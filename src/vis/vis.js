@@ -491,6 +491,10 @@ var Vis = cdb.core.View.extend({
       "histogram": {
         model: 'HistogramModel',
         view: 'Histogram.View'
+      },
+      "category": {
+        model: 'CategoryModel',
+        view: 'Category.View'
       }
     };
 
@@ -540,7 +544,6 @@ var Vis = cdb.core.View.extend({
     });
 
     dashboard.createInstance();
-
 
     this.map.layers.reset(_.map(data.layers, function(layerData) {
       var model;

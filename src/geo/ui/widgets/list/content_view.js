@@ -15,15 +15,17 @@ cdb.geo.ui.Widget.List.Content = cdb.geo.ui.Widget.Content.extend({
         '<dt class="Widget-infoItem Widget-textSmaller Widget-textSmaller--upper"><%= itemsCount %> rows</dt>'+
       '</dl>'+
     '</div>'+
-    '<div class="Widget-content js-content"></div>'+
+    '<div class="Widget-content Widget-content--noSidesMargin">'+
+      '<div class="Widget-listWrapper js-content"></div>'+
+    '</div>'+
     '<div class="Widget-footer js-footer"></div>',
 
   _PLACEHOLDER: ' ' +
     '<ul class="Widget-list Widget-list--withBorders">' +
-      '<li class="Widget-listItem Widget-listItem--withBorders Widget-listItem--fake"></li>' +
-      '<li class="Widget-listItem Widget-listItem--withBorders Widget-listItem--fake"></li>' +
-      '<li class="Widget-listItem Widget-listItem--withBorders Widget-listItem--fake"></li>' +
-      '<li class="Widget-listItem Widget-listItem--withBorders Widget-listItem--fake"></li>' +
+      '<li class="Widget-listItem Widget-listItem--fake"></li>' +
+      '<li class="Widget-listItem Widget-listItem--fake"></li>' +
+      '<li class="Widget-listItem Widget-listItem--fake"></li>' +
+      '<li class="Widget-listItem Widget-listItem--fake"></li>' +
     '</ul>',
 
   render: function() {
@@ -59,13 +61,24 @@ cdb.geo.ui.Widget.List.Content = cdb.geo.ui.Widget.Content.extend({
     this.$('.js-content').html(list.render().el);
     this.addView(list);
 
+    var isScrollList = (list.$el.get(0).scrollHeight - list.$el.outerHeight()) > 0;
+
     if (count > 4) {
       // Paginator
       var pagination = new cdb.geo.ui.Widget.List.PaginatorView({
         $target: list.$el
       });
-      this.$('.js-footer').html(pagination.render().el);
+      this.$('.js-footer').append(pagination.render().el);
       this.addView(pagination);
+    }
+
+    // Edges
+    if (isScrollList) {
+      var edges = new cdb.geo.ui.Widget.List.EdgesView({
+        $target: list.$el
+      });
+      this.$('.js-content').append(edges.render().el);
+      this.addView(edges);
     }
   }
 

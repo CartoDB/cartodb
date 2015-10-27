@@ -62,7 +62,7 @@ cdb.geo.ui.Widget.Error = cdb.core.View.extend({
   },
 
   _onRefreshClick: function() {
-    this.trigger('refreshData', this);
+    this.dataModel.fetch();
   },
 
   show: function() {

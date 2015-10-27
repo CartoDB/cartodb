@@ -21,6 +21,10 @@
     root.cdb.geo = {};
     root.cdb.geo.ui = {};
     root.cdb.geo.ui.Widget = {};
+    root.cdb.geo.ui.Widget.List = {};
+    root.cdb.geo.ui.Widget.Category = {};
+    root.cdb.geo.ui.Widget.Histogram = {};
+    root.cdb.geo.ui.Widget.Formula = {};
     root.cdb.geo.geocoder = {};
     root.cdb.ui = {};
     root.cdb.ui.common = {};
@@ -90,19 +94,28 @@
         'geo/ui/widget.js',
         'geo/ui/widgets/widget_model.js',
         'geo/ui/widgets/widget_collection.js',
-        'geo/ui/widgets/standard/widget_loader.js',
-        'geo/ui/widgets/standard/widget_error.js',
-        'geo/ui/widgets/standard/widget_content.js',
+        'geo/ui/widgets/standard/widget_loader_view.js',
+        'geo/ui/widgets/standard/widget_error_view.js',
+        'geo/ui/widgets/standard/widget_content_view.js',
         'geo/ui/widgets/histogram/widget_histogram_view.js',
         'geo/ui/widgets/histogram/widget_histogram_content_view.js',
         'geo/ui/widgets/histogram/widget_histogram_model.js',
-        'geo/ui/widgets/list/widget_list_view.js',
-        'geo/ui/widgets/list/widget_list_content_view.js',
-        'geo/ui/widgets/list/widget_list_paginator_view.js',
-        'geo/ui/widgets/list/widget_list_item_view.js',
-        'geo/ui/widgets/list/widget_list_items_view.js',
-        'geo/ui/widgets/list/widget_list_model.js',
-
+        'geo/ui/widgets/list/view.js',
+        'geo/ui/widgets/list/content_view.js',
+        'geo/ui/widgets/list/paginator_view.js',
+        'geo/ui/widgets/list/edges_view.js',
+        'geo/ui/widgets/list/item_view.js',
+        'geo/ui/widgets/list/items_view.js',
+        'geo/ui/widgets/list/model.js',
+        'geo/ui/widgets/category/view.js',
+        'geo/ui/widgets/category/content_view.js',
+        'geo/ui/widgets/category/item_view.js',
+        'geo/ui/widgets/category/items_view.js',
+        'geo/ui/widgets/category/paginator_view.js',
+        'geo/ui/widgets/category/model.js',
+        'geo/ui/widgets/formula/view.js',
+        'geo/ui/widgets/formula/content_view.js',
+        'geo/ui/widgets/formula/model.js',
         // End widgets
 
         'geo/sublayer.js',

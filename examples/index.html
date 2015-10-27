@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8">
     <title>CartoDB.js load example</title>
+    <meta name=viewport content="width=device-width initial-scale=1">
     <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.15/themes/css/cartodb.css" />
     <link rel="stylesheet" href="/dist/themes/css/cartodb.css" />
     <script src="/src/cartodb.js"></script>
@@ -67,16 +68,16 @@
             "map_provider": "leaflet",
             "bounds": [
               [
-                -72.24891676830892,
-                -84.13330078125
+                41.33815377536821,
+                2.013759613037109
               ],
               [
-                -65.29346780107583,
-                -45.3515625
+                41.46086777862755,
+                2.3272132873535156
               ]
             ],
-            "center": "[-69.04500130183705, -64.742431640625]",
-            "zoom": 6,
+            "center": "[41.39950754886423, 2.170400619506836]",
+            "zoom": 13,
             "updated_at": "2015-10-26T11:50:30+00:00",
             "layers": [
               {
@@ -120,14 +121,9 @@
                         "infowindow": {
                           "fields": [
                             {
-                              "name": "aname2",
+                              "name": "n_distri",
                               "title": true,
                               "position": 0
-                            },
-                            {
-                              "name": "description",
-                              "title": true,
-                              "position": 1
                             }
                           ],
                           "template_name": "infowindow_light",
@@ -160,9 +156,9 @@
                         "order": 1,
                         "visible": true,
                         "options": {
-                          "sql": "select * from untitled_table_1",
-                          "layer_name": "untitled_table_1",
-                          "cartocss": "/** simple visualization */\n\n#untitled_table_1{\n  polygon-fill: #FF6600;\n  polygon-opacity: 0.7;\n  line-color: #FFF;\n  line-width: 0.5;\n  line-opacity: 1;\n}",
+                          "sql": "SELECT * FROM districtes_barcelona",
+                          "layer_name": "Distritos",
+                          "cartocss": "/** simple visualization */\n\n#districtes_barcelona{\n  polygon-fill: #FF6600;\n  polygon-opacity: 0.7;\n  line-color: #FFF;\n  line-width: 0.5;\n  line-opacity: 1;\n}",
                           "cartocss_version": "2.1.1",
                           "interactivity": "cartodb_id",
                           "table_name": "\"\".",
@@ -170,17 +166,35 @@
                             "list_widget": {
                               "type": "list",
                               "options": {
-                                "title": "Waduses",
+                                "title": "Barrios",
                                 "columns": [
-                                  "aname2",
-                                  "description"
+                                  "n_distri",
                                 ],
                                 "columns_title": [
-                                  "Nombre",
-                                  "Descripción"
+                                  "Distrito"
                                 ]
                               }
-                            }
+                            },
+                            "histogram_widget_uuid": {
+                              "type": "histogram",
+                              "options": {
+                                "title": "Casas por barrio",
+                                "column": "homes",
+                                "bins": 10
+                              }
+                            },
+                            // 'formula_widget_uuid': {
+                            //   "type": "formula",
+                            //   "options": {
+                            //     "title": "Total de árboles",
+                            //     "columns": [
+                            //       "trees"
+                            //     ],
+                            //     "columns_title": [
+                            //       "Estos son los árboles totales de los distritos"
+                            //     ]
+                            //   }
+                            // },
                           }
                         }
                       },
@@ -188,18 +202,7 @@
                         "id": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
                         "type": "CartoDB",
                         "infowindow": {
-                          "fields": [
-                            {
-                              "name": "description",
-                              "title": true,
-                              "position": 0
-                            },
-                            {
-                              "name": "name",
-                              "title": true,
-                              "position": 1
-                            }
-                          ],
+                          "fields": [],
                           "template_name": "table/views/infowindow_light",
                           "template": "<div class=\"cartodb-popup v2\">\n  <a href=\"#close\" class=\"cartodb-popup-close-button close\">x</a>\n  <div class=\"cartodb-popup-content-wrapper\">\n    <div class=\"cartodb-popup-content\">\n      {{#content.fields}}\n        {{#title}}<h4>{{title}}</h4>{{/title}}\n        {{#value}}\n          <p {{#type}}class=\"{{ type }}\"{{/type}}>{{{ value }}}</p>\n        {{/value}}\n        {{^value}}\n          <p class=\"empty\">null</p>\n        {{/value}}\n      {{/content.fields}}\n    </div>\n  </div>\n  <div class=\"cartodb-popup-tip-container\"></div>\n</div>\n",
                           "alternative_names": {},
@@ -223,13 +226,26 @@
                         "order": 2,
                         "visible": true,
                         "options": {
-                          "sql": "select * from untitled_table_8",
-                          "layer_name": "untitled_table_8",
-                          "cartocss": "/** simple visualization */\n\n#untitled_table_8{\n  marker-fill-opacity: 0.9;\n  marker-line-color: #FFF;\n  marker-line-width: 1;\n  marker-line-opacity: 1;\n  marker-placement: point;\n  marker-type: ellipse;\n  marker-width: 10;\n  marker-fill: #FF6600;\n  marker-allow-overlap: true;\n}",
+                          "sql": "select * from arboles",
+                          "layer_name": "Árboles",
+                          "cartocss": "/** simple visualization */\n\n#arboles{\n  marker-fill-opacity: 0.9;\n  marker-line-color: #FFF;\n  marker-line-width: 1;\n  marker-line-opacity: 1;\n  marker-placement: point;\n  marker-type: ellipse;\n  marker-width: 10;\n  marker-fill: #FF6600;\n  marker-allow-overlap: true;\n}",
                           "cartocss_version": "2.1.1",
                           "interactivity": "cartodb_id",
                           "table_name": "\"\".",
-                          "widgets": {}
+                          "widgets": {
+                            // 'category_widget_uuid': {
+                            //   "type": "category",
+                            //   "options": {
+                            //     "title": "Categorías de árboles",
+                            //     "columns": [
+                            //       "name"
+                            //     ],
+                            //     "columns_title": [
+                            //       "Familia"
+                            //     ]
+                            //   }
+                            // }
+                          }
                         }
                       }
                     ]
@@ -318,9 +334,10 @@
               "time": 0
             },
             "datasource": {
-              "user_name": "cdb",
-              "maps_api_template": "http://{user}.localhost.lan:8181",
-              "stat_tag": "84ec6844-4b4b-11e5-9c1d-080027880ca6",
+              "type": "public_map",
+              "user_name": "pablo",
+              "maps_api_template": "https://{user}.cartodb-staging.com:443",
+              "stat_tag": "ece6faac-7271-11e5-a85f-04013fc66a01",
               "force_cors": true // This is sometimes set in the editor
             }
           }

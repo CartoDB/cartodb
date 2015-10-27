@@ -7,19 +7,25 @@ cdb.windshaft.Dashboard = function(options) {
 
   this.instance = new cdb.windshaft.DashboardInstance();
   this.layers.bind('change', this.createInstance, this);
-  this.layerGroup.bindDashboardInstance(this.instance);
 
   // When the instance has changed, we need to update some models (eg: widgets) in this class
   // with the information that the instance contains.
   var self = this;
   this.instance.bind('change:layergroupid', function(dashboardInstance) {
+
+    // Set the tiles and grid URLS on the layerGroup
+    this.layerGroup.set({
+      urls: dashboardInstance.getTiles()
+    });
+
+    // Update the URLs of the
     dashboardInstance.forEachWidget(function(widgetId, widgetMetadata) {
       var widgetModel = self.getWidgetByName(widgetId);
 
       // TODO: Could be https
       widgetModel.set('url', widgetMetadata.url.http);
     });
-  });
+  }.bind(this));
 };
 
 cdb.windshaft.Dashboard.prototype.createInstance = function() {

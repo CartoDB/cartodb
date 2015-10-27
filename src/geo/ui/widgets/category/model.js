@@ -1,9 +1,4 @@
-cdb.geo.ui.Widget.HistogramModel = cdb.geo.ui.Widget.Model.extend({
-
-  options: {
-    page: 0,
-    per_page: 100
-  },
+cdb.geo.ui.Widget.CategoryModel = cdb.geo.ui.Widget.Model.extend({
 
   defaults: {
     data: [],
@@ -13,14 +8,6 @@ cdb.geo.ui.Widget.HistogramModel = cdb.geo.ui.Widget.Model.extend({
   initialize: function() {
     this._data = new Backbone.Collection(this.get('data'));
     cdb.geo.ui.Widget.Model.prototype.initialize.call(this);
-  },
-
-  _createUrlOptions: function() {
-    return _.compact(_(this.options).map(
-      function(v, k) {
-        return k + "=" + encodeURIComponent(v);
-      }
-    )).join('&');
   },
 
   getData: function() {
@@ -46,5 +33,4 @@ cdb.geo.ui.Widget.HistogramModel = cdb.geo.ui.Widget.Model.extend({
       data: r.data
     };
   }
-
 });

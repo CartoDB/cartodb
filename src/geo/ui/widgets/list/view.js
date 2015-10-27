@@ -4,8 +4,6 @@
  *
  */
 
-cdb.geo.ui.Widget.List = {};
-
 cdb.geo.ui.Widget.List.View = cdb.geo.ui.Widget.View.extend({
 
   _createContentView: function() {

@@ -1,7 +1,7 @@
 cdb.geo.ui.Widget.List.ItemView = cdb.core.View.extend({
 
   tagName: 'li',
-  className: 'Widget-listItem Widget-listItem--withBorders',
+  className: 'Widget-listItem',
 
   events: {
     'click .js-button': '_onItemClick'
@@ -9,7 +9,9 @@ cdb.geo.ui.Widget.List.ItemView = cdb.core.View.extend({
 
   _TEMPLATE: ' ' +
     '<% if (isClickable) { %>'+
-      '<button type="button" class="Widget-listItemButton js-button">'+
+      '<button type="button" class="Widget-listItemInner Widget-listButton Widget-listButton--withBorder js-button">'+
+    '<% } else { %>'+
+      '<div class="Widget-listItemInner Widget-listItemInner--withBorders">'+
     '<% } %>'+
       '<div class="Widget-contentSpaced Widget-contentSpaced--topAligned Widget-contentSpaced--start">'+
         '<em class="Widget-dot Widget-listDot"></em>'+
@@ -36,6 +38,8 @@ cdb.geo.ui.Widget.List.ItemView = cdb.core.View.extend({
       '</div>'+
     '<% if (isClickable) { %>'+
       '</button>'+
+    '<% } else { %>'+
+      '</div>'+
     '<% } %>',
 
   initialize: function() {

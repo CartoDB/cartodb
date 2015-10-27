@@ -50,8 +50,7 @@ cdb.geo.ui.Widget.Content = cdb.core.View.extend({
   },
 
   _initBinds: function() {
-    this.dataModel.once('error', this._onFirstLoad, this);
-    this.dataModel.once('change:data', this._onFirstLoad, this);
+    this.dataModel.once('error change:data', this._onFirstLoad, this);
     this.viewModel.bind('change:sync', this._checkBinds, this);
     this.add_related_model(this.dataModel);
     this.add_related_model(this.viewModel);
@@ -77,8 +76,12 @@ cdb.geo.ui.Widget.Content = cdb.core.View.extend({
   },
 
   _addPlaceholder: function() {
-    var placeholderTemplate = _.template(this._PLACEHOLDER);
-    this.$('.js-content').append(placeholderTemplate());
+    if (this._PLACEHOLDER) {
+      var placeholderTemplate = _.template(this._PLACEHOLDER);
+      this.$('.js-content').append(placeholderTemplate());
+    } else {
+      cdb.log.info('Placeholder template doesn\'t exist');
+    }
   }
 
 });

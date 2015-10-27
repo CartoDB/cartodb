@@ -168,7 +168,7 @@ You can call to `addTo(map[, position])` in the promise so when the layer is rea
 
 #### Example
 
-<div class="code-title">cartodb.createLayer using a url</div>
+`cartodb.createLayer` using a url
 
 ```javascript
 var map;
@@ -332,7 +332,7 @@ map.on('click', function(e) {
 
 ### Named Maps Layer Source Object (_type: 'namedmap'_)
 
-Used for making public maps with private data. See [Named Maps](http://docs.cartodb.com/cartodb-platform/maps-api.html#named-maps-1) for more information.
+Used for making public maps with private data. See [Named Maps](/cartodb-platform/maps-api/named-maps/) for more information.
 
 ```javascript
 {
@@ -408,7 +408,9 @@ Changes the opacity of the layer.
 
 #### Arguments
 
-+ **opacity**: value in range [0, 1]
+Arguments | Description
+--- | ---
+opacity | value in range [0, 1]
 
 ### layer.getSubLayer(_layerIndex_)
 
@@ -416,15 +418,16 @@ Gets a previously created sublayer. And exception is raised if no sublayer exist
 
 #### Arguments
 
-+ **layerIndex**: 0 based index of the sublayer to get. Should be within [0, getSubLayerCount())
+Arguments | Description
+--- | ---
+layerIndex | 0 based index of the sublayer to get. Should be within [0, getSubLayerCount())
 
 #### Returns
 
-A SubLayer object.
+A `SubLayer` object.
 
 #### Example
 
-<div class="code-title">layer.getSubLayer</div>
 ```javascript
 layer.getSubLayer(1).hide();
 
@@ -443,7 +446,8 @@ The number of sublayers.
 
 #### Example
 
-<div class="code-title">Hide layers using layer.getSubLayerCount</div>
+Hide layers using `layer.getSubLayerCount`
+
 ```javascript
 var num_sublayers = layer.getSubLayerCount();
 
@@ -458,9 +462,10 @@ Adds a new data to the current layer. With this method, data from multiple table
 
 #### Arguments
 
-- **layerDefinition**: an object with the sql and cartocss that defines the data, should be like:
+Arguments | Description
+--- | ---
+layerDefinition | an object with the sql and cartocss that defines the data, should be like
 
-<div class="code-title">layerDefinition</div>
 ```javascript
 {
   sql: "SELECT * FROM table_name",
@@ -480,7 +485,6 @@ A SubLayer object.
 
 #### Example
 
-<div class="code-title">layer.createSubLayer</div>
 ```javascript
 cartodb.createLayer(map, 'http://examples.cartodb.com/api/v2/viz/european_countries_e/viz.json', function(layer) {
   // add populated places points over the countries layer
@@ -506,13 +510,17 @@ The layer itself.
 
 #### Arguments
 
-- **auth_token:** string
+Arguments | Description
+--- | ---
+auth_token | string
+
 
 ### layer.setParams(_key, value_)
 
-Sets the configuration of a layer when using [named maps](http://docs.cartodb.com/cartodb-platform/maps-api.html#named-maps-1). It can be invoked in different ways:
+Sets the configuration of a layer when using [named maps](/cartodb-platform/maps-api/named-maps/). It can be invoked in different ways:
 
-<div class="code-title">layer.setParams</div>
+#### Arguments
+
 ```javascript
 layer.setParams('test', 10); // sets test = 10
 layer.setParams('test', null); // unset test
@@ -521,8 +529,10 @@ layer.setParams({'test': 1, 'color': '#F00'}); // set more than one parameter at
 
 #### Arguments
 
-- **key:** string
-- **value:** string or number
+Arguments | Description
+--- | ---
+key | string
+value | string or number
 
 #### Returns
 
@@ -536,9 +546,13 @@ Sets sublayer parameters. Useful when more than one parameter needs to be change
 
 #### Arguments
 
-- **layerDefinition**: an object with the sql and cartocss that defines the data, like:
+Arguments | Description
+--- | ---
+layerDefinition | an object with the sql and cartocss that defines the data
 
-<div class="code-title">layerDefinition</div>
+
+#### layerDefinition
+
 ```javascript
 {
   sql: "SELECT * FROM table_name",
@@ -553,7 +567,6 @@ The layer itself.
 
 #### Example
 
-<div class="code-title">sublayer.set</div>
 ```javascript
 sublayer.set({
   sql: "SELECT * FROM table_name WHERE cartodb_id < 100",
@@ -568,7 +581,7 @@ Gets the attribute for the sublayer, for example 'sql', 'cartocss'.
 
 #### Returns
 
-The requested attribute or undefined if it's not present.
+The requested attribute or `undefined` if it's not present.
 
 ### sublayer.remove()
 
@@ -584,11 +597,11 @@ Removes the sublayer from the layer temporarily. The layer is refreshed after ca
 
 ### sublayer.toggle()
 
-Toggles the visibility of the sublayer and returns a boolean that indicates the new status (true if the sublayer is visible, false if it is hidden)
+Toggles the visibility of the sublayer and returns a boolean that indicates the new status (`true` if the sublayer is visible, `false` if it is hidden)
 
 ### sublayer.isVisible()
 
-It returns `true`  if the sublayer is visible.
+It returns `true` if the sublayer is visible.
 
 ## cartodb.CartoDBLayer.CartoDBSubLayer
 
@@ -616,25 +629,29 @@ Sets the columns which data will be available via the interaction with the subla
 
 ### sublayer.setInteraction(_true_)
 
-Enables (true) or disables (false) the interaction of the layer. When disabled, **featureOver**, **featureClick**, **featureOut**, **mouseover** and **mouseout** are **not** triggered.
+Enables (`true`) or disables (`false`) the interaction of the layer. When disabled, **featureOver**, **featureClick**, **featureOut**, **mouseover** and **mouseout** are **not** triggered.
 
 #### Arguments
 
-+ **enable**: true if the interaction needs to be enabled.
+Arguments | Description
+--- | ---
+enable | `true` if the interaction needs to be enabled.
 
 ### sublayer.infowindow
 
-**sublayer.infowindow** is a Backbone model where we modify the parameters of the infowindow.
+`sublayer.infowindow` is a Backbone model where we modify the parameters of the infowindow.
 
 #### Attributes
 
-- **template**: Custom HTML template for the infowindow. You can write simple HTML or use [Mustache templates](http://mustache.github.com/).
-- **sanitizeTemplate**: By default all templates are sanitized from unsafe tags/attrs (e.g. `<script>`), set this to `false`
-to skip sanitization, or a function to provide your own sanitization (e.g. `function(inputHtml) { return inputHtml })`).
-- **width**: Width of the infowindow (value must be a number).
-- **maxHeight**: Max height of the scrolled content (value must be a number).
+Attributes | Description
+--- | ---
+template | Custom HTML template for the infowindow. You can write simple HTML or use [Mustache templates](http://mustache.github.com/).
+sanitizeTemplate | By default all templates are sanitized from unsafe tags/attrs (e.g. `<script>`), set this to `false` to skip sanitization, or a function to provide your own sanitization (e.g. `function(inputHtml) { return inputHtml })`).
+width | Width of the infowindow (value must be a number).
+maxHeight | Max height of the scrolled content (value must be a number).
 
-<div class="code-title">sublayer.infowindow.set</div>
+#### sublayer.infowindow.set
+
 ```html
 <div id="map"></div>
 
@@ -693,12 +710,14 @@ Shortcut for `get('tms')`
 
 ### sublayer.legend
 
-**sublayer.legend** is a Backbone model with the information about the legend.
+`sublayer.legend` is a Backbone model with the information about the legend.
 
 #### Attributes
 
-- **template**: Custom HTML template for the legend. You can write simple HTML.
-- **title**: Title of the legend.
-- **show_title**: Set this to `false` if you don't want the title to be displayed.
-- **items**: An array with the items that are displayed in the legend.
-- **visible**: Set this to `false` if you want to hide the legend.
+Attributes | Description
+--- | ---
+template | Custom HTML template for the legend. You can write simple HTML.
+title | Title of the legend.
+show_title | Set this to `false` if you don't want the title to be displayed.
+items | An array with the items that are displayed in the legend.
+visible | Set this to `false` if you want to hide the legend.

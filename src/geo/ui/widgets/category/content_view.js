@@ -6,7 +6,7 @@
 
 cdb.geo.ui.Widget.Category.Content = cdb.geo.ui.Widget.Content.extend({
 
-  _ITEMS_PER_PAGE: 6,
+  _ITEMS_PER_PAGE: 4,
 
   _TEMPLATE: ' ' +
     '<div class="Widget-header">'+

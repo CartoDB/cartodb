@@ -2,7 +2,7 @@ cdb.geo.ui.Widget.Category.ItemsView = cdb.geo.ui.Widget.View.extend({
 
   _ITEMS_PER_PAGE: 4,
 
-  className: 'Widget-list js-list',
+  className: 'Widget-list Widget-list--wrapped js-list',
   tagName: 'ul',
 
   initialize: function() {

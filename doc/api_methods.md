@@ -25,8 +25,8 @@ Arguments | Description
 map_id | a DOM object, for example `$('#map')` or a DOM id.
 vizjson_url | url of the vizjson object.
 options |
-<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> shareable | add facebook and twitter share buttons.
-<i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> title | adds a header with the title of the visualization.
+&#124;_ shareable | add facebook and twitter share buttons.
+&#124;_ title | adds a header with the title of the visualization.
 <i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> description | adds description to the header (as you set in the UI).
 <i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> search | adds a search control (default: true).
 <i class="Icon Icon--s5 Icon--cGrey Icon--mAlign Icon--indent"></i> zoomControl | adds zoom control (default: true).

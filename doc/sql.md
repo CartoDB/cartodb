@@ -2,11 +2,12 @@
 
 CartoDB offers a powerful SQL API for you to query and retreive data from your CartoDB tables. CartoDB.js offers a simple to use wrapper for sending those requests and using the results.
 
-## cartodb.SQL
+### cartodb.SQL
 
-**cartodb.SQL** is the tool you will use to access data you store in your CartoDB tables. This is a really powerful technique for returning things like: **items closest to a point**, **items ordered by date**, or **GeoJSON vector geometries**. It’s all powered with SQL and our tutorials will show you how easy it is to begin with SQL.
+`cartodb.SQL` is the tool you will use to access data you store in your CartoDB tables. This is a really powerful technique for returning things like: **items closest to a point**, **items ordered by date**, or **GeoJSON vector geometries**. It’s all powered with SQL and our tutorials will show you how easy it is to begin with SQL.
 
-<div class="code-title">cartodb.SQL</div>
+#### Example
+
 ```javascript
 var sql = new cartodb.SQL({ user: 'cartodb_user' });
 sql.execute("SELECT * FROM table_name WHERE id > {{id}}", { id: 3 })
@@ -21,9 +22,11 @@ sql.execute("SELECT * FROM table_name WHERE id > {{id}}", { id: 3 })
 
 It accepts the following options:
 
-+ **format**: should be geoJSON.
-+ **dp**: float precision.
-+ **jsonp**: if jsonp should be used instead of CORS. This param is enabled if the browser does not support CORS.
+Options | Description
+--- | ---
+format | should be GeoJSON.
+dp | float precision.
+jsonp | if jsonp should be used instead of CORS. This param is enabled if the browser does not support CORS.
 
 These arguments will be applied to all the queries performed by this object. If you want to override them for one query see **execute** options.
 
@@ -33,20 +36,25 @@ It executes a sql query.
 
 #### Arguments
 
-+ **sql**: a string with the sql query to be executed. You can specify template variables like {{variable}} which will be filled with **vars** object.
-+ **vars**: a map with the variables to be interpolated in the sql query.
-+ **options**: accepts **format**, **dp** and **jsonp**. This object also overrides the params passed to $.ajax.
+Arguments | Description
+--- | ---
+sql | a string with the sql query to be executed. You can specify template variables like {{variable}} which will be filled with `vars` object.
+vars | a map with the variables to be interpolated in the sql query.
+options | accepts `format`, `dp` and `jsonp`. This object also overrides the params passed to `$.ajax`.
 
 #### Returns
 
 A promise object. You can listen for the following events:
 
-+ **done**: triggered when the data arrives.
-+ **error**: triggered when something failed.
+Events | Description
+--- | ---
+done | triggered when the data arrives.
+error | triggered when something failed.
+
+#### Example
 
 You can also use done and error methods:
 
-<div class="code-title">sql.execute</div>
 ```javascript
 sql.execute('SELECT * FROM table_name')
   .done(fn)
@@ -55,26 +63,26 @@ sql.execute('SELECT * FROM table_name')
 
 ### sql.getBounds(_sql [,vars][, options][, callback]_)
 
-Returns the bounds [ [sw_lat, sw_lon], [ne_lat, ne_lon ] ] for the geometry resulting of specified query.
+Returns the bounds `[ [sw_lat, sw_lon], [ne_lat, ne_lon ] ]` for the geometry resulting of specified query.
 
-<div class="code-title">sql.getBounds</div>
+#### Example
+
 ```javascript
 sql.getBounds('select * from table').done(function(bounds) {
-    console.log(bounds);
+  console.log(bounds);
 });
 ```
 
 #### Arguments
 
-+ **sql**: a string with the sql query to calculate the bounds from.
+Arguments | Description
+--- | ---
+sql | a string with the sql query to calculate the bounds from.
 
-#### Application of getBounds in Leaflet
+#### getBounds and Leaflet
 
 You can use the results from `getBounds` to center data on your maps using Leaflet.
 
-- **getBounds and Leaflet**
-
-<div class="code-title">sql.getBounds</div>
 ```javascript
 sql.getBounds('select * from table').done(function(bounds) {
   map.setBounds(bounds);

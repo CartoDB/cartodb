@@ -13,7 +13,7 @@ Triggered when the user hovers on any feature.
 Arguments | Description
 --- | ---
 event | Browser mouse event object.
-latlng | Array with the LatLng ([lat,lng]) where the layer was clicked.
+latlng | Array with the `LatLng ([lat,lng])` where the layer was clicked.
 pos | Object with x and y position in the DOM map element.
 data | The CartoDB data of the clicked feature with the `interactivity` param.
 layerIndex | the `layerIndex` where the event happened.

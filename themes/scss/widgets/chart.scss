@@ -2,6 +2,30 @@
   position: relative;
 }
 
+.Widget-chart {
+  display: none;
+}
+
+.Widget-chart.Widget-chart--fake {
+  display: block;
+}
+
+.Widget-chartItem.Widget-chartItem--fake {
+	display: inline-block;
+  width: 9%;
+  height: 40px;
+  background: #f1f1f1;
+  margin: 0 1px 0 0;
+}
+
+.Widget-chartItem--fake.Widget-chartItem--small {
+  height: 20px;
+}
+
+.Widget-chartItem--fake.Widget-chartItem--big {
+  height: 60px;
+}
+
 .Tooltip {
   top: 0;
   left: 0;
@@ -26,10 +50,6 @@
 	left: 20px;
 	bottom: -3px;
 	content: '';
-}
-
-.Widget-chart {
-  display: none;
 }
 
 .Chart.is-selectable .Handle,

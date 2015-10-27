@@ -591,7 +591,7 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
        '<dt class="Widget-infoItem js-max">0 MAX</dt>'+
      '</dl>'+
    '</div>'+
-   '<div class="Widget-content js-content">'+
+    '<div class="Widget-content js-content">'+
    '<div class="Tooltip js-tooltip"></div>'+
    '  <div class="Widget-filter Widget-contentSpaced js-filter">'+
    '    <p class="Widget-textSmaller Widget-textSmaller--bold Widget-textSmaller--upper js-val"></p>'+
@@ -603,11 +603,17 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
    '  <svg class="Widget-chart js-chart"></svg>',
 
   _PLACEHOLDER: ' ' +
-    '<ul class="Widget-list Widget-list--withBorders">' +
-      '<li class="Widget-listItem Widget-listItem--withBorders Widget-listItem--fake"></li>' +
-      '<li class="Widget-listItem Widget-listItem--withBorders Widget-listItem--fake"></li>' +
-      '<li class="Widget-listItem Widget-listItem--withBorders Widget-listItem--fake"></li>' +
-      '<li class="Widget-listItem Widget-listItem--withBorders Widget-listItem--fake"></li>' +
+    '<ul class="Widget-chart Widget-chart--fake">' +
+      '<li class="Widget-chartItem Widget-chartItem--small Widget-chartItem--fake"></li>' +
+      '<li class="Widget-chartItem Widget-chartItem--fake"></li>' +
+      '<li class="Widget-chartItem Widget-chartItem--fake"></li>' +
+      '<li class="Widget-chartItem Widget-chartItem--small Widget-chartItem--fake"></li>' +
+      '<li class="Widget-chartItem Widget-chartItem--fake"></li>' +
+      '<li class="Widget-chartItem Widget-chartItem--small Widget-chartItem--fake"></li>' +
+      '<li class="Widget-chartItem Widget-chartItem--fake"></li>' +
+      '<li class="Widget-chartItem Widget-chartItem--big Widget-chartItem--fake"></li>' +
+      '<li class="Widget-chartItem Widget-chartItem--fake"></li>' +
+      '<li class="Widget-chartItem Widget-chartItem--small Widget-chartItem--fake"></li>' +
     '</ul>',
 
   _initViews: function() {

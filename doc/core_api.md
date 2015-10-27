@@ -10,7 +10,7 @@ If you want to use this functionality, you only need to load cartodb.core.js fro
 
 An example using this funcionality can be found in a ModestMaps example: [view live](http://cartodb.github.com/cartodb.js/examples/modestmaps.html) / [source code](https://github.com/CartoDB/cartodb.js/blob/develop/examples/modestmaps.html).
 
-Notice that cartodb.SQL is also included in that JavaScript file
+Notice that `cartodb.SQL` is also included in that JavaScript file
 
 ## cartodb.Tiles
 

@@ -1,13 +1,8 @@
 var $ = require('jquery');
 var Backbone = require('Backbone');
 
-var Config = require('../../../../src-browserify/core/config');
-var config = new Config();
-config.set({
-  cartodb_attributions: "CartoDB <a href='http://cartodb.com/attributions' target='_blank'>attribution</a>",
-  cartodb_logo_link: "http://www.cartodb.com"
-});
-var configProxy = require('config-proxy').set(config);
+var config = require('../../../../src-browserify/cdb.config');
+var configProxy = require('config-proxy');
 
 var Map = require('../../../../src-browserify/geo/map');
 var MapView = require('../../../../src-browserify/geo/map-view');
@@ -15,6 +10,7 @@ var Infowindow = require('../../../../src-browserify/geo/ui/infowindow');
 
 describe('core/geo/map-view', function() {
   beforeEach(function() {
+    configProxy.set(config);
     this.container = $('<div>').css('height', '200px');
 
     this.map = new Map();

@@ -9,14 +9,16 @@ var bannerStr = function(dest) {
 var bundles = {
 
   // Specs that are shared for all bundles
+  // Ordered by dirs before files, and after that alpabetically
   'src-browserify-specs': {
     src: [
+      'test/lib/fail-tests-if-have-errors-in-src.js',
       'test/lib/reset-proxies-after-each.js',
       'test/spec/src-browserify/require-proxies/create-require-proxy.spec.js',
       'test/spec/src-browserify/api/sql.spec.js',
+      'test/spec/src-browserify/core/log/*.js',
       'test/spec/src-browserify/core/decorators.spec.js',
       'test/spec/src-browserify/core/log.spec.js',
-      'test/spec/src-browserify/core/log/*.js',
       'test/spec/src-browserify/core/model.spec.js',
       'test/spec/src-browserify/core/sanitize.spec.js',
       'test/spec/src-browserify/core/template-list.spec.js',
@@ -24,15 +26,15 @@ var bundles = {
       'test/spec/src-browserify/core/util.spec.js',
       'test/spec/src-browserify/core/view.spec.js',
       'test/spec/src-browserify/geo/geocoder/*.js',
-      'test/spec/src-browserify/geo/geometry.spec.js',
       'test/spec/src-browserify/geo/layer-definition/*.js',
       'test/spec/src-browserify/geo/map/*.js',
-      'test/spec/src-browserify/geo/map-view.spec.js',
-      'test/spec/src-browserify/geo/map.spec.js',
-      'test/spec/src-browserify/geo/sublayer.spec.js',
       'test/spec/src-browserify/geo/ui/infowindow.spec.js',
       'test/spec/src-browserify/geo/ui/infowindow-model.spec.js',
       'test/spec/src-browserify/geo/ui/legend.spec.js',
+      'test/spec/src-browserify/geo/geometry.spec.js',
+      'test/spec/src-browserify/geo/map-view.spec.js',
+      'test/spec/src-browserify/geo/map.spec.js',
+      'test/spec/src-browserify/geo/sublayer.spec.js',
       'test/spec/src-browserify/vis/image.spec.js',
     ],
     dest: '<%= config.tmp %>/src-browserify-specs.js'

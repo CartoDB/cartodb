@@ -6,6 +6,8 @@ cdb.geo = {};
 cdb.geo.ui = {};
 var cdbProxy = require('cdb-proxy').set(cdb);
 var cdbUI = require('../../../../../src-browserify/cdb.geo.ui.legend');
+var config = require('../../../../../src-browserify/cdb.config');
+var configProxy = require('config-proxy');
 
 var Backbone = require('backbone');
 var Model = require('../../../../../src-browserify/core/model');
@@ -13,6 +15,7 @@ var Map = require('../../../../../src-browserify/geo/map');
 
 describe('geo/ui/legend', function() {
   beforeEach(function() {
+    configProxy.set(config);
     jQueryProxy.set($);
     cdbProxy.set(cdb);
     cdb.geo = {};

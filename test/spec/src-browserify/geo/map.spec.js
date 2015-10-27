@@ -1,10 +1,5 @@
-var Config = require('../../../../src-browserify/core/config');
-var config = new Config();
-config.set({
-  cartodb_attributions: "CartoDB <a href='http://cartodb.com/attributions' target='_blank'>attribution</a>",
-  cartodb_logo_link: "http://www.cartodb.com"
-});
-var configProxy = require('config-proxy').set(config);
+var config = require('../../../../src-browserify/cdb.config');
+var configProxy = require('config-proxy');
 
 var PlainLayer = require('../../../../src-browserify/geo/map/plain-layer');
 var CartoDBLayer = require('../../../../src-browserify/geo/map/cartodb-layer');

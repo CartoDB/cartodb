@@ -1,10 +1,12 @@
 var cdb = require('cdb-proxy').set({}).get();
-var Config = require('../../../../src-browserify/core/config');
+var config = require('../../../../src-browserify/cdb.config');
+var configProxy = require('config-proxy');
+
 var Log = require('../../../../src-browserify/core/log');
 
 describe('core/log', function() {
   it('should has error, log and debug', function() {
-    cdb.config = new Config();
+    configProxy.set(config);
     cdb.errors = jasmine.createSpy('ErrorList', ['create']);
     var log = new Log({tag: 'test'});
     expect(log.error).toBeTruthy();

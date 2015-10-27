@@ -5,7 +5,7 @@ var TemplateList = require('../../../../../src-browserify/core/template-list');
 var templatesProxy = require('templates-proxy');
 var Log = require('../../../../../src-browserify/core/log');
 var logProxy = require('log-proxy');
-var Config = require('../../../../../src-browserify/core/config');
+var config = require('../../../../../src-browserify/cdb.config');
 var configProxy = require('config-proxy');
 
 var Map = require('../../../../../src-browserify/geo/map');
@@ -18,7 +18,7 @@ describe('geo/ui/infowindow', function() {
 
   beforeEach(function() {
     jQueryProxy.set($);
-    configProxy.set(new Config());
+    configProxy.set(config);
     logProxy.set(new Log());
     templatesProxy.set(new TemplateList());
 

@@ -8,12 +8,7 @@ require('json2'); // TODO polyfills window.JSON, still necessary with modern bro
 cdb.$ = require('jquery-proxy').get();
 cdb.Backbone = require('backbone-proxy').set(require('backbone')).get();
 
-var Config = require('./core/config');
-cdb.config = require('config-proxy').set(new Config()).get();
-cdb.config.set({
-  cartodb_attributions: "CartoDB <a href='http://cartodb.com/attributions' target='_blank'>attribution</a>",
-  cartodb_logo_link: "http://www.cartodb.com"
-});
+require('./cdb.config');
 
 var Log = require('./core/log');
 cdb.log = require('log-proxy').set(new Log({tag: 'cdb'})).get();

@@ -55,14 +55,14 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     var lines = this.chart.select('.Lines');
 
     lines.append('g')
-    .attr('class', 'y')
-    .selectAll('.x')
+    .selectAll('.y')
     .data(range.slice(1, range.length - 1))
     .enter().append('svg:line')
+    .attr('class', 'y')
     .attr('y1', 0)
-    .attr('x1', function(d) { return d && d.freq; })
+    .attr('x1', function(d) { return d; })
     .attr('y2', this.chartHeight)
-    .attr('x2', function(d) { return d && d.freq; });
+    .attr('x2', function(d) { return d; });
   },
 
   _generateHorizontalLines: function() {
@@ -78,9 +78,9 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     .enter().append('svg:line')
     .attr('class', 'y')
     .attr('x1', 0)
-    .attr('y1', function(d) { return d && d.freq; })
+    .attr('y1', function(d) { return d; })
     .attr('x2', this.chartWidth)
-    .attr('y2', function(d) { return d && d.freq; });
+    .attr('y2', function(d) { return d; });
 
     this.bottomLine = lines
     .append('line')
@@ -106,7 +106,7 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
   _setupDimensions: function() {
     var data = this.model.get('data');
 
-    this.margin = { top: 0, right: 0, bottom: 20, left: 0 };
+    this.margin = this.options.margin;
 
     this.canvasWidth  = this.options.width;
     this.canvasHeight = this.options.height;
@@ -133,8 +133,7 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     .selectAll('.Canvas')
     .append('g')
     .attr('class', 'Chart')
-    .attr('opacity', 0)
-    .attr('transform', 'translate(0, ' + this.options.y + ')');
+    .attr('opacity', 0);
 
     this.chart.classed(this.options.className || '', true);
   },
@@ -145,26 +144,29 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     .duration(150)
     .attr('opacity', 0)
     .style('display', 'none')
-    .attr('transform', 'translate(0, ' + (this.options.y - 10) + ')');
+    .attr('transform', 'translate(' + this.margin.left + ', ' + (this.options.y - 10) + ')');
   },
 
   show: function() {
     this.chart
-    .attr('transform', 'translate(0, ' + (this.options.y + 10) + ')')
+    .attr('transform', 'translate(' + this.margin.left + ', ' + (this.options.y + 10) + ')')
     .transition()
     .duration(150)
     .attr('opacity', 1)
     .style('display', 'block')
-    .attr('transform', 'translate(0, ' + (this.options.y) + ')');
+    .attr('transform', 'translate(' + this.margin.left + ', ' + (this.options.y) + ')');
   },
 
   _onChangePos: function() {
     var pos = this.model.get('pos');
 
+    var x = +pos.x;
+    var y = +pos.y;
+
     this.chart
     .transition()
     .duration(150)
-    .attr('transform', 'translate(' + (pos.x) + ', ' + (pos.y) + ')');
+    .attr('transform', 'translate(' + (this.margin.left + x) + ', ' + this.margin.top + y + ')');
   },
 
   _onBrushStart: function() {
@@ -612,6 +614,7 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
     this.chart = new cdb.geo.ui.Widget.Histogram.Chart(({
       el: this.$('.js-chart'),
       y: 0,
+      margin: { top: 0, right: 4, bottom: 20, left: 4 },
       handles: true,
       width: this.canvasWidth,
       height: this.defaults.chartHeight,
@@ -632,6 +635,7 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
       el: this.$('.js-chart'),
       handles: false,
       width: this.canvasWidth,
+      margin: { top: 0, right: 0, bottom: 0, left: 4 },
       y: 0,
       height: 20,
       data: this.dataModel.get('data')
@@ -651,7 +655,7 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
   },
 
   _setupDimensions: function() {
-    this.margin = { top: 0, right: 10, bottom: 20, left: 10 };
+    this.margin = { top: 0, right: 0, bottom: 20, left: 0 };
 
     this.canvasWidth  = this.$('.js-chart').width();
     this.canvasHeight = this.defaults.chartHeight + this.margin.top + this.margin.bottom;
@@ -710,7 +714,7 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
   },
 
   _generateData: function() {
-    var data = _.map(d3.range(Math.round(Math.random() * 50) + 2), function(d, i) {
+    var data = _.map(d3.range(Math.round(Math.random() * 10) + 2), function(d, i) {
       if (Math.round(Math.random() * 100) >= 90) {
         return undefined;
       } else {

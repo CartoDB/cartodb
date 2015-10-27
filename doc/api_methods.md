@@ -481,7 +481,7 @@ layerDefinition | an object with the sql and cartocss that defines the data, sho
 
 #### Returns
 
-A SubLayer object.
+A `SubLayer` object.
 
 #### Example
 
@@ -613,15 +613,15 @@ Shortcut for `get('sql')`
 
 Shortcut for `get('cartocss')`
 
-### sublayer.setSQL(sql)
+### sublayer.setSQL(_sql_)
 
 Shortcut for `set({'sql': 'SELECT * FROM table_name'})`
 
-### sublayer.setCartoCSS(css)
+### sublayer.setCartoCSS(_css_)
 
 Shortcut for `set({'cartocss': '#layer {...}' })`
 
-### sublayer.setInteractivity('cartodb_id, name, ...')
+### sublayer.setInteractivity(_'cartodb_id, name, ...'_)
 
 Shortcut for `set({'interactivity': 'cartodb_id, name, ...' })`
 
@@ -650,7 +650,7 @@ sanitizeTemplate | By default all templates are sanitized from unsafe tags/attrs
 width | Width of the infowindow (value must be a number).
 maxHeight | Max height of the scrolled content (value must be a number).
 
-#### sublayer.infowindow.set
+#### Example
 
 ```html
 <div id="map"></div>

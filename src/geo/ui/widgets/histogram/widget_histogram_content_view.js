@@ -19,9 +19,7 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
   render: function() {
     this._generateChart();
 
-    this._generateHorizontalLines();
-    this._generateVerticalLines();
-
+    this._generateLines();
     this._generateBars();
 
     this._generateHandles();
@@ -43,10 +41,32 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     this.chart.classed('is-selectable', false);
   },
 
+  resize: function(width) {
+    var a = this.model.get('a');
+    var b = this.model.get('b');
+
+    this.options.width = width;
+
+    this.$el.width(width);
+
+    this.chart.attr('width', width);
+
+    this._onChangeData();
+    this.selectRange(a, b);
+  },
+
   reset: function(data) {
     this.loadData(data);
-    this._removeBrush();
     this.model.set({ a: 0, b: this.model.get('data').length });
+  },
+
+  _removeLines: function() {
+    this.chart.select('.Lines').remove();
+  },
+
+  _generateLines: function() {
+    this._generateHorizontalLines();
+    this._generateVerticalLines();
   },
 
   _generateVerticalLines: function() {
@@ -257,6 +277,11 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
   },
 
   selectRange: function(a, b) {
+
+    if (a === undefined && b === undefined) {
+      return;
+    }
+
     var data = this.model.get('data');
     var start = a * (100 / data.length);
     var end = b * (100 / data.length);
@@ -411,7 +436,7 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
   },
 
   _removeXAxis: function() {
-    d3.select('.axis').remove();
+    this.chart.select('.axis').remove();
   },
 
   _generateXAxis: function() {
@@ -464,12 +489,14 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     this._removeBrush();
     this._removeBars();
     this._removeHandles();
+    this._removeXAxis();
+    this._removeLines();
 
     this._setupDimensions();
+
+    this._generateLines();
     this._generateBars();
     this._generateHandles();
-
-    this._removeXAxis();
     this._generateXAxis();
 
     this._setupBrush();
@@ -588,6 +615,10 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
 
     this.clearSubViews();
 
+    _.bindAll(this, '_onWindowResize');
+
+    $(window).bind('resize', this._onWindowResize);
+
     var template = _.template(this._TEMPLATE);
     var data = this.dataModel.getData();
     var isDataEmpty = _.isEmpty(data) || _.size(data) === 0;
@@ -607,6 +638,15 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
     }
 
     return this;
+  },
+
+  _onWindowResize: function() {
+    var size = this.canvasWidth;
+    this._setupDimensions();
+    if (size !== this.canvasWidth) {
+      this.chart.resize(this.canvasWidth);
+      this.miniChart.resize(this.canvasWidth);
+    }
   },
 
   _renderMainChart: function() {
@@ -654,9 +694,9 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
   },
 
   _setupDimensions: function() {
-    this.margin = { top: 0, right: 0, bottom: 20, left: 0 };
+    this.margin = { top: 0, right: 24, bottom: 20, left: 24 };
 
-    this.canvasWidth  = this.$('.js-chart').width();
+    this.canvasWidth  = this.$el.width() - this.margin.left - this.margin.right;
     this.canvasHeight = this.defaults.chartHeight + this.margin.top + this.margin.bottom;
   },
 
@@ -802,5 +842,10 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
     this.canvas
     .append('g')
     .attr('class', 'Canvas');
+  },
+
+  clean: function() {
+    $(window).unbind('resize', this._onWindowResize);
+    cdb.core.View.prototype.clean.call(this);
   }
 });

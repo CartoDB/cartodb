@@ -55,13 +55,13 @@ module CartoDB
           auth_post(uri, body)
         end
 
-        def self.auth_post(uri, body)
+        def self.auth_post(uri, body, json_body = true)
           uri = Addressable::URI.encode(uri)
 
           res = post(uri, body: body)
 
           if(res.response_code == 200)
-            JSON.parse(res.response_body)
+            json_body ? JSON.parse(res.response_body) : res.response_body
           else
             raise "Box Error status: #{res.response_code}, body: #{res.response_body}, headers: #{res.response_headers}"
           end
@@ -191,6 +191,18 @@ module CartoDB
             query = build_fields_query(fields, FOLDER_AND_FILE_FIELDS_QUERY)
             file, response = get(uri, query: query)
             file
+          end
+
+          # Required for all providers
+          DATASOURCE_NAME = 'box'
+
+          def revoke_tokens(token)
+            uri = "https://api.box.com/oauth2/revoke"
+            body = "client_id=#{@client_id}&client_secret=#{@client_secret}&token=#{token}"
+
+            BoxAPI::auth_post(uri, body, false)
+          rescue => ex
+            raise AuthError.new("revoke_token: #{ex.message}", DATASOURCE_NAME)
           end
 
           private
@@ -436,16 +448,7 @@ module CartoDB
 
         # Revokes current set token
         def revoke_token
-        #  http_client = Carto::Http::Client.get('gdrive',
-        #    connecttimeout: 60,
-        #    timeout: 600
-        #    )
-        #  response = http_client.get("https://accounts.google.com/o/oauth2/revoke?token=#{token}")
-        #    if response.code == 200
-        #      true
-        #    end
-        #rescue => ex
-        #  raise AuthError.new("revoke_token: #{ex.message}", DATASOURCE_NAME)
+          client.revoke_tokens(token)
         end
 
         # Sets an error reporting component

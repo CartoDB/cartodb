@@ -130,20 +130,27 @@ Arguments | Description
 --- | ---
 HTMLImageElement | the DOM element where your image is to be located.
 
-#### Returns
-
-An `Image` object
-
 #### Example
 
 ```javascript
 cartodb.Image(vizjson_url).into(document.getElementById('map_preview'))
 ```
 
+#### Returns
+
+An `Image` object
+
 ### Image.write(_attributes_)
 
 Adds an `img` tag in the same place script is executed. It's possible to specify a class name (`class`) and/or an id attribute (`id`) for the resulting image:
 
+#### Arguments
+
+Arguments | Description
+--- | ---
+class | the DOM class applied to the resulting `img` tag.
+id | the DOM id applied to the resulting `img` tag.
+src | path to a temporary image that acts as a placeholder while the static map is retrieved.
 
 #### Example
 
@@ -157,14 +164,6 @@ cartodb.Image(vizjson_url)
 </script>
 ```
 
-#### Arguments
-
-Arguments | Description
---- | ---
-class | the DOM class applied to the resulting `img` tag.
-id | the DOM id applied to the resulting `img` tag.
-src | path to a temporary image that acts as a placeholder while the static map is retrieved.
-
 #### Returns
 
 An `Image` object
@@ -172,6 +171,13 @@ An `Image` object
 ### Image.getUrl(_callback(err, url)_)
 
 Gets the URL for the image requested.
+
+#### Callback Arguments
+
+Arguments | Description
+--- | ---
+err | error associated with the image request, if any.
+url | URL of the generated image.
 
 #### Example
 
@@ -184,13 +190,6 @@ cartodb.Image(vizjson_url)
   })
 </script>
 ```
-
-#### Callback Arguments
-
-Arguments | Description
---- | ---
-err | error associated with the image request, if any.
-url | URL of the generated image.
 
 #### Returns
 

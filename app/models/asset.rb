@@ -8,7 +8,7 @@ class Asset < Sequel::Model
 
   PUBLIC_ATTRIBUTES = %w{ id public_url user_id kind }
 
-  VALID_EXTENSIONS = %w{ jpg jpeg gif png svg }
+  VALID_EXTENSIONS = %w{ jpg gif png svg }
 
   attr_accessor :asset_file, :url
 
@@ -75,6 +75,7 @@ class Asset < Sequel::Model
     (asset_file.respond_to?(:original_filename) ? asset_file.original_filename : asset_file)
       .split(".")
       .last
+      .slice(0, 3) # Filename might include a postfix hash (e.g. Rack::Test::UploadedFile adds it)
       .downcase
   end
 

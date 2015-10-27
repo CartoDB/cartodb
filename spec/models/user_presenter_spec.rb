@@ -23,7 +23,9 @@ describe Carto::Api::UserPresenter do
         twitter_datasource_block_size: 1000,
         twitter_datasource_block_price: 10,
         twitter_datasource_quota: 70000,
-        soft_twitter_datasource_limit: true
+        soft_twitter_datasource_limit: true,
+        public_visualization_count: 1,
+        all_visualization_count: 2
       })
 
     # Some sample data
@@ -73,7 +75,9 @@ describe Carto::Api::UserPresenter do
         twitter_datasource_block_size: 1000,
         twitter_datasource_block_price: 10,
         twitter_datasource_quota: 70000,
-        soft_twitter_datasource_limit: true
+        soft_twitter_datasource_limit: true,
+        public_visualization_count: 1,
+        all_visualization_count: 2
       })
 
     organization = ::Organization.new(quota_in_bytes: 200.megabytes, name: 'testorg', seats: 5).save
@@ -121,6 +125,7 @@ describe Carto::Api::UserPresenter do
     new_data[:table_quota].should == old_data[:table_quota]
     new_data[:table_count].should == old_data[:table_count]
     new_data[:public_visualization_count].should == old_data[:public_visualization_count]
+    new_data[:all_visualization_count].should == old_data[:all_visualization_count]
     new_data[:visualization_count].should == old_data[:visualization_count]
     new_data[:failed_import_count].should == old_data[:failed_import_count]
     new_data[:success_import_count].should == old_data[:success_import_count]

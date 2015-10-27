@@ -42,10 +42,14 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
   },
 
   resize: function(width) {
+    this.model.set('width', width);
+  },
+
+  _onResize: function() {
     var a = this.model.get('a');
     var b = this.model.get('b');
 
-    this.options.width = width;
+    var width = this.model.get('width');
 
     this.$el.width(width);
 
@@ -114,9 +118,12 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
   _setupModel: function() {
     this.model = new cdb.core.Model({
       data: this.options.data,
+      width: this.options.width,
+      height: this.options.height,
       pos: { x: 0, y: 0 }
     });
 
+    this.model.bind('change:width', this._onResize, this);
     this.model.bind('change:pos', this._onChangePos, this);
     this.model.bind('change:a change:b', this._onChangeRange, this);
     this.model.bind('change:data', this._onChangeData, this);
@@ -126,11 +133,11 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
   _setupDimensions: function() {
     this.margin = this.options.margin;
 
-    this.canvasWidth  = this.options.width;
-    this.canvasHeight = this.options.height;
+    this.canvasWidth  = this.model.get('width');
+    this.canvasHeight = this.model.get('height');
 
     this.chartWidth  = this.canvasWidth - this.margin.left - this.margin.right;
-    this.chartHeight = this.options.height;
+    this.chartHeight = this.model.get('height');
 
     this._setupScales();
   },
@@ -641,12 +648,9 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
   },
 
   _onWindowResize: function() {
-    var size = this.canvasWidth;
     this._setupDimensions();
-    if (size !== this.canvasWidth) {
-      this.chart.resize(this.canvasWidth);
-      this.miniChart.resize(this.canvasWidth);
-    }
+    this.chart.resize(this.canvasWidth);
+    this.miniChart.resize(this.canvasWidth);
   },
 
   _renderMainChart: function() {

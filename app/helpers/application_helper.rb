@@ -109,6 +109,10 @@ module ApplicationHelper
       config[:static_image_upload_endpoint] = Cartodb.config[:static_image_upload_endpoint]
     end
 
+    if Cartodb.config[:cdn_url].present?
+      config[:cdn_url] = Cartodb.config[:cdn_url]
+    end
+
     config.to_json
   end
 

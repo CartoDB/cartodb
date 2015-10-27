@@ -30,8 +30,7 @@ cdb.windshaft.Client.prototype.instantiateMap = function(mapDefinition) {
   var options = {
     success: function(data) {
       if (data.errors) {
-        // TODO: Error handling
-        throw data.errors;
+        throw "Windshaft Error: " + data.errors;
       } else {
         data.windshaftURLTemplate = this.windshaftURLTemplate;
         data.userName = this.userName;
@@ -43,7 +42,7 @@ cdb.windshaft.Client.prototype.instantiateMap = function(mapDefinition) {
       try {
         err = JSON.parse(xhr.responseText);
       } catch(e) {}
-      throw err.errors;
+      throw "Windshaft Error: " + err.errors;
     }
   }
 

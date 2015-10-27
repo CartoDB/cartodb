@@ -11,12 +11,16 @@ cdb.geo.ui.Widget.Model = cdb.core.Model.extend({
     columns: []
   },
 
+  url: function() {
+    return this.get('url');
+  },
+
   initialize: function() {
     this._initBinds();
   },
 
   _initBinds: function() {
-    this.bind('change:dashboardBaseURL', function(){
+    this.bind('change:url', function(){
       var self = this;
       this.fetch({
         error: function() {

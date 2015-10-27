@@ -173,5 +173,16 @@ cdb.windshaft.DashboardInstance = cdb.core.Model.extend({
         callback(null);
       }
     });
+  },
+
+  forEachWidget: function(callback) {
+    var layers = this.get('metadata').layers;
+    _.each(layers, function(layer) {
+      var widgets = layer.widgets;
+      for (var widgetId in widgets) {
+        var widget = widgets[widgetId];
+        callback(widgetId, widget);
+      }
+    });
   }
 })

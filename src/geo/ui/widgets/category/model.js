@@ -5,25 +5,9 @@ cdb.geo.ui.Widget.CategoryModel = cdb.geo.ui.Widget.Model.extend({
     columns: []
   },
 
-  url: function() {
-    // TODO: replace list by category :D
-    return this.get('dashboardBaseURL') + '/list/' + this.get('id');
-  },
-
   initialize: function() {
     this._data = new Backbone.Collection(this.get('data'));
-    this._initBinds();
-  },
-
-  _initBinds: function() {
-    this.bind('change:dashboardBaseURL', function(){
-      var self = this;
-      this.fetch({
-        error: function() {
-          self.trigger('error');
-        }
-      });
-    }, this);
+    cdb.geo.ui.Widget.Model.prototype.initialize.call(this);
   },
 
   getData: function() {

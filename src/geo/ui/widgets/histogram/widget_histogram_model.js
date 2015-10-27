@@ -10,25 +10,9 @@ cdb.geo.ui.Widget.HistogramModel = cdb.geo.ui.Widget.Model.extend({
     columns: []
   },
 
-  url: function() {
-    // TODO: Change this once the histogram endpoint is ready!
-    return this.get('dashboardBaseURL') + '/list/' + this.get('id');
-  },
-
   initialize: function() {
     this._data = new Backbone.Collection(this.get('data'));
-    this._initBinds();
-  },
-
-  _initBinds: function() {
-    this.bind('change:dashboardBaseURL', function(){
-      var self = this;
-      this.fetch({
-        error: function() {
-          self.trigger('error');
-        }
-      });
-    }, this);
+    cdb.geo.ui.Widget.Model.prototype.initialize.call(this);
   },
 
   _createUrlOptions: function() {

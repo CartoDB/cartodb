@@ -5,13 +5,9 @@ cdb.geo.ui.Widget.ListModel = cdb.geo.ui.Widget.Model.extend({
     per_page: 100
   },
 
-  url: function() {
-    return this.get('dashboardBaseURL') + '/list/' + this.get('id');
-  },
-
   initialize: function() {
     this._data = new Backbone.Collection(this.get('data'));
-    this._initBinds();
+    cdb.geo.ui.Widget.Model.prototype.initialize.call(this);
   },
 
   getData: function() {

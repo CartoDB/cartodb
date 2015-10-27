@@ -63,7 +63,7 @@ An `Image` object
 
 ## cartodb.Image
 
-### Image.size(_width_,_height_)
+### Image.size(_width, height_)
 
 Sets the size of the image.
 

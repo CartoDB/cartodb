@@ -11,7 +11,7 @@ cdb.windshaft.Dashboard = function(options) {
 
   // Bindings
   this.layers.bind('change', this.createInstance, this);
-  // this.widgets.bind('change', this.createInstance, this);
+  this.widgets.bind('change:filter', this.createInstance, this);
 
   // When the instance has changed, we need to update some models (eg: widgets) in this class
   // with the information that the instance contains.
@@ -37,7 +37,21 @@ cdb.windshaft.Dashboard = function(options) {
 cdb.windshaft.Dashboard.prototype.createInstance = function() {
   var dashboardConfig = this.configGenerator.generate(this);
   console.log(dashboardConfig);
-  var instance = this.client.instantiateMap(dashboardConfig);
+
+  var filters = {};
+  if (!this.widgets.isEmpty()) {
+    filters.layers = [];
+
+    this.widgets.each(function(widget) {
+      if (widget.get('filter')) {
+        var filter = {};
+        filter[widget.get('id')] = widget.get('filter');
+        filters.layers.push(filter);
+      }
+    });
+  }
+
+  var instance = this.client.instantiateMap(dashboardConfig, filters);
   instance.bind('change:layergroupid', function() {
     this.instance.set(instance.toJSON());
   }.bind(this));

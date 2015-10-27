@@ -22,7 +22,7 @@ cdb.windshaft.Client.MAX_GET_SIZE = 2033;
  * @param  {function} callback A callback that will get the public or private map
  * @return {cdb.windshaft.DashboardInstance} The instance of the dashboard
  */
-cdb.windshaft.Client.prototype.instantiateMap = function(mapDefinition) {
+cdb.windshaft.Client.prototype.instantiateMap = function(mapDefinition, filters) {
   var payload = JSON.stringify(mapDefinition);
 
   var dashboardInstance = new cdb.windshaft.DashboardInstance();
@@ -44,43 +44,54 @@ cdb.windshaft.Client.prototype.instantiateMap = function(mapDefinition) {
       } catch(e) {}
       throw "Windshaft Error: " + err.errors;
     }
+  };
+
+  // TODO: Move this
+  var params = [
+    ["stat_tag", this.statTag].join("=")
+  ];
+
+  var filters = filters || {};
+  if (Object.keys(filters).length) {
+    params.push(["filters", JSON.stringify(filters)].join('='));
   }
 
-  if (this._usePOST(payload)) {
-    this._post(payload, options);
+  if (this._usePOST(payload, params)) {
+    this._post(payload, params, options);
   } else {
-    this._get(payload, options);
+    this._get(payload, params, options);
   }
 
   return dashboardInstance;
 }
 
-cdb.windshaft.Client.prototype._usePOST = function(payload) {
+cdb.windshaft.Client.prototype._usePOST = function(payload, params) {
   if (this.isCorsSupported && this.forceCors) {
     return true;
   }
   return payload.length >= this.constructor.MAX_GET_SIZE;
 }
 
-cdb.windshaft.Client.prototype._post = function(payload, options) {
+cdb.windshaft.Client.prototype._post = function(payload, params, options) {
   this.ajax({
     crossOrigin: true,
     type: 'POST',
     method: 'POST',
     dataType: 'json',
     contentType: 'application/json',
-    url: this._getURL(),
+    url: this._getURL(params),
     data: payload,
     success: options.success,
     error: options.error
   });
 }
 
-cdb.windshaft.Client.prototype._get = function(payload, options) {
+cdb.windshaft.Client.prototype._get = function(payload, params, options) {
   var compressFunction = this._getCompressor(payload);
   compressFunction(payload, this.constructor.DEFAULT_COMPRESSION_LEVEL, function(dataParameter) {
+    params.push(dataParameter);
     this.ajax({
-      url: this._getURL(dataParameter),
+      url: this._getURL(params),
       dataType: 'jsonp',
       jsonpCallback: this._jsonpCallbackName(payload),
       cache: true,
@@ -106,12 +117,7 @@ cdb.windshaft.Client.prototype._getCompressor = function(payload) {
 }
 
 
-cdb.windshaft.Client.prototype._getURL = function(dataParameter) {
-  var params = [];
-  params.push(["stat_tag", this.statTag].join("="));
-  if (dataParameter) {
-    params.push(dataParameter);  
-  }
+cdb.windshaft.Client.prototype._getURL = function(params) {
   return [this.url, this.endpoint].join('/') + '?' + params.join('&');
 }
 

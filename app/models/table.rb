@@ -415,16 +415,15 @@ class Table
       @data_import = DataImport.find(id: @user_table.data_import_id)
       @data_import.table_id   = id
       @data_import.table_name = name
-      @data_import.save
 
       if !@data_import.privacy.nil?
         if !self.owner.valid_privacy?(@data_import.privacy)
           raise "Error: User '#{self.owner.username}' doesn't have private tables enabled"
         end
         @user_table.privacy = @data_import.privacy
-        privacy = @data_import.privacy
-        save
       end
+
+      save
 
       decorator = CartoDB::Datasources::Decorators::Factory.decorator_for(@data_import.service_name)
       if !decorator.nil? && decorator.decorates_layer?

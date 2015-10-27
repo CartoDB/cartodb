@@ -10,15 +10,16 @@ Triggered when the user hovers on any feature.
 
 #### Callback arguments
 
-- **event**: Browser mouse event object.
-- **latlng**: Array with the LatLng ([lat,lng]) where the layer was clicked.
-- **pos**: Object with x and y position in the DOM map element.
-- **data**: The CartoDB data of the clicked feature with the **interactivity** param.
-- **layerIndex**: the layerIndex where the event happened.
+Arguments | Description
+--- | ---
+event | Browser mouse event object.
+latlng | Array with the LatLng ([lat,lng]) where the layer was clicked.
+pos | Object with x and y position in the DOM map element.
+data | The CartoDB data of the clicked feature with the `interactivity` param.
+layerIndex | the `layerIndex` where the event happened.
 
 #### Example
 
-<div class="code-title">layer.on</div>
 ```javascript
 layer.on('featureOver', function(e, latlng, pos, data, subLayerIndex) {
   console.log("mouse over polygon with data: " + data);
@@ -47,7 +48,6 @@ Triggered when the mouse leaves all the features. Useful to revert the cursor af
 
 #### Example
 
-<div class="code-title">sublayer.on</div>
 ```javascript
 layer.on('mouseover', function() {
   cursor.set('hand')
@@ -64,7 +64,6 @@ Triggered when the layer or any of its sublayers are about to be loaded. This is
 
 #### Example
 
-<div class="code-title">layer.on</div>
 ```javascript
 layer.on("loading", function() {
   console.log("layer about to load");
@@ -80,7 +79,6 @@ Triggered when the layer or its sublayers have been loaded. This is also trigger
 
 #### Example
 
-<div class="code-title">layer.on</div>
 ```javascript
 layer.on("load", function() {
   console.log("layer loaded");

@@ -151,6 +151,10 @@ class Admin::UsersController < Admin::AdminController
       title = SERVICE_TITLES.fetch(serv, serv)
       revoke_url = SERVICE_REVOKE_URLS.fetch(serv, nil)
       enabled = case serv
+        when 'gdrive'
+          Cartodb.config[:oauth][serv]['client_id'].present?
+        when 'box'
+          Cartodb.config[:oauth][serv]['client_id'].present? && current_user.has_feature_flag?('box_datasource')
         when 'gdrive', 'box'
           Cartodb.config[:oauth][serv]['client_id'].present?
         when 'dropbox'

@@ -26,16 +26,15 @@ layerOptions | the data that defines the layer. It should contain at least `user
 
 options | 
 --- | ---
-&#124;_user_name | 
-&#124;_sublayers |
-&#124;_maps_api_template | 
+&#124;_ user_name | 
+&#124;_ sublayers | 
+&#124;_ maps_api_template | 
 callback(tilesUrl, error) | a function that recieves the tiles templates. In case of an error, the first param is null and the second one will be an object with an errors attribute that contains the list of errors. 
 
 #### Example
 
 In this example, a layer with one sublayer is created. The sublayer renders all the content from a table.
 
-<div class="code-title">cartodb.Tiles.getTiles</div>
 ```javascript
 var layerData = {
   user_name: 'mycartodbuser',

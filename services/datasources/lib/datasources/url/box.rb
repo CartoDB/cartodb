@@ -1,11 +1,254 @@
 # encoding: utf-8
 
-require 'boxr'
 require_relative '../../../../../lib/carto/http/client'
 
 module CartoDB
   module Datasources
     module Url
+      # Replacement for Boxr, which requires Ruby >= 2
+      # Most of this code has been extracted from Boxr.
+      # This should be migrated when we upgrade to Ruby 2.
+      module BoxAPI
+
+        def self.oauth_url(state, options = {})
+          host = options.fetch(:host, "app.box.com")
+          response_type = options.fetch(:response_type, "code")
+          scope = options[:scope]
+          folder_id = options[:folder_id]
+          client_id = options[:client_id]
+
+          template = Addressable::Template.new("https://{host}/api/oauth2/authorize{?query*}")
+
+          query = {"response_type" => "#{response_type}", "state" => "#{state}", "client_id" => "#{client_id}"}
+          query["scope"] = "#{scope}" unless scope.nil?
+          query["folder_id"] = "#{folder_id}" unless folder_id.nil?
+
+          uri = template.expand({"host" => "#{host}", "query" => query})
+          uri
+        end
+
+        def self.get_tokens(code, options = {})
+          grant_type = options[:grant_type]
+          assertion = options[:assertion]
+          scope = options[:scope]
+          username = options[:username]
+          client_id = options[:client_id]
+          client_secret = options[:client_secret]
+
+          uri = "https://api.box.com/oauth2/token"
+          body = "grant_type=#{grant_type}&client_id=#{client_id}&client_secret=#{client_secret}"
+          body = body + "&code=#{code}" unless code.nil?
+          body = body + "&scope=#{scope}" unless scope.nil?
+          body = body + "&username=#{username}" unless username.nil?
+          body = body + "&assertion=#{assertion}" unless assertion.nil?
+
+          auth_post(uri, body)
+        end
+
+        def self.refresh_tokens(refresh_token, options = {})
+          client_id = options[:client_id]
+          client_secret = options[:client_secret]
+
+          uri = "https://api.box.com/oauth2/token"
+          body = "grant_type=refresh_token&refresh_token=#{refresh_token}&client_id=#{client_id}&client_secret=#{client_secret}"
+
+          auth_post(uri, body)
+        end
+
+        def self.auth_post(uri, body)
+          uri = Addressable::URI.encode(uri)
+
+          res = post(uri, body: body)
+
+          if(res.response_code == 200)
+            JSON.parse(res.response_body)
+          else
+            raise "Box Error status: #{res.response_code}, body: #{res.response_body}, headers: #{res.response_headers}"
+          end
+        end
+
+        def self.post(uri, options = {})
+          http_client = Carto::Http::Client.get('box',
+            connecttimeout: 60,
+            timeout: 600
+            )
+          http_client.post(uri.to_s, options)
+        end
+
+        def self.get(uri, options = {})
+          query = options[:query]
+          header = options[:header]
+          follow_redirect = options[:follow_redirect]
+
+          http_client = Carto::Http::Client.get('box',
+            connecttimeout: 60,
+            timeout: 600)
+          response = http_client.get(uri.to_s, headers: header, followlocation: follow_redirect, params: query)
+          response
+        end
+
+        private
+
+      end
+
+      module BoxAPI
+
+        class Client
+
+          API_URI = "https://api.box.com/2.0"
+          SEARCH_URI = "#{API_URI}/search"
+          FILES_URI = "#{API_URI}/files"
+
+          def initialize(access_token, options = {})
+            client_id = options[:client_id]
+            client_secret = options[:client_secret]
+
+            @access_token = access_token
+            raise "Access token cannot be nil" if @access_token.nil?
+            @client_id = client_id
+            @client_secret = client_secret
+          end
+
+          def search(query, options = {})
+            scope = options[:scope]
+            file_extensions = options[:file_extensions]
+            created_at_range = options[:created_at_range]
+            updated_at_range = options[:updated_at_range]
+            size_range = options[:size_range]
+            owner_user_ids = options[:owner_user_ids]
+            ancestor_folder_ids = options[:ancestor_folder_ids]
+            content_types = options[:content_types]
+            type = options[:type]
+            limit = options.fetch(:limit, 30)
+            offset = options.fetch(:offset, 0)
+
+            query = {query: query}
+            query[:scope] = scope unless scope.nil?
+            query[:file_extensions] = file_extensions unless file_extensions.nil?
+            query[:created_at_range] = created_at_range unless created_at_range.nil?
+            query[:updated_at_range] = updated_at_range unless updated_at_range.nil?
+            query[:size_range] = size_range unless size_range.nil?
+            query[:owner_user_ids] = owner_user_ids unless owner_user_ids.nil?
+            query[:ancestor_folder_ids] = ancestor_folder_ids unless ancestor_folder_ids.nil?
+            query[:content_types] = content_types unless content_types.nil?
+            query[:type] = type unless type.nil?
+            query[:limit] = limit unless limit.nil?
+            query[:offset] = offset unless offset.nil?
+
+            results, response = get(SEARCH_URI, query: query)
+            results.entries
+          end
+
+          def download_url(file, options = {})
+            version = options[:version]
+
+            download_file(file, version: version, follow_redirect: false)
+          end
+
+          def download_file(file, options = {})
+            version = options[:version]
+            follow_redirect = options.fetch(:follow_redirect, true)
+
+            file_id = ensure_id(file)
+            begin
+              uri = "#{FILES_URI}/#{file_id}/content"
+              query = {}
+              query[:version] = version unless version.nil?
+
+              # Boxr didn't have 200
+              body_json, response = get(uri, query: query, success_codes: [302,202,200], follow_redirect: false, process_response: false)
+
+              if(response.response_code == 302)
+                location = response.header['Location'][0]
+
+                if(follow_redirect)
+                  file, response = get(location, process_response: false)
+                else
+                  return location #simply return the url
+                end
+              elsif(response.response_code==202)
+                retry_after_seconds = response.header['Retry-After'][0]
+                sleep retry_after_seconds.to_i
+              elsif(response.response_code == 200)
+                file = response.response_body
+              end
+            end until file
+
+            file
+          end
+
+          FOLDER_AND_FILE_FIELDS = [:type,:id,:sequence_id,:etag,:name,:created_at,:modified_at,:description,
+                              :size,:path_collection,:created_by,:modified_by,:trashed_at,:purged_at,
+                              :content_created_at,:content_modified_at,:owned_by,:shared_link,:folder_upload_email,
+                              :parent,:item_status,:item_collection,:sync_state,:has_collaborations,:permissions,:tags,
+                              :sha1,:shared_link,:version_number,:comment_count,:lock,:extension,:is_package,
+                              :expiring_embed_link, :can_non_owners_invite]
+          FOLDER_AND_FILE_FIELDS_QUERY = FOLDER_AND_FILE_FIELDS.join(',')
+
+          def file_from_id(file_id, fields: [])
+            file_id = ensure_id(file_id)
+            uri = "#{FILES_URI}/#{file_id}"
+            query = build_fields_query(fields, FOLDER_AND_FILE_FIELDS_QUERY)
+            file, response = get(uri, query: query)
+            file
+          end
+
+          private
+
+          def build_fields_query(fields, all_fields_query)
+            if fields == :all
+              {:fields => all_fields_query}
+            elsif fields.is_a?(Array) && fields.length > 0
+              {:fields => fields.join(',')}
+            else
+              {}
+            end
+          end
+
+          def ensure_id(item)
+            return item if item.class == String || item.class == Fixnum || item.nil?
+            return item.id if item.respond_to?(:id)
+            return item['id'] if item.class == Hash
+            raise "Expecting an id of class String or Fixnum, or object that responds to :id"
+          end
+
+          def get(uri, options = {})
+            query = options[:query]
+            success_codes = options.fetch(:success_codes, [200])
+            process_response = options.fetch(:process_response, true)
+            if_match = options[:if_match]
+            box_api_header = options[:box_api_header]
+            follow_redirect = options.fetch(follow_redirect, true)
+
+            #uri = Addressable::URI.encode(uri)
+
+            headers = standard_headers
+            headers['If-Match'] = if_match unless if_match.nil?
+            headers['BoxApi'] = box_api_header unless box_api_header.nil?
+
+            res = BoxAPI::get(uri, query: query, header: headers, follow_redirect: follow_redirect)
+
+            check_response_status(res, success_codes)
+
+            if process_response
+              return JSON.parse(res.response_body)
+            else
+              return res.response_body, res
+            end
+          end
+
+          def check_response_status(res, success_codes)
+            raise "BoxError: status: #{res.response_code}, body: #{res.response_body}, header: #{res.response_headers}" unless success_codes.include?(res.response_code)
+          end
+
+          def standard_headers
+            {"Authorization" => "Bearer #{@access_token}"}
+          end
+
+        end
+
+      end
+
       class Box < BaseOAuth
 
         # Required for all providers
@@ -51,14 +294,12 @@ module CartoDB
         def get_auth_url
           service_name = service_name_for_user(DATASOURCE_NAME, @user)
           state = CALLBACK_STATE_DATA_PLACEHOLDER.sub('user', @user.username).sub('service', service_name)
-          url = Boxr::oauth_url(state,
-                          host: config['box_host'],
-                          response_type: "code",
-                          scope: nil,
-                          folder_id: nil,
-                          client_id: config['client_id'])
-
-          url.to_s
+          BoxAPI::oauth_url(state,
+                            host: config['box_host'],
+                            response_type: "code",
+                            scope: nil,
+                            folder_id: nil,
+                            client_id: config['client_id']).to_s
         end
 
         # Validate authorization code and store token
@@ -118,7 +359,9 @@ module CartoDB
                  type: nil,
                  limit: 200,
                  offset: 0)
-          result.map{ |i| format_item_data(i) }.sort {|x,y| y[:updated_at] <=> x[:updated_at] }
+
+          items = result[1][1]
+          items.map{ |i| format_item_data(i) }.sort {|x,y| y[:updated_at] <=> x[:updated_at] }
         end
 
         # Retrieves a resource and returns its contents
@@ -139,9 +382,9 @@ module CartoDB
         def get_resource_metadata(id)
           result = client.file_from_id(id)
           raise NotFoundDownloadError.new("Retrieving file #{id} metadata: #{result.inspect}, should stop syncing", DATASOURCE_NAME) if result.nil?
-          raise DataDownloadError.new("Retrieving file #{id} metadata: #{result.inspect}", DATASOURCE_NAME) if result.item_status != 'active'
+          raise DataDownloadError.new("Retrieving file #{id} metadata: #{result.inspect}", DATASOURCE_NAME) if result['item_status'] != 'active'
           item_data = format_item_data(result)
-          return item_data.to_hash
+          return item_data
         end
 
         # Retrieves current filters
@@ -181,7 +424,7 @@ module CartoDB
           # Any call would do, we just want to see if communicates or refuses the token
           result = client.search('test search')
           !result.nil?
-        rescue Boxr::BoxrError => e
+        rescue => e
           if e.message =~ /invalid_token/
             CartoDB.notify_debug('Box invalid_token', self: self.inspect)
             false
@@ -214,8 +457,8 @@ module CartoDB
         private
 
         def set_tokens(tokens)
-          @access_token = tokens.access_token
-          @refresh_token = tokens.refresh_token
+          @access_token = tokens['access_token']
+          @refresh_token = tokens['refresh_token']
         end
 
         def client
@@ -223,33 +466,27 @@ module CartoDB
         end
 
         def get_client(user)
-          token_refresh_callback = lambda do |access, refresh, identifier|
-            some_method_that_saves_them(access, refresh)
-          end
-
-          Boxr::Client.new(@access_token,
-                           refresh_token: nil,
-                           client_id: config['client_id'],
-                           client_secret: config['client_secret'],
-                           &token_refresh_callback)
-        end
-
-        def get_tokens(code)
-          Boxr::get_tokens(code,
-                           grant_type: "authorization_code",
-                           assertion: nil,
-                           scope: nil,
-                           username: nil,
+          BoxAPI::Client.new(@access_token,
                            client_id: config['client_id'],
                            client_secret: config['client_secret'])
         end
 
+        def get_tokens(code)
+          BoxAPI::get_tokens(code,
+                             grant_type: "authorization_code",
+                             assertion: nil,
+                             scope: nil,
+                             username: nil,
+                             client_id: config['client_id'],
+                             client_secret: config['client_secret'])
+        end
+
         def get_fresh_tokens(refresh_token)
-          tokens = Boxr::refresh_tokens(refresh_token,
+          tokens = BoxAPI::refresh_tokens(refresh_token,
                                client_id: config['client_id'],
                                client_secret: config['client_secret'])
           # Box refresh tokens can only be used once
-          update_user_oauth(tokens.refresh_token)
+          update_user_oauth(tokens['refresh_token'])
           tokens
         end
 
@@ -277,14 +514,13 @@ module CartoDB
         # @return { :id, :title, :url, :service, :checksum, :size, :filename, :updated_at }
         def format_item_data(item_data)
           {
-            id:           item_data.id,
-            title:        item_data.name,
+            id:           item_data['id'],
+            title:        item_data['name'],
             service:      DATASOURCE_NAME,
             checksum:     checksum_of(item_data.fetch('modified_at')),
-            url: client.download_url(item_data),
-            filename: item_data.name,
-            size: item_data.size.to_i,
-            updated_at: DateTime.rfc3339(item_data.content_modified_at)
+            filename: item_data['name'],
+            size: item_data['size'].to_i,
+            updated_at: DateTime.rfc3339(item_data['content_modified_at'])
           }
         end
 

@@ -99,6 +99,9 @@
       background: $elementBkg;
     }
   }
+  .Widget-chartItem--fake {
+    background-color: $loadingBkg;
+  }
 
   .Widget-loader {
     background: $link;

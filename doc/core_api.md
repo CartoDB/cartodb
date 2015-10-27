@@ -72,3 +72,4 @@ The `tilesUrl` object contains url template for tiles and interactivity grids:
     ...
   ]
 }
+```

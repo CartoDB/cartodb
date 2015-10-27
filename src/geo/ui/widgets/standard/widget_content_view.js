@@ -10,10 +10,10 @@ cdb.geo.ui.Widget.Content = cdb.core.View.extend({
   _TEMPLATE: ' ' +
     '<div class="Widget-header">'+
       '<div class="Widget-title Widget-contentSpaced">'+
-        '<h3 class="Widget-textBig"><%= title %></h3>'+
+        '<h3 class="Widget-textBig" title="<%- title %>"><%- title %></h3>'+
       '</div>'+
       '<dl class="Widget-info">'+
-        '<dt class="Widget-infoItem Widget-textSmaller Widget-textSmaller--upper"><%= itemsCount %> items</dt>'+
+        '<dt class="Widget-infoItem Widget-textSmaller Widget-textSmaller--upper"><%- itemsCount %> items</dt>'+
       '</dl>'+
     '</div>'+
     '<div class="Widget-content js-content"></div>',

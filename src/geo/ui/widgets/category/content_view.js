@@ -11,7 +11,7 @@ cdb.geo.ui.Widget.Category.Content = cdb.geo.ui.Widget.Content.extend({
   _TEMPLATE: ' ' +
     '<div class="Widget-header">'+
       '<div class="Widget-title Widget-contentSpaced">'+
-        '<h3 class="Widget-textBig"><%= title %></h3>'+
+        '<h3 class="Widget-textBig" title="<%- title %>"><%- title %></h3>'+
       '</div>'+
       '<dl class="Widget-info Widget-textSmaller Widget-textSmaller--upper">'+
         '<dt class="Widget-infoItem">- null rows</dt>'+

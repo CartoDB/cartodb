@@ -20,9 +20,9 @@ cdb.geo.ui.Widget.Formula.Content = cdb.geo.ui.Widget.Content.extend({
     '</div>'+
     '<div class="Widget-content">'+
       '<% if (!_.isUndefined(value)) { %>'+
-        '<p class="Widget-textBigger"><%= value %></p>'+
+        '<h4 class="Widget-textBigger" title="<%- value %>"><%- value %></h4>'+
         '<% if (desc) { %>'+
-          '<p class="Widget-textSmaller"><%= desc %></p>'+
+          '<p class="Widget-textSmaller" title="<%- desc %>"><%- desc %></p>'+
         '<% } %>'+
       '<% } else { %>'+
         '<div class="Widget-listItem--fake"></div>'+

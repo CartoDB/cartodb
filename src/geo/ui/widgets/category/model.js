@@ -6,12 +6,19 @@ cdb.geo.ui.Widget.CategoryModel = cdb.geo.ui.Widget.Model.extend({
   },
 
   initialize: function() {
+    this.filter = new cdb.windshaft.filters.CategoryFilter();
     this._data = new Backbone.Collection(this.get('data'));
     cdb.geo.ui.Widget.Model.prototype.initialize.call(this);
   },
 
   getData: function() {
     return this._data;
+  },
+
+  getMaxCount: function() {
+    return this._data.max(function(datum) {
+      return datum.get('count');
+    }).get('count');
   },
 
   getSize: function() {

@@ -31,7 +31,7 @@ module HelperMethods
     require 'webrick'
     server = WEBrick::HTTPServer.new(
       AccessLog: [],
-      Logger: WEBrick::Log::new("/dev/null", 7), #comment this line if weird things happen
+      Logger: WEBrick::Log::new("/dev/null", 7), # comment this line if weird things happen
       Port: port,
       DocumentRoot: File.dirname(file_path),
       RequestCallback: Proc.new() { |_req, res|

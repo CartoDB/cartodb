@@ -35,9 +35,7 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
   },
 
   _removeBrush: function() {
-    this.brush
-    .clear()
-    .event(this.chart.select('.Brush'));
+    this.chart.select('.Brush').remove();
     this.chart.classed('is-selectable', false);
   },
 

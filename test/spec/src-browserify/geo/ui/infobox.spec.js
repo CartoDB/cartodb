@@ -1,9 +1,16 @@
-describe('infobox', function() {
+// var $ = require('jquery');
+// var jQueryProxy = require('jquery-proxy');
+var Backbone = require('backbone');
+var Template = require('../../../../../src-browserify/core/template');
+var Model = require('../../../../../src-browserify/core/model');
+var InfoBox = require('../../../../../src-browserify/geo/ui/infobox');
+
+fdescribe('geo/ui/infobox', function() {
   var view;
   var layer;
   beforeEach(function() {
     layer = new Backbone.Model();
-    view = new cdb.geo.ui.InfoBox({
+    view = new InfoBox({
       template: '#{{test}}#',
       position: 'top|right',
       pos_margin: 30,

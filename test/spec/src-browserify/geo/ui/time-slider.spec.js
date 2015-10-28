@@ -1,10 +1,13 @@
-describe('cdb.geo.ui.TimeSlider', function() {
+var Backbone = require('backbone');
+var TimeSlider = require('../../../../../src-browserify/geo/ui/time-slider');
+
+fdescribe('geo/ui/time-slider', function() {
   var view;
   var layer;
 
   beforeEach(function() {
     layer = new Backbone.Model();
-    view = new cdb.geo.ui.TimeSlider({
+    view = new TimeSlider({
       layer: layer,
       width: "auto"
     });

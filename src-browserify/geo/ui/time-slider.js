@@ -1,4 +1,7 @@
-cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
+var _ = require('underscore');
+var InfoBox = require('./infobox');
+
+var TimeSlider = InfoBox.extend({
 
   DEFAULT_OFFSET_TOP: 30,
   className: 'cartodb-timeslider',
@@ -38,7 +41,7 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
     this._bindLayer(this.options.layer);
 
     this.on('clean', this._unbindLayer);
-    cdb.geo.ui.InfoBox.prototype.initialize.call(this);
+    InfoBox.prototype.initialize.call(this);
 
   },
 
@@ -130,11 +133,11 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
       var stepDurationMS = (new Date(tb.end).getTime() - new Date(tb.start).getTime()) / torqueLayer.options.steps;
       var stepEndTime = new Date(stepStartTimeMS + stepDurationMS);
       var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-      return pad(months[date.getMonth()]) + " " + pad(date.getDate())  + " - " 
+      return pad(months[date.getMonth()]) + " " + pad(date.getDate())  + " - "
         + pad(months[stepEndTime.getMonth()]) + " " + pad(stepEndTime.getDate());
     }
 
-    
+
 
     if (range < THREE_DAYS) {
       if (start.getDate() === end.getDate()) {
@@ -222,10 +225,11 @@ cdb.geo.ui.TimeSlider = cdb.geo.ui.InfoBox.extend({
   },
 
   render: function() {
-    cdb.geo.ui.InfoBox.prototype.render.apply(this, arguments);
+    InfoBox.prototype.render.apply(this, arguments);
     this._initSlider();
     return this;
   }
 
 });
 
+module.exports = TimeSlider;

@@ -1,15 +1,18 @@
+var _ = require('underscore');
+var $ = require('jquery-proxy').get();
+var templates = require('cdb.templates');
+var View = require('../../core/view');
+var util = require('../../core/util');
+
 /**
  * Show or hide tiles loader
  *
  * Usage:
  *
- * var tiles_loader = new cdb.geo.ui.TilesLoader();
+ * var tiles_loader = new TilesLoader();
  * mapWrapper.$el.append(tiles_loader.render().$el);
- *
  */
-
-
-cdb.geo.ui.TilesLoader = cdb.core.View.extend({
+var TilesLoader = View.extend({
 
   className: "cartodb-tiles-loader",
 
@@ -20,7 +23,7 @@ cdb.geo.ui.TilesLoader = cdb.core.View.extend({
   initialize: function() {
     _.defaults(this.options, this.default_options);
     this.isVisible = 0;
-    this.template = this.options.template ? this.options.template : cdb.templates.getTemplate('geo/tiles_loader');
+    this.template = this.options.template ? this.options.template : templates.getTemplate('geo/tiles_loader');
   },
 
   render: function() {
@@ -30,7 +33,7 @@ cdb.geo.ui.TilesLoader = cdb.core.View.extend({
 
   show: function(ev) {
     if(this.isVisible) return;
-    if (!cdb.core.util.ie || (cdb.core.util.browser.ie && cdb.core.util.browser.ie.version >= 10)) {
+    if (!util.ie || (util.browser.ie && util.browser.ie.version >= 10)) {
       this.$el.fadeTo(this.options.animationSpeed, 1)
     } else {
       this.$el.show();
@@ -42,7 +45,7 @@ cdb.geo.ui.TilesLoader = cdb.core.View.extend({
     this.isVisible--;
     if(this.isVisible > 0) return;
     this.isVisible = 0;
-    if (!cdb.core.util.ie || (cdb.core.util.browser.ie && cdb.core.util.browser.ie.version >= 10)) {
+    if (!util.ie || (util.browser.ie && util.browser.ie.version >= 10)) {
       this.$el.stop(true).fadeTo(this.options.animationSpeed, 0)
     } else {
       this.$el.hide();
@@ -54,3 +57,5 @@ cdb.geo.ui.TilesLoader = cdb.core.View.extend({
   }
 
 });
+
+module.exports = TilesLoader;

@@ -101,6 +101,12 @@ module.exports = function(cdb) {
       expect(cdb.geo.ui.LayerSelector).toEqual(jasmine.any(Function));
       expect(cdb.geo.ui.LayerView).toEqual(jasmine.any(Function));
       expect(cdb.geo.ui.LayerViewFromLayerGroup).toEqual(jasmine.any(Function));
+
+      expect(cdb.geo.ui.MobileLayer).toEqual(jasmine.any(Function));
+      expect(cdb.geo.ui.Mobile).toEqual(jasmine.any(Function));
+      expect(cdb.geo.ui.TilesLoader).toEqual(jasmine.any(Function));
+      expect(cdb.geo.ui.TimeSlider).toEqual(jasmine.any(Function));
+      expect(cdb.geo.ui.InfoBox).toEqual(jasmine.any(Function));
     });
 
     it('should have a cdb.geo.ui object w/ legend models', function() {

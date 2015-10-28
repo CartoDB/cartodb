@@ -6,7 +6,6 @@ require_relative '../doubles/user'
 include CartoDB::Datasources
 
 describe Url::Box do
-
   def get_config
     {
       'box_host' => '',
@@ -26,10 +25,9 @@ describe Url::Box do
       box_provider.filter.should eq nil
 
       # Filter to 'documents'
-      formats = [ 'csv', 'xls' ]
+      formats = ['csv', 'xls']
       box_provider.filter = formats
       box_provider.filter.should eq formats
     end
   end
-
 end

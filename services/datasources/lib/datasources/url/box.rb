@@ -191,7 +191,7 @@ module CartoDB
                               :content_created_at, :content_modified_at, :owned_by, :shared_link, :folder_upload_email,
                               :parent, :item_status, :item_collection, :sync_state, :has_collaborations, :permissions, :tags,
                               :sha1, :shared_link, :version_number, :comment_count, :lock, :extension, :is_package,
-                              :expiring_embed_link,  :can_non_owners_invite]
+                              :expiring_embed_link, :can_non_owners_invite]
           FOLDER_AND_FILE_FIELDS_QUERY = FOLDER_AND_FILE_FIELDS.join(',')
 
           def file_from_id(file_id, fields = [])

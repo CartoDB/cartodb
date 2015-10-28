@@ -1,3 +1,9 @@
+var $ = require('jquery-proxy').get();
+var cdb = require('cdb');
+var _ = require('underscore');
+var templates = require('cdb.templates');
+var View = require('../../core/view');
+
 /**
  * Show a dropdown from the target
  *
@@ -5,7 +11,7 @@
  *
  * usage example:
  *
- *    var settings = new cdb.ui.common.Dropdown({
+ *    var settings = new Dropdown({
  *        el: "#settings_element",
  *        speedIn: 300,
  *        speedOut: 200
@@ -14,9 +20,8 @@
  *    settings.show();
  *    // close it
  *    settings.close();
-*/
-
-cdb.ui.common.Dropdown = cdb.core.View.extend({
+ */
+var Dropdown = View.extend({
 
   tagName: 'div',
   className: 'dropdown',
@@ -44,7 +49,7 @@ cdb.ui.common.Dropdown = cdb.core.View.extend({
 
     // Dropdown template
     if (this.options.template_base) {
-      this.template_base = cdb.templates.getTemplate(this.options.template_base);
+      this.template_base = templates.getTemplate(this.options.template_base);
     } else if (this.options.template) {
       this.template_base = this.options.template;
     }
@@ -141,10 +146,12 @@ cdb.ui.common.Dropdown = cdb.core.View.extend({
   clean: function() {
     $(this.options.target).unbind({"click": this._handleClick});
     $(document).unbind('keydown', this._keydown);
-    cdb.core.View.prototype.clean.apply(this, arguments);
+    View.prototype.clean.apply(this, arguments);
   },
 
   _fireClick: function(ev) {
     this.trigger("optionClicked", ev, this.el);
   }
 });
+
+module.exports = Dropdown;

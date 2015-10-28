@@ -21,6 +21,7 @@ cdb.core.View = require('./core/view');
 
 cdb.ui.common.Dialog = require('./ui/common/dialog');
 cdb.ui.common.ShareDialog = require('./ui/common/share');
+cdb.ui.common.Dropdown = require('./ui/common/dropdown');
 
 cdb.geo.geocoder.NOKIA = require('./geo/geocoder/nokia-geocoder');
 cdb.geo.geocoder.YAHOO = require('./geo/geocoder/yahoo-geocoder');
@@ -80,5 +81,9 @@ cdb.geo.ui.SlidesController = require('./geo/ui/slides-controller');
 cdb.geo.ui.Header = require('./geo/ui/header');
 
 cdb.geo.ui.Search = require('./geo/ui/search');
+
+cdb.geo.ui.LayerSelector = require('./geo/ui/layer-selector');
+cdb.geo.ui.LayerView = require('./geo/ui/layer-view');
+cdb.geo.ui.LayerViewFromLayerGroup = require('./geo/ui/layer-view-from-layer-group');
 
 module.exports = cdb;

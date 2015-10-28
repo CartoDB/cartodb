@@ -1,16 +1,20 @@
+var _ = require('underscore');
+var cdb = require('cdb'); // cdb.god, cdb.geo.ui.*
+var Dropdown = require('../../ui/common/dropdown');
+var View = require('../../core/view');
+var Model = require('../../core/model');
 
 /**
  *  Layer selector: it allows to select the layers that will be shown in the map
  *  - It needs the mapview, the element template and the dropdown template
  *
- *  var layer_selector = new cdb.geo.ui.LayerSelector({
+ *  var layer_selector = new LayerSelector({
  *    mapView: mapView,
  *    template: element_template,
  *    dropdown_template: dropdown_template
  *  });
  */
-
-cdb.geo.ui.LayerSelector = cdb.core.View.extend({
+var LayerSelector = View.extend({
 
   className: 'cartodb-layer-selector-box',
 
@@ -36,7 +40,7 @@ cdb.geo.ui.LayerSelector = cdb.core.View.extend({
 
     this.$el.html(this.options.template(this.options));
 
-    this.dropdown = new cdb.ui.common.Dropdown({
+    this.dropdown = new Dropdown({
       className:"cartodb-dropdown border",
       template: this.options.dropdown_template,
       target: this.$el.find("a"),
@@ -50,6 +54,7 @@ cdb.geo.ui.LayerSelector = cdb.core.View.extend({
       horizontal_offset: 13
     });
 
+    // TODO cdb.god only exists for cartodb editor, this would be better to extract and handle there
     if (cdb.god) cdb.god.bind("closeDialogs", this.dropdown.hide, this.dropdown);
 
     this.$el.append(this.dropdown.render().el);
@@ -70,7 +75,7 @@ cdb.geo.ui.LayerSelector = cdb.core.View.extend({
         var layerGroupView = self.mapView.getLayerByCid(layer.cid);
         for (var i = 0 ; i < layerGroupView.getLayerCount(); ++i) {
           var l = layerGroupView.getLayer(i);
-          var m = new cdb.core.Model(l);
+          var m = new Model(l);
           m.set('order', i);
           m.set('type', 'layergroup');
 
@@ -107,6 +112,8 @@ cdb.geo.ui.LayerSelector = cdb.core.View.extend({
   },
 
   _createLayer: function(_class, opts) {
+    // TODO depends on global object, can't extact to common module since that would create circular devDependencies,
+    // could this be solved differently?
     var layerView = new cdb.geo.ui[_class](opts);
     this.$("ul").append(layerView.render().el);
     this.addView(layerView);
@@ -133,106 +140,4 @@ cdb.geo.ui.LayerSelector = cdb.core.View.extend({
 
 });
 
-
-
-
-
-
-/**
- *  View for each CartoDB layer
- *  - It needs a model to make it work.
- *
- *  var layerView = new cdb.geo.ui.LayerView({
- *    model: layer_model,
- *    layer_definition: layer_definition
- *  });
- *
- */
-
-cdb.geo.ui.LayerView = cdb.core.View.extend({
-
-  tagName: "li",
-
-  defaults: {
-    template: '\
-      <a class="layer" href="#/change-layer"><%- layer_name %></a>\
-      <a href="#switch" class="right <%- visible ? "enabled" : "disabled" %> switch"><span class="handle"></span></a>\
-    '
-  },
-
-  events: {
-    "click": '_onSwitchClick'
-  },
-
-  initialize: function() {
-
-    if (!this.model.has('visible')) this.model.set('visible', false);
-
-    this.model.bind("change:visible", this._onSwitchSelected, this);
-
-    this.add_related_model(this.model);
-
-    this._onSwitchSelected();
-
-    // Template
-    this.template = this.options.template ? cdb.templates.getTemplate(this.options.template) : _.template(this.defaults.template);
-  },
-
-  render: function() {
-    var attrs = _.clone(this.model.attributes);
-    attrs.layer_name = attrs.layer_name || attrs.table_name;
-    this.$el.append(this.template(attrs));
-    return this;
-  },
-
-  /*
-  * Throw an event when the user clicks in the switch button
-  */
-  _onSwitchSelected: function() {
-    var enabled = this.model.get('visible');
-
-    // Change switch
-    this.$el.find(".switch")
-      .removeClass(enabled ? 'disabled' : 'enabled')
-      .addClass(enabled    ? 'enabled'  : 'disabled');
-
-    // Send trigger
-    this.trigger('switchChanged');
-
-  },
-
-  _onSwitchClick: function(e){
-    this.killEvent(e);
-
-    // Set model
-    this.model.set("visible", !this.model.get("visible"));
-  }
-
-});
-
-/**
- *  View for each layer from a layer group
- *  - It needs a model and the layer_definition to make it work.
- *
- *  var layerView = new cdb.geo.ui.LayerViewFromLayerGroup({
- *    model: layer_model,
- *    layerView: layweView
- *  });
- *
- */
-
-cdb.geo.ui.LayerViewFromLayerGroup = cdb.geo.ui.LayerView.extend({
-
-  _onSwitchSelected: function() {
-
-    cdb.geo.ui.LayerView.prototype._onSwitchSelected.call(this);
-    var sublayer = this.options.layerView.getSubLayer(this.options.layerIndex)
-    var visible = this.model.get('visible');
-
-    if (visible) {
-      sublayer.show();
-    } else {
-      sublayer.hide();
-    }
-  }
-});
+module.exports = LayerSelector;

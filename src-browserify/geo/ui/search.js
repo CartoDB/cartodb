@@ -189,9 +189,12 @@ var Search = View.extend({
     if (this._searchInfowindow) {
       // Hide it and then destroy it (when animation ends)
       this._searchInfowindow.hide(true);
-      var infowindow = this._searchInfowindow;
+      var self = this;
       setTimeout(function() {
-        infowindow.clean();
+        if (self._searchInfowindow) {
+          self._searchInfowindow.clean();
+          delete self._searchInfowindow;
+        }
       }, 1000);
     }
   },

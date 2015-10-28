@@ -50,6 +50,7 @@ module.exports = function(cdb) {
     it('should have a cdb.ui.common object', function() {
       expect(cdb.ui.common.Dialog).toEqual(jasmine.any(Function));
       expect(cdb.ui.common.ShareDialog).toEqual(jasmine.any(Function));
+      expect(cdb.ui.common.Dropdown).toEqual(jasmine.any(Function));
     });
 
     it('should have a cdb.geo object', function() {
@@ -96,6 +97,10 @@ module.exports = function(cdb) {
       expect(cdb.geo.ui.Header).toEqual(jasmine.any(Function));
 
       expect(cdb.geo.ui.Search).toEqual(jasmine.any(Function));
+
+      expect(cdb.geo.ui.LayerSelector).toEqual(jasmine.any(Function));
+      expect(cdb.geo.ui.LayerView).toEqual(jasmine.any(Function));
+      expect(cdb.geo.ui.LayerViewFromLayerGroup).toEqual(jasmine.any(Function));
     });
 
     it('should have a cdb.geo.ui object w/ legend models', function() {

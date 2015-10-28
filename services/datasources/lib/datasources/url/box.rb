@@ -165,7 +165,7 @@ module CartoDB
               query[:version] = version unless version.nil?
 
               # Boxr didn't have 200
-              body_json, _response = get(uri, query: query, success_codes: [302, 202, 200], follow_redirect: false, process_response: false)
+              _body_json, response = get(uri, query: query, success_codes: [302, 202, 200], follow_redirect: false, process_response: false)
 
               if response.response_code == 302
                 location = response.header['Location'][0]

@@ -22,6 +22,9 @@ describe DatasourcesFactory do
       dropbox_provider = DatasourcesFactory.get_datasource(Url::Dropbox::DATASOURCE_NAME, user_mock)
       dropbox_provider.kind_of?(Url::Dropbox).should eq true
 
+      dropbox_provider = DatasourcesFactory.get_datasource(Url::Box::DATASOURCE_NAME, user_mock)
+      dropbox_provider.kind_of?(Url::Box).should eq true
+
       gdrive_provider = DatasourcesFactory.get_datasource(Url::GDrive::DATASOURCE_NAME, user_mock)
       gdrive_provider.kind_of?(Url::GDrive).should eq true
 

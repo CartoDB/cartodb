@@ -1,8 +1,8 @@
 var cdb = require('../../../src-browserify/core');
-var sharedForCdbCommon = require('./shared-for-cdb-common');
+var sharedForCdb = require('./shared-for-cdb');
 
 describe('core bundle', function() {
-  sharedForCdbCommon(cdb);
+  sharedForCdb(cdb);
 
   it('should have some objects present on the cdb object', function() {
     expect(cdb.Tiles).toEqual(jasmine.any(Function));

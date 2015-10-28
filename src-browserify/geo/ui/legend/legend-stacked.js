@@ -1,5 +1,5 @@
+var cdb = require('cdb'); // cdb.geo.ui.Legend.*
 var _ = require('underscore');
-var Legend = require('../legend');
 var Legends = require('../legends');
 var LegendModel = require('../legend-model');
 var StackedLegend = require('./stacked-legend');
@@ -65,7 +65,8 @@ var LegendStacked = StackedLegend.extend({
 
     type = this._capitalize(type);
 
-    var view = new Legend[type](model.attributes);
+    // TODO: Necessary evil, can't require since end up with circular references; how to solve better?
+    var view = new cdb.geo.ui.Legend[type](model.attributes);
 
     this.legends.push(view);
 

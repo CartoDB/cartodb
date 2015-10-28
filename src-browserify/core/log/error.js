@@ -1,10 +1,10 @@
 var Backbone = require('backbone');
 var jQueryProxy = require('jquery-proxy');
-var configProxy = require('config-proxy');
+var config = require('cdb.config');
 
 var ErrorModel = Backbone.Model.extend({
   url: function() {
-    return configProxy.get().REPORT_ERROR_URL;
+    return config.REPORT_ERROR_URL;
   },
 
   initialize: function() {

@@ -1,5 +1,5 @@
 var LeafletProxy = require('leaflet-proxy');
-var config = require('config-proxy').get();
+var config = require('cdb.config');
 var LeafletCartoDBGroupLayer = require('./leaflet-cartodb-group-layer');
 var LayerDefinition = require('../layer-definition/layer-definition');
 

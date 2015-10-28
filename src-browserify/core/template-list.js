@@ -1,7 +1,7 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
+var log = require('cdb.log');
 var Template = require('./template');
-var logProxy = require('log-proxy');
 
 var TemplateList = Backbone.Collection.extend({
   model: Template,
@@ -19,7 +19,7 @@ var TemplateList = Backbone.Collection.extend({
       return _.bind(t.render, t);
     }
 
-    logProxy.get().error(template_name + " not found");
+    log.error(template_name + " not found");
 
     return null;
   }

@@ -17,7 +17,7 @@ var Backbone = require('backbone-proxy').set(window.Backbone
     : require('./api/core-lib/backbone-isch')
   ).get();
 
-var cdb = require('./cdb-common');
+var cdb = require('cdb');
 
 cdb.Tiles = require('./api/tiles');
 cdb._Promise = require('./api/core-lib/_promise');

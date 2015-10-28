@@ -1,12 +1,9 @@
 var _ = require('underscore');
-
-var cdbProxy = require('cdb-proxy');
 var Backbone = require('backbone');
 var $ = require('jquery');
 var jQueryProxy = require('jquery-proxy');
 var BackboneProxy = require('backbone-proxy');
 var ajaxProxy = require('ajax-proxy');
-// var cartocssProxy = require('cartocss-default-version-proxy').set('1.2.3').get();
 
 var Queue = require('../../../../src-browserify/vis/image/queue');
 var StaticImage = require('../../../../src-browserify/vis/image/static-image');
@@ -16,7 +13,6 @@ var Image = require('../../../../src-browserify/vis/image');
 describe('vis/image', function() {
 
   beforeEach(function() {
-    cdbProxy.set({});
     BackboneProxy.set(Backbone);
     jQueryProxy.set($);
     ajaxProxy.set($.ajax);

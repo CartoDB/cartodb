@@ -1,6 +1,6 @@
  var L = require('leaflet-proxy').get();
+ var config = require('cdb.config');
  var GeometryView = require('../geometry-view');
- var configProxy = require('config-proxy');
 
 /**
  * view for markers
@@ -24,7 +24,7 @@ function PointView(geometryModel) {
   this.points = [];
 
   var icon = {
-    iconUrl: this.model.get('iconUrl') || configProxy.get().get('assets_url') + '/images/layout/default_marker.png',
+    iconUrl: this.model.get('iconUrl') || config.get('assets_url') + '/images/layout/default_marker.png',
     iconAnchor: this.model.get('iconAnchor') || [11, 11]
   };
 

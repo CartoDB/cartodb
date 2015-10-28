@@ -1,7 +1,7 @@
 var _ = require('underscore');
 var jQueryProxy = require('jquery-proxy');
+var templates = require('cdb.templates');
 var View = require('../../core/view');
-var templatesProxy = require('templates-proxy');
 
 /**
  * generic dialog
@@ -72,7 +72,7 @@ module.exports = View.extend({
     // After removing the dialog, cleaning other bindings
     this.bind("clean", this._reClean);
 
-    this.template_base = this.options.template_base ? _.template(this.options.template_base) : templatesProxy.get().getTemplate(this.options.template_name);
+    this.template_base = this.options.template_base ? _.template(this.options.template_base) : templates.getTemplate(this.options.template_name);
   },
 
   render: function() {

@@ -2,38 +2,33 @@ module.exports = function(cdb) {
   describe('shared for cdb object in all bundles except for core', function() {
     it('should have the commonly used vendor libs defined', function() {
       expect(cdb.$).toEqual(jasmine.any(Function));
-      expect(cdb.L).toEqual(jasmine.any(Object));
       expect(cdb.Mustache).toEqual(jasmine.any(Object));
       expect(cdb.Backbone).toEqual(jasmine.any(Object));
       expect(cdb._).toEqual(jasmine.any(Function));
     });
 
-    it("should create a cdb.Profiler", function() {
-      expect(cdb.config).toBeDefined();
+    it('should have some common objects', function() {
+      expect(cdb.config).toEqual(jasmine.any(Object));
+      expect(cdb.log).toEqual(jasmine.any(Object));
+      expect(cdb.errors).toEqual(jasmine.any(Object));
+      expect(cdb.templates).toEqual(jasmine.any(Object));
+      expect(cdb.decorators).toEqual(jasmine.any(Object));
     });
 
-    it("should generate error when error is called", function() {
+    it('config should contain links variables', function() {
+      expect(cdb.config.get('cartodb_attributions')).toEqual("CartoDB <a href='http://cartodb.com/attributions' target='_blank'>attribution</a>");
+      expect(cdb.config.get('cartodb_logo_link')).toEqual("http://www.cartodb.com");
+    });
+
+    it('should generate error when error is called', function() {
+      expect(cdb.config).toBeDefined();
       cdb.config.ERROR_TRACK_ENABLED = true
       cdb.errors.reset([]);
       cdb.log.error('this is an error');
       expect(cdb.errors.size()).toEqual(1);
     });
 
-    it("should create a global error list", function() {
-      expect(cdb.errors).toBeDefined();
-    });
-
-    describe('cdb.config', function() {
-      it('should contain links variables', function() {
-        expect(cdb.config.get('cartodb_attributions')).toEqual("CartoDB <a href='http://cartodb.com/attributions' target='_blank'>attribution</a>");
-        expect(cdb.config.get('cartodb_logo_link')).toEqual("http://www.cartodb.com");
-      });
-    });
-
-    it("should create a cdb.core with expected model", function() {
-      expect(cdb.core.Loader).toBeDefined();
-      expect(cdb.core.util).toBeDefined();
-      expect(cdb.core.Profiler).toBeDefined();
+    it('should create a cdb.core with expected model', function() {
       expect(cdb.core.Template).toBeDefined();
       expect(cdb.core.TemplateList).toBeDefined();
       expect(cdb.core.Model).toBeDefined();
@@ -87,7 +82,6 @@ module.exports = function(cdb) {
       expect(cdb.geo.ui.Share).toEqual(jasmine.any(Function));
       expect(cdb.geo.ui.Zoom).toEqual(jasmine.any(Function));
       expect(cdb.geo.ui.ZoomInfo).toEqual(jasmine.any(Function));
-      expect(cdb.geo.ui.Legend).toEqual(jasmine.any(Function));
 
       expect(cdb.geo.ui.InfowindowModel).toEqual(jasmine.any(Function));
       expect(cdb.geo.ui.Infowindow).toEqual(jasmine.any(Function));
@@ -102,6 +96,36 @@ module.exports = function(cdb) {
       expect(cdb.geo.ui.Header).toEqual(jasmine.any(Function));
 
       expect(cdb.geo.ui.Search).toEqual(jasmine.any(Function));
+    });
+
+    it('should have a cdb.geo.ui object w/ legend models', function() {
+      expect(cdb.geo.ui.Legend).toEqual(jasmine.any(Function));
+      expect(cdb.geo.ui.Legend.Bubble).toEqual(jasmine.any(Function));
+      expect(cdb.geo.ui.Legend.Category).toEqual(jasmine.any(Function));
+      expect(cdb.geo.ui.Legend.Choropleth).toEqual(jasmine.any(Function));
+      expect(cdb.geo.ui.Legend.Color).toEqual(jasmine.any(Function));
+      expect(cdb.geo.ui.Legend.Custom).toEqual(jasmine.any(Function));
+      expect(cdb.geo.ui.Legend.Density).toEqual(jasmine.any(Function));
+      expect(cdb.geo.ui.Legend.Intensity).toEqual(jasmine.any(Function));
+      expect(cdb.geo.ui.Legend.None).toEqual(jasmine.any(Function));
+      expect(cdb.geo.ui.Legend.Stacked).toEqual(jasmine.any(Function));
+
+      expect(cdb.geo.ui.LegendItemModel).toEqual(jasmine.any(Function));
+      expect(cdb.geo.ui.LegendItem).toEqual(jasmine.any(Function));
+      expect(cdb.geo.ui.LegendItems).toEqual(jasmine.any(Function));
+      expect(cdb.geo.ui.LegendModel).toEqual(jasmine.any(Function));
+      expect(cdb.geo.ui.Legends).toEqual(jasmine.any(Function));
+      expect(cdb.geo.ui.BaseLegend).toEqual(jasmine.any(Function));
+      expect(cdb.geo.ui.BubbleLegend).toEqual(jasmine.any(Function));
+      expect(cdb.geo.ui.CategoryLegend).toEqual(jasmine.any(Function));
+      expect(cdb.geo.ui.ChoroplethLegend).toEqual(jasmine.any(Function));
+      expect(cdb.geo.ui.ColorLegend).toEqual(jasmine.any(Function));
+      expect(cdb.geo.ui.CustomLegend).toEqual(jasmine.any(Function));
+      expect(cdb.geo.ui.DebugLegend).toEqual(jasmine.any(Function));
+      expect(cdb.geo.ui.DensityLegend).toEqual(jasmine.any(Function));
+      expect(cdb.geo.ui.IntensityLegend).toEqual(jasmine.any(Function));
+      expect(cdb.geo.ui.NoneLegend).toEqual(jasmine.any(Function));
+      expect(cdb.geo.ui.StackedLegend).toEqual(jasmine.any(Function));
     });
 
     it('should have a cdb.common object', function() {

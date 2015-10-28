@@ -1,13 +1,8 @@
 var $ = require('jquery');
-
 var jQueryProxy = require('jquery-proxy');
-var TemplateList = require('../../../../../src-browserify/core/template-list');
-var templatesProxy = require('templates-proxy');
-var Log = require('../../../../../src-browserify/core/log');
-var logProxy = require('log-proxy');
-var config = require('../../../../../src-browserify/cdb.config');
-var configProxy = require('config-proxy');
-
+var templates = require('cdb.templates');
+var log = require('cdb.log');
+var config = require('cdb.config');
 var Map = require('../../../../../src-browserify/geo/map');
 var MapView = require('../../../../../src-browserify/geo/map-view');
 var InfowindowModel = require('../../../../../src-browserify/geo/ui/infowindow-model');
@@ -18,9 +13,6 @@ describe('geo/ui/infowindow', function() {
 
   beforeEach(function() {
     jQueryProxy.set($);
-    configProxy.set(config);
-    logProxy.set(new Log());
-    templatesProxy.set(new TemplateList());
 
     var container = $('<div>').css('height', '200px');
 

@@ -1,5 +1,5 @@
 var _ = require('underscore');
-var templatesProxy = require('templates-proxy');
+var templates = require('cdb.templates');
 var View = require('../../core/view');
 
 /**
@@ -13,7 +13,7 @@ var LegendItem = View.extend({
 
     _.bindAll(this, "render");
 
-    this.template = this.options.template ? _.template(this.options.template) : templatesProxy.get().getTemplate('geo/legend');
+    this.template = this.options.template ? _.template(this.options.template) : templates.getTemplate('geo/legend');
 
   },
 

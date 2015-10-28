@@ -1,7 +1,7 @@
 var $ = require('jquery');
+var templates = require('cdb.templates');
 var _ = require('underscore');
 var Backbone = require('backbone');
-var cdb = require('cdb-proxy').set({}).get();
 var View = require('../../../../src-browserify/core/view');
 
 describe('core/view', function() {
@@ -9,7 +9,6 @@ describe('core/view', function() {
   var view;
 
   beforeEach(function() {
-    cdb.templates = {};
     TestView = View.extend({
       initialize: function() {
         this.init_called = true;

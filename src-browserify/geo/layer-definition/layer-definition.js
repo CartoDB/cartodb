@@ -1,5 +1,5 @@
 var _ = require('underscore');
-var cartoCssProxy = require('cartocss-default-version-proxy');
+var cdb = require('cdb'); // cdb.CARTOCSS_DEFAULT_VERSION
 var MapBase = require('./map-base');
 
 // TODO: This is actually an AnonymousMap -> Rename?
@@ -159,7 +159,7 @@ LayerDefinition.prototype = _.extend({}, MapBase.prototype, {
       layer = 0;
     }
 
-    version = version || cartoCssProxy.get();
+    version = version || cdb.CARTOCSS_DEFAULT_VERSION;
 
     this.layers[layer].options.cartocss = style;
     this.layers[layer].options.cartocss_version = version;

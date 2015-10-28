@@ -1,4 +1,4 @@
-var cdbProxy = require('cdb-proxy'); // cdb.DEBUG
+var cdb = require('cdb'); // cdb.DEBUG
 
 var Loader = {
 
@@ -49,7 +49,7 @@ var Loader = {
   },
 
   loadModule: function(modName) {
-    var file = "cartodb.mod." + modName + (cdbProxy.get().DEBUG ? ".uncompressed.js" : ".js");
+    var file = "cartodb.mod." + modName + (cdb.DEBUG ? ".uncompressed.js" : ".js");
     var src = this.getPath(file);
     if (!src) {
       throw new Error("can't find cartodb.js file");

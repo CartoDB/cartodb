@@ -1,11 +1,10 @@
-var cdb = require('cdb-proxy').get();
 var _ = require('underscore');
 var LegendModel = require('./legend-model');
+var LegendExports = require('./legend-exports');
 var View = require('../../core/view');
 
 /**
  * Legend View: wrapper for the different types of legends
- * TODO: there is a dependency on the global cdb.geo.ui object to get specific types, could this be fixed?
  */
 var Legend = View.extend({
 
@@ -64,7 +63,7 @@ var Legend = View.extend({
     if (type == 'none' || type == null) {
       this.legend_name = null;
       this.model.set({ type: "none" }, { silent: true });
-    } else if (!cdb.geo.ui[this.legend_name]) {
+    } else if (!LegendExports[this.legend_name]) {
 
       // set the previous type
       this.legend_name = null;
@@ -92,7 +91,7 @@ var Legend = View.extend({
     var template = this.model.get("template");
 
     if (type && this.legend_name) {
-      this.view = new cdb.geo.ui[this.legend_name]({
+      this.view = new LegendExports[this.legend_name]({
         model: this.model
       });
 

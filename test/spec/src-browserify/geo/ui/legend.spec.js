@@ -1,25 +1,21 @@
+var _ = require('underscore');
+var Backbone = require('backbone');
 var $ = require('jquery');
 var jQueryProxy = require('jquery-proxy');
+var cdb = require('cdb'); // to setup cdb.geo.ui.*, cdb.geo.ui.Legend.*
+var config = require('cdb.config');
 
-var cdb = {};
-cdb.geo = {};
-cdb.geo.ui = {};
-var cdbProxy = require('cdb-proxy').set(cdb);
-var cdbUI = require('../../../../../src-browserify/cdb.geo.ui.legend');
-var config = require('../../../../../src-browserify/cdb.config');
-var configProxy = require('config-proxy');
+// A necessary evil, due to otherwise end up with circular references
+cdb.geo.ui.Legend = require('../../../../../src-browserify/geo/ui/legend');
+_.extend(cdb.geo.ui.Legend, require('../../../../../src-browserify/geo/ui/legend/legend-view-exports'));
 
-var Backbone = require('backbone');
+var LegendExports = require('../../../../../src-browserify/geo/ui/legend-exports');
 var Model = require('../../../../../src-browserify/core/model');
 var Map = require('../../../../../src-browserify/geo/map');
 
 describe('geo/ui/legend', function() {
   beforeEach(function() {
-    configProxy.set(config);
     jQueryProxy.set($);
-    cdbProxy.set(cdb);
-    cdb.geo = {};
-    cdb.geo.ui = cdbUI;
   });
 
   describe("Legend", function() {
@@ -79,7 +75,7 @@ describe('geo/ui/legend', function() {
     });
 
     it("should have a collection", function() {
-      expect(legend.items instanceof cdb.geo.ui.LegendItems).toEqual(true);
+      expect(legend.items instanceof LegendExports.LegendItems).toEqual(true);
     });
 
     it("should populate the collection", function() {
@@ -100,14 +96,14 @@ describe('geo/ui/legend', function() {
 
     it("should create the specific legend based on the type", function() {
       legend.model.set({ type: "bubble" });
-      expect(legend.view instanceof cdb.geo.ui.BubbleLegend).toEqual(true);
+      expect(legend.view instanceof LegendExports.BubbleLegend).toEqual(true);
       expect(legend.$el.hasClass("bubble")).toEqual(true);
       expect(legend.$el.hasClass("custom")).toEqual(false);
     });
 
     it("shouldn't create the legend if the type is unknown", function() {
       legend.model.set({ type: "the_legend_of_santana" });
-      expect(legend.view instanceof cdb.geo.ui.CustomLegend).toEqual(false);
+      expect(legend.view instanceof LegendExports.CustomLegend).toEqual(false);
       expect(legend.$el.hasClass("custom")).toEqual(false);
     });
 
@@ -256,7 +252,7 @@ describe('geo/ui/legend', function() {
 
       legends = [ legendA, legendB ];
 
-      stackedLegend = new cdb.geo.ui.StackedLegend({
+      stackedLegend = new LegendExports.StackedLegend({
         legends: legends
       });
 
@@ -283,7 +279,7 @@ describe('geo/ui/legend', function() {
       });
       model.items = new Backbone.Collection(data)
 
-      legend = new cdb.geo.ui.ColorLegend({
+      legend = new LegendExports.ColorLegend({
         model: model
       });
     });

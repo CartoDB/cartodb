@@ -1,7 +1,7 @@
 var _ = require('underscore');
-var config = require('config-proxy').get();
 var LeafletProxy = require('leaflet-proxy');
-var logProxy = require('log-proxy');
+var config = require('cdb.config');
+var log = require('cdb.log');
 var Model = require('../core/model');
 var Layers = require('./map/layers');
 var Geometries = require('./geometries');
@@ -173,14 +173,14 @@ var Map = Model.extend({
     var layer = this.layers.get(cid);
 
     if (layer) this.removeLayer(layer);
-    else logProxy.get().error("There's no layer with cid = " + cid + ".");
+    else log.error("There's no layer with cid = " + cid + ".");
   },
 
   removeLayerAt: function(i) {
     var layer = this.layers.at(i);
 
     if (layer) this.removeLayer(layer);
-    else logProxy.get().error("There's no layer in that position.");
+    else log.error("There's no layer in that position.");
   },
 
   clearLayers: function() {

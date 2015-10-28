@@ -1,5 +1,5 @@
 var _ = require('underscore');
-var templatesProxy = require('templates-proxy');
+var templates = require('cdb.templates');
 var View = require('../../core/view');
 
 /**
@@ -30,7 +30,7 @@ module.exports = View.extend({
 
     _.defaults(this.options, this.default_options);
 
-    this.template = this.options.template ? this.options.template : templatesProxy.get().getTemplate('geo/zoom');
+    this.template = this.options.template ? this.options.template : templates.getTemplate('geo/zoom');
     this.map.bind('change:zoom change:minZoom change:maxZoom', this._checkZoom, this);
   },
 

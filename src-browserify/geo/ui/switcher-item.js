@@ -1,5 +1,5 @@
 var _ = require('underscore');
-var templatesProxy = require('templates-proxy');
+var templates = require('cdb.templates');
 var View = require('../../core/view');
 
 var SwitcherItem = View.extend({
@@ -15,7 +15,7 @@ var SwitcherItem = View.extend({
   initialize: function() {
 
     _.bindAll(this, "render");
-    this.template = templatesProxy.get().getTemplate('templates/map/switcher/item');
+    this.template = templates.getTemplate('templates/map/switcher/item');
     this.parent = this.options.parent;
     this.model.on("change:selected", this.render);
 

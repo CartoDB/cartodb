@@ -1,10 +1,10 @@
 var _ = require('underscore');
-var Model = require('../../core/model');
 
 // TODO: can't use these requires since they in turn depends on this file (i.e. cyclic dependency), how to break?
 // var TorqueLayer = require('./torque-layer');
 // var CartoDBNamedMapLayer = require('./cartodb-named-map-layer');
-var cdbProxy = require('cdb-proxy');
+var cdb = require('cdb'); // cdb.geo.TorqueLayer, cdb.geo.CartoDBNamedMapLayer
+var Model = require('../../core/model');
 
 // Map layer, could be tiled or whatever
 var MapLayer = Model.extend({
@@ -53,10 +53,10 @@ var MapLayer = Model.extend({
         return myTemplate === itsTemplate && myLayer === itsLayer;
       }
       else if (myType === 'torque') {
-        return cdbProxy.get().geo.TorqueLayer.prototype.isEqual.call(this, layer);
+        return cdb.geo.TorqueLayer.prototype.isEqual.call(this, layer);
       }
       else if (myType === 'named_map') {
-        return cdbProxy.get().geo.CartoDBNamedMapLayer.prototype.isEqual.call(this, layer);
+        return cdb.geo.CartoDBNamedMapLayer.prototype.isEqual.call(this, layer);
       } else { // same type but not tiled
         var myBaseType = me.base_type? me.base_type : me.options.base_type;
         var itsBaseType = other.base_type? other.base_type : other.options.base_type;

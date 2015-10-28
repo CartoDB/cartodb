@@ -1,5 +1,5 @@
 var _ = require('underscore');
-var templatesProxy = require('templates-proxy');
+var templates = require('cdb.templates');
 var View = require('../../core/view');
 var SwitcherItem = require('./switcher-item');
 
@@ -25,7 +25,7 @@ var Switcher = View.extend({
       this.model.collection = this.collection;
     }
 
-    this.template = this.options.template ? this.options.template : templatesProxy.get().getTemplate('geo/switcher');
+    this.template = this.options.template ? this.options.template : templates.getTemplate('geo/switcher');
   },
 
   show: function() {

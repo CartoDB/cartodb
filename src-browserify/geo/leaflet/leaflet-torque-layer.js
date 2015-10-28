@@ -2,8 +2,8 @@
 // Thus, the Leaflet var "L" is assumed to be present in the global scope.
 //
 // see "torque" in ./leaflet-map-view.js
-var cdb = require('cdb-proxy').get();
 var _ = require('underscore');
+var cdb = require('cdb'); // cdb.geo.LeafletTorqueLayer
 var util = require('cdb.core.util');
 var LeafletLayerView = require('./leaflet-layer-view');
 var CartoDBLogo = require('../cartodb-logo');

@@ -1,8 +1,8 @@
 var _ = require('underscore');
 var Spinner = require('spin.js');
 var jQueryProxy = require('jquery-proxy');
-var logProxy = require('log-proxy');
-var templatesProxy = require('templates-proxy');
+var log = require('cdb.log');
+var templates = require('cdb.templates');
 var sanitize = require('../../core/sanitize');
 var Template = require('../../core/template');
 var View = require('../../core/view');
@@ -181,7 +181,7 @@ var Infowindow = View.extend({
    */
   _setTemplate: function() {
     if (this.model.get('template_name')) {
-      this.template = templatesProxy.get().getTemplate(this._getModelTemplate());
+      this.template = templates.getTemplate(this._getModelTemplate());
       this.render();
     }
   },
@@ -192,7 +192,7 @@ var Infowindow = View.extend({
   _compileTemplate: function() {
     var template = this.model.get('template') ?
       this.model.get('template') :
-      templatesProxy.get().getTemplate(this._getModelTemplate());
+      templates.getTemplate(this._getModelTemplate());
 
     if(typeof(template) !== 'function') {
       this.template = new Template({
@@ -373,7 +373,7 @@ var Infowindow = View.extend({
     if (!this._isValidURL(url)) {
       $img.hide();
       $shadow.hide();
-      logProxy.get().info("Header image url not valid");
+      log.info("Header image url not valid");
       return;
     }
 

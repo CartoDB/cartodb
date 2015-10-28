@@ -1,10 +1,9 @@
-// Create the cartodb object to be set in the global namespace, which includes to properly write up all dependencies.
-// Code extracted from the older src/cartodb.js file (entry file prior to browerify)
-// These definitions are shared for all bundles
-var cdb = require('cdb-proxy').set({}).get();
+// Definitions shared in the cdb object for all bundles.
+// Extracted from the older src/cartodb.js file (entry file prior to browserify)
+var cdb = {};
 cdb.VERSION = "3.15.8";
 cdb.DEBUG = false;
-cdb.CARTOCSS_DEFAULT_VERSION = require('cartocss-default-version-proxy').set('2.1.1').get();;
+cdb.CARTOCSS_DEFAULT_VERSION = '2.1.1';
 cdb.CARTOCSS_VERSIONS = {
   '2.0.0': '',
   '2.1.0': ''
@@ -21,8 +20,8 @@ cdb.ui.common = {};
 cdb.vis = {};
 cdb.decorators = {};
 
-cdb.core.Profiler = require('./core/profiler');
-cdb.core.util = require('./core/util');
+cdb.core.Profiler = require('cdb.core.Profiler');
+cdb.core.util = require('cdb.core.util');
 cdb.core.Loader = cdb.vis.Loader = require('./core/loader');
 
 cdb.Image = require('./vis/image')

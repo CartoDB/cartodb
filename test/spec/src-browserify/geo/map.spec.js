@@ -1,6 +1,4 @@
-var config = require('../../../../src-browserify/cdb.config');
-var configProxy = require('config-proxy');
-
+var config = require('cdb.config');
 var PlainLayer = require('../../../../src-browserify/geo/map/plain-layer');
 var CartoDBLayer = require('../../../../src-browserify/geo/map/cartodb-layer');
 var Map = require('../../../../src-browserify/geo/map');
@@ -9,7 +7,6 @@ describe('core/geo/map', function() {
   var map;
 
   beforeEach(function() {
-    configProxy.set(config);
     map = new Map();
   });
 

@@ -1,5 +1,5 @@
 var _ = require('underscore');
-var logProxy = require('log-proxy');
+var log = require('cdb.log');
 var View = require('../core/view');
 var Infowindow = require('./ui/infowindow');
 
@@ -150,7 +150,7 @@ var MapView = View.extend({
   getLayerByCid: function(cid) {
     var l = this.layers[cid];
     if(!l) {
-      logProxy.get().debug("layer with cid " + cid + " can't be get");
+      log.debug("layer with cid " + cid + " can't be get");
     }
     return l;
   },
@@ -203,7 +203,7 @@ var MapView = View.extend({
       if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
         mapViewClass = opts.GoogleMapsMapView;
       } else {
-        logProxy.get().error("you must include google maps library _before_ include cdb");
+        log.error("you must include google maps library _before_ include cdb");
       }
     }
     return mapViewClass;

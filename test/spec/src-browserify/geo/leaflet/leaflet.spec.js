@@ -6,19 +6,10 @@ var L = require('leaflet');
 global.L = L;
 require('torque.js');
 
-var cdb = {
-  ui: {},
-  geo: {} // required for cdb.geo.LeafletTorqueLayer
-};
-var cdbProxy = require('cdb-proxy').set(cdb);
 var ajaxProxy = require('ajax-proxy').set($.ajax);
-var config = require('../../../../../src-browserify/cdb.config');
-var configProxy = require('config-proxy').set(config);
 var leafletProxy = require('leaflet-proxy').set(L);
-var Log = require('../../../../../src-browserify/core/log');
-var log = new Log();
-var logProxy = require('log-proxy').set(log);
-var cartoCssDefaultVersionProxy = require('cartocss-default-version-proxy').set('2.1.1');
+var config = require('cdb.config');
+var log = require('cdb.log');
 var Backbone = require('backbone');
 var BackboneProxy = require('backbone-proxy').set(Backbone);
 
@@ -42,13 +33,9 @@ describe('geo/leaflet/leaflet-map-view', function() {
   var container;
 
   beforeEach(function() {
-    cdbProxy.set(cdb);
-    cartoCssDefaultVersionProxy.set('2.1.1');
     ajaxProxy.set($.ajax);
-    configProxy.set(config);
     BackboneProxy.set(Backbone);
     leafletProxy.set(L);
-    logProxy.set(log);
 
     container = $('<div>').css({
         'height': '200px',

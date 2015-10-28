@@ -1,5 +1,5 @@
+var config = require('cdb.config');
 var MapLayer = require('./map-layer');
-var config = require('config-proxy').get();
 
 var CartoDBLayer = MapLayer.extend({
 

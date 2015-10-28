@@ -1,7 +1,7 @@
 var Backbone = require('backbone');
-var cdbProxy = require('cdb-proxy'); // cdb.DEBUG
-var errorsProxy = require('errors-proxy');
-var configProxy = require('config-proxy');
+var cdb = require('cdb'); // cdb.DEBUG
+var errors = require('cdb.errors');
+var config = require('cdb.config');
 
 // TODO: Is this fake console/IE7 still necessary?
 var _console;
@@ -13,7 +13,7 @@ _fake_console.prototype.log= function(){};
 if (typeof console !== "undefined") {
   _console = console;
   try {
-    _console.log.apply(_console, ['cartodb.js ' + cdbProxy.get().VERSION])
+    _console.log.apply(_console, ['cartodb.js ' + cdb.VERSION])
   } catch(e) {
     _console = new _fake_console();
   }
@@ -25,8 +25,8 @@ var Log = Backbone.Model.extend({
 
   error: function() {
     _console.error.apply(_console, arguments);
-    if(configProxy.get().ERROR_TRACK_ENABLED) {
-      errorsProxy.get().create({
+    if(config.ERROR_TRACK_ENABLED) {
+      errors.create({
         msg: Array.prototype.slice.call(arguments).join('')
       });
     }
@@ -41,7 +41,7 @@ var Log = Backbone.Model.extend({
   },
 
   debug: function() {
-    if (cdbProxy.get().DEBUG) _console.log.apply(_console, arguments);
+    if (cdb.DEBUG) _console.log.apply(_console, arguments);
   }
 });
 

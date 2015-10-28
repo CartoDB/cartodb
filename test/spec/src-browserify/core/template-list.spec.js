@@ -1,11 +1,11 @@
-var logProxy = require('log-proxy');
+var log = require('cdb.log');
 var TemplateList = require('../../../../src-browserify/core/template-list');
 
 describe('core/template-list', function() {
   var tmpl;
 
   beforeEach(function() {
-    logProxy.set(jasmine.createSpyObj('cdb.log', ['error']));
+    spyOn(log, 'error');
     tmpl = new TemplateList();
     tmpl.reset([
       {name: 't1', template: "hi, my name is <%= name %>"},

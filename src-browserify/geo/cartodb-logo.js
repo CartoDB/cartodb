@@ -1,4 +1,4 @@
-var config = require('config-proxy').get();
+var config = require('cdb.config');
 
 var CartoDBLogo = {
 

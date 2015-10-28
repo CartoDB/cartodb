@@ -1,9 +1,7 @@
 var _ = require('underscore');
-
-var cdb = require('cdb-proxy').get();
 var L = require('leaflet-proxy').get();
-var logProxy = require('log-proxy');
-
+var cdb = require('cdb'); // cdb.geo.LeafletTorqueLayer
+var log = require('cdb.log');
 var MapView = require('../map-view');
 var View = require('../../core/view');
 var LeafletTiledLayerView = require('./leaflet-tiled-layer-view');
@@ -376,10 +374,10 @@ var LeafletMapView = MapView.extend({
       try {
         layer_view = new layerClass(layer, map);
       } catch(e) {
-        logProxy.get().error("MAP: error creating '" +  layer.get('type') + "' layer -> " + e.message);
+        log.error("MAP: error creating '" +  layer.get('type') + "' layer -> " + e.message);
       }
     } else {
-      logProxy.get().error("MAP: " + layer.get('type') + " can't be created");
+      log.error("MAP: " + layer.get('type') + " can't be created");
     }
     return layer_view;
   },

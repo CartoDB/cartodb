@@ -209,7 +209,6 @@ describe CartoDB::Connector::Importer do
     data_import.success.should eq true
   end
 
-
   it 'should import table and vis as public with private_tables enabled' do
     @user.private_tables_enabled = true
     @user.save

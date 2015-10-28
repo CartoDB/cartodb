@@ -9,7 +9,6 @@ module CartoDB
       # Most of this code has been extracted from Boxr.
       # This should be migrated when we upgrade to Ruby 2.
       module BoxAPI
-
         class ExpiredTokenError < StandardError; end
 
         def self.oauth_url(state, options = {})
@@ -25,7 +24,7 @@ module CartoDB
           query["scope"] = "#{scope}" unless scope.nil?
           query["folder_id"] = "#{folder_id}" unless folder_id.nil?
 
-          template.expand({"host" => "#{host}", "query" => query})
+          template.expand("host" => "#{host}", "query" => query)
         end
 
         def self.get_tokens(code, options = {})
@@ -83,9 +82,9 @@ module CartoDB
 
         def self.post(uri, options = {})
           http_client = Carto::Http::Client.get('box',
-            connecttimeout: 60,
-            timeout: 600
-            )
+                                                connecttimeout: 60,
+                                                timeout: 600
+                                               )
           http_client.post(uri.to_s, options)
         end
 
@@ -100,11 +99,9 @@ module CartoDB
           response = http_client.get(uri.to_s, headers: header, followlocation: follow_redirect, params: query)
           response
         end
-
       end
 
       module BoxAPI
-
         class Client
 
           API_URI = "https://api.box.com/2.0"
@@ -170,13 +167,13 @@ module CartoDB
               # Boxr didn't have 200
               body_json, response = get(uri, query: query, success_codes: [302,202,200], follow_redirect: false, process_response: false)
 
-              if(response.response_code == 302)
+              if response.response_code == 302
                 location = response.header['Location'][0]
 
                 if follow_redirect
                   file, response = get(location, process_response: false)
                 else
-                  return location #simply return the url
+                  return location # simply return the url
                 end
               elsif response.response_code == 202
                 retry_after_seconds = response.header['Retry-After'][0]
@@ -221,9 +218,9 @@ module CartoDB
 
           def build_fields_query(fields, all_fields_query)
             if fields == :all
-              {:fields => all_fields_query}
+              { fields: all_fields_query }
             elsif fields.is_a?(Array) && fields.length > 0
-              {:fields => fields.join(',')}
+              { fields: fields.join(',') }
             else
               {}
             end
@@ -268,7 +265,6 @@ module CartoDB
           end
 
         end
-
       end
 
       class Box < BaseOAuth
@@ -289,7 +285,7 @@ module CartoDB
         def initialize(config, user)
           super(config, user, %w{ application_name client_id client_secret box_host }, DATASOURCE_NAME)
 
-          raise UninitializedError.new('missing user instance', DATASOURCE_NAME)            if user.nil?
+          raise UninitializedError.new('missing user instance', DATASOURCE_NAME) if user.nil?
 
           @access_token = nil
           @refresh_token = nil
@@ -355,7 +351,7 @@ module CartoDB
           set_tokens(get_fresh_tokens(token))
         rescue CartoDB::Datasources::Url::BoxAPI::ExpiredTokenError => e
           CartoDB.notify_exception(e, self: inspect, token: token)
-          set_tokens({ 'access_token' => nil, 'refresh_token' => nil})
+          set_tokens('access_token' => nil, 'refresh_token' => nil)
         end
 
         # Retrieve (refresh) token
@@ -389,9 +385,7 @@ module CartoDB
           result = result.map { |i| format_item_data(i) }.sort { |x, y| y[:updated_at] <=> x[:updated_at] }
 
           unless @formats.nil? || @formats.empty?
-            result = result.select { |item|
-              item[:filename] =~ /.*(#{@formats.join(')|(')})$/i
-            }
+            result = result.select { |item| item[:filename] =~ /.*(#{@formats.join(')|(')})$/i }
           end
 
           result
@@ -416,8 +410,7 @@ module CartoDB
           result = client.file_from_id(id)
           raise NotFoundDownloadError.new("Retrieving file #{id} metadata: #{result.inspect}, should stop syncing", DATASOURCE_NAME) if result.nil?
           raise DataDownloadError.new("Retrieving file #{id} metadata: #{result.inspect}", DATASOURCE_NAME) if result['item_status'] != 'active'
-          item_data = format_item_data(result)
-          return item_data
+          format_item_data(result)
         end
 
         # Retrieves current filters
@@ -527,9 +520,9 @@ module CartoDB
           url = get_auth_url
 
           http_client = Carto::Http::Client.get('box',
-            connecttimeout: 60,
-            timeout: 600
-            )
+                                                connecttimeout: 60,
+                                                timeout: 600
+                                               )
           response = http_client.get(url)
           code = response[:body][:code]
           code

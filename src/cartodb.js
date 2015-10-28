@@ -166,7 +166,8 @@
         'windshaft/private_dashboard_config.js',
         'windshaft/filters/collection.js',
         'windshaft/filters/base.js',
-        'windshaft/filters/category.js'
+        'windshaft/filters/category.js',
+        'windshaft/filters/range.js'
     ];
 
     cdb.init = function(ready) {

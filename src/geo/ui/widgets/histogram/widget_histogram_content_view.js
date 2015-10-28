@@ -143,7 +143,7 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
   _setupScales: function() {
     var data = this.model.get('data');
     this.xScale = d3.scale.linear().domain([0, 100]).range([0, this.chartWidth]);
-    this.yScale = d3.scale.linear().domain([0, d3.max(data, function(d) { return d.isEmpty() ? 0 : d.get('freq'); } )]).range([this.chartHeight, 0]);
+    this.yScale = d3.scale.linear().domain([0, d3.max(data, function(d) { return _.isEmpty(d) ? 0 : d.freq; } )]).range([this.chartHeight, 0]);
     this.zScale = d3.scale.ordinal().domain(d3.range(data.length)).rangeRoundBands([0, this.chartWidth]);
   },
 
@@ -244,7 +244,7 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
       return;
     }
 
-    var freq = data[barIndex].get('freq');
+    var freq = data[barIndex].freq;
 
     var format = d3.format('0,000');
     var bar = this.chart.select('.Bar:nth-child(' + (barIndex + 1) + ')');
@@ -472,7 +472,7 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
 
       if (v === 0 || i === 0 || i === (data.length - 1)) {
         var sum = _.reduce(data.slice(0, i + 1), function(memo, d) {
-          return d.isEmpty() ? memo : d.get('freq') + memo;
+          return _.isEmpty(d) ? memo : d.freq + memo;
         }, 0);
         return format(sum);
       } else {
@@ -493,6 +493,9 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
   },
 
   loadData: function(data) {
+    if (data && data.toJSON) {
+      data = data.toJSON();
+    }
     this.model.set({ a: null, b: null }, { silent: true });
     this.model.set('data', data);
     this._onChangeData();
@@ -532,7 +535,7 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     .enter()
     .append('rect')
     .attr('class', 'Bar')
-    .attr('data', function(d) { return d.isEmpty() ? 0 :  d.get('freq'); })
+    .attr('data', function(d) { return _.isEmpty(d) ? 0 :  d.freq; })
     .attr('transform', function(d, i) {
       return 'translate(' + (i * self.barWidth) + ', 0 )';
     })
@@ -547,10 +550,10 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
       return Math.random() * (100 + i * 10);
     })
     .attr('height', function(d) {
-      return d.isEmpty() ? 0 : self.chartHeight - self.yScale(d.get('freq'));
+      return _.isEmpty(d) ? 0 : self.chartHeight - self.yScale(d.freq);
     })
     .attr('y', function(d) {
-      return d.isEmpty() ? self.chartHeight : self.yScale(d.get('freq'));
+      return _.isEmpty(d) ? self.chartHeight : self.yScale(d.freq);
     });
   },
 
@@ -610,16 +613,9 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
 
   _PLACEHOLDER: ' ' +
     '<ul class="Widget-chart Widget-chart--fake">' +
-      '<li class="Widget-chartItem Widget-chartItem--small Widget-chartItem--fake"></li>' +
-      '<li class="Widget-chartItem Widget-chartItem--fake"></li>' +
-      '<li class="Widget-chartItem Widget-chartItem--fake"></li>' +
-      '<li class="Widget-chartItem Widget-chartItem--small Widget-chartItem--fake"></li>' +
-      '<li class="Widget-chartItem Widget-chartItem--fake"></li>' +
-      '<li class="Widget-chartItem Widget-chartItem--small Widget-chartItem--fake"></li>' +
-      '<li class="Widget-chartItem Widget-chartItem--fake"></li>' +
-      '<li class="Widget-chartItem Widget-chartItem--big Widget-chartItem--fake"></li>' +
-      '<li class="Widget-chartItem Widget-chartItem--fake"></li>' +
-      '<li class="Widget-chartItem Widget-chartItem--small Widget-chartItem--fake"></li>' +
+      '<% for (var i = 0; i < 18; i++) { %>' +
+      '<li class="Widget-chartItem Widget-chartItem--<%- _.sample(["small", "medium", "big"], 1)[0] %> Widget-chartItem--fake"></li>' +
+      '<% } %>' +
     '</ul>',
 
   _initViews: function() {
@@ -628,6 +624,22 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
     this._generateCanvas();
     this._renderMainChart();
     this._renderMiniChart();
+  },
+
+  _initBinds: function() {
+    this.dataModel.bind('change:data', this._onFirstLoad, this);
+    this.add_related_model(this.dataModel);
+  },
+
+  _onFirstLoad: function() {
+    this.render();
+    this.dataModel.unbind('change:data', this._onFirstLoad, this);
+    this.dataModel.bind('change:data', this._onChangeData, this);
+  },
+
+  _onChangeData: function() {
+    var data = this._getData(true);
+    this.chart.loadData(data);
   },
 
   render: function() {
@@ -641,6 +653,13 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
     var template = _.template(this._TEMPLATE);
     var data = this.dataModel.getData();
     var isDataEmpty = _.isEmpty(data) || _.size(data) === 0;
+
+    this.originalDataModel = _.clone(this.dataModel.getData());
+
+    window.viewModel = this.viewModel; // TODO: remove
+    window.dataModel = this.dataModel; // TODO: remove
+    window.originalDataModel = this.originalDataModel; // TODO: remove
+    window.filter = this.filter; // TODO: remove
 
     this.$el.html(
       template({
@@ -673,14 +692,15 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
       handles: true,
       width: this.canvasWidth,
       height: this.defaults.chartHeight,
-      data: this.dataModel.getData().models
+      data: this._getData()
     }));
 
     this.chart.bind('range_updated', this._onRangeUpdated, this);
     this.chart.bind('hover', this._onValueHover, this);
     this.chart.render().show();
 
-    window.chart = this.chart;
+    window.chart = this.chart; // TODO: remove
+
     this._updateStats();
   },
 
@@ -693,12 +713,12 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
       margin: { top: 0, right: 0, bottom: 0, left: 4 },
       y: 0,
       height: 20,
-      data: this.dataModel.getData().models
+      data: this._getData()
     }));
 
     this.miniChart.bind('on_brush_end', this._onMiniRangeUpdated, this);
     this.miniChart.render().hide();
-    window.miniChart = this.miniChart;
+    window.miniChart = this.miniChart; // TODO: remove
   },
 
   _setupBindings: function() {
@@ -729,13 +749,19 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
   },
 
   _onMiniRangeUpdated: function(a, b) {
+
     this.viewModel.set({ a: a, b: b });
-    var data = this._getData();
+    var data = this._getOriginalData();
+
+    var min = data[a].min;
+    var max = data[b - 1].max;
+
+    this.filter.setRange({ min: min, max: max });
 
     var self = this;
 
     var refreshData = _.debounce(function() {
-      self.chart.refreshData(data, a, b);
+      //self.chart.refreshData(data, a, b);
       self._updateStats();
     }, 100);
 
@@ -800,8 +826,12 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
     });
   },
 
+  _getOriginalData: function() {
+    return this.originalDataModel.toJSON();
+  },
+
   _getData: function(full) {
-    var data = this.dataModel.getData().models;
+    var data = this.dataModel.getData().toJSON();
 
     if (full || (!this.viewModel.get('a') && !this.viewModel.get('b'))) {
       return data;
@@ -813,12 +843,12 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
   _updateStats: function() {
     var data = this._getData();
     var sum = _.reduce(data, function(memo, d) {
-      return d.isEmpty() ? memo : d.get('freq') + memo;
+      return _.isEmpty(d) ? memo : d.freq + memo;
     }, 0);
 
-    var max = d3.max(data, function(d) { return d.isEmpty() ? 0 : d.get('freq'); });
-    var avg = Math.round(d3.mean(data, function(d) { return d.isEmpty() ? 0 : d.get('freq'); }));
-    var min = d3.min(data, function(d) { return d.isEmpty() ? 0 : d.get('freq'); });
+    var max = d3.max(data, function(d) { return _.isEmpty(d) ? 0 : d.freq; });
+    var avg = Math.round(d3.mean(data, function(d) { return _.isEmpty(d) ? 0 : d.freq; }));
+    var min = d3.min(data, function(d) { return _.isEmpty(d) ? 0 : d.freq; });
 
     this.viewModel.set({ total: sum, min: min, max: max, avg: avg });
   },
@@ -826,15 +856,28 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
   _zoom: function() {
     this._expand();
     this.viewModel.set({ zoom_enabled: false });
-    this.chart.loadData(this._getData());
-    this.miniChart.selectRange(this.viewModel.get('a'), this.viewModel.get('b'));
+
+    var data = this._getData();
+    var a = this.viewModel.get('a');
+    var b = this.viewModel.get('b');
+
+    this.miniChart.selectRange(a, b);
+
+    var min = data[0].min;
+    var max = data[data.length - 1].max;
+
+    this.filter.setRange({ min: min, max: max });
+
     this.miniChart.show();
   },
 
   _reset: function() {
     this._contract();
     this.viewModel.set({ zoom_enabled: true, a: null, b: null });
-    this.chart.reset(this._getData());
+    this.chart.model.set({ a: null, b: null })
+
+    this.filter.unsetRange();
+
     this.$(".js-filter").animate({ opacity: 0 }, 0);
     this.miniChart.hide();
   },

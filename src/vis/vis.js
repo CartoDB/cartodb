@@ -490,7 +490,8 @@ var Vis = cdb.core.View.extend({
       },
       "histogram": {
         model: 'HistogramModel',
-        view: 'Histogram.View'
+        view: 'Histogram.View',
+        filter: 'RangeFilter'
       },
       "aggregation": {
         model: 'CategoryModel',

@@ -156,6 +156,7 @@ WORKING_SPECS_9 = \
   services/datasources/spec/integration/ \
   services/datasources/spec/unit/arcgis_spec.rb \
 	services/datasources/spec/unit/dropbox_spec.rb \
+	services/datasources/spec/unit/box_spec.rb \
 	services/datasources/spec/unit/gdrive_spec.rb \
   services/importer/spec/regression/query_batcher_spec.rb \
   services/importer/spec/regression/query_batcher_spec.rb \

@@ -1736,6 +1736,56 @@ describe Carto::Api::VisualizationsController do
 
   end
 
+  describe 'filter canonical viz by country code' do
+    include_context 'visualization creation helpers'
+
+    before(:each) do
+      stub_named_maps_calls
+      host! "#{$user_1.username}.localhost.lan"
+      @headers = http_json_headers
+      @vis_1 = api_visualization_creation(
+        $user_1,
+        @headers,
+        privacy: Visualization::Member::PRIVACY_PUBLIC,
+        type: Visualization::Member::TYPE_CANONICAL,
+        country_codes: ['US']
+      )
+      @vis_2 = api_visualization_creation(
+        $user_1,
+        @headers,
+        privacy: Visualization::Member::PRIVACY_PUBLIC,
+        type: Visualization::Member::TYPE_CANONICAL,
+        country_codes: ['ES', 'FR', 'PT']
+      )
+    end
+
+    after(:each) do
+      delete_user_data($user_1)
+    end
+
+    it 'should return one visualization for country filter' do
+      get api_v1_visualizations_index_url(api_key: $user_1.api_key, type: 'table', country_code: 'ES'), {}, @headers
+      last_response.status.should eq 200
+      body = JSON.parse(last_response.body)
+      body["visualizations"].length.should eq 1
+      body["visualizations"][0]["id"].should eq @vis_2.id
+    end
+
+    it 'should return zero visualization for country filter' do
+      get api_v1_visualizations_index_url(api_key: $user_1.api_key, type: 'table', country_code: 'GA'), {}, @headers
+      last_response.status.should eq 200
+      body = JSON.parse(last_response.body)
+      body["visualizations"].length.should eq 0
+    end
+
+    it 'should return all the visualizations if empty country filter' do
+      get api_v1_visualizations_index_url(api_key: $user_1.api_key, type: 'table', country_code: ''), {}, @headers
+      last_response.status.should eq 200
+      body = JSON.parse(last_response.body)
+      body["visualizations"].length.should eq 2
+    end
+  end
+
   # See #5591
   describe 'error with wrong visualization url' do
     def url(user_domain, visualization_id, api_key, host = @host)
@@ -1992,8 +2042,10 @@ describe Carto::Api::VisualizationsController do
     create_table_with_options($user_1, @headers, options)
   end
 
-  def api_visualization_creation(user, headers, additional_fields = {})
-    post api_v1_visualizations_create_url(user_domain: user.username, api_key: user.api_key), factory(user).merge(additional_fields).to_json, headers
+  def api_visualization_creation(user, headers = {}, additional_fields = {})
+    user_data = factory(user).merge(additional_fields).to_json
+    url = api_v1_visualizations_create_url(user_domain: user.username, api_key: user.api_key)
+    post url, user_data, headers
     id = JSON.parse(last_response.body).fetch('id')
     id.should_not be_nil
     CartoDB::Visualization::Member.new(id: id).fetch

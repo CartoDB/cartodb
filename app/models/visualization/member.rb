@@ -82,6 +82,7 @@ module CartoDB
       attribute :prev_id,             String, default: nil
       attribute :next_id,             String, default: nil
       attribute :bbox,                String, default: nil
+      attribute :country_codes,       Array[String], default: nil
       # Don't use directly, use instead getter/setter "transition_options"
       attribute :slide_transition_options,  String, default: DEFAULT_OPTIONS_VALUE
       attribute :active_child,        String, default: nil

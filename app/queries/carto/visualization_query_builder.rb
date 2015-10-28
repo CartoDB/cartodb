@@ -180,6 +180,11 @@ class Carto::VisualizationQueryBuilder
     self
   end
 
+  def with_country_code(country_code)
+    @country_code = country_code
+    self
+  end
+
   def build
     query = Carto::Visualization.scoped
 
@@ -282,6 +287,10 @@ class Carto::VisualizationQueryBuilder
 
     if @only_with_display_name
       query = query.where("display_name is not null")
+    end
+
+    if @country_code
+      query = query.where("ARRAY[?]::text[] <@ visualizations.country_codes", @country_code.upcase)
     end
 
     @include_associations.each { |association|

@@ -61,7 +61,7 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
 
   reset: function(data) {
     this.loadData(data);
-    this.model.set({ a: 0, b: this.model.get('data').length });
+    this.model.set({ a: null, b: null });
   },
 
   _removeLines: function() {
@@ -348,6 +348,14 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
           return;
         }
 
+        if (a === b) {
+          if (hiBarIndex >= data.length) {
+            a = (loBarIndex - 1) * (100 / data.length);
+          } else {
+            b = (hiBarIndex + 1) * (100 / data.length);
+          }
+        }
+
         self._selectRange(a, b);
         self.model.set({ a: loBarIndex, b: hiBarIndex });
         self._adjustBrushHandles();
@@ -487,7 +495,7 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
   },
 
   loadData: function(data) {
-    this.model.set({ a: 0, b: 0 }, { silent: true });
+    this.model.set({ a: null, b: null }, { silent: true });
     this.model.set('data', data);
     this._onChangeData();
   },
@@ -796,9 +804,11 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
 
   _getData: function(full) {
     var data = this.dataModel.getData().models;
-    if (full) {
+
+    if (full || (!this.viewModel.get('a') && !this.viewModel.get('b'))) {
       return data;
     }
+
     return data.slice(this.viewModel.get('a'), this.viewModel.get('b'));
   },
 
@@ -825,7 +835,7 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
 
   _reset: function() {
     this._contract();
-    this.viewModel.set({ zoom_enabled: true, a: 0, b: 100 });
+    this.viewModel.set({ zoom_enabled: true, a: null, b: null });
     this.chart.reset(this._getData());
     this.$(".js-filter").animate({ opacity: 0 }, 0);
     this.miniChart.hide();

@@ -20,6 +20,17 @@
   height: 4px;
   border-radius: 4px;
 }
+.is-disabled .Widget-progressState {
+  @include css3-prefix(animation, state-progress 0 ease-out);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  max-width: 100%;
+  height: 4px;
+  border-radius: 4px;
+}
+
 .Widget-progressState--positive {
   left: 0;
   border-top-right-radius: 0;

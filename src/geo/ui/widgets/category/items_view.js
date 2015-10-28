@@ -30,7 +30,7 @@ cdb.geo.ui.Widget.Category.ItemsView = cdb.geo.ui.Widget.View.extend({
       mdl.set({
         'selected': true,
         'name': mdl.get([this.dataModel.get('options').column]),
-        'maxCount': this.dataModel.getMaxCount()
+        'totalCount': this.dataModel.getTotalCount()
       })
       this._addItem(mdl, groupItem);
     }, this);

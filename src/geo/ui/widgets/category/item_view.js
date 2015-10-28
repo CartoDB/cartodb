@@ -12,7 +12,7 @@ cdb.geo.ui.Widget.Category.ItemView = cdb.core.View.extend({
       '<button type="button" class="Widget-listItemInner Widget-listButton js-button <%- isDisabled ? \'is-disabled\' : \'\' %>">'+
         '<div class="Widget-contentSpaced">'+
           '<p class="Widget-textSmall Widget-textSmall--bold Widget-textSmall--upper" title="<%- name %>"><%- name %></p>'+
-          '<p class="Widget-textSmaller" title="<%- value %>">~<%- value %></p>'+
+          '<p class="Widget-textSmaller" title="<%- value %>"><%- value %> (~<%- percentage %>%)</p>'+
         '</div>'+
         '<div class="Widget-progressBar">'+
           '<div class="Widget-progressState" style="width: <%- percentage %>%"></div>'+
@@ -33,7 +33,7 @@ cdb.geo.ui.Widget.Category.ItemView = cdb.core.View.extend({
       template({
         name: this.model.get('name'),
         value: Math.ceil(value),
-        percentage: (value / this.model.get('maxCount')) * 100,
+        percentage: Math.ceil((value / this.model.get('totalCount')) * 100),
         isDisabled: !this.model.get('selected') ? 'is-disabled' : ''
       })
     );

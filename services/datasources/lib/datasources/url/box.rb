@@ -21,7 +21,7 @@ module CartoDB
 
           template = Addressable::Template.new("https://{host}/api/oauth2/authorize{?query*}")
 
-          query = {"response_type" => "#{response_type}", "state" => "#{state}", "client_id" => "#{client_id}"}
+          query = { "response_type" => "#{response_type}", "state" => "#{state}", "client_id" => "#{client_id}" }
           query["scope"] = "#{scope}" unless scope.nil?
           query["folder_id"] = "#{folder_id}" unless folder_id.nil?
 
@@ -61,7 +61,7 @@ module CartoDB
 
           res = post(uri, body: body)
 
-          if(res.response_code == 200)
+          if res.response_code == 200
             json_body ? JSON.parse(res.response_body) : res.response_body
           else
             handle_error_response(res)
@@ -77,7 +77,7 @@ module CartoDB
             raise "Box Error status: #{res.response_code}, body: #{res.response_body}, headers: #{res.response_headers}"
           end
         rescue => e
-          CartoDB.notify_exception(e, self: self.inspect, response: res.inspect)
+          CartoDB.notify_exception(e, self: inspect, response: res.inspect)
           raise e
         end
 
@@ -134,7 +134,7 @@ module CartoDB
             limit = options.fetch(:limit, 30)
             offset = options.fetch(:offset, 0)
 
-            query = {query: query}
+            query = { query: query }
             query[:scope] = scope unless scope.nil?
             query[:file_extensions] = file_extensions unless file_extensions.nil?
             query[:created_at_range] = created_at_range unless created_at_range.nil?
@@ -173,15 +173,15 @@ module CartoDB
               if(response.response_code == 302)
                 location = response.header['Location'][0]
 
-                if(follow_redirect)
+                if follow_redirect
                   file, response = get(location, process_response: false)
                 else
                   return location #simply return the url
                 end
-              elsif(response.response_code==202)
+              elsif response.response_code == 202
                 retry_after_seconds = response.header['Retry-After'][0]
                 sleep retry_after_seconds.to_i
-              elsif(response.response_code == 200)
+              elsif response.response_code == 200
                 file = response.response_body
               end
             end until file
@@ -189,12 +189,12 @@ module CartoDB
             file
           end
 
-          FOLDER_AND_FILE_FIELDS = [:type,:id,:sequence_id,:etag,:name,:created_at,:modified_at,:description,
-                              :size,:path_collection,:created_by,:modified_by,:trashed_at,:purged_at,
-                              :content_created_at,:content_modified_at,:owned_by,:shared_link,:folder_upload_email,
-                              :parent,:item_status,:item_collection,:sync_state,:has_collaborations,:permissions,:tags,
-                              :sha1,:shared_link,:version_number,:comment_count,:lock,:extension,:is_package,
-                              :expiring_embed_link, :can_non_owners_invite]
+          FOLDER_AND_FILE_FIELDS = [:type, :id, :sequence_id, :etag, :name, :created_at, :modified_at, :description,
+                              :size, :path_collection, :created_by, :modified_by, :trashed_at, :purged_at,
+                              :content_created_at, :content_modified_at, :owned_by, :shared_link, :folder_upload_email,
+                              :parent, :item_status, :item_collection, :sync_state, :has_collaborations, :permissions, :tags,
+                              :sha1, :shared_link, :version_number, :comment_count, :lock, :extension, :is_package,
+                              :expiring_embed_link,  :can_non_owners_invite]
           FOLDER_AND_FILE_FIELDS_QUERY = FOLDER_AND_FILE_FIELDS.join(',')
 
           def file_from_id(file_id, fields = [])
@@ -264,7 +264,7 @@ module CartoDB
           end
 
           def standard_headers
-            {"Authorization" => "Bearer #{@access_token}"}
+            { "Authorization" => "Bearer #{@access_token}" }
           end
 
         end
@@ -354,7 +354,7 @@ module CartoDB
         def token=(token)
           set_tokens(get_fresh_tokens(token))
         rescue CartoDB::Datasources::Url::BoxAPI::ExpiredTokenError => e
-          CartoDB.notify_exception(e, self: self.inspect, token: token)
+          CartoDB.notify_exception(e, self: inspect, token: token)
           set_tokens({ 'access_token' => nil, 'refresh_token' => nil})
         end
 
@@ -369,7 +369,7 @@ module CartoDB
         # @return [ { :id, :title, :url, :service } ]
         # @throws TokenExpiredOrInvalidError
         # @throws DataDownloadError
-        def get_resources_list(filter=[])
+        def get_resources_list(filter = [])
           self.filter = filter
 
           # Box doesn't have a way to "retrieve everything" but it supports whitespaces for multiple search terms
@@ -386,7 +386,7 @@ module CartoDB
                  limit: 200,
                  offset: 0)
 
-          result = result.map{ |i| format_item_data(i) }.sort {|x,y| y[:updated_at] <=> x[:updated_at] }
+          result = result.map { |i| format_item_data(i) }.sort { |x, y| y[:updated_at] <=> x[:updated_at] }
 
           unless @formats.nil? || @formats.empty?
             result = result.select { |item|
@@ -428,7 +428,7 @@ module CartoDB
 
         # Sets current filters
         # @param filter_data {}
-        def filter=(filter_data=[])
+        def filter=(filter_data = [])
           @formats = filter_data
         end
 
@@ -461,10 +461,10 @@ module CartoDB
           !result.nil?
         rescue => e
           if e.message =~ /invalid_token/
-            CartoDB.notify_debug('Box invalid_token', self: self.inspect)
+            CartoDB.notify_debug('Box invalid_token', self: inspect)
             false
           else
-            CartoDB.notify_exception(e, self: self.inspect)
+            CartoDB.notify_exception(e, self: inspect)
             raise e
           end
         end

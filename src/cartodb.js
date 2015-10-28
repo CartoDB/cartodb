@@ -68,6 +68,7 @@
         'core/view.js',
         'core/loader.js',
         'core/util.js',
+        'core/format.js',
 
         'geo/geocoder.js',
         'geo/geometry.js',

@@ -41,7 +41,7 @@ cdb.geo.ui.Widget.List.Content = cdb.geo.ui.Widget.Content.extend({
     this.$el.html(
       template({
         title: this.viewModel.get('title'),
-        itemsCount: !isDataEmpty ? data.length : '-'
+        itemsCount: !isDataEmpty ? cdb.core.format.formatValue(data.length) : '-'
       })
     );
 

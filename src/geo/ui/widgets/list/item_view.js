@@ -22,7 +22,7 @@ cdb.geo.ui.Widget.List.ItemView = cdb.core.View.extend({
               '<dl class="Widget-inlineList">'+
               '<% for (var i = 1, l = itemsCount; i < l; i++) { %>'+
                 '<div class="Widget-inlineListItem Widget-textSmaller Widget-textSmaller--noEllip">'+
-                  '<dd class="Widget-textSmaller--bold Widget-textSmaller--dark" title="<%- items[i][1] %>"><%- items[i][1] %></dd>'+
+                  '<dd class="Widget-textSmaller--bold Widget-textSmaller--dark u-rSpace" title="<%- items[i][1] %>"><%- items[i][1] %></dd>'+
                   '<dt title="<%- items[i][0] %>"><%- items[i][0] %></dt>'+
                 '</div>'+
               '<% } %>'+
@@ -70,18 +70,23 @@ cdb.geo.ui.Widget.List.ItemView = cdb.core.View.extend({
   // Replace titles if there are alternatives
   // Convert data object to array items
   _sanitizeData: function(data) {
+    var hasInteractivity = this._hasInteractivity(data);
     var data = _.omit(data, function(value, key, object) {
       return key === 'cartodb_id';
     });
 
+    var columnTitles = this.viewModel.get('columns_title');
+    if (hasInteractivity && !_.isEmpty(columnTitles)) {
+      columnTitles = _.rest(columnTitles, 1);
+    }
+
     // Convert to pair items and check if there is a column title
     var arr = [];
     var i = 0;
-    var columnTitles = this.viewModel.get('columns_title');
 
     _.each(data, function(value, key) {
       var title = columnTitles && columnTitles[i] || key;
-      arr.push([ title, value ]);
+      arr.push([ title, cdb.core.format.formatValue(value) ]);
       ++i;
     });
 

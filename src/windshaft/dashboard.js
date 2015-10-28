@@ -3,6 +3,7 @@ cdb.windshaft.Dashboard = function(options) {
   this.layerGroup = options.layerGroup;
   // TODO: Pass widgets in the options
   this.widgets = this.getWidgets();
+  this.filters = new cdb.windshaft.filters.Collection(options.filters);
   this.client = options.client;
   this.statTag = options.statTag;
   this.configGenerator = options.configGenerator;
@@ -11,7 +12,7 @@ cdb.windshaft.Dashboard = function(options) {
 
   // Bindings
   this.layers.bind('change', this.createInstance, this);
-  // this.widgets.bind('change', this.createInstance, this);
+  this.filters.bind('change', this.createInstance, this);
 
   // When the instance has changed, we need to update some models (eg: widgets) in this class
   // with the information that the instance contains.
@@ -37,7 +38,8 @@ cdb.windshaft.Dashboard = function(options) {
 cdb.windshaft.Dashboard.prototype.createInstance = function() {
   var dashboardConfig = this.configGenerator.generate(this);
   console.log(dashboardConfig);
-  var instance = this.client.instantiateMap(dashboardConfig);
+
+  var instance = this.client.instantiateMap(dashboardConfig, this.filters.toJSON());
   instance.bind('change:layergroupid', function() {
     this.instance.set(instance.toJSON());
   }.bind(this));

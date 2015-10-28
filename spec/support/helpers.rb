@@ -30,11 +30,11 @@ module HelperMethods
 
     require 'webrick'
     server = WEBrick::HTTPServer.new(
-      :AccessLog       => [],
-      :Logger          => WEBrick::Log::new("/dev/null", 7), #comment this line if weird things happen
-      :Port            => port,
-      :DocumentRoot    => File.dirname(file_path),
-      :RequestCallback => Proc.new() { |req, res|
+      AccessLog: [],
+      Logger: WEBrick::Log::new("/dev/null", 7), #comment this line if weird things happen
+      Port: port,
+      DocumentRoot: File.dirname(file_path),
+      RequestCallback: Proc.new() { |req, res|
         options[:headers].each { |k, v| res[k] = v } if options[:headers].present?
         if options[:headers].present? && options[:headers]['content-type'].present?
           res.content_type = options[:headers]['content-type']

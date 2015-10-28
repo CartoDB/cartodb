@@ -52,6 +52,7 @@ var bundles = {
   },
   'core-specs': {
     src: [
+      'test/lib/fail-tests-if-have-errors-in-src.js',
       'test/spec/src-browserify/core.spec.js',
       'test/spec/src-browserify/api/tiles.spec.js',
     ],
@@ -67,6 +68,7 @@ var bundles = {
   },
   'standard-specs': {
     src: [
+      'test/lib/fail-tests-if-have-errors-in-src.js',
       'test/spec/src-browserify/standard.spec.js',
     ],
     dest: '<%= config.tmp %>/standard-specs.js'

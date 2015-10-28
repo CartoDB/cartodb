@@ -58,7 +58,6 @@
   @include flex-wrap(nowrap);
   @include transition(margin-left, 500ms);
   flex-direction: row;
-  height: 132px;
   margin-left: 0;
   overflow: hidden;
 }
@@ -66,7 +65,6 @@
   @include flex-grow(1);
   min-width: $desktopLayout;
   max-width: $desktopLayout;
-  min-height: 132px;
 }
 .Widget-listItem {
   display: block;
@@ -164,7 +162,6 @@
   .Widget-listGroup {
     min-width: $mobileLayout;
     max-width: $mobileLayout;
-    min-height: 232px;
   }
   .Widget-inlineListItem {
     width: 47%;

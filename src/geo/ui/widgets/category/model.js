@@ -15,10 +15,10 @@ cdb.geo.ui.Widget.CategoryModel = cdb.geo.ui.Widget.Model.extend({
     return this._data;
   },
 
-  getMaxCount: function() {
-    return this._data.max(function(datum) {
-      return datum.get('count');
-    }).get('count');
+  getTotalCount: function() {
+    return this._data.reduce(function(memo, datum) {
+      return memo + datum.get('count');
+    }, 0);
   },
 
   getSize: function() {

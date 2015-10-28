@@ -370,6 +370,8 @@ module CartoDB
         # @throws TokenExpiredOrInvalidError
         # @throws DataDownloadError
         def get_resources_list(filter=[])
+          self.filter = filter
+
           # Box doesn't have a way to "retrieve everything" but it supports whitespaces for multiple search terms
           result = client.search(SUPPORTED_EXTENSIONS.join(' '),
                  scope: nil,
@@ -384,7 +386,15 @@ module CartoDB
                  limit: 200,
                  offset: 0)
 
-          result.map{ |i| format_item_data(i) }.sort {|x,y| y[:updated_at] <=> x[:updated_at] }
+          result = result.map{ |i| format_item_data(i) }.sort {|x,y| y[:updated_at] <=> x[:updated_at] }
+
+          unless @formats.nil? || @formats.empty?
+            result = result.select { |item|
+              item[:filename] =~ /.*(#{@formats.join(')|(')})$/i
+            }
+          end
+
+          result
         end
 
         # Retrieves a resource and returns its contents

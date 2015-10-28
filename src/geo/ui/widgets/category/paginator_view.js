@@ -11,7 +11,7 @@ cdb.geo.ui.Widget.Category.PaginatorView = cdb.core.View.extend({
   className: 'Widget-nav Widget-contentSpaced',
 
   _TEMPLATE: ' ' +
-      '<p class="Widget-textSmaller Widget-textSmaller--bold Widget-textSmall--upper">? categories more</p>' +
+      '<p class="Widget-textSmaller Widget-textSmaller--bold Widget-textSmall--upper"><%- categoriesCount %> categor<%- categoriesCount !== 1 ? "ies" : "y" %></p>' +
       '<div class="Widget-navDots js-dots">'+
         '<% for (var i = 0, l = pages; i < l; i++) { %>' +
           '<button class="Widget-dot Widget-dot--navigation js-page <% if (currentPage === i) { %>is-selected<% } %>" data-page="<%- i %>"></button>' +
@@ -23,6 +23,7 @@ cdb.geo.ui.Widget.Category.PaginatorView = cdb.core.View.extend({
   },
 
   initialize: function() {
+    this.dataModel = this.options.dataModel;
     this._$target = this.options.$target;
     this.model = new cdb.core.Model({
       pages: this.options.pages,
@@ -35,9 +36,11 @@ cdb.geo.ui.Widget.Category.PaginatorView = cdb.core.View.extend({
   render: function() {
     this.clearSubViews();
     var template = _.template(this._TEMPLATE);
+    var categoriesCount = this.dataModel.getSize();
     this.$el.html(
       template({
         currentPage: this.model.get('page'),
+        categoriesCount: categoriesCount || '-',
         pages: this.model.get('pages')
       })
     );
@@ -47,8 +50,12 @@ cdb.geo.ui.Widget.Category.PaginatorView = cdb.core.View.extend({
   _initBinds: function() {
     _.bindAll(this, '_scrollToPage');
     $(window).bind('resize', this._scrollToPage);
-    this.model.bind('change:page', this.render, this);
-    this.model.bind('change:page', this._scrollToPage, this);
+    this.model.bind('change:page', function() {
+      this.render();
+      this._scrollToPage();
+    }, this);
+    this.dataModel.bind('change:data', this.render, this);
+    this.add_related_model(this.dataModel);
   },
 
   _scrollToPage: function() {

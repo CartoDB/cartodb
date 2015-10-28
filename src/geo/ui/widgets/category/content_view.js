@@ -6,7 +6,7 @@
 
 cdb.geo.ui.Widget.Category.Content = cdb.geo.ui.Widget.Content.extend({
 
-  _ITEMS_PER_PAGE: 4,
+  _ITEMS_PER_PAGE: 6,
 
   _TEMPLATE: ' ' +
     '<div class="Widget-header">'+
@@ -74,6 +74,7 @@ cdb.geo.ui.Widget.Category.Content = cdb.geo.ui.Widget.Content.extend({
       var pagination = new cdb.geo.ui.Widget.Category.PaginatorView({
         $target: list.$el,
         pages: pages,
+        dataModel: this.dataModel,
         itemsPerPage: this._ITEMS_PER_PAGE
       });
       this.$('.js-footer').append(pagination.render().el);

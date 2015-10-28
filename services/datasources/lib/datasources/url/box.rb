@@ -94,8 +94,8 @@ module CartoDB
           follow_redirect = options[:follow_redirect]
 
           http_client = Carto::Http::Client.get('box',
-            connecttimeout: 60,
-            timeout: 600)
+                                                connecttimeout: 60,
+                                                timeout: 600)
           response = http_client.get(uri.to_s, headers: header, followlocation: follow_redirect, params: query)
           response
         end
@@ -187,18 +187,21 @@ module CartoDB
           end
 
           FOLDER_AND_FILE_FIELDS = [:type, :id, :sequence_id, :etag, :name, :created_at, :modified_at, :description,
-                              :size, :path_collection, :created_by, :modified_by, :trashed_at, :purged_at,
-                              :content_created_at, :content_modified_at, :owned_by, :shared_link, :folder_upload_email,
-                              :parent, :item_status, :item_collection, :sync_state, :has_collaborations, :permissions, :tags,
-                              :sha1, :shared_link, :version_number, :comment_count, :lock, :extension, :is_package,
-                              :expiring_embed_link, :can_non_owners_invite]
+                                    :size, :path_collection, :created_by, :modified_by, :trashed_at, :purged_at,
+                                    :content_created_at, :content_modified_at, :owned_by, :shared_link,
+                                    :folder_upload_email,
+                                    :parent, :item_status, :item_collection, :sync_state, :has_collaborations,
+                                    :permissions, :tags,
+                                    :sha1, :shared_link, :version_number, :comment_count, :lock, :extension,
+                                    :is_package,
+                                    :expiring_embed_link, :can_non_owners_invite]
           FOLDER_AND_FILE_FIELDS_QUERY = FOLDER_AND_FILE_FIELDS.join(',')
 
           def file_from_id(file_id, fields = [])
             file_id = ensure_id(file_id)
             uri = "#{FILES_URI}/#{file_id}"
             query = build_fields_query(fields, FOLDER_AND_FILE_FIELDS_QUERY)
-            file, response = get(uri, query: query)
+            file, _response = get(uri, query: query)
             file
           end
 
@@ -257,7 +260,9 @@ module CartoDB
           end
 
           def check_response_status(res, success_codes)
-            raise "BoxError: status: #{res.response_code}, body: #{res.response_body}, header: #{res.response_headers}" unless success_codes.include?(res.response_code)
+            unless success_codes.include?(res.response_code)
+              raise "BoxError status: #{res.response_code}, body: #{res.response_body}, header: #{res.response_headers}"
+            end
           end
 
           def standard_headers
@@ -370,17 +375,17 @@ module CartoDB
 
           # Box doesn't have a way to "retrieve everything" but it supports whitespaces for multiple search terms
           result = client.search(SUPPORTED_EXTENSIONS.join(' '),
-                 scope: nil,
-                 file_extensions: nil,
-                 created_at_range: nil,
-                 updated_at_range: nil,
-                 size_range: nil,
-                 owner_user_ids: nil,
-                 ancestor_folder_ids: nil,
-                 content_types: nil,
-                 type: nil,
-                 limit: 200,
-                 offset: 0)
+                                 scope: nil,
+                                 file_extensions: nil,
+                                 created_at_range: nil,
+                                 updated_at_range: nil,
+                                 size_range: nil,
+                                 owner_user_ids: nil,
+                                 ancestor_folder_ids: nil,
+                                 content_types: nil,
+                                 type: nil,
+                                 limit: 200,
+                                 offset: 0)
 
           result = result.map { |i| format_item_data(i) }.sort { |x, y| y[:updated_at] <=> x[:updated_at] }
 
@@ -408,8 +413,15 @@ module CartoDB
         # @throws NotFoundDownloadError
         def get_resource_metadata(id)
           result = client.file_from_id(id)
-          raise NotFoundDownloadError.new("Retrieving file #{id} metadata: #{result.inspect}, should stop syncing", DATASOURCE_NAME) if result.nil?
-          raise DataDownloadError.new("Retrieving file #{id} metadata: #{result.inspect}", DATASOURCE_NAME) if result['item_status'] != 'active'
+
+          if result.nil?
+            raise NotFoundDownloadError.new("Retrieving file #{id} metadata: #{result.inspect}, should stop syncing", DATASOURCE_NAME)
+          end
+
+          if result['item_status'] != 'active'
+            raise DataDownloadError.new("Retrieving file #{id} metadata: #{result.inspect}", DATASOURCE_NAME)
+          end
+
           format_item_data(result)
         end
 
@@ -486,8 +498,8 @@ module CartoDB
 
         def get_client(user)
           BoxAPI::Client.new(@access_token,
-                           client_id: config['client_id'],
-                           client_secret: config['client_secret'])
+                             client_id: config['client_id'],
+                             client_secret: config['client_secret'])
         end
 
         def get_tokens(code)
@@ -502,8 +514,8 @@ module CartoDB
 
         def get_fresh_tokens(refresh_token)
           tokens = BoxAPI::refresh_tokens(refresh_token,
-                               client_id: config['client_id'],
-                               client_secret: config['client_secret'])
+                                          client_id: config['client_id'],
+                                          client_secret: config['client_secret'])
           # Box refresh tokens can only be used once
           update_user_oauth(tokens['refresh_token'])
           tokens

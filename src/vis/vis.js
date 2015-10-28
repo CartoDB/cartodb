@@ -537,9 +537,6 @@ var Vis = cdb.core.View.extend({
       }
 
       layer.widgets = widgetModels;
-
-      // TODO: Remove this
-      window.widgets = widgetModels;
     });
 
     var windshaftClient = new cdb.windshaft.Client({

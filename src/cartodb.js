@@ -165,6 +165,7 @@
         'windshaft/public_dashboard_config.js',
         'windshaft/private_dashboard_config.js',
         'windshaft/filters/collection.js',
+        'windshaft/filters/base.js',
         'windshaft/filters/category.js'
     ];
 

@@ -1,4 +1,4 @@
-cdb.windshaft.filters.CategoryFilter = cdb.core.Model.extend({
+cdb.windshaft.filters.CategoryFilter = cdb.windshaft.filters.FilterBase.extend({
 
   initialize: function() {
     this.rejectedCategories = [];

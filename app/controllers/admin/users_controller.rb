@@ -6,6 +6,19 @@ require_relative '../../../services/datasources/lib/datasources'
 class Admin::UsersController < Admin::AdminController
   include LoginHelper
 
+  SERVICE_TITLES = {
+    'gdrive' => 'Google Drive',
+    'dropbox' => 'Dropbox',
+    'box' => 'Box',
+    'mailchimp' => 'MailChimp',
+    'instagram' => 'Instagram'
+  }
+
+  SERVICE_REVOKE_URLS = {
+    'mailchimp' => 'http://admin.mailchimp.com/account/oauth2/',
+    'instagram' => 'http://instagram.com/accounts/manage_access/'
+  }
+
   ssl_required  :account, :profile, :account_update, :profile_update, :delete
 
   before_filter :login_required
@@ -134,28 +147,24 @@ class Admin::UsersController < Admin::AdminController
 
     datasources.each do |serv|
       obj ||= Hash.new
-      enabled = false
-      title = ''
-      revoke_url = ''
 
-      case serv
+      title = SERVICE_TITLES.fetch(serv, serv)
+      revoke_url = SERVICE_REVOKE_URLS.fetch(serv, nil)
+      enabled = case serv
         when 'gdrive'
-          enabled = true if Cartodb.config[:oauth]['gdrive']['client_id'].present?
-          title = 'Google Drive'
+          Cartodb.config[:oauth][serv]['client_id'].present?
+        when 'box'
+          Cartodb.config[:oauth][serv]['client_id'].present? && current_user.has_feature_flag?('box_import')
+        when 'gdrive', 'box'
+          Cartodb.config[:oauth][serv]['client_id'].present?
         when 'dropbox'
-          enabled = true if Cartodb.config[:oauth]['dropbox']['app_key'].present?
-          title = 'Dropbox'
+          Cartodb.config[:oauth]['dropbox']['app_key'].present?
         when 'mailchimp'
-          enabled = true if Cartodb.config[:oauth]['mailchimp']['app_key'].present? && current_user.has_feature_flag?('mailchimp_import')
-          title = 'MailChimp'
-          revoke_url = 'http://admin.mailchimp.com/account/oauth2/'
+          Cartodb.config[:oauth]['mailchimp']['app_key'].present? && current_user.has_feature_flag?('mailchimp_import')
         when 'instagram'
-          enabled = true if Cartodb.config[:oauth]['instagram']['app_key'].present? && current_user.has_feature_flag?('instagram_import')
-          title = 'Instagram'
-          revoke_url = 'http://instagram.com/accounts/manage_access/'
+          Cartodb.config[:oauth]['instagram']['app_key'].present? && current_user.has_feature_flag?('instagram_import')
         else
-          enabled = true
-          title = serv
+          true
       end
 
       if enabled

@@ -12,7 +12,7 @@ describe Url::GDrive do
       'application_name' => '',
       'client_id' => '',
       'client_secret' => '',
-      'callback_url' => ''
+      'callback_url' => 'http://localhost/callback'
     }
   end #get_config
 

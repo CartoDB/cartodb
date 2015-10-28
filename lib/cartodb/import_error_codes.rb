@@ -119,6 +119,11 @@ module CartoDB
       what_about: "Data download timed out. Check the source is not running slow and/or try again.",
       source: ERROR_SOURCE_USER
     },
+    1021 => {
+      title: 'Box permission revoked',
+      what_about: "CartoDB has not permission to access your files at Box. Please import file again.",
+      source: ERROR_SOURCE_USER
+    },
     1100 => {
       title: 'Download file not found',
       what_about: "Provided URL doesn't return a file (error 404). Please check that URL is still valid and that you can download the file and try again."

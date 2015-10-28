@@ -841,14 +841,18 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
   },
 
   _updateStats: function() {
-    var data = this._getData();
+    var data = this._getOriginalData();
+
     var sum = _.reduce(data, function(memo, d) {
       return _.isEmpty(d) ? memo : d.freq + memo;
     }, 0);
 
-    var max = d3.max(data, function(d) { return _.isEmpty(d) ? 0 : d.freq; });
+    var a = this.viewModel.get('a') || 0;
+    var b = this.viewModel.get('b') ?  this.viewModel.get('b') - 1: data.length - 1;
+
     var avg = Math.round(d3.mean(data, function(d) { return _.isEmpty(d) ? 0 : d.freq; }));
-    var min = d3.min(data, function(d) { return _.isEmpty(d) ? 0 : d.freq; });
+    var min = data && data.length && data[a].min;
+    var max = data && data.length && data[b].max;
 
     this.viewModel.set({ total: sum, min: min, max: max, avg: avg });
   },
@@ -874,7 +878,7 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
   _reset: function() {
     this._contract();
     this.viewModel.set({ zoom_enabled: true, a: null, b: null });
-    this.chart.model.set({ a: null, b: null })
+    this.chart.model.set({ a: null, b: null });
 
     this.filter.unsetRange();
 

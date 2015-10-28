@@ -167,6 +167,7 @@
                               "type": "list",
                               "options": {
                                 "title": "Barrios",
+                                "sync": true,
                                 "columns": [
                                   "cartodb_id",
                                   "n_distri",
@@ -234,7 +235,7 @@
                         "options": {
                           "sql": "select * from arboles",
                           "layer_name": "Árboles",
-                          "cartocss": "/** simple visualization */\n\n#arboles{\n  marker-fill-opacity: 0.9;\n  marker-line-color: #FFF;\n  marker-line-width: 1;\n  marker-line-opacity: 1;\n  marker-placement: point;\n  marker-type: ellipse;\n  marker-width: 10;\n  marker-fill: #FF6600;\n  marker-allow-overlap: true;\n}",
+                          "cartocss": "/** simple visualization */\n\n#arboles{\n  marker-fill-opacity: 0.9;\n  marker-line-color: #FFF;\n  marker-line-width: 1;\n  marker-line-opacity: 1;\n  marker-placement: point;\n  marker-type: ellipse;\n  marker-width: 10;\n  marker-fill: green;\n  marker-allow-overlap: true;\n}",
                           "cartocss_version": "2.1.1",
                           "interactivity": "cartodb_id",
                           "table_name": "\"\".",
@@ -244,9 +245,6 @@
                               "options": {
                                 "title": "Categorías de árboles",
                                 "column": "name",
-                                "columns_title": [
-                                  "Familia"
-                                ],
                                 "aggregation": "count"
                               }
                             }

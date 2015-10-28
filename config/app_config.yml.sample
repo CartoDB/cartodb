@@ -1,4 +1,8 @@
 defaults: &defaults
+  # If uncommented, most images like static map previews and twitter card image urls will use this CDN urls
+  #cdn_url:
+  #  http:             "http.cdn.host"
+  #  https:            "https.cdn.host"
   http_client_logs: true
   ogr2ogr:
     binary:           'which ogr2ogr2'

@@ -5,7 +5,7 @@ require_relative '../../../../../lib/carto/http/client'
 module CartoDB
   module Datasources
     module Url
-      # Replacement for Boxr, which requires Ruby >= 2
+      # BoxAPI module is a replacement for Boxr, which requires Ruby >= 2.
       # Most of this code has been extracted from Boxr.
       # This should be migrated when we upgrade to Ruby 2.
       module BoxAPI
@@ -25,8 +25,7 @@ module CartoDB
           query["scope"] = "#{scope}" unless scope.nil?
           query["folder_id"] = "#{folder_id}" unless folder_id.nil?
 
-          uri = template.expand({"host" => "#{host}", "query" => query})
-          uri
+          template.expand({"host" => "#{host}", "query" => query})
         end
 
         def self.get_tokens(code, options = {})
@@ -102,8 +101,6 @@ module CartoDB
           response
         end
 
-        private
-
       end
 
       module BoxAPI
@@ -151,7 +148,7 @@ module CartoDB
             query[:offset] = offset unless offset.nil?
 
             results, response = get(SEARCH_URI, query: query)
-            results.entries
+            results['entries']
           end
 
           def download_url(file, options = {})
@@ -247,8 +244,6 @@ module CartoDB
             box_api_header = options[:box_api_header]
             follow_redirect = options.fetch(follow_redirect, true)
 
-            #uri = Addressable::URI.encode(uri)
-
             headers = standard_headers
             headers['If-Match'] = if_match unless if_match.nil?
             headers['BoxApi'] = box_api_header unless box_api_header.nil?
@@ -311,7 +306,6 @@ module CartoDB
         # If will provide a url to download the resource, or requires calling get_resource()
         # @return bool
         def providers_download_url?
-          # TODO: maybe it can be replaced with download url
           false
         end
 
@@ -329,7 +323,7 @@ module CartoDB
                             client_id: config['client_id']).to_s
         end
 
-        # Validate authorization code and store token
+        # Validates authorization code, sets access and refresh tokens for current instance and stores (refresh) token
         # @param auth_code : string
         # @return string : Refresh token
         # Older implementations had a use_callback_flow parameter that became deprecated. Not implemented.
@@ -353,7 +347,7 @@ module CartoDB
           end
         end
 
-        # Store token
+        # Store (refresh) token. If it's not valid both access_token and refresh_token will be nil.
         # Triggers generation of a valid access token for the lifetime of this instance
         # @param token string
         # @throws AuthError
@@ -364,7 +358,7 @@ module CartoDB
           set_tokens({ 'access_token' => nil, 'refresh_token' => nil})
         end
 
-        # Retrieve token
+        # Retrieve (refresh) token
         # @return string | nil
         def token
           @refresh_token
@@ -390,8 +384,7 @@ module CartoDB
                  limit: 200,
                  offset: 0)
 
-          items = result[1][1]
-          items.map{ |i| format_item_data(i) }.sort {|x,y| y[:updated_at] <=> x[:updated_at] }
+          result.map{ |i| format_item_data(i) }.sort {|x,y| y[:updated_at] <=> x[:updated_at] }
         end
 
         # Retrieves a resource and returns its contents

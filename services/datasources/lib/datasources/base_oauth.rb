@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+require_relative '../../../importer/lib/importer/unp'
+
 module CartoDB
   module Datasources
     class BaseOAuth < Base

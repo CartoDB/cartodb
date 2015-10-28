@@ -289,6 +289,10 @@ cdb.geo.CartoDBGroupLayer = cdb.geo.MapLayer.extend({
     };
   },
 
+  bindDashboardInstance: function(dashboardInstance) {
+    this.dashboardInstance = dashboardInstance;
+  },
+
   fetchAttributes: function(layer, featureID, callback) {
     this.dashboardInstance.fetchAttributes(layer, featureID, callback);
   }

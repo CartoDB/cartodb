@@ -11,6 +11,7 @@ cdb.windshaft.Dashboard = function(options) {
   this.instance = new cdb.windshaft.DashboardInstance();
 
   // Bindings
+  this.layerGroup.bindDashboardInstance(this.instance);
   this.layers.bind('change', this.createInstance, this);
   this.filters.bind('change', this.createInstance, this);
 

@@ -144,7 +144,7 @@ module CartoDB
             query[:limit] = limit unless limit.nil?
             query[:offset] = offset unless offset.nil?
 
-            results, response = get(SEARCH_URI, query: query)
+            results, _response = get(SEARCH_URI, query: query)
             results['entries']
           end
 
@@ -165,7 +165,7 @@ module CartoDB
               query[:version] = version unless version.nil?
 
               # Boxr didn't have 200
-              body_json, response = get(uri, query: query, success_codes: [302,202,200], follow_redirect: false, process_response: false)
+              body_json, _response = get(uri, query: query, success_codes: [302, 202, 200], follow_redirect: false, process_response: false)
 
               if response.response_code == 302
                 location = response.header['Location'][0]
@@ -415,7 +415,8 @@ module CartoDB
           result = client.file_from_id(id)
 
           if result.nil?
-            raise NotFoundDownloadError.new("Retrieving file #{id} metadata: #{result.inspect}, should stop syncing", DATASOURCE_NAME)
+            message = "Retrieving file #{id} metadata: #{result.inspect}, should stop syncing"
+            raise NotFoundDownloadError.new(message, DATASOURCE_NAME)
           end
 
           if result['item_status'] != 'active'
@@ -451,7 +452,8 @@ module CartoDB
 
         # Stores the data import item instance to use/manipulate it
         # @param value DataImport
-        def data_import_item=(value)
+        # Not implemented
+        def data_import_item=(_value)
           nil
         end
 
@@ -481,7 +483,8 @@ module CartoDB
 
         # Sets an error reporting component
         # @param component mixed
-        def report_component=(component)
+        # Not implemented
+        def report_component=(_component)
           nil
         end
 
@@ -493,10 +496,10 @@ module CartoDB
         end
 
         def client
-          @client ||= get_client(@user)
+          @client ||= get_client
         end
 
-        def get_client(user)
+        def get_client
           BoxAPI::Client.new(@access_token,
                              client_id: config['client_id'],
                              client_secret: config['client_secret'])

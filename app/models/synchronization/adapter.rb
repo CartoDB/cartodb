@@ -183,7 +183,6 @@ module CartoDB
       # INFO: As upon import geom index names are not enforced, they might "not collide"
       # and generate one on the new import plus the one already existing, so we skip those
       def generate_index_statements(origin_schema, origin_table_name)
-        debugger
         # This code discerns gist indexes like lib/sql/CDB_CartodbfyTable.sql -> _CDB_create_the_geom_columns
         # It also removes extra `cartodb_id` indexes except the main `TABLENAME_pkey` one
         # Note that in all cases it leaves composite indexes (indatts > 1)

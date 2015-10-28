@@ -528,18 +528,6 @@ module CartoDB
           oauth.save
         end
 
-        def get_code(user)
-          url = get_auth_url
-
-          http_client = Carto::Http::Client.get('box',
-                                                connecttimeout: 60,
-                                                timeout: 600
-                                               )
-          response = http_client.get(url)
-          code = response[:body][:code]
-          code
-        end
-
         # Formats all data to comply with our desired format
         # @param item_data Hash : Single item returned from GDrive API
         # @return { :id, :title, :url, :service, :checksum, :size, :filename, :updated_at }

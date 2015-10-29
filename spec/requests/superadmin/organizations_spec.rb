@@ -96,7 +96,7 @@ feature "Superadmin's organization API" do
 
   describe "GET /superadmin/organization" do
     it "gets all organizations" do
-      @organization2 = FactoryGirl.create(:organization, name: 'wadus')
+      @organization2 = FactoryGirl.create(:organization, name: 'wadus-org')
       get_json superadmin_organizations_path, {}, superadmin_headers do |response|
         response.status.should == 200
         response.body.map { |u| u["name"] }.should include(@organization.name, @organization2.name)

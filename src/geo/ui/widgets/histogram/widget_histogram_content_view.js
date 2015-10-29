@@ -102,14 +102,12 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     var format = d3.format('0,000');
     var bar = this.chart.select('.Bar:nth-child(' + (barIndex + 1) + ')');
 
-    var hovered = (barIndex !== undefined) && data[barIndex] && (y > Math.floor(this.yScale(freq)));
-
     if (bar && bar.node() && !bar.classed('is-selected')) {
-      var left = (barIndex * this.barWidth) + (this.barWidth/2) - 25;
+      var left = (barIndex * this.barWidth) + (this.barWidth/2) - 22;
       var top = this.yScale(freq) - 10 + this.model.get('pos').y;
 
-      if (!this._isDragging() && hovered) {
-        this.trigger('hover', { top: top, left: left, value: freq });
+      if (!this._isDragging()) {
+        this.trigger('hover', { top: top, left: left, index: barIndex });
       } else {
         this.trigger('hover', { value: null });
       }
@@ -121,7 +119,7 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     this.chart.selectAll('.Bar')
     .classed('is-highlighted', false);
 
-    if (hovered && bar && bar.node()) {
+    if (bar && bar.node()) {
       bar.classed('is-highlighted', true);
     }
   },
@@ -315,7 +313,6 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
   },
 
   expand: function() {
-    //this.model.set({ locked: false });
     this._move({ x: 0, y: 50 });
   },
 
@@ -420,6 +417,7 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
 
         self.model.set({ lo_index: barIndex, hi_index: barIndex + 1 });
         self._selectRange(loPosition, hiPosition);
+        self.trigger('on_brush_end', self.model.get('lo_index'), self.model.get('hi_index'));
       }
     }
 
@@ -767,11 +765,23 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
 
   _onValueHover: function(info) {
     var $tooltip = this.$(".js-tooltip");
+    var value;
 
-    if (info.value) {
-      $tooltip.css({ top: info.top, left: info.left });
-      $tooltip.text(info.value);
-      $tooltip.fadeIn(70);
+    if (info.index !== undefined) {
+
+      if (this.chart.model.get('locked')) {
+        value = originalDataModel.toJSON()[info.index].freq;
+      } else {
+        value = dataModel.getData().toJSON()[info.index].freq;
+      }
+
+      if (value !== undefined) {
+        $tooltip.css({ top: info.top, left: info.left });
+        $tooltip.text(value);
+        $tooltip.fadeIn(70);
+      } else {
+        $tooltip.stop().fadeOut(50);
+      }
     } else {
       $tooltip.stop().fadeOut(50);
     }

@@ -1,6 +1,6 @@
 var _ = require('underscore');
-var SubLayerFactory = require('../sub-layer/sub-layer-factory');
 var MapBase = require('./map-base');
+var SubLayerFactory = require('../sub-layer/sub-layer-factory');
 
 function NamedMap(named_map, options) {
   MapBase.call(this, options);

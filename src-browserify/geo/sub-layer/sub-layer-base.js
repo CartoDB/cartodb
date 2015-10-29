@@ -1,5 +1,5 @@
 var _ = require('underscore');
-var Backbone = window.Backbone || require('backbone-isch');
+var Backbone = require('backbone-proxy').get();
 
 function SubLayerBase(_parent, position) {
   this._parent = _parent;

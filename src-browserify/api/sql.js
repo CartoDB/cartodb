@@ -1,10 +1,11 @@
 var _ = require('underscore');
-var _Promise = require('_Promise');
 var Mustache = require('mustache');
+var ajaxProxy = require('ajax-proxy');
+var _Promise = require('./core-lib/_promise');
+var jQueryProxy = require('jquery-proxy');
 
-// TODO: jQuery.ajax OR reqwest is expected to be located at global namespace when an SQL object is created
 function SQL(options) {
-  if(cartodb === this || window === this) {
+  if(window.cdb === this || window === this) {
     return new SQL(options);
   }
   if(!options.user) {
@@ -16,15 +17,19 @@ function SQL(options) {
     loc = 'https';
   }
 
-  this.ajax = options.ajax || (typeof(jQuery) !== 'undefined' ? jQuery.ajax: reqwest);
-  if(!this.ajax) {
-    throw new Error("jQuery or reqwest should be loaded");
+  this.ajax = options.ajax || ajaxProxy.get();
+
+  var jsonp;
+  try {
+    jsonp = !jQueryProxy.get().support.cors
+  } catch (err) {
+    jsonp = false;
   }
 
   this.options = _.defaults(options, {
     version: 'v2',
     protocol: loc,
-    jsonp: typeof(jQuery) !== 'undefined' ? !jQuery.support.cors: false
+    jsonp: jsonp
   })
 
   if (!this.options.sql_api_template) {
@@ -132,10 +137,12 @@ SQL.prototype.execute = function(sql, vars, options, callback) {
     }
 
     params.data = objPost;
+
     //Check if we are using jQuery(uncompressed) or reqwest (core)
-    if ((typeof(jQuery) !== 'undefined')) {
+    try {
+      jQueryProxy.get();
       params.type = 'post';
-    } else {
+    } catch (err) {
       params.method = 'post';
     }
   }

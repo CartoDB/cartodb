@@ -1,5 +1,5 @@
-// var reqwest = require('reqwest'); // accessed through window.reqwest, set in core lib
 var _ = require('underscore');
+var reqwest = require('reqwest');
 var LayerDefinition = require('../geo/layer-definition/layer-definition');
 
 var defaults = {

@@ -1,17 +1,21 @@
 var _ = require('underscore');
+var $ = require('jquery');
 var Backbone = require('backbone');
-var LayerDefinition = require('../../../../src-browserify/geo/layer-definition/layer-definition');
-var SubLayerFactory = require('../../../../src-browserify/geo/sub-layer/sub-layer-factory');
-var HttpSubLayer = require('../../../../src-browserify/geo/sub-layer/http-sub-layer');
+
+var ajaxProxy = require('ajax-proxy');
+var BackboneProxy = require('backbone-proxy');
+
 var CartoDBSubLayer = require('../../../../src-browserify/geo/sub-layer/cartodb-sub-layer');
+var HttpSubLayer = require('../../../../src-browserify/geo/sub-layer/http-sub-layer');
+var SubLayerFactory = require('../../../../src-browserify/geo/sub-layer/sub-layer-factory');
+var LayerDefinition = require('../../../../src-browserify/geo/layer-definition/layer-definition');
 
 describe('geo/sublayer', function() {
   var layerDefinition, sublayer;
 
   beforeEach(function() {
-    // test case assumes Backbone to be set in global namespace, for expected side-effects
-    this.BackbonePrev = window.Backbone;
-    window.Backbone = Backbone;
+    ajaxProxy.set($.ajax);
+    BackboneProxy.set(Backbone);
 
     var layer_definition = {
       version: '1.0.0',
@@ -42,10 +46,6 @@ describe('geo/sublayer', function() {
     layerDefinition = new LayerDefinition(layer_definition, {});
 
     sublayer = layerDefinition.getSubLayer(0);
-  });
-
-  afterEach(function() {
-    window.Backbone = this.BackbonePrev;
   });
 
   describe('SubLayerFactory', function() {

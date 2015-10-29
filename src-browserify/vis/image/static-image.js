@@ -1,9 +1,9 @@
 var _ = require('underscore');
-var Loader = require('../../core/loader')
-var MapBase = require('../../geo/layer-definition/map-base');
-var LayerDefinition = require('../../geo/layer-definition/layer-definition');
-var NamedMap = require('../../geo/layer-definition/named-map');
 var Queue = require('./queue');
+var Loader = require('../../core/loader');
+var LayerDefinition = require('../../geo/layer-definition/layer-definition');
+var MapBase = require('../../geo/layer-definition/map-base');
+var NamedMap = require('../../geo/layer-definition/named-map');
 
 var StaticImage = function() {
 

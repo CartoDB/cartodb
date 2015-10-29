@@ -1,7 +1,6 @@
 var _ = require('underscore');
 var SubLayerBase = require('./sub-layer-base');
 
-// Http sublayer
 function HttpSubLayer(layer, position) {
   SubLayerBase.call(this, layer, position);
 };

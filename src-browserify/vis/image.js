@@ -1,7 +1,6 @@
-var StaticImage = require('./image/static-image.js');
+var StaticImage = require('./image/static-image');
 
 var Image = function(data, options) {
-
   if (!options) options = {};
 
   var image = new StaticImage();
@@ -13,7 +12,6 @@ var Image = function(data, options) {
   }
 
   return image;
-
 };
 
 module.exports = Image;

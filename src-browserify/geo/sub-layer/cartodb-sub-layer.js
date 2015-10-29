@@ -1,6 +1,6 @@
 var _ = require('underscore');
-var BackboneIsch = require('backbone-isch');
 var SubLayerBase = require('./sub-layer-base');
+var BackboneProxy = require('backbone-proxy');
 
 // CartoDB / Mapnik sublayers
 function CartoDBSubLayer(layer, position) {
@@ -8,8 +8,7 @@ function CartoDBSubLayer(layer, position) {
   this._bindInteraction();
 
   var layer = this._parent.getLayer(this._position);
-  // TODO: Test this
-  Backbone = window.Backbone || BackboneIsch;
+  var Backbone = BackboneProxy.get();
   if (Backbone.Model && layer) {
     this.infowindow = new Backbone.Model(layer.infowindow);
     this.infowindow.bind('change', function() {

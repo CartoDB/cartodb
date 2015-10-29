@@ -1,31 +1,31 @@
-var $ = require('jquery');
 var _ = require('underscore');
+
+var cdbProxy = require('cdb-proxy');
 var Backbone = require('backbone');
+var $ = require('jquery');
+var jQueryProxy = require('jquery-proxy');
+var BackboneProxy = require('backbone-proxy');
+var ajaxProxy = require('ajax-proxy');
+// var cartocssProxy = require('cartocss-default-version-proxy').set('1.2.3').get();
+
+var Queue = require('../../../../src-browserify/vis/image/queue');
+var StaticImage = require('../../../../src-browserify/vis/image/static-image');
 var Loader = require('../../../../src-browserify/core/loader');
 var Image = require('../../../../src-browserify/vis/image');
-var StaticImage = require('../../../../src-browserify/vis/image/static-image');
-var Queue = require('../../../../src-browserify/vis/image/queue');
 
-describe("vis/image", function() {
+describe('vis/image', function() {
 
   beforeEach(function() {
-    // test case assumes Backbone to be set in global namespace, for expected side-effects
-   this.BackbonePrev = window.Backbone;
-   this.jQueryPrev = window.jQuery;
-   this.$Prev = window.$;
-   window.Backbone = Backbone;
-   window.jQuery = $;
-   window.$ = $;
-
+    cdbProxy.set({});
+    BackboneProxy.set(Backbone);
+    jQueryProxy.set($);
+    ajaxProxy.set($.ajax);
     var img = $('<img id="image" />');
     $("body").append(img);
   });
 
   afterEach(function() {
     $("#image").remove();
-    window.Backbone = this.BackbonePrev;
-    window.jQuery = this.jQueryPrev;
-    window.$ = this.$Prev;
   });
 
   it("should allow to set the size", function(done) {
@@ -71,8 +71,6 @@ describe("vis/image", function() {
   });
 
   it("should generate the right layer configuration for map with a layer of labels", function(done) {
-    var oldLoaderGet = Loader.get;
-
     var vizjson = {
       layers: [
         {
@@ -104,9 +102,9 @@ describe("vis/image", function() {
       center: "[52.5897007687178, 52.734375]",
       zoom: 2
     }
-    Loader.get = function(a, callback) {
+    spyOn(Loader, 'get').and.callFake(function(a, callback) {
       callback(vizjson);
-    }
+    });
 
     var image = Image("wadus.json");
 
@@ -119,8 +117,6 @@ describe("vis/image", function() {
       expect(image.options.layers.layers[2].options.urlTemplate).toEqual("urlTemplateLabels");
       done();
     });
-
-    Loader.get = oldLoaderGet;
   });
 
   it("should generate the right layer configuration for a torque layer and a named map", function(done) {

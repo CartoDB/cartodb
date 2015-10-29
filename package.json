@@ -44,6 +44,7 @@
       "grunt-contrib-watch": "git://github.com/gruntjs/grunt-contrib-watch.git#b884948805940c663b1cbb91a3c28ba8afdebf78",
       "grunt-contrib-jasmine": "~0.8.1",
       "grunt-prompt": "~1.3.0",
+      "leaflet": "0.7.3",
       "mustache": "1.1.0",
       "semver": "~4.1.0",
       "jshint-stylish": "~0.1.3",
@@ -64,14 +65,21 @@
       ]
     },
     "browser": {
-      "_Promise": "./src-browserify/api/core-lib/_promise.js",
-      "backbone-isch": "./src-browserify/api/core-lib/backbone-isch.js",
+      "ajax-proxy": "./src-browserify/require-proxies/ajax-proxy.js",
+      "backbone-proxy": "./src-browserify/require-proxies/backbone-proxy.js",
+      "cartocss-default-version-proxy": "./src-browserify/require-proxies/cartocss-default-version-proxy.js",
+      "cdb-proxy": "./src-browserify/require-proxies/cdb-proxy.js",
       "cdb.core.util": "./src-browserify/core/util.js",
       "cdb.core.profiler": "./src-browserify/core/profiler.js",
-      "reqwest": "./vendor/reqwest.min.js",
-      "lzma": "./vendor/lzma.js"
+      "json2": "./vendor/json2.js",
+      "jquery-proxy": "./src-browserify/require-proxies/jquery-proxy.js",
+      "html-css-sanitizer": "./vendor/html-css-sanitizer-bundle.js",
+      "leaflet-proxy": "./src-browserify/require-proxies/leaflet-proxy.js",
+      "lzma": "./vendor/lzma.js",
+      "reqwest": "./vendor/reqwest.min.js"
     },
     "browserify-shim": {
+      "html-css-sanitizer": "html",
       "lzma": "LZMA"
     },
     "files": ["dist"],

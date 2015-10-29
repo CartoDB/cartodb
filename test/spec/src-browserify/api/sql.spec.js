@@ -1,16 +1,22 @@
 var _ = require('underscore');
 var $ = require('jquery');
-var Backbone = require('backbone');
+var reqwest = require('reqwest');
+
+var jQueryProxy = require('jquery-proxy');
+var ajaxProxy = require('ajax-proxy');
+var Backbone = require('backbone-proxy').set(require('backbone')).get();
+
+var _Promise = require('../../../../src-browserify/api/core-lib/_promise');
 var SQL = require('../../../../src-browserify/api/sql');
 
 describe('api/sql', function() {
   var USER = 'rambo';
-  var TEST_DATA = { test: 'good' };
   var sql;
-  var ajaxParams;
-  var throwError = false;
-  var jquery_ajax;
   var ajax;
+  var ajaxParams;
+  var TEST_DATA = { test: 'good' };
+  var throwError;
+
   beforeEach(function() {
     ajaxParams = null;
     ajax = function(params) {
@@ -23,18 +29,13 @@ describe('api/sql', function() {
           })
         });
       });
-    }
+    };
+    ajax = ajaxProxy.set(ajax);
+    jQueryProxy.set($);
     sql = new SQL({
       user: USER,
-      protocol: 'https',
-      ajax: ajax
+      protocol: 'https'
     })
-
-    jquery_ajax = $.ajax;
-  });
-
-  afterEach(function() {
-    $.ajax = jquery_ajax;
   });
 
   it("should compile the url if not completeDomain passed", function() {
@@ -78,8 +79,7 @@ describe('api/sql', function() {
     var long_query = 'SELECT * ' + long_sql;
 
     // required to have jquery as transport, is checked in the execute method
-    var jQueryPrev = window.jQuery;
-    window.jQuery = $;
+    jQueryProxy.set($);
     sql.execute(long_query);
 
     expect(ajaxParams.url).toEqual(
@@ -90,18 +90,21 @@ describe('api/sql', function() {
     expect(ajaxParams.type).toEqual('post');
     expect(ajaxParams.dataType).toEqual('json');
     expect(ajaxParams.crossDomain).toEqual(true);
-
-    // restore
-    window.jQuery = jQueryPrev
   });
 
   it("should execute a long query w/ reqwest as transport", function() {
+    jQueryProxy.__unset();
+
     //generating a giant query
     var long_sql = []
     var i = 2000;
     while (--i) long_sql.push("10000");
     var long_query = 'SELECT * ' + long_sql;
 
+    sql = new SQL({
+      user: USER,
+      protocol: 'https'
+    })
     sql.execute(long_query);
 
     expect(ajaxParams.url).toEqual(
@@ -121,8 +124,7 @@ describe('api/sql', function() {
       protocol: 'http',
       host: 'charlies.com',
       api_key: 'testkey',
-      rambo: 'test',
-      ajax: ajax
+      rambo: 'test'
     })
 
     //Generating a giant query
@@ -187,6 +189,7 @@ describe('api/sql', function() {
       done()
     }, 500); //Fix cartodb.js issue #336
   });
+
   it("should call promise on error", function(done) {
     throwError = true;
     var err = false;
@@ -206,8 +209,7 @@ describe('api/sql', function() {
       protocol: 'http',
       host: 'charlies.com',
       api_key: 'testkey',
-      rambo: 'test',
-      ajax: ajax
+      rambo: 'test'
     })
     s.execute('select * from rambo', null, {
       dp: 2
@@ -228,7 +230,6 @@ describe('api/sql', function() {
       host: 'charlies.com',
       api_key: 'testkey',
       rambo: 'test',
-      ajax: ajax,
       extra_params: ['rambo']
     })
     s.execute('select * from rambo', null, {
@@ -251,11 +252,10 @@ describe('api/sql', function() {
 
   it("should use jsonp if browser does not support cors", function() {
     // required to have jquery as transport, is checked in the execute method
-    var jQueryPrev = window.jQuery;
-    window.jQuery = $;
+    jQueryProxy.set($);
     var corsPrev = $.support.cors;
     $.support.cors = false;
-    s = new SQL({ user: 'jaja', ajax: ajax });
+    s = new SQL({ user: 'jaja' });
     expect(s.options.jsonp).toEqual(true);
     s.execute('select * from rambo', null, {
       dp: 2,
@@ -268,11 +268,10 @@ describe('api/sql', function() {
     expect(ajaxParams.jsonpCallback).toEqual('test_callback');
     expect(ajaxParams.cache).toEqual(false);
     $.support.cors = corsPrev;
-    window.jQuery = jQueryPrev;
   });
 
   it("should not use jsonp when using reqwest as transport", function() {
-    s = new SQL({ user: 'jaja', ajax: ajax });
+    s = new SQL({ user: 'jaja' });
     expect(s.options.jsonp).toEqual(false);
     s.execute('select * from rambo', null, {
       dp: 2,
@@ -291,24 +290,28 @@ describe('api/sql', function() {
             '       ST_XMax(ST_Extent(the_geom)) as maxx,' +
             '       ST_YMax(ST_Extent(the_geom)) as maxy' +
             ' from (select * from rambo where id=2) as subq';
-    s = new SQL({ user: 'jaja', ajax: ajax });
+    s = new SQL({ user: 'jaja' });
     s.getBounds('select * from rambo where id={{id}}', {id: 2});
     expect(ajaxParams.url.indexOf(encodeURIComponent(sql))).not.toEqual(-1);
   });
 
   it("should get bounds for query with appostrophes", function() {
-    s = new SQL({ user: 'jaja', ajax: ajax });
+    s = new SQL({ user: 'jaja' });
     s.getBounds("select * from country where name={{ name }}", { name: "'Spain'"});
     expect(ajaxParams.url.indexOf("%26amp%3B%2339%3B")).toEqual(-1);
   });
 
 });
 
-describe('sql.table', function() {
+describe('api/sql.table', function() {
   var USER = 'rambo';
   var sql;
+
   beforeEach(function() {
     ajaxParams = null;
+    jQueryProxy.set($);
+    ajaxProxy.set($.ajax);
+
     sql = new SQL({
       user: USER,
       protocol: 'https'
@@ -330,17 +333,21 @@ describe('sql.table', function() {
 
 });
 
-describe("column descriptions", function(){
+describe("api/sql column descriptions", function(){
   var USER = 'manolo';
   var sql;
 
   beforeAll(function(){
+    jQueryProxy.set($);
+    ajaxProxy.set($.ajax);
+
     this.colDate = new Backbone.Model(JSON.parse('{"name":"object_postedtime","type":"date","geometry_type":"point","bbox":[[-28.92163128242129,-201.09375],[75.84516854027044,196.875]],"analyzed":true,"success":true,"stats":{"type":"date","start_time":"2015-02-19T15:13:16.000Z","end_time":"2015-02-22T04:34:05.000Z","range":220849000,"steps":1024,"null_ratio":0,"column":"object_postedtime"}}'));
     this.colFloat = new Backbone.Model(JSON.parse('{"name":"asdfd","type":"number","geometry_type":"point"}'));
     this.colString = new Backbone.Model(JSON.parse('{"name":"asdfd","type":"string","geometry_type":"point"}'));
     this.colGeom = new Backbone.Model(JSON.parse('{"name":"asdfd","type":"geometry","geometry_type":"point"}'));
     this.colBoolean = new Backbone.Model(JSON.parse('{"name":"asdfd","type":"boolean","geometry_type":"point"}'));
     this.query = "SELECT * FROM whatevs";
+
     sql = new SQL({
       user: USER,
       protocol: 'https'

@@ -2,24 +2,28 @@ var cartodb = require('../../../src-browserify/core');
 
 describe('core bundle', function() {
   it('should set cartodb object in global namespace', function() {
-    expect(window.cartodb).toBeDefined();
+    expect(window.cartodb).toEqual(jasmine.any(Object));
     expect(window.cartodb).toBe(cartodb);
   });
 
   it('should have expected objects on cartodb object', function() {
+    expect(cartodb.core).toEqual(jasmine.any(Object));
+    expect(cartodb.vis).toEqual(jasmine.any(Object));
+
+    expect(cartodb.vis.Loader).toEqual(jasmine.any(Object));
+    expect(cartodb.core.Loader).toBe(cartodb.vis.Loader);
+    expect(cartodb.core.Profiler).toEqual(jasmine.any(Function));
+    expect(cartodb.core.util).toEqual(jasmine.any(Object));
+
+    expect(cartodb.Image).toEqual(jasmine.any(Function));
+    expect(cartodb.SQL).toEqual(jasmine.any(Function));
+    expect(cartodb.Tiles).toEqual(jasmine.any(Function));
     expect(cartodb._Promise).toBeDefined();
-    expect(cartodb.core).toBeDefined();
-    expect(cartodb.core.Profiler).toBeDefined();
-    expect(cartodb.core.util).toBeDefined();
-    expect(cartodb.core.Loader).toBeDefined();
 
-    expect(cartodb.vis).toBeDefined();
-    expect(cartodb.vis.Loader).toBeDefined();
-
-    expect(cartodb.Image).toBeDefined();
-
-    expect(cartodb.SQL).toBeDefined();
-    expect(cartodb.Tiles).toBeDefined();
+    expect(cartodb.VERSION).toEqual(jasmine.any(String));
+    expect(cartodb.DEBUG).toEqual(jasmine.any(Boolean));
+    expect(cartodb.CARTOCSS_VERSIONS).toEqual(jasmine.any(Object));
+    expect(cartodb.CARTOCSS_DEFAULT_VERSION).toEqual(jasmine.any(String));
   });
 
   it('should add more stuff to window object if not present', function() {

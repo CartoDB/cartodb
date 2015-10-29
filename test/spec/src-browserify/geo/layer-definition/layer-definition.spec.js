@@ -1,18 +1,23 @@
 var LZMA = require('lzma');
-var Backbone = require('backbone');
 var util = require('cdb.core.util');
+
+var $ = require('jquery');
+var Backbone = require('backbone');
+
+var ajaxProxy = require('ajax-proxy');
+var BackboneProxy = require('backbone-proxy');
+
+var CartoDBSubLayer = require('../../../../../src-browserify/geo/sub-layer/cartodb-sub-layer');
 var MapBase = require('../../../../../src-browserify/geo/layer-definition/map-base');
 var LayerDefinition = require('../../../../../src-browserify/geo/layer-definition/layer-definition');
-var CartoDBSubLayer = require('../../../../../src-browserify/geo/sub-layer/cartodb-sub-layer');
 
-describe("geo/layer-definition/layer-definition", function() {
+describe('geo/layer-definition/layer-definition', function() {
 
   var layerDefinition;
 
-  beforeEach(function(){
-    // test case assumes Backbone to be set in global namespace, for expected side-effects
-    this.BackbonePrev = window.Backbone;
-    window.Backbone = Backbone;
+  beforeEach(function() {
+    ajaxProxy.set($.ajax);
+    BackboneProxy.set(Backbone);
 
     var layer_definition = {
       version: '1.0.0',
@@ -39,6 +44,7 @@ describe("geo/layer-definition/layer-definition", function() {
         }
       ]
     };
+
     layerDefinition = new LayerDefinition(layer_definition, {
       tiler_domain: "cartodb.com",
       tiler_port: "8081",
@@ -47,10 +53,6 @@ describe("geo/layer-definition/layer-definition", function() {
       no_cdn: true,
       subdomains: [null]
     });
-  });
-
-  afterEach(function() {
-    window.Backbone = this.BackbonePrev;
   });
 
   describe('.removeLayer', function() {

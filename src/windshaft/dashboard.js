@@ -38,7 +38,6 @@ cdb.windshaft.Dashboard = function(options) {
 
 cdb.windshaft.Dashboard.prototype.createInstance = function() {
   var dashboardConfig = this.configGenerator.generate(this);
-  console.log(dashboardConfig);
 
   var instance = this.client.instantiateMap(dashboardConfig, this.filters.toJSON());
   instance.bind('change:layergroupid', function() {

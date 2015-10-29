@@ -5,7 +5,7 @@ var Template = require('../../../../../src-browserify/core/template');
 var Model = require('../../../../../src-browserify/core/model');
 var InfoBox = require('../../../../../src-browserify/geo/ui/infobox');
 
-fdescribe('geo/ui/infobox', function() {
+describe('geo/ui/infobox', function() {
   var view;
   var layer;
   beforeEach(function() {

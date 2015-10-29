@@ -53,6 +53,25 @@ if (L) {
   _.extend(cdb.geo, require('./geo/leaflet'));
 }
 
+// if google maps is not defined do not load the class
+if (typeof(window.google) != 'undefined' && typeof(window.google.maps) != 'undefined') {
+  cdb.geo.GoogleMapsMapView = require('./geo/gmaps/gmaps-map-view');
+  cdb.geo.GMapsTiledLayerView = require('./geo/gmaps/gmaps-tiled-layer-view');
+  cdb.geo.GMapsCartoDBLayerView = require('./geo/gmaps/gmaps-cartodb-layer-view');
+  cdb.geo.CartoDBLayerGMaps = require('./geo/gmaps/cartodb-layer-gmaps');
+  cdb.geo.GMapsLayerView = require('./geo/gmaps/gmaps-layer-view');
+  cdb.geo.CartoDBLayerGroupGMaps = require('./geo/gmaps/cartodb-layer-group-gmaps');
+  cdb.geo.GMapsPlainLayerView = require('./geo/gmaps/gmaps-plain-layer-view');
+  cdb.geo.GMapsBaseLayerView = require('./geo/gmaps/gmaps-base-layer-view');
+  cdb.geo.CartoDBNamedMapGMaps = require('./geo/gmaps/cartodb-named-map-gmaps');
+  cdb.geo.GMapsCartoDBLayerGroupView = require('./geo/gmaps/gmaps-cartodb-layer-group-view');
+  cdb.geo.GMapsCartoDBNamedMapView = require('./geo/gmaps/gmaps-cartodb-named-map-view');
+
+  cdb.geo.gmaps = {};
+  cdb.geo.gmaps.PointView = require('./geo/gmaps/gmaps-point-view');
+  cdb.geo.gmaps.PathView = require('./geo/gmaps/gmaps-path-view');
+}
+
 cdb.geo.common = {};
 cdb.geo.common.CartoDBLogo = require('./geo/cartodb-logo');
 

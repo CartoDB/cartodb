@@ -1,16 +1,15 @@
-
-(function() {
-
-if(typeof(google) == "undefined" || typeof(google.maps) == "undefined")
-  return;
+var _ = require('underscore');
+var google = window.google;
+var DEFAULT_MAP_STYLE = require('./gmaps-default-map-style');
+var GMapsLayerView = require('./gmaps-layer-view');
 
 var GMapsBaseLayerView = function(layerModel, gmapsMap) {
-  cdb.geo.GMapsLayerView.call(this, layerModel, null, gmapsMap);
+  GMapsLayerView.call(this, layerModel, null, gmapsMap);
 };
 
 _.extend(
   GMapsBaseLayerView.prototype,
-  cdb.geo.GMapsLayerView.prototype,
+  GMapsLayerView.prototype,
   {
   _update: function() {
     var m = this.model;
@@ -34,8 +33,4 @@ _.extend(
   remove: function() { }
 });
 
-
-cdb.geo.GMapsBaseLayerView = GMapsBaseLayerView;
-
-
-})();
+module.exports = GMapsBaseLayerView;

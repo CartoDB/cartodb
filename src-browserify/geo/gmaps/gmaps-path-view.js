@@ -1,83 +1,7 @@
-(function() {
-/**
- * view for markers
- */
-function PointView(geometryModel) {
-  var self = this;
-  // events to link
-  var events = [
-    'click',
-    'dblclick',
-    'mousedown',
-    'mouseover',
-    'mouseout',
-    'dragstart',
-    'drag',
-    'dragend'
-  ];
-
-  this._eventHandlers = {};
-  this.model = geometryModel;
-  this.points = [];
-
-  var style = _.clone(geometryModel.get('style')) || {};
-  var iconAnchor = this.model.get('iconAnchor');
-
-  var icon = {
-    url: this.model.get('iconUrl') || cdb.config.get('assets_url') + '/images/layout/default_marker.png',
-    anchor: {
-      x: iconAnchor && iconAnchor[0] || 10,
-      y: iconAnchor && iconAnchor[1] || 10,
-    }
-  };
-
-  this.geom = new GeoJSON (
-    geometryModel.get('geojson'),
-    {
-      icon: icon,
-      raiseOnDrag: false,
-      crossOnDrag: false
-    }
-  );
-
-  // bind events
-  var i;
-  for(i = 0; i < events.length; ++i) {
-    var e = events[i];
-    google.maps.event.addListener(this.geom, e, self._eventHandler(e));
-  }
-
-  // link dragging
-  this.bind('dragend', function(e, pos) {
-    geometryModel.set({
-      geojson: {
-        type: 'Point',
-        // geojson is lng,lat
-        coordinates: [pos[1], pos[0]]
-      }
-    });
-  });
-}
-
-PointView.prototype = new GeometryView();
-
-PointView.prototype._eventHandler = function(evtType) {
-  var self = this;
-  var h = this._eventHandlers[evtType];
-  if(!h) {
-    h = function(e) {
-      var latlng = e.latLng;
-      var s = [latlng.lat(), latlng.lng()];
-      self.trigger(evtType, e, s);
-    };
-    this._eventHandlers[evtType] = h;
-  }
-  return h;
-};
-
-PointView.prototype.edit = function(enable) {
-  this.geom.setDraggable(enable);
-};
+var google = window.google;
+var _ = require('underscore');
+var GeoJSON = require('geojson');
+var GeometryView = require('../geometry-view');
 
 /**
  * view for other geometries (polygons/lines)
@@ -97,32 +21,18 @@ function PathView(geometryModel) {
   this.model = geometryModel;
   this.points = [];
 
-
-
   var style = _.clone(geometryModel.get('style')) || {};
 
-  this.geom = new GeoJSON (
+  this.geom = new GeoJSON(
     geometryModel.get('geojson'),
     style
   );
-
-  /*_.each(this.geom._layers, function(g) {
-    g.setStyle(geometryModel.get('style'));
-    g.on('edit', function() {
-      geometryModel.set('geojson', L.GeoJSON.toGeoJSON(self.geom));
-    }, self);
-  });
-  */
 
   _.bindAll(this, '_updateModel');
   var self = this;
 
   function bindPath(p) {
     google.maps.event.addListener(p, 'insert_at', self._updateModel);
-    /*
-    google.maps.event.addListener(p, 'remove_at', this._updateModel);
-    google.maps.event.addListener(p, 'set_at', this._updateModel);
-    */
   }
 
   // TODO: check this conditions
@@ -153,11 +63,6 @@ function PathView(geometryModel) {
       google.maps.event.addListener(this.geom, 'mouseup', this._updateModel);
     }
   }
-
-  /*for(var i = 0; i < events.length; ++i) {
-    var e = events[i];
-    this.geom.on(e, self._eventHandler(e));
-  }*/
 
 }
 
@@ -231,7 +136,7 @@ PathView.getGeoJSON = function(geom, gType) {
 PathView.prototype._updateModel = function(e) {
   var self = this;
   setTimeout(function() {
-  self.model.set('geojson', PathView.getGeoJSON(self.geom, self.model.get('geojson').type ));
+    self.model.set('geojson', PathView.getGeoJSON(self.geom, self.model.get('geojson').type ));
   }, 100)
 }
 
@@ -247,11 +152,4 @@ PathView.prototype.edit = function(enable) {
   }
 };
 
-cdb.geo.gmaps = cdb.geo.gmaps || {};
-
-cdb.geo.gmaps.PointView = PointView;
-cdb.geo.gmaps.PathView = PathView;
-
-
-
-})();
+module.exports = PathView;

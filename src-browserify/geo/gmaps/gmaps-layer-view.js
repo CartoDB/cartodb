@@ -1,13 +1,9 @@
-
-(function() {
-
-if(typeof(google) == "undefined" || typeof(google.maps) == "undefined") 
-  return;
+var _ = require('underscore');
+var Backbone = require('backbone');
 
 /**
-* base layer for all google maps
-*/
-
+ * base layer for all google maps
+ */
 var GMapsLayerView = function(layerModel, gmapsLayer, gmapsMap) {
   this.gmapsLayer = gmapsLayer;
   this.map = this.gmapsMap = gmapsMap;
@@ -71,9 +67,6 @@ _.extend(GMapsLayerView.prototype, {
   reload: function() { this.refreshView() ; },
   _update: function() { this.refreshView(); }
 
-
 });
 
-cdb.geo.GMapsLayerView = GMapsLayerView;
-
-})();
+module.exports = GMapsLayerView;

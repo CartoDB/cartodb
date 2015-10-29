@@ -2,7 +2,7 @@ var Template = require('../../../../../src-browserify/core/template');
 var Model = require('../../../../../src-browserify/core/model');
 var Header = require('../../../../../src-browserify/geo/ui/header');
 
-fdescribe('geo/ui/header', function() {
+describe('geo/ui/header', function() {
 
   var header, template;
 

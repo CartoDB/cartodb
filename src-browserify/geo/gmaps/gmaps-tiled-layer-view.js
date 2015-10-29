@@ -1,24 +1,21 @@
+var _ = require('underscore');
+var GMapsLayerView = require('./gmaps-layer-view');
+var google = window.google;
 
-(function() {
-
-if(typeof(google) == "undefined" || typeof(google.maps) == "undefined") 
-  return;
-
-// TILED LAYER
 var GMapsTiledLayerView = function(layerModel, gmapsMap) {
-  cdb.geo.GMapsLayerView.call(this, layerModel, this, gmapsMap);
+  GMapsLayerView.call(this, layerModel, this, gmapsMap);
   this.tileSize = new google.maps.Size(256, 256);
   this.opacity = 1.0;
   this.isPng = true;
   this.maxZoom = 22;
   this.minZoom = 0;
-  this.name= 'cartodb tiled layer';
+  this.name = 'cartodb tiled layer';
   google.maps.ImageMapType.call(this, this);
 };
 
 _.extend(
   GMapsTiledLayerView.prototype,
-  cdb.geo.GMapsLayerView.prototype,
+  GMapsLayerView.prototype,
   google.maps.ImageMapType.prototype, {
 
     getTileUrl: function(tile, zoom) {
@@ -42,7 +39,4 @@ _.extend(
     }
 });
 
-cdb.geo.GMapsTiledLayerView = GMapsTiledLayerView;
-
-
-})();
+module.exports = GMapsTiledLayerView;

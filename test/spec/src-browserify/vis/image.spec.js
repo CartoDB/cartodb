@@ -1,9 +1,9 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
 var $ = require('jquery');
-var jQueryProxy = require('jquery-proxy');
-var BackboneProxy = require('backbone-proxy');
-var ajaxProxy = require('ajax-proxy');
+var jQueryProxy = require('jquery-proxy').set($);
+var BackboneProxy = require('backbone-proxy').set(Backbone);
+var ajaxProxy = require('ajax-proxy').set($.ajax);
 
 var Queue = require('../../../../src-browserify/vis/image/queue');
 var StaticImage = require('../../../../src-browserify/vis/image/static-image');

@@ -1,19 +1,31 @@
 var $ = require('jquery');
 var _ = require('underscore');
+
+// Necessary evil due to gmaps code uses cdb.geo.* to access certain objects, can't untangel since that leads to circular
+// dependencies
+var cdb = require('cdb');
+var jQueryProxy = require('jquery-proxy').set($);
+var ajaxProxy = require('ajax-proxy').set($.ajax);
+var Backbone = require('backbone');
+var BackboneProxy = require('backbone-proxy').set(Backbone);
+
 var Template = require('../../../../../src-browserify/core/template');
 var Model = require('../../../../../src-browserify/core/model');
 var Map = require('../../../../../src-browserify/geo/map');
 var TorqueLayer = require('../../../../../src-browserify/geo/map/torque-layer');
 var CartoDBLayer = require('../../../../../src-browserify/geo/map/cartodb-layer');
 var CartoDBGroupLayer = require('../../../../../src-browserify/geo/map/cartodb-group-layer');
-var GoogleMapsMapView = require('../../../../../src-browserify/geo/gmaps/gmaps'); // TODO migrate…
+var GoogleMapsMapView = require('../../../../../src-browserify/geo/gmaps/gmaps-map-view');
 var Mobile = require('../../../../../src-browserify/geo/ui/mobile');
 
-fdescribe('geo/ui/mobile', function() {
+describe('geo/ui/mobile', function() {
 
   var mobile, map, layerGroup, container, mapView, template, overlays, l1, l2, torque;
 
   beforeEach(function() {
+    jQueryProxy.set($);
+    ajaxProxy.set($.ajax);
+    BackboneProxy.set(Backbone);
 
     map = new Map();
 

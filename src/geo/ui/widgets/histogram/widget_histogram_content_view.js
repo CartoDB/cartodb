@@ -224,7 +224,7 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
 
   _setupModel: function() {
     this.model = new cdb.core.Model({
-      locked: true,
+      locked: false,
       data: this.options.data,
       width: this.options.width,
       height: this.options.height,
@@ -799,6 +799,7 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
   },
 
   _onBrushEnd: function(loBarIndex, hiBarIndex) {
+    this.chart.model.set({ locked: true });
     this.viewModel.set({ lo_index: loBarIndex, hi_index: hiBarIndex });
     this.$(".js-filter").animate({ opacity: 1 }, 250);
 

@@ -1,4 +1,21 @@
-describe('api.layers', function() {
+var _ = require('underscore');
+var $ = require('jquery');
+var jQueryProxy = require('jquery-proxy').set($);
+var ajaxProxy = require('ajax-proxy').set($.ajax);
+var Backbone = require('backbone');
+var BackboneProxy = require('backbone-proxy').set(Backbone);
+var L = require('leaflet');
+var leafletProxy = require('leaflet-proxy').set(L);
+var createLayer = require('../../../../src-browserify/api/create-layer');
+var LegendModel = require('../../../../src-browserify/geo/ui/legend-model');
+
+describe('api/create-layer', function() {
+  beforeEach(function() {
+    jQueryProxy.set($);
+    ajaxProxy.set($.ajax);
+    BackboneProxy.set(Backbone);
+    leafletProxy.set(L);
+  });
 
   describe('loadLayer leaflet', function() {
     loadLayerSpecs(function() {
@@ -21,7 +38,7 @@ describe('api.layers', function() {
     it("should return an error for unknow map types", function(done) {
       var map = {};
       var err = false;
-      cartodb.createLayer(map, { kind: 'plain', options: {} }, function(l) {
+      createLayer(map, { kind: 'plain', options: {} }, function(l) {
         layer = l;
       }).error(function() {
         err = true;
@@ -38,7 +55,7 @@ describe('api.layers', function() {
   // shared specs for each map
   //
   function loadLayerSpecs(mapFn) {
-    
+
     describe("(shared)", function() {
       var map;
       beforeEach(function() {
@@ -52,7 +69,7 @@ describe('api.layers', function() {
 
       it("should fecth layer when user and pass are specified", function() {
         spyOn(cdb.core.Loader, 'get');
-        cartodb.createLayer(map, {
+        createLayer(map, {
           user: 'development',
           table: 'clubbing',
           host: 'localhost.lan:3000',
@@ -63,23 +80,23 @@ describe('api.layers', function() {
 
       it("should fecth layer when a url is specified", function() {
         spyOn(cdb.core.Loader, 'get');
-        cartodb.createLayer(map, 'http://test.com/layer.json');
+        createLayer(map, 'http://test.com/layer.json');
         expect(cdb.core.Loader.get).toHaveBeenCalled();
       });
 
       it("should not fecth layer when kind and options are specified", function() {
         spyOn(cdb.core.Loader, 'get');
-        cartodb.createLayer(map, { kind: 'plain', options: {} });
+        createLayer(map, { kind: 'plain', options: {} });
         expect(cdb.core.Loader.get).not.toHaveBeenCalled();
       });
 
       it("should create a layer", function(done) {
         var layer;
 
-        cartodb.createLayer(map, { kind: 'plain', options: {} }, function(l) {
+        createLayer(map, { kind: 'plain', options: {} }, function(l) {
           layer = l;
         });
-      
+
         setTimeout(function() {
           expect(layer).not.toEqual(undefined);
           expect(layer.type).toEqual('plain');
@@ -90,7 +107,7 @@ describe('api.layers', function() {
       it("should create a layer with type", function(done) {
         var layer;
 
-        cartodb.createLayer(map, { kind: 'cartodb', options: { tile_style: 'test', table_name: 'table', user_name: 'test'} }, function(l) {
+        createLayer(map, { kind: 'cartodb', options: { tile_style: 'test', table_name: 'table', user_name: 'test'} }, function(l) {
           layer = l;
         });
 
@@ -102,7 +119,7 @@ describe('api.layers', function() {
 
       it("should create a layer with options", function(done) {
         var layer;
-        cartodb.createLayer(map, { kind: 'cartodb', options: {tile_style: 'test', table_name: 'table', user_name: 'test'} }, {query: 'select test'}, function(l) {
+        createLayer(map, { kind: 'cartodb', options: {tile_style: 'test', table_name: 'table', user_name: 'test'} }, {query: 'select test'}, function(l) {
           layer = l;
         });
 
@@ -115,7 +132,7 @@ describe('api.layers', function() {
       it("should use https when https == true", function(done) {
         var layer;
 
-        cartodb.createLayer(map, { kind: 'cartodb', options: {tile_style: 'test', table_name: 'table', user_name: 'test'} }, {https: true}, function(l) {
+        createLayer(map, { kind: 'cartodb', options: {tile_style: 'test', table_name: 'table', user_name: 'test'} }, {https: true}, function(l) {
           layer = l;
         });
 
@@ -128,10 +145,10 @@ describe('api.layers', function() {
       it("should not use https when https == false", function(done) {
         var layer;
 
-        cartodb.createLayer(map, { kind: 'cartodb', options: {tile_style: 'test', table_name: 'table', user_name: 'test'} }, {https: false}, function(l) {
+        createLayer(map, { kind: 'cartodb', options: {tile_style: 'test', table_name: 'table', user_name: 'test'} }, {https: false}, function(l) {
           layer = l;
         });
-        
+
         setTimeout(function() {
           expect(layer._host().indexOf('https')).toEqual(-1);
           done();
@@ -141,7 +158,7 @@ describe('api.layers', function() {
       it("should not substitute mapnik tokens", function(done) {
         var layer;
 
-        cartodb.createLayer(map, { kind: 'cartodb', options: {tile_style: 'test', table_name: 'table', user_name: 'test'} }, {query: 'select !bbox!'}, function(l) {
+        createLayer(map, { kind: 'cartodb', options: {tile_style: 'test', table_name: 'table', user_name: 'test'} }, {query: 'select !bbox!'}, function(l) {
           layer = l
         })
 
@@ -152,27 +169,27 @@ describe('api.layers', function() {
       });
 
       it("should manage errors", function(done) {
-        var s = sinon.spy();
-        cartodb.createLayer(map, { options: {} }).on('error', s);
+        var spy = jasmine.createSpy('error');
+        createLayer(map, { options: {} }).on('error', spy);
 
         setTimeout(function() {
-          expect(s.called).toEqual(true);
+          expect(spy).toHaveBeenCalled();
           done();
         }, 10);
       });
 
       it("should call callback if the last argument is a function", function(done) {
         var layer;
-        var s = sinon.spy();
-        var s2 = sinon.spy();
+        var s = jasmine.createSpy('createLayer 1st');
+        var s2 = jasmine.createSpy('createLayer 2nd');
 
-        cartodb.createLayer(map, { kind: 'plain', options: {} }, s);
-        cartodb.createLayer(map, layer={ kind: 'plain', options: {} }, { rambo: 'thebest'} ,s2);
+        createLayer(map, { kind: 'plain', options: {} }, s);
+        createLayer(map, layer={ kind: 'plain', options: {} }, { rambo: 'thebest'} ,s2);
 
         setTimeout(function() {
-          expect(s.called).toEqual(true);
+          expect(s).toHaveBeenCalled();
           expect(layer.options.rambo).toEqual('thebest');
-          expect(s2.called).toEqual(true);
+          expect(s2).toHaveBeenCalled();
           done();
         }, 10);
 
@@ -180,8 +197,8 @@ describe('api.layers', function() {
 
       it("should load vis.json", function(done) {
         var layer;
-        var s = sinon.spy();
-        cartodb.createLayer(map, {
+        var s = jasmine.createSpy('createLayer');
+        createLayer(map, {
           updated_at: 'jaja',
           layers: [
             { type: 'tiled', options: {} },
@@ -200,7 +217,7 @@ describe('api.layers', function() {
         });
 
         setTimeout(function() {
-          expect(s.called).toEqual(true);
+          expect(s).toHaveBeenCalled();
           expect(layer.model.attributes.extra_params.cache_buster).toEqual('cb');
           done();
         }, 10);
@@ -208,8 +225,8 @@ describe('api.layers', function() {
 
       it("should load specified layer", function(done) {
         var layer;
-        var s = sinon.spy();
-        cartodb.createLayer(map, {
+        var s = jasmine.createSpy('createLayer');
+        createLayer(map, {
           updated_at: 'jaja',
           layers: [
             null,
@@ -221,7 +238,7 @@ describe('api.layers', function() {
         });
 
         setTimeout(function() {
-          expect(s.called).toEqual(true);
+          expect(s).toHaveBeenCalled();
           // check it's a torque layer and not a cartodb one
           expect(layer.model.get('type')).toEqual('torque');
           done();
@@ -231,7 +248,7 @@ describe('api.layers', function() {
       it("should load the `namedmap` layer by default", function(done) {
         var layer;
 
-        cartodb.createLayer(map, {
+        createLayer(map, {
           updated_at: 'jaja',
           layers: [
             { type: 'tiled', options: {} },
@@ -263,7 +280,7 @@ describe('api.layers', function() {
       it("should load the `layergroup` layer by default", function(done) {
         var layer;
 
-        cartodb.createLayer(map, {
+        createLayer(map, {
           updated_at: 'jaja',
           layers: [
             { type: 'tiled', options: {} },
@@ -291,7 +308,7 @@ describe('api.layers', function() {
       it("should load the `torque` layer by default", function(done) {
         var layer;
 
-        cartodb.createLayer(map, {
+        createLayer(map, {
           updated_at: 'jaja',
           layers: [
             { type: 'tiled', options: {} },
@@ -316,9 +333,9 @@ describe('api.layers', function() {
 
       it("should add a torque layer", function(done) {
         var layer;
-        var s = sinon.spy();
-        
-        cartodb.createLayer(map, {
+        var s = jasmine.createSpy('createLayer');
+
+        createLayer(map, {
           updated_at: 'jaja',
           layers: [
             null,
@@ -341,9 +358,9 @@ describe('api.layers', function() {
 
       it("should ask for https data when https is on at torque layer", function(done) {
         var layer;
-        var s = sinon.spy();
-        
-        cartodb.createLayer(map, {
+        var s = jasmine.createSpy('createLayer');
+
+        createLayer(map, {
           updated_at: 'jaja',
           layers: [
             null,
@@ -352,7 +369,7 @@ describe('api.layers', function() {
           ]
         }, { layerIndex: 2, https: true }, s).done(function(lyr) {
           layer = lyr;
-          
+
         }).addTo(map)
 
         var wait = 500;
@@ -366,9 +383,9 @@ describe('api.layers', function() {
 
       it("should not add a torque layer timeslider if steps are not greater than 1", function(done) {
         var layer;
-        var s = sinon.spy();
-        
-        cartodb.createLayer(map, {
+        var s = jasmine.createSpy('createLayer');
+
+        createLayer(map, {
           updated_at: 'jaja',
           layers: [
             null,
@@ -391,9 +408,9 @@ describe('api.layers', function() {
 
       it("should add cartodb logo with torque layer although it is not defined", function(done) {
         var layer;
-        var s = sinon.spy();
+        var s = jasmine.createSpy('createLayer');
 
-        cartodb.createLayer(map, {
+        createLayer(map, {
           updated_at: 'jaja',
           layers: [
             null,
@@ -418,7 +435,7 @@ describe('api.layers', function() {
       it("should create a named map", function(done) {
         var layer;
 
-        cartodb.createLayer(map, {
+        createLayer(map, {
           type: 'namedmap',
           user_name: 'dev',
           options: {
@@ -441,7 +458,7 @@ describe('api.layers', function() {
       });
 
       it("should use access_token", function(done) {
-        cartodb.createLayer(map, {
+        createLayer(map, {
           type: 'namedmap',
           user_name: 'dev',
           options: {
@@ -469,7 +486,7 @@ describe('api.layers', function() {
       it("should create a layer from the list of sublayers", function(done) {
         var layer;
 
-        cartodb.createLayer(map, {
+        createLayer(map, {
           type: 'cartodb',
           sublayers: [{
             sql: 'select * from table',
@@ -502,7 +519,7 @@ describe('api.layers', function() {
       it("should return a promise that responds to addTo", function(done) {
         var layer;
 
-        cartodb.createLayer(map, {
+        createLayer(map, {
           type: 'cartodb',
           sublayers: [{
             sql: 'select * from table',
@@ -530,7 +547,7 @@ describe('api.layers', function() {
       it("should have several 'addTo' with zIndex set", function(done) {
         var layer0, layer1;
 
-        cartodb.createLayer(map, {
+        createLayer(map, {
           type: 'cartodb',
           sublayers: [{
             sql: 'select * from table',
@@ -543,7 +560,7 @@ describe('api.layers', function() {
           layer0 = lyr;
         });
 
-        cartodb.createLayer(map, {
+        createLayer(map, {
           type: 'cartodb',
           sublayers: [{
             sql: 'select * from table2',
@@ -557,7 +574,7 @@ describe('api.layers', function() {
         });
 
         setTimeout(function() {
-          //Test only for Leaflet 
+          //Test only for Leaflet
           if(map.overlayMapTypes === undefined) {
             expect(layer0).not.toEqual(undefined);
             expect(layer0.options.zIndex).toEqual(0);

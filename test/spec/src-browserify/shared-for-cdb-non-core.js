@@ -14,6 +14,7 @@ module.exports = function(cdb) {
       expect(cdb.templates).toEqual(jasmine.any(Object));
       expect(cdb.decorators).toEqual(jasmine.any(Object));
       expect(cdb.createVis).toEqual(jasmine.any(Function));
+      expect(cdb.createLayer).toEqual(jasmine.any(Function));
     });
 
     it('config should contain links variables', function() {

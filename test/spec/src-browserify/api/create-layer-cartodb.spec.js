@@ -1,4 +1,21 @@
-describe('api.layers.cartodb', function() {
+var _ = require('underscore');
+var $ = require('jquery');
+var jQueryProxy = require('jquery-proxy').set($);
+var ajaxProxy = require('ajax-proxy').set($.ajax);
+var Backbone = require('backbone');
+var BackboneProxy = require('backbone-proxy').set(Backbone);
+var L = require('leaflet');
+var leafletProxy = require('leaflet-proxy').set(L);
+var createLayer = require('../../../../src-browserify/api/create-layer');
+var LegendModel = require('../../../../src-browserify/geo/ui/legend-model');
+
+describe('api/create-layer (cartodb)', function() {
+  beforeEach(function() {
+    jQueryProxy.set($);
+    ajaxProxy.set($.ajax);
+    BackboneProxy.set(Backbone);
+    leafletProxy.set(L);
+  });
 
   describe('loadLayer leaflet', function() {
     loadLayerSpecs(function() {
@@ -45,7 +62,7 @@ describe('api.layers.cartodb', function() {
         'setOptions'
       ];
 
-      cartodb.createLayer(map, { kind: 'cartodb', options: { table_name:'test', tile_style: 'test', user_name: 'test'} }, function(l) {
+      createLayer(map, { kind: 'cartodb', options: { table_name:'test', tile_style: 'test', user_name: 'test'} }, function(l) {
         layer = l;
       });
 
@@ -69,20 +86,16 @@ describe('api.layers.cartodb', function() {
 
 
     it("should add a infowindow", function(done) {
-      //cdb.templates.add(new cdb.core.Template({
-        //name: 'test',
-      //}));
-
-      cartodb.createLayer(map, { 
-          kind: 'cartodb', 
-          options: { 
+      createLayer(map, {
+          kind: 'cartodb',
+          options: {
             table_name: 'test',
             user_name: 'test',
             tile_style: 'tesst'
           },
-          infowindow: { 
+          infowindow: {
             template: '<div></div>',
-            fields: [{name: 'test', title: true, order: 0}] 
+            fields: [{name: 'test', title: true, order: 0}]
           }
       }, function(l) {
         addFn(map, l);
@@ -120,7 +133,7 @@ describe('api.layers.cartodb', function() {
         ]
       };
 
-      cartodb.createLayer(map, {
+      createLayer(map, {
         kind: 'cartodb',
         options: {
           table_name: 'test',
@@ -139,7 +152,7 @@ describe('api.layers.cartodb', function() {
       });
 
       setTimeout(function() {
-        expect(layer.legend instanceof cdb.geo.ui.LegendModel).toBeTruthy();
+        expect(layer.legend instanceof LegendModel).toBeTruthy();
         expect(layer.legend.get('visible')).toBeTruthy();
         expect(layer.legend.get('items')).toEqual(legend.items);
         done();
@@ -147,16 +160,16 @@ describe('api.layers.cartodb', function() {
     });
 
     it("should add interactivity if there is infowindow", function(done) {
-      cartodb.createLayer(map, { 
-          kind: 'cartodb', 
-          options: { 
+      createLayer(map, {
+          kind: 'cartodb',
+          options: {
             table_name: 'test',
             user_name: 'test',
             tile_style: 'test'
           },
-          infowindow: { 
+          infowindow: {
             template: '<div></div>',
-            fields: [{name: 'test', title: true, order: 0}] 
+            fields: [{name: 'test', title: true, order: 0}]
           }
       }, {
         interactivity: 'myname,jaja'
@@ -174,16 +187,16 @@ describe('api.layers.cartodb', function() {
 
     it("should not add interactivity when interaction is false", function(done) {
 
-      cartodb.createLayer(map, { 
-          kind: 'cartodb', 
-          options: { 
+      createLayer(map, {
+          kind: 'cartodb',
+          options: {
             table_name: 'test',
             user_name: 'test',
             tile_style: 'test'
           },
-          infowindow: { 
+          infowindow: {
             template: '<div></div>',
-            fields: [{name: 'test', title: true, order: 0}] 
+            fields: [{name: 'test', title: true, order: 0}]
           }
       }, {
         interactivity: 'myname,jaja',
@@ -202,16 +215,16 @@ describe('api.layers.cartodb', function() {
     });
 
     it("should add to the map when done", function() {
-      cartodb.createLayer(map, { 
-          kind: 'cartodb', 
-          options: { 
+      createLayer(map, {
+          kind: 'cartodb',
+          options: {
             table_name: 'test',
             user_name: 'test',
             tile_style: 'test'
           },
-          infowindow: { 
+          infowindow: {
             template: '<div></div>',
-            fields: [{name: 'test', title: true, order: 0}] 
+            fields: [{name: 'test', title: true, order: 0}]
           }
       }, {
         interactivity: 'myname,jaja',
@@ -226,5 +239,3 @@ describe('api.layers.cartodb', function() {
   };
 
 });
-
-

@@ -13,6 +13,7 @@ cdb.errors = require('cdb.errors');
 cdb.templates = require('cdb.templates');
 cdb.decorators = require('./core/decorators');
 cdb.createVis = require('./api/create-vis');
+cdb.createLayer = require('./api/create-layer');
 
 // Extracted from vis/vis.js,
 // used in libs like torque and odyssey to add themselves here (or so it seems)
@@ -79,6 +80,9 @@ if (typeof(window.google) != 'undefined' && typeof(window.google.maps) != 'undef
 
 cdb.geo.common = {};
 cdb.geo.common.CartoDBLogo = require('./geo/cartodb-logo');
+
+// overwrites the _Promise defined from the core bundle
+cdb._Promise = require('./api/_promise');
 
 cdb.geo.ui.Text = require('./geo/ui/text');
 cdb.geo.ui.Annotation = require('./geo/ui/annotation');

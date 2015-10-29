@@ -15,12 +15,17 @@ var bundles = {
       'test/lib/fail-tests-if-have-errors-in-src.js',
       'test/lib/reset-proxies-after-each.js',
       'test/spec/src-browserify/require-proxies/create-require-proxy.spec.js',
+      'test/spec/src-browserify/api/create-layer-cartodb.spec.js',
+      'test/spec/src-browserify/api/create-layer.spec.js',
       'test/spec/src-browserify/api/sql.spec.js',
       'test/spec/src-browserify/core/**/*',
       'test/spec/src-browserify/geo/**/*',
       'test/spec/src-browserify/ui/**/*',
-      '!test/spec/src-browserify/ui/common/tabpane.spec.js',
       'test/spec/src-browserify/vis/**/*',
+
+      // not actually used anywhere in cartodb.js, only for editor?
+      // TODO can be (re)moved?
+      '!test/spec/src-browserify/ui/common/tabpane.spec.js',
     ],
     dest: '<%= config.tmp %>/src-browserify-specs.js'
   },

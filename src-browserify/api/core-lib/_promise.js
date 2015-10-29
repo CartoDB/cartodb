@@ -1,5 +1,6 @@
 var Backbone = require('backbone-proxy').get();
 
+// NOTE only for usage in core bundle (where Backbone is not available)
 function _Promise() { }
 _Promise.prototype = Backbone.Events;
 _Promise.prototype.done = function(fn) {

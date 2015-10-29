@@ -1,6 +1,7 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
 var jQueryProxy = require('jquery-proxy');
+require('./decorators'); // since it monkey-patches Backbone.Model
 
 /**
  * Base Model for all CartoDB model.

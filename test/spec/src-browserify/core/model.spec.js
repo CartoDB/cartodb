@@ -1,6 +1,5 @@
 var $ = require('jquery');
-var jQueryProxy = require('jquery-proxy');
-require('../../../../src-browserify/core/decorators'); // to monkey-patch model to work as expected here…
+var jQueryProxy = require('jquery-proxy').set($);
 var Model = require('../../../../src-browserify/core/model');
 
 describe('core/model', function() {

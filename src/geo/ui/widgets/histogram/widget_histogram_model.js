@@ -13,14 +13,11 @@ cdb.geo.ui.Widget.HistogramModel = cdb.geo.ui.Widget.Model.extend({
     return this._data.size();
   },
 
-  getDataSerialized: function() {
-    return this.get('data');
-  },
-
-  parse: function(r) {
-    this._data.reset(r);
+  parse: function(data) {
+    var bins = data.bins;
+    this._data.reset(bins);
     return {
-      data: r
+      data: bins
     };
   }
 

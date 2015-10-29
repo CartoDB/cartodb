@@ -19,17 +19,14 @@ cdb.geo.ui.Widget.CategoryModel = cdb.geo.ui.Widget.Model.extend({
     return this._data.size();
   },
 
-  getDataSerialized: function() {
-    return this.get('data');
-  },
-
   parse: function(data) {
+    var categories = data.categories;
     var columnName = this.get('options').column;
-    var maxCount = data.reduce(function(memo, datum) {
+    var maxCount = categories.reduce(function(memo, datum) {
       return memo + datum.count;
     }, 0);
 
-    var newData = _.map(data, function(datum) {
+    var newData = _.map(categories, function(datum) {
       return {
         'selected': true,
         'name': datum[columnName],

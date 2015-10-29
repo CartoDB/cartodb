@@ -32,6 +32,27 @@ feature "Superadmin's organization API" do
     end
   end
 
+  scenario "organization with owner create success" do
+    org_atts = FactoryGirl.build(:organization, name: 'wadus').values
+    user = FactoryGirl.create(:user_with_private_tables)
+    org_atts[:owner_id] = user.id
+
+    post_json superadmin_organizations_path, { organization: org_atts }, superadmin_headers do |response|
+      response.status.should == 201
+      response.body[:name].should == 'wadus'
+
+      # Double check that the organization has been created properly
+      organization = Organization.filter(:name => org_atts[:name]).first
+      organization.should be_present
+      organization.id.should == response.body[:id]
+
+      organization.owner_id.should == user.id
+      user.reload
+      user.organization_id.should == organization.id
+      organization.destroy_cascade
+    end
+  end
+
   scenario "organization update fail" do
     pending "Exception handling isn' implemented yet"
   end

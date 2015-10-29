@@ -24,6 +24,11 @@ cdb.ui.common.ShareDialog = require('./ui/common/share');
 cdb.ui.common.Dropdown = require('./ui/common/dropdown');
 cdb.ui.common.FullScreen = require('./ui/common/fullscreen');
 cdb.ui.common.Notification = require('./ui/common/notification');
+cdb.ui.common.Row = require('./ui/common/table/row');
+cdb.ui.common.TableData = require('./ui/common/table/table-data');
+cdb.ui.common.TableProperties = require('./ui/common/table/table-properties');
+cdb.ui.common.RowView = require('./ui/common/table/row-view');
+cdb.ui.common.Table = require('./ui/common/table');
 
 cdb.geo.geocoder.NOKIA = require('./geo/geocoder/nokia-geocoder');
 cdb.geo.geocoder.YAHOO = require('./geo/geocoder/yahoo-geocoder');

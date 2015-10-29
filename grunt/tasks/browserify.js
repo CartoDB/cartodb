@@ -18,7 +18,8 @@ var bundles = {
       'test/spec/src-browserify/api/sql.spec.js',
       'test/spec/src-browserify/core/**/*',
       'test/spec/src-browserify/geo/**/*',
-      'test/spec/src-browserify/geo/**/*',
+      'test/spec/src-browserify/ui/**/*',
+      '!test/spec/src-browserify/ui/common/tabpane.spec.js',
       'test/spec/src-browserify/vis/image.spec.js',
     ],
     dest: '<%= config.tmp %>/src-browserify-specs.js'

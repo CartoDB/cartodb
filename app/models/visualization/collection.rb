@@ -177,29 +177,34 @@ module CartoDB
 
       # noinspection RubyArgCount
       def unauthenticated_likes(type)
-        options = { :id.cast(:uuid) => :subject,
-              :privacy => Visualization::Member::PRIVACY_PUBLIC }
+        # visualizations.id == :visualizations__id in Sequel
+        options = {
+          visualizations__id: :subject,
+          privacy: Visualization::Member::PRIVACY_PUBLIC
+        }
         count_likes(type, options)
       end
 
       # noinspection RubyArgCount
       def authenticated_likes(type)
-        options = { :id.cast(:uuid) => :subject }
+        options = {
+          visualizations__id: :subject
+        }
 
         count_likes(type, options)
       end
 
       def count_likes(type, options)
-        options.merge!({:type => type}) if type
+        options.merge!(type: type) if type
 
         user_id = @user_id
 
         dataset = CartoDB::Like.select(:subject)
-        .where(:actor => @user_id)
-        .join(:visualizations, options)
+                               .where(actor: @user_id)
+                               .join(:visualizations, options)
         dataset = add_liked_by_conditions_to_dataset(dataset, user_id)
         dataset.distinct
-        .count
+               .count
       end
 
       def paginate_and_get_entries(dataset, filters)
@@ -223,16 +228,16 @@ module CartoDB
       def user_shared_entities_count(type = nil)
         type ||= @type
         user_shared_count = CartoDB::SharedEntity.select(:entity_id)
-        .where(:recipient_id => @user_id,
-               :entity_type => CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION,
-               :recipient_type => CartoDB::SharedEntity::RECIPIENT_TYPE_USER)
+        .where(recipient_id: @user_id,
+               entity_type: CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION,
+               recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_USER)
         if type.nil?
           user_shared_count = user_shared_count.join(:visualizations,
-                                                     :visualizations__id.cast(:uuid) => :entity_id)
+                                                     visualizations__id: :entity_id)
         else
           user_shared_count = user_shared_count.join(:visualizations,
-                                                     :visualizations__id.cast(:uuid) => :entity_id,
-                                                     :type => type)
+                                                     visualizations__id: :entity_id,
+                                                     type: type)
         end
         user_shared_count.count
       end
@@ -249,11 +254,11 @@ module CartoDB
                  :recipient_type => CartoDB::SharedEntity::RECIPIENT_TYPE_ORGANIZATION)
           if type.nil?
             org_shared_count = org_shared_count.join(:visualizations,
-                                                     :visualizations__id.cast(:uuid) => :entity_id)
+                                                     visualizations__id: :entity_id)
           else
             org_shared_count = org_shared_count.join(:visualizations,
-                                                     :visualizations__id.cast(:uuid) => :entity_id,
-                                                     :type => type)
+                                                     visualizations__id: :entity_id,
+                                                     type: type)
           end
           org_shared_count.count
         end
@@ -296,8 +301,13 @@ module CartoDB
 
       def add_liked_by_conditions_to_dataset(dataset, user_id)
         user_shared_vis = user_shared_vis(user_id)
-        dataset = dataset.where { ( { privacy: [CartoDB::Visualization::Member::PRIVACY_PUBLIC, CartoDB::Visualization::Member::PRIVACY_LINK] } ) | ( { user_id: user_id } ) | ( { id: user_shared_vis } ) }
-        # TODO: this probably introduces duplicates. See #2899. Should be removed when like count and list matches for organizations
+        dataset = dataset.where {
+         ({ privacy: [CartoDB::Visualization::Member::PRIVACY_PUBLIC, CartoDB::Visualization::Member::PRIVACY_LINK] }) |
+         ({ user_id: user_id }) |
+         ({ visualizations__id: user_shared_vis })
+        }
+        # TODO: this probably introduces duplicates. See #2899.
+        # Should be removed when like count and list matches for organizations
         #include_shared_entities(dataset, { user_id: user_id } )
       end
 

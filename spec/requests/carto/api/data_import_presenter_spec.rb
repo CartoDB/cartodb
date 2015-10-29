@@ -4,13 +4,19 @@ require_relative '../../../rspec_configuration'
 require 'ostruct'
 require 'uuidtools'
 require_relative '../../../../app/controllers/carto/api/data_import_presenter'
+require_relative '../../../spec_helper'
 
 module CartoDB; end
 
 describe Carto::Api::DataImportPresenter do
+  before(:all) do
+    @user = create_user(:username => 'test', :email => "client@example.com", :password => "clientex")
+    @user.max_layers = 4
+  end
 
   before(:each) do
     @data_import = OpenStruct.new(
+      user: @user,
       state: 'success',
       success: true,
       created_at: Time.now,
@@ -23,8 +29,14 @@ describe Carto::Api::DataImportPresenter do
       create_visualization: false,
       user_defined_limits: '{}',
       original_url: '',
-      service_name: ''
+      service_name: '',
+      rejected_layers: 'manolo,escobar',
+      runner_warnings: '{"max_tables_per_import":10}'
     )
+  end
+
+  after(:all) do
+    @user.destroy
   end
 
   describe '#display_name' do
@@ -79,6 +91,11 @@ describe Carto::Api::DataImportPresenter do
       presenter.api_public_values['display_name'].should eq @data_import.id
     end
 
+    it 'gets warnings' do
+      CartoDB.expects(:notify_debug).never
+      presenter = Carto::Api::DataImportPresenter.new(@data_import)
+      expected = {:rejected_layers=>["manolo", "escobar"], :user_max_layers=>4, "max_tables_per_import"=>10}
+      presenter.api_public_values[:warnings].should eq expected
+    end
   end
-
 end

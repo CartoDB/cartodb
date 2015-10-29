@@ -23,11 +23,6 @@ cdb.geo.ui.Widget.CategoryModel = cdb.geo.ui.Widget.Model.extend({
     return this.get('data');
   },
 
-  fetch: function(opts) {
-    this.trigger("loading", this);
-    return cdb.core.Model.prototype.fetch.call(this,opts);
-  },
-
   parse: function(data) {
     var columnName = this.get('options').column;
     var maxCount = data.reduce(function(memo, datum) {

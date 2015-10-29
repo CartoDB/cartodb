@@ -163,25 +163,34 @@
                           "interactivity": "cartodb_id",
                           "table_name": "\"\".",
                           "widgets": {
-                            "list_widget": {
-                              "type": "list",
+                            'category_widget_uuid': {
+                              "type": "aggregation",
                               "options": {
                                 "title": "Barrios",
-                                "sync": true,
-                                "columns": [
-                                  "cartodb_id",
-                                  "n_distri",
-                                  "homes",
-                                  "area"
-                                ],
-                                "columns_title": [
-                                  "id",
-                                  "Distrito",
-                                  "casas",
-                                  "m2"
-                                ]
+                                "column": "n_distri",
+                                "aggregation": "count",
+                                "sync": true
                               }
                             },
+                            // "list_widget": {
+                            //   "type": "list",
+                            //   "options": {
+                            //     "title": "Barrios",
+                            //     "sync": true,
+                            //     "columns": [
+                            //       "cartodb_id",
+                            //       "n_distri",
+                            //       "homes",
+                            //       "area"
+                            //     ],
+                            //     "columns_title": [
+                            //       "id",
+                            //       "Distrito",
+                            //       "casas",
+                            //       "m2"
+                            //     ]
+                            //   }
+                            // },
                             "histogram_widget_uuid": {
                               "type": "histogram",
                               "options": {
@@ -194,15 +203,15 @@
                             // 'formula_widget_uuid': {
                             //   "type": "formula",
                             //   "options": {
-                            //     "title": "Total de árboles",
+                            //     "title": "Area total",
                             //     "columns": [
-                            //       "trees"
+                            //       "area"
                             //     ],
                             //     "columns_title": [
-                            //       "Estos son los árboles totales de los distritos"
+                            //       "Este es el area total por metros cuadrados"
                             //     ]
                             //   }
-                            // },
+                            // }
                           }
                         }
                       },
@@ -240,17 +249,17 @@
                           "cartocss_version": "2.1.1",
                           "interactivity": "cartodb_id",
                           "table_name": "\"\".",
-                          "widgets": {
-                            'category_widget_uuid': {
-                              "type": "aggregation",
-                              "options": {
-                                "title": "Categorías de árboles",
-                                "column": "name",
-                                "aggregation": "count",
-                                "sync": true
-                              }
-                            }
-                          }
+                          // "widgets": {
+                          //   'category_widget_uuid': {
+                          //     "type": "aggregation",
+                          //     "options": {
+                          //       "title": "Categorías de árboles",
+                          //       "column": "name",
+                          //       "aggregation": "count",
+                          //       "sync": true
+                          //     }
+                          //   }
+                          // }
                         }
                       }
                     ]

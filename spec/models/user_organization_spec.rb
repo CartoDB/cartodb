@@ -73,9 +73,7 @@ describe UserOrganization do
 
     # Promote
     owner_org = CartoDB::UserOrganization.new(@organization.id, @owner.id)
-    expect {
-      owner_org.promote_user_to_admin
-    }.to raise_error StandardError
+    expect { owner_org.promote_user_to_admin }.to raise_error StandardError
     @owner.reload
 
     @owner.database_schema.should == 'public'

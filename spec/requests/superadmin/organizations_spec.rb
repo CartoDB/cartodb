@@ -42,7 +42,7 @@ feature "Superadmin's organization API" do
       response.body[:name].should == 'wadus'
 
       # Double check that the organization has been created properly
-      organization = Organization.filter(:name => org_atts[:name]).first
+      organization = Organization.filter(name: org_atts[:name]).first
       organization.should be_present
       organization.id.should == response.body[:id]
 
@@ -64,7 +64,7 @@ feature "Superadmin's organization API" do
     post_json superadmin_organizations_path, { organization: org_atts }, superadmin_headers do |response|
       response.status.should == 500
 
-      Organization.filter(:name => org_atts[:name]).first.should be_nil
+      Organization.filter(name: org_atts[:name]).first.should be_nil
       user.reload
       user.organization_id.should be_nil
     end

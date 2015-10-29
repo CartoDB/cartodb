@@ -8,6 +8,10 @@ cdb.windshaft.DashboardInstance = cdb.core.Model.extend({
     this.gridParams = ['map_key', 'api_key', 'cache_policy', 'updated_at'];
   },
 
+  isLoaded: function() {
+    return !!this.get('layergroupid');
+  },
+
   getMapId: function() {
     return this.get('layergroupid');
   },

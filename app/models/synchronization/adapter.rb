@@ -140,7 +140,7 @@ module CartoDB
 
       def results
         runner.results
-      end
+      end 
 
       def error_code
         runner.results.map(&:error_code).compact.first
@@ -180,12 +180,10 @@ module CartoDB
       end
 
       # Store all indexes to re-create them after "syncing" the table by reimporting and swapping it
-      # INFO: As upon import geom index names are not enforced, they might "not collide"
-      # and generate one on the new import plus the one already existing, so we skip those
+      # INFO: As upon import geom index names are not enforced, they might "not collide" and generate one on the new import
+      # plus the one already existing, so we skip those
       def generate_index_statements(origin_schema, origin_table_name)
-        # This code discerns gist indexes like lib/sql/CDB_CartodbfyTable.sql -> _CDB_create_the_geom_columns
-        # It also removes extra `cartodb_id` indexes except the main `TABLENAME_pkey` one
-        # Note that in all cases it leaves composite indexes (indatts > 1)
+        # INFO: This code discerns gist indexes like lib/sql/CDB_CartodbfyTable.sql -> _CDB_create_the_geom_columns
         user.in_database(as: :superuser)[%Q(
           SELECT indexdef AS indexdef
           FROM pg_indexes
@@ -197,39 +195,32 @@ module CartoDB
                 pg_class c, pg_index i,
                 pg_attribute a
               WHERE c.oid  = '#{origin_schema}.#{origin_table_name}'::regclass::oid AND i.indrelid = c.oid
-                AND (
-                  (a.attname = '#{::Table::THE_GEOM}' OR a.attname = '#{::Table::THE_GEOM_WEBMERCATOR}')
-                  AND i.indexrelid = ir.oid
-                  AND i.indnatts = 1
-                  AND i.indkey[0] = a.attnum
-                  AND a.attrelid = c.oid
-                  AND NOT a.attisdropped
-                  AND am.oid = ir.relam
-                  AND am.amname = 'gist'
-                ) OR (
-                  a.attname = '#{::Table::CARTODB_ID}'
-                  AND i.indexrelid = ir.oid
-                  AND i.indnatts = 1
-                  AND i.indkey[0] = a.attnum
-                  AND a.attrelid = c.oid
-                  AND NOT a.attisdropped
-                  AND am.oid = ir.relam
-                  AND ir.relname <> '#{origin_table_name}_pkey'
-                )
-            )
-        )].map { |record| record.fetch(:indexdef) }
+                    AND (a.attname = '#{::Table::THE_GEOM}' OR a.attname = '#{::Table::THE_GEOM_WEBMERCATOR}')
+                    AND i.indexrelid = ir.oid 
+                    AND i.indnatts = 1
+                    AND i.indkey[0] = a.attnum 
+                    AND a.attrelid = c.oid
+                    AND NOT a.attisdropped 
+                    AND am.oid = ir.relam
+                    AND am.amname = 'gist'
+                  )
+        )].map { |record|
+          record.fetch(:indexdef)
+        }
       end
 
       def run_index_statements(statements)
-        statements.each do |statement|
+        statements.each { |statement|
           begin
             database.run(statement)
           rescue => exception
             if exception.message !~ /relation .* already exists/
-              Rollbar.report_message('Error copying indexes', 'error', error: exception.inspect, statement: statement)
+              Rollbar.report_message('Error copying indexes', 'error',
+                                   { error: exception.inspect,
+                                     statement: statement } )
             end
           end
-        end
+        }
       end
 
       private
@@ -238,3 +229,4 @@ module CartoDB
     end
   end
 end
+

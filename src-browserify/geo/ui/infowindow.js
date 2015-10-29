@@ -1,6 +1,7 @@
 var _ = require('underscore');
 var Spinner = require('spin.js');
 var jQueryProxy = require('jquery-proxy');
+require('jquery.jscrollpane'); // registers itself to $.jScrollPane
 var log = require('cdb.log');
 var templates = require('cdb.templates');
 var sanitize = require('../../core/sanitize');

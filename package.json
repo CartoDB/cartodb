@@ -81,6 +81,7 @@
       "jquery.ui.mouse": "./vendor/mod/jquery-ui/jquery.ui.mouse.js",
       "jquery.ui.slider": "./vendor/mod/jquery-ui/jquery.ui.slider.js",
       "jquery.ui.widget": "./vendor/mod/jquery-ui/jquery.ui.widget.js",
+      "jquery.jscrollpane": "./vendor/jscrollpane.js",
       "geojson": "./vendor/GeoJSON.js",
       "html-css-sanitizer": "./vendor/html-css-sanitizer-bundle.js",
       "leaflet-proxy": "./src-browserify/require-proxies/leaflet-proxy.js",
@@ -109,6 +110,11 @@
           "jquery:jQuery",
           "jquery.ui.widget",
           "jquery.ui.mouse"
+        ]
+      },
+      "jquery.jscrollpane": {
+        "depends": [
+          "jquery:jQuery"
         ]
       },
       "spin.js": "Spinner",

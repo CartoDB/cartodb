@@ -767,7 +767,8 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     if (!cdb.core.util.ie || (cdb.core.util.browser.ie && cdb.core.util.browser.ie.version > 8)) {
       this.$el.css({
         'marginBottom':'-10px',
-        'display':'block',
+        'display': 'block',
+        'visibility':'visible',
         opacity:0
       });
 
@@ -793,7 +794,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
         opacity:      "0",
         display:      "block"
       }, 180, function() {
-        self.$el.css({display: "none"});
+        self.$el.css({visibility: "hidden"});
       });
     } else {
       this.$el.hide();

@@ -1,14 +1,17 @@
+var _ = require('underscore');
+var log = require('cdb.log');
+var View = require('../../core/view');
+
 /**
  *  FullScreen widget:
  *
- *  var widget = new cdb.ui.common.FullScreen({
+ *  var widget = new FullScreen({
  *    doc: ".container", // optional; if not specified, we do the fullscreen of the whole window
  *    template: this.getTemplate("table/views/fullscreen")
  *  });
  *
  */
-
-cdb.ui.common.FullScreen = cdb.core.View.extend({
+var FullScreen = View.extend({
 
   tagName: 'div',
   className: 'cartodb-fullscreen',
@@ -86,7 +89,7 @@ cdb.ui.common.FullScreen = cdb.core.View.extend({
 
     if (!this._canFullScreenBeEnabled()) {
       this.undelegateEvents();
-      cdb.log.info('FullScreen API is deprecated on insecure origins. See https://goo.gl/rStTGz for more details.');
+      log.info('FullScreen API is deprecated on insecure origins. See https://goo.gl/rStTGz for more details.');
     }
 
     return this;
@@ -111,3 +114,5 @@ cdb.ui.common.FullScreen = cdb.core.View.extend({
   }
 
 });
+
+module.exports = FullScreen;

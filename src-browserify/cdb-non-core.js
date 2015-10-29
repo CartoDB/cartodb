@@ -22,6 +22,7 @@ cdb.core.View = require('./core/view');
 cdb.ui.common.Dialog = require('./ui/common/dialog');
 cdb.ui.common.ShareDialog = require('./ui/common/share');
 cdb.ui.common.Dropdown = require('./ui/common/dropdown');
+cdb.ui.common.FullScreen = require('./ui/common/fullscreen');
 
 cdb.geo.geocoder.NOKIA = require('./geo/geocoder/nokia-geocoder');
 cdb.geo.geocoder.YAHOO = require('./geo/geocoder/yahoo-geocoder');

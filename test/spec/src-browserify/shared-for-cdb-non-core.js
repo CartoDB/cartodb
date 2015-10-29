@@ -51,6 +51,7 @@ module.exports = function(cdb) {
       expect(cdb.ui.common.Dialog).toEqual(jasmine.any(Function));
       expect(cdb.ui.common.ShareDialog).toEqual(jasmine.any(Function));
       expect(cdb.ui.common.Dropdown).toEqual(jasmine.any(Function));
+      expect(cdb.ui.common.FullScreen).toEqual(jasmine.any(Function));
     });
 
     it('should have a cdb.geo object', function() {

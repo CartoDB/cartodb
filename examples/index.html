@@ -249,7 +249,7 @@
                           "cartocss_version": "2.1.1",
                           "interactivity": "cartodb_id",
                           "table_name": "\"\".",
-                          // "widgets": {
+                          "widgets": {
                           //   'category_widget_uuid': {
                           //     "type": "aggregation",
                           //     "options": {
@@ -259,7 +259,22 @@
                           //       "sync": true
                           //     }
                           //   }
-                          // }
+                            "list_widget": {
+                              "type": "list",
+                              "options": {
+                                "title": "Arboles",
+                                "sync": true,
+                                "columns": [
+                                  "cartodb_id",
+                                  "name"
+                                ],
+                                "columns_title": [
+                                  "id",
+                                  "tipo"
+                                ]
+                              }
+                            },
+                          }
                         }
                       }
                     ]

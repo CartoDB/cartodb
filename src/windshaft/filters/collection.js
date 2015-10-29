@@ -7,7 +7,12 @@ cdb.windshaft.filters.Collection = Backbone.Collection.extend({
       json.layers = [];
       _.each(activeFilters, function(filter) {
         if (!filter.isEmpty()) {
-          json.layers.push(filter.toJSON());
+          var index = filter.get('layerIndex');
+          if (json.layers[index]) {
+            _.extend(json.layers[index],filter.toJSON());
+          } else {
+            json.layers[index] = filter.toJSON();
+          }
         }
       });
     }

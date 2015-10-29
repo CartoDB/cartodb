@@ -415,6 +415,7 @@ class Table
       @data_import = DataImport.find(id: @user_table.data_import_id)
       @data_import.table_id   = id
       @data_import.table_name = name
+      @data_import.save
 
       if !@data_import.privacy.nil?
         if !self.owner.valid_privacy?(@data_import.privacy)
@@ -423,7 +424,7 @@ class Table
         @user_table.privacy = @data_import.privacy
       end
 
-      save
+      @user_table.save
 
       decorator = CartoDB::Datasources::Decorators::Factory.decorator_for(@data_import.service_name)
       if !decorator.nil? && decorator.decorates_layer?

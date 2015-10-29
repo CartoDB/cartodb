@@ -1,4 +1,8 @@
 defaults: &defaults
+  # If uncommented, most images like static map previews and twitter card image urls will use this CDN urls
+  #cdn_url:
+  #  http:             "http.cdn.host"
+  #  https:            "https.cdn.host"
   http_client_logs: true
   ogr2ogr:
     binary:           'which ogr2ogr2'
@@ -10,7 +14,6 @@ defaults: &defaults
   subdomainless_urls: false
   http_port:           3000 # nil|integer. HTTP port to use when building urls. Leave empty to use default (80)
   https_port:          # nil|integer. HTTPS port to use when building urls. Leave empty to use default (443)
-  maps_api_cdn_template: # nil|string. E.g. '{protocol}://{zone}.cartocdn/{user}/api/v1/map/static/named/{tpl_id}/{width}/{height}.png'
   secret_token:       '71c2b25921b84a1cb21c71503ab8fb23'
   account_host:       'localhost.lan:3000'
   account_path:       '/account'
@@ -268,6 +271,11 @@ defaults: &defaults
       app_key:              ''
       app_secret:           ''
       callback_url:         ''
+    box:
+      application_name:     ''
+      client_id:            ''
+      client_secret:        ''
+      box_host:             "app.box.com"
     instagram:
       app_key:              ''
       app_secret:           ''
@@ -303,13 +311,6 @@ defaults: &defaults
             ratelimit_concurrency:  3
             ratelimit_ttl:          4
             ratelimit_wait_secs:    0.1
-  feature_flags:
-    ghost_tables:
-      restricted: true
-    rainbow_maps:
-      restricted: false
-  user_feature_flags:
-    rambo:    ['ghost_tables']
   basemaps:
     CartoDB:
       positron_rainbow_labels:

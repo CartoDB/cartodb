@@ -27,11 +27,6 @@ cdb.geo.ui.Widget.Category.ItemsView = cdb.geo.ui.Widget.View.extend({
         groupItem = $('<div>').addClass('Widget-listGroup');
         this.$el.append(groupItem);
       }
-      mdl.set({
-        'selected': true,
-        'name': mdl.get([this.dataModel.get('options').column]),
-        'totalCount': this.dataModel.getTotalCount()
-      })
       this._addItem(mdl, groupItem);
     }, this);
   },

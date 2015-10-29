@@ -50,7 +50,11 @@ cdb.geo.ui.Widget.Loader = cdb.core.View.extend({
   },
 
   hide: function() {
-    this.$el.removeClass('is-visible');
+    var self = this;
+    setTimeout(function() {
+      self.$el.removeClass('is-visible');
+    }, 500);
+
   }
 
 });

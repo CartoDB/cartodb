@@ -2,7 +2,7 @@ cdb.windshaft.Dashboard = function(options) {
   this.layers = new Backbone.Collection(options.layers);
   this.layerGroup = options.layerGroup;
   // TODO: Pass widgets in the options
-  this.widgets = this.getWidgets();
+  this.widgets = new Backbone.Collection(options.widgets);
   this.filters = new cdb.windshaft.filters.Collection(options.filters);
   this.client = options.client;
   this.statTag = options.statTag;
@@ -37,7 +37,11 @@ cdb.windshaft.Dashboard = function(options) {
 };
 
 cdb.windshaft.Dashboard.prototype.createInstance = function() {
-  var dashboardConfig = this.configGenerator.generate(this);
+  var dashboardConfig = this.configGenerator.generate({
+    layers: this.getVisibleLayers(),
+    widgets: this.getWidgets()
+  });
+  console.log(dashboardConfig);
 
   var instance = this.client.instantiateMap(dashboardConfig, this.filters.toJSON());
   instance.bind('change:layergroupid', function() {
@@ -56,18 +60,9 @@ cdb.windshaft.Dashboard.prototype.getVisibleLayers = function() {
 };
 
 cdb.windshaft.Dashboard.prototype.getWidgetById = function(widgetId) {
-  return this.getWidgets().find({ id: widgetId });
+  return this.widgets.find({ id: widgetId });
 };
 
 cdb.windshaft.Dashboard.prototype.getWidgets = function() {
-  if (!this.widgets) {
-    this.widgets = new Backbone.Collection();
-    this.layers.each(function(layer) {
-      _.each(layer.widgets, function(widget) {
-        this.widgets.add(widget);
-      }.bind(this));
-    }.bind(this));
-  }
-
   return this.widgets;
-}
+};

@@ -1,9 +1,10 @@
 cdb.windshaft.PrivateDashboardConfig = {};
 
-cdb.windshaft.PrivateDashboardConfig.generate = function(dashboard) {
+cdb.windshaft.PrivateDashboardConfig.generate = function(options) {
+  this.layers = options.layers;
   var config = {};
 
-  dashboard.getLayers().each(function(layer, index){
+  this.layers.each(function(layer, index){
     config['layer' + index] = layer.isVisible() ? '1' : 0;
   });
 

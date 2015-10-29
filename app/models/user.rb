@@ -662,20 +662,15 @@ class User < Sequel::Model
   end
 
   def dedicated_support?
-    /(FREE|MAGELLAN|JOHN SNOW|ACADEMY|ACADEMIC|ON HOLD)/i.match(self.account_type) ? false : true
+    Carto::PricePlan.new.dedicated_support?(self)
   end
 
   def remove_logo?
-    /(FREE|MAGELLAN|JOHN SNOW|ACADEMY|ACADEMIC|ON HOLD)/i.match(self.account_type) ? false : true
+    Carto::PricePlan.new.remove_logo?(self)
   end
 
   def soft_geocoding_limit?
-    if self[:soft_geocoding_limit].nil?
-      plan_list = "ACADEMIC|Academy|Academic|INTERNAL|FREE|AMBASSADOR|ACADEMIC MAGELLAN|PARTNER|FREE|Magellan|Academy|ACADEMIC|AMBASSADOR"
-      (self.account_type =~ /(#{plan_list})/ ? false : true)
-    else
-      self[:soft_geocoding_limit]
-    end
+    Carto::PricePlan.new.soft_geocoding_limit?(self)
   end
   alias_method :soft_geocoding_limit, :soft_geocoding_limit?
 

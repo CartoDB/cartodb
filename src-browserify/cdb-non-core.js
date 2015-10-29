@@ -1,14 +1,14 @@
 // Definitions shared for all non-core bundles
+require('json2'); // TODO polyfills window.JSON, was required for Backbone and to support legacy IE; still relevant for supported browsers?
+var Backbone = require('backbone-proxy').set(require('backbone')).get(); // requirement for cdb
 var cdb = require('cdb');
+cdb.Backbone = Backbone;
 var _ = cdb._ = require('underscore');
 cdb.Mustache = require('mustache');
 
 cdb.$ = require('jquery-proxy').get();
 require('mousewheel'); // registers itself to $.event; TODO what's this required for? still relevant for supported browsers?
 require('mwheelIntent'); // registers itself to $.event; TODO what's this required for? still relevant for supported browsers?
-
-require('json2'); // TODO polyfills window.JSON, was required for Backbone and to support legacy IE; still relevant for supported browsers?
-cdb.Backbone = require('backbone-proxy').set(require('backbone')).get();
 
 cdb.config = require('cdb.config');
 cdb.log = require('cdb.log');

@@ -1,5 +1,9 @@
+var _ = require('underscore');
+var InfoBox = require('./infobox');
+var sanitize = require('../../core/sanitize');
+var InfowindowModel = require('./infowindow-model');
 
-cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
+var Tooltip = InfoBox.extend({
 
   defaultTemplate: '<p>{{text}}</p>',
   className: 'cartodb-tooltip',
@@ -15,7 +19,7 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
       throw new Error("mapView should be present");
     }
     this.options.template = this.options.template || this.defaultTemplate;
-    cdb.geo.ui.InfoBox.prototype.initialize.call(this);
+    InfoBox.prototype.initialize.call(this);
     this._filter = null;
     this.showing = false;
     this.showhideTimeout = null;
@@ -60,7 +64,7 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
               non_valid_keys = non_valid_keys.concat(this.options.omit_columns);
             }
 
-            var c = cdb.geo.ui.InfowindowModel.contentForFields(data, this.options.fields, {
+            var c = InfowindowModel.contentForFields(data, this.options.fields, {
               empty_fields: this.options.empty_fields
             });
 
@@ -186,9 +190,11 @@ cdb.geo.ui.Tooltip = cdb.geo.ui.InfoBox.extend({
   },
 
   render: function(data) {
-    var sanitizedOutput = cdb.core.sanitize.html(this.template(data));
+    var sanitizedOutput = sanitize.html(this.template(data));
     this.$el.html( sanitizedOutput );
     return this;
   }
 
 });
+
+module.exports = Tooltip;

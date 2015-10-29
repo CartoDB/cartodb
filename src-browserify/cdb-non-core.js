@@ -111,5 +111,6 @@ cdb.geo.ui.Mobile = require('./geo/ui/mobile');
 cdb.geo.ui.TilesLoader = require('./geo/ui/tiles-loader');
 cdb.geo.ui.TimeSlider = require('./geo/ui/time-slider');
 cdb.geo.ui.InfoBox = require('./geo/ui/infobox');
+cdb.geo.ui.Tooltip = require('./geo/ui/tooltip');
 
 module.exports = cdb;

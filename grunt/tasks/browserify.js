@@ -38,6 +38,7 @@ var bundles = {
       'test/spec/src-browserify/geo/ui/mobile.spec.js',
       'test/spec/src-browserify/geo/ui/search.spec.js',
       'test/spec/src-browserify/geo/ui/time-slider.spec.js',
+      'test/spec/src-browserify/geo/ui/tooltip.spec.js',
       'test/spec/src-browserify/geo/*',
       'test/spec/src-browserify/vis/image.spec.js',
     ],

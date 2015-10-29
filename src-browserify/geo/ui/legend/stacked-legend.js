@@ -1,5 +1,5 @@
 var _ = require('underscore');
-var jQueryProxy = require('jquery-proxy');
+var $ = require('jquery-proxy').get();
 var View = require('../../../core/view');
 
 var StackedLegend = View.extend({
@@ -86,7 +86,6 @@ var StackedLegend = View.extend({
   },
 
   addTo: function(element) {
-    var $ = jQueryProxy.get();
     $(element).html(this.render().$el);
   }
 });

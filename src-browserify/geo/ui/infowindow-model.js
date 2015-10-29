@@ -1,5 +1,5 @@
 var _ = require('underscore');
-var jQueryProxy = require('jquery-proxy');
+var $ = require('jquery-proxy').get();
 var Backbone = require('backbone');
 
 /**
@@ -72,7 +72,7 @@ var InfowindowModel = Backbone.Model.extend({
   },
 
   _addField: function(fieldName, at) {
-    var dfd = jQueryProxy.get().Deferred();
+    var dfd = $.Deferred();
     if(!this.containsField(fieldName)) {
       var fields = this.get('fields');
       if(fields) {
@@ -89,7 +89,7 @@ var InfowindowModel = Backbone.Model.extend({
 
   addField: function(fieldName, at) {
     var self = this;
-    jQueryProxy.get().when(this._addField(fieldName, at)).then(function() {
+    $.when(this._addField(fieldName, at)).then(function() {
       self.sortFields();
       self.trigger('change:fields');
       self.trigger('add:fields');

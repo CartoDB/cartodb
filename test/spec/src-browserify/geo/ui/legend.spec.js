@@ -1,7 +1,7 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
 var $ = require('jquery');
-var jQueryProxy = require('jquery-proxy');
+var jQueryProxy = require('jquery-proxy').set($);
 var cdb = require('cdb'); // to setup cdb.geo.ui.*, cdb.geo.ui.Legend.*
 var config = require('cdb.config');
 

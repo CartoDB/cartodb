@@ -1,5 +1,5 @@
 var _ = require('underscore');
-var jQueryProxy = require('jquery-proxy');
+var $ = require('jquery-proxy').get();
 var sanitize = require('../../core/sanitize');
 var View = require('../../core/view');
 var Template = require('../../core/template');
@@ -81,8 +81,6 @@ module.exports = View.extend({
     var public_map_url = url.replace("embed_map", "public_map"); // TODO: get real URL
 
     var code = "<iframe width='100%' height='520' frameborder='0' src='" + url + "' allowfullscreen webkitallowfullscreen mozallowfullscreen oallowfullscreen msallowfullscreen></iframe>";
-
-    var $ = jQueryProxy.get();
 
     this.dialog = new ShareDialog({
       title: data.map.get("title"),

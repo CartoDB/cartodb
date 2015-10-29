@@ -1,5 +1,5 @@
 var _ = require('underscore');
-var jQueryProxy = require('jquery-proxy');
+var $ = require('jquery-proxy').get();
 var templates = require('cdb.templates');
 var View = require('../../core/view');
 
@@ -67,7 +67,7 @@ module.exports = View.extend({
     _.bindAll(this, 'render', '_keydown');
 
     // Keydown bindings for the dialog
-    jQueryProxy.get()(document).bind('keydown', this._keydown);
+    $(document).bind('keydown', this._keydown);
 
     // After removing the dialog, cleaning other bindings
     this.bind("clean", this._reClean);
@@ -114,7 +114,7 @@ module.exports = View.extend({
    * helper method that renders the dialog and appends it to body
    */
   appendToBody: function() {
-    jQueryProxy.get()('body').append(this.render().el);
+    $('body').append(this.render().el);
     return this;
   },
 
@@ -163,7 +163,7 @@ module.exports = View.extend({
 
   _reClean: function() {
 
-    jQueryProxy.get()(document).unbind('keydown', this._keydown);
+    $(document).unbind('keydown', this._keydown);
 
   }
 

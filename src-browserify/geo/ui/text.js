@@ -1,7 +1,7 @@
 var _ = require('underscore');
 var View = require('../../core/view');
 var sanitize = require('../../core/sanitize');
-var jQueryProxy = require('jquery-proxy');
+var $ = require('jquery-proxy').get();
 
 var Text = View.extend({
 
@@ -26,7 +26,6 @@ var Text = View.extend({
     this.template = this.options.template;
 
     var self = this;
-    var $ = jQueryProxy.get();
 
     $(window).on("map_resized", function() {
       self._place();
@@ -164,7 +163,7 @@ var Text = View.extend({
   _fixLinks: function() {
 
     this.$el.find("a").each(function(i, link) {
-      jQueryProxy.get()(this).attr("target", "_top");
+      $(this).attr("target", "_top");
     });
 
   },

@@ -1,7 +1,5 @@
 var _ = require('underscore');
-
-var jQueryProxy = require('jquery-proxy');
-
+var $ = require('jquery-proxy').get();
 var Model = require('../../core/model');
 var Template = require('../../core/template');
 var View = require('../../core/view');
@@ -334,7 +332,7 @@ var Annotation = View.extend({
   _fixLinks: function() {
 
     this.$el.find("a").each(function(i, link) {
-      jQueryProxy.get()(this).attr("target", "_top");
+      $(this).attr("target", "_top");
     });
 
   },

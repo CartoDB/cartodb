@@ -1,5 +1,5 @@
 var $ = require('jquery');
-var jQueryProxy = require('jquery-proxy');
+var jQueryProxy = require('jquery-proxy').set($);
 var InfowindowModel = require('../../../../../src-browserify/geo/ui/infowindow-model');
 
 describe('geo/ui/infowindow-model', function() {

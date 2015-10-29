@@ -1,5 +1,5 @@
 var _ = require('underscore');
-var jQueryProxy = require('jquery-proxy');
+var $ = require('jquery-proxy').get();
 var sanitize = require('../../core/sanitize');
 var Text = require('./text');
 
@@ -26,7 +26,6 @@ module.exports = Text.extend({
     this.template = this.options.template;
 
     var self = this;
-    var $ = jQueryProxy.get();
 
     $(window).on("map_resized", function() {
       self._place();

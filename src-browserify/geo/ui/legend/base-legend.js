@@ -1,4 +1,4 @@
-var jQueryProxy = require('jquery-proxy');
+var $ = require('jquery-proxy').get();
 var View = require('../../../core/view');
 
 /**
@@ -13,7 +13,6 @@ var BaseLegend = View.extend({
   },
 
   addTo: function(element) {
-    var $ = jQueryProxy.get();
     $(element).html(this.render().$el);
   },
 

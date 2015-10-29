@@ -1,5 +1,5 @@
 var $ = require('jquery');
-var jQueryProxy = require('jquery-proxy');
+var jQueryProxy = require('jquery-proxy').set($);
 var templates = require('cdb.templates');
 var log = require('cdb.log');
 var config = require('cdb.config');

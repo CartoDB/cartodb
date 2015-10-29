@@ -1,5 +1,5 @@
 var _ = require('underscore');
-var jQueryProxy = require('jquery-proxy');
+var $ = require('jquery-proxy').get();
 var Dialog = require('./dialog');
 var sanitize = require('../../core/sanitize');
 
@@ -56,7 +56,7 @@ module.exports = Dialog.extend({
     }
 
     // Keydown bindings for the dialog
-    jQueryProxy.get()(document).bind('keydown', this._keydown);
+    $(document).bind('keydown', this._keydown);
 
     // After removing the dialog, cleaning other bindings
     this.bind("clean", this._reClean);

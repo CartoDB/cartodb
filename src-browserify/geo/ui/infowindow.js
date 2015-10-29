@@ -1,6 +1,6 @@
 var _ = require('underscore');
 var Spinner = require('spin.js');
-var jQueryProxy = require('jquery-proxy');
+var $ = require('jquery-proxy').get();
 require('jquery.jscrollpane'); // registers itself to $.jScrollPane
 var log = require('cdb.log');
 var templates = require('cdb.templates');
@@ -211,8 +211,6 @@ var Infowindow = View.extend({
    *  Check event origin
    */
   _checkOrigin: function(ev) {
-    var $ = jQueryProxy.get();
-
     // If the mouse down come from jspVerticalBar
     // dont stop the propagation, but if the event
     // is a touchstart, stop the propagation
@@ -391,7 +389,7 @@ var Infowindow = View.extend({
       this.remove();
     });
 
-    $img = jQueryProxy.get()("<img />").attr("src", url);
+    $img = $("<img />").attr("src", url);
     $cover.append($img);
 
     $img.load(function(){

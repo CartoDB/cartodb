@@ -1,7 +1,15 @@
-describe('Interaction funcionality', function() {
+var $ = require('jquery');
+var google = window.google;
+var googleProxy = require('google-proxy').set(google);
+var ajaxProxy = require('ajax-proxy').set($.ajax);
+var CartoDBLayerGMaps = require('../../../../../src-browserify/geo/gmaps/cartodb-layer-gmaps');
+
+describe('CartoDBLayerGMaps: Interaction funcionality', function() {
   var div, map, cdb_layer;
 
   beforeEach(function() {
+    ajaxProxy.set($.ajax);
+    googleProxy.set(window.google);
 
     div = document.createElement('div');
     div.setAttribute("id","map");
@@ -16,7 +24,7 @@ describe('Interaction funcionality', function() {
       mapTypeControl: false
     });
 
-    cdb_layer = new cdb.geo.CartoDBLayerGMaps({
+    cdb_layer = new CartoDBLayerGMaps({
       map: map,
       user_name:"examples",
       table_name: 'country_colors',

@@ -3,7 +3,6 @@ var _ = require('underscore');
 
 // Necessary evil due to gmaps code uses cdb.geo.* to access certain objects, can't untangel since that leads to circular
 // dependencies
-var cdb = require('cdb');
 var jQueryProxy = require('jquery-proxy').set($);
 var googleProxy = require('google-proxy').set(window.google);
 var ajaxProxy = require('ajax-proxy').set($.ajax);

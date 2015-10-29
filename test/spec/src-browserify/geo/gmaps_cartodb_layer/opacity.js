@@ -1,7 +1,15 @@
-describe('Opacity interaction', function() {
+var $ = require('jquery');
+var google = window.google;
+var googleProxy = require('google-proxy').set(google);
+var ajaxProxy = require('ajax-proxy').set($.ajax);
+var CartoDBLayerGMaps = require('../../../../../src-browserify/geo/gmaps/cartodb-layer-gmaps');
+
+describe('CartoDBLayerGMaps: Opacity interaction', function() {
   var div, map, cdb_layer;
 
   beforeEach(function() {
+    ajaxProxy.set($.ajax);
+    googleProxy.set(window.google);
 
     div = document.createElement('div');
     div.setAttribute("id","map");
@@ -16,7 +24,7 @@ describe('Opacity interaction', function() {
       mapTypeControl: false
     });
 
-    cdb_layer = new cdb.geo.CartoDBLayerGMaps({
+    cdb_layer = new CartoDBLayerGMaps({
       map: map,
       user_name:"examples",
       table_name: 'earthquakes',
@@ -48,7 +56,7 @@ describe('Opacity interaction', function() {
 
 
   xit('Opacity shouldn\'t change if it is not visible', function() {
-    
+
     waits(500);
 
     runs(function() {
@@ -69,26 +77,4 @@ describe('Opacity interaction', function() {
       expect(before_opacity).toEqual(0.8);
     });
   });
-
-
-  // it('Opacity should change if layer is visible', function() {
-  //   cdb_layer.setOpacity(0.3);
-
-  //   var $layer = $(div).find(".leaflet-layer")
-  //     , opacity = cdb_layer.options.opacity;
-
-  //   expect(cdb_layer.options.visible).toBeTruthy();
-  //   expect($layer.css("opacity")).toEqual('0.3');
-  // });
-
-
-  // it('If sets opacity to 0, the layer is still visible', function() {
-  //   cdb_layer.setOpacity(0);
-
-  //   var $layer = $(div).find(".leaflet-layer")
-  //     , opacity = cdb_layer.options.opacity;
-
-  //   expect(cdb_layer.options.visible).toBeTruthy();
-  //   expect($layer.css("opacity")).toEqual('0');
-  // });
 });

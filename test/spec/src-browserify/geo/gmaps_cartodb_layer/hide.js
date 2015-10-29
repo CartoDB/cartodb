@@ -1,7 +1,16 @@
-describe('Hide funcionality', function() {
+var $ = require('jquery');
+var google = window.google;
+var googleProxy = require('google-proxy').set(google);
+var ajaxProxy = require('ajax-proxy').set($.ajax);
+var CartoDBLayerGMaps = require('../../../../../src-browserify/geo/gmaps/cartodb-layer-gmaps');
+
+describe('CartoDBLayerGMaps: Hide funcionality', function() {
   var div, map, cdb_layer;
 
   beforeEach(function() {
+    ajaxProxy.set($.ajax);
+    googleProxy.set(window.google);
+
     div = document.createElement('div');
     div.setAttribute("id","map");
     div.style.height = "100px";
@@ -15,7 +24,7 @@ describe('Hide funcionality', function() {
       mapTypeControl: false
     });
 
-    cdb_layer = new cdb.geo.CartoDBLayerGMaps({
+    cdb_layer = new CartoDBLayerGMaps({
       map: map,
       user_name:"examples",
       tile_style: 'test',
@@ -50,7 +59,7 @@ describe('Hide funcionality', function() {
         expect(opacity).toEqual(0);
         expect(before_opacity).not.toEqual(0);
         done();
-      }, 500);  
+      }, 500);
     }, 500);
   });
 

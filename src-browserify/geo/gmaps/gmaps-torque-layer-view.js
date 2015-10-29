@@ -1,13 +1,13 @@
-
-(function() {
-
-if(typeof(google) == "undefined" || typeof(google.maps) == "undefined")
-  return;
+var torque = window.torque; // TODO dependency, other way to require?
+var _ = require('underscore');
+var cdb = require('cdb'); // cdb.geo.GMapsTorqueLayerView
+var GMapsLayerView = require('./gmaps-layer-view');
+var CartoDBLogo = require('../cartodb-logo');
 
 var GMapsTorqueLayerView = function(layerModel, gmapsMap) {
 
   var extra = layerModel.get('extra_params');
-  cdb.geo.GMapsLayerView.call(this, layerModel, this, gmapsMap);
+  GMapsLayerView.call(this, layerModel, this, gmapsMap);
 
   var query = this._getQuery(layerModel);
   torque.GMapsTorqueLayer.call(this, {
@@ -52,7 +52,7 @@ var GMapsTorqueLayerView = function(layerModel, gmapsMap) {
 
 _.extend(
   GMapsTorqueLayerView.prototype,
-  cdb.geo.GMapsLayerView.prototype,
+  GMapsLayerView.prototype,
   torque.GMapsTorqueLayer.prototype,
   {
 
@@ -63,7 +63,7 @@ _.extend(
     if ('query' in changed || 'query_wrapper' in changed) {
       this.setSQL(this._getQuery(this.model));
     }
-    if ('visible' in changed) 
+    if ('visible' in changed)
       this.model.get('visible') ? this.show(): this.hide();
   },
 
@@ -84,7 +84,7 @@ _.extend(
     torque.GMapsTorqueLayer.prototype.onAdd.apply(this);
     // Add CartoDB logo
     if (this.options.cartodb_logo != false)
-      cdb.geo.common.CartoDBLogo.addWadus({ left: 74, bottom:8 }, 2000, this.map.getDiv())
+      CartoDBLogo.addWadus({ left: 74, bottom:8 }, 2000, this.map.getDiv())
   },
 
   onTilesLoaded: function() {
@@ -98,8 +98,6 @@ _.extend(
 
 });
 
-
 cdb.geo.GMapsTorqueLayerView = GMapsTorqueLayerView;
 
-
-})();
+module.exports = GMapsTorqueLayerView;

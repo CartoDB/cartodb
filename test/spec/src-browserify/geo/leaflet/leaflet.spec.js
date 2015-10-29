@@ -1,10 +1,9 @@
 var $ = require('jquery');
 var _ = require('underscore');
 
-// Load L.TorqueLayer, it's only available if Leaflet is loaded at the time of the require
 var L = require('leaflet');
 global.L = L;
-require('torque.js');
+require('torque.js'); // attaches L.TorqueLayer (but only while window.L is loaded before this require!)
 
 var ajaxProxy = require('ajax-proxy').set($.ajax);
 var leafletProxy = require('leaflet-proxy').set(L);

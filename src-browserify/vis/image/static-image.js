@@ -1,3 +1,4 @@
+var torque = window.torque; // TODO optional dependency, other way to require?
 var _ = require('underscore');
 var Queue = require('./queue');
 var Loader = require('../../core/loader');

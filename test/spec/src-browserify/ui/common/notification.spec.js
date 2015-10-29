@@ -1,9 +1,11 @@
+var $ = require('jquery');
+var Notification = require('../../../../../src-browserify/ui/common/notification');
 
-describe("common.ui.Notification", function() {
+describe('ui/common/notification', function() {
 
   var notification;
   beforeEach(function() {
-    notification = new cdb.ui.common.Notification({
+    notification = new Notification({
         el: $('<div>'),
         template: 'template'
     });
@@ -20,13 +22,13 @@ describe("common.ui.Notification", function() {
   });
 
   it("should be closed on timeout", function(done) {
-    notification = new cdb.ui.common.Notification({
+    notification = new Notification({
       el: $('<div>'),
       timeout: 250,
       template: 'template'
     });
     notification.open();
-    
+
     setTimeout(function () {
       expect(notification.$el.css('display')).toEqual('none');
       done();

@@ -1,4 +1,4 @@
-// Defintions shared for all non-core bundles
+// Definitions shared for all non-core bundles
 var cdb = require('cdb');
 var _ = cdb._ = require('underscore');
 cdb.Mustache = require('mustache');
@@ -23,6 +23,7 @@ cdb.ui.common.Dialog = require('./ui/common/dialog');
 cdb.ui.common.ShareDialog = require('./ui/common/share');
 cdb.ui.common.Dropdown = require('./ui/common/dropdown');
 cdb.ui.common.FullScreen = require('./ui/common/fullscreen');
+cdb.ui.common.Notification = require('./ui/common/notification');
 
 cdb.geo.geocoder.NOKIA = require('./geo/geocoder/nokia-geocoder');
 cdb.geo.geocoder.YAHOO = require('./geo/geocoder/yahoo-geocoder');

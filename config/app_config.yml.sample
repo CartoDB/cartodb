@@ -271,6 +271,11 @@ defaults: &defaults
       app_key:              ''
       app_secret:           ''
       callback_url:         ''
+    box:
+      application_name:     ''
+      client_id:            ''
+      client_secret:        ''
+      box_host:             "app.box.com"
     instagram:
       app_key:              ''
       app_secret:           ''

@@ -77,6 +77,7 @@ module ApplicationHelper
       gdrive_api_key:             Cartodb.config[:gdrive]['api_key'],
       gdrive_app_id:              Cartodb.config[:gdrive]['app_id'],
       oauth_dropbox:              Cartodb.config[:oauth]['dropbox']['app_key'],
+      oauth_box:                  Cartodb.config[:oauth]['box']['client_id'],
       oauth_gdrive:               Cartodb.config[:oauth]['gdrive']['client_id'],
       oauth_instagram:            Cartodb.config[:oauth]['instagram']['app_key'],
       oauth_mailchimp:            Cartodb.config[:oauth]['mailchimp']['app_key'],

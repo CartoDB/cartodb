@@ -23,6 +23,7 @@
 * Data-library page for common-data and accounts with data_library feature flag [#5712](https://github.com/CartoDB/cartodb/pull/5712)
 * Removed config option `maps_api_cdn_template`, reusing now instead `cdn_url`
 * Allow to create sync tables with a map if setting up onw from "connect dataset" from the Maps view
+* Added [#5975 Box integration](https://github.com/CartoDB/cartodb/issues/5975).
 
 
 3.11.0 (2015-09-09)

@@ -20,16 +20,19 @@ describe DatasourcesFactory do
       DatasourcesFactory.set_config(get_config)
 
       dropbox_provider = DatasourcesFactory.get_datasource(Url::Dropbox::DATASOURCE_NAME, user_mock)
-      dropbox_provider.kind_of?(Url::Dropbox).should eq true
+      dropbox_provider.is_a?(Url::Dropbox).should eq true
+
+      dropbox_provider = DatasourcesFactory.get_datasource(Url::Box::DATASOURCE_NAME, user_mock)
+      dropbox_provider.is_a?(Url::Box).should eq true
 
       gdrive_provider = DatasourcesFactory.get_datasource(Url::GDrive::DATASOURCE_NAME, user_mock)
-      gdrive_provider.kind_of?(Url::GDrive).should eq true
+      gdrive_provider.is_a?(Url::GDrive).should eq true
 
       url_provider = DatasourcesFactory.get_datasource(Url::PublicUrl::DATASOURCE_NAME, user_mock)
-      url_provider.kind_of?(Url::PublicUrl).should eq true
+      url_provider.is_a?(Url::PublicUrl).should eq true
 
       twitter_provider = DatasourcesFactory.get_datasource(Search::Twitter::DATASOURCE_NAME, user_mock)
-      twitter_provider.kind_of?(Search::Twitter).should eq true
+      twitter_provider.is_a?(Search::Twitter).should eq true
 
       nil_provider = DatasourcesFactory.get_datasource(nil, user_mock)
       nil_provider.nil?.should eq true

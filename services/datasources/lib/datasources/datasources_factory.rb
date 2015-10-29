@@ -1,6 +1,7 @@
 # encoding: utf-8
 require_relative './url/arcgis'
 require_relative './url/dropbox'
+require_relative './url/box'
 require_relative './url/gdrive'
 require_relative './url/instagram_oauth'
 require_relative './url/mailchimp'
@@ -39,6 +40,8 @@ module CartoDB
           case datasource_name
             when Url::Dropbox::DATASOURCE_NAME
               Url::Dropbox.get_new(DatasourcesFactory.config_for(datasource_name, user), user)
+            when Url::Box::DATASOURCE_NAME
+              Url::Box.get_new(DatasourcesFactory.config_for(datasource_name, user), user)
             when Url::GDrive::DATASOURCE_NAME
               Url::GDrive.get_new(DatasourcesFactory.config_for(datasource_name, user), user)
             when Url::InstagramOAuth::DATASOURCE_NAME
@@ -63,6 +66,7 @@ module CartoDB
         def self.get_all_oauth_datasources
           [
             Url::Dropbox::DATASOURCE_NAME,
+            Url::Box::DATASOURCE_NAME,
             Url::GDrive::DATASOURCE_NAME,
             Url::InstagramOAuth::DATASOURCE_NAME,
             Url::MailChimp::DATASOURCE_NAME
@@ -80,16 +84,16 @@ module CartoDB
           includes_customized_config = false
 
           case datasource_name
-            when Url::Dropbox::DATASOURCE_NAME, Url::GDrive::DATASOURCE_NAME, Url::InstagramOAuth::DATASOURCE_NAME,
-                 Url::MailChimp::DATASOURCE_NAME
-              config = (config_source[:oauth] rescue nil)
-              config ||= (config_source[:oauth.to_s] rescue nil)
-            when Search::Twitter::DATASOURCE_NAME
-              config = (config_source[:datasource_search] rescue nil)
-              config ||= (config_source[:datasource_search.to_s] rescue nil)
-              includes_customized_config = true
-            else
-              config = nil
+          when Url::Dropbox::DATASOURCE_NAME, Url::Box::DATASOURCE_NAME, Url::GDrive::DATASOURCE_NAME, Url::InstagramOAuth::DATASOURCE_NAME,
+               Url::MailChimp::DATASOURCE_NAME
+            config = (config_source[:oauth] rescue nil)
+            config ||= (config_source[:oauth.to_s] rescue nil)
+          when Search::Twitter::DATASOURCE_NAME
+            config = (config_source[:datasource_search] rescue nil)
+            config ||= (config_source[:datasource_search.to_s] rescue nil)
+            includes_customized_config = true
+          else
+            config = nil
           end
 
           if config.nil? || config.empty?

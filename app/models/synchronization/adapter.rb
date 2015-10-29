@@ -203,8 +203,7 @@ module CartoDB
                 AND am.oid = ir.relam
                 AND (
                   (
-                    a.attname = '#{::Table::THE_GEOM}'
-                    OR a.attname = '#{::Table::THE_GEOM_WEBMERCATOR}'
+                    (a.attname = '#{::Table::THE_GEOM}' OR a.attname = '#{::Table::THE_GEOM_WEBMERCATOR}')
                     AND am.amname = 'gist'
                   ) OR (
                     a.attname = '#{::Table::CARTODB_ID}'

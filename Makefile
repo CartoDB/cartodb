@@ -11,7 +11,6 @@ PENDING_SPECS = \
   $(NULL)
 
 WORKING_SPECS_INTEGRATIONS = \
-  spec/integrations/common_data_integration.rb \
   $(NULL)
 
 WORKING_SPECS_1 = \
@@ -151,8 +150,13 @@ WORKING_SPECS_9 = \
   spec/rspec_configuration.rb \
   services/twitter-search/spec/unit/ \
   services/datasources/spec/acceptance/datasources_factory_spec.rb \
+	services/datasources/spec/acceptance/dropbox_spec.rb \
+	services/datasources/spec/acceptance/gdrive_spec.rb \
   services/datasources/spec/integration/ \
   services/datasources/spec/unit/arcgis_spec.rb \
+	services/datasources/spec/unit/dropbox_spec.rb \
+	services/datasources/spec/unit/box_spec.rb \
+	services/datasources/spec/unit/gdrive_spec.rb \
   services/importer/spec/regression/query_batcher_spec.rb \
   services/importer/spec/regression/query_batcher_spec.rb \
   services/platform-limits/spec/unit/ \

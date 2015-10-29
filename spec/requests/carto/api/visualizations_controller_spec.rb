@@ -39,7 +39,8 @@ describe Carto::Api::VisualizationsController do
             attributes: [],
             associations: {
               'owner' => {
-                attributes: [ 'email', 'quota_in_bytes', 'db_size_in_bytes', 'maps_count', 'table_count' ],
+                attributes: [ 'email', 'quota_in_bytes', 'db_size_in_bytes', 'public_visualization_count',
+                'all_visualization_count', 'table_count' ],
                 associations: {}
               }
             }
@@ -50,7 +51,8 @@ describe Carto::Api::VisualizationsController do
         attributes: [],
         associations: {
           'owner' => {
-            attributes: [ 'email', 'quota_in_bytes', 'db_size_in_bytes', 'maps_count', 'table_count' ],
+            attributes: [ 'email', 'quota_in_bytes', 'db_size_in_bytes', 'public_visualization_count',
+            'all_visualization_count', 'table_count' ],
             associations: {}
           }
         }
@@ -82,7 +84,7 @@ describe Carto::Api::VisualizationsController do
       table1 = create_random_table($user_1)
 
       Carto::StaticMapsURLHelper.any_instance
-                                .stubs(:get_static_maps_api_cdn_config)
+                                .stubs(:get_cdn_config)
                                 .returns(nil)
       ApplicationHelper.stubs(:maps_api_template)
                        .returns("http://#{$user_1.username}.localhost.lan:8181")
@@ -107,16 +109,15 @@ describe Carto::Api::VisualizationsController do
       table1 = create_random_table($user_1)
 
       Carto::StaticMapsURLHelper.any_instance
-                                .stubs(:get_static_maps_api_cdn_config)
-                                .returns("{protocol}://cdn.local.lan/{user}")
+                                .stubs(:get_cdn_config)
+                                .returns("http" => "cdn.local.lan")
 
-      get api_v2_visualizations_static_map_url({
+      get api_v2_visualizations_static_map_url(
           user_domain: $user_1.username,
-          #api_key: $user_1.api_key,
           id: table1.table_visualization.id,
           width: width,
           height: height
-        }),
+        ),
         @headers
       last_response.status.should == 302
 
@@ -139,7 +140,7 @@ describe Carto::Api::VisualizationsController do
       private_table = create_random_table($user_1)
 
       Carto::StaticMapsURLHelper.any_instance
-                                     .stubs(:get_static_maps_api_cdn_config)
+                                     .stubs(:get_cdn_config)
                                      .returns(nil)
       ApplicationHelper.stubs(:maps_api_template)
                        .returns("http://#{$user_1.username}.localhost.lan:8181")
@@ -184,8 +185,8 @@ describe Carto::Api::VisualizationsController do
       table1 = create_random_table($user_1)
 
       Carto::StaticMapsURLHelper.any_instance
-                                     .stubs(:get_static_maps_api_cdn_config)
-                                     .returns("{protocol}://cdn.local.lan/{user}")
+                                     .stubs(:get_cdn_config)
+                                     .returns("http" => "cdn.local.lan")
 
       get api_v2_visualizations_static_map_url({
           user_domain: $user_1.username,

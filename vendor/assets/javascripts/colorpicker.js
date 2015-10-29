@@ -396,22 +396,26 @@
 
             var slideClone = slide.cloneNode(true);
             var pickerClone = picker.cloneNode(true);
-
             var hsvGradient = slideClone.getElementById('gradient-hsv');
-
             var hsvRect = slideClone.getElementsByTagName('rect')[0];
 
-            hsvGradient.id = 'gradient-hsv-' + uniqID;
-            hsvRect.setAttribute('fill', 'url(#' + hsvGradient.id + ')');
+            if (hsvGradient) {
+              hsvGradient.id = 'gradient-hsv-' + uniqID;
+              hsvRect.setAttribute('fill', 'url(#' + hsvGradient.id + ')');
+            }
 
             var blackAndWhiteGradients = [pickerClone.getElementById('gradient-black'), pickerClone.getElementById('gradient-white')];
             var whiteAndBlackRects = pickerClone.getElementsByTagName('rect');
 
-            blackAndWhiteGradients[0].id = 'gradient-black-' + uniqID;
-            blackAndWhiteGradients[1].id = 'gradient-white-' + uniqID;
+            if (blackAndWhiteGradients[0]) {
+              blackAndWhiteGradients[0].id = 'gradient-black-' + uniqID;
+              whiteAndBlackRects[1].setAttribute('fill', 'url(#' + blackAndWhiteGradients[0].id + ')');
+            }
 
-            whiteAndBlackRects[0].setAttribute('fill', 'url(#' + blackAndWhiteGradients[1].id + ')');
-            whiteAndBlackRects[1].setAttribute('fill', 'url(#' + blackAndWhiteGradients[0].id + ')');
+            if (blackAndWhiteGradients[1]) {
+              blackAndWhiteGradients[1].id = 'gradient-white-' + uniqID;
+              whiteAndBlackRects[0].setAttribute('fill', 'url(#' + blackAndWhiteGradients[1].id + ')');
+            }
 
             this.slideElement.appendChild(slideClone);
             this.pickerElement.appendChild(pickerClone);

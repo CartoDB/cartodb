@@ -77,6 +77,7 @@ module ApplicationHelper
       gdrive_api_key:             Cartodb.config[:gdrive]['api_key'],
       gdrive_app_id:              Cartodb.config[:gdrive]['app_id'],
       oauth_dropbox:              Cartodb.config[:oauth]['dropbox']['app_key'],
+      oauth_box:                  Cartodb.config[:oauth]['box']['client_id'],
       oauth_gdrive:               Cartodb.config[:oauth]['gdrive']['client_id'],
       oauth_instagram:            Cartodb.config[:oauth]['instagram']['app_key'],
       oauth_mailchimp:            Cartodb.config[:oauth]['mailchimp']['app_key'],
@@ -107,6 +108,10 @@ module ApplicationHelper
 
     if Cartodb.config[:static_image_upload_endpoint].present?
       config[:static_image_upload_endpoint] = Cartodb.config[:static_image_upload_endpoint]
+    end
+
+    if Cartodb.config[:cdn_url].present?
+      config[:cdn_url] = Cartodb.config[:cdn_url]
     end
 
     config.to_json
@@ -143,6 +148,10 @@ module ApplicationHelper
 
     if Cartodb.config[:explore_api].present?
       config[:explore_user] = Cartodb.config[:explore_api]['username']
+    end
+
+    if Cartodb.config[:common_data].present?
+      config[:common_data_user] = Cartodb.config[:common_data]['username']
     end
 
     config.to_json

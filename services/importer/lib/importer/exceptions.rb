@@ -146,6 +146,7 @@ module CartoDB
       CartoDB::Datasources::ExternalServiceError                  => 1012,
       CartoDB::Datasources::GNIPServiceError                      => 1009,
       CartoDB::Datasources::DropboxPermissionError                => 1016,
+      CartoDB::Datasources::BoxPermissionError                    => 1021,
       CartoDB::Datasources::GDriveNoExternalAppsAllowedError      => 1008
     }
   end

@@ -270,6 +270,10 @@ class Carto::Visualization < ActiveRecord::Base
     !is_privacy_private?
   end
 
+  def self.columns
+    super.reject { |c| c.name == "country_codes" }
+  end
+
   private
 
   def get_named_map

@@ -9,8 +9,7 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
   },
 
   initialize: function() {
-
-    _.bindAll(this, '_selectBars', '_adjustBrushHandles', '_onBrushMove', '_onBrushStart', '_onMouseMove', '_onMouseEnter', '_onMouseOut');
+    _.bindAll(this, '_selectBars', '_adjustBrushHandles', '_onBrushMove', '_onBrushStart', '_onMouseMove', '_onMouseOut');
 
     this._setupModel();
     this._setupDimensions();
@@ -18,34 +17,32 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
 
   render: function() {
     this._generateChart();
-
-    this._generateLines();
-    this._generateBars();
-
-    this._generateHandles();
-
-    this._setupBrush();
-    this._generateXAxis();
-
+    this._generateChartContent();
     return this;
   },
 
-  _removeBars: function() {
-    this.chart.selectAll('.Bar').remove();
+  refresh: function() {
+    this._removeChartContent();
+    this._setupDimensions();
+    this._generateChartContent();
   },
 
-  _removeBrush: function() {
-    this.chart.select('.Brush').remove();
-    this.chart.classed('is-selectable', false);
+  _onChangeData: function() {
+    if (!this.model.get('locked')) {
+      this.refresh();
+    }
   },
 
-  resize: function(width) {
-    this.model.set('width', width);
+  _onChangeRange: function() {
+    if (this.model.get('lo_index') === 0 && this.model.get('hi_index') === 0) {
+      return;
+    }
+    this.trigger('range_updated', this.model.get('lo_index'), this.model.get('hi_index'));
   },
 
   _onResize: function() {
-    var a = this.model.get('a');
-    var b = this.model.get('b');
+    var loBarIndex = this.model.get('lo_index');
+    var hiBarIndex = this.model.get('hi_index');
 
     var width = this.model.get('width');
 
@@ -54,12 +51,118 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     this.chart.attr('width', width);
 
     this._onChangeData();
-    this.selectRange(a, b);
+    this.selectRange(loBarIndex, hiBarIndex);
+  },
+
+  _onChangePos: function() {
+    var pos = this.model.get('pos');
+
+    var x = +pos.x;
+    var y = +pos.y;
+
+    this.chart
+    .transition()
+    .duration(150)
+    .attr('transform', 'translate(' + (this.margin.left + x) + ', ' + this.margin.top + y + ')');
+  },
+
+  _onBrushStart: function() {
+    this.chart.classed('is-selectable', true);
+  },
+
+  _onChangeDragging: function() {
+    this.chart.classed('is-dragging', this.model.get('dragging'));
+  },
+
+  _onBrushMove: function() {
+    this.model.set({ dragging: true });
+    this._selectBars();
+    this._adjustBrushHandles();
+  },
+
+  _onMouseOut: function() {
+    var bars = this.chart.selectAll('.Bar');
+    bars.classed('is-highlighted', false);
+    this.trigger('hover', { value: null });
+  },
+
+  _onMouseMove: function() {
+    var x = d3.event.offsetX;
+    var y = d3.event.offsetY;
+
+    var barIndex = Math.floor(x / this.barWidth);
+    var data = this.model.get('data');
+
+    if (data[barIndex] === undefined || data[barIndex] === null) {
+      return;
+    }
+
+    var freq = data[barIndex].freq;
+
+    var format = d3.format('0,000');
+    var bar = this.chart.select('.Bar:nth-child(' + (barIndex + 1) + ')');
+
+    var hovered = (barIndex !== undefined) && data[barIndex] && (y > Math.floor(this.yScale(freq)));
+
+    if (bar && bar.node() && !bar.classed('is-selected')) {
+      var left = (barIndex * this.barWidth) + (this.barWidth/2) - 25;
+      var top = this.yScale(freq) - 10 + this.model.get('pos').y;
+
+      if (!this._isDragging() && hovered) {
+        this.trigger('hover', { top: top, left: left, value: freq });
+      } else {
+        this.trigger('hover', { value: null });
+      }
+
+    } else {
+      this.trigger('hover', { value: null });
+    }
+
+    this.chart.selectAll('.Bar')
+    .classed('is-highlighted', false);
+
+    if (hovered && bar && bar.node()) {
+      bar.classed('is-highlighted', true);
+    }
+  },
+
+  _formatNumber: function(value, unit) {
+    var format = d3.format("0,000");
+    return format(value + unit ? ' ' + unit : '');
+  },
+
+  _removeBars: function() {
+    this.chart.selectAll('.Bars').remove();
+  },
+
+  _removeBrush: function() {
+    this.chart.select('.Brush').remove();
+    this.chart.classed('is-selectable', false);
+  },
+
+  _removeChartContent: function() {
+    this._removeBrush();
+    this._removeBars();
+    this._removeHandles();
+    this._removeXAxis();
+    this._removeLines();
+  },
+
+  _generateChartContent: function() {
+    this._generateLines();
+    this._generateBars();
+    this._generateHandles();
+    this._setupBrush();
+    this._generateXAxis();
+  },
+
+  resize: function(width) {
+    this.model.set('width', width);
   },
 
   reset: function(data) {
     this.loadData(data);
-    this.model.set({ a: null, b: null });
+    this.model.set({ lo_index: null, hi_index: null });
   },
 
   _removeLines: function() {
@@ -113,19 +216,24 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     .attr('y2', this.chartHeight);
   },
 
+  _bindModel: function() {
+    this.model.bind('change:width', this._onResize, this);
+    this.model.bind('change:pos', this._onChangePos, this);
+    this.model.bind('change:lo_index change:hi_index', this._onChangeRange, this);
+    this.model.bind('change:data', this._onChangeData, this);
+    this.model.bind('change:dragging', this._onChangeDragging, this);
+  },
+
   _setupModel: function() {
     this.model = new cdb.core.Model({
+      locked: true,
       data: this.options.data,
       width: this.options.width,
       height: this.options.height,
       pos: { x: 0, y: 0 }
     });
 
-    this.model.bind('change:width', this._onResize, this);
-    this.model.bind('change:pos', this._onChangePos, this);
-    this.model.bind('change:a change:b', this._onChangeRange, this);
-    this.model.bind('change:data', this._onChangeData, this);
-    this.model.bind('change:dragging', this._onChangeDragging, this);
+    this._bindModel();
   },
 
   _setupDimensions: function() {
@@ -180,29 +288,13 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     .attr('transform', 'translate(' + this.margin.left + ', ' + (this.options.y) + ')');
   },
 
-  _onChangePos: function() {
-    var pos = this.model.get('pos');
-
-    var x = +pos.x;
-    var y = +pos.y;
-
-    this.chart
-    .transition()
-    .duration(150)
-    .attr('transform', 'translate(' + (this.margin.left + x) + ', ' + this.margin.top + y + ')');
-  },
-
-  _onBrushStart: function() {
-    this.chart.classed('is-selectable', true);
-  },
-
   _selectBars: function() {
     var self = this;
     var extent = this.brush.extent();
     var lo = extent[0];
     var hi = extent[1];
 
-    this.model.set({ a: this._getLoBarIndex(), b: this._getHiBarIndex() });
+    this.model.set({ lo_index: this._getLoBarIndex(), hi_index: this._getHiBarIndex() });
 
     this.chart.selectAll('.Bar').classed('is-selected', function(d, i) {
       var a = Math.floor(i * self.barWidth);
@@ -214,93 +306,46 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     });
   },
 
-  _onChangeDragging: function() {
-    this.chart.classed('is-dragging', this.model.get('dragging'));
-  },
-
-  _onBrushMove: function() {
-    this.model.set({ dragging: true });
-    this._selectBars();
-    this._adjustBrushHandles();
-  },
-
-  _onMouseEnter: function() {
-  },
-
-  _onMouseOut: function() {
-    var bars = this.chart.selectAll('.Bar');
-    bars.classed('is-highlighted', false);
-    this.trigger('hover', { value: null });
-  },
-
-  _onMouseMove: function() {
-    var x = d3.event.offsetX;
-    var y = d3.event.offsetY;
-
-    var barIndex = Math.floor(x / this.barWidth);
-    var data = this.model.get('data');
-
-    if (data[barIndex] === undefined || data[barIndex] === null) {
-      return;
-    }
-
-    var freq = data[barIndex].freq;
-
-    var format = d3.format('0,000');
-    var bar = this.chart.select('.Bar:nth-child(' + (barIndex + 1) + ')');
-
-    var hovered = (barIndex !== undefined) && data[barIndex] && (y > Math.floor(this.yScale(freq)));
-
-    if (bar && bar.node() && !bar.classed('is-selected')) {
-      var left = (barIndex * this.barWidth) + (this.barWidth/2) - 25;
-      var top = this.yScale(freq) - 10 + this.model.get('pos').y;
-
-      if (!this._isDragging() && hovered) {
-        this.trigger('hover', { top: top, left: left, value: freq });
-      } else {
-        this.trigger('hover', { value: null });
-      }
-
-    } else {
-      this.trigger('hover', { value: null });
-    }
-
-    this.chart.selectAll('.Bar')
-    .classed('is-highlighted', false);
-
-    if (hovered && bar && bar.node()) {
-      bar.classed('is-highlighted', true);
-    }
-  },
-
   _isDragging: function() {
     return this.model.get('dragging');
   },
 
-  move: function(pos) {
+  _move: function(pos) {
     this.model.set({ pos: pos });
   },
 
-  selectRange: function(a, b) {
+  expand: function() {
+    //this.model.set({ locked: false });
+    this._move({ x: 0, y: 50 });
+  },
 
-    if (!a && !b) {
+  contract: function() {
+    this.model.set({ locked: true });
+    this._move({ x: 0, y: 0 });
+  },
+
+  removeSelection: function() {
+    var data = this.model.get('data');
+    this.selectRange(0, data.length - 1);
+    this.resetBrush();
+  },
+
+  selectRange: function(loBarIndex, hiBarIndex) {
+
+    if (!loBarIndex && !hiBarIndex) {
       return;
     }
 
-    var data = this.model.get('data');
-    var start = a * (100 / data.length);
-    var end = b * (100 / data.length);
+    var loPosition = this._getBarPosition(loBarIndex);
+    var hiPosition = this._getBarPosition(hiBarIndex);
 
-    this.chart.select('.Brush').transition()
-    .duration(this.brush.empty() ? 0 : 100)
-    .call(this.brush.extent([start, end]))
-    .call(this.brush.event);
+    this._selectRange(loPosition, hiPosition);
   },
 
-  _selectRange: function(start, end) {
+  _selectRange: function(loPosition, hiPosition) {
     this.chart.select('.Brush').transition()
     .duration(this.brush.empty() ? 0 : 150)
-    .call(this.brush.extent([start, end]))
+    .call(this.brush.extent([loPosition, hiPosition]))
     .call(this.brush.event);
   },
 
@@ -319,6 +364,11 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     return Math.floor(x / this.barWidth);
   },
 
+  _getBarPosition: function(index) {
+    var data = this.model.get('data');
+    return index * (100 / data.length);
+  },
+
   _setupBrush: function() {
     var self = this;
 
@@ -327,7 +377,7 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
 
     function onBrushEnd() {
       var data = self.model.get('data');
-      var a, b;
+      var loPosition, hiPosition;
 
       self.model.set({ dragging: false });
 
@@ -339,35 +389,37 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
         var loBarIndex = self._getLoBarIndex();
         var hiBarIndex = self._getHiBarIndex();
 
-        a = loBarIndex * (100 / data.length);
-        b = hiBarIndex * (100 / data.length);
+        loPosition = self._getBarPosition(loBarIndex);
+        hiPosition = self._getBarPosition(hiBarIndex);
 
         if (!d3.event.sourceEvent) {
           return;
         }
 
-        if (a === b) {
+        if (loBarIndex === hiBarIndex) {
           if (hiBarIndex >= data.length) {
-            a = (loBarIndex - 1) * (100 / data.length);
+            loPosition = self._getBarPosition(loBarIndex - 1);
           } else {
-            b = (hiBarIndex + 1) * (100 / data.length);
+            hiPosition = self._getBarPosition(hiBarIndex + 1);
           }
         }
 
-        self._selectRange(a, b);
-        self.model.set({ a: loBarIndex, b: hiBarIndex });
+        self._selectRange(loPosition, hiPosition);
+        self.model.set({ lo_index: loBarIndex, hi_index: hiBarIndex });
         self._adjustBrushHandles();
         self._selectBars();
 
-        self.trigger('on_brush_end', self.model.get('a'), self.model.get('b'));
+        self.trigger('on_brush_end', self.model.get('lo_index'), self.model.get('hi_index'));
       }
 
-      if (d3.event.sourceEvent && a === undefined && b === undefined) {
+      if (d3.event.sourceEvent && loPosition === undefined && hiPosition === undefined) {
         var barIndex = self._getBarIndex();
-        a = (barIndex) * (100 / data.length);
-        b = (barIndex + 1) * (100 / data.length);
-        self.model.set({ a: barIndex, b: barIndex + 1 });
-        self._selectRange(a, b);
+
+        loPosition = self._getBarPosition(barIndex);
+        hiPosition = self._getBarPosition(barIndex + 1);
+
+        self.model.set({ lo_index: barIndex, hi_index: barIndex + 1 });
+        self._selectRange(loPosition, hiPosition);
       }
     }
 
@@ -384,30 +436,30 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     .selectAll('rect')
     .attr('y', 0)
     .attr('height', this.chartHeight)
-    .on('mouseenter', this._onMouseEnter)
     .on('mouseout', this._onMouseOut)
     .on('mousemove', this._onMouseMove);
   },
 
   _adjustBrushHandles: function() {
     var extent = this.brush.extent();
-    var lo = extent[0];
-    var hi = extent[1];
+
+    var loExtent = extent[0];
+    var hiExtent = extent[1];
 
     this.leftHandleLine
-    .attr('x1', this.xScale(lo))
-    .attr('x2', this.xScale(lo));
+    .attr('x1', this.xScale(loExtent))
+    .attr('x2', this.xScale(loExtent));
 
     this.rightHandleLine
-    .attr('x1', this.xScale(hi))
-    .attr('x2', this.xScale(hi));
+    .attr('x1', this.xScale(hiExtent))
+    .attr('x2', this.xScale(hiExtent));
 
     if (this.options.handles) {
       this.leftHandle
-      .attr('x', this.xScale(lo) - this.defaults.handleWidth / 2);
+      .attr('x', this.xScale(loExtent) - this.defaults.handleWidth / 2);
 
       this.rightHandle
-      .attr('x', this.xScale(hi) - this.defaults.handleWidth / 2);
+      .attr('x', this.xScale(hiExtent) - this.defaults.handleWidth / 2);
     }
   },
 
@@ -486,36 +538,24 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     .call(xAxis);
   },
 
-  refreshData: function(data, a, b) {
-    if (data && data.length > 0) {
-      this.model.set({ data: data, a: a, b: data.length - 1 });
-    }
-  },
-
   loadData: function(data) {
     if (data && data.toJSON) {
       data = data.toJSON();
     }
-    this.model.set({ a: null, b: null }, { silent: true });
+
+    this.model.set({ lo_index: null, hi_index: null }, { silent: true });
     this.model.set('data', data);
     this._onChangeData();
   },
 
-  _onChangeData: function() {
-    this._removeBrush();
-    this._removeBars();
-    this._removeHandles();
-    this._removeXAxis();
-    this._removeLines();
+  resetBrush: function() {
+    this.selectRange(0, 10);
 
-    this._setupDimensions();
-
-    this._generateLines();
-    this._generateBars();
-    this._generateHandles();
-    this._generateXAxis();
-
-    this._setupBrush();
+    var self = this;
+    setTimeout(function() {
+      self._removeBrush();
+      self._setupBrush();
+    }, 200);
   },
 
   _generateBars: function() {
@@ -555,19 +595,7 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     .attr('y', function(d) {
       return _.isEmpty(d) ? self.chartHeight : self.yScale(d.freq);
     });
-  },
-
-  _onChangeRange: function() {
-    if (this.model.get('a') === 0 && this.model.get('b') === 0) {
-      return;
-    }
-    this.trigger('range_updated', this.model.get('a'), this.model.get('b'));
-  },
-
-  _formatNumber: function(value, unit) {
-    var format = d3.format("0,000");
-    return format(value + unit ? ' ' + unit : '');
-  },
+  }
 
 });
 
@@ -696,6 +724,7 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
     }));
 
     this.chart.bind('range_updated', this._onRangeUpdated, this);
+    this.chart.bind('on_brush_end', this._onBrushEnd, this);
     this.chart.bind('hover', this._onValueHover, this);
     this.chart.render().show();
 
@@ -748,29 +777,31 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
     }
   },
 
-  _onMiniRangeUpdated: function(a, b) {
-
-    this.viewModel.set({ a: a, b: b });
+  _onMiniRangeUpdated: function(loBarIndex, hiBarIndex) {
+    this.viewModel.set({ lo_index: loBarIndex, hi_index: hiBarIndex });
     var data = this._getOriginalData();
 
-    var min = data[a].min;
-    var max = data[b - 1].max;
+    var min = data[loBarIndex].min;
+    var max = data[hiBarIndex - 1].max;
 
     this.filter.setRange({ min: min, max: max });
-
-    var self = this;
-
-    var refreshData = _.debounce(function() {
-      //self.chart.refreshData(data, a, b);
-      self._updateStats();
-    }, 100);
-
-    refreshData();
+    this._updateStats();
   },
 
-  _onRangeUpdated: function(a, b) {
+  _onBrushEnd: function(loBarIndex, hiBarIndex) {
+    this.viewModel.set({ lo_index: loBarIndex, hi_index: hiBarIndex });
     this.$(".js-filter").animate({ opacity: 1 }, 250);
-    this.viewModel.set({ a: a, b: b });
+
+    var data = this._getData();
+    var min = data[0].min;
+    var max = data[data.length - 1].max;
+
+    this.filter.setRange({ min: min, max: max });
+  },
+
+  _onRangeUpdated: function(loBarIndex, hiBarIndex) {
+    this.viewModel.set({ lo_index: loBarIndex, hi_index: hiBarIndex });
+    this.$(".js-filter").animate({ opacity: 1 }, 250);
     this._updateStats();
   },
 
@@ -792,18 +823,6 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
 
   _onChangeAvg: function() {
     this._animateValue('.js-avg', 'avg', 'AVG');
-  },
-
-  _generateData: function() {
-    var data = _.map(d3.range(Math.round(Math.random() * 10) + 2), function(d, i) {
-      if (Math.round(Math.random() * 100) >= 90) {
-        return undefined;
-      } else {
-        return { bucket: i, freq: Math.round(Math.random() * 1000) };
-      }
-    });
-
-    this.dataModel.set('data', data);
   },
 
   _animateValue: function(className, what, unit) {
@@ -833,66 +852,79 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
   _getData: function(full) {
     var data = this.dataModel.getData().toJSON();
 
-    if (full || (!this.viewModel.get('a') && !this.viewModel.get('b'))) {
+    if (full || (!this.viewModel.get('lo_index') && !this.viewModel.get('hi_index'))) {
       return data;
     }
 
-    return data.slice(this.viewModel.get('a'), this.viewModel.get('b'));
+    return data.slice(this.viewModel.get('lo_index'), this.viewModel.get('hi_index'));
   },
 
   _updateStats: function() {
-    var data = this._getData();
-    var sum = _.reduce(data, function(memo, d) {
+    var data = this._getOriginalData();
+
+    var loBarIndex = this.viewModel.get('lo_index') || 0;
+    var hiBarIndex = this.viewModel.get('hi_index') ?  this.viewModel.get('hi_index') - 1 : data.length - 1;
+
+    var sum = _.reduce(data.slice(loBarIndex, hiBarIndex + 1), function(memo, d) {
       return _.isEmpty(d) ? memo : d.freq + memo;
     }, 0);
 
-    var max = d3.max(data, function(d) { return _.isEmpty(d) ? 0 : d.freq; });
     var avg = Math.round(d3.mean(data, function(d) { return _.isEmpty(d) ? 0 : d.freq; }));
-    var min = d3.min(data, function(d) { return _.isEmpty(d) ? 0 : d.freq; });
+    var min = data && data.length && data[loBarIndex].min;
+    var max = data && data.length && data[hiBarIndex].max;
 
     this.viewModel.set({ total: sum, min: min, max: max, avg: avg });
   },
 
   _zoom: function() {
+    this.chart.model.set({ locked: false });
     this._expand();
     this.viewModel.set({ zoom_enabled: false });
 
-    var data = this._getData();
-    var a = this.viewModel.get('a');
-    var b = this.viewModel.get('b');
+    var data = this._getOriginalData();
 
-    this.miniChart.selectRange(a, b);
+    var loBarIndex = this.viewModel.get('lo_index');
+    var hiBarIndex = this.viewModel.get('hi_index');
 
-    var min = data[0].min;
-    var max = data[data.length - 1].max;
+    var min = data[loBarIndex].min;
+    var max = data[hiBarIndex - 1].max;
+
+    this.miniChart.selectRange(loBarIndex, hiBarIndex);
+    this.miniChart.show();
 
     this.filter.setRange({ min: min, max: max });
+    this.chart.refresh();
 
-    this.miniChart.show();
   },
 
   _reset: function() {
+
+    this.chart.model.set('data', this.originalDataModel.toJSON());
+
     this._contract();
-    this.viewModel.set({ zoom_enabled: true, a: null, b: null });
-    this.chart.model.set({ a: null, b: null })
+
+    this.viewModel.set({ zoom_enabled: true, lo_index: null, hi_index: null });
+    this.chart.model.set({ lo_index: null, hi_index: null });
 
     this.filter.unsetRange();
 
-    this.$(".js-filter").animate({ opacity: 0 }, 0);
     this.miniChart.hide();
+
+    this.$(".js-filter").animate({ opacity: 0 }, 0);
+    this.chart.removeSelection();
   },
 
   _contract: function() {
     this.canvas
     .attr('height', this.canvasHeight);
-    this.chart.move({ x: 0, y: 0 });
+    this.chart.contract();
   },
 
   _expand: function() {
     this.canvas
     .attr('height', this.canvasHeight + 60);
     this.miniChart.show();
-    this.chart.move({ x: 0, y: 50 });
+    this.chart.expand();
   },
 
   _generateCanvas: function() {

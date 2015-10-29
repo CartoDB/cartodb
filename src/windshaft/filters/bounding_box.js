@@ -5,18 +5,20 @@ cdb.windshaft.filters.BoundingBoxFilter = cdb.core.Model.extend({
   },
 
   setBounds: function(bounds) {
-    this.southLatitude = bounds[0][1];
-    this.westLatitude = bounds[0][0];
-    this.eastLatitude = bounds[1][1];
-    this.northLatitude = bounds[1][0];
+    this.set({
+      westLatitude: bounds[0][0],
+      southLatitude: bounds[0][1],
+      northLatitude: bounds[1][0],
+      eastLatitude: bounds[1][1]
+    });
   },
 
   toString: function() {
     return [
-      this.westLatitude,
-      this.southLatitude,
-      this.eastLatitude,
-      this.northLatitude
+      this.get('westLatitude'),
+      this.get('southLatitude'),
+      this.get('eastLatitude'),
+      this.get('northLatitud')
     ].join(',');
   }
 });

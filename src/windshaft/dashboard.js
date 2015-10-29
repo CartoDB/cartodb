@@ -1,14 +1,18 @@
 cdb.windshaft.Dashboard = function(options) {
-  this.layers = new Backbone.Collection(options.layers);
+  BOUNDING_BOX_FILTER_WAIT = 500;
+
   this.layerGroup = options.layerGroup;
-  // TODO: Pass widgets in the options
+  this.layers = new Backbone.Collection(options.layers);
   this.widgets = new Backbone.Collection(options.widgets);
   this.filters = new cdb.windshaft.filters.Collection(options.filters);
+  this.map = options.map;
   this.client = options.client;
   this.statTag = options.statTag;
   this.configGenerator = options.configGenerator;
 
   this.instance = new cdb.windshaft.DashboardInstance();
+
+  this.boundingBoxFilter = new cdb.windshaft.filters.BoundingBoxFilter(this.map.getViewBounds());
 
   // Bindings
   this.layerGroup.bindDashboardInstance(this.instance);
@@ -20,26 +24,43 @@ cdb.windshaft.Dashboard = function(options) {
   var self = this;
   this.instance.bind('change:layergroupid', function(dashboardInstance) {
 
-    // Set the tiles and grid URLS on the layerGroup
     // TODO: Set the URL of the attributes service once it's available
     this.layerGroup.set({
       urls: dashboardInstance.getTiles()
     });
 
-    // Update the URLs of the widgets
-    dashboardInstance.forEachWidget(function(widgetId, widgetMetadata) {
-      var widgetModel = self.getWidgetById(widgetId);
-
-      // TODO: Could be https
-      widgetModel.set('url', widgetMetadata.url.http);
-    });
+    this._updateWidgetURLs();
   }.bind(this));
+
+  this.map.bind('change:center', _.debounce(this._boundingBoxChanged, BOUNDING_BOX_FILTER_WAIT), this);
+};
+
+cdb.windshaft.Dashboard.prototype._boundingBoxChanged = function() {
+  if (this.instance.isLoaded()) {
+    this.boundingBoxFilter.setBounds(this.map.getViewBounds());
+
+    this._updateWidgetURLs();
+  }
+};
+
+cdb.windshaft.Dashboard.prototype._updateWidgetURLs = function() {
+  var self = this;
+  this.instance.forEachWidget(function(widgetId, widgetMetadata) {
+    var widgetModel = self._getWidgetById(widgetId);
+
+    // TODO: Could be https
+    var url = widgetMetadata.url.http;
+    widgetModel.set({
+      'url': url,
+      'boundingBox': self.boundingBoxFilter.toString()
+    });
+  });
 };
 
 cdb.windshaft.Dashboard.prototype.createInstance = function() {
   var dashboardConfig = this.configGenerator.generate({
-    layers: this.getVisibleLayers(),
-    widgets: this.getWidgets()
+    layers: this.layers,
+    widgets: this.widgets
   });
   console.log(dashboardConfig);
 
@@ -51,18 +72,6 @@ cdb.windshaft.Dashboard.prototype.createInstance = function() {
   return this.instance;
 };
 
-cdb.windshaft.Dashboard.prototype.getLayers = function() {
-  return this.layers;
-};
-
-cdb.windshaft.Dashboard.prototype.getVisibleLayers = function() {
-  return this.layers.filter(function(layer) { return layer.isVisible(); });
-};
-
-cdb.windshaft.Dashboard.prototype.getWidgetById = function(widgetId) {
+cdb.windshaft.Dashboard.prototype._getWidgetById = function(widgetId) {
   return this.widgets.find({ id: widgetId });
-};
-
-cdb.windshaft.Dashboard.prototype.getWidgets = function() {
-  return this.widgets;
 };

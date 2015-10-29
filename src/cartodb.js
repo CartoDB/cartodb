@@ -161,14 +161,15 @@
 
         'windshaft/config.js',
         'windshaft/client.js',
+        'windshaft/filters/collection.js',
+        'windshaft/filters/base.js',
+        'windshaft/filters/category.js',
+        'windshaft/filters/range.js',
+        'windshaft/filters/bounding_box.js',
         'windshaft/dashboard.js',
         'windshaft/dashboard_instance.js',
         'windshaft/public_dashboard_config.js',
         'windshaft/private_dashboard_config.js',
-        'windshaft/filters/collection.js',
-        'windshaft/filters/base.js',
-        'windshaft/filters/category.js',
-        'windshaft/filters/range.js'
     ];
 
     cdb.init = function(ready) {

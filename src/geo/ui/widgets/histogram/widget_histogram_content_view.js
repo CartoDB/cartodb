@@ -610,7 +610,7 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
   },
 
   events: {
-    'click .js-clear': '_reset',
+    'click .js-clear': '_clear',
     'click .js-zoom': '_zoom'
   },
 
@@ -628,7 +628,7 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
    '</div>'+
     '<div class="Widget-content js-content">'+
    '<div class="Widget-chartTooltip js-tooltip"></div>'+
-   '  <div class="Widget-filter Widget-contentSpaced js-filter">'+
+   '  <div class="Widget-filter Widget-contentSpaced js-filter is-hidden">'+
    '    <p class="Widget-textSmaller Widget-textSmaller--bold Widget-textSmaller--upper js-val"></p>'+
    '    <div class="Widget-filterButtons">'+
    '      <button class="Widget-link Widget-filterButton js-zoom">zoom</button>'+
@@ -749,7 +749,9 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
   },
 
   _setupBindings: function() {
+    this.viewModel.bind('change:zoomed', this._onChangeZoomed, this);
     this.viewModel.bind('change:zoom_enabled', this._onChangeZoomEnabled, this);
+    this.viewModel.bind('change:filter_enabled', this._onChangeFilterEnabled, this);
     this.viewModel.bind('change:total', this._onChangeTotal, this);
     this.viewModel.bind('change:max',   this._onChangeMax, this);
     this.viewModel.bind('change:min',   this._onChangeMin, this);
@@ -789,8 +791,8 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
 
   _onMiniRangeUpdated: function(loBarIndex, hiBarIndex) {
     this.viewModel.set({ lo_index: loBarIndex, hi_index: hiBarIndex });
-    var data = this._getOriginalData();
 
+    var data = this._getOriginalData();
     var min = data[loBarIndex].min;
     var max = data[hiBarIndex - 1].max;
 
@@ -800,8 +802,12 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
 
   _onBrushEnd: function(loBarIndex, hiBarIndex) {
     this.chart.model.set({ locked: true });
-    this.viewModel.set({ lo_index: loBarIndex, hi_index: hiBarIndex });
-    this.$(".js-filter").animate({ opacity: 1 }, 250);
+
+    if (this.viewModel.get('zoomed')) {
+      this.viewModel.set({ filter_enabled: true, lo_index: loBarIndex, hi_index: hiBarIndex });
+    } else {
+      this.viewModel.set({ zoom_enabled: true, filter_enabled: true, lo_index: loBarIndex, hi_index: hiBarIndex });
+    }
 
     var data = this._getData();
     var min = data[0].min;
@@ -811,9 +817,17 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
   },
 
   _onRangeUpdated: function(loBarIndex, hiBarIndex) {
-    this.viewModel.set({ lo_index: loBarIndex, hi_index: hiBarIndex });
-    this.$(".js-filter").animate({ opacity: 1 }, 250);
+    if (this.viewModel.get('zoomed')) {
+      this.viewModel.set({ zoom_enabled: false, lo_index: loBarIndex, hi_index: hiBarIndex });
+    } else {
+      this.viewModel.set({ lo_index: loBarIndex, hi_index: hiBarIndex });
+    }
+
     this._updateStats();
+  },
+
+  _onChangeFilterEnabled: function() {
+    this.$(".js-filter").toggleClass('is-hidden', !this.viewModel.get('filter_enabled'));
   },
 
   _onChangeZoomEnabled: function() {
@@ -887,42 +901,53 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
     this.viewModel.set({ total: sum, min: min, max: max, avg: avg });
   },
 
-  _zoom: function() {
-    this.chart.model.set({ locked: false });
-    this._expand();
-    this.viewModel.set({ zoom_enabled: false });
+  _onChangeZoomed: function() {
 
-    var data = this._getOriginalData();
+    if (this.viewModel.get('zoomed')) {
 
-    var loBarIndex = this.viewModel.get('lo_index');
-    var hiBarIndex = this.viewModel.get('hi_index');
+      this.chart.model.set({ locked: false });
+      this._expand();
 
-    var min = data[loBarIndex].min;
-    var max = data[hiBarIndex - 1].max;
+      var data = this._getOriginalData();
 
-    this.miniChart.selectRange(loBarIndex, hiBarIndex);
-    this.miniChart.show();
+      var loBarIndex = this.viewModel.get('lo_index');
+      var hiBarIndex = this.viewModel.get('hi_index');
 
-    this.filter.setRange({ min: min, max: max });
-    this.chart.refresh();
+      var min = data[loBarIndex].min;
+      var max = data[hiBarIndex - 1].max;
+
+      this.miniChart.selectRange(loBarIndex, hiBarIndex);
+      this.miniChart.show();
+
+      this.filter.setRange({ min: min, max: max });
+      this.chart.refresh();
+    } else {
+      this.viewModel.set({ zoom_enabled: false, filter_enabled: false, lo_index: null, hi_index: null });
+      this.chart.model.set('data', this.originalDataModel.toJSON());
+
+      this._contract();
+
+      this.chart.model.set({ lo_index: null, hi_index: null });
+
+      this.filter.unsetRange();
+
+      this.miniChart.hide();
+
+      this.chart.removeSelection();
+    }
 
   },
 
-  _reset: function() {
+  _zoom: function() {
+    this.viewModel.set({ zoomed: true, zoom_enabled: false });
+  },
 
-    this.chart.model.set('data', this.originalDataModel.toJSON());
-
-    this._contract();
-
-    this.viewModel.set({ zoom_enabled: true, lo_index: null, hi_index: null });
-    this.chart.model.set({ lo_index: null, hi_index: null });
-
-    this.filter.unsetRange();
-
-    this.miniChart.hide();
-
-    this.$(".js-filter").animate({ opacity: 0 }, 0);
-    this.chart.removeSelection();
+  _clear: function() {
+    if (!this.viewModel.get('zoomed')) {
+      this.viewModel.trigger('change:zoomed');
+    } else {
+      this.viewModel.set({ zoomed: false, zoom_enabled: true });
+    }
   },
 
   _contract: function() {

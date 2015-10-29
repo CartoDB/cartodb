@@ -57,10 +57,6 @@
   position: relative;
 }
 
-.Widget-filter {
-  opacity: 0;
-}
-
 .extent {
   opacity: 0;
   fill-opacity: 0;
@@ -138,6 +134,9 @@
   stroke: #3AA9E3;
 }
 
+.Widget-filter.is-hidden {
+  opacity: 0;
+}
 .Widget-filterButton.is-hidden {
   display: none;
 }

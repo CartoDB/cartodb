@@ -30,9 +30,9 @@ class Superadmin::OrganizationsController < Superadmin::SuperadminController
       @organization.delete if @organization
     rescue => e
       # Avoid shadowing original error
-      Rollbar.report_message('Cleaning failed creation', 'error', error: e.inspect, organization: @organization)
+      CartoDB.notify_error('Cleaning failed creation', error: e.inspect, organization: @organization)
     end
-    Rollbar.report_message('Error creating organization', 'error', error: e.inspect, organization: @organization)
+    CartoDB.notify_error('Error creating organization', error: e.inspect, organization: @organization)
     respond_with(:superadmin, @organization, errors: [e.inspect], status: 500)
   end
 

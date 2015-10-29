@@ -13,6 +13,7 @@ module.exports = function(cdb) {
       expect(cdb.errors).toEqual(jasmine.any(Object));
       expect(cdb.templates).toEqual(jasmine.any(Object));
       expect(cdb.decorators).toEqual(jasmine.any(Object));
+      expect(cdb.createVis).toEqual(jasmine.any(Function));
     });
 
     it('config should contain links variables', function() {
@@ -33,6 +34,7 @@ module.exports = function(cdb) {
       expect(cdb.core.TemplateList).toBeDefined();
       expect(cdb.core.Model).toBeDefined();
       expect(cdb.core.View).toBeDefined();
+      expect(cdb.core.Loader).toEqual(jasmine.any(Object));
     });
 
     it("should create a cdb.decorators", function() {
@@ -153,8 +155,19 @@ module.exports = function(cdb) {
     });
 
     it('should have a core.vis', function() {
-      expect(cdb.vis).toBeDefined();
-      expect(cdb.vis.Loader).toBeDefined();
+      expect(cdb.vis).toEqual(jasmine.any(Object));
+      expect(cdb.vis.Loader).toBe(cdb.core.Loader);
+
+      expect(cdb.vis.Overlay).toEqual(jasmine.any(Object));
+      expect(cdb.vis.Overlays).toEqual(jasmine.any(Function));
+      expect(cdb.vis.Layers).toEqual(jasmine.any(Object));
+      expect(cdb.vis.Vis).toEqual(jasmine.any(Function));
+      expect(cdb.vis.INFOWINDOW_TEMPLATE).toEqual(jasmine.any(Object));
+    });
+
+    it('should have a moduleLoad function', function() {
+      // Extracted from vis/vis.js, not used for vis but for external libs to register to non-core libs
+      expect(cdb.moduleLoad).toEqual(jasmine.any(Function));
     });
   });
 };

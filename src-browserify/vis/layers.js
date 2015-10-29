@@ -1,7 +1,12 @@
-
-(function() {
-
-var Layers = cdb.vis.Layers;
+var Layers = require('./vis/layers');
+var TileLayer = require('../geo/map/tile-layer');
+var WMSLayer = require('../geo/map/wms-layer');
+var GMapsBaseLayer = require('../geo/map/gmaps-base-layer');
+var PlainLayer = require('../geo/map/plain-layer');
+var CartoDBGroupLayer = require('../geo/map/cartodb-group-layer');
+var CartoDBLayer = require('../geo/map/cartodb-layer');
+var CartoDBNamedMapLayer = require('../geo/map/cartodb-named-map-layer');
+var TorqueLayer = require('../geo/map/torque-layer');
 
 /*
  *  if we are using http and the tiles of base map need to be fetched from
@@ -44,7 +49,7 @@ Layers.register('tilejson', function(vis, data) {
   else if(vis.https === false) { // Checking for an explicit false value. If it's undefined the url is left as is.
     url = transformToHTTP(url);
   }
-  return new cdb.geo.TileLayer({
+  return new TileLayer({
     urlTemplate: url
   });
 });
@@ -57,25 +62,25 @@ Layers.register('tiled', function(vis, data) {
   else if(vis.https === false) { // Checking for an explicit false value. If it's undefined the url is left as is.
     url = transformToHTTP(url);
   }
-  
+
   data.urlTemplate = url;
-  return new cdb.geo.TileLayer(data);
+  return new TileLayer(data);
 });
 
 Layers.register('wms', function(vis, data) {
-  return new cdb.geo.WMSLayer(data);
+  return new WMSLayer(data);
 });
 
 Layers.register('gmapsbase', function(vis, data) {
-  return new cdb.geo.GMapsBaseLayer(data);
+  return new GMapsBaseLayer(data);
 });
 
 Layers.register('plain', function(vis, data) {
-  return new cdb.geo.PlainLayer(data);
+  return new PlainLayer(data);
 });
 
 Layers.register('background', function(vis, data) {
-  return new cdb.geo.PlainLayer(data);
+  return new PlainLayer(data);
 });
 
 
@@ -105,9 +110,9 @@ var cartoLayer = function(vis, data) {
   // be created
   if(data.sublayers) {
     data.type = 'layergroup';
-    return new cdb.geo.CartoDBGroupLayer(data);
+    return new CartoDBGroupLayer(data);
   }
-  return new cdb.geo.CartoDBLayer(data);
+  return new CartoDBLayer(data);
 };
 
 Layers.register('cartodb', cartoLayer);
@@ -115,12 +120,12 @@ Layers.register('carto', cartoLayer);
 
 Layers.register('layergroup', function(vis, data) {
   normalizeOptions(vis, data);
-  return new cdb.geo.CartoDBGroupLayer(data);
+  return new CartoDBGroupLayer(data);
 });
 
 Layers.register('namedmap', function(vis, data) {
   normalizeOptions(vis, data);
-  return new cdb.geo.CartoDBNamedMapLayer(data);
+  return new CartoDBNamedMapLayer(data);
 });
 
 Layers.register('torque', function(vis, data) {
@@ -135,7 +140,5 @@ Layers.register('torque', function(vis, data) {
     }
   }
   data.cartodb_logo = vis.cartodb_logo == undefined ? data.cartodb_logo : vis.cartodb_logo;
-  return new cdb.geo.TorqueLayer(data);
+  return new TorqueLayer(data);
 });
-
-})();

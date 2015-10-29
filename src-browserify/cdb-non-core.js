@@ -12,6 +12,17 @@ cdb.log = require('cdb.log');
 cdb.errors = require('cdb.errors');
 cdb.templates = require('cdb.templates');
 cdb.decorators = require('./core/decorators');
+cdb.createVis = require('./api/create-vis');
+
+// Extracted from vis/vis.js,
+// used in libs like torque and odyssey to add themselves here (or so it seems)
+cdb.moduleLoad = function(name, mod) {
+  cdb[name] = mod;
+  cdb.config.modules.add({
+    name: name,
+    mod: mod
+  });
+};
 
 cdb.core.sanitize = require('./core/sanitize')
 cdb.core.Template = require('./core/template');
@@ -63,21 +74,7 @@ if (L) {
 // if google maps is not defined do not load the class
 if (typeof(window.google) != 'undefined' && typeof(window.google.maps) != 'undefined') {
   require('google-proxy').set(window.google);
-  cdb.geo.GoogleMapsMapView = require('./geo/gmaps/gmaps-map-view');
-  cdb.geo.GMapsTiledLayerView = require('./geo/gmaps/gmaps-tiled-layer-view');
-  cdb.geo.GMapsCartoDBLayerView = require('./geo/gmaps/gmaps-cartodb-layer-view');
-  cdb.geo.CartoDBLayerGMaps = require('./geo/gmaps/cartodb-layer-gmaps');
-  cdb.geo.GMapsLayerView = require('./geo/gmaps/gmaps-layer-view');
-  cdb.geo.CartoDBLayerGroupGMaps = require('./geo/gmaps/cartodb-layer-group-gmaps');
-  cdb.geo.GMapsPlainLayerView = require('./geo/gmaps/gmaps-plain-layer-view');
-  cdb.geo.GMapsBaseLayerView = require('./geo/gmaps/gmaps-base-layer-view');
-  cdb.geo.CartoDBNamedMapGMaps = require('./geo/gmaps/cartodb-named-map-gmaps');
-  cdb.geo.GMapsCartoDBLayerGroupView = require('./geo/gmaps/gmaps-cartodb-layer-group-view');
-  cdb.geo.GMapsCartoDBNamedMapView = require('./geo/gmaps/gmaps-cartodb-named-map-view');
-
-  cdb.geo.gmaps = {};
-  cdb.geo.gmaps.PointView = require('./geo/gmaps/gmaps-point-view');
-  cdb.geo.gmaps.PathView = require('./geo/gmaps/gmaps-path-view');
+  _.extend(cdb.geo, require('./geo/gmaps'));
 }
 
 cdb.geo.common = {};
@@ -119,5 +116,13 @@ cdb.geo.ui.TilesLoader = require('./geo/ui/tiles-loader');
 cdb.geo.ui.TimeSlider = require('./geo/ui/time-slider');
 cdb.geo.ui.InfoBox = require('./geo/ui/infobox');
 cdb.geo.ui.Tooltip = require('./geo/ui/tooltip');
+
+cdb.vis.INFOWINDOW_TEMPLATE = require('./vis/vis/infowindow-template');
+cdb.vis.Overlay = require('./vis/vis/overlay');
+cdb.vis.Overlays = require('./vis/vis/overlays');
+cdb.vis.Layers = require('./vis/vis/layers');
+cdb.vis.Vis = require('./vis/vis');
+require('./vis/overlays'); // Overlay.register calls
+require('./vis/layers'); // Layers.register calls
 
 module.exports = cdb;

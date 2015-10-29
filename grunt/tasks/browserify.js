@@ -20,7 +20,7 @@ var bundles = {
       'test/spec/src-browserify/geo/**/*',
       'test/spec/src-browserify/ui/**/*',
       '!test/spec/src-browserify/ui/common/tabpane.spec.js',
-      'test/spec/src-browserify/vis/image.spec.js',
+      'test/spec/src-browserify/vis/**/*',
     ],
     dest: '<%= config.tmp %>/src-browserify-specs.js'
   },

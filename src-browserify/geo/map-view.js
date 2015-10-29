@@ -1,4 +1,5 @@
 var _ = require('underscore');
+var cdb = require('cdb'); // cdb.geo.LeafletMapView, cdb.geo.GoogleMapsMapView
 var log = require('cdb.log');
 var View = require('../core/view');
 var Infowindow = require('./ui/infowindow');
@@ -198,10 +199,10 @@ var MapView = View.extend({
 
 }, {
   _getClass: function(provider) {
-    var mapViewClass = opts.LeafletMapView;
+    var mapViewClass = cdb.geo.LeafletMapView;
     if(provider === 'googlemaps') {
       if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
-        mapViewClass = opts.GoogleMapsMapView;
+        mapViewClass = cdb.geo.GoogleMapsMapView;
       } else {
         log.error("you must include google maps library _before_ include cdb");
       }

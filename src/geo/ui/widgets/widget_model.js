@@ -12,7 +12,7 @@ cdb.geo.ui.Widget.Model = cdb.core.Model.extend({
   },
 
   url: function() {
-    return this.get('url');
+    return this.get('url') + '?bbox=' + this.get('boundingBox');
   },
 
   initialize: function() {
@@ -20,7 +20,7 @@ cdb.geo.ui.Widget.Model = cdb.core.Model.extend({
   },
 
   _initBinds: function() {
-    this.bind('change:url', function(){
+    this.bind('change:url change:boundingBox', function(){
       var self = this;
       this.fetch({
         error: function() {

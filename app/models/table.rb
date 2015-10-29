@@ -424,6 +424,8 @@ class Table
         @user_table.privacy = @data_import.privacy
       end
 
+      @user_table.save
+
       decorator = CartoDB::Datasources::Decorators::Factory.decorator_for(@data_import.service_name)
       if !decorator.nil? && decorator.decorates_layer?
         self.map.layers.each do |layer|

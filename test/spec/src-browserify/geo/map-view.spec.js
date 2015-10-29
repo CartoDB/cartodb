@@ -1,5 +1,5 @@
 var $ = require('jquery');
-var Backbone = require('Backbone');
+var Backbone = require('backbone');
 var config = require('cdb.config');
 var Map = require('../../../../src-browserify/geo/map');
 var MapView = require('../../../../src-browserify/geo/map-view');

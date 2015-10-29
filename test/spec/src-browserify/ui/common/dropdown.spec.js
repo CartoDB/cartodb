@@ -1,7 +1,10 @@
-describe('common.ui.Dropdown', function() {
+var $ = require('jquery');
+var Dropdown = require('../../../../../src-browserify/ui/common/dropdown');
+
+describe('ui/common/dropdown', function() {
   beforeEach(function() {
     this.$el = $('<div><button id="btn"></button></div>');
-    this.view = new cdb.ui.common.Dropdown({
+    this.view = new Dropdown({
       el: $('<div>'),
       target: this.$el.find('#btn')
     });

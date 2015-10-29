@@ -54,7 +54,7 @@ feature "Superadmin's organization API" do
   end
 
   scenario "organization with owner creation failure" do
-    org_atts = FactoryGirl.build(:organization, name: 'wadus_fail').values
+    org_atts = FactoryGirl.build(:organization, name: 'wadus-fail').values
     user = FactoryGirl.create(:user_with_private_tables)
     org_atts[:owner_id] = user.id
 

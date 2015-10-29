@@ -197,24 +197,21 @@ module CartoDB
                 pg_class c, pg_index i,
                 pg_attribute a
               WHERE c.oid  = '#{origin_schema}.#{origin_table_name}'::regclass::oid AND i.indrelid = c.oid
+                AND i.indexrelid = ir.oid
+                AND i.indnatts = 1
+                AND i.indkey[0] = a.attnum
+                AND a.attrelid = c.oid
+                AND NOT a.attisdropped
+                AND am.oid = ir.relam
                 AND (
-                  (a.attname = '#{::Table::THE_GEOM}' OR a.attname = '#{::Table::THE_GEOM_WEBMERCATOR}')
-                  AND i.indexrelid = ir.oid
-                  AND i.indnatts = 1
-                  AND i.indkey[0] = a.attnum
-                  AND a.attrelid = c.oid
-                  AND NOT a.attisdropped
-                  AND am.oid = ir.relam
-                  AND am.amname = 'gist'
-                ) OR (
-                  a.attname = '#{::Table::CARTODB_ID}'
-                  AND i.indexrelid = ir.oid
-                  AND i.indnatts = 1
-                  AND i.indkey[0] = a.attnum
-                  AND a.attrelid = c.oid
-                  AND NOT a.attisdropped
-                  AND am.oid = ir.relam
-                  AND ir.relname <> '#{origin_table_name}_pkey'
+                  (
+                    a.attname = '#{::Table::THE_GEOM}'
+                    OR a.attname = '#{::Table::THE_GEOM_WEBMERCATOR}'
+                    AND am.amname = 'gist'
+                  ) OR (
+                    a.attname = '#{::Table::CARTODB_ID}'
+                    AND ir.relname <> '#{origin_table_name}_pkey'
+                  )
                 )
             )
         )].map { |record| record.fetch(:indexdef) }

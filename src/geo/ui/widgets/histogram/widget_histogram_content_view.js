@@ -22,9 +22,11 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
   },
 
   _onChangeData: function() {
-    this._removeChartContent();
-    this._setupDimensions();
-    this._generateChartContent();
+    if (this.model.get('expanded')) {
+      this._removeChartContent();
+      this._setupDimensions();
+      this._generateChartContent();
+    }
   },
 
   _onChangeRange: function() {
@@ -717,6 +719,7 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
     }));
 
     this.chart.bind('range_updated', this._onRangeUpdated, this);
+    this.chart.bind('on_brush_end', this._onBrushEnd, this);
     this.chart.bind('hover', this._onValueHover, this);
     this.chart.render().show();
 
@@ -778,6 +781,17 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
 
     this.filter.setRange({ min: min, max: max });
     this._updateStats();
+  },
+
+  _onBrushEnd: function(loBarIndex, hiBarIndex) {
+    this.viewModel.set({ lo_index: loBarIndex, hi_index: hiBarIndex });
+    this.$(".js-filter").animate({ opacity: 1 }, 250);
+
+    var data = this._getData();
+    var min = data[0].min;
+    var max = data[data.length - 1].max;
+
+    this.filter.setRange({ min: min, max: max });
   },
 
   _onRangeUpdated: function(loBarIndex, hiBarIndex) {
@@ -861,21 +875,27 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
     this._expand();
     this.viewModel.set({ zoom_enabled: false });
 
-    var data = this._getData();
+    //var data = this._getData();
+    var data = this._getOriginalData();
+
     var loBarIndex = this.viewModel.get('lo_index');
     var hiBarIndex = this.viewModel.get('hi_index');
 
     this.miniChart.selectRange(loBarIndex, hiBarIndex);
     this.miniChart.show();
 
-    var min = data[0].min;
-    var max = data[data.length - 1].max;
+    var min = data[loBarIndex].min;
+    var max = data[hiBarIndex - 1].max;
 
     this.filter.setRange({ min: min, max: max });
   },
 
   _reset: function() {
+
+    this.chart.model.set('data', this.originalDataModel.toJSON());
+
     this._contract();
+
     this.viewModel.set({ zoom_enabled: true, lo_index: null, hi_index: null });
     this.chart.model.set({ lo_index: null, hi_index: null });
 

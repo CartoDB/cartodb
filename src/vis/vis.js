@@ -561,7 +561,8 @@ var Vis = cdb.core.View.extend({
       layerGroup: cartoDBLayerGroup,
       layers: cartoDBLayers,
       widgets: widgetModels,
-      filters: filterModels
+      filters: filterModels,
+      map: map
     });
 
     dashboard.createInstance();

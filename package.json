@@ -86,6 +86,8 @@
       "html-css-sanitizer": "./vendor/html-css-sanitizer-bundle.js",
       "leaflet-proxy": "./src-browserify/require-proxies/leaflet-proxy.js",
       "lzma": "./vendor/lzma.js",
+      "mousewheel": "./vendor/mousewheel.js",
+      "mwheelIntent": "./vendor/mwheelIntent.js",
       "reqwest": "./vendor/reqwest.min.js",
       "spin.js": "./vendor/spin.js",
       "wax.cartodb.js": "./vendor/wax.cartodb.js"
@@ -94,11 +96,7 @@
       "geojson": "GeoJSON",
       "html-css-sanitizer": "html",
       "lzma": "LZMA",
-      "jquery.ui.widget": {
-        "depends": [
-          "jquery:jQuery"
-        ]
-      },
+      "jquery.jscrollpane": { "depends": ["jquery:jQuery"] },
       "jquery.ui.mouse": {
         "depends": [
           "jquery:jQuery",
@@ -112,11 +110,9 @@
           "jquery.ui.mouse"
         ]
       },
-      "jquery.jscrollpane": {
-        "depends": [
-          "jquery:jQuery"
-        ]
-      },
+      "jquery.ui.widget": { "depends": ["jquery:jQuery"] },
+      "mousewheel": { "depends": ["jquery:jQuery"] },
+      "mwheelIntent": { "depends": ["jquery:jQuery"] },
       "spin.js": "Spinner",
       "wax.cartodb.js": "wax"
     },

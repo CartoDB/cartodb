@@ -2,9 +2,12 @@
 var cdb = require('cdb');
 var _ = cdb._ = require('underscore');
 cdb.Mustache = require('mustache');
-require('json2'); // TODO polyfills window.JSON, still necessary with modern browser?
 
 cdb.$ = require('jquery-proxy').get();
+require('mousewheel'); // registers itself to $.event; TODO what's this required for? still relevant for supported browsers?
+require('mwheelIntent'); // registers itself to $.event; TODO what's this required for? still relevant for supported browsers?
+
+require('json2'); // TODO polyfills window.JSON, was required for Backbone and to support legacy IE; still relevant for supported browsers?
 cdb.Backbone = require('backbone-proxy').set(require('backbone')).get();
 
 cdb.config = require('cdb.config');

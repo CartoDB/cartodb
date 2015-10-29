@@ -472,16 +472,6 @@ var Vis = cdb.core.View.extend({
       layers: cartoDBLayers
     });
 
-    // TODO: Perhaps this "endpoint" could be part of the "datasource"?
-    var endpoint = cdb.windshaft.config.MAPS_API_BASE_URL;
-    var configGenerator = cdb.windshaft.PublicDashboardConfig;
-    var datasource = data.datasource;
-    // TODO: We can use something else to differentiate types of "datasource"s
-    if (datasource.template_name) {
-      endpoint = [cdb.windshaft.config.MAPS_API_BASE_URL, 'named', datasource.template_name].join('/');
-      configGenerator = cdb.windshaft.PrivateDashboardConfig;
-    }
-
     // TODO: We can probably move this logic somewhere in cdb.geo.ui.Widget
     var widgetClasses = {
       "list": {
@@ -501,22 +491,28 @@ var Vis = cdb.core.View.extend({
     };
 
     var filterModels = [];
+    var widgetModels = [];
     _.each(cartoDBLayers, function(layer) {
       var widgets = layer.get('options').widgets;
-      var widgetModels = [];
-      for (var widgetName in widgets) {
-        var widgetData = widgets[widgetName];
-        widgetData.id = widgetName;
+      
+      for (var widgetId in widgets) {
+        var widgetData = widgets[widgetId];
+        var widgetType = widgetData.type;
+
         if (!widgetClasses[widgetData.type]) {
-          throw 'Widget type \'' + widgetData.type + '\' is not supported!';
+          throw 'Widget type \'' + widgetType + '\' is not supported!';
         }
 
+        widgetData.id = widgetId;
+        widgetData.layerId = layer.get('id');
+
         // Instantiate the model 
-        var modelClass = widgetClasses[widgetData.type].model;
+        var modelClass = widgetClasses[widgetType].model;
         var widgetModel = new cdb.geo.ui.Widget[modelClass](widgetData);
         widgetModels.push(widgetModel);
 
-        var filterClass = widgetClasses[widgetData.type].filter;
+        // Instantiate a filter (if needed)
+        var filterClass = widgetClasses[widgetType].filter;
         var filterModel;
         if (filterClass) {
           filterModel = new cdb.windshaft.filters[filterClass]({
@@ -526,7 +522,7 @@ var Vis = cdb.core.View.extend({
         }
 
         // Instantitate the view
-        var viewClass = widgetClasses[widgetData.type].view;
+        var viewClass = widgetClasses[widgetType].view;
         var viewClassParts = viewClass.split('.');
         var viewOptions = { model: widgetModel };
         if (filterModel) {
@@ -536,9 +532,17 @@ var Vis = cdb.core.View.extend({
 
         $('.js-canvas').append(widgetView.render().el);
       }
-
-      layer.widgets = widgetModels;
     });
+
+    // TODO: Perhaps this "endpoint" could be part of the "datasource"?
+    var endpoint = cdb.windshaft.config.MAPS_API_BASE_URL;
+    var configGenerator = cdb.windshaft.PublicDashboardConfig;
+    var datasource = data.datasource;
+    // TODO: We can use something else to differentiate types of "datasource"s
+    if (datasource.template_name) {
+      endpoint = [cdb.windshaft.config.MAPS_API_BASE_URL, 'named', datasource.template_name].join('/');
+      configGenerator = cdb.windshaft.PrivateDashboardConfig;
+    }
 
     var windshaftClient = new cdb.windshaft.Client({
       endpoint: endpoint,
@@ -554,6 +558,7 @@ var Vis = cdb.core.View.extend({
       statTag: datasource.stat_tag,
       layerGroup: cartoDBLayerGroup,
       layers: cartoDBLayers,
+      widgets: widgetModels,
       filters: filterModels
     });
 
@@ -602,6 +607,10 @@ var Vis = cdb.core.View.extend({
     })
 
     return this;
+
+  },
+
+  _addWidget: function() {
 
   },
 

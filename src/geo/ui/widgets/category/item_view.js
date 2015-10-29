@@ -33,7 +33,7 @@ cdb.geo.ui.Widget.Category.ItemView = cdb.core.View.extend({
       template({
         name: this.model.get('name'),
         value: Math.ceil(value),
-        percentage: Math.ceil((value / this.model.get('totalCount')) * 100),
+        percentage: Math.ceil((value / this.model.get('maxCount')) * 100),
         isDisabled: !this.model.get('selected') ? 'is-disabled' : ''
       })
     );

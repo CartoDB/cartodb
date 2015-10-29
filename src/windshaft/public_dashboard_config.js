@@ -1,10 +1,11 @@
 cdb.windshaft.PublicDashboardConfig = {};
 
-cdb.windshaft.PublicDashboardConfig.generate = function(dashboard) {
+cdb.windshaft.PublicDashboardConfig.generate = function(options) {
+  this.layers = options.layers;
+  this.widgets = options.widgets;
   var config = {};
 
-  // LAYERS
-  config.layers = dashboard.getVisibleLayers().map(function(layerModel, layerIndex) {
+  config.layers = this.layers.map(function(layerModel, layerIndex) {
     var layerConfig = {
       type: 'cartodb',
       options: {
@@ -21,20 +22,17 @@ cdb.windshaft.PublicDashboardConfig.generate = function(dashboard) {
       };
     }
 
-    // WIDGETS
-    var widgets = layerModel.widgets;
+    var widgets = this.widgets.where({ layerId: layerModel.get('id') });
     if (widgets && widgets.length) {
       layerConfig.options.widgets = {};
 
       widgets.forEach(function(widget) {
-
-        // TODO: Each widget has different options
         layerConfig.options.widgets[widget.get('id')] = widget.toJSON();
       });
     }
 
     return layerConfig;
-  });
+  }, this);
 
   return config;
 };

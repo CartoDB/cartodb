@@ -55,6 +55,7 @@ if (L) {
 
 // if google maps is not defined do not load the class
 if (typeof(window.google) != 'undefined' && typeof(window.google.maps) != 'undefined') {
+  require('google-proxy').set(window.google);
   cdb.geo.GoogleMapsMapView = require('./geo/gmaps/gmaps-map-view');
   cdb.geo.GMapsTiledLayerView = require('./geo/gmaps/gmaps-tiled-layer-view');
   cdb.geo.GMapsCartoDBLayerView = require('./geo/gmaps/gmaps-cartodb-layer-view');

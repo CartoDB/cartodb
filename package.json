@@ -75,6 +75,7 @@
       "cdb.log": "./src-browserify/cdb.log.js",
       "cdb.errors": "./src-browserify/cdb.errors.js",
       "cdb.templates": "./src-browserify/cdb.templates.js",
+      "google-proxy": "./src-browserify/require-proxies/google-proxy.js",
       "json2": "./vendor/json2.js",
       "jquery-proxy": "./src-browserify/require-proxies/jquery-proxy.js",
       "jquery.ui.mouse": "./vendor/mod/jquery-ui/jquery.ui.mouse.js",

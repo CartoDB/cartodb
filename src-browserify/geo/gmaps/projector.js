@@ -1,4 +1,4 @@
-var google = window.google;
+var google = require('google-proxy').get();;
 
 // helper to get pixel position from latlon
 var Projector = function(map) { this.setMap(map); };

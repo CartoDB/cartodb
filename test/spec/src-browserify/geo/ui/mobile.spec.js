@@ -5,6 +5,7 @@ var _ = require('underscore');
 // dependencies
 var cdb = require('cdb');
 var jQueryProxy = require('jquery-proxy').set($);
+var googleProxy = require('google-proxy').set(window.google);
 var ajaxProxy = require('ajax-proxy').set($.ajax);
 var Backbone = require('backbone');
 var BackboneProxy = require('backbone-proxy').set(Backbone);
@@ -26,6 +27,7 @@ describe('geo/ui/mobile', function() {
     jQueryProxy.set($);
     ajaxProxy.set($.ajax);
     BackboneProxy.set(Backbone);
+    googleProxy.set(window.google);
 
     map = new Map();
 

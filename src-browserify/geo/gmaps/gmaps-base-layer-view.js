@@ -1,5 +1,5 @@
 var _ = require('underscore');
-var google = window.google;
+var google = require('google-proxy').get();;
 var DEFAULT_MAP_STYLE = require('./gmaps-default-map-style');
 var GMapsLayerView = require('./gmaps-layer-view');
 

@@ -1,4 +1,4 @@
-var google = window.google;
+var google = require('google-proxy').get();;
 var wax = require('wax.cartodb.js');
 var Profiler = require('cdb.core.Profiler');
 

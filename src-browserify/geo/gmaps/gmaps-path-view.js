@@ -1,4 +1,4 @@
-var google = window.google;
+var google = require('google-proxy').get();;
 var _ = require('underscore');
 var GeoJSON = require('geojson');
 var GeometryView = require('../geometry-view');

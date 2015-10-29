@@ -807,7 +807,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     if(this.isHidden()) return;
 
     var
-    offset          = this.model.get("offset")
+    offset          = this.model.get("offset"),
     pos             = this.mapView.latLonToPixel(this.model.get("latlng")),
     x               = this.$el.position().left,
     y               = this.$el.position().top,
@@ -823,7 +823,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   /**
    *  Adjust pan to show correctly the infowindow
    */
-  adjustPan: function (callback) {
+  adjustPan: function () {
     var offset = this.model.get("offset");
 
     if (!this.model.get("autoPan") || this.isHidden()) { return; }

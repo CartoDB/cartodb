@@ -62,6 +62,7 @@ module CartoDB
         @loader_options      = {}
         @results             = []
         @stats               = []
+        @warnings = {}
       end
 
       def loader_options=(value)
@@ -142,7 +143,7 @@ module CartoDB
         results.select(&:success?).length > 0
       end
 
-      attr_reader :results, :log, :loader, :stats, :downloader
+      attr_reader :results, :log, :loader, :stats, :downloader, :warnings
 
       private
 
@@ -247,8 +248,11 @@ module CartoDB
           end
 
           @importer_stats.timing('import') do
-            unpacker.source_files.each_with_index { |source_file, index|
+            if unpacker.source_files.length > MAX_TABLES_PER_IMPORT
+              add_warning(max_tables_per_import: MAX_TABLES_PER_IMPORT)
+            end
 
+            unpacker.source_files.each_with_index do |source_file, index|
               next if (index >= MAX_TABLES_PER_IMPORT)
               @job.new_table_name if (index > 0)
 
@@ -256,8 +260,7 @@ module CartoDB
               log.append "Filename: #{source_file.fullpath} Size (bytes): #{source_file.size}"
               import_stats = execute_import(source_file, @downloader)
               @stats << import_stats
-
-            }
+            end
           end
 
           @importer_stats.timing('cleanup') do
@@ -384,6 +387,10 @@ module CartoDB
                                                                user: user,
                                                                db: db
                                                              })
+      end
+
+      def add_warning(warning)
+        @warnings.merge!(warning)
       end
 
       def raise_if_over_storage_quota(source_file)

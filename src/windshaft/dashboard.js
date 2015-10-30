@@ -32,7 +32,7 @@ cdb.windshaft.Dashboard = function(options) {
     this._updateWidgetURLs();
   }.bind(this));
 
-  this.map.bind('change:center', _.debounce(this._boundingBoxChanged, BOUNDING_BOX_FILTER_WAIT), this);
+  this.map.bind('change:center change:zoom', _.debounce(this._boundingBoxChanged, BOUNDING_BOX_FILTER_WAIT), this);
 };
 
 cdb.windshaft.Dashboard.prototype._boundingBoxChanged = function() {

@@ -5,8 +5,10 @@ cdb.geo.ui.Widget.CategoryModel = cdb.geo.ui.Widget.Model.extend({
     columns: []
   },
 
-  initialize: function() {
-    this.filter = new cdb.windshaft.filters.CategoryFilter();
+  initialize: function(attrs, opts) {
+    if (opts.filter) {
+      this.filter = opts.filter;
+    }
     this._data = new Backbone.Collection(this.get('data'));
     cdb.geo.ui.Widget.Model.prototype.initialize.call(this);
   },
@@ -26,6 +28,17 @@ cdb.geo.ui.Widget.CategoryModel = cdb.geo.ui.Widget.Model.extend({
       return memo + datum.count;
     }, 0);
 
+    // Add rejected categories + result categories
+    var rejectedCategories = _.clone(this.filter.rejectedCategories);
+    var rejectedData = _.map(rejectedCategories, function(category){
+      return {
+        'selected': false,
+        'name': category,
+        'count': 0,
+        'maxCount': 0
+      };
+    }, this);
+
     var newData = _.map(categories, function(datum) {
       return {
         'selected': true,
@@ -34,6 +47,11 @@ cdb.geo.ui.Widget.CategoryModel = cdb.geo.ui.Widget.Model.extend({
         'maxCount': maxCount
       };
     }, this);
+
+    newData = newData.concat(rejectedData);
+    newData = _.sortBy(newData, function(datum) {
+      return datum.name;
+    });
 
     this._data.reset(newData);
 

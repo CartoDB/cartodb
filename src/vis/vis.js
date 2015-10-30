@@ -462,6 +462,7 @@ var Vis = cdb.core.View.extend({
     }
 
     // Get the CartoDBLayers from the LayerGroup
+    // TODO: namedmap?
     var layerGroup = _.find(data.layers, function(layer) {
       return layer.type === 'layergroup';
     });
@@ -506,22 +507,23 @@ var Vis = cdb.core.View.extend({
         widgetData.id = widgetId;
         widgetData.layerId = layer.get('id');
 
-        // Instantiate the model
-        var modelClass = widgetClasses[widgetType].model;
-        var widgetModel = new cdb.geo.ui.Widget[modelClass](widgetData);
-        widgetModels.push(widgetModel);
-
         // Instantiate a filter (if needed)
         var filterClass = widgetClasses[widgetType].filter;
         var filterModel;
         if (filterClass) {
           filterModel = new cdb.windshaft.filters[filterClass]({
-            widgetId: widgetModel.get('id'),
+            widgetId: widgetId,
             // TODO: check this thing
-            layerIndex: index
+            layerIndex: index,
+            layerId: widgetData.layerId
           });
           filterModels.push(filterModel);
         }
+
+        // Instantiate the model
+        var modelClass = widgetClasses[widgetType].model;
+        var widgetModel = new cdb.geo.ui.Widget[modelClass](widgetData, { filter: filterModel });
+        widgetModels.push(widgetModel);
 
         // Instantitate the view
         var viewClass = widgetClasses[widgetType].view;

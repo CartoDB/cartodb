@@ -6,7 +6,7 @@
 
 cdb.geo.ui.Widget.Category.PaginatorView = cdb.core.View.extend({
 
-  _ITEMS_PER_PAGE: 4,
+  _ITEMS_PER_PAGE: 6,
 
   className: 'Widget-nav Widget-contentSpaced',
 
@@ -23,39 +23,51 @@ cdb.geo.ui.Widget.Category.PaginatorView = cdb.core.View.extend({
   },
 
   initialize: function() {
+    this._ITEMS_PER_PAGE = this.options.itemsPerPage;
     this.dataModel = this.options.dataModel;
     this._$target = this.options.$target;
     this.model = new cdb.core.Model({
-      pages: this.options.pages,
-      page: 0,
-      itemsPerPage: this.options.itemsPerPage
+      page: 0
     });
     this._initBinds();
   },
 
   render: function() {
     this.clearSubViews();
+    this.$el.empty();
+    var count = this.dataModel.getSize();
+    var pages = Math.ceil(count / this._ITEMS_PER_PAGE);
     var template = _.template(this._TEMPLATE);
-    var categoriesCount = this.dataModel.getSize();
     this.$el.html(
       template({
         currentPage: this.model.get('page'),
-        categoriesCount: categoriesCount || '-',
-        pages: this.model.get('pages')
+        categoriesCount: count || '-',
+        pages: pages
       })
     );
+    this._scrollToPage();
+
     return this;
   },
 
   _initBinds: function() {
     _.bindAll(this, '_scrollToPage');
     $(window).bind('resize', this._scrollToPage);
-    this.model.bind('change:page', function() {
+    this.model.bind('change:page', this.render, this);
+    this.dataModel.bind('change:data', function() {
+      this._setPage();
       this.render();
-      this._scrollToPage();
     }, this);
-    this.dataModel.bind('change:data', this.render, this);
     this.add_related_model(this.dataModel);
+  },
+
+  // If current page doesn't exist due to a data change, we should reset it
+  _setPage: function() {
+    var count = this.dataModel.getSize();
+    var pages = Math.ceil(count / this._ITEMS_PER_PAGE);
+    if (this.model.get('page') > (pages - 1)) {
+      this.model.set({ page: 0 }, { silent :true });
+    }
   },
 
   _scrollToPage: function() {

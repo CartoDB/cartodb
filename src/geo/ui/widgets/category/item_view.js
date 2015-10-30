@@ -12,7 +12,9 @@ cdb.geo.ui.Widget.Category.ItemView = cdb.core.View.extend({
       '<button type="button" class="Widget-listItemInner Widget-listButton js-button <%- isDisabled ? \'is-disabled\' : \'\' %>">'+
         '<div class="Widget-contentSpaced">'+
           '<p class="Widget-textSmall Widget-textSmall--bold Widget-textSmall--upper" title="<%- name %>"><%- name %></p>'+
-          '<p class="Widget-textSmaller" title="<%- value %>"><%- value %> (~<%- percentage %>%)</p>'+
+          '<% if (value > 0) { %>'+
+            '<p class="Widget-textSmaller" title="<%- value %>"><%- value %> (~<%- percentage %>%)</p>'+
+          '<% } %>'+
         '</div>'+
         '<div class="Widget-progressBar">'+
           '<div class="Widget-progressState" style="width: <%- percentage %>%"></div>'+

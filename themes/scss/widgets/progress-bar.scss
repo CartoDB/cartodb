@@ -11,7 +11,7 @@
   border-radius: 4px;
 }
 .Widget-progressState {
-  @include css3-prefix(animation, state-progress 600ms ease-out);
+  // @include css3-prefix(animation, state-progress 600ms ease-out);
   position: absolute;
   top: 0;
   left: 0;
@@ -21,7 +21,7 @@
   border-radius: 4px;
 }
 .is-disabled .Widget-progressState {
-  @include css3-prefix(animation, state-progress 0 ease-out);
+  // @include css3-prefix(animation, state-progress 0 ease-out);
   position: absolute;
   top: 0;
   left: 0;

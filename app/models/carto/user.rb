@@ -141,7 +141,7 @@ class Carto::User < ActiveRecord::Base
   end
 
   def remove_logo?
-    Carto::PricePlan.new.remove_logo?(self)
+    Carto::AccountType.new.remove_logo?(self)
   end
 
   def organization_username
@@ -293,7 +293,7 @@ class Carto::User < ActiveRecord::Base
   end
 
   def soft_geocoding_limit?
-    Carto::PricePlan.new.soft_geocoding_limit?(self)
+    Carto::AccountType.new.soft_geocoding_limit?(self)
   end
   alias_method :soft_geocoding_limit, :soft_geocoding_limit?
 
@@ -320,7 +320,7 @@ class Carto::User < ActiveRecord::Base
   end
 
   def dedicated_support?
-    Carto::PricePlan.new.dedicated_support?(self)
+    Carto::AccountType.new.dedicated_support?(self)
   end
 
   def arcgis_datasource_enabled?

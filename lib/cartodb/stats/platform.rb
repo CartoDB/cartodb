@@ -9,7 +9,7 @@ module CartoDB
 
       # Total users that aren't FREE
       def pay_users
-        Carto::PricePlan.new.pay_users
+        Carto::AccountType.new.pay_users
       end
 
       # Total datasets

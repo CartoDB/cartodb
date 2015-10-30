@@ -43,7 +43,7 @@ describe Carto::User do
     end
 
     it 'false for free accounts' do
-      @carto_user.account_type = Carto::PricePlan::FREE
+      @carto_user.account_type = Carto::AccountType::FREE
 
       @carto_user.dedicated_support?.should be_false
       @carto_user.remove_logo?.should be_false

@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 module Carto
-  class PricePlan
+  class AccountType
 
     FREE = 'FREE'
     MAGELLAN = 'MAGELLAN'

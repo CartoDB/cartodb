@@ -13,7 +13,7 @@ module Carto
     REMOVE_LOGO_PLANS_REGEXP = /(FREE|MAGELLAN|JOHN SNOW|ACADEMY|ACADEMIC|ON HOLD)/i
 
     def pay_users
-      return ::User.where("upper(account_type) != '#{FREE}'").count
+      ::User.where("upper(account_type) != '#{FREE}'").count
     end
 
     def dedicated_support?(user)

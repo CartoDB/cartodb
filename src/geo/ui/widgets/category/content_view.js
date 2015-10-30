@@ -25,40 +25,22 @@ cdb.geo.ui.Widget.Category.Content = cdb.geo.ui.Widget.Content.extend({
     '</div>'+
     '<div class="Widget-footer js-footer"></div>',
 
-  _PLACEHOLDER: ' ' +
-    '<ul class="Widget-list Widget-list--withBorders">' +
-      '<li class="Widget-listItem Widget-listItem--fake"></li>' +
-      '<li class="Widget-listItem Widget-listItem--fake"></li>' +
-      '<li class="Widget-listItem Widget-listItem--fake"></li>' +
-      '<li class="Widget-listItem Widget-listItem--fake"></li>' +
-    '</ul>',
-
   render: function() {
     this.clearSubViews();
-
     var template = _.template(this._TEMPLATE);
-    var data = this.dataModel.getData();
-    var isDataEmpty = _.isEmpty(data) || _.size(data) === 0;
     this.$el.html(
       template({
-        title: this.viewModel.get('title'),
-        itemsCount: !isDataEmpty ? data.length : '-'
+        title: this.viewModel.get('title')
       })
     );
-
-    if (isDataEmpty) {
-      this._addPlaceholder();
-    } else {
-      this._initViews();
-    }
-
+    this._initViews();
     return this;
   },
 
-  _initViews: function() {
-    var count = this.dataModel.getSize();
-    var pages = Math.ceil(count / this._ITEMS_PER_PAGE);
+  // Reset category content bindings and move that logic to category list view
+  _initBinds: function() {},
 
+  _initViews: function() {
     // List view -> items view
     var list = new cdb.geo.ui.Widget.Category.ItemsView({
       viewModel: this.viewModel,
@@ -69,17 +51,14 @@ cdb.geo.ui.Widget.Category.Content = cdb.geo.ui.Widget.Content.extend({
     this.$('.js-content').html(list.render().el);
     this.addView(list);
 
-    if (pages > 0) {
-      // Paginator
-      var pagination = new cdb.geo.ui.Widget.Category.PaginatorView({
-        $target: list.$el,
-        pages: pages,
-        dataModel: this.dataModel,
-        itemsPerPage: this._ITEMS_PER_PAGE
-      });
-      this.$('.js-footer').append(pagination.render().el);
-      this.addView(pagination);
-    }
+    // Paginator
+    var pagination = new cdb.geo.ui.Widget.Category.PaginatorView({
+      $target: list.$el,
+      dataModel: this.dataModel,
+      itemsPerPage: this._ITEMS_PER_PAGE
+    });
+    this.$('.js-footer').append(pagination.render().el);
+    this.addView(pagination);
   }
 
 });

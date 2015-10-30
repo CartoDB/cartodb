@@ -13,18 +13,16 @@ cdb.windshaft.filters.CategoryFilter = cdb.windshaft.filters.FilterBase.extend({
       var index = this.rejectedCategories.indexOf(value);
       if (index >= 0) {
         this.rejectedCategories.splice(index, 1);
+        this.trigger('change', this);
       }
     }
-
-    this.trigger('change', this);
   },
 
   reject: function(value) {
     if (!this.contains(value)) {
       this.rejectedCategories.push(value);
+      this.trigger('change', this);
     }
-
-    this.trigger('change', this);
   },
 
   contains: function(value) {
@@ -38,4 +36,3 @@ cdb.windshaft.filters.CategoryFilter = cdb.windshaft.filters.FilterBase.extend({
     return json;
   }
 });
-

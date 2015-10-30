@@ -181,6 +181,8 @@ module Carto
           warnings.merge!(user_max_layers: @data_import.user.max_layers)
         end
 
+        warnings.merge!(JSON.parse(@data_import.runner_warnings)) if !@data_import.runner_warnings.nil?
+
         warnings.empty? ? nil : warnings
       end
     end

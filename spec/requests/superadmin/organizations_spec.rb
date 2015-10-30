@@ -32,6 +32,44 @@ feature "Superadmin's organization API" do
     end
   end
 
+  scenario "organization with owner creation success" do
+    org_atts = FactoryGirl.build(:organization, name: 'wadus').values
+    user = FactoryGirl.create(:user_with_private_tables)
+    org_atts[:owner_id] = user.id
+
+    post_json superadmin_organizations_path, { organization: org_atts }, superadmin_headers do |response|
+      response.status.should == 201
+      response.body[:name].should == 'wadus'
+
+      # Double check that the organization has been created properly
+      organization = Organization.filter(name: org_atts[:name]).first
+      organization.should be_present
+      organization.id.should == response.body[:id]
+
+      organization.owner_id.should == user.id
+      user.reload
+      user.organization_id.should == organization.id
+      organization.destroy_cascade
+    end
+  end
+
+  scenario "organization with owner creation failure" do
+    org_atts = FactoryGirl.build(:organization, name: 'wadus-fail').values
+    user = FactoryGirl.create(:user_with_private_tables)
+    org_atts[:owner_id] = user.id
+
+    simulated_error = StandardError.new('promote_user_to_admin failure simulation')
+    CartoDB::UserOrganization.any_instance.stubs(:promote_user_to_admin).raises(simulated_error)
+
+    post_json superadmin_organizations_path, { organization: org_atts }, superadmin_headers do |response|
+      response.status.should == 500
+
+      Organization.filter(name: org_atts[:name]).first.should be_nil
+      user.reload
+      user.organization_id.should be_nil
+    end
+  end
+
   scenario "organization update fail" do
     pending "Exception handling isn' implemented yet"
   end
@@ -58,7 +96,7 @@ feature "Superadmin's organization API" do
 
   describe "GET /superadmin/organization" do
     it "gets all organizations" do
-      @organization2 = FactoryGirl.create(:organization, name: 'wadus')
+      @organization2 = FactoryGirl.create(:organization, name: 'wadus-org')
       get_json superadmin_organizations_path, {}, superadmin_headers do |response|
         response.status.should == 200
         response.body.map { |u| u["name"] }.should include(@organization.name, @organization2.name)

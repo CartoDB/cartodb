@@ -677,13 +677,15 @@ module CartoDB
         set_user_privileges_in_geocoding_schema(org_member_role)
       end
 
+      def schema_exists?(schema, database = @user.in_database)
+        query = "SELECT 1 as schema_exist FROM information_schema.schemata WHERE schema_name = '#{schema}'"
+        !database.fetch(query).first.nil?
+      end
+
       def drop_users_privileges_in_schema(schema, accounts)
         @user.in_database(as: :superuser, statement_timeout: 600000) do |user_database|
-          if user_database.fetch(
-            "SELECT 1 as schema_exist FROM information_schema.schemata WHERE schema_name = '#{schema}'"
-          ).first.nil?
-            return
-          end
+          return unless schema_exists?(schema, user_database)
+
           user_database.transaction do
             accounts
               .select { |role| role_exists?(user_database, role) }
@@ -904,8 +906,8 @@ module CartoDB
 
       def move_to_own_schema
         new_schema_name = @user.username
+        old_database_schema_name = @user.database_schema
         if @user.database_schema != new_schema_name
-          old_database_schema_name = @user.database_schema
           @user.database_schema = new_schema_name
           @user.this.update database_schema: new_schema_name
           create_user_schema
@@ -914,6 +916,19 @@ module CartoDB
           create_public_db_user
           set_database_search_path
         end
+      rescue => e
+        # Undo metadata changes if process fails
+        begin
+          @user.this.update database_schema: old_database_schema_name
+          if schema_exists?(new_schema_name)
+            drop_all_functions_from_schema(new_schema_name)
+            @user.in_database.run(%{ DROP SCHEMA "#{new_schema_name}" })
+          end
+        rescue => e
+          # Avoid shadowing the actual error
+          CartoDB.notify_exception(e, user: @user)
+        end
+        raise e
       end
 
       def drop_database_and_user(conn = nil)

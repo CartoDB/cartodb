@@ -1,5 +1,5 @@
 module.exports = {
-  LeafetLayerView: require('./leaflet/leaflet-layer-view'),
+  LeafletLayerView: require('./leaflet/leaflet-layer-view'),
 
   LeafletPlainLayerView: require('./leaflet/leaflet-plain-layer-view'),
   LeafletTiledLayerView: require('./leaflet/leaflet-tiled-layer-view'),

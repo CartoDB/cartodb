@@ -30,6 +30,7 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
   _onChangeData: function() {
     if (!this.model.get('locked')) {
       this.refresh();
+      this.model.set('locked', false);
     }
   },
 
@@ -317,7 +318,6 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
   },
 
   contract: function() {
-    this.model.set({ locked: true });
     this._move({ x: 0, y: 0 });
   },
 
@@ -458,11 +458,11 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     var handle = { width: this.defaults.handleWidth, height: this.defaults.handleHeight, radius: this.defaults.handleRadius };
     var yPos = (this.chartHeight / 2) - (this.defaults.handleHeight / 2);
 
-    var h = this.chart.select('.Handles')
+    var handles = this.chart.select('.Handles')
     .append('g')
     .attr('class', 'Handle ' + className);
 
-    h
+    handles
     .append('line')
     .attr('class', 'HandleLine')
     .attr('x1', 3)
@@ -471,7 +471,7 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     .attr('y2', this.chartHeight + 4);
 
     if (this.options.handles) {
-      h
+      handles
       .append('rect')
       .attr('class', 'HandleRect')
       .attr('transform', 'translate(0, ' + yPos + ')')
@@ -480,33 +480,20 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
       .attr('rx', handle.radius)
       .attr('ry', handle.radius);
 
-      var y = 21;
-      h
-      .append('line')
-      .attr('class', 'HandleGrip')
-      .attr('x1', 2)
-      .attr('y1', y)
-      .attr('x2', 4)
-      .attr('y2', y);
+      var y = 21; // initial position of the first grip
 
-      h
-      .append('line')
-      .attr('class', 'HandleGrip')
-      .attr('x1', 2)
-      .attr('y1', y+3)
-      .attr('x2', 4)
-      .attr('y2', y+3);
-
-      h
-      .append('line')
-      .attr('class', 'HandleGrip')
-      .attr('x1', 2)
-      .attr('y1', y+6)
-      .attr('x2', 4)
-      .attr('y2', y+6);
+      for (var i = 0; i < 3; i++) {
+        handles
+        .append('line')
+        .attr('class', 'HandleGrip')
+        .attr('x1', 2)
+        .attr('y1', y + i*3)
+        .attr('x2', 4)
+        .attr('y2', y + i*3);
+      }
     }
 
-    return h;
+    return handles;
   },
 
   _generateHandles: function() {

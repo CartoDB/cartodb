@@ -1,5 +1,5 @@
 var _ = require('underscore');
-var L = require('leaflet-proxy').get();
+var L = require('leaflet');
 var cdb = require('cdb'); // cdb.geo.LeafletTorqueLayer
 var log = require('cdb.log');
 var MapView = require('../map-view');

@@ -1,5 +1,5 @@
 var _ = require('underscore');
-var $ = require('jquery-proxy').get();
+var $ = require('jquery');
 var Model = require('../../core/model');
 var Template = require('../../core/template');
 var View = require('../../core/view');

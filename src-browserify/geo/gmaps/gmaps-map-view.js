@@ -1,4 +1,3 @@
-var google = require('google-proxy').get();;
 var _ = require('underscore');
 var cdb = require('cdb'); // cdb.geo.GMapsTorqueLayerView
 var log = require('cdb.log');

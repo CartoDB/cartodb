@@ -1,7 +1,7 @@
 var $ = require('jquery');
-var templates = require('cdb.templates');
 var _ = require('underscore');
 var Backbone = require('backbone');
+var templates = require('cdb.templates');
 var View = require('../../../../src-browserify/core/view');
 
 describe('core/view', function() {

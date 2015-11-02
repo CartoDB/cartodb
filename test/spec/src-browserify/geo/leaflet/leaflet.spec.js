@@ -1,17 +1,11 @@
 var $ = require('jquery');
 var _ = require('underscore');
-
+var Backbone = require('backbone');
 var L = require('leaflet');
 global.L = L;
 require('torque.js'); // attaches L.TorqueLayer (but only while window.L is loaded before this require!)
-
-var ajaxProxy = require('ajax-proxy').set($.ajax);
-var leafletProxy = require('leaflet-proxy').set(L);
 var config = require('cdb.config');
 var log = require('cdb.log');
-var Backbone = require('backbone');
-var BackboneProxy = require('backbone-proxy').set(Backbone);
-
 var LeafletTorqueLayer = require('../../../../../src-browserify/geo/leaflet/leaflet-torque-layer');
 var Map = require('../../../../../src-browserify/geo/map');
 var LeafletMapView = require('../../../../../src-browserify/geo/leaflet/leaflet-map-view');
@@ -32,10 +26,6 @@ describe('geo/leaflet/leaflet-map-view', function() {
   var container;
 
   beforeEach(function() {
-    ajaxProxy.set($.ajax);
-    BackboneProxy.set(Backbone);
-    leafletProxy.set(L);
-
     container = $('<div>').css({
         'height': '200px',
         'width': '200px'

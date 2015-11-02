@@ -1,5 +1,5 @@
 var _ = require('underscore');
-var LeafletProxy = require('leaflet-proxy');
+var L = require('leaflet');
 var config = require('cdb.config');
 var log = require('cdb.log');
 var Model = require('../core/model');
@@ -290,14 +290,12 @@ var Map = Model.extend({
 
 }, {
   latlngToMercator: function(latlng, zoom) {
-    var L = LeafletProxy.get();
     var ll = new L.LatLng(latlng[0], latlng[1]);
     var pp = L.CRS.EPSG3857.latLngToPoint(ll, zoom);
     return [pp.x, pp.y];
   },
 
   mercatorToLatLng: function(point, zoom) {
-    var L = LeafletProxy.get();
     var ll = L.CRS.EPSG3857.pointToLatLng(point, zoom);
     return [ll.lat, ll.lng]
   }

@@ -1,16 +1,8 @@
 var $ = require('jquery');
 var _ = require('underscore');
 var L = require('leaflet');
-window.torque = require('torque.js'); // to window.torque.GMapsTorqueLayer, required by GMapsTorqueLayerView
-
-// Necessary evil due to gmaps code uses cdb.geo.* to access certain objects, can't untangel since that leads to circular
-// dependencies
-var leafletProxy = require('leaflet-proxy').set(L);
-var jQueryProxy = require('jquery-proxy').set($);
-var googleProxy = require('google-proxy').set(window.google);
-var ajaxProxy = require('ajax-proxy').set($.ajax);
 var Backbone = require('backbone');
-var BackboneProxy = require('backbone-proxy').set(Backbone);
+window.torque = require('torque.js'); // to window.torque.GMapsTorqueLayer, required by GMapsTorqueLayerView
 
 var Map = require('../../../../../src-browserify/geo/map');
 var GoogleMapsMapView = require('../../../../../src-browserify/geo/gmaps/gmaps-map-view');
@@ -32,12 +24,6 @@ var GMapsTorqueLayerView = require('../../../../../src-browserify/geo/gmaps/gmap
     var spy;
     var container;
     beforeEach(function() {
-      jQueryProxy.set($);
-      leafletProxy.set(L);
-      ajaxProxy.set($.ajax);
-      BackboneProxy.set(Backbone);
-      googleProxy.set(window.google);
-
       container = $('<div>').css('height', '200px');
       //$('body').append(container);
       map = new Map();

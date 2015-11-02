@@ -1,4 +1,3 @@
-var torque = window.torque; // TODO dependency, other way to require?
 var _ = require('underscore');
 var Backbone = require('backbone');
 var cdb = require('cdb'); // cdb.geo.GMapsTorqueLayerView

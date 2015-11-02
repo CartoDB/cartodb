@@ -1,4 +1,4 @@
-var $ = require('jquery-proxy').get();
+var $ = require('jquery');
 var View = require('../../../core/view');
 
 /**

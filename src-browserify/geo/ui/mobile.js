@@ -1,7 +1,7 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
 var cdb = require('cdb'); // cdb.geo.ui.*
-var $ = require('jquery-proxy').get();
+var $ = require('jquery');
 require('jquery.ui.slider'); // registers itself to $.slider
 require('jquery.jscrollpane'); // registers itself to $.jScrollPane
 var templates = require('cdb.templates');

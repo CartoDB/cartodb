@@ -1,8 +1,7 @@
 var _ = require('underscore');
+var $ = require('jquery');
 var Mustache = require('mustache');
-var ajaxProxy = require('ajax-proxy');
-var _Promise = require('./core-lib/_promise');
-var jQueryProxy = require('jquery-proxy');
+var _Promise = require('./_promise');
 
 function SQL(options) {
   if(window.cdb === this || window === this) {
@@ -17,19 +16,10 @@ function SQL(options) {
     loc = 'https';
   }
 
-  this.ajax = options.ajax || ajaxProxy.get();
-
-  var jsonp;
-  try {
-    jsonp = !jQueryProxy.get().support.cors
-  } catch (err) {
-    jsonp = false;
-  }
-
   this.options = _.defaults(options, {
     version: 'v2',
     protocol: loc,
-    jsonp: jsonp
+    jsonp: !$.support.cors
   })
 
   if (!this.options.sql_api_template) {
@@ -137,14 +127,7 @@ SQL.prototype.execute = function(sql, vars, options, callback) {
     }
 
     params.data = objPost;
-
-    //Check if we are using jQuery(uncompressed) or reqwest (core)
-    try {
-      jQueryProxy.get();
-      params.type = 'post';
-    } catch (err) {
-      params.method = 'post';
-    }
+    params.type = 'post';
   }
 
   // wrap success and error functions
@@ -179,7 +162,7 @@ SQL.prototype.execute = function(sql, vars, options, callback) {
 
   // call ajax
   delete options.jsonp;
-  this.ajax(_.extend(params, options));
+  $.ajax(_.extend(params, options));
   return promise;
 }
 

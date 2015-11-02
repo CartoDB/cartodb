@@ -1,5 +1,5 @@
 var _ = require('underscore');
-var jQueryProxy = require('jquery-proxy');
+var $ = require('jquery');
 
 /**
 * geocoders for different services
@@ -28,7 +28,7 @@ var YAHOO = {
         protocol = 'http:';
       }
 
-      jQueryProxy.get().getJSON(protocol + '//query.yahooapis.com/v1/public/yql?q='+encodeURIComponent('SELECT * FROM json WHERE url="http://where.yahooapis.com/geocode?q=' + address + '&appid=' + this.keys.app_id + '&flags=JX"') + '&format=json&callback=?', function(data) {
+      $.getJSON(protocol + '//query.yahooapis.com/v1/public/yql?q='+encodeURIComponent('SELECT * FROM json WHERE url="http://where.yahooapis.com/geocode?q=' + address + '&appid=' + this.keys.app_id + '&flags=JX"') + '&format=json&callback=?', function(data) {
 
          var coordinates = [];
          if (data && data.query && data.query.results && data.query.results.json && data.query.results.json.ResultSet && data.query.results.json.ResultSet.Found != "0") {

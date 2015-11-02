@@ -1,6 +1,6 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
-var $ = require('jquery-proxy').get();
+var $ = require('jquery');
 var cdb = require('cdb'); // cdb.odyssey (set through cdb.moduleLoad())
 var config = require('cdb.config');
 var log = require('cdb.log');

@@ -1,13 +1,10 @@
 var $ = require('jquery');
-var jQueryProxy = require('jquery-proxy').set($);
 var Dialog = require('../../../../../src-browserify/ui/common/dialog');
 
 describe('ui/common/dialog', function() {
 
   var dialog;
   beforeEach(function() {
-    jQueryProxy.set($);
-
     dialog = new Dialog({el: $('<div>')});
     dialog.ok = function() {};
     dialog.cancel = function() {};

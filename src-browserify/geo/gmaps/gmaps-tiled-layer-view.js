@@ -1,6 +1,5 @@
 var _ = require('underscore');
 var GMapsLayerView = require('./gmaps-layer-view');
-var google = require('google-proxy').get();;
 
 var GMapsTiledLayerView = function(layerModel, gmapsMap) {
   GMapsLayerView.call(this, layerModel, this, gmapsMap);

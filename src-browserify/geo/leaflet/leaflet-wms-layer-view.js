@@ -1,5 +1,5 @@
 var _ = require('underscore');
-var L = require('leaflet-proxy').get();
+var L = require('leaflet');
 var LeafletLayerView = require('./leaflet-layer-view.js');
 
 var LeafletWMSLayerView = L.TileLayer.WMS.extend({

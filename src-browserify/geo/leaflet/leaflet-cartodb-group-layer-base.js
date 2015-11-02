@@ -1,5 +1,5 @@
 var wax = require('wax.cartodb.js');
-var L = require('leaflet-proxy').get();
+var L = require('leaflet');
 var config = require('cdb.config');
 var Profiler = require('cdb.core.Profiler');
 var LeafletLayerView = require('./leaflet-layer-view');

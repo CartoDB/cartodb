@@ -1,14 +1,5 @@
 var $ = require('jquery');
 var _ = require('underscore');
-
-// Necessary evil due to gmaps code uses cdb.geo.* to access certain objects, can't untangel since that leads to circular
-// dependencies
-var jQueryProxy = require('jquery-proxy').set($);
-var googleProxy = require('google-proxy').set(window.google);
-var ajaxProxy = require('ajax-proxy').set($.ajax);
-var Backbone = require('backbone');
-var BackboneProxy = require('backbone-proxy').set(Backbone);
-
 var Template = require('../../../../../src-browserify/core/template');
 var Model = require('../../../../../src-browserify/core/model');
 var Map = require('../../../../../src-browserify/geo/map');
@@ -23,11 +14,6 @@ describe('geo/ui/mobile', function() {
   var mobile, map, layerGroup, container, mapView, template, overlays, l1, l2, torque;
 
   beforeEach(function() {
-    jQueryProxy.set($);
-    ajaxProxy.set($.ajax);
-    BackboneProxy.set(Backbone);
-    googleProxy.set(window.google);
-
     map = new Map();
 
     torque = new TorqueLayer({ type: "torque", visible: false, urlTemplate: "https://maps.nlp.nokia.com/maptiler/v2/maptile/newest/normal.day/{z}/{x}/{y}/256/png8?lg=eng&token=61YWYROufLu_f8ylE0vn0Q&app_id=qIWDkliFCtLntLma2e6O", name: "Nokia Day", className: "nokia_day", attribution: "©2012 Nokia <a href='http://here.net/services/terms' target='_blank'>Terms of use</a>", kind: "tiled", infowindow: null, id: 1226, order: 0 });

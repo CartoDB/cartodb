@@ -1,5 +1,5 @@
-var sanitize = require('../../../core/sanitize');
 var _ = require('underscore');
+var sanitize = require('../../../core/sanitize');
 var BaseLegend = require('./base-legend');
 
 /**

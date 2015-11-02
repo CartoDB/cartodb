@@ -1,10 +1,6 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
 var $ = require('jquery');
-var jQueryProxy = require('jquery-proxy').set($);
-var BackboneProxy = require('backbone-proxy').set(Backbone);
-var ajaxProxy = require('ajax-proxy').set($.ajax);
-
 var Queue = require('../../../../src-browserify/vis/image/queue');
 var StaticImage = require('../../../../src-browserify/vis/image/static-image');
 var Loader = require('../../../../src-browserify/core/loader');
@@ -13,9 +9,6 @@ var Image = require('../../../../src-browserify/vis/image');
 describe('vis/image', function() {
 
   beforeEach(function() {
-    BackboneProxy.set(Backbone);
-    jQueryProxy.set($);
-    ajaxProxy.set($.ajax);
     var img = $('<img id="image" />');
     $("body").append(img);
   });

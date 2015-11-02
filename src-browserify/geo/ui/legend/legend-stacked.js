@@ -1,5 +1,5 @@
-var cdb = require('cdb'); // cdb.geo.ui.Legend.*
 var _ = require('underscore');
+var cdb = require('cdb'); // cdb.geo.ui.Legend.*
 var Legends = require('../legends');
 var LegendModel = require('../legend-model');
 var StackedLegend = require('./stacked-legend');

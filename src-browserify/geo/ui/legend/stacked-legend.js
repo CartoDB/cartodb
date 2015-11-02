@@ -1,5 +1,5 @@
 var _ = require('underscore');
-var $ = require('jquery-proxy').get();
+var $ = require('jquery');
 var View = require('../../../core/view');
 
 var StackedLegend = View.extend({

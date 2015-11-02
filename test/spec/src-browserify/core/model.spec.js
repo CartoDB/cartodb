@@ -1,5 +1,4 @@
 var $ = require('jquery');
-var jQueryProxy = require('jquery-proxy').set($);
 var Model = require('../../../../src-browserify/core/model');
 
 describe('core/model', function() {
@@ -7,7 +6,6 @@ describe('core/model', function() {
   var model;
 
   beforeEach(function() {
-    jQueryProxy.set($);
     TestModel = Model.extend({
       initialize: function() {
         this.initCalled = true;

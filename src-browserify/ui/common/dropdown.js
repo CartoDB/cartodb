@@ -1,4 +1,4 @@
-var $ = require('jquery-proxy').get();
+var $ = require('jquery');
 var cdb = require('cdb');
 var _ = require('underscore');
 var templates = require('cdb.templates');

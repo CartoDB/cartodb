@@ -1,6 +1,6 @@
+var $ = require('jquery');
 var _ = require('underscore');
 var Backbone = require('backbone');
-var $ = require('jquery-proxy').get();
 require('./decorators'); // since it monkey-patches Backbone.Model
 
 /**

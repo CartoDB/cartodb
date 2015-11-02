@@ -1,5 +1,4 @@
 var $ = require('jquery');
-var jQueryProxy = require('jquery-proxy').set($);
 var templates = require('cdb.templates');
 var log = require('cdb.log');
 var config = require('cdb.config');
@@ -12,8 +11,6 @@ describe('geo/ui/infowindow', function() {
   var model, view;
 
   beforeEach(function() {
-    jQueryProxy.set($);
-
     var container = $('<div>').css('height', '200px');
 
     map = new Map();

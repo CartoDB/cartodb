@@ -1,5 +1,5 @@
 var Backbone = require('backbone');
-var jQueryProxy = require('jquery-proxy');
+var $ = require('jquery');
 var config = require('cdb.config');
 
 var ErrorModel = Backbone.Model.extend({
@@ -8,7 +8,7 @@ var ErrorModel = Backbone.Model.extend({
   },
 
   initialize: function() {
-    this.set({ browser: JSON.stringify(jQueryProxy.get().browser) });
+    this.set({ browser: JSON.stringify($.browser) });
   }
 });
 

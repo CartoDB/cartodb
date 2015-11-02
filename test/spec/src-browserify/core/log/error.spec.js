@@ -1,12 +1,7 @@
 var $ = require('jquery');
-var jQueryProxy = require('jquery-proxy');
 var ErrorModel = require('../../../../../src-browserify/core/log/error');
 
 describe('core/log/error', function() {
-  beforeEach(function() {
-    jQueryProxy.set($);
-  });
-
   it('should set a browser info when created', function() {
     var err = new ErrorModel({});
     expect(err.get('browser')).toEqual(JSON.stringify($.browser));

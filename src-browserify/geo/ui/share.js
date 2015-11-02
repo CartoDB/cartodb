@@ -1,5 +1,5 @@
 var _ = require('underscore');
-var $ = require('jquery-proxy').get();
+var $ = require('jquery');
 var sanitize = require('../../core/sanitize');
 var View = require('../../core/view');
 var Template = require('../../core/template');

@@ -1,15 +1,15 @@
+var $ = require('jquery');
 var _ = require('underscore');
 var util = require('cdb.core.util');
 var Profiler = require('cdb.core.Profiler');
 var MapProperties = require('./map-properties')
 var SubLayerFactory = require('../sub-layer/sub-layer-factory');
-var ajaxProxy = require('ajax-proxy');
 
 function MapBase(options) {
   var self = this;
 
   this.options = _.defaults(options, {
-    ajax: ajaxProxy.get(),
+    ajax: $.ajax,
     pngParams: ['map_key', 'api_key', 'cache_policy', 'updated_at'],
     gridParams: ['map_key', 'api_key', 'cache_policy', 'updated_at'],
     cors: util.isCORSSupported(),

@@ -1,4 +1,3 @@
-var google = require('google-proxy').get();;
 var wax = require('wax.cartodb.js');
 var Profiler = require('cdb.core.Profiler');
 
@@ -164,7 +163,7 @@ CartoDBLayerGroupBase.prototype._findPos = function (map,o) {
 };
 
 /**
- * Creates an instance of a google.maps Point
+ * Creates an instance of a googleMaps Point
  */
 CartoDBLayerGroupBase.prototype._newPoint = function(x, y) {
   return new google.maps.Point(x, y);

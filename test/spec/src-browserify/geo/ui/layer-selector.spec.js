@@ -1,10 +1,6 @@
 var $ = require('jquery');
-var jQueryProxy = require('jquery-proxy').set($);
-var ajaxProxy = require('ajax-proxy').set($.ajax);
 var Backbone = require('backbone');
-var BackboneProxy = require('backbone-proxy').set(Backbone);
 var L = require('leaflet');
-var leafletProxy = require('leaflet-proxy').set(L);
 var cdb = require('cdb');
 cdb.geo.ui = {
   LayerView: require('../../../../../src-browserify/geo/ui/layer-view'),
@@ -23,11 +19,6 @@ describe('geo/ui/layer-selector', function() {
   var layerSelector, layerSelector2, layerGroup;
 
   beforeEach(function() {
-    ajaxProxy.set($.ajax);
-    jQueryProxy.set($);
-    leafletProxy.set(L);
-    BackboneProxy.set(Backbone);
-
     var map = new Map();
     var map2 = new Map();
 

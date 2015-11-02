@@ -1,4 +1,4 @@
- var L = require('leaflet-proxy').get();
+ var L = require('leaflet');
  var config = require('cdb.config');
  var GeometryView = require('../geometry-view');
 

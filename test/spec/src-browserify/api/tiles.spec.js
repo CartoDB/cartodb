@@ -1,6 +1,3 @@
-var reqwest = require('reqwest');
-require('ajax-proxy').set(reqwest.compat);
-
 var Tiles = require('../../../../src-browserify/api/tiles');
 
 describe('api/tiles', function() {

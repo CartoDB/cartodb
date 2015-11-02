@@ -13,11 +13,7 @@ var bundles = {
   'src-browserify-specs': {
     src: [
       'test/lib/fail-tests-if-have-errors-in-src.js',
-      'test/lib/reset-proxies-after-each.js',
-      'test/spec/src-browserify/require-proxies/create-require-proxy.spec.js',
-      'test/spec/src-browserify/api/create-layer-cartodb.spec.js',
-      'test/spec/src-browserify/api/create-layer.spec.js',
-      'test/spec/src-browserify/api/sql.spec.js',
+      'test/spec/src-browserify/api/**/*',
       'test/spec/src-browserify/core/**/*',
       'test/spec/src-browserify/geo/**/*',
       'test/spec/src-browserify/ui/**/*',
@@ -30,35 +26,19 @@ var bundles = {
     dest: '<%= config.tmp %>/src-browserify-specs.js'
   },
 
-  'core': {
-    options: {
-      banner: bannerStr('cartodb.core.uncompressed.js')
-    },
-    src: 'src-browserify/core.js',
-    dest: '<%= config.dist %>/cartodb.core.uncompressed.js'
-  },
-  'core-specs': {
-    src: [
-      'test/lib/fail-tests-if-have-errors-in-src.js',
-      'test/spec/src-browserify/core.spec.js',
-      'test/spec/src-browserify/api/tiles.spec.js',
-    ],
-    dest: '<%= config.tmp %>/core-specs.js'
-  },
-
-  standard: {
+  cartodb: {
     options: {
       banner: bannerStr('cartodb.uncompressed.js')
     },
-    src: 'src-browserify/standard.js',
+    src: 'src-browserify/cartodb.js',
     dest: '<%= config.dist %>/cartodb.uncompressed.js'
   },
-  'standard-specs': {
+  'cartodb-specs': {
     src: [
       'test/lib/fail-tests-if-have-errors-in-src.js',
-      'test/spec/src-browserify/standard.spec.js',
+      'test/spec/src-browserify/cartodb.spec.js',
     ],
-    dest: '<%= config.tmp %>/standard-specs.js'
+    dest: '<%= config.tmp %>/cartodb-specs.js'
   },
 };
 

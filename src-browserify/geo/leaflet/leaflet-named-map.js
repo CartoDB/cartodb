@@ -1,4 +1,4 @@
-var L = require('leaflet-proxy').get();
+var L = require('leaflet');
 var LeafletCartoDBGroupLayerBase = require('./leaflet-cartodb-group-layer-base');
 var LeafletLayerView = require('./leaflet-layer-view');
 var NamedMap = require('../layer-definition/named-map');

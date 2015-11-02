@@ -1,12 +1,7 @@
 var $ = require('jquery');
-var jQueryProxy = require('jquery-proxy');
 var NOKIA = require('../../../../../src-browserify/geo/geocoder/nokia-geocoder');
 
 describe('geo/geocoder/nokia-geocoder', function() {
-  beforeEach(function() {
-    jQueryProxy.set($);
-  });
-
   it("don't remove the spaces in the user-submitted addresses", function(done) {
     var regexp = new RegExp(/http:\/\/places.nlp.nokia.com\/places\/v1\/discover\/search\/\?q\=bn20%208qt/);
 

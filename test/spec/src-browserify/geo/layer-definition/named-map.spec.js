@@ -1,18 +1,11 @@
 var $ = require('jquery');
 var Backbone = require('backbone');
-
-var ajaxProxy = require('ajax-proxy');
-var BackboneProxy = require('backbone-proxy');
-
 var NamedMap = require('../../../../../src-browserify/geo/layer-definition/named-map');
 
 describe('geo/layer-definition/named-map', function() {
   var namedMap, named_map;
 
   beforeEach(function() {
-    ajaxProxy.set($.ajax);
-    BackboneProxy.set(Backbone);
-
     named_map = {
       name: 'testing',
       params: {

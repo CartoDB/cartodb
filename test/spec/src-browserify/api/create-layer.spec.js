@@ -1,22 +1,12 @@
 var _ = require('underscore');
 var $ = require('jquery');
-var jQueryProxy = require('jquery-proxy').set($);
-var ajaxProxy = require('ajax-proxy').set($.ajax);
 var Backbone = require('backbone');
-var BackboneProxy = require('backbone-proxy').set(Backbone);
 var L = require('leaflet');
-var leafletProxy = require('leaflet-proxy').set(L);
+var Loader = require('../../../../src-browserify/core/loader');
 var createLayer = require('../../../../src-browserify/api/create-layer');
 var LegendModel = require('../../../../src-browserify/geo/ui/legend-model');
 
 describe('api/create-layer', function() {
-  beforeEach(function() {
-    jQueryProxy.set($);
-    ajaxProxy.set($.ajax);
-    BackboneProxy.set(Backbone);
-    leafletProxy.set(L);
-  });
-
   describe('loadLayer leaflet', function() {
     loadLayerSpecs(function() {
       return L.map($('<div>')[0]).setView([0, 0], 3);
@@ -67,27 +57,27 @@ describe('api/create-layer', function() {
         delete cartodb.torque;
       });
 
-      it("should fecth layer when user and pass are specified", function() {
-        spyOn(cdb.core.Loader, 'get');
+      it("should fetch layer when user and pass are specified", function() {
+        spyOn(Loader, 'get');
         createLayer(map, {
           user: 'development',
           table: 'clubbing',
           host: 'localhost.lan:3000',
           protocol: 'http'
         });
-        expect(cdb.core.Loader.get).toHaveBeenCalled();
+        expect(Loader.get).toHaveBeenCalled();
       });
 
-      it("should fecth layer when a url is specified", function() {
-        spyOn(cdb.core.Loader, 'get');
+      it("should fetch layer when a url is specified", function() {
+        spyOn(Loader, 'get');
         createLayer(map, 'http://test.com/layer.json');
-        expect(cdb.core.Loader.get).toHaveBeenCalled();
+        expect(Loader.get).toHaveBeenCalled();
       });
 
-      it("should not fecth layer when kind and options are specified", function() {
-        spyOn(cdb.core.Loader, 'get');
+      it("should not fetch layer when kind and options are specified", function() {
+        spyOn(Loader, 'get');
         createLayer(map, { kind: 'plain', options: {} });
-        expect(cdb.core.Loader.get).not.toHaveBeenCalled();
+        expect(Loader.get).not.toHaveBeenCalled();
       });
 
       it("should create a layer", function(done) {

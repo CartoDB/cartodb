@@ -1,4 +1,4 @@
-var LeafletProxy = require('leaflet-proxy');
+var L = require('leaflet');
 var config = require('cdb.config');
 var LeafletCartoDBGroupLayer = require('./leaflet-cartodb-group-layer');
 var LayerDefinition = require('../layer-definition/layer-definition');
@@ -18,7 +18,6 @@ var LeafletCartoDBLayer = LeafletCartoDBGroupLayer.extend({
 
 
   initialize: function (options) {
-    var L = LeafletProxy.get();
     L.Util.setOptions(this, options);
 
     if (!options.table_name || !options.user_name || !options.tile_style) {

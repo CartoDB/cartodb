@@ -1,5 +1,5 @@
 var _ = require('underscore');
-var $ = require('jquery-proxy').get();
+var $ = require('jquery');
 var templates = require('cdb.templates');
 var View = require('../../core/view');
 var util = require('../../core/util');

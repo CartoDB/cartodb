@@ -1,22 +1,11 @@
 var _ = require('underscore');
 var $ = require('jquery');
-var jQueryProxy = require('jquery-proxy').set($);
-var ajaxProxy = require('ajax-proxy').set($.ajax);
 var Backbone = require('backbone');
-var BackboneProxy = require('backbone-proxy').set(Backbone);
 var L = require('leaflet');
-var leafletProxy = require('leaflet-proxy').set(L);
 var createLayer = require('../../../../src-browserify/api/create-layer');
 var LegendModel = require('../../../../src-browserify/geo/ui/legend-model');
 
 describe('api/create-layer (cartodb)', function() {
-  beforeEach(function() {
-    jQueryProxy.set($);
-    ajaxProxy.set($.ajax);
-    BackboneProxy.set(Backbone);
-    leafletProxy.set(L);
-  });
-
   describe('loadLayer leaflet', function() {
     loadLayerSpecs(function() {
       return L.map($('<div>')[0]).setView([0, 0], 3);

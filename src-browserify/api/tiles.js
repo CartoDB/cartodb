@@ -1,5 +1,5 @@
 var _ = require('underscore');
-var reqwest = require('reqwest');
+var $ = require('jquery');
 var LayerDefinition = require('../geo/layer-definition/layer-definition');
 
 var defaults = {
@@ -23,7 +23,7 @@ var Tiles = function(options) {
 
   options.layer_definition = LayerDefinition.layerDefFromSubLayers(options.sublayers);
 
-  options.ajax = reqwest.compat;
+  options.ajax = $.ajax;
 
   LayerDefinition.call(this, options.layer_definition, options);
 };

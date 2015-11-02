@@ -1,6 +1,6 @@
 var _ = require('underscore');
+var L = require('leaflet');
 var cdb = require('cdb'); // cdb.geo.GoogleMapsMapView, cdb.geo.LeafletMapView
-var L = require('leaflet-proxy').get();
 var Loader = require('../core/loader');
 var Map = require('../geo/map');
 var Vis = require('../vis/vis');

@@ -1,12 +1,7 @@
-var LZMA = require('lzma');
-var util = require('cdb.core.util');
-
 var $ = require('jquery');
 var Backbone = require('backbone');
-
-var ajaxProxy = require('ajax-proxy');
-var BackboneProxy = require('backbone-proxy');
-
+var LZMA = require('lzma');
+var util = require('cdb.core.util');
 var CartoDBSubLayer = require('../../../../../src-browserify/geo/sub-layer/cartodb-sub-layer');
 var MapBase = require('../../../../../src-browserify/geo/layer-definition/map-base');
 var LayerDefinition = require('../../../../../src-browserify/geo/layer-definition/layer-definition');
@@ -16,9 +11,6 @@ describe('geo/layer-definition/layer-definition', function() {
   var layerDefinition;
 
   beforeEach(function() {
-    ajaxProxy.set($.ajax);
-    BackboneProxy.set(Backbone);
-
     var layer_definition = {
       version: '1.0.0',
       stat_tag: 'vis_id',

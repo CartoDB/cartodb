@@ -1,7 +1,5 @@
 var $ = require('jquery');
-var jQueryProxy = require('jquery-proxy').set($);
 var L = require('leaflet');
-var leafletProxy = require('leaflet-proxy').set(L);
 var Search = require('../../../../../src-browserify/geo/ui/search');
 var NOKIA  = require('../../../../../src-browserify/geo/geocoder/nokia-geocoder');
 var Map = require('../../../../../src-browserify/geo/map');
@@ -11,9 +9,6 @@ var LeafletMapView = require('../../../../../src-browserify/geo/leaflet/leaflet-
 describe('cdb/geo/ui/search', function() {
 
   beforeEach(function() {
-    leafletProxy.set(L);
-    jQueryProxy.set($);
-
     this.$el = $("<div>")
       .attr('id', 'map')
       .height(500)

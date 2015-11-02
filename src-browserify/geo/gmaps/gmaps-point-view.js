@@ -1,4 +1,3 @@
-var google = require('google-proxy').get();;
 var _ = require('underscore');
 var GeoJSON = require('geojson');
 var config = require('cdb.config');

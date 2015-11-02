@@ -1,5 +1,5 @@
 var _ = require('underscore');
-var $ = require('jquery-proxy').get();
+var $ = require('jquery');
 var Backbone = require('backbone');
 
 /**

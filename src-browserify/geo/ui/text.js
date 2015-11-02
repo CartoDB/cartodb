@@ -1,7 +1,7 @@
 var _ = require('underscore');
 var View = require('../../core/view');
 var sanitize = require('../../core/sanitize');
-var $ = require('jquery-proxy').get();
+var $ = require('jquery');
 
 var Text = View.extend({
 

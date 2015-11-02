@@ -1,16 +1,10 @@
 var $ = require('jquery');
-var google = window.google;
-var googleProxy = require('google-proxy').set(google);
-var ajaxProxy = require('ajax-proxy').set($.ajax);
 var CartoDBLayerGMaps = require('../../../../../src-browserify/geo/gmaps/cartodb-layer-gmaps');
 
 describe('CartoDBLayerGMaps: Interaction funcionality', function() {
   var div, map, cdb_layer;
 
   beforeEach(function() {
-    ajaxProxy.set($.ajax);
-    googleProxy.set(window.google);
-
     div = document.createElement('div');
     div.setAttribute("id","map");
     div.style.height = "100px";

@@ -1,5 +1,3 @@
-// var $ = require('jquery');
-// var jQueryProxy = require('jquery-proxy');
 var Backbone = require('backbone');
 var Template = require('../../../../../src-browserify/core/template');
 var Model = require('../../../../../src-browserify/core/model');

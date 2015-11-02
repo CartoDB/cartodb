@@ -1,12 +1,7 @@
 var $ = require('jquery');
-var jQueryProxy = require('jquery-proxy');
 var Geometry = require('../../../../src-browserify/geo/geometry');
 
 describe('geo/geometry', function() {
-  beforeEach(function() {
-    jQueryProxy.set($);
-  });
-
   it("isPoint should return true when is a point", function() {
     var geojsonFeature = {
         "type": "Point",

@@ -3,8 +3,6 @@ var _ = require('underscore');
 var L = require('leaflet');
 
 // required due to implicit dependency in vis --> map-view
-var jQueryProxy = require('jquery-proxy').set($);
-var ajaxProxy = require('ajax-proxy').set($.ajax);
 var cdb = require('cdb');
 _.extend(cdb.geo, require('../../../../src-browserify/geo/leaflet'));
 _.extend(cdb.geo, require('../../../../src-browserify/geo/gmaps'));
@@ -37,9 +35,6 @@ describe('vis/vis/overlay', function() {
 describe('vis/vis', function() {
 
   beforeEach(function(){
-    jQueryProxy.set($);
-    ajaxProxy.set($.ajax);
-
     this.container = $('<div>').css('height', '200px');
     this.mapConfig = {
       updated_at: 'cachebuster',

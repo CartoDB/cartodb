@@ -1,6 +1,6 @@
 var _ = require('underscore');
+var L = require('leaflet');
 var Backbone = require('backbone');
-var L = require('leaflet-proxy').get();
 var LeafletLayerView = require('./leaflet-layer-view');
 var LeafletCartoDBLayer = require('./leaflet-cartodb-layer');
 

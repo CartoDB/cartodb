@@ -2,7 +2,6 @@ var $ = require('jquery');
 var _ = require('underscore');
 
 // required due to implicit dependency in vis --> map-view
-var jQueryProxy = require('jquery-proxy').set($);
 var cdb = require('cdb');
 _.extend(cdb.geo, require('../../../../src-browserify/geo/leaflet'));
 _.extend(cdb.geo, require('../../../../src-browserify/geo/gmaps'));

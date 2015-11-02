@@ -1,4 +1,3 @@
-var google = require('google-proxy').get();;
 var _ = require('underscore');
 var config = require('cdb.config');
 var CartoDBLayerGroupGMaps = require('./cartodb-layer-group-gmaps');

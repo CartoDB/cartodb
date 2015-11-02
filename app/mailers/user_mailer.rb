@@ -16,7 +16,7 @@ class UserMailer < ActionMailer::Base
 
     @user_needs_password = user_needs_password(user)
 
-    mail :to => @user.email, 
+    mail :to => @user.email,
          :subject => @subject
   end
 
@@ -26,18 +26,26 @@ class UserMailer < ActionMailer::Base
     organization = @table_visualization.user.organization
     @link = "#{CartoDB.base_url(organization.name, @user.username)}#{CartoDB.path(self, 'public_tables_show_bis', {id: "#{@table_visualization.user.username}.#{@table_visualization.name}"})}"
     @subject = "#{@table_visualization.user.username} has shared a CartoDB dataset with you"
-    mail :to => @user.email, 
+    mail :to => @user.email,
          :subject => @subject
   end
-  
+
   def share_visualization(visualization, user)
     @visualization = visualization
     @user = user
     organization = @visualization.user.organization
-    @link = "#{CartoDB.base_url(organization.name, @visualization.user.username)}#{CartoDB.path(self, 'public_visualizations_show_map', {id: @visualization.id})}"
+    if @visualization.privacy == CartoDB::Visualization::Member::PRIVACY_PRIVATE
+      base_url = CartoDB.base_url(organization.name, user.username)
+      vis_id = "#{@visualization.user.username}.#{@visualization.id}"
+    else
+      base_url = CartoDB.base_url(organization.name, @visualization.user.username)
+      vis_id = @visualization.id
+    end
+    path = CartoDB.path(self, 'public_visualizations_show_map', id: vis_id)
+    @link = "#{base_url}#{path}"
     @subject = "#{@visualization.user.username} has shared a CartoDB map with you"
-    mail :to => @user.email,
-         :subject => @subject
+    mail(to: @user.email,
+         subject: @subject)
   end
 
   def unshare_table(table_visualization_name, table_visualization_owner_name, user)
@@ -48,7 +56,7 @@ class UserMailer < ActionMailer::Base
     mail :to => @user.email,
          :subject => @subject
   end
-  
+
   def unshare_visualization(visualization_name, visualization_owner_name, user)
     @visualization_name = visualization_name
     @visualization_owner_name = visualization_owner_name

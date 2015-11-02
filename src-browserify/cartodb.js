@@ -4,7 +4,6 @@ var _ = require('underscore');
 var L = require('leaflet');
 require('mousewheel'); // registers itself to $.event; TODO what's this required for? still relevant for supported browsers?
 require('mwheelIntent'); // registers itself to $.event; TODO what's this required for? still relevant for supported browsers?
-require('json2'); // TODO polyfills window.JSON, was required for Backbone and to support legacy IE; still relevant for supported browsers?
 
 var cdb = require('cdb');
 cdb.Backbone = require('backbone');

@@ -11,12 +11,12 @@ module CartoDB
     end
 
     def apply_privacy_change(metadata_table, old_privacy, privacy_changed = false)
-      @table.map.save
+      @table.map.save if !@table.map.nil?
 
       # Separate on purpose as if fails here no need to revert visualizations' privacy
       revertable_privacy_change(metadata_table, old_privacy) do
         # Map saving actually doesn't changes privacy, but to keep on same reverting logic
-        @table.map.save
+        @table.map.save if !@table.map.nil?
         set_from_table_privacy(@table.privacy)
       end
 

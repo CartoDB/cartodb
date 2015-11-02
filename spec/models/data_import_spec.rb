@@ -4,8 +4,9 @@ require_relative '../spec_helper'
 describe DataImport do
   before(:each) do
     ::User.all.each(&:destroy)
-    @user = create_user(:username => 'test', :email => "client@example.com", :password => "clientex")
-    @table = create_table :user_id => @user.id
+    @user = create_user(username: 'test', email: "client@example.com", password: "clientex")
+    stub_named_maps_calls
+    @table = create_table(user_id: @user.id)
   end
 
   after(:all) do
@@ -22,7 +23,7 @@ describe DataImport do
     table1.insert_row!(name: 1.0)
     table2.insert_row!(name: '1')
 
-    merge_query = %Q(
+    merge_query = %(
       SELECT #{table2.name}.the_geom,
               #{table2.name}.description,
               #{table2.name}.name,
@@ -46,13 +47,13 @@ describe DataImport do
     fixture = '/../db/fake_data/column_string_to_boolean.csv'
     expect do
       DataImport.create(
-        :user_id       => @user.id,
-        :table_id      => @table.id,
-        :data_source   => fixture,
-        :updated_at    => Time.now,
-        :append        => true
+        user_id: @user.id,
+        table_id: @table.id,
+        data_source: fixture,
+        updated_at: Time.now,
+        append: true
       ).run_import!
-    end.to change{@table.reload.records[:total_rows]}.by(11)
+    end.to change { @table.reload.records[:total_rows] }.by(11)
   end
 
   it 'raises a meaningful error if over storage quota' do
@@ -61,9 +62,9 @@ describe DataImport do
     @user.save
 
     data_import = DataImport.create(
-      :user_id       => @user.id,
-      :data_source   => '/../db/fake_data/clubbing.csv',
-      :updated_at    => Time.now
+      user_id: @user.id,
+      data_source: '/../db/fake_data/clubbing.csv',
+      updated_at: Time.now
     ).run_import!
 
     @user.quota_in_bytes = previous_quota_in_bytes
@@ -77,9 +78,9 @@ describe DataImport do
     @user.save
 
     data_import = DataImport.create(
-      :user_id       => @user.id,
-      :data_source   => '/../db/fake_data/clubbing.csv',
-      :updated_at    => Time.now
+      user_id: @user.id,
+      data_source: '/../db/fake_data/clubbing.csv',
+      updated_at: Time.now
     ).run_import!
 
     @user.table_quota = previous_table_quota
@@ -90,10 +91,10 @@ describe DataImport do
 
   it 'should allow to duplicate an existing table' do
     data_import = DataImport.create(
-      :user_id       => @user.id,
-      :table_name    => 'duplicated_table',
-      :updated_at    => Time.now,
-      :table_copy    => @table.name ).run_import!
+      user_id: @user.id,
+      table_name: 'duplicated_table',
+      updated_at: Time.now,
+      table_copy: @table.name).run_import!
     duplicated_table = Table[data_import.table_id]
     duplicated_table.should_not be_nil
     duplicated_table.name.should be == 'duplicated_table'
@@ -101,15 +102,15 @@ describe DataImport do
 
   it 'should allow to create a table from a query' do
     data_import = DataImport.create(
-      :user_id       => @user.id,
-      :data_source   => '/../db/fake_data/clubbing.csv',
-      :updated_at    => Time.now ).run_import!
+      user_id: @user.id,
+      data_source: '/../db/fake_data/clubbing.csv',
+      updated_at: Time.now).run_import!
 
     data_import = DataImport.create(
-      :user_id       => @user.id,
-      :table_name    => 'from_query',
-      :updated_at    => Time.now,
-      :from_query    => "SELECT * FROM #{data_import.table_name} LIMIT 5" ).run_import!
+      user_id: @user.id,
+      table_name: 'from_query',
+      updated_at: Time.now,
+      from_query: "SELECT * FROM #{data_import.table_name} LIMIT 5").run_import!
     data_import.state.should be == 'complete'
 
     duplicated_table = Table[data_import.table_id]
@@ -120,9 +121,9 @@ describe DataImport do
 
   it 'imports a simple file' do
     data_import = DataImport.create(
-      :user_id       => @user.id,
-      :data_source   => '/../db/fake_data/clubbing.csv',
-      :updated_at    => Time.now
+      user_id: @user.id,
+      data_source: '/../db/fake_data/clubbing.csv',
+      updated_at: Time.now
     ).run_import!
 
     table = Table[data_import.table_id]
@@ -133,9 +134,9 @@ describe DataImport do
 
   it 'imports a simple file with latlon' do
     data_import = DataImport.create(
-      :user_id       => @user.id,
-      :data_source   => '/../services/importer/spec/fixtures/csv_with_geojson.csv',
-      :updated_at    => Time.now
+      user_id: @user.id,
+      data_source: '/../services/importer/spec/fixtures/csv_with_geojson.csv',
+      updated_at: Time.now
     ).run_import!
 
     table = Table[data_import.table_id]
@@ -146,9 +147,9 @@ describe DataImport do
     data_import = nil
     serve_file Rails.root.join('db/fake_data/clubbing.csv') do |url|
       data_import = DataImport.create(
-        :user_id       => @user.id,
-        :data_source   => url,
-        :updated_at    => Time.now ).run_import!
+        user_id: @user.id,
+        data_source: url,
+        updated_at: Time.now).run_import!
     end
 
     table = Table[data_import.table_id]
@@ -160,11 +161,11 @@ describe DataImport do
   it 'should allow to create a table from a url with params' do
     data_import = nil
     serve_file Rails.root.join('db/fake_data/clubbing.csv?param=wadus'),
-          :headers => {"content-type" => "text/plain"}  do |url|
+               headers: { "content-type" => "text/plain" } do |url|
       data_import = DataImport.create(
-        :user_id       => @user.id,
-        :data_source   => url,
-        :updated_at    => Time.now ).run_import!
+        user_id: @user.id,
+        data_source: url,
+        updated_at: Time.now).run_import!
     end
 
     table = Table[data_import.table_id]
@@ -175,15 +176,15 @@ describe DataImport do
 
   it "can create a table from a query selecting only the cartodb_id" do
     data_import = DataImport.create(
-      :user_id       => @user.id,
-      :data_source   => '/../db/fake_data/clubbing.csv',
-      :updated_at    => Time.now ).run_import!
+      user_id: @user.id,
+      data_source: '/../db/fake_data/clubbing.csv',
+      updated_at: Time.now).run_import!
 
     data_import = DataImport.create(
-      :user_id       => @user.id,
-      :table_name    => 'from_query',
-      :updated_at    => Time.now,
-      :from_query    => "SELECT cartodb_id FROM #{data_import.table_name} LIMIT 5" ).run_import!
+      user_id: @user.id,
+      table_name: 'from_query',
+      updated_at: Time.now,
+      from_query: "SELECT cartodb_id FROM #{data_import.table_name} LIMIT 5").run_import!
     data_import.state.should be == 'complete'
 
     duplicated_table = Table[data_import.table_id]
@@ -197,9 +198,9 @@ describe DataImport do
     file_path = File.join(upload_path, 'wadus.csv')
     FileUtils.cp Rails.root.join('db/fake_data/clubbing.csv'), file_path
     data_import = DataImport.create(
-      :user_id       => @user.id,
-      :data_source   => file_path,
-      :updated_at    => Time.now )
+      user_id: @user.id,
+      data_source: file_path,
+      updated_at: Time.now)
 
     data_import.destroy
 
@@ -209,8 +210,8 @@ describe DataImport do
   it 'should add a common_data extra_option' do
     DataImport.any_instance.stubs(:from_common_data?).returns(true)
     data_import = DataImport.create(
-      :user_id         => @user.id,
-      :data_source     => "http://127.0.0.1/foo.csv"
+      user_id: @user.id,
+      data_source: "http://127.0.0.1/foo.csv"
     )
     data_import.reload
     data_import.extra_options[:common_data].should eq true
@@ -220,8 +221,8 @@ describe DataImport do
     Cartodb.config[:common_data]['username'] = 'mycommondata'
     Cartodb.config[:common_data]['host'] = 'cartodb.wadus.com'
     data_import = DataImport.create(
-      :user_id         => @user.id,
-      :data_source     => "http://mycommondata.cartodb.wadus.com/foo.csv"
+      user_id: @user.id,
+      data_source: "http://mycommondata.cartodb.wadus.com/foo.csv"
     )
     data_import.from_common_data?.should eq true
   end
@@ -229,8 +230,8 @@ describe DataImport do
   it 'should not consider a import as common data if common_data config does not exist' do
     Cartodb.config.delete('common_data')
     data_import = DataImport.create(
-      :user_id         => @user.id,
-      :data_source     => "http://mycommondata.cartodb.wadus.com/foo.csv"
+      user_id: @user.id,
+      data_source: "http://mycommondata.cartodb.wadus.com/foo.csv"
     )
     data_import.from_common_data?.should eq false
   end
@@ -239,37 +240,36 @@ describe DataImport do
     Cartodb.config[:common_data]['username'] = 'mycommondata'
     Cartodb.config[:common_data]['host'] = 'cartodb.wadus.com'
     data_import = DataImport.create(
-      :user_id         => @user.id,
-      :data_source     => "http://mydatasource.cartodb.wadus.com/foo.csv"
+      user_id: @user.id,
+      data_source: "http://mydatasource.cartodb.wadus.com/foo.csv"
     )
     data_import.from_common_data?.should eq false
   end
 
-
   describe 'log' do
     it 'is initialized to a CartoDB::Log instance' do
-      data_import   = DataImport.new
+      data_import = DataImport.new
       data_import.log.should be_instance_of CartoDB::Log
     end
 
     it 'allows messages to be appended' do
-      data_import   = DataImport.new(
-                        user_id:    1,
-                        table_name: 'foo',
-                        from_query: 'bogus'
-                      )
-      data_import.log << 'sample message'
+      data_import = DataImport.new(
+        user_id:    @user.id,
+        table_name: 'foo',
+        from_query: 'bogus'
+      )
+      data_import.log.append('sample message')
       data_import.save
       data_import.log.to_s.should =~ /sample message/
     end
 
     it 'is fetched after retrieving the data_import object from DB' do
-      data_import   = DataImport.new(
-                        user_id:    1,
-                        table_name: 'foo',
-                        from_query: 'bogus'
-                      )
-      data_import.log << 'sample message'
+      data_import = DataImport.new(
+        user_id:    @user.id,
+        table_name: 'foo',
+        from_query: 'bogus'
+      )
+      data_import.log.append('sample message')
       data_import.save
       data_import.logger.should_not be nil
 
@@ -279,20 +279,19 @@ describe DataImport do
     end
 
     it 'will not overwrite an existing logger field' do
-      data_import   = DataImport.new(
-                        user_id:    1,
-                        table_name: 'foo',
-                        from_query: 'bogus',
-                      )
+      data_import = DataImport.new(
+        user_id:    @user.id,
+        table_name: 'foo',
+        from_query: 'bogus',
+      )
       data_import.save
       data_import.logger = 'existing log'
       data_import.this.update(logger: 'existing log')
-      data_import.logger    .should == 'existing log'
-      data_import.log       << 'sample message'
-      data_import.log.to_s  .should =~ /sample message/
+      data_import.logger.should == 'existing log'
+      data_import.log.append('sample message')
+      data_import.log.to_s.should =~ /sample message/
       data_import.save
-      data_import.logger    .should == 'existing log'
+      data_import.logger.should == 'existing log'
     end
-  end #log
+  end
 end
-

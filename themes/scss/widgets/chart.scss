@@ -123,9 +123,17 @@
 
 .Handle {
   opacity: 0;
+}
+
+.HandleRect {
   stroke-width: 2;
   stroke: #3AA9E3;
   fill: #FFF;
+}
+
+.HandleGrip {
+  stroke-width: 1;
+  stroke: #CCC;
 }
 
 .HandleLine {

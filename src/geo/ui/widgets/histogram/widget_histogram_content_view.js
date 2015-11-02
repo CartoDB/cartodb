@@ -444,34 +444,75 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     var loExtent = extent[0];
     var hiExtent = extent[1];
 
-    this.leftHandleLine
-    .attr('x1', this.xScale(loExtent))
-    .attr('x2', this.xScale(loExtent));
+    var leftX  = this.xScale(loExtent) - this.defaults.handleWidth / 2;
+    var rightX = this.xScale(hiExtent) - this.defaults.handleWidth / 2;
 
-    this.rightHandleLine
-    .attr('x1', this.xScale(hiExtent))
-    .attr('x2', this.xScale(hiExtent));
+    this.chart.select('.Handle-left')
+    .attr('transform', 'translate(' + leftX + ', 0)');
 
-    if (this.options.handles) {
-      this.leftHandle
-      .attr('x', this.xScale(loExtent) - this.defaults.handleWidth / 2);
-
-      this.rightHandle
-      .attr('x', this.xScale(hiExtent) - this.defaults.handleWidth / 2);
-    }
+    this.chart.select('.Handle-right')
+    .attr('transform', 'translate(' + rightX + ', 0)');
   },
 
-  _generateHandle: function() {
+  _generateHandle: function(className) {
     var handle = { width: this.defaults.handleWidth, height: this.defaults.handleHeight, radius: this.defaults.handleRadius };
     var yPos = (this.chartHeight / 2) - (this.defaults.handleHeight / 2);
 
-    return this.chart.select('.Handles').append('rect')
-    .attr('class', 'Handle')
-    .attr('transform', 'translate(0, ' + yPos + ')')
-    .attr('width', handle.width)
-    .attr('height', handle.height)
-    .attr('rx', handle.radius)
-    .attr('ry', handle.radius);
+    var h = this.chart.select('.Handles')
+    .append('g')
+    .attr('class', 'Handle ' + className);
+
+    h
+    .append('line')
+    .attr('class', 'HandleLine')
+    .attr('x1', 3)
+    .attr('y1', -4)
+    .attr('x2', 3)
+    .attr('y2', this.chartHeight + 4);
+
+    if (this.options.handles) {
+      h
+      .append('rect')
+      .attr('class', 'HandleRect')
+      .attr('transform', 'translate(0, ' + yPos + ')')
+      .attr('width', handle.width)
+      .attr('height', handle.height)
+      .attr('rx', handle.radius)
+      .attr('ry', handle.radius);
+
+      var y = 21;
+      h
+      .append('line')
+      .attr('class', 'HandleGrip')
+      .attr('x1', 2)
+      .attr('y1', y)
+      .attr('x2', 4)
+      .attr('y2', y);
+
+      h
+      .append('line')
+      .attr('class', 'HandleGrip')
+      .attr('x1', 2)
+      .attr('y1', y+3)
+      .attr('x2', 4)
+      .attr('y2', y+3);
+
+      h
+      .append('line')
+      .attr('class', 'HandleGrip')
+      .attr('x1', 2)
+      .attr('y1', y+6)
+      .attr('x2', 4)
+      .attr('y2', y+6);
+    }
+
+    return h;
+  },
+
+  _generateHandles: function() {
+    this.chart.append('g').attr('class', 'Handles');
+    this.leftHandle  = this._generateHandle('Handle-left');
+    this.rightHandle = this._generateHandle('Handle-right');
   },
 
   _generateHandleLine: function() {
@@ -485,17 +526,6 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
 
   _removeHandles: function() {
     this.chart.select('.Handles').remove();
-  },
-
-  _generateHandles: function() {
-    this.chart.append('g').attr('class', 'Handles');
-    this.leftHandleLine  = this._generateHandleLine();
-    this.rightHandleLine = this._generateHandleLine();
-
-    if (this.options.handles) {
-      this.leftHandle      = this._generateHandle();
-      this.rightHandle     = this._generateHandle();
-    }
   },
 
   _removeXAxis: function() {

@@ -46,7 +46,7 @@ module.exports = function(grunt) {
     },
     pkg:  pkg,
     gitinfo: {},
-    browserify: require('./grunt/tasks/browserify').task(),
+    browserify: require('./grunt/tasks/browserify').task(grunt),
     s3: require('./grunt/tasks/s3').task(grunt, config),
     prompt: require('./grunt/tasks/prompt').task(grunt, config),
     replace: require('./grunt/tasks/replace').task(grunt, config),

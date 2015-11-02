@@ -27,10 +27,11 @@ cdb.geo.ui.Widget.View = cdb.core.View.extend({
   initialize: function() {
     this.dataModel = this.model;
     this.viewModel = new cdb.core.Model({
-      title: this.model.get('options').title,
-      type: this.model.get('options').type,
-      sync: this.model.get('options').sync,
-      columns_title: this.model.get('options').columns_title
+      title: this.model.get('title'),
+      type: this.model.get('type'),
+      sync: this.model.get('sync'),
+      bbox: this.model.get('bbox'),
+      columns_title: this.model.get('columns_title')
     });
     this.filter = this.options.filter;
   },

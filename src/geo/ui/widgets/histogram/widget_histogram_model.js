@@ -19,6 +19,16 @@ cdb.geo.ui.Widget.HistogramModel = cdb.geo.ui.Widget.Model.extend({
     return {
       data: bins
     };
+  },
+
+  toJSON: function(d) {
+    return {
+      type: "histogram",
+      options: {
+        column: this.get('column'),
+        bins: this.get('bins')
+      }
+    };
   }
 
 });

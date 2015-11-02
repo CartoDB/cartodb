@@ -51,29 +51,10 @@ cdb.geo.ui.Widget.Content = cdb.core.View.extend({
   },
 
   _initBinds: function() {
-    this.dataModel.once('error change:data', this._onFirstLoad, this);
+    this.dataModel.bind('error change:data', this.render, this);
     this.viewModel.bind('change:sync', this._checkBinds, this);
     this.add_related_model(this.dataModel);
     this.add_related_model(this.viewModel);
-  },
-
-  _onFirstLoad: function() {
-    this.render();
-    this._unbindEvents(); // Remove any old dataModel binding
-    this._checkBinds();
-  },
-
-  _checkBinds: function() {
-    var isSync = this.viewModel.get('sync');
-    this[ isSync ? '_bindEvents' : '_unbindEvents']();
-  },
-
-  _bindEvents: function() {
-    this.dataModel.bind('change:data', this.render, this);
-  },
-
-  _unbindEvents: function() {
-    this.dataModel.unbind(null, null, this);
   },
 
   _addPlaceholder: function() {

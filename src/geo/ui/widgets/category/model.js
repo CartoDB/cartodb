@@ -1,10 +1,5 @@
 cdb.geo.ui.Widget.CategoryModel = cdb.geo.ui.Widget.Model.extend({
 
-  defaults: {
-    data: [],
-    columns: []
-  },
-
   initialize: function(attrs, opts) {
     if (opts.filter) {
       this.filter = opts.filter;
@@ -21,9 +16,19 @@ cdb.geo.ui.Widget.CategoryModel = cdb.geo.ui.Widget.Model.extend({
     return this._data.size();
   },
 
+  toJSON: function() {
+    return {
+      type: "aggregation",
+      options: {
+          column: this.get('column'),
+          aggregation: this.get('aggregation')
+      }
+    };
+  },
+
   parse: function(data) {
     var categories = data.categories;
-    var columnName = this.get('options').column;
+    var columnName = this.get('column');
     var maxCount = categories.reduce(function(memo, datum) {
       return memo + datum.count;
     }, 0);

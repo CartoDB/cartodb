@@ -10,7 +10,7 @@
   display: block;
 }
 .Widget-chartItem.Widget-chartItem--fake {
-	display: inline-block;
+  display: inline-block;
   width: 5%;
   height: 40px;
   margin: 0 1px 0 0;
@@ -23,29 +23,29 @@
 }
 
 .Widget-chartTooltip {
-  top: 0;
-  left: 0;
   display: none;
   position: absolute;
-  color: #fff;
-  padding: 5px;
+  top: 0;
+  left: 0;
   min-width: 50px;
+  padding: 5px;
   box-sizing: border-box;
-  text-align: center;
   border-radius: 3px;
   background: #000;
+  color: #FFF;
   font-size: 10px;
+  text-align: center;
   pointer-events: none;
 }
 .Widget-chartTooltip:after {
-	position: absolute;
-	display: inline-block;
+  display: inline-block;
+  position: absolute;
+  bottom: -3px;
+  left: 20px;
   border-top: 5px solid #000;
   border-right: 5px solid transparent;
   border-left: 5px solid transparent;
-	left: 20px;
-	bottom: -3px;
-	content: '';
+  content: '';
 }
 
 .Chart.is-selectable .Handle,
@@ -75,7 +75,7 @@
 }
 .Bar.is-selected {
   fill: #DDD;
-  opacity: .7;
+  opacity: 0.7;
 }
 
 .mini {
@@ -104,12 +104,12 @@
   fill: none;
   stroke-width: 1;
   opacity: 0.2;
-  stroke: #000000;
+  stroke: #000;
   shape-rendering: crispEdges;
 }
 
 .Line {
-  stroke: #EEEEEE;
+  stroke: #EEE;
   stroke-width: 1;
   shape-rendering: crispEdges;
 }
@@ -117,20 +117,18 @@
 .Line.Line--bottom {
   stroke-width: 1;
   opacity: 0.2;
-  stroke: #000000;
+  stroke: #000;
   shape-rendering: crispEdges;
 }
 
 .Handle {
   opacity: 0;
 }
-
 .HandleRect {
   stroke-width: 2;
   stroke: #3AA9E3;
   fill: #FFF;
 }
-
 .HandleGrip {
   stroke-width: 1;
   stroke: #CCC;
@@ -140,11 +138,4 @@
   opacity: 0;
   stroke-width: 2;
   stroke: #3AA9E3;
-}
-
-.Widget-filter.is-hidden {
-  opacity: 0;
-}
-.Widget-filterButton.is-hidden {
-  display: none;
 }

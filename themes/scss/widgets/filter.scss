@@ -8,6 +8,9 @@
   width: 100%;
   margin: 5px 0;
 }
+.Widget-filter.is-hidden {
+  opacity: 0;
+}
 .Widget-filterButtons {
   @include display-flex();
   @include justify-content(space-between, justify);
@@ -18,4 +21,7 @@
   &:last-child {
     margin-right: 0;
   }
+}
+.Widget-filterButton.is-hidden {
+  display: none;
 }

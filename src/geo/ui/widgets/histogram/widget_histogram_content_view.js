@@ -237,7 +237,6 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
 
   _setupDimensions: function() {
     this.margin = this.options.margin;
-    console.log(this.margin);
 
     this.canvasWidth  = this.model.get('width');
     this.canvasHeight = this.model.get('height');

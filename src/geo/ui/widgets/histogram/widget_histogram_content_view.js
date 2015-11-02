@@ -64,7 +64,7 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     this.chart
     .transition()
     .duration(150)
-    .attr('transform', 'translate(' + (this.margin.left + x) + ', ' + this.margin.top + y + ')');
+    .attr('transform', 'translate(' + (this.margin.left + x) + ', ' + (this.margin.top + y) + ')');
   },
 
   _onBrushStart: function() {
@@ -237,12 +237,13 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
 
   _setupDimensions: function() {
     this.margin = this.options.margin;
+    console.log(this.margin);
 
     this.canvasWidth  = this.model.get('width');
     this.canvasHeight = this.model.get('height');
 
     this.chartWidth  = this.canvasWidth - this.margin.left - this.margin.right;
-    this.chartHeight = this.model.get('height');
+    this.chartHeight = this.model.get('height') - this.margin.top - this.margin.bottom;
 
     this._setupScales();
   },
@@ -274,17 +275,17 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     .duration(150)
     .attr('opacity', 0)
     .style('display', 'none')
-    .attr('transform', 'translate(' + this.margin.left + ', ' + (this.options.y - 10) + ')');
+    .attr('transform', 'translate(' + this.margin.left + ', ' + (this.margin.top + this.options.y - 10) + ')');
   },
 
   show: function() {
     this.chart
-    .attr('transform', 'translate(' + this.margin.left + ', ' + (this.options.y + 10) + ')')
+    .attr('transform', 'translate(' + this.margin.left + ', ' + (this.margin.top + this.options.y + 10) + ')')
     .transition()
     .duration(150)
     .attr('opacity', 1)
     .style('display', 'block')
-    .attr('transform', 'translate(' + this.margin.left + ', ' + (this.options.y) + ')');
+    .attr('transform', 'translate(' + this.margin.left + ', ' + (this.margin.top + this.options.y) + ')');
   },
 
   _selectBars: function() {
@@ -623,7 +624,7 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
 cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
 
   defaults: {
-    chartHeight: 48
+    chartHeight: 48 + 20 + 4
   },
 
   events: {
@@ -737,7 +738,7 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
     this.chart = new cdb.geo.ui.Widget.Histogram.Chart(({
       el: this.$('.js-chart'),
       y: 0,
-      margin: { top: 0, right: 4, bottom: 20, left: 4 },
+      margin: { top: 4, right: 4, bottom: 20, left: 4 },
       handles: true,
       width: this.canvasWidth,
       height: this.defaults.chartHeight,
@@ -782,10 +783,10 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
   },
 
   _setupDimensions: function() {
-    this.margin = { top: 0, right: 24, bottom: 20, left: 24 };
+    this.margin = { top: 0, right: 24, bottom: 0, left: 24 };
 
     this.canvasWidth  = this.$el.width() - this.margin.left - this.margin.right;
-    this.canvasHeight = this.defaults.chartHeight + this.margin.top + this.margin.bottom;
+    this.canvasHeight = this.defaults.chartHeight - this.margin.top - this.margin.bottom;
   },
 
   _onValueHover: function(info) {

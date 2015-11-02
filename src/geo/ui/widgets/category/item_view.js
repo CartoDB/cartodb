@@ -24,7 +24,7 @@ cdb.geo.ui.Widget.Category.ItemView = cdb.core.View.extend({
 
   initialize: function(options) {
     this.filter = options.filter;
-    this.model.bind('change', this.render, this);
+    this._initBinds();
   },
 
   render: function() {
@@ -41,6 +41,10 @@ cdb.geo.ui.Widget.Category.ItemView = cdb.core.View.extend({
     );
 
     return this;
+  },
+
+  _initBinds: function() {
+    this.model.bind('change', this.render, this);
   },
 
   _onItemClick: function() {

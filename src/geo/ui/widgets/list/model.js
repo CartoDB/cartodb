@@ -24,5 +24,15 @@ cdb.geo.ui.Widget.ListModel = cdb.geo.ui.Widget.Model.extend({
     return {
       data: rows
     };
+  },
+
+  toJSON: function() {
+    return {
+      type: "list",
+      options: {
+        columns: this.get('columns')
+      }
+    };
   }
+
 });

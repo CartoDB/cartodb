@@ -20,8 +20,6 @@ cdb.geo.ui.Widget.Error = cdb.core.View.extend({
   },
 
   initialize: function() {
-    this.dataModel = this.options.dataModel;
-    this.viewModel = this.options.viewModel;
     this._initBinds();
   },
 
@@ -32,37 +30,12 @@ cdb.geo.ui.Widget.Error = cdb.core.View.extend({
   },
 
   _initBinds: function() {
-    this.dataModel.once('error', function() {
-      this.show();
-      this._onFirstLoad();
-    }, this);
-    this.dataModel.once('change:data', this._onFirstLoad, this);
-    this.viewModel.bind('change:sync', this._checkBinds, this);
-    this.add_related_model(this.dataModel);
-    this.add_related_model(this.viewModel);
-  },
-
-  _onFirstLoad: function() {
-    this._unbindEvents(); // Remove any old dataModel binding
-    this._checkBinds();
-  },
-
-  _checkBinds: function() {
-    var isSync = this.viewModel.get('sync');
-    this[ isSync ? '_bindEvents' : '_unbindEvents']();
-  },
-
-  _bindEvents: function() {
-    this.dataModel.bind('error', this.show, this);
-    this.dataModel.bind('loading change:data', this.hide, this);
-  },
-
-  _unbindEvents: function() {
-    this.dataModel.unbind(null, null, this);
+    this.model.bind('error', this.show, this);
+    this.model.bind('loading sync', this.hide, this);
   },
 
   _onRefreshClick: function() {
-    this.dataModel.fetch();
+    this.model.fetch();
   },
 
   show: function() {

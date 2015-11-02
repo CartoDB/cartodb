@@ -25,13 +25,6 @@ cdb.geo.ui.Widget.View = cdb.core.View.extend({
   },
 
   initialize: function() {
-    this.dataModel = this.model;
-    this.viewModel = new cdb.core.Model({
-      title: this.model.get('options').title,
-      type: this.model.get('options').type,
-      sync: this.model.get('options').sync,
-      columns_title: this.model.get('options').columns_title
-    });
     this.filter = this.options.filter;
   },
 
@@ -42,15 +35,13 @@ cdb.geo.ui.Widget.View = cdb.core.View.extend({
 
   _initViews: function() {
     this._loader = new cdb.geo.ui.Widget.Loader({
-      viewModel: this.viewModel,
-      dataModel: this.dataModel
+      model: this.model
     });
     this.$el.append(this._loader.render().el);
     this.addView(this._loader);
 
     this._error = new cdb.geo.ui.Widget.Error({
-      viewModel: this.viewModel,
-      dataModel: this.dataModel
+      model: this.model
     });
     this._error.bind('refreshData', function() {
       console.log("refresh data man!");
@@ -67,8 +58,7 @@ cdb.geo.ui.Widget.View = cdb.core.View.extend({
   // In this case it will be the standard widget content.
   _createContentView: function() {
     return new cdb.geo.ui.Widget.Content({
-      viewModel: this.viewModel,
-      dataModel: this.dataModel,
+      model: this.model,
       filter: this.filter
     });
   }

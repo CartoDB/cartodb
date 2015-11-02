@@ -95,7 +95,6 @@
         // Widgets
         'geo/ui/widget.js',
         'geo/ui/widgets/widget_model.js',
-        'geo/ui/widgets/widget_collection.js',
         'geo/ui/widgets/standard/widget_loader_view.js',
         'geo/ui/widgets/standard/widget_error_view.js',
         'geo/ui/widgets/standard/widget_content_view.js',

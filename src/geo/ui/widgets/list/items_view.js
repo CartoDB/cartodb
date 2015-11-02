@@ -7,11 +7,6 @@ cdb.geo.ui.Widget.List.ItemsView = cdb.geo.ui.Widget.View.extend({
     'scroll': '_checkScroll'
   },
 
-  initialize: function() {
-    this.dataModel = this.options.dataModel;
-    this.viewModel = this.options.viewModel;
-  },
-
   render: function() {
     this.clearSubViews();
     this._renderList();
@@ -19,13 +14,13 @@ cdb.geo.ui.Widget.List.ItemsView = cdb.geo.ui.Widget.View.extend({
   },
 
   _renderList: function() {
-    this.dataModel.getData().each(this._addItem, this);
+    this.model.getData().each(this._addItem, this);
   },
 
   _addItem: function(mdl) {
     var v = new cdb.geo.ui.Widget.List.ItemView({
       model: mdl,
-      viewModel: this.viewModel
+      viewModel: this.model
     });
     v.bind('itemClicked', function(){
       this.trigger('itemClicked', mdl, this);

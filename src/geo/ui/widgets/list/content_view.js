@@ -36,11 +36,11 @@ cdb.geo.ui.Widget.List.Content = cdb.geo.ui.Widget.Content.extend({
     this.clearSubViews();
 
     var template = _.template(this._TEMPLATE);
-    var data = this.dataModel.getData();
+    var data = this.model.getData();
     var isDataEmpty = _.isEmpty(data) || _.size(data) === 0;
     this.$el.html(
       template({
-        title: this.viewModel.get('title'),
+        title: this.model.get('title'),
         itemsCount: !isDataEmpty ? cdb.core.format.formatValue(data.length) : '-'
       })
     );
@@ -55,12 +55,11 @@ cdb.geo.ui.Widget.List.Content = cdb.geo.ui.Widget.Content.extend({
   },
 
   _initViews: function() {
-    var count = this.dataModel.getSize();
+    var count = this.model.getSize();
 
     // List view -> items view
     this._list = new cdb.geo.ui.Widget.List.ItemsView({
-      viewModel: this.viewModel,
-      dataModel: this.dataModel
+      model: this.model
     });
     this.$('.js-content').html(this._list.render().el);
     this.addView(this._list);

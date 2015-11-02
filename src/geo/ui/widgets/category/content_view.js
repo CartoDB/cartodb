@@ -30,7 +30,7 @@ cdb.geo.ui.Widget.Category.Content = cdb.geo.ui.Widget.Content.extend({
     var template = _.template(this._TEMPLATE);
     this.$el.html(
       template({
-        title: this.viewModel.get('title')
+        title: this.model.get('title')
       })
     );
     this._initViews();
@@ -43,8 +43,7 @@ cdb.geo.ui.Widget.Category.Content = cdb.geo.ui.Widget.Content.extend({
   _initViews: function() {
     // List view -> items view
     var list = new cdb.geo.ui.Widget.Category.ItemsView({
-      viewModel: this.viewModel,
-      dataModel: this.dataModel,
+      model: this.model,
       filter: this.filter,
       itemsPerPage: this._ITEMS_PER_PAGE
     });
@@ -54,7 +53,7 @@ cdb.geo.ui.Widget.Category.Content = cdb.geo.ui.Widget.Content.extend({
     // Paginator
     var pagination = new cdb.geo.ui.Widget.Category.PaginatorView({
       $target: list.$el,
-      dataModel: this.dataModel,
+      viewModel: this.model,
       itemsPerPage: this._ITEMS_PER_PAGE
     });
     this.$('.js-footer').append(pagination.render().el);

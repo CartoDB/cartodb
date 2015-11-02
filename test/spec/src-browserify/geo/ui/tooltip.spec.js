@@ -1,8 +1,8 @@
 var $ = require('jquery');
 var Backbone = require('backbone');
-var Map = require('../../../../../src-browserify/geo/map');
-var LeafletMapView = require('../../../../../src-browserify/geo/leaflet/leaflet-map-view');
-var Tooltip = require('../../../../../src-browserify/geo/ui/tooltip');
+var Map = require('cdb/geo/map');
+var LeafletMapView = require('cdb/geo/leaflet/leaflet-map-view');
+var Tooltip = require('cdb/geo/ui/tooltip');
 
 describe('geo/ui/tooltip', function() {
 

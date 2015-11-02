@@ -1,8 +1,8 @@
 var _ = require('underscore');
 var $ = require('jquery');
 var Backbone = require('backbone');
-var _Promise = require('../../../../src-browserify/api/_promise');
-var SQL = require('../../../../src-browserify/api/sql');
+var _Promise = require('cdb/api/_promise');
+var SQL = require('cdb/api/sql');
 
 describe('api/sql', function() {
   var USER = 'rambo';

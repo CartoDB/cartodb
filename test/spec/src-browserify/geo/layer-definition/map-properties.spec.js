@@ -1,4 +1,4 @@
-var MapProperties = require('../../../../../src-browserify/geo/layer-definition/map-properties');
+var MapProperties = require('cdb/geo/layer-definition/map-properties');
 
 describe('geo/layer-definition/map-properties', function() {
 

@@ -1,4 +1,4 @@
-var Template = require('../../../../src-browserify/core/template');
+var Template = require('cdb/core/template');
 
 describe("core/template", function() {
     var tmpl;

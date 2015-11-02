@@ -1,5 +1,5 @@
 var $ = require('jquery');
-var Model = require('../../../../src-browserify/core/model');
+var Model = require('cdb/core/model');
 
 describe('core/model', function() {
   var TestModel;

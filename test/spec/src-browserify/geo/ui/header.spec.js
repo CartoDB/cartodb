@@ -1,6 +1,6 @@
-var Template = require('../../../../../src-browserify/core/template');
-var Model = require('../../../../../src-browserify/core/model');
-var Header = require('../../../../../src-browserify/geo/ui/header');
+var Template = require('cdb/core/template');
+var Model = require('cdb/core/model');
+var Header = require('cdb/geo/ui/header');
 
 describe('geo/ui/header', function() {
 

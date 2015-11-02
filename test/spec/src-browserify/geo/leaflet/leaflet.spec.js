@@ -6,18 +6,18 @@ global.L = L;
 require('torque.js'); // attaches L.TorqueLayer (but only while window.L is loaded before this require!)
 var config = require('cdb.config');
 var log = require('cdb.log');
-var LeafletTorqueLayer = require('../../../../../src-browserify/geo/leaflet/leaflet-torque-layer');
-var Map = require('../../../../../src-browserify/geo/map');
-var LeafletMapView = require('../../../../../src-browserify/geo/leaflet/leaflet-map-view');
-var TileLayer = require('../../../../../src-browserify/geo/map/tile-layer');
-var LeafletTiledLayerView = require('../../../../../src-browserify/geo/leaflet/leaflet-tiled-layer-view');
-var CartoDBLayer = require('../../../../../src-browserify/geo/map/cartodb-layer');
-var CartoDBGroupLayer = require('../../../../../src-browserify/geo/map/cartodb-group-layer');
-var PlainLayer = require('../../../../../src-browserify/geo/map/plain-layer');
-var LeafletPlainLayerView = require('../../../../../src-browserify/geo/leaflet/leaflet-plain-layer-view');
-var Geometry = require('../../../../../src-browserify/geo/geometry');
-var GMapsBaseLayer = require('../../../../../src-browserify/geo/map/gmaps-base-layer');
-var TorqueLayer = require('../../../../../src-browserify/geo/map/torque-layer');
+var LeafletTorqueLayer = require('cdb/geo/leaflet/leaflet-torque-layer');
+var Map = require('cdb/geo/map');
+var LeafletMapView = require('cdb/geo/leaflet/leaflet-map-view');
+var TileLayer = require('cdb/geo/map/tile-layer');
+var LeafletTiledLayerView = require('cdb/geo/leaflet/leaflet-tiled-layer-view');
+var CartoDBLayer = require('cdb/geo/map/cartodb-layer');
+var CartoDBGroupLayer = require('cdb/geo/map/cartodb-group-layer');
+var PlainLayer = require('cdb/geo/map/plain-layer');
+var LeafletPlainLayerView = require('cdb/geo/leaflet/leaflet-plain-layer-view');
+var Geometry = require('cdb/geo/geometry');
+var GMapsBaseLayer = require('cdb/geo/map/gmaps-base-layer');
+var TorqueLayer = require('cdb/geo/map/torque-layer');
 
 describe('geo/leaflet/leaflet-map-view', function() {
   var mapView;

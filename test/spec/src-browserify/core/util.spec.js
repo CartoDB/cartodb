@@ -1,4 +1,4 @@
-var util = require('../../../../src-browserify/core/util');
+var util = require('cdb/core/util');
 
 describe('core/util', function() {
   it('should identify user agents properly', function() {

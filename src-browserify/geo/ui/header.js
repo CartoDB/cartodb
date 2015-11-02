@@ -1,7 +1,7 @@
 var _ = require('underscore');
-var sanitize = require('../../../src-browserify/core/sanitize');
-var View = require('../../../src-browserify/core/view');
-var SlidesController = require('../../../src-browserify/geo/ui/slides-controller');
+var sanitize = require('cdb/core/sanitize');
+var View = require('cdb/core/view');
+var SlidesController = require('cdb/geo/ui/slides-controller');
 
 var Header = View.extend({
 

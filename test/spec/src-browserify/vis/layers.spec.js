@@ -3,12 +3,12 @@ var _ = require('underscore');
 
 // required due to implicit dependency in vis --> map-view
 var cdb = require('cdb');
-_.extend(cdb.geo, require('../../../../src-browserify/geo/leaflet'));
-_.extend(cdb.geo, require('../../../../src-browserify/geo/gmaps'));
+_.extend(cdb.geo, require('cdb/geo/leaflet'));
+_.extend(cdb.geo, require('cdb/geo/gmaps'));
 
-var Vis = require('../../../../src-browserify/vis/vis');
-var Layers = require('../../../../src-browserify/vis/vis/layers');
-require('../../../../src-browserify/vis/layers'); // Layers.register calls
+var Vis = require('cdb/vis/vis');
+var Layers = require('cdb/vis/vis/layers');
+require('cdb/vis/layers'); // Layers.register calls
 
 describe('vis/layers', function() {
   var vis;

@@ -1,5 +1,5 @@
 var Backbone = require('backbone');
-var TimeSlider = require('../../../../../src-browserify/geo/ui/time-slider');
+var TimeSlider = require('cdb/geo/ui/time-slider');
 
 describe('geo/ui/time-slider', function() {
   var view;

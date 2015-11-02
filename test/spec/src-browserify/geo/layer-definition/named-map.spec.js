@@ -1,6 +1,6 @@
 var $ = require('jquery');
 var Backbone = require('backbone');
-var NamedMap = require('../../../../../src-browserify/geo/layer-definition/named-map');
+var NamedMap = require('cdb/geo/layer-definition/named-map');
 
 describe('geo/layer-definition/named-map', function() {
   var namedMap, named_map;

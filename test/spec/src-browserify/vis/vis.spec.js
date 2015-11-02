@@ -4,16 +4,16 @@ var L = require('leaflet');
 
 // required due to implicit dependency in vis --> map-view
 var cdb = require('cdb');
-_.extend(cdb.geo, require('../../../../src-browserify/geo/leaflet'));
-_.extend(cdb.geo, require('../../../../src-browserify/geo/gmaps'));
-_.extend(L, require('../../../../src-browserify/geo/leaflet-extensions'));
+_.extend(cdb.geo, require('cdb/geo/leaflet'));
+_.extend(cdb.geo, require('cdb/geo/gmaps'));
+_.extend(L, require('cdb/geo/leaflet-extensions'));
 
-var createVis = require('../../../../src-browserify/api/create-vis');
-var View = require('../../../../src-browserify/core/view');
-var Overlay = require('../../../../src-browserify/vis/vis/overlay');
-var Vis = require('../../../../src-browserify/vis/vis');
-require('../../../../src-browserify/vis/overlays'); // Overlay.register calls
-require('../../../../src-browserify/vis/layers'); // Layers.register calls
+var createVis = require('cdb/api/create-vis');
+var View = require('cdb/core/view');
+var Overlay = require('cdb/vis/vis/overlay');
+var Vis = require('cdb/vis/vis');
+require('cdb/vis/overlays'); // Overlay.register calls
+require('cdb/vis/layers'); // Layers.register calls
 
 describe('vis/vis/overlay', function() {
 

@@ -1,13 +1,13 @@
 var $ = require('jquery');
 var _ = require('underscore');
-var Template = require('../../../../../src-browserify/core/template');
-var Model = require('../../../../../src-browserify/core/model');
-var Map = require('../../../../../src-browserify/geo/map');
-var TorqueLayer = require('../../../../../src-browserify/geo/map/torque-layer');
-var CartoDBLayer = require('../../../../../src-browserify/geo/map/cartodb-layer');
-var CartoDBGroupLayer = require('../../../../../src-browserify/geo/map/cartodb-group-layer');
-var GoogleMapsMapView = require('../../../../../src-browserify/geo/gmaps/gmaps-map-view');
-var Mobile = require('../../../../../src-browserify/geo/ui/mobile');
+var Template = require('cdb/core/template');
+var Model = require('cdb/core/model');
+var Map = require('cdb/geo/map');
+var TorqueLayer = require('cdb/geo/map/torque-layer');
+var CartoDBLayer = require('cdb/geo/map/cartodb-layer');
+var CartoDBGroupLayer = require('cdb/geo/map/cartodb-group-layer');
+var GoogleMapsMapView = require('cdb/geo/gmaps/gmaps-map-view');
+var Mobile = require('cdb/geo/ui/mobile');
 
 describe('geo/ui/mobile', function() {
 

@@ -2,9 +2,9 @@ var $ = require('jquery');
 var Backbone = require('backbone');
 var LZMA = require('lzma');
 var util = require('cdb.core.util');
-var CartoDBSubLayer = require('../../../../../src-browserify/geo/sub-layer/cartodb-sub-layer');
-var MapBase = require('../../../../../src-browserify/geo/layer-definition/map-base');
-var LayerDefinition = require('../../../../../src-browserify/geo/layer-definition/layer-definition');
+var CartoDBSubLayer = require('cdb/geo/sub-layer/cartodb-sub-layer');
+var MapBase = require('cdb/geo/layer-definition/map-base');
+var LayerDefinition = require('cdb/geo/layer-definition/layer-definition');
 
 describe('geo/layer-definition/layer-definition', function() {
 

@@ -1,9 +1,9 @@
 var $ = require('jquery');
 var Backbone = require('backbone');
 var config = require('cdb.config');
-var Map = require('../../../../src-browserify/geo/map');
-var MapView = require('../../../../src-browserify/geo/map-view');
-var Infowindow = require('../../../../src-browserify/geo/ui/infowindow');
+var Map = require('cdb/geo/map');
+var MapView = require('cdb/geo/map-view');
+var Infowindow = require('cdb/geo/ui/infowindow');
 
 describe('core/geo/map-view', function() {
   beforeEach(function() {

@@ -5,12 +5,12 @@ var cdb = require('cdb'); // to setup cdb.geo.ui.*, cdb.geo.ui.Legend.*
 var config = require('cdb.config');
 
 // A necessary evil, due to otherwise end up with circular references
-cdb.geo.ui.Legend = require('../../../../../src-browserify/geo/ui/legend');
-_.extend(cdb.geo.ui.Legend, require('../../../../../src-browserify/geo/ui/legend/legend-view-exports'));
+cdb.geo.ui.Legend = require('cdb/geo/ui/legend');
+_.extend(cdb.geo.ui.Legend, require('cdb/geo/ui/legend/legend-view-exports'));
 
-var LegendExports = require('../../../../../src-browserify/geo/ui/legend-exports');
-var Model = require('../../../../../src-browserify/core/model');
-var Map = require('../../../../../src-browserify/geo/map');
+var LegendExports = require('cdb/geo/ui/legend-exports');
+var Model = require('cdb/core/model');
+var Map = require('cdb/geo/map');
 
 describe('geo/ui/legend', function() {
   describe("Legend", function() {

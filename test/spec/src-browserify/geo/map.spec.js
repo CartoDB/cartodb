@@ -1,7 +1,7 @@
 var config = require('cdb.config');
-var PlainLayer = require('../../../../src-browserify/geo/map/plain-layer');
-var CartoDBLayer = require('../../../../src-browserify/geo/map/cartodb-layer');
-var Map = require('../../../../src-browserify/geo/map');
+var PlainLayer = require('cdb/geo/map/plain-layer');
+var CartoDBLayer = require('cdb/geo/map/cartodb-layer');
+var Map = require('cdb/geo/map');
 
 describe('core/geo/map', function() {
   var map;

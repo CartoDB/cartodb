@@ -1,5 +1,5 @@
 var $ = require('jquery');
-var YAHOO = require('../../../../../src-browserify/geo/geocoder/yahoo-geocoder');
+var YAHOO = require('cdb/geo/geocoder/yahoo-geocoder');
 
 describe('geo/geocoder/yahoo-geocoder', function() {
   it("we shouldn't get a direction that doesn't exist", function(done) {

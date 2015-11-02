@@ -1,4 +1,4 @@
-var GMapsBaseLayer = require('../../../../../src-browserify/geo/map/gmaps-base-layer');
+var GMapsBaseLayer = require('cdb/geo/map/gmaps-base-layer');
 
 describe('GMapsBaseLayer', function() {
   it("should be type GMapsBase", function() {

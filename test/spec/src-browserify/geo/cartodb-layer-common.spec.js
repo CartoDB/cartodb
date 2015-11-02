@@ -1,4 +1,4 @@
-var CartoDBLayerCommon = require('../../../../src-browserify/geo/cartodb-layer-common');
+var CartoDBLayerCommon = require('cdb/geo/cartodb-layer-common');
 
 describe('geo/cartodb-layer-common', function() {
 

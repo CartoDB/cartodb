@@ -1,10 +1,10 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
 var $ = require('jquery');
-var Queue = require('../../../../src-browserify/vis/image/queue');
-var StaticImage = require('../../../../src-browserify/vis/image/static-image');
-var Loader = require('../../../../src-browserify/core/loader');
-var Image = require('../../../../src-browserify/vis/image');
+var Queue = require('cdb/vis/image/queue');
+var StaticImage = require('cdb/vis/image/static-image');
+var Loader = require('cdb/core/loader');
+var Image = require('cdb/vis/image');
 
 describe('vis/image', function() {
 

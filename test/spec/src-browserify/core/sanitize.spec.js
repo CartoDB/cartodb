@@ -1,4 +1,4 @@
-var sanitize = require('../../../../src-browserify/core/sanitize');
+var sanitize = require('cdb/core/sanitize');
 
 describe("core/sanitize", function() {
   describe('.html', function() {

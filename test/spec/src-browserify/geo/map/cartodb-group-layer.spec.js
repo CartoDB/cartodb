@@ -1,4 +1,4 @@
-var CartoDBGroupLayer = require('../../../../../src-browserify/geo/map/cartodb-group-layer');
+var CartoDBGroupLayer = require('cdb/geo/map/cartodb-group-layer');
 
 describe('geo/map/cartodb-group-layer', function() {
   it("should be type layergroup", function() {

@@ -2,10 +2,10 @@ var $ = require('jquery');
 var templates = require('cdb.templates');
 var log = require('cdb.log');
 var config = require('cdb.config');
-var Map = require('../../../../../src-browserify/geo/map');
-var MapView = require('../../../../../src-browserify/geo/map-view');
-var InfowindowModel = require('../../../../../src-browserify/geo/ui/infowindow-model');
-var Infowindow = require('../../../../../src-browserify/geo/ui/infowindow');
+var Map = require('cdb/geo/map');
+var MapView = require('cdb/geo/map-view');
+var InfowindowModel = require('cdb/geo/ui/infowindow-model');
+var Infowindow = require('cdb/geo/ui/infowindow');
 
 describe('geo/ui/infowindow', function() {
   var model, view;

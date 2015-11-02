@@ -1,10 +1,10 @@
 var $ = require('jquery');
 var L = require('leaflet');
-var Search = require('../../../../../src-browserify/geo/ui/search');
-var NOKIA  = require('../../../../../src-browserify/geo/geocoder/nokia-geocoder');
-var Map = require('../../../../../src-browserify/geo/map');
-var Template = require('../../../../../src-browserify/core/template');
-var LeafletMapView = require('../../../../../src-browserify/geo/leaflet/leaflet-map-view');
+var Search = require('cdb/geo/ui/search');
+var NOKIA  = require('cdb/geo/geocoder/nokia-geocoder');
+var Map = require('cdb/geo/map');
+var Template = require('cdb/core/template');
+var LeafletMapView = require('cdb/geo/leaflet/leaflet-map-view');
 
 describe('cdb/geo/ui/search', function() {
 

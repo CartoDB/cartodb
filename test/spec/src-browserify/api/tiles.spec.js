@@ -1,4 +1,4 @@
-var Tiles = require('../../../../src-browserify/api/tiles');
+var Tiles = require('cdb/api/tiles');
 
 describe('api/tiles', function() {
   beforeEach(function() {

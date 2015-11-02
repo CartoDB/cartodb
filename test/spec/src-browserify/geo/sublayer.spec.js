@@ -1,10 +1,10 @@
 var _ = require('underscore');
 var $ = require('jquery');
 var Backbone = require('backbone');
-var CartoDBSubLayer = require('../../../../src-browserify/geo/sub-layer/cartodb-sub-layer');
-var HttpSubLayer = require('../../../../src-browserify/geo/sub-layer/http-sub-layer');
-var SubLayerFactory = require('../../../../src-browserify/geo/sub-layer/sub-layer-factory');
-var LayerDefinition = require('../../../../src-browserify/geo/layer-definition/layer-definition');
+var CartoDBSubLayer = require('cdb/geo/sub-layer/cartodb-sub-layer');
+var HttpSubLayer = require('cdb/geo/sub-layer/http-sub-layer');
+var SubLayerFactory = require('cdb/geo/sub-layer/sub-layer-factory');
+var LayerDefinition = require('cdb/geo/layer-definition/layer-definition');
 
 describe('geo/sublayer', function() {
   var layerDefinition, sublayer;

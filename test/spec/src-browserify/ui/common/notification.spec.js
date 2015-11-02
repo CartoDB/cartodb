@@ -1,5 +1,5 @@
 var $ = require('jquery');
-var Notification = require('../../../../../src-browserify/ui/common/notification');
+var Notification = require('cdb/ui/common/notification');
 
 describe('ui/common/notification', function() {
 

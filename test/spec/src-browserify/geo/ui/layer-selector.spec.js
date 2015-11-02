@@ -3,16 +3,16 @@ var Backbone = require('backbone');
 var L = require('leaflet');
 var cdb = require('cdb');
 cdb.geo.ui = {
-  LayerView: require('../../../../../src-browserify/geo/ui/layer-view'),
-  LayerViewFromLayerGroup: require('../../../../../src-browserify/geo/ui/layer-view-from-layer-group')
+  LayerView: require('cdb/geo/ui/layer-view'),
+  LayerViewFromLayerGroup: require('cdb/geo/ui/layer-view-from-layer-group')
 };
-var Map = require('../../../../../src-browserify/geo/map');
-var CartoDBLayer = require('../../../../../src-browserify/geo/map/cartodb-layer');
-var CartoDBGroupLayer = require('../../../../../src-browserify/geo/map/cartodb-group-layer');
-var Layers = require('../../../../../src-browserify/geo/map/layers');
-var LeafletMapView = require('../../../../../src-browserify/geo/leaflet/leaflet-map-view');
-var Template = require('../../../../../src-browserify/core/template');
-var LayerSelector = require('../../../../../src-browserify/geo/ui/layer-selector');
+var Map = require('cdb/geo/map');
+var CartoDBLayer = require('cdb/geo/map/cartodb-layer');
+var CartoDBGroupLayer = require('cdb/geo/map/cartodb-group-layer');
+var Layers = require('cdb/geo/map/layers');
+var LeafletMapView = require('cdb/geo/leaflet/leaflet-map-view');
+var Template = require('cdb/core/template');
+var LayerSelector = require('cdb/geo/ui/layer-selector');
 
 describe('geo/ui/layer-selector', function() {
 

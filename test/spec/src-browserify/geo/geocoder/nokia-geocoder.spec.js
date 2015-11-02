@@ -1,5 +1,5 @@
 var $ = require('jquery');
-var NOKIA = require('../../../../../src-browserify/geo/geocoder/nokia-geocoder');
+var NOKIA = require('cdb/geo/geocoder/nokia-geocoder');
 
 describe('geo/geocoder/nokia-geocoder', function() {
   it("don't remove the spaces in the user-submitted addresses", function(done) {

@@ -1,8 +1,8 @@
-var Layers = require('../../../../../src-browserify/geo/map/layers');
-var PlainLayer = require('../../../../../src-browserify/geo/map/plain-layer');
-var TileLayer = require('../../../../../src-browserify/geo/map/tile-layer');
-var TorqueLayer = require('../../../../../src-browserify/geo/map/torque-layer');
-var CartoDBLayer = require('../../../../../src-browserify/geo/map/cartodb-layer');
+var Layers = require('cdb/geo/map/layers');
+var PlainLayer = require('cdb/geo/map/plain-layer');
+var TileLayer = require('cdb/geo/map/tile-layer');
+var TorqueLayer = require('cdb/geo/map/torque-layer');
+var CartoDBLayer = require('cdb/geo/map/cartodb-layer');
 
 describe('geo/map/layers', function() {
   var layers;

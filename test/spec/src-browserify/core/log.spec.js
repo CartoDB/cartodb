@@ -1,6 +1,6 @@
 var config = require('cdb.config');
 var errors = require('cdb.errors');
-var Log = require('../../../../src-browserify/core/log');
+var Log = require('cdb/core/log');
 
 describe('core/log', function() {
   beforeEach(function() {

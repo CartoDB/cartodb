@@ -2,8 +2,8 @@ var _ = require('underscore');
 var $ = require('jquery');
 var Backbone = require('backbone');
 var L = require('leaflet');
-var createLayer = require('../../../../src-browserify/api/create-layer');
-var LegendModel = require('../../../../src-browserify/geo/ui/legend-model');
+var createLayer = require('cdb/api/create-layer');
+var LegendModel = require('cdb/geo/ui/legend-model');
 
 describe('api/create-layer (cartodb)', function() {
   describe('loadLayer leaflet', function() {

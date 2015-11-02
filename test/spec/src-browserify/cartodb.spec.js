@@ -1,4 +1,4 @@
-var cdb = require('../../../src-browserify/cartodb');
+var cdb = require('cdb/cartodb');
 
 describe('cartodb.js bundle', function() {
   it('should set cartodb object in global namespace', function() {

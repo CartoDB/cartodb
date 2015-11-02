@@ -4,19 +4,19 @@ var L = require('leaflet');
 var Backbone = require('backbone');
 window.torque = require('torque.js'); // to window.torque.GMapsTorqueLayer, required by GMapsTorqueLayerView
 
-var Map = require('../../../../../src-browserify/geo/map');
-var GoogleMapsMapView = require('../../../../../src-browserify/geo/gmaps/gmaps-map-view');
-var TileLayer = require('../../../../../src-browserify/geo/map/tile-layer');
-var GMapsTiledLayerView = require('../../../../../src-browserify/geo/gmaps/gmaps-tiled-layer-view');
-var CartoDBLayer = require('../../../../../src-browserify/geo/map/cartodb-layer');
-var CartoDBGroupLayer = require('../../../../../src-browserify/geo/map/cartodb-group-layer');
-var PlainLayer = require('../../../../../src-browserify/geo/map/plain-layer');
-var GMapsCartoDBLayerView = require('../../../../../src-browserify/geo/gmaps/gmaps-cartodb-layer-view');
-var GMapsCartoDBLayerGroupView = require('../../../../../src-browserify/geo/gmaps/gmaps-cartodb-layer-group-view');
-var GMapsPlainLayerView = require('../../../../../src-browserify/geo/gmaps/gmaps-plain-layer-view');
-var Geometry = require('../../../../../src-browserify/geo/geometry');
-var GmapsPathView = require('../../../../../src-browserify/geo/gmaps/gmaps-path-view');
-var GMapsTorqueLayerView = require('../../../../../src-browserify/geo/gmaps/gmaps-torque-layer-view');
+var Map = require('cdb/geo/map');
+var GoogleMapsMapView = require('cdb/geo/gmaps/gmaps-map-view');
+var TileLayer = require('cdb/geo/map/tile-layer');
+var GMapsTiledLayerView = require('cdb/geo/gmaps/gmaps-tiled-layer-view');
+var CartoDBLayer = require('cdb/geo/map/cartodb-layer');
+var CartoDBGroupLayer = require('cdb/geo/map/cartodb-group-layer');
+var PlainLayer = require('cdb/geo/map/plain-layer');
+var GMapsCartoDBLayerView = require('cdb/geo/gmaps/gmaps-cartodb-layer-view');
+var GMapsCartoDBLayerGroupView = require('cdb/geo/gmaps/gmaps-cartodb-layer-group-view');
+var GMapsPlainLayerView = require('cdb/geo/gmaps/gmaps-plain-layer-view');
+var Geometry = require('cdb/geo/geometry');
+var GmapsPathView = require('cdb/geo/gmaps/gmaps-path-view');
+var GMapsTorqueLayerView = require('cdb/geo/gmaps/gmaps-torque-layer-view');
 
   describe('geo/gmaps/gmaps-map-view', function() {
     var mapView;

@@ -1,5 +1,5 @@
 var $ = require('jquery');
-var InfowindowModel = require('../../../../../src-browserify/geo/ui/infowindow-model');
+var InfowindowModel = require('cdb/geo/ui/infowindow-model');
 
 describe('geo/ui/infowindow-model', function() {
   var model;

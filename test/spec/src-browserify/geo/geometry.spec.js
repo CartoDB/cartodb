@@ -1,5 +1,5 @@
 var $ = require('jquery');
-var Geometry = require('../../../../src-browserify/geo/geometry');
+var Geometry = require('cdb/geo/geometry');
 
 describe('geo/geometry', function() {
   it("isPoint should return true when is a point", function() {

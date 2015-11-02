@@ -2,9 +2,9 @@ var _ = require('underscore');
 var $ = require('jquery');
 var Backbone = require('backbone');
 var L = require('leaflet');
-var Loader = require('../../../../src-browserify/core/loader');
-var createLayer = require('../../../../src-browserify/api/create-layer');
-var LegendModel = require('../../../../src-browserify/geo/ui/legend-model');
+var Loader = require('cdb/core/loader');
+var createLayer = require('cdb/api/create-layer');
+var LegendModel = require('cdb/geo/ui/legend-model');
 
 describe('api/create-layer', function() {
   describe('loadLayer leaflet', function() {

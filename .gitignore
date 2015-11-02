@@ -1,7 +1,8 @@
 .DS_store
 npm-debug.log
 *.swp
-node_modules
+node_modules/*
+!node_modules/cdb
 themes/css/all.css
 themes/css/cartodb.ie.css
 secrets.json

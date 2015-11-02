@@ -540,9 +540,9 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
 
       if (v === 0 || i === 0 || i === (data.length - 1)) {
         var sum = _.reduce(data.slice(0, i + 1), function(memo, d) {
-          return _.isEmpty(d) ? memo : d.freq + memo;
+          return _.isEmpty(d) ? memo : d.start + memo;
         }, 0);
-        return format(sum);
+        return format(sum.toFixed(2));
       } else {
         return '';
       }

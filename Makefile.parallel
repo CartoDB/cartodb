@@ -45,6 +45,7 @@ WORKING_SPECS_1 = \
 	spec/models/visualization/tags_spec.rb \
 	spec/models/visualization/watcher_spec.rb \
   spec/models/named_maps_spec.rb \
+  spec/models/data_import_spec.rb \
   spec/models/geocoding_spec.rb \
   spec/models/common_data_spec.rb \
   spec/lib/sql_parser_spec.rb \
@@ -52,7 +53,7 @@ WORKING_SPECS_1 = \
   spec/lib/string_spec.rb \
   spec/lib/image_metadata_spec.rb \
   spec/lib/central_spec.rb \
-  spec/lib/trending_maps_spec.rb \ 
+  spec/lib/trending_maps_spec.rb \
   spec/lib/explore_api_spec.rb \
   spec/lib/carto/http/client_spec.rb \
 	spec/helpers/uuidhelper_spec.rb \
@@ -60,7 +61,7 @@ WORKING_SPECS_1 = \
 	spec/models/carto/group_spec.rb \
 	spec/models/carto/ldap/configuration_spec.rb \
 	spec/requests/sessions_controller_spec.rb \
-	spec/services/carto/visualizations_export_service_spec.rb \ 
+	spec/services/carto/visualizations_export_service_spec.rb \
   $(NULL)
 
 WORKING_SPECS_2 = \
@@ -90,7 +91,7 @@ WORKING_SPECS_2 = \
   services/importer/spec/unit/sql_loader_spec.rb \
   services/importer/spec/unit/ogr2ogr_spec.rb \
   services/importer/spec/unit/post_import_handler_spec.rb \
-  services/importer/spec/unit/runner_spec.rb \ 
+  services/importer/spec/unit/runner_spec.rb \
   services/importer/spec/unit/unp_spec.rb \
   services/importer/spec/unit/url_translator/fusion_tables_spec.rb \
   services/importer/spec/unit/url_translator/github_spec.rb \
@@ -118,7 +119,7 @@ WORKING_SPECS_4 = \
 	spec/requests/carto/api/organizations_controller_spec.rb \
   spec/requests/api/imports_spec.rb \
   spec/requests/api/json/imports_controller_spec.rb \
-	spec/requests/carto/api/imports_controller_spec.rb \ 
+	spec/requests/carto/api/imports_controller_spec.rb \
   spec/connectors/importer_spec.rb \
   spec/requests/api/geocodings_spec.rb \
   services/importer/spec/unit/url_translator/osm_spec.rb \
@@ -127,7 +128,7 @@ WORKING_SPECS_4 = \
 
 WORKING_SPECS_5 = \
   spec/rspec_configuration.rb \
-  spec/requests/api/assets_spec.rb \ 
+  spec/requests/api/assets_spec.rb \
   spec/requests/carto/api/assets_controller_spec.rb \
   spec/requests/api/user_layers_spec.rb \
   spec/requests/api/json/layers_controller_spec.rb \
@@ -192,8 +193,8 @@ WORKING_SPECS_9 = \
   spec/requests/api/json/overlays_controller_spec.rb \
   spec/requests/carto/api/overlays_controller_spec.rb \
 	spec/models/carto/user_creation_spec.rb \
-	spec/requests/carto/api/invitations_controller_spec.rb \ 
-	spec/models/carto/invitation_spec.rb \ 
+	spec/requests/carto/api/invitations_controller_spec.rb \
+	spec/models/carto/invitation_spec.rb \
 	spec/models/carto/user_service_spec.rb \
 	spec/models/carto/user_spec.rb \
 	spec/models/carto/user_table_spec.rb \

@@ -42,20 +42,6 @@ describe DataImport do
     data_import.error_code.should == 8004
   end
 
-  it 'should allow to append data to an existing table' do
-    pending "not yet implemented"
-    fixture = '/../db/fake_data/column_string_to_boolean.csv'
-    expect do
-      DataImport.create(
-        user_id: @user.id,
-        table_id: @table.id,
-        data_source: fixture,
-        updated_at: Time.now,
-        append: true
-      ).run_import!
-    end.to change { @table.reload.records[:total_rows] }.by(11)
-  end
-
   it 'raises a meaningful error if over storage quota' do
     previous_quota_in_bytes = @user.quota_in_bytes
     @user.quota_in_bytes = 0
@@ -220,6 +206,7 @@ describe DataImport do
   end
 
   it 'should know that the import is from common data' do
+     Cartodb.config[:common_data] = {}
     Cartodb.config[:common_data]['username'] = 'mycommondata'
     Cartodb.config[:common_data]['host'] = 'cartodb.wadus.com'
     data_import = DataImport.create(
@@ -230,7 +217,7 @@ describe DataImport do
   end
 
   it 'should not consider a import as common data if common_data config does not exist' do
-    Cartodb.config.delete('common_data')
+    Cartodb.config.delete(:common_data)
     data_import = DataImport.create(
       user_id: @user.id,
       data_source: "http://mycommondata.cartodb.wadus.com/foo.csv"
@@ -239,6 +226,7 @@ describe DataImport do
   end
 
   it 'should not consider a import as common data if common_data config does not match with url' do
+    Cartodb.config[:common_data] = {}
     Cartodb.config[:common_data]['username'] = 'mycommondata'
     Cartodb.config[:common_data]['host'] = 'cartodb.wadus.com'
     data_import = DataImport.create(
@@ -250,7 +238,10 @@ describe DataImport do
 
   describe 'log' do
     it 'is initialized to a CartoDB::Log instance' do
-      data_import = DataImport.new
+      data_import = DataImport.create(
+        user_id: @user.id,
+        data_source: "http://mydatasource.cartodb.wadus.com/foo.csv"
+      )
       data_import.log.should be_instance_of CartoDB::Log
     end
 

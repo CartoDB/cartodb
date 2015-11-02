@@ -9,8 +9,8 @@ cdb.geo.ui.Widget.Histogram.View = cdb.geo.ui.Widget.View.extend({
 
   _createContentView: function() {
     return new cdb.geo.ui.Widget.Histogram.Content({
-      viewModel: this.viewModel,
-      dataModel: this.dataModel,
+      dataModel: this.model,
+      viewModel: new cdb.core.Model(),
       filter: this.filter
     });
   }

@@ -24,7 +24,7 @@ cdb.geo.ui.Widget.Category.PaginatorView = cdb.core.View.extend({
 
   initialize: function() {
     this._ITEMS_PER_PAGE = this.options.itemsPerPage;
-    this.dataModel = this.options.dataModel;
+    this.viewModel = this.options.viewModel;
     this._$target = this.options.$target;
     this.model = new cdb.core.Model({
       page: 0
@@ -35,7 +35,7 @@ cdb.geo.ui.Widget.Category.PaginatorView = cdb.core.View.extend({
   render: function() {
     this.clearSubViews();
     this.$el.empty();
-    var count = this.dataModel.getSize();
+    var count = this.viewModel.getSize();
     var pages = Math.ceil(count / this._ITEMS_PER_PAGE);
     var template = _.template(this._TEMPLATE);
     this.$el.html(
@@ -54,16 +54,16 @@ cdb.geo.ui.Widget.Category.PaginatorView = cdb.core.View.extend({
     _.bindAll(this, '_scrollToPage');
     $(window).bind('resize', this._scrollToPage);
     this.model.bind('change:page', this.render, this);
-    this.dataModel.bind('change:data', function() {
+    this.viewModel.bind('change:data', function() {
       this._setPage();
       this.render();
     }, this);
-    this.add_related_model(this.dataModel);
+    this.add_related_model(this.viewModel);
   },
 
   // If current page doesn't exist due to a data change, we should reset it
   _setPage: function() {
-    var count = this.dataModel.getSize();
+    var count = this.viewModel.getSize();
     var pages = Math.ceil(count / this._ITEMS_PER_PAGE);
     if (this.model.get('page') > (pages - 1)) {
       this.model.set({ page: 0 }, { silent :true });

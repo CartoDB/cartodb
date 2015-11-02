@@ -24,8 +24,6 @@ cdb.geo.ui.Widget.Content = cdb.core.View.extend({
     '</ul>',
 
   initialize: function() {
-    this.dataModel = this.options.dataModel;
-    this.viewModel = this.options.viewModel;
     this.filter = this.options.filter;
     this._initBinds();
   },
@@ -34,11 +32,11 @@ cdb.geo.ui.Widget.Content = cdb.core.View.extend({
     this.clearSubViews();
 
     var template = _.template(this._TEMPLATE);
-    var data = this.dataModel.getData();
+    var data = this.model.getData();
     var isDataEmpty = _.isEmpty(data) || _.size(data) === 0;
     this.$el.html(
       template({
-        title: this.viewModel.get('title'),
+        title: this.model.get('title'),
         itemsCount: !isDataEmpty ? data.length : '-'
       })
     );
@@ -51,10 +49,7 @@ cdb.geo.ui.Widget.Content = cdb.core.View.extend({
   },
 
   _initBinds: function() {
-    this.dataModel.bind('error change:data', this.render, this);
-    this.viewModel.bind('change:sync', this._checkBinds, this);
-    this.add_related_model(this.dataModel);
-    this.add_related_model(this.viewModel);
+    this.model.bind('change:data', this.render, this);
   },
 
   _addPlaceholder: function() {

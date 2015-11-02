@@ -644,6 +644,12 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
       '<% } %>' +
     '</ul>',
 
+  initialize: function() {
+    this.dataModel = this.options.dataModel;
+    this.viewModel = new cdb.core.Model();
+    cdb.geo.ui.Widget.Content.prototype.initialize.call(this);
+  },
+
   _initViews: function() {
     this.$('.js-chart').show();
     this._setupDimensions();
@@ -689,7 +695,7 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
 
     this.$el.html(
       template({
-        title: this.viewModel.get('title'),
+        title: this.dataModel.get('title'),
         itemsCount: !isDataEmpty ? data.length : '-'
       })
     );

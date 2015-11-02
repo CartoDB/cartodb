@@ -25,6 +25,15 @@ class Superadmin::OrganizationsController < Superadmin::SuperadminController
       uo.promote_user_to_admin
     end
     respond_with(:superadmin, @organization)
+  rescue => e
+    begin
+      @organization.delete if @organization
+    rescue => e
+      # Avoid shadowing original error
+      CartoDB.notify_error('Cleaning failed creation', error: e.inspect, organization: @organization)
+    end
+    CartoDB.notify_error('Error creating organization', error: e.inspect, organization: @organization)
+    respond_with(:superadmin, @organization, errors: [e.inspect], status: 500)
   end
 
   def update
@@ -37,7 +46,7 @@ class Superadmin::OrganizationsController < Superadmin::SuperadminController
     @organization.destroy_cascade
     respond_with(:superadmin, @organization)
   rescue => e
-    Rollbar.report_message('Error deleting organization', 'error', { error: e.inspect, organization: self.inspect })
+    Rollbar.report_message('Error deleting organization', 'error', error: e.inspect, organization: @organization)
     respond_with({ errors: [ e.inspect ]})
   end
 

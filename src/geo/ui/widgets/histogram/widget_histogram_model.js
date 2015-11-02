@@ -17,7 +17,8 @@ cdb.geo.ui.Widget.HistogramModel = cdb.geo.ui.Widget.Model.extend({
     var bins = data.bins;
     this._data.reset(bins);
     return {
-      data: bins
+      data: bins,
+      width: data.width
     };
   }
 

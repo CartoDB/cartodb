@@ -95,28 +95,29 @@ describe DataImport do
       table_name: 'duplicated_table',
       updated_at: Time.now,
       table_copy: @table.name).run_import!
-    duplicated_table = Table[data_import.table_id]
+    duplicated_table = ::UserTable.where(id: data_import.table_id).first
     duplicated_table.should_not be_nil
     duplicated_table.name.should be == 'duplicated_table'
   end
 
   it 'should allow to create a table from a query' do
-    data_import = DataImport.create(
+    data_import_1 = DataImport.create(
       user_id: @user.id,
       data_source: '/../db/fake_data/clubbing.csv',
       updated_at: Time.now).run_import!
+    data_import_1.state.should be == 'complete'
 
-    data_import = DataImport.create(
+    data_import_2 = DataImport.create(
       user_id: @user.id,
       table_name: 'from_query',
       updated_at: Time.now,
-      from_query: "SELECT * FROM #{data_import.table_name} LIMIT 5").run_import!
-    data_import.state.should be == 'complete'
+      from_query: "SELECT * FROM #{data_import_1.table_name} LIMIT 5").run_import!
+    data_import_2.state.should be == 'complete'
 
-    duplicated_table = Table[data_import.table_id]
+    duplicated_table = ::UserTable.where(id: data_import_2.table_id).first
     duplicated_table.should_not be_nil
     duplicated_table.name.should be == 'from_query'
-    duplicated_table.records[:rows].should have(5).items
+    duplicated_table.service.records[:rows].should have(5).items
   end
 
   it 'imports a simple file' do
@@ -126,10 +127,10 @@ describe DataImport do
       updated_at: Time.now
     ).run_import!
 
-    table = Table[data_import.table_id]
+    table = ::UserTable.where(id: data_import.table_id).first
     table.should_not be_nil
     table.name.should be == 'clubbing'
-    table.records[:rows].should have(10).items
+    table.service.records[:rows].should have(10).items
   end
 
   it 'imports a simple file with latlon' do
@@ -139,7 +140,7 @@ describe DataImport do
       updated_at: Time.now
     ).run_import!
 
-    table = Table[data_import.table_id]
+    table = ::UserTable.where(id: data_import.table_id).first
     table.should_not be_nil
   end
 
@@ -152,10 +153,10 @@ describe DataImport do
         updated_at: Time.now).run_import!
     end
 
-    table = Table[data_import.table_id]
+    table = ::UserTable.where(id: data_import.table_id).first
     table.should_not be_nil
     table.name.should be == 'clubbing'
-    table.records[:rows].should have(10).items
+    table.service.records[:rows].should have(10).items
   end
 
   it 'should allow to create a table from a url with params' do
@@ -168,29 +169,30 @@ describe DataImport do
         updated_at: Time.now).run_import!
     end
 
-    table = Table[data_import.table_id]
+    table = ::UserTable.where(id: data_import.table_id).first
     table.should_not be_nil
     table.name.should be == 'clubbing'
-    table.records[:rows].should have(10).items
+    table.service.records[:rows].should have(10).items
   end
 
   it "can create a table from a query selecting only the cartodb_id" do
-    data_import = DataImport.create(
+    data_import_1 = DataImport.create(
       user_id: @user.id,
       data_source: '/../db/fake_data/clubbing.csv',
       updated_at: Time.now).run_import!
+    data_import_1.state.should be == 'complete'
 
-    data_import = DataImport.create(
+    data_import_2 = DataImport.create(
       user_id: @user.id,
       table_name: 'from_query',
       updated_at: Time.now,
-      from_query: "SELECT cartodb_id FROM #{data_import.table_name} LIMIT 5").run_import!
-    data_import.state.should be == 'complete'
+      from_query: "SELECT cartodb_id FROM #{data_import_1.table_name} LIMIT 5").run_import!
+    data_import_2.state.should be == 'complete'
 
-    duplicated_table = Table[data_import.table_id]
+    duplicated_table = ::UserTable.where(id: data_import_2.table_id).first
     duplicated_table.should_not be_nil
     duplicated_table.name.should be == 'from_query'
-    duplicated_table.records[:rows].should have(5).items
+    duplicated_table.service.records[:rows].should have(5).items
   end
 
   it "should remove any uploaded files after deletion" do
@@ -270,11 +272,11 @@ describe DataImport do
         from_query: 'bogus'
       )
       data_import.log.append('sample message')
+      # Logs get saved at checkpoints or certain operations, so force store
+      data_import.log.store
       data_import.save
-      data_import.logger.should_not be nil
 
       rehydrated_data_import = DataImport[id: data_import.id]
-      rehydrated_data_import
       data_import.log.to_s.should == rehydrated_data_import.log.to_s
     end
 

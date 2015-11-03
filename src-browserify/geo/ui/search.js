@@ -1,3 +1,4 @@
+var $ = require('jquery');
 var View = require('../../core/view');
 var NOKIA = require('../../geo/geocoder/nokia-geocoder');
 var InfowindowModel = require('../../geo/ui/infowindow-model');

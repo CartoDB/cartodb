@@ -72,7 +72,7 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
 
   _onChangeData: function() {
     var data = this._getData(true);
-    this.chart.loadData(data);
+    this.chart.replaceData(data);
   },
 
   render: function() {
@@ -329,7 +329,7 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
       this.chart.refresh();
     } else {
       this.viewModel.set({ zoom_enabled: false, filter_enabled: false, lo_index: null, hi_index: null });
-      this.chart.updateData(this.originalDataModel.toJSON());
+      this.chart.replaceData(this.originalDataModel.toJSON());
 
       this._contract();
 

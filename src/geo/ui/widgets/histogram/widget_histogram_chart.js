@@ -20,28 +20,6 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     return this;
   },
 
-  refresh: function() {
-    this._removeChartContent();
-    this._setupDimensions();
-    this._generateChartContent();
-  },
-
-  lock: function() {
-    this.model.set('locked', true);
-  },
-
-  unlock: function() {
-    this.model.set('locked', false);
-  },
-
-  isLocked: function() {
-    return this.model.get('locked');
-  },
-
-  resetIndexes: function() {
-    this.model.set({ lo_index: null, hi_index: null });
-  },
-
   _onChangeData: function() {
     if (!this.model.get('locked')) {
       this.refresh();
@@ -140,6 +118,36 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     }
   },
 
+  _bindModel: function() {
+    this.model.bind('change:width', this._onResize, this);
+    this.model.bind('change:pos', this._onChangePos, this);
+    this.model.bind('change:lo_index change:hi_index', this._onChangeRange, this);
+    this.model.bind('change:data', this._onChangeData, this);
+    this.model.bind('change:dragging', this._onChangeDragging, this);
+  },
+
+  refresh: function() {
+    this._removeChartContent();
+    this._setupDimensions();
+    this._generateChartContent();
+  },
+
+  lock: function() {
+    this.model.set('locked', true);
+  },
+
+  unlock: function() {
+    this.model.set('locked', false);
+  },
+
+  isLocked: function() {
+    return this.model.get('locked');
+  },
+
+  resetIndexes: function() {
+    this.model.set({ lo_index: null, hi_index: null });
+  },
+
   _formatNumber: function(value, unit) {
     var format = d3.format("0,000");
     return format(value + unit ? ' ' + unit : '');
@@ -175,7 +183,7 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
   },
 
   reset: function(data) {
-    this.loadData(data);
+    this._loadData(data);
     this.model.set({ lo_index: null, hi_index: null });
   },
 
@@ -228,14 +236,6 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     .attr('y1', this.chartHeight)
     .attr('x2', this.chartWidth - 1)
     .attr('y2', this.chartHeight);
-  },
-
-  _bindModel: function() {
-    this.model.bind('change:width', this._onResize, this);
-    this.model.bind('change:pos', this._onChangePos, this);
-    this.model.bind('change:lo_index change:hi_index', this._onChangeRange, this);
-    this.model.bind('change:data', this._onChangeData, this);
-    this.model.bind('change:dragging', this._onChangeDragging, this);
   },
 
   _setupModel: function() {
@@ -568,17 +568,16 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     .call(xAxis);
   },
 
-  updateData: function(data) {
+  replaceData: function(data) {
     this.model.set('data', data);
   },
 
-  loadData: function(data) {
+  _loadData: function(data) {
     if (data && data.toJSON) {
       data = data.toJSON();
     }
 
-    this.model.set({ lo_index: null, hi_index: null }, { silent: true });
-    this.model.set('data', data);
+    this.model.set({ data: data, lo_index: null, hi_index: null }, { silent: true });
     this._onChangeData();
   },
 
@@ -632,4 +631,3 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
   }
 
 });
-

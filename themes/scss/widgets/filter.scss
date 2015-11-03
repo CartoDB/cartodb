@@ -5,9 +5,9 @@
 @import '../variables/mixins';
 
 .Widget-filter {
-  width: 100%;
-  margin: 5px 0;
+  display: block;
   max-height: 200px;
+  margin: 5px 0;
   transition: max-height 200ms ease-in;
 }
 .Widget-filter.is-hidden {

@@ -195,11 +195,12 @@ class Admin::VisualizationsController < Admin::AdminController
     end
     # Legacy redirect, now all public pages also with org. name
     if eligible_for_redirect?(@visualization.user)
+      visualization_presenter = Carto::Api::VisualizationsPresenter.new(@visualization, @visualization.user, self)
+
       redirect_to CartoDB.url(self,
                               'public_visualizations_public_map',
                               {
-                                id: Carto::Api::VisualizationsPresenter.qualified_visualization_id(
-                                  params[:id], @visualization.user.username),
+                                id: visualization_presenter.privacy_aware_map_url,
                                 redirected: true
                               },
                               @visualization.user

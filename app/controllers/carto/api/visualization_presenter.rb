@@ -90,11 +90,7 @@ module Carto
       end
 
       def qualified_visualization_id(username = nil)
-        VisualizationPresenter.qualified_visualization_id(@visualization.id, username)
-      end
-
-      def self.qualified_visualization_id(visualization_id, username = nil)
-        username.nil? ? visualization_id : "#{username}.#{visualization_id}"
+        username.nil? ? @visualization.id : "#{username}.#{@visualization.id}"
       end
 
       private

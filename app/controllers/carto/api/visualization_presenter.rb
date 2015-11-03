@@ -79,14 +79,22 @@ module Carto
         return unless organization
 
         if @visualization.is_privacy_private?
-          base_url = CartoDB.base_url(organization.name, @current_viewer.username)
-          vis_id = "#{@visualization.user.username}.#{@visualization.id}"
+          base_url_username = @current_viewer.username
+          vis_id_username = @visualization.user.username
         else
-          base_url = CartoDB.base_url(organization.name, @visualization.user.username)
-          vis_id = @visualization.id
+          base_url_username = @visualization.user.username
+          vis_id_username = nil
         end
-        path = CartoDB.path(@context, 'public_visualizations_show_map', id: vis_id)
-        "#{base_url}#{path}"
+        path = CartoDB.path(@context, 'public_visualizations_show_map', id: qualified_visualization_id(vis_id_username))
+        "#{CartoDB.base_url(organization.name, base_url_username)}#{path}"
+      end
+
+      def qualified_visualization_id(username = nil)
+        VisualizationPresenter.qualified_visualization_id(@visualization.id, username)
+      end
+
+      def self.qualified_visualization_id(visualization_id, username = nil)
+        username.nil? ? visualization_id : "#{username}.#{visualization_id}"
       end
 
       private
@@ -96,7 +104,9 @@ module Carto
           @visualization.related_tables.select { |table| table.id != @visualization.table.id } :
           @visualization.related_tables
 
-        related.map { |table| Carto::Api::UserTablePresenter.new(table, @visualization.permission, @current_viewer).to_poro }
+        related.map do |table|
+          Carto::Api::UserTablePresenter.new(table, @visualization.permission, @current_viewer).to_poro
+        end
       end
 
       def children_poro(visualization)
@@ -112,9 +122,10 @@ module Carto
 
       def url
         if @visualization.canonical?
-          CartoDB.url(@context, 'public_tables_show_bis', { id: @visualization.qualified_name(@current_viewer) }, @current_viewer)
+          CartoDB.url(@context, 'public_tables_show_bis', { id: qualified_visualization_id(@current_viewer) },
+                      @current_viewer)
         else
-          CartoDB.url(@context, 'public_visualizations_show_map', { id: @visualization.id }, @current_viewer)
+          CartoDB.url(@context, 'public_visualizations_show_map', { id: qualified_visualization_id }, @current_viewer)
         end
       end
 

@@ -196,13 +196,14 @@ class Admin::VisualizationsController < Admin::AdminController
     # Legacy redirect, now all public pages also with org. name
     if eligible_for_redirect?(@visualization.user)
       redirect_to CartoDB.url(self,
-                                'public_visualizations_public_map',
-                                {
-                                  id: "#{@visualization.user.username}.#{params[:id]}",
-                                  redirected:true
-                                },
-                                @visualization.user
-                              ) and return
+                              'public_visualizations_public_map',
+                              {
+                                id: Carto::Api::VisualizationsPresenter.qualified_visualization_id(
+                                  params[:id], @visualization.user.username),
+                                redirected: true
+                              },
+                              @visualization.user
+                             ) and return
     end
 
     if @visualization.can_be_cached?

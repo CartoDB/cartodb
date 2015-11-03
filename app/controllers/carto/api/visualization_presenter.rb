@@ -71,12 +71,29 @@ module Carto
         }
       end
 
+      # Ideally this should go at a lower level, as relates to url generation, but at least centralize logic here
+      # INFO: For now, no support for non-org users, as intended use is for sharing urls
+      def privacy_aware_map_url
+        organization = @visualization.user.organization
+
+        return unless organization
+
+        if @visualization.is_privacy_private?
+          base_url = CartoDB.base_url(organization.name, @current_viewer.username)
+          vis_id = "#{@visualization.user.username}.#{@visualization.id}"
+        else
+          base_url = CartoDB.base_url(organization.name, @visualization.user.username)
+          vis_id = @visualization.id
+        end
+        path = CartoDB.path(@context, 'public_visualizations_show_map', id: vis_id)
+        "#{base_url}#{path}"
+      end
 
       private
 
       def related_tables
-        related = @visualization.table ? 
-          @visualization.related_tables.select { |table| table.id != @visualization.table.id } : 
+        related = @visualization.table ?
+          @visualization.related_tables.select { |table| table.id != @visualization.table.id } :
           @visualization.related_tables
 
         related.map { |table| Carto::Api::UserTablePresenter.new(table, @visualization.permission, @current_viewer).to_poro }

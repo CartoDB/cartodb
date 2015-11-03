@@ -33,16 +33,10 @@ class UserMailer < ActionMailer::Base
   def share_visualization(visualization, user)
     @visualization = visualization
     @user = user
-    organization = @visualization.user.organization
-    if @visualization.privacy == CartoDB::Visualization::Member::PRIVACY_PRIVATE
-      base_url = CartoDB.base_url(organization.name, user.username)
-      vis_id = "#{@visualization.user.username}.#{@visualization.id}"
-    else
-      base_url = CartoDB.base_url(organization.name, @visualization.user.username)
-      vis_id = @visualization.id
-    end
-    path = CartoDB.path(self, 'public_visualizations_show_map', id: vis_id)
-    @link = "#{base_url}#{path}"
+
+    # This presenter has limited compatibility with old Visualization models
+    visualization_presenter = Carto::Api::VisualizationPresenter.new(visualization, user, self)
+    @link = visualization_presenter.privacy_aware_map_url
     @subject = "#{@visualization.user.username} has shared a CartoDB map with you"
     mail(to: @user.email,
          subject: @subject)

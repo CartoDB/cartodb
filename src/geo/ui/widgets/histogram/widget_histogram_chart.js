@@ -34,7 +34,7 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     this.trigger('range_updated', this.model.get('lo_index'), this.model.get('hi_index'));
   },
 
-  _onResize: function() {
+  _onChangeWidth: function() {
     var loBarIndex = this.model.get('lo_index');
     var hiBarIndex = this.model.get('hi_index');
 
@@ -44,7 +44,7 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
 
     this.chart.attr('width', width);
 
-    this._onChangeData();
+    this.refresh();
     this.selectRange(loBarIndex, hiBarIndex);
   },
 
@@ -85,7 +85,7 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     var y = d3.event.offsetY;
 
     var barIndex = Math.floor(x / this.barWidth);
-    var data = this.model.get('data');
+    var data = this.originalData;
 
     if (data[barIndex] === undefined || data[barIndex] === null) {
       return;
@@ -98,7 +98,8 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
 
     if (bar && bar.node() && !bar.classed('is-selected')) {
       var left = (barIndex * this.barWidth) + (this.barWidth/2) - 22;
-      var top = this.yScale(freq) - 10 + this.model.get('pos').y;
+      var topMargin = 0;
+      var top = this.yScale(freq) - 20 + this.model.get('pos').y + this.$el.position().top;
 
       if (!this._isDragging()) {
         this.trigger('hover', { top: top, left: left, index: barIndex });
@@ -119,7 +120,7 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
   },
 
   _bindModel: function() {
-    this.model.bind('change:width', this._onResize, this);
+    this.model.bind('change:width', this._onChangeWidth, this);
     this.model.bind('change:pos', this._onChangePos, this);
     this.model.bind('change:lo_index change:hi_index', this._onChangeRange, this);
     this.model.bind('change:data', this._onChangeData, this);
@@ -247,6 +248,8 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
       pos: { x: 0, y: 0 }
     });
 
+    this.originalData = _.clone(this.options.data);
+
     this._bindModel();
   },
 
@@ -266,6 +269,7 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     var data = this.model.get('data');
     this.xScale = d3.scale.linear().domain([0, 100]).range([0, this.chartWidth]);
     this.yScale = d3.scale.linear().domain([0, d3.max(data, function(d) { return _.isEmpty(d) ? 0 : d.freq; } )]).range([this.chartHeight, 0]);
+    this.yScale2 = d3.scale.linear().domain([0, d3.max(this.originalData, function(d) { return _.isEmpty(d) ? 0 : d.freq; } )]).range([this.chartHeight, 0]);
     this.zScale = d3.scale.ordinal().domain(d3.range(data.length)).rangeRoundBands([0, this.chartWidth]);
   },
 

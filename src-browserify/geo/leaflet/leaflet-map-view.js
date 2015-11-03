@@ -1,3 +1,4 @@
+var $ = require('jquery');
 var _ = require('underscore');
 var L = require('leaflet');
 var cdb = require('cdb'); // cdb.geo.LeafletTorqueLayer

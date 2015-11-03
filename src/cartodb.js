@@ -99,6 +99,7 @@
         'geo/ui/widgets/standard/widget_error_view.js',
         'geo/ui/widgets/standard/widget_content_view.js',
         'geo/ui/widgets/histogram/widget_histogram_view.js',
+        'geo/ui/widgets/histogram/widget_histogram_chart.js',
         'geo/ui/widgets/histogram/widget_histogram_content_view.js',
         'geo/ui/widgets/histogram/widget_histogram_model.js',
         'geo/ui/widgets/list/view.js',

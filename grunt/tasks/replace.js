@@ -19,6 +19,22 @@ module.exports = {
         files: [{
           expand: true,
           flatten: true,
+          src: ['src-browserify/cdb.js'],
+          dest: 'src-browserify/'
+        }]
+      },
+
+      'cdb-old': {
+        options: {
+          patterns: [{
+            match: '/cdb.VERSION = "<%= config.version.bugfixing %>"/g',
+            replacement: 'cdb.VERSION = "<%= grunt.config(\'bump.version\') %>"',
+            expression: true
+          }]
+        },
+        files: [{
+          expand: true,
+          flatten: true,
           src: ['src/cartodb.js'],
           dest: 'src/'
         }]

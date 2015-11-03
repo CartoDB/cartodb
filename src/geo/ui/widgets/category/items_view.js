@@ -1,6 +1,6 @@
 cdb.geo.ui.Widget.Category.ItemsView = cdb.geo.ui.Widget.View.extend({
 
-  _ITEMS_PER_PAGE: 4,
+  _ITEMS_PER_PAGE: 6,
 
   className: 'Widget-list Widget-list--wrapped js-list',
   tagName: 'ul',
@@ -32,7 +32,7 @@ cdb.geo.ui.Widget.Category.ItemsView = cdb.geo.ui.Widget.View.extend({
   },
 
   _initBinds: function() {
-    this.model.once('change:data', this.render, this);
+    this.model.bind('change:data', this.render, this);
   },
 
   _renderPlaceholder: function() {
@@ -68,9 +68,30 @@ cdb.geo.ui.Widget.Category.ItemsView = cdb.geo.ui.Widget.View.extend({
       model: mdl,
       viewModel: this.viewModel,
       filter: this.filter
-    })
+    });
+    v.bind('itemClicked', this._setFilters, this);
     this.addView(v);
     $parent.append(v.render().el);
+  },
+
+  _setFilters: function(mdl) {
+    var isSelected = mdl.get('selected');
+    var data = this.model.getData();
+
+    if (isSelected) {
+      if (!this.filter.hasRejects()) {
+        this.filter.reject(
+          _.without(
+            _.pluck(data.toJSON(), 'name'),
+            mdl.get('name')
+          )
+        );
+      } else {
+        this.filter.reject([mdl.get('name')]);
+      }
+    } else {
+      this.filter.accept([mdl.get('name')]);
+    }
   }
 
 });

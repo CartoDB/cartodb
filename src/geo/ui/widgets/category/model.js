@@ -34,11 +34,11 @@ cdb.geo.ui.Widget.CategoryModel = cdb.geo.ui.Widget.Model.extend({
     }, 0);
 
     // Add rejected categories + result categories
-    var rejectedCategories = _.clone(this.filter.rejectedCategories);
-    var rejectedData = _.map(rejectedCategories, function(category){
+    var rejectedCategories = this.filter.rejectedCategories.toJSON();
+    var rejectedData = _.map(rejectedCategories, function(d){
       return {
         'selected': false,
-        'name': category,
+        'name': d.name,
         'count': 0,
         'maxCount': 0
       };

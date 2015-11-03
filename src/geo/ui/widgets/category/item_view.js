@@ -48,11 +48,6 @@ cdb.geo.ui.Widget.Category.ItemView = cdb.core.View.extend({
   },
 
   _onItemClick: function() {
-    this.model.set('selected', !this.model.get('selected'));
-    if (this.model.get('selected')) {
-      this.filter.accept(this.model.get('name'));
-    } else {
-      this.filter.reject(this.model.get('name'));
-    }
+    this.trigger('itemClicked', this.model, this);
   }
 });

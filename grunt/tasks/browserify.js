@@ -31,6 +31,18 @@ var bundles = {
     ],
     dest: '<%= config.tmp %>/cartodb-specs.js'
   },
+
+  odyssey: {
+    src: 'src-browserify/odyssey.js',
+    dest: '<%= config.dist %>/cartodb.mod.odyssey.uncompressed.js',
+  },
+  'odyssey-specs': {
+    src: [
+      'test/lib/fail-tests-if-have-errors-in-src.js',
+      'test/spec/src-browserify/odyssey.spec.js',
+    ],
+    dest: '<%= config.tmp %>/odyssey-specs.js',
+  }
 };
 
 module.exports = {
@@ -55,7 +67,7 @@ module.exports = {
           // Append the default prelude with the header, required for source-maps to match original code
           prelude: [
             "// cartodb.js version: <%= grunt.config.get('bump.version') %>",
-            '// uncompressed version: cartodb.uncompressed.js',
+            '// uncompressed version: ' + path.basename(bundle.dest),
             "// sha: <%= grunt.config.get('gitinfo').local.branch.current.SHA %>",
             defaultPreludePath
           ].join("\n")

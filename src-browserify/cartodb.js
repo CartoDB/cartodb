@@ -115,7 +115,6 @@ cdb.geo.ui.LayerViewFromLayerGroup = require('./geo/ui/layer-view-from-layer-gro
 cdb.geo.ui.MobileLayer = require('./geo/ui/mobile-layer');
 cdb.geo.ui.Mobile = require('./geo/ui/mobile');
 cdb.geo.ui.TilesLoader = require('./geo/ui/tiles-loader');
-cdb.geo.ui.TimeSlider = require('./geo/ui/time-slider');
 cdb.geo.ui.InfoBox = require('./geo/ui/infobox');
 cdb.geo.ui.Tooltip = require('./geo/ui/tooltip');
 

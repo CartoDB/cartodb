@@ -54,6 +54,10 @@ describe('vis/vis', function() {
     this.vis.load(this.mapConfig);
   })
 
+  afterEach(function() {
+    jasmine.clock().uninstall();
+  });
+
   it("should insert  default max and minZoom values when not provided", function() {
     expect(this.vis.mapView.map_leaflet.options.maxZoom).toEqual(20);
     expect(this.vis.mapView.map_leaflet.options.minZoom).toEqual(0);
@@ -145,6 +149,7 @@ describe('vis/vis', function() {
   });
 
   it("should not invalidate map if map height is 0", function(done) {
+    jasmine.clock().install();
     var container = $('<div>').css('height', '0');
     var vis = new Vis({el: container});
     this.mapConfig.map_provider = "googlemaps";
@@ -156,6 +161,7 @@ describe('vis/vis', function() {
       expect(vis.mapView.invalidateSize).not.toHaveBeenCalled();
       done();
     }, 4000);
+    jasmine.clock().tick(4000);
   });
 
   it("should bind resize changes when map height is 0", function() {
@@ -214,6 +220,8 @@ describe('vis/vis', function() {
   })
 
   it("load should call done", function(done) {
+    jasmine.clock().install();
+
     this.mapConfig.layers = [{
       kind: 'tiled',
       options: {
@@ -229,6 +237,7 @@ describe('vis/vis', function() {
       done();
     }, 100);
 
+    jasmine.clock().tick(1000);
   });
 
   it("should add header", function() {
@@ -420,6 +429,8 @@ describe('vis/vis', function() {
   });
 
   it ("should load modules", function(done) {
+    jasmine.clock().install();
+
     this.mapConfig.layers = [
       {kind: 'torque', options: { tile_style: 'test', user_name: 'test', table_name: 'test'}}
     ];
@@ -436,7 +447,9 @@ describe('vis/vis', function() {
       }
       expect(found).toEqual(true);
       done()
-    }, 20);
+    }, 200);
+
+    jasmine.clock().tick(1000);
   });
 
   it ("should force GMaps", function() {
@@ -510,42 +523,5 @@ describe('vis/vis', function() {
       expect(this.vis.legends.$el.html()).toContain('visible legend item');
       expect(this.vis.legends.$el.html()).not.toContain('invisible legend item');
     })
-  })
-
-  describe("Torque time slider", function() {
-
-    beforeEach(function() {
-      // Load torque module
-      cartodb.torque = torque;
-    })
-
-    it ("should display the time slider if a torque layer is present", function(done) {
-      this.mapConfig.layers = [
-        {
-          kind: 'torque',
-          options: { user_name: 'test', table_name: 'test', tile_style: 'Map { -torque-frame-count: 10;} #test { marker-width: 10; }'}
-        }
-      ];
-
-      this.vis.load(this.mapConfig).done(function(vis, layers){
-        expect(vis.timeSlider).toBeDefined();
-        done();
-      });
-    });
-
-    it ("should NOT display the time slider if a torque layer is not visible", function(done) {
-      this.mapConfig.layers = [
-        {
-          kind: 'torque',
-          visible: false,
-          options: { user_name: 'test', table_name: 'test', tile_style: 'Map { -torque-frame-count: 10;} #test { marker-width: 10; }'}
-        }
-      ];
-
-      this.vis.load(this.mapConfig).done(function(vis, layers){
-        expect(vis.timeSlider).toBeUndefined();
-        done();
-      });
-    });
   })
 });

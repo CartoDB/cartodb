@@ -1,6 +1,4 @@
-var _ = require('underscore');
 var $ = require('jquery');
-var Backbone = require('backbone');
 var L = require('leaflet');
 var Loader = require('cdb/core/loader');
 var createLayer = require('cdb/api/create-layer');
@@ -50,11 +48,6 @@ describe('api/create-layer', function() {
       var map;
       beforeEach(function() {
         map = mapFn();
-        cartodb.torque = torque;
-      });
-
-      afterEach(function() {
-        delete cartodb.torque;
       });
 
       it("should fetch layer when user and pass are specified", function() {
@@ -220,17 +213,15 @@ describe('api/create-layer', function() {
           updated_at: 'jaja',
           layers: [
             null,
-            {kind: 'cartodb', options: { user_name: 'test', table_name: 'test', tile_style: 'test'}, infowindow: null },
-            {kind: 'torque', options: { user_name: 'test', table_name: 'test', tile_style: 'Map{ -torque-frame-count: 10; }#test { marker-width: 10; }'}, infowindow: null }
+            {kind: 'cartodb', options: { user_name: 'test', table_name: 'test', tile_style: 'test'}, infowindow: null }
           ]
-        }, { layerIndex: 2 }, s).done(function(lyr) {
+        }, { layerIndex: 1 }, s).done(function(lyr) {
           layer = lyr;
         });
 
         setTimeout(function() {
           expect(s).toHaveBeenCalled();
-          // check it's a torque layer and not a cartodb one
-          expect(layer.model.get('type')).toEqual('torque');
+          expect(layer.model.get('type')).toEqual('cartodb');
           done();
         }, 500);
       });
@@ -293,133 +284,6 @@ describe('api/create-layer', function() {
           expect(layer.options.type).toEqual('layergroup');
           done();
         }, 0);
-      });
-
-      it("should load the `torque` layer by default", function(done) {
-        var layer;
-
-        createLayer(map, {
-          updated_at: 'jaja',
-          layers: [
-            { type: 'tiled', options: {} },
-            { type: 'tiled', options: {} },
-            {
-              type: 'torque',
-              options: {
-                'torque-steps': 3
-              }
-            }
-          ]
-        }).done(function(lyr) {
-          layer = lyr;
-        });
-
-        setTimeout(function() {
-          expect(layer).toBeDefined();
-          expect(layer.type).toEqual('torque');
-          done();
-        }, 0);
-      });
-
-      it("should add a torque layer", function(done) {
-        var layer;
-        var s = jasmine.createSpy('createLayer');
-
-        createLayer(map, {
-          updated_at: 'jaja',
-          layers: [
-            null,
-            {kind: 'cartodb', options: { user_name: 'test', table_name: 'test', tile_style: 'test'}, infowindow: null },
-            {kind: 'torque', options: { user_name: 'test', table_name: 'test', tile_style: 'Map { -torque-frame-count: 10;} #test { marker-width: 10; }'}, infowindow: null }
-          ]
-        }, { layerIndex: 2 }, s).done(function(lyr) {
-          layer = lyr;
-        }).addTo(map)
-
-        var wait = 500;
-        if (!map.getContainer) wait = 2500;
-
-        setTimeout(function() {
-          if (map.getContainer) expect($(map.getContainer()).find('.cartodb-timeslider').length).toBe(1)
-          if (map.getDiv)       expect($(map.getDiv()).find('.cartodb-timeslider').length).toBe(1)
-          done()
-        }, wait);
-      });
-
-      it("should ask for https data when https is on at torque layer", function(done) {
-        var layer;
-        var s = jasmine.createSpy('createLayer');
-
-        createLayer(map, {
-          updated_at: 'jaja',
-          layers: [
-            null,
-            {kind: 'cartodb', options: { user_name: 'test', table_name: 'test', tile_style: 'test'}, infowindow: null },
-            {kind: 'torque', options: { user_name: 'test', table_name: 'test', tile_style: 'Map { -torque-frame-count: 10;} #test { marker-width: 10; }'}, infowindow: null }
-          ]
-        }, { layerIndex: 2, https: true }, s).done(function(lyr) {
-          layer = lyr;
-
-        }).addTo(map)
-
-        var wait = 500;
-        if (!map.getContainer) wait = 2500;
-
-        setTimeout(function() {
-          expect(layer.provider.options.tiler_protocol).toBe("https");
-          done()
-        }, wait);
-      });
-
-      it("should not add a torque layer timeslider if steps are not greater than 1", function(done) {
-        var layer;
-        var s = jasmine.createSpy('createLayer');
-
-        createLayer(map, {
-          updated_at: 'jaja',
-          layers: [
-            null,
-            {kind: 'cartodb', options: { user_name: 'test', table_name: 'test', tile_style: 'test'}, infowindow: null },
-            {kind: 'torque', options: { user_name: 'test', table_name: 'test', tile_style: 'Map { -torque-frame-count: 1;} #test { marker-width: 10; }'}, infowindow: null }
-          ]
-        }, { layerIndex: 2 }, s).done(function(lyr) {
-          layer = lyr;
-        }).addTo(map)
-
-        var wait = 500;
-        if (!map.getContainer) wait = 2500;
-
-        setTimeout(function() {
-          if (map.getContainer) expect($(map.getContainer()).find('.cartodb-timeslider').length).toBe(0)
-          if (map.getDiv)       expect($(map.getDiv()).find('.cartodb-timeslider').length).toBe(0)
-          done()
-        }, wait);
-      });
-
-      it("should add cartodb logo with torque layer although it is not defined", function(done) {
-        var layer;
-        var s = jasmine.createSpy('createLayer');
-
-        createLayer(map, {
-          updated_at: 'jaja',
-          layers: [
-            null,
-            {kind: 'cartodb', options: { user_name: 'test', table_name: 'test', tile_style: 'test'}, infowindow: null },
-            {kind: 'torque', options: { user_name: 'test', table_name: 'test', tile_style: 'Map{ -torque-frame-count: 10;}#test { marker-width: 10; }'}, infowindow: null }
-          ]
-        }, { layerIndex: 2 }, s).done(function(lyr) {
-          layer = lyr;
-        }).addTo(map)
-
-        var wait = 500;
-        if (!map.getContainer) wait = 2500;
-
-        setTimeout(function() {
-          expect(layer.options.cartodb_logo).toEqual(undefined);
-          if (map.getContainer) expect($(map.getContainer()).find('.cartodb-logo').length).toBe(1)
-          if (map.getDiv)       expect($(map.getDiv()).find('.cartodb-logo').length).toBe(1)
-          done();
-        }, wait);
       });
 
       it("should create a named map", function(done) {

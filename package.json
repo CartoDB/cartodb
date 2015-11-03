@@ -73,6 +73,7 @@
       "cdb.log": "./src-browserify/cdb.log.js",
       "cdb.errors": "./src-browserify/cdb.errors.js",
       "cdb.templates": "./src-browserify/cdb.templates.js",
+      "jquery.ui.core": "./vendor/mod/jquery-ui/jquery.ui.core.js",
       "jquery.ui.mouse": "./vendor/mod/jquery-ui/jquery.ui.mouse.js",
       "jquery.ui.slider": "./vendor/mod/jquery-ui/jquery.ui.slider.js",
       "jquery.ui.widget": "./vendor/mod/jquery-ui/jquery.ui.widget.js",
@@ -83,12 +84,15 @@
       "mousewheel": "./vendor/mousewheel.js",
       "mwheelIntent": "./vendor/mwheelIntent.js",
       "spin.js": "./vendor/spin.js",
+      "carto": "./vendor/mod/carto.js",
+      "torque": "./vendor/mod/torque.uncompressed.js",
       "wax.cartodb.js": "./vendor/wax.cartodb.js"
     },
     "browserify-shim": {
       "geojson": "GeoJSON",
       "html-css-sanitizer": "html",
       "lzma": "LZMA",
+      "jquery.ui.core": { "depends": ["jquery:jQuery"] },
       "jquery.jscrollpane": { "depends": ["jquery:jQuery"] },
       "jquery.ui.mouse": {
         "depends": [

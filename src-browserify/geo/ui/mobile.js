@@ -1,6 +1,6 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
-var cdb = require('cdb'); // cdb.geo.ui.*
+var cdb = require('cdb'); // cdb.geo.ui.*, cdb.geo.ui.TimeSlider
 var $ = require('jquery');
 require('jquery.ui.slider'); // registers itself to $.slider
 require('jquery.jscrollpane'); // registers itself to $.jScrollPane
@@ -13,7 +13,6 @@ var Zoom = require('./zoom');
 var TilesLoader = require('./tiles-loader');
 var Search = require('./search');
 var MobileLayer = require('./mobile-layer');
-var TimeSlider = require('./time-slider');
 var SlidesController = require('./slides-controller');
 
 var Mobile = View.extend({
@@ -680,7 +679,15 @@ var Mobile = View.extend({
 
       this.hasTorque = true;
 
-      this.slider = new TimeSlider({type: "time_slider", layer: this.options.torqueLayer, map: this.options.map, pos_margin: 0, position: "none" , width: "auto" });
+      // Expected to be loaded through cartodb.mod.torque lib
+      this.slider = new cdb.geo.ui.TimeSlider({
+        type: "time_slider",
+        layer: this.options.torqueLayer,
+        map: this.options.map,
+        pos_margin: 0,
+        position: "none",
+        width: "auto"
+      });
 
       this.slider.bind("time_clicked", function() {
         this.slider.toggleTime();

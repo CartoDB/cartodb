@@ -14,7 +14,6 @@ var Share = require('../geo/ui/share');
 var Search = require('../geo/ui/search');
 var Text = require('../geo/ui/text');
 var TilesLoader = require('../geo/ui/tiles-loader');
-var TimeSlider = require('../geo/ui/time-slider');
 var Tooltip = require('../geo/ui/tooltip');
 var Zoom = require('../geo/ui/zoom');
 var FullScreen = require('../ui/common/fullscreen');
@@ -206,7 +205,11 @@ Overlay.register('loader', function(data) {
 });
 
 Overlay.register('time_slider', function(data, viz) {
-  var slider = new TimeSlider(data);
+  // Expected to be loaded through torque
+  if (!cdb.geo.ui.TimeSlider) {
+    throw new Error('torque library must be loaded for the cdb.geo.ui.TimeSlider to work');
+  }
+  var slider = new cdb.geo.ui.TimeSlider(data);
   return slider.render();
 });
 

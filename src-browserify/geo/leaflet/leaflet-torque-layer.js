@@ -1,12 +1,11 @@
 // NOTE this is ONLY used for torque bundle AND the leaflet.spec.js, that assumed torque lib to be loaded)
-// Thus, the Leaflet var "L" is assumed to be present in the global scope.
-//
-// see "torque" in ./leaflet-map-view.js
-var _ = require('underscore');
-var cdb = require('cdb'); // cdb.geo.LeafletTorqueLayer
-var util = require('cdb.core.util');
-var LeafletLayerView = require('./leaflet-layer-view');
-var CartoDBLogo = require('../cartodb-logo');
+// Depends on cartodb to be loaded and present in global namespace.
+var cdb = window.cdb;
+var L = cdb.L;
+var _ = cdb._;
+var util = cdb.core.util;
+var LeafletLayerView = cdb.geo.LeafletLayerView;
+var CartoDBLogo = cdb.geo.common.CartoDBLogo;
 
 /**
  * leaflet torque layer
@@ -109,5 +108,4 @@ var LeafletTorqueLayer = L.TorqueLayer.extend({
 
 _.extend(LeafletTorqueLayer.prototype, LeafletLayerView.prototype);
 
-// TODO : extract?
-cdb.geo.LeafletTorqueLayer = LeafletTorqueLayer;
+module.exports = LeafletTorqueLayer;

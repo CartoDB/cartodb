@@ -1,5 +1,7 @@
-var _ = require('underscore');
-var InfoBox = require('./infobox');
+// Depends on cdb to be loaded
+var cdb = window.cdb;
+var _ = cdb._;
+var InfoBox = cdb.geo.ui.InfoBox;
 
 var TimeSlider = InfoBox.extend({
 

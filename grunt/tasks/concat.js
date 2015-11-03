@@ -85,28 +85,6 @@ module.exports = {
         }
       },
 
-      torque: {
-        options: {
-          banner: grunt.file.read('./grunt/templates/version_header.js'),
-          footer: grunt.file.read('./grunt/templates/torque_footer.js')
-        },
-        files: {
-          // Torque library
-          '<%= config.dist %>/cartodb.mod.torque.uncompressed.js': [
-            './grunt/templates/torque_header.js',
-            'vendor/mod/carto.js',
-            'vendor/mod/torque.uncompressed.js',
-            'src/geo/gmaps/torque.js',
-            'src/geo/leaflet/torque.js',
-            'src/geo/ui/time_slider.js',
-            'vendor/mod/jquery-ui/jquery.ui.core.js',
-            'vendor/mod/jquery-ui/jquery.ui.widget.js',
-            'vendor/mod/jquery-ui/jquery.ui.mouse.js',
-            'vendor/mod/jquery-ui/jquery.ui.slider.js'
-          ]
-        }
-      },
-
       odyssey: {
         options: {
           banner: grunt.file.read('./grunt/templates/version_header.js'),

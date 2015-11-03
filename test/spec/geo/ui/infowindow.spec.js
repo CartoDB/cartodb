@@ -496,7 +496,7 @@ describe("cdb.geo.ui.infowindow", function() {
 
     beforeEach(function() {
 
-      url = "http://assets.javierarce.com/lion.png";
+      url = "http://the.url.of.my.image.com/image.png";
 
       container = $('<div>').css('height', '200px');
 

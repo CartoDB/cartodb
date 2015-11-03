@@ -15,7 +15,6 @@ This is a little doc with the basis of cartodb js framework (TM), in other words
  - core
  - geo
  - lib
- - demos: place where to put demos for a component. It is recomended to test the components isolated
  - test
 
 ## core

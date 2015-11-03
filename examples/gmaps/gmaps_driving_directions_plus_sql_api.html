@@ -26,7 +26,6 @@
 
     <script>
       var map;
-      var google_api_key = "AIzaSyCADWr4a6NraGN1ldmcBKN4W_6c6teuImw"
       function main() {
 
         // Map center
@@ -50,7 +49,7 @@
         var exploratorium = new google.maps.LatLng(37.801434, -122.397561);
 
         // Our CartoDB visualization
-        var vizjson_url = "http://team.cartodb.com/api/v2/viz/db067df4-8f8b-11e4-97e2-0e4fddd5de28/viz.json";
+        var vizjson_url = "https://documentation.cartodb.com/api/v2/viz/9f645d04-da1b-11e4-9cd9-0e0c41326911/viz.json";
         cartodb.createLayer(map, vizjson_url)
         .addTo(map)
         .done(function(layers) {

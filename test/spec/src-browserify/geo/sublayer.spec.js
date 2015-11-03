@@ -1,22 +1,15 @@
 var _ = require('underscore');
 var $ = require('jquery');
 var Backbone = require('backbone');
-
-var ajaxProxy = require('ajax-proxy');
-var BackboneProxy = require('backbone-proxy');
-
-var CartoDBSubLayer = require('../../../../src-browserify/geo/sub-layer/cartodb-sub-layer');
-var HttpSubLayer = require('../../../../src-browserify/geo/sub-layer/http-sub-layer');
-var SubLayerFactory = require('../../../../src-browserify/geo/sub-layer/sub-layer-factory');
-var LayerDefinition = require('../../../../src-browserify/geo/layer-definition/layer-definition');
+var CartoDBSubLayer = require('cdb/geo/sub-layer/cartodb-sub-layer');
+var HttpSubLayer = require('cdb/geo/sub-layer/http-sub-layer');
+var SubLayerFactory = require('cdb/geo/sub-layer/sub-layer-factory');
+var LayerDefinition = require('cdb/geo/layer-definition/layer-definition');
 
 describe('geo/sublayer', function() {
   var layerDefinition, sublayer;
 
   beforeEach(function() {
-    ajaxProxy.set($.ajax);
-    BackboneProxy.set(Backbone);
-
     var layer_definition = {
       version: '1.0.0',
       stat_tag: 'vis_id',

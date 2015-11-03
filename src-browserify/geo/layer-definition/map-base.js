@@ -1,15 +1,15 @@
+var $ = require('jquery');
 var _ = require('underscore');
 var util = require('cdb.core.util');
-var profiler = require('cdb.core.profiler');
+var Profiler = require('cdb.core.Profiler');
 var MapProperties = require('./map-properties')
 var SubLayerFactory = require('../sub-layer/sub-layer-factory');
-var ajaxProxy = require('ajax-proxy');
 
 function MapBase(options) {
   var self = this;
 
   this.options = _.defaults(options, {
-    ajax: ajaxProxy.get(),
+    ajax: $.ajax,
     pngParams: ['map_key', 'api_key', 'cache_policy', 'updated_at'],
     gridParams: ['map_key', 'api_key', 'cache_policy', 'updated_at'],
     cors: util.isCORSSupported(),
@@ -140,7 +140,7 @@ MapBase.prototype = {
     var self = this;
     var ajax = this.options.ajax;
 
-    var loadingTime = profiler.metric('cartodb-js.layergroup.post.time').start();
+    var loadingTime = Profiler.metric('cartodb-js.layergroup.post.time').start();
 
     ajax({
       crossOrigin: true,
@@ -155,7 +155,7 @@ MapBase.prototype = {
         // discard previous calls when there is another call waiting
         if(0 === self._createMapCallsStack.length) {
           if (data.errors) {
-            profiler.metric('cartodb-js.layergroup.post.error').inc();
+            Profiler.metric('cartodb-js.layergroup.post.error').inc();
             callback(null, data);
           } else {
             callback(data);
@@ -166,7 +166,7 @@ MapBase.prototype = {
       },
       error: function(xhr) {
         loadingTime.end();
-        profiler.metric('cartodb-js.layergroup.post.error').inc();
+        Profiler.metric('cartodb-js.layergroup.post.error').inc();
         var err = { errors: ['unknow error'] };
         if (xhr.status === 0) {
           err = { errors: ['connection error'] };
@@ -190,7 +190,7 @@ MapBase.prototype = {
     var endPoint = self.JSONPendPoint || self.endPoint;
     compressor(json, 3, function(encoded) {
       params.push(encoded);
-      var loadingTime = profiler.metric('cartodb-js.layergroup.get.time').start();
+      var loadingTime = Profiler.metric('cartodb-js.layergroup.get.time').start();
       var host = self.options.dynamic_cdn ? self._host(): self._tilerHost();
       ajax({
         dataType: 'jsonp',
@@ -202,7 +202,7 @@ MapBase.prototype = {
           if(0 === self._createMapCallsStack.length) {
             // check for errors
             if (data.errors) {
-              profiler.metric('cartodb-js.layergroup.get.error').inc();
+              Profiler.metric('cartodb-js.layergroup.get.error').inc();
               callback(null, data);
             } else {
               callback(data);
@@ -212,7 +212,7 @@ MapBase.prototype = {
         },
         error: function(data) {
           loadingTime.end();
-          profiler.metric('cartodb-js.layergroup.get.error').inc();
+          Profiler.metric('cartodb-js.layergroup.get.error').inc();
           var err = { errors: ['unknow error'] };
           try {
             err = JSON.parse(xhr.responseText);
@@ -271,7 +271,7 @@ MapBase.prototype = {
   fetchAttributes: function(layer_index, feature_id, columnNames, callback) {
     this._attrCallbackName = this._attrCallbackName || this._callbackName();
     var ajax = this.options.ajax;
-    var loadingTime = profiler.metric('cartodb-js.named_map.attributes.time').start();
+    var loadingTime = Profiler.metric('cartodb-js.named_map.attributes.time').start();
     ajax({
       dataType: 'jsonp',
       url: this._attributesUrl(layer_index, feature_id),
@@ -283,7 +283,7 @@ MapBase.prototype = {
       },
       error: function(data) {
         loadingTime.end();
-        profiler.metric('cartodb-js.named_map.attributes.error').inc();
+        Profiler.metric('cartodb-js.named_map.attributes.error').inc();
         callback(null);
       }
     });

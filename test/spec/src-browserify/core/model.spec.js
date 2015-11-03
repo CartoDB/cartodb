@@ -1,13 +1,11 @@
 var $ = require('jquery');
-var jQueryProxy = require('jquery-proxy');
-var Model = require('../../../../src-browserify/core/model');
+var Model = require('cdb/core/model');
 
 describe('core/model', function() {
   var TestModel;
   var model;
 
   beforeEach(function() {
-    jQueryProxy.set($);
     TestModel = Model.extend({
       initialize: function() {
         this.initCalled = true;
@@ -22,8 +20,8 @@ describe('core/model', function() {
   });
 
   it("should call initialize", function() {
-    expect(Model.prototype.initialize).toHaveBeenCalled();
     expect(model.initCalled).toBe(true);
+    expect(Model.prototype.initialize).toHaveBeenCalled();
   });
 
   it("should attach save to the element context", function() {

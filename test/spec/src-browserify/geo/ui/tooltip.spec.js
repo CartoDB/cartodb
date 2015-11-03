@@ -1,17 +1,23 @@
-describe('cdb.geo.Tooltip', function() {
+var $ = require('jquery');
+var Backbone = require('backbone');
+var Map = require('cdb/geo/map');
+var LeafletMapView = require('cdb/geo/leaflet/leaflet-map-view');
+var Tooltip = require('cdb/geo/ui/tooltip');
+
+describe('geo/ui/tooltip', function() {
 
   var tooltip, layer, container, mapView;
   beforeEach(function() {
     container = $("<div id='map'>").css('height', '1000px');
     $('body').append(container)
-    var map = new cdb.geo.Map();
-    mapView = new cdb.geo.LeafletMapView({
+    var map = new Map();
+    mapView = new LeafletMapView({
       el: $('#map'),
       map: map
     });
 
     layer = new Backbone.Model();
-    tooltip = new cdb.geo.ui.Tooltip({
+    tooltip = new Tooltip({
       template: '{{#fields}}{{{ value }}},{{/fields}}',
       layer: layer,
       mapView: mapView

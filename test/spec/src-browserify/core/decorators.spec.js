@@ -1,5 +1,5 @@
 var Backbone = require('backbone');
-var decorators = require('../../../../src-browserify/core/decorators');
+var decorators = require('cdb/core/decorators');
 
 describe("core/decorators", function() {
 

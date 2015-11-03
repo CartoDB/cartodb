@@ -1,23 +1,38 @@
+var $ = require('jquery');
+var _ = require('underscore');
+var L = require('leaflet');
 
-describe("Overlay", function() {
+// required due to implicit dependency in vis --> map-view
+var cdb = require('cdb');
+_.extend(cdb.geo, require('cdb/geo/leaflet'));
+_.extend(cdb.geo, require('cdb/geo/gmaps'));
+_.extend(L, require('cdb/geo/leaflet-extensions'));
 
+var createVis = require('cdb/api/create-vis');
+var View = require('cdb/core/view');
+var Overlay = require('cdb/vis/vis/overlay');
+var Vis = require('cdb/vis/vis');
+require('cdb/vis/overlays'); // Overlay.register calls
+require('cdb/vis/layers'); // Layers.register calls
+
+describe('vis/vis/overlay', function() {
 
   it("should register and create a type", function() {
     var _data;
-    cdb.vis.Overlay.register('test', function(data) {
+    Overlay.register('test', function(data) {
       _data = data;
-      return new cdb.core.View();
+      return new View();
     });
 
     var opt = {a : 1, b:2, pos: [10, 20]};
-    var v = cdb.vis.Overlay.create('test', null, opt);
+    var v = Overlay.create('test', null, opt);
     expect(_data).toEqual(opt);
 
   });
 
 });
 
-describe("Vis", function() {
+describe('vis/vis', function() {
 
   beforeEach(function(){
     this.container = $('<div>').css('height', '200px');
@@ -35,7 +50,7 @@ describe("Vis", function() {
       ]
     };
 
-    this.vis = new cdb.vis.Vis({el: this.container});
+    this.vis = new Vis({el: this.container});
     this.vis.load(this.mapConfig);
   })
 
@@ -89,7 +104,7 @@ describe("Vis", function() {
     expect(this.mapConfig.center[0]).not.toEqual(43.3);
     expect(this.mapConfig.center[1]).not.toEqual("ham");
   })
-  
+
   it("should parse bounds values if they are correct", function() {
     this.container = $('<div>').css('height', '200px');
     var opts = {
@@ -131,7 +146,7 @@ describe("Vis", function() {
 
   it("should not invalidate map if map height is 0", function(done) {
     var container = $('<div>').css('height', '0');
-    var vis = new cdb.vis.Vis({el: container});
+    var vis = new Vis({el: container});
     this.mapConfig.map_provider = "googlemaps";
 
     vis.load(this.mapConfig);
@@ -145,7 +160,7 @@ describe("Vis", function() {
 
   it("should bind resize changes when map height is 0", function() {
     var container = $('<div>').css('height', '0');
-    var vis = new cdb.vis.Vis({el: container});
+    var vis = new Vis({el: container});
     spyOn(vis, '_onResize');
 
     this.mapConfig.map_provider = "googlemaps";
@@ -157,7 +172,7 @@ describe("Vis", function() {
 
   it("shouldn't bind resize changes when map height is greater than 0", function() {
     var container = $('<div>').css('height', '200px');
-    var vis = new cdb.vis.Vis({el: container});
+    var vis = new Vis({el: container});
     spyOn(vis, '_onResize');
 
     this.mapConfig.map_provider = "googlemaps";
@@ -170,11 +185,11 @@ describe("Vis", function() {
 
   it("should pass map to overlays", function() {
     var _map;
-    cdb.vis.Overlay.register('jaja', function(data, vis){
+    Overlay.register('jaja', function(data, vis){
       _map = vis.map
-      return new cdb.core.View()
+      return new View()
     })
-    var vis = new cdb.vis.Vis({el: this.container});
+    var vis = new Vis({el: this.container});
     this.mapConfig.overlays = [ {type: 'jaja'}];
     vis.load(this.mapConfig);
     expect(_map).not.toEqual(undefined);
@@ -387,7 +402,7 @@ describe("Vis", function() {
           }
         ]
       };
-      cartodb.createVis('map', vizjson, {})
+      createVis('map', vizjson, {})
         .done(function(vis, layers) {
           var tooltip = vis.addOverlay({
             type: 'tooltip',
@@ -410,7 +425,7 @@ describe("Vis", function() {
     ];
 
     this.vis.load(this.mapConfig);
-    
+
     setTimeout(function() {
       var scripts = document.getElementsByTagName('script'),
           torqueRe = /\/cartodb\.mod\.torque\.js/;
@@ -438,7 +453,7 @@ describe("Vis", function() {
     };
 
     layers = null;
-    
+
     this.vis.load(this.mapConfig, opts);
     expect(this.vis.map.layers.at(0).get('type')).toEqual('GMapsBase');
   });

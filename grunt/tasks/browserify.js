@@ -1,68 +1,45 @@
-var bannerStr = function(dest) {
-  return [
-    "// cartodb.js version: <%= grunt.config.get('bump.version') %>",
-    "// uncompressed version: " + dest,
-    "// sha: <%= gitinfo.local.branch.current.SHA %>"
-  ].join("\n")
-};
+var path = require('path');
 
 var bundles = {
 
   // Specs that are shared for all bundles
+  // Ordered by dirs before files, and after that alpabetically
   'src-browserify-specs': {
     src: [
-      'test/lib/reset-proxies-after-each.js',
-      'test/spec/src-browserify/create-cdb.spec.js',
-      'test/spec/src-browserify/require-proxies/create-require-proxy.spec.js',
-      'test/spec/src-browserify/api/sql.spec.js',
-      'test/spec/src-browserify/core/decorators.spec.js',
-      'test/spec/src-browserify/core/log.spec.js',
-      'test/spec/src-browserify/core/log/*.js',
-      'test/spec/src-browserify/core/model.spec.js',
-      'test/spec/src-browserify/core/sanitize.spec.js',
-      'test/spec/src-browserify/core/template-list.spec.js',
-      'test/spec/src-browserify/core/template.spec.js',
-      'test/spec/src-browserify/core/util.spec.js',
-      'test/spec/src-browserify/core/view.spec.js',
-      'test/spec/src-browserify/geo/layer-definition/*.js',
-      'test/spec/src-browserify/geo/sublayer.spec.js',
-      'test/spec/src-browserify/vis/image.spec.js',
+      'test/lib/fail-tests-if-have-errors-in-src.js',
+      'test/spec/src-browserify/api/**/*',
+      'test/spec/src-browserify/core/**/*',
+      'test/spec/src-browserify/geo/**/*',
+      'test/spec/src-browserify/ui/**/*',
+      'test/spec/src-browserify/vis/**/*',
+
+      // not actually used anywhere in cartodb.js, only for editor?
+      // TODO can be (re)moved?
+      '!test/spec/src-browserify/ui/common/tabpane.spec.js',
     ],
     dest: '<%= config.tmp %>/src-browserify-specs.js'
   },
 
-  'core': {
-    options: {
-      banner: bannerStr('cartodb.core.uncompressed.js')
-    },
-    src: 'src-browserify/core.js',
-    dest: '<%= config.dist %>/cartodb.core.uncompressed.js'
-  },
-  'core-specs': {
-    src: [
-      'test/spec/src-browserify/core.spec.js',
-      'test/spec/src-browserify/api/tiles.spec.js',
-    ],
-    dest: '<%= config.tmp %>/core-specs.js'
-  },
-
-  standard: {
-    options: {
-      banner: bannerStr('cartodb.uncompressed.js')
-    },
-    src: 'src-browserify/standard.js',
+  cartodb: {
+    src: 'src-browserify/cartodb.js',
     dest: '<%= config.dist %>/cartodb.uncompressed.js'
   },
-  'standard-specs': {
+  'cartodb-specs': {
     src: [
-      'test/spec/src-browserify/standard.spec.js',
+      'test/lib/fail-tests-if-have-errors-in-src.js',
+      'test/spec/src-browserify/cartodb.spec.js',
     ],
-    dest: '<%= config.tmp %>/standard-specs.js'
+    dest: '<%= config.tmp %>/cartodb-specs.js'
   },
 };
 
 module.exports = {
-  task: function() {
+  task: function(grunt) {
+    // from https://github.com/substack/browser-pack/blob/aadeabea66feac48193d27d233daf1c85209357e/index.js#L11
+    var defaultPreludePath = grunt.file.read(
+      path.join('node_modules', 'browserify', 'node_modules', 'browser-pack', '_prelude.js')
+    );
+
     var cfg = {};
     for (var name in bundles) {
       var bundle = cfg[name] = bundles[name];
@@ -74,8 +51,15 @@ module.exports = {
         transform: [],
         watch: '<%= config.doWatchify %>',
         browserifyOptions: {
-          debug: true // to generate source maps
-        }
+          debug: true, // to generate source maps
+          // Append the default prelude with the header, required for source-maps to match original code
+          prelude: [
+            "// cartodb.js version: <%= grunt.config.get('bump.version') %>",
+            '// uncompressed version: cartodb.uncompressed.js',
+            "// sha: <%= grunt.config.get('gitinfo').local.branch.current.SHA %>",
+            defaultPreludePath
+          ].join("\n")
+        },
       };
       for (var key in defaultOptions) {
         var value = defaultOptions[key];

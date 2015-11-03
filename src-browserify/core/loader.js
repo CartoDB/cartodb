@@ -1,4 +1,4 @@
-var cdbProxy = require('cdb-proxy'); // cdb.DEBUG
+var cdb = require('cdb'); // cdb.DEBUG
 
 var Loader = {
 
@@ -36,8 +36,8 @@ var Loader = {
     var scripts = document.getElementsByTagName('script'),
         cartodbJsRe = /\/?cartodb[\-\._]?([\w\-\._]*)\.js\??/;
     for (i = 0, len = scripts.length; i < len; i++) {
-      src = scripts[i].src;
-      matches = src.match(cartodbJsRe);
+      var src = scripts[i].src;
+      var matches = src.match(cartodbJsRe);
 
       if (matches) {
         var bits = src.split('/');
@@ -49,10 +49,10 @@ var Loader = {
   },
 
   loadModule: function(modName) {
-    var file = "cartodb.mod." + modName + (cdbProxy.get().DEBUG ? ".uncompressed.js" : ".js");
+    var file = "cartodb.mod." + modName + (cdb.DEBUG ? ".uncompressed.js" : ".js");
     var src = this.getPath(file);
     if (!src) {
-      throw new Error("can't find cartodb.js file");
+      throw new Error("can't find cartodb.js file (no src path found for '" + file + "')");
     }
     Loader.loadScript(src);
   }

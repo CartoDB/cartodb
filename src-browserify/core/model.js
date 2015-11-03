@@ -1,6 +1,7 @@
+var $ = require('jquery');
 var _ = require('underscore');
 var Backbone = require('backbone');
-var jQueryProxy = require('jquery-proxy');
+require('./decorators'); // since it monkey-patches Backbone.Model
 
 /**
  * Base Model for all CartoDB model.
@@ -22,7 +23,7 @@ var Model = Backbone.Model.extend({
     var self = this;
     // var date = new Date();
     this.trigger('loadModelStarted');
-    jQueryProxy.get().when(this.elder('fetch', args)).done(function(ev){
+    $.when(this.elder('fetch', args)).done(function(ev){
       self.trigger('loadModelCompleted', ev);
       // var dateComplete = new Date()
       // console.log('completed in '+(dateComplete - date));
@@ -69,7 +70,7 @@ var Model = Backbone.Model.extend({
     var self = this;
     if(!opt2 || !opt2.silent) this.trigger('saving');
     var promise = Backbone.Model.prototype.save.apply(this, arguments);
-    jQueryProxy.get().when(promise).done(function() {
+    $.when(promise).done(function() {
       if(!opt2 || !opt2.silent) self.trigger('saved');
     }).fail(function() {
       if(!opt2 || !opt2.silent) self.trigger('errorSaving')

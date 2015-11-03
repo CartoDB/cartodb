@@ -1,13 +1,11 @@
-var cdbProxy = require('cdb-proxy');
-var TemplateList = require('../../../../src-browserify/core/template-list');
+var log = require('cdb.log');
+var TemplateList = require('cdb/core/template-list');
 
 describe('core/template-list', function() {
   var tmpl;
 
   beforeEach(function() {
-    var cdb = cdbProxy.set({
-      log: jasmine.createSpyObj('cdb.log', ['error'])
-    });
+    spyOn(log, 'error');
     tmpl = new TemplateList();
     tmpl.reset([
       {name: 't1', template: "hi, my name is <%= name %>"},

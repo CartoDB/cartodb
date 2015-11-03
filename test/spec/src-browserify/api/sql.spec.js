@@ -1,13 +1,8 @@
 var _ = require('underscore');
 var $ = require('jquery');
-var reqwest = require('reqwest');
-
-var jQueryProxy = require('jquery-proxy');
-var ajaxProxy = require('ajax-proxy');
-var Backbone = require('backbone-proxy').set(require('backbone')).get();
-
-var _Promise = require('../../../../src-browserify/api/core-lib/_promise');
-var SQL = require('../../../../src-browserify/api/sql');
+var Backbone = require('backbone');
+var _Promise = require('cdb/api/_promise');
+var SQL = require('cdb/api/sql');
 
 describe('api/sql', function() {
   var USER = 'rambo';
@@ -30,8 +25,8 @@ describe('api/sql', function() {
         });
       });
     };
-    ajax = ajaxProxy.set(ajax);
-    jQueryProxy.set($);
+    spyOn($, 'ajax').and.callFake(ajax);
+
     sql = new SQL({
       user: USER,
       protocol: 'https'
@@ -71,7 +66,7 @@ describe('api/sql', function() {
     )
   });
 
-  it("should execute a long query w/ jquery as transport", function() {
+  it("should execute a long query", function() {
     //Generating a giant query
     var long_sql = []
     var i = 2000;
@@ -79,7 +74,6 @@ describe('api/sql', function() {
     var long_query = 'SELECT * ' + long_sql;
 
     // required to have jquery as transport, is checked in the execute method
-    jQueryProxy.set($);
     sql.execute(long_query);
 
     expect(ajaxParams.url).toEqual(
@@ -88,31 +82,6 @@ describe('api/sql', function() {
 
     expect(ajaxParams.data.q).toEqual(long_query);
     expect(ajaxParams.type).toEqual('post');
-    expect(ajaxParams.dataType).toEqual('json');
-    expect(ajaxParams.crossDomain).toEqual(true);
-  });
-
-  it("should execute a long query w/ reqwest as transport", function() {
-    jQueryProxy.__unset();
-
-    //generating a giant query
-    var long_sql = []
-    var i = 2000;
-    while (--i) long_sql.push("10000");
-    var long_query = 'SELECT * ' + long_sql;
-
-    sql = new SQL({
-      user: USER,
-      protocol: 'https'
-    })
-    sql.execute(long_query);
-
-    expect(ajaxParams.url).toEqual(
-      'https://' + USER + '.cartodb.com/api/v2/sql'
-    )
-
-    expect(ajaxParams.data.q).toEqual(long_query);
-    expect(ajaxParams.method).toEqual('post');
     expect(ajaxParams.dataType).toEqual('json');
     expect(ajaxParams.crossDomain).toEqual(true);
   });
@@ -251,8 +220,6 @@ describe('api/sql', function() {
 
 
   it("should use jsonp if browser does not support cors", function() {
-    // required to have jquery as transport, is checked in the execute method
-    jQueryProxy.set($);
     var corsPrev = $.support.cors;
     $.support.cors = false;
     s = new SQL({ user: 'jaja' });
@@ -268,20 +235,6 @@ describe('api/sql', function() {
     expect(ajaxParams.jsonpCallback).toEqual('test_callback');
     expect(ajaxParams.cache).toEqual(false);
     $.support.cors = corsPrev;
-  });
-
-  it("should not use jsonp when using reqwest as transport", function() {
-    s = new SQL({ user: 'jaja' });
-    expect(s.options.jsonp).toEqual(false);
-    s.execute('select * from rambo', null, {
-      dp: 2,
-      jsonpCallback: 'test_callback',
-      cache: false
-    })
-    expect(ajaxParams.dataType).toEqual('json');
-    expect(ajaxParams.crossDomain).toEqual(true);
-    expect(ajaxParams.jsonp).toBeUndefined()
-    expect(ajaxParams.cache).toEqual(false);
   });
 
   it("should get bounds for query", function() {
@@ -309,9 +262,6 @@ describe('api/sql.table', function() {
 
   beforeEach(function() {
     ajaxParams = null;
-    jQueryProxy.set($);
-    ajaxProxy.set($.ajax);
-
     sql = new SQL({
       user: USER,
       protocol: 'https'
@@ -338,9 +288,6 @@ describe("api/sql column descriptions", function(){
   var sql;
 
   beforeAll(function(){
-    jQueryProxy.set($);
-    ajaxProxy.set($.ajax);
-
     this.colDate = new Backbone.Model(JSON.parse('{"name":"object_postedtime","type":"date","geometry_type":"point","bbox":[[-28.92163128242129,-201.09375],[75.84516854027044,196.875]],"analyzed":true,"success":true,"stats":{"type":"date","start_time":"2015-02-19T15:13:16.000Z","end_time":"2015-02-22T04:34:05.000Z","range":220849000,"steps":1024,"null_ratio":0,"column":"object_postedtime"}}'));
     this.colFloat = new Backbone.Model(JSON.parse('{"name":"asdfd","type":"number","geometry_type":"point"}'));
     this.colString = new Backbone.Model(JSON.parse('{"name":"asdfd","type":"string","geometry_type":"point"}'));

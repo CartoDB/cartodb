@@ -1,19 +1,19 @@
-describe("common.ui.Table", function() {
+var _ = require('underscore');
+var $ = require('jquery');
+var TableData = require('cdb/ui/common/table/table-data');
+var Row = require('cdb/ui/common/table/row');
+var RowView = require('cdb/ui/common/table/row-view');
+var TableProperties = require('cdb/ui/common/table/table-properties');
+var Table = require('cdb/ui/common/table');
+
+describe('ui/common/table', function() {
 
   var cols;
   var tableMetadata;
-  describe("Row", function() {
-    beforeEach(function() {
-    });
-
-    // it("", function() {
-
-    // });
-  });
 
   describe("TableData", function() {
     beforeEach(function() {
-      cols = new cdb.ui.common.TableData();
+      cols = new TableData();
       cols.reset([
         {'id': 1, 'col1': 1, 'col2': 2, 'col3': 3},
         {'id': 2, 'col1': 4, 'col2': 5, 'col3': 6}
@@ -30,27 +30,27 @@ describe("common.ui.Table", function() {
 
   describe("RowView", function() {
     it("should render in a row", function() {
-      var row = new cdb.ui.common.Row({test0: 'a', test1: 'b'});
-      var r = new cdb.ui.common.RowView({model: row});
+      var row = new Row({test0: 'a', test1: 'b'});
+      var r = new RowView({model: row});
       expect(r.render().$('td').length).toEqual(3); // two rows plus one blank row before them
     });
 
     it("should render in order", function() {
-      var row = new cdb.ui.common.Row({test0: 'a', test1: 'b'});
-      var r = new cdb.ui.common.RowView({model: row, order: ['test1', 'test0']});
+      var row = new Row({test0: 'a', test1: 'b'});
+      var r = new RowView({model: row, order: ['test1', 'test0']});
       r.render();
       expect($(r.$('td')[1]).html()).toEqual('b');
       expect($(r.$('td')[2]).html()).toEqual('a');
 
-      r = new cdb.ui.common.RowView({model: row, order: ['test0', 'test1']});
+      r = new RowView({model: row, order: ['test0', 'test1']});
       r.render();
       expect($(r.$('td')[1]).html()).toEqual('a');
       expect($(r.$('td')[2]).html()).toEqual('b');
     });
 
     it("should render row header", function() {
-      var row = new cdb.ui.common.Row({test0: 'a', test1: 'b'});
-      var r = new cdb.ui.common.RowView({
+      var row = new Row({test0: 'a', test1: 'b'});
+      var r = new RowView({
         model: row,
         row_header: true
       });
@@ -59,8 +59,8 @@ describe("common.ui.Table", function() {
     });
 
     it("should return cell x", function() {
-      var row = new cdb.ui.common.Row({test0: 'a', test1: 'b'});
-      var r = new cdb.ui.common.RowView({model: row});
+      var row = new Row({test0: 'a', test1: 'b'});
+      var r = new RowView({model: row});
       r.render();
       expect(r.getCell(2).html()).toEqual('b');
     });
@@ -69,11 +69,11 @@ describe("common.ui.Table", function() {
   describe("Table", function() {
     var table;
     beforeEach(function() {
-      cdb.ui.common.Row.url = 'test';
-      cols = new cdb.ui.common.TableData();
+      Row.url = 'test';
+      cols = new TableData();
       cols.url = 'test';
 
-      tableMetadata = new cdb.ui.common.TableProperties({
+      tableMetadata = new TableProperties({
         schema: [
           ['id', 'number'],
           ['col1','number'],
@@ -86,14 +86,10 @@ describe("common.ui.Table", function() {
         {'id': 2, 'col1': 4, 'col2': 5, 'col3': 6}
       ]);
 
-      table = new cdb.ui.common.Table({
+      table = new Table({
         dataModel: cols,
         model: tableMetadata
       });
-
-      this.server = sinon.fakeServer.create();
-
-
     });
 
     it("should render a table", function() {
@@ -208,7 +204,7 @@ describe("common.ui.Table", function() {
     });
 
     it("should render new data on change data source", function() {
-      cols = new cdb.ui.common.TableData();
+      cols = new TableData();
       table.setDataSource(cols);
       cols.reset([
         {'id': 100, 'col1': 1, 'col2': 2, 'col3': 3}
@@ -250,12 +246,12 @@ describe("common.ui.Table", function() {
       });
 
 
-      tableMetadata = new cdb.ui.common.TableProperties({
+      tableMetadata = new TableProperties({
         schema: schema
       });
       cols.reset(rows);
 
-      table = new cdb.ui.common.Table({
+      table = new Table({
         dataModel: cols,
         model: tableMetadata
       });
@@ -276,4 +272,3 @@ describe("common.ui.Table", function() {
   });
 
 });
-

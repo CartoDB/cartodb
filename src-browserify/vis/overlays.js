@@ -1,12 +1,32 @@
-(function() {
+var _ = require('underscore');
+var Overlay = require('./vis/overlay');
+var SlidesController = require('../geo/ui/slides-controller');
+var Model = require('../core/model');
+var Template = require('../core/template');
+var Mobile = require('../geo/ui/mobile');
+var Annotation = require('../geo/ui/annotation');
+var Header = require('../geo/ui/header');
+var InfoBox = require('../geo/ui/infobox');
+var Infowindow = require('../geo/ui/infowindow');
+var InfowindowModel = require('../geo/ui/infowindow-model');
+var LayerSelector = require('../geo/ui/layer-selector');
+var Share = require('../geo/ui/share');
+var Search = require('../geo/ui/search');
+var Text = require('../geo/ui/text');
+var TilesLoader = require('../geo/ui/tiles-loader');
+var TimeSlider = require('../geo/ui/time-slider');
+var Tooltip = require('../geo/ui/tooltip');
+var Zoom = require('../geo/ui/zoom');
+var FullScreen = require('../ui/common/fullscreen');
+var Image = require('./image');
 
-cdb.vis.Overlay.register('logo', function(data, vis) {
+Overlay.register('logo', function(data, vis) {
 
 });
 
-cdb.vis.Overlay.register('slides_controller', function(data, vis) {
+Overlay.register('slides_controller', function(data, vis) {
 
-  var slides_controller = new cdb.geo.ui.SlidesController({
+  var slides_controller = new SlidesController({
     transitions: data.transitions,
     visualization: vis
   });
@@ -15,9 +35,9 @@ cdb.vis.Overlay.register('slides_controller', function(data, vis) {
 
 });
 
-cdb.vis.Overlay.register('mobile', function(data, vis) {
+Overlay.register('mobile', function(data, vis) {
 
-  var template = cdb.core.Template.compile(
+  var template = Template.compile(
     data.template || '\
     <div class="backdrop"></div>\
     <div class="cartodb-header">\
@@ -39,7 +59,7 @@ cdb.vis.Overlay.register('mobile', function(data, vis) {
     data.templateType || 'mustache'
   );
 
-  var mobile = new cdb.geo.ui.Mobile({
+  var mobile = new Mobile({
     template: template,
     mapView: vis.mapView,
     overlays: data.overlays,
@@ -55,11 +75,11 @@ cdb.vis.Overlay.register('mobile', function(data, vis) {
   return mobile.render();
 });
 
-cdb.vis.Overlay.register('image', function(data, vis) {
+Overlay.register('image', function(data, vis) {
 
   var options = data.options;
 
-  var template = cdb.core.Template.compile(
+  var template = Template.compile(
     data.template || '\
     <div class="content">\
     <div class="text widget_text">{{{ content }}}</div>\
@@ -67,8 +87,8 @@ cdb.vis.Overlay.register('image', function(data, vis) {
     data.templateType || 'mustache'
   );
 
-  var widget = new cdb.geo.ui.Image({
-    model: new cdb.core.Model(options),
+  var widget = new Image({
+    model: new Model(options),
     template: template
   });
 
@@ -76,11 +96,11 @@ cdb.vis.Overlay.register('image', function(data, vis) {
 
 });
 
-cdb.vis.Overlay.register('text', function(data, vis) {
+Overlay.register('text', function(data, vis) {
 
   var options = data.options;
 
-  var template = cdb.core.Template.compile(
+  var template = Template.compile(
     data.template || '\
     <div class="content">\
     <div class="text widget_text">{{{ text }}}</div>\
@@ -88,8 +108,8 @@ cdb.vis.Overlay.register('text', function(data, vis) {
     data.templateType || 'mustache'
   );
 
-  var widget = new cdb.geo.ui.Text({
-    model: new cdb.core.Model(options),
+  var widget = new Text({
+    model: new Model(options),
     template: template,
     className: "cartodb-overlay overlay-text " + options.device
   });
@@ -98,11 +118,11 @@ cdb.vis.Overlay.register('text', function(data, vis) {
 
 });
 
-cdb.vis.Overlay.register('annotation', function(data, vis) {
+Overlay.register('annotation', function(data, vis) {
 
   var options = data.options;
 
-  var template = cdb.core.Template.compile(
+  var template = Template.compile(
     data.template || '\
     <div class="content">\
     <div class="text widget_text">{{{ text }}}</div>\
@@ -113,7 +133,7 @@ cdb.vis.Overlay.register('annotation', function(data, vis) {
 
   var options = data.options;
 
-  var widget = new cdb.geo.ui.Annotation({
+  var widget = new Annotation({
     className: "cartodb-overlay overlay-annotation " + options.device,
     template: template,
     mapView: vis.mapView,
@@ -130,15 +150,15 @@ cdb.vis.Overlay.register('annotation', function(data, vis) {
 });
 
 
-cdb.vis.Overlay.register('zoom_info', function(data, vis) {
+Overlay.register('zoom_info', function(data, vis) {
   //console.log("placeholder for the zoom_info overlay");
 });
 
-cdb.vis.Overlay.register('header', function(data, vis) {
+Overlay.register('header', function(data, vis) {
 
   var options = data.options;
 
-  var template = cdb.core.Template.compile(
+  var template = Template.compile(
     data.template || '\
     <div class="content">\
     <div class="title">{{{ title }}}</div>\
@@ -147,8 +167,8 @@ cdb.vis.Overlay.register('header', function(data, vis) {
     data.templateType || 'mustache'
   );
 
-  var widget = new cdb.geo.ui.Header({
-    model: new cdb.core.Model(options),
+  var widget = new Header({
+    model: new Model(options),
     transitions: data.transitions,
     slides: vis.slides,
     template: template
@@ -159,16 +179,16 @@ cdb.vis.Overlay.register('header', function(data, vis) {
 });
 
 // map zoom control
-cdb.vis.Overlay.register('zoom', function(data, vis) {
+Overlay.register('zoom', function(data, vis) {
 
   if(!data.template) {
     vis.trigger('error', 'zoom template is empty')
     return;
   }
 
-  var zoom = new cdb.geo.ui.Zoom({
+  var zoom = new Zoom({
     model: data.map,
-    template: cdb.core.Template.compile(data.template)
+    template: Template.compile(data.template)
   });
 
   return zoom.render();
@@ -176,23 +196,23 @@ cdb.vis.Overlay.register('zoom', function(data, vis) {
 });
 
 // Tiles loader
-cdb.vis.Overlay.register('loader', function(data) {
+Overlay.register('loader', function(data) {
 
-  var tilesLoader = new cdb.geo.ui.TilesLoader({
-    template: cdb.core.Template.compile(data.template)
+  var tilesLoader = new TilesLoader({
+    template: Template.compile(data.template)
   });
 
   return tilesLoader.render();
 });
 
-cdb.vis.Overlay.register('time_slider', function(data, viz) {
-  var slider = new cdb.geo.ui.TimeSlider(data);
+Overlay.register('time_slider', function(data, viz) {
+  var slider = new TimeSlider(data);
   return slider.render();
 });
 
 
 // Header to show informtion (title and description)
-cdb.vis.Overlay.register('_header', function(data, vis) {
+Overlay.register('_header', function(data, vis) {
   var MAX_SHORT_DESCRIPTION_LENGTH = 100;
 
   // Add the complete url for facebook and twitter
@@ -202,7 +222,7 @@ cdb.vis.Overlay.register('_header', function(data, vis) {
     data.share_url = data.url;
   }
 
-  var template = cdb.core.Template.compile(
+  var template = Template.compile(
     data.template || "\
       {{#title}}\
         <h1>\
@@ -252,7 +272,7 @@ cdb.vis.Overlay.register('_header', function(data, vis) {
 
   mobile_shareable = mobile_shareable && (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
 
-  var header = new cdb.geo.ui.Header({
+  var header = new Header({
     title: title,
     description: description,
     facebook_title: facebook_title,
@@ -268,13 +288,13 @@ cdb.vis.Overlay.register('_header', function(data, vis) {
 });
 
 // infowindow
-cdb.vis.Overlay.register('infowindow', function(data, vis) {
+Overlay.register('infowindow', function(data, vis) {
 
   if (_.size(data.fields) == 0) {
     return null;
   }
 
-  var infowindowModel = new cdb.geo.ui.InfowindowModel({
+  var infowindowModel = new InfowindowModel({
     template: data.template,
     template_type: data.templateType,
     alternative_names: data.alternative_names,
@@ -282,7 +302,7 @@ cdb.vis.Overlay.register('infowindow', function(data, vis) {
     template_name: data.template_name
   });
 
-  var infowindow = new cdb.geo.ui.Infowindow({
+  var infowindow = new Infowindow({
      model: infowindowModel,
      mapView: vis.mapView,
      template: data.template
@@ -293,27 +313,27 @@ cdb.vis.Overlay.register('infowindow', function(data, vis) {
 
 
 // layer_selector
-cdb.vis.Overlay.register('layer_selector', function(data, vis) {
+Overlay.register('layer_selector', function(data, vis) {
 
   var options = data.options;
   //if (!options.display) return;
 
-  var template = cdb.core.Template.compile(
+  var template = Template.compile(
     data.template || '\
       <a href="#/change-visibility" class="layers">Visible layers<div class="count"></div></a>\
       ',
     data.templateType || 'underscore'
   );
 
-  var dropdown_template = cdb.core.Template.compile(
+  var dropdown_template = Template.compile(
     data.template || '\
       <ul></ul><div class="tail"><span class="border"></span></div>\
       ',
     data.templateType || 'underscore'
   );
 
-  var layerSelector = new cdb.geo.ui.LayerSelector({
-    model: new cdb.core.Model(options),
+  var layerSelector = new LayerSelector({
+    model: new Model(options),
     mapView: vis.mapView,
     template: template,
     dropdown_template: dropdown_template,
@@ -351,20 +371,20 @@ cdb.vis.Overlay.register('layer_selector', function(data, vis) {
 });
 
 // fullscreen
-cdb.vis.Overlay.register('fullscreen', function(data, vis) {
+Overlay.register('fullscreen', function(data, vis) {
 
   var options = data.options;
 
   options.allowWheelOnFullscreen = false;
 
-  var template = cdb.core.Template.compile(
+  var template = Template.compile(
     data.template || '<a href="{{ mapUrl }}" target="_blank"></a>',
     data.templateType || 'mustache'
   );
 
-  var fullscreen = new cdb.ui.common.FullScreen({
+  var fullscreen = new FullScreen({
     doc: "#map > div",
-    model: new cdb.core.Model(options),
+    model: new Model(options),
     mapView: vis.mapView,
     template: template
   });
@@ -374,17 +394,17 @@ cdb.vis.Overlay.register('fullscreen', function(data, vis) {
 });
 
 // share content
-cdb.vis.Overlay.register('share', function(data, vis) {
+Overlay.register('share', function(data, vis) {
 
   var options = data.options;
 
-  var template = cdb.core.Template.compile(
+  var template = Template.compile(
     data.template || '<a href="#"></a>',
     data.templateType || 'mustache'
   );
 
-  var widget = new cdb.geo.ui.Share({
-    model: new cdb.core.Model(options),
+  var widget = new Share({
+    model: new Model(options),
     vis: vis,
     map: vis.map,
     template: template
@@ -397,9 +417,9 @@ cdb.vis.Overlay.register('share', function(data, vis) {
 });
 
 // search content
-cdb.vis.Overlay.register('search', function(data, vis) {
+Overlay.register('search', function(data, vis) {
 
-  var template = cdb.core.Template.compile(
+  var template = Template.compile(
     data.template || '\
       <form>\
         <span class="loader"></span>\
@@ -410,7 +430,7 @@ cdb.vis.Overlay.register('search', function(data, vis) {
     data.templateType || 'mustache'
   );
 
-  var search = new cdb.geo.ui.Search(
+  var search = new Search(
     _.extend(data, {
       template: template,
       mapView: vis.mapView,
@@ -423,17 +443,17 @@ cdb.vis.Overlay.register('search', function(data, vis) {
 });
 
 // tooltip
-cdb.vis.Overlay.register('tooltip', function(data, vis) {
+Overlay.register('tooltip', function(data, vis) {
   if (!data.layer && vis.getLayers().length <= 1) {
     throw new Error("layer is null");
   }
   data.layer = data.layer || vis.getLayers()[1];
   data.layer.setInteraction(true);
   data.mapView = vis.mapView;
-  return new cdb.geo.ui.Tooltip(data);
+  return new Tooltip(data);
 });
 
-cdb.vis.Overlay.register('infobox', function(data, vis) {
+Overlay.register('infobox', function(data, vis) {
   var layer;
   var layers = vis.getLayers();
   if (!data.layer) {
@@ -446,9 +466,7 @@ cdb.vis.Overlay.register('infobox', function(data, vis) {
     throw new Error("layer is null");
   }
   data.layer.setInteraction(true);
-  var infobox = new cdb.geo.ui.InfoBox(data);
+  var infobox = new InfoBox(data);
   return infobox;
 
 });
-
-})();

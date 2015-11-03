@@ -1,5 +1,24 @@
+var $ = require('jquery');
+var _ = require('underscore');
+var L = require('leaflet');
+var Backbone = require('backbone');
+window.torque = require('torque.js'); // to window.torque.GMapsTorqueLayer, required by GMapsTorqueLayerView
 
-  describe('GoogleMapsMapView', function() {
+var Map = require('cdb/geo/map');
+var GoogleMapsMapView = require('cdb/geo/gmaps/gmaps-map-view');
+var TileLayer = require('cdb/geo/map/tile-layer');
+var GMapsTiledLayerView = require('cdb/geo/gmaps/gmaps-tiled-layer-view');
+var CartoDBLayer = require('cdb/geo/map/cartodb-layer');
+var CartoDBGroupLayer = require('cdb/geo/map/cartodb-group-layer');
+var PlainLayer = require('cdb/geo/map/plain-layer');
+var GMapsCartoDBLayerView = require('cdb/geo/gmaps/gmaps-cartodb-layer-view');
+var GMapsCartoDBLayerGroupView = require('cdb/geo/gmaps/gmaps-cartodb-layer-group-view');
+var GMapsPlainLayerView = require('cdb/geo/gmaps/gmaps-plain-layer-view');
+var Geometry = require('cdb/geo/geometry');
+var GmapsPathView = require('cdb/geo/gmaps/gmaps-path-view');
+var GMapsTorqueLayerView = require('cdb/geo/gmaps/gmaps-torque-layer-view');
+
+  describe('geo/gmaps/gmaps-map-view', function() {
     var mapView;
     var map;
     var spy;
@@ -7,14 +26,15 @@
     beforeEach(function() {
       container = $('<div>').css('height', '200px');
       //$('body').append(container);
-      map = new cdb.geo.Map();
-      mapView = new cdb.geo.GoogleMapsMapView({
+      map = new Map();
+      mapView = new GoogleMapsMapView({
         el: container,
         map: map
       });
 
-      layerURL = 'http://{s}.tiles.mapbox.com/v3/cartodb.map-1nh578vv/{z}/{x}/{y}.png';
-      layer    = new cdb.geo.TileLayer({ urlTemplate: layerURL });
+      // layerURL = 'http://{s}.tiles.mapbox.com/v3/cartodb.map-1nh578vv/{z}/{x}/{y}.png';
+      layerURL = 'http://localhost/{s}/light_nolabels/{z}/{x}/{y}.png';
+      layer = new TileLayer({ urlTemplate: layerURL });
 
       spy = {
         zoomChanged:        function(){},
@@ -32,18 +52,18 @@
     });
 
     it("should change bounds when center is set", function() {
-      var s = sinon.spy();
+      var spy = jasmine.createSpy('change:view_bound_ne');
       spyOn(map, 'getViewBounds');
-      map.bind('change:view_bounds_ne', s);
+      map.bind('change:view_bounds_ne', spy);
       map.set('center', [10, 10]);
-      expect(s.called).toEqual(true);
+      expect(spy).toHaveBeenCalled()
       expect(map.getViewBounds).not.toHaveBeenCalled();
     });
 
     it("should change center and zoom when bounds are changed", function(done) {
-      var s = sinon.spy();
+      var spy = jasmine.createSpy('change:center');
       mapView.getSize = function() { return {x: 200, y: 200}; }
-      map.bind('change:center', s);
+      map.bind('change:center', spy);
       spyOn(mapView, '_setCenter');
       mapView._bindModel();
 
@@ -113,27 +133,27 @@
     it("should create a TiledLayerView when the layer is Tiled", function() {
       var lyr = map.addLayer(layer);
       var layerView = mapView.getLayerByCid(lyr);
-      expect(cdb.geo.GMapsTiledLayerView.prototype.isPrototypeOf(layerView)).toBeTruthy();
+      expect(GMapsTiledLayerView.prototype.isPrototypeOf(layerView)).toBeTruthy();
     });
 
     it("should create a CartoDBLayer when the layer is cartodb", function() {
-      layer = new cdb.geo.CartoDBLayer({
+      layer = new CartoDBLayer({
         table_name: 'test',
         user_name: 'testuser',
         tile_style: 'teststyle'
       });
-      map.addLayer(new cdb.geo.PlainLayer({}));
+      map.addLayer(new PlainLayer({}));
       var lyr = map.addLayer(layer);
       var layerView = mapView.getLayerByCid(lyr);
-      expect(cdb.geo.GMapsCartoDBLayerView.prototype.isPrototypeOf(layerView)).toBeTruthy();
+      expect(GMapsCartoDBLayerView.prototype.isPrototypeOf(layerView)).toBeTruthy();
     });
 
     it("should create a CartoDBGroupLayer when the layer is layergroup", function() {
-      layer = new cdb.geo.CartoDBGroupLayer({
+      layer = new CartoDBGroupLayer({
         layer_definition: {
           version: '1.0.0',
           layers: [{
-             type: 'cartodb', 
+             type: 'cartodb',
              options: {
                sql: "select * from european_countries_export",
                cartocss: '#layer { polygon-fill: #000; polygon-opacity: 0.8;}',
@@ -143,14 +163,14 @@
            }]
         }
       });
-      map.addLayer(new cdb.geo.PlainLayer({}));
+      map.addLayer(new PlainLayer({}));
       var lyr = map.addLayer(layer);
       var layerView = mapView.getLayerByCid(lyr);
-      expect(cdb.geo.GMapsCartoDBLayerGroupView.prototype.isPrototypeOf(layerView)).toBeTruthy();
+      expect(GMapsCartoDBLayerGroupView.prototype.isPrototypeOf(layerView)).toBeTruthy();
     });
 
     it("should create a cartodb logo when layer is cartodb", function(done) {
-      layer = new cdb.geo.CartoDBLayer({ table_name: "INVENTADO", tile_style: 'test', user_name: 'test'});
+      layer = new CartoDBLayer({ table_name: "INVENTADO", tile_style: 'test', user_name: 'test'});
       var lyr = map.addLayer(layer);
       var layerView = mapView.getLayerByCid(lyr);
 
@@ -161,10 +181,10 @@
     });
 
     it("should create a PlaiLayer when the layer is cartodb", function() {
-      layer    = new cdb.geo.PlainLayer({});
+      layer = new PlainLayer({});
       var lyr = map.addLayer(layer);
       var layerView = mapView.getLayerByCid(lyr);
-      expect(layerView.__proto__.constructor).toEqual(cdb.geo.GMapsPlainLayerView);
+      expect(layerView.__proto__.constructor).toEqual(GMapsPlainLayerView);
     });
 
     var geojsonFeature = {
@@ -185,7 +205,7 @@
     }
 
     function testGeom(g) {
-      var geo = new cdb.geo.Geometry({
+      var geo = new Geometry({
         geojson: g
       });
       map.addGeometry(geo);
@@ -203,7 +223,7 @@
     });
 
     it("should edit a geometry", function() {
-      var geo = new cdb.geo.Geometry({
+      var geo = new Geometry({
         geojson: geojsonFeature
       });
       map.addGeometry(geo);
@@ -217,20 +237,20 @@
     });
 
     it("should convert to geojson", function() {
-      var geo = new cdb.geo.Geometry({
+      var geo = new Geometry({
         geojson: multipoly
       });
       map.addGeometry(geo);
       var v = mapView.geometries[geo.cid];
-      var geojson = cdb.geo.gmaps.PathView.getGeoJSON(v.geom, 'MultiPolygon');
+      var geojson = GmapsPathView.getGeoJSON(v.geom, 'MultiPolygon');
       expect(geojson).toEqual(multipoly);
     });
 
-    it("should swicth layer", function(done) {
+    it("should switch layer", function(done) {
       map.addLayer(layer);
       layer.set({'type': 'torque', 'cartocss': 'Map{ -torque-frame-count: 10; }'});
       setTimeout(function() {
-        expect(mapView.layers[layer.cid] instanceof cdb.geo.GMapsTorqueLayerView).toEqual(true);
+        expect(mapView.layers[layer.cid] instanceof GMapsTorqueLayerView).toEqual(true);
         done();
       }, 2000);
     });

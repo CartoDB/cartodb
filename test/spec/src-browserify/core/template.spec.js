@@ -1,11 +1,9 @@
-var cdb = require('cdb-proxy').set({}).get();
-var Template = require('../../../../src-browserify/core/template');
+var Template = require('cdb/core/template');
 
 describe("core/template", function() {
     var tmpl;
 
     beforeEach(function() {
-      cdb.log = {};
       tmpl = new Template({
         template: "hi, my name is <%= name %>"
       });

@@ -1,4 +1,7 @@
-describe('Show funcionality', function() {
+var $ = require('jquery');
+var CartoDBLayerGMaps = require('cdb/geo/gmaps/cartodb-layer-gmaps');
+
+describe('CartoDBLayerGMaps: Show funcionality', function() {
   var div, map, cdb_layer;
 
   beforeEach(function() {
@@ -15,7 +18,7 @@ describe('Show funcionality', function() {
       mapTypeControl: false
     });
 
-    cdb_layer = new cdb.geo.CartoDBLayerGMaps({
+    cdb_layer = new CartoDBLayerGMaps({
       map: map,
       user_name:"examples",
       table_name: 'earthquakes',

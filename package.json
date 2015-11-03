@@ -83,6 +83,7 @@
       "lzma": "./vendor/lzma.js",
       "mousewheel": "./vendor/mousewheel.js",
       "mwheelIntent": "./vendor/mwheelIntent.js",
+      "odyssey": "./vendor/mod/odyssey.js",
       "spin.js": "./vendor/spin.js",
       "carto": "./vendor/mod/carto.js",
       "torque": "./vendor/mod/torque.uncompressed.js",

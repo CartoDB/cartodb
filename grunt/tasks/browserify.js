@@ -52,6 +52,18 @@ var bundles = {
     ],
     dest: '<%= config.tmp %>/cartodb-specs.js',
   },
+
+  odyssey: {
+    src: 'src-browserify/odyssey.js',
+    dest: '<%= config.dist %>/cartodb.mod.odyssey.uncompressed.js',
+  },
+  'odyssey-specs': {
+    src: [
+      'test/lib/fail-tests-if-have-errors-in-src.js',
+      'test/spec/src-browserify/odyssey.spec.js',
+    ],
+    dest: '<%= config.tmp %>/odyssey-specs.js',
+  }
 };
 
 module.exports = {

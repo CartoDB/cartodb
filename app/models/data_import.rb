@@ -432,7 +432,7 @@ class DataImport < Sequel::Model
     new_table_name = import_from_query(table_name, query)
     sanitize_columns(new_table_name)
 
-    self.update(table_names: new_table_name)
+    self.update(table_names: new_table_name, service_name: nil)
     migrate_existing(new_table_name)
 
     self.results.push CartoDB::Importer2::Result.new(success: true, error: nil)
@@ -811,8 +811,9 @@ class DataImport < Sequel::Model
   end
 
   def decorate_log(data_import)
-    decoration = { retrieved_items: 0}
-    if data_import.success && data_import.table_id
+    decoration = { retrieved_items: 0 }
+    if data_import.success && data_import.table_id && data_import.migrate_table.nil? && data_import.from_query.nil? &&
+       data_import.table_copy.nil?
       datasource = get_datasource_provider
       if datasource.persists_state_via_data_import?
         decoration = datasource.get_audit_stats

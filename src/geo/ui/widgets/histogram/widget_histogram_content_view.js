@@ -178,7 +178,7 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
 
     if (info.index !== undefined) {
 
-      if (this.chart.model.get('locked')) {
+      if (this.chart.isLocked()) {
         value = originalDataModel.toJSON()[info.index].freq;
       } else {
         value = dataModel.getData().toJSON()[info.index].freq;
@@ -208,7 +208,7 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
   },
 
   _onBrushEnd: function(loBarIndex, hiBarIndex) {
-    this.chart.model.set({ locked: true });
+    this.chart.lock();
 
     if (this.viewModel.get('zoomed')) {
       this.viewModel.set({ filter_enabled: true, lo_index: loBarIndex, hi_index: hiBarIndex });
@@ -311,7 +311,7 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
   _onChangeZoomed: function() {
     if (this.viewModel.get('zoomed')) {
 
-      this.chart.model.set({ locked: false });
+      this.chart.unlock();
       this._expand();
 
       var data = this._getOriginalData();
@@ -329,11 +329,11 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
       this.chart.refresh();
     } else {
       this.viewModel.set({ zoom_enabled: false, filter_enabled: false, lo_index: null, hi_index: null });
-      this.chart.model.set('data', this.originalDataModel.toJSON());
+      this.chart.updateData(this.originalDataModel.toJSON());
 
       this._contract();
 
-      this.chart.model.set({ lo_index: null, hi_index: null });
+      this.chart.resetIndexes();
 
       this.filter.unsetRange();
 

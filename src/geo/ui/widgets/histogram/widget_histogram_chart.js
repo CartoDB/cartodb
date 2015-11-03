@@ -26,6 +26,22 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     this._generateChartContent();
   },
 
+  lock: function() {
+    this.model.set('locked', true);
+  },
+
+  unlock: function() {
+    this.model.set('locked', false);
+  },
+
+  isLocked: function() {
+    return this.model.get('locked');
+  },
+
+  resetIndexes: function() {
+    this.model.set({ lo_index: null, hi_index: null });
+  },
+
   _onChangeData: function() {
     if (!this.model.get('locked')) {
       this.refresh();
@@ -550,6 +566,10 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     .attr('class', 'Axis')
     .attr('transform', 'translate(0,' + (this.chartHeight + 5) + ')')
     .call(xAxis);
+  },
+
+  updateData: function(data) {
+    this.model.set('data', data);
   },
 
   loadData: function(data) {

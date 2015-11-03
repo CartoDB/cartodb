@@ -7,9 +7,13 @@
 .Widget-filter {
   width: 100%;
   margin: 5px 0;
+  max-height: 200px;
+  transition: max-height 200ms ease-in;
 }
 .Widget-filter.is-hidden {
-  opacity: 0;
+  max-height: 0;
+  transition: max-height 100ms ease-out;
+  overflow: hidden;
 }
 .Widget-filterButtons {
   @include display-flex();

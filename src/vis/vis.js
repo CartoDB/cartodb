@@ -1329,7 +1329,6 @@ var Vis = cdb.core.View.extend({
           });
 
           if (attributes) {
-            infowindow.model.updateContent(attributes);
             infowindow.adjustPan();
           } else {
             infowindow.setError();

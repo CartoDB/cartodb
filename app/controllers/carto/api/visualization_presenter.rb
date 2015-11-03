@@ -78,13 +78,18 @@ module Carto
 
         return unless organization
 
+        # When a visualization is private, checks of permissions need not only the Id but also the vis owner database schema
+        # Logic on public_map route will handle permissions so here we only "namespace the id" when proceeds
         if @visualization.is_privacy_private?
+          # Final url will be like ORG.cartodb.com/u/VIEWER/viz/OWNER_SCHEMA.VIS_ID/public_map
           base_url_username = @current_viewer.username
           vis_id_schema = @visualization.user.sql_safe_database_schema
         else
+          # Final url will be like ORG.cartodb.com/u/VIEWER/viz/VIS_ID/public_map
           base_url_username = @visualization.user.username
           vis_id_schema = nil
         end
+        # this builds only the fragment /viz/xxxxx/public_map
         path = CartoDB.path(@context, 'public_visualizations_show_map', id: qualified_visualization_id(vis_id_schema))
         "#{CartoDB.base_url(organization.name, base_url_username)}#{path}"
       end

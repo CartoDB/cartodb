@@ -195,14 +195,18 @@ class Admin::VisualizationsController < Admin::AdminController
     end
     # Legacy redirect, now all public pages also with org. name
     if eligible_for_redirect?(@visualization.user)
+      # INFO: here we only want the presenter to rewrite the url of @visualization.user namespacing it like 'schema.id',
+      # so current_user also equals @visualization.user
+      visualization_presenter = Carto::Api::VisualizationsPresenter.new(@visualization, @visualization.user, self)
+
       redirect_to CartoDB.url(self,
-                                'public_visualizations_public_map',
-                                {
-                                  id: "#{@visualization.user.username}.#{params[:id]}",
-                                  redirected:true
-                                },
-                                @visualization.user
-                              ) and return
+                              'public_visualizations_public_map',
+                              {
+                                id: visualization_presenter.privacy_aware_map_url,
+                                redirected: true
+                              },
+                              @visualization.user
+                             ) and return
     end
 
     if @visualization.can_be_cached?

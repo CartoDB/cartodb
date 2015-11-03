@@ -80,17 +80,17 @@ module Carto
 
         if @visualization.is_privacy_private?
           base_url_username = @current_viewer.username
-          vis_id_username = @visualization.user.username
+          vis_id_schema = @visualization.user.sql_safe_database_schema
         else
           base_url_username = @visualization.user.username
-          vis_id_username = nil
+          vis_id_schema = nil
         end
-        path = CartoDB.path(@context, 'public_visualizations_show_map', id: qualified_visualization_id(vis_id_username))
+        path = CartoDB.path(@context, 'public_visualizations_show_map', id: qualified_visualization_id(vis_id_schema))
         "#{CartoDB.base_url(organization.name, base_url_username)}#{path}"
       end
 
-      def qualified_visualization_id(username = nil)
-        username.nil? ? @visualization.id : "#{username}.#{@visualization.id}"
+      def qualified_visualization_id(schema = nil)
+        schema.nil? ? @visualization.id : "#{schema}.#{@visualization.id}"
       end
 
       private
@@ -118,10 +118,10 @@ module Carto
 
       def url
         if @visualization.canonical?
-          CartoDB.url(@context, 'public_tables_show_bis', { id: qualified_visualization_id(@current_viewer) },
+          CartoDB.url(@context, 'public_tables_show_bis', { id: @visualization.qualified_name(@current_viewer) },
                       @current_viewer)
         else
-          CartoDB.url(@context, 'public_visualizations_show_map', { id: qualified_visualization_id }, @current_viewer)
+          CartoDB.url(@context, 'public_visualizations_show_map', { id: @visualization.id }, @current_viewer)
         end
       end
 

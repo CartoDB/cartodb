@@ -1,13 +1,24 @@
+/**
+ *  Category filter view
+ *
+ */
+
 cdb.geo.ui.Widget.Category.FilterView = cdb.core.View.extend({
 
   className: 'Widget-filter Widget-contentSpaced Widget-contentSpaced--sideMargins is-hidden',
 
   _TEMPLATE: ' ' +
-  '  <p class="Widget-textSmaller Widget-textSmaller--bold Widget-textSmaller--dark Widget-textSmaller--upper"><%- totalCategories === acceptedCategories ? "All selected" : acceptedCategories + " selected" %></p>'+
-  '  <div class="Widget-filterButtons">'+
-  '    <% if (totalCategories !== acceptedCategories) { %><button class="Widget-link Widget-filterButton js-all">select all</button><% } %>'+
-  '    <% if (totalCategories !== rejectedCategories) { %><button class="Widget-link Widget-filterButton js-none">unselect all</button><% } %>'+
-  '  </div>',
+  '<p class="Widget-textSmaller Widget-textSmaller--bold Widget-textSmaller--dark Widget-textSmaller--upper">'+
+    '<%- rejectedCats === 0 ? "All selected" : selectedCats + " selected" %>'+
+  '</p>'+
+  '<div class="Widget-filterButtons">'+
+    '<% if (rejectedCats !== 0 && totalCats > 0) { %>'+
+      '<button class="Widget-link Widget-filterButton js-all">select all</button>'+
+    '<% } %>'+
+    '<% if (totalCats > rejectedCats) { %>'+
+      '<button class="Widget-link Widget-filterButton js-none">unselect all</button>'+
+    '<% } %>'+
+  '</div>',
 
   events: {
     'click .js-all': '_onSelectAll',
@@ -21,19 +32,18 @@ cdb.geo.ui.Widget.Category.FilterView = cdb.core.View.extend({
 
   render: function() {
     var template = _.template(this._TEMPLATE);
-    var totalCategories = this.model.getData().size();
-    var rejectedCategories = this.filter.rejectedCategories.size();
-    var acceptedCategories = totalCategories - rejectedCategories;
-    var isVisible = this.filter.hasRejects();
+    var totalCats = this.model.getData().size();
+    var selectedCats = this.model.getData().filter(function(m){ return m.get('selected') }).length;
+    var rejectedCats = this.filter.getRejected().size();
 
     this.$el.html(
       template({
-        totalCategories: totalCategories,
-        acceptedCategories: acceptedCategories,
-        rejectedCategories: rejectedCategories
+        totalCats: totalCats,
+        selectedCats: selectedCats,
+        rejectedCats: rejectedCats
       })
     );
-    this[ totalCategories > 0 ? 'show' : 'hide']();
+    this[ totalCats > 0 ? 'show' : 'hide']();
     return this;
   },
 

@@ -50,6 +50,23 @@ describe('widgets/histogram/chart', function() {
     this.view.render().show();
     expect(this.view.$el.find('.Handle').size()).toBe(2);
   });
+
+  it('should refresh the data', function() {
+    spyOn(this.view, 'refresh').and.callThrough();
+    this.view.render().show();
+    this.view.reset(genHistogramData(20));
+    expect(this.view.refresh).toHaveBeenCalled();
+  });
+
+  it('shouldn\'t refresh the data', function() {
+    this.view.model.set('locked', true);
+    spyOn(this.view, 'refresh').and.callThrough();
+    this.view.render().show();
+    this.view.reset(genHistogramData(20));
+    expect(this.view.refresh).not.toHaveBeenCalled();
+  });
+
+
 });
 
 function genHistogramData(n) {

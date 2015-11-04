@@ -79,8 +79,8 @@ cdb.geo.MapView = require('./geo/map-view');
 
 _.extend(cdb.geo, require('./geo/gmaps'));
 
-// overwrites the _Promise defined from the core bundle
-cdb._Promise = require('./api/_promise');
+// overwrites the Promise defined from the core bundle
+cdb.Promise = require('./api/promise');
 
 cdb.geo.ui.Text = require('./geo/ui/text');
 cdb.geo.ui.Annotation = require('./geo/ui/annotation');

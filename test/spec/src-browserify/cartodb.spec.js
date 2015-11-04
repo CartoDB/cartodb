@@ -46,6 +46,7 @@ describe('cartodb.js bundle', function() {
 
       expect(cdb.Image).toEqual(jasmine.any(Function));
       expect(cdb.SQL).toEqual(jasmine.any(Function));
+      expect(cdb.Promise).toEqual(jasmine.any(Function));
 
       expect(cdb.VERSION).toEqual(jasmine.any(String));
       expect(cdb.DEBUG).toEqual(jasmine.any(Boolean));

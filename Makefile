@@ -40,7 +40,7 @@ WORKING_SPECS_1 = \
 	spec/models/visualization/overlays_spec.rb \
 	spec/models/visualization/presenter_spec.rb \
 	spec/models/visualization/relator_spec.rb \
-	spec/models/visualization/table_blender_spec.rb \ 
+	spec/models/visualization/table_blender_spec.rb \
 	spec/models/visualization/tags_spec.rb \
 	spec/models/visualization/watcher_spec.rb \
   spec/models/named_maps_spec.rb \

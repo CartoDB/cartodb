@@ -1,3 +1,8 @@
+/**
+ *  Category list view
+ *
+ */
+
 cdb.geo.ui.Widget.Category.ItemsView = cdb.geo.ui.Widget.View.extend({
 
   _ITEMS_PER_PAGE: 6,
@@ -80,17 +85,22 @@ cdb.geo.ui.Widget.Category.ItemsView = cdb.geo.ui.Widget.View.extend({
 
     if (isSelected) {
       if (!this.filter.hasRejects()) {
-        this.filter.reject(
-          _.without(
-            _.pluck(data.toJSON(), 'name'),
-            mdl.get('name')
-          )
-        );
+        var rejects = [];
+        data.map(function(m) {
+          var name = m.get('name');
+          if (name !== mdl.get('name')) {
+            m.set('selected', false);
+            rejects.push(name);
+          }
+        });
+        this.filter.reject(rejects);
       } else {
-        this.filter.reject([mdl.get('name')]);
+        mdl.set('selected', false);
+        this.filter.reject(mdl.get('name'));
       }
     } else {
-      this.filter.accept([mdl.get('name')]);
+      mdl.set('selected', true);
+      this.filter.accept(mdl.get('name'));
     }
   }
 

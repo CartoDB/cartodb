@@ -14,7 +14,7 @@ cdb.geo.ui.Widget.HistogramModel = cdb.geo.ui.Widget.Model.extend({
   },
 
   parse: function(data) {
-    var bins = data.bins;
+    var bins = data.ownFilterOff.bins;
     this._data.reset(bins);
     return {
       data: bins,

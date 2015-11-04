@@ -19,7 +19,7 @@ cdb.geo.ui.Widget.ListModel = cdb.geo.ui.Widget.Model.extend({
   },
 
   parse: function(data) {
-    var rows = data.rows;
+    var rows = data.ownFilterOff.rows;
     this._data.reset(rows);
     return {
       data: rows

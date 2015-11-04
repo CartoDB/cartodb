@@ -156,7 +156,7 @@ cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
   },
 
   initialize: function() {
-    this.widgets = new Backbone.Collection();
+    this.widgets = new Backbone.Collection([]);
     cdb.geo.MapLayer.prototype.initialize.apply(this, arguments);
   },
 

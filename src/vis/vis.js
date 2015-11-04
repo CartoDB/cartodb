@@ -461,16 +461,30 @@ var Vis = cdb.core.View.extend({
       this.mapView.bind('newLayerView', this.addTooltip, this);
     }
 
-    // Get the CartoDBLayers from the LayerGroup
-    // TODO: namedmap?
-    var layerGroup = _.find(data.layers, function(layer) {
-      return layer.type === 'layergroup';
-    });
-    var cartoDBLayers = _.map(layerGroup.options.layer_definition.layers, function(layerData) {
-      return Layers.create(layerData.type, self, layerData);
-    });
-    var cartoDBLayerGroup = new cdb.geo.CartoDBGroupLayer({}, {
-      layers: cartoDBLayers
+    var cartoDBLayers;
+    var cartoDBLayerGroup;
+    var layerGroupData;
+    var layersData;
+    _.each(data.layers, function(layer) {
+      if (layer.type === 'layergroup') {
+        layerGroupData = layer;
+        layersData = layer.options.layer_definition.layers;
+        cartoDBLayers = _.map(layersData, function(layerData) {
+          return Layers.create(layerData.type, self, layerData);
+        });
+        cartoDBLayerGroup = new cdb.geo.CartoDBGroupLayer({}, {
+          layers: cartoDBLayers
+        });
+      } else if (layer.type === 'namedmap') {
+        layerGroupData = layer;
+        layersData = layer.options.named_map.layers;
+        cartoDBLayers = _.map(layersData, function(layerData) {
+          return Layers.create("cartodb", self, layerData);
+        });
+        cartoDBLayerGroup = new cdb.geo.CartoDBGroupLayer({}, {
+          layers: cartoDBLayers
+        });
+      }
     });
 
     // TODO: We can probably move this logic somewhere in cdb.geo.ui.Widget
@@ -492,7 +506,7 @@ var Vis = cdb.core.View.extend({
     };
 
     _.each(cartoDBLayers, function(layer, index) {
-      var widgets = layer.get('options').widgets;
+      var widgets = layer.get('widgets') || {};
 
       for (var widgetId in widgets) {
         var widgetData = widgets[widgetId];
@@ -1322,6 +1336,7 @@ var Vis = cdb.core.View.extend({
           });
 
           if (attributes) {
+            infowindow.model.updateContent(attributes);
             infowindow.adjustPan();
           } else {
             infowindow.setError();

@@ -1,3 +1,8 @@
+/**
+ *  Category list item view
+ *
+ */
+
 cdb.geo.ui.Widget.Category.ItemView = cdb.core.View.extend({
 
   tagName: 'li',

@@ -1,3 +1,8 @@
+/**
+ *  Category widget model
+ *
+ */
+
 cdb.geo.ui.Widget.CategoryModel = cdb.geo.ui.Widget.Model.extend({
 
   initialize: function(attrs, opts) {
@@ -34,29 +39,18 @@ cdb.geo.ui.Widget.CategoryModel = cdb.geo.ui.Widget.Model.extend({
     }, 0);
 
     // Add rejected categories + result categories
-    var rejectedCategories = this.filter.rejectedCategories.toJSON();
-    var rejectedData = _.map(rejectedCategories, function(d){
-      return {
-        'selected': false,
-        'name': d.name,
-        'count': 0,
-        'maxCount': 0
-      };
-    }, this);
+    var rejectedCats = this.filter.getRejected();
 
     var newData = _.map(categories, function(datum) {
+      var value = datum[columnName];
+      var isRejected = rejectedCats.where({ name: value }).length > 0;
       return {
-        'selected': true,
-        'name': datum[columnName],
+        'selected': !isRejected,
+        'name': value,
         'count': datum.count,
         'maxCount': maxCount
       };
     }, this);
-
-    newData = newData.concat(rejectedData);
-    newData = _.sortBy(newData, function(datum) {
-      return datum.name;
-    });
 
     this._data.reset(newData);
 

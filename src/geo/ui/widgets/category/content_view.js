@@ -1,6 +1,5 @@
 /**
- *
- *
+ *  Category content view
  *
  */
 

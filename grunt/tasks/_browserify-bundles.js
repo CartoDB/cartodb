@@ -33,6 +33,9 @@ module.exports = {
   'torque': {
     src: 'src-browserify/torque.js',
     dest: '<%= config.dist %>/cartodb.mod.torque.uncompressed.js',
+    options: {
+      external: ['jquery'], // will be required from cartodb bundle
+    }
   },
   'torque-specs': {
     src: ['test/spec/src-browserify/torque.spec.js']
@@ -43,6 +46,9 @@ module.exports = {
   cartodb: {
     src: 'src-browserify/cartodb.js',
     dest: '<%= config.dist %>/cartodb.uncompressed.js',
+    options: {
+      require: ['jquery'], // expose jquery for other bundles (e.g. torque)
+    }
   },
   'cartodb-specs': {
     src: [

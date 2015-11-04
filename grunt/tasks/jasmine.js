@@ -92,7 +92,8 @@ module.exports = {
           "src/api/layers.js",
           "src/api/sql.js",
           "src/api/vis.js",
-          "src/windshaft/client.js"
+          "src/windshaft/client.js",
+          "src/windshaft/filters/*.js"
         ],
         options: {
           keepRunner: true,

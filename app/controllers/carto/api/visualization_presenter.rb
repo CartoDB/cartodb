@@ -73,7 +73,7 @@ module Carto
 
       # Ideally this should go at a lower level, as relates to url generation, but at least centralize logic here
       # INFO: For now, no support for non-org users, as intended use is for sharing urls
-      def privacy_aware_map_url
+      def privacy_aware_map_url(additional_params = {}, action = 'public_visualizations_show_map')
         organization = @visualization.user.organization
 
         return unless organization
@@ -90,7 +90,7 @@ module Carto
           vis_id_schema = nil
         end
         # this builds only the fragment /viz/xxxxx/public_map
-        path = CartoDB.path(@context, 'public_visualizations_show_map', id: qualified_visualization_id(vis_id_schema))
+        path = CartoDB.path(@context, action, additional_params.merge(id: qualified_visualization_id(vis_id_schema)))
         "#{CartoDB.base_url(organization.name, base_url_username)}#{path}"
       end
 

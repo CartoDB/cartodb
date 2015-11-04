@@ -1,6 +1,6 @@
 # Static Maps
 
-Static views of CartoDB maps can be generated using the [Static Maps API](http://docs.cartodb.com/cartodb-platform/maps-api.html#static-maps-api) within CartoDB.js. The map's style, including the zoom and bounding box, follows from what was set in the viz.json file, but you can change the zoom, center, and size of your image with a few lines of code. You can also change your basemap Images can be placed in specified DOM elements on your page, or you can generate a URL for the image.
+Static views of CartoDB maps can be generated using the [Static Maps API](/cartodb-platform/maps-api/static-maps-api/) within CartoDB.js. The map's style, including the zoom and bounding box, follows from what was set in the `viz.json` file, but you can change the zoom, center, and size of your image with a few lines of code. You can also change your basemap Images can be placed in specified DOM elements on your page, or you can generate a URL for the image.
 
 ## Quick Start
 
@@ -18,36 +18,42 @@ cartodb.Image(vizjson_url)
 </script>
 ```
 
-### Result
+#### Result
+
 ```html
 <img id="AwesomeMap" src="https://cartocdn-ashbu.global.ssl.fastly.net/documentation/api/v1/map/static/center/04430594691ff84a3fdac56259e5180b:1419270587670/4/-3.4/44.2/600/400.png" class="thumb">
 ```
 
-### cartodb.Image(_layerSource_[, options])
+### cartodb.Image(_layerSource[, options]_)
 
 #### Arguments
 
-- **layerSource**: can be either a viz.json object or a [layer source object](http://docs.cartodb.com/cartodb-platform/cartodb-js.html#standard-layer-source-object-type-cartodb)
+Name |Description
+--- | ---
+layerSource | can be either a `viz.json` object or a [layer source object](/cartodb-platform/cartodb-js/api-methods/#standard-layer-source-object-type-cartodb)
 
-#### Options
+options | 
+--- | ---
+&#124;_ basemap | change the basemap specified in the layer definition. Type: Object defining base map properties (see example below).
+&#124;_ no_cdn | Disable CDN usage. Type: Boolean. Default: `false` (use CDN)
+&#124;_ override_bbox | Override default of using the bounding box of the visualization. This is needed to use `Image.center` and `Image.zoom`. Type: Boolean. Default: `false` (use bounding box)
 
-Options take the form of a JavaScript object.
+#### Returns
 
-- **options**:
-    - **basemap**: change the basemap specified in the layer definition. Type: Object defining base map properties (see example below).
-    - **no_cdn**: Disable CDN usage. Type: Boolean. Default: `false` (use CDN)
-    - **override_bbox**: Override default of using the bounding box of the visualization. This is needed to use `Image.center` and `Image.zoom`. Type: Boolean. Default: `false` (use bounding box)
+An `Image` object
+
+#### Example
 
 ```javascript
 <script>
 var vizjson_url = 'https://documentation.cartodb.com/api/v2/viz/008b3ec6-02c3-11e4-b687-0edbca4b5057/viz.json';
 var basemap = {
-        type: "http",
-        options: {
-          urlTemplate: "http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png",
-          subdomains: ["a", "b", "c"]
-        }
-      };
+  type: "http",
+  options: {
+    urlTemplate: "http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png",
+    subdomains: ["a", "b", "c"]
+  }
+};
 
 cartodb.Image(vizjson_url, {basemap: basemap})
   .size(600, 400)
@@ -56,22 +62,24 @@ cartodb.Image(vizjson_url, {basemap: basemap})
 </script>
 ```
 
-#### Returns
-An _Image_ object
+---
 
 ## cartodb.Image
 
-### Image.size(_width_,_height_)
+### Image.size(_width, height_)
 
 Sets the size of the image.
 
 #### Arguments
 
-- **width**: the width of the resulting image in pixels
-- **height**: the height of the resulting image in pixels
+Name |Description
+--- | ---
+width | the width of the resulting image in pixels
+height | the height of the resulting image in pixels
 
 #### Returns
-An _Image_ object
+
+An `Image` object
 
 ### Image.center(_latLng_)
 
@@ -79,23 +87,27 @@ Sets the center of the map.
 
 #### Arguments
 
-- **latLng**: an array of the latitude and longitude of the center of the map. Example: `[40.4378271,-3.6795367]`
+Name |Description
+--- | ---
+latLng | an array of the latitude and longitude of the center of the map. Example: `[40.4378271, -3.6795367]`
 
 #### Returns
 
-An _Image_ object
+An `Image` object
 
-### Image.zoom(zoomLevel)
+### Image.zoom(_zoomLevel_)
 
 Sets the zoom level of the static map. Must be used with the option `override_bbox: true` if not using `Image.center` or `Image.bbox`.
 
 #### Arguments
 
-- **zoomLevel**: the zoom of the resulting static map. `zoomLevel` must be an integer in the range [0,24].
+Name |Description
+--- | ---
+zoomLevel | the zoom of the resulting static map. `zoomLevel` must be an integer in the range [0,24].
 
 #### Returns
 
-An _Image_ object
+An `Image` object
 
 ### Image.bbox(_boundingBox_)
 
@@ -103,25 +115,30 @@ If you set `bbox`, `center` and `zoom` will be overridden.
 
 #### Arguments
 
-- **boundingBox**: an array of coordinates making up the bounding box for your map. `boundingBox` takes the form: `[sw_lat, sw_lon, ne_lat, ne_lon]`.
+Name |Description
+--- | ---
+boundingBox | an array of coordinates making up the bounding box for your map. `boundingBox` takes the form: `[sw_lat, sw_lon, ne_lat, ne_lon]`.
 
 #### Returns
 
-An _Image_ object
+An `Image` object
 
-### Image.into(HTMLImageElement)
+### Image.into(_HTMLImageElement_)
 
 Inserts the image into the HTML DOM element specified.
 
 #### Arguments
 
-- **HTMLImageElement**: the DOM element where your image is to be located.
+Name |Description
+--- | ---
+HTMLImageElement | the DOM element where your image is to be located.
 
 #### Returns
 
-An _Image_ object
+An `Image` object
 
-<div class="image-into">Image.into</div>
+#### Example
+
 ```javascript
 cartodb.Image(vizjson_url).into(document.getElementById('map_preview'))
 ```
@@ -130,7 +147,20 @@ cartodb.Image(vizjson_url).into(document.getElementById('map_preview'))
 
 Adds an `img` tag in the same place script is executed. It's possible to specify a class name (`class`) and/or an id attribute (`id`) for the resulting image:
 
-<div class="image-write">Image.write</div>
+#### Arguments
+
+Name |Description
+--- | ---
+class | the DOM class applied to the resulting `img` tag.
+id | the DOM id applied to the resulting `img` tag.
+src | path to a temporary image that acts as a placeholder while the static map is retrieved.
+
+#### Returns
+
+An `Image` object
+
+#### Example
+
 ```javascript
 <script>
 cartodb.Image(vizjson_url)
@@ -141,50 +171,43 @@ cartodb.Image(vizjson_url)
 </script>
 ```
 
-#### Arguments
-
-- **attributes**:
-    + **class**: the DOM class applied to the resulting `img` tag
-    + **id**: the DOM id applied to the resulting `img` tag
-    + **src**: path to a temporary image that acts as a placeholder while the static map is retrieved
-
-#### Returns
-
-An _Image_ object
-
-
 ### Image.getUrl(_callback(err, url)_)
 
 Gets the URL for the image requested.
 
-<div class="image-geturl">Image.getUrl</div>
+#### Callback Arguments
+
+Name |Description
+--- | ---
+err | error associated with the image request, if any.
+url | URL of the generated image.
+
+#### Returns
+
+An `Image` object
+
+#### Example
+
 ```javascript
 <script>
 cartodb.Image(vizjson_url)
   .size(600, 400)
   .getUrl(function(err, url) {
-      console.log('image url',url);
+    console.log('image url',url);
   })
 </script>
 ```
-
-#### Callback Arguments
-
-- **err**: error associated with the image request, if any
-- **url**: URL of the generated image
-
-#### Returns
-
-An _Image_ object
 
 ### Image.format(_format_)
 
 Gets the URL for the image requested.
 
-#### Argument
+#### Arguments
 
-- **format**: image format of resulting image. One of `png` (default) or `jpg` (which have a quality of 85 dpi)
+Name |Description
+--- | ---
+format | image format of resulting image. One of `png` (default) or `jpg` (which have a quality of 85 dpi)
 
 #### Returns
 
-An _Image_ object
+An `Image` object

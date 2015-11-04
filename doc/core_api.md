@@ -4,14 +4,15 @@ In case you are not using Leaflet, or you want to implement your own layer objec
 
 If you want to use this functionality, you only need to load cartodb.core.js from our cdn. No CSS is needed:
 
-<div class="code-title">Core API functionallity</div>
 ```html
 <script src="http://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.core.js"></script>
 ```
 
 An example using this funcionality can be found in a ModestMaps example: [view live](http://cartodb.github.com/cartodb.js/examples/modestmaps.html) / [source code](https://github.com/CartoDB/cartodb.js/blob/develop/examples/modestmaps.html).
 
-Notice that cartodb.SQL is also included in that JavaScript file
+Notice that `cartodb.SQL` is also included in that JavaScript file
+
+---
 
 ## cartodb.Tiles
 
@@ -19,25 +20,43 @@ Notice that cartodb.SQL is also included in that JavaScript file
 
 Fetch the tile template for the layer definition.
 
-### Arguments
+#### Arguments
 
-+ **layerOptions**: the data that defines the layer. It should contain at least user_name and sublayer list. These are the available options:
+Name |Description
+--- | ---
+layerOptions | the data that defines the layer. It should contain at least `user_name` and `sublayers` list.
 
-<div class="code-title">cartodb.Tiles.getTiles</div>
+options | 
+--- | ---
+&#124;_ user_name | 
+&#124;_ sublayers | 
+&#124;_ maps_api_template | 
+callback(tilesUrl, error) | a function that recieves the tiles templates. In case of an error, the first param is null and the second one will be an object with an errors attribute that contains the list of errors. 
+
+#### Example
+
+In this example, a layer with one sublayer is created. The sublayer renders all the content from a table.
+
 ```javascript
-{
+var layerData = {
   user_name: 'mycartodbuser',
   sublayers: [{
     sql: "SELECT * FROM table_name";
     cartocss: '#layer { marker-fill: #F0F0F0; }'
   }],
   maps_api_template: 'https://{user}.cartodb.com' // Optional
+};
+cartodb.Tiles.getTiles(layerData, function(tilesUrl, error) {
+  if (tilesUrl == null) {
+    console.log("error: ", error.errors.join('\n'));
+    return;
+  }
+  console.log("url template is ", tilesUrl.tiles[0]);
 }
 ```
 
-+ **callback(tilesUrl, error)**: a function that recieves the tiles templates. In case of an error, the first param is null and the second one will be an object with an errors attribute that contains the list of errors. The tilesUrl object contains url template for tiles and interactivity grids:
+The `tilesUrl` object contains url template for tiles and interactivity grids:
 
-<div class="code-title">cartodb.Tiles.getTiles</div>
 ```javascript
 {
   tiles: [
@@ -54,27 +73,5 @@ Fetch the tile template for the layer definition.
     ],
     ...
   ]
-}
-```
-
-### Example
-
-In this example, a layer with one sublayer is created. The sublayer renders all the content from a table.
-
-<div class="code-title">cartodb.Tiles.getTiles</div>
-```javascript
-var layerData = {
-  user_name: 'mycartodbuser',
-  sublayers: [{
-    sql: "SELECT * FROM table_name";
-    cartocss: '#layer { marker-fill: #F0F0F0; }'
-  }]
-};
-cartodb.Tiles.getTiles(layerData, function(tiles, err) {
-  if(tiler == null) {
-    console.log("error: ", err.errors.join('\n'));
-    return;
-  }
-  console.log("url template is ", tiles.tiles[0]);
 }
 ```

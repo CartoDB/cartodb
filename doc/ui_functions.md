@@ -6,7 +6,6 @@ There are a few functions in CartoDB.js for creating, enabling, and disabling pi
 
 Shows a small tooltip on hover:
 
-<div class="code-title">cartodb.geo.ui.Tooltip</div>
 ```javascript
 var tooltip = vis.addOverlay({
   type: 'tooltip',
@@ -22,11 +21,12 @@ The tooltip is shown when hover on feature when is called.
 
 The tooltip is not shown when hover on feature.
 
+---
+
 ## cartodb.geo.ui.InfoBox
 
 Shows a small box when the user hovers on a map feature. The position is fixed:
 
-<div class="code-title">cartodb.geo.ui.InfoBox</div>
 ```javascript
 var box = vis.addOverlay({
   type: 'infobox',
@@ -44,11 +44,12 @@ The tooltip is shown when hover on feature.
 
 The tooltip is not shown when hover on feature.
 
+---
+
 ## cartodb.geo.ui.Zoom
 
 Shows the zoom control:
 
-<div class="code-title">cartodb.geo.ui.Zoom</div>
 ```javascript
 vis.addOverlay({ type: 'zoom' });
 ```

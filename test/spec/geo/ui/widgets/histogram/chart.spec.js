@@ -1,13 +1,22 @@
 describe('widgets/histogram/chart', function() {
 
   afterEach(function() {
-    //$('.js-chart').remove();
+    $('.js-chart').remove();
   });
 
   beforeEach(function() {
     d3.select("body").append("svg").attr('class', 'js-chart');
-    this.data = genHistogramData(20);
+
     this.width = 300;
+    this.height = 100;
+
+    d3.select($('.js-chart')[0])
+    .attr('width',  this.width)
+    .attr('height', this.height)
+    .append('g')
+    .attr('class', 'Canvas');
+
+    this.data = genHistogramData(20);
     this.margin = { top: 4, right: 4, bottom: 20, left: 4 };
 
     this.view = new cdb.geo.ui.Widget.Histogram.Chart(({
@@ -25,6 +34,21 @@ describe('widgets/histogram/chart', function() {
   it('should calculate the width of the bars', function() {
     this.view.render().show();
     expect(this.view.barWidth).toBe((this.width - this.margin.left - this.margin.right) / this.data.length);
+  });
+
+  it('should draw the bars', function() {
+    this.view.render().show();
+    expect(this.view.$el.find('.Bar').size()).toBe(this.data.length);
+  });
+
+  it('should draw the axis', function() {
+    this.view.render().show();
+    expect(this.view.$el.find('.Axis').size()).toBe(1);
+  });
+
+  it('should draw the handles', function() {
+    this.view.render().show();
+    expect(this.view.$el.find('.Handle').size()).toBe(2);
   });
 });
 

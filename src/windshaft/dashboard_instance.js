@@ -179,14 +179,22 @@ cdb.windshaft.DashboardInstance = cdb.core.Model.extend({
     });
   },
 
-  forEachWidget: function(callback) {
+  getWidgetURL: function(options) {
+    var widgetId = options.widgetId;
+    var protocol = options.protocol;
+
     var layers = this.get('metadata').layers;
+    var url;
     _.each(layers, function(layer) {
       var widgets = layer.widgets;
-      for (var widgetId in widgets) {
-        var widget = widgets[widgetId];
-        callback(widgetId, widget);
+      for (var id in widgets) {
+        if (widgetId === id) {
+          url = widgets[id].url[protocol];
+          return;
+        }
       }
     });
+
+    return url;
   }
-})
+});

@@ -12,66 +12,79 @@ cdb.windshaft.Dashboard = function(options) {
 
   this.instance = new cdb.windshaft.DashboardInstance();
 
-  this.boundingBoxFilter = new cdb.windshaft.filters.BoundingBoxFilter(this.map.getViewBounds());
-
   // Bindings
   this.layerGroup.bindDashboardInstance(this.instance);
-  this.layers.bind('change', this.createInstance, this);
-  this.filters.bind('change', this.createInstance, this);
-
-  // When the instance has changed, we need to update some models (eg: widgets) in this class
-  // with the information that the instance contains.
-  var self = this;
-  this.instance.bind('change:layergroupid', function(dashboardInstance) {
-
-    // TODO: Set the URL of the attributes service once it's available
-    this.layerGroup.set({
-      urls: dashboardInstance.getTiles()
-    });
-
-    this._updateWidgetURLs();
-  }.bind(this));
-
+  this.layers.bind('change', this._createInstance, this);
+  this.filters.bind('change', this._filterChanged, this);
   this.map.bind('change:center change:zoom', _.debounce(this._boundingBoxChanged, BOUNDING_BOX_FILTER_WAIT), this);
+
+  this._createInstance();
 };
 
-cdb.windshaft.Dashboard.prototype._boundingBoxChanged = function() {
-  if (this.instance.isLoaded()) {
-    this.boundingBoxFilter.setBounds(this.map.getViewBounds());
+cdb.windshaft.Dashboard.prototype._createInstance = function(options) {
+  var options = options || {};
 
-    this._updateWidgetURLs();
-  }
-};
-
-cdb.windshaft.Dashboard.prototype._updateWidgetURLs = function() {
-  var self = this;
-  this.instance.forEachWidget(function(widgetId, widgetMetadata) {
-    var widgetModel = self._getWidgetById(widgetId);
-
-    // TODO: Could be https
-    var url = widgetMetadata.url.http;
-    widgetModel.set({
-      'url': url,
-      'boundingBox': self.boundingBoxFilter.toString()
-    });
-  });
-};
-
-cdb.windshaft.Dashboard.prototype.createInstance = function() {
   var dashboardConfig = this.configGenerator.generate({
     layers: this.layers,
     widgets: this.widgets
   });
-  console.log(dashboardConfig);
 
-  var instance = this.client.instantiateMap(dashboardConfig, this.filters.toJSON());
-  instance.bind('change:layergroupid', function() {
-    this.instance.set(instance.toJSON());
-  }.bind(this));
+  this.client.instantiateMap({
+    mapDefinition: dashboardConfig,
+    filters: this.filters.toJSON(),
+    success: function(dashboardInstance) {
+
+      // Update the dashboard instance with the attributes of the new one
+      this.instance.set(dashboardInstance.toJSON());
+
+      // TODO: Set the URL of the attributes service once it's available
+      this.layerGroup.set({
+        urls: dashboardInstance.getTiles()
+      });
+
+      this._updateWidgetURLs({
+        layerId: options.layerId
+      });
+    }.bind(this),
+    error: function(error) {
+      console.log('Error creating dashboard instance: ' + error);
+    }
+  });
 
   return this.instance;
 };
 
-cdb.windshaft.Dashboard.prototype._getWidgetById = function(widgetId) {
-  return this.widgets.find({ id: widgetId });
+cdb.windshaft.Dashboard.prototype._filterChanged = function(filter) {
+  var layerId = filter.get('layerId')
+  this._createInstance({
+    layerId: layerId
+  });
 };
+
+cdb.windshaft.Dashboard.prototype._boundingBoxChanged = function() {
+  if (this.instance) {
+    this._updateWidgetURLs();
+  }
+};
+
+cdb.windshaft.Dashboard.prototype._updateWidgetURLs = function(options) {
+  var options = options || {};
+  var self = this;
+  var boundingBoxFilter = new cdb.windshaft.filters.BoundingBoxFilter(this.map.getViewBounds());
+  var layerId = options.layerId;
+  this.widgets.each(function(widget) {
+    var silent = layerId && widget.get('layerId') !== layerId;
+    var url = self.instance.getWidgetURL({
+      widgetId: widget.get('id'),
+      protocol: 'http'
+    });
+
+    widget.set({
+      'url': url,
+      'boundingBox': boundingBoxFilter.toString()
+    }, {
+      silent: silent
+    });
+  });
+};
+

@@ -1,11 +1,11 @@
 describe('widgets/histogram/content_view', function() {
 
   beforeEach(function() {
-    debugger
+
     this.dataModel = new cdb.geo.ui.Widget.HistogramModel({
       id: 'widget_3',
+      title: 'Howdy',
       options: {
-        title: 'Howdy',
         columns: ['cartodb_id', 'title']
       }
     });
@@ -28,18 +28,30 @@ describe('widgets/histogram/content_view', function() {
 
   it('should render the histogram', function() {
     spyOn(this.view, 'render').and.callThrough();
-    this.dataModel._data.reset(genData(20));
+    this.dataModel._data.reset(genHistogramData(20));
     this.dataModel.trigger('change:data');
     expect(this.view.render).toHaveBeenCalled();
-    //expect(_.size(this.view._subviews)).toBe(3);
-    //expect(_.size(this.view._list)).toBeDefined();
-    //expect(_.size(this.view._paginator)).toBeDefined();
-    //expect(_.size(this.view._edges)).toBeDefined();
+    expect(this.view.$('h3').text()).toBe('Howdy');
+  });
+
+  it('should update stats', function() {
+    expect(this.view.viewModel.get('min')).toBe(undefined);
+    expect(this.view.viewModel.get('max')).toBe(undefined);
+    expect(this.view.viewModel.get('avg')).toBe(undefined);
+    expect(this.view.viewModel.get('total')).toBe(undefined);
+
+    this.dataModel._data.reset(genHistogramData(20));
+    this.dataModel.trigger('change:data');
+
+    expect(this.view.viewModel.get('min')).not.toBe(0);
+    expect(this.view.viewModel.get('max')).not.toBe(0);
+    expect(this.view.viewModel.get('avg')).not.toBe(0);
+    expect(this.view.viewModel.get('total')).not.toBe(0);
   });
 
 });
 
-function genData(n) {
+function genHistogramData(n) {
   n = n || 1;
   var arr = [];
   _.times(n, function(i) {

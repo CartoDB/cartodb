@@ -573,7 +573,8 @@ var Infowindow = View.extend({
     if (!util.ie || (util.browser.ie && util.browser.ie.version > 8)) {
       this.$el.css({
         'marginBottom':'-10px',
-        'display':'block',
+        'display': 'block',
+        'visibility':'visible',
         opacity:0
       });
 
@@ -599,7 +600,7 @@ var Infowindow = View.extend({
         opacity:      "0",
         display:      "block"
       }, 180, function() {
-        self.$el.css({display: "none"});
+        self.$el.css({visibility: "hidden"});
       });
     } else {
       this.$el.hide();
@@ -613,7 +614,7 @@ var Infowindow = View.extend({
     if(this.isHidden()) return;
 
     var
-    offset          = this.model.get("offset")
+    offset          = this.model.get("offset"),
     pos             = this.mapView.latLonToPixel(this.model.get("latlng")),
     x               = this.$el.position().left,
     y               = this.$el.position().top,
@@ -629,7 +630,7 @@ var Infowindow = View.extend({
   /**
    *  Adjust pan to show correctly the infowindow
    */
-  adjustPan: function (callback) {
+  adjustPan: function () {
     var offset = this.model.get("offset");
 
     if (!this.model.get("autoPan") || this.isHidden()) { return; }

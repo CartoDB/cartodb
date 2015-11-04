@@ -9,6 +9,7 @@ The documentation below refers to CartoDB.js v3. For major changes in the librar
 Creates a visualization inside the map_id DOM object.
 
 <div class="code-title">cartodb.createVis</div>
+
 ```javascript
 var url = 'http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json';
 
@@ -80,6 +81,7 @@ An overlay object, see [vis.Overlays](#visoverlays).
 Returns the first overlay with the specified **type**.
 
 <div class="code-title">vis.getOverlay</div>
+
 ```javascript
 var zoom = vis.getOverlay('zoom');
 zoom.clean() // remove it from the screen
@@ -126,11 +128,13 @@ With visualizations already created through the CartoDB console, you can simply 
 - **layerSource**: contains information about the layer. It can be specified in 2 ways:
 
 <div class="code-title">Passing the url where the layer data is located</div>
+
 ```javascript
 cartodb.createLayer(map, 'http://myserver.com/layerdata.json')
 ```
 
 <div class="code-title">passing the data directly</div>
+
 ```javascript
 cartodb.createLayer(map, { layermetadata })
 ```
@@ -147,6 +151,7 @@ cartodb.createLayer(map, { layermetadata })
     all the tiled layers (non animated ones) are merged into a single one. The default value for
     this option is 1 (usually tiled layers).
   - **filter**: a string or array of strings to specify the type(s) of sublayers that will be rendered (eg: `['http', 'mapnik']`). All non-torque layers (http and mapnik) will be rendered if this option is not present.
+  - **no_cdn**: true to disable CDN when fetching tiles
 
 - **callback(_layer_)**: if a function is specified, it will be invoked after the layer has been created. The layer will be passed as an argument.
 
@@ -419,6 +424,7 @@ A SubLayer object.
 #### Example
 
 <div class="code-title">layer.getSubLayer</div>
+
 ```javascript
 layer.getSubLayer(1).hide();
 
@@ -438,6 +444,7 @@ The number of sublayers.
 #### Example
 
 <div class="code-title">Hide layers using layer.getSubLayerCount</div>
+
 ```javascript
 var num_sublayers = layer.getSubLayerCount();
 
@@ -455,6 +462,7 @@ Adds a new data to the current layer. With this method, data from multiple table
 - **layerDefinition**: an object with the sql and cartocss that defines the data, should be like:
 
 <div class="code-title">layerDefinition</div>
+
 ```javascript
 {
   sql: "SELECT * FROM table_name",
@@ -475,6 +483,7 @@ A SubLayer object.
 #### Example
 
 <div class="code-title">layer.createSubLayer</div>
+
 ```javascript
 cartodb.createLayer(map, 'http://examples.cartodb.com/api/v2/viz/european_countries_e/viz.json', function(layer) {
   // add populated places points over the countries layer
@@ -507,6 +516,7 @@ The layer itself.
 Sets the configuration of a layer when using [named maps](http://docs.cartodb.com/cartodb-platform/maps-api.html#named-maps-1). It can be invoked in different ways:
 
 <div class="code-title">layer.setParams</div>
+
 ```javascript
 layer.setParams('test', 10); // sets test = 10
 layer.setParams('test', null); // unset test
@@ -533,6 +543,7 @@ Sets sublayer parameters. Useful when more than one parameter needs to be change
 - **layerDefinition**: an object with the sql and cartocss that defines the data, like:
 
 <div class="code-title">layerDefinition</div>
+
 ```javascript
 {
   sql: "SELECT * FROM table_name",
@@ -548,6 +559,7 @@ The layer itself.
 #### Example
 
 <div class="code-title">sublayer.set</div>
+
 ```javascript
 sublayer.set({
   sql: "SELECT * FROM table_name WHERE cartodb_id < 100",
@@ -629,6 +641,7 @@ to skip sanitization, or a function to provide your own sanitization (e.g. `func
 - **maxHeight**: Max height of the scrolled content (value must be a number).
 
 <div class="code-title">sublayer.infowindow.set</div>
+
 ```html
 <div id="map"></div>
 

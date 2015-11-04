@@ -1,25 +1,16 @@
 describe('widgets/loader_view', function() {
 
   beforeEach(function() {
-    this.dataModel = new cdb.geo.ui.Widget.Model({
+    this.model = new cdb.geo.ui.Widget.Model({
       id: 'widget_1',
-      options: {
-        title: 'Hello widget',
-        columns: ['cartodb_id', 'description']
-      }
-    });
-    this.viewModel = new cdb.core.Model({
-      sync: true
+      title: 'Hello widget',
+      columns: ['cartodb_id', 'description']
     });
 
-    spyOn(this.dataModel, 'once').and.callThrough();
-    spyOn(this.dataModel, 'bind').and.callThrough();
-    spyOn(this.dataModel, 'unbind').and.callThrough();
-    spyOn(this.viewModel, 'bind').and.callThrough();
+    spyOn(this.model, 'bind').and.callThrough();
 
     this.view = new cdb.geo.ui.Widget.Loader({
-      viewModel: this.viewModel,
-      dataModel: this.dataModel
+      model: this.model
     });
   });
 
@@ -29,38 +20,8 @@ describe('widgets/loader_view', function() {
   });
 
   it('should have a binds from the beginning', function() {
-    expect(this.viewModel.bind.calls.argsFor(0)[0]).toEqual('change:sync');
-    expect(this.dataModel.once.calls.argsFor(0)[0]).toEqual('loading');
-    expect(this.dataModel.once.calls.argsFor(1)[0]).toEqual('error');
-    expect(this.dataModel.once.calls.argsFor(2)[0]).toEqual('change:data');
-    expect(this.dataModel.bind.calls.count()).toEqual(0);
-    expect(this.dataModel.unbind.calls.count()).toEqual(0);
-  });
-
-  describe('sync', function(){
-    beforeEach(function() {
-      this.view.render();
-    });
-
-    it('should set binds if sync option is true', function() {
-      // Fake first load
-      this.dataModel.trigger('change:data');
-      // Due to sync is enabled from the beginning, loading and change:data
-      // binds should be defined.
-      expect(this.dataModel.unbind.calls.count()).toEqual(1);
-      expect(this.dataModel.bind.calls.argsFor(1)[0]).toEqual('loading');
-      expect(this.dataModel.bind.calls.argsFor(0)[0]).toEqual('error change:data');
-      expect(this.dataModel.bind.calls.count()).toEqual(2);
-    });
-
-    it('should not set binds if sync option is false', function() {
-      // Fake first load
-      this.dataModel.trigger('change:data');
-      // Change sync option
-      this.viewModel.set('sync', false);
-      expect(this.dataModel.unbind.calls.count()).toEqual(2);
-      expect(this.dataModel.bind.calls.count()).toEqual(2);
-    });
+    expect(this.model.bind.calls.argsFor(0)[0]).toEqual('loading');
+    expect(this.model.bind.calls.argsFor(1)[0]).toEqual('sync error');
   });
 
   describe('visibility', function() {

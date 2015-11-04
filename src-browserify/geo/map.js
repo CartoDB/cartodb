@@ -1,10 +1,10 @@
 var _ = require('underscore');
 var L = require('leaflet');
+var Backbone = require('backbone');
 var config = require('cdb.config');
 var log = require('cdb.log');
 var Model = require('../core/model');
 var Layers = require('./map/layers');
-var Geometries = require('./geometries');
 
 var Map = Model.extend({
 
@@ -33,7 +33,7 @@ var Map = Model.extend({
     this.layers.bind('remove', this._updateAttributions, this);
     this.layers.bind('change:attribution', this._updateAttributions, this);
 
-    this.geometries = new Geometries();
+    this.geometries = new Backbone.Collection();
   },
 
   _updateAttributions: function() {

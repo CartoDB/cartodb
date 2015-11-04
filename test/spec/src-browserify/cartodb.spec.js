@@ -126,7 +126,6 @@ describe('cartodb.js bundle', function() {
       expect(cdb.geo.geocoder.NOKIA).toEqual(jasmine.any(Object));
 
       expect(cdb.geo.Geometry).toEqual(jasmine.any(Function));
-      expect(cdb.geo.Geometries).toEqual(jasmine.any(Function));
 
       expect(cdb.geo.MapLayer).toEqual(jasmine.any(Function));
       expect(cdb.geo.TileLayer).toEqual(jasmine.any(Function));

@@ -62,7 +62,6 @@ cdb.geo.common.CartoDBLogo = require('./geo/cartodb-logo');
 cdb.geo.geocoder.NOKIA = require('./geo/geocoder/nokia-geocoder');
 cdb.geo.geocoder.YAHOO = require('./geo/geocoder/yahoo-geocoder');
 cdb.geo.Geometry = require('./geo/geometry');
-cdb.geo.Geometries = require('./geo/geometries');
 
 cdb.geo.MapLayer = require('./geo/map/map-layer');
 cdb.geo.TileLayer = require('./geo/map/tile-layer');

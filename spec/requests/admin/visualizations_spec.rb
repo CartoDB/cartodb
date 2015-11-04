@@ -438,11 +438,103 @@ describe Admin::VisualizationsController do
       }
       org.destroy
     end
+
+    # @see https://github.com/CartoDB/cartodb/issues/6081
+    it 'If logged user navigates to legacy url from org user without org name, gets redirected properly' do
+      db_config   = Rails.configuration.database_configuration[Rails.env]
+      # Why not passing db_config directly to Sequel.postgres here ?
+      # See https://github.com/CartoDB/cartodb/issues/421
+      db = Sequel.postgres(
+        host:     db_config.fetch('host'),
+        port:     db_config.fetch('port'),
+        database: db_config.fetch('database'),
+        username: db_config.fetch('username')
+      )
+      CartoDB::Visualization.repository = DataRepository::Backend::Sequel.new(db, :visualizations)
+
+      CartoDB::UserOrganization.any_instance.stubs(:move_user_tables_to_schema).returns(nil)
+      CartoDB::TablePrivacyManager.any_instance.stubs(
+        set_from_table_privacy: nil,
+        propagate_to_varnish: nil
+      )
+
+      ::User.any_instance.stubs(
+        after_create: nil
+      )
+
+      CartoDB::UserModule::DBService.any_instance.stubs(
+        grant_user_in_database: nil,
+        grant_publicuser_in_database: nil,
+        set_user_privileges_at_db: nil,
+        set_statement_timeouts: nil,
+        set_user_as_organization_member: nil,
+        rebuild_quota_trigger: nil,
+        setup_organization_user_schema: nil,
+        set_database_search_path: nil,
+        cartodb_extension_version_pre_mu?: false,
+        load_cartodb_functions: nil,
+        create_schema: nil,
+        move_tables_to_schema: nil,
+        create_public_db_user: nil,
+        monitor_user_notification: nil,
+        enable_remote_db_user: nil
+      )
+
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true)
+      Table.any_instance.stubs(
+        perform_cartodb_function: nil,
+        update_cdb_tablemetadata: nil,
+        update_table_pg_stats: nil,
+        create_table_in_database!: nil,
+        get_table_id: 1,
+        grant_select_to_tiler_user: nil,
+        cartodbfy: nil,
+        set_the_geom_column!: nil
+      )
+
+      # --------TEST ITSELF-----------
+
+      org = Organization.new
+      org.name = 'vis-spec-org'
+      org.quota_in_bytes = 1024**3
+      org.seats = 10
+      org.save
+
+      ::User.any_instance.stubs(:remaining_quota).returns(1000)
+      user_a = create_user(username: 'org-user-a', quota_in_bytes: 123456789, table_quota: 400)
+      user_org = CartoDB::UserOrganization.new(org.id, user_a.id)
+      user_org.promote_user_to_admin
+      org.reload
+      user_a.reload
+
+      user_b = create_user(username: 'user-b-non-org', quota_in_bytes: 123456789, table_quota: 400)
+
+      vis_id = factory(user_a).fetch('id')
+      vis = CartoDB::Visualization::Member.new(id: vis_id).fetch
+      vis.privacy = CartoDB::Visualization::Member::PRIVACY_PUBLIC
+      vis.store
+
+      login_host(user_b)
+
+      # dirty but effective trick, generate the url as if were for a non-org user, then replace usernames
+      # to respect format and just have no organization
+      destination_url = CartoDB.url(self, 'public_visualizations_public_map', { id: vis.name }, user_b)
+                               .sub(user_b.username, user_a.username)
+
+      get destination_url
+      last_response.status.should be(302)
+      last_response.headers["Location"].should eq CartoDB.url(self, 'public_visualizations_public_map',
+                                                              { id: vis.id, redirected: true }, user_a)
+      follow_redirect!
+      last_response.status.should be(200)
+
+      org.destroy
+    end
   end
 
-  def login_host(user, org)
+  def login_host(user, org = nil)
     login_as(user, scope: user.username)
-    host! "#{org.name}.localhost.lan"
+    host! "#{org.nil? ? user.username : org.name}.localhost.lan"
   end
 
   def follow_redirects(limit = 10)

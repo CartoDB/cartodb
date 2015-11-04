@@ -20,7 +20,6 @@ cdb.windshaft.filters.Collection = Backbone.Collection.extend({
     return json;
   },
 
-
   getActiveFilters: function() {
     return this.filter(function(filter) {
       return !filter.isEmpty();

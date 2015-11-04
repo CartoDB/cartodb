@@ -22,19 +22,21 @@ cdb.windshaft.Client.MAX_GET_SIZE = 2033;
  * @param  {function} callback A callback that will get the public or private map
  * @return {cdb.windshaft.DashboardInstance} The instance of the dashboard
  */
-cdb.windshaft.Client.prototype.instantiateMap = function(mapDefinition, filters) {
+cdb.windshaft.Client.prototype.instantiateMap = function(options) {
+  var mapDefinition = options.mapDefinition;
+  var filters = options.filters;
+  var successCallback = options.success;
+  var errorCallback = options.error;
   var payload = JSON.stringify(mapDefinition);
-
-  var dashboardInstance = new cdb.windshaft.DashboardInstance();
 
   var options = {
     success: function(data) {
       if (data.errors) {
-        throw "Windshaft Error: " + data.errors;
+        errorCallback(data.errors[0]);
       } else {
         data.windshaftURLTemplate = this.windshaftURLTemplate;
         data.userName = this.userName;
-        dashboardInstance.set(data);
+        successCallback(new cdb.windshaft.DashboardInstance(data));
       }
     }.bind(this),
     error: function(xhr) {
@@ -42,7 +44,7 @@ cdb.windshaft.Client.prototype.instantiateMap = function(mapDefinition, filters)
       try {
         err = JSON.parse(xhr.responseText);
       } catch(e) {}
-      throw "Windshaft Error: " + err.errors;
+      errorCallback(err.errors[0]);
     }
   };
 
@@ -61,8 +63,6 @@ cdb.windshaft.Client.prototype.instantiateMap = function(mapDefinition, filters)
   } else {
     this._get(payload, params, options);
   }
-
-  return dashboardInstance;
 }
 
 cdb.windshaft.Client.prototype._usePOST = function(payload, params) {

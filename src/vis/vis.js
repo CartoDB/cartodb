@@ -567,8 +567,6 @@ var Vis = cdb.core.View.extend({
       map: map
     });
 
-    dashboard.createInstance();
-
     this.map.layers.reset(_.map(data.layers, function(layerData) {
       var model;
 

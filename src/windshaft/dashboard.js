@@ -3,8 +3,15 @@ cdb.windshaft.Dashboard = function(options) {
 
   this.layerGroup = options.layerGroup;
   this.layers = new Backbone.Collection(options.layers);
-  this.widgets = new Backbone.Collection(options.widgets);
-  this.filters = new cdb.windshaft.filters.Collection(options.filters);
+
+  // Flat list of widgets
+  var widgets = _.flatten(this.layers.map(function(layer) { return layer.widgets.models; }));
+  this.widgets =  new Backbone.Collection(widgets);
+
+  // Flat list of filters
+  var filters = _.flatten(_.map(widgets, function(widget) { return widget.filter; }));
+  this.filters = new cdb.windshaft.filters.Collection(filters);
+
   this.map = options.map;
   this.client = options.client;
   this.statTag = options.statTag;
@@ -25,8 +32,7 @@ cdb.windshaft.Dashboard.prototype._createInstance = function(options) {
   var options = options || {};
 
   var dashboardConfig = this.configGenerator.generate({
-    layers: this.layers,
-    widgets: this.widgets
+    layers: this.layers.models
   });
 
   this.client.instantiateMap({
@@ -55,7 +61,7 @@ cdb.windshaft.Dashboard.prototype._createInstance = function(options) {
 };
 
 cdb.windshaft.Dashboard.prototype._filterChanged = function(filter) {
-  var layerId = filter.get('layerId')
+  var layerId = filter.get('layerId');
   this._createInstance({
     layerId: layerId
   });
@@ -72,18 +78,21 @@ cdb.windshaft.Dashboard.prototype._updateWidgetURLs = function(options) {
   var self = this;
   var boundingBoxFilter = new cdb.windshaft.filters.BoundingBoxFilter(this.map.getViewBounds());
   var layerId = options.layerId;
-  this.widgets.each(function(widget) {
-    var silent = layerId && widget.get('layerId') !== layerId;
-    var url = self.instance.getWidgetURL({
-      widgetId: widget.get('id'),
-      protocol: 'http'
-    });
 
-    widget.set({
-      'url': url,
-      'boundingBox': boundingBoxFilter.toString()
-    }, {
-      silent: silent
+  this.layers.each(function(layer) {
+    layer.widgets.each(function(widget) {
+      var silent = layerId && layer.get('id') !== layerId;
+      var url = self.instance.getWidgetURL({
+        widgetId: widget.get('id'),
+        protocol: 'http'
+      });
+
+      widget.set({
+        'url': url,
+        'boundingBox': boundingBoxFilter.toString()
+      }, {
+        silent: silent
+      });
     });
   });
 };

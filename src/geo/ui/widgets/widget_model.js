@@ -18,6 +18,10 @@ cdb.geo.ui.Widget.Model = cdb.core.Model.extend({
   },
 
   initialize: function(attrs, opts) {
+    if (opts.filter) {
+      this.filter = opts.filter;
+    }
+
     this._initBinds();
   },
 

@@ -1,8 +1,8 @@
 cdb.geo.ui.Widget.HistogramModel = cdb.geo.ui.Widget.Model.extend({
 
-  initialize: function() {
+  initialize: function(attrs, opts) {
     this._data = new Backbone.Collection(this.get('data'));
-    cdb.geo.ui.Widget.Model.prototype.initialize.call(this);
+    cdb.geo.ui.Widget.Model.prototype.initialize.call(this, attrs, opts);
   },
 
   getData: function() {

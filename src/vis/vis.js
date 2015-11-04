@@ -491,8 +491,6 @@ var Vis = cdb.core.View.extend({
       }
     };
 
-    var filterModels = [];
-    var widgetModels = [];
     _.each(cartoDBLayers, function(layer, index) {
       var widgets = layer.get('options').widgets;
 
@@ -517,13 +515,12 @@ var Vis = cdb.core.View.extend({
             layerIndex: index,
             layerId: widgetData.layerId
           });
-          filterModels.push(filterModel);
         }
 
         // Instantiate the model
         var modelClass = widgetClasses[widgetType].model;
         var widgetModel = new cdb.geo.ui.Widget[modelClass](widgetData, { filter: filterModel });
-        widgetModels.push(widgetModel);
+        layer.widgets.add(widgetModel);
 
         // Instantitate the view
         var viewClass = widgetClasses[widgetType].view;
@@ -562,8 +559,6 @@ var Vis = cdb.core.View.extend({
       statTag: datasource.stat_tag,
       layerGroup: cartoDBLayerGroup,
       layers: cartoDBLayers,
-      widgets: widgetModels,
-      filters: filterModels,
       map: map
     });
 

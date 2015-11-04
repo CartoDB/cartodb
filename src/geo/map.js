@@ -155,12 +155,17 @@ cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
     cartocss_version: '2.1.0'
   },
 
+  initialize: function() {
+    this.widgets = new Backbone.Collection();
+    cdb.geo.MapLayer.prototype.initialize.apply(this, arguments);
+  },
+
   activate: function() {
-    this.set({active: true, opacity: 0.99, visible: true})
+    this.set({active: true, opacity: 0.99, visible: true});
   },
 
   deactivate: function() {
-    this.set({active: false, opacity: 0, visible: false})
+    this.set({active: false, opacity: 0, visible: false});
   },
 
   /**

@@ -1,11 +1,8 @@
 cdb.geo.ui.Widget.CategoryModel = cdb.geo.ui.Widget.Model.extend({
 
   initialize: function(attrs, opts) {
-    if (opts.filter) {
-      this.filter = opts.filter;
-    }
     this._data = new Backbone.Collection(this.get('data'));
-    cdb.geo.ui.Widget.Model.prototype.initialize.call(this);
+    cdb.geo.ui.Widget.Model.prototype.initialize.call(this, attrs, opts);
   },
 
   getData: function() {

@@ -5,9 +5,9 @@ cdb.geo.ui.Widget.ListModel = cdb.geo.ui.Widget.Model.extend({
     per_page: 100
   },
 
-  initialize: function() {
+  initialize: function(attrs, opts) {
     this._data = new Backbone.Collection(this.get('data'));
-    cdb.geo.ui.Widget.Model.prototype.initialize.call(this);
+    cdb.geo.ui.Widget.Model.prototype.initialize.call(this, attrs, opts);
   },
 
   getData: function() {
@@ -34,5 +34,4 @@ cdb.geo.ui.Widget.ListModel = cdb.geo.ui.Widget.Model.extend({
       }
     };
   }
-
 });

@@ -9,6 +9,10 @@
   @include justify-content(space-between, justify);
   @include align-items(center);
 }
+.Widget-contentSpaced--sideMargins {
+  margin-right: $sMargin-section;
+  margin-left: $sMargin-section;
+}
 .Widget-contentSpaced--topAligned {
   @include align-items(flex-start);
 }

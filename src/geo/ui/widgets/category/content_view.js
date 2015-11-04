@@ -41,19 +41,27 @@ cdb.geo.ui.Widget.Category.Content = cdb.geo.ui.Widget.Content.extend({
   _initBinds: function() {},
 
   _initViews: function() {
+    // Selected control
+    var filters = new cdb.geo.ui.Widget.Category.FilterView({
+      model: this.model,
+      filter: this.filter
+    });
+    this.$('.js-content').html(filters.render().el);
+    this.addView(filters);
+
     // List view -> items view
     var list = new cdb.geo.ui.Widget.Category.ItemsView({
       model: this.model,
       filter: this.filter,
       itemsPerPage: this._ITEMS_PER_PAGE
     });
-    this.$('.js-content').html(list.render().el);
+    this.$('.js-content').append(list.render().el);
     this.addView(list);
 
     // Paginator
     var pagination = new cdb.geo.ui.Widget.Category.PaginatorView({
       $target: list.$el,
-      viewModel: this.model,
+      dataModel: this.model,
       itemsPerPage: this._ITEMS_PER_PAGE
     });
     this.$('.js-footer').append(pagination.render().el);

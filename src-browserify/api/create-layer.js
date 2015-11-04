@@ -5,7 +5,7 @@ var Loader = require('../core/loader');
 var Map = require('../geo/map');
 var Vis = require('../vis/vis');
 var Layers = require('../vis/vis/layers');
-var _Promise = require('./_promise');
+var Promise = require('./promise');
 
 /**
  * compose cartodb url
@@ -62,7 +62,7 @@ module.exports = function(map, layer, options, callback) {
   if(_.isFunction(fn)) {
     callback = fn;
   }
-  var promise = new _Promise();
+  var promise = new Promise();
 
   promise.addTo = function(map, position) {
     promise.on('done', function() {

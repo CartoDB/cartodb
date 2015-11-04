@@ -46,6 +46,7 @@ describe('cartodb.js bundle', function() {
 
       expect(cdb.Image).toEqual(jasmine.any(Function));
       expect(cdb.SQL).toEqual(jasmine.any(Function));
+      expect(cdb.Promise).toEqual(jasmine.any(Function));
 
       expect(cdb.VERSION).toEqual(jasmine.any(String));
       expect(cdb.DEBUG).toEqual(jasmine.any(Boolean));
@@ -125,7 +126,6 @@ describe('cartodb.js bundle', function() {
       expect(cdb.geo.geocoder.NOKIA).toEqual(jasmine.any(Object));
 
       expect(cdb.geo.Geometry).toEqual(jasmine.any(Function));
-      expect(cdb.geo.Geometries).toEqual(jasmine.any(Function));
 
       expect(cdb.geo.MapLayer).toEqual(jasmine.any(Function));
       expect(cdb.geo.TileLayer).toEqual(jasmine.any(Function));
@@ -151,11 +151,6 @@ describe('cartodb.js bundle', function() {
 
       expect(cdb.geo.ui.InfowindowModel).toEqual(jasmine.any(Function));
       expect(cdb.geo.ui.Infowindow).toEqual(jasmine.any(Function));
-
-      expect(cdb.geo.ui.SwitcherItemModel).toEqual(jasmine.any(Function));
-      expect(cdb.geo.ui.SwitcherItems).toEqual(jasmine.any(Function));
-      expect(cdb.geo.ui.SwitcherItem).toEqual(jasmine.any(Function));
-      expect(cdb.geo.ui.Switcher).toEqual(jasmine.any(Function));
 
       expect(cdb.geo.ui.SlidesControllerItem).toEqual(jasmine.any(Function));
       expect(cdb.geo.ui.SlidesController).toEqual(jasmine.any(Function));

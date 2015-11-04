@@ -62,7 +62,6 @@ cdb.geo.common.CartoDBLogo = require('./geo/cartodb-logo');
 cdb.geo.geocoder.NOKIA = require('./geo/geocoder/nokia-geocoder');
 cdb.geo.geocoder.YAHOO = require('./geo/geocoder/yahoo-geocoder');
 cdb.geo.Geometry = require('./geo/geometry');
-cdb.geo.Geometries = require('./geo/geometries');
 
 cdb.geo.MapLayer = require('./geo/map/map-layer');
 cdb.geo.TileLayer = require('./geo/map/tile-layer');
@@ -79,8 +78,8 @@ cdb.geo.MapView = require('./geo/map-view');
 
 _.extend(cdb.geo, require('./geo/gmaps'));
 
-// overwrites the _Promise defined from the core bundle
-cdb._Promise = require('./api/_promise');
+// overwrites the Promise defined from the core bundle
+cdb.Promise = require('./api/promise');
 
 cdb.geo.ui.Text = require('./geo/ui/text');
 cdb.geo.ui.Annotation = require('./geo/ui/annotation');
@@ -96,11 +95,6 @@ _.extend(cdb.geo.ui.Legend, require('./geo/ui/legend/legend-view-exports'));
 
 cdb.geo.ui.InfowindowModel = require('./geo/ui/infowindow-model');
 cdb.geo.ui.Infowindow = require('./geo/ui/infowindow');
-
-cdb.geo.ui.SwitcherItemModel = require('./geo/ui/switcher-item-model');
-cdb.geo.ui.SwitcherItems = require('./geo/ui/switcher-items');
-cdb.geo.ui.SwitcherItem = require('./geo/ui/switcher-item');
-cdb.geo.ui.Switcher = require('./geo/ui/switcher');
 
 cdb.geo.ui.SlidesControllerItem = require('./geo/ui/slides-controller-item');
 cdb.geo.ui.SlidesController = require('./geo/ui/slides-controller');

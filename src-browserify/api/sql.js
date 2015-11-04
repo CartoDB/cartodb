@@ -1,7 +1,7 @@
 var _ = require('underscore');
 var $ = require('jquery');
 var Mustache = require('mustache');
-var _Promise = require('./_promise');
+var Promise = require('./promise');
 
 function SQL(options) {
   if(window.cdb === this || window === this) {
@@ -53,7 +53,7 @@ SQL.prototype.execute = function(sql, vars, options, callback) {
   //Variable that defines if a query should be using get method or post method
   var MAX_LENGTH_GET_QUERY = 1024;
 
-  var promise = new _Promise();
+  var promise = new Promise();
   if(!sql) {
     throw new TypeError("sql should not be null");
   }
@@ -167,7 +167,7 @@ SQL.prototype.execute = function(sql, vars, options, callback) {
 }
 
 SQL.prototype.getBounds = function(sql, vars, options, callback) {
-  var promise = new _Promise();
+  var promise = new Promise();
   var args = arguments,
   fn = args[args.length -1];
   if(_.isFunction(fn)) {

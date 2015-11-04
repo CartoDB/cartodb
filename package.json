@@ -86,8 +86,6 @@
       "mwheelIntent": "./vendor/mwheelIntent.js",
       "odyssey": "./vendor/mod/odyssey.js",
       "spin.js": "./vendor/spin.js",
-      "carto": "./vendor/mod/carto.js",
-      "torque": "./vendor/mod/torque.uncompressed.js",
       "wax.cartodb.js": "./vendor/wax.cartodb.js"
     },
     "browserify-shim": {

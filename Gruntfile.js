@@ -163,6 +163,7 @@ module.exports = function(grunt) {
   var css = allDeps
     .concat([
       'sass',
+      'concat',
       'cssmin',
       'imagemin',
     ]);
@@ -170,7 +171,6 @@ module.exports = function(grunt) {
     .concat('connect:styleguide');
   var js = allDeps
     .concat([
-      'concat',
       'browserify',
     ]);
   var buildJS = allDeps

@@ -47,6 +47,7 @@ module.exports = function(grunt) {
     pkg:  pkg,
     gitinfo: {},
     browserify: require('./grunt/tasks/browserify').task(grunt),
+    exorcise: require('./grunt/tasks/exorcise').task(),
     s3: require('./grunt/tasks/s3').task(grunt, config),
     prompt: require('./grunt/tasks/prompt').task(grunt, config),
     replace: require('./grunt/tasks/replace').task(grunt, config),
@@ -174,7 +175,10 @@ module.exports = function(grunt) {
     ]);
   var buildJS = allDeps
     .concat(js)
-    .concat('uglify');
+    .concat([
+      'exorcise',
+      'uglify',
+    ]);
   var devJS = allDeps
     .concat('preWatch')
     .concat(js)

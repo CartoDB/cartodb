@@ -32,7 +32,7 @@ cdb.geo.ui.Widget.CategoryModel = cdb.geo.ui.Widget.Model.extend({
   },
 
   parse: function(data) {
-    var categories = data.categories;
+    var categories = data.ownFilterOff.categories;
     var columnName = this.get('column');
     var maxCount = categories.reduce(function(memo, datum) {
       return memo + datum.count;

@@ -1,7 +1,7 @@
 #!/bin/bash
 # Jesus Vazquez
 truncate -s 0 specfull.txt
-cat Makefile.parallel| grep -v 'spec/lib/varnish_spec.rb'| \
+cat Makefile | grep -v 'spec/lib/varnish_spec.rb'| \
 grep -v 'spec/integrations/common_data_integration.rb'| \
 grep -v 'spec/models/visualization/table_blender.rb'| \
 grep -v 'services/user-mover/spec/user_mover_spec.rb'| \

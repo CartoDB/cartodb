@@ -12,7 +12,7 @@ module.exports = {
 
   'src-browserify-specs': {
     src: [
-        'test/lib/fail-tests-if-have-errors-in-src.js',
+        'test/fail-tests-if-have-errors-in-src.js',
         'test/spec/src-browserify/api/**/*',
         'test/spec/src-browserify/core/**/*',
         'test/spec/src-browserify/geo/**/*',
@@ -46,7 +46,7 @@ module.exports = {
   },
   'cartodb-specs': {
     src: [
-      'test/lib/fail-tests-if-have-errors-in-src.js',
+      'test/fail-tests-if-have-errors-in-src.js',
       'test/spec/src-browserify/cartodb.spec.js',
     ],
     dest: '<%= config.tmp %>/cartodb-specs.js',
@@ -58,7 +58,7 @@ module.exports = {
   },
   'odyssey-specs': {
     src: [
-      'test/lib/fail-tests-if-have-errors-in-src.js',
+      'test/fail-tests-if-have-errors-in-src.js',
       'test/spec/src-browserify/odyssey.spec.js',
     ],
     dest: '<%= config.tmp %>/odyssey-specs.js',

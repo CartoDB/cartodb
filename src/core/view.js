@@ -1,5 +1,4 @@
 (function() {
-
   /**
    * Base View for all CartoDB views.
    * DO NOT USE Backbone.View directly

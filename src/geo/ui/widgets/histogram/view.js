@@ -3,8 +3,6 @@
  *
  */
 
-cdb.geo.ui.Widget.Histogram = {};
-
 cdb.geo.ui.Widget.Histogram.View = cdb.geo.ui.Widget.View.extend({
 
   _createContentView: function() {

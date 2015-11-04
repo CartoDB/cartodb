@@ -32,6 +32,7 @@ WORKING_SPECS_1 = \
   spec/models/map/copier_spec.rb \
   spec/models/visualization/*.rb \
   spec/models/named_maps_spec.rb \
+  spec/models/data_import_spec.rb \
   spec/models/geocoding_spec.rb \
   spec/models/common_data_spec.rb \
   spec/lib/sql_parser_spec.rb \

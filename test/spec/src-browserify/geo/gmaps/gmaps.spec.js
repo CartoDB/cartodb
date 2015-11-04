@@ -2,7 +2,6 @@ var $ = require('jquery');
 var _ = require('underscore');
 var L = require('leaflet');
 var Backbone = require('backbone');
-window.torque = require('torque.js'); // to window.torque.GMapsTorqueLayer, required by GMapsTorqueLayerView
 
 var Map = require('cdb/geo/map');
 var GoogleMapsMapView = require('cdb/geo/gmaps/gmaps-map-view');
@@ -16,7 +15,6 @@ var GMapsCartoDBLayerGroupView = require('cdb/geo/gmaps/gmaps-cartodb-layer-grou
 var GMapsPlainLayerView = require('cdb/geo/gmaps/gmaps-plain-layer-view');
 var Geometry = require('cdb/geo/geometry');
 var GmapsPathView = require('cdb/geo/gmaps/gmaps-path-view');
-var GMapsTorqueLayerView = require('cdb/geo/gmaps/gmaps-torque-layer-view');
 
   describe('geo/gmaps/gmaps-map-view', function() {
     var mapView;
@@ -25,27 +23,16 @@ var GMapsTorqueLayerView = require('cdb/geo/gmaps/gmaps-torque-layer-view');
     var container;
     beforeEach(function() {
       container = $('<div>').css('height', '200px');
-      //$('body').append(container);
       map = new Map();
       mapView = new GoogleMapsMapView({
         el: container,
         map: map
       });
 
-      // layerURL = 'http://{s}.tiles.mapbox.com/v3/cartodb.map-1nh578vv/{z}/{x}/{y}.png';
       layerURL = 'http://localhost/{s}/light_nolabels/{z}/{x}/{y}.png';
       layer = new TileLayer({ urlTemplate: layerURL });
 
-      spy = {
-        zoomChanged:        function(){},
-        centerChanged:      function(){},
-        scrollWheelChanged: function(){}
-      };
-
-      spyOn(spy, 'zoomChanged');
-      spyOn(spy, 'centerChanged');
-      spyOn(spy, 'scrollWheelChanged');
-
+      spy = jasmine.createSpyObj('spy', ['zoomChanged', 'centerChanged', 'scrollWheelChanged']);
       map.bind('change:zoom', spy.zoomChanged);
       map.bind('change:center', spy.centerChanged);
       map.bind('change:scrollwheel', spy.scrollWheelChanged);
@@ -244,14 +231,5 @@ var GMapsTorqueLayerView = require('cdb/geo/gmaps/gmaps-torque-layer-view');
       var v = mapView.geometries[geo.cid];
       var geojson = GmapsPathView.getGeoJSON(v.geom, 'MultiPolygon');
       expect(geojson).toEqual(multipoly);
-    });
-
-    it("should switch layer", function(done) {
-      map.addLayer(layer);
-      layer.set({'type': 'torque', 'cartocss': 'Map{ -torque-frame-count: 10; }'});
-      setTimeout(function() {
-        expect(mapView.layers[layer.cid] instanceof GMapsTorqueLayerView).toEqual(true);
-        done();
-      }, 2000);
     });
   });

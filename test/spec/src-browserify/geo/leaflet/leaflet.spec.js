@@ -3,10 +3,8 @@ var _ = require('underscore');
 var Backbone = require('backbone');
 var L = require('leaflet');
 global.L = L;
-require('torque.js'); // attaches L.TorqueLayer (but only while window.L is loaded before this require!)
 var config = require('cdb.config');
 var log = require('cdb.log');
-var LeafletTorqueLayer = require('cdb/geo/leaflet/leaflet-torque-layer');
 var Map = require('cdb/geo/map');
 var LeafletMapView = require('cdb/geo/leaflet/leaflet-map-view');
 var TileLayer = require('cdb/geo/map/tile-layer');
@@ -39,17 +37,7 @@ describe('geo/leaflet/leaflet-map-view', function() {
     layerURL = 'http://{s}.tiles.mapbox.com/v3/cartodb.map-1nh578vv/{z}/{x}/{y}.png';
     layer = new TileLayer({ urlTemplate: layerURL });
 
-    spy = {
-      zoomChanged: function(){},
-      keyboardChanged: function(){},
-      centerChanged: function(){},
-      changed: function() {}
-    };
-
-    spyOn(spy, 'zoomChanged');
-    spyOn(spy, 'keyboardChanged');
-    spyOn(spy, 'centerChanged');
-    spyOn(spy, 'changed');
+    spy = jasmine.createSpyObj('spy', ['zoomChanged', 'centerChanged', 'keyboardChanged', 'changed']);
     map.bind('change:zoom', spy.zoomChanged);
     map.bind('change:keyboard', spy.keyboardChanged);
     map.bind('change:center', spy.centerChanged);
@@ -292,25 +280,6 @@ describe('geo/leaflet/leaflet-map-view', function() {
     var layerView1 = mapView.getLayerByCid(map.addLayer(layer1));
     var layerView2 = mapView.getLayerByCid(map.addLayer(layer2, { at: 0 }));
     expect(layerView1.options.zIndex > layerView2.options.zIndex).toEqual(true);
-  });
-
-  it("should switch layer", function() {
-    map.addLayer(layer);
-    layer.set('type', 'torque');
-    expect(mapView.layers[layer.cid] instanceof L.TorqueLayer).toEqual(true);
-  });
-
-  it("should reuse layer view", function() {
-    var layer1 = new TorqueLayer({ type: 'torque', sql: 'select * from table', cartocss: '#test {}' });
-    map.addLayer(layer1);
-    expect(mapView.layers[layer1.cid] instanceof L.TorqueLayer).toEqual(true);
-    mapView.layers[layer1.cid].check = 'testing';
-    var newLayer = layer1.clone();
-    newLayer.set({ sql: 'select * from table', cartocss: '#test {}' });
-    map.layers.reset([newLayer]);
-    expect(mapView.layers[newLayer.cid] instanceof L.TorqueLayer).toEqual(true);
-    expect(mapView.layers[newLayer.cid].model).toEqual(newLayer)
-    expect(mapView.layers[newLayer.cid].check).toEqual('testing');
   });
 
   // Test cases for gmaps substitutes since the support is deprecated.

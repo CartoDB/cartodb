@@ -1,25 +1,33 @@
-
-/**
- *  Uglify grunt task for CartoDB.js
- *
- */
+var _ = require('underscore');
+var bundles = require('./_browserify-bundles');
 
 module.exports = {
-  task: function() {
-    return {
-      dist: {
-        options: {
-          banner: '// CartoDB.js version: <%= grunt.config("bump.version") %> \n' +
-            '// sha: <%= grunt.config.get("gitinfo").local.branch.current.SHA %> \n'
-        },
-        files: {
-          '<%= config.dist %>/cartodb.js':             ['<%= config.dist %>/cartodb.uncompressed.js'],
-          '<%= config.dist %>/cartodb.core.js':        ['<%= config.dist %>/cartodb.core.uncompressed.js'],
-          '<%= config.dist %>/cartodb_nojquery.js':    ['<%= config.dist %>/_cartodb_nojquery.js'],
-          '<%= config.dist %>/cartodb_noleaflet.js':   ['<%= config.dist %>/_cartodb_noleaflet.js'],
-          '<%= config.dist %>/cartodb.mod.torque.js':  ['<%= config.dist %>/cartodb.mod.torque.uncompressed.js']
+  task: function(grunt) {
+    var cfg = {};
+    var defaultOptions = {
+      sourceMap: true,
+      banner: [
+        '// CartoDB.js version: <%= grunt.config("bump.version") %>',
+        '// sha: <%= grunt.config.get("gitinfo").local.branch.current.SHA %>',
+      ].join("\n"),
+    };
+
+    for (var bundleName in bundles) {
+      if (!/tmp|specs/.test(bundleName)) {
+        var files = {};
+        var src = bundles[bundleName].dest;
+        var uglifiedDest = src.replace('.uncompressed', '');
+        files[uglifiedDest] = src;
+
+        cfg[bundleName] = {
+          options: _.extend({
+            sourceMapIn: src.replace('.js', '.map')
+          }, defaultOptions),
+          files: files
         }
       }
     }
+
+    return cfg;
   }
 }

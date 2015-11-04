@@ -1,8 +1,10 @@
-var _ = require('underscore');
-var Backbone = require('backbone');
-var cdb = require('cdb'); // cdb.geo.GMapsTorqueLayerView
-var GMapsLayerView = require('./gmaps-layer-view');
-var CartoDBLogo = require('../cartodb-logo');
+// Depends on cartodb standard bundle being loaded and present in global namespace
+var torque = require('torque.js');
+var cdb = window.cdb;
+var _ = cdb._;
+var Backbone = cdb.Backbone;
+var GMapsLayerView = cdb.geo.GMapsLayerView;
+var CartoDBLogo = cdb.geo.common.CartoDBLogo;
 
 var GMapsTorqueLayerView = function(layerModel, gmapsMap) {
 
@@ -97,7 +99,5 @@ _.extend(
   }
 
 });
-
-cdb.geo.GMapsTorqueLayerView = GMapsTorqueLayerView;
 
 module.exports = GMapsTorqueLayerView;

@@ -39,10 +39,11 @@
       "grunt-contrib-cssmin": "~0.7.0",
       "grunt-contrib-imagemin": "~0.9.4",
       "grunt-contrib-jshint": "~0.8.0",
-      "grunt-contrib-uglify": "~0.3.0",
+      "grunt-contrib-uglify": "~0.10.0",
       "grunt-replace": "0.6.2",
       "grunt-contrib-watch": "git://github.com/gruntjs/grunt-contrib-watch.git#b884948805940c663b1cbb91a3c28ba8afdebf78",
       "grunt-contrib-jasmine": "~0.8.1",
+      "grunt-exorcise": "~2.1.0",
       "grunt-prompt": "~1.3.0",
       "leaflet": "0.7.3",
       "mustache": "1.1.0",
@@ -73,6 +74,7 @@
       "cdb.log": "./src-browserify/cdb.log.js",
       "cdb.errors": "./src-browserify/cdb.errors.js",
       "cdb.templates": "./src-browserify/cdb.templates.js",
+      "jquery.ui.core": "./vendor/mod/jquery-ui/jquery.ui.core.js",
       "jquery.ui.mouse": "./vendor/mod/jquery-ui/jquery.ui.mouse.js",
       "jquery.ui.slider": "./vendor/mod/jquery-ui/jquery.ui.slider.js",
       "jquery.ui.widget": "./vendor/mod/jquery-ui/jquery.ui.widget.js",
@@ -84,12 +86,15 @@
       "mwheelIntent": "./vendor/mwheelIntent.js",
       "odyssey": "./vendor/mod/odyssey.js",
       "spin.js": "./vendor/spin.js",
+      "carto": "./vendor/mod/carto.js",
+      "torque": "./vendor/mod/torque.uncompressed.js",
       "wax.cartodb.js": "./vendor/wax.cartodb.js"
     },
     "browserify-shim": {
       "geojson": "GeoJSON",
       "html-css-sanitizer": "html",
       "lzma": "LZMA",
+      "jquery.ui.core": { "depends": ["jquery:jQuery"] },
       "jquery.jscrollpane": { "depends": ["jquery:jQuery"] },
       "jquery.ui.mouse": {
         "depends": [

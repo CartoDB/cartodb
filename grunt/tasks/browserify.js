@@ -1,49 +1,5 @@
 var path = require('path');
-
-var bundles = {
-
-  // Specs that are shared for all bundles
-  // Ordered by dirs before files, and after that alpabetically
-  'src-browserify-specs': {
-    src: [
-      'test/lib/fail-tests-if-have-errors-in-src.js',
-      'test/spec/src-browserify/api/**/*',
-      'test/spec/src-browserify/core/**/*',
-      'test/spec/src-browserify/geo/**/*',
-      'test/spec/src-browserify/ui/**/*',
-      'test/spec/src-browserify/vis/**/*',
-
-      // not actually used anywhere in cartodb.js, only for editor?
-      // TODO can be (re)moved?
-      '!test/spec/src-browserify/ui/common/tabpane.spec.js',
-    ],
-    dest: '<%= config.tmp %>/src-browserify-specs.js'
-  },
-
-  cartodb: {
-    src: 'src-browserify/cartodb.js',
-    dest: '<%= config.dist %>/cartodb.uncompressed.js'
-  },
-  'cartodb-specs': {
-    src: [
-      'test/lib/fail-tests-if-have-errors-in-src.js',
-      'test/spec/src-browserify/cartodb.spec.js',
-    ],
-    dest: '<%= config.tmp %>/cartodb-specs.js'
-  },
-
-  odyssey: {
-    src: 'src-browserify/odyssey.js',
-    dest: '<%= config.dist %>/cartodb.mod.odyssey.uncompressed.js',
-  },
-  'odyssey-specs': {
-    src: [
-      'test/lib/fail-tests-if-have-errors-in-src.js',
-      'test/spec/src-browserify/odyssey.spec.js',
-    ],
-    dest: '<%= config.tmp %>/odyssey-specs.js',
-  }
-};
+var bundles = require('./_browserify-bundles');
 
 module.exports = {
   task: function(grunt) {

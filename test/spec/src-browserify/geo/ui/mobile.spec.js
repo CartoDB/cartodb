@@ -817,32 +817,4 @@ describe('geo/ui/mobile', function() {
 
   });
 
-
-  describe("with a hidden torque layer", function() {
-
-    var mobile;
-
-    beforeEach(function() {
-
-      torque.options = { steps: 3 };
-      torque.hidden  = true;
-      torque.getStep = function() {};
-
-      mobile = new Mobile({
-        template: template,
-        mapView: mapView,
-        overlays: overlays,
-        torqueLayer: torque,
-        map: map
-      });
-
-    });
-
-    it("should hide the timeslider", function() {
-      mobile.render();
-      expect(mobile.$el.find(".cartodb-timeslider").length).toBe(1);
-      expect(mobile.$el.find(".cartodb-timeslider").css("display")).toBe("none");
-    });
-  });
-
 });

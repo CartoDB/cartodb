@@ -1,24 +1,26 @@
 cdb.windshaft.filters.CategoryFilter = cdb.windshaft.filters.FilterBase.extend({
 
   initialize: function() {
-    this.acceptedCategories = new Backbone.Collection();
     this.rejectedCategories = new Backbone.Collection();
   },
 
   isEmpty: function() {
-    return this.acceptedCategories.size() === 0 && this.rejectedCategories.size() === 0;
+    return this.rejectedCategories.size() === 0;
   },
 
   accept: function(values) {
+    values = !_.isArray(values) ? [values] : values;
     var arr = [];
     _.each(values, function(value) {
       var mdls = this.rejectedCategories.where({ name: value });
       if (mdls.length > 0) {
-        arr.push(mdls[0]);
+        arr.push(_.first(mdls));
       }
     }, this);
-    this.rejectedCategories.remove(arr);
-    this.trigger('change', this);
+    if (arr.length > 0) {
+      this.rejectedCategories.remove(arr);
+      this.trigger('change', this);
+    }
   },
 
   acceptAll: function() {
@@ -26,19 +28,22 @@ cdb.windshaft.filters.CategoryFilter = cdb.windshaft.filters.FilterBase.extend({
     this.trigger('change', this);
   },
 
-  hasAccepts: function() {
-    return this.acceptedCategories.size() > 0;
+  getRejected: function() {
+    return this.rejectedCategories;
   },
 
   reject: function(values) {
+    values = !_.isArray(values) ? [values] : values;
     var arr = [];
     _.each(values, function(value) {
       if (this.rejectedCategories.where({ name: value }).length === 0) {
         arr.push({ name: value });
       }
     }, this);
-    this.rejectedCategories.add(arr);
-    this.trigger('change', this);
+    if (arr.length > 0) {
+      this.rejectedCategories.add(arr);
+      this.trigger('change', this);
+    }
   },
 
   hasRejects: function() {
@@ -50,9 +55,6 @@ cdb.windshaft.filters.CategoryFilter = cdb.windshaft.filters.FilterBase.extend({
     json[this.get('widgetId')] = {};
     if (this.rejectedCategories.size() > 0) {
       json[this.get('widgetId')].reject = _.pluck(this.rejectedCategories.toJSON(), 'name');
-    }
-    if (this.acceptedCategories.size() > 0) {
-      json[this.get('widgetId')].accept = _.pluck(this.acceptedCategories.toJSON(), 'name');
     }
     return json;
   }

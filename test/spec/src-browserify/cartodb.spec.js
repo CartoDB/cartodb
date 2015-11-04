@@ -152,11 +152,6 @@ describe('cartodb.js bundle', function() {
       expect(cdb.geo.ui.InfowindowModel).toEqual(jasmine.any(Function));
       expect(cdb.geo.ui.Infowindow).toEqual(jasmine.any(Function));
 
-      expect(cdb.geo.ui.SwitcherItemModel).toEqual(jasmine.any(Function));
-      expect(cdb.geo.ui.SwitcherItems).toEqual(jasmine.any(Function));
-      expect(cdb.geo.ui.SwitcherItem).toEqual(jasmine.any(Function));
-      expect(cdb.geo.ui.Switcher).toEqual(jasmine.any(Function));
-
       expect(cdb.geo.ui.SlidesControllerItem).toEqual(jasmine.any(Function));
       expect(cdb.geo.ui.SlidesController).toEqual(jasmine.any(Function));
       expect(cdb.geo.ui.Header).toEqual(jasmine.any(Function));

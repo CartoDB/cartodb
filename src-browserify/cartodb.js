@@ -97,11 +97,6 @@ _.extend(cdb.geo.ui.Legend, require('./geo/ui/legend/legend-view-exports'));
 cdb.geo.ui.InfowindowModel = require('./geo/ui/infowindow-model');
 cdb.geo.ui.Infowindow = require('./geo/ui/infowindow');
 
-cdb.geo.ui.SwitcherItemModel = require('./geo/ui/switcher-item-model');
-cdb.geo.ui.SwitcherItems = require('./geo/ui/switcher-items');
-cdb.geo.ui.SwitcherItem = require('./geo/ui/switcher-item');
-cdb.geo.ui.Switcher = require('./geo/ui/switcher');
-
 cdb.geo.ui.SlidesControllerItem = require('./geo/ui/slides-controller-item');
 cdb.geo.ui.SlidesController = require('./geo/ui/slides-controller');
 cdb.geo.ui.Header = require('./geo/ui/header');

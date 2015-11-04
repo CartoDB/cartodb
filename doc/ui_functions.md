@@ -21,6 +21,7 @@ The tooltip is shown when hover on feature when is called.
 
 The tooltip is not shown when hover on feature.
 
+---
 
 ## cartodb.geo.ui.InfoBox
 
@@ -43,6 +44,7 @@ The tooltip is shown when hover on feature.
 
 The tooltip is not shown when hover on feature.
 
+---
 
 ## cartodb.geo.ui.Zoom
 

@@ -10,7 +10,7 @@ Triggered when the user hovers on any feature.
 
 #### Callback arguments
 
-Arguments | Description
+Name |Description
 --- | ---
 event | Browser mouse event object.
 latlng | Array with the `LatLng ([lat,lng])` where the layer was clicked.
@@ -34,7 +34,7 @@ Triggered when the user hovers out any feature.
 
 Triggered when when the user clicks on a feature of a layer.
 
-#### callback arguments
+#### Callback arguments
 
 Same as `featureOver`.
 
@@ -88,13 +88,15 @@ layer.getSubLayer(0).set({
 });
 ```
 
+---
+
 ## subLayer
 
 ### sublayer.featureOver(_event, latlng, pos, data, layerIndex_)
 
 Same as `layer.featureOver()` but sublayer specific.
 
-#### callback arguments
+#### Callback arguments
 
 Same as `layer.featureOver()`.
 
@@ -102,7 +104,7 @@ Same as `layer.featureOver()`.
 
 Same as `layer.featureClick()` but sublayer specific.
 
-#### callback arguments
+#### Callback arguments
 
 Same as `layer.featureClick()`.
 

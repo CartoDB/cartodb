@@ -12,6 +12,8 @@ Although the Viz JSON file stores all your map settings, all these settings can 
 cartodb.createVis('map', 'http://examples.cartodb.com/api/v2/viz/ne_10m_populated_p_1/viz.json')
 ```
 
+---
+
 ## How to set a different host than cartodb.com
 
 CartoDB.js sends all requests to the cartodb.com domain by default. If you are running your own
@@ -30,6 +32,8 @@ CartoDB.js will replace ``{user}``.
 
 Notice that you don't need to set the path to the endpoint, CartoDB.js will set it automatically.
 
+---
+
 ## Bounds wrapper
 
 We have added an easy method to get the bounding box for any dataset or filtered query using the CartoDB.js library. The **getBounds** function can be useful for guiding users to the right location on a map or for loading only the right data at the right time based on user actions.
@@ -41,6 +45,8 @@ sql.getBounds('SELECT * FROM table_name').done(function(bounds) {
   console.log(bounds);
 });
 ```
+
+---
 
 ## Event listener support
 
@@ -86,6 +92,8 @@ layer.on('featureOut', function(e, latlng, pos, data, layer) {
 });
 ```
 
+---
+
 ## Leaflet integration
 
 If you want to use [Leaflet](http://leafletjs.com) it gets even easier. CartoDB.js handles loading all the necessary libraries for you! Just include CartoDB.js and CartoDB.css in the HEAD of your website and you are ready to go! The CartoDB.css document isn’t mandatory. However, if you are making a map and are not familiar with writing your own CSS for the various needed elements, it can help you jumpstart the process. Using Leaflet is as simple as adding the main JavaScript library:
@@ -94,6 +102,8 @@ If you want to use [Leaflet](http://leafletjs.com) it gets even easier. CartoDB.
 <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.15/themes/css/cartodb.css" />
 <script src="http://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js"></script>
 ```
+
+---
 
 ## HTTPS support
 
@@ -117,6 +127,8 @@ You can use all the functionality of CartoDB.js with HTTPs support. Be sure to u
     });
 </script>
 ```
+
+---
 
 ## Persistent version hosting
 

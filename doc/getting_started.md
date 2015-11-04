@@ -24,7 +24,6 @@ window.onload = function() {
 
 [Grab the complete example source code](https://github.com/CartoDB/cartodb.js/blob/develop/examples/easy.html)
 
-
 ## Using the library
 
 CartoDB.js can be used when you want to embed and use a visualization you have designed using CartoDB's user interface, or to dynamically create visualizations from scratch using your data. If you want to create new maps on your webpage, jump to [Creating a visualization from scratch](#creating-a-visualization-from-scratch). If you already have maps on your webpage and want to add CartoDB visualizations to them, read [Adding CartoDB layers to an existing map](#adding-cartodb-layers-to-an-existing-map).
@@ -131,6 +130,7 @@ cartodb.createLayer(map, {
 
 Want further information? [Check out the complete list of API methods](#api-methods).
 
+---
 
 ## Usage examples
 

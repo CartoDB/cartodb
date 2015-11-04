@@ -12,6 +12,8 @@ An example using this funcionality can be found in a ModestMaps example: [view l
 
 Notice that `cartodb.SQL` is also included in that JavaScript file
 
+---
+
 ## cartodb.Tiles
 
 ### cartodb.Tiles.getTiles(_layerOptions, callback_)
@@ -20,7 +22,7 @@ Fetch the tile template for the layer definition.
 
 #### Arguments
 
-Arguments | Description
+Name |Description
 --- | ---
 layerOptions | the data that defines the layer. It should contain at least `user_name` and `sublayers` list.
 

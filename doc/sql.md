@@ -6,6 +6,16 @@ CartoDB offers a powerful SQL API for you to query and retreive data from your C
 
 `cartodb.SQL` is the tool you will use to access data you store in your CartoDB tables. This is a really powerful technique for returning things like: **items closest to a point**, **items ordered by date**, or **GeoJSON vector geometries**. It’s all powered with SQL and our tutorials will show you how easy it is to begin with SQL.
 
+#### Arguments
+
+Name | Description
+--- | ---
+format | should be GeoJSON.
+dp | float precision.
+jsonp | if jsonp should be used instead of CORS. This param is enabled if the browser does not support CORS.
+
+These arguments will be applied to all the queries performed by this object. If you want to override them for one query see **execute** options.
+
 #### Example
 
 ```javascript
@@ -20,23 +30,13 @@ sql.execute("SELECT * FROM table_name WHERE id > {{id}}", { id: 3 })
   })
 ```
 
-It accepts the following options:
-
-Options | Description
---- | ---
-format | should be GeoJSON.
-dp | float precision.
-jsonp | if jsonp should be used instead of CORS. This param is enabled if the browser does not support CORS.
-
-These arguments will be applied to all the queries performed by this object. If you want to override them for one query see **execute** options.
-
 ### sql.execute(_sql [,vars][, options][, callback]_)
 
 It executes a sql query.
 
 #### Arguments
 
-Arguments | Description
+Name |Description
 --- | ---
 sql | a string with the sql query to be executed. You can specify template variables like {{variable}} which will be filled with `vars` object.
 vars | a map with the variables to be interpolated in the sql query.
@@ -65,6 +65,12 @@ sql.execute('SELECT * FROM table_name')
 
 Returns the bounds `[ [sw_lat, sw_lon], [ne_lat, ne_lon ] ]` for the geometry resulting of specified query.
 
+#### Arguments
+
+Name |Description
+--- | ---
+sql | a string with the sql query to calculate the bounds from.
+
 #### Example
 
 ```javascript
@@ -72,12 +78,6 @@ sql.getBounds('select * from table').done(function(bounds) {
   console.log(bounds);
 });
 ```
-
-#### Arguments
-
-Arguments | Description
---- | ---
-sql | a string with the sql query to calculate the bounds from.
 
 #### getBounds and Leaflet
 

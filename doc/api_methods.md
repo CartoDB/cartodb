@@ -8,19 +8,9 @@ The documentation below refers to CartoDB.js v3. For major changes in the librar
 
 Creates a visualization inside the map_id DOM object.
 
-#### Call
-
-```javascript
-var url = 'http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json';
-
-cartodb.createVis('map', url)
-  .done(function(vis, layers) {
-  });
-```
-
 #### Arguments
 
-Arguments | Description
+Name |Description
 --- | ---
 map_id | a DOM object, for example `$('#map')` or a DOM id.
 vizjson_url | url of the vizjson object.
@@ -60,6 +50,18 @@ Event | Description
 done | triggered when the visualization is created, `vis` is passed as the first argument and `layers` is passed as the second argument. Each layer type has different options, see layers section.
 error | triggered when the layer couldn't be created. The error string is the first argument.
 
+#### Example
+
+```javascript
+var url = 'http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json';
+
+cartodb.createVis('map', url)
+  .done(function(vis, layers) {
+  });
+```
+
+---
+
 ## cartodb.Vis
 
 ### vis.getLayers()
@@ -87,7 +89,7 @@ An overlay object, see [vis.Overlays](#visoverlays).
 
 Returns the first overlay with the specified **type**.
 
-#### Call
+#### Example
 
 ```javascript
 var zoom = vis.getOverlay('zoom');
@@ -132,7 +134,7 @@ With visualizations already created through the CartoDB console, you can simply 
 
 #### Arguments
 
-Arguments | Description
+Name |Description
 --- | ---
 map | Leaflet `L.Map` object. The map should be initialized before calling this function.
 layerSource | contains information about the layer. It can be specified in 2 ways
@@ -386,6 +388,8 @@ cartodb.createLayer(map, {
 }, { filter: ['http', 'mapnik'] })
 ```
 
+---
+
 ## cartodb.CartoDBLayer
 
 CartoDBLayer allows you to manage tiled layers from CartoDB. It manages the sublayers.
@@ -412,7 +416,7 @@ Changes the opacity of the layer.
 
 #### Arguments
 
-Arguments | Description
+Name |Description
 --- | ---
 opacity | value in range [0, 1]
 
@@ -422,7 +426,7 @@ Gets a previously created sublayer. And exception is raised if no sublayer exist
 
 #### Arguments
 
-Arguments | Description
+Name |Description
 --- | ---
 layerIndex | 0 based index of the sublayer to get. Should be within [0, getSubLayerCount())
 
@@ -466,7 +470,7 @@ Adds a new data to the current layer. With this method, data from multiple table
 
 #### Arguments
 
-Arguments | Description
+Name |Description
 --- | ---
 layerDefinition | an object with the sql and cartocss that defines the data, should be like
 
@@ -508,16 +512,15 @@ Refreshes the data. If the data has been changed in the CartoDB server those cha
 Sets the auth token that will be used to create the layer. Only available for private visualizations. An exception is
 raised if the layer is not being loaded with HTTPS. See [Named Maps](http://docs.cartodb.com/cartodb-platform/maps-api.html#named-maps-1) for more information.
 
-#### Returns
-
-The layer itself.
-
 #### Arguments
 
-Arguments | Description
+Name |Description
 --- | ---
 auth_token | string
 
+#### Returns
+
+The layer itself.
 
 ### layer.setParams(_key, value_)
 
@@ -525,15 +528,7 @@ Sets the configuration of a layer when using [named maps](/cartodb-platform/maps
 
 #### Arguments
 
-```javascript
-layer.setParams('test', 10); // sets test = 10
-layer.setParams('test', null); // unset test
-layer.setParams({'test': 1, 'color': '#F00'}); // set more than one parameter at once
-```
-
-#### Arguments
-
-Arguments | Description
+Name |Description
 --- | ---
 key | string
 value | string or number
@@ -541,6 +536,16 @@ value | string or number
 #### Returns
 
 The layer itself.
+
+#### Example
+
+```javascript
+layer.setParams('test', 10); // sets test = 10
+layer.setParams('test', null); // unset test
+layer.setParams({'test': 1, 'color': '#F00'}); // set more than one parameter at once
+```
+
+---
 
 ## cartodb.CartoDBLayer.SubLayer
 
@@ -550,20 +555,9 @@ Sets sublayer parameters. Useful when more than one parameter needs to be change
 
 #### Arguments
 
-Arguments | Description
+Name |Description
 --- | ---
 layerDefinition | an object with the sql and cartocss that defines the data
-
-
-#### layerDefinition
-
-```javascript
-{
-  sql: "SELECT * FROM table_name",
-  cartocss: "#layer { marker-fill: red; }",
-  interactivity: 'cartodb_id, area, column' // optional
-}
-```
 
 #### Returns
 
@@ -637,7 +631,7 @@ Enables (`true`) or disables (`false`) the interaction of the layer. When disabl
 
 #### Arguments
 
-Arguments | Description
+Name |Description
 --- | ---
 enable | `true` if the interaction needs to be enabled.
 
@@ -647,7 +641,7 @@ enable | `true` if the interaction needs to be enabled.
 
 #### Attributes
 
-Attributes | Description
+Name | Description
 --- | ---
 template | Custom HTML template for the infowindow. You can write simple HTML or use [Mustache templates](http://mustache.github.com/).
 sanitizeTemplate | By default all templates are sanitized from unsafe tags/attrs (e.g. `<script>`), set this to `false` to skip sanitization, or a function to provide your own sanitization (e.g. `function(inputHtml) { return inputHtml })`).
@@ -686,6 +680,8 @@ maxHeight | Max height of the scrolled content (value must be a number).
 
 [Grab the complete example source code](https://github.com/CartoDB/cartodb.js/blob/develop/examples/custom_infowindow.html)
 
+---
+
 ## cartodb.CartoDBLayer.HttpSubLayer
 
 ### sublayer.setURLTemplate(_urlTemplate_)
@@ -718,7 +714,7 @@ Shortcut for `get('tms')`
 
 #### Attributes
 
-Attributes | Description
+Name | Description
 --- | ---
 template | Custom HTML template for the legend. You can write simple HTML.
 title | Title of the legend.

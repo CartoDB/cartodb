@@ -27,13 +27,15 @@ module CartoDB
           notify_privacy_affected_entities(metadata_table) if privacy_changed
         end
 
-      rescue => exception
-        CartoDB.notify_debug('Table without a map', {
+      rescue NoMethodError => exception
+        CartoDB.notify_debug("#{exception.message} #{exception.backtrace}", {
           table_id: @table.id,
           user_id: @table.user_id,
           data_import_id: @table.data_import_id,
           database_name: @table.database_name
         })
+
+        raise exception
       end
     end
 

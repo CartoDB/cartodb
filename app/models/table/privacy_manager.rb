@@ -30,6 +30,7 @@ module CartoDB
       rescue => exception
         CartoDB.notify_debug('Table without a map', {
           table_id: @table.id,
+          table_name: @table.name,
           user_id: @table.user_id,
           data_import_id: @table.data_import_id,
           database_name: @table.database_name

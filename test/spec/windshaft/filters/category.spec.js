@@ -1,6 +1,9 @@
+var _ = require('underscore');
+var WindshaftFiltersCategory = require('cdb/windshaft/filters/category');
+
 describe('windshaft/filters/category', function() {
   beforeEach(function() {
-    this.filter = new cdb.windshaft.filters.CategoryFilter({
+    this.filter = new WindshaftFiltersCategory({
       widgetId: 'category_widget'
     });
   });
@@ -88,5 +91,5 @@ describe('windshaft/filters/category', function() {
       expect(result['category_widget']['accept']).not.toBeDefined();
     });
   });
-  
+
 });

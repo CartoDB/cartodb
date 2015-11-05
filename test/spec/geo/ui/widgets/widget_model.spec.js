@@ -1,7 +1,10 @@
-describe('widgets/model', function() {
+var _ = require('underscore');
+var WidgetModel = require('cdb/geo/ui/widgets/widget_model');
+
+describe('geo/ui/widgets/widget_model', function() {
 
   beforeEach(function() {
-    this.model = new cdb.geo.ui.Widget.Model();
+    this.model = new WidgetModel();
   });
 
   it('should listen to a dashboardBaseURL attribute change at the beginning', function() {

@@ -1,9 +1,12 @@
-describe('widgets/error_view', function() {
+var WidgetModel = require('cdb/geo/ui/widgets/widget_model');
+var WidgetErrorView = require('cdb/geo/ui/widgets/standard/widget_error_view');
+
+describe('geo/ui/widgets/standard/widget_error_view', function() {
 
   beforeEach(function() {
     jasmine.clock().install();
 
-    this.model = new cdb.geo.ui.Widget.Model({
+    this.model = new WidgetModel({
       id: 'widget_98334',
       title: 'Helloooo',
       columns: ['cartodb_id', 'title']
@@ -11,7 +14,7 @@ describe('widgets/error_view', function() {
 
     spyOn(this.model, 'bind').and.callThrough();
 
-    this.view = new cdb.geo.ui.Widget.Error({
+    this.view = new WidgetErrorView({
       model: this.model
     });
   });

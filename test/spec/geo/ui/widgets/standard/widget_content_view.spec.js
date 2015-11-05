@@ -1,7 +1,10 @@
-describe('widgets/content_view', function() {
+var WidgetModel = require('cdb/geo/ui/widgets/widget_model');
+var WidgetContentView = require('cdb/geo/ui/widgets/standard/widget_content_view');
+
+describe('geo/ui/widgets/standard/widget_content_view', function() {
 
   beforeEach(function() {
-    this.model = new cdb.geo.ui.Widget.Model({
+    this.model = new WidgetModel({
       id: 'widget_3',
       title: 'Howdy',
       columns: ['cartodb_id', 'title']
@@ -9,7 +12,7 @@ describe('widgets/content_view', function() {
 
     spyOn(this.model, 'bind').and.callThrough();
 
-    this.view = new cdb.geo.ui.Widget.Content({
+    this.view = new WidgetContentView({
       model: this.model
     });
   });

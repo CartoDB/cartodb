@@ -181,12 +181,12 @@ module.exports = WidgetContent.extend({
 
   _onValueHover: function(info) {
     var $tooltip = this.$(".js-tooltip");
-    if (info.freq !== undefined) {
+    if (info.freq > 0) {
       $tooltip.css({ top: info.top, left: info.left });
       $tooltip.text(info.freq);
       $tooltip.fadeIn(70);
     } else {
-      $tooltip.stop().fadeOut(50);
+      $tooltip.stop().hide();
     }
   },
 

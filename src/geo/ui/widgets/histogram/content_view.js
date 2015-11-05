@@ -64,18 +64,21 @@ module.exports = WidgetContent.extend({
   },
 
   _initBinds: function() {
-    this.dataModel.bind('change:data', this._onFirstLoad, this);
+    this.dataModel.bind('change:off', this._onFirstLoad, this);
     this.add_related_model(this.dataModel);
   },
 
   _onFirstLoad: function() {
     this.render();
-    this.dataModel.unbind('change:data', this._onFirstLoad, this);
-    this.dataModel.bind('change:data', this._onChangeData, this);
+    this.dataModel.unbind('change:off', this._onFirstLoad, this);
+    this.dataModel.bind('change:on', this._onChangeData, this);
+    var data = this.dataModel.getData().off;
+    this.start = data.at(0).get('start');
+    this.end = data.at(data.length - 1).get('end');
   },
 
   _onChangeData: function() {
-    var data = this._getData(true);
+    var data = this._getData();
     this.chart.replaceData(data);
   },
 
@@ -88,7 +91,7 @@ module.exports = WidgetContent.extend({
     $(window).bind('resize', this._onWindowResize);
 
     var template = _.template(this._TEMPLATE);
-    var data = this.dataModel.getData();
+    var data = this.dataModel.getData().off;
     var isDataEmpty = _.isEmpty(data) || _.size(data) === 0;
 
     this.originalDataModel = _.clone(this.dataModel.getData());
@@ -129,12 +132,12 @@ module.exports = WidgetContent.extend({
       handles: true,
       width: this.canvasWidth,
       height: this.defaults.chartHeight,
-      data: this._getData()
+      data: this.dataModel.getDataWithOwnFilterApplied()
     }));
 
     this.chart.bind('range_updated', this._onRangeUpdated, this);
     this.chart.bind('on_brush_end', this._onBrushEnd, this);
-    this.chart.bind('hover', this._onValueHover, this);
+    //this.chart.bind('hover', this._onValueHover, this);
     this.chart.render().show();
 
     window.chart = this.chart; // TODO: remove
@@ -151,7 +154,7 @@ module.exports = WidgetContent.extend({
       margin: { top: 0, right: 0, bottom: 0, left: 4 },
       y: 0,
       height: 20,
-      data: this._getData()
+      data: this.dataModel.getDataWithoutOwnFilterApplied()
     }));
 
     this.miniChart.bind('on_brush_end', this._onMiniRangeUpdated, this);
@@ -183,9 +186,9 @@ module.exports = WidgetContent.extend({
     if (info.index !== undefined) {
 
       if (this.chart.isLocked()) {
-        value = originalDataModel.toJSON()[info.index].freq;
+        value = this.dataModel.getDataWithoutOwnFilterApplied()[info.index].freq;
       } else {
-        value = dataModel.getData().toJSON()[info.index].freq;
+        value = this.dataModel.getDataWithOwnFilterApplied()[info.index].freq;
       }
 
       if (value !== undefined) {
@@ -203,28 +206,30 @@ module.exports = WidgetContent.extend({
   _onMiniRangeUpdated: function(loBarIndex, hiBarIndex) {
     this.viewModel.set({ lo_index: loBarIndex, hi_index: hiBarIndex });
 
-    var data = this._getOriginalData();
+    var data = this.dataModel.getDataWithoutOwnFilterApplied();
     var min = data[loBarIndex].min;
     var max = data[hiBarIndex - 1].max;
 
-    this.filter.setRange({ min: min, max: max });
+    this.filter.setRange({ min: min, max: max, start: this.start, end: this.end });
     this._updateStats();
   },
 
   _onBrushEnd: function(loBarIndex, hiBarIndex) {
-    this.chart.lock();
+    var data = this._getData();
 
-    if (this.viewModel.get('zoomed')) {
-      this.viewModel.set({ filter_enabled: true, lo_index: loBarIndex, hi_index: hiBarIndex });
-    } else {
-      this.viewModel.set({ zoom_enabled: true, filter_enabled: true, lo_index: loBarIndex, hi_index: hiBarIndex });
+    var properties = { filter_enabled: true, lo_index: loBarIndex, hi_index: hiBarIndex };
+
+    if (!this.viewModel.get('zoomed')) {
+      properties.zoom_enabled = true;
     }
 
-    var data = this._getData();
+    this.viewModel.set(properties);
+
     var min = data[0].min;
     var max = data[data.length - 1].max;
 
-    this.filter.setRange({ min: min, max: max });
+    this.chart.lock();
+    this.filter.setRange({ min: min, max: max, start: this.start, end: this.end });
   },
 
   _onRangeUpdated: function(loBarIndex, hiBarIndex) {
@@ -281,12 +286,8 @@ module.exports = WidgetContent.extend({
     });
   },
 
-  _getOriginalData: function() {
-    return this.originalDataModel.toJSON();
-  },
-
   _getData: function(full) {
-    var data = this.dataModel.getData().toJSON();
+    var data = this.dataModel.getDataWithoutOwnFilterApplied();
 
     if (full || (!this.viewModel.get('lo_index') && !this.viewModel.get('hi_index'))) {
       return data;
@@ -296,10 +297,14 @@ module.exports = WidgetContent.extend({
   },
 
   _updateStats: function() {
-    var data = this._getOriginalData();
+    var data = this.dataModel.getDataWithoutOwnFilterApplied();
 
     var loBarIndex = this.viewModel.get('lo_index') || 0;
     var hiBarIndex = this.viewModel.get('hi_index') ?  this.viewModel.get('hi_index') - 1 : data.length - 1;
+
+    if (hiBarIndex + 1 > data.length) {
+      return;
+    }
 
     var sum = _.reduce(data.slice(loBarIndex, hiBarIndex + 1), function(memo, d) {
       return _.isEmpty(d) ? memo : d.freq + memo;
@@ -315,10 +320,9 @@ module.exports = WidgetContent.extend({
   _onChangeZoomed: function() {
     if (this.viewModel.get('zoomed')) {
 
-      this.chart.unlock();
       this._expand();
 
-      var data = this._getOriginalData();
+      var data = this.dataModel.getDataWithoutOwnFilterApplied();
 
       var loBarIndex = this.viewModel.get('lo_index');
       var hiBarIndex = this.viewModel.get('hi_index');
@@ -329,11 +333,11 @@ module.exports = WidgetContent.extend({
       this.miniChart.selectRange(loBarIndex, hiBarIndex);
       this.miniChart.show();
 
-      this.filter.setRange({ min: min, max: max });
-      this.chart.refresh();
+      var data = this.dataModel.getDataWithOwnFilterApplied();
+      this.chart.replaceData(data);
     } else {
       this.viewModel.set({ zoom_enabled: false, filter_enabled: false, lo_index: null, hi_index: null });
-      this.chart.replaceData(this.originalDataModel.toJSON());
+      this.chart.replaceData(this.dataModel.getDataWithoutOwnFilterApplied());
 
       this._contract();
 

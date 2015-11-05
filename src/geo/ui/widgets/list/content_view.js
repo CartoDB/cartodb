@@ -1,10 +1,14 @@
-/**
- *  Default widget content view:
- *
- *
- */
+var _ = require('underscore');
+var format = require('cdb/core/format');
+var WidgetContentView = require('../standard/widget_content_view');
+var WidgetListItemsView = require('./items_view');
+var WidgetListPaginatorView = require('./paginator_view');
+var WidgetListEdgesView = require('./edges_view');
 
-cdb.geo.ui.Widget.List.Content = cdb.geo.ui.Widget.Content.extend({
+/**
+ * Default widget content view:
+ */
+module.exports = WidgetContentView.extend({
 
   options: {
     showScroll: false
@@ -41,7 +45,7 @@ cdb.geo.ui.Widget.List.Content = cdb.geo.ui.Widget.Content.extend({
     this.$el.html(
       template({
         title: this.model.get('title'),
-        itemsCount: !isDataEmpty ? cdb.core.format.formatValue(data.length) : '-'
+        itemsCount: !isDataEmpty ? format.formatValue(data.length) : '-'
       })
     );
 
@@ -58,7 +62,7 @@ cdb.geo.ui.Widget.List.Content = cdb.geo.ui.Widget.Content.extend({
     var count = this.model.getSize();
 
     // List view -> items view
-    this._list = new cdb.geo.ui.Widget.List.ItemsView({
+    this._list = new WidgetListItemsView({
       model: this.model
     });
     this.$('.js-content').html(this._list.render().el);
@@ -68,14 +72,14 @@ cdb.geo.ui.Widget.List.Content = cdb.geo.ui.Widget.Content.extend({
 
     if (isScrollList || this.options.showScroll) {
       // Paginator
-      this._pagination = new cdb.geo.ui.Widget.List.PaginatorView({
+      this._pagination = new WidgetListPaginatorView({
         $target: this._list.$el
       });
       this.$('.js-footer').append(this._pagination.render().el);
       this.addView(this._pagination);
 
       // Edges
-      this._edges = new cdb.geo.ui.Widget.List.EdgesView({
+      this._edges = new WidgetListEdgesView({
         $target: this._list.$el
       });
       this.$('.js-content').append(this._edges.render().el);

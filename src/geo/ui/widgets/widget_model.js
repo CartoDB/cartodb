@@ -1,9 +1,9 @@
-/**
- *  Default widget model
- *
- */
+var Model = require('cdb/core/model');
 
-cdb.geo.ui.Widget.Model = cdb.core.Model.extend({
+/**
+ * Default widget model
+ */
+module.exports = Model.extend({
 
   defaults: {
     url: '',
@@ -67,7 +67,7 @@ cdb.geo.ui.Widget.Model = cdb.core.Model.extend({
 
   fetch: function(opts) {
     this.trigger("loading", this);
-    return cdb.core.Model.prototype.fetch.call(this,opts);
+    return Model.prototype.fetch.call(this,opts);
   },
 
   toJSON: function() {

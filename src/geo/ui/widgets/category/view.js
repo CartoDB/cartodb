@@ -1,13 +1,13 @@
+var WidgetView = require('../../widget');
+var WidgetCategoryContent = require('./content_view');
 
 /**
- *  Category widget view
- *
+ * Category widget view
  */
-
-cdb.geo.ui.Widget.Category.View = cdb.geo.ui.Widget.View.extend({
+module.exports = WidgetView.extend({
 
   _createContentView: function() {
-    return new cdb.geo.ui.Widget.Category.Content({
+    return new WidgetCategoryContent({
       model: this.model,
       filter: this.filter
     });

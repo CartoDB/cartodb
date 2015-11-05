@@ -1,4 +1,6 @@
-cdb.windshaft.filters.FilterBase = cdb.core.Model.extend({
+var Model = require('cdb/core/model');
+
+module.exports = Model.extend({
 
   isEmpty: function() {
     throw "Filters must implement the .isEmpty method";

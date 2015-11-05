@@ -1,6 +1,6 @@
-cdb.windshaft.PrivateDashboardConfig = {};
+var WindshaftPrivateDashboardConfig = {};
 
-cdb.windshaft.PrivateDashboardConfig.generate = function(options) {
+WindshaftPrivateDashboardConfig.generate = function(options) {
   this.layers = options.layers;
   var config = {};
 
@@ -12,3 +12,5 @@ cdb.windshaft.PrivateDashboardConfig.generate = function(options) {
   // TODO: We should add the auth_token
   return config;
 };
+
+module.exports = WindshaftPrivateDashboardConfig;

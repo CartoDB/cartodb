@@ -1,11 +1,12 @@
+var _ = require('underscore');
+var View = require('cdb/core/view');
+
 /**
  *  List edges view:
  *
  *  - It shows the borders and the shadows, if needed.
- *
  */
-
-cdb.geo.ui.Widget.List.EdgesView = cdb.core.View.extend({
+module.exports = View.extend({
 
   _TEMPLATE: ' ' +
     '<div class="Widget-listEdge Widget-listEdge--top">'+
@@ -50,7 +51,7 @@ cdb.geo.ui.Widget.List.EdgesView = cdb.core.View.extend({
 
   clean: function() {
     this._unbindScroll();
-    cdb.core.View.prototype.clean.call(this);
+    View.prototype.clean.call(this);
   }
 
 });

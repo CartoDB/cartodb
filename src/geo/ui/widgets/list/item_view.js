@@ -1,4 +1,8 @@
-cdb.geo.ui.Widget.List.ItemView = cdb.core.View.extend({
+var _ = require('underscore');
+var format = require('cdb/core/format');
+var View = require('cdb/core/view');
+
+module.exports = View.extend({
 
   tagName: 'li',
   className: 'Widget-listItem',
@@ -86,7 +90,7 @@ cdb.geo.ui.Widget.List.ItemView = cdb.core.View.extend({
 
     _.each(data, function(value, key) {
       var title = columnTitles && columnTitles[i] || key;
-      arr.push([ title, cdb.core.format.formatValue(value) ]);
+      arr.push([ title, format.formatValue(value) ]);
       ++i;
     });
 

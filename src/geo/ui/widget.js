@@ -1,3 +1,7 @@
+var View = require('cdb/core/view');
+var WidgetLoaderView = require('./widgets/standard/widget_loader_view');
+var WidgetErrorView = require('./widgets/standard/widget_error_view');
+var WidgetContentView = require('./widgets/standard/widget_content_view');
 
 /**
  *  Default widget view:
@@ -12,10 +16,8 @@
  *  different possibilities.
  *  - Sync or unsync widget (sync/unsync), making the proper view
  *  listen or not changes from the current datasource.
- *
  */
-
-cdb.geo.ui.Widget.View = cdb.core.View.extend({
+module.exports = View.extend({
 
   className: 'Widget Widget--light',
 
@@ -34,13 +36,13 @@ cdb.geo.ui.Widget.View = cdb.core.View.extend({
   },
 
   _initViews: function() {
-    this._loader = new cdb.geo.ui.Widget.Loader({
+    this._loader = new WidgetLoaderView({
       model: this.model
     });
     this.$el.append(this._loader.render().el);
     this.addView(this._loader);
 
-    this._error = new cdb.geo.ui.Widget.Error({
+    this._error = new WidgetErrorView({
       model: this.model
     });
     this._error.bind('refreshData', function() {
@@ -57,7 +59,7 @@ cdb.geo.ui.Widget.View = cdb.core.View.extend({
   // Generate and return content view.
   // In this case it will be the standard widget content.
   _createContentView: function() {
-    return new cdb.geo.ui.Widget.Content({
+    return new WidgetContentView({
       model: this.model,
       filter: this.filter
     });

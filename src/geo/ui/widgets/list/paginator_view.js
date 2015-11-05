@@ -1,4 +1,7 @@
-cdb.geo.ui.Widget.List.PaginatorView = cdb.core.View.extend({
+var _ = require('underscore');
+var View = require('cdb/core/view');
+
+module.exports = View.extend({
 
   className: 'Widget-nav Widget-contentSpaced',
 
@@ -94,7 +97,7 @@ cdb.geo.ui.Widget.List.PaginatorView = cdb.core.View.extend({
 
   clean: function() {
     this._unbindScroll();
-    cdb.core.View.prototype.clean.call(this);
+    View.prototype.clean.call(this);
   }
 
 });

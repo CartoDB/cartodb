@@ -1,10 +1,10 @@
-/**
- *  Default widget content view:
- *
- *
- */
+var _ = require('underscore');
+var WidgetContent = require('../standard/widget_content_view');
 
-cdb.geo.ui.Widget.Formula.Content = cdb.geo.ui.Widget.Content.extend({
+/**
+ * Default widget content view:
+ */
+module.exports = WidgetContent.extend({
 
   _TEMPLATE: ' ' +
     '<div class="Widget-header">'+

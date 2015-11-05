@@ -1,9 +1,12 @@
-/**
- *  Category list view
- *
- */
+var $ = require('jquery');
+var _ = require('underscore');
+var WidgetView = require('../../widget');
+var WidgetCategoryItemView = require('./item_view');
 
-cdb.geo.ui.Widget.Category.ItemsView = cdb.geo.ui.Widget.View.extend({
+/**
+ * Category list view
+ */
+module.exports = WidgetView.extend({
 
   _ITEMS_PER_PAGE: 6,
 
@@ -69,7 +72,7 @@ cdb.geo.ui.Widget.Category.ItemsView = cdb.geo.ui.Widget.View.extend({
   },
 
   _addItem: function(mdl, $parent) {
-    var v = new cdb.geo.ui.Widget.Category.ItemView({
+    var v = new WidgetCategoryItemView({
       model: mdl,
       viewModel: this.viewModel,
       filter: this.filter

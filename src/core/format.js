@@ -1,19 +1,24 @@
-cdb.core.format = {};
+var _ = require('underscore');
+var d3 = require('d3');
 
-cdb.core.format._formatNumber = function(value) {
+var format = {};
+
+format._formatNumber = function(value) {
   return d3.format(",")(value);
 }
 
-cdb.core.format._formatDate = function(value) {
+format._formatDate = function(value) {
   return d3.time.format("%Y-%m-%d")(value);
 }
 
-cdb.core.format.formatValue = function(value) {
+format.formatValue = function(value) {
   if (_.isNumber(value)) {
-    return cdb.core.format._formatNumber(value);
+    return format._formatNumber(value);
   }
   if (_.isDate(value)) {
-    return cdb.core.format._formatDate(value);
+    return format._formatDate(value);
   }
   return value;
 }
+
+module.exports = format;

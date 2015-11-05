@@ -1,10 +1,14 @@
-/**
- *  Default widget content view:
- *
- *
- */
+var $ = require('jquery');
+var _ = require('underscore');
+var Model = require('cdb/core/model');
+var View = require('cdb/core/view');
+var WidgetContent = require('../standard/widget_content_view');
+var WidgetHistogramChart = require('./chart');
 
-cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
+/**
+ * Default widget content view:
+ */
+module.exports = WidgetContent.extend({
 
   defaults: {
     chartHeight: 48 + 20 + 4
@@ -47,8 +51,8 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
 
   initialize: function() {
     this.dataModel = this.options.dataModel;
-    this.viewModel = new cdb.core.Model();
-    cdb.geo.ui.Widget.Content.prototype.initialize.call(this);
+    this.viewModel = new Model();
+    WidgetContent.prototype.initialize.call(this);
   },
 
   _initViews: function() {
@@ -118,7 +122,7 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
   },
 
   _renderMainChart: function() {
-    this.chart = new cdb.geo.ui.Widget.Histogram.Chart(({
+    this.chart = new WidgetHistogramChart(({
       el: this.$('.js-chart'),
       y: 0,
       margin: { top: 4, right: 4, bottom: 20, left: 4 },
@@ -139,7 +143,7 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
   },
 
   _renderMiniChart: function() {
-    this.miniChart = new cdb.geo.ui.Widget.Histogram.Chart(({
+    this.miniChart = new WidgetHistogramChart(({
       className: 'mini',
       el: this.$('.js-chart'),
       handles: false,
@@ -380,6 +384,6 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
 
   clean: function() {
     $(window).unbind('resize', this._onWindowResize);
-    cdb.core.View.prototype.clean.call(this);
+    View.prototype.clean.call(this);
   }
 });

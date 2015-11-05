@@ -1,4 +1,9 @@
-cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
+var _ = require('underscore');
+var d3 = require('d3');
+var Model = require('cdb/core/model');
+var View = require('cdb/core/view');
+
+module.exports = View.extend({
   defaults: {
     duration: 750,
     handleWidth: 6,
@@ -240,7 +245,7 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
   },
 
   _setupModel: function() {
-    this.model = new cdb.core.Model({
+    this.model = new Model({
       locked: false,
       data: this.options.data,
       width: this.options.width,

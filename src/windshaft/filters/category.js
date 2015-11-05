@@ -1,4 +1,8 @@
-cdb.windshaft.filters.CategoryFilter = cdb.windshaft.filters.FilterBase.extend({
+var _ = require('underscore');
+var Backbone = require('backbone');
+var WindshaftFilterBase = require('./base');
+
+module.exports = WindshaftFilterBase.extend({
 
   initialize: function() {
     this.rejectedCategories = new Backbone.Collection();

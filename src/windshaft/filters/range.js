@@ -1,4 +1,7 @@
-cdb.windshaft.filters.RangeFilter = cdb.windshaft.filters.FilterBase.extend({
+var _ = require('underscore');
+var WindshaftFilterBase = require('./base');
+
+module.exports = WindshaftFilterBase.extend({
 
   isEmpty: function() {
     return _.isUndefined(this.get('min')) && _.isUndefined(this.get('max'));
@@ -22,4 +25,3 @@ cdb.windshaft.filters.RangeFilter = cdb.windshaft.filters.FilterBase.extend({
     return json;
   }
 });
-

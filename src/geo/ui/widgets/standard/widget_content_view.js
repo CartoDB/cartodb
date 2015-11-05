@@ -1,9 +1,11 @@
-/**
- *  Default widget content view:
- *
- */
+var _ = require('underscore');
+var log = require('cdb.log');
+var View = require('cdb/core/view');
 
-cdb.geo.ui.Widget.Content = cdb.core.View.extend({
+/**
+ * Default widget content view:
+ */
+module.exports = View.extend({
 
   className: 'Widget-body',
 
@@ -57,7 +59,7 @@ cdb.geo.ui.Widget.Content = cdb.core.View.extend({
       var placeholderTemplate = _.template(this._PLACEHOLDER);
       this.$('.js-content').append(placeholderTemplate());
     } else {
-      cdb.log.info('Placeholder template doesn\'t exist');
+      log.info('Placeholder template doesn\'t exist');
     }
   }
 

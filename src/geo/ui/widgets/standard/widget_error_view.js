@@ -1,12 +1,13 @@
+var _ = require('underscore');
+var View = require('cdb/core/view');
+
 /**
  *  Default widget error view:
  *
  *  It will listen or not to dataModel changes when
  *  first load is done.
- *
  */
-
-cdb.geo.ui.Widget.Error = cdb.core.View.extend({
+module.exports = View.extend({
 
   className: 'Widget-error',
 

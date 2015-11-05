@@ -16,13 +16,13 @@ cdb.windshaft.Dashboard = function(options) {
 
   this.map.bind('change:center change:zoom', _.debounce(this._boundingBoxChanged, BOUNDING_BOX_FILTER_WAIT), this);
 
-  this.layers.bind('change', this._createInstance, this);
-  this.layers.bind('change:filter', this._onFilterChanged, this);
+  this.layers.bind('change', this._onLayerChanged, this);
+  this.layers.bind('change:filter', this._onLayerChanged, this);
 
   this._createInstance();
 };
 
-cdb.windshaft.Dashboard.prototype._onFilterChanged = function(layer, widget, filter) {
+cdb.windshaft.Dashboard.prototype._onLayerChanged = function(layer) {
   var layerId = layer.get('id');
   this._createInstance({
     layerId: layerId
@@ -36,7 +36,6 @@ cdb.windshaft.Dashboard.prototype._createInstance = function(options) {
     layers: this.layers.models
   });
 
-  // Flat list of widgets
   var visibleLayers = this.layers.filter(function(layer) { return layer.isVisible(); });
   var filtersFromVisibleLayers = _.chain(this.layers.models)
     .filter(function(layer) { return layer.isVisible(); })

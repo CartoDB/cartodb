@@ -21,18 +21,10 @@ var WindshaftDashboard = function(options) {
 
   this.map.bind('change:center change:zoom', _.debounce(this._boundingBoxChanged, BOUNDING_BOX_FILTER_WAIT), this);
 
-  this.layers.bind('change', this._onLayerChanged, this);
-  this.layers.bind('change:filter', this._onLayerChanged, this);
+  this.layers.bind('change', this._layerChanged, this);
+  this.layers.bind('change:filter', this._layerChanged, this);
 
   this._createInstance();
-};
-
-
-WindshaftDashboard.prototype._onLayerChanged = function(layer) {
-  var layerId = layer.get('id');
-  this._createInstance({
-    layerId: layerId
-  });
 };
 
 WindshaftDashboard.prototype._createInstance = function(options) {
@@ -76,13 +68,6 @@ WindshaftDashboard.prototype._createInstance = function(options) {
   return this.instance;
 };
 
-WindshaftDashboard.prototype._filterChanged = function(filter) {
-  var layerId = filter.get('layerId');
-  this._createInstance({
-    layerId: layerId
-  });
-};
-
 WindshaftDashboard.prototype._boundingBoxChanged = function() {
   if (this.instance) {
     this._updateWidgetURLs();
@@ -110,6 +95,13 @@ WindshaftDashboard.prototype._updateWidgetURLs = function(options) {
         silent: silent
       });
     });
+  });
+};
+
+WindshaftDashboard.prototype._layerChanged = function(layer) {
+  var layerId = layer.get('id');
+  this._createInstance({
+    layerId: layerId
   });
 };
 

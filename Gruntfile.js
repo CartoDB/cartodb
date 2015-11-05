@@ -182,7 +182,10 @@ module.exports = function(grunt) {
   var devJS = allDeps
     .concat('preWatch')
     .concat(js)
-    .concat('connect:jasmine');
+    .concat([
+      'connect:jasmine',
+      'connect:examples',
+    ]);
 
   grunt.registerTask('default', [ 'build' ]);
   grunt.registerTask('build', _.uniq(buildJS.concat(css)));

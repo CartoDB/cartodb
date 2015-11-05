@@ -28,6 +28,23 @@ module.exports = {
         }
       },
 
+      // TODO remove? used to test examples
+      examples: {
+        options: {
+          port: 8092,
+          livereload: true,
+          open: {
+            target: 'http://localhost:8092/examples/index.html'
+          },
+          base: {
+            path: '.',
+            options: {
+              index: './examples/index.html'
+            }
+          }
+        }
+      },
+
       styleguide: {
         options: {
           port: 9001,

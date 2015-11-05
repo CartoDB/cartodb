@@ -7,7 +7,7 @@ module.exports = {
     return {
       scss: {
         files: ['themes/scss/**/*.scss'],
-        tasks: ['css', 'concat:themes', 'cssmin:themes'],
+        tasks: ['sass', 'concat:themes', 'cssmin:themes'],
         options: {
           spawn: false,
           livereload: true

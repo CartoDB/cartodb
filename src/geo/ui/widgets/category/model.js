@@ -68,20 +68,14 @@ module.exports = WidgetModel.extend({
       };
     }, this);
 
-    // newData = _.sortBy(newData, function(datum) {
-    //   return -datum.count;
-    // });
-
     newData.sort(function(a,b) {
       return a.count - b.count || a.selected < b.selected
     });
 
-    var newDataCollection = new Backbone.Collection(newData);
-
     var restData = this._dataOrigin.map(function(mdl) {
       var value = mdl.get(columnName);
       var isRejected = rejectedCats.where({ name: value }).length > 0;
-      var alreadyAdded = newDataCollection.find(function(m){ return m.get('name') === value });
+      var alreadyAdded = _.find(newData, function(m){ return m.name === value });
 
       if (!alreadyAdded) {
         return {
@@ -94,7 +88,7 @@ module.exports = WidgetModel.extend({
 
     newData = newData.concat(_.compact(restData));
     this._data.reset(newData);
-    
+
     return {
       data: newData,
       min: min,

@@ -74,7 +74,7 @@ module.exports = WidgetView.extend({
   _addItem: function(mdl, $parent) {
     var v = new WidgetCategoryItemView({
       model: mdl,
-      viewModel: this.viewModel,
+      dataModel: this.model,
       filter: this.filter
     });
     v.bind('itemClicked', this._setFilters, this);

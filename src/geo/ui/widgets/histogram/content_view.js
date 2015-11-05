@@ -137,7 +137,7 @@ module.exports = WidgetContent.extend({
 
     this.chart.bind('range_updated', this._onRangeUpdated, this);
     this.chart.bind('on_brush_end', this._onBrushEnd, this);
-    //this.chart.bind('hover', this._onValueHover, this);
+    this.chart.bind('hover', this._onValueHover, this);
     this.chart.render().show();
 
     window.chart = this.chart; // TODO: remove
@@ -181,23 +181,10 @@ module.exports = WidgetContent.extend({
 
   _onValueHover: function(info) {
     var $tooltip = this.$(".js-tooltip");
-    var value;
-
-    if (info.index !== undefined) {
-
-      if (this.chart.isLocked()) {
-        value = this.dataModel.getDataWithoutOwnFilterApplied()[info.index].freq;
-      } else {
-        value = this.dataModel.getDataWithOwnFilterApplied()[info.index].freq;
-      }
-
-      if (value !== undefined) {
-        $tooltip.css({ top: info.top, left: info.left });
-        $tooltip.text(value);
-        $tooltip.fadeIn(70);
-      } else {
-        $tooltip.stop().fadeOut(50);
-      }
+    if (info.freq !== undefined) {
+      $tooltip.css({ top: info.top, left: info.left });
+      $tooltip.text(info.freq);
+      $tooltip.fadeIn(70);
     } else {
       $tooltip.stop().fadeOut(50);
     }

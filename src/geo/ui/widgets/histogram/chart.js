@@ -27,7 +27,7 @@ module.exports = View.extend({
 
   replaceData: function(data) {
     if (!this.isLocked()) {
-      //console.log('updating')
+      //console.log('updating', data)
       this.model.set({ data: data });
     } else {
       //console.log('not updating');
@@ -101,7 +101,7 @@ module.exports = View.extend({
     var y = d3.event.offsetY;
 
     var barIndex = Math.floor(x / this.barWidth);
-    var data = this.originalData;
+    var data = this.model.get('data');
 
     if (data[barIndex] === undefined || data[barIndex] === null) {
       return;
@@ -118,7 +118,7 @@ module.exports = View.extend({
       var top = this.yScale(freq) - 20 + this.model.get('pos').y + this.$el.position().top;
 
       if (!this._isDragging()) {
-        this.trigger('hover', { top: top, left: left, index: barIndex });
+        this.trigger('hover', { top: top, left: left, freq: freq });
       } else {
         this.trigger('hover', { value: null });
       }
@@ -259,8 +259,6 @@ module.exports = View.extend({
       pos: { x: 0, y: 0 }
     });
 
-    this.originalData = _.clone(this.options.data);
-
     this._bindModel();
   },
 
@@ -280,7 +278,6 @@ module.exports = View.extend({
     var data = this.model.get('data');
     this.xScale = d3.scale.linear().domain([0, 100]).range([0, this.chartWidth]);
     this.yScale = d3.scale.linear().domain([0, d3.max(data, function(d) { return _.isEmpty(d) ? 0 : d.freq; } )]).range([this.chartHeight, 0]);
-    this.yScale2 = d3.scale.linear().domain([0, d3.max(this.originalData, function(d) { return _.isEmpty(d) ? 0 : d.freq; } )]).range([this.chartHeight, 0]);
     this.zScale = d3.scale.ordinal().domain(d3.range(data.length)).rangeRoundBands([0, this.chartWidth]);
   },
 

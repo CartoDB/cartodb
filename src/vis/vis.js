@@ -490,17 +490,14 @@ var Vis = cdb.core.View.extend({
     // TODO: We can probably move this logic somewhere in cdb.geo.ui.Widget
     var widgetClasses = {
       "list": {
-        model: 'ListModel',
-        view: 'List.View'
+        model: 'ListModel'
       },
       "histogram": {
         model: 'HistogramModel',
-        view: 'Histogram.View',
         filter: 'RangeFilter'
       },
       "aggregation": {
         model: 'CategoryModel',
-        view: 'Category.View',
         filter: 'CategoryFilter'
       }
     };
@@ -535,19 +532,15 @@ var Vis = cdb.core.View.extend({
         var modelClass = widgetClasses[widgetType].model;
         var widgetModel = new cdb.geo.ui.Widget[modelClass](widgetData, { filter: filterModel });
         layer.widgets.add(widgetModel);
-
-        // Instantitate the view
-        var viewClass = widgetClasses[widgetType].view;
-        var viewClassParts = viewClass.split('.');
-        var viewOptions = { model: widgetModel };
-        if (filterModel) {
-          viewOptions.filter = filterModel;
-        }
-        var widgetView = new cdb.geo.ui.Widget[viewClassParts[0]][viewClassParts[1]](viewOptions);
-
-        $('.js-canvas').append(widgetView.render().el);
       }
     });
+
+    // TODO: This will need to change when new layers are added / removed
+    var layersWithWidgets = new Backbone.Collection(cartoDBLayers);
+    var widgetsView = new cdb.geo.ui.WidgetsView({
+      layers: layersWithWidgets
+    });
+    $('.js-canvas').append(widgetsView.render().el);
 
     // TODO: Perhaps this "endpoint" could be part of the "datasource"?
     var endpoint = cdb.windshaft.config.MAPS_API_BASE_URL;

@@ -26,7 +26,7 @@ module CartoDB
         notify_privacy_affected_entities(metadata_table) if privacy_changed
       end
 
-      rescue
+      rescue => exception
         CartoDB.notify_debug('Table without a map',
           table_id: @table.id,
           table_name: @table.name,

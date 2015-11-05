@@ -1,14 +1,19 @@
+var _ = require('underscore');
+var $ = require('jquery');
+var templates = require('cdb.templates');
+var View = require('../../core/view');
+
 /**
  * generic dialog
  *
  * this opens a dialog in the middle of the screen rendering
- * a dialog using cdb.templates 'common/dialog' or template_base option.
+ * a dialog using templates 'common/dialog' or template_base option.
  *
  * inherit class should implement render_content (it could return another widget)
  *
  * usage example:
  *
- *    var MyDialog = cdb.ui.common.Dialog.extend({
+ *    var MyDialog = Dialog.extend({
  *      render_content: function() {
  *        return "my content";
  *      },
@@ -27,8 +32,7 @@
  * TODO: modal
  * TODO: document modal_type
  */
-
-cdb.ui.common.Dialog = cdb.core.View.extend({
+module.exports = View.extend({
 
   tagName: 'div',
   className: 'dialog',
@@ -68,7 +72,7 @@ cdb.ui.common.Dialog = cdb.core.View.extend({
     // After removing the dialog, cleaning other bindings
     this.bind("clean", this._reClean);
 
-    this.template_base = this.options.template_base ? _.template(this.options.template_base) : cdb.templates.getTemplate(this.options.template_name);
+    this.template_base = this.options.template_base ? _.template(this.options.template_base) : templates.getTemplate(this.options.template_name);
   },
 
   render: function() {

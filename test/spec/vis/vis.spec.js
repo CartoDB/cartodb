@@ -1,23 +1,38 @@
+var $ = require('jquery');
+var _ = require('underscore');
+var L = require('leaflet');
 
-describe("Overlay", function() {
+// required due to implicit dependency in vis --> map-view
+var cdb = require('cdb');
+_.extend(cdb.geo, require('cdb/geo/leaflet'));
+_.extend(cdb.geo, require('cdb/geo/gmaps'));
+_.extend(L, require('cdb/geo/leaflet-extensions'));
 
+var createVis = require('cdb/api/create-vis');
+var View = require('cdb/core/view');
+var Overlay = require('cdb/vis/vis/overlay');
+var Vis = require('cdb/vis/vis');
+require('cdb/vis/overlays'); // Overlay.register calls
+require('cdb/vis/layers'); // Layers.register calls
+
+describe('vis/vis/overlay', function() {
 
   it("should register and create a type", function() {
     var _data;
-    cdb.vis.Overlay.register('test', function(data) {
+    Overlay.register('test', function(data) {
       _data = data;
-      return new cdb.core.View();
+      return new View();
     });
 
     var opt = {a : 1, b:2, pos: [10, 20]};
-    var v = cdb.vis.Overlay.create('test', null, opt);
+    var v = Overlay.create('test', null, opt);
     expect(_data).toEqual(opt);
 
   });
 
 });
 
-describe("Vis", function() {
+describe('vis/vis', function() {
 
   beforeEach(function(){
     this.container = $('<div>').css('height', '200px');
@@ -35,9 +50,13 @@ describe("Vis", function() {
       ]
     };
 
-    this.vis = new cdb.vis.Vis({el: this.container});
+    this.vis = new Vis({el: this.container});
     this.vis.load(this.mapConfig);
   })
+
+  afterEach(function() {
+    jasmine.clock().uninstall();
+  });
 
   it("should insert  default max and minZoom values when not provided", function() {
     expect(this.vis.mapView.map_leaflet.options.maxZoom).toEqual(20);
@@ -89,7 +108,7 @@ describe("Vis", function() {
     expect(this.mapConfig.center[0]).not.toEqual(43.3);
     expect(this.mapConfig.center[1]).not.toEqual("ham");
   })
-  
+
   it("should parse bounds values if they are correct", function() {
     this.container = $('<div>').css('height', '200px');
     var opts = {
@@ -130,8 +149,9 @@ describe("Vis", function() {
   });
 
   it("should not invalidate map if map height is 0", function(done) {
+    jasmine.clock().install();
     var container = $('<div>').css('height', '0');
-    var vis = new cdb.vis.Vis({el: container});
+    var vis = new Vis({el: container});
     this.mapConfig.map_provider = "googlemaps";
 
     vis.load(this.mapConfig);
@@ -141,11 +161,12 @@ describe("Vis", function() {
       expect(vis.mapView.invalidateSize).not.toHaveBeenCalled();
       done();
     }, 4000);
+    jasmine.clock().tick(4000);
   });
 
   it("should bind resize changes when map height is 0", function() {
     var container = $('<div>').css('height', '0');
-    var vis = new cdb.vis.Vis({el: container});
+    var vis = new Vis({el: container});
     spyOn(vis, '_onResize');
 
     this.mapConfig.map_provider = "googlemaps";
@@ -157,7 +178,7 @@ describe("Vis", function() {
 
   it("shouldn't bind resize changes when map height is greater than 0", function() {
     var container = $('<div>').css('height', '200px');
-    var vis = new cdb.vis.Vis({el: container});
+    var vis = new Vis({el: container});
     spyOn(vis, '_onResize');
 
     this.mapConfig.map_provider = "googlemaps";
@@ -170,11 +191,11 @@ describe("Vis", function() {
 
   it("should pass map to overlays", function() {
     var _map;
-    cdb.vis.Overlay.register('jaja', function(data, vis){
+    Overlay.register('jaja', function(data, vis){
       _map = vis.map
-      return new cdb.core.View()
+      return new View()
     })
-    var vis = new cdb.vis.Vis({el: this.container});
+    var vis = new Vis({el: this.container});
     this.mapConfig.overlays = [ {type: 'jaja'}];
     vis.load(this.mapConfig);
     expect(_map).not.toEqual(undefined);
@@ -199,6 +220,8 @@ describe("Vis", function() {
   })
 
   it("load should call done", function(done) {
+    jasmine.clock().install();
+
     this.mapConfig.layers = [{
       kind: 'tiled',
       options: {
@@ -214,6 +237,7 @@ describe("Vis", function() {
       done();
     }, 100);
 
+    jasmine.clock().tick(1000);
   });
 
   it("should add header", function() {
@@ -387,7 +411,7 @@ describe("Vis", function() {
           }
         ]
       };
-      cartodb.createVis('map', vizjson, {})
+      createVis('map', vizjson, {})
         .done(function(vis, layers) {
           var tooltip = vis.addOverlay({
             type: 'tooltip',
@@ -405,12 +429,14 @@ describe("Vis", function() {
   });
 
   it ("should load modules", function(done) {
+    jasmine.clock().install();
+
     this.mapConfig.layers = [
       {kind: 'torque', options: { tile_style: 'test', user_name: 'test', table_name: 'test'}}
     ];
 
     this.vis.load(this.mapConfig);
-    
+
     setTimeout(function() {
       var scripts = document.getElementsByTagName('script'),
           torqueRe = /\/cartodb\.mod\.torque\.js/;
@@ -421,7 +447,9 @@ describe("Vis", function() {
       }
       expect(found).toEqual(true);
       done()
-    }, 20);
+    }, 200);
+
+    jasmine.clock().tick(1000);
   });
 
   it ("should force GMaps", function() {
@@ -438,7 +466,7 @@ describe("Vis", function() {
     };
 
     layers = null;
-    
+
     this.vis.load(this.mapConfig, opts);
     expect(this.vis.map.layers.at(0).get('type')).toEqual('GMapsBase');
   });
@@ -495,42 +523,5 @@ describe("Vis", function() {
       expect(this.vis.legends.$el.html()).toContain('visible legend item');
       expect(this.vis.legends.$el.html()).not.toContain('invisible legend item');
     })
-  })
-
-  describe("Torque time slider", function() {
-
-    beforeEach(function() {
-      // Load torque module
-      cartodb.torque = torque;
-    })
-
-    it ("should display the time slider if a torque layer is present", function(done) {
-      this.mapConfig.layers = [
-        {
-          kind: 'torque',
-          options: { user_name: 'test', table_name: 'test', tile_style: 'Map { -torque-frame-count: 10;} #test { marker-width: 10; }'}
-        }
-      ];
-
-      this.vis.load(this.mapConfig).done(function(vis, layers){
-        expect(vis.timeSlider).toBeDefined();
-        done();
-      });
-    });
-
-    it ("should NOT display the time slider if a torque layer is not visible", function(done) {
-      this.mapConfig.layers = [
-        {
-          kind: 'torque',
-          visible: false,
-          options: { user_name: 'test', table_name: 'test', tile_style: 'Map { -torque-frame-count: 10;} #test { marker-width: 10; }'}
-        }
-      ];
-
-      this.vis.load(this.mapConfig).done(function(vis, layers){
-        expect(vis.timeSlider).toBeUndefined();
-        done();
-      });
-    });
   })
 });

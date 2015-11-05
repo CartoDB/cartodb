@@ -1,210 +1,123 @@
-// entry point
-;(function() {
+var isLeafletAlreadyLoaded = !!window.L;
 
-    var root = this;
+var _ = require('underscore');
+var L = require('leaflet');
+require('mousewheel'); // registers itself to $.event; TODO what's this required for? still relevant for supported browsers?
+require('mwheelIntent'); // registers itself to $.event; TODO what's this required for? still relevant for supported browsers?
 
-    var cdb = root.cdb = {};
+var cdb = require('cdb');
+cdb.Backbone = require('backbone');
+cdb.Mustache = require('mustache');
+cdb.$ = require('jquery');
+cdb._ = _;
+cdb.L = L;
 
-    cdb.VERSION = "3.15.8";
-    cdb.DEBUG = false;
+if (isLeafletAlreadyLoaded) L.noConflict();
+_.extend(L, require('./geo/leaflet-extensions'));
+_.extend(cdb.geo, require('./geo/leaflet'));
 
-    cdb.CARTOCSS_VERSIONS = {
-      '2.0.0': '',
-      '2.1.0': ''
-    };
+cdb.Image = require('./vis/image')
+cdb.SQL = require('./api/sql');
 
-    cdb.CARTOCSS_DEFAULT_VERSION = '2.1.1';
+cdb.config = require('cdb.config');
+cdb.log = require('cdb.log');
+cdb.errors = require('cdb.errors');
+cdb.templates = require('cdb.templates');
+cdb.decorators = require('./core/decorators');
+cdb.createVis = require('./api/create-vis');
+cdb.createLayer = require('./api/create-layer');
 
-    root.cdb.config = {};
-    root.cdb.core = {};
-    root.cdb.image = {};
-    root.cdb.geo = {};
-    root.cdb.geo.ui = {};
-    root.cdb.geo.ui.Widget = {};
-    root.cdb.geo.ui.Widget.List = {};
-    root.cdb.geo.ui.Widget.Category = {};
-    root.cdb.geo.ui.Widget.Histogram = {};
-    root.cdb.geo.ui.Widget.Formula = {};
-    root.cdb.geo.geocoder = {};
-    root.cdb.ui = {};
-    root.cdb.ui.common = {};
-    root.cdb.vis = {};
-    root.cdb.decorators = {};
-    root.cdb.windshaft = {};
-    root.cdb.windshaft.filters = {};
+// Extracted from vis/vis.js,
+// used in libs like torque and odyssey to add themselves here (or so it seems)
+cdb.moduleLoad = function(name, mod) {
+  cdb[name] = mod;
+  cdb.config.modules.add({
+    name: name,
+    mod: mod
+  });
+};
 
-    /**
-     * global variables
-     */
-    root.JST = root.JST || {};
-    root.cartodb = cdb;
+cdb.core.Profiler = require('cdb.core.Profiler');
+cdb.core.util = require('cdb.core.util');
+cdb.core.Loader = cdb.vis.Loader = require('./core/loader');
+cdb.core.sanitize = require('./core/sanitize')
+cdb.core.Template = require('./core/template');
+cdb.core.TemplateList = require('./core/template-list');
+cdb.core.Model = require('./core/model');
+cdb.core.View = require('./core/view');
 
-    cdb.files = [
-        "../vendor/jquery.min.js",
-        "../vendor/underscore.js",
-        "../vendor/json2.js",
-        "../vendor/backbone.js",
-        "../vendor/d3.js",
-        "../vendor/mustache.js",
+cdb.ui.common.Dialog = require('./ui/common/dialog');
+cdb.ui.common.ShareDialog = require('./ui/common/share');
+cdb.ui.common.Dropdown = require('./ui/common/dropdown');
+cdb.ui.common.FullScreen = require('./ui/common/fullscreen');
+cdb.ui.common.Notification = require('./ui/common/notification');
+cdb.ui.common.Row = require('./ui/common/table/row');
+cdb.ui.common.TableData = require('./ui/common/table/table-data');
+cdb.ui.common.TableProperties = require('./ui/common/table/table-properties');
+cdb.ui.common.RowView = require('./ui/common/table/row-view');
+cdb.ui.common.Table = require('./ui/common/table');
 
-        "../vendor/leaflet.js",
-        "../vendor/wax.cartodb.js",
-        "../vendor/GeoJSON.js", //geojson gmaps lib
+cdb.geo.common.CartoDBLogo = require('./geo/cartodb-logo');
 
-        "../vendor/jscrollpane.js",
-        "../vendor/mousewheel.js",
-        "../vendor/mwheelIntent.js",
-        "../vendor/spin.js",
-        "../vendor/lzma.js",
-        "../vendor/html-css-sanitizer-bundle.js",
+cdb.geo.geocoder.NOKIA = require('./geo/geocoder/nokia-geocoder');
+cdb.geo.geocoder.YAHOO = require('./geo/geocoder/yahoo-geocoder');
+cdb.geo.Geometry = require('./geo/geometry');
 
-        'core/sanitize.js',
-        'core/decorator.js',
-        'core/config.js',
-        'core/log.js',
-        'core/profiler.js',
-        'core/template.js',
-        'core/model.js',
-        'core/view.js',
-        'core/loader.js',
-        'core/util.js',
-        'core/format.js',
+cdb.geo.MapLayer = require('./geo/map/map-layer');
+cdb.geo.TileLayer = require('./geo/map/tile-layer');
+cdb.geo.GMapsBaseLayer = require('./geo/map/gmaps-base-layer');
+cdb.geo.WMSLayer = require('./geo/map/wms-layer');
+cdb.geo.PlainLayer = require('./geo/map/plain-layer');
+cdb.geo.TorqueLayer = require('./geo/map/torque-layer');
+cdb.geo.CartoDBLayer = require('./geo/map/cartodb-layer');
+cdb.geo.CartoDBNamedMapLayer = require('./geo/map/cartodb-named-map-layer');
+cdb.geo.Layers = require('./geo/map/layers');
+cdb.geo.CartoDBGroupLayer = require('./geo/map/cartodb-group-layer');
+cdb.geo.Map = require('./geo/map');
+cdb.geo.MapView = require('./geo/map-view');
 
-        'geo/geocoder.js',
-        'geo/geometry.js',
-        'geo/map.js',
-        'geo/ui/text.js',
-        'geo/ui/annotation.js',
-        'geo/ui/image.js',
-        'geo/ui/share.js',
-        'geo/ui/zoom.js',
-        'geo/ui/zoom_info.js',
-        'geo/ui/legend.js',
-        'geo/ui/switcher.js',
-        'geo/ui/infowindow.js',
-        'geo/ui/header.js',
-        'geo/ui/search.js',
-        'geo/ui/layer_selector.js',
-        'geo/ui/slides_controller.js',
-        'geo/ui/mobile.js',
-        'geo/ui/tiles_loader.js',
-        'geo/ui/infobox.js',
-        'geo/ui/tooltip.js',
-        'geo/ui/fullscreen.js',
+_.extend(cdb.geo, require('./geo/gmaps'));
 
-        // Widgets
-        'geo/ui/widget.js',
-        'geo/ui/widgets/widget_model.js',
-        'geo/ui/widgets/standard/widget_loader_view.js',
-        'geo/ui/widgets/standard/widget_error_view.js',
-        'geo/ui/widgets/standard/widget_content_view.js',
-        'geo/ui/widgets/histogram/view.js',
-        'geo/ui/widgets/histogram/chart.js',
-        'geo/ui/widgets/histogram/content_view.js',
-        'geo/ui/widgets/histogram/model.js',
-        'geo/ui/widgets/list/view.js',
-        'geo/ui/widgets/list/content_view.js',
-        'geo/ui/widgets/list/paginator_view.js',
-        'geo/ui/widgets/list/edges_view.js',
-        'geo/ui/widgets/list/item_view.js',
-        'geo/ui/widgets/list/items_view.js',
-        'geo/ui/widgets/list/model.js',
-        'geo/ui/widgets/category/view.js',
-        'geo/ui/widgets/category/filter_view.js',
-        'geo/ui/widgets/category/content_view.js',
-        'geo/ui/widgets/category/item_view.js',
-        'geo/ui/widgets/category/items_view.js',
-        'geo/ui/widgets/category/paginator_view.js',
-        'geo/ui/widgets/category/model.js',
-        'geo/ui/widgets/formula/view.js',
-        'geo/ui/widgets/formula/content_view.js',
-        'geo/ui/widgets/formula/model.js',
-        // End widgets
+// overwrites the Promise defined from the core bundle
+cdb.Promise = require('./api/promise');
 
-        'geo/sublayer.js',
-        'geo/layer_definition.js',
-        'geo/common.js',
+cdb.geo.ui.Text = require('./geo/ui/text');
+cdb.geo.ui.Annotation = require('./geo/ui/annotation');
+cdb.geo.ui.Image = require('./geo/ui/image');
+cdb.geo.ui.Share = require('./geo/ui/share');
+cdb.geo.ui.Zoom = require('./geo/ui/zoom');
+cdb.geo.ui.ZoomInfo = require('./geo/ui/zoom-info');
 
-        'geo/leaflet/leaflet_base.js',
-        'geo/leaflet/leaflet_plainlayer.js',
-        'geo/leaflet/leaflet_tiledlayer.js',
-        'geo/leaflet/leaflet_gmaps_tiledlayer.js',
-        'geo/leaflet/leaflet_wmslayer.js',
-        'geo/leaflet/leaflet_cartodb_layergroup.js',
-        'geo/leaflet/leaflet_cartodb_layer.js',
-        'geo/leaflet/leaflet.geometry.js',
-        'geo/leaflet/leaflet.js',
+// setup expected object structure here, to avoid circular references
+_.extend(cdb.geo.ui, require('./geo/ui/legend-exports'));
+cdb.geo.ui.Legend = require('./geo/ui/legend');
+_.extend(cdb.geo.ui.Legend, require('./geo/ui/legend/legend-view-exports'));
 
-        'geo/gmaps/gmaps_base.js',
-        'geo/gmaps/gmaps_baselayer.js',
-        'geo/gmaps/gmaps_plainlayer.js',
-        'geo/gmaps/gmaps_tiledlayer.js',
-        'geo/gmaps/gmaps_cartodb_layergroup.js',
-        'geo/gmaps/gmaps_cartodb_layer.js',
-        'geo/gmaps/gmaps.geometry.js',
-        'geo/gmaps/gmaps.js',
+cdb.geo.ui.InfowindowModel = require('./geo/ui/infowindow-model');
+cdb.geo.ui.Infowindow = require('./geo/ui/infowindow');
 
-        'ui/common/dialog.js',
-        'ui/common/share.js',
-        'ui/common/notification.js',
-        'ui/common/table.js',
-        'ui/common/dropdown.js',
+cdb.geo.ui.SlidesControllerItem = require('./geo/ui/slides-controller-item');
+cdb.geo.ui.SlidesController = require('./geo/ui/slides-controller');
+cdb.geo.ui.Header = require('./geo/ui/header');
 
-        'vis/vis.js',
-        'vis/image.js',
-        'vis/overlays.js',
-        'vis/layers.js',
+cdb.geo.ui.Search = require('./geo/ui/search');
 
-        // PUBLIC API
-        'api/layers.js',
-        'api/sql.js',
-        'api/vis.js',
+cdb.geo.ui.LayerSelector = require('./geo/ui/layer-selector');
+cdb.geo.ui.LayerView = require('./geo/ui/layer-view');
+cdb.geo.ui.LayerViewFromLayerGroup = require('./geo/ui/layer-view-from-layer-group');
 
-        'windshaft/config.js',
-        'windshaft/client.js',
-        'windshaft/filters/collection.js',
-        'windshaft/filters/base.js',
-        'windshaft/filters/category.js',
-        'windshaft/filters/range.js',
-        'windshaft/filters/bounding_box.js',
-        'windshaft/dashboard.js',
-        'windshaft/dashboard_instance.js',
-        'windshaft/public_dashboard_config.js',
-        'windshaft/private_dashboard_config.js',
-    ];
+cdb.geo.ui.MobileLayer = require('./geo/ui/mobile-layer');
+cdb.geo.ui.Mobile = require('./geo/ui/mobile');
+cdb.geo.ui.TilesLoader = require('./geo/ui/tiles-loader');
+cdb.geo.ui.InfoBox = require('./geo/ui/infobox');
+cdb.geo.ui.Tooltip = require('./geo/ui/tooltip');
 
-    cdb.init = function(ready) {
-      // define a simple class
-      var Class = cdb.Class = function() {};
-      _.extend(Class.prototype, Backbone.Events);
+cdb.vis.INFOWINDOW_TEMPLATE = require('./vis/vis/infowindow-template');
+cdb.vis.Overlay = require('./vis/vis/overlay');
+cdb.vis.Overlays = require('./vis/vis/overlays');
+cdb.vis.Layers = require('./vis/vis/layers');
+cdb.vis.Vis = require('./vis/vis');
+require('./vis/overlays'); // Overlay.register calls
+require('./vis/layers'); // Layers.register calls
 
-      cdb._loadJST();
-      root.cdb.god = new Backbone.Model();
-
-      ready && ready();
-    };
-
-    /**
-     * load all the javascript files. For testing, do not use in production
-     */
-    cdb.load = function(prefix, ready) {
-        var c = 0;
-
-        var next = function() {
-            var script = document.createElement('script');
-            script.src = prefix + cdb.files[c];
-            document.body.appendChild(script);
-            ++c;
-            if(c == cdb.files.length) {
-                if(ready) {
-                    script.onload = ready;
-                }
-            } else {
-                script.onload = next;
-            }
-        };
-
-        next();
-
-    };
-})();
+module.exports = cdb;

@@ -1,49 +1,42 @@
+var _ = require('underscore');
+var $ = require('jquery');
+var LayerDefinition = require('../geo/layer-definition/layer-definition');
 
-;(function() {
+var defaults = {
+  tiler_domain:   "cartodb.com",
+  tiler_port:     "80",
+  tiler_protocol: "http",
+  subdomains: ['{s}'],
+  extra_params:   {
+    cache_policy: 'persist'
+  }
+};
 
-  var root = this;
+var Tiles = function(options) {
+  _.defaults(options, defaults);
+  if(!options.sublayers) {
+    throw new Error("sublayers should be passed");
+  }
+  if(!options.user_name) {
+    throw new Error("username should be passed");
+  }
 
-  root.cartodb = root.cartodb || {};
+  options.layer_definition = LayerDefinition.layerDefFromSubLayers(options.sublayers);
 
-  var defaults = {
-    tiler_domain:   "cartodb.com",
-    tiler_port:     "80",
-    tiler_protocol: "http",
-    subdomains: ['{s}'],
-    extra_params:   {
-      cache_policy: 'persist'
-    }
-  };
+  options.ajax = $.ajax;
 
-  var Tiles = function(options) {
-    _.defaults(options, defaults);
-    if(!options.sublayers) {
-      throw new Error("sublayers should be passed");
-    }
-    if(!options.user_name) {
-      throw new Error("username should be passed");
-    }
+  LayerDefinition.call(this, options.layer_definition, options);
+};
 
-    options.layer_definition = LayerDefinition.layerDefFromSubLayers(options.sublayers);
+_.extend(Tiles.prototype, LayerDefinition.prototype);
 
-    options.ajax = reqwest.compat;
+/**
+ * return the tile url template for the layer requested
+ */
+Tiles.getTiles = function(options, callback) {
+  var t = new Tiles(options);
+  t.getTiles(callback);
+  return t;
+};
 
-    LayerDefinition.call(this, options.layer_definition, options);
-  };
-
-  _.extend(Tiles.prototype, LayerDefinition.prototype);
-
-
-  root.cartodb.Tiles = Tiles;
-
-  /**
-   * return the tile url template for the layer requested
-   */
-  Tiles.getTiles = function(options, callback) {
-    var t = new Tiles(options);
-    t.getTiles(callback);
-    return t;
-  };
-
-
-})();
+module.exports = Tiles;

@@ -1,4 +1,9 @@
-cdb.geo.ui.Text = cdb.core.View.extend({
+var _ = require('underscore');
+var View = require('../../core/view');
+var sanitize = require('../../core/sanitize');
+var $ = require('jquery');
+
+var Text = View.extend({
 
   className: "cartodb-overlay overlay-text",
 
@@ -164,7 +169,7 @@ cdb.geo.ui.Text = cdb.core.View.extend({
   },
 
   render: function() {
-    var text = cdb.core.sanitize.html(this.model.get("extra").rendered_text, this.model.get('sanitizeText'));
+    var text = sanitize.html(this.model.get("extra").rendered_text, this.model.get('sanitizeText'));
     var data = _.chain(this.model.attributes).clone().extend({ text: text }).value();
     this.$el.html(this.template(data));
 
@@ -182,3 +187,5 @@ cdb.geo.ui.Text = cdb.core.View.extend({
   }
 
 });
+
+module.exports = Text;

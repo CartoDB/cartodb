@@ -1,32 +1,32 @@
-cdb.core.util = {};
+var util = {};
 
-cdb.core.util.isCORSSupported = function() {
+util.isCORSSupported = function() {
   return 'withCredentials' in new XMLHttpRequest();
 };
 
-cdb.core.util.array2hex = function(byteArr) {
+util.array2hex = function(byteArr) {
   var encoded = []
   for(var i = 0; i < byteArr.length; ++i) {
     encoded.push(String.fromCharCode(byteArr[i] + 128));
   }
-  return cdb.core.util.btoa(encoded.join(''));
+  return util.btoa(encoded.join(''));
 };
 
-cdb.core.util.btoa = function(data) {
+util.btoa = function(data) {
   if (typeof window['btoa'] == 'function') {
-    return cdb.core.util.encodeBase64Native(data);
+    return util.encodeBase64Native(data);
   };
 
-  return cdb.core.util.encodeBase64(data);
+  return util.encodeBase64(data);
 };
 
-cdb.core.util.encodeBase64Native = function (input) {
+util.encodeBase64Native = function (input) {
   return btoa(input);
 };
 
 // ie7 btoa,
 // from http://phpjs.org/functions/base64_encode/
-cdb.core.util.encodeBase64 = function (data) {
+util.encodeBase64 = function (data) {
   var b64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
   var o1, o2, o3, h1, h2, h3, h4, bits, i = 0,
     ac = 0,
@@ -59,14 +59,14 @@ cdb.core.util.encodeBase64 = function (data) {
   return (r ? enc.slice(0, r - 3) : enc) + '==='.slice(r || 3);
 };
 
-cdb.core.util.uniqueCallbackName = function(str) {
-  cdb.core.util._callback_c = cdb.core.util._callback_c || 0;
-  ++cdb.core.util._callback_c;
-  return cdb.core.util.crc32(str) + "_" + cdb.core.util._callback_c;
+util.uniqueCallbackName = function(str) {
+  util._callback_c = util._callback_c || 0;
+  ++util._callback_c;
+  return util.crc32(str) + "_" + util._callback_c;
 };
 
-cdb.core.util.crc32 = function(str) {
-  var crcTable = cdb.core.util._crcTable || (cdb.core.util._crcTable = cdb.core.util._makeCRCTable());
+util.crc32 = function(str) {
+  var crcTable = util._crcTable || (util._crcTable = util._makeCRCTable());
   var crc = 0 ^ (-1);
 
   for (var i = 0, l = str.length; i < l; ++i ) {
@@ -76,7 +76,7 @@ cdb.core.util.crc32 = function(str) {
   return (crc ^ (-1)) >>> 0;
 };
 
-cdb.core.util._makeCRCTable = function() {
+util._makeCRCTable = function() {
   var c;
   var crcTable = [];
   for(var n = 0; n < 256; ++n){
@@ -89,9 +89,9 @@ cdb.core.util._makeCRCTable = function() {
   return crcTable;
 };
 
-cdb.core.util._inferBrowser = function(ua){
+util._inferBrowser = function(ua){
   var browser = {};
-  ua = ua || window.navigator.userAgent;
+  ua = ua || typeof window !== 'undefined' && window.navigator.userAgent || '';
   function detectIE() {
     var msie = ua.indexOf('MSIE ');
     var trident = ua.indexOf('Trident/');
@@ -121,4 +121,6 @@ cdb.core.util._inferBrowser = function(ua){
   return browser;
 }
 
-cdb.core.util.browser = cdb.core.util._inferBrowser();
+util.browser = util._inferBrowser();
+
+module.exports = util;

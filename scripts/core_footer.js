@@ -1,3 +1,0 @@
-
-})();
-//cartodb.core end

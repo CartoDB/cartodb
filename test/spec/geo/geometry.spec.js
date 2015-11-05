@@ -1,10 +1,13 @@
-describe("Geometry", function() {
+var $ = require('jquery');
+var Geometry = require('cdb/geo/geometry');
+
+describe('geo/geometry', function() {
   it("isPoint should return true when is a point", function() {
     var geojsonFeature = {
         "type": "Point",
         "coordinates": [-104.99404, 39.75621]
     };
-    var g = new cdb.geo.Geometry({
+    var g = new Geometry({
       geojson: geojsonFeature
     });
     expect(g.isPoint()).toEqual(true);
@@ -12,4 +15,3 @@ describe("Geometry", function() {
     expect(g.isPoint()).toEqual(false);
   });
 });
-

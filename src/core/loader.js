@@ -1,4 +1,6 @@
-var Loader = cdb.vis.Loader = cdb.core.Loader = {
+var cdb = require('cdb'); // cdb.DEBUG
+
+var Loader = {
 
   queue: [],
   current: undefined,
@@ -34,8 +36,8 @@ var Loader = cdb.vis.Loader = cdb.core.Loader = {
     var scripts = document.getElementsByTagName('script'),
         cartodbJsRe = /\/?cartodb[\-\._]?([\w\-\._]*)\.js\??/;
     for (i = 0, len = scripts.length; i < len; i++) {
-      src = scripts[i].src;
-      matches = src.match(cartodbJsRe);
+      var src = scripts[i].src;
+      var matches = src.match(cartodbJsRe);
 
       if (matches) {
         var bits = src.split('/');
@@ -47,15 +49,16 @@ var Loader = cdb.vis.Loader = cdb.core.Loader = {
   },
 
   loadModule: function(modName) {
-    var file = "cartodb.mod." + modName + (cartodb.DEBUG ? ".uncompressed.js" : ".js");
+    var file = "cartodb.mod." + modName + (cdb.DEBUG ? ".uncompressed.js" : ".js");
     var src = this.getPath(file);
     if (!src) {
-      cartodb.log.error("can't find cartodb.js file");
+      throw new Error("can't find cartodb.js file (no src path found for '" + file + "')");
     }
     Loader.loadScript(src);
   }
 };
 
+// Required for jsonp callback, see Loader.get()
 window.vizjson = function(data) {
   Loader.current && Loader.current(data);
   // remove script
@@ -68,3 +71,4 @@ window.vizjson = function(data) {
   }
 };
 
+module.exports = Loader;

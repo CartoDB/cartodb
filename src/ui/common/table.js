@@ -1,3 +1,8 @@
+var _ = require('underscore');
+var $ = require('jquery');
+var View = require('../../core/view');
+var RowView = require('./table/row-view');
+
 /**
  * generic table
  *
@@ -12,163 +17,15 @@
       $('body').append(table.render().el);
 
   * model should be a collection of Rows
-
- */
-
-/**
- * represents a table row
- */
-cdb.ui.common.Row = cdb.core.Model.extend({
-});
-
-cdb.ui.common.TableData = Backbone.Collection.extend({
-    model: cdb.ui.common.Row,
-    fetched: false,
-
-    initialize: function() {
-      var self = this;
-      this.bind('reset', function() {
-        self.fetched = true;
-      })
-    },
-
-    /**
-     * get value for row index and columnName
-     */
-    getCell: function(index, columnName) {
-      var r = this.at(index);
-      if(!r) {
-        return null;
-      }
-      return r.get(columnName);
-    },
-
-    isEmpty: function() {
-      return this.length === 0;
-    }
-
-});
-
-/**
- * contains information about the table, mainly the schema
- */
-cdb.ui.common.TableProperties = cdb.core.Model.extend({
-
-  columnNames: function() {
-    return _.map(this.get('schema'), function(c) {
-      return c[0];
-    });
-  },
-
-  columnName: function(idx) {
-    return this.columnNames()[idx];
-  }
-});
-
-/**
- * renders a table row
- */
-cdb.ui.common.RowView = cdb.core.View.extend({
-  tagName: 'tr',
-
-  initialize: function() {
-
-    this.model.bind('change', this.render, this);
-    this.model.bind('destroy', this.clean, this);
-    this.model.bind('remove', this.clean, this);
-    this.model.bind('change', this.triggerChange, this);
-    this.model.bind('sync', this.triggerSync, this);
-    this.model.bind('error', this.triggerError, this);
-
-    this.add_related_model(this.model);
-    this.order = this.options.order;
-  },
-
-  triggerChange: function() {
-    this.trigger('changeRow');
-  },
-
-  triggerSync: function() {
-    this.trigger('syncRow');
-  },
-
-  triggerError: function() {
-    this.trigger('errorRow')
-  },
-
-  valueView: function(colName, value) {
-    return value;
-  },
-
-  render: function() {
-    var self = this;
-    var row = this.model;
-
-    var tr = '';
-
-    var tdIndex = 0;
-    var td;
-    if(this.options.row_header) {
-        td = '<td class="rowHeader" data-x="' + tdIndex + '">';
-    } else {
-        td = '<td class="EmptyRowHeader" data-x="' + tdIndex + '">';
-    }
-    var v = self.valueView('', '');
-    if(v.html) {
-      v = v[0].outerHTML;
-    }
-    td += v;
-    td += '</td>';
-    tdIndex++;
-    tr += td
-
-    var attrs = this.order || _.keys(row.attributes);
-    var tds = '';
-    var row_attrs = row.attributes;
-    for(var i = 0, len = attrs.length; i < len; ++i) {
-      var key = attrs[i];
-      var value = row_attrs[key];
-      if(value !== undefined) {
-        var td = '<td id="cell_' + row.id + '_' + key + '" data-x="' + tdIndex + '">';
-        var v = self.valueView(key, value);
-        if(v.html) {
-          v = v[0].outerHTML;
-        }
-        td += v;
-        td += '</td>';
-        tdIndex++;
-        tds += td;
-      }
-    }
-    tr += tds;
-    this.$el.html(tr).attr('id', 'row_' + row.id);
-    return this;
-  },
-
-  getCell: function(x) {
-    var childNo = x;
-    if(this.options.row_header) {
-      ++x;
-    }
-    return this.$('td:eq(' + x + ')');
-  },
-
-  getTableView: function() {
-    return this.tableView;
-  }
-
-});
-
-/**
  * render a table
  * this widget needs two data sources
  * - the table model which contains information about the table (columns and so on). See TableProperties
  * - the model with the data itself (TableData)
  */
-cdb.ui.common.Table = cdb.core.View.extend({
+var Table = View.extend({
 
   tagName: 'table',
-  rowView: cdb.ui.common.RowView,
+  rowView: RowView,
 
   events: {
       'click td': '_cellClick',
@@ -446,3 +303,5 @@ cdb.ui.common.Table = cdb.core.View.extend({
 
 
 });
+
+module.exports = Table;

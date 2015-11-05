@@ -19,7 +19,7 @@ module.exports = {
         files: [{
           expand: true,
           flatten: true,
-          src: ['src/cartodb.js'],
+          src: ['src/cdb.js'],
           dest: 'src/'
         }]
       },

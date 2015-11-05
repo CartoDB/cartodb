@@ -1,5 +1,9 @@
+var _ = require('underscore');
+var $ = require('jquery');
+var Dialog = require('./dialog');
+var sanitize = require('../../core/sanitize');
 
-cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
+module.exports = Dialog.extend({
 
   tagName: 'div',
   className: 'cartodb-share-dialog',
@@ -123,8 +127,8 @@ cdb.ui.common.ShareDialog = cdb.ui.common.Dialog.extend({
 
     var $el = this.$el;
 
-    var title             = cdb.core.sanitize.html(this.options.title);
-    var description       = cdb.core.sanitize.html(this.options.description);
+    var title             = sanitize.html(this.options.title);
+    var description       = sanitize.html(this.options.description);
     var clean_description = this._stripHTML(this.options.description);
     var share_url         = this.options.share_url;
 

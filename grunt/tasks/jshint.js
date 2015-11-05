@@ -1,9 +1,7 @@
-
 /**
  *  JS hint grunt task for CartoDB.js
  *
  */
-
 module.exports = {
   task: function() {
     return {
@@ -13,11 +11,8 @@ module.exports = {
       },
       all: [
         'Gruntfile.js',
-        '<%= config.app %>/js/**/*.js',
         'test/spec/**/*.js'
       ]
     }
   }
 }
-
-    

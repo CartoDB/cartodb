@@ -1,5 +1,18 @@
-describe("common.geo.ui.Legend", function() {
+var _ = require('underscore');
+var Backbone = require('backbone');
+var $ = require('jquery');
+var cdb = require('cdb'); // to setup cdb.geo.ui.*, cdb.geo.ui.Legend.*
+var config = require('cdb.config');
 
+// A necessary evil, due to otherwise end up with circular references
+cdb.geo.ui.Legend = require('cdb/geo/ui/legend');
+_.extend(cdb.geo.ui.Legend, require('cdb/geo/ui/legend/legend-view-exports'));
+
+var LegendExports = require('cdb/geo/ui/legend-exports');
+var Model = require('cdb/core/model');
+var Map = require('cdb/geo/map');
+
+describe('geo/ui/legend', function() {
   describe("Legend", function() {
 
     var data, legend, map;
@@ -10,7 +23,7 @@ describe("common.geo.ui.Legend", function() {
 
     beforeEach(function() {
 
-      map = new cdb.geo.Map();
+      map = new Map();
 
       data = [
         { name: "Category 1", value: "#f1f1f1" },
@@ -57,7 +70,7 @@ describe("common.geo.ui.Legend", function() {
     });
 
     it("should have a collection", function() {
-      expect(legend.items instanceof cdb.geo.ui.LegendItems).toEqual(true);
+      expect(legend.items instanceof LegendExports.LegendItems).toEqual(true);
     });
 
     it("should populate the collection", function() {
@@ -78,14 +91,14 @@ describe("common.geo.ui.Legend", function() {
 
     it("should create the specific legend based on the type", function() {
       legend.model.set({ type: "bubble" });
-      expect(legend.view instanceof cdb.geo.ui.BubbleLegend).toEqual(true);
+      expect(legend.view instanceof LegendExports.BubbleLegend).toEqual(true);
       expect(legend.$el.hasClass("bubble")).toEqual(true);
       expect(legend.$el.hasClass("custom")).toEqual(false);
     });
 
     it("shouldn't create the legend if the type is unknown", function() {
       legend.model.set({ type: "the_legend_of_santana" });
-      expect(legend.view instanceof cdb.geo.ui.CustomLegend).toEqual(false);
+      expect(legend.view instanceof LegendExports.CustomLegend).toEqual(false);
       expect(legend.$el.hasClass("custom")).toEqual(false);
     });
 
@@ -234,7 +247,7 @@ describe("common.geo.ui.Legend", function() {
 
       legends = [ legendA, legendB ];
 
-      stackedLegend = new cdb.geo.ui.StackedLegend({
+      stackedLegend = new LegendExports.StackedLegend({
         legends: legends
       });
 
@@ -254,14 +267,14 @@ describe("common.geo.ui.Legend", function() {
         { name: null, value: "red"  },
       ];
 
-      var model = new cdb.core.Model({
+      var model = new Model({
         type: "color",
         title: "title",
         show_title: false,
       });
       model.items = new Backbone.Collection(data)
 
-      legend = new cdb.geo.ui.ColorLegend({
+      legend = new LegendExports.ColorLegend({
         model: model
       });
     });

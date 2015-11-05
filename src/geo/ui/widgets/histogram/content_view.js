@@ -322,6 +322,7 @@ module.exports = WidgetContent.extend({
 
       var data = this.dataModel.getDataWithOwnFilterApplied();
       this.chart.replaceData(data);
+      this.chart.refresh();
     } else {
       this.viewModel.set({ zoom_enabled: false, filter_enabled: false, lo_index: null, hi_index: null });
       this.chart.replaceData(this.dataModel.getDataWithoutOwnFilterApplied());

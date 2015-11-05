@@ -122,9 +122,9 @@ var CartoDBLayer = MapLayer.extend({
   },
 
   getFilters: function() {
-    return _.flatten(this.widgets.map(function(widget) {
+    return this.widgets.map(function(widget) {
       return widget.getFilter();
-    }));
+    });
   }
 });
 

@@ -91,12 +91,17 @@ module CartoDB
         # @param use_callback_flow : bool
         # @return string : Access token
         # @throws AuthError
-        def validate_auth_code(auth_code, use_callback_flow=true)
+        def validate_auth_code(auth_code, use_callback_flow = true)
           unless use_callback_flow
             @client.authorization.redirect_uri = REDIRECT_URI
           end
           @client.authorization.code = auth_code
           @client.authorization.fetch_access_token!
+          if @client.authorization.refresh_token.nil?
+            raise AuthError.new(
+              "Error validating auth token. Is this Google account linked to another CartoDB account?",
+              DATASOURCE_NAME)
+          end
           @refresh_token = @client.authorization.refresh_token
         rescue Google::APIClient::InvalidIDTokenError, Signet::AuthorizationError => ex
           raise AuthError.new("validating auth code: #{ex.message}", DATASOURCE_NAME)

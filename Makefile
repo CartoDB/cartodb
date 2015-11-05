@@ -30,8 +30,21 @@ WORKING_SPECS_1 = \
 	spec/requests/carto/api/database_groups_controller_spec.rb \
   spec/models/map_spec.rb \
   spec/models/map/copier_spec.rb \
-  spec/models/visualization/*.rb \
+	spec/models/visualization/collection_spec.rb \
+	spec/models/visualization/copier_spec.rb \
+	spec/models/visualization/locator_spec.rb \
+	spec/models/visualization/member_spec.rb \
+	spec/models/visualization/name_checker_spec.rb \
+	spec/models/visualization/name_generator_spec.rb \
+	spec/models/visualization/organization_visualization_spec.rb \
+	spec/models/visualization/overlays_spec.rb \
+	spec/models/visualization/presenter_spec.rb \
+	spec/models/visualization/relator_spec.rb \
+	spec/models/visualization/table_blender_spec.rb \
+	spec/models/visualization/tags_spec.rb \
+	spec/models/visualization/watcher_spec.rb \
   spec/models/named_maps_spec.rb \
+  spec/models/data_import_spec.rb \
   spec/models/geocoding_spec.rb \
   spec/models/common_data_spec.rb \
   spec/lib/sql_parser_spec.rb \

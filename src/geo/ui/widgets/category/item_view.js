@@ -1,5 +1,6 @@
 var _ = require('underscore');
 var View = require('cdb/core/view');
+var template = require('./item_view.tpl');
 
 /**
  * Category list item view
@@ -13,19 +14,6 @@ module.exports = View.extend({
     'click .js-button': '_onItemClick'
   },
 
-  _TEMPLATE: ' ' +
-    '<li class="Widget-listItem">'+
-      '<button type="button" class="Widget-listItemInner Widget-listButton js-button <%- isDisabled ? \'is-disabled\' : \'\' %>">'+
-        '<div class="Widget-contentSpaced">'+
-          '<p class="Widget-textSmall Widget-textSmall--bold Widget-textSmall--upper" title="<%- name %>"><%- name %></p>'+
-          '<p class="Widget-textSmaller" title="<%- value %>"><%- value %> (~<%- percentage %>%)</p>'+
-        '</div>'+
-        '<div class="Widget-progressBar">'+
-          '<div class="Widget-progressState" style="width: <%- percentage %>%"></div>'+
-        '</div>'+
-      '</button>'+
-    '</li>',
-
   initialize: function(options) {
     this.filter = this.options.filter;
     this.dataModel = this.options.dataModel;
@@ -33,7 +21,6 @@ module.exports = View.extend({
   },
 
   render: function() {
-    var template = _.template(this._TEMPLATE);
     var value = this.model.get('count');
 
     this.$el.html(

@@ -1,13 +1,15 @@
-/**
- *  Category widget model
- *
- */
+var _ = require('underscore');
+var Backbone = require('backbone');
+var WidgetModel = require('../widget_model');
 
-cdb.geo.ui.Widget.CategoryModel = cdb.geo.ui.Widget.Model.extend({
+/**
+ * Category widget model
+ */
+module.exports = WidgetModel.extend({
 
   initialize: function(attrs, opts) {
     this._data = new Backbone.Collection(this.get('data'));
-    cdb.geo.ui.Widget.Model.prototype.initialize.call(this, attrs, opts);
+    WidgetModel.prototype.initialize.call(this, attrs, opts);
 
     // Retrigger an event when the changes
     this.filter.bind('change', this._onFilterChanged, this);

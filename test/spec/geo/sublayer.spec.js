@@ -1,4 +1,12 @@
-describe('Sublayers', function() {
+var _ = require('underscore');
+var $ = require('jquery');
+var Backbone = require('backbone');
+var CartoDBSubLayer = require('cdb/geo/sub-layer/cartodb-sub-layer');
+var HttpSubLayer = require('cdb/geo/sub-layer/http-sub-layer');
+var SubLayerFactory = require('cdb/geo/sub-layer/sub-layer-factory');
+var LayerDefinition = require('cdb/geo/layer-definition/layer-definition');
+
+describe('geo/sublayer', function() {
   var layerDefinition, sublayer;
 
   beforeEach(function() {
@@ -97,7 +105,7 @@ describe('Sublayers', function() {
           expect(subl).toEqual(sublayer);
           done();
         };
-        
+
         sublayer.on('remove', callback);
 
         sublayer.remove();

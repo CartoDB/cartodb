@@ -1,4 +1,12 @@
-describe('cdb.geo.ui.Search', function() {
+var $ = require('jquery');
+var L = require('leaflet');
+var Search = require('cdb/geo/ui/search');
+var NOKIA  = require('cdb/geo/geocoder/nokia-geocoder');
+var Map = require('cdb/geo/map');
+var Template = require('cdb/core/template');
+var LeafletMapView = require('cdb/geo/leaflet/leaflet-map-view');
+
+describe('cdb/geo/ui/search', function() {
 
   beforeEach(function() {
     this.$el = $("<div>")
@@ -6,8 +14,8 @@ describe('cdb.geo.ui.Search', function() {
       .height(500)
       .width(500);
     $('body').append(this.$el);
-    this.map = new cdb.geo.Map();
-    var template = cdb.core.Template.compile(
+    this.map = new Map();
+    var template = Template.compile(
       '\
         <form>\
           <span class="loader"></span>\
@@ -17,12 +25,12 @@ describe('cdb.geo.ui.Search', function() {
       ',
       'mustache'
     );
-    this.mapView = new cdb.geo.LeafletMapView({
+    this.mapView = new LeafletMapView({
       el: this.$el,
       map: this.map
     });
 
-    this.view = new cdb.geo.ui.Search({
+    this.view = new Search({
       template: template,
       model: this.map,
       mapView: this.mapView
@@ -51,7 +59,7 @@ describe('cdb.geo.ui.Search', function() {
         },
         type: undefined
       };
-      cdb.geo.geocoder.NOKIA.geocode = function(address, callback) {
+      NOKIA.geocode = function(address, callback) {
         callback([ self.result ]);
       };
 
@@ -59,9 +67,9 @@ describe('cdb.geo.ui.Search', function() {
     });
 
     it('should search with geocoder when form is submit', function() {
-      spyOn(cdb.geo.geocoder.NOKIA, 'geocode');
+      spyOn(NOKIA, 'geocode');
       this.view.$('form').submit();
-      expect(cdb.geo.geocoder.NOKIA.geocode).toHaveBeenCalled();
+      expect(NOKIA.geocode).toHaveBeenCalled();
     });
 
     it('should change map center when geocoder returns any result', function() {
@@ -170,20 +178,26 @@ describe('cdb.geo.ui.Search', function() {
       });
 
       it('should destroy/hide search pin when map is clicked', function(done) {
-        expect(this.view._searchPin).toBeDefined();
-        expect(this.view._searchInfowindow).toBeDefined();
+        jasmine.clock().install();
+
+        var view = this.view;
+        expect(view._searchPin).toBeDefined();
+        expect(view._searchInfowindow).toBeDefined();
         this.mapView.trigger('click');
         setTimeout(function() {
-          expect(this.view._searchPin).toBeUndefined();
-          expect(this.view._searchInfowindow).toBeUndefined();
+          expect(view._searchPin).toBeUndefined();
+          expect(view._searchInfowindow).toBeUndefined();
           done();
         }, 1500);
+
+        jasmine.clock().tick(2000);
       });
     });
   });
 
   afterEach(function() {
     this.$el.remove();
+    jasmine.clock().uninstall();
   })
 
 });

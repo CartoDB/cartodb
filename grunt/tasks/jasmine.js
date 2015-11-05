@@ -1,110 +1,85 @@
+var _ = require('underscore');
+
+var defaultOptions = {
+  keepRunner: true,
+  summary: true,
+  display: 'short',
+  vendor: [
+    // Load & install the source-map-support lib (get proper stack traces from inlined source-maps)
+    "node_modules/source-map-support/browser-source-map-support.js",
+    "test/install-source-map-support.js",
+  ]
+};
 
 /**
- *  Jasmine grunt task for CartoDB.js tests
- *
+ * Jasmine grunt task for CartoDB.js tests
+ * https://github.com/gruntjs/grunt-contrib-jasmine#options
+ * Load order: vendor, helpers, source, specs,
  */
-
 module.exports = {
   task: function() {
     return {
-      dist: {
+
+      'src': {
+        src: [], // actual src files are require'd in the *.spec.js files
+        options: _.defaults({
+          outfile: 'test/SpecRunner-src.html',
+          specs: '<%= config.tmp %>/src-specs.js',
+          vendor: defaultOptions.vendor.concat([
+            'http://maps.googleapis.com/maps/api/js?sensor=false&v=3.12',
+
+            // this is required by vis/vis spec "should load modules";
+            // TODO: core/loader searches existing <script> tags for some src that contains *cartodb*.js* file,
+            // it uses the same URL path to load the module from - could we make this more robust and not depend on
+            // distant external/global circumstances to define its behavior, e.g. a configuration when model is created?
+            "vendor/fake.cartodb.js",
+          ]),
+        }, defaultOptions)
+      },
+
+      torque: {
         src: [
-          "vendor/jquery.min.js",
-          "vendor/underscore.js",
-          "vendor/backbone.js",
-          "vendor/d3.js",
-          "vendor/leaflet.js",
-          "vendor/wax.cartodb.js",
-          "vendor/mustache.js",
-          "vendor/GeoJSON.js",
-          "vendor/jscrollpane.js",
-          "vendor/spin.js",
-          "vendor/lzma.js",
-          "vendor/mod/carto.js",
-          "vendor/mod/torque.uncompressed.js",
-          "vendor/mod/jquery-ui/jquery.ui.core.js",
-          "vendor/mod/jquery-ui/jquery.ui.widget.js",
-          "vendor/mod/jquery-ui/jquery.ui.mouse.js",
-          "vendor/mod/jquery-ui/jquery.ui.slider.js",
-          "vendor/html-css-sanitizer-bundle.js",
-          "test/lib/sinon-1.3.4.js",
-          "test/lib/sinon-ie.js",
-          "src/cartodb.js",
-          "src/core/model.js",
-          "src/geo/ui/widgets/widget_model.js",
-          "src/geo/ui/widgets/widget_collection.js",
-          "src/core/*.js",
-          "src/geo/geometry.js",
-          "src/geo/map.js",
-          "src/geo/ui/header.js",
-          "src/geo/ui/legend.js",
-          "src/geo/ui/infobox.js",
-          "src/geo/ui/infowindow.js",
-          "src/geo/ui/search.js",
-          "src/geo/ui/mobile.js",
-          "src/geo/ui/annotation.js",
-          "src/geo/ui/layer_selector.js",
-          'src/geo/ui/slides_controller.js',
-          "src/geo/ui/share.js",
-          "src/geo/ui/zoom_info.js",
-          "src/geo/ui/tiles_loader.js",
-          "src/geo/ui/zoom.js",
-          "src/geo/ui/tooltip.js",
-          "src/geo/ui/time_slider.js",
-          "src/geo/ui/fullscreen.js",
-          "src/geo/ui/widget.js",
-          "src/geo/ui/widgets/*.js",
-          "src/geo/ui/widgets/standard/*.js",
-          "src/geo/ui/widgets/**/*.js",
-          "src/geo/sublayer.js",
-          "src/geo/layer_definition.js",
-          "src/geo/common.js",
-          "src/geo/leaflet/leaflet.geometry.js",
-          "src/geo/leaflet/leaflet_base.js",
-          "src/geo/leaflet/leaflet_plainlayer.js",
-          "src/geo/leaflet/leaflet_tiledlayer.js",
-          "src/geo/leaflet/leaflet_gmaps_tiledlayer.js",
-          "src/geo/leaflet/leaflet_wmslayer.js",
-          "src/geo/leaflet/leaflet_cartodb_layergroup.js",
-          "src/geo/leaflet/leaflet_cartodb_layer.js",
-          "src/geo/leaflet/torque.js",
-          "src/geo/leaflet/leaflet.js",
-          "src/geo/gmaps/gmaps.geometry.js",
-          "src/geo/gmaps/gmaps_base.js",
-          "src/geo/gmaps/gmaps_baselayer.js",
-          "src/geo/gmaps/gmaps_plainlayer.js",
-          "src/geo/gmaps/gmaps_tiledlayer.js",
-          "src/geo/gmaps/gmaps_cartodb_layergroup.js",
-          "src/geo/gmaps/gmaps_cartodb_layer.js",
-          "src/geo/gmaps/torque.js",
-          "src/geo/gmaps/gmaps.js",
-          "src/geo/geocoder.js",
-          "src/ui/common/dialog.js",
-          "src/ui/common/share.js",
-          "src/ui/common/notification.js",
-          "src/ui/common/table.js",
-          "src/ui/common/tabpane.js",
-          "src/ui/common/dropdown.js",
-          "src/vis/vis.js",
-          "src/vis/image.js",
-          "src/vis/layers.js",
-          "src/vis/overlays.js",
-          "src/api/layers.js",
-          "src/api/sql.js",
-          "src/api/vis.js",
-          "src/windshaft/client.js",
-          "src/windshaft/filters/*.js"
+          'dist/cartodb.mod.torque.uncompressed.js',
         ],
-        options: {
-          keepRunner: true,
-          outfile: 'test/SpecRunner.html',
-          specs: 'test/spec/**/*.js',
-          helpers: 'test/spec/SpecHelper.js',
-          vendor: [ "http://maps.googleapis.com/maps/api/js?sensor=false&v=3.12" ],
-          summary: true,
-          display: 'short'
-        }
-      }
+        options: _.defaults({
+          outfile: 'test/SpecRunner-torque.html',
+          specs: '<%= config.tmp %>/torque-specs.js',
+          vendor: defaultOptions.vendor.concat([
+            'http://maps.googleapis.com/maps/api/js?sensor=false&v=3.12',
+            'dist/cartodb.uncompressed.js',
+
+            // this is required by vis/vis spec "should load modules";
+            // TODO: core/loader searches existing <script> tags for some src that contains *cartodb*.js* file,
+            // it uses the same URL path to load the module from - could we make this more robust and not depend on
+            // distant external/global circumstances to define its behavior, e.g. a configuration when model is created?
+            "vendor/fake.cartodb.js",
+          ]),
+        }, defaultOptions)
+      },
+
+      odyssey: {
+        src: [
+          'dist/cartodb.mod.odyssey.uncompressed.js',
+        ],
+        options: _.defaults({
+          outfile: 'test/SpecRunner-odyssey.html',
+          specs: '<%= config.tmp %>/odyssey-specs.js',
+          vendor: defaultOptions.vendor.concat([
+            '<%= config.dist %>/cartodb.uncompressed.js',
+          ]),
+        }, defaultOptions),
+      },
+
+      cartodb: {
+        src: [
+          'dist/cartodb.uncompressed.js',
+        ],
+        options: _.defaults({
+          outfile: 'test/SpecRunner-cartodb.html',
+          specs: '<%= config.tmp %>/cartodb-specs.js',
+        }, defaultOptions)
+      },
+
     }
   }
 }

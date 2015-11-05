@@ -1,12 +1,15 @@
-describe('widgets/list/content_view', function() {
+var _ = require('underscore');
+var WidgetListModel = require('cdb/geo/ui/widgets/list/model');
+var WidgetListContent = require('cdb/geo/ui/widgets/list/content_view');
 
+describe('geo/ui/widgets/list/content_view', function() {
   beforeEach(function() {
-    this.model = new cdb.geo.ui.Widget.ListModel({
+    this.model = new WidgetListModel({
       id: 'widget_3',
       title: 'Howdy',
       columns: ['cartodb_id', 'title']
     });
-    this.view = new cdb.geo.ui.Widget.List.Content({
+    this.view = new WidgetListContent({
       showScroll: true,
       model: this.model
     });

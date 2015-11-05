@@ -1,7 +1,12 @@
+var _ = require('underscore');
+var Backbone = require('backbone');
+var Mustache = require('mustache');
+var log = require('cdb.log');
+
 /**
  * template system
  * usage:
-   var tmpl = new cdb.core.Template({
+   var tmpl = new Template({
      template: "hi, my name is {{ name }}",
      type: 'mustache' // undescore by default
    });
@@ -11,12 +16,11 @@
 
    you could pass the compiled tempalte directly:
 
-   var tmpl = new cdb.core.Template({
+   var tmpl = new Template({
      compiled: function() { return 'my compiled template'; }
    });
  */
-
-cdb.core.Template = Backbone.Model.extend({
+var Template = Backbone.Model.extend({
 
   initialize: function() {
     this.bind('change', this._invalidate);
@@ -42,11 +46,11 @@ cdb.core.Template = Backbone.Model.extend({
 
   compile: function() {
     var tmpl_type = this.get('type') || 'underscore';
-    var fn = cdb.core.Template.compilers[tmpl_type];
+    var fn = Template.compilers[tmpl_type];
     if(fn) {
       return fn(this.get('template'));
     } else {
-      cdb.log.error("can't get rendered for " + tmpl_type);
+      log.error("can't get rendered for " + tmpl_type);
     }
     return null;
   },
@@ -78,56 +82,12 @@ cdb.core.Template = Backbone.Model.extend({
       }
   },
   compile: function(tmpl, type) {
-    var t = new cdb.core.Template({
+    var t = new Template({
       template: tmpl,
       type: type || 'underscore'
     });
     return _.bind(t.render, t);
   }
-}
-);
-
-cdb.core.TemplateList = Backbone.Collection.extend({
-
-  model: cdb.core.Template,
-
-  getTemplate: function(template_name) {
-
-    if (this.namespace) {
-      template_name = this.namespace + template_name;
-    }
-
-    var t = this.find(function(t) {
-        return t.get('name') === template_name;
-    });
-
-    if(t) {
-      return _.bind(t.render, t);
-    }
-
-    cdb.log.error(template_name + " not found");
-
-    return null;
-  }
 });
 
-/**
- * global variable
- */
-cdb.templates = new cdb.core.TemplateList();
-
-/**
- * load JST templates.
- * rails creates a JST variable with all the templates.
- * This functions loads them as default into cbd.template
- */
-cdb._loadJST = function() {
-  if(typeof(window.JST) !== undefined) {
-    cdb.templates.reset(
-      _(JST).map(function(tmpl, name) {
-        return { name: name, compiled: tmpl };
-      })
-    );
-  }
-};
-
+module.exports = Template;

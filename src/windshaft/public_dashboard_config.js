@@ -1,6 +1,6 @@
-cdb.windshaft.PublicDashboardConfig = {};
+var WindshaftPublicDashboardConfig = {};
 
-cdb.windshaft.PublicDashboardConfig.generate = function(options) {
+WindshaftPublicDashboardConfig.generate = function(options) {
   var layers = options.layers;
   var config = { layers: [] };
   _.each(layers, function(layer) {
@@ -34,3 +34,5 @@ cdb.windshaft.PublicDashboardConfig.generate = function(options) {
 
   return config;
 };
+
+module.exports = WindshaftPublicDashboardConfig;

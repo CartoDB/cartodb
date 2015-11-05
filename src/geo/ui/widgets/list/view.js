@@ -1,13 +1,13 @@
+var WidgetView = require('../../widget');
+var WidgetListContentView = require('./content_view');
 
 /**
- *  List widget view
- *
+ * List widget view
  */
-
-cdb.geo.ui.Widget.List.View = cdb.geo.ui.Widget.View.extend({
+module.exports = WidgetView.extend({
 
   _createContentView: function() {
-    return new cdb.geo.ui.Widget.List.Content({
+    return new WidgetListContentView({
       model: this.model
     });
   }

@@ -1,9 +1,10 @@
-/**
- *  Category filter view
- *
- */
+var _ = require('underscore');
+var View = require('cdb/core/view');
 
-cdb.geo.ui.Widget.Category.FilterView = cdb.core.View.extend({
+/**
+ * Category filter view
+ */
+module.exports = View.extend({
 
   className: 'Widget-filter Widget-contentSpaced Widget-contentSpaced--sideMargins is-hidden',
 

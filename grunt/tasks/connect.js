@@ -1,46 +1,50 @@
-
 /**
  *  Connect grunt task for CartoDB.js website
  *
  */
-
 module.exports = {
   task: function(config) {
     return {
+
       options: {
         port: 9001,
         livereload: 35730,
         // change this to '0.0.0.0' to access the server from outside
         hostname: '0.0.0.0'
       },
-      livereload: {
+
+      // Required for source-map-support install to work in a non-headless browserify
+      // Use this instead of opening test/SpecRunner-*.html files directly
+      jasmine: {
         options: {
-          middleware: function(connect) {
-            return [
-              connect.static('.tmp'),
-              connect().use('/bower_components', connect.static('./bower_components')),
-              connect.static(config.app)
-            ];
+          port: 8091,
+          livereload: true,
+          base: {
+            path: '.',
+            options: {
+              index: 'test/SpecRunner-core.html'
+            }
           }
         }
       },
-      dist: {
+
+      // TODO remove? used to test examples
+      examples: {
         options: {
-          open: true,
-          base: [
-            '<%= config.dist %>/<%= config.app %>'
-          ]
+          port: 8092,
+          livereload: true,
+          open: {
+            target: 'http://localhost:8092/examples/index.html'
+          },
+          base: {
+            path: '.',
+            options: {
+              index: './examples/index.html'
+            }
+          }
         }
       },
-      test: {
-        options: {
-          base: [
-            '.tmp',
-            'test',
-            '<%= config.app %>'
-          ]
-        }
-      },
+
       styleguide: {
         options: {
           port: 9001,
@@ -52,6 +56,7 @@ module.exports = {
           ]
         }
       }
+
     }
   }
 }

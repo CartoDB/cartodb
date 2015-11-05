@@ -1,15 +1,20 @@
-cdb.windshaft.Dashboard = function(options) {
+var _ = require('underscore');
+var Backbone = require('backbone');
+var WindshaftFiltersCollection = require('./filters/collection');
+var WindshaftFiltersBoundingBoxFilter = require('./filters/bounding_box');
+var WindshaftDashboardInstance = require('./dashboard_instance');
+
+var WindshaftDashboard = function(options) {
   BOUNDING_BOX_FILTER_WAIT = 500;
 
   this.layerGroup = options.layerGroup;
   this.layers = new Backbone.Collection(options.layers);
-
   this.map = options.map;
   this.client = options.client;
   this.statTag = options.statTag;
   this.configGenerator = options.configGenerator;
 
-  this.instance = new cdb.windshaft.DashboardInstance();
+  this.instance = new WindshaftDashboardInstance();
 
   // Bindings
   this.layerGroup.bindDashboardInstance(this.instance);
@@ -22,14 +27,15 @@ cdb.windshaft.Dashboard = function(options) {
   this._createInstance();
 };
 
-cdb.windshaft.Dashboard.prototype._onLayerChanged = function(layer) {
+
+WindshaftDashboard.prototype._onLayerChanged = function(layer) {
   var layerId = layer.get('id');
   this._createInstance({
     layerId: layerId
   });
 };
 
-cdb.windshaft.Dashboard.prototype._createInstance = function(options) {
+WindshaftDashboard.prototype._createInstance = function(options) {
   var options = options || {};
 
   var dashboardConfig = this.configGenerator.generate({
@@ -70,16 +76,23 @@ cdb.windshaft.Dashboard.prototype._createInstance = function(options) {
   return this.instance;
 };
 
-cdb.windshaft.Dashboard.prototype._boundingBoxChanged = function() {
+WindshaftDashboard.prototype._filterChanged = function(filter) {
+  var layerId = filter.get('layerId');
+  this._createInstance({
+    layerId: layerId
+  });
+};
+
+WindshaftDashboard.prototype._boundingBoxChanged = function() {
   if (this.instance) {
     this._updateWidgetURLs();
   }
 };
 
-cdb.windshaft.Dashboard.prototype._updateWidgetURLs = function(options) {
+WindshaftDashboard.prototype._updateWidgetURLs = function(options) {
   var options = options || {};
   var self = this;
-  var boundingBoxFilter = new cdb.windshaft.filters.BoundingBoxFilter(this.map.getViewBounds());
+  var boundingBoxFilter = new WindshaftFiltersBoundingBoxFilter(this.map.getViewBounds());
   var layerId = options.layerId;
 
   this.layers.each(function(layer) {
@@ -100,3 +113,4 @@ cdb.windshaft.Dashboard.prototype._updateWidgetURLs = function(options) {
   });
 };
 
+module.exports = WindshaftDashboard;

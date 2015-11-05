@@ -1,4 +1,8 @@
-describe("common.geo.ui.Header", function() {
+var Template = require('cdb/core/template');
+var Model = require('cdb/core/model');
+var Header = require('cdb/geo/ui/header');
+
+describe('geo/ui/header', function() {
 
   var header, template;
 
@@ -8,7 +12,7 @@ describe("common.geo.ui.Header", function() {
 
   beforeEach(function() {
 
-    template = cdb.core.Template.compile(
+    template = Template.compile(
        ' \
       <div class="content">\
       <div class="title">{{{ title }}}</div>\
@@ -17,8 +21,8 @@ describe("common.geo.ui.Header", function() {
       'mustache'
     );
 
-    header = new cdb.geo.ui.Header({
-      model: new cdb.core.Model({
+    header = new Header({
+      model: new Model({
         extra: {
           title: 'Title',
           description: 'Description <a href="http://test.es">Test</a>',
@@ -35,8 +39,8 @@ describe("common.geo.ui.Header", function() {
     expect(header.$('.description a').attr('target')).toBe('_blank');
 
     // Overwritting target attribute if exists
-    var h1 = new cdb.geo.ui.Header({
-      model: new cdb.core.Model({
+    var h1 = new Header({
+      model: new Model({
         extra: {
           title: 'Title',
           description: "Description <a href='http://test.es' target='_parent'>Test</a>",
@@ -51,8 +55,8 @@ describe("common.geo.ui.Header", function() {
     expect(h1.$('.description a').attr('target')).toBe('_blank');
 
     // Working with simple and double quotes
-    var h2 = new cdb.geo.ui.Header({
-      model: new cdb.core.Model({
+    var h2 = new Header({
+      model: new Model({
         extra: {
           title: 'Title',
           description: "Description <a href='http://test.es'>Test</a>",
@@ -67,8 +71,8 @@ describe("common.geo.ui.Header", function() {
     expect(h2.$('.description a').attr('target')).toBe('_blank');
 
     // Don't remove other attributes
-    var h1 = new cdb.geo.ui.Header({
-      model: new cdb.core.Model({
+    var h1 = new Header({
+      model: new Model({
         extra: {
           title: 'Title',
           description: "Description <a href='http://test.es' target='_parent' name='naaaamed'>Test</a>",

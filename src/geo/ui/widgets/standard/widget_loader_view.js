@@ -1,12 +1,12 @@
+var View = require('cdb/core/view');
+
 /**
  *  Default widget loader view:
  *
  *  It will listen or not to dataModel changes when
  *  first load is done.
- *
  */
-
-cdb.geo.ui.Widget.Loader = cdb.core.View.extend({
+module.exports = View.extend({
 
   className: 'Widget-loader',
 

@@ -1,5 +1,12 @@
-cdb.windshaft.DashboardInstance = cdb.core.Model.extend({
- 
+var $ = require('jquery');
+var _ = require('underscore');
+var Model = require('cdb/core/model');
+var util = require('cdb/core/util');
+var MapBase = require('cdb/geo/layer-definition/map-base');
+var WindshaftConfig = require('./config');
+
+module.exports = Model.extend({
+
   initialize: function() {
     this.ajax = $.ajax;
 
@@ -19,7 +26,7 @@ cdb.windshaft.DashboardInstance = cdb.core.Model.extend({
   getBaseURL: function() {
     return [
       this.getHost(),
-      cdb.windshaft.config.MAPS_API_BASE_URL,
+      WindshaftConfig.MAPS_API_BASE_URL,
       this.getMapId(),
     ].join('/');
   },
@@ -33,7 +40,7 @@ cdb.windshaft.DashboardInstance = cdb.core.Model.extend({
     if (cdnHost) {
       host = [protocol, '://', subhost, cdnHost, '/', userName].join('');
     }
-    
+
     return host;
   },
 
@@ -165,7 +172,7 @@ cdb.windshaft.DashboardInstance = cdb.core.Model.extend({
     $.ajax({
       dataType: 'jsonp',
       url: url,
-      jsonpCallback: '_cdbi_layer_attributes_' + cdb.core.util.uniqueCallbackName(this.toJSON()),
+      jsonpCallback: '_cdbi_layer_attributes_' + util.uniqueCallbackName(this.toJSON()),
       cache: true,
       success: function(data) {
         // loadingTime.end();

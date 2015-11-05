@@ -1,4 +1,7 @@
-cdb.geo.ui.LayerWidgetsView = cdb.core.View.extend({
+var View = require('cdb/core/view');
+var WidgetViewFactory = require('cdb/geo/ui/widgets/widget_view_factory');
+
+module.exports = View.extend({
 
   className: 'LayerWidgets-canvas',
 
@@ -13,7 +16,7 @@ cdb.geo.ui.LayerWidgetsView = cdb.core.View.extend({
   },
 
   _renderWidgetView: function(widget) {
-    var widgetView = cdb.geo.ui.WidgetViewFactory.createView(widget);
+    var widgetView = WidgetViewFactory.createView(widget);
     this.$el.append(widgetView.render().el);
 
     this.addView(widgetView);

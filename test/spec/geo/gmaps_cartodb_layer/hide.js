@@ -1,4 +1,7 @@
-describe('Hide funcionality', function() {
+var $ = require('jquery');
+var CartoDBLayerGMaps = require('cdb/geo/gmaps/cartodb-layer-gmaps');
+
+describe('CartoDBLayerGMaps: Hide funcionality', function() {
   var div, map, cdb_layer;
 
   beforeEach(function() {
@@ -15,7 +18,7 @@ describe('Hide funcionality', function() {
       mapTypeControl: false
     });
 
-    cdb_layer = new cdb.geo.CartoDBLayerGMaps({
+    cdb_layer = new CartoDBLayerGMaps({
       map: map,
       user_name:"examples",
       tile_style: 'test',
@@ -50,7 +53,7 @@ describe('Hide funcionality', function() {
         expect(opacity).toEqual(0);
         expect(before_opacity).not.toEqual(0);
         done();
-      }, 500);  
+      }, 500);
     }, 500);
   });
 

@@ -1,8 +1,10 @@
-describe('Interaction funcionality', function() {
+var $ = require('jquery');
+var CartoDBLayerGMaps = require('cdb/geo/gmaps/cartodb-layer-gmaps');
+
+describe('CartoDBLayerGMaps: Interaction funcionality', function() {
   var div, map, cdb_layer;
 
   beforeEach(function() {
-
     div = document.createElement('div');
     div.setAttribute("id","map");
     div.style.height = "100px";
@@ -16,7 +18,7 @@ describe('Interaction funcionality', function() {
       mapTypeControl: false
     });
 
-    cdb_layer = new cdb.geo.CartoDBLayerGMaps({
+    cdb_layer = new CartoDBLayerGMaps({
       map: map,
       user_name:"examples",
       table_name: 'country_colors',

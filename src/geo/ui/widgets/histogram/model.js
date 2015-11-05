@@ -1,23 +1,41 @@
-cdb.geo.ui.Widget.HistogramModel = cdb.geo.ui.Widget.Model.extend({
+var Backbone = require('backbone');
+var WidgetModel = require('../widget_model');
+
+module.exports = WidgetModel.extend({
 
   initialize: function(attrs, opts) {
-    this._data = new Backbone.Collection(this.get('data'));
-    cdb.geo.ui.Widget.Model.prototype.initialize.call(this, attrs, opts);
+    this._offData = new Backbone.Collection(this.get('data'));
+    this._onData = new Backbone.Collection(this.get('data'));
+
+    WidgetModel.prototype.initialize.call(this, attrs, opts);
   },
 
   getData: function() {
-    return this._data;
+    return { off: this._offData, on: this._onData };
+  },
+
+  getDataWithOwnFilterApplied: function() {
+    return this._onData.toJSON();
+  },
+
+  getDataWithoutOwnFilterApplied: function() {
+    return this._offData.toJSON();
   },
 
   getSize: function() {
-    return this._data.size();
+    return { off: this._offData.size(), on: this._onData.size() };
   },
 
   parse: function(data) {
-    var bins = data.ownFilterOff.bins;
-    this._data.reset(bins);
+    var offBins = data.ownFilterOff.bins;
+    var onBins = data.ownFilterOn.bins;
+
+    this._offData.reset(offBins);
+    this._onData.reset(onBins);
+
     return {
-      data: bins,
+      off: offBins,
+      on: onBins,
       width: data.width
     };
   },
@@ -31,5 +49,4 @@ cdb.geo.ui.Widget.HistogramModel = cdb.geo.ui.Widget.Model.extend({
       }
     };
   }
-
 });

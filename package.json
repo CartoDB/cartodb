@@ -26,37 +26,95 @@
       "type": "BSD"
     }],
     "devDependencies": {
+      "backbone": "1.2.3",
+      "browserify": "~11.2.0",
+      "browserify-shim": "~3.8.10",
+      "d3": "~3.5.6",
+      "jstify": "~0.12.0",
       "grunt": "~0.4.5",
-      "grunt-autoprefixer": "~0.6.4",
-      "grunt-build-control": "~0.1.2",
-      "grunt-concurrent": "~0.4.3",
+      "grunt-browserify": "~4.0.1",
       "grunt-contrib-clean": "~0.5.0",
-      "grunt-contrib-compass": "~0.7.0",
       "grunt-contrib-concat": "~0.3.0",
-      "grunt-contrib-connect": "~0.8.0",
+      "grunt-contrib-connect": "~0.11.2",
       "grunt-contrib-copy": "~0.7.0",
       "grunt-sass": "~1.1.0-beta",
       "grunt-contrib-cssmin": "~0.7.0",
-      "grunt-contrib-htmlmin": "~0.1.3",
       "grunt-contrib-imagemin": "~0.9.4",
       "grunt-contrib-jshint": "~0.8.0",
-      "grunt-contrib-uglify": "~0.3.0",
+      "grunt-contrib-uglify": "~0.10.0",
       "grunt-replace": "0.6.2",
       "grunt-contrib-watch": "git://github.com/gruntjs/grunt-contrib-watch.git#b884948805940c663b1cbb91a3c28ba8afdebf78",
       "grunt-contrib-jasmine": "~0.8.1",
-      "grunt-filerev": "~0.2.0",
-      "grunt-svgmin": "~0.3.0",
-      "grunt-usemin": "~2.0.0",
+      "grunt-exorcise": "~2.1.0",
       "grunt-prompt": "~1.3.0",
+      "leaflet": "0.7.3",
+      "mustache": "1.1.0",
       "semver": "~4.1.0",
       "jshint-stylish": "~0.1.3",
+      "jquery": "2.1.4",
       "load-grunt-tasks": "~0.6.0",
       "time-grunt": "~0.3.1",
       "grunt-aws": "^0.4.0",
       "grunt-fastly": "~0.1.3",
       "grunt-gitinfo": "~0.1.7",
-      "underscore": "~1.7.0",
-      "findup-sync": "0.1.3"
+      "underscore": "1.8.3",
+      "findup-sync": "0.1.3",
+      "source-map-support": "0.3.2",
+      "torque.js": "~2.11.0",
+      "watchify": "3.4.0"
+    },
+    "browserify": {
+      "transform": [
+        "browserify-shim",
+        "jstify"
+      ]
+    },
+    "browser": {
+      "cdb": "./src/cdb.js",
+      "cdb.config": "./src/cdb.config.js",
+      "cdb.core.util": "./src/core/util.js",
+      "cdb.core.Profiler": "./src/core/profiler.js",
+      "cdb.log": "./src/cdb.log.js",
+      "cdb.errors": "./src/cdb.errors.js",
+      "cdb.templates": "./src/cdb.templates.js",
+      "jquery.ui.core": "./vendor/mod/jquery-ui/jquery.ui.core.js",
+      "jquery.ui.mouse": "./vendor/mod/jquery-ui/jquery.ui.mouse.js",
+      "jquery.ui.slider": "./vendor/mod/jquery-ui/jquery.ui.slider.js",
+      "jquery.ui.widget": "./vendor/mod/jquery-ui/jquery.ui.widget.js",
+      "jquery.jscrollpane": "./vendor/jscrollpane.js",
+      "geojson": "./vendor/GeoJSON.js",
+      "html-css-sanitizer": "./vendor/html-css-sanitizer-bundle.js",
+      "lzma": "./vendor/lzma.js",
+      "mousewheel": "./vendor/mousewheel.js",
+      "mwheelIntent": "./vendor/mwheelIntent.js",
+      "odyssey": "./vendor/mod/odyssey.js",
+      "spin.js": "./vendor/spin.js",
+      "wax.cartodb.js": "./vendor/wax.cartodb.js"
+    },
+    "browserify-shim": {
+      "geojson": "GeoJSON",
+      "html-css-sanitizer": "html",
+      "lzma": "LZMA",
+      "jquery.ui.core": { "depends": ["jquery:jQuery"] },
+      "jquery.jscrollpane": { "depends": ["jquery:jQuery"] },
+      "jquery.ui.mouse": {
+        "depends": [
+          "jquery:jQuery",
+          "jquery.ui.widget"
+        ]
+      },
+      "jquery.ui.slider": {
+        "depends": [
+          "jquery:jQuery",
+          "jquery.ui.widget",
+          "jquery.ui.mouse"
+        ]
+      },
+      "jquery.ui.widget": { "depends": ["jquery:jQuery"] },
+      "mousewheel": { "depends": ["jquery:jQuery"] },
+      "mwheelIntent": { "depends": ["jquery:jQuery"] },
+      "spin.js": "Spinner",
+      "wax.cartodb.js": "wax"
     },
     "files": ["dist"],
     "main": "cartodb.js"

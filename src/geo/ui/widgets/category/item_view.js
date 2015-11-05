@@ -1,9 +1,10 @@
-/**
- *  Category list item view
- *
- */
+var _ = require('underscore');
+var View = require('cdb/core/view');
 
-cdb.geo.ui.Widget.Category.ItemView = cdb.core.View.extend({
+/**
+ * Category list item view
+ */
+module.exports = View.extend({
 
   tagName: 'li',
   className: 'Widget-listItem',

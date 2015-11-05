@@ -1,4 +1,6 @@
-cdb.windshaft.filters.BoundingBoxFilter = cdb.core.Model.extend({
+var Model = require('cdb/core/model');
+
+module.exports = Model.extend({
 
   initialize: function(bounds) {
     this.setBounds(bounds);

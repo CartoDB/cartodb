@@ -1,9 +1,11 @@
+var $ = require('jquery');
+var Dialog = require('cdb/ui/common/dialog');
 
-describe("common.ui.Dialog", function() {
+describe('ui/common/dialog', function() {
 
   var dialog;
   beforeEach(function() {
-    dialog = new cdb.ui.common.Dialog({el: $('<div>')});
+    dialog = new Dialog({el: $('<div>')});
     dialog.ok = function() {};
     dialog.cancel = function() {};
     spyOn(dialog, 'ok');
@@ -38,16 +40,15 @@ describe("common.ui.Dialog", function() {
   });
 
   it("should append it to body and be rendered", function() {
-    var s = sinon.stub(dialog, 'render');
-    s.returns(dialog);
+    spyOn(dialog, 'render').and.returnValue(dialog);
     var r = dialog.appendToBody();
-    expect(s.called).toEqual(true);
+    expect(dialog.render).toHaveBeenCalled();
     expect(dialog.$el.parent()[0]).toEqual(document.body);
     expect(r).toEqual(dialog);
   });
 
   it("should render title", function() {
-      var dialog = new cdb.ui.common.Dialog({
+      var dialog = new Dialog({
         title: 'test',
         template_base: '<%= title %>'
       });

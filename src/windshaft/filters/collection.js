@@ -1,4 +1,7 @@
-cdb.windshaft.filters.Collection = Backbone.Collection.extend({
+var _ = require('underscore');
+var Backbone = require('backbone');
+
+module.exports = Backbone.Collection.extend({
 
   toJSON: function() {
     var json = {};

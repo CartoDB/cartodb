@@ -1,33 +1,43 @@
-describe('LeafletMapView', function() {
+var $ = require('jquery');
+var _ = require('underscore');
+var Backbone = require('backbone');
+var L = require('leaflet');
+global.L = L;
+var config = require('cdb.config');
+var log = require('cdb.log');
+var Map = require('cdb/geo/map');
+var LeafletMapView = require('cdb/geo/leaflet/leaflet-map-view');
+var TileLayer = require('cdb/geo/map/tile-layer');
+var LeafletTiledLayerView = require('cdb/geo/leaflet/leaflet-tiled-layer-view');
+var CartoDBLayer = require('cdb/geo/map/cartodb-layer');
+var CartoDBGroupLayer = require('cdb/geo/map/cartodb-group-layer');
+var PlainLayer = require('cdb/geo/map/plain-layer');
+var LeafletPlainLayerView = require('cdb/geo/leaflet/leaflet-plain-layer-view');
+var Geometry = require('cdb/geo/geometry');
+var GMapsBaseLayer = require('cdb/geo/map/gmaps-base-layer');
+var TorqueLayer = require('cdb/geo/map/torque-layer');
+
+describe('geo/leaflet/leaflet-map-view', function() {
   var mapView;
   var map;
   var spy;
   var container;
+
   beforeEach(function() {
     container = $('<div>').css({
         'height': '200px',
         'width': '200px'
     });
-    map = new cdb.geo.Map();
-    mapView = new cdb.geo.LeafletMapView({
+    map = new Map();
+    mapView = new LeafletMapView({
       el: container,
       map: map
     });
 
     layerURL = 'http://{s}.tiles.mapbox.com/v3/cartodb.map-1nh578vv/{z}/{x}/{y}.png';
-    layer    = new cdb.geo.TileLayer({ urlTemplate: layerURL });
+    layer = new TileLayer({ urlTemplate: layerURL });
 
-    spy = {
-      zoomChanged: function(){},
-      keyboardChanged: function(){},
-      centerChanged: function(){},
-      changed: function() {}
-    };
-
-    spyOn(spy, 'zoomChanged');
-    spyOn(spy, 'keyboardChanged');
-    spyOn(spy, 'centerChanged');
-    spyOn(spy, 'changed');
+    spy = jasmine.createSpyObj('spy', ['zoomChanged', 'centerChanged', 'keyboardChanged', 'changed']);
     map.bind('change:zoom', spy.zoomChanged);
     map.bind('change:keyboard', spy.keyboardChanged);
     map.bind('change:center', spy.centerChanged);
@@ -35,18 +45,18 @@ describe('LeafletMapView', function() {
   });
 
   it("should change bounds when center is set", function() {
-    var s = sinon.spy();
+    var spy = jasmine.createSpy('change:view_bounds_ne');
     spyOn(map, 'getViewBounds');
-    map.bind('change:view_bounds_ne', s);
+    map.bind('change:view_bounds_ne', spy);
     map.set('center', [10, 10]);
-    expect(s.called).toEqual(true);
+    expect(spy).toHaveBeenCalled();
     expect(map.getViewBounds).not.toHaveBeenCalled();
   });
 
   it("should change center and zoom when bounds are changed", function(done) {
-    var s = sinon.spy();
+    var spy = jasmine.createSpy('change:center');
     mapView.getSize = function() { return {x: 200, y: 200}; }
-    map.bind('change:center', s);
+    map.bind('change:center', spy);
     spyOn(mapView, '_setCenter');
     mapView._bindModel();
 
@@ -105,11 +115,11 @@ describe('LeafletMapView', function() {
   it("should create a TiledLayerView when the layer is Tiled", function() {
     var lyr = map.addLayer(layer);
     var layerView = mapView.getLayerByCid(lyr);
-    expect(cdb.geo.LeafLetTiledLayerView.prototype.isPrototypeOf(layerView)).isPrototypeOf();
+    expect(LeafletTiledLayerView.prototype.isPrototypeOf(layerView)).isPrototypeOf();
   });
 
   it("should create a CartoDBLayer when the layer is cartodb", function() {
-    layer    = new cdb.geo.CartoDBLayer({
+    layer = new CartoDBLayer({
       table_name: 'test',
       user_name: 'test',
       tile_style: 'test'
@@ -120,7 +130,7 @@ describe('LeafletMapView', function() {
   });
 
   it("should create a CartoDBLayerGroup when the layer is LayerGroup", function() {
-    layer = new cdb.geo.CartoDBGroupLayer({
+    layer = new CartoDBGroupLayer({
       layer_definition: {
           version: '1.0.0',
           layers: [{
@@ -139,7 +149,7 @@ describe('LeafletMapView', function() {
   });
 
   it("should create the cartodb logo", function(done) {
-    layer = new cdb.geo.CartoDBLayer({ 
+    layer = new CartoDBLayer({
       table_name: "INVENTADO",
       user_name: 'test',
       tile_style: 'test'
@@ -154,7 +164,7 @@ describe('LeafletMapView', function() {
   });
 
   it("should not add the cartodb logo when cartodb_logo = false", function(done) {
-    layer = new cdb.geo.CartoDBLayer({ 
+    layer = new CartoDBLayer({
       table_name: "INVENTADO",
       user_name: 'test',
       tile_style: 'test',
@@ -170,14 +180,14 @@ describe('LeafletMapView', function() {
   });
 
   it("should create a PlaiLayer when the layer is cartodb", function() {
-    layer    = new cdb.geo.PlainLayer({});
+    layer = new PlainLayer({});
     var lyr = map.addLayer(layer);
     var layerView = mapView.getLayerByCid(lyr);
-    expect(layerView.setQuery).not.toEqual(cdb.geo.LeafLetPlainLayerView);
+    expect(layerView.setQuery).not.toEqual(LeafletPlainLayerView);
   });
 
   it("should insert layers in specified order", function() {
-    var layer = new cdb.geo.CartoDBLayer({
+    var layer = new CartoDBLayer({
         table_name: "INVENTADO",
         user_name: 'test',
         tile_style: 'test'
@@ -185,7 +195,7 @@ describe('LeafletMapView', function() {
     map.addLayer(layer);
 
     spyOn(mapView.map_leaflet,'addLayer');
-    var b = new cdb.geo.TileLayer({urlTemplate: 'test' });
+    var b = new TileLayer({urlTemplate: 'test' });
     map.addLayer(b, {at: 0});
 
     expect(mapView.getLayerByCid(layer.cid).options.zIndex).toEqual(1);
@@ -195,12 +205,12 @@ describe('LeafletMapView', function() {
 
   it("shoule remove all layers when map view is cleaned", function() {
 
-    var id1 = map.addLayer(new cdb.geo.CartoDBLayer({
+    var id1 = map.addLayer(new CartoDBLayer({
         table_name: "INVENTADO",
         user_name: 'test',
         tile_style: 'test'
     }));
-    var id2 = map.addLayer(new cdb.geo.CartoDBLayer({
+    var id2 = map.addLayer(new CartoDBLayer({
         table_name: "INVENTADO",
         user_name: 'test',
         tile_style: 'test'
@@ -218,7 +228,7 @@ describe('LeafletMapView', function() {
   });
 
   it("should not all a layer when it can't be creadted", function() {
-    var layer    = new cdb.geo.TileLayer({type: 'rambo'});
+    var layer = new TileLayer({type: 'rambo'});
     map.addLayer(layer);
     expect(_.size(mapView.layers)).toEqual(0);
   });
@@ -229,7 +239,7 @@ describe('LeafletMapView', function() {
   };
 
   it("should add and remove a geometry", function() {
-    var geo = new cdb.geo.Geometry({
+    var geo = new Geometry({
       geojson: geojsonFeature
     });
     map.addGeometry(geo);
@@ -239,7 +249,7 @@ describe('LeafletMapView', function() {
   });
 
   it("should edit a geometry", function() {
-    var geo = new cdb.geo.Geometry({
+    var geo = new Geometry({
       geojson: geojsonFeature
     });
     map.addGeometry(geo);
@@ -265,30 +275,11 @@ describe('LeafletMapView', function() {
   });
 
   it("should set z-order", function() {
-    var layer1 = new cdb.geo.TileLayer({ urlTemplate:'test1'});
-    var layer2 = new cdb.geo.TileLayer({ urlTemplate:'test2'});
+    var layer1 = new TileLayer({ urlTemplate:'test1'});
+    var layer2 = new TileLayer({ urlTemplate:'test2'});
     var layerView1 = mapView.getLayerByCid(map.addLayer(layer1));
     var layerView2 = mapView.getLayerByCid(map.addLayer(layer2, { at: 0 }));
     expect(layerView1.options.zIndex > layerView2.options.zIndex).toEqual(true);
-  });
-
-  it("should switch layer", function() {
-    map.addLayer(layer);
-    layer.set('type', 'torque');
-    expect(mapView.layers[layer.cid] instanceof L.TorqueLayer).toEqual(true);
-  });
-
-  it("should reuse layer view", function() {
-    var layer1 = new cdb.geo.TorqueLayer({ type: 'torque', sql: 'select * from table', cartocss: '#test {}' });
-    map.addLayer(layer1);
-    expect(mapView.layers[layer1.cid] instanceof L.TorqueLayer).toEqual(true);
-    mapView.layers[layer1.cid].check = 'testing';
-    var newLayer = layer1.clone();
-    newLayer.set({ sql: 'select * from table', cartocss: '#test {}' });
-    map.layers.reset([newLayer]);
-    expect(mapView.layers[newLayer.cid] instanceof L.TorqueLayer).toEqual(true);
-    expect(mapView.layers[newLayer.cid].model).toEqual(newLayer)
-    expect(mapView.layers[newLayer.cid].check).toEqual('testing');
   });
 
   // Test cases for gmaps substitutes since the support is deprecated.
@@ -369,7 +360,7 @@ describe('LeafletMapView', function() {
       var view;
 
       beforeEach(function() {
-        var layer = new cdb.geo.GMapsBaseLayer(layerOpts);
+        var layer = new GMapsBaseLayer(layerOpts);
         view = mapView.createLayer(layer);
       });
 
@@ -431,7 +422,7 @@ describe('LeafletMapView', function() {
       var attributions = mapView.$el.find('.leaflet-control-attribution').text();
       expect(attributions).toEqual('CartoDB attribution');
 
-      layer = new cdb.geo.CartoDBLayer({
+      layer = new CartoDBLayer({
         attribution: 'custom attribution'
       });
       map.addLayer(layer);
@@ -451,14 +442,14 @@ describe('LeafletMapView', function() {
         attribution: 'Stamen'
       }).addTo(leafletMap);
 
-      mapView = new cdb.geo.LeafletMapView({
+      mapView = new LeafletMapView({
         el: container,
         map: map,
         map_object: leafletMap
       });
 
       // Add a CartoDB layer with some custom attribution
-      layer = new cdb.geo.CartoDBLayer({
+      layer = new CartoDBLayer({
         attribution: 'custom attribution'
       });
       map.addLayer(layer);
@@ -479,14 +470,14 @@ describe('LeafletMapView', function() {
         attribution: 'Stamen'
       }).addTo(leafletMap);
 
-      mapView = new cdb.geo.LeafletMapView({
+      mapView = new LeafletMapView({
         el: container,
         map: map,
         map_object: leafletMap
       });
 
       // Add a CartoDB layer with some custom attribution
-      layer = new cdb.geo.CartoDBLayer({
+      layer = new CartoDBLayer({
         attribution: 'custom attribution'
       });
       map.addLayer(layer);
@@ -496,4 +487,3 @@ describe('LeafletMapView', function() {
     });
   });
 });
-

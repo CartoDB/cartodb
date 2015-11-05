@@ -1,4 +1,7 @@
-cdb.geo.ui.Widget.List.ItemsView = cdb.geo.ui.Widget.View.extend({
+var WidgetView = require('../../widget');
+var WidgetListItemView = require('./item_view');
+
+module.exports = WidgetView.extend({
 
   className: 'Widget-list js-list',
   tagName: 'ul',
@@ -18,7 +21,7 @@ cdb.geo.ui.Widget.List.ItemsView = cdb.geo.ui.Widget.View.extend({
   },
 
   _addItem: function(mdl) {
-    var v = new cdb.geo.ui.Widget.List.ItemView({
+    var v = new WidgetListItemView({
       model: mdl,
       viewModel: this.model
     });

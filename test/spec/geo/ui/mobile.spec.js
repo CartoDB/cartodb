@@ -1,18 +1,28 @@
-describe("cdb.geo.ui.Mobile", function() {
+var $ = require('jquery');
+var _ = require('underscore');
+var Template = require('cdb/core/template');
+var Model = require('cdb/core/model');
+var Map = require('cdb/geo/map');
+var TorqueLayer = require('cdb/geo/map/torque-layer');
+var CartoDBLayer = require('cdb/geo/map/cartodb-layer');
+var CartoDBGroupLayer = require('cdb/geo/map/cartodb-group-layer');
+var GoogleMapsMapView = require('cdb/geo/gmaps/gmaps-map-view');
+var Mobile = require('cdb/geo/ui/mobile');
+
+describe('geo/ui/mobile', function() {
 
   var mobile, map, layerGroup, container, mapView, template, overlays, l1, l2, torque;
 
   beforeEach(function() {
+    map = new Map();
 
-    map = new cdb.geo.Map();
+    torque = new TorqueLayer({ type: "torque", visible: false, urlTemplate: "https://maps.nlp.nokia.com/maptiler/v2/maptile/newest/normal.day/{z}/{x}/{y}/256/png8?lg=eng&token=61YWYROufLu_f8ylE0vn0Q&app_id=qIWDkliFCtLntLma2e6O", name: "Nokia Day", className: "nokia_day", attribution: "©2012 Nokia <a href='http://here.net/services/terms' target='_blank'>Terms of use</a>", kind: "tiled", infowindow: null, id: 1226, order: 0 });
 
-    torque = new cdb.geo.TorqueLayer({ type: "torque", visible: false, urlTemplate: "https://maps.nlp.nokia.com/maptiler/v2/maptile/newest/normal.day/{z}/{x}/{y}/256/png8?lg=eng&token=61YWYROufLu_f8ylE0vn0Q&app_id=qIWDkliFCtLntLma2e6O", name: "Nokia Day", className: "nokia_day", attribution: "©2012 Nokia <a href='http://here.net/services/terms' target='_blank'>Terms of use</a>", kind: "tiled", infowindow: null, id: 1226, order: 0 });
+    l1 = new CartoDBLayer({ type: "Tiled", visible: true, urlTemplate: "https://maps.nlp.nokia.com/maptiler/v2/maptile/newest/normal.day/{z}/{x}/{y}/256/png8?lg=eng&token=61YWYROufLu_f8ylE0vn0Q&app_id=qIWDkliFCtLntLma2e6O", name: "Nokia Day", className: "nokia_day", attribution: "©2012 Nokia <a href='http://here.net/services/terms' target='_blank'>Terms of use</a>", kind: "tiled", infowindow: null, id: 1226, order: 0 });
 
-    l1 = new cdb.geo.CartoDBLayer({ type: "Tiled", visible: true, urlTemplate: "https://maps.nlp.nokia.com/maptiler/v2/maptile/newest/normal.day/{z}/{x}/{y}/256/png8?lg=eng&token=61YWYROufLu_f8ylE0vn0Q&app_id=qIWDkliFCtLntLma2e6O", name: "Nokia Day", className: "nokia_day", attribution: "©2012 Nokia <a href='http://here.net/services/terms' target='_blank'>Terms of use</a>", kind: "tiled", infowindow: null, id: 1226, order: 0 });
+    l2 = new CartoDBLayer({ type: "CartoDB", attribution: "CartoDB <a href='http://cartodb.com/attributions' target='_blank'>attribution</a>", active: true, query: null, opacity: 0.99, interactivity: "cartodb_id", interaction: true, debug: false, tiler_domain: "localhost.lan", tiler_port: "8181", tiler_protocol: "http", sql_api_domain: "development.localhost.lan", sql_api_port: 8080, sql_api_protocol: "http", extra_params: { cache_policy: "persist", cache_buster: 1369995364392 }, cdn_url: "", maxZoom: 28, auto_bound: false, visible: true, sql_domain: "localhost.lan", sql_port: "8080", sql_protocol: "http", tile_style_history: [ "#untitled_table1 { // polygons [mapnik-geometry-type=polygons] { marker-fill: #FF6600; marker-opacity: 1; marker-width: 12; marker-line-color: white; marker-line-width: 3; marker-line-opacity: 0.9; marker-placement: point; marker-type: ellipse;marker-allow-overlap: true; } //lines [mapnik-geometry-type=linestring] { line-color: #FF6600; line-width: 2; line-opacity: 0.7; } //polygons [mapnik-geometry-type=polygon] { polygon-fill:#FF6600; polygon-opacity: 0.7; line-opacity:1; line-color: #FFFFFF; } }" ], style_version: "2.1.1", table_name: "points", user_name: "development", tile_style: "#untitled_table { // points [mapnik-geometry-type=point] { marker-fill: #FF6600; marker-opacity: 1; marker-width: 12; marker-line-color: white; marker-line-width: 3; marker-line-opacity: 0.9; marker-placement: point; marker-type: ellipse;marker-allow-overlap: true; } //lines [mapnik-geometry-type=linestring] { line-color: #FF6600; line-width: 2; line-opacity: 0.7; } //polygons [mapnik-geometry-type=polygon] { polygon-fill:#FF6600; polygon-opacity: 0.7; line-opacity:1; line-color: #FFFFFF; } }", use_server_style: true, query_history: [ ], sql_api_endpoint: "/api/v1/sql", no_cdn: true, order: 2, kind: "carto", template_name: "table/views/infowindow_light" , id: 231, order: 1 });
 
-    l2 = new cdb.geo.CartoDBLayer({ type: "CartoDB", attribution: "CartoDB <a href='http://cartodb.com/attributions' target='_blank'>attribution</a>", active: true, query: null, opacity: 0.99, interactivity: "cartodb_id", interaction: true, debug: false, tiler_domain: "localhost.lan", tiler_port: "8181", tiler_protocol: "http", sql_api_domain: "development.localhost.lan", sql_api_port: 8080, sql_api_protocol: "http", extra_params: { cache_policy: "persist", cache_buster: 1369995364392 }, cdn_url: "", maxZoom: 28, auto_bound: false, visible: true, sql_domain: "localhost.lan", sql_port: "8080", sql_protocol: "http", tile_style_history: [ "#untitled_table1 { // polygons [mapnik-geometry-type=polygons] { marker-fill: #FF6600; marker-opacity: 1; marker-width: 12; marker-line-color: white; marker-line-width: 3; marker-line-opacity: 0.9; marker-placement: point; marker-type: ellipse;marker-allow-overlap: true; } //lines [mapnik-geometry-type=linestring] { line-color: #FF6600; line-width: 2; line-opacity: 0.7; } //polygons [mapnik-geometry-type=polygon] { polygon-fill:#FF6600; polygon-opacity: 0.7; line-opacity:1; line-color: #FFFFFF; } }" ], style_version: "2.1.1", table_name: "points", user_name: "development", tile_style: "#untitled_table { // points [mapnik-geometry-type=point] { marker-fill: #FF6600; marker-opacity: 1; marker-width: 12; marker-line-color: white; marker-line-width: 3; marker-line-opacity: 0.9; marker-placement: point; marker-type: ellipse;marker-allow-overlap: true; } //lines [mapnik-geometry-type=linestring] { line-color: #FF6600; line-width: 2; line-opacity: 0.7; } //polygons [mapnik-geometry-type=polygon] { polygon-fill:#FF6600; polygon-opacity: 0.7; line-opacity:1; line-color: #FFFFFF; } }", use_server_style: true, query_history: [ ], sql_api_endpoint: "/api/v1/sql", no_cdn: true, order: 2, kind: "carto", template_name: "table/views/infowindow_light" , id: 231, order: 1 });
-
-    layerGroup = new cdb.geo.CartoDBGroupLayer({
+    layerGroup = new CartoDBGroupLayer({
       layer_definition: {
         version: '1.0.0',
         layers: [{
@@ -63,7 +73,7 @@ describe("cdb.geo.ui.Mobile", function() {
 
     map.layers.reset([l1, layerGroup]);
 
-    template = cdb.core.Template.compile('\<div class="backdrop"></div>\
+    template = Template.compile('\<div class="backdrop"></div>\
           <div class="cartodb-header">\
           <div class="content">\
           <a href="#" class="fullscreen"></a>\
@@ -79,10 +89,10 @@ describe("cdb.geo.ui.Mobile", function() {
           <a href="#" class="cartodb-attribution-button"></a>\
           <div class="torque"></div>\
           ', 'mustache');
-    
+
           container = $('<div>').css('height', '200px');
 
-          mapView = new cdb.geo.GoogleMapsMapView({
+          mapView = new GoogleMapsMapView({
             el: container,
             map: map
           });
@@ -118,7 +128,7 @@ describe("cdb.geo.ui.Mobile", function() {
 
     beforeEach(function() {
 
-      mobile = new cdb.geo.ui.Mobile({
+      mobile = new Mobile({
         template: template,
         mapView: mapView,
         overlays: overlays,
@@ -201,17 +211,6 @@ describe("cdb.geo.ui.Mobile", function() {
       expect(mobile.$el.find(".layers .cartodb-mobile-layer.has-legend").length).toBe(1);
     });
 
-    //it("should hide the attribution when clicking on the backdrop", function() {
-      //mobile.render();
-      //mobile.$el.find(".cartodb-attribution-button").click();
-      //mobile.$el.find(".cartodb-attribution-button .backdrop").click();
-
-      //setTimeout(function() {
-        //expect(mobile.$el.find(".cartodb-attribution").css("display")).toBe("");
-      //}, 450);
-
-    //});
-
   });
 
   describe("without layer_selector, without legends, without search", function() {
@@ -220,7 +219,7 @@ describe("cdb.geo.ui.Mobile", function() {
 
     beforeEach(function() {
 
-      mobile = new cdb.geo.ui.Mobile({
+      mobile = new Mobile({
         template: template,
         mapView: mapView,
         overlays: overlays,
@@ -293,7 +292,7 @@ describe("cdb.geo.ui.Mobile", function() {
 
     beforeEach(function() {
 
-      mobile = new cdb.geo.ui.Mobile({
+      mobile = new Mobile({
         template: template,
         mapView: mapView,
         overlays: overlays,
@@ -373,7 +372,7 @@ describe("cdb.geo.ui.Mobile", function() {
 
     beforeEach(function() {
 
-      mobile = new cdb.geo.ui.Mobile({
+      mobile = new Mobile({
         template: template,
         mapView: mapView,
         overlays: overlays,
@@ -446,7 +445,7 @@ describe("cdb.geo.ui.Mobile", function() {
 
     beforeEach(function() {
 
-      mobile = new cdb.geo.ui.Mobile({
+      mobile = new Mobile({
         template: template,
         mapView: mapView,
         overlays: overlays,
@@ -518,7 +517,7 @@ describe("cdb.geo.ui.Mobile", function() {
 
     beforeEach(function() {
 
-      mobile = new cdb.geo.ui.Mobile({
+      mobile = new Mobile({
         template: template,
         mapView: mapView,
         overlays: [],
@@ -582,18 +581,6 @@ describe("cdb.geo.ui.Mobile", function() {
       mobile.render();
       expect(mobile.$el.find(".layers .cartodb-mobile-layer.has-legend").length).toBe(0);
     });
-
-    //it("should hide the attribution when clicking on the backdrop", function() {
-      //mobile.render();
-      //mobile.$el.find(".cartodb-attribution-button").click();
-      //mobile.$el.find(".cartodb-attribution-button .backdrop").click();
-
-      //setTimeout(function() {
-        //expect(mobile.$el.find(".cartodb-attribution").css("display")).toBe("");
-      //}, 350);
-
-    //});
-
   });
 
   describe("with some disabled layers", function() {
@@ -602,7 +589,7 @@ describe("cdb.geo.ui.Mobile", function() {
 
     beforeEach(function() {
 
-    layerGroup = new cdb.geo.CartoDBGroupLayer({
+    layerGroup = new CartoDBGroupLayer({
       layer_definition: {
         version: '1.0.0',
         layers: [{
@@ -653,12 +640,12 @@ describe("cdb.geo.ui.Mobile", function() {
     map.layers.reset([l1, layerGroup]);
 
 
-    mapView = new cdb.geo.GoogleMapsMapView({
+    mapView = new GoogleMapsMapView({
       el: container,
       map: map
     });
 
-      mobile = new cdb.geo.ui.Mobile({
+      mobile = new Mobile({
         template: template,
         mapView: mapView,
         overlays: overlays,
@@ -737,7 +724,7 @@ describe("cdb.geo.ui.Mobile", function() {
     it("should hide the attribution when clicking on the backdrop", function(done) {
       mobile.render();
       mobile.$el.find(".cartodb-attribution-button").click();
-      
+
       setTimeout(function() {
         expect(mobile.$el.find(".backdrop").css("display")).toBe("block");
 
@@ -771,7 +758,7 @@ describe("cdb.geo.ui.Mobile", function() {
 
     beforeEach(function() {
 
-      mobile = new cdb.geo.ui.Mobile({
+      mobile = new Mobile({
         template: template,
         mapView: mapView,
         overlays: overlays,
@@ -803,7 +790,7 @@ describe("cdb.geo.ui.Mobile", function() {
 
     beforeEach(function() {
 
-      mobile = new cdb.geo.ui.Mobile({
+      mobile = new Mobile({
         template: template,
         mapView: mapView,
         overlays: [{
@@ -828,34 +815,6 @@ describe("cdb.geo.ui.Mobile", function() {
       expect(mobile.$el.hasClass("with-search")).toBe(true);
     });
 
-  });
-
-
-  describe("with a hidden torque layer", function() {
-
-    var mobile;
-
-    beforeEach(function() {
-
-      torque.options = { steps: 3 };
-      torque.hidden  = true;
-      torque.getStep = function() {};
-
-      mobile = new cdb.geo.ui.Mobile({
-        template: template,
-        mapView: mapView,
-        overlays: overlays,
-        torqueLayer: torque,
-        map: map
-      });
-
-    });
-
-    it("should hide the timeslider", function() {
-      mobile.render();
-      expect(mobile.$el.find(".cartodb-timeslider").length).toBe(1);
-      expect(mobile.$el.find(".cartodb-timeslider").css("display")).toBe("none");
-    });
   });
 
 });

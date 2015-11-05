@@ -1,4 +1,11 @@
-cdb.geo.ui.Share = cdb.core.View.extend({
+var _ = require('underscore');
+var $ = require('jquery');
+var sanitize = require('../../core/sanitize');
+var View = require('../../core/view');
+var Template = require('../../core/template');
+var ShareDialog = require('../../ui/common/share');
+
+module.exports = View.extend({
 
   className: "cartodb-share",
 
@@ -40,7 +47,7 @@ cdb.geo.ui.Share = cdb.core.View.extend({
       data.share_url = data.url;
     }
 
-    var template = cdb.core.Template.compile(
+    var template = Template.compile(
       data.template || '\
       <div class="mamufas">\
       <div class="block modal {{modal_type}}">\
@@ -75,7 +82,7 @@ cdb.geo.ui.Share = cdb.core.View.extend({
 
     var code = "<iframe width='100%' height='520' frameborder='0' src='" + url + "' allowfullscreen webkitallowfullscreen mozallowfullscreen oallowfullscreen msallowfullscreen></iframe>";
 
-    this.dialog = new cdb.ui.common.ShareDialog({
+    this.dialog = new ShareDialog({
       title: data.map.get("title"),
       description: data.map.get("description"),
       model: this.options.vis.map,

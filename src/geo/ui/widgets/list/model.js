@@ -1,4 +1,7 @@
-cdb.geo.ui.Widget.ListModel = cdb.geo.ui.Widget.Model.extend({
+var Backbone = require('backbone');
+var WidgetModel = require('../widget_model');
+
+module.exports = WidgetModel.extend({
 
   options: {
     page: 0,
@@ -7,7 +10,7 @@ cdb.geo.ui.Widget.ListModel = cdb.geo.ui.Widget.Model.extend({
 
   initialize: function(attrs, opts) {
     this._data = new Backbone.Collection(this.get('data'));
-    cdb.geo.ui.Widget.Model.prototype.initialize.call(this, attrs, opts);
+    WidgetModel.prototype.initialize.call(this, attrs, opts);
   },
 
   getData: function() {

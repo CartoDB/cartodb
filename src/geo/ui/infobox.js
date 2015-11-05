@@ -1,5 +1,8 @@
+var _ = require('underscore');
+var View = require('../../core/view');
+var Template = require('../../core/template');
 
-cdb.geo.ui.InfoBox = cdb.core.View.extend({
+var InfoBox = View.extend({
 
   className: 'cartodb-infobox',
   defaults: {
@@ -18,7 +21,7 @@ cdb.geo.ui.InfoBox = cdb.core.View.extend({
   },
 
   setTemplate: function(tmpl) {
-    this.template = cdb.core.Template.compile(tmpl, 'mustache');
+    this.template = Template.compile(tmpl, 'mustache');
   },
 
   enable: function() {
@@ -70,3 +73,4 @@ cdb.geo.ui.InfoBox = cdb.core.View.extend({
 
 });
 
+module.exports = InfoBox;

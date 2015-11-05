@@ -1,14 +1,16 @@
-/**
- *  Histogram widget view
- *
- */
+var Model = require('cdb/core/model');
+var WidgetView = require('../../widget');
+var WidgetHistogramContent = require('./content_view');
 
-cdb.geo.ui.Widget.Histogram.View = cdb.geo.ui.Widget.View.extend({
+/**
+ * Histogram widget view
+ */
+module.exports = WidgetView.extend({
 
   _createContentView: function() {
-    return new cdb.geo.ui.Widget.Histogram.Content({
+    return new WidgetHistogramContent({
       dataModel: this.model,
-      viewModel: new cdb.core.Model(),
+      viewModel: new Model(),
       filter: this.filter
     });
   }

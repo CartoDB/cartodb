@@ -1,3 +1,4 @@
+var _ = require('underscore');
 
 /**
  *  Grunfile runner file for CartoDB.js
@@ -25,7 +26,7 @@ module.exports = function(grunt) {
 
   var config = {
     dist: 'dist',
-    app:  'www',
+    tmp: '.tmp',
     version: {
       major:      version[0],
       minor:      version[0] + '.' + version[1],
@@ -38,7 +39,6 @@ module.exports = function(grunt) {
     secrets: {},
     config: config,
     dist: 'dist',
-    app:  'www',
     version: {
       major:      version[0],
       minor:      version[0] + '.' + version[1],
@@ -46,6 +46,8 @@ module.exports = function(grunt) {
     },
     pkg:  pkg,
     gitinfo: {},
+    browserify: require('./grunt/tasks/browserify').task(grunt),
+    exorcise: require('./grunt/tasks/exorcise').task(),
     s3: require('./grunt/tasks/s3').task(grunt, config),
     prompt: require('./grunt/tasks/prompt').task(grunt, config),
     replace: require('./grunt/tasks/replace').task(grunt, config),
@@ -54,54 +56,14 @@ module.exports = function(grunt) {
     watch: require('./grunt/tasks/watch').task(),
     connect: require('./grunt/tasks/connect').task(config),
     clean: require('./grunt/tasks/clean').task(),
-    compass: require('./grunt/tasks/compass').task(),
-    autoprefixer: require('./grunt/tasks/autoprefixer').task(),
-    useminPrepare: require('./grunt/tasks/useminPrepare').task(),
-    usemin: require('./grunt/tasks/usemin').task(),
-    htmlmin: require('./grunt/tasks/htmlmin').task(),
     concat: require('./grunt/tasks/concat').task(grunt, config),
     uglify: require('./grunt/tasks/uglify').task(),
     cssmin: require('./grunt/tasks/cssmin').task(),
     imagemin: require('./grunt/tasks/imagemin').task(),
-    svgmin: require('./grunt/tasks/svgmin').task(),
     copy: require('./grunt/tasks/copy').task(grunt, config),
-    filerev: require('./grunt/tasks/filerev').task(),
-    buildcontrol: require('./grunt/tasks/buildcontrol').task(),
     jshint: require('./grunt/tasks/jshint').task(),
-    concurrent: require('./grunt/tasks/concurrent').task(),
     jasmine: require('./grunt/tasks/jasmine').task()
   });
-
-
-  /* TASKS */
-
-  grunt.registerTask('serve', function (target) {
-    if (target === 'dist') {
-      return grunt.task.run(['build', 'connect:dist:keepalive']);
-    }
-
-    grunt.task.run([
-      'clean:server',
-      'concurrent:server',
-      'autoprefixer:server',
-      'copy:stageStatic',
-      'connect:livereload',
-      'watch'
-    ]);
-  });
-
-  grunt.registerTask('server', function (target) {
-    grunt.log.warn('The `server` task has been deprecated. Use `grunt serve` to start a server.');
-    grunt.task.run([target ? ('serve:' + target) : 'serve']);
-  });
-
-  grunt.registerTask('check', [
-    'clean:server',
-    'compass:server',
-    'jshint:all'
-  ]);
-
-  grunt.registerTask('test', [ 'jasmine' ]);
 
   grunt.registerTask('release', [
     'prompt:bump',
@@ -175,49 +137,62 @@ module.exports = function(grunt) {
     ]);
   });
 
-  grunt.registerTask('pages', [ 'buildcontrol:pages' ]);
+  grunt.registerTask('preWatch', function() {
+    grunt.config('config.doWatchify', true); // required for browserify to use watch files instead
+  });
 
-  grunt.registerTask('build', [
-    'clean:dist',
-    'css',
-    'dist_js',
-    'useminPrepare',
-    'cssmin',
-    'imagemin',
-    'svgmin',
-    'filerev',
-    'usemin',
-    'htmlmin',
-    'uglify'
-  ]);
+  grunt.event.once('connect.jasmine.listening', function(host, port) {
+    grunt.log.writeln('Jasmine specs available at (one per bundle):');
 
-  grunt.registerTask('dist_js', [
+    var jasmineConfig = grunt.config('jasmine');
+    for (var name in jasmineConfig) {
+      var specRunnerFilepath = jasmineConfig[name].options.outfile;
+      grunt.task.run('jasmine:' + name + ':build')
+      grunt.log.writeln(' - http://' + host + ':' + port + '/' + specRunnerFilepath);
+    }
+  });
+
+  // Define tasks order for each step as if run in isolation,
+  // when registering the actual tasks _.uniq is used to discard duplicate tasks from begin run
+  var allDeps = [
     'set_current_version',
-    'js'
-  ])
-
-  grunt.registerTask('js', [
+    'clean:dist',
     'replace',
     'gitinfo',
-    'concurrent:dist',
-    'concat',
-    'autoprefixer:dist'
-  ]);
+  ];
+  var css = allDeps
+    .concat([
+      'sass',
+      'concat',
+      'cssmin',
+      'imagemin',
+    ]);
+  var devCSS = css
+    .concat('connect:styleguide');
+  var js = allDeps
+    .concat([
+      'browserify',
+    ]);
+  var buildJS = allDeps
+    .concat(js)
+    .concat([
+      'exorcise',
+      'uglify',
+    ]);
+  var devJS = allDeps
+    .concat('preWatch')
+    .concat(js)
+    .concat([
+      'connect:jasmine',
+      'connect:examples',
+    ]);
 
-  grunt.registerTask('css', [ 'sass' ]);
-
-  grunt.registerTask('dist', [
-    'set_current_version',
-    'build'
-  ]);
-
-  grunt.registerTask('default', [
-    'dist'
-  ]);
-
-  grunt.registerTask('dev', [
-    'build',
-    'connect:styleguide',
-    'watch'
-  ]);
+  grunt.registerTask('default', [ 'build' ]);
+  grunt.registerTask('build', _.uniq(buildJS.concat(css)));
+  grunt.registerTask('build:js', _.uniq(buildJS));
+  grunt.registerTask('build:css', _.uniq(css));
+  grunt.registerTask('test', _.uniq(js.concat('jasmine')));
+  grunt.registerTask('dev', _.uniq(devCSS.concat(devJS).concat('watch')));
+  grunt.registerTask('dev:css', _.uniq(devCSS.concat('watch')));
+  grunt.registerTask('dev:js', _.uniq(devJS.concat('watch')));
 }

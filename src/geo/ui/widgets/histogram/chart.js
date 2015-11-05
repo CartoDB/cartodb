@@ -1,4 +1,9 @@
-cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
+var _ = require('underscore');
+var d3 = require('d3');
+var Model = require('cdb/core/model');
+var View = require('cdb/core/view');
+
+module.exports = View.extend({
   defaults: {
     duration: 750,
     handleWidth: 6,
@@ -20,11 +25,22 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     return this;
   },
 
-  _onChangeData: function() {
-    if (!this.model.get('locked')) {
-      this.refresh();
-      this.model.set('locked', false);
+  replaceData: function(data) {
+    if (!this.isLocked()) {
+      //console.log('updating', data)
+      this.model.set({ data: data });
+    } else {
+      //console.log('not updating');
+      this.unlock();
     }
+  },
+
+  _onChangeData: function() {
+    if (!this.isLocked()) {
+      this.refresh();
+    }
+
+    this.unlock();
   },
 
   _onChangeRange: function() {
@@ -85,7 +101,7 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     var y = d3.event.offsetY;
 
     var barIndex = Math.floor(x / this.barWidth);
-    var data = this.originalData;
+    var data = this.model.get('data');
 
     if (data[barIndex] === undefined || data[barIndex] === null) {
       return;
@@ -102,7 +118,7 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
       var top = this.yScale(freq) - 20 + this.model.get('pos').y + this.$el.position().top;
 
       if (!this._isDragging()) {
-        this.trigger('hover', { top: top, left: left, index: barIndex });
+        this.trigger('hover', { top: top, left: left, freq: freq });
       } else {
         this.trigger('hover', { value: null });
       }
@@ -183,11 +199,6 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     this.model.set('width', width);
   },
 
-  reset: function(data) {
-    this._loadData(data);
-    this.model.set({ lo_index: null, hi_index: null });
-  },
-
   _removeLines: function() {
     this.chart.select('.Lines').remove();
   },
@@ -240,15 +251,13 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
   },
 
   _setupModel: function() {
-    this.model = new cdb.core.Model({
+    this.model = new Model({
       locked: false,
       data: this.options.data,
       width: this.options.width,
       height: this.options.height,
       pos: { x: 0, y: 0 }
     });
-
-    this.originalData = _.clone(this.options.data);
 
     this._bindModel();
   },
@@ -269,7 +278,6 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     var data = this.model.get('data');
     this.xScale = d3.scale.linear().domain([0, 100]).range([0, this.chartWidth]);
     this.yScale = d3.scale.linear().domain([0, d3.max(data, function(d) { return _.isEmpty(d) ? 0 : d.freq; } )]).range([this.chartHeight, 0]);
-    this.yScale2 = d3.scale.linear().domain([0, d3.max(this.originalData, function(d) { return _.isEmpty(d) ? 0 : d.freq; } )]).range([this.chartHeight, 0]);
     this.zScale = d3.scale.ordinal().domain(d3.range(data.length)).rangeRoundBands([0, this.chartWidth]);
   },
 
@@ -570,19 +578,6 @@ cdb.geo.ui.Widget.Histogram.Chart = cdb.core.View.extend({
     .attr('class', 'Axis')
     .attr('transform', 'translate(0,' + (this.chartHeight + 5) + ')')
     .call(xAxis);
-  },
-
-  replaceData: function(data) {
-    this.model.set('data', data);
-  },
-
-  _loadData: function(data) {
-    if (data && data.toJSON) {
-      data = data.toJSON();
-    }
-
-    this.model.set({ data: data, lo_index: null, hi_index: null }, { silent: true });
-    this._onChangeData();
   },
 
   resetBrush: function() {

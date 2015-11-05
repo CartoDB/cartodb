@@ -1,10 +1,15 @@
+var $ = require('jquery');
+var View = require('../../core/view');
+var NOKIA = require('../../geo/geocoder/nokia-geocoder');
+var InfowindowModel = require('../../geo/ui/infowindow-model');
+var Infowindow = require('../../geo/ui/infowindow');
+var Geometry = require('../../geo/geometry');
+
 /**
  *  UI component to place the map in the
  *  location found by the geocoder.
- *
  */
-
-cdb.geo.ui.Search = cdb.core.View.extend({
+var Search = View.extend({
 
   className: 'cartodb-searchbox',
 
@@ -82,7 +87,7 @@ cdb.geo.ui.Search = cdb.core.View.extend({
     this._showLoader();
     // Remove previous pin
     this._destroySearchPin();
-    cdb.geo.geocoder.NOKIA.geocode(address, function(places) {
+    NOKIA.geocode(address, function(places) {
       self._onResult(places);
       // Hide loader
       self._hideLoader();
@@ -159,7 +164,7 @@ cdb.geo.ui.Search = cdb.core.View.extend({
   },
 
   _createInfowindow: function(position, address) {
-    var infowindowModel = new cdb.geo.ui.InfowindowModel({
+    var infowindowModel = new InfowindowModel({
       template: this.options.infowindowTemplate,
       latlng: position,
       width: this.options.infowindowWidth,
@@ -172,7 +177,7 @@ cdb.geo.ui.Search = cdb.core.View.extend({
       }
     });
 
-    this._searchInfowindow = new cdb.geo.ui.Infowindow({
+    this._searchInfowindow = new Infowindow({
       model: infowindowModel,
       mapView: this.mapView
     });
@@ -185,16 +190,19 @@ cdb.geo.ui.Search = cdb.core.View.extend({
     if (this._searchInfowindow) {
       // Hide it and then destroy it (when animation ends)
       this._searchInfowindow.hide(true);
-      var infowindow = this._searchInfowindow;
+      var self = this;
       setTimeout(function() {
-        infowindow.clean();
+        if (self._searchInfowindow) {
+          self._searchInfowindow.clean();
+          delete self._searchInfowindow;
+        }
       }, 1000);
     }
   },
 
   _createPin: function(position, address) {
     this._searchPin = this.mapView._addGeomToMap(
-      new cdb.geo.Geometry({
+      new Geometry({
         geojson: { type: "Point", "coordinates": [ position[1], position[0] ] },
         iconUrl: this.options.iconUrl,
         iconAnchor: this.options.iconAnchor
@@ -231,3 +239,5 @@ cdb.geo.ui.Search = cdb.core.View.extend({
   }
 
 });
+
+module.exports = Search;

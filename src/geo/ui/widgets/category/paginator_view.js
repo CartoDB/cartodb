@@ -1,10 +1,9 @@
-/**
- *
- *
- *
- */
+var $ = require('jquery');
+var _ = require('underscore');
+var View = require('cdb/core/view');
+var Model = require('cdb/core/model');
 
-cdb.geo.ui.Widget.Category.PaginatorView = cdb.core.View.extend({
+module.exports = View.extend({
 
   _ITEMS_PER_PAGE: 6,
 
@@ -26,7 +25,7 @@ cdb.geo.ui.Widget.Category.PaginatorView = cdb.core.View.extend({
     this._ITEMS_PER_PAGE = this.options.itemsPerPage;
     this.dataModel = this.options.dataModel;
     this._$target = this.options.$target;
-    this.model = new cdb.core.Model({
+    this.model = new Model({
       page: 0
     });
     this._initBinds();
@@ -83,7 +82,7 @@ cdb.geo.ui.Widget.Category.PaginatorView = cdb.core.View.extend({
 
   clean: function() {
     $(window).unbind('resize', this._scrollToPage);
-    cdb.core.View.prototype.clean.call(this);
+    View.prototype.clean.call(this);
   }
 
 });

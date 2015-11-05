@@ -1,12 +1,16 @@
+var _ = require('underscore');
+var templates = require('cdb.templates');
+var View = require('../../core/view');
+
 /**
- * generic embbed notification, like twitter "new notifications"
+ * generic embed notification, like twitter "new notifications"
  *
  * it shows slowly the notification with a message and a close button.
  * Optionally you can set a timeout to close
  *
  * usage example:
  *
-      var notification = new cdb.ui.common.Notificaiton({
+      var notification = new Notification({
           el: "#notification_element",
           msg: "error!",
           timeout: 1000
@@ -14,9 +18,8 @@
       notification.show();
       // close it
       notification.close();
-*/
-
-cdb.ui.common.Notification = cdb.core.View.extend({
+ */
+var Notification = View.extend({
 
   tagName: 'div',
   className: 'dialog',
@@ -35,7 +38,7 @@ cdb.ui.common.Notification = cdb.core.View.extend({
   initialize: function() {
     this.closeTimeout = -1;
     _.defaults(this.options, this.default_options);
-    this.template = this.options.template ? _.template(this.options.template) : cdb.templates.getTemplate('common/notification');
+    this.template = this.options.template ? _.template(this.options.template) : templates.getTemplate('common/notification');
 
     this.$el.hide();
   },
@@ -79,3 +82,4 @@ cdb.ui.common.Notification = cdb.core.View.extend({
 
 });
 
+module.exports = Notification;

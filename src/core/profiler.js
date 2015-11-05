@@ -28,8 +28,6 @@
   }
 ```
 */
-(function(exports) {
-
 var MAX_HISTORY = 1024;
 function Profiler() {}
 Profiler.metrics = {};
@@ -110,7 +108,7 @@ Metric.prototype = {
 
   //
   // finish a time measurement and register it
-  // ``start`` should be called first, if not this 
+  // ``start`` should be called first, if not this
   // function does not take effect
   //
   end: function(defer) {
@@ -121,7 +119,7 @@ Metric.prototype = {
   },
 
   //
-  // increments the value 
+  // increments the value
   // qty: how many, default = 1
   //
   inc: function(qty) {
@@ -130,7 +128,7 @@ Metric.prototype = {
   },
 
   //
-  // decrements the value 
+  // decrements the value
   // qty: how many, default = 1
   //
   dec: function(qty) {
@@ -160,6 +158,4 @@ Profiler.metric = function(name) {
   return new Metric(name);
 };
 
-exports.Profiler = Profiler;
-
-})(cdb.core);
+module.exports = Profiler;

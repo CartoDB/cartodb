@@ -1240,10 +1240,6 @@ div.cartodb-legend.choropleth li.graph {
   -o-border-radius: 3px;
   border-radius: 3px;
 
-  -moz-background-clip: padding;
-  -webkit-background-clip: padding;
-  background-clip: padding;
-
   /*box-shadow: inset 0px 0px 0px 1px rgba(0, 0, 0, 0.2);*/
   border: 1px solid #b3b3b3;
 }
@@ -1295,10 +1291,6 @@ div.cartodb-legend.density li.graph {
   -o-border-radius: 3px;
   border-radius: 3px;
 
-  -moz-background-clip: padding;
-  -webkit-background-clip: padding;
-  background-clip: padding;
-
   /*box-shadow: inset 0px 0px 0px 1px rgba(0, 0, 0, 0.2);*/
   border: 1px solid #b3b3b3;
 }
@@ -1335,10 +1327,6 @@ div.cartodb-legend.intensity li.graph {
   -ms-border-radius: 3px;
   -o-border-radius: 3px;
   border-radius: 3px;
-
-  -moz-background-clip: padding;
-  -webkit-background-clip: padding;
-  background-clip: padding;
 
   /*border: 1px solid #b3b3b3;*/
   -webkit-box-shadow: inset 0px 0px 0px 1px rgba(0, 0, 0, 0.2);

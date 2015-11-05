@@ -1,10 +1,14 @@
-/**
- *  Default widget content view:
- *
- *
- */
+var $ = require('jquery');
+var _ = require('underscore');
+var Model = require('cdb/core/model');
+var View = require('cdb/core/view');
+var WidgetContent = require('../standard/widget_content_view');
+var WidgetHistogramChart = require('./chart');
 
-cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
+/**
+ * Default widget content view:
+ */
+module.exports = WidgetContent.extend({
 
   defaults: {
     chartHeight: 48 + 20 + 4
@@ -47,8 +51,8 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
 
   initialize: function() {
     this.dataModel = this.options.dataModel;
-    this.viewModel = new cdb.core.Model();
-    cdb.geo.ui.Widget.Content.prototype.initialize.call(this);
+    this.viewModel = new Model();
+    WidgetContent.prototype.initialize.call(this);
   },
 
   _initViews: function() {
@@ -60,18 +64,21 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
   },
 
   _initBinds: function() {
-    this.dataModel.bind('change:data', this._onFirstLoad, this);
+    this.dataModel.bind('change:off', this._onFirstLoad, this);
     this.add_related_model(this.dataModel);
   },
 
   _onFirstLoad: function() {
     this.render();
-    this.dataModel.unbind('change:data', this._onFirstLoad, this);
-    this.dataModel.bind('change:data', this._onChangeData, this);
+    this.dataModel.unbind('change:off', this._onFirstLoad, this);
+    this.dataModel.bind('change:on', this._onChangeData, this);
+    var data = this.dataModel.getData().off;
+    this.start = data.at(0).get('start');
+    this.end = data.at(data.length - 1).get('end');
   },
 
   _onChangeData: function() {
-    var data = this._getData(true);
+    var data = this._getData();
     this.chart.replaceData(data);
   },
 
@@ -84,7 +91,7 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
     $(window).bind('resize', this._onWindowResize);
 
     var template = _.template(this._TEMPLATE);
-    var data = this.dataModel.getData();
+    var data = this.dataModel.getData().off;
     var isDataEmpty = _.isEmpty(data) || _.size(data) === 0;
 
     this.originalDataModel = _.clone(this.dataModel.getData());
@@ -118,14 +125,14 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
   },
 
   _renderMainChart: function() {
-    this.chart = new cdb.geo.ui.Widget.Histogram.Chart(({
+    this.chart = new WidgetHistogramChart(({
       el: this.$('.js-chart'),
       y: 0,
       margin: { top: 4, right: 4, bottom: 20, left: 4 },
       handles: true,
       width: this.canvasWidth,
       height: this.defaults.chartHeight,
-      data: this._getData()
+      data: this.dataModel.getDataWithOwnFilterApplied()
     }));
 
     this.chart.bind('range_updated', this._onRangeUpdated, this);
@@ -139,7 +146,7 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
   },
 
   _renderMiniChart: function() {
-    this.miniChart = new cdb.geo.ui.Widget.Histogram.Chart(({
+    this.miniChart = new WidgetHistogramChart(({
       className: 'mini',
       el: this.$('.js-chart'),
       handles: false,
@@ -147,7 +154,7 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
       margin: { top: 0, right: 0, bottom: 0, left: 4 },
       y: 0,
       height: 20,
-      data: this._getData()
+      data: this.dataModel.getDataWithoutOwnFilterApplied()
     }));
 
     this.miniChart.bind('on_brush_end', this._onMiniRangeUpdated, this);
@@ -174,23 +181,10 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
 
   _onValueHover: function(info) {
     var $tooltip = this.$(".js-tooltip");
-    var value;
-
-    if (info.index !== undefined) {
-
-      if (this.chart.isLocked()) {
-        value = originalDataModel.toJSON()[info.index].freq;
-      } else {
-        value = dataModel.getData().toJSON()[info.index].freq;
-      }
-
-      if (value !== undefined) {
-        $tooltip.css({ top: info.top, left: info.left });
-        $tooltip.text(value);
-        $tooltip.fadeIn(70);
-      } else {
-        $tooltip.stop().fadeOut(50);
-      }
+    if (info.freq !== undefined) {
+      $tooltip.css({ top: info.top, left: info.left });
+      $tooltip.text(info.freq);
+      $tooltip.fadeIn(70);
     } else {
       $tooltip.stop().fadeOut(50);
     }
@@ -199,28 +193,30 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
   _onMiniRangeUpdated: function(loBarIndex, hiBarIndex) {
     this.viewModel.set({ lo_index: loBarIndex, hi_index: hiBarIndex });
 
-    var data = this._getOriginalData();
+    var data = this.dataModel.getDataWithoutOwnFilterApplied();
     var min = data[loBarIndex].min;
     var max = data[hiBarIndex - 1].max;
 
-    this.filter.setRange({ min: min, max: max });
+    this.filter.setRange({ min: min, max: max, start: this.start, end: this.end });
     this._updateStats();
   },
 
   _onBrushEnd: function(loBarIndex, hiBarIndex) {
-    this.chart.lock();
+    var data = this._getData();
 
-    if (this.viewModel.get('zoomed')) {
-      this.viewModel.set({ filter_enabled: true, lo_index: loBarIndex, hi_index: hiBarIndex });
-    } else {
-      this.viewModel.set({ zoom_enabled: true, filter_enabled: true, lo_index: loBarIndex, hi_index: hiBarIndex });
+    var properties = { filter_enabled: true, lo_index: loBarIndex, hi_index: hiBarIndex };
+
+    if (!this.viewModel.get('zoomed')) {
+      properties.zoom_enabled = true;
     }
 
-    var data = this._getData();
+    this.viewModel.set(properties);
+
     var min = data[0].min;
     var max = data[data.length - 1].max;
 
-    this.filter.setRange({ min: min, max: max });
+    this.chart.lock();
+    this.filter.setRange({ min: min, max: max, start: this.start, end: this.end });
   },
 
   _onRangeUpdated: function(loBarIndex, hiBarIndex) {
@@ -277,12 +273,8 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
     });
   },
 
-  _getOriginalData: function() {
-    return this.originalDataModel.toJSON();
-  },
-
   _getData: function(full) {
-    var data = this.dataModel.getData().toJSON();
+    var data = this.dataModel.getDataWithoutOwnFilterApplied();
 
     if (full || (!this.viewModel.get('lo_index') && !this.viewModel.get('hi_index'))) {
       return data;
@@ -292,10 +284,14 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
   },
 
   _updateStats: function() {
-    var data = this._getOriginalData();
+    var data = this.dataModel.getDataWithoutOwnFilterApplied();
 
     var loBarIndex = this.viewModel.get('lo_index') || 0;
     var hiBarIndex = this.viewModel.get('hi_index') ?  this.viewModel.get('hi_index') - 1 : data.length - 1;
+
+    if (hiBarIndex + 1 > data.length) {
+      return;
+    }
 
     var sum = _.reduce(data.slice(loBarIndex, hiBarIndex + 1), function(memo, d) {
       return _.isEmpty(d) ? memo : d.freq + memo;
@@ -311,10 +307,9 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
   _onChangeZoomed: function() {
     if (this.viewModel.get('zoomed')) {
 
-      this.chart.unlock();
       this._expand();
 
-      var data = this._getOriginalData();
+      var data = this.dataModel.getDataWithoutOwnFilterApplied();
 
       var loBarIndex = this.viewModel.get('lo_index');
       var hiBarIndex = this.viewModel.get('hi_index');
@@ -325,11 +320,11 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
       this.miniChart.selectRange(loBarIndex, hiBarIndex);
       this.miniChart.show();
 
-      this.filter.setRange({ min: min, max: max });
-      this.chart.refresh();
+      var data = this.dataModel.getDataWithOwnFilterApplied();
+      this.chart.replaceData(data);
     } else {
       this.viewModel.set({ zoom_enabled: false, filter_enabled: false, lo_index: null, hi_index: null });
-      this.chart.replaceData(this.originalDataModel.toJSON());
+      this.chart.replaceData(this.dataModel.getDataWithoutOwnFilterApplied());
 
       this._contract();
 
@@ -380,6 +375,6 @@ cdb.geo.ui.Widget.Histogram.Content = cdb.geo.ui.Widget.Content.extend({
 
   clean: function() {
     $(window).unbind('resize', this._onWindowResize);
-    cdb.core.View.prototype.clean.call(this);
+    View.prototype.clean.call(this);
   }
 });

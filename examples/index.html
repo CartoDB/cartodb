@@ -6,7 +6,7 @@
     <meta name=viewport content="width=device-width initial-scale=1">
     <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.15/themes/css/cartodb.css" />
     <link rel="stylesheet" href="/dist/themes/css/cartodb.css" />
-    <script src="/src/cartodb.js"></script>
+    <script src="/dist/cartodb.uncompressed.js"></script>
     <style type="text/css">
       html, body {
         position:relative;
@@ -54,8 +54,6 @@
 
     <script>
       window.onload = function() {
-        cartodb.load('/src/', function() {
-
           var vizJSON1 = {
             "id": "84ec6844-4b4b-11e5-9c1d-080027880ca6",
             "version": "0.1.0",
@@ -711,7 +709,6 @@
           .error(function(err) {
             console.log(err);
           });
-        });
       }
     </script>
   </body>

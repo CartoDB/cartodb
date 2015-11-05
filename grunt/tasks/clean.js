@@ -1,9 +1,7 @@
-
 /**
  *  Clean grunt task for CartoDB.js
  *
  */
-
 module.exports = {
   task: function() {
     return {
@@ -17,10 +15,7 @@ module.exports = {
             '!<%= config.dist %>/.git*'
           ]
         }]
-      },
-      server: [
-        '.tmp'
-      ]
+      }
     }
   }
 }

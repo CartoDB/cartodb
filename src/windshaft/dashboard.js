@@ -4,14 +4,6 @@ cdb.windshaft.Dashboard = function(options) {
   this.layerGroup = options.layerGroup;
   this.layers = new Backbone.Collection(options.layers);
 
-  // Flat list of widgets
-  var widgets = _.flatten(this.layers.map(function(layer) { return layer.widgets.models; }));
-  this.widgets =  new Backbone.Collection(widgets);
-
-  // Flat list of filters
-  var filters = _.flatten(_.map(widgets, function(widget) { return widget.filter; }));
-  this.filters = new cdb.windshaft.filters.Collection(filters);
-
   this.map = options.map;
   this.client = options.client;
   this.statTag = options.statTag;
@@ -21,11 +13,20 @@ cdb.windshaft.Dashboard = function(options) {
 
   // Bindings
   this.layerGroup.bindDashboardInstance(this.instance);
-  this.layers.bind('change', this._createInstance, this);
-  this.filters.bind('change', this._filterChanged, this);
+
   this.map.bind('change:center change:zoom', _.debounce(this._boundingBoxChanged, BOUNDING_BOX_FILTER_WAIT), this);
 
+  this.layers.bind('change', this._createInstance, this);
+  this.layers.bind('change:filter', this._onFilterChanged, this);
+
   this._createInstance();
+};
+
+cdb.windshaft.Dashboard.prototype._onFilterChanged = function(layer, widget, filter) {
+  var layerId = layer.get('id');
+  this._createInstance({
+    layerId: layerId
+  });
 };
 
 cdb.windshaft.Dashboard.prototype._createInstance = function(options) {
@@ -35,9 +36,19 @@ cdb.windshaft.Dashboard.prototype._createInstance = function(options) {
     layers: this.layers.models
   });
 
+  // Flat list of widgets
+  var visibleLayers = this.layers.filter(function(layer) { return layer.isVisible(); });
+  var filtersFromVisibleLayers = _.chain(this.layers.models)
+    .filter(function(layer) { return layer.isVisible(); })
+    .map(function(layer) { return layer.getFilters(); })
+    .flatten()
+    .value();
+
+  var filters = new cdb.windshaft.filters.Collection(filtersFromVisibleLayers);
+
   this.client.instantiateMap({
     mapDefinition: dashboardConfig,
-    filters: this.filters.toJSON(),
+    filters: filters.toJSON(),
     success: function(dashboardInstance) {
 
       // Update the dashboard instance with the attributes of the new one
@@ -58,13 +69,6 @@ cdb.windshaft.Dashboard.prototype._createInstance = function(options) {
   });
 
   return this.instance;
-};
-
-cdb.windshaft.Dashboard.prototype._filterChanged = function(filter) {
-  var layerId = filter.get('layerId');
-  this._createInstance({
-    layerId: layerId
-  });
 };
 
 cdb.windshaft.Dashboard.prototype._boundingBoxChanged = function() {

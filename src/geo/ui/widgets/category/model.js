@@ -8,6 +8,9 @@ cdb.geo.ui.Widget.CategoryModel = cdb.geo.ui.Widget.Model.extend({
   initialize: function(attrs, opts) {
     this._data = new Backbone.Collection(this.get('data'));
     cdb.geo.ui.Widget.Model.prototype.initialize.call(this, attrs, opts);
+
+    // Retrigger an event when the changes
+    this.filter.bind('change', this._onFilterChanged, this);
   },
 
   getData: function() {
@@ -54,5 +57,9 @@ cdb.geo.ui.Widget.CategoryModel = cdb.geo.ui.Widget.Model.extend({
     return {
       data: newData
     };
+  },
+
+  _onFilterChanged: function(filter) {
+    this.trigger('change:filter', this, filter);
   }
 });

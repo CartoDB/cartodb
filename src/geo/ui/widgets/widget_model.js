@@ -32,6 +32,11 @@ cdb.geo.ui.Widget.Model = cdb.core.Model.extend({
         self._onChangeBinds();
       });
     }, this);
+
+    // Retrigger an event when the filter changes
+    if (this.filter) {
+      this.filter.bind('change', this._onFilterChanged, this);
+    }
   },
 
   _onChangeBinds: function() {
@@ -57,12 +62,8 @@ cdb.geo.ui.Widget.Model = cdb.core.Model.extend({
     });
   },
 
-  _createUrlOptions: function() {
-    return _.compact(_(this.options).map(
-      function(v, k) {
-        return k + "=" + encodeURIComponent(v);
-      }
-    )).join('&');
+  _onFilterChanged: function(filter) {
+    this.trigger('change:filter', this, filter);
   },
 
   getData: function() {
@@ -74,8 +75,11 @@ cdb.geo.ui.Widget.Model = cdb.core.Model.extend({
     return cdb.core.Model.prototype.fetch.call(this,opts);
   },
 
+  getFilter: function() {
+    return this.filter;
+  },
+
   toJSON: function() {
     throw new Error('toJSON should be defined for each widget');
   }
-
 });

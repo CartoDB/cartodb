@@ -157,6 +157,12 @@ cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
 
   initialize: function() {
     this.widgets = new Backbone.Collection([]);
+
+    // Re-trigger the change:filter event
+    this.widgets.bind('change:filter', function(widget, filter) {
+      this.trigger('change:filter', this, widget, filter);
+    }, this);
+
     cdb.geo.MapLayer.prototype.initialize.apply(this, arguments);
   },
 
@@ -242,6 +248,12 @@ cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
         .concat(this.getInfowindowFieldNames())
          .concat(this.getTooltipFieldNames())
     );
+  },
+
+  getFilters: function() {
+    return _.flatten(this.widgets.map(function(widget) {
+      return widget.getFilter();
+    }));
   }
 });
 

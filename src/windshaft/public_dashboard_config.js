@@ -1,3 +1,4 @@
+var _ = require('underscore');
 var WindshaftPublicDashboardConfig = {};
 
 WindshaftPublicDashboardConfig.generate = function(options) {

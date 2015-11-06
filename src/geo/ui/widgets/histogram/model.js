@@ -3,11 +3,11 @@ var WidgetModel = require('../widget_model');
 
 module.exports = WidgetModel.extend({
 
-  initialize: function() {
+  initialize: function(attrs, opts) {
     this._offData = new Backbone.Collection(this.get('data'));
     this._onData = new Backbone.Collection(this.get('data'));
 
-    WidgetModel.prototype.initialize.call(this);
+    WidgetModel.prototype.initialize.call(this, attrs, opts);
   },
 
   getData: function() {

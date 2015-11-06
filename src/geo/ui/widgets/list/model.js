@@ -8,9 +8,9 @@ module.exports = WidgetModel.extend({
     per_page: 100
   },
 
-  initialize: function() {
+  initialize: function(attrs, opts) {
     this._data = new Backbone.Collection(this.get('data'));
-    WidgetModel.prototype.initialize.call(this);
+    WidgetModel.prototype.initialize.call(this, attrs, opts);
   },
 
   getData: function() {
@@ -37,5 +37,4 @@ module.exports = WidgetModel.extend({
       }
     };
   }
-
 });

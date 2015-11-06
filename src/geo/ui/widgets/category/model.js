@@ -8,12 +8,13 @@ var WidgetModel = require('../widget_model');
 module.exports = WidgetModel.extend({
 
   initialize: function(attrs, opts) {
-    if (opts.filter) {
-      this.filter = opts.filter;
-    }
     this._data = new Backbone.Collection(this.get('data'));
-    WidgetModel.prototype.initialize.call(this);
     this._dataOrigin = new Backbone.Collection(this.get('data'));
+
+    WidgetModel.prototype.initialize.call(this, attrs, opts);
+
+    // Retrigger an event when the changes
+    this.filter.bind('change', this._onFilterChanged, this);
   },
 
   getData: function() {
@@ -96,5 +97,9 @@ module.exports = WidgetModel.extend({
       avg: avg,
       totalCount: totalCount
     };
+  },
+
+  _onFilterChanged: function(filter) {
+    this.trigger('change:filter', this, filter);
   }
 });

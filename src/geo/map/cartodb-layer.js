@@ -1,3 +1,4 @@
+var Backbone = require('backbone');
 var _ = require('underscore');
 var config = require('cdb.config');
 var MapLayer = require('./map-layer');
@@ -25,15 +26,28 @@ var CartoDBLayer = MapLayer.extend({
     cartocss_version: '2.1.0'
   },
 
+  initialize: function() {
+    this.widgets = new Backbone.Collection([]);
+
+    // Re-trigger the change:filter event
+    this.widgets.bind('change:filter', function(widget, filter) {
+      this.trigger('change:filter', this, widget, filter);
+    }, this);
+
+    MapLayer.prototype.initialize.apply(this, arguments);
+  },
+
   activate: function() {
-    this.set({active: true, opacity: 0.99, visible: true})
+    this.set({active: true, opacity: 0.99, visible: true});
   },
 
   deactivate: function() {
-    this.set({active: false, opacity: 0, visible: false})
+    this.set({active: false, opacity: 0, visible: false});
   },
 
-  // refresh the layer
+  /**
+   * refresh the layer
+   */
   invalidate: function() {
     var e = this.get('extra_params') || e;
     e.cache_buster = new Date().getTime();
@@ -103,8 +117,14 @@ var CartoDBLayer = MapLayer.extend({
     return _.uniq(
       ['cartodb_id']
         .concat(this.getInfowindowFieldNames())
-        .concat(this.getTooltipFieldNames())
+         .concat(this.getTooltipFieldNames())
     );
+  },
+
+  getFilters: function() {
+    return this.widgets.map(function(widget) {
+      return widget.getFilter();
+    });
   }
 });
 

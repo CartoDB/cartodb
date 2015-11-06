@@ -394,6 +394,8 @@ var Vis = View.extend({
     var cartoDBLayerGroup;
     var layerGroupData;
     var layersData;
+    var layers;
+    var interactiveLayers;
     _.each(data.layers, function(layer) {
       if (layer.type === 'layergroup') {
         layerGroupData = layer;
@@ -404,6 +406,19 @@ var Vis = View.extend({
         cartoDBLayerGroup = new cdb.geo.CartoDBGroupLayer({}, {
           layers: cartoDBLayers
         });
+
+        layers = _.map(data.layers, function(layerData) {
+          var model;
+          if (layerData.type === 'layergroup' || layerData.type === 'namedmap') {
+            model = cartoDBLayerGroup;
+          } else {
+            model = Layers.create(layerData.type || layerData.kind, self, layerData);
+          }
+          return model;
+        });
+
+        var nonCartoDBLayers = _.filter(layers, function(lyr) { return lyr.get('type') === 'torque'; })
+        interactiveLayers = [].concat(cartoDBLayers, nonCartoDBLayers)
       } else if (layer.type === 'namedmap') {
         layerGroupData = layer;
         layersData = layer.options.named_map.layers;
@@ -431,7 +446,7 @@ var Vis = View.extend({
       }
     };
 
-    _.each(cartoDBLayers, function(layer, index) {
+    _.each(interactiveLayers, function(layer, index) {
       var widgets = layer.get('widgets') || {};
 
       for (var widgetId in widgets) {
@@ -465,7 +480,7 @@ var Vis = View.extend({
     });
 
     // TODO: This will need to change when new layers are added / removed
-    var layersWithWidgets = new Backbone.Collection(cartoDBLayers);
+    var layersWithWidgets = new Backbone.Collection(interactiveLayers);
     var widgetsView = new WidgetsView({
       layers: layersWithWidgets
     });
@@ -493,22 +508,13 @@ var Vis = View.extend({
       client: windshaftClient,
       configGenerator: configGenerator,
       statTag: datasource.stat_tag,
+      //TODO: assuming here all viz.json has a layergroup and that may not be true
       layerGroup: cartoDBLayerGroup,
-      layers: cartoDBLayers,
+      layers: interactiveLayers,
       map: map
     });
 
-    this.map.layers.reset(_.map(data.layers, function(layerData) {
-      var model;
-
-      if (layerData.type === 'layergroup' || layerData.type === 'namedmap') {
-        model = cartoDBLayerGroup;
-      } else {
-        model = Layers.create(layerData.type || layerData.kind, self, layerData);
-      }
-      return model;
-    }));
-
+    this.map.layers.reset(layers);
     this.overlayModels.reset(data.overlays);
 
     // if there are no sublayer_options fill it

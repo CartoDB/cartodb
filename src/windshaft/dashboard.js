@@ -53,12 +53,21 @@ WindshaftDashboard.prototype._createInstance = function(options) {
 
       // TODO: Set the URL of the attributes service once it's available
       this.layerGroup.set({
-        urls: dashboardInstance.getTiles()
+        urls: dashboardInstance.getTiles('mapnik')
       });
 
       this._updateWidgetURLs({
         layerId: options.layerId
       });
+
+      // update other kind of layers too
+      this.layers.each(function(layer) {
+        if (layer.get('type') === 'torque') {
+          console.log(dashboardInstance.getTiles('torque'));
+          layer.set('urls', dashboardInstance.getTiles('torque'));
+        }
+      });
+
     }.bind(this),
     error: function(error) {
       console.log('Error creating dashboard instance: ' + error);

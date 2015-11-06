@@ -69,10 +69,6 @@ module.exports = WidgetModel.extend({
       };
     }, this);
 
-    newData.sort(function(a,b) {
-      return a.count - b.count || a.selected < b.selected
-    });
-
     var restData = this._dataOrigin.map(function(mdl) {
       var value = mdl.get(columnName);
       var isRejected = rejectedCats.where({ name: value }).length > 0;
@@ -88,6 +84,15 @@ module.exports = WidgetModel.extend({
     }, this);
 
     newData = newData.concat(_.compact(restData));
+
+    newData.sort(function(a,b) {
+      if (a.count === b.count) {
+        return (a.selected < b.selected) ? 1 : -1;
+      } else {
+        return (a.count < b.count) ? 1 : -1;
+      }
+    });
+
     this._data.reset(newData);
 
     return {

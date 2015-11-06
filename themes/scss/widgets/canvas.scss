@@ -17,6 +17,19 @@
   border-radius: 4px;
   background: #FFF; // Canvas is out of widget themes
 }
+.Widget-canvas .simplebar-track {
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 2px;
+  background: #EEE;
+}
+.Widget-canvas .simplebar-track .simplebar-scrollbar {
+  right: 0;
+  width: 2px;
+  border-radius: 4px;
+  background: #AAA;
+}
 
 // Widget media query
 @include media-query() {
@@ -27,7 +40,7 @@
     width: 100%;
     min-width: 100%;
     max-width: 100%;
-    height: auto;
+    height: 350px;
     margin-top: 8px;
     margin-bottom: 0;
     overflow-x: auto;
@@ -38,5 +51,9 @@
     @include display-flex();
     @include flex-wrap(nowrap);
     position: relative;
+  }
+  .Widget-canvas .simplebar-content {
+    @include display-flex();
+    @include flex-wrap(nowrap);
   }
 }

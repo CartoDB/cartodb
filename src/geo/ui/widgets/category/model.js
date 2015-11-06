@@ -57,7 +57,7 @@ module.exports = WidgetModel.extend({
       return memo + datum.count;
     }, 0);
     // TODO: change avg after getting the total of categories
-    var avg = totalCount / categories.length;
+    var avg = !totalCount ? 0 : (totalCount / categories.length).toFixed(2);
 
     var newData = _.map(categories, function(datum) {
       var value = datum[columnName];

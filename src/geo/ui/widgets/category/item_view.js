@@ -22,12 +22,13 @@ module.exports = View.extend({
 
   render: function() {
     var value = this.model.get('count');
+    var totalCount = this.dataModel.get('totalCount');
 
     this.$el.html(
       template({
         name: this.model.get('name'),
         value: Math.ceil(value),
-        percentage: Math.ceil((value / this.dataModel.get('totalCount')) * 100),
+        percentage: Math.ceil(!totalCount ? 0 : (value / this.dataModel.get('totalCount')) * 100),
         isDisabled: !this.model.get('selected') ? 'is-disabled' : ''
       })
     );

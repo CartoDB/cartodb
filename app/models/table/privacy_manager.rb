@@ -11,19 +11,31 @@ module CartoDB
     end
 
     def apply_privacy_change(metadata_table, old_privacy, privacy_changed = false)
-      @table.map.save
-
-      # Separate on purpose as if fails here no need to revert visualizations' privacy
-      revertable_privacy_change(metadata_table, old_privacy) do
-        # Map saving actually doesn't changes privacy, but to keep on same reverting logic
+      begin
         @table.map.save
-        set_from_table_privacy(@table.privacy)
-      end
 
-      revertable_privacy_change(metadata_table, old_privacy,
-                                [metadata_table.table_visualization] + metadata_table.affected_visualizations) do
-        propagate_to([metadata_table.table_visualization])
-        notify_privacy_affected_entities(metadata_table) if privacy_changed
+        # Separate on purpose as if fails here no need to revert visualizations' privacy
+        revertable_privacy_change(metadata_table, old_privacy) do
+          # Map saving actually doesn't changes privacy, but to keep on same reverting logic
+          @table.map.save
+          set_from_table_privacy(@table.privacy)
+        end
+
+        revertable_privacy_change(metadata_table, old_privacy,
+                                  [metadata_table.table_visualization] + metadata_table.affected_visualizations) do
+          propagate_to([metadata_table.table_visualization])
+          notify_privacy_affected_entities(metadata_table) if privacy_changed
+        end
+
+      rescue NoMethodError => exception
+        CartoDB.notify_debug("#{exception.message} #{exception.backtrace}", {
+          table_id: @table.id,
+          table_name: @table.name,
+          user_id: @table.user_id,
+          data_import_id: @table.data_import_id
+          })
+
+        raise exception
       end
     end
 

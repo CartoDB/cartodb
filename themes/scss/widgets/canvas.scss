@@ -30,6 +30,9 @@
   border-radius: 4px;
   background: #AAA;
 }
+.Widget-canvas .simplebar-scroll-content {
+  height: auto!important; // Fix for firefox
+}
 
 // Widget media query
 @include media-query() {

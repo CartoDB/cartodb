@@ -485,7 +485,7 @@ var Vis = View.extend({
     var widgetsView = new WidgetsView({
       layers: layersWithWidgets
     });
-    $('.js-canvas').append(widgetsView.render().el);
+    $('.js-dashboard').append(widgetsView.render().el);
 
     // TODO: Perhaps this "endpoint" could be part of the "datasource"?
     var endpoint = cdb.windshaft.config.MAPS_API_BASE_URL;

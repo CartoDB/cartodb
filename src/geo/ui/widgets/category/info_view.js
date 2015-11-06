@@ -2,12 +2,13 @@ var $ = require('jquery');
 var _ = require('underscore');
 var cdb = require('cdb');
 var template = require('./info.tpl');
+var View = require('cdb/core/view');
 
 /**
  * Category info view
  */
 
-module.exports = cdb.core.View.extend({
+module.exports = View.extend({
 
   className: 'Widget-info Widget-textSmaller Widget-textSmaller--upper',
   tagName: 'dl',

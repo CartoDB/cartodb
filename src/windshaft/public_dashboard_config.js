@@ -1,38 +1,36 @@
 var WindshaftPublicDashboardConfig = {};
 
 WindshaftPublicDashboardConfig.generate = function(options) {
-  this.layers = options.layers;
-  this.widgets = options.widgets;
-  var config = {};
-
-  config.layers = this.layers.map(function(layerModel, layerIndex) {
-    var layerConfig = {
-      type: 'cartodb',
-      options: {
-        sql: layerModel.get('sql'),
-        cartocss: layerModel.get('cartocss'),
-        cartocss_version: layerModel.get('cartocss_version'),
-        interactivity: layerModel.getInteractiveColumnNames()
-      }
-    };
-    if (layerModel.getInfowindowFieldNames().length) {
-      layerConfig.options.attributes = {
-        id: "cartodb_id",
-        columns: layerModel.getInfowindowFieldNames()
+  var layers = options.layers;
+  var config = { layers: [] };
+  _.each(layers, function(layer) {
+    if (layer.isVisible()) {
+      var layerConfig = {
+        type: 'cartodb',
+        options: {
+          sql: layer.get('sql'),
+          cartocss: layer.get('cartocss'),
+          cartocss_version: layer.get('cartocss_version'),
+          interactivity: layer.getInteractiveColumnNames()
+        }
       };
+      if (layer.getInfowindowFieldNames().length) {
+        layerConfig.options.attributes = {
+          id: "cartodb_id",
+          columns: layer.getInfowindowFieldNames()
+        };
+      }
+
+      if (layer.widgets.length > 0) {
+        layerConfig.options.widgets = {};
+        layer.widgets.each(function(widget) {
+          layerConfig.options.widgets[widget.get('id')] = widget.toJSON();
+        });
+
+      }
+      config.layers.push(layerConfig);
     }
-
-    var widgets = this.widgets.where({ layerId: layerModel.get('id') });
-    if (widgets && widgets.length) {
-      layerConfig.options.widgets = {};
-
-      widgets.forEach(function(widget) {
-        layerConfig.options.widgets[widget.get('id')] = widget.toJSON();
-      });
-    }
-
-    return layerConfig;
-  }, this);
+  });
 
   return config;
 };

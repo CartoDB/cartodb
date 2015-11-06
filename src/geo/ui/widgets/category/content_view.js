@@ -2,7 +2,9 @@ var _ = require('underscore');
 var WidgetContent = require('../standard/widget_content_view');
 var WidgetCategoryFilterView = require('./filter_view');
 var WidgetCategoryItemsView = require('./items_view');
+var WidgetCategoryInfoView = require('./info_view');
 var WidgetCategoryPaginatorView = require('./paginator_view');
+var template = require('./content.tpl');
 
 /**
  * Category content view
@@ -11,26 +13,8 @@ module.exports = WidgetContent.extend({
 
   _ITEMS_PER_PAGE: 6,
 
-  _TEMPLATE: ' ' +
-    '<div class="Widget-header">'+
-      '<div class="Widget-title Widget-contentSpaced">'+
-        '<h3 class="Widget-textBig" title="<%- title %>"><%- title %></h3>'+
-      '</div>'+
-      '<dl class="Widget-info Widget-textSmaller Widget-textSmaller--upper">'+
-        '<dt class="Widget-infoItem">- null rows</dt>'+
-        '<dt class="Widget-infoItem">- min</dt>'+
-        '<dt class="Widget-infoItem">- avg</dt>'+
-        '<dt class="Widget-infoItem">- max</dt>'+
-      '</dl>'+
-    '</div>'+
-    '<div class="Widget-content Widget-content--noSidesMargin">'+
-      '<div class="Widget-listWrapper js-content"></div>'+
-    '</div>'+
-    '<div class="Widget-footer js-footer"></div>',
-
   render: function() {
     this.clearSubViews();
-    var template = _.template(this._TEMPLATE);
     this.$el.html(
       template({
         title: this.model.get('title')
@@ -51,6 +35,13 @@ module.exports = WidgetContent.extend({
     });
     this.$('.js-content').html(filters.render().el);
     this.addView(filters);
+
+    // Stats info
+    var info = new WidgetCategoryInfoView({
+      model: this.model
+    });
+    this.$('.js-header').append(info.render().el);
+    this.addView(info);
 
     // List view -> items view
     var list = new WidgetCategoryItemsView({

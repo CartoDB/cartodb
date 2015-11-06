@@ -13,6 +13,7 @@ module.exports = WidgetModel.extend({
     }
     this._data = new Backbone.Collection(this.get('data'));
     WidgetModel.prototype.initialize.call(this);
+    this._dataOrigin = new Backbone.Collection(this.get('data'));
   },
 
   getData: function() {
@@ -34,14 +35,28 @@ module.exports = WidgetModel.extend({
   },
 
   parse: function(data) {
+    var self = this;
     var categories = data.ownFilterOff.categories;
     var columnName = this.get('column');
-    var maxCount = categories.reduce(function(memo, datum) {
-      return memo + datum.count;
-    }, 0);
-
     // Add rejected categories + result categories
     var rejectedCats = this.filter.getRejected();
+
+    // If there is no data from the beginning,
+    // complete data origin.
+    if (this._dataOrigin.isEmpty()) {
+      this._dataOrigin.reset(categories);
+    }
+
+    // Get max count of all items
+    var min = 0;
+    var max = 0;
+    var totalCount = categories.reduce(function(memo, datum) {
+      min = Math.min(min, datum.count);
+      max = Math.max(max, datum.count);
+      return memo + datum.count;
+    }, 0);
+    // TODO: change avg after getting the total of categories
+    var avg = totalCount / categories.length;
 
     var newData = _.map(categories, function(datum) {
       var value = datum[columnName];
@@ -49,15 +64,37 @@ module.exports = WidgetModel.extend({
       return {
         'selected': !isRejected,
         'name': value,
-        'count': datum.count,
-        'maxCount': maxCount
+        'count': datum.count
       };
     }, this);
 
+    newData.sort(function(a,b) {
+      return a.count - b.count || a.selected < b.selected
+    });
+
+    var restData = this._dataOrigin.map(function(mdl) {
+      var value = mdl.get(columnName);
+      var isRejected = rejectedCats.where({ name: value }).length > 0;
+      var alreadyAdded = _.find(newData, function(m){ return m.name === value });
+
+      if (!alreadyAdded) {
+        return {
+          'selected': !isRejected,
+          'name': value,
+          'count': 0
+        };
+      }
+    }, this);
+
+    newData = newData.concat(_.compact(restData));
     this._data.reset(newData);
 
     return {
-      data: newData
+      data: newData,
+      min: min,
+      max: max,
+      avg: avg,
+      totalCount: totalCount
     };
   }
 });

@@ -2,6 +2,7 @@ var $ = require('jquery');
 var _ = require('underscore');
 var WidgetView = require('../../widget');
 var WidgetCategoryItemView = require('./item_view');
+var placeholder = require('./placeholder.tpl');
 
 /**
  * Category list view
@@ -12,12 +13,6 @@ module.exports = WidgetView.extend({
 
   className: 'Widget-list Widget-list--wrapped js-list',
   tagName: 'ul',
-
-  _PLACEHOLDER: ' ' +
-    '<li class="Widget-listItem Widget-listItem--fake"></li>' +
-    '<li class="Widget-listItem Widget-listItem--fake"></li>' +
-    '<li class="Widget-listItem Widget-listItem--fake"></li>' +
-    '<li class="Widget-listItem Widget-listItem--fake"></li>',
 
   initialize: function() {
     this._ITEMS_PER_PAGE = this.options.itemsPerPage;
@@ -48,9 +43,7 @@ module.exports = WidgetView.extend({
     this.$el
       .addClass('Widget-list--withBorders')
       .removeClass('Widget-list--wrapped');
-
-    var template = _.template(this._PLACEHOLDER);
-    this.$el.append(template());
+    this.$el.append(placeholder());
   },
 
   _renderList: function() {
@@ -74,7 +67,7 @@ module.exports = WidgetView.extend({
   _addItem: function(mdl, $parent) {
     var v = new WidgetCategoryItemView({
       model: mdl,
-      viewModel: this.viewModel,
+      dataModel: this.model,
       filter: this.filter
     });
     v.bind('itemClicked', this._setFilters, this);

@@ -5,6 +5,7 @@
 @import '../variables/mixins';
 
 .Widget {
+  position: relative;
   width: $desktopLayout;
   // Due to line-heights, better to substract some pixels in the top
   padding: ($sMargin-section - 2) 0 $sMargin-section;
@@ -39,6 +40,7 @@
   .Widget {
     width: $mobileLayout;
     min-width: $mobileLayout;
+    min-height: 280px;
     border-right: 2px solid transparent;
     border-bottom: 0;
   }

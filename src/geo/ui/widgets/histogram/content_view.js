@@ -45,9 +45,13 @@ module.exports = WidgetContent.extend({
     this.render();
     this.dataModel.unbind('change:off', this._onFirstLoad, this);
     this.dataModel.bind('change:on', this._onChangeData, this);
-    var data = this.dataModel.getData().off;
-    this.start = data.at(0).get('start');
-    this.end = data.at(data.length - 1).get('end');
+    this._storeBounds();
+  },
+
+  _storeBounds: function() {
+    var data = this.dataModel.getDataWithoutOwnFilterApplied();
+    this.start = data[0].start;
+    this.end = data[data.length - 1].end;
   },
 
   _onChangeData: function() {
@@ -66,12 +70,9 @@ module.exports = WidgetContent.extend({
     var data = this.dataModel.getData().off;
     var isDataEmpty = _.isEmpty(data) || _.size(data) === 0;
 
-    this.originalDataModel = _.clone(this.dataModel.getData());
-
     window.viewModel = this.viewModel; // TODO: remove
     window.dataModel = this.dataModel; // TODO: remove
-    window.originalDataModel = this.originalDataModel; // TODO: remove
-    window.filter = this.filter; // TODO: remove
+    window.filter    = this.filter;    // TODO: remove
 
     this.$el.html(
       template({
@@ -170,11 +171,17 @@ module.exports = WidgetContent.extend({
     this.viewModel.set({ lo_index: loBarIndex, hi_index: hiBarIndex });
 
     var data = this.dataModel.getDataWithoutOwnFilterApplied();
-    var min = data[loBarIndex].min;
-    var max = data[hiBarIndex - 1].max;
+
+    this._setRange(data, loBarIndex, hiBarIndex - 1);
+
+    this._updateStats();
+  },
+
+  _setRange: function(data, loBarIndex, hiBarIndex) {
+    var min = data[loBarIndex].min || data[loBarIndex].start;
+    var max = data[hiBarIndex].max || data[hiBarIndex].end;
 
     this.filter.setRange({ min: min, max: max, start: this.start, end: this.end });
-    this._updateStats();
   },
 
   _onBrushEnd: function(loBarIndex, hiBarIndex) {
@@ -188,11 +195,9 @@ module.exports = WidgetContent.extend({
 
     this.viewModel.set(properties);
 
-    var min = data[0].min;
-    var max = data[data.length - 1].max;
-
     this.chart.lock();
-    this.filter.setRange({ min: min, max: max, start: this.start, end: this.end });
+
+    this._setRange(data, 0, data.length - 1);
   },
 
   _onRangeUpdated: function(loBarIndex, hiBarIndex) {

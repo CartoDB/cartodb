@@ -178,7 +178,7 @@ module.exports = WidgetContent.extend({
   },
 
   _setRange: function(data, loBarIndex, hiBarIndex) {
-    var min = data[loBarIndex].min || data[loBarIndex].start;
+    var min = data[loBarIndex].min || data[loBarIndex].end;
     var max = data[hiBarIndex].max || data[hiBarIndex].end;
 
     this.filter.setRange({ min: min, max: max, start: this.start, end: this.end });

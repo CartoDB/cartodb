@@ -171,11 +171,17 @@ module.exports = WidgetContent.extend({
     this.viewModel.set({ lo_index: loBarIndex, hi_index: hiBarIndex });
 
     var data = this.dataModel.getDataWithoutOwnFilterApplied();
-    var min = data[loBarIndex].min;
-    var max = data[hiBarIndex - 1].max;
+
+    this._setRange(data, loBarIndex, hiBarIndex - 1);
+
+    this._updateStats();
+  },
+
+  _setRange: function(data, loBarIndex, hiBarIndex) {
+    var min = data[loBarIndex].min || data[loBarIndex].start;
+    var max = data[hiBarIndex].max || data[hiBarIndex].end;
 
     this.filter.setRange({ min: min, max: max, start: this.start, end: this.end });
-    this._updateStats();
   },
 
   _onBrushEnd: function(loBarIndex, hiBarIndex) {
@@ -189,11 +195,9 @@ module.exports = WidgetContent.extend({
 
     this.viewModel.set(properties);
 
-    var min = data[0].min;
-    var max = data[data.length - 1].max;
-
     this.chart.lock();
-    this.filter.setRange({ min: min, max: max, start: this.start, end: this.end });
+
+    this._setRange(data, 0, data.length - 1);
   },
 
   _onRangeUpdated: function(loBarIndex, hiBarIndex) {

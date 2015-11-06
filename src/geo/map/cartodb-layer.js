@@ -6,7 +6,7 @@ var MapLayer = require('./map-layer');
 var CartoDBLayer = MapLayer.extend({
 
   defaults: {
-    attribution: cdb.config.get('cartodb_attributions'),
+    attribution: config.get('cartodb_attributions'),
     type: 'CartoDB',
     active: true,
     query: null,
@@ -34,7 +34,7 @@ var CartoDBLayer = MapLayer.extend({
       this.trigger('change:filter', this, widget, filter);
     }, this);
 
-    cdb.geo.MapLayer.prototype.initialize.apply(this, arguments);
+    MapLayer.prototype.initialize.apply(this, arguments);
   },
 
   activate: function() {

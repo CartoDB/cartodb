@@ -58,7 +58,7 @@ module.exports = WindshaftFilterBase.extend({
     var json = {};
     json[this.get('widgetId')] = {};
     if (this.rejectedCategories.size() > 0) {
-      json[this.get('widgetId')].reject = _.pluck(this.rejectedCategories.toJSON(), 'name');
+      json[this.get('widgetId')].reject = _.map(_.pluck(this.rejectedCategories.toJSON(), 'name'), encodeURIComponent);
     }
     return json;
   }

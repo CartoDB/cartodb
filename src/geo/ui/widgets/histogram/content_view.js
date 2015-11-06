@@ -5,6 +5,9 @@ var View = require('cdb/core/view');
 var WidgetContent = require('../standard/widget_content_view');
 var WidgetHistogramChart = require('./chart');
 
+var placeholder = require('./placeholder.tpl');
+var template = require('./content.tpl');
+
 /**
  * Default widget content view:
  */
@@ -18,36 +21,6 @@ module.exports = WidgetContent.extend({
     'click .js-clear': '_clear',
     'click .js-zoom': '_zoom'
   },
-
-  _TEMPLATE: ' ' +
-   '<div class="Widget-header">'+
-      '<div class="Widget-title Widget-contentSpaced">'+
-        '<h3 class="Widget-textBig"><%= title %></h3>'+
-      '</div>'+
-     '<dl class="Widget-info Widget-textSmaller Widget-textSmaller--upper">'+
-       '<dt class="Widget-infoItem js-null">0 NULL ROWS</dt>'+
-       '<dt class="Widget-infoItem js-min">0 MIN</dt>'+
-       '<dt class="Widget-infoItem js-avg">0 AVG</dt>'+
-       '<dt class="Widget-infoItem js-max">0 MAX</dt>'+
-     '</dl>'+
-   '</div>'+
-    '<div class="Widget-content js-content">'+
-   '<div class="Widget-chartTooltip js-tooltip"></div>'+
-   '  <div class="Widget-filter Widget-contentSpaced js-filter is-hidden">'+
-   '    <p class="Widget-textSmaller Widget-textSmaller--bold Widget-textSmaller--upper js-val"></p>'+
-   '    <div class="Widget-filterButtons">'+
-   '      <button class="Widget-link Widget-filterButton js-zoom">zoom</button>'+
-   '      <button class="Widget-link Widget-filterButton js-clear">clear</button>'+
-   '    </div>'+
-   '  </div>'+
-   '  <svg class="Widget-chart js-chart"></svg>',
-
-  _PLACEHOLDER: ' ' +
-    '<ul class="Widget-chart Widget-chart--fake">' +
-      '<% for (var i = 0; i < 18; i++) { %>' +
-      '<li class="Widget-chartItem Widget-chartItem--<%- _.sample(["small", "medium", "big"], 1)[0] %> Widget-chartItem--fake"></li>' +
-      '<% } %>' +
-    '</ul>',
 
   initialize: function() {
     this.dataModel = this.options.dataModel;
@@ -90,7 +63,6 @@ module.exports = WidgetContent.extend({
 
     $(window).bind('resize', this._onWindowResize);
 
-    var template = _.template(this._TEMPLATE);
     var data = this.dataModel.getData().off;
     var isDataEmpty = _.isEmpty(data) || _.size(data) === 0;
 
@@ -116,6 +88,10 @@ module.exports = WidgetContent.extend({
     }
 
     return this;
+  },
+
+  _addPlaceholder: function() {
+    this.$('.js-content').append(placeholder());
   },
 
   _onWindowResize: function() {
@@ -320,6 +296,7 @@ module.exports = WidgetContent.extend({
       this.miniChart.selectRange(loBarIndex, hiBarIndex);
       this.miniChart.show();
 
+      this.chart.unlock()
       var data = this.dataModel.getDataWithOwnFilterApplied();
       this.chart.replaceData(data);
       this.chart.refresh();

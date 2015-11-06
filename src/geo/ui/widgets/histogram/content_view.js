@@ -282,42 +282,48 @@ module.exports = WidgetContent.extend({
 
   _onChangeZoomed: function() {
     if (this.viewModel.get('zoomed')) {
-
-      this._expand();
-
-      var data = this.dataModel.getDataWithoutOwnFilterApplied();
-
-      var loBarIndex = this.viewModel.get('lo_index');
-      var hiBarIndex = this.viewModel.get('hi_index');
-
-      var min = data[loBarIndex].min;
-      var max = data[hiBarIndex - 1].max;
-
-      this.miniChart.selectRange(loBarIndex, hiBarIndex);
-      this.miniChart.show();
-
-      this.chart.unlock()
-      var data = this.dataModel.getDataWithOwnFilterApplied();
-      this.chart.replaceData(data);
-      this.chart.refresh();
+      this._onZoomIn();
     } else {
-      this.viewModel.set({ zoom_enabled: false, filter_enabled: false, lo_index: null, hi_index: null });
-      this.chart.replaceData(this.dataModel.getDataWithoutOwnFilterApplied());
-
-      this._contract();
-
-      this.chart.resetIndexes();
-
-      this.filter.unsetRange();
-
-      this.miniChart.hide();
-
-      this.chart.removeSelection();
+      this._onZoomOut();
     }
+  },
+
+  _onZoomIn: function() {
+    this._expand();
+
+    this._showMiniRange();
+
+    var data = this.dataModel.getDataWithoutOwnFilterApplied().slice(this.viewModel.get('lo_index'), this.viewModel.get('hi_index'));
+    this.chart.replaceData(data);
   },
 
   _zoom: function() {
     this.viewModel.set({ zoomed: true, zoom_enabled: false });
+  },
+
+  _onZoomOut: function() {
+    this.viewModel.set({ zoom_enabled: false, filter_enabled: false, lo_index: null, hi_index: null });
+    this.chart.replaceData(this.dataModel.getDataWithoutOwnFilterApplied());
+
+    this._contract();
+
+    this.chart.resetIndexes();
+
+    this.filter.unsetRange();
+
+    this.miniChart.hide();
+
+    this.chart.removeSelection();
+  },
+
+  _showMiniRange: function() {
+    var data = this.dataModel.getDataWithoutOwnFilterApplied();
+
+    var loBarIndex = this.viewModel.get('lo_index');
+    var hiBarIndex = this.viewModel.get('hi_index');
+
+    this.miniChart.selectRange(loBarIndex, hiBarIndex);
+    this.miniChart.show();
   },
 
   _clear: function() {

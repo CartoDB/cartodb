@@ -17,7 +17,7 @@ var WindshaftDashboard = function(options) {
   this.instance = new WindshaftDashboardInstance();
 
   // Bindings
-  this.layerGroup.bindDashboardInstance(this.instance);
+  this.layerGroup && this.layerGroup.bindDashboardInstance(this.instance);
 
   this.map.bind('change:center change:zoom', _.debounce(this._boundingBoxChanged, BOUNDING_BOX_FILTER_WAIT), this);
 
@@ -52,7 +52,7 @@ WindshaftDashboard.prototype._createInstance = function(options) {
       this.instance.set(dashboardInstance.toJSON());
 
       // TODO: Set the URL of the attributes service once it's available
-      this.layerGroup.set({
+      this.layerGroup && this.layerGroup.set({
         urls: dashboardInstance.getTiles('mapnik')
       });
 

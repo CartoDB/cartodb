@@ -407,18 +407,6 @@ var Vis = View.extend({
           layers: cartoDBLayers
         });
 
-        layers = _.map(data.layers, function(layerData) {
-          var model;
-          if (layerData.type === 'layergroup' || layerData.type === 'namedmap') {
-            model = cartoDBLayerGroup;
-          } else {
-            model = Layers.create(layerData.type || layerData.kind, self, layerData);
-          }
-          return model;
-        });
-
-        var nonCartoDBLayers = _.filter(layers, function(lyr) { return lyr.get('type') === 'torque'; })
-        interactiveLayers = [].concat(cartoDBLayers, nonCartoDBLayers)
       } else if (layer.type === 'namedmap') {
         layerGroupData = layer;
         layersData = layer.options.named_map.layers;
@@ -430,6 +418,19 @@ var Vis = View.extend({
         });
       }
     });
+
+    layers = _.map(data.layers, function(layerData) {
+      var model;
+      if (layerData.type === 'layergroup' || layerData.type === 'namedmap') {
+        model = cartoDBLayerGroup;
+      } else {
+        model = Layers.create(layerData.type || layerData.kind, self, layerData);
+      }
+      return model;
+    });
+
+    var nonCartoDBLayers = _.filter(layers, function(lyr) { return lyr.get('type') === 'torque'; })
+    interactiveLayers = _.compact([].concat(cartoDBLayers, nonCartoDBLayers))
 
     // TODO: We can probably move this logic somewhere in cdb.geo.ui.Widget
     var widgetClasses = {

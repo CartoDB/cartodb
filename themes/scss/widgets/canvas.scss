@@ -4,16 +4,18 @@
 @import '../variables/sizes';
 @import '../variables/mixins';
 
-
 .Widget-canvas {
-  position: absolute;
+  position: relative;
   top: 0;
-  right: 0;
   bottom: 0;
   width: 352px;
-  height: 100%;
+  min-width: 352px;
+  max-width: 352px;
+  margin: 16px 16px 16px 0;
   overflow-y: auto;
   overflow-x: visible;
+  border-radius: 4px;
+  background: #FFF; // Canvas is out of widget themes
 }
 
 // Widget media query
@@ -23,8 +25,18 @@
     @include flex-wrap(nowrap);
     position: relative;
     width: 100%;
+    min-width: 100%;
+    max-width: 100%;
     height: auto;
+    margin-top: 8px;
+    margin-bottom: 0;
     overflow-x: auto;
     overflow-y: visible;
+    border-radius: 0;
+  }
+  .LayerWidgets-canvas {
+    @include display-flex();
+    @include flex-wrap(nowrap);
+    position: relative;
   }
 }

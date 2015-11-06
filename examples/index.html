@@ -14,43 +14,14 @@
         padding: 0;
         margin: 0;
       }
-      .Map-canvas {
-        position: absolute;
-        left: 0;
-        right: 352px;
-        bottom: 0;
-        height: 100%;
-        background: #F2F6F9;
-        z-index: 1;
-      }
-      #map {
-        position: absolute;
-        left: 10px;
-        right: 10px;
-        bottom: 10px;
-        top: 10px;
-        z-index: 1;
-      }
-      @media only screen and (max-width: 960px) and (min-width: 320px) {
-        #map {
-          left: 5px;
-          right: 5px;
-          bottom: 5px;
-          top: 5px;
-        }
-        .Map-canvas {
-          position: relative;
-          width: 100%;
-          height: 70%;
-        }
-      }
     </style>
   </head>
   <body>
-    <div class="Map-canvas">
-      <div id="map"></div>
+    <div class="Dashboard-canvas js-dashboard">
+      <div class="Map-canvas">
+        <div class="Map" id="map"></div>
+      </div>
     </div>
-    <div class="Widget-canvas js-canvas"></div>
 
     <script>
       window.onload = function() {

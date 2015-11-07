@@ -7,15 +7,22 @@
 .Dashboard-canvas {
   @include display-flex();
   @include justify-content(space-between, justify);
+  box-sizing: border-box; // to avoid height to overflow the 100% due to the extra padding
   position: relative;
   width: 100%;
-  height: 100%;
+  height: 100%; // fill content to the visible viewport, but add scroll for overflowing inline content (e.g. widgets)
+  padding: 16px; // padding is necessary for the background below to be used (otherwise would use the container's bg)
   background: rgba(#F2F6F9, 1); // Canvas is out of widget themes
+}
+.Dashboard-mapWrapper {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include flex-direction(column);
+  @include flex-grow(1);
 }
 .Map-canvas {
   position: relative;
-  flex-grow: 2;
-  margin: 16px;
+  @include flex-grow(1);
 }
 .Map {
   position: absolute;
@@ -25,22 +32,15 @@
   left: 0;
   z-index: 1;
 }
-// Dashboard media query
+.Dashboard-time {
+  margin-top: 8px;
+}
+
 @include media-query() {
   .Dashboard-canvas {
-    display: block;
+    @include flex-direction(column);
   }
-  .Map-canvas {
-    display: block;
-    position: relative;
-    width: 100%;
-    height: 70%;
-    margin: 0;
-  }
-  .Map {
-    top: 8px;
-    right: 8px;
-    bottom: 8px;
-    left: 8px;
+  .Dashboard-time {
+    max-height: 64px;
   }
 }

@@ -5,6 +5,9 @@ var View = require('cdb/core/view');
 var WidgetContent = require('../standard/widget_content_view');
 var WidgetHistogramChart = require('./chart');
 
+var placeholder = require('./placeholder.tpl');
+var template = require('./content.tpl');
+
 /**
  * Default widget content view:
  */
@@ -18,36 +21,6 @@ module.exports = WidgetContent.extend({
     'click .js-clear': '_clear',
     'click .js-zoom': '_zoom'
   },
-
-  _TEMPLATE: ' ' +
-   '<div class="Widget-header">'+
-      '<div class="Widget-title Widget-contentSpaced">'+
-        '<h3 class="Widget-textBig"><%= title %></h3>'+
-      '</div>'+
-     '<dl class="Widget-info Widget-textSmaller Widget-textSmaller--upper">'+
-       '<dt class="Widget-infoItem js-null">0 NULL ROWS</dt>'+
-       '<dt class="Widget-infoItem js-min">0 MIN</dt>'+
-       '<dt class="Widget-infoItem js-avg">0 AVG</dt>'+
-       '<dt class="Widget-infoItem js-max">0 MAX</dt>'+
-     '</dl>'+
-   '</div>'+
-    '<div class="Widget-content js-content">'+
-   '<div class="Widget-chartTooltip js-tooltip"></div>'+
-   '  <div class="Widget-filter Widget-contentSpaced js-filter is-hidden">'+
-   '    <p class="Widget-textSmaller Widget-textSmaller--bold Widget-textSmaller--upper js-val"></p>'+
-   '    <div class="Widget-filterButtons">'+
-   '      <button class="Widget-link Widget-filterButton js-zoom">zoom</button>'+
-   '      <button class="Widget-link Widget-filterButton js-clear">clear</button>'+
-   '    </div>'+
-   '  </div>'+
-   '  <svg class="Widget-chart js-chart"></svg>',
-
-  _PLACEHOLDER: ' ' +
-    '<ul class="Widget-chart Widget-chart--fake">' +
-      '<% for (var i = 0; i < 18; i++) { %>' +
-      '<li class="Widget-chartItem Widget-chartItem--<%- _.sample(["small", "medium", "big"], 1)[0] %> Widget-chartItem--fake"></li>' +
-      '<% } %>' +
-    '</ul>',
 
   initialize: function() {
     this.dataModel = this.options.dataModel;
@@ -90,7 +63,6 @@ module.exports = WidgetContent.extend({
 
     $(window).bind('resize', this._onWindowResize);
 
-    var template = _.template(this._TEMPLATE);
     var data = this.dataModel.getData().off;
     var isDataEmpty = _.isEmpty(data) || _.size(data) === 0;
 
@@ -116,6 +88,10 @@ module.exports = WidgetContent.extend({
     }
 
     return this;
+  },
+
+  _addPlaceholder: function() {
+    this.$('.js-content').append(placeholder());
   },
 
   _onWindowResize: function() {
@@ -181,12 +157,12 @@ module.exports = WidgetContent.extend({
 
   _onValueHover: function(info) {
     var $tooltip = this.$(".js-tooltip");
-    if (info.freq !== undefined) {
+    if (info.freq > 0) {
       $tooltip.css({ top: info.top, left: info.left });
       $tooltip.text(info.freq);
       $tooltip.fadeIn(70);
     } else {
-      $tooltip.stop().fadeOut(50);
+      $tooltip.stop().hide();
     }
   },
 
@@ -306,40 +282,48 @@ module.exports = WidgetContent.extend({
 
   _onChangeZoomed: function() {
     if (this.viewModel.get('zoomed')) {
-
-      this._expand();
-
-      var data = this.dataModel.getDataWithoutOwnFilterApplied();
-
-      var loBarIndex = this.viewModel.get('lo_index');
-      var hiBarIndex = this.viewModel.get('hi_index');
-
-      var min = data[loBarIndex].min;
-      var max = data[hiBarIndex - 1].max;
-
-      this.miniChart.selectRange(loBarIndex, hiBarIndex);
-      this.miniChart.show();
-
-      var data = this.dataModel.getDataWithOwnFilterApplied();
-      this.chart.replaceData(data);
+      this._onZoomIn();
     } else {
-      this.viewModel.set({ zoom_enabled: false, filter_enabled: false, lo_index: null, hi_index: null });
-      this.chart.replaceData(this.dataModel.getDataWithoutOwnFilterApplied());
-
-      this._contract();
-
-      this.chart.resetIndexes();
-
-      this.filter.unsetRange();
-
-      this.miniChart.hide();
-
-      this.chart.removeSelection();
+      this._onZoomOut();
     }
+  },
+
+  _onZoomIn: function() {
+    this._expand();
+
+    this._showMiniRange();
+
+    var data = this.dataModel.getDataWithoutOwnFilterApplied().slice(this.viewModel.get('lo_index'), this.viewModel.get('hi_index'));
+    this.chart.replaceData(data);
   },
 
   _zoom: function() {
     this.viewModel.set({ zoomed: true, zoom_enabled: false });
+  },
+
+  _onZoomOut: function() {
+    this.viewModel.set({ zoom_enabled: false, filter_enabled: false, lo_index: null, hi_index: null });
+    this.chart.replaceData(this.dataModel.getDataWithoutOwnFilterApplied());
+
+    this._contract();
+
+    this.chart.resetIndexes();
+
+    this.filter.unsetRange();
+
+    this.miniChart.hide();
+
+    this.chart.removeSelection();
+  },
+
+  _showMiniRange: function() {
+    var data = this.dataModel.getDataWithoutOwnFilterApplied();
+
+    var loBarIndex = this.viewModel.get('lo_index');
+    var hiBarIndex = this.viewModel.get('hi_index');
+
+    this.miniChart.selectRange(loBarIndex, hiBarIndex);
+    this.miniChart.show();
   },
 
   _clear: function() {

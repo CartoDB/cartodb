@@ -201,17 +201,19 @@ module.exports = Model.extend({
     var widgetId = options.widgetId;
     var protocol = options.protocol;
 
-    var layers = this.get('metadata').layers;
-    var url;
-    _.each(layers, function(layer) {
-      var widgets = layer.widgets;
-      for (var id in widgets) {
-        if (widgetId === id) {
-          url = widgets[id].url[protocol];
-          return;
+    if(this.get('metadata')) {
+      var layers = this.get('metadata').layers;
+      var url;
+      _.each(layers, function(layer) {
+        var widgets = layer.widgets;
+        for (var id in widgets) {
+          if (widgetId === id) {
+            url = widgets[id].url[protocol];
+            return;
+          }
         }
-      }
-    });
+      });
+    }
 
     return url;
   }

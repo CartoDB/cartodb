@@ -1,7 +1,6 @@
 var _ = require('underscore');
 var MapLayer = require('./map-layer');
 var Backbone = require('backbone');
-var _ = require('underscore');
 
 var TorqueLayer = MapLayer.extend({
   defaults: {

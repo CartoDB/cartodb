@@ -278,7 +278,7 @@ module.exports = View.extend({
     var data = this.model.get('data');
     this.xScale = d3.scale.linear().domain([0, 100]).range([0, this.chartWidth]);
     this.yScale = d3.scale.linear().domain([0, d3.max(data, function(d) { return _.isEmpty(d) ? 0 : d.freq; } )]).range([this.chartHeight, 0]);
-    this.zScale = d3.scale.ordinal().domain(d3.range(data.length)).rangeRoundBands([0, this.chartWidth]);
+    this.xAxisScale = d3.scale.ordinal().domain(d3.range(data.length)).rangeRoundBands([0, this.chartWidth]);
   },
 
   _calcBarWidth: function() {
@@ -552,7 +552,7 @@ module.exports = View.extend({
     var format = d3.format('0,000');
 
     var xAxis = d3.svg.axis()
-    .scale(this.zScale)
+    .scale(this.xAxisScale)
     .orient('bottom')
     .innerTickSize(0)
     .tickFormat(function(d, i) {

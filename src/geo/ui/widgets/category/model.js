@@ -38,7 +38,6 @@ module.exports = WidgetModel.extend({
   parse: function(data) {
     var self = this;
     var categories = data.ownFilterOff.categories;
-    var columnName = this.get('column');
     // Add rejected categories + result categories
     var rejectedCats = this.filter.getRejected();
 
@@ -52,25 +51,25 @@ module.exports = WidgetModel.extend({
     var min = 0;
     var max = 0;
     var totalCount = categories.reduce(function(memo, datum) {
-      min = Math.min(min, datum.count);
-      max = Math.max(max, datum.count);
-      return memo + datum.count;
+      min = Math.min(min, datum.value);
+      max = Math.max(max, datum.value);
+      return memo + datum.value;
     }, 0);
     // TODO: change avg after getting the total of categories
     var avg = !totalCount ? 0 : (totalCount / categories.length).toFixed(2);
 
     var newData = _.map(categories, function(datum) {
-      var value = datum[columnName];
+      var value = datum.category;
       var isRejected = rejectedCats.where({ name: value }).length > 0;
       return {
         'selected': !isRejected,
         'name': value,
-        'count': datum.count
+        'value': datum.value
       };
     }, this);
 
     var restData = this._dataOrigin.map(function(mdl) {
-      var value = mdl.get(columnName);
+      var value = mdl.get('category');
       var isRejected = rejectedCats.where({ name: value }).length > 0;
       var alreadyAdded = _.find(newData, function(m){ return m.name === value });
 
@@ -78,7 +77,7 @@ module.exports = WidgetModel.extend({
         return {
           'selected': !isRejected,
           'name': value,
-          'count': 0
+          'value': 0
         };
       }
     }, this);
@@ -86,10 +85,10 @@ module.exports = WidgetModel.extend({
     newData = newData.concat(_.compact(restData));
 
     newData.sort(function(a,b) {
-      if (a.count === b.count) {
+      if (a.value === b.value) {
         return (a.selected < b.selected) ? 1 : -1;
       } else {
-        return (a.count < b.count) ? 1 : -1;
+        return (a.value < b.value) ? 1 : -1;
       }
     });
 

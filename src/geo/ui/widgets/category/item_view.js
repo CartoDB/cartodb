@@ -21,7 +21,7 @@ module.exports = View.extend({
   },
 
   render: function() {
-    var value = this.model.get('count');
+    var value = this.model.get('value');
     var totalCount = this.dataModel.get('totalCount');
 
     this.$el.html(

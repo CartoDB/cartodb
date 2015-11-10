@@ -18,6 +18,10 @@ module.exports = Backbone.Collection.extend({
           }
         }
       });
+      // fill the holes
+      for (var i = 0; i < json.layers.length; ++i) {
+        json.layers[i] = json.layers[i] || {};
+      }
     }
 
     return json;

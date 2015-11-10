@@ -17,7 +17,7 @@ var WindshaftDashboard = function(options) {
   this.instance = new WindshaftDashboardInstance();
 
   // Bindings
-  this.layerGroup.bindDashboardInstance(this.instance);
+  this.layerGroup && this.layerGroup.bindDashboardInstance(this.instance);
 
   this.map.bind('change:center change:zoom', _.debounce(this._boundingBoxChanged, BOUNDING_BOX_FILTER_WAIT), this);
 
@@ -52,13 +52,22 @@ WindshaftDashboard.prototype._createInstance = function(options) {
       this.instance.set(dashboardInstance.toJSON());
 
       // TODO: Set the URL of the attributes service once it's available
-      this.layerGroup.set({
-        urls: dashboardInstance.getTiles()
+      this.layerGroup && this.layerGroup.set({
+        urls: dashboardInstance.getTiles('mapnik')
       });
 
       this._updateWidgetURLs({
         layerId: options.layerId
       });
+
+      // update other kind of layers too
+      this.layers.each(function(layer) {
+        if (layer.get('type') === 'torque') {
+          console.log(dashboardInstance.getTiles('torque'));
+          layer.set('urls', dashboardInstance.getTiles('torque'));
+        }
+      });
+
     }.bind(this),
     error: function(error) {
       console.log('Error creating dashboard instance: ' + error);
@@ -69,7 +78,7 @@ WindshaftDashboard.prototype._createInstance = function(options) {
 };
 
 WindshaftDashboard.prototype._boundingBoxChanged = function() {
-  if (this.instance) {
+  if (this.instance.isLoaded()) {
     this._updateWidgetURLs();
   }
 };

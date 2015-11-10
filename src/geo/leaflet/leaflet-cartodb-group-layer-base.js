@@ -119,6 +119,7 @@ var LeafletCartoDBGroupLayerBase = L.TileLayer.extend({
     if (this.options.cartodb_logo != false)
       CartoDBLogo.addWadus({ left:8, bottom:8 }, 0, map._container);
 
+    // TODO: We can probably move this to an initialize method
     this.model.bind('change:urls', function() {
       self.__update(function() {
         // if while the layer was processed in the server is removed

@@ -410,7 +410,7 @@ var Vis = View.extend({
         cartoDBLayers = _.map(layersData, function(layerData) {
           return Layers.create("cartodb", self, layerData);
         });
-        cartoDBLayerGroup = new cdb.geo.CartoDBGroupLayer({}, {
+        cartoDBLayerGroup = new cdb.geo.CartoDBGroupLayer({ namedMap: true }, {
           layers: cartoDBLayers
         });
       }

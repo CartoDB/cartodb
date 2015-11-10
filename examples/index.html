@@ -191,8 +191,14 @@
                         "id": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
                         "type": "CartoDB",
                         "infowindow": {
-                          "fields": [],
-                          "template_name": "table/views/infowindow_light",
+                          "fields": [
+                            {
+                              "name": "name",
+                              "title": true,
+                              "position": 0
+                            }
+                          ],
+                          "template_name": "infowindow_light",
                           "template": "<div class=\"cartodb-popup v2\">\n  <a href=\"#close\" class=\"cartodb-popup-close-button close\">x</a>\n  <div class=\"cartodb-popup-content-wrapper\">\n    <div class=\"cartodb-popup-content\">\n      {{#content.fields}}\n        {{#title}}<h4>{{title}}</h4>{{/title}}\n        {{#value}}\n          <p {{#type}}class=\"{{ type }}\"{{/type}}>{{{ value }}}</p>\n        {{/value}}\n        {{^value}}\n          <p class=\"empty\">null</p>\n        {{/value}}\n      {{/content.fields}}\n    </div>\n  </div>\n  <div class=\"cartodb-popup-tip-container\"></div>\n</div>\n",
                           "alternative_names": {},
                           "width": 226,
@@ -554,6 +560,20 @@
                         "layer_name": "arboles",
                         "interactivity": "cartodb_id",
                         "visible": true,
+                        "infowindow": {
+                          "fields": [
+                            {
+                              "name": "name",
+                              "title": true,
+                              "position": 0
+                            }
+                          ],
+                          "template_name": "infowindow_light",
+                          "template": "<div class=\"cartodb-popup v2\">\n  <a href=\"#close\" class=\"cartodb-popup-close-button close\">x</a>\n  <div class=\"cartodb-popup-content-wrapper\">\n    <div class=\"cartodb-popup-content\">\n      {{#content.fields}}\n        {{#title}}<h4>{{title}}</h4>{{/title}}\n        {{#value}}\n          <p {{#type}}class=\"{{ type }}\"{{/type}}>{{{ value }}}</p>\n        {{/value}}\n        {{^value}}\n          <p class=\"empty\">null</p>\n        {{/value}}\n      {{/content.fields}}\n    </div>\n  </div>\n  <div class=\"cartodb-popup-tip-container\"></div>\n</div>\n",
+                          "alternative_names": {},
+                          "width": 226,
+                          "maxHeight": 180
+                        },
                         "widgets": {
                           "list_widget": {
                             "type": "list",

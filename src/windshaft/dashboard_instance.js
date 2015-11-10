@@ -164,7 +164,7 @@ module.exports = Model.extend({
   fetchAttributes: function(layer, featureID, callback) {
     var url = [
       this.getBaseURL(),
-      this.getLayerIndexByType(layer, "mapnik"),
+      layer,
       'attributes',
       featureID
     ].join('/');

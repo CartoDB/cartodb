@@ -19,7 +19,7 @@ var CartoDBGroupLayer = MapLayer.extend({
 
   getVisibleLayers: function() {
     return this.layers.filter(function(layer) {
-      return layer.get('visible')
+      return layer.get('visible');
     });
   },
 
@@ -28,27 +28,43 @@ var CartoDBGroupLayer = MapLayer.extend({
       throw 'URLS not fetched yet';
     }
 
-    // TODO: Is this important?
-    // var subdomains = ['0', '1', '2', '3'];
-
-    // function replaceSubdomain(urls) {
-    //   var urls = urls || [];
-    //   var formattedURLs = [];
-    //   for (var i = 0; i < urls.length; ++i) {
-    //     formattedURLs.push(urls[i].replace('{s}', subdomains[i % subdomains.length]));
-    //   }
-    //   return formattedURLs;
-    // }
-
+    // Layergroup
     var urls = this.get('urls');
 
+
+    var index = this._getIndexOfVisibleLayer(layerIndex);
+
+    // TODO: layerIndex should take into account the hidden layers.
+    // For example, for a layergroup, if the layerIndex is 1 but layer 0 is hidden, this method should
+    // use urls.grids[0]
     return {
       tilejson: '2.0.0',
       scheme: 'xyz',
-      grids: urls.grids[layerIndex],
+      grids: urls.grids[index],
       tiles: urls.tiles,
       formatter: function(options, data) { return data; }
     };
+  },
+
+  _getIndexOfVisibleLayer: function(layerIndex) {
+    if (this.get('namedMap') === true) {
+      return layerIndex;
+    } else {
+      var layers = {};
+      var i = 0;
+      this.layers.each(function(layer, index) {
+        if(layer.isVisible()) {
+          layers[index] = i;
+          i++;
+        }
+      });
+      var index = layers[layerIndex];
+      if (index === undefined) {
+        index = -1;
+      }
+
+      return index;
+    }
   },
 
   bindDashboardInstance: function(dashboardInstance) {
@@ -56,7 +72,8 @@ var CartoDBGroupLayer = MapLayer.extend({
   },
 
   fetchAttributes: function(layer, featureID, callback) {
-    this.dashboardInstance.fetchAttributes(layer, featureID, callback);
+    var index = this._getIndexOfVisibleLayer(layer);
+    this.dashboardInstance.fetchAttributes(index, featureID, callback);
   }
 });
 

@@ -3,6 +3,10 @@ var WidgetModel = require('../widget_model');
 
 module.exports = WidgetModel.extend({
 
+  url: function() {
+    return this.get('url') + '?bbox=' + this.get('boundingBox') + '&start=' + this.get('start') + '&end=' + this.get('end');
+  },
+
   initialize: function(attrs, opts) {
     this._offData = new Backbone.Collection(this.get('data'));
     this._onData = new Backbone.Collection(this.get('data'));

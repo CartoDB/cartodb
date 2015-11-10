@@ -27,10 +27,8 @@ module.exports = View.extend({
 
   replaceData: function(data) {
     if (!this.isLocked()) {
-      //console.log('updating', data)
       this.model.set({ data: data });
     } else {
-      //console.log('not updating');
       this.unlock();
     }
   },
@@ -355,7 +353,6 @@ module.exports = View.extend({
   },
 
   selectRange: function(loBarIndex, hiBarIndex) {
-
     if (!loBarIndex && !hiBarIndex) {
       return;
     }
@@ -549,29 +546,19 @@ module.exports = View.extend({
   _generateXAxis: function() {
     var data = this.model.get('data');
 
-    var format = d3.format('0,000');
+    var format = d3.format('0,00');
 
     var xAxis = d3.svg.axis()
     .scale(this.xAxisScale)
     .orient('bottom')
     .innerTickSize(0)
     .tickFormat(function(d, i) {
-      function calculateBins(n) {
-        if (n % 2 === 0) return 4;
-        else return 4;
+      if (i == data.length - 1) {
+        return format(data[i].end.toFixed(2));
+      } else if (i === 0 || (i + 1) % 2 === 0) {
+        return format(data[i].start.toFixed(2));
       }
-
-      var p = Math.round(data.length / calculateBins(data.length));
-      var v = i % p;
-
-      if (v === 0 || i === 0 || i === (data.length - 1)) {
-        var sum = _.reduce(data.slice(0, i + 1), function(memo, d) {
-          return _.isEmpty(d) ? memo : d.start + memo;
-        }, 0);
-        return format(sum.toFixed(2));
-      } else {
-        return '';
-      }
+      return '';
     });
 
     this.chart.append('g')
@@ -628,5 +615,4 @@ module.exports = View.extend({
       return _.isEmpty(d) ? self.chartHeight : self.yScale(d.freq);
     });
   }
-
 });

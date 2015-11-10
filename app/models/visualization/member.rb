@@ -375,6 +375,10 @@ module CartoDB
         privacy == PRIVACY_PRIVATE and not organization?
       end
 
+      def is_privacy_private?
+        privacy == PRIVACY_PRIVATE
+      end
+
       def organization?
         privacy == PRIVACY_PRIVATE and permission.acl.size > 0
       end
@@ -443,6 +447,8 @@ module CartoDB
       def table?
         type == TYPE_CANONICAL
       end
+      # Used at Carto::Api::VisualizationPresenter
+      alias :canonical? :table?
 
       def type_slide?
         type == TYPE_SLIDE

@@ -95,13 +95,23 @@ var LeafletTorqueLayer = L.TorqueLayer.extend({
   _modelUpdated: function(model) {
     var changed = this.model.changedAttributes();
     if(changed === false) return;
+    /*
     changed.tile_style && this.setCartoCSS(this.model.get('tile_style'));
     if ('query' in changed || 'query_wrapper' in changed) {
       this.setSQL(this._getQuery(this.model));
     }
+    */
 
     if ('visible' in changed)
       this.model.get('visible') ? this.show(): this.hide();
+
+    if ('urls' in changed) {
+      // REAL HACK
+      this.provider.templateUrl = this.model.get('urls').tiles[0];
+      this.provider._setReady(true);
+      this._reloadTiles();
+
+    }
 
   }
 });

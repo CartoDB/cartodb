@@ -89,9 +89,9 @@ module.exports = Model.extend({
     var layerIndexes = [];
     for (var i = 0; i < layers.length; i++) {
       var layer = layers[i];
-      var isValidType = layer.type !== 'torque';
+      var isValidType = false;
       if (types && types.length > 0) {
-        isValidType = isValidType && types.indexOf(layer.type) != -1;
+        isValidType = types.indexOf(layer.type) != -1;
       }
       if (isValidType) {
         layerIndexes.push(i);
@@ -100,7 +100,7 @@ module.exports = Model.extend({
     return layerIndexes;
   },
 
-  getTiles: function() {
+  getTiles: function(layerType) {
     var grids = [];
     var tiles = [];
     var params = [];
@@ -112,7 +112,15 @@ module.exports = Model.extend({
       subdomains = [''];
     }
 
-    var layerIndexes = this.getLayerIndexesByType("mapnik");
+    layerType = layerType || 'mapnik';
+
+    var extFroLayerType = {
+      'mapnik': 'png',
+      'torque': 'json.torque'
+    };
+    var extension = extFroLayerType[layerType];
+
+    var layerIndexes = this.getLayerIndexesByType(layerType);
     if (layerIndexes.length) {
       var tileTemplate = '/' +  layerIndexes.join(',') +'/{z}/{x}/{y}';
       var gridTemplate = '/{z}/{x}/{y}';
@@ -120,12 +128,15 @@ module.exports = Model.extend({
       for(var i = 0; i < subdomains.length; ++i) {
         var s = subdomains[i];
         var cartodb_url = this.getHost(s) + MapBase.BASE_URL + '/' + this.getMapId();
-        tiles.push(cartodb_url + tileTemplate + ".png" + (pngParams ? "?" + pngParams: '') );
+        tiles.push(cartodb_url + tileTemplate + "." + extension + (pngParams ? "?" + pngParams: '') );
 
-        for(var layer = 0; layer < this.get('metadata').layers.length; ++layer) {
-          var index = this.getLayerIndexByType(layer, "mapnik");
-          grids[layer] = grids[layer] || [];
-          grids[layer].push(cartodb_url + "/" + index +  gridTemplate + ".grid.json" + (gridParams ? "?" + gridParams: ''));
+        // for mapnik layers add grid json too
+        if (layerType === 'mapnik') {
+          for(var layer = 0; layer < this.get('metadata').layers.length; ++layer) {
+            var index = this.getLayerIndexByType(layer, "mapnik");
+            grids[layer] = grids[layer] || [];
+            grids[layer].push(cartodb_url + "/" + index +  gridTemplate + ".grid.json" + (gridParams ? "?" + gridParams: ''));
+          }
         }
       }
     } else {
@@ -189,9 +200,9 @@ module.exports = Model.extend({
   getWidgetURL: function(options) {
     var widgetId = options.widgetId;
     var protocol = options.protocol;
-
-    var layers = this.get('metadata').layers;
     var url;
+    var layers = this.get('metadata') && this.get('metadata').layers;
+
     _.each(layers, function(layer) {
       var widgets = layer.widgets;
       for (var id in widgets) {

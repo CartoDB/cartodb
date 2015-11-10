@@ -55,22 +55,20 @@ describe('geo/ui/widgets/histogram/chart', function() {
     expect(this.view.$el.find('.Handle').size()).toBe(2);
   });
 
-  xit('should refresh the data', function() {
+  it('should refresh the data', function() {
     spyOn(this.view, 'refresh').and.callThrough();
     this.view.render().show();
-    this.view.reset(genHistogramData(20));
+    this.view.model.set({ data: genHistogramData(20) });
     expect(this.view.refresh).toHaveBeenCalled();
   });
 
-  xit('shouldn\'t refresh the data', function() {
+  it('shouldn\'t refresh the data', function() {
     this.view.model.set('locked', true);
     spyOn(this.view, 'refresh').and.callThrough();
     this.view.render().show();
-    this.view.reset(genHistogramData(20));
+    this.view.model.set({ data: genHistogramData(20) });
     expect(this.view.refresh).not.toHaveBeenCalled();
   });
-
-
 });
 
 function genHistogramData(n) {

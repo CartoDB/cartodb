@@ -18,7 +18,7 @@ module.exports = Model.extend({
   },
 
   initialize: function(attrs, opts) {
-    if (opts.filter) {
+    if (opts && opts.filter) {
       this.filter = opts.filter;
     }
 

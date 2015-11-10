@@ -56,7 +56,7 @@ module.exports = WidgetContent.extend({
   },
 
   _onChangeData: function() {
-    var data = this._getData();
+    var data = this.dataModel.getDataWithOwnFilterApplied();
     this.chart.replaceData(data);
   },
 
@@ -124,6 +124,8 @@ module.exports = WidgetContent.extend({
   },
 
   _renderMiniChart: function() {
+    this.originalData = this.dataModel.getDataWithoutOwnFilterApplied();
+
     this.miniChart = new WidgetHistogramChart(({
       className: 'mini',
       el: this.$('.js-chart'),
@@ -171,22 +173,32 @@ module.exports = WidgetContent.extend({
   _onMiniRangeUpdated: function(loBarIndex, hiBarIndex) {
     this.viewModel.set({ lo_index: loBarIndex, hi_index: hiBarIndex });
 
-    var data = this.dataModel.getDataWithoutOwnFilterApplied();
+    var data = this.originalData;
 
-    this._setRange(data, loBarIndex, hiBarIndex - 1);
+    var start = data[loBarIndex].start;
+    var end = data[hiBarIndex - 1].end;
+
+    this.dataModel.set({ start: start, end: end });
+
+    this._setRange(data, start, end);
 
     this._updateStats();
   },
 
-  _setRange: function(data, loBarIndex, hiBarIndex) {
-    var min = data[loBarIndex].start;
-    var max = data[hiBarIndex].end;
-
-    this.filter.setRange({ min: min, max: max });
+  _setRange: function(data, start, end) {
+    this.filter.setRange({ min: start, max: end });
   },
 
   _onBrushEnd: function(loBarIndex, hiBarIndex) {
-    var data = this._getData();
+    var data = this.dataModel.getDataWithoutOwnFilterApplied();
+
+    var loBarIndex = this.viewModel.get('lo_index');
+    var hiBarIndex = this.viewModel.get('hi_index');
+
+    var start = data[loBarIndex].start;
+    var end = data[hiBarIndex - 1].end;
+
+    this.dataModel.set({ start: start, end: end });
 
     var properties = { filter_enabled: true, lo_index: loBarIndex, hi_index: hiBarIndex };
 
@@ -198,7 +210,7 @@ module.exports = WidgetContent.extend({
 
     this.chart.lock();
 
-    this._setRange(data, 0, data.length - 1);
+    this._setRange(data, start, end);
   },
 
   _onRangeUpdated: function(loBarIndex, hiBarIndex) {
@@ -299,7 +311,7 @@ module.exports = WidgetContent.extend({
 
     this._showMiniRange();
 
-    var data = this.dataModel.getDataWithoutOwnFilterApplied().slice(this.viewModel.get('lo_index'), this.viewModel.get('hi_index'));
+    var data = this.dataModel.getDataWithOwnFilterApplied();
     this.chart.replaceData(data);
   },
 

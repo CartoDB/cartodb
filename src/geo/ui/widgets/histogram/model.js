@@ -1,10 +1,18 @@
 var Backbone = require('backbone');
 var WidgetModel = require('../widget_model');
+var _ = require('underscore');
 
 module.exports = WidgetModel.extend({
 
   url: function() {
-    return this.get('url') + '?bbox=' + this.get('boundingBox') + '&start=' + this.get('start') + '&end=' + this.get('end');
+    var url = this.get('url') + '?bbox=' + this.get('boundingBox');
+    if (_.isNumber(this.get('start'))) {
+      url += '&start=' + this.get('start');
+    }
+    if (_.isNumber(this.get('end'))) {
+      url += '&end=' + this.get('end');
+    }
+    return url;
   },
 
   initialize: function(attrs, opts) {

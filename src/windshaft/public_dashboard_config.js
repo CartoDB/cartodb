@@ -7,7 +7,7 @@ WindshaftPublicDashboardConfig.generate = function(options) {
   _.each(layers, function(layer) {
     if (layer.isVisible()) {
       var layerConfig = {
-        type: 'cartodb',
+        type: layer.get('type').toLowerCase(),
         options: {
           sql: layer.get('sql'),
           cartocss: layer.get('cartocss'),

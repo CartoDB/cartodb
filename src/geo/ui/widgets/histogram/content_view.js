@@ -50,8 +50,9 @@ module.exports = WidgetContent.extend({
 
   _storeBounds: function() {
     var data = this.dataModel.getDataWithoutOwnFilterApplied();
-    this.start = data[0].start;
-    this.end = data[data.length - 1].end;
+    var start = data[0].start;
+    var end = data[data.length - 1].end;
+    this.dataModel.set({ start: start, end: end });
   },
 
   _onChangeData: function() {
@@ -178,10 +179,10 @@ module.exports = WidgetContent.extend({
   },
 
   _setRange: function(data, loBarIndex, hiBarIndex) {
-    var min = data[loBarIndex].min || data[loBarIndex].end;
-    var max = data[hiBarIndex].max || data[hiBarIndex].end;
+    var min = data[loBarIndex].start;
+    var max = data[hiBarIndex].end;
 
-    this.filter.setRange({ min: min, max: max, start: this.start, end: this.end });
+    this.filter.setRange({ min: min, max: max });
   },
 
   _onBrushEnd: function(loBarIndex, hiBarIndex) {

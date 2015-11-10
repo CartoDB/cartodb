@@ -78,7 +78,7 @@ WindshaftDashboard.prototype._createInstance = function(options) {
 };
 
 WindshaftDashboard.prototype._boundingBoxChanged = function() {
-  if (this.instance) {
+  if (this.instance.isLoaded()) {
     this._updateWidgetURLs();
   }
 };

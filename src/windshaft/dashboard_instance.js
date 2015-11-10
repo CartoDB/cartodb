@@ -200,20 +200,18 @@ module.exports = Model.extend({
   getWidgetURL: function(options) {
     var widgetId = options.widgetId;
     var protocol = options.protocol;
+    var url;
+    var layers = this.get('metadata') && this.get('metadata').layers;
 
-    if(this.get('metadata')) {
-      var layers = this.get('metadata').layers;
-      var url;
-      _.each(layers, function(layer) {
-        var widgets = layer.widgets;
-        for (var id in widgets) {
-          if (widgetId === id) {
-            url = widgets[id].url[protocol];
-            return;
-          }
+    _.each(layers, function(layer) {
+      var widgets = layer.widgets;
+      for (var id in widgets) {
+        if (widgetId === id) {
+          url = widgets[id].url[protocol];
+          return;
         }
-      });
-    }
+      }
+    });
 
     return url;
   }

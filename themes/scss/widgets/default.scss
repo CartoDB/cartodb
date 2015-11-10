@@ -34,6 +34,9 @@
 .Widget-content--noSidesMargin {
   margin: $sMargin-element 0 0;
 }
+.Widget--time {
+  width: 100%;
+}
 
 // Widget media query
 @include media-query() {
@@ -43,5 +46,9 @@
     min-height: 280px;
     border-right: 2px solid transparent;
     border-bottom: 0;
+  }
+  .Widget--time {
+    width: 100%;
+    min-height: auto;
   }
 }

@@ -55,6 +55,23 @@ describe('geo/ui/widgets/histogram/chart', function() {
     expect(this.view.$el.find('.Handle').size()).toBe(2);
   });
 
+  it('should calculate the scales', function() {
+    this.view.render().show();
+
+    var chartWidth = this.width - this.margin.left - this.margin.right;
+    var chartHeight = this.height - this.margin.top - this.margin.bottom;
+    var max = _.max(this.view.model.get('data'), function(d) { return d.freq; });
+
+    expect(this.view.xScale(0)).toBe(0);
+    expect(this.view.xScale(100)).toBe(chartWidth);
+
+    expect(this.view.yScale(0)).toBe(chartHeight);
+    expect(this.view.yScale(max.freq)).toBe(0);
+
+    expect(this.view.xAxisScale(0)).toBe(6);
+    expect(this.view.xAxisScale(this.view.model.get('data').length - 1)).toBe(272);
+  });
+
   it('should refresh the data', function() {
     spyOn(this.view, 'refresh').and.callThrough();
     this.view.render().show();
@@ -63,7 +80,7 @@ describe('geo/ui/widgets/histogram/chart', function() {
   });
 
   it('shouldn\'t refresh the data', function() {
-    this.view.model.set('locked', true);
+    this.view.model.set({ locked: true });
     spyOn(this.view, 'refresh').and.callThrough();
     this.view.render().show();
     this.view.model.set({ data: genHistogramData(20) });

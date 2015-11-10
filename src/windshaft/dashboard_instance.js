@@ -1,14 +1,11 @@
-var $ = require('jquery');
 var _ = require('underscore');
 var Model = require('cdb/core/model');
-var util = require('cdb/core/util');
 var MapBase = require('cdb/geo/layer-definition/map-base');
 var WindshaftConfig = require('./config');
 
 module.exports = Model.extend({
 
   initialize: function() {
-    this.ajax = $.ajax;
 
     // TODO: What params are really used?
     this.pngParams = ['map_key', 'api_key', 'cache_policy', 'updated_at'];
@@ -170,31 +167,6 @@ module.exports = Model.extend({
       }
     }
     return url_params.join('&');
-  },
-
-  fetchAttributes: function(layer, featureID, callback) {
-    var url = [
-      this.getBaseURL(),
-      layer,
-      'attributes',
-      featureID
-    ].join('/');
-
-    $.ajax({
-      dataType: 'jsonp',
-      url: url,
-      jsonpCallback: '_cdbi_layer_attributes_' + util.uniqueCallbackName(this.toJSON()),
-      cache: true,
-      success: function(data) {
-        // loadingTime.end();
-        callback(data);
-      },
-      error: function(data) {
-        // loadingTime.end();
-        // cartodb.core.Profiler.metric('cartodb-js.named_map.attributes.error').inc();
-        callback(null);
-      }
-    });
   },
 
   getWidgetURL: function(options) {

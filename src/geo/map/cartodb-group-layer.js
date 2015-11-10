@@ -1,6 +1,8 @@
+var $ = require('jquery');
 var Backbone = require('backbone');
 var MapLayer = require('./map-layer');
 var Layers = require('./layers');
+var util = require('cdb/core/util');
 
 var CartoDBGroupLayer = MapLayer.extend({
 
@@ -46,6 +48,9 @@ var CartoDBGroupLayer = MapLayer.extend({
     };
   },
 
+  // Returns the position of a visible layer in relation to all layers when the map is 
+  // an "Anonymous Map". For example, if there are two CartoDB layers and layer #0 is
+  // hidden, this method would return -1 for #0 and 0 for layer #1.
   _getIndexOfVisibleLayer: function(layerIndex) {
     if (this.get('namedMap') === true) {
       return layerIndex;
@@ -67,13 +72,30 @@ var CartoDBGroupLayer = MapLayer.extend({
     }
   },
 
-  bindDashboardInstance: function(dashboardInstance) {
-    this.dashboardInstance = dashboardInstance;
-  },
-
   fetchAttributes: function(layer, featureID, callback) {
     var index = this._getIndexOfVisibleLayer(layer);
-    this.dashboardInstance.fetchAttributes(index, featureID, callback);
+    var url = [
+      this.get('baseURL'),
+      index,
+      'attributes',
+      featureID
+    ].join('/');
+
+    $.ajax({
+      dataType: 'jsonp',
+      url: url,
+      jsonpCallback: '_cdbi_layer_attributes_' + util.uniqueCallbackName(this.toJSON()),
+      cache: true,
+      success: function(data) {
+        // loadingTime.end();
+        callback(data);
+      },
+      error: function(data) {
+        // loadingTime.end();
+        // cartodb.core.Profiler.metric('cartodb-js.named_map.attributes.error').inc();
+        callback(null);
+      }
+    });
   }
 });
 

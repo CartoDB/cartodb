@@ -24,14 +24,6 @@
         <div class="Map-canvas">
           <div class="Map" id="map"></div>
         </div>
-        <div class="Dashboard-time">
-          <div class="Widget Widget--light Widget--time">
-            <div class="Widget-loader"></div>
-            <div class="Widget-error">
-            </div>
-            <div class="Widget-body"> ▶︎ HH:ss </div>
-          </div>
-        </div>
       </div>
     </div>
 
@@ -222,13 +214,13 @@
                         "visible": true,
                         "user_name": "pablo",
                         "maps_api_template": "https://{user}.cartodb-staging.com:443",
-                        
-                        
+
+
                         "options": {
                           "sql": "select * from arboles",
                           "layer_name": "Árboles",
                           "cartocss": "Map { -torque-frame-count:1; -torque-animation-duration:10; -torque-time-attribute:\"cartodb_id\"; -torque-aggregation-function:\"count(cartodb_id)\"; -torque-resolution:1; -torque-data-aggregation:linear; } #out_3{ marker-width: 5; marker-fill: red; }",
-                          
+
                           "cartocss_version": "2.1.1",
                           "interactivity": "cartodb_id",
                           "table_name": "arboles",

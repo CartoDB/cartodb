@@ -12,9 +12,11 @@ module.exports = WidgetModel.extend({
     this._dataOrigin = new Backbone.Collection(this.get('data'));
 
     WidgetModel.prototype.initialize.call(this, attrs, opts);
+    this.filter.setDataOrigin(this._dataOrigin);
 
     // Retrigger an event when the changes
     this.filter.bind('change', this._onFilterChanged, this);
+
   },
 
   getData: function() {
@@ -29,15 +31,13 @@ module.exports = WidgetModel.extend({
     return {
       type: "aggregation",
       options: {
-          column: this.get('column'),
-          aggregation: this.get('aggregation')
+        column: this.get('column'),
+        aggregation: this.get('aggregation')
       }
     };
   },
 
-  parse: function(data) {
-    var self = this;
-    var categories = data.ownFilterOff.categories;
+  _parseData: function(categories) {
     // Add rejected categories + result categories
     var rejectedCats = this.filter.getRejected();
 
@@ -60,7 +60,7 @@ module.exports = WidgetModel.extend({
 
     var newData = _.map(categories, function(datum) {
       var value = datum.category;
-      var isRejected = rejectedCats.where({ name: value }).length > 0;
+      var isRejected = this.filter.isRejected(value);
       return {
         'selected': !isRejected,
         'name': value,
@@ -70,7 +70,7 @@ module.exports = WidgetModel.extend({
 
     var restData = this._dataOrigin.map(function(mdl) {
       var value = mdl.get('category');
-      var isRejected = rejectedCats.where({ name: value }).length > 0;
+      var isRejected = this.filter.isRejected(value);
       var alreadyAdded = _.find(newData, function(m){ return m.name === value });
 
       if (!alreadyAdded) {
@@ -92,8 +92,6 @@ module.exports = WidgetModel.extend({
       }
     });
 
-    this._data.reset(newData);
-
     return {
       data: newData,
       min: min,
@@ -101,6 +99,19 @@ module.exports = WidgetModel.extend({
       avg: avg,
       totalCount: totalCount
     };
+  },
+
+  setCategories: function(d) {
+    var attrs = this._parseData(d);
+    this.model.set(attrs);
+    this._data.reset(attrs.data);
+  },
+
+  parse: function(d) {
+    var categories = d.ownFilterOff.categories;
+    var attrs = this._parseData(categories);
+    this._data.reset(attrs.data);
+    return attrs;
   },
 
   _onFilterChanged: function(filter) {

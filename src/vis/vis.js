@@ -417,10 +417,10 @@ var Vis = View.extend({
         });
         layers.push(cartoDBLayerGroup);
       } else {
-        var torqueLayer = Layers.create(layerData.type, self, layerData);
-        layers.push(torqueLayer);
+        var layer = Layers.create(layerData.type, self, layerData);
+        layers.push(layer);
         if (layerData.type === 'torque') {
-          interactiveLayers.push(torqueLayer);
+          interactiveLayers.push(layer);
         }
       }
     });

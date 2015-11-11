@@ -1,4 +1,6 @@
 var $ = require('jquery');
+var _ = require('underscore');
+var Model = require('cdb/core/model');
 var WidgetContentView = require('../standard/widget_content_view.js');
 var ControlsView = require('./controls-view');
 var StepInfoView = require('./step-info-view');
@@ -7,28 +9,34 @@ var HistogramChartView = require('../histogram/chart');
 module.exports = WidgetContentView.extend({
 
   defaults: {
-    chartHeight:
-      48 // inline bars height
-      + 20 // bottom labels
-      + 4 // margins
+    width: 400
   },
 
   initialize: function() {
-      var data = [{"bin":0,"start":38331,"end":45855.1,"freq":1,"min":38331,"max":38331},{"bin":1,"start":45855.1,"end":53379.2,"freq":1,"min":53968,"max":53968},{"bin":2,"start":53379.2,"end":60903.3,"freq":1,"min":55611,"max":55611},{"bin":3,"start":60903.3,"end":68427.4,"freq":1,"min":70151,"max":70151},{"bin":4,"start":68427.4,"end":75951.5,"freq":2,"min":78448,"max":79017},{"bin":5,"start":75951.5,"end":83475.6,"freq":1,"min":87877,"max":87877},{"bin":6,"start":83475.6,"end":90999.70000000001,"freq":0},{"bin":7,"start":90999.70000000001,"end":98523.8,"freq":0},{"bin":8,"start":98523.8,"end":106047.90000000001,"freq":0},{"bin":9,"start":106047.90000000001,"end":113572,"freq":1,"min":113572,"max":113572}];
-      this.model.set('data', data);
-    this.model.bind('change:play', this._onChangePlay, this);
+    _.bindAll(this, '_onWindowResize');
+    $(window).bind('resize', this._onWindowResize);
+
     this.model.bind('change:data', this.render, this);
 
-    // TODO set later
-    // setTimeout(function() {
-    //   var data = [{"bin":0,"start":38331,"end":45855.1,"freq":1,"min":38331,"max":38331},{"bin":1,"start":45855.1,"end":53379.2,"freq":1,"min":53968,"max":53968},{"bin":2,"start":53379.2,"end":60903.3,"freq":1,"min":55611,"max":55611},{"bin":3,"start":60903.3,"end":68427.4,"freq":1,"min":70151,"max":70151},{"bin":4,"start":68427.4,"end":75951.5,"freq":2,"min":78448,"max":79017},{"bin":5,"start":75951.5,"end":83475.6,"freq":1,"min":87877,"max":87877},{"bin":6,"start":83475.6,"end":90999.70000000001,"freq":0},{"bin":7,"start":90999.70000000001,"end":98523.8,"freq":0},{"bin":8,"start":98523.8,"end":106047.90000000001,"freq":0},{"bin":9,"start":106047.90000000001,"end":113572,"freq":1,"min":113572,"max":113572}];
-    //   this.model.set('data', data);
-    // }.bind(this), 500);
+    this.viewModel = new Model({
+      width: this.defaults.width,
+      margins: { // should match CSS
+        top: 0,
+        right: 24,
+        bottom: 0,
+        left: 24
+      },
+      histogramChartHeight:
+        48 // inline bars height
+        + 20 // bottom labels
+        + 4 // margins
+    });
+    this.add_related_model(this.viewModel);
+    this.viewModel.bind('change:width', this._onChangeWidth, this);
   },
 
   render: function() {
     this.clearSubViews();
-    this.$el.html('');
     this._appendView(
       new ControlsView({
         model: this.model
@@ -41,25 +49,36 @@ module.exports = WidgetContentView.extend({
     );
 
     if (this.model.get('data')) {
-      this._createHistogramChartView();
+      this._createHistogramView();
     }
+
+    this._onWindowResize();
 
     return this;
   },
 
-  _createHistogramChartView: function() {
-    var view = new HistogramChartView({
+  clean: function() {
+    $(window).unbind('resize', this._onWindowResize);
+    View.prototype.clean.call(this);
+  },
+
+  _createHistogramView: function() {
+    this.histogramChartView = new HistogramChartView({
       y: 0,
-      margin: { top: 4, right: 4, bottom: 20, left: 4 },
+      margin: {
+        top: 4,
+        right: 4,
+        bottom: 20,
+        left: 4
+      },
       handles: true,
-      width: 500||this.$el.width(), // TODO remove margins?
-      height: this.defaults.chartHeight,
+      width: this._histogramChartWidth(),
+      height: this.viewModel.get('histogramChartHeight'),
       data: this.model.get('data')
       // data: this.dataModel.getDataWithOwnFilterApplied()
     });
-    this._appendView(view);
-    view.show();
-    // view.render().show();
+    this._appendView(this.histogramChartView);
+    this.histogramChartView.show();
   },
 
   _appendView: function(view) {
@@ -68,15 +87,21 @@ module.exports = WidgetContentView.extend({
     view.render();
   },
 
-  _onChangePlay: function() {
-    // TODO replace with real state changing
-    if (this.model.get('play')) {
-      this._theInterval = setInterval(function() {
-        this.model.set('step', new Date());
-      }.bind(this), 500)
-    } else {
-      clearInterval(this._theInterval);
+  _onChangeWidth: function() {
+    if (this.histogramChartView) {
+      this.histogramChartView.resize(this._histogramChartWidth());
     }
-  }
+  },
+
+  _histogramChartWidth: function() {
+    var margins = this.viewModel.get('margins');
+    return this.viewModel.get('width') - margins.left - margins.right;
+  },
+
+  _onWindowResize: _.debounce(function() {
+    // $el.width might not be available, e.g. if $el is not present in DOM yet
+    // TODO width is not always accurate, because of other elements also resizing which affects this element
+    this.viewModel.set('width', this.$el.width() || this.defaults.width);
+  }, 50)
 
 });

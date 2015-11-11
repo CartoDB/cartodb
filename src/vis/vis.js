@@ -483,7 +483,10 @@ var Vis = View.extend({
     $('.js-dashboard').append(widgetsView.render().el);
 
     // Time widget view
-    var timeWidgetModel = new Model({});
+    var timeWidgetModel = new Model({
+      // TODO fake data, create real data from a layer
+      data: [{"bin":0,"start":38331,"end":45855.1,"freq":1,"min":38331,"max":38331},{"bin":1,"start":45855.1,"end":53379.2,"freq":1,"min":53968,"max":53968},{"bin":2,"start":53379.2,"end":60903.3,"freq":1,"min":55611,"max":55611},{"bin":3,"start":60903.3,"end":68427.4,"freq":1,"min":70151,"max":70151},{"bin":4,"start":68427.4,"end":75951.5,"freq":2,"min":78448,"max":79017},{"bin":5,"start":75951.5,"end":83475.6,"freq":1,"min":87877,"max":87877},{"bin":6,"start":83475.6,"end":90999.70000000001,"freq":0},{"bin":7,"start":90999.70000000001,"end":98523.8,"freq":0},{"bin":8,"start":98523.8,"end":106047.90000000001,"freq":0},{"bin":9,"start":106047.90000000001,"end":113572,"freq":1,"min":113572,"max":113572}],
+    });
     var timeWidgetView = new TimeWidgetView({
       model: timeWidgetModel
     });

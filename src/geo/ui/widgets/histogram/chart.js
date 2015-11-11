@@ -570,25 +570,48 @@ module.exports = View.extend({
   _generateXAxis: function() {
     var data = this.model.get('data');
 
-    var format = d3.format('0,00');
+    var format = d3.format('.2s');
 
     var xAxis = d3.svg.axis()
     .scale(this.xAxisScale)
     .orient('bottom')
     .innerTickSize(0)
     .tickFormat(function(d, i) {
-      if (i == data.length - 1) {
-        return format(data[i].end.toFixed(2));
-      } else if (i === 0 || (i + 1) % 2 === 0) {
-        return format(data[i].start.toFixed(2));
-      }
-      return '';
+      return (i === data.length - 1) ? format(data[i].end) : format(data[i].start);
     });
 
     this.chart.append('g')
     .attr('class', 'Axis')
     .attr('transform', 'translate(0,' + (this.chartHeight + 5) + ')')
     .call(xAxis);
+
+    this._cleanAxis();
+  },
+
+  _cleanAxis: function() {
+    var isOverlapping = function(innerClientRect, outerClientRect) {
+      return !(
+        Math.floor(outerClientRect.left) <= Math.ceil(innerClientRect.left) &&
+        Math.floor(outerClientRect.top) <= Math.ceil(innerClientRect.top) &&
+        Math.floor(innerClientRect.right) <= Math.ceil(outerClientRect.right) &&
+        Math.floor(innerClientRect.bottom) <= Math.ceil(outerClientRect.bottom)
+      );
+    };
+
+    var ticks = this.chart.selectAll('.tick')[0];
+
+    // Hide overlapping text labels
+    _.each(ticks, function(tick, i) {
+      if (i + 1 < ticks.length) {
+        if (tick.style.opacity === "1") {
+          var o = isOverlapping(tick.getBoundingClientRect(), ticks[i+1].getBoundingClientRect());
+          if (o) {
+            el = ticks[i+1];
+            el.style.opacity = "0";
+          }
+        }
+      }
+    });
   },
 
   resetBrush: function() {

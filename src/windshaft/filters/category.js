@@ -2,6 +2,10 @@ var _ = require('underscore');
 var Backbone = require('backbone');
 var WindshaftFilterBase = require('./base');
 
+/**
+ *  Filter used by the category widget
+ *
+ */
 module.exports = WindshaftFilterBase.extend({
 
   initialize: function() {
@@ -25,13 +29,13 @@ module.exports = WindshaftFilterBase.extend({
     _.each(values, function(value) {
       var d = { name: value };
       var rejectedMdls = this.rejectedCategories.where(d);
+      var acceptedMdls = this.acceptedCategories.where(d);
       if (rejectedMdls.length > 0) {
         this.rejectedCategories.remove(rejectedMdls);
       }
-      // if (acceptedCount > 0) {
+      if (!acceptedMdls.length) {
         this.acceptedCategories.add(d);
-      // }
-
+      }
     }, this);
 
     this.trigger('change', this);
@@ -67,10 +71,13 @@ module.exports = WindshaftFilterBase.extend({
     _.each(values, function(value) {
       var d = { name: value };
       var acceptedMdls = this.acceptedCategories.where(d);
+      var rejectedMdls = this.rejectedCategories.where(d);
       if (acceptedMdls.length > 0) {
         this.acceptedCategories.remove(acceptedMdls);
       } else {
-        this.rejectedCategories.add(d);
+        if (!rejectedMdls.length) {
+          this.rejectedCategories.add(d);
+        }
       }
     }, this);
 
@@ -95,6 +102,7 @@ module.exports = WindshaftFilterBase.extend({
 
   toJSON: function() {
     var filter = {};
+    var dataCount = this._dataOrigin.size();
     var rejectCount = this.rejectedCategories.size();
     var acceptCount = this.acceptedCategories.size();
     var acceptedCats = { accept: _.map(_.pluck(this.acceptedCategories.toJSON(), 'name'), encodeURIComponent) };
@@ -102,14 +110,14 @@ module.exports = WindshaftFilterBase.extend({
 
     // TODO: review this block of code + other possibilities
     if (!this.isEmpty()) {
-      if (rejectCount === 0 && acceptCount > 0 && rejectCount < this._dataOrigin.size()) {
+      if (acceptCount > 0 && acceptCount < dataCount && rejectCount < dataCount) {
         filter = acceptedCats;
-      } else if (acceptCount === 0 && rejectCount > 0 && rejectCount < this._dataOrigin.size()) {
+      } else if (acceptCount === 0 && rejectCount > 0 && rejectCount < dataCount) {
         filter = rejectedCats;
-      } else if (rejectCount >= this._dataOrigin.size() && acceptCount === 0) {
-        // TODO: replace this by empty array
-        filter = { accept: ['_____'] };
-      } else if (acceptCount >= this._dataOrigin.size() && rejectCount === 0) {
+      } else if (rejectCount >= dataCount && acceptCount === 0) {
+        // TODO: replace this by empty array when it is available through API
+        filter = { accept: ['___@___'] };
+      } else if (acceptCount >= dataCount && rejectCount === 0) {
         filter = {};
       } else {
         _.extend(filter, rejectedCats, acceptedCats);

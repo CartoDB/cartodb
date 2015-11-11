@@ -12,9 +12,6 @@ module.exports = WidgetModel.extend({
     this._dataOrigin = new Backbone.Collection(this.get('data'));
 
     WidgetModel.prototype.initialize.call(this, attrs, opts);
-
-    // Retrigger an event when the changes
-    this.filter.bind('change', this._onFilterChanged, this);
   },
 
   getData: function() {

@@ -124,6 +124,7 @@ module.exports = WidgetContent.extend({
 
   _renderMiniChart: function() {
     this.originalData = this.dataModel.getDataWithoutOwnFilterApplied();
+    window.originalData = this.originalData;
 
     this.miniChart = new WidgetHistogramChart(({
       className: 'mini',
@@ -190,9 +191,6 @@ module.exports = WidgetContent.extend({
 
   _onBrushEnd: function(loBarIndex, hiBarIndex) {
     var data = this.dataModel.getDataWithoutOwnFilterApplied();
-
-    var loBarIndex = this.viewModel.get('lo_index');
-    var hiBarIndex = this.viewModel.get('hi_index');
 
     var start = data[loBarIndex].start;
     var end = data[hiBarIndex - 1].end;
@@ -321,11 +319,10 @@ module.exports = WidgetContent.extend({
 
   _onZoomOut: function() {
     this.viewModel.set({ zoom_enabled: false, filter_enabled: false, lo_index: null, hi_index: null });
-    this.chart.replaceData(this.dataModel.getDataWithoutOwnFilterApplied());
+
+    this.chart.replaceData(this.originalData);
     this.chart.contract(this.canvasHeight);
     this.chart.resetIndexes();
-
-    this.filter.unsetRange();
 
     this.miniChart.hide();
 

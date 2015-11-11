@@ -29,9 +29,7 @@ module.exports = WidgetContent.extend({
   },
 
   _initViews: function() {
-    this.$('.js-chart').show();
     this._setupDimensions();
-    this._generateCanvas();
     this._renderMainChart();
     this._renderMiniChart();
   },
@@ -56,7 +54,7 @@ module.exports = WidgetContent.extend({
   },
 
   _onChangeData: function() {
-    var data = this._getData();
+    var data = this.dataModel.getDataWithOwnFilterApplied();
     this.chart.replaceData(data);
   },
 
@@ -104,14 +102,15 @@ module.exports = WidgetContent.extend({
 
   _renderMainChart: function() {
     this.chart = new WidgetHistogramChart(({
-      el: this.$('.js-chart'),
       y: 0,
       margin: { top: 4, right: 4, bottom: 20, left: 4 },
       handles: true,
       width: this.canvasWidth,
-      height: this.defaults.chartHeight,
+      height: this.canvasHeight,
       data: this.dataModel.getDataWithOwnFilterApplied()
     }));
+    this.$('.js-content').append(this.chart.el);
+    this.addView(this.chart);
 
     this.chart.bind('range_updated', this._onRangeUpdated, this);
     this.chart.bind('on_brush_end', this._onBrushEnd, this);
@@ -124,9 +123,12 @@ module.exports = WidgetContent.extend({
   },
 
   _renderMiniChart: function() {
+    this.originalData = this.dataModel.getDataWithoutOwnFilterApplied();
+    window.originalData = this.originalData;
+
     this.miniChart = new WidgetHistogramChart(({
       className: 'mini',
-      el: this.$('.js-chart'),
+      el: this.chart.$el, // TODO the mini-histogram should not depend on the chart histogram's DOM
       handles: false,
       width: this.canvasWidth,
       margin: { top: 0, right: 0, bottom: 0, left: 4 },
@@ -171,22 +173,29 @@ module.exports = WidgetContent.extend({
   _onMiniRangeUpdated: function(loBarIndex, hiBarIndex) {
     this.viewModel.set({ lo_index: loBarIndex, hi_index: hiBarIndex });
 
-    var data = this.dataModel.getDataWithoutOwnFilterApplied();
+    var data = this.originalData;
 
-    this._setRange(data, loBarIndex, hiBarIndex - 1);
+    var start = data[loBarIndex].start;
+    var end = data[hiBarIndex - 1].end;
+
+    this.dataModel.set({ start: start, end: end });
+
+    this._setRange(data, start, end);
 
     this._updateStats();
   },
 
-  _setRange: function(data, loBarIndex, hiBarIndex) {
-    var min = data[loBarIndex].start;
-    var max = data[hiBarIndex].end;
-
-    this.filter.setRange({ min: min, max: max });
+  _setRange: function(data, start, end) {
+    this.filter.setRange({ min: start, max: end });
   },
 
   _onBrushEnd: function(loBarIndex, hiBarIndex) {
-    var data = this._getData();
+    var data = this.dataModel.getDataWithoutOwnFilterApplied();
+
+    var start = data[loBarIndex].start;
+    var end = data[hiBarIndex - 1].end;
+
+    this.dataModel.set({ start: start, end: end });
 
     var properties = { filter_enabled: true, lo_index: loBarIndex, hi_index: hiBarIndex };
 
@@ -198,7 +207,7 @@ module.exports = WidgetContent.extend({
 
     this.chart.lock();
 
-    this._setRange(data, 0, data.length - 1);
+    this._setRange(data, start, end);
   },
 
   _onRangeUpdated: function(loBarIndex, hiBarIndex) {
@@ -295,11 +304,12 @@ module.exports = WidgetContent.extend({
   },
 
   _onZoomIn: function() {
-    this._expand();
+    this.miniChart.show();
+    this.chart.expand(this.canvasHeight + 60);
 
     this._showMiniRange();
 
-    var data = this.dataModel.getDataWithoutOwnFilterApplied().slice(this.viewModel.get('lo_index'), this.viewModel.get('hi_index'));
+    var data = this.dataModel.getDataWithOwnFilterApplied();
     this.chart.replaceData(data);
   },
 
@@ -309,13 +319,10 @@ module.exports = WidgetContent.extend({
 
   _onZoomOut: function() {
     this.viewModel.set({ zoom_enabled: false, filter_enabled: false, lo_index: null, hi_index: null });
-    this.chart.replaceData(this.dataModel.getDataWithoutOwnFilterApplied());
 
-    this._contract();
-
+    this.chart.replaceData(this.originalData);
+    this.chart.contract(this.canvasHeight);
     this.chart.resetIndexes();
-
-    this.filter.unsetRange();
 
     this.miniChart.hide();
 
@@ -338,29 +345,6 @@ module.exports = WidgetContent.extend({
     } else {
       this.viewModel.set({ zoomed: false, zoom_enabled: true });
     }
-  },
-
-  _contract: function() {
-    this.canvas
-    .attr('height', this.canvasHeight);
-    this.chart.contract();
-  },
-
-  _expand: function() {
-    this.canvas
-    .attr('height', this.canvasHeight + 60);
-    this.miniChart.show();
-    this.chart.expand();
-  },
-
-  _generateCanvas: function() {
-    this.canvas = d3.select(this.$el.find('.js-chart')[0])
-    .attr('width',  this.canvasWidth)
-    .attr('height', this.canvasHeight);
-
-    this.canvas
-    .append('g')
-    .attr('class', 'Canvas');
   },
 
   clean: function() {

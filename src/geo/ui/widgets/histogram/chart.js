@@ -1,9 +1,11 @@
+var $ = require('jquery');
 var _ = require('underscore');
 var d3 = require('d3');
 var Model = require('cdb/core/model');
 var View = require('cdb/core/view');
 
 module.exports = View.extend({
+
   defaults: {
     duration: 750,
     handleWidth: 6,
@@ -12,8 +14,28 @@ module.exports = View.extend({
     transitionType: 'elastic'
   },
 
-  initialize: function() {
+  initialize: function(opts) {
+    if (!opts.width) throw new Error('opts.width is required');
+    if (!opts.height) throw new Error('opts.height is required');
+
     _.bindAll(this, '_selectBars', '_adjustBrushHandles', '_onBrushMove', '_onBrushStart', '_onMouseMove', '_onMouseOut');
+
+    // TODO resolve this; the histogram has two views that relies on this._canvas, one for a mini "zoom" view and one
+    // for the normal view
+    if (!opts.el) {
+      // using tagName: 'svg' doesn't work,
+      // and w/o class="" d3 won't instantiate properly
+      this.$el = $('<svg class=""></svg>');
+      this.el = this.$el[0];
+
+      this._canvas = d3.select(this.el)
+        .attr('width',  opts.width)
+        .attr('height', opts.height);
+
+      this._canvas
+        .append('g')
+        .attr('class', 'Canvas');
+    }
 
     this._setupModel();
     this._setupDimensions();
@@ -284,7 +306,7 @@ module.exports = View.extend({
   },
 
   _generateChart: function() {
-    this.chart = d3.select(this.options.el[0])
+    this.chart = d3.select(this.el)
     .selectAll('.Canvas')
     .append('g')
     .attr('class', 'Chart')
@@ -338,11 +360,13 @@ module.exports = View.extend({
     this.model.set({ pos: pos });
   },
 
-  expand: function() {
+  expand: function(newHeight) {
+    this._canvas.attr('height', newHeight);
     this._move({ x: 0, y: 50 });
   },
 
-  contract: function() {
+  contract: function(newHeight) {
+    this._canvas.attr('height', newHeight);
     this._move({ x: 0, y: 0 });
   },
 

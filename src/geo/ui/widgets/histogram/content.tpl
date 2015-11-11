@@ -18,4 +18,4 @@
       <button class="Widget-link Widget-filterButton js-clear">clear</button>
     </div>
   </div>
-  <svg class="Widget-chart js-chart"></svg>
+</div>

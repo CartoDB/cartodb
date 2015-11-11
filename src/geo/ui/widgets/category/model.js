@@ -13,10 +13,6 @@ module.exports = WidgetModel.extend({
 
     WidgetModel.prototype.initialize.call(this, attrs, opts);
     this.filter.setDataOrigin(this._dataOrigin);
-
-    // Retrigger an event when the changes
-    this.filter.bind('change', this._onFilterChanged, this);
-
   },
 
   getData: function() {

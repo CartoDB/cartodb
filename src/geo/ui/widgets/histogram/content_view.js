@@ -42,7 +42,8 @@ module.exports = WidgetContent.extend({
   _onFirstLoad: function() {
     this.render();
     this.dataModel.unbind('change:off', this._onFirstLoad, this);
-    this.dataModel.bind('change:on', this._onChangeData, this);
+    this.dataModel.bind('change:on', this._onChangeWithOwnFiltersData, this);
+    this.dataModel.bind('change:off', this._onChangeWithoutOwnFiltersData, this);
     this._storeBounds();
   },
 
@@ -53,9 +54,18 @@ module.exports = WidgetContent.extend({
     this.dataModel.set({ start: start, end: end });
   },
 
-  _onChangeData: function() {
-    var data = this.dataModel.getDataWithOwnFilterApplied();
-    this.chart.replaceData(data);
+  _onChangeWithoutOwnFiltersData: function() {
+    //console.log('changin off data');
+  },
+
+  _onChangeWithOwnFiltersData: function() {
+    if (this.unsettingRange) {
+      this.chart.replaceData(this.originalData);
+      this.unsettingRange = false;
+    } else {
+      var data = this.dataModel.getDataWithOwnFilterApplied();
+      this.chart.replaceData(data);
+    }
   },
 
   render: function() {
@@ -320,9 +330,11 @@ module.exports = WidgetContent.extend({
   _onZoomOut: function() {
     this.viewModel.set({ zoom_enabled: false, filter_enabled: false, lo_index: null, hi_index: null });
 
-    this.chart.replaceData(this.originalData);
     this.chart.contract(this.canvasHeight);
     this.chart.resetIndexes();
+
+    this.unsettingRange = true;
+    this.filter.unsetRange();
 
     this.miniChart.hide();
 

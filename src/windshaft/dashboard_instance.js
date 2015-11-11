@@ -1,14 +1,16 @@
-var $ = require('jquery');
 var _ = require('underscore');
 var Model = require('cdb/core/model');
-var util = require('cdb/core/util');
 var MapBase = require('cdb/geo/layer-definition/map-base');
 var WindshaftConfig = require('./config');
 
 module.exports = Model.extend({
 
+  TILE_EXTENSIONS_BY_LAYER_TYPE: {
+    'mapnik': '.png',
+    'torque': '.json.torque'
+  },
+
   initialize: function() {
-    this.ajax = $.ajax;
 
     // TODO: What params are really used?
     this.pngParams = ['map_key', 'api_key', 'cache_policy', 'updated_at'];
@@ -19,19 +21,19 @@ module.exports = Model.extend({
     return !!this.get('layergroupid');
   },
 
-  getMapId: function() {
-    return this.get('layergroupid');
-  },
-
-  getBaseURL: function() {
+  getBaseURL: function(subhost) {
     return [
-      this.getHost(),
+      this._getHost(subhost),
       WindshaftConfig.MAPS_API_BASE_URL,
-      this.getMapId(),
+      this._getMapId(),
     ].join('/');
   },
 
-  getHost: function(subhost) {
+  _getMapId: function() {
+    return this.get('layergroupid');
+  },
+
+  _getHost: function(subhost) {
     var userName = this.get('userName');
     var protocol = this._useHTTPS() ? 'https' : 'http';
     var subhost = subhost || '';
@@ -48,62 +50,10 @@ module.exports = Model.extend({
     return this.get('windshaftURLTemplate').indexOf('https') === 0;
   },
 
-  /**
-   * Returns the index of a layer of a given type, as the tiler kwows it.
-   *
-   * @param {integer} index - number of layer of the specified type
-   * @param {string} layerType - type of the layers
-   */
-  getLayerIndexByType: function(index, layerType) {
-    var layers = this.get('metadata') && this.get('metadata').layers;
-
-    if (!layers) {
-      return index;
-    }
-
-    var tilerLayerIndex = {};
-    var j = 0;
-    for (var i = 0; i < layers.length; i++) {
-      if (layers[i].type == layerType) {
-        tilerLayerIndex[j] = i;
-        j++;
-      }
-    }
-    if (tilerLayerIndex[index] === undefined) {
-      return -1;
-    }
-    return tilerLayerIndex[index];
-  },
-
-  /**
-   * Returns the index of a layer of a given type, as the tiler kwows it.
-   *
-   * @param {string|array} types - Type or types of layers
-   */
-  getLayerIndexesByType: function(types) {
-    var layers = this.get('metadata') && this.get('metadata').layers;
-
-    if (!layers) {
-      return;
-    }
-    var layerIndexes = [];
-    for (var i = 0; i < layers.length; i++) {
-      var layer = layers[i];
-      var isValidType = false;
-      if (types && types.length > 0) {
-        isValidType = types.indexOf(layer.type) != -1;
-      }
-      if (isValidType) {
-        layerIndexes.push(i);
-      }
-    }
-    return layerIndexes;
-  },
-
-  getTiles: function(layerType) {
+  getTiles: function(layerType, params) {
     var grids = [];
     var tiles = [];
-    var params = [];
+
     var pngParams = this._encodeParams(params, this.pngParams);
     var gridParams = this._encodeParams(params, this.gridParams);
     var subdomains = ['0', '1', '2', '3'];
@@ -114,28 +64,37 @@ module.exports = Model.extend({
 
     layerType = layerType || 'mapnik';
 
-    var extFroLayerType = {
-      'mapnik': 'png',
-      'torque': 'json.torque'
-    };
-    var extension = extFroLayerType[layerType];
-
-    var layerIndexes = this.getLayerIndexesByType(layerType);
+    var layerIndexes = this._getLayerIndexesByType(layerType);
     if (layerIndexes.length) {
-      var tileTemplate = '/' +  layerIndexes.join(',') +'/{z}/{x}/{y}';
       var gridTemplate = '/{z}/{x}/{y}';
 
       for(var i = 0; i < subdomains.length; ++i) {
-        var s = subdomains[i];
-        var cartodb_url = this.getHost(s) + MapBase.BASE_URL + '/' + this.getMapId();
-        tiles.push(cartodb_url + tileTemplate + "." + extension + (pngParams ? "?" + pngParams: '') );
+        var subdomain = subdomains[i];
+        var tileURLTemplate = [
+          this.getBaseURL(subdomain),
+          '/',
+          layerIndexes.join(','),
+          '/{z}/{x}/{y}',
+          this.TILE_EXTENSIONS_BY_LAYER_TYPE[layerType],
+          (pngParams ? "?" + pngParams: '')
+        ].join('');
+
+        tiles.push(tileURLTemplate);
 
         // for mapnik layers add grid json too
         if (layerType === 'mapnik') {
           for(var layer = 0; layer < this.get('metadata').layers.length; ++layer) {
-            var index = this.getLayerIndexByType(layer, "mapnik");
+            var index = this._getLayerIndexByType(layer, "mapnik");
+            var gridURLTemplate = [
+              this.getBaseURL(subdomain),
+              "/",
+              index,
+              gridTemplate,
+              ".grid.json",
+              (gridParams ? "?" + gridParams: '')
+            ].join("");
             grids[layer] = grids[layer] || [];
-            grids[layer].push(cartodb_url + "/" + index +  gridTemplate + ".grid.json" + (gridParams ? "?" + gridParams: ''));
+            grids[layer].push(gridURLTemplate);
           }
         }
       }
@@ -172,29 +131,56 @@ module.exports = Model.extend({
     return url_params.join('&');
   },
 
-  fetchAttributes: function(layer, featureID, callback) {
-    var url = [
-      this.getBaseURL(),
-      this.getLayerIndexByType(layer, "mapnik"),
-      'attributes',
-      featureID
-    ].join('/');
+  /**
+   * Returns the index of a layer of a given type, as the tiler kwows it.
+   *
+   * @param {string|array} types - Type or types of layers
+   */
+  _getLayerIndexesByType: function(types) {
+    var layers = this.get('metadata') && this.get('metadata').layers;
 
-    $.ajax({
-      dataType: 'jsonp',
-      url: url,
-      jsonpCallback: '_cdbi_layer_attributes_' + util.uniqueCallbackName(this.toJSON()),
-      cache: true,
-      success: function(data) {
-        // loadingTime.end();
-        callback(data);
-      },
-      error: function(data) {
-        // loadingTime.end();
-        // cartodb.core.Profiler.metric('cartodb-js.named_map.attributes.error').inc();
-        callback(null);
+    if (!layers) {
+      return;
+    }
+    var layerIndexes = [];
+    for (var i = 0; i < layers.length; i++) {
+      var layer = layers[i];
+      var isValidType = false;
+      if (types && types.length > 0) {
+        isValidType = types.indexOf(layer.type) != -1;
       }
-    });
+      if (isValidType) {
+        layerIndexes.push(i);
+      }
+    }
+    return layerIndexes;
+  },
+
+  /**
+   * Returns the index of a layer of a given type, as the tiler kwows it.
+   *
+   * @param {integer} index - number of layer of the specified type
+   * @param {string} layerType - type of the layers
+   */
+  _getLayerIndexByType: function(index, layerType) {
+    var layers = this.get('metadata') && this.get('metadata').layers;
+
+    if (!layers) {
+      return index;
+    }
+
+    var tilerLayerIndex = {};
+    var j = 0;
+    for (var i = 0; i < layers.length; i++) {
+      if (layers[i].type == layerType) {
+        tilerLayerIndex[j] = i;
+        j++;
+      }
+    }
+    if (tilerLayerIndex[index] === undefined) {
+      return -1;
+    }
+    return tilerLayerIndex[index];
   },
 
   getWidgetURL: function(options) {

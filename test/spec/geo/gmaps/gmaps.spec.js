@@ -8,7 +8,7 @@ var GoogleMapsMapView = require('cdb/geo/gmaps/gmaps-map-view');
 var TileLayer = require('cdb/geo/map/tile-layer');
 var GMapsTiledLayerView = require('cdb/geo/gmaps/gmaps-tiled-layer-view');
 var CartoDBLayer = require('cdb/geo/map/cartodb-layer');
-var CartoDBGroupLayer = require('cdb/geo/map/cartodb-group-layer');
+var CartoDBLayerGroupAnonymous = require('cdb/geo/map/cartodb-layer-group-anonymous');
 var PlainLayer = require('cdb/geo/map/plain-layer');
 var GMapsCartoDBLayerView = require('cdb/geo/gmaps/gmaps-cartodb-layer-view');
 var GMapsCartoDBLayerGroupView = require('cdb/geo/gmaps/gmaps-cartodb-layer-group-view');
@@ -135,21 +135,8 @@ var GmapsPathView = require('cdb/geo/gmaps/gmaps-path-view');
       expect(GMapsCartoDBLayerView.prototype.isPrototypeOf(layerView)).toBeTruthy();
     });
 
-    it("should create a CartoDBGroupLayer when the layer is layergroup", function() {
-      layer = new CartoDBGroupLayer({
-        layer_definition: {
-          version: '1.0.0',
-          layers: [{
-             type: 'cartodb',
-             options: {
-               sql: "select * from european_countries_export",
-               cartocss: '#layer { polygon-fill: #000; polygon-opacity: 0.8;}',
-               cartocss_version : '2.0.0',
-               interactivity: ['test2', 'cartodb_id2']
-             }
-           }]
-        }
-      });
+    it("should create a CartoDBLayerGroupAnonymous when the layer is layergroup", function() {
+      layer = new CartoDBLayerGroupAnonymous({});
       map.addLayer(new PlainLayer({}));
       var lyr = map.addLayer(layer);
       var layerView = mapView.getLayerByCid(lyr);

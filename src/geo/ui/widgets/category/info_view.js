@@ -3,6 +3,7 @@ var _ = require('underscore');
 var cdb = require('cdb');
 var template = require('./info.tpl');
 var View = require('cdb/core/view');
+var d3 = require('d3');
 
 /**
  * Category info view

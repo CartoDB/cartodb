@@ -4,7 +4,7 @@ var Model = require('cdb/core/model');
 var View = require('cdb/core/view');
 var WidgetContent = require('../standard/widget_content_view');
 var WidgetHistogramChart = require('./chart');
-
+var d3 = require('d3');
 var placeholder = require('./placeholder.tpl');
 var template = require('./content.tpl');
 
@@ -43,7 +43,6 @@ module.exports = WidgetContent.extend({
     this.render();
     this.dataModel.unbind('change:off', this._onFirstLoad, this);
     this.dataModel.bind('change:on', this._onChangeWithOwnFiltersData, this);
-    this.dataModel.bind('change:off', this._onChangeWithoutOwnFiltersData, this);
     this._storeBounds();
   },
 
@@ -54,11 +53,16 @@ module.exports = WidgetContent.extend({
     this.dataModel.set({ start: start, end: end });
   },
 
-  _onChangeWithoutOwnFiltersData: function() {
-    //console.log('changin off data');
-  },
-
   _onChangeWithOwnFiltersData: function() {
+
+    // if the action was initiated by the user
+    // don't replace the stored data
+    if (this.lockedByUser) {
+      this.lockedByUser = false;
+    } else {
+      this.originalData = this.dataModel.getDataWithoutOwnFilterApplied();
+    }
+
     if (this.unsettingRange) {
       this.chart.replaceData(this.originalData);
       this.unsettingRange = false;
@@ -181,6 +185,7 @@ module.exports = WidgetContent.extend({
   },
 
   _onMiniRangeUpdated: function(loBarIndex, hiBarIndex) {
+    this.lockedByUser = true;
     this.viewModel.set({ lo_index: loBarIndex, hi_index: hiBarIndex });
 
     var data = this.originalData;
@@ -201,6 +206,8 @@ module.exports = WidgetContent.extend({
 
   _onBrushEnd: function(loBarIndex, hiBarIndex) {
     var data = this.dataModel.getDataWithoutOwnFilterApplied();
+
+    this.lockedByUser = true;
 
     var start = data[loBarIndex].start;
     var end = data[hiBarIndex - 1].end;
@@ -324,6 +331,7 @@ module.exports = WidgetContent.extend({
   },
 
   _zoom: function() {
+    this.lockedByUser = true;
     this.viewModel.set({ zoomed: true, zoom_enabled: false });
   },
 
@@ -352,6 +360,8 @@ module.exports = WidgetContent.extend({
   },
 
   _clear: function() {
+    this.lockedByUser = true;
+
     if (!this.viewModel.get('zoomed')) {
       this.viewModel.trigger('change:zoomed');
     } else {

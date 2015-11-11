@@ -89,8 +89,8 @@ module.exports = WidgetModel.extend({
 
   setCategories: function(d) {
     var attrs = this._parseData(d);
-    this.model.set(attrs);
     this._data.reset(attrs.data);
+    this.set(attrs);
   },
 
   parse: function(d) {

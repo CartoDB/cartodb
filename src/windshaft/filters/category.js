@@ -89,7 +89,7 @@ module.exports = WindshaftFilterBase.extend({
     var acceptCount = this.acceptedCategories.size();
     if (this.rejectedCategories.where({ name: name }).length > 0) {
       return true;
-    } else if (rejectCount === 0 && acceptCount > 0 && this.acceptedCategories.where({ name: name }).length === 0) {
+    } else if (acceptCount > 0 && this.acceptedCategories.where({ name: name }).length === 0) {
       return true;
     } else {
       return false

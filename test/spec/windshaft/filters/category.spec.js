@@ -128,6 +128,29 @@ describe('windshaft/filters/category', function() {
     expect(callback).toHaveBeenCalled();
   });
 
+  describe('isRejected', function() {
+    it('should be rejected it is included in reject collection', function() {
+      this.filter.reject(1);
+      expect(this.filter.isRejected(1)).toBeTruthy();
+    });
+
+    it('should be rejected it is not included in any of both (accept or reject) and there are accepted', function() {
+      this.filter.accept(4);
+      expect(this.filter.isRejected(1)).toBeTruthy();
+      this.filter.reject(2);
+      expect(this.filter.isRejected(1)).toBeTruthy();
+    });
+
+    it('should not be rejected if both collections are empty', function() {
+      expect(this.filter.isRejected(1)).toBeFalsy();
+    });
+
+    it('should not be rejected if it is present in accepted collection', function() {
+      this.filter.accept(1);
+      expect(this.filter.isRejected(1)).toBeFalsy();
+    });
+  });
+
   describe('toJSON', function() {
     it('should generate an object with attributes when it is serialized', function() {
       this.filter.reject([1,2]);

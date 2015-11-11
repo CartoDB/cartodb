@@ -13,8 +13,10 @@ module.exports = {
         },
         files: [{
           expand: true,
-          cwd: 'themes/scss',
-          src: ['**/*.scss'],
+          src: [
+            'vendor/**/*.css',
+            'themes/scss/**/*.scss'
+          ],
           dest: '.tmp/scss',
           ext: '.css'
         }]

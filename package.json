@@ -52,6 +52,7 @@
       "semver": "~4.1.0",
       "jshint-stylish": "~0.1.3",
       "jquery": "2.1.4",
+      "simplebar": "git@github.com:Grsmto/simplebar.git",
       "load-grunt-tasks": "~0.6.0",
       "time-grunt": "~0.3.1",
       "grunt-aws": "^0.4.0",
@@ -89,7 +90,8 @@
       "mwheelIntent": "./vendor/mwheelIntent.js",
       "odyssey": "./vendor/mod/odyssey.js",
       "spin.js": "./vendor/spin.js",
-      "wax.cartodb.js": "./vendor/wax.cartodb.js"
+      "wax.cartodb.js": "./vendor/wax.cartodb.js",
+      "simplebar": "./vendor/simplebar/simplebar.min.js"
     },
     "browserify-shim": {
       "geojson": "GeoJSON",
@@ -114,7 +116,8 @@
       "mousewheel": { "depends": ["jquery:jQuery"] },
       "mwheelIntent": { "depends": ["jquery:jQuery"] },
       "spin.js": "Spinner",
-      "wax.cartodb.js": "wax"
+      "wax.cartodb.js": "wax",
+      "simplebar": "simplebar"
     },
     "files": ["dist"],
     "main": "cartodb.js"

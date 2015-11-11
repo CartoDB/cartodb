@@ -186,8 +186,8 @@ module.exports = View.extend({
   },
 
   _formatNumber: function(value, unit) {
-    var format = d3.format("0,000");
-    return format(value + unit ? ' ' + unit : '');
+    var format = d3.format('.2s');
+    return format(value) + (unit ? ' ' + unit : '');
   },
 
   _removeBars: function() {
@@ -570,14 +570,14 @@ module.exports = View.extend({
   _generateXAxis: function() {
     var data = this.model.get('data');
 
-    var format = d3.format('.2s');
+    var self = this;
 
     var xAxis = d3.svg.axis()
     .scale(this.xAxisScale)
     .orient('bottom')
     .innerTickSize(0)
     .tickFormat(function(d, i) {
-      return (i === data.length - 1) ? format(data[i].end) : format(data[i].start);
+      return (i === data.length - 1) ? self._formatNumber(data[i].end) : self._formatNumber(data[i].start);
     });
 
     this.chart.append('g')

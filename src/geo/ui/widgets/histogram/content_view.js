@@ -256,7 +256,7 @@ module.exports = WidgetContent.extend({
 
   _animateValue: function(className, what, unit) {
     var self = this;
-    var format = d3.format("0,000");
+    var format = d3.format('.2s');
 
     var from = this.viewModel.previous(what) || 0;
     var to = this.viewModel.get(what);

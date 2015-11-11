@@ -139,7 +139,7 @@ describe('LeafletMapView', function() {
   });
 
   it("should create the cartodb logo", function(done) {
-    layer = new cdb.geo.CartoDBLayer({ 
+    layer = new cdb.geo.CartoDBLayer({
       table_name: "INVENTADO",
       user_name: 'test',
       tile_style: 'test'
@@ -154,7 +154,7 @@ describe('LeafletMapView', function() {
   });
 
   it("should not add the cartodb logo when cartodb_logo = false", function(done) {
-    layer = new cdb.geo.CartoDBLayer({ 
+    layer = new cdb.geo.CartoDBLayer({
       table_name: "INVENTADO",
       user_name: 'test',
       tile_style: 'test',
@@ -495,5 +495,5 @@ describe('LeafletMapView', function() {
       expect(attributions).toEqual('Stamen, custom attribution, CartoDB attribution');
     });
   });
-});
 
+});

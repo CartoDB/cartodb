@@ -45,7 +45,11 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
           minZoom: this.map.get('minZoom'),
           maxZoom: this.map.get('maxZoom'),
           disableDefaultUI: true,
+          // Set scrollwheel options
           scrollwheel: this.map.get("scrollwheel"),
+          // Allow dragging (and double click zoom)
+          draggable: this.map.get("drag"),
+          disableDoubleClickZoom: this.map.get("drag"),
           mapTypeControl:false,
           mapTypeId: google.maps.MapTypeId.ROADMAP,
           backgroundColor: 'white',

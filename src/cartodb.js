@@ -13,7 +13,7 @@ cdb._ = _;
 cdb.L = L;
 
 if (isLeafletAlreadyLoaded) L.noConflict();
-_.extend(L, require('./geo/leaflet-extensions'));
+// _.extend(L, require('./geo/leaflet-extensions'));
 _.extend(cdb.geo, require('./geo/leaflet'));
 
 cdb.Image = require('./vis/image')
@@ -119,7 +119,6 @@ cdb.vis.Layers = require('./vis/vis/layers');
 cdb.vis.Vis = require('./vis/vis');
 require('./vis/overlays'); // Overlay.register calls
 require('./vis/layers'); // Layers.register calls
-
 
 cdb.geo.ui.Widget.View = require('./geo/ui/widget');
 cdb.geo.ui.Widget.Content = require('./geo/ui/widgets/standard/widget_content_view');

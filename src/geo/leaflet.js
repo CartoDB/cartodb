@@ -7,7 +7,7 @@ module.exports = {
   LeafletWMSLayerView: require('./leaflet/leaflet-wms-layer-view'),
 
   LeafletCartoDBLayerGroupView: require('./leaflet/leaflet-cartodb-layer-group-view'),
-  LeafletCartoDBNamedMapView: require('./leaflet/leaflet-cartodb-named-map-view'),
+  LeafletCartoDBNamedMapView: require('./leaflet/leaflet-cartodb-layer-group-view'),
 
   LeafletLayerCartoDBView: require('./leaflet/leaflet-layer-cartodb-view'),
 

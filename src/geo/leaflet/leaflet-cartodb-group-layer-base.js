@@ -4,7 +4,6 @@ var config = require('cdb.config');
 var Profiler = require('cdb.core.Profiler');
 var LeafletLayerView = require('./leaflet-layer-view');
 var CartoDBLayerCommon = require('../cartodb-layer-common');
-var LayerDefinition = require('../layer-definition/layer-definition');
 var CartoDBLogo = require('../cartodb-logo');
 
 var LeafletCartoDBGroupLayerBase = L.TileLayer.extend({
@@ -13,7 +12,6 @@ var LeafletCartoDBGroupLayerBase = L.TileLayer.extend({
 
   includes: [
     LeafletLayerView.prototype,
-    // LayerDefinition.prototype,
     CartoDBLayerCommon.prototype
   ],
 
@@ -296,6 +294,9 @@ var LeafletCartoDBGroupLayerBase = L.TileLayer.extend({
    */
   _newPoint: function(x, y) {
     return new L.Point(x, y);
+  },
+
+  _modelUpdated: function() {
   }
 });
 

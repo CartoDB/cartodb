@@ -1,9 +1,9 @@
 var L = require('leaflet');
 var config = require('cdb.config');
-var LeafletCartoDBGroupLayer = require('./leaflet-cartodb-group-layer');
+var LeafletCartoDBGroupLayerBase = require('./leaflet-cartodb-group-layer-base');
 var LayerDefinition = require('../layer-definition/layer-definition');
 
-var LeafletCartoDBLayer = LeafletCartoDBGroupLayer.extend({
+var LeafletCartoDBLayer = LeafletCartoDBGroupLayerBase.extend({
 
   options: {
     query:          "SELECT * FROM {{table_name}}",

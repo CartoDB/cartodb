@@ -134,9 +134,9 @@ describe('cartodb.js bundle', function() {
       expect(cdb.geo.PlainLayer).toEqual(jasmine.any(Function));
       expect(cdb.geo.TorqueLayer).toEqual(jasmine.any(Function));
       expect(cdb.geo.CartoDBLayer).toEqual(jasmine.any(Function));
-      expect(cdb.geo.CartoDBNamedMapLayer).toEqual(jasmine.any(Function));
+      expect(cdb.geo.CartoDBLayerGroupNamed).toEqual(jasmine.any(Function));
+      expect(cdb.geo.CartoDBLayerGroupAnonymous).toEqual(jasmine.any(Function));
       expect(cdb.geo.Layers).toEqual(jasmine.any(Function));
-      expect(cdb.geo.CartoDBGroupLayer).toEqual(jasmine.any(Function));
       expect(cdb.geo.Map).toEqual(jasmine.any(Function));
       expect(cdb.geo.MapView).toEqual(jasmine.any(Function));
     });

@@ -177,6 +177,25 @@ describe 'csv regression tests' do
     }].first.fetch(:count).should eq 5
   end
 
+  it 'imports records with cell line breaks in tables which require normalization' do
+    filepath    = path_to('in_cell_line_breaks_needs_norm.csv')
+    downloader  = Downloader.new(filepath)
+    runner      = Runner.new({
+                               pg: @pg_options,
+                               downloader: downloader,
+                               log: CartoDB::Importer2::Doubles::Log.new,
+                               user: CartoDB::Importer2::Doubles::User.new
+                             })
+    runner.run
+
+    result = runner.results.first
+    @db[%Q{
+      SELECT count(*)
+      FROM #{result.schema}.#{result.table_name}
+      AS count
+    }].first.fetch(:count).should eq 5
+  end
+
   it 'refuses to import csv with broken encoding' do
     pending "Need to update clinker to match production's ruby and stdlib"
     filepath    = path_to('broken_encoding.csv')

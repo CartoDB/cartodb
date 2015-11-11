@@ -13,7 +13,7 @@ module.exports = View.extend({
     '<%- rejectedCats === 0 ? "All selected" : selectedCats + " selected" %>'+
   '</p>'+
   '<div class="Widget-filterButtons">'+
-    '<% if (rejectedCats !== 0 && totalCats > 0) { %>'+
+    '<% if (rejectedCats !== 0 && totalCats > 0 || acceptedCats > 0) { %>'+
       '<button class="Widget-link Widget-filterButton js-all">select all</button>'+
     '<% } %>'+
     '<% if (totalCats > rejectedCats) { %>'+
@@ -36,12 +36,14 @@ module.exports = View.extend({
     var totalCats = this.model.getData().size();
     var selectedCats = this.model.getData().filter(function(m){ return m.get('selected') }).length;
     var rejectedCats = this.filter.getRejected().size();
+    var acceptedCats = this.filter.getAccepted().size();
 
     this.$el.html(
       template({
         totalCats: totalCats,
         selectedCats: selectedCats,
-        rejectedCats: rejectedCats
+        rejectedCats: rejectedCats,
+        acceptedCats: acceptedCats
       })
     );
     this[ totalCats > 0 ? 'show' : 'hide']();
@@ -55,9 +57,9 @@ module.exports = View.extend({
   },
 
   _onUnselectAll: function() {
-    this.filter.reject(
+    this.filter.rejectAll(
       this.model.getData().pluck('name')
-    )
+    );
   },
 
   _onSelectAll: function() {

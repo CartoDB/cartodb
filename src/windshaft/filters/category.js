@@ -20,18 +20,21 @@ module.exports = WindshaftFilterBase.extend({
 
   accept: function(values) {
     values = !_.isArray(values) ? [values] : values;
-    var arr = [];
+    var acceptedCount = this.acceptedCategories.size();
+
     _.each(values, function(value) {
-      var mdls = this.acceptedCategories.where({ name: value });
-      if (mdls.length === 0) {
-        arr.push({ name: value });
+      var d = { name: value };
+      var rejectedMdls = this.rejectedCategories.where(d);
+      if (rejectedMdls.length > 0) {
+        this.rejectedCategories.remove(rejectedMdls);
       }
+      // if (acceptedCount > 0) {
+        this.acceptedCategories.add(d);
+      // }
+
     }, this);
-    if (arr.length > 0) {
-      this.acceptedCategories.add(arr);
-      this.rejectedCategories.remove(arr);
-      this.trigger('change', this);
-    }
+
+    this.trigger('change', this);
   },
 
   acceptAll: function() {
@@ -40,8 +43,18 @@ module.exports = WindshaftFilterBase.extend({
     this.trigger('change', this);
   },
 
-  getAccepted: function() {
+  rejectAll: function(d) {
+    this.acceptedCategories.reset();
+    this.reject(d);
+    // Reject function will trigger change event
+  },
 
+  getAccepted: function() {
+    return this.acceptedCategories;
+  },
+
+  hasAccepts: function() {
+    return this.acceptedCategories.size() > 0;
   },
 
   getRejected: function() {
@@ -50,18 +63,18 @@ module.exports = WindshaftFilterBase.extend({
 
   reject: function(values) {
     values = !_.isArray(values) ? [values] : values;
-    var arr = [];
+
     _.each(values, function(value) {
-      var mdls = this.rejectedCategories.where({ name: value })
-      if (mdls.length === 0) {
-        arr.push({ name: value });
+      var d = { name: value };
+      var acceptedMdls = this.acceptedCategories.where(d);
+      if (acceptedMdls.length > 0) {
+        this.acceptedCategories.remove(acceptedMdls);
+      } else {
+        this.rejectedCategories.add(d);
       }
     }, this);
-    if (arr.length > 0) {
-      this.rejectedCategories.add(arr);
-      this.acceptedCategories.remove(arr);
-      this.trigger('change', this);
-    }
+
+    this.trigger('change', this);
   },
 
   isRejected: function(name) {

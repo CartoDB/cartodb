@@ -77,10 +77,10 @@ module.exports = WidgetView.extend({
 
   _setFilters: function(mdl) {
     var isSelected = mdl.get('selected');
-    var data = this.model.getData();
 
     if (isSelected) {
-      if (!this.filter.hasRejects()) {
+      if (!this.filter.hasRejects() && !this.filter.hasAccepts()) {
+        var data = this.model.getData();
         var rejects = [];
         // Make elements "unselected"
         data.map(function(m) {

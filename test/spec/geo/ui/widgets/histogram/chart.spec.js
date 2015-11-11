@@ -30,7 +30,10 @@ describe('geo/ui/widgets/histogram/chart', function() {
       handles: true,
       width: this.width,
       height: 100,
-      data: this.data
+      data: this.data,
+      xAxisTickFormat: function(d, i) {
+        return d;
+      }
     }));
     window.chart = this.view;
   });

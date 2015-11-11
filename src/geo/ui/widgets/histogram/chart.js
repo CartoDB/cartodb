@@ -17,6 +17,7 @@ module.exports = View.extend({
   initialize: function(opts) {
     if (!opts.width) throw new Error('opts.width is required');
     if (!opts.height) throw new Error('opts.height is required');
+    if (!_.isFunction(opts.xAxisTickFormat)) throw new Error('opts.xAxisTickFormat is required')
 
     _.bindAll(this, '_selectBars', '_adjustBrushHandles', '_onBrushMove', '_onBrushStart', '_onMouseMove', '_onMouseOut');
 
@@ -192,11 +193,6 @@ module.exports = View.extend({
 
   resetIndexes: function() {
     this.model.set({ lo_index: null, hi_index: null });
-  },
-
-  _formatNumber: function(value, unit) {
-    var format = d3.format('.2s');
-    return format(value) + (unit ? ' ' + unit : '');
   },
 
   _removeBars: function() {
@@ -586,7 +582,7 @@ module.exports = View.extend({
     .orient('bottom')
     .innerTickSize(0)
     .tickFormat(function(d, i) {
-      return (i === data.length - 1) ? self._formatNumber(data[i].end) : self._formatNumber(data[i].start);
+      return self.options.xAxisTickFormat(d, i, data)
     });
 
     this.chart.append('g')

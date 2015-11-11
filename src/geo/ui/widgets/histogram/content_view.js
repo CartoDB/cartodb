@@ -1,5 +1,6 @@
 var $ = require('jquery');
 var _ = require('underscore');
+var d3 = require('d3');
 var Model = require('cdb/core/model');
 var View = require('cdb/core/view');
 var WidgetContent = require('../standard/widget_content_view');
@@ -7,6 +8,7 @@ var WidgetHistogramChart = require('./chart');
 var d3 = require('d3');
 var placeholder = require('./placeholder.tpl');
 var template = require('./content.tpl');
+var xAxisTickFormatter = d3.format('.2s');
 
 /**
  * Default widget content view:
@@ -125,7 +127,8 @@ module.exports = WidgetContent.extend({
       handles: true,
       width: this.canvasWidth,
       height: this.canvasHeight,
-      data: this.dataModel.getDataWithOwnFilterApplied()
+      data: this.dataModel.getDataWithOwnFilterApplied(),
+      xAxisTickFormat: this._xAxisTickFormat.bind(this)
     }));
     this.$('.js-content').append(this.chart.el);
     this.addView(this.chart);
@@ -140,6 +143,16 @@ module.exports = WidgetContent.extend({
     this._updateStats();
   },
 
+  _xAxisTickFormat: function(d, i, data) {
+    return (i === data.length - 1)
+      ? this._formatNumber(data[i].end)
+      : this._formatNumber(data[i].start);
+  },
+
+  _formatNumber: function(value, unit) {
+    return xAxisTickFormatter(value) + (unit ? ' ' + unit : '');
+  },
+
   _renderMiniChart: function() {
     this.originalData = this.dataModel.getDataWithoutOwnFilterApplied();
     window.originalData = this.originalData;
@@ -152,7 +165,8 @@ module.exports = WidgetContent.extend({
       margin: { top: 0, right: 0, bottom: 0, left: 4 },
       y: 0,
       height: 20,
-      data: this.dataModel.getDataWithoutOwnFilterApplied()
+      data: this.dataModel.getDataWithoutOwnFilterApplied(),
+      xAxisTickFormat: this._xAxisTickFormat.bind(this)
     }));
 
     this.miniChart.bind('on_brush_end', this._onMiniRangeUpdated, this);

@@ -87,7 +87,7 @@ module.exports = WindshaftFilterBase.extend({
     var acceptedCats = { accept: _.map(_.pluck(this.acceptedCategories.toJSON(), 'name'), encodeURIComponent) };
     var rejectedCats = { reject: _.map(_.pluck(this.rejectedCategories.toJSON(), 'name'), encodeURIComponent) };
 
-    // TODO: review this block of code + possibilities
+    // TODO: review this block of code + other possibilities
     if (!this.isEmpty()) {
       if (rejectCount === 0 && acceptCount > 0 && rejectCount < this._dataOrigin.size()) {
         filter = acceptedCats;

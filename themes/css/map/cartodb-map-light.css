@@ -984,7 +984,6 @@ div.cartodb-legend-stack {
   position:absolute;
   bottom: 35px;
   right: 20px;
-  display:none;
 
   webkit-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
   -moz-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;

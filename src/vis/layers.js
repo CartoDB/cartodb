@@ -3,9 +3,9 @@ var TileLayer = require('../geo/map/tile-layer');
 var WMSLayer = require('../geo/map/wms-layer');
 var GMapsBaseLayer = require('../geo/map/gmaps-base-layer');
 var PlainLayer = require('../geo/map/plain-layer');
-var CartoDBGroupLayer = require('../geo/map/cartodb-group-layer');
 var CartoDBLayer = require('../geo/map/cartodb-layer');
-var CartoDBNamedMapLayer = require('../geo/map/cartodb-named-map-layer');
+var CartoDBLayerGroupAnonymous = require('../geo/map/cartodb-layer-group-anonymous');
+var CartoDBLayerGroupNamed = require('../geo/map/cartodb-layer-group-named');
 var TorqueLayer = require('../geo/map/torque-layer');
 
 /*
@@ -121,13 +121,13 @@ Layers.register('carto', cartoLayer);
 // TODO: This can be removed
 Layers.register('layergroup', function(vis, data) {
   normalizeOptions(vis, data);
-  return new CartoDBGroupLayer(data);
+  return new CartoDBLayerGroupAnonymous(data);
 });
 
 // TODO: This can be removed
 Layers.register('namedmap', function(vis, data) {
   normalizeOptions(vis, data);
-  return new CartoDBNamedMapLayer(data);
+  return new CartoDBLayerGroupNamed(data);
 });
 
 Layers.register('torque', function(vis, data) {

@@ -70,9 +70,9 @@ cdb.geo.WMSLayer = require('./geo/map/wms-layer');
 cdb.geo.PlainLayer = require('./geo/map/plain-layer');
 cdb.geo.TorqueLayer = require('./geo/map/torque-layer');
 cdb.geo.CartoDBLayer = require('./geo/map/cartodb-layer');
-cdb.geo.CartoDBNamedMapLayer = require('./geo/map/cartodb-named-map-layer');
+cdb.geo.CartoDBLayerGroupNamed = require('./geo/map/cartodb-layer-group-named');
+cdb.geo.CartoDBLayerGroupAnonymous = require('./geo/map/cartodb-layer-group-anonymous');
 cdb.geo.Layers = require('./geo/map/layers');
-cdb.geo.CartoDBGroupLayer = require('./geo/map/cartodb-group-layer');
 cdb.geo.Map = require('./geo/map');
 cdb.geo.MapView = require('./geo/map-view');
 

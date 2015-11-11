@@ -21,6 +21,8 @@ var Layers = require('./vis/layers');
 var Overlay = require('./vis/overlay');
 var INFOWINDOW_TEMPLATE = require('./vis/infowindow-template');
 var WidgetsView = require('cdb/geo/ui/widgets/widgets_view');
+var CartoDBLayerGroupNamed = require('cdb/geo/map/cartodb-layer-group-named');
+var CartoDBLayerGroupAnonymous = require('cdb/geo/map/cartodb-layer-group-anonymous');
 var TimeWidgetView = require('cdb/geo/ui/widgets/time/view');
 var Model = require('cdb/core/model');
 
@@ -394,45 +396,36 @@ var Vis = View.extend({
 
     var cartoDBLayers;
     var cartoDBLayerGroup;
-    var layerGroupData;
-    var layersData;
-    var layers;
-    var interactiveLayers;
-    _.each(data.layers, function(layer) {
-      if (layer.type === 'layergroup') {
-        layerGroupData = layer;
-        layersData = layer.options.layer_definition.layers;
-        cartoDBLayers = _.map(layersData, function(layerData) {
-          return Layers.create(layerData.type, self, layerData);
-        });
-        cartoDBLayerGroup = new cdb.geo.CartoDBGroupLayer({}, {
-          layers: cartoDBLayers
-        });
-
-      } else if (layer.type === 'namedmap') {
-        layerGroupData = layer;
-        layersData = layer.options.named_map.layers;
-        cartoDBLayers = _.map(layersData, function(layerData) {
-          return Layers.create("cartodb", self, layerData);
-        });
-        cartoDBLayerGroup = new cdb.geo.CartoDBGroupLayer({}, {
-          layers: cartoDBLayers
-        });
-      }
-    });
-
-    layers = _.map(data.layers, function(layerData) {
-      var model;
+    var layers = [];
+    var interactiveLayers = [];
+    _.each(data.layers, function(layerData) {
       if (layerData.type === 'layergroup' || layerData.type === 'namedmap') {
-        model = cartoDBLayerGroup;
+        var layersData;
+        var layerGroupClass;
+        if (layerData.type === 'layergroup') {
+          layersData = layerData.options.layer_definition.layers;
+          layerGroupClass = CartoDBLayerGroupAnonymous;
+        } else {
+          layersData = layerData.options.named_map.layers;
+          layerGroupClass = CartoDBLayerGroupNamed;
+        }
+        cartoDBLayers = _.map(layersData, function(layerData) {
+          var cartoDBLayer = Layers.create("cartodb", self, layerData);
+          interactiveLayers.push(cartoDBLayer);
+          return cartoDBLayer;
+        });
+        cartoDBLayerGroup = new layerGroupClass({}, {
+          layers: cartoDBLayers
+        });
+        layers.push(cartoDBLayerGroup);
       } else {
-        model = Layers.create(layerData.type || layerData.kind, self, layerData);
+        var layer = Layers.create(layerData.type, self, layerData);
+        layers.push(layer);
+        if (layerData.type === 'torque') {
+          interactiveLayers.push(layer);
+        }
       }
-      return model;
     });
-
-    var nonCartoDBLayers = _.filter(layers, function(lyr) { return lyr.get('type') === 'torque'; })
-    interactiveLayers = _.compact([].concat(cartoDBLayers, nonCartoDBLayers))
 
     // TODO: We can probably move this logic somewhere in cdb.geo.ui.Widget
     var widgetClasses = {

@@ -10,7 +10,7 @@ var LeafletMapView = require('cdb/geo/leaflet/leaflet-map-view');
 var TileLayer = require('cdb/geo/map/tile-layer');
 var LeafletTiledLayerView = require('cdb/geo/leaflet/leaflet-tiled-layer-view');
 var CartoDBLayer = require('cdb/geo/map/cartodb-layer');
-var CartoDBGroupLayer = require('cdb/geo/map/cartodb-group-layer');
+var CartoDBLayerGroupAnonymous = require('cdb/geo/map/cartodb-layer-group-anonymous');
 var PlainLayer = require('cdb/geo/map/plain-layer');
 var LeafletPlainLayerView = require('cdb/geo/leaflet/leaflet-plain-layer-view');
 var Geometry = require('cdb/geo/geometry');
@@ -129,20 +129,8 @@ describe('geo/leaflet/leaflet-map-view', function() {
     expect(layerView.setQuery).not.toEqual(undefined);
   });
 
-  it("should create a CartoDBLayerGroup when the layer is LayerGroup", function() {
-    layer = new CartoDBGroupLayer({
-      layer_definition: {
-          version: '1.0.0',
-          layers: [{
-             type: 'cartodb',
-             options: {
-               sql: 'select * from ne_10m_populated_places_simple',
-               cartocss: '#layer { marker-fill: red; }',
-               interactivity: ['test', 'cartodb_id']
-             }
-          }]
-        }
-    });
+  it("should create a CartoDBLayerGroupAnonymous when the layer is LayerGroup", function() {
+    layer = new CartoDBLayerGroupAnonymous({});
     var lyr = map.addLayer(layer);
     var layerView = mapView.getLayerByCid(lyr);
     expect(layerView.getLayerCount()).toEqual(1);

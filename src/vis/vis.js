@@ -23,6 +23,8 @@ var INFOWINDOW_TEMPLATE = require('./vis/infowindow-template');
 var WidgetsView = require('cdb/geo/ui/widgets/widgets_view');
 var CartoDBLayerGroupNamed = require('cdb/geo/map/cartodb-layer-group-named');
 var CartoDBLayerGroupAnonymous = require('cdb/geo/map/cartodb-layer-group-anonymous');
+var TimeWidgetView = require('cdb/geo/ui/widgets/time/view');
+var Model = require('cdb/core/model');
 
 /**
  * visulization creation
@@ -479,6 +481,14 @@ var Vis = View.extend({
       layers: layersWithWidgets
     });
     $('.js-dashboard').append(widgetsView.render().el);
+
+    // Time widget view
+    var timeWidgetModel = new Model({});
+    var timeWidgetView = new TimeWidgetView({
+      model: timeWidgetModel
+    });
+    this.addView(timeWidgetView);
+    $('.js-dashboard-map-wrapper').append(timeWidgetView.render().el);
 
     // TODO: Perhaps this "endpoint" could be part of the "datasource"?
     var endpoint = cdb.windshaft.config.MAPS_API_BASE_URL;

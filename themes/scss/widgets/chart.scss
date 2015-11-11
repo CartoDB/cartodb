@@ -2,13 +2,6 @@
   position: relative;
 }
 
-.Widget-chart {
-  display: none;
-}
-
-.Widget-chart.Widget-chart--fake {
-  display: block;
-}
 .Widget-chartItem.Widget-chartItem--fake {
   display: inline-block;
   width: 5%;

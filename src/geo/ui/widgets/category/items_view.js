@@ -82,14 +82,14 @@ module.exports = WidgetView.extend({
     if (isSelected) {
       if (!this.filter.hasRejects()) {
         var rejects = [];
+        // Make elements "unselected"
         data.map(function(m) {
           var name = m.get('name');
           if (name !== mdl.get('name')) {
             m.set('selected', false);
-            rejects.push(name);
           }
         });
-        this.filter.reject(rejects);
+        this.filter.accept(mdl.get('name'));
       } else {
         mdl.set('selected', false);
         this.filter.reject(mdl.get('name'));

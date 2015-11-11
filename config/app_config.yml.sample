@@ -205,6 +205,7 @@ defaults: &defaults
     data:
       kind: "carto"
       options:
+        # attribution:        'CartoDB attribution'
         query:              ""
         opacity:            0.99
         auto_bound:         false

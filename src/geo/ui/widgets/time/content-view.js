@@ -74,8 +74,11 @@ module.exports = WidgetContentView.extend({
       handles: true,
       width: this._histogramChartWidth(),
       height: this.viewModel.get('histogramChartHeight'),
-      data: this.model.get('data')
+      data: this.model.get('data'),
       // data: this.dataModel.getDataWithOwnFilterApplied()
+      xAxisTickFormat: function(d, i) {
+        return i;
+      }
     });
     this._appendView(this.histogramChartView);
     this.histogramChartView.show();

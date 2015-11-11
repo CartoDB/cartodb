@@ -4,11 +4,10 @@ var MapLayer = require('./map-layer');
 var Layers = require('./layers');
 var util = require('cdb/core/util');
 
-var CartoDBGroupLayer = MapLayer.extend({
+var CartoDBLayerGroupBase = MapLayer.extend({
 
   defaults: {
-    visible: true,
-    type: 'layergroup'
+    visible: true
   },
 
   initialize: function(attributes, options) {
@@ -27,7 +26,7 @@ var CartoDBGroupLayer = MapLayer.extend({
 
   getTileJSONFromTiles: function(layerIndex) {
     if (!this.get('urls')) {
-      throw 'URLS not fetched yet';
+      throw 'tileJSON for the layer cannot be calculated until urls are set';
     }
 
     // Layergroup
@@ -52,27 +51,14 @@ var CartoDBGroupLayer = MapLayer.extend({
   // an "Anonymous Map". For example, if there are two CartoDB layers and layer #0 is
   // hidden, this method would return -1 for #0 and 0 for layer #1.
   _getIndexOfVisibleLayer: function(layerIndex) {
-    if (this.get('namedMap') === true) {
-      return layerIndex;
-    } else {
-      var layers = {};
-      var i = 0;
-      this.layers.each(function(layer, index) {
-        if(layer.isVisible()) {
-          layers[index] = i;
-          i++;
-        }
-      });
-      var index = layers[layerIndex];
-      if (index === undefined) {
-        index = -1;
-      }
-
-      return index;
-    }
+    throw "_getIndexOfVisibleLayer must be implemented"
   },
 
   fetchAttributes: function(layer, featureID, callback) {
+    if (!this.get('baseURL')) {
+      throw 'Attributes cannot be fetched until baseURL is set';
+    }
+
     var index = this._getIndexOfVisibleLayer(layer);
     var url = [
       this.get('baseURL'),
@@ -99,4 +85,4 @@ var CartoDBGroupLayer = MapLayer.extend({
   }
 });
 
-module.exports = CartoDBGroupLayer;
+module.exports = CartoDBLayerGroupBase;

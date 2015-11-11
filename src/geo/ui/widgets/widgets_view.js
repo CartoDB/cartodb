@@ -1,7 +1,6 @@
 var View = require('cdb/core/view');
-var $ = require('jquery');
 var LayerWidgetsView = require('cdb/geo/ui/widgets/layer_widgets_view');
-// var simplebar = require('simplebar');
+require('simplebar');
 
 module.exports = View.extend({
 

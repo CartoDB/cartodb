@@ -4,7 +4,7 @@ var Model = require('cdb/core/model');
 var View = require('cdb/core/view');
 var WidgetContent = require('../standard/widget_content_view');
 var WidgetHistogramChart = require('./chart');
-
+var d3 = require('d3');
 var placeholder = require('./placeholder.tpl');
 var template = require('./content.tpl');
 

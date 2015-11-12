@@ -133,7 +133,7 @@
         layer_definition: {
           version: '1.0.0',
           layers: [{
-             type: 'cartodb', 
+             type: 'cartodb',
              options: {
                sql: "select * from european_countries_export",
                cartocss: '#layer { polygon-fill: #000; polygon-opacity: 0.8;}',
@@ -234,4 +234,22 @@
         done();
       }, 2000);
     });
+
+    it("should disable gmaps dragging and double click zooming when the map has drag disabled", function() {
+      var container = $('<div>').css({
+          'height': '200px',
+          'width': '200px'
+      });
+      var map = new cdb.geo.Map({
+        drag: false
+      });
+      var mapView = new cdb.geo.GoogleMapsMapView({
+        el: container,
+        map: map
+      });
+
+      expect(mapView.map_googlemaps.get('draggable')).toBeFalsy();
+      expect(mapView.map_googlemaps.get('disableDoubleClickZoom')).toBeFalsy();
+    });
+
   });

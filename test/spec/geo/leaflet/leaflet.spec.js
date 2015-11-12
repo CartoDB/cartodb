@@ -139,7 +139,7 @@ describe('LeafletMapView', function() {
   });
 
   it("should create the cartodb logo", function(done) {
-    layer = new cdb.geo.CartoDBLayer({ 
+    layer = new cdb.geo.CartoDBLayer({
       table_name: "INVENTADO",
       user_name: 'test',
       tile_style: 'test'
@@ -154,7 +154,7 @@ describe('LeafletMapView', function() {
   });
 
   it("should not add the cartodb logo when cartodb_logo = false", function(done) {
-    layer = new cdb.geo.CartoDBLayer({ 
+    layer = new cdb.geo.CartoDBLayer({
       table_name: "INVENTADO",
       user_name: 'test',
       tile_style: 'test',
@@ -495,5 +495,22 @@ describe('LeafletMapView', function() {
       expect(attributions).toEqual('Stamen, custom attribution, CartoDB attribution');
     });
   });
-});
 
+  it("should disable leaflet dragging and double click zooming when the map has drag disabled", function() {
+    var container = $('<div>').css({
+        'height': '200px',
+        'width': '200px'
+    });
+    var map = new cdb.geo.Map({
+      drag: false
+    });
+    var mapView = new cdb.geo.LeafletMapView({
+      el: container,
+      map: map
+    });
+
+    expect(mapView.map_leaflet.dragging.enabled()).toBeFalsy();
+    expect(mapView.map_leaflet.doubleClickZoom.enabled()).toBeFalsy();
+  });
+
+});

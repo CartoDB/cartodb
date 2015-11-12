@@ -20,6 +20,10 @@ class Carto::VisualizationQueryBuilder
     self.user_public(user).with_type(Carto::Visualization::TYPE_DERIVED)
   end
 
+  def self.user_all_visualizations(user)
+    new.with_user_id(user ? user.id : nil).with_type(Carto::Visualization::TYPE_DERIVED)
+  end
+
   def self.user_public(user)
     new.with_user_id(user ? user.id : nil).with_privacy(Carto::Visualization::PRIVACY_PUBLIC)
   end

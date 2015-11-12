@@ -1715,6 +1715,10 @@ describe User do
 
       user.reload
 
+      # Just to be sure all following checks will not falsely report ok using wrong schema
+      user.database_schema.should eq CartoDB::UserModule::DBService::SCHEMA_PUBLIC
+      user.database_schema.should_not eq user.username
+
       test_table_name = "table_perm_test"
 
       # Safety check
@@ -1739,6 +1743,8 @@ describe User do
         SHOW statement_timeout;
       }).first[:statement_timeout].should eq "#{user_timeout_secs}s"
 
+      # No check for `set_user_as_organization_member` as cartodb-postgresql already tests it
+
       # Checks for "grant_read_on_schema_queries(SCHEMA_CARTODB, db_user)"
       user.in_database(as: :superuser).fetch(%{
         SELECT * FROM has_schema_privilege('#{user.database_username}',
@@ -1746,7 +1752,7 @@ describe User do
       }).first[:has_schema_privilege].should == true
       user.in_database(as: :superuser).fetch(%{
         SELECT * FROM has_function_privilege('#{user.database_username}',
-                                             '_cdb_userquotainbytes()', 'EXECUTE');
+                                             '#{user.database_schema}._cdb_userquotainbytes()', 'EXECUTE');
       }).first[:has_function_privilege].should == true
       # SCHEMA_CARTODB has no tables to select from, except CDB_CONF on which has no permission
       user.in_database(as: :superuser).fetch(%{
@@ -1780,7 +1786,7 @@ describe User do
       })
       user.in_database(as: :superuser).fetch(%{
         SELECT * FROM has_table_privilege('#{user.database_username}',
-                                           '#{test_table_name}', 'SELECT');
+                                           '#{user.database_schema}.#{test_table_name}', 'SELECT');
       }).first[:has_table_privilege].should == true
       # _cdb_userquotainbytes is always created on the user schema
       user.in_database(as: :superuser).fetch(%{
@@ -1822,12 +1828,10 @@ describe User do
       }).first[:_cdb_userquotainbytes].nil?.should == false
       # Varnish invalidation function
       user.in_database(as: :superuser).fetch(%{
-        SELECT * FROM has_function_privilege('#{user.database_username}',
-                                             '#{user.database_schema}.cdb_invalidate_varnish(text)', 'EXECUTE');
+        SELECT * FROM has_function_privilege(
+          '#{user.database_username}',
+          '#{CartoDB::UserModule::DBService::SCHEMA_PUBLIC}.cdb_invalidate_varnish(text)', 'EXECUTE');
       }).first[:has_function_privilege].should == true
-
-      # INFO: Not implemented "db_service.set_user_as_organization_member" checks as I first want to be sure
-      # if intended to be there or not
 
       # Checks of publicuser
       user.in_database(as: :superuser).fetch(%{
@@ -1876,6 +1880,199 @@ describe User do
       }).first[:has_table_privilege].should == true
 
       user.destroy
+    end
+
+    it 'Properly setups a new organization user' do
+      # INFO: avoiding enable_remote_db_user
+      Cartodb.config[:signups] = nil
+
+      CartoDB::UserModule::DBService.any_instance.stubs(
+        cartodb_extension_version_pre_mu?: nil,
+        monitor_user_notification: nil,
+        enable_remote_db_user: nil
+      )
+
+      disk_quota = 1234567890
+      user_timeout_secs = 666
+
+      # create an owner
+      organization = create_org('org-user-creation-db-checks-organization', disk_quota * 10, 10)
+      user1 = create_user email: 'user1@whatever.com', username: 'creation-db-checks-org-owner', password: 'user11'
+      user1.organization = organization
+      user1.save
+      organization.owner_id = user1.id
+      organization.save
+      organization.reload
+      user1.reload
+
+      user = ::User.new
+      user.username = String.random(8).downcase
+      user.email = String.random(8).downcase + '@' + String.random(5).downcase + '.com'
+      user.password = user.email.split('@').first
+      user.password_confirmation = user.password
+      user.admin = false
+      user.private_tables_enabled = true
+      user.private_maps_enabled = true
+      user.enabled = true
+      user.table_quota = 500
+      user.quota_in_bytes = disk_quota
+      user.user_timeout = user_timeout_secs * 1000
+      user.database_timeout = 123000
+      user.geocoding_quota = 1000
+      user.geocoding_block_price = 1500
+      user.sync_tables_enabled = false
+      user.organization = organization
+      user.twitter_datasource_enabled = false
+      user.avatar_url = user.default_avatar
+
+      user.valid?.should == true
+
+      user.save
+
+      user.nil?.should == false
+
+      # To avoid connection pool caching
+      CartoDB::UserModule::DBService.terminate_database_connections(user.database_name, user.database_host)
+
+      user.reload
+
+      # Just to be sure all following checks will not falsely report ok using wrong schema
+      user.database_schema.should_not eq CartoDB::UserModule::DBService::SCHEMA_PUBLIC
+      user.database_schema.should eq user.username
+
+      test_table_name = "table_perm_test"
+
+      # Safety check
+      user.in_database.fetch(%{
+        SELECT * FROM pg_extension WHERE extname='postgis';
+      }).first.nil?.should == false
+
+      # Replicate functionality inside ::UserModule::DBService.configure_database
+      # -------------------------------------------------------------------
+
+      user.in_database.fetch(%{
+        SHOW search_path;
+      }).first[:search_path].should == user.db_service.build_search_path(user.database_schema, false)
+
+      # @see http://www.postgresql.org/docs/current/static/functions-info.html#FUNCTIONS-INFO-ACCESS-TABLE
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_database_privilege('#{user.database_username}', '#{user.database_name}', 'CONNECT');
+      }).first[:has_database_privilege].should == true
+
+      # Careful as PG formatter timeout output changes to XXmin if too big
+      user.in_database.fetch(%{
+        SHOW statement_timeout;
+      }).first[:statement_timeout].should eq "#{user_timeout_secs}s"
+
+      # No check for `set_user_as_organization_member` as cartodb-postgresql already tests it
+
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_function_privilege('#{user.database_username}',
+                                             '#{user.database_schema}._cdb_userquotainbytes()', 'EXECUTE');
+      }).first[:has_function_privilege].should == true
+      # SCHEMA_CARTODB has no tables to select from, except CDB_CONF on which has no permission
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_table_privilege('#{user.database_username}',
+                                           'cartodb.CDB_CONF',
+                                           'SELECT, INSERT, UPDATE, DELETE, TRUNCATE, REFERENCES, TRIGGER');
+      }).first[:has_table_privilege].should == false
+
+      # Checks on SCHEMA_PUBLIC
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_schema_privilege('#{user.database_username}',
+                                           '#{CartoDB::UserModule::DBService::SCHEMA_PUBLIC}', 'USAGE');
+      }).first[:has_schema_privilege].should == true
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_table_privilege('#{user.database_username}',
+                                           '#{CartoDB::UserModule::DBService::SCHEMA_PUBLIC}.spatial_ref_sys', 'SELECT');
+      }).first[:has_table_privilege].should == true
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_function_privilege('#{user.database_username}',
+                                             '#{CartoDB::UserModule::DBService::SCHEMA_PUBLIC}._postgis_stats(regclass, text, text)',
+                                             'EXECUTE');
+      }).first[:has_function_privilege].should == true
+
+      # Checks on own schema
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_schema_privilege('#{user.database_username}',
+                                           '#{user.database_schema}', 'CREATE, USAGE');
+      }).first[:has_schema_privilege].should == true
+      user.in_database.run(%{
+        CREATE TABLE #{test_table_name}(x int);
+      })
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_table_privilege('#{user.database_username}',
+                                           '#{user.database_schema}.#{test_table_name}', 'SELECT');
+      }).first[:has_table_privilege].should == true
+      # _cdb_userquotainbytes is always created on the user schema
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_function_privilege('#{user.database_username}',
+                                             '#{user.database_schema}._cdb_userquotainbytes()', 'EXECUTE');
+      }).first[:has_function_privilege].should == true
+
+      # quota check
+      user.in_database(as: :superuser).fetch(%{
+        SELECT #{user.database_schema}._CDB_UserQuotaInBytes();
+      }).first[:_cdb_userquotainbytes].nil?.should == false
+      # Varnish invalidation function
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_function_privilege(
+          '#{user.database_username}',
+          '#{CartoDB::UserModule::DBService::SCHEMA_PUBLIC}.cdb_invalidate_varnish(text)', 'EXECUTE');
+      }).first[:has_function_privilege].should == true
+
+      # Checks of publicuser
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_database_privilege('#{CartoDB::PUBLIC_DB_USER}',
+                                           '#{user.database_name}', 'CONNECT');
+      }).first[:has_database_privilege].should == true
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_schema_privilege('#{CartoDB::PUBLIC_DB_USER}',
+                                           '#{user.database_schema}', 'USAGE');
+      }).first[:has_schema_privilege].should == true
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_schema_privilege('#{CartoDB::PUBLIC_DB_USER}',
+                                           '#{CartoDB::UserModule::DBService::SCHEMA_CARTODB}', 'USAGE');
+      }).first[:has_schema_privilege].should == true
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_function_privilege(
+          '#{CartoDB::PUBLIC_DB_USER}',
+          '#{CartoDB::UserModule::DBService::SCHEMA_CARTODB}.CDB_LatLng (NUMERIC, NUMERIC)',
+          'EXECUTE');
+      }).first[:has_function_privilege].should == true
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_table_privilege('#{CartoDB::PUBLIC_DB_USER}',
+                                           '#{CartoDB::UserModule::DBService::SCHEMA_CARTODB}.CDB_CONF',
+                                           'SELECT, INSERT, UPDATE, DELETE, TRUNCATE, REFERENCES, TRIGGER');
+      }).first[:has_table_privilege].should == false
+
+      # Additional public user grants/revokes
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_table_privilege('#{CartoDB::PUBLIC_DB_USER}',
+                                           '#{CartoDB::UserModule::DBService::SCHEMA_CARTODB}.cdb_tablemetadata',
+                                           'SELECT');
+      }).first[:has_table_privilege].should == false
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_schema_privilege('#{CartoDB::PUBLIC_DB_USER}',
+                                           '#{CartoDB::UserModule::DBService::SCHEMA_PUBLIC}', 'USAGE');
+      }).first[:has_schema_privilege].should == true
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_function_privilege(
+          '#{CartoDB::PUBLIC_DB_USER}',
+          '#{CartoDB::UserModule::DBService::SCHEMA_PUBLIC}._postgis_stats(regclass, text, text)',
+          'EXECUTE');
+      }).first[:has_function_privilege].should == true
+      user.in_database(as: :superuser).fetch(%{
+        SELECT * FROM has_table_privilege('#{CartoDB::PUBLIC_DB_USER}',
+                                          '#{CartoDB::UserModule::DBService::SCHEMA_PUBLIC}.spatial_ref_sys', 'SELECT');
+      }).first[:has_table_privilege].should == true
+
+      user.in_database.run(%{
+        DROP TABLE #{user.database_schema}.#{test_table_name};
+      })
+
+      user.destroy
+      organization.destroy
     end
   end
 

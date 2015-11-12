@@ -1,6 +1,6 @@
 // cartodb.js version: 3.15.8
 // uncompressed version: cartodb.uncompressed.js
-// sha: 60285edb65f6575c8a34799fde55308751251c5f
+// sha: 586d5ad17fb657fe1a4b693c95079469b14576eb
 (function() {
   var define;  // Undefine define (require.js), see https://github.com/CartoDB/cartodb.js/issues/543
   var root = this;
@@ -30811,7 +30811,8 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     if (!cdb.core.util.ie || (cdb.core.util.browser.ie && cdb.core.util.browser.ie.version > 8)) {
       this.$el.css({
         'marginBottom':'-10px',
-        'display':'block',
+        'display': 'block',
+        'visibility':'visible',
         opacity:0
       });
 
@@ -30837,7 +30838,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
         opacity:      "0",
         display:      "block"
       }, 180, function() {
-        self.$el.css({display: "none"});
+        self.$el.css({visibility: "hidden"});
       });
     } else {
       this.$el.hide();
@@ -30851,7 +30852,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     if(this.isHidden()) return;
 
     var
-    offset          = this.model.get("offset")
+    offset          = this.model.get("offset"),
     pos             = this.mapView.latLonToPixel(this.model.get("latlng")),
     x               = this.$el.position().left,
     y               = this.$el.position().top,
@@ -30867,7 +30868,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   /**
    *  Adjust pan to show correctly the infowindow
    */
-  adjustPan: function (callback) {
+  adjustPan: function () {
     var offset = this.model.get("offset");
 
     if (!this.model.get("autoPan") || this.isHidden()) { return; }

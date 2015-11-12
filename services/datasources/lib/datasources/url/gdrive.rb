@@ -37,13 +37,9 @@ module CartoDB
         # @throws UninitializedError
         # @throws MissingConfigurationError
         def initialize(config, user)
-          super
+          super(config, user, %w{ application_name client_id client_secret callback_url }, DATASOURCE_NAME)
 
           raise UninitializedError.new('missing user instance', DATASOURCE_NAME)            if user.nil?
-          raise MissingConfigurationError.new('missing application_name', DATASOURCE_NAME)  unless config.include?('application_name')
-          raise MissingConfigurationError.new('missing client_id', DATASOURCE_NAME)         unless config.include?('client_id')
-          raise MissingConfigurationError.new('missing client_secret', DATASOURCE_NAME)     unless config.include?('client_secret')
-          raise MissingConfigurationError.new('missing callback_url', DATASOURCE_NAME)      unless config.include?('callback_url')
 
           self.filter=[]
           @refresh_token = nil
@@ -95,12 +91,17 @@ module CartoDB
         # @param use_callback_flow : bool
         # @return string : Access token
         # @throws AuthError
-        def validate_auth_code(auth_code, use_callback_flow=true)
+        def validate_auth_code(auth_code, use_callback_flow = true)
           unless use_callback_flow
             @client.authorization.redirect_uri = REDIRECT_URI
           end
           @client.authorization.code = auth_code
           @client.authorization.fetch_access_token!
+          if @client.authorization.refresh_token.nil?
+            raise AuthError.new(
+              "Error validating auth token. Is this Google account linked to another CartoDB account?",
+              DATASOURCE_NAME)
+          end
           @refresh_token = @client.authorization.refresh_token
         rescue Google::APIClient::InvalidIDTokenError, Signet::AuthorizationError => ex
           raise AuthError.new("validating auth code: #{ex.message}", DATASOURCE_NAME)
@@ -298,9 +299,9 @@ module CartoDB
             timeout: 600
             )
           response = http_client.get("https://accounts.google.com/o/oauth2/revoke?token=#{token}")
-            if response.code == 200
-              true
-            end
+          if response.code == 200
+            true
+          end
         rescue => ex
           raise AuthError.new("revoke_token: #{ex.message}", DATASOURCE_NAME)
         end
@@ -338,14 +339,6 @@ module CartoDB
             data[:size] = item_data.fetch('fileSize').to_i
           end
           data
-        end
-
-        # Calculates a checksum of given input
-        # @param origin string
-        # @return string
-        def checksum_of(origin)
-          #noinspection RubyArgCount
-          Zlib::crc32(origin).to_s
         end
 
         def clean_filename(name)

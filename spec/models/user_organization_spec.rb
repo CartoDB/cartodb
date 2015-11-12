@@ -50,5 +50,35 @@ describe UserOrganization do
     @owner.reload
 
     @owner.real_tables.count.should == 1
+
+    @owner.database_schema.should == @owner.username
+  end
+
+  it 'keeps tables and metadata if table movement fails' do
+    ::User.any_instance.stubs(:create_in_central).returns(true)
+    ::User.any_instance.stubs(:update_in_central).returns(true)
+
+    # This is coupled to DBService#move_tables_to_schema implementation, but we need a way to simulate a failure
+    Carto::UserTable.stubs(:find_by_user_id_and_name).raises(StandardError.new("Simulation of table movement failure"))
+
+    @organization = Organization.new(quota_in_bytes: 1234567890, name: 'org-that-will-fail', seats: 5).save
+    @owner = create_user(quota_in_bytes: 524288000, table_quota: 500)
+    @owner.in_database.run('create table no_cartodbfied_table (test integer)')
+
+    # Checks that should also be met afterwards
+    @owner.database_schema.should == 'public'
+    @owner.real_tables.count.should == 1
+
+    @owner.db_service.schema_exists?(@owner.username).should == false
+
+    # Promote
+    owner_org = CartoDB::UserOrganization.new(@organization.id, @owner.id)
+    expect { owner_org.promote_user_to_admin }.to raise_error StandardError
+    @owner.reload
+
+    @owner.database_schema.should == 'public'
+    @owner.real_tables.count.should == 1
+
+    @owner.db_service.schema_exists?(@owner.username).should == false
   end
 end

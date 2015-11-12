@@ -16,6 +16,9 @@ namespace :cartodb do
         visualization = CartoDB::Visualization::Member.new(id: visualization_id)
         preview_image = Carto::StaticMapsURLHelper.new.url_for_static_map_without_request(data[:user], 'http' , visualization, 600, 300)
         trending_maps_lib.notify_trending_map(visualization_id, data[:mapviews], preview_image) unless simulation
+
+        event_properties = { map_id: visualization.id, map_name: visualization.fetch.name, mapviews: data[:mapviews] }
+        Cartodb::EventTracker.new.send_event(visualization.fetch.user, 'Scored trending map', event_properties) unless simulation
       end
 
       trending_maps_lib.send_trending_map_report(trending_maps) unless simulation

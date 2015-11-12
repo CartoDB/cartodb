@@ -4,6 +4,7 @@ require_dependency 'resque/user_jobs'
 require_dependency 'static_maps_url_helper'
 require_relative '../carto/admin/user_table_public_map_adapter'
 require_relative '../carto/admin/visualization_public_map_adapter'
+require_relative '../carto/api/visualization_presenter'
 require_relative '../../helpers/embed_redis_cache'
 require_dependency 'static_maps_url_helper'
 
@@ -195,14 +196,11 @@ class Admin::VisualizationsController < Admin::AdminController
     end
     # Legacy redirect, now all public pages also with org. name
     if eligible_for_redirect?(@visualization.user)
-      redirect_to CartoDB.url(self,
-                                'public_visualizations_public_map',
-                                {
-                                  id: "#{@visualization.user.username}.#{params[:id]}",
-                                  redirected:true
-                                },
-                                @visualization.user
-                              ) and return
+      # INFO: here we only want the presenter to rewrite the url of @visualization.user namespacing it like 'schema.id',
+      # so current_user also equals @visualization.user
+      visualization_presenter = Carto::Api::VisualizationPresenter.new(@visualization, @visualization.user, self)
+      redirect_to visualization_presenter.privacy_aware_map_url({ redirected: true },
+                                                                'public_visualizations_public_map') and return
     end
 
     if @visualization.can_be_cached?

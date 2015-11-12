@@ -133,7 +133,7 @@ _Don't forget to restart Rails after you have modified `config/app_config.yml`._
 
 Backend is a Rails 3 application, there's no specific workflow you must follow to run it.
 
-Every PR should be covered by tests. If you create a new file please add it to `Makefile`. Useful commands:
+Every PR should be covered by tests. If you create a new file please add it to `Makefiles`. Useful commands:
 - `make check`: prepare the test database and run the full suite (takes a while).
 - `make prepare-test-db`: prepare the test database.
 - `bundle exec rspec <spec file>`: run a spec.

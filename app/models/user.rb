@@ -662,20 +662,15 @@ class User < Sequel::Model
   end
 
   def dedicated_support?
-    /(FREE|MAGELLAN|JOHN SNOW|ACADEMY|ACADEMIC|ON HOLD)/i.match(self.account_type) ? false : true
+    Carto::AccountType.new.dedicated_support?(self)
   end
 
   def remove_logo?
-    /(FREE|MAGELLAN|JOHN SNOW|ACADEMY|ACADEMIC|ON HOLD)/i.match(self.account_type) ? false : true
+    Carto::AccountType.new.remove_logo?(self)
   end
 
   def soft_geocoding_limit?
-    if self[:soft_geocoding_limit].nil?
-      plan_list = "ACADEMIC|Academy|Academic|INTERNAL|FREE|AMBASSADOR|ACADEMIC MAGELLAN|PARTNER|FREE|Magellan|Academy|ACADEMIC|AMBASSADOR"
-      (self.account_type =~ /(#{plan_list})/ ? false : true)
-    else
-      self[:soft_geocoding_limit]
-    end
+    Carto::AccountType.new.soft_geocoding_limit?(self)
   end
   alias_method :soft_geocoding_limit, :soft_geocoding_limit?
 
@@ -1170,10 +1165,6 @@ class User < Sequel::Model
     DataImport.where(user_id: self.id).count
   end
 
-  def maps_count
-    Map.where(user_id: self.id).count
-  end
-
   # Get the count of public visualizations
   def public_visualization_count
     visualization_count({
@@ -1181,6 +1172,15 @@ class User < Sequel::Model
       privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC,
       exclude_shared: true,
       exclude_raster: true
+    })
+  end
+
+  # Get the count of all visualizations
+  def all_visualization_count
+    visualization_count({
+      type: CartoDB::Visualization::Member::TYPE_DERIVED,
+      exclude_shared: false,
+      exclude_raster: false
     })
   end
 

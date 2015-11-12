@@ -34,12 +34,7 @@ module CartoDB
         # @throws UninitializedError
         # @throws MissingConfigurationError
         def initialize(config, user)
-          super
-
-          raise UninitializedError.new('missing user instance', DATASOURCE_NAME)        if user.nil?
-          raise MissingConfigurationError.new('missing app_key', DATASOURCE_NAME)       unless config.include?('app_key')
-          raise MissingConfigurationError.new('missing app_secret', DATASOURCE_NAME)    unless config.include?('app_secret')
-          raise MissingConfigurationError.new('missing callback_url', DATASOURCE_NAME)  unless config.include?('callback_url')
+          super(config, user, %w{ app_key app_secret callback_url }, DATASOURCE_NAME)
 
           @user               = user
           @app_key            = config.fetch('app_key')
@@ -278,14 +273,6 @@ module CartoDB
             checksum: checksum_of(item_data.fetch('rev')),
             size:     item_data.fetch('bytes').to_i
           }
-        end
-
-        # Calculates a checksum of given input
-        # @param origin string
-        # @return string
-        def checksum_of(origin)
-          #noinspection RubyArgCount
-          Zlib::crc32(origin).to_s
         end
 
       end

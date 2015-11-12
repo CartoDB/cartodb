@@ -9,8 +9,6 @@ module.exports = {
   LeafletCartoDBLayerGroupView: require('./leaflet/leaflet-cartodb-layer-group-view'),
   LeafletCartoDBNamedMapView: require('./leaflet/leaflet-cartodb-layer-group-view'),
 
-  LeafletLayerCartoDBView: require('./leaflet/leaflet-layer-cartodb-view'),
-
   leaflet: {
     PointView: require('./leaflet/leaflet-point-view'),
     PathView: require('./leaflet/leaflet-path-view')

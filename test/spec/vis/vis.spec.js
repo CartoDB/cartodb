@@ -6,7 +6,6 @@ var L = require('leaflet');
 var cdb = require('cdb');
 _.extend(cdb.geo, require('cdb/geo/leaflet'));
 _.extend(cdb.geo, require('cdb/geo/gmaps'));
-_.extend(L, require('cdb/geo/leaflet-extensions'));
 
 var createVis = require('cdb/api/create-vis');
 var View = require('cdb/core/view');

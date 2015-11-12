@@ -213,8 +213,8 @@ module.exports = WidgetContent.extend({
 
     this.lockedByUser = true;
 
-    //var start = data[loBarIndex].start;
-    //var end = data[hiBarIndex - 1].end;
+    var start = data[loBarIndex].start;
+    var end = data[hiBarIndex - 1].end;
 
     //this.dataModel.set({ start: start, end: end });
 

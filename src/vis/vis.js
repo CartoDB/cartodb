@@ -24,7 +24,8 @@ var WidgetsView = require('cdb/geo/ui/widgets/widgets_view');
 var CartoDBLayerGroupNamed = require('cdb/geo/map/cartodb-layer-group-named');
 var CartoDBLayerGroupAnonymous = require('cdb/geo/map/cartodb-layer-group-anonymous');
 var TimeWidgetView = require('cdb/geo/ui/widgets/time/view');
-var Model = require('cdb/core/model');
+var TorqueLayerModel = require('cdb/geo/map/torque-layer');
+var TorqueTimeModel = require('cdb/geo/ui/widgets/time/torque-time-model');
 
 /**
  * visulization creation
@@ -419,6 +420,7 @@ var Vis = View.extend({
         });
         layers.push(cartoDBLayerGroup);
       } else {
+        // Treat differently since this kind of layer is rendered client-side (and not through the tiler)
         var layer = Layers.create(layerData.type, self, layerData);
         layers.push(layer);
         if (layerData.type === 'torque') {
@@ -476,6 +478,7 @@ var Vis = View.extend({
     });
 
     // TODO: This will need to change when new layers are added / removed
+    // TODO torque layer(s?) should not be added here, since rendered separately further down, how to organize better?
     var layersWithWidgets = new Backbone.Collection(interactiveLayers);
     var widgetsView = new WidgetsView({
       layers: layersWithWidgets
@@ -483,15 +486,17 @@ var Vis = View.extend({
     $('.js-dashboard').append(widgetsView.render().el);
 
     // Time widget view
-    var timeWidgetModel = new Model({
-      // TODO fake data, create real data from a layer
-      data: [{"bin":0,"start":38331,"end":45855.1,"freq":1,"min":38331,"max":38331},{"bin":1,"start":45855.1,"end":53379.2,"freq":1,"min":53968,"max":53968},{"bin":2,"start":53379.2,"end":60903.3,"freq":1,"min":55611,"max":55611},{"bin":3,"start":60903.3,"end":68427.4,"freq":1,"min":70151,"max":70151},{"bin":4,"start":68427.4,"end":75951.5,"freq":2,"min":78448,"max":79017},{"bin":5,"start":75951.5,"end":83475.6,"freq":1,"min":87877,"max":87877},{"bin":6,"start":83475.6,"end":90999.70000000001,"freq":0},{"bin":7,"start":90999.70000000001,"end":98523.8,"freq":0},{"bin":8,"start":98523.8,"end":106047.90000000001,"freq":0},{"bin":9,"start":106047.90000000001,"end":113572,"freq":1,"min":113572,"max":113572}],
-    });
-    var timeWidgetView = new TimeWidgetView({
-      model: timeWidgetModel
-    });
-    this.addView(timeWidgetView);
-    $('.js-dashboard-map-wrapper').append(timeWidgetView.render().el);
+    var torqueLayerModel = _.find(interactiveLayers, function(m) { return m.get('type') === 'torque' });
+    if (torqueLayerModel) {
+      var timeWidgetModel = new TorqueTimeModel(undefined, {
+        torqueLayerModel: torqueLayerModel
+      });
+      var timeWidgetView = new TimeWidgetView({
+        model: timeWidgetModel
+      });
+      this.addView(timeWidgetView);
+      $('.js-dashboard-map-wrapper').append(timeWidgetView.render().el);
+    }
 
     // TODO: Perhaps this "endpoint" could be part of the "datasource"?
     var endpoint = cdb.windshaft.config.MAPS_API_BASE_URL;

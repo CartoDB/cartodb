@@ -1,1 +1,3 @@
-<span><%- label %></span>
+<button>
+  <span><%- label %></span>
+</button>

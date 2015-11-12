@@ -7,11 +7,11 @@ var template = require('./step-info.tpl');
 module.exports = View.extend({
 
   initialize: function() {
-    this.model.bind('change:step', this.render, this);
+    this.model.bind('change:stepDate', this.render, this);
   },
 
   render: function() {
-    var step = this.model.get('step') || '…';
+    var step = this.model.get('stepDate') || '…';
     this.$el.html(
       template({
         step: step.toString()

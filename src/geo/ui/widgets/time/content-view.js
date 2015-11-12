@@ -6,6 +6,12 @@ var ControlsView = require('./controls-view');
 var StepInfoView = require('./step-info-view');
 var HistogramChartView = require('../histogram/chart');
 
+/**
+ * View representing a time-series widget
+ * Expects a model that have the following attrs:
+ *  - data: an array of bins, where each item contains {freq, start, end}
+ *  - step: if present, controls the current time item being rendered
+ */
 module.exports = WidgetContentView.extend({
 
   defaults: {
@@ -20,7 +26,7 @@ module.exports = WidgetContentView.extend({
 
     this.viewModel = new Model({
       width: this.defaults.width,
-      margins: { // should match CSS
+      margins: { // TODO could be calculated from element styles instead of duplicated numbers here?
         top: 0,
         right: 24,
         bottom: 0,
@@ -75,7 +81,6 @@ module.exports = WidgetContentView.extend({
       width: this._histogramChartWidth(),
       height: this.viewModel.get('histogramChartHeight'),
       data: this.model.get('data'),
-      // data: this.dataModel.getDataWithOwnFilterApplied()
       xAxisTickFormat: function(d, i) {
         return i;
       }

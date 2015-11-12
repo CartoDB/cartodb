@@ -80,7 +80,7 @@ module.exports = View.extend({
 
     this.chart.attr('width', width);
 
-    this.refresh();
+    this.reset();
     this.selectRange(loBarIndex, hiBarIndex);
   },
 
@@ -128,24 +128,26 @@ module.exports = View.extend({
     }
 
     var freq = data[barIndex].freq;
+    var hoverProperties = {};
 
-    var format = d3.format('0,000');
     var bar = this.chart.select('.Bar:nth-child(' + (barIndex + 1) + ')');
 
     if (bar && bar.node() && !bar.classed('is-selected')) {
+
       var left = (barIndex * this.barWidth) + (this.barWidth/2) - 22;
-      var topMargin = 0;
-      var top = this.yScale(freq) - 20 + this.model.get('pos').y + this.$el.position().top;
+      var top = this.yScale(freq) + this.model.get('pos').y + this.$el.position().top - 20;
 
       if (!this._isDragging()) {
-        this.trigger('hover', { top: top, left: left, freq: freq });
+        hoverProperties = { top: top, left: left, freq: freq };
       } else {
-        this.trigger('hover', { value: null });
+        hoverProperties = { value: null };
       }
 
     } else {
-      this.trigger('hover', { value: null });
+      hoverProperties = { value: null };
     }
+
+    this.trigger('hover', hoverProperties);
 
     this.chart.selectAll('.Bar')
     .classed('is-highlighted', false);
@@ -163,10 +165,17 @@ module.exports = View.extend({
     this.model.bind('change:dragging', this._onChangeDragging, this);
   },
 
-  refresh: function() {
+  reset: function() {
     this._removeChartContent();
     this._setupDimensions();
     this._generateChartContent();
+  },
+
+  refresh: function() {
+    this._setupDimensions();
+    this._removeXAxis();
+    this._generateXAxis();
+    this._updateChart();
   },
 
   lock: function() {
@@ -199,10 +208,14 @@ module.exports = View.extend({
     this.chart.classed('is-selectable', false);
   },
 
+  _removeLines: function() {
+    this.chart.select('.Lines').remove();
+  },
+
   _removeChartContent: function() {
     this._removeBrush();
-    this._removeBars();
     this._removeHandles();
+    this._removeBars();
     this._removeXAxis();
     this._removeLines();
   },
@@ -217,10 +230,6 @@ module.exports = View.extend({
 
   resize: function(width) {
     this.model.set('width', width);
-  },
-
-  _removeLines: function() {
-    this.chart.select('.Lines').remove();
   },
 
   _generateLines: function() {
@@ -624,17 +633,11 @@ module.exports = View.extend({
     }, 200);
   },
 
-  _generateBars: function() {
+  _updateChart: function() {
     var self = this;
     var data = this.model.get('data');
 
-    this._calcBarWidth();
-
-    var bars = this.chart.append('g')
-
-    .attr('transform', 'translate(0, 0 )')
-    .attr('class', 'Bars')
-    .selectAll('.Bar')
+    var bars = this.chart.selectAll('.Bar')
     .data(data);
 
     bars
@@ -650,11 +653,63 @@ module.exports = View.extend({
     .attr('width', this.barWidth - 1);
 
     bars.transition()
+    .duration(200)
+    .attr('height', function(d) {
+      var h = self.chartHeight - self.yScale(d.freq);
+      var height = _.isEmpty(d) || (h < 0 || h === undefined) ? 0 : h;
+      return height;
+    })
+    .attr('y', function(d) {
+      return _.isEmpty(d) ? self.chartHeight : self.yScale(d.freq);
+    });
+
+    bars
+    .exit()
+    .transition()
+    .duration(200)
+    .attr('height', function(d) {
+      return 0;
+    })
+    .attr('y', function(d) {
+      return self.chartHeight;
+    });
+  },
+
+  _generateBars: function() {
+    var self = this;
+    var data = this.model.get('data');
+
+    this._calcBarWidth();
+
+    var bars = this.chart.append('g')
+
+    .attr('transform', 'translate(0, 0 )')
+    .attr('class', 'Bars')
+    .selectAll('.Bar')
+    .data(data);
+
+    bars.exit().remove();
+
+    bars
+    .enter()
+    .append('rect')
+    .attr('class', 'Bar')
+    .attr('data', function(d) { return _.isEmpty(d) ? 0 :  d.freq; })
+    .attr('transform', function(d, i) {
+      return 'translate(' + (i * self.barWidth) + ', 0 )';
+    })
+    .attr('y', self.chartHeight)
+    .attr('height', 0)
+    .attr('width', this.barWidth - 1);
+
+    bars
+    .transition()
     .ease(this.defaults.transitionType)
     .duration(self.defaults.duration)
     .delay(function(d, i) {
       return Math.random() * (100 + i * 10);
     })
+    .transition()
     .attr('height', function(d) {
       return _.isEmpty(d) ? 0 : self.chartHeight - self.yScale(d.freq);
     })

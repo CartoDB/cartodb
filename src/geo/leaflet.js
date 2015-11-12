@@ -1,3 +1,4 @@
+// TODO: Do we need this?
 module.exports = {
   LeafletLayerView: require('./leaflet/leaflet-layer-view'),
 
@@ -5,9 +6,7 @@ module.exports = {
   LeafletTiledLayerView: require('./leaflet/leaflet-tiled-layer-view'),
   LeafletGmapsTiledLayerView: require('./leaflet/leaflet-gmaps-tiled-layer-view'),
   LeafletWMSLayerView: require('./leaflet/leaflet-wms-layer-view'),
-
   LeafletCartoDBLayerGroupView: require('./leaflet/leaflet-cartodb-layer-group-view'),
-  LeafletCartoDBNamedMapView: require('./leaflet/leaflet-cartodb-layer-group-view'),
 
   leaflet: {
     PointView: require('./leaflet/leaflet-point-view'),

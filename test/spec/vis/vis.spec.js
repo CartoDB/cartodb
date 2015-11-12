@@ -472,12 +472,11 @@ describe("Vis", function() {
         ],
       };
 
-      vis.load(mapConfig);
-
-      setTimeout(function () {
-        expect(vis.map.get('drag')).toEqual(true);
-        done();
-      }, 500);
+      vis.load(mapConfig)
+        .done(function() {
+          expect(vis.map.get('drag')).toBeTruthy();
+          done();
+        });
 
     });
 
@@ -509,12 +508,11 @@ describe("Vis", function() {
         ],
       };
 
-      vis.load(mapConfig);
-
-      setTimeout(function () {
-        expect(vis.map.get('drag')).toEqual(true);
-        done();
-      }, 500);
+      vis.load(mapConfig)
+        .done(function() {
+          expect(vis.map.get('drag')).toBeTruthy();
+          done();
+        });
 
     });
 
@@ -535,12 +533,11 @@ describe("Vis", function() {
         overlays: [],
       };
 
-      vis.load(mapConfig);
-
-      setTimeout(function () {
-        expect(vis.map.get('drag')).toEqual(true);
-        done();
-      }, 500);
+      vis.load(mapConfig)
+        .done(function() {
+          expect(vis.map.get('drag')).toBeTruthy();
+          done();
+        });
 
     });
 
@@ -561,13 +558,46 @@ describe("Vis", function() {
         overlays: [],
       };
 
-      vis.load(mapConfig);
+      vis.load(mapConfig)
+        .done(function() {
+          expect(vis.map.get('drag')).toBeFalsy();
+          done();
+        });
 
-      setTimeout(function () {
-        expect(vis.map.get('drag')).toEqual(false);
-        done();
-      }, 500);
+    });
 
+    it("should disable leaflet dragging and double click zooming when the map has drag disabled", function() {
+      var container = $('<div>').css({
+          'height': '200px',
+          'width': '200px'
+      });
+      var map = new cdb.geo.Map({
+        drag: false
+      });
+      var mapView = new cdb.geo.LeafletMapView({
+        el: container,
+        map: map
+      });
+
+      expect(mapView.map_leaflet.dragging.enabled()).toBeFalsy();
+      expect(mapView.map_leaflet.doubleClickZoom.enabled()).toBeFalsy();
+    });
+
+    it("should disable gmaps dragging and double click zooming when the map has drag disabled", function() {
+      var container = $('<div>').css({
+          'height': '200px',
+          'width': '200px'
+      });
+      var map = new cdb.geo.Map({
+        drag: false
+      });
+      var mapView = new cdb.geo.GoogleMapsMapView({
+        el: container,
+        map: map
+      });
+
+      expect(mapView.map_googlemaps.get('draggable')).toBeFalsy();
+      expect(mapView.map_googlemaps.get('disableDoubleClickZoom')).toBeFalsy();
     });
 
   });

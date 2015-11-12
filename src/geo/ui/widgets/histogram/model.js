@@ -15,42 +15,32 @@ module.exports = WidgetModel.extend({
     if (_.isNumber(this.get('bins'))) {
       url += '&bins=' + this.get('bins');
     }
+    if (_.isNumber(this.get('own_filter'))) {
+      url += '&own_filter=' + this.get('own_filter');
+    }
     return url;
   },
 
   initialize: function(attrs, opts) {
-    this._offData = new Backbone.Collection(this.get('data'));
-    this._onData = new Backbone.Collection(this.get('data'));
+    this._data = new Backbone.Collection(this.get('data'));
 
     WidgetModel.prototype.initialize.call(this, attrs, opts);
   },
 
   getData: function() {
-    return { off: this._offData, on: this._onData };
-  },
-
-  getDataWithOwnFilterApplied: function() {
-    return this._onData.toJSON();
-  },
-
-  getDataWithoutOwnFilterApplied: function() {
-    return this._offData.toJSON();
+    return this._data.toJSON();
   },
 
   getSize: function() {
-    return { off: this._offData.size(), on: this._onData.size() };
+    return this._data.size();
   },
 
   parse: function(data) {
-    var offBins = data.ownFilterOff.bins;
-    var onBins = data.ownFilterOn.bins;
 
-    this._offData.reset(offBins);
-    this._onData.reset(onBins);
+    this._data.reset(data.bins);
 
     return {
-      off: offBins,
-      on: onBins,
+      data: data.bins,
       width: data.width
     };
   },

@@ -12,6 +12,9 @@ module.exports = WidgetModel.extend({
     if (_.isNumber(this.get('end'))) {
       url += '&end=' + this.get('end');
     }
+    if (_.isNumber(this.get('bins'))) {
+      url += '&bins=' + this.get('bins');
+    }
     return url;
   },
 

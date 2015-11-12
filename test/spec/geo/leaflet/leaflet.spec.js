@@ -496,4 +496,21 @@ describe('LeafletMapView', function() {
     });
   });
 
+  it("should disable leaflet dragging and double click zooming when the map has drag disabled", function() {
+    var container = $('<div>').css({
+        'height': '200px',
+        'width': '200px'
+    });
+    var map = new cdb.geo.Map({
+      drag: false
+    });
+    var mapView = new cdb.geo.LeafletMapView({
+      el: container,
+      map: map
+    });
+
+    expect(mapView.map_leaflet.dragging.enabled()).toBeFalsy();
+    expect(mapView.map_leaflet.doubleClickZoom.enabled()).toBeFalsy();
+  });
+
 });

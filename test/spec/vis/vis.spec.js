@@ -444,7 +444,7 @@ describe("Vis", function() {
 
   describe("dragging option", function() {
 
-    it("should be enabled with zoom overlay and scrollwheel enabled", function(done) {
+    it("should be enabled with zoom overlay and scrollwheel enabled", function() {
       var container = $('<div>').css('height', '200px');
       var vis = new cdb.vis.Vis({el: container});
 
@@ -472,15 +472,11 @@ describe("Vis", function() {
         ],
       };
 
-      vis.load(mapConfig)
-        .done(function() {
-          expect(vis.map.get('drag')).toBeTruthy();
-          done();
-        });
-
+      vis.load(mapConfig);
+      expect(vis.map.get('drag')).toBeTruthy();
     });
 
-    it("should be enabled with zoom overlay and scrollwheel disabled", function(done) {
+    it("should be enabled with zoom overlay and scrollwheel disabled", function() {
       var container = $('<div>').css('height', '200px');
       var vis = new cdb.vis.Vis({el: container});
 
@@ -508,15 +504,11 @@ describe("Vis", function() {
         ],
       };
 
-      vis.load(mapConfig)
-        .done(function() {
-          expect(vis.map.get('drag')).toBeTruthy();
-          done();
-        });
-
+      vis.load(mapConfig);
+      expect(vis.map.get('drag')).toBeTruthy();
     });
 
-    it("should be enabled without zoom overlay and scrollwheel enabled", function(done) {
+    it("should be enabled without zoom overlay and scrollwheel enabled", function() {
       var container = $('<div>').css('height', '200px');
       var vis = new cdb.vis.Vis({el: container});
 
@@ -533,15 +525,11 @@ describe("Vis", function() {
         overlays: [],
       };
 
-      vis.load(mapConfig)
-        .done(function() {
-          expect(vis.map.get('drag')).toBeTruthy();
-          done();
-        });
-
+      vis.load(mapConfig);
+      expect(vis.map.get('drag')).toBeTruthy();
     });
 
-    it("should be disabled without zoom overlay and scrollwheel disabled", function(done) {
+    it("should be disabled without zoom overlay and scrollwheel disabled", function() {
       var container = $('<div>').css('height', '200px');
       var vis = new cdb.vis.Vis({el: container});
 
@@ -558,46 +546,8 @@ describe("Vis", function() {
         overlays: [],
       };
 
-      vis.load(mapConfig)
-        .done(function() {
-          expect(vis.map.get('drag')).toBeFalsy();
-          done();
-        });
-
-    });
-
-    it("should disable leaflet dragging and double click zooming when the map has drag disabled", function() {
-      var container = $('<div>').css({
-          'height': '200px',
-          'width': '200px'
-      });
-      var map = new cdb.geo.Map({
-        drag: false
-      });
-      var mapView = new cdb.geo.LeafletMapView({
-        el: container,
-        map: map
-      });
-
-      expect(mapView.map_leaflet.dragging.enabled()).toBeFalsy();
-      expect(mapView.map_leaflet.doubleClickZoom.enabled()).toBeFalsy();
-    });
-
-    it("should disable gmaps dragging and double click zooming when the map has drag disabled", function() {
-      var container = $('<div>').css({
-          'height': '200px',
-          'width': '200px'
-      });
-      var map = new cdb.geo.Map({
-        drag: false
-      });
-      var mapView = new cdb.geo.GoogleMapsMapView({
-        el: container,
-        map: map
-      });
-
-      expect(mapView.map_googlemaps.get('draggable')).toBeFalsy();
-      expect(mapView.map_googlemaps.get('disableDoubleClickZoom')).toBeFalsy();
+      vis.load(mapConfig);
+      expect(vis.map.get('drag')).toBeFalsy();
     });
 
   });

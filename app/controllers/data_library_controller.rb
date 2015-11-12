@@ -9,7 +9,7 @@ class DataLibraryController < ApplicationController
   def index
     render_404 and return if @viewed_user.nil? || !@viewed_user.has_feature_flag?("data_library")
 
-    @base_url = "#{request.protocol}#{CartoDB.account_host}"
+    @dataset_base_url = (Rails.env.production? || Rails.env.staging?) ? "#{request.protocol}#{CartoDB.account_host}/dataset/" : "#{@viewed_user.public_url(nil, request.protocol == "https://" ? "https" : "http")}#{request.host}/tables/"
 
     respond_to do |format|
       format.html { render 'index' }

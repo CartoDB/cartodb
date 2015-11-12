@@ -1,12 +1,10 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
-var LeafletLayerView = require('./leaflet-layer-view');
 var LeafletCartoDBGroupLayerBase = require('./leaflet-cartodb-group-layer-base');
 
 var LeafletCartoDBLayerGroupView = LeafletCartoDBGroupLayerBase.extend({
 
   includes: [
-    LeafletLayerView.prototype,
     Backbone.Events
   ],
 
@@ -64,8 +62,7 @@ var LeafletCartoDBLayerGroupView = LeafletCartoDBGroupLayerBase.extend({
     }, 10);
 
 
-    LeafletCartoDBGroupLayerBase.prototype.initialize.call(this, opts);
-    LeafletLayerView.call(this, layerModel, this, leafletMap);
+    LeafletCartoDBGroupLayerBase.prototype.initialize.call(this, opts, layerModel, leafletMap);
   },
 
   featureOver: function(e, latlon, pixelPos, data, layer) {

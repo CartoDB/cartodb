@@ -79,93 +79,6 @@
                 "order": 0,
                 "type": "tiled"
               },
-              // {
-              //   type: 'layergroup',
-              //   options: {
-              //     layer_definition: {
-              //       layers: [
-              //         {
-              //           visible: true,
-              //           type: 'torque',
-              //           options: {
-              //             "cartocss_version":"1.0.0",
-              //             "cartocss":"Map{-torque-frame-count:256;-torque-resolution:1;-torque-aggregation-function:'count(cartodb_id)';-torque-time-attribute:'end_at';-torque-data-aggregation:linear;}",
-              //             "sql":"select * from mwc13"
-              //           }
-              //         }
-              //       ]
-              //     }
-              //   }
-              // },
-              // {
-              //   id: '4c07a352-892d-11e5-9380-080027880ca6',
-              //   "user_name": "orgowner",
-              //    "maps_api_template": "http://localhost.lan:8181/user/{user}",
-              //   type: 'torque',
-              //   visible: true,
-              //   options: {
-              //     // "cartocss_version":"1.0.0",
-              //     "cartocss_version": "2.1.1",
-              //     "cartocss": [
-              //       "Map{",
-              //       "-torque-frame-count:256;",
-              //       "-torque-resolution:1;",
-              //       "-torque-aggregation-function:'count(end_at)';",
-              //       "-torque-time-attribute:'end_at';",
-              //       "-torque-data-aggregation:linear;",
-              //       "}"
-              //     ].join(''),
-              //     "sql":"select * from mwc13",
-              //     "layer_name": "mwc13",
-              //     "interactivity": "end_at",
-              //     "table_name": "mwc13",
-              //   },
-              //   widgets: {
-              //
-              //   }
-              // },
-              {
-                "id": "9c14474e-d89a-49b2-b19b-7dce60f0a259",
-                "type": "torque",
-                "order": 3,
-                "legend": {
-                  "type": "none",
-                  "show_title": false,
-                  "title": "",
-                  "template": "",
-                  "visible": true
-                },
-                "options": {
-                  "stat_tag": "4c07a352-892d-11e5-9380-080027880ca6",
-                  "maps_api_template": "http://localhost.lan:8181/user/{user}",
-                  "sql_api_template": "http://localhost.lan:8080/user/{user}",
-                  "tiler_protocol": "http",
-                  "tiler_domain": "localhost.lan",
-                  "tiler_port": "8181",
-                  "sql_api_protocol": "http",
-                  "sql_api_domain": "localhost.lan",
-                  "sql_api_endpoint": "/api/v1/sql",
-                  "sql_api_port": 8080,
-                  "layer_name": "mwc13",
-                  "query": "select * from mwc13",
-                  "visible": true,
-                  "table_name": "mwc13",
-                  "user_name": "orgowner",
-                  "tile_style": "/** torque visualization */\n\nMap {\n-torque-frame-count:256;\n-torque-animation-duration:30;\n-torque-time-attribute:\"end_at\";\n-torque-aggregation-function:\"count(cartodb_id)\";\n-torque-resolution:1;\n-torque-data-aggregation:linear;\n}\n\n#mwc13{\n  comp-op: lighter;\n  marker-fill-opacity: 0.9;\n  marker-line-color: #FFF;\n  marker-line-width: 0;\n  marker-line-opacity: 1;\n  marker-type: ellipse;\n  marker-width: 6;\n  marker-fill: #0F3B82;\n}\n#mwc13[frame-offset=1] {\n marker-width:8;\n marker-fill-opacity:0.45; \n}\n#mwc13[frame-offset=2] {\n marker-width:10;\n marker-fill-opacity:0.225; \n}",
-
-                  // required for map?stat_tag=… tiler API call
-                  // "cartocss_version": "2.1.1",
-                  // "cartocss": [
-                  //   "Map{",
-                  //   "-torque-frame-count:256;",
-                  //   "-torque-resolution:1;",
-                  //   "-torque-aggregation-function:'count(cartodb_id)';",
-                  //   "-torque-time-attribute:'end_at';",
-                  //   "-torque-data-aggregation:linear;",
-                  //   "}"
-                  // ].join(''),
-                }
-              },
               {
                 "type": "layergroup",
                 "options": {
@@ -334,81 +247,54 @@
                   "attribution": "wadus"
                 }
               },
-                      // {
-                      //   "id": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
-                      //   "type": "torque",
-                      //   "infowindow": {
-                      //     "fields": [
-                      //       {
-                      //         "name": "name",
-                      //         "title": true,
-                      //         "position": 0
-                      //       }
-                      //     ],
-                      //     "template_name": "infowindow_light",
-                      //     "template": "<div class=\"cartodb-popup v2\">\n  <a href=\"#close\" class=\"cartodb-popup-close-button close\">x</a>\n  <div class=\"cartodb-popup-content-wrapper\">\n    <div class=\"cartodb-popup-content\">\n      {{#content.fields}}\n        {{#title}}<h4>{{title}}</h4>{{/title}}\n        {{#value}}\n          <p {{#type}}class=\"{{ type }}\"{{/type}}>{{{ value }}}</p>\n        {{/value}}\n        {{^value}}\n          <p class=\"empty\">null</p>\n        {{/value}}\n      {{/content.fields}}\n    </div>\n  </div>\n  <div class=\"cartodb-popup-tip-container\"></div>\n</div>\n",
-                      //     "alternative_names": {},
-                      //     "width": 226,
-                      //     "maxHeight": 180
-                      //   },
-                      //   "tooltip": {
-                      //     "fields": [],
-                      //     "template_name": "tooltip_light",
-                      //     "template": "<div class=\"cartodb-tooltip-content-wrapper\">\n  <div class=\"cartodb-tooltip-content\">\n  {{#fields}}\n    {{#title}}\n    <h4>{{title}}</h4>\n    {{/title}}\n    <p>{{{ value }}}</p>\n  {{/fields}}\n  </div>\n</div>",
-                      //     "alternative_names": {},
-                      //     "maxHeight": 180
-                      //   },
-                      //   "legend": {
-                      //     "type": "none",
-                      //     "show_title": false,
-                      //     "title": "",
-                      //     "template": "",
-                      //     "visible": true
-                      //   },
-                      //   "order": 2,
-                      //   "visible": true,
-                      //   "user_name": "pablo",
-                      //   "maps_api_template": "https://{user}.cartodb-staging.com:443",
+              {
+                "id": "9c14474e-d89a-49b2-b19b-7dce60f0a259",
+                "type": "torque",
+                "order": 3,
+                "legend": {
+                  "type": "none",
+                  "show_title": false,
+                  "title": "",
+                  "template": "",
+                  "visible": true
+                },
+                "options": {
+                  "stat_tag": "4c07a352-892d-11e5-9380-080027880ca6",
+                  "sql_api_template": "http://localhost.lan:8080/user/{user}",
+                  "tiler_protocol": "http",
+                  "tiler_domain": "localhost.lan",
+                  "tiler_port": "8181",
+                  "sql_api_protocol": "http",
+                  "sql_api_domain": "localhost.lan",
+                  "sql_api_endpoint": "/api/v1/sql",
+                  "sql_api_port": 8080,
+                  "visible": true,
 
+                  // shared for vizjson and the manual cfg below:
+                  "user_name": "orgowner",
+                  "maps_api_template": "http://localhost.lan:8181/user/{user}",
+                  "table_name": "mwc13",
+                  "layer_name": "mwc13",
 
-                      //   "options": {
-                      //     "sql": "select * from arboles",
-                      //     "layer_name": "Árboles",
-                      //     "cartocss": "Map { -torque-frame-count:1; -torque-animation-duration:10; -torque-time-attribute:\"cartodb_id\"; -torque-aggregation-function:\"count(cartodb_id)\"; -torque-resolution:1; -torque-data-aggregation:linear; } #out_3{ marker-width: 5; marker-fill: red; }",
+                  // from vizjson:
+                  // "tile_style": "/** torque visualization */\n\nMap {\n-torque-frame-count:256;\n-torque-animation-duration:30;\n-torque-time-attribute:\"end_at\";\n-torque-aggregation-function:\"count(cartodb_id)\";\n-torque-resolution:1;\n-torque-data-aggregation:linear;\n}\n\n#mwc13{\n  comp-op: lighter;\n  marker-fill-opacity: 0.9;\n  marker-line-color: #FFF;\n  marker-line-width: 0;\n  marker-line-opacity: 1;\n  marker-type: ellipse;\n  marker-width: 6;\n  marker-fill: #0F3B82;\n}\n#mwc13[frame-offset=1] {\n marker-width:8;\n marker-fill-opacity:0.45; \n}\n#mwc13[frame-offset=2] {\n marker-width:10;\n marker-fill-opacity:0.225; \n}",
+                  // "query": "select * from mwc13",
 
-                      //     "cartocss_version": "2.1.1",
-                      //     "interactivity": "cartodb_id",
-                      //     "table_name": "arboles",
-                      //   },
-                      //   "widgets": {
-                      //   //   'category_widget_uuid': {
-                      //   //     "type": "aggregation",
-                      //   //       "title": "Categorías de árboles",
-                      //   //       "column": "name",
-                      //   //       "aggregation": "count",
-                      //   //       "sync": true
-                      //   //   }
-                      //     "histogram_widget_uuid_torque": {
-                      //       "type": "histogram",
-                      //       "title": "torque hist",
-                      //       "column": "cartodb_id",
-                      //       "bins": 10
-                      //     },
-                      //     "list_widget": {
-                      //       "type": "list",
-                      //       "title": "Arboles",
-                      //       "bbox": false,
-                      //       "columns": [
-                      //         "cartodb_id",
-                      //         "name"
-                      //       ],
-                      //       "columns_title": [
-                      //         "id",
-                      //         "tipo"
-                      //       ]
-                      //     },
-                      //   }
-                      // },
+                  // manual cfg: instead of vizjson format
+                  "interactivity": 'cartodbid',
+                  "sql": "select * from mwc13",
+                  "cartocss_version": "2.1.1",
+                  "cartocss": [
+                    "Map{",
+                    "-torque-frame-count:256;",
+                    "-torque-resolution:1;",
+                    "-torque-aggregation-function:'count(cartodb_id)';",
+                    "-torque-time-attribute:'end_at';",
+                    "-torque-data-aggregation:linear;",
+                    "}"
+                  ].join(''),
+                }
+              },
               {
                 "options": {
                   "visible": true,
@@ -430,7 +316,7 @@
                 "id": "2045d4f7-7a76-4b41-8acf-88e32ac49370",
                 "order": 4,
                 "type": "tiled"
-              }
+              },
             ],
             "overlays": [
               {

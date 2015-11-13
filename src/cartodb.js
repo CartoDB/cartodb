@@ -150,11 +150,5 @@ cdb.windshaft.filters.BoundingBoxFilter = require('./windshaft/filters/bounding_
 cdb.windshaft.filters.CategoryFilter = require('./windshaft/filters/category');
 cdb.windshaft.filters.Collection = require('./windshaft/filters/collection');
 cdb.windshaft.filters.RangeFilter = require('./windshaft/filters/range');
-cdb.windshaft.Client = require('./windshaft/client');
-cdb.windshaft.config = require('./windshaft/config');
-cdb.windshaft.Dashboard = require('./windshaft/dashboard');
-cdb.windshaft.DashboardInstance = require('./windshaft/dashboard_instance');
-cdb.windshaft.PrivateDashboardConfig = require('./windshaft/private_dashboard_config');
-cdb.windshaft.PublicDashboardConfig = require('./windshaft/public_dashboard_config');
 
 module.exports = cdb;

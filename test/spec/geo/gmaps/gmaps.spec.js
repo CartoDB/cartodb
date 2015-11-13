@@ -16,7 +16,7 @@ var GMapsPlainLayerView = require('cdb/geo/gmaps/gmaps-plain-layer-view');
 var Geometry = require('cdb/geo/geometry');
 var GmapsPathView = require('cdb/geo/gmaps/gmaps-path-view');
 
-fdescribe('geo/gmaps/gmaps-map-view', function() {
+describe('geo/gmaps/gmaps-map-view', function() {
   var mapView;
   var map;
   var spy;

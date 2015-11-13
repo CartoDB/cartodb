@@ -202,7 +202,7 @@ module.exports = WidgetContent.extend({
     var start = data[loBarIndex].start;
     var end = data[hiBarIndex - 1].end;
 
-    this.dataModel.set({ start: start, end: end });
+    //this.dataModel.set({ start: start, end: end });
 
     this._setRange(data, start, end);
 

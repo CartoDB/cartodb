@@ -281,9 +281,10 @@
                   // "query": "select * from mwc13",
 
                   // manual cfg: instead of vizjson format
-                  "interactivity": 'cartodbid',
+                  "interactivity": 'cartodb_id',
                   "sql": "select * from mwc13",
                   "cartocss_version": "2.1.1",
+
                   "cartocss": [
                     "Map{",
                     "-torque-frame-count:256;",
@@ -291,7 +292,11 @@
                     "-torque-aggregation-function:'count(cartodb_id)';",
                     "-torque-time-attribute:'end_at';",
                     "-torque-data-aggregation:linear;",
-                    "}"
+                    "-torque-animation-duration:30;",
+                    "}",
+                    "#mwc13{\n  comp-op: lighter;\n  marker-fill-opacity: 0.9;\n  marker-line-color: #FFF;\n  marker-line-width: 0;\n  marker-line-opacity: 1;\n  marker-type: ellipse;\n  marker-width: 6;\n  marker-fill: #0F3B82;\n}",
+                    "#mwc13[frame-offset=1] {\n marker-width:8;\n marker-fill-opacity:0.45; \n}\n",
+                    "#mwc13[frame-offset=2] {\n marker-width:10;\n marker-fill-opacity:0.225; \n}"
                   ].join(''),
                 }
               },

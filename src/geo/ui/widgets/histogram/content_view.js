@@ -64,14 +64,17 @@ module.exports = WidgetContent.extend({
     if (this.lockedByUser) {
       this.lockedByUser = false;
     } else {
-      this.originalData = this.dataModel.getData();
-      console.log('Storing new data: ' + this.originalData);
+      console.log('Loading new data: ' + this.originalData);
+      //this.originalData = this.dataModel.getData();
+      this.chart.model.set({ data: this.dataModel.getData() });
+      this.chart.reset();
     }
 
     if (this.unsettingRange) {
-      this.chart.replaceData(this.originalData);
-      this.unsettingRange = false;
       console.log("Replacing data");
+      this.chart.model.set({ data: this.originalData });
+      this.chart.reset();
+      this.unsettingRange = false;
     } else {
       var data = this.dataModel.getData();
       this.chart.replaceData(data);
@@ -334,8 +337,7 @@ module.exports = WidgetContent.extend({
     this._showMiniRange();
 
     this.dataModel.set({ start: null, end: null, bins: null, own_filter: 1 });
-//    var data = this.dataModel.getData();
-//    this.chart.replaceData(data);
+    this.lockedByUser = false;
   },
 
   _zoom: function() {

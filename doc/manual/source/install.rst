@@ -144,7 +144,7 @@ GIS dependencies
 
   .. code-block:: bash
   
-    sudo apt-get install libgeos-c1 libgeos-dev
+    sudo apt-get install libgeos-c1v5 libgeos-dev
 
 * Install GDAL
 
@@ -162,7 +162,7 @@ PostGIS
   .. code-block:: bash
       
     sudo apt-get install libxml2-dev
-    sudo apt-get install liblwgeom-2.1.8 postgis postgresql-9.3-postgis-2.1 postgresql-9.3-postgis-2.1-scripts
+    sudo apt-get install liblwgeom-2.1.8 postgis postgresql-9.3-postgis-2.2 postgresql-9.3-postgis-scripts
 
 * Initialize template postgis database. We create a template database in postgresql that will contain the postgis extension. This way, every time CartoDB creates a new user database it just clones this template database
 

@@ -19,12 +19,11 @@ module.exports = View.extend({
   },
 
   render: function() {
-    var format =  d3.format('.2s');
     this.$el.html(
       template({
-        min: format(this.model.get('min')),
-        max: format(this.model.get('max')),
-        nulls: format(this.model.get('nulls') || 0)
+        min: this.model.get('min'),
+        max: this.model.get('max'),
+        nulls: this.model.get('nulls')
       })
     );
     return this;

@@ -23,7 +23,6 @@ module.exports = View.extend({
 
   render: function() {
     var value = this.model.get('value');
-    var totalCount = this.dataModel.get('count');
     var template = this.model.get('agg') ? unclickableTemplate : clickedTemplate;
 
     this.$el.html(
@@ -31,7 +30,7 @@ module.exports = View.extend({
         hasSearch: this.dataModel.get('search'),
         name: this.model.get('name'),
         value: Math.ceil(value),
-        percentage: Math.ceil(!totalCount ? 0 : (value / this.dataModel.get('max')) * 100),
+        percentage: ((value / this.dataModel.get('max')) * 100),
         isDisabled: !this.model.get('selected') ? 'is-disabled' : ''
       })
     );

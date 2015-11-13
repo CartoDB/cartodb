@@ -1,7 +1,3 @@
-require('jquery.ui.core'); // registers itself to $
-require('jquery.ui.widget'); // registers itself to $
-require('jquery.ui.mouse'); // registers itself to $
-require('jquery.ui.slider'); // registers itself to $
 var torque = window.torque = require('torque.js'); // standalone torque lib, required for gmaps/leaflet layer view
 
 // Get and mutate the global cdb object, add expected objects for gmaps/leaflet if present:

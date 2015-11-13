@@ -51,6 +51,10 @@
   .Widget-progressState--negative {
     background: $negative;
   }
+  .Widget-progressState--pattern {
+    background-color: rgba($secondary, .3);
+    background-image: repeating-linear-gradient(-45deg, transparent, transparent 5px, rgba($secondary,.5) 5px, rgba($secondary,.5) 10px);
+  }
 
   .Widget-dot {
     background: $highlighted;
@@ -161,6 +165,10 @@
     }
     .Widget-progressState {
       background: $disabled !important; // Preventing problems with inline colors
+    }
+    .Widget-progressState--pattern {
+      background-color: rgba($secondary, .1) !important;
+      background-image: repeating-linear-gradient(-45deg, transparent, transparent 5px, rgba($secondary,.2) 5px, rgba($secondary,.2) 10px) !important;
     }
   }
 }

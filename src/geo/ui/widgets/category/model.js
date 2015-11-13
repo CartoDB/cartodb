@@ -2,6 +2,7 @@ var _ = require('underscore');
 var Backbone = require('backbone');
 var WidgetModel = require('../widget_model');
 var CategoriesCollection = require('./categories_collection');
+var MAXCATEGORIES = 12;
 
 /**
  * Category widget model
@@ -53,34 +54,33 @@ module.exports = WidgetModel.extend({
       newData.push({
         'selected': !isRejected,
         'name': category,
+        'agg': datum.agg,
         'value': count
       });
     }, this);
 
-    // TODO: change avg after getting the total of categories
-    var avg = !totalCount ? 0 : (totalCount / categories.length).toFixed(2);
-
-    this._dataOrigin.each(function(mdl) {
-      var value = mdl.get('category');
-      var isRejected = this.filter.isRejected(value);
-      var alreadyAdded = _tmpArray[value];
-
-      if (!alreadyAdded) {
-        newData.push({
-          'selected': !isRejected,
-          'name': value,
-          'value': 0
-        });
-      }
-    }, this);
+    // this._dataOrigin.each(function(mdl) {
+    //   if (newData.length >= MAXCATEGORIES) {
+    //     return;
+    //   }
+    //
+    //   var value = mdl.get('category');
+    //   var isRejected = this.filter.isRejected(value);
+    //   var alreadyAdded = _tmpArray[value];
+    //
+    //   if (!alreadyAdded) {
+    //     newData.push({
+    //       'selected': !isRejected,
+    //       'name': value,
+    //       'agg': false,
+    //       'value': 0
+    //     });
+    //   }
+    // }, this);
 
     return {
-      data: newData,
-      min: min,
-      max: max,
-      avg: avg,
-      totalCount: totalCount
-    };
+      data: newData
+    }
   },
 
   setCategories: function(d) {
@@ -94,6 +94,14 @@ module.exports = WidgetModel.extend({
     var categories = d.ownFilterOff.categories;
     this._dataOriginChecker(categories);
     var attrs = this._parseData(categories);
+    _.extend(attrs, {
+        nulls: d.nulls,
+        min: d.min,
+        max: d.max,
+        count: d.count,
+        categoriesCount: d.categoriesCount
+      }
+    );
     this._data.reset(attrs.data);
     return attrs;
   },

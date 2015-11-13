@@ -22,7 +22,6 @@ module.exports = View.extend({
     var format =  d3.format('.2s');
     this.$el.html(
       template({
-        avg: format(this.model.get('avg')),
         min: format(this.model.get('min')),
         max: format(this.model.get('max')),
         nulls: format(this.model.get('nulls') || 0)

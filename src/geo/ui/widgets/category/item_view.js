@@ -1,6 +1,7 @@
 var _ = require('underscore');
 var View = require('cdb/core/view');
-var template = require('./item_view.tpl');
+var clickedTemplate = require('./item_clickable_view.tpl');
+var unclickableTemplate = require('./item_unclickable_view.tpl');
 
 /**
  * Category list item view
@@ -22,10 +23,12 @@ module.exports = View.extend({
 
   render: function() {
     var value = this.model.get('value');
-    var totalCount = this.dataModel.get('totalCount');
+    var totalCount = this.dataModel.get('count');
+    var template = this.model.get('agg') ? unclickableTemplate : clickedTemplate;
 
     this.$el.html(
       template({
+        hasSearch: this.dataModel.get('search'),
         name: this.model.get('name'),
         value: Math.ceil(value),
         percentage: Math.ceil(!totalCount ? 0 : (value / this.dataModel.get('max')) * 100),
@@ -38,6 +41,7 @@ module.exports = View.extend({
 
   _initBinds: function() {
     this.model.bind('change', this.render, this);
+    this.dataModel.bind('change:search', this.render, this);
   },
 
   _onItemClick: function() {

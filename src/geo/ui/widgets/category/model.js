@@ -35,12 +35,6 @@ module.exports = WidgetModel.extend({
   },
 
   _parseData: function(categories) {
-    // If there is no data from the beginning,
-    // complete data origin.
-    if (this._dataOrigin.isEmpty()) {
-      this._dataOrigin.reset(categories);
-    }
-
     // Get info stats from categories
     var min = 0;
     var max = 0;
@@ -90,6 +84,7 @@ module.exports = WidgetModel.extend({
   },
 
   setCategories: function(d) {
+    this._dataOriginChecker(d);
     var attrs = this._parseData(d);
     this._data.reset(attrs.data);
     this.set(attrs);
@@ -97,9 +92,18 @@ module.exports = WidgetModel.extend({
 
   parse: function(d) {
     var categories = d.ownFilterOff.categories;
+    this._dataOriginChecker(categories);
     var attrs = this._parseData(categories);
     this._data.reset(attrs.data);
     return attrs;
+  },
+
+  _dataOriginChecker: function(d) {
+    // If there is no data from the beginning,
+    // complete data origin.
+    if (this._dataOrigin.isEmpty()) {
+      this._dataOrigin.reset(d);
+    }
   },
 
   _onFilterChanged: function(filter) {

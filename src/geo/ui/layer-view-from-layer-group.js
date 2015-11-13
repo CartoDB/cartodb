@@ -1,3 +1,4 @@
+// TODO: We can probably remove this whole file
 var LayerView = require('./layer-view');
 
 /**
@@ -14,15 +15,16 @@ var LayerViewFromLayerGroup = LayerView.extend({
 
   _onSwitchSelected: function() {
 
-    LayerView.prototype._onSwitchSelected.call(this);
-    var sublayer = this.options.layerView.getSubLayer(this.options.layerIndex)
-    var visible = this.model.get('visible');
+    // LayerView.prototype._onSwitchSelected.call(this);
+    // debugger;
+    // var sublayer = this.options.layerView.getSubLayer(this.options.layerIndex);
+    // var visible = this.model.get('visible');
 
-    if (visible) {
-      sublayer.show();
-    } else {
-      sublayer.hide();
-    }
+    // if (visible) {
+    //   sublayer.show();
+    // } else {
+    //   sublayer.hide();
+    // }
   }
 });
 

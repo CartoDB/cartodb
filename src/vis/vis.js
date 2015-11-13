@@ -463,8 +463,7 @@ var Vis = View.extend({
           filterModel = new cdb.windshaft.filters[filterClass]({
             widgetId: widgetId,
             // TODO: check this thing
-            layerIndex: index,
-            layerId: widgetData.layerId
+            layerIndex: index
           });
         }
 
@@ -989,7 +988,7 @@ var Vis = View.extend({
     }
 
     this.mobile = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    this.mobile_enabled = (opt.mobile_layout && this.mobile) || opt.force_mobile;
+    this.mobile_enabled = true;
 
     if (opt.force_mobile === false || opt.force_mobile === "false") this.mobile_enabled = false;
 

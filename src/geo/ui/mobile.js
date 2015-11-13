@@ -268,48 +268,41 @@ var Mobile = View.extend({
   },
 
   _getLayersFromLayerView: function() {
-    if (this.options.layerView && this.options.layerView.model.get("type") == "layergroup") {
-      this.layers = _.map(this.options.layerView.layers, function(l, i) {
-        var m = new Model(l);
+    // TODO: This is used when cartodb.createLayer is used. Fix when we decide what to do with
+    // TODO: This is untested!
+    // cartodb.createLayer
+    // if (this.options.layerView && this.options.layerView.model.get("type") == "layergroup") {
+    //   this.layers = _.map(this.options.layerView.layers, function(l, i) {
+    //     var m = new Model(l.toJSON());
 
-        m.set('order', i);
-        m.set('type', 'layergroup');
-        m.set('visible', l.visible);
-        m.set('layer_name', l.options.layer_name);
+    //     m.set('order', i);
+    //     m.set('type', 'layergroup');
+    //     m.set('visible', l.visible);
+    //     m.set('layer_name', l.options.layer_name);
 
-        layerView = this._createLayer('LayerViewFromLayerGroup', {
-          model: m,
-          layerView: this.options.layerView,
-          layerIndex: i
-        });
+    //     layerView = this._createLayer('LayerViewFromLayerGroup', {
+    //       model: m,
+    //       layerView: this.options.layerView,
+    //       layerIndex: i
+    //     });
 
-        return layerView.model;
-      }, this);
-    } else if (this.options.layerView && (this.options.layerView.model.get("type") == "torque")) {
-      var layerView = this._createLayer('LayerView', { model: this.options.layerView.model });
-      this.layers.push(layerView.model);
-    }
+    //     return layerView.model;
+    //   }, this);
+    // } else if (this.options.layerView && (this.options.layerView.model.get("type") == "torque")) {
+    //   var layerView = this._createLayer('LayerView', { model: this.options.layerView.model });
+    //   this.layers.push(layerView.model);
+    // }
   },
 
   _getLayer: function(layer) {
+    // TODO: This is not working for "namedmap" layers
     if (layer.get("type") == 'layergroup') {
       var layerGroupView = this.mapView.getLayerByCid(layer.cid);
       layer.layers.each(function(layer, i) {
 
-        var l = layer;
-        var m = new Model(l);
-
-        m.set('order', i);
-        m.set('type', 'layergroup');
-        m.set('visible', layer.get('visible'));
-        m.set('layer_name', layer.get('options').layer_name);
-
-        layerView = this._createLayer('LayerViewFromLayerGroup', {
-          model: m,
-          layerView: layerGroupView,
-          layerIndex: i
-        });
-        this.layers.push(layerView.model);
+        // TODO: This only work for layers inside a layergroup
+        layer.set('layer_name', layer.get('options').layer_name);
+        this.layers.push(layer);
       }, this);
     } else if (layer.get("type") === "CartoDB" || layer.get('type') === 'torque') {
       if (layer.get('type') === 'torque')  {
@@ -545,7 +538,7 @@ var Mobile = View.extend({
     var hasLegendOverlay = this.visibility_options.legends;
 
     var legends = this.layers.filter(function(layer) {
-      return layer.get("legend") && layer.get("legend").type !== "none"
+      return layer.get("legend") && layer.get("legend").type !== "none";
     });
 
     var hasLegends = legends.length ? true : false;

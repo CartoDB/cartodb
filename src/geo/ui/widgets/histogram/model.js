@@ -5,52 +5,64 @@ var _ = require('underscore');
 module.exports = WidgetModel.extend({
 
   url: function() {
-    var url = this.get('url') + '?bbox=' + this.get('boundingBox');
+    var params = [];
+
     if (_.isNumber(this.get('start'))) {
-      url += '&start=' + this.get('start');
+      params.push('start=' + this.get('start'));
     }
     if (_.isNumber(this.get('end'))) {
-      url += '&end=' + this.get('end');
+      params.push('end=' + this.get('end'));
     }
     if (_.isNumber(this.get('bins'))) {
-      url += '&bins=' + this.get('bins');
+      params.push('bins=' + this.get('bins'));
+    }
+    if (_.isNumber(this.get('own_filter'))) {
+      params.push('own_filter=' + this.get('own_filter'));
+    }
+    if (this.get('boundingBox')) {
+      params.push('bbox=' + this.get('boundingBox'));
+    }
+
+    var url = this.get('url');
+    if (params.length > 0) {
+        url += '?' + params.join('&');
     }
     return url;
   },
 
   initialize: function(attrs, opts) {
-    this._offData = new Backbone.Collection(this.get('data'));
-    this._onData = new Backbone.Collection(this.get('data'));
+    this._data = new Backbone.Collection(this.get('data'));
 
     WidgetModel.prototype.initialize.call(this, attrs, opts);
   },
 
+  _onChangeBinds: function() {
+    this.bind('change:url change:start change:end', function(){
+      if (this.get('sync')) {
+        this._fetch();
+      }
+    }, this);
+    this.bind('change:boundingBox', function() {
+      if (this.get('bbox')) {
+        this._fetch();
+      }
+    }, this);
+  },
+
   getData: function() {
-    return { off: this._offData, on: this._onData };
-  },
-
-  getDataWithOwnFilterApplied: function() {
-    return this._onData.toJSON();
-  },
-
-  getDataWithoutOwnFilterApplied: function() {
-    return this._offData.toJSON();
+    return this._data.toJSON();
   },
 
   getSize: function() {
-    return { off: this._offData.size(), on: this._onData.size() };
+    return this._data.size();
   },
 
   parse: function(data) {
-    var offBins = data.ownFilterOff.bins;
-    var onBins = data.ownFilterOn.bins;
 
-    this._offData.reset(offBins);
-    this._onData.reset(onBins);
+    this._data.reset(data.bins);
 
     return {
-      off: offBins,
-      on: onBins,
+      data: data.bins,
       width: data.width
     };
   },

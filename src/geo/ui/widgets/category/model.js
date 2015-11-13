@@ -95,7 +95,7 @@ module.exports = WidgetModel.extend({
     var categories = data.categories;
     this._dataOriginChecker(categories);
     var attrs = this._parseData(categories);
-    debugger;
+
     _.extend(attrs, {
         nulls: data.nulls,
         min: data.min,

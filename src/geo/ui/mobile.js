@@ -2,7 +2,6 @@ var _ = require('underscore');
 var Backbone = require('backbone');
 var cdb = require('cdb'); // cdb.geo.ui.*, cdb.geo.ui.TimeSlider
 var $ = require('jquery');
-require('jquery.ui.slider'); // registers itself to $.slider
 require('jquery.jscrollpane'); // registers itself to $.jScrollPane
 var templates = require('cdb.templates');
 var sanitize = require('../../core/sanitize.js')

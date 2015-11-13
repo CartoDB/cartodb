@@ -50,10 +50,12 @@ module.exports = WidgetContent.extend({
     var data = this.dataModel.getDataWithoutOwnFilterApplied();
     var start = data[0].start;
     var end = data[data.length - 1].end;
-    this.dataModel.set({ start: start, end: end });
+    this.dataModel.set({ start: start, end: end, bins: data.length });
   },
 
   _onChangeWithOwnFiltersData: function() {
+
+    console.log('Locked by user: ' + this.lockedByUser);
 
     // if the action was initiated by the user
     // don't replace the stored data
@@ -61,11 +63,13 @@ module.exports = WidgetContent.extend({
       this.lockedByUser = false;
     } else {
       this.originalData = this.dataModel.getDataWithoutOwnFilterApplied();
+      console.log('Storing new data: ' + this.originalData);
     }
 
     if (this.unsettingRange) {
       this.chart.replaceData(this.originalData);
       this.unsettingRange = false;
+      console.log("Replacing data");
     } else {
       var data = this.dataModel.getDataWithOwnFilterApplied();
       this.chart.replaceData(data);
@@ -212,7 +216,7 @@ module.exports = WidgetContent.extend({
     var start = data[loBarIndex].start;
     var end = data[hiBarIndex - 1].end;
 
-    this.dataModel.set({ start: start, end: end });
+    //this.dataModel.set({ start: start, end: end });
 
     var properties = { filter_enabled: true, lo_index: loBarIndex, hi_index: hiBarIndex };
 

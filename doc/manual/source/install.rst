@@ -203,6 +203,8 @@ PostGIS
 Redis
 -----
 
+Redis 3+ is needed.
+
 * Add redis PPA
 
   .. code-block:: bash

@@ -35,25 +35,27 @@ module.exports = WidgetContent.extend({
   },
 
   _initBinds: function() {
-    this.dataModel.bind('change:off', this._onFirstLoad, this);
+    this.dataModel.bind('change:data', this._onFirstLoad, this);
     this.add_related_model(this.dataModel);
   },
 
   _onFirstLoad: function() {
     this.render();
-    this.dataModel.unbind('change:off', this._onFirstLoad, this);
-    this.dataModel.bind('change:on', this._onChangeWithOwnFiltersData, this);
+    this.dataModel.unbind('change:data', this._onFirstLoad, this);
+    this.dataModel.bind('change:data', this._onChangeData, this);
     this._storeBounds();
   },
 
   _storeBounds: function() {
-    var data = this.dataModel.getDataWithoutOwnFilterApplied();
-    var start = data[0].start;
-    var end = data[data.length - 1].end;
-    this.dataModel.set({ start: start, end: end, bins: data.length });
+    var data = this.dataModel.getData();
+    if (data && data.length > 0) {
+      var start = data[0].start;
+      var end = data[data.length - 1].end;
+      this.dataModel.set({ start: start, end: end, bins: data.length });
+    }
   },
 
-  _onChangeWithOwnFiltersData: function() {
+  _onChangeData: function() {
 
     console.log('Locked by user: ' + this.lockedByUser);
 
@@ -62,16 +64,19 @@ module.exports = WidgetContent.extend({
     if (this.lockedByUser) {
       this.lockedByUser = false;
     } else {
-      this.originalData = this.dataModel.getDataWithoutOwnFilterApplied();
-      console.log('Storing new data: ' + this.originalData);
+      console.log('Loading new data: ' + this.originalData);
+      //this.originalData = this.dataModel.getData();
+      this.chart.model.set({ data: this.dataModel.getData() });
+      this.chart.reset();
     }
 
     if (this.unsettingRange) {
-      this.chart.replaceData(this.originalData);
-      this.unsettingRange = false;
       console.log("Replacing data");
+      this.chart.model.set({ data: this.originalData });
+      this.chart.reset();
+      this.unsettingRange = false;
     } else {
-      var data = this.dataModel.getDataWithOwnFilterApplied();
+      var data = this.dataModel.getData();
       this.chart.replaceData(data);
     }
   },
@@ -84,7 +89,7 @@ module.exports = WidgetContent.extend({
 
     $(window).bind('resize', this._onWindowResize);
 
-    var data = this.dataModel.getData().off;
+    var data = this.dataModel.getData();
     var isDataEmpty = _.isEmpty(data) || _.size(data) === 0;
 
     window.viewModel = this.viewModel; // TODO: remove
@@ -125,7 +130,7 @@ module.exports = WidgetContent.extend({
       handles: true,
       width: this.canvasWidth,
       height: this.canvasHeight,
-      data: this.dataModel.getDataWithOwnFilterApplied()
+      data: this.dataModel.getData()
     }));
     this.$('.js-content').append(this.chart.el);
     this.addView(this.chart);
@@ -141,7 +146,7 @@ module.exports = WidgetContent.extend({
   },
 
   _renderMiniChart: function() {
-    this.originalData = this.dataModel.getDataWithoutOwnFilterApplied();
+    this.originalData = this.dataModel.getData();
     window.originalData = this.originalData;
 
     this.miniChart = new WidgetHistogramChart(({
@@ -152,7 +157,7 @@ module.exports = WidgetContent.extend({
       margin: { top: 0, right: 0, bottom: 0, left: 4 },
       y: 0,
       height: 20,
-      data: this.dataModel.getDataWithoutOwnFilterApplied()
+      data: this.dataModel.getData()
     }));
 
     this.miniChart.bind('on_brush_end', this._onMiniRangeUpdated, this);
@@ -197,7 +202,7 @@ module.exports = WidgetContent.extend({
     var start = data[loBarIndex].start;
     var end = data[hiBarIndex - 1].end;
 
-    this.dataModel.set({ start: start, end: end });
+    //this.dataModel.set({ start: start, end: end });
 
     this._setRange(data, start, end);
 
@@ -205,11 +210,12 @@ module.exports = WidgetContent.extend({
   },
 
   _setRange: function(data, start, end) {
+      console.log(data,start,end)
     this.filter.setRange({ min: start, max: end });
   },
 
   _onBrushEnd: function(loBarIndex, hiBarIndex) {
-    var data = this.dataModel.getDataWithoutOwnFilterApplied();
+    var data = this.dataModel.getData();
 
     this.lockedByUser = true;
 
@@ -286,7 +292,7 @@ module.exports = WidgetContent.extend({
   },
 
   _getData: function(full) {
-    var data = this.dataModel.getDataWithoutOwnFilterApplied();
+    var data = this.dataModel.getData();
 
     if (full || (!this.viewModel.get('lo_index') && !this.viewModel.get('hi_index'))) {
       return data;
@@ -296,7 +302,7 @@ module.exports = WidgetContent.extend({
   },
 
   _updateStats: function() {
-    var data = this.dataModel.getDataWithoutOwnFilterApplied();
+    var data = this.dataModel.getData();
 
     var loBarIndex = this.viewModel.get('lo_index') || 0;
     var hiBarIndex = this.viewModel.get('hi_index') ?  this.viewModel.get('hi_index') - 1 : data.length - 1;
@@ -330,8 +336,8 @@ module.exports = WidgetContent.extend({
 
     this._showMiniRange();
 
-    var data = this.dataModel.getDataWithOwnFilterApplied();
-    this.chart.replaceData(data);
+    this.dataModel.set({ start: null, end: null, bins: null, own_filter: 1 });
+    this.lockedByUser = false;
   },
 
   _zoom: function() {
@@ -354,7 +360,7 @@ module.exports = WidgetContent.extend({
   },
 
   _showMiniRange: function() {
-    var data = this.dataModel.getDataWithoutOwnFilterApplied();
+    var data = this.dataModel.getData();
 
     var loBarIndex = this.viewModel.get('lo_index');
     var hiBarIndex = this.viewModel.get('hi_index');

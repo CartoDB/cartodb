@@ -9,7 +9,7 @@ var CartoDBLayerGroupAnonymous = require('cdb/geo/map/cartodb-layer-group-anonym
 var GoogleMapsMapView = require('cdb/geo/gmaps/gmaps-map-view');
 var Mobile = require('cdb/geo/ui/mobile');
 
-fdescribe('geo/ui/mobile', function() {
+describe('geo/ui/mobile', function() {
 
   var mobile, map, layerGroup, container, mapView, template, overlays, l1, l2, torque;
 

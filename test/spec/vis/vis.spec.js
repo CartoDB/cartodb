@@ -14,22 +14,6 @@ var Vis = require('cdb/vis/vis');
 require('cdb/vis/overlays'); // Overlay.register calls
 require('cdb/vis/layers'); // Layers.register calls
 
-describe('vis/vis/overlay', function() {
-
-  it("should register and create a type", function() {
-    var _data;
-    Overlay.register('test', function(data) {
-      _data = data;
-      return new View();
-    });
-
-    var opt = {a : 1, b:2, pos: [10, 20]};
-    var v = Overlay.create('test', null, opt);
-    expect(_data).toEqual(opt);
-
-  });
-
-});
 
 describe('vis/vis', function() {
 

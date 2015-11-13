@@ -11,9 +11,7 @@ var CartoDBLayer = require('cdb/geo/map/cartodb-layer');
 var CartoDBLayerGroupAnonymous = require('cdb/geo/map/cartodb-layer-group-anonymous');
 var CartoDBLayerGroupNamed = require('cdb/geo/map/cartodb-layer-group-named');
 var PlainLayer = require('cdb/geo/map/plain-layer');
-var GMapsCartoDBLayerView = require('cdb/geo/gmaps/gmaps-cartodb-layer-view');
 var GMapsCartoDBLayerGroupView = require('cdb/geo/gmaps/gmaps-cartodb-layer-group-view');
-var GMapsCartoDBNamedMapView = require('cdb/geo/gmaps/gmaps-cartodb-named-map-view');
 var GMapsPlainLayerView = require('cdb/geo/gmaps/gmaps-plain-layer-view');
 var Geometry = require('cdb/geo/geometry');
 var GmapsPathView = require('cdb/geo/gmaps/gmaps-path-view');
@@ -125,18 +123,18 @@ fdescribe('geo/gmaps/gmaps-map-view', function() {
     expect(GMapsTiledLayerView.prototype.isPrototypeOf(layerView)).toBeTruthy();
   });
 
-  it("should create a LeafletCartoDBLayerGroupView when the layer is CartoDBLayerGroupAnonymous", function() {
+  it("should create a GMapsCartoDBLayerGroupView when the layer is CartoDBLayerGroupAnonymous", function() {
     layer = new CartoDBLayerGroupAnonymous({}, {});
     var lyr = map.addLayer(layer);
     var layerView = mapView.getLayerByCid(lyr);
     expect(layerView instanceof GMapsCartoDBLayerGroupView).toBeTruthy();
   });
 
-  it("should create a GMapsCartoDBNamedMapView when the layer is CartoDBLayerGroupNamed", function() {
+  it("should create a GMapsCartoDBLayerGroupView when the layer is CartoDBLayerGroupNamed", function() {
     layer = new CartoDBLayerGroupNamed({}, {});
     var lyr = map.addLayer(layer);
     var layerView = mapView.getLayerByCid(lyr);
-    expect(layerView instanceof GMapsCartoDBNamedMapView).toBeTruthy();
+    expect(layerView instanceof GMapsCartoDBLayerGroupView).toBeTruthy();
   });
 
   it("should create a cartodb logo when layer is CartoDBLayerGroupAnonymous", function(done) {

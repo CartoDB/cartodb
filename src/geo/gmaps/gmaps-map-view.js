@@ -3,11 +3,9 @@ var cdb = require('cdb'); // cdb.geo.GMapsTorqueLayerView
 var log = require('cdb.log');
 var MapView = require('../map-view');
 var GMapsTiledLayerView = require('./gmaps-tiled-layer-view');
-var GMapsCartoDBLayerView = require('./gmaps-cartodb-layer-view');
 var GMapsPlainLayerView = require('./gmaps-plain-layer-view');
 var GMapsBaseLayerView = require('./gmaps-base-layer-view');
 var GMapsCartoDBLayerGroupView = require('./gmaps-cartodb-layer-group-view');
-var GMapsCartoDBNamedMapView = require('./gmaps-cartodb-named-map-view');
 var LeafletWMSLayerView = require('../leaflet/leaflet-wms-layer-view');
 var Projector = require('./projector');
 var PointView = require('./gmaps-point-view');
@@ -17,12 +15,10 @@ var GoogleMapsMapView = MapView.extend({
 
   layerTypeMap: {
     "tiled": GMapsTiledLayerView,
-    "cartodb": GMapsCartoDBLayerView,
-    "carto": GMapsCartoDBLayerView,
     "plain": GMapsPlainLayerView,
     "gmapsbase": GMapsBaseLayerView,
     "layergroup": GMapsCartoDBLayerGroupView,
-    "namedmap": GMapsCartoDBNamedMapView,
+    "namedmap": GMapsCartoDBLayerGroupView,
     "torque": function(layer, map) {
       return new cdb.geo.GMapsTorqueLayerView(layer, map);
     },

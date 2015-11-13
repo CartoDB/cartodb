@@ -24,8 +24,7 @@ var CartoDBNamedMapGmaps = function(opts) {
    _.extend(this.options, opts);
   this.projector = new Projector(opts.map);
   CartoDBLayerCommon.call(this);
-  // precache
-  this.update();
+  CartoDBLayerGroupBase.call(this);
 };
 
 CartoDBNamedMapGmaps.prototype = new wax.g.connector();

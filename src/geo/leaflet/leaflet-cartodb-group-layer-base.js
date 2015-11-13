@@ -166,7 +166,7 @@ var LeafletCartoDBGroupLayerBase = L.TileLayer.extend({
       self.ok && self.ok();
       done && done();
     } else {
-      self.error && self.error(err);
+      self.error && self.error('URLs have not been fetched yet');
       done && done();
     }
   },

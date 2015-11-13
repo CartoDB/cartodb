@@ -99,29 +99,30 @@ CartoDBLayerCommon.prototype = {
 
   setOptions: function (opts) {
 
-    if (typeof opts != "object" || opts.length) {
-      throw new Error(opts + ' options must be an object');
-    }
+    // TODO: This should be in the model!
+    // if (typeof opts != "object" || opts.length) {
+    //   throw new Error(opts + ' options must be an object');
+    // }
 
-    _.extend(this.options, opts);
+    // _.extend(this.options, opts);
 
-    var opts = this.options;
+    // var opts = this.options;
 
-    this.options.query = this.options.query || "select * from " + this.options.table_name;
-    if(this.options.query_wrapper) {
-      this.options.query = _.template(this.options.query_wrapper)({ sql: this.options.query });
-    }
+    // this.options.query = this.options.query || "select * from " + this.options.table_name;
+    // if(this.options.query_wrapper) {
+    //   this.options.query = _.template(this.options.query_wrapper)({ sql: this.options.query });
+    // }
 
-    this.setSilent(true);
-    opts.interaction && this.setInteraction(opts.interaction);
-    opts.opacity && this.setOpacity(opts.opacity);
-    opts.query && this.setQuery(opts.query.replace(/\{\{table_name\}\}/g, this.options.table_name));
-    opts.tile_style && this.setCartoCSS(opts.tile_style.replace(new RegExp( opts.table_name, "g"), "layer0"));
-    opts.cartocss && this.setCartoCSS(opts.cartocss);
-    opts.interactivity && this.setInteractivity(opts.interactivity);
-    opts.visible ? this.show() : this.hide();
-    this.setSilent(false);
-    this._definitionUpdated();
+    // this.setSilent(true);
+    // opts.interaction && this.setInteraction(opts.interaction);
+    // opts.opacity && this.setOpacity(opts.opacity);
+    // opts.query && this.setQuery(opts.query.replace(/\{\{table_name\}\}/g, this.options.table_name));
+    // opts.tile_style && this.setCartoCSS(opts.tile_style.replace(new RegExp( opts.table_name, "g"), "layer0"));
+    // opts.cartocss && this.setCartoCSS(opts.cartocss);
+    // opts.interactivity && this.setInteractivity(opts.interactivity);
+    // opts.visible ? this.show() : this.hide();
+    // this.setSilent(false);
+    // this._definitionUpdated();
   },
 
   _getLayerDefinition: function() {

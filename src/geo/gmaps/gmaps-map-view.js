@@ -3,7 +3,7 @@ var cdb = require('cdb'); // cdb.geo.GMapsTorqueLayerView
 var log = require('cdb.log');
 var MapView = require('../map-view');
 var GMapsTiledLayerView = require('./gmaps-tiled-layer-view');
-var GMapsCartoDBLayerView = require('./gmaps-cartodb-layer-view')
+var GMapsCartoDBLayerView = require('./gmaps-cartodb-layer-view');
 var GMapsPlainLayerView = require('./gmaps-plain-layer-view');
 var GMapsBaseLayerView = require('./gmaps-base-layer-view');
 var GMapsCartoDBLayerGroupView = require('./gmaps-cartodb-layer-group-view');
@@ -150,6 +150,7 @@ var GoogleMapsMapView = MapView.extend({
     this.map_googlemaps.setCenter(c);
   },
 
+  // TODO: This could be moved to the base class
   createLayer: function(layer) {
     var layer_view,
     layerClass = this.layerTypeMap[layer.get('type').toLowerCase()];
@@ -157,8 +158,9 @@ var GoogleMapsMapView = MapView.extend({
     if (layerClass) {
       try {
         layer_view = new layerClass(layer, this.map_googlemaps);
-      } catch(e) {
+      } catch (e) {
         log.error("MAP: error creating '" +  layer.get('type') + "' layer -> " + e.message);
+        throw e;
       }
     } else {
       log.error("MAP: " + layer.get('type') + " can't be created");
@@ -185,7 +187,6 @@ var GoogleMapsMapView = MapView.extend({
     this.layers[layer.cid] = layer_view;
 
     if (layer_view) {
-      var idx = _(this.layers).filter(function(lyr) { return !!lyr.getTile; }).length - 1;
       var isBaseLayer = _.keys(this.layers).length === 1 || (opts && opts.index === 0) || layer.get('order') === 0;
       // set base layer
       if(isBaseLayer && !opts.no_base_layer) {
@@ -197,8 +198,8 @@ var GoogleMapsMapView = MapView.extend({
           layer_view._update();
         }
       } else {
-        idx -= 1;
-        idx = Math.max(0, idx); // avoid -1
+        // TODO: Make sure this order will be right
+        var idx = layer.get('order');
         if (layer_view.getTile) {
           if (!layer_view.gmapsLayer) {
             log.error("gmaps layer can't be null");

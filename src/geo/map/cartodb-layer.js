@@ -5,6 +5,7 @@ var MapLayer = require('./map-layer');
 
 var CartoDBLayer = MapLayer.extend({
 
+  // TODO: Cleanup this!
   defaults: {
     attribution: config.get('cartodb_attributions'),
     type: 'CartoDB',
@@ -23,7 +24,8 @@ var CartoDBLayer = MapLayer.extend({
     extra_params: {},
     cdn_url: null,
     maxZoom: 28,
-    cartocss_version: '2.1.0'
+    cartocss_version: '2.1.0',
+    visible: true
   },
 
   initialize: function() {

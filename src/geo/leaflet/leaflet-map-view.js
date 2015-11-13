@@ -364,6 +364,7 @@ var LeafletMapView = MapView.extend({
     }
   },
 
+  // TODO: This could be moved to the base class
   createLayer: function(layer, map) {
     var layer_view = null;
     var layerClass = this.layerTypeMap[layer.get('type').toLowerCase()];
@@ -371,8 +372,9 @@ var LeafletMapView = MapView.extend({
     if (layerClass) {
       try {
         layer_view = new layerClass(layer, map);
-      } catch(e) {
+      } catch (e) {
         log.error("MAP: error creating '" +  layer.get('type') + "' layer -> " + e.message);
+        throw e;
       }
     } else {
       log.error("MAP: " + layer.get('type') + " can't be created");

@@ -61,7 +61,8 @@ function LayerGroupView(base) {
     }, 10);
 
 
-    //CartoDBLayerGroup.call(this, opts);
+    this.model = layerModel;
+
     base.call(this, opts);
     GMapsLayerView.call(this, layerModel, this, gmapsMap);
   };

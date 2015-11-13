@@ -27,6 +27,19 @@ module.exports = WidgetModel.extend({
     WidgetModel.prototype.initialize.call(this, attrs, opts);
   },
 
+  _onChangeBinds: function() {
+    this.bind('change:url change:start change:end', function(){
+      if (this.get('sync')) {
+        this._fetch();
+      }
+    }, this);
+    this.bind('change:boundingBox', function() {
+      if (this.get('bbox')) {
+        this._fetch();
+      }
+    }, this);
+  },
+
   getData: function() {
     return this._data.toJSON();
   },

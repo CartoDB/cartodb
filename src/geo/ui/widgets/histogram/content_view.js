@@ -48,9 +48,11 @@ module.exports = WidgetContent.extend({
 
   _storeBounds: function() {
     var data = this.dataModel.getData();
-    var start = data[0].start;
-    var end = data[data.length - 1].end;
-    this.dataModel.set({ start: start, end: end, bins: data.length });
+    if (data && data.length > 0) {
+      var start = data[0].start;
+      var end = data[data.length - 1].end;
+      this.dataModel.set({ start: start, end: end, bins: data.length });
+    }
   },
 
   _onChangeData: function() {
@@ -332,8 +334,6 @@ module.exports = WidgetContent.extend({
     this._showMiniRange();
 
     this.dataModel.set({ start: null, end: null, bins: null, own_filter: 1 });
-    this.dataModel.trigger('change:url');
-
 //    var data = this.dataModel.getData();
 //    this.chart.replaceData(data);
   },

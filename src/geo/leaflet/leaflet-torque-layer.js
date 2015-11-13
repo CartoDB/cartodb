@@ -73,7 +73,6 @@ var LeafletTorqueLayer = L.TorqueLayer.extend({
     this.bind('tilesLoading', function() {
       this.trigger('loading');
     }, this);
-
   },
 
   onAdd: function(map) {
@@ -110,9 +109,7 @@ var LeafletTorqueLayer = L.TorqueLayer.extend({
       this.provider.templateUrl = this.model.get('urls').tiles[0];
       this.provider._setReady(true);
       this._reloadTiles();
-
     }
-
   }
 });
 

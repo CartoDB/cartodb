@@ -2,8 +2,6 @@ var _ = require('underscore');
 var GMapsLayerView = require('./gmaps-layer-view');
 var CartoDBLayerGroupGmaps = require('./cartodb-layer-group-gmaps');
 
-var base = CartoDBLayerGroupGmaps;
-
 var GMapsCartoDBLayerGroupView = function(layerModel, gmapsMap) {
   var self = this;
   var hovers = [];
@@ -62,14 +60,14 @@ var GMapsCartoDBLayerGroupView = function(layerModel, gmapsMap) {
 
   this.model = layerModel;
 
-  base.call(this, opts);
+  CartoDBLayerGroupGmaps.call(this, opts);
   GMapsLayerView.call(this, layerModel, this, gmapsMap);
 };
 
 _.extend(
   GMapsCartoDBLayerGroupView.prototype,
   GMapsLayerView.prototype,
-  base.prototype,
+  CartoDBLayerGroupGmaps.prototype,
   {
 
   _update: function() {

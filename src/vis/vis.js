@@ -23,9 +23,7 @@ var INFOWINDOW_TEMPLATE = require('./vis/infowindow-template');
 var WidgetsView = require('cdb/geo/ui/widgets/widgets_view');
 var CartoDBLayerGroupNamed = require('cdb/geo/map/cartodb-layer-group-named');
 var CartoDBLayerGroupAnonymous = require('cdb/geo/map/cartodb-layer-group-anonymous');
-var TimeWidgetView = require('cdb/geo/ui/widgets/time/view');
-var TorqueLayerModel = require('cdb/geo/map/torque-layer');
-var TorqueTimeModel = require('cdb/geo/ui/widgets/time/torque-time-model');
+var WidgetViewFactory = require('cdb/geo/ui/widgets/widget_view_factory');
 
 /**
  * visulization creation
@@ -441,6 +439,10 @@ var Vis = View.extend({
       "aggregation": {
         model: 'CategoryModel',
         filter: 'CategoryFilter'
+      },
+      "time": {
+        model: 'TimeModel',
+        filter: 'RangeFilter'
       }
     };
 
@@ -477,26 +479,29 @@ var Vis = View.extend({
       }
     });
 
+    var isTimeWidget = function(m) {
+      return m.get('type') === 'time';
+    };
+    var isLayerWithTimeWidget = function(m) {
+      return m.widgets.any(isTimeWidget);
+    }
+
+    // TODO WidgetView assumes all widgets to be rendered in one place which won't work for the time widget, could we
+    // solve this differently/better? for now extract the layer (assumes there to only be one) and attach the view here
+    var layer = _.find(interactiveLayers, isLayerWithTimeWidget)
+    if (layer) {
+      var widgetModel = layer.widgets.find(isTimeWidget);
+      var view = WidgetViewFactory.createView(widgetModel);
+      this.addView(view);
+      $('.js-dashboard-map-wrapper').append(view.render().el);
+    }
+
     // TODO: This will need to change when new layers are added / removed
-    // TODO torque layer(s?) should not be added here, since rendered separately further down, how to organize better?
-    var layersWithWidgets = new Backbone.Collection(interactiveLayers);
+    var layersWithWidgets = new Backbone.Collection(_.reject(interactiveLayers, isLayerWithTimeWidget));
     var widgetsView = new WidgetsView({
       layers: layersWithWidgets
     });
     $('.js-dashboard').append(widgetsView.render().el);
-
-    // Time widget view
-    var torqueLayerModel = _.find(interactiveLayers, function(m) { return m.get('type') === 'torque' });
-    if (torqueLayerModel) {
-      var timeWidgetModel = new TorqueTimeModel(undefined, {
-        torqueLayerModel: torqueLayerModel
-      });
-      var timeWidgetView = new TimeWidgetView({
-        model: timeWidgetModel
-      });
-      this.addView(timeWidgetView);
-      $('.js-dashboard-map-wrapper').append(timeWidgetView.render().el);
-    }
 
     // TODO: Perhaps this "endpoint" could be part of the "datasource"?
     var endpoint = cdb.windshaft.config.MAPS_API_BASE_URL;

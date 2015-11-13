@@ -148,6 +148,8 @@ cdb.geo.ui.Widget.List.PaginatorView = require('./geo/ui/widgets/list/paginator_
 cdb.geo.ui.Widget.List.ItemView = require('./geo/ui/widgets/list/item_view');
 cdb.geo.ui.Widget.List.ItemsView = require('./geo/ui/widgets/list/items_view');
 cdb.geo.ui.Widget.List.Content = require('./geo/ui/widgets/list/content_view');
+cdb.geo.ui.Widget.TimeModel = require('./geo/ui/widgets/time/model');
+cdb.geo.ui.Widget.Time.View = require('./geo/ui/widgets/time/view');
 
 cdb.windshaft.filters.FilterBase = require('./windshaft/filters/base');
 cdb.windshaft.filters.BoundingBoxFilter = require('./windshaft/filters/bounding_box');

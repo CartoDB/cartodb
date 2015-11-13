@@ -1,12 +1,14 @@
 var ListWidgetView = require('cdb/geo/ui/widgets/list/view');
 var HistogramWidgetView = require('cdb/geo/ui/widgets/histogram/view');
 var CategoryWidgetView = require('cdb/geo/ui/widgets/category/view');
+var TimeWidgetView = require('cdb/geo/ui/widgets/time/view');
 
 module.exports = {
   CLASSES: {
     "list": ListWidgetView,
     "histogram": HistogramWidgetView,
-    "aggregation": CategoryWidgetView
+    "aggregation": CategoryWidgetView,
+    "time": TimeWidgetView
   },
 
   createView: function(widget) {

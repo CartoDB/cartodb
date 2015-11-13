@@ -5,6 +5,7 @@ var WidgetContentView = require('../standard/widget_content_view.js');
 var ControlsView = require('./controls-view');
 var StepInfoView = require('./step-info-view');
 var HistogramChartView = require('../histogram/chart');
+var placeholderTemplate = require('../histogram/placeholder.tpl');
 
 /**
  * View representing a time-series widget
@@ -19,10 +20,9 @@ module.exports = WidgetContentView.extend({
   },
 
   initialize: function() {
+    WidgetContentView.prototype.initialize.apply(this, arguments);
     _.bindAll(this, '_onWindowResize');
     $(window).bind('resize', this._onWindowResize);
-
-    this.model.bind('change:data', this.render, this);
 
     this.viewModel = new Model({
       width: this.defaults.width,
@@ -43,18 +43,22 @@ module.exports = WidgetContentView.extend({
 
   render: function() {
     this.clearSubViews();
-    this._appendView(
-      new ControlsView({
-        model: this.model
-      })
-    );
-    this._appendView(
-      new StepInfoView({
-        model: this.model
-      })
-    );
+    this.$el.html('');
 
-    if (this.model.get('data')) {
+    // this._appendView(
+    //   new ControlsView({
+    //     model: this.model
+    //   })
+    // );
+    // this._appendView(
+    //   new StepInfoView({
+    //     model: this.model
+    //   })
+    // );
+
+    if (this._isDataEmpty()) {
+      this.$el.append(placeholderTemplate());
+    } else {
       this._createHistogramView();
     }
 
@@ -80,7 +84,7 @@ module.exports = WidgetContentView.extend({
       handles: true,
       width: this._histogramChartWidth(),
       height: this.viewModel.get('histogramChartHeight'),
-      data: this.model.get('data'),
+      data: this.model.getDataWithoutOwnFilterApplied(),
       xAxisTickFormat: function(d, i) {
         return i;
       }
@@ -104,6 +108,11 @@ module.exports = WidgetContentView.extend({
   _histogramChartWidth: function() {
     var margins = this.viewModel.get('margins');
     return this.viewModel.get('width') - margins.left - margins.right;
+  },
+
+  _isDataEmpty: function() {
+    var data = this.model.getData().off;
+    return _.isEmpty(data) || _.size(data) === 0;
   },
 
   _onWindowResize: _.debounce(function() {

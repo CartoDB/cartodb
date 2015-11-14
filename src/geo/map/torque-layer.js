@@ -31,6 +31,10 @@ var TorqueLayer = MapLayer.extend({
   },
 
   getInfowindowData: function() {
+    var infowindow = this.get('infowindow');
+    if (infowindow && infowindow.fields && infowindow.fields.length) {
+      return infowindow;
+    }
     return null;
   },
 
@@ -54,6 +58,9 @@ var TorqueLayer = MapLayer.extend({
     return this.widgets.map(function(widget) {
       return widget.getFilter();
     });
+  },
+
+  fetchAttributes: function(layer, featureID, callback) {
   }
 
 });

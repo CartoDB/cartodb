@@ -91,17 +91,16 @@ module.exports = WidgetModel.extend({
   },
 
   parse: function(d) {
-    var data = d.ownFilterOff;
-    var categories = data.categories;
+    var categories = d.categories;
     this._dataOriginChecker(categories);
     var attrs = this._parseData(categories);
 
     _.extend(attrs, {
-        nulls: data.nulls,
-        min: data.min,
-        max: data.max,
-        count: data.count,
-        categoriesCount: data.categoriesCount
+        nulls: d.nulls,
+        min: d.min,
+        max: d.max,
+        count: d.count,
+        categoriesCount: d.categoriesCount
       }
     );
     this._data.reset(attrs.data);

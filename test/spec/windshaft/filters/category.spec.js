@@ -1,13 +1,19 @@
 var _ = require('underscore');
 var WindshaftFiltersCategory = require('cdb/windshaft/filters/category');
-var data = Array.apply(null, { length: 12 }).map(Number.call, Number);
 var Backbone = require('Backbone');
 
 describe('windshaft/filters/category', function() {
+  var data;
+
   beforeEach(function() {
     this.filter = new WindshaftFiltersCategory({
       widgetId: 'category_widget'
     });
+
+    data = [];
+    for (var i = 0; i < 12; i++) {
+      data.push(i);
+    }
 
     this.filter.setDataOrigin(new Backbone.Collection(data));
   });

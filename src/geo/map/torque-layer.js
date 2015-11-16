@@ -31,6 +31,7 @@ var TorqueLayer = MapLayer.extend({
   },
 
   getInfowindowData: function() {
+    // TODO: use infowindow model in the future
     var infowindow = this.get('infowindow');
     if (infowindow && infowindow.fields && infowindow.fields.length) {
       return infowindow;

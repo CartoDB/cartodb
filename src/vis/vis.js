@@ -1209,6 +1209,8 @@ var Vis = View.extend({
     var mapView = this.mapView;
     var infowindow = null;
     var layers = [];
+    // TODO: this should be managed at a different level so each layer knows if
+    // the infowindow needs to be added
     if (layerView.model) {
       if (layerView.model.layers) {
         layers = layerView.model.layers;

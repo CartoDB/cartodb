@@ -1,6 +1,6 @@
 var _ = require('underscore');
 var WindshaftFiltersCategory = require('cdb/windshaft/filters/category');
-var Backbone = require('Backbone');
+var Backbone = require('backbone');
 
 describe('windshaft/filters/category', function() {
   var data;

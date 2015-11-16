@@ -37,7 +37,7 @@ module.exports = WidgetModel.extend({
   },
 
   _onChangeBinds: function() {
-    this.bind('change:url change:start change:end', function(){
+    this.bind('change:url', function(){
       if (this.get('sync')) {
         this._fetch();
       }

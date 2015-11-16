@@ -34,8 +34,8 @@ describe('geo/ui/widgets/histogram/content_view', function() {
 
   it('should render the histogram', function() {
     spyOn(this.view, 'render').and.callThrough();
-    this.dataModel._offData.reset(genHistogramData(20));
-    this.dataModel.trigger('change:off');
+    this.dataModel._data.reset(genHistogramData(20));
+    this.dataModel.trigger('change:data');
     expect(this.view.render).toHaveBeenCalled();
     expect(this.view.$('h3').text()).toBe('Howdy');
   });
@@ -46,8 +46,8 @@ describe('geo/ui/widgets/histogram/content_view', function() {
     expect(this.view.viewModel.get('avg')).toBe(undefined);
     expect(this.view.viewModel.get('total')).toBe(undefined);
 
-    this.dataModel._offData.reset(genHistogramData(20));
-    this.dataModel.trigger('change:off');
+    this.dataModel._data.reset(genHistogramData(20));
+    this.dataModel.trigger('change:data');
 
     expect(this.view.viewModel.get('min')).not.toBe(0);
     expect(this.view.viewModel.get('max')).not.toBe(0);

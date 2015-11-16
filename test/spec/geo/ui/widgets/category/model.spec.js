@@ -1,7 +1,6 @@
 var _ = require('underscore');
 var CategoryModel = require('cdb/geo/ui/widgets/category/model.js');
 var WindshaftFiltersCategory = require('cdb/windshaft/filters/category');
-var Backbone = require('Backbone');
 
 describe('widgets/category/model', function() {
 

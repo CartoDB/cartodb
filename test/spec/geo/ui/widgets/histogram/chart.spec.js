@@ -78,14 +78,6 @@ describe('geo/ui/widgets/histogram/chart', function() {
     this.view.model.set({ data: genHistogramData(20) });
     expect(this.view.refresh).toHaveBeenCalled();
   });
-
-  it('shouldn\'t refresh the data', function() {
-    this.view.model.set({ locked: true });
-    spyOn(this.view, 'refresh').and.callThrough();
-    this.view.render().show();
-    this.view.model.set({ data: genHistogramData(20) });
-    expect(this.view.refresh).not.toHaveBeenCalled();
-  });
 });
 
 function genHistogramData(n) {

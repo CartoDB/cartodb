@@ -475,7 +475,7 @@ describe('vis/vis', function() {
 
     it("should be enabled with zoom overlay and scrollwheel enabled", function() {
       var container = $('<div>').css('height', '200px');
-      var vis = new cdb.vis.Vis({el: container});
+      var vis = new Vis({el: container});
 
       var mapConfig = {
         updated_at: 'cachebuster',
@@ -507,7 +507,7 @@ describe('vis/vis', function() {
 
     it("should be enabled with zoom overlay and scrollwheel disabled", function() {
       var container = $('<div>').css('height', '200px');
-      var vis = new cdb.vis.Vis({el: container});
+      var vis = new Vis({el: container});
 
       var mapConfig = {
         updated_at: 'cachebuster',
@@ -539,7 +539,7 @@ describe('vis/vis', function() {
 
     it("should be enabled without zoom overlay and scrollwheel enabled", function() {
       var container = $('<div>').css('height', '200px');
-      var vis = new cdb.vis.Vis({el: container});
+      var vis = new Vis({el: container});
 
       var mapConfig = {
         updated_at: 'cachebuster',
@@ -560,7 +560,7 @@ describe('vis/vis', function() {
 
     it("should be disabled without zoom overlay and scrollwheel disabled", function() {
       var container = $('<div>').css('height', '200px');
-      var vis = new cdb.vis.Vis({el: container});
+      var vis = new Vis({el: container});
 
       var mapConfig = {
         updated_at: 'cachebuster',

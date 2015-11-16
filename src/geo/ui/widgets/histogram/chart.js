@@ -140,7 +140,7 @@ module.exports = View.extend({
       }
 
       if (!this._isDragging()) {
-        var d = this._formatNumber(freq);
+        var d = this.formatNumber(freq);
         hoverProperties = { top: top, left: left, data: d };
       } else {
         hoverProperties = null;
@@ -186,7 +186,7 @@ module.exports = View.extend({
     this.model.set({ lo_index: null, hi_index: null });
   },
 
-  _formatNumber: function(value, unit) {
+  formatNumber: function(value, unit) {
     var format = d3.format('.2s');
 
     if (value < 1000) {
@@ -598,7 +598,7 @@ module.exports = View.extend({
     .orient('bottom')
     .innerTickSize(0)
     .tickFormat(function(d, i) {
-      return (i === data.length - 1) ? self._formatNumber(data[i].end) : self._formatNumber(data[i].start);
+      return (i === data.length - 1) ? self.formatNumber(data[i].end) : self.formatNumber(data[i].start);
     });
 
     this.chart.append('g')

@@ -188,10 +188,26 @@ module.exports = View.extend({
 
   _formatNumber: function(value, unit) {
     var format = d3.format('.2s');
+
+    if (value < 1000) {
+      v = (value).toFixed(2);
+      if (v.endsWith('.00')) {
+        v = v.replace('.00', '');
+      }
+      return v;
+    }
+
+    if (value % 1 !== 0) {
+      format = d3.format('');
+      return format(value);
+    }
+
     value = format(value) + (unit ? ' ' + unit : '');
+
     if (value.endsWith('.0')) {
       value = value.replace('.0', '');
     }
+
     return value == '0.0' ? 0 : value;
   },
 

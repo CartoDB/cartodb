@@ -103,6 +103,8 @@ describe('geo/ui/widgets/histogram/chart', function() {
     expect(this.view._formatNumber(0)).toBe('0');
     expect(this.view._formatNumber(5)).toBe("5");
     expect(this.view._formatNumber(5.0)).toBe("5");
+    expect(this.view._formatNumber(5.00)).toBe("5");
+    expect(this.view._formatNumber(186.7)).toBe("186.70");
     expect(this.view._formatNumber(500)).toBe("500");
     expect(this.view._formatNumber(1234)).toBe("1.2k");
   });

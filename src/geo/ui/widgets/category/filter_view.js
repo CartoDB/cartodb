@@ -16,6 +16,7 @@ module.exports = View.extend({
 
   initialize: function() {
     this.filter = this.options.filter;
+    this.viewModel = this.options.viewModel;
     this._initBinds();
   },
 
@@ -38,9 +39,11 @@ module.exports = View.extend({
   },
 
   _initBinds: function() {
-    this.model.bind('change', this.render, this);
+    this.model.bind('change:data', this.render, this);
+    this.viewModel.bind('change:search', this.toggle, this);
     this.filter.bind('change', this.render, this);
     this.add_related_model(this.filter);
+    this.add_related_model(this.viewModel);
   },
 
   _onUnselectAll: function() {
@@ -51,6 +54,10 @@ module.exports = View.extend({
 
   _onSelectAll: function() {
     this.filter.acceptAll();
+  },
+
+  toggle: function() {
+    this[ this.viewModel.isSearchEnabled() ? 'hide' : 'show' ]();
   },
 
   show: function() {

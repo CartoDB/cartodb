@@ -20,6 +20,13 @@
   @include justify-content(flex-start, start);
   text-align: left;
 }
+.Widget-contentFlex {
+  @include display-flex();
+  @include align-items(center);
+}
+.Widget-contentFlex > * {
+  width: auto;
+}
 .Widget-contentFull {
   width: 100%;
 }

@@ -53,6 +53,9 @@
   overflow: hidden;
   z-index: 1;
 }
+.Widget-list.is-hidden {
+  display: none;
+}
 .Widget-list--wrapped {
   @include display-flex();
   @include flex-wrap(nowrap);
@@ -75,6 +78,12 @@
 }
 .Widget-listItemInner--withBorders {
   padding: ($sMargin-element / 2) + 1 0;
+}
+.Widget-listItemInner--fullSpace {
+  @include display-flex();
+}
+.Widget-listItemInner--fullSpace > * {
+  width: 100%;
 }
 .Widget-listItem--fake {
   position: relative;

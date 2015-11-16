@@ -1,6 +1,7 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
 var WidgetModel = require('../widget_model');
+var WidgetSearchModel = require('./search_model.js');
 var CategoriesCollection = require('./categories_collection');
 var MAXCATEGORIES = 12;
 
@@ -11,18 +12,44 @@ module.exports = WidgetModel.extend({
 
   initialize: function(attrs, opts) {
     this._data = new CategoriesCollection(this.get('data'));
-    this._dataOrigin = new Backbone.Collection(this.get('data'));
-
     WidgetModel.prototype.initialize.call(this, attrs, opts);
-    this.filter.setDataOrigin(this._dataOrigin);
+
+    // Search model
+    this.search = new WidgetSearchModel({}, {
+      filter: this.filter
+    });
+  },
+
+  _onChangeBinds: function() {
+    WidgetModel.prototype._onChangeBinds.call(this);
+
+    this.search.set({
+      url: this.get('url'),
+      boundingBox: this.get('boundingBox')
+    });
+    
+    this.bind('change:url change:boundingBox', function() {
+      this.search.set({
+        url: this.get('url'),
+        boundingBox: this.get('boundingBox')
+      });
+    }, this);
   },
 
   getData: function() {
     return this._data;
   },
 
+  getSearch: function() {
+    return this.search;
+  },
+
   getSize: function() {
     return this._data.size();
+  },
+
+  getCount: function() {
+    return this.get('categoriesCount');
   },
 
   toJSON: function() {
@@ -59,32 +86,12 @@ module.exports = WidgetModel.extend({
       });
     }, this);
 
-    // this._dataOrigin.each(function(mdl) {
-    //   if (newData.length >= MAXCATEGORIES) {
-    //     return;
-    //   }
-    //
-    //   var value = mdl.get('category');
-    //   var isRejected = this.filter.isRejected(value);
-    //   var alreadyAdded = _tmpArray[value];
-    //
-    //   if (!alreadyAdded) {
-    //     newData.push({
-    //       'selected': !isRejected,
-    //       'name': value,
-    //       'agg': false,
-    //       'value': 0
-    //     });
-    //   }
-    // }, this);
-
     return {
       data: newData
     }
   },
 
   setCategories: function(d) {
-    this._dataOriginChecker(d);
     var attrs = this._parseData(d);
     this._data.reset(attrs.data);
     this.set(attrs);
@@ -92,7 +99,6 @@ module.exports = WidgetModel.extend({
 
   parse: function(d) {
     var categories = d.categories;
-    this._dataOriginChecker(categories);
     var attrs = this._parseData(categories);
 
     _.extend(attrs, {
@@ -105,14 +111,6 @@ module.exports = WidgetModel.extend({
     );
     this._data.reset(attrs.data);
     return attrs;
-  },
-
-  _dataOriginChecker: function(d) {
-    // If there is no data from the beginning,
-    // complete data origin.
-    if (this._dataOrigin.isEmpty()) {
-      this._dataOrigin.reset(d);
-    }
   },
 
   _onFilterChanged: function(filter) {

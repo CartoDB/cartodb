@@ -155,6 +155,14 @@
     }
   }
 
+  .Widget-checkbox {
+    border-color: $disabled;
+
+    &.is-checked {
+      background: $link;
+    }
+  }
+
   // States
   .is-disabled {
     .Widget-textNormal,

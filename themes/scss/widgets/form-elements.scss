@@ -1,0 +1,26 @@
+// Default styles for form elements within widget
+// --------------------------------------------------
+
+@import '../variables/sizes';
+@import '../variables/mixins';
+
+$size: 8px;
+
+.Widget-checkbox {
+  display: inline;
+  width: $size;
+  min-width: $size;
+  max-width: $size;
+  height: $size;
+  margin-top: 2px;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  vertical-align: top;
+}
+.Widget-checkbox.is-checked {
+  width: $size + 2;
+  min-width: $size + 2;
+  max-width: $size + 2;
+  height: $size + 2;
+  border: 0;
+}

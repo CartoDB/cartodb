@@ -16,6 +16,7 @@ module.exports = WidgetView.extend({
 
   initialize: function() {
     this._ITEMS_PER_PAGE = this.options.itemsPerPage;
+    this.dataModel = this.options.dataModel;
     this.filter = this.options.filter;
     this._initBinds();
   },
@@ -23,7 +24,7 @@ module.exports = WidgetView.extend({
   render: function() {
     this.clearSubViews();
     this.$el.empty();
-    var data = this.model.getData();
+    var data = this.dataModel.getData();
     var isDataEmpty = _.isEmpty(data) || _.size(data) === 0;
 
     if (isDataEmpty) {
@@ -35,7 +36,8 @@ module.exports = WidgetView.extend({
   },
 
   _initBinds: function() {
-    this.model.bind('change:data', this.render, this);
+    this.model.bind('change:search', this.toggle, this);
+    this.dataModel.bind('change:data', this.render, this);
   },
 
   _renderPlaceholder: function() {
@@ -53,7 +55,7 @@ module.exports = WidgetView.extend({
       .addClass('Widget-list--wrapped');
 
     var groupItem;
-    var data = this.model.getData();
+    var data = this.dataModel.getData();
 
     data.each(function(mdl, i) {
       if (i % this._ITEMS_PER_PAGE === 0) {
@@ -67,7 +69,7 @@ module.exports = WidgetView.extend({
   _addItem: function(mdl, $parent) {
     var v = new WidgetCategoryItemView({
       model: mdl,
-      dataModel: this.model,
+      dataModel: this.dataModel,
       filter: this.filter
     });
     v.bind('itemClicked', this._setFilters, this);
@@ -80,7 +82,7 @@ module.exports = WidgetView.extend({
 
     if (isSelected) {
       if (!this.filter.hasRejects() && !this.filter.hasAccepts()) {
-        var data = this.model.getData();
+        var data = this.dataModel.getData();
         var rejects = [];
         // Make elements "unselected"
         data.map(function(m) {
@@ -98,6 +100,18 @@ module.exports = WidgetView.extend({
       mdl.set('selected', true);
       this.filter.accept(mdl.get('name'));
     }
+  },
+
+  toggle: function() {
+    this[ !this.model.isSearchEnabled() ? 'show' : 'hide']();
+  },
+
+  show: function() {
+    this.$el.removeClass('is-hidden');
+  },
+
+  hide: function() {
+    this.$el.addClass('is-hidden');
   }
 
 });

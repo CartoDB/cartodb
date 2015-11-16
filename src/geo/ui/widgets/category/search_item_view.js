@@ -1,10 +1,10 @@
+var $ = require('jquery');
 var _ = require('underscore');
 var View = require('cdb/core/view');
-var clickedTemplate = require('./item_clickable_view.tpl');
-var unclickableTemplate = require('./item_unclickable_view.tpl');
+var template = require('./search_item_clickable_template.tpl');
 
 /**
- * Category list item view
+ * Category list view
  */
 module.exports = View.extend({
 
@@ -23,15 +23,13 @@ module.exports = View.extend({
 
   render: function() {
     var value = this.model.get('value');
-    var template = this.model.get('agg') ? unclickableTemplate : clickedTemplate;
 
     this.$el.html(
       template({
-        hasSearch: this.dataModel.get('search'),
         name: this.model.get('name'),
         value: Math.ceil(value),
-        percentage: ((value / this.dataModel.get('max')) * 100),
-        isDisabled: !this.model.get('selected') ? 'is-disabled' : ''
+        percentage: 0, // ((value / this.dataModel.get('max')) * 100),
+        isDisabled: !this.model.get('selected')
       })
     );
 
@@ -39,13 +37,11 @@ module.exports = View.extend({
   },
 
   _initBinds: function() {
-    this.model.bind('change', this.render, this);
-    this.dataModel.bind('change:search', this.render, this);
-    this.add_related_model(this.dataModel);
+    this.model.bind('change:selected', this.render, this);
   },
 
   _onItemClick: function() {
-    this.trigger('itemClicked', this.model, this);
+    this.model.set('selected', !this.model.get('selected'));
   }
 
 });

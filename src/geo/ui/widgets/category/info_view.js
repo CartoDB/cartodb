@@ -15,22 +15,31 @@ module.exports = View.extend({
   tagName: 'dl',
 
   initialize: function() {
+    // Model is viewModel in its parent with
+    // info about if search is applied or not
+    this.dataModel = this.options.dataModel;
     this._initBinds();
   },
 
   render: function() {
     this.$el.html(
       template({
-        min: this.model.get('min'),
-        max: this.model.get('max'),
-        nulls: this.model.get('nulls')
+        min: this.dataModel.get('min'),
+        max: this.dataModel.get('max'),
+        nulls: this.dataModel.get('nulls')
       })
     );
     return this;
   },
 
   _initBinds: function() {
-    this.model.bind('change:data', this.render, this);
+    this.dataModel.bind('change:data', this.render, this);
+    this.model.bind('change:search', this.toggle, this);
+    this.add_related_model(this.dataModel);
+  },
+
+  toggle: function() {
+    this[ this.model.isSearchEnabled() ? 'hide' : 'show' ]();
   }
 
 });

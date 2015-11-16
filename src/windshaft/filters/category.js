@@ -1,6 +1,7 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
 var WindshaftFilterBase = require('./base');
+var MAXDATACOUNT = 12;
 
 /**
  *  Filter used by the category widget
@@ -15,11 +16,6 @@ module.exports = WindshaftFilterBase.extend({
 
   isEmpty: function() {
     return this.rejectedCategories.size() === 0 && this.acceptedCategories.size() === 0;
-  },
-
-  // TODO: change this thing
-  setDataOrigin: function(collection) {
-    this._dataOrigin = collection;
   },
 
   accept: function(values) {
@@ -45,6 +41,10 @@ module.exports = WindshaftFilterBase.extend({
     this.acceptedCategories.reset();
     this.rejectedCategories.reset();
     this.trigger('change', this);
+  },
+
+  isAccepted: function(name) {
+    return this.acceptedCategories.where({ name: name }).length > 0;
   },
 
   rejectAll: function(d) {
@@ -92,7 +92,7 @@ module.exports = WindshaftFilterBase.extend({
     } else if (acceptCount > 0 && this.acceptedCategories.where({ name: name }).length === 0) {
       return true;
     } else {
-      return false
+      return false;
     }
   },
 
@@ -102,7 +102,7 @@ module.exports = WindshaftFilterBase.extend({
 
   toJSON: function() {
     var filter = {};
-    var dataCount = this._dataOrigin.size();
+    var maxDataCount = MAXDATACOUNT;
     var rejectCount = this.rejectedCategories.size();
     var acceptCount = this.acceptedCategories.size();
     var acceptedCats = { accept: _.map(_.pluck(this.acceptedCategories.toJSON(), 'name'), encodeURIComponent) };
@@ -110,14 +110,14 @@ module.exports = WindshaftFilterBase.extend({
 
     // TODO: review this block of code + other possibilities
     if (!this.isEmpty()) {
-      if (acceptCount > 0 && acceptCount < dataCount && rejectCount < dataCount) {
+      if (acceptCount > 0 && acceptCount < maxDataCount && rejectCount < maxDataCount) {
         filter = acceptedCats;
-      } else if (acceptCount === 0 && rejectCount > 0 && rejectCount < dataCount) {
+      } else if (acceptCount === 0 && rejectCount > 0 && rejectCount < maxDataCount) {
         filter = rejectedCats;
-      } else if (rejectCount >= dataCount && acceptCount === 0) {
+      } else if (rejectCount >= maxDataCount && acceptCount === 0) {
         // TODO: replace this by empty array when it is available through API
         filter = { accept: ['___@___'] };
-      } else if (acceptCount >= dataCount && rejectCount === 0) {
+      } else if (acceptCount >= maxDataCount && rejectCount === 0) {
         filter = {};
       } else {
         _.extend(filter, rejectedCats, acceptedCats);

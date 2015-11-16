@@ -1,4 +1,5 @@
 var torque = require('cdb/torque');
+require('leaflet').noConflict();
 
 describe('torque', function() {
   it('should set a window.torque object', function() {

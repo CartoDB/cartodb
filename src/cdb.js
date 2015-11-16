@@ -1,9 +1,11 @@
 // Creates cdb object, mutated in the entry file cartodb.js
 // Used to avoid circular dependencies
-var cdb = window.cdb;
+var cdb = window.cdb = window.cartodb;
 
+// Might be set in different bundles (e.g. cartodb.js vs. torque), avoid overriding it once set
 if (!cdb) {
-  var cdb = window.cdb || {};
+  cdb = window.cdb = window.cartodb = {};
+  if (!window.JST) window.JST = {};
   cdb.VERSION = "3.15.8";
   cdb.DEBUG = false;
   cdb.CARTOCSS_DEFAULT_VERSION = '2.1.1';
@@ -35,9 +37,6 @@ if (!cdb) {
 
   cdb.windshaft = {};
   cdb.windshaft.filters = {};
-
-  if (!window.JST) window.JST = {};
-  window.cdb = window.cartodb = cdb;
 }
 
 module.exports = cdb;

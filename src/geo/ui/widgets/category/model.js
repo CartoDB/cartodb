@@ -46,6 +46,7 @@ module.exports = WidgetModel.extend({
     var max = 0;
     var totalCount = 0;
     var newData = [];
+    var _tmpArray = {};
 
     _.each(categories, function(datum) {
       var category = datum.category;
@@ -54,6 +55,7 @@ module.exports = WidgetModel.extend({
       min = Math.min(min, count);
       max = Math.max(max, count);
       totalCount = totalCount + count;
+      _tmpArray[category] = true;
       newData.push({
         'selected': !isRejected,
         'name': category,
@@ -67,7 +69,7 @@ module.exports = WidgetModel.extend({
     this._dataOrigin.each(function(mdl) {
       var value = mdl.get('category');
       var isRejected = this.filter.isRejected(value);
-      var alreadyAdded = _.find(newData, function(m){ return m.name === value });
+      var alreadyAdded = _tmpArray[value];
 
       if (!alreadyAdded) {
         newData.push({

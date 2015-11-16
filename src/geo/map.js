@@ -15,6 +15,7 @@ var Map = Model.extend({
     minZoom: 0,
     maxZoom: 40,
     scrollwheel: true,
+    drag: true,
     keyboard: true,
     provider: 'leaflet'
   },

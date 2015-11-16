@@ -105,7 +105,6 @@ cdb.geo.ui.Search = require('./geo/ui/search');
 
 cdb.geo.ui.LayerSelector = require('./geo/ui/layer-selector');
 cdb.geo.ui.LayerView = require('./geo/ui/layer-view');
-cdb.geo.ui.LayerViewFromLayerGroup = require('./geo/ui/layer-view-from-layer-group');
 
 cdb.geo.ui.MobileLayer = require('./geo/ui/mobile-layer');
 cdb.geo.ui.Mobile = require('./geo/ui/mobile');

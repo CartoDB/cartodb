@@ -160,7 +160,6 @@ describe('cartodb.js bundle', function() {
 
       expect(cdb.geo.ui.LayerSelector).toEqual(jasmine.any(Function));
       expect(cdb.geo.ui.LayerView).toEqual(jasmine.any(Function));
-      expect(cdb.geo.ui.LayerViewFromLayerGroup).toEqual(jasmine.any(Function));
 
       expect(cdb.geo.ui.MobileLayer).toEqual(jasmine.any(Function));
       expect(cdb.geo.ui.Mobile).toEqual(jasmine.any(Function));

@@ -98,7 +98,7 @@ var LayerSelector = View.extend({
           layerView.bind('switchChanged', self._setCount, self);
           self.layers.push(layerView);
         })
-      } else if (layer.get("type") === "CartoDB" || layer.get('type') === 'torque') {
+      } else if (layer.get('type') === 'torque') {
         var layerView = self._createLayerView(layer);
         layerView.bind('switchChanged', self._setCount, self);
         self.layers.push(layerView);

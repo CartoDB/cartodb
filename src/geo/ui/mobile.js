@@ -257,50 +257,17 @@ var Mobile = View.extend({
   _getLayers: function() {
     this.layers = [];
 
-    // we add the layers to the array depending on the method used
-    // to sent us the layers
-    if (this.options.layerView) {
-      this._getLayersFromLayerView();
-    } else {
-      _.each(this.map.layers.models, this._getLayer, this);
-    }
-  },
-
-  _getLayersFromLayerView: function() {
-    // TODO: This is used when cartodb.createLayer is used. Fix when we decide what to do with
-    // TODO: This is untested!
-    // cartodb.createLayer
-    // if (this.options.layerView && this.options.layerView.model.get("type") == "layergroup") {
-    //   this.layers = _.map(this.options.layerView.layers, function(l, i) {
-    //     var m = new Model(l.toJSON());
-
-    //     m.set('order', i);
-    //     m.set('type', 'layergroup');
-    //     m.set('visible', l.visible);
-    //     m.set('layer_name', l.options.layer_name);
-
-    //     layerView = this._createLayer('LayerViewFromLayerGroup', {
-    //       model: m,
-    //       layerView: this.options.layerView,
-    //       layerIndex: i
-    //     });
-
-    //     return layerView.model;
-    //   }, this);
-    // } else if (this.options.layerView && (this.options.layerView.model.get("type") == "torque")) {
-    //   var layerView = this._createLayer('LayerView', { model: this.options.layerView.model });
-    //   this.layers.push(layerView.model);
-    // }
+    _.each(this.map.layers.models, this._getLayer, this);
   },
 
   _getLayer: function(layer) {
-    // TODO: This is not working for "namedmap" layers
-    if (layer.get("type") == 'layergroup') {
-      var layerGroupView = this.mapView.getLayerByCid(layer.cid);
+    if (layer.get("type") === 'layergroup' || layer.get("type") === 'namedmap') {
       layer.layers.each(function(layer, i) {
 
-        // TODO: This only work for layers inside a layergroup
-        layer.set('layer_name', layer.get('options').layer_name);
+        // TODO: We could probably use layer.getName directly in the layer selector
+        // instead of having to set this up here for layers inside `layer_group` layers.
+        // We'd need to take `torque` layers into account to.
+        layer.set('layer_name', layer.getName());
         this.layers.push(layer);
       }, this);
     } else if (layer.get("type") === "CartoDB" || layer.get('type') === 'torque') {

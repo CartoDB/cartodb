@@ -78,6 +78,35 @@ describe('geo/ui/widgets/histogram/chart', function() {
     this.view.model.set({ data: genHistogramData(20) });
     expect(this.view.refresh).toHaveBeenCalled();
   });
+
+  it('should detect overlapping rectangles', function() {
+    var a = {
+      left: 0,
+      width: 100
+    };
+
+    var b = {
+      left: 55,
+      width: 100
+    };
+
+    var c = {
+      left: 500,
+      width: 100
+    };
+
+    expect(this.view._isOverlapping(a, b)).toBe(true);
+    expect(this.view._isOverlapping(b, c)).toBe(false);
+  });
+
+  it('should format numbers', function() {
+    expect(this.view._formatNumber(0)).toBe('0');
+    expect(this.view._formatNumber(5)).toBe("5");
+    expect(this.view._formatNumber(5.0)).toBe("5");
+    expect(this.view._formatNumber(500)).toBe("500");
+    expect(this.view._formatNumber(1234)).toBe("1.2k");
+  });
+
 });
 
 function genHistogramData(n) {

@@ -124,10 +124,6 @@ module.exports = View.extend({
     }
 
     var freq = data[barIndex].freq;
-    //var min = this._formatNumber(data[barIndex].start);
-    //var max = this._formatNumber(data[barIndex].end);
-    var data = this._formatNumber(freq);
-
     var hoverProperties = {};
 
     var bar = this.chart.select('.Bar:nth-child(' + (barIndex + 1) + ')');
@@ -144,7 +140,8 @@ module.exports = View.extend({
       }
 
       if (!this._isDragging()) {
-        hoverProperties = { top: top, left: left, data: data };
+        var d = this._formatNumber(freq);
+        hoverProperties = { top: top, left: left, data: d };
       } else {
         hoverProperties = null;
       }
@@ -614,7 +611,7 @@ module.exports = View.extend({
   },
 
   _isOverlapping: function(a, b) {
-    return !(a.left < b.left || a.left > b.left + b.width);
+    return !(a.left + a.width < b.left || a.left > b.left + b.width);
   },
 
   resetBrush: function() {

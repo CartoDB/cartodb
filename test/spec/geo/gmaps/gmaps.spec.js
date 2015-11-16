@@ -233,15 +233,6 @@ var GmapsPathView = require('cdb/geo/gmaps/gmaps-path-view');
       expect(geojson).toEqual(multipoly);
     });
 
-    it("should swicth layer", function(done) {
-      map.addLayer(layer);
-      layer.set({'type': 'torque', 'cartocss': 'Map{ -torque-frame-count: 10; }'});
-      setTimeout(function() {
-        expect(mapView.layers[layer.cid] instanceof cdb.geo.GMapsTorqueLayerView).toEqual(true);
-        done();
-      }, 2000);
-    });
-
     it("should disable gmaps dragging and double click zooming when the map has drag disabled", function() {
       var container = $('<div>').css({
           'height': '200px',

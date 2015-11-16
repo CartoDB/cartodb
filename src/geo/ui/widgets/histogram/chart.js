@@ -142,7 +142,6 @@ module.exports = View.extend({
       if (h < 1 && h > 0) {
         top = this.chartHeight + this.model.get('pos').y + this.$el.position().top - 20;
       }
-      console.log(top);
 
       if (!this._isDragging()) {
         hoverProperties = { top: top, left: left, data: data };

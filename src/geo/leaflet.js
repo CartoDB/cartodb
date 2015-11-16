@@ -1,4 +1,3 @@
-// TODO: Do we need this?
 module.exports = {
   LeafletLayerView: require('./leaflet/leaflet-layer-view'),
 

@@ -145,7 +145,6 @@ module.exports = WidgetContent.extend({
     this.chart.bind('on_brush_end', this._onBrushEnd, this);
     this.chart.bind('hover', this._onValueHover, this);
     this.chart.render().show();
-    window.chart = this.chart;
 
     this._updateStats();
   },
@@ -315,7 +314,7 @@ module.exports = WidgetContent.extend({
 
     if (data && data.length) {
       var loBarIndex = this.viewModel.get('lo_index') || 0;
-      var hiBarIndex = this.viewModel.get('hi_index') || (data.length - 1);
+      var hiBarIndex = this.viewModel.get('hi_index') || data.length;
 
       var sum = this._calcSum(data, loBarIndex, hiBarIndex);
       var avg = this._calcAvg(data);
@@ -324,7 +323,7 @@ module.exports = WidgetContent.extend({
         min = data[loBarIndex].min;
       }
 
-      if (hiBarIndex >= 0 && hiBarIndex <= data.length) {
+      if (hiBarIndex >= 0 && hiBarIndex - 1 < data.length) {
         max = data[hiBarIndex - 1].max;
       }
 

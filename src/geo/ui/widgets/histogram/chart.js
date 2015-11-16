@@ -197,11 +197,6 @@ module.exports = View.extend({
       return v;
     }
 
-    if (value % 1 !== 0) {
-      format = d3.format('');
-      return format(value);
-    }
-
     value = format(value) + (unit ? ' ' + unit : '');
 
     if (value.endsWith('.0')) {

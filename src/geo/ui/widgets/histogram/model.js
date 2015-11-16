@@ -67,6 +67,17 @@ module.exports = WidgetModel.extend({
     };
   },
 
+  // set bins for the histograms
+  // @bins should be an array with the format [{ start: ..., end: ..., freq: ..., min: ..., max:   }, ...]
+  //    - start, end: are the bucket bounds
+  //    - min, max: the min and the max value for all the points in that bucket
+  //    - freq: count 
+  setBins: function(bins, options) {
+    this._data.reset(bins, options);
+    this.set('data', { bins: bins }, options);
+    return this;
+  },
+
   toJSON: function(d) {
     return {
       type: "histogram",

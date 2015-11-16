@@ -64,17 +64,11 @@ module.exports = WidgetContent.extend({
   },
 
   _onChangeData: function() {
-
-    console.log('Locked by user: ' + this.lockedByUser);
-    console.log('is zoomed?', this._isZoomed());
-
     // if the action was initiated by the user
     // don't replace the stored data
     if (this.lockedByUser) {
       this.lockedByUser = false;
     } else {
-      console.log('LOADING NEW DATA: ' + this.dataModel.getData());
-
       if (this._isZoomed()) {
         this.zoomedData = this.dataModel.getData();
       } else {
@@ -86,12 +80,10 @@ module.exports = WidgetContent.extend({
 
     if (this.unsettingRange) {
       this.unsettingRange = false;
-      console.log("REPLACING DATA");
       this.chart.replaceData(this.originalData);
       this.viewModel.set({ lo_index: null, hi_index: null });
     } else {
       if (this._isZoomed() && !this.lockZoomedData) {
-        console.log('replacing data while zoomed');
         this.lockZoomedData = true;
         this.zoomedData = this.dataModel.getData();
       }
@@ -214,8 +206,7 @@ module.exports = WidgetContent.extend({
   },
 
   _onMiniRangeUpdated: function(loBarIndex, hiBarIndex) {
-    //this.lockedByUser = true;
-    //this.viewModel.set({ lo_index: loBarIndex, hi_index: hiBarIndex });
+    this.lockedByUser = false;
 
     var data = this.originalData;
 
@@ -229,14 +220,15 @@ module.exports = WidgetContent.extend({
   },
 
   _setRange: function(start, end) {
-    console.log('Setting range: ', start, end);
     this.filter.setRange({ min: start, max: end });
   },
 
   _onBrushEnd: function(loBarIndex, hiBarIndex) {
     var data = this._getData();
 
-    this.lockedByUser = true;
+    if (this._isZoomed()) {
+      this.lockedByUser = true;
+    }
 
     var properties = { filter_enabled: true, lo_index: loBarIndex, hi_index: hiBarIndex };
 
@@ -254,20 +246,15 @@ module.exports = WidgetContent.extend({
 
   _onRangeUpdated: function(loBarIndex, hiBarIndex) {
 
-    console.log('hibarindex (2)', hiBarIndex);
-
+    var self = this;
     if (this.viewModel.get('zoomed')) {
       this.viewModel.set({ zoom_enabled: false, lo_index: loBarIndex, hi_index: hiBarIndex });
     } else {
       this.viewModel.set({ lo_index: loBarIndex, hi_index: hiBarIndex });
     }
 
-    var self = this;
-    var update = function() {
-      self._updateStats();
-    };
-    var s = _.debounce(update, 400);
-    s();
+    var updateStats = _.debounce(function() { self._updateStats(); }, 400);
+    updateStats();
   },
 
   _getData: function() {

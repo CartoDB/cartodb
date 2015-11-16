@@ -95,7 +95,6 @@ CartoDBLayerGroupBase.prototype.update = function (done) {
   var self = this;
   this.loading && this.loading();
 
-  // TODO: self.model is undefined
   var tilejson = self.model.get('urls');
   if(tilejson) {
     self.tilejson = tilejson;

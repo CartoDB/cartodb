@@ -1,5 +1,3 @@
-require('jquery-ui/mouse'); // registers itself to $
-require('jquery-ui/slider'); // registers itself to $
 // Depends on cdb to be loaded
 var cdb = window.cdb;
 var _ = cdb._;

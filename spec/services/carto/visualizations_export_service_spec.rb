@@ -6,12 +6,12 @@ describe Carto::VisualizationsExportService do
   before(:each) do
     bypass_named_maps
     ::User.any_instance
-          .stubs(:has_feature_flag?)
-          .returns(false)
+      .stubs(:has_feature_flag?)
+      .returns(false)
     ::User.any_instance
-          .stubs(:has_feature_flag?)
-          .with(Carto::VisualizationsExportService::FEATURE_FLAG_NAME)
-          .returns(true)
+      .stubs(:has_feature_flag?)
+      .with(Carto::VisualizationsExportService::FEATURE_FLAG_NAME)
+      .returns(true)
   end
 
   after(:each) do

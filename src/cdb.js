@@ -1,39 +1,43 @@
 // Creates cdb object, mutated in the entry file cartodb.js
 // Used to avoid circular dependencies
-var cdb = {};
-cdb.VERSION = "3.15.8";
-cdb.DEBUG = false;
-cdb.CARTOCSS_DEFAULT_VERSION = '2.1.1';
-cdb.CARTOCSS_VERSIONS = {
-  '2.0.0': '',
-  '2.1.0': ''
-};
+var cdb = window.cdb;
 
-cdb.config = {};
-cdb.core = {};
-cdb.decorators = {};
-cdb.image = {};
+if (!cdb) {
+  var cdb = window.cdb || {};
+  cdb.VERSION = "3.15.8";
+  cdb.DEBUG = false;
+  cdb.CARTOCSS_DEFAULT_VERSION = '2.1.1';
+  cdb.CARTOCSS_VERSIONS = {
+    '2.0.0': '',
+    '2.1.0': ''
+  };
 
-cdb.geo = {};
-cdb.geo.common = {};
-cdb.geo.geocoder = {};
+  cdb.config = {};
+  cdb.core = {};
+  cdb.decorators = {};
+  cdb.image = {};
 
-cdb.geo.ui = {};
-cdb.geo.ui.Widget = {};
-cdb.geo.ui.Widget.List = {};
-cdb.geo.ui.Widget.Category = {};
-cdb.geo.ui.Widget.Histogram = {};
-cdb.geo.ui.Widget.Formula =
+  cdb.geo = {};
+  cdb.geo.common = {};
+  cdb.geo.geocoder = {};
 
-cdb.ui = {};
-cdb.ui.common = {};
+  cdb.geo.ui = {};
+  cdb.geo.ui.Widget = {};
+  cdb.geo.ui.Widget.List = {};
+  cdb.geo.ui.Widget.Category = {};
+  cdb.geo.ui.Widget.Histogram = {};
+  cdb.geo.ui.Widget.Formula =
 
-cdb.vis = {};
+  cdb.ui = {};
+  cdb.ui.common = {};
 
-cdb.windshaft = {};
-cdb.windshaft.filters = {};
+  cdb.vis = {};
 
-if (!window.JST) window.JST = {};
-window.cdb = window.cartodb = cdb;
+  cdb.windshaft = {};
+  cdb.windshaft.filters = {};
+
+  if (!window.JST) window.JST = {};
+  window.cdb = window.cartodb = cdb;
+}
 
 module.exports = cdb;

@@ -16,7 +16,13 @@ describe('vis/vis', function() {
       bounds: [
         [1, 2],
         [3, 4],
-      ]
+      ],
+      datasource: {
+        user_name: "wadus",
+        maps_api_template: "https://{user}.example.com:443",
+        stat_tag: "ece6faac-7271-11e5-a85f-04013fc66a01",
+        force_cors: true // This is sometimes set in the editor
+      }
     };
 
     this.vis = new cdb.vis.Vis({el: this.container});
@@ -27,7 +33,7 @@ describe('vis/vis', function() {
     it ("should display the time slider if a torque layer is present", function(done) {
       this.mapConfig.layers = [
         {
-          kind: 'torque',
+          type: 'torque',
           options: { user_name: 'test', table_name: 'test', tile_style: 'Map { -torque-frame-count: 10;} #test { marker-width: 10; }'}
         }
       ];
@@ -41,7 +47,7 @@ describe('vis/vis', function() {
     it ("should NOT display the time slider if a torque layer is not visible", function(done) {
       this.mapConfig.layers = [
         {
-          kind: 'torque',
+          type: 'torque',
           visible: false,
           options: { user_name: 'test', table_name: 'test', tile_style: 'Map { -torque-frame-count: 10;} #test { marker-width: 10; }'}
         }

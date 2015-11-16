@@ -1,5 +1,4 @@
 var View = require('cdb/core/view');
-var WidgetViewFactory = require('cdb/geo/ui/widgets/widget_view_factory');
 
 module.exports = View.extend({
 
@@ -16,7 +15,7 @@ module.exports = View.extend({
   },
 
   _renderWidgetView: function(widget) {
-    var widgetView = WidgetViewFactory.createView(widget);
+    var widgetView = this.options.widgetViewFactory.createView(widget, this.model);
     this.$el.append(widgetView.render().el);
 
     this.addView(widgetView);
@@ -26,4 +25,3 @@ module.exports = View.extend({
     this.$el.toggle(layer.get('visible'));
   }
 });
-

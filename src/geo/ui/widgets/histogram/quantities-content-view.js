@@ -11,7 +11,7 @@ var template = require('./content.tpl');
 var xAxisTickFormatter = d3.format('.2s');
 
 /**
- * Default widget content view:
+ * Widget content view for a quantity-series
  */
 module.exports = WidgetContent.extend({
 

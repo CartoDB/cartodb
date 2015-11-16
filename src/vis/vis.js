@@ -24,14 +24,70 @@ var WidgetsView = require('cdb/geo/ui/widgets/widgets_view');
 var CartoDBLayerGroupNamed = require('cdb/geo/map/cartodb-layer-group-named');
 var CartoDBLayerGroupAnonymous = require('cdb/geo/map/cartodb-layer-group-anonymous');
 var WidgetViewFactory = require('cdb/geo/ui/widgets/widget_view_factory');
+var ListWidgetView = require('cdb/geo/ui/widgets/list/view');
+var QuantitiesHistogramView = require('cdb/geo/ui/widgets/histogram/quantities-view');
+var TimeHistogramView = require('cdb/geo/ui/widgets/histogram/time-view');
+var CategoryWidgetView = require('cdb/geo/ui/widgets/category/view');
 
 /**
- * visulization creation
+ * Visualization creation
  */
 var Vis = View.extend({
 
   initialize: function() {
     _.bindAll(this, 'loadingTiles', 'loadTiles', '_onResize');
+
+    // TODO this should probably be extracted, together with the .load method
+    this.widgetViewFactory = new WidgetViewFactory([
+      // List widget
+      {
+        match: function(widget) {
+          return widget.get('type') === 'list';
+        },
+        create: function(widget) {
+          return new ListWidgetView({
+            model: widget,
+            filter: widget.filter
+          });
+        }
+      },
+      // Torque histogram widget
+      {
+        match: function(widget, layer) {
+          return layer.get('type') && widget.get('type') === 'histogram';
+        },
+        create: function(widget) {
+          return new TimeHistogramView({
+            model: widget,
+            filter: widget.filter
+          });
+        }
+      },
+      // Default histogram widget
+      {
+        match: function(widget) {
+          return widget.get('type') === 'histogram';
+        },
+        create: function(widget) {
+          return new QuantitiesHistogramView({
+            model: widget,
+            filter: widget.filter
+          });
+        }
+      },
+      // Category widget
+      {
+        match: function(widget) {
+          return widget.get('type') === 'aggregation';
+        },
+        create: function(widget) {
+          return new CategoryWidgetView({
+            model: widget,
+            filter: widget.filter
+          });
+        }
+      }
+    ]);
 
     this.https = false;
     this.overlays = [];
@@ -439,10 +495,6 @@ var Vis = View.extend({
       "aggregation": {
         model: 'CategoryModel',
         filter: 'CategoryFilter'
-      },
-      "time": {
-        model: 'TimeModel',
-        filter: 'RangeFilter'
       }
     };
 
@@ -479,19 +531,19 @@ var Vis = View.extend({
       }
     });
 
-    var isTimeWidget = function(m) {
-      return m.get('type') === 'time';
+    var isHistogramWidget = function(m) {
+      return m.get('type') === 'histogram';
     };
     var isLayerWithTimeWidget = function(m) {
-      return m.widgets.any(isTimeWidget);
+      return m.get('type') === 'torque' && m.widgets.any(isHistogramWidget);
     }
 
     // TODO WidgetView assumes all widgets to be rendered in one place which won't work for the time widget, could we
     // solve this differently/better? for now extract the layer (assumes there to only be one) and attach the view here
     var layer = _.find(interactiveLayers, isLayerWithTimeWidget)
     if (layer) {
-      var widgetModel = layer.widgets.find(isTimeWidget);
-      var view = WidgetViewFactory.createView(widgetModel);
+      var widgetModel = layer.widgets.find(isHistogramWidget);
+      var view = this.widgetViewFactory.createView(widgetModel, layer);
       this.addView(view);
       $('.js-dashboard-map-wrapper').append(view.render().el);
     }
@@ -499,6 +551,7 @@ var Vis = View.extend({
     // TODO: This will need to change when new layers are added / removed
     var layersWithWidgets = new Backbone.Collection(_.reject(interactiveLayers, isLayerWithTimeWidget));
     var widgetsView = new WidgetsView({
+      widgetViewFactory: this.widgetViewFactory,
       layers: layersWithWidgets
     });
     $('.js-dashboard').append(widgetsView.render().el);

@@ -2,16 +2,11 @@ var $ = require('jquery');
 var _ = require('underscore');
 var Model = require('cdb/core/model');
 var WidgetContentView = require('../standard/widget_content_view.js');
-var ControlsView = require('./controls-view');
-var StepInfoView = require('./step-info-view');
-var HistogramChartView = require('../histogram/chart');
-var placeholderTemplate = require('../histogram/placeholder.tpl');
+var HistogramChartView = require('./chart');
+var placeholderTemplate = require('./placeholder.tpl');
 
 /**
- * View representing a time-series widget
- * Expects a model that have the following attrs:
- *  - data: an array of bins, where each item contains {freq, start, end}
- *  - step: if present, controls the current time item being rendered
+ * Widget view representing a histogram of date/time-series.
  */
 module.exports = WidgetContentView.extend({
 
@@ -33,9 +28,9 @@ module.exports = WidgetContentView.extend({
         left: 24
       },
       histogramChartHeight:
-        48 // inline bars height
-        + 20 // bottom labels
-        + 4 // margins
+        48 + // inline bars height
+        20 + // bottom labels
+        4 // margins
     });
     this.add_related_model(this.viewModel);
     this.viewModel.bind('change:width', this._onChangeWidth, this);
@@ -43,18 +38,7 @@ module.exports = WidgetContentView.extend({
 
   render: function() {
     this.clearSubViews();
-    this.$el.html('');
-
-    // this._appendView(
-    //   new ControlsView({
-    //     model: this.model
-    //   })
-    // );
-    // this._appendView(
-    //   new StepInfoView({
-    //     model: this.model
-    //   })
-    // );
+    this.$el.html(''); // to remove placeholder if there is any
 
     if (this._isDataEmpty()) {
       this.$el.append(placeholderTemplate());
@@ -84,7 +68,7 @@ module.exports = WidgetContentView.extend({
       handles: true,
       width: this._histogramChartWidth(),
       height: this.viewModel.get('histogramChartHeight'),
-      data: this.model.getDataWithoutOwnFilterApplied(),
+      data: this.model.getData(),
       xAxisTickFormat: function(d, i) {
         return i;
       }
@@ -111,7 +95,7 @@ module.exports = WidgetContentView.extend({
   },
 
   _isDataEmpty: function() {
-    var data = this.model.getData().off;
+    var data = this.model.getData();
     return _.isEmpty(data) || _.size(data) === 0;
   },
 

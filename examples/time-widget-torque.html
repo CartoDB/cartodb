@@ -282,7 +282,8 @@
 
                   // manual cfg: instead of vizjson format
                   "interactivity": 'cartodb_id',
-                  "sql": "select * from mwc13",
+                  // TODO extract is a hack, until Winshaft can handle a Date column
+                  "sql": "select *, extract(epoch from end_at) AS numeric_end_at from mwc13",
                   "cartocss_version": "2.1.1",
 
                   "cartocss": [
@@ -301,11 +302,11 @@
                 },
                 "widgets": {
                   "time_widget_uuid": {
-                    "type": "time",
-                    // "type": "histogram",
-                    // "title": "bampadam",
-                    // "column": "_end_at",
-                    // "bins": 256
+                    "type": "histogram",
+                    "title": "bampadam",
+                    "column": "numeric_end_at",
+                    // "bins": 256 // TODO initial request is hardcoded to return 10 bins, needs fix in Windshaft
+                  }
                 }
               },
               {

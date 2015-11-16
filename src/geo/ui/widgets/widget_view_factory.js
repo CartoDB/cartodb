@@ -1,26 +1,27 @@
-var ListWidgetView = require('cdb/geo/ui/widgets/list/view');
-var HistogramWidgetView = require('cdb/geo/ui/widgets/histogram/view');
-var CategoryWidgetView = require('cdb/geo/ui/widgets/category/view');
-var TimeWidgetView = require('cdb/geo/ui/widgets/time/view');
+var _ = require('underscore');
 
-module.exports = {
-  CLASSES: {
-    "list": ListWidgetView,
-    "histogram": HistogramWidgetView,
-    "aggregation": CategoryWidgetView,
-    "time": TimeWidgetView
-  },
+var WidgetViewFactory = function (typeDefs) {
+  this.typeDefs = [];
+  _.each(typeDefs, function(def) {
+    this.addType(def);
+  }, this);
+};
 
-  createView: function(widget) {
-    var widgetType = widget.get('type');
-    var widgetViewClass = this.CLASSES[widgetType];
+WidgetViewFactory.prototype.addType = function (def) {
+  if (!_.isFunction(def.match)) new Error('def.match must be a function');
+  if (!_.isFunction(def.create)) new Error('def.match must be a function');
+  this.typeDefs.push(def);
+};
 
-    // TODO: widgetViewClass might be null
-    var widgetView = new widgetViewClass({
-      model: widget,
-      filter: widget.filter
-    });
-
-    return widgetView;
+WidgetViewFactory.prototype.createView = function (widget, layer) {
+  var type = _.find(this.typeDefs, function(type) {
+    return type.match(widget, layer);
+  });
+  if (type) {
+    return type.create(widget, layer);
+  } else {
+    throw new Error('no view found for arguments ' + arguments);
   }
 };
+
+module.exports = WidgetViewFactory;

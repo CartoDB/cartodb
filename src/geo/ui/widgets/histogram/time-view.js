@@ -1,5 +1,5 @@
 var WidgetView = require('../../widget');
-var ContentView = require('./content-view');
+var ContentView = require('./time-content-view');
 
 module.exports = WidgetView.extend({
 

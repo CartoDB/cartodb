@@ -187,11 +187,8 @@ var GoogleMapsMapView = MapView.extend({
       // set base layer
       if(isBaseLayer && !opts.no_base_layer) {
         var m = layer_view.model;
-        if(m.get('type') === 'GMapsBase') {
-          layer_view._update();
-        } else {
+        if(m.get('type') !== 'GMapsBase') {
           layer_view.isBase = true;
-          layer_view._update();
         }
       } else {
         // TODO: Make sure this order will be right

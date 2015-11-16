@@ -70,10 +70,6 @@ _.extend(
   CartoDBLayerGroupGmaps.prototype,
   {
 
-  _update: function() {
-    this.setOptions(this.model.attributes);
-  },
-
   reload: function() {
     this.model.invalidate();
   },

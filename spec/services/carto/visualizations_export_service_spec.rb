@@ -7,6 +7,9 @@ describe Carto::VisualizationsExportService do
     bypass_named_maps
     ::User.any_instance
           .stubs(:has_feature_flag?)
+          .returns(false)
+    ::User.any_instance
+          .stubs(:has_feature_flag?)
           .with(Carto::VisualizationsExportService::FEATURE_FLAG_NAME)
           .returns(true)
   end

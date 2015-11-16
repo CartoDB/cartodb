@@ -44,7 +44,6 @@ describe Visualization::Locator do
     @user_mock.stubs(:api_key).returns(user_apikey)
     @user_mock.stubs(:invalidate_varnish_cache).returns(nil)
     @user_mock.stubs(:has_feature_flag?)
-      .with(Carto::VisualizationsExportService::FEATURE_FLAG_NAME)
       .returns(false)
     CartoDB::Visualization::Relator.any_instance.stubs(:user).returns(@user_mock)
 

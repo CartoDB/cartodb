@@ -130,6 +130,19 @@ feature "Superadmin's organization API" do
   describe 'users destruction logic' do
     include_context 'organization with users helper'
 
+    it 'blocks deletion of a user with shared entities' do
+      table = create_random_table(@org_user_1)
+      share_table(table, @org_user_1, @org_user_2)
+
+      expect {
+        @org_user_1.destroy
+      }.to raise_error(CartoDB::BaseCartoDBError, "Cannot delete user, has shared entities")
+    end
+  end
+
+  describe 'sharing users destruction logic' do
+    include_context 'organization with users helper'
+
     it 'keeps a table shared with an user when that user is deleted' do
       table = create_random_table(@org_user_1)
       share_table(table, @org_user_1, @org_user_2)
@@ -139,9 +152,41 @@ feature "Superadmin's organization API" do
 
       expect {
         @org_user_1.destroy
-      }.to raise_error(CartoDB::BaseCartoDBError, "Cannot delete user, has shared entities")
+      }.not_to raise_error(CartoDB::BaseCartoDBError, "Cannot delete user, has shared entities")
     end
+  end
 
+  describe 'users with shares destruction logic' do
+    include_context 'organization with users helper'
+
+    it 'cleans sharing information when recipient user is deleted' do
+      table = create_random_table(@org_user_1)
+      share_table(table, @org_user_1, @org_user_2)
+
+      Carto::SharedEntity.where(recipient_id: @org_user_2.id).count.should == 1
+
+      permission = table.map.visualizations.first.permission
+      acl = JSON.parse(permission.access_control_list)
+      acl[0]['id'].should == @org_user_2.id
+
+      @org_user_2.destroy
+
+      # Table is kept
+      Carto::UserTable.where(id: table.id).first.should_not be_nil
+
+      # Share is removed
+      Carto::SharedEntity.where(recipient_id: @org_user_2.id).count.should == 0
+
+      # User is removed from ACL
+      table.reload
+      permission = table.map.visualizations.first.permission
+      acl = JSON.parse(permission.access_control_list)
+      acl.count.should == 0
+
+      expect {
+        @org_user_1.destroy
+      }.not_to raise_error(CartoDB::BaseCartoDBError, "Cannot delete user, has shared entities")
+    end
   end
 
 

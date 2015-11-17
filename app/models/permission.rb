@@ -235,6 +235,13 @@ module CartoDB
       set_group_permission(group, ACCESS_NONE)
     end
 
+    def remove_user_permission(user)
+      granted_access = granted_access_for_user(user)
+      if granted_access != ACCESS_NONE
+        self.acl = self.inputable_acl.select { |entry| entry[:entity][:id] != user.id }
+      end
+    end
+
     def set_user_permission(subject, access)
       set_subject_permission(subject.id, access, TYPE_USER)
     end
@@ -385,16 +392,12 @@ module CartoDB
       ACCESS_NONE if permission.nil?
     end
 
-    def granted_access_for_group(group)
-      permission = nil
+    def granted_access_for_user(user)
+      granted_access_for_entry_type(TYPE_USER, user)
+    end
 
-      acl.map do |entry|
-        if entry[:type] == TYPE_GROUP && entry[:id] == group.id
-          permission = entry[:access]
-        end
-      end
-      permission = ACCESS_NONE if permission.nil?
-      permission
+    def granted_access_for_group(group)
+      granted_access_for_entry_type(TYPE_GROUP, group)
     end
 
     # Note: Does not check ownership
@@ -490,6 +493,18 @@ module CartoDB
     end
 
     private
+
+    def granted_access_for_entry_type(type, entity)
+      permission = nil
+
+      acl.map do |entry|
+        if entry[:type] == type && entry[:id] == entity.id
+          permission = entry[:access]
+        end
+      end
+      permission = ACCESS_NONE if permission.nil?
+      permission
+    end
 
     # @param permission_type ENTITY_TYPE_xxxx
     # @throws PermissionError

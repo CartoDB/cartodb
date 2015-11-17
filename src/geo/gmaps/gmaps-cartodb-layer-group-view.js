@@ -58,10 +58,8 @@ var GMapsCartoDBLayerGroupView = function(layerModel, gmapsMap) {
   }, 10);
 
 
-  this.model = layerModel;
-
-  CartoDBLayerGroupGmaps.call(this, opts);
   GMapsLayerView.call(this, layerModel, this, gmapsMap);
+  CartoDBLayerGroupGmaps.call(this, opts);
 };
 
 _.extend(

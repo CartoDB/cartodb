@@ -45,5 +45,15 @@ describe Carto::User do
       @carto_user.remove_logo?.should be_false
       @carto_user.soft_geocoding_limit?.should be_false
     end
+
+    it 'true for BASIC and PRO accounts' do
+      [Carto::AccountType::BASIC, Carto::AccountType::PRO].each do |account_type|
+        @carto_user.account_type = account_type
+
+        @carto_user.dedicated_support?.should be_true
+        @carto_user.remove_logo?.should be_true
+        @carto_user.soft_geocoding_limit?.should be_true
+      end
+    end
   end
 end

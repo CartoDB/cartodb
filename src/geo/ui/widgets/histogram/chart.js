@@ -191,7 +191,8 @@ module.exports = View.extend({
 
     if (value < 1000) {
       v = (value).toFixed(2);
-      if (v.endsWith('.00')) {
+      // value ends with .00
+      if (value.match('.00' + "$")) {
         v = v.replace('.00', '');
       }
       return v;
@@ -199,6 +200,7 @@ module.exports = View.extend({
 
     value = format(value) + (unit ? ' ' + unit : '');
 
+    // value ends with .0
     if (value.match('.0' + "$")) {
       value = value.replace('.0', '');
     }

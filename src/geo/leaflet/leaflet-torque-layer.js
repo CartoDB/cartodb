@@ -74,7 +74,6 @@ var LeafletTorqueLayer = L.TorqueLayer.extend({
       this.trigger('loading');
     }, this);
 
-    layerModel.initBindsForTorqueLayerView(this);
   },
 
   onAdd: function(map) {

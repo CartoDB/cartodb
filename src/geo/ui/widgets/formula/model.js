@@ -6,7 +6,7 @@ module.exports = WidgetModel.extend({
   // TODO: The response format has probably changed
   parse: function(r) {
     return {
-      data: r[this.get('operation')],
+      data: r.result,
       nulls: r.nulls
     };
   },

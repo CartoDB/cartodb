@@ -17,7 +17,6 @@ cdb.d3 = d3;
 if (isLeafletAlreadyLoaded) L.noConflict();
 _.extend(cdb.geo, require('./geo/leaflet'));
 
-cdb.Image = require('./vis/image');
 cdb.SQL = require('./api/sql');
 
 cdb.config = require('cdb.config');

@@ -1,7 +1,7 @@
 var _ = require('underscore');
 var Model = require('cdb/core/model');
-var MapBase = require('cdb/geo/layer-definition/map-base');
 var WindshaftConfig = require('./config');
+var EMPTY_GIF = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 
 module.exports = Model.extend({
 
@@ -99,7 +99,8 @@ module.exports = Model.extend({
         }
       }
     } else {
-      tiles = [MapBase.EMPTY_GIF];
+      // TODO: Clients of this method should decide what to render if no layers are present
+      tiles = [EMPTY_GIF];
     }
 
     this.urls = {

@@ -53,6 +53,8 @@ var GoogleMapsMapView = MapView.extend({
         maxZoom: this.map.get('maxZoom'),
         disableDefaultUI: true,
         scrollwheel: this.map.get("scrollwheel"),
+        draggable: this.map.get("drag"),
+        disableDoubleClickZoom: this.map.get("drag"),
         mapTypeControl:false,
         mapTypeId: google.maps.MapTypeId.ROADMAP,
         backgroundColor: 'white',

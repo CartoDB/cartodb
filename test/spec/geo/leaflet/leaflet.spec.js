@@ -474,4 +474,22 @@ describe('geo/leaflet/leaflet-map-view', function() {
       expect(attributions).toEqual('Stamen, custom attribution, CartoDB attribution');
     });
   });
+
+  it("should disable leaflet dragging and double click zooming when the map has drag disabled", function() {
+    var container = $('<div>').css({
+        'height': '200px',
+        'width': '200px'
+    });
+    var map = new Map({
+      drag: false
+    });
+    var mapView = new LeafletMapView({
+      el: container,
+      map: map
+    });
+
+    expect(mapView.map_leaflet.dragging.enabled()).toBeFalsy();
+    expect(mapView.map_leaflet.doubleClickZoom.enabled()).toBeFalsy();
+  });
+
 });

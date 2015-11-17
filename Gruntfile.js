@@ -46,6 +46,40 @@ module.exports = function(grunt) {
     },
     pkg:  pkg,
     gitinfo: {},
+    // svg_sprite                  : {
+    //     complex: {
+    //
+    //         // Target basics
+    //         expand                  : true,
+    //         cwd                     : 'themes',
+    //         src                     : ['svg/*.svg'],
+    //         dest                    : 'dist/svg',
+    //
+    //         // Target options
+    //         options                 : {
+    //             // shape               : {
+    //             //     dimension       : {         // Set maximum dimensions
+    //             //         maxWidth    : 32,
+    //             //         maxHeight   : 32
+    //             //     },
+    //             //     spacing         : {         // Add padding
+    //             //         padding     : 10
+    //             //     },
+    //             //     dest            : null, // 'out/intermediate-svg'    // Keep the intermediate files
+    //             // },
+    //             mode                : {
+    //                 prefix: '.svgpito-%s',
+    //                 view            : {         // Activate the «view» mode
+    //                     bust        : false,
+    //                     render      : {
+    //                         css    : true
+    //                     }
+    //                 },
+    //                 symbol          : false      // Activate the «symbol» mode
+    //             }
+    //         }
+    //     }
+    // },
     browserify: require('./grunt/tasks/browserify').task(grunt),
     exorcise: require('./grunt/tasks/exorcise').task(),
     s3: require('./grunt/tasks/s3').task(grunt, config),
@@ -69,6 +103,10 @@ module.exports = function(grunt) {
     'prompt:bump',
     'build'
   ]);
+
+  // grunt.registerTask('svg', [
+  //   'svg_sprite'
+  // ]);
 
   grunt.registerTask('publish', function (target) {
 

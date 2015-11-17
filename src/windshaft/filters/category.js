@@ -18,7 +18,7 @@ module.exports = WindshaftFilterBase.extend({
     return this.rejectedCategories.size() === 0 && this.acceptedCategories.size() === 0;
   },
 
-  accept: function(values) {
+  accept: function(values, applyFilter) {
     values = !_.isArray(values) ? [values] : values;
     var acceptedCount = this.acceptedCategories.size();
 
@@ -34,23 +34,19 @@ module.exports = WindshaftFilterBase.extend({
       }
     }, this);
 
-    this.trigger('change', this);
+    if (applyFilter !== false) {
+      this.applyFilter();
+    }
   },
 
   acceptAll: function() {
     this.acceptedCategories.reset();
     this.rejectedCategories.reset();
-    this.trigger('change', this);
+    this.applyFilter();
   },
 
   isAccepted: function(name) {
     return this.acceptedCategories.where({ name: name }).length > 0;
-  },
-
-  rejectAll: function(d) {
-    this.acceptedCategories.reset();
-    this.reject(d);
-    // Reject function will trigger change event
   },
 
   getAccepted: function() {
@@ -61,11 +57,7 @@ module.exports = WindshaftFilterBase.extend({
     return this.acceptedCategories.size() > 0;
   },
 
-  getRejected: function() {
-    return this.rejectedCategories;
-  },
-
-  reject: function(values) {
+  reject: function(values, applyFilter) {
     values = !_.isArray(values) ? [values] : values;
 
     _.each(values, function(value) {
@@ -81,7 +73,9 @@ module.exports = WindshaftFilterBase.extend({
       }
     }, this);
 
-    this.trigger('change', this);
+    if (applyFilter !== false) {
+      this.applyFilter();
+    }
   },
 
   isRejected: function(name) {
@@ -96,8 +90,22 @@ module.exports = WindshaftFilterBase.extend({
     }
   },
 
+  getRejected: function() {
+    return this.rejectedCategories;
+  },
+
   hasRejects: function() {
     return this.rejectedCategories.size() > 0;
+  },
+
+  rejectAll: function(d) {
+    this.acceptedCategories.reset();
+    this.reject(d, false);
+    this.applyFilter();
+  },
+
+  applyFilter: function() {
+    this.trigger('change', this);
   },
 
   toJSON: function() {

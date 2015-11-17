@@ -1,10 +1,16 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
+var CategoryItemModel = require('./category_item_model');
 
 /**
- * Categories collection
+ *  Data categories collection
+ *
+ *  - It basically sorts by (value, selected and "Other").
  */
+
 module.exports = Backbone.Collection.extend({
+
+  model: CategoryItemModel,
 
   comparator: function(a,b) {
     if (a.get('name') === 'Other') {

@@ -4,7 +4,7 @@ var View = require('cdb/core/view');
 var template = require('./search_item_clickable_template.tpl');
 
 /**
- * Category list view
+ * Category search list view
  */
 module.exports = View.extend({
 
@@ -16,7 +16,8 @@ module.exports = View.extend({
   },
 
   initialize: function(options) {
-    this.filter = this.options.filter;
+    // This data model comes from the original data in order to get
+    // the max value and set properly the progress bar.
     this.dataModel = this.options.dataModel;
     this._initBinds();
   },
@@ -28,7 +29,7 @@ module.exports = View.extend({
       template({
         name: this.model.get('name'),
         value: Math.ceil(value),
-        percentage: 0, // ((value / this.dataModel.get('max')) * 100),
+        percentage: ((value / this.dataModel.get('max')) * 100),
         isDisabled: !this.model.get('selected')
       })
     );

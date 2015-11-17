@@ -1,6 +1,6 @@
 var _ = require('underscore');
 var View = require('cdb/core/view');
-var clickedTemplate = require('./item_clickable_view.tpl');
+var clickableTemplate = require('./item_clickable_view.tpl');
 var unclickableTemplate = require('./item_unclickable_view.tpl');
 
 /**
@@ -23,11 +23,12 @@ module.exports = View.extend({
 
   render: function() {
     var value = this.model.get('value');
-    var template = this.model.get('agg') ? unclickableTemplate : clickedTemplate;
+    var template = this.model.get('agg') || this.dataModel.isLocked() ?
+      unclickableTemplate : clickableTemplate;
 
     this.$el.html(
       template({
-        hasSearch: this.dataModel.get('search'),
+        isAggregated: this.model.get('agg'),
         name: this.model.get('name'),
         value: Math.ceil(value),
         percentage: ((value / this.dataModel.get('max')) * 100),

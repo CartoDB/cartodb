@@ -11,11 +11,14 @@ module.exports = View.extend({
 
   events: {
     'click .js-close': '_onClickClose',
-    'submit .js-form': '_onSubmitForm'
+    'submit .js-form': '_onSubmitForm',
+    'click .js-lock': '_lockCategories',
+    'click .js-unlock': '_unlockCategories'
   },
 
   initialize: function() {
     this._title = this.options.title;
+    this.dataModel = this.options.dataModel;
     this.search = this.options.search;
     this._initBinds();
   },
@@ -24,6 +27,8 @@ module.exports = View.extend({
     this.$el.html(
       template({
         title: this._title,
+        isLocked: this.dataModel.isLocked(),
+        canBeLocked: this.dataModel.canBeLocked(),
         isSearchEnabled: this.model.isSearchEnabled()
       })
     );
@@ -32,6 +37,8 @@ module.exports = View.extend({
 
   _initBinds: function() {
     this.model.bind('change:search', this._onSearchToggled, this);
+    this.dataModel.bind('change:filter change:locked', this.render, this);
+    this.add_related_model(this.dataModel);
   },
 
   _onSearchToggled: function() {
@@ -63,6 +70,14 @@ module.exports = View.extend({
     if (ev.keyCode === 27) {
       this.model.disableSearch();
     }
+  },
+
+  _lockCategories: function() {
+    this.dataModel.lockCategories();
+  },
+
+  _unlockCategories: function() {
+    this.dataModel.unlockCategories();
   },
 
   _onClickClose: function() {

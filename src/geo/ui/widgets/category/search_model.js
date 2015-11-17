@@ -2,6 +2,7 @@ var _ = require('underscore');
 var Backbone = require('backbone');
 var cdb = require('cdb');
 var Model = require('cdb/core/model');
+var CategoriesCollection = require('./categories_collection');
 
 /**
  * Category search model
@@ -20,20 +21,20 @@ module.exports = Model.extend({
   },
 
   initialize: function(attrs, opts) {
-    this.filter = opts.filter;
-    this._data = new Backbone.Collection();
-    // Internal array for storing selected items accross different
-    // searches
-    this._selectedItems = {};
+    // Locked collection will have the status
+    // of the selected/locked items
+    this.locked = opts.locked;
+    this._data = new CategoriesCollection();
     this._initBinds();
   },
 
   _initBinds: function() {
     this._data.bind('change:selected', this._onChangeSelected, this);
-  },
-
-  setUrl: function(url) {
-    this.set('url', url);
+    this.bind('change:boundingBox', function() {
+      if (this.isSearchApplied()) {
+        this.fetch();
+      }
+    }, this);
   },
 
   getData: function() {
@@ -54,29 +55,28 @@ module.exports = Model.extend({
   },
 
   resetData: function() {
-    this._selectedItems = {};
     this._data.reset([]);
-    this.set('data', []);
-  },
-
-  getSelectedCategories: function() {
-    return _.map(this._selectedItems, function(value, key) {
-      return key;
+    this.set({
+      data: [],
+      q: ''
     });
   },
 
+  isSearchApplied: function() {
+    return this.isValid() && this.getSize() > 0;
+  },
+
   _onChangeSelected: function(mdl, isSelected) {
-    var category = mdl.get('name');
-    this._selectedItems[category] = isSelected ? true : null;
+    this.locked[ isSelected ? 'addItem' : 'removeItem' ](mdl);
   },
 
   parse: function(r) {
     var newData = [];
     _.each(r.categories, function(d) {
       var category = d.category;
-      var isAccepted = this._selectedItems[category] || this.filter.isAccepted(category);
+      var isLocked = this.locked.isItemLocked(category);
       newData.push({
-        selected: isAccepted,
+        selected: isLocked,
         name: category,
         agg: d.agg,
         value: d.value
@@ -87,6 +87,11 @@ module.exports = Model.extend({
     return {
       data: newData
     }
+  },
+
+  fetch: function(opts) {
+    this.trigger("loading", this);
+    return Model.prototype.fetch.call(this,opts);
   }
 
 });

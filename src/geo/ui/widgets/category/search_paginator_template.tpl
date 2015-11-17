@@ -1,7 +1,5 @@
 <div class="Widget-contentFlex">
-  <button class="js-searchToggle">
-    o 
-  </button>
+  <button class="js-searchToggle">close search</button> -
   <p class="Widget-textSmaller Widget-textSmaller--bold Widget-textSmall--upper">
     <%- categoriesCount %> categor<%- categoriesCount !== 1 ? "ies" : "y" %> found
   </p>

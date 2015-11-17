@@ -12,9 +12,15 @@ module.exports = CategoryItemsView.extend({
 
   className: 'Widget-list is-hidden Widget-list--wrapped js-list',
 
+  initialize: function() {
+    this.originModel = this.options.originModel;
+    CategoryItemsView.prototype.initialize.call(this);
+  },
+
   _addItem: function(mdl, $parent) {
     var v = new WidgetSearchCategoryItemView({
-      model: mdl
+      model: mdl,
+      dataModel: this.originModel
     });
     this.addView(v);
     $parent.append(v.render().el);
@@ -23,5 +29,5 @@ module.exports = CategoryItemsView.extend({
   toggle: function() {
     this[ this.model.isSearchEnabled() ? 'show' : 'hide']();
   }
-  
+
 });

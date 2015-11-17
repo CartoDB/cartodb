@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="500px" height="313px" viewBox="0 0 500 313" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.4.2 (15857) - http://www.bohemiancoding.com/sketch -->
+    <title>hamburguer</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="icons" sketch:type="MSArtboardGroup" transform="translate(-500.000000, -92.000000)" fill="#000000" opacity="0.9">
+            <path d="M500,123.75 C500,106.491102 513.993409,92.5 531.253598,92.5 L968.746402,92.5 C986.007288,92.5 1000,106.487307 1000,123.75 C1000,141.008898 986.006591,155 968.746402,155 L531.253598,155 C513.992712,155 500,141.012693 500,123.75 Z M500,248.75 C500,231.491102 513.993409,217.5 531.253598,217.5 L968.746402,217.5 C986.007288,217.5 1000,231.487307 1000,248.75 C1000,266.008898 986.006591,280 968.746402,280 L531.253598,280 C513.992712,280 500,266.012693 500,248.75 Z M500,373.75 C500,356.491102 513.993409,342.5 531.253598,342.5 L968.746402,342.5 C986.007288,342.5 1000,356.487307 1000,373.75 C1000,391.008898 986.006591,405 968.746402,405 L531.253598,405 C513.992712,405 500,391.012693 500,373.75 Z" id="hamburguer" sketch:type="MSShapeGroup"></path>
+        </g>
+    </g>
+</svg>

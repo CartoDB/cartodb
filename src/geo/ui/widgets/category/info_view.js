@@ -1,7 +1,7 @@
 var $ = require('jquery');
 var _ = require('underscore');
 var cdb = require('cdb');
-var template = require('./info.tpl');
+var template = require('./info_template.tpl');
 var View = require('cdb/core/view');
 var d3 = require('d3');
 
@@ -15,13 +15,13 @@ module.exports = View.extend({
   tagName: 'dl',
 
   initialize: function() {
-    // Model is viewModel in its parent with
-    // info about if search is applied or not
+    this.viewModel = this.options.viewModel;
     this.dataModel = this.options.dataModel;
     this._initBinds();
   },
 
   render: function() {
+
     this.$el.html(
       template({
         min: this.dataModel.get('min'),
@@ -34,12 +34,13 @@ module.exports = View.extend({
 
   _initBinds: function() {
     this.dataModel.bind('change:data', this.render, this);
-    this.model.bind('change:search', this.toggle, this);
+    this.viewModel.bind('change:search', this.toggle, this);
     this.add_related_model(this.dataModel);
+    this.add_related_model(this.viewModel);
   },
 
   toggle: function() {
-    this[ this.model.isSearchEnabled() ? 'hide' : 'show' ]();
+    this[ this.viewModel.isSearchEnabled() ? 'hide' : 'show' ]();
   }
 
 });

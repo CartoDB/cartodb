@@ -9,7 +9,7 @@ module.exports = {
   task: function(grunt, config) {
     return {
       options: {
-        noProcess: ['**/*.{png,gif,jpg,ico}'],
+        noProcess: ['**/*.{png,gif,jpg,ico,svg}'],
         process: function (content, srcpath) {
 
           // Replace string task corrupts images
@@ -37,16 +37,6 @@ module.exports = {
 
           return content;
         }
-      },
-
-      distStatic: {
-        files: [{
-          expand: true,
-          dot: true,
-          cwd: 'themes/img',
-          src: [ '**/*.{png,jpg,gif}' ],
-          dest: '<%= config.dist %>/themes/img'
-        }]
       }
     }
   }

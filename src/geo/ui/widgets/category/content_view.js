@@ -43,16 +43,8 @@ module.exports = WidgetContent.extend({
     // in accept filter. Then reset search.
     var searchEnabled = this.viewModel.isSearchEnabled();
     if (!searchEnabled) {
-      /*
-        - It should add the selected items to the data model
-        - It should add those selected items to the accept collection without
-          doing any new request.
-        - Clear search model and internal things.
-        - Render data list
-      */
-      var selectedItems = this.search.getSelectedCategories();
-      this.filter.accept(selectedItems);
-      this.search.resetData();
+      this.model.cleanSearch();
+      this.model.applyFilters();
     }
   },
 
@@ -60,6 +52,7 @@ module.exports = WidgetContent.extend({
     // Title or search
     var searchTitle = new WidgetSearchTitleView({
       model: this.viewModel,
+      dataModel: this.model,
       title: this.model.get('title'),
       search: this.search
     });
@@ -68,15 +61,15 @@ module.exports = WidgetContent.extend({
 
     // Stats info
     var info = new WidgetCategoryInfoView({
-      model: this.viewModel,
+      viewModel: this.viewModel,
       dataModel: this.model
     });
     this.$('.js-header').append(info.render().el);
     this.addView(info);
 
-    // Selected control
+    // Actions over data view
     var filters = new WidgetCategoryFilterView({
-      model: this.model,
+      dataModel: this.model,
       viewModel: this.viewModel,
       filter: this.filter
     });
@@ -111,6 +104,7 @@ module.exports = WidgetContent.extend({
     var searchList = new WidgetSearchCategoryItemsView({
       model: this.viewModel,
       dataModel: this.search,
+      originModel: this.model,
       filter: this.filter,
       itemsPerPage: this._ITEMS_PER_PAGE
     });

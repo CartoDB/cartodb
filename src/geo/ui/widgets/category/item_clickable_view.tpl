@@ -5,7 +5,7 @@
       <p class="Widget-textSmaller" title="<%- value %>"><%- value %></p>
     </div>
     <div class="Widget-progressBar">
-      <div class="Widget-progressState" style="width: <%- percentage %>%"></div>
+      <div class="Widget-progressState <% isAggregated ? 'Widget-progressState--pattern' : '' %>" style="width: <%- percentage %>%"></div>
     </div>
   </button>
 </li>

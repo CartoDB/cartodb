@@ -1,6 +1,6 @@
 var _ = require('underscore');
 var View = require('cdb/core/view');
-var template = require('./filter.tpl');
+var template = require('./filter_template.tpl');
 
 /**
  * Category filter view
@@ -16,33 +16,32 @@ module.exports = View.extend({
 
   initialize: function() {
     this.filter = this.options.filter;
+    this.dataModel = this.options.dataModel;
     this.viewModel = this.options.viewModel;
     this._initBinds();
   },
 
   render: function() {
-    var totalCats = this.model.getData().size();
-    var selectedCats = this.model.getData().filter(function(m){ return m.get('selected') }).length;
+    var totalCats = this.dataModel.getData().size();
     var rejectedCats = this.filter.getRejected().size();
     var acceptedCats = this.filter.getAccepted().size();
 
     this.$el.html(
       template({
+        isLocked: this.dataModel.isLocked(),
+        totalLocked: this.dataModel.getLockedSize(),
         totalCats: totalCats,
-        selectedCats: selectedCats,
         rejectedCats: rejectedCats,
         acceptedCats: acceptedCats
       })
     );
-    this[ totalCats > 0 ? 'show' : 'hide']();
     return this;
   },
 
   _initBinds: function() {
-    this.model.bind('change:data', this.render, this);
+    this.dataModel.bind('change:data change:filter change:locked', this.render, this);
     this.viewModel.bind('change:search', this.toggle, this);
-    this.filter.bind('change', this.render, this);
-    this.add_related_model(this.filter);
+    this.add_related_model(this.dataModel);
     this.add_related_model(this.viewModel);
   },
 

@@ -52,9 +52,7 @@ var GoogleMapsMapView = MapView.extend({
         minZoom: this.map.get('minZoom'),
         maxZoom: this.map.get('maxZoom'),
         disableDefaultUI: true,
-        // Set scrollwheel options
         scrollwheel: this.map.get("scrollwheel"),
-        // Allow dragging (and double click zoom)
         draggable: this.map.get("drag"),
         disableDoubleClickZoom: this.map.get("drag"),
         mapTypeControl:false,

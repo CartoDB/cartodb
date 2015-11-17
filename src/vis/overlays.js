@@ -302,7 +302,8 @@ Overlay.register('infowindow', function(data, vis) {
     template_type: data.templateType,
     alternative_names: data.alternative_names,
     fields: data.fields,
-    template_name: data.template_name
+    template_name: data.template_name,
+    template_type: data.template_type
   });
 
   var infowindow = new Infowindow({

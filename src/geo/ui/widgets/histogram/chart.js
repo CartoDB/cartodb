@@ -48,19 +48,15 @@ module.exports = View.extend({
   },
 
   replaceData: function(data) {
-    if (!this.isLocked()) {
-      this.model.set({ data: data });
-    } else {
-      this.unlock();
-    }
+    this.model.set({ data: data });
   },
 
   _onChangeData: function() {
-    if (!this.isLocked()) {
+    if (this.model.previous('data').length != this.model.get('data').length) {
+      this.reset();
+    } else {
       this.refresh();
     }
-
-    this.unlock();
   },
 
   _onChangeRange: function() {
@@ -134,17 +130,24 @@ module.exports = View.extend({
 
     if (bar && bar.node() && !bar.classed('is-selected')) {
 
-      var left = (barIndex * this.barWidth) + (this.barWidth/2) - 22;
+      var left = (barIndex * this.barWidth) + (this.barWidth/2);
       var top = this.yScale(freq) + this.model.get('pos').y + this.$el.position().top - 20;
 
+      var h = this.chartHeight - this.yScale(freq);
+
+      if (h < 1 && h > 0) {
+        top = this.chartHeight + this.model.get('pos').y + this.$el.position().top - 20;
+      }
+
       if (!this._isDragging()) {
-        hoverProperties = { top: top, left: left, freq: freq };
+        var d = this.formatNumber(freq);
+        hoverProperties = { top: top, left: left, data: d };
       } else {
-        hoverProperties = { value: null };
+        hoverProperties = null;
       }
 
     } else {
-      hoverProperties = { value: null };
+      hoverProperties = null;
     }
 
     this.trigger('hover', hoverProperties);
@@ -168,6 +171,7 @@ module.exports = View.extend({
   reset: function() {
     this._removeChartContent();
     this._setupDimensions();
+    this._calcBarWidth();
     this._generateChartContent();
   },
 
@@ -178,25 +182,28 @@ module.exports = View.extend({
     this._updateChart();
   },
 
-  lock: function() {
-    this.model.set('locked', true);
-  },
-
-  unlock: function() {
-    this.model.set('locked', false);
-  },
-
-  isLocked: function() {
-    return this.model.get('locked');
-  },
-
   resetIndexes: function() {
     this.model.set({ lo_index: null, hi_index: null });
   },
 
-  _formatNumber: function(value, unit) {
+  formatNumber: function(value, unit) {
     var format = d3.format('.2s');
-    return format(value) + (unit ? ' ' + unit : '');
+
+    if (value < 1000) {
+      v = (value).toFixed(2);
+      if (v.endsWith('.00')) {
+        v = v.replace('.00', '');
+      }
+      return v;
+    }
+
+    value = format(value) + (unit ? ' ' + unit : '');
+
+    if (value.endsWith('.0')) {
+      value = value.replace('.0', '');
+    }
+
+    return value == '0.0' ? 0 : value;
   },
 
   _removeBars: function() {
@@ -281,7 +288,6 @@ module.exports = View.extend({
 
   _setupModel: function() {
     this.model = new Model({
-      locked: false,
       data: this.options.data,
       width: this.options.width,
       height: this.options.height,
@@ -348,6 +354,7 @@ module.exports = View.extend({
     var extent = this.brush.extent();
     var lo = extent[0];
     var hi = extent[1];
+
 
     this.model.set({ lo_index: this._getLoBarIndex(), hi_index: this._getHiBarIndex() });
 
@@ -586,7 +593,7 @@ module.exports = View.extend({
     .orient('bottom')
     .innerTickSize(0)
     .tickFormat(function(d, i) {
-      return (i === data.length - 1) ? self._formatNumber(data[i].end) : self._formatNumber(data[i].start);
+      return (i === data.length - 1) ? self.formatNumber(data[i].end) : self.formatNumber(data[i].start);
     });
 
     this.chart.append('g')
@@ -598,29 +605,24 @@ module.exports = View.extend({
   },
 
   _cleanAxis: function() {
-    var isOverlapping = function(innerClientRect, outerClientRect) {
-      return !(
-        Math.floor(outerClientRect.left) <= Math.ceil(innerClientRect.left) &&
-        Math.floor(outerClientRect.top) <= Math.ceil(innerClientRect.top) &&
-        Math.floor(innerClientRect.right) <= Math.ceil(outerClientRect.right) &&
-        Math.floor(innerClientRect.bottom) <= Math.ceil(outerClientRect.bottom)
-      );
-    };
-
     var ticks = this.chart.selectAll('.tick')[0];
 
     // Hide overlapping text labels
     _.each(ticks, function(tick, i) {
       if (i + 1 < ticks.length) {
-        if (tick.style.opacity === "1") {
-          var o = isOverlapping(tick.getBoundingClientRect(), ticks[i+1].getBoundingClientRect());
+        if (tick.style.opacity == '1') {
+          var o = this._isOverlapping(tick.getBoundingClientRect(), ticks[i+1].getBoundingClientRect());
           if (o) {
             el = ticks[i+1];
-            el.style.opacity = "0";
+            el.style.opacity = '0';
           }
         }
       }
-    });
+    }, this);
+  },
+
+  _isOverlapping: function(a, b) {
+    return !(a.left + a.width < b.left || a.left > b.left + b.width);
   },
 
   resetBrush: function() {
@@ -682,13 +684,10 @@ module.exports = View.extend({
     this._calcBarWidth();
 
     var bars = this.chart.append('g')
-
-    .attr('transform', 'translate(0, 0 )')
+    .attr('transform', 'translate(0, 0)')
     .attr('class', 'Bars')
     .selectAll('.Bar')
     .data(data);
-
-    bars.exit().remove();
 
     bars
     .enter()
@@ -711,10 +710,30 @@ module.exports = View.extend({
     })
     .transition()
     .attr('height', function(d) {
-      return _.isEmpty(d) ? 0 : self.chartHeight - self.yScale(d.freq);
+
+      if (_.isEmpty(d)) {
+        return 0;
+      }
+
+      var h = self.chartHeight - self.yScale(d.freq);
+
+      if (h < 1 && h > 0) {
+        h = 1;
+      }
+      return h;
     })
     .attr('y', function(d) {
-      return _.isEmpty(d) ? self.chartHeight : self.yScale(d.freq);
+      if (_.isEmpty(d)) {
+        return self.chartHeight;
+      }
+
+      var h = self.chartHeight - self.yScale(d.freq);
+
+      if (h < 1 && h > 0) {
+        return self.chartHeight - 1;
+      } else {
+        return self.yScale(d.freq);
+      }
     });
   }
 });

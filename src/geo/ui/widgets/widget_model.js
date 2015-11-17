@@ -10,7 +10,8 @@ module.exports = Model.extend({
     data: [],
     columns: [],
     sync: true,
-    bbox: true
+    bbox: true,
+    search: false
   },
 
   url: function() {

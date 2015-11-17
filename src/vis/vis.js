@@ -1213,7 +1213,18 @@ var Vis = View.extend({
 
     var mapView = this.mapView;
     var infowindow = null;
-    var layers = layerView.model && layerView.model.layers || [];
+    var layers = [];
+    // TODO: this should be managed at a different level so each layer knows if
+    // the infowindow needs to be added
+    if (layerView.model) {
+      if (layerView.model.layers) {
+        layers = layerView.model.layers;
+      } else {
+        if (layerView.model.getInfowindowData) {
+          layers = new Backbone.Collection([layerView.model]);
+        }
+      }
+    }
 
     for(var i = 0; i < layers.length; ++i) {
       var layerModel = layers.at(i);

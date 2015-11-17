@@ -29,6 +29,10 @@ var QuantitiesHistogramView = require('cdb/geo/ui/widgets/histogram/quantities-v
 var TimeHistogramView = require('cdb/geo/ui/widgets/histogram/time-view');
 var CategoryWidgetView = require('cdb/geo/ui/widgets/category/view');
 
+var isTimeHistogramWidget = function(m) {
+  return m.get('type') === 'histogram' && m.get('column_type') === 'date';
+};
+
 /**
  * Visualization creation
  */
@@ -51,11 +55,9 @@ var Vis = View.extend({
           });
         }
       },
-      // Torque histogram widget
+      // Torque/date histogram widget
       {
-        match: function(widget, layer) {
-          return layer.get('type') && widget.get('type') === 'histogram';
-        },
+        match: isTimeHistogramWidget,
         create: function(widget) {
           return new TimeHistogramView({
             model: widget,
@@ -531,18 +533,15 @@ var Vis = View.extend({
       }
     });
 
-    var isHistogramWidget = function(m) {
-      return m.get('type') === 'histogram';
-    };
     var isLayerWithTimeWidget = function(m) {
-      return m.get('type') === 'torque' && m.widgets.any(isHistogramWidget);
-    }
+      return m.widgets.any(isTimeHistogramWidget);
+    };
 
     // TODO WidgetView assumes all widgets to be rendered in one place which won't work for the time widget, could we
     // solve this differently/better? for now extract the layer (assumes there to only be one) and attach the view here
-    var layer = _.find(interactiveLayers, isLayerWithTimeWidget)
+    var layer = _.find(interactiveLayers, isLayerWithTimeWidget);
     if (layer) {
-      var widgetModel = layer.widgets.find(isHistogramWidget);
+      var widgetModel = layer.widgets.find(isTimeHistogramWidget);
       var view = this.widgetViewFactory.createView(widgetModel, layer);
       this.addView(view);
       $('.js-dashboard-map-wrapper').append(view.render().el);

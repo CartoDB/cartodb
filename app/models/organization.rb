@@ -245,6 +245,10 @@ class Organization < Sequel::Model
     ::Resque.enqueue(::Resque::OrganizationJobs::Mail::DiskQuotaLimitReached, id) if disk_quota_limit_reached?
   end
 
+  def notify_if_seat_limit_reached
+    ::Resque.enqueue(::Resque::OrganizationJobs::Mail::SeatLimitReached, id) if seat_limit_reached?
+  end
+
   def database_name
     owner ? owner.database_name : nil
   end
@@ -271,6 +275,11 @@ class Organization < Sequel::Model
   # Returns true if disk quota won't allow new signups with existing defaults
   def disk_quota_limit_reached?
     unassigned_quota < default_quota_in_bytes
+  end
+
+  # Returns true if seat limit has been reached
+  def seat_limit_reached?
+    remaining_seats < 1
   end
 
   def quota_dates(options)

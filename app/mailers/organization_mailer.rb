@@ -23,4 +23,13 @@ class OrganizationMailer < ActionMailer::Base
     mail to: email, subject: @title
   end
 
+  def seat_limit_reached(organization)
+    @organization = organization
+    @subject = "Your organization #{@organization.name} has reached its seat limit"
+    @link = "mailto:support@cartodb.com"
+
+    mail to: @organization.owner.email,
+         subject: @subject
+  end
+
 end

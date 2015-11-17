@@ -1270,7 +1270,9 @@ module CartoDB
                 current_time = time.strftime("%Y-%m-%d %H:%M:%S %Z", time.localtime())
                 session_user = plpy.execute("SELECT session_user", 1)[0]["session_user"]
                 invalidation_result = {'timestamp': current_time, 'duration': round(invalidation_duration, 8), 'termination_state': termination_state, 'retries': retries, 'error': error, 'database': '#{@user.database_name}', 'table_name': table_name, 'dbuser': session_user}
-                syslog.syslog(syslog.LOG_INFO, "invalidation: %s" % invalidation_result)
+                
+                if trigger_verbose:
+                  syslog.syslog(syslog.LOG_INFO, "invalidation: %s" % invalidation_result)
 
             $$
             LANGUAGE 'plpythonu' VOLATILE;

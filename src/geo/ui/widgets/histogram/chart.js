@@ -125,10 +125,6 @@ module.exports = View.extend({
     }
 
     var freq = data[barIndex].freq;
-    //var min = this._formatNumber(data[barIndex].start);
-    //var max = this._formatNumber(data[barIndex].end);
-    var data = this._formatNumber(freq);
-
     var hoverProperties = {};
 
     var bar = this.chart.select('.Bar:nth-child(' + (barIndex + 1) + ')');
@@ -145,7 +141,8 @@ module.exports = View.extend({
       }
 
       if (!this._isDragging()) {
-        hoverProperties = { top: top, left: left, data: data };
+        var d = this._formatNumber(freq);
+        hoverProperties = { top: top, left: left, data: d };
       } else {
         hoverProperties = null;
       }
@@ -192,10 +189,26 @@ module.exports = View.extend({
 
   _formatNumber: function(value, unit) {
     var format = d3.format('.2s');
+
+    if (value < 1000) {
+      v = (value).toFixed(2);
+      if (v.endsWith('.00')) {
+        v = v.replace('.00', '');
+      }
+      return v;
+    }
+
+    if (value % 1 !== 0) {
+      format = d3.format('');
+      return format(value);
+    }
+
     value = format(value) + (unit ? ' ' + unit : '');
+
     if (value.endsWith('.0')) {
       value = value.replace('.0', '');
     }
+
     return value == '0.0' ? 0 : value;
   },
 
@@ -615,7 +628,7 @@ module.exports = View.extend({
   },
 
   _isOverlapping: function(a, b) {
-    return !(a.left < b.left || a.left > b.left + b.width);
+    return !(a.left + a.width < b.left || a.left > b.left + b.width);
   },
 
   resetBrush: function() {

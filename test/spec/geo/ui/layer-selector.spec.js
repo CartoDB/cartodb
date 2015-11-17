@@ -1,6 +1,7 @@
 var $ = require('jquery');
 var Backbone = require('backbone');
 var L = require('leaflet');
+L.noConflict();
 var cdb = require('cdb');
 var Map = require('cdb/geo/map');
 var CartoDBLayer = require('cdb/geo/map/cartodb-layer');

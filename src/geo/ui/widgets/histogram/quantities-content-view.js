@@ -28,9 +28,7 @@ module.exports = WidgetContent.extend({
     this.firstData = _.clone(this.options.dataModel);
     this.viewModel = new Model();
     this.lockedByUser = false;
-    window.lockedByUser = this.lockedByUser;
     WidgetContent.prototype.initialize.call(this);
-    window.c = this;
   },
 
   _initViews: function() {
@@ -103,10 +101,6 @@ module.exports = WidgetContent.extend({
     var data = this.dataModel.getData();
     var isDataEmpty = _.isEmpty(data) || _.size(data) === 0;
 
-    window.viewModel = this.viewModel; // TODO: remove
-    window.dataModel = this.dataModel; // TODO: remove
-    window.filter    = this.filter;    // TODO: remove
-
     this.$el.html(
       template({
         title: this.dataModel.get('title'),
@@ -117,6 +111,7 @@ module.exports = WidgetContent.extend({
     if (isDataEmpty) {
       this._addPlaceholder();
     } else {
+      this.originalData = this.dataModel.getData();
       this._setupBindings();
       this._initViews();
     }
@@ -152,8 +147,6 @@ module.exports = WidgetContent.extend({
     this.chart.bind('hover', this._onValueHover, this);
     this.chart.render().show();
 
-    window.chart = this.chart; // TODO: remove
-
     this._updateStats();
   },
 
@@ -168,9 +161,6 @@ module.exports = WidgetContent.extend({
   },
 
   _renderMiniChart: function() {
-    this.originalData = this.dataModel.getData();
-    window.originalData = this.originalData;
-
     this.miniChart = new WidgetHistogramChart(({
       className: 'mini',
       el: this.chart.$el, // TODO the mini-histogram should not depend on the chart histogram's DOM
@@ -185,7 +175,6 @@ module.exports = WidgetContent.extend({
 
     this.miniChart.bind('on_brush_end', this._onMiniRangeUpdated, this);
     this.miniChart.render().hide();
-    window.miniChart = this.miniChart; // TODO: remove
   },
 
   _setupBindings: function() {

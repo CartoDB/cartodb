@@ -154,7 +154,7 @@ class Admin::UsersController < Admin::AdminController
         when 'gdrive'
           Cartodb.config[:oauth][serv]['client_id'].present?
         when 'box'
-          Cartodb.config[:oauth][serv]['client_id'].present? && current_user.has_feature_flag?('box_import')
+          Cartodb.config[:oauth][serv]['client_id'].present?
         when 'gdrive', 'box'
           Cartodb.config[:oauth][serv]['client_id'].present?
         when 'dropbox'

@@ -36,6 +36,11 @@ module.exports = WidgetContentView.extend({
     this.viewModel.bind('change:width', this._onChangeWidth, this);
   },
 
+  _initBinds: function() {
+    // TODO overrides parent view's private function, can we remove this and have things more clear?
+    this.model.once('change:data', this.render, this);
+  },
+
   render: function() {
     this.clearSubViews();
     this.$el.html(''); // to remove placeholder if there is any

@@ -415,6 +415,9 @@ describe('vis/vis', function() {
   });
 
   it ("should load modules", function(done) {
+    // Ensure the torque module is not loaded (might have been loaded in other tests)
+    delete cdb.torque;
+
     jasmine.clock().install();
 
     this.mapConfig.layers = [

@@ -11,6 +11,7 @@ module.exports = View.extend({
     handleWidth: 6,
     handleHeight: 23,
     handleRadius: 3,
+    divisionWidth: 80,
     transitionType: 'elastic'
   },
 
@@ -311,11 +312,12 @@ module.exports = View.extend({
     var data = this.model.get('data');
     this.xScale = d3.scale.linear().domain([0, 100]).range([0, this.chartWidth]);
     this.yScale = d3.scale.linear().domain([0, d3.max(data, function(d) { return _.isEmpty(d) ? 0 : d.freq; } )]).range([this.chartHeight, 0]);
-    this.xAxisScale = d3.scale.linear().range([data[0].min, data[data.length - 1].max]).domain([0, this.chartWidth]);
+    this.xAxisScale = d3.scale.linear().range([data[0].start, data[data.length - 1].end]).domain([0, this.chartWidth]);
   },
 
   _setupRanges: function() {
-    this.verticalRange = d3.range(0, this.chartWidth + this.chartWidth / 4, this.chartWidth / 4);
+    var n = Math.round(this.chartWidth / this.defaults.divisionWidth);
+    this.verticalRange = d3.range(0, this.chartWidth + this.chartWidth / n, this.chartWidth / n);
     this.horizontalRange = d3.range(0, this.chartHeight + this.chartHeight / 2, this.chartHeight / 2);
   },
 

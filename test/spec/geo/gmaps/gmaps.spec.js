@@ -211,8 +211,7 @@ describe('geo/gmaps/gmaps-map-view', function() {
     expect(geo.get('geojson')).toEqual({
       "type": "Point",
       "coordinates": [20, 10]
-    })
-
+    });
   });
 
   it("should convert to geojson", function() {
@@ -223,5 +222,22 @@ describe('geo/gmaps/gmaps-map-view', function() {
     var v = mapView.geometries[geo.cid];
     var geojson = GmapsPathView.getGeoJSON(v.geom, 'MultiPolygon');
     expect(geojson).toEqual(multipoly);
+  });
+
+  it("should disable gmaps dragging and double click zooming when the map has drag disabled", function() {
+    var container = $('<div>').css({
+        'height': '200px',
+        'width': '200px'
+    });
+    var map = new Map({
+      drag: false
+    });
+    var mapView = new GoogleMapsMapView({
+      el: container,
+      map: map
+    });
+
+    expect(mapView.map_googlemaps.get('draggable')).toBeFalsy();
+    expect(mapView.map_googlemaps.get('disableDoubleClickZoom')).toBeFalsy();
   });
 });

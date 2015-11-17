@@ -269,6 +269,14 @@ var Vis = View.extend({
     var scrollwheel       = (options.scrollwheel === undefined)  ? data.scrollwheel : options.scrollwheel;
     var slides_controller = (options.slides_controller === undefined)  ? data.slides_controller : options.slides_controller;
 
+    // Do not allow pan map if zoom overlay and scrollwheel are disabled
+    // Check if zoom overlay is present.
+    var hasZoomOverlay = _.isObject(_.find(data.overlays, function(overlay) {
+      return overlay.type == "zoom"
+    }));
+
+    var allowDragging = hasZoomOverlay || scrollwheel;
+
     // map
     data.maxZoom || (data.maxZoom = 20);
     data.minZoom || (data.minZoom = 0);
@@ -306,6 +314,7 @@ var Vis = View.extend({
       minZoom: data.minZoom,
       legends: data.legends,
       scrollwheel: scrollwheel,
+      drag: allowDragging,
       provider: data.map_provider
     };
 
@@ -437,6 +446,9 @@ var Vis = View.extend({
     var widgetClasses = {
       "list": {
         model: 'ListModel'
+      },
+      "formula": {
+        model: 'FormulaModel'
       },
       "histogram": {
         model: 'HistogramModel',

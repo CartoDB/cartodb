@@ -460,6 +460,116 @@ describe('vis/vis', function() {
     expect(this.vis.map.layers.at(0).get('type')).toEqual('GMapsBase');
   });
 
+  describe("dragging option", function() {
+
+    it("should be enabled with zoom overlay and scrollwheel enabled", function() {
+      var container = $('<div>').css('height', '200px');
+      var vis = new Vis({el: container});
+
+      var mapConfig = {
+        updated_at: 'cachebuster',
+        title: "irrelevant",
+        url: "http://cartodb.com",
+        center: [40.044, -101.95],
+        bounding_box_sw: [20, -140],
+        bounding_box_ne: [ 55, -50],
+        zoom: 4,
+        bounds: [[1, 2],[3, 4]],
+        scrollwheel: true,
+        overlays: [
+          {
+            type: "zoom",
+            order: 6,
+            options: {
+              x: 20,
+              y: 20,
+              display: true
+            },
+            template: ""
+          }
+        ],
+      };
+
+      vis.load(mapConfig);
+      expect(vis.map.get('drag')).toBeTruthy();
+    });
+
+    it("should be enabled with zoom overlay and scrollwheel disabled", function() {
+      var container = $('<div>').css('height', '200px');
+      var vis = new Vis({el: container});
+
+      var mapConfig = {
+        updated_at: 'cachebuster',
+        title: "irrelevant",
+        url: "http://cartodb.com",
+        center: [40.044, -101.95],
+        bounding_box_sw: [20, -140],
+        bounding_box_ne: [ 55, -50],
+        zoom: 4,
+        bounds: [[1, 2],[3, 4]],
+        scrollwheel: false,
+        overlays: [
+          {
+            type: "zoom",
+            order: 6,
+            options: {
+              x: 20,
+              y: 20,
+              display: true
+            },
+            template: ""
+          }
+        ],
+      };
+
+      vis.load(mapConfig);
+      expect(vis.map.get('drag')).toBeTruthy();
+    });
+
+    it("should be enabled without zoom overlay and scrollwheel enabled", function() {
+      var container = $('<div>').css('height', '200px');
+      var vis = new Vis({el: container});
+
+      var mapConfig = {
+        updated_at: 'cachebuster',
+        title: "irrelevant",
+        url: "http://cartodb.com",
+        center: [40.044, -101.95],
+        bounding_box_sw: [20, -140],
+        bounding_box_ne: [ 55, -50],
+        zoom: 4,
+        bounds: [[1, 2],[3, 4]],
+        scrollwheel: true,
+        overlays: [],
+      };
+
+      vis.load(mapConfig);
+      expect(vis.map.get('drag')).toBeTruthy();
+    });
+
+    it("should be disabled without zoom overlay and scrollwheel disabled", function() {
+      var container = $('<div>').css('height', '200px');
+      var vis = new Vis({el: container});
+
+      var mapConfig = {
+        updated_at: 'cachebuster',
+        title: "irrelevant",
+        url: "http://cartodb.com",
+        center: [40.044, -101.95],
+        bounding_box_sw: [20, -140],
+        bounding_box_ne: [ 55, -50],
+        zoom: 4,
+        bounds: [[1, 2],[3, 4]],
+        scrollwheel: false,
+        overlays: [],
+      };
+
+      vis.load(mapConfig);
+      expect(vis.map.get('drag')).toBeFalsy();
+    });
+
+  });
+
   describe("Legends", function() {
 
     it('should only display legends for visible layers', function() {

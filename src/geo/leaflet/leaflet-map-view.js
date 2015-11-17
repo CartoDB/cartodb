@@ -39,12 +39,14 @@ var LeafletMapView = MapView.extend({
     if (!this.options.map_object) {
 
       this.map_leaflet = new L.Map(this.el, mapConfig);
-
       // remove the "powered by leaflet"
       this.map_leaflet.attributionControl.setPrefix('');
-
       if (this.map.get("scrollwheel") == false) this.map_leaflet.scrollWheelZoom.disable();
       if (this.map.get("keyboard") == false) this.map_leaflet.keyboard.disable();
+      if (this.map.get("drag") == false) {
+        this.map_leaflet.dragging.disable();
+        this.map_leaflet.doubleClickZoom.disable();
+      }
 
     } else {
 

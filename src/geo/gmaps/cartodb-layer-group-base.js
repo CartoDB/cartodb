@@ -92,21 +92,20 @@ CartoDBLayerGroupBase.prototype.clear = function () {
 };
 
 CartoDBLayerGroupBase.prototype.update = function (done) {
-  var self = this;
   this.loading && this.loading();
 
-  var tilejson = self.model.get('urls');
+  var tilejson = this.model.get('urls');
   if(tilejson) {
-    self.tilejson = tilejson;
-    self.options.tiles = tilejson.tiles;
-    self.tiles = 0;
-    self.cache = {};
-    self._reloadInteraction();
-    self.refreshView();
-    self.ok && self.ok();
+    this.tilejson = tilejson;
+    this.options.tiles = tilejson.tiles;
+    this.tiles = 0;
+    this.cache = {};
+    this._reloadInteraction();
+    this.refreshView();
+    this.ok && this.ok();
     done && done();
   } else {
-    self.error && self.error('URLs have not been fetched yet');
+    this.error && this.error('URLs have not been fetched yet');
     done && done();
   }
 };

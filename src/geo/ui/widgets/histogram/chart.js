@@ -611,11 +611,15 @@ module.exports = View.extend({
     // Hide overlapping text labels
     _.each(ticks, function(tick, i) {
       if (i + 1 < ticks.length) {
-        if (tick.style.opacity == '1') {
-          var o = this._isOverlapping(tick.getBoundingClientRect(), ticks[i+1].getBoundingClientRect());
-          if (o) {
-            el = ticks[i+1];
-            el.style.opacity = '0';
+        if (+tick.style.opacity !== 0) {
+          for (var j = i + 1; j < ticks.length; j++) { // TODO: too costly?
+            if (j < ticks.length) {
+              var o = this._isOverlapping(tick.getBoundingClientRect(), ticks[j].getBoundingClientRect());
+              if (o) {
+                el = ticks[j];
+                el.style.opacity = '0';
+              }
+            }
           }
         }
       }
@@ -623,7 +627,8 @@ module.exports = View.extend({
   },
 
   _isOverlapping: function(a, b) {
-    return !(a.left + a.width < b.left || a.left > b.left + b.width);
+    var padding = 5;
+    return !(a.left + a.width + padding < b.left);
   },
 
   resetBrush: function() {

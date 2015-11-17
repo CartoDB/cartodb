@@ -199,7 +199,7 @@ module.exports = View.extend({
 
     value = format(value) + (unit ? ' ' + unit : '');
 
-    if (value.endsWith('.0')) {
+    if (value.match('.0' + "$") {
       value = value.replace('.0', '');
     }
 

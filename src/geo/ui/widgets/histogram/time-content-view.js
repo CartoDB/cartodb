@@ -74,7 +74,20 @@ module.exports = WidgetContentView.extend({
       }
     });
     this._appendView(this.histogramChartView);
+    this.histogramChartView.bind('on_brush_end', this._onBrushEnd, this);
     this.histogramChartView.show();
+  },
+
+  _onBrushEnd: function(loBarIndex, hiBarIndex) {
+    var data = this.model.getData();
+    this._setRange(
+      data[loBarIndex].start,
+      data[hiBarIndex - 1].end
+    );
+  },
+
+  _setRange: function(start, end) {
+    this.filter.setRange({ min: start, max: end });
   },
 
   _appendView: function(view) {

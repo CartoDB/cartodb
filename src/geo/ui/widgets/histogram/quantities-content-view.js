@@ -5,9 +5,8 @@ var Model = require('cdb/core/model');
 var View = require('cdb/core/view');
 var WidgetContent = require('../standard/widget_content_view');
 var WidgetHistogramChart = require('./chart');
-var d3 = require('d3');
 var placeholder = require('./placeholder.tpl');
-var template = require('./content.tpl');
+var template = require('./quantities-content.tpl');
 var xAxisTickFormatter = d3.format('.2s');
 
 /**
@@ -41,13 +40,12 @@ module.exports = WidgetContent.extend({
   },
 
   _initBinds: function() {
-    this.dataModel.bind('change:data', this._onFirstLoad, this);
+    this.dataModel.once('change:data', this._onFirstLoad, this);
     this.add_related_model(this.dataModel);
   },
 
   _onFirstLoad: function() {
     this.render();
-    this.dataModel.unbind('change:data', this._onFirstLoad, this);
     this.dataModel.bind('change:data', this._onChangeData, this);
     this._storeBounds();
   },

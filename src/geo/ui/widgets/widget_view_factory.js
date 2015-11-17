@@ -9,7 +9,7 @@ var WidgetViewFactory = function (typeDefs) {
 
 WidgetViewFactory.prototype.addType = function (def) {
   if (!_.isFunction(def.match)) new Error('def.match must be a function');
-  if (!_.isFunction(def.create)) new Error('def.match must be a function');
+  if (!_.isFunction(def.create)) new Error('def.create must be a function');
   this.typeDefs.push(def);
 };
 

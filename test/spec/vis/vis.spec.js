@@ -462,11 +462,8 @@ describe('vis/vis', function() {
 
   describe("dragging option", function() {
 
-    it("should be enabled with zoom overlay and scrollwheel enabled", function() {
-      var container = $('<div>').css('height', '200px');
-      var vis = new Vis({el: container});
-
-      var mapConfig = {
+    beforeEach(function() {
+      this.mapConfig = {
         updated_at: 'cachebuster',
         title: "irrelevant",
         url: "http://cartodb.com",
@@ -476,21 +473,34 @@ describe('vis/vis', function() {
         zoom: 4,
         bounds: [[1, 2],[3, 4]],
         scrollwheel: true,
-        overlays: [
-          {
-            type: "zoom",
-            order: 6,
-            options: {
-              x: 20,
-              y: 20,
-              display: true
-            },
-            template: ""
-          }
-        ],
+        overlays: [],
+        datasource: {
+          user_name: "wadus",
+          maps_api_template: "https://{user}.example.com:443",
+          stat_tag: "ece6faac-7271-11e5-a85f-04013fc66a01",
+          force_cors: true // This is sometimes set in the editor
+        }
       };
+    });
 
-      vis.load(mapConfig);
+    it("should be enabled with zoom overlay and scrollwheel enabled", function() {
+      var container = $('<div>').css('height', '200px');
+      var vis = new Vis({el: container});
+
+      this.mapConfig.overlays = [
+        {
+          type: "zoom",
+          order: 6,
+          options: {
+            x: 20,
+            y: 20,
+            display: true
+          },
+          template: ""
+        }
+      ];
+
+      vis.load(this.mapConfig);
       expect(vis.map.get('drag')).toBeTruthy();
     });
 
@@ -498,31 +508,20 @@ describe('vis/vis', function() {
       var container = $('<div>').css('height', '200px');
       var vis = new Vis({el: container});
 
-      var mapConfig = {
-        updated_at: 'cachebuster',
-        title: "irrelevant",
-        url: "http://cartodb.com",
-        center: [40.044, -101.95],
-        bounding_box_sw: [20, -140],
-        bounding_box_ne: [ 55, -50],
-        zoom: 4,
-        bounds: [[1, 2],[3, 4]],
-        scrollwheel: false,
-        overlays: [
-          {
-            type: "zoom",
-            order: 6,
-            options: {
-              x: 20,
-              y: 20,
-              display: true
-            },
-            template: ""
-          }
-        ],
-      };
+      this.mapConfig.overlays = [
+        {
+          type: "zoom",
+          order: 6,
+          options: {
+            x: 20,
+            y: 20,
+            display: true
+          },
+          template: ""
+        }
+      ];
 
-      vis.load(mapConfig);
+      vis.load(this.mapConfig);
       expect(vis.map.get('drag')).toBeTruthy();
     });
 
@@ -530,20 +529,9 @@ describe('vis/vis', function() {
       var container = $('<div>').css('height', '200px');
       var vis = new Vis({el: container});
 
-      var mapConfig = {
-        updated_at: 'cachebuster',
-        title: "irrelevant",
-        url: "http://cartodb.com",
-        center: [40.044, -101.95],
-        bounding_box_sw: [20, -140],
-        bounding_box_ne: [ 55, -50],
-        zoom: 4,
-        bounds: [[1, 2],[3, 4]],
-        scrollwheel: true,
-        overlays: [],
-      };
+      this.mapConfig.scrollwheel = true;
 
-      vis.load(mapConfig);
+      vis.load(this.mapConfig);
       expect(vis.map.get('drag')).toBeTruthy();
     });
 
@@ -551,20 +539,9 @@ describe('vis/vis', function() {
       var container = $('<div>').css('height', '200px');
       var vis = new Vis({el: container});
 
-      var mapConfig = {
-        updated_at: 'cachebuster',
-        title: "irrelevant",
-        url: "http://cartodb.com",
-        center: [40.044, -101.95],
-        bounding_box_sw: [20, -140],
-        bounding_box_ne: [ 55, -50],
-        zoom: 4,
-        bounds: [[1, 2],[3, 4]],
-        scrollwheel: false,
-        overlays: [],
-      };
+      this.mapConfig.scrollwheel = false;
 
-      vis.load(mapConfig);
+      vis.load(this.mapConfig);
       expect(vis.map.get('drag')).toBeFalsy();
     });
 

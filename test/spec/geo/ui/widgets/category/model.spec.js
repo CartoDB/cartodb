@@ -16,7 +16,7 @@ describe('widgets/category/model', function() {
 
   describe('parseData', function() {
 
-    it('should provide data and stats as an object', function() {
+    xit('should provide data and stats as an object', function() {
       var r = this.model._parseData();
       expect(r.max).toBeDefined();
       expect(r.min).toBeDefined();

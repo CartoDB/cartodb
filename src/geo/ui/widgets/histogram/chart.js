@@ -191,8 +191,8 @@ module.exports = View.extend({
 
     if (value < 1000) {
       v = (value).toFixed(2);
-      // value ends with .00
-      if (value.match('.00' + "$")) {
+      // v ends with .00
+      if (v.match('.00' + "$")) {
         v = v.replace('.00', '');
       }
       return v;

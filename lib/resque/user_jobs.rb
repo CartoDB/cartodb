@@ -37,9 +37,7 @@ module Resque
           OrganizationMailer.seat_limit_reached(Organization.where(id: organization_id).first).deliver
         end
       end
-
     end
-
   end
 
   module UserJobs

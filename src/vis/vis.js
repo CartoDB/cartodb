@@ -432,6 +432,9 @@ var Vis = View.extend({
       "list": {
         model: 'ListModel'
       },
+      "formula": {
+        model: 'FormulaModel'
+      },
       "histogram": {
         model: 'HistogramModel',
         filter: 'RangeFilter'

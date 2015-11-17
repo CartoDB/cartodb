@@ -6,9 +6,18 @@ module.exports = WidgetModel.extend({
   // TODO: The response format has probably changed
   parse: function(r) {
     return {
-      data: _.reduce(r, function(memo, d) {
-        return memo + parseInt(d.trees);
-      }, 0)
+      data: r[this.get('operation')],
+      nulls: r.nulls
     };
+  },
+
+  toJSON: function(d) {
+      return {
+          type: "formula",
+          options: {
+              column: this.get('column'),
+              operation: this.get('operation')
+          }
+      };
   }
 });

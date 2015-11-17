@@ -141,7 +141,7 @@ module.exports = View.extend({
       }
 
       if (!this._isDragging()) {
-        var d = this._formatNumber(freq);
+        var d = this.formatNumber(freq);
         hoverProperties = { top: top, left: left, data: d };
       } else {
         hoverProperties = null;
@@ -187,7 +187,7 @@ module.exports = View.extend({
     this.model.set({ lo_index: null, hi_index: null });
   },
 
-  _formatNumber: function(value, unit) {
+  formatNumber: function(value, unit) {
     var format = d3.format('.2s');
 
     if (value < 1000) {
@@ -196,11 +196,6 @@ module.exports = View.extend({
         v = v.replace('.00', '');
       }
       return v;
-    }
-
-    if (value % 1 !== 0) {
-      format = d3.format('');
-      return format(value);
     }
 
     value = format(value) + (unit ? ' ' + unit : '');

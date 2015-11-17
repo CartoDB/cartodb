@@ -275,30 +275,30 @@ module.exports = WidgetContent.extend({
     this.$(".js-zoom").toggleClass('is-hidden', !this.viewModel.get('zoom_enabled'));
   },
 
-  _formatNumber: function(value, unit) {
-    var format = d3.format('.2s');
-    value = format(value) + (unit ? ' ' + unit : '');
-    if (value.endsWith('.0')) {
-      value = value.replace('.0', '');
-    }
-    return value == '0.0' ? 0 : value;
-  },
-
   _onChangeTotal: function() {
     //this._animateValue('.js-val', 'total', ' SELECTED');
-    this.$('.js-val').text(this._formatNumber(this.viewModel.get('total')) + ' SELECTED');
+    this.$('.js-val').text(this.chart.formatNumber(this.viewModel.get('total')) + ' SELECTED');
   },
 
   _onChangeMax: function() {
-    this._animateValue('.js-max', 'max', 'MAX');
+    //this._animateValue('.js-max', 'max', 'MAX');
+    if (this.viewModel.get('max') === undefined) {
+      return '0 MAX';
+    }
+    this.$('.js-max').text(this.chart.formatNumber(this.viewModel.get('max')) + ' MAX');
   },
 
   _onChangeMin: function() {
-    this._animateValue('.js-min', 'min', 'MIN');
+    //this._animateValue('.js-min', 'min', 'MIN');
+    if (this.viewModel.get('min') === undefined) {
+      return '0 MIN';
+    }
+    this.$('.js-min').text(this.chart.formatNumber(this.viewModel.get('min')) + ' MIN');
   },
 
   _onChangeAvg: function() {
-    this._animateValue('.js-avg', 'avg', 'AVG');
+    this.$('.js-avg').text(this.chart.formatNumber(this.viewModel.get('avg')) + ' AVG');
+    //this._animateValue('.js-avg', 'avg', 'AVG');
   },
 
   _animateValue: function(className, what, unit) {
@@ -322,20 +322,21 @@ module.exports = WidgetContent.extend({
 
   _updateStats: function() {
     var data = this._getData();
+    var min, max;
 
     if (data && data.length) {
       var loBarIndex = this.viewModel.get('lo_index') || 0;
-      var hiBarIndex = this.viewModel.get('hi_index') || (data.length - 1);
+      var hiBarIndex = this.viewModel.get('hi_index') || data.length;
 
       var sum = this._calcSum(data, loBarIndex, hiBarIndex);
       var avg = this._calcAvg(data);
 
       if (loBarIndex >= 0 && loBarIndex < data.length) {
-        var min = data[loBarIndex].min;
+        min = data[loBarIndex].min;
       }
 
-      if (hiBarIndex >= 0 && hiBarIndex < data.length) {
-        var max = data[hiBarIndex - 1].max;
+      if (hiBarIndex >= 0 && hiBarIndex - 1 < data.length) {
+        max = data[hiBarIndex - 1].max;
       }
 
       this.viewModel.set({ total: sum, min: min, max: max, avg: avg });

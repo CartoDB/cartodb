@@ -24,7 +24,6 @@ cdb.geo.ui.Widget.List = {};
 cdb.geo.ui.Widget.Category = {};
 cdb.geo.ui.Widget.Histogram = {};
 cdb.geo.ui.Widget.Formula = {};
-cdb.geo.ui.Widget.Time = {};
 
 cdb.ui = {};
 cdb.ui.common = {};

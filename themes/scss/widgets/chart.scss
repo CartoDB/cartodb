@@ -87,19 +87,7 @@
 
 .Axis {
   font: 10px sans-serif;
-  shape-rendering: crispEdges;
-}
-
-.Axis path {
-  display: none;
-  shape-rendering: crispEdges;
-}
-.Axis line {
-  fill: none;
-  stroke-width: 1;
-  opacity: 0.2;
-  stroke: #000;
-  shape-rendering: crispEdges;
+  fill: #979EA1;
 }
 
 .Line {

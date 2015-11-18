@@ -59,7 +59,7 @@ WindshaftClient.prototype.instantiateMap = function(options) {
 
   var filters = filters || {};
   if (Object.keys(filters).length) {
-    params.push(["filters", JSON.stringify(filters)].join('='));
+    params.push(["filters", encodeURIComponent(JSON.stringify(filters))].join('='));
   }
 
   if (this._usePOST(payload, params)) {

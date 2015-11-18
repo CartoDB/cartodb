@@ -39,11 +39,11 @@ var Mobile = View.extend({
     this.hasLayerSelector = false;
     this.layersLoading    = 0;
 
-    this.slides_data   = this.options.slides_data;
+    this.slides_data = this.options.slides_data;
     this.visualization = this.options.visualization;
 
     if (this.visualization) {
-      this.slides      = this.visualization.slides;
+      this.slides = this.visualization.slides;
     }
 
     this.mobileEnabled = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -62,12 +62,11 @@ var Mobile = View.extend({
     window.addEventListener('orientationchange', _.bind(this.doOnOrientationChange, this));
 
     this._addWheelEvent();
-
   },
 
   loadingTiles: function() {
     if (this.loader) {
-      this.loader.show()
+      this.loader.show();
     }
 
     if (this.layersLoading === 0) {
@@ -90,40 +89,35 @@ var Mobile = View.extend({
   },
 
   _selectOverlays: function() {
-
     if (this.slides && this.slides_data) { // if there are slides…
-
       var state = this.slides.state();
 
-      if (state == 0) this.overlays = this.options.overlays; // first slide == master vis
-      else {
+      if (state === 0) {
+        this.overlays = this.options.overlays;
+      } else {
         this.overlays = this.slides_data[state - 1].overlays;
       }
     } else { // otherwise we load the regular overlays
       this.overlays = this.options.overlays;
     }
-
   },
 
   _addWheelEvent: function() {
+    var self    = this;
+    var mapView = this.options.mapView;
 
-      var self    = this;
-      var mapView = this.options.mapView;
+    $(document).on('webkitfullscreenchange mozfullscreenchange fullscreenchange', function() {
 
-      $(document).on('webkitfullscreenchange mozfullscreenchange fullscreenchange', function() {
+      if ( !document.fullscreenElement && !document.webkitFullscreenElement && !document.mozFullScreenElement && !document.msFullscreenElement) {
+        mapView.options.map.set("scrollwheel", false);
+      }
 
-        if ( !document.fullscreenElement && !document.webkitFullscreenElement && !document.mozFullScreenElement && !document.msFullscreenElement) {
-          mapView.options.map.set("scrollwheel", false);
-        }
+      mapView.invalidateSize();
 
-        mapView.invalidateSize();
-
-      });
-
+    });
   },
 
   _setupModel: function() {
-
     this.model = new Backbone.Model({
       open: false,
       layer_count: 0
@@ -131,7 +125,6 @@ var Mobile = View.extend({
 
     this.model.on("change:open", this._onChangeOpen, this);
     this.model.on("change:layer_count", this._onChangeLayerCount, this);
-
   },
 
   /**
@@ -153,36 +146,29 @@ var Mobile = View.extend({
   },
 
   _onBackdropClick: function(e) {
-
     e.preventDefault();
     e.stopPropagation();
 
     this.$el.find(".backdrop").fadeOut(250);
     this.$el.find(".cartodb-attribution").fadeOut(250);
-
   },
 
   _onAttributionClick: function(e) {
-
     e.preventDefault();
     e.stopPropagation();
 
     this.$el.find(".backdrop").fadeIn(250);
     this.$el.find(".cartodb-attribution").fadeIn(250);
-
   },
 
   _toggle: function(e) {
-
     e.preventDefault();
     e.stopPropagation();
 
     this.model.set("open", !this.model.get("open"));
-
   },
 
   _toggleFullScreen: function(ev) {
-
     ev.stopPropagation();
     ev.preventDefault();
 
@@ -195,24 +181,16 @@ var Mobile = View.extend({
     var mapView = this.options.mapView;
 
     if (!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement) {
-
       requestFullScreen.call(docEl);
-
       if (mapView) {
-
         mapView.options.map.set("scrollwheel", true);
-
       }
-
     } else {
-
       cancelFullScreen.call(doc);
-
     }
   },
 
   _open: function() {
-
     var right = this.$el.find(".aside").width();
 
     this.$el.find(".cartodb-header").animate({ right: right }, 200)
@@ -220,16 +198,13 @@ var Mobile = View.extend({
     this.$el.find(".cartodb-attribution-button").animate({ right: right + parseInt(this.$el.find(".cartodb-attribution-button").css("right")) }, 200)
     this.$el.find(".cartodb-attribution").animate({ right: right + parseInt(this.$el.find(".cartodb-attribution-button").css("right")) }, 200)
     this._initScrollPane();
-
   },
 
   _close: function() {
-
     this.$el.find(".cartodb-header").animate({ right: 0 }, 200)
     this.$el.find(".aside").animate({ right: - this.$el.find(".aside").width() }, 200)
     this.$el.find(".cartodb-attribution-button").animate({ right: 20 }, 200)
     this.$el.find(".cartodb-attribution").animate({ right: 20 }, 200)
-
   },
 
   default_options: {
@@ -242,9 +217,7 @@ var Mobile = View.extend({
   },
 
   doOnOrientationChange: function() {
-
-    switch(window.orientation)
-    {
+    switch(window.orientation) {
       case -90:
       case 90: this.recalc("landscape");
         break;
@@ -254,31 +227,23 @@ var Mobile = View.extend({
   },
 
   recalc: function(orientation) {
-
     var height = $(".legends > div.cartodb-legend-stack").height();
 
     if (this.$el.hasClass("open") && height < 100 && !this.$el.hasClass("torque")) {
-
       this.$el.css("height", height);
       this.$el.find(".top-shadow").hide();
       this.$el.find(".bottom-shadow").hide();
-
     } else if (this.$el.hasClass("open") && height < 100 && this.$el.hasClass("legends") && this.$el.hasClass("torque")) {
-
       this.$el.css("height", height + $(".legends > div.torque").height() );
       this.$el.find(".top-shadow").hide();
       this.$el.find(".bottom-shadow").hide();
-
     }
-
   },
 
   _onChangeLayerCount: function() {
-
     var layer_count = this.model.get("layer_count");
     var msg = layer_count + " layer" + (layer_count != 1 ? "s" : "");
     this.$el.find(".aside .layer-container > h3").html(msg);
-
   },
 
   _onChangeOpen: function() {
@@ -290,91 +255,30 @@ var Mobile = View.extend({
   },
 
   _getLayers: function() {
-
     this.layers = [];
 
-    // we add the layers to the array depending on the method used
-    // to sent us the layers
-    if (this.options.layerView) {
-      this._getLayersFromLayerView();
-    } else {
-      _.each(this.map.layers.models, this._getLayer, this);
-    }
-
-  },
-
-  _getLayersFromLayerView: function() {
-
-    if (this.options.layerView && this.options.layerView.model.get("type") == "layergroup") {
-
-      this.layers = _.map(this.options.layerView.layers, function(l, i) {
-
-        var m = new Model(l);
-
-        m.set('order', i);
-        m.set('type', 'layergroup');
-        m.set('visible', l.visible);
-        m.set('layer_name', l.options.layer_name);
-
-        layerView = this._createLayer('LayerViewFromLayerGroup', {
-          model: m,
-          layerView: this.options.layerView,
-          layerIndex: i
-        });
-
-        return layerView.model;
-
-      }, this);
-
-    } else if (this.options.layerView && (this.options.layerView.model.get("type") == "torque")) {
-
-      var layerView = this._createLayer('LayerView', { model: this.options.layerView.model });
-
-      this.layers.push(layerView.model);
-
-    }
+    _.each(this.map.layers.models, this._getLayer, this);
   },
 
   _getLayer: function(layer) {
+    if (layer.get("type") === 'layergroup' || layer.get("type") === 'namedmap') {
+      layer.layers.each(function(layer, i) {
 
-    if (layer.get("type") == 'layergroup' || layer.get('type') === 'namedmap') {
-
-      var layerGroupView = this.mapView.getLayerByCid(layer.cid);
-
-      for (var i = 0 ; i < layerGroupView.getLayerCount(); ++i) {
-
-        var l = layerGroupView.getLayer(i);
-        var m = new Model(l);
-
-        m.set('order', i);
-        m.set('type', 'layergroup');
-        m.set('visible', l.visible);
-        m.set('layer_name', l.options.layer_name);
-
-        layerView = this._createLayer('LayerViewFromLayerGroup', {
-          model: m,
-          layerView: layerGroupView,
-          layerIndex: i
-        });
-
-        this.layers.push(layerView.model);
-
-      }
-
+        // TODO: We could probably use layer.getName directly in the layer selector
+        // instead of having to set this up here for layers inside `layer_group` layers.
+        // We'd need to take `torque` layers into account to.
+        layer.set('layer_name', layer.getName());
+        this.layers.push(layer);
+      }, this);
     } else if (layer.get("type") === "CartoDB" || layer.get('type') === 'torque') {
-
       if (layer.get('type') === 'torque')  {
         layer.on("change:visible", this._toggleSlider, this);
       }
-
       this.layers.push(layer);
-
     }
-
   },
 
   _toggleSlider: function(m) {
-
     if (m.get("visible")) {
       this.$el.addClass("with-torque");
       this.slider.show();
@@ -382,7 +286,6 @@ var Mobile = View.extend({
       this.$el.removeClass("with-torque");
       this.slider.hide();
     }
-
   },
 
   _reInitScrollpane: function() {
@@ -390,7 +293,6 @@ var Mobile = View.extend({
   },
 
   _bindOrientationChange: function() {
-
     var self = this;
 
     var onOrientationChange = function() {
@@ -403,11 +305,9 @@ var Mobile = View.extend({
     } else {
       window.addEventListener('orientationchange', _.bind(onOrientationChange));
     }
-
   },
 
   _renderOverlays: function() {
-
     var hasSearchOverlay  = false;
     var hasZoomOverlay    = false;
     var hasLoaderOverlay  = false;
@@ -459,11 +359,9 @@ var Mobile = View.extend({
     if (!hasZoomOverlay    && zoom_visibility)   this._addZoom();
     if (!hasLoaderOverlay  && loader_visibility) this._addLoader();
     if (layer_selector_visibility || hasLayerSelector && layer_selector_visibility == undefined) this.hasLayerSelector = true;
-
   },
 
   _initScrollPane: function() {
-
     if (this.$scrollpane) return;
 
     var self = this;
@@ -475,11 +373,9 @@ var Mobile = View.extend({
       self.$scrollpane.css("max-height", height - 60);
       self.$scrollpane.jScrollPane({ showArrows: true });
     }, 500);
-
   },
 
   _addZoom: function() {
-
     var template = Template.compile('\
     <a href="#zoom_in" class="zoom_in">+</a>\
     <a href="#zoom_out" class="zoom_out">-</a>\
@@ -493,11 +389,9 @@ var Mobile = View.extend({
 
     this.$el.append(zoom.render().$el);
     this.$el.addClass("with-zoom");
-
   },
 
   _addLoader: function() {
-
     var template = Template.compile('<div class="loader"></div>', 'mustache');
 
     this.loader = new TilesLoader({
@@ -506,20 +400,16 @@ var Mobile = View.extend({
 
     this.$el.append(this.loader.render().$el);
     this.$el.addClass("with-loader");
-
   },
 
   _addFullscreen: function() {
-
     if (this.visibility_options.fullscreen != false) {
       this.hasFullscreen = true;
       this.$el.addClass("with-fullscreen");
     }
-
   },
 
   _addSearch: function() {
-
     this.hasSearch = true;
 
     var template = Template.compile('\
@@ -540,11 +430,9 @@ var Mobile = View.extend({
     this.$el.find(".aside").prepend(search.render().$el);
     this.$el.find(".cartodb-searchbox").show();
     this.$el.addClass("with-search");
-
   },
 
   _addHeader: function(overlay) {
-
     this.hasHeader = true;
 
     this.$header = this.$el.find(".cartodb-header");
@@ -582,13 +470,10 @@ var Mobile = View.extend({
         this.$el.addClass("with-header");
         this.$header.find(".content").append($hgroup);
       }
-
     }
-
   },
 
   _addAttributions: function() {
-
     var attributions = "";
 
     this.options.mapView.$el.find(".leaflet-control-attribution").hide(); // TODO: remove this from here
@@ -613,15 +498,13 @@ var Mobile = View.extend({
     if (attributions) {
       this.$el.find(".cartodb-attribution-button").fadeIn(250);
     }
-
   },
 
   _renderLayers: function() {
-
     var hasLegendOverlay = this.visibility_options.legends;
 
     var legends = this.layers.filter(function(layer) {
-      return layer.get("legend") && layer.get("legend").type !== "none"
+      return layer.get("legend") && layer.get("legend").type !== "none";
     });
 
     var hasLegends = legends.length ? true : false;
@@ -638,11 +521,9 @@ var Mobile = View.extend({
     if (!this.hasSearch) this.$el.find(".aside .layer-container").prepend("<h3></h3>");
 
     _.each(this.layers, this._renderLayer, this);
-
   },
 
   _renderLayer: function(data) {
-
     var hasLegend = data.get("legend") && data.get("legend").type !== "" && data.get("legend").type !== "none";
 
     // When the layer selector is disabled, don't show the layer if it doesn't have legends
@@ -669,11 +550,9 @@ var Mobile = View.extend({
     layer.bind("change_visibility", this._reInitScrollpane, this);
 
     this.model.set("layer_count", this.model.get("layer_count") + 1);
-
   },
 
   _renderTorque: function() {
-
     if (this.options.torqueLayer) {
 
       this.hasTorque = true;
@@ -697,13 +576,10 @@ var Mobile = View.extend({
       if (this.options.torqueLayer.hidden) this.slider.hide();
       else this.$el.addClass("with-torque");
     }
-
   },
 
   _renderSlidesController: function() {
-
     if (this.slides) {
-
       this.$el.addClass("with-slides");
 
       this.slidesController = new SlidesController({
@@ -714,13 +590,10 @@ var Mobile = View.extend({
       });
 
       this.$el.append(this.slidesController.render().$el);
-
     }
-
   },
 
   render: function() {
-
     this._bindOrientationChange();
 
     this.$el.html(this.template(this.options));
@@ -739,9 +612,7 @@ var Mobile = View.extend({
     this._renderTorque();
 
     return this;
-
   }
-
 });
 
 module.exports = Mobile;

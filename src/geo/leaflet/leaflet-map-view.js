@@ -7,11 +7,9 @@ var MapView = require('../map-view');
 var View = require('../../core/view');
 var LeafletTiledLayerView = require('./leaflet-tiled-layer-view');
 var LeafletWMSLayerView = require('./leaflet-wms-layer-view');
-var LeafletLayerCartoDBView = require('./leaflet-layer-cartodb-view');
 var LeafletPlainLayerView = require('./leaflet-plain-layer-view');
 var LeafletGmapsTiledLayerView = require('./leaflet-gmaps-tiled-layer-view');
 var LeafletCartoDBLayerGroupView = require('./leaflet-cartodb-layer-group-view');
-var LeafletCartoDBNamedMapView = require('./leaflet-cartodb-named-map-view');
 var LeafletPointView = require('./leaflet-point-view');
 var LeafletPathView = require('./leaflet-path-view');
 
@@ -41,12 +39,14 @@ var LeafletMapView = MapView.extend({
     if (!this.options.map_object) {
 
       this.map_leaflet = new L.Map(this.el, mapConfig);
-
       // remove the "powered by leaflet"
       this.map_leaflet.attributionControl.setPrefix('');
-
       if (this.map.get("scrollwheel") == false) this.map_leaflet.scrollWheelZoom.disable();
       if (this.map.get("keyboard") == false) this.map_leaflet.keyboard.disable();
+      if (this.map.get("drag") == false) {
+        this.map_leaflet.dragging.disable();
+        this.map_leaflet.doubleClickZoom.disable();
+      }
 
     } else {
 
@@ -349,15 +349,13 @@ var LeafletMapView = MapView.extend({
   layerTypeMap: {
     "tiled": LeafletTiledLayerView,
     "wms": LeafletWMSLayerView,
-    "cartodb": LeafletLayerCartoDBView,
-    "carto": LeafletLayerCartoDBView,
     "plain": LeafletPlainLayerView,
 
     // Substitutes the GMaps baselayer w/ an equivalent Leaflet tiled layer, since not supporting Gmaps anymore
     "gmapsbase": LeafletGmapsTiledLayerView,
 
     "layergroup": LeafletCartoDBLayerGroupView,
-    "namedmap": LeafletCartoDBNamedMapView,
+    "namedmap": LeafletCartoDBLayerGroupView,
     "torque": function(layer, map) {
       // TODO for now adding this error to be thrown if object is not present, since it's dependency
       // is not included in the standard bundle
@@ -375,8 +373,9 @@ var LeafletMapView = MapView.extend({
     if (layerClass) {
       try {
         layer_view = new layerClass(layer, map);
-      } catch(e) {
+      } catch (e) {
         log.error("MAP: error creating '" +  layer.get('type') + "' layer -> " + e.message);
+        throw e;
       }
     } else {
       log.error("MAP: " + layer.get('type') + " can't be created");

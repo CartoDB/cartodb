@@ -24,7 +24,9 @@ module.exports = WidgetContent.extend({
 
   initialize: function() {
     this.dataModel = this.options.dataModel;
+    this.firstData = _.clone(this.options.dataModel);
     this.viewModel = new Model();
+    this.lockedByUser = false;
     WidgetContent.prototype.initialize.call(this);
   },
 
@@ -55,30 +57,37 @@ module.exports = WidgetContent.extend({
     }
   },
 
+  _isZoomed: function() {
+    return this.viewModel.get('zoomed');
+  },
+
   _onChangeData: function() {
-
-    console.log('Locked by user: ' + this.lockedByUser);
-
     // if the action was initiated by the user
     // don't replace the stored data
     if (this.lockedByUser) {
       this.lockedByUser = false;
     } else {
-      console.log('Loading new data: ' + this.originalData);
-      //this.originalData = this.dataModel.getData();
-      this.chart.model.set({ data: this.dataModel.getData() });
-      this.chart.reset();
+      if (this._isZoomed()) {
+        this.zoomedData = this.dataModel.getData();
+      } else {
+        this.originalData = this.dataModel.getData();
+      }
+
+      this.chart.replaceData(this.dataModel.getData());
     }
 
     if (this.unsettingRange) {
-      console.log("Replacing data");
-      this.chart.model.set({ data: this.originalData });
-      this.chart.reset();
       this.unsettingRange = false;
+      this.chart.replaceData(this.originalData);
+      this.viewModel.set({ lo_index: null, hi_index: null });
     } else {
-      var data = this.dataModel.getData();
-      this.chart.replaceData(data);
+      if (this._isZoomed() && !this.lockZoomedData) {
+        this.lockZoomedData = true;
+        this.zoomedData = this.dataModel.getData();
+      }
     }
+
+    this._updateStats();
   },
 
   render: function() {
@@ -92,10 +101,6 @@ module.exports = WidgetContent.extend({
     var data = this.dataModel.getData();
     var isDataEmpty = _.isEmpty(data) || _.size(data) === 0;
 
-    window.viewModel = this.viewModel; // TODO: remove
-    window.dataModel = this.dataModel; // TODO: remove
-    window.filter    = this.filter;    // TODO: remove
-
     this.$el.html(
       template({
         title: this.dataModel.get('title'),
@@ -106,6 +111,7 @@ module.exports = WidgetContent.extend({
     if (isDataEmpty) {
       this._addPlaceholder();
     } else {
+      this.originalData = this.dataModel.getData();
       this._setupBindings();
       this._initViews();
     }
@@ -140,15 +146,10 @@ module.exports = WidgetContent.extend({
     this.chart.bind('hover', this._onValueHover, this);
     this.chart.render().show();
 
-    window.chart = this.chart; // TODO: remove
-
     this._updateStats();
   },
 
   _renderMiniChart: function() {
-    this.originalData = this.dataModel.getData();
-    window.originalData = this.originalData;
-
     this.miniChart = new WidgetHistogramChart(({
       className: 'mini',
       el: this.chart.$el, // TODO the mini-histogram should not depend on the chart histogram's DOM
@@ -162,7 +163,6 @@ module.exports = WidgetContent.extend({
 
     this.miniChart.bind('on_brush_end', this._onMiniRangeUpdated, this);
     this.miniChart.render().hide();
-    window.miniChart = this.miniChart; // TODO: remove
   },
 
   _setupBindings: function() {
@@ -184,9 +184,10 @@ module.exports = WidgetContent.extend({
 
   _onValueHover: function(info) {
     var $tooltip = this.$(".js-tooltip");
-    if (info.freq > 0) {
+    if (info && info.data) {
       $tooltip.css({ top: info.top, left: info.left });
-      $tooltip.text(info.freq);
+      $tooltip.text(info.data);
+      $tooltip.css({ left: info.left - $tooltip.width()/2 });
       $tooltip.fadeIn(70);
     } else {
       $tooltip.stop().hide();
@@ -194,35 +195,29 @@ module.exports = WidgetContent.extend({
   },
 
   _onMiniRangeUpdated: function(loBarIndex, hiBarIndex) {
-    this.lockedByUser = true;
-    this.viewModel.set({ lo_index: loBarIndex, hi_index: hiBarIndex });
+    this.lockedByUser = false;
 
     var data = this.originalData;
+
+    this.lockZoomedData = false;
 
     var start = data[loBarIndex].start;
     var end = data[hiBarIndex - 1].end;
 
-    //this.dataModel.set({ start: start, end: end });
-
-    this._setRange(data, start, end);
-
+    this._setRange(start, end);
     this._updateStats();
   },
 
-  _setRange: function(data, start, end) {
-      console.log(data,start,end)
+  _setRange: function(start, end) {
     this.filter.setRange({ min: start, max: end });
   },
 
   _onBrushEnd: function(loBarIndex, hiBarIndex) {
-    var data = this.dataModel.getData();
+    var data = this._getData();
 
-    this.lockedByUser = true;
-
-    var start = data[loBarIndex].start;
-    var end = data[hiBarIndex - 1].end;
-
-    //this.dataModel.set({ start: start, end: end });
+    if (this._isZoomed()) {
+      this.lockedByUser = true;
+    }
 
     var properties = { filter_enabled: true, lo_index: loBarIndex, hi_index: hiBarIndex };
 
@@ -232,19 +227,32 @@ module.exports = WidgetContent.extend({
 
     this.viewModel.set(properties);
 
-    this.chart.lock();
+    var start = data[loBarIndex].start;
+    var end = data[hiBarIndex - 1].end;
 
-    this._setRange(data, start, end);
+    this._setRange(start, end);
   },
 
   _onRangeUpdated: function(loBarIndex, hiBarIndex) {
+
+    var self = this;
     if (this.viewModel.get('zoomed')) {
       this.viewModel.set({ zoom_enabled: false, lo_index: loBarIndex, hi_index: hiBarIndex });
     } else {
       this.viewModel.set({ lo_index: loBarIndex, hi_index: hiBarIndex });
     }
 
-    this._updateStats();
+    var updateStats = _.debounce(function() { self._updateStats(); }, 400);
+    updateStats();
+  },
+
+  _getData: function() {
+    var data = this.dataModel.getData();
+
+    if (this._isZoomed()) {
+      data = this.zoomedData;
+    }
+    return data;
   },
 
   _onChangeFilterEnabled: function() {
@@ -256,19 +264,29 @@ module.exports = WidgetContent.extend({
   },
 
   _onChangeTotal: function() {
-    this._animateValue('.js-val', 'total', ' SELECTED');
+    //this._animateValue('.js-val', 'total', ' SELECTED');
+    this.$('.js-val').text(this.chart.formatNumber(this.viewModel.get('total')) + ' SELECTED');
   },
 
   _onChangeMax: function() {
-    this._animateValue('.js-max', 'max', 'MAX');
+    //this._animateValue('.js-max', 'max', 'MAX');
+    if (this.viewModel.get('max') === undefined) {
+      return '0 MAX';
+    }
+    this.$('.js-max').text(this.chart.formatNumber(this.viewModel.get('max')) + ' MAX');
   },
 
   _onChangeMin: function() {
-    this._animateValue('.js-min', 'min', 'MIN');
+    //this._animateValue('.js-min', 'min', 'MIN');
+    if (this.viewModel.get('min') === undefined) {
+      return '0 MIN';
+    }
+    this.$('.js-min').text(this.chart.formatNumber(this.viewModel.get('min')) + ' MIN');
   },
 
   _onChangeAvg: function() {
-    this._animateValue('.js-avg', 'avg', 'AVG');
+    this.$('.js-avg').text(this.chart.formatNumber(this.viewModel.get('avg')) + ' AVG');
+    //this._animateValue('.js-avg', 'avg', 'AVG');
   },
 
   _animateValue: function(className, what, unit) {
@@ -285,41 +303,42 @@ module.exports = WidgetContent.extend({
         if (i === isNaN) {
           i = 0;
         }
-        var v = Math.floor(i);
-        $(this).text(format(v) + ' ' + unit);
+        $(this).text(format(i) + ' ' + unit);
       }
     });
   },
 
-  _getData: function(full) {
-    var data = this.dataModel.getData();
+  _updateStats: function() {
+    var data = this._getData();
+    var min, max;
 
-    if (full || (!this.viewModel.get('lo_index') && !this.viewModel.get('hi_index'))) {
-      return data;
+    if (data && data.length) {
+      var loBarIndex = this.viewModel.get('lo_index') || 0;
+      var hiBarIndex = this.viewModel.get('hi_index') || data.length;
+
+      var sum = this._calcSum(data, loBarIndex, hiBarIndex);
+      var avg = this._calcAvg(data);
+
+      if (loBarIndex >= 0 && loBarIndex < data.length) {
+        min = data[loBarIndex].min;
+      }
+
+      if (hiBarIndex >= 0 && hiBarIndex - 1 < data.length) {
+        max = data[hiBarIndex - 1].max;
+      }
+
+      this.viewModel.set({ total: sum, min: min, max: max, avg: avg });
     }
-
-    return data.slice(this.viewModel.get('lo_index'), this.viewModel.get('hi_index'));
   },
 
-  _updateStats: function() {
-    var data = this.dataModel.getData();
+  _calcAvg: function(data) {
+    return Math.round(d3.mean(data, function(d) { return _.isEmpty(d) ? 0 : d.freq; }));
+  },
 
-    var loBarIndex = this.viewModel.get('lo_index') || 0;
-    var hiBarIndex = this.viewModel.get('hi_index') ?  this.viewModel.get('hi_index') - 1 : data.length - 1;
-
-    if (hiBarIndex + 1 > data.length) {
-      return;
-    }
-
-    var sum = _.reduce(data.slice(loBarIndex, hiBarIndex + 1), function(memo, d) {
-      return _.isEmpty(d) ? memo : d.freq + memo;
+  _calcSum: function(data, start, end) {
+    return _.reduce(data.slice(start, end), function(memo, d) {
+      return d.freq + memo;
     }, 0);
-
-    var avg = Math.round(d3.mean(data, function(d) { return _.isEmpty(d) ? 0 : d.freq; }));
-    var min = data && data.length && data[loBarIndex].min;
-    var max = data && data.length && data[hiBarIndex].max;
-
-    this.viewModel.set({ total: sum, min: min, max: max, avg: avg });
   },
 
   _onChangeZoomed: function() {
@@ -337,6 +356,7 @@ module.exports = WidgetContent.extend({
     this._showMiniRange();
 
     this.dataModel.set({ start: null, end: null, bins: null, own_filter: 1 });
+    this.dataModel._fetch();
     this.lockedByUser = false;
   },
 
@@ -346,13 +366,16 @@ module.exports = WidgetContent.extend({
   },
 
   _onZoomOut: function() {
+    this.lockedByUser = true;
+    this.lockZoomedData = false;
+    this.unsettingRange = true;
+
+    this.dataModel.set({ own_filter: null });
     this.viewModel.set({ zoom_enabled: false, filter_enabled: false, lo_index: null, hi_index: null });
+    this.filter.unsetRange();
 
     this.chart.contract(this.canvasHeight);
     this.chart.resetIndexes();
-
-    this.unsettingRange = true;
-    this.filter.unsetRange();
 
     this.miniChart.hide();
 
@@ -370,13 +393,12 @@ module.exports = WidgetContent.extend({
   },
 
   _clear: function() {
-    this.lockedByUser = true;
-
-    if (!this.viewModel.get('zoomed')) {
-      this.viewModel.trigger('change:zoomed');
-    } else {
-      this.viewModel.set({ zoomed: false, zoom_enabled: true });
-    }
+    //if (!this.viewModel.get('zoomed')) {
+      //this.viewModel.trigger('change:zoomed');
+    //} else {
+    this.viewModel.set({ zoomed: false, zoom_enabled: false });
+    this.viewModel.trigger('change:zoomed');
+    //}
   },
 
   clean: function() {

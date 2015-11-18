@@ -4,7 +4,7 @@ var cdb = window.cdb;
 var L = cdb.L;
 var _ = cdb._;
 var util = cdb.core.util;
-var LeafletLayerView = cdb.geo.LeafletLayerView;
+var LeafletLayerView = require('cdb/geo/leaflet/leaflet-layer-view');
 var CartoDBLogo = cdb.geo.common.CartoDBLogo;
 
 /**
@@ -73,7 +73,6 @@ var LeafletTorqueLayer = L.TorqueLayer.extend({
     this.bind('tilesLoading', function() {
       this.trigger('loading');
     }, this);
-
   },
 
   onAdd: function(map) {
@@ -110,9 +109,7 @@ var LeafletTorqueLayer = L.TorqueLayer.extend({
       this.provider.templateUrl = this.model.get('urls').tiles[0];
       this.provider._setReady(true);
       this._reloadTiles();
-
     }
-
   }
 });
 

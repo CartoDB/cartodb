@@ -25,6 +25,12 @@ var CartoDBLayerGroupNamed = require('cdb/geo/map/cartodb-layer-group-named');
 var CartoDBLayerGroupAnonymous = require('cdb/geo/map/cartodb-layer-group-anonymous');
 var TimeWidgetView = require('cdb/geo/ui/widgets/time/view');
 var Model = require('cdb/core/model');
+var WindshaftConfig = require('cdb/windshaft/config');
+var WindshaftClient = require('cdb/windshaft/client');
+var WindshaftDashboard = require('cdb/windshaft/dashboard');
+var WindshaftDashboardInstance = require('cdb/windshaft/dashboard_instance');
+var WindshaftPrivateDashboardConfig = require('cdb/windshaft/private_dashboard_config');
+var WindshaftPublicDashboardConfig = require('cdb/windshaft/public_dashboard_config');
 
 /**
  * visulization creation
@@ -263,6 +269,14 @@ var Vis = View.extend({
     var scrollwheel       = (options.scrollwheel === undefined)  ? data.scrollwheel : options.scrollwheel;
     var slides_controller = (options.slides_controller === undefined)  ? data.slides_controller : options.slides_controller;
 
+    // Do not allow pan map if zoom overlay and scrollwheel are disabled
+    // Check if zoom overlay is present.
+    var hasZoomOverlay = _.isObject(_.find(data.overlays, function(overlay) {
+      return overlay.type == "zoom"
+    }));
+
+    var allowDragging = hasZoomOverlay || scrollwheel;
+
     // map
     data.maxZoom || (data.maxZoom = 20);
     data.minZoom || (data.minZoom = 0);
@@ -300,6 +314,7 @@ var Vis = View.extend({
       minZoom: data.minZoom,
       legends: data.legends,
       scrollwheel: scrollwheel,
+      drag: allowDragging,
       provider: data.map_provider
     };
 
@@ -432,6 +447,9 @@ var Vis = View.extend({
       "list": {
         model: 'ListModel'
       },
+      "formula": {
+        model: 'FormulaModel'
+      },
       "histogram": {
         model: 'HistogramModel',
         filter: 'RangeFilter'
@@ -463,8 +481,7 @@ var Vis = View.extend({
           filterModel = new cdb.windshaft.filters[filterClass]({
             widgetId: widgetId,
             // TODO: check this thing
-            layerIndex: index,
-            layerId: widgetData.layerId
+            layerIndex: index
           });
         }
 
@@ -491,16 +508,16 @@ var Vis = View.extend({
     $('.js-dashboard-map-wrapper').append(timeWidgetView.render().el);
 
     // TODO: Perhaps this "endpoint" could be part of the "datasource"?
-    var endpoint = cdb.windshaft.config.MAPS_API_BASE_URL;
-    var configGenerator = cdb.windshaft.PublicDashboardConfig;
+    var endpoint = WindshaftConfig.MAPS_API_BASE_URL;
+    var configGenerator = WindshaftPublicDashboardConfig;
     var datasource = data.datasource;
     // TODO: We can use something else to differentiate types of "datasource"s
     if (datasource.template_name) {
-      endpoint = [cdb.windshaft.config.MAPS_API_BASE_URL, 'named', datasource.template_name].join('/');
-      configGenerator = cdb.windshaft.PrivateDashboardConfig;
+      endpoint = [WindshaftConfig.MAPS_API_BASE_URL, 'named', datasource.template_name].join('/');
+      configGenerator = WindshaftPrivateDashboardConfig;
     }
 
-    var windshaftClient = new cdb.windshaft.Client({
+    var windshaftClient = new WindshaftClient({
       endpoint: endpoint,
       windshaftURLTemplate: datasource.maps_api_template,
       userName: datasource.user_name,
@@ -508,7 +525,7 @@ var Vis = View.extend({
       forceCors: datasource.force_cors
     });
 
-    var dashboard = new cdb.windshaft.Dashboard({
+    var dashboard = new WindshaftDashboard({
       client: windshaftClient,
       configGenerator: configGenerator,
       statTag: datasource.stat_tag,
@@ -1212,7 +1229,18 @@ var Vis = View.extend({
 
     var mapView = this.mapView;
     var infowindow = null;
-    var layers = layerView.model && layerView.model.layers || [];
+    var layers = [];
+    // TODO: this should be managed at a different level so each layer knows if
+    // the infowindow needs to be added
+    if (layerView.model) {
+      if (layerView.model.layers) {
+        layers = layerView.model.layers;
+      } else {
+        if (layerView.model.getInfowindowData) {
+          layers = new Backbone.Collection([layerView.model]);
+        }
+      }
+    }
 
     for(var i = 0; i < layers.length; ++i) {
       var layerModel = layers.at(i);

@@ -125,28 +125,31 @@ module CartoDB
       end
 
       def normalize(temporary_filepath)
-        temporary_csv = ::CSV.open(temporary_filepath, 'w', col_sep: OUTPUT_DELIMITER)
-        File.open(filepath, 'rb', external_encoding: encoding)
-        .each_line(line_delimiter) { |line|
-          row = parsed_line(line)
-          next unless row
-          temporary_csv << multiple_column(row)
-        }
+
+        temporary_csv = CSV.open(temporary_filepath, 'w', col_sep: OUTPUT_DELIMITER, encoding: 'UTF-8')
+
+        nonblank_ignored_lines = 0
+
+        CSV.open(filepath, "rb:#{encoding}", col_sep: @delimiter) do |input|
+          loop do
+            begin
+              row = input.shift
+              break unless row
+            rescue CSV::MalformedCSVError
+              nonblank_ignored_lines += 1 unless row.to_s.strip.empty?
+              next
+            end
+            temporary_csv << multiple_column(row)
+          end
+        end
+
+        # TODO: let the user know if nonblank_ignored_lines > 0
 
         temporary_csv.close
 
         @delimiter = OUTPUT_DELIMITER
       rescue ArgumentError, Encoding::UndefinedConversionError, Encoding::InvalidByteSequenceError => e
         raise EncodingDetectionError
-      end
-
-      def   parsed_line(line)
-        ::CSV.parse_line(line.chomp.encode('UTF-8',
-                         :fallback => {
-                             REVERSE_LINE_FEED.force_encoding("Windows-1252") => ""
-                         }), csv_options)
-      rescue => e
-        nil
       end
 
       def temporary_filepath(filename_prefix = '')
@@ -158,15 +161,6 @@ module CartoDB
           col_sep:            delimiter,
           quote_char:         DEFAULT_QUOTE
         }
-      end
-
-      def line_delimiter
-        windows_eol? ? "\r" : $/
-      end
-
-      def windows_eol?
-        return false if first_line =~ /\n/
-        !!(first_line =~ %r{\r})
       end
 
       def needs_normalization?
@@ -272,4 +266,3 @@ module CartoDB
     end
   end
 end
-

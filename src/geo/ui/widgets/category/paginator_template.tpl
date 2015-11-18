@@ -3,7 +3,9 @@
     <i class="CDBIcon CDBIcon-Lens"></i>
   </button>
   <p class="Widget-textSmaller Widget-textSmaller--bold Widget-textSmall--upper">
-    <%- categoriesCount > 12 ? (categoriesCount - 11) : categoriesCount  %> categor<%- categoriesCount !== 1 ? "ies" : "y" %> <%- categoriesCount > 12 ? "more" : "" %>
+    <% if (!isLocked) { %>
+      <%- categoriesCount > 12 ? (categoriesCount - 11) : categoriesCount  %> categor<%- categoriesCount !== 1 ? "ies" : "y" %> <%- categoriesCount > 12 ? "more" : "" %>
+    <% } %>
   </p>
 </div>
 <div class="Widget-navDots js-dots">

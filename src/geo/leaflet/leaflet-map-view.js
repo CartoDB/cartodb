@@ -366,7 +366,6 @@ var LeafletMapView = MapView.extend({
     }
   },
 
-  // TODO: This could be moved to the base class
   createLayer: function(layer, map) {
     var layer_view = null;
     var layerClass = this.layerTypeMap[layer.get('type').toLowerCase()];

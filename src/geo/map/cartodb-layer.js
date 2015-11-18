@@ -5,26 +5,9 @@ var MapLayer = require('./map-layer');
 
 var CartoDBLayer = MapLayer.extend({
 
-  // TODO: Cleanup this!
   defaults: {
     attribution: config.get('cartodb_attributions'),
     type: 'CartoDB',
-    active: true,
-    query: null,
-    opacity: 0.99,
-    interactivity: null,
-    interaction: true,
-    debug: false,
-    tiler_domain: "cartodb.com",
-    tiler_port: "80",
-    tiler_protocol: "http",
-    sql_api_domain: "cartodb.com",
-    sql_api_port: "80",
-    sql_api_protocol: "http",
-    extra_params: {},
-    cdn_url: null,
-    maxZoom: 28,
-    cartocss_version: '2.1.0',
     visible: true
   },
 
@@ -47,9 +30,7 @@ var CartoDBLayer = MapLayer.extend({
     this.set({active: false, opacity: 0, visible: false});
   },
 
-  /**
-   * refresh the layer
-   */
+  // TODO: This is probably not used anymore
   invalidate: function() {
     var e = this.get('extra_params') || e;
     e.cache_buster = new Date().getTime();

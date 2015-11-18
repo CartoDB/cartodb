@@ -148,7 +148,6 @@ var GoogleMapsMapView = MapView.extend({
     this.map_googlemaps.setCenter(c);
   },
 
-  // TODO: This could be moved to the base class
   createLayer: function(layer) {
     var layer_view,
     layerClass = this.layerTypeMap[layer.get('type').toLowerCase()];

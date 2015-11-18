@@ -38,7 +38,7 @@ WindshaftDashboard.prototype._createInstance = function(options) {
     .flatten()
     .value();
 
-  var filters = new cdb.windshaft.filters.Collection(filtersFromVisibleLayers);
+  var filters = new WindshaftFiltersCollection(filtersFromVisibleLayers);
 
   this.client.instantiateMap({
     mapDefinition: dashboardConfig,

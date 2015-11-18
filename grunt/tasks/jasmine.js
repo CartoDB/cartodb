@@ -21,7 +21,9 @@ module.exports = {
     return {
 
       'src': {
-        src: [], // actual src files are require'd in the *.spec.js files
+        src: [
+          'dist/cartodb.uncompressed.js',
+        ],
         options: _.defaults({
           outfile: 'test/SpecRunner-src.html',
           specs: '<%= config.tmp %>/src-specs.js',

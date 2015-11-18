@@ -3,7 +3,7 @@ require('jquery-ui/slider'); // registers itself to $
 // Depends on cdb to be loaded
 var cdb = window.cdb;
 var _ = cdb._;
-var InfoBox = cdb.geo.ui.InfoBox;
+var InfoBox = require('cdb/geo/ui/infobox');
 
 var TimeSlider = InfoBox.extend({
 

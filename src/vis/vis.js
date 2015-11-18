@@ -25,6 +25,12 @@ var CartoDBLayerGroupNamed = require('cdb/geo/map/cartodb-layer-group-named');
 var CartoDBLayerGroupAnonymous = require('cdb/geo/map/cartodb-layer-group-anonymous');
 var TimeWidgetView = require('cdb/geo/ui/widgets/time/view');
 var Model = require('cdb/core/model');
+var WindshaftConfig = require('cdb/windshaft/config');
+var WindshaftClient = require('cdb/windshaft/client');
+var WindshaftDashboard = require('cdb/windshaft/dashboard');
+var WindshaftDashboardInstance = require('cdb/windshaft/dashboard_instance');
+var WindshaftPrivateDashboardConfig = require('cdb/windshaft/private_dashboard_config');
+var WindshaftPublicDashboardConfig = require('cdb/windshaft/public_dashboard_config');
 
 /**
  * visulization creation
@@ -475,8 +481,7 @@ var Vis = View.extend({
           filterModel = new cdb.windshaft.filters[filterClass]({
             widgetId: widgetId,
             // TODO: check this thing
-            layerIndex: index,
-            layerId: widgetData.layerId
+            layerIndex: index
           });
         }
 
@@ -503,16 +508,16 @@ var Vis = View.extend({
     $('.js-dashboard-map-wrapper').append(timeWidgetView.render().el);
 
     // TODO: Perhaps this "endpoint" could be part of the "datasource"?
-    var endpoint = cdb.windshaft.config.MAPS_API_BASE_URL;
-    var configGenerator = cdb.windshaft.PublicDashboardConfig;
+    var endpoint = WindshaftConfig.MAPS_API_BASE_URL;
+    var configGenerator = WindshaftPublicDashboardConfig;
     var datasource = data.datasource;
     // TODO: We can use something else to differentiate types of "datasource"s
     if (datasource.template_name) {
-      endpoint = [cdb.windshaft.config.MAPS_API_BASE_URL, 'named', datasource.template_name].join('/');
-      configGenerator = cdb.windshaft.PrivateDashboardConfig;
+      endpoint = [WindshaftConfig.MAPS_API_BASE_URL, 'named', datasource.template_name].join('/');
+      configGenerator = WindshaftPrivateDashboardConfig;
     }
 
-    var windshaftClient = new cdb.windshaft.Client({
+    var windshaftClient = new WindshaftClient({
       endpoint: endpoint,
       windshaftURLTemplate: datasource.maps_api_template,
       userName: datasource.user_name,
@@ -520,7 +525,7 @@ var Vis = View.extend({
       forceCors: datasource.force_cors
     });
 
-    var dashboard = new cdb.windshaft.Dashboard({
+    var dashboard = new WindshaftDashboard({
       client: windshaftClient,
       configGenerator: configGenerator,
       statTag: datasource.stat_tag,

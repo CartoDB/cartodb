@@ -4,8 +4,13 @@
 @import '../variables/sizes';
 @import '../variables/mixins';
 
-$size: 8px;
+.Widget-textInput {
+  border: none;
+  outline: none;
+  font-size: $sFontSize-larger;
+}
 
+$size: 8px;
 .Widget-checkbox {
   display: inline;
   width: $size;

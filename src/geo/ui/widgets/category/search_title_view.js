@@ -45,6 +45,9 @@ module.exports = View.extend({
     var isSearchEnabled = this.model.isSearchEnabled();
     this[isSearchEnabled ? '_bindESC' : '_unbindESC']();
     this.render();
+    if (isSearchEnabled) {
+      this._focusOnInput();
+    }
   },
 
   _onSubmitForm: function(ev) {
@@ -56,6 +59,13 @@ module.exports = View.extend({
     } else {
       this.model.toggleSearch();
     }
+  },
+
+  _focusOnInput: function() {
+    var self = this;
+    setTimeout(function() {
+      self.$('.js-textInput').focus();
+    },0);
   },
 
   _bindESC: function() {

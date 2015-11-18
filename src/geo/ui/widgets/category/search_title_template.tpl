@@ -1,7 +1,10 @@
 <% if (isSearchEnabled) { %>
-  <form class=" js-form">
-    <input type="text" class=" js-textInput" placeholder="Search by column"/>
-    <button type="button" class=" js-close">x</button>
+  <form class="Widget-form js-form">
+    <i class="CDBIcon CDBIcon-Lens"></i>
+    <input type="text" class="Widget-textInput js-textInput" placeholder="Search by name"/>
+    <button type="button" class=" js-close">
+      <i class="CDBIcon CDBIcon-X"></i>
+    </button>
   </form>
 <% } else { %>
   <div class="Widget-title Widget-contentSpaced">

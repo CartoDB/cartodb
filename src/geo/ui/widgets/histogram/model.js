@@ -34,9 +34,7 @@ module.exports = WidgetModel.extend({
     this._data = new Backbone.Collection(this.get('data'));
 
     // BBox should only be included until after the first fetch, since we want to get the range of the full dataset
-    this.once('change:data', function() {
-      this.set({ submitBBox: true });
-    });
+    this.once('change:data', this.model.set.bind(this.model, 'submitBBox', true));
 
     WidgetModel.prototype.initialize.call(this, attrs, opts);
   },

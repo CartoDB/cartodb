@@ -1,6 +1,6 @@
 // cartodb.js version: 3.15.8
 // uncompressed version: cartodb.uncompressed.js
-// sha: 586d5ad17fb657fe1a4b693c95079469b14576eb
+// sha: 92177cf6f6c31baf83a4f9846aa6cc465adaf86f
 (function() {
   var define;  // Undefine define (require.js), see https://github.com/CartoDB/cartodb.js/issues/543
   var root = this;
@@ -27276,6 +27276,7 @@ cdb.geo.Map = cdb.core.Model.extend({
     minZoom: 0,
     maxZoom: 40,
     scrollwheel: true,
+    drag: true,
     keyboard: true,
     provider: 'leaflet'
   },
@@ -35512,8 +35513,15 @@ cdb.geo.leaflet.PathView = PathView;
         // remove the "powered by leaflet"
         this.map_leaflet.attributionControl.setPrefix('');
 
+        // Disable scrollwheel
         if (this.map.get("scrollwheel") == false) this.map_leaflet.scrollWheelZoom.disable();
+        // Disable keyboard
         if (this.map.get("keyboard") == false) this.map_leaflet.keyboard.disable();
+        // Disable dragging (also doubleClickZoom)
+        if (this.map.get("drag") == false) {
+          this.map_leaflet.dragging.disable();
+          this.map_leaflet.doubleClickZoom.disable();
+        }
 
       } else {
 
@@ -37030,7 +37038,11 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
           minZoom: this.map.get('minZoom'),
           maxZoom: this.map.get('maxZoom'),
           disableDefaultUI: true,
+          // Set scrollwheel options
           scrollwheel: this.map.get("scrollwheel"),
+          // Allow dragging (and double click zoom)
+          draggable: this.map.get("drag"),
+          disableDoubleClickZoom: this.map.get("drag"),
           mapTypeControl:false,
           mapTypeId: google.maps.MapTypeId.ROADMAP,
           backgroundColor: 'white',
@@ -38683,6 +38695,14 @@ var Vis = cdb.core.View.extend({
     var scrollwheel       = (options.scrollwheel === undefined)  ? data.scrollwheel : options.scrollwheel;
     var slides_controller = (options.slides_controller === undefined)  ? data.slides_controller : options.slides_controller;
 
+    // Do not allow pan map if zoom overlay and scrollwheel are disabled
+    // Check if zoom overlay is present.
+    var hasZoomOverlay = _.isObject(_.find(data.overlays, function(overlay) {
+      return overlay.type == "zoom"
+    }));
+
+    var allowDragging = hasZoomOverlay || scrollwheel;
+
     // map
     data.maxZoom || (data.maxZoom = 20);
     data.minZoom || (data.minZoom = 0);
@@ -38719,6 +38739,7 @@ var Vis = cdb.core.View.extend({
       minZoom: data.minZoom,
       legends: data.legends,
       scrollwheel: scrollwheel,
+      drag: allowDragging,
       provider: data.map_provider
     };
 

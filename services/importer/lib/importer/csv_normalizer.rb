@@ -260,6 +260,10 @@ module CartoDB
       end
 
       def remove_quoted_strings(input)
+        # Note that CSV quoted strings can use double quotes, `""`
+        # as a way of escaping a single quote `"`
+        # Since we're just removing all quoted strings, this simple
+        # approach works in that case too.
         input.gsub(/"[^\\"]*"/, '')
       end
 

@@ -30,7 +30,7 @@ var LayerSelector = View.extend({
 
     this.mapView  = this.options.mapView;
     this.mapView.bind('click zoomstart drag', function() {
-      this.dropdown && this.dropdown.hide()
+      this.dropdown && this.dropdown.hide();
     }, this);
     this.add_related_model(this.mapView);
 
@@ -74,7 +74,8 @@ var LayerSelector = View.extend({
 
       if (layer.get("type") == 'layergroup' || layer.get('type') === 'namedmap') {
         layer.layers.each(function(layerModel, index){
-          var layerName = layerModel.get('layer_name');
+
+          var layerName = layerModel.getName();
           if(self.options.layer_names) {
             layerName = self.options.layer_names[index];
           }
@@ -98,7 +99,7 @@ var LayerSelector = View.extend({
           layerView.bind('switchChanged', self._setCount, self);
           self.layers.push(layerView);
         })
-      } else if (layer.get("type") === "CartoDB" || layer.get('type') === 'torque') {
+      } else if (layer.get('type') === 'torque') {
         var layerView = self._createLayerView(layer);
         layerView.bind('switchChanged', self._setCount, self);
         self.layers.push(layerView);

@@ -3,7 +3,6 @@ var wax = require('wax.cartodb.js');
 var CartoDBDefaultOptions = require('./cartodb-default-options');
 var Projector = require('./projector');
 var CartoDBLayerGroupBase = require('./cartodb-layer-group-base');
-var LayerDefinition = require('../layer-definition/layer-definition');
 var CartoDBLayerCommon = require('../cartodb-layer-common');
 var CartoDBLogo = require('../cartodb-logo');
 
@@ -13,15 +12,6 @@ var CartoDBLayerGroupGMaps = function(opts) {
   this.tiles = 0;
   this.tilejson = null;
   this.interaction = [];
-
-  if (!opts.layer_definition && !opts.sublayers) {
-      throw new Error('cartodb-leaflet needs at least the layer_definition or sublayer list');
-  }
-
-  // if only sublayers is available, generate layer_definition from it
-  if(!opts.layer_definition) {
-    opts.layer_definition = LayerDefinition.layerDefFromSubLayers(opts.sublayers);
-  }
 
   // Add CartoDB logo
   if (this.options.cartodb_logo != false)
@@ -33,15 +23,13 @@ var CartoDBLayerGroupGMaps = function(opts) {
   // TODO: remove wax.connector here
    _.extend(this.options, opts);
   this.projector = new Projector(opts.map);
-  LayerDefinition.call(this, opts.layer_definition, this.options);
   CartoDBLayerCommon.call(this);
-  // precache
-  this.update();
+  CartoDBLayerGroupBase.call(this);
 };
 
 CartoDBLayerGroupGMaps.Projector = Projector;
 CartoDBLayerGroupGMaps.prototype = new wax.g.connector();
-_.extend(CartoDBLayerGroupGMaps.prototype, LayerDefinition.prototype, CartoDBLayerGroupBase.prototype, CartoDBLayerCommon.prototype);
+_.extend(CartoDBLayerGroupGMaps.prototype, CartoDBLayerGroupBase.prototype, CartoDBLayerCommon.prototype);
 CartoDBLayerGroupGMaps.prototype.interactionClass = wax.g.interaction;
 
 module.exports = CartoDBLayerGroupGMaps;

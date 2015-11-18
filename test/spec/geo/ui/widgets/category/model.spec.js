@@ -1,7 +1,6 @@
 var _ = require('underscore');
 var CategoryModel = require('cdb/geo/ui/widgets/category/model.js');
 var WindshaftFiltersCategory = require('cdb/windshaft/filters/category');
-var Backbone = require('Backbone');
 
 describe('widgets/category/model', function() {
 
@@ -16,7 +15,21 @@ describe('widgets/category/model', function() {
   });
 
   describe('parseData', function() {
-    
+
+    xit('should provide data and stats as an object', function() {
+      var r = this.model._parseData();
+      expect(r.max).toBeDefined();
+      expect(r.min).toBeDefined();
+      expect(r.avg).toBeDefined();
+      expect(r.data).toBeDefined();
+      expect(r.data.length).toBe(0);
+    });
+
+    it('should provide data and stats as an object', function() {
+      var r = this.model._parseData(_generateData(2));
+      expect(r.data.length).toBe(2);
+    });
+
   });
 
   describe('dataOrigin', function() {
@@ -45,3 +58,12 @@ describe('widgets/category/model', function() {
   })
 
 });
+
+function _generateData(n) {
+  return _.times(n, function(i) {
+    return {
+      category: i,
+      value: 2
+    }
+  });
+}

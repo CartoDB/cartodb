@@ -11,7 +11,8 @@ var CartoDBLayerGroupBase = MapLayer.extend({
   },
 
   initialize: function(attributes, options) {
-    this.layers = new Backbone.Collection(options.layers);
+    options = options || {};
+    this.layers = new Backbone.Collection(options.layers || {});
   },
 
   isEqual: function() {

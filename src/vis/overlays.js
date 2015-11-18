@@ -17,7 +17,6 @@ var TilesLoader = require('../geo/ui/tiles-loader');
 var Tooltip = require('../geo/ui/tooltip');
 var Zoom = require('../geo/ui/zoom');
 var FullScreen = require('../ui/common/fullscreen');
-var Image = require('./image');
 
 Overlay.register('logo', function(data, vis) {
 
@@ -72,27 +71,6 @@ Overlay.register('mobile', function(data, vis) {
   });
 
   return mobile.render();
-});
-
-Overlay.register('image', function(data, vis) {
-
-  var options = data.options;
-
-  var template = Template.compile(
-    data.template || '\
-    <div class="content">\
-    <div class="text widget_text">{{{ content }}}</div>\
-    </div>',
-    data.templateType || 'mustache'
-  );
-
-  var widget = new Image({
-    model: new Model(options),
-    template: template
-  });
-
-  return widget.render();
-
 });
 
 Overlay.register('text', function(data, vis) {
@@ -302,7 +280,8 @@ Overlay.register('infowindow', function(data, vis) {
     template_type: data.templateType,
     alternative_names: data.alternative_names,
     fields: data.fields,
-    template_name: data.template_name
+    template_name: data.template_name,
+    template_type: data.template_type
   });
 
   var infowindow = new Infowindow({

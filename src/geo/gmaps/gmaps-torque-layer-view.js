@@ -3,7 +3,8 @@ var torque = require('torque.js');
 var cdb = window.cdb;
 var _ = cdb._;
 var Backbone = cdb.Backbone;
-var GMapsLayerView = cdb.geo.GMapsLayerView;
+
+var GMapsLayerView = require('cdb/geo/gmaps/gmaps-layer-view');
 var CartoDBLogo = cdb.geo.common.CartoDBLogo;
 
 var GMapsTorqueLayerView = function(layerModel, gmapsMap) {

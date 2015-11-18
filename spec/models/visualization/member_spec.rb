@@ -30,7 +30,6 @@ describe Visualization::Member do
     @user_mock.stubs(:username).returns(user_name)
     @user_mock.stubs(:api_key).returns(user_apikey)
     @user_mock.stubs(:has_feature_flag?)
-      .with(Carto::VisualizationsExportService::FEATURE_FLAG_NAME)
       .returns(false)
     CartoDB::Visualization::Relator.any_instance.stubs(:user).returns(@user_mock)
 

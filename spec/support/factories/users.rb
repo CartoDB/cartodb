@@ -110,6 +110,16 @@ module CartoDB
       user
     end
 
+    def create_mocked_user(user_id = UUIDTools::UUID.timestamp_create.to_s, user_name = 'whatever', user_apikey = '123')
+      user_mock = mock
+      user_mock.stubs(:id).returns(user_id)
+      user_mock.stubs(:username).returns(user_name)
+      user_mock.stubs(:api_key).returns(user_apikey)
+      user_mock.stubs(:invalidate_varnish_cache).returns(nil)
+      user_mock.stubs(:has_feature_flag?).returns(false)
+      user_mock
+    end
+
     def reload_user_data(user)
       delete_user_data user
       create_import(@user, "#{Rails.root}/db/fake_data/import_csv_1.csv")

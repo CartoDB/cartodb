@@ -22,7 +22,11 @@ module CartoDB
         create_search_overlay(@visualization, 3)
         create_zoom_overlay(@visualization, 6)
         create_loader_overlay(@visualization, 8)
-        create_logo_overlay(@visualization, 9)
+
+        # nil check added to support feature flag check (see #6108) without breaking backguards compatibility
+        if @visualization.user.nil? || !@visualization.user.has_feature_flag?('disabled_cartodb_logo')
+          create_logo_overlay(@visualization, 9)
+        end
       end
 
       def get_overlay_by_type(t)

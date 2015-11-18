@@ -35,6 +35,7 @@ module.exports = View.extend({
     var template = this._TEMPLATE;
     this.$el.html(
       template({
+        isLocked: this.dataModel.isLocked(),
         isSearchEnabled: this.viewModel.isSearchEnabled(),
         currentPage: this.model.get('page'),
         categoriesCount: categoriesCount || '-',

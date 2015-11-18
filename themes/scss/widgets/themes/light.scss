@@ -3,22 +3,22 @@
 
 @import '../../variables/mixins';
 
-.Widget--light {
-  $primary: rgba(#2E3C43, 1);
-  $secondary: rgba(#636D72, 1);
-  $disabled: rgba(#CBCED0, 1);
-  $elementBkg: rgba(#EEE, 1);
-  $elementBkgHover: rgba(#AAA, 1);
-  $elementBorder: rgba(#EEE, 1);
-  $link: rgba(#3AA9E3, 1);
-  $linkHover: rgba(#227DBD, 1);
-  $highlighted: rgba(#9DE0AD, 1);
-  $positive: rgba(#8FB83F, 1);
-  $negative: rgba(#F15743, 1);
-  $loadingBkg: rgba(#F9F9F9, 1);
-  $canvasBkg: rgba(#F2F6F9, 1);
-  $commonBkg: rgba(#FFF, 1);
+$primary: rgba(#2E3C43, 1);
+$secondary: rgba(#636D72, 1);
+$disabled: rgba(#CBCED0, 1);
+$elementBkg: rgba(#EEE, 1);
+$elementBkgHover: rgba(#AAA, 1);
+$elementBorder: rgba(#EEE, 1);
+$link: rgba(#3AA9E3, 1);
+$linkHover: rgba(#227DBD, 1);
+$highlighted: rgba(#9DE0AD, 1);
+$positive: rgba(#8FB83F, 1);
+$negative: rgba(#F15743, 1);
+$loadingBkg: rgba(#F9F9F9, 1);
+$canvasBkg: rgba(#F2F6F9, 1);
+$commonBkg: rgba(#FFF, 1);
 
+.Widget--light {
   border-color: $canvasBkg;
   background: $commonBkg;
 
@@ -58,17 +58,19 @@
     background: $elementBkg;
   }
   .Widget-progressState {
-    background: $highlighted;
+    background-color: $highlighted;
   }
   .Widget-progressState--positive {
-    background: $positive;
+    background-color: $positive;
   }
   .Widget-progressState--negative {
-    background: $negative;
+    background-color: $negative;
+  }
+  .Widget-progressState--inactive {
+    background-color: $elementBkg;
   }
   .Widget-progressState--pattern {
-    background-color: $elementBkg;
-    background-image: repeating-linear-gradient(45deg, $elementBkg 0, rgba($secondary, 0.7) 1px, $elementBkg 2px, $elementBkg 3px);
+    background-image: repeating-linear-gradient(45deg, transparent 0, rgba($secondary, 0.7) 1px, transparent 2px, transparent 3px);
   }
 
   .Widget-dot {
@@ -187,11 +189,11 @@
       color: $disabled;
     }
     .Widget-progressState {
-      background: $disabled !important; // Preventing problems with inline colors
+      background-color: $disabled !important; // Preventing problems with inline colors
     }
     .Widget-progressState--pattern {
-      background-color: rgba($secondary, 0.1) !important;
-      background-image: repeating-linear-gradient(45deg, $elementBkg 0, rgba($secondary, 0.2) 1px, $elementBkg 1px, $elementBkg 2px);
+      background-color: rgba($disabled, 0.3) !important;
+      background-image: repeating-linear-gradient(45deg, transparent 0, rgba($secondary, 0.3) 1px, transparent 1px, transparent 2px) !important;
     }
   }
 }

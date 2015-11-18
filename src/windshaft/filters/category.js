@@ -104,6 +104,14 @@ module.exports = WindshaftFilterBase.extend({
     this.applyFilter();
   },
 
+  cleanFilter: function(triggerChange) {
+    this.acceptedCategories.reset();
+    this.rejectedCategories.reset();
+    if (triggerChange !== false) {
+      this.applyFilter();
+    }
+  },
+
   applyFilter: function() {
     this.trigger('change', this);
   },

@@ -5,10 +5,10 @@
     <desc>Created with Sketch.</desc>
     <defs></defs>
     <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
-        <g id="icons" sketch:type="MSArtboardGroup" transform="translate(-1000.000000, 0.000000)" stroke="#000000" stroke-width="20.8333333" stroke-linecap="round" stroke-linejoin="round">
-            <g id="icon-font_03_X" sketch:type="MSLayerGroup" transform="translate(1010.000000, 10.000000)">
-                <path d="M0.416666667,0.416666667 L479.583333,479.583333" id="Stroke-772" sketch:type="MSShapeGroup"></path>
-                <path d="M479.583333,0.416666667 L0.416666667,479.583333" id="Stroke-773" sketch:type="MSShapeGroup"></path>
+        <g id="icons" sketch:type="MSArtboardGroup" transform="translate(-1000.000000, 0.000000)" fill="#000000">
+            <g id="icon-font_03_X" sketch:type="MSLayerGroup" transform="translate(1000.000000, 0.000000)">
+                <path d="M3.05097103,17.7823623 L482.217638,496.949029 C486.285599,501.01699 492.881068,501.01699 496.949029,496.949029 C501.01699,492.881068 501.01699,486.285599 496.949029,482.217638 L17.7823623,3.05097103 C13.7144009,-1.01699034 7.1189324,-1.01699034 3.05097103,3.05097103 C-1.01699034,7.1189324 -1.01699034,13.7144009 3.05097103,17.7823623 L3.05097103,17.7823623 Z" id="Shape" sketch:type="MSShapeGroup"></path>
+                <path d="M482.217638,3.05097103 L3.05097103,482.217638 C-1.01699034,486.285599 -1.01699034,492.881068 3.05097103,496.949029 C7.1189324,501.01699 13.7144009,501.01699 17.7823623,496.949029 L496.949029,17.7823623 C501.01699,13.7144009 501.01699,7.1189324 496.949029,3.05097103 C492.881068,-1.01699034 486.285599,-1.01699034 482.217638,3.05097103 L482.217638,3.05097103 Z" id="Shape" sketch:type="MSShapeGroup"></path>
             </g>
         </g>
     </g>

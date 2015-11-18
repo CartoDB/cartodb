@@ -125,8 +125,8 @@ module.exports = WidgetContent.extend({
 
   _onWindowResize: function() {
     this._setupDimensions();
-    this.chart.resize(this.canvasWidth);
-    this.miniChart.resize(this.canvasWidth);
+    if (this.chart) this.chart.resize(this.canvasWidth);
+    if (this.miniChart) this.miniChart.resize(this.canvasWidth);
   },
 
   _renderMainChart: function() {

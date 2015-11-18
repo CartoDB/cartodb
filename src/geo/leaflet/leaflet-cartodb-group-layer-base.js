@@ -4,7 +4,6 @@ var config = require('cdb.config');
 var Profiler = require('cdb.core.Profiler');
 var LeafletLayerView = require('./leaflet-layer-view');
 var CartoDBLayerCommon = require('../cartodb-layer-common');
-var LayerDefinition = require('../layer-definition/layer-definition');
 var CartoDBLogo = require('../cartodb-logo');
 
 var LeafletCartoDBGroupLayerBase = L.TileLayer.extend({
@@ -13,7 +12,6 @@ var LeafletCartoDBGroupLayerBase = L.TileLayer.extend({
 
   includes: [
     LeafletLayerView.prototype,
-    // LayerDefinition.prototype,
     CartoDBLayerCommon.prototype
   ],
 
@@ -37,7 +35,7 @@ var LeafletCartoDBGroupLayerBase = L.TileLayer.extend({
   },
 
 
-  initialize: function (options) {
+  initialize: function (options, layerModel, leafletMap) {
     options = options || {};
     // Set options
     L.Util.setOptions(this, options);
@@ -48,6 +46,7 @@ var LeafletCartoDBGroupLayerBase = L.TileLayer.extend({
     L.TileLayer.prototype.initialize.call(this);
     this.interaction = [];
     this.addProfiling();
+    LeafletLayerView.call(this, layerModel, this, leafletMap);
   },
 
   addProfiling: function() {
@@ -167,7 +166,7 @@ var LeafletCartoDBGroupLayerBase = L.TileLayer.extend({
       self.ok && self.ok();
       done && done();
     } else {
-      self.error && self.error(err);
+      self.error && self.error('URLs have not been fetched yet');
       done && done();
     }
   },
@@ -296,6 +295,9 @@ var LeafletCartoDBGroupLayerBase = L.TileLayer.extend({
    */
   _newPoint: function(x, y) {
     return new L.Point(x, y);
+  },
+
+  _modelUpdated: function() {
   }
 });
 

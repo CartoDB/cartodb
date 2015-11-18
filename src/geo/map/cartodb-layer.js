@@ -8,22 +8,7 @@ var CartoDBLayer = MapLayer.extend({
   defaults: {
     attribution: config.get('cartodb_attributions'),
     type: 'CartoDB',
-    active: true,
-    query: null,
-    opacity: 0.99,
-    interactivity: null,
-    interaction: true,
-    debug: false,
-    tiler_domain: "cartodb.com",
-    tiler_port: "80",
-    tiler_protocol: "http",
-    sql_api_domain: "cartodb.com",
-    sql_api_port: "80",
-    sql_api_protocol: "http",
-    extra_params: {},
-    cdn_url: null,
-    maxZoom: 28,
-    cartocss_version: '2.1.0'
+    visible: true
   },
 
   initialize: function() {
@@ -45,9 +30,7 @@ var CartoDBLayer = MapLayer.extend({
     this.set({active: false, opacity: 0, visible: false});
   },
 
-  /**
-   * refresh the layer
-   */
+  // TODO: This is probably not used anymore
   invalidate: function() {
     var e = this.get('extra_params') || e;
     e.cache_buster = new Date().getTime();
@@ -125,6 +108,12 @@ var CartoDBLayer = MapLayer.extend({
     return this.widgets.map(function(widget) {
       return widget.getFilter();
     });
+  },
+
+  // Layers inside a "layergroup" layer have the layer_name defined in options.layer_name
+  // Layers inside a "namedmap" layer have the layer_name defined in the root of their definition
+  getName: function() {
+    return this.get('options') && this.get('options').layer_name || this.get('layer_name');
   }
 });
 

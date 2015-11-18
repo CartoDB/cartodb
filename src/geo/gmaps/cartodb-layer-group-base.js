@@ -12,7 +12,11 @@ function setImageOpacityIE8(img, opacity) {
     }
 }
 
-function CartoDBLayerGroupBase() {}
+function CartoDBLayerGroupBase() {
+  this.model.bind('change:urls', function() {
+    this.update();
+  }, this);
+}
 
 CartoDBLayerGroupBase.prototype.setOpacity = function(opacity) {
   if (isNaN(opacity) || opacity > 1 || opacity < 0) {
@@ -79,7 +83,6 @@ CartoDBLayerGroupBase.prototype.getTile = function(coord, zoom, ownerDocument) {
 };
 
 CartoDBLayerGroupBase.prototype.onAdd = function () {
-  //this.update();
 };
 
 CartoDBLayerGroupBase.prototype.clear = function () {
@@ -88,22 +91,22 @@ CartoDBLayerGroupBase.prototype.clear = function () {
 };
 
 CartoDBLayerGroupBase.prototype.update = function (done) {
-  var self = this;
   this.loading && this.loading();
-  this.getTiles(function(urls, err) {
-    if(urls) {
-      self.tilejson = urls;
-      self.options.tiles = urls.tiles;
-      self.tiles = 0;
-      self.cache = {};
-      self._reloadInteraction();
-      self.refreshView();
-      self.ok && self.ok();
-      done && done();
-    } else {
-      self.error && self.error(err)
-    }
-  });
+
+  var tilejson = this.model.get('urls');
+  if(tilejson) {
+    this.tilejson = tilejson;
+    this.options.tiles = tilejson.tiles;
+    this.tiles = 0;
+    this.cache = {};
+    this._reloadInteraction();
+    this.refreshView();
+    this.ok && this.ok();
+    done && done();
+  } else {
+    this.error && this.error('URLs have not been fetched yet');
+    done && done();
+  }
 };
 
 CartoDBLayerGroupBase.prototype.refreshView = function() {
@@ -117,9 +120,6 @@ CartoDBLayerGroupBase.prototype.refreshView = function() {
       }
     }
   );
-}
-CartoDBLayerGroupBase.prototype.onLayerDefinitionUpdated = function() {
-    this.update();
 }
 
 CartoDBLayerGroupBase.prototype._checkLayer = function() {

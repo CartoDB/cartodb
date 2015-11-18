@@ -15,10 +15,8 @@ cdb.L = L;
 cdb.d3 = d3;
 
 if (isLeafletAlreadyLoaded) L.noConflict();
-_.extend(L, require('./geo/leaflet-extensions'));
 _.extend(cdb.geo, require('./geo/leaflet'));
 
-cdb.Image = require('./vis/image');
 cdb.SQL = require('./api/sql');
 
 cdb.config = require('cdb.config');
@@ -106,7 +104,6 @@ cdb.geo.ui.Search = require('./geo/ui/search');
 
 cdb.geo.ui.LayerSelector = require('./geo/ui/layer-selector');
 cdb.geo.ui.LayerView = require('./geo/ui/layer-view');
-cdb.geo.ui.LayerViewFromLayerGroup = require('./geo/ui/layer-view-from-layer-group');
 
 cdb.geo.ui.MobileLayer = require('./geo/ui/mobile-layer');
 cdb.geo.ui.Mobile = require('./geo/ui/mobile');
@@ -121,7 +118,6 @@ cdb.vis.Layers = require('./vis/vis/layers');
 cdb.vis.Vis = require('./vis/vis');
 require('./vis/overlays'); // Overlay.register calls
 require('./vis/layers'); // Layers.register calls
-
 
 cdb.geo.ui.Widget.View = require('./geo/ui/widget');
 cdb.geo.ui.Widget.Content = require('./geo/ui/widgets/standard/widget_content_view');
@@ -151,11 +147,5 @@ cdb.windshaft.filters.BoundingBoxFilter = require('./windshaft/filters/bounding_
 cdb.windshaft.filters.CategoryFilter = require('./windshaft/filters/category');
 cdb.windshaft.filters.Collection = require('./windshaft/filters/collection');
 cdb.windshaft.filters.RangeFilter = require('./windshaft/filters/range');
-cdb.windshaft.Client = require('./windshaft/client');
-cdb.windshaft.config = require('./windshaft/config');
-cdb.windshaft.Dashboard = require('./windshaft/dashboard');
-cdb.windshaft.DashboardInstance = require('./windshaft/dashboard_instance');
-cdb.windshaft.PrivateDashboardConfig = require('./windshaft/private_dashboard_config');
-cdb.windshaft.PublicDashboardConfig = require('./windshaft/public_dashboard_config');
 
 module.exports = cdb;

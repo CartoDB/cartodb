@@ -29,11 +29,18 @@ var WidgetModelFactory = require('cdb/geo/ui/widgets/widget-model-factory');
 var ListModel = require('cdb/geo/ui/widgets/list/model');
 var HistogramModel = require('cdb/geo/ui/widgets/histogram/model');
 var CategoryModel = require('cdb/geo/ui/widgets/category/model');
+var FormulaModel = require('cdb/geo/ui/widgets/formula/model');
 var WidgetViewFactory = require('cdb/geo/ui/widgets/widget_view_factory');
 var ListWidgetView = require('cdb/geo/ui/widgets/list/view');
 var HistogramView = require('cdb/geo/ui/widgets/histogram/view');
 var TimeSeriesView = require('cdb/geo/ui/widgets/time-series/view');
 var CategoryWidgetView = require('cdb/geo/ui/widgets/category/view');
+var WindshaftConfig = require('cdb/windshaft/config');
+var WindshaftClient = require('cdb/windshaft/client');
+var WindshaftDashboard = require('cdb/windshaft/dashboard');
+var WindshaftDashboardInstance = require('cdb/windshaft/dashboard_instance');
+var WindshaftPrivateDashboardConfig = require('cdb/windshaft/private_dashboard_config');
+var WindshaftPublicDashboardConfig = require('cdb/windshaft/public_dashboard_config');
 
 // Used to identify time-series widget for both the widget view factory as well as render it below the map instead of
 // the default widgets list view
@@ -52,7 +59,6 @@ var Vis = View.extend({
     var createFilter = function(Klass, attrs, layerIndex) {
       return new Klass({
         widgetId: attrs.id,
-        layerId: attrs.layerId,
         layerIndex: layerIndex
       });
     };
@@ -61,6 +67,11 @@ var Vis = View.extend({
         match: 'list',
         createModel: function(attrs) {
           return new ListModel(attrs);
+        }
+      }, {
+        match: 'formula',
+        createModel: function(attrs) {
+          return new FormulaModel(attrs);
         }
       }, {
         match: 'histogram',
@@ -358,6 +369,14 @@ var Vis = View.extend({
     var scrollwheel       = (options.scrollwheel === undefined)  ? data.scrollwheel : options.scrollwheel;
     var slides_controller = (options.slides_controller === undefined)  ? data.slides_controller : options.slides_controller;
 
+    // Do not allow pan map if zoom overlay and scrollwheel are disabled
+    // Check if zoom overlay is present.
+    var hasZoomOverlay = _.isObject(_.find(data.overlays, function(overlay) {
+      return overlay.type == "zoom"
+    }));
+
+    var allowDragging = hasZoomOverlay || scrollwheel;
+
     // map
     data.maxZoom || (data.maxZoom = 20);
     data.minZoom || (data.minZoom = 0);
@@ -395,6 +414,7 @@ var Vis = View.extend({
       minZoom: data.minZoom,
       legends: data.legends,
       scrollwheel: scrollwheel,
+      drag: allowDragging,
       provider: data.map_provider
     };
 
@@ -532,10 +552,6 @@ var Vis = View.extend({
       }
     }, this);
 
-    var isLayerWithTimeWidget = function(m) {
-      return m.widgets.any(isTimeSeriesWidget);
-    };
-
     // TODO WidgetView assumes all widgets to be rendered in one place which won't work for the time widget, could we
     // solve this differently/better? for now extract the layer (assumes there to only be one) and attach the view here
     var layer = _.find(interactiveLayers, isLayerWithTimeWidget);
@@ -555,16 +571,16 @@ var Vis = View.extend({
     $('.js-dashboard').append(widgetsView.render().el);
 
     // TODO: Perhaps this "endpoint" could be part of the "datasource"?
-    var endpoint = cdb.windshaft.config.MAPS_API_BASE_URL;
-    var configGenerator = cdb.windshaft.PublicDashboardConfig;
+    var endpoint = WindshaftConfig.MAPS_API_BASE_URL;
+    var configGenerator = WindshaftPublicDashboardConfig;
     var datasource = data.datasource;
     // TODO: We can use something else to differentiate types of "datasource"s
     if (datasource.template_name) {
-      endpoint = [cdb.windshaft.config.MAPS_API_BASE_URL, 'named', datasource.template_name].join('/');
-      configGenerator = cdb.windshaft.PrivateDashboardConfig;
+      endpoint = [WindshaftConfig.MAPS_API_BASE_URL, 'named', datasource.template_name].join('/');
+      configGenerator = WindshaftPrivateDashboardConfig;
     }
 
-    var windshaftClient = new cdb.windshaft.Client({
+    var windshaftClient = new WindshaftClient({
       endpoint: endpoint,
       windshaftURLTemplate: datasource.maps_api_template,
       userName: datasource.user_name,
@@ -572,7 +588,7 @@ var Vis = View.extend({
       forceCors: datasource.force_cors
     });
 
-    var dashboard = new cdb.windshaft.Dashboard({
+    var dashboard = new WindshaftDashboard({
       client: windshaftClient,
       configGenerator: configGenerator,
       statTag: datasource.stat_tag,

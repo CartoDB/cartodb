@@ -65,9 +65,7 @@ module Carto
         input = params[:free_text].present? ? clean_free_text_input([params[:free_text]]) : select_distinct_from_table_and_column(params[:table_name], params[:column_name])
         return head(400) if input.nil? && params[:table_name].present?
         render(json: []) and return if input.nil? || input.empty?
-
-        list = input.map{ |v| "'#{ v.downcase.gsub(/[^\p{Alnum}]/) }'" }.join(",")
-
+        list = input.map{ |v| "'#{ v.gsub("'", %q(\\\')) }'" }.join(",")
         services = CartoDB::SQLApi.new({ username: 'geocoding', timeout: GEOCODING_SQLAPI_CALLS_TIMEOUT}).fetch("SELECT (admin0_available_services(Array[#{list}])).*")
 
         geometries = []

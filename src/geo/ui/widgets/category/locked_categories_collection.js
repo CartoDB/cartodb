@@ -17,6 +17,14 @@ module.exports = Backbone.Collection.extend({
   },
 
   addItems: function(mdls) {
+    _.each(mdls, function(m) {
+      if (!this.isItemLocked(m.name)) {
+        this.add(m);
+      }
+    }, this);
+  },
+
+  resetItems: function(mdls) {
     this.reset(mdls);
   },
 
@@ -35,6 +43,10 @@ module.exports = Backbone.Collection.extend({
     return this.find(function(d) {
       return d.get('name') === name;
     });
+  },
+
+  getItemsName: function() {
+    return this.pluck('name');
   }
 
 });

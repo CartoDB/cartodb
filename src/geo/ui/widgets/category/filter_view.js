@@ -63,7 +63,7 @@ module.exports = View.extend({
 
   _onApplyClick: function() {
     this.viewModel.toggleSearch();
-    this.dataModel.applyFilters();
+    this.dataModel.applyLocked();
   }
 
 });

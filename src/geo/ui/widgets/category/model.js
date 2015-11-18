@@ -54,14 +54,6 @@ module.exports = WidgetModel.extend({
       this.set('locked', this.locked.size() > 0);
     }, this);
 
-    this.locked.bind('add', function(mdl) {
-      this.filter.accept(mdl.get('name'), false);
-    }, this);
-
-    this.locked.bind('remove', function(mdl) {
-      this.filter.reject(mdl.get('name'), false);
-    }, this);
-
     this.bind('change:url change:boundingBox', function() {
       this.search.set({
         url: this.get('url'),
@@ -122,20 +114,26 @@ module.exports = WidgetModel.extend({
     this.search.resetData();
   },
 
-  applyFilters: function() {
+  applyLocked: function() {
+    this.filter.rejectedCategories.reset();
+    var currentLocked = this.locked.getItemsName();
+    this.locked.addItems(
+      this.filter.getAccepted().toJSON()
+    );
+    this.filter.accept(currentLocked);
     this.filter.applyFilter();
+  },
+
+  lockCategories: function() {
+    this.locked.resetItems(
+      this.filter.getAccepted().toJSON()
+    );
+    this._fetch();
   },
 
   unlockCategories: function() {
     this.locked.removeItems();
     this.filter.acceptAll();
-  },
-
-  lockCategories: function() {
-    this.locked.addItems(
-      this.filter.getAccepted().toJSON()
-    );
-    this._fetch();
   },
 
   // Data parser methods //

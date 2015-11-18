@@ -54,6 +54,8 @@ module.exports = Model.extend({
     return !!(str||'');
   },
 
+  isLocked: function() {},
+
   resetData: function() {
     this._data.reset([]);
     this.set({

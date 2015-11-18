@@ -19,7 +19,7 @@ module.exports = WidgetModel.extend({
     if (_.isNumber(this.get('own_filter'))) {
       params.push('own_filter=' + this.get('own_filter'));
     }
-    if (this.get('boundingBox')) {
+    if (this.get('boundingBox') && this.get('submitBBox')) {
       params.push('bbox=' + this.get('boundingBox'));
     }
 

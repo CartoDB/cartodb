@@ -116,7 +116,7 @@ For these changes to take effect, you'll need to restart postgres:
 
     git clone https://github.com/CartoDB/cartodb-postgresql.git
     cd cartodb-postgresql
-    git checkout cdb
+    git checkout <LATEST cartodb-postgresql tag>
     sudo make all install
  
 GIS dependencies

@@ -13,4 +13,3 @@ describe Carto::BiVisualization do
     end
   end
 end
-

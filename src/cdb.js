@@ -22,13 +22,7 @@ if (!cdb) {
   cdb.geo = {};
   cdb.geo.common = {};
   cdb.geo.geocoder = {};
-
   cdb.geo.ui = {};
-  cdb.geo.ui.Widget = {};
-  cdb.geo.ui.Widget.List = {};
-  cdb.geo.ui.Widget.Category = {};
-  cdb.geo.ui.Widget.Histogram = {};
-  cdb.geo.ui.Widget.Formula =
 
   cdb.ui = {};
   cdb.ui.common = {};

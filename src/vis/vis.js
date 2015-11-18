@@ -23,8 +23,19 @@ var INFOWINDOW_TEMPLATE = require('./vis/infowindow-template');
 var WidgetsView = require('cdb/geo/ui/widgets/widgets_view');
 var CartoDBLayerGroupNamed = require('cdb/geo/map/cartodb-layer-group-named');
 var CartoDBLayerGroupAnonymous = require('cdb/geo/map/cartodb-layer-group-anonymous');
-var TimeWidgetView = require('cdb/geo/ui/widgets/time/view');
-var Model = require('cdb/core/model');
+var RangeFilter = require('cdb/windshaft/filters/range');
+var CategoryFilter = require('cdb/windshaft/filters/category');
+var WidgetModelFactory = require('cdb/geo/ui/widgets/widget-model-factory');
+var ListModel = require('cdb/geo/ui/widgets/list/model');
+var HistogramModel = require('cdb/geo/ui/widgets/histogram/model');
+var CategoryModel = require('cdb/geo/ui/widgets/category/model');
+var FormulaModel = require('cdb/geo/ui/widgets/formula/model');
+var WidgetViewFactory = require('cdb/geo/ui/widgets/widget_view_factory');
+var ListWidgetView = require('cdb/geo/ui/widgets/list/view');
+var HistogramView = require('cdb/geo/ui/widgets/histogram/view');
+var TimeSeriesView = require('cdb/geo/ui/widgets/time-series/view');
+var CategoryWidgetView = require('cdb/geo/ui/widgets/category/view');
+var FormulaWidgetView = require('cdb/geo/ui/widgets/formula/view');
 var WindshaftConfig = require('cdb/windshaft/config');
 var WindshaftClient = require('cdb/windshaft/client');
 var WindshaftDashboard = require('cdb/windshaft/dashboard');
@@ -32,13 +43,99 @@ var WindshaftDashboardInstance = require('cdb/windshaft/dashboard_instance');
 var WindshaftPrivateDashboardConfig = require('cdb/windshaft/private_dashboard_config');
 var WindshaftPublicDashboardConfig = require('cdb/windshaft/public_dashboard_config');
 
+// Used to identify time-series widget for both the widget view factory as well as render it below the map instead of
+// the default widgets list view
+var isTimeSeriesWidget = function(m) {
+  return m.isForTimeSeries;
+};
+
 /**
- * visulization creation
+ * Visualization creation
  */
 var Vis = View.extend({
 
   initialize: function() {
     _.bindAll(this, 'loadingTiles', 'loadTiles', '_onResize');
+
+    var createFilter = function(Klass, attrs, layerIndex) {
+      return new Klass({
+        widgetId: attrs.id,
+        layerIndex: layerIndex
+      });
+    };
+    this.widgetModelFactory = new WidgetModelFactory({
+      list: function(attrs) {
+        return new ListModel(attrs);
+      },
+      formula: function(attrs) {
+        return new FormulaModel(attrs);
+      },
+      histogram: function(attrs, layerIndex) {
+        return new HistogramModel(attrs, {
+          filter: createFilter(RangeFilter, attrs, layerIndex)
+        });
+      },
+      'time-series': function(attrs, layerIndex) {
+        // change type because time-series because it's really a histogram (for the tiler at least)
+        attrs.type = 'histogram';
+        var model = new HistogramModel(attrs, {
+          filter: createFilter(RangeFilter, attrs, layerIndex)
+        });
+
+        // since we changed the type of we need some way to identify that it's intended for a time-series view later
+        model.isForTimeSeries = true;
+
+        return model;
+      },
+      aggregation: function(attrs, layerIndex) {
+        return new CategoryModel(attrs, {
+          filter: createFilter(CategoryFilter, attrs, layerIndex)
+        });
+      }
+    });
+
+    // TODO this should probably be extracted, together with the .load method
+    this.widgetViewFactory = new WidgetViewFactory([
+      {
+        match: 'formula',
+        createView: function(widget) {
+          return new FormulaWidgetView({
+            model: widget
+          });
+        }
+      }, {
+        match: 'list',
+        createView: function(widget) {
+          return new ListWidgetView({
+            model: widget
+          });
+        }
+      }, {
+        match: isTimeSeriesWidget,
+        createView: function(widget) {
+          return new TimeSeriesView({
+            model: widget,
+            filter: widget.filter
+          });
+        }
+      }, {
+        match: 'histogram',
+        createView: function(widget) {
+          return new HistogramView({
+            model: widget,
+            filter: widget.filter
+          });
+        }
+      }, {
+        match: 'aggregation',
+        createView: function(widget) {
+          return new CategoryWidgetView({
+            model: widget,
+            filter: widget.filter
+          });
+        }
+      }
+    ]);
 
     this.https = false;
     this.overlays = [];
@@ -434,6 +531,7 @@ var Vis = View.extend({
         });
         layers.push(cartoDBLayerGroup);
       } else {
+        // Treat differently since this kind of layer is rendered client-side (and not through the tiler)
         var layer = Layers.create(layerData.type, self, layerData);
         layers.push(layer);
         if (layerData.type === 'torque') {
@@ -442,70 +540,40 @@ var Vis = View.extend({
       }
     });
 
-    // TODO: We can probably move this logic somewhere in cdb.geo.ui.Widget
-    var widgetClasses = {
-      "list": {
-        model: 'ListModel'
-      },
-      "formula": {
-        model: 'FormulaModel'
-      },
-      "histogram": {
-        model: 'HistogramModel',
-        filter: 'RangeFilter'
-      },
-      "aggregation": {
-        model: 'CategoryModel',
-        filter: 'CategoryFilter'
-      }
-    };
-
-    _.each(interactiveLayers, function(layer, index) {
-      var widgets = layer.get('widgets') || {};
-
-      for (var widgetId in widgets) {
-        var widgetData = widgets[widgetId];
-        var widgetType = widgetData.type;
-
-        if (!widgetClasses[widgetData.type]) {
-          throw 'Widget type \'' + widgetType + '\' is not supported!';
-        }
-
-        widgetData.id = widgetId;
-        widgetData.layerId = layer.get('id');
-
-        // Instantiate a filter (if needed)
-        var filterClass = widgetClasses[widgetType].filter;
-        var filterModel;
-        if (filterClass) {
-          filterModel = new cdb.windshaft.filters[filterClass]({
-            widgetId: widgetId,
-            // TODO: check this thing
-            layerIndex: index
-          });
-        }
-
-        // Instantiate the model
-        var modelClass = widgetClasses[widgetType].model;
-        var widgetModel = new cdb.geo.ui.Widget[modelClass](widgetData, { filter: filterModel });
+    // TODO: We can probably move this logic somewhere else
+    _.each(interactiveLayers, function(layer, layerIndex) {
+      var widgetsAttrs = layer.get('widgets') || {};
+      for (var id in widgetsAttrs) {
+        var attrs = _.extend({
+          id: id,
+          layerId: layer.get('id')
+        }, widgetsAttrs[id]);
+        var widgetModel = this.widgetModelFactory.createModel(attrs, layerIndex);
         layer.widgets.add(widgetModel);
       }
-    });
+    }, this);
+
+    var isLayerWithTimeWidget = function(m) {
+      return m.widgets.any(isTimeSeriesWidget);
+    };
+
+    // TODO WidgetView assumes all widgets to be rendered in one place which won't work for the time widget, could we
+    // solve this differently/better? for now extract the layer (assumes there to only be one) and attach the view here
+    var layer = _.find(interactiveLayers, isLayerWithTimeWidget);
+    if (layer) {
+      var widgetModel = layer.widgets.find(isTimeSeriesWidget);
+      var view = this.widgetViewFactory.createView(widgetModel, layer);
+      this.addView(view);
+      $('.js-dashboard-map-wrapper').append(view.render().el);
+    }
 
     // TODO: This will need to change when new layers are added / removed
-    var layersWithWidgets = new Backbone.Collection(interactiveLayers);
+    var layersWithWidgets = new Backbone.Collection(_.reject(interactiveLayers, isLayerWithTimeWidget));
     var widgetsView = new WidgetsView({
+      widgetViewFactory: this.widgetViewFactory,
       layers: layersWithWidgets
     });
     $('.js-dashboard').append(widgetsView.render().el);
-
-    // Time widget view
-    var timeWidgetModel = new Model({});
-    var timeWidgetView = new TimeWidgetView({
-      model: timeWidgetModel
-    });
-    this.addView(timeWidgetView);
-    $('.js-dashboard-map-wrapper').append(timeWidgetView.render().el);
 
     // TODO: Perhaps this "endpoint" could be part of the "datasource"?
     var endpoint = WindshaftConfig.MAPS_API_BASE_URL;

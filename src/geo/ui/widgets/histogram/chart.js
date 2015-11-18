@@ -11,12 +11,14 @@ module.exports = View.extend({
     handleWidth: 6,
     handleHeight: 23,
     handleRadius: 3,
+    divisionWidth: 80,
     transitionType: 'elastic'
   },
 
   initialize: function(opts) {
     if (!opts.width) throw new Error('opts.width is required');
     if (!opts.height) throw new Error('opts.height is required');
+    if (!_.isFunction(opts.xAxisTickFormat)) throw new Error('opts.xAxisTickFormat is required')
 
     _.bindAll(this, '_selectBars', '_adjustBrushHandles', '_onBrushMove', '_onBrushStart', '_onMouseMove', '_onMouseOut');
 
@@ -247,13 +249,11 @@ module.exports = View.extend({
   },
 
   _generateVerticalLines: function() {
-    var range = d3.range(0, this.chartWidth + this.chartWidth / 4, this.chartWidth / 4);
-
     var lines = this.chart.select('.Lines');
 
     lines.append('g')
     .selectAll('.Line')
-    .data(range.slice(1, range.length - 1))
+    .data(this.verticalRange.slice(1, this.verticalRange.length - 1))
     .enter().append('svg:line')
     .attr('class', 'Line')
     .attr('y1', 0)
@@ -263,15 +263,13 @@ module.exports = View.extend({
   },
 
   _generateHorizontalLines: function() {
-    var range = d3.range(0, this.chartHeight + this.chartHeight / 2, this.chartHeight / 2);
-
     var lines = this.chart.append('g')
     .attr('class', 'Lines');
 
     lines.append('g')
     .attr('class', 'y')
     .selectAll('.Line')
-    .data(range)
+    .data(this.horizontalRange)
     .enter().append('svg:line')
     .attr('class', 'Line')
     .attr('x1', 0)
@@ -309,13 +307,20 @@ module.exports = View.extend({
     this.chartHeight = this.model.get('height') - this.margin.top - this.margin.bottom;
 
     this._setupScales();
+    this._setupRanges();
   },
 
   _setupScales: function() {
     var data = this.model.get('data');
     this.xScale = d3.scale.linear().domain([0, 100]).range([0, this.chartWidth]);
     this.yScale = d3.scale.linear().domain([0, d3.max(data, function(d) { return _.isEmpty(d) ? 0 : d.freq; } )]).range([this.chartHeight, 0]);
-    this.xAxisScale = d3.scale.ordinal().domain(d3.range(data.length)).rangeRoundBands([0, this.chartWidth]);
+    this.xAxisScale = d3.scale.linear().range([data[0].start, data[data.length - 1].end]).domain([0, this.chartWidth]);
+  },
+
+  _setupRanges: function() {
+    var n = Math.round(this.chartWidth / this.defaults.divisionWidth);
+    this.verticalRange = d3.range(0, this.chartWidth + this.chartWidth / n, this.chartWidth / n);
+    this.horizontalRange = d3.range(0, this.chartHeight + this.chartHeight / 2, this.chartHeight / 2);
   },
 
   _calcBarWidth: function() {
@@ -586,45 +591,27 @@ module.exports = View.extend({
   },
 
   _generateXAxis: function() {
+    var self = this;
     var data = this.model.get('data');
 
-    var self = this;
+    var lines = this.chart.append('g')
+    .attr('class', 'Axis');
 
-    var xAxis = d3.svg.axis()
-    .scale(this.xAxisScale)
-    .orient('bottom')
-    .innerTickSize(0)
-    .tickFormat(function(d, i) {
-      return (i === data.length - 1) ? self.formatNumber(data[i].end) : self.formatNumber(data[i].start);
+    lines
+    .append('g')
+    .selectAll('.Label')
+    .data(this.verticalRange.slice(0, this.verticalRange.length))
+    .enter().append("text")
+    .attr("x", function(d) { return d; })
+    .attr("y", function(d) { return self.chartHeight + 15; })
+    .attr("text-anchor", function(d, i) {
+      if (i === 0) return 'start';
+      else if (i === self.verticalRange.length - 1) return 'end';
+      else return 'middle';
+    })
+    .text(function(d) {
+      return self.formatNumber(self.xAxisScale(d));
     });
-
-    this.chart.append('g')
-    .attr('class', 'Axis')
-    .attr('transform', 'translate(0,' + (this.chartHeight + 5) + ')')
-    .call(xAxis);
-
-    this._cleanAxis();
-  },
-
-  _cleanAxis: function() {
-    var ticks = this.chart.selectAll('.tick')[0];
-
-    // Hide overlapping text labels
-    _.each(ticks, function(tick, i) {
-      if (i + 1 < ticks.length) {
-        if (tick.style.opacity == '1') {
-          var o = this._isOverlapping(tick.getBoundingClientRect(), ticks[i+1].getBoundingClientRect());
-          if (o) {
-            el = ticks[i+1];
-            el.style.opacity = '0';
-          }
-        }
-      }
-    }, this);
-  },
-
-  _isOverlapping: function(a, b) {
-    return !(a.left + a.width < b.left || a.left > b.left + b.width);
   },
 
   resetBrush: function() {

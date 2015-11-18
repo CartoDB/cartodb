@@ -69,7 +69,7 @@ module.exports = WidgetModel.extend({
       });
     }, this);
 
-    // TODO: review this bindings from search...
+    // TODO: review this events propagation from search model
     this.search.bind('loading', function() {
       this.trigger("loading", this);
     }, this);

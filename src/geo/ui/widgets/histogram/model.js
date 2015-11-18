@@ -19,7 +19,7 @@ module.exports = WidgetModel.extend({
     if (_.isNumber(this.get('own_filter'))) {
       params.push('own_filter=' + this.get('own_filter'));
     }
-    if (this.get('boundingBox')) {
+    if (this.get('boundingBox') && this.get('submitBBox')) {
       params.push('bbox=' + this.get('boundingBox'));
     }
 
@@ -32,6 +32,11 @@ module.exports = WidgetModel.extend({
 
   initialize: function(attrs, opts) {
     this._data = new Backbone.Collection(this.get('data'));
+
+    // BBox should only be included until after the first fetch, since we want to get the range of the full dataset
+    this.once('change:data', function() {
+      this.set('submitBBox', true);
+    });
 
     WidgetModel.prototype.initialize.call(this, attrs, opts);
   },
@@ -58,12 +63,31 @@ module.exports = WidgetModel.extend({
   },
 
   parse: function(data) {
+    var numberOfBins = data.bins_count;
+    var width = data.bin_width;
+    var nulls = data.nulls_count;
+    var start = data.bins_start;
 
-    this._data.reset(data.bins);
+    var buckets = new Array(numberOfBins);
+
+    _.each(data.bins, function(b) {
+      buckets[b.bin] = b;
+    });
+
+    for (var i = 0; i < numberOfBins; i++) {
+      buckets[i] = _.extend({
+        bin: i,
+        start: start + (i * width),
+        end: start + ((i + 1) * width),
+        freq: 0
+      }, buckets[i]);
+    }
+
+    this._data.reset(buckets);
 
     return {
-      data: data.bins,
-      width: data.width
+      data: buckets,
+      nulls: data.nulls
     };
   },
 

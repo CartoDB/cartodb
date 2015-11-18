@@ -1,6 +1,6 @@
 var Model = require('cdb/core/model');
 var WidgetView = require('../../widget');
-var WidgetHistogramContent = require('./content_view');
+var WidgetHistogramContent = require('./content-view');
 
 /**
  * Histogram widget view

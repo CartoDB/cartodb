@@ -1,15 +1,16 @@
 var $ = require('jquery');
 var _ = require('underscore');
+var d3 = require('d3');
 var Model = require('cdb/core/model');
 var View = require('cdb/core/view');
 var WidgetContent = require('../standard/widget_content_view');
 var WidgetHistogramChart = require('./chart');
-var d3 = require('d3');
 var placeholder = require('./placeholder.tpl');
 var template = require('./content.tpl');
+var xAxisTickFormatter = d3.format('.2s');
 
 /**
- * Default widget content view:
+ * Widget content view for a histogram
  */
 module.exports = WidgetContent.extend({
 
@@ -37,15 +38,15 @@ module.exports = WidgetContent.extend({
   },
 
   _initBinds: function() {
-    this.dataModel.bind('change:data', this._onFirstLoad, this);
+    this.dataModel.once('change:data', this._onFirstLoad, this);
     this.add_related_model(this.dataModel);
   },
 
   _onFirstLoad: function() {
     this.render();
-    this.dataModel.unbind('change:data', this._onFirstLoad, this);
-    this.dataModel.bind('change:data', this._onChangeData, this);
     this._storeBounds();
+    this.dataModel.bind('change:data', this._onChangeData, this);
+    this.dataModel._fetch();
   },
 
   _storeBounds: function() {
@@ -125,8 +126,8 @@ module.exports = WidgetContent.extend({
 
   _onWindowResize: function() {
     this._setupDimensions();
-    this.chart.resize(this.canvasWidth);
-    this.miniChart.resize(this.canvasWidth);
+    if (this.chart) this.chart.resize(this.canvasWidth);
+    if (this.miniChart) this.miniChart.resize(this.canvasWidth);
   },
 
   _renderMainChart: function() {
@@ -136,7 +137,8 @@ module.exports = WidgetContent.extend({
       handles: true,
       width: this.canvasWidth,
       height: this.canvasHeight,
-      data: this.dataModel.getData()
+      data: this.dataModel.getData(),
+      xAxisTickFormat: this._xAxisTickFormat.bind(this)
     }));
     this.$('.js-content').append(this.chart.el);
     this.addView(this.chart);
@@ -149,6 +151,16 @@ module.exports = WidgetContent.extend({
     this._updateStats();
   },
 
+  _xAxisTickFormat: function(d, i, data) {
+    return (i === data.length - 1)
+      ? this._formatNumber(data[i].end)
+      : this._formatNumber(data[i].start);
+  },
+
+  _formatNumber: function(value, unit) {
+    return xAxisTickFormatter(value) + (unit ? ' ' + unit : '');
+  },
+
   _renderMiniChart: function() {
     this.miniChart = new WidgetHistogramChart(({
       className: 'mini',
@@ -158,7 +170,8 @@ module.exports = WidgetContent.extend({
       margin: { top: 0, right: 0, bottom: 0, left: 4 },
       y: 0,
       height: 20,
-      data: this.dataModel.getData()
+      data: this.dataModel.getData(),
+      xAxisTickFormat: this._xAxisTickFormat.bind(this)
     }));
 
     this.miniChart.bind('on_brush_end', this._onMiniRangeUpdated, this);
@@ -182,25 +195,31 @@ module.exports = WidgetContent.extend({
     this.canvasHeight = this.defaults.chartHeight - this.margin.top - this.margin.bottom;
   },
 
+  _clearTooltip: function() {
+    this.$(".js-tooltip").stop().hide();
+  },
+
   _onValueHover: function(info) {
     var $tooltip = this.$(".js-tooltip");
+
     if (info && info.data) {
       $tooltip.css({ top: info.top, left: info.left });
       $tooltip.text(info.data);
       $tooltip.css({ left: info.left - $tooltip.width()/2 });
       $tooltip.fadeIn(70);
     } else {
-      $tooltip.stop().hide();
+      this._clearTooltip();
     }
   },
 
   _onMiniRangeUpdated: function(loBarIndex, hiBarIndex) {
     this.lockedByUser = false;
-
-    var data = this.originalData;
-
     this.lockZoomedData = false;
 
+    this._clearTooltip();
+    this.chart.removeSelection();
+
+    var data = this.originalData;
     var start = data[loBarIndex].start;
     var end = data[hiBarIndex - 1].end;
 
@@ -361,6 +380,7 @@ module.exports = WidgetContent.extend({
   },
 
   _zoom: function() {
+    this.chart.removeSelection();
     this.lockedByUser = true;
     this.viewModel.set({ zoomed: true, zoom_enabled: false });
   },
@@ -393,12 +413,8 @@ module.exports = WidgetContent.extend({
   },
 
   _clear: function() {
-    //if (!this.viewModel.get('zoomed')) {
-      //this.viewModel.trigger('change:zoomed');
-    //} else {
     this.viewModel.set({ zoomed: false, zoom_enabled: false });
     this.viewModel.trigger('change:zoomed');
-    //}
   },
 
   clean: function() {

@@ -559,16 +559,20 @@ var Vis = View.extend({
       } else {
         odysseyLoaded();
       }
-
     }
-
 
     _.defer(function() {
       self.trigger('done', self, map.layers);
-    })
+    });
+
+    // TODO: rethink this
+    if (layersWithWidgets.size() > 0) {
+      setTimeout(function() {
+        self.mapView.invalidateSize();
+      }, 0);
+    }
 
     return this;
-
   },
 
   _addWidget: function() {

@@ -1,259 +1,185 @@
-// // TODO:
-// //  - Make sure all params are sent (stat_tag, auth_token)
-// //  - Stack requests to instantiateMap
-// //  - Add profiling (cartodb.core.Profiler.metric)
-// //  - Accept reqwest as an ajax client
-// //  - Accept an instantiateCallback
-// //  - caching of get requests (cache option to $.ajax)
-// //  - client.instantiateMap returns an instance of cdb.windshaft.PublicMap or
-// //    cdb.windshaft.PrivateMap
-// describe('cdb.windshaft.Client', function() {
+var $ = require('jquery');
+var util = require('cdb/core/util');
+var Client = require('cdb/windshaft/client');
 
-//   describe('.instantiateMap', function() {
+describe('src/windshaft/client', function() {
 
-//     var ajax, ajaxParams, client, mapDefinition;
+  it('should throw an error if required options are not passed to the constructor', function() {
+    expect(function() {
+      new Client({});
+    }).toThrow('The following options are required: windshaftURLTemplate, userName, endpoint, statTag');
+  });
 
-//     beforeEach(function() {
-//       ajax = function(params) {
-//         ajaxParams = params;
-//         params.success({});
-//       }
+  describe('#instantiateMap', function() {
 
-//       mapDefinition = {
-//         toJSON: function() {
-//           return {
-//             a: 1
-//           };
-//         }
-//       };
-//     })
+    beforeEach(function() {
+      this.previousAjax = $.ajax;
 
-//     describe('GET request', function() {
+      $.ajax = function(params) {
+        this.ajaxParams = params;
+      }.bind(this);
 
-//       it('should use a GET request', function(done) {
-//         var client = new cdb.windshaft.Client({
-//           ajax: ajax,
-//           user_name: 'wadus',
-//           maps_api_template: 'http://{user}.cartodb.com:80',
-//           stat_tag: '123456789'
-//         });
+      util.uniqueCallbackName = function() {
+        return 'callbackName';
+      };
 
-//         client.instantiateMap(mapDefinition, function(map) {
-//           expect(ajaxParams.dataType).toEqual('jsonp');
-//           expect(ajaxParams.type).toBeUndefined(); // GET request
-//           expect(ajaxParams.url).toEqual('http://wadus.cartodb.com:80/api/v1/map?stat_tag=123456789&config=%7B%22a%22%3A1%7D');
-//           expect(ajaxParams.jsonpCallback().indexOf('_cdbc_')).toEqual(0);
-//           expect(ajaxParams.cache).toEqual(true);
+      this.client = new Client({
+        windshaftURLTemplate: 'https://{user}.example.com:443',
+        userName: 'rambo',
+        statTag: 'stat_tag',
+        endpoint: 'api/v1'
+      });
+    });
 
-//           expect(map).toBeDefined();
-//           done();
-//         })
-//       })
+    afterEach(function() {
+      $.ajax = this.previousAjax;
+    });
 
-//       describe('compression', function() {
+    it('should trigger a GET request to instantiate a map', function() {
+      this.client.instantiateMap({
+        mapDefinition: { some: 'json that must be encoded' },
+        filters: { some: 'filters that will be applied' }
+      });
 
-//         it("should compress the map definition using LZMA and the browser's btoa function", function(done) {
-//           var client = new cdb.windshaft.Client({
-//             ajax: ajax,
-//             user_name: 'wadus',
-//             maps_api_template: 'http://{user}.cartodb.com:80',
-//             stat_tag: '123456789',
-//             force_compress: true
-//           });
+      var url = this.ajaxParams.url.split('?')[0];
+      var params = this.ajaxParams.url.split('?')[1].split('&');
 
-//           spyOn(window, "btoa");
+      expect(url).toEqual('https://rambo.example.com:443/api/v1');
+      expect(params[0]).toEqual('stat_tag=stat_tag');
+      expect(params[1]).toEqual('filters=%7B%22some%22%3A%22filters%20that%20will%20be%20applied%22%7D');
+      expect(params[2]).toEqual('config=%7B%22some%22%3A%22json%20that%20must%20be%20encoded%22%7D');
+      expect(this.ajaxParams.method).toEqual('GET');
+      expect(this.ajaxParams.dataType).toEqual('jsonp');
+      expect(this.ajaxParams.jsonpCallback).toEqual('_cdbc_callbackName');
+      expect(this.ajaxParams.cache).toEqual(true);
+    });
 
-//           var payload = JSON.stringify({ config: JSON.stringify(mapDefinition.toJSON()) });
-//           LZMA.compress(payload, 3, function(encoded) {
-//             lzma = cdb.core.util.array2hex(encoded);
-//             client.instantiateMap(mapDefinition, function(map) {
-//               expect(window.btoa.calls.count()).toEqual(2);
-//               expect(window.btoa.calls.mostRecent().args.length).toEqual(1);
-//               expect(ajaxParams.url.indexOf('lzma=' + lzma)).not.toEqual(-1);
-//               done();
-//             })
-//           })
-//         });
+    it('should invoke the success callback with an instance of the dasboard', function() {
+      var successCallback = jasmine.createSpy('successCallback');
 
-//         it("should compress the map definition using LZMA and cdb.core.util.encodeBase64", function(done) {
-//           var client = new cdb.windshaft.Client({
-//             ajax: ajax,
-//             user_name: 'wadus',
-//             maps_api_template: 'http://{user}.cartodb.com:80',
-//             stat_tag: '123456789',
-//             force_compress: true
-//           });
+      this.client.instantiateMap({
+        mapDefinition: 'mapDefinition',
+        filters: 'filters',
+        success: successCallback
+      });
 
-//           var _btoa = window.btoa;
-//           window.btoa = undefined;
+      this.ajaxParams.success({});
 
-//           spyOn(cdb.core.util, "encodeBase64");
+      expect(successCallback).toHaveBeenCalled();
+      var dasboardInstance = successCallback.calls.mostRecent().args[0];
 
-//           var payload = JSON.stringify({ config: JSON.stringify(mapDefinition.toJSON()) });
-//           LZMA.compress(payload, 3, function(encoded) {
-//             lzma = cdb.core.util.array2hex(encoded);
-//             client.instantiateMap(mapDefinition, function(map) {
-//               expect(cdb.core.util.encodeBase64.calls.count()).toEqual(2);
-//               expect(cdb.core.util.encodeBase64.calls.mostRecent().args.length).toEqual(1);
-//               expect(ajaxParams.url.indexOf('lzma=' + lzma)).not.toEqual(-1);
+      expect(dasboardInstance).toBeDefined();
+      expect(dasboardInstance.getBaseURL()).toEqual('https://rambo.example.com:443/api/v1/map/');
+    });
 
-//               window.btoa = _btoa;
+    it('should invoke the error callback if Windshaft returns some errors', function() {
+      var errorCallback = jasmine.createSpy('errorCallback');
 
-//               done();
-//             })
-//           });
-//         });
-//       });
+      this.client.instantiateMap({
+        mapDefinition: 'mapDefinition',
+        filters: 'filters',
+        error: errorCallback
+      });
 
-//       it('should handle errors returned by the tiler', function(done) {
-//         ajax = function(params) {
-//           ajaxParams = params;
-//           params.success({ errors: ['Error!'] });
-//         };
+      this.ajaxParams.success({
+        errors: [ 'something went wrong!' ]
+      });
 
-//         var client = new cdb.windshaft.Client({
-//           ajax: ajax,
-//           user_name: 'wadus',
-//           maps_api_template: 'http://{user}.cartodb.com:80',
-//           stat_tag: '123456789'
-//         });
+      expect(errorCallback).toHaveBeenCalledWith('something went wrong!');
+    });
 
-//         client.instantiateMap(mapDefinition, function(map, error) {
-//           expect(map).toBeNull();
-//           expect(error.errors).toEqual([ 'Error!' ]);
-//           done();
-//         });
-//       })
+    it('should invoke the error callback if ajax request goes wrong', function() {
+      var errorCallback = jasmine.createSpy('errorCallback');
 
-//       it('should handle ajax errors', function(done) {
-//         var ajaxParams;
-//         var ajax = function(params) {
-//           ajaxParams = params;
-//           params.error('Error!');
-//         };
+      this.client.instantiateMap({
+        mapDefinition: 'mapDefinition',
+        filters: 'filters',
+        error: errorCallback
+      });
 
-//         var client = new cdb.windshaft.Client({
-//           ajax: ajax,
-//           user_name: 'wadus',
-//           maps_api_template: 'http://{user}.cartodb.com:80',
-//           stat_tag: '123456789'
-//         });
+      this.ajaxParams.error({ responseText: 'something went wrong!' });
 
-//         client.instantiateMap(mapDefinition, function(map, error) {
-//           expect(map).toBeNull();
-//           expect(error.errors).toEqual([ 'Unknown error' ]);
-//           done();
-//         });
-//       })
-//     })
+      expect(errorCallback).toHaveBeenCalledWith('Unknown error');
+    });
 
-//     describe('POST request', function() {
+    it('should use POST if forceCors is true', function() {
+      spyOn(util, 'isCORSSupported').and.returnValue(true);
 
-//       var longMapDefinition = {
-//         toJSON: function() {
-//           var data = { a: '' };
-//           for (var i = 0; i < cdb.windshaft.Client.MAX_GET_SIZE + 10; i++) {
-//             data.a += '0';
-//           }
-//           return data;
-//         }
-//       }
+      this.client = new Client({
+        windshaftURLTemplate: 'https://{user}.example.com:443',
+        userName: 'rambo',
+        statTag: 'stat_tag',
+        endpoint: 'api/v1',
+        forceCors: true
+      });
 
-//       it('should use a POST request when serialized mapDefinition is longer than max GET size', function(done) {
-//         var client = new cdb.windshaft.Client({
-//           ajax: ajax,
-//           user_name: 'wadus',
-//           maps_api_template: 'http://{user}.cartodb.com:80',
-//           stat_tag: '123456789'
-//         });
+      this.client.instantiateMap({
+        mapDefinition: { some: 'json that must be encoded' },
+        filters: { some: 'filters that will be applied' }
+      });
 
-//         client.instantiateMap(longMapDefinition, function(map) {
-//           expect(ajaxParams.crossOrigin).toEqual(true);
-//           expect(ajaxParams.type).toEqual('POST'); // POST request
-//           expect(ajaxParams.method).toEqual('POST'); // POST request
-//           expect(ajaxParams.dataType).toEqual('json');
-//           expect(ajaxParams.contentType).toEqual('application/json');
-//           expect(ajaxParams.url).toEqual('http://wadus.cartodb.com:80/api/v1/map?stat_tag=123456789');
-//           expect(ajaxParams.data).toEqual(JSON.stringify(longMapDefinition.toJSON()));
+      var url = this.ajaxParams.url.split('?')[0];
+      var params = this.ajaxParams.url.split('?')[1].split('&');
 
-//           expect(map).toBeDefined();
-//           done();
-//         })
-//       })
+      expect(url).toEqual('https://rambo.example.com:443/api/v1');
+      expect(params[0]).toEqual('stat_tag=stat_tag');
+      expect(params[1]).toEqual('filters=%7B%22some%22%3A%22filters%20that%20will%20be%20applied%22%7D');
+      expect(this.ajaxParams.crossOrigin).toEqual(true);
+      expect(this.ajaxParams.method).toEqual('POST');
+      expect(this.ajaxParams.dataType).toEqual('json');
+      expect(this.ajaxParams.contentType).toEqual('application/json');
+    });
 
-//       it('should use a POST request when CORS is available and forcing CORS', function(done) {
-//         cdb.core.util.isCORSSupported = function() {
-//           return true;
-//         }
+    it('should use POST if payload is too big to be sent as a URL param', function() {
+      spyOn(util, 'isCORSSupported').and.returnValue(true);
 
-//         mapDefinition = {
-//           toJSON: function() {
-//             return { a: 'wadus' };
-//           }
-//         }
+      this.client = new Client({
+        windshaftURLTemplate: 'https://{user}.example.com:443',
+        userName: 'rambo',
+        statTag: 'stat_tag',
+        endpoint: 'api/v1',
+        forceCors: false
+      });
 
-//         var client = new cdb.windshaft.Client({
-//           ajax: ajax,
-//           user_name: 'wadus',
-//           maps_api_template: 'http://{user}.cartodb.com:80',
-//           stat_tag: '123456789',
-//           force_cors: true
-//         });
+      var mapDefinition = { key: '' };
+      for (var i = 0; i < 3000; i++) {
+        mapDefinition.key += 'x';
+      }
 
-//         client.instantiateMap(mapDefinition, function(map) {
-//           expect(ajaxParams.crossOrigin).toEqual(true);
-//           expect(ajaxParams.type).toEqual('POST'); // POST request
-//           expect(ajaxParams.method).toEqual('POST'); // POST request
-//           expect(ajaxParams.dataType).toEqual('json');
-//           expect(ajaxParams.contentType).toEqual('application/json');
-//           expect(ajaxParams.url).toEqual('http://wadus.cartodb.com:80/api/v1/map?stat_tag=123456789');
-//           expect(ajaxParams.data).toEqual(JSON.stringify(mapDefinition.toJSON()));
+      this.client.instantiateMap({
+        mapDefinition: mapDefinition,
+        filters: { some: 'filters that will be applied' }
+      });
 
-//           expect(map).toBeDefined();
-//           done();
-//         })
-//       })
+      var url = this.ajaxParams.url.split('?')[0];
+      var params = this.ajaxParams.url.split('?')[1].split('&');
 
-//       it('should handle errors returned by the tiler', function(done) {
-//         ajax = function(params) {
-//           ajaxParams = params;
-//           params.success({ errors: ['Error!'] });
-//         };
+      expect(url).toEqual('https://rambo.example.com:443/api/v1');
+      expect(params[0]).toEqual('stat_tag=stat_tag');
+      expect(params[1]).toEqual('filters=%7B%22some%22%3A%22filters%20that%20will%20be%20applied%22%7D');
+      expect(this.ajaxParams.crossOrigin).toEqual(true);
+      expect(this.ajaxParams.method).toEqual('POST');
+      expect(this.ajaxParams.dataType).toEqual('json');
+      expect(this.ajaxParams.contentType).toEqual('application/json');
+    });
 
-//         var client = new cdb.windshaft.Client({
-//           ajax: ajax,
-//           user_name: 'wadus',
-//           maps_api_template: 'http://{user}.cartodb.com:80',
-//           stat_tag: '123456789'
-//         });
+    it('should NOT use POST if forceCors is true but cors is not supported', function() {
+      spyOn(util, 'isCORSSupported').and.returnValue(false);
 
-//         client.instantiateMap(longMapDefinition, function(map, error) {
-//           expect(map).toBeNull();
-//           expect(error.errors).toEqual([ 'Error!' ]);
-//           done();
-//         });
-//       })
+      this.client = new Client({
+        windshaftURLTemplate: 'https://{user}.example.com:443',
+        userName: 'rambo',
+        statTag: 'stat_tag',
+        endpoint: 'api/v1',
+        forceCors: true
+      });
 
-//       it('should handle ajax errors', function(done) {
-//         var ajaxParams;
-//         var ajax = function(params) {
-//           ajaxParams = params;
-//           params.error('Error!');
-//         };
+      this.client.instantiateMap({
+        mapDefinition: { some: 'json that must be encoded' },
+        filters: { some: 'filters that will be applied' }
+      });
 
-//         var client = new cdb.windshaft.Client({
-//           ajax: ajax,
-//           user_name: 'wadus',
-//           maps_api_template: 'http://{user}.cartodb.com:80',
-//           stat_tag: '123456789'
-//         });
-
-//         client.instantiateMap(longMapDefinition, function(map, error) {
-//           expect(map).toBeNull();
-//           expect(error.errors).toEqual([ 'Unknown error' ]);
-//           done();
-//         });
-//       })
-//     })
-//   })
-// })
+      expect(this.ajaxParams.method).toEqual('GET');
+    });
+  });
+});

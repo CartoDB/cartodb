@@ -3,7 +3,9 @@
     <i class="CDBIcon CDBIcon-Lens"></i>
   </button>
   <p class="Widget-textSmaller Widget-textSmaller--bold Widget-textSmall--upper">
-    <% if (!isLocked) { %>
+    <% if (isLocked) { %>
+      search
+    <% } else { %>
       <%- categoriesCount > 12 ? (categoriesCount - 11) : categoriesCount  %> categor<%- categoriesCount !== 1 ? "ies" : "y" %> <%- categoriesCount > 12 ? "more" : "" %>
     <% } %>
   </p>

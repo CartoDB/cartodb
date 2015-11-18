@@ -13,7 +13,6 @@ function setImageOpacityIE8(img, opacity) {
 }
 
 function CartoDBLayerGroupBase() {
-  // TODO: See where this fits better
   this.model.bind('change:urls', function() {
     this.update();
   }, this);

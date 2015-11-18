@@ -58,12 +58,31 @@ module.exports = WidgetModel.extend({
   },
 
   parse: function(data) {
+    var numberOfBins = data.bins_count;
+    var width = data.bin_width;
+    var nulls = data.nulls_count;
+    var start = data.bins_start;
 
-    this._data.reset(data.bins);
+    var buckets = new Array(numberOfBins);
+
+    _.each(data.bins, function(b) {
+      buckets[b.bin] = b;
+    });
+
+    for (var i = 0; i < numberOfBins; i++) {
+      _.defaults(buckets[i], {
+        bin: i,
+        start: start + (i * width),
+        end: start + ((i + 1) * width),
+        freq: 0
+      });
+    }
+
+    this._data.reset(buckets);
 
     return {
-      data: data.bins,
-      width: data.width
+      data: buckets,
+      nulls: data.nulls
     };
   },
 

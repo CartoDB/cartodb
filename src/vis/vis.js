@@ -543,7 +543,7 @@ var Vis = View.extend({
       }
     });
 
-    // TODO: We can probably move this logic somewhere in cdb.geo.ui.Widget
+    // TODO: We can probably move this logic somewhere else
     _.each(interactiveLayers, function(layer, layerIndex) {
       var widgetsAttrs = layer.get('widgets') || {};
       for (var id in widgetsAttrs) {
@@ -551,6 +551,10 @@ var Vis = View.extend({
         layer.widgets.add(widgetModel);
       }
     }, this);
+
+    var isLayerWithTimeWidget = function(m) {
+      return m.widgets.any(isTimeSeriesWidget);
+    };
 
     // TODO WidgetView assumes all widgets to be rendered in one place which won't work for the time widget, could we
     // solve this differently/better? for now extract the layer (assumes there to only be one) and attach the view here

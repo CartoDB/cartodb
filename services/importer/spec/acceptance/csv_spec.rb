@@ -270,6 +270,46 @@ describe 'csv regression tests' do
       WHERE a='200'
     }].first.fetch(:c).should match /\AFirst line.Second line\Z/u
   end
+
+  it 'import records with escaped quotes' do
+    %w(escaped_quotes_comma_sep.csv escaped_quotes_semi_sep.csv).each do |csv_file|
+      filepath    = path_to(csv_file)
+      downloader  = Downloader.new(filepath)
+      runner      = Runner.new({
+                                 pg: @pg_options,
+                                 downloader: downloader,
+                                 log: CartoDB::Importer2::Doubles::Log.new,
+                                 user: CartoDB::Importer2::Doubles::User.new
+                               })
+      runner.run
+
+      result = runner.results.first
+      @db[%Q{
+        SELECT count(*)
+        FROM #{result.schema}.#{result.table_name}
+        AS count
+      }].first.fetch(:count).should eq 2
+
+      @db[%Q{
+        SELECT b
+        FROM #{result.schema}.#{result.table_name}
+        WHERE a='100'
+      }].first.fetch(:b).should eq "--\"--"
+
+      @db[%Q{
+        SELECT c
+        FROM #{result.schema}.#{result.table_name}
+        WHERE a='100'
+      }].first.fetch(:c).should eq "\"XYZ\""
+
+      @db[%Q{
+        SELECT c
+        FROM #{result.schema}.#{result.table_name}
+        WHERE a='200'
+      }].first.fetch(:c).should eq "I\"J\"K"
+    end
+  end
+
   it 'refuses to import csv with broken encoding' do
     filepath    = path_to('broken_encoding.csv')
     downloader  = Downloader.new(filepath)

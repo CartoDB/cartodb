@@ -254,7 +254,21 @@
                           // TODO extract is a hack, until Winshaft can handle a Date column
                           "sql": "select *, extract(epoch from end_at) AS numeric_end_at from mwc13",
                           "layer_name": "mwc13-static",
-                          "cartocss": "/** simple visualization */\n\n#mwc13{\n  marker-fill-opacity: 0.9;\n  marker-line-color: #FFF;\n  marker-line-width: 1;\n  marker-line-opacity: 1;\n  marker-placement: point;\n  marker-type: ellipse;\n  marker-width: 10;\n  marker-fill: #229A00;\n  marker-allow-overlap: true;\n  marker-comp-op: multiply;\n}",
+                          "cartocss": [
+                            "/** simple visualization */",
+                            "#mwc13{",
+                              "marker-fill-opacity: 0.9;",
+                              "marker-line-color: #FFF;",
+                              "marker-line-width: 1;",
+                              "marker-line-opacity: 1;",
+                              "marker-placement: point;",
+                              "marker-type: ellipse;",
+                              "marker-width: 10;",
+                              "marker-fill: #FFCCCC;",
+                              "marker-allow-overlap: true;",
+                              "marker-comp-op: multiply;",
+                            "}"
+                          ].join(''),
                           "cartocss_version": "2.1.1",
                           "interactivity": "cartodb_id",
                           "table_name": "mwc13"

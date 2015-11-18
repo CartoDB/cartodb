@@ -64,8 +64,9 @@ module.exports = WidgetModel.extend({
     var start = data.bins_start;
 
     var buckets = new Array(numberOfBins);
+
     _.each(data.bins, function(b) {
-      buckets[b.bin] = _.omit(b, 'bins_number', 'bin_width', 'nulls_count');
+      buckets[b.bin] = b;
     });
 
     for (var i = 0; i < numberOfBins; i++) {

@@ -72,7 +72,6 @@ $commonBkg: rgba(#FFF, 1);
   .Widget-progressState--pattern {
     background-image: repeating-linear-gradient(45deg, transparent 0, rgba($secondary, 0.7) 1px, transparent 2px, transparent 3px);
   }
-
   .Widget-dot {
     background: $highlighted;
   }

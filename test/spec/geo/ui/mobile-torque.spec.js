@@ -7,7 +7,6 @@ var TorqueLayer = require('cdb/geo/map/torque-layer');
 var Map = require('cdb/geo/map');
 var Mobile = require('cdb/geo/ui/mobile');
 var GoogleMapsMapView = require('cdb/geo/gmaps/gmaps-map-view');
-var torque = require('cdb/torque');
 
 describe('geo/ui/mobile (torque)', function() {
 

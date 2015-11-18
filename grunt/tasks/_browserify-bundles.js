@@ -6,6 +6,7 @@ var torqueSpecs = [
   'test/spec/geo/leaflet/leaflet-torque-layer.spec.js',
   'test/spec/geo/ui/mobile-torque.spec.js',
   'test/spec/geo/ui/time-slider.spec.js',
+  'test/spec/geo/ui/layer-selector-torque.spec.js'
 ];
 
 module.exports = {

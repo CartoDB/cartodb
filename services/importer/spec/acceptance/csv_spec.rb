@@ -197,7 +197,6 @@ describe 'csv regression tests' do
   end
 
   it 'refuses to import csv with broken encoding' do
-    pending "Need to update clinker to match production's ruby and stdlib"
     filepath    = path_to('broken_encoding.csv')
     downloader  = Downloader.new(filepath)
     runner      = Runner.new({

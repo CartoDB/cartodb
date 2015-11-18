@@ -46,7 +46,6 @@ module.exports = WidgetContent.extend({
     this.render();
     this._storeBounds();
     this.dataModel.bind('change:data', this._onChangeData, this);
-    this.dataModel.set({ submitBBox: true });
     this.dataModel._fetch();
   },
 

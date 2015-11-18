@@ -67,9 +67,6 @@ describe('geo/ui/widgets/histogram/chart', function() {
 
     expect(this.view.yScale(0)).toBe(chartHeight);
     expect(this.view.yScale(max.freq)).toBe(0);
-
-    expect(this.view.xAxisScale(0)).toBe(6);
-    expect(this.view.xAxisScale(this.view.model.get('data').length - 1)).toBe(272);
   });
 
   it('should refresh the data', function() {
@@ -77,26 +74,6 @@ describe('geo/ui/widgets/histogram/chart', function() {
     this.view.render().show();
     this.view.model.set({ data: genHistogramData(20) });
     expect(this.view.refresh).toHaveBeenCalled();
-  });
-
-  it('should detect overlapping rectangles', function() {
-    var a = {
-      left: 0,
-      width: 100
-    };
-
-    var b = {
-      left: 55,
-      width: 100
-    };
-
-    var c = {
-      left: 500,
-      width: 100
-    };
-
-    expect(this.view._isOverlapping(a, b)).toBe(true);
-    expect(this.view._isOverlapping(b, c)).toBe(false);
   });
 
   it('should format numbers', function() {

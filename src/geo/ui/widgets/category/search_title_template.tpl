@@ -1,7 +1,7 @@
 <% if (isSearchEnabled) { %>
   <form class="Widget-form js-form">
     <i class="CDBIcon CDBIcon-Lens"></i>
-    <input type="text" class="Widget-textInput js-textInput" placeholder="Search by name"/>
+    <input type="text" class="Widget-textInput js-textInput" value="<%- q %>" placeholder="search by name"/>
     <button type="button" class=" js-close">
       <i class="CDBIcon CDBIcon-X"></i>
     </button>

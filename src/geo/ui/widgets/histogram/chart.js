@@ -394,6 +394,9 @@ module.exports = View.extend({
   },
 
   removeSelection: function() {
+    if (!this._getLoBarIndex() && !this._getHiBarIndex()) {
+      return;
+    }
     var data = this.model.get('data');
     this.selectRange(0, data.length - 1);
     this.resetBrush();

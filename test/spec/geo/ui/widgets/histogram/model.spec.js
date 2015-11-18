@@ -25,6 +25,7 @@ describe('geo/ui/widgets/histogram/model', function() {
 
     var parsedData = this.model.getData();
 
+    expect(data.nulls).toBe(0);
     expect(parsedData.length).toBe(4);
     expect(JSON.stringify(parsedData)).toBe('[{"bin":0,"start":55611,"end":70101.25,"freq":2,"max":70151,"min":55611},{"bin":1,"start":70101.25,"end":84591.5,"freq":2,"max":79017,"min":78448},{"bin":2,"start":84591.5,"end":99081.75,"freq":0},{"bin":3,"start":99081.75,"end":113572,"freq":1,"max":113572,"min":113572}]');
   });

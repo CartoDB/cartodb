@@ -78,7 +78,8 @@ module.exports = WidgetModel.extend({
     this._data.reset(buckets);
 
     return {
-      data: buckets
+      data: buckets,
+      nulls: data.nulls
     };
   },
 

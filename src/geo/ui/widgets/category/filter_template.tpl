@@ -8,7 +8,7 @@
 <% } else { %>
   <p class="Widget-textSmaller Widget-textSmaller--bold Widget-textSmaller--dark Widget-textSmaller--upper">
     <% if (isLocked) { %>
-      <%- totalLocked %> selected
+      <%- totalLocked %> locked
     <% } else { %>
       <%- rejectedCats === 0 && acceptedCats === 0 || acceptedCats >= totalCats ? "All selected" : acceptedCats + " selected" %>
     <% }%>

@@ -187,7 +187,7 @@ describe 'legacy behaviour tests' do
       table.insert_row!(country: 'Cote d\'Ivore')
       table.insert_row!(country: 'Spain')
 
-      get api_v1_geocodings_available_geometries_url, { kind: 'postalcode', column_name: 'country', table_name: table.name}
+      get api_v1_geocodings_available_geometries_url, { kind: 'postalcode', column_name: 'country', table_name: table.name }
       last_response.status.should == 200
     end
 

@@ -9,6 +9,15 @@
   outline: none;
   font-size: $sFontSize-larger;
 }
+.Widget-textInput::-webkit-input-placeholder {
+  font-weight: $sFontWeight-lighter;
+}
+.Widget-textInput::-moz-input-placeholder {
+  font-weight: $sFontWeight-lighter;
+}
+.Widget-textInput::-ms-input-placeholder {
+  font-weight: $sFontWeight-lighter;
+}
 
 $size: 8px;
 .Widget-checkbox {

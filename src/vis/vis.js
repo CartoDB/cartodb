@@ -35,6 +35,7 @@ var ListWidgetView = require('cdb/geo/ui/widgets/list/view');
 var HistogramView = require('cdb/geo/ui/widgets/histogram/view');
 var TimeSeriesView = require('cdb/geo/ui/widgets/time-series/view');
 var CategoryWidgetView = require('cdb/geo/ui/widgets/category/view');
+var FormulaWidgetView = require('cdb/geo/ui/widgets/formula/view');
 var WindshaftConfig = require('cdb/windshaft/config');
 var WindshaftClient = require('cdb/windshaft/client');
 var WindshaftDashboard = require('cdb/windshaft/dashboard');
@@ -107,6 +108,13 @@ var Vis = View.extend({
     // TODO this should probably be extracted, together with the .load method
     this.widgetViewFactory = new WidgetViewFactory([
       {
+        match: 'formula',
+        createView: function(widget) {
+          return new FormulaWidgetView({
+            model: widget
+          });
+        }
+      }, {
         match: 'list',
         createView: function(widget) {
           return new ListWidgetView({

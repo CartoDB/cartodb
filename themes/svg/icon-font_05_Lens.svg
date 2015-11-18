@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns" width="483" height="488" viewBox="0 0 483 488" version="1.1">
+  <title>
+    icon-font_05_Lens
+  </title>
+  <desc>
+    Created with Sketch.
+  </desc>
+  <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+    <g id="icons" sketch:type="MSArtboardGroup" transform="translate(-2012.000000, -12.000000)" fill="#000000">
+      <g id="icon-font_05_Lens" sketch:type="MSLayerGroup" transform="translate(2012.000000, 12.000000)">
+        <path d="M291.84 296.34C298.09 290.09 308.21 290.08 314.46 296.34L478.25 460.13C484.5 466.37 484.5 476.5 478.25 482.75L478.25 482.75C472 489 461.88 489.01 455.63 482.75L291.84 318.96C285.59 312.72 285.59 302.59 291.84 296.34L291.84 296.34 291.84 296.34Z" id="Rectangle-14" sketch:type="MSShapeGroup"/>
+        <path d="M178.5 325L178.5 325C259.41 325 325 259.41 325 178.5 325 97.59 259.41 32 178.5 32 97.59 32 32 97.59 32 178.5 32 259.41 97.59 325 178.5 325L178.5 325 178.5 325ZM178.5 357L178.5 357C79.92 357 0 277.08 0 178.5 0 79.92 79.92 0 178.5 0 277.08 0 357 79.92 357 178.5 357 277.08 277.08 357 178.5 357L178.5 357 178.5 357Z" id="Shape" sketch:type="MSShapeGroup"/>
+      </g>
+    </g>
+  </g>
+</svg>

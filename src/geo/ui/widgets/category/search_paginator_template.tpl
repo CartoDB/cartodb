@@ -1,5 +1,7 @@
 <div class="Widget-contentFlex">
-  <button class="js-searchToggle">close search</button>
+  <button class="u-rSpace--m Widget-buttonIcon js-searchToggle">
+    <i class="CDBIcon CDBIcon-Hamburguer"></i>
+  </button>
   <% if (categoriesCount > 0) { %>
     <p class="Widget-textSmaller Widget-textSmaller--bold Widget-textSmall--upper">
       <%- categoriesCount %> categor<%- categoriesCount !== 1 ? "ies" : "y" %> found

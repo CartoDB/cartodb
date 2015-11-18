@@ -9,12 +9,18 @@
     <div class="Widget-options">
       <% if (canBeLocked) { %>
         <% if (isLocked) { %>
-          <button class="js-unlock">unlock</button>
+          <button class="Widget-buttonIcon Widget-buttonIcon--circle is-selected js-unlock">
+            <i class="CDBIcon CDBIcon-Unlock"></i>
+          </button>
         <% } else { %>
-          <button class="js-lock">lock</button>
+          <button class="Widget-buttonIcon Widget-buttonIcon--circle js-lock">
+            <i class="CDBIcon CDBIcon-Unlock"></i>
+          </button>
         <% }  %>
       <% } %>
-      <button>apply colors</button>
+      <button class="Widget-buttonIcon Widget-buttonIcon--circle">
+        <i class="CDBIcon CDBIcon-Syringe"></i>
+      </button>
     </div>
   </div>
 <% } %>

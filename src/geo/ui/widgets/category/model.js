@@ -142,25 +142,18 @@ module.exports = WidgetModel.extend({
 
   _parseData: function(categories) {
     // Get info stats from categories
-    var min = 0;
-    var max = 0;
-    var totalCount = 0;
     var newData = [];
     var _tmpArray = {};
 
     _.each(categories, function(datum) {
       var category = datum.category;
-      var count = datum.value;
       var isRejected = this.filter.isRejected(category);
-      min = Math.min(min, count);
-      max = Math.max(max, count);
-      totalCount = totalCount + count;
       _tmpArray[category] = true;
       newData.push({
         selected: !isRejected,
         name: category,
         agg: datum.agg,
-        value: count
+        value: datum.value
       });
     }, this);
 

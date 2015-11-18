@@ -24,9 +24,6 @@
   @include display-flex();
   @include align-items(center);
 }
-.Widget-contentFlex > * {
-  width: auto;
-}
 .Widget-contentFull {
   width: 100%;
 }

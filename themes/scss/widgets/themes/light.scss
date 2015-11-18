@@ -33,12 +33,24 @@
   .Widget-textSmaller--dark {
     color: $primary;
   }
-  .Widget-link {
+  .Widget-link,
+  .Widget-buttonIcon {
+    border-color: $link;
     color: $link;
     &:hover {
+      border-color: $linkHover;
       color: $linkHover;
     }
   }
+  .Widget-buttonIcon--circle.is-selected {
+    background-color: $link;
+    color: #FFF;
+    &:hover {
+      border-color: $linkHover;
+      background: $linkHover;
+    }
+  }
+
   .Widget-progressBar {
     background: $elementBkg;
   }

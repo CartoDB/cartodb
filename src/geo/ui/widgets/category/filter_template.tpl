@@ -15,10 +15,10 @@
   </p>
   <div class="Widget-filterButtons">
     <% if (rejectedCats !== 0 && totalCats > 0 || acceptedCats > 0) { %>
-      <button class="Widget-link Widget-filterButton js-all">select all</button>
+      <button class="Widget-link Widget-filterButton js-all">all</button>
     <% } %>
     <% if (totalCats > rejectedCats) { %>
-      <button class="Widget-link Widget-filterButton js-none">unselect all</button>
+      <button class="Widget-link Widget-filterButton js-none">none</button>
     <% } %>
   </div>
 <% } %>

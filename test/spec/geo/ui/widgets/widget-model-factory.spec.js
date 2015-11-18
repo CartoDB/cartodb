@@ -7,11 +7,17 @@ describe('geo/ui/widgets/widget-model-factory', function() {
 
   it('should call addType for each item', function() {
     spyOn(WidgetModelFactory.prototype, 'addType');
-    new WidgetModelFactory([1,2,3]);
+    var types = {
+      foo: function() {},
+      bar: function() {},
+      baz: function() {}
+    };
+    new WidgetModelFactory(types);
     expect(WidgetModelFactory.prototype.addType).toHaveBeenCalled();
     expect(WidgetModelFactory.prototype.addType.calls.count()).toEqual(3);
-    expect(WidgetModelFactory.prototype.addType.calls.argsFor(0)).toEqual([1]);
-    expect(WidgetModelFactory.prototype.addType.calls.argsFor(2)).toEqual([3]);
+    expect(WidgetModelFactory.prototype.addType.calls.argsFor(0)).toEqual(['foo', jasmine.any(Function)]);
+    expect(WidgetModelFactory.prototype.addType.calls.argsFor(1)).toEqual(['bar', jasmine.any(Function)]);
+    expect(WidgetModelFactory.prototype.addType.calls.argsFor(2)).toEqual(['baz', jasmine.any(Function)]);
   });
 
   describe('.addType', function() {
@@ -45,42 +51,28 @@ describe('geo/ui/widgets/widget-model-factory', function() {
 
   describe('.createModel', function() {
     beforeEach(function() {
-      this.widgetId = 'widget-uuid';
-      this.layerId = 'layer-id';
       this.layerIndex = 4;
-      this.attrs = {};
+      this.attrs = {
+        type: 'foobar',
+        id: 'widget-uuid',
+        layerId: 'layer-id'
+      };
       this.layer = {};
 
-      this.matchSpy = jasmine.createSpy('match');
       this.createModelSpy = jasmine.createSpy('createModel');
 
-      this.factory.addType({
-        match: this.matchSpy,
-        createModel: this.createModelSpy
-      });
+      this.factory.addType('foobar', this.createModelSpy);
     });
 
     describe('when called with an existing type', function() {
       beforeEach(function() {
         this.returnedObj = {};
-        this.matchSpy.and.returnValue(true);
         this.createModelSpy.and.returnValue(this.returnedObj);
-        this.result = this.factory.createModel(this.widgetId, this.attrs, this.layerId, this.layerIndex);
-      });
-
-      it('should add id and layer id to attrs', function() {
-        expect(this.attrs.id).toEqual(this.widgetId);
-        expect(this.attrs.layerId).toEqual(this.layerId);
+        this.result = this.factory.createModel(this.attrs, this.layerIndex);
       });
 
       it('should call create for the matching type', function() {
         expect(this.result).toBe(this.returnedObj);
-      });
-
-      it('should call match with given widget attrs', function() {
-        expect(this.matchSpy).toHaveBeenCalled();
-        expect(this.matchSpy.calls.argsFor(0).length).toEqual(1);
-        expect(this.matchSpy.calls.argsFor(0)[0]).toEqual(this.attrs);
       });
 
       it('should call createModel with given attrs', function() {
@@ -93,16 +85,19 @@ describe('geo/ui/widgets/widget-model-factory', function() {
 
     describe('when called with non-existing type', function() {
       beforeEach(function() {
-        this.matchSpy.and.returnValue(false);
+        this.attrs = {
+          type: 'nope',
+          id: 'meh',
+          layerId: 'meh'
+        }
         try {
-          this.factory.createModel(this.attrs, this.layer);
+          this.factory.createModel(this.attrs, this.layerIndex);
         } catch(e) {
           this.e = e;
         }
       });
 
       it('should not call create with given widget and layer', function() {
-        expect(this.matchSpy).toHaveBeenCalled();
         expect(this.createModelSpy).not.toHaveBeenCalled();
       });
 

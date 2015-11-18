@@ -63,47 +63,36 @@ var Vis = View.extend({
         layerIndex: layerIndex
       });
     };
-    this.widgetModelFactory = new WidgetModelFactory([
-      {
-        match: 'list',
-        createModel: function(attrs) {
-          return new ListModel(attrs);
-        }
-      }, {
-        match: 'formula',
-        createModel: function(attrs) {
-          return new FormulaModel(attrs);
-        }
-      }, {
-        match: 'histogram',
-        createModel: function(attrs, layerIndex) {
-          return new HistogramModel(attrs, {
-            filter: createFilter(RangeFilter, attrs, layerIndex)
-          });
-        }
-      }, {
-        match: 'time-series',
-        createModel: function(attrs, layerIndex) {
-          // change type because time-series because it's really a histogram (for the tiler at least)
-          attrs.type = 'histogram';
-          var model = new HistogramModel(attrs, {
-            filter: createFilter(RangeFilter, attrs, layerIndex)
-          });
+    this.widgetModelFactory = new WidgetModelFactory({
+      list: function(attrs) {
+        return new ListModel(attrs);
+      },
+      formula: function(attrs) {
+        return new FormulaModel(attrs);
+      },
+      histogram: function(attrs, layerIndex) {
+        return new HistogramModel(attrs, {
+          filter: createFilter(RangeFilter, attrs, layerIndex)
+        });
+      },
+      'time-series': function(attrs, layerIndex) {
+        // change type because time-series because it's really a histogram (for the tiler at least)
+        attrs.type = 'histogram';
+        var model = new HistogramModel(attrs, {
+          filter: createFilter(RangeFilter, attrs, layerIndex)
+        });
 
-          // since we changed the type of we need some way to identify that it's intended for a time-series view later
-          model.isForTimeSeries = true;
+        // since we changed the type of we need some way to identify that it's intended for a time-series view later
+        model.isForTimeSeries = true;
 
-          return model;
-        }
-      }, {
-        match: 'aggregation',
-        createModel: function(attrs, layerIndex) {
-          return new CategoryModel(attrs, {
-            filter: createFilter(CategoryFilter, attrs, layerIndex)
-          });
-        }
+        return model;
+      },
+      aggregation: function(attrs, layerIndex) {
+        return new CategoryModel(attrs, {
+          filter: createFilter(CategoryFilter, attrs, layerIndex)
+        });
       }
-    ]);
+    });
 
     // TODO this should probably be extracted, together with the .load method
     this.widgetViewFactory = new WidgetViewFactory([
@@ -555,7 +544,11 @@ var Vis = View.extend({
     _.each(interactiveLayers, function(layer, layerIndex) {
       var widgetsAttrs = layer.get('widgets') || {};
       for (var id in widgetsAttrs) {
-        var widgetModel = this.widgetModelFactory.createModel(id, widgetsAttrs[id], layer.get('id'), layerIndex);
+        var attrs = _.extend({
+          id: id,
+          layerId: layer.get('id')
+        }, widgetsAttrs[id]);
+        var widgetModel = this.widgetModelFactory.createModel(attrs, layerIndex);
         layer.widgets.add(widgetModel);
       }
     }, this);

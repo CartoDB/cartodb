@@ -379,6 +379,7 @@ module.exports = WidgetContent.extend({
   },
 
   _zoom: function() {
+    this.chart.removeSelection();
     this.lockedByUser = true;
     this.viewModel.set({ zoomed: true, zoom_enabled: false });
   },
@@ -411,12 +412,8 @@ module.exports = WidgetContent.extend({
   },
 
   _clear: function() {
-    //if (!this.viewModel.get('zoomed')) {
-      //this.viewModel.trigger('change:zoomed');
-    //} else {
     this.viewModel.set({ zoomed: false, zoom_enabled: false });
     this.viewModel.trigger('change:zoomed');
-    //}
   },
 
   clean: function() {

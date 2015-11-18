@@ -113,8 +113,8 @@ module.exports = WindshaftFilterBase.extend({
     var maxDataCount = MAXDATACOUNT;
     var rejectCount = this.rejectedCategories.size();
     var acceptCount = this.acceptedCategories.size();
-    var acceptedCats = { accept: _.map(_.pluck(this.acceptedCategories.toJSON(), 'name'), encodeURIComponent) };
-    var rejectedCats = { reject: _.map(_.pluck(this.rejectedCategories.toJSON(), 'name'), encodeURIComponent) };
+    var acceptedCats = { accept: _.pluck(this.acceptedCategories.toJSON(), 'name') };
+    var rejectedCats = { reject: _.pluck(this.rejectedCategories.toJSON(), 'name') };
 
     // TODO: review this block of code + other possibilities
     if (!this.isEmpty()) {

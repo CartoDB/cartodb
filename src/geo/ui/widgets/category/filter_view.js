@@ -53,7 +53,7 @@ module.exports = View.extend({
 
   _onUnselectAll: function() {
     this.filter.rejectAll(
-      this.model.getData().pluck('name')
+      this.dataModel.getData().pluck('name')
     );
   },
 

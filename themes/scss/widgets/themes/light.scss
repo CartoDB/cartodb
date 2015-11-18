@@ -52,8 +52,8 @@
     background: $negative;
   }
   .Widget-progressState--pattern {
-    background-color: rgba($secondary, .3);
-    background-image: repeating-linear-gradient(-45deg, transparent, transparent 5px, rgba($secondary,.5) 5px, rgba($secondary,.5) 10px);
+    background-color: $elementBkg;
+    background-image: repeating-linear-gradient(45deg, $elementBkg 0, rgba($secondary, 0.7) 1px, $elementBkg 2px, $elementBkg 3px);
   }
 
   .Widget-dot {
@@ -175,8 +175,8 @@
       background: $disabled !important; // Preventing problems with inline colors
     }
     .Widget-progressState--pattern {
-      background-color: rgba($secondary, .1) !important;
-      background-image: repeating-linear-gradient(-45deg, transparent, transparent 5px, rgba($secondary,.2) 5px, rgba($secondary,.2) 10px) !important;
+      background-color: rgba($secondary, 0.1) !important;
+      background-image: repeating-linear-gradient(45deg, $elementBkg 0, rgba($secondary, 0.2) 1px, $elementBkg 1px, $elementBkg 2px);
     }
   }
 }

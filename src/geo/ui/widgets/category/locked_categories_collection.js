@@ -10,12 +10,6 @@ module.exports = Backbone.Collection.extend({
 
   model: CategoryItemModel,
 
-  initialize: function() {
-    this.bind('change add remove reset', function() {
-      console.log(this.toJSON(), this.size());
-    })
-  },
-
   addItem: function(mdl) {
     if (!this.isItemLocked(mdl.get('name'))) {
       this.add(mdl);

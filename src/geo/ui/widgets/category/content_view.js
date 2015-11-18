@@ -44,7 +44,6 @@ module.exports = WidgetContent.extend({
     var searchEnabled = this.viewModel.isSearchEnabled();
     if (!searchEnabled) {
       this.model.cleanSearch();
-      this.model.applyFilters();
     }
   },
 
@@ -70,6 +69,7 @@ module.exports = WidgetContent.extend({
     // Actions over data view
     var filters = new WidgetCategoryFilterView({
       dataModel: this.model,
+      search: this.search,
       viewModel: this.viewModel,
       filter: this.filter
     });

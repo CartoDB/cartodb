@@ -2,11 +2,12 @@ var $ = require('jquery');
 var _ = require('underscore');
 var View = require('cdb/core/view');
 var Model = require('cdb/core/model');
-var template = require('./paginator_template.tpl');
+var defaultTemplate = require('./paginator_template.tpl');
 
 module.exports = View.extend({
 
   _ITEMS_PER_PAGE: 6,
+  _TEMPLATE: defaultTemplate,
 
   className: 'Widget-nav Widget-contentSpaced',
 
@@ -31,6 +32,7 @@ module.exports = View.extend({
     this.$el.empty();
     var categoriesCount = this.dataModel.getCount();
     var pages = Math.ceil(this.dataModel.getSize() / this._ITEMS_PER_PAGE);
+    var template = this._TEMPLATE;
     this.$el.html(
       template({
         isSearchEnabled: this.viewModel.isSearchEnabled(),

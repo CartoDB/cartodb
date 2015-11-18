@@ -1,4 +1,11 @@
-<% if (isLocked) { %>
+<% if (isSearchEnabled) { %>
+  <p class="Widget-textSmaller Widget-textSmaller--bold Widget-textSmaller--dark Widget-textSmaller--upper"></p>
+  <div class="Widget-filterButtons">
+    <% if (isSearchApplied) { %>
+      <button class="Widget-link js-apply">apply</button>
+    <% } %>
+  </div>
+<% } else if (isLocked && !isSearchEnabled) { %>
   <p class="Widget-textSmaller Widget-textSmaller--bold Widget-textSmaller--dark Widget-textSmaller--upper">
     <%- totalLocked %> selected
   </p>

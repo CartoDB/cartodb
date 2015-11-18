@@ -7,17 +7,19 @@ var template = require('./filter_template.tpl');
  */
 module.exports = View.extend({
 
-  className: 'Widget-filter Widget-contentSpaced Widget-contentSpaced--sideMargins is-hidden',
+  className: 'Widget-filter Widget-contentSpaced Widget-contentSpaced--sideMargins',
 
   events: {
     'click .js-all': '_onSelectAll',
-    'click .js-none': '_onUnselectAll'
+    'click .js-none': '_onUnselectAll',
+    'click .js-apply':'_onApplyClick'
   },
 
   initialize: function() {
     this.filter = this.options.filter;
     this.dataModel = this.options.dataModel;
     this.viewModel = this.options.viewModel;
+    this.search = this.options.search;
     this._initBinds();
   },
 
@@ -30,6 +32,8 @@ module.exports = View.extend({
       template({
         isLocked: this.dataModel.isLocked(),
         totalLocked: this.dataModel.getLockedSize(),
+        isSearchEnabled: this.viewModel.isSearchEnabled(),
+        isSearchApplied: this.dataModel.isSearchApplied(),
         totalCats: totalCats,
         rejectedCats: rejectedCats,
         acceptedCats: acceptedCats
@@ -40,8 +44,10 @@ module.exports = View.extend({
 
   _initBinds: function() {
     this.dataModel.bind('change:data change:filter change:locked', this.render, this);
-    this.viewModel.bind('change:search', this.toggle, this);
+    this.viewModel.bind('change:search', this.render, this);
+    this.search.bind('change:data', this.render, this);
     this.add_related_model(this.dataModel);
+    this.add_related_model(this.search);
     this.add_related_model(this.viewModel);
   },
 
@@ -55,16 +61,9 @@ module.exports = View.extend({
     this.filter.acceptAll();
   },
 
-  toggle: function() {
-    this[ this.viewModel.isSearchEnabled() ? 'hide' : 'show' ]();
-  },
-
-  show: function() {
-    this.$el.removeClass('is-hidden');
-  },
-
-  hide: function() {
-    this.$el.addClass('is-hidden');
+  _onApplyClick: function() {
+    this.viewModel.toggleSearch();
+    this.dataModel.applyFilters();
   }
 
 });

@@ -18,14 +18,6 @@ var TorqueLayer = MapLayer.extend({
     MapLayer.prototype.initialize.apply(this, arguments);
   },
 
-  play: function() {
-    this.trigger('run', true);
-  },
-
-  pause: function() {
-    this.trigger('run', false);
-  },
-
   isEqual: function(other) {
     var properties = ['query', 'query_wrapper', 'cartocss'];
     var self = this;

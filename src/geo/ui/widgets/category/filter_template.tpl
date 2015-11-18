@@ -13,12 +13,14 @@
       <%- rejectedCats === 0 && acceptedCats === 0 || acceptedCats >= totalCats ? "All selected" : acceptedCats + " selected" %>
     <% }%>
   </p>
-  <div class="Widget-filterButtons">
-    <% if (rejectedCats !== 0 && totalCats > 0 || acceptedCats > 0) { %>
-      <button class="Widget-link Widget-filterButton js-all">all</button>
-    <% } %>
-    <% if (totalCats > rejectedCats) { %>
-      <button class="Widget-link Widget-filterButton js-none">none</button>
-    <% } %>
-  </div>
+  <% if (!isLocked) { %>
+    <div class="Widget-filterButtons">
+      <% if (rejectedCats !== 0 && totalCats > 0 || acceptedCats > 0) { %>
+        <button class="Widget-link Widget-filterButton js-all">all</button>
+      <% } %>
+      <% if (totalCats > rejectedCats) { %>
+        <button class="Widget-link Widget-filterButton js-none">none</button>
+      <% } %>
+    </div>
+  <% } %>
 <% } %>

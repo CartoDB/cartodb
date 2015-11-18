@@ -6,11 +6,11 @@ var View = require('cdb/core/view');
 var WidgetContent = require('../standard/widget_content_view');
 var WidgetHistogramChart = require('./chart');
 var placeholder = require('./placeholder.tpl');
-var template = require('./quantities-content.tpl');
+var template = require('./content.tpl');
 var xAxisTickFormatter = d3.format('.2s');
 
 /**
- * Widget content view for a quantity-series
+ * Widget content view for a histogram
  */
 module.exports = WidgetContent.extend({
 

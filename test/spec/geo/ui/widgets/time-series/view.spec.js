@@ -1,14 +1,14 @@
 var HistogramModel = require('cdb/geo/ui/widgets/histogram/model');
-var TimeWidgetView = require('cdb/geo/ui/widgets/histogram/time-view');
+var TimeSeriesWidgetView = require('cdb/geo/ui/widgets/time-series/view');
 
-describe('geo/ui/widgets/histogram/time-view', function() {
+describe('geo/ui/widgets/time-series/view', function() {
   beforeEach(function() {
     this.model = new HistogramModel({
     });
     this.model.sync = function(method, model, options) {
       this.options = options;
     }.bind(this);
-    this.view = new TimeWidgetView({
+    this.view = new TimeSeriesWidgetView({
       model: this.model
     });
     this.view.render();

@@ -23,14 +23,22 @@ var INFOWINDOW_TEMPLATE = require('./vis/infowindow-template');
 var WidgetsView = require('cdb/geo/ui/widgets/widgets_view');
 var CartoDBLayerGroupNamed = require('cdb/geo/map/cartodb-layer-group-named');
 var CartoDBLayerGroupAnonymous = require('cdb/geo/map/cartodb-layer-group-anonymous');
+var RangeFilter = require('cdb/windshaft/filters/range');
+var CategoryFilter = require('cdb/windshaft/filters/category');
+var WidgetModelFactory = require('cdb/geo/ui/widgets/widget-model-factory');
+var ListModel = require('cdb/geo/ui/widgets/list/model');
+var HistogramModel = require('cdb/geo/ui/widgets/histogram/model');
+var CategoryModel = require('cdb/geo/ui/widgets/category/model');
 var WidgetViewFactory = require('cdb/geo/ui/widgets/widget_view_factory');
 var ListWidgetView = require('cdb/geo/ui/widgets/list/view');
-var QuantitiesHistogramView = require('cdb/geo/ui/widgets/histogram/quantities-view');
-var TimeHistogramView = require('cdb/geo/ui/widgets/histogram/time-view');
+var HistogramView = require('cdb/geo/ui/widgets/histogram/view');
+var TimeSeriesView = require('cdb/geo/ui/widgets/time-series/view');
 var CategoryWidgetView = require('cdb/geo/ui/widgets/category/view');
 
-var isTimeHistogramWidget = function(m) {
-  return m.get('type') === 'histogram' && m.get('column_type') === 'date';
+// Used to identify time-series widget for both the widget view factory as well as render it below the map instead of
+// the default widgets list view
+var isTimeSeriesWidget = function(m) {
+  return m.isForTimeSeries;
 };
 
 /**
@@ -41,48 +49,78 @@ var Vis = View.extend({
   initialize: function() {
     _.bindAll(this, 'loadingTiles', 'loadTiles', '_onResize');
 
+    var createFilter = function(Klass, attrs, layerIndex) {
+      return new Klass({
+        widgetId: attrs.id,
+        layerId: attrs.layerId,
+        layerIndex: layerIndex
+      });
+    };
+    this.widgetModelFactory = new WidgetModelFactory([
+      {
+        match: 'list',
+        createModel: function(attrs) {
+          return new ListModel(attrs);
+        }
+      }, {
+        match: 'histogram',
+        createModel: function(attrs, layerIndex) {
+          return new HistogramModel(attrs, {
+            filter: createFilter(RangeFilter, attrs, layerIndex)
+          });
+        }
+      }, {
+        match: 'time-series',
+        createModel: function(attrs, layerIndex) {
+          // change type because time-series because it's really a histogram (for the tiler at least)
+          attrs.type = 'histogram';
+          var model = new HistogramModel(attrs, {
+            filter: createFilter(RangeFilter, attrs, layerIndex)
+          });
+
+          // since we changed the type of we need some way to identify that it's intended for a time-series view later
+          model.isForTimeSeries = true;
+
+          return model;
+        }
+      }, {
+        match: 'aggregation',
+        createModel: function(attrs, layerIndex) {
+          return new CategoryModel(attrs, {
+            filter: createFilter(CategoryFilter, attrs, layerIndex)
+          });
+        }
+      }
+    ]);
+
     // TODO this should probably be extracted, together with the .load method
     this.widgetViewFactory = new WidgetViewFactory([
-      // List widget
       {
-        match: function(widget) {
-          return widget.get('type') === 'list';
-        },
-        create: function(widget) {
+        match: 'list',
+        createView: function(widget) {
           return new ListWidgetView({
+            model: widget
+          });
+        }
+      }, {
+        match: isTimeSeriesWidget,
+        createView: function(widget) {
+          return new TimeSeriesView({
             model: widget,
             filter: widget.filter
           });
         }
-      },
-      // Torque/date histogram widget
-      {
-        match: isTimeHistogramWidget,
-        create: function(widget) {
-          return new TimeHistogramView({
+      }, {
+        match: 'histogram',
+        createView: function(widget) {
+          return new HistogramView({
             model: widget,
             filter: widget.filter
           });
         }
-      },
-      // Default histogram widget
-      {
-        match: function(widget) {
-          return widget.get('type') === 'histogram';
-        },
-        create: function(widget) {
-          return new QuantitiesHistogramView({
-            model: widget,
-            filter: widget.filter
-          });
-        }
-      },
-      // Category widget
-      {
-        match: function(widget) {
-          return widget.get('type') === 'aggregation';
-        },
-        create: function(widget) {
+      }, {
+        match: 'aggregation',
+        createView: function(widget) {
           return new CategoryWidgetView({
             model: widget,
             filter: widget.filter
@@ -486,62 +524,23 @@ var Vis = View.extend({
     });
 
     // TODO: We can probably move this logic somewhere in cdb.geo.ui.Widget
-    var widgetClasses = {
-      "list": {
-        model: 'ListModel'
-      },
-      "histogram": {
-        model: 'HistogramModel',
-        filter: 'RangeFilter'
-      },
-      "aggregation": {
-        model: 'CategoryModel',
-        filter: 'CategoryFilter'
-      }
-    };
-
-    _.each(interactiveLayers, function(layer, index) {
-      var widgets = layer.get('widgets') || {};
-
-      for (var widgetId in widgets) {
-        var widgetData = widgets[widgetId];
-        var widgetType = widgetData.type;
-
-        if (!widgetClasses[widgetData.type]) {
-          throw 'Widget type \'' + widgetType + '\' is not supported!';
-        }
-
-        widgetData.id = widgetId;
-        widgetData.layerId = layer.get('id');
-
-        // Instantiate a filter (if needed)
-        var filterClass = widgetClasses[widgetType].filter;
-        var filterModel;
-        if (filterClass) {
-          filterModel = new cdb.windshaft.filters[filterClass]({
-            widgetId: widgetId,
-            // TODO: check this thing
-            layerIndex: index,
-            layerId: widgetData.layerId
-          });
-        }
-
-        // Instantiate the model
-        var modelClass = widgetClasses[widgetType].model;
-        var widgetModel = new cdb.geo.ui.Widget[modelClass](widgetData, { filter: filterModel });
+    _.each(interactiveLayers, function(layer, layerIndex) {
+      var widgetsAttrs = layer.get('widgets') || {};
+      for (var id in widgetsAttrs) {
+        var widgetModel = this.widgetModelFactory.createModel(id, widgetsAttrs[id], layer.get('id'), layerIndex);
         layer.widgets.add(widgetModel);
       }
-    });
+    }, this);
 
     var isLayerWithTimeWidget = function(m) {
-      return m.widgets.any(isTimeHistogramWidget);
+      return m.widgets.any(isTimeSeriesWidget);
     };
 
     // TODO WidgetView assumes all widgets to be rendered in one place which won't work for the time widget, could we
     // solve this differently/better? for now extract the layer (assumes there to only be one) and attach the view here
     var layer = _.find(interactiveLayers, isLayerWithTimeWidget);
     if (layer) {
-      var widgetModel = layer.widgets.find(isTimeHistogramWidget);
+      var widgetModel = layer.widgets.find(isTimeSeriesWidget);
       var view = this.widgetViewFactory.createView(widgetModel, layer);
       this.addView(view);
       $('.js-dashboard-map-wrapper').append(view.render().el);

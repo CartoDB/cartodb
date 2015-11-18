@@ -20,7 +20,7 @@ describe('geo/ui/widgets/widget_view_factory', function() {
         expect(function() {
           this.factory.addType({
             match: true,
-            create: true
+            createView: true
           });
         }).toThrowError();
 
@@ -28,7 +28,7 @@ describe('geo/ui/widgets/widget_view_factory', function() {
         expect(function() {
           this.factory.addType({
             match: true,
-            create: function() {}
+            createView: function() {}
           });
         }).toThrowError();
 
@@ -36,7 +36,7 @@ describe('geo/ui/widgets/widget_view_factory', function() {
         expect(function() {
           this.factory.addType({
             match: function() {},
-            create: true
+            createView: true
           });
         }).toThrowError();
       });
@@ -49,11 +49,11 @@ describe('geo/ui/widgets/widget_view_factory', function() {
       this.layer = {};
 
       this.matchSpy = jasmine.createSpy('match');
-      this.createSpy = jasmine.createSpy('create');
+      this.createViewSpy = jasmine.createSpy('createView');
 
       this.factory.addType({
         match: this.matchSpy,
-        create: this.createSpy
+        createView: this.createViewSpy
       });
     });
 
@@ -61,24 +61,26 @@ describe('geo/ui/widgets/widget_view_factory', function() {
       beforeEach(function() {
         this.returnedObj = {};
         this.matchSpy.and.returnValue(true);
-        this.createSpy.and.returnValue(this.returnedObj);
+        this.createViewSpy.and.returnValue(this.returnedObj);
         this.result = this.factory.createView(this.widget, this.layer);
       });
 
-      it('should call create for the a matching type', function() {
+      it('should call createView for the matching type', function() {
         expect(this.result).toBe(this.returnedObj);
       });
 
       it('should call match with given widget and layer', function() {
         expect(this.matchSpy).toHaveBeenCalled();
+        expect(this.matchSpy.calls.argsFor(0).length).toEqual(2);
         expect(this.matchSpy.calls.argsFor(0)[0]).toEqual(this.widget);
         expect(this.matchSpy.calls.argsFor(0)[1]).toEqual(this.layer);
       });
 
       it('should call create with given widget and layer', function() {
-        expect(this.createSpy).toHaveBeenCalled();
-        expect(this.createSpy.calls.argsFor(0)[0]).toEqual(this.widget);
-        expect(this.createSpy.calls.argsFor(0)[1]).toEqual(this.layer);
+        expect(this.createViewSpy).toHaveBeenCalled();
+        expect(this.createViewSpy.calls.argsFor(0).length).toEqual(2);
+        expect(this.createViewSpy.calls.argsFor(0)[0]).toEqual(this.widget);
+        expect(this.createViewSpy.calls.argsFor(0)[1]).toEqual(this.layer);
       });
     });
 
@@ -94,7 +96,7 @@ describe('geo/ui/widgets/widget_view_factory', function() {
 
       it('should not call create with given widget and layer', function() {
         expect(this.matchSpy).toHaveBeenCalled();
-        expect(this.createSpy).not.toHaveBeenCalled();
+        expect(this.createViewSpy).not.toHaveBeenCalled();
       });
 
       it('should throw error since no there is no matching type', function() {

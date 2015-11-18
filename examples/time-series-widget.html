@@ -260,9 +260,8 @@
                           "table_name": "mwc13"
                         },
                         "widgets": {
-                          "time_static_widget_uuid": {
-                            "type": "histogram",
-                            column_type: 'date', // to differentiate from a quantities histogram
+                          "time_series_static_widget_uuid": {
+                            "type": "time-series",
                             "column": "numeric_end_at",
                             // TODO initial request is hardcoded until the tiler can resolve this itself
                             "bins": 256,

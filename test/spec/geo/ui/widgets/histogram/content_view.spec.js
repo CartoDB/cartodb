@@ -1,9 +1,9 @@
 var _ = require('underscore');
 var Model = require('cdb/core/model');
 var WidgetHistogramModel = require('cdb/geo/ui/widgets/histogram/model');
-var WidgetHistogramContent = require('cdb/geo/ui/widgets/histogram/quantities-content-view');
+var WidgetHistogramContent = require('cdb/geo/ui/widgets/histogram/content-view');
 
-describe('geo/ui/widgets/histogram/quantities-content-view', function() {
+describe('geo/ui/widgets/histogram/content-view', function() {
 
   beforeEach(function() {
 

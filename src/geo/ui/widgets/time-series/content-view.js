@@ -2,8 +2,8 @@ var $ = require('jquery');
 var _ = require('underscore');
 var Model = require('cdb/core/model');
 var WidgetContentView = require('../standard/widget_content_view.js');
-var HistogramChartView = require('./chart');
-var placeholderTemplate = require('./placeholder.tpl');
+var HistogramChartView = require('../histogram/chart');
+var placeholderTemplate = require('../histogram/placeholder.tpl');
 
 /**
  * Widget view representing a histogram of date/time-series.

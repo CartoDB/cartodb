@@ -181,6 +181,16 @@ describe 'legacy behaviour tests' do
       JSON.parse(last_response.body).should eq ['polygon']
     end
 
+    it 'returns point from an input column if SQLApi says there is a point service for it' do
+      table = create_table(user_id: @user1.id)
+      table.add_column!(name: 'country', type: 'string')
+      table.insert_row!(country: 'Cote d\'Ivore')
+      table.insert_row!(country: 'Spain')
+
+      get api_v1_geocodings_available_geometries_url, { kind: 'postalcode', column_name: 'country', table_name: table.name}
+      last_response.status.should == 200
+    end
+
     it 'returns 400 if table name does not exist' do
       get api_v1_geocodings_available_geometries_url, { kind: 'postalcode', column_name: 'my_column', table_name: 'my_table'}
       last_response.status.should eq 400

@@ -70,12 +70,12 @@ module.exports = WidgetModel.extend({
     });
 
     for (var i = 0; i < numberOfBins; i++) {
-      _.defaults(buckets[i], {
+      buckets[i] = _.extend({
         bin: i,
         start: start + (i * width),
         end: start + ((i + 1) * width),
         freq: 0
-      });
+      }, buckets[i]);
     }
 
     this._data.reset(buckets);

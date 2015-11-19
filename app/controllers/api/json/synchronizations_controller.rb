@@ -199,7 +199,7 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
       options.merge!( { data_source: external_source.import_url.presence } )
     else
       url = params[:url]
-      valide_url!(url) unless Rails.env.development? || Rails.env.test?
+      validate_url!(url) unless Rails.env.development? || Rails.env.test?
       options.merge!(data_source: url)
     end
 

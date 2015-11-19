@@ -7,6 +7,7 @@ var log = require('cdb.log');
 var util = require('cdb.core.util');
 var Loader = require('../core/loader');
 var View = require('../core/view');
+var Model = require('cdb/core/model');
 var StackedLegend = require('../geo/ui/legend/stacked-legend');
 var Map = require('../geo/map');
 var MapView = require('../geo/map-view');
@@ -31,11 +32,11 @@ var HistogramModel = require('cdb/geo/ui/widgets/histogram/model');
 var CategoryModel = require('cdb/geo/ui/widgets/category/model');
 var FormulaModel = require('cdb/geo/ui/widgets/formula/model');
 var WidgetViewFactory = require('cdb/geo/ui/widgets/widget-view-factory');
-var ListWidgetView = require('cdb/geo/ui/widgets/list/view');
-var HistogramView = require('cdb/geo/ui/widgets/histogram/view');
-var TimeSeriesView = require('cdb/geo/ui/widgets/time-series/view');
-var CategoryWidgetView = require('cdb/geo/ui/widgets/category/view');
-var FormulaWidgetView = require('cdb/geo/ui/widgets/formula/view');
+var ListContentView = require('cdb/geo/ui/widgets/list/content_view');
+var HistogramContentView = require('cdb/geo/ui/widgets/histogram/content-view');
+var TimeSeriesContentView = require('cdb/geo/ui/widgets/time-series/content-view');
+var CategoryContentView = require('cdb/geo/ui/widgets/category/content_view');
+var FormulaContentView = require('cdb/geo/ui/widgets/formula/content_view');
 var WindshaftConfig = require('cdb/windshaft/config');
 var WindshaftClient = require('cdb/windshaft/client');
 var WindshaftDashboard = require('cdb/windshaft/dashboard');
@@ -97,38 +98,43 @@ var Vis = View.extend({
     this.widgetViewFactory = new WidgetViewFactory([
       {
         type: 'formula',
-        createView: function(widget) {
-          return new FormulaWidgetView({
+        createContentView: function(widget) {
+          return new FormulaContentView({
             model: widget
           });
         }
       }, {
         type: 'list',
-        createView: function(widget) {
-          return new ListWidgetView({
+        createContentView: function(widget) {
+          return new ListContentView({
             model: widget
           });
         }
       }, {
         match: isTimeSeriesWidget,
-        createView: function(widget) {
-          return new TimeSeriesView({
+        createContentView: function(widget) {
+          return new TimeSeriesContentView({
             model: widget,
             filter: widget.filter
           });
-        }
+        },
+        customizeWidgetAttrs: function(attrs) {
+          attrs.className += ' Dashboard-time';
+          return attrs;
+        },
       }, {
         type: 'histogram',
-        createView: function(widget) {
-          return new HistogramView({
-            model: widget,
+        createContentView: function(widget) {
+          return new HistogramContentView({
+            dataModel: widget,
+            viewModel: new Model(),
             filter: widget.filter
           });
         }
       }, {
         type: 'aggregation',
-        createView: function(widget) {
-          return new CategoryWidgetView({
+        createContentView: function(widget) {
+          return new CategoryContentView({
             model: widget,
             filter: widget.filter
           });
@@ -561,7 +567,7 @@ var Vis = View.extend({
     var layer = _.find(interactiveLayers, isLayerWithTimeWidget);
     if (layer) {
       var widgetModel = layer.widgets.find(isTimeSeriesWidget);
-      var view = this.widgetViewFactory.createView(widgetModel, layer);
+      var view = this.widgetViewFactory.createWidgetView(widgetModel, layer);
       this.addView(view);
       $('.js-dashboard-map-wrapper').append(view.render().el);
     }

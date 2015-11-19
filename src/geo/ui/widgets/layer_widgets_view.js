@@ -15,7 +15,7 @@ module.exports = View.extend({
   },
 
   _renderWidgetView: function(widget) {
-    var widgetView = this.options.widgetViewFactory.createView(widget, this.model);
+    var widgetView = this.options.widgetViewFactory.createWidgetView(widget, this.model);
     this.$el.append(widgetView.render().el);
 
     this.addView(widgetView);

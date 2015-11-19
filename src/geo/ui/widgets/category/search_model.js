@@ -37,6 +37,12 @@ module.exports = Model.extend({
     }, this);
   },
 
+  setData: function(data) {
+    var categories = this._parseData(data);
+    this._data.reset(categories);
+    this.set('data', categories);
+  },
+
   getData: function() {
     return this._data;
   },
@@ -57,11 +63,8 @@ module.exports = Model.extend({
   isLocked: function() {},
 
   resetData: function() {
-    this._data.reset([]);
-    this.set({
-      data: [],
-      q: ''
-    });
+    this.setData([]);
+    this.set('q', '');
   },
 
   isSearchApplied: function() {
@@ -72,23 +75,30 @@ module.exports = Model.extend({
     this.locked[ isSelected ? 'addItem' : 'removeItem' ](mdl);
   },
 
-  parse: function(r) {
+  _parseData: function(categories) {
     var newData = [];
-    _.each(r.categories, function(d) {
-      var category = d.category;
-      var isLocked = this.locked.isItemLocked(category);
-      newData.push({
-        selected: isLocked,
-        name: category,
-        agg: d.agg,
-        value: d.value
-      });
+    _.each(categories, function(d) {
+      if (!d.agg) {
+        var category = d.category || d.name;
+        var isLocked = this.locked.isItemLocked(category);
+        newData.push({
+          selected: isLocked,
+          name: category,
+          agg: d.agg,
+          value: d.value
+        });
+      }
     }, this);
-    this._data.reset(newData);
 
+    return newData;
+  },
+
+  parse: function(r) {
+    var categories = this._parseData(r.categories);
+    this._data.reset(categories);
     return {
-      data: newData
-    }
+      data: categories
+    };
   },
 
   fetch: function(opts) {

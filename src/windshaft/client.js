@@ -2,8 +2,7 @@ var $ = require('jquery');
 var _ = require('underscore');
 var LZMA = require('lzma');
 var util = require('cdb/core/util');
-var WindshaftDashboardInstance = require('./dashboard_instance');
-
+var WindshaftDashboardInstance = require('cdb/windshaft/dashboard-instance');
 
 var validatePresenceOfOptions = function(options, requiredOptions) {
   var missingOptions = _.filter(requiredOptions, function(option) {
@@ -51,7 +50,7 @@ WindshaftClient.prototype.instantiateMap = function(options) {
       if (data.errors) {
         errorCallback(data.errors[0]);
       } else {
-        data.windshaftURLTemplate = this.windshaftURLTemplate;
+        data.urlTemplate = this.windshaftURLTemplate;
         data.userName = this.userName;
         successCallback(new WindshaftDashboardInstance(data));
       }

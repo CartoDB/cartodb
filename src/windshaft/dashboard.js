@@ -2,7 +2,7 @@ var _ = require('underscore');
 var Backbone = require('backbone');
 var WindshaftFiltersCollection = require('./filters/collection');
 var WindshaftFiltersBoundingBoxFilter = require('./filters/bounding_box');
-var WindshaftDashboardInstance = require('./dashboard_instance');
+var WindshaftDashboardInstance = require('./dashboard-instance');
 
 var WindshaftDashboard = function(options) {
   BOUNDING_BOX_FILTER_WAIT = 500;

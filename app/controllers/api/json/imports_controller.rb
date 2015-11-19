@@ -6,6 +6,7 @@ require_relative '../../../models/visualization/external_source'
 require_relative '../../../../services/platform-limits/platform_limits'
 require_relative '../../../../services/importer/lib/importer/exceptions'
 require_dependency 'carto/uuidhelper'
+require 'uri'
 
 class Api::Json::ImportsController < Api::ApplicationController
   include Carto::UUIDHelper
@@ -37,8 +38,12 @@ class Api::Json::ImportsController < Api::ApplicationController
         options = default_creation_options
 
         if params[:url].present?
+          url = params.fetch(:url)
+          if !valid_url? url
+            raise "Invalid URL"
+          end
           options.merge!({
-                           data_source: params.fetch(:url)
+                           data_source: url
                          })
         elsif params[:remote_visualization_id].present?
           external_source = external_source(params[:remote_visualization_id])
@@ -118,6 +123,18 @@ class Api::Json::ImportsController < Api::ApplicationController
   end
 
   private
+
+  # Check that the url to download from is valid: http and no port scanning allowed
+  def valid_url? url
+    uri = URI.parse(url)
+    if uri.kind_of?(URI::HTTP) && (uri.port == 80 || uri.port == 443 || Rails.env.development? || Rails.env.test?)
+      return true
+    else
+      return false
+    end
+  rescue URI::InvalidURIError
+    return false
+  end
 
   def default_creation_options
     user_defined_limits = params.fetch(:user_defined_limits, {})

@@ -39,7 +39,6 @@ var FormulaWidgetView = require('cdb/geo/ui/widgets/formula/view');
 var WindshaftConfig = require('cdb/windshaft/config');
 var WindshaftClient = require('cdb/windshaft/client');
 var WindshaftDashboard = require('cdb/windshaft/dashboard');
-var WindshaftDashboardInstance = require('cdb/windshaft/dashboard_instance');
 var WindshaftPrivateDashboardConfig = require('cdb/windshaft/private_dashboard_config');
 var WindshaftPublicDashboardConfig = require('cdb/windshaft/public_dashboard_config');
 

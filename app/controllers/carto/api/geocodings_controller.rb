@@ -66,7 +66,7 @@ module Carto
         return head(400) if input.nil? && params[:table_name].present?
         render(json: []) and return if input.nil? || input.empty?
 
-        list = input.map{ |v| "'#{ v.to_s.gsub("'", %q('')) }'" }.join(",")
+        list = input.map { |v| "'#{v.to_s.gsub("'", "''")}'" }.join(",")
 
         services = CartoDB::SQLApi.new({ username: 'geocoding', timeout: GEOCODING_SQLAPI_CALLS_TIMEOUT}).fetch("SELECT (admin0_available_services(Array[#{list}])).*")
 

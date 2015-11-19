@@ -1,14 +1,9 @@
 <% if (isSearchEnabled) { %>
-  <p class="Widget-textSmaller Widget-textSmaller--bold Widget-textSmaller--dark Widget-textSmaller--upper"></p>
-  <div class="Widget-filterButtons">
-    <% if (isSearchApplied) { %>
-      <button class="Widget-link js-apply">apply</button>
-    <% } %>
-  </div>
+  <p class="Widget-textSmaller Widget-textSmaller--bold Widget-textSmaller--dark Widget-textSmaller--upper"><%- totalLocked %> selected</p>
 <% } else { %>
   <p class="Widget-textSmaller Widget-textSmaller--bold Widget-textSmaller--dark Widget-textSmaller--upper">
     <% if (isLocked) { %>
-      <%- totalLocked %> locked
+      <%- totalCats %> selected
     <% } else { %>
       <%- rejectedCats === 0 && acceptedCats === 0 || acceptedCats >= totalCats ? "All selected" : acceptedCats + " selected" %>
     <% }%>

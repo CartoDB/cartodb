@@ -11,15 +11,13 @@ module.exports = View.extend({
 
   events: {
     'click .js-all': '_onSelectAll',
-    'click .js-none': '_onUnselectAll',
-    'click .js-apply':'_onApplyClick'
+    'click .js-none': '_onUnselectAll'
   },
 
   initialize: function() {
     this.filter = this.options.filter;
     this.dataModel = this.options.dataModel;
     this.viewModel = this.options.viewModel;
-    this.search = this.options.search;
     this._initBinds();
   },
 
@@ -43,11 +41,9 @@ module.exports = View.extend({
   },
 
   _initBinds: function() {
-    this.dataModel.bind('change:data change:filter change:locked', this.render, this);
+    this.dataModel.bind('change:data change:filter change:locked lockedChange', this.render, this);
     this.viewModel.bind('change:search', this.render, this);
-    this.search.bind('change:data', this.render, this);
     this.add_related_model(this.dataModel);
-    this.add_related_model(this.search);
     this.add_related_model(this.viewModel);
   },
 
@@ -59,11 +55,6 @@ module.exports = View.extend({
 
   _onSelectAll: function() {
     this.filter.acceptAll();
-  },
-
-  _onApplyClick: function() {
-    this.viewModel.toggleSearch();
-    this.dataModel.applyLocked();
   }
 
 });

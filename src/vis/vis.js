@@ -30,7 +30,7 @@ var ListModel = require('cdb/geo/ui/widgets/list/model');
 var HistogramModel = require('cdb/geo/ui/widgets/histogram/model');
 var CategoryModel = require('cdb/geo/ui/widgets/category/model');
 var FormulaModel = require('cdb/geo/ui/widgets/formula/model');
-var WidgetViewFactory = require('cdb/geo/ui/widgets/widget_view_factory');
+var WidgetViewFactory = require('cdb/geo/ui/widgets/widget-view-factory');
 var ListWidgetView = require('cdb/geo/ui/widgets/list/view');
 var HistogramView = require('cdb/geo/ui/widgets/histogram/view');
 var TimeSeriesView = require('cdb/geo/ui/widgets/time-series/view');
@@ -96,14 +96,14 @@ var Vis = View.extend({
     // TODO this should probably be extracted, together with the .load method
     this.widgetViewFactory = new WidgetViewFactory([
       {
-        match: 'formula',
+        type: 'formula',
         createView: function(widget) {
           return new FormulaWidgetView({
             model: widget
           });
         }
       }, {
-        match: 'list',
+        type: 'list',
         createView: function(widget) {
           return new ListWidgetView({
             model: widget
@@ -118,7 +118,7 @@ var Vis = View.extend({
           });
         }
       }, {
-        match: 'histogram',
+        type: 'histogram',
         createView: function(widget) {
           return new HistogramView({
             model: widget,
@@ -126,7 +126,7 @@ var Vis = View.extend({
           });
         }
       }, {
-        match: 'aggregation',
+        type: 'aggregation',
         createView: function(widget) {
           return new CategoryWidgetView({
             model: widget,

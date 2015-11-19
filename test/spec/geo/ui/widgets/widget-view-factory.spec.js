@@ -1,6 +1,6 @@
-var WidgetViewFactory = require('cdb/geo/ui/widgets/widget_view_factory');
+var WidgetViewFactory = require('cdb/geo/ui/widgets/widget-view-factory');
 
-describe('geo/ui/widgets/widget_view_factory', function() {
+describe('geo/ui/widgets/widget-view-factory', function() {
   beforeEach(function() {
     this.factory = new WidgetViewFactory();
   });

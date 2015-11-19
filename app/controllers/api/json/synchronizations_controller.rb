@@ -54,6 +54,9 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
         puts exception.backtrace
       rescue CartoDB::InvalidInterval => exception
         render_jsonp({ errors: "#{exception.detail['message']}: #{exception.detail['hint']}" }, 400)
+      rescue InvalidUrlError => exception
+        CartoDB::Logger.info('Error: create', "#{exception.message} #{ex.backtrace.inspect}")
+        render_jsonp({ errors: exception.message }, 400)
       end
 
     end

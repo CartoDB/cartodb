@@ -1192,7 +1192,14 @@ class Table
 
       unless register_table_only
         begin
-          owner.in_database.rename_table(@name_changed_from, name)
+          # Quite infuriating, but no other way for '_' prefixed names
+          if name.start_with?('_')
+            temp_name = "#{10.times.map{ rand(9) }.join()}_" + name
+            owner.in_database.rename_table(@name_changed_from, temp_name)
+            owner.in_database.rename_table(temp_name, name)
+          else
+            owner.in_database.rename_table(@name_changed_from, name)
+          end
         rescue StandardError => exception
           exception_to_raise = CartoDB::BaseCartoDBError.new(
               "Table update_name_changes(): '#{@name_changed_from}' doesn't exist", exception)

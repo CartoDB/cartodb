@@ -43,6 +43,7 @@ module.exports = View.extend({
   render: function() {
     this._generateChart();
     this._generateChartContent();
+    this._generateTimeMarker();
     return this;
   },
 
@@ -552,6 +553,52 @@ module.exports = View.extend({
     }
 
     return handles;
+  },
+
+  _generateTimeMarker: function() {
+    var translateX = function(d) {
+      return 'translate(' + [ d.x, d.y] + ')';
+    };
+
+    var dx = function(handle, fallbackVal) {
+      // TODO tmp, x should be available on element.data()[0].x following d3 conventions
+      var transformStr = handle.attr('transform');
+      return _.isString(transformStr)
+        ? +(transformStr.match(/\d+\.?\d*/)[0])
+        : fallbackVal;
+    };
+
+    var self = this;
+    var isWithinRange = function(x) {
+      var rangeStart = dx(self.leftHandle, 0)
+      var rangeEnd = Math.min(dx(self.rightHandle, self.chartWidth), self.chartWidth);
+      return rangeStart <= x && x <= rangeEnd;
+    };
+
+    var drag = d3.behavior.drag()
+      .on('drag', function(d, i) {
+        // TODO wasRunning = torqueLayer.isRunning ? => pause
+        var wasRunning = false;
+
+        // Only update as long it's within the bounds of the chart
+        d.x += d3.event.dx
+        if (isWithinRange(d.x)) {
+          d3.select(this).attr('transform', translateX);
+        }
+
+        // TODO wasRunning? => play
+      });
+
+    var d = this.defaults;
+    this._timeMarker = this.chart.append('rect')
+      .attr('class', 'TimeMarker')
+      .attr('width', 4)
+      .attr('height', this.chartHeight + 8)
+      .attr('rx', d.handleRadius)
+      .attr('ry', d.handleRadius)
+      .data([{ x: 0, y: -4 }])
+      .attr('transform', translateX)
+      .call(drag);
   },
 
   _generateHandles: function() {

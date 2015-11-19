@@ -4,9 +4,11 @@ require_relative '../../../models/synchronization/member'
 require_relative '../../../models/synchronization/collection'
 require_relative '../../../../services/datasources/lib/datasources'
 require_relative '../../../../services/platform-limits/platform_limits'
+require_dependency 'carto/url_validator'
 
 class Api::Json::SynchronizationsController < Api::ApplicationController
   include CartoDB
+  include Carto::UrlValidator
 
   ssl_required :create, :update, :destroy, :sync, :sync_now
 
@@ -193,7 +195,9 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
       external_source = get_external_source(params[:remote_visualization_id])
       options.merge!( { data_source: external_source.import_url.presence } )
     else
-      options.merge!({ data_source: params[:url] })
+      url = params[:url]
+      valide_url!(url) unless (Rails.env.development? || Rails.env.test?)
+      options.merge!({ data_source: url })
     end
 
     options.merge!({ synchronization_id: member_id })

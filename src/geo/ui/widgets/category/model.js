@@ -50,15 +50,15 @@ module.exports = WidgetModel.extend({
       }
     }, this);
 
-    this.locked.bind('add remove reset', function() {
-      this.set('locked', this.locked.size() > 0);
-    }, this);
-
     this.bind('change:url change:boundingBox', function() {
       this.search.set({
         url: this.get('url'),
         boundingBox: this.get('boundingBox')
       });
+    }, this);
+
+    this.locked.bind('change add remove', function() {
+      this.trigger('lockedChange', this.locked, this);
     }, this);
 
     // TODO: review this events propagation from search model
@@ -80,12 +80,23 @@ module.exports = WidgetModel.extend({
   },
 
   isLocked: function() {
-    return this.locked.size() > 0;
+    return this.get('locked');
   },
 
   canBeLocked: function() {
     return this.isLocked() ||
       this.filter.hasAccepts();
+  },
+
+  canApplyLocked: function() {
+    var acceptedCollection = this.filter.getAccepted();
+    if (this.filter.getAccepted().size() !== this.locked.size()) {
+      return true;
+    }
+
+    return acceptedCollection.find(function(m) {
+      return !this.locked.isItemLocked(m.get('name'));
+    }, this);
   },
 
   getData: function() {
@@ -111,28 +122,40 @@ module.exports = WidgetModel.extend({
   // Apply functions
 
   cleanSearch: function() {
+    this.locked.resetItems([]);
     this.search.resetData();
   },
 
+  setupSearch: function() {
+    if (!this.isSearchApplied()) {
+      var acceptedCats = this.filter.getAccepted().toJSON();
+      this.locked.addItems(acceptedCats);
+      this.search.setData(
+        this._data.toJSON()
+      );
+    }
+  },
+
   applyLocked: function() {
-    this.filter.rejectedCategories.reset();
     var currentLocked = this.locked.getItemsName();
-    this.locked.addItems(
-      this.filter.getAccepted().toJSON()
-    );
+    if (!currentLocked.length) {
+      this.unlockCategories();
+      return false;
+    }
+    this.set('locked', true);
+    this.filter.cleanFilter(false);
     this.filter.accept(currentLocked);
     this.filter.applyFilter();
+    this.cleanSearch();
   },
 
   lockCategories: function() {
-    this.locked.resetItems(
-      this.filter.getAccepted().toJSON()
-    );
+    this.set('locked', true);
     this._fetch();
   },
 
   unlockCategories: function() {
-    this.locked.removeItems();
+    this.set('locked', false);
     this.filter.acceptAll();
   },
 
@@ -157,8 +180,9 @@ module.exports = WidgetModel.extend({
 
 
     if (this.isLocked()) {
-      // Add locked items that are not present in the categories data
-      this.locked.each(function(mdl) {
+      var acceptedCats = this.filter.getAccepted();
+      // Add accepted items that are not present in the categories data
+      acceptedCats.each(function(mdl) {
         var category = mdl.get('name');
         if (!_tmpArray[category]) {
           newData.push({

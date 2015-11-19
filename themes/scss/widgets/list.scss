@@ -65,6 +65,12 @@
   margin-left: 0;
   overflow: hidden;
 }
+.Widget-list--noresults {
+  @include display-flex();
+  @include align-items(center);
+  height: 120px;
+  padding: 0 24px;
+}
 .Widget-listGroup {
   @include flex-grow(1);
   min-width: $desktopLayout;

@@ -3,7 +3,7 @@ var _ = require('underscore');
 var View = require('cdb/core/view');
 var CategoryItemsView = require('./items_view');
 var WidgetSearchCategoryItemView = require('./search_item_view');
-var placeholder = require('./placeholder.tpl');
+var placeholder = require('./search_items_no_results_template.tpl');
 
 /**
  * Category list view
@@ -28,6 +28,24 @@ module.exports = CategoryItemsView.extend({
 
   toggle: function() {
     this[ this.model.isSearchEnabled() ? 'show' : 'hide']();
-  }
+  },
+
+  _renderList: function() {
+    this.$el.removeClass('Widget-list--noresults')
+    CategoryItemsView.prototype._renderList.call(this);
+  },
+
+  _renderPlaceholder: function() {
+    // Change view classes
+    this.$el
+      .addClass('Widget-list--noresults')
+      .removeClass('Widget-list--wrapped');
+
+    this.$el.html(
+      placeholder({
+        q: this.dataModel.get('q')
+      })
+    );
+  },
 
 });

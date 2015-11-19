@@ -1,7 +1,7 @@
-var WidgetView = require('../../widget');
+var View = require('cdb/core/view');
 var WidgetListItemView = require('./item_view');
 
-module.exports = WidgetView.extend({
+module.exports = View.extend({
 
   className: 'Widget-list js-list',
   tagName: 'ul',

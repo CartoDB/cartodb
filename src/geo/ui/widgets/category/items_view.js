@@ -1,13 +1,13 @@
 var $ = require('jquery');
 var _ = require('underscore');
-var WidgetView = require('../../widget');
+var View = require('cdb/core/view');
 var WidgetCategoryItemView = require('./item_view');
 var placeholder = require('./placeholder.tpl');
 
 /**
  * Category list view
  */
-module.exports = WidgetView.extend({
+module.exports = View.extend({
 
   _ITEMS_PER_PAGE: 6,
 

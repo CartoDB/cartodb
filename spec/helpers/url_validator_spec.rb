@@ -28,5 +28,7 @@ describe 'UUIDHelper' do
   it 'does nothing if everything is ok' do
     @url_validator.validate_url!("http://example.com/foo.csv")
     @url_validator.validate_url!("https://example.com/bar.kml")
+    @url_validator.validate_url!("http://example.com/foo.csv:80")
+    @url_validator.validate_url!("https://example.com/bar.kml:443")
   end
 end

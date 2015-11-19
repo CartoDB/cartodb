@@ -2,25 +2,23 @@ require 'uri'
 
 module Carto
   module UrlValidator
+    DEFAULT_URL_VALID_PORTS = [80, 443]
+
     class InvalidUrlError < StandardError
-      def initialize(msg = "Invalid URL, cannot connect dataset.")
-        super
+      def initialize(url)
+        super "Invalid URL, cannot connect dataset: #{url}"
       end
     end
 
-    def validate_url!(str)
-      raise InvalidUrlError unless valid_url?(str)
+    def validate_url!(str, valid_ports = DEFAULT_URL_VALID_PORTS)
+      raise InvalidUrlError, str unless valid_url?(str, valid_ports)
     end
 
     private
 
-    def valid_url?(str)
+    def valid_url?(str, valid_ports)
       uri = URI.parse(str)
-      if uri.is_a?(URI::HTTP) && (uri.port == 80 || uri.port == 443)
-        return true
-      else
-        return false
-      end
+      return uri.is_a?(URI::HTTP) && valid_ports.include?(uri.port)
     rescue URI::InvalidURIError
       return false
     end

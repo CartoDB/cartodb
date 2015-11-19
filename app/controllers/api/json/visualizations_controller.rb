@@ -82,7 +82,6 @@ class Api::Json::VisualizationsController < Api::ApplicationController
           locator.get(@table_id, CartoDB.extract_subdomain(request))
         end
 
-        debugger
         return head(403) unless payload[:id] == vis.id
         return(head 404) unless vis
         return head(403) unless vis.has_permission?(current_user, Visualization::Member::PERMISSION_READWRITE)

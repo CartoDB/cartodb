@@ -6,7 +6,7 @@ module Carto
     belongs_to :user, class_name: Carto::User
 
     VALID_STATES = ['pending', 'importing', 'ready', 'error']
-    validate :state, inclusion: { in: VALID_STATES, :allow_nil => false }
+    validate :state, inclusion: { in: VALID_STATES, allow_nil: false }
 
     def import_config_json
       JSON.parse(import_config)

@@ -1194,7 +1194,7 @@ class Table
         begin
           # Quite infuriating, but no other way for '_' prefixed names
           if name.start_with?('_')
-            temp_name = "#{ 10.times.map{ rand(9) }.join }_" + name
+            temp_name = "#{10.times.map{ rand(9) }.join}_" + name
             owner.in_database.rename_table(@name_changed_from, temp_name)
             owner.in_database.rename_table(temp_name, name)
           else

@@ -12,6 +12,11 @@ module.exports = PaginatorView.extend({
 
   toggle: function() {
     this[ !this.viewModel.isSearchEnabled() ? 'hide' : 'show' ]();
+  },
+
+  _onSearchClicked: function() {
+    this.options.originModel.cleanSearch();
+    this.viewModel.toggleSearch();
   }
 
 });

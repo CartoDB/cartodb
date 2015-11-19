@@ -2,9 +2,9 @@
   <form class="Widget-form js-form">
     <i class="CDBIcon CDBIcon-Lens"></i>
     <input type="text" class="Widget-textInput js-textInput" value="<%- q %>" placeholder="search by name"/>
-    <button type="button" class=" js-close">
-      <i class="CDBIcon CDBIcon-X"></i>
-    </button>
+    <% if (canShowApply) { %>
+      <button type="button" class="Widget-link js-apply">apply</button>
+    <% } %>
   </form>
 <% } else { %>
   <div class="Widget-title Widget-contentSpaced">
@@ -17,7 +17,7 @@
           </button>
         <% } else { %>
           <button class="Widget-buttonIcon Widget-buttonIcon--circle js-lock">
-            <i class="CDBIcon CDBIcon-Unlock"></i>
+            <i class="CDBIcon CDBIcon-Lock"></i>
           </button>
         <% }  %>
       <% } %>

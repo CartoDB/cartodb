@@ -13,11 +13,12 @@ module.exports = View.extend({
     'click .js-close': '_onClickClose',
     'submit .js-form': '_onSubmitForm',
     'click .js-lock': '_lockCategories',
-    'click .js-unlock': '_unlockCategories'
+    'click .js-unlock': '_unlockCategories',
+    'click .js-apply': '_applyLocked'
   },
 
   initialize: function() {
-    this._title = this.options.title;
+    this.viewModel = this.options.viewModel;
     this.dataModel = this.options.dataModel;
     this.search = this.options.search;
     this._initBinds();
@@ -26,24 +27,26 @@ module.exports = View.extend({
   render: function() {
     this.$el.html(
       template({
-        title: this._title,
+        title: this.dataModel.get('title'),
         q: this.search.get('q'),
         isLocked: this.dataModel.isLocked(),
         canBeLocked: this.dataModel.canBeLocked(),
-        isSearchEnabled: this.model.isSearchEnabled()
+        isSearchEnabled: this.viewModel.isSearchEnabled(),
+        canShowApply: this.dataModel.canApplyLocked()
       })
     );
     return this;
   },
 
   _initBinds: function() {
-    this.model.bind('change:search', this._onSearchToggled, this);
-    this.dataModel.bind('change:filter change:locked', this.render, this);
+    this.viewModel.bind('change:search', this._onSearchToggled, this);
+    this.dataModel.bind('change:filter change:locked lockedChange', this.render, this);
     this.add_related_model(this.dataModel);
+    this.add_related_model(this.viewModel);
   },
 
   _onSearchToggled: function() {
-    var isSearchEnabled = this.model.isSearchEnabled();
+    var isSearchEnabled = this.viewModel.isSearchEnabled();
     this[isSearchEnabled ? '_bindESC' : '_unbindESC']();
     this.render();
     if (isSearchEnabled) {
@@ -58,7 +61,7 @@ module.exports = View.extend({
     if (this.search.isValid()) {
       this.search.fetch();
     } else {
-      this.model.toggleSearch();
+      this.viewModel.toggleSearch();
     }
   },
 
@@ -70,16 +73,16 @@ module.exports = View.extend({
   },
 
   _bindESC: function() {
-    $(window).bind("keyup." + this.model.get('id'), _.bind(this._onKeyUp, this));
+    $(window).bind("keyup." + this.cid, _.bind(this._onKeyUp, this));
   },
 
   _unbindESC: function() {
-    $(window).unbind("keyup." + this.model.get('id'));
+    $(window).unbind("keyup." + this.cid);
   },
 
   _onKeyUp: function(ev) {
     if (ev.keyCode === 27) {
-      this.model.disableSearch();
+      this.viewModel.disableSearch();
     }
   },
 
@@ -91,8 +94,13 @@ module.exports = View.extend({
     this.dataModel.unlockCategories();
   },
 
+  _applyLocked: function() {
+    this.viewModel.toggleSearch();
+    this.dataModel.applyLocked();
+  },
+
   _onClickClose: function() {
-    this.model.disableSearch();
+    this.viewModel.disableSearch();
   },
 
   clean: function() {

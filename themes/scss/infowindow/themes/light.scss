@@ -33,8 +33,28 @@
       color: #fff;
     }
   }
+  .Cdb-infowindow-tabs {
+    background: #F2F6F9;
+  }
+  .Cdb-infowindow-tabs-links {
+    color: #3AA9E3;
+    &.is-active {
+      color: #2E3C43;
+      border-bottom: 1px solid #2E3C43;
+    }
+  }
+  .Cdb-loading-subtitle {
+    background: #F9F9F9;
+  }
+  .Cdb-loading-title {
+    background: #F9F9F9;
+  }
 
+  .Cdb-loading-bg {
+    opacity: .03;
+  }
 }
+
 
 .Cdb-infowindow-header {
   &.Cdb-infowindow-header-bg--light {

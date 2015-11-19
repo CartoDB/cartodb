@@ -10,26 +10,22 @@
   font-family: 'Open Sans';
 }
 
-.Cdb-infowindow-inner, .Cdb-infowindow-header-bg {
-  padding: $sMargin-section;
-}
-
-.is-header .Cdb-infowindow-header-bg {
-  padding-bottom: $sMargin-element;
-}
-
-.is-header .Cdb-infowindow-inner {
-  padding-top: $sMargin-element;
-}
-
-.Cdb-infowindow-header {
+.Cdb-infowindow-container {
   border-radius: 4px;
   overflow: hidden;
 }
 
-.is-header .Cdb-infowindow-header {
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
+.Cdb-infowindow-inner, .Cdb-infowindow-header-bg {
+  padding: 20px 24px 14px 24px;
+}
+
+.is-header {
+  .Cdb-infowindow-header-bg {
+    padding-bottom: 12px;
+  }
+  .Cdb-infowindow-inner {
+    padding-top: 12px;
+  }
 }
 
 .Cdb-infowindow-subtitle {
@@ -80,10 +76,12 @@
 .Cdb-infowindow-header-media {
   position: relative;
   overflow: hidden;
+  z-index: 1;
 }
 
 .Cdb-infowindow-media-item {
   display: block;
+  width: 100%;
 }
 
 
@@ -108,7 +106,7 @@
 
 .Cdb-hook {
   position: absolute;
-  left: 20px;
+  left: 24px;
   bottom: 0;
   z-index: 10;
 }
@@ -132,7 +130,7 @@
   border-top: 16px solid #E68165 !important;
 }
 
-.Cdb-hook:after {
+.Cdb-hook:after, .Cdb-hook-image:after {
   content:"";
   position: absolute;
   left: 0;
@@ -148,22 +146,167 @@
 
 .is-header-image {
 
-  .Cdb-hook:before {
-    display: none;
-  }
-
-  .Cdb-hook-inner {
+  .Cdb-hook-image {
     position: absolute;
     height: 16px;
     width: 24px;
-    overflow: hidden;
-    -webkit-clip-path: polygon(0 0, 0% 100%, 100% 0);
-    clip-path: polygon(0 0, 0% 100%, 100% 0);
     z-index: 3;
-    background: #fff; 
+    left: 24px;
 
     img {
-      margin-left: -20px;
+      margin-left: -24px;
     }
   }
+  .Cdb-hook-image-inner {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+    z-index: 3;
+  }
 }
+
+.Cdb-infowindow-tabs {
+  font-size: 10px;
+  line-height: 14px;
+  padding: 21px 24px 0 24px;
+  width: auto;
+  overflow: hidden;
+  position: relative;
+}
+
+.Cdb-infowindow-tabs-item {
+  float: left;
+  margin-right: 16px;
+  position: relative;
+  z-index: 2;
+}
+
+.Cdb-infowindow-tabs-links {
+  display: block;
+  padding-bottom: 13px;
+}
+
+.Cdb-infowindow-navigation {
+  padding: 14px 0 24px ;
+  margin: 0 24px;
+  border-top: 1px solid #F2F6F9;
+  font-size: 10px;
+  position: relative;
+  text-align: center;
+  color: #636D72;
+  position: relative;
+  margin-top: -1px;
+}
+
+.Cdb-infowindow-navigation-prev {
+  display: block;
+  width: 4px;
+  height: 7px;
+  position: absolute;
+  top: 16px;
+  left: 0;
+
+  &:before {
+    content:"";
+    position: absolute;
+    display: block;
+    width: 6px;
+    height: 1px;
+    background: #3AA9E3;
+    top: 0;
+    left: 0; 
+    transform: rotate(-45deg);
+  }
+  &:after {
+    content:"";
+    position: absolute;
+    display: block;
+    width: 6px;
+    height: 1px;
+    background: #3AA9E3;
+    bottom: 2px;
+    left: 0; 
+    transform: rotate(45deg);
+  }
+}
+
+.Cdb-infowindow-navigation-next {
+  display: block;
+  width: 4px;
+  height: 7px;
+  position: absolute;
+  top: 16px;
+  right: 0;
+
+  &:before {
+    content:"";
+    position: absolute;
+    display: block;
+    width: 6px;
+    height: 1px;
+    background: #3AA9E3;
+    top: 0;
+    left: 0; 
+    transform: rotate(45deg);
+  }
+  &:after {
+    content:"";
+    position: absolute;
+    display: block;
+    width: 6px;
+    height: 1px;
+    background: #3AA9E3;
+    bottom: 2px;
+    left: 0; 
+    transform: rotate(-45deg);
+  }
+}
+
+.Cdb-loading {
+  padding: 4px 0 10px 0;
+}
+.Cdb-loading-subtitle {
+  height: 4px;
+  margin-bottom: 8px;
+  width: 40%;
+}
+.Cdb-loading-title {
+  height: 8px;
+  width: 90%;
+}
+.Cdb-loading-text {
+  overflow: hidden;
+  position: relative;
+}
+
+@-webkit-keyframes placeholder {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 70%;
+  }
+}
+
+@keyframes placeholder {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 70%;
+  }
+}
+
+.Cdb-loading-bg {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  background: linear-gradient(to right,  rgba(0, 0, 0, 0) 0%,rgba(0, 0, 0, 1) 100%);
+  -webkit-animation: placeholder ease-in-out 2s infinite ;
+  animation: placeholder ease-in-out 2s infinite;
+}
+
+
+

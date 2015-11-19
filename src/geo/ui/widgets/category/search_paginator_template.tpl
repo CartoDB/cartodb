@@ -1,12 +1,5 @@
 <div class="Widget-contentFlex">
-  <button class="u-rSpace--m Widget-buttonIcon js-searchToggle">
-    <i class="CDBIcon CDBIcon-Hamburguer"></i>
-  </button>
-  <% if (categoriesCount > 0) { %>
-    <p class="Widget-textSmaller Widget-textSmaller--bold Widget-textSmall--upper">
-      <%- categoriesCount %> categor<%- categoriesCount !== 1 ? "ies" : "y" %> found
-    </p>
-  <% } %>
+  <button class="u-rSpace--m Widget-link js-searchToggle">cancel</button>
 </div>
 <div class="Widget-navDots js-dots">
   <% for (var i = 0, l = pages; i < l; i++) { %><button class="Widget-dot Widget-dot--navigation js-page <% if (currentPage === i) { %>is-selected<% } %>" data-page="<%- i %>"></button><% } %>

@@ -44,8 +44,9 @@ module.exports = WidgetContent.extend({
 
   _onFirstLoad: function() {
     this.render();
-    this.dataModel.bind('change:data', this._onChangeData, this);
     this._storeBounds();
+    this.dataModel.bind('change:data', this._onChangeData, this);
+    this.dataModel._fetch();
   },
 
   _storeBounds: function() {
@@ -194,25 +195,31 @@ module.exports = WidgetContent.extend({
     this.canvasHeight = this.defaults.chartHeight - this.margin.top - this.margin.bottom;
   },
 
+  _clearTooltip: function() {
+    this.$(".js-tooltip").stop().hide();
+  },
+
   _onValueHover: function(info) {
     var $tooltip = this.$(".js-tooltip");
+
     if (info && info.data) {
       $tooltip.css({ top: info.top, left: info.left });
       $tooltip.text(info.data);
       $tooltip.css({ left: info.left - $tooltip.width()/2 });
       $tooltip.fadeIn(70);
     } else {
-      $tooltip.stop().hide();
+      this._clearTooltip();
     }
   },
 
   _onMiniRangeUpdated: function(loBarIndex, hiBarIndex) {
     this.lockedByUser = false;
-
-    var data = this.originalData;
-
     this.lockZoomedData = false;
 
+    this._clearTooltip();
+    this.chart.removeSelection();
+
+    var data = this.originalData;
     var start = data[loBarIndex].start;
     var end = data[hiBarIndex - 1].end;
 
@@ -373,6 +380,7 @@ module.exports = WidgetContent.extend({
   },
 
   _zoom: function() {
+    this.chart.removeSelection();
     this.lockedByUser = true;
     this.viewModel.set({ zoomed: true, zoom_enabled: false });
   },
@@ -405,12 +413,8 @@ module.exports = WidgetContent.extend({
   },
 
   _clear: function() {
-    //if (!this.viewModel.get('zoomed')) {
-      //this.viewModel.trigger('change:zoomed');
-    //} else {
     this.viewModel.set({ zoomed: false, zoom_enabled: false });
     this.viewModel.trigger('change:zoomed');
-    //}
   },
 
   clean: function() {

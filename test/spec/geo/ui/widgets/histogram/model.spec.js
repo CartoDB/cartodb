@@ -7,6 +7,14 @@ describe('geo/ui/widgets/histogram/model', function() {
     this.model = new WidgetModel();
   });
 
+  it('should submit the bbox if enabled', function() {
+    this.model.set({ boundingBox: 1234 });
+    expect(this.model.url()).toBe("");
+
+    this.model.set({ submitBBox: true });
+    expect(this.model.url()).toBe("?bbox=1234");
+  });
+
   it('should parse the bins', function() {
     var data = {
       bin_width: 14490.25,

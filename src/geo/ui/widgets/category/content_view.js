@@ -34,23 +34,10 @@ module.exports = WidgetContent.extend({
     return this;
   },
 
-  _initBinds: function() {
-    this.viewModel.bind('change:search', this._onToggleSearch, this);
-  },
-
-  _onToggleSearch: function() {
-    // If search is disabled, get selected items and set them
-    // in accept filter. Then reset search.
-    var searchEnabled = this.viewModel.isSearchEnabled();
-    if (!searchEnabled) {
-      this.model.cleanSearch();
-    }
-  },
-
   _initViews: function() {
     // Title or search
     var searchTitle = new WidgetSearchTitleView({
-      model: this.viewModel,
+      viewModel: this.viewModel,
       dataModel: this.model,
       title: this.model.get('title'),
       search: this.search
@@ -61,7 +48,8 @@ module.exports = WidgetContent.extend({
     // Stats info
     var info = new WidgetCategoryInfoView({
       viewModel: this.viewModel,
-      dataModel: this.model
+      dataModel: this.model,
+      search: this.search
     });
     this.$('.js-header').append(info.render().el);
     this.addView(info);
@@ -69,7 +57,6 @@ module.exports = WidgetContent.extend({
     // Actions over data view
     var filters = new WidgetCategoryFilterView({
       dataModel: this.model,
-      search: this.search,
       viewModel: this.viewModel,
       filter: this.filter
     });
@@ -115,6 +102,7 @@ module.exports = WidgetContent.extend({
     var searchPagination = new WidgetSearchCategoryPaginatorView({
       $target: searchList.$el,
       viewModel: this.viewModel,
+      originModel: this.model,
       dataModel: this.search,
       itemsPerPage: this._ITEMS_PER_PAGE
     });

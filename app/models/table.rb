@@ -1226,7 +1226,7 @@ class Table
 
   # @see https://github.com/jeremyevans/sequel#qualifying-identifiers-columntable-names
   def sequel_qualified_table_name
-    "#{owner.database_schema}__#{@user_table.name}".to_sym
+    Sequel.qualify(owner.database_schema, @user_table.name)
   end
 
   def qualified_table_name

@@ -17,6 +17,7 @@ module.exports = View.extend({
   initialize: function() {
     this.viewModel = this.options.viewModel;
     this.dataModel = this.options.dataModel;
+    this.search = this.options.search;
     this._initBinds();
   },
 
@@ -24,6 +25,9 @@ module.exports = View.extend({
 
     this.$el.html(
       template({
+        isSearchEnabled: this.viewModel.isSearchEnabled(),
+        isSearchApplied: this.dataModel.isSearchApplied(),
+        resultsCount: this.search.getCount(),
         min: this.dataModel.get('min'),
         max: this.dataModel.get('max'),
         nulls: this.dataModel.get('nulls')
@@ -33,14 +37,12 @@ module.exports = View.extend({
   },
 
   _initBinds: function() {
-    this.dataModel.bind('change:data', this.render, this);
-    this.viewModel.bind('change:search', this.toggle, this);
+    this.dataModel.bind('change:data change:locked', this.render, this);
+    this.viewModel.bind('change:search', this.render, this);
+    this.search.bind('change:data', this.render, this);
     this.add_related_model(this.dataModel);
+    this.add_related_model(this.search);
     this.add_related_model(this.viewModel);
-  },
-
-  toggle: function() {
-    this[ this.viewModel.isSearchEnabled() ? 'hide' : 'show' ]();
   }
 
 });

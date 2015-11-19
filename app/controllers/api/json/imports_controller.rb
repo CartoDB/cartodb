@@ -39,11 +39,8 @@ class Api::Json::ImportsController < Api::ApplicationController
         options = default_creation_options
 
         if params[:url].present?
-          url = params.fetch(:url)
-          valide_url!(url) unless Rails.env.development? || Rails.env.test?
-          options.merge!({
-                           data_source: url
-                         })
+          validate_url!(params.fetch(:url)) unless Rails.env.development? || Rails.env.test?
+          options.merge!(data_source: params.fetch(:url))
         elsif params[:remote_visualization_id].present?
           external_source = external_source(params[:remote_visualization_id])
           options.merge!( { data_source: external_source.import_url.presence } )

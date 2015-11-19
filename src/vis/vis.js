@@ -586,7 +586,7 @@ var Vis = View.extend({
 
     var windshaftClient = new WindshaftClient({
       endpoint: endpoint,
-      windshaftURLTemplate: datasource.maps_api_template,
+      urlTemplate: datasource.maps_api_template,
       userName: datasource.user_name,
       statTag: datasource.stat_tag,
       forceCors: datasource.force_cors

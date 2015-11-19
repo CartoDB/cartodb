@@ -18,15 +18,15 @@ var validatePresenceOfOptions = function(options, requiredOptions) {
  * @param {object} options Options to set up the client
  */
 WindshaftClient = function(options) {
-  validatePresenceOfOptions(options, ['windshaftURLTemplate', 'userName', 'endpoint', 'statTag']);
+  validatePresenceOfOptions(options, ['urlTemplate', 'userName', 'endpoint', 'statTag']);
 
-  this.windshaftURLTemplate = options.windshaftURLTemplate;
+  this.urlTemplate = options.urlTemplate;
   this.userName = options.userName;
   this.endpoint = options.endpoint;
   this.statTag = options.statTag;
   this.forceCors = options.forceCors || false;
 
-  this.url = this.windshaftURLTemplate.replace('{user}', this.userName);
+  this.url = this.urlTemplate.replace('{user}', this.userName);
 };
 
 WindshaftClient.DEFAULT_COMPRESSION_LEVEL = 3;
@@ -50,7 +50,7 @@ WindshaftClient.prototype.instantiateMap = function(options) {
       if (data.errors) {
         errorCallback(data.errors[0]);
       } else {
-        data.urlTemplate = this.windshaftURLTemplate;
+        data.urlTemplate = this.urlTemplate;
         data.userName = this.userName;
         successCallback(new WindshaftDashboardInstance(data));
       }

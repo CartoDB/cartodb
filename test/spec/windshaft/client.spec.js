@@ -7,7 +7,7 @@ describe('src/windshaft/client', function() {
   it('should throw an error if required options are not passed to the constructor', function() {
     expect(function() {
       new Client({});
-    }).toThrow('The following options are required: windshaftURLTemplate, userName, endpoint, statTag');
+    }).toThrow('The following options are required: urlTemplate, userName, endpoint, statTag');
   });
 
   describe('#instantiateMap', function() {
@@ -24,7 +24,7 @@ describe('src/windshaft/client', function() {
       };
 
       this.client = new Client({
-        windshaftURLTemplate: 'https://{user}.example.com:443',
+        urlTemplate: 'https://{user}.example.com:443',
         userName: 'rambo',
         statTag: 'stat_tag',
         endpoint: 'api/v1'
@@ -106,7 +106,7 @@ describe('src/windshaft/client', function() {
       spyOn(util, 'isCORSSupported').and.returnValue(true);
 
       this.client = new Client({
-        windshaftURLTemplate: 'https://{user}.example.com:443',
+        urlTemplate: 'https://{user}.example.com:443',
         userName: 'rambo',
         statTag: 'stat_tag',
         endpoint: 'api/v1',
@@ -134,7 +134,7 @@ describe('src/windshaft/client', function() {
       spyOn(util, 'isCORSSupported').and.returnValue(true);
 
       this.client = new Client({
-        windshaftURLTemplate: 'https://{user}.example.com:443',
+        urlTemplate: 'https://{user}.example.com:443',
         userName: 'rambo',
         statTag: 'stat_tag',
         endpoint: 'api/v1',
@@ -167,7 +167,7 @@ describe('src/windshaft/client', function() {
       spyOn(util, 'isCORSSupported').and.returnValue(false);
 
       this.client = new Client({
-        windshaftURLTemplate: 'https://{user}.example.com:443',
+        urlTemplate: 'https://{user}.example.com:443',
         userName: 'rambo',
         statTag: 'stat_tag',
         endpoint: 'api/v1',

@@ -2,10 +2,22 @@ var _ = require('underscore');
 var MapLayer = require('./map-layer');
 var Backbone = require('backbone');
 
+/**
+ * Model for a Torque Layer
+ */
 var TorqueLayer = MapLayer.extend({
   defaults: {
     type: 'torque',
-    visible: true
+    visible: true,
+
+    // Values expected to be set from torque layer
+    isRunning: false,
+    timeBounds: {
+      start: undefined,
+      end: undefined
+    },
+    steps: 0,
+    step: 0,
   },
 
   initialize: function() {
@@ -16,6 +28,40 @@ var TorqueLayer = MapLayer.extend({
     }, this);
 
     MapLayer.prototype.initialize.apply(this, arguments);
+  },
+
+  // Expected to be called from view, to keep the model in sync,
+  // so other views can listen to the model w/o have to know what view implementation is used
+  initBindsForTorqueLayerView: function(torqueLayerView) {
+    torqueLayerView.bind('change:time', function() {
+      this.set('step', torqueLayerView.getStep());
+    }, this);
+
+    torqueLayerView.bind('play', this.set.bind(this, 'isRunning', true));
+    torqueLayerView.bind('pause', this.set.bind(this, 'isRunning', false));
+
+    this.set({
+      isRunning: torqueLayerView.isRunning(),
+      timeBounds: torqueLayerView.getTimeBounds(),
+      step: torqueLayerView.getStep(),
+      steps: torqueLayerView.options.steps
+    });
+
+    this.bind('run', function(run) {
+      if (run) {
+        torqueLayerView.play();
+      } else {
+        torqueLayerView.pause();
+      }
+    });
+  },
+
+  play: function() {
+    this.trigger('run', true);
+  },
+
+  pause: function() {
+    this.trigger('run', false);
   },
 
   isEqual: function(other) {

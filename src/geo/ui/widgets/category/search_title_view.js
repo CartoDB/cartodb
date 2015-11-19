@@ -28,6 +28,7 @@ module.exports = View.extend({
     this.$el.html(
       template({
         title: this.dataModel.get('title'),
+        columnName: this.dataModel.get('column'),
         q: this.search.get('q'),
         isLocked: this.dataModel.isLocked(),
         canBeLocked: this.dataModel.canBeLocked(),

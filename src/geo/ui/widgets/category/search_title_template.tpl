@@ -1,9 +1,9 @@
 <% if (isSearchEnabled) { %>
-  <form class="Widget-form js-form">
-    <i class="CDBIcon CDBIcon-Lens"></i>
-    <input type="text" class="Widget-textInput js-textInput" value="<%- q %>" placeholder="search by name"/>
+  <form class="Widget-search js-form">
+    <i class="CDBIcon CDBIcon-Lens Widget-searchLens"></i>
+    <input type="text" class="Widget-textInput Widget-searchTextInput js-textInput" value="<%- q %>" placeholder="search by <%- columnName %>"/>
     <% if (canShowApply) { %>
-      <button type="button" class="Widget-link js-apply">apply</button>
+      <button type="button" class="Widget-link Widget-searchApply js-apply">apply</button>
     <% } %>
   </form>
 <% } else { %>

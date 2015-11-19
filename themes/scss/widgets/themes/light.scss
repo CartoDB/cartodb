@@ -53,7 +53,9 @@ $commonBkg: rgba(#FFF, 1);
       background: $linkHover;
     }
   }
-
+  .Widget-searchLens {
+    color: $link;
+  }
   .Widget-progressBar {
     background: $elementBkg;
   }

@@ -4,6 +4,9 @@
 @import '../variables/sizes';
 @import '../variables/mixins';
 
+.Widget-form {
+  height: 24px;
+}
 .Widget-textInput {
   border: none;
   outline: none;

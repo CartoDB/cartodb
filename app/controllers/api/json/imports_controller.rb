@@ -40,7 +40,7 @@ class Api::Json::ImportsController < Api::ApplicationController
 
         if params[:url].present?
           url = params.fetch(:url)
-          valide_url!(url) unless (Rails.env.development? || Rails.env.test?)
+          valide_url!(url) unless Rails.env.development? || Rails.env.test?
           options.merge!({
                            data_source: url
                          })

@@ -70,6 +70,7 @@ module.exports = View.extend({
   },
 
   _onSearchClicked: function() {
+    this.dataModel.setupSearch();
     this.viewModel.toggleSearch();
   },
 

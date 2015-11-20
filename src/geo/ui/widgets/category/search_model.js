@@ -103,7 +103,19 @@ module.exports = Model.extend({
 
   fetch: function(opts) {
     this.trigger("loading", this);
-    return Model.prototype.fetch.call(this,opts);
+    return Model.prototype.fetch.call(this, opts);
+  },
+
+  sync: function() {
+    var self = arguments[1];
+    if (this._xhr) {
+      this._xhr.abort();
+    }
+    this._xhr = Model.prototype.sync.apply(this, arguments);
+    this._xhr.always(function() {
+      self._xhr = null;
+    });
+    return this._xhr;
   }
 
 });

@@ -23,47 +23,47 @@ module.exports = View.extend({
 
     _.bindAll(this, '_selectBars', '_adjustBrushHandles', '_onBrushMove', '_onBrushStart', '_onMouseMove', '_onMouseOut');
 
+    this.model = new Model({
+      data: opts.data,
+      width: opts.width,
+      height: opts.height,
+      margin: opts.margin,
+      pos: { x: 0, y: 0 }
+    });
+
+    this.model.bind('change:width', this._onChangeWidth, this);
+    this.model.bind('change:pos', this._onChangePos, this);
+    this.model.bind('change:lo_index change:hi_index', this._onChangeRange, this);
+    this.model.bind('change:data', this._onChangeData, this);
+    this.model.bind('change:dragging', this._onChangeDragging, this);
+
+    this._torqueLayerModel = this.options.torqueLayerModel;
+
     // using tagName: 'svg' doesn't work,
     // and w/o class="" d3 won't instantiate properly
     this.$el = $('<svg class=""></svg>');
     this.el = this.$el[0];
 
     this._canvas = d3.select(this.el)
-    .attr('width',  opts.width)
-    .attr('height', opts.height);
+      .attr('width',  this.model.get('width'))
+      .attr('height', this.model.get('height'))
 
-    this._canvas
-    .append('g')
-    .attr('class', 'Canvas');
+    this._canvas.append('g').attr('class', 'Canvas');
 
-    this._setupModel();
-    this._setupDimensions();
+    this._setupScalesRanges();
   },
 
   render: function() {
     this._generateChart();
     this._generateChartContent();
-    if (this.options.torqueLayerModel) {
-      this._generateTimeMarker();
+    if (this._torqueLayerModel) {
+      this._generateTimeMarker(this._torqueLayerModel);
     }
     return this;
   },
 
-  _generateTimeMarker: function() {
+  _generateTimeMarker: function(torqueLayerModel) {
     var self = this;
-
-    var getDX = function(handle, fallbackVal) {
-      // TODO tmp, x should be available on element.data()[0].x following d3 conventions
-      var transformStr = handle.attr('transform');
-      return _.isString(transformStr)
-        ? +(transformStr.match(/\d+\.?\d*/)[0])
-        : fallbackVal;
-    };
-    var isWithinRange = function(x) {
-      var rangeStart = getDX(self.leftHandle, 0)
-      var rangeEnd = Math.min(getDX(self.rightHandle, self.chartWidth), self.chartWidth);
-      return rangeStart <= x && x <= rangeEnd;
-    };
 
     var translateX = function(d) {
       return 'translate(' + [ d.x, d.y] + ')';
@@ -74,25 +74,37 @@ module.exports = View.extend({
     var timeMarker = this.chart.append('rect')
       .attr('class', 'TimeMarker')
       .attr('width', 4)
-      .attr('height', this.chartHeight + 8)
+      .attr('height', this._chartHeight() + 8)
       .attr('rx', d.handleRadius)
       .attr('ry', d.handleRadius)
       .data([{ x: 0, y: -4 }])
       .attr('transform', translateX)
       .call(dragBehavior);
 
-    // TODO update scale range when width changes
-    var xScaleTorque = d3.scale.linear().domain([0, 256]).range([0, this.chartWidth]);
-    var tlm = this.options.torqueLayerModel;
+    var updateTimeMarkerPos = function(m, step) {
+      var data = timeMarker.data();
+      data[0].x = self.xScaleTorque(step);
 
-    var isDragging = false;
+      timeMarker
+        .data(data)
+        .transition()
+        .ease('linear')
+        .attr('transform', translateX);
+    };
+    torqueLayerModel.bind('change:step', updateTimeMarkerPos);
+    this.add_related_model(torqueLayerModel);
+
+    var isWithinRange = function(x) {
+      return 0 <= x && x <= self._chartWidth();
+    };
+
     var wasRunning = false;
     dragBehavior
       .on('dragstart', function() {
-        isDragging = true;
-        var wasRunning = tlm.get('isRunning');
+        torqueLayerModel.unbind('change:step', updateTimeMarkerPos);
+        var wasRunning = torqueLayerModel.get('isRunning');
         if (wasRunning) {
-          tlm.pause();
+          torqueLayerModel.pause();
         }
       })
       .on('drag', function(d, i) {
@@ -101,30 +113,16 @@ module.exports = View.extend({
           d.x = nextX;
           d3.select(this).attr('transform', translateX);
 
-          var step = Math.round(xScaleTorque.invert(d.x));
-          tlm.setStep(step);
+          var step = Math.round(self.xScaleTorque.invert(d.x));
+          torqueLayerModel.setStep(step);
         }
       })
       .on('dragend', function() {
         if (wasRunning) {
           self._torqueLayerModel.play();
         }
-        isDragging = false;
+        torqueLayerModel.bind('change:step', updateTimeMarkerPos);
       });
-
-    tlm.bind('change:step', function(m, step) {
-      if (!isDragging) {
-        var data = timeMarker.data();
-        data[0].x = xScaleTorque(step);
-
-        timeMarker
-          .data(data)
-          .transition()
-          .ease('linear')
-          .attr('transform', translateX);
-      }
-    });
-    this.add_related_model(tlm);
   },
 
   replaceData: function(data) {
@@ -147,20 +145,19 @@ module.exports = View.extend({
   },
 
   _onChangeWidth: function() {
-    var loBarIndex = this.model.get('lo_index');
-    var hiBarIndex = this.model.get('hi_index');
-
     var width = this.model.get('width');
-
     this.$el.width(width);
-
     this.chart.attr('width', width);
 
     this.reset();
+
+    var loBarIndex = this.model.get('lo_index');
+    var hiBarIndex = this.model.get('hi_index');
     this.selectRange(loBarIndex, hiBarIndex);
   },
 
   _onChangePos: function() {
+    var margin = this.model.get('margin');
     var pos = this.model.get('pos');
 
     var x = +pos.x;
@@ -169,7 +166,7 @@ module.exports = View.extend({
     this.chart
     .transition()
     .duration(150)
-    .attr('transform', 'translate(' + (this.margin.left + x) + ', ' + (this.margin.top + y) + ')');
+    .attr('transform', 'translate(' + (margin.left + x) + ', ' + (margin.top + y) + ')');
   },
 
   _onBrushStart: function() {
@@ -194,7 +191,6 @@ module.exports = View.extend({
 
   _onMouseMove: function() {
     var x = d3.event.offsetX;
-    var y = d3.event.offsetY;
 
     var barIndex = Math.floor(x / this.barWidth);
     var data = this.model.get('data');
@@ -209,15 +205,16 @@ module.exports = View.extend({
     var bar = this.chart.select('.Bar:nth-child(' + (barIndex + 1) + ')');
 
     if (bar && bar.node() && !bar.classed('is-selected')) {
+      var chartHeight = this._chartHeight();
 
       var left = (barIndex * this.barWidth) + (this.barWidth/2);
 
       var top = this.yScale(freq) + this.model.get('pos').y + this.$el.position().top - 20;
 
-      var h = this.chartHeight - this.yScale(freq);
+      var h = chartHeight - this.yScale(freq);
 
       if (h < this.defaults.minimumBarHeight && h > 0) {
-        top = this.chartHeight + this.model.get('pos').y + this.$el.position().top - 20 - this.defaults.minimumBarHeight;
+        top = chartHeight + this.model.get('pos').y + this.$el.position().top - 20 - this.defaults.minimumBarHeight;
       }
 
       if (!this._isDragging()) {
@@ -226,7 +223,6 @@ module.exports = View.extend({
       } else {
         hoverProperties = null;
       }
-
     } else {
       hoverProperties = null;
     }
@@ -241,23 +237,15 @@ module.exports = View.extend({
     }
   },
 
-  _bindModel: function() {
-    this.model.bind('change:width', this._onChangeWidth, this);
-    this.model.bind('change:pos', this._onChangePos, this);
-    this.model.bind('change:lo_index change:hi_index', this._onChangeRange, this);
-    this.model.bind('change:data', this._onChangeData, this);
-    this.model.bind('change:dragging', this._onChangeDragging, this);
-  },
-
   reset: function() {
     this._removeChartContent();
-    this._setupDimensions();
+    this._setupScalesRanges();
     this._calcBarWidth();
     this._generateChartContent();
   },
 
   refresh: function() {
-    this._setupDimensions();
+    this._setupScalesRanges();
     this._removeXAxis();
     this._generateXAxis();
     this._updateChart();
@@ -337,11 +325,14 @@ module.exports = View.extend({
     .attr('class', 'Line')
     .attr('y1', 0)
     .attr('x1', function(d) { return d; })
-    .attr('y2', this.chartHeight)
+    .attr('y2', this._chartHeight())
     .attr('x2', function(d) { return d; });
   },
 
   _generateHorizontalLines: function() {
+    var chartWidth = this._chartWidth();
+    var chartHeight = this._chartHeight();
+
     var lines = this.chart.append('g')
     .attr('class', 'Lines');
 
@@ -353,65 +344,58 @@ module.exports = View.extend({
     .attr('class', 'Line')
     .attr('x1', 0)
     .attr('y1', function(d) { return d; })
-    .attr('x2', this.chartWidth)
+    .attr('x2', chartWidth)
     .attr('y2', function(d) { return d; });
 
     this.bottomLine = lines
     .append('line')
     .attr('class', 'Line Line--bottom')
     .attr('x1', 0)
-    .attr('y1', this.chartHeight)
-    .attr('x2', this.chartWidth - 1)
-    .attr('y2', this.chartHeight);
+    .attr('y1', chartHeight)
+    .attr('x2', chartWidth - 1)
+    .attr('y2', chartHeight);
   },
 
-  _setupModel: function() {
-    this.model = new Model({
-      data: this.options.data,
-      width: this.options.width,
-      height: this.options.height,
-      pos: { x: 0, y: 0 }
-    });
-
-    this._bindModel();
+  _chartWidth: function() {
+    var margin = this.model.get('margin');
+    return this.model.get('width') - margin.left - margin.right;
   },
 
-  _setupDimensions: function() {
-    this.margin = this.options.margin;
-
-    this.canvasWidth  = this.model.get('width');
-    this.canvasHeight = this.model.get('height');
-
-    this.chartWidth  = this.canvasWidth - this.margin.left - this.margin.right;
-    this.chartHeight = this.model.get('height') - this.margin.top - this.margin.bottom;
-
-    this._setupScales();
-    this._setupRanges();
+  _chartHeight: function() {
+    var margin = this.model.get('margin');
+    return this.model.get('height') - margin.top - margin.bottom;
   },
 
-  _setupScales: function() {
+  _setupScalesRanges: function() {
+    var chartWidth = this._chartWidth();
+    var chartHeight = this._chartHeight();
     var data = this.model.get('data');
-    this.xScale = d3.scale.linear().domain([0, 100]).range([0, this.chartWidth]);
-    this.yScale = d3.scale.linear().domain([0, d3.max(data, function(d) { return _.isEmpty(d) ? 0 : d.freq; } )]).range([this.chartHeight, 0]);
-    this.xAxisScale = d3.scale.linear().range([data[0].start, data[data.length - 1].end]).domain([0, this.chartWidth]);
-  },
+    this.xScale = d3.scale.linear().domain([0, 100]).range([0, chartWidth]);
+    this.yScale = d3.scale.linear().domain([0, d3.max(data, function(d) { return _.isEmpty(d) ? 0 : d.freq; } )]).range([chartHeight, 0]);
+    this.xAxisScale = d3.scale.linear().range([data[0].start, data[data.length - 1].end]).domain([0, chartWidth]);
 
-  _setupRanges: function() {
-    var n = Math.round(this.chartWidth / this.defaults.divisionWidth);
-    this.verticalRange = d3.range(0, this.chartWidth + this.chartWidth / n, this.chartWidth / n);
-    this.horizontalRange = d3.range(0, this.chartHeight + this.chartHeight / 2, this.chartHeight / 2);
+    if (this._torqueLayerModel) {
+      this.xScaleTorque = d3.scale.linear()
+        .domain([0, this._torqueLayerModel.get('steps')])
+        .range([0, chartWidth]);
+    }
+
+    var n = Math.round(chartWidth / this.defaults.divisionWidth);
+    this.verticalRange = d3.range(0, chartWidth + chartWidth / n, chartWidth / n);
+    this.horizontalRange = d3.range(0, chartHeight + chartHeight / 2, chartHeight / 2);
   },
 
   _calcBarWidth: function() {
-    this.barWidth = this.chartWidth / this.model.get('data').length;
+    this.barWidth = this._chartWidth() / this.model.get('data').length;
   },
 
   _generateChart: function() {
+    var margin = this.model.get('margin');
     this.chart = d3.select(this.el)
     .selectAll('.Canvas')
     .append('g')
     .attr('class', 'Chart')
-    .attr('transform', 'translate(' + this.margin.left + ', ' + this.margin.top + ')');
+    .attr('transform', 'translate(' + margin.left + ', ' + margin.top + ')');
 
     this.chart.classed(this.options.className || '', true);
   },
@@ -429,7 +413,6 @@ module.exports = View.extend({
     var extent = this.brush.extent();
     var lo = extent[0];
     var hi = extent[1];
-
 
     this.model.set({ lo_index: this._getLoBarIndex(), hi_index: this._getHiBarIndex() });
 
@@ -572,7 +555,7 @@ module.exports = View.extend({
     .call(this.brush)
     .selectAll('rect')
     .attr('y', 0)
-    .attr('height', this.chartHeight)
+    .attr('height', this._chartHeight())
     .on('mouseout', this._onMouseOut)
     .on('mousemove', this._onMouseMove);
   },
@@ -594,8 +577,10 @@ module.exports = View.extend({
   },
 
   _generateHandle: function(className) {
+    var chartHeight = this._chartHeight();
+
     var handle = { width: this.defaults.handleWidth, height: this.defaults.handleHeight, radius: this.defaults.handleRadius };
-    var yPos = (this.chartHeight / 2) - (this.defaults.handleHeight / 2);
+    var yPos = (chartHeight / 2) - (this.defaults.handleHeight / 2);
 
     var handles = this.chart.select('.Handles')
     .append('g')
@@ -607,7 +592,7 @@ module.exports = View.extend({
     .attr('x1', 3)
     .attr('y1', -4)
     .attr('x2', 3)
-    .attr('y2', this.chartHeight + 4);
+    .attr('y2', chartHeight + 4);
 
     if (this.options.handles) {
       handles
@@ -647,7 +632,7 @@ module.exports = View.extend({
     .attr('x1', 0)
     .attr('y1', 0)
     .attr('x2', 0)
-    .attr('y2', this.chartHeight);
+    .attr('y2', this._chartHeight());
   },
 
   _removeHandles: function() {
@@ -671,7 +656,7 @@ module.exports = View.extend({
     .data(this.verticalRange.slice(0, this.verticalRange.length))
     .enter().append("text")
     .attr("x", function(d) { return d; })
-    .attr("y", function(d) { return self.chartHeight + 15; })
+    .attr("y", function(d) { return self._chartHeight() + 15; })
     .attr("text-anchor", function(d, i) {
       if (i === 0) return 'start';
       else if (i === self.verticalRange.length - 1) return 'end';
@@ -685,6 +670,7 @@ module.exports = View.extend({
   _updateChart: function() {
     var self = this;
     var data = this.model.get('data');
+    var chartHeight = this._chartHeight();
 
     var bars = this.chart.selectAll('.Bar')
     .data(data);
@@ -697,7 +683,7 @@ module.exports = View.extend({
     .attr('transform', function(d, i) {
       return 'translate(' + (i * self.barWidth) + ', 0 )';
     })
-    .attr('y', self.chartHeight)
+    .attr('y', chartHeight)
     .attr('height', 0)
     .attr('width', this.barWidth - 1);
 
@@ -709,7 +695,7 @@ module.exports = View.extend({
         return 0;
       }
 
-      var h = self.chartHeight - self.yScale(d.freq);
+      var h = chartHeight - self.yScale(d.freq);
 
       if (h < self.defaults.minimumBarHeight && h > 0) {
         h = self.defaults.minimumBarHeight;
@@ -718,13 +704,13 @@ module.exports = View.extend({
     })
     .attr('y', function(d) {
       if (_.isEmpty(d)) {
-        return self.chartHeight;
+        return chartHeight;
       }
 
-      var h = self.chartHeight - self.yScale(d.freq);
+      var h = chartHeight - self.yScale(d.freq);
 
       if (h < self.defaults.minimumBarHeight && h > 0) {
-        return self.chartHeight - self.defaults.minimumBarHeight;
+        return chartHeight - self.defaults.minimumBarHeight;
       } else {
         return self.yScale(d.freq);
       }
@@ -734,17 +720,14 @@ module.exports = View.extend({
     .exit()
     .transition()
     .duration(200)
-    .attr('height', function(d) {
-      return 0;
-    })
-    .attr('y', function(d) {
-      return self.chartHeight;
-    });
+    .attr('height', 0)
+    .attr('y', chartHeight);
   },
 
   _generateBars: function() {
     var self = this;
     var data = this.model.get('data');
+    var chartHeight = this._chartHeight();
 
     this._calcBarWidth();
 
@@ -762,14 +745,14 @@ module.exports = View.extend({
     .attr('transform', function(d, i) {
       return 'translate(' + (i * self.barWidth) + ', 0 )';
     })
-    .attr('y', self.chartHeight)
+    .attr('y', chartHeight)
     .attr('height', 0)
     .attr('width', this.barWidth - 1);
 
     bars
     .transition()
     .ease(this.defaults.transitionType)
-    .duration(self.defaults.duration)
+    .duration(this.defaults.duration)
     .delay(function(d, i) {
       return Math.random() * (100 + i * 10);
     })
@@ -780,7 +763,7 @@ module.exports = View.extend({
         return 0;
       }
 
-      var h = self.chartHeight - self.yScale(d.freq);
+      var h = chartHeight - self.yScale(d.freq);
 
       if (h < self.defaults.minimumBarHeight && h > 0) {
         h = self.defaults.minimumBarHeight;
@@ -789,13 +772,13 @@ module.exports = View.extend({
     })
     .attr('y', function(d) {
       if (_.isEmpty(d)) {
-        return self.chartHeight;
+        return chartHeight;
       }
 
-      var h = self.chartHeight - self.yScale(d.freq);
+      var h = chartHeight - self.yScale(d.freq);
 
       if (h < self.defaults.minimumBarHeight && h > 0) {
-        return self.chartHeight - self.defaults.minimumBarHeight;
+        return chartHeight - self.defaults.minimumBarHeight;
       } else {
         return self.yScale(d.freq);
       }

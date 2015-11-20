@@ -32,8 +32,11 @@ var TorqueLayer = MapLayer.extend({
 
   // TODO Update silently to avoid a generic change event, which causes the layer to reload tiles
   _setWithoutGenericChangeEvent: function(attr, val) {
-    this.set(attr, val, { silent: true });
-    this.trigger('change:' + attr, this, val);
+    var prevVal = this.get(attr);
+    this.set(attr, val, {silent: true});
+    if (val !== prevVal) {
+      this.trigger('change:' + attr, this, val);
+    }
   },
 
   // Expected to be called from view, to keep the model in sync,
@@ -46,6 +49,12 @@ var TorqueLayer = MapLayer.extend({
       this._setWithoutGenericChangeEvent('step', torqueLayerView.getStep());
     }, this);
 
+    torqueLayerView.once('remove', function() {
+      torqueLayerView.unbind('play');
+      torqueLayerView.unbind('pause');
+      torqueLayerView.unbind('change:time');
+    });
+
     this.set({
         isRunning: torqueLayerView.isRunning(),
         timeBounds: torqueLayerView.getTimeBounds(),
@@ -55,29 +64,9 @@ var TorqueLayer = MapLayer.extend({
       { silent: true }
     );
 
-    // TODO how to unbind events on removal of layer?
-    this.bind('_run', function(run) {
-      if (run) {
-        torqueLayerView.play();
-      } else {
-        torqueLayerView.pause();
-      }
-    });
-    this.bind('_changeStep', function(step) {
-      torqueLayerView.setStep(step);
-    });
-  },
-
-  play: function() {
-    this.trigger('_run', true);
-  },
-
-  pause: function() {
-    this.trigger('_run', false);
-  },
-
-  setStep: function(step) {
-    this.trigger('_changeStep', step);
+    this.play = torqueLayerView.play.bind(torqueLayerView);
+    this.pause = torqueLayerView.pause.bind(torqueLayerView);
+    this.setStep = torqueLayerView.setStep.bind(torqueLayerView);
   },
 
   isEqual: function(other) {

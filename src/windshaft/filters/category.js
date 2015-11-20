@@ -1,7 +1,6 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
 var WindshaftFilterBase = require('./base');
-var MAXDATACOUNT = 12;
 
 /**
  *  Filter used by the category widget
@@ -9,9 +8,23 @@ var MAXDATACOUNT = 12;
  */
 module.exports = WindshaftFilterBase.extend({
 
+  defaults: {
+    rejectAll: false
+  },
+
   initialize: function() {
     this.rejectedCategories = new Backbone.Collection();
     this.acceptedCategories = new Backbone.Collection();
+    this._initBinds();
+  },
+
+  _initBinds: function() {
+    this.rejectedCategories.bind('add remove', function() {
+      this.set('rejectAll', false);
+    }, this);
+    this.acceptedCategories.bind('add remove', function() {
+      this.set('rejectAll', false);
+    }, this);
   },
 
   isEmpty: function() {
@@ -85,6 +98,8 @@ module.exports = WindshaftFilterBase.extend({
       return true;
     } else if (acceptCount > 0 && this.acceptedCategories.where({ name: name }).length === 0) {
       return true;
+    } else if (this.get('rejectAll')) {
+      return true;
     } else {
       return false;
     }
@@ -101,6 +116,7 @@ module.exports = WindshaftFilterBase.extend({
   rejectAll: function(d) {
     this.acceptedCategories.reset();
     this.reject(d, false);
+    this.set('rejectAll', true);
     this.applyFilter();
   },
 
@@ -118,26 +134,20 @@ module.exports = WindshaftFilterBase.extend({
 
   toJSON: function() {
     var filter = {};
-    var maxDataCount = MAXDATACOUNT;
     var rejectCount = this.rejectedCategories.size();
     var acceptCount = this.acceptedCategories.size();
     var acceptedCats = { accept: _.pluck(this.acceptedCategories.toJSON(), 'name') };
     var rejectedCats = { reject: _.pluck(this.rejectedCategories.toJSON(), 'name') };
 
-    // TODO: review this block of code + other possibilities
-    if (!this.isEmpty()) {
-      if (acceptCount > 0 && acceptCount < maxDataCount && rejectCount < maxDataCount) {
-        filter = acceptedCats;
-      } else if (acceptCount === 0 && rejectCount > 0 && rejectCount < maxDataCount) {
-        filter = rejectedCats;
-      } else if (rejectCount >= maxDataCount && acceptCount === 0) {
-        // TODO: replace this by empty array when it is available through API
-        filter = { accept: ['___@___'] };
-      } else if (acceptCount >= maxDataCount && rejectCount === 0) {
-        filter = {};
-      } else {
-        _.extend(filter, rejectedCats, acceptedCats);
-      }
+    if (this.get('rejectAll')) {
+      // TODO: replace this by empty array when it is available through API
+      filter = { accept: ['___@___'] };
+    } else if (acceptCount > 0 && rejectCount === 0) {
+      filter = acceptedCats;
+    } else if (rejectCount > 0 && acceptCount === 0) {
+      filter = rejectedCats;
+    } else {
+      _.extend(filter, rejectedCats, acceptedCats);
     }
 
     var json = {};

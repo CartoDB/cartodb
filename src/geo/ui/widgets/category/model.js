@@ -231,7 +231,8 @@ module.exports = WidgetModel.extend({
       type: "aggregation",
       options: {
         column: this.get('column'),
-        aggregation: this.get('aggregation')
+        aggregation: this.get('aggregation'),
+        aggregationColumn: this.get('aggregationColumn')
       }
     };
   }

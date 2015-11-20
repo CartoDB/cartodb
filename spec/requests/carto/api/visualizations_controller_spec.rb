@@ -787,7 +787,7 @@ describe Carto::Api::VisualizationsController do
         priv_vis_id = JSON.parse(last_response.body).fetch('id')
 
         put api_v1_visualizations_update_url(user_domain: $user_2.username, api_key: $user_2.api_key, id: priv_vis_id),
-            { id: priv_vis_id, privacy: CartoDB::Visualization::Member::PRIVACY_PRIVATE}.to_json,
+            { id: priv_vis_id, privacy: CartoDB::Visualization::Member::PRIVACY_PRIVATE }.to_json,
             @headers
         last_response.status.should == 200
 

@@ -33,8 +33,8 @@ module.exports = WidgetContent.extend({
 
   _initViews: function() {
     this._setupDimensions();
-    this._renderMainChart();
     this._renderMiniChart();
+    this._renderMainChart();
   },
 
   _initBinds: function() {
@@ -164,16 +164,17 @@ module.exports = WidgetContent.extend({
   _renderMiniChart: function() {
     this.miniChart = new WidgetHistogramChart(({
       className: 'mini',
-      el: this.chart.$el, // TODO the mini-histogram should not depend on the chart histogram's DOM
       handles: false,
       width: this.canvasWidth,
-      margin: { top: 0, right: 0, bottom: 0, left: 4 },
+      margin: { top: 0, right: 0, bottom: 20, left: 4 },
       y: 0,
-      height: 20,
+      height: 40,
       data: this.dataModel.getData(),
       xAxisTickFormat: this._xAxisTickFormat.bind(this)
     }));
 
+    this.addView(this.miniChart);
+    this.$('.js-content').append(this.miniChart.el);
     this.miniChart.bind('on_brush_end', this._onMiniRangeUpdated, this);
     this.miniChart.render().hide();
   },

@@ -18,26 +18,22 @@ module.exports = View.extend({
   initialize: function(opts) {
     if (!opts.width) throw new Error('opts.width is required');
     if (!opts.height) throw new Error('opts.height is required');
-    if (!_.isFunction(opts.xAxisTickFormat)) throw new Error('opts.xAxisTickFormat is required')
+    if (!_.isFunction(opts.xAxisTickFormat)) throw new Error('opts.xAxisTickFormat is required');
 
     _.bindAll(this, '_selectBars', '_adjustBrushHandles', '_onBrushMove', '_onBrushStart', '_onMouseMove', '_onMouseOut');
 
-    // TODO resolve this; the histogram has two views that relies on this._canvas, one for a mini "zoom" view and one
-    // for the normal view
-    if (!opts.el) {
-      // using tagName: 'svg' doesn't work,
-      // and w/o class="" d3 won't instantiate properly
-      this.$el = $('<svg class=""></svg>');
-      this.el = this.$el[0];
+    // using tagName: 'svg' doesn't work,
+    // and w/o class="" d3 won't instantiate properly
+    this.$el = $('<svg class=""></svg>');
+    this.el = this.$el[0];
 
-      this._canvas = d3.select(this.el)
-        .attr('width',  opts.width)
-        .attr('height', opts.height);
+    this._canvas = d3.select(this.el)
+    .attr('width',  opts.width)
+    .attr('height', opts.height);
 
-      this._canvas
-        .append('g')
-        .attr('class', 'Canvas');
-    }
+    this._canvas
+    .append('g')
+    .attr('class', 'Canvas');
 
     this._setupModel();
     this._setupDimensions();
@@ -133,6 +129,7 @@ module.exports = View.extend({
     if (bar && bar.node() && !bar.classed('is-selected')) {
 
       var left = (barIndex * this.barWidth) + (this.barWidth/2);
+
       var top = this.yScale(freq) + this.model.get('pos').y + this.$el.position().top - 20;
 
       var h = this.chartHeight - this.yScale(freq);
@@ -332,28 +329,17 @@ module.exports = View.extend({
     .selectAll('.Canvas')
     .append('g')
     .attr('class', 'Chart')
-    .attr('opacity', 0);
+    .attr('transform', 'translate(' + this.margin.left + ', ' + this.margin.top + ')');
 
     this.chart.classed(this.options.className || '', true);
   },
 
   hide: function() {
-    this.chart
-    .transition()
-    .duration(150)
-    .attr('opacity', 0)
-    .style('display', 'none')
-    .attr('transform', 'translate(' + this.margin.left + ', ' + (this.margin.top + this.options.y - 10) + ')');
+    this.$el.hide();
   },
 
   show: function() {
-    this.chart
-    .attr('transform', 'translate(' + this.margin.left + ', ' + (this.margin.top + this.options.y + 10) + ')')
-    .transition()
-    .duration(150)
-    .attr('opacity', 1)
-    .style('display', 'block')
-    .attr('transform', 'translate(' + this.margin.left + ', ' + (this.margin.top + this.options.y) + ')');
+    this.$el.show();
   },
 
   _selectBars: function() {
@@ -385,7 +371,7 @@ module.exports = View.extend({
 
   expand: function(newHeight) {
     this._canvas.attr('height', newHeight);
-    this._move({ x: 0, y: 50 });
+    this._move({ x: 0, y: 20 });
   },
 
   contract: function(newHeight) {

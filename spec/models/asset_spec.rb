@@ -35,7 +35,7 @@ describe Asset do
     it 'validates file correct metadata' do
       asset = Asset.new user_id: @user.id, asset_file: (Rails.root + 'spec/support/data/fake_png.png').to_s
       asset.valid?.should be_false
-      asset.errors.full_messages.should include("file doesn't appears to be an image")
+      asset.errors.full_messages.should include("file doesn't appear to be an image")
     end
 
     it 'validates file size' do

@@ -377,10 +377,10 @@ module.exports = WidgetContent.extend({
     this.dataModel.set({ start: null, end: null, bins: null, own_filter: 1 });
     this.dataModel._fetch();
     this.lockedByUser = false;
+    this.chart.removeSelection();
   },
 
   _zoom: function() {
-    this.chart.removeSelection();
     this.lockedByUser = true;
     this.viewModel.set({ zoomed: true, zoom_enabled: false });
   },

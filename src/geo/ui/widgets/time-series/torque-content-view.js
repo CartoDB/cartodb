@@ -1,10 +1,10 @@
 var $ = require('jquery');
 var _ = require('underscore');
-var d3 = require('d3');
 var Model = require('cdb/core/model');
 var WidgetContentView = require('../standard/widget_content_view.js');
 var HistogramChartView = require('../histogram/chart');
 var placeholderTemplate = require('../histogram/placeholder.tpl');
+var TorqueControlsView = require('./torque-controls-view');
 
 /**
  * Widget content view representing a time-series for a torque-layer
@@ -52,6 +52,7 @@ module.exports = WidgetContentView.extend({
     if (this._isDataEmpty()) {
       this.$el.append(placeholderTemplate());
     } else {
+      this._createAnimationControls();
       this._createHistogramView();
     }
 
@@ -63,6 +64,14 @@ module.exports = WidgetContentView.extend({
   clean: function() {
     $(window).unbind('resize', this._onWindowResize);
     View.prototype.clean.call(this);
+  },
+
+  _createAnimationControls: function() {
+    var view = new TorqueControlsView({
+      model: this._torqueLayerModel
+    });
+    this.addView(view);
+    this.$el.append(view.render().el);
   },
 
   _createHistogramView: function() {

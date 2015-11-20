@@ -30,23 +30,30 @@ var TorqueLayer = MapLayer.extend({
     MapLayer.prototype.initialize.apply(this, arguments);
   },
 
+  // TODO Update silently to avoid a generic change event, which causes the layer to reload tiles
+  _setWithoutGenericChangeEvent: function(attr, val) {
+    this.set(attr, val, { silent: true });
+    this.trigger('change:' + attr, this, val);
+  },
+
   // Expected to be called from view, to keep the model in sync,
   // so other views can listen to the model w/o have to know what view implementation is used
   initBindsForTorqueLayerView: function(torqueLayerView) {
-    torqueLayerView.bind('play', this.set.bind(this, 'isRunning', true));
-    torqueLayerView.bind('pause', this.set.bind(this, 'isRunning', false));
+    window.tlv = torqueLayerView;
+    torqueLayerView.bind('play', this._setWithoutGenericChangeEvent.bind(this, 'isRunning', true))
+    torqueLayerView.bind('pause', this._setWithoutGenericChangeEvent.bind(this, 'isRunning', false))
     torqueLayerView.bind('change:time', function() {
-      // TODO Update silently to avoid a generic change event, which causes the layer to reload tiles
-      this.set('step', torqueLayerView.getStep(), { silent: true });
-      this.trigger('change:step', this, torqueLayerView.getStep());
+      this._setWithoutGenericChangeEvent('step', torqueLayerView.getStep());
     }, this);
 
     this.set({
-      isRunning: torqueLayerView.isRunning(),
-      timeBounds: torqueLayerView.getTimeBounds(),
-      step: torqueLayerView.getStep(),
-      steps: torqueLayerView.options.steps
-    });
+        isRunning: torqueLayerView.isRunning(),
+        timeBounds: torqueLayerView.getTimeBounds(),
+        step: torqueLayerView.getStep(),
+        steps: torqueLayerView.options.steps
+      },
+      { silent: true }
+    );
 
     // TODO how to unbind events on removal of layer?
     this.bind('_run', function(run) {

@@ -1440,11 +1440,9 @@ describe Carto::Api::VisualizationsController do
             @headers
         last_response.status.should == 200
 
-        get api_v2_visualizations_vizjson_url(
-              id: visualization.fetch('id'),
-              api_key: @api_key),
-              id: visualization.fetch('id'),
-              @headers
+        get api_v2_visualizations_vizjson_url(id: visualization.fetch('id'), api_key: @api_key),
+            id: visualization.fetch('id'),
+            @headers
         visualization = JSON.parse(last_response.body)
 
         layer_group_layer = visualization["layers"][1]

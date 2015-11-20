@@ -68,8 +68,10 @@ module.exports = WidgetModel.extend({
     this.search.bind('sync', function() {
       this.trigger("sync", this);
     }, this);
-    this.search.bind('error', function() {
-      this.trigger("error", this);
+    this.search.bind('error', function(e) {
+      if (!e || (e && e.statusText !== "abort")) {
+        this.trigger("error", this);
+      }
     }, this);
   },
 

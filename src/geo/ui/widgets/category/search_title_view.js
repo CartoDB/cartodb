@@ -85,12 +85,6 @@ module.exports = View.extend({
     }, 250
   ),
 
-  function(ev) {
-    if (ev.keyCode !== 13 && ev.keyCode !== 27) {
-      this._onSubmitForm();
-    }
-  },
-
   _bindESC: function() {
     $(window).bind("keyup." + this.cid, _.bind(this._onKeyUp, this));
   },

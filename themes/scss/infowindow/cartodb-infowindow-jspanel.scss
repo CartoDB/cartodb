@@ -133,26 +133,6 @@
   z-index: 5;
 }
 ​
- .jspContainer:after {
-  bottom:0px;
-  background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, rgba(255,255,255,0)), color-stop(100%, rgba(255,255,255,1)));
-  background: -webkit-linear-gradient(top, rgba(255,255,255,0), rgba(255,255,255,1));
-  background: -moz-linear-gradient(top, rgba(255,255,255,0), rgba(255,255,255,1));
-  background: -o-linear-gradient(top, rgba(255,255,255,0), rgba(255,255,255,1));
-  background: linear-gradient(top, rgba(255,255,255,0), rgba(255,255,255,1));
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#00ffffff',GradientType=0 );
-}
-​
- .jspContainer:before {
-  top:0px;
-  background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, rgba(255,255,255,1)), color-stop(100%, rgba(255,255,255,0)));
-  background: -webkit-linear-gradient(top, rgba(255,255,255,1), rgba(255,255,255,0));
-  background: -moz-linear-gradient(top, rgba(255,255,255,1), rgba(255,255,255,0));
-  background: -o-linear-gradient(top, rgba(255,255,255,1), rgba(255,255,255,0));
-  background: linear-gradient(top, rgba(255,255,255,1), rgba(255,255,255,0));
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#00ffffff',GradientType=0 );
-}
-
 .jspTrack:after {
   content: "";
   position: absolute;

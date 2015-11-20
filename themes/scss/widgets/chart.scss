@@ -85,11 +85,6 @@
   }
 }
 
-.Axis {
-  font: 10px sans-serif;
-  fill: #979EA1;
-}
-
 .Line {
   stroke: #EEE;
   stroke-width: 1;
@@ -120,4 +115,20 @@
   opacity: 0;
   stroke-width: 2;
   stroke: #3AA9E3;
+}
+
+.Axis {
+  shape-rendering: crispEdges;
+  font: 10px sans-serif;
+  fill: #979EA1;
+}
+
+.Axis path {
+  display: none;
+}
+
+.Axis line {
+  stroke: #EEE;
+  stroke-width: 1;
+  shape-rendering: crispEdges;
 }

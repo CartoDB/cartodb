@@ -20,7 +20,7 @@ module.exports = View.extend({
     if (!opts.width) throw new Error('opts.width is required');
     if (!opts.height) throw new Error('opts.height is required');
 
-    _.bindAll(this, '_selectBars', '_adjustBrushHandles', '_onBrushMove', '_onBrushStart', '_onMouseMove', '_onMouseOut');
+    _.bindAll(this, '_selectBars', '_adjustBrushHandles', '_onBrushMove', '_onBrushStart', '_onMouseMove', '_onMouseOut', '_adjustTextAnchor');
 
     // using tagName: 'svg' doesn't work,
     // and w/o class="" d3 won't instantiate properly
@@ -242,7 +242,10 @@ module.exports = View.extend({
 
   _generateLines: function() {
     this._generateHorizontalLines();
-    this._generateVerticalLines();
+
+    if (this.options.type !== 'time') {
+      this._generateVerticalLines();
+    }
   },
 
   _generateVerticalLines: function() {
@@ -311,7 +314,11 @@ module.exports = View.extend({
     var data = this.model.get('data');
     this.xScale = d3.scale.linear().domain([0, 100]).range([0, this.chartWidth]);
     this.yScale = d3.scale.linear().domain([0, d3.max(data, function(d) { return _.isEmpty(d) ? 0 : d.freq; } )]).range([this.chartHeight, 0]);
-    this.xAxisScale = d3.scale.linear().range([data[0].start, data[data.length - 1].end]).domain([0, this.chartWidth]);
+    if (this.options.type === 'time') {
+      this.xAxisScale = d3.time.scale().domain([data[0].start * 1000, data[data.length - 1].end * 1000]).nice().range([0, this.chartWidth]);
+    } else {
+      this.xAxisScale = d3.scale.linear().range([data[0].start, data[data.length - 1].end]).domain([0, this.chartWidth]);
+    }
   },
 
   _setupRanges: function() {
@@ -573,31 +580,77 @@ module.exports = View.extend({
   },
 
   _removeXAxis: function() {
-    this.chart.select('.Axis').remove();
+    this._canvas.select('.Axis').remove();
+  },
+
+  _adjustTextAnchor: function(d, i) {
+    var ticks = this.xAxisScale.ticks();
+
+    if (i === 0) {
+      return 'start';
+    } else if (i === ticks.length - 1) {
+      return 'end';
+    } else {
+      return 'middle';
+    }
   },
 
   _generateXAxis: function() {
     var self = this;
-    var data = this.model.get('data');
 
-    var lines = this.chart.append('g')
-    .attr('class', 'Axis');
+    if (this.options.type == 'time') {
+      d3.selection.prototype.moveToBack = function() { 
+        return this.each(function() {
+          var firstChild = this.parentNode.firstChild; 
+          if (firstChild) {
+            this.parentNode.insertBefore(this, firstChild); 
+          }
+        });
+      };
 
-    lines
-    .append('g')
-    .selectAll('.Label')
-    .data(this.verticalRange.slice(0, this.verticalRange.length))
-    .enter().append("text")
-    .attr("x", function(d) { return d; })
-    .attr("y", function(d) { return self.chartHeight + 15; })
-    .attr("text-anchor", function(d, i) {
-      if (i === 0) return 'start';
-      else if (i === self.verticalRange.length - 1) return 'end';
-      else return 'middle';
-    })
-    .text(function(d) {
-      return self.formatNumber(self.xAxisScale(d));
-    });
+      var xAxis = d3.svg.axis()
+      .orient("bottom")
+      .tickPadding(5)
+      .innerTickSize(-this.chartHeight)
+      .scale(this.xAxisScale)
+      .orient('bottom');
+
+      var lines = this._canvas.append('g')
+      .attr("class", 'Axis')
+      .attr("transform", "translate(0," + (this.chartHeight + 5) + ")")
+      .call(xAxis)
+      .selectAll("text")
+      .style("text-anchor", this._adjustTextAnchor);
+
+      this._canvas.select('.Axis')
+      .moveToBack();
+
+    } else {
+      var data = this.model.get('data');
+
+      var lines = this.chart.append('g')
+      .attr('class', 'Axis');
+
+      lines
+      .append('g')
+      .selectAll('.Label')
+      .data(this.verticalRange.slice(0, this.verticalRange.length))
+      .enter().append("text")
+      .attr("x", function(d) { return d; })
+      .attr("y", function(d) { return self.chartHeight + 15; })
+      .attr("text-anchor", function(d, i) {
+        if (i === 0) {
+          return 'start';
+        } else if (i === self.verticalRange.length - 1) {
+          return 'end';
+        } else {
+          return 'middle';
+        }
+      })
+      .text(function(d) {
+        return self.formatNumber(self.xAxisScale(d));
+      });
+    }
   },
 
   _updateChart: function() {

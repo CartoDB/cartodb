@@ -43,8 +43,88 @@ module.exports = View.extend({
   render: function() {
     this._generateChart();
     this._generateChartContent();
-    this._generateTimeMarker();
+    if (this.options.torqueLayerModel) {
+      this._generateTimeMarker();
+    }
     return this;
+  },
+
+  _generateTimeMarker: function() {
+    var self = this;
+
+    var getDX = function(handle, fallbackVal) {
+      // TODO tmp, x should be available on element.data()[0].x following d3 conventions
+      var transformStr = handle.attr('transform');
+      return _.isString(transformStr)
+        ? +(transformStr.match(/\d+\.?\d*/)[0])
+        : fallbackVal;
+    };
+    var isWithinRange = function(x) {
+      var rangeStart = getDX(self.leftHandle, 0)
+      var rangeEnd = Math.min(getDX(self.rightHandle, self.chartWidth), self.chartWidth);
+      return rangeStart <= x && x <= rangeEnd;
+    };
+
+    var translateX = function(d) {
+      return 'translate(' + [ d.x, d.y] + ')';
+    };
+
+    var dragBehavior = d3.behavior.drag()
+    var d = this.defaults;
+    var timeMarker = this.chart.append('rect')
+      .attr('class', 'TimeMarker')
+      .attr('width', 4)
+      .attr('height', this.chartHeight + 8)
+      .attr('rx', d.handleRadius)
+      .attr('ry', d.handleRadius)
+      .data([{ x: 0, y: -4 }])
+      .attr('transform', translateX)
+      .call(dragBehavior);
+
+    // TODO update scale range when width changes
+    var xScaleTorque = d3.scale.linear().domain([0, 256]).range([0, this.chartWidth]);
+    var tlm = this.options.torqueLayerModel;
+
+    var isDragging = false;
+    var wasRunning = false;
+    dragBehavior
+      .on('dragstart', function() {
+        isDragging = true;
+        var wasRunning = tlm.get('isRunning');
+        if (wasRunning) {
+          tlm.pause();
+        }
+      })
+      .on('drag', function(d, i) {
+        var nextX = d.x + d3.event.dx;
+        if (isWithinRange(nextX)) {
+          d.x = nextX;
+          d3.select(this).attr('transform', translateX);
+
+          var step = Math.round(xScaleTorque.invert(d.x));
+          tlm.setStep(step);
+        }
+      })
+      .on('dragend', function() {
+        if (wasRunning) {
+          self._torqueLayerModel.play();
+        }
+        isDragging = false;
+      });
+
+    tlm.bind('change:step', function(m, step) {
+      if (!isDragging) {
+        var data = timeMarker.data();
+        data[0].x = xScaleTorque(step);
+
+        timeMarker
+          .data(data)
+          .transition()
+          .ease('linear')
+          .attr('transform', translateX);
+      }
+    });
+    this.add_related_model(tlm);
   },
 
   replaceData: function(data) {
@@ -553,52 +633,6 @@ module.exports = View.extend({
     }
 
     return handles;
-  },
-
-  _generateTimeMarker: function() {
-    var translateX = function(d) {
-      return 'translate(' + [ d.x, d.y] + ')';
-    };
-
-    var dx = function(handle, fallbackVal) {
-      // TODO tmp, x should be available on element.data()[0].x following d3 conventions
-      var transformStr = handle.attr('transform');
-      return _.isString(transformStr)
-        ? +(transformStr.match(/\d+\.?\d*/)[0])
-        : fallbackVal;
-    };
-
-    var self = this;
-    var isWithinRange = function(x) {
-      var rangeStart = dx(self.leftHandle, 0)
-      var rangeEnd = Math.min(dx(self.rightHandle, self.chartWidth), self.chartWidth);
-      return rangeStart <= x && x <= rangeEnd;
-    };
-
-    var drag = d3.behavior.drag()
-      .on('drag', function(d, i) {
-        // TODO wasRunning = torqueLayer.isRunning ? => pause
-        var wasRunning = false;
-
-        // Only update as long it's within the bounds of the chart
-        d.x += d3.event.dx
-        if (isWithinRange(d.x)) {
-          d3.select(this).attr('transform', translateX);
-        }
-
-        // TODO wasRunning? => play
-      });
-
-    var d = this.defaults;
-    this._timeMarker = this.chart.append('rect')
-      .attr('class', 'TimeMarker')
-      .attr('width', 4)
-      .attr('height', this.chartHeight + 8)
-      .attr('rx', d.handleRadius)
-      .attr('ry', d.handleRadius)
-      .data([{ x: 0, y: -4 }])
-      .attr('transform', translateX)
-      .call(drag);
   },
 
   _generateHandles: function() {

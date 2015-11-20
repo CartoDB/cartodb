@@ -35,6 +35,7 @@ var WidgetViewFactory = require('cdb/geo/ui/widgets/widget-view-factory');
 var ListContentView = require('cdb/geo/ui/widgets/list/content_view');
 var HistogramContentView = require('cdb/geo/ui/widgets/histogram/content-view');
 var TimeSeriesContentView = require('cdb/geo/ui/widgets/time-series/content-view');
+var TorqueTimeSeriesContentView = require('cdb/geo/ui/widgets/time-series/torque-content-view');
 var CategoryContentView = require('cdb/geo/ui/widgets/category/content_view');
 var FormulaContentView = require('cdb/geo/ui/widgets/formula/content_view');
 var WindshaftConfig = require('cdb/windshaft/config');
@@ -111,6 +112,22 @@ var Vis = View.extend({
           });
         }
       }, {
+        // Torque time-series widget, keep before the normal time-series type to be instantiated if it's an torque layer
+        match: function(widget, layer) {
+          return layer.get('type') === 'torque' && isTimeSeriesWidget(widget);
+        },
+        createContentView: function(widget, layer) {
+          return new TorqueTimeSeriesContentView({
+            model: widget,
+            filter: widget.filter,
+            torqueLayerModel: layer
+          });
+        },
+        customizeWidgetAttrs: function(attrs) {
+          attrs.className += ' Dashboard-time';
+          return attrs;
+        }
+      }, {
         match: isTimeSeriesWidget,
         createContentView: function(widget) {
           return new TimeSeriesContentView({
@@ -121,7 +138,7 @@ var Vis = View.extend({
         customizeWidgetAttrs: function(attrs) {
           attrs.className += ' Dashboard-time';
           return attrs;
-        },
+        }
       }, {
         type: 'histogram',
         createContentView: function(widget) {

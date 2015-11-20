@@ -7,7 +7,11 @@ var searchTemplate = require('./search_paginator_template.tpl');
 
 module.exports = PaginatorView.extend({
 
-  _TEMPLATE: searchTemplate,
+  options: {
+    paginator: true,
+    template: searchTemplate
+  },
+
   className: 'Widget-nav is-hidden Widget-contentSpaced',
 
   toggle: function() {

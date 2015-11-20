@@ -6,8 +6,11 @@ var defaultTemplate = require('./paginator_template.tpl');
 
 module.exports = View.extend({
 
-  _ITEMS_PER_PAGE: 6,
-  _TEMPLATE: defaultTemplate,
+  options: {
+    itemsPerPage: 6,
+    template: defaultTemplate,
+    paginator: false
+  },
 
   className: 'Widget-nav Widget-contentSpaced',
 
@@ -17,7 +20,6 @@ module.exports = View.extend({
   },
 
   initialize: function() {
-    this._ITEMS_PER_PAGE = this.options.itemsPerPage;
     this.dataModel = this.options.dataModel;
     this.viewModel = this.options.viewModel;
     this._$target = this.options.$target;
@@ -31,10 +33,11 @@ module.exports = View.extend({
     this.clearSubViews();
     this.$el.empty();
     var categoriesCount = this.dataModel.getCount();
-    var pages = Math.ceil(this.dataModel.getSize() / this._ITEMS_PER_PAGE);
-    var template = this._TEMPLATE;
+    var pages = Math.ceil(this.dataModel.getSize() / this.options.itemsPerPage);
+    var template = this.options.template;
     this.$el.html(
       template({
+        showPaginator: this.options.paginator,
         isLocked: this.dataModel.isLocked(),
         isSearchEnabled: this.viewModel.isSearchEnabled(),
         currentPage: this.model.get('page'),

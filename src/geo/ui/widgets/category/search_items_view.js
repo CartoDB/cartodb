@@ -17,21 +17,9 @@ module.exports = CategoryItemsView.extend({
     CategoryItemsView.prototype.initialize.call(this);
   },
 
-  _addItem: function(mdl, $parent) {
-    var v = new WidgetSearchCategoryItemView({
-      model: mdl,
-      dataModel: this.originModel
-    });
-    this.addView(v);
-    $parent.append(v.render().el);
-  },
-
-  toggle: function() {
-    this[ this.model.isSearchEnabled() ? 'show' : 'hide']();
-  },
-
   _renderList: function() {
-    this.$el.removeClass('Widget-list--noresults')
+    // Change view classes
+    this.$el.removeClass('Widget-list--noresults');
     CategoryItemsView.prototype._renderList.call(this);
   },
 
@@ -47,5 +35,18 @@ module.exports = CategoryItemsView.extend({
       })
     );
   },
+
+  _addItem: function(mdl, $parent) {
+    var v = new WidgetSearchCategoryItemView({
+      model: mdl,
+      dataModel: this.originModel
+    });
+    this.addView(v);
+    $parent.append(v.render().el);
+  },
+
+  toggle: function() {
+    this[ this.model.isSearchEnabled() ? 'show' : 'hide']();
+  }
 
 });

@@ -93,7 +93,8 @@ module.exports = WidgetContent.extend({
       dataModel: this.search,
       originModel: this.model,
       filter: this.filter,
-      itemsPerPage: this._ITEMS_PER_PAGE
+      itemsPerPage: this._ITEMS_PER_PAGE,
+      paginator: true
     });
     this.$('.js-content').append(searchList.render().el);
     this.addView(searchList);
@@ -104,7 +105,8 @@ module.exports = WidgetContent.extend({
       viewModel: this.viewModel,
       originModel: this.model,
       dataModel: this.search,
-      itemsPerPage: this._ITEMS_PER_PAGE
+      itemsPerPage: this._ITEMS_PER_PAGE,
+      paginator: true
     });
     this.$('.js-footer').append(searchPagination.render().el);
     this.addView(searchPagination);

@@ -9,13 +9,15 @@ var placeholder = require('./placeholder.tpl');
  */
 module.exports = View.extend({
 
-  _ITEMS_PER_PAGE: 6,
+  options: {
+    paginator: false,
+    itemsPerPage: 6
+  },
 
   className: 'Widget-list Widget-list--wrapped js-list',
   tagName: 'ul',
 
   initialize: function() {
-    this._ITEMS_PER_PAGE = this.options.itemsPerPage;
     this.dataModel = this.options.dataModel;
     this.filter = this.options.filter;
     this._initBinds();
@@ -50,15 +52,14 @@ module.exports = View.extend({
 
   _renderList: function() {
     // Change view classes
-    this.$el
-      .removeClass('Widget-list--withBorders')
-      .addClass('Widget-list--wrapped');
+    this.$el.removeClass('Widget-list--withBorders');
+    this.$el[ this.options.paginator ? 'addClass' : 'removeClass']('Widget-list--wrapped');
 
     var groupItem;
     var data = this.dataModel.getData();
 
     data.each(function(mdl, i) {
-      if (i % this._ITEMS_PER_PAGE === 0) {
+      if (i % this.options.itemsPerPage === 0) {
         groupItem = $('<div>').addClass('Widget-listGroup');
         this.$el.append(groupItem);
       }

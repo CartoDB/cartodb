@@ -8,6 +8,8 @@
     <% } %>
   </p>
 </div>
-<div class="Widget-navDots js-dots">
-  <% for (var i = 0, l = pages; i < l; i++) { %><button class="Widget-dot Widget-dot--navigation js-page <% if (currentPage === i) { %>is-selected<% } %>" data-page="<%- i %>"></button><% } %>
-</div>
+<% if (showPaginator) { %>
+  <div class="Widget-navDots js-dots">
+    <% for (var i = 0, l = pages; i < l; i++) { %><button class="Widget-dot Widget-dot--navigation js-page <% if (currentPage === i) { %>is-selected<% } %>" data-page="<%- i %>"></button><% } %>
+  </div>
+<% } %>

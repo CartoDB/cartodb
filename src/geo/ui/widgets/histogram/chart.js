@@ -56,13 +56,13 @@ module.exports = View.extend({
   render: function() {
     this._generateChart();
     this._generateChartContent();
-    if (this._torqueLayerModel) {
-      this._generateTimeMarker(this._torqueLayerModel);
-    }
     return this;
   },
 
-  _generateTimeMarker: function(torqueLayerModel) {
+  _generateTimeMarker: function() {
+    if (!this._torqueLayerModel) return
+
+    var torqueLayerModel = this._torqueLayerModel;
     var self = this;
 
     var translateX = function(d) {
@@ -71,7 +71,10 @@ module.exports = View.extend({
 
     var dragBehavior = d3.behavior.drag()
     var d = this.defaults;
-    var timeMarker = this.chart.append('rect')
+
+    if (this.timeMarker) this.timeMarker.remove(); // if it was added previously
+    var timeMarker = this.timeMarker = this.chart.append('rect')
+    timeMarker
       .attr('class', 'TimeMarker')
       .attr('width', 4)
       .attr('height', this._chartHeight() + 8)
@@ -304,6 +307,7 @@ module.exports = View.extend({
     this._generateHandles();
     this._setupBrush();
     this._generateXAxis();
+    this._generateTimeMarker();
   },
 
   resize: function(width) {

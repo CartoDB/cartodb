@@ -2,24 +2,17 @@ require_relative 'visualization_presenter'
 require_relative 'vizjson_presenter'
 require_relative '../../../models/visualization/stats'
 require_relative 'paged_searcher'
+require_relative '../controller_helper'
 require_dependency 'carto/uuidhelper'
 require_dependency 'static_maps_url_helper'
 
 module Carto
   module Api
-    class VisualizationLoadError < StandardError
-      attr_reader :message, :status
-
-      def initialize(message, status)
-        @message = message
-        @status = status
-      end
-    end
-
     class VisualizationsController < ::Api::ApplicationController
       include VisualizationSearcher
       include PagedSearcher
       include Carto::UUIDHelper
+      include Carto::ControllerHelper
 
       ssl_required :index, :show
       ssl_allowed  :vizjson2, :likes_count, :likes_list, :is_liked, :list_watching, :static_map
@@ -33,7 +26,8 @@ module Carto
       before_filter :load_visualization, only: [:likes_count, :likes_list, :is_liked, :show, :stats, :list_watching,
                                                 :static_map]
 
-      rescue_from Carto::Api::VisualizationLoadError, with: :visualization_load_error
+      rescue_from Carto::LoadError, with: :rescue_from_carto_error
+      rescue_from Carto::UUIDParameterFormatError, with: :rescue_from_carto_error
 
       def show
         render_jsonp(to_json(@visualization))
@@ -157,13 +151,13 @@ module Carto
                                                          .first
 
         if @visualization.nil?
-          raise Carto::Api::VisualizationLoadError.new('Visualization does not exist', 404)
+          raise Carto::LoadError.new('Visualization does not exist', 404)
         end
         if !@visualization.is_viewable_by_user?(current_viewer)
-          raise Carto::Api::VisualizationLoadError.new('Visualization not viewable', 403)
+          raise Carto::LoadError.new('Visualization not viewable', 403)
         end
         unless request_username_matches_visualization_owner
-          raise Carto::Api::VisualizationLoadError.new('Visualization of that user does not exist', 404)
+          raise Carto::LoadError.new('Visualization of that user does not exist', 404)
         end
       end
 
@@ -206,13 +200,6 @@ module Carto
       def to_hash(visualization)
         # TODO: previous controller uses public_fields_only option which I don't know if is still used
         VisualizationPresenter.new(visualization, current_viewer, self).to_poro
-      end
-
-      def visualization_load_error(e)
-        respond_to do |format|
-          format.html { render text: e.message, status: e.status }
-          format.json { render json: { errors: e.message }, status: e.status }
-        end
       end
 
     end

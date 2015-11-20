@@ -394,12 +394,9 @@ module.exports = View.extend({
   },
 
   removeSelection: function() {
-    if (!this._getLoBarIndex() && !this._getHiBarIndex()) {
-      return;
-    }
-    var data = this.model.get('data');
-    this.selectRange(0, data.length - 1);
-    this.resetBrush();
+    this.chart.selectAll('.Bar').classed('is-selected', false);
+    this._removeBrush();
+    this._setupBrush();
   },
 
   selectRange: function(loBarIndex, hiBarIndex) {
@@ -615,16 +612,6 @@ module.exports = View.extend({
     .text(function(d) {
       return self.formatNumber(self.xAxisScale(d));
     });
-  },
-
-  resetBrush: function() {
-    this.selectRange(0, 10);
-
-    var self = this;
-    setTimeout(function() {
-      self._removeBrush();
-      self._setupBrush();
-    }, 200);
   },
 
   _updateChart: function() {

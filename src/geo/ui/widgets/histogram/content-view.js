@@ -140,6 +140,7 @@ module.exports = WidgetContent.extend({
       data: this.dataModel.getData(),
       xAxisTickFormat: this._xAxisTickFormat.bind(this)
     }));
+
     this.$('.js-content').append(this.chart.el);
     this.addView(this.chart);
 
@@ -377,12 +378,12 @@ module.exports = WidgetContent.extend({
     this.dataModel.set({ start: null, end: null, bins: null, own_filter: 1 });
     this.dataModel._fetch();
     this.lockedByUser = false;
-    this.chart.removeSelection();
   },
 
   _zoom: function() {
     this.lockedByUser = true;
     this.viewModel.set({ zoomed: true, zoom_enabled: false });
+    this.chart.removeSelection();
   },
 
   _onZoomOut: function() {
@@ -398,8 +399,6 @@ module.exports = WidgetContent.extend({
     this.chart.resetIndexes();
 
     this.miniChart.hide();
-
-    this.chart.removeSelection();
   },
 
   _showMiniRange: function() {

@@ -25,6 +25,4 @@ shared_context 'users helper' do
     delete_user_data @user2 if @user2
     # User destruction is handled at spec_helper
   end
-
 end
-

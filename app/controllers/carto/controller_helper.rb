@@ -47,6 +47,5 @@ module Carto
         format.json { render json: { errors: message }, status: status }
       end
     end
-
   end
 end

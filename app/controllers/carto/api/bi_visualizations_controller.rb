@@ -34,7 +34,7 @@ module Carto
       def load_bi_visualization
         @bi_visualization = Carto::BiVisualization.find(@bi_visualization_id)
         raise Carto::UnauthorizedError.new unless @bi_visualization.accessible_by?(current_user)
-      rescue ActiveRecord::RecordNotFound => e
+      rescue ActiveRecord::RecordNotFound
         raise Carto::LoadError.new("BiVisualization not found: #{@bi_visualization_id}")
       end
     end

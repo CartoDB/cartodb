@@ -7,7 +7,6 @@ describe Carto::Api::BiVisualizationsController do
   include_context 'users helper'
 
   describe '#vizjson' do
-
     before(:all) do
       @bi_dataset = FactoryGirl.create(:bi_dataset, user_id: @user1.id)
       @bi_visualization = FactoryGirl.create(:bi_visualization, bi_dataset: @bi_dataset)
@@ -47,8 +46,5 @@ describe Carto::Api::BiVisualizationsController do
         response.status.should == 403
       end
     end
-
-
   end
-
 end

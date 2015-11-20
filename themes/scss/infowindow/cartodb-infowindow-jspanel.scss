@@ -1,0 +1,178 @@
+/* js panel */
+.cartodb-popup-content {
+  outline: none;
+}
+
+.Cdb-infowindow-inner {
+    padding: 20px 24px 14px;
+    position: relative;
+}
+
+.jspContainer {
+  overflow: hidden;
+  position: relative;
+  outline: none;
+}
+
+ .jspContainer * {
+  outline: none;
+}
+
+ .jspPane {
+  position: absolute;
+  padding:4px 0 0 0!important;
+  z-index:1;
+}
+
+ .jspVerticalBar {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 6px;
+  height: 100%;
+  background: none;
+  z-index:10;
+}
+
+ .jspHorizontalBar {
+  position: absolute;
+  bottom: 0; left: 0;
+  width: 100%;
+  height: 6px;
+  background: none;
+}
+
+ .jspVerticalBar *,
+ .jspHorizontalBar * {
+  margin: 0;
+  padding: 0;
+}
+
+ .jspCap {
+  display: none;
+}
+
+ .jspHorizontalBar .jspCap {
+  float: left;
+}
+
+ .jspTrack {
+  position: relative;
+  cursor: pointer;
+  background: none;
+}
+
+ .jspDrag {
+  position: relative;
+  top: 0; left: 0;
+  cursor: pointer;
+  border-radius:10px;
+  -moz-border-radius:10px;
+  -webkit-border-radius:10px;
+  background: #999999;
+  background: rgba(0,0,0,0.16);
+}
+
+ .jspDrag:hover {
+  background: #666666;
+  background: rgba(0,0,0,0.5);
+  cursor: pointer;
+}
+
+ .jspHorizontalBar .jspTrack,
+ .jspHorizontalBar .jspDrag {
+  float: left;
+  height: 100%;
+}
+
+ .jspArrow {
+  background: #50506d;
+  text-indent: -20000px;
+  display: block;
+  cursor: pointer;
+}
+
+ .jspArrow.jspDisabled {
+  cursor: default;
+  background: #80808d;
+}
+
+ .jspVerticalBar .jspArrow {
+  height: 16px;
+}
+
+ .jspHorizontalBar .jspArrow {
+  width: 16px;
+  float: left;
+  height: 100%;
+}
+
+ .jspVerticalBar .jspArrow:focus {
+  outline: none;
+}
+
+ .jspCorner {
+  background: #eeeef4;
+  float: left;
+  height: 100%;
+}
+
+* html  .jspCorner {
+  margin: 0 -3px 0 0;
+}
+
+ .jspContainer:after,
+ .jspContainer:before {
+  content:'';
+  position:absolute;
+  left:0;
+  right:12px;
+  display:block;
+  height:10px;
+  width:190px;
+  z-index: 5;
+}
+​
+ .jspContainer:after {
+  bottom:0px;
+  background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, rgba(255,255,255,0)), color-stop(100%, rgba(255,255,255,1)));
+  background: -webkit-linear-gradient(top, rgba(255,255,255,0), rgba(255,255,255,1));
+  background: -moz-linear-gradient(top, rgba(255,255,255,0), rgba(255,255,255,1));
+  background: -o-linear-gradient(top, rgba(255,255,255,0), rgba(255,255,255,1));
+  background: linear-gradient(top, rgba(255,255,255,0), rgba(255,255,255,1));
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#00ffffff',GradientType=0 );
+}
+​
+ .jspContainer:before {
+  top:0px;
+  background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, rgba(255,255,255,1)), color-stop(100%, rgba(255,255,255,0)));
+  background: -webkit-linear-gradient(top, rgba(255,255,255,1), rgba(255,255,255,0));
+  background: -moz-linear-gradient(top, rgba(255,255,255,1), rgba(255,255,255,0));
+  background: -o-linear-gradient(top, rgba(255,255,255,1), rgba(255,255,255,0));
+  background: linear-gradient(top, rgba(255,255,255,1), rgba(255,255,255,0));
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#00ffffff',GradientType=0 );
+}
+
+.jspTrack:after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  left: 50%;
+  background: #3E4B51;
+  display: block;
+  margin-left: -1px;
+}
+
+.jspDrag {
+  background: #636D72;
+  z-index: 2;
+}
+
+.jspVerticalBar {
+  width: 5px;
+}
+
+
+

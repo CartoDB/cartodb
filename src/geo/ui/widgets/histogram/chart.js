@@ -7,7 +7,7 @@ var View = require('cdb/core/view');
 module.exports = View.extend({
 
   defaults: {
-    minimumBarHeight: 1,
+    minimumBarHeight: 2,
     duration: 750,
     handleWidth: 6,
     handleHeight: 23,

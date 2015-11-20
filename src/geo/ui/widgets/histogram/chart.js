@@ -7,6 +7,7 @@ var View = require('cdb/core/view');
 module.exports = View.extend({
 
   defaults: {
+    minimumBarHeight: 1,
     duration: 750,
     handleWidth: 6,
     handleHeight: 23,
@@ -137,8 +138,8 @@ module.exports = View.extend({
 
       var h = this.chartHeight - this.yScale(freq);
 
-      if (h < 1 && h > 0) {
-        top = this.chartHeight + this.model.get('pos').y + this.$el.position().top - 20;
+      if (h < this.defaults.minimumBarHeight && h > 0) {
+        top = this.chartHeight + this.model.get('pos').y + this.$el.position().top - 20 - this.defaults.minimumBarHeight;
       }
 
       if (!this._isDragging()) {
@@ -636,12 +637,30 @@ module.exports = View.extend({
     bars.transition()
     .duration(200)
     .attr('height', function(d) {
+
+      if (_.isEmpty(d)) {
+        return 0;
+      }
+
       var h = self.chartHeight - self.yScale(d.freq);
-      var height = _.isEmpty(d) || (h < 0 || h === undefined) ? 0 : h;
-      return height;
+
+      if (h < self.defaults.minimumBarHeight && h > 0) {
+        h = self.defaults.minimumBarHeight;
+      }
+      return h;
     })
     .attr('y', function(d) {
-      return _.isEmpty(d) ? self.chartHeight : self.yScale(d.freq);
+      if (_.isEmpty(d)) {
+        return self.chartHeight;
+      }
+
+      var h = self.chartHeight - self.yScale(d.freq);
+
+      if (h < self.defaults.minimumBarHeight && h > 0) {
+        return self.chartHeight - self.defaults.minimumBarHeight;
+      } else {
+        return self.yScale(d.freq);
+      }
     });
 
     bars
@@ -696,8 +715,8 @@ module.exports = View.extend({
 
       var h = self.chartHeight - self.yScale(d.freq);
 
-      if (h < 1 && h > 0) {
-        h = 1;
+      if (h < self.defaults.minimumBarHeight && h > 0) {
+        h = self.defaults.minimumBarHeight;
       }
       return h;
     })
@@ -708,8 +727,8 @@ module.exports = View.extend({
 
       var h = self.chartHeight - self.yScale(d.freq);
 
-      if (h < 1 && h > 0) {
-        return self.chartHeight - 1;
+      if (h < self.defaults.minimumBarHeight && h > 0) {
+        return self.chartHeight - self.defaults.minimumBarHeight;
       } else {
         return self.yScale(d.freq);
       }

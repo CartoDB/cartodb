@@ -32,16 +32,12 @@ module.exports = View.extend({
   render: function() {
     this.clearSubViews();
     this.$el.empty();
-    var categoriesCount = this.dataModel.getCount();
     var pages = Math.ceil(this.dataModel.getSize() / this.options.itemsPerPage);
     var template = this.options.template;
     this.$el.html(
       template({
         showPaginator: this.options.paginator,
-        isLocked: this.dataModel.isLocked(),
-        isSearchEnabled: this.viewModel.isSearchEnabled(),
         currentPage: this.model.get('page'),
-        categoriesCount: categoriesCount || '-',
         pages: pages
       })
     );

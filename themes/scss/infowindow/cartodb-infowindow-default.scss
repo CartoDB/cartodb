@@ -2,6 +2,10 @@
 @import '../variables/mixins';
 
 /* new infowindow */
+.cartodb-infowindow {
+  position: absolute;
+}
+
 .Cdb-infowindow {
   background: #fff;
   border-radius: 4px;
@@ -19,6 +23,11 @@
   padding: 20px 24px 14px 24px;
 }
 
+.Cdb-infowindow-inner--scroll {
+  padding-right: 12px;
+  position: relative;
+}
+
 .is-header {
   .Cdb-infowindow-header-bg {
     padding-bottom: 12px;
@@ -32,11 +41,12 @@
   font-size: $sFontSize-smaller;
   font-weight: $sFontWeight-lighter;
   line-height: $sLineHeight-smaller;
+  text-transform: uppercase;
 } 
 
 .Cdb-infowindow-title {
   font-size: $sFontSize-small;
-  font-weight: $sFontWeight-semibold;
+  font-weight: $sFontWeight-lighter;
   line-height: $sLineHeight-small;
 }
 
@@ -107,7 +117,7 @@
 .Cdb-hook {
   position: absolute;
   left: 24px;
-  bottom: 0;
+  bottom: 1px;
   z-index: 10;
 }
 
@@ -303,10 +313,8 @@
   top: 0;
   bottom: 0;
   width: 50%;
-  background: linear-gradient(to right,  rgba(0, 0, 0, 0) 0%,rgba(0, 0, 0, 1) 100%);
+  background: linear-gradient(to right,  rgba(0,0,0,0) 0%,rgba(0,0,0,1) 50%,rgba(0,0,0,0) 100%);
   -webkit-animation: placeholder ease-in-out 2s infinite ;
   animation: placeholder ease-in-out 2s infinite;
 }
-
-
 

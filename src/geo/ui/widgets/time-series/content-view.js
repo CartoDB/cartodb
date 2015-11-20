@@ -37,8 +37,23 @@ module.exports = WidgetContentView.extend({
   },
 
   _initBinds: function() {
-    // TODO overrides parent view's private function, can we remove this and have things more clear?
+    //TODO overrides parent view's private function, can we remove this and have things more clear?
+    this.model.once('change:data', this._onFirstLoad, this);
+  },
+
+  _onFirstLoad: function() {
+    this._storeBounds();
     this.model.once('change:data', this.render, this);
+    this.model._fetch();
+  },
+
+  _storeBounds: function() {
+    var data = this.model.getData();
+    if (data && data.length > 0) {
+      var start = data[0].start;
+      var end = data[data.length - 1].end;
+      this.model.set({ start: start, end: end, bins: data.length });
+    }
   },
 
   render: function() {
@@ -63,21 +78,21 @@ module.exports = WidgetContentView.extend({
 
   _createHistogramView: function() {
     this.histogramChartView = new HistogramChartView({
-      y: 0,
+      type: 'time',
+      duration: 200,
       margin: {
         top: 4,
         right: 4,
         bottom: 20,
         left: 4
       },
+      y: 0,
       handles: true,
       width: this._histogramChartWidth(),
       height: this.viewModel.get('histogramChartHeight'),
-      data: this.model.getData(),
-      xAxisTickFormat: function(d, i) {
-        return i;
-      }
+      data: this.model.getData()
     });
+
     this._appendView(this.histogramChartView);
     this.histogramChartView.bind('on_brush_end', this._onBrushEnd, this);
     this.histogramChartView.show();

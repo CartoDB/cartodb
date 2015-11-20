@@ -126,7 +126,7 @@ module.exports = WidgetContent.extend({
 
   _onWindowResize: function() {
     this._setupDimensions();
-    if (this.histogramChartView) this.chart.resize(this.canvasWidth);
+    if (this.histogramChartView) this.histogramChartView.resize(this.canvasWidth);
     if (this.miniHistogramChartView) this.miniHistogramChartView.resize(this.canvasWidth);
   },
 
@@ -401,7 +401,7 @@ module.exports = WidgetContent.extend({
   },
 
   _clear: function() {
-    this.chart.removeSelection();
+    this.histogramChartView.removeSelection();
     this.viewModel.set({ zoomed: false, zoom_enabled: false });
     this.viewModel.trigger('change:zoomed');
   },

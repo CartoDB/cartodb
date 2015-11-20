@@ -1431,7 +1431,7 @@ describe Carto::Api::VisualizationsController do
 
         # Call to cache the vizjson after generating it
         get api_v2_visualizations_vizjson_url(id: visualization.fetch('id'), api_key: @api_key),
-            id: visualization.fetch('id'),
+            { id: visualization.fetch('id') },
             @headers
 
         # Now force a change
@@ -1441,7 +1441,7 @@ describe Carto::Api::VisualizationsController do
         last_response.status.should == 200
 
         get api_v2_visualizations_vizjson_url(id: visualization.fetch('id'), api_key: @api_key),
-            id: visualization.fetch('id'),
+            { id: visualization.fetch('id') },
             @headers
         visualization = JSON.parse(last_response.body)
 

@@ -1511,10 +1511,10 @@ describe Carto::Api::VisualizationsController do
         get api_v1_visualizations_show_url(id: TEST_UUID, api_key: @api_key), {}, @headers
         last_response.status.should == 404
 
-        put api_v1_visualizations_update_url(id: TEST_UUID, api_key: @api_key), {}, @headers
+        put api_v1_visualizations_update_url(id: TEST_UUID, api_key: @api_key), { id: TEST_UUID }.to_json, @headers
         last_response.status.should == 404
 
-        delete api_v1_visualizations_destroy_url(id: TEST_UUID, api_key: @api_key), {}, @headers
+        delete api_v1_visualizations_destroy_url(id: TEST_UUID, api_key: @api_key), { id: TEST_UUID }.to_json, @headers
         last_response.status.should == 404
 
         get "/api/v2/viz/#{TEST_UUID}/viz?api_key=#{@api_key}", {}, @headers

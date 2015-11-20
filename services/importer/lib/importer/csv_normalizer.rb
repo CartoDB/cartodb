@@ -128,22 +128,21 @@ module CartoDB
 
         temporary_csv = CSV.open(temporary_filepath, 'w', col_sep: OUTPUT_DELIMITER, encoding: 'UTF-8')
 
-        nonblank_ignored_lines = 0
-
         CSV.open(filepath, "rb:#{encoding}", col_sep: @delimiter) do |input|
           loop do
             begin
               row = input.shift
               break unless row
             rescue CSV::MalformedCSVError
-              nonblank_ignored_lines += 1 unless row.to_s.strip.empty?
               next
             end
             temporary_csv << multiple_column(row)
           end
         end
 
-        # TODO: let the user know if nonblank_ignored_lines > 0
+        # TODO: it would be nice to detect and  warn the user about ignored
+        # malformed rows (but probably not about malformed empty lines, such
+        # as trailing \n\r\n seen in some cases)
 
         temporary_csv.close
 

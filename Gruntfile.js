@@ -162,6 +162,7 @@ module.exports = function(grunt) {
   ];
   var css = allDeps
     .concat([
+      'copy',
       'sass',
       'concat',
       'cssmin',

@@ -1,0 +1,43 @@
+// Default icon styles
+// --------------------------------------------------
+
+@import '../variables/mixins';
+@include font-face('CDBIcon', '../../fonts/CDBIcon.eot', '../../fonts/CDBIcon.woff', '../../fonts/CDBIcon.ttf', '../../fonts/CDBIcon.svg');
+
+.CDBIcon {
+  display: inline-block;
+  font-family: 'CDBIcon';
+  font-style: normal;
+  font-weight: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1;
+}
+
+.CDBIcon-Cartofante:before {
+  content: '\E001';
+}
+
+.CDBIcon-Hamburguer:before {
+  content: '\E002';
+}
+
+.CDBIcon-X:before {
+  content: '\E003';
+}
+
+.CDBIcon-Syringe:before {
+  content: '\E004';
+}
+
+.CDBIcon-Lens:before {
+  content: '\E005';
+}
+
+.CDBIcon-Lock:before {
+  content: '\E006';
+}
+
+.CDBIcon-Unlock:before {
+  content: '\E007';
+}

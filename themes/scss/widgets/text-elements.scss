@@ -17,6 +17,9 @@
   font-weight: $sFontWeight-normal;
   line-height: $sFontSize-normal + 6;
 }
+.Widget-textBig--bold {
+  font-weight: $sFontWeight-semibold;
+}
 .Widget-textNormal { // 14 size
   @include text-overflow();
   font-size: $sFontSize-normal;
@@ -30,12 +33,13 @@
   @include text-overflow();
   font-size: $sFontSize-small;
   font-weight: $sFontWeight-normal;
-  line-height: $sFontSize-small + 1;
+  line-height: $sFontSize-small + 2;
 }
 .Widget-textSmall--bold {
   font-weight: $sFontWeight-semibold;
 }
 .Widget-textSmall--upper {
+  line-height: $sFontSize-small + 1;
   text-transform: uppercase;
 }
 .Widget-textSmaller { // 10 size

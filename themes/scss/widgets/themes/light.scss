@@ -3,22 +3,22 @@
 
 @import '../../variables/mixins';
 
-.Widget--light {
-  $primary: rgba(#2E3C43, 1);
-  $secondary: rgba(#636D72, 1);
-  $disabled: rgba(#CBCED0, 1);
-  $elementBkg: rgba(#EEE, 1);
-  $elementBkgHover: rgba(#AAA, 1);
-  $elementBorder: rgba(#EEE, 1);
-  $link: rgba(#3AA9E3, 1);
-  $linkHover: rgba(#227DBD, 1);
-  $highlighted: rgba(#9DE0AD, 1);
-  $positive: rgba(#8FB83F, 1);
-  $negative: rgba(#F15743, 1);
-  $loadingBkg: rgba(#F9F9F9, 1);
-  $canvasBkg: rgba(#F2F6F9, 1);
-  $commonBkg: rgba(#FFF, 1);
+$primary: rgba(#2E3C43, 1);
+$secondary: rgba(#636D72, 1);
+$disabled: rgba(#CBCED0, 1);
+$elementBkg: rgba(#EEE, 1);
+$elementBkgHover: rgba(#AAA, 1);
+$elementBorder: rgba(#EEE, 1);
+$link: rgba(#3AA9E3, 1);
+$linkHover: rgba(#227DBD, 1);
+$highlighted: rgba(#9DE0AD, 1);
+$positive: rgba(#8FB83F, 1);
+$negative: rgba(#F15743, 1);
+$loadingBkg: rgba(#F9F9F9, 1);
+$canvasBkg: rgba(#F2F6F9, 1);
+$commonBkg: rgba(#FFF, 1);
 
+.Widget--light {
   border-color: $canvasBkg;
   background: $commonBkg;
 
@@ -33,29 +33,47 @@
   .Widget-textSmaller--dark {
     color: $primary;
   }
-  .Widget-link {
+  .Widget-textInput {
+    color: $primary;
+  }
+  .Widget-link,
+  .Widget-buttonIcon {
+    border-color: $link;
     color: $link;
     &:hover {
+      border-color: $linkHover;
       color: $linkHover;
     }
+  }
+  .Widget-buttonIcon--circle.is-selected {
+    background-color: $link;
+    color: #FFF;
+    &:hover {
+      border-color: $linkHover;
+      background: $linkHover;
+    }
+  }
+  .Widget-searchLens {
+    color: $link;
   }
   .Widget-progressBar {
     background: $elementBkg;
   }
   .Widget-progressState {
-    background: $highlighted;
+    background-color: $highlighted;
   }
   .Widget-progressState--positive {
-    background: $positive;
+    background-color: $positive;
   }
   .Widget-progressState--negative {
-    background: $negative;
+    background-color: $negative;
+  }
+  .Widget-progressState--inactive {
+    background-color: $elementBkg;
   }
   .Widget-progressState--pattern {
-    background-color: rgba($secondary, .3);
-    background-image: repeating-linear-gradient(-45deg, transparent, transparent 5px, rgba($secondary,.5) 5px, rgba($secondary,.5) 10px);
+    background-image: repeating-linear-gradient(45deg, transparent 0, rgba($secondary, 0.7) 1px, transparent 2px, transparent 3px);
   }
-
   .Widget-dot {
     background: $highlighted;
   }
@@ -155,6 +173,14 @@
     }
   }
 
+  .Widget-checkbox {
+    border-color: $disabled;
+
+    &.is-checked {
+      background: $link;
+    }
+  }
+
   // States
   .is-disabled {
     .Widget-textNormal,
@@ -164,11 +190,11 @@
       color: $disabled;
     }
     .Widget-progressState {
-      background: $disabled !important; // Preventing problems with inline colors
+      background-color: $disabled !important; // Preventing problems with inline colors
     }
     .Widget-progressState--pattern {
-      background-color: rgba($secondary, .1) !important;
-      background-image: repeating-linear-gradient(-45deg, transparent, transparent 5px, rgba($secondary,.2) 5px, rgba($secondary,.2) 10px) !important;
+      background-color: rgba($disabled, 0.3) !important;
+      background-image: repeating-linear-gradient(45deg, transparent 0, rgba($secondary, 0.3) 1px, transparent 1px, transparent 2px) !important;
     }
   }
 }

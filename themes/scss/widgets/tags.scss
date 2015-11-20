@@ -14,9 +14,16 @@
   vertical-align: middle;
 }
 // Widget tag types, should we move them to theme?
-.Widget-tag--green {
-  background: #EDF3DF;
+.Widget-tag--avg {
+  background-color: rgba(#EDF3DF, 1);
 }
-.Widget-tag--blue {
-  background: #DFF2FC;
+.Widget-tag--sum {
+  background-color: rgba(#DFF2FC, 1);
+}
+.Widget-tag--count {
+  background-color: rgba(#FEF4E2, 1);
+}
+.Widget-tag--min,
+.Widget-tag--max {
+  background-color: rgba(#FEE0DD, 1);
 }

@@ -1,0 +1,33 @@
+/**
+ *  CartoDB infowindow custom styles
+ */
+
+
+.Cdb-infowindow--custom {
+  .Cdb-hook:before {
+    border-top: 16px solid #fff;
+  }
+  
+  .Cdb-infowindow-tabs:before {
+    content:"";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: rgba(0, 0, 0, .16);
+  }
+  .Cdb-infowindow-tabs-links {
+    color: #fff;
+    &.is-active {
+      color: #2E3C43;
+      border-bottom: 1px solid #2E3C43;
+    }
+  }
+  .Cdb-loading-subtitle {
+    background: #F9F9F9;
+  }
+  .Cdb-loading-title {
+    background: #F9F9F9;
+  }
+}

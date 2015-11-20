@@ -401,6 +401,7 @@ module.exports = WidgetContent.extend({
   },
 
   _clear: function() {
+    this.chart.removeSelection();
     this.viewModel.set({ zoomed: false, zoom_enabled: false });
     this.viewModel.trigger('change:zoomed');
   },

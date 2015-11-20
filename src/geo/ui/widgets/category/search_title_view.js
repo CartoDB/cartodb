@@ -11,6 +11,7 @@ module.exports = View.extend({
 
   events: {
     'click .js-close': '_onClickClose',
+    'keyup .js-textInput': '_onKeyupInput',
     'submit .js-form': '_onSubmitForm',
     'click .js-lock': '_lockCategories',
     'click .js-unlock': '_unlockCategories',
@@ -56,7 +57,9 @@ module.exports = View.extend({
   },
 
   _onSubmitForm: function(ev) {
-    ev.preventDefault();
+    if (ev) {
+      ev.preventDefault();
+    }
     var q = this.$('.js-textInput').val();
     this.search.set('q', q);
     if (this.search.isValid()) {
@@ -70,8 +73,17 @@ module.exports = View.extend({
     var self = this;
     setTimeout(function() {
       self.$('.js-textInput').focus();
-    },0);
+    }, 0);
   },
+
+  _onKeyupInput: _.debounce(
+    function(ev) {
+      var q = this.$('.js-textInput').val();
+      if (ev.keyCode !== 13 && ev.keyCode !== 27 && q !== "") {
+        this._onSubmitForm();
+      }
+    }, 250
+  ),
 
   _bindESC: function() {
     $(window).bind("keyup." + this.cid, _.bind(this._onKeyUp, this));

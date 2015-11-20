@@ -33,8 +33,8 @@ module.exports = WidgetContent.extend({
 
   _initViews: function() {
     this._setupDimensions();
-    this._renderMainChart();
     this._renderMiniChart();
+    this._renderMainChart();
   },
 
   _initBinds: function() {
@@ -137,8 +137,7 @@ module.exports = WidgetContent.extend({
       handles: true,
       width: this.canvasWidth,
       height: this.canvasHeight,
-      data: this.dataModel.getData(),
-      xAxisTickFormat: this._xAxisTickFormat.bind(this)
+      data: this.dataModel.getData()
     }));
 
     this.$('.js-content').append(this.histogramChartView.el);
@@ -152,29 +151,19 @@ module.exports = WidgetContent.extend({
     this._updateStats();
   },
 
-  _xAxisTickFormat: function(d, i, data) {
-    return (i === data.length - 1)
-      ? this._formatNumber(data[i].end)
-      : this._formatNumber(data[i].start);
-  },
-
-  _formatNumber: function(value, unit) {
-    return xAxisTickFormatter(value) + (unit ? ' ' + unit : '');
-  },
-
   _renderMiniChart: function() {
     this.miniHistogramChartView = new HistogramChartView(({
       className: 'mini',
-      el: this.histogramChartView.$el, // TODO the mini-histogram should not depend on the chart histogram's DOM
       handles: false,
       width: this.canvasWidth,
-      margin: { top: 0, right: 0, bottom: 0, left: 4 },
+      margin: { top: 0, right: 0, bottom: 20, left: 4 },
       y: 0,
-      height: 20,
-      data: this.dataModel.getData(),
-      xAxisTickFormat: this._xAxisTickFormat.bind(this)
+      height: 40,
+      data: this.dataModel.getData()
     }));
 
+    this.addView(this.miniHistogramChartView);
+    this.$('.js-content').append(this.miniHistogramChartView.el);
     this.miniHistogramChartView.bind('on_brush_end', this._onMiniRangeUpdated, this);
     this.miniHistogramChartView.render().hide();
   },

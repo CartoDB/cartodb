@@ -29,6 +29,8 @@ module Carto
   end
 
   module ControllerHelper
+    include Carto::UUIDHelper
+
     def uuid_parameter(parameter)
       param = params[parameter]
       if is_uuid?(param)

@@ -25,6 +25,7 @@ WORKING_SPECS_1 = \
   spec/models/layer/presenter_spec.rb \
 	spec/requests/sessions_spec.rb \
   spec/requests/api/json/layer_presenter_spec.rb \
+  spec/requests/carto/admin/bi_visualizations_controller_spec.rb.rb \
 	spec/requests/carto/api/bi_visualizations_controller_spec.rb \
   spec/requests/carto/api/layer_presenter_spec.rb \
 	spec/requests/carto/api/data_import_presenter_spec.rb \

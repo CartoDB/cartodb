@@ -292,6 +292,11 @@ CartoDB::Application.routes.draw do
 
   end
 
+  scope :module => 'carto/admin' do
+    # 1b visualizations
+    get '(/user/:user_domain)(/u/:user_domain)/bivisualizations/:id/embed_map'        => 'bi_visualizations#embed_map',       as: :bi_visualizations_embed_map,  constraints: { id: /[^\/]+/ }, defaults: { dont_rewrite: true }
+  end
+
   scope :module => 'carto/api', :format => :json do
 
     # V1 api/json calls
@@ -306,7 +311,7 @@ CartoDB::Application.routes.draw do
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/related_templates'          => 'templates#related_templates_by_visualization', as: :api_v1_visualizations_related_templates, constraints: { id: /[^\/]+/ }
 
     # 1b Visualizations
-    get '(/user/:user_domain)(/u/:user_domain)/api/v1/bivisualization/:id/viz'                       => 'bi_visualizations#vizjson',   as: :api_v1_bi_visualizations_vizjson,    constraints: { id: /[^\/]+/ }
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1/bivisualizations/:id/viz'                       => 'bi_visualizations#vizjson',   as: :api_v1_bi_visualizations_vizjson,    constraints: { id: /[^\/]+/ }
 
     # Tables
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/tables/:id'                     => 'tables#show',   as: :api_v1_tables_show, constraints: { id: /[^\/]+/ }

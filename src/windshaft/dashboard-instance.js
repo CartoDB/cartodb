@@ -36,8 +36,8 @@ module.exports = Model.extend({
   _getHost: function(subhost) {
     var userName = this.get('userName');
     var protocol = this._useHTTPS() ? 'https' : 'http';
-    var subhost = subhost || '';
-    var host = this.get('windshaftURLTemplate').replace('{user}', userName);
+    var subhost = subhost ? subhost + '.' : '';
+    var host = this.get('urlTemplate').replace('{user}', userName);
     var cdnHost = this.get('cdn_url') && this.get('cdn_url')[protocol];
     if (cdnHost) {
       host = [protocol, '://', subhost, cdnHost, '/', userName].join('');
@@ -47,7 +47,7 @@ module.exports = Model.extend({
   },
 
   _useHTTPS: function() {
-    return this.get('windshaftURLTemplate').indexOf('https') === 0;
+    return this.get('urlTemplate').indexOf('https') === 0;
   },
 
   getTiles: function(layerType, params) {
@@ -85,16 +85,18 @@ module.exports = Model.extend({
         if (layerType === 'mapnik') {
           for(var layer = 0; layer < this.get('metadata').layers.length; ++layer) {
             var index = this._getLayerIndexByType(layer, "mapnik");
-            var gridURLTemplate = [
-              this.getBaseURL(subdomain),
-              "/",
-              index,
-              gridTemplate,
-              ".grid.json",
-              (gridParams ? "?" + gridParams: '')
-            ].join("");
-            grids[layer] = grids[layer] || [];
-            grids[layer].push(gridURLTemplate);
+            if (index >= 0) {
+              var gridURLTemplate = [
+                this.getBaseURL(subdomain),
+                "/",
+                index,
+                gridTemplate,
+                ".grid.json",
+                (gridParams ? "?" + gridParams: '')
+              ].join("");
+              grids[layer] = grids[layer] || [];
+              grids[layer].push(gridURLTemplate);
+            }
           }
         }
       }

@@ -2,7 +2,7 @@ var _ = require('underscore');
 var Backbone = require('backbone');
 var WindshaftFiltersCollection = require('./filters/collection');
 var WindshaftFiltersBoundingBoxFilter = require('./filters/bounding_box');
-var WindshaftDashboardInstance = require('./dashboard_instance');
+var WindshaftDashboardInstance = require('./dashboard-instance');
 
 var WindshaftDashboard = function(options) {
   BOUNDING_BOX_FILTER_WAIT = 500;
@@ -61,7 +61,6 @@ WindshaftDashboard.prototype._createInstance = function(options) {
       // update other kind of layers too
       this.layers.each(function(layer) {
         if (layer.get('type') === 'torque') {
-          console.log(dashboardInstance.getTiles('torque'));
           layer.set('urls', dashboardInstance.getTiles('torque'));
         }
       });

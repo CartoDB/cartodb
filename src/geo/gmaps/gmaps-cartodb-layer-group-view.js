@@ -3,7 +3,6 @@ var GMapsLayerView = require('./gmaps-layer-view');
 var wax = require('wax.cartodb.js');
 var CartoDBDefaultOptions = require('./cartodb-default-options');
 var Projector = require('./projector');
-var GMapsCartoDBLayerGroupView = require('./cartodb-layer-group-base');
 var CartoDBLayerCommon = require('../cartodb-layer-common');
 var CartoDBLogo = require('../cartodb-logo');
 var Profiler = require('cdb.core.Profiler');
@@ -84,7 +83,7 @@ var GMapsCartoDBLayerGroupView = function(layerModel, gmapsMap) {
   }
 
   // Bind changes to the urls of the layer model
-  this.model.bind('change:urls', function() {
+  layerModel.bind('change:urls', function() {
     this.update();
   }, this);
 

@@ -10,7 +10,6 @@ if (typeof(window.google) != 'undefined' && typeof(window.google.maps) != 'undef
     GoogleMapsMapView: require('./gmaps/gmaps-map-view'),
     GMapsTiledLayerView: require('./gmaps/gmaps-tiled-layer-view'),
     GMapsLayerView: require('./gmaps/gmaps-layer-view'),
-    CartoDBLayerGroupGMaps: require('./gmaps/cartodb-layer-group-gmaps'),
     GMapsPlainLayerView: require('./gmaps/gmaps-plain-layer-view'),
     GMapsBaseLayerView: require('./gmaps/gmaps-base-layer-view'),
     GMapsCartoDBLayerGroupView: require('./gmaps/gmaps-cartodb-layer-group-view'),

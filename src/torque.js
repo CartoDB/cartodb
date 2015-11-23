@@ -12,8 +12,6 @@ if (typeof google !== 'undefined' && typeof google.maps !== 'undefined') {
 
 cdb.geo.LeafletTorqueLayer = require('./geo/leaflet/leaflet-torque-layer');
 
-cdb.geo.ui.TimeSlider = require('./geo/ui/time-slider');
-
 cdb.moduleLoad('torque', torque);
 
 module.exports = torque;

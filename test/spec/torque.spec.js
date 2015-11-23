@@ -17,6 +17,5 @@ describe('torque', function() {
     expect(cdb.geo.LeafletTorqueLayer).toEqual(jasmine.any(Function));
 
     expect(cdb.geo.ui).toEqual(jasmine.any(Object));
-    expect(cdb.geo.ui.TimeSlider).toEqual(jasmine.any(Function));
   });
 });

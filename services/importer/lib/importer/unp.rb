@@ -13,7 +13,7 @@ module CartoDB
     class Unp
       HIDDEN_FILE_REGEX     = /^(\.|\_{2})/
       UNP_READ_ERROR_REGEX  = /.*Cannot read.*/
-      COMPRESSED_EXTENSIONS = %w{ .zip .gz .tgz .tar.gz .bz2 .tar .kmz }
+      COMPRESSED_EXTENSIONS = %w{ .zip .gz .tgz .tar.gz .bz2 .tar .kmz .rar }
       SUPPORTED_FORMATS     = %w{
         .csv .shp .ods .xls .xlsx .tif .tiff .kml .kmz
         .js .json .tar .gz .tgz .osm .bz2 .geojson
@@ -215,4 +215,3 @@ module CartoDB
     end
   end
 end
-

@@ -1,6 +1,6 @@
 // cartodb.js version: 3.15.8
 // uncompressed version: cartodb.uncompressed.js
-// sha: 4a64eccccaff655879b0724594ccf584ca6de8fb
+// sha: 92177cf6f6c31baf83a4f9846aa6cc465adaf86f
 (function() {
   var define;  // Undefine define (require.js), see https://github.com/CartoDB/cartodb.js/issues/543
   var root = this;
@@ -25993,7 +25993,7 @@ if(!window.JSON) {
 
     cdb.config = new Config();
     cdb.config.set({
-      cartodb_attributions: "CartoDB <a href=\"http://cartodb.com/attributions\" target=\"_blank\">attribution</a>",
+      cartodb_attributions: "CartoDB <a href='http://cartodb.com/attributions' target='_blank'>attribution</a>",
       cartodb_logo_link: "http://www.cartodb.com"
     });
 
@@ -27299,9 +27299,9 @@ cdb.geo.Map = cdb.core.Model.extend({
   },
 
   _updateAttributions: function() {
-    var defaultCartoDBAttribution = cdb.core.sanitize.html(this.defaults.attribution[0]);
+    var defaultCartoDBAttribution = this.defaults.attribution[0];
     var attributions = _.chain(this.layers.models)
-      .map(function(layer) { return cdb.core.sanitize.html( layer.get('attribution') ); })
+      .map(function(layer) { return layer.get('attribution'); })
       .reject(function(attribution) { return attribution == defaultCartoDBAttribution})
       .compact()
       .uniq()

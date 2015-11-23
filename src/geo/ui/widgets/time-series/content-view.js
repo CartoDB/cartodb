@@ -9,7 +9,7 @@ var HistogramView = require('./histogram-view');
 module.exports = View.extend({
 
   initialize: function() {
-    this.model.once('change:data', this.render, this);
+    this.model.once('change:data', this._onFirstLoad, this);
   },
 
   render: function() {
@@ -19,14 +19,25 @@ module.exports = View.extend({
     if (this._isDataEmpty()) {
       this.$el.append(placeholderTemplate());
     } else {
-      this._renderContent();
+      this._appendView(new HistogramView(this.options));
     }
 
     return this;
   },
 
-  _renderContent: function() {
-    this._appendView(new HistogramView(this.options));
+  _onFirstLoad: function() {
+    this._storeBounds();
+    this.model.once('change:data', this.render, this);
+    this.model._fetch();
+  },
+
+  _storeBounds: function() {
+    var data = this.model.getData();
+    if (data && data.length > 0) {
+      var start = data[0].start;
+      var end = data[data.length - 1].end;
+      this.model.set({ start: start, end: end, bins: data.length });
+    }
   },
 
   _appendView: function(view) {

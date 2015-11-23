@@ -22,8 +22,8 @@ WindshaftPublicDashboardConfig.generate = function(options) {
         };
       }
 
+      layerConfig.options.widgets = {};
       if (layer.widgets.length > 0) {
-        layerConfig.options.widgets = {};
         layer.widgets.each(function(widget) {
           layerConfig.options.widgets[widget.get('id')] = widget.toJSON();
         });

@@ -50,21 +50,19 @@ module.exports = View.extend({
 
   _createHistogramView: function() {
     this.chartView = new HistogramChartView({
-      y: 0,
+      type: 'time',
+      animationSpeed: 100,
       margin: {
         top: 4,
         right: 4,
         bottom: 20,
         left: 4
       },
+      y: 0,
       handles: true,
       width: this._histogramChartWidth(),
       height: this.viewModel.get('histogramChartHeight'),
-      data: this.model.getData(),
-      torqueLayerModel: this.options.torqueLayerModel,
-      xAxisTickFormat: function(d, i) {
-        return i;
-      }
+      data: this.model.getData()
     });
     this.addView(this.chartView);
     this.$el.append(this.chartView.render().el);

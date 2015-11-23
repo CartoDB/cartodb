@@ -41,8 +41,8 @@ var FormulaContentView = require('cdb/geo/ui/widgets/formula/content_view');
 var WindshaftConfig = require('cdb/windshaft/config');
 var WindshaftClient = require('cdb/windshaft/client');
 var WindshaftDashboard = require('cdb/windshaft/dashboard');
-var WindshaftPrivateDashboardConfig = require('cdb/windshaft/private_dashboard_config');
-var WindshaftPublicDashboardConfig = require('cdb/windshaft/public_dashboard_config');
+var WindshaftPrivateDashboardConfig = require('cdb/windshaft/private-dashboard-config');
+var WindshaftPublicDashboardConfig = require('cdb/windshaft/public-dashboard-config');
 
 // Used to identify time-series widget for both the widget view factory as well as render it below the map instead of
 // the default widgets list view
@@ -585,7 +585,7 @@ var Vis = View.extend({
 
     var windshaftClient = new WindshaftClient({
       endpoint: endpoint,
-      windshaftURLTemplate: datasource.maps_api_template,
+      urlTemplate: datasource.maps_api_template,
       userName: datasource.user_name,
       statTag: datasource.stat_tag,
       forceCors: datasource.force_cors

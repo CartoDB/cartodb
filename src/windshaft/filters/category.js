@@ -142,12 +142,10 @@ module.exports = WindshaftFilterBase.extend({
     if (this.get('rejectAll')) {
       // TODO: replace this by empty array when it is available through API
       filter = { accept: ['___@___'] };
-    } else if (acceptCount > 0 && rejectCount === 0) {
+    } else if (acceptCount > 0) {
       filter = acceptedCats;
     } else if (rejectCount > 0 && acceptCount === 0) {
       filter = rejectedCats;
-    } else {
-      _.extend(filter, rejectedCats, acceptedCats);
     }
 
     var json = {};

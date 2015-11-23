@@ -1,21 +1,33 @@
 var $ = require('jquery');
+var _ = require('underscore');
 var LZMA = require('lzma');
 var util = require('cdb/core/util');
-var WindshaftDashboardInstance = require('./dashboard_instance');
+var WindshaftDashboardInstance = require('cdb/windshaft/dashboard-instance');
+
+var validatePresenceOfOptions = function(options, requiredOptions) {
+  var missingOptions = _.filter(requiredOptions, function(option) {
+    return !options[option];
+  });
+  if (missingOptions.length) {
+    throw 'The following options are required: ' + missingOptions.join(', ');
+  }
+};
 
 /**
  * Windshaft client. It provides a method to create instances of dashboards.
  * @param {object} options Options to set up the client
  */
 WindshaftClient = function(options) {
-  this.windshaftURLTemplate = options.windshaftURLTemplate;
+  validatePresenceOfOptions(options, ['urlTemplate', 'userName', 'endpoint', 'statTag']);
+
+  this.urlTemplate = options.urlTemplate;
   this.userName = options.userName;
-  this.url = this.windshaftURLTemplate.replace('{user}', this.userName);
-  this.statTag = options.statTag;
-  this.isCorsSupported = util.isCORSSupported();
-  this.forceCors = options.forceCors;
   this.endpoint = options.endpoint;
-}
+  this.statTag = options.statTag;
+  this.forceCors = options.forceCors || false;
+
+  this.url = this.urlTemplate.replace('{user}', this.userName);
+};
 
 WindshaftClient.DEFAULT_COMPRESSION_LEVEL = 3;
 WindshaftClient.MAX_GET_SIZE = 2033;
@@ -38,7 +50,7 @@ WindshaftClient.prototype.instantiateMap = function(options) {
       if (data.errors) {
         errorCallback(data.errors[0]);
       } else {
-        data.windshaftURLTemplate = this.windshaftURLTemplate;
+        data.urlTemplate = this.urlTemplate;
         data.userName = this.userName;
         successCallback(new WindshaftDashboardInstance(data));
       }
@@ -70,7 +82,7 @@ WindshaftClient.prototype.instantiateMap = function(options) {
 }
 
 WindshaftClient.prototype._usePOST = function(payload, params) {
-  if (this.isCorsSupported && this.forceCors) {
+  if (util.isCORSSupported() && this.forceCors) {
     return true;
   }
   return payload.length >= this.constructor.MAX_GET_SIZE;
@@ -79,7 +91,6 @@ WindshaftClient.prototype._usePOST = function(payload, params) {
 WindshaftClient.prototype._post = function(payload, params, options) {
   $.ajax({
     crossOrigin: true,
-    type: 'POST',
     method: 'POST',
     dataType: 'json',
     contentType: 'application/json',
@@ -96,6 +107,7 @@ WindshaftClient.prototype._get = function(payload, params, options) {
     params.push(dataParameter);
     $.ajax({
       url: this._getURL(params),
+      method: 'GET',
       dataType: 'jsonp',
       jsonpCallback: this._jsonpCallbackName(payload),
       cache: true,

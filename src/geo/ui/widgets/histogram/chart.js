@@ -7,6 +7,7 @@ var View = require('cdb/core/view');
 module.exports = View.extend({
 
   defaults: {
+    minimumBarHeight: 2,
     duration: 750,
     handleWidth: 6,
     handleHeight: 23,
@@ -18,26 +19,22 @@ module.exports = View.extend({
   initialize: function(opts) {
     if (!opts.width) throw new Error('opts.width is required');
     if (!opts.height) throw new Error('opts.height is required');
-    if (!_.isFunction(opts.xAxisTickFormat)) throw new Error('opts.xAxisTickFormat is required')
+    if (!_.isFunction(opts.xAxisTickFormat)) throw new Error('opts.xAxisTickFormat is required');
 
     _.bindAll(this, '_selectBars', '_adjustBrushHandles', '_onBrushMove', '_onBrushStart', '_onMouseMove', '_onMouseOut');
 
-    // TODO resolve this; the histogram has two views that relies on this._canvas, one for a mini "zoom" view and one
-    // for the normal view
-    if (!opts.el) {
-      // using tagName: 'svg' doesn't work,
-      // and w/o class="" d3 won't instantiate properly
-      this.$el = $('<svg class=""></svg>');
-      this.el = this.$el[0];
+    // using tagName: 'svg' doesn't work,
+    // and w/o class="" d3 won't instantiate properly
+    this.$el = $('<svg class=""></svg>');
+    this.el = this.$el[0];
 
-      this._canvas = d3.select(this.el)
-        .attr('width',  opts.width)
-        .attr('height', opts.height);
+    this._canvas = d3.select(this.el)
+    .attr('width',  opts.width)
+    .attr('height', opts.height);
 
-      this._canvas
-        .append('g')
-        .attr('class', 'Canvas');
-    }
+    this._canvas
+    .append('g')
+    .attr('class', 'Canvas');
 
     this._setupModel();
     this._setupDimensions();
@@ -133,12 +130,13 @@ module.exports = View.extend({
     if (bar && bar.node() && !bar.classed('is-selected')) {
 
       var left = (barIndex * this.barWidth) + (this.barWidth/2);
+
       var top = this.yScale(freq) + this.model.get('pos').y + this.$el.position().top - 20;
 
       var h = this.chartHeight - this.yScale(freq);
 
-      if (h < 1 && h > 0) {
-        top = this.chartHeight + this.model.get('pos').y + this.$el.position().top - 20;
+      if (h < this.defaults.minimumBarHeight && h > 0) {
+        top = this.chartHeight + this.model.get('pos').y + this.$el.position().top - 20 - this.defaults.minimumBarHeight;
       }
 
       if (!this._isDragging()) {
@@ -332,28 +330,17 @@ module.exports = View.extend({
     .selectAll('.Canvas')
     .append('g')
     .attr('class', 'Chart')
-    .attr('opacity', 0);
+    .attr('transform', 'translate(' + this.margin.left + ', ' + this.margin.top + ')');
 
     this.chart.classed(this.options.className || '', true);
   },
 
   hide: function() {
-    this.chart
-    .transition()
-    .duration(150)
-    .attr('opacity', 0)
-    .style('display', 'none')
-    .attr('transform', 'translate(' + this.margin.left + ', ' + (this.margin.top + this.options.y - 10) + ')');
+    this.$el.hide();
   },
 
   show: function() {
-    this.chart
-    .attr('transform', 'translate(' + this.margin.left + ', ' + (this.margin.top + this.options.y + 10) + ')')
-    .transition()
-    .duration(150)
-    .attr('opacity', 1)
-    .style('display', 'block')
-    .attr('transform', 'translate(' + this.margin.left + ', ' + (this.margin.top + this.options.y) + ')');
+    this.$el.show();
   },
 
   _selectBars: function() {
@@ -385,7 +372,7 @@ module.exports = View.extend({
 
   expand: function(newHeight) {
     this._canvas.attr('height', newHeight);
-    this._move({ x: 0, y: 50 });
+    this._move({ x: 0, y: 20 });
   },
 
   contract: function(newHeight) {
@@ -394,12 +381,9 @@ module.exports = View.extend({
   },
 
   removeSelection: function() {
-    if (!this._getLoBarIndex() && !this._getHiBarIndex()) {
-      return;
-    }
-    var data = this.model.get('data');
-    this.selectRange(0, data.length - 1);
-    this.resetBrush();
+    this.chart.selectAll('.Bar').classed('is-selected', false);
+    this._removeBrush();
+    this._setupBrush();
   },
 
   selectRange: function(loBarIndex, hiBarIndex) {
@@ -617,16 +601,6 @@ module.exports = View.extend({
     });
   },
 
-  resetBrush: function() {
-    this.selectRange(0, 10);
-
-    var self = this;
-    setTimeout(function() {
-      self._removeBrush();
-      self._setupBrush();
-    }, 200);
-  },
-
   _updateChart: function() {
     var self = this;
     var data = this.model.get('data');
@@ -649,12 +623,30 @@ module.exports = View.extend({
     bars.transition()
     .duration(200)
     .attr('height', function(d) {
+
+      if (_.isEmpty(d)) {
+        return 0;
+      }
+
       var h = self.chartHeight - self.yScale(d.freq);
-      var height = _.isEmpty(d) || (h < 0 || h === undefined) ? 0 : h;
-      return height;
+
+      if (h < self.defaults.minimumBarHeight && h > 0) {
+        h = self.defaults.minimumBarHeight;
+      }
+      return h;
     })
     .attr('y', function(d) {
-      return _.isEmpty(d) ? self.chartHeight : self.yScale(d.freq);
+      if (_.isEmpty(d)) {
+        return self.chartHeight;
+      }
+
+      var h = self.chartHeight - self.yScale(d.freq);
+
+      if (h < self.defaults.minimumBarHeight && h > 0) {
+        return self.chartHeight - self.defaults.minimumBarHeight;
+      } else {
+        return self.yScale(d.freq);
+      }
     });
 
     bars
@@ -709,8 +701,8 @@ module.exports = View.extend({
 
       var h = self.chartHeight - self.yScale(d.freq);
 
-      if (h < 1 && h > 0) {
-        h = 1;
+      if (h < self.defaults.minimumBarHeight && h > 0) {
+        h = self.defaults.minimumBarHeight;
       }
       return h;
     })
@@ -721,8 +713,8 @@ module.exports = View.extend({
 
       var h = self.chartHeight - self.yScale(d.freq);
 
-      if (h < 1 && h > 0) {
-        return self.chartHeight - 1;
+      if (h < self.defaults.minimumBarHeight && h > 0) {
+        return self.chartHeight - self.defaults.minimumBarHeight;
       } else {
         return self.yScale(d.freq);
       }

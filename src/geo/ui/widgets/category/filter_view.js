@@ -1,13 +1,13 @@
 var _ = require('underscore');
 var View = require('cdb/core/view');
-var template = require('./filter.tpl');
+var template = require('./filter_template.tpl');
 
 /**
  * Category filter view
  */
 module.exports = View.extend({
 
-  className: 'Widget-filter Widget-contentSpaced Widget-contentSpaced--sideMargins is-hidden',
+  className: 'Widget-filter Widget-contentSpaced Widget-contentSpaced--sideMargins',
 
   events: {
     'click .js-all': '_onSelectAll',
@@ -16,49 +16,45 @@ module.exports = View.extend({
 
   initialize: function() {
     this.filter = this.options.filter;
+    this.dataModel = this.options.dataModel;
+    this.viewModel = this.options.viewModel;
     this._initBinds();
   },
 
   render: function() {
-    var totalCats = this.model.getData().size();
-    var selectedCats = this.model.getData().filter(function(m){ return m.get('selected') }).length;
+    var totalCats = this.dataModel.getData().size();
     var rejectedCats = this.filter.getRejected().size();
     var acceptedCats = this.filter.getAccepted().size();
 
     this.$el.html(
       template({
+        isLocked: this.dataModel.isLocked(),
+        totalLocked: this.dataModel.getLockedSize(),
+        isSearchEnabled: this.viewModel.isSearchEnabled(),
+        isSearchApplied: this.dataModel.isSearchApplied(),
         totalCats: totalCats,
-        selectedCats: selectedCats,
         rejectedCats: rejectedCats,
         acceptedCats: acceptedCats
       })
     );
-    this[ totalCats > 0 ? 'show' : 'hide']();
     return this;
   },
 
   _initBinds: function() {
-    this.model.bind('change', this.render, this);
-    this.filter.bind('change', this.render, this);
-    this.add_related_model(this.filter);
+    this.dataModel.bind('change:data change:filter change:locked lockedChange', this.render, this);
+    this.viewModel.bind('change:search', this.render, this);
+    this.add_related_model(this.dataModel);
+    this.add_related_model(this.viewModel);
   },
 
   _onUnselectAll: function() {
     this.filter.rejectAll(
-      this.model.getData().pluck('name')
+      this.dataModel.getData().pluck('name')
     );
   },
 
   _onSelectAll: function() {
     this.filter.acceptAll();
-  },
-
-  show: function() {
-    this.$el.removeClass('is-hidden');
-  },
-
-  hide: function() {
-    this.$el.addClass('is-hidden');
   }
 
 });

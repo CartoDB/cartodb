@@ -6,6 +6,7 @@
 
 .Widget-listWrapper {
   position: relative;
+  // height: 216px;
 }
 .Widget-listEdge {
   display: block;
@@ -48,10 +49,12 @@
 .Widget-list {
   display: block;
   position: relative;
-  max-height: 232px;
   margin: 0;
   overflow: hidden;
   z-index: 1;
+}
+.Widget-list.is-hidden {
+  display: none;
 }
 .Widget-list--wrapped {
   @include display-flex();
@@ -60,6 +63,13 @@
   flex-direction: row;
   margin-left: 0;
   overflow: hidden;
+  max-height: 232px;
+}
+.Widget-list--noresults {
+  @include display-flex();
+  @include align-items(center);
+  height: 120px;
+  padding: 0 24px;
 }
 .Widget-listGroup {
   @include flex-grow(1);
@@ -75,6 +85,12 @@
 }
 .Widget-listItemInner--withBorders {
   padding: ($sMargin-element / 2) + 1 0;
+}
+.Widget-listItemInner--fullSpace {
+  @include display-flex();
+}
+.Widget-listItemInner--fullSpace > * {
+  width: 100%;
 }
 .Widget-listItem--fake {
   position: relative;

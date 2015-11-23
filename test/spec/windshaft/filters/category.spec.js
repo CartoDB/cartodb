@@ -14,8 +14,6 @@ describe('windshaft/filters/category', function() {
     for (var i = 0; i < 12; i++) {
       data.push(i);
     }
-
-    this.filter.setDataOrigin(new Backbone.Collection(data));
   });
 
   it('should generate two internal collections for adding rejected and accepted items', function() {
@@ -155,6 +153,11 @@ describe('windshaft/filters/category', function() {
       this.filter.accept(1);
       expect(this.filter.isRejected(1)).toBeFalsy();
     });
+
+    it('should be rejected if rejectAll is enabled', function() {
+      this.filter.set('rejectAll', true);
+      expect(this.filter.isRejected(1)).toBeTruthy();
+    });
   });
 
   describe('toJSON', function() {
@@ -172,7 +175,8 @@ describe('windshaft/filters/category', function() {
       expect(result['category_widget']['accept']).not.toBeDefined();
     });
 
-    it('should send accept when reject is empty but accept', function() {
+    it('should send accept when there is any accept, no matter rejects', function() {
+      this.filter.reject([1,2]);
       this.filter.accept(3);
       var result = this.filter.toJSON();
       expect(result['category_widget']).toBeDefined();
@@ -180,7 +184,7 @@ describe('windshaft/filters/category', function() {
       expect(result['category_widget']['accept']).toBeDefined();
       var accept = result['category_widget']['accept'];
       expect(accept.length).toBe(1);
-      expect(accept[0]).toBe('3');
+      expect(accept[0]).toBe(3);
     });
 
     it('should send reject when accept is empty but reject', function() {
@@ -191,11 +195,11 @@ describe('windshaft/filters/category', function() {
       expect(result['category_widget']['accept']).not.toBeDefined();
       var reject = result['category_widget']['reject'];
       expect(reject.length).toBe(2);
-      expect(reject[0]).toBe('1');
-      expect(reject[1]).toBe('2');
+      expect(reject[0]).toBe(1);
+      expect(reject[1]).toBe(2);
     });
 
-    it('should send accept when both (accept and reject) are not empty, but not completed with both', function() {
+    it('should send accept when both (accept and reject) are not empty', function() {
       this.filter.reject([1,2]);
       this.filter.accept([3]);
       var result = this.filter.toJSON();
@@ -204,7 +208,7 @@ describe('windshaft/filters/category', function() {
       expect(result['category_widget']['accept']).toBeDefined();
       var accept = result['category_widget']['accept'];
       expect(accept.length).toBe(1);
-      expect(accept[0]).toBe('3');
+      expect(accept[0]).toBe(3);
     });
 
     // TODO: change this spec when it is fixed in the API
@@ -217,14 +221,6 @@ describe('windshaft/filters/category', function() {
       var accept = result['category_widget']['accept'];
       expect(accept.length).toBe(1);
       expect(accept[0]).toBe('___@___');
-    });
-
-    it('should not send anything when all categories are accepted', function() {
-      this.filter.accept(data);
-      var result = this.filter.toJSON();
-      expect(result['category_widget']).toBeDefined();
-      expect(result['category_widget']['reject']).not.toBeDefined();
-      expect(result['category_widget']['accept']).not.toBeDefined();
     });
 
   });

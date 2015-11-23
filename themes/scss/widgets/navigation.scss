@@ -8,6 +8,9 @@
   width: 100%;
   margin-top: $sMargin-element;
 }
+.Widget-nav.is-hidden {
+  display: none;
+}
 .Widget-navDots {
   height: 8px;
 }

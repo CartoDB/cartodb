@@ -132,9 +132,8 @@ _.extend(
 
     error: function(e) {
       if(this.model) {
-        //trigger the error form _checkTiles in the model
-        this.model.trigger('error', e?e.errors:'unknown error');
-        this.model.trigger('tileError', e?e.errors:'unknown error');
+        this.model.trigger('error', e ? e.errors : 'unknown error');
+        this.model.trigger('tileError', e ? e.errors : 'unknown error');
       }
     },
 

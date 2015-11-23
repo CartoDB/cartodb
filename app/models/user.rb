@@ -196,6 +196,10 @@ class User < Sequel::Model
     ::Resque.enqueue(::Resque::UserJobs::Mail::NewOrganizationUser, self.id)
   end
 
+  def notify_org_seats_limit_reached
+    ::Resque.enqueue(::Resque::UserJobs::Mail::NewOrganizationUser, self.id)
+  end
+
   def should_load_common_data?
     last_common_data_update_date.nil? || last_common_data_update_date < Time.now - COMMON_DATA_ACTIVE_DAYS.day
   end

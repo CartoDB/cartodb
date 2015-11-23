@@ -246,7 +246,7 @@ class Organization < Sequel::Model
   end
 
   def notify_if_seat_limit_reached
-    ::Resque.enqueue(::Resque::OrganizationJobs::Mail::SeatLimitReached, id) if seat_limit_reached?
+    ::Resque.enqueue(::Resque::OrganizationJobs::Mail::SeatLimitReached, id)
   end
 
   def database_name

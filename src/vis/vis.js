@@ -253,9 +253,6 @@ var Vis = View.extend({
       if(subLayer.model && subLayer.model.get('type') === 'torque') {
         if (o.visible === false) {
           subLayer.model.set('visible', false);
-          if (this.timeSlider) {
-            this.timeSlider.hide();
-          }
         }
       }
     }
@@ -275,23 +272,6 @@ var Vis = View.extend({
     }
 
     this._createOverlays(overlays, data, options);
-  },
-
-  addTimeSlider: function(torqueLayer) {
-    // if a timeslides already exists don't create it again
-    if (torqueLayer && (torqueLayer.options.steps > 1) && !this.timeSlider) {
-      var self = this;
-      // dont use add overlay since this overlay is managed by torque layer
-      var timeSlider = Overlay.create('time_slider', this, { layer: torqueLayer });
-      this.mapView.addOverlay(timeSlider);
-      this.timeSlider = timeSlider;
-      // remove when layer is done
-      torqueLayer.bind('remove', function _remove() {
-        self.timeSlider = null;
-        timeSlider.remove();
-        torqueLayer.unbind('remove', _remove);
-      });
-    }
   },
 
   _setupSublayers: function(layers, options) {
@@ -516,10 +496,6 @@ var Vis = View.extend({
 
     this.mapView.bind('newLayerView', this._addLoading, this);
 
-    if (options.time_slider) {
-      this.mapView.bind('newLayerView', this._addTimeSlider, this);
-    }
-
     if (this.infowindow) {
       this.mapView.bind('newLayerView', this.addInfowindow, this);
     }
@@ -667,23 +643,6 @@ var Vis = View.extend({
 
   _addWidget: function() {
 
-  },
-
-  _addTimeSlider: function() {
-    var self = this;
-    var torque = _(this.getLayers()).find(function(layer) {
-      return layer.model.get('type') === 'torque' && layer.model.get('visible');
-    });
-    if (torque) {
-      this.torqueLayer = torque;
-      // send step events from torque layer
-      this.torqueLayer.bind('change:time', function(s) {
-        this.trigger('change:step', this.torqueLayer, this.torqueLayer.getStep());
-      }, this);
-      if (!this.mobile_enabled && this.torqueLayer) {
-        this.addTimeSlider(this.torqueLayer);
-      }
-    }
   },
 
   // sets the animation step if there is an animation

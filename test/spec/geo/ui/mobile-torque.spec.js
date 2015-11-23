@@ -136,12 +136,6 @@ describe('geo/ui/mobile (torque)', function() {
         map: map
       });
     });
-
-    it("should hide the timeslider", function() {
-      mobile.render();
-      expect(mobile.$el.find(".cartodb-timeslider").length).toBe(1);
-      expect(mobile.$el.find(".cartodb-timeslider").css("display")).toBe("none");
-    });
   });
 
 });

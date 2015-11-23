@@ -27,10 +27,12 @@ module.exports = View.extend({
 
     this.$el.html(
       template({
+        customColor: this.dataModel.isColorApplied(),
         isAggregated: this.model.get('agg'),
         name: this.model.get('name'),
         value: Math.ceil(value),
         percentage: ((value / this.dataModel.get('max')) * 100),
+        color: this.model.get('color'),
         isDisabled: !this.model.get('selected') ? 'is-disabled' : ''
       })
     );
@@ -40,7 +42,7 @@ module.exports = View.extend({
 
   _initBinds: function() {
     this.model.bind('change', this.render, this);
-    this.dataModel.bind('change:search', this.render, this);
+    this.dataModel.bind('change:search change:categoryColors', this.render, this);
     this.add_related_model(this.dataModel);
   },
 

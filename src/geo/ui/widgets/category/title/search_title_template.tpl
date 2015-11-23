@@ -21,7 +21,10 @@
           </button>
         <% }  %>
       <% } %>
-      <button class="Widget-buttonIcon Widget-buttonIcon--circle js-applyColors">
+      <button class="Widget-buttonIcon Widget-buttonIcon--circle
+        <%- isColorApplied ? 'is-selected' : '' %>
+        <%- isColorApplied ? 'js-cancelColors' : 'js-applyColors' %>
+        ">
         <i class="CDBIcon CDBIcon-Syringe"></i>
       </button>
     </div>

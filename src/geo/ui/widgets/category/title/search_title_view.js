@@ -17,7 +17,8 @@ module.exports = View.extend({
     'click .js-lock': '_lockCategories',
     'click .js-unlock': '_unlockCategories',
     'click .js-applyLocked': '_applyLocked',
-    'click .js-applyColors': '_applyColors'
+    'click .js-applyColors': '_applyColors',
+    'click .js-cancelColors': '_cancelColors'
   },
 
   initialize: function() {
@@ -29,6 +30,7 @@ module.exports = View.extend({
   render: function() {
     this.$el.html(
       template({
+        isColorApplied: this.dataModel.isColorApplied(),
         title: this.dataModel.get('title'),
         columnName: this.dataModel.get('column'),
         q: this.dataModel.getSearchQuery(),
@@ -43,7 +45,7 @@ module.exports = View.extend({
 
   _initBinds: function() {
     this.viewModel.bind('change:search', this._onSearchToggled, this);
-    this.dataModel.bind('change:filter change:locked change:lockCollection', this.render, this);
+    this.dataModel.bind('change:filter change:locked change:lockCollection change:categoryColors', this.render, this);
     this.add_related_model(this.dataModel);
     this.add_related_model(this.viewModel);
   },
@@ -115,6 +117,10 @@ module.exports = View.extend({
 
   _applyColors: function() {
     this.dataModel.applyCategoryColors();
+  },
+
+  _cancelColors: function() {
+    this.dataModel.cancelCategoryColors();
   },
 
   clean: function() {

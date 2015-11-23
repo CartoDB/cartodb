@@ -1,18 +1,11 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
 var Model = require('cdb/core/model');
+var d3 = require('d3');
 var WidgetModel = require('../widget_model');
 var WidgetSearchModel = require('./models/search_model.js');
 var CategoriesCollection = require('./models/categories_collection');
 var LockedCatsCollection = require('./models/locked_categories_collection');
-var categoryColors = [
-  "#a6cee3", "#1f78b4",
-  "#b2df8a", "#33a02c",
-  "#fb9a99", "#e31a1c",
-  "#fdbf6f", "#ff7f00",
-  "#cab2d6", "#6a3d9a",
-  "#ffff99", "#b15928"
-];
 
 /**
  * Category widget model
@@ -91,7 +84,17 @@ module.exports = WidgetModel.extend({
    */
 
   applyCategoryColors: function() {
-    this.trigger('applyCategoryColors', categoryColors, this);
+    this.set('categoryColors', true);
+    this.trigger('applyCategoryColors', this);
+  },
+
+  cancelCategoryColors: function() {
+    this.set('categoryColors', false);
+    this.trigger('cancelCategoryColors', this);
+  },
+
+  isColorApplied: function() {
+    return this.get('categoryColors');
   },
 
   // Locked collection helper methods //
@@ -234,19 +237,21 @@ module.exports = WidgetModel.extend({
     // Get info stats from categories
     var newData = [];
     var _tmpArray = {};
+    var color = d3.scale.category20();
 
-    _.each(categories, function(datum) {
+    _.each(categories, function(datum, i) {
       var category = datum.category;
       var isRejected = this.filter.isRejected(category);
       _tmpArray[category] = true;
+
       newData.push({
         selected: !isRejected,
         name: category,
         agg: datum.agg,
-        value: datum.value
+        value: datum.value,
+        color: color(category)
       });
     }, this);
-
 
     if (this.isLocked()) {
       var acceptedCats = this.filter.getAccepted();
@@ -256,6 +261,7 @@ module.exports = WidgetModel.extend({
         if (!_tmpArray[category]) {
           newData.push({
             selected: true,
+            color: color(category),
             name: category,
             agg: false,
             value: 0

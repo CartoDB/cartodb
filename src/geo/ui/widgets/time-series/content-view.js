@@ -79,7 +79,7 @@ module.exports = WidgetContentView.extend({
   _createHistogramView: function() {
     this.histogramChartView = new HistogramChartView({
       type: 'time',
-      duration: 200,
+      animationSpeed: 100,
       margin: {
         top: 4,
         right: 4,

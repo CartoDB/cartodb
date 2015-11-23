@@ -5,32 +5,35 @@ var View = require('cdb/core/view');
 var template = require('./search_title_template.tpl');
 
 /**
- * Category content view
+ * Show category title or search any category
+ *
  */
+
 module.exports = View.extend({
 
   events: {
-    'click .js-close': '_onClickClose',
     'keyup .js-textInput': '_onKeyupInput',
     'submit .js-form': '_onSubmitForm',
     'click .js-lock': '_lockCategories',
     'click .js-unlock': '_unlockCategories',
-    'click .js-apply': '_applyLocked'
+    'click .js-applyLocked': '_applyLocked',
+    'click .js-applyColors': '_applyColors',
+    'click .js-cancelColors': '_cancelColors'
   },
 
   initialize: function() {
     this.viewModel = this.options.viewModel;
     this.dataModel = this.options.dataModel;
-    this.search = this.options.search;
     this._initBinds();
   },
 
   render: function() {
     this.$el.html(
       template({
+        isColorApplied: this.dataModel.isColorApplied(),
         title: this.dataModel.get('title'),
         columnName: this.dataModel.get('column'),
-        q: this.search.get('q'),
+        q: this.dataModel.getSearchQuery(),
         isLocked: this.dataModel.isLocked(),
         canBeLocked: this.dataModel.canBeLocked(),
         isSearchEnabled: this.viewModel.isSearchEnabled(),
@@ -42,7 +45,7 @@ module.exports = View.extend({
 
   _initBinds: function() {
     this.viewModel.bind('change:search', this._onSearchToggled, this);
-    this.dataModel.bind('change:filter change:locked lockedChange', this.render, this);
+    this.dataModel.bind('change:filter change:locked change:lockCollection change:categoryColors', this.render, this);
     this.add_related_model(this.dataModel);
     this.add_related_model(this.viewModel);
   },
@@ -61,11 +64,11 @@ module.exports = View.extend({
       ev.preventDefault();
     }
     var q = this.$('.js-textInput').val();
-    this.search.set('q', q);
-    if (this.search.isValid()) {
-      this.search.fetch();
-    } else {
-      this.viewModel.toggleSearch();
+    if (this.dataModel.getSearchQuery() !== q) {
+      this.dataModel.setSearchQuery(q);
+      if (this.dataModel.isSearchValid()) {
+        this.dataModel.applySearch();
+      }
     }
   },
 
@@ -112,8 +115,12 @@ module.exports = View.extend({
     this.dataModel.applyLocked();
   },
 
-  _onClickClose: function() {
-    this.viewModel.disableSearch();
+  _applyColors: function() {
+    this.dataModel.applyCategoryColors();
+  },
+
+  _cancelColors: function() {
+    this.dataModel.cancelCategoryColors();
   },
 
   clean: function() {

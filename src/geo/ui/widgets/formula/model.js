@@ -12,12 +12,13 @@ module.exports = WidgetModel.extend({
   },
 
   toJSON: function(d) {
-      return {
-          type: "formula",
-          options: {
-              column: this.get('column'),
-              operation: this.get('operation')
-          }
-      };
+    return {
+      type: "formula",
+      options: {
+        column: this.get('column'),
+        operation: this.get('operation')
+      }
+    };
   }
+
 });

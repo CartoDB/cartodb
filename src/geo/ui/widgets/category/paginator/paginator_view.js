@@ -47,10 +47,9 @@ module.exports = View.extend({
   },
 
   _initBinds: function() {
-    _.bindAll(this, '_scrollToPage');
     $(window).bind('resize.' + this.cid, _.bind(this._scrollToPage, this));
     this.model.bind('change:page', this.render, this);
-    this.dataModel.bind('change:data', function() {
+    this.dataModel.bind('change:data change:searchData', function() {
       this._setPage();
       this.render();
     }, this);

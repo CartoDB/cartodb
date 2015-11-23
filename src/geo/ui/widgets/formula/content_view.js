@@ -1,6 +1,7 @@
 var _ = require('underscore');
 var WidgetContent = require('../standard/widget_content_view');
 var template = require('./template.tpl');
+var d3 = require('d3');
 
 /**
  * Default widget content view:
@@ -14,10 +15,17 @@ module.exports = WidgetContent.extend({
 
   render: function() {
     this.clearSubViews();
+    var value = this.dataModel.get('data');
+    var format = d3.format('0,000');
+
+    if (_.isNumber(value)) {
+      value = format(value.toFixed(2));
+    }
+
     this.$el.html(
       template({
         title: this.dataModel.get('title'),
-        value: this.dataModel.get('data'),
+        value: value,
         operation: this.dataModel.get('operation'),
         nulls: this.dataModel.get('nulls')
       })

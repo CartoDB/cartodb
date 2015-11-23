@@ -3,7 +3,7 @@
     <i class="CDBIcon CDBIcon-Lens Widget-searchLens"></i>
     <input type="text" class="Widget-textInput Widget-searchTextInput js-textInput" value="<%- q %>" placeholder="search by <%- columnName %>"/>
     <% if (canShowApply) { %>
-      <button type="button" class="Widget-link Widget-searchApply js-apply">apply</button>
+      <button type="button" class="Widget-link Widget-searchApply js-applyLocked">apply</button>
     <% } %>
   </form>
 <% } else { %>
@@ -21,7 +21,10 @@
           </button>
         <% }  %>
       <% } %>
-      <button class="Widget-buttonIcon Widget-buttonIcon--circle">
+      <button class="Widget-buttonIcon Widget-buttonIcon--circle
+        <%- isColorApplied ? 'is-selected' : '' %>
+        <%- isColorApplied ? 'js-cancelColors' : 'js-applyColors' %>
+        ">
         <i class="CDBIcon CDBIcon-Syringe"></i>
       </button>
     </div>

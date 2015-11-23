@@ -1,12 +1,11 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
-var cdb = require('cdb'); // cdb.geo.ui.*, cdb.geo.ui.TimeSlider
+var cdb = require('cdb'); // cdb.geo.ui.*
 var $ = require('jquery');
 require('jquery.jscrollpane'); // registers itself to $.jScrollPane
 var templates = require('cdb.templates');
-var sanitize = require('../../core/sanitize.js')
+var sanitize = require('../../core/sanitize.js');
 var View = require('../../core/view');
-var Model = require('../../core/model');
 var Template = require('../../core/template');
 var Zoom = require('./zoom');
 var TilesLoader = require('./tiles-loader');
@@ -271,20 +270,7 @@ var Mobile = View.extend({
         this.layers.push(layer);
       }, this);
     } else if (layer.get("type") === "CartoDB" || layer.get('type') === 'torque') {
-      if (layer.get('type') === 'torque')  {
-        layer.on("change:visible", this._toggleSlider, this);
-      }
       this.layers.push(layer);
-    }
-  },
-
-  _toggleSlider: function(m) {
-    if (m.get("visible")) {
-      this.$el.addClass("with-torque");
-      this.slider.show();
-    } else {
-      this.$el.removeClass("with-torque");
-      this.slider.hide();
     }
   },
 
@@ -552,32 +538,6 @@ var Mobile = View.extend({
     this.model.set("layer_count", this.model.get("layer_count") + 1);
   },
 
-  _renderTorque: function() {
-    if (this.options.torqueLayer) {
-
-      this.hasTorque = true;
-
-      // Expected to be loaded through cartodb.mod.torque lib
-      this.slider = new cdb.geo.ui.TimeSlider({
-        type: "time_slider",
-        layer: this.options.torqueLayer,
-        map: this.options.map,
-        pos_margin: 0,
-        position: "none",
-        width: "auto"
-      });
-
-      this.slider.bind("time_clicked", function() {
-        this.slider.toggleTime();
-      }, this);
-
-      this.$el.find(".torque").append(this.slider.render().$el);
-
-      if (this.options.torqueLayer.hidden) this.slider.hide();
-      else this.$el.addClass("with-torque");
-    }
-  },
-
   _renderSlidesController: function() {
     if (this.slides) {
       this.$el.addClass("with-slides");
@@ -609,7 +569,6 @@ var Mobile = View.extend({
 
     this._getLayers();
     this._renderLayers();
-    this._renderTorque();
 
     return this;
   }

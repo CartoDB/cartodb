@@ -1,7 +1,8 @@
 var _ = require('underscore');
 var View = require('cdb/core/view');
-var clickableTemplate = require('./item_clickable_view.tpl');
-var unclickableTemplate = require('./item_unclickable_view.tpl');
+var clickableTemplate = require('./item_clickable_template.tpl');
+var unclickableTemplate = require('./item_unclickable_template.tpl');
+var d3 = require('d3');
 
 /**
  * Category list item view
@@ -16,7 +17,6 @@ module.exports = View.extend({
   },
 
   initialize: function(options) {
-    this.filter = this.options.filter;
     this.dataModel = this.options.dataModel;
     this._initBinds();
   },
@@ -25,13 +25,16 @@ module.exports = View.extend({
     var value = this.model.get('value');
     var template = this.model.get('agg') || this.dataModel.isLocked() ?
       unclickableTemplate : clickableTemplate;
+    var format = d3.format('0,000');
 
     this.$el.html(
       template({
+        customColor: this.dataModel.isColorApplied(),
         isAggregated: this.model.get('agg'),
         name: this.model.get('name'),
-        value: Math.ceil(value),
+        value: format(Math.ceil(value)),
         percentage: ((value / this.dataModel.get('max')) * 100),
+        color: this.model.get('color'),
         isDisabled: !this.model.get('selected') ? 'is-disabled' : ''
       })
     );
@@ -41,7 +44,7 @@ module.exports = View.extend({
 
   _initBinds: function() {
     this.model.bind('change', this.render, this);
-    this.dataModel.bind('change:search', this.render, this);
+    this.dataModel.bind('change:search change:categoryColors', this.render, this);
     this.add_related_model(this.dataModel);
   },
 

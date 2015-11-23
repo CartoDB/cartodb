@@ -132,7 +132,6 @@ module.exports = WidgetContent.extend({
 
   _renderMainChart: function() {
     this.histogramChartView = new HistogramChartView(({
-      y: 0,
       margin: { top: 4, right: 4, bottom: 20, left: 4 },
       handles: true,
       width: this.canvasWidth,
@@ -157,7 +156,6 @@ module.exports = WidgetContent.extend({
       handles: false,
       width: this.canvasWidth,
       margin: { top: 0, right: 0, bottom: 20, left: 4 },
-      y: 0,
       height: 40,
       data: this.dataModel.getData()
     }));

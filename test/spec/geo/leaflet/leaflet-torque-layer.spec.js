@@ -32,23 +32,4 @@ describe('geo/leaflet/leaflet-torque-layer', function() {
     expect(this.mapView.layers[newLayer.cid].model).toEqual(newLayer)
     expect(this.mapView.layers[newLayer.cid].check).toEqual('testing');
   });
-
-  describe('when a layer is changed to torque type', function() {
-    beforeEach(function() {
-      jasmine.clock().install()
-
-      this.map.addLayer(this.layer);
-      this.layer.set('type', 'torque');
-
-      jasmine.clock().tick(2000);
-    });
-
-    it('should switch layer', function() {
-      expect(this.mapView.layers[this.layer.cid] instanceof L.TorqueLayer).toBe(true);
-    });
-
-    afterEach(function() {
-      jasmine.clock().uninstall();
-    });
-  });
 });

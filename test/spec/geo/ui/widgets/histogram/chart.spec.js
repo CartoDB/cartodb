@@ -25,7 +25,6 @@ describe('geo/ui/widgets/histogram/chart', function() {
 
     this.view = new WidgetHistogramChart(({
       el: $('.js-chart'),
-      y: 0,
       margin: this.margin,
       handles: true,
       width: this.width,

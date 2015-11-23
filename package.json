@@ -58,7 +58,6 @@
     "grunt-replace": "0.6.2",
     "grunt-sass": "~1.1.0-beta",
     "jquery": "2.1.4",
-    "jquery-ui": "1.10.5",
     "jshint-stylish": "~0.1.3",
     "jstify": "0.12.0",
     "leaflet": "0.7.3",

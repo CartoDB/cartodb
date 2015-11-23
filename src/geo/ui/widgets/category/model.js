@@ -1,10 +1,11 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
 var Model = require('cdb/core/model');
+var d3 = require('d3');
 var WidgetModel = require('../widget_model');
-var WidgetSearchModel = require('./search_model.js');
-var CategoriesCollection = require('./categories_collection');
-var LockedCatsCollection = require('./locked_categories_collection');
+var WidgetSearchModel = require('./models/search_model.js');
+var CategoriesCollection = require('./models/categories_collection');
+var LockedCatsCollection = require('./models/locked_categories_collection');
 
 /**
  * Category widget model
@@ -58,10 +59,9 @@ module.exports = WidgetModel.extend({
     }, this);
 
     this.locked.bind('change add remove', function() {
-      this.trigger('lockedChange', this.locked, this);
+      this.trigger('change:lockCollection', this.locked, this);
     }, this);
 
-    // TODO: review this events propagation from search model
     this.search.bind('loading', function() {
       this.trigger("loading", this);
     }, this);
@@ -73,9 +73,33 @@ module.exports = WidgetModel.extend({
         this.trigger("error", this);
       }
     }, this);
+    this.search.bind('change:data', function() {
+      this.trigger('change:searchData', this.search, this);
+    }, this)
   },
 
-  // Helper methods
+  /*
+   *  Helper methods for internal models/collections
+   *
+   */
+
+  applyCategoryColors: function() {
+    this.set('categoryColors', true);
+    this.trigger('applyCategoryColors', this._data.map(function(m){
+      return [ m.get('name'), m.get('color') ];
+    }), this);
+  },
+
+  cancelCategoryColors: function() {
+    this.set('categoryColors', false);
+    this.trigger('cancelCategoryColors', this);
+  },
+
+  isColorApplied: function() {
+    return this.get('categoryColors');
+  },
+
+  // Locked collection helper methods //
 
   getLockedSize: function() {
     return this.locked.size();
@@ -87,7 +111,7 @@ module.exports = WidgetModel.extend({
 
   canBeLocked: function() {
     return this.isLocked() ||
-      this.filter.hasAccepts();
+      this.getAcceptedCount() > 0;
   },
 
   canApplyLocked: function() {
@@ -99,43 +123,6 @@ module.exports = WidgetModel.extend({
     return acceptedCollection.find(function(m) {
       return !this.locked.isItemLocked(m.get('name'));
     }, this);
-  },
-
-  getData: function() {
-    return this._data;
-  },
-
-  getSearch: function() {
-    return this.search;
-  },
-
-  isSearchApplied: function() {
-    return this.search.isSearchApplied();
-  },
-
-  getSize: function() {
-    return this._data.size();
-  },
-
-  getCount: function() {
-    return this.get('categoriesCount');
-  },
-
-  // Apply functions
-
-  cleanSearch: function() {
-    this.locked.resetItems([]);
-    this.search.resetData();
-  },
-
-  setupSearch: function() {
-    if (!this.isSearchApplied()) {
-      var acceptedCats = this.filter.getAccepted().toJSON();
-      this.locked.addItems(acceptedCats);
-      this.search.setData(
-        this._data.toJSON()
-      );
-    }
   },
 
   applyLocked: function() {
@@ -158,7 +145,92 @@ module.exports = WidgetModel.extend({
 
   unlockCategories: function() {
     this.set('locked', false);
+    this.acceptAll();
+  },
+
+  // Search model helper methods //
+
+  getSearchQuery: function() {
+    return this.search.getSearchQuery();
+  },
+
+  setSearchQuery: function(q) {
+    this.search.set('q', q);
+  },
+
+  isSearchValid: function() {
+    return this.search.isValid();
+  },
+
+  getSearchResult: function() {
+    return this.search.getData();
+  },
+
+  getSearchCount: function() {
+    return this.search.getCount();
+  },
+
+  applySearch: function() {
+    this.search.fetch();
+  },
+
+  isSearchApplied: function() {
+    return this.search.isSearchApplied();
+  },
+
+  cleanSearch: function() {
+    this.locked.resetItems([]);
+    this.search.resetData();
+  },
+
+  setupSearch: function() {
+    if (!this.isSearchApplied()) {
+      var acceptedCats = this.filter.getAccepted().toJSON();
+      this.locked.addItems(acceptedCats);
+      this.search.setData(
+        this._data.toJSON()
+      );
+    }
+  },
+
+  // Filter model helper methods //
+
+  getRejectedCount: function() {
+    return this.filter.rejectedCategories.size();
+  },
+
+  getAcceptedCount: function() {
+    return this.filter.acceptedCategories.size();
+  },
+
+  acceptFilters: function(values) {
+    this.filter.accept(values);
+  },
+
+  rejectFilters: function(values) {
+    this.filter.reject(values);
+  },
+
+  rejectAll: function() {
+    this.filter.rejectAll();
+  },
+
+  acceptAll: function() {
     this.filter.acceptAll();
+  },
+
+  // Proper model helper methods //
+
+  getData: function() {
+    return this._data;
+  },
+
+  getSize: function() {
+    return this._data.size();
+  },
+
+  getCount: function() {
+    return this.get('categoriesCount');
   },
 
   // Data parser methods //
@@ -167,19 +239,21 @@ module.exports = WidgetModel.extend({
     // Get info stats from categories
     var newData = [];
     var _tmpArray = {};
+    var color = d3.scale.category20();
 
-    _.each(categories, function(datum) {
+    _.each(categories, function(datum, i) {
       var category = datum.category;
       var isRejected = this.filter.isRejected(category);
       _tmpArray[category] = true;
+
       newData.push({
         selected: !isRejected,
         name: category,
         agg: datum.agg,
-        value: datum.value
+        value: datum.value,
+        color: color(category)
       });
     }, this);
-
 
     if (this.isLocked()) {
       var acceptedCats = this.filter.getAccepted();
@@ -189,6 +263,7 @@ module.exports = WidgetModel.extend({
         if (!_tmpArray[category]) {
           newData.push({
             selected: true,
+            color: color(category),
             name: category,
             agg: false,
             value: 0

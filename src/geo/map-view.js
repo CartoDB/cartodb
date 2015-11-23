@@ -137,12 +137,6 @@ var MapView = View.extend({
     }
   },
 
-  _swicthLayerView: function(layer, attr, opts) {
-    this._removeLayer(layer);
-    this._addLayer(layer, this.map.layers, opts);
-  },
-
-
   _removeGeometry: function(geo) {
     var geo_view = this.geometries[geo.cid];
     delete this.layers[layer.cid];

@@ -1,8 +1,8 @@
 var $ = require('jquery');
 var _ = require('underscore');
 var View = require('cdb/core/view');
-var WidgetCategoryItemView = require('./item_view');
-var placeholder = require('./placeholder.tpl');
+var CategoryItemView = require('./item/item_view');
+var placeholder = require('./items_placeholder_template.tpl');
 
 /**
  * Category list view
@@ -18,8 +18,8 @@ module.exports = View.extend({
   tagName: 'ul',
 
   initialize: function() {
+    this.viewModel = this.options.viewModel;
     this.dataModel = this.options.dataModel;
-    this.filter = this.options.filter;
     this._initBinds();
   },
 
@@ -38,8 +38,9 @@ module.exports = View.extend({
   },
 
   _initBinds: function() {
-    this.model.bind('change:search', this.toggle, this);
-    this.dataModel.bind('change:data', this.render, this);
+    this.viewModel.bind('change:search', this.toggle, this);
+    this.dataModel.bind('change:data change:searchData', this.render, this);
+    this.add_related_model(this.dataModel);
   },
 
   _renderPlaceholder: function() {
@@ -68,10 +69,9 @@ module.exports = View.extend({
   },
 
   _addItem: function(mdl, $parent) {
-    var v = new WidgetCategoryItemView({
+    var v = new CategoryItemView({
       model: mdl,
-      dataModel: this.dataModel,
-      filter: this.filter
+      dataModel: this.dataModel
     });
     v.bind('itemClicked', this._setFilters, this);
     this.addView(v);
@@ -82,7 +82,7 @@ module.exports = View.extend({
     var isSelected = mdl.get('selected');
 
     if (isSelected) {
-      if (!this.filter.hasRejects() && !this.filter.hasAccepts()) {
+      if (!this.dataModel.getRejectedCount() && !this.dataModel.getAcceptedCount()) {
         var data = this.dataModel.getData();
         var rejects = [];
         // Make elements "unselected"
@@ -92,19 +92,19 @@ module.exports = View.extend({
             m.set('selected', false);
           }
         });
-        this.filter.accept(mdl.get('name'));
+        this.dataModel.acceptFilters(mdl.get('name'));
       } else {
         mdl.set('selected', false);
-        this.filter.reject(mdl.get('name'));
+        this.dataModel.rejectFilters(mdl.get('name'));
       }
     } else {
       mdl.set('selected', true);
-      this.filter.accept(mdl.get('name'));
+      this.dataModel.acceptFilters(mdl.get('name'));
     }
   },
 
   toggle: function() {
-    this[ !this.model.isSearchEnabled() ? 'show' : 'hide']();
+    this[ !this.viewModel.isSearchEnabled() ? 'show' : 'hide']();
   },
 
   show: function() {

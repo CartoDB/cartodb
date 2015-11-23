@@ -1,9 +1,10 @@
 var _ = require('underscore');
 var View = require('cdb/core/view');
-var template = require('./filter_template.tpl');
+var template = require('./options_template.tpl');
 
 /**
  * Category filter view
+ *
  */
 module.exports = View.extend({
 
@@ -15,7 +16,6 @@ module.exports = View.extend({
   },
 
   initialize: function() {
-    this.filter = this.options.filter;
     this.dataModel = this.options.dataModel;
     this.viewModel = this.options.viewModel;
     this._initBinds();
@@ -23,8 +23,8 @@ module.exports = View.extend({
 
   render: function() {
     var totalCats = this.dataModel.getData().size();
-    var rejectedCats = this.filter.getRejected().size();
-    var acceptedCats = this.filter.getAccepted().size();
+    var rejectedCats = this.dataModel.getRejectedCount();
+    var acceptedCats = this.dataModel.getAcceptedCount();
 
     this.$el.html(
       template({
@@ -41,20 +41,18 @@ module.exports = View.extend({
   },
 
   _initBinds: function() {
-    this.dataModel.bind('change:data change:filter change:locked lockedChange', this.render, this);
+    this.dataModel.bind('change:data change:filter change:locked change:lockCollection', this.render, this);
     this.viewModel.bind('change:search', this.render, this);
     this.add_related_model(this.dataModel);
     this.add_related_model(this.viewModel);
   },
 
   _onUnselectAll: function() {
-    this.filter.rejectAll(
-      this.dataModel.getData().pluck('name')
-    );
+    this.dataModel.rejectAll();
   },
 
   _onSelectAll: function() {
-    this.filter.acceptAll();
+    this.dataModel.acceptAll();
   }
 
 });

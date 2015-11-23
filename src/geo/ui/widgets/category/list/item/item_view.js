@@ -1,7 +1,7 @@
 var _ = require('underscore');
 var View = require('cdb/core/view');
-var clickableTemplate = require('./item_clickable_view.tpl');
-var unclickableTemplate = require('./item_unclickable_view.tpl');
+var clickableTemplate = require('./item_clickable_template.tpl');
+var unclickableTemplate = require('./item_unclickable_template.tpl');
 
 /**
  * Category list item view
@@ -16,7 +16,6 @@ module.exports = View.extend({
   },
 
   initialize: function(options) {
-    this.filter = this.options.filter;
     this.dataModel = this.options.dataModel;
     this._initBinds();
   },

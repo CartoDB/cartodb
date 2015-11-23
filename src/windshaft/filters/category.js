@@ -66,10 +66,6 @@ module.exports = WindshaftFilterBase.extend({
     return this.acceptedCategories;
   },
 
-  hasAccepts: function() {
-    return this.acceptedCategories.size() > 0;
-  },
-
   reject: function(values, applyFilter) {
     values = !_.isArray(values) ? [values] : values;
 
@@ -107,10 +103,6 @@ module.exports = WindshaftFilterBase.extend({
 
   getRejected: function() {
     return this.rejectedCategories;
-  },
-
-  hasRejects: function() {
-    return this.rejectedCategories.size() > 0;
   },
 
   rejectAll: function(d) {

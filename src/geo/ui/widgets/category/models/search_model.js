@@ -67,6 +67,10 @@ module.exports = Model.extend({
     this.set('q', '');
   },
 
+  getSearchQuery: function() {
+    return this.get('q');
+  },
+
   isSearchApplied: function() {
     return this.isValid() && this.getSize() > 0;
   },

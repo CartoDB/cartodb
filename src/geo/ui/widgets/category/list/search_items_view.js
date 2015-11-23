@@ -2,7 +2,7 @@ var $ = require('jquery');
 var _ = require('underscore');
 var View = require('cdb/core/view');
 var CategoryItemsView = require('./items_view');
-var WidgetSearchCategoryItemView = require('./search_item_view');
+var WidgetSearchCategoryItemView = require('./item/search_item_view');
 var placeholder = require('./search_items_no_results_template.tpl');
 
 /**
@@ -12,15 +12,20 @@ module.exports = CategoryItemsView.extend({
 
   className: 'Widget-list is-hidden Widget-list--wrapped js-list',
 
-  initialize: function() {
-    this.originModel = this.options.originModel;
-    CategoryItemsView.prototype.initialize.call(this);
-  },
-
   _renderList: function() {
-    // Change view classes
-    this.$el.removeClass('Widget-list--noresults');
-    CategoryItemsView.prototype._renderList.call(this);
+    this.$el.removeClass('Widget-list--withBorders Widget-list--noresults');
+    this.$el.addClass('Widget-list--wrapped');
+
+    var groupItem;
+    var data = this.dataModel.getSearchResult();
+
+    data.each(function(mdl, i) {
+      if (i % this.options.itemsPerPage === 0) {
+        groupItem = $('<div>').addClass('Widget-listGroup');
+        this.$el.append(groupItem);
+      }
+      this._addItem(mdl, groupItem);
+    }, this);
   },
 
   _renderPlaceholder: function() {
@@ -31,7 +36,7 @@ module.exports = CategoryItemsView.extend({
 
     this.$el.html(
       placeholder({
-        q: this.dataModel.get('q')
+        q: this.dataModel.getSearchQuery()
       })
     );
   },
@@ -39,14 +44,14 @@ module.exports = CategoryItemsView.extend({
   _addItem: function(mdl, $parent) {
     var v = new WidgetSearchCategoryItemView({
       model: mdl,
-      dataModel: this.originModel
+      dataModel: this.dataModel
     });
     this.addView(v);
     $parent.append(v.render().el);
   },
 
   toggle: function() {
-    this[ this.model.isSearchEnabled() ? 'show' : 'hide']();
+    this[ this.viewModel.isSearchEnabled() ? 'show' : 'hide']();
   }
 
 });

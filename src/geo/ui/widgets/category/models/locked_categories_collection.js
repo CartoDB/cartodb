@@ -3,7 +3,8 @@ var Backbone = require('backbone');
 var CategoryItemModel = require('./category_item_model');
 
 /**
- * Locked categories collection
+ *  Locked categories collection
+ *
  */
 
 module.exports = Backbone.Collection.extend({

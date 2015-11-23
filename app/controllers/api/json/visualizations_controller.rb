@@ -148,7 +148,6 @@ class Api::Json::VisualizationsController < Api::ApplicationController
         end
 
         return head(404) unless vis
-        return head(403) unless payload[:id] == vis.id
         return head(403) unless vis.is_owner?(current_user)
 
         track_event(vis, 'Deleted')
@@ -157,7 +156,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
             # Remove dependent visualizations as well, if any
             track_event(dependent_vis, 'Deleted')
           }
-        end 
+        end
 
         @stats_aggregator.timing('delete') do
           vis.delete

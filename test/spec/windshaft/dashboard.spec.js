@@ -12,12 +12,18 @@ var CategoryFilter = require('cdb/windshaft/filters/category');
 var WidgetModelFactory = require('cdb/geo/ui/widgets/widget-model-factory');
 
 fdescribe('src/windshaft/dashboard', function() {
-  beforeEach(function() {
-    $.ajax = function() {};
-  });
 
-  it('should create an instance of the dashboard and update the URLs of layers and widgets', function() {
-    var dashboardInstance = new DashboardInstance({
+  beforeEach(function() {
+
+    // Disable ajax
+    this.ajax = $.ajax;
+    $.ajax = function() {};
+
+    // Disable debounce for these tests
+    this.debounce = _.debounce;
+    _.debounce = function (func) { return function () { func.apply(this, arguments);}; };
+
+    this.dashboardInstance = new DashboardInstance({
       metadata: {
         layers: [
           {
@@ -36,24 +42,42 @@ fdescribe('src/windshaft/dashboard', function() {
       }
     });
 
-    spyOn(dashboardInstance, 'getBaseURL').and.returnValue('baseURL');
-    spyOn(dashboardInstance, 'getTiles').and.callFake(function(type) {
+    spyOn(this.dashboardInstance, 'getBaseURL').and.returnValue('baseURL');
+    spyOn(this.dashboardInstance, 'getTiles').and.callFake(function(type) {
       if (type === 'torque') {
         return 'torqueTileURLs';
       }
       return 'tileURLs';
-    });
-    var client = {
+    }); 
+
+    this.client = {
       instantiateMap: function(options) {
-        options.success(dashboardInstance);
-      }
+        options.success(this.dashboardInstance);
+      }.bind(this)
     };
-    var configGenerator = {
+
+    this.configGenerator = {
       generate: function() {}
     };
-    var cartoDBLayerGroup = new Backbone.Model();
-    var cartoDBLayer1 = new CartoDBLayer();
 
+    this.map = new Map({
+      view_bounds_sw: [],
+      view_bounds_ne: []
+    });
+
+    this.cartoDBLayerGroup = new Backbone.Model();
+    this.cartoDBLayer1 = new CartoDBLayer({ id: '12345-67890' });
+    this.cartoDBLayer2 = new CartoDBLayer({ id: '09876-54321' });
+    this.torqueLayer = new TorqueLayer();
+  });
+
+  afterEach(function() {
+    $.ajax = this.ajax;
+
+    _.debounce = this.debounce;
+  });
+
+  it('should create an instance of the dashboard and update the URLs of layers and widgets', function() {
     var filter = new CategoryFilter({layerIndex: 0 });
     var widgetModelFactory = new WidgetModelFactory({
       list: function(attrs) {
@@ -67,51 +91,31 @@ fdescribe('src/windshaft/dashboard', function() {
       type: 'list'
     }
     var widget = widgetModelFactory.createModel(widgetAttrs, 0);
-    cartoDBLayer1.addWidget(widget);
 
-    var cartoDBLayer2 = new CartoDBLayer();
-    var torqueLayer = new TorqueLayer();
-    var interactiveLayers = [
-      cartoDBLayer1,
-      cartoDBLayer2,
-      torqueLayer
-    ];
-    var map = new Map({
-      view_bounds_sw: [],
-      view_bounds_ne: []
-    });
+    this.cartoDBLayer1.addWidget(widget);
 
     var dashboard = new Dashboard({
-      client: client,
-      configGenerator: configGenerator,
+      client: this.client,
+      configGenerator: this.configGenerator,
       statTag: 'stat_tag',
-      layerGroup: cartoDBLayerGroup,
-      layers: interactiveLayers,
-      map: map
+      layerGroup: this.cartoDBLayerGroup,
+      layers: [ this.cartoDBLayer1, this.cartoDBLayer2, this.torqueLayer ],
+      map: this.map
     });
 
     // urls of the layerGroup have been updated
-    expect(cartoDBLayerGroup.get('baseURL')).toEqual('baseURL');
-    expect(cartoDBLayerGroup.get('urls')).toEqual('tileURLs');
+    expect(this.cartoDBLayerGroup.get('baseURL')).toEqual('baseURL');
+    expect(this.cartoDBLayerGroup.get('urls')).toEqual('tileURLs');
 
     // urls of torque layers have been updated too!
-    expect(torqueLayer.get('urls')).toEqual('torqueTileURLs');
+    expect(this.torqueLayer.get('urls')).toEqual('torqueTileURLs');
 
     // url of widget have been updated
-    expect(widget.get('url')).toEqual('http://example.com');
+    expect(widget.url()).toEqual('http://example.com');
   });
 
   it('should pass the filters of visible layers to create the instance', function() {
-    var client = {
-      instantiateMap: function() {}
-    };
-    spyOn(client, 'instantiateMap');
-
-    var configGenerator = {
-      generate: function() {}
-    };
-    var cartoDBLayerGroup = new Backbone.Model();
-    var cartoDBLayer1 = new CartoDBLayer();
+    spyOn(this.client, 'instantiateMap');
 
     var filter = new CategoryFilter({layerIndex: 0 });
     spyOn(filter, 'isEmpty').and.returnValue(false);
@@ -130,82 +134,53 @@ fdescribe('src/windshaft/dashboard', function() {
       type: 'list'
     }
     var widget = widgetModelFactory.createModel(widgetAttrs, 0);
-    cartoDBLayer1.addWidget(widget);
-
-    var cartoDBLayer2 = new CartoDBLayer();
-    var interactiveLayers = [
-      cartoDBLayer1,
-      cartoDBLayer2,
-    ];
-    var map = new Map({
-      view_bounds_sw: [],
-      view_bounds_ne: []
-    });
+    this.cartoDBLayer1.addWidget(widget);
 
     var dashboard = new Dashboard({
-      client: client,
-      configGenerator: configGenerator,
+      client: this.client,
+      configGenerator: this.configGenerator,
       statTag: 'stat_tag',
-      layerGroup: cartoDBLayerGroup,
-      layers: interactiveLayers,
-      map: map
+      layerGroup: this.cartoDBLayerGroup,
+      layers: [ this.cartoDBLayer1, this.cartoDBLayer2 ],
+      map: this.map
     });
 
-    expect(client.instantiateMap.calls.mostRecent().args[0].filters).toEqual({
+    expect(this.client.instantiateMap.calls.mostRecent().args[0].filters).toEqual({
       layers: [{
         something: 'else'
       }]
     });
 
     // Hide the layer
-    cartoDBLayer1.set('visible', false);
+    this.cartoDBLayer1.set('visible', false);
 
     // client.instantiateMap has been called again, but this time no filters are passed
-    expect(client.instantiateMap.calls.mostRecent().args[0].filters).toEqual({});
+    expect(this.client.instantiateMap.calls.mostRecent().args[0].filters).toEqual({});
   });
 
   it('should update the urls of widgets when bounding box changes', function() {
-    jasmine.clock().install();
-
-    var dashboardInstance = new DashboardInstance({
-      layergroupid: 'dashboardId',
-      metadata: {
-        layers: [
-          {
-            "type": "mapnik",
-            "meta": {},
-            "widgets": {
-              "widgetId": {
-                "url": {
-                  "http": "http://example.com",
-                  "https": "https://example.com"
+    this.client.instantiateMap = function(args) {
+      this.dashboardInstance.set({
+        layergroupid: 'dashboardId',
+        metadata: {
+          layers: [
+            {
+              "type": "mapnik",
+              "meta": {},
+              "widgets": {
+                "widgetId": {
+                  "url": {
+                    "http": "http://example.com/widgetId",
+                    "https": "https://example.comwidgetId"
+                  }
                 }
               }
             }
-          }
-        ]
-      }
-    });
-
-    spyOn(dashboardInstance, 'getBaseURL').and.returnValue('baseURL');
-    spyOn(dashboardInstance, 'getTiles').and.callFake(function(type) {
-      if (type === 'torque') {
-        return 'torqueTileURLs';
-      }
-      return 'tileURLs';
-    });
-
-    var client = {
-      instantiateMap: function(args) {
-        args.success(dashboardInstance);
-      }
-    };
-
-    var configGenerator = {
-      generate: function() {}
-    };
-    var cartoDBLayerGroup = new Backbone.Model();
-    var cartoDBLayer1 = new CartoDBLayer();
+          ]
+        }
+      });
+      args.success(this.dashboardInstance);
+    }.bind(this);
 
     var filter = new CategoryFilter({layerIndex: 0 });
     spyOn(filter, 'isEmpty').and.returnValue(false);
@@ -224,51 +199,33 @@ fdescribe('src/windshaft/dashboard', function() {
       type: 'list'
     }
     var widget = widgetModelFactory.createModel(widgetAttrs, 0);
-    cartoDBLayer1.addWidget(widget);
-
-    var interactiveLayers = [
-      cartoDBLayer1
-    ];
-    var map = new Map({
-      view_bounds_sw: [],
-      view_bounds_ne: []
-    });
+    this.cartoDBLayer1.addWidget(widget);
 
     var dashboard = new Dashboard({
-      client: client,
-      configGenerator: configGenerator,
+      client: this.client,
+      configGenerator: this.configGenerator,
       statTag: 'stat_tag',
-      layerGroup: cartoDBLayerGroup,
-      layers: interactiveLayers,
-      map: map
+      layerGroup: this.cartoDBLayerGroup,
+      layers: [ this.cartoDBLayer1 ],
+      map: this.map
     });
 
     // url of widget have been updated
-    expect(widget.url()).toEqual('http://example.com');
+    expect(widget.url()).toEqual('http://example.com/widgetId');
 
-    map.setBounds([['s', 'w'], ['n', 'e']]);
-    map.trigger('change:center');
+    // This widgets needs this attribute to be true in order to submit the bbox filter
+    widget.set('submitBBox', true);
 
-    // Wait a bit
-    jasmine.clock().tick(1000);
+    // Map bounds changes and event is triggered
+    this.map.setBounds([['s', 'w'], ['n', 'e']]);
+    this.map.trigger('change:center');
 
-    // widget url has been update and now includes the bounding box filter
-    expect(widget.url()).toEqual('http://example.com?bbox=');
-
-    jasmine.clock().uninstall();
+    // widget url has been updated and now includes the bounding box filter
+    expect(widget.url()).toEqual('http://example.com/widgetId?bbox=w,s,e,n');
   });
 
   it('should create a new instance when some attributes of a layer changes', function() {
-    var client = {
-      instantiateMap: function() {}
-    };
-    spyOn(client, 'instantiateMap');
-
-    var configGenerator = {
-      generate: function() {}
-    };
-    var cartoDBLayerGroup = new Backbone.Model();
-    var cartoDBLayer1 = new CartoDBLayer();
+    spyOn(this.client, 'instantiateMap');
 
     var filter = new CategoryFilter({layerIndex: 0 });
     spyOn(filter, 'isEmpty').and.returnValue(false);
@@ -287,46 +244,27 @@ fdescribe('src/windshaft/dashboard', function() {
       type: 'list'
     }
     var widget = widgetModelFactory.createModel(widgetAttrs, 0);
-    cartoDBLayer1.addWidget(widget);
-
-    var cartoDBLayer2 = new CartoDBLayer();
-    var interactiveLayers = [
-      cartoDBLayer1,
-      cartoDBLayer2,
-    ];
-    var map = new Map({
-      view_bounds_sw: [],
-      view_bounds_ne: []
-    });
+    this.cartoDBLayer1.addWidget(widget);
 
     var dashboard = new Dashboard({
-      client: client,
-      configGenerator: configGenerator,
+      client: this.client,
+      configGenerator: this.configGenerator,
       statTag: 'stat_tag',
-      layerGroup: cartoDBLayerGroup,
-      layers: interactiveLayers,
-      map: map
+      layerGroup: this.cartoDBLayerGroup,
+      layers: [ this.cartoDBLayer1, this.cartoDBLayer2 ],
+      map: this.map
     });
 
-    expect(client.instantiateMap.calls.count()).toEqual(1);
+    expect(this.client.instantiateMap.calls.count()).toEqual(1);
 
     // Hide the layer
-    cartoDBLayer1.set('visible', false);
+    this.cartoDBLayer1.set('visible', false);
 
-    expect(client.instantiateMap.calls.count()).toEqual(2);
+    expect(this.client.instantiateMap.calls.count()).toEqual(2);
   });
 
   it('should create a new instance when the filter of a layer changes', function() {
-    var client = {
-      instantiateMap: function() {}
-    };
-    spyOn(client, 'instantiateMap');
-
-    var configGenerator = {
-      generate: function() {}
-    };
-    var cartoDBLayerGroup = new Backbone.Model();
-    var cartoDBLayer1 = new CartoDBLayer();
+    spyOn(this.client, 'instantiateMap');
 
     var filter = new CategoryFilter({layerIndex: 0 });
     spyOn(filter, 'isEmpty').and.returnValue(false);
@@ -345,38 +283,29 @@ fdescribe('src/windshaft/dashboard', function() {
       type: 'list'
     }
     var widget = widgetModelFactory.createModel(widgetAttrs, 0);
-    cartoDBLayer1.addWidget(widget);
-
-    var cartoDBLayer2 = new CartoDBLayer();
-    var interactiveLayers = [
-      cartoDBLayer1,
-      cartoDBLayer2,
-    ];
-    var map = new Map({
-      view_bounds_sw: [],
-      view_bounds_ne: []
-    });
+    this.cartoDBLayer1.addWidget(widget);
 
     var dashboard = new Dashboard({
-      client: client,
-      configGenerator: configGenerator,
+      client: this.client,
+      configGenerator: this.configGenerator,
       statTag: 'stat_tag',
-      layerGroup: cartoDBLayerGroup,
-      layers: interactiveLayers,
-      map: map
+      layerGroup: this.cartoDBLayerGroup,
+      layers: [ this.cartoDBLayer1, this.cartoDBLayer2 ],
+      map: this.map
     });
 
-    expect(client.instantiateMap.calls.count()).toEqual(1);
+    expect(this.client.instantiateMap.calls.count()).toEqual(1);
 
     // Filter has changed
-    cartoDBLayer1.trigger('change:filter', cartoDBLayer1);
+    this.cartoDBLayer1.trigger('change:filter', this.cartoDBLayer1);
 
-    expect(client.instantiateMap.calls.count()).toEqual(2);
+    expect(this.client.instantiateMap.calls.count()).toEqual(2);
   });
 
-  fit('should refresh the URLs of widgets and only trigger a change event if the widget belongs to the layer that changed', function() {
-    var dashboardInstance = new DashboardInstance({
-      metadata: {
+  it('should refresh the URLs of widgets and only trigger a change event if the widget belongs to the layer that changed', function() {
+    var i = 0;
+    this.client.instantiateMap = function(args) {
+      this.dashboardInstance.set('metadata', {
         layers: [
           {
             "type": "mapnik",
@@ -384,8 +313,8 @@ fdescribe('src/windshaft/dashboard', function() {
             "widgets": {
               "widgetId1": {
                 "url": {
-                  "http": "http://example.com",
-                  "https": "https://example.com"
+                  "http": "http://example.com/widgetId1/" + i,
+                  "https": "https://example.com/widgetId1/" + i
                 }
               }
             }
@@ -396,34 +325,18 @@ fdescribe('src/windshaft/dashboard', function() {
             "widgets": {
               "widgetId2": {
                 "url": {
-                  "http": "http://example.com",
-                  "https": "https://example.com"
+                  "http": "http://example.com/widgetId2/" + i,
+                  "https": "https://example.com/widgetId2/" + i
                 }
               }
             }
           }
         ]
-      }
-    });
-    spyOn(dashboardInstance, 'getBaseURL').and.returnValue('baseURL');
-    spyOn(dashboardInstance, 'getTiles').and.callFake(function(type) {
-      if (type === 'torque') {
-        return 'torqueTileURLs';
-      }
-      return 'tileURLs';
-    });
+      });
 
-    var client = {
-      instantiateMap: function(args) {
-        args.success(dashboardInstance);
-      }
-    };
-
-    var configGenerator = {
-      generate: function() {}
-    };
-    var cartoDBLayerGroup = new Backbone.Model();
-    var cartoDBLayer1 = new CartoDBLayer();
+      args.success(this.dashboardInstance);
+      i++;
+    }.bind(this);
 
     var filter = new CategoryFilter({layerIndex: 0 });
     spyOn(filter, 'isEmpty').and.returnValue(false);
@@ -442,33 +355,26 @@ fdescribe('src/windshaft/dashboard', function() {
       type: 'list'
     }
     var widget1 = widgetModelFactory.createModel(widgetAttrs, 0);
-    cartoDBLayer1.addWidget(widget1);
+    this.cartoDBLayer1.addWidget(widget1);
 
     var widgetAttrs = {
       id: 'widgetId2',
       type: 'list'
     }
     var widget2 = widgetModelFactory.createModel(widgetAttrs, 0);
-    var cartoDBLayer2 = new CartoDBLayer();
-    cartoDBLayer2.addWidget(widget2);
-
-    var interactiveLayers = [
-      cartoDBLayer1,
-      cartoDBLayer2,
-    ];
-    var map = new Map({
-      view_bounds_sw: [],
-      view_bounds_ne: []
-    });
+    this.cartoDBLayer2.addWidget(widget2);
 
     var dashboard = new Dashboard({
-      client: client,
-      configGenerator: configGenerator,
+      client: this.client,
+      configGenerator: this.configGenerator,
       statTag: 'stat_tag',
-      layerGroup: cartoDBLayerGroup,
-      layers: interactiveLayers,
-      map: map
+      layerGroup: this.cartoDBLayerGroup,
+      layers: [ this.cartoDBLayer1, this.cartoDBLayer2 ],
+      map: this.map
     });
+
+    expect(widget1.get('url')).toEqual('http://example.com/widgetId1/0');
+    expect(widget2.get('url')).toEqual('http://example.com/widgetId2/0');
 
     // Bind some callbacks to check which change:url events do widgets trigger
     var callback1 = jasmine.createSpy('callback1');
@@ -478,8 +384,12 @@ fdescribe('src/windshaft/dashboard', function() {
     widget2.bind('change:url', callback2);
 
     // Filter has changed by cartoDBLayer1
-    cartoDBLayer1.trigger('change:filter', cartoDBLayer1);
+    this.cartoDBLayer1.trigger('change:filter', this.cartoDBLayer1);
 
+    expect(widget1.get('url')).toEqual('http://example.com/widgetId1/1');
+    expect(widget2.get('url')).toEqual('http://example.com/widgetId2/1');
+
+    // Layer1 was the one that triggered the change so only callback1 should have been called
     expect(callback1).toHaveBeenCalled();
     expect(callback2).not.toHaveBeenCalled();
   });

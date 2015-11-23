@@ -12,6 +12,20 @@ module.exports = CategoryItemsView.extend({
 
   className: 'Widget-list is-hidden Widget-list--wrapped js-list',
 
+  render: function() {
+    this.clearSubViews();
+    this.$el.empty();
+    var data = this.dataModel.getSearchResult();
+    var isDataEmpty = data.isEmpty() || data.size() === 0;
+
+    if (isDataEmpty) {
+      this._renderPlaceholder();
+    } else {
+      this._renderList();
+    }
+    return this;
+  },
+
   _renderList: function() {
     this.$el.removeClass('Widget-list--withBorders Widget-list--noresults');
     this.$el.addClass('Widget-list--wrapped');

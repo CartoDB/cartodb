@@ -70,15 +70,14 @@ module.exports = View.extend({
 
   _createHistogramView: function() {
     this._chartView = new HistogramChartView({
+      type: 'time',
+      animationSpeed: 100,
       y: 0,
       margin: this._viewModel.get('histogramChartMargins'),
       handles: true,
       width: this._viewModel.get('histogramChartWidth'),
       height: this._viewModel.get('histogramChartHeight'),
-      data: this.model.getData(),
-      xAxisTickFormat: function(d, i) {
-        return i;
-      }
+      data: this.model.getData()
     });
     this.addView(this._chartView);
     this.$el.append(this._chartView.render().el);

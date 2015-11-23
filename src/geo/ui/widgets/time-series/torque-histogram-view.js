@@ -72,7 +72,6 @@ module.exports = View.extend({
     this._chartView = new HistogramChartView({
       type: 'time',
       animationSpeed: 100,
-      y: 0,
       margin: this._viewModel.get('histogramChartMargins'),
       handles: true,
       width: this._viewModel.get('histogramChartWidth'),

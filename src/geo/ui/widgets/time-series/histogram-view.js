@@ -58,7 +58,6 @@ module.exports = View.extend({
         bottom: 20,
         left: 4
       },
-      y: 0,
       handles: true,
       width: this._histogramChartWidth(),
       height: this.viewModel.get('histogramChartHeight'),

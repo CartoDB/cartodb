@@ -22,7 +22,7 @@ module.exports = WidgetModel.extend({
   },
 
   parse: function(data) {
-    var rows = data.ownFilterOff.rows;
+    var rows = data.rows;
     this._data.reset(rows);
     return {
       data: rows

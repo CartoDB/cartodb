@@ -5,6 +5,7 @@ var config = require('cdb.config');
 var log = require('cdb.log');
 var Model = require('../core/model');
 var Layers = require('./map/layers');
+var sanitize = require('../core/sanitize');
 
 var Map = Model.extend({
 
@@ -40,7 +41,7 @@ var Map = Model.extend({
   _updateAttributions: function() {
     var defaultCartoDBAttribution = this.defaults.attribution[0];
     var attributions = _.chain(this.layers.models)
-      .map(function(layer) { return layer.get('attribution'); })
+      .map(function(layer) { return sanitize.html(layer.get('attribution')); })
       .reject(function(attribution) { return attribution == defaultCartoDBAttribution})
       .compact()
       .uniq()

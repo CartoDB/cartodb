@@ -2,7 +2,7 @@ var $ = require('jquery');
 var _ = require('underscore');
 var View = require('cdb/core/view');
 var WidgetCategoryItemView = require('./item_view');
-var placeholder = require('./placeholder.tpl');
+var placeholder = require('./items_placeholder_template.tpl');
 
 /**
  * Category list view

@@ -8,7 +8,7 @@ var WidgetCategoryInfoView = require('./info_view');
 var WidgetCategoryPaginatorView = require('./paginator_view');
 var WidgetSearchCategoryItemsView = require('./search_items_view');
 var WidgetSearchCategoryPaginatorView = require('./search_paginator_view');
-var template = require('./content.tpl');
+var template = require('./content_template.tpl');
 
 /**
  * Category content view

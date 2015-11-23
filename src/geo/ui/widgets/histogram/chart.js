@@ -37,8 +37,6 @@ module.exports = View.extend({
     this.model.bind('change:data', this._onChangeData, this);
     this.model.bind('change:dragging', this._onChangeDragging, this);
 
-    this._torqueLayerModel = this.options.torqueLayerModel;
-
     // using tagName: 'svg' doesn't work,
     // and w/o class="" d3 won't instantiate properly
     this.$el = $('<svg class=""></svg>');
@@ -59,74 +57,6 @@ module.exports = View.extend({
     return this;
   },
 
-  _generateTimeMarker: function() {
-    if (!this._torqueLayerModel) return
-
-    var torqueLayerModel = this._torqueLayerModel;
-    var self = this;
-
-    var translateX = function(d) {
-      return 'translate(' + [ d.x, d.y] + ')';
-    };
-
-    var dragBehavior = d3.behavior.drag()
-    var d = this.defaults;
-
-    if (this.timeMarker) this.timeMarker.remove(); // if it was added previously
-    var timeMarker = this.timeMarker = this.chart.append('rect')
-    timeMarker
-      .attr('class', 'TimeMarker')
-      .attr('width', 4)
-      .attr('height', this._chartHeight() + 8)
-      .attr('rx', d.handleRadius)
-      .attr('ry', d.handleRadius)
-      .data([{ x: 0, y: -4 }])
-      .attr('transform', translateX)
-      .call(dragBehavior);
-
-    var updateTimeMarkerPos = function(m, step) {
-      var data = timeMarker.data();
-      data[0].x = self.xScaleTorque(step);
-
-      timeMarker
-        .data(data)
-        .transition()
-        .ease('linear')
-        .attr('transform', translateX);
-    };
-    torqueLayerModel.bind('change:step', updateTimeMarkerPos);
-    this.add_related_model(torqueLayerModel);
-
-    var isWithinRange = function(x) {
-      return 0 <= x && x <= self._chartWidth();
-    };
-
-    var wasRunning = false;
-    dragBehavior
-      .on('dragstart', function() {
-        torqueLayerModel.unbind('change:step', updateTimeMarkerPos);
-        var wasRunning = torqueLayerModel.get('isRunning');
-        if (wasRunning) {
-          torqueLayerModel.pause();
-        }
-      })
-      .on('drag', function(d, i) {
-        var nextX = d.x + d3.event.dx;
-        if (isWithinRange(nextX)) {
-          d.x = nextX;
-          d3.select(this).attr('transform', translateX);
-
-          var step = Math.round(self.xScaleTorque.invert(d.x));
-          torqueLayerModel.setStep(step);
-        }
-      })
-      .on('dragend', function() {
-        if (wasRunning) {
-          self._torqueLayerModel.play();
-        }
-        torqueLayerModel.bind('change:step', updateTimeMarkerPos);
-      });
-  },
 
   replaceData: function(data) {
     this.model.set({ data: data });
@@ -307,7 +237,6 @@ module.exports = View.extend({
     this._generateHandles();
     this._setupBrush();
     this._generateXAxis();
-    this._generateTimeMarker();
   },
 
   resize: function(width) {
@@ -377,12 +306,6 @@ module.exports = View.extend({
     this.xScale = d3.scale.linear().domain([0, 100]).range([0, chartWidth]);
     this.yScale = d3.scale.linear().domain([0, d3.max(data, function(d) { return _.isEmpty(d) ? 0 : d.freq; } )]).range([chartHeight, 0]);
     this.xAxisScale = d3.scale.linear().range([data[0].start, data[data.length - 1].end]).domain([0, chartWidth]);
-
-    if (this._torqueLayerModel) {
-      this.xScaleTorque = d3.scale.linear()
-        .domain([0, this._torqueLayerModel.get('steps')])
-        .range([0, chartWidth]);
-    }
 
     var n = Math.round(chartWidth / this.defaults.divisionWidth);
     this.verticalRange = d3.range(0, chartWidth + chartWidth / n, chartWidth / n);

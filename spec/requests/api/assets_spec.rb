@@ -53,6 +53,22 @@ describe "Assets API" do
     end
   end
 
+  it "finds image file extension" do
+    asset = FactoryGirl.create(:asset, user_id: $user_1.id)
+
+    Asset::VALID_EXTENSIONS.each do |extension|
+      asset_name = "cartofante" + extension
+      asset.stubs(:asset_file).returns(asset_name)
+      asset.asset_file_extension.should == extension
+    end
+  end
+
+  it "detects incorrect image file extension" do
+    asset = FactoryGirl.create(:asset, user_id: $user_1.id)
+    asset.stubs(:asset_file).returns("cartofante.gifv")
+    asset.asset_file_extension.should == nil
+  end
+
   it "deletes an asset" do
     FactoryGirl.create(:asset, user_id: $user_1.id)
     $user_1.reload

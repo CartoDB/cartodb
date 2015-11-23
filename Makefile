@@ -58,6 +58,7 @@ WORKING_SPECS_1 = \
   spec/lib/explore_api_spec.rb \
   spec/lib/carto/http/client_spec.rb \
 	spec/helpers/uuidhelper_spec.rb \
+	spec/helpers/url_validator_spec.rb \
 	spec/models/carto/bi_dataset_spec.rb \
 	spec/models/carto/bi_visualization_spec.rb \
 	spec/models/carto/template_spec.rb \

@@ -8,7 +8,7 @@ class Asset < Sequel::Model
 
   PUBLIC_ATTRIBUTES = %w{ id public_url user_id kind }
 
-  VALID_EXTENSIONS = %w{ jpg gif png svg }
+  VALID_EXTENSIONS = %w{ .jpeg .jpg .gif .png .svg }
 
   attr_accessor :asset_file, :url
 
@@ -66,17 +66,19 @@ class Asset < Sequel::Model
     metadata = CartoDB::ImageMetadata.new(@file.path)
     errors.add(:file, "is too big, 1024x1024 max") if metadata.width > 1024 || metadata.height > 1024
     # If metadata reports no size, 99% sure not valid, so out
-    errors.add(:file, "doesn't appears to be an image") if metadata.width == 0 || metadata.height == 0
+    errors.add(:file, "doesn't appear to be an image") if metadata.width == 0 || metadata.height == 0
   rescue => e
     errors.add(:file, "error while uploading: #{e.message}")
   end
 
   def asset_file_extension
-    (asset_file.respond_to?(:original_filename) ? asset_file.original_filename : asset_file)
-      .split(".")
-      .last
-      .slice(0, 3) # Filename might include a postfix hash (e.g. Rack::Test::UploadedFile adds it)
-      .downcase
+    filename = asset_file.respond_to?(:original_filename) ? asset_file.original_filename : asset_file
+    extension = File.extname(filename).downcase
+
+    # Filename might include a postfix hash -- Rack::Test::UploadedFile adds it
+    extension.gsub!(/\d+-\w+-\w+\z/, '') if Rails.env.test?
+
+    extension if VALID_EXTENSIONS.include?(extension)
   end
 
   ##

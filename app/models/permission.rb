@@ -184,13 +184,15 @@ module CartoDB
         end
       }
 
-      cleaned_acl = incoming_acl.map { |item|
+      acl_items = incoming_acl.map do |item|
         {
           type:   item[:type],
           id:     item[:entity][:id],
           access: item[:access]
         }
-      }
+      end
+
+      cleaned_acl = acl_items.select { |i| i[:id] } # Cleaning, see #5668
 
       if @old_acl.nil?
         @old_acl = acl
@@ -233,6 +235,13 @@ module CartoDB
       @update_db_group_permission = false
 
       set_group_permission(group, ACCESS_NONE)
+    end
+
+    def remove_user_permission(user)
+      granted_access = granted_access_for_user(user)
+      if granted_access != ACCESS_NONE
+        self.acl = inputable_acl.select { |entry| entry[:entity][:id] != user.id }
+      end
     end
 
     def set_user_permission(subject, access)
@@ -385,16 +394,12 @@ module CartoDB
       ACCESS_NONE if permission.nil?
     end
 
-    def granted_access_for_group(group)
-      permission = nil
+    def granted_access_for_user(user)
+      granted_access_for_entry_type(TYPE_USER, user)
+    end
 
-      acl.map do |entry|
-        if entry[:type] == TYPE_GROUP && entry[:id] == group.id
-          permission = entry[:access]
-        end
-      end
-      permission = ACCESS_NONE if permission.nil?
-      permission
+    def granted_access_for_group(group)
+      granted_access_for_entry_type(TYPE_GROUP, group)
     end
 
     # Note: Does not check ownership
@@ -431,7 +436,8 @@ module CartoDB
 
       # Create user entities for the new ACL
       users = relevant_user_acl_entries(acl)
-      users.each { |user|
+      # Avoid entries without recipient id. See #5668.
+      users.select { |u| u[:id] }.each do |user|
         shared_entity = CartoDB::SharedEntity.new(
             recipient_id:   user[:id],
             recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_USER,
@@ -442,7 +448,7 @@ module CartoDB
         if e.table?
           grant_db_permission(e, user[:access], shared_entity)
         end
-      }
+      end
 
       org = relevant_org_acl_entry(acl)
       if org
@@ -489,6 +495,18 @@ module CartoDB
     end
 
     private
+
+    def granted_access_for_entry_type(type, entity)
+      permission = nil
+
+      acl.map do |entry|
+        if entry[:type] == type && entry[:id] == entity.id
+          permission = entry[:access]
+        end
+      end
+      permission = ACCESS_NONE if permission.nil?
+      permission
+    end
 
     # @param permission_type ENTITY_TYPE_xxxx
     # @throws PermissionError
@@ -538,7 +556,9 @@ module CartoDB
               entity.table.remove_organization_access
             end
             users.each { |user|
-              entity.table.remove_access(::User.where(id: user[:id]).first)
+              # Cleaning, see #5668
+              u = ::User[user[:id]]
+              entity.table.remove_access(u) if u
             }
             # update_db_group_permission check is needed to avoid updating db requests
             if @update_db_group_permission != false

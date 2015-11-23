@@ -294,6 +294,8 @@ class User < Sequel::Model
       self.assets.each { |a| a.destroy }
       CartoDB::Synchronization::Collection.new.fetch(user_id: self.id).destroy
 
+      destroy_shared_with
+
       assign_search_tweets_to_organization_owner
     rescue StandardError => exception
       error_happened = true
@@ -1458,6 +1460,15 @@ class User < Sequel::Model
   end
 
   private
+
+  def destroy_shared_with
+    CartoDB::SharedEntity.where(recipient_id: id).each do |se|
+      CartoDB::Permission.where(entity_id: se.entity_id).each do |p|
+        p.remove_user_permission(self)
+        p.save
+      end
+    end
+  end
 
   def get_invitation_token_from_user_creation
     user_creation = get_user_creation

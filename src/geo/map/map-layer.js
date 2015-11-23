@@ -1,4 +1,5 @@
 var _ = require('underscore');
+var log = require('cdb.log');
 
 // TODO: can't use these requires since they in turn depends on this file (i.e. cyclic dependency), how to break?
 // var TorqueLayer = require('./torque-layer');
@@ -12,6 +13,12 @@ var MapLayer = Model.extend({
   defaults: {
     visible: true,
     type: 'Tiled'
+  },
+
+  initialize: function() {
+    this.bind('change:type', function() {
+      log.error('changing layer type is not allowed, remove it and add a new one instead');
+    });
   },
 
   /***

@@ -117,7 +117,6 @@ var GoogleMapsMapView = MapView.extend({
     this.map.layers.bind('add', this._addLayer, this);
     this.map.layers.bind('remove', this._removeLayer, this);
     this.map.layers.bind('reset', this._addLayers, this);
-    this.map.layers.bind('change:type', this._swicthLayerView, this);
 
     this.projector = new Projector(this.map_googlemaps);
 

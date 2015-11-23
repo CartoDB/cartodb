@@ -3,14 +3,16 @@ var TimeSeriesContentView = require('cdb/geo/ui/widgets/time-series/content-view
 
 describe('geo/ui/widgets/time-series/content-view', function() {
   beforeEach(function() {
-    this.model = new HistogramModel({
-    });
+    this.model = new HistogramModel({});
+
     this.model.sync = function(method, model, options) {
       this.options = options;
     }.bind(this);
+
     this.view = new TimeSeriesContentView({
       model: this.model
     });
+
     this.view.render();
   });
 
@@ -26,8 +28,13 @@ describe('geo/ui/widgets/time-series/content-view', function() {
     beforeEach(function() {
       var timeOffset = 10000;
       var startTime = (new Date()).getTime() - timeOffset;
+
       this.model.fetch();
       this.options.success({
+        bins_count: 3,
+        bin_width: 100,
+        nulls: 0,
+        bins_start: 10,
         bins: [{
           start: startTime,
           end: startTime + timeOffset,
@@ -37,7 +44,7 @@ describe('geo/ui/widgets/time-series/content-view', function() {
     });
 
     it('should render chart', function() {
-      expect(this.view.$el.html()).toContain('<svg');
+      expect(this.view.render().$el.html()).toContain('<svg');
     });
   });
 });

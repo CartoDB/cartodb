@@ -47,12 +47,6 @@ module.exports = View.extend({
     });
     this._viewModel.bind('change:width', this._onChangeWidth, this);
     this.add_related_model(this._viewModel);
-
-    // TODO w/o this the timemarker ends up behind the removed-and-added elements in the histogram chart,
-    // can we avoid that?
-    this.model.bind('change:data', this.render, this);
-    this._viewModel.bind('change:width', this.render, this);
-
     this._onChangeWidth();
   },
 
@@ -84,7 +78,7 @@ module.exports = View.extend({
     this._chartView.show();
 
     var timeMarkerView = new TorqueTimeMarkerview({
-      chartCanvas: this._chartView.chart,
+      chartCanvas: this._chartView.canvas,
       viewModel: this._viewModel,
       torqueLayerModel: this.options.torqueLayerModel
     });

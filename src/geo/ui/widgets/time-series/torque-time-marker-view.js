@@ -40,7 +40,7 @@ module.exports = View.extend({
         .attr('height', height)
         .attr('rx', 3)
         .attr('ry', 3)
-        .data([{ x: 0, y: -4 }])
+        .data([{ x: 0, y: 0 }])
         .attr('transform', this._translateXY)
         .call(dragBehavior);
     }

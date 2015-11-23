@@ -76,12 +76,13 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
   def update
     @stats_aggregator.timing('visualizations.update') do
-
       begin
         vis, = @stats_aggregator.timing('locate') do
           locator.get(@table_id, CartoDB.extract_subdomain(request))
         end
-        return(head 404) unless vis
+
+        return head(404) unless vis
+        return head(403) unless payload[:id] == vis.id
         return head(403) unless vis.has_permission?(current_user, Visualization::Member::PERMISSION_READWRITE)
 
         vis_data = payload
@@ -145,8 +146,10 @@ class Api::Json::VisualizationsController < Api::ApplicationController
         vis,  = @stats_aggregator.timing('locate') do
           locator.get(@table_id, CartoDB.extract_subdomain(request))
         end
-        return(head 404) unless vis
-        return(head 403) unless vis.is_owner?(current_user)
+
+        return head(404) unless vis
+        return head(403) unless payload[:id] == vis.id
+        return head(403) unless vis.is_owner?(current_user)
 
         track_event(vis, 'Deleted')
         unless vis.table.nil?

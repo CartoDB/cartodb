@@ -62,11 +62,11 @@ module.exports = View.extend({
       ev.preventDefault();
     }
     var q = this.$('.js-textInput').val();
-    this.dataModel.setSearchQuery(q);
-    if (this.dataModel.isSearchValid()) {
-      this.dataModel.applySearch();
-    } else {
-      this.viewModel.toggleSearch();
+    if (this.dataModel.getSearchQuery() !== q) {
+      this.dataModel.setSearchQuery(q);
+      if (this.dataModel.isSearchValid()) {
+        this.dataModel.applySearch();
+      }
     }
   },
 
@@ -115,10 +115,6 @@ module.exports = View.extend({
 
   _applyColors: function() {
     this.dataModel.applyCategoryColors();
-  },
-
-  _onClickClose: function() {
-    this.viewModel.disableSearch();
   },
 
   clean: function() {

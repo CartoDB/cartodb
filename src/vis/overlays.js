@@ -182,16 +182,6 @@ Overlay.register('loader', function(data) {
   return tilesLoader.render();
 });
 
-Overlay.register('time_slider', function(data, viz) {
-  // Expected to be loaded through torque
-  if (!cdb.geo.ui.TimeSlider) {
-    throw new Error('torque library must be loaded for the cdb.geo.ui.TimeSlider to work');
-  }
-  var slider = new cdb.geo.ui.TimeSlider(data);
-  return slider.render();
-});
-
-
 // Header to show informtion (title and description)
 Overlay.register('_header', function(data, vis) {
   var MAX_SHORT_DESCRIPTION_LENGTH = 100;
@@ -322,34 +312,19 @@ Overlay.register('layer_selector', function(data, vis) {
     layer_names: data.layer_names
   });
 
-  var timeSlider = vis.timeSlider;
-  if (timeSlider) {
-    layerSelector.bind('change:visible', function(visible, order, layer) {
-      if (layer.get('type') === 'torque') {
-        timeSlider[visible ? 'show': 'hide']();
-      }
-    });
-  }
   if (vis.legends) {
-
     layerSelector.bind('change:visible', function(visible, order, layer) {
-
-
       if (layer.get('type') === 'layergroup' || layer.get('type') === 'torque') {
-
         var legend = vis.legends && vis.legends.getLegendByIndex(order);
 
         if (legend) {
           legend[visible ? 'show': 'hide']();
         }
-
       }
-
     });
   }
 
   return layerSelector.render();
-
 });
 
 // fullscreen

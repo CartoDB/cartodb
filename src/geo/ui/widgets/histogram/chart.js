@@ -29,11 +29,11 @@ module.exports = View.extend({
     this.$el = $('<svg class=""></svg>');
     this.el = this.$el[0];
 
-    this._canvas = d3.select(this.el)
+    this.canvas = d3.select(this.el)
     .attr('width',  opts.width)
     .attr('height', opts.height);
 
-    this._canvas
+    this.canvas
     .append('g')
     .attr('class', 'Canvas');
 
@@ -380,12 +380,12 @@ module.exports = View.extend({
   },
 
   expand: function(newHeight) {
-    this._canvas.attr('height', newHeight);
+    this.canvas.attr('height', newHeight);
     this._move({ x: 0, y: 20 });
   },
 
   contract: function(newHeight) {
-    this._canvas.attr('height', newHeight);
+    this.canvas.attr('height', newHeight);
     this._move({ x: 0, y: 0 });
   },
 
@@ -583,7 +583,7 @@ module.exports = View.extend({
   },
 
   _removeAxis: function() {
-    this._canvas.select('.Axis').remove();
+    this.canvas.select('.Axis').remove();
   },
 
   _generateAdjustAnchorMethod: function(ticks) {
@@ -649,14 +649,14 @@ module.exports = View.extend({
     .scale(this.xAxisScale)
     .orient('bottom');
 
-    this._canvas.append('g')
+    this.canvas.append('g')
     .attr("class", 'Axis')
     .attr("transform", "translate(0," + (this.chartHeight + 5) + ")")
     .call(xAxis)
     .selectAll("text")
     .style("text-anchor", adjustTextAnchor);
 
-    this._canvas.select('.Axis')
+    this.canvas.select('.Axis')
     .moveToBack();
   },
 

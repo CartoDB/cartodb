@@ -85,7 +85,9 @@ module.exports = WidgetModel.extend({
 
   applyCategoryColors: function() {
     this.set('categoryColors', true);
-    this.trigger('applyCategoryColors', this);
+    this.trigger('applyCategoryColors', this._data.map(function(m){
+      return [ m.get('name'), m.get('color') ];
+    }), this);
   },
 
   cancelCategoryColors: function() {

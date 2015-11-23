@@ -9,9 +9,8 @@ var TorqueLayer = require('cdb/geo/map/torque-layer');
 var HistogramModel = require('cdb/geo/ui/widgets/histogram/model');
 var Model = require('cdb/geo/ui/widgets/histogram/model');
 var CategoryFilter = require('cdb/windshaft/filters/category');
-var WidgetModelFactory = require('cdb/geo/ui/widgets/widget-model-factory');
 
-fdescribe('src/windshaft/dashboard', function() {
+describe('src/windshaft/dashboard', function() {
 
   beforeEach(function() {
 
@@ -78,19 +77,10 @@ fdescribe('src/windshaft/dashboard', function() {
   });
 
   it('should create an instance of the dashboard and update the URLs of layers and widgets', function() {
-    var filter = new CategoryFilter({layerIndex: 0 });
-    var widgetModelFactory = new WidgetModelFactory({
-      list: function(attrs) {
-        return new HistogramModel(attrs, {
-          filter: filter
-        });
-      },
-    });
-    var widgetAttrs = {
+    var widget = new HistogramModel({
       id: 'widgetId',
       type: 'list'
-    }
-    var widget = widgetModelFactory.createModel(widgetAttrs, 0);
+    }, {});
 
     this.cartoDBLayer1.addWidget(widget);
 
@@ -121,19 +111,11 @@ fdescribe('src/windshaft/dashboard', function() {
     spyOn(filter, 'isEmpty').and.returnValue(false);
     spyOn(filter, 'toJSON').and.returnValue({ something: 'else' });
 
-    var widgetModelFactory = new WidgetModelFactory({
-      list: function(attrs) {
-        return new HistogramModel(attrs, {
-          filter: filter
-        });
-      },
-    });
-
-    var widgetAttrs = {
+    var widget = new HistogramModel({
       id: 'widgetId',
       type: 'list'
-    }
-    var widget = widgetModelFactory.createModel(widgetAttrs, 0);
+    }, { filter: filter });
+
     this.cartoDBLayer1.addWidget(widget);
 
     var dashboard = new Dashboard({
@@ -182,23 +164,10 @@ fdescribe('src/windshaft/dashboard', function() {
       args.success(this.dashboardInstance);
     }.bind(this);
 
-    var filter = new CategoryFilter({layerIndex: 0 });
-    spyOn(filter, 'isEmpty').and.returnValue(false);
-    spyOn(filter, 'toJSON').and.returnValue({ something: 'else' });
-
-    var widgetModelFactory = new WidgetModelFactory({
-      list: function(attrs) {
-        return new HistogramModel(attrs, {
-          filter: filter
-        });
-      },
-    });
-
-    var widgetAttrs = {
+    var widget = new HistogramModel({
       id: 'widgetId',
       type: 'list'
-    }
-    var widget = widgetModelFactory.createModel(widgetAttrs, 0);
+    }, {});
     this.cartoDBLayer1.addWidget(widget);
 
     var dashboard = new Dashboard({
@@ -227,23 +196,10 @@ fdescribe('src/windshaft/dashboard', function() {
   it('should create a new instance when some attributes of a layer changes', function() {
     spyOn(this.client, 'instantiateMap');
 
-    var filter = new CategoryFilter({layerIndex: 0 });
-    spyOn(filter, 'isEmpty').and.returnValue(false);
-    spyOn(filter, 'toJSON').and.returnValue({ something: 'else' });
-
-    var widgetModelFactory = new WidgetModelFactory({
-      list: function(attrs) {
-        return new HistogramModel(attrs, {
-          filter: filter
-        });
-      },
-    });
-
-    var widgetAttrs = {
+    var widget = new HistogramModel({
       id: 'widgetId',
       type: 'list'
-    }
-    var widget = widgetModelFactory.createModel(widgetAttrs, 0);
+    }, {});
     this.cartoDBLayer1.addWidget(widget);
 
     var dashboard = new Dashboard({
@@ -270,19 +226,12 @@ fdescribe('src/windshaft/dashboard', function() {
     spyOn(filter, 'isEmpty').and.returnValue(false);
     spyOn(filter, 'toJSON').and.returnValue({ something: 'else' });
 
-    var widgetModelFactory = new WidgetModelFactory({
-      list: function(attrs) {
-        return new HistogramModel(attrs, {
-          filter: filter
-        });
-      },
-    });
-
-    var widgetAttrs = {
+    var widget = new HistogramModel({
       id: 'widgetId',
       type: 'list'
-    }
-    var widget = widgetModelFactory.createModel(widgetAttrs, 0);
+    }, {
+      filter: filter
+    });
     this.cartoDBLayer1.addWidget(widget);
 
     var dashboard = new Dashboard({
@@ -338,30 +287,16 @@ fdescribe('src/windshaft/dashboard', function() {
       i++;
     }.bind(this);
 
-    var filter = new CategoryFilter({layerIndex: 0 });
-    spyOn(filter, 'isEmpty').and.returnValue(false);
-    spyOn(filter, 'toJSON').and.returnValue({ something: 'else' });
-
-    var widgetModelFactory = new WidgetModelFactory({
-      list: function(attrs) {
-        return new HistogramModel(attrs, {
-          filter: filter
-        });
-      },
-    });
-
-    var widgetAttrs = {
+    var widget1 = new HistogramModel({
       id: 'widgetId1',
       type: 'list'
-    }
-    var widget1 = widgetModelFactory.createModel(widgetAttrs, 0);
+    }, {});
     this.cartoDBLayer1.addWidget(widget1);
 
-    var widgetAttrs = {
+    var widget2 = new HistogramModel({
       id: 'widgetId2',
       type: 'list'
-    }
-    var widget2 = widgetModelFactory.createModel(widgetAttrs, 0);
+    }, {});
     this.cartoDBLayer2.addWidget(widget2);
 
     var dashboard = new Dashboard({

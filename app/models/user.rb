@@ -197,7 +197,7 @@ class User < Sequel::Model
   end
 
   def notify_org_seats_limit_reached
-    ::Resque.enqueue(::Resque::UserJobs::Mail::NewOrganizationUser, self.id)
+    ::Resque.enqueue(::Resque::UserJobs::Mail::NewOrganizationUser, id)
   end
 
   def should_load_common_data?

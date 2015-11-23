@@ -53,6 +53,7 @@ module.exports = WindshaftFilterBase.extend({
   },
 
   acceptAll: function() {
+    this.set('rejectAll', false);
     this.acceptedCategories.reset();
     this.rejectedCategories.reset();
     this.applyFilter();

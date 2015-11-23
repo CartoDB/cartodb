@@ -59,7 +59,7 @@ describe('src/windshaft/client', function() {
 
       this.client.instantiateMap({
         mapDefinition: 'mapDefinition',
-        filters: 'filters',
+        filters: {},
         success: successCallback
       });
 
@@ -77,7 +77,7 @@ describe('src/windshaft/client', function() {
 
       this.client.instantiateMap({
         mapDefinition: 'mapDefinition',
-        filters: 'filters',
+        filters: {},
         error: errorCallback
       });
 
@@ -93,7 +93,7 @@ describe('src/windshaft/client', function() {
 
       this.client.instantiateMap({
         mapDefinition: 'mapDefinition',
-        filters: 'filters',
+        filters: {},
         error: errorCallback
       });
 

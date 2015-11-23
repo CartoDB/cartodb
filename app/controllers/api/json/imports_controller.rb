@@ -6,9 +6,11 @@ require_relative '../../../models/visualization/external_source'
 require_relative '../../../../services/platform-limits/platform_limits'
 require_relative '../../../../services/importer/lib/importer/exceptions'
 require_dependency 'carto/uuidhelper'
+require_dependency 'carto/url_validator'
 
 class Api::Json::ImportsController < Api::ApplicationController
   include Carto::UUIDHelper
+  include Carto::UrlValidator
 
   ssl_required :create
   ssl_allowed :invalidate_service_token
@@ -37,9 +39,8 @@ class Api::Json::ImportsController < Api::ApplicationController
         options = default_creation_options
 
         if params[:url].present?
-          options.merge!({
-                           data_source: params.fetch(:url)
-                         })
+          validate_url!(params.fetch(:url)) unless Rails.env.development? || Rails.env.test?
+          options.merge!(data_source: params.fetch(:url))
         elsif params[:remote_visualization_id].present?
           external_source = external_source(params[:remote_visualization_id])
           options.merge!( { data_source: external_source.import_url.presence } )

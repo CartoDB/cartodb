@@ -37,7 +37,6 @@ var LeafletCartoDBLayerGroupView = L.TileLayer.extend({
     subdomains:     null
   },
 
-
   initialize: function(layerModel, leafletMap) {
     var self = this;
     var hovers = [];

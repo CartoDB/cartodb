@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 require_relative '../../../spec_helper'
+require_relative '../../../factories/users_helper'
 require_relative '../../api/json/visualizations_controller_shared_examples'
 require_relative '../../../../app/controllers/carto/api/visualizations_controller'
 

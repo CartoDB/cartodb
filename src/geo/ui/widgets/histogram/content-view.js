@@ -138,6 +138,7 @@ module.exports = WidgetContent.extend({
       height: this.canvasHeight,
       data: this.dataModel.getData()
     }));
+    window.c = this.histogramChartView;
 
     this.$('.js-content').append(this.histogramChartView.el);
     this.addView(this.histogramChartView);

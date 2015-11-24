@@ -54,6 +54,14 @@ module.exports = View.extend({
     this.model.set({ data: data });
   },
 
+  _onChangeV: function() {
+    this.textLabel.data([this.model.get('v')]).text(function(d) { return d });
+    var width = this.textLabel.node().getBBox().width;
+    this.rectLabel.attr('width', width);
+
+    console.log(this.model.get('v'));
+  },
+
   _onChangeData: function() {
     if (this.model.previous('data').length != this.model.get('data').length) {
       this.reset();
@@ -96,7 +104,12 @@ module.exports = View.extend({
   },
 
   _onBrushStart: function() {
+    var extent = this.brush.extent();
+    var hiExtent = extent[1];
+    var rightX = this.xScale(hiExtent) - this.options.handleWidth / 2;
+
     this.chart.classed('is-selectable', true);
+    console.warn(this.xAxisScale(rightX));
   },
 
   _onChangeDragging: function() {
@@ -165,6 +178,7 @@ module.exports = View.extend({
   },
 
   _bindModel: function() {
+    this.model.bind('change:v', this._onChangeV, this);
     this.model.bind('change:width', this._onChangeWidth, this);
     this.model.bind('change:pos', this._onChangePos, this);
     this.model.bind('change:lo_index change:hi_index', this._onChangeRange, this);
@@ -522,6 +536,8 @@ module.exports = View.extend({
 
     this.chart.select('.Handle-right')
     .attr('transform', 'translate(' + rightX + ', 0)');
+
+    this.model.set({ v: this.xAxisScale(rightX) });
   },
 
   _generateHandle: function(className) {
@@ -531,6 +547,20 @@ module.exports = View.extend({
     var handles = this.chart.select('.Handles')
     .append('g')
     .attr('class', 'Handle ' + className);
+
+    var bar = handles.selectAll("g")
+    .data(['1234'])
+    .enter().append("g")
+    .attr("transform", function(d, i) { return "translate(0,50)"; });
+
+    this.rectLabel = bar.append("rect")
+    .attr('fill', 'blue')
+    .attr('font-size', '12')
+    .attr("height", 10)
+
+    this.textLabel = bar.append("text")
+    .attr("dy", "10")
+    .text(function(d) { return d; });
 
     handles
     .append('line')

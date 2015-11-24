@@ -99,11 +99,15 @@ describe('widgets/category/search_title_view', function() {
     it('should render "apply colors" button and apply them when is clicked', function(){
       expect(this.view.$('.js-applyColors').length).toBe(1);
       spyOn(this.model, 'applyCategoryColors').and.callThrough();
-      spyOn(this.model, 'cancelCategoryColors').and.callThrough();
       this.view.$('.js-applyColors').click();
       expect(this.model.applyCategoryColors).toHaveBeenCalled();
       expect(this.view.$('.js-applyColors').length).toBe(0);
       expect(this.view.$('.js-cancelColors').length).toBe(1);
+    });
+
+    it('should remove category colors when they are applied and button is clicked', function() {
+      spyOn(this.model, 'cancelCategoryColors').and.callThrough();
+      this.view.$('.js-applyColors').click();
       expect(this.view.$('.js-cancelColors').hasClass('is-selected')).toBeTruthy();
       this.view.$('.js-cancelColors').click();
       expect(this.model.cancelCategoryColors).toHaveBeenCalled();
@@ -113,11 +117,16 @@ describe('widgets/category/search_title_view', function() {
       this.model.acceptFilters('one');
       expect(this.view.$('.js-lock').length).toBe(1);
       spyOn(this.model, 'lockCategories').and.callThrough();
-      spyOn(this.model, 'unlockCategories').and.callThrough();
       this.view.$('.js-lock').click();
       expect(this.model.lockCategories).toHaveBeenCalled();
       expect(this.view.$('.js-lock').length).toBe(0);
       expect(this.view.$('.js-unlock').length).toBe(1);
+    });
+
+    it('should unlock when widget is locked and button is clicked', function() {
+      spyOn(this.model, 'unlockCategories').and.callThrough();
+      this.model.acceptFilters('one');
+      this.view.$('.js-lock').click();
       expect(this.view.$('.js-unlock').hasClass('is-selected')).toBeTruthy();
       this.view.$('.js-unlock').click();
       expect(this.model.unlockCategories).toHaveBeenCalled();

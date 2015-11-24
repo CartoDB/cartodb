@@ -296,5 +296,18 @@ describe Carto::UserCreation do
       user_creation = Carto::UserCreation.new_user_signup(user_data)
       user_creation.next_creation_step until user_creation.finished?
     end
+
+    it 'doesnt trigger any unexpected mails if organization is ok' do
+      ::User.any_instance.stubs(:create_in_central).returns(true)
+      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+      ::Resque.expects(:enqueue).with(Resque::UserJobs::Mail::NewOrganizationUser, instance_of(String)).once
+
+      user_data = FactoryGirl.build(:valid_user)
+
+      user_data.organization = @organization
+
+      user_creation = Carto::UserCreation.new_user_signup(user_data)
+      user_creation.next_creation_step until user_creation.finished?
+    end
   end
 end

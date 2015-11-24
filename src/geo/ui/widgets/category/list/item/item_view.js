@@ -35,7 +35,9 @@ module.exports = View.extend({
         value: format(Math.ceil(value)),
         percentage: ((value / this.dataModel.get('max')) * 100),
         color: this.model.get('color'),
-        isDisabled: !this.model.get('selected') ? 'is-disabled' : ''
+        isDisabled: !this.model.get('selected') ? 'is-disabled' : '',
+        prefix: this.dataModel.get('prefix'),
+        suffix: this.dataModel.get('suffix')
       })
     );
 

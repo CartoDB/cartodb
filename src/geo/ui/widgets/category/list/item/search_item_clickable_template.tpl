@@ -4,7 +4,7 @@
     <div class="u-lSpace--xl">
       <div class="Widget-contentSpaced">
         <p class="Widget-textSmall Widget-textSmall--bold Widget-textSmall--upper" title="<%- name %>"><%- name %></p>
-        <p class="Widget-textSmaller" title="<%- value %>"><%- value %></p>
+        <p class="Widget-textSmaller" title="<%- value %>"><%- prefix %><%- value %><%- suffix %></p>
       </div>
       <div class="Widget-progressBar">
         <div class="Widget-progressState" style="width: <%- percentage %>%"></div>

@@ -62,7 +62,7 @@ describe('core/geo/map', function() {
 
     // Map has the default CartoDB attribution
     expect(map.get('attribution')).toEqual([
-      "CartoDB <a href='http://cartodb.com/attributions' target='_blank'>attribution</a>"
+      "CartoDB <a href=\"http://cartodb.com/attributions\" target=\"_blank\">attribution</a>"
     ]);
 
     var layer1 = new CartoDBLayer({ attribution: 'attribution1' });
@@ -76,7 +76,7 @@ describe('core/geo/map', function() {
     expect(map.get('attribution')).toEqual([
       "attribution1",
       "wadus",
-      "CartoDB <a href='http://cartodb.com/attributions' target='_blank'>attribution</a>",
+      "CartoDB <a href=\"http://cartodb.com/attributions\" target=\"_blank\">attribution</a>",
     ]);
 
     var layer = new CartoDBLayer({ attribution: 'attribution2' });
@@ -88,7 +88,7 @@ describe('core/geo/map', function() {
       "attribution1",
       "wadus",
       "attribution2",
-      "CartoDB <a href='http://cartodb.com/attributions' target='_blank'>attribution</a>",
+      "CartoDB <a href=\"http://cartodb.com/attributions\" target=\"_blank\">attribution</a>",
     ]);
 
     layer.set('attribution', 'new attribution');
@@ -98,7 +98,7 @@ describe('core/geo/map', function() {
       "attribution1",
       "wadus",
       "new attribution",
-      "CartoDB <a href='http://cartodb.com/attributions' target='_blank'>attribution</a>",
+      "CartoDB <a href=\"http://cartodb.com/attributions\" target=\"_blank\">attribution</a>",
     ]);
 
     map.layers.remove(layer);
@@ -106,7 +106,7 @@ describe('core/geo/map', function() {
     expect(map.get('attribution')).toEqual([
       "attribution1",
       "wadus",
-      "CartoDB <a href='http://cartodb.com/attributions' target='_blank'>attribution</a>",
+      "CartoDB <a href=\"http://cartodb.com/attributions\" target=\"_blank\">attribution</a>",
     ]);
 
     // Addind a layer with the default attribution
@@ -118,7 +118,7 @@ describe('core/geo/map', function() {
     expect(map.get('attribution')).toEqual([
       "attribution1",
       "wadus",
-      "CartoDB <a href='http://cartodb.com/attributions' target='_blank'>attribution</a>",
+      "CartoDB <a href=\"http://cartodb.com/attributions\" target=\"_blank\">attribution</a>",
     ]);
   })
 });

@@ -18,18 +18,18 @@ describe 'rar regression tests' do
   include_context "no stats"
 
   before do
-    @pg_options  = Factories::PGConnection.new.pg_options
+    @pg_options = Factories::PGConnection.new.pg_options
   end
 
   it 'returns empty results if no supported files in the bundle' do
     filepath    = path_to('one_unsupported.rar')
     downloader  = Downloader.new(filepath)
-    runner      = Runner.new({
-                               pg: @pg_options,
-                               downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new,
-                               user: CartoDB::Importer2::Doubles::User.new
-                             })
+    runner      = Runner.new(
+                   pg: @pg_options,
+                   downloader: downloader,
+                   log: CartoDB::Importer2::Doubles::Log.new,
+                   user: CartoDB::Importer2::Doubles::User.new
+                  )
     runner.run
 
     runner.results.length.should eq 0
@@ -38,12 +38,12 @@ describe 'rar regression tests' do
   it 'ignores unsupported files in the bundle' do
     filepath    = path_to('one_unsupported_one_valid.rar')
     downloader  = Downloader.new(filepath)
-    runner      = Runner.new({
-                               pg: @pg_options,
-                               downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new,
-                               user: CartoDB::Importer2::Doubles::User.new
-                             })
+    runner      = Runner.new(
+                    pg:         @pg_options,
+                    downloader: downloader,
+                    log:        CartoDB::Importer2::Doubles::Log.new,
+                    user:       CartoDB::Importer2::Doubles::User.new
+                  )
     runner.run
 
     runner.results.length.should eq 1
@@ -52,78 +52,77 @@ describe 'rar regression tests' do
   it 'imports a rar with >1 file successfully' do
     filepath    = path_to('multiple_csvs.rar')
     downloader  = Downloader.new(filepath)
-    runner      = Runner.new({
-                               pg: @pg_options,
-                               downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new,
-                               user: CartoDB::Importer2::Doubles::User.new
-                             })
+    runner      = Runner.new(
+                    pg:         @pg_options,
+                    downloader: downloader,
+                    log:        CartoDB::Importer2::Doubles::Log.new,
+                    user:       CartoDB::Importer2::Doubles::User.new
+                  )
     runner.run
 
     runner.results.select(&:success?).length.should eq 2
     runner.results.length.should eq 2
-    runner.results.each { |result|
-      name = @db[%Q{ SELECT * FROM pg_class WHERE relname='#{result.table_name}' }].first[:relname]
+    runner.results.each do |result|
+      name = @db["SELECT * FROM pg_class WHERE relname='#{result.table_name}'"].first[:relname]
       name.should eq result.table_name
-    }
+    end
   end
 
   it 'imports a maximum of Runner::MAX_TABLES_PER_IMPORT files from a rar, but doesnt errors' do
     filepath    = path_to('more_than_10_files.rar')
     downloader  = Downloader.new(filepath)
-    runner      = Runner.new({
-                               pg: @pg_options,
-                               downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new,
-                               user: CartoDB::Importer2::Doubles::User.new
-                             })
+    runner      = Runner.new(
+                    pg:         @pg_options,
+                    downloader: downloader,
+                    log:        CartoDB::Importer2::Doubles::Log.new,
+                    user:       CartoDB::Importer2::Doubles::User.new
+                  )
     runner.run
 
     runner.results.select(&:success?).length.should eq Runner::MAX_TABLES_PER_IMPORT
     runner.results.length.should eq Runner::MAX_TABLES_PER_IMPORT
-    runner.results.each { |result|
-      name = @db[%Q{ SELECT * FROM pg_class WHERE relname='#{result.table_name}' }].first[:relname]
+    runner.results.each do |result|
+      name = @db["SELECT * FROM pg_class WHERE relname='#{result.table_name}'"].first[:relname]
       name.should eq result.table_name
-    }
+    end
   end
 
   it 'imports a shapefile that includes a xxx.VERSION.txt file skipping it' do
     # http://www.naturalearthdata.com/downloads/
     filepath    = path_to('shapefile_with_version_txt.rar')
     downloader  = Downloader.new(filepath)
-    runner      = Runner.new({
-                               pg: @pg_options,
-                               downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new,
-                               user: CartoDB::Importer2::Doubles::User.new
-                             })
+    runner      = Runner.new(
+                    pg:         @pg_options,
+                    downloader: downloader,
+                    log:        CartoDB::Importer2::Doubles::Log.new,
+                    user:       CartoDB::Importer2::Doubles::User.new
+                  )
     runner.run
 
     runner.results.select(&:success?).length.should eq 1
     runner.results.length.should eq 1
-    runner.results.each { |result|
-      name = @db[%Q{ SELECT * FROM pg_class WHERE relname='#{result.table_name}' }].first[:relname]
+    runner.results.each do |result|
+      name = @db["SELECT * FROM pg_class WHERE relname='#{result.table_name}'"].first[:relname]
       name.should eq result.table_name
-    }
+    end
   end
 
-    it 'imports all non-failing items from a rar without failing the whole import' do
+  it 'imports all non-failing items from a rar without failing the whole import' do
     filepath    = path_to('file_ok_and_file_ko.rar')
     downloader  = Downloader.new(filepath)
-    runner      = Runner.new({
-                               pg: @pg_options,
-                               downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new,
-                               user: CartoDB::Importer2::Doubles::User.new
-                             })
+    runner      = Runner.new(
+                    pg:         @pg_options,
+                    downloader: downloader,
+                    log:        CartoDB::Importer2::Doubles::Log.new,
+                    user:       CartoDB::Importer2::Doubles::User.new
+                  )
     runner.run
 
     runner.results.select(&:success?).length.should eq 1
     runner.results.length.should eq 2
-    runner.results.select(&:success?).each { |result|
-      name = @db[%Q{ SELECT * FROM pg_class WHERE relname='#{result.table_name}' }].first[:relname]
+    runner.results.select(&:success?).each do |result|
+      name = @db["SELECT * FROM pg_class WHERE relname='#{result.table_name}'"].first[:relname]
       name.should eq result.table_name
-    }
+    end
   end
-
 end

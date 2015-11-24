@@ -86,6 +86,15 @@ describe Table do
       table.valid?.should == true
     end
 
+    it 'can use underscore prefixed names for tables' do
+      table = Table.new
+      table.user_id = $user_1.id
+      table.name = '_name'
+      table.save
+
+      table.valid?.should == true
+    end
+
     it "should set a valid table_id value (OID)" do
       table = create_table(name: 'this_is_a_table', user_id: $user_1.id)
       table.table_id.should be_a(Integer)

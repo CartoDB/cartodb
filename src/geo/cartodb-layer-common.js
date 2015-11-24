@@ -157,44 +157,6 @@ CartoDBLayerCommon.prototype = {
         this.setInteraction(i, false);
       }
     }
-  },
-
-  /**
-   *  Check the tiles
-   */
-  _checkTiles: function() {
-    var xyz = {z: 4, x: 6, y: 6}
-      , self = this
-      , img = new Image()
-      , urls = this._tileJSON()
-
-    getTiles(function(urls) {
-
-      var grid_url = urls.tiles[0]
-          .replace(/\{z\}/g,xyz.z)
-          .replace(/\{x\}/g,xyz.x)
-          .replace(/\{y\}/g,xyz.y);
-
-      this.options.ajax({
-        method: "get",
-        url: grid_url,
-        crossDomain: true,
-        success: function() {
-          self.tilesOk();
-          clearTimeout(timeout)
-        },
-        error: function(xhr, msg, data) {
-          clearTimeout(timeout);
-          self.error(xhr.responseText && JSON.parse(xhr.responseText));
-        }
-      });
-    });
-
-    var timeout = setTimeout(function(){
-      clearTimeout(timeout);
-      self.error("tile timeout");
-    }, 30000);
-
   }
 };
 

@@ -26,7 +26,7 @@ module.exports = View.extend({
     if (!this.options.torqueLayerModel) throw new Error('torqeLayerModel is required');
     if (!this.options.filter) throw new Error('filter is required');
 
-    this._filter = this.options._filter;
+    this._filter = this.options.filter;
 
     _.bindAll(this, '_onWindowResize');
     $(window).bind('resize', this._onWindowResize);

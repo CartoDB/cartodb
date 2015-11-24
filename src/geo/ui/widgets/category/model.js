@@ -227,6 +227,10 @@ module.exports = WidgetModel.extend({
     this.filter.acceptAll();
   },
 
+  isAllFiltersRejected: function() {
+    return this.filter.get('rejectAll');
+  },
+
   // Proper model helper methods //
 
   getData: function() {

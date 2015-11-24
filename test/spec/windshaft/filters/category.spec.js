@@ -33,6 +33,10 @@ describe('windshaft/filters/category', function() {
       this.filter.accept(1);
       expect(this.filter.isEmpty()).toBeFalsy();
     });
+    it('should not be empty when rejectAll is true', function() {
+      this.filter.set('rejectAll', true);
+      expect(this.filter.isEmpty()).toBeFalsy();
+    });
   });
 
   describe('accept', function() {

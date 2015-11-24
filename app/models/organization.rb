@@ -277,9 +277,9 @@ class Organization < Sequel::Model
     unassigned_quota < default_quota_in_bytes
   end
 
-  # Returns true if seat limit has been reached
+  # Returns true if seat limit will be reached with new user
   def seat_limit_reached?
-    remaining_seats < 1
+    (remaining_seats - 1) < 1
   end
 
   def quota_dates(options)

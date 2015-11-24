@@ -352,7 +352,7 @@ module.exports = WidgetContent.extend({
     var total = this._calcSum(data, start, end);
 
     var area = _.reduce(data.slice(start, end), function(memo, d) {
-      return !d.start ? memo : ((d.end - d.start) * d.freq) + memo;
+      return !(d.start || d.end) ? memo : ((d.end + d.start) * 0.5 * d.freq) + memo;
     }, 0);
 
     if (total > 0) {

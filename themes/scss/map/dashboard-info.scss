@@ -1,0 +1,46 @@
+// Dashboard info
+// --------------------------------------------------
+
+@import '../variables/sizes';
+@import '../variables/mixins';
+
+.Dashboard-info {
+  height: 100vh;
+  position: absolute;
+  max-width: 280px;
+  padding: 24px;
+  background: #3AA9E3;
+  left: 0px;
+  top: 0;
+  width: 88px;
+  box-sizing: border-box;
+  z-index: 2;
+  font-family: 'Open Sans';
+
+  &.is-active {
+    width: 280px;
+    box-shadow: 0px 0px 40px 0px rgba(0, 0, 0, .20);
+  }
+}
+
+.Dashboard-info-update {
+  color: #fff;
+  font-size: $sFontSize-small;
+  line-height: $sLineHeight-small;
+  font-weight: $sFontWeight-small;
+  margin-bottom: 8px;
+}
+
+.Dashboard-info-title {
+  color: #fff;
+  font-size: $sFontSize-huge;
+  line-height: $sLineHeight-huge;
+  font-weight: $sFontWeight-lighter;
+  margin-bottom: 20px;
+}
+
+.Dashboard-info-description {
+  color: #fff;
+  font-size: $sFontSize-normal;
+  line-height: $sLineHeight-normal;
+}

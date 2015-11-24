@@ -177,8 +177,140 @@ describe 'csv regression tests' do
     }].first.fetch(:count).should eq 5
   end
 
+  it 'imports records with cell line breaks in tables which require normalization' do
+    filepath    = path_to('in_cell_line_breaks_needs_norm.csv')
+    downloader  = Downloader.new(filepath)
+    runner      = Runner.new({
+                               pg: @pg_options,
+                               downloader: downloader,
+                               log: CartoDB::Importer2::Doubles::Log.new,
+                               user: CartoDB::Importer2::Doubles::User.new
+                             })
+    runner.run
+
+    result = runner.results.first
+    @db[%Q{
+      SELECT count(*)
+      FROM #{result.schema}.#{result.table_name}
+      AS count
+    }].first.fetch(:count).should eq 5
+  end
+
+  it 'import records in ISO-8859-1 with Windows-style breaks' do
+    filepath    = path_to('cp1252_with_crlf.csv')
+    downloader  = Downloader.new(filepath)
+    runner      = Runner.new({
+                               pg: @pg_options,
+                               downloader: downloader,
+                               log: CartoDB::Importer2::Doubles::Log.new,
+                               user: CartoDB::Importer2::Doubles::User.new
+                             })
+    runner.run
+
+    result = runner.results.first
+    @db[%Q{
+      SELECT count(*)
+      FROM #{result.schema}.#{result.table_name}
+      AS count
+    }].first.fetch(:count).should eq 20
+  end
+
+  it 'import records with cell cp1252 reverse line breaks' do
+    filepath    = path_to('cp1252_with_rev_lf.csv')
+    downloader  = Downloader.new(filepath)
+    runner      = Runner.new({
+                               pg: @pg_options,
+                               downloader: downloader,
+                               log: CartoDB::Importer2::Doubles::Log.new,
+                               user: CartoDB::Importer2::Doubles::User.new
+                             })
+    runner.run
+
+    result = runner.results.first
+    @db[%Q{
+      SELECT count(*)
+      FROM #{result.schema}.#{result.table_name}
+      AS count
+    }].first.fetch(:count).should eq 2
+
+    @db[%Q{
+      SELECT c
+      FROM #{result.schema}.#{result.table_name}
+      WHERE a='200'
+    }].first.fetch(:c).should match /\AFirst line.Second line\Z/u
+  end
+
+  it 'import records with cell utf8 reverse line breaks' do
+    filepath    = path_to('utf8_with_rev_lf.csv')
+    downloader  = Downloader.new(filepath)
+    runner      = Runner.new({
+                               pg: @pg_options,
+                               downloader: downloader,
+                               log: CartoDB::Importer2::Doubles::Log.new,
+                               user: CartoDB::Importer2::Doubles::User.new
+                             })
+    runner.run
+
+    result = runner.results.first
+    @db[%Q{
+      SELECT count(*)
+      FROM #{result.schema}.#{result.table_name}
+      AS count
+    }].first.fetch(:count).should eq 2
+
+   chk = @db[%Q{
+     SELECT c
+     FROM #{result.schema}.#{result.table_name}
+     WHERE a='200'
+   }].first.fetch(:c)
+
+    @db[%Q{
+      SELECT c
+      FROM #{result.schema}.#{result.table_name}
+      WHERE a='200'
+    }].first.fetch(:c).should match /\AFirst line.Second line\Z/u
+  end
+
+  it 'import records with escaped quotes' do
+    %w(escaped_quotes_comma_sep.csv escaped_quotes_semi_sep.csv).each do |csv_file|
+      filepath    = path_to(csv_file)
+      downloader  = Downloader.new(filepath)
+      runner      = Runner.new({
+                                 pg: @pg_options,
+                                 downloader: downloader,
+                                 log: CartoDB::Importer2::Doubles::Log.new,
+                                 user: CartoDB::Importer2::Doubles::User.new
+                               })
+      runner.run
+
+      result = runner.results.first
+      @db[%Q{
+        SELECT count(*)
+        FROM #{result.schema}.#{result.table_name}
+        AS count
+      }].first.fetch(:count).should eq 2
+
+      @db[%Q{
+        SELECT b
+        FROM #{result.schema}.#{result.table_name}
+        WHERE a='100'
+      }].first.fetch(:b).should eq "--\"--"
+
+      @db[%Q{
+        SELECT c
+        FROM #{result.schema}.#{result.table_name}
+        WHERE a='100'
+      }].first.fetch(:c).should eq "\"XYZ\""
+
+      @db[%Q{
+        SELECT c
+        FROM #{result.schema}.#{result.table_name}
+        WHERE a='200'
+      }].first.fetch(:c).should eq "I\"J\"K"
+    end
+  end
+
   it 'refuses to import csv with broken encoding' do
-    pending "Need to update clinker to match production's ruby and stdlib"
     filepath    = path_to('broken_encoding.csv')
     downloader  = Downloader.new(filepath)
     runner      = Runner.new({

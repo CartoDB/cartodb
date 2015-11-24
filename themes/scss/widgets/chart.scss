@@ -2,11 +2,15 @@
   position: relative;
 }
 
+.Widget-chart.Widget-chart--fake {
+  text-align: center;
+}
 .Widget-chartItem.Widget-chartItem--fake {
   display: inline-block;
-  width: 5%;
+  width: 4%;
   height: 40px;
-  margin: 0 1px 0 0;
+  margin: 0;
+  padding: 0;
 }
 .Widget-chartItem--fake.Widget-chartItem--small {
   height: 20px;

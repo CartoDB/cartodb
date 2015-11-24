@@ -5,7 +5,9 @@ var View = require('cdb/core/view');
 var template = require('./search_title_template.tpl');
 
 /**
- * Show category title or search any category
+ *  Show category title or search any category
+ *  + another options for this widget, as in,
+ *  colorize categories, lock defined categories...
  *
  */
 

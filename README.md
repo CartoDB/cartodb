@@ -62,3 +62,4 @@ CartoDB works in any modern browser, but if you want more info:
 - [Firefox](https://www.mozilla.org/en-US/firefox/new/) from v38.
 - [Safari](http://www.apple.com/safari/) from v8.
 - [Chrome](https://www.google.com/chrome/browser/desktop/) from v31.
+

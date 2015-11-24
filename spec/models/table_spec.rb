@@ -90,8 +90,8 @@ describe Table do
       table = Table.new
       table.user_id = $user_1.id
       table.name = '_name'
-      table.name.should eq '_name'
       table.save
+      table.name.should eq '_name'
 
       table.valid?.should == true
     end

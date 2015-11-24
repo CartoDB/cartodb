@@ -43,6 +43,7 @@ class Admin::OrganizationUsersController < Admin::AdminController
     common_data_url = CartoDB::Visualization::CommonDataService.build_url(self)
     ::Resque.enqueue(::Resque::UserJobs::CommonData::LoadCommonData, @user.id, common_data_url)
     @user.notify_new_organization_user
+    @user.organization.notify_if_seat_limit_reached
     redirect_to CartoDB.url(self, 'organization', {}, current_user), flash: { success: "New user created successfully" }
   rescue CartoDB::CentralCommunicationFailure => e
     Rollbar.report_exception(e)

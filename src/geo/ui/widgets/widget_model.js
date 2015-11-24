@@ -62,6 +62,10 @@ module.exports = Model.extend({
     });
   },
 
+  refresh: function() {
+    this._fetch();
+  },
+
   _onFilterChanged: function(filter) {
     this.trigger('change:filter', this, filter);
   },

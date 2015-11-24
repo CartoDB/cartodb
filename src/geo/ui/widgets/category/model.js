@@ -233,6 +233,14 @@ module.exports = WidgetModel.extend({
     return this.get('categoriesCount');
   },
 
+  refresh: function() {
+    if (this.isSearchApplied()) {
+      this.search.fetch();
+    } else {
+      this._fetch();
+    }
+  },
+
   // Data parser methods //
 
   _parseData: function(categories) {

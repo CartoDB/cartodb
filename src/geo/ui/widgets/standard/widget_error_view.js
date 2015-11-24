@@ -1,5 +1,6 @@
 var _ = require('underscore');
 var View = require('cdb/core/view');
+var template = require('./widget_error_template.tpl');
 
 /**
  *  Default widget error view:
@@ -9,12 +10,7 @@ var View = require('cdb/core/view');
  */
 module.exports = View.extend({
 
-  className: 'Widget-error',
-
-  _TEMPLATE: ' ' +
-    '<button class="Widget-button Widget-errorButton js-refresh">'+
-      '<span class="Widget-textSmall Widget-textSmall--bold">REFRESH</span>' +
-    '</button>',
+  className: 'Widget-error is-hidden',
 
   events: {
     'click .js-refresh': '_onRefreshClick'
@@ -25,31 +21,25 @@ module.exports = View.extend({
   },
 
   render: function() {
-    var template = _.template(this._TEMPLATE);
     this.$el.html(template());
     return this;
   },
 
   _initBinds: function() {
     this.model.bind('error', this.show, this);
-    this.model.bind('loading sync', this.hide, this);
+    this.model.bind('loading', this.hide, this);
   },
 
   _onRefreshClick: function() {
-    this.model.fetch();
+    this.model.refresh();
   },
 
   show: function() {
-    this.$el.css('display', 'flex');
-    this.$el.addClass('is-visible');
+    this.$el.removeClass('is-hidden');
   },
 
   hide: function() {
-    var self = this;
-    this.$el.removeClass('is-visible');
-    setTimeout(function() {
-      self.$el.hide();
-    }, 500);
+    this.$el.addClass('is-hidden');
   }
 
 });

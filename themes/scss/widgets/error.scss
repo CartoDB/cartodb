@@ -1,16 +1,12 @@
 // Default styles for error state
 // --------------------------------------------------
 
-@import '../variables/sizes';
 @import '../variables/mixins';
 
 .Widget-error {
   @include display-flex();
   @include justify-content(center);
   @include align-items(center);
-  @include opacity(0);
-  @include transition(opacity, 500ms);
-  display: none;
   position: absolute;
   top: 0;
   right: 0;
@@ -19,6 +15,6 @@
   border-top: 2px solid transparent;
   z-index: 11;
 }
-.Widget-error.is-visible {
-  @include opacity(1);
+.Widget-error.is-hidden {
+  display: none;
 }

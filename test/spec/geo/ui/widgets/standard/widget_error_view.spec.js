@@ -26,7 +26,7 @@ describe('geo/ui/widgets/standard/widget_error_view', function() {
 
   it('should have a binds from the beginning', function() {
     expect(this.model.bind.calls.argsFor(0)[0]).toEqual('error');
-    expect(this.model.bind.calls.argsFor(1)[0]).toEqual('loading sync');
+    expect(this.model.bind.calls.argsFor(1)[0]).toEqual('loading');
   });
 
   it('should fetch again the data when refresh button is clicked', function() {
@@ -45,14 +45,12 @@ describe('geo/ui/widgets/standard/widget_error_view', function() {
 
     it('should remove is-visible class when element isn\'t showed', function() {
       this.view.hide();
-      expect(this.view.$el.hasClass('is-visible')).toBeFalsy();
-      jasmine.clock().tick(550);
-      expect(this.view.$el.css('display')).toBe('none');
+      expect(this.view.$el.hasClass('is-hidden')).toBeTruthy();
     });
 
     it('should add is-visible class when element is showed', function() {
       this.view.show();
-      expect(this.view.$el.hasClass('is-visible')).toBeTruthy();
+      expect(this.view.$el.hasClass('is-hidden')).toBeFalsy();
     });
   });
 

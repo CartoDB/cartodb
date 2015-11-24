@@ -8,8 +8,16 @@ var CategoriesCollection = require('./models/categories_collection');
 var LockedCatsCollection = require('./models/locked_categories_collection');
 
 /**
- * Category widget model
+ *  Category widget model
+ *
+ *  - It has several internal models/collections
+ *
+ *  · search model: it manages category search results.
+ *  · locked collection: it stores locked items.
+ *  · filter model: it knows which items are accepted or rejected.
+ *
  */
+
 module.exports = WidgetModel.extend({
 
   url: function() {
@@ -75,7 +83,7 @@ module.exports = WidgetModel.extend({
     }, this);
     this.search.bind('change:data', function() {
       this.trigger('change:searchData', this.search, this);
-    }, this)
+    }, this);
   },
 
   /*

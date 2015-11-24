@@ -59,6 +59,9 @@ module.exports = View.extend({
         left: 4
       },
       handles: true,
+      delayBar: function(d, i) {
+        return 100 + (i * 10);
+      },
       width: this._histogramChartWidth(),
       height: this.viewModel.get('histogramChartHeight'),
       data: this.model.getData()

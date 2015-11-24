@@ -279,7 +279,7 @@ module.exports = WidgetModel.extend({
       var acceptedCats = this.filter.getAccepted();
       // Add accepted items that are not present in the categories data
       acceptedCats.each(function(mdl) {
-        var category = mdl.get('name');
+        var category = mdl.get('name').toString();
         if (!_tmpArray[category]) {
           newData.push({
             selected: true,

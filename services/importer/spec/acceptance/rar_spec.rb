@@ -25,11 +25,11 @@ describe 'rar regression tests' do
     filepath    = path_to('one_unsupported.rar')
     downloader  = Downloader.new(filepath)
     runner      = Runner.new(
-                   pg: @pg_options,
-                   downloader: downloader,
-                   log: CartoDB::Importer2::Doubles::Log.new,
-                   user: CartoDB::Importer2::Doubles::User.new
-                  )
+      pg:         @pg_options,
+      downloader: downloader,
+      log:        CartoDB::Importer2::Doubles::Log.new,
+      user:       CartoDB::Importer2::Doubles::User.new
+    )
     runner.run
 
     runner.results.length.should eq 0
@@ -39,11 +39,11 @@ describe 'rar regression tests' do
     filepath    = path_to('one_unsupported_one_valid.rar')
     downloader  = Downloader.new(filepath)
     runner      = Runner.new(
-                    pg:         @pg_options,
-                    downloader: downloader,
-                    log:        CartoDB::Importer2::Doubles::Log.new,
-                    user:       CartoDB::Importer2::Doubles::User.new
-                  )
+      pg:         @pg_options,
+      downloader: downloader,
+      log:        CartoDB::Importer2::Doubles::Log.new,
+      user:       CartoDB::Importer2::Doubles::User.new
+    )
     runner.run
 
     runner.results.length.should eq 1
@@ -53,14 +53,14 @@ describe 'rar regression tests' do
     filepath    = path_to('multiple_csvs.rar')
     downloader  = Downloader.new(filepath)
     runner      = Runner.new(
-                    pg:         @pg_options,
-                    downloader: downloader,
-                    log:        CartoDB::Importer2::Doubles::Log.new,
-                    user:       CartoDB::Importer2::Doubles::User.new
-                  )
+      pg:         @pg_options,
+      downloader: downloader,
+      log:        CartoDB::Importer2::Doubles::Log.new,
+      user:       CartoDB::Importer2::Doubles::User.new
+    )
     runner.run
 
-    runner.results.select(&:success?).length.should eq 2
+    runner.results.count(&:success?).should eq 2
     runner.results.length.should eq 2
     runner.results.each do |result|
       name = @db["SELECT * FROM pg_class WHERE relname='#{result.table_name}'"].first[:relname]
@@ -72,14 +72,14 @@ describe 'rar regression tests' do
     filepath    = path_to('more_than_10_files.rar')
     downloader  = Downloader.new(filepath)
     runner      = Runner.new(
-                    pg:         @pg_options,
-                    downloader: downloader,
-                    log:        CartoDB::Importer2::Doubles::Log.new,
-                    user:       CartoDB::Importer2::Doubles::User.new
-                  )
+      pg:         @pg_options,
+      downloader: downloader,
+      log:        CartoDB::Importer2::Doubles::Log.new,
+      user:       CartoDB::Importer2::Doubles::User.new
+    )
     runner.run
 
-    runner.results.select(&:success?).length.should eq Runner::MAX_TABLES_PER_IMPORT
+    runner.results.count(&:success?).should eq Runner::MAX_TABLES_PER_IMPORT
     runner.results.length.should eq Runner::MAX_TABLES_PER_IMPORT
     runner.results.each do |result|
       name = @db["SELECT * FROM pg_class WHERE relname='#{result.table_name}'"].first[:relname]
@@ -92,14 +92,14 @@ describe 'rar regression tests' do
     filepath    = path_to('shapefile_with_version_txt.rar')
     downloader  = Downloader.new(filepath)
     runner      = Runner.new(
-                    pg:         @pg_options,
-                    downloader: downloader,
-                    log:        CartoDB::Importer2::Doubles::Log.new,
-                    user:       CartoDB::Importer2::Doubles::User.new
-                  )
+      pg:         @pg_options,
+      downloader: downloader,
+      log:        CartoDB::Importer2::Doubles::Log.new,
+      user:       CartoDB::Importer2::Doubles::User.new
+    )
     runner.run
 
-    runner.results.select(&:success?).length.should eq 1
+    runner.results.count(&:success?).should eq 1
     runner.results.length.should eq 1
     runner.results.each do |result|
       name = @db["SELECT * FROM pg_class WHERE relname='#{result.table_name}'"].first[:relname]
@@ -111,14 +111,14 @@ describe 'rar regression tests' do
     filepath    = path_to('file_ok_and_file_ko.rar')
     downloader  = Downloader.new(filepath)
     runner      = Runner.new(
-                    pg:         @pg_options,
-                    downloader: downloader,
-                    log:        CartoDB::Importer2::Doubles::Log.new,
-                    user:       CartoDB::Importer2::Doubles::User.new
-                  )
+      pg:         @pg_options,
+      downloader: downloader,
+      log:        CartoDB::Importer2::Doubles::Log.new,
+      user:       CartoDB::Importer2::Doubles::User.new
+    )
     runner.run
 
-    runner.results.select(&:success?).length.should eq 1
+    runner.results.count(&:success?).should eq 1
     runner.results.length.should eq 2
     runner.results.select(&:success?).each do |result|
       name = @db["SELECT * FROM pg_class WHERE relname='#{result.table_name}'"].first[:relname]

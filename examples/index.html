@@ -7,6 +7,9 @@
     <link rel="stylesheet" href="/dist/themes/css/cartodb.css" />
     <script src="/dist/cartodb.uncompressed.js"></script>
     <script src="/dist/cartodb.mod.torque.uncompressed.js"></script>
+
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700' rel='stylesheet' type='text/css'>
+
     <style type="text/css">
       html, body {
         position:relative;
@@ -19,7 +22,16 @@
   <body>
     <div class="Dashboard-canvas js-dashboard">
       <div class="Dashboard-mapWrapper js-dashboard-map-wrapper">
-        <div class="Map-canvas">
+        <div class="Dashboard-info">
+          <div class="Dashboard-info-header">
+          </div>
+          <div class="Dashboard-info-texts">
+            <p class="Dashboard-info-update">UPDATED 14 HOURS AGO</p>
+            <h1 class="Dashboard-info-title">NBA arenas areas of influence</h1>
+            <h2 class="Dashboard-info-description">The NBA Territory Analysis Tool will allow individual teams to analyze their current and potential marketing territories. Users can see visual reports and develop analyses on the fly.</h2>
+          </div>
+        </div>
+        <div class="Map-canvas Map-canvas--margin">
           <div class="Map" id="map"></div>
         </div>
       </div>

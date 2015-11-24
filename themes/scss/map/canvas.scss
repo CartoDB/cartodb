@@ -23,6 +23,9 @@
 .Map-canvas {
   position: relative;
   @include flex-grow(1);
+  &.Map-canvas--margin {
+    margin-left: 88px;
+  }
 }
 .Map {
   position: absolute;

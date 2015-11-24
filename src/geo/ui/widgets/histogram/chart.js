@@ -13,6 +13,9 @@ module.exports = View.extend({
     handleHeight: 23,
     handleRadius: 3,
     divisionWidth: 80,
+    animationBarDelay: function(d, i) {
+      return Math.random() * (100 + (i * 10));
+    },
     transitionType: 'elastic'
   },
 
@@ -748,10 +751,8 @@ module.exports = View.extend({
     bars
     .transition()
     .ease(this.options.transitionType)
-    .duration(self.options.animationSpeed)
-    .delay(function(d, i) {
-      return Math.random() * (100 + i * 10);
-    })
+    .duration(this.options.animationSpeed)
+    .delay(this.options.animationBarDelay)
     .transition()
     .attr('height', function(d) {
 

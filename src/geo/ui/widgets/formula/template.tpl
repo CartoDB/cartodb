@@ -11,7 +11,9 @@
 </div>
 <div class="Widget-content">
   <% if (!_.isUndefined(value)) { %>
-    <h4 class="Widget-textBigger" title="<%- value %>"><%- value %></h4>
+    <h4 class="Widget-textBigger" title="<%- value %>">
+      <%- prefix %><%- value %><%- suffix %>
+    </h4>
   <% } else { %>
     <div class="Widget-listItem--fake"></div>
   <% } %>

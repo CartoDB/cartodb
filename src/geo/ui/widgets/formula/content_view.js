@@ -27,7 +27,9 @@ module.exports = WidgetContent.extend({
         title: this.dataModel.get('title'),
         value: value,
         operation: this.dataModel.get('operation'),
-        nulls: this.dataModel.get('nulls')
+        nulls: this.dataModel.get('nulls'),
+        prefix: this.dataModel.get('prefix'),
+        suffix: this.dataModel.get('suffix')
       })
     );
 

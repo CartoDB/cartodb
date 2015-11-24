@@ -24,9 +24,10 @@ module.exports = View.extend({
 
   initialize: function() {
     if (!this.options.torqueLayerModel) throw new Error('torqeLayerModel is required');
-    if (!this.options.filter) throw new Error('filter is required');
+    if (!this.options.rangeFilter) throw new Error('rangeFilter is required');
 
-    this._filter = this.options.filter;
+    this._rangeFilter = this.options.rangeFilter;
+    this._torqueLayerModel = this.options.torqueLayerModel;
 
     _.bindAll(this, '_onWindowResize');
     $(window).bind('resize', this._onWindowResize);
@@ -80,7 +81,7 @@ module.exports = View.extend({
     var timeMarkerView = new TorqueTimeMarkerview({
       chartCanvas: this._chartView.canvas,
       viewModel: this._viewModel,
-      torqueLayerModel: this.options.torqueLayerModel
+      torqueLayerModel: this._torqueLayerModel
     });
     this.addView(timeMarkerView);
     timeMarkerView.render();
@@ -88,14 +89,10 @@ module.exports = View.extend({
 
   _onBrushEnd: function(loBarIndex, hiBarIndex) {
     var data = this.model.getData();
-    this._setRange(
+    this._rangeFilter.setRange(
       data[loBarIndex].start,
       data[hiBarIndex - 1].end
     );
-  },
-
-  _setRange: function(start, end) {
-    this._filter.setRange({ min: start, max: end });
   },
 
   _onChangeWidth: function() {

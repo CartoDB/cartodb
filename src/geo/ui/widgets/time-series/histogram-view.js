@@ -74,14 +74,10 @@ module.exports = View.extend({
 
   _onBrushEnd: function(loBarIndex, hiBarIndex) {
     var data = this.model.getData();
-    this._setRange(
+    this.filter.setRange(
       data[loBarIndex].start,
       data[hiBarIndex - 1].end
     );
-  },
-
-  _setRange: function(start, end) {
-    this.filter.setRange({ min: start, max: end });
   },
 
   _onChangeWidth: function() {

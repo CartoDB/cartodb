@@ -1314,7 +1314,11 @@ var Vis = View.extend({
           t.setFilter(null);
         }
       }
-    })
+    });
+
+    infowindow.model.bind('domready', function() {
+      layerView.trigger('infowindow_ready', infowindow, this);
+    }, this);
 
     // if the layer has no infowindow just pass the interaction
     // data to the infowindow

@@ -4,6 +4,9 @@
 @import '../variables/sizes';
 @import '../variables/mixins';
 
+.Dashboard-info-texts {
+  display: none;
+}
 .Dashboard-info {
   height: 100vh;
   position: absolute;
@@ -20,6 +23,9 @@
   &.is-active {
     width: 280px;
     box-shadow: 0px 0px 40px 0px rgba(0, 0, 0, .20);
+    .Dashboard-info-texts  {
+      display: block;
+    }
   }
 }
 

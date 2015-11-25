@@ -323,7 +323,12 @@ module.exports = WidgetContent.extend({
   },
 
   _updateStats: function() {
-    var data = this._getData();
+    var data = this.originalData;
+
+    if (this._isZoomed()) {
+      data = this.zoomedData;
+    }
+
     var nulls = this.dataModel.get('nulls');
 
     var min, max;

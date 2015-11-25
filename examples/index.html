@@ -38,6 +38,7 @@
           </div>
 
           <div class="Dashboard-info-footer">
+            <!--
             <div class="Dashboard-info-snapshots">
               <ul class="Dashboard-info-snapshots-list">
                 <li class="Dashboard-info-snapshots-list-item">
@@ -57,7 +58,7 @@
                   <p class="Dashboard-info-snapshots-list-date">08/10 · 17:35</p>
                 </li>
               </ul>
-            </div>
+            </div>-->
             <ul>
               <li class="Dashboard-info-footer-item">
                 <div class="Dashboard-info-media">
@@ -251,7 +252,7 @@
                             }
                           ],
                           "template_name": "table/views/infowindow_light",
-                          "template": "<div class=\"cartodb-popup v2\">\n  <a href=\"#close\" class=\"cartodb-popup-close-button close\">x</a>\n  <div class=\"cartodb-popup-content-wrapper\">\n    <div class=\"cartodb-popup-content\">\n      {{#content.fields}}\n        {{#title}}<h4>{{title}}</h4>{{/title}}\n        {{#value}}\n          <p {{#type}}class=\"{{ type }}\"{{/type}}>{{{ value }}}</p>\n        {{/value}}\n        {{^value}}\n          <p class=\"empty\">null</p>\n        {{/value}}\n      {{/content.fields}}\n    </div>\n  </div>\n  <div class=\"cartodb-popup-tip-container\"></div>\n</div>\n",
+                          "template": "<div class=\"cartodb-popup v2\">\n <div class=\"cartodb-popup-content-wrapper\">\n    <div class=\"cartodb-popup-content\">\n      {{#content.fields}}\n        {{#title}}<h4>{{title}}</h4>{{/title}}\n        {{#value}}\n          <p {{#type}}class=\"{{ type }}\"{{/type}}>{{{ value }}}</p>\n        {{/value}}\n        {{^value}}\n          <p class=\"empty\">null</p>\n        {{/value}}\n      {{/content.fields}}\n    </div>\n  </div>\n  <div class=\"cartodb-popup-tip-container\"></div>\n</div>\n",
                           "alternative_names": {},
                           "width": 226,
                           "maxHeight": 180
@@ -600,7 +601,7 @@
                             }
                           ],
                           "template_name": "table/views/infowindow_light",
-                          "template": "<div class=\"cartodb-popup v2\">\n  <a href=\"#close\" class=\"cartodb-popup-close-button close\">x</a>\n  <div class=\"cartodb-popup-content-wrapper\">\n    <div class=\"cartodb-popup-content\">\n      {{#content.fields}}\n        {{#title}}<h4>{{title}}</h4>{{/title}}\n        {{#value}}\n          <p {{#type}}class=\"{{ type }}\"{{/type}}>{{{ value }}}</p>\n        {{/value}}\n        {{^value}}\n          <p class=\"empty\">null</p>\n        {{/value}}\n      {{/content.fields}}\n    </div>\n  </div>\n  <div class=\"cartodb-popup-tip-container\"></div>\n</div>\n",
+                          "template": "<div class=\"Cdb-infowindow Cdb-infowindow--dark cartodb-popup\">\n  <div class=\"Cdb-infowindow-container\">\n <div class=\"Cdb-infowindow-bg\">\n <div class=\"Cdb-infowindow-inner\">\n <ul class=\"Cdb-infowindow-list\">\n    <li class=\"Cdb-infowindow-list-item\">\n      {{#content.fields}}\n        {{#title}}<h5 class='Cdb-infowindow-subtitle'>{{title}}</h5>{{/title}}\n  {{#value}}\n  <h4 class=\"Cdb-infowindow-title\">{{{ value }}}</h4>\n        {{/value}}\n        {{^value}}\n          <h4 class=\"Cdb-infowindow-title\">null</h4>\n        {{/value}}\n      {{/content.fields}}\n    </li>\n  </ul>\n </div>\n </div>\n  <div class=\"Cdb-hook\">\n <div class=\"Cdb-hook-inner\">\n </div>\n </div>\n </div>\n</div>\n",
                           "alternative_names": {},
                           "width": 226,
                           "maxHeight": 180
@@ -696,7 +697,7 @@
                             }
                           ],
                           "template_name": "infowindow_light",
-                          "template": "<div class=\"cartodb-popup v2\">\n  <a href=\"#close\" class=\"cartodb-popup-close-button close\">x</a>\n  <div class=\"cartodb-popup-content-wrapper\">\n    <div class=\"cartodb-popup-content\">\n      {{#content.fields}}\n        {{#title}}<h4>{{title}}</h4>{{/title}}\n        {{#value}}\n          <p {{#type}}class=\"{{ type }}\"{{/type}}>{{{ value }}}</p>\n        {{/value}}\n        {{^value}}\n          <p class=\"empty\">null</p>\n        {{/value}}\n      {{/content.fields}}\n    </div>\n  </div>\n  <div class=\"cartodb-popup-tip-container\"></div>\n</div>\n",
+                          "template": "<div class=\"Cdb-infowindow Cdb-infowindow--light cartodb-popup\">\n  <div class=\"Cdb-infowindow-container\">\n <div class=\"Cdb-infowindow-bg\">\n <div class=\"Cdb-infowindow-inner\">\n <ul class=\"Cdb-infowindow-list\">\n    <li class=\"Cdb-infowindow-list-item\">\n      {{#content.fields}}\n        {{#title}}<h5 class='Cdb-infowindow-subtitle'>{{title}}</h5>{{/title}}\n  {{#value}}\n  <h4 class=\"Cdb-infowindow-title\">{{{ value }}}</h4>\n        {{/value}}\n        {{^value}}\n          <h4 class=\"Cdb-infowindow-title\">null</h4>\n        {{/value}}\n      {{/content.fields}}\n    </li>\n  </ul>\n </div>\n </div>\n  <div class=\"Cdb-hook\">\n <div class=\"Cdb-hook-inner\">\n </div>\n </div>\n </div>\n</div>\n",
                           "alternative_names": {},
                           "width": 226,
                           "maxHeight": 180

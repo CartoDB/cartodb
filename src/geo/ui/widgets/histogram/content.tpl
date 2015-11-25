@@ -1,7 +1,7 @@
 <div class="Widget-header">
   <div class="js-title">
     <div class="Widget-title Widget-contentSpaced">
-      <h3 class="Widget-textBig"><%= title %></h3>
+      <h3 class="Widget-textBig"><%- title %></h3>
     </div>
   </div>
   <dl class="Widget-info Widget-textSmaller Widget-textSmaller--upper">

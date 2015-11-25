@@ -2,9 +2,7 @@ var _ = require('underscore');
 var Backbone = require('backbone');
 var Model = require('cdb/core/model');
 var d3 = require('d3');
-var colorbrewer = require('colorbrewer');
-var categoryColors = _.initial(colorbrewer.Accent[8]);
-var defaultColor = '#CCC';
+var CategoryColors = require('./models/category_colors');
 var WidgetModel = require('../widget_model');
 var WidgetSearchModel = require('./models/search_model.js');
 var CategoriesCollection = require('./models/categories_collection');
@@ -34,6 +32,9 @@ module.exports = WidgetModel.extend({
 
     // Locked categories collection
     this.locked = new LockedCatsCollection();
+
+    // Colors class
+    this.colors = new CategoryColors();
 
     // Search model
     this.search = new WidgetSearchModel({}, {
@@ -259,15 +260,24 @@ module.exports = WidgetModel.extend({
   // Data parser methods //
 
   _parseData: function(categories) {
-    // Get info stats from categories
     var newData = [];
     var _tmpArray = {};
     var _tmpCount = 0;
+    var acceptedCats = this.filter.getAccepted();
+
+    // Update colors by data categories
+    this.colors.updateData(
+      _.uniq(
+        _.union(
+          _.pluck(categories, 'category'),
+          _.pluck(acceptedCats, 'name')
+        )
+      )
+    );
 
     _.each(categories, function(datum, i) {
       var category = datum.category;
       var isRejected = this.filter.isRejected(category);
-      var color = categoryColors[i];
       _tmpArray[category] = true;
       _tmpCount++;
 
@@ -276,20 +286,18 @@ module.exports = WidgetModel.extend({
         name: category,
         agg: datum.agg,
         value: datum.value,
-        color: color || defaultColor
+        color: this.colors.getColorByCategory(category)
       });
     }, this);
 
     if (this.isLocked()) {
-      var acceptedCats = this.filter.getAccepted();
       // Add accepted items that are not present in the categories data
       acceptedCats.each(function(mdl, i) {
         var category = mdl.get('name').toString();
-        var color = categoryColors[_tmpCount + i];
         if (!_tmpArray[category]) {
           newData.push({
             selected: true,
-            color: color || defaultColor,
+            color: this.colors.getColorByCategory(category),
             name: category,
             agg: false,
             value: 0
@@ -307,6 +315,9 @@ module.exports = WidgetModel.extend({
     var attrs = this._parseData(d);
     this._data.reset(attrs.data);
     this.set(attrs);
+    if (this.isColorApplied()) {
+      this.applyCategoryColors();
+    }
   },
 
   parse: function(d) {
@@ -322,6 +333,9 @@ module.exports = WidgetModel.extend({
       }
     );
     this._data.reset(attrs.data);
+    if (this.isColorApplied()) {
+      this.applyCategoryColors();
+    }
     return attrs;
   },
 

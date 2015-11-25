@@ -150,7 +150,7 @@ var Vis = View.extend({
         }
       }, {
         type: 'aggregation',
-        createContentView: function(widget, layer) {
+        createContentView: function(widget) {
           return new CategoryContentView({
             model: widget,
             filter: widget.filter

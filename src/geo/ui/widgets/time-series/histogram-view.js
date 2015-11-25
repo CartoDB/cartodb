@@ -34,6 +34,14 @@ module.exports = View.extend({
     });
     this.add_related_model(this.viewModel);
     this.viewModel.bind('change:width', this._onChangeWidth, this);
+
+    this.model.bind('change:data', this._onChangeData, this);
+  },
+
+  _onChangeData: function() {
+    if (this.chartView) {
+      this.chartView.replaceData(this.model.getData());
+    }
   },
 
   render: function() {
@@ -74,14 +82,10 @@ module.exports = View.extend({
 
   _onBrushEnd: function(loBarIndex, hiBarIndex) {
     var data = this.model.getData();
-    this._setRange(
+    this.filter.setRange(
       data[loBarIndex].start,
       data[hiBarIndex - 1].end
     );
-  },
-
-  _setRange: function(start, end) {
-    this.filter.setRange({ min: start, max: end });
   },
 
   _onChangeWidth: function() {

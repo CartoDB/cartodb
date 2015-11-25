@@ -119,7 +119,7 @@ var Vis = View.extend({
         createContentView: function(widget, layer) {
           return new TorqueTimeSeriesContentView({
             model: widget,
-            filter: widget.filter,
+            rangeFilter: widget.filter,
             torqueLayerModel: layer
           });
         },

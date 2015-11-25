@@ -209,15 +209,11 @@ module.exports = WidgetContent.extend({
     this.histogramChartView.removeSelection();
 
     var data = this.originalData;
-    var start = data[loBarIndex].start;
-    var end = data[hiBarIndex - 1].end;
-
-    this._setRange(start, end);
+    this.filter.setRange(
+      data[loBarIndex].start,
+      data[hiBarIndex - 1].end
+    );
     this._updateStats();
-  },
-
-  _setRange: function(start, end) {
-    this.filter.setRange({ min: start, max: end });
   },
 
   _onBrushEnd: function(loBarIndex, hiBarIndex) {
@@ -228,17 +224,15 @@ module.exports = WidgetContent.extend({
     }
 
     var properties = { filter_enabled: true, lo_index: loBarIndex, hi_index: hiBarIndex };
-
     if (!this.viewModel.get('zoomed')) {
       properties.zoom_enabled = true;
     }
-
     this.viewModel.set(properties);
 
-    var start = data[loBarIndex].start;
-    var end = data[hiBarIndex - 1].end;
-
-    this._setRange(start, end);
+    this.filter.setRange(
+      data[loBarIndex].start,
+      data[hiBarIndex - 1].end
+    );
     this._updateStats();
   },
 
@@ -391,7 +385,7 @@ module.exports = WidgetContent.extend({
 
   _onZoomIn: function() {
     this.miniHistogramChartView.show();
-    this.histogramChartView.expand(this.canvasHeight + 60);
+    this.histogramChartView.expand(this.canvasHeight + 22);
 
     this._showMiniRange();
 
@@ -413,6 +407,7 @@ module.exports = WidgetContent.extend({
 
     this.dataModel.set({ own_filter: null });
     this.viewModel.set({ zoom_enabled: false, filter_enabled: false, lo_index: null, hi_index: null });
+
     this.filter.unsetRange();
 
     this.histogramChartView.contract(this.canvasHeight);

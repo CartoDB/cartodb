@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="/dist/themes/css/cartodb.css" />
     <script src="/dist/cartodb.uncompressed.js"></script>
     <script src="/dist/cartodb.mod.torque.uncompressed.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
 
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700' rel='stylesheet' type='text/css'>
 
@@ -24,11 +25,60 @@
       <div class="Dashboard-mapWrapper js-dashboard-map-wrapper">
         <div class="Dashboard-info">
           <div class="Dashboard-info-header">
+            <div class="Dashboard-info-logo">
+            </div>
+            <div class="Dashboard-info-actions">
+              <a href="#" class="Dashboard-info-actions-link"></a>
+            </div>
+            <div class="Dashboard-info-texts">
+              <p class="Dashboard-info-update">UPDATED 14 HOURS AGO</p>
+              <h1 class="Dashboard-info-title">NBA arenas areas of influence</h1>
+              <h2 class="Dashboard-info-description">The NBA Territory Analysis Tool will allow individual teams to analyze their current and potential marketing territories. Users can see visual reports and develop analyses on the fly.</h2>
+            </div>
           </div>
-          <div class="Dashboard-info-texts">
-            <p class="Dashboard-info-update">UPDATED 14 HOURS AGO</p>
-            <h1 class="Dashboard-info-title">NBA arenas areas of influence</h1>
-            <h2 class="Dashboard-info-description">The NBA Territory Analysis Tool will allow individual teams to analyze their current and potential marketing territories. Users can see visual reports and develop analyses on the fly.</h2>
+
+          <div class="Dashboard-info-footer">
+            <!--
+            <div class="Dashboard-info-snapshots">
+              <ul class="Dashboard-info-snapshots-list">
+                <li class="Dashboard-info-snapshots-list-item">
+                  <h3 class="Dashboard-info-snapshots-list-title">NAMED SNAPSHOT</h3>
+                  <p class="Dashboard-info-snapshots-list-date">08/10 · 17:35</p>
+                </li>
+                <li class="Dashboard-info-snapshots-list-item">
+                  <h3 class="Dashboard-info-snapshots-list-title">NAMED SNAPSHOT</h3>
+                  <p class="Dashboard-info-snapshots-list-date">08/10 · 17:35</p>
+                </li>
+                <li class="Dashboard-info-snapshots-list-item">
+                  <h3 class="Dashboard-info-snapshots-list-title">NAMED SNAPSHOT</h3>
+                  <p class="Dashboard-info-snapshots-list-date">08/10 · 17:35</p>
+                </li>
+                <li class="Dashboard-info-snapshots-list-item">
+                  <h3 class="Dashboard-info-snapshots-list-title">NAMED SNAPSHOT</h3>
+                  <p class="Dashboard-info-snapshots-list-date">08/10 · 17:35</p>
+                </li>
+              </ul>
+            </div>-->
+            <ul>
+              <li class="Dashboard-info-footer-item">
+                <div class="Dashboard-info-media">
+                  <img src="/themes/img/icon-save.svg" alt="Save" />
+                </div>
+                <p class="Dashboard-info-footer-txt">Save snapshot</p>
+              </li>
+              <li class="Dashboard-info-footer-item">
+                <div class="Dashboard-info-media">
+                  <img src="/themes/img/icon-share.svg" alt="share" />
+                </div>
+                <p class="Dashboard-info-footer-txt">Share view</p>
+              </li>
+              <li class="Dashboard-info-footer-item">
+                <div class="Dashboard-info-media">
+                  <img src="/themes/img/avatar.png" alt="avatar" class="inline-block"/>
+                </div>
+                <p class="Dashboard-info-footer-txt">Danielle Brewer</p>
+              </li>
+            </ul>
           </div>
         </div>
         <div class="Map-canvas Map-canvas--margin">
@@ -202,7 +252,7 @@
                             }
                           ],
                           "template_name": "table/views/infowindow_light",
-                          "template": "<div class=\"cartodb-popup v2\">\n  <a href=\"#close\" class=\"cartodb-popup-close-button close\">x</a>\n  <div class=\"cartodb-popup-content-wrapper\">\n    <div class=\"cartodb-popup-content\">\n      {{#content.fields}}\n        {{#title}}<h4>{{title}}</h4>{{/title}}\n        {{#value}}\n          <p {{#type}}class=\"{{ type }}\"{{/type}}>{{{ value }}}</p>\n        {{/value}}\n        {{^value}}\n          <p class=\"empty\">null</p>\n        {{/value}}\n      {{/content.fields}}\n    </div>\n  </div>\n  <div class=\"cartodb-popup-tip-container\"></div>\n</div>\n",
+                          "template": "<div class=\"cartodb-popup v2\">\n <div class=\"cartodb-popup-content-wrapper\">\n    <div class=\"cartodb-popup-content\">\n      {{#content.fields}}\n        {{#title}}<h4>{{title}}</h4>{{/title}}\n        {{#value}}\n          <p {{#type}}class=\"{{ type }}\"{{/type}}>{{{ value }}}</p>\n        {{/value}}\n        {{^value}}\n          <p class=\"empty\">null</p>\n        {{/value}}\n      {{/content.fields}}\n    </div>\n  </div>\n  <div class=\"cartodb-popup-tip-container\"></div>\n</div>\n",
                           "alternative_names": {},
                           "width": 226,
                           "maxHeight": 180
@@ -551,7 +601,7 @@
                             }
                           ],
                           "template_name": "table/views/infowindow_light",
-                          "template": "<div class=\"cartodb-popup v2\">\n  <a href=\"#close\" class=\"cartodb-popup-close-button close\">x</a>\n  <div class=\"cartodb-popup-content-wrapper\">\n    <div class=\"cartodb-popup-content\">\n      {{#content.fields}}\n        {{#title}}<h4>{{title}}</h4>{{/title}}\n        {{#value}}\n          <p {{#type}}class=\"{{ type }}\"{{/type}}>{{{ value }}}</p>\n        {{/value}}\n        {{^value}}\n          <p class=\"empty\">null</p>\n        {{/value}}\n      {{/content.fields}}\n    </div>\n  </div>\n  <div class=\"cartodb-popup-tip-container\"></div>\n</div>\n",
+                          "template": "<div class=\"Cdb-infowindow Cdb-infowindow--dark cartodb-popup\">\n  <div class=\"Cdb-infowindow-container\">\n <div class=\"Cdb-infowindow-bg\">\n <div class=\"Cdb-infowindow-inner\">\n <ul class=\"Cdb-infowindow-list\">\n    <li class=\"Cdb-infowindow-list-item\">\n      {{#content.fields}}\n        {{#title}}<h5 class='Cdb-infowindow-subtitle'>{{title}}</h5>{{/title}}\n  {{#value}}\n  <h4 class=\"Cdb-infowindow-title\">{{{ value }}}</h4>\n        {{/value}}\n        {{^value}}\n          <h4 class=\"Cdb-infowindow-title\">null</h4>\n        {{/value}}\n      {{/content.fields}}\n    </li>\n  </ul>\n </div>\n </div>\n  <div class=\"Cdb-hook\">\n <div class=\"Cdb-hook-inner\">\n </div>\n </div>\n </div>\n</div>\n",
                           "alternative_names": {},
                           "width": 226,
                           "maxHeight": 180
@@ -647,7 +697,7 @@
                             }
                           ],
                           "template_name": "infowindow_light",
-                          "template": "<div class=\"cartodb-popup v2\">\n  <a href=\"#close\" class=\"cartodb-popup-close-button close\">x</a>\n  <div class=\"cartodb-popup-content-wrapper\">\n    <div class=\"cartodb-popup-content\">\n      {{#content.fields}}\n        {{#title}}<h4>{{title}}</h4>{{/title}}\n        {{#value}}\n          <p {{#type}}class=\"{{ type }}\"{{/type}}>{{{ value }}}</p>\n        {{/value}}\n        {{^value}}\n          <p class=\"empty\">null</p>\n        {{/value}}\n      {{/content.fields}}\n    </div>\n  </div>\n  <div class=\"cartodb-popup-tip-container\"></div>\n</div>\n",
+                          "template": "<div class=\"Cdb-infowindow Cdb-infowindow--light cartodb-popup\">\n  <div class=\"Cdb-infowindow-container\">\n <div class=\"Cdb-infowindow-bg\">\n <div class=\"Cdb-infowindow-inner\">\n <ul class=\"Cdb-infowindow-list\">\n    <li class=\"Cdb-infowindow-list-item\">\n      {{#content.fields}}\n        {{#title}}<h5 class='Cdb-infowindow-subtitle'>{{title}}</h5>{{/title}}\n  {{#value}}\n  <h4 class=\"Cdb-infowindow-title\">{{{ value }}}</h4>\n        {{/value}}\n        {{^value}}\n          <h4 class=\"Cdb-infowindow-title\">null</h4>\n        {{/value}}\n      {{/content.fields}}\n    </li>\n  </ul>\n </div>\n </div>\n  <div class=\"Cdb-hook\">\n <div class=\"Cdb-hook-inner\">\n </div>\n </div>\n </div>\n</div>\n",
                           "alternative_names": {},
                           "width": 226,
                           "maxHeight": 180
@@ -790,6 +840,13 @@
             console.log(err);
           });
       }
+
+      $( document ).ready(function() {
+       $(".Dashboard-info-actions-link").click(function() {
+          $('.Dashboard-info').toggleClass('is-active');
+        });
+      });
+
     </script>
   </body>
 </html>

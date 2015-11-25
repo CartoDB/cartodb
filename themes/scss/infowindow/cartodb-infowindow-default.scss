@@ -13,6 +13,8 @@
   box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, .24);
   font-family: 'Open Sans';
   cursor: default;
+  /* remove when fix the position */
+  transform: translateY(-24px) translateX(4px);
 }
 
 .Cdb-infowindow-container {
@@ -21,7 +23,7 @@
 }
 
 .Cdb-infowindow-inner, .Cdb-infowindow-header-bg {
-  padding: 20px 24px 14px 24px;
+  padding: 20px 24px 18px 24px;
 }
 
 .Cdb-infowindow-inner--scroll {

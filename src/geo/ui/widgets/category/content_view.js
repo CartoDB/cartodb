@@ -22,7 +22,6 @@ module.exports = WidgetContent.extend({
   initialize: function(opts) {
     this.viewModel = new WidgetViewModel();
     WidgetContent.prototype.initialize.call(this, arguments);
-    this._initBinds();
   },
 
   render: function() {

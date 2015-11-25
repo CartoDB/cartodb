@@ -1,4 +1,5 @@
 var _ = require('underscore');
+var log = require('cdb.log');
 var MapLayer = require('./map-layer');
 var Backbone = require('backbone');
 
@@ -30,8 +31,8 @@ var TorqueLayer = MapLayer.extend({
     MapLayer.prototype.initialize.apply(this, arguments);
   },
 
-  // TODO Update silently to avoid a generic change event, which causes the layer to reload tiles
-  _setWithoutGenericChangeEvent: function(attr, val) {
+  // Custom setter to avoid trigger the generic 'change' event that would cause the tiles to be reloaded
+  _setWithoutReloadingTiles: function(attr, val) {
     var prevVal = this.get(attr);
     this.set(attr, val, {silent: true});
     if (val !== prevVal) {
@@ -41,32 +42,64 @@ var TorqueLayer = MapLayer.extend({
 
   // Expected to be called from view, to keep the model in sync,
   // so other views can listen to the model w/o have to know what view implementation is used
-  initBindsForTorqueLayerView: function(torqueLayerView) {
-    window.tlv = torqueLayerView;
-    torqueLayerView.bind('play', this._setWithoutGenericChangeEvent.bind(this, 'isRunning', true))
-    torqueLayerView.bind('pause', this._setWithoutGenericChangeEvent.bind(this, 'isRunning', false))
+  initForTorqueLayerView: function(torqueLayerView) {
+    // Binds events from view to this moel
+    torqueLayerView.bind('play', this._setWithoutReloadingTiles.bind(this, 'isRunning', true))
+    torqueLayerView.bind('pause', this._setWithoutReloadingTiles.bind(this, 'isRunning', false))
     torqueLayerView.bind('change:time', function() {
-      this._setWithoutGenericChangeEvent('step', torqueLayerView.getStep());
+      this._setWithoutReloadingTiles('step', torqueLayerView.getStep());
+    }, this);
+    torqueLayerView.bind('change:stepsRange', function() {
+      this._setWithoutReloadingTiles('stepsRange', torqueLayerView.getStepsRange());
     }, this);
 
+    // Set initial values, but don't change
+    this.set({
+      isRunning: torqueLayerView.isRunning(),
+      timeBounds: torqueLayerView.getTimeBounds(),
+      step: torqueLayerView.getStep(),
+      steps: torqueLayerView.options.steps,
+      stepsRange: torqueLayerView.getStepsRange()
+    }, {
+      silent: true
+    });
+
+    // Binds methods from this model to any views that are initialized
+    var proxyMethods = ['play', 'pause', 'setStep', 'setStepsRange'];
+    proxyMethods.forEach(function(name) {
+      var method = torqueLayerView[name]
+      if (method) {
+        this.bind(name, method, torqueLayerView);
+      } else {
+        log.error('torque layer (model): tried to proxy method ' + name + ', but it does not exist on the view');
+      }
+    }, this);
+
+    // Clean up of events above when view is removed
     torqueLayerView.once('remove', function() {
       torqueLayerView.unbind('play');
       torqueLayerView.unbind('pause');
       torqueLayerView.unbind('change:time');
+      proxyMethods.forEach(function(name) {
+        this.unbind(name, torqueLayerView[name], torqueLayerView);
+      });
     });
+  },
 
-    this.set({
-        isRunning: torqueLayerView.isRunning(),
-        timeBounds: torqueLayerView.getTimeBounds(),
-        step: torqueLayerView.getStep(),
-        steps: torqueLayerView.options.steps
-      },
-      { silent: true }
-    );
+  play: function() {
+    this.trigger.apply(this, ['play'].concat(Array.prototype.slice.call(arguments)));
+  },
 
-    this.play = torqueLayerView.play.bind(torqueLayerView);
-    this.pause = torqueLayerView.pause.bind(torqueLayerView);
-    this.setStep = torqueLayerView.setStep.bind(torqueLayerView);
+  pause: function() {
+    this.trigger.apply(this, ['pause'].concat(Array.prototype.slice.call(arguments)));
+  },
+
+  setStep: function() {
+    this.trigger.apply(this, ['setStep'].concat(Array.prototype.slice.call(arguments)));
+  },
+
+  setStepsRange: function() {
+    this.trigger.apply(this, ['setStepsRange'].concat(Array.prototype.slice.call(arguments)));
   },
 
   isEqual: function(other) {

@@ -8,6 +8,7 @@ var TorqueTimeMarkerview = require('./torque-time-marker-view');
 /**
  * Torque time-series histogram view.
  * Extends the common histogram chart view with time-control
+ * this.model is a histogram model
  */
 module.exports = View.extend({
 
@@ -79,7 +80,8 @@ module.exports = View.extend({
     this._chartView.show();
 
     var timeMarkerView = new TorqueTimeMarkerview({
-      chartCanvas: this._chartView.canvas,
+      model: this.model, // a histogram model
+      chartView: this._chartView,
       viewModel: this._viewModel,
       torqueLayerModel: this._torqueLayerModel
     });
@@ -93,6 +95,7 @@ module.exports = View.extend({
       data[loBarIndex].start,
       data[hiBarIndex - 1].end
     );
+    this._torqueLayerModel.setStepsRange(loBarIndex, hiBarIndex);
   },
 
   _onChangeWidth: function() {

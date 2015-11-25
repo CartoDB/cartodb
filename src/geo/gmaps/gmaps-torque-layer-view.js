@@ -51,7 +51,7 @@ var GMapsTorqueLayerView = function(layerModel, gmapsMap) {
     this.play();
   }
 
-  layerModel.initBindsForTorqueLayerView(this);
+  layerModel.initForTorqueLayerView(this);
 };
 
 _.extend(

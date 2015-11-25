@@ -1,4 +1,5 @@
 var HistogramModel = require('cdb/geo/ui/widgets/histogram/model');
+var RangeFilter = require('cdb/windshaft/filters/range');
 var TorqueLayerModel = require('cdb/geo/map/torque-layer');
 var TimeContentView = require('cdb/geo/ui/widgets/time-series/torque-content-view');
 
@@ -9,12 +10,12 @@ describe('geo/ui/widgets/time-series/torque-content-view', function() {
       this.options = options;
     }.bind(this);
 
-    this.filter = {};
+    this.rangeFilter = new RangeFilter();
     this.torqueLayerModel = new TorqueLayerModel();
     this.view = new TimeContentView({
       model: this.model,
       torqueLayerModel: this.torqueLayerModel,
-      filter: this.filter
+      rangeFilter: this.rangeFilter
     });
     this.renderResult = this.view.render();
   });

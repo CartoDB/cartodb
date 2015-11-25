@@ -1,6 +1,7 @@
 var _ = require('underscore');
 var View = require('cdb/core/view');
 var TorqueControlsView = require('./torque-controls-view');
+var TorqueTimeInfoView = require('./torque-time-info-view');
 var placeholderTemplate = require('../histogram/placeholder.tpl');
 var TorqueHistogramView = require('./torque-histogram-view');
 
@@ -28,6 +29,9 @@ module.exports = View.extend({
 
   _renderContent: function() {
     this._appendView(new TorqueControlsView({
+      model: this.options.torqueLayerModel
+    }));
+    this._appendView(new TorqueTimeInfoView({
       model: this.options.torqueLayerModel
     }));
     this._appendView(new TorqueHistogramView(this.options));

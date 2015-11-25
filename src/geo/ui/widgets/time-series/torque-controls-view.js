@@ -1,4 +1,3 @@
-var _ = require('underscore');
 var View = require('cdb/core/view');
 var template = require('./torque-controls.tpl');
 
@@ -16,18 +15,13 @@ module.exports = View.extend({
   },
 
   render: function() {
-    if (_.isNumber(this.model.get('step'))) {
-      this.$el.html(
-        template({
-          label: this.model.get('isRunning')
-            ? '❚❚'
-            : '▶'
-        })
-      );
-      this.show();
-    } else {
-      this.hide();
-    }
+    this.$el.html(
+      template({
+        label: this.model.get('isRunning')
+          ? '❚❚'
+          : '▶'
+      })
+    );
 
     return this;
   },

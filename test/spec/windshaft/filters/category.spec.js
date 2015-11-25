@@ -221,10 +221,10 @@ describe('windshaft/filters/category', function() {
       this.filter.rejectAll(data);
       var result = this.filter.toJSON();
       expect(result['category_widget']).toBeDefined();
-      expect(result['category_widget']['reject']).toBeDefined();
-      expect(result['category_widget']['accept']).not.toBeDefined();
-      var reject = result['category_widget']['reject'];
-      expect(reject.length).toBe(0);
+      expect(result['category_widget']['reject']).not.toBeDefined();
+      expect(result['category_widget']['accept']).toBeDefined();
+      var accept = result['category_widget']['accept'];
+      expect(accept.length).toBe(0);
     });
 
   });

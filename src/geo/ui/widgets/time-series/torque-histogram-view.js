@@ -50,6 +50,14 @@ module.exports = View.extend({
     this._viewModel.bind('change:width', this._onChangeWidth, this);
     this.add_related_model(this._viewModel);
     this._onChangeWidth();
+
+    this.model.bind('change:data', this._onChangeData, this);
+  },
+
+  _onChangeData: function() {
+    if (this._chartView) {
+      this._chartView.replaceData(this.model.getData());
+    }
   },
 
   render: function() {

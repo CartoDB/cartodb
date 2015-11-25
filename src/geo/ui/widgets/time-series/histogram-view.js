@@ -34,6 +34,14 @@ module.exports = View.extend({
     });
     this.add_related_model(this.viewModel);
     this.viewModel.bind('change:width', this._onChangeWidth, this);
+
+    this.model.bind('change:data', this._onChangeData, this);
+  },
+
+  _onChangeData: function() {
+    if (this.chartView) {
+      this.chartView.replaceData(this.model.getData());
+    }
   },
 
   render: function() {

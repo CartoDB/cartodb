@@ -26,11 +26,7 @@ module.exports = WidgetContent.extend({
 
   render: function() {
     this.clearSubViews();
-    this.$el.html(
-      template({
-        title: this.model.get('title')
-      })
-    );
+    this.$el.html(template());
     this._initViews();
     return this;
   },

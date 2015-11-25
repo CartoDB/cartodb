@@ -172,6 +172,7 @@ module.exports = WidgetContent.extend({
     this.viewModel.bind('change:zoom_enabled', this._onChangeZoomEnabled, this);
     this.viewModel.bind('change:filter_enabled', this._onChangeFilterEnabled, this);
     this.viewModel.bind('change:total', this._onChangeTotal, this);
+    this.viewModel.bind('change:nulls', this._onChangeNulls, this);
     this.viewModel.bind('change:max',   this._onChangeMax, this);
     this.viewModel.bind('change:min',   this._onChangeMin, this);
     this.viewModel.bind('change:avg',   this._onChangeAvg, this);
@@ -239,6 +240,7 @@ module.exports = WidgetContent.extend({
     var end = data[hiBarIndex - 1].end;
 
     this._setRange(start, end);
+    this._updateStats();
   },
 
   _onRangeUpdated: function(loBarIndex, hiBarIndex) {
@@ -269,6 +271,11 @@ module.exports = WidgetContent.extend({
 
   _onChangeZoomEnabled: function() {
     this.$(".js-zoom").toggleClass('is-hidden', !this.viewModel.get('zoom_enabled'));
+  },
+
+  _onChangeNulls: function() {
+    //this._animateValue('.js-val', 'nulls', ' SELECTED');
+    this.$('.js-nulls').text(this.histogramChartView.formatNumber(this.viewModel.get('nulls')) + ' NULLS');
   },
 
   _onChangeTotal: function() {
@@ -317,30 +324,51 @@ module.exports = WidgetContent.extend({
   },
 
   _updateStats: function() {
-    var data = this._getData();
+    var data = this.originalData;
+
+    if (this._isZoomed()) {
+      data = this.zoomedData;
+    }
+
+    var nulls = this.dataModel.get('nulls');
+
     var min, max;
 
     if (data && data.length) {
+
       var loBarIndex = this.viewModel.get('lo_index') || 0;
       var hiBarIndex = this.viewModel.get('hi_index') || data.length;
 
       var sum = this._calcSum(data, loBarIndex, hiBarIndex);
-      var avg = this._calcAvg(data);
+      var avg = this._calcAvg(data, loBarIndex, hiBarIndex);
 
       if (loBarIndex >= 0 && loBarIndex < data.length) {
-        min = data[loBarIndex].min;
+        min = data[loBarIndex].start;
       }
 
       if (hiBarIndex >= 0 && hiBarIndex - 1 < data.length) {
-        max = data[hiBarIndex - 1].max;
+        max = data[hiBarIndex - 1].end;
       }
 
-      this.viewModel.set({ total: sum, min: min, max: max, avg: avg });
+      this.viewModel.set({ total: sum, nulls: nulls, min: min, max: max, avg: avg });
     }
   },
 
-  _calcAvg: function(data) {
-    return Math.round(d3.mean(data, function(d) { return _.isEmpty(d) ? 0 : d.freq; }));
+  _calcAvg: function(data, start, end) {
+
+    var selectedData = data.slice(start, end);
+
+    var total = this._calcSum(data, start, end, total);
+
+    if (!total) {
+      return 0;
+    }
+
+    var area = _.reduce(selectedData, function(memo, d) {
+      return !(d.start || d.end) ? memo : ((d.start + d.end) * 0.5 * d.freq) + memo;
+    }, 0);
+
+    return area / total;
   },
 
   _calcSum: function(data, start, end) {

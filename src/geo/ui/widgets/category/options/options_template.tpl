@@ -10,10 +10,10 @@
   </p>
   <% if (!isLocked) { %>
     <div class="Widget-filterButtons">
-      <% if (rejectedCats !== 0 && totalCats > 0 || acceptedCats > 0) { %>
+      <% if (rejectedCats > 0 || acceptedCats > 0 || isAllRejected) { %>
         <button class="Widget-link Widget-filterButton js-all">all</button>
       <% } %>
-      <% if (totalCats > rejectedCats) { %>
+      <% if (totalCats > rejectedCats && !isAllRejected) { %>
         <button class="Widget-link Widget-filterButton js-none">none</button>
       <% } %>
     </div>

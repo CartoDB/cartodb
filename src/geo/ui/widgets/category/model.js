@@ -2,14 +2,25 @@ var _ = require('underscore');
 var Backbone = require('backbone');
 var Model = require('cdb/core/model');
 var d3 = require('d3');
+var colorbrewer = require('colorbrewer');
+var categoryColors = _.initial(colorbrewer.Accent[8]);
+var defaultColor = '#CCC';
 var WidgetModel = require('../widget_model');
 var WidgetSearchModel = require('./models/search_model.js');
 var CategoriesCollection = require('./models/categories_collection');
 var LockedCatsCollection = require('./models/locked_categories_collection');
 
 /**
- * Category widget model
+ *  Category widget model
+ *
+ *  - It has several internal models/collections
+ *
+ *  · search model: it manages category search results.
+ *  · locked collection: it stores locked items.
+ *  · filter model: it knows which items are accepted or rejected.
+ *
  */
+
 module.exports = WidgetModel.extend({
 
   url: function() {
@@ -75,7 +86,7 @@ module.exports = WidgetModel.extend({
     }, this);
     this.search.bind('change:data', function() {
       this.trigger('change:searchData', this.search, this);
-    }, this)
+    }, this);
   },
 
   /*
@@ -219,6 +230,10 @@ module.exports = WidgetModel.extend({
     this.filter.acceptAll();
   },
 
+  isAllFiltersRejected: function() {
+    return this.filter.get('rejectAll');
+  },
+
   // Proper model helper methods //
 
   getData: function() {
@@ -247,31 +262,34 @@ module.exports = WidgetModel.extend({
     // Get info stats from categories
     var newData = [];
     var _tmpArray = {};
-    var color = d3.scale.category20();
+    var _tmpCount = 0;
 
     _.each(categories, function(datum, i) {
       var category = datum.category;
       var isRejected = this.filter.isRejected(category);
+      var color = categoryColors[i];
       _tmpArray[category] = true;
+      _tmpCount++;
 
       newData.push({
         selected: !isRejected,
         name: category,
         agg: datum.agg,
         value: datum.value,
-        color: color(category)
+        color: color || defaultColor
       });
     }, this);
 
     if (this.isLocked()) {
       var acceptedCats = this.filter.getAccepted();
       // Add accepted items that are not present in the categories data
-      acceptedCats.each(function(mdl) {
-        var category = mdl.get('name');
+      acceptedCats.each(function(mdl, i) {
+        var category = mdl.get('name').toString();
+        var color = categoryColors[_tmpCount + i];
         if (!_tmpArray[category]) {
           newData.push({
             selected: true,
-            color: color(category),
+            color: color || defaultColor,
             name: category,
             agg: false,
             value: 0

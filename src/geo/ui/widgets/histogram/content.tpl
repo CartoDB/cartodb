@@ -3,7 +3,7 @@
     <h3 class="Widget-textBig"><%= title %></h3>
   </div>
   <dl class="Widget-info Widget-textSmaller Widget-textSmaller--upper">
-    <dt class="Widget-infoItem js-null">0 NULL ROWS</dt>
+    <dt class="Widget-infoItem js-nulls">0 NULL ROWS</dt>
     <dt class="Widget-infoItem js-min">0 MIN</dt>
     <dt class="Widget-infoItem js-avg">0 AVG</dt>
     <dt class="Widget-infoItem js-max">0 MAX</dt>

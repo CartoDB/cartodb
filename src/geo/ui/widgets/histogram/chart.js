@@ -62,9 +62,17 @@ module.exports = View.extend({
     });
 
     var width = this.textLabel.node().getBBox().width;
-    //console.log(this.tipLabel.attr('transform'));
-    //this.rectLabel.attr('width', width);
-    //console.log(this.model.get('v'));
+    this.rectLabel.attr('width', width);
+
+    var parts = /translate\(\s*([^\s,)]+), ([^\s,)]+)/.exec(this.rightHandle.attr('transform'));
+    var xPos = +parts[1] + 3;
+
+    console.log(xPos, this.chartWidth, xPos + width >= this.chartWidth);
+
+    if (xPos + width >= this.chartWidth) {
+      this.textLabel.attr('dx', this.chartWidth - (xPos + width));
+      this.rectLabel.attr('x', this.chartWidth - (xPos + width));
+    }
   },
 
   _onChangeData: function() {
@@ -114,11 +122,25 @@ module.exports = View.extend({
     var rightX = this.xScale(hiExtent) - this.options.handleWidth / 2;
 
     this.chart.classed('is-selectable', true);
-    console.warn(this.xAxisScale(rightX));
   },
 
   _onChangeDragging: function() {
     this.chart.classed('is-dragging', this.model.get('dragging'));
+    if (this.model.get('dragging')) {
+      if (this.textLabel) {
+        this.textLabel
+        .transition()
+        .duration(200)
+        .attr('opacity',  1);
+      }
+    } else {
+      if (this.textLabel) {
+        this.textLabel
+        .transition()
+        .duration(200)
+        .attr('opacity',  0);
+      }
+    }
   },
 
   _onBrushMove: function() {
@@ -202,7 +224,13 @@ module.exports = View.extend({
     this._setupDimensions();
     this._removeAxis();
     this._generateAxis();
+
     this._updateChart();
+
+    this._removeHandles();
+    this._generateHandles();
+
+    this._setupBrush();
   },
 
   resetIndexes: function() {
@@ -253,11 +281,11 @@ module.exports = View.extend({
   },
 
   _generateChartContent: function() {
+    this._generateAxis();
     this._generateLines();
     this._generateBars();
     this._generateHandles();
     this._setupBrush();
-    this._generateAxis();
   },
 
   resize: function(width) {
@@ -548,32 +576,35 @@ module.exports = View.extend({
     this.chart.select('.Handle-right')
     .attr('transform', 'translate(' + rightX + ', 0)');
 
-    this.model.set({ v: this.xAxisScale(rightX) });
+    this.model.set({ v: this.xAxisScale(rightX + 3) });
   },
 
   _generateHandle: function(className) {
-    var handle = { width: this.options.handleWidth, height: this.options.handleHeight, radius: this.options.handleRadius };
+    var opts = { width: this.options.handleWidth, height: this.options.handleHeight, radius: this.options.handleRadius };
     var yPos = (this.chartHeight / 2) - (this.options.handleHeight / 2);
 
-    var handles = this.chart.select('.Handles')
+    var handle = this.chart.select('.Handles')
     .append('g')
     .attr('class', 'Handle ' + className);
 
-    this.tipLabel = handles.selectAll("g")
-    .data(['1234'])
+    this.tipLabel = handle.selectAll("g")
+    .data([''])
     .enter().append("g")
     .attr("transform", function(d, i) { return "translate(0,52)"; });
 
     this.rectLabel = this.tipLabel.append("rect")
-    .attr('fill', 'red')
-    .attr("height", 12);
+    .attr('fill', '#fff')
+    .attr("height", 12)
+    .attr("width", 10);
 
     this.textLabel = this.tipLabel.append("text")
-    .attr("dy", "10")
-    .style("font-size", "9px")
+    .attr("dy", "11")
+    .attr("dx", "0")
+    .attr('fill', '#979EA1')
+    .style("font-size", "10px")
     .text(function(d) { return d; });
 
-    handles
+    handle
     .append('line')
     .attr('class', 'HandleLine')
     .attr('x1', 3)
@@ -582,19 +613,19 @@ module.exports = View.extend({
     .attr('y2', this.chartHeight + 4);
 
     if (this.options.handles) {
-      handles
+      handle
       .append('rect')
       .attr('class', 'HandleRect')
       .attr('transform', 'translate(0, ' + yPos + ')')
-      .attr('width', handle.width)
-      .attr('height', handle.height)
-      .attr('rx', handle.radius)
-      .attr('ry', handle.radius);
+      .attr('width', opts.width)
+      .attr('height', opts.height)
+      .attr('rx', opts.radius)
+      .attr('ry', opts.radius);
 
       var y = 21; // initial position of the first grip
 
       for (var i = 0; i < 3; i++) {
-        handles
+        handle
         .append('line')
         .attr('class', 'HandleGrip')
         .attr('x1', 2)
@@ -604,7 +635,7 @@ module.exports = View.extend({
       }
     }
 
-    return handles;
+    return handle;
   },
 
   _generateHandles: function() {

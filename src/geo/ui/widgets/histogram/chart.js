@@ -54,24 +54,71 @@ module.exports = View.extend({
     this.model.set({ data: data });
   },
 
-  _onChangeV: function() {
-    var self = this;
+  _onChangeLeftTip: function() {
+    this._updateLeftTip('left');
+  },
 
-    this.textLabel.data([this.model.get('v')]).text(function(d) {
+  _onChangeRightTip: function() {
+    this._updateTip('right');
+  },
+
+  _updateLeftTip: function(className) {
+    var self = this;
+    var textLabel = this.chart.select('.TipLabel-text.Handle-' + className);
+    var tipLabel  = this.chart.select('.TipLabel.Handle-' + className);
+    var rectLabel = this.chart.select('.TipLabel-rect.Handle-' + className);
+
+
+    textLabel.data([this.model.get(className + '_tip')]).text(function(d) {
       return self.formatNumber(d);
     });
 
-    var width = this.textLabel.node().getBBox().width;
-    this.rectLabel.attr('width', width);
+    var width = textLabel.node().getBBox().width;
+    rectLabel.attr('width', width + 4);
 
-    var parts = /translate\(\s*([^\s,)]+), ([^\s,)]+)/.exec(this.rightHandle.attr('transform'));
-    var xPos = +parts[1] + 3;
+    var xParts = /translate\(\s*([^\s,)]+), ([^\s,)]+)/.exec(this.leftHandle.attr('transform'));
+    var xPos = +xParts[1] + 3;
 
-    console.log(xPos, this.chartWidth, xPos + width >= this.chartWidth);
+    if ((xPos - width/2) < 0) {
+      tipLabel.attr('transform', 'translate(0, 52)');
+      textLabel.attr('dx', -xPos);
+      rectLabel.attr('x',  -xPos);
+    } else {
+      tipLabel.attr('transform', 'translate(-' + (width/2) + ', 52)');
+      rectLabel.attr('x', 0);
+      textLabel.attr('dx', +2);
+    }
+  },
+  _updateTip: function(className) {
+    var self = this;
+    var textLabel = this.chart.select('.TipLabel-text.Handle-' + className);
+    var tipLabel  = this.chart.select('.TipLabel.Handle-' + className);
+    var rectLabel = this.chart.select('.TipLabel-rect.Handle-' + className);
 
-    if (xPos + width >= this.chartWidth) {
-      this.textLabel.attr('dx', this.chartWidth - (xPos + width));
-      this.rectLabel.attr('x', this.chartWidth - (xPos + width));
+    textLabel.data([this.model.get(className + '_tip')]).text(function(d) {
+      return self.formatNumber(d);
+    });
+
+    var width = textLabel.node().getBBox().width;
+    rectLabel.attr('width', width + 4);
+
+    var lParts = /translate\(\s*([^\s,)]+), ([^\s,)]+)/.exec(this.leftHandle.attr('transform'));
+    var rParts = /translate\(\s*([^\s,)]+), ([^\s,)]+)/.exec(this.rightHandle.attr('transform'));
+    var xPos = +rParts[1] + 3;
+    var lPos = +lParts[1] + 3;
+
+    if ((lPos - width/2 - 2) < 0) {
+      tipLabel.attr('transform', 'translate(0, 52)');
+      textLabel.attr('dx', 10);
+      rectLabel.attr('x', 20);
+    } if ((xPos + width/2 + 2) >= this.chartWidth) {
+      tipLabel.attr('transform', 'translate(0, 52)');
+      textLabel.attr('dx', this.chartWidth - (xPos + width - 2));
+      rectLabel.attr('x', this.chartWidth - (xPos + width));
+    } else {
+      tipLabel.attr('transform', 'translate(-' + (width/2) + ', 52)');
+      rectLabel.attr('x', 0);
+      textLabel.attr('dx', +2);
     }
   },
 
@@ -126,20 +173,41 @@ module.exports = View.extend({
 
   _onChangeDragging: function() {
     this.chart.classed('is-dragging', this.model.get('dragging'));
+    this._updateTipOpacity('right');
+    this._updateTipOpacity('left');
+  },
+
+  _showTip: function(className) {
+    var textLabel = this.chart.select('.TipLabel-text.Handle-' + className);
+    var tipLabel  = this.chart.select('.TipLabel.Handle-' + className);
+    var rectLabel = this.chart.select('.TipLabel-rect.Handle-' + className);
+
+    if (textLabel) {
+      textLabel.transition().duration(200).attr('opacity',  1);
+    }
+    if (rectLabel) {
+      rectLabel.transition().duration(200).attr('opacity',  1);
+    }
+  },
+
+  _hideTip: function(className) {
+    var textLabel = this.chart.select('.TipLabel-text.Handle-' + className);
+    var tipLabel  = this.chart.select('.TipLabel.Handle-' + className);
+    var rectLabel = this.chart.select('.TipLabel-rect.Handle-' + className);
+
+    if (textLabel) {
+      textLabel.transition().duration(200).attr('opacity',  0);
+    }
+    if (rectLabel) {
+      rectLabel.transition().duration(200).attr('opacity',  0);
+    }
+  },
+
+  _updateTipOpacity: function(className) {
     if (this.model.get('dragging')) {
-      if (this.textLabel) {
-        this.textLabel
-        .transition()
-        .duration(200)
-        .attr('opacity',  1);
-      }
+      this._showTip(className);
     } else {
-      if (this.textLabel) {
-        this.textLabel
-        .transition()
-        .duration(200)
-        .attr('opacity',  0);
-      }
+      this._hideTip(className);
     }
   },
 
@@ -183,7 +251,7 @@ module.exports = View.extend({
         top = this.chartHeight + this.model.get('pos').y + this.$el.position().top - 20 - this.options.minimumBarHeight;
       }
 
-      if (!this._isDragging()) {
+      if (!this._isDragging() && freq > 0) {
         var d = this.formatNumber(freq);
         hoverProperties = { top: top, left: left, data: d };
       } else {
@@ -205,7 +273,8 @@ module.exports = View.extend({
   },
 
   _bindModel: function() {
-    this.model.bind('change:v', this._onChangeV, this);
+    this.model.bind('change:right_tip', this._onChangeRightTip, this);
+    this.model.bind('change:left_tip', this._onChangeLeftTip, this);
     this.model.bind('change:width', this._onChangeWidth, this);
     this.model.bind('change:pos', this._onChangePos, this);
     this.model.bind('change:lo_index change:hi_index', this._onChangeRange, this);
@@ -576,7 +645,33 @@ module.exports = View.extend({
     this.chart.select('.Handle-right')
     .attr('transform', 'translate(' + rightX + ', 0)');
 
-    this.model.set({ v: this.xAxisScale(rightX + 3) });
+    this.model.set({ right_tip: this.xAxisScale(rightX + 3) });
+    this.model.set({ left_tip: this.xAxisScale(leftX + 3) });
+  },
+
+  _generateTip: function(className) {
+
+    var handle = this.chart.select('.Handle.' + className);
+
+    var tipLabel = this.tipLabel = handle.selectAll("g")
+    .data([''])
+    .enter().append("g")
+    .attr('class', 'TipLabel ' + className)
+    .attr("transform", function(d, i) { return "translate(0,52)"; });
+
+    this.rectLabel = tipLabel.append("rect")
+    .attr('class', 'TipLabel-rect ' + className)
+    .attr('fill', '#fff')
+    .attr("height", 12)
+    .attr("width", 10);
+
+    this.textLabel = tipLabel.append("text")
+    .attr('class', 'TipLabel-text ' + className)
+    .attr("dy", "11")
+    .attr("dx", "0")
+    .attr('fill', '#979EA1')
+    .style("font-size", "10px")
+    .text(function(d) { return d; });
   },
 
   _generateHandle: function(className) {
@@ -587,22 +682,7 @@ module.exports = View.extend({
     .append('g')
     .attr('class', 'Handle ' + className);
 
-    this.tipLabel = handle.selectAll("g")
-    .data([''])
-    .enter().append("g")
-    .attr("transform", function(d, i) { return "translate(0,52)"; });
-
-    this.rectLabel = this.tipLabel.append("rect")
-    .attr('fill', '#fff')
-    .attr("height", 12)
-    .attr("width", 10);
-
-    this.textLabel = this.tipLabel.append("text")
-    .attr("dy", "11")
-    .attr("dx", "0")
-    .attr('fill', '#979EA1')
-    .style("font-size", "10px")
-    .text(function(d) { return d; });
+    this._generateTip(className);
 
     handle
     .append('line')

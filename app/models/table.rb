@@ -1192,7 +1192,15 @@ class Table
 
       unless register_table_only
         begin
-          owner.in_database.rename_table(@name_changed_from, name)
+          #  Underscore prefixes have a special meaning in PostgreSQL, hence the ugly hack
+          #  see http://stackoverflow.com/questions/26631976/how-to-rename-a-postgresql-table-by-prefixing-an-underscore
+          if name.start_with?('_')
+            temp_name = "#{10.times.map { rand(9) }.join}_" + name
+            owner.in_database.rename_table(@name_changed_from, temp_name)
+            owner.in_database.rename_table(temp_name, name)
+          else
+            owner.in_database.rename_table(@name_changed_from, name)
+          end
         rescue StandardError => exception
           exception_to_raise = CartoDB::BaseCartoDBError.new(
               "Table update_name_changes(): '#{@name_changed_from}' doesn't exist", exception)
@@ -1219,7 +1227,7 @@ class Table
 
   # @see https://github.com/jeremyevans/sequel#qualifying-identifiers-columntable-names
   def sequel_qualified_table_name
-    "#{owner.database_schema}__#{@user_table.name}".to_sym
+    Sequel.qualify(owner.database_schema, @user_table.name)
   end
 
   def qualified_table_name

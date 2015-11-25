@@ -2,6 +2,7 @@ var _ = require('underscore');
 var Backbone = require('backbone');
 var Model = require('cdb/core/model');
 var d3 = require('d3');
+var $ = require('jquery');
 var CategoryColors = require('./models/category_colors');
 var WidgetModel = require('../widget_model');
 var WidgetSearchModel = require('./models/search_model.js');
@@ -43,6 +44,17 @@ module.exports = WidgetModel.extend({
   },
 
   _onChangeBinds: function() {
+
+    $(document).bind(
+      'applyCategoryColors.' + this.get('layerId'),
+      _.bind(function(model) {
+        if (model !== this && this.isColorApplied()) {
+          this.set('categoryColors', false);
+        }
+      }, this)
+    );
+
+
     // Set url and bounds when they have changed
     this.search.set({
       url: this.get('url'),
@@ -96,10 +108,12 @@ module.exports = WidgetModel.extend({
    */
 
   applyCategoryColors: function() {
-    this.set('categoryColors', true);
-    this.trigger('applyCategoryColors', this._data.map(function(m){
+    var colorsData = this._data.map(function(m){
       return [ m.get('name'), m.get('color') ];
-    }), this);
+    });
+    $(document).trigger('applyCategoryColors', this);
+    this.set('categoryColors', true);
+    this.trigger('applyCategoryColors', colorsData, this);
   },
 
   cancelCategoryColors: function() {

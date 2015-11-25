@@ -262,7 +262,6 @@ module.exports = WidgetModel.extend({
   _parseData: function(categories) {
     var newData = [];
     var _tmpArray = {};
-    var _tmpCount = 0;
     var acceptedCats = this.filter.getAccepted();
 
     // Update colors by data categories
@@ -279,7 +278,6 @@ module.exports = WidgetModel.extend({
       var category = datum.category;
       var isRejected = this.filter.isRejected(category);
       _tmpArray[category] = true;
-      _tmpCount++;
 
       newData.push({
         selected: !isRejected,

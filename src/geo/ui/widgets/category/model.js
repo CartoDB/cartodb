@@ -2,7 +2,6 @@ var _ = require('underscore');
 var Backbone = require('backbone');
 var Model = require('cdb/core/model');
 var d3 = require('d3');
-var $ = require('jquery');
 var CategoryColors = require('./models/category_colors');
 var WidgetModel = require('../widget_model');
 var WidgetSearchModel = require('./models/search_model.js');

@@ -317,8 +317,13 @@ module.exports = View.extend({
 
   _setupScales: function() {
     var data = this.model.get('data');
+
     this.xScale = d3.scale.linear().domain([0, 100]).range([0, this.chartWidth]);
     this.yScale = d3.scale.linear().domain([0, d3.max(data, function(d) { return _.isEmpty(d) ? 0 : d.freq; } )]).range([this.chartHeight, 0]);
+
+    if (!data || !data.length) {
+      return;
+    }
 
     if (this.options.type === 'time') {
       this.xAxisScale = d3.time.scale().domain([data[0].start * 1000, data[data.length - 1].end * 1000]).nice().range([0, this.chartWidth]);

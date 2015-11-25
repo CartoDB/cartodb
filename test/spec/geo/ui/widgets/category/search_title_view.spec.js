@@ -3,7 +3,7 @@ var CategoryModel = require('cdb/geo/ui/widgets/category/model.js');
 var ViewModel = require('cdb/geo/ui/widgets/widget_content_model.js');
 var SearchTitleView = require('cdb/geo/ui/widgets/category/title/search_title_view.js');
 var WindshaftFiltersCategory = require('cdb/windshaft/filters/category');
-var $ = require('jQuery');
+var $ = require('jquery');
 
 describe('widgets/category/search_title_view', function() {
 

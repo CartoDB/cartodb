@@ -104,9 +104,9 @@ $commonBkg: rgba(#FFF, 1);
   .Widget-listItem--fake:before {
     background-color: $loadingBkg;
   }
-  .Widget-listButton:hover {
-    background: $canvasBkg;
-  }
+  // .Widget-listButton:hover {
+  //   background: $canvasBkg;
+  // }
   .Widget-listButton--withBorder {
     &:before {
       background: transparent;

@@ -82,7 +82,7 @@ module.exports = View.extend({
     var isSelected = mdl.get('selected');
 
     if (isSelected) {
-      if (!this.dataModel.getRejectedCount() && !this.dataModel.getAcceptedCount()) {
+      if (!this.dataModel.getRejectedCount() && !this.dataModel.getAcceptedCount() && this.dataModel.getCount() > 1) {
         var data = this.dataModel.getData();
         var rejects = [];
         // Make elements "unselected"

@@ -13,6 +13,9 @@ module.exports = View.extend({
     handleHeight: 23,
     handleRadius: 3,
     divisionWidth: 80,
+    animationBarDelay: function(d, i) {
+      return Math.random() * (100 + (i * 10));
+    },
     transitionType: 'elastic'
   },
 
@@ -314,8 +317,13 @@ module.exports = View.extend({
 
   _setupScales: function() {
     var data = this.model.get('data');
+
     this.xScale = d3.scale.linear().domain([0, 100]).range([0, this.chartWidth]);
     this.yScale = d3.scale.linear().domain([0, d3.max(data, function(d) { return _.isEmpty(d) ? 0 : d.freq; } )]).range([this.chartHeight, 0]);
+
+    if (!data || !data.length) {
+      return;
+    }
 
     if (this.options.type === 'time') {
       this.xAxisScale = d3.time.scale().domain([data[0].start * 1000, data[data.length - 1].end * 1000]).nice().range([0, this.chartWidth]);
@@ -390,6 +398,7 @@ module.exports = View.extend({
   },
 
   removeSelection: function() {
+    this.resetIndexes();
     this.chart.selectAll('.Bar').classed('is-selected', false);
     this._removeBrush();
     this._setupBrush();
@@ -748,10 +757,8 @@ module.exports = View.extend({
     bars
     .transition()
     .ease(this.options.transitionType)
-    .duration(self.options.animationSpeed)
-    .delay(function(d, i) {
-      return Math.random() * (100 + i * 10);
-    })
+    .duration(this.options.animationSpeed)
+    .delay(this.options.animationBarDelay)
     .transition()
     .attr('height', function(d) {
 

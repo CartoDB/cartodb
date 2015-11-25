@@ -27,6 +27,7 @@
         ">
         <i class="CDBIcon CDBIcon-Syringe"></i>
       </button>
+      <button class="Widget-arrow js-collapse <%- isCollapsed ? 'Widget-arrow--down' : 'Widget-arrow--up' %> "></button>
     </div>
   </div>
 <% } %>

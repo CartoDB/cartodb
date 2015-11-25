@@ -32,6 +32,7 @@ module.exports = View.extend({
         totalLocked: this.dataModel.getLockedSize(),
         isSearchEnabled: this.viewModel.isSearchEnabled(),
         isSearchApplied: this.dataModel.isSearchApplied(),
+        isAllRejected: this.dataModel.isAllFiltersRejected(),
         totalCats: totalCats,
         rejectedCats: rejectedCats,
         acceptedCats: acceptedCats

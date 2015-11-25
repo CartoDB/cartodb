@@ -33,6 +33,10 @@ describe('windshaft/filters/category', function() {
       this.filter.accept(1);
       expect(this.filter.isEmpty()).toBeFalsy();
     });
+    it('should not be empty when rejectAll is true', function() {
+      this.filter.set('rejectAll', true);
+      expect(this.filter.isEmpty()).toBeFalsy();
+    });
   });
 
   describe('accept', function() {
@@ -121,14 +125,15 @@ describe('windshaft/filters/category', function() {
     });
   });
 
-  it('should reject all cleaning accepted and adding necessary rejects', function() {
+  it('should reject all cleaning accepted and rejected, also changing rejectAll attribute', function() {
     var callback = jasmine.createSpy('callback');
     this.filter.bind('change', callback, this.filter);
     this.filter.accept([1,2,3]);
     this.filter.reject([4]);
-    this.filter.rejectAll(data); // data is on the beginning of the doc ;)
-    expect(this.filter.getRejected().size()).toBe(12);
+    this.filter.rejectAll();
+    expect(this.filter.getRejected().size()).toBe(0);
     expect(this.filter.getAccepted().size()).toBe(0);
+    expect(this.filter.get('rejectAll')).toBeTruthy();
     expect(callback).toHaveBeenCalled();
   });
 
@@ -219,8 +224,7 @@ describe('windshaft/filters/category', function() {
       expect(result['category_widget']['reject']).not.toBeDefined();
       expect(result['category_widget']['accept']).toBeDefined();
       var accept = result['category_widget']['accept'];
-      expect(accept.length).toBe(1);
-      expect(accept[0]).toBe('___@___');
+      expect(accept.length).toBe(0);
     });
 
   });

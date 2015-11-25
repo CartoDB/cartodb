@@ -83,7 +83,7 @@ module.exports = Model.extend({
     var newData = [];
     _.each(categories, function(d) {
       if (!d.agg) {
-        var category = d.category || d.name;
+        var category = (d.category || d.name).toString();
         var isLocked = this.locked.isItemLocked(category);
         newData.push({
           selected: isLocked,

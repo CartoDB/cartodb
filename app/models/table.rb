@@ -1195,7 +1195,7 @@ class Table
           #  Underscore prefixes have a special meaning in PostgreSQL, hence the ugly hack
           #  see http://stackoverflow.com/questions/26631976/how-to-rename-a-postgresql-table-by-prefixing-an-underscore
           if name.start_with?('_')
-            temp_name = "#{10.times.map{ rand(9) }.join}_" + name
+            temp_name = "#{ 10.times.map{ rand(9) }.join }_" + name
             owner.in_database.rename_table(@name_changed_from, temp_name)
             owner.in_database.rename_table(temp_name, name)
           else

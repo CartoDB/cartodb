@@ -34,6 +34,10 @@
 .Widget-content--noSidesMargin {
   margin: $sMargin-element 0 0;
 }
+.Widget-body.is-collapsed {
+  height: 38px;
+  overflow: hidden;
+}
 .Widget--time {
   width: 100%;
 }

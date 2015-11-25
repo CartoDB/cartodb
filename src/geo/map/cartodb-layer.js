@@ -1,7 +1,7 @@
-var Backbone = require('backbone');
 var _ = require('underscore');
 var config = require('cdb.config');
 var MapLayer = require('./map-layer');
+var WidgetsCollection = require('../ui/widgets/widgets_collection');
 
 var CartoDBLayer = MapLayer.extend({
 
@@ -12,7 +12,7 @@ var CartoDBLayer = MapLayer.extend({
   },
 
   initialize: function() {
-    this.widgets = new Backbone.Collection([]);
+    this.widgets = new WidgetsCollection([]);
 
     // Re-trigger the change:filter event
     this.widgets.bind('change:filter', function(widget, filter) {

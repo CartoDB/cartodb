@@ -44,17 +44,6 @@ module.exports = WidgetModel.extend({
   },
 
   _onChangeBinds: function() {
-
-    $(document).bind(
-      'applyCategoryColors.' + this.get('layerId'),
-      _.bind(function(model) {
-        if (model !== this && this.isColorApplied()) {
-          this.set('categoryColors', false);
-        }
-      }, this)
-    );
-
-
     // Set url and bounds when they have changed
     this.search.set({
       url: this.get('url'),
@@ -108,11 +97,10 @@ module.exports = WidgetModel.extend({
    */
 
   applyCategoryColors: function() {
+    this.set('categoryColors', true);
     var colorsData = this._data.map(function(m){
       return [ m.get('name'), m.get('color') ];
     });
-    $(document).trigger('applyCategoryColors', this);
-    this.set('categoryColors', true);
     this.trigger('applyCategoryColors', colorsData, this);
   },
 

@@ -21,8 +21,6 @@ module.exports = WidgetContent.extend({
 
   initialize: function(opts) {
     this.viewModel = new WidgetViewModel();
-    this.layerModel = opts.layer;
-    this.model.set('layerId', this.layerModel.id);
     WidgetContent.prototype.initialize.call(this, arguments);
   },
 

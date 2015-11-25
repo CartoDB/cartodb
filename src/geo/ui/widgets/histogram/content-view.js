@@ -385,7 +385,7 @@ module.exports = WidgetContent.extend({
 
   _onZoomIn: function() {
     this.miniHistogramChartView.show();
-    this.histogramChartView.expand(this.canvasHeight + 22);
+    this.histogramChartView.expand(20);
 
     this._showMiniRange();
 

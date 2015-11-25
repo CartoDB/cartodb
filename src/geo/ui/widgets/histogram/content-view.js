@@ -267,34 +267,39 @@ module.exports = WidgetContent.extend({
   },
 
   _onChangeNulls: function() {
-    //this._animateValue('.js-val', 'nulls', ' SELECTED');
     this.$('.js-nulls').text(this.histogramChartView.formatNumber(this.viewModel.get('nulls')) + ' NULLS');
+    this.$('.js-nulls').attr('title', this._formatNumberWithCommas(this.viewModel.get('nulls').toFixed(2)) + ' NULLS');
   },
 
   _onChangeTotal: function() {
-    //this._animateValue('.js-val', 'total', ' SELECTED');
     this.$('.js-val').text(this.histogramChartView.formatNumber(this.viewModel.get('total')) + ' SELECTED');
+    this.$('.js-val').attr('title', this._formatNumberWithCommas(this.viewModel.get('total').toFixed(2)) + ' SELECTED');
   },
 
   _onChangeMax: function() {
-    //this._animateValue('.js-max', 'max', 'MAX');
     if (this.viewModel.get('max') === undefined) {
       return '0 MAX';
     }
     this.$('.js-max').text(this.histogramChartView.formatNumber(this.viewModel.get('max')) + ' MAX');
+    this.$('.js-max').attr('title', this._formatNumberWithCommas(this.viewModel.get('max').toFixed(2)) + ' MAX');
   },
 
   _onChangeMin: function() {
-    //this._animateValue('.js-min', 'min', 'MIN');
     if (this.viewModel.get('min') === undefined) {
-      return '0 MIN';
+      this.$('.js-min').text('0 MIN');
+      return;
     }
     this.$('.js-min').text(this.histogramChartView.formatNumber(this.viewModel.get('min')) + ' MIN');
+    this.$('.js-min').attr('title', this._formatNumberWithCommas(this.viewModel.get('min').toFixed(2)) + ' MIN');
   },
 
   _onChangeAvg: function() {
     this.$('.js-avg').text(this.histogramChartView.formatNumber(this.viewModel.get('avg')) + ' AVG');
-    //this._animateValue('.js-avg', 'avg', 'AVG');
+    this.$('.js-avg').attr('title', this._formatNumberWithCommas(this.viewModel.get('avg').toFixed(2)) + ' AVG');
+  },
+
+  _formatNumberWithCommas: function(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   },
 
   _animateValue: function(className, what, unit) {
@@ -328,9 +333,9 @@ module.exports = WidgetContent.extend({
     var min, max;
 
     if (data && data.length) {
+
       var loBarIndex = this.viewModel.get('lo_index') || 0;
       var hiBarIndex = this.viewModel.get('hi_index') || data.length;
-
 
       var sum = this._calcSum(data, loBarIndex, hiBarIndex);
       var avg = this._calcAvg(data, loBarIndex, hiBarIndex);
@@ -348,17 +353,20 @@ module.exports = WidgetContent.extend({
   },
 
   _calcAvg: function(data, start, end) {
-    var total = this._calcSum(data, start, end);
 
-    var area = _.reduce(data.slice(start, end), function(memo, d) {
-      return !(d.start || d.end) ? memo : ((d.end + d.start) * 0.5 * d.freq) + memo;
-    }, 0);
+    var selectedData = data.slice(start, end);
 
-    if (total > 0) {
-      return area / total;
-    } else {
+    var total = this._calcSum(data, start, end, total);
+
+    if (!total) {
       return 0;
     }
+
+    var area = _.reduce(selectedData, function(memo, d) {
+      return (d.avg && d.freq) ? (d.avg * d.freq) + memo : memo;
+    }, 0);
+
+    return area / total;
   },
 
   _calcSum: function(data, start, end) {

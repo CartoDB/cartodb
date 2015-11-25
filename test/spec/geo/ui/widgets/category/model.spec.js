@@ -271,6 +271,11 @@ describe('widgets/category/model', function() {
     expect(this.model._data.size()).toBe(9);
     expect(this.model.get('data').length).toBe(9);
     expect(changeSpy).toHaveBeenCalled();
+
+    spyOn(this.model, 'applyCategoryColors');
+    spyOn(this.model, 'isColorApplied').and.returnValue(true);
+    this.model.setCategories(_generateData(9));
+    expect(this.model.applyCategoryColors).toHaveBeenCalled();
   });
 
   describe('parse', function() {
@@ -282,6 +287,15 @@ describe('widgets/category/model', function() {
         categories: _generateData(2)
       });
       expect(resetSpy).toHaveBeenCalled();
+    });
+
+    it('should send applied colors if it is enabled', function() {
+      spyOn(this.model, 'applyCategoryColors');
+      spyOn(this.model, 'isColorApplied').and.returnValue(true);
+      this.model.parse({
+        categories: _generateData(2)
+      });
+      expect(this.model.applyCategoryColors).toHaveBeenCalled();
     });
 
   });

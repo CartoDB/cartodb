@@ -3,6 +3,14 @@ var colorbrewer = require('colorbrewer');
 var categoryColors = _.initial(colorbrewer.Accent[8]);
 var defaultColor = '#CCC';
 
+/**
+ *  Class to set categories to each color
+ *  - Right now, there is a relation 1 color to 1 category.
+ *  - If that category is not available in the new data, that
+ *    color will be freed.
+ *
+ */
+
 function CategoryColors() {
   this.colors = {};
   _.each(categoryColors, function(c) {
@@ -35,12 +43,7 @@ CategoryColors.prototype.getNextAvailableColor = function() {
       return i;
     }
   }
-};
-
-CategoryColors.prototype.getAllCategoryColors = function () {
-  return _.map(this.colors, function(key, value) {
-    return [value, key];
-  });
+  return null;
 };
 
 CategoryColors.prototype.getColorByCategory = function (category) {

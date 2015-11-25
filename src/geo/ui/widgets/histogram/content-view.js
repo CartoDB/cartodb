@@ -334,9 +334,9 @@ module.exports = WidgetContent.extend({
     var min, max;
 
     if (data && data.length) {
+
       var loBarIndex = this.viewModel.get('lo_index') || 0;
       var hiBarIndex = this.viewModel.get('hi_index') || data.length;
-
 
       var sum = this._calcSum(data, loBarIndex, hiBarIndex);
       var avg = this._calcAvg(data, loBarIndex, hiBarIndex);
@@ -354,17 +354,20 @@ module.exports = WidgetContent.extend({
   },
 
   _calcAvg: function(data, start, end) {
-    var total = this._calcSum(data, start, end);
 
-    var area = _.reduce(data.slice(start, end), function(memo, d) {
-      return !(d.start || d.end) ? memo : ((d.end + d.start) * 0.5 * d.freq) + memo;
-    }, 0);
+    var selectedData = data.slice(start, end);
 
-    if (total > 0) {
-      return area / total;
-    } else {
+    var total = this._calcSum(data, start, end, total);
+
+    if (!total) {
       return 0;
     }
+
+    var area = _.reduce(selectedData, function(memo, d) {
+      return !(d.start || d.end) ? memo : ((d.start + d.end) * 0.5 * d.freq) + memo;
+    }, 0);
+
+    return area / total;
   },
 
   _calcSum: function(data, start, end) {

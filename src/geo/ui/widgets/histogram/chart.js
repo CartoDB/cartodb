@@ -55,11 +55,16 @@ module.exports = View.extend({
   },
 
   _onChangeV: function() {
-    this.textLabel.data([this.model.get('v')]).text(function(d) { return d });
-    var width = this.textLabel.node().getBBox().width;
-    this.rectLabel.attr('width', width);
+    var self = this;
 
-    console.log(this.model.get('v'));
+    this.textLabel.data([this.model.get('v')]).text(function(d) {
+      return self.formatNumber(d);
+    });
+
+    var width = this.textLabel.node().getBBox().width;
+    //console.log(this.tipLabel.attr('transform'));
+    //this.rectLabel.attr('width', width);
+    //console.log(this.model.get('v'));
   },
 
   _onChangeData: function() {
@@ -548,18 +553,18 @@ module.exports = View.extend({
     .append('g')
     .attr('class', 'Handle ' + className);
 
-    var bar = handles.selectAll("g")
+    this.tipLabel = handles.selectAll("g")
     .data(['1234'])
     .enter().append("g")
-    .attr("transform", function(d, i) { return "translate(0,50)"; });
+    .attr("transform", function(d, i) { return "translate(0,52)"; });
 
-    this.rectLabel = bar.append("rect")
-    .attr('fill', 'blue')
-    .attr('font-size', '12')
-    .attr("height", 10)
+    this.rectLabel = this.tipLabel.append("rect")
+    .attr('fill', 'red')
+    .attr("height", 12);
 
-    this.textLabel = bar.append("text")
+    this.textLabel = this.tipLabel.append("text")
     .attr("dy", "10")
+    .style("font-size", "9px")
     .text(function(d) { return d; });
 
     handles

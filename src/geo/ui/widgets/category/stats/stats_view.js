@@ -6,7 +6,8 @@ var View = require('cdb/core/view');
 var d3 = require('d3');
 
 /**
- * Category info view
+ * Category stats info view
+ *
  */
 
 module.exports = View.extend({
@@ -21,15 +22,18 @@ module.exports = View.extend({
   },
 
   render: function() {
+    var min = this._getFormattedValue('min');
+    var max = this._getFormattedValue('max');
+    var nulls = this._getFormattedValue('nulls');
 
     this.$el.html(
       template({
         isSearchEnabled: this.viewModel.isSearchEnabled(),
         isSearchApplied: this.dataModel.isSearchApplied(),
         resultsCount: this.dataModel.getSearchCount(),
-        min: this.dataModel.get('min'),
-        max: this.dataModel.get('max'),
-        nulls: this.dataModel.get('nulls')
+        min: min,
+        max: max,
+        nulls: nulls
       })
     );
     return this;
@@ -40,6 +44,11 @@ module.exports = View.extend({
     this.viewModel.bind('change:search', this.render, this);
     this.add_related_model(this.dataModel);
     this.add_related_model(this.viewModel);
+  },
+
+  _getFormattedValue: function(attr) {
+    var format = d3.format('0,000');
+    return !_.isUndefined(this.dataModel.get(attr)) && format(this.dataModel.get(attr)) || '-'
   }
 
 });

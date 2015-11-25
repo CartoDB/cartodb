@@ -364,7 +364,7 @@ module.exports = WidgetContent.extend({
     }
 
     var area = _.reduce(selectedData, function(memo, d) {
-      return !(d.start || d.end) ? memo : ((d.start + d.end) * 0.5 * d.freq) + memo;
+      return (d.avg && d.freq) ? (d.avg * d.freq) + memo : memo;
     }, 0);
 
     return area / total;

@@ -1038,7 +1038,7 @@ class User < Sequel::Model
     renamed_tables.each do |t|
       table = Table.new(:user_table => ::UserTable.find(:table_id => t[:oid], :user_id => self.id))
       begin
-        CartoDB::Logger.info('link_renamed_tables', "User[id: '#{self.id}'], Table[name: '#{t[:relname]}']")
+        CartoDB::Logger.info('link_renamed_tables', "User[id: '#{id}'], Table[name: '#{t[:relname]}']")
         Rollbar.report_message('ghost tables', 'debug', {
           :action => 'rename',
           :new_table => t[:relname]
@@ -1057,7 +1057,7 @@ class User < Sequel::Model
     created_tables = real_tables.select {|t| table_names.include?(t[:relname]) }
     created_tables.each do |t|
       begin
-        CartoDB::Logger.info('link_created_table:', "User[id: '#{self.id}'], Table[name: '#{t[:relname]}']")
+        CartoDB::Logger.info('link_created_table:', "User[id: '#{id}'], Table[name: '#{t[:relname]}']")
         Rollbar.report_message('ghost tables', 'debug', {
           :action => 'registering table',
           :new_table => t[:relname]
@@ -1089,7 +1089,7 @@ class User < Sequel::Model
 
     # Remove tables with oids that don't exist on the db
     self.tables.where(table_id: dropped_tables).all.each do |user_table|
-      CartoDB::Logger.info('link_deleted_tables', "User[id: '#{self.id}'], Table[name: '#{user_table.name}']")
+      CartoDB::Logger.info('link_deleted_tables', "User[id: '#{id}'], Table[name: '#{user_table.name}']")
       Rollbar.report_message('ghost tables', 'debug', {
         :action => 'dropping table',
         :new_table => user_table.name

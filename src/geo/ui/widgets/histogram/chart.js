@@ -393,6 +393,7 @@ module.exports = View.extend({
   },
 
   removeSelection: function() {
+    this.resetIndexes();
     this.chart.selectAll('.Bar').classed('is-selected', false);
     this._removeBrush();
     this._setupBrush();

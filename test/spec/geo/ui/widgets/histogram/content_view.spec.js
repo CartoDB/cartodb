@@ -65,6 +65,7 @@ function genHistogramData(n) {
     var obj = {
       bin: i,
       freq: Math.round(Math.random() * 10),
+      avg: Math.round(Math.random() * 10),
       start: start,
       end: end,
       max: end,

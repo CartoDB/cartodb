@@ -6,7 +6,8 @@ var View = require('cdb/core/view');
 var d3 = require('d3');
 
 /**
- * Category info view
+ * Category stats info view
+ *
  */
 
 module.exports = View.extend({

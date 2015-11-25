@@ -46,8 +46,9 @@ var TorqueLayer = MapLayer.extend({
     // Binds events from view to this moel
     torqueLayerView.bind('play', this._setWithoutReloadingTiles.bind(this, 'isRunning', true))
     torqueLayerView.bind('pause', this._setWithoutReloadingTiles.bind(this, 'isRunning', false))
-    torqueLayerView.bind('change:time', function() {
-      this._setWithoutReloadingTiles('step', torqueLayerView.getStep());
+    torqueLayerView.bind('change:time', function(changes) {
+      this._setWithoutReloadingTiles('time', changes.time);
+      this._setWithoutReloadingTiles('step', changes.step);
     }, this);
     torqueLayerView.bind('change:stepsRange', function() {
       this._setWithoutReloadingTiles('stepsRange', torqueLayerView.getStepsRange());
@@ -57,6 +58,7 @@ var TorqueLayer = MapLayer.extend({
     this.set({
       isRunning: torqueLayerView.isRunning(),
       timeBounds: torqueLayerView.getTimeBounds(),
+      time: torqueLayerView.getTime(),
       step: torqueLayerView.getStep(),
       steps: torqueLayerView.options.steps,
       stepsRange: torqueLayerView.getStepsRange()

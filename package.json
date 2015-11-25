@@ -67,7 +67,7 @@
     "semver": "~4.1.0",
     "source-map-support": "0.3.2",
     "time-grunt": "~0.3.1",
-    "torque.js": "2.11.4",
+    "torque.js": "2.14.0",
     "underscore": "1.8.3",
     "watchify": "3.4.0"
   },

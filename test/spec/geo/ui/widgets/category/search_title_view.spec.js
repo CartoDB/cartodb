@@ -1,6 +1,6 @@
 var _ = require('underscore');
 var CategoryModel = require('cdb/geo/ui/widgets/category/model.js');
-var ViewModel = require('cdb/geo/ui/widgets/category/models/view_model.js');
+var ViewModel = require('cdb/geo/ui/widgets/widget_content_model.js');
 var SearchTitleView = require('cdb/geo/ui/widgets/category/title/search_title_view.js');
 var WindshaftFiltersCategory = require('cdb/windshaft/filters/category');
 var $ = require('jQuery');
@@ -35,6 +35,7 @@ describe('widgets/category/search_title_view', function() {
 
     it('should change to search state when search event is triggered', function() {
       expect(this.viewModel.bind.calls.argsFor(0)[0]).toEqual('change:search');
+      expect(this.viewModel.bind.calls.argsFor(1)[0]).toEqual('change:collapsed');
     });
 
     it('should change to search state when search event is triggered', function() {
@@ -130,6 +131,16 @@ describe('widgets/category/search_title_view', function() {
       expect(this.view.$('.js-unlock').hasClass('is-selected')).toBeTruthy();
       this.view.$('.js-unlock').click();
       expect(this.model.unlockCategories).toHaveBeenCalled();
+    });
+
+    it('should call to collapse function when it is clicked', function() {
+      spyOn(this.viewModel, 'toggleCollapsed').and.callThrough();
+      expect(this.view.$('.js-collapse').hasClass('Widget-arrow--up')).toBeTruthy();
+      this.view.$('.js-collapse').click();
+      expect(this.viewModel.toggleCollapsed).toHaveBeenCalled();
+      expect(this.view.$('.js-collapse').hasClass('Widget-arrow--down')).toBeTruthy();
+      this.view.$('.js-collapse').click();
+      expect(this.viewModel.toggleCollapsed.calls.count()).toBe(2);
     });
 
   });

@@ -20,7 +20,8 @@ module.exports = View.extend({
     'click .js-unlock': '_unlockCategories',
     'click .js-applyLocked': '_applyLocked',
     'click .js-applyColors': '_applyColors',
-    'click .js-cancelColors': '_cancelColors'
+    'click .js-cancelColors': '_cancelColors',
+    'click .js-collapse': '_toggleCollapse'
   },
 
   initialize: function() {
@@ -32,6 +33,7 @@ module.exports = View.extend({
   render: function() {
     this.$el.html(
       template({
+        isCollapsed: this.viewModel.isCollapsed(),
         isColorApplied: this.dataModel.isColorApplied(),
         title: this.dataModel.get('title'),
         columnName: this.dataModel.get('column'),
@@ -47,6 +49,7 @@ module.exports = View.extend({
 
   _initBinds: function() {
     this.viewModel.bind('change:search', this._onSearchToggled, this);
+    this.viewModel.bind('change:collapsed', this.render, this);
     this.dataModel.bind('change:filter change:locked change:lockCollection change:categoryColors', this.render, this);
     this.add_related_model(this.dataModel);
     this.add_related_model(this.viewModel);
@@ -129,6 +132,10 @@ module.exports = View.extend({
   _cancelSearch: function() {
     this.dataModel.cleanSearch();
     this.viewModel.disableSearch();
+  },
+
+  _toggleCollapse: function() {
+    this.viewModel.toggleCollapsed();
   },
 
   clean: function() {

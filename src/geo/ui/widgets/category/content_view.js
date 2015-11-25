@@ -3,7 +3,7 @@ var WidgetContent = require('../standard/widget_content_view');
 var SearchTitleView = require('./title/search_title_view');
 var CategoryOptionsView = require('./options/options_view');
 var CategoryItemsView = require('./list/items_view');
-var CategoryViewModel = require('./models/view_model');
+var WidgetViewModel = require('../widget_content_model');
 var CategoryStatsView = require('./stats/stats_view');
 var CategoryPaginatorView = require('./paginator/paginator_view');
 var SearchCategoryItemsView = require('./list/search_items_view');
@@ -20,8 +20,9 @@ module.exports = WidgetContent.extend({
   _ITEMS_PER_PAGE: 6,
 
   initialize: function(opts) {
-    this.viewModel = new CategoryViewModel();
+    this.viewModel = new WidgetViewModel();
     WidgetContent.prototype.initialize.call(this, arguments);
+    this._initBinds();
   },
 
   render: function() {
@@ -29,6 +30,13 @@ module.exports = WidgetContent.extend({
     this.$el.html(template());
     this._initViews();
     return this;
+  },
+
+  _initBinds: function() {
+    this.viewModel.bind('change:collapsed', function(mdl, isCollapsed) {
+      this.$el.toggleClass('is-collapsed', !!isCollapsed);
+    }, this);
+    this.add_related_model(this.viewModel);
   },
 
   _initViews: function() {

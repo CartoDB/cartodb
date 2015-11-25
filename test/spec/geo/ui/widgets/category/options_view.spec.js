@@ -1,6 +1,6 @@
 var _ = require('underscore');
 var CategoryModel = require('cdb/geo/ui/widgets/category/model.js');
-var ViewModel = require('cdb/geo/ui/widgets/category/models/view_model.js');
+var ViewModel = require('cdb/geo/ui/widgets/widget_content_model.js');
 var OptionsView = require('cdb/geo/ui/widgets/category/options/options_view.js');
 var WindshaftFiltersCategory = require('cdb/windshaft/filters/category');
 var $ = require('jQuery');

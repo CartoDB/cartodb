@@ -3,6 +3,7 @@ var _ = require('underscore');
 var d3 = require('d3');
 var Model = require('cdb/core/model');
 var View = require('cdb/core/view');
+var HistogramTitleView = require('./histogram_title_view');
 var WidgetContent = require('../standard/widget_content_view');
 var HistogramChartView = require('./chart');
 var placeholder = require('./placeholder.tpl');
@@ -32,6 +33,13 @@ module.exports = WidgetContent.extend({
   },
 
   _initViews: function() {
+    var titleView = new HistogramTitleView({
+      viewModel: this.viewModel,
+      dataModel: this.dataModel
+    });
+    this.$('.js-title').html(titleView.render().el);
+    this.addView(titleView);
+
     this._setupDimensions();
     this._renderMiniChart();
     this._renderMainChart();
@@ -39,7 +47,11 @@ module.exports = WidgetContent.extend({
 
   _initBinds: function() {
     this.dataModel.once('change:data', this._onFirstLoad, this);
+    this.viewModel.bind('change:collapsed', function(mdl, isCollapsed) {
+      this.$el.toggleClass('is-collapsed', !!isCollapsed);
+    }, this);
     this.add_related_model(this.dataModel);
+    this.add_related_model(this.viewModel);
   },
 
   _onFirstLoad: function() {

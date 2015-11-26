@@ -289,7 +289,7 @@ module.exports = WidgetContent.extend({
     this._animateValue(this.viewModel, what, className, {
       formatter: this.histogramChartView.formatNumber,
       template: animationTemplate,
-      templateData: { suffix: suffix }
+      templateData: { suffix: " " + suffix }
     });
   },
 

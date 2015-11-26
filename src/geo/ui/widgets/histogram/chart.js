@@ -54,69 +54,42 @@ module.exports = View.extend({
     this.model.set({ data: data });
   },
 
-  _onChangeLeftTip: function() {
-    this._updateLeftTip('left');
+  _onChangeLeftAxisTip: function() {
+    this._updateAxisTip('left');
   },
 
-  _onChangeRightTip: function() {
-    this._updateTip('right');
+  _onChangeRightAxisTip: function() {
+    this._updateAxisTip('right');
   },
 
-  _updateLeftTip: function(className) {
+  _updateAxisTip: function(className) {
     var self = this;
-    var textLabel = this.chart.select('.TipLabel-text.Handle-' + className);
-    var tipLabel  = this.chart.select('.TipLabel.Handle-' + className);
-    var rectLabel = this.chart.select('.TipLabel-rect.Handle-' + className);
 
+    var textLabel = this.chart.select('.AxisTip-text.AxisTip-' + className);
+    var axisTip  = this.chart.select('.AxisTip.AxisTip-' + className);
+    var rectLabel = this.chart.select('.AxisTip-rect.AxisTip-' + className);
+    var handle    = this.chart.select('.Handle.Handle-' + className);
 
-    textLabel.data([this.model.get(className + '_tip')]).text(function(d) {
+    textLabel.data([this.model.get(className + '_axis_tip')]).text(function(d) {
       return self.formatNumber(d);
     });
 
     var width = textLabel.node().getBBox().width;
     rectLabel.attr('width', width + 4);
 
-    var xParts = /translate\(\s*([^\s,)]+), ([^\s,)]+)/.exec(this.leftHandle.attr('transform'));
-    var xPos = +xParts[1] + 3;
+    var parts = /translate\(\s*([^\s,)]+), ([^\s,)]+)/.exec(handle.attr('transform'));
+    var xPos = +parts[1] + 3;
 
     if ((xPos - width/2) < 0) {
-      tipLabel.attr('transform', 'translate(0, 52)');
+      axisTip.attr('transform', 'translate(0, 52)');
       textLabel.attr('dx', -xPos);
       rectLabel.attr('x',  -xPos);
-    } else {
-      tipLabel.attr('transform', 'translate(-' + (width/2) + ', 52)');
-      rectLabel.attr('x', 0);
-      textLabel.attr('dx', +2);
-    }
-  },
-  _updateTip: function(className) {
-    var self = this;
-    var textLabel = this.chart.select('.TipLabel-text.Handle-' + className);
-    var tipLabel  = this.chart.select('.TipLabel.Handle-' + className);
-    var rectLabel = this.chart.select('.TipLabel-rect.Handle-' + className);
-
-    textLabel.data([this.model.get(className + '_tip')]).text(function(d) {
-      return self.formatNumber(d);
-    });
-
-    var width = textLabel.node().getBBox().width;
-    rectLabel.attr('width', width + 4);
-
-    var lParts = /translate\(\s*([^\s,)]+), ([^\s,)]+)/.exec(this.leftHandle.attr('transform'));
-    var rParts = /translate\(\s*([^\s,)]+), ([^\s,)]+)/.exec(this.rightHandle.attr('transform'));
-    var xPos = +rParts[1] + 3;
-    var lPos = +lParts[1] + 3;
-
-    if ((lPos - width/2 - 2) < 0) {
-      tipLabel.attr('transform', 'translate(0, 52)');
-      textLabel.attr('dx', 10);
-      rectLabel.attr('x', 20);
-    } if ((xPos + width/2 + 2) >= this.chartWidth) {
-      tipLabel.attr('transform', 'translate(0, 52)');
+    } else if ((xPos + width/2 + 2) >= this.chartWidth) {
+      axisTip.attr('transform', 'translate(0, 52)');
       textLabel.attr('dx', this.chartWidth - (xPos + width - 2));
       rectLabel.attr('x', this.chartWidth - (xPos + width));
     } else {
-      tipLabel.attr('transform', 'translate(-' + (width/2) + ', 52)');
+      axisTip.attr('transform', 'translate(-' + (width/2) + ', 52)');
       rectLabel.attr('x', 0);
       textLabel.attr('dx', +2);
     }
@@ -178,9 +151,9 @@ module.exports = View.extend({
   },
 
   _showTip: function(className) {
-    var textLabel = this.chart.select('.TipLabel-text.Handle-' + className);
-    var tipLabel  = this.chart.select('.TipLabel.Handle-' + className);
-    var rectLabel = this.chart.select('.TipLabel-rect.Handle-' + className);
+    var textLabel = this.chart.select('.AxisTip-text.AxisTip-' + className);
+    var axisTip  = this.chart.select('.AxisTip.AxisTip-' + className);
+    var rectLabel = this.chart.select('.AxisTip-rect.AxisTip-' + className);
 
     if (textLabel) {
       textLabel.transition().duration(200).attr('opacity',  1);
@@ -191,9 +164,9 @@ module.exports = View.extend({
   },
 
   _hideTip: function(className) {
-    var textLabel = this.chart.select('.TipLabel-text.Handle-' + className);
-    var tipLabel  = this.chart.select('.TipLabel.Handle-' + className);
-    var rectLabel = this.chart.select('.TipLabel-rect.Handle-' + className);
+    var textLabel = this.chart.select('.AxisTip-text.AxisTip-' + className);
+    var axisTip  = this.chart.select('.AxisTip.AxisTip-' + className);
+    var rectLabel = this.chart.select('.AxisTip-rect.AxisTip-' + className);
 
     if (textLabel) {
       textLabel.transition().duration(200).attr('opacity',  0);
@@ -273,13 +246,13 @@ module.exports = View.extend({
   },
 
   _bindModel: function() {
-    this.model.bind('change:right_tip', this._onChangeRightTip, this);
-    this.model.bind('change:left_tip', this._onChangeLeftTip, this);
     this.model.bind('change:width', this._onChangeWidth, this);
     this.model.bind('change:pos', this._onChangePos, this);
     this.model.bind('change:lo_index change:hi_index', this._onChangeRange, this);
     this.model.bind('change:data', this._onChangeData, this);
     this.model.bind('change:dragging', this._onChangeDragging, this);
+    this.model.bind('change:right_axis_tip', this._onChangeRightAxisTip, this);
+    this.model.bind('change:left_axis_tip', this._onChangeLeftAxisTip, this);
   },
 
   reset: function() {
@@ -645,32 +618,31 @@ module.exports = View.extend({
     this.chart.select('.Handle-right')
     .attr('transform', 'translate(' + rightX + ', 0)');
 
-    this.model.set({ right_tip: this.xAxisScale(rightX + 3) });
-    this.model.set({ left_tip: this.xAxisScale(leftX + 3) });
+    this.model.set({
+      left_axis_tip: this.xAxisScale(leftX + 3),
+      right_axis_tip: this.xAxisScale(rightX + 3)
+    });
   },
 
-  _generateTip: function(className) {
+  _generateAxisTip: function(className) {
 
-    var handle = this.chart.select('.Handle.' + className);
+    var handle = this.chart.select('.Handle.Handle-' + className);
 
-    var tipLabel = this.tipLabel = handle.selectAll("g")
+    var axisTip = handle.selectAll("g")
     .data([''])
     .enter().append("g")
-    .attr('class', 'TipLabel ' + className)
+    .attr('class', 'AxisTip AxisTip-' + className)
     .attr("transform", function(d, i) { return "translate(0,52)"; });
 
-    this.rectLabel = tipLabel.append("rect")
-    .attr('class', 'TipLabel-rect ' + className)
-    .attr('fill', '#fff')
+    this.rectLabel = axisTip.append("rect")
+    .attr('class', 'AxisTip-rect AxisTip-' + className)
     .attr("height", 12)
     .attr("width", 10);
 
-    this.textLabel = tipLabel.append("text")
-    .attr('class', 'TipLabel-text ' + className)
+    this.textLabel = axisTip.append("text")
+    .attr('class', 'AxisTip-text AxisTip-' + className)
     .attr("dy", "11")
     .attr("dx", "0")
-    .attr('fill', '#979EA1')
-    .style("font-size", "10px")
     .text(function(d) { return d; });
   },
 
@@ -680,9 +652,9 @@ module.exports = View.extend({
 
     var handle = this.chart.select('.Handles')
     .append('g')
-    .attr('class', 'Handle ' + className);
+    .attr('class', 'Handle Handle-' + className);
 
-    this._generateTip(className);
+    this._generateAxisTip(className);
 
     handle
     .append('line')
@@ -720,8 +692,8 @@ module.exports = View.extend({
 
   _generateHandles: function() {
     this.chart.append('g').attr('class', 'Handles');
-    this.leftHandle  = this._generateHandle('Handle-left');
-    this.rightHandle = this._generateHandle('Handle-right');
+    this.leftHandle  = this._generateHandle('left');
+    this.rightHandle = this._generateHandle('right');
   },
 
   _generateHandleLine: function() {

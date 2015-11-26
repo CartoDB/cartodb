@@ -33,6 +33,10 @@
   font-size: 10px;
   text-align: center;
   pointer-events: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 .Widget-chartTooltip:after {
   display: inline-block;
@@ -125,6 +129,10 @@
   shape-rendering: crispEdges;
   font: 10px sans-serif;
   fill: #979EA1;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 .Axis path {
@@ -135,4 +143,12 @@
   stroke: #EEE;
   stroke-width: 1;
   shape-rendering: crispEdges;
+}
+
+.AxisTip-text {
+  fill: #3AA9E3;
+  font-size: 10px;
+}
+.AxisTip-rect {
+  fill: #FFF;
 }

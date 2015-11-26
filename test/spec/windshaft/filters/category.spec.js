@@ -224,8 +224,7 @@ describe('windshaft/filters/category', function() {
       expect(result['category_widget']['reject']).not.toBeDefined();
       expect(result['category_widget']['accept']).toBeDefined();
       var accept = result['category_widget']['accept'];
-      expect(accept.length).toBe(1);
-      expect(accept[0]).toBe('___@___');
+      expect(accept.length).toBe(0);
     });
 
   });

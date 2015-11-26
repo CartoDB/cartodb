@@ -42,14 +42,10 @@ module.exports = WidgetModel.extend({
   },
 
   _onChangeBinds: function() {
-    this.bind('change:url', function(){
-      if (this.get('sync')) {
-        this._fetch();
-      }
-    }, this);
-    this.bind('change:boundingBox', function() {
-      if (this.get('bbox')) {
-        this._fetch();
+    WidgetModel.prototype._onChangeBinds.call(this);
+    this.bind('change:histogramSizes', function(mdl, isSizesApplied, d) {
+      if (isSizesApplied) {
+        this.trigger('histogramSizes', this);
       }
     }, this);
   },
@@ -95,7 +91,7 @@ module.exports = WidgetModel.extend({
   // @bins should be an array with the format [{ start: ..., end: ..., freq: ..., min: ..., max:   }, ...]
   //    - start, end: are the bucket bounds
   //    - min, max: the min and the max value for all the points in that bucket
-  //    - freq: count 
+  //    - freq: count
   setBins: function(bins, options) {
     this._data.reset(bins, options);
     this.set('data', { bins: bins }, options);

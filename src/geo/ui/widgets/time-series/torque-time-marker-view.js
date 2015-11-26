@@ -7,15 +7,16 @@ var View = require('cdb/core/view');
 module.exports = View.extend({
 
   initialize: function() {
-    if (!this.options.chartCanvas) throw new Error('chartCanvas is required');
+    if (!this.options.chartView) throw new Error('chartView is required');
     if (!this.options.viewModel) throw new Error('viewModel is required');
     if (!this.options.torqueLayerModel) throw new Error('torqeLayerModel is required');
 
-    this._chartCanvas = this.options.chartCanvas;
+    this._chartView = this.options.chartView;
     this._viewModel = this.options.viewModel;
     this._torqueLayerModel = this.options.torqueLayerModel;
 
-    this._torqueLayerModel.bind('change:step', this._updatePosition, this);
+    this._torqueLayerModel.bind('change:step', this._onChangeStep, this);
+    this._torqueLayerModel.bind('change:stepsRange', this.onStepsRange, this);
     this.add_related_model(this._torqueLayerModel);
 
     this._viewModel.bind('change:histogramChartWidth', this._updateXScale, this);
@@ -25,7 +26,7 @@ module.exports = View.extend({
 
   render: function() {
     // Make the render call idempotent; only create time marker once
-    if (!this._timeMarker) {
+    if (!this.timeMarker) {
       var dragBehavior = d3.behavior.drag()
         .on('dragstart', this._onDragStart.bind(this))
         .on('drag', this._onDrag.bind(this))
@@ -34,7 +35,7 @@ module.exports = View.extend({
       var margins = this._viewModel.get('histogramChartMargins');
       var height = this._viewModel.get('histogramChartHeight') - margins.top - margins.bottom + 8;
 
-      this._timeMarker = this._chartCanvas.append('rect')
+      this.timeMarker = this._chartView.canvas.append('rect')
         .attr('class', 'TimeMarker')
         .attr('width', 4)
         .attr('height', height)
@@ -49,8 +50,8 @@ module.exports = View.extend({
   },
 
   clean: function() {
-    if (this._timeMarker) {
-      this._timeMarker.remove();
+    if (this.timeMarker) {
+      this.timeMarker.remove();
     }
     View.prototype.clean.call(this);
   },
@@ -70,7 +71,7 @@ module.exports = View.extend({
     var nextX = d.x + d3.event.dx;
     if (this._isWithinRange(nextX)) {
       d.x = nextX;
-      this._timeMarker.attr('transform', this._translateXY);
+      this.timeMarker.attr('transform', this._translateXY);
 
       var step = Math.round(this._xScale.invert(d.x));
       this._torqueLayerModel.setStep(step);
@@ -92,19 +93,26 @@ module.exports = View.extend({
     return 0 <= x && x <= this._viewModel.get('histogramChartWidth');
   },
 
-  _updatePosition: function(m, step) {
-    // Time marker might not be created yet, when this method is first called
-    if (this._timeMarker && !this._viewModel.get('isDragging')) {
-      var data = this._timeMarker.data();
+  _onChangeStep: function(m, step) {
+    // Time marker might not be created when this method is first called
+    if (this.timeMarker && !this._viewModel.get('isDragging')) {
+      var data = this.timeMarker.data();
       data[0].x = this._xScale(step);
 
-      this._timeMarker
+      this.timeMarker
         .data(data)
         .transition()
         .ease('linear')
-        .attr('transform', function(d) {
-          return 'translate(' + [d.x, d.y] + ')';
-        });
+        .attr('transform', this._translateXY);
+    }
+  },
+
+  onStepsRange: function() {
+    var r = this._torqueLayerModel.get('stepsRange');
+    if (r.start === 0 && r.end === this.model.get('bins')) {
+      this._chartView.removeSelection();
+    } else {
+      this._chartView.selectRange(r.start, r.end);
     }
   },
 

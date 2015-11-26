@@ -503,13 +503,13 @@ module.exports = View.extend({
     this.model.set({ pos: pos });
   },
 
-  expand: function(newHeight) {
-    this.canvas.attr('height', newHeight);
-    this._move({ x: 0, y: 20 });
+  expand: function(height) {
+    this.canvas.attr('height', this.canvasHeight + height);
+    this._move({ x: 0, y: height });
   },
 
-  contract: function(newHeight) {
-    this.canvas.attr('height', newHeight);
+  contract: function(height) {
+    this.canvas.attr('height', height);
     this._move({ x: 0, y: 0 });
   },
 

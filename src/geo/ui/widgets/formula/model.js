@@ -7,6 +7,7 @@ module.exports = WidgetModel.extend({
     {},
     WidgetModel.prototype.defaults,
     {
+      data: '',
       suffix: '',
       prefix: ''
     }

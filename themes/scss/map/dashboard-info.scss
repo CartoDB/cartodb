@@ -4,8 +4,70 @@
 @import '../variables/sizes';
 @import '../variables/mixins';
 
+@-webkit-keyframes fadeInDown {
+  from {
+    opacity: 0;
+    -webkit-transform: translate3d(0, -2%, 0);
+    transform: translate3d(0, -2%, 0);
+  }
+
+  to {
+    opacity: 1;
+    -webkit-transform: none;
+    transform: none;
+  }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    -webkit-transform: translate3d(0, -2%, 0);
+    transform: translate3d(0, -2%, 0);
+  }
+
+  to {
+    opacity: 1;
+    -webkit-transform: none;
+    transform: none;
+  }
+}
+
+
+@-webkit-keyframes fadeInRight {
+  from {
+    opacity: 0;
+    -webkit-transform: translate3d(-5%, 0, 0);
+    transform: translate3d(-5%, 0, 0);
+  }
+
+  to {
+    opacity: 1;
+    -webkit-transform: none;
+    transform: none;
+  }
+}
+
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    -webkit-transform: translate3d(-5%, 0, 0);
+    transform: translate3d(-5%, 0, 0);
+  }
+
+  to {
+    opacity: 1;
+    -webkit-transform: none;
+    transform: none;
+  }
+}
+
 .Dashboard-info-texts {
-  display: none;
+  opacity: 0;
+  position: absolute;
+  left: 24px;
+  top: 150px;
+  right: 24px;
+  width: 232px;
 }
 .Dashboard-info {
   height: 100vh;
@@ -13,20 +75,61 @@
   max-width: 280px;
   padding: 24px;
   background: #3AA9E3;
+  overflow: hidden;
   left: 0px;
   top: 0;
   width: 88px;
   box-sizing: border-box;
   z-index: 2;
   font-family: 'Open Sans';
+  -webkit-transition: width .5s cubic-bezier(0.01, 0.99, 0.97, 1.01);
+  transition: width .5s cubic-bezier(0.01, 0.99, 0.97, 1.01);
 
   &.is-active {
     width: 280px;
     box-shadow: 0px 0px 40px 0px rgba(0, 0, 0, .20);
+
     .Dashboard-info-texts  {
-      display: block;
+      -webkit-animation: .8s fadeInDown both;
+      animation: .8s fadeInDown both;
+    }
+    .Dashboard-info-footer-txt {
+      -webkit-animation: .8s fadeInRight both;
+      animation: .8s fadeInRight both;
+    }
+    .Dashboard-info-snapshots {
+      opacity: 1;
+    }
+    .Dashboard-info-actions-link {
+      transform: rotate(180deg);
     }
   }
+}
+
+.Dashboard-info-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  background: #fff;
+  margin-bottom: $sMargin-section;
+}
+
+.Dashboard-info-actions {
+  width: 40px;
+  height: 40px;
+  margin-bottom: 48px;
+}
+
+.Dashboard-info-actions-link {
+  display: block;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid #fff;
+  margin: 0 auto;
+  background: url(/themes/img/dashboard-show.svg) no-repeat center center;
+  -webkit-transition: all .3s ease-out;
+  transition: all .3s ease-out;
 }
 
 .Dashboard-info-update {
@@ -49,4 +152,84 @@
   color: #fff;
   font-size: $sFontSize-normal;
   line-height: $sLineHeight-normal;
+}
+
+.Dashboard-info-footer {
+  position: absolute;
+  right: 24px;
+  bottom: 24px;
+  left: 24px;
+  width: 280px;
+}
+
+.Dashboard-info-media {
+  display: inline-block;
+  vertical-align: middle;
+  width: 40px;
+  text-align: center;
+  margin-right: 10px;
+
+  img {
+    display: inline-block;
+    border-radius: 4px;
+  }
+}
+
+.Dashboard-info-footer-txt {
+  color: #fff;
+  font-size: $sFontSize-larger;
+  line-height: $sLineHeight-larger;
+  font-weight: $sFontWeight-lighter;
+  vertical-align: middle;
+  display: inline-block;
+  opacity: 0;
+}
+
+.Dashboard-info-footer-item {
+  margin-top: 20px;
+}
+
+.Dashboard-info-snapshots {
+  padding: 24px;
+  background: rgba(0, 0, 0, .2);
+  margin-left: -24px;
+  position: relative;
+  height: 120px;
+  overflow: hidden;
+  opacity: 0;
+  width: 280px;
+  box-sizing: border-box;
+  -webkit-transition: opacity .5s ease-out;
+  transition: opacity .5s ease-out;
+}
+
+.Dashboard-info-snapshots-list {
+  display: flex;
+  flex-flow: row wrap;
+  position: absolute;
+  width: 1000px;
+}
+
+.Dashboard-info-snapshots-list-item {
+  height: 72px;
+  background: #fff;
+  border-radius: 4px;
+  margin-right: 8px;
+  width: 96px;
+  padding: 12px;
+  box-sizing: border-box;
+}
+
+.Dashboard-info-snapshots-list-title {
+  font-weight: $sFontWeight-semibold;
+  font-size: $sFontSize-smaller;
+  line-height: $sLineHeight-smaller;
+  margin-bottom: 8px;
+}
+
+.Dashboard-info-snapshots-list-date {
+  font-weight: $sFontWeight-lighter;
+  font-size: $sFontSize-smaller;
+  line-height: $sLineHeight-smaller;
+  color: #636D72;
 }

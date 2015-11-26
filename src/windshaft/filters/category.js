@@ -129,8 +129,7 @@ module.exports = WindshaftFilterBase.extend({
     var rejectedCats = { reject: _.pluck(this.rejectedCategories.toJSON(), 'name') };
 
     if (this.get('rejectAll')) {
-      // TODO: replace this by empty array when it is available through API
-      filter = { accept: ['___@___'] };
+      filter = { accept: [] };
     } else if (acceptCount > 0) {
       filter = acceptedCats;
     } else if (rejectCount > 0 && acceptCount === 0) {

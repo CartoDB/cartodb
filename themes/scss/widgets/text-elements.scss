@@ -8,7 +8,8 @@
   @include text-overflow();
   font-size: $sFontSize-huge;
   font-weight: $sFontWeight-normal;
-  line-height: $sFontSize-huge * 1.6;
+  color: #2E3C43;
+  //line-height: $sFontSize-huge * 1.6;
 }
 .Widget-textBig { // 16 size
   @include text-overflow();

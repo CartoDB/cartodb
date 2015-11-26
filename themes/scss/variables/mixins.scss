@@ -22,7 +22,7 @@
 // Display inline
 @mixin inline-block() {
   display:inline-block;
-  vertical-align: top;
+  vertical-align: middle;
 }
 
 // Display flex functions

@@ -7,20 +7,23 @@ module.exports = WindshaftFilterBase.extend({
     return _.isUndefined(this.get('min')) && _.isUndefined(this.get('max'));
   },
 
-  setRange: function(range) {
-    this.set(range);
+  setRange: function(min, max) {
+    this.set({
+      min: min,
+      max: max
+    });
   },
 
-  unsetRange: function(range) {
-    this.unset('min', { silent: true });
-    this.unset('max', { silent: true });
-    this.trigger('change', this);
+  unsetRange: function() {
+    this.setRange(undefined, undefined);
   },
-
 
   toJSON: function() {
     var json = {};
-    json[this.get('widgetId')] = { min: this.get('min'), max: this.get('max') };
+    json[this.get('widgetId')] = {
+      min: this.get('min'),
+      max: this.get('max')
+    };
 
     return json;
   }

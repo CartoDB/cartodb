@@ -3,11 +3,12 @@ var _ = require('underscore');
 var d3 = require('d3');
 var Model = require('cdb/core/model');
 var View = require('cdb/core/view');
+var HistogramTitleView = require('./histogram_title_view');
 var WidgetContent = require('../standard/widget_content_view');
+var WidgetViewModel = require('../widget_content_model');
 var HistogramChartView = require('./chart');
 var placeholder = require('./placeholder.tpl');
 var template = require('./content.tpl');
-var xAxisTickFormatter = d3.format('.2s');
 
 /**
  * Widget content view for a histogram
@@ -26,12 +27,19 @@ module.exports = WidgetContent.extend({
   initialize: function() {
     this.dataModel = this.options.dataModel;
     this.firstData = _.clone(this.options.dataModel);
-    this.viewModel = new Model();
+    this.viewModel = new WidgetViewModel();
     this.lockedByUser = false;
     WidgetContent.prototype.initialize.call(this);
   },
 
   _initViews: function() {
+    var titleView = new HistogramTitleView({
+      viewModel: this.viewModel,
+      dataModel: this.dataModel
+    });
+    this.$('.js-title').html(titleView.render().el);
+    this.addView(titleView);
+
     this._setupDimensions();
     this._renderMiniChart();
     this._renderMainChart();
@@ -39,7 +47,11 @@ module.exports = WidgetContent.extend({
 
   _initBinds: function() {
     this.dataModel.once('change:data', this._onFirstLoad, this);
+    this.viewModel.bind('change:collapsed', function(mdl, isCollapsed) {
+      this.$el.toggleClass('is-collapsed', !!isCollapsed);
+    }, this);
     this.add_related_model(this.dataModel);
+    this.add_related_model(this.viewModel);
   },
 
   _onFirstLoad: function() {
@@ -210,15 +222,11 @@ module.exports = WidgetContent.extend({
     this.histogramChartView.removeSelection();
 
     var data = this.originalData;
-    var start = data[loBarIndex].start;
-    var end = data[hiBarIndex - 1].end;
-
-    this._setRange(start, end);
+    this.filter.setRange(
+      data[loBarIndex].start,
+      data[hiBarIndex - 1].end
+    );
     this._updateStats();
-  },
-
-  _setRange: function(start, end) {
-    this.filter.setRange({ min: start, max: end });
   },
 
   _onBrushEnd: function(loBarIndex, hiBarIndex) {
@@ -229,17 +237,15 @@ module.exports = WidgetContent.extend({
     }
 
     var properties = { filter_enabled: true, lo_index: loBarIndex, hi_index: hiBarIndex };
-
     if (!this.viewModel.get('zoomed')) {
       properties.zoom_enabled = true;
     }
-
     this.viewModel.set(properties);
 
-    var start = data[loBarIndex].start;
-    var end = data[hiBarIndex - 1].end;
-
-    this._setRange(start, end);
+    this.filter.setRange(
+      data[loBarIndex].start,
+      data[hiBarIndex - 1].end
+    );
     this._updateStats();
   },
 
@@ -285,7 +291,8 @@ module.exports = WidgetContent.extend({
 
   _onChangeMax: function() {
     if (this.viewModel.get('max') === undefined) {
-      return '0 MAX';
+      this.$('.js-min').text('0 MAX');
+      return;
     }
     this.$('.js-max').text(this.histogramChartView.formatNumber(this.viewModel.get('max')) + ' MAX');
     this.$('.js-max').attr('title', this._formatNumberWithCommas(this.viewModel.get('max').toFixed(2)) + ' MAX');
@@ -392,7 +399,7 @@ module.exports = WidgetContent.extend({
 
   _onZoomIn: function() {
     this.miniHistogramChartView.show();
-    this.histogramChartView.expand(this.canvasHeight + 60);
+    this.histogramChartView.expand(20);
 
     this._showMiniRange();
 
@@ -414,6 +421,7 @@ module.exports = WidgetContent.extend({
 
     this.dataModel.set({ own_filter: null });
     this.viewModel.set({ zoom_enabled: false, filter_enabled: false, lo_index: null, hi_index: null });
+
     this.filter.unsetRange();
 
     this.histogramChartView.contract(this.canvasHeight);

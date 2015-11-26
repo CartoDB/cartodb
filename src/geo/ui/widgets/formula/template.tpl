@@ -14,7 +14,7 @@
 </div>
 <div class="Widget-content">
   <% if (!_.isUndefined(value)) { %>
-    <h4 class="Widget-textBigger js-value" title="<%- value %>">
+    <h4 class="Widget-textBigger Widget-textBigger--maxWidth js-value" title="<%- value %>">
       <%- prefix %><%- value %><%- suffix %>
     </h4>
   <% } else { %>

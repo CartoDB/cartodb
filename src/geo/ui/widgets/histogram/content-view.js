@@ -5,10 +5,10 @@ var Model = require('cdb/core/model');
 var View = require('cdb/core/view');
 var HistogramTitleView = require('./histogram_title_view');
 var WidgetContent = require('../standard/widget_content_view');
+var WidgetViewModel = require('../widget_content_model');
 var HistogramChartView = require('./chart');
 var placeholder = require('./placeholder.tpl');
 var template = require('./content.tpl');
-var xAxisTickFormatter = d3.format('.2s');
 
 /**
  * Widget content view for a histogram
@@ -27,7 +27,7 @@ module.exports = WidgetContent.extend({
   initialize: function() {
     this.dataModel = this.options.dataModel;
     this.firstData = _.clone(this.options.dataModel);
-    this.viewModel = new Model();
+    this.viewModel = new WidgetViewModel();
     this.lockedByUser = false;
     WidgetContent.prototype.initialize.call(this);
   },

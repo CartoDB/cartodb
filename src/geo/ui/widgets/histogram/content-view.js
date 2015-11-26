@@ -290,7 +290,8 @@ module.exports = WidgetContent.extend({
 
   _onChangeMax: function() {
     if (this.viewModel.get('max') === undefined) {
-      return '0 MAX';
+      this.$('.js-min').text('0 MAX');
+      return;
     }
     this.$('.js-max').text(this.histogramChartView.formatNumber(this.viewModel.get('max')) + ' MAX');
     this.$('.js-max').attr('title', this._formatNumberWithCommas(this.viewModel.get('max').toFixed(2)) + ' MAX');

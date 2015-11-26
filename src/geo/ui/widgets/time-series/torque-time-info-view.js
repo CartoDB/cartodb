@@ -1,3 +1,4 @@
+var _ = require('underscore');
 var d3 = require('d3');
 var View = require('cdb/core/view');
 var template = require('./torque-time-info.tpl');
@@ -20,12 +21,15 @@ module.exports = View.extend({
   },
 
   render: function() {
-    var date = new Date(this.model.get('time'));
+    var date = this.model.get('time');
+
     this.$el.html(
-      template({
-        time: this._timeFormatter(date),
-        date: this._dateFormatter(date)
-      })
+      isNaN(date && date.getTime())
+        ? ''
+        : template({
+            time: this._timeFormatter(date),
+            date: this._dateFormatter(date)
+          })
     );
 
     return this;

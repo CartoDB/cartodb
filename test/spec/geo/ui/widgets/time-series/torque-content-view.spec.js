@@ -11,7 +11,8 @@ describe('geo/ui/widgets/time-series/torque-content-view', function() {
     }.bind(this);
 
     this.rangeFilter = new RangeFilter();
-    this.torqueLayerModel = new TorqueLayerModel();
+    this.torqueLayerModel = new TorqueLayerModel({
+    });
     this.view = new TimeContentView({
       model: this.model,
       torqueLayerModel: this.torqueLayerModel,

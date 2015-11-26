@@ -97,13 +97,15 @@ module.exports = View.extend({
     // Time marker might not be created when this method is first called
     if (this.timeMarker && !this._viewModel.get('isDragging')) {
       var data = this.timeMarker.data();
-      data[0].x = this._xScale(step);
-
-      this.timeMarker
-        .data(data)
-        .transition()
-        .ease('linear')
-        .attr('transform', this._translateXY);
+      var newX = this._xScale(step);
+      if (!isNaN(newX)) {
+        data[0].x = newX;
+        this.timeMarker
+          .data(data)
+          .transition()
+          .ease('linear')
+          .attr('transform', this._translateXY);
+      }
     }
   },
 

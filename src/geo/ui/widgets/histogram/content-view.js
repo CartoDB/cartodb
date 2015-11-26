@@ -225,12 +225,14 @@ module.exports = WidgetContent.extend({
 
     var data = this.originalData;
 
-    if (loBarIndex > 0 && loBarIndex < data.length && (hiBarIndex - 1) > 0 && (hiBarIndex - 1) < data.length) {
+    if (loBarIndex >= 0 && loBarIndex < data.length && (hiBarIndex - 1) >= 0 && (hiBarIndex - 1) < data.length) {
       this.filter.setRange(
         data[loBarIndex].start,
         data[hiBarIndex - 1].end
       );
       this._updateStats();
+    } else {
+      console.error('Error accessing array bounds', loBarIndex, hiBarIndex, data);
     }
   },
 
@@ -249,12 +251,14 @@ module.exports = WidgetContent.extend({
 
     this.viewModel.set(properties);
 
-    if (loBarIndex > 0 && loBarIndex < data.length && (hiBarIndex - 1) > 0 && (hiBarIndex - 1) < data.length) {
+    if (loBarIndex >= 0 && loBarIndex < data.length && (hiBarIndex - 1) >= 0 && (hiBarIndex - 1) < data.length) {
       this.filter.setRange(
         data[loBarIndex].start,
         data[hiBarIndex - 1].end
       );
       this._updateStats();
+    } else {
+      console.error('Error accessing array bounds', loBarIndex, hiBarIndex, data);
     }
   },
 

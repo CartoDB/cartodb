@@ -266,12 +266,14 @@ module.exports = View.extend({
     this._setupDimensions();
     this._removeAxis();
     this._generateAxis();
-
     this._updateChart();
 
+    // Recreate the handles so they appear on top
     this._removeHandles();
     this._generateHandles();
 
+    // Recreate the brush so it appears on top
+    this._removeBrush();
     this._setupBrush();
   },
 

@@ -19,6 +19,7 @@
 .Widget-searchTextInput {
   @include flex-grow(2);
   width: 100%;
+  font-family: 'Open Sans'
 }
 .Widget-searchApply {
   @include flex-grow(1);

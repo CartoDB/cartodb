@@ -6,6 +6,7 @@
 
 .Widget-textBigger { // 16 size
   @include text-overflow();
+  color: #2E3C43;
   font-size: $sFontSize-huge;
   font-weight: $sFontWeight-normal;
 }

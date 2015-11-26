@@ -1,6 +1,7 @@
 // Helper classes
 // ----------------------------------------------
 
+@import '../variables/mixins';
 
 .u-tSpace {
   margin-top: 4px;
@@ -19,4 +20,8 @@
 }
 .u-lSpace--xl {
   margin-left: 12px;
+}
+
+.u-iBlock {
+  @include inline-block()
 }

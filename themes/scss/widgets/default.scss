@@ -8,7 +8,7 @@
   position: relative;
   width: $desktopLayout;
   // Due to line-heights, better to substract some pixels in the top
-  padding: ($sMargin-section - 2) 0 $sMargin-section;
+  padding: ($sMargin-section - 4) 0 ($sMargin-section - 4);
   box-sizing: border-box;
   border-bottom: 2px solid transparent;
   font-family: 'Open Sans';
@@ -32,6 +32,10 @@
 }
 .Widget-content--noSidesMargin {
   margin: $sMargin-element 0 0;
+}
+.Widget-content--histogram {
+  margin-left: 20px;
+  margin-top: 0
 }
 .Widget-body.is-collapsed {
   height: 38px;

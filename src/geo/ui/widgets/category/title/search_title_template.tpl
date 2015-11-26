@@ -13,11 +13,11 @@
       <% if (canBeLocked) { %>
         <% if (isLocked) { %>
           <button class="Widget-buttonIcon Widget-buttonIcon--circle is-selected js-unlock">
-            <i class="CDBIcon CDBIcon-Unlock"></i>
+            <i class="CDBIcon CDBIcon-Unlock CDBIcon--top"></i>
           </button>
         <% } else { %>
           <button class="Widget-buttonIcon Widget-buttonIcon--circle js-lock">
-            <i class="CDBIcon CDBIcon-Lock"></i>
+            <i class="CDBIcon CDBIcon-Lock CDBIcon--top"></i>
           </button>
         <% }  %>
       <% } %>
@@ -25,7 +25,7 @@
         <%- isColorApplied ? 'is-selected' : '' %>
         <%- isColorApplied ? 'js-cancelColors' : 'js-applyColors' %>
         ">
-        <i class="CDBIcon CDBIcon-Syringe"></i>
+        <i class="CDBIcon CDBIcon-Syringe CDBIcon--top"></i>
       </button>
       <button class="Widget-arrow js-collapse <%- isCollapsed ? 'Widget-arrow--down' : 'Widget-arrow--up' %> "></button>
     </div>

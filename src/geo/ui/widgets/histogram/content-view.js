@@ -278,44 +278,39 @@ module.exports = WidgetContent.extend({
     this.$(".js-zoom").toggleClass('is-hidden', !this.viewModel.get('zoom_enabled'));
   },
 
+  _changeHeaderValue: function(className, what, suffix) {
+    if (this.viewModel.get(what) === undefined) {
+      this.$(className).text('0 ' + suffix);
+      return;
+    }
+
+    this._addTitleForValue(className, what, suffix);
+
+    this._animateValue(this.viewModel, what, className, {
+      formatter: this.histogramChartView.formatNumber,
+      template: animationTemplate,
+      templateData: { suffix: suffix }
+    });
+  },
+
   _onChangeNulls: function() {
-    this._addTitleForValue('.js-nulls', 'nulls', 'NULL ROWS');
-    var formatter = this.histogramChartView.formatNumber;
-    this._animateValue(this.viewModel, 'nulls', '.js-nulls', { formatter: formatter, template: animationTemplate, templateData: { suffix: 'NULL ROWS' }});
+    this._changeHeaderValue('.js-nulls', 'nulls', 'NULL ROWS');
   },
 
   _onChangeTotal: function() {
-    this._addTitleForValue('.js-val', 'total', 'SELECTED');
-
-    var formatter = this.histogramChartView.formatNumber;
-    this._animateValue(this.viewModel, 'total', '.js-val', { formatter: formatter, template: animationTemplate, templateData: { suffix: 'NULL ROWS' }});
+    this._changeHeaderValue('.js-val', 'total', 'SELECTED');
   },
 
   _onChangeMax: function() {
-    if (this.viewModel.get('max') === undefined) {
-      this.$('.js-min').text('0 MAX');
-      return;
-    }
-
-    this._addTitleForValue('.js-max', 'max', 'MAX');
-    var formatter = this.histogramChartView.formatNumber;
-    this._animateValue(this.viewModel, 'max', '.js-max', { formatter: formatter, template: animationTemplate, templateData: { suffix: 'MAX' }});
+    this._changeHeaderValue('.js-max', 'max', 'MAX');
   },
 
   _onChangeMin: function() {
-    if (this.viewModel.get('min') === undefined) {
-      this.$('.js-min').text('0 MIN');
-      return;
-    }
-    this._addTitleForValue('.js-min', 'min', 'MIN');
-    var formatter = this.histogramChartView.formatNumber;
-    this._animateValue(this.viewModel, 'min', '.js-min', { formatter: formatter, template: animationTemplate, templateData: { suffix: 'MIN' }});
+    this._changeHeaderValue('.js-min', 'min', 'MIN');
   },
 
   _onChangeAvg: function() {
-    this._addTitleForValue('.js-avg', 'avg', 'AVG');
-    var formatter = this.histogramChartView.formatNumber;
-    this._animateValue(this.viewModel, 'avg', '.js-avg', { formatter: formatter, template: animationTemplate, templateData: { suffix: 'AVG' }});
+    this._changeHeaderValue('.js-avg', 'avg', 'AVG');
   },
 
   _addTitleForValue: function(className, what, unit) {

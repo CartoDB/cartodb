@@ -75,23 +75,12 @@ module.exports = View.extend({
 
     this.$(className).prop('counter', from).stop().animate({ counter: to }, {
       duration: opts.animationSpeed || 500,
-      easing: 'swing',
+      easing: opts.easingMethod || 'swing',
       step: function (i) {
-        if (i === isNaN) {
-          i = 0;
-        }
-
-        if (_.isNumber(i) && !_.isNaN(i)) {
-          value = opts.formatter(i);
-        } else {
-          value = 0;
-        }
-
+        value = _.isNaN(i) ? 0 : opts.formatter(i);
         var data = _.extend({ value: value }, opts.templateData);
         $(this).text(opts.template(data));
       }
     });
-  },
-
-
+  }
 });

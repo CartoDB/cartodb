@@ -30,7 +30,7 @@ module.exports = View.extend({
       template({
         title: this.dataModel.get('title'),
         isSizesApplied: this.dataModel.get('histogramSizes'),
-        isCollapsed: this.viewModel.get('collapsed')
+        isCollapsed: this.viewModel.isCollapsed()
       })
     );
     return this;
@@ -52,7 +52,7 @@ module.exports = View.extend({
   },
 
   _toggleCollapse: function() {
-    this.viewModel.set('collapsed', !this.viewModel.get('collapsed'));
+    this.viewModel.toggleCollapsed();
   }
 
 });

@@ -25,7 +25,7 @@ module.exports = View.extend({
       width: this.defaults.width,
       margins: { // TODO could be calculated from element styles instead of duplicated numbers here?
         top: 0,
-        right: 24,
+        right: 0,
         bottom: 0,
         left: 24
       },
@@ -34,8 +34,6 @@ module.exports = View.extend({
         20 + // bottom labels
         4 // margins
     });
-    this.add_related_model(this.viewModel);
-    this.viewModel.bind('change:width', this._onChangeWidth, this);
 
     this.model.bind('change:data', this._onChangeData, this);
   },
@@ -72,7 +70,7 @@ module.exports = View.extend({
       delayBar: function(d, i) {
         return 100 + (i * 10);
       },
-      width: this._histogramChartWidth(),
+      width: this.viewModel.get('width'),
       height: this.viewModel.get('histogramChartHeight'),
       data: this.model.getData()
     });
@@ -90,21 +88,15 @@ module.exports = View.extend({
     );
   },
 
-  _onChangeWidth: function() {
-    if (this.chartView) {
-      this.chartView.resize(this._histogramChartWidth());
-    }
-  },
-
-  _histogramChartWidth: function() {
-    var margins = this.viewModel.get('margins');
-    return this.viewModel.get('width') - margins.left - margins.right;
-  },
-
   _onWindowResize: _.debounce(function() {
+    var width = this.$el.width() || this.defaults.width;
+
     // $el.width might not be available, e.g. if $el is not present in DOM yet
     // TODO width is not always accurate, because of other elements also resizing which affects this element
-    this.viewModel.set('width', this.$el.width() || this.defaults.width);
+    this.viewModel.set('width', width);
+    if (this.chartView) {
+      this.chartView.resize(width);
+    }
   }, 50)
 
 });

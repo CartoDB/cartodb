@@ -19,7 +19,7 @@ module.exports = View.extend({
     width: 400,
     margins: {
       top: 0,
-      right: 24,
+      right: 0,
       bottom: 0,
       left: 24
     }
@@ -37,21 +37,18 @@ module.exports = View.extend({
 
     this._viewModel = new Model({
       width: this.defaults.width,
+      margins: this.defaults.margins,
       histogramChartMargins: {
         top: 4,
         right: 4,
         bottom: 20,
         left: 4
       },
-      margins: this.defaults.margins,
       histogramChartHeight:
         48 + // inline bars height
         20 + // bottom labels
         4 // margins
     });
-    this._viewModel.bind('change:width', this._onChangeWidth, this);
-    this.add_related_model(this._viewModel);
-    this._onChangeWidth();
 
     this.model.bind('change:data', this._onChangeData, this);
   },
@@ -80,7 +77,7 @@ module.exports = View.extend({
       animationSpeed: 100,
       margin: this._viewModel.get('histogramChartMargins'),
       handles: true,
-      width: this._viewModel.get('histogramChartWidth'),
+      width: this._viewModel.get('width'),
       height: this._viewModel.get('histogramChartHeight'),
       data: this.model.getData()
     });
@@ -108,20 +105,15 @@ module.exports = View.extend({
     this._torqueLayerModel.setStepsRange(loBarIndex, hiBarIndex);
   },
 
-  _onChangeWidth: function() {
-    var margins = this._viewModel.get('margins');
-    var histogramChartWidth = this._viewModel.get('width') - margins.left - margins.right;
-    this._viewModel.set('histogramChartWidth', histogramChartWidth);
-
-    if (this._chartView) {
-      this._chartView.resize(histogramChartWidth);
-    }
-  },
-
   _onWindowResize: _.debounce(function() {
+    var width = this.$el.width() || this.defaults.width;
+
     // $el.width might not be available, e.g. if $el is not present in DOM yet
     // TODO width is not always accurate, because of other elements also resizing which affects this element
-    this._viewModel.set('width', this.$el.width() || this.defaults.width);
+    this._viewModel.set('width', width);
+    if (this._chartView) {
+      this._chartView.resize(width);
+    }
   }, 50)
 
 });

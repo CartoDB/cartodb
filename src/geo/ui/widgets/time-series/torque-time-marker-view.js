@@ -19,7 +19,7 @@ module.exports = View.extend({
     this._torqueLayerModel.bind('change:stepsRange', this.onStepsRange, this);
     this.add_related_model(this._torqueLayerModel);
 
-    this._viewModel.bind('change:histogramChartWidth', this._updateXScale, this);
+    this._viewModel.bind('change:width', this._updateXScale, this);
     this.add_related_model(this._viewModel);
     this._updateXScale();
   },
@@ -90,7 +90,7 @@ module.exports = View.extend({
   },
 
   _isWithinRange: function(x) {
-    return 0 <= x && x <= this._viewModel.get('histogramChartWidth');
+    return 0 <= x && x <= this._viewModel.get('width');
   },
 
   _onChangeStep: function(m, step) {
@@ -119,6 +119,6 @@ module.exports = View.extend({
   _updateXScale: function() {
     this._xScale = d3.scale.linear()
       .domain([0, this._torqueLayerModel.get('steps')])
-      .range([0, this._viewModel.get('histogramChartWidth')]);
+      .range([0, this._viewModel.get('width')]);
   }
 });

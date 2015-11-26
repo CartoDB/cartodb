@@ -23,7 +23,7 @@ describe('geo/ui/widgets/time-series/torque-time-marker-view', function() {
     };
     this.viewModel = new Model({
       histogramChartMargins: this.histogramChartMargins,
-      histogramChartWidth: 400,
+      width: 400,
       histogramChartHeight: 200
     });
     this.chartView = new HistogramChartView({

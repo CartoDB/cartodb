@@ -48,7 +48,8 @@ $commonBkg: rgba(#FFF, 1);
       color: $linkHover;
     }
   }
-  .Widget-buttonIcon--circle.is-selected {
+  .Widget-buttonIcon--circle.is-selected,
+  .Widget-buttonIcon--circleBig.is-selected {
     background-color: $link;
     color: #FFF;
     &:hover {

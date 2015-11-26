@@ -18,6 +18,7 @@
   background: #FFF; // Canvas is out of widget themes
 }
 .Widget-canvasShadowTop {
+  display: none;
   position: absolute;
   top: 0;
   right: 0;
@@ -29,6 +30,7 @@
   border-top-right-radius: 4px;
 }
 .Widget-canvasShadowBottom {
+  display: none;
   position: absolute;
   bottom: 0;
   right: 0;

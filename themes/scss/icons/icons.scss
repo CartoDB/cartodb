@@ -5,7 +5,8 @@
 @include font-face('CDBIcon', '../../fonts/CDBIcon.eot', '../../fonts/CDBIcon.woff', '../../fonts/CDBIcon.ttf', '../../fonts/CDBIcon.svg');
 
 .CDBIcon {
-  display: inline-block;
+  @include inline-block();
+  vertical-align: top;
   font-family: 'CDBIcon';
   font-style: normal;
   font-weight: normal;

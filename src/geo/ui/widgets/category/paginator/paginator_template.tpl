@@ -1,7 +1,9 @@
 <div class="Widget-contentFlex">
   <button class="u-rSpace--m Widget-buttonIcon Widget-textSmaller Widget-textSmaller--upper js-searchToggle">
     <i class="CDBIcon CDBIcon-Lens"></i>
-    search
+    <span class="u-iBlock">
+      search
+    </span>
   </button>
 </div>
 <% if (showPaginator) { %>

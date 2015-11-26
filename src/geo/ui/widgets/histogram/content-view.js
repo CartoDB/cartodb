@@ -242,16 +242,20 @@ module.exports = WidgetContent.extend({
     }
 
     var properties = { filter_enabled: true, lo_index: loBarIndex, hi_index: hiBarIndex };
+
     if (!this.viewModel.get('zoomed')) {
       properties.zoom_enabled = true;
     }
+
     this.viewModel.set(properties);
 
-    this.filter.setRange(
-      data[loBarIndex].start,
-      data[hiBarIndex - 1].end
-    );
-    this._updateStats();
+    if (loBarIndex > 0 && loBarIndex < data.length && (hiBarIndex - 1) > 0 && (hiBarIndex - 1) < data.length) {
+      this.filter.setRange(
+        data[loBarIndex].start,
+        data[hiBarIndex - 1].end
+      );
+      this._updateStats();
+    }
   },
 
   _onRangeUpdated: function(loBarIndex, hiBarIndex) {

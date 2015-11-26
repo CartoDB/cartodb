@@ -1,6 +1,7 @@
 var $ = require('jquery');
 var _ = require('underscore');
 var d3 = require('d3');
+var formatter = require('cdb/core/format');
 var Model = require('cdb/core/model');
 var View = require('cdb/core/view');
 var HistogramTitleView = require('./histogram_title_view');
@@ -281,12 +282,12 @@ module.exports = WidgetContent.extend({
   },
 
   _onChangeNulls: function() {
-    this.$('.js-nulls').text(this.histogramChartView.formatNumber(this.viewModel.get('nulls')) + ' NULLS');
+    this.$('.js-nulls').text(formatter.formatNumber(this.viewModel.get('nulls')) + ' NULLS');
     this.$('.js-nulls').attr('title', this._formatNumberWithCommas(this.viewModel.get('nulls').toFixed(2)) + ' NULLS');
   },
 
   _onChangeTotal: function() {
-    this.$('.js-val').text(this.histogramChartView.formatNumber(this.viewModel.get('total')) + ' SELECTED');
+    this.$('.js-val').text(formatter.formatNumber(this.viewModel.get('total')) + ' SELECTED');
     this.$('.js-val').attr('title', this._formatNumberWithCommas(this.viewModel.get('total').toFixed(2)) + ' SELECTED');
   },
 
@@ -295,7 +296,7 @@ module.exports = WidgetContent.extend({
       this.$('.js-min').text('0 MAX');
       return;
     }
-    this.$('.js-max').text(this.histogramChartView.formatNumber(this.viewModel.get('max')) + ' MAX');
+    this.$('.js-max').text(formatter.formatNumber(this.viewModel.get('max')) + ' MAX');
     this.$('.js-max').attr('title', this._formatNumberWithCommas(this.viewModel.get('max').toFixed(2)) + ' MAX');
   },
 
@@ -304,12 +305,12 @@ module.exports = WidgetContent.extend({
       this.$('.js-min').text('0 MIN');
       return;
     }
-    this.$('.js-min').text(this.histogramChartView.formatNumber(this.viewModel.get('min')) + ' MIN');
+    this.$('.js-min').text(formatter.formatNumber(this.viewModel.get('min')) + ' MIN');
     this.$('.js-min').attr('title', this._formatNumberWithCommas(this.viewModel.get('min').toFixed(2)) + ' MIN');
   },
 
   _onChangeAvg: function() {
-    this.$('.js-avg').text(this.histogramChartView.formatNumber(this.viewModel.get('avg')) + ' AVG');
+    this.$('.js-avg').text(formatter.formatNumber(this.viewModel.get('avg')) + ' AVG');
     this.$('.js-avg').attr('title', this._formatNumberWithCommas(this.viewModel.get('avg').toFixed(2)) + ' AVG');
   },
 

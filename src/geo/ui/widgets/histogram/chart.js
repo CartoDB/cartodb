@@ -1,6 +1,7 @@
 var $ = require('jquery');
 var _ = require('underscore');
 var d3 = require('d3');
+var formatter = require('cdb/core/format');
 var Model = require('cdb/core/model');
 var View = require('cdb/core/view');
 
@@ -64,15 +65,13 @@ module.exports = View.extend({
   },
 
   _updateAxisTip: function(className) {
-    var self = this;
-
     var textLabel = this.chart.select('.AxisTip-text.AxisTip-' + className);
     var axisTip  = this.chart.select('.AxisTip.AxisTip-' + className);
     var rectLabel = this.chart.select('.AxisTip-rect.AxisTip-' + className);
     var handle    = this.chart.select('.Handle.Handle-' + className);
 
     textLabel.data([this.model.get(className + '_axis_tip')]).text(function(d) {
-      return self.formatNumber(d);
+      return formatter.formatNumber(d);
     });
 
     var width = textLabel.node().getBBox().width;
@@ -147,13 +146,13 @@ module.exports = View.extend({
 
   _onChangeDragging: function() {
     this.chart.classed('is-dragging', this.model.get('dragging'));
-    this._updateTipOpacity('right');
-    this._updateTipOpacity('left');
+    this._updateAxisTipOpacity('right');
+    this._updateAxisTipOpacity('left');
   },
 
-  _showTip: function(className) {
+  _showAxisTip: function(className) {
     var textLabel = this.chart.select('.AxisTip-text.AxisTip-' + className);
-    var axisTip  = this.chart.select('.AxisTip.AxisTip-' + className);
+    var axisTip   = this.chart.select('.AxisTip.AxisTip-' + className);
     var rectLabel = this.chart.select('.AxisTip-rect.AxisTip-' + className);
 
     if (textLabel) {
@@ -164,9 +163,9 @@ module.exports = View.extend({
     }
   },
 
-  _hideTip: function(className) {
+  _hideAxisTip: function(className) {
     var textLabel = this.chart.select('.AxisTip-text.AxisTip-' + className);
-    var axisTip  = this.chart.select('.AxisTip.AxisTip-' + className);
+    var axisTip   = this.chart.select('.AxisTip.AxisTip-' + className);
     var rectLabel = this.chart.select('.AxisTip-rect.AxisTip-' + className);
 
     if (textLabel) {
@@ -177,11 +176,11 @@ module.exports = View.extend({
     }
   },
 
-  _updateTipOpacity: function(className) {
+  _updateAxisTipOpacity: function(className) {
     if (this.model.get('dragging')) {
-      this._showTip(className);
+      this._showAxisTip(className);
     } else {
-      this._hideTip(className);
+      this._hideAxisTip(className);
     }
   },
 
@@ -226,7 +225,7 @@ module.exports = View.extend({
       }
 
       if (!this._isDragging() && freq > 0) {
-        var d = this.formatNumber(freq);
+        var d = formatter.formatNumber(freq);
         hoverProperties = { top: top, left: left, data: d };
       } else {
         hoverProperties = null;
@@ -280,34 +279,12 @@ module.exports = View.extend({
     this.model.set({ lo_index: null, hi_index: null });
   },
 
-  formatNumber: function(value, unit) {
-    var format = d3.format('.2s');
-
-    if (value < 1000) {
-      v = (value).toFixed(2);
-      // v ends with .00
-      if (v.match('.00' + "$")) {
-        v = v.replace('.00', '');
-      }
-      return v;
-    }
-
-    value = format(value) + (unit ? ' ' + unit : '');
-
-    // value ends with .0
-    if (value.match('.0' + "$")) {
-      value = value.replace('.0', '');
-    }
-
-    return value == '0.0' ? 0 : value;
-  },
-
   _removeBars: function() {
     this.chart.selectAll('.Bars').remove();
   },
 
   _removeBrush: function() {
-    this.chart.select('.Brush').remove();
+    this.chart.selectAll('.Brush').remove();
     this.chart.classed('is-selectable', false);
   },
 
@@ -755,7 +732,7 @@ module.exports = View.extend({
     .attr("y", function(d) { return self.chartHeight + 15; })
     .attr("text-anchor", adjustTextAnchor)
     .text(function(d) {
-      return self.formatNumber(self.xAxisScale(d));
+      return formatter.formatNumber(self.xAxisScale(d));
     });
   },
 

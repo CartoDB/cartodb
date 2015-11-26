@@ -224,11 +224,14 @@ module.exports = WidgetContent.extend({
     this.histogramChartView.removeSelection();
 
     var data = this.originalData;
-    this.filter.setRange(
-      data[loBarIndex].start,
-      data[hiBarIndex - 1].end
-    );
-    this._updateStats();
+
+    if (loBarIndex > 0 && loBarIndex < data.length && (hiBarIndex - 1) > 0 && (hiBarIndex - 1) < data.length) {
+      this.filter.setRange(
+        data[loBarIndex].start,
+        data[hiBarIndex - 1].end
+      );
+      this._updateStats();
+    }
   },
 
   _onBrushEnd: function(loBarIndex, hiBarIndex) {

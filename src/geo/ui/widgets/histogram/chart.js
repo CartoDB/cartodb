@@ -7,6 +7,7 @@ var View = require('cdb/core/view');
 module.exports = View.extend({
 
   defaults: {
+    axis_tip: false,
     minimumBarHeight: 2,
     animationSpeed: 750,
     handleWidth: 6,
@@ -618,10 +619,12 @@ module.exports = View.extend({
     this.chart.select('.Handle-right')
     .attr('transform', 'translate(' + rightX + ', 0)');
 
-    this.model.set({
-      left_axis_tip: this.xAxisScale(leftX + 3),
-      right_axis_tip: this.xAxisScale(rightX + 3)
-    });
+    if (this.options.axis_tip) {
+      this.model.set({
+        left_axis_tip: this.xAxisScale(leftX + 3),
+        right_axis_tip: this.xAxisScale(rightX + 3)
+      });
+    }
   },
 
   _generateAxisTip: function(className) {
@@ -654,7 +657,9 @@ module.exports = View.extend({
     .append('g')
     .attr('class', 'Handle Handle-' + className);
 
-    this._generateAxisTip(className);
+    if (this.options.axis_tip) {
+      this._generateAxisTip(className);
+    }
 
     handle
     .append('line')

@@ -50,7 +50,7 @@ module.exports = WidgetContent.extend({
       })
     );
 
-    this._animateValue(this.dataModel, 'data', '.js-value', { animationSpeed: 700, formatter: format, template: animationTemplate, templateData: { prefix: prefix, suffix: suffix }});
+    this._animateValue(this.dataModel, 'data', '.js-value', animationTemplate, { animationSpeed: 700, formatter: format, templateData: { prefix: prefix, suffix: suffix }});
 
     this.$el.toggleClass('is-collapsed', !!isCollapsed);
 

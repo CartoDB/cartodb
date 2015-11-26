@@ -65,21 +65,22 @@ module.exports = View.extend({
     }
   },
 
-  _animateValue: function(model, what, className, opts) {
+  _animateValue: function(model, what, className, template, opts) {
     var self = this;
 
     var to   = model.get(what);
     var from = model.previous(what) || 0;
 
     var format = opts.formatter || d3.format('0,000');
+    var templateData = opts.templateData || {};
 
     this.$(className).prop('counter', from).stop().animate({ counter: to }, {
       duration: opts.animationSpeed || 500,
       easing: opts.easingMethod || 'swing',
       step: function (i) {
         value = _.isNaN(i) ? 0 : opts.formatter(i);
-        var data = _.extend({ value: value }, opts.templateData);
-        $(this).text(opts.template(data));
+        var data = _.extend({ value: value }, templateData);
+        $(this).text(template(data));
       }
     });
   }

@@ -12,6 +12,7 @@ module CartoDB
       # Also default schema for new users
       SCHEMA_PUBLIC = 'public'
       SCHEMA_CARTODB = 'cartodb'
+      SCHEMA_CDB_GEOCODER = 'cdb_geocoder_client'
       SCHEMA_IMPORTER = 'cdb_importer'
       SCHEMA_GEOCODING = 'cdb'
 
@@ -390,6 +391,48 @@ module CartoDB
         else
           CartoDB.notify_debug("org_metadata_api configuration missing", user_id: @user.id, config: config)
         end
+      end
+
+      def configure_geocoder_extension(organization=nil)
+        config = Cartodb.config[:geocoder]['api']
+        raise("Geocoder API config missing") if config.blank?
+        host = config['host']
+        port = config['port']
+        user = config['user']
+        dbname = config['dbname']
+        raise("Geocoder API config incomplete, some fields are missing") if host.blank? || port.blank? || user.blank? || dbname.blank?
+
+        geocoder_server_config_sql = %{
+          SELECT cartodb.CDB_Conf_SetConf('geocoder_server_config',
+            '{ \"connection_str\": \"host=#{host} port=#{port} dbname=#{dbname} user=#{user}\"}'::json
+          );
+        }
+
+        @user.in_database(as: :superuser) do |db|
+          db.transaction do
+            db.run('CREATE EXTENSION IF NOT EXISTS plproxy SCHEMA public')
+            db.run('CREATE EXTENSION IF NOT EXISTS cdb_geocoder_client')
+            db.run(geocoder_server_config_sql)
+          end
+        end
+
+        if !organization.nil?
+          org_users = organization.users
+          org_users.each do |u|
+            # TODO This part is a copy of the build_search_path method to avoid put the geocoder schema path
+            # until we open this to all the users
+            search_path = "\"#{u.database_schema}\", #{SCHEMA_CARTODB}, #{SCHEMA_CDB_GEOCODER}, #{SCHEMA_PUBLIC}"
+            @user.in_database(as: :superuser).run("ALTER USER \"#{u.database_username}\"
+              SET search_path TO #{search_path}")
+          end
+        else
+          # TODO This part is a copy of the build_search_path method to avoid put the geocoder schema path
+          # until we open this to all the users
+          search_path = "\"#{@user.database_schema}\", #{SCHEMA_CARTODB}, #{SCHEMA_CDB_GEOCODER}, #{SCHEMA_PUBLIC}"
+          @user.in_database(as: :superuser).run("ALTER USER \"#{@user.database_username}\"
+            SET search_path TO #{search_path}")
+        end
+        reset_pooled_connections
       end
 
       def setup_organization_owner

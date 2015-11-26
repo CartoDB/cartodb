@@ -5,7 +5,7 @@
   <% } %>
 </div>
 <div class="Widget-content Widget-content--timeSeries">
-  <div class="Widget-timeSeriesFakeChart">
+  <div class="Widget-timeSeriesFakeChart <% if (hasTorqueLayer) { %>Widget-timeSeriesFakeChart--torque<% } %>">
     <% for (var i = 0; i < 50; i++) { %>
       <div class="Widget-timeSeriesFakeChartItem" style="height: <%- Math.floor(Math.random() * 100) %>%"></div>
     <% } %>

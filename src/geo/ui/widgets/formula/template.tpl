@@ -13,7 +13,7 @@
   </dl>
 </div>
 <div class="Widget-content">
-  <% if (!_.isUndefined(value)) { %>
+  <% if (value) { %>
     <h4 class="Widget-textBigger" title="<%- value %>">
       <%- prefix %><%- value %><%- suffix %>
     </h4>

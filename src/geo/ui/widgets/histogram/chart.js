@@ -1,6 +1,7 @@
 var $ = require('jquery');
 var _ = require('underscore');
 var d3 = require('d3');
+var formatter = require('cdb/core/format');
 var Model = require('cdb/core/model');
 var View = require('cdb/core/view');
 
@@ -144,7 +145,7 @@ module.exports = View.extend({
       }
 
       if (!this._isDragging()) {
-        var d = this.formatNumber(freq);
+        var d = formatter.formatNumber(freq);
         hoverProperties = { top: top, left: left, data: d };
       } else {
         hoverProperties = null;
@@ -188,28 +189,6 @@ module.exports = View.extend({
 
   resetIndexes: function() {
     this.model.set({ lo_index: null, hi_index: null });
-  },
-
-  formatNumber: function(value, unit) {
-    var format = d3.format('.2s');
-
-    if (value < 1000) {
-      v = (value).toFixed(2);
-      // v ends with .00
-      if (v.match('.00' + "$")) {
-        v = v.replace('.00', '');
-      }
-      return v;
-    }
-
-    value = format(value) + (unit ? ' ' + unit : '');
-
-    // value ends with .0
-    if (value.match('.0' + "$")) {
-      value = value.replace('.0', '');
-    }
-
-    return value == '0.0' ? 0 : value;
   },
 
   _removeBars: function() {
@@ -632,7 +611,7 @@ module.exports = View.extend({
     .attr("y", function(d) { return self.chartHeight + 15; })
     .attr("text-anchor", adjustTextAnchor)
     .text(function(d) {
-      return self.formatNumber(self.xAxisScale(d));
+      return formatter.formatNumber(self.xAxisScale(d));
     });
   },
 

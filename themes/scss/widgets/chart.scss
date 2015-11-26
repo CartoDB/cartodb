@@ -148,6 +148,10 @@
 .AxisTip-text {
   fill: #3AA9E3;
   font-size: 10px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 .AxisTip-rect {
   fill: #FFF;

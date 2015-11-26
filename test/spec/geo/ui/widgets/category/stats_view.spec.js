@@ -21,7 +21,7 @@ describe('widgets/category/stats_view', function() {
   describe('render', function() {
     it('should render properly data stats', function() {
       this.view.render();
-      expect(this.view.$('.Widget-infoItem').length).toBe(3);
+      expect(this.view.$('.Widget-infoItem').length).toBe(2);
     });
 
     it('should show number of results when a search is applied', function() {

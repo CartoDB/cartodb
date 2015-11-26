@@ -22,18 +22,14 @@ module.exports = View.extend({
   },
 
   render: function() {
-    var min = this._getFormattedValue('min');
-    var max = this._getFormattedValue('max');
-    var nulls = this._getFormattedValue('nulls');
-
     this.$el.html(
       template({
         isSearchEnabled: this.viewModel.isSearchEnabled(),
         isSearchApplied: this.dataModel.isSearchApplied(),
         resultsCount: this.dataModel.getSearchCount(),
-        min: min,
-        max: max,
-        nulls: nulls
+        totalCats: this._getCategoriesSize(),
+        nullsPer: this._getNullPercentage(),
+        catsPer: this._getCagetoriesPercentage()
       })
     );
     return this;
@@ -46,9 +42,39 @@ module.exports = View.extend({
     this.add_related_model(this.viewModel);
   },
 
-  _getFormattedValue: function(attr) {
-    var format = d3.format('0,000');
-    return !_.isUndefined(this.dataModel.get(attr)) && format(this.dataModel.get(attr)) || '-'
+  _getNullPercentage: function(attr) {
+    var nulls = this.dataModel.get('nulls');
+    var total = this.dataModel.get('count');
+    return !nulls ? 0 : (nulls/total);
+  },
+
+  _getCagetoriesPercentage: function(attr) {
+    var total = this.dataModel.get('count');
+    var data = this.dataModel.getData();
+    if (!total) {
+      return 0;
+    }
+
+    var currentTotal = data.reduce(function(memo, mdl) {
+        return !mdl.get('agg') ? ( memo + parseFloat(mdl.get('value'))) : memo;
+      },
+      0
+    );
+
+    if (!currentTotal) {
+      return 0;
+    }
+
+    return ((currentTotal / total) * 100).toFixed(0);
+  },
+
+  _getCategoriesSize: function() {
+    return _.pluck(
+      this.dataModel.getData().reject(function(mdl) {
+        return mdl.get('agg')
+      }),
+      'name'
+    ).length;
   }
 
 });

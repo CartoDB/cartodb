@@ -121,7 +121,10 @@ $commonBkg: rgba(#FFF, 1);
       background: $elementBkg;
     }
   }
-  .Widget-chartItem--fake {
+  .Widget-chartItem--fake,
+  .Widget-timeSeriesTimeInfo--fake,
+  .Widget-timeSeriesFakeControl,
+  .Widget-timeSeriesFakeChartItem {
     background-color: $loadingBkg;
   }
 

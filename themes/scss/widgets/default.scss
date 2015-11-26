@@ -1,4 +1,14 @@
 // Default styles for widgets
+//
+// Expected layout hierarchy:
+//   Widget
+//     Widget-loader
+//     Widget-error
+//     Widget-body
+//       Widget-header
+//       Widget-content
+//       Widget-footer
+//
 // --------------------------------------------------
 
 @import '../variables/sizes';
@@ -13,6 +23,9 @@
   border-bottom: 2px solid transparent;
   font-family: 'Open Sans';
 }
+.Widget--timeSeries {
+  width: 100%; // override default width
+}
 .Widget-title {
   @include display-flex();
   @include justify-content(flex-start, start);
@@ -26,12 +39,17 @@
   margin-right: $sMargin-section;
   margin-left: $sMargin-section;
 }
+.Widget-header--timeSeries {
+  @include display-flex();
+  @include justify-content(flex-start, start);
+  @include align-items(center);
+}
 .Widget-content {
-  display: block;
   margin-top: $sMargin-element;
 }
 .Widget-content--noSidesMargin {
-  margin: $sMargin-element 0 0;
+  margin-right: 0;
+  margin-left: 0;
 }
 .Widget-content--histogram {
   margin-left: 20px;
@@ -40,9 +58,6 @@
 .Widget-body.is-collapsed {
   height: 38px;
   overflow: hidden;
-}
-.Widget--time {
-  width: 100%;
 }
 
 // Widget media query
@@ -54,8 +69,21 @@
     border-right: 2px solid transparent;
     border-bottom: 0;
   }
-  .Widget--time {
+  .Widget--timeSeries {
+    width: 100%; // override default width
+    height: 64px;
+    min-height: 64px; // override default min-height
+    max-height: 64px;
+  }
+  .Widget-body--timeSeries {
+    @include display-flex();
+    @include justify-content(flex-start, start);
+    @include align-items(flex-start, start);
+    @include flex-direction(row);
+  }
+  .Widget-content--timeSeries {
     width: 100%;
-    min-height: auto;
+    margin-top: 0; // override default
+    margin-left: 0; // override default
   }
 }

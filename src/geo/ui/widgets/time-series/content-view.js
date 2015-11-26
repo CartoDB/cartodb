@@ -1,12 +1,14 @@
 var _ = require('underscore');
 var View = require('cdb/core/view');
-var placeholderTemplate = require('../histogram/placeholder.tpl');
+var placeholderTemplate = require('./placeholder.tpl');
 var HistogramView = require('./histogram-view');
 
 /**
  * Widget content view for a time-series
  */
 module.exports = View.extend({
+
+  className: 'Widget-body Widget-body--timeSeries',
 
   initialize: function() {
     this.model.once('change:data', this._onFirstLoad, this);
@@ -17,7 +19,9 @@ module.exports = View.extend({
     this.$el.html(''); // to remove placeholder if there is any
 
     if (this._isDataEmpty()) {
-      this.$el.append(placeholderTemplate());
+      this.$el.append(placeholderTemplate({
+        hasTorqueLayer: false
+      }));
     } else {
       this._appendView(new HistogramView(this.options));
     }

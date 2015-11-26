@@ -124,7 +124,7 @@ var Vis = View.extend({
           });
         },
         customizeWidgetAttrs: function(attrs) {
-          attrs.className += ' Dashboard-time';
+          attrs.className += ' Widget--timeSeries';
           return attrs;
         }
       }, {
@@ -136,7 +136,7 @@ var Vis = View.extend({
           });
         },
         customizeWidgetAttrs: function(attrs) {
-          attrs.className += ' Dashboard-time';
+          attrs.className += ' Widget--timeSeries';
           return attrs;
         }
       }, {

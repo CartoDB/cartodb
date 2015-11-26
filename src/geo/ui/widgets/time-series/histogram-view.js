@@ -9,6 +9,8 @@ var HistogramChartView = require('../histogram/chart');
  */
 module.exports = View.extend({
 
+  className: 'Widget-content Widget-content--timeSeries',
+
   defaults: {
     width: 400
   },

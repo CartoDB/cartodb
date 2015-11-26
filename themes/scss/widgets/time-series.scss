@@ -23,6 +23,7 @@
 }
 .Widget-timeSeriesTimeInfo {
   margin-left: $sMargin-component;
+  white-space:nowrap;
 }
 .Widget-timeSeriesTimeInfo--fake {
   width: 140px;

@@ -8,6 +8,7 @@ var View = require('cdb/core/view');
 module.exports = View.extend({
 
   defaults: {
+    axis_tip: false,
     minimumBarHeight: 2,
     animationSpeed: 750,
     handleWidth: 6,
@@ -55,6 +56,45 @@ module.exports = View.extend({
     this.model.set({ data: data });
   },
 
+  _onChangeLeftAxisTip: function() {
+    this._updateAxisTip('left');
+  },
+
+  _onChangeRightAxisTip: function() {
+    this._updateAxisTip('right');
+  },
+
+  _updateAxisTip: function(className) {
+    var textLabel = this.chart.select('.AxisTip-text.AxisTip-' + className);
+    var axisTip  = this.chart.select('.AxisTip.AxisTip-' + className);
+    var rectLabel = this.chart.select('.AxisTip-rect.AxisTip-' + className);
+    var handle    = this.chart.select('.Handle.Handle-' + className);
+
+    textLabel.data([this.model.get(className + '_axis_tip')]).text(function(d) {
+      return formatter.formatNumber(d);
+    });
+
+    var width = textLabel.node().getBBox().width;
+    rectLabel.attr('width', width + 4);
+
+    var parts = /translate\(\s*([^\s,)]+), ([^\s,)]+)/.exec(handle.attr('transform'));
+    var xPos = +parts[1] + 3;
+
+    if ((xPos - width/2) < 0) {
+      axisTip.attr('transform', 'translate(0, 52)');
+      textLabel.attr('dx', -xPos);
+      rectLabel.attr('x',  -xPos);
+    } else if ((xPos + width/2 + 2) >= this.chartWidth) {
+      axisTip.attr('transform', 'translate(0, 52)');
+      textLabel.attr('dx', this.chartWidth - (xPos + width - 2));
+      rectLabel.attr('x', this.chartWidth - (xPos + width));
+    } else {
+      axisTip.attr('transform', 'translate(-' + (width/2) + ', 52)');
+      rectLabel.attr('x', 0);
+      textLabel.attr('dx', +2);
+    }
+  },
+
   _onChangeData: function() {
     if (this.model.previous('data').length != this.model.get('data').length) {
       this.reset();
@@ -97,11 +137,51 @@ module.exports = View.extend({
   },
 
   _onBrushStart: function() {
+    var extent = this.brush.extent();
+    var hiExtent = extent[1];
+    var rightX = this.xScale(hiExtent) - this.options.handleWidth / 2;
+
     this.chart.classed('is-selectable', true);
   },
 
   _onChangeDragging: function() {
     this.chart.classed('is-dragging', this.model.get('dragging'));
+    this._updateAxisTipOpacity('right');
+    this._updateAxisTipOpacity('left');
+  },
+
+  _showAxisTip: function(className) {
+    var textLabel = this.chart.select('.AxisTip-text.AxisTip-' + className);
+    var axisTip   = this.chart.select('.AxisTip.AxisTip-' + className);
+    var rectLabel = this.chart.select('.AxisTip-rect.AxisTip-' + className);
+
+    if (textLabel) {
+      textLabel.transition().duration(200).attr('opacity',  1);
+    }
+    if (rectLabel) {
+      rectLabel.transition().duration(200).attr('opacity',  1);
+    }
+  },
+
+  _hideAxisTip: function(className) {
+    var textLabel = this.chart.select('.AxisTip-text.AxisTip-' + className);
+    var axisTip   = this.chart.select('.AxisTip.AxisTip-' + className);
+    var rectLabel = this.chart.select('.AxisTip-rect.AxisTip-' + className);
+
+    if (textLabel) {
+      textLabel.transition().duration(200).attr('opacity',  0);
+    }
+    if (rectLabel) {
+      rectLabel.transition().duration(200).attr('opacity',  0);
+    }
+  },
+
+  _updateAxisTipOpacity: function(className) {
+    if (this.model.get('dragging')) {
+      this._showAxisTip(className);
+    } else {
+      this._hideAxisTip(className);
+    }
   },
 
   _onBrushMove: function() {
@@ -144,7 +224,7 @@ module.exports = View.extend({
         top = this.chartHeight + this.model.get('pos').y + this.$el.position().top - 20 - this.options.minimumBarHeight;
       }
 
-      if (!this._isDragging()) {
+      if (!this._isDragging() && freq > 0) {
         var d = formatter.formatNumber(freq);
         hoverProperties = { top: top, left: left, data: d };
       } else {
@@ -171,6 +251,8 @@ module.exports = View.extend({
     this.model.bind('change:lo_index change:hi_index', this._onChangeRange, this);
     this.model.bind('change:data', this._onChangeData, this);
     this.model.bind('change:dragging', this._onChangeDragging, this);
+    this.model.bind('change:right_axis_tip', this._onChangeRightAxisTip, this);
+    this.model.bind('change:left_axis_tip', this._onChangeLeftAxisTip, this);
   },
 
   reset: function() {
@@ -185,6 +267,14 @@ module.exports = View.extend({
     this._removeAxis();
     this._generateAxis();
     this._updateChart();
+
+    // Recreate the handles so they appear on top
+    this._removeHandles();
+    this._generateHandles();
+
+    // Recreate the brush so it appears on top
+    this._removeBrush();
+    this._setupBrush();
   },
 
   resetIndexes: function() {
@@ -196,7 +286,7 @@ module.exports = View.extend({
   },
 
   _removeBrush: function() {
-    this.chart.select('.Brush').remove();
+    this.chart.selectAll('.Brush').remove();
     this.chart.classed('is-selectable', false);
   },
 
@@ -213,11 +303,11 @@ module.exports = View.extend({
   },
 
   _generateChartContent: function() {
+    this._generateAxis();
     this._generateLines();
     this._generateBars();
     this._generateHandles();
     this._setupBrush();
-    this._generateAxis();
   },
 
   resize: function(width) {
@@ -507,17 +597,50 @@ module.exports = View.extend({
 
     this.chart.select('.Handle-right')
     .attr('transform', 'translate(' + rightX + ', 0)');
+
+    if (this.options.axis_tip) {
+      this.model.set({
+        left_axis_tip: this.xAxisScale(leftX + 3),
+        right_axis_tip: this.xAxisScale(rightX + 3)
+      });
+    }
+  },
+
+  _generateAxisTip: function(className) {
+
+    var handle = this.chart.select('.Handle.Handle-' + className);
+
+    var axisTip = handle.selectAll("g")
+    .data([''])
+    .enter().append("g")
+    .attr('class', 'AxisTip AxisTip-' + className)
+    .attr("transform", function(d, i) { return "translate(0,52)"; });
+
+    this.rectLabel = axisTip.append("rect")
+    .attr('class', 'AxisTip-rect AxisTip-' + className)
+    .attr("height", 12)
+    .attr("width", 10);
+
+    this.textLabel = axisTip.append("text")
+    .attr('class', 'AxisTip-text AxisTip-' + className)
+    .attr("dy", "11")
+    .attr("dx", "0")
+    .text(function(d) { return d; });
   },
 
   _generateHandle: function(className) {
-    var handle = { width: this.options.handleWidth, height: this.options.handleHeight, radius: this.options.handleRadius };
+    var opts = { width: this.options.handleWidth, height: this.options.handleHeight, radius: this.options.handleRadius };
     var yPos = (this.chartHeight / 2) - (this.options.handleHeight / 2);
 
-    var handles = this.chart.select('.Handles')
+    var handle = this.chart.select('.Handles')
     .append('g')
-    .attr('class', 'Handle ' + className);
+    .attr('class', 'Handle Handle-' + className);
 
-    handles
+    if (this.options.axis_tip) {
+      this._generateAxisTip(className);
+    }
+
+    handle
     .append('line')
     .attr('class', 'HandleLine')
     .attr('x1', 3)
@@ -526,19 +649,19 @@ module.exports = View.extend({
     .attr('y2', this.chartHeight + 4);
 
     if (this.options.handles) {
-      handles
+      handle
       .append('rect')
       .attr('class', 'HandleRect')
       .attr('transform', 'translate(0, ' + yPos + ')')
-      .attr('width', handle.width)
-      .attr('height', handle.height)
-      .attr('rx', handle.radius)
-      .attr('ry', handle.radius);
+      .attr('width', opts.width)
+      .attr('height', opts.height)
+      .attr('rx', opts.radius)
+      .attr('ry', opts.radius);
 
       var y = 21; // initial position of the first grip
 
       for (var i = 0; i < 3; i++) {
-        handles
+        handle
         .append('line')
         .attr('class', 'HandleGrip')
         .attr('x1', 2)
@@ -548,13 +671,13 @@ module.exports = View.extend({
       }
     }
 
-    return handles;
+    return handle;
   },
 
   _generateHandles: function() {
     this.chart.append('g').attr('class', 'Handles');
-    this.leftHandle  = this._generateHandle('Handle-left');
-    this.rightHandle = this._generateHandle('Handle-right');
+    this.leftHandle  = this._generateHandle('left');
+    this.rightHandle = this._generateHandle('right');
   },
 
   _generateHandleLine: function() {

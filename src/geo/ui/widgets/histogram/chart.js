@@ -8,6 +8,7 @@ var View = require('cdb/core/view');
 module.exports = View.extend({
 
   defaults: {
+    width: 0,
     axis_tip: false,
     minimumBarHeight: 2,
     animationSpeed: 750,
@@ -21,22 +22,21 @@ module.exports = View.extend({
     transitionType: 'elastic'
   },
 
-  initialize: function(opts) {
-    if (!opts.width) throw new Error('opts.width is required');
-    if (!opts.height) throw new Error('opts.height is required');
+  initialize: function() {
+    if (!_.isNumber(this.options.height)) throw new Error('height is required');
 
-    this.options = _.extend({}, this.defaults, opts);
+    this.options = _.extend({}, this.defaults, this.options);
 
     _.bindAll(this, '_selectBars', '_adjustBrushHandles', '_onBrushMove', '_onBrushStart', '_onMouseMove', '_onMouseOut');
 
     // using tagName: 'svg' doesn't work,
     // and w/o class="" d3 won't instantiate properly
-    this.$el = $('<svg class=""></svg>');
-    this.el = this.$el[0];
+    this.setElement($('<svg class=""></svg>')[0]);
+    this.$el.hide(); // will be toggled on width change
 
     this.canvas = d3.select(this.el)
-    .attr('width',  opts.width)
-    .attr('height', opts.height);
+    .attr('width',  this.options.width)
+    .attr('height', this.options.height);
 
     this.canvas
     .append('g')
@@ -122,6 +122,7 @@ module.exports = View.extend({
 
     this.reset();
     this.selectRange(loBarIndex, hiBarIndex);
+    this.$el.toggle(width > 1);
   },
 
   _onChangePos: function() {
@@ -377,7 +378,7 @@ module.exports = View.extend({
     this.canvasWidth  = this.model.get('width');
     this.canvasHeight = this.model.get('height');
 
-    this.chartWidth  = this.canvasWidth - this.margin.left - this.margin.right;
+    this.chartWidth  = Math.max(this.canvasWidth - this.margin.left - this.margin.right, 0);
     this.chartHeight = this.model.get('height') - this.margin.top - this.margin.bottom;
 
     this._setupScales();
@@ -788,7 +789,7 @@ module.exports = View.extend({
     })
     .attr('y', self.chartHeight)
     .attr('height', 0)
-    .attr('width', this.barWidth - 1);
+    .attr('width', Math.max(0, this.barWidth - 1));
 
     bars
     .transition()
@@ -854,7 +855,7 @@ module.exports = View.extend({
     })
     .attr('y', self.chartHeight)
     .attr('height', 0)
-    .attr('width', this.barWidth - 1);
+    .attr('width', Math.max(0, this.barWidth - 1));
 
     bars
     .transition()

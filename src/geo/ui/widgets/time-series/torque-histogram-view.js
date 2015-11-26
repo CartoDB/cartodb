@@ -16,7 +16,6 @@ module.exports = View.extend({
 
   // TODO could be calculated from element styles instead of duplicated numbers here?
   defaults: {
-    width: 400,
     margins: {
       top: 0,
       right: 0,
@@ -36,7 +35,6 @@ module.exports = View.extend({
     $(window).bind('resize', this._onWindowResize);
 
     this._viewModel = new Model({
-      width: this.defaults.width,
       margins: this.defaults.margins,
       histogramChartMargins: {
         top: 4,
@@ -77,7 +75,6 @@ module.exports = View.extend({
       animationSpeed: 100,
       margin: this._viewModel.get('histogramChartMargins'),
       handles: true,
-      width: this._viewModel.get('width'),
       height: this._viewModel.get('histogramChartHeight'),
       data: this.model.getData()
     });
@@ -106,7 +103,7 @@ module.exports = View.extend({
   },
 
   _onWindowResize: _.debounce(function() {
-    var width = this.$el.width() || this.defaults.width;
+    var width = this.$el.width() || 0;
 
     // $el.width might not be available, e.g. if $el is not present in DOM yet
     // TODO width is not always accurate, because of other elements also resizing which affects this element

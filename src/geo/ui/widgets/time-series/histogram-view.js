@@ -11,10 +11,6 @@ module.exports = View.extend({
 
   className: 'Widget-content Widget-content--timeSeries',
 
-  defaults: {
-    width: 400
-  },
-
   initialize: function() {
     _.bindAll(this, '_onWindowResize');
     $(window).bind('resize', this._onWindowResize);
@@ -22,7 +18,6 @@ module.exports = View.extend({
     this.filter = this.options.filter;
 
     this.viewModel = new Model({
-      width: this.defaults.width,
       margins: { // TODO could be calculated from element styles instead of duplicated numbers here?
         top: 0,
         right: 0,
@@ -70,7 +65,6 @@ module.exports = View.extend({
       delayBar: function(d, i) {
         return 100 + (i * 10);
       },
-      width: this.viewModel.get('width'),
       height: this.viewModel.get('histogramChartHeight'),
       data: this.model.getData()
     });
@@ -89,7 +83,7 @@ module.exports = View.extend({
   },
 
   _onWindowResize: _.debounce(function() {
-    var width = this.$el.width() || this.defaults.width;
+    var width = this.$el.width() || 0;
 
     // $el.width might not be available, e.g. if $el is not present in DOM yet
     // TODO width is not always accurate, because of other elements also resizing which affects this element

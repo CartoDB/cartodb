@@ -1,6 +1,7 @@
 var $ = require('jquery');
 var _ = require('underscore');
 var d3 = require('d3');
+var formatter = require('cdb/core/format');
 var Model = require('cdb/core/model');
 var View = require('cdb/core/view');
 var HistogramTitleView = require('./histogram_title_view');
@@ -146,6 +147,7 @@ module.exports = WidgetContent.extend({
     this.histogramChartView = new HistogramChartView(({
       margin: { top: 4, right: 4, bottom: 20, left: 4 },
       handles: true,
+      axis_tip: true,
       width: this.canvasWidth,
       height: this.canvasHeight,
       data: this.model.getData()
@@ -221,11 +223,16 @@ module.exports = WidgetContent.extend({
     this.histogramChartView.removeSelection();
 
     var data = this.originalData;
-    this.filter.setRange(
-      data[loBarIndex].start,
-      data[hiBarIndex - 1].end
-    );
-    this._updateStats();
+
+    if (loBarIndex >= 0 && loBarIndex < data.length && (hiBarIndex - 1) >= 0 && (hiBarIndex - 1) < data.length) {
+      this.filter.setRange(
+        data[loBarIndex].start,
+        data[hiBarIndex - 1].end
+      );
+      this._updateStats();
+    } else {
+      console.error('Error accessing array bounds', loBarIndex, hiBarIndex, data);
+    }
   },
 
   _onBrushEnd: function(loBarIndex, hiBarIndex) {
@@ -236,16 +243,22 @@ module.exports = WidgetContent.extend({
     }
 
     var properties = { filter_enabled: true, lo_index: loBarIndex, hi_index: hiBarIndex };
+
     if (!this.viewModel.get('zoomed')) {
       properties.zoom_enabled = true;
     }
+
     this.viewModel.set(properties);
 
-    this.filter.setRange(
-      data[loBarIndex].start,
-      data[hiBarIndex - 1].end
-    );
-    this._updateStats();
+    if (loBarIndex >= 0 && loBarIndex < data.length && (hiBarIndex - 1) >= 0 && (hiBarIndex - 1) < data.length) {
+      this.filter.setRange(
+        data[loBarIndex].start,
+        data[hiBarIndex - 1].end
+      );
+      this._updateStats();
+    } else {
+      console.error('Error accessing array bounds', loBarIndex, hiBarIndex, data);
+    }
   },
 
   _onRangeUpdated: function(loBarIndex, hiBarIndex) {

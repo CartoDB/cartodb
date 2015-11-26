@@ -1,6 +1,7 @@
 var _ = require('underscore');
 var log = require('cdb.log');
 var View = require('cdb/core/view');
+var d3 = require('d3');
 
 /**
  * Default widget content view:
@@ -61,6 +62,35 @@ module.exports = View.extend({
     } else {
       log.info('Placeholder template doesn\'t exist');
     }
-  }
+  },
+
+  _animateValue: function(model, what, className, opts) {
+    var self = this;
+
+    var to   = model.get(what);
+    var from = model.previous(what) || 0;
+
+    var format = opts.formatter || d3.format('0,000');
+
+    this.$(className).prop('counter', from).stop().animate({ counter: to }, {
+      duration: opts.animationSpeed || 500,
+      easing: 'swing',
+      step: function (i) {
+        if (i === isNaN) {
+          i = 0;
+        }
+
+        if (_.isNumber(i) && !_.isNaN(i)) {
+          value = opts.formatter(i);
+        } else {
+          value = 0;
+        }
+
+        var data = _.extend({ value: value }, opts.templateData);
+        $(this).text(opts.template(data));
+      }
+    });
+  },
+
 
 });

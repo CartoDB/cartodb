@@ -6,13 +6,15 @@
 
 .CDBIcon {
   @include inline-block();
-  vertical-align: top;
   font-family: 'CDBIcon';
   font-style: normal;
   font-weight: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   line-height: 1;
+  &.CDBIcon--top {
+    vertical-align: top;
+  }
 }
 
 .CDBIcon-Cartofante:before {

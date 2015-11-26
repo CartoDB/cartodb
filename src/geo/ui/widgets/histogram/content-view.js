@@ -321,24 +321,6 @@ module.exports = WidgetContent.extend({
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   },
 
-  _xanimateValue: function(className, what, unit) {
-    var self = this;
-
-    var from = this.viewModel.previous(what) || 0;
-    var to = this.viewModel.get(what);
-
-    this.$(className).prop('counter', from).stop().animate({ counter: to }, {
-      duration: 500,
-      easing: 'swing',
-      step: function (i) {
-        if (i === isNaN) {
-          i = 0;
-        }
-        $(this).text(self.histogramChartView.formatNumber(i) + ' ' + unit);
-      }
-    });
-  },
-
   _updateStats: function() {
     var data = this.originalData;
 

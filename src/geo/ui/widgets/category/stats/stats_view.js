@@ -32,6 +32,7 @@ module.exports = View.extend({
         catsPer: this._getCagetoriesPercentage()
       })
     );
+
     return this;
   },
 
@@ -42,25 +43,23 @@ module.exports = View.extend({
     this.add_related_model(this.viewModel);
   },
 
-  _getNullPercentage: function(attr) {
+  _getNullPercentage: function() {
     var nulls = this.dataModel.get('nulls');
     var total = this.dataModel.get('totalCount') || 0;
-    var per = !nulls ? 0 : ((nulls/total) * 100).toFixed(2);
-    return per;
+    return !nulls ? 0 : ((nulls/total) * 100).toFixed(2);
   },
 
-  _getCagetoriesPercentage: function(attr) {
+  _getCagetoriesPercentage: function() {
     var total = this.dataModel.get('totalCount') || 0;
     var data = this.dataModel.getData();
+
     if (!total) {
       return 0;
     }
 
     var currentTotal = data.reduce(function(memo, mdl) {
-        return !mdl.get('agg') ? ( memo + parseFloat(mdl.get('value'))) : memo;
-      },
-      0
-    );
+      return !mdl.get('agg') ? ( memo + parseFloat(mdl.get('value'))) : memo;
+    }, 0);
 
     if (!currentTotal) {
       return 0;
@@ -72,10 +71,7 @@ module.exports = View.extend({
   _getCategoriesSize: function() {
     return _.pluck(
       this.dataModel.getData().reject(function(mdl) {
-        return mdl.get('agg')
-      }),
-      'name'
-    ).length;
+        return mdl.get('agg');
+      }), 'name').length;
   }
-
 });

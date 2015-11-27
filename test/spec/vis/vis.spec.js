@@ -22,6 +22,7 @@ describe('vis/vis', function() {
     this.mapConfig = {
       updated_at: 'cachebuster',
       title: "irrelevant",
+      description: "not so irrelevant",
       url: "http://cartodb.com",
       center: [40.044, -101.95],
       bounding_box_sw: [20, -140],
@@ -31,6 +32,10 @@ describe('vis/vis', function() {
         [1, 2],
         [3, 4],
       ],
+      user: {
+        fullname: "Chuck Norris",
+        avatar_url: "http://example.com/avatar.jpg"
+      },
       datasource: {
         user_name: "wadus",
         maps_api_template: "https://{user}.example.com:443",
@@ -390,6 +395,10 @@ describe('vis/vis', function() {
             }
           }
         ],
+        user: {
+          fullname: "Chuck Norris",
+          avatar_url: "http://example.com/avatar.jpg"
+        },
         datasource: {
           user_name: "wadus",
           maps_api_template: "https://{user}.example.com:443",
@@ -466,6 +475,7 @@ describe('vis/vis', function() {
       this.mapConfig = {
         updated_at: 'cachebuster',
         title: "irrelevant",
+        description: "not so irrelevant",
         url: "http://cartodb.com",
         center: [40.044, -101.95],
         bounding_box_sw: [20, -140],
@@ -474,6 +484,10 @@ describe('vis/vis', function() {
         bounds: [[1, 2],[3, 4]],
         scrollwheel: true,
         overlays: [],
+        user: {
+          fullname: "Chuck Norris",
+          avatar_url: "http://example.com/avatar.jpg"
+        },
         datasource: {
           user_name: "wadus",
           maps_api_template: "https://{user}.example.com:443",

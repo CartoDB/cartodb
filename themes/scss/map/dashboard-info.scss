@@ -107,11 +107,19 @@
 }
 
 .Dashboard-info-logo {
-  width: 40px;
-  height: 40px;
-  border-radius: 4px;
   background: #fff;
+  border-radius: 4px;
+  height: 40px;
+  line-height: 40px;
   margin-bottom: $sMargin-section;
+  text-align: center;
+  width: 40px;
+}
+
+.Dashboard-info-logo i {
+  color: #3C93D8;
+  font-size: 22px;
+  vertical-align: top;
 }
 
 .Dashboard-info-actions {
@@ -136,8 +144,9 @@
   color: #fff;
   font-size: $sFontSize-small;
   line-height: $sLineHeight-small;
-  font-weight: $sFontWeight-small;
+  font-weight: $sFontWeight-lighter;
   margin-bottom: 8px;
+  text-transform: uppercase;
 }
 
 .Dashboard-info-title {
@@ -168,11 +177,12 @@
   width: 40px;
   text-align: center;
   margin-right: 10px;
+}
 
-  img {
-    display: inline-block;
-    border-radius: 4px;
-  }
+.Dashboard-info-avatar img {
+  border-radius: 4px;
+  display: inline-block;
+  width: 100%;
 }
 
 .Dashboard-info-footer-txt {

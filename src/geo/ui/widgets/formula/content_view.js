@@ -26,6 +26,15 @@ module.exports = WidgetContent.extend({
     this.clearSubViews();
     var value = this.dataModel.get('data');
 
+    var format = function(value) {
+      var formatter = d3.format('0,000');
+
+      if (_.isNumber(value)) {
+        return formatter(value.toFixed(2));
+      }
+      return 0;
+    };
+
     var nulls = !_.isUndefined(this.dataModel.get('nulls')) && formatter.formatNumber(this.dataModel.get('nulls')) || '-';
     var isCollapsed = this.dataModel.isCollapsed();
 
@@ -48,7 +57,7 @@ module.exports = WidgetContent.extend({
       el: this.$el
     });
 
-    animator.animateValue(this.dataModel, 'data', '.js-value', animationTemplate, { animationSpeed: 700, formatter: formatter.formatNumber, templateData: { prefix: prefix, suffix: suffix }});
+    animator.animateValue(this.dataModel, 'data', '.js-value', animationTemplate, { animationSpeed: 700, formatter: format, templateData: { prefix: prefix, suffix: suffix }});
 
     this.$el.toggleClass('is-collapsed', !!isCollapsed);
 

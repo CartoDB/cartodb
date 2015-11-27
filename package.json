@@ -69,7 +69,8 @@
     "time-grunt": "~0.3.1",
     "torque.js": "2.14.0",
     "underscore": "1.8.3",
-    "watchify": "3.4.0"
+    "watchify": "3.4.0",
+    "perfect-scrollbar": "~0.6.7"
   },
   "browserify": {
     "transform": [
@@ -92,7 +93,6 @@
     "mousewheel": "./vendor/mousewheel.js",
     "mwheelIntent": "./vendor/mwheelIntent.js",
     "odyssey": "./vendor/mod/odyssey.js",
-    "simplebar": "./vendor/simplebar/simplebar.min.js",
     "spin.js": "./vendor/spin.js",
     "wax.cartodb.js": "./vendor/wax.cartodb.js"
   },
@@ -115,7 +115,6 @@
         "jquery:jQuery"
       ]
     },
-    "simplebar": "simplebar",
     "spin.js": "Spinner",
     "wax.cartodb.js": "wax"
   },

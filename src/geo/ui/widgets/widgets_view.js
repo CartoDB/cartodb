@@ -1,5 +1,6 @@
 var View = require('cdb/core/view');
 var _ = require('underscore');
+var $ = require('jquery');
 var LayerWidgetsView = require('cdb/geo/ui/widgets/layer_widgets_view');
 require('simplebar');
 

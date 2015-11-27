@@ -1,1 +1,1 @@
-<%= prefix %><%= value %><%= suffix %>
+<%- prefix %><%- value %><%- suffix %>

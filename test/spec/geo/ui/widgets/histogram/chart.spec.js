@@ -101,14 +101,14 @@ describe('geo/ui/widgets/histogram/chart', function() {
     });
 
     it('should calculate the scales', function() {
-      var chartWidth = this.width - this.margin.left - this.margin.right;
-      var chartHeight = this.height - this.margin.top - this.margin.bottom;
       var max = _.max(this.view.model.get('data'), function(d) { return d.freq; });
 
       expect(this.view.xScale(0)).toBe(0);
-      expect(this.view.xScale(100)).toBe(chartWidth);
+      expect(this.view.xScale(100)).toMatch(/\d+/);
+      expect(this.view.xScale(100)).toEqual(this.view.chartWidth());
 
-      expect(this.view.yScale(0)).toBe(chartHeight);
+      expect(this.view.yScale(0)).toMatch(/\d+/);
+      expect(this.view.yScale(0)).toEqual(this.view.chartHeight());
       expect(this.view.yScale(max.freq)).toBe(0);
     });
 

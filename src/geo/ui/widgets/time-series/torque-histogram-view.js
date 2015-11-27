@@ -28,12 +28,6 @@ module.exports = View.extend({
       right: 4,
       bottom: 20,
       left: 4
-    },
-    margins: {
-      top: 0,
-      right: 0,
-      bottom: 0,
-      left: 24
     }
   },
 
@@ -44,9 +38,6 @@ module.exports = View.extend({
     this._rangeFilter = this.options.rangeFilter;
     this._torqueLayerModel = this.options.torqueLayerModel;
 
-    this._viewModel = new Model({
-      margins: this.defaults.margins
-    });
     this.model.bind('change:data', this._onChangeData, this);
   },
 
@@ -81,7 +72,6 @@ module.exports = View.extend({
     var timeMarkerView = new TorqueTimeMarkerview({
       model: this.model, // a histogram model
       chartView: this._chartView,
-      viewModel: this._viewModel,
       torqueLayerModel: this._torqueLayerModel
     });
     this.addView(timeMarkerView);

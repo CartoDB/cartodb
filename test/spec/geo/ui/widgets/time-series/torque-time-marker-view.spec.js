@@ -21,7 +21,6 @@ describe('geo/ui/widgets/time-series/torque-time-marker-view', function() {
       bottom: 3,
       left: 4
     };
-    this.viewModel = new Model();
     this.chartView = new HistogramChartView({
       margin: this.histogramChartMargins,
       height: 200,
@@ -35,7 +34,6 @@ describe('geo/ui/widgets/time-series/torque-time-marker-view', function() {
 
     this.view = new TorqueTimeMarkerView({
       model: this.model,
-      viewModel: this.viewModel,
       torqueLayerModel: this.torqueLayerModel,
       chartView: this.chartView
     });
@@ -62,7 +60,7 @@ describe('geo/ui/widgets/time-series/torque-time-marker-view', function() {
     describe('when is dragging the marker', function() {
       beforeEach(function() {
         spyOn(this.view.timeMarker, 'data').and.callThrough();
-        this.viewModel.set('isDragging', true);
+        this.view.viewModel.set('isDragging', true);
         this.torqueLayerModel.set('step', 40);
       });
 

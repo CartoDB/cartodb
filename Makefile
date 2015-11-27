@@ -15,7 +15,6 @@ WORKING_SPECS_INTEGRATIONS = \
 
 WORKING_SPECS_1 = \
   spec/rspec_configuration.rb \
-	spec/controllers/carto/api/presenter_cache_spec.rb \
   spec/models/table_spec.rb \
   spec/models/table/relator_spec.rb \
   spec/models/table/column_typecaster_spec.rb \
@@ -31,6 +30,7 @@ WORKING_SPECS_1 = \
   spec/requests/carto/api/layer_presenter_spec.rb \
 	spec/requests/carto/api/data_import_presenter_spec.rb \
 	spec/requests/carto/api/database_groups_controller_spec.rb \
+	spec/requests/carto/api/presenter_cache_spec.rb \
   spec/models/map_spec.rb \
   spec/models/map/copier_spec.rb \
 	spec/models/visualization/collection_spec.rb \

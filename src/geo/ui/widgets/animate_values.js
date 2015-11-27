@@ -13,25 +13,31 @@ module.exports = View.extend({
   },
 
   animateFromValues: function(from, to, className, template, opts) {
-    var self = this;
-
+    var $el = this.$(className);
     var options = opts || {};
     var formatter = options.formatter || d3.format('0,000');
     var templateData = options.templateData || {};
 
-    this.$(className).prop('counter', from).stop().animate({ counter: to }, {
+    var stepValue = function (i) {
+      value = (_.isNaN(i) || i === undefined) ? (options.defaultValue || 0) : formatter(i);
+      var data = _.extend({ value: value }, templateData);
+      $el.text(template(data));
+    };
+
+    if (options.animationSpeed === 0) {
+      stepValue(to);
+      return;
+    }
+
+    $el.prop('counter', from).stop().animate({ counter: to }, {
       duration: options.animationSpeed || 500,
       easing: options.easingMethod || 'swing',
-      step: function (i) {
-        value = (_.isNaN(i) || i === undefined) ? (options.defaultValue || 0) : formatter(i);
-        var data = _.extend({ value: value }, templateData);
-        $(this).text(template(data));
-      }
+      step: stepValue
     });
   },
 
   animateFromCurrentValue: function(value, className, template, opts) {
-    var self = this;
+    var $el = this.$(className);
 
     var options = opts || {};
 
@@ -41,19 +47,26 @@ module.exports = View.extend({
     var formatter = options.formatter || d3.format('0,000');
     var templateData = options.templateData || {};
 
-    this.$(className).prop('counter', from).stop().animate({ counter: to }, {
+    var stepValue = function (i) {
+      value = (_.isNaN(i) || i === undefined) ? (options.defaultValue || 0) : formatter(i);
+      var data = _.extend({ value: value }, templateData);
+      $el.text(template(data));
+    };
+
+    if (options.animationSpeed === 0) {
+      stepValue(to);
+      return;
+    }
+
+    $el.prop('counter', from).stop().animate({ counter: to }, {
       duration: options.animationSpeed || 500,
       easing: options.easingMethod || 'swing',
-      step: function (i) {
-        value = (_.isNaN(i) || i === undefined) ? (options.defaultValue || 0) : formatter(i);
-        var data = _.extend({ value: value }, templateData);
-        $(this).text(template(data));
-      }
+      step: stepValue
     });
   },
 
   animateValue: function(model, what, className, template, opts) {
-    var self = this;
+    var $el = this.$(className);
 
     var options = opts || {};
 
@@ -63,14 +76,21 @@ module.exports = View.extend({
     var formatter = options.formatter || d3.format('0,000');
     var templateData = options.templateData || {};
 
-    this.$(className).prop('counter', from).stop().animate({ counter: to }, {
+    var stepValue = function (i) {
+      value = (_.isNaN(i) || i === undefined) ? (options.defaultValue || 0) : formatter(i);
+      var data = _.extend({ value: value }, templateData);
+      $el.text(template(data));
+    };
+
+    if (options.animationSpeed === 0) {
+      stepValue(to);
+      return;
+    }
+
+    $el.prop('counter', from).stop().animate({ counter: to }, {
       duration: options.animationSpeed || 500,
       easing: options.easingMethod || 'swing',
-      step: function (i) {
-        value = (_.isNaN(i) || i === undefined) ? (options.defaultValue || 0) : formatter(i);
-        var data = _.extend({ value: value }, templateData);
-        $(this).text(template(data));
-      }
+      step: stepValue
     });
   }
 });

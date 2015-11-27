@@ -5,6 +5,7 @@ require('simplebar');
 module.exports = View.extend({
 
   className: 'Widget-canvas',
+
   attributes: {
     "data-simplebar-direction": "vertical"
   },

@@ -15,7 +15,7 @@ var DashboardInfoView = View.extend({
       template({
         title: this.model.get('title'),
         description: this.model.get('description'),
-        updatedAt: moment('2015-11-23T19:17:29+00:00').fromNow(),
+        updatedAt: moment(this.model.get('updatedAt')).fromNow(),
         userName: this.model.get('userName'),
         userAvatarURL: this.model.get('userAvatarURL')
       })

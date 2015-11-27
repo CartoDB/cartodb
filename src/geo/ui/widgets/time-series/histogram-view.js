@@ -13,7 +13,8 @@ module.exports = View.extend({
     mobileThreshold: 960, // px; should match CSS media-query
     histogramChartHeight:
       48 + // inline bars height
-      20 + // bottom labels
+      4 + // bottom margin
+      16 + // labels
       4, // margins
     histogramChartMobileHeight:
       20 + // inline bars height (no bottom labels)
@@ -39,7 +40,7 @@ module.exports = View.extend({
       margin: {
         top: 4,
         right: 4,
-        bottom: 20,
+        bottom: 4,
         left: 4
       },
       handles: true,

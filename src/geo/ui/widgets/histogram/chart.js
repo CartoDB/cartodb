@@ -11,6 +11,7 @@ module.exports = View.extend({
      // render the chart once the width is set as default, provide false value for this prop to disable this behavior
      // e.g. for "mini" histogram behavior
     showOnWidthChange: true,
+    labelsMargin: 16, // px
 
     axis_tip: false,
     minimumBarHeight: 2,
@@ -102,7 +103,10 @@ module.exports = View.extend({
 
   chartHeight: function() {
     var m = this.model.get('margin');
-    return this.model.get('height') - m.top - m.bottom;
+    var labelsMargin = this.model.get('showLabels')
+      ? this.defaults.labelsMargin
+      : 0;
+    return this.model.get('height') - m.top - m.bottom - labelsMargin;
   },
 
   _resizeToParentElement: function() {
@@ -197,15 +201,7 @@ module.exports = View.extend({
   },
 
   _onChangShowLabels: function() {
-    var showLabels = this.model.get('showLabels');
-
-    var margin = this.model.get('margin');
-    margin.bottom = showLabels
-      ? this.options.margin.bottom
-      : this.options.margin.top; // same as top for margins to be symmetrical
-    this.model.set('margin', margin);
-
-    this._axis.style('opacity', showLabels ? 1 : 0);
+    this._axis.style('opacity', this.model.get('showLabels') ? 1 : 0);
   },
 
   _onChangePos: function() {

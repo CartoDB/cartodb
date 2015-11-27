@@ -133,7 +133,7 @@ module.exports = WidgetContent.extend({
 
   _renderMainChart: function() {
     this.histogramChartView = new HistogramChartView(({
-      margin: { top: 4, right: 4, bottom: 20, left: 4 },
+      margin: { top: 4, right: 4, bottom: 4, left: 4 },
       handles: true,
       axis_tip: true,
       height: this.defaults.chartHeight,
@@ -155,7 +155,7 @@ module.exports = WidgetContent.extend({
     this.miniHistogramChartView = new HistogramChartView(({
       className: 'mini',
       handles: false,
-      margin: { top: 0, right: 0, bottom: 20, left: 4 },
+      margin: { top: 0, right: 0, bottom: 4, left: 4 },
       height: 40,
       showOnWidthChange: false,
       data: this.dataModel.getData()

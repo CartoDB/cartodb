@@ -27,7 +27,7 @@ describe('geo/ui/widgets/histogram/chart', function() {
     this.margin = {
       top: 4,
       right: 4,
-      bottom: 20,
+      bottom: 4,
       left: 4
     };
 

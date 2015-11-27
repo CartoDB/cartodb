@@ -138,8 +138,7 @@ module.exports = View.extend({
   },
 
   _calcHeight: function() {
-    var chartMargin = this._chartView.model.get('margin');
-    return this._chartView.model.get('height') - chartMargin.top - chartMargin.bottom + this.defaults.height;
+    return this._chartView.chartHeight() + this.defaults.height;
   },
 
   _updateXScale: function() {

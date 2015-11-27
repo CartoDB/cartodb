@@ -12,9 +12,10 @@ module CartoDB
       # Also default schema for new users
       SCHEMA_PUBLIC = 'public'
       SCHEMA_CARTODB = 'cartodb'
-      SCHEMA_CDB_GEOCODER = 'cdb_geocoder_client'
       SCHEMA_IMPORTER = 'cdb_importer'
       SCHEMA_GEOCODING = 'cdb'
+      SCHEMA_CDB_GEOCODER_API = 'cdb_geocoder_client'
+      CDB_GEOCODER_API_VERSION = '0.0.1'
 
       def initialize(user)
         raise "User nil" unless user
@@ -411,7 +412,7 @@ module CartoDB
         @user.in_database(as: :superuser) do |db|
           db.transaction do
             db.run('CREATE EXTENSION IF NOT EXISTS plproxy SCHEMA public')
-            db.run('CREATE EXTENSION IF NOT EXISTS cdb_geocoder_client')
+            db.run("CREATE EXTENSION IF NOT EXISTS cdb_geocoder_client VERSION '#{CDB_GEOCODER_API_VERSION}'")
             db.run(geocoder_server_config_sql)
           end
         end
@@ -421,14 +422,17 @@ module CartoDB
           org_users.each do |u|
             # TODO This part is a copy of the build_search_path method to avoid put the geocoder schema path
             # until we open this to all the users
-            search_path = "\"#{u.database_schema}\", #{SCHEMA_CARTODB}, #{SCHEMA_CDB_GEOCODER}, #{SCHEMA_PUBLIC}"
+            search_path = "\"#{u.database_schema}\", #{SCHEMA_CARTODB}, #{SCHEMA_CDB_GEOCODER_API}, #{SCHEMA_PUBLIC}"
             @user.in_database(as: :superuser).run("ALTER USER \"#{u.database_username}\"
+              SET search_path TO #{search_path}")
+            # We have to set the search_path to the publicuser too
+            @user.in_database(as: :superuser).run("ALTER USER \"#{u.database_public_username}\"
               SET search_path TO #{search_path}")
           end
         else
           # TODO This part is a copy of the build_search_path method to avoid put the geocoder schema path
           # until we open this to all the users
-          search_path = "\"#{@user.database_schema}\", #{SCHEMA_CARTODB}, #{SCHEMA_CDB_GEOCODER}, #{SCHEMA_PUBLIC}"
+          search_path = "\"#{@user.database_schema}\", #{SCHEMA_CARTODB}, #{SCHEMA_CDB_GEOCODER_API}, #{SCHEMA_PUBLIC}"
           @user.in_database(as: :superuser).run("ALTER USER \"#{@user.database_username}\"
             SET search_path TO #{search_path}")
         end

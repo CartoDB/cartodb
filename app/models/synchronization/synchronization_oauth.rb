@@ -38,7 +38,7 @@ class SynchronizationOauth < Sequel::Model
   end #validate
 
   def before_save
-    super  
+    super
     self.updated_at = Time.now
   end #before_save
 
@@ -49,7 +49,7 @@ class SynchronizationOauth < Sequel::Model
 
 
   def get_service_datasource
-    user = User.where(id: user_id).first
+    user = ::User.where(id: user_id).first
     datasource = CartoDB::Datasources::DatasourcesFactory.get_datasource(service, user, {
       http_timeout: ::DataImport.http_timeout_for(user)
     })

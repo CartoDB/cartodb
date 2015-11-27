@@ -3,7 +3,6 @@ require_relative '../../spec_helper'
 require_relative '../user_shared_examples'
 
 describe Carto::User do
-
   it_behaves_like 'user models' do
     def get_twitter_imports_count_by_user_id(user_id)
       get_user_by_id(user_id).twitter_imports_count
@@ -15,7 +14,6 @@ describe Carto::User do
   end
 
   describe '#needs_password_confirmation?' do
-
     it 'is true for a normal user' do
       user = FactoryGirl.build(:carto_user, :google_sign_in => nil)
       user.needs_password_confirmation?.should == true
@@ -33,7 +31,29 @@ describe Carto::User do
       user = FactoryGirl.build(:carto_user, :google_sign_in => true, :last_password_change_date => Time.now)
       user.needs_password_confirmation?.should == true
     end
-
   end
 
+  describe '#dedicated_support, #remove_logo and #soft_geocoding_limit' do
+    before(:all) do
+      @carto_user = FactoryGirl.build(:carto_user)
+    end
+
+    it 'false for free accounts' do
+      @carto_user.account_type = Carto::AccountType::FREE
+
+      @carto_user.dedicated_support?.should be_false
+      @carto_user.remove_logo?.should be_false
+      @carto_user.soft_geocoding_limit?.should be_false
+    end
+
+    it 'true for BASIC and PRO accounts' do
+      [Carto::AccountType::BASIC, Carto::AccountType::PRO].each do |account_type|
+        @carto_user.account_type = account_type
+
+        @carto_user.dedicated_support?.should be_true
+        @carto_user.remove_logo?.should be_true
+        @carto_user.soft_geocoding_limit?.should be_true
+      end
+    end
+  end
 end

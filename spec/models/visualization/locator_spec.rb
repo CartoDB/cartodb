@@ -43,6 +43,8 @@ describe Visualization::Locator do
     @user_mock.stubs(:username).returns(user_name)
     @user_mock.stubs(:api_key).returns(user_apikey)
     @user_mock.stubs(:invalidate_varnish_cache).returns(nil)
+    @user_mock.stubs(:has_feature_flag?)
+      .returns(false)
     CartoDB::Visualization::Relator.any_instance.stubs(:user).returns(@user_mock)
 
     @visualization  = Visualization::Member.new(

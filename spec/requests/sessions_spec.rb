@@ -1,8 +1,11 @@
 # encoding: utf-8
 require_relative '../acceptance_helper'
+require_relative '../factories/visualization_creation_helpers'
 
 feature "Sessions" do
   before do
+    Capybara.current_driver = :rack_test
+
     @banned_user_agents = [
       "Mozilla/5.0 (compatible; MSIE 8.0; Windows NT 6.0; Trident/4.0; WOW64; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; .NET CLR 1.0.3705; .NET CLR 1.1.4322)",
       "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0; .NET CLR 3.5.30729; .NET CLR 3.0.30729; .NET CLR 2.0.50727; Media Center PC 6.0)",
@@ -25,45 +28,48 @@ feature "Sessions" do
     ]
   end
 
-  scenario "Login in the application" do
-    user = create_user
+  describe 'valid user' do
 
-    visit login_path
-    fill_in 'email', :with => user.email
-    fill_in 'password', :with => 'blablapassword'
-    click_link_or_button 'Sign in'
-
-    page.should have_css("input[@type=text].error")
-    page.should have_css("input[@type=password].error")
-    page.should have_content("Your account or your password is not ok")
-
-    fill_in 'email', :with => user.email
-    fill_in 'password', :with => user.email.split('@').first
-    click_link_or_button 'Sign in'
-
-    user.destroy
-  end
-
-  scenario "Get the session information via OAuth" do
-    Capybara.current_driver = :rack_test
-    user = create_user :email => 'fernando.blat@vizzuality.com', :username => 'blat'
-
-    client_application = create_client_application :user => user, :url => CartoDB.hostname, :callback_url => CartoDB.hostname
-
-    oauth_consumer = OAuth::Consumer.new(client_application.key, client_application.secret, {
-      :site => client_application.url,
-      :scheme => :query_string,
-      :http_method => :post
-    })
-    access_token = create_access_token :client_application => client_application, :user => user
-    identity_uri = "http://vizzuality.testhost.lan/oauth/identity.json"
-    req = prepare_oauth_request(oauth_consumer, identity_uri, :token => access_token)
-    get_json identity_uri, {}, {'Authorization' => req["Authorization"]} do |response|
-      response.status.should be_success
-      response.body.should == { :uid => user.id, :email => 'fernando.blat@vizzuality.com', :username => 'blat' }
+    before(:all) do
+      @user = create_user :email => 'fernando.blat@vizzuality.com', :username => 'blat'
     end
 
-    user.destroy
+    after(:all) do
+      @user.destroy
+    end
+
+    scenario "Login in the application" do
+      visit login_path
+      fill_in 'email', :with => @user.email
+      fill_in 'password', :with => 'blablapassword'
+      click_link_or_button 'Login'
+
+      page.should have_css(".Sessions-fieldError.js-Sessions-fieldError")
+      page.should have_css("[@data-content='Your account or your password is not ok']")
+
+      fill_in 'email', :with => @user.email
+      fill_in 'password', :with => @user.email.split('@').first
+      click_link_or_button 'Login'
+      page.should be_dashboard
+    end
+
+    scenario "Get the session information via OAuth" do
+      client_application = create_client_application :user => @user, :url => CartoDB.hostname, :callback_url => CartoDB.hostname
+
+      oauth_consumer = OAuth::Consumer.new(client_application.key, client_application.secret, {
+        :site => client_application.url,
+        :scheme => :query_string,
+        :http_method => :post
+      })
+      access_token = create_access_token :client_application => client_application, :user => @user
+      identity_uri = "http://vizzuality.testhost.lan/oauth/identity.json"
+      req = prepare_oauth_request(oauth_consumer, identity_uri, :token => access_token)
+      get_json identity_uri, {}, {'Authorization' => req["Authorization"]} do |response|
+        response.status.should be_success
+        response.body.should == { :uid => @user.id, :email => @user.email, :username => @user.username }
+      end
+    end
+
   end
 
   scenario "should redirect you to the user login page if unauthorized", :js => true do
@@ -75,14 +81,19 @@ feature "Sessions" do
 
 
   scenario "should show error page when trying to connect with unsupported browser" do
-    @banned_user_agents.each do |user_agent|
-      options = page.driver.instance_variable_get("@options")
-      options[:headers] = {"HTTP_USER_AGENT" => user_agent}
-      page.driver.instance_variable_set "@options", options
+    options = page.driver.instance_variable_get("@options")
+    old_headers = options[:headers]
+    begin
+      @banned_user_agents.each do |user_agent|
+        options[:headers] = {"HTTP_USER_AGENT" => user_agent}
+        page.driver.instance_variable_set "@options", options
 
-      visit '/login'
+        visit '/login'
 
-      page.should have_content("You have to update your browser in order to use CartoDB")
+        page.should have_content("We recommend that you install the latest version of any")
+      end
+    ensure
+      options[:headers] = old_headers
     end
   end
 
@@ -94,30 +105,70 @@ feature "Sessions" do
 
       visit '/login'
 
-      page.should have_content("Login to your CartoDB")
+      page.should have_content("Login to CartoDB")
     end
   end
 
-  scenario "doesn't allow to login from a different domain than user account domain" do
-    user1  = FactoryGirl.create(:user_with_private_tables, :username => 'email1')
-    user2  = FactoryGirl.create(:user_with_private_tables, :username => 'email2')
+  describe "Organization login" do
+    include_context 'organization with users helper'
 
-    visit login_url(:subdomain => user2.username, :port => Capybara.server_port)
+    it 'allows login to organization users' do
+      visit org_login_url(@org_user_1.organization)
+      send_login_form(@org_user_1)
+      page.should be_dashboard
+    end
 
-    fill_in 'email', :with => user1.email
-    fill_in 'password', :with => user1.email.split('@').first
-    click_link_or_button 'Sign in'
+    it 'does not allow user+password login to organization users if auth_username_password_enabled is false' do
+      @organization.auth_username_password_enabled = false
+      @organization.save
 
-    page.should have_css("input[@type=text].error")
-    page.should have_css("input[@type=password].error")
-    page.should have_content("Your account or your password is not ok")
+      visit org_login_url(@org_user_1.organization)
+      page.should_not have_css('#email')
+      page.should_not have_css('#password')
+    end
 
-    fill_in 'email', :with => user2.email
-    fill_in 'password', :with => user2.email.split('@').first
+    it 'does not allow google login to organization users if auth_google_enabled is false' do
+      @organization.auth_google_enabled = false
+      @organization.save
 
-    click_link_or_button 'Sign in'
+      visit org_login_url(@org_user_1.organization)
+      page.should_not have_css('#google_signup_access_token')
+      page.should_not have_css('#google_login_button_iframe')
+    end
 
-    page.should_not have_content("Your account or your password is not ok")
+    describe 'ldap login' do
+
+      before(:all) do
+        @ldap_configuration = FactoryGirl.create(:ldap_configuration, { organization_id: @organization.id })
+      end
+
+      after(:all) do
+        @ldap_configuration.destroy
+      end
+
+      it 'does not allow google login to organization users if they have ldap configuration' do
+        visit org_login_url(@org_user_1.organization)
+        page.should_not have_css('#google_signup_access_token')
+        page.should_not have_css('#google_login_button_iframe')
+      end
+
+    end
+
   end
+
+  def org_login_url(organization)
+    login_url(:host => "#{organization.name}.localhost.lan", :port => Capybara.server_port)
+  end
+
+  def send_login_form(user)
+    fill_in 'email', :with => user.email
+    fill_in 'password', :with => user.username
+    click_link_or_button 'Login'
+  end
+
+  def be_dashboard
+    have_css(".ContentController")
+  end
+
 end
 

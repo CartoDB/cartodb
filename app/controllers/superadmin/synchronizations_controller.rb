@@ -7,7 +7,7 @@ class Superadmin::SynchronizationsController < Superadmin::SuperadminController
 
   respond_to :json
 
-  ssl_required :index if Rails.env.production? || Rails.env.staging?
+  ssl_required :index
 
   layout 'application'
 

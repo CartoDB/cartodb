@@ -4,7 +4,7 @@ module CartoDB
   class OAuths
 
     # Class constructor
-    # @param owner_user User
+    # @param owner_user ::User
     def initialize(owner_user)
       @owner = owner_user
     end #initialize

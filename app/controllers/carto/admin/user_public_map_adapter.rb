@@ -5,7 +5,7 @@ module Carto
       extend Forwardable
 
       delegate [ :id, :name, :username, :disqus_shortname, :avatar, :avatar_url, :remove_logo?, :has_organization?, 
-                :organization, :organization_id, :twitter_username, :public_url, :subdomain, :organization_username, 
+                :organization, :organization_id, :twitter_username, :location, :public_url, :subdomain, :organization_username, 
                 :sql_safe_database_schema, :account_type, :google_maps_query_string, :basemaps, :default_basemap ] => :user
 
       attr_reader :user
@@ -20,6 +20,10 @@ module Carto
 
       def public_visualization_count
         @public_visualization_count ||= Carto::VisualizationQueryBuilder.user_public_visualizations(@user).build.count
+      end
+
+      def all_visualization_count
+        @all_visualization_count ||= Carto::VisualizationQueryBuilder.user_all_visualizations(@user).build.count
       end
 
     end

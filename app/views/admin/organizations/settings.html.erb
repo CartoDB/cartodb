@@ -20,6 +20,7 @@
 
   <div class="FormAccount-Content">
     <%= render :partial => 'admin/shared/org_subheader' %>
+    <div class="FormAccount-separator"></div>
 
     <%= form_for @organization, url: CartoDB.url(self, 'organization_settings_update', {}, current_user), multipart: true do |f| %>
       <%= csrf_meta_tags %>
@@ -32,10 +33,12 @@
           <div class="FormAccount-avatarPreview">
             <img src="<%= @organization.avatar_url %>" title="" alt="" class="FormAccount-avatarPreviewImage" />
           </div>
-          <%= f.file_field :avatar_url, :class => "js-fileAvatar", :value => "Choose image" %>
-        </div>
-        <div class="FormAccount-rowInfo">
-          <p class="FormAccount-rowInfoText FormAccount-rowInfoText--smaller">Recommended images should be 128x128 pixels of size</p>
+          <div class="FormAccount-avatar--input">
+            <%= f.file_field :avatar_url, :class => "FormAccount-fileAvatar js-fileAvatar", :value => "Change image" %>
+            <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
+              <p class="FormAccount-rowInfoText FormAccount-rowInfoText--smaller">Recommended images should be 128x128 pixels of size</p>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -55,10 +58,10 @@
 
       <div class="FormAccount-row">
         <div class="FormAccount-rowLabel">
-          <label class="FormAccount-label">Name</label>
+          <label class="FormAccount-label">Display name</label>
         </div>
         <div class="FormAccount-rowData">
-          <%= f.text_field :name, :class => "FormAccount-input FormAccount-input--med" %>
+          <%= f.text_field :display_name, :class => "FormAccount-input FormAccount-input--med" %>
           <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
             <p class="FormAccount-rowInfoText">Check your <a href="<%= CartoDB.base_url(@organization.name) %>">public page</a></p>
           </div>
@@ -157,7 +160,7 @@
       </div>
 
       <% if current_user.has_feature_flag?('google_maps') && current_user.organization_owner? %>
-      
+
         <div class="FormAccount-title">
           <p class="FormAccount-titleText">Configure API keys from external providers</p>
         </div>
@@ -173,7 +176,7 @@
           </div>
           <div class="FormAccount-rowInfo">
             <p class="FormAccount-rowInfoText">
-              This is the <%= @organization.name %> Google Maps query string. 
+              This is the <%= @organization.name %> Google Maps query string.
               Contact with <a href="mailto:support@cartodb.com">support@cartodb.com</a> to change it.
             </p>
           </div>

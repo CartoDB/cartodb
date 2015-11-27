@@ -8,12 +8,20 @@ module Carto
     PRIVACY_PUBLIC = 1
     PRIVACY_LINK = 2
 
-    belongs_to :visualization, primary_key: :map_id, foreign_key: :map_id, 
+    belongs_to :visualization, primary_key: :map_id, foreign_key: :map_id,
                 conditions: { type: Carto::Visualization::TYPE_CANONICAL }, inverse_of: :user_table
 
     belongs_to :user
 
     belongs_to :map
+
+    belongs_to :data_import
+
+    has_many :automatic_geocodings, inverse_of: :table, class_name: Carto::AutomaticGeocoding, foreign_key: :table_id
+    has_many :tags, foreign_key: :table_id
+
+    has_many :layers_user_table
+    has_many :layers, through: :layers_user_table
 
     def geometry_types
       @geometry_types ||= table.geometry_types
@@ -91,8 +99,7 @@ module Carto
     end
 
     def affected_visualizations
-      affected_visualizations ||= affected_visualization_ids
-        .map  { |id| Carto::Visualization.find(id) }
+      @affected_visualizations ||= affected_visualization_ids.map { |id| Carto::Visualization.find(id) }
     end
 
     # TODO: use associations?

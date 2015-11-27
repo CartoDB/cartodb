@@ -47,7 +47,7 @@ module CartoDB
         attr_reader :metadata
 
         # Constructor
-        # @param user User
+        # @param user ::User
         def initialize(user)
           super
           @service_name = DATASOURCE_NAME
@@ -79,7 +79,7 @@ module CartoDB
         end
 
         # Factory method
-        # @param user User
+        # @param user ::User
         # @return CartoDB::Datasources::Url::ArcGIS
         def self.get_new(user)
           return new(user)
@@ -357,6 +357,8 @@ module CartoDB
         end
 
         # NOTE: Assumes url is valid
+        # NOTE: Returned ids are sorted so they can be chunked into blocks to
+        #       be requested by range queries: `(OBJECTID >= ... AND OBJECTID <= ... )`        
         # @param url String
         # @return Array
         # @throws DataDownloadError
@@ -368,7 +370,7 @@ module CartoDB
             if response.code != 200
 
           begin
-            data = ::JSON.parse(response.body).fetch('objectIds')
+            data = ::JSON.parse(response.body).fetch('objectIds').sort
           rescue => exception
             raise ResponseError.new("Missing data: #{exception.to_s} #{request_url} #{exception.backtrace}")
           end

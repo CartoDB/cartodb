@@ -23,6 +23,7 @@ require_relative '../../services/importer/lib/importer/post_import_handler'
 require_relative '../../services/importer/lib/importer/mail_notifier'
 require_relative '../../services/importer/lib/importer/cartodbfy_time'
 require_relative '../../services/platform-limits/platform_limits'
+require_relative '../../lib/cartodb/event_tracker'
 
 include CartoDB::Datasources
 
@@ -63,7 +64,10 @@ class DataImport < Sequel::Model
     # No automatic conversion coded
     'user_defined_limits',
     'original_url',
-    'privacy'
+    'privacy',
+    'http_response_code',
+    'rejected_layers',
+    'runner_warnings'
   ]
 
   # This attributes will get removed from public_values upon calling api_call_public_values
@@ -258,7 +262,8 @@ class DataImport < Sequel::Model
   def remove_uploaded_resources
     return nil unless uploaded_file
 
-    path = Rails.root.join('public', 'uploads', uploaded_file[1])
+    file_upload_helper = CartoDB::FileUpload.new(Cartodb.config[:importer].fetch("uploads_path", nil))
+    path = file_upload_helper.get_uploads_path.join(uploaded_file[1])
     FileUtils.rm_rf(path) if Dir.exists?(path)
   end
 
@@ -271,6 +276,7 @@ class DataImport < Sequel::Model
     log.append "Import finished\n"
     log.store
     save
+
     begin
       CartoDB::PlatformLimits::Importer::UserConcurrentImportsAmount.new({
                                                                              user: current_user,
@@ -284,6 +290,13 @@ class DataImport < Sequel::Model
                            "#{exception.message} #{exception.backtrace.inspect}")
     end
     notify(results)
+
+    begin
+      track_new_datasets(results)
+    rescue => exception
+      CartoDB::notify_exception(exception)
+    end
+
     self
   end
 
@@ -419,7 +432,7 @@ class DataImport < Sequel::Model
     new_table_name = import_from_query(table_name, query)
     sanitize_columns(new_table_name)
 
-    self.update(table_names: new_table_name)
+    self.update(table_names: new_table_name, service_name: nil)
     migrate_existing(new_table_name)
 
     self.results.push CartoDB::Importer2::Result.new(success: true, error: nil)
@@ -602,8 +615,9 @@ class DataImport < Sequel::Model
                                                 downloader: downloader,
                                                 log: log,
                                                 user: current_user,
-                                                unpacker: CartoDB::Importer2::Unp.new,
-                                                post_import_handler: post_import_handler
+                                                unpacker: CartoDB::Importer2::Unp.new(Cartodb.config[:importer]),
+                                                post_import_handler: post_import_handler,
+                                                importer_config: Cartodb.config[:importer]
                                               })
       runner.loader_options = ogr2ogr_options.merge content_guessing_options
       runner.set_importer_stats_host_info(Socket.gethostname)
@@ -611,8 +625,9 @@ class DataImport < Sequel::Model
       quota_checker = CartoDB::QuotaChecker.new(current_user)
       database      = current_user.in_database
       destination_schema = current_user.database_schema
+      public_user_roles = current_user.db_service.public_user_roles
       importer      = CartoDB::Connector::Importer.new(runner, registrar, quota_checker, database, id,
-                                                       destination_schema, current_user.public_user_roles)
+                                                       destination_schema, public_user_roles)
       log.append 'Before importer run'
       importer.run(tracker)
       log.append 'After importer run'
@@ -634,6 +649,14 @@ class DataImport < Sequel::Model
     else
       self.results    = importer.results
       self.error_code = importer.error_code
+      self.rejected_layers = importer.rejected_layers.join(',') if !importer.rejected_layers.empty?
+      self.runner_warnings = runner.warnings.to_json if !runner.warnings.empty?
+
+      # http_response_code is only relevant if a direct download is performed
+      if !runner.nil? && datasource_provider.providers_download_url?
+        self.http_response_code = runner.downloader.http_response_code
+      end
+
       # Table.after_create() setted fields that won't be saved to "final" data import unless specified here
       self.table_name = importer.table.name if importer.success? && importer.table
       self.table_id   = importer.table.id if importer.success? && importer.table
@@ -708,13 +731,17 @@ class DataImport < Sequel::Model
     if datasource_provider.providers_download_url?
       downloader = CartoDB::Importer2::Downloader.new(
           (metadata[:url].present? && datasource_provider.providers_download_url?) ? metadata[:url] : data_source,
-          { http_timeout: ::DataImport.http_timeout_for(current_user) }
+          { http_timeout: ::DataImport.http_timeout_for(current_user) },
+          { importer_config: Cartodb.config[:importer] }
       )
       log.append "File will be downloaded from #{downloader.url}"
     else
       log.append 'Downloading file data from datasource'
       downloader = CartoDB::Importer2::DatasourceDownloader.new(
-        datasource_provider, metadata, { http_timeout: ::DataImport.http_timeout_for(current_user) }, log
+        datasource_provider, metadata, {
+                                         http_timeout: ::DataImport.http_timeout_for(current_user),
+                                         importer_config: Cartodb.config[:importer]
+                                       }, log
       )
     end
 
@@ -731,11 +758,11 @@ class DataImport < Sequel::Model
   end
 
   def current_user
-    @current_user ||= User[user_id]
+    @current_user ||= ::User[user_id]
   end
 
   def notify(results)
-    owner = User.where(:id => self.user_id).first
+    owner = ::User.where(:id => self.user_id).first
     imported_tables = results.select {|r| r.success }.length
     failed_tables = results.length - imported_tables
 
@@ -784,8 +811,9 @@ class DataImport < Sequel::Model
   end
 
   def decorate_log(data_import)
-    decoration = { retrieved_items: 0}
-    if data_import.success && data_import.table_id
+    decoration = { retrieved_items: 0 }
+    if data_import.success && data_import.table_id && data_import.migrate_table.nil? && data_import.from_query.nil? &&
+       data_import.table_copy.nil?
       datasource = get_datasource_provider
       if datasource.persists_state_via_data_import?
         decoration = datasource.get_audit_stats
@@ -876,6 +904,26 @@ class DataImport < Sequel::Model
     if datasource.persists_state_via_data_import?
       datasource.data_import_item = self
       datasource.set_audit_to_failed
+    end
+  end
+
+  def track_new_datasets(results)
+    return unless current_user
+
+    results.each do |result|
+      if result.success?
+        if result.name != nil
+          map_id = UserTable.where(data_import_id: self.id, name: result.name).first.map_id
+          origin = self.from_common_data? ? 'common-data' : 'import'
+        else
+          map_id = UserTable.where(data_import_id: self.id).first.map_id
+          origin = 'copy'
+        end
+        vis = Carto::Visualization.where(map_id: map_id).first
+
+        custom_properties = {'privacy' => vis.privacy, 'type' => vis.type,  'vis_id' => vis.id, 'origin' => origin}
+        Cartodb::EventTracker.new.send_event(current_user, 'Created dataset', custom_properties)
+      end
     end
   end
 

@@ -39,7 +39,7 @@ class Api::Json::ColumnsController < Api::ApplicationController
         render_jsonp(@table.modify_column!(name: params[:id],
                                            type: params[:type],
                                            new_name: params[:new_name]))
-      rescue => e  
+      rescue => e
         errors = e.is_a?(CartoDB::InvalidType) ? [e.db_message] : [translate_error(e.message.split("\n").first)]
         render_jsonp({:errors => errors}, 400) and return
       end
@@ -64,9 +64,9 @@ class Api::Json::ColumnsController < Api::ApplicationController
               #and pg_class.oid=pg_constraint.conrelid
               #and pg_constraint.contype='p' limit 1"
 
-        # key_name = current_user.run_pg_query(sql)[:rows][0][:conname]
+        # key_name = current_user.db_service.run_pg_query(sql)[:rows][0][:conname]
         # Recompact table on disk
-        #current_user.run_pg_query("CLUSTER #{@table.name} USING #{pkey_name}")
+        #current_user.db_service.run_pg_query("CLUSTER #{@table.name} USING #{pkey_name}")
 
         head :no_content
       rescue => e

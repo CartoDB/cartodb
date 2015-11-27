@@ -1,7 +1,9 @@
 # coding: UTF-8
+
 require_relative '../../../models/visualization/presenter'
 require_relative '../../../helpers/bounding_box_helper'
 require_relative '../../../../services/named-maps-api-wrapper/lib/named-maps-wrapper/exceptions'
+require_relative '../../../../lib/cartodb/event_tracker'
 
 class Api::Json::TablesController < Api::ApplicationController
   TABLE_QUOTA_REACHED_TEXT = 'You have reached your table quota'
@@ -39,6 +41,12 @@ class Api::Json::TablesController < Api::ApplicationController
 
         if save_status
           render_jsonp(@table.public_values({request:request}), 200, { location: "/tables/#{@table.id}" })
+
+          custom_properties = {'privacy' => @table.table_visualization.privacy, 
+                               'type' => @table.table_visualization.type,  
+                               'vis_id' => @table.table_visualization.id, 
+                               'origin' => 'blank'}
+          Cartodb::EventTracker.new.send_event(current_user, 'Created dataset', custom_properties)
         else
           CartoDB::Logger.info 'Error on tables#create', @table.errors.full_messages
           render_jsonp( { :description => @table.errors.full_messages,
@@ -65,7 +73,7 @@ class Api::Json::TablesController < Api::ApplicationController
         # TODO consider removing this code. The entry point is only used to set lat/long columns
         unless params[:name].nil?
           if params[:name].downcase != @table.name
-            owner = User.select(:id,:database_name,:crypted_password,:quota_in_bytes,:username, :private_tables_enabled, :table_quota).filter(:id => current_user.id).first
+            owner = ::User.select(:id,:database_name,:crypted_password,:quota_in_bytes,:username, :private_tables_enabled, :table_quota).filter(:id => current_user.id).first
             # TODO reverse this logic: make explicit if this needs to start with a letter
             if params[:name] =~ /\A[0-9_]/
               raise "Table names can't start with numbers or dashes."
@@ -122,9 +130,17 @@ class Api::Json::TablesController < Api::ApplicationController
         @stats_aggregator.timing('ownership-check') do
           return head(403) unless @table.table_visualization.is_owner?(current_user)
         end
+
+        custom_properties = {'privacy' => @table.table_visualization.privacy, 
+                             'type' => @table.table_visualization.type,  
+                             'vis_id' => @table.table_visualization.id}
+
         @stats_aggregator.timing('delete') do
           @table.destroy
         end
+
+        Cartodb::EventTracker.new.send_event(current_user, 'Deleted dataset', custom_properties)
+
         head :no_content
       rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
         CartoDB::Logger.info "Communication error with tiler API. HTTP Code: #{exception.message}", exception.template_data

@@ -11,7 +11,7 @@ module Carto
     def self.get(user, cartodb_geocoder_config, table_service, params = {})
       # Reset old connections to make sure changes apply.
       # NOTE: This assumes it's being called from a Resque job
-      user.reset_pooled_connections
+      user.db_service.reset_pooled_connections
       log = params.fetch(:log)
       log.append 'TableGeocoderFactory.get()'
       log.append "params: #{params.select{|k| k != :log}.to_s}"

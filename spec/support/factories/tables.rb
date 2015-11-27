@@ -36,6 +36,7 @@ module CartoDB
     def visualization_template(user, attributes = {})
       {
         name:                     attributes.fetch(:name, "visualization #{rand(9999)}"),
+        display_name:             attributes.fetch(:display_name, nil),
         tags:                     attributes.fetch(:tags, ['foo', 'bar']),
         map_id:                   attributes.fetch(:map_id, ::Map.create(user_id: user.id).id),
         description:              attributes.fetch(:description, 'bogus'),

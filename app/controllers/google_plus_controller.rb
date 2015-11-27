@@ -19,11 +19,11 @@ class GooglePlusController < ApplicationController
     email = user_data.email
     username = user_data.auto_username
 
-    existing_user = User.where("email = '#{email}' OR username = '#{username}'").first
+    existing_user = ::User.where("email = '#{email}' OR username = '#{username}'").first
 
     throw 'existing user' unless existing_user == nil
 
-    user = User.new
+    user = ::User.new
     user_data.set_values(user)
     user.save(raise_on_failure: true)
     user.create_in_central
@@ -37,5 +37,5 @@ class GooglePlusController < ApplicationController
   def load_button_color
     @button_color = params[:button_color].nil? ? nil : "##{params[:button_color].tr('^A-Za-z0-9', '')}"
   end
-  
+
 end

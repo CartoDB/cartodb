@@ -8,7 +8,7 @@ describe CartoDB::Permission do
 
   before(:all) do
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
-    User.any_instance.stubs(:gravatar).returns(nil)
+    ::User.any_instance.stubs(:gravatar).returns(nil)
     @user = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
   end
 
@@ -204,6 +204,86 @@ describe CartoDB::Permission do
 
       permission2.destroy
       user2.destroy
+    end
+
+    it 'supports groups' do
+      entity_id = UUIDTools::UUID.timestamp_create.to_s
+      entity_type = Permission::ENTITY_TYPE_VISUALIZATION
+
+      # Don't check/handle DB permissions
+      Permission.any_instance.stubs(:revoke_previous_permissions).returns(nil)
+      Permission.any_instance.stubs(:grant_db_permission).returns(nil)
+      Carto::Group.any_instance.stubs(:grant_db_permission).returns(nil)
+      # No need to check for real DB visualizations
+      vis_table_mock = mock
+      vis_table_mock.stubs(:add_read_permission)
+      vis_entity_mock = mock
+      vis_perm_mock = mock
+      vis_perm_mock.stubs(:owner_id).returns(@user.id)
+      vis_perm_mock.stubs(:save)
+
+      vis_entity_mock.stubs(:permission).returns(vis_perm_mock)
+      vis_entity_mock.stubs(:table?).returns(true)
+      vis_entity_mock.stubs(:invalidate_cache).returns(nil)
+      vis_entity_mock.stubs(:table).returns(vis_table_mock)
+      vis_entity_mock.stubs(:related_tables).returns([])
+      vis_entity_mock.stubs(:privacy=)
+      vis_entity_mock.stubs(:store)
+      vis_entity_mock.stubs(:type).returns(CartoDB::Visualization::Member::TYPE_DERIVED)
+      vis_entity_mock.stubs(:id).returns(UUIDTools::UUID.timestamp_create.to_s)
+      vis_entity_mock.stubs(:name).returns("foobar_visualization")
+      Permission.any_instance.stubs(:entity).returns(vis_entity_mock)
+
+      organization = Carto::Organization.find(FactoryGirl.create(:organization).id)
+      group = FactoryGirl.create(:random_group, organization: organization)
+
+      acl_initial = []
+      acl_with_data = [
+        {
+          type: Permission::TYPE_GROUP,
+          entity: {
+            id: group.id,
+            username: 'a_group'
+          },
+          access: Permission::ACCESS_READONLY
+        }
+      ]
+      acl_with_data_expected = [
+        {
+          type: acl_with_data[0][:type],
+          id:   acl_with_data[0][:entity][:id],
+          access: acl_with_data[0][:access]
+        }
+      ]
+
+      permission = Permission.new(
+        owner_id:       @user.id,
+        owner_username: @user.username,
+        entity_id:      entity_id,
+        entity_type:    entity_type
+        #check default acl is correct
+      )
+      permission.save
+
+      permission.id.should_not eq nil
+      permission.owner_id.should eq @user.id
+      permission.owner_username.should eq @user.username
+      permission.entity_id.should eq entity_id
+      permission.entity_type.should eq entity_type
+      permission.acl.should eq acl_initial
+
+      permission.acl = acl_with_data
+      permission.save
+      #vis_table_mock.expects(:add_read_permission)
+      #expect(vis_table_mock).to receive(:add_read_permission)
+
+      permission.acl.should eq acl_with_data_expected
+
+      # Nil should reset to default value
+      permission.acl = nil
+      permission.acl.should eq acl_initial
+
+      permission.destroy
     end
   end
 
@@ -549,7 +629,7 @@ describe CartoDB::Permission do
       permission.entity_id = permission.entity.id
 
       permission.save
-     
+
       user2_id = "17d5b1e6-0d14-11e4-a3ef-0800274a1928"
       user3_id = "28d09bc0-0d14-11e4-a3ef-0800274a1928"
       permissions_changes = {
@@ -563,7 +643,7 @@ describe CartoDB::Permission do
 
       ::Resque.expects(:enqueue).with(::Resque::UserJobs::Mail::ShareVisualization, permission.entity.id, user2_id).once
       ::Resque.expects(:enqueue).with(::Resque::UserJobs::Mail::UnshareVisualization, permission.entity.name, permission.owner_username, user3_id).once
-      
+
       permission.notify_permissions_change(permissions_changes)
       permission.destroy
     end
@@ -590,9 +670,9 @@ describe CartoDB::Permission do
         entity_type: Permission::ENTITY_TYPE_VISUALIZATION
       )
       permission.entity_id = permission.entity.id
-    
+
       Resque.stubs(:enqueue).returns(nil)
-      
+
       permission.acl = [
         {
           type: Permission::TYPE_USER,
@@ -608,7 +688,7 @@ describe CartoDB::Permission do
       permission.save
       # Here try full reload of model
       permission = Permission.where(id: permission.id).first
-    
+
       permission.acl = [
         {
           type: Permission::TYPE_USER,
@@ -628,11 +708,11 @@ describe CartoDB::Permission do
         }
       ]
       acl2 = permission.acl
-      
+
 
       CartoDB::Permission.expects(:compare_new_acl).with(acl1, acl2).once
       CartoDB::Permission.expects(:compare_new_acl).with(acl2, []).once
-      
+
       permission.save
       permission.destroy
     end
@@ -640,7 +720,7 @@ describe CartoDB::Permission do
     it "permission comparisson function should return right diff hash" do
       acl1 = [{:type=>"user", :id=>"17d09bc0-0d14-11e4-a3ef-0800274a1928", :access=>"r"}, {:type=>"user", :id=>"28d09bc0-0d14-11e4-a3ef-0800274a1928", :access=>"r"}]
       acl2 = [{:type=>"user", :id=>"17d09bc0-0d14-11e4-a3ef-0800274a1928", :access=>"r"}, {:type=>"user", :id=>"17d5b1e6-0d14-11e4-a3ef-0800274a1928", :access=>"r"}]
-     
+
       expected_diff = {
         "user" => {
           "17d5b1e6-0d14-11e4-a3ef-0800274a1928" => [{ "action"=>"grant", "type"=>"r" }],

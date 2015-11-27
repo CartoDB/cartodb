@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 require_relative '../../../spec_helper'
+require_relative '../../../factories/users_helper'
 require_relative '../../api/json/visualizations_controller_shared_examples'
 require_relative '../../../../app/controllers/carto/api/visualizations_controller'
 
@@ -39,7 +40,8 @@ describe Carto::Api::VisualizationsController do
             attributes: [],
             associations: {
               'owner' => {
-                attributes: [ 'email', 'quota_in_bytes', 'db_size_in_bytes', 'maps_count', 'table_count' ],
+                attributes: [ 'email', 'quota_in_bytes', 'db_size_in_bytes', 'public_visualization_count',
+                'all_visualization_count', 'table_count' ],
                 associations: {}
               }
             }
@@ -50,7 +52,8 @@ describe Carto::Api::VisualizationsController do
         attributes: [],
         associations: {
           'owner' => {
-            attributes: [ 'email', 'quota_in_bytes', 'db_size_in_bytes', 'maps_count', 'table_count' ],
+            attributes: [ 'email', 'quota_in_bytes', 'db_size_in_bytes', 'public_visualization_count',
+            'all_visualization_count', 'table_count' ],
             associations: {}
           }
         }
@@ -82,7 +85,7 @@ describe Carto::Api::VisualizationsController do
       table1 = create_random_table($user_1)
 
       Carto::StaticMapsURLHelper.any_instance
-                                .stubs(:get_static_maps_api_cdn_config)
+                                .stubs(:get_cdn_config)
                                 .returns(nil)
       ApplicationHelper.stubs(:maps_api_template)
                        .returns("http://#{$user_1.username}.localhost.lan:8181")
@@ -107,16 +110,15 @@ describe Carto::Api::VisualizationsController do
       table1 = create_random_table($user_1)
 
       Carto::StaticMapsURLHelper.any_instance
-                                .stubs(:get_static_maps_api_cdn_config)
-                                .returns("{protocol}://cdn.local.lan/{user}")
+                                .stubs(:get_cdn_config)
+                                .returns("http" => "cdn.local.lan")
 
-      get api_v2_visualizations_static_map_url({
+      get api_v2_visualizations_static_map_url(
           user_domain: $user_1.username,
-          #api_key: $user_1.api_key,
           id: table1.table_visualization.id,
           width: width,
           height: height
-        }),
+        ),
         @headers
       last_response.status.should == 302
 
@@ -139,7 +141,7 @@ describe Carto::Api::VisualizationsController do
       private_table = create_random_table($user_1)
 
       Carto::StaticMapsURLHelper.any_instance
-                                     .stubs(:get_static_maps_api_cdn_config)
+                                     .stubs(:get_cdn_config)
                                      .returns(nil)
       ApplicationHelper.stubs(:maps_api_template)
                        .returns("http://#{$user_1.username}.localhost.lan:8181")
@@ -184,8 +186,8 @@ describe Carto::Api::VisualizationsController do
       table1 = create_random_table($user_1)
 
       Carto::StaticMapsURLHelper.any_instance
-                                     .stubs(:get_static_maps_api_cdn_config)
-                                     .returns("{protocol}://cdn.local.lan/{user}")
+                                     .stubs(:get_cdn_config)
+                                     .returns("http" => "cdn.local.lan")
 
       get api_v2_visualizations_static_map_url({
           user_domain: $user_1.username,
@@ -224,16 +226,21 @@ describe Carto::Api::VisualizationsController do
 
     it 'returns valid information for a user with one table' do
       table1 = create_random_table($user_1)
-      expected_visualization = JSON.parse(table1.table_visualization.to_hash(
+      table1_visualization_hash = table1.table_visualization.to_hash(
         related: false,
         table_data: true,
         user: $user_1,
         table: table1,
-        synchronization: nil
-      ).to_json)
+        synchronization: nil)
+      table1_visualization_hash[:permission][:owner].delete(:groups)
+      table1_visualization_hash[:table][:permission][:owner].delete(:groups)
+      expected_visualization = JSON.parse(table1_visualization_hash.to_json)
       expected_visualization = normalize_hash(expected_visualization)
 
-      response_body(type: CartoDB::Visualization::Member::TYPE_CANONICAL).should == {
+      response = response_body(type: CartoDB::Visualization::Member::TYPE_CANONICAL)
+      # INFO: old API won't support server side generated urls for visualizations. See #5250 and #5279
+      response['visualizations'][0].delete('url')
+      response.should == {
         'visualizations' => [expected_visualization],
         'total_entries' => 1,
         'total_user_entries' => 1,
@@ -771,9 +778,8 @@ describe Carto::Api::VisualizationsController do
         pub_vis_id = JSON.parse(last_response.body).fetch('id')
 
         put api_v1_visualizations_update_url(user_domain: $user_2.username, api_key: $user_2.api_key, id: pub_vis_id),
-             {
-               privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC
-             }.to_json, @headers
+            { id: pub_vis_id, privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC }.to_json,
+            @headers
         last_response.status.should == 200
 
         post api_v1_visualizations_create_url(user_domain: $user_2.username, api_key: $user_2.api_key),
@@ -782,9 +788,8 @@ describe Carto::Api::VisualizationsController do
         priv_vis_id = JSON.parse(last_response.body).fetch('id')
 
         put api_v1_visualizations_update_url(user_domain: $user_2.username, api_key: $user_2.api_key, id: priv_vis_id),
-             {
-               privacy: CartoDB::Visualization::Member::PRIVACY_PRIVATE
-             }.to_json, @headers
+            { id: priv_vis_id, privacy: CartoDB::Visualization::Member::PRIVACY_PRIVATE }.to_json,
+            @headers
         last_response.status.should == 200
 
         get api_v1_visualizations_index_url(user_domain: $user_2.username, type: 'derived'), @headers
@@ -835,6 +840,7 @@ describe Carto::Api::VisualizationsController do
                                                                                api_key: user_2.api_key,
                                                                                id: pub_vis_id)}",
             {
+              id: pub_vis_id,
               privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC
             }.to_json, @headers
         last_response.status.should == 200
@@ -849,6 +855,7 @@ describe Carto::Api::VisualizationsController do
                                                                                api_key: user_2.api_key,
                                                                                id: priv_vis_id)}",
             {
+              id: priv_vis_id,
               privacy: CartoDB::Visualization::Member::PRIVACY_PRIVATE
             }.to_json, @headers
         last_response.status.should == 200
@@ -916,7 +923,10 @@ describe Carto::Api::VisualizationsController do
         u1_vis_1_perm_id = body.fetch('permission').fetch('id')
         # By default derived vis from private tables are WITH_LINK, so setprivate
         put api_v1_visualizations_update_url(user_domain: user_1.username, id: u1_vis_1_id, api_key: user_1.api_key),
-            { privacy: CartoDB::Visualization::Member::PRIVACY_PRIVATE }.to_json, @headers
+            {
+              id: u1_vis_1_id,
+              privacy: CartoDB::Visualization::Member::PRIVACY_PRIVATE
+            }.to_json, @headers
         last_response.status.should == 200
 
         # Share vis with user_2 in readonly (vis can never be shared in readwrite)
@@ -956,7 +966,10 @@ describe Carto::Api::VisualizationsController do
         # Now with link
         # -------------
         put api_v1_visualizations_update_url(user_domain: user_1.username, id: u1_vis_1_id, api_key: user_1.api_key),
-            { privacy: CartoDB::Visualization::Member::PRIVACY_LINK }.to_json, @headers
+            {
+              id: u1_vis_1_id,
+              privacy: CartoDB::Visualization::Member::PRIVACY_LINK
+            }.to_json, @headers
         last_response.status.should == 200
 
         # Owner authenticated
@@ -980,7 +993,10 @@ describe Carto::Api::VisualizationsController do
         # Now public
         # ----------
         put api_v1_visualizations_update_url(user_domain: user_1.username, id: u1_vis_1_id, api_key: user_1.api_key),
-            { privacy: CartoDB::Visualization::Member::PRIVACY_LINK }.to_json, @headers
+            {
+              id: u1_vis_1_id,
+              privacy: CartoDB::Visualization::Member::PRIVACY_LINK
+            }.to_json, @headers
         last_response.status.should == 200
 
         get api_v2_visualizations_vizjson_url(user_domain: user_1.username, id: u1_vis_1_id, api_key: user_1.api_key)
@@ -1101,7 +1117,8 @@ describe Carto::Api::VisualizationsController do
         collection.should_not be_empty
 
         delete api_v1_visualizations_destroy_url(id: id, api_key: @api_key),
-          {}, @headers
+               { id: id }.to_json,
+               @headers
         get api_v1_visualizations_index_url(api_key: @api_key),
           {}, @headers
 
@@ -1205,7 +1222,7 @@ describe Carto::Api::VisualizationsController do
       it 'returns a visualization' do
         payload = factory($user_1)
         post api_v1_visualizations_create_url(api_key: @api_key),
-          payload.to_json, @headers
+        payload.to_json, @headers
         id = JSON.parse(last_response.body).fetch('id')
 
         get api_v1_visualizations_show_url(id: id, api_key: @api_key), {}, @headers
@@ -1282,18 +1299,19 @@ describe Carto::Api::VisualizationsController do
         viz_id = JSON.parse(last_response.body).fetch('id')
 
         put api_v1_visualizations_show_url(user_domain: $user_1.username, id: viz_id, api_key: @api_key),
-            { privacy: 'PUBLIC' }.to_json, @headers
+            { privacy: 'PUBLIC', id: viz_id }.to_json, @headers
 
         get api_v2_visualizations_vizjson_url(user_domain: $user_1.username, id: viz_id, api_key: @api_key),
-            {}, @headers
+            { id: viz_id }, @headers
 
         last_response.status.should == 200
         last_response.headers.should have_key('Surrogate-Key')
         last_response['Surrogate-Key'].should include(CartoDB::SURROGATE_NAMESPACE_VIZJSON)
         last_response['Surrogate-Key'].should include(get_surrogate_key(CartoDB::SURROGATE_NAMESPACE_VISUALIZATION, viz_id))
 
-        delete api_v1_visualizations_show_url(user_domain: $user_1.username, id: viz_id, api_key: @api_key),
-               { }, @headers
+        delete api_v1_visualizations_destroy_url(user_domain: $user_1.username, id: viz_id, api_key: @api_key),
+               { id: viz_id }.to_json,
+               @headers
       end
 
       it 'joins the attributions of the layers in a layergroup in the viz.json' do
@@ -1413,14 +1431,19 @@ describe Carto::Api::VisualizationsController do
         table2_visualization.update_attribute(:attributions, 'attribution 2')
 
         # Call to cache the vizjson after generating it
-        get api_v2_visualizations_vizjson_url(id: visualization.fetch('id'), api_key: @api_key),{}, @headers
+        get api_v2_visualizations_vizjson_url(id: visualization.fetch('id'), api_key: @api_key),
+            { id: visualization.fetch('id') },
+            @headers
 
         # Now force a change
         put api_v1_visualizations_update_url(api_key: @api_key, id: table2_visualization.id),
-          { attributions: modified_table_2_attribution }.to_json, @headers
+            { attributions: modified_table_2_attribution, id: table2_visualization.id }.to_json,
+            @headers
         last_response.status.should == 200
 
-        get api_v2_visualizations_vizjson_url(id: visualization.fetch('id'), api_key: @api_key),{}, @headers
+        get api_v2_visualizations_vizjson_url(id: visualization.fetch('id'), api_key: @api_key),
+            { id: visualization.fetch('id') },
+            @headers
         visualization = JSON.parse(last_response.body)
 
         layer_group_layer = visualization["layers"][1]
@@ -1489,10 +1512,10 @@ describe Carto::Api::VisualizationsController do
         get api_v1_visualizations_show_url(id: TEST_UUID, api_key: @api_key), {}, @headers
         last_response.status.should == 404
 
-        put api_v1_visualizations_update_url(id: TEST_UUID, api_key: @api_key), {}, @headers
+        put api_v1_visualizations_update_url(id: TEST_UUID, api_key: @api_key), { id: TEST_UUID }.to_json, @headers
         last_response.status.should == 404
 
-        delete api_v1_visualizations_destroy_url(id: TEST_UUID, api_key: @api_key), {}, @headers
+        delete api_v1_visualizations_destroy_url(id: TEST_UUID, api_key: @api_key), { id: TEST_UUID }.to_json, @headers
         last_response.status.should == 404
 
         get "/api/v2/viz/#{TEST_UUID}/viz?api_key=#{@api_key}", {}, @headers
@@ -1544,17 +1567,31 @@ describe Carto::Api::VisualizationsController do
     end
 
     it 'orders remotes by size with external sources size' do
-      post api_v1_visualizations_create_url(api_key: $user_1.api_key), factory($user_1, locked: true, type: 'remote').to_json, @headers
+      post api_v1_visualizations_create_url(api_key: $user_1.api_key),
+           factory($user_1, locked: true, type: 'remote', display_name: 'visu1').to_json, @headers
       vis_1_id = JSON.parse(last_response.body).fetch('id')
-      external_source_2 = Carto::ExternalSource.new({visualization_id: vis_1_id, import_url: 'http://www.fake.com', rows_counted: 1, size: 100 }).save
+      Carto::ExternalSource.new(
+        visualization_id: vis_1_id,
+        import_url: 'http://www.fake.com',
+        rows_counted: 1,
+        size: 100).save
 
-      post api_v1_visualizations_create_url(api_key: $user_1.api_key), factory($user_1, locked: true, type: 'remote').to_json, @headers
+      post api_v1_visualizations_create_url(api_key: $user_1.api_key),
+           factory($user_1, locked: true, type: 'remote', display_name: 'visu2').to_json, @headers
       vis_2_id = JSON.parse(last_response.body).fetch('id')
-      external_source_2 = Carto::ExternalSource.new({visualization_id: vis_2_id, import_url: 'http://www.fake.com', rows_counted: 1, size: 200 }).save
+      Carto::ExternalSource.new(
+        visualization_id: vis_2_id,
+        import_url: 'http://www.fake.com',
+        rows_counted: 1,
+        size: 200).save
 
-      post api_v1_visualizations_create_url(api_key: $user_1.api_key), factory($user_1, locked: true, type: 'remote').to_json, @headers
+      post api_v1_visualizations_create_url(api_key: $user_1.api_key),
+           factory($user_1, locked: true, type: 'remote', display_name: 'visu3').to_json, @headers
       vis_3_id = JSON.parse(last_response.body).fetch('id')
-      external_source_3 = Carto::ExternalSource.new({visualization_id: vis_3_id, import_url: 'http://www.fake.com', rows_counted: 1, size: 10 }).save
+      Carto::ExternalSource.new(
+        visualization_id: vis_3_id,
+        import_url: 'http://www.fake.com',
+        rows_counted: 1, size: 10).save
 
       get api_v1_visualizations_index_url(api_key: $user_1.api_key, types: 'remote', order: 'size'), {}, @headers
       last_response.status.should == 200
@@ -1564,6 +1601,39 @@ describe Carto::Api::VisualizationsController do
       collection[0]['id'].should == vis_2_id
       collection[1]['id'].should == vis_1_id
       collection[2]['id'].should == vis_3_id
+    end
+
+    it 'mixed types search should filter only remote without display name' do
+
+      post api_v1_visualizations_create_url(api_key: $user_1.api_key),
+           factory($user_1, locked: true, type: 'table').to_json, @headers
+      vis_1_id = JSON.parse(last_response.body).fetch('id')
+
+      post api_v1_visualizations_create_url(api_key: $user_1.api_key),
+           factory($user_1, locked: true, type: 'remote', name: 'visu2', display_name: 'visu2').to_json, @headers
+      vis_2_id = JSON.parse(last_response.body).fetch('id')
+      Carto::ExternalSource.new(
+        visualization_id: vis_2_id,
+        import_url: 'http://www.fake.com',
+        rows_counted: 1,
+        size: 200).save
+
+      post api_v1_visualizations_create_url(api_key: $user_1.api_key),
+           factory($user_1, locked: true, type: 'remote', name: 'visu3').to_json, @headers
+      vis_3_id = JSON.parse(last_response.body).fetch('id')
+      Carto::ExternalSource.new(
+        visualization_id: vis_3_id,
+        import_url: 'http://www.fake.com',
+        rows_counted: 1,
+        size: 200).save
+
+      get api_v1_visualizations_index_url(api_key: $user_1.api_key, types: 'remote,table'), {}, @headers
+      last_response.status.should == 200
+      response    = JSON.parse(last_response.body)
+      collection  = response.fetch('visualizations')
+      collection.length.should eq 2
+      [vis_1_id, vis_2_id].include?(collection[0]['id']).should eq true
+      [vis_1_id, vis_2_id].include?(collection[1]['id']).should eq true
     end
 
   end
@@ -1585,6 +1655,53 @@ describe Carto::Api::VisualizationsController do
       body = JSON.parse(last_response.body)
       body['total_entries'].should eq 0
       body['visualizations'].count.should eq 0
+    end
+
+  end
+
+  describe 'visualization url generation' do
+    include_context 'visualization creation helpers'
+    include_context 'users helper'
+    include_context 'organization with users helper'
+
+    it 'generates a user table visualization url' do
+      table = create_table(privacy: UserTable::PRIVACY_PUBLIC, name: "table_#{rand(9999)}_1_1", user_id: $user_1.id)
+      vis_id = table.table_visualization.id
+
+      get_json api_v1_visualizations_show_url(user_domain: $user_1.username, id: vis_id, api_key: $user_1.api_key), {}, http_json_headers do |response|
+        response.status.should == 200
+
+        response.body[:url].should == "http://#{$user_1.username}#{Cartodb.config[:session_domain]}:#{Cartodb.config[:http_port]}/tables/#{table.name}"
+      end
+    end
+
+    it 'generates a user map url' do
+      visualization = api_visualization_creation($user_1, http_json_headers, { privacy: Visualization::Member::PRIVACY_PUBLIC, type: Visualization::Member::TYPE_DERIVED })
+      get_json api_v1_visualizations_show_url(user_domain: $user_1.username, id: visualization.id, api_key: $user_1.api_key), {}, http_json_headers do |response|
+        response.status.should == 200
+
+        response.body[:url].should == "http://#{$user_1.username}#{Cartodb.config[:session_domain]}:#{Cartodb.config[:http_port]}/viz/#{visualization.id}/map"
+      end
+    end
+
+    it 'generates a org user table visualization url' do
+      table = create_table(privacy: UserTable::PRIVACY_PUBLIC, name: "table_#{rand(9999)}_1_1", user_id: @org_user_1.id)
+      vis_id = table.table_visualization.id
+
+      get_json api_v1_visualizations_show_url(user_domain: @org_user_1.username, id: vis_id, api_key: @org_user_1.api_key), {}, http_json_headers do |response|
+        response.status.should == 200
+
+        response.body[:url].should == "http://#{@org_user_1.organization.name}#{Cartodb.config[:session_domain]}:#{Cartodb.config[:http_port]}/u/#{@org_user_1.username}/tables/#{table.name}"
+      end
+    end
+
+    it 'generates a organization user map url' do
+      visualization = api_visualization_creation(@org_user_1, http_json_headers, { privacy: Visualization::Member::PRIVACY_PUBLIC, type: Visualization::Member::TYPE_DERIVED })
+      get_json api_v1_visualizations_show_url(user_domain: @org_user_1.username, id: visualization.id, api_key: @org_user_1.api_key), {}, http_json_headers do |response|
+        response.status.should == 200
+
+        response.body[:url].should == "http://#{@org_user_1.organization.name}#{Cartodb.config[:session_domain]}:#{Cartodb.config[:http_port]}/u/#{@org_user_1.username}/viz/#{visualization.id}/map"
+      end
     end
 
   end
@@ -1634,6 +1751,206 @@ describe Carto::Api::VisualizationsController do
       last_response.status.should eq 400
     end
 
+  end
+
+  # See #5591
+  describe 'error with wrong visualization url' do
+    def url(user_domain, visualization_id, api_key, host = @host)
+      api_v1_visualizations_show_url(user_domain: user_domain, id: visualization_id, api_key: api_key).
+        gsub('www.example.com', host)
+    end
+
+    describe 'normal user urls' do
+      include_context 'users helper'
+
+      before(:each) do
+        stub_named_maps_calls
+
+        @vis_owner = @user1
+        @vis_owner.private_tables_enabled = true
+        @vis_owner.save
+        @other_user = @user2
+        @table = create_random_table(@vis_owner, "viz#{rand(999)}", UserTable::PRIVACY_PRIVATE)
+        @vis = @table.table_visualization
+        @vis.private?.should == true
+
+        @host = "#{@vis_owner.username}.localhost.lan"
+
+        @headers = http_json_headers
+      end
+
+      after(:each) do
+        @table.destroy
+      end
+
+      it 'returns 200 with owner user_domain' do
+        get_json url(@vis_owner.username, @vis.id, @vis_owner.api_key), {}, @headers do |response|
+          response.status.should == 200
+        end
+      end
+
+      it 'returns 404 if visualization does not exist' do
+        random_uuid = UUIDTools::UUID.timestamp_create.to_s
+        get_json url(@vis_owner.username, random_uuid, @vis_owner.api_key), {}, @headers do |response|
+          response.status.should == 404
+          response.body[:errors].should == 'Visualization does not exist'
+        end
+      end
+
+      it 'returns 403 under other user domain if visualization is private' do
+        get_json url(@other_user.username, @vis.id, @other_user.api_key), {}, @headers do |response|
+          response.status.should == 403
+          response.body[:errors].should == 'Visualization not viewable'
+        end
+      end
+
+      it 'returns 401 if visualization is private' do
+        get_json url(@vis_owner.username, @vis.id, @other_user.api_key), {}, @headers do |response|
+          response.status.should == 401
+        end
+      end
+
+      it 'returns 200 if user at url is empty' do
+        ApplicationController.any_instance.stubs(:current_viewer).returns(@vis_owner)
+        login_as(@vis_owner, scope: @vis_owner.username)
+        get_json url(nil, @vis.id, @vis_owner.api_key), {}, @headers do |response|
+          response.status.should == 200
+        end
+      end
+
+      it 'returns 404 if user at url does not match visualization owner' do
+        app = ApplicationController.any_instance
+        app.stubs(:current_user).returns(@vis_owner)
+        app.stubs(:current_viewer).returns(@vis_owner)
+        app.stubs(:api_authorization_required).returns(true)
+
+        get_json url(@other_user.username, @vis.id, @vis_owner.api_key), {}, @headers do |response|
+          response.status.should == 404
+        end
+      end
+
+      it 'returns 404 if user subdomain does not match visualization owner' do
+        app = ApplicationController.any_instance
+        app.stubs(:current_user).returns(@vis_owner)
+        app.stubs(:current_viewer).returns(@vis_owner)
+        app.stubs(:api_authorization_required).returns(true)
+
+        host = "#{@other_user.username}.localhost.lan"
+        get_json url(nil, @vis.id, @vis_owner.api_key, host), {}, @headers do |response|
+          response.status.should == 404
+          response.body[:errors].should == 'Visualization of that user does not exist'
+        end
+      end
+    end
+
+    describe 'organization urls' do
+      include_context 'organization with users helper'
+
+      before(:each) do
+        stub_named_maps_calls
+
+        @vis_owner = @org_user_1
+        @table = create_random_table(@vis_owner, "viz#{rand(999)}", UserTable::PRIVACY_PRIVATE)
+        @shared_vis = @table.table_visualization
+        @shared_user = @org_user_2
+        @not_shared_user = @org_user_owner
+        share_visualization(@shared_vis, @shared_user)
+
+        @host = "#{@vis_owner.organization.name}.localhost.lan"
+
+        @headers = http_json_headers
+      end
+
+      after(:each) do
+        @table.destroy
+      end
+
+      it 'returns 200 with owner user_domain' do
+        get_json url(@vis_owner.username, @shared_vis.id, @vis_owner.api_key), {}, @headers do |response|
+          response.status.should == 200
+        end
+      end
+
+      it 'returns 200 with valid (shared user) user_domain' do
+        get_json url(@shared_user.username, @shared_vis.id, @shared_user.api_key), {}, @headers do |response|
+          response.status.should == 200
+        end
+      end
+
+      it 'returns 200 with valid shared user (current_user) user_domain, with current_viewer being the owner' do
+        ApplicationController.any_instance.stubs(:current_viewer).returns(@vis_owner)
+        ApplicationController.any_instance.stubs(:current_user).returns(@shared_user)
+        get_json url(@shared_user.username, @shared_vis.id, @shared_user.api_key), {}, @headers do |response|
+          response.status.should == 200
+        end
+      end
+
+      it 'returns 404 if visualization does not exist' do
+        random_uuid = UUIDTools::UUID.timestamp_create.to_s
+        get_json url(@vis_owner.username, random_uuid, @vis_owner.api_key), {}, @headers do |response|
+          response.status.should == 404
+          response.body[:errors].should == 'Visualization does not exist'
+        end
+      end
+
+      it 'returns 403 if visualization is not shared with the domain user' do
+        get_json url(@not_shared_user.username, @shared_vis.id, @not_shared_user.api_key), {}, @headers do |response|
+          response.status.should == 403
+          response.body[:errors].should == 'Visualization not viewable'
+        end
+      end
+
+      it 'returns 401 if visualization is not shared with the apikey user' do
+        get_json url(@shared_user.username, @shared_vis.id, @not_shared_user.api_key), {}, @headers do |response|
+          response.status.should == 401
+        end
+      end
+
+      it 'returns 404 if user at url is empty' do
+        ApplicationController.any_instance.stubs(:current_viewer).returns(@shared_user)
+        login_as(@shared_user, scope: @shared_user.organization.name)
+        get_json url(nil, @shared_vis.id, @shared_user.api_key), {}, @headers do |response|
+          response.status.should == 404
+          response.body[:errors].should == 'Visualization of that user does not exist'
+        end
+      end
+
+      it 'returns 404 if user at url is empty, current_user is the owner and current_viewer has permission' do
+        ApplicationController.any_instance.stubs(:current_user).returns(@vis_owner)
+        ApplicationController.any_instance.stubs(:current_viewer).returns(@shared_user)
+        login_as(@shared_user, scope: @shared_user.organization.name)
+        get_json url(nil, @shared_vis.id, @shared_user.api_key), {}, @headers do |response|
+          response.status.should == 404
+          response.body[:errors].should == 'Visualization of that user does not exist'
+        end
+      end
+
+      it 'returns 404 if user at url does not match visualization owner' do
+        app = ApplicationController.any_instance
+        app.stubs(:current_user).returns(@shared_user)
+        app.stubs(:current_viewer).returns(@shared_user)
+        app.stubs(:api_authorization_required).returns(true)
+
+        login_as(@shared_user, scope: @shared_user.organization.name)
+        get_json url(@not_shared_user.username, @shared_vis.id, @shared_user.api_key), {}, @headers do |response|
+          response.status.should == 404
+          response.body[:errors].should == 'Visualization of that user does not exist'
+        end
+      end
+
+      it 'returns 404 if user at url does not match visualization owner with current_user being the owner and current_viewer the shared to' do
+        app = ApplicationController.any_instance
+        app.stubs(:current_user).returns(@vis_owner)
+        app.stubs(:current_viewer).returns(@shared_user)
+        app.stubs(:api_authorization_required).returns(true)
+
+        login_as(@shared_user, scope: @shared_user.organization.name)
+        get_json url(@not_shared_user.username, @shared_vis.id, @shared_user.api_key), {}, @headers do |response|
+          response.status.should == 404
+          response.body[:errors].should == 'Visualization of that user does not exist'
+        end
+      end
+    end
   end
 
   include Rack::Test::Methods
@@ -1689,28 +2006,13 @@ describe Carto::Api::VisualizationsController do
   end
 
   def table_factory(options={})
-    privacy = options.fetch(:privacy, 1)
-
-    seed    = rand(9999)
-    payload = {
-      name:         "table #{seed}",
-      description:  "table #{seed} description"
-    }
-    post api_v1_tables_create_url(api_key: @api_key),
-      payload.to_json, @headers
-
-    table_attributes  = JSON.parse(last_response.body)
-    table_id          = table_attributes.fetch('id')
-
-    put api_v1_tables_update_url(id: table_id, api_key: @api_key),
-      { privacy: privacy }.to_json, @headers
-
-    table_attributes
+    create_table_with_options($user_1, @headers, options)
   end
 
   def api_visualization_creation(user, headers, additional_fields = {})
     post api_v1_visualizations_create_url(user_domain: user.username, api_key: user.api_key), factory(user).merge(additional_fields).to_json, headers
     id = JSON.parse(last_response.body).fetch('id')
+    id.should_not be_nil
     CartoDB::Visualization::Member.new(id: id).fetch
   end
 

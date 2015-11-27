@@ -26,6 +26,9 @@
   @include justify-content(center, center);
 }
 .MapsList.is-hidden { display: none }
+.MapsList.is-bottom {
+  margin-bottom: 120px;
+}
 .MapsList-item {
   position: relative;
   width: 300px;

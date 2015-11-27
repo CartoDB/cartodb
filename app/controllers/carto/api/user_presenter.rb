@@ -1,14 +1,20 @@
+require_relative 'group_presenter'
+
 module Carto
   module Api
     class UserPresenter
 
-      def initialize(user)
+      # fetching_options:
+      # - fetch_groups
+      def initialize(user, fetching_options = {})
         @user = user
+        @fetching_options = fetching_options
       end
 
       def to_poro
         return {} if @user.nil?
-        {
+
+        poro = {
           id:               @user.id,
           username:         @user.username,
           email:            @user.email,
@@ -17,8 +23,15 @@ module Carto
           quota_in_bytes:   @user.quota_in_bytes,
           db_size_in_bytes: @user.db_size_in_bytes,
           table_count:      @user.table_count,
-          maps_count:       @user.maps_count
+          public_visualization_count: @user.public_visualization_count,
+          all_visualization_count: @user.all_visualization_count
         }
+
+        if @fetching_options[:fetch_groups] == true
+          poro.merge!(groups: @user.groups ? @user.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro } : [])
+        end
+
+        poro
       end
 
       def data(options = {})
@@ -37,8 +50,8 @@ module Carto
           account_type: @user.account_type,
           table_quota: @user.table_quota,
           table_count: @user.table_count,
-          maps_count: maps_count,
           public_visualization_count: @user.public_visualization_count,
+          all_visualization_count: @user.all_visualization_count,
           visualization_count: @user.visualization_count,
           failed_import_count: failed_import_count,
           success_import_count: success_import_count,
@@ -103,6 +116,10 @@ module Carto
           data[:organization] = Carto::Api::OrganizationPresenter.new(@user.organization).to_poro
         end
 
+        if !@user.groups.nil?
+          data[:groups] = @user.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro }
+        end
+
         if options[:extended]
           # TODO: This fields are pending migration
           data.merge({
@@ -135,10 +152,6 @@ module Carto
                                                    .build_paged(1, 1)
                                                    .pluck(:created_at)
         row_data.nil? ? nil : row_data[0]
-      end
-
-      def maps_count
-        Carto::Map.where(user_id: @user.id).count
       end
 
     end

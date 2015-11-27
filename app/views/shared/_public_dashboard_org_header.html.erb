@@ -1,0 +1,54 @@
+<div class="UserInfo js-user-info">
+  <div class="UserAvatar UserInfo-avatar">
+    <% if @avatar_url %>
+      <img src="<%= @avatar_url %>" class="UserAvatar-img UserAvatar-img--large" />
+    <% else %>
+      <div class="UserAvatar-img UserAvatar-img--large UserAvatar-img--no-src"></div>
+    <% end %>
+  </div>
+  <h2 class="UserInfo-name">
+    <%= @name %>
+    <span class="UserInfo-nameBreadcrumb"> /
+      <% if @content_type == 'maps' %>
+        <%= link_to 'Maps', @maps_url, class: "DropdownLink js-breadcrumb-dropdown-target" %>
+      <% else %>
+        <%= link_to 'Datasets', @datasets_url, class: "DropdownLink js-breadcrumb-dropdown-target" %>
+      <% end %>
+      <% content_for(:js) do %>
+        <div class="js-breadcrumb-dropdown-content Dropdown BreadcrumbsDropdown BreadcrumbsDropdown--compact" style="display: none;">
+          <ul class="BreadcrumbsDropdown-list">
+            <li class="BreadcrumbsDropdown-listItem">
+              <nav class="BreadcrumbsDropdown-options">
+                <%= link_to 'Maps', @maps_url, class: "BreadcrumbsDropdown-optionsItem #{@content_type == 'maps' ? 'is-selected' : ''}" %>
+                <%= link_to 'Datasets', @datasets_url, class: "BreadcrumbsDropdown-optionsItem has-margin #{@content_type == 'maps' ? '' : 'is-selected'}" %>
+              </nav>
+            </li>
+          </ul>
+        </div>
+      <% end %>
+    </span>
+  </h2>
+  <% if @description.present? %>
+    <p class="UserInfo-desc"><%= @description %></p>
+  <% end %>
+  <ul class="UserInfo-links">
+    <% if @website.present? %>
+      <li class="UserInfo-linksItem">
+        <i class="iconFont iconFont-Dribbble"></i>
+        <%= link_to @website_clean, @website %>
+      </li>
+    <% end %>
+    <% if @twitter_username.present? %>
+      <li class="UserInfo-linksItem">
+        <i class="iconFont iconFont-Twitter"></i>
+        <%= link_to @twitter_username, "https://twitter.com/#{@twitter_username}" %>
+      </li>
+    <% end %>
+    <% if @available_for_hire %>
+      <li class="UserInfo-linksItem UserInfo-linksItem--positive">
+        <i class="iconFont iconFont-Check"></i>
+        <%= mail_to @email, "Available for hire" %>
+      </li>
+    <% end %>
+  </ul>
+</div>

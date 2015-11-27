@@ -1,11 +1,11 @@
 # encoding: utf-8
+
+require_relative '../controllers/carto/api/group_presenter'
 require_relative './organization/organization_decorator'
 require_relative './permission'
 
 class Organization < Sequel::Model
 
-  ORG_VIS_KEY_FORMAT = "org_vis::%s"
-  ORG_VIS_KEY_REDIS_TTL = 600
 
   include CartoDB::OrganizationDecorator
   include Concerns::CartodbCentralSynchronizable
@@ -25,13 +25,15 @@ class Organization < Sequel::Model
   # @param display_name String
   # @param discus_shortname String
   # @param twitter_username String
+  # @param location String
   # @param geocoding_quota Integer
   # @param map_view_quota Integer
   # @param geocoding_block_price Integer
   # @param map_view_block_price Integer
 
   one_to_many :users
-  many_to_one :owner, class_name: 'User', key: 'owner_id'
+  one_to_many :groups
+  many_to_one :owner, class_name: '::User', key: 'owner_id'
 
   plugin :validation_helpers
 
@@ -50,7 +52,9 @@ class Organization < Sequel::Model
   def validate_new_user(user, errors)
     if !whitelisted_email_domains.nil? and !whitelisted_email_domains.empty?
       email_domain = user.email.split('@')[1]
-      errors.add(:email, "Email domain '#{email_domain}' not valid for #{name} organization") unless whitelisted_email_domains.include?(email_domain)
+      unless whitelisted_email_domains.include?(email_domain) || user.invitation_token.present?
+        errors.add(:email, "Email domain '#{email_domain}' not valid for #{name} organization")
+      end
     end
   end
 
@@ -70,9 +74,14 @@ class Organization < Sequel::Model
     raise errors.join('; ') unless valid?
   end
 
+  def before_destroy
+    destroy_groups
+  end
+
   # INFO: replacement for destroy because destroying owner triggers
   # organization destroy
   def destroy_cascade
+    destroy_groups
     destroy_permissions
     destroy_non_owner_users
     if self.owner
@@ -106,6 +115,7 @@ class Organization < Sequel::Model
   #        example: 0.20 will get all organizations at 80% of their map view limit
   #
   def self.overquota(delta = 0)
+
     Organization.all.select do |o|
         limit = o.map_view_quota.to_i - (o.map_view_quota.to_i * delta)
         over_map_views = o.get_api_calls(from: o.owner.last_billing_cycle, to: Date.today) > limit
@@ -159,7 +169,8 @@ class Organization < Sequel::Model
         :id         => self.owner ? self.owner.id : nil,
         :username   => self.owner ? self.owner.username : nil,
         :avatar_url => self.owner ? self.owner.avatar_url : nil,
-        :email      => self.owner ? self.owner.email : nil
+        :email      => self.owner ? self.owner.email : nil,
+        :groups     => self.owner && self.owner.groups ? self.owner.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro } : []
       },
       :quota_in_bytes           => self.quota_in_bytes,
       :geocoding_quota          => self.geocoding_quota,
@@ -169,6 +180,7 @@ class Organization < Sequel::Model
       :geocoding_block_price    => self.geocoding_block_price,
       :seats                    => self.seats,
       :twitter_username         => self.twitter_username,
+      :location                 => self.twitter_username,
       :updated_at               => self.updated_at,
       :website          => self.website,
       :admin_email      => self.admin_email,
@@ -229,7 +241,46 @@ class Organization < Sequel::Model
     users.nil? ? 0 : users.count
   end
 
+  def notify_if_disk_quota_limit_reached
+    ::Resque.enqueue(::Resque::OrganizationJobs::Mail::DiskQuotaLimitReached, id) if disk_quota_limit_reached?
+  end
+
+  def notify_if_seat_limit_reached
+    ::Resque.enqueue(::Resque::OrganizationJobs::Mail::SeatLimitReached, id) if seat_limit_reached?
+  end
+
+  def database_name
+    owner ? owner.database_name : nil
+  end
+
+  def revoke_cdb_conf_access
+    return unless users
+    users.map { |user| user.db_service.revoke_cdb_conf_access }
+  end
+
+  def name_to_display
+    display_name.nil? ? name : display_name
+  end
+
   private
+
+  def destroy_groups
+    return unless groups
+
+    groups.map { |g| Carto::Group.find(g.id).destroy_group_with_extension }
+
+    reload
+  end
+
+  # Returns true if disk quota won't allow new signups with existing defaults
+  def disk_quota_limit_reached?
+    unassigned_quota < default_quota_in_bytes
+  end
+
+  # Returns true if seat limit will be reached with new user
+  def seat_limit_reached?
+    (remaining_seats - 1) < 1
+  end
 
   def quota_dates(options)
     date_to = (options[:to] ? options[:to].to_date : Date.today)
@@ -251,7 +302,7 @@ class Organization < Sequel::Model
   end
 
   def name_exists_in_users?
-    !User.where(username: self.name).first.nil?
+    !::User.where(username: self.name).first.nil?
   end
 
   def make_auth_token

@@ -1,5 +1,5 @@
 class GeocoderMailer < ActionMailer::Base
-  default from: "cartodb.com <support@cartodb.com>"
+  default from: Cartodb.get_config(:mailer, 'from')
   layout 'mail'
 
   def geocoding_finished(user, state, table_name, error_code=nil, processable_rows, geocoded_rows)

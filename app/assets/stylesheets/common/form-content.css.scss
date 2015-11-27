@@ -104,6 +104,9 @@ $sLabel-width: 140px;
   color: $cTypography-paragraphs;
   text-transform: capitalize;
 }
+.Form-label.has-error {
+  color: $cHighlight-negative;
+}
 .Form-label.Form-label--verticalAlignTop {
   line-height: inherit;
 }
@@ -142,6 +145,9 @@ $sLabel-width: 140px;
 .Form-rowData--long { width: 380px }
 .Form-rowData--med { width: 300px }
 .Form-rowData--short { width: 170px }
+.Form-rowData--shorter {
+  width: 130px;
+}
 .Form-rowData--step {
   width: 260px;
   margin-right: 0;
@@ -165,6 +171,50 @@ $sLabel-width: 140px;
 
   &:focus { border-color: #999 }
 }
+
+.Form-inputField {
+  position: relative;
+  height: 38px;
+  padding: 0 12px;
+  border: 1px solid #CCC;
+  border-radius: 4px;
+  outline: none;
+  color: #666;
+  z-index: 2;
+}
+.Form-inputField--withLabel {
+  padding: 0 12px  0;
+  background: #FFF;
+  &:hover {
+    border-color: #999;
+  }
+}
+
+.Form-inputField--withLabel.has-error {
+  color: $cHighlight-negative;
+  border-color: rgba(#DD3B37,0.6);
+}
+.Form-inputField--withLabel.has-error .Form-inputLabel {
+  color: rgba($cHighlight-negative, 0.6);
+}
+.Form-inputField--withLabel.has-error .Form-input {
+  color: $cHighlight-negative;
+}
+
+.Form-inputField--withLabel.has-error.is-focused {
+  border-color: rgba(#DD3B37,0.6);
+}
+
+.Form-inputField .Form-input {
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: none;
+}
+.Form-inputField .Form-inputLabel {
+  color: #CCC;
+}
+
 .Form-input.Form-input--error { border-color: rgba(#DD3B37,0.6) }
 .Form-input.Form-input--error:focus,
 .Form-input.Form-input--error:hover { border-color: rgba(#DD3B37,1) }
@@ -178,6 +228,9 @@ $sLabel-width: 140px;
 .Form-input--long { width: 354px }
 .Form-input--med { width: 274px }
 .Form-input--short { width: 114px }
+.Form-input--shorter {
+  width: 30px;
+}
 // Types
 .Form-input.has-icon {
   padding: 0 42px 0 12px;
@@ -236,13 +289,27 @@ $sLabel-width: 140px;
   border-radius: 4px;
   @include transition(margin, 200ms, ease-in-out);
 }
-.Form-inputError.is-visible { margin-top: 15px }
-.Form-input.is-disabled { background: $cStructure-grayBkg }
-.Form-input.is-invalid { border-color: $cHighlight-negative }
+.Form-inputError.is-visible {
+  margin-top: 15px;
+}
+.Form-input.is-disabled {
+  background: $cStructure-grayBkg;
+}
+.Form-input.is-invalid {
+  border-color: $cHighlight-negative;
+}
+.Form-inputField.is-focused {
+  border-color: $cTypography-secondary;
+}
+
 // Modifiers
-.Form-input--noBorder { border: none }
+.Form-input--noBorder {
+  border: none;
+}
 .Form-input--noBkg,
-.Form-input--noBkg.is-disabled { background: transparent }
+.Form-input--noBkg.is-disabled {
+  background: transparent;
+}
 
 .Form-textarea {
   padding: 9px 12px;
@@ -509,3 +576,4 @@ $sLabel-width: 140px;
   .tagit-choice { padding: 0 11px }
   .tagit-choice .tagit-close { display: none }
 }
+

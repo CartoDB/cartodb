@@ -18,7 +18,7 @@ module CartoDB
       # Class constructor
       # @param options Hash
       # {
-      #   :user           => User|nil
+      #   :user           => ::User|nil
       #   :ip             => Integer|nil
       #   :initial_value  => mixed|nil
       #   :max_value      => mixed|nil

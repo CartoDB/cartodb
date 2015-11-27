@@ -19,16 +19,11 @@ module CartoDB
         #  'app_secret'
         #  'callback_url'
         # ]
-        # @param user User
+        # @param user ::User
         # @throws UninitializedError
         # @throws MissingConfigurationError
         def initialize(config, user)
-          super
-
-          raise UninitializedError.new('missing user instance', DATASOURCE_NAME)        if user.nil?
-          raise MissingConfigurationError.new('missing app_key', DATASOURCE_NAME)       unless config.include?('app_key')
-          raise MissingConfigurationError.new('missing app_secret', DATASOURCE_NAME)    unless config.include?('app_secret')
-          raise MissingConfigurationError.new('missing callback_url', DATASOURCE_NAME)  unless config.include?('callback_url')
+          super(config, user, %w{ app_key app_secret callback_url }, DATASOURCE_NAME)
 
           @user         = user
           @app_key      = config.fetch('app_key')
@@ -48,7 +43,7 @@ module CartoDB
 
         # Factory method
         # @param config : {}
-        # @param user : User
+        # @param user : ::User
         # @return CartoDB::Datasources::Url::InstagramOAuth
         def self.get_new(config, user)
           return new(config, user)

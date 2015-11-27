@@ -17,8 +17,8 @@ module CartoDB
         account_type: self.account_type,
         table_quota: self.table_quota,
         table_count: self.table_count,
-        maps_count: self.maps_count,
         public_visualization_count: self.public_visualization_count,
+        all_visualization_count: self.all_visualization_count,
         visualization_count: self.visualization_count,
         failed_import_count: self.failed_import_count,
         success_import_count: self.success_import_count,
@@ -78,6 +78,10 @@ module CartoDB
       }
 
       data[:organization] = self.organization.to_poro if self.organization.present?
+
+      if !groups.nil?
+        data[:groups] = self.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro }
+      end
 
       if options[:extended]
         data.merge({

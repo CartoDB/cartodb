@@ -9,7 +9,7 @@ describe Carto::Api::TemplatesController do
   include Warden::Test::Helpers
 
   before(:each) do
-    User.any_instance.stubs(:has_feature_flag?)
+    ::User.any_instance.stubs(:has_feature_flag?)
                      .with('templated_workflows')
                      .returns(true)
     Carto::User.any_instance.stubs(:has_feature_flag?)

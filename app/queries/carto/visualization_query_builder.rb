@@ -20,6 +20,10 @@ class Carto::VisualizationQueryBuilder
     self.user_public(user).with_type(Carto::Visualization::TYPE_DERIVED)
   end
 
+  def self.user_all_visualizations(user)
+    new.with_user_id(user ? user.id : nil).with_type(Carto::Visualization::TYPE_DERIVED)
+  end
+
   def self.user_public(user)
     new.with_user_id(user ? user.id : nil).with_privacy(Carto::Visualization::PRIVACY_PUBLIC)
   end
@@ -39,6 +43,7 @@ class Carto::VisualizationQueryBuilder
     @order = {}
     @off_database_order = {}
     @exclude_synced_external_sources = false
+    @exclude_imported_remote_visualizations = false
   end
 
   def with_id_or_name(id_or_name)
@@ -61,6 +66,11 @@ class Carto::VisualizationQueryBuilder
 
   def without_synced_external_sources
     @exclude_synced_external_sources = true
+    self
+  end
+
+  def without_imported_remote_visualizations
+    @exclude_imported_remote_visualizations = true
     self
   end
 
@@ -165,6 +175,11 @@ class Carto::VisualizationQueryBuilder
     self
   end
 
+  def with_display_name
+    @only_with_display_name = true
+    self
+  end
+
   def build
     query = Carto::Visualization.scoped
 
@@ -222,9 +237,19 @@ class Carto::VisualizationQueryBuilder
                    .joins(%Q{
                             LEFT JOIN external_data_imports edi
                               ON  edi.external_source_id = es.id
-                              AND edi.synchronization_id IS NOT NULL
+                              #{exclude_only_synchronized}
                           })
                    .where("edi.id IS NULL")
+    end
+
+    if @exclude_imported_remote_visualizations
+      # Right now only common-data public visualizations have display name setted so
+      # the data-library visualizations have it too. So if we want to filter legacy remote
+      # visualizations without display_name, we have to to this way.
+      # We take into account other types and exclude from the display_name because the search
+      # of datasets, for example, make a query with multiples types (table, remote) and we don't
+      # want to filter the table ones
+      query = query.where('("visualizations"."type" <> \'remote\' OR "visualizations"."type" = \'remote\' AND "visualizations"."display_name" IS NOT NULL)')
     end
 
     if @type
@@ -253,6 +278,10 @@ class Carto::VisualizationQueryBuilder
     if @bounding_box
       bbox_sql = BoundingBoxHelper.to_polygon(@bounding_box[:minx], @bounding_box[:miny], @bounding_box[:maxx], @bounding_box[:maxy])
       query = query.where("visualizations.bbox is not null AND visualizations.bbox && #{bbox_sql}")
+    end
+
+    if @only_with_display_name
+      query = query.where("display_name is not null")
     end
 
     @include_associations.each { |association|
@@ -306,7 +335,15 @@ class Carto::VisualizationQueryBuilder
   end
 
   def recipient_ids(user)
-    [ user.id, user.organization_id ].compact
+    [ user.id, user.organization_id ].compact + groups_ids(user)
+  end
+
+  def groups_ids(user)
+    user.groups.nil? ? [] : user.groups.collect(&:id)
+  end
+
+  def exclude_only_synchronized
+    "AND edi.synchronization_id IS NOT NULL" unless @exclude_imported_remote_visualizations
   end
 
 end

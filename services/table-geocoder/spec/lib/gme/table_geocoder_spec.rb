@@ -115,7 +115,7 @@ describe Carto::Gme::TableGeocoder do
       conn          = CartoDB::Importer2::Factories::PGConnection.new
       @db           = conn.connection
       @pg_options   = conn.pg_options
-      @table_name   = "ne_10m_populated_places_simple"
+      @table_name   = "ne_10m_populated_places_simple_#{rand.to_s[2..11]}"
 
       # Avoid issues on some machines if postgres system account can't read fixtures subfolder for the COPY
       filename = 'populated_places_short.csv'

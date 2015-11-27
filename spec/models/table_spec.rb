@@ -37,7 +37,7 @@ end
 
 describe Table do
   before(:each) do
-    User.any_instance.stubs(:enable_remote_db_user).returns(true)
+    CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
   end
 
   before(:all) do
@@ -83,6 +83,16 @@ describe Table do
       table.user_id = $user_1.id
       table.name    = 'all'
       table.name.should eq 'all_t'
+      table.valid?.should == true
+    end
+
+    it 'can use underscore prefixed names for tables' do
+      table = Table.new
+      table.user_id = $user_1.id
+      table.name = '_name'
+      table.save
+
+      table.name.should eq '_name'
       table.valid?.should == true
     end
 
@@ -683,7 +693,7 @@ describe Table do
   end
 
   it "should remove varnish cache when updating the table privacy" do
-    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true)
 
     $user_1.private_tables_enabled = true
     $user_1.save
@@ -691,12 +701,11 @@ describe Table do
 
     id = table.table_visualization.id
     CartoDB::Varnish.any_instance.expects(:purge)
-      .times(3)
-      .with(".*#{id}:vizjson")
-      .returns(true)
+                                 .times(4)
+                                 .with(".*#{id}:vizjson")
+                                 .returns(true)
 
-    CartoDB::TablePrivacyManager.any_instance
-      .expects(:propagate_to_varnish)
+    CartoDB::TablePrivacyManager.any_instance.expects(:propagate_to_varnish)
     table.privacy = UserTable::PRIVACY_PUBLIC
     table.save
   end
@@ -1191,7 +1200,7 @@ describe Table do
       the_geom = %Q{{"type":"Point","coordinates":[#{lon},#{lat}]}}
       pk = table.insert_row!({:name => "First check_in", :the_geom => the_geom})
 
-      query_result = $user_1.run_pg_query("select ST_X(the_geom) as lon, ST_Y(the_geom) as lat from #{table.name} where cartodb_id = #{pk} limit 1")
+      query_result = $user_1.db_service.run_pg_query("select ST_X(the_geom) as lon, ST_Y(the_geom) as lat from #{table.name} where cartodb_id = #{pk} limit 1")
       ("%.3f" % query_result[:rows][0][:lon]).should == ("%.3f" % lon)
       ("%.3f" % query_result[:rows][0][:lat]).should == ("%.3f" % lat)
     end
@@ -1234,7 +1243,7 @@ describe Table do
       the_geom = %Q{{"type":"Point","coordinates":[#{lon},#{lat}]}}
       table.update_row!(pk, {:the_geom => the_geom})
 
-      query_result = $user_1.run_pg_query("select ST_X(the_geom) as lon, ST_Y(the_geom) as lat from #{table.name} where cartodb_id = #{pk} limit 1")
+      query_result = $user_1.db_service.run_pg_query("select ST_X(the_geom) as lon, ST_Y(the_geom) as lat from #{table.name} where cartodb_id = #{pk} limit 1")
       ("%.3f" % query_result[:rows][0][:lon]).should == ("%.3f" % lon)
       ("%.3f" % query_result[:rows][0][:lat]).should == ("%.3f" % lat)
     end
@@ -1428,7 +1437,7 @@ describe Table do
       cartodb_id_schema = table_schema.detect {|s| s[0].to_s == "cartodb_id"}
       cartodb_id_schema.should be_present
       cartodb_id_schema = cartodb_id_schema[1]
-      cartodb_id_schema[:db_type].should == "bigint"
+      cartodb_id_schema[:db_type].should == "integer"
       cartodb_id_schema[:default].should == "nextval('#{table.name}_cartodb_id_seq'::regclass)"
       cartodb_id_schema[:primary_key].should == true
       cartodb_id_schema[:allow_null].should == false
@@ -1437,6 +1446,7 @@ describe Table do
     it "should add a 'cartodb_id_' column when importing a file with invalid data on the cartodb_id column" do
       data_import = DataImport.create( :user_id       => $user_1.id,
                                        :data_source   =>  '/../db/fake_data/duplicated_cartodb_id.zip')
+
       data_import.run_import!
       table = Table.new(user_table: UserTable[data_import.table_id])
       table.should_not be_nil, "Import failure: #{data_import.log}"
@@ -1450,13 +1460,14 @@ describe Table do
       cartodb_id_schema[:default].should == "nextval('#{table.name}_cartodb_id_seq'::regclass)"
       cartodb_id_schema[:primary_key].should == true
       cartodb_id_schema[:allow_null].should == false
-      invalid_cartodb_id_schema = table_schema.detect {|s| s[0].to_s == 'cartodb_id_1'}
+      invalid_cartodb_id_schema = table_schema.detect {|s| s[0].to_s == 'cartodb_id_0'}
       invalid_cartodb_id_schema.should be_present
     end
 
-    it "should return geometry types" do
+    it "should return geometry types when guessing is enabled" do
       data_import = DataImport.create( :user_id       => $user_1.id,
-                                       :data_source   => '/../db/fake_data/gadm4_export.csv' )
+                                       :data_source   => '/../db/fake_data/gadm4_export.csv',
+                                       :type_guessing  => true )
       data_import.run_import!
 
       table = Table.new(user_table: UserTable[data_import.table_id])
@@ -1596,7 +1607,7 @@ describe Table do
       the_geom = %Q{{"type":"Point","coordinates":[#{lon},#{lat}]}}
       table.update_row!(pk, {:the_geom => the_geom})
 
-      query_result = $user_1.run_pg_query("select ST_X(ST_TRANSFORM(the_geom_webmercator,4326)) as lon, ST_Y(ST_TRANSFORM(the_geom_webmercator,4326)) as lat from #{table.name} where cartodb_id = #{pk} limit 1")
+      query_result = $user_1.db_service.run_pg_query("select ST_X(ST_TRANSFORM(the_geom_webmercator,4326)) as lon, ST_Y(ST_TRANSFORM(the_geom_webmercator,4326)) as lat from #{table.name} where cartodb_id = #{pk} limit 1")
       ("%.3f" % query_result[:rows][0][:lon]).should == ("%.3f" % lon)
       ("%.3f" % query_result[:rows][0][:lat]).should == ("%.3f" % lat)
     end
@@ -1613,7 +1624,7 @@ describe Table do
       the_geom = %Q{{"type":"Point","coordinates":[#{lon},#{lat}]}}
       table.update_row!(pk, {:the_geom => the_geom})
 
-      query_result = $user_1.run_pg_query("select ST_X(ST_TRANSFORM(the_geom_webmercator,4326)) as lon, ST_Y(ST_TRANSFORM(the_geom_webmercator,4326)) as lat from #{table.name} where cartodb_id = #{pk} limit 1")
+      query_result = $user_1.db_service.run_pg_query("select ST_X(ST_TRANSFORM(the_geom_webmercator,4326)) as lon, ST_Y(ST_TRANSFORM(the_geom_webmercator,4326)) as lat from #{table.name} where cartodb_id = #{pk} limit 1")
       ("%.3f" % query_result[:rows][0][:lon]).should == ("%.3f" % lon)
       ("%.3f" % query_result[:rows][0][:lat]).should == ("%.3f" % lat)
     end
@@ -1729,8 +1740,8 @@ describe Table do
       table = new_table :name => nil, :user_id => $user_1.id
       table.migrate_existing_table = "exttable"
 
-      $user_1.run_pg_query("CREATE TABLE exttable (go VARCHAR, ttoo INT, bed VARCHAR)")
-      $user_1.run_pg_query("INSERT INTO exttable (go, ttoo, bed) VALUES ( 'c', 1, 'p');
+      $user_1.db_service.run_pg_query("CREATE TABLE exttable (go VARCHAR, ttoo INT, bed VARCHAR)")
+      $user_1.db_service.run_pg_query("INSERT INTO exttable (go, ttoo, bed) VALUES ( 'c', 1, 'p');
                           INSERT INTO exttable (go, ttoo, bed) VALUES ( 'c', 2, 'p')")
       table.save
       table.name.should == 'exttable'
@@ -1742,8 +1753,8 @@ describe Table do
       table = new_table :name => nil, :user_id => $user_1.id
       table.migrate_existing_table = "exttable"
 
-      $user_1.run_pg_query("CREATE TABLE exttable (the_geom VARCHAR, cartodb_id INT, bed VARCHAR)")
-      $user_1.run_pg_query("INSERT INTO exttable (the_geom, cartodb_id, bed) VALUES ( 'c', 1, 'p');
+      $user_1.db_service.run_pg_query("CREATE TABLE exttable (the_geom VARCHAR, cartodb_id INT, bed VARCHAR)")
+      $user_1.db_service.run_pg_query("INSERT INTO exttable (the_geom, cartodb_id, bed) VALUES ( 'c', 1, 'p');
                          INSERT INTO exttable (the_geom, cartodb_id, bed) VALUES ( 'c', 2, 'p')")
       table.save
       table.name.should == 'exttable'
@@ -1752,9 +1763,9 @@ describe Table do
 
     it "create and migrate a table containing a valid the_geom" do
       delete_user_data $user_1
-      $user_1.run_pg_query("CREATE TABLE exttable (cartodb_id INT, bed VARCHAR)")
-      $user_1.run_pg_query("SELECT public.AddGeometryColumn ('#{$user_1.database_schema}','exttable','the_geom',4326,'POINT',2);")
-      $user_1.run_pg_query("INSERT INTO exttable (the_geom, cartodb_id, bed) VALUES ( ST_GEOMETRYFROMTEXT('POINT(10 14)',4326), 1, 'p');
+      $user_1.db_service.run_pg_query("CREATE TABLE exttable (cartodb_id INT, bed VARCHAR)")
+      $user_1.db_service.run_pg_query("SELECT public.AddGeometryColumn ('#{$user_1.database_schema}','exttable','the_geom',4326,'POINT',2);")
+      $user_1.db_service.run_pg_query("INSERT INTO exttable (the_geom, cartodb_id, bed) VALUES ( ST_GEOMETRYFROMTEXT('POINT(10 14)',4326), 1, 'p');
                          INSERT INTO exttable (the_geom, cartodb_id, bed) VALUES ( ST_GEOMETRYFROMTEXT('POINT(22 34)',4326), 2, 'p')")
 
       data_import = DataImport.create( :user_id       => $user_1.id,
@@ -1950,7 +1961,7 @@ describe Table do
       # latlong projection
       table = new_table(:name => nil, :user_id => $user_1.id)
       table.migrate_existing_table = 'two'
-      $user_1.run_pg_query('
+      $user_1.db_service.run_pg_query('
         CREATE TABLE two AS SELECT CDB_LatLng(0,0) AS the_geom
       ')
       table.save
@@ -1962,7 +1973,7 @@ describe Table do
       # single multipoint, without srid
       table = new_table(:name => nil, :user_id => $user_1.id)
       table.migrate_existing_table = 'three'
-      $user_1.run_pg_query('
+      $user_1.db_service.run_pg_query('
         CREATE TABLE three AS SELECT ST_Collect(ST_MakePoint(0,0),ST_MakePoint(1,1)) AS the_geom;
       ')
       table.save
@@ -1974,7 +1985,7 @@ describe Table do
       # same as above (single multipoint), but with a SRID=4326 (latlong)
       table = new_table(:name => nil, :user_id => $user_1.id)
       table.migrate_existing_table = 'four'
-      $user_1.run_pg_query('
+      $user_1.db_service.run_pg_query('
         CREATE TABLE four AS SELECT ST_SetSRID(ST_Collect(ST_MakePoint(0,0),ST_MakePoint(1,1)),4326) AS the_geom
       ')
       table.save
@@ -1986,7 +1997,7 @@ describe Table do
       # single polygon
       table = new_table(:name => nil, :user_id => $user_1.id)
       table.migrate_existing_table = 'five'
-      $user_1.run_pg_query('
+      $user_1.db_service.run_pg_query('
         CREATE TABLE five AS SELECT ST_SetSRID(ST_Buffer(ST_MakePoint(0,0),10), 4326) AS the_geom
       ')
       table.save
@@ -1998,7 +2009,7 @@ describe Table do
       # single line
       table = new_table(:name => nil, :user_id => $user_1.id)
       table.migrate_existing_table = 'six'
-      $user_1.run_pg_query('
+      $user_1.db_service.run_pg_query('
         CREATE TABLE six AS SELECT ST_SetSRID(ST_Boundary(ST_Buffer(ST_MakePoint(0,0),10,1)), 4326) AS the_geom
       ')
       table.save
@@ -2010,7 +2021,7 @@ describe Table do
       # field named "the_geom" being _not_ of type geometry
       table = new_table(:name => nil, :user_id => $user_1.id)
       table.migrate_existing_table = 'seven'
-      $user_1.run_pg_query(%Q{
+      $user_1.db_service.run_pg_query(%Q{
         CREATE TABLE seven AS SELECT 'wadus' AS the_geom;
       })
       table.save
@@ -2023,7 +2034,7 @@ describe Table do
       # geometrycollection (concrete type) Unsupported
       table = new_table(:name => nil, :user_id => $user_1.id)
       table.migrate_existing_table = 'eight'
-      $user_1.run_pg_query('
+      $user_1.db_service.run_pg_query('
         CREATE TABLE eight AS SELECT ST_SetSRID(ST_Collect(ST_MakePoint(0,0), ST_Buffer(ST_MakePoint(10,0),1)), 4326) AS the_geom
       ')
       expect {
@@ -2046,10 +2057,10 @@ describe Table do
 
       table = new_table :name => nil, :user_id => $user_1.id
       table.migrate_existing_table = 'only_ogc_fid'
-      $user_1.run_pg_query(%Q{
+      $user_1.db_service.run_pg_query(%Q{
         CREATE TABLE #{table.migrate_existing_table} (#{ogc_fid_field} INT, description VARCHAR)
       })
-      $user_1.run_pg_query(%Q{
+      $user_1.db_service.run_pg_query(%Q{
         INSERT INTO #{table.migrate_existing_table} (#{ogc_fid_field}, description)
         VALUES  (#{imported_id_1}, '#{description_1}'),
                 (#{imported_id_2}, '#{description_2}')
@@ -2070,10 +2081,10 @@ describe Table do
 
       table = new_table :name => nil, :user_id => $user_1.id
       table.migrate_existing_table = 'only_gid'
-      $user_1.run_pg_query(%Q{
+      $user_1.db_service.run_pg_query(%Q{
         CREATE TABLE #{table.migrate_existing_table} (#{gid_field} INT, description VARCHAR)
       })
-      $user_1.run_pg_query(%Q{
+      $user_1.db_service.run_pg_query(%Q{
         INSERT INTO #{table.migrate_existing_table} (#{gid_field}, description)
         VALUES  (#{imported_id_1}, '#{description_1}'),
                 (#{imported_id_2}, '#{description_2}')
@@ -2094,10 +2105,10 @@ describe Table do
 
       table = new_table :name => nil, :user_id => $user_1.id
       table.migrate_existing_table = 'cartodb_id_and_ogc_fid'
-      $user_1.run_pg_query(%Q{
+      $user_1.db_service.run_pg_query(%Q{
         CREATE TABLE #{table.migrate_existing_table} (cartodb_id INT, #{ogc_fid_field} INT, description VARCHAR)
       })
-      $user_1.run_pg_query(%Q{
+      $user_1.db_service.run_pg_query(%Q{
         INSERT INTO #{table.migrate_existing_table} (cartodb_id, #{ogc_fid_field}, description)
         VALUES  (#{cartodb_id_1}, #{imported_id_1}, '#{description_1}'),
                 (#{cartodb_id_2}, #{imported_id_2}, '#{description_2}')
@@ -2118,10 +2129,10 @@ describe Table do
 
       table = new_table :name => nil, :user_id => $user_1.id
       table.migrate_existing_table = 'cartodb_id_and_gid'
-      $user_1.run_pg_query(%Q{
+      $user_1.db_service.run_pg_query(%Q{
         CREATE TABLE #{table.migrate_existing_table} (cartodb_id INT, #{gid_field} INT, description VARCHAR)
       })
-      $user_1.run_pg_query(%Q{
+      $user_1.db_service.run_pg_query(%Q{
         INSERT INTO #{table.migrate_existing_table} (cartodb_id, #{gid_field}, description)
         VALUES  (#{cartodb_id_1}, #{imported_id_1}, '#{description_1}'),
                 (#{cartodb_id_2}, #{imported_id_2}, '#{description_2}')
@@ -2249,20 +2260,131 @@ describe Table do
       table.save
       table.should be_private
 
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true)
       source  = table.table_visualization
       derived = CartoDB::Visualization::Copier.new($user_1, source).copy
       derived.store
       derived.type.should eq(CartoDB::Visualization::Member::TYPE_DERIVED)
 
       # Do not create all member objects anew to be able to set expectations
-      CartoDB::Visualization::Member.stubs(:new).with(has_entry(:id => derived.id)).returns(derived)
-      CartoDB::Visualization::Member.stubs(:new).with(has_entry(:type => 'table')).returns(table.table_visualization)
+      CartoDB::Visualization::Member.stubs(:new).with(has_entry(id: derived.id)).returns(derived)
+      CartoDB::Visualization::Member.stubs(:new).with(has_entry(type: 'table')).returns(table.table_visualization)
 
-      derived.expects(:invalidate_cache).once()
+      derived.expects(:invalidate_cache).once
 
       table.privacy = UserTable::PRIVACY_PUBLIC
       table.save
+
+      $user_1.private_tables_enabled = false
+      $user_1.save
+    end
+
+    it 'privacy reverts if named map update fails' do
+      $user_1.private_tables_enabled = true
+      $user_1.save
+      table = create_table(user_id: $user_1.id, privacy: UserTable::PRIVACY_PUBLIC)
+      table.save
+
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true)
+      source = table.table_visualization
+      derived = CartoDB::Visualization::Copier.new($user_1, source).copy
+      derived.store
+      derived.type.should eq(CartoDB::Visualization::Member::TYPE_DERIVED)
+
+      # Scenario 1: Fail at map saving (can happen due to Map handlers)
+
+      table.privacy = UserTable::PRIVACY_PRIVATE
+
+      ::Map.any_instance.stubs(:save).once.raises(StandardError)
+
+      expect do
+        table.save
+      end.to raise_exception StandardError
+
+      table.reload.privacy.should eq UserTable::PRIVACY_PUBLIC
+
+      ::Map.any_instance.stubs(:save).returns(true)
+
+      # Scenario 2: Fail setting user table privacy (unlikely, but just in case)
+
+      @stub_calls = 0
+      CartoDB::TablePrivacyManager.any_instance.stubs(:set_from_table_privacy) do
+        @stub_calls += 1
+        if @stub_calls > 1
+          true
+        else
+          raise StandardError
+        end
+      end
+
+      table.privacy = UserTable::PRIVACY_PRIVATE
+      expect do
+        table.save
+      end.to raise_exception StandardError
+
+      table.reload.privacy.should eq UserTable::PRIVACY_PUBLIC
+
+      CartoDB::TablePrivacyManager.any_instance.unstub(:set_from_table_privacy)
+
+      # Scenario 3: Fail saving canonical visualization named map
+
+      @stub_calls = 0
+      @restore_called = false
+      CartoDB::Visualization::Member.any_instance.stubs(:store_using_table).with(table.table_visualization) do
+        @stub_calls += 1
+        if @stub_calls > 1
+          @restore_called = true
+          true
+        else
+          raise CartoDB::NamedMapsWrapper::HTTPResponseError.new("Failing canonical visualization named map update")
+        end
+      end
+
+      table.privacy = UserTable::PRIVACY_PRIVATE
+      expect do
+        table.save
+      end.to raise_exception CartoDB::NamedMapsWrapper::HTTPResponseError
+
+      @restore_called.should eq true
+
+      table.reload.privacy.should eq UserTable::PRIVACY_PUBLIC
+
+      CartoDB::Visualization::Member.any_instance.unstub(:store_using_table)
+
+      # Scenario 4: Fail saving affected visualizations named map
+
+      @stub_calls = 0
+      @restore_called = false
+      CartoDB::Visualization::Member.any_instance.stubs(:store_using_table).with(derived) do
+        @stub_calls += 1
+        if @stub_calls > 1
+          @restore_called = true
+          true
+        else
+          raise CartoDB::NamedMapsWrapper::HTTPResponseError.new("Failing affected visualization named map update")
+        end
+      end
+
+      table.privacy = UserTable::PRIVACY_PRIVATE
+      expect do
+        table.save
+      end.to raise_exception CartoDB::NamedMapsWrapper::HTTPResponseError
+
+      table.reload.privacy.should eq UserTable::PRIVACY_PUBLIC
+
+      CartoDB::Visualization::Member.any_instance.unstub(:store_using_table)
+
+      # Scenario 5: All went fine
+
+      table.privacy = UserTable::PRIVACY_PRIVATE
+      table.save
+      table.reload.privacy.should eq UserTable::PRIVACY_PRIVATE
+      table.privacy = UserTable::PRIVACY_PUBLIC
+      table.save
+      table.reload.privacy.should eq UserTable::PRIVACY_PUBLIC
+
+      $user_1.private_tables_enabled = false
+      $user_1.save
     end
   end
 

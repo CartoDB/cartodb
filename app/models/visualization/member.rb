@@ -81,6 +81,7 @@ module CartoDB
       attribute :kind,                String, default: KIND_GEOM
       attribute :prev_id,             String, default: nil
       attribute :next_id,             String, default: nil
+      attribute :bbox,                String, default: nil
       # Don't use directly, use instead getter/setter "transition_options"
       attribute :slide_transition_options,  String, default: DEFAULT_OPTIONS_VALUE
       attribute :active_child,        String, default: nil
@@ -88,6 +89,7 @@ module CartoDB
       def_delegators :validator,    :errors, :full_errors
       def_delegators :relator,      *Relator::INTERFACE
 
+      # This get called not only when creating a new but also when populating from the Collection
       def initialize(attributes={}, repository=Visualization.repository, name_checker=nil)
         super(attributes)
         @repository     = repository
@@ -100,6 +102,7 @@ module CartoDB
         # this flag is passed to the table in case of canonical visualizations. It's used to say to the table to not touch the database and only change the metadata information, useful for ghost tables
         self.register_table_only = false
         @redis_vizjson_cache = RedisVizjsonCache.new()
+        @old_privacy = @privacy
       end
 
       def self.remote_member(name, user_id, privacy, description, tags, license, source, attributions, display_name)
@@ -177,7 +180,7 @@ module CartoDB
         self
       end
 
-      def store_using_table(fields, table_privacy_changed=false)
+      def store_using_table(fields, table_privacy_changed = false)
         if type == TYPE_CANONICAL
           # Each table has a canonical visualization which must have privacy synced
           self.privacy = fields[:privacy_text]
@@ -197,8 +200,7 @@ module CartoDB
         if privacy == PRIVACY_PROTECTED
           validator.validate_presence_of_with_custom_message(
             { encrypted_password: encrypted_password, password_salt: password_salt },
-            "password can't be blank"
-            )
+            "password can't be blank")
         end
 
         # Allow only "maintaining" privacy link for everyone but not setting it
@@ -239,6 +241,7 @@ module CartoDB
         raise KeyError if data.nil?
         self.attributes = data
         self.name_changed = false
+        @old_privacy = @privacy
         self.privacy_changed = false
         self.permission_change_valid = true
         self.dirty = false
@@ -246,8 +249,19 @@ module CartoDB
         self
       end
 
-      def delete(from_table_deletion=false)
-          # Named map must be deleted before the map, or we lose the reference to it
+      def delete(from_table_deletion = false)
+        # from_table_deletion would be enough for canonical viz-based deletes,
+        # but common data loading also calls this delete without the flag to true, causing a call without a Map
+        begin
+          if user.has_feature_flag?(Carto::VisualizationsExportService::FEATURE_FLAG_NAME) && map
+            Carto::VisualizationsExportService.new.export(id)
+          end
+        rescue => exception
+          # Don't break deletion flow
+          CartoDB.notify_error(exception.message, error: exception.inspect, user: user, visualization_id: id)
+        end
+
+        # Named map must be deleted before the map, or we lose the reference to it
         begin
           named_map = get_named_map
           # non-existing named map is not a critical failure, keep deleting even if not found
@@ -255,7 +269,7 @@ module CartoDB
         rescue NamedMapsWrapper::HTTPResponseError => exception
           # CDB-1964: Silence named maps API exception if deleting data to avoid interrupting whole flow
           unless from_table_deletion
-            CartoDB.notify_exception(exception, { user: user })
+            CartoDB.notify_exception(exception, user: user)
           end
         end
 
@@ -335,10 +349,13 @@ module CartoDB
         super(permission_id)
       end
 
-      def privacy=(privacy)
-        privacy = privacy.downcase if privacy
-        self.privacy_changed = true if ( privacy != @privacy && !@privacy.nil? )
-        super(privacy)
+      def privacy=(new_privacy)
+        new_privacy = new_privacy.downcase if new_privacy
+        if new_privacy != @privacy && !@privacy.nil?
+          self.privacy_changed = true
+          @old_privacy = @privacy
+        end
+        super(new_privacy)
       end
 
       def tags=(tags)
@@ -356,6 +373,10 @@ module CartoDB
 
       def private?
         privacy == PRIVACY_PRIVATE and not organization?
+      end
+
+      def is_privacy_private?
+        privacy == PRIVACY_PRIVATE
       end
 
       def organization?
@@ -386,10 +407,9 @@ module CartoDB
         user.id == user_id
       end
 
-      # @param user User
+      # @param user ::User
       # @param permission_type String PERMISSION_xxx
       def has_permission?(user, permission_type)
-        # TODO: Make checks mandatory after permissions migration
         return is_owner?(user) if permission_id.nil?
         is_owner?(user) || permission.is_permitted?(user, permission_type)
       end
@@ -427,17 +447,17 @@ module CartoDB
       def table?
         type == TYPE_CANONICAL
       end
+      # Used at Carto::Api::VisualizationPresenter
+      alias :canonical? :table?
 
       def type_slide?
         type == TYPE_SLIDE
       end
 
-      # TODO: Check if for type slide should return true also
       def dependent?
         derived? && single_data_layer?
       end
 
-      # TODO: Check if for type slide should return true also
       def non_dependent?
         derived? && !single_data_layer?
       end
@@ -614,7 +634,7 @@ module CartoDB
         !(likes.select { |like| like.actor == user_id }.first.nil?)
       end
 
-      # @param viewer_user User
+      # @param viewer_user ::User
       def qualified_name(viewer_user=nil)
         if viewer_user.nil? || is_owner?(viewer_user)
           name
@@ -703,7 +723,7 @@ module CartoDB
         fetch if reload_self
       end
 
-      def do_store(propagate_changes=true, table_privacy_changed=false)
+      def do_store(propagate_changes = true, table_privacy_changed = false)
         if password_protected?
           raise CartoDB::InvalidMember.new('No password set and required') unless has_password?
         else
@@ -732,7 +752,13 @@ module CartoDB
           repository.store(id, attributes.to_hash)
         end
 
-        save_named_map
+        begin
+          save_named_map
+        rescue => exception
+          CartoDB.notify_exception(exception, user: user, message: "Error saving visualization named map")
+          restore_previous_privacy
+          raise exception
+        end
 
         propagate_attribution_change if table
         if type == TYPE_REMOTE || type == TYPE_CANONICAL
@@ -740,6 +766,17 @@ module CartoDB
         else
           propagate_name_to(table) if table and propagate_changes
         end
+      end
+
+      def restore_previous_privacy
+        unless @old_privacy.nil?
+          self.privacy = @old_privacy
+          attributes[:privacy] = @old_privacy
+          repository.store(id, attributes.to_hash)
+        end
+      rescue => exception
+        CartoDB.notify_exception(exception, user: user, message: "Error restoring previous visualization privacy")
+        raise exception
       end
 
       def perform_invalidations(table_privacy_changed)
@@ -802,7 +839,7 @@ module CartoDB
       def propagate_privacy_to(table)
         if type == TYPE_CANONICAL
           CartoDB::TablePrivacyManager.new(table)
-                                      .set_from(self)
+                                      .set_from_visualization(self)
                                       .propagate_to_varnish
         end
         self

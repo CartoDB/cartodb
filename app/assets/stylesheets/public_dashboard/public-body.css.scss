@@ -17,5 +17,8 @@
 .PublicBody-content {
   @include display-flex();
   @include flex-grow(1);
-  margin-top: $sMargin-group;
+  margin-top: 120px;
+}
+.PublicBody.PublicBody--grey .PublicBody-content {
+  background: #F9F9F9;
 }

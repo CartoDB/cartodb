@@ -74,7 +74,6 @@ describe 'gz and tgz regression tests' do
                              })
     runner.run
     runner.results.first.success?.should eq false
-    runner.results.first.error_code.should eq 1002
+    runner.results.first.error_code.should eq 2002
   end
 end
-

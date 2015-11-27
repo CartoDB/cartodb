@@ -21,7 +21,7 @@ class GooglePlusAPI
   def get_user(access_token)
     google_user_data = GooglePlusAPI.new.get_user_data(access_token)
     # INFO: we assume if a user is queried at a CartoDB instance, user is local
-    google_user_data.present? ? User.where(email: google_user_data.email).first : false
+    google_user_data.present? ? ::User.where(email: google_user_data.email).first : false
   end
 
   def request_user_data(access_token)

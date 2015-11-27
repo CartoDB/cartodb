@@ -1,5 +1,5 @@
 class UserMailer < ActionMailer::Base
-  default from: "cartodb.com <support@cartodb.com>"
+  default from: Cartodb.get_config(:mailer, 'from')
   layout 'mail'
 
   def new_organization_user(user)
@@ -14,10 +14,9 @@ class UserMailer < ActionMailer::Base
       @enable_account_link = "#{CartoDB.base_url(@organization.name, @user.username)}#{CartoDB.path(self, 'enable_account_token_show', {id: @user.enable_account_token})}"
     end
 
-    # INFO: if user has been created by the admin he needs to tell him the password. If he has signed in through the page
-    @user_needs_password = !@user.google_sign_in && @user.enable_account_token.nil?
+    @user_needs_password = user_needs_password(user)
 
-    mail :to => @user.email, 
+    mail :to => @user.email,
          :subject => @subject
   end
 
@@ -27,18 +26,20 @@ class UserMailer < ActionMailer::Base
     organization = @table_visualization.user.organization
     @link = "#{CartoDB.base_url(organization.name, @user.username)}#{CartoDB.path(self, 'public_tables_show_bis', {id: "#{@table_visualization.user.username}.#{@table_visualization.name}"})}"
     @subject = "#{@table_visualization.user.username} has shared a CartoDB dataset with you"
-    mail :to => @user.email, 
+    mail :to => @user.email,
          :subject => @subject
   end
-  
+
   def share_visualization(visualization, user)
     @visualization = visualization
     @user = user
-    organization = @visualization.user.organization
-    @link = "#{CartoDB.base_url(organization.name, @visualization.user.username)}#{CartoDB.path(self, 'public_visualizations_show_map', {id: @visualization.id})}"
+
+    # This presenter has limited compatibility with old Visualization models
+    visualization_presenter = Carto::Api::VisualizationPresenter.new(visualization, user, self)
+    @link = visualization_presenter.privacy_aware_map_url
     @subject = "#{@visualization.user.username} has shared a CartoDB map with you"
-    mail :to => @user.email,
-         :subject => @subject
+    mail(to: @user.email,
+         subject: @subject)
   end
 
   def unshare_table(table_visualization_name, table_visualization_owner_name, user)
@@ -49,7 +50,7 @@ class UserMailer < ActionMailer::Base
     mail :to => @user.email,
          :subject => @subject
   end
-  
+
   def unshare_visualization(visualization_name, visualization_owner_name, user)
     @visualization_name = visualization_name
     @visualization_owner_name = visualization_owner_name
@@ -66,7 +67,8 @@ class UserMailer < ActionMailer::Base
     @preview_image = visualization_preview_image
     @subject = "Your map #{@map_name} got some love!"
     @greetings = ["congrats", "congratulations", "cool", "awesome", "hooray", "nice", "wow", "rad", "bravo", "yay", "boom"]
-    @link = "#{@user.public_url}#{CartoDB.path(self, 'public_visualizations_show_map', { id: visualization.id })}"
+    mail_tracker = get_mail_tracker('like_map')
+    @link = "#{@user.public_url}#{CartoDB.path(self, 'public_visualizations_show_map', id: visualization.id)}#{mail_tracker}"
     @viewer_maps_link = "#{viewer_user.public_url}#{CartoDB.path(self, 'public_maps_home')}"
     mail :to => @user.email,
          :subject => @subject
@@ -79,10 +81,37 @@ class UserMailer < ActionMailer::Base
     @preview_image = visualization_preview_image
     @subject = "Your dataset #{@dataset_name} got some love!"
     @greetings = ["congrats", "congratulations", "cool", "awesome", "hooray", "nice", "wow", "rad", "bravo", "yay", "boom"]
-    @link = "#{@user.public_url}#{CartoDB.path(self, 'public_visualizations_show', { id: canonical_visualization.id })}"
+    mail_tracker = get_mail_tracker('like_map')
+    @link = "#{@user.public_url}#{CartoDB.path(self, 'public_visualizations_show', id: canonical_visualization.id)}#{mail_tracker}"
     @viewer_datasets_link = "#{viewer_user.public_url}#{CartoDB.path(self, 'public_datasets_home')}"
     mail :to => @user.email,
          :subject => @subject
+  end
+
+  def trending_map(visualization, mapviews, visualization_preview_image)
+    @user = visualization.user
+    @mapviews = mapviews
+    @map_name = visualization.name
+    @preview_image = visualization_preview_image
+    @subject = "Recent activity on one of your maps!"
+    @greetings = ["congrats", "congratulations", "cool", "awesome", "hooray", "nice", "wow", "rad", "bravo", "yay", "boom"]
+    mail_tracker = get_mail_tracker('trending_map')
+    @link = "#{@user.public_url}#{CartoDB.path(self, 'public_visualizations_show_map', id: visualization.id)}#{mail_tracker}"
+    mail :to => @user.email,
+         :subject => @subject
+  end
+
+  private
+
+  # If user has been created by the admin he needs to tell him the password.
+  # If he has signed in through the page he doesn't.
+  def user_needs_password(user)
+    !user.google_sign_in && user.enable_account_token.nil? && !user.created_with_invitation?
+  end
+
+  def get_mail_tracker(tag)
+    hubspot = Cartodb.get_config(:metrics, 'hubspot')
+    hubspot["mailing_track"][tag] unless hubspot.nil? || !hubspot["mailing_track"].present?
   end
 
 end

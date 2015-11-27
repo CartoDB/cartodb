@@ -1,9 +1,6 @@
 # encoding: utf-8
 require_relative '../../spec_helper'
 require_relative '../../../services/data-repository/backend/sequel'
-require_relative '../../../services/relocator/relocator'
-require_relative '../../../services/relocator/worker'
-require_relative '../../../services/relocator/relocator/table_dumper'
 require_relative '../../../app/models/visualization/member'
 require_relative '../../../services/data-repository/repository'
 
@@ -22,54 +19,37 @@ describe Visualization::Member do
     )
     Visualization.repository  = DataRepository::Backend::Sequel.new(db, :visualizations)
 
-    CartoDB::Relocator::TableDumper.any_instance.stubs(:migrate).returns(nil)
-    CartoDB::Relocator::SchemaDumper.any_instance.stubs(:migrate).returns(nil)
-    CartoDB::Relocator::Relocation.any_instance.stubs(:compare).returns(nil)
-
     UserOrganization.any_instance.stubs(:move_user_tables_to_schema).returns(nil)
     CartoDB::TablePrivacyManager.any_instance.stubs(
         :set_from_table_privacy => nil,
         :propagate_to_varnish => nil
     )
 
-    User.any_instance.stubs(
-        :enable_remote_db_user => nil,
-        :after_create => nil,
-        :create_schema => nil,
-        :create_public_db_user => nil,
-        :set_database_search_path => nil,
-        :load_cartodb_functions => nil,
-        :set_user_privileges => nil,
-        :monitor_user_notification => nil,
-        :grant_user_in_database => nil,
-        :set_statement_timeouts => nil,
-        :set_user_as_organization_member => nil,
-        :cartodb_extension_version_pre_mu? => false,
-        :rebuild_quota_trigger => nil,
-        :setup_schema => nil,
-        :grant_publicuser_in_database => nil,
-        :move_tables_to_schema => nil
+    ::User.any_instance.stubs(
+      after_create: nil
+    )
+
+    CartoDB::UserModule::DBService.any_instance.stubs(
+      grant_user_in_database: nil,
+      grant_publicuser_in_database: nil,
+      set_user_privileges_at_db: nil,
+      set_statement_timeouts: nil,
+      set_user_as_organization_member: nil,
+      rebuild_quota_trigger: nil,
+      setup_organization_user_schema: nil,
+      set_database_search_path: nil,
+      cartodb_extension_version_pre_mu?: false,
+      load_cartodb_functions: nil,
+      create_schema: nil,
+      move_tables_to_schema: nil,
+      create_public_db_user: nil,
+      enable_remote_db_user: nil,
+      monitor_user_notification: nil
     )
 
     Organization.all.each { |org|
       org.destroy
     }
-
-    # @owner.create_schema(@owner.username, @owner.database_username)
-    # @owner.grant_all_on_user_schema_queries
-    # move_user_tables_to_schema(@owner.id)
-    # @owner.organization_id = @organization.id
-    # @owner.database_schema = @owner.username
-    # @organization.owner_id = @owner.id
-    # @organization.save
-    # @owner.create_public_db_user
-    # @owner.set_database_search_path
-    # @owner.load_cartodb_functions
-    # @owner.set_user_privileges
-    # @owner.rebuild_quota_trigger
-    # @owner.save
-    # @owner.monitor_user_notification
-    # @active = true
 
     @org, @owner_user, @other_user = prepare_organization
   end
@@ -205,8 +185,6 @@ describe Visualization::Member do
       :organization => org
     )
     org.reload
-
-    #CartoDB::Relocator::Worker.organize(user_b, org)
 
     user_a.database_name.should eq user_b.database_name
 

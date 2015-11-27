@@ -17,7 +17,7 @@ shared_examples_for "organization models" do
       FactoryGirl.create(:high_resolution_geocoding, user: @user1, formatter: 'admin0', processed_rows: 2, cache_hits: 3)
 
       expect {
-        User.any_instance.expects(:get_geocoding_calls).never
+        ::User.any_instance.expects(:get_geocoding_calls).never
         get_geocoding_calls_by_organization_id(@organization.id).should == 14
       }.to make_database_queries(count: 0..1)
     end
@@ -33,7 +33,7 @@ shared_examples_for "organization models" do
       FactoryGirl.create(:search_tweet, user: @user1, retrieved_items: 5)
 
       # TODO: range and model expectation is needed because Sequel model is not counting sql queries, and can't know why.
-      User.any_instance.expects(:get_twitter_imports_count).never
+      ::User.any_instance.expects(:get_twitter_imports_count).never
       expect {
         get_twitter_imports_count_by_organization_id(@organization.id).should == 11
       }.to make_database_queries(count: 0..1)

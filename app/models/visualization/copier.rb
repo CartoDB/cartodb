@@ -23,7 +23,7 @@ module CartoDB
           description:  visualization.description,
           type:         type_from(additional_fields),
           parent_id:    additional_fields.fetch(:parent_id, nil),
-          map_id:       map_copy(layers, type_from(additional_fields) == Member::TYPE_SLIDE).id,
+          map_id:       map_copy(layers).id,
           privacy:      visualization.privacy,
           user_id:      @user.id
         )
@@ -49,8 +49,8 @@ module CartoDB
         }
       end
 
-      def map_copy(layers, create_as_children=false)
-        @map_copy ||= CartoDB::Map::Copier.new.copy(visualization.map, layers, create_as_children)
+      def map_copy(layers)
+        @map_copy ||= CartoDB::Map::Copier.new.copy(visualization.map, layers)
       end
 
       def new_name

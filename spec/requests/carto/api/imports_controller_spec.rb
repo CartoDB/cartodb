@@ -149,7 +149,6 @@ describe Carto::Api::ImportsController do
     response.code.should be == '200'
 
     @table_from_import = UserTable.all.last.service
-
     post api_v1_imports_create_url(:api_key    => $user_1.api_key,
                         :table_name => 'wadus_2',
                         :sql        => "SELECT * FROM #{@table_from_import.name}")

@@ -8,13 +8,17 @@ module CartoDB
   module Importer2
     class KmlSplitter
       MAX_LAYERS = 50
+      OGRINFO_BINARY = 'ogrinfo'
+      DEFAULT_OGR2OGR_BINARY = 'ogr2ogr2'
+
       def self.support?(source_file)
         source_file.extension == '.kml'
       end
 
-      def initialize(source_file, temporary_directory)
+      def initialize(source_file, temporary_directory, ogr2ogr_config = nil)
         @source_file          = source_file
         @temporary_directory  = temporary_directory
+        @ogr2ogr_binary = @ogr2ogr_config.nil? ? DEFAULT_OGR2OGR_BINARY : ogr2ogr_config['binary']
       end
 
       def run
@@ -38,7 +42,7 @@ module CartoDB
       end
 
       def extract(extracted_file_path, source_file, layer_name)
-        `ogr2ogr2 -f 'KML' #{extracted_file_path} #{source_file.fullpath} "#{layer_name}"`
+        `#{@ogr2ogr_binary} -f 'KML' #{extracted_file_path} #{source_file.fullpath} "#{layer_name}"`
       end
 
       def multiple_layers?(source_file)
@@ -46,8 +50,8 @@ module CartoDB
       end
 
       def layers_in(source_file)
-        stdout, stderr, status = 
-          Open3.capture3("ogrinfo #{source_file.fullpath}")
+        stdout, stderr, status =
+          Open3.capture3("#{OGRINFO_BINARY} #{source_file.fullpath}")
         stdout.split("\n")
           .select { |line| line =~ /\A\d/ }
           .map { |line| line.gsub(/\A\d+:\s/, '') }
@@ -66,7 +70,6 @@ module CartoDB
 
       attr_reader :temporary_directory
       attr_writer :source_file
-    end # KmlSplitter
-  end # Importer2
-end # CartoDB
-  
+    end
+  end
+end

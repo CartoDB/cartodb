@@ -56,7 +56,11 @@ module CartoDB
         end
 
         def load_from_yml
-          yml_config = "#{File.dirname(__FILE__)}/../../../../config/database.yml"
+          if ENV['RAILS_DATABASE_FILE']
+            yml_config = "#{File.dirname(__FILE__)}/../../../../config/#{ENV['RAILS_DATABASE_FILE']}"
+          else
+            yml_config = "#{File.dirname(__FILE__)}/../../../../config/database.yml"
+          end
           yml_config = YAML.load_file(yml_config)['test'].each_with_object({}){ |(k,v), h|
             h[k.to_sym] = v
           }

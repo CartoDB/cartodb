@@ -3,18 +3,18 @@ namespace :cartodb do
 
     desc "Add timezone to timestamp users columns"
     task :add_timezones_to_timestamps => :environment do
-      users_length = User.all.length
+      users_length = ::User.all.length
       cu = 1
       task_errors = []
-      User.all.each do |u|
+      ::User.all.each do |u|
         puts "#{u.username} (#{cu}/#{users_length})"
         user_tables = u.real_tables.collect {|rt| rt[:relname]}
         user_tables.each do |ut|
           table_columns = u.in_database.schema(ut)
-          pending_columns = table_columns.select do |t| 
+          pending_columns = table_columns.select do |t|
             t.first == :updated_at || t.first == :created_at
           end
-          pending_columns = pending_columns.map do |pc| 
+          pending_columns = pending_columns.map do |pc|
             pc.first.to_s if pc.last[:db_type] == "timestamp without time zone"
           end.compact
           if !pending_columns.empty?
@@ -48,7 +48,7 @@ namespace :cartodb do
     desc "Unshare all entities for a given user"
     task :unshare_all_entities, [:user] => :environment do |t, args|
       # First unshare everything owned by the user itself
-      user = User.find(username: args[:user])
+      user = ::User.find(username: args[:user])
       CartoDB::Permission.where(owner_id: user.id).each do |permission|
         unless permission.acl.empty?
           puts "Deleting permission: #{permission.acl}"

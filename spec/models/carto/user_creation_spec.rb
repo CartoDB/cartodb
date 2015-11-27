@@ -3,12 +3,59 @@ require_relative '../../../app/models/carto/user_creation'
 
 describe Carto::UserCreation do
 
+  describe 'autologin?' do
+
+    it 'is true for autologin_user_creation factory' do
+      FactoryGirl.build(:autologin_user_creation).autologin?.should == true
+    end
+
+    it 'is false for states other than success' do
+      FactoryGirl.build(:autologin_user_creation, state: 'creating_user').autologin?.should == false
+      FactoryGirl.build(:autologin_user_creation, state: 'validating_user').autologin?.should == false
+      FactoryGirl.build(:autologin_user_creation, state: 'saving_user').autologin?.should == false
+      FactoryGirl.build(:autologin_user_creation, state: 'promoting_user').autologin?.should == false
+      FactoryGirl.build(:autologin_user_creation, state: 'creating_user_in_central').autologin?.should == false
+      FactoryGirl.build(:autologin_user_creation, state: 'load_common_data').autologin?.should == false
+      FactoryGirl.build(:autologin_user_creation, state: 'failure').autologin?.should == false
+
+      FactoryGirl.build(:autologin_user_creation, state: 'success').autologin?.should == true
+    end
+
+    it 'is stops working after one minute' do
+      FactoryGirl.build(:autologin_user_creation, created_at: Time.now - 61.seconds).autologin?.should == false
+      FactoryGirl.build(:autologin_user_creation, created_at: Time.now - 60.seconds).autologin?.should == false
+      FactoryGirl.build(:autologin_user_creation, created_at: Time.now - 59.seconds).autologin?.should == true
+    end
+
+    it 'is false for users with enable_account_token' do
+      user_creation = FactoryGirl.build(:autologin_user_creation)
+      user = user_creation.instance_variable_get(:@cartodb_user)
+      user.enable_account_token = 'whatever'
+      user_creation.autologin?.should == false
+    end
+
+    it 'is false for disabled users' do
+      user_creation = FactoryGirl.build(:autologin_user_creation)
+      user = user_creation.instance_variable_get(:@cartodb_user)
+      user.enabled = false
+      user_creation.autologin?.should == false
+    end
+
+    it 'is false for users that have seen their dashboard' do
+      user_creation = FactoryGirl.build(:autologin_user_creation)
+      user = user_creation.instance_variable_get(:@cartodb_user)
+      user.dashboard_viewed_at = Time.now
+      user_creation.autologin?.should == false
+    end
+
+  end
+
   describe 'validation token' do
     include_context 'organization with users helper'
 
     it 'assigns an enable_account_token if user has not signed up with Google' do
-      User.any_instance.stubs(:create_in_central).returns(true)
-      User.any_instance.stubs(:enable_remote_db_user).returns(true)
+      ::User.any_instance.stubs(:create_in_central).returns(true)
+      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
       user_data = FactoryGirl.build(:valid_user)
       user_data.organization = @organization
       user_data.google_sign_in = false
@@ -21,8 +68,8 @@ describe Carto::UserCreation do
     end
 
     it 'does not assign an enable_account_token if user has signed up with Google' do
-      User.any_instance.stubs(:create_in_central).returns(true)
-      User.any_instance.stubs(:enable_remote_db_user).returns(true)
+      ::User.any_instance.stubs(:create_in_central).returns(true)
+      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
       user_data = FactoryGirl.build(:valid_user)
       user_data.organization = @organization
       user_data.google_sign_in = true
@@ -35,9 +82,32 @@ describe Carto::UserCreation do
       saved_user.enable_account_token.should be_nil
     end
 
+    it 'does not assign an enable_account_token nor sends email if user had an invitation and the right token is set' do
+      ::Resque.expects(:enqueue).with(::Resque::UserJobs::Mail::NewOrganizationUser).never
+      ::Resque.expects(:enqueue).with(Resque::OrganizationJobs::Mail::Invitation, instance_of(String)).once
+      ::User.any_instance.stubs(:create_in_central).returns(true)
+      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+      user_data = FactoryGirl.build(:valid_user)
+      user_data.organization = @organization
+      user_data.google_sign_in = false
+
+      invitation = Carto::Invitation.create_new(@carto_org_user_owner, [user_data.email], 'Welcome!')
+      invitation.save
+
+      user_creation = Carto::UserCreation.
+                      new_user_signup(user_data).
+                      with_invitation_token(invitation.token(user_data.email))
+      user_creation.next_creation_step until user_creation.finished?
+      user_creation.reload
+
+      saved_user = user_creation.user
+      saved_user.username.should == user_data.username
+      saved_user.enable_account_token.should be_nil
+    end
+
     it 'neither creates a new User nor sends the mail and marks creation as failure if saving fails' do
       Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
-      User.any_instance.stubs(:save).raises('saving error')
+      ::User.any_instance.stubs(:save).raises('saving error')
 
       ::Resque.expects(:enqueue).with(::Resque::UserJobs::Mail::NewOrganizationUser).never
 
@@ -61,7 +131,7 @@ describe Carto::UserCreation do
 
     it 'neither creates a new User nor sends the mail and marks creation as failure if Central fails' do
       Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
-      User.any_instance.stubs(:create_in_central).raises('Error on state creating_user_in_central, mark_as_failure: false. Error: Application server responded with http 422: {"errors":["Existing username."]}')
+      ::User.any_instance.stubs(:create_in_central).raises('Error on state creating_user_in_central, mark_as_failure: false. Error: Application server responded with http 422: {"errors":["Existing username."]}')
 
       ::Resque.expects(:enqueue).with(::Resque::UserJobs::Mail::NewOrganizationUser).never
 
@@ -133,7 +203,7 @@ describe Carto::UserCreation do
       Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
       fake_central_client = {}
       fake_central_client.stubs(:create_organization_user).returns(true)
-      User.any_instance.stubs(:cartodb_central_client).returns(fake_central_client)
+      ::User.any_instance.stubs(:cartodb_central_client).returns(fake_central_client)
       Cartodb::Central.stubs(:new).returns(fake_central_client)
       user = FactoryGirl.build(:valid_user)
       central_user_data = JSON.parse(user.to_json)
@@ -149,8 +219,8 @@ describe Carto::UserCreation do
 
     # INFO : this mail contains validation link
     it 'triggers a ::Resque::UserJobs::Mail::NewOrganizationUser' do
-      User.any_instance.stubs(:create_in_central).returns(true)
-      User.any_instance.stubs(:enable_remote_db_user).returns(true)
+      ::User.any_instance.stubs(:create_in_central).returns(true)
+      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
       ::Resque.expects(:enqueue).with(Resque::UserJobs::Mail::NewOrganizationUser, instance_of(String)).once
 
       user_data = FactoryGirl.build(:valid_user)
@@ -162,9 +232,9 @@ describe Carto::UserCreation do
     end
 
     it 'should trigger load_common_data in the user if common_data_url is setted' do
-      User.any_instance.stubs(:create_in_central).returns(true)
-      User.any_instance.stubs(:enable_remote_db_user).returns(true)
-      User.any_instance.expects(:load_common_data).with('http://www.example.com').once
+      ::User.any_instance.stubs(:create_in_central).returns(true)
+      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+      ::User.any_instance.expects(:load_common_data).with('http://www.example.com').once
 
       user_data = FactoryGirl.build(:valid_user)
       user_data.organization = @organization
@@ -176,9 +246,9 @@ describe Carto::UserCreation do
     end
 
     it 'should not trigger load_common_data in the user if common_data_url is not setted' do
-      User.any_instance.stubs(:create_in_central).returns(true)
-      User.any_instance.stubs(:enable_remote_db_user).returns(true)
-      User.any_instance.expects(:load_common_data).with('http://www.example.com').never
+      ::User.any_instance.stubs(:create_in_central).returns(true)
+      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+      ::User.any_instance.expects(:load_common_data).with('http://www.example.com').never
 
       user_data = FactoryGirl.build(:valid_user)
       user_data.organization = @organization
@@ -190,4 +260,58 @@ describe Carto::UserCreation do
 
   end
 
+  describe 'organization overquota email' do
+    include_context 'organization with users helper'
+
+    it 'triggers a DiskQuotaLimitReached mail if organization has run out of quota for new users' do
+      ::User.any_instance.stubs(:create_in_central).returns(true)
+      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+      ::Resque.expects(:enqueue).with(Resque::UserJobs::Mail::NewOrganizationUser, instance_of(String)).once
+      ::Resque.expects(:enqueue).with(Resque::OrganizationJobs::Mail::DiskQuotaLimitReached, instance_of(String)).once
+
+      user_data = FactoryGirl.build(:valid_user)
+      user_data.organization = @organization
+      @organization.quota_in_bytes = @organization.assigned_quota + @organization.default_quota_in_bytes + 1
+      @organization.save
+
+      user_creation = Carto::UserCreation.new_user_signup(user_data)
+      user_creation.next_creation_step until user_creation.finished?
+    end
+  end
+
+  describe 'organization over seats email' do
+    include_context 'organization with users helper'
+
+    it 'triggers a SeatLimitReached mail if organization has run out of seats new users' do
+      ::User.any_instance.stubs(:create_in_central).returns(true)
+      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+      ::Resque.expects(:enqueue).with(Resque::UserJobs::Mail::NewOrganizationUser, instance_of(String)).once
+      ::Resque.expects(:enqueue).with(Resque::OrganizationJobs::Mail::SeatLimitReached, instance_of(String)).once
+
+      user_data = FactoryGirl.build(:valid_user)
+      user_data.organization = @organization
+      @organization.seats = 4
+      @organization.save
+
+      user_creation = Carto::UserCreation.new_user_signup(user_data)
+      user_creation.next_creation_step until user_creation.finished?
+    end
+
+    it 'doesnt trigger any unexpected mails if organization is ok' do
+      ::User.any_instance.stubs(:create_in_central).returns(true)
+      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+      ::Resque.expects(:enqueue).with(Resque::UserJobs::Mail::NewOrganizationUser, instance_of(String)).once
+      ::Resque.expects(:enqueue).with(Resque::OrganizationJobs::Mail::SeatLimitReached, instance_of(String)).never
+      ::Resque.expects(:enqueue).with(Resque::OrganizationJobs::Mail::DiskQuotaLimitReached, instance_of(String)).never
+
+      user_data = FactoryGirl.build(:valid_user)
+
+      user_data.organization = @organization
+      @organization.seats = 15
+      @organization.save
+
+      user_creation = Carto::UserCreation.new_user_signup(user_data)
+      user_creation.next_creation_step until user_creation.finished?
+    end
+  end
 end

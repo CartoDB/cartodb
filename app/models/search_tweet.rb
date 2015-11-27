@@ -53,7 +53,7 @@ class SearchTweet < Sequel::Model
     total_rows = self.retrieved_items
     quota = user.effective_twitter_total_quota
 
-    # User#get_twitter_imports_count includes this run, so we discount it
+    # ::User#get_twitter_imports_count includes this run, so we discount it
     remaining_quota  = quota + total_rows - user.effective_get_twitter_imports_count
     remaining_quota  = (remaining_quota > 0 ? remaining_quota : 0)
     used_credits     = total_rows - remaining_quota

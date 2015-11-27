@@ -3,8 +3,8 @@ namespace :cartodb do
   namespace :db do
     desc 'Sets table_ids for all table metadata recors'
     task :set_table_oids => :environment do
-      count = User.count
-      User.all.each_with_index do |user, index|
+      count = ::User.count
+      ::User.all.each_with_index do |user, index|
         puts "Setting table oids for #{user.username}"
         begin
           if %w(development staging).include?(ENV['RAILS_ENV'])
@@ -48,7 +48,7 @@ namespace :cartodb do
                 SET table_id = #{oid}
                 WHERE name = '#{name_in_metadata}'
                 AND user_id = #{user.id}
-              )) 
+              ))
             }
           entries_in_database_by_oid = entries_in_database
                                         .invert.delete_if { |k, v| k.nil? }

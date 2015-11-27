@@ -18,14 +18,15 @@ module CartoDB
 
       def self.supported?(extension)
         extension == ".#{@format}"
-      end #self.supported?
+      end
 
-      def initialize(supported_format, filepath, job=nil, csv_normalizer=nil)
+      def initialize(supported_format, filepath, job=nil, csv_normalizer=nil, importer_config = nil)
         @format = "#{supported_format.downcase}"
         @filepath = filepath
         @job      = job || Job.new
-        @csv_normalizer = csv_normalizer || CsvNormalizer.new(converted_filepath, @job)
-      end #initialize
+        @importer_config = importer_config
+        @csv_normalizer = csv_normalizer || CsvNormalizer.new(converted_filepath, @job, @importer_config)
+      end
 
       def run
         job.log "Converting #{@format.upcase} to CSV"
@@ -44,21 +45,20 @@ module CartoDB
           job.log "done executing in2csv."
         end
 
-
         # Can be check locally using wc -l ... (converted_filepath)
         job.log "Orig file: #{filepath}\nTemp destination: #{converted_filepath}"
         # Roo gem is not exporting always correctly when source Excel has atypical UTF-8 characters
         @csv_normalizer.force_normalize
         @csv_normalizer.run
         self
-      end #run
+      end
 
       def converted_filepath
         File.join(
           File.dirname(filepath),
           File.basename(filepath, File.extname(filepath))
         ) + '.csv'
-      end #converted_filepath
+      end
 
       protected
 
@@ -71,6 +71,6 @@ module CartoDB
       end
 
       attr_reader :filepath, :job
-    end #Excel2Csv
-  end # Importer2
-end # CartoDB
+    end
+  end
+end

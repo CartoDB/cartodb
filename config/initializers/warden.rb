@@ -10,15 +10,19 @@ class Warden::SessionSerializer
   end
 
   def deserialize(username)
-    User.filter(username: username).first
+    ::User.filter(username: username).first
   end
 end
 
 Warden::Strategies.add(:password) do
+  def valid_password_strategy_for_user(user)
+    user.organization.nil? || user.organization.auth_username_password_enabled
+  end
+
   def authenticate!
     if params[:email] && params[:password]
-      if (user = User.authenticate(params[:email], params[:password]))
-        if user.enabled?
+      if (user = ::User.authenticate(params[:email], params[:password]))
+        if user.enabled? && valid_password_strategy_for_user(user)
           success!(user, :message => "Success")
           request.flash['logged'] = true
         elsif !user.enable_account_token.nil?
@@ -38,7 +42,7 @@ end
 Warden::Strategies.add(:enable_account_token) do
   def authenticate!
     if params[:id]
-      user = User.where(enable_account_token: params[:id]).first
+      user = ::User.where(enable_account_token: params[:id]).first
       if user
         user.enable_account_token = nil
         user.save
@@ -53,10 +57,14 @@ Warden::Strategies.add(:enable_account_token) do
 end
 
 Warden::Strategies.add(:google_access_token) do
+  def valid_google_access_token_strategy_for_user(user)
+    user.organization.nil? || user.organization.auth_google_enabled
+  end
+
   def authenticate!
     if params[:google_access_token]
       user = GooglePlusAPI.new.get_user(params[:google_access_token])
-      if user
+      if user && valid_google_access_token_strategy_for_user(user)
         if user.enable_account_token.nil?
           success!(user)
         else
@@ -79,8 +87,8 @@ Warden::Strategies.add(:ldap) do
     begin
       user = Carto::Ldap::Manager.new.authenticate(params[:email], params[:password])
     rescue Carto::Ldap::LDAPUserNotPresentAtCartoDBError => exception
-      throw(:warden, action: 'ldap_user_not_at_cartodb', 
-        cartodb_username: exception.cartodb_username, organization_id: exception.organization_id, 
+      throw(:warden, action: 'ldap_user_not_at_cartodb',
+        cartodb_username: exception.cartodb_username, organization_id: exception.organization_id,
         ldap_username: exception.ldap_username, ldap_email: exception.ldap_email)
     end
     (fail! and return) unless user
@@ -105,7 +113,7 @@ Warden::Strategies.add(:api_authentication) do
         end
 
       if @oauth_token && @oauth_token.is_a?(::AccessToken)
-        user = User.find_with_custom_fields(@oauth_token.user_id)
+        user = ::User.find_with_custom_fields(@oauth_token.user_id)
         if user.enable_account_token.nil?
           success!(user) and return
         else
@@ -134,7 +142,7 @@ Warden::Strategies.add(:api_key) do
         if $users_metadata.HMGET("rails:users:#{user_name}", "map_key").first == api_key
           user_id = $users_metadata.HGET "rails:users:#{user_name}", 'id'
           return fail! if user_id.blank?
-          user    = User[user_id]
+          user = ::User[user_id]
           success!(user)
         else
           return fail!
@@ -167,3 +175,19 @@ Warden::Manager.after_set_user except: :fetch do |user, auth, opts|
   end
 end
 
+Warden::Strategies.add(:user_creation) do
+  def authenticate!
+    username = params[:username]
+    user = ::User.where(username: username).first
+    return fail! unless user
+
+    user_creation = Carto::UserCreation.where(user_id: user.id).first
+    return fail! unless user_creation
+
+    if user_creation.autologin?
+      success!(user, :message => "Success")
+    else
+      fail!
+    end
+  end
+end

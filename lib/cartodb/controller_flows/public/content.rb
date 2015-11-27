@@ -12,7 +12,7 @@ module CartoDB
 
         def render
           username = CartoDB.extract_subdomain(@request).strip.downcase
-          viewed_user = User.where(username: username).first
+          viewed_user = ::User.where(username: username).first
 
           if viewed_user.nil?
             org = Organization.where(name: username).first

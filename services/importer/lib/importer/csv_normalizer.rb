@@ -25,12 +25,13 @@ module CartoDB
       REVERSE_LINE_FEED     = "\x8D"
 
 
-      def initialize(filepath, job=nil)
+      def initialize(filepath, job = nil, importer_config = nil)
         @filepath = filepath
         @job      = job || Job.new
         @delimiter = nil
         @force_normalize = false
         @encoding = nil
+        @importer_config = importer_config
       end
 
       def force_normalize
@@ -83,9 +84,9 @@ module CartoDB
         end
 
         occurrences = Hash[
-          COMMON_DELIMITERS.map { |delimiter| 
-            [delimiter, lines_for_detection.map { |line| 
-              line.count(delimiter) }] 
+          COMMON_DELIMITERS.map { |delimiter|
+            [delimiter, lines_for_detection.map { |line|
+              line.count(delimiter) }]
           }
         ]
 
@@ -93,9 +94,9 @@ module CartoDB
 
         variances = Hash.new
         @delimiter = DEFAULT_DELIMITER
-        
+
         use_variance = true
-        occurrences.each { |key, values| 
+        occurrences.each { |key, values|
           if values.length > 1
             variances[key] = sample_variance(values) unless values.first == 0
           elsif values.length == 1
@@ -124,28 +125,30 @@ module CartoDB
       end
 
       def normalize(temporary_filepath)
-        temporary_csv = ::CSV.open(temporary_filepath, 'w', col_sep: OUTPUT_DELIMITER)
-        File.open(filepath, 'rb', external_encoding: encoding)
-        .each_line(line_delimiter) { |line|
-          row = parsed_line(line)
-          next unless row
-          temporary_csv << multiple_column(row)
-        }
+
+        temporary_csv = CSV.open(temporary_filepath, 'w', col_sep: OUTPUT_DELIMITER, encoding: 'UTF-8')
+
+        CSV.open(filepath, "rb:#{encoding}", col_sep: @delimiter) do |input|
+          loop do
+            begin
+              row = input.shift
+              break unless row
+            rescue CSV::MalformedCSVError
+              next
+            end
+            temporary_csv << multiple_column(row)
+          end
+        end
+
+        # TODO: it would be nice to detect and  warn the user about ignored
+        # malformed rows (but probably not about malformed empty lines, such
+        # as trailing \n\r\n seen in some cases)
 
         temporary_csv.close
 
         @delimiter = OUTPUT_DELIMITER
       rescue ArgumentError, Encoding::UndefinedConversionError, Encoding::InvalidByteSequenceError => e
         raise EncodingDetectionError
-      end
-
-      def   parsed_line(line)
-        ::CSV.parse_line(line.chomp.encode('UTF-8',
-                         :fallback => {
-                             REVERSE_LINE_FEED.force_encoding("Windows-1252") => ""
-                         }), csv_options)
-      rescue => e
-        nil
       end
 
       def temporary_filepath(filename_prefix = '')
@@ -157,15 +160,6 @@ module CartoDB
           col_sep:            delimiter,
           quote_char:         DEFAULT_QUOTE
         }
-      end
-
-      def line_delimiter
-        windows_eol? ? "\r" : $/
-      end
-
-      def windows_eol?
-        return false if first_line =~ /\n/
-        !!(first_line =~ %r{\r})
       end
 
       def needs_normalization?
@@ -235,7 +229,7 @@ module CartoDB
       private
 
       def generate_temporary_directory
-        self.temporary_directory = Unp.new.generate_temporary_directory.temporary_directory
+        self.temporary_directory = Unp.new(@importer_config).generate_temporary_directory.temporary_directory
         self
       end
 
@@ -259,6 +253,10 @@ module CartoDB
       end
 
       def remove_quoted_strings(input)
+        # Note that CSV quoted strings can use double quotes, `""`
+        # as a way of escaping a single quote `"`
+        # Since we're just removing all quoted strings, this simple
+        # approach works in that case too.
         input.gsub(/"[^\\"]*"/, '')
       end
 
@@ -267,4 +265,3 @@ module CartoDB
     end
   end
 end
-

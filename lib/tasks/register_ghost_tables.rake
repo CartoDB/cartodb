@@ -9,7 +9,7 @@ namespace :cartodb do
       raise usage if args[:username].blank? || args[:table_name].blank?
 
       begin
-        user       = User.find(username: args[:username] )
+        user       = ::User.find(username: args[:username] )
         table_name = args[:table_name]
 
         table                          = Table.new

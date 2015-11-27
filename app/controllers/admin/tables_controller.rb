@@ -1,7 +1,7 @@
 # coding: utf-8
 require_relative '../../models/map/presenter'
 
-class Admin::TablesController < ApplicationController
+class Admin::TablesController < Admin::AdminController
   ssl_required :index, :show, :public
 
   skip_before_filter :browser_is_html5_compliant?, :only => [:embed_map]
@@ -29,7 +29,7 @@ class Admin::TablesController < ApplicationController
   def public
     @table = nil
     @subdomain = CartoDB.extract_subdomain(request)
-    @table = ::Table.get_by_id(params[:id], User.find(:username => @subdomain))
+    @table = ::Table.get_by_id(params[:id], ::User.find(:username => @subdomain))
 
     # Has quite strange checks to see if a user can access a public table
     if @table.blank? || @table.private? || ((current_user && current_user.id != @table.user_id) && @table.private?)

@@ -37,6 +37,7 @@ gem 'net-ldap',                '0.11'
 
 group :production, :staging do
   gem 'unicorn',               '4.8.2'
+  gem 'unicorn-worker-killer'
   gem 'raindrops',             '0.12.0'
 end
 
@@ -67,7 +68,7 @@ gem 'aequitas',                 '0.0.2'
 gem 'uuidtools',                '2.1.5'
 
 # Markdown
-gem 'redcarpet', '3.2.3'
+gem 'redcarpet', '3.3.2'
 
 # TODO we should be able to remove this using the new
 #      Rails routes DSL
@@ -105,6 +106,9 @@ group :development, :test do
   # Server
   gem 'thin',                           require: false
 end
+
+# segment metrics
+gem 'analytics-ruby', '~> 2.0.0', :require => 'segment/analytics'
 
 # Load optional engines
 # TODO activate when CartoDB plugins are finally included

@@ -108,7 +108,7 @@ describe CartoDB::Connector::Importer do
     @user.save
 
     filepath = "#{Rails.root}/spec/support/data/elecciones2008.csv"
-  
+
     data_import = DataImport.create(
       :user_id       => @user.id,
       :data_source   => filepath,
@@ -123,12 +123,40 @@ describe CartoDB::Connector::Importer do
     UserTable[id: data_import.table.id].privacy.should eq (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['private']
   end
 
+  it 'should import table and vis as private if privacy param is set to private' do
+    @user.private_tables_enabled = true
+    @user.save
+
+    filepath = "#{Rails.root}/spec/support/data/elecciones2008.csv"
+
+    data_import = DataImport.create(
+      user_id: @user.id,
+      data_source: filepath,
+      updated_at: Time.now.utc,
+      append: false,
+      privacy: (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['private'],
+      create_visualization: true
+    )
+    data_import.values[:data_source] = filepath
+
+    data_import.run_import!
+
+    data_import.success.should eq true
+    Carto::Visualization.find_by_id(data_import.visualization_id).privacy.should eq 'private'
+
+    data_import.values[:data_source] = filepath
+
+    data_import.run_import!
+
+    UserTable[id: data_import.table.id].privacy.should eq (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['private']
+  end
+
   it 'should import tables as private by default if user has private tables enabled' do
     @user.private_tables_enabled = true
     @user.save
 
     filepath = "#{Rails.root}/spec/support/data/elecciones2008.csv"
-  
+
     data_import = DataImport.create(
       :user_id       => @user.id,
       :data_source   => filepath,
@@ -147,7 +175,7 @@ describe CartoDB::Connector::Importer do
     @user.save
 
     filepath = "#{Rails.root}/spec/support/data/elecciones2008.csv"
-  
+
     data_import = DataImport.create(
       :user_id       => @user.id,
       :data_source   => filepath,
@@ -161,12 +189,12 @@ describe CartoDB::Connector::Importer do
     UserTable[id: data_import.table.id].privacy.should eq (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['public']
   end
 
-  it 'should import as public with private_tables_enabled' do 
+  it 'should import as public with private_tables enabled' do
     @user.private_tables_enabled = true
     @user.save
 
     filepath = "#{Rails.root}/spec/support/data/elecciones2008.csv"
-  
+
     data_import = DataImport.create(
       :user_id       => @user.id,
       :data_source   => filepath,
@@ -181,12 +209,34 @@ describe CartoDB::Connector::Importer do
     data_import.success.should eq true
   end
 
-  it 'should not import as private if private_tables_enabled is disabled' do 
+  it 'should import table and vis as public with private_tables enabled' do
+    @user.private_tables_enabled = true
+    @user.save
+
+    filepath = "#{Rails.root}/spec/support/data/elecciones2008.csv"
+
+    data_import = DataImport.create(
+      user_id: @user.id,
+      data_source: filepath,
+      updated_at: Time.now.utc,
+      append: false,
+      privacy: (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['public'],
+      create_visualization: true
+    )
+    data_import.values[:data_source] = filepath
+
+    data_import.run_import!
+
+    data_import.success.should eq true
+    Carto::Visualization.find_by_id(data_import.visualization_id).privacy.should eq 'public'
+  end
+
+  it 'should not import as private if private_tables_enabled is disabled' do
     @user.private_tables_enabled = false
     @user.save
 
     filepath = "#{Rails.root}/spec/support/data/elecciones2008.csv"
-  
+
     data_import = DataImport.create(
       :user_id       => @user.id,
       :data_source   => filepath,
@@ -200,7 +250,66 @@ describe CartoDB::Connector::Importer do
 
     data_import.success.should_not eq true
   end
+
+  it 'should be able to handle wrong type guessing' do
+    filepath = "#{Rails.root}/spec/support/data/wrong_the_geom_guessing.csv"
+
+    data_import = DataImport.create(
+      user_id:      @user.id,
+      data_source:  filepath,
+      updated_at:   Time.now,
+      append:       false
+    )
+    data_import.values[:data_source] = filepath
+
+    data_import.run_import!
+
+    data_import.success.should eq true
+  end
+
+  it 'should be able to import a multi file zip as a multilayer map' do
+    @user.max_layers = 5
+    @user.save
+
+    filepath = "#{Rails.root}/spec/support/data/multilayer_shp.zip"
+
+    data_import = DataImport.create(
+      user_id: @user.id,
+      data_source: filepath,
+      updated_at: Time.now.utc,
+      append: false,
+      create_visualization: true
+    )
+    data_import.values[:data_source] = filepath
+
+    data_import.run_import!
+    data_import.success.should eq true
+
+    vis = Carto::Visualization.find_by_id(data_import.visualization_id)
+    vis.map.data_layers.count.should eq 5
+  end
+
+  it 'should be able to handle a zip with more files max_layers' do
+    @user.max_layers = 2
+    @user.save
+
+    filepath = "#{Rails.root}/spec/support/data/multilayer_shp.zip"
+
+    data_import = DataImport.create(
+      user_id: @user.id,
+      data_source: filepath,
+      updated_at: Time.now.utc,
+      append: false,
+      create_visualization: true
+    )
+    data_import.values[:data_source] = filepath
+
+    data_import.run_import!
+    data_import.success.should eq true
+
+    vis = Carto::Visualization.find_by_id(data_import.visualization_id)
+    vis.map.data_layers.count.should eq @user.max_layers
+
+    data_import.rejected_layers.split(',').count.should eq 3
+  end
 end
-
-
-

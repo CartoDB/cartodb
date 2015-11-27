@@ -50,7 +50,10 @@ describe Carto::VisualizationQueryBuilder do
 
     expect {
       @vqb.build.first.user.username.should_not eq nil
-    }.to make_database_queries(count: 3)
+    }.to make_database_queries(count: 2..3)
+    # 1: SELECT * FROM visualizations LIMIT 1
+    # 2: to select basic user fields
+    # 3: AR seems to not be very clever detecting vis.user is already fetched and sometimes re-fetches it
 
     expect {
       @vqb.with_prefetch_user(true).build.first.user.username.should_not eq nil
@@ -61,7 +64,7 @@ describe Carto::VisualizationQueryBuilder do
     table1 = create_random_table(@user1)
 
     expect {
-      @vqb.build.where(id: table1.table_visualization.id).first.table.name 
+      @vqb.build.where(id: table1.table_visualization.id).first.table.name
     }.to make_database_queries(count: 2..3)
 
     expect {

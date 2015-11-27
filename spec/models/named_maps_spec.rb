@@ -758,6 +758,57 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
   end
 
   describe 'view data' do
+    it "Doesn't returns an http layer if missing urlTemplate" do
+      layer = {
+        options: {
+          type: "not-plain"
+        }
+      }
+      layer_num = 0
+      template_data = {}
+
+      results = CartoDB::NamedMapsWrapper::NamedMap.send(:options_for_basemap_layer, layer, layer_num, template_data)
+      results.nil?.should eq true
+
+      layer = {
+        options: {
+          type: "not-plain",
+          'urlTemplate' => ''
+        }
+      }
+      results = CartoDB::NamedMapsWrapper::NamedMap.send(:options_for_basemap_layer, layer, layer_num, template_data)
+      results.nil?.should eq true
+
+      layer = {
+        options: {
+          type: "not-plain",
+          'urlTemplate' => nil
+        }
+      }
+      results = CartoDB::NamedMapsWrapper::NamedMap.send(:options_for_basemap_layer, layer, layer_num, template_data)
+      results.nil?.should eq true
+
+      layer = {
+        options: {
+          type: "not-plain",
+          "urlTemplate" => "cartodb.com",
+          "subdomains" => "abcd"
+        }
+      }
+      expected_results = {
+        layer_name: 'http',
+        layer_options: {
+          urlTemplate: layer[:options]["urlTemplate"],
+          subdomains: layer[:options]["subdomains"]
+        },
+        layer_num: layer_num,
+        template_data: template_data
+      }
+      results = CartoDB::NamedMapsWrapper::NamedMap.send(:options_for_basemap_layer, layer, layer_num, template_data)
+      results.nil?.should eq false
+      results.should == expected_results
+    end
+
     it 'checks that the named map builds correctly the :view section' do
 
       disable_if_config_has_maps_with_labels

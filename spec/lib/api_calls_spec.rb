@@ -145,5 +145,27 @@ describe CartoDB::Stats::APICalls do
       end
     end
 
+    it 'fetches data for one day' do
+      key = @api_calls.redis_api_call_key(@username, @type, @options[:stat_tag])
+
+      today = Date.today
+
+      random_data = {}
+      random_data[(today - 2.days).strftime("%Y%m%d")] = 7
+      random_data[(today - 1.days).strftime("%Y%m%d")] = 13
+
+      random_data.each do |date, score|
+        $users_metadata.ZADD(key, score, date).to_i
+      end
+
+      chose_date = Date.today - 1.days
+
+      calls = @api_calls.get_api_calls_from_redis_source(@username, @type, @options.merge({from: chose_date, to: chose_date}))
+      calls.count.should == 1
+
+      chose_date_key = chose_date.strftime("%Y%m%d")
+      calls[chose_date_key].should eq(random_data.fetch(chose_date_key, 0)), "Failed day #{chose_date_key}, it was #{calls[chose_date_key]} instead of #{random_data[chose_date_key]}"
+    end
+
   end
 end

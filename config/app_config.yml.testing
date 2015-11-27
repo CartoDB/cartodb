@@ -5,7 +5,7 @@ defaults: &defaults
   http_client_logs: true
   ogr2ogr:
     binary:           'which ogr2ogr2'
-    csv_guessing:     false
+    csv_guessing:     true
   debug_assets: true
   mandatory_keys:     [layer_opts, sql_api, varnish_management, redis, session_domain]
   session_domain:     '.localhost.lan'
@@ -66,6 +66,14 @@ defaults: &defaults
     generate_every: 86400
   explore_api:
     username: 'common-data'
+  mailer:
+    from: 'cartodb.com <support@cartodb.com>'
+    address: ''
+    port: ''
+    user_name: ''
+    password: ''
+    authentication: ''
+    enable_starttls_auto: ''
   varnish_management:
     critical: false
     host: '127.0.0.1'
@@ -82,6 +90,9 @@ defaults: &defaults
       api_credentials:     3
       users_metadata:      5
       redis_migrator_logs: 6
+  org_metadata_api:
+    username: "extension"
+    password: "elephant"
   superadmin:
     username: "superadmin"
     password: "monkey"
@@ -108,6 +119,15 @@ defaults: &defaults
   error_track:
     url: 'https://viz2.cartodb.com/api/v1/sql'
     percent_users: 10
+  mailer: 
+    from: 'cartodb.com <support@cartodb.com>' 
+    address: ''
+    port: ''
+    user_name: ''
+    password: ''
+    authentication: ''
+    enable_starttls_auto: ''
+
   # graphite endpoint used to post frontend stats
   #graphite_public:
     #host: ""
@@ -198,10 +218,18 @@ defaults: &defaults
       client_id: ''
       client_secret: ''
       callback_url: 'http://cartodb.com'
+    google_plus:
+      client_id: ''
+      cookie_policy: 'single_host_origin'
     dropbox:
       app_key:  ''
       app_secret: ''
       callback_url: ''
+    box:
+      application_name:     ''
+      client_id:            ''
+      client_secret:        ''
+      box_host:             "app.box.com"
     instagram:
       app_key:              ''
       app_secret:           ''

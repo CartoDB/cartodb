@@ -69,7 +69,8 @@ module CartoDB
       dashboard_templates.js
       public_dashboard_deps.js
       public_dashboard.js
-      public_data_dashboard.js
+      data_library_deps.js
+      data_library.js
       public_map.js
       public_map_deps.js
       editor.js
@@ -98,6 +99,12 @@ module CartoDB
       confirmation.js
       new_public_table.js
 
+      explore_deps.js
+      explore.js
+
+      user_feed_deps.js
+      user_feed.js
+
       tipsy.js
       modernizr.js
       statsc.js
@@ -122,9 +129,11 @@ module CartoDB
       password_protected.css
       public_dashboard.css
       public_map.css
-      public_data_dashboard.css
+      data_library.css
       public_table.css
       sessions.css
+      user_feed.css
+      explore.css
 
       plugins/tipsy.css
 

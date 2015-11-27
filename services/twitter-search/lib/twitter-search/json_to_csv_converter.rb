@@ -5,39 +5,32 @@ module CartoDB
     class JSONToCSVConverter
 
       INDIVIDUAL_FIELDS = [
-        :id,
-        :verb,
         :link,
         :body,
         :objectType,
         :postedTime,
         :favoritesCount,
-        :twitter_filter_level,
         :twitter_lang,
         :retweetCount
       ]
 
       GROUP_FIELDS = [
         :actor,
-        :generator,
-        :provider,
         :inReplyTo,
         :geo,
-        :twitter_entities,  # Save json string,
-        :object,
-        :location,
-        :gnip
+        :twitter_entities, # Save json string,
+        :location
       ]
 
       # Same as above but with fields inside a group field
       SUBGROUP_FIELDS_TO_DUMP = {
-        :actor => [
-          :links,     #links[0].href
+        actor: [
+          :links,     # links[0].href
           :location,  # May be a Twitter Place, with a displayName and objectType, or a simple String
-          :languages  #languages[0]
+          :languages  # languages[0]
         ],
         # if this gets renamed to the_geom, cartodb will import it as a bounding box
-        :location => [
+        location: [
           :geo
         ],
         # same as location->geo, but as a point, so should have higher priority
@@ -45,52 +38,27 @@ module CartoDB
 
       # This fields will get dumped as field_subfield. If not present here will be saved as a stringified json
       SUBFIELDS = {
-        :actor => [
-          :objectType,
+        actor: [
           :id,
-          :link,
           :displayName,
           :image,
           :summary,
           :postedTime,
-          :links,
           :location,
           :utcOffset,
           :preferredUsername,
-          :languages,
-          :twitterTimeZone,
           :friendsCount,
           :followersCount,
           :listedCount,
           :statusesCount,
           :verified
         ],
-        :generator => [
-          :displayName,
+        inReplyTo: [
           :link
         ],
-        :provider => [
-          :objectType,
-          :displayName,
-          :link
-        ],
-        :inReplyTo => [
-          :link
-        ],
-        :location => [
-          :objectType,
-          :displayName,
-          :link,
+        location: [
           :geo,
-          :streetAddress,
           :name
-        ],
-        :object => [
-          :objectType,
-          :id,
-          :summary,
-          :postedTime,
-          :link
         ]
       }
 
@@ -112,36 +80,36 @@ module CartoDB
             field_to_csv(field)
           }
 
-          GROUP_FIELDS.each { |field|
+          GROUP_FIELDS.each do |field|
             if SUBFIELDS[field].nil?
               results_row << field_to_csv(field)
             else
-              SUBFIELDS[field].each { |subfield|
+              SUBFIELDS[field].each do |subfield|
                 results_row << field_to_csv("#{field.to_s}_#{subfield.to_s}")
-              }
+              end
             end
-          }
+          end
 
-          CARTODB_FIELDS.each { |field|
+          CARTODB_FIELDS.each do |field|
             results_row << field_to_csv(field)
-          }
+          end
 
-          additional_fields.each { |key, value|
+          additional_fields.each do |key, _value|
             results_row << field_to_csv(key)
-          }
+          end
 
           results << results_row.join(',')
         end
 
         # Data rows
-        input_data.each { |item|
+        input_data.each do |item|
           results_row = []
 
-          INDIVIDUAL_FIELDS.each { |field|
+          INDIVIDUAL_FIELDS.each do |field|
             results_row << (item[field].nil? ? nil : field_to_csv(item[field]))
-          }
+          end
 
-          GROUP_FIELDS.each { |field|
+          GROUP_FIELDS.each do |field|
             # Group field has no subfields "defined"? then must be dumped
             if SUBFIELDS[field].nil?
               if !item[field].nil?
@@ -151,7 +119,7 @@ module CartoDB
               end
             else
               # Go inside fields, repeat similar logic
-              SUBFIELDS[field].each { |subfield|
+              SUBFIELDS[field].each do |subfield|
                 if !item[field].nil? && !item[field][subfield].nil?
                   # Subitems will either get written as they are or dumped
                   if !SUBGROUP_FIELDS_TO_DUMP[field].nil? && SUBGROUP_FIELDS_TO_DUMP[field].include?(subfield)
@@ -162,22 +130,22 @@ module CartoDB
                 else
                   results_row << nil
                 end
-              }
+              end
             end
-          }
+          end
 
-          CARTODB_FIELDS.each{ |field|
+          CARTODB_FIELDS.each do |field|
             if field == :the_geom
               results_row << field_to_csv(calculate_the_geom(item))
             end
-          }
+          end
 
-          additional_fields.each { |key, value|
+          additional_fields.each do |_key, value|
             results_row << field_to_csv(value)
-          }
+          end
 
           results << results_row.join(',')
-        }
+        end
 
         results.join("\n")
       end
@@ -209,14 +177,14 @@ module CartoDB
         elsif !row[:gnip].nil? && !row[:gnip].empty? && !row[:gnip][:profileLocations].nil? &&
               !row[:gnip][:profileLocations].empty?
 
-          row[:gnip][:profileLocations].each { |location|
+          row[:gnip][:profileLocations].each do |location|
             # Store first point found (only)
             if !location[:geo].nil? && !location[:geo].empty? && !location[:geo][:type].nil? &&
                !location[:geo][:type].empty? && location[:geo][:type] == 'point' && output.nil?
 
               output = ::JSON.dump(location[:geo])
             end
-          }
+          end
         end
 
         output

@@ -20,9 +20,12 @@ describe Carto::Api::OrganizationsController do
 
     before(:all) do
       @org_user_3 = create_test_user("c#{random_username}", @organization)
+      @group_1 = FactoryGirl.create(:random_group, display_name: 'g_1', organization: @carto_organization)
+      @group_1.add_user(@org_user_1.username)
     end
 
     after(:all) do
+      @group_1.destroy
       stub_named_maps_calls
       delete_user_data(@org_user_3)
       @org_user_3.destroy
@@ -98,6 +101,29 @@ describe Carto::Api::OrganizationsController do
         ids.count.should == 1
         ids[0].should == @org_user_2.id
       }
+    end
+
+    it 'return users with matching group_id' do
+      group = @carto_organization.groups.first
+      url = api_v1_organization_groups_users_url(id: @organization.id, group_id: group.id, api_key: @org_user_owner.api_key)
+      get_json url, @headers do |response|
+        response.status.should == 200
+        ids = response.body[:users].map { |u| u['id'] }.uniq.sort
+        ids.count.should == group.users.count
+        ids.should == group.users.map(&:id).uniq.sort
+      end
+    end
+
+    it 'return users with matching email and group_id' do
+      group = @carto_organization.groups.first
+      user = group.users.first
+      url = api_v1_organization_groups_users_url(id: @organization.id, group_id: group.id, api_key: @org_user_owner.api_key, q: user.email)
+      get_json url, @headers do |response|
+        response.status.should == 200
+        ids = response.body[:users].map { |u| u['id'] }
+        ids.count.should == 1
+        ids[0].should == user.id
+      end
     end
 
   end

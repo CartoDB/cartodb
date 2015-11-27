@@ -24,6 +24,12 @@ module CartoDB
       DEFAULT_HTTP_REQUEST_TIMEOUT = 600
       URL_ESCAPED_CHARACTERS = 'áéíóúÁÉÍÓÚñÑçÇàèìòùÀÈÌÒÙ'
 
+      SUPPORTED_EXTENSIONS = CartoDB::Importer2::Unp::SUPPORTED_FORMATS
+                              .concat(CartoDB::Importer2::Unp::COMPRESSED_EXTENSIONS)
+      URL_FILENAME_REGEX = Regexp.new(
+                              "[[:word:]]+(#{ SUPPORTED_EXTENSIONS.map{ |s| s.sub(/\./, "\\.")}.join("|") })+",
+                              true)
+
       DEFAULT_FILENAME        = 'importer'
       CONTENT_DISPOSITION_RE  = %r{;\s*filename=(.*;|.*)}
       URL_RE                  = %r{://}
@@ -88,15 +94,18 @@ module CartoDB
         }
       ]
 
-      def initialize(url, http_options={}, seed=nil, repository=nil)
-        @url          = url
+      def initialize(url, http_options = {}, options = {}, seed = nil, repository = nil)
+        @url = url
         raise UploadError if url.nil?
 
         @http_options = http_options
+        @importer_config = options[:importer_config]
+        @ogr2ogr_config = options[:ogr2ogr]
         @seed         = seed
         @repository   = repository || DataRepository::Filesystem::Local.new(temporary_directory)
         @datasource = nil
         @source_file = nil
+        @http_response_code = nil
 
         translators = URL_TRANSLATORS.map(&:new)
         translator = translators.find { |translator| translator.supported?(url) }
@@ -114,6 +123,10 @@ module CartoDB
         false
       end
 
+      def http_download?
+        true
+      end
+
       def run(available_quota_in_bytes=nil)
         set_local_source_file || set_downloaded_source_file(available_quota_in_bytes)
         self
@@ -121,7 +134,7 @@ module CartoDB
 
       def clean_up
         if defined?(@temporary_directory) &&
-           @temporary_directory =~ /^#{CartoDB::Importer2::Unp::IMPORTER_TMP_SUBFOLDER}/ &&
+           @temporary_directory =~ /^#{Unp.new(@importer_config, @ogr2ogr_config).get_temporal_subfolder_path}/ &&
            !(@temporary_directory =~ /\.\./)
           FileUtils.rm_rf @temporary_directory
         end
@@ -153,7 +166,7 @@ module CartoDB
         # not supported
       end
 
-      attr_reader   :source_file, :datasource, :etag, :last_modified
+      attr_reader :source_file, :datasource, :etag, :last_modified, :http_response_code
       attr_accessor :url
 
       private
@@ -225,6 +238,7 @@ module CartoDB
         downloaded_file = File.open(temp_name, 'wb')
         request = http_client.request(@translated_url, typhoeus_options)
         request.on_headers do |response|
+          @http_response_code = response.code if !response.code.nil?
           unless response.success?
             download_error = true
             error_response = response
@@ -271,11 +285,11 @@ module CartoDB
 
       def name_from(headers, url, custom=nil)
         name =  custom || name_from_http(headers) || name_in(url)
+
         if name == nil || name == ''
-          random_name
-        else
-          name
+          name = random_name
         end
+
         name_with_extension(name, headers)
       end
 
@@ -378,7 +392,9 @@ module CartoDB
       end
 
       def name_in(url)
-        url.split('/').last.split('?').first
+        url_name = URL_FILENAME_REGEX.match(url).to_s
+
+        url_name if !url_name.empty?
       end
 
       def random_name
@@ -392,7 +408,7 @@ module CartoDB
 
       def temporary_directory
         return @temporary_directory if @temporary_directory
-        @temporary_directory = Unp.new.generate_temporary_directory.temporary_directory
+        @temporary_directory = Unp.new(@importer_config).generate_temporary_directory.temporary_directory
       end
 
       def gdrive_deny_in?(headers)

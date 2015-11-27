@@ -5,6 +5,7 @@ require 'open3'
 require_relative './exceptions'
 require_relative './source_file'
 require_relative './kml_splitter'
+require_relative './gpx_splitter'
 require_relative './osm_splitter'
 
 module CartoDB
@@ -12,20 +13,28 @@ module CartoDB
     class Unp
       HIDDEN_FILE_REGEX     = /^(\.|\_{2})/
       UNP_READ_ERROR_REGEX  = /.*Cannot read.*/
-      COMPRESSED_EXTENSIONS = %w{ .zip .gz .tgz .tar.gz .bz2 .tar .kmz }
+      COMPRESSED_EXTENSIONS = %w{ .zip .gz .tgz .tar.gz .bz2 .tar .kmz .rar }
       SUPPORTED_FORMATS     = %w{
         .csv .shp .ods .xls .xlsx .tif .tiff .kml .kmz
-        .js .json .tar .gz .tgz .osm .bz2 .geojson 
+        .js .json .tar .gz .tgz .osm .bz2 .geojson
         .gpx .sql .tab .tsv .txt
       }
-      SPLITTERS             = [KmlSplitter, OsmSplitter]
+      SPLITTERS = [KmlSplitter, OsmSplitter, GpxSplitter]
 
-      IMPORTER_TMP_SUBFOLDER = '/tmp/imports/'
+      DEFAULT_IMPORTER_TMP_SUBFOLDER = '/tmp/imports/'
 
       attr_reader :source_files, :temporary_directory
 
-      def initialize
+      def initialize(importer_config = nil, ogr2ogr_config = nil)
         @source_files = []
+        @ogr2ogr_config = ogr2ogr_config
+        if !importer_config.nil? && !importer_config['unp_temporal_folder'].nil?
+          @temporal_subfolder_path = importer_config['unp_temporal_folder']
+        end
+      end
+
+      def get_temporal_subfolder_path
+        @temporal_subfolder_path ||= DEFAULT_IMPORTER_TMP_SUBFOLDER
       end
 
       def run(path)
@@ -173,8 +182,8 @@ module CartoDB
 
       # Return a new temporary file contained inside a tmp subfolder
       def temporary_file
-        FileUtils.mkdir_p(IMPORTER_TMP_SUBFOLDER) unless File.directory?(IMPORTER_TMP_SUBFOLDER)
-        Tempfile.new('', IMPORTER_TMP_SUBFOLDER)
+        FileUtils.mkdir_p(get_temporal_subfolder_path) unless File.directory?(get_temporal_subfolder_path)
+        Tempfile.new('', get_temporal_subfolder_path)
       end
 
       def temporary_directory
@@ -186,7 +195,7 @@ module CartoDB
         source_files.flat_map { |source_file|
           splitter = splitter_for(source_file)
           if splitter
-            splitter.new(source_file, temporary_directory)
+            splitter.new(source_file, temporary_directory, @ogr2ogr_config)
               .run.source_files
           else
             source_file
@@ -198,7 +207,7 @@ module CartoDB
         SPLITTERS.select { |splitter| splitter.support?(source_file) }
           .first
       end
-      
+
       private
 
       attr_reader :job
@@ -206,4 +215,3 @@ module CartoDB
     end
   end
 end
-

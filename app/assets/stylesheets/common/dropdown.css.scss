@@ -13,37 +13,39 @@
  * The tick can be placed horizontally by .tick_left/center/right, or vertically by .tick_top/middle/bottom, in
  * combination with horizontal_left/right and vertical_top/bottom.
  */
-@import "../variables/mixins";
-@import "../variables/colors";
+@import '../variables/mixins';
+@import '../variables/colors';
 
 .Dropdown {
-  position: absolute;
   display: none;
-  background: $cStructure-mainBkg;
+  position: absolute;
   border-radius: 4px;
+  background: $cStructure-mainBkg;
   /* x-offset, y-offset, blur, size, color */
-  box-shadow: 0 0 5px 1px rgba(black, 0.2), 0 0 1px 0 rgba(black, 0.3);
+  box-shadow: 0 0 5px 1px rgba(#000, 0.2), 0 0 1px 0 rgba(#000, 0.3);
   z-index: 100000000; // to be on top of avatar and attribution overlays on public dashboard
 
   &:before {
-    content: ' ';
-    position: absolute;
+    @include transform(rotate(45deg));
     display: block !important;
+    position: absolute;
     width: 10px;
     height: 10px;
     background-color: $cStructure-mainBkg;
     box-shadow: 0 0 5px 1px rgba(black, 0.2);
-    @include transform(rotate(45deg));
+    content: ' ';
   }
   &:after {
-    content: ' ';
-    position: absolute;
     display: block !important;
+    position: absolute;
     background-color: $cStructure-mainBkg;
+    content: ' ';
   }
 
   // Tick for 12 possibilities
-  &.tick_top, &.tick_middle, &.tick_bottom {
+  &.tick_top,
+  &.tick_middle,
+  &.tick_bottom {
     &.horizontal_left {
       &:before {
         left: -5px;
@@ -87,7 +89,9 @@
     bottom: 6px;
   }
 
-  &.tick_left, &.tick_center, &.tick_right {
+  &.tick_left,
+  &.tick_center,
+  &.tick_right {
     &.vertical_top {
       &:before {
         bottom: -5px;
@@ -141,8 +145,8 @@
 }
 
 .Dropdown > ul {
-  position: relative;
   @include inline-block();
+  position: relative;
   margin: 20px;
   padding: 0;
   list-style: none;
@@ -171,4 +175,23 @@
   &:first-child {
     margin-top: 0;
   }
+}
+
+// New styles //
+// TODO: clean old styles and use this standard ones + remove
+// those !important things
+.DropdownList {
+  display: block !important;
+  margin: 2px 15px !important;
+}
+.DropdownList-item {
+  display: block !important;
+  padding: 10px 0 !important;
+  margin: 0!important;
+  border-bottom: 1px solid $cStructure-mainLine;
+  border-top: none;
+}
+.DropdownList-item:last-child {
+  border-bottom: none;
+  border-top: none;
 }

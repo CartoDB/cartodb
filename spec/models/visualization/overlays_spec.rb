@@ -37,8 +37,21 @@ describe Visualization::Overlays do
   describe 'default' do
     it 'should create all overlays' do
       Visualization::Overlays.new(@visualization).create_default_overlays
+
       @visualization.overlays.count.should eq 5
-      @visualization.overlays.select { |o| o.options['display'] }.count eq 5
+      @visualization.overlays.select { |o| o.options['display'] }.count.should eq 5
+      @visualization.overlays.select { |o| o.type == 'logo' }.count.should eq 1
+    end
+
+    it 'should not create logo if user has disabled_cartodb_logo feature_flag' do
+      user_mock = mock
+      user_mock.stubs(:has_feature_flag?).with('disabled_cartodb_logo').returns(true)
+      @visualization.stubs(:user).returns(user_mock)
+
+      Visualization::Overlays.new(@visualization).create_default_overlays
+
+      @visualization.overlays.select { |o| o.type == 'logo' }.count.should eq 0
+      @visualization.overlays.count.should eq 4
     end
   end
 
@@ -48,7 +61,7 @@ describe Visualization::Overlays do
       Visualization::Overlays.new(@visualization).create_overlays_from_url_options(url_options)
 
       @visualization.overlays.count.should eq 5
-      @visualization.overlays.select { |o| o.options['display'] }.count eq 9
+      @visualization.overlays.select { |o| o.options['display'] }.count.should eq 5
     end
 
     it 'should create overlays from urls header' do
@@ -56,7 +69,7 @@ describe Visualization::Overlays do
       Visualization::Overlays.new(@visualization).create_overlays_from_url_options(url_options)
 
       @visualization.overlays.count.should eq 5
-      @visualization.overlays.select { |o| o.options['display'] }.count eq 8
+      @visualization.overlays.select { |o| o.options['display'] }.count.should eq 5
 
     end
 
@@ -65,7 +78,7 @@ describe Visualization::Overlays do
       Visualization::Overlays.new(@visualization).create_overlays_from_url_options(url_options)
 
       @visualization.overlays.count.should eq 5
-      @visualization.overlays.select { |o| o.options['display'] }.count eq 5
+      @visualization.overlays.select { |o| o.options['display'] }.count.should  eq 5
 
     end
 

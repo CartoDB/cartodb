@@ -2,6 +2,7 @@
 
 require_relative 'permission_user_presenter'
 require_relative 'permission_organization_presenter'
+require_relative 'permission_group_presenter'
 
 module CartoDB
   class PermissionPresenter
@@ -34,10 +35,15 @@ module CartoDB
     private
 
     def entity_decoration(entry)
-      if entry[:type] == CartoDB::Permission::TYPE_USER
+      case entry[:type]
+      when CartoDB::Permission::TYPE_USER
         @user_presenter.decorate(entry[:id])
-      else
+      when CartoDB::Permission::TYPE_ORGANIZATION
         @org_presenter.decorate(entry[:id])
+      when CartoDB::Permission::TYPE_GROUP
+        CartoDB::PermissionGroupPresenter.new.decorate(entry[:id])
+      else
+        raise "Unknown entity type for entry #{entry}"
       end
     end
 

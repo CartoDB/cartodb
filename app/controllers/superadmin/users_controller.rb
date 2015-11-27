@@ -3,7 +3,7 @@ require_relative '../../../lib/carto/http/client'
 class Superadmin::UsersController < Superadmin::SuperadminController
   respond_to :json
 
-  ssl_required :show, :create, :update, :destroy, :index if Rails.env.production? || Rails.env.staging?
+  ssl_required :show, :create, :update, :destroy, :index
   before_filter :get_user, only: [ :update, :destroy, :show, :dump, :data_imports, :data_import ]
   before_filter :get_carto_user, only: [ :synchronizations, :synchronization ]
 
@@ -14,12 +14,12 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   end
 
   def index
-    @users = (params[:overquota].present? ? User.overquota(0.20) : User.all)
+    @users = (params[:overquota].present? ? ::User.overquota(0.20) : ::User.all)
     respond_with(:superadmin, @users.map { |user| user.data })
   end
 
   def create
-    @user = User.new
+    @user = ::User.new
 
     @user.set_fields_from_central(params[:user], :create)
     @user.enabled = true
@@ -124,7 +124,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   private
 
   def get_user
-    @user = User[params[:id]]
+    @user = ::User[params[:id]]
     render json: { error: 'User not found' }, status: 404 unless @user
   end
 

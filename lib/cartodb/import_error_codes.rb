@@ -119,6 +119,11 @@ module CartoDB
       what_about: "Data download timed out. Check the source is not running slow and/or try again.",
       source: ERROR_SOURCE_USER
     },
+    1021 => {
+      title: 'Box permission revoked',
+      what_about: "CartoDB has not permission to access your files at Box. Please import file again.",
+      source: ERROR_SOURCE_USER
+    },
     1100 => {
       title: 'Download file not found',
       what_about: "Provided URL doesn't return a file (error 404). Please check that URL is still valid and that you can download the file and try again."
@@ -226,6 +231,11 @@ module CartoDB
       what_about: "The columns you have chosen don't have the same column type in both tables. Please change the types so the columns will have the same type and try again.",
       source: ERROR_SOURCE_USER
     },
+    8005 => {
+      title: "Max layers per map reached",
+      what_about: "You can't add more layers to your map. Please upgrade your account.",
+      source: ERROR_SOURCE_USER
+    },
     6666 => {
       title: 'Dataset too big',
       what_about: "The dataset you tried to import is too big and cannot be processed. If the dataset allows it, you can try splitting it into smaller files and then append them once imported, or contact our support team at <a href='mailto:support@cartodb.com?subject=Dataset%20too%20big%20import%20error'>support@cartodb.com</a>.",
@@ -238,7 +248,9 @@ module CartoDB
     },
     6668 => {
       title: 'Too many table rows',
-      what_about: "The resulting table would contain too many rows. Contact our support team at <a href='mailto:support@cartodb.com?subject=Dataset%20too%20many%20table%20rows%20import%20error'>support@cartodb.com</a>.",
+      what_about: "You cannot import this dataset. The number of rows exceeds the maximum dataset quota permitted " \
+                  "for your account. Please contact <a href='mailto:sales@cartodb.com?subject=Dataset%20too%20many" \
+                  "%20table%20rows%20import%20error'>Sales</a> if you have questions about importing this dataset.",
       source: ERROR_SOURCE_USER
     },
     6669 => {

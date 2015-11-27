@@ -3,8 +3,8 @@ namespace :cartodb do
   namespace :db do
     desc 'Moves left-over tables from failed imports from the public to the cdb_importer schema'
     task :cleanup_importer_tables => :environment do
-      count = User.count
-      User.all.each_with_index do |user, index|
+      count = ::User.count
+      ::User.all.each_with_index do |user, index|
         puts "Cleaning up importer tables for #{user.username}"
         begin
           user.in_database.fetch(%Q(
@@ -12,7 +12,7 @@ namespace :cartodb do
             AS table_name
             WHERE table_schema = 'public'
             AND table_name ~ 'importer_\\w{32}'
-          )).map { |record| 
+          )).map { |record|
             @table_name = record.fetch(:table_name)
             user.in_database.run(%Q{
               DROP TABLE IF EXISTS "cdb_importer"."#{@table_name}"

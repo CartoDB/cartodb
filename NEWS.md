@@ -3,6 +3,29 @@
 * Now the owner of the dataset is going to receive an email when the synchronization fails hits the max allowed number [#3501](https://github.com/CartoDB/cartodb/issues/3501)
 * If the dataset don't have an associated map we avoid to use the zoom property [#5447](https://github.com/CartoDB/cartodb/issues/5447)
 * Display custom attribution of layers in the editor and embeds [#5388](https://github.com/CartoDB/cartodb/pull/5388)
+* Adapted Hound configuration to use default .rubocop.yml file so we can have [Rubocop](https://github.com/bbatsov/rubocop) style checks integrated at Sublime Text via [SublimeLinter](http://sublimelinter.readthedocs.org/en/latest/) + [SublimeLinter-rubocop](https://github.com/SublimeLinter/SublimeLinter-rubocop)
+* Migrated `Synchronization` id field to `uuid`
+* Fix for #5477 bug moving users with non-cartodbfied tables
+* Added a rake task to notify trendy maps to the map owner when reach a certain mapviews amount (500, 1000, 2000 and so on). This task takes into account the day before so it should be exectuded daily
+* Fixed negative geocoding quota in georeference modal [#5622](https://github.com/CartoDB/cartodb/pull/5622)
+* Now create a map from a GPX multilayer file is going to create a multilayer map
+* Group support for organizations. Usage instructions:
+  1. Update CartoDB PostgreSQL extension to the latest version ([instructions](https://github.com/CartoDB/cartodb/blob/master/UPGRADE#L43)).
+  2. Configure metadata api credentials and timeout. You can copy `org_metadata_api` config from `config/app_config.yml.sample` into your `config/app_config.yml`.
+  3. Trigger existing orgs configuration: `RAILS_ENV=development bundle exec rake cartodb:db:configure_extension_org_metadata_api_endpoint`.
+  4. Trigger existing org owner role assignment: `RAILS_ENV=development bundle exec rake cartodb:db:assign_org_owner_role`.
+  5. Increase your database pool size to 50 (10 x # threads, see next line) at config/database.yml. Sample development configuration: config/database.yml.sample
+  6. From now on you must run the server in multithread mode: `bundle exec thin start --threaded -p 3000 --threadpool-size 5`.
+* New visualization backups feature. Upon viz deletion a special vizjson will be stored in a new DB table. Backups live for Carto::VisualizationsExportService::DAYS_TO_KEEP_BACKUP days and can be recovered with `cartodb:vizs:import_user_visualization` rake by visualization id. Needs new feature flag `visualizations_backup`. Check https://github.com/CartoDB/cartodb/issues/5710 for additional details
+* Fully removed Layer parent_id from backend and frontend as wasn't used.
+* Added new (optional) config parameters `unp_temporal_folder` & `uploads_path` under `importer` section to allow custom UNP and file upload paths.
+* Added new (optional) config parameters `unp_temporal_folder` & `uploads_path` under `importer` section to allow custom UNP and file upload paths.
+* Data-library page for common-data and accounts with data_library feature flag [#5712](https://github.com/CartoDB/cartodb/pull/5712)
+* Removed config option `maps_api_cdn_template`, reusing now instead `cdn_url`
+* Allow to create sync tables with a map if setting up onw from "connect dataset" from the Maps view
+* Added [#5975 Box integration](https://github.com/CartoDB/cartodb/issues/5975).
+* New rake to install in user or organization the geocoder extension
+
 
 3.11.0 (2015-09-09)
 -------------------
@@ -16,6 +39,7 @@
 * LDAP configuration & authentication system. If active deactivates standard CartoDB & Google authentications. See cartodb:ldap:create_ldap_configuration rake for how to create one, and source code of /app/models/carto/ldap for more details.
 * Upgrade cartodb-postgresql extension to 0.9.4, which includes the new cartodbfy process. As part of this change new user tables won't have the columns `created_at` nor `updated_at`. See the [release notes](https://github.com/CartoDB/cartodb-postgresql/blob/0.9.4/NEWS.md) for more details.
 * Added code coverage generation for tests suite. After a run, results will be stored at `coverage` subfolder
+* Organizations can choose their authentication mechanisms.
 * Fixed street addr tab for georeference modal for google maps/geocoder usage [#5281](https://github.com/CartoDB/cartodb/pull/5281)
 * Privacy toggler within create dataset dialog [#5340](https://github.com/CartoDB/cartodb/pull/5340)
 * Fixed maps disappearing after creation + navigation to dashboard [#5264](https://github.com/CartoDB/cartodb/issues/5264)
@@ -24,6 +48,12 @@
 * Removed Mixpanel tracking code [#5410](https://github.com/CartoDB/cartodb/pull/5410)
 * Newly imported datasets now properly calculate the map bounds and zoom and store them
 * Don't try to short url with bitly if credentials are not present in app_config.yml
+
+### components versions
+- [CartoDB v3.11.0](https://github.com/CartoDB/cartodb/tree/v3.11.0)
+- [Windshaft-cartodb 2.12.0](https://github.com/CartoDB/Windshaft-cartodb/tree/2.12.0)
+- [CartoDB-SQL-API 1.24.0](https://github.com/CartoDB/CartoDB-SQL-API/tree/1.24.1)
+- [CartoDB.js 3.15.3](https://github.com/CartoDB/cartodb.js/tree/3.15.3)
 
 3.10.3 (2015-08-13)
 ---
@@ -483,7 +513,7 @@ Bugfixes:
 ------------------
 * New Features
   * Multiuser support
-  * Added avatar_url to User model
+  * Added avatar_url to ::User model
   * Added custom avatars
   * Added Permission model and permission attribute for Visualizations
   * Activated Sequel extension connection_validator.
@@ -526,7 +556,7 @@ Bugfixes:
   * Added a log method for db_maintenance rakes
       (logs to log/rake_db_maintenance.log).
       For now used on load_functions.
-  * Added avatar_url to User model
+  * Added avatar_url to ::User model
 
 * Migration Type (see UPGRADE): Mandatory migration
   * Check also [installtion steps](https://github.com/CartoDB/cartodb-postgresql#install) for cartodb postgres extension
@@ -594,7 +624,7 @@ Bugfixes:
   * Change error when importing a file and there is not enough quota left
   * When a custom tooltip is applied in a layer, if you reload the browser, it doesn't appear anymore
   * If you select fields with null values, it displays neither title nor value on the new tooltip (infowindow on hover)
-  * User name is not appearing in that user profile (link in description)
+  * Username is not appearing in that user profile (link in description)
 
 
 2.13.5 (2014-05-13)
@@ -613,7 +643,7 @@ Bugfixes:
   * Change error when importing a file and there is not enough quota left
   * When a custom tooltip is applied in a layer, if you reload the browser, it doesn't appear anymore
   * If you select fields with null values, it displays neither title nor value on the new tooltip (infowindow on hover)
-  * User name is not appearing in that user profile (link in description)
+  * Username is not appearing in that user profile (link in description)
 
 2.13.4 (2014-05-08)
 -------------------

@@ -1,6 +1,6 @@
 class Api::Json::UploadsController < Api::ApplicationController
 
-  ssl_required :create if Rails.env.production? || Rails.env.staging?
+  ssl_required :create
 
   skip_before_filter :verify_authenticity_token
   before_filter :api_or_user_authorization_required
@@ -22,9 +22,12 @@ class Api::Json::UploadsController < Api::ApplicationController
 
         random_token = Digest::SHA2.hexdigest("#{Time.now.utc}--#{filename.object_id.to_s}").first(20)
 
+        file_upload_helper = CartoDB::FileUpload.new(Cartodb.config[:importer].fetch("uploads_path", nil))
+        file_upload_helper.get_uploads_path
+
         @stats_aggregator.timing('save') do
-          FileUtils.mkdir_p(Rails.root.join('public/uploads').join(random_token))
-          file = File.new(Rails.root.join('public/uploads').join(random_token).join(File.basename(filename)), 'w')
+          FileUtils.mkdir_p(file_upload_helper.get_uploads_path.join(random_token))
+          file = File.new(file_upload_helper.get_uploads_path.join(random_token).join(File.basename(filename)), 'w')
           file.write filedata
           file.close
         end

@@ -9,12 +9,12 @@ module Carto
 
       ssl_required :users
 
-      before_filter :load_organization
+      before_filter :load_organization, :load_group
 
       def users
         page, per_page, order = page_per_page_order_params(50, :username)
         query = params[:q]
-        users_query = @organization.users
+        users_query = [@group, @organization].compact.first.users
         users_query = users_query.where('(username like ? or email like ?)', "%#{query}%", "#{query}") if query
 
         total_user_entries = users_query.count
@@ -29,6 +29,13 @@ module Carto
       def load_organization
         @organization = Carto::Organization.where(id: params[:id]).first
         render_jsonp({}, 401) and return if @organization.nil?
+      end
+
+      def load_group
+        if params[:group_id]
+          @group = @organization.groups.find(params[:group_id])
+          render_jsonp({ errors: "No #{params[:group_id]} at #{@organization.id}" }, 404) and return unless @group
+        end
       end
 
     end

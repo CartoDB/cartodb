@@ -17,6 +17,7 @@ require_relative '../../services/importer/lib/importer/query_batcher'
 require_relative '../../services/importer/lib/importer/cartodbfy_time'
 require_relative '../../services/datasources/lib/datasources/decorators/factory'
 require_relative '../../services/table-geocoder/lib/internal-geocoder/latitude_longitude'
+require_relative '../factories/layer_factory'
 
 require_relative '../../lib/cartodb/stats/user_tables'
 require_relative '../../lib/cartodb/stats/importer'
@@ -32,6 +33,7 @@ class Table
   CARTODB_COLUMNS = %W{ cartodb_id created_at updated_at the_geom }
   THE_GEOM_WEBMERCATOR = :the_geom_webmercator
   THE_GEOM = :the_geom
+  CARTODB_ID = :cartodb_id
 
   NO_GEOMETRY_TYPES_CACHING_TIMEOUT = 5.minutes
   GEOMETRY_TYPES_PRESENT_CACHING_TIMEOUT = 24.hours
@@ -162,7 +164,7 @@ class Table
 
   # Getter by table uuid using canonical visualizations
   # @param table_id String
-  # @param viewer_user User
+  # @param viewer_user ::User
   def self.get_by_id(table_id, viewer_user)
     table = nil
     return table unless viewer_user
@@ -195,7 +197,7 @@ class Table
       user_id = viewer_user.id
       table_name, table_schema = Table.table_and_schema(t)
       unless table_schema.nil?
-        owner = User.where(username:table_schema).first
+        owner = ::User.where(username:table_schema).first
         unless owner.nil?
           user_id = owner.id
         end
@@ -210,7 +212,7 @@ class Table
       user_id = viewer_user.id
       table_name, table_schema = Table.table_and_schema(t)
       unless table_schema.nil?
-        owner = User.where(username:table_schema).first
+        owner = ::User.where(username:table_schema).first
         unless owner.nil?
           user_id = owner.id
         end
@@ -423,6 +425,8 @@ class Table
         @user_table.privacy = @data_import.privacy
       end
 
+      @user_table.save
+
       decorator = CartoDB::Datasources::Decorators::Factory.decorator_for(@data_import.service_name)
       if !decorator.nil? && decorator.decorates_layer?
         self.map.layers.each do |layer|
@@ -430,46 +434,32 @@ class Table
           layer.save if decorator.layer_eligible?(layer)  # skip .save if nothing changed
         end
       end
-
-      if @data_import.create_visualization
-        @data_import.visualization_id = self.create_derived_visualization.id
-        @data_import.save
-      end
     end
     add_table_to_stats
 
     update_table_pg_stats
 
   rescue => e
-    self.handle_creation_error(e)
+    handle_creation_error(e)
   end
 
   def before_save
     @user_table.updated_at = table_visualization.updated_at if table_visualization
-  end #before_save
+  end
 
   def after_save
     manage_tags
     update_name_changes
 
-    @user_table.map.save
-    manager = CartoDB::TablePrivacyManager.new(@user_table)
-    manager.set_from_table_privacy(@user_table.privacy)
-    manager.propagate_to(table_visualization)
-    if privacy_changed?
-      manager.propagate_to_varnish
-      update_cdb_tablemetadata
-    end
+    CartoDB::TablePrivacyManager.new(@user_table).apply_privacy_change(self, previous_privacy, privacy_changed?)
 
-    affected_visualizations.each { |visualization|
-      manager.propagate_to(visualization, privacy_changed?)
-    }
+    update_cdb_tablemetadata if privacy_changed?
   end
 
   def propagate_namechange_to_table_vis
     table_visualization.name = name
     table_visualization.store
-  end #propagate_namechange_to_table_vis
+  end
 
   def grant_select_to_tiler_user
     owner.in_database(:as => :superuser).run(%Q{GRANT SELECT ON #{qualified_table_name} TO #{CartoDB::TILE_DB_USER};})
@@ -511,39 +501,19 @@ class Table
   end
 
   def create_default_map_and_layers
+    base_layer = CartoDB::Factories::LayerFactory.get_default_base_layer(owner)
 
-    # Adds the default baselayer
-    baselayer = default_baselayer_for_user
-    provider = ::Map.provider_for_baselayer(baselayer)
-    m = ::Map.create(::Map::DEFAULT_OPTIONS.merge(table_id: self.id, user_id: self.user_id, provider: provider))
-    @user_table.map_id = m.id
-    base_layer = ::Layer.new(baselayer)
-    m.add_layer(base_layer)
+    map = CartoDB::Factories::MapFactory.get_map(base_layer, user_id, id)
+    @user_table.map_id = map.id
 
-    # Adds the default data layer
-    data_layer = ::Layer.new(Cartodb.config[:layer_opts]['data'])
-    data_layer.options['table_name'] = self.name
-    data_layer.options['user_name'] = self.owner.username
-    data_layer.options['tile_style'] = "##{self.name} #{Cartodb.config[:layer_opts]['default_tile_styles'][self.the_geom_type]}"
-    data_layer.infowindow ||= {}
-    data_layer.infowindow['fields'] = []
-    data_layer.tooltip ||= {}
-    data_layer.tooltip['fields'] = []
-    m.add_layer(data_layer)
+    map.add_layer(base_layer)
 
-    # Adds a layer with labels at top if the baselayer has that option
-    labels_layer_url = base_layer.options['labels'] && base_layer.options['labels']['url']
-    if labels_layer_url
-      labels_layer = ::Layer.new({
-        kind: 'tiled',
-        options: base_layer.options.except('name', 'className', 'labels').merge({
-          'urlTemplate' => labels_layer_url,
-          'url' => labels_layer_url,
-          'type' => 'Tiled',
-          'name' => "#{base_layer.options['name']} Labels"
-        })
-      })
-      m.add_layer(labels_layer)
+    data_layer = CartoDB::Factories::LayerFactory.get_default_data_layer(name, owner, the_geom_type)
+    map.add_layer(data_layer)
+
+    if base_layer.supports_labels_layer?
+      labels_layer = CartoDB::Factories::LayerFactory.get_default_labels_layer(base_layer)
+      map.add_layer(labels_layer)
     end
   end
 
@@ -567,23 +537,6 @@ class Table
     member.map.recalculate_zoom!
 
     CartoDB::Visualization::Overlays.new(member).create_default_overlays
-  end
-
-  def create_derived_visualization
-    blender = CartoDB::Visualization::TableBlender.new(self.owner, [ self ])
-    map = blender.blend
-    vis = CartoDB::Visualization::Member.new(
-      {
-        name:     beautify_name(self.name),
-        map_id:   map.id,
-        type:     CartoDB::Visualization::Member::TYPE_DERIVED,
-        privacy:  blender.blended_privacy,
-        user_id:  self.owner.id
-      }
-    )
-    CartoDB::Visualization::Overlays.new(vis).create_default_overlays
-    vis.store
-    vis
   end
 
   def before_destroy
@@ -639,10 +592,10 @@ class Table
   end
 
   def varnish_key
-    if owner.cartodb_extension_version_pre_mu?
+    if owner.db_service.cartodb_extension_version_pre_mu?
       "^#{self.owner.database_name}:(.*#{self.name}.*)|(table)$"
     else
-      "^#{self.owner.database_name}:(.*#{owner.database_schema}\\.#{self.name}.*)|(table)$"
+      "^#{self.owner.database_name}:(.*#{owner.database_schema}(\\\\\")?\\.#{self.name}.*)|(table)$"
     end
   end
 
@@ -732,7 +685,7 @@ class Table
   end
 
   def privacy_changed?
-    @user_table.previous_changes.keys.include?(:privacy)
+     @user_table.previous_changes && @user_table.previous_changes.keys.include?(:privacy)
   end
 
   def redis_key
@@ -1090,7 +1043,7 @@ class Table
   end
 
   def run_query(query)
-    owner.run_pg_query(query)
+    owner.db_service.run_pg_query(query)
   end
 
   def georeference_from!(options = {})
@@ -1197,7 +1150,7 @@ class Table
   end
 
   def owner
-    @owner ||= User[self.user_id]
+    @owner ||= ::User[self.user_id]
   end
 
   def table_style
@@ -1239,7 +1192,15 @@ class Table
 
       unless register_table_only
         begin
-          owner.in_database.rename_table(@name_changed_from, name)
+          #  Underscore prefixes have a special meaning in PostgreSQL, hence the ugly hack
+          #  see http://stackoverflow.com/questions/26631976/how-to-rename-a-postgresql-table-by-prefixing-an-underscore
+          if name.start_with?('_')
+            temp_name = "#{10.times.map { rand(9) }.join}_" + name
+            owner.in_database.rename_table(@name_changed_from, temp_name)
+            owner.in_database.rename_table(temp_name, name)
+          else
+            owner.in_database.rename_table(@name_changed_from, name)
+          end
         rescue StandardError => exception
           exception_to_raise = CartoDB::BaseCartoDBError.new(
               "Table update_name_changes(): '#{@name_changed_from}' doesn't exist", exception)
@@ -1266,7 +1227,7 @@ class Table
 
   # @see https://github.com/jeremyevans/sequel#qualifying-identifiers-columntable-names
   def sequel_qualified_table_name
-    "#{owner.database_schema}__#{@user_table.name}".to_sym
+    Sequel.qualify(owner.database_schema, @user_table.name)
   end
 
   def qualified_table_name
@@ -1284,17 +1245,17 @@ class Table
 
   ############################### Sharing tables ##############################
 
-  # @param [User] organization_user Gives read permission to this user
+  # @param [::User] organization_user Gives read permission to this user
   def add_read_permission(organization_user)
     perform_table_permission_change('CDB_Organization_Add_Table_Read_Permission', organization_user)
   end
 
-  # @param [User] organization_user Gives read and write permission to this user
+  # @param [::User] organization_user Gives read and write permission to this user
   def add_read_write_permission(organization_user)
     perform_table_permission_change('CDB_Organization_Add_Table_Read_Write_Permission', organization_user)
   end
 
-  # @param [User] organization_user Removes all permissions to this user
+  # @param [::User] organization_user Removes all permissions to this user
   def remove_access(organization_user)
     perform_table_permission_change('CDB_Organization_Remove_Access_Permission', organization_user)
   end
@@ -1347,15 +1308,20 @@ class Table
     sequel.count
   end
 
+  def beautify_name(name)
+    return name unless name
+    name.tr('_', ' ').split.map(&:capitalize).join(' ')
+  end
+
   private
+
+  def previous_privacy
+    # INFO: @user_table.initial_value(:privacy) weirdly returns incorrect value so using changes index instead
+    privacy_changed? ? @user_table.previous_changes[:privacy].first : nil
+  end
 
   def importer_stats
     @importer_stats ||= CartoDB::Stats::Importer.instance
-  end
-
-  def beautify_name(name)
-    return name unless name
-    name.gsub('_', ' ').split.map(&:capitalize).join(' ')
   end
 
   def calculate_the_geom_type
@@ -1662,7 +1628,7 @@ class Table
   ############################### Sharing tables ##############################
 
   # @param [String] cartodb_pg_func
-  # @param [User] organization_user
+  # @param [::User] organization_user
   def perform_table_permission_change(cartodb_pg_func, organization_user)
     from_schema = self.owner.database_schema
     table_name = self.name

@@ -104,6 +104,13 @@ body.is-inDialog {
   padding-bottom: 0;
   overflow: auto;
 }
+.Dialog-body.Dialog-body--share {
+  @include display-flex();
+  @include align-items(center);
+  @include flex-direction(column);
+  padding-top: 0px;
+  & .u-inner { width: 620px }
+}
 .Dialog-body.Dialog-body--small { width: $sSmallWidth }
 .Dialog-Stretcher {
   width: $sLayout-width;
@@ -212,6 +219,9 @@ body.is-inDialog {
   font-weight: $sFontWeight-normal;
   color: $cTypography-paragraphs;
 }
+.Dialog-headerTitle--warning {
+  color: $cHighlight-alert2;
+}
 .Dialog-headerTitle--error { color: $cHighlight-negative }
 .Dialog-headerText {
   font-size: $sFontSize-large;
@@ -236,9 +246,6 @@ body.is-inDialog {
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center);
-}
-.Dialog-affectedEntitiesAvatar {
-  margin-left: $sMargin-min;
 }
 
 // Styles related to expanded styles, where body--expanded is intended to be scrollable
@@ -305,7 +312,11 @@ $sNarrower-width: 620px;
   width: 520px;
 }
 .Dialog-narrowerContent { width: $sNarrower-width }
-
+.Dialog-countryBack {
+  float: right;
+  margin-left: 12px;
+  pointer-events: auto;
+}
 @include keyframes(fade-and-scale-in) {
   0% {
     @include opacity(0.0);

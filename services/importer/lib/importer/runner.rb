@@ -32,7 +32,7 @@ module CartoDB
       #   :downloader CartoDB::Importer2::DatasourceDownloader|CartoDB::Importer2::Downloader
       #   :log CartoDB::Log|nil
       #   :job CartoDB::Importer2::Job|nil
-      #   :user User|nil
+      #   :user ::User|nil
       #   :unpacker Unp|nil
       #   :post_import_handler CartoDB::Importer2::PostImportHandler|nil
       #   :limits Hash|nil {
@@ -53,6 +53,7 @@ module CartoDB
           !@user.nil? && @user.respond_to?(:remaining_quota) ? @user.remaining_quota : DEFAULT_AVAILABLE_QUOTA
         @unpacker            = options.fetch(:unpacker, nil) || Unp.new
         @post_import_handler = options.fetch(:post_import_handler, nil)
+        @importer_config = options.fetch(:importer_config, nil)
         @importer_stats = CartoDB::Stats::Importer.instance
         limit_instances = options.fetch(:limits, {})
         @import_file_limit = limit_instances.fetch(:import_file_size_instance, input_file_size_limit_instance(@user))
@@ -61,6 +62,7 @@ module CartoDB
         @loader_options      = {}
         @results             = []
         @stats               = []
+        @warnings = {}
       end
 
       def loader_options=(value)
@@ -141,20 +143,20 @@ module CartoDB
         results.select(&:success?).length > 0
       end
 
-      attr_reader :results, :log, :loader, :stats
+      attr_reader :results, :log, :loader, :stats, :downloader, :warnings
 
       private
 
       attr_reader :pg_options, :unpacker, :available_quota, :job
       attr_writer :results, :tracker
 
-      def import(source_file, downloader, loader_object=nil)
+      def import(source_file, downloader, loader_object = nil)
         loader = loader_object || loader_for(source_file).new(@job, source_file)
 
         raise EmptyFileError if source_file.empty?
 
         loader.set_importer_stats(@importer_stats) if loader.respond_to?(:set_importer_stats)
-        loader.options = @loader_options.merge(tracker: tracker)
+        loader.options = @loader_options.merge(tracker: tracker, importer_config: @importer_config)
 
         tracker.call('importing')
         @job.log "Importing data from #{source_file.fullpath}"
@@ -246,8 +248,11 @@ module CartoDB
           end
 
           @importer_stats.timing('import') do
-            unpacker.source_files.each_with_index { |source_file, index|
+            if unpacker.source_files.length > MAX_TABLES_PER_IMPORT
+              add_warning(max_tables_per_import: MAX_TABLES_PER_IMPORT)
+            end
 
+            unpacker.source_files.each_with_index do |source_file, index|
               next if (index >= MAX_TABLES_PER_IMPORT)
               @job.new_table_name if (index > 0)
 
@@ -255,8 +260,7 @@ module CartoDB
               log.append "Filename: #{source_file.fullpath} Size (bytes): #{source_file.size}"
               import_stats = execute_import(source_file, @downloader)
               @stats << import_stats
-
-            }
+            end
           end
 
           @importer_stats.timing('cleanup') do
@@ -314,6 +318,8 @@ module CartoDB
             end
           end
         }
+
+        @http_response_code = @downloader.http_response_code if @downloader.http_download?
       end
 
       def execute_import(source_file, downloader)
@@ -381,6 +387,10 @@ module CartoDB
                                                                user: user,
                                                                db: db
                                                              })
+      end
+
+      def add_warning(warning)
+        @warnings.merge!(warning)
       end
 
       def raise_if_over_storage_quota(source_file)

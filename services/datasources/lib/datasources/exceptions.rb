@@ -52,7 +52,9 @@ module CartoDB
         end
       end
 
-      class DropboxPermissionError < DatasourceBaseError; end
+      class DatasourcePermissionError < DatasourceBaseError; end
+      class DropboxPermissionError < DatasourcePermissionError; end
+      class BoxPermissionError < DatasourcePermissionError; end
 
       class GDriveNoExternalAppsAllowedError < DatasourceBaseError; end
   end

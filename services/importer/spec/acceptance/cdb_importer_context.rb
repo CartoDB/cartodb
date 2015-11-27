@@ -12,9 +12,11 @@ shared_context "cdb_importer schema" do
     @db.execute('GRANT ALL ON spatial_ref_sys TO PUBLIC')
   end
 
-  after(:all) do
-    @db.execute('DROP SCHEMA cdb_importer CASCADE')
-    @db.disconnect
+  unless ENV['PARALLEL']
+    after(:all) do
+      @db.execute('DROP SCHEMA cdb_importer CASCADE')
+      @db.disconnect
+    end
   end
 
 end

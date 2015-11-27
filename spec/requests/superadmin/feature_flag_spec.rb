@@ -7,7 +7,7 @@ describe FeatureFlag do
       feature_flag = FactoryGirl.build(:feature_flag)
 
       expect {
-        post superadmin_feature_flags_url, { feature_flag: feature_flag }.to_json, default_headers
+        post superadmin_feature_flags_url, { feature_flag: feature_flag }.to_json, superadmin_headers
 
         response.status.should == 204
       }.to change(FeatureFlag, :count).by(1)
@@ -26,7 +26,7 @@ describe FeatureFlag do
       old_name = feature_flag.name
 
       expect {
-        put superadmin_feature_flag_url(feature_flag.id), { feature_flag: test_feature_flag }.to_json, default_headers
+        put superadmin_feature_flag_url(feature_flag.id), { feature_flag: test_feature_flag }.to_json, superadmin_headers
 
         feature_flag.reload
       }.to change(feature_flag, :name).from(old_name).to(test_feature_flag.name)
@@ -39,7 +39,7 @@ describe FeatureFlag do
       feature_flag = FactoryGirl.create(:feature_flag)
 
       expect {
-        delete superadmin_feature_flag_url(feature_flag.id), { feature_flag: feature_flag }.to_json, default_headers
+        delete superadmin_feature_flag_url(feature_flag.id), { feature_flag: feature_flag }.to_json, superadmin_headers
       }.to change(FeatureFlag, :count).by(-1)
     end
 
@@ -50,18 +50,9 @@ describe FeatureFlag do
       feature_flag_user = FactoryGirl.create(:feature_flags_user, feature_flag_id: feature_flag.id, user_id: user.id)
 
       expect {
-        delete superadmin_feature_flag_url(feature_flag.id), { feature_flag: feature_flag }.to_json, default_headers
+        delete superadmin_feature_flag_url(feature_flag.id), { feature_flag: feature_flag }.to_json, superadmin_headers
       }.to change(FeatureFlagsUser, :count).by(-1)
     end
   end
 
-  private
-
-  def default_headers(user = Cartodb.config[:superadmin]["username"], password = Cartodb.config[:superadmin]["password"])
-    {
-      'HTTP_AUTHORIZATION' => ActionController::HttpAuthentication::Basic.encode_credentials(user, password),
-      'HTTP_ACCEPT' => "application/json",
-      'CONTENT_TYPE'  => 'application/json'
-    }
-  end
 end

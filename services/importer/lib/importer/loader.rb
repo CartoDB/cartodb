@@ -32,10 +32,10 @@ module CartoDB
         !(%w{ .tif .tiff .sql }.include?(extension))
       end
 
-      def initialize(job, source_file, layer=nil, ogr2ogr=nil, georeferencer=nil)
+      def initialize(job, source_file, layer = nil, ogr2ogr = nil, georeferencer = nil)
         self.job            = job
         self.source_file    = source_file
-        self.layer          = 'track_points' if source_file.extension =~ /\.gpx/
+        self.layer          = layer
         self.ogr2ogr        = ogr2ogr
         self.georeferencer  = georeferencer
         self.options        = {}
@@ -115,7 +115,7 @@ module CartoDB
           .inject(source_file.fullpath) { |filepath, normalizer_klass|
 
             @importer_stats.timing(normalizer_klass.to_s.split('::').last) do
-              normalizer = normalizer_klass.new(filepath, job)
+              normalizer = normalizer_klass.new(filepath, job, options[:importer_config])
 
               FORCE_NORMALIZER_REGEX.each { |regex|
                 normalizer.force_normalize if regex =~ source_file.path
@@ -165,7 +165,7 @@ module CartoDB
           normalizer.supported?(source_file.extension)
         }
         return DEFAULT_ENCODING unless normalizer
-        normalizer.new(source_file.fullpath, job).encoding
+        normalizer.new(source_file.fullpath, job, options[:importer_config]).encoding
       end
 
       def shapefile_without_prj?
@@ -229,6 +229,7 @@ module CartoDB
 
       attr_accessor   :source_file, :options
 
+
       private
 
       attr_writer     :ogr2ogr, :georeferencer
@@ -242,6 +243,11 @@ module CartoDB
       # @throws LoadError
       # @throws UnsupportedFormatError
       def run_ogr2ogr(append_mode=false)
+        # INFO: This is a workaround for the append mode
+        # Currently it is only used for arcgis importer. In order for this to work
+        # properly, it must always be executed before cartodbfy.
+        remove_primary_key if append_mode
+
         ogr2ogr.run(append_mode)
 
         #In case there are not an specific error we try to fix it
@@ -260,6 +266,12 @@ module CartoDB
         end
 
         check_for_import_errors
+      end
+
+      def remove_primary_key
+        primary_key = "#{job.table_name}_pkey"
+        query = "ALTER TABLE #{SCHEMA}.#{job.table_name} DROP CONSTRAINT IF EXISTS #{primary_key}"
+        job.db.run query
       end
 
       # Sometimes we could try to recover from a known failure
@@ -316,6 +328,10 @@ module CartoDB
 
         # Some kind of error in ogr2ogr could lead to a partial import and we don't want it
         if ogr2ogr.generic_error? || ogr2ogr.exit_code != 0
+          job.logger.append "Ogr2ogr FAILED!"
+          job.logger.append "ogr2ogr.exit_code = " + ogr2ogr.exit_code.to_s
+          job.logger.append "ogr2ogr.command = " + ogr2ogr.command, truncate=false
+          job.logger.append "ogr2ogr.command_output = " + ogr2ogr.command_output, truncate=false
           raise LoadError.new(job.logger)
         end
       end

@@ -6,7 +6,7 @@ namespace :cartodb do
     task :import_madrid_clubbing => :environment do
       puts "Creating table 'Clubbing Madrid'"
       puts "Importing the data..."
-      user = User[1]
+      user = ::User[1]
       table = Table.new :privacy => Table::PRIVACY_PUBLIC, :name => 'Clubbing Madrid',
                         :tags => 'bars, madrid'
       table.user_id = user.id

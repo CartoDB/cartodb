@@ -26,6 +26,7 @@ describe Visualization::Member do
     @user_mock.stubs(:api_key).returns(user_apikey)
     @user_mock.stubs(:avatar_url).returns('')
     @user_mock.stubs(:public_url).returns("http://#{user_name}.cartodb.com")
+    @user_mock.stubs(:groups).returns([])
     CartoDB::Visualization::Relator.any_instance.stubs(:user).returns(@user_mock)
 
     support_tables_mock = Doubles::Visualization::SupportTables.new

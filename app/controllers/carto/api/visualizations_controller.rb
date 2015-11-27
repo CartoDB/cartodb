@@ -2,6 +2,7 @@ require_relative 'visualization_presenter'
 require_relative 'vizjson_presenter'
 require_relative '../../../models/visualization/stats'
 require_relative 'paged_searcher'
+require_relative '../controller_helper'
 require_dependency 'carto/uuidhelper'
 require_dependency 'static_maps_url_helper'
 
@@ -11,6 +12,7 @@ module Carto
       include VisualizationSearcher
       include PagedSearcher
       include Carto::UUIDHelper
+      include Carto::ControllerHelper
 
       ssl_required :index, :show
       ssl_allowed  :vizjson2, :likes_count, :likes_list, :is_liked, :list_watching, :static_map
@@ -23,6 +25,9 @@ module Carto
       before_filter :load_by_name_or_id, only: [:vizjson2]
       before_filter :load_visualization, only: [:likes_count, :likes_list, :is_liked, :show, :stats, :list_watching,
                                                 :static_map]
+
+      rescue_from Carto::LoadError, with: :rescue_from_carto_error
+      rescue_from Carto::UUIDParameterFormatError, with: :rescue_from_carto_error
 
       def show
         render_jsonp(to_json(@visualization))
@@ -38,14 +43,17 @@ module Carto
         # TODO: undesirable table hardcoding, needed for disambiguation. Look for
         # a better approach and/or move it to the query builder
         response = {
-          visualizations: vqb.with_order("visualizations.#{order}", :desc).build_paged(page, per_page).map { |v| VisualizationPresenter.new(v, current_viewer, { related: false }).to_poro },
+          visualizations: vqb.with_order("visualizations.#{order}", :desc).build_paged(page, per_page).map { |v|
+              VisualizationPresenter.new(v, current_viewer, self, { related: false }).to_poro
+          },
           total_entries: vqb.build.count
         }
         if current_user
+          # Prefetching at counts removes duplicates
           response.merge!({
             total_user_entries: VisualizationQueryBuilder.new.with_types(total_types).with_user_id(current_user.id).build.count,
             total_likes: VisualizationQueryBuilder.new.with_types(total_types).with_liked_by_user_id(current_user.id).build.count,
-            total_shared: VisualizationQueryBuilder.new.with_types(total_types).with_shared_with_user_id(current_user.id).with_user_id_not(current_user.id).build.count
+            total_shared: VisualizationQueryBuilder.new.with_types(total_types).with_shared_with_user_id(current_user.id).with_user_id_not(current_user.id).with_prefetch_table.build.count
           })
         end
         render_jsonp(response)
@@ -142,11 +150,30 @@ module Carto
                                                             }
                                                          .first
 
-        return render(text: 'Visualization does not exist', status: 404) if @visualization.nil?
-        return render(text: 'Visualization not viewable', status: 403) if !@visualization.is_viewable_by_user?(current_viewer)
-        subdomain = CartoDB.extract_subdomain(request)
-        # INFO: subdomain checking is not part of previous permission checking (and should not be), so we add an additional check here: subdomain must match visualization username.
-        return render(text: 'Visualization of that user does not exist', status: 404) if subdomain && !subdomain.empty? && subdomain != @visualization.user.username && !@visualization.has_read_permission?(current_viewer)
+        if @visualization.nil?
+          raise Carto::LoadError.new('Visualization does not exist', 404)
+        end
+        if !@visualization.is_viewable_by_user?(current_viewer)
+          raise Carto::LoadError.new('Visualization not viewable', 403)
+        end
+        unless request_username_matches_visualization_owner
+          raise Carto::LoadError.new('Visualization of that user does not exist', 404)
+        end
+      end
+
+      # This avoids crossing usernames and visualizations.
+      # Remember that the url of a visualization shared with a user contains that user's username instead of owner's
+      def request_username_matches_visualization_owner
+        # Support both for username at `/u/username` and subdomain, prioritizing first
+        username = [CartoDB.username_from_request(request), CartoDB.subdomain_from_request(request)].compact.first
+        # URL must always contain username, either at subdomain or at path.
+        # Domainless url documentation: http://cartodb.readthedocs.org/en/latest/configuration.html#domainless-urls
+        return false unless username.present?
+
+        # Either user is owner or is current and has permission
+        # R permission check is based on current_viewer because current_user assumes you're viewing your subdomain
+        username == @visualization.user.username ||
+          (current_user && username == current_user.username && @visualization.has_read_permission?(current_viewer))
       end
 
       def id_and_schema_from_params
@@ -172,7 +199,7 @@ module Carto
 
       def to_hash(visualization)
         # TODO: previous controller uses public_fields_only option which I don't know if is still used
-        VisualizationPresenter.new(visualization, current_viewer).to_poro
+        VisualizationPresenter.new(visualization, current_viewer, self).to_poro
       end
 
     end

@@ -27,13 +27,13 @@ class Carto::Visualization < ActiveRecord::Base
 
   belongs_to :user_table, class_name: Carto::UserTable, primary_key: :map_id, foreign_key: :map_id, inverse_of: :visualization
 
-  belongs_to :permission
+  has_one :permission, inverse_of: :entity, conditions: { entity_type: 'vis' }, foreign_key: :entity_id
 
   has_many :likes, foreign_key: :subject
   has_many :shared_entities, foreign_key: :entity_id, inverse_of: :visualization
 
   # TODO: duplicated with user_table?
-  belongs_to :table, class_name: Carto::UserTable, primary_key: :map_id, foreign_key: :map_id
+  belongs_to :table, class_name: Carto::UserTable, primary_key: :map_id, foreign_key: :map_id, inverse_of: :visualization
   has_one :external_source
   has_many :unordered_children, class_name: Carto::Visualization, foreign_key: :parent_id
 
@@ -46,6 +46,7 @@ class Carto::Visualization < ActiveRecord::Base
   has_many :related_templates, class_name: Carto::Template, foreign_key: :source_visualization_id
 
   has_one :synchronization, class_name: Carto::Synchronization
+  has_many :external_sources, class_name: Carto::ExternalSource
 
   def ==(other_visualization)
     self.id == other_visualization.id
@@ -117,6 +118,10 @@ class Carto::Visualization < ActiveRecord::Base
     is_publically_accesible? || has_read_permission?(user)
   end
 
+  def is_accesible_by_user?(user)
+    is_viewable_by_user?(user) || password_protected?
+  end
+
   def is_publically_accesible?
     is_public? || is_link_privacy?
   end
@@ -152,6 +157,10 @@ class Carto::Visualization < ActiveRecord::Base
 
   def type_slide?
     type == TYPE_SLIDE
+  end
+
+  def canonical?
+    type == TYPE_CANONICAL
   end
 
   def derived?
@@ -190,7 +199,12 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def is_private?
-    privacy == PRIVACY_PRIVATE and not organization?
+    # This organization? check is kept for backwards compatibility
+    is_privacy_private? and not organization?
+  end
+
+  def is_privacy_private?
+    privacy == PRIVACY_PRIVATE
   end
 
   def is_public?
@@ -250,6 +264,10 @@ class Carto::Visualization < ActiveRecord::Base
     if !license.nil?
       Carto::License.find(license.to_sym)
     end
+  end
+
+  def can_be_cached?
+    !is_privacy_private?
   end
 
   private

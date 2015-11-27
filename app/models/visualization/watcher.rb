@@ -9,7 +9,7 @@ module CartoDB
       # watcher:_orgid_:_vis_id_:_user_id_
       KEY_FORMAT = "watcher:%s:%s:%s"
 
-      # @params user User
+      # @params user ::User
       # @params visualization CartoDB::Visualization::Member
       # @throws CartoDB::Visualization::WatcherError
       def initialize(user, visualization, notification_ttl = nil)

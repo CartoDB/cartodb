@@ -9,10 +9,10 @@ module CartoDB
 
       # Gets an instance unique per process + data_import_id
       def self.instance(data_import_id)
-        @@instances[data_import_id] ||= new()
+        @@instances[data_import_id] ||= new
       end
 
-      def initialize()
+      def initialize
         @cartodbfy_time = 0.0
       end
 
@@ -20,7 +20,7 @@ module CartoDB
         @cartodbfy_time += elapsed_time
       end
 
-      def get()
+      def get
         return @cartodbfy_time
       end
 

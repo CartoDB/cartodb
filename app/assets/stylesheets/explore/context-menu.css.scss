@@ -1,0 +1,96 @@
+@import '../variables/mixins';
+@import '../variables/colors';
+@import '../variables/sizes';
+
+// Context menu for the Explore page.
+// Extracted from .Filters component, since visually it's different enough to motivate a separate component.
+// ---
+.ContextMenu {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: transparent;
+  color: $cTypography-linkSecondary;
+  font-size: 14px;
+  z-index: 100;
+}
+// Moved with scroll behaviour
+.ContextMenu.is-fixed {
+  position: fixed;
+  border-bottom: 1px solid $cStructure-mainLine;
+  background: #FFF;
+}
+.ContextMenu-row {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center, center);
+  height: 80px;
+}
+@media only screen and (max-width: 959px) {
+  .ContextMenu-row {
+    padding-right: 20px;
+    padding-left: 20px;
+  }
+}
+.ContextMenu-dropdown {
+  text-align: left;
+}
+.ContextMenu-dropdownArrow {
+  position: relative;
+  top: -1px;
+  margin-left: 6px;
+  font-size: 7px;
+  -webkit-font-smoothing: auto;
+  -moz-osx-font-smoothing: auto;
+}
+.ContextMenu-label {
+  margin-right: 20px;
+}
+.ContextMenu > .u-inner {
+  display: block;
+  position: relative;
+  height: 81px;
+  padding: 0;
+  overflow: hidden;
+}
+.ContextMenu-group {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center, center);
+}
+.ContextMenu-group.is-hidden {
+  display: none;
+}
+.ContextMenu-groupItem {
+  @include inline-block();
+  margin-right: 20px;
+  color: $cTypography-secondary;
+  line-height: normal;
+  &:last-child {
+    margin-right: 0;
+  }
+}
+.ContextMenu-orderLink {
+  @include inline-block();
+  color: #CCC;
+  font-size: 15px;
+  line-height: 19px;
+  &:hover {
+    color: #666;
+  }
+}
+.ContextMenu-orderLink.is-selected {
+  color: #666;
+  &:hover {
+    cursor: default;
+  }
+}
+.ContextMenu-orderLink--graph {
+  line-height: 26px;
+}
+.ContextMenu-orderLink--size {
+  font-size: 17px;
+  line-height: 17px;
+}

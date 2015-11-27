@@ -59,7 +59,7 @@ module CartoDB
         #  'password'
         #  'search_url'
         # ]
-        # @param user User
+        # @param user ::User
         # @param redis_storage Redis|nil (optional)
         # @param user_defined_limits Hash|nil (optional)
         # @throws UninitializedError
@@ -87,8 +87,6 @@ module CartoDB
           }
           @redis_storage = redis_storage
 
-          @json2csv_conversor = TwitterSearch::JSONToCSVConverter.new
-
           @csv_dumper = CSVFileDumper.new(TwitterSearch::JSONToCSVConverter.new, DEBUG_FLAG)
 
           @user = user
@@ -102,7 +100,7 @@ module CartoDB
 
         # Factory method
         # @param config {}
-        # @param user User
+        # @param user ::User
         # @param redis_storage Redis|nil
         # @param user_defined_limits Hash|nil
         # @return CartoDB::Datasources::Search::TwitterSearch
@@ -184,7 +182,7 @@ module CartoDB
 
         # Hide sensitive fields
         def to_s
-          config_public_values = 
+          config_public_values =
 
           "<CartoDB::Datasources::Search::Twitter @user=#{@user.username} @filters=#{@filters} @search_api_config=#{search_api_config_public_values}>"
         end
@@ -247,11 +245,11 @@ module CartoDB
 
         def search_api_config_public_values
           {
-            TwitterSearch::SearchAPI::CONFIG_AUTH_REQUIRED            => 
+            TwitterSearch::SearchAPI::CONFIG_AUTH_REQUIRED            =>
               @search_api_config[TwitterSearch::SearchAPI::CONFIG_AUTH_REQUIRED],
-            TwitterSearch::SearchAPI::CONFIG_AUTH_USERNAME            => 
+            TwitterSearch::SearchAPI::CONFIG_AUTH_USERNAME            =>
               @search_api_config[TwitterSearch::SearchAPI::CONFIG_AUTH_USERNAME],
-            TwitterSearch::SearchAPI::CONFIG_SEARCH_URL               => 
+            TwitterSearch::SearchAPI::CONFIG_SEARCH_URL               =>
               @search_api_config[TwitterSearch::SearchAPI::CONFIG_SEARCH_URL]
           }
         end
@@ -346,7 +344,7 @@ module CartoDB
             thread.join
           }
 
-          # INFO: For now we don't treat as error a no results scenario, else use: 
+          # INFO: For now we don't treat as error a no results scenario, else use:
           # raise NoResultsError.new if category_totals.values.inject(:+) == 0
 
           filters[FILTER_CATEGORIES].each { |category|
@@ -531,7 +529,7 @@ module CartoDB
         end
 
         # Max results per page
-        # @param user User
+        # @param user ::User
         def build_maxresults_field(user)
           if twitter_credit_limits > 0
             [remaining_quota, TwitterSearch::SearchAPI::MAX_PAGE_RESULTS].min
@@ -552,7 +550,7 @@ module CartoDB
 
 
         # Max total results
-        # @param user User
+        # @param user ::User
         def build_total_results_field(user)
           if twitter_credit_limits == 0 && user.soft_twitter_datasource_limit
             NO_TOTAL_RESULTS
@@ -561,7 +559,7 @@ module CartoDB
           end
         end
 
-        # @param user User
+        # @param user ::User
         def is_service_enabled?(user)
           if !user.organization.nil?
             enabled = user.organization.twitter_datasource_enabled
@@ -576,14 +574,14 @@ module CartoDB
           end
         end
 
-        # @param user User
+        # @param user ::User
         # @return boolean
         def has_enough_quota?(user)
           # As this is used to disallow searches (and throw exceptions) don't use here user limits
           user.soft_twitter_datasource_limit || (user.remaining_twitter_quota > 0)
         end
 
-        # @param user User
+        # @param user ::User
         # @param data_import_item DataImport
         # @param retrieved_items_count Integer
         def save_audit(user, data_import_item, retrieved_items_count)

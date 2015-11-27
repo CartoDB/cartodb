@@ -5,6 +5,8 @@ class Carto::Synchronization < ActiveRecord::Base
   belongs_to :user
   belongs_to :visualization, class_name: Carto::Visualization
 
+  has_many :external_data_imports
+
   STATE_CREATED   = 'created'
   # Already at resque, waiting for slot
   STATE_QUEUED   = 'queued'

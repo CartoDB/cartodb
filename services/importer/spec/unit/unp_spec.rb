@@ -18,7 +18,7 @@ describe Unp do
     it 'populates a list of source files' do
       zipfile   = zipfile_factory
       unp       = Unp.new
-      
+
       unp.source_files.should be_empty
       unp.run(zipfile)
       unp.source_files.should_not be_empty
@@ -238,6 +238,15 @@ describe Unp do
       Unp.new.unp_failure?('', 999).should eq true
     end
   end #unp_failure?
+
+  describe "configuration" do
+    it "Uses a different configuration path if specified" do
+      new_config_path = "/fake/uploads"
+
+      Unp.new("unp_temporal_folder" => new_config_path).get_temporal_subfolder_path.should eq new_config_path
+      Unp.new.get_temporal_subfolder_path.should eq Unp::DEFAULT_IMPORTER_TMP_SUBFOLDER
+    end
+  end
 
   def zipfile_factory(dir='/var/tmp/bogus')
     filename = 'bogus.zip'

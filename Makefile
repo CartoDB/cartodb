@@ -11,7 +11,6 @@ PENDING_SPECS = \
   $(NULL)
 
 WORKING_SPECS_INTEGRATIONS = \
-  spec/integrations/common_data_integration.rb \
   $(NULL)
 
 WORKING_SPECS_1 = \
@@ -24,13 +23,30 @@ WORKING_SPECS_1 = \
 	spec/models/user_table_spec.rb \
   spec/models/layer_spec.rb \
   spec/models/layer/presenter_spec.rb \
+	spec/requests/sessions_spec.rb \
   spec/requests/api/json/layer_presenter_spec.rb \
+  spec/requests/carto/admin/bi_visualizations_controller_spec.rb \
+	spec/requests/carto/api/bi_visualizations_controller_spec.rb \
   spec/requests/carto/api/layer_presenter_spec.rb \
 	spec/requests/carto/api/data_import_presenter_spec.rb \
+	spec/requests/carto/api/database_groups_controller_spec.rb \
   spec/models/map_spec.rb \
   spec/models/map/copier_spec.rb \
-  spec/models/visualization/*.rb \
+	spec/models/visualization/collection_spec.rb \
+	spec/models/visualization/copier_spec.rb \
+	spec/models/visualization/locator_spec.rb \
+	spec/models/visualization/member_spec.rb \
+	spec/models/visualization/name_checker_spec.rb \
+	spec/models/visualization/name_generator_spec.rb \
+	spec/models/visualization/organization_visualization_spec.rb \
+	spec/models/visualization/overlays_spec.rb \
+	spec/models/visualization/presenter_spec.rb \
+	spec/models/visualization/relator_spec.rb \
+	spec/models/visualization/table_blender_spec.rb \
+	spec/models/visualization/tags_spec.rb \
+	spec/models/visualization/watcher_spec.rb \
   spec/models/named_maps_spec.rb \
+  spec/models/data_import_spec.rb \
   spec/models/geocoding_spec.rb \
   spec/models/common_data_spec.rb \
   spec/lib/sql_parser_spec.rb \
@@ -38,15 +54,23 @@ WORKING_SPECS_1 = \
   spec/lib/string_spec.rb \
   spec/lib/image_metadata_spec.rb \
   spec/lib/central_spec.rb \
+  spec/lib/trending_maps_spec.rb \
+  spec/lib/explore_api_spec.rb \
   spec/lib/carto/http/client_spec.rb \
 	spec/helpers/uuidhelper_spec.rb \
+	spec/helpers/url_validator_spec.rb \
+	spec/models/carto/bi_dataset_spec.rb \
+	spec/models/carto/bi_visualization_spec.rb \
 	spec/models/carto/template_spec.rb \
+	spec/models/carto/group_spec.rb \
 	spec/models/carto/ldap/configuration_spec.rb \
 	spec/requests/sessions_controller_spec.rb \
+	spec/services/carto/visualizations_export_service_spec.rb \
   $(NULL)
 
 WORKING_SPECS_2 = \
   spec/lib/cartodb/stats/importer_spec.rb \
+	spec/lib/cartodb/stats/platform_spec.rb \
   services/importer/spec/acceptance/geojson_spec.rb \
   services/importer/spec/acceptance/gpx_spec.rb \
   services/importer/spec/acceptance/kml_spec.rb \
@@ -104,11 +128,11 @@ WORKING_SPECS_4 = \
   services/importer/spec/unit/url_translator/osm_spec.rb \
   services/importer/spec/unit/url_translator/osm2_spec.rb \
   services/importer/spec/unit/mail_notifier_spec.rb \
-  services/relocator/spec/relocator_spec.rb \
 
 WORKING_SPECS_5 = \
   spec/rspec_configuration.rb \
   spec/requests/api/assets_spec.rb \
+  spec/requests/carto/api/assets_controller_spec.rb \
   spec/requests/api/user_layers_spec.rb \
   spec/requests/api/json/layers_controller_spec.rb \
   spec/requests/carto/api/layers_controller_spec.rb \
@@ -145,8 +169,13 @@ WORKING_SPECS_9 = \
   spec/rspec_configuration.rb \
   services/twitter-search/spec/unit/ \
   services/datasources/spec/acceptance/datasources_factory_spec.rb \
+	services/datasources/spec/acceptance/dropbox_spec.rb \
+	services/datasources/spec/acceptance/gdrive_spec.rb \
   services/datasources/spec/integration/ \
   services/datasources/spec/unit/arcgis_spec.rb \
+	services/datasources/spec/unit/dropbox_spec.rb \
+	services/datasources/spec/unit/box_spec.rb \
+	services/datasources/spec/unit/gdrive_spec.rb \
   services/importer/spec/regression/query_batcher_spec.rb \
   services/importer/spec/regression/query_batcher_spec.rb \
   services/platform-limits/spec/unit/ \
@@ -168,6 +197,8 @@ WORKING_SPECS_9 = \
   spec/requests/api/json/overlays_controller_spec.rb \
   spec/requests/carto/api/overlays_controller_spec.rb \
 	spec/models/carto/user_creation_spec.rb \
+	spec/requests/carto/api/invitations_controller_spec.rb \
+	spec/models/carto/invitation_spec.rb \
 	spec/models/carto/user_service_spec.rb \
 	spec/models/carto/user_spec.rb \
 	spec/models/carto/user_table_spec.rb \
@@ -196,7 +227,7 @@ endif
 	# TODO skip this if db already exists ?
 	# Clean DB connections before drop test DB
 	psql -U postgres -c "select pg_terminate_backend(pid) from pg_stat_activity where datname='carto_db_test'"
-	MOCHA_OPTIONS=skip_integration RAILS_ENV=test bundle exec rake cartodb:test:prepare
+	MOCHA_OPTIONS=skip_integration RAILS_ENV=test bundle exec rake cartodb:test:prepare --trace
 
 # TODO: Ongoing removal of groups, that's the reason of holes in numbering
 check-1:
@@ -242,6 +273,3 @@ cartodbui:
 
 
 .PHONY: develop_cdb cartodbui
-
-
-

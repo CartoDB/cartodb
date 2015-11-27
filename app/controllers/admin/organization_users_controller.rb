@@ -2,7 +2,7 @@
 require_dependency 'google_plus_api'
 require_dependency 'google_plus_config'
 
-class Admin::OrganizationUsersController < ApplicationController
+class Admin::OrganizationUsersController < Admin::AdminController
   # Organization actions
   ssl_required  :new, :create, :edit, :update, :destroy
   # Data of single users
@@ -16,7 +16,7 @@ class Admin::OrganizationUsersController < ApplicationController
   layout 'application'
 
   def new
-    @user = User.new
+    @user = ::User.new
     @user.quota_in_bytes = (current_user.organization.unassigned_quota < 100.megabytes ? current_user.organization.unassigned_quota : 100.megabytes)
 
     respond_to do |format|
@@ -33,7 +33,7 @@ class Admin::OrganizationUsersController < ApplicationController
   end
 
   def create
-    @user = User.new
+    @user = ::User.new
     @user.set_fields(params[:user], [:username, :email, :password, :quota_in_bytes, :password_confirmation, :twitter_datasource_enabled])
     @user.organization = current_user.organization
     @user.username = "#{@user.username}"
@@ -43,6 +43,7 @@ class Admin::OrganizationUsersController < ApplicationController
     common_data_url = CartoDB::Visualization::CommonDataService.build_url(self)
     ::Resque.enqueue(::Resque::UserJobs::CommonData::LoadCommonData, @user.id, common_data_url)
     @user.notify_new_organization_user
+    @user.organization.notify_if_seat_limit_reached
     redirect_to CartoDB.url(self, 'organization', {}, current_user), flash: { success: "New user created successfully" }
   rescue CartoDB::CentralCommunicationFailure => e
     Rollbar.report_exception(e)
@@ -53,7 +54,7 @@ class Admin::OrganizationUsersController < ApplicationController
     end
     set_flash_flags
     flash.now[:error] = e.user_message
-    @user = User.new(username: @user.username, email: @user.email, quota_in_bytes: @user.quota_in_bytes, twitter_datasource_enabled: @user.twitter_datasource_enabled)
+    @user = ::User.new(username: @user.username, email: @user.email, quota_in_bytes: @user.quota_in_bytes, twitter_datasource_enabled: @user.twitter_datasource_enabled)
     render 'new'
   rescue Sequel::ValidationFailed => e
     flash.now[:error] = e.message
@@ -74,6 +75,7 @@ class Admin::OrganizationUsersController < ApplicationController
     @user.set_fields(attributes, [:website]) if attributes[:website].present?
     @user.set_fields(attributes, [:description]) if attributes[:description].present?
     @user.set_fields(attributes, [:twitter_username]) if attributes[:twitter_username].present?
+    @user.set_fields(attributes, [:location]) if attributes[:location].present?
 
     @user.password = attributes[:password] if attributes[:password].present?
     @user.password_confirmation = attributes[:password_confirmation] if attributes[:password_confirmation].present?

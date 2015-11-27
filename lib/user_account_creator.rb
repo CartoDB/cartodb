@@ -37,6 +37,11 @@ module CartoDB
       self
     end
 
+    def with_invitation_token(invitation_token)
+      @invitation_token = invitation_token
+      self
+    end
+
     def user
       @user
     end
@@ -65,7 +70,8 @@ module CartoDB
     def enqueue_creation(current_controller)
       build
 
-      user_creation = Carto::UserCreation.new_user_signup(@user)
+      user_creation = Carto::UserCreation.new_user_signup(@user).
+                      with_invitation_token(@invitation_token)
       user_creation.save
 
       common_data_url = CartoDB::Visualization::CommonDataService.build_url(current_controller)
@@ -101,6 +107,7 @@ module CartoDB
       end
 
       @user.username = @user_params[PARAM_USERNAME] if @user_params[PARAM_USERNAME]
+      @user.invitation_token = @invitation_token
     end
 
   end

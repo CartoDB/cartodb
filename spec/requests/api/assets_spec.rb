@@ -18,13 +18,15 @@ describe "Assets API" do
   it 'creates a new asset' do
     Asset.any_instance.stubs('use_s3?').returns(false)
 
-    file_path = Rails.root.join('spec', 'support','data', 'cartofante_blue.png')
+    file_path = Rails.root.join('spec', 'support', 'data', 'cartofante_blue.png')
     if File.exist?(file_path) && File.file?(file_path)
       uploaded_file = Rack::Test::UploadedFile.new(file_path, 'image/png')
 
-      post_json(api_v1_users_assets_create_url(user_id: $user_1), params.merge(
-        kind: 'wadus',
-        filename: uploaded_file.path)
+      post_json(
+        api_v1_users_assets_create_url(user_id: $user_1),
+        params.merge(
+          kind: 'wadus',
+          filename: uploaded_file.path)
       ) do |response|
         response.status.should be_success
         response.body[:public_url].should =~ /\/test\/#{$user_1.username}\/assets\/\d+cartofante_blue/
@@ -49,6 +51,22 @@ describe "Assets API" do
       response.status.should == 400
       response.body[:error].should == ["AWS exception"]
     end
+  end
+
+  it "finds image file extension" do
+    asset = FactoryGirl.create(:asset, user_id: $user_1.id)
+
+    Asset::VALID_EXTENSIONS.each do |extension|
+      asset_name = "cartofante" + extension
+      asset.stubs(:asset_file).returns(asset_name)
+      asset.asset_file_extension.should == extension
+    end
+  end
+
+  it "detects incorrect image file extension" do
+    asset = FactoryGirl.create(:asset, user_id: $user_1.id)
+    asset.stubs(:asset_file).returns("cartofante.gifv")
+    asset.asset_file_extension.should == nil
   end
 
   it "deletes an asset" do

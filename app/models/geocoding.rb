@@ -114,6 +114,7 @@ class Geocoding < Sequel::Model
 
   # INFO: this method shall always be called from a queue processor
   def run!
+    @started_at = Time.now
     log.append "Running geocoding job on server #{Socket.gethostname} with PID: #{Process.pid}"
     if self.force_all_rows == true
       table_geocoder.reset_cartodb_georef_status
@@ -132,19 +133,21 @@ class Geocoding < Sequel::Model
 
     self.run_geocoding!(processable_rows, rows_geocoded_before)
   rescue => e
+    # state == nil probably means it has failed even before run_geocoding begun
+    handle_geocoding_failure(e, rows_geocoded_before || 0) if state == nil
     log.append "Unexpected exception: #{e.to_s}"
     log.append e.backtrace
     CartoDB.notify_exception(e)
     raise e
   ensure
     log.store # Make sure the log is stored in DB
-    user.reset_pooled_connections
+    user.db_service.reset_pooled_connections
   end
 
   def run_geocoding!(processable_rows, rows_geocoded_before = 0)
     log.append "run_geocoding!()"
     self.update state: 'started', processable_rows: processable_rows
-    @started_at = Time.now
+    @started_at ||= Time.now
 
     # INFO: this is where the real stuff is done
     table_geocoder.run
@@ -181,7 +184,7 @@ class Geocoding < Sequel::Model
     return 0 unless kind == 'high-resolution'
     total_rows       = processed_rows.to_i + cache_hits.to_i
     geocoding_quota  = user.organization.present? ? user.organization.geocoding_quota.to_i : user.geocoding_quota
-    # User#get_geocoding_calls includes this geocoding run, so we discount it
+    # ::User#get_geocoding_calls includes this geocoding run, so we discount it
     remaining_quota  = geocoding_quota + total_rows - user.get_geocoding_calls
     remaining_quota  = (remaining_quota > 0 ? remaining_quota : 0)
     used_credits     = total_rows - remaining_quota
@@ -190,7 +193,7 @@ class Geocoding < Sequel::Model
 
   def price
     return 0 unless used_credits.to_i > 0
-    (user.geocoding_block_price * used_credits) / User::GEOCODING_BLOCK_SIZE.to_f
+    (user.geocoding_block_price * used_credits) / ::User::GEOCODING_BLOCK_SIZE.to_f
   end # price
 
   def cost

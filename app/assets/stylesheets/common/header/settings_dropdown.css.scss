@@ -21,10 +21,19 @@
   @include justify-content(space-between, justify);
   @include align-items(center, center);
 }
+.SettingsDropdown-itemLink.SettingsDropdown-itemButtonLink {
+  color: $cTypography-link;
+}
+.SettingsDropdown-itemLink.SettingsDropdown-itemButtonLink:hover {
+  color: $cTypography-linkHover;
+  text-decoration: none;
+}
+
 .SettingsDropdown-itemLink:hover {
   text-decoration: none;
   .SettingsDropdown-itemLinkText { text-decoration: underline }
 }
+
 .SettingsDropdown-itemLinkText { font-size: $sFontSize-normal }
 .SettingsDropdown-accountType {
   margin-left: 10px;

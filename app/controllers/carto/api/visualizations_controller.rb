@@ -40,11 +40,13 @@ module Carto
         types, total_types = get_types_parameters
         vqb = query_builder_with_filter_from_hash(params)
 
+        presenter_cache = Carto::Api::PresenterCache.new
+
         # TODO: undesirable table hardcoding, needed for disambiguation. Look for
         # a better approach and/or move it to the query builder
         response = {
           visualizations: vqb.with_order("visualizations.#{order}", :desc).build_paged(page, per_page).map { |v|
-              VisualizationPresenter.new(v, current_viewer, self, { related: false }).to_poro
+              VisualizationPresenter.new(v, current_viewer, self, { related: false }).with_presenter_cache(presenter_cache).to_poro
           },
           total_entries: vqb.build.count
         }

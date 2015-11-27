@@ -15,6 +15,7 @@ WORKING_SPECS_INTEGRATIONS = \
 
 WORKING_SPECS_1 = \
   spec/rspec_configuration.rb \
+	spec/controllers/carto/api/presenter_cache_spec.rb
   spec/models/table_spec.rb \
   spec/models/table/relator_spec.rb \
   spec/models/table/column_typecaster_spec.rb \

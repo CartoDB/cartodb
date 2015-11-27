@@ -14,6 +14,12 @@ module Carto
         @current_viewer = current_viewer
         @context = context
         @options = options
+        @presenter_cache = Carto::Api::PresenterCache.new
+      end
+
+      def with_presenter_cache(presenter_cache)
+        @presenter_cache = presenter_cache
+        self
       end
 
       def to_poro
@@ -32,7 +38,7 @@ module Carto
           stats: show_stats ? @visualization.stats : {},
           created_at: @visualization.created_at,
           updated_at: @visualization.updated_at,
-          permission: @visualization.permission.nil? ? nil : Carto::Api::PermissionPresenter.new(@visualization.permission).to_poro,
+          permission: @visualization.permission.nil? ? nil : Carto::Api::PermissionPresenter.new(@visualization.permission).with_presenter_cache(@presenter_cache).to_poro,
           locked: @visualization.locked,
           source: @visualization.source,
           title: @visualization.title,
@@ -45,7 +51,7 @@ module Carto
           next_id: @visualization.next_id,
           transition_options: @visualization.transition_options,
           active_child: @visualization.active_child,
-          table: Carto::Api::UserTablePresenter.new(@visualization.table, @visualization.permission, @current_viewer).to_poro,
+          table: Carto::Api::UserTablePresenter.new(@visualization.table, @visualization.permission, @current_viewer).with_presenter_cache(@presenter_cache).to_poro,
           external_source: Carto::Api::ExternalSourcePresenter.new(@visualization.external_source).to_poro,
           synchronization: Carto::Api::SynchronizationPresenter.new(@visualization.synchronization).to_poro,
           children: @visualization.children.map { |v| children_poro(v) },

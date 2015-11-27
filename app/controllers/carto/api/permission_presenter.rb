@@ -6,12 +6,22 @@ module Carto
 
       def initialize(permission)
         @permission = permission
+        @presenter_cache = Carto::Api::PresenterCache.new
+      end
+
+      def with_presenter_cache(presenter_cache)
+        @presenter_cache = presenter_cache
+        self
       end
 
       def to_poro
+        owner_presenter = @presenter_cache.get(Carto::User, @permission.owner.id) do
+          Carto::Api::UserPresenter.new(@permission.owner, { fetch_groups: false } )
+        end
+
         {
           id:         @permission.id,
-          owner:      Carto::Api::UserPresenter.new(@permission.owner, { fetch_groups: false } ).to_poro,
+          owner:      owner_presenter.to_poro,
           entity: {
             id:       @permission.entity_id,
             type:     @permission.entity_type

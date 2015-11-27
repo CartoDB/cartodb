@@ -20,9 +20,9 @@ module.exports = View.extend({
   render: function() {
     this.$el.html(
       template({
-        icon: this.model.get('isRunning')
-          ? 'CDBIcon-X'
-          : 'CDBIcon-Cartofante'
+        iconClass: this.model.get('isRunning')
+          ? 'Widget-timeSeriesPauseIcon'
+          : 'Widget-timeSeriesPlayIcon'
       })
     );
 

@@ -1,1 +1,1 @@
-<i class="CDBIcon <%- icon %>"></i>
+<i class="<%- iconClass %>"></i>

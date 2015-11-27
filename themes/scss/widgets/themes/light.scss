@@ -91,6 +91,7 @@ $commonBkg: rgba(#FFF, 1);
     background: $secondary;
   }
 
+
   .Widget-listEdgeBorder {
     background: $elementBorder;
   }
@@ -130,6 +131,15 @@ $commonBkg: rgba(#FFF, 1);
   .Widget-timeSeriesFakeControl,
   .Widget-timeSeriesFakeChartItem {
     background-color: $loadingBkg;
+  }
+  .Widget-timeSeriesPlayIcon {
+    border-left-color: $elementBkg;
+  }
+  .Widget-timeSeriesPauseIcon {
+    &:before,
+    &:after {
+      background-color: $elementBkg;
+    }
   }
 
   .Widget-loader {

@@ -21,6 +21,31 @@
   width: 16px;
   height: 16px;
 }
+.Widget-timeSeriesPlayIcon {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  margin-left: 2px; // make the icon to appear more centric
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  border-left-width: 6px;
+  border-left-style: solid;
+}
+.Widget-timeSeriesPauseIcon {
+  margin-top: -2px;
+  &:before,
+  &:after {
+    display: inline-block;
+    width: 2px;
+    height: 8px;
+    border-radius: 3px;
+    content: '';
+  }
+  &:after {
+    margin-left: 2px;
+  }
+}
+
 .Widget-timeSeriesTimeInfo {
   margin-left: 16px;
   white-space: nowrap;

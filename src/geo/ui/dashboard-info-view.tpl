@@ -47,7 +47,7 @@
       <p class="Dashboard-info-footer-txt">Share view</p>
     </li>
     <li class="Dashboard-info-footer-item">
-      <div class="Dashboard-info-media">
+      <div class="Dashboard-info-media Dashboard-info-avatar">
         <img src="<%- userAvatarURL %>" alt="avatar" class="inline-block"/>
       </div>
       <p class="Dashboard-info-footer-txt"><%- userName %></p>

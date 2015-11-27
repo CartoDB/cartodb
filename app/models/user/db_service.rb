@@ -425,6 +425,9 @@ module CartoDB
             search_path = "\"#{u.database_schema}\", #{SCHEMA_CARTODB}, #{SCHEMA_CDB_GEOCODER_API}, #{SCHEMA_PUBLIC}"
             @user.in_database(as: :superuser).run("ALTER USER \"#{u.database_username}\"
               SET search_path TO #{search_path}")
+            # We have to set the search_path to the publicuser too
+            @user.in_database(as: :superuser).run("ALTER USER \"#{u.database_public_username}\"
+              SET search_path TO #{search_path}")
           end
         else
           # TODO This part is a copy of the build_search_path method to avoid put the geocoder schema path

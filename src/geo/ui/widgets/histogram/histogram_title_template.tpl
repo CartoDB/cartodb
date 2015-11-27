@@ -6,5 +6,5 @@
     ">
     <i class="CDBIcon CDBIcon-Syringe CDBIcon--top"></i>
   </button>
-  <button class="Widget-arrow js-collapse <%- isCollapsed ? 'Widget-arrow--down' : 'Widget-arrow--up' %> "></button>
+  <button class="Widget-arrow js-collapse <%- isCollapsed ? 'Widget-arrow--down' : 'Widget-arrow--up' %> "><span class="Widget-arrowCircle"></span></button>
 </div>

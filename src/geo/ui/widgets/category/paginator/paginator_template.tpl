@@ -1,6 +1,6 @@
 <div class="Widget-contentFlex">
   <button class="u-rSpace--m Widget-buttonIcon Widget-textSmaller Widget-textSmaller--upper js-searchToggle">
-    <i class="CDBIcon CDBIcon-Lens"></i>
+    <i class="CDBIcon CDBIcon--center CDBIcon-Lens u-rSpace"></i>
     <span class="u-iBlock">
       search
     </span>

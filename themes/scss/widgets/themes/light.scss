@@ -200,4 +200,8 @@ $commonBkg: rgba(#FFF, 1);
       background-image: repeating-linear-gradient(45deg, transparent 0, rgba($secondary, 0.3) 1px, transparent 1px, transparent 2px) !important;
     }
   }
+
+  .Widget-arrowCircle {
+    background: $link;
+  }
 }

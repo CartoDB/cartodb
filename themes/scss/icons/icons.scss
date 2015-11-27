@@ -5,16 +5,13 @@
 @include font-face('CDBIcon', '../../fonts/CDBIcon.eot', '../../fonts/CDBIcon.woff', '../../fonts/CDBIcon.ttf', '../../fonts/CDBIcon.svg');
 
 .CDBIcon {
-  @include inline-block();
+  display: inline-block;
   font-family: 'CDBIcon';
   font-style: normal;
   font-weight: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  &.CDBIcon--top {
-    vertical-align: top;
-    margin-top: 1px;
-  }
+  line-height: 1;
 }
 
 .CDBIcon-Cartofante:before {

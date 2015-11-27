@@ -23,64 +23,6 @@
   <body>
     <div class="Dashboard-canvas js-dashboard">
       <div class="Dashboard-mapWrapper js-dashboard-map-wrapper">
-        <div class="Dashboard-info">
-          <div class="Dashboard-info-header">
-            <div class="Dashboard-info-logo">
-            </div>
-            <div class="Dashboard-info-actions">
-              <a href="#" class="Dashboard-info-actions-link"></a>
-            </div>
-            <div class="Dashboard-info-texts">
-              <p class="Dashboard-info-update">UPDATED 14 HOURS AGO</p>
-              <h1 class="Dashboard-info-title">NBA arenas areas of influence</h1>
-              <h2 class="Dashboard-info-description">The NBA Territory Analysis Tool will allow individual teams to analyze their current and potential marketing territories. Users can see visual reports and develop analyses on the fly.</h2>
-            </div>
-          </div>
-
-          <div class="Dashboard-info-footer">
-            <!--
-            <div class="Dashboard-info-snapshots">
-              <ul class="Dashboard-info-snapshots-list">
-                <li class="Dashboard-info-snapshots-list-item">
-                  <h3 class="Dashboard-info-snapshots-list-title">NAMED SNAPSHOT</h3>
-                  <p class="Dashboard-info-snapshots-list-date">08/10 · 17:35</p>
-                </li>
-                <li class="Dashboard-info-snapshots-list-item">
-                  <h3 class="Dashboard-info-snapshots-list-title">NAMED SNAPSHOT</h3>
-                  <p class="Dashboard-info-snapshots-list-date">08/10 · 17:35</p>
-                </li>
-                <li class="Dashboard-info-snapshots-list-item">
-                  <h3 class="Dashboard-info-snapshots-list-title">NAMED SNAPSHOT</h3>
-                  <p class="Dashboard-info-snapshots-list-date">08/10 · 17:35</p>
-                </li>
-                <li class="Dashboard-info-snapshots-list-item">
-                  <h3 class="Dashboard-info-snapshots-list-title">NAMED SNAPSHOT</h3>
-                  <p class="Dashboard-info-snapshots-list-date">08/10 · 17:35</p>
-                </li>
-              </ul>
-            </div>-->
-            <ul>
-              <li class="Dashboard-info-footer-item">
-                <div class="Dashboard-info-media">
-                  <img src="/themes/img/icon-save.svg" alt="Save" />
-                </div>
-                <p class="Dashboard-info-footer-txt">Save snapshot</p>
-              </li>
-              <li class="Dashboard-info-footer-item">
-                <div class="Dashboard-info-media">
-                  <img src="/themes/img/icon-share.svg" alt="share" />
-                </div>
-                <p class="Dashboard-info-footer-txt">Share view</p>
-              </li>
-              <li class="Dashboard-info-footer-item">
-                <div class="Dashboard-info-media">
-                  <img src="/themes/img/avatar.png" alt="avatar" class="inline-block"/>
-                </div>
-                <p class="Dashboard-info-footer-txt">Danielle Brewer</p>
-              </li>
-            </ul>
-          </div>
-        </div>
         <div class="Map-canvas Map-canvas--margin">
           <div class="Map" id="map"></div>
         </div>
@@ -91,6 +33,10 @@
       window.onload = function() {
           var vizJSON1 = {
             "id": "84ec6844-4b4b-11e5-9c1d-080027880ca6",
+            "user": {
+              "fullname": "Emilio García",
+              "avatar_url": "https://s3.amazonaws.com/com.cartodb.users-assets.production/production/piensaenpixel/assets/20150507074635Captura%20de%20pantalla%202015-05-07%20a%20la%28s%29%2009.46.28.png"
+            },
             "version": "0.1.0",
             "title": "my map",
             "likes": 0,
@@ -476,10 +422,14 @@
 
           var vizJSON2 = {
             "id": "84ec6844-4b4b-11e5-9c1d-080027880ca6",
+            "user": {
+              "fullname": "Emilio García",
+              "avatar_url": "https://s3.amazonaws.com/com.cartodb.users-assets.production/production/piensaenpixel/assets/20150507074635Captura%20de%20pantalla%202015-05-07%20a%20la%28s%29%2009.46.28.png"
+            },
             "version": "0.1.0",
-            "title": "my map",
+            "title": "Mapaza",
             "likes": 0,
-            "description": null,
+            "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas rutrum porttitor sollicitudin. Morbi vitae felis dignissim, lacinia justo id, ornare augue. Maecenas sed elit enim. Etiam auctor lacus lorem, sed tempor ante feugiat eu. Duis rhoncus luctus egestas. Curabitur iaculis pellentesque pulvinar. Curabitur eros nisi, lobortis volutpat ultrices faucibus, laoreet ut enim.",
             "scrollwheel": false,
             "legends": true,
             "url": null,
@@ -840,12 +790,6 @@
             console.log(err);
           });
       }
-
-      $( document ).ready(function() {
-       $(".Dashboard-info-actions-link").click(function() {
-          $('.Dashboard-info').toggleClass('is-active');
-        });
-      });
 
     </script>
   </body>

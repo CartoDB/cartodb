@@ -8,6 +8,10 @@ module.exports = View.extend({
 
   className: 'Widget-canvas',
 
+  attributes: {
+    "data-simplebar-direction": "vertical"
+  },
+
   initialize: function(options) {
     this.layers = options.layers;
   },

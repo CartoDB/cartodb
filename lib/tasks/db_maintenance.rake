@@ -1196,5 +1196,29 @@ namespace :cartodb do
       end
     end
 
+    desc "Configure geocoder extension configuration for user or organization"
+    task :configure_geocoder_extension_configuration, [:entity_name, :is_organization] => :environment do |t, args|
+      args.with_defaults(:entity_name => nil, :is_organization => false)
+      puts "ERROR: You have to provide an username or organization name as first parameter" if args[:entity_name].blank?
+      if args[:is_organization]
+        organizations = Organization.where(name: args[:entity_name]).all
+        raise "ERROR: Organization #{args[:entity_name]} don't exists" if organizations.blank?
+        run_for_organizations_owner(organizations) do |owner|
+          begin
+            owner.db_service.configure_geocoder_extension(owner.organization)
+          rescue => e
+            puts "Error trying to configure geocoder extension for org #{owner.organization.name}: #{e.message}"
+          end
+        end
+      else
+        user = User.where(username: args[:entity_name]).first
+        raise  "ERROR: User #{args[:entity_name]} don't exists" if user.nil?
+        begin
+          user.db_service.configure_geocoder_extension()
+        rescue => e
+          puts "ERROR trying to configure geocoder extension for user #{user.username}: #{e.message}"
+        end
+      end
+    end
   end
 end

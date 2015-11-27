@@ -168,6 +168,11 @@ defaults: &defaults
       base_url: ''
       api_key: ''
       table_name: ''
+    api:
+      host: ''
+      port: ''
+      dbname: ''
+      user: ''
   importer:
     content_guessing:        # Depends on geocoding
       enabled:         false # Disabled if false or not present

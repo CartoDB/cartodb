@@ -81,9 +81,11 @@
     @include align-items(flex-start, start);
     @include flex-direction(row);
   }
+  .Widget-header--timeSeries {
+    margin-right: 0; //override default, set on header to avoid double margin for the torque use-case
+  }
   .Widget-content--timeSeries {
     width: 100%;
     margin-top: 0; // override default
-    margin-left: 0; // override default
   }
 }

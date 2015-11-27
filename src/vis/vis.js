@@ -56,6 +56,10 @@ var isTimeSeriesWidget = function(m) {
  */
 var Vis = View.extend({
 
+  DEFAULT_MAX_ZOOM: 20,
+
+  DEFAULT_MIN_ZOOM: 0,
+
   initialize: function() {
     _.bindAll(this, 'loadingTiles', 'loadTiles', '_onResize');
 
@@ -353,9 +357,6 @@ var Vis = View.extend({
 
     var allowDragging = hasZoomOverlay || scrollwheel;
 
-    // map
-    data.maxZoom || (data.maxZoom = 20);
-    data.minZoom || (data.minZoom = 0);
 
     //Force using GMaps ?
     if ( (this.gmaps_base_type) && (data.map_provider === "leaflet") ) {
@@ -386,8 +387,8 @@ var Vis = View.extend({
     var mapConfig = {
       title: data.title,
       description: data.description,
-      maxZoom: data.maxZoom,
-      minZoom: data.minZoom,
+      maxZoom: data.maxZoom || this.DEFAULT_MAX_ZOOM,
+      minZoom: data.minZoom || this.DEFAULT_MIN_ZOOM,
       legends: data.legends,
       scrollwheel: scrollwheel,
       drag: allowDragging,
@@ -1384,7 +1385,6 @@ var Vis = View.extend({
     }
 
     return infowindow;
-
   },
 
   addCursorInteraction: function(map, layer) {

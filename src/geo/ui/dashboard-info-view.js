@@ -4,7 +4,7 @@ var moment = require('moment');
 
 var DashboardInfoView = View.extend({
 
-  className: 'Dashboard-info is-active',
+  className: 'Dashboard-info',
 
   events: {
     'click .js-toggle-view-link': "_toggleView"

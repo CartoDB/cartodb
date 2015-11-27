@@ -19,16 +19,28 @@ describe('widgets/category/model', function() {
   describe('binds', function() {
 
     beforeEach(function() {
+      this.model.set({
+        url: 'http://heytest.io'
+      });
       // Simulating first interaction with client.js
       this.model._onChangeBinds();
     });
 
     describe('url', function() {
+      beforeEach(function() {
+        spyOn(this.model, 'fetch');
+        spyOn(this.model.search, 'fetch');
+        spyOn(this.model.rangeModel, 'fetch');
+      });
+
       it('should set search url when it changes', function() {
-        this.model.sync = function() {};
-        expect(this.model.search.get('url')).toBe('');
-        this.model.set('url', 'http://heytest.io');
         expect(this.model.search.get('url')).toBe('http://heytest.io');
+        expect(this.model.search.url()).toBe('http://heytest.io/search?q=');
+      });
+
+      it('should set rangeModel url when it changes', function() {
+        expect(this.model.rangeModel.get('url')).toBe('http://heytest.io');
+        expect(this.model.rangeModel.url()).toBe('http://heytest.io');
       });
     });
 

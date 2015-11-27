@@ -36,7 +36,7 @@ module.exports = View.extend({
   },
 
   _initBinds: function() {
-    this.dataModel.bind('change:data change:locked change:search', this.render, this);
+    this.dataModel.bind('change:data change:locked change:search change:totalCount', this.render, this);
     this.viewModel.bind('change:search', this.render, this);
     this.add_related_model(this.dataModel);
     this.add_related_model(this.viewModel);
@@ -44,12 +44,13 @@ module.exports = View.extend({
 
   _getNullPercentage: function(attr) {
     var nulls = this.dataModel.get('nulls');
-    var total = this.dataModel.get('count');
-    return !nulls ? 0 : (nulls/total);
+    var total = this.dataModel.get('totalCount') || 0;
+    var per = !nulls ? 0 : ((nulls/total) * 100).toFixed(2);
+    return per;
   },
 
   _getCagetoriesPercentage: function(attr) {
-    var total = this.dataModel.get('count');
+    var total = this.dataModel.get('totalCount') || 0;
     var data = this.dataModel.getData();
     if (!total) {
       return 0;
@@ -65,7 +66,7 @@ module.exports = View.extend({
       return 0;
     }
 
-    return ((currentTotal / total) * 100).toFixed(0);
+    return ((currentTotal / total) * 100).toFixed(2);
   },
 
   _getCategoriesSize: function() {

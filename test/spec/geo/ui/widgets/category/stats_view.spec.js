@@ -52,7 +52,7 @@ describe('widgets/category/stats_view', function() {
 
     it('should render when any of this events are triggered from data model', function() {
       var bind = this.model.bind.calls.argsFor(0);
-      expect(bind[0]).toEqual('change:data change:locked change:search');
+      expect(bind[0]).toEqual('change:data change:locked change:search change:totalCount');
       expect(bind[1]).toEqual(this.view.render);
     });
 

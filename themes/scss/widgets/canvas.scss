@@ -12,50 +12,49 @@
   min-width: 352px;
   max-width: 352px;
   margin-left: 8px;
-  overflow-y: auto;
-  overflow-x: visible;
   border-radius: 4px;
   background: #FFF; // Canvas is out of widget themes
 }
-.Widget-canvasShadowTop {
-  display: none;
+.Widget-canvasInner {
   position: absolute;
   top: 0;
   right: 0;
+  bottom: 0;
+  width: 100%;
+  overflow-y: auto;
+  overflow-x: visible;
+}
+.Widget-canvasShadow {
+  display: none;
+  position: absolute;
+  right: 0;
   left: 0;
   height: 60px;
-  @include background-gradient(#fff, rgba(255, 255, 255, 0));
-  z-index: 2;
+  z-index: 1;
+}
+.Widget-canvasShadow--top {
+  @include background-gradient(#FFF, rgba(255, 255, 255, 0));
+  top: 0;
   border-top-left-radius: 4px;
   border-top-right-radius: 4px;
 }
-.Widget-canvasShadowBottom {
-  display: none;
-  position: absolute;
+.Widget-canvasShadow--bottom {
+  @include background-gradient(rgba(255, 255, 255, 0), #FFF);
   bottom: 0;
-  right: 0;
-  left: 0;
-  height: 60px;
-  @include background-gradient(rgba(255, 255, 255, 0), #fff);
-  z-index: 2;
   border-bottom-left-radius: 4px;
   border-bottom-right-radius: 4px;
 }
-.Widget-canvas .simplebar-track {
-  top: 0;
-  right: 0;
-  bottom: 0;
-  width: 2px;
+.Widget-canvasShadow.is-visible {
+  display: block;
+}
+.Widget-canvas .ps-scrollbar-y-rail {
+  width: 2px !important; // Resetting standard scroll track color
   background: #EEE;
+  z-index: 3;
 }
-.Widget-canvas .simplebar-track .simplebar-scrollbar {
-  right: 0;
-  width: 2px;
-  border-radius: 4px;
+.Widget-canvas .ps-scrollbar-y {
+  width: 2px !important; // Resetting standard scroll bar color
   background: #AAA;
-}
-.Widget-canvas .simplebar-scroll-content {
-  height: auto!important; // Fix for firefox
 }
 
 // Widget media query

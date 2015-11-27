@@ -22,33 +22,60 @@ module.exports = View.extend({
   },
 
   render: function() {
-    var min = this._getFormattedValue('min');
-    var max = this._getFormattedValue('max');
-    var nulls = this._getFormattedValue('nulls');
-
     this.$el.html(
       template({
         isSearchEnabled: this.viewModel.isSearchEnabled(),
         isSearchApplied: this.dataModel.isSearchApplied(),
         resultsCount: this.dataModel.getSearchCount(),
-        min: min,
-        max: max,
-        nulls: nulls
+        totalCats: this._getCategoriesSize(),
+        nullsPer: this._getNullPercentage(),
+        catsPer: this._getCagetoriesPercentage()
       })
     );
     return this;
   },
 
   _initBinds: function() {
-    this.dataModel.bind('change:data change:locked change:search', this.render, this);
+    this.dataModel.bind('change:data change:locked change:search change:totalCount', this.render, this);
     this.viewModel.bind('change:search', this.render, this);
     this.add_related_model(this.dataModel);
     this.add_related_model(this.viewModel);
   },
 
-  _getFormattedValue: function(attr) {
-    var format = d3.format('0,000');
-    return !_.isUndefined(this.dataModel.get(attr)) && format(this.dataModel.get(attr)) || '-'
+  _getNullPercentage: function(attr) {
+    var nulls = this.dataModel.get('nulls');
+    var total = this.dataModel.get('totalCount') || 0;
+    var per = !nulls ? 0 : ((nulls/total) * 100).toFixed(2);
+    return per;
+  },
+
+  _getCagetoriesPercentage: function(attr) {
+    var total = this.dataModel.get('totalCount') || 0;
+    var data = this.dataModel.getData();
+    if (!total) {
+      return 0;
+    }
+
+    var currentTotal = data.reduce(function(memo, mdl) {
+        return !mdl.get('agg') ? ( memo + parseFloat(mdl.get('value'))) : memo;
+      },
+      0
+    );
+
+    if (!currentTotal) {
+      return 0;
+    }
+
+    return ((currentTotal / total) * 100).toFixed(2);
+  },
+
+  _getCategoriesSize: function() {
+    return _.pluck(
+      this.dataModel.getData().reject(function(mdl) {
+        return mdl.get('agg')
+      }),
+      'name'
+    ).length;
   }
 
 });

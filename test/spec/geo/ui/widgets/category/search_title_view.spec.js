@@ -35,11 +35,10 @@ describe('widgets/category/search_title_view', function() {
 
     it('should change to search state when search event is triggered', function() {
       expect(this.viewModel.bind.calls.argsFor(0)[0]).toEqual('change:search');
-      expect(this.viewModel.bind.calls.argsFor(1)[0]).toEqual('change:collapsed');
     });
 
     it('should change to search state when search event is triggered', function() {
-      expect(this.model.bind.calls.argsFor(0)[0]).toEqual('change:filter change:locked change:lockCollection change:categoryColors');
+      expect(this.model.bind.calls.argsFor(0)[0]).toEqual('change:filter change:locked change:lockCollection change:categoryColors change:collapsed');
     });
   });
 
@@ -134,13 +133,13 @@ describe('widgets/category/search_title_view', function() {
     });
 
     it('should call to collapse function when it is clicked', function() {
-      spyOn(this.viewModel, 'toggleCollapsed').and.callThrough();
+      spyOn(this.model, 'toggleCollapsed').and.callThrough();
       expect(this.view.$('.js-collapse').hasClass('Widget-arrow--up')).toBeTruthy();
       this.view.$('.js-collapse').click();
-      expect(this.viewModel.toggleCollapsed).toHaveBeenCalled();
+      expect(this.model.toggleCollapsed).toHaveBeenCalled();
       expect(this.view.$('.js-collapse').hasClass('Widget-arrow--down')).toBeTruthy();
       this.view.$('.js-collapse').click();
-      expect(this.viewModel.toggleCollapsed.calls.count()).toBe(2);
+      expect(this.model.toggleCollapsed.calls.count()).toBe(2);
     });
 
   });

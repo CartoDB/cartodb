@@ -8,8 +8,6 @@
   @include text-overflow();
   font-size: $sFontSize-huge;
   font-weight: $sFontWeight-normal;
-  color: #2E3C43;
-  //line-height: $sFontSize-huge * 1.6;
 }
 .Widget-textBig { // 16 size
   @include text-overflow();
@@ -59,4 +57,14 @@
   text-overflow: inherit;
   white-space: inherit;
   overflow: inherit;
+}
+.Widget-textBigger--maxWidth {
+  max-width: 304px;
+}
+
+// Widget media query
+@include media-query() {
+  .Widget-textBigger--maxWidth {
+    max-width: 225px;
+  }
 }

@@ -2,45 +2,69 @@
 
 require_relative '../../../../app/controllers/carto/api/presenter_cache'
 
+class Carto::Api::FakeModel
+  attr_reader :id
+
+  def initialize(id = rand(100000))
+    @id = id
+  end
+end
+
+class Carto::Api::FakePresenter
+  def initialize(model)
+    @model = model
+  end
+
+  def to_poro
+    { id: @model.id }
+  end
+end
+
 describe Carto::Api::PresenterCache do
 
-  describe '#get' do
+  describe '#get_poro' do
 
     let(:cache) { Carto::Api::PresenterCache.new }
-    let(:model_class) { String }
-    let(:model_class_b) { Hash }
-    let(:model_id) { 'fake_id' }
-    let(:model_id_b) { 'fake_id_2' }
+
+    let(:fake_model) { Carto::Api::FakeModel.new }
+    let(:fake_model_b) { Carto::Api::FakeModel.new }
+    let(:fake_model_idless) { Carto::Api::FakeModel.new(nil) }
+
+    let(:fake_presenter) { Carto::Api::FakePresenter.new(fake_model) }
+    let(:fake_presenter_b) { Carto::Api::FakePresenter.new(fake_model_b) }
 
     it 'throws an error if no block is provided' do
-      expect { cache.get(model_class, model_id) }.to raise_error(/no block given \(yield\)/)
+      expect { cache.get_poro(fake_model) }.to raise_error(/no block given \(yield\)/)
     end
 
-    it 'returns block value for non-cached classes or ids' do
-      value = 'a'
-      cache.get(model_class, model_id) { value } .should == value
-      cache.get(model_class, model_id_b) { value } .should == value
+    it 'returns block presenter.to_poro for non-cached models' do
+      cache.get_poro(fake_model) { fake_presenter }.should == fake_presenter.to_poro
+      cache.get_poro(fake_model_b) { fake_presenter_b }.should == fake_presenter_b.to_poro
     end
 
-    it 'returns cached value for cached classes and ids' do
-      value = 'b'
-      cache.get(model_class, model_id) { value } .should == value
+    it 'returns cached presenter.to_poro for cached classes and ids' do
+      cache.get_poro(fake_model) { fake_presenter }.should == fake_presenter.to_poro
       # Block is ignored
-      cache.get(model_class, model_id) { value + value } .should == value
+      cache.get_poro(fake_model) { fake_presenter_b }.should == fake_presenter.to_poro
     end
 
-    it 'does not cache for nil classes or ids' do
-      value = 'c'
-      value_b = 'd'
-      cache.get(nil, nil) { value } .should == value
-      cache.get(nil, nil) { value_b } .should == value_b
-      cache.get(model_class, nil) { value } .should == value
-      cache.get(model_class, nil) { value_b } .should == value_b
+    it 'raises error with nil models' do
+      expect { cache.get_poro(nil) }.to raise_error(/no model given/)
     end
 
-    it 'does not cache nil values' do
-      cache.get(model_class, model_id) { nil }.should == nil
-      cache.get(model_class, model_id) { 'a' }.should == 'a'
+    it 'does not cache if model.id is nil' do
+      cache.get_poro(fake_model_idless) { fake_presenter }.should == fake_presenter.to_poro
+      cache.get_poro(fake_model_idless) { fake_presenter_b }.should == fake_presenter_b.to_poro
+    end
+
+    it 'raises error for nil presenters' do
+      expect { cache.get_poro(fake_model) { nil } }.to raise_error(/no presenter given/)
+      expect { cache.get_poro(fake_model_idless) { nil } }.to raise_error(/no presenter given/)
+    end
+
+    it 'does not raise error for nil presenter if it was cached' do
+      cache.get_poro(fake_model) { fake_presenter }.should == fake_presenter.to_poro
+      cache.get_poro(fake_model) { nil }.should == fake_presenter.to_poro
     end
 
   end

@@ -8,13 +8,26 @@ module Carto
         @cache = Hash.new
       end
 
-      def get(model_class, model_id)
-        return yield if model_class.nil? || model_id.nil?
+      # Caches to_poro of the presenter that is passed in a block, based on model class and id. Example:
+      # cache.get_poro(user)  { Carto::Api::UserPresenter.new(user, { fetch_groups: false } ) }
+      def get_poro(model)
+        raise "no model given" unless model
+
+        model_class = model.class
+        model_id = model.id
+
+        if model_id.nil?
+          presenter = yield
+          raise "no presenter given" if presenter.nil?
+          return presenter.to_poro
+        end
 
         class_cache = get_class_cache(model_class)
 
         unless class_cache[model_id]
-          class_cache[model_id] = yield
+          presenter = yield
+          raise "no presenter given" if presenter.nil?
+          class_cache[model_id] = presenter.to_poro
         end
 
         class_cache[model_id]

@@ -138,6 +138,7 @@
   line-height: $sLineHeight-small;
   font-weight: $sFontWeight-small;
   margin-bottom: 8px;
+  text-transform: uppercase;
 }
 
 .Dashboard-info-title {
@@ -172,6 +173,7 @@
   img {
     display: inline-block;
     border-radius: 4px;
+    width: 100%;
   }
 }
 

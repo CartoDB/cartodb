@@ -4,7 +4,8 @@ var Model = require('cdb/core/model');
 var d3 = require('d3');
 var CategoryColors = require('./models/category_colors');
 var WidgetModel = require('../widget_model');
-var WidgetSearchModel = require('./models/search_model.js');
+var WidgetSearchModel = require('./models/search_model');
+var CategoryModelRange = require('./models/category_model_range');
 var CategoriesCollection = require('./models/categories_collection');
 var LockedCatsCollection = require('./models/locked_categories_collection');
 
@@ -33,6 +34,9 @@ module.exports = WidgetModel.extend({
     // Locked categories collection
     this.locked = new LockedCatsCollection();
 
+    // Internal model for calculating total amount of values in the category
+    this.rangeModel = new CategoryModelRange();
+
     // Colors class
     this.colors = new CategoryColors();
 
@@ -42,12 +46,24 @@ module.exports = WidgetModel.extend({
     });
   },
 
-  _onChangeBinds: function() {
-    // Set url and bounds when they have changed
+  // Set any needed parameter when they have changed in this model
+  _setInternalModels: function() {
+    var url = this.get('url');
+
     this.search.set({
-      url: this.get('url'),
+      url: url,
       boundingBox: this.get('boundingBox')
     });
+
+    this.rangeModel.setUrl(url);
+  },
+
+  _onChangeBinds: function() {
+    this._setInternalModels();
+
+    this.rangeModel.bind('change:totalCount', function(mdl, value) {
+      this.set('totalCount', value);
+    }, this);
 
     this.bind('change:url', function(){
       if (this.get('sync')) {

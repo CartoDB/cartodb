@@ -16,8 +16,7 @@ module.exports = Model.extend({
   },
 
   url: function() {
-    return this.get('url') + '/search?q=' + encodeURIComponent(this.get('q')) +
-    '&bbox=' + this.get('boundingBox');
+    return this.get('url') + '/search?q=' + encodeURIComponent(this.get('q'));
   },
 
   initialize: function(attrs, opts) {

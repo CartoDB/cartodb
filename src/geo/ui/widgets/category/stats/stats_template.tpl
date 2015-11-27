@@ -7,7 +7,6 @@
     <% } %>
   </dt>
 <% } else { %>
-  <dt class="Widget-infoItem"><%- nulls %> null rows</dt>
-  <dt class="Widget-infoItem"><%- min %> min</dt>
-  <dt class="Widget-infoItem"><%- max %> max</dt>
+  <dt class="Widget-infoItem"><%- nullsPer %>% null rows</dt>
+  <dt class="Widget-infoItem"><%- catsPer %>% in <%- totalCats %> categor<%- totalCats !== 1 ? 'ies' : 'y' %></dt>
 <% } %>

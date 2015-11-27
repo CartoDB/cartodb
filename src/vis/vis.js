@@ -169,18 +169,6 @@ var Vis = View.extend({
       this.mapView = this.options.mapView;
       this.map = this.mapView.map;
     }
-
-    // recalculate map position on orientation change
-    if (!window.addEventListener) {
-      window.attachEvent('orientationchange', this.doOnOrientationChange, this);
-    } else {
-      window.addEventListener('orientationchange', _.bind(this.doOnOrientationChange, this));
-    }
-
-  },
-
-  doOnOrientationChange: function() {
-    //this.setMapPosition();
   },
 
   /**

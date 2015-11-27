@@ -21,20 +21,17 @@ describe('geo/ui/widgets/time-series/torque-time-marker-view', function() {
       bottom: 3,
       left: 4
     };
-    this.viewModel = new Model({
-      histogramChartMargins: this.histogramChartMargins,
-      width: 400,
-      histogramChartHeight: 200
-    });
+    this.viewModel = new Model();
     this.chartView = new HistogramChartView({
       margin: this.histogramChartMargins,
-      width: 400,
       height: 200,
       data: [{
         start: 0,
         end: 1
       }]
     });
+    this.chartView.render();
+    this.chartView.model.set('width', 400);
 
     this.view = new TorqueTimeMarkerView({
       model: this.model,

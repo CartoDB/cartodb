@@ -11,7 +11,6 @@ module.exports = View.extend({
      // render the chart once the width is set as default, provide false value for this prop to disable this behavior
      // e.g. for "mini" histogram behavior
     showOnWidthChange: true,
-    width: 0,
 
     axis_tip: false,
     minimumBarHeight: 2,
@@ -46,14 +45,29 @@ module.exports = View.extend({
     this.$el.hide(); // will be toggled on width change
 
     this.canvas = d3.select(this.el)
-    .attr('width',  this.options.width)
+    .attr('width', 0)
     .attr('height', this.options.height);
 
     this.canvas
     .append('g')
     .attr('class', 'Canvas');
 
-    this._setupModel();
+    this.model = new Model({
+      data: this.options.data,
+      height: this.options.height,
+      margin: this.options.margin,
+      width: 0, // will be set on resize listener
+      pos: { x: 0, y: 0 }
+    });
+    this.model.bind('change:width', this._onChangeWidth, this);
+    this.model.bind('change:height', this._onChangeHeight, this);
+    this.model.bind('change:pos', this._onChangePos, this);
+    this.model.bind('change:lo_index change:hi_index', this._onChangeRange, this);
+    this.model.bind('change:data', this._onChangeData, this);
+    this.model.bind('change:dragging', this._onChangeDragging, this);
+    this.model.bind('change:right_axis_tip', this._onChangeRightAxisTip, this);
+    this.model.bind('change:left_axis_tip', this._onChangeLeftAxisTip, this);
+
     this._setupDimensions();
   },
 
@@ -81,7 +95,6 @@ module.exports = View.extend({
       this.$el.toggle(wasVisible);
 
       this.model.set('width', width);
-      this.trigger('resized', width);
     }
   },
 
@@ -140,19 +153,25 @@ module.exports = View.extend({
   },
 
   _onChangeWidth: function() {
-    var loBarIndex = this.model.get('lo_index');
-    var hiBarIndex = this.model.get('hi_index');
-
     var width = this.model.get('width');
     this.$el.width(width);
     this.chart.attr('width', width);
-
-    this.reset();
-    this.selectRange(loBarIndex, hiBarIndex);
-
     if (this.options.showOnWidthChange && width > 0) {
       this.$el.show();
     }
+    this.reset();
+
+    var loBarIndex = this.model.get('lo_index');
+    var hiBarIndex = this.model.get('hi_index');
+    this.selectRange(loBarIndex, hiBarIndex);
+  },
+
+  _onChangeHeight: function() {
+    var height = this.model.get('height');
+    this.$el.height(height);
+    this.chart.attr('height', height);
+
+    this.reset();
   },
 
   _onChangePos: function() {
@@ -276,16 +295,6 @@ module.exports = View.extend({
     }
   },
 
-  _bindModel: function() {
-    this.model.bind('change:width', this._onChangeWidth, this);
-    this.model.bind('change:pos', this._onChangePos, this);
-    this.model.bind('change:lo_index change:hi_index', this._onChangeRange, this);
-    this.model.bind('change:data', this._onChangeData, this);
-    this.model.bind('change:dragging', this._onChangeDragging, this);
-    this.model.bind('change:right_axis_tip', this._onChangeRightAxisTip, this);
-    this.model.bind('change:left_axis_tip', this._onChangeLeftAxisTip, this);
-  },
-
   reset: function() {
     this._removeChartContent();
     this._setupDimensions();
@@ -387,17 +396,6 @@ module.exports = View.extend({
     .attr('y2', this.chartHeight);
   },
 
-  _setupModel: function() {
-    this.model = new Model({
-      data: this.options.data,
-      height: this.options.height,
-      width: 0, // will be set on resize listener
-      pos: { x: 0, y: 0 }
-    });
-
-    this._bindModel();
-  },
-
   _setupDimensions: function() {
     this.margin = this.options.margin;
 
@@ -493,6 +491,10 @@ module.exports = View.extend({
   contract: function(height) {
     this.canvas.attr('height', height);
     this._move({ x: 0, y: 0 });
+  },
+
+  resizeHeight: function(height) {
+    this.model.set('height', height);
   },
 
   removeSelection: function() {

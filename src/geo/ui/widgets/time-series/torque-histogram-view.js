@@ -1,3 +1,4 @@
+var $ = require('jquery');
 var Model = require('cdb/core/model');
 var View = require('cdb/core/view');
 var HistogramChartView = require('../histogram/chart');
@@ -14,6 +15,20 @@ module.exports = View.extend({
 
   // TODO could be calculated from element styles instead of duplicated numbers here?
   defaults: {
+    mobileThreshold: 960, // px; should match CSS media-query
+    histogramChartHeight:
+      48 + // inline bars height
+      20 + // bottom labels
+      4, // margins
+    histogramChartMobileHeight:
+      20 + // inline bars height (no bottom labels)
+      4, // margins
+    histogramChartMargins: {
+      top: 4,
+      right: 4,
+      bottom: 20,
+      left: 4
+    },
     margins: {
       top: 0,
       right: 0,
@@ -30,19 +45,8 @@ module.exports = View.extend({
     this._torqueLayerModel = this.options.torqueLayerModel;
 
     this._viewModel = new Model({
-      margins: this.defaults.margins,
-      histogramChartMargins: {
-        top: 4,
-        right: 4,
-        bottom: 20,
-        left: 4
-      },
-      histogramChartHeight:
-        48 + // inline bars height
-        20 + // bottom labels
-        4 // margins
+      margins: this.defaults.margins
     });
-
     this.model.bind('change:data', this._onChangeData, this);
   },
 
@@ -62,14 +66,16 @@ module.exports = View.extend({
     this._chartView = new HistogramChartView({
       type: 'time',
       animationSpeed: 100,
-      margin: this._viewModel.get('histogramChartMargins'),
+      margin: this.defaults.histogramChartMargins,
       handles: true,
-      height: this._viewModel.get('histogramChartHeight'),
+      height: this.defaults.histogramChartHeight,
       data: this.model.getData()
     });
     this.addView(this._chartView);
     this.$el.append(this._chartView.render().el);
     this._chartView.bind('on_brush_end', this._onBrushEnd, this);
+    this._chartView.model.bind('change:width', this._onChangeChartWidth, this);
+    this.add_related_model(this._chartView.model);
     this._chartView.show();
 
     var timeMarkerView = new TorqueTimeMarkerview({
@@ -89,6 +95,15 @@ module.exports = View.extend({
       data[hiBarIndex - 1].end
     );
     this._torqueLayerModel.setStepsRange(loBarIndex, hiBarIndex);
+  },
+
+  _onChangeChartWidth: function() {
+    var isMobileSize = $(window).width() < this.defaults.mobileThreshold;
+    var height = isMobileSize
+      ? this.defaults.histogramChartMobileHeight
+      : this.defaults.histogramChartHeight;
+
+    this._chartView.model.set('height', height);
   }
 
 });

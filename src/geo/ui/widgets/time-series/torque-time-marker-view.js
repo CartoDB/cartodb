@@ -6,6 +6,11 @@ var View = require('cdb/core/view');
  */
 module.exports = View.extend({
 
+  defaults: {
+    width: 4,
+    height: 8
+  },
+
   initialize: function() {
     if (!this.options.chartView) throw new Error('chartView is required');
     if (!this.options.viewModel) throw new Error('viewModel is required');
@@ -20,7 +25,10 @@ module.exports = View.extend({
     this._torqueLayerModel.bind('change:stepsRange', this._onStepsRange, this);
     this.add_related_model(this._torqueLayerModel);
 
-    this._chartView.bind('resized', this._onResized, this);
+    this._chartView.model.bind('change:width', this._onChangeChartWidth, this);
+    this._chartView.model.bind('change:height', this._onChangeChartHeight, this);
+    this.add_related_model(this._chartView.model);
+
     this._updateXScale();
   },
 
@@ -32,13 +40,10 @@ module.exports = View.extend({
         .on('drag', this._onDrag.bind(this))
         .on('dragend', this._onDragEnd.bind(this));
 
-      var margins = this._viewModel.get('histogramChartMargins');
-      var height = this._viewModel.get('histogramChartHeight') - margins.top - margins.bottom + 8;
-
       this.timeMarker = this._chartView.canvas.append('rect')
         .attr('class', 'TimeMarker')
-        .attr('width', 4)
-        .attr('height', height)
+        .attr('width', this.defaults.width)
+        .attr('height', this._calcHeight())
         .attr('rx', 3)
         .attr('ry', 3)
         .data([{ x: 0, y: 0 }])
@@ -90,7 +95,7 @@ module.exports = View.extend({
   },
 
   _isWithinRange: function(x) {
-    return 0 <= x && x <= this._viewModel.get('width');
+    return x >= 0 && x <= this._width();
   },
 
   _onChangeStep: function() {
@@ -122,15 +127,27 @@ module.exports = View.extend({
     }
   },
 
-  _onResized: function(width) {
-    this._viewModel.set('width', width);
+  _onChangeChartWidth: function() {
     this._updateXScale();
     this._onChangeStep();
+  },
+
+  _onChangeChartHeight: function() {
+    this.timeMarker.attr('height', this._calcHeight());
+  },
+
+  _calcHeight: function() {
+    var chartMargin = this._chartView.model.get('margin');
+    return this._chartView.model.get('height') - chartMargin.top - chartMargin.bottom + this.defaults.height;
   },
 
   _updateXScale: function() {
     this._xScale = d3.scale.linear()
       .domain([0, this._torqueLayerModel.get('steps')])
-      .range([0, this._viewModel.get('width')]);
+      .range([0, this._width()]);
+  },
+
+  _width: function() {
+    return this._chartView.model.get('width');
   }
 });

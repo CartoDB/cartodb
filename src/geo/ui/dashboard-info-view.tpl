@@ -1,5 +1,6 @@
 <div class="Dashboard-info-header">
   <div class="Dashboard-info-logo">
+    <i class="CDBIcon CDBIcon-Cartofante"></i>
   </div>
   <div class="Dashboard-info-actions">
     <a href="#" class="Dashboard-info-actions-link js-toggle-view-link"></a>

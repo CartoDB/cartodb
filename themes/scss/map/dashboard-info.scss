@@ -107,11 +107,19 @@
 }
 
 .Dashboard-info-logo {
-  width: 40px;
-  height: 40px;
-  border-radius: 4px;
   background: #fff;
+  border-radius: 4px;
+  height: 40px;
+  line-height: 40px;
   margin-bottom: $sMargin-section;
+  text-align: center;
+  width: 40px;
+}
+
+.Dashboard-info-logo i {
+  color: #3C93D8;
+  font-size: 22px;
+  vertical-align: top;
 }
 
 .Dashboard-info-actions {

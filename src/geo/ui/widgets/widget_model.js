@@ -10,7 +10,8 @@ module.exports = Model.extend({
     data: [],
     columns: [],
     sync: true,
-    bbox: true
+    bbox: true,
+    collapsed: false
   },
 
   url: function() {
@@ -64,6 +65,14 @@ module.exports = Model.extend({
 
   refresh: function() {
     this._fetch();
+  },
+
+  isCollapsed: function() {
+    return this.get('collapsed');
+  },
+
+  toggleCollapsed: function() {
+    this.set('collapsed', !this.get('collapsed'));
   },
 
   _onFilterChanged: function(filter) {

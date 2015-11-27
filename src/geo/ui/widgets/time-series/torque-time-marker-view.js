@@ -21,7 +21,7 @@ module.exports = View.extend({
     this.add_related_model(this._torqueLayerModel);
 
     this._chartView.bind('resized', this._onResized, this);
-    this._updateXScale(1);
+    this._updateXScale();
   },
 
   render: function() {

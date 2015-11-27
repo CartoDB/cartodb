@@ -6,7 +6,7 @@
         <span class="Widget-textSmaller Widget-textSmaller--upper"><%- operation %></span>
       </div>
     </div>
-    <button class="Widget-arrow js-collapse <%- isCollapsed ? 'Widget-arrow--down' : 'Widget-arrow--up' %> "></button>
+    <button class="Widget-arrow js-collapse <%- isCollapsed ? 'Widget-arrow--down' : 'Widget-arrow--up' %> "><span class="Widget-arrowCircle"></span></button>
   </div>
   <dl class="Widget-info">
     <dt class="Widget-infoItem Widget-textSmaller Widget-textSmaller--upper"><%- nulls %> null rows</dt>
@@ -14,10 +14,11 @@
 </div>
 <div class="Widget-content">
   <% if (value) { %>
-    <h4 class="Widget-textBigger" title="<%- value %>">
+    <h4 class="Widget-textBigger Widget-textBigger--maxWidth js-value" title="<%- value %>">
       <%- prefix %><%- value %><%- suffix %>
     </h4>
   <% } else { %>
     <div class="Widget-listItem--fake"></div>
   <% } %>
 </div>
+

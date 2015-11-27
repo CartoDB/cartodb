@@ -13,8 +13,12 @@
 .Widget-arrow {
   display: inline-block;
   position: relative;
-  width: 17px;
-  height: 10px;
+  width: 13px;
+  height: 15px;
+  margin-top: 1px;
+  margin-left: 2px;
+  text-align: right;
+  vertical-align: top;
 
   &:hover {
     cursor: pointer;
@@ -22,39 +26,42 @@
 
   &:after,
   &:before {
+    display: inline-block;
     position: absolute;
-    top: 5px;
-    width: 10px;
-    height: 1px;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: #F50;
     content: '';
   }
+
+  &:before {
+    top: 0;
+    right: 0;
+  }
+
+  &:after {
+    right: 0;
+    bottom: 0;
+  }
 }
+
+.Widget-arrowCircle {
+  display: inline-block;
+  width: 3px;
+  height: 3px;
+  margin-top: 5px;
+  border-radius: 50%;
+  vertical-align: top;
+}
+
 .Widget-arrow.is-disabled {
   @include opacity(0.5);
   &:hover {
     cursor: default;
   }
 }
-.Widget-arrow--up {
-  &:after {
-    @include css3-prefix(transform, rotate(45deg));
-    right: 0;
-  }
-  &:before {
-    @include css3-prefix(transform, rotate(-45deg));
-    left: 0;
-  }
-}
-.Widget-arrow--down {
-  &:after {
-    @include css3-prefix(transform, rotate(-45deg));
-    right: 0;
-  }
-  &:before {
-    @include css3-prefix(transform, rotate(45deg));
-    left: 0;
-  }
-}
+
 .Widget-lens {
   display: inline-block;
   position: relative;

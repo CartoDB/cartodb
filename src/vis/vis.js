@@ -43,6 +43,7 @@ var WindshaftClient = require('cdb/windshaft/client');
 var WindshaftDashboard = require('cdb/windshaft/dashboard');
 var WindshaftPrivateDashboardConfig = require('cdb/windshaft/private-dashboard-config');
 var WindshaftPublicDashboardConfig = require('cdb/windshaft/public-dashboard-config');
+var DashboardInfoView = require('cdb/geo/ui/dashboard-info-view');
 
 // Used to identify time-series widget for both the widget view factory as well as render it below the map instead of
 // the default widgets list view
@@ -573,6 +574,18 @@ var Vis = View.extend({
     });
     $('.js-dashboard').append(widgetsView.render().el);
 
+    var dashboard = new Model({
+      title: data.title,
+      description: data.description,
+      updatedAt: data.updated_at,
+      userName: data.user.fullname,
+      userAvatarURL: data.user.avatar_url
+    });
+    var dashboardInfoView = new DashboardInfoView({
+      model: dashboard
+    });
+    $('.js-dashboard').append(dashboardInfoView.render().el);
+
     // TODO: Perhaps this "endpoint" could be part of the "datasource"?
     var endpoint = WindshaftConfig.MAPS_API_BASE_URL;
     var configGenerator = WindshaftPublicDashboardConfig;
@@ -1063,13 +1076,13 @@ var Vis = View.extend({
 
     if (opt.force_mobile === false || opt.force_mobile === "false") this.mobile_enabled = false;
 
-    if (!opt.title) {
-      vizjson.title = null;
-    }
+    // if (!opt.title) {
+    //   vizjson.title = null;
+    // }
 
-    if (!opt.description) {
-      vizjson.description = null;
-    }
+    // if (!opt.description) {
+    //   vizjson.description = null;
+    // }
 
     if (!opt.tiles_loader) {
       remove_overlay('loader');

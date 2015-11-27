@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<svg width="483px" height="488px" viewBox="0 0 483 488" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
-    <!-- Generator: Sketch 3.4.2 (15857) - http://www.bohemiancoding.com/sketch -->
+<svg width="471px" height="471px" viewBox="0 0 471 471" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.4.2 (15855) - http://www.bohemiancoding.com/sketch -->
     <title>icon-font_05_Lens</title>
     <desc>Created with Sketch.</desc>
     <defs></defs>
     <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
         <g id="icons" sketch:type="MSArtboardGroup" transform="translate(-2012.000000, -12.000000)" fill="#000000">
             <g id="icon-font_05_Lens" sketch:type="MSLayerGroup" transform="translate(2012.000000, 12.000000)">
-                <path d="M291.838835,296.338835 C298.087223,290.090446 308.211019,290.083602 314.463099,296.335682 L478.253153,460.125736 C484.4998,466.372383 484.499763,476.500237 478.25,482.75 C472.001611,488.998389 461.877815,489.005232 455.625736,482.753153 L291.835682,318.963099 C285.589035,312.716452 285.589072,302.588597 291.838835,296.338835 Z M178.5,325 C259.409716,325 325,259.409716 325,178.5 C325,97.5902842 259.409716,32 178.5,32 C97.5902842,32 32,97.5902842 32,178.5 C32,259.409716 97.5902842,325 178.5,325 Z M0,178.5 C0,79.9171722 79.9171722,0 178.5,0 C277.082828,0 357,79.9171722 357,178.5 C357,277.082828 277.082828,357 178.5,357 C79.9171722,357 0,277.082828 0,178.5 Z" id="Shape" sketch:type="MSShapeGroup"></path>
+                <path d="M335.278142,263.210579 L471,398.932437 L398.932437,471 L263.210579,335.278142 C237.977078,348.951638 209.074358,356.716236 178.358118,356.716236 C79.8536495,356.716236 0,276.862587 0,178.358118 C0,79.8536495 79.8536495,0 178.358118,0 C276.862587,0 356.716236,79.8536495 356.716236,178.358118 C356.716236,209.074358 348.951638,237.977078 335.278142,263.210579 Z M180,284 C239.094468,284 287,236.094468 287,177 C287,117.905532 239.094468,70 180,70 C120.905532,70 73,117.905532 73,177 C73,236.094468 120.905532,284 180,284 Z" id="Rectangle-2689" sketch:type="MSShapeGroup"></path>
             </g>
         </g>
     </g>

@@ -9,6 +9,7 @@ var WidgetViewModel = require('../widget_content_model');
 var HistogramChartView = require('./chart');
 var placeholder = require('./placeholder.tpl');
 var template = require('./content.tpl');
+var animationTemplate = require('./animation_template.tpl');
 
 /**
  * Widget content view for a histogram
@@ -25,7 +26,7 @@ module.exports = WidgetContent.extend({
   },
 
   initialize: function() {
-    this.dataModel = this.options.dataModel;
+    this.model = this.options.dataModel;
     this.firstData = _.clone(this.options.dataModel);
     this.viewModel = new WidgetViewModel();
     this.lockedByUser = false;
@@ -35,7 +36,7 @@ module.exports = WidgetContent.extend({
   _initViews: function() {
     var titleView = new HistogramTitleView({
       viewModel: this.viewModel,
-      dataModel: this.dataModel
+      dataModel: this.model
     });
     this.$('.js-title').html(titleView.render().el);
     this.addView(titleView);
@@ -45,27 +46,25 @@ module.exports = WidgetContent.extend({
   },
 
   _initBinds: function() {
-    this.dataModel.once('change:data', this._onFirstLoad, this);
-    this.viewModel.bind('change:collapsed', function(mdl, isCollapsed) {
+    this.model.once('change:data', this._onFirstLoad, this);
+    this.model.bind('change:collapsed', function(mdl, isCollapsed) {
       this.$el.toggleClass('is-collapsed', !!isCollapsed);
     }, this);
-    this.add_related_model(this.dataModel);
-    this.add_related_model(this.viewModel);
   },
 
   _onFirstLoad: function() {
     this.render();
     this._storeBounds();
-    this.dataModel.bind('change:data', this._onChangeData, this);
-    this.dataModel._fetch();
+    this.model.bind('change:data', this._onChangeData, this);
+    this.model._fetch();
   },
 
   _storeBounds: function() {
-    var data = this.dataModel.getData();
+    var data = this.model.getData();
     if (data && data.length > 0) {
       var start = data[0].start;
       var end = data[data.length - 1].end;
-      this.dataModel.set({ start: start, end: end, bins: data.length });
+      this.model.set({ start: start, end: end, bins: data.length });
     }
   },
 
@@ -80,12 +79,12 @@ module.exports = WidgetContent.extend({
       this.lockedByUser = false;
     } else {
       if (this._isZoomed()) {
-        this.zoomedData = this.dataModel.getData();
+        this.zoomedData = this.model.getData();
       } else {
-        this.originalData = this.dataModel.getData();
+        this.originalData = this.model.getData();
       }
 
-      this.histogramChartView.replaceData(this.dataModel.getData());
+      this.histogramChartView.replaceData(this.model.getData());
     }
 
     if (this.unsettingRange) {
@@ -95,7 +94,7 @@ module.exports = WidgetContent.extend({
     } else {
       if (this._isZoomed() && !this.lockZoomedData) {
         this.lockZoomedData = true;
-        this.zoomedData = this.dataModel.getData();
+        this.zoomedData = this.model.getData();
       }
     }
 
@@ -103,15 +102,14 @@ module.exports = WidgetContent.extend({
   },
 
   render: function() {
-
     this.clearSubViews();
 
-    var data = this.dataModel.getData();
+    var data = this.model.getData();
     var isDataEmpty = _.isEmpty(data) || _.size(data) === 0;
 
     this.$el.html(
       template({
-        title: this.dataModel.get('title'),
+        title: this.model.get('title'),
         itemsCount: !isDataEmpty ? data.length : '-'
       })
     );
@@ -119,7 +117,7 @@ module.exports = WidgetContent.extend({
     if (isDataEmpty) {
       this._addPlaceholder();
     } else {
-      this.originalData = this.dataModel.getData();
+      this.originalData = this.model.getData();
       this._setupBindings();
       this._initViews();
     }
@@ -137,7 +135,7 @@ module.exports = WidgetContent.extend({
       handles: true,
       axis_tip: true,
       height: this.defaults.chartHeight,
-      data: this.dataModel.getData()
+      data: this.model.getData()
     }));
 
     this.$('.js-content').append(this.histogramChartView.el);
@@ -158,7 +156,7 @@ module.exports = WidgetContent.extend({
       margin: { top: 0, right: 0, bottom: 4, left: 4 },
       height: 40,
       showOnWidthChange: false,
-      data: this.dataModel.getData()
+      data: this.model.getData()
     }));
 
     this.addView(this.miniHistogramChartView);
@@ -255,7 +253,7 @@ module.exports = WidgetContent.extend({
   },
 
   _getData: function() {
-    var data = this.dataModel.getData();
+    var data = this.model.getData();
 
     if (this._isZoomed()) {
       data = this.zoomedData;
@@ -271,60 +269,46 @@ module.exports = WidgetContent.extend({
     this.$(".js-zoom").toggleClass('is-hidden', !this.viewModel.get('zoom_enabled'));
   },
 
+  _changeHeaderValue: function(className, what, suffix) {
+    if (this.viewModel.get(what) === undefined) {
+      this.$(className).text('0 ' + suffix);
+      return;
+    }
+
+    this._addTitleForValue(className, what, suffix);
+
+    this._animateValue(this.viewModel, what, className, animationTemplate, {
+      formatter: formatter.formatNumber,
+      templateData: { suffix: " " + suffix }
+    });
+  },
+
   _onChangeNulls: function() {
-    this.$('.js-nulls').text(formatter.formatNumber(this.viewModel.get('nulls')) + ' NULLS');
-    this.$('.js-nulls').attr('title', this._formatNumberWithCommas(this.viewModel.get('nulls').toFixed(2)) + ' NULLS');
+    this._changeHeaderValue('.js-nulls', 'nulls', 'NULL ROWS');
   },
 
   _onChangeTotal: function() {
-    this.$('.js-val').text(formatter.formatNumber(this.viewModel.get('total')) + ' SELECTED');
-    this.$('.js-val').attr('title', this._formatNumberWithCommas(this.viewModel.get('total').toFixed(2)) + ' SELECTED');
+    this._changeHeaderValue('.js-val', 'total', 'SELECTED');
   },
 
   _onChangeMax: function() {
-    if (this.viewModel.get('max') === undefined) {
-      this.$('.js-min').text('0 MAX');
-      return;
-    }
-    this.$('.js-max').text(formatter.formatNumber(this.viewModel.get('max')) + ' MAX');
-    this.$('.js-max').attr('title', this._formatNumberWithCommas(this.viewModel.get('max').toFixed(2)) + ' MAX');
+    this._changeHeaderValue('.js-max', 'max', 'MAX');
   },
 
   _onChangeMin: function() {
-    if (this.viewModel.get('min') === undefined) {
-      this.$('.js-min').text('0 MIN');
-      return;
-    }
-    this.$('.js-min').text(formatter.formatNumber(this.viewModel.get('min')) + ' MIN');
-    this.$('.js-min').attr('title', this._formatNumberWithCommas(this.viewModel.get('min').toFixed(2)) + ' MIN');
+    this._changeHeaderValue('.js-min', 'min', 'MIN');
   },
 
   _onChangeAvg: function() {
-    this.$('.js-avg').text(formatter.formatNumber(this.viewModel.get('avg')) + ' AVG');
-    this.$('.js-avg').attr('title', this._formatNumberWithCommas(this.viewModel.get('avg').toFixed(2)) + ' AVG');
+    this._changeHeaderValue('.js-avg', 'avg', 'AVG');
+  },
+
+  _addTitleForValue: function(className, what, unit) {
+    this.$(className).attr('title', this._formatNumberWithCommas(this.viewModel.get(what).toFixed(2)) + ' ' + unit);
   },
 
   _formatNumberWithCommas: function(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  },
-
-  _animateValue: function(className, what, unit) {
-    var self = this;
-    var format = d3.format('.2s');
-
-    var from = this.viewModel.previous(what) || 0;
-    var to = this.viewModel.get(what);
-
-    $(className).prop('counter', from).stop().animate({ counter: to }, {
-      duration: 500,
-      easing: 'swing',
-      step: function (i) {
-        if (i === isNaN) {
-          i = 0;
-        }
-        $(this).text(format(i) + ' ' + unit);
-      }
-    });
   },
 
   _updateStats: function() {
@@ -334,7 +318,7 @@ module.exports = WidgetContent.extend({
       data = this.zoomedData;
     }
 
-    var nulls = this.dataModel.get('nulls');
+    var nulls = this.model.get('nulls');
 
     var min, max;
 
@@ -395,8 +379,8 @@ module.exports = WidgetContent.extend({
 
     this._showMiniRange();
 
-    this.dataModel.set({ start: null, end: null, bins: null, own_filter: 1 });
-    this.dataModel._fetch();
+    this.model.set({ start: null, end: null, bins: null, own_filter: 1 });
+    this.model._fetch();
     this.lockedByUser = false;
   },
 
@@ -411,7 +395,7 @@ module.exports = WidgetContent.extend({
     this.lockZoomedData = false;
     this.unsettingRange = true;
 
-    this.dataModel.set({ own_filter: null });
+    this.model.set({ own_filter: null });
     this.viewModel.set({ zoom_enabled: false, filter_enabled: false, lo_index: null, hi_index: null });
 
     this.filter.unsetRange();
@@ -423,7 +407,7 @@ module.exports = WidgetContent.extend({
   },
 
   _showMiniRange: function() {
-    var data = this.dataModel.getData();
+    var data = this.model.getData();
 
     var loBarIndex = this.viewModel.get('lo_index');
     var hiBarIndex = this.viewModel.get('hi_index');

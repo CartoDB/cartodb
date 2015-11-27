@@ -14,7 +14,7 @@ module.exports = {
         files: [{
           expand: true,
           src: [
-            'vendor/**/*.css',
+            'vendor/**/*.scss',
             'themes/scss/**/*.scss'
           ],
           dest: '.tmp/scss',

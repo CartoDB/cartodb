@@ -1,7 +1,7 @@
 <% if (isSearchEnabled) { %>
   <form class="Widget-search js-form">
     <i class="CDBIcon CDBIcon-Lens Widget-searchLens"></i>
-    <input type="text" class="Widget-textInput Widget-searchTextInput js-textInput" value="<%- q %>" placeholder="search by <%- columnName %>"/>
+    <input type="text" class="Widget-textInput Widget-searchTextInput js-textInput" value="<%- q %>" placeholder="Search by <%- columnName %>"/>
     <% if (canShowApply) { %>
       <button type="button" class="Widget-link Widget-searchApply js-applyLocked">apply</button>
     <% } %>
@@ -27,7 +27,7 @@
         ">
         <i class="CDBIcon CDBIcon-Syringe CDBIcon--top"></i>
       </button>
-      <button class="Widget-arrow js-collapse <%- isCollapsed ? 'Widget-arrow--down' : 'Widget-arrow--up' %> "></button>
+      <button class="Widget-arrow js-collapse <%- isCollapsed ? 'Widget-arrow--down' : 'Widget-arrow--up' %> "><span class="Widget-arrowCircle"></span></button>
     </div>
   </div>
 <% } %>

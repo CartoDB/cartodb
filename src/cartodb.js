@@ -28,7 +28,7 @@ cdb.createVis = require('./api/create-vis');
 cdb.createLayer = require('./api/create-layer');
 
 // Extracted from vis/vis.js,
-// used in libs like torque and odyssey to add themselves here (or so it seems)
+// used in libs like torque to add themselves here (or so it seems)
 cdb.moduleLoad = function(name, mod) {
   cdb[name] = mod;
   cdb.config.modules.add({
@@ -96,8 +96,6 @@ _.extend(cdb.geo.ui.Legend, require('./geo/ui/legend/legend-view-exports'));
 cdb.geo.ui.InfowindowModel = require('./geo/ui/infowindow-model');
 cdb.geo.ui.Infowindow = require('./geo/ui/infowindow');
 
-cdb.geo.ui.SlidesControllerItem = require('./geo/ui/slides-controller-item');
-cdb.geo.ui.SlidesController = require('./geo/ui/slides-controller');
 cdb.geo.ui.Header = require('./geo/ui/header');
 
 cdb.geo.ui.Search = require('./geo/ui/search');

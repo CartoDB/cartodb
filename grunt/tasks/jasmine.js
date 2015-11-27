@@ -57,19 +57,6 @@ module.exports = {
         }, defaultOptions)
       },
 
-      odyssey: {
-        src: [
-          'dist/cartodb.mod.odyssey.uncompressed.js',
-        ],
-        options: _.defaults({
-          outfile: 'test/SpecRunner-odyssey.html',
-          specs: '<%= config.tmp %>/odyssey-specs.js',
-          vendor: defaultOptions.vendor.concat([
-            '<%= config.dist %>/cartodb.uncompressed.js',
-          ]),
-        }, defaultOptions),
-      },
-
       cartodb: {
         src: [
           'dist/cartodb.uncompressed.js',

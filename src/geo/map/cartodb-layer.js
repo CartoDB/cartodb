@@ -30,6 +30,10 @@ var CartoDBLayer = MapLayer.extend({
     this.set({active: false, opacity: 0, visible: false});
   },
 
+  getWidgets: function() {
+    return this.widgets;
+  },
+
   // TODO: This is probably not used anymore
   invalidate: function() {
     var e = this.get('extra_params') || e;

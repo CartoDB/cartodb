@@ -33,7 +33,7 @@ module.exports = View.extend({
   render: function() {
     this.$el.html(
       template({
-        isCollapsed: this.viewModel.isCollapsed(),
+        isCollapsed: this.dataModel.isCollapsed(),
         isColorApplied: this.dataModel.isColorApplied(),
         title: this.dataModel.get('title'),
         columnName: this.dataModel.get('column'),
@@ -49,8 +49,7 @@ module.exports = View.extend({
 
   _initBinds: function() {
     this.viewModel.bind('change:search', this._onSearchToggled, this);
-    this.viewModel.bind('change:collapsed', this.render, this);
-    this.dataModel.bind('change:filter change:locked change:lockCollection change:categoryColors', this.render, this);
+    this.dataModel.bind('change:filter change:locked change:lockCollection change:categoryColors change:collapsed', this.render, this);
     this.add_related_model(this.dataModel);
     this.add_related_model(this.viewModel);
   },
@@ -135,7 +134,7 @@ module.exports = View.extend({
   },
 
   _toggleCollapse: function() {
-    this.viewModel.toggleCollapsed();
+    this.dataModel.toggleCollapsed();
   },
 
   clean: function() {

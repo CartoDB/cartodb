@@ -29,7 +29,8 @@ module.exports = View.extend({
       widgetViewFactory: this.options.widgetViewFactory,
       model: layer
     });
-    layer.widgets.bind('change:collapsed', this._onWidgetCollapsed, this);
+    var widgets = layer.getWidgets();
+    widgets.bind('change:collapsed', this._onWidgetCollapsed, this);
     this.$('.Widget-canvasInner').append(layerWidgetsView.render().el);
     this.addView(layerWidgetsView);
   },

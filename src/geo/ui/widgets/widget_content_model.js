@@ -9,16 +9,7 @@ var Model = require('cdb/core/model');
 module.exports = Model.extend({
 
   defaults: {
-    collapsed: false,
     search: false
-  },
-
-  isCollapsed: function() {
-    return this.get('collapsed');
-  },
-
-  toggleCollapsed: function() {
-    this.set('collapsed', !this.get('collapsed'));
   },
 
   toggleSearch: function() {

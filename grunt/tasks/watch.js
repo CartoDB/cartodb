@@ -15,7 +15,7 @@ module.exports = {
       },
       livereload: {
         options: {
-          livereload: '<%= connect.options.livereload %>'
+          livereload: '<%= connect.server.options.livereload %>'
         },
         files: [
           '.tmp/css/**/*.css',

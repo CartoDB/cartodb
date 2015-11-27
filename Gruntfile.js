@@ -141,13 +141,22 @@ module.exports = function(grunt) {
     grunt.config('config.doWatchify', true); // required for browserify to use watch files instead
   });
 
-  grunt.event.once('connect.jasmine.listening', function(host, port) {
-    grunt.log.writeln('Jasmine specs available at (one per bundle):');
+  grunt.event.once('connect.server.listening', function(host, port) {
+    grunt.log.writeln('Styleguide:');
+    grunt.log.writeln(' - http://' + host + ':' + port + '/themes/styleguide');
+    grunt.log.writeln('');
 
+    grunt.log.writeln('Examples:');
+    grunt.log.writeln(' - http://' + host + ':' + port + '/examples');
+    grunt.log.writeln('');
+
+    // Needs webserver for source-map-support install to work in a non-headless browserify,
+    // Unfortunately can't get source-maps when spec-runner is opened using file://
+    grunt.log.writeln('Jasmine specs available at (one per bundle):');
     var jasmineConfig = grunt.config('jasmine');
     for (var name in jasmineConfig) {
       var specRunnerFilepath = jasmineConfig[name].options.outfile;
-      grunt.task.run('jasmine:' + name + ':build')
+      grunt.task.run('jasmine:' + name + ':build');
       grunt.log.writeln(' - http://' + host + ':' + port + '/' + specRunnerFilepath);
     }
   });
@@ -168,8 +177,6 @@ module.exports = function(grunt) {
       'cssmin',
       'imagemin',
     ]);
-  var devCSS = css
-    .concat('connect:styleguide');
   var js = allDeps
     .concat([
       'browserify',
@@ -182,18 +189,18 @@ module.exports = function(grunt) {
     ]);
   var devJS = allDeps
     .concat('preWatch')
-    .concat(js)
-    .concat([
-      'connect:jasmine',
-      'connect:examples',
-    ]);
+    .concat(js);
+  var watch = [
+    'connect',
+    'watch'
+  ];
 
   grunt.registerTask('default', [ 'build' ]);
   grunt.registerTask('build', _.uniq(buildJS.concat(css)));
   grunt.registerTask('build:js', _.uniq(buildJS));
   grunt.registerTask('build:css', _.uniq(css));
   grunt.registerTask('test', _.uniq(js.concat('jasmine')));
-  grunt.registerTask('dev', _.uniq(devCSS.concat(devJS).concat('watch')));
-  grunt.registerTask('dev:css', _.uniq(devCSS.concat('watch')));
-  grunt.registerTask('dev:js', _.uniq(devJS.concat('watch')));
+  grunt.registerTask('dev', _.uniq(css.concat(devJS).concat(watch)));
+  grunt.registerTask('dev:css', _.uniq(css.concat(watch)));
+  grunt.registerTask('dev:js', _.uniq(devJS.concat(watch)));
 }

@@ -9,25 +9,14 @@
 <% } else { %>
   <div class="Widget-title Widget-contentSpaced">
     <h3 class="Widget-textBig" title="<%- title %>"><%- title %></h3>
-    <div class="Widget-options">
-      <% if (canBeLocked) { %>
-        <% if (isLocked) { %>
-          <button class="Widget-buttonIcon Widget-buttonIcon--circle is-selected js-unlock">
-            <i class="CDBIcon CDBIcon-Unlock CDBIcon--top"></i>
-          </button>
-        <% } else { %>
-          <button class="Widget-buttonIcon Widget-buttonIcon--circle js-lock">
-            <i class="CDBIcon CDBIcon-Lock CDBIcon--top"></i>
-          </button>
-        <% }  %>
-      <% } %>
+    <div class="Widget-options Widget-contentSpaced">
       <button class="Widget-buttonIcon Widget-buttonIcon--circle
         <%- isColorApplied ? 'is-selected' : '' %>
         <%- isColorApplied ? 'js-cancelColors' : 'js-applyColors' %>
         ">
         <i class="CDBIcon CDBIcon-Syringe CDBIcon--top"></i>
       </button>
-      <button class="Widget-arrow js-collapse <%- isCollapsed ? 'Widget-arrow--down' : 'Widget-arrow--up' %> "><span class="Widget-arrowCircle"></span></button>
+      <button class="Widget-threePoints js-collapse"></button>
     </div>
   </div>
 <% } %>

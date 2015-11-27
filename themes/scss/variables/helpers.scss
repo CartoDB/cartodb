@@ -18,10 +18,13 @@
 .u-rSpace--xl {
   margin-right: 12px;
 }
+.u-lSpace {
+  margin-left: 4px;
+}
 .u-lSpace--xl {
   margin-left: 12px;
 }
 
 .u-iBlock {
-  @include inline-block()
+  @include inline-block();
 }

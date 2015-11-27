@@ -3,9 +3,12 @@
 <% } else { %>
   <p class="Widget-textSmaller Widget-textSmaller--bold Widget-textSmaller--dark Widget-textSmaller--upper">
     <% if (isLocked) { %>
-      <%- totalCats %> selected
+      <%- totalCats %> blocked <button class="Widget-link u-lSpace js-unlock">unlock</button>
     <% } else { %>
       <%- rejectedCats === 0 && acceptedCats === 0 || acceptedCats >= totalCats ? "All selected" : acceptedCats + " selected" %>
+      <% if (canBeLocked) { %>
+        <button class="Widget-link u-lSpace js-lock">lock</button>
+      <% }%>
     <% }%>
   </p>
   <% if (!isLocked) { %>

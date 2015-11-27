@@ -12,7 +12,9 @@ module.exports = View.extend({
 
   events: {
     'click .js-all': '_onSelectAll',
-    'click .js-none': '_onUnselectAll'
+    'click .js-none': '_onUnselectAll',
+    'click .js-lock': '_lockCategories',
+    'click .js-unlock': '_unlockCategories'
   },
 
   initialize: function() {
@@ -29,6 +31,7 @@ module.exports = View.extend({
     this.$el.html(
       template({
         isLocked: this.dataModel.isLocked(),
+        canBeLocked: this.dataModel.canBeLocked(),
         totalLocked: this.dataModel.getLockedSize(),
         isSearchEnabled: this.viewModel.isSearchEnabled(),
         isSearchApplied: this.dataModel.isSearchApplied(),
@@ -46,6 +49,14 @@ module.exports = View.extend({
     this.viewModel.bind('change:search', this.render, this);
     this.add_related_model(this.dataModel);
     this.add_related_model(this.viewModel);
+  },
+
+  _lockCategories: function() {
+    this.dataModel.lockCategories();
+  },
+
+  _unlockCategories: function() {
+    this.dataModel.unlockCategories();
   },
 
   _onUnselectAll: function() {

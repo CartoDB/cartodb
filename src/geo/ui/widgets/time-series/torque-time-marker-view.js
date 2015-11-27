@@ -16,12 +16,12 @@ module.exports = View.extend({
     this._torqueLayerModel = this.options.torqueLayerModel;
 
     this._torqueLayerModel.bind('change:step', this._onChangeStep, this);
+    this._torqueLayerModel.bind('change:steps', this._onChangeSteps, this);
     this._torqueLayerModel.bind('change:stepsRange', this.onStepsRange, this);
     this.add_related_model(this._torqueLayerModel);
 
-    this._viewModel.bind('change:width', this._updateXScale, this);
-    this.add_related_model(this._viewModel);
-    this._updateXScale();
+    this._chartView.bind('resized', this._onResized, this);
+    this._updateXScale(1);
   },
 
   render: function() {
@@ -93,11 +93,11 @@ module.exports = View.extend({
     return 0 <= x && x <= this._viewModel.get('width');
   },
 
-  _onChangeStep: function(m, step) {
+  _onChangeStep: function() {
     // Time marker might not be created when this method is first called
     if (this.timeMarker && !this._viewModel.get('isDragging')) {
       var data = this.timeMarker.data();
-      var newX = this._xScale(step);
+      var newX = this._xScale(this._torqueLayerModel.get('step'));
       if (!isNaN(newX)) {
         data[0].x = newX;
         this.timeMarker
@@ -109,6 +109,10 @@ module.exports = View.extend({
     }
   },
 
+  _onChangeSteps: function() {
+    this._updateXScale();
+  },
+
   onStepsRange: function() {
     var r = this._torqueLayerModel.get('stepsRange');
     if (r.start === 0 && r.end === this.model.get('bins')) {
@@ -116,6 +120,12 @@ module.exports = View.extend({
     } else {
       this._chartView.selectRange(r.start, r.end);
     }
+  },
+
+  _onResized: function(width) {
+    this._viewModel.set('width', width);
+    this._updateXScale();
+    this._onChangeStep();
   },
 
   _updateXScale: function() {

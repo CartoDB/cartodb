@@ -2,7 +2,6 @@ var $ = require('jquery');
 var _ = require('underscore');
 var d3 = require('d3');
 var formatter = require('cdb/core/format');
-var Model = require('cdb/core/model');
 var View = require('cdb/core/view');
 var HistogramTitleView = require('./histogram_title_view');
 var WidgetContent = require('../standard/widget_content_view');
@@ -41,7 +40,6 @@ module.exports = WidgetContent.extend({
     this.$('.js-title').html(titleView.render().el);
     this.addView(titleView);
 
-    this._setupDimensions();
     this._renderMiniChart();
     this._renderMainChart();
   },
@@ -108,10 +106,6 @@ module.exports = WidgetContent.extend({
 
     this.clearSubViews();
 
-    _.bindAll(this, '_onWindowResize');
-
-    $(window).bind('resize', this._onWindowResize);
-
     var data = this.dataModel.getData();
     var isDataEmpty = _.isEmpty(data) || _.size(data) === 0;
 
@@ -137,22 +131,14 @@ module.exports = WidgetContent.extend({
     this.$('.js-content').append(placeholder());
   },
 
-  _onWindowResize: function() {
-    this._setupDimensions();
-    if (this.histogramChartView) this.histogramChartView.resize(this.canvasWidth);
-    if (this.miniHistogramChartView) this.miniHistogramChartView.resize(this.canvasWidth);
-  },
-
   _renderMainChart: function() {
     this.histogramChartView = new HistogramChartView(({
       margin: { top: 4, right: 4, bottom: 20, left: 4 },
       handles: true,
       axis_tip: true,
-      width: this.canvasWidth,
-      height: this.canvasHeight,
+      height: this.defaults.chartHeight,
       data: this.dataModel.getData()
     }));
-    window.c = this.histogramChartView;
 
     this.$('.js-content').append(this.histogramChartView.el);
     this.addView(this.histogramChartView);
@@ -169,9 +155,9 @@ module.exports = WidgetContent.extend({
     this.miniHistogramChartView = new HistogramChartView(({
       className: 'mini',
       handles: false,
-      width: this.canvasWidth,
       margin: { top: 0, right: 0, bottom: 20, left: 4 },
       height: 40,
+      showOnWidthChange: false,
       data: this.dataModel.getData()
     }));
 
@@ -190,13 +176,6 @@ module.exports = WidgetContent.extend({
     this.viewModel.bind('change:max',   this._onChangeMax, this);
     this.viewModel.bind('change:min',   this._onChangeMin, this);
     this.viewModel.bind('change:avg',   this._onChangeAvg, this);
-  },
-
-  _setupDimensions: function() {
-    this.margin = { top: 0, right: 24, bottom: 0, left: 24 };
-
-    this.canvasWidth  = this.$el.width() - this.margin.left - this.margin.right;
-    this.canvasHeight = this.defaults.chartHeight - this.margin.top - this.margin.bottom;
   },
 
   _clearTooltip: function() {
@@ -411,7 +390,7 @@ module.exports = WidgetContent.extend({
   },
 
   _onZoomIn: function() {
-    this.miniHistogramChartView.show();
+    this.miniHistogramChartView.show(); // TODO  show done in showMiniRange, really necessary to do this here?
     this.histogramChartView.expand(20);
 
     this._showMiniRange();
@@ -437,7 +416,7 @@ module.exports = WidgetContent.extend({
 
     this.filter.unsetRange();
 
-    this.histogramChartView.contract(this.canvasHeight);
+    this.histogramChartView.contract(this.defaults.chartHeight);
     this.histogramChartView.resetIndexes();
 
     this.miniHistogramChartView.hide();
@@ -457,10 +436,5 @@ module.exports = WidgetContent.extend({
     this.histogramChartView.removeSelection();
     this.viewModel.set({ zoomed: false, zoom_enabled: false });
     this.viewModel.trigger('change:zoomed');
-  },
-
-  clean: function() {
-    $(window).unbind('resize', this._onWindowResize);
-    View.prototype.clean.call(this);
   }
 });

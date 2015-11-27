@@ -8,7 +8,11 @@ var View = require('cdb/core/view');
 module.exports = View.extend({
 
   defaults: {
+     // render the chart once the width is set as default, provide false value for this prop to disable this behavior
+     // e.g. for "mini" histogram behavior
+    showOnWidthChange: true,
     width: 0,
+
     axis_tip: false,
     minimumBarHeight: 2,
     animationSpeed: 750,
@@ -28,6 +32,13 @@ module.exports = View.extend({
     this.options = _.extend({}, this.defaults, this.options);
 
     _.bindAll(this, '_selectBars', '_adjustBrushHandles', '_onBrushMove', '_onBrushStart', '_onMouseMove', '_onMouseOut');
+
+    // Use this special setup for each view instance ot have its own debounced listener
+    // TODO in theory there's the possiblity that the callback is called before the view is rendered in the DOM,
+    //  which would lead to the view not being visible until an explicit window resize.
+    //  a wasAddedToDOM event would've been nice to have
+    this._onWindowResize = _.debounce(this._resizeToParentElement.bind(this), 50);
+    $(window).bind('resize', this._onWindowResize);
 
     // using tagName: 'svg' doesn't work,
     // and w/o class="" d3 won't instantiate properly
@@ -52,8 +63,26 @@ module.exports = View.extend({
     return this;
   },
 
+  clean: function() {
+    $(window).unbind('resize', this._onWindowResize);
+    View.prototype.clean.call(this);
+  },
+
   replaceData: function(data) {
     this.model.set({ data: data });
+  },
+
+  _resizeToParentElement: function() {
+    if (this.$el.parent()) {
+      // Hide this view temporarily to get actual size of the parent container
+      var wasVisible = this.isHidden();
+      this.$el.hide();
+      var width = this.$el.parent().width() || 0;
+      this.$el.toggle(wasVisible);
+
+      this.model.set('width', width);
+      this.trigger('resized', width);
+    }
   },
 
   _onChangeLeftAxisTip: function() {
@@ -115,14 +144,15 @@ module.exports = View.extend({
     var hiBarIndex = this.model.get('hi_index');
 
     var width = this.model.get('width');
-
     this.$el.width(width);
-
     this.chart.attr('width', width);
 
     this.reset();
     this.selectRange(loBarIndex, hiBarIndex);
-    this.$el.toggle(width > 1);
+
+    if (this.options.showOnWidthChange && width > 0) {
+      this.$el.show();
+    }
   },
 
   _onChangePos: function() {
@@ -311,10 +341,6 @@ module.exports = View.extend({
     this._setupBrush();
   },
 
-  resize: function(width) {
-    this.model.set('width', width);
-  },
-
   _generateLines: function() {
     this._generateHorizontalLines();
 
@@ -364,8 +390,8 @@ module.exports = View.extend({
   _setupModel: function() {
     this.model = new Model({
       data: this.options.data,
-      width: this.options.width,
       height: this.options.height,
+      width: 0, // will be set on resize listener
       pos: { x: 0, y: 0 }
     });
 
@@ -375,14 +401,12 @@ module.exports = View.extend({
   _setupDimensions: function() {
     this.margin = this.options.margin;
 
-    this.canvasWidth  = this.model.get('width');
-    this.canvasHeight = this.model.get('height');
-
-    this.chartWidth  = Math.max(this.canvasWidth - this.margin.left - this.margin.right, 0);
+    this.chartWidth = Math.max(0, this.model.get('width') - this.margin.left - this.margin.right);
     this.chartHeight = this.model.get('height') - this.margin.top - this.margin.bottom;
 
     this._setupScales();
     this._setupRanges();
+    this._onWindowResize();
   },
 
   _setupScales: function() {
@@ -430,6 +454,10 @@ module.exports = View.extend({
     this.$el.show();
   },
 
+  isHidden: function() {
+    return this.$el.is(':visible');
+  },
+
   _selectBars: function() {
     var self = this;
     var extent = this.brush.extent();
@@ -458,7 +486,7 @@ module.exports = View.extend({
   },
 
   expand: function(height) {
-    this.canvas.attr('height', this.canvasHeight + height);
+    this.canvas.attr('height', this.model.get('height') + height);
     this._move({ x: 0, y: height });
   },
 

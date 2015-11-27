@@ -4,6 +4,9 @@ var d3 = require('d3');
 var WidgetHistogramChart = require('cdb/geo/ui/widgets/histogram/chart');
 
 describe('geo/ui/widgets/histogram/chart', function() {
+  var onWindowResizeReal;
+  var onWindowResizeSpy;
+
   afterEach(function() {
     $('.js-chart').remove();
   });
@@ -21,63 +24,100 @@ describe('geo/ui/widgets/histogram/chart', function() {
     .attr('class', 'Canvas');
 
     this.data = genHistogramData(20);
-    this.margin = { top: 4, right: 4, bottom: 20, left: 4 };
+    this.margin = {
+      top: 4,
+      right: 4,
+      bottom: 20,
+      left: 4
+    };
+
+    // override default behavior of debounce, to be able to control callback
+    onWindowResizeSpy = jasmine.createSpy('_onWindowResize');
+    spyOn(_, 'debounce').and.callFake(function(cb) {
+      onWindowResizeReal = cb;
+      return onWindowResizeSpy;
+    });
 
     this.view = new WidgetHistogramChart(({
       el: $('.js-chart'),
       margin: this.margin,
       handles: true,
-      width: this.width,
       height: 100,
       data: this.data,
       xAxisTickFormat: function(d, i) {
         return d;
       }
     }));
-    window.chart = this.view;
-  });
 
-  it('should calculate the width of the bars', function() {
-    this.view.render().show();
-    expect(this.view.barWidth).toBe((this.width - this.margin.left - this.margin.right) / this.data.length);
-  });
+    var parentSpy = jasmine.createSpyObj('view.$el.parent()', ['width']);
+    parentSpy.width.and.returnValue(this.width);
+    spyOn(this.view.$el, 'parent');
+    this.view.$el.parent.and.returnValue(parentSpy);
 
-  it('should draw the bars', function() {
-    this.view.render().show();
-    expect(this.view.$el.find('.Bar').size()).toBe(this.data.length);
-  });
-
-  it('should draw the axis', function() {
-    this.view.render().show();
-    expect(this.view.$el.find('.Axis').size()).toBe(1);
-  });
-
-  it('should draw the handles', function() {
-    this.view.render().show();
-    expect(this.view.$el.find('.Handle').size()).toBe(2);
-  });
-
-  it('should calculate the scales', function() {
-    this.view.render().show();
-
-    var chartWidth = this.width - this.margin.left - this.margin.right;
-    var chartHeight = this.height - this.margin.top - this.margin.bottom;
-    var max = _.max(this.view.model.get('data'), function(d) { return d.freq; });
-
-    expect(this.view.xScale(0)).toBe(0);
-    expect(this.view.xScale(100)).toBe(chartWidth);
-
-    expect(this.view.yScale(0)).toBe(chartHeight);
-    expect(this.view.yScale(max.freq)).toBe(0);
-  });
-
-  it('should refresh the data', function() {
     spyOn(this.view, 'refresh').and.callThrough();
-    this.view.render().show();
-    this.view.model.set({ data: genHistogramData(20) });
-    expect(this.view.refresh).toHaveBeenCalled();
+
+    this.view.render();
   });
-  
+
+  it('should be hidden initially', function() {
+    expect(this.view.$el.attr('style')).toMatch('none');
+  });
+
+  describe('when view is resized but set to not be shown just yet', function() {
+    beforeEach(function() {
+      expect(this.view.options.showOnWidthChange).toBe(true); // assert default value, in case it's changed
+      this.view.options.showOnWidthChange = false;
+    });
+
+    it('should not show view', function() {
+      expect(this.view.$el.attr('style')).toMatch('none');
+    });
+  });
+
+  describe('when view is resized', function() {
+    beforeEach(function() {
+      onWindowResizeReal.call(this);
+      expect(this.view.$el.parent).toHaveBeenCalled();
+    });
+
+    it('should render the view', function() {
+      expect(this.view.$el.attr('style')).not.toMatch('none');
+    });
+
+    it('should calculate the width of the bars', function() {
+      expect(this.view.barWidth).toBe((this.width - this.margin.left - this.margin.right) / this.data.length);
+    });
+
+    it('should draw the bars', function() {
+      expect(this.view.$el.find('.Bar').size()).toBe(this.data.length);
+    });
+
+    it('should draw the axis', function() {
+      expect(this.view.$el.find('.Axis').size()).toBe(1);
+    });
+
+    it('should draw the handles', function() {
+      expect(this.view.$el.find('.Handle').size()).toBe(2);
+    });
+
+    it('should calculate the scales', function() {
+      var chartWidth = this.width - this.margin.left - this.margin.right;
+      var chartHeight = this.height - this.margin.top - this.margin.bottom;
+      var max = _.max(this.view.model.get('data'), function(d) { return d.freq; });
+
+      expect(this.view.xScale(0)).toBe(0);
+      expect(this.view.xScale(100)).toBe(chartWidth);
+
+      expect(this.view.yScale(0)).toBe(chartHeight);
+      expect(this.view.yScale(max.freq)).toBe(0);
+    });
+
+    it('should refresh the data', function() {
+      this.view.show();
+      this.view.model.set({ data: genHistogramData(20) });
+      expect(this.view.refresh).toHaveBeenCalled();
+    });
+  });
 });
 
 function genHistogramData(n) {

@@ -1,5 +1,3 @@
-var $ = require('jquery');
-var _ = require('underscore');
 var Model = require('cdb/core/model');
 var View = require('cdb/core/view');
 var HistogramChartView = require('../histogram/chart');
@@ -12,9 +10,6 @@ module.exports = View.extend({
   className: 'Widget-content Widget-content--timeSeries',
 
   initialize: function() {
-    _.bindAll(this, '_onWindowResize');
-    $(window).bind('resize', this._onWindowResize);
-
     this.filter = this.options.filter;
 
     this.viewModel = new Model({
@@ -42,13 +37,7 @@ module.exports = View.extend({
   render: function() {
     this.clearSubViews();
     this._createHistogramView();
-    this._onWindowResize();
     return this;
-  },
-
-  clean: function() {
-    $(window).unbind('resize', this._onWindowResize);
-    View.prototype.clean.call(this);
   },
 
   _createHistogramView: function() {
@@ -80,17 +69,6 @@ module.exports = View.extend({
       data[loBarIndex].start,
       data[hiBarIndex - 1].end
     );
-  },
-
-  _onWindowResize: _.debounce(function() {
-    var width = this.$el.width() || 0;
-
-    // $el.width might not be available, e.g. if $el is not present in DOM yet
-    // TODO width is not always accurate, because of other elements also resizing which affects this element
-    this.viewModel.set('width', width);
-    if (this.chartView) {
-      this.chartView.resize(width);
-    }
-  }, 50)
+  }
 
 });

@@ -86,6 +86,16 @@ describe('widgets/category/model', function() {
       });
 
     });
+
+    describe('range model', function() {
+
+      it('should set totalCount when rangeModel has changed', function() {
+        expect(this.model.get('totalCount')).toBeUndefined();
+        this.model.rangeModel.trigger('change:totalCount', this, 1000);
+        expect(this.model.get('totalCount')).toBe(1000);
+      });
+
+    });
   });
 
   describe('category colors', function() {

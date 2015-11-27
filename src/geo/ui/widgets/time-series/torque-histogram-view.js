@@ -99,10 +99,12 @@ module.exports = View.extend({
 
   _onChangeChartWidth: function() {
     var isMobileSize = $(window).width() < this.defaults.mobileThreshold;
+
+    this._chartView.toggleLabels(!isMobileSize);
+
     var height = isMobileSize
       ? this.defaults.histogramChartMobileHeight
       : this.defaults.histogramChartHeight;
-
     this._chartView.model.set('height', height);
   }
 

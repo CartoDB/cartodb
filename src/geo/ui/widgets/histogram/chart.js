@@ -53,6 +53,7 @@ module.exports = View.extend({
     .attr('class', 'Canvas');
 
     this.model = new Model({
+      showLabels: true,
       data: this.options.data,
       height: this.options.height,
       margin: this.options.margin,
@@ -67,6 +68,7 @@ module.exports = View.extend({
     this.model.bind('change:dragging', this._onChangeDragging, this);
     this.model.bind('change:right_axis_tip', this._onChangeRightAxisTip, this);
     this.model.bind('change:left_axis_tip', this._onChangeLeftAxisTip, this);
+    this.model.bind('change:showLabels', this._onChangShowLabels, this);
 
     this._setupDimensions();
   },
@@ -86,6 +88,10 @@ module.exports = View.extend({
     this.model.set({ data: data });
   },
 
+  toggleLabels: function(show) {
+    this.model.set('showLabels', show);
+  },
+
   _resizeToParentElement: function() {
     if (this.$el.parent()) {
       // Hide this view temporarily to get actual size of the parent container
@@ -96,6 +102,10 @@ module.exports = View.extend({
 
       this.model.set('width', width);
     }
+  },
+
+  _onChangShowLabels: function() {
+    this._axis.style('opacity', this.model.get('showLabels') ? 1 : 0);
   },
 
   _onChangeLeftAxisTip: function() {
@@ -170,6 +180,8 @@ module.exports = View.extend({
     var height = this.model.get('height');
     this.$el.height(height);
     this.chart.attr('height', height);
+    this.leftHandle.attr('height', height);
+    this.rightHandle.attr('height', height);
 
     this.reset();
   },
@@ -742,11 +754,11 @@ module.exports = View.extend({
   },
 
   _generateAxis: function() {
-    if (this.options.type === 'time') {
-      this._generateTimeAxis();
-    } else {
-      this._generateNumericAxis();
-    }
+    this._axis = this.options.type === 'time'
+      ? this._generateTimeAxis()
+      : this._generateNumericAxis();
+
+    this._onChangShowLabels();
   },
 
   _generateNumericAxis: function() {
@@ -767,12 +779,11 @@ module.exports = View.extend({
     .text(function(d) {
       return formatter.formatNumber(self.xAxisScale(d));
     });
+
+    return axis;
   },
 
   _generateTimeAxis: function() {
-
-    var self = this;
-
     d3.selection.prototype.moveToBack = function() { // TODO: move to a helper
       return this.each(function() {
         var firstChild = this.parentNode.firstChild;
@@ -791,15 +802,15 @@ module.exports = View.extend({
     .scale(this.xAxisScale)
     .orient('bottom');
 
-    this.canvas.append('g')
+    var axis = this.canvas.append('g')
     .attr("class", 'Axis')
     .attr("transform", "translate(0," + (this.chartHeight + 5) + ")")
-    .call(xAxis)
-    .selectAll("text")
-    .style("text-anchor", adjustTextAnchor);
+    .call(xAxis);
 
-    this.canvas.select('.Axis')
-    .moveToBack();
+    axis.selectAll('text').style('text-anchor', adjustTextAnchor);
+    axis.moveToBack();
+
+    return axis;
   },
 
   _updateChart: function() {

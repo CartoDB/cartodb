@@ -1,4 +1,4 @@
-var Model = require('cdb/core/model');
+var $ = require('jquery');
 var View = require('cdb/core/view');
 var HistogramChartView = require('../histogram/chart');
 
@@ -9,29 +9,21 @@ module.exports = View.extend({
 
   className: 'Widget-content Widget-content--timeSeries',
 
+  defaults: {
+    mobileThreshold: 960, // px; should match CSS media-query
+    histogramChartHeight:
+      48 + // inline bars height
+      20 + // bottom labels
+      4, // margins
+    histogramChartMobileHeight:
+      20 + // inline bars height (no bottom labels)
+      4 // margins
+  },
+
   initialize: function() {
     this.filter = this.options.filter;
 
-    this.viewModel = new Model({
-      margins: { // TODO could be calculated from element styles instead of duplicated numbers here?
-        top: 0,
-        right: 0,
-        bottom: 0,
-        left: 24
-      },
-      histogramChartHeight:
-        48 + // inline bars height
-        20 + // bottom labels
-        4 // margins
-    });
-
     this.model.bind('change:data', this._onChangeData, this);
-  },
-
-  _onChangeData: function() {
-    if (this.chartView) {
-      this.chartView.replaceData(this.model.getData());
-    }
   },
 
   render: function() {
@@ -41,7 +33,7 @@ module.exports = View.extend({
   },
 
   _createHistogramView: function() {
-    this.chartView = new HistogramChartView({
+    this._chartView = new HistogramChartView({
       type: 'time',
       animationSpeed: 100,
       margin: {
@@ -54,13 +46,22 @@ module.exports = View.extend({
       delayBar: function(d, i) {
         return 100 + (i * 10);
       },
-      height: this.viewModel.get('histogramChartHeight'),
+      height: this.defaults.histogramChartHeight,
       data: this.model.getData()
     });
-    this.addView(this.chartView);
-    this.$el.append(this.chartView.render().el);
-    this.chartView.bind('on_brush_end', this._onBrushEnd, this);
-    this.chartView.show();
+    this.addView(this._chartView);
+    this.$el.append(this._chartView.render().el);
+    this._chartView.show();
+
+    this._chartView.bind('on_brush_end', this._onBrushEnd, this);
+    this._chartView.model.bind('change:width', this._onChangeChartWidth, this);
+    this.add_related_model(this._chartView.model);
+  },
+
+  _onChangeData: function() {
+    if (this._chartView) {
+      this._chartView.replaceData(this.model.getData());
+    }
   },
 
   _onBrushEnd: function(loBarIndex, hiBarIndex) {
@@ -69,6 +70,17 @@ module.exports = View.extend({
       data[loBarIndex].start,
       data[hiBarIndex - 1].end
     );
+  },
+
+  _onChangeChartWidth: function() {
+    var isMobileSize = $(window).width() < this.defaults.mobileThreshold;
+
+    this._chartView.toggleLabels(!isMobileSize);
+
+    var height = isMobileSize
+      ? this.defaults.histogramChartMobileHeight
+      : this.defaults.histogramChartHeight;
+    this._chartView.model.set('height', height);
   }
 
 });

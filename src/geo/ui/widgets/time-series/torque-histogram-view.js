@@ -21,13 +21,7 @@ module.exports = View.extend({
       4, // margins
     histogramChartMobileHeight:
       20 + // inline bars height (no bottom labels)
-      4, // margins
-    histogramChartMargins: {
-      top: 4,
-      right: 4,
-      bottom: 20,
-      left: 4
-    }
+      4 // margins
   },
 
   initialize: function() {
@@ -40,12 +34,6 @@ module.exports = View.extend({
     this.model.bind('change:data', this._onChangeData, this);
   },
 
-  _onChangeData: function() {
-    if (this._chartView) {
-      this._chartView.replaceData(this.model.getData());
-    }
-  },
-
   render: function() {
     this.clearSubViews();
     this._createHistogramView();
@@ -56,17 +44,23 @@ module.exports = View.extend({
     this._chartView = new HistogramChartView({
       type: 'time',
       animationSpeed: 100,
-      margin: this.defaults.histogramChartMargins,
+      margin: {
+        top: 4,
+        right: 4,
+        bottom: 20,
+        left: 4
+      },
       handles: true,
       height: this.defaults.histogramChartHeight,
       data: this.model.getData()
     });
     this.addView(this._chartView);
     this.$el.append(this._chartView.render().el);
+    this._chartView.show();
+
     this._chartView.bind('on_brush_end', this._onBrushEnd, this);
     this._chartView.model.bind('change:width', this._onChangeChartWidth, this);
     this.add_related_model(this._chartView.model);
-    this._chartView.show();
 
     var timeMarkerView = new TorqueTimeMarkerview({
       model: this.model, // a histogram model
@@ -75,6 +69,12 @@ module.exports = View.extend({
     });
     this.addView(timeMarkerView);
     timeMarkerView.render();
+  },
+
+  _onChangeData: function() {
+    if (this._chartView) {
+      this._chartView.replaceData(this.model.getData());
+    }
   },
 
   _onBrushEnd: function(loBarIndex, hiBarIndex) {

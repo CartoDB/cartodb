@@ -177,12 +177,12 @@
   width: 40px;
   text-align: center;
   margin-right: 10px;
+}
 
-  img {
-    display: inline-block;
-    border-radius: 4px;
-    width: 100%;
-  }
+.Dashboard-info-avatar img {
+  border-radius: 4px;
+  display: inline-block;
+  width: 100%;
 }
 
 .Dashboard-info-footer-txt {

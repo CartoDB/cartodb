@@ -1,5 +1,4 @@
 var $ = require('jquery');
-var Model = require('cdb/core/model');
 var View = require('cdb/core/view');
 var HistogramChartView = require('../histogram/chart');
 var TorqueTimeMarkerview = require('./torque-time-marker-view');

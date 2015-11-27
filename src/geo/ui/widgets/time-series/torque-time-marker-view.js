@@ -17,7 +17,7 @@ module.exports = View.extend({
 
     this._torqueLayerModel.bind('change:step', this._onChangeStep, this);
     this._torqueLayerModel.bind('change:steps', this._onChangeSteps, this);
-    this._torqueLayerModel.bind('change:stepsRange', this.onStepsRange, this);
+    this._torqueLayerModel.bind('change:stepsRange', this._onStepsRange, this);
     this.add_related_model(this._torqueLayerModel);
 
     this._chartView.bind('resized', this._onResized, this);
@@ -113,7 +113,7 @@ module.exports = View.extend({
     this._updateXScale();
   },
 
-  onStepsRange: function() {
+  _onStepsRange: function() {
     var r = this._torqueLayerModel.get('stepsRange');
     if (r.start === 0 && r.end === this.model.get('bins')) {
       this._chartView.removeSelection();

@@ -56,10 +56,11 @@ module.exports = View.extend({
       showLabels: true,
       data: this.options.data,
       height: this.options.height,
-      margin: this.options.margin,
+      margin: _.clone(this.options.margin),
       width: 0, // will be set on resize listener
       pos: { x: 0, y: 0 }
     });
+
     this.model.bind('change:width', this._onChangeWidth, this);
     this.model.bind('change:height', this._onChangeHeight, this);
     this.model.bind('change:pos', this._onChangePos, this);
@@ -114,10 +115,6 @@ module.exports = View.extend({
 
       this.model.set('width', width);
     }
-  },
-
-  _onChangShowLabels: function() {
-    this._axis.style('opacity', this.model.get('showLabels') ? 1 : 0);
   },
 
   _onChangeLeftAxisTip: function() {
@@ -196,7 +193,19 @@ module.exports = View.extend({
     this.leftHandle.attr('height', height);
     this.rightHandle.attr('height', height);
 
-    this.refresh();
+    this.reset();
+  },
+
+  _onChangShowLabels: function() {
+    var showLabels = this.model.get('showLabels');
+
+    var margin = this.model.get('margin');
+    margin.bottom = showLabels
+      ? this.options.margin.bottom
+      : this.options.margin.top; // same as top for margins to be symmetrical
+    this.model.set('margin', margin);
+
+    this._axis.style('opacity', showLabels ? 1 : 0);
   },
 
   _onChangePos: function() {

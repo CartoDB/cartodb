@@ -4,6 +4,7 @@ exclude:
   - 'themes/scss/map/*.scss'
   - 'themes/scss/tooltip/*.scss'
   - 'themes/scss/vendor/*.scss'
+  - 'vendor/**/*.scss'
 linters:
   BangFormat:
     enabled: true

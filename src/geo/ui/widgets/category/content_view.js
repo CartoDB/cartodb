@@ -32,10 +32,9 @@ module.exports = WidgetContent.extend({
   },
 
   _initBinds: function() {
-    this.viewModel.bind('change:collapsed', function(mdl, isCollapsed) {
+    this.model.bind('change:collapsed', function(mdl, isCollapsed) {
       this.$el.toggleClass('is-collapsed', !!isCollapsed);
     }, this);
-    this.add_related_model(this.viewModel);
   },
 
   _initViews: function() {

@@ -20,7 +20,6 @@ module.exports = View.extend({
   },
 
   initialize: function() {
-    this.viewModel = this.options.viewModel;
     this.dataModel = this.options.dataModel;
     this._initBinds();
   },
@@ -30,17 +29,15 @@ module.exports = View.extend({
       template({
         title: this.dataModel.get('title'),
         isSizesApplied: this.dataModel.get('histogramSizes'),
-        isCollapsed: this.viewModel.isCollapsed()
+        isCollapsed: this.dataModel.isCollapsed()
       })
     );
     return this;
   },
 
   _initBinds: function() {
-    this.dataModel.bind('change:histogramSizes', this.render, this);
-    this.viewModel.bind('change:collapsed', this.render, this);
+    this.dataModel.bind('change:histogramSizes change:collapsed', this.render, this);
     this.add_related_model(this.dataModel);
-    this.add_related_model(this.viewModel);
   },
 
   _applySizes: function() {
@@ -52,7 +49,7 @@ module.exports = View.extend({
   },
 
   _toggleCollapse: function() {
-    this.viewModel.toggleCollapsed();
+    this.dataModel.toggleCollapsed();
   }
 
 });

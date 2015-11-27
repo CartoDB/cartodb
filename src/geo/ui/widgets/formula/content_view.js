@@ -26,7 +26,7 @@ module.exports = WidgetContent.extend({
     var value = this.dataModel.get('data');
 
     var nulls = !_.isUndefined(this.dataModel.get('nulls')) && formatter.formatNumber(this.dataModel.get('nulls')) || '-';
-    var isCollapsed = this.viewModel.isCollapsed();
+    var isCollapsed = this.dataModel.isCollapsed();
 
     var prefix = this.dataModel.get('prefix');
     var suffix = this.dataModel.get('suffix');
@@ -51,13 +51,12 @@ module.exports = WidgetContent.extend({
   },
 
   _initBinds: function() {
-    this.viewModel.bind('change:collapsed', this.render, this);
+    this.dataModel.bind('change:collapsed', this.render, this);
     WidgetContent.prototype._initBinds.call(this);
-    this.add_related_model(this.viewModel);
   },
 
   _toggleCollapse: function() {
-    this.viewModel.toggleCollapsed();
+    this.dataModel.toggleCollapsed();
   }
 
 });

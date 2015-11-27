@@ -218,7 +218,6 @@ var Vis = View.extend({
   },
 
   _setLayerOptions: function(options) {
-
     var layers = [];
 
     // flatten layers (except baselayer)
@@ -267,7 +266,6 @@ var Vis = View.extend({
   },
 
   _setupSublayers: function(layers, options) {
-
     options.sublayer_options = [];
 
     _.each(layers.slice(1), function(lyr) {
@@ -283,9 +281,7 @@ var Vis = View.extend({
       } else if (lyr.type === 'torque') {
         options.sublayer_options.push({ visible: ( lyr.options.visible !== undefined ? lyr.options.visible : true ) })
       }
-
     });
-
   },
 
   load: function(data, options) {
@@ -356,7 +352,6 @@ var Vis = View.extend({
     }));
 
     var allowDragging = hasZoomOverlay || scrollwheel;
-
 
     //Force using GMaps ?
     if ( (this.gmaps_base_type) && (data.map_provider === "leaflet") ) {
@@ -682,7 +677,6 @@ var Vis = View.extend({
   },
 
   _addMobile: function(data, options) {
-
     var layers;
     var layer = data.layers[1];
 
@@ -766,7 +760,6 @@ var Vis = View.extend({
   },
 
   addOverlay: function(overlay) {
-
     overlay.map = this.map;
 
     var v = Overlay.create(overlay.type, this, overlay);
@@ -895,7 +888,6 @@ var Vis = View.extend({
       }
     }
 
-
     if (opt.layer_selector) {
       if (!search_overlay('layer_selector')) {
         vizjson.overlays.push({
@@ -976,11 +968,7 @@ var Vis = View.extend({
       }
       _applyLayerOptions(vizjson.layers);
     }
-
   },
-
-  // Set map top position taking into account header height
-  setMapPosition: function() { },
 
   createLayer: function(layerData, opts) {
     var layerModel = Layers.create(layerData.type || layerData.kind, this, layerData);
@@ -1053,7 +1041,6 @@ var Vis = View.extend({
   },
 
   addInfowindow: function(layerView) {
-
     var mapView = this.mapView;
     var infowindow = null;
     var layers = [];
@@ -1181,7 +1168,6 @@ var Vis = View.extend({
     }
   },
 
-
   loadingTiles: function() {
 
     if (this.mobileOverlay) {
@@ -1294,7 +1280,6 @@ var Vis = View.extend({
       }
     }, 150);
   }
-
 }, {
 
   /**
@@ -1402,7 +1387,6 @@ var Vis = View.extend({
     var mapView = map.viz.mapView;
     layer.unbind(null, null, mapView);
   }
-
 });
 
 module.exports = Vis;

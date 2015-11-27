@@ -286,7 +286,6 @@ var Vis = View.extend({
 
   load: function(data, options) {
     var self = this;
-    this._data = data;
 
     if (typeof(data) === 'string') {
       var url = data;
@@ -349,7 +348,7 @@ var Vis = View.extend({
     // Do not allow pan map if zoom overlay and scrollwheel are disabled
     // Check if zoom overlay is present.
     var hasZoomOverlay = _.isObject(_.find(data.overlays, function(overlay) {
-      return overlay.type == "zoom"
+      return overlay.type == "zoom";
     }));
 
     var allowDragging = hasZoomOverlay || scrollwheel;
@@ -418,8 +417,6 @@ var Vis = View.extend({
     var map = new Map(mapConfig);
     this.map = map;
     this.overlayModels = new Backbone.Collection();
-
-    this.updated_at = data.updated_at || new Date().getTime();
 
     // If a CartoDB embed map is hidden by default, its
     // height is 0 and it will need to recalculate its size
@@ -615,20 +612,6 @@ var Vis = View.extend({
     return this;
   },
 
-  _addWidget: function() {
-
-  },
-
-  // sets the animation step if there is an animation
-  // returns true if succed
-  setAnimationStep: function(s, opt) {
-    if (this.torqueLayer) {
-      this.torqueLayer.setStep(s, opt);
-      return true;
-    }
-    return false;
-  },
-
   _createOverlays: function(overlays, vis_data, options) {
 
     _(overlays).each(function(data) {
@@ -687,22 +670,14 @@ var Vis = View.extend({
           overlay.render();
         }
       }
-
-
     }, this);
-
   },
 
   _addHeader: function(data, vis_data) {
-
-    var transitions = [vis_data.transition_options];
-
     return this.addOverlay({
       type: 'header',
-      options: data.options,
-      transitions: transitions
+      options: data.options
     });
-
   },
 
   _addMobile: function(data, options) {
@@ -722,12 +697,9 @@ var Vis = View.extend({
         layers = layer.options.named_map.layers;
       }
 
-      var transitions = [data.transition_options];
-
       this.mobileOverlay = this.addOverlay({
         type: 'mobile',
         layers: layers,
-        transitions:transitions,
         overlays: data.overlays,
         options: options,
         torqueLayer: this.torqueLayer

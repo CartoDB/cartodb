@@ -49,7 +49,6 @@ Overlay.register('mobile', function(data, vis) {
     template: template,
     mapView: vis.mapView,
     overlays: data.overlays,
-    transitions: data.transitions,
     visualization: vis,
     layerView: data.layerView,
     visibility_options: data.options,
@@ -133,7 +132,6 @@ Overlay.register('header', function(data, vis) {
 
   var widget = new Header({
     model: new Model(options),
-    transitions: data.transitions,
     template: template
   });
 

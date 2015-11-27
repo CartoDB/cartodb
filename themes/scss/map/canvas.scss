@@ -20,12 +20,12 @@
   @include flex-direction(column);
   @include flex-grow(1);
 }
+.Dashboard-mapWrapper--margin {
+  margin-left: 80px;
+}
 .Map-canvas {
   position: relative;
   @include flex-grow(1);
-  &.Map-canvas--margin {
-    margin-left: 80px;
-  }
 }
 .Map {
   position: absolute;

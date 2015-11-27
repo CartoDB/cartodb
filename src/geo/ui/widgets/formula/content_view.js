@@ -3,6 +3,7 @@ var WidgetContent = require('../standard/widget_content_view');
 var WidgetViewModel = require('../widget_content_model');
 var template = require('./template.tpl');
 var animationTemplate = require('./animation_template.tpl');
+var formatter = require('cdb/core/format');
 var d3 = require('d3');
 
 /**
@@ -23,16 +24,8 @@ module.exports = WidgetContent.extend({
   render: function() {
     this.clearSubViews();
     var value = this.dataModel.get('data');
-    var format = function(value) {
-      var formatter = d3.format('0,000');
 
-      if (_.isNumber(value)) {
-        return formatter(value.toFixed(2));
-      }
-      return 0;
-    };
-
-    var nulls = !_.isUndefined(this.dataModel.get('nulls')) && format(this.dataModel.get('nulls')) || '-';
+    var nulls = !_.isUndefined(this.dataModel.get('nulls')) && formatter.formatNumber(this.dataModel.get('nulls')) || '-';
     var isCollapsed = this.viewModel.isCollapsed();
 
     var prefix = this.dataModel.get('prefix');
@@ -50,7 +43,7 @@ module.exports = WidgetContent.extend({
       })
     );
 
-    this._animateValue(this.dataModel, 'data', '.js-value', animationTemplate, { animationSpeed: 700, formatter: format, templateData: { prefix: prefix, suffix: suffix }});
+    this._animateValue(this.dataModel, 'data', '.js-value', animationTemplate, { animationSpeed: 700, formatter: formatter.formatNumber, templateData: { prefix: prefix, suffix: suffix }});
 
     this.$el.toggleClass('is-collapsed', !!isCollapsed);
 

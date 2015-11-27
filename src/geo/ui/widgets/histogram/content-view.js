@@ -300,7 +300,7 @@ module.exports = WidgetContent.extend({
     this._addTitleForValue(className, what, suffix);
 
     this._animateValue(this.viewModel, what, className, animationTemplate, {
-      formatter: this.histogramChartView.formatNumber,
+      formatter: formatter.formatNumber,
       templateData: { suffix: " " + suffix }
     });
   },

@@ -297,7 +297,7 @@ describe('geo/ui/infowindow', function() {
     it('should sanitize the template output by default', function() {
       view.model.set('template', 'no <iframe src="" onload="document.body.appendChild(document.createElement(\'script\')).src=\'http://localhost/xss.js\'"/> no');
       view.render();
-      expect(view.$el.html()).toEqual('no <iframe> no</iframe>');
+      expect(view.$el.html()).toEqual('no ');
     });
 
     it('should allow to override sanitization', function() {
@@ -320,7 +320,7 @@ describe('geo/ui/infowindow', function() {
 
       view.model.set('sanitizeTemplate', undefined);
       view.render();
-      expect(view.$el.html()).toEqual('no <iframe> no</iframe>');
+      expect(view.$el.html()).toEqual('no ');
     });
   });
 

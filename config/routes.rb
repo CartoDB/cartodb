@@ -209,6 +209,10 @@ CartoDB::Application.routes.draw do
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/locked/tag/:tag'              => 'visualizations#index', as: :maps_locked_tag
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/locked/tag/:tag/:page'        => 'visualizations#index', as: :maps_locked_tag_page
 
+    # Dashboards
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/dashboards'                        => 'visualizations#index', as: :dashboards_index
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/dashboards/:page'                  => 'visualizations#index', as: :dashboards_page
+
     # Visualizations search
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/visualizations/search/:q'                    => 'visualizations#index', as: :visualizations_search
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/visualizations/search/:q/:page'              => 'visualizations#index', as: :visualizations_search_page

@@ -30,6 +30,7 @@ WORKING_SPECS_1 = \
   spec/requests/carto/api/layer_presenter_spec.rb \
 	spec/requests/carto/api/data_import_presenter_spec.rb \
 	spec/requests/carto/api/database_groups_controller_spec.rb \
+	spec/requests/carto/api/presenter_cache_spec.rb \
   spec/models/map_spec.rb \
   spec/models/map/copier_spec.rb \
 	spec/models/visualization/collection_spec.rb \

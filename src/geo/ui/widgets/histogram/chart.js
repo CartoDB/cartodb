@@ -44,6 +44,7 @@ module.exports = View.extend({
 
     this._setupModel();
     this._setupDimensions();
+    this._setupD3Bindings();
   },
 
   render: function() {
@@ -267,6 +268,9 @@ module.exports = View.extend({
     this._removeAxis();
     this._generateAxis();
     this._updateChart();
+
+    this.chart.select('.Handles').moveToFront();
+    this.chart.select('.Brush').moveToFront();
   },
 
   resetIndexes: function() {
@@ -361,6 +365,24 @@ module.exports = View.extend({
     });
 
     this._bindModel();
+  },
+
+   _setupD3Bindings: function() { // TODO: move to a helper
+
+    d3.selection.prototype.moveToBack = function() { 
+      return this.each(function() {
+        var firstChild = this.parentNode.firstChild;
+        if (firstChild) {
+          this.parentNode.insertBefore(this, firstChild);
+        }
+      });
+    };
+
+    d3.selection.prototype.moveToFront = function() {
+      return this.each(function(){
+        this.parentNode.appendChild(this);
+      });
+    };
   },
 
   _setupDimensions: function() {
@@ -733,15 +755,6 @@ module.exports = View.extend({
   _generateTimeAxis: function() {
 
     var self = this;
-
-    d3.selection.prototype.moveToBack = function() { // TODO: move to a helper
-      return this.each(function() {
-        var firstChild = this.parentNode.firstChild;
-        if (firstChild) {
-          this.parentNode.insertBefore(this, firstChild);
-        }
-      });
-    };
 
     var adjustTextAnchor = this._generateAdjustAnchorMethod(this.xAxisScale.ticks());
 

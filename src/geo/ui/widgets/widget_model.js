@@ -83,6 +83,10 @@ module.exports = Model.extend({
     return this.get('data');
   },
 
+  getPreviousData: function() {
+    return this.previous('data');
+  },
+
   fetch: function(opts) {
     this.trigger("loading", this);
     return Model.prototype.fetch.call(this,opts);

@@ -5,6 +5,7 @@ var template = require('./template.tpl');
 var animationTemplate = require('./animation_template.tpl');
 var formatter = require('cdb/core/format');
 var d3 = require('d3');
+var AnimateValues = require('../animate_values.js');
 
 /**
  * Default widget content view:
@@ -52,7 +53,11 @@ module.exports = WidgetContent.extend({
       })
     );
 
-    this._animateValue(this.dataModel, 'data', '.js-value', animationTemplate, { animationSpeed: 700, formatter: format, templateData: { prefix: prefix, suffix: suffix }});
+    var animator = new AnimateValues({
+      el: this.$el
+    });
+
+    animator.animateValue(this.dataModel, 'data', '.js-value', animationTemplate, { animationSpeed: 700, formatter: format, templateData: { prefix: prefix, suffix: suffix }});
 
     this.$el.toggleClass('is-collapsed', !!isCollapsed);
 

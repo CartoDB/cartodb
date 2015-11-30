@@ -6,6 +6,7 @@ var WidgetViewModel = require('../widget_content_model');
 var HistogramChartView = require('./chart');
 var placeholder = require('./placeholder.tpl');
 var template = require('./content.tpl');
+var AnimateValues = require('../animate_values.js');
 var animationTemplate = require('./animation_template.tpl');
 
 /**
@@ -274,7 +275,11 @@ module.exports = WidgetContent.extend({
 
     this._addTitleForValue(className, what, suffix);
 
-    this._animateValue(this.viewModel, what, className, animationTemplate, {
+    var animator = new AnimateValues({
+      el: this.$el
+    });
+
+    animator.animateValue(this.viewModel, what, className, animationTemplate, {
       formatter: formatter.formatNumber,
       templateData: { suffix: " " + suffix }
     });

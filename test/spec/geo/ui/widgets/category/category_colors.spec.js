@@ -8,13 +8,13 @@ describe('widgets/category/category_colors', function() {
   });
 
   it('should generate colors from the beginning', function() {
-    expect(_.size(this.model.colors)).toBe(7);
+    expect(_.size(this.model.colors)).toBe(6);
   });
 
   describe('updateData', function() {
 
     it('should set a color per each category', function() {
-      this.model.updateData(_generateData(8));
+      this.model.updateData(_generateData(7));
       var anyWithoutColor = false;
       _.each(this.model.colors, function(value, key) {
         if (!value) {
@@ -81,8 +81,8 @@ describe('widgets/category/category_colors', function() {
 
     it('should return the category from a color', function() {
       this.model.updateData(_generateData(10));
-      expect(this.model.getCategoryByColor("#beaed4")).not.toBeUndefined();
-      expect(this.model.getCategoryByColor("#fdc086")).not.toBeUndefined();
+      expect(this.model.getCategoryByColor("#2CA095")).not.toBeUndefined();
+      expect(this.model.getCategoryByColor("#559030")).not.toBeUndefined();
     });
 
     it('should return undefined if color is not defined', function() {

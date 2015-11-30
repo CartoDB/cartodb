@@ -60,9 +60,10 @@ module.exports = WidgetContent.extend({
   _storeBounds: function() {
     var data = this.model.getData();
     if (data && data.length > 0) {
-      var start = data[0].start;
-      var end = data[data.length - 1].end;
-      this.model.set({ start: start, end: end, bins: data.length });
+      this.start = data[0].start;
+      this.end = data[data.length - 1].end;
+      this.binsCount = data.length;
+      this.model.set({ start: this.start, end: this.end, bins: this.binsCount });
     }
   },
 
@@ -397,7 +398,7 @@ module.exports = WidgetContent.extend({
     this.lockZoomedData = false;
     this.unsettingRange = true;
 
-    this.model.set({ own_filter: null });
+    this.model.set({ start: this.start, end: this.end, bins_count: this.binsCount, own_filter: null });
     this.viewModel.set({ zoom_enabled: false, filter_enabled: false, lo_index: null, hi_index: null });
 
     this.filter.unsetRange();

@@ -42,13 +42,26 @@ module.exports = Model.extend({
 
   _onChangeBinds: function() {
     this.bind('change:url', function(){
-      if (this.get('sync')) {
+      if (this.get('sync') && !this.isCollapsed()) {
         this._fetch();
       }
     }, this);
     this.bind('change:boundingBox', function() {
-      if (this.get('bbox')) {
+      if (this.get('boundingBox') && !this.isCollapsed()) {
         this._fetch();
+      }
+    }, this);
+
+    this.bind('change:collapsed', function(mdl, isCollapsed) {
+      if (!isCollapsed) {
+        if (mdl.changedAttributes(this._previousAttrs)) {
+          this._fetch();
+        }
+      } else {
+        this._previousAttrs = {
+          url: this.get('url'),
+          boundingBox: this.get('boundingBox')
+        };
       }
     }, this);
   },

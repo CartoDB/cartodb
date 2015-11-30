@@ -25,7 +25,6 @@ module.exports = WidgetContent.extend({
 
   initialize: function() {
     this.model = this.options.dataModel;
-    this.firstData = _.clone(this.options.dataModel);
     this.viewModel = new WidgetViewModel();
     this.lockedByUser = false;
     WidgetContent.prototype.initialize.call(this);
@@ -398,7 +397,7 @@ module.exports = WidgetContent.extend({
     this.lockZoomedData = false;
     this.unsettingRange = true;
 
-    this.model.set({ start: this.start, end: this.end, bins_count: this.binsCount, own_filter: null });
+    this.model.set({ start: this.start, end: this.end, bins: this.binsCount, own_filter: null });
     this.viewModel.set({ zoom_enabled: false, filter_enabled: false, lo_index: null, hi_index: null });
 
     this.filter.unsetRange();

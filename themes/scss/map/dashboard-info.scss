@@ -36,28 +36,20 @@
 @-webkit-keyframes fadeInRight {
   from {
     opacity: 0;
-    -webkit-transform: translate3d(-5%, 0, 0);
-    transform: translate3d(-5%, 0, 0);
   }
 
   to {
     opacity: 1;
-    -webkit-transform: none;
-    transform: none;
   }
 }
 
 @keyframes fadeInRight {
   from {
     opacity: 0;
-    -webkit-transform: translate3d(-5%, 0, 0);
-    transform: translate3d(-5%, 0, 0);
   }
 
   to {
     opacity: 1;
-    -webkit-transform: none;
-    transform: none;
   }
 }
 
@@ -70,7 +62,7 @@
   opacity: 0;
 }
 .Dashboard-info {
-  @include transition(width, 0.5s, cubic-bezier(0.01, 0.99, 0.97, 1.01));
+  @include transition(width, 0.3s, cubic-bezier(0.01, 0.99, 0.97, 1.01));
   position: absolute;
   top: 0;
   left: 0;
@@ -127,7 +119,7 @@
 }
 
 .Dashboard-info-actions-link {
-  @include transition(all, 0.3s, ease-out);
+  @include transition(all, 0.2s, ease-out);
   display: block;
   width: 24px;
   height: 24px;
@@ -197,7 +189,7 @@
 }
 
 .Dashboard-info-snapshots {
-  @include transition(opacity, 0.5s, ease-out);
+  @include transition(opacity, 0.3s, ease-out);
   position: relative;
   width: 280px;
   height: 120px;

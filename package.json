@@ -93,7 +93,6 @@
     "lzma": "./vendor/lzma.js",
     "mousewheel": "./vendor/mousewheel.js",
     "mwheelIntent": "./vendor/mwheelIntent.js",
-    "odyssey": "./vendor/mod/odyssey.js",
     "spin.js": "./vendor/spin.js",
     "wax.cartodb.js": "./vendor/wax.cartodb.js"
   },

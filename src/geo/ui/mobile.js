@@ -11,7 +11,6 @@ var Zoom = require('./zoom');
 var TilesLoader = require('./tiles-loader');
 var Search = require('./search');
 var MobileLayer = require('./mobile-layer');
-var SlidesController = require('./slides-controller');
 
 var Mobile = View.extend({
 
@@ -38,12 +37,7 @@ var Mobile = View.extend({
     this.hasLayerSelector = false;
     this.layersLoading    = 0;
 
-    this.slides_data = this.options.slides_data;
     this.visualization = this.options.visualization;
-
-    if (this.visualization) {
-      this.slides = this.visualization.slides;
-    }
 
     this.mobileEnabled = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
@@ -54,7 +48,7 @@ var Mobile = View.extend({
 
     this.template = this.options.template ? this.options.template : templates.getTemplate('geo/zoom');
 
-    this._selectOverlays();
+    this.overlays = this.options.overlays;
 
     this._setupModel();
 
@@ -84,20 +78,6 @@ var Mobile = View.extend({
     if(this.layersLoading <= 0) {
       this.layersLoading = 0;
       this.trigger('load');
-    }
-  },
-
-  _selectOverlays: function() {
-    if (this.slides && this.slides_data) { // if there are slides…
-      var state = this.slides.state();
-
-      if (state === 0) {
-        this.overlays = this.options.overlays;
-      } else {
-        this.overlays = this.slides_data[state - 1].overlays;
-      }
-    } else { // otherwise we load the regular overlays
-      this.overlays = this.options.overlays;
     }
   },
 
@@ -441,10 +421,6 @@ var Mobile = View.extend({
         show_description = true;
       }
 
-      if (this.slides) {
-        has_header = true;
-      }
-
       var $hgroup = title_template({
         title: sanitize.html(extra.title),
         show_title:show_title,
@@ -538,21 +514,6 @@ var Mobile = View.extend({
     this.model.set("layer_count", this.model.get("layer_count") + 1);
   },
 
-  _renderSlidesController: function() {
-    if (this.slides) {
-      this.$el.addClass("with-slides");
-
-      this.slidesController = new SlidesController({
-        show_counter: true,
-        transitions: this.options.transitions,
-        visualization: this.options.visualization,
-        slides: this.slides
-      });
-
-      this.$el.append(this.slidesController.render().$el);
-    }
-  },
-
   render: function() {
     this._bindOrientationChange();
 
@@ -562,8 +523,6 @@ var Mobile = View.extend({
     this.$header.show();
 
     this._renderOverlays();
-
-    this._renderSlidesController();
 
     this._addAttributions();
 

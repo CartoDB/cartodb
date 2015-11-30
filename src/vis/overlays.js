@@ -1,6 +1,5 @@
 var _ = require('underscore');
 var Overlay = require('./vis/overlay');
-var SlidesController = require('../geo/ui/slides-controller');
 var Model = require('../core/model');
 var Template = require('../core/template');
 var Mobile = require('../geo/ui/mobile');
@@ -19,17 +18,6 @@ var Zoom = require('../geo/ui/zoom');
 var FullScreen = require('../ui/common/fullscreen');
 
 Overlay.register('logo', function(data, vis) {
-
-});
-
-Overlay.register('slides_controller', function(data, vis) {
-
-  var slides_controller = new SlidesController({
-    transitions: data.transitions,
-    visualization: vis
-  });
-
-  return slides_controller.render();
 
 });
 
@@ -61,8 +49,6 @@ Overlay.register('mobile', function(data, vis) {
     template: template,
     mapView: vis.mapView,
     overlays: data.overlays,
-    transitions: data.transitions,
-    slides_data: data.slides,
     visualization: vis,
     layerView: data.layerView,
     visibility_options: data.options,
@@ -146,8 +132,6 @@ Overlay.register('header', function(data, vis) {
 
   var widget = new Header({
     model: new Model(options),
-    transitions: data.transitions,
-    slides: vis.slides,
     template: template
   });
 

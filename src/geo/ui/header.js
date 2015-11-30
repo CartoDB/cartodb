@@ -1,7 +1,6 @@
 var _ = require('underscore');
 var sanitize = require('cdb/core/sanitize');
 var View = require('cdb/core/view');
-var SlidesController = require('cdb/geo/ui/slides-controller');
 
 var Header = View.extend({
 
@@ -42,15 +41,6 @@ var Header = View.extend({
     data.title = sanitize.html(data.title);
     data.description = this._setLinksTarget(sanitize.html(data.description));
     this.$el.html(this.options.template(data));
-
-    if (this.options.slides) {
-      this.slides_controller = new SlidesController({
-        transitions: this.options.transitions,
-        slides: this.options.slides
-      });
-
-      this.$el.append(this.slides_controller.render().$el);
-    }
 
     if (this.model.get("show_title") || this.model.get("show_description")) {
       this.show();

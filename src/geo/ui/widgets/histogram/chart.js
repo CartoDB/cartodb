@@ -8,6 +8,11 @@ var View = require('cdb/core/view');
 module.exports = View.extend({
 
   defaults: {
+     // render the chart once the width is set as default, provide false value for this prop to disable this behavior
+     // e.g. for "mini" histogram behavior
+    showOnWidthChange: true,
+
+    labelsMargin: 16, // px
     hasAxisTip: false,
     minimumBarHeight: 2,
     animationSpeed: 750,
@@ -21,28 +26,52 @@ module.exports = View.extend({
     transitionType: 'elastic'
   },
 
-  initialize: function(opts) {
-    if (!opts.width) throw new Error('opts.width is required');
-    if (!opts.height) throw new Error('opts.height is required');
+  initialize: function() {
+    if (!_.isNumber(this.options.height)) throw new Error('height is required');
 
-    this.options = _.extend({}, this.defaults, opts);
+    this.options = _.extend({}, this.defaults, this.options);
 
     _.bindAll(this, '_selectBars', '_adjustBrushHandles', '_onBrushMove', '_onBrushStart', '_onMouseMove', '_onMouseOut');
 
+    // Use this special setup for each view instance ot have its own debounced listener
+    // TODO in theory there's the possiblity that the callback is called before the view is rendered in the DOM,
+    //  which would lead to the view not being visible until an explicit window resize.
+    //  a wasAddedToDOM event would've been nice to have
+    this._onWindowResize = _.debounce(this._resizeToParentElement.bind(this), 50);
+    $(window).bind('resize', this._onWindowResize);
+
     // using tagName: 'svg' doesn't work,
     // and w/o class="" d3 won't instantiate properly
-    this.$el = $('<svg class=""></svg>');
-    this.el = this.$el[0];
+    this.setElement($('<svg class=""></svg>')[0]);
+    this.$el.hide(); // will be toggled on width change
 
     this.canvas = d3.select(this.el)
-    .attr('width',  opts.width)
-    .attr('height', opts.height);
+    .attr('width', 0)
+    .attr('height', this.options.height);
 
     this.canvas
     .append('g')
     .attr('class', 'Canvas');
 
-    this._setupModel();
+    this.model = new Model({
+      showLabels: true,
+      data: this.options.data,
+      height: this.options.height,
+      margin: _.clone(this.options.margin),
+      width: 0, // will be set on resize listener
+      pos: { x: 0, y: 0 }
+    });
+
+    this.model.bind('change:width', this._onChangeWidth, this);
+    this.model.bind('change:height', this._onChangeHeight, this);
+    this.model.bind('change:pos', this._onChangePos, this);
+    this.model.bind('change:lo_index change:hi_index', this._onChangeRange, this);
+    this.model.bind('change:data', this._onChangeData, this);
+    this.model.bind('change:dragging', this._onChangeDragging, this);
+    this.model.bind('change:right_axis_tip', this._onChangeRightAxisTip, this);
+    this.model.bind('change:left_axis_tip', this._onChangeLeftAxisTip, this);
+    this.model.bind('change:showLabels', this._onChangShowLabels, this);
+
     this._setupDimensions();
     this._setupD3Bindings();
   },
@@ -53,8 +82,44 @@ module.exports = View.extend({
     return this;
   },
 
+  clean: function() {
+    $(window).unbind('resize', this._onWindowResize);
+    View.prototype.clean.call(this);
+  },
+
   replaceData: function(data) {
     this.model.set({ data: data });
+  },
+
+  toggleLabels: function(show) {
+    this.model.set('showLabels', show);
+  },
+
+  chartWidth: function() {
+    var m = this.model.get('margin');
+
+    // Get max because width might be negative initially
+    return Math.max(0, this.model.get('width') - m.left - m.right);
+  },
+
+  chartHeight: function() {
+    var m = this.model.get('margin');
+    var labelsMargin = this.model.get('showLabels')
+      ? this.defaults.labelsMargin
+      : 0;
+    return this.model.get('height') - m.top - m.bottom - labelsMargin;
+  },
+
+  _resizeToParentElement: function() {
+    if (this.$el.parent()) {
+      // Hide this view temporarily to get actual size of the parent container
+      var wasVisible = this.isHidden();
+      this.$el.hide();
+      var width = this.$el.parent().width() || 0;
+      this.$el.toggle(wasVisible);
+
+      this.model.set('width', width);
+    }
   },
 
   _onChangeLeftAxisTip: function() {
@@ -85,10 +150,10 @@ module.exports = View.extend({
       axisTip.attr('transform', 'translate(0, 52)');
       textLabel.attr('dx', -xPos);
       rectLabel.attr('x',  -xPos);
-    } else if ((xPos + width/2 + 2) >= this.chartWidth) {
+    } else if ((xPos + width/2 + 2) >= this.chartWidth()) {
       axisTip.attr('transform', 'translate(0, 52)');
-      textLabel.attr('dx', this.chartWidth - (xPos + width - 2));
-      rectLabel.attr('x', this.chartWidth - (xPos + width));
+      textLabel.attr('dx', this.chartWidth() - (xPos + width - 2));
+      rectLabel.attr('x', this.chartWidth() - (xPos + width));
     } else {
       axisTip.attr('transform', 'translate(-' + (width/2) + ', 52)');
       rectLabel.attr('x', 0);
@@ -112,21 +177,37 @@ module.exports = View.extend({
   },
 
   _onChangeWidth: function() {
+    var width = this.model.get('width');
+    this.$el.width(width);
+    this.chart.attr('width', width);
+    if (this.options.showOnWidthChange && width > 0) {
+      this.$el.show();
+    }
+    this.reset();
+
     var loBarIndex = this.model.get('lo_index');
     var hiBarIndex = this.model.get('hi_index');
+    this.selectRange(loBarIndex, hiBarIndex);
+  },
 
-    var width = this.model.get('width');
+  _onChangeHeight: function() {
+    var height = this.model.get('height');
 
-    this.$el.width(width);
-
-    this.chart.attr('width', width);
+    this.$el.height(height);
+    this.chart.attr('height', height);
+    this.leftHandle.attr('height', height);
+    this.rightHandle.attr('height', height);
 
     this.reset();
-    this.selectRange(loBarIndex, hiBarIndex);
+  },
+
+  _onChangShowLabels: function() {
+    this._axis.style('opacity', this.model.get('showLabels') ? 1 : 0);
   },
 
   _onChangePos: function() {
     var pos = this.model.get('pos');
+    var margin = this.model.get('margin');
 
     var x = +pos.x;
     var y = +pos.y;
@@ -134,7 +215,7 @@ module.exports = View.extend({
     this.chart
     .transition()
     .duration(150)
-    .attr('transform', 'translate(' + (this.margin.left + x) + ', ' + (this.margin.top + y) + ')');
+    .attr('transform', 'translate(' + (margin.left + x) + ', ' + (margin.top + y) + ')');
   },
 
   _onBrushStart: function() {
@@ -219,10 +300,10 @@ module.exports = View.extend({
 
       var top = this.yScale(freq) + this.model.get('pos').y + this.$el.position().top - 20;
 
-      var h = this.chartHeight - this.yScale(freq);
+      var h = this.chartHeight() - this.yScale(freq);
 
       if (h < this.options.minimumBarHeight && h > 0) {
-        top = this.chartHeight + this.model.get('pos').y + this.$el.position().top - 20 - this.options.minimumBarHeight;
+        top = this.chartHeight() + this.model.get('pos').y + this.$el.position().top - 20 - this.options.minimumBarHeight;
       }
 
       if (!this._isDragging() && freq > 0) {
@@ -244,16 +325,6 @@ module.exports = View.extend({
     if (bar && bar.node()) {
       bar.classed('is-highlighted', true);
     }
-  },
-
-  _bindModel: function() {
-    this.model.bind('change:width', this._onChangeWidth, this);
-    this.model.bind('change:pos', this._onChangePos, this);
-    this.model.bind('change:lo_index change:hi_index', this._onChangeRange, this);
-    this.model.bind('change:data', this._onChangeData, this);
-    this.model.bind('change:dragging', this._onChangeDragging, this);
-    this.model.bind('change:right_axis_tip', this._onChangeRightAxisTip, this);
-    this.model.bind('change:left_axis_tip', this._onChangeLeftAxisTip, this);
   },
 
   reset: function() {
@@ -306,10 +377,6 @@ module.exports = View.extend({
     this._setupBrush();
   },
 
-  resize: function(width) {
-    this.model.set('width', width);
-  },
-
   _generateLines: function() {
     this._generateHorizontalLines();
 
@@ -328,7 +395,7 @@ module.exports = View.extend({
     .attr('class', 'Line')
     .attr('y1', 0)
     .attr('x1', function(d) { return d; })
-    .attr('y2', this.chartHeight)
+    .attr('y2', this.chartHeight())
     .attr('x2', function(d) { return d; });
   },
 
@@ -344,27 +411,16 @@ module.exports = View.extend({
     .attr('class', 'Line')
     .attr('x1', 0)
     .attr('y1', function(d) { return d; })
-    .attr('x2', this.chartWidth)
+    .attr('x2', this.chartWidth())
     .attr('y2', function(d) { return d; });
 
     this.bottomLine = lines
     .append('line')
     .attr('class', 'Line Line--bottom')
     .attr('x1', 0)
-    .attr('y1', this.chartHeight)
-    .attr('x2', this.chartWidth - 1)
-    .attr('y2', this.chartHeight);
-  },
-
-  _setupModel: function() {
-    this.model = new Model({
-      data: this.options.data,
-      width: this.options.width,
-      height: this.options.height,
-      pos: { x: 0, y: 0 }
-    });
-
-    this._bindModel();
+    .attr('y1', this.chartHeight())
+    .attr('x2', this.chartWidth() - 1)
+    .attr('y2', this.chartHeight());
   },
 
    _setupD3Bindings: function() { // TODO: move to a helper
@@ -386,51 +442,46 @@ module.exports = View.extend({
   },
 
   _setupDimensions: function() {
-    this.margin = this.options.margin;
-
-    this.canvasWidth  = this.model.get('width');
-    this.canvasHeight = this.model.get('height');
-
-    this.chartWidth  = this.canvasWidth - this.margin.left - this.margin.right;
-    this.chartHeight = this.model.get('height') - this.margin.top - this.margin.bottom;
-
     this._setupScales();
     this._setupRanges();
+    this._onWindowResize();
   },
 
   _setupScales: function() {
     var data = this.model.get('data');
 
-    this.xScale = d3.scale.linear().domain([0, 100]).range([0, this.chartWidth]);
-    this.yScale = d3.scale.linear().domain([0, d3.max(data, function(d) { return _.isEmpty(d) ? 0 : d.freq; } )]).range([this.chartHeight, 0]);
+    this.xScale = d3.scale.linear().domain([0, 100]).range([0, this.chartWidth()]);
+    this.yScale = d3.scale.linear().domain([0, d3.max(data, function(d) { return _.isEmpty(d) ? 0 : d.freq; } )]).range([this.chartHeight(), 0]);
 
     if (!data || !data.length) {
       return;
     }
 
     if (this.options.type === 'time') {
-      this.xAxisScale = d3.time.scale().domain([data[0].start * 1000, data[data.length - 1].end * 1000]).nice().range([0, this.chartWidth]);
+      this.xAxisScale = d3.time.scale().domain([data[0].start * 1000, data[data.length - 1].end * 1000]).nice().range([0, this.chartWidth()]);
     } else {
-      this.xAxisScale = d3.scale.linear().range([data[0].start, data[data.length - 1].end]).domain([0, this.chartWidth]);
+      this.xAxisScale = d3.scale.linear().range([data[0].start, data[data.length - 1].end]).domain([0, this.chartWidth()]);
     }
   },
 
   _setupRanges: function() {
-    var n = Math.round(this.chartWidth / this.options.divisionWidth);
-    this.verticalRange = d3.range(0, this.chartWidth + this.chartWidth / n, this.chartWidth / n);
-    this.horizontalRange = d3.range(0, this.chartHeight + this.chartHeight / 2, this.chartHeight / 2);
+    var n = Math.round(this.chartWidth() / this.options.divisionWidth);
+    this.verticalRange = d3.range(0, this.chartWidth() + this.chartWidth() / n, this.chartWidth() / n);
+    this.horizontalRange = d3.range(0, this.chartHeight() + this.chartHeight() / 2, this.chartHeight() / 2);
   },
 
   _calcBarWidth: function() {
-    this.barWidth = this.chartWidth / this.model.get('data').length;
+    this.barWidth = this.chartWidth() / this.model.get('data').length;
   },
 
   _generateChart: function() {
+    var margin = this.model.get('margin');
+
     this.chart = d3.select(this.el)
     .selectAll('.Canvas')
     .append('g')
     .attr('class', 'Chart')
-    .attr('transform', 'translate(' + this.margin.left + ', ' + this.margin.top + ')');
+    .attr('transform', 'translate(' + margin.left + ', ' + margin.top + ')');
 
     this.chart.classed(this.options.className || '', true);
   },
@@ -441,6 +492,10 @@ module.exports = View.extend({
 
   show: function() {
     this.$el.show();
+  },
+
+  isHidden: function() {
+    return this.$el.is(':visible');
   },
 
   _selectBars: function() {
@@ -471,13 +526,17 @@ module.exports = View.extend({
   },
 
   expand: function(height) {
-    this.canvas.attr('height', this.canvasHeight + height);
+    this.canvas.attr('height', this.model.get('height') + height);
     this._move({ x: 0, y: height });
   },
 
   contract: function(height) {
     this.canvas.attr('height', height);
     this._move({ x: 0, y: 0 });
+  },
+
+  resizeHeight: function(height) {
+    this.model.set('height', height);
   },
 
   removeSelection: function() {
@@ -592,7 +651,7 @@ module.exports = View.extend({
     .call(this.brush)
     .selectAll('rect')
     .attr('y', 0)
-    .attr('height', this.chartHeight)
+    .attr('height', this.chartHeight())
     .on('mouseout', this._onMouseOut)
     .on('mousemove', this._onMouseMove);
   },
@@ -644,7 +703,7 @@ module.exports = View.extend({
 
   _generateHandle: function(className) {
     var opts = { width: this.options.handleWidth, height: this.options.handleHeight, radius: this.options.handleRadius };
-    var yPos = (this.chartHeight / 2) - (this.options.handleHeight / 2);
+    var yPos = (this.chartHeight() / 2) - (this.options.handleHeight / 2);
 
     var handle = this.chart.select('.Handles')
     .append('g')
@@ -660,7 +719,7 @@ module.exports = View.extend({
     .attr('x1', 3)
     .attr('y1', -4)
     .attr('x2', 3)
-    .attr('y2', this.chartHeight + 4);
+    .attr('y2', this.chartHeight() + 4);
 
     if (this.options.handles) {
       handle
@@ -700,7 +759,7 @@ module.exports = View.extend({
     .attr('x1', 0)
     .attr('y1', 0)
     .attr('x2', 0)
-    .attr('y2', this.chartHeight);
+    .attr('y2', this.chartHeight());
   },
 
   _removeHandles: function() {
@@ -725,11 +784,11 @@ module.exports = View.extend({
   },
 
   _generateAxis: function() {
-    if (this.options.type === 'time') {
-      this._generateTimeAxis();
-    } else {
-      this._generateNumericAxis();
-    }
+    this._axis = this.options.type === 'time'
+      ? this._generateTimeAxis()
+      : this._generateNumericAxis();
+
+    this._onChangShowLabels();
   },
 
   _generateNumericAxis: function() {
@@ -745,35 +804,34 @@ module.exports = View.extend({
     .data(this.verticalRange)
     .enter().append("text")
     .attr("x", function(d) { return d; })
-    .attr("y", function(d) { return self.chartHeight + 15; })
+    .attr("y", function(d) { return self.chartHeight() + 15; })
     .attr("text-anchor", adjustTextAnchor)
     .text(function(d) {
       return formatter.formatNumber(self.xAxisScale(d));
     });
+
+    return axis;
   },
 
   _generateTimeAxis: function() {
-
-    var self = this;
-
     var adjustTextAnchor = this._generateAdjustAnchorMethod(this.xAxisScale.ticks());
 
     var xAxis = d3.svg.axis()
     .orient("bottom")
     .tickPadding(5)
-    .innerTickSize(-this.chartHeight)
+    .innerTickSize(-this.chartHeight())
     .scale(this.xAxisScale)
     .orient('bottom');
 
-    this.canvas.append('g')
+    var axis = this.canvas.append('g')
     .attr("class", 'Axis')
-    .attr("transform", "translate(0," + (this.chartHeight + 5) + ")")
-    .call(xAxis)
-    .selectAll("text")
-    .style("text-anchor", adjustTextAnchor);
+    .attr("transform", "translate(0," + (this.chartHeight() + 5) + ")")
+    .call(xAxis);
 
-    this.canvas.select('.Axis')
-    .moveToBack();
+    axis.selectAll('text').style('text-anchor', adjustTextAnchor);
+    axis.moveToBack();
+
+    return axis;
   },
 
   _updateChart: function() {
@@ -791,9 +849,9 @@ module.exports = View.extend({
     .attr('transform', function(d, i) {
       return 'translate(' + (i * self.barWidth) + ', 0 )';
     })
-    .attr('y', self.chartHeight)
+    .attr('y', self.chartHeight())
     .attr('height', 0)
-    .attr('width', this.barWidth - 1);
+    .attr('width', Math.max(0, this.barWidth - 1));
 
     bars
     .transition()
@@ -804,7 +862,7 @@ module.exports = View.extend({
         return 0;
       }
 
-      var h = self.chartHeight - self.yScale(d.freq);
+      var h = self.chartHeight() - self.yScale(d.freq);
 
       if (h < self.options.minimumBarHeight && h > 0) {
         h = self.options.minimumBarHeight;
@@ -813,13 +871,13 @@ module.exports = View.extend({
     })
     .attr('y', function(d) {
       if (_.isEmpty(d)) {
-        return self.chartHeight;
+        return self.chartHeight();
       }
 
-      var h = self.chartHeight - self.yScale(d.freq);
+      var h = self.chartHeight() - self.yScale(d.freq);
 
       if (h < self.options.minimumBarHeight && h > 0) {
-        return self.chartHeight - self.options.minimumBarHeight;
+        return self.chartHeight() - self.options.minimumBarHeight;
       } else {
         return self.yScale(d.freq);
       }
@@ -833,7 +891,7 @@ module.exports = View.extend({
       return 0;
     })
     .attr('y', function(d) {
-      return self.chartHeight;
+      return self.chartHeight();
     });
   },
 
@@ -857,9 +915,9 @@ module.exports = View.extend({
     .attr('transform', function(d, i) {
       return 'translate(' + (i * self.barWidth) + ', 0 )';
     })
-    .attr('y', self.chartHeight)
+    .attr('y', self.chartHeight())
     .attr('height', 0)
-    .attr('width', this.barWidth - 1);
+    .attr('width', Math.max(0, this.barWidth - 1));
 
     bars
     .transition()
@@ -873,7 +931,7 @@ module.exports = View.extend({
         return 0;
       }
 
-      var h = self.chartHeight - self.yScale(d.freq);
+      var h = self.chartHeight() - self.yScale(d.freq);
 
       if (h < self.options.minimumBarHeight && h > 0) {
         h = self.options.minimumBarHeight;
@@ -882,13 +940,13 @@ module.exports = View.extend({
     })
     .attr('y', function(d) {
       if (_.isEmpty(d)) {
-        return self.chartHeight;
+        return self.chartHeight();
       }
 
-      var h = self.chartHeight - self.yScale(d.freq);
+      var h = self.chartHeight() - self.yScale(d.freq);
 
       if (h < self.options.minimumBarHeight && h > 0) {
-        return self.chartHeight - self.options.minimumBarHeight;
+        return self.chartHeight() - self.options.minimumBarHeight;
       } else {
         return self.yScale(d.freq);
       }

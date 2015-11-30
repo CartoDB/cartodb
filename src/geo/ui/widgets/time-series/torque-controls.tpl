@@ -1,3 +1,1 @@
-<button>
-  <span><%- label %></span>
-</button>
+<i class="<%- iconClass %>"></i>

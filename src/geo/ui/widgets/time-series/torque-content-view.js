@@ -1,8 +1,9 @@
 var _ = require('underscore');
 var View = require('cdb/core/view');
+var torqueTemplate = require('./torque-template.tpl');
+var placeholderTemplate = require('./placeholder.tpl');
 var TorqueControlsView = require('./torque-controls-view');
 var TorqueTimeInfoView = require('./torque-time-info-view');
-var placeholderTemplate = require('../histogram/placeholder.tpl');
 var TorqueHistogramView = require('./torque-histogram-view');
 
 /**
@@ -10,16 +11,19 @@ var TorqueHistogramView = require('./torque-histogram-view');
  */
 module.exports = View.extend({
 
+  className: 'Widget-body Widget-body--timeSeries',
+
   initialize: function() {
     this.model.once('change:data', this.render, this);
   },
 
   render: function() {
     this.clearSubViews();
-    this.$el.html(''); // to remove placeholder if there is any
 
     if (this._isDataEmpty()) {
-      this.$el.append(placeholderTemplate());
+      this.$el.html(placeholderTemplate({
+        hasTorqueLayer: true
+      }));
     } else {
       this._renderContent();
     }
@@ -28,18 +32,25 @@ module.exports = View.extend({
   },
 
   _renderContent: function() {
-    this._appendView(new TorqueControlsView({
-      model: this.options.torqueLayerModel
-    }));
-    this._appendView(new TorqueTimeInfoView({
-      model: this.options.torqueLayerModel
-    }));
+    this.$el.html(torqueTemplate());
+    this._appendView(
+      new TorqueControlsView({ model: this.options.torqueLayerModel }),
+      '.js-header'
+    );
+    this._appendView(
+      new TorqueTimeInfoView({ model: this.options.torqueLayerModel }),
+      '.js-header'
+    );
     this._appendView(new TorqueHistogramView(this.options));
   },
 
-  _appendView: function(view) {
+  _appendView: function(view, selector) {
     this.addView(view);
-    this.$el.append(view.el);
+    if (selector) {
+      this.$(selector).append(view.el);
+    } else {
+      this.$el.append(view.el);
+    }
     view.render();
   },
 

@@ -129,7 +129,7 @@ var Vis = View.extend({
           });
         },
         customizeWidgetAttrs: function(attrs) {
-          attrs.className += ' Dashboard-time';
+          attrs.className += ' Widget--timeSeries';
           return attrs;
         }
       }, {
@@ -141,7 +141,7 @@ var Vis = View.extend({
           });
         },
         customizeWidgetAttrs: function(attrs) {
-          attrs.className += ' Dashboard-time';
+          attrs.className += ' Widget--timeSeries';
           return attrs;
         }
       }, {
@@ -533,7 +533,7 @@ var Vis = View.extend({
       var widgetModel = layer.widgets.find(isTimeSeriesWidget);
       var view = this.widgetViewFactory.createWidgetView(widgetModel, layer);
       this.addView(view);
-      $('.js-dashboard-map-wrapper').append(view.render().el);
+      $('.js-dashboard-belowMap').append(view.render().el);
     }
 
     // TODO: This will need to change when new layers are added / removed

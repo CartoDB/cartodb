@@ -8,7 +8,7 @@ var WidgetViewFactory = function(defs) {
   }, this);
 };
 
-WidgetViewFactory.prototype.DEFAULT_CLASS_NAMES = 'Widget Widget--light Widget--time';
+WidgetViewFactory.prototype.DEFAULT_CLASS_NAMES = 'Widget Widget--light';
 
 WidgetViewFactory.prototype.addType = function(def) {
   if (!def.match) {

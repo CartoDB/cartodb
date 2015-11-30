@@ -1,6 +1,4 @@
 var $ = require('jquery');
-var _ = require('underscore');
-var Model = require('cdb/core/model');
 var View = require('cdb/core/view');
 var HistogramChartView = require('../histogram/chart');
 var TorqueTimeMarkerview = require('./torque-time-marker-view');
@@ -12,15 +10,19 @@ var TorqueTimeMarkerview = require('./torque-time-marker-view');
  */
 module.exports = View.extend({
 
+  className: 'Widget-content Widget-content--timeSeries',
+
   // TODO could be calculated from element styles instead of duplicated numbers here?
   defaults: {
-    width: 400,
-    margins: {
-      top: 0,
-      right: 24,
-      bottom: 0,
-      left: 24
-    }
+    mobileThreshold: 960, // px; should match CSS media-query
+    histogramChartHeight:
+      48 + // inline bars height
+      4 + // bottom margin
+      16 + // bottom labels
+      4, // margins
+    histogramChartMobileHeight:
+      20 + // inline bars height (no bottom labels)
+      4 // margins
   },
 
   initialize: function() {
@@ -30,71 +32,50 @@ module.exports = View.extend({
     this._rangeFilter = this.options.rangeFilter;
     this._torqueLayerModel = this.options.torqueLayerModel;
 
-    _.bindAll(this, '_onWindowResize');
-    $(window).bind('resize', this._onWindowResize);
-
-    this._viewModel = new Model({
-      width: this.defaults.width,
-      histogramChartMargins: {
-        top: 4,
-        right: 4,
-        bottom: 20,
-        left: 4
-      },
-      margins: this.defaults.margins,
-      histogramChartHeight:
-        48 + // inline bars height
-        20 + // bottom labels
-        4 // margins
-    });
-    this._viewModel.bind('change:width', this._onChangeWidth, this);
-    this.add_related_model(this._viewModel);
-    this._onChangeWidth();
-
     this.model.bind('change:data', this._onChangeData, this);
-  },
-
-  _onChangeData: function() {
-    if (this._chartView) {
-      this._chartView.replaceData(this.model.getData());
-    }
   },
 
   render: function() {
     this.clearSubViews();
     this._createHistogramView();
-    this._onWindowResize();
     return this;
-  },
-
-  clean: function() {
-    $(window).unbind('resize', this._onWindowResize);
-    View.prototype.clean.call(this);
   },
 
   _createHistogramView: function() {
     this._chartView = new HistogramChartView({
       type: 'time',
       animationSpeed: 100,
-      margin: this._viewModel.get('histogramChartMargins'),
+      margin: {
+        top: 4,
+        right: 4,
+        bottom: 4,
+        left: 4
+      },
       handles: true,
-      width: this._viewModel.get('histogramChartWidth'),
-      height: this._viewModel.get('histogramChartHeight'),
+      height: this.defaults.histogramChartHeight,
       data: this.model.getData()
     });
     this.addView(this._chartView);
     this.$el.append(this._chartView.render().el);
-    this._chartView.bind('on_brush_end', this._onBrushEnd, this);
     this._chartView.show();
+
+    this._chartView.bind('on_brush_end', this._onBrushEnd, this);
+    this._chartView.model.bind('change:width', this._onChangeChartWidth, this);
+    this.add_related_model(this._chartView.model);
 
     var timeMarkerView = new TorqueTimeMarkerview({
       model: this.model, // a histogram model
       chartView: this._chartView,
-      viewModel: this._viewModel,
       torqueLayerModel: this._torqueLayerModel
     });
     this.addView(timeMarkerView);
     timeMarkerView.render();
+  },
+
+  _onChangeData: function() {
+    if (this._chartView) {
+      this._chartView.replaceData(this.model.getData());
+    }
   },
 
   _onBrushEnd: function(loBarIndex, hiBarIndex) {
@@ -106,20 +87,15 @@ module.exports = View.extend({
     this._torqueLayerModel.setStepsRange(loBarIndex, hiBarIndex);
   },
 
-  _onChangeWidth: function() {
-    var margins = this._viewModel.get('margins');
-    var histogramChartWidth = this._viewModel.get('width') - margins.left - margins.right;
-    this._viewModel.set('histogramChartWidth', histogramChartWidth);
+  _onChangeChartWidth: function() {
+    var isMobileSize = $(window).width() < this.defaults.mobileThreshold;
 
-    if (this._chartView) {
-      this._chartView.resize(histogramChartWidth);
-    }
-  },
+    this._chartView.toggleLabels(!isMobileSize);
 
-  _onWindowResize: _.debounce(function() {
-    // $el.width might not be available, e.g. if $el is not present in DOM yet
-    // TODO width is not always accurate, because of other elements also resizing which affects this element
-    this._viewModel.set('width', this.$el.width() || this.defaults.width);
-  }, 50)
+    var height = isMobileSize
+      ? this.defaults.histogramChartMobileHeight
+      : this.defaults.histogramChartHeight;
+    this._chartView.model.set('height', height);
+  }
 
 });

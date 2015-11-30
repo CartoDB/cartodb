@@ -6,6 +6,9 @@ var template = require('./torque-controls.tpl');
  */
 module.exports = View.extend({
 
+  tagName: 'button',
+  className: 'Widget-buttonIcon Widget-buttonIcon--circleBig is-selected',
+
   events: {
     'click': '_onClick'
   },
@@ -17,9 +20,9 @@ module.exports = View.extend({
   render: function() {
     this.$el.html(
       template({
-        label: this.model.get('isRunning')
-          ? '❚❚'
-          : '▶'
+        iconClass: this.model.get('isRunning')
+          ? 'Widget-timeSeriesPauseIcon'
+          : 'Widget-timeSeriesPlayIcon'
       })
     );
 

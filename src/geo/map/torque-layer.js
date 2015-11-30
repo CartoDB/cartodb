@@ -1,7 +1,7 @@
 var _ = require('underscore');
 var log = require('cdb.log');
 var MapLayer = require('./map-layer');
-var Backbone = require('backbone');
+var WidgetsCollection = require('../ui/widgets/widgets_collection');
 
 /**
  * Model for a Torque Layer
@@ -22,7 +22,7 @@ var TorqueLayer = MapLayer.extend({
   },
 
   initialize: function() {
-    this.widgets = new Backbone.Collection([]);
+    this.widgets = new WidgetsCollection([]);
 
     this.widgets.bind('change:filter', function(widget, filter) {
       this.trigger('change:filter', this, widget, filter);

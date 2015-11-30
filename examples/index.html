@@ -24,7 +24,39 @@
     <div class="Dashboard-canvas js-dashboard">
       <div class="Dashboard-mapWrapper js-dashboard-map-wrapper">
         <div class="Map-canvas Map-canvas--margin">
-          <div class="Map" id="map"></div>
+          <div class="Map" id="map">
+
+            <div class="CDB-mapZoom">
+              <div class="CDB-controller">
+                <div class="CDB-mapZoomInner">
+                  <a href="#" class="CDB-mapZoomLink">-</a>
+                  <a href="#" class="CDB-mapZoomLink">+</a>
+                </div>
+                <div class="CDB-mapZoomInfo">
+                  1
+                </div>
+              </div>
+
+              <div class="CDB-controller">
+                  rabo
+              </div>
+            </div>
+
+            <div class="CDB-mapFull">
+              <a href="#" class="CDB-mapFullLink">
+                <svg width="12px" height="12px" viewBox="0 0 12 12" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">>
+                  <g id="Full-screen" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+                      <g id="FullScreen-Button" sketch:type="MSLayerGroup" transform="translate(-47.000000, -47.000000)" fill="#32A8E6">
+                          <g id="Rectangle-680-+-Rectangle-680-Copy" transform="translate(45.000000, 44.000000)" sketch:type="MSShapeGroup">
+                              <path d="M11.1038522,11.129401 L9.12735125,13.105902 C8.92734254,13.3059107 8.61713382,13.2995369 8.42187168,13.1042748 C8.2323201,12.9147232 8.22588101,12.5931587 8.42024447,12.3987952 L11.251926,9.56711365 C11.3516526,9.46738709 11.4787763,9.4189699 11.6053877,9.41969349 C11.7303517,9.42321979 11.8588744,9.47020967 11.9557784,9.56711365 L14.7874599,12.3987952 C14.9874686,12.5988039 14.9810949,12.9090126 14.7858327,13.1042748 C14.5962811,13.2938263 14.2747166,13.3002654 14.0803531,13.105902 L12.1038522,11.129401 L12.1038522,15.2952501 C12.1038522,15.5664248 11.8719186,15.7862553 11.6038522,15.7862553 C11.3277098,15.7862553 11.1038522,15.5583748 11.1038522,15.2952501 L11.1038522,11.129401 Z" id="Rectangle-680" transform="translate(11.605981, 12.602970) scale(1, -1) rotate(-315.000000) translate(-11.605981, -12.602970) "></path>
+                              <path d="M4.10385219,4.12940103 L2.12735125,6.10590197 C1.92734254,6.30591068 1.61713382,6.29953691 1.42187168,6.10427476 C1.2323201,5.91472319 1.22588101,5.59315865 1.42024447,5.39879519 L4.25192601,2.56711365 C4.35165257,2.46738709 4.47877629,2.4189699 4.60538772,2.41969349 C4.73035166,2.42321979 4.8588744,2.47020967 4.95577838,2.56711365 L7.78745991,5.39879519 C7.98746863,5.5988039 7.98109485,5.90901261 7.78583271,6.10427476 C7.59628113,6.29382633 7.2747166,6.30026543 7.08035313,6.10590197 L5.10385219,4.12940103 L5.10385219,8.29525009 C5.10385219,8.56642477 4.8719186,8.78625528 4.60385219,8.78625528 C4.32770982,8.78625528 4.10385219,8.5583748 4.10385219,8.29525009 L4.10385219,4.12940103 Z" id="Rectangle-680-Copy" transform="translate(4.605981, 5.602970) scale(-1, 1) rotate(-315.000000) translate(-4.605981, -5.602970) "></path>
+                          </g>
+                      </g>
+                  </g>
+                </svg>
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -69,7 +101,7 @@
                   "urlTemplate": "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png",
                   "minZoom": "0",
                   "maxZoom": "18",
-                  "attribution": "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"http://cartodb.com/attributions#basemaps\">CartoDB</a>",
+                  "attribution": "",
                   "subdomains": "abcd",
                   "style": null,
                   "labels": {

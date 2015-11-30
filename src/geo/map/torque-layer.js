@@ -147,6 +147,10 @@ var TorqueLayer = MapLayer.extend({
     });
   },
 
+  getWidgets: function() {
+    return this.widgets;
+  },
+
   fetchAttributes: function(layer, featureID, callback) {
   }
 

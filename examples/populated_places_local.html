@@ -152,18 +152,16 @@
                             },
                             'category_widget_adm0_a3': {
                               "type": "aggregation",
-                                "title": "Country",
-                                "column": "adm0_a3",
-                                "aggregation": "count",
-                                "suffix": " cities",
-                                "sync": true
+                              "title": "Population by country",
+                              "column": "adm0name",
+                              "aggregation": "sum",
+                              "aggregationColumn": "pop_max"
                             },
                             'category_widget_labelrank': {
                               "type": "aggregation",
-                                "title": "Rank category",
-                                "column": "labelrank",
-                                "aggregation": "count",
-                                "sync": true
+                              "title": "Rank category",
+                              "column": "labelrank",
+                              "aggregation": "count"
                             },
                             "formula_widget_avg": {
                               "type": "formula",

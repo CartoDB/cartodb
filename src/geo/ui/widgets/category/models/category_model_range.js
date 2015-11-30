@@ -30,8 +30,17 @@ module.exports = Model.extend({
   },
 
   parse: function(d) {
+    // Calculating the total amount of all categories with the sum of all
+    // categories from this model included the aggregated (Other)
+    
     return {
-      totalCount: d.count
+      totalCount: _.reduce(
+        _.pluck(d.categories, 'value'),
+        function(memo, value) {
+          return memo + value;
+        },
+        0
+      )
     };
   }
 });

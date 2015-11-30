@@ -1,6 +1,7 @@
 var _ = require('underscore');
-var colorbrewer = require('colorbrewer');
-var categoryColors = _.initial(colorbrewer.Accent[8]);
+// var colorbrewer = require('colorbrewer');
+// var categoryColors = _.initial(colorbrewer.Accent[8]); // Color brewer colors
+var categoryColors = ['#2CA095','#E5811B','#4A4DBA','#AD2BAD','#559030','#E1C221']; // Demo colors
 var defaultColor = '#CCC';
 
 /**

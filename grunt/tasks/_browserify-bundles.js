@@ -57,17 +57,5 @@ module.exports = {
       'test/spec/cartodb.spec.js',
     ],
     dest: '<%= config.tmp %>/cartodb-specs.js',
-  },
-
-  odyssey: {
-    src: 'src/odyssey.js',
-    dest: '<%= config.dist %>/cartodb.mod.odyssey.uncompressed.js',
-  },
-  'odyssey-specs': {
-    src: [
-      'test/fail-tests-if-have-errors-in-src.js',
-      'test/spec/odyssey.spec.js',
-    ],
-    dest: '<%= config.tmp %>/odyssey-specs.js',
   }
 };

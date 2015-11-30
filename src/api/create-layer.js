@@ -147,7 +147,6 @@ module.exports = function(map, layer, options, callback) {
         mapView: mapView
       });
 
-      viz.updated_at = visData.updated_at;
       viz.https = options.https;
     }
 

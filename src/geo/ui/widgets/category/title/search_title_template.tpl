@@ -16,7 +16,9 @@
         ">
         <i class="CDBIcon CDBIcon-Syringe CDBIcon--top"></i>
       </button>
-      <button class="Widget-threePoints js-collapse"></button>
+      <button class="Widget-threePoints js-collapse">
+        <span class="Widget-threePointsItem"></span>
+      </button>
     </div>
   </div>
 <% } %>

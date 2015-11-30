@@ -148,18 +148,22 @@ $commonBkg: rgba(#FFF, 1);
     }
   }
 
-  .Widget-threePoints,
+
   .Widget-threePoints:before,
   .Widget-threePoints:after {
-    border-color: #FFF;
     background-color: $link;
   }
   .Widget-threePoints:hover {
-    background-color: $linkHover;
     &:before,
     &:after {
       background-color: $linkHover;
     }
+    .Widget-threePointsItem {
+      background-color: $linkHover;
+    }
+  }
+  .Widget-threePointsItem {
+    background-color: $link;
   }
 
   .Widget-arrow:after,

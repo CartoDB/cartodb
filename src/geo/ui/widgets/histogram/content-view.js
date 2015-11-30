@@ -377,7 +377,6 @@ module.exports = WidgetContent.extend({
   },
 
   _onZoomIn: function() {
-    this.miniHistogramChartView.show(); // TODO  show done in showMiniRange, really necessary to do this here?
     this.histogramChartView.expand(20);
 
     this._showMiniRange();

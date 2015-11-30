@@ -7,8 +7,8 @@
 @-webkit-keyframes fadeInDown {
   from {
     opacity: 0;
-    -webkit-transform: translate3d(0, -2%, 0);
-    transform: translate3d(0, -2%, 0);
+    -webkit-transform: translate3d(-5%, 0, 0);
+    transform: translate3d(-5%, 0, 0);
   }
 
   to {
@@ -21,8 +21,8 @@
 @keyframes fadeInDown {
   from {
     opacity: 0;
-    -webkit-transform: translate3d(0, -2%, 0);
-    transform: translate3d(0, -2%, 0);
+    -webkit-transform: translate3d(-5%, 0, 0);
+    transform: translate3d(-5%, 0, 0);
   }
 
   to {
@@ -33,41 +33,21 @@
 }
 
 
-@-webkit-keyframes fadeInRight {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes fadeInRight {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
-}
-
 .Dashboard-info-texts {
   position: absolute;
   top: 150px;
   right: 24px;
   left: 24px;
-  width: 232px;
+  width: 304px;
   opacity: 0;
 }
 .Dashboard-info {
-  @include transition(width, 0.3s, cubic-bezier(0.01, 0.99, 0.97, 1.01));
+  @include transition(width, 0.25s, cubic-bezier(0.01, 0.99, 0.97, 1.01));
   position: absolute;
   top: 0;
   left: 0;
   width: 88px;
-  max-width: 280px;
+  max-width: 352px;
   height: 100vh;
   padding: 24px;  
   background: #3AA9E3;
@@ -77,14 +57,14 @@
   z-index: 2;
 
   &.is-active {
-    width: 280px;
+    width: 352px;
     box-shadow: 0 0 40px 0 rgba(0, 0, 0, 0.2);
 
     .Dashboard-info-texts {
       @include animation(fadeInDown 0.8s both);
     }
     .Dashboard-info-footer-txt {
-      @include animation(fadeInRight 0.8s both);
+      @include animation(fadeInDown 0.8s both);
     }
     .Dashboard-info-snapshots {
       opacity: 1;
@@ -149,6 +129,7 @@
 .Dashboard-info-description {
   color: #FFF;
   font-size: $sFontSize-normal;
+  font-weight: $sFontWeight-lighter;
   line-height: $sLineHeight-normal;
 }
 

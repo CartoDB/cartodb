@@ -4,6 +4,35 @@
 @import '../variables/sizes';
 @import '../variables/mixins';
 
+@-webkit-keyframes fadeInDown {
+  from {
+    opacity: 0;
+    -webkit-transform: translate3d(0, -2%, 0);
+    transform: translate3d(0, -2%, 0);
+  }
+
+  to {
+    opacity: 1;
+    -webkit-transform: none;
+    transform: none;
+  }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    -webkit-transform: translate3d(0, -2%, 0);
+    transform: translate3d(0, -2%, 0);
+  }
+
+  to {
+    opacity: 1;
+    -webkit-transform: none;
+    transform: none;
+  }
+}
+
+
 
 .leaflet-bottom, .cartodb-logo, .cartodb-zoom, .cartodb-searchbox, .cartodb-share, .cartodb-layer-selector-box {
   display: none !important;
@@ -11,12 +40,12 @@
 
 .CDB-controller {
   position: relative;
+  min-width: 32px;
   border-radius: 4px;
   background: #FFF;
   line-height: 32px;
   box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.24), 0 4px 8px 0 rgba(0, 0, 0, 0.16);
   z-index: 200;
-  min-width: 32px;
 }
 
 .CDB-mapZoom {
@@ -104,4 +133,42 @@
   z-index: 10;
 }
 
+.CDB-controllerSearch {
+  @include transition(all, 0.3s, cubic-bezier(0.01, 0.99, 0.97, 1.01));
+  position: relative;
+  width: 32px;
+  height: 32px;
 
+  &.is-active {
+    min-width: 180px;
+
+    .CDB-controllerSearchInput {
+      @include animation(fadeInDown 0.8s both);
+    }
+  }
+}
+
+.CDB-controllerSearchButton {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.CDB-controllerSearchInput {
+  position: absolute;
+  top: 7px;
+  left: 8px;
+  width: 136px;
+  border: 0;
+  border-right: 1px solid #F8F8F8;
+  font: 300 12px/14px 'Open Sans';
+  opacity: 0;
+
+  &:focus {
+    outline: none;
+  }
+}

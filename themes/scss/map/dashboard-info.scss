@@ -33,26 +33,6 @@
 }
 
 
-@-webkit-keyframes fadeInRight {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes fadeInRight {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
-}
-
 .Dashboard-info-texts {
   position: absolute;
   top: 150px;
@@ -84,7 +64,7 @@
       @include animation(fadeInDown 0.8s both);
     }
     .Dashboard-info-footer-txt {
-      @include animation(fadeInRight 0.8s both);
+      @include animation(fadeInDown 0.8s both);
     }
     .Dashboard-info-snapshots {
       opacity: 1;

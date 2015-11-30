@@ -16,8 +16,6 @@ module.exports = View.extend({
   events: {
     'keyup .js-textInput': '_onKeyupInput',
     'submit .js-form': '_onSubmitForm',
-    'click .js-lock': '_lockCategories',
-    'click .js-unlock': '_unlockCategories',
     'click .js-applyLocked': '_applyLocked',
     'click .js-applyColors': '_applyColors',
     'click .js-cancelColors': '_cancelColors',
@@ -49,7 +47,7 @@ module.exports = View.extend({
 
   _initBinds: function() {
     this.viewModel.bind('change:search', this._onSearchToggled, this);
-    this.dataModel.bind('change:filter change:locked change:lockCollection change:categoryColors change:collapsed', this.render, this);
+    this.dataModel.bind('change:filter change:lockCollection change:categoryColors change:collapsed', this.render, this);
     this.add_related_model(this.dataModel);
     this.add_related_model(this.viewModel);
   },
@@ -105,14 +103,6 @@ module.exports = View.extend({
       this._cancelSearch();
       return false;
     }
-  },
-
-  _lockCategories: function() {
-    this.dataModel.lockCategories();
-  },
-
-  _unlockCategories: function() {
-    this.dataModel.unlockCategories();
   },
 
   _applyLocked: function() {

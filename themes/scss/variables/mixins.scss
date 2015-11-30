@@ -1,4 +1,3 @@
-
 // Mixins
 // - Necessary SCSS functions
 // - Browser support:
@@ -21,7 +20,7 @@
 
 // Display inline
 @mixin inline-block() {
-  display:inline-block;
+  display: inline-block;
   vertical-align: middle;
 }
 

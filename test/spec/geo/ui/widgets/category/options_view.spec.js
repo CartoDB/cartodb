@@ -65,12 +65,23 @@ describe('widgets/category/options_view', function() {
       expect(this.view.$('.Widget-filterButtons').length).toBe(0);
     });
 
-    it('should render only number of locked items if widget is locked', function() {
+    it('should render number of locked items and unlock button if widget is locked', function() {
       spyOn(this.model, 'isLocked').and.returnValue(true);
       this.view.render();
       expect(this.view.$('.Widget-textSmaller').length).toBe(1);
-      expect(this.view.$('.Widget-textSmaller').text()).toContain('0 selected');
+      expect(this.view.$('.Widget-textSmaller').text()).toContain('0 blocked');
       expect(this.view.$('.Widget-filterButtons').length).toBe(0);
+      expect(this.view.$('.js-unlock').length).toBe(1);
+    });
+
+    it('should render number of selected items and lock button if widget is still not locked', function() {
+      spyOn(this.model, 'isLocked').and.returnValue(false);
+      this.model.setCategories([{ name: 'test' }, { name: 'one' }]);
+      this.model.acceptFilters('one');
+      expect(this.view.$('.Widget-textSmaller').length).toBe(1);
+      expect(this.view.$('.Widget-textSmaller').text()).toContain('1 selected');
+      expect(this.view.$('.Widget-filterButtons').length).toBe(1);
+      expect(this.view.$('.js-lock').length).toBe(1);
     });
 
     it('should render filter buttons if widget is neither locked nor search enabled', function() {
@@ -118,6 +129,29 @@ describe('widgets/category/options_view', function() {
     this.view.render();
     this.view.$('.js-all').click();
     expect(this.model.acceptAll).toHaveBeenCalled();
+  });
+
+  describe('lock', function() {
+
+    it('should render "locked" button and apply them when is clicked', function(){
+      this.model.acceptFilters('one');
+      expect(this.view.$('.js-lock').length).toBe(1);
+      spyOn(this.model, 'lockCategories').and.callThrough();
+      this.view.$('.js-lock').click();
+      expect(this.model.lockCategories).toHaveBeenCalled();
+      expect(this.view.$('.js-lock').length).toBe(0);
+      expect(this.view.$('.js-unlock').length).toBe(1);
+    });
+
+    it('should unlock when widget is locked and button is clicked', function() {
+      spyOn(this.model, 'unlockCategories').and.callThrough();
+      this.model.acceptFilters('one');
+      this.view.$('.js-lock').click();
+      expect(this.view.$('.js-unlock').length).toBe(1);
+      this.view.$('.js-unlock').click();
+      expect(this.model.unlockCategories).toHaveBeenCalled();
+    });
+
   });
 
 });

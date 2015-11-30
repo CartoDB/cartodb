@@ -38,7 +38,7 @@ describe('widgets/category/search_title_view', function() {
     });
 
     it('should change to search state when search event is triggered', function() {
-      expect(this.model.bind.calls.argsFor(0)[0]).toEqual('change:filter change:locked change:lockCollection change:categoryColors change:collapsed');
+      expect(this.model.bind.calls.argsFor(0)[0]).toEqual('change:filter change:lockCollection change:categoryColors change:collapsed');
     });
   });
 
@@ -113,33 +113,10 @@ describe('widgets/category/search_title_view', function() {
       expect(this.model.cancelCategoryColors).toHaveBeenCalled();
     });
 
-    it('should render "locked" button and apply them when is clicked', function(){
-      this.model.acceptFilters('one');
-      expect(this.view.$('.js-lock').length).toBe(1);
-      spyOn(this.model, 'lockCategories').and.callThrough();
-      this.view.$('.js-lock').click();
-      expect(this.model.lockCategories).toHaveBeenCalled();
-      expect(this.view.$('.js-lock').length).toBe(0);
-      expect(this.view.$('.js-unlock').length).toBe(1);
-    });
-
-    it('should unlock when widget is locked and button is clicked', function() {
-      spyOn(this.model, 'unlockCategories').and.callThrough();
-      this.model.acceptFilters('one');
-      this.view.$('.js-lock').click();
-      expect(this.view.$('.js-unlock').hasClass('is-selected')).toBeTruthy();
-      this.view.$('.js-unlock').click();
-      expect(this.model.unlockCategories).toHaveBeenCalled();
-    });
-
     it('should call to collapse function when it is clicked', function() {
       spyOn(this.model, 'toggleCollapsed').and.callThrough();
-      expect(this.view.$('.js-collapse').hasClass('Widget-arrow--up')).toBeTruthy();
       this.view.$('.js-collapse').click();
       expect(this.model.toggleCollapsed).toHaveBeenCalled();
-      expect(this.view.$('.js-collapse').hasClass('Widget-arrow--down')).toBeTruthy();
-      this.view.$('.js-collapse').click();
-      expect(this.model.toggleCollapsed.calls.count()).toBe(2);
     });
 
   });

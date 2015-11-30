@@ -34,7 +34,7 @@
     </ul>
   </div>
  -->  <ul>
-    <li class="Dashboard-info-footer-item">
+    <!--<li class="Dashboard-info-footer-item">
       <div class="Dashboard-info-media">
         <img src="/themes/img/icon-save.svg" alt="Save" />
       </div>
@@ -45,7 +45,7 @@
         <img src="/themes/img/icon-share.svg" alt="share" />
       </div>
       <p class="Dashboard-info-footer-txt">Share view</p>
-    </li>
+    </li>-->
     <li class="Dashboard-info-footer-item">
       <div class="Dashboard-info-media Dashboard-info-avatar">
         <img src="<%- userAvatarURL %>" alt="avatar" class="inline-block"/>

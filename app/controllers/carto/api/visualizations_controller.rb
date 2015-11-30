@@ -59,6 +59,9 @@ module Carto
         render_jsonp(response)
       rescue CartoDB::BoundingBoxError => e
         render_jsonp({ error: e.message }, 400)
+      rescue => e
+        CartoDB.notify_exception(e, { request: request })
+        render_jsonp({ error: e.message }, 500)
       end
 
       def likes_count

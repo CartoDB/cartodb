@@ -14,6 +14,7 @@ Rollbar.configure do |config|
 end
 
 module CartoDB
+  # Extra can contain `:request` and `:user`
   def self.notify_exception(e, extra={})
     if Rails.env.development? || Rails.env.test?
       backtrace = e.backtrace ? e.backtrace : ['']

@@ -11,9 +11,9 @@ module.exports = View.extend({
      // render the chart once the width is set as default, provide false value for this prop to disable this behavior
      // e.g. for "mini" histogram behavior
     showOnWidthChange: true,
-    labelsMargin: 16, // px
 
-    axis_tip: false,
+    labelsMargin: 16, // px
+    hasAxisTip: false,
     minimumBarHeight: 2,
     animationSpeed: 750,
     handleWidth: 6,
@@ -73,6 +73,7 @@ module.exports = View.extend({
     this.model.bind('change:showLabels', this._onChangShowLabels, this);
 
     this._setupDimensions();
+    this._setupD3Bindings();
   },
 
   render: function() {
@@ -338,6 +339,9 @@ module.exports = View.extend({
     this._removeAxis();
     this._generateAxis();
     this._updateChart();
+
+    this.chart.select('.Handles').moveToFront();
+    this.chart.select('.Brush').moveToFront();
   },
 
   resetIndexes: function() {
@@ -417,6 +421,24 @@ module.exports = View.extend({
     .attr('y1', this.chartHeight())
     .attr('x2', this.chartWidth() - 1)
     .attr('y2', this.chartHeight());
+  },
+
+   _setupD3Bindings: function() { // TODO: move to a helper
+
+    d3.selection.prototype.moveToBack = function() {
+      return this.each(function() {
+        var firstChild = this.parentNode.firstChild;
+        if (firstChild) {
+          this.parentNode.insertBefore(this, firstChild);
+        }
+      });
+    };
+
+    d3.selection.prototype.moveToFront = function() {
+      return this.each(function(){
+        this.parentNode.appendChild(this);
+      });
+    };
   },
 
   _setupDimensions: function() {
@@ -649,7 +671,7 @@ module.exports = View.extend({
     this.chart.select('.Handle-right')
     .attr('transform', 'translate(' + rightX + ', 0)');
 
-    if (this.options.axis_tip) {
+    if (this.options.hasAxisTip) {
       this.model.set({
         left_axis_tip: this.xAxisScale(leftX + 3),
         right_axis_tip: this.xAxisScale(rightX + 3)
@@ -687,7 +709,7 @@ module.exports = View.extend({
     .append('g')
     .attr('class', 'Handle Handle-' + className);
 
-    if (this.options.axis_tip) {
+    if (this.options.hasAxisTip) {
       this._generateAxisTip(className);
     }
 
@@ -792,15 +814,6 @@ module.exports = View.extend({
   },
 
   _generateTimeAxis: function() {
-    d3.selection.prototype.moveToBack = function() { // TODO: move to a helper
-      return this.each(function() {
-        var firstChild = this.parentNode.firstChild;
-        if (firstChild) {
-          this.parentNode.insertBefore(this, firstChild);
-        }
-      });
-    };
-
     var adjustTextAnchor = this._generateAdjustAnchorMethod(this.xAxisScale.ticks());
 
     var xAxis = d3.svg.axis()

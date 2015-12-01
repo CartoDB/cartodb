@@ -18,9 +18,6 @@ WidgetModelFactory.prototype.addType = function (type, createModel) {
 WidgetModelFactory.prototype.createModel = function (layer, layerIndex, attrs) {
   if (!attrs.id) throw new Error('attrs.id is required');
 
-  // TODO is this really required?
-  attrs.layerId = layer.get('id');
-
   var createModel = this.types[attrs.type];
   if (createModel) {
     var opts = {

@@ -438,8 +438,7 @@ var Vis = View.extend({
       var widgetsAttrs = layer.get('widgets') || {};
       for (var id in widgetsAttrs) {
         var attrs = _.extend({
-          id: id,
-          layerId: layer.get('id')
+          id: id
         }, widgetsAttrs[id]);
         var widgetModel = this.widgetModelFactory.createModel(layer, layerIndex, attrs);
         widgetModels.push(widgetModel);

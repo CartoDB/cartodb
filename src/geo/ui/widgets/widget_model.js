@@ -47,7 +47,7 @@ module.exports = Model.extend({
       }
     }, this);
     this.bind('change:boundingBox', function() {
-      if (this.get('boundingBox') && !this.isCollapsed()) {
+      if (this.get('bbox') && !this.isCollapsed()) {
         this._fetch();
       }
     }, this);

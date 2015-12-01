@@ -74,7 +74,7 @@ module.exports = WidgetModel.extend({
     this.bind('change:boundingBox', function() {
       // If a search is applied and bounding bounds has changed,
       // don't fetch new raw data
-      if (this.get('boundingBox') && !this.isSearchApplied() && !this.isCollapsed()) {
+      if (this.get('bbox') && !this.isSearchApplied() && !this.isCollapsed()) {
         this._fetch();
       }
     }, this);

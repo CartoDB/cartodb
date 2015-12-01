@@ -60,11 +60,18 @@ module.exports = WidgetContent.extend({
   _storeBounds: function() {
     var data = this.model.getData();
     if (data && data.length > 0) {
+<<<<<<< HEAD
       this.firstData = data;
       this.start = data[0].start;
       this.end = data[data.length - 1].end;
       this.binsCount = data.length;
       this.model.set({ start: this.start, end: this.end, bins: data.length });
+=======
+      this.start = data[0].start;
+      this.end = data[data.length - 1].end;
+      this.binsCount = data.length;
+      this.model.set({ start: this.start, end: this.end, bins: this.binsCount });
+>>>>>>> widgets
     }
   },
 
@@ -385,6 +392,11 @@ module.exports = WidgetContent.extend({
   },
 
   _onZoomIn: function() {
+<<<<<<< HEAD
+=======
+    this.histogramChartView.expand(20);
+
+>>>>>>> widgets
     this._showMiniRange();
     this.histogramChartView.expand(20);
 
@@ -405,7 +417,10 @@ module.exports = WidgetContent.extend({
     this.unsettingRange = true;
 
     this.model.set({ start: this.start, end: this.end, bins: this.binsCount, own_filter: null });
+<<<<<<< HEAD
 
+=======
+>>>>>>> widgets
     this.viewModel.set({ zoom_enabled: false, filter_enabled: false, lo_index: null, hi_index: null });
 
     this.filter.unsetRange();

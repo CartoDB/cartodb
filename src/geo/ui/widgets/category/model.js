@@ -66,7 +66,7 @@ module.exports = WidgetModel.extend({
     }, this);
 
     this.bind('change:url', function(){
-      if (this.get('sync')) {
+      if (this.get('sync') && !this.isCollapsed()) {
         this._fetch();
       }
     }, this);
@@ -74,7 +74,7 @@ module.exports = WidgetModel.extend({
     this.bind('change:boundingBox', function() {
       // If a search is applied and bounding bounds has changed,
       // don't fetch new raw data
-      if (this.get('bbox') && !this.isSearchApplied()) {
+      if (this.get('bbox') && !this.isSearchApplied() && !this.isCollapsed()) {
         this._fetch();
       }
     }, this);
@@ -84,6 +84,19 @@ module.exports = WidgetModel.extend({
         url: this.get('url'),
         boundingBox: this.get('boundingBox')
       });
+    }, this);
+
+    this.bind('change:collapsed', function(mdl, isCollapsed) {
+      if (!isCollapsed) {
+        if (mdl.changedAttributes(this._previousAttrs)) {
+          this._fetch();
+        }
+      } else {
+        this._previousAttrs = {
+          url: this.get('url'),
+          boundingBox: this.get('boundingBox')
+        };
+      }
     }, this);
 
     this.locked.bind('change add remove', function() {

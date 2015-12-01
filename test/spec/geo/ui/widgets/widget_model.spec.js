@@ -41,11 +41,43 @@ describe('geo/ui/widgets/widget_model', function() {
       expect(this.model.fetch).not.toHaveBeenCalled();
     });
 
+    it('should not fetch new data when url changes and widget is collapsed', function() {
+      this.model.set('collapsed', true);
+      spyOn(this.model, 'fetch');
+      this.model.trigger('change:url', this.model);
+      expect(this.model.fetch).not.toHaveBeenCalled();
+    });
+
     it('should not fetch new data when bbox changes and bbox is not enabled', function() {
       this.model.set('bbox', false);
       spyOn(this.model, 'fetch');
       this.model.trigger('change:boundingBox', this.model);
       expect(this.model.fetch).not.toHaveBeenCalled();
+    });
+
+    it('should not fetch new data when bbox changes and widget is collapsed', function() {
+      this.model.set('collapsed', true);
+      spyOn(this.model, 'fetch');
+      this.model.trigger('change:boundingBox', this.model);
+      expect(this.model.fetch).not.toHaveBeenCalled();
+    });
+
+  });
+
+  describe('when collapse', function() {
+
+    it('should fetch again when collapse is disabled and url or boundingBox has changed', function() {
+      spyOn(this.model, '_fetch');
+      this.model.set('collapsed', true);
+      this.model.set('url', 'hello');
+      this.model.set('collapsed', false);
+      expect(this.model._fetch).toHaveBeenCalled();
+    });
+
+    it('should not fetch when collapsed is enabled', function() {
+      spyOn(this.model, '_fetch');
+      this.model.set('collapsed', true);
+      expect(this.model._fetch).not.toHaveBeenCalled();
     });
 
   });

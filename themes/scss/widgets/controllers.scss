@@ -71,7 +71,10 @@
 
   &:hover {
     background: #F9F9F9;
-    color: #3AA9E3;
+
+    .CDB-mapZoomComponent {
+      fill: #3AA9E3;
+    }
   }
 
   &:last-child {
@@ -86,6 +89,10 @@
   }
 }
 
+.CDB-mapZoomLinkComponent {
+  vertical-align: middle;
+}
+
 .CDB-mapZoomInfo {
   position: absolute;
   top: -24px;
@@ -96,8 +103,10 @@
   border-radius: 4px;
   background: rgba(0, 0, 0, 0.64); 
   color: #FFF;
-  font-size: 10px;
-  line-height: 14px;
+  font-family: 'Open Sans';
+  font-size: $sFontSize-smaller;
+  font-weight: $sFontWeight-semibold;
+  line-height: $sLineHeight-smaller;
   text-align: center;
   z-index: 0;
 }
@@ -172,3 +181,5 @@
     outline: none;
   }
 }
+
+

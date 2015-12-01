@@ -63,12 +63,12 @@
   .Widget-canvas {
     @include display-flex();
     @include flex-wrap(nowrap);
-    width: 100%;
-    min-width: 100%;
-    max-width: 100%;
+    width: calc(100% - 80px);
+    min-width: calc(100% - 80px);
+    max-width: calc(100% - 80px);
     height: 350px;
     margin-top: 8px;
-    margin-left: 0;
+    margin-left: 80px;
     overflow-x: auto;
     overflow-y: visible;
     border-radius: 0;
@@ -81,5 +81,8 @@
   .Widget-canvas .simplebar-content {
     @include display-flex();
     @include flex-wrap(nowrap);
+  }
+  .Widget-canvasShadow.is-visible {
+    display: none;
   }
 }

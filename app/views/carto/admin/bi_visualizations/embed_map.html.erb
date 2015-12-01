@@ -1,1 +1,41 @@
-<%= @bi_visualization.viz_json %>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>CartoDB</title>
+    <meta name=viewport content="width=device-width initial-scale=1">
+    <%= stylesheet_link_tag 'dashboard_embed.css', :media => 'all' %>
+
+    <style type="text/css">
+      html, body {
+        position:relative;
+        height: 100%;
+        padding: 0;
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="Dashboard-canvas js-dashboard">
+      <div class="Dashboard-mapWrapper Dashboard-mapWrapper--margin">
+        <div class="Map-canvas">
+          <div class="Map" id="map"></div>
+        </div>
+      </div>
+    </div>
+    <div class="Widget-canvas js-canvas"></div>
+
+    <%= javascript_include_tag 'dashboard_embed.js' -%>
+
+    <script>
+      var viz = <%= @bi_visualization.viz_json %>;
+
+      window.onload = function() {
+        cartodb.createVis('map', viz, opts)
+          .error(function(e) {
+            console.log(e);
+          });
+      }
+    </script>
+  </body>
+</html>

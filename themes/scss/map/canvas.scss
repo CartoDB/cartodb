@@ -46,3 +46,13 @@
     @include flex-direction(column);
   }
 }
+
+@include media-query-mobile() {
+  .Dashboard-canvas {
+    padding: 8px;
+  }
+  .Dashboard-mapWrapper--margin {
+    margin-left: 0;
+    margin-top: 48px;
+  }
+}

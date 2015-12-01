@@ -60,7 +60,7 @@ module.exports = WidgetContent.extend({
   _storeBounds: function() {
     var data = this.model.getData();
     if (data && data.length > 0) {
-      this.firstData = data;
+      this.initialData = data;
       this.start = data[0].start;
       this.end = data[data.length - 1].end;
       this.binsCount = data.length;
@@ -81,22 +81,14 @@ module.exports = WidgetContent.extend({
       if (this._isZoomed()) {
         this.zoomedData = this.model.getData();
       } else {
-        this.histogramChartView.generateShadowBars(this.firstData);
+        this.histogramChartView.generateShadowBars(this.initialData);
         this.originalData = this.model.getData();
       }
-
       this.histogramChartView.replaceData(this.model.getData());
     }
 
     if (this.unsettingRange) {
-      this.unsettingRange = false;
-      this.histogramChartView.replaceData(this.originalData);
-      this.viewModel.set({ lo_index: null, hi_index: null });
-
-      if (!this._isZoomed()) {
-        this.histogramChartView.generateShadowBars(this.firstData);
-      }
-
+      this._unsetRange();
     } else {
       if (this._isZoomed() && !this.lockZoomedData) {
         this.lockZoomedData = true;
@@ -129,6 +121,16 @@ module.exports = WidgetContent.extend({
     }
 
     return this;
+  },
+
+  _unsetRange: function() {
+    this.unsettingRange = false;
+    this.histogramChartView.replaceData(this.originalData);
+    this.viewModel.set({ lo_index: null, hi_index: null });
+
+    if (!this._isZoomed()) {
+      this.histogramChartView.generateShadowBars(this.initialData);
+    }
   },
 
   _addPlaceholder: function() {

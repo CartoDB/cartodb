@@ -1,7 +1,6 @@
 var _ = require('underscore');
 var config = require('cdb.config');
 var MapLayer = require('./map-layer');
-var WidgetsCollection = require('../ui/widgets/widgets_collection');
 
 var CartoDBLayer = MapLayer.extend({
 
@@ -12,13 +11,6 @@ var CartoDBLayer = MapLayer.extend({
   },
 
   initialize: function() {
-    this.widgets = new WidgetsCollection([]);
-
-    // Re-trigger the change:filter event
-    this.widgets.bind('change:filter', function(widget, filter) {
-      this.trigger('change:filter', this, widget, filter);
-    }, this);
-
     MapLayer.prototype.initialize.apply(this, arguments);
   },
 
@@ -28,10 +20,6 @@ var CartoDBLayer = MapLayer.extend({
 
   deactivate: function() {
     this.set({active: false, opacity: 0, visible: false});
-  },
-
-  getWidgets: function() {
-    return this.widgets;
   },
 
   // TODO: This is probably not used anymore
@@ -108,20 +96,10 @@ var CartoDBLayer = MapLayer.extend({
     );
   },
 
-  getFilters: function() {
-    return this.widgets.map(function(widget) {
-      return widget.getFilter();
-    });
-  },
-
   // Layers inside a "layergroup" layer have the layer_name defined in options.layer_name
   // Layers inside a "namedmap" layer have the layer_name defined in the root of their definition
   getName: function() {
     return this.get('options') && this.get('options').layer_name || this.get('layer_name');
-  },
-
-  addWidget: function(widget) {
-    this.widgets.add(widget);
   }
 });
 

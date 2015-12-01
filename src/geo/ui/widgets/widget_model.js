@@ -106,10 +106,6 @@ module.exports = Model.extend({
     return Model.prototype.fetch.call(this,opts);
   },
 
-  getFilter: function() {
-    return this.filter;
-  },
-
   toJSON: function() {
     throw new Error('toJSON should be defined for each widget');
   }

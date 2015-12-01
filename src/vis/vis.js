@@ -442,7 +442,6 @@ var Vis = View.extend({
           layerId: layer.get('id')
         }, widgetsAttrs[id]);
         var widgetModel = this.widgetModelFactory.createModel(layer, layerIndex, attrs);
-        layer.widgets.add(widgetModel);
         widgetModels.push(widgetModel);
       }
     }, this);
@@ -475,6 +474,7 @@ var Vis = View.extend({
       //TODO: assuming here all viz.json has a layergroup and that may not be true
       layerGroup: cartoDBLayerGroup,
       layers: interactiveLayers,
+      widgets: this.widgets,
       map: map
     });
 

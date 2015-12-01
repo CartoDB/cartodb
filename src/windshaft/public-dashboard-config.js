@@ -3,6 +3,7 @@ var WindshaftPublicDashboardConfig = {};
 
 WindshaftPublicDashboardConfig.generate = function(options) {
   var layers = options.layers;
+  var widgets = options.widgets;
   var config = { layers: [] };
   _.each(layers, function(layer) {
     if (layer.isVisible()) {
@@ -23,12 +24,12 @@ WindshaftPublicDashboardConfig.generate = function(options) {
       }
 
       layerConfig.options.widgets = {};
-      if (layer.widgets.length > 0) {
-        layer.widgets.each(function(widget) {
+      var layerId = layer.get('id');
+      widgets.each(function(widget) {
+        if (layerId === widget.layer.get('id')) {
           layerConfig.options.widgets[widget.get('id')] = widget.toJSON();
-        });
-
-      }
+        }
+      });
       config.layers.push(layerConfig);
     }
   });

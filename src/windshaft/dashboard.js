@@ -9,6 +9,7 @@ var WindshaftDashboard = function(options) {
 
   this.layerGroup = options.layerGroup;
   this.layers = new Backbone.Collection(options.layers);
+  this.widgets = options.widgets;
   this.map = options.map;
   this.client = options.client;
   this.statTag = options.statTag;
@@ -19,7 +20,7 @@ var WindshaftDashboard = function(options) {
   this.map.bind('change:center change:zoom', _.debounce(this._boundingBoxChanged, BOUNDING_BOX_FILTER_WAIT), this);
 
   this.layers.bind('change', this._layerChanged, this);
-  this.layers.bind('change:filter', this._layerChanged, this);
+  this.widgets.bind('change:filter', this._onChangedFilter, this);
 
   this._createInstance();
 };
@@ -28,14 +29,15 @@ WindshaftDashboard.prototype._createInstance = function(options) {
   var options = options || {};
 
   var dashboardConfig = this.configGenerator.generate({
-    layers: this.layers.models
+    layers: this.layers.models,
+    widgets: this.widgets
   });
 
-  var visibleLayers = this.layers.filter(function(layer) { return layer.isVisible(); });
-  var filtersFromVisibleLayers = _.chain(this.layers.models)
-    .filter(function(layer) { return layer.isVisible(); })
-    .map(function(layer) { return layer.getFilters(); })
-    .flatten()
+
+  var filtersFromVisibleLayers = this.widgets.chain()
+    .filter(function(w) { return w.layer.get('visible') })
+    .map(function(w) { return w.filter })
+    .compact() // not all widgets have filters
     .value();
 
   var filters = new WindshaftFiltersCollection(filtersFromVisibleLayers);
@@ -81,26 +83,29 @@ WindshaftDashboard.prototype._boundingBoxChanged = function() {
 };
 
 WindshaftDashboard.prototype._updateWidgetURLs = function(options) {
-  var options = options || {};
-  var self = this;
+  options = options || {};
   var boundingBoxFilter = new WindshaftFiltersBoundingBoxFilter(this.map.getViewBounds());
+  var boundingBox = boundingBoxFilter.toString();
   var layerId = options.layerId;
 
-  this.layers.each(function(layer) {
-    layer.widgets.each(function(widget) {
-      var silent = layerId && layer.get('id') !== layerId;
-      var url = self.instance.getWidgetURL({
-        widgetId: widget.get('id'),
-        protocol: 'http'
-      });
-
-      widget.set({
-        'url': url,
-        'boundingBox': boundingBoxFilter.toString()
-      }, {
-        silent: silent
-      });
+  this.widgets.each(function(widget) {
+    var url = this.instance.getWidgetURL({
+      widgetId: widget.get('id'),
+      protocol: 'http'
     });
+
+    widget.set({
+      'url': url,
+      'boundingBox': boundingBox
+    }, {
+      silent: layerId && layerId !== widget.layer.get('id')
+    });
+  }, this);
+};
+
+WindshaftDashboard.prototype._onChangedFilter = function(w) {
+  this._createInstance({
+    layerId: w.layer.get('id')
   });
 };
 

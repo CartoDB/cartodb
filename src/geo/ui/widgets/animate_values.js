@@ -9,9 +9,6 @@ var View = require('cdb/core/view');
  */
 module.exports = View.extend({
 
-  initialize: function() {
-  },
-
   animateFromValues: function(from, to, className, template, opts) {
     var $el = this.$(className);
     var options = opts || {};

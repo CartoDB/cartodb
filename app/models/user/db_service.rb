@@ -1276,6 +1276,12 @@ module CartoDB
                   GD['time'] = time
                 else:  
                   time = GD['time']
+                
+                if 'json' not in GD:
+                  import json
+                  GD['json'] = json
+                else:  
+                  json = GD['json']
  
                 start = time.time()
                 retries = 0
@@ -1319,7 +1325,7 @@ module CartoDB
                 invalidation_result = {"timestamp": current_time, "duration": round(invalidation_duration, 8), "termination_state": termination_state, "retries": retries, "error": error, "database": "#{@user.database_name}", "table_name": table_name, "dbuser": session_user}
                 
                 if trigger_verbose:
-                  syslog.syslog(syslog.LOG_INFO, "invalidation: %s" % invalidation_result)
+                  syslog.syslog(syslog.LOG_INFO, "invalidation: %s" % json.dumps(invalidation_result))
 
             $$
             LANGUAGE 'plpythonu' VOLATILE;

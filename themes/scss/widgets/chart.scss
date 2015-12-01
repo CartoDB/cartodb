@@ -85,6 +85,10 @@
   fill: #E7E7E7;
 }
 
+.Bar.is-selected {
+  fill: rgba(#000, 0.06);
+}
+
 .mini {
 
   .Bar {
@@ -163,6 +167,7 @@
 }
 
 .ShadowBar {
-  fill: #F9F9F9;
+  fill: rgba(#000, 0.06);
   shape-rendering: crispEdges;
 }
+

@@ -212,3 +212,36 @@
   font-weight: $sFontWeight-lighter;
   line-height: $sLineHeight-smaller;
 }
+
+@include media-query-mobile() {
+  .Dashboard-info {
+    right: 0;
+    height: 48px;
+    width: 100%;
+    max-width: 100%;
+  }
+  .Dashboard-info-header {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+  }
+  .Dashboard-info-logo {
+    width: 32px;
+    height: 32px;
+    line-height: 32px;
+  }
+  .Dashboard-info-footer {
+    top: 8px;
+    left: auto;
+    bottom: auto;
+    right: 8px;
+    width: 32px;
+  }
+  .Dashboard-info-footer-item {
+    margin-top: 0;
+  }
+  .Dashboard-info-media {
+    width: 32px;
+    margin: 0;
+  }
+}

@@ -1,16 +1,25 @@
+@import '../variables/mixins';
+
 .Widget-content {
   position: relative;
 }
 .Widget-chart.Widget-chart--fake {
-  text-align: center;
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(flex-end);
+  width: 100%;
+  height: 72px; // value to match real widget content height, to avoid "jumpy" behavior
 }
 .Widget-chartItem.Widget-chartItem--fake {
+  @include flex-grow(1);
   display: inline-block;
-  width: 4%;
-  height: 40px;
+  margin-right: 2px;
 }
 .Widget-chartItem--fake.Widget-chartItem--small {
   height: 20px;
+}
+.Widget-chartItem--fake.Widget-chartItem--medium {
+  height: 40px;
 }
 .Widget-chartItem--fake.Widget-chartItem--big {
   height: 60px;
@@ -73,8 +82,7 @@
   opacity: 1;
 }
 .Bar.is-selected {
-  fill: #DDD;
-  opacity: 0.7;
+  fill: #e7e7e7;
 }
 
 .mini {
@@ -152,4 +160,9 @@
 }
 .AxisTip-rect {
   fill: #FFF;
+}
+
+.ShadowBar {
+  fill: #F9F9F9;
+  shape-rendering: crispEdges;
 }

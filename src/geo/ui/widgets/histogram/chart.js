@@ -332,6 +332,7 @@ module.exports = View.extend({
     this._setupDimensions();
     this._calcBarWidth();
     this._generateChartContent();
+    this.removeShadowBars();
   },
 
   refresh: function() {
@@ -346,6 +347,10 @@ module.exports = View.extend({
 
   resetIndexes: function() {
     this.model.set({ lo_index: null, hi_index: null });
+  },
+
+  removeShadowBars: function() {
+    this.chart.selectAll('.ShadowBars').remove();
   },
 
   _removeBars: function() {
@@ -372,6 +377,7 @@ module.exports = View.extend({
   _generateChartContent: function() {
     this._generateAxis();
     this._generateLines();
+
     this._generateBars();
     this._generateHandles();
     this._setupBrush();
@@ -721,7 +727,7 @@ module.exports = View.extend({
     .attr('x2', 3)
     .attr('y2', this.chartHeight() + 4);
 
-    if (this.options.handles) {
+    if (this.options.hasHandles) {
       handle
       .append('rect')
       .attr('class', 'HandleRect')
@@ -951,5 +957,63 @@ module.exports = View.extend({
         return self.yScale(d.freq);
       }
     });
+  },
+
+  generateShadowBars: function(data) {
+
+    if (!data || !data.length) {
+      return;
+    }
+
+    this.removeShadowBars();
+
+    var self = this;
+
+    var yScale = d3.scale.linear().domain([0, d3.max(data, function(d) { return _.isEmpty(d) ? 0 : d.freq; } )]).range([this.chartHeight(), 0]);
+    var barWidth = this.chartWidth() / data.length;
+
+    var bars = this.chart.append('g')
+    .attr('transform', 'translate(0, 0)')
+    .attr('class', 'ShadowBars')
+    .selectAll('.ShadowBar')
+    .data(data)
+    .enter()
+    .append('rect')
+    .attr('class', 'ShadowBar')
+    .attr('data', function(d) { return _.isEmpty(d) ? 0 :  d.freq; })
+    .attr('transform', function(d, i) {
+      return 'translate(' + (i * barWidth) + ', 0 )';
+    })
+    .attr('y', function(d) {
+      if (_.isEmpty(d)) {
+        return self.chartHeight();
+      }
+
+      var h = self.chartHeight() - yScale(d.freq);
+
+      if (h < self.options.minimumBarHeight && h > 0) {
+        return self.chartHeight() - self.options.minimumBarHeight;
+      } else {
+        return yScale(d.freq);
+      }
+    })
+    .attr('width', Math.max(0, barWidth - 1))
+    .attr('height', function(d) {
+
+      if (_.isEmpty(d)) {
+        return 0;
+      }
+
+      var h = self.chartHeight() - yScale(d.freq);
+
+      if (h < self.options.minimumBarHeight && h > 0) {
+        h = self.options.minimumBarHeight;
+      }
+      return h;
+    });
+
+    // We need to explicitly move the lines of the grid behind the shadow bars
+    this.chart.selectAll('.ShadowBars').moveToBack();
+    this.chart.selectAll('.Lines').moveToBack();
   }
 });

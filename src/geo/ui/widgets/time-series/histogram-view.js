@@ -43,7 +43,7 @@ module.exports = View.extend({
         bottom: 4,
         left: 4
       },
-      handles: true,
+      hasHandles: true,
       animationBarDelay: function(d, i) {
         return (i * 20);
       },

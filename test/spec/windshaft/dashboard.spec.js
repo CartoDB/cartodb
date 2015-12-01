@@ -47,7 +47,7 @@ describe('src/windshaft/dashboard', function() {
         return 'torqueTileURLs';
       }
       return 'tileURLs';
-    }); 
+    });
 
     this.client = {
       instantiateMap: function(options) {

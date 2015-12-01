@@ -17,14 +17,7 @@
     </style>
   </head>
   <body>
-    <div class="Dashboard-canvas js-dashboard">
-      <div class="Dashboard-mapWrapper Dashboard-mapWrapper--margin">
-        <div class="Map-canvas">
-          <div class="Map" id="map"></div>
-        </div>
-        <div class="Dashboard-belowMap js-dashboard-belowMap"></div>
-      </div>
-    </div>
+    <div class="Dashboard-canvas" id="dashboard"></div>
 
     <script>
       window.onload = function() {
@@ -362,7 +355,7 @@
             }
           }
 
-          cartodb.createVis('map', vizJSON1, {
+          cartodb.createVis('dashboard', vizJSON1, {
             no_cdn: false,
             layer_selector: true,
           })

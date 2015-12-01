@@ -24,16 +24,19 @@ WidgetViewFactory.prototype.addType = function(def) {
   this.defs.push(def);
 };
 
-WidgetViewFactory.prototype.createWidgetView = function(widget, layer) {
+/**
+ * @returns {Object, undefined} Returns nothing if there is not matching view for the given model
+ */
+WidgetViewFactory.prototype.createWidgetView = function(widget) {
   var def = _.find(this.defs, function(def) {
-    return def.match(widget, layer);
+    return def.match(widget);
   });
 
   if (def) {
     var attrs = {
       className: this.DEFAULT_CLASS_NAMES,
       model: widget,
-      contentView: def.createContentView(widget, layer)
+      contentView: def.createContentView(widget)
     };
 
     return new WidgetView(
@@ -41,8 +44,6 @@ WidgetViewFactory.prototype.createWidgetView = function(widget, layer) {
         ? def.customizeWidgetAttrs(attrs)
         : attrs
     );
-  } else {
-    throw new Error('no widget view found for given widget: ' + JSON.stringify(widget.attributes));
   }
 };
 

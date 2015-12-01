@@ -1,8 +1,8 @@
-var _ = require('underscore');
-var WidgetViewFactory = require('cdb/geo/ui/widgets/widget-view-factory');
-var WidgetView = require('cdb/geo/ui/widgets/widget-view');
-var View = require('cdb/core/view');
 var Model = require('cdb/core/model');
+var View = require('cdb/core/view');
+var WidgetViewFactory = require('cdb/geo/ui/widgets/widget-view-factory');
+var WidgetModel = require('cdb/geo/ui/widgets/widget_model');
+var WidgetView = require('cdb/geo/ui/widgets/widget-view');
 
 describe('geo/ui/widgets/widget-view-factory', function() {
   beforeEach(function() {
@@ -49,8 +49,13 @@ describe('geo/ui/widgets/widget-view-factory', function() {
 
   describe('.createWidgetView', function() {
     beforeEach(function() {
-      this.widget = new Model();
-      this.layer = {};
+      this.layer = new Model({
+        id: 'layer-uuid',
+        type: 'cartodb'
+      });
+      this.widget = new WidgetModel({}, {
+        layer: this.layer
+      });
 
       this.matchSpy = jasmine.createSpy('match');
       this.createContentViewSpy = jasmine.createSpy('createContentView');
@@ -66,12 +71,12 @@ describe('geo/ui/widgets/widget-view-factory', function() {
       });
     });
 
-    describe('when called with a match function', function() {
+    describe('when called with a matching match function', function() {
       beforeEach(function() {
         this.contentView = new View();
         this.matchSpy.and.returnValue(true);
         this.createContentViewSpy.and.returnValue(this.contentView);
-        this.widgetView = this.factory.createWidgetView(this.widget, this.layer);
+        this.widgetView = this.factory.createWidgetView(this.widget);
       });
 
       it('should create a widget view', function() {
@@ -84,16 +89,14 @@ describe('geo/ui/widgets/widget-view-factory', function() {
 
       it('should call match with given widget and layer', function() {
         expect(this.matchSpy).toHaveBeenCalled();
-        expect(this.matchSpy.calls.argsFor(0).length).toEqual(2);
+        expect(this.matchSpy.calls.argsFor(0).length).toEqual(1);
         expect(this.matchSpy.calls.argsFor(0)[0]).toEqual(this.widget);
-        expect(this.matchSpy.calls.argsFor(0)[1]).toEqual(this.layer);
       });
 
       it('should call create with given widget and layer', function() {
         expect(this.createContentViewSpy).toHaveBeenCalled();
-        expect(this.createContentViewSpy.calls.argsFor(0).length).toEqual(2);
+        expect(this.createContentViewSpy.calls.argsFor(0).length).toEqual(1);
         expect(this.createContentViewSpy.calls.argsFor(0)[0]).toEqual(this.widget);
-        expect(this.createContentViewSpy.calls.argsFor(0)[1]).toEqual(this.layer);
       });
     });
 
@@ -102,7 +105,7 @@ describe('geo/ui/widgets/widget-view-factory', function() {
         this.contentView = new View();
         this.widget.set('type', 'wadus'); // should match 1st type added to factory
         this.createWadusContentViewSpy.and.returnValue(this.contentView);
-        this.widgetView = this.factory.createWidgetView(this.widget, this.layer);
+        this.widgetView = this.factory.createWidgetView(this.widget);
       });
 
       it('should create a widget view', function() {
@@ -117,11 +120,7 @@ describe('geo/ui/widgets/widget-view-factory', function() {
     describe('when called with non-existing type', function() {
       beforeEach(function() {
         this.matchSpy.and.returnValue(false);
-        try {
-          this.factory.createWidgetView(this.widget, this.layer);
-        } catch(e) {
-          this.e = e;
-        }
+        this.result = this.factory.createWidgetView(this.widget);
       });
 
       it('should not call create with given widget and layer', function() {
@@ -129,8 +128,8 @@ describe('geo/ui/widgets/widget-view-factory', function() {
         expect(this.createContentViewSpy).not.toHaveBeenCalled();
       });
 
-      it('should throw error since no there is no matching type', function() {
-        expect(this.e).toBeDefined();
+      it('should return undefined', function() {
+        expect(this.result).toBeUndefined();
       });
     });
   });

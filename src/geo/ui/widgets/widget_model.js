@@ -19,9 +19,10 @@ module.exports = Model.extend({
   },
 
   initialize: function(attrs, opts) {
-    if (opts && opts.filter) {
-      this.filter = opts.filter;
-    }
+    opts = opts || {};
+
+    this.layer = opts.layer;
+    this.filter = opts.filter; // optional/might be undefined
 
     this._initBinds();
   },

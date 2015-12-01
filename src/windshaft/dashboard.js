@@ -20,7 +20,7 @@ var WindshaftDashboard = function(options) {
   this.map.bind('change:center change:zoom', _.debounce(this._boundingBoxChanged, BOUNDING_BOX_FILTER_WAIT), this);
 
   this.layers.bind('change', this._layerChanged, this);
-  this.widgets.bind('change:filter', this._onChangedFilter, this);
+  this.widgets.bind('change:filter', this._filterChanged, this);
 
   this._createInstance();
 };
@@ -35,7 +35,7 @@ WindshaftDashboard.prototype._createInstance = function(options) {
 
 
   var filtersFromVisibleLayers = this.widgets.chain()
-    .filter(function(w) { return w.layer.get('visible') })
+    .filter(function(w) { return w.layer.isVisible() })
     .map(function(w) { return w.filter })
     .compact() // not all widgets have filters
     .value();
@@ -103,7 +103,7 @@ WindshaftDashboard.prototype._updateWidgetURLs = function(options) {
   }, this);
 };
 
-WindshaftDashboard.prototype._onChangedFilter = function(w) {
+WindshaftDashboard.prototype._filterChanged = function(w) {
   this._createInstance({
     layerId: w.layer.get('id')
   });

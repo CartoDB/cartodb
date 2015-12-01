@@ -29,15 +29,7 @@ var Search = View.extend({
 
   options: {
     searchPin: true,
-    infowindowTemplate: 
-    /*'<div class="cartodb-infowindow">'+
-      '<div class="cartodb-popup v2 centered">'+
-      '<a href="#close" class="cartodb-popup-close-button close">x</a>'+
-       '<div class="cartodb-popup-content-wrapper">'+
-         '<p>{{ address }}</p>'+
-       '</div>'+
-       '<div class="cartodb-popup-tip-container"></div>'+
-    '</div>',*/
+    infowindowTemplate:
     '<div class="cartodb-infowindow">'+
       '<div class="cartodb-popup Cdb-infowindow Cdb-infowindow--light">'+
         '<div class="Cdb-infowindow-container">'+

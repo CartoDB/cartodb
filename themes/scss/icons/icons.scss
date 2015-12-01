@@ -4,7 +4,7 @@
 @import '../variables/mixins';
 @include font-face('CDBIcon', '../../fonts/CDBIcon.eot', '../../fonts/CDBIcon.woff', '../../fonts/CDBIcon.ttf', '../../fonts/CDBIcon.svg');
 
-.CDBIcon {
+.CDB-Icon {
   display: inline-block;
   font-family: 'CDBIcon';
   font-style: normal;
@@ -14,30 +14,30 @@
   line-height: 1;
 }
 
-.CDBIcon-Cartofante:before {
+.CDB-Icon-Cartofante:before {
   content: '\E001';
 }
 
-.CDBIcon-Hamburguer:before {
+.CDB-Icon-Hamburguer:before {
   content: '\E002';
 }
 
-.CDBIcon-X:before {
+.CDB-Icon-X:before {
   content: '\E003';
 }
 
-.CDBIcon-Syringe:before {
+.CDB-Icon-Syringe:before {
   content: '\E004';
 }
 
-.CDBIcon-Lens:before {
+.CDB-Icon-Lens:before {
   content: '\E005';
 }
 
-.CDBIcon-Lock:before {
+.CDB-Icon-Lock:before {
   content: '\E006';
 }
 
-.CDBIcon-Unlock:before {
+.CDB-Icon-Unlock:before {
   content: '\E007';
 }

@@ -30,7 +30,9 @@ module.exports = View.extend({
           });
         }
       }, {
-        type: 'histogram',
+        match: function(m) {
+          return m.get('type') === 'histogram' && m.layer.get('type') !== 'torque';
+        },
         createContentView: function(m) {
           return new HistogramContentView({
             dataModel: m,

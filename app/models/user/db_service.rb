@@ -1265,6 +1265,23 @@ module CartoDB
 
                 client = GD.get('invalidation', None)
 
+                if 'syslog' not in GD:
+                  import syslog
+                  GD['syslog'] = syslog
+                else:  
+                  syslog = GD['syslog']
+               
+                if 'time' not in GD:
+                  import time
+                  GD['time'] = time
+                else:  
+                  time = GD['time']
+ 
+                start = time.time()
+                retries = 0
+                termination_state = 1
+                error = ''          
+
                 while True:
 
                   if not client:
@@ -1272,6 +1289,7 @@ module CartoDB
                         import redis
                         client = GD['invalidation'] = redis.Redis(host='#{invalidation_host}', port=#{invalidation_port}, socket_timeout=timeout)
                       except Exception as err:
+                        error = "client_error - %s" % str(err)
                         # NOTE: we won't retry on connection error
                         if critical:
                           plpy.error('Invalidation Service connection error: ' +  str(err))
@@ -1279,8 +1297,11 @@ module CartoDB
 
                   try:
                     client.execute_command('TCH', '#{@user.database_name}', table_name)
+                    termination_state = 0
+                    error = ''
                     break
                   except Exception as err:
+                    error = "request_error - %s" % str(err)
                     if trigger_verbose:
                       plpy.warning('Invalidation Service warning: ' + str(err))
                     client = GD['invalidation'] = None # force reconnect
@@ -1288,7 +1309,18 @@ module CartoDB
                       if critical:
                         plpy.error('Invalidation Service error: ' +  str(err))
                       break
+                    retries = retries + 1
                     retry -= 1 # try reconnecting
+                  
+                end = time.time()
+                invalidation_duration = (end - start)
+                current_time = time.strftime("%Y-%m-%d %H:%M:%S %Z", time.localtime())
+                session_user = plpy.execute("SELECT session_user", 1)[0]["session_user"]
+                invalidation_result = {'timestamp': current_time, 'duration': round(invalidation_duration, 8), 'termination_state': termination_state, 'retries': retries, 'error': error, 'database': '#{@user.database_name}', 'table_name': table_name, 'dbuser': session_user}
+                
+                if trigger_verbose:
+                  syslog.syslog(syslog.LOG_INFO, "invalidation: %s" % invalidation_result)
+
             $$
             LANGUAGE 'plpythonu' VOLATILE;
             REVOKE ALL ON FUNCTION public.cdb_invalidate_varnish(TEXT) FROM PUBLIC;

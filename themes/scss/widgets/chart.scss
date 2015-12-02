@@ -120,33 +120,33 @@
   stroke: #3AA9E3;
 }
 
-.Axis {
+.CDB-ChartAxis {
   @include css3-prefix(user-select, none);
   shape-rendering: crispEdges;
   font: 10px sans-serif;
   fill: #979EA1;
 }
 
-.Axis path {
+.CDB-ChartAxis path {
   display: none;
 }
 
-.Axis line {
+.CDB-ChartAxis line {
   stroke: #EEE;
   stroke-width: 1;
   shape-rendering: crispEdges;
 }
 
-.AxisTip-text {
+.CDB-ChartAxisTip-text {
   @include css3-prefix(user-select, none);
   fill: #3AA9E3;
   font-size: 10px;
 }
-.AxisTip-rect {
+.CDB-ChartAxisTip-rect {
   fill: #FFF;
 }
 
-.ShadowBar {
+.CDB-ChartShadowBar {
   fill: rgba(#000, 0.06);
   shape-rendering: crispEdges;
 }

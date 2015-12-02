@@ -131,9 +131,9 @@ module.exports = View.extend({
   },
 
   _updateAxisTip: function(className) {
-    var textLabel = this.chart.select('.AxisTip-text.AxisTip-' + className);
-    var axisTip  = this.chart.select('.AxisTip.AxisTip-' + className);
-    var rectLabel = this.chart.select('.AxisTip-rect.AxisTip-' + className);
+    var textLabel = this.chart.select('.CDB-ChartAxisTip-text.CDB-ChartAxisTip-' + className);
+    var axisTip  = this.chart.select('.CDB-ChartAxisTip.CDB-ChartAxisTip-' + className);
+    var rectLabel = this.chart.select('.CDB-ChartAxisTip-rect.CDB-ChartAxisTip-' + className);
     var handle    = this.chart.select('.CDB-ChartHandle.CDB-ChartHandle-' + className);
 
     textLabel.data([this.model.get(className + '_axis_tip')]).text(function(d) {
@@ -233,9 +233,9 @@ module.exports = View.extend({
   },
 
   _showAxisTip: function(className) {
-    var textLabel = this.chart.select('.AxisTip-text.AxisTip-' + className);
-    var axisTip   = this.chart.select('.AxisTip.AxisTip-' + className);
-    var rectLabel = this.chart.select('.AxisTip-rect.AxisTip-' + className);
+    var textLabel = this.chart.select('.CDB-ChartAxisTip-text.CDB-ChartAxisTip-' + className);
+    var axisTip   = this.chart.select('.CDB-ChartAxisTip.CDB-ChartAxisTip-' + className);
+    var rectLabel = this.chart.select('.CDB-ChartAxisTip-rect.CDB-ChartAxisTip-' + className);
 
     if (textLabel) {
       textLabel.transition().duration(200).attr('opacity',  1);
@@ -246,9 +246,9 @@ module.exports = View.extend({
   },
 
   _hideAxisTip: function(className) {
-    var textLabel = this.chart.select('.AxisTip-text.AxisTip-' + className);
-    var axisTip   = this.chart.select('.AxisTip.AxisTip-' + className);
-    var rectLabel = this.chart.select('.AxisTip-rect.AxisTip-' + className);
+    var textLabel = this.chart.select('.CDB-ChartAxisTip-text.CDB-ChartAxisTip-' + className);
+    var axisTip   = this.chart.select('.CDB-ChartAxisTip.CDB-ChartAxisTip-' + className);
+    var rectLabel = this.chart.select('.CDB-ChartAxisTip-rect.CDB-ChartAxisTip-' + className);
 
     if (textLabel) {
       textLabel.transition().duration(200).attr('opacity',  0);
@@ -350,7 +350,7 @@ module.exports = View.extend({
   },
 
   removeShadowBars: function() {
-    this.chart.selectAll('.ShadowBars').remove();
+    this.chart.selectAll('.CDB-ChartShadowBars').remove();
   },
 
   _removeBars: function() {
@@ -692,16 +692,16 @@ module.exports = View.extend({
     var axisTip = handle.selectAll("g")
     .data([''])
     .enter().append("g")
-    .attr('class', 'AxisTip AxisTip-' + className)
+    .attr('class', 'CDB-ChartAxisTip CDB-ChartAxisTip-' + className)
     .attr("transform", function(d, i) { return "translate(0,52)"; });
 
     this.rectLabel = axisTip.append("rect")
-    .attr('class', 'AxisTip-rect AxisTip-' + className)
+    .attr('class', 'CDB-ChartAxisTip-rect CDB-ChartAxisTip-' + className)
     .attr("height", 12)
     .attr("width", 10);
 
     this.textLabel = axisTip.append("text")
-    .attr('class', 'AxisTip-text AxisTip-' + className)
+    .attr('class', 'CDB-ChartAxisTip-text CDB-ChartAxisTip-' + className)
     .attr("dy", "11")
     .attr("dx", "0")
     .text(function(d) { return d; });
@@ -773,7 +773,7 @@ module.exports = View.extend({
   },
 
   _removeAxis: function() {
-    this.canvas.select('.Axis').remove();
+    this.canvas.select('.CDB-ChartAxis').remove();
   },
 
   _generateAdjustAnchorMethod: function(ticks) {
@@ -802,7 +802,7 @@ module.exports = View.extend({
     var adjustTextAnchor = this._generateAdjustAnchorMethod(this.verticalRange);
 
     var axis = this.chart.append('g')
-    .attr('class', 'Axis');
+    .attr('class', 'CDB-ChartAxis');
 
     axis
     .append('g')
@@ -830,7 +830,7 @@ module.exports = View.extend({
     .orient('bottom');
 
     var axis = this.canvas.append('g')
-    .attr("class", 'Axis')
+    .attr("class", 'CDB-ChartAxis')
     .attr("transform", "translate(0," + (this.chartHeight() + 5) + ")")
     .call(xAxis);
 
@@ -974,12 +974,12 @@ module.exports = View.extend({
 
     var bars = this.chart.append('g')
     .attr('transform', 'translate(0, 0)')
-    .attr('class', 'ShadowBars')
-    .selectAll('.ShadowBar')
+    .attr('class', 'CDB-ChartShadowBars')
+    .selectAll('.CDB-ChartShadowBar')
     .data(data)
     .enter()
     .append('rect')
-    .attr('class', 'ShadowBar')
+    .attr('class', 'CDB-ChartShadowBar')
     .attr('data', function(d) { return _.isEmpty(d) ? 0 :  d.freq; })
     .attr('transform', function(d, i) {
       return 'translate(' + (i * barWidth) + ', 0 )';
@@ -1013,7 +1013,7 @@ module.exports = View.extend({
     });
 
     // We need to explicitly move the lines of the grid behind the shadow bars
-    this.chart.selectAll('.ShadowBars').moveToBack();
-    this.chart.selectAll('.Lines').moveToBack();
+    this.chart.selectAll('.CDB-ChartShadowBars').moveToBack();
+    this.chart.selectAll('.CDB-ChartLines').moveToBack();
   }
 });

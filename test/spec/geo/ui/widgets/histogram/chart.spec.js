@@ -93,7 +93,7 @@ describe('geo/ui/widgets/histogram/chart', function() {
     });
 
     it('should draw the axis', function() {
-      expect(this.view.$el.find('.Axis').size()).toBe(1);
+      expect(this.view.$el.find('.CDB-ChartAxis').size()).toBe(1);
     });
 
     it('should draw the handles', function() {

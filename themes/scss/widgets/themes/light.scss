@@ -11,6 +11,7 @@ $elementBkgHover: rgba(#AAA, 1);
 $elementBorder: rgba(#EEE, 1);
 $link: rgba(#3AA9E3, 1);
 $linkHover: rgba(#227DBD, 1);
+$lightHighlight: rgba(#000, 0.06);
 $highlighted: rgba(#9DE0AD, 1);
 $darkHighlighted: rgba(#5BA45E, 1);
 $positive: rgba(#8FB83F, 1);
@@ -217,6 +218,14 @@ $commonBkg: rgba(#FFF, 1);
 
   .CDB-Chart-bar.is-highlighted {
     fill: $darkHighlighted;
+  }
+
+  .CDB-Chart-bar.is-selected {
+    fill: $lightHighlight;
+  }
+
+  .CDB-Chart-shadowBar {
+    fill: $lightHighlight;
   }
 
   .CDB-Chart-handleRect {

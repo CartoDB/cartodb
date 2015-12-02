@@ -46,10 +46,6 @@
   opacity: 1;
 }
 
-.CDB-Chart-bar.is-selected {
-  fill: rgba(#000, 0.06);
-}
-
 .CDB-Chart.CDB-Chart--mini {
 
   .CDB-Chart-bar {
@@ -122,6 +118,5 @@
 }
 
 .CDB-Chart-shadowBar {
-  fill: rgba(#000, 0.06);
   shape-rendering: crispEdges;
 }

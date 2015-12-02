@@ -6,11 +6,6 @@
     <meta name=viewport content="width=device-width initial-scale=1">
     <link rel="stylesheet" href="/dist/themes/css/cartodb.css" />
     <script src="/dist/cartodb.uncompressed.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-
-
-    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700' rel='stylesheet' type='text/css'>
-
     <style type="text/css">
       html, body {
         position:relative;
@@ -21,14 +16,7 @@
     </style>
   </head>
   <body>
-    <div class="CDB-Dashboard-canvas js-dashboard">
-      <div class="CDB-Dashboard-mapWrapper CDB-Dashboard-mapWrapper--margin">
-        <div class="CDB-Map-canvas">
-          <div class="CDB-Map" id="map"></div>
-        </div>
-        <div class="CDB-Dashboard-belowMap js-dashboard-belowMap"></div>
-      </div>
-    </div>
+    <div class="Dashboard-canvas" id="dashboard"></div>
 
     <script>
       window.onload = function() {
@@ -295,26 +283,11 @@
             }
           }
 
-          cartodb.createVis('map', vizJSON1, {
+          cartodb.createVis('dashboard', vizJSON1, {
             no_cdn: false,
           })
           .done(function(vis, layers) {
-
             window.layers = layers.models[1].layers;
-
-            // var stadiums = layers[2];
-            // var counties = layers[1];
-
-            // var widget = vis.addWidget('list', {
-            //   layer: stadiums,
-            //   title: 'List',
-            //   listTemplate: $("#list_template").html(),
-            //   listItemTemplate: $("#list_item_template").html(),
-            //   columns: ['cartodb_id', 'description'],
-            //   sync: true
-            // });
-
-            // $('body').append(widget.render().el);
           })
           .error(function(err) {
             console.log(err);

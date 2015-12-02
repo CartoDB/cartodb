@@ -2,6 +2,7 @@ var _ = require('underscore');
 var cdb = require('cdb');
 var $ = require('jquery');
 var View = require('cdb/core/view');
+var TooltipView = require('cdb/geo/ui/widgets/widget-tooltip-view');
 var template = require('./histogram_title_template.tpl');
 
 /**
@@ -32,12 +33,28 @@ module.exports = View.extend({
         isCollapsed: this.dataModel.isCollapsed()
       })
     );
+    this._initViews();
+
     return this;
   },
 
   _initBinds: function() {
     this.dataModel.bind('change:histogramSizes change:collapsed', this.render, this);
     this.add_related_model(this.dataModel);
+  },
+
+  _initViews: function() {
+    var sizesTooltip = new TooltipView({
+      target: this.$('.js-sizes')
+    });
+    $('body').append(sizesTooltip.render().el);
+    this.addView(sizesTooltip);
+
+    var collapseTooltip = new TooltipView({
+      target: this.$('.js-collapse')
+    });
+    $('body').append(collapseTooltip.render().el);
+    this.addView(collapseTooltip);
   },
 
   _applySizes: function() {

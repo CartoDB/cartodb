@@ -2,6 +2,7 @@ var _ = require('underscore');
 var cdb = require('cdb');
 var $ = require('jquery');
 var View = require('cdb/core/view');
+var TooltipView = require('cdb/geo/ui/widgets/widget-tooltip-view');
 var template = require('./search_title_template.tpl');
 
 /**
@@ -29,6 +30,7 @@ module.exports = View.extend({
   },
 
   render: function() {
+    this.clearSubViews();
     this.$el.html(
       template({
         isCollapsed: this.dataModel.isCollapsed(),
@@ -42,6 +44,7 @@ module.exports = View.extend({
         canShowApply: this.dataModel.canApplyLocked()
       })
     );
+    this._initViews();
     return this;
   },
 
@@ -50,6 +53,20 @@ module.exports = View.extend({
     this.dataModel.bind('change:filter change:lockCollection change:categoryColors change:collapsed', this.render, this);
     this.add_related_model(this.dataModel);
     this.add_related_model(this.viewModel);
+  },
+
+  _initViews: function() {
+    var collapseTooltip = new TooltipView({
+      target: this.$('.js-collapse')
+    });
+    $('body').append(collapseTooltip.render().el);
+    this.addView(collapseTooltip);
+
+    var colorsTooltip = new TooltipView({
+      target: this.$('.js-colors')
+    });
+    $('body').append(colorsTooltip.render().el);
+    this.addView(colorsTooltip);
   },
 
   _onSearchToggled: function() {

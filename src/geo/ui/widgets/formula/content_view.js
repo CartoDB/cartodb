@@ -2,9 +2,11 @@ var _ = require('underscore');
 var WidgetContent = require('../standard/widget_content_view');
 var WidgetViewModel = require('../widget_content_model');
 var template = require('./template.tpl');
+var TooltipView = require('cdb/geo/ui/widgets/widget-tooltip-view');
 var animationTemplate = require('./animation_template.tpl');
 var formatter = require('cdb/core/format');
 var d3 = require('d3');
+var $ = require('jquery');
 var AnimateValues = require('../animate_values.js');
 
 /**
@@ -61,12 +63,22 @@ module.exports = WidgetContent.extend({
 
     this.$el.toggleClass('is-collapsed', !!isCollapsed);
 
+    this._initViews();
+
     return this;
   },
 
   _initBinds: function() {
     this.dataModel.bind('change:collapsed', this.render, this);
     WidgetContent.prototype._initBinds.call(this);
+  },
+
+  _initViews: function() {
+    var tooltip = new TooltipView({
+      target: this.$('.js-collapse')
+    });
+    $('body').append(tooltip.render().el);
+    this.addView(tooltip);
   },
 
   _toggleCollapse: function() {

@@ -10,13 +10,15 @@
   <div class="CDB-Widget-title CDB-Widget-contentSpaced">
     <h3 class="CDB-Widget-textBig" title="<%- title %>"><%- title %></h3>
     <div class="CDB-Widget-options CDB-Widget-contentSpaced">
-      <button class="CDB-Widget-buttonIcon CDB-Widget-buttonIcon--circle
+      <button class="CDB-Widget-buttonIcon CDB-Widget-buttonIcon--circle js-colors
         <%- isColorApplied ? 'is-selected' : '' %>
         <%- isColorApplied ? 'js-cancelColors' : 'js-applyColors' %>
+        " data-tooltip="
+          <%- isColorApplied ? 'Remove colors' : 'Apply colors' %>
         ">
         <i class="CDB-Icon CDB-Icon-syringe CDB-Icon--top"></i>
       </button>
-      <button class="CDB-Shape-threePoints js-collapse">
+      <button class="CDB-Shape-threePoints js-collapse" data-tooltip="<%- isCollapsed ? 'Show' : 'Hide' %>">
         <span class="CDB-Shape-threePointsItem"></span>
       </button>
     </div>

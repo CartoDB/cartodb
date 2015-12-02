@@ -89,7 +89,7 @@ linters:
   PropertyCount:
     enabled: true
     include_nested: false
-    max_properties: 15
+    max_properties: 18
     severity: warning
   PropertySortOrder:
     enabled: true

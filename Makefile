@@ -10,6 +10,7 @@ all:
 prepare-ruby-version:
 ifeq ($(RUBY_MAJOR),2)
 	cp Gemfile-ruby2 Gemfile
+	cp Gemfile-ruby2.lock Gemfile.lock
 endif
 
 PENDING_SPECS = \

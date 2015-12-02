@@ -16,8 +16,8 @@ module.exports = View.extend({
   className: "CDB-Zoom",
 
   events: {
-    'click .js-CDB-ZoomIn': 'zoom_in',
-    'click .js-CDB-ZoomOut': 'zoom_out'
+    'click .js-ZoomIn': 'zoom_in',
+    'click .js-ZoomOut': 'zoom_out'
   },
 
   default_options: {
@@ -42,8 +42,8 @@ module.exports = View.extend({
 
   _checkZoom: function() {
     var zoom = this.map.get('zoom');
-    this.$('.js-CDB-ZoomIn')[ zoom < this.map.get('maxZoom') ? 'removeClass' : 'addClass' ]('is-disabled')
-    this.$('.js-CDB-ZoomOut')[ zoom > this.map.get('minZoom') ? 'removeClass' : 'addClass' ]('is-disabled')
+    this.$('.js-ZoomIn')[ zoom < this.map.get('maxZoom') ? 'removeClass' : 'addClass' ]('is-disabled')
+    this.$('.js-ZoomOut')[ zoom > this.map.get('minZoom') ? 'removeClass' : 'addClass' ]('is-disabled')
   },
 
   zoom_in: function(ev) {

@@ -5,7 +5,7 @@
 @import '../variables/mixins';
 
 
-.CDB-overlay {
+.CDB-Overlay {
   position: relative;
   min-width: 32px;
   height: 32px;
@@ -81,7 +81,7 @@
     height: 11px;
     background: #636D72;
     content: '';
-  } 
+  }
 }
 
 .CDB-ZoomInfo {
@@ -92,7 +92,7 @@
   height: 34px;
   padding-top: 6px;
   border-radius: 4px;
-  background: rgba(0, 0, 0, 0.64); 
+  background: rgba(0, 0, 0, 0.64);
   color: #FFF;
   font-family: 'Open Sans';
   font-size: $sFontSize-smaller;

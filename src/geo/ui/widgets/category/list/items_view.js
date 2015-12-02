@@ -14,7 +14,7 @@ module.exports = View.extend({
     itemsPerPage: 6
   },
 
-  className: 'Widget-list Widget-list--wrapped js-list',
+  className: 'CDB-Widget-list CDB-Widget-list--wrapped js-list',
   tagName: 'ul',
 
   initialize: function() {
@@ -46,22 +46,22 @@ module.exports = View.extend({
   _renderPlaceholder: function() {
     // Change view classes
     this.$el
-      .addClass('Widget-list--withBorders')
-      .removeClass('Widget-list--wrapped');
+      .addClass('CDB-Widget-list--withBorders')
+      .removeClass('CDB-Widget-list--wrapped');
     this.$el.append(placeholder());
   },
 
   _renderList: function() {
     // Change view classes
-    this.$el.removeClass('Widget-list--withBorders');
-    this.$el[ this.options.paginator ? 'addClass' : 'removeClass']('Widget-list--wrapped');
+    this.$el.removeClass('CDB-Widget-list--withBorders');
+    this.$el[ this.options.paginator ? 'addClass' : 'removeClass']('CDB-Widget-list--wrapped');
 
     var groupItem;
     var data = this.dataModel.getData();
 
     data.each(function(mdl, i) {
       if (i % this.options.itemsPerPage === 0) {
-        groupItem = $('<div>').addClass('Widget-listGroup');
+        groupItem = $('<div>').addClass('CDB-Widget-listGroup');
         this.$el.append(groupItem);
       }
       this._addItem(mdl, groupItem);

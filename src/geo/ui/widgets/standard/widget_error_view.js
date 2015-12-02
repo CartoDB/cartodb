@@ -10,7 +10,7 @@ var template = require('./widget_error_template.tpl');
  */
 module.exports = View.extend({
 
-  className: 'Widget-error is-hidden',
+  className: 'CDB-Widget-error is-hidden',
 
   events: {
     'click .js-refresh': '_onRefreshClick'

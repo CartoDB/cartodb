@@ -3,13 +3,13 @@ var View = require('cdb/core/view');
 
 module.exports = View.extend({
 
-  className: 'Widget-nav Widget-contentSpaced',
+  className: 'CDB-Widget-nav CDB-Widget-contentSpaced',
 
   _TEMPLATE: ' ' +
     '<span></span>' +
-    '<div class="Widget-navArrows Widget-contentSpaced">'+
-      '<button class="Widget-arrow Widget-arrow--up js-up"></button>'+
-      '<button class="Widget-arrow Widget-arrow--down js-down"></button>'+
+    '<div class="CDB-Widget-navArrows CDB-Widget-contentSpaced">'+
+      '<button class="CDB-Shape-arrow CDB-Shape-arrow--up js-up"></button>'+
+      '<button class="CDB-Shape-arrow CDB-Shape-arrow--down js-down"></button>'+
     '</div>',
 
   events: {
@@ -54,7 +54,7 @@ module.exports = View.extend({
     var areaHeight = this._$target.outerHeight();
     var firstEl = null;
     var lastEl = null;
-    var items = this._$target.children('.Widget-listItem');
+    var items = this._$target.children('.CDB-Widget-listItem');
 
     items.each(function(index, value) {
       var top = $(this).position().top;

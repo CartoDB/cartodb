@@ -11,7 +11,7 @@ var TorqueHistogramView = require('./torque-histogram-view');
  */
 module.exports = View.extend({
 
-  className: 'Widget-body Widget-body--timeSeries',
+  className: 'CDB-Widget-body CDB-Widget-body--timeSeries',
 
   initialize: function() {
     this.model.once('change:data', this.render, this);

@@ -8,7 +8,7 @@ var template = require('./options_template.tpl');
  */
 module.exports = View.extend({
 
-  className: 'Widget-filter Widget-contentSpaced Widget-contentSpaced--sideMargins',
+  className: 'CDB-Widget-filter CDB-Widget-contentSpaced CDB-Widget-contentSpaced--sideMargins',
 
   events: {
     'click .js-all': '_onSelectAll',

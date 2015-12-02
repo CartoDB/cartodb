@@ -22,9 +22,9 @@ describe('widgets/category/options_view', function() {
     this.model.setCategories([{ name: 'test' }]);
     this.view.render();
     var $el = this.view.$el;
-    expect($el.find('.Widget-textSmaller').length).toBe(1);
-    expect($el.find('.Widget-link').length).toBe(1);
-    expect($el.find('.Widget-link').text()).toBe('none');
+    expect($el.find('.CDB-Widget-textSmaller').length).toBe(1);
+    expect($el.find('.CDB-Widget-link').length).toBe(1);
+    expect($el.find('.CDB-Widget-link').text()).toBe('none');
   });
 
   describe('bind', function() {
@@ -53,24 +53,24 @@ describe('widgets/category/options_view', function() {
 
     it('should render selected all from the beginning', function() {
       this.view.render();
-      expect(this.view.$('.Widget-textSmaller').length).toBe(1);
-      expect(this.view.$('.Widget-textSmaller').text()).toContain('All selected');
+      expect(this.view.$('.CDB-Widget-textSmaller').length).toBe(1);
+      expect(this.view.$('.CDB-Widget-textSmaller').text()).toContain('All selected');
     });
 
     it('should render only a text with locked/selected items when search is enabled', function() {
       spyOn(this.viewModel, 'isSearchEnabled').and.returnValue(true);
       this.view.render();
-      expect(this.view.$('.Widget-textSmaller').length).toBe(1);
-      expect(this.view.$('.Widget-textSmaller').text()).toContain('0 selected');
-      expect(this.view.$('.Widget-filterButtons').length).toBe(0);
+      expect(this.view.$('.CDB-Widget-textSmaller').length).toBe(1);
+      expect(this.view.$('.CDB-Widget-textSmaller').text()).toContain('0 selected');
+      expect(this.view.$('.CDB-Widget-filterButtons').length).toBe(0);
     });
 
     it('should render number of locked items and unlock button if widget is locked', function() {
       spyOn(this.model, 'isLocked').and.returnValue(true);
       this.view.render();
-      expect(this.view.$('.Widget-textSmaller').length).toBe(1);
-      expect(this.view.$('.Widget-textSmaller').text()).toContain('0 blocked');
-      expect(this.view.$('.Widget-filterButtons').length).toBe(0);
+      expect(this.view.$('.CDB-Widget-textSmaller').length).toBe(1);
+      expect(this.view.$('.CDB-Widget-textSmaller').text()).toContain('0 blocked');
+      expect(this.view.$('.CDB-Widget-filterButtons').length).toBe(0);
       expect(this.view.$('.js-unlock').length).toBe(1);
     });
 
@@ -78,9 +78,9 @@ describe('widgets/category/options_view', function() {
       spyOn(this.model, 'isLocked').and.returnValue(false);
       this.model.setCategories([{ name: 'test' }, { name: 'one' }]);
       this.model.acceptFilters('one');
-      expect(this.view.$('.Widget-textSmaller').length).toBe(1);
-      expect(this.view.$('.Widget-textSmaller').text()).toContain('1 selected');
-      expect(this.view.$('.Widget-filterButtons').length).toBe(1);
+      expect(this.view.$('.CDB-Widget-textSmaller').length).toBe(1);
+      expect(this.view.$('.CDB-Widget-textSmaller').text()).toContain('1 selected');
+      expect(this.view.$('.CDB-Widget-filterButtons').length).toBe(1);
       expect(this.view.$('.js-lock').length).toBe(1);
     });
 
@@ -90,9 +90,9 @@ describe('widgets/category/options_view', function() {
       this.model.acceptFilters('Hey');
       this.model.setCategories([{ name: 'Hey' }, { name: 'Buddy' }]);
       this.view.render();
-      expect(this.view.$('.Widget-textSmaller').length).toBe(1);
-      expect(this.view.$('.Widget-textSmaller').text()).toContain('1 selected');
-      expect(this.view.$('.Widget-filterButtons').length).toBe(1);
+      expect(this.view.$('.CDB-Widget-textSmaller').length).toBe(1);
+      expect(this.view.$('.CDB-Widget-textSmaller').text()).toContain('1 selected');
+      expect(this.view.$('.CDB-Widget-filterButtons').length).toBe(1);
       expect(this.view.$('.js-all').length).toBe(1);
       expect(this.view.$('.js-none').length).toBe(1);
     });

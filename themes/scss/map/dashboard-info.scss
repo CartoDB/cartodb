@@ -4,36 +4,7 @@
 @import '../variables/sizes';
 @import '../variables/mixins';
 
-@-webkit-keyframes fadeInDown {
-  from {
-    opacity: 0;
-    -webkit-transform: translate3d(-5%, 0, 0);
-    transform: translate3d(-5%, 0, 0);
-  }
-
-  to {
-    opacity: 1;
-    -webkit-transform: none;
-    transform: none;
-  }
-}
-
-@keyframes fadeInDown {
-  from {
-    opacity: 0;
-    -webkit-transform: translate3d(-5%, 0, 0);
-    transform: translate3d(-5%, 0, 0);
-  }
-
-  to {
-    opacity: 1;
-    -webkit-transform: none;
-    transform: none;
-  }
-}
-
-
-.Dashboard-info-texts {
+.CDB-Dashboard-infoTexts {
   position: absolute;
   top: 150px;
   right: 24px;
@@ -41,15 +12,15 @@
   width: 304px;
   opacity: 0;
 }
-.Dashboard-info {
+.CDB-Dashboard-info {
   @include transition(width, 0.25s, cubic-bezier(0.01, 0.99, 0.97, 1.01));
-  position: absolute;
+  position: fixed;
   top: 0;
+  bottom: 0;
   left: 0;
   width: 88px;
   max-width: 352px;
-  height: 100vh;
-  padding: 24px;
+  padding: 24px;  
   background: #3AA9E3;
   font-family: 'Open Sans';
   overflow: hidden;
@@ -60,22 +31,22 @@
     width: 352px;
     box-shadow: 0 0 40px 0 rgba(0, 0, 0, 0.2);
 
-    .Dashboard-info-texts {
+    .CDB-Dashboard-infoTexts {
       @include animation(fadeInDown 0.8s both);
     }
-    .Dashboard-info-footer-txt {
+    .CDB-Dashboard-infoFooterTxt {
       @include animation(fadeInDown 0.8s both);
     }
-    .Dashboard-info-snapshots {
+    .CDB-Dashboard-infoSnapshots {
       opacity: 1;
     }
-    .Dashboard-info-actions-link {
+    .CDB-Dashboard-infoActionsLink {
       transform: rotate(180deg);
     }
   }
 }
 
-.Dashboard-info-logo {
+.CDB-Dashboard-infoLogo {
   width: 40px;
   height: 40px;
   margin-bottom: $sMargin-section;
@@ -85,20 +56,20 @@
   text-align: center;
 }
 
-.Dashboard-info-logo i {
+.CDB-Dashboard-infoLogo i {
   margin-top: -4px;
   color: #3C93D8;
   font-size: 22px;
   vertical-align: middle;
 }
 
-.Dashboard-info-actions {
+.CDB-Dashboard-infoActions {
   width: 40px;
   height: 40px;
   margin-bottom: 48px;
 }
 
-.Dashboard-info-actions-link {
+.CDB-Dashboard-infoActionsLink {
   @include transition(all, 0.2s, ease-out);
   display: block;
   width: 24px;
@@ -109,7 +80,7 @@
   background: url('../img/dashboard-show.svg') no-repeat center center;
 }
 
-.Dashboard-info-update {
+.CDB-Dashboard-infoUpdate {
   margin-bottom: 8px;
   color: #FFF;
   font-size: $sFontSize-small;
@@ -118,7 +89,7 @@
   text-transform: uppercase;
 }
 
-.Dashboard-info-title {
+.CDB-Dashboard-infoTitle {
   margin-bottom: 20px;
   color: #FFF;
   font-size: $sFontSize-huge;
@@ -126,14 +97,14 @@
   line-height: $sLineHeight-huge;
 }
 
-.Dashboard-info-description {
+.CDB-Dashboard-infoDescription {
   color: #FFF;
   font-size: $sFontSize-normal;
   font-weight: $sFontWeight-lighter;
   line-height: $sLineHeight-normal;
 }
 
-.Dashboard-info-footer {
+.CDB-Dashboard-infoFooter {
   position: absolute;
   right: 24px;
   bottom: 24px;
@@ -141,7 +112,7 @@
   width: 280px;
 }
 
-.Dashboard-info-media {
+.CDB-Dashboard-infoMedia {
   display: inline-block;
   width: 40px;
   margin-right: 10px;
@@ -149,13 +120,13 @@
   vertical-align: middle;
 }
 
-.Dashboard-info-avatar img {
+.CDB-Dashboard-infoAvatar img {
   display: inline-block;
   width: 100%;
   border-radius: 4px;
 }
 
-.Dashboard-info-footer-txt {
+.CDB-Dashboard-infoFooterTxt {
   display: inline-block;
   color: #FFF;
   font-size: $sFontSize-larger;
@@ -165,11 +136,11 @@
   vertical-align: middle;
 }
 
-.Dashboard-info-footer-item {
+.CDB-Dashboard-infoFooterItem {
   margin-top: 20px;
 }
 
-.Dashboard-info-snapshots {
+.CDB-Dashboard-infoSnapshots {
   @include transition(opacity, 0.3s, ease-out);
   position: relative;
   width: 280px;
@@ -182,14 +153,14 @@
   box-sizing: border-box;
 }
 
-.Dashboard-info-snapshots-list {
+.CDB-Dashboard-infoSnapshotsList {
   display: flex;
-  flex-flow: row wrap;
   position: absolute;
+  flex-flow: row wrap;
   width: 1000px;
 }
 
-.Dashboard-info-snapshots-list-item {
+.CDB-Dashboard-infoSnapshotsListItem {
   width: 96px;
   height: 72px;
   margin-right: 8px;
@@ -199,14 +170,14 @@
   box-sizing: border-box;
 }
 
-.Dashboard-info-snapshots-list-title {
+.CDB-Dashboard-infoSnapshotsListTitle {
   margin-bottom: 8px;
   font-size: $sFontSize-smaller;
   font-weight: $sFontWeight-semibold;
   line-height: $sLineHeight-smaller;
 }
 
-.Dashboard-info-snapshots-list-date {
+.CDB-Dashboard-infoSnapshotsListDate {
   color: #636D72;
   font-size: $sFontSize-smaller;
   font-weight: $sFontWeight-lighter;
@@ -214,34 +185,47 @@
 }
 
 @include media-query-mobile() {
-  .Dashboard-info {
+  .CDB-Dashboard-info {
     right: 0;
-    height: 48px;
     width: 100%;
     max-width: 100%;
+    height: 48px;
   }
-  .Dashboard-info-header {
+  .CDB-Dashboard-infoHeader {
     position: absolute;
     top: 8px;
     left: 8px;
   }
-  .Dashboard-info-logo {
+  .CDB-Dashboard-infoLogo {
     width: 32px;
     height: 32px;
     line-height: 32px;
   }
-  .Dashboard-info-footer {
+  .CDB-Dashboard-infoFooter {
     top: 8px;
-    left: auto;
-    bottom: auto;
     right: 8px;
+    bottom: auto;
+    left: auto;
     width: 32px;
   }
-  .Dashboard-info-footer-item {
+  .CDB-Dashboard-infoFooterItem {
     margin-top: 0;
   }
-  .Dashboard-info-media {
+  .CDB-Dashboard-infoMedia {
     width: 32px;
     margin: 0;
+  }
+}
+
+
+@include keyframes(fadeInDown) {
+  from {
+    @include css3-prefix(transform, translate3d(-5%, 0, 0));
+    opacity: 0;
+  }
+
+  to {
+    @include css3-prefix(transform, none);
+    opacity: 1;
   }
 }

@@ -1,7 +1,7 @@
 var $ = require('jquery');
 var View = require('cdb/core/view');
 var HistogramChartView = require('../histogram/chart');
-var TorqueTimeMarkerview = require('./torque-time-marker-view');
+var TorqueTimeSliderView = require('./torque-time-slider-view');
 
 /**
  * Torque time-series histogram view.
@@ -10,7 +10,7 @@ var TorqueTimeMarkerview = require('./torque-time-marker-view');
  */
 module.exports = View.extend({
 
-  className: 'Widget-content Widget-content--timeSeries',
+  className: 'CDB-Widget-content CDB-Widget-content--timeSeries',
 
   // TODO could be calculated from element styles instead of duplicated numbers here?
   defaults: {
@@ -63,13 +63,13 @@ module.exports = View.extend({
     this._chartView.model.bind('change:width', this._onChangeChartWidth, this);
     this.add_related_model(this._chartView.model);
 
-    var timeMarkerView = new TorqueTimeMarkerview({
+    var timeSliderView = new TorqueTimeSliderView({
       model: this.model, // a histogram model
       chartView: this._chartView,
       torqueLayerModel: this._torqueLayerModel
     });
-    this.addView(timeMarkerView);
-    timeMarkerView.render();
+    this.addView(timeSliderView);
+    timeSliderView.render();
   },
 
   _onChangeData: function() {

@@ -3,19 +3,19 @@
 
 @import '../variables/mixins';
 
-.Widget-dot {
+.CDB-Shape-dot {
   display: inline-block;
   width: 8px;
   min-width: 8px;
   height: 8px;
   border-radius: 8px;
 }
-.Widget-threePoints {
+.CDB-Shape-threePoints {
   display: inline-block;
   position: relative;
   width: 3px;
   height: 16px;
-  margin-right: -10px;  
+  margin-right: -10px;
   margin-left: 6px;
   padding: 0 10px;
   text-align: center;
@@ -31,8 +31,8 @@
     content: '';
     z-index: 1;
   }
- 
-  &:before { 
+
+  &:before {
     top: 0;
     right: 7px;
   }
@@ -47,7 +47,7 @@
   }
 }
 
-.Widget-threePointsItem {
+.CDB-Shape-threePointsItem {
   display: block;
   position: absolute;
   top: 6px;
@@ -57,7 +57,7 @@
   border-radius: 50%;
 }
 
-.Widget-arrow {
+.CDB-Shape-arrow {
   display: inline-block;
   position: relative;
   width: 17px;
@@ -76,13 +76,13 @@
     content: '';
   }
 }
-.Widget-arrow.is-disabled {
+.CDB-Shape-arrow.is-disabled {
   @include opacity(0.5);
   &:hover {
     cursor: default;
   }
 }
-.Widget-arrow--up {
+.CDB-Shape-arrow--up {
   &:after {
     @include css3-prefix(transform, rotate(45deg));
     right: 0;
@@ -92,7 +92,7 @@
     left: 0;
   }
 }
-.Widget-arrow--down {
+.CDB-Shape-arrow--down {
   &:after {
     @include css3-prefix(transform, rotate(-45deg));
     right: 0;
@@ -103,7 +103,7 @@
   }
 }
 
-.Widget-lens {
+.CDB-Shape-lens {
   display: inline-block;
   position: relative;
   width: 16px;

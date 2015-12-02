@@ -3,29 +3,15 @@ var _ = require('underscore');
 var log = require('cdb.log');
 var View = require('cdb/core/view');
 var d3 = require('d3');
+var contentTemplate = require('./widget_content_template.tpl');
+var placeholderTemplate = require('./widget_placeholder_template.tpl');
 
 /**
  * Default widget content view:
  */
 module.exports = View.extend({
 
-  className: 'Widget-body',
-
-  _TEMPLATE: ' ' +
-    '<div class="Widget-header">'+
-      '<div class="Widget-title Widget-contentSpaced">'+
-        '<h3 class="Widget-textBig" title="<%- title %>"><%- title %></h3>'+
-      '</div>'+
-      '<dl class="Widget-info">'+
-        '<dt class="Widget-infoItem Widget-textSmaller Widget-textSmaller--upper"><%- itemsCount %> items</dt>'+
-      '</dl>'+
-    '</div>'+
-    '<div class="Widget-content js-content"></div>',
-
-  _PLACEHOLDER: ' ' +
-    '<ul class="Widget-list Widget-list--withBorders">' +
-      '<li class="Widget-listItem Widget-listItem--withBorders Widget-listItem--fake"></li>' +
-    '</ul>',
+  className: 'CDB-Widget-body',
 
   initialize: function() {
     this.filter = this.options.filter;
@@ -34,12 +20,10 @@ module.exports = View.extend({
 
   render: function() {
     this.clearSubViews();
-
-    var template = _.template(this._TEMPLATE);
     var data = this.model.getData();
     var isDataEmpty = _.isEmpty(data) || _.size(data) === 0;
     this.$el.html(
-      template({
+      contentTemplate({
         title: this.model.get('title'),
         itemsCount: !isDataEmpty ? data.length : '-'
       })
@@ -57,8 +41,7 @@ module.exports = View.extend({
   },
 
   _addPlaceholder: function() {
-    if (this._PLACEHOLDER) {
-      var placeholderTemplate = _.template(this._PLACEHOLDER);
+    if (placeholderTemplate) {
       this.$('.js-content').append(placeholderTemplate());
     } else {
       log.info('Placeholder template doesn\'t exist');

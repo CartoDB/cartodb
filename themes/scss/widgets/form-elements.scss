@@ -4,26 +4,27 @@
 @import '../variables/sizes';
 @import '../variables/mixins';
 
-.Widget-form {
+.CDB-Widget-form {
   height: 24px;
 }
-.Widget-textInput {
+.CDB-Widget-textInput {
   border: none;
   outline: none;
+  font-family: 'Open Sans';
   font-size: $sFontSize-larger;
 }
-.Widget-textInput::-webkit-input-placeholder {
+.CDB-Widget-textInput::-webkit-input-placeholder {
   font-weight: $sFontWeight-lighter;
 }
-.Widget-textInput::-moz-input-placeholder {
+.CDB-Widget-textInput::-moz-input-placeholder {
   font-weight: $sFontWeight-lighter;
 }
-.Widget-textInput::-ms-input-placeholder {
+.CDB-Widget-textInput::-ms-input-placeholder {
   font-weight: $sFontWeight-lighter;
 }
 
 $size: 8px;
-.Widget-checkbox {
+.CDB-Widget-checkbox {
   display: inline;
   width: $size;
   min-width: $size;
@@ -34,7 +35,7 @@ $size: 8px;
   border-radius: 2px;
   vertical-align: top;
 }
-.Widget-checkbox.is-checked {
+.CDB-Widget-checkbox.is-checked {
   width: $size + 2;
   min-width: $size + 2;
   max-width: $size + 2;

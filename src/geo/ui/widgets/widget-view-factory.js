@@ -8,7 +8,7 @@ var WidgetViewFactory = function(defs) {
   }, this);
 };
 
-WidgetViewFactory.prototype.DEFAULT_CLASS_NAMES = 'Widget Widget--light';
+WidgetViewFactory.prototype.DEFAULT_CLASS_NAMES = 'CDB-Widget CDB-Widget--light';
 
 WidgetViewFactory.prototype.addType = function(def) {
   if (!def.match) {

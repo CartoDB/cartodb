@@ -1,25 +1,25 @@
-<div class="Widget-header">
-  <div class="Widget-title Widget-contentSpaced">
-    <div class="Widget-contentSpaced">
-      <h3 class="Widget-textBig"><%- title %></h3>
-      <div class="Widget-tag Widget-tag--<%- operation %>">
-        <span class="Widget-textSmaller Widget-textSmaller--upper"><%- operation %></span>
+<div class="CDB-Widget-header">
+  <div class="CDB-Widget-title CDB-Widget-contentSpaced">
+    <div class="CDB-Widget-contentSpaced">
+      <h3 class="CDB-Widget-textBig"><%- title %></h3>
+      <div class="CDB-Widget-tag CDB-Widget-tag--<%- operation %>">
+        <span class="CDB-Widget-textSmaller CDB-Widget-textSmaller--upper"><%- operation %></span>
       </div>
     </div>
-    <button class="Widget-threePoints js-collapse">
-      <span class="Widget-threePointsItem"></span>
+    <button class="CDB-Shape-threePoints js-collapse">
+      <span class="CDB-Shape-threePointsItem"></span>
     </button>
   </div>
-  <dl class="Widget-info">
-    <dt class="Widget-infoItem Widget-textSmaller Widget-textSmaller--upper"><%- nulls %> null rows</dt>
+  <dl class="CDB-Widget-info">
+    <dt class="CDB-Widget-infoItem CDB-Widget-textSmaller CDB-Widget-textSmaller--upper"><%- nulls %> null rows</dt>
   </dl>
 </div>
-<div class="Widget-content">
+<div class="CDB-Widget-content">
   <% if (value) { %>
-    <h4 class="Widget-textBigger Widget-textBigger--maxWidth js-value" title="<%- value %>">
+    <h4 class="CDB-Widget-textBigger CDB-Widget-textBigger--maxWidth js-value" title="<%- value %>">
       <%- prefix %><%- value %><%- suffix %>
     </h4>
   <% } else { %>
-    <div class="Widget-listItem--fake"></div>
+    <div class="CDB-Widget-listItem--fake"></div>
   <% } %>
 </div>

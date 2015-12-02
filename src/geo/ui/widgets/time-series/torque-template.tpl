@@ -1,1 +1,1 @@
-<div class="Widget-header Widget-header--timeSeries js-header"></div>
+<div class="CDB-Widget-header CDB-Widget-header--timeSeries js-header"></div>

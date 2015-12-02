@@ -1,3 +1,4 @@
+var _ = require('underscore');
 var View = require('cdb/core/view');
 var WidgetViewFactory = require('cdb/geo/ui/widgets/widget-view-factory');
 var TimeSeriesContentView = require('cdb/geo/ui/widgets/time-series/content-view');
@@ -5,7 +6,7 @@ var TorqueTimeSeriesContentView = require('cdb/geo/ui/widgets/time-series/torque
 
 module.exports = View.extend({
 
-  className: 'Dashboard-belowMap',
+  className: 'CDB-Dashboard-belowMap',
 
   initialize: function(options) {
     this._widgetViewFactory = new WidgetViewFactory([
@@ -23,7 +24,7 @@ module.exports = View.extend({
           });
         },
         customizeWidgetAttrs: function(attrs) {
-          attrs.className += ' Widget--timeSeries';
+          attrs.className += ' CDB-Widget--timeSeries';
           return attrs;
         }
       }, {
@@ -38,7 +39,7 @@ module.exports = View.extend({
           });
         },
         customizeWidgetAttrs: function(attrs) {
-          attrs.className += ' Widget--timeSeries';
+          attrs.className += ' CDB-Widget--timeSeries';
           return attrs;
         }
       }
@@ -54,6 +55,7 @@ module.exports = View.extend({
     this.clearSubViews();
     this.$el.empty();
     this._widgets.each(this._maybeRenderWidgetView, this);
+    this.$el.toggle(!_.isEmpty(this._subviews));
     return this;
   },
 

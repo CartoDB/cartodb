@@ -4,7 +4,7 @@
 @import '../variables/sizes';
 @import '../variables/mixins';
 
-.Widget-tag {
+.CDB-Widget-tag {
   @include display-flex();
   @include align-items(center);
   height: 22px;
@@ -13,17 +13,19 @@
   border-radius: 4px;
   vertical-align: middle;
 }
-// Widget tag types, should we move them to theme?
-.Widget-tag--avg {
+// Widget tag types
+// They should not belong to widget themes because color should
+// not be related
+.CDB-Widget-tag--avg {
   background-color: rgba(#EDF3DF, 1);
 }
-.Widget-tag--sum {
+.CDB-Widget-tag--sum {
   background-color: rgba(#DFF2FC, 1);
 }
-.Widget-tag--count {
+.CDB-Widget-tag--count {
   background-color: rgba(#FEF4E2, 1);
 }
-.Widget-tag--min,
-.Widget-tag--max {
+.CDB-Widget-tag--min,
+.CDB-Widget-tag--max {
   background-color: rgba(#FEE0DD, 1);
 }

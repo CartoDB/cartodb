@@ -8,10 +8,11 @@ var FormulaContentView = require('cdb/geo/ui/widgets/formula/content_view');
 var HistogramContentView = require('cdb/geo/ui/widgets/histogram/content-view');
 var ListContentView = require('cdb/geo/ui/widgets/list/content_view');
 var WidgetViewFactory = require('cdb/geo/ui/widgets/widget-view-factory');
+var template = require('./dashboard-sidebar.tpl');
 
 module.exports = View.extend({
 
-  className: 'Widget-canvas',
+  className: 'CDB-Widget-canvas',
 
   initialize: function(options) {
     this._widgetViewFactory = new WidgetViewFactory([
@@ -62,32 +63,43 @@ module.exports = View.extend({
   render: function() {
     this._cleanScrollEvent();
     this.clearSubViews();
-    this.$el.empty();
-    this.$el.append($('<div>').addClass('Widget-canvasInner'));
+
+    this.$el.html(template());
     this._widgets.each(this._maybeRenderWidgetView, this);
+    this.$el.toggle(!_.isEmpty(this._subviews));
+
     this._renderScroll();
     this._renderShadows();
     this._bindScroll();
+
     return this;
+  },
+
+  _$container: function() {
+    return $(this._container());
+  },
+
+  _container: function() {
+    return this.el.querySelector('.js-container');
   },
 
   _maybeRenderWidgetView: function(widgetModel) {
     var view = this._widgetViewFactory.createWidgetView(widgetModel);
     if (view) {
       this.addView(view);
-      this.$('.Widget-canvasInner').append(view.render().el);
+      this._$container().append(view.render().el);
     }
   },
 
   _bindScroll: function() {
-    this.$('.Widget-canvasInner')
+    this._$container()
       .on('ps-y-reach-start', _.bind(this._onScrollTop, this))
       .on('ps-y-reach-end', _.bind(this._onScrollBottom, this))
       .on('ps-scroll-y', _.bind(this._onScroll, this));
   },
 
   _renderScroll: function() {
-    Ps.initialize(this.$('.Widget-canvasInner').get(0), {
+    Ps.initialize(this._container(), {
       wheelSpeed: 2,
       wheelPropagation: true,
       minScrollbarLength: 20
@@ -95,13 +107,13 @@ module.exports = View.extend({
   },
 
   _onWidgetCollapsed: function() {
-    Ps.update(this.$('.Widget-canvasInner').get(0));
+    Ps.update(this._container());
   },
 
   _renderShadows: function() {
     var self = this;
-    this.$shadowTop = $('<div>').addClass("Widget-canvasShadow Widget-canvasShadow--top");
-    this.$shadowBottom = $('<div>').addClass("Widget-canvasShadow Widget-canvasShadow--bottom is-visible");
+    this.$shadowTop = $('<div>').addClass("CDB-Widget-canvasShadow CDB-Widget-canvasShadow--top");
+    this.$shadowBottom = $('<div>').addClass("CDB-Widget-canvasShadow CDB-Widget-canvasShadow--bottom is-visible");
     this.$el.append(this.$shadowTop);
     this.$el.append(this.$shadowBottom);
   },
@@ -111,7 +123,7 @@ module.exports = View.extend({
   },
 
   _onScroll: function() {
-    var $el = this.$('.Widget-canvasInner');
+    var $el = this._$container();
     var currentPos = $el.scrollTop();
     var max = $el.get(0).scrollHeight;
     var height = $el.outerHeight();
@@ -125,7 +137,9 @@ module.exports = View.extend({
   },
 
   _cleanScrollEvent: function() {
-    this.$('.Widget-canvasInner').off('ps-scroll-y');
+    if (this._$container()) {
+      this._$container().off('ps-scroll-y');
+    }
   },
 
   clean: function() {

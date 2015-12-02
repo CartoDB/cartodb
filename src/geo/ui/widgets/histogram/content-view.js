@@ -161,7 +161,7 @@ module.exports = WidgetContent.extend({
 
   _renderMiniChart: function() {
     this.miniHistogramChartView = new HistogramChartView(({
-      className: 'mini',
+      className: 'CDB-Chart--mini',
       margin: { top: 0, right: 0, bottom: 4, left: 4 },
       height: 40,
       showOnWidthChange: false,

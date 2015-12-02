@@ -10,7 +10,7 @@ var formatter = require('cdb/core/format');
 module.exports = View.extend({
 
   tagName: 'li',
-  className: 'Widget-listItem',
+  className: 'CDB-Widget-listItem',
 
   events: {
     'click .js-button': '_onItemClick'

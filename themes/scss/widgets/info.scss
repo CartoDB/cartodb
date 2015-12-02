@@ -4,13 +4,13 @@
 @import '../variables/sizes';
 @import '../variables/mixins';
 
-.Widget-info {
+.CDB-Widget-info {
   @include display-flex();
   @include justify-content(flex-start, start);
   @include align-items(center);
   width: 100%;
 }
-.Widget-infoItem {
+.CDB-Widget-infoItem {
   margin-right: $sMargin-element;
   &:last-child {
     margin-right: 0;
@@ -19,10 +19,10 @@
 
 // Widget sizes
 @include media-query() {
-  .Widget-info {
+  .CDB-Widget-info {
     @include justify-content(space-between, justify);
   }
-  .Widget-infoItem {
+  .CDB-Widget-infoItem {
     margin-right: 0;
   }
 }

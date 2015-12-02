@@ -4,20 +4,23 @@
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(flex-end);
-  width: 100%;
   height: 72px; // value to match real widget content height, to avoid "jumpy" behavior
+  width: 100%;
 }
 .CDB-Widget-chartItem.CDB-Widget-chartItem--fake {
   @include flex-grow(1);
   display: inline-block;
   margin-right: 2px;
 }
+
 .CDB-Widget-chartItem--fake.CDB-Widget-chartItem--small {
   height: 20px;
 }
+
 .CDB-Widget-chartItem--fake.CDB-Widget-chartItem--medium {
   height: 40px;
 }
+
 .CDB-Widget-chartItem--fake.CDB-Widget-chartItem--big {
   height: 60px;
 }
@@ -38,6 +41,7 @@
   text-align: center;
   pointer-events: none;
 }
+
 .CDB-Widget-chartTooltip:after {
   display: inline-block;
   position: absolute;
@@ -50,8 +54,8 @@
   content: '';
 }
 
-.CDB-Chart.is-selectable .CDB-ChartHandle,
-.CDB-Chart.is-selectable .CDB-ChartHandleLine {
+.CDB-Chart.is-selectable .CDB-Chart-handle,
+.CDB-Chart.is-selectable .CDB-Chart-handleLine {
   opacity: 1;
 }
 
@@ -62,91 +66,91 @@
   shape-rendering: crispEdges;
 }
 
-.CDB-ChartBar {
-  fill: #9DE0AD;
+.CDB-Chart-bar {
   transition: fill 200ms ease;
   shape-rendering: crispEdges;
 }
-.CDB-ChartBar.is-highlighted {
-  fill: #5BA45E;
+
+.CDB-Chart-bar.is-highlighted {
   opacity: 1;
 }
-.CDB-ChartBar.is-selected {
+
+.CDB-Chart-bar.is-selected {
   fill: rgba(#000, 0.06);
 }
 
-.mini {
+.CDB-Chart.CDB-Chart--mini {
 
-  .CDB-ChartBar {
+  .CDB-Chart-bar {
     fill: #333;
   }
-  .CDB-ChartBar.is-highlighted {
+  .CDB-Chart-bar.is-highlighted {
     fill: #333;
   }
-  .CDB-ChartBar.is-selected {
+  .CDB-Chart-bar.is-selected {
     fill: #DDD;
   }
 }
 
-.CDB-ChartLine {
+.CDB-Chart-line {
   stroke: #EEE;
   stroke-width: 1;
   shape-rendering: crispEdges;
 }
 
-.CDB-ChartLine.CDB-ChartLine--bottom {
+.CDB-Chart-line.CDB-Chart-line--bottom {
   stroke-width: 1;
   opacity: 0.2;
   stroke: #000;
   shape-rendering: crispEdges;
 }
 
-.CDB-ChartHandle {
+.CDB-Chart-handle {
   opacity: 0;
 }
-.CDB-ChartHandleRect {
+
+.CDB-Chart-handleRect {
+  fill: #fff;
   stroke-width: 2;
-  stroke: #3AA9E3;
-  fill: #FFF;
 }
-.CDB-ChartHandleGrip {
+
+.CDB-Chart-handleGrip {
+  stroke: #ccc;
   stroke-width: 1;
-  stroke: #CCC;
 }
 
-.CDB-ChartHandleLine {
+.CDB-Chart-handleLine {
   opacity: 0;
   stroke-width: 2;
-  stroke: #3AA9E3;
 }
 
-.CDB-ChartAxis {
+.CDB-Chart-axis {
   @include css3-prefix(user-select, none);
-  shape-rendering: crispEdges;
-  font: 10px sans-serif;
   fill: #979EA1;
+  font: 10px sans-serif;
+  shape-rendering: crispEdges;
 }
 
-.CDB-ChartAxis path {
+.CDB-Chart-axis path {
   display: none;
 }
 
-.CDB-ChartAxis line {
+.CDB-Chart-axis line {
   stroke: #EEE;
   stroke-width: 1;
   shape-rendering: crispEdges;
 }
 
-.CDB-ChartAxisTip-text {
+.CDB-Chart-axisTipText {
   @include css3-prefix(user-select, none);
-  fill: #3AA9E3;
   font-size: 10px;
 }
-.CDB-ChartAxisTip-rect {
-  fill: #FFF;
+
+.CDB-Chart-axisTipRect {
+  fill: #fff;
 }
 
-.CDB-ChartShadowBar {
-  fill: rgba(#000, 0.06);
+.CDB-Chart-shadowBar {
+  fill: rgba(#000, .06);
   shape-rendering: crispEdges;
 }

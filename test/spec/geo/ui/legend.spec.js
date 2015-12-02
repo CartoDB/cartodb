@@ -475,7 +475,7 @@ describe('geo/ui/legend', function() {
         expect(legend.$el.find("li:first-child .bullet").css("background")).toEqual("rgb(88, 160, 98)");
 
         expect(legend.$el.find("li:nth-child(2)").text().trim()).toEqual(custom_data[1].name);
-        expect(legend.$el.find("li:nth-child(2) .bullet").css("background")).toEqual("url(http://cartodb.com/assets/logos/logos_full_cartodb_light.png)");
+        expect(legend.$el.find("li:nth-child(2) .bullet").css("background")).toEqual('url("http://cartodb.com/assets/logos/logos_full_cartodb_light.png")');
       });
 
       it("should show a title", function() {

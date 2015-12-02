@@ -11,7 +11,7 @@ var template = require('./histogram_title_template.tpl');
 
 module.exports = View.extend({
 
-  className: 'Widget-title Widget-contentSpaced',
+  className: 'CDB-Widget-title CDB-Widget-contentSpaced',
 
   events: {
     'click .js-applySizes': '_applySizes',

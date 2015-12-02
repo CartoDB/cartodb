@@ -17,11 +17,11 @@
 @import '../variables/sizes';
 @import '../variables/mixins';
 
-.Widget-timeSeriesFakeControl {
+.CDB-Widget-timeSeriesFakeControl {
   width: 16px;
   height: 16px;
 }
-.Widget-timeSeriesPlayIcon {
+.CDB-Widget-timeSeriesPlayIcon {
   display: inline-block;
   width: 0;
   height: 0;
@@ -31,7 +31,7 @@
   border-left-width: 6px;
   border-left-style: solid;
 }
-.Widget-timeSeriesPauseIcon {
+.CDB-Widget-timeSeriesPauseIcon {
   margin-top: -2px;
   &:before,
   &:after {
@@ -46,33 +46,33 @@
   }
 }
 
-.Widget-timeSeriesTimeInfo {
+.CDB-Widget-timeSeriesTimeInfo {
   margin-left: 16px;
   white-space: nowrap;
 }
-.Widget-timeSeriesTimeInfo--fake {
+.CDB-Widget-timeSeriesTimeInfo--fake {
   width: 140px;
   height: 8px;
 }
 
-.Widget-timeSeriesFakeChart {
+.CDB-Widget-timeSeriesFakeChart {
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(flex-end);
   width: 100%;
   height: 74px; // value to match real widget content height, to avoid "jumpy" behavior
 }
-.Widget-timeSeriesFakeChart--torque {
+.CDB-Widget-timeSeriesFakeChart--torque {
   height: 82px; // value to match real widget content height, to avoid "jumpy" behavior
 }
-.Widget-timeSeriesFakeChartItem {
+.CDB-Widget-timeSeriesFakeChartItem {
   @include flex-grow(1);
   display: inline-block;
   margin-right: 2px;
 }
 
 @include media-query() {
-  .Widget-timeSeriesFakeChart {
+  .CDB-Widget-timeSeriesFakeChart {
     height: 16px;
   }
 }

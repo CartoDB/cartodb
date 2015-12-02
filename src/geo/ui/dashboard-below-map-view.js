@@ -5,7 +5,7 @@ var TorqueTimeSeriesContentView = require('cdb/geo/ui/widgets/time-series/torque
 
 module.exports = View.extend({
 
-  className: 'Dashboard-belowMap',
+  className: 'CDB-Dashboard-belowMap',
 
   initialize: function(options) {
     this._widgetViewFactory = new WidgetViewFactory([
@@ -23,7 +23,7 @@ module.exports = View.extend({
           });
         },
         customizeWidgetAttrs: function(attrs) {
-          attrs.className += ' Widget--timeSeries';
+          attrs.className += ' CDB-Widget--timeSeries';
           return attrs;
         }
       }, {
@@ -38,7 +38,7 @@ module.exports = View.extend({
           });
         },
         customizeWidgetAttrs: function(attrs) {
-          attrs.className += ' Widget--timeSeries';
+          attrs.className += ' CDB-Widget--timeSeries';
           return attrs;
         }
       }

@@ -10,7 +10,7 @@ var DashboardSidebarView = require('./dashboard-sidebar-view');
  */
 module.exports = View.extend({
 
-  className: 'Dashboard-canvas',
+  className: 'CDB-Dashboard-canvas',
 
   initialize: function(options) {
     this._widgets = options.widgets;

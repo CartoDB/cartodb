@@ -1,57 +1,22 @@
 var _ = require('underscore');
 var format = require('cdb/core/format');
 var View = require('cdb/core/view');
+var template = require('./item_template.tpl');
 
 module.exports = View.extend({
 
   tagName: 'li',
-  className: 'Widget-listItem',
+  className: 'CDB-Widget-listItem',
 
   events: {
     'click .js-button': '_onItemClick'
   },
-
-  _TEMPLATE: ' ' +
-    '<% if (isClickable) { %>'+
-      '<button type="button" class="Widget-listItemInner Widget-listButton Widget-listButton--withBorder js-button">'+
-    '<% } else { %>'+
-      '<div class="Widget-listItemInner Widget-listItemInner--withBorders">'+
-    '<% } %>'+
-      '<div class="Widget-contentSpaced Widget-contentSpaced--topAligned Widget-contentSpaced--start">'+
-        '<em class="Widget-dot Widget-listDot"></em>'+
-        '<% if (itemsCount > 0) { %>'+
-          '<div class="Widget-contentFull">'+
-            '<p class="Widget-textSmall Widget-textSmall--upper Widget-textSmall--bold" title="<%- items[0][1] %>"><%- items[0][1] %></p>'+
-            '<% if (itemsCount > 2) { %>'+
-              '<dl class="Widget-inlineList">'+
-              '<% for (var i = 1, l = itemsCount; i < l; i++) { %>'+
-                '<div class="Widget-inlineListItem Widget-textSmaller Widget-textSmaller--noEllip">'+
-                  '<dd class="Widget-textSmaller--bold Widget-textSmaller--dark u-rSpace" title="<%- items[i][1] %>"><%- items[i][1] %></dd>'+
-                  '<dt title="<%- items[i][0] %>"><%- items[i][0] %></dt>'+
-                '</div>'+
-              '<% } %>'+
-              '</dl>'+
-            '<% } else if (itemsCount === 2) { %>'+
-              '<dl class="Widget-textSmaller Widget-textSmaller--noEllip u-tSpace">'+
-                '<dd class="Widget-textSmaller--bold Widget-textSmaller--dark u-rSpace" title="<%- items[1][1] %>"><%- items[1][1] %></dd>'+
-                '<dt title="<%- items[1][0] %>"><%- items[1][0] %></dt>'+
-              '</dl>'+
-            '<% } %>'+
-          '</div>'+
-        '<% } %>'+
-      '</div>'+
-    '<% if (isClickable) { %>'+
-      '</button>'+
-    '<% } else { %>'+
-      '</div>'+
-    '<% } %>',
 
   initialize: function() {
     this.viewModel = this.options.viewModel;
   },
 
   render: function() {
-    var template = _.template(this._TEMPLATE);
     var data = this.model.toJSON();
     var hasInteractivity = this._hasInteractivity(data);
     var items = this._sanitizeData(data);

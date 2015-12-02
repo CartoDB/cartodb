@@ -9,14 +9,12 @@ var View = require('cdb/core/view');
  */
 module.exports = View.extend({
 
-  initialize: function() {
-  },
-
   animateFromValues: function(from, to, className, template, opts) {
     var $el = this.$(className);
     var options = opts || {};
     var formatter = options.formatter || d3.format('0,000');
     var templateData = options.templateData || {};
+    var debounceWait = options.debounceWait || 500;
 
     var stepValue = function (i) {
       value = (_.isNaN(i) || i === undefined) ? (options.defaultValue || 0) : formatter(i);
@@ -29,17 +27,24 @@ module.exports = View.extend({
       return;
     }
 
-    $el.prop('counter', from).stop().animate({ counter: to }, {
-      duration: options.animationSpeed || 500,
-      easing: options.easingMethod || 'swing',
-      step: stepValue
-    });
+    stepValue(from);
+
+    var animate = _.debounce(function() {
+      $el.prop('counter', from).stop().animate({ counter: to }, {
+        duration: options.animationSpeed || 500,
+        easing: options.easingMethod || 'swing',
+        step: stepValue
+      });
+    }, debounceWait);
+
+    animate();
   },
 
   animateFromCurrentValue: function(value, className, template, opts) {
     var $el = this.$(className);
 
     var options = opts || {};
+    var debounceWait = options.debounceWait || 500;
 
     var to   = value;
     var from = +this.$(className).text();
@@ -58,17 +63,24 @@ module.exports = View.extend({
       return;
     }
 
-    $el.prop('counter', from).stop().animate({ counter: to }, {
-      duration: options.animationSpeed || 500,
-      easing: options.easingMethod || 'swing',
-      step: stepValue
-    });
+    stepValue(from);
+
+    var animate = _.debounce(function() {
+      $el.prop('counter', from).stop().animate({ counter: to }, {
+        duration: options.animationSpeed || 500,
+        easing: options.easingMethod || 'swing',
+        step: stepValue
+      });
+    }, debounceWait);
+
+    animate();
   },
 
   animateValue: function(model, what, className, template, opts) {
     var $el = this.$(className);
 
     var options = opts || {};
+    var debounceWait = options.debounceWait || 500;
 
     var to   = model.get(what);
     var from = model.previous(what) || 0;
@@ -87,10 +99,16 @@ module.exports = View.extend({
       return;
     }
 
-    $el.prop('counter', from).stop().animate({ counter: to }, {
-      duration: options.animationSpeed || 500,
-      easing: options.easingMethod || 'swing',
-      step: stepValue
-    });
+    stepValue(from);
+
+    var animate = _.debounce(function() {
+      $el.prop('counter', from).stop().animate({ counter: to }, {
+        duration: options.animationSpeed || 500,
+        easing: options.easingMethod || 'swing',
+        step: stepValue
+      });
+    }, debounceWait);
+
+    animate();
   }
 });

@@ -1,13 +1,13 @@
-<div class="Widget-contentFlex">
-  <button class="u-rSpace--m Widget-buttonIcon Widget-textSmaller Widget-textSmaller--upper js-searchToggle">
-    <i class="CDBIcon CDBIcon--center CDBIcon-Lens u-rSpace"></i>
+<div class="CDB-Widget-contentFlex">
+  <button class="u-rSpace--m CDB-Widget-buttonIcon CDB-Widget-textSmaller CDB-Widget-textSmaller--upper js-searchToggle">
+    <i class="CDB-Icon CDB-Icon--center CDB-Icon-lens u-rSpace"></i>
     <span class="u-iBlock">
       search
     </span>
   </button>
 </div>
 <% if (showPaginator) { %>
-  <div class="Widget-navDots js-dots">
-    <% for (var i = 0, l = pages; i < l; i++) { %><button class="Widget-dot Widget-dot--navigation js-page <% if (currentPage === i) { %>is-selected<% } %>" data-page="<%- i %>"></button><% } %>
+  <div class="CDB-Widget-navDots js-dots">
+    <% for (var i = 0, l = pages; i < l; i++) { %><button class="CDB-Shape-dot CDB-Widget-dot--navigation js-page <% if (currentPage === i) { %>is-selected<% } %>" data-page="<%- i %>"></button><% } %>
   </div>
 <% } %>

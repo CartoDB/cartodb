@@ -21,7 +21,7 @@ describe('geo/ui/widgets/standard/widget_error_view', function() {
 
   it('should have render correctly', function() {
     this.view.render();
-    expect(this.view.$el.hasClass('Widget-error')).toBeTruthy();
+    expect(this.view.$el.hasClass('CDB-Widget-error')).toBeTruthy();
   });
 
   it('should have a binds from the beginning', function() {

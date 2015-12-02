@@ -4,7 +4,7 @@
 @import '../variables/sizes';
 @import '../variables/mixins';
 
-.Widget-button {
+.CDB-Widget-button {
   @include transition(background, 250ms);
   display: inline-block;
   padding: 0 26px;
@@ -12,7 +12,7 @@
   font-family: 'Open Sans';
   line-height: 40px;
 }
-.Widget-link {
+.CDB-Widget-link {
   font-size: $sFontSize-smaller;
   font-weight: $sFontWeight-normal;
   text-transform: uppercase;
@@ -20,14 +20,14 @@
     text-decoration: underline;
   }
 }
-.Widget-buttonIcon--circle {
+.CDB-Widget-buttonIcon--circle {
   width: 16px;
   height: 16px;
   border: 1px solid transparent;
   border-radius: 14px;
   text-align: center;
 }
-.Widget-buttonIcon--circleBig {
+.CDB-Widget-buttonIcon--circleBig {
   @include display-flex();
   @include justify-content(center);
   @include align-items(center);
@@ -37,19 +37,19 @@
   border-radius: 14px;
 }
 
-.Widget-link,
-.Widget-buttonIcon,
-.Widget-button {
+.CDB-Widget-link,
+.CDB-Widget-buttonIcon,
+.CDB-Widget-button {
   font-family: 'Open Sans';
   &:hover {
     cursor: pointer;
   }
 }
 
-.CDBIcon--center {
+.CDB-Icon--center {
   vertical-align: middle;
 }
 
-.CDBIcon--top {
+.CDB-Icon--top {
   vertical-align: top;
 }

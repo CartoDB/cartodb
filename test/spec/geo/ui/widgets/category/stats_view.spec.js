@@ -21,7 +21,7 @@ describe('widgets/category/stats_view', function() {
   describe('render', function() {
     it('should render properly data stats', function() {
       this.view.render();
-      expect(this.view.$('.Widget-infoItem').length).toBe(2);
+      expect(this.view.$('.CDB-Widget-infoItem').length).toBe(2);
     });
 
     it('should show number of results when a search is applied', function() {
@@ -29,16 +29,16 @@ describe('widgets/category/stats_view', function() {
       spyOn(this.model, 'isSearchApplied').and.returnValue(true);
       spyOn(this.model, 'getSearchCount').and.returnValue(10);
       this.view.render();
-      expect(this.view.$('.Widget-infoItem').length).toBe(1);
-      expect(this.view.$('.Widget-infoItem').text()).toContain('10 found');
+      expect(this.view.$('.CDB-Widget-infoItem').length).toBe(1);
+      expect(this.view.$('.CDB-Widget-infoItem').text()).toContain('10 found');
     });
 
     it('should nothing when search is enabled but not applied', function() {
       spyOn(this.viewModel, 'isSearchEnabled').and.returnValue(true);
       spyOn(this.model, 'isSearchApplied').and.returnValue(false);
       this.view.render();
-      expect(this.view.$('.Widget-infoItem').length).toBe(1);
-      expect(this.view.$('.Widget-infoItem').text()).not.toContain('found');
+      expect(this.view.$('.CDB-Widget-infoItem').length).toBe(1);
+      expect(this.view.$('.CDB-Widget-infoItem').text()).not.toContain('found');
     });
   });
 

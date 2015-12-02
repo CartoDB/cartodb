@@ -10,7 +10,7 @@ var placeholder = require('./search_items_no_results_template.tpl');
  */
 module.exports = CategoryItemsView.extend({
 
-  className: 'Widget-list is-hidden Widget-list--wrapped js-list',
+  className: 'CDB-Widget-list is-hidden CDB-Widget-list--wrapped js-list',
 
   render: function() {
     this.clearSubViews();
@@ -27,15 +27,15 @@ module.exports = CategoryItemsView.extend({
   },
 
   _renderList: function() {
-    this.$el.removeClass('Widget-list--withBorders Widget-list--noresults');
-    this.$el.addClass('Widget-list--wrapped');
+    this.$el.removeClass('CDB-Widget-list--withBorders CDB-Widget-list--noresults');
+    this.$el.addClass('CDB-Widget-list--wrapped');
 
     var groupItem;
     var data = this.dataModel.getSearchResult();
 
     data.each(function(mdl, i) {
       if (i % this.options.itemsPerPage === 0) {
-        groupItem = $('<div>').addClass('Widget-listGroup');
+        groupItem = $('<div>').addClass('CDB-Widget-listGroup');
         this.$el.append(groupItem);
       }
       this._addItem(mdl, groupItem);
@@ -45,8 +45,8 @@ module.exports = CategoryItemsView.extend({
   _renderPlaceholder: function() {
     // Change view classes
     this.$el
-      .addClass('Widget-list--noresults')
-      .removeClass('Widget-list--wrapped');
+      .addClass('CDB-Widget-list--noresults')
+      .removeClass('CDB-Widget-list--wrapped');
 
     this.$el.html(
       placeholder({

@@ -4,6 +4,8 @@ var WidgetContentView = require('../standard/widget_content_view');
 var WidgetListItemsView = require('./items_view');
 var WidgetListPaginatorView = require('./paginator_view');
 var WidgetListEdgesView = require('./edges_view');
+var template = require('./content_template.tpl');
+var templatePlaceholder = require('./placeholder_template.tpl');
 
 /**
  * Default widget content view:
@@ -14,32 +16,8 @@ module.exports = WidgetContentView.extend({
     showScroll: false
   },
 
-  _TEMPLATE: ' ' +
-    '<div class="Widget-header">'+
-      '<div class="Widget-title Widget-contentSpaced">'+
-        '<h3 class="Widget-textBig" title="<%- title %>"><%- title %></h3>'+
-      '</div>'+
-      '<dl class="Widget-info">'+
-        '<dt class="Widget-infoItem Widget-textSmaller Widget-textSmaller--upper"><%- itemsCount %> rows</dt>'+
-      '</dl>'+
-    '</div>'+
-    '<div class="Widget-content Widget-content--noSidesMargin">'+
-      '<div class="Widget-listWrapper js-content"></div>'+
-    '</div>'+
-    '<div class="Widget-footer js-footer"></div>',
-
-  _PLACEHOLDER: ' ' +
-    '<ul class="Widget-list Widget-list--withBorders">' +
-      '<li class="Widget-listItem Widget-listItem--fake"></li>' +
-      '<li class="Widget-listItem Widget-listItem--fake"></li>' +
-      '<li class="Widget-listItem Widget-listItem--fake"></li>' +
-      '<li class="Widget-listItem Widget-listItem--fake"></li>' +
-    '</ul>',
-
   render: function() {
     this.clearSubViews();
-
-    var template = _.template(this._TEMPLATE);
     var data = this.model.getData();
     var isDataEmpty = _.isEmpty(data) || _.size(data) === 0;
     this.$el.html(

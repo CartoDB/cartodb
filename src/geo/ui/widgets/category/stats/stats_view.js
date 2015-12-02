@@ -15,7 +15,7 @@ var AnimateValues = require('../../animate_values');
 
 module.exports = View.extend({
 
-  className: 'Widget-info Widget-textSmaller Widget-textSmaller--upper',
+  className: 'CDB-Widget-info CDB-Widget-textSmaller CDB-Widget-textSmaller--upper',
   tagName: 'dl',
 
   initialize: function() {

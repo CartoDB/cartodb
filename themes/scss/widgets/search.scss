@@ -5,23 +5,22 @@
 @import '../variables/mixins';
 
 
-.Widget-search {
+.CDB-Widget-search {
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center);
   height: 24px;
 }
-.Widget-searchLens {
+.CDB-Widget-searchLens {
   @include flex-grow(1);
   min-width: 16px;
   margin-right: 5px;
 }
-.Widget-searchTextInput {
+.CDB-Widget-searchTextInput {
   @include flex-grow(2);
   width: 100%;
-  font-family: 'Open Sans'
 }
-.Widget-searchApply {
+.CDB-Widget-searchApply {
   @include flex-grow(1);
   min-width: 34px;
   margin-left: 8px;

@@ -1,8 +1,8 @@
-<div class="Widget-contentFlex">
-  <button class="u-rSpace--m Widget-link js-searchToggle">cancel</button>
+<div class="CDB-Widget-contentFlex">
+  <button class="u-rSpace--m CDB-Widget-link js-searchToggle">cancel</button>
 </div>
 <% if (showPaginator) { %>
-  <div class="Widget-navDots js-dots">
-    <% for (var i = 0, l = pages; i < l; i++) { %><button class="Widget-dot Widget-dot--navigation js-page <% if (currentPage === i) { %>is-selected<% } %>" data-page="<%- i %>"></button><% } %>
+  <div class="CDB-Widget-navDots js-dots">
+    <% for (var i = 0, l = pages; i < l; i++) { %><button class="CDB-Shape-dot CDB-Widget-dot--navigation js-page <% if (currentPage === i) { %>is-selected<% } %>" data-page="<%- i %>"></button><% } %>
   </div>
 <% } %>

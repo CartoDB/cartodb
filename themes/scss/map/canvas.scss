@@ -4,7 +4,7 @@
 @import '../variables/sizes';
 @import '../variables/mixins';
 
-.Dashboard-canvas {
+.CDB-Dashboard-canvas {
   @include display-flex();
   @include justify-content(space-between, justify);
   box-sizing: border-box; // to avoid height to overflow the 100% due to the extra padding
@@ -14,45 +14,45 @@
   padding: 16px; // padding is necessary for the background below to be used (otherwise would use the container's bg)
   background: rgba(#F2F6F9, 1); // Canvas is out of widget themes
 }
-.Dashboard-mapWrapper {
+.CDB-Dashboard-mapWrapper {
   @include display-flex();
   @include justify-content(space-between, justify);
   @include flex-direction(column);
   @include flex-grow(1);
 }
-.Dashboard-mapWrapper--margin {
+.CDB-Dashboard-mapWrapper--margin {
   margin-left: 80px;
 }
-.Map-canvas {
-  position: relative;
+.CDB-Map-canvas {
   @include flex-grow(1);
+  position: relative;
 }
-.Map {
+.CDB-Map {
   position: absolute;
   top: 0;
   right: 0;
   bottom: 0;
   left: 0;
-  z-index: 1;
   border-radius: 4px;
   overflow: hidden;
+  z-index: 1;
 }
-.Dashboard-belowMap {
+.CDB-Dashboard-belowMap {
   margin-top: 8px;
 }
 
 @include media-query() {
-  .Dashboard-canvas {
+  .CDB-Dashboard-canvas {
     @include flex-direction(column);
   }
 }
 
 @include media-query-mobile() {
-  .Dashboard-canvas {
+  .CDB-Dashboard-canvas {
     padding: 8px;
   }
-  .Dashboard-mapWrapper--margin {
-    margin-left: 0;
+  .CDB-Dashboard-mapWrapper--margin {
     margin-top: 48px;
+    margin-left: 0;
   }
 }

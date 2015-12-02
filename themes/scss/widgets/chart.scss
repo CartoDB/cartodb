@@ -1,31 +1,29 @@
 @import '../variables/mixins';
 
-.Widget-content {
-  position: relative;
-}
-.Widget-chart.Widget-chart--fake {
+.CDB-Widget-chart.Widget-chart--fake {
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(flex-end);
   width: 100%;
   height: 72px; // value to match real widget content height, to avoid "jumpy" behavior
 }
-.Widget-chartItem.Widget-chartItem--fake {
+.CDB-Widget-chartItem.CDB-Widget-chartItem--fake {
   @include flex-grow(1);
   display: inline-block;
   margin-right: 2px;
 }
-.Widget-chartItem--fake.Widget-chartItem--small {
+.CDB-Widget-chartItem--fake.CDB-Widget-chartItem--small {
   height: 20px;
 }
-.Widget-chartItem--fake.Widget-chartItem--medium {
+.CDB-Widget-chartItem--fake.CDB-Widget-chartItem--medium {
   height: 40px;
 }
-.Widget-chartItem--fake.Widget-chartItem--big {
+.CDB-Widget-chartItem--fake.CDB-Widget-chartItem--big {
   height: 60px;
 }
 
-.Widget-chartTooltip {
+.CDB-Widget-chartTooltip {
+  @include css3-prefix(user-select, none);
   display: none;
   position: absolute;
   top: 0;
@@ -39,12 +37,8 @@
   font-size: 10px;
   text-align: center;
   pointer-events: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
 }
-.Widget-chartTooltip:after {
+.CDB-Widget-chartTooltip:after {
   display: inline-block;
   position: absolute;
   bottom: -3px;
@@ -56,13 +50,9 @@
   content: '';
 }
 
-.Chart.is-selectable .Handle,
-.Chart.is-selectable .HandleLine {
+.CDB-Chart.is-selectable .CDB-ChartHandle,
+.CDB-Chart.is-selectable .CDB-ChartHandleLine {
   opacity: 1;
-}
-
-.Widget {
-  position: relative;
 }
 
 .extent {
@@ -72,98 +62,91 @@
   shape-rendering: crispEdges;
 }
 
-.Bar {
+.CDB-ChartBar {
   fill: #9DE0AD;
   transition: fill 200ms ease;
   shape-rendering: crispEdges;
 }
-.Bar.is-highlighted {
+.CDB-ChartBar.is-highlighted {
   fill: #5BA45E;
   opacity: 1;
 }
-
-.Bar.is-selected {
+.CDB-ChartBar.is-selected {
   fill: rgba(#000, 0.06);
 }
 
 .mini {
 
-  .Bar {
+  .CDB-ChartBar {
     fill: #333;
   }
-  .Bar.is-highlighted {
+  .CDB-ChartBar.is-highlighted {
     fill: #333;
   }
-  .Bar.is-selected {
+  .CDB-ChartBar.is-selected {
     fill: #DDD;
   }
 }
 
-.Line {
+.CDB-ChartLine {
   stroke: #EEE;
   stroke-width: 1;
   shape-rendering: crispEdges;
 }
 
-.Line.Line--bottom {
+.CDB-ChartLine.CDB-ChartLine--bottom {
   stroke-width: 1;
   opacity: 0.2;
   stroke: #000;
   shape-rendering: crispEdges;
 }
 
-.Handle {
+.CDB-ChartHandle {
   opacity: 0;
 }
-.HandleRect {
+.CDB-ChartHandleRect {
   stroke-width: 2;
   stroke: #3AA9E3;
   fill: #FFF;
 }
-.HandleGrip {
+.CDB-ChartHandleGrip {
   stroke-width: 1;
   stroke: #CCC;
 }
 
-.HandleLine {
+.CDB-ChartHandleLine {
   opacity: 0;
   stroke-width: 2;
   stroke: #3AA9E3;
 }
 
-.Axis {
+.CDB-ChartAxis {
+  @include css3-prefix(user-select, none);
   shape-rendering: crispEdges;
   font: 10px sans-serif;
   fill: #979EA1;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
 }
 
-.Axis path {
+.CDB-ChartAxis path {
   display: none;
 }
 
-.Axis line {
+.CDB-ChartAxis line {
   stroke: #EEE;
   stroke-width: 1;
   shape-rendering: crispEdges;
 }
 
-.AxisTip-text {
+.CDB-ChartAxisTip-text {
+  @include css3-prefix(user-select, none);
   fill: #3AA9E3;
   font-size: 10px;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
 }
-.AxisTip-rect {
+.CDB-ChartAxisTip-rect {
   fill: #FFF;
 }
 
-.ShadowBar {
+.CDB-ChartShadowBar {
   fill: rgba(#000, 0.06);
   shape-rendering: crispEdges;
 }

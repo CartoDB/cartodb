@@ -9,13 +9,13 @@ var View = require('cdb/core/view');
 module.exports = View.extend({
 
   _TEMPLATE: ' ' +
-    '<div class="Widget-listEdge Widget-listEdge--top">'+
-      '<div class="Widget-listEdgeShadow js-topShadow"></div>'+
-      '<div class="Widget-listEdgeBorder"></div>'+
+    '<div class="CDB-Widget-listEdge CDB-Widget-listEdge--top">'+
+      '<div class="CDB-Widget-listEdgeShadow js-topShadow"></div>'+
+      '<div class="CDB-Widget-listEdgeBorder"></div>'+
     '</div>'+
-    '<div class="Widget-listEdge Widget-listEdge--bottom">'+
-      '<div class="Widget-listEdgeShadow js-bottomShadow"></div>'+
-      '<div class="Widget-listEdgeBorder"></div>'+
+    '<div class="CDB-Widget-listEdge CDB-Widget-listEdge--bottom">'+
+      '<div class="CDB-Widget-listEdgeShadow js-bottomShadow"></div>'+
+      '<div class="CDB-Widget-listEdgeBorder"></div>'+
     '</div>',
 
   initialize: function() {

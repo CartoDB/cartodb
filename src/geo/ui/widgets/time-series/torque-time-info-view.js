@@ -10,7 +10,7 @@ var template = require('./torque-time-info.tpl');
  */
 module.exports = View.extend({
 
-  className: 'Widget-timeSeriesTimeInfo',
+  className: 'CDB-Widget-timeSeriesTimeInfo',
 
   initialize: function() {
     this.model.bind('change:step', this.render, this);

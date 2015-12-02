@@ -3,7 +3,7 @@ var WidgetListItemView = require('./item_view');
 
 module.exports = View.extend({
 
-  className: 'Widget-list js-list',
+  className: 'CDB-Widget-list js-list',
   tagName: 'ul',
 
   events: {

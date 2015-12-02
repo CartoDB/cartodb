@@ -1,12 +1,12 @@
-<button type="button" class="Widget-listItemInner Widget-listItemInner--fullSpace Widget-listButton js-button <%- isDisabled ? 'is-disabled' : '' %>">
-  <span class="Widget-checkbox <%- isDisabled ? '' : 'is-checked' %>"></span>
+<button type="button" class="CDB-Widget-listItemInner CDB-Widget-listItemInner--fullSpace CDB-Widget-listButton js-button <%- isDisabled ? 'is-disabled' : '' %>">
+  <span class="CDB-Widget-checkbox <%- isDisabled ? '' : 'is-checked' %>"></span>
   <div class="u-lSpace--xl">
-    <div class="Widget-contentSpaced">
-      <p class="Widget-textSmall Widget-textSmall--bold Widget-textSmall--upper" title="<%- name %>"><%- name %></p>
-      <p class="Widget-textSmaller" title="<%- value %>"><%- prefix %><%- value %><%- suffix %></p>
+    <div class="CDB-Widget-contentSpaced">
+      <p class="CDB-Widget-textSmall CDB-Widget-textSmall--bold CDB-Widget-textSmall--upper" title="<%- name %>"><%- name %></p>
+      <p class="CDB-Widget-textSmaller" title="<%- value %>"><%- prefix %><%- value %><%- suffix %></p>
     </div>
-    <div class="Widget-progressBar">
-      <div class="Widget-progressState" style="width: <%- percentage %>%"></div>
+    <div class="CDB-Widget-progressBar">
+      <div class="CDB-Widget-progressState" style="width: <%- percentage %>%"></div>
     </div>
   </div>
 </button>

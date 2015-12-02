@@ -105,7 +105,7 @@
                   "layer_name": "mwc13-torque",
                   "interactivity": 'cartodb_id',
                   // TODO extract is a hack, until Winshaft can handle a Date column
-                  "sql": "select *, extract(epoch from end_at) AS numeric_end_at from mwc13",
+                  "sql": "select * from mwc13",
                   "cartocss_version": "2.1.1",
                   "cartocss": [
                     "Map{",
@@ -124,11 +124,7 @@
                 "widgets": {
                   "time_torque_widget_uuid": {
                     "type": "time-series",
-                    "column": "numeric_end_at",
-                    // TODO initial request is hardcoded until the tiler can resolve this itself
-                    "bins": 256,
-                    start: 1361776558,
-                    end: 1362012931
+                    "column": "end_at"
                   },
                   'category_widget_uuid': {
                     "type": "aggregation",

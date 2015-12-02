@@ -1,4 +1,5 @@
 var _ = require('underscore');
+var Model = require('cdb/core/model');
 var View = require('cdb/core/view');
 var WidgetModel = require('cdb/geo/ui/widgets/widget_model');
 var WidgetView = require('cdb/geo/ui/widgets/widget-view');
@@ -12,6 +13,8 @@ describe('geo/ui/widgets/widget-view', function() {
         title: 'Hello widget',
         columns: ['cartodb_id', 'description']
       }
+    }, {
+      layer: new Model()
     });
     this.view = new WidgetView({
       model: this.model,

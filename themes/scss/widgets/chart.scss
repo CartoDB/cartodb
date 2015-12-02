@@ -4,8 +4,8 @@
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(flex-end);
-  height: 72px; // value to match real widget content height, to avoid "jumpy" behavior
   width: 100%;
+  height: 72px; // value to match real widget content height, to avoid "jumpy" behavior
 }
 .CDB-Widget-chartItem.CDB-Widget-chartItem--fake {
   @include flex-grow(1);
@@ -110,12 +110,12 @@
 }
 
 .CDB-Chart-handleRect {
-  fill: #fff;
+  fill: #FFF;
   stroke-width: 2;
 }
 
 .CDB-Chart-handleGrip {
-  stroke: #ccc;
+  stroke: #CCC;
   stroke-width: 1;
 }
 
@@ -147,10 +147,10 @@
 }
 
 .CDB-Chart-axisTipRect {
-  fill: #fff;
+  fill: #FFF;
 }
 
 .CDB-Chart-shadowBar {
-  fill: rgba(#000, .06);
+  fill: rgba(#000, 0.06);
   shape-rendering: crispEdges;
 }

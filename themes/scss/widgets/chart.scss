@@ -50,8 +50,8 @@
   content: '';
 }
 
-.CDB-Chart.is-selectable .Handle,
-.CDB-Chart.is-selectable .HandleLine {
+.CDB-Chart.is-selectable .CDB-ChartHandle,
+.CDB-Chart.is-selectable .CDB-ChartHandleLine {
   opacity: 1;
 }
 
@@ -62,60 +62,59 @@
   shape-rendering: crispEdges;
 }
 
-.Bar {
+.CDB-ChartBar {
   fill: #9DE0AD;
   transition: fill 200ms ease;
   shape-rendering: crispEdges;
 }
-.Bar.is-highlighted {
+.CDB-ChartBar.is-highlighted {
   fill: #5BA45E;
   opacity: 1;
 }
-
-.Bar.is-selected {
+.CDB-ChartBar.is-selected {
   fill: rgba(#000, 0.06);
 }
 
 .mini {
 
-  .Bar {
+  .CDB-ChartBar {
     fill: #333;
   }
-  .Bar.is-highlighted {
+  .CDB-ChartBar.is-highlighted {
     fill: #333;
   }
-  .Bar.is-selected {
+  .CDB-ChartBar.is-selected {
     fill: #DDD;
   }
 }
 
-.Line {
+.CDB-ChartLine {
   stroke: #EEE;
   stroke-width: 1;
   shape-rendering: crispEdges;
 }
 
-.Line.Line--bottom {
+.CDB-ChartLine.CDB-ChartLine--bottom {
   stroke-width: 1;
   opacity: 0.2;
   stroke: #000;
   shape-rendering: crispEdges;
 }
 
-.Handle {
+.CDB-ChartHandle {
   opacity: 0;
 }
-.HandleRect {
+.CDB-ChartHandleRect {
   stroke-width: 2;
   stroke: #3AA9E3;
   fill: #FFF;
 }
-.HandleGrip {
+.CDB-ChartHandleGrip {
   stroke-width: 1;
   stroke: #CCC;
 }
 
-.HandleLine {
+.CDB-ChartHandleLine {
   opacity: 0;
   stroke-width: 2;
   stroke: #3AA9E3;

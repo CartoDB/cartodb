@@ -89,7 +89,7 @@ describe('geo/ui/widgets/histogram/chart', function() {
     });
 
     it('should draw the bars', function() {
-      expect(this.view.$el.find('.Bar').size()).toBe(this.data.length);
+      expect(this.view.$el.find('.CDB-ChartBar').size()).toBe(this.data.length);
     });
 
     it('should draw the axis', function() {
@@ -97,7 +97,7 @@ describe('geo/ui/widgets/histogram/chart', function() {
     });
 
     it('should draw the handles', function() {
-      expect(this.view.$el.find('.Handle').size()).toBe(2);
+      expect(this.view.$el.find('.CDB-ChartHandle').size()).toBe(2);
     });
 
     it('should calculate the scales', function() {

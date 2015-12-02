@@ -3,7 +3,7 @@ var Model = require('cdb/core/model');
 var View = require('cdb/core/view');
 
 /**
- * Time-marker, expected to be used in a histogram view
+ * Time-slider, expected to be used in a histogram view
  */
 module.exports = View.extend({
 
@@ -34,15 +34,15 @@ module.exports = View.extend({
   },
 
   render: function() {
-    // Make the render call idempotent; only create time marker once
-    if (!this.timeMarker) {
+    // Make the render call idempotent; only create time slider once
+    if (!this.timeSlider) {
       var dragBehavior = d3.behavior.drag()
         .on('dragstart', this._onDragStart.bind(this))
         .on('drag', this._onDrag.bind(this))
         .on('dragend', this._onDragEnd.bind(this));
 
-      this.timeMarker = this._chartView.canvas.append('rect')
-        .attr('class', 'CDB-TimeMarker')
+      this.timeSlider = this._chartView.canvas.append('rect')
+        .attr('class', 'CDB-TimeSlider')
         .attr('width', this.defaults.width)
         .attr('height', this._calcHeight())
         .attr('rx', 3)
@@ -56,8 +56,8 @@ module.exports = View.extend({
   },
 
   clean: function() {
-    if (this.timeMarker) {
-      this.timeMarker.remove();
+    if (this.timeSlider) {
+      this.timeSlider.remove();
     }
     View.prototype.clean.call(this);
   },
@@ -77,7 +77,7 @@ module.exports = View.extend({
     var nextX = d.x + d3.event.dx;
     if (this._isWithinRange(nextX)) {
       d.x = nextX;
-      this.timeMarker.attr('transform', this._translateXY);
+      this.timeSlider.attr('transform', this._translateXY);
 
       var step = Math.round(this._xScale.invert(d.x));
       this._torqueLayerModel.setStep(step);
@@ -100,13 +100,13 @@ module.exports = View.extend({
   },
 
   _onChangeStep: function() {
-    // Time marker might not be created when this method is first called
-    if (this.timeMarker && !this.viewModel.get('isDragging')) {
-      var data = this.timeMarker.data();
+    // Time slider might not be created when this method is first called
+    if (this.timeSlider && !this.viewModel.get('isDragging')) {
+      var data = this.timeSlider.data();
       var newX = this._xScale(this._torqueLayerModel.get('step'));
       if (!isNaN(newX)) {
         data[0].x = newX;
-        this.timeMarker
+        this.timeSlider
           .data(data)
           .transition()
           .ease('linear')
@@ -134,7 +134,7 @@ module.exports = View.extend({
   },
 
   _onChangeChartHeight: function() {
-    this.timeMarker.attr('height', this._calcHeight());
+    this.timeSlider.attr('height', this._calcHeight());
   },
 
   _calcHeight: function() {

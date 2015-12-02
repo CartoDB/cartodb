@@ -95,10 +95,21 @@ WindshaftDashboard.prototype._updateWidgetURLs = function(options) {
       protocol: 'http'
     });
 
-    widget.set({
+    var layerMeta = widget.layer.get('meta') || {};
+    var extraAttrs = {};
+    if (layerMeta.steps && layerMeta.column_type && _.isNumber(layerMeta.start) && _.isNumber(layerMeta.end)) {
+      extraAttrs = {
+        bins: layerMeta.steps,
+        columnType: layerMeta.column_type,
+        start: layerMeta.start  / 1000,
+        end:  layerMeta.end / 1000
+      };
+    }
+
+    widget.set(_.extend({
       'url': url,
       'boundingBox': boundingBox
-    }, {
+    }, extraAttrs), {
       silent: layerId && layerId !== widget.layer.get('id')
     });
   }, this);

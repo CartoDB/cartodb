@@ -63,11 +63,15 @@ module.exports = View.extend({
   render: function() {
     this._cleanScrollEvent();
     this.clearSubViews();
+
     this.$el.html(template());
     this._widgets.each(this._maybeRenderWidgetView, this);
+    this.$el.toggle(!_.isEmpty(this._subviews));
+
     this._renderScroll();
     this._renderShadows();
     this._bindScroll();
+
     return this;
   },
 

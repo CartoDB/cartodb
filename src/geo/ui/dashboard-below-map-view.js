@@ -1,3 +1,4 @@
+var _ = require('underscore');
 var View = require('cdb/core/view');
 var WidgetViewFactory = require('cdb/geo/ui/widgets/widget-view-factory');
 var TimeSeriesContentView = require('cdb/geo/ui/widgets/time-series/content-view');
@@ -54,6 +55,7 @@ module.exports = View.extend({
     this.clearSubViews();
     this.$el.empty();
     this._widgets.each(this._maybeRenderWidgetView, this);
+    this.$el.toggle(!_.isEmpty(this._subviews));
     return this;
   },
 

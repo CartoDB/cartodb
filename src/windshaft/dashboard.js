@@ -56,15 +56,16 @@ WindshaftDashboard.prototype._createInstance = function(options) {
         urls: dashboardInstance.getTiles('mapnik')
       });
 
-      this._updateWidgetURLs({
-        layerId: options.layerId
-      });
-
       // update other kind of layers too
-      this.layers.each(function(layer) {
+      this.layers.each(function(layer, layerIndex) {
+        layer.set('meta', dashboardInstance.getLayerMeta(layerIndex));
         if (layer.get('type') === 'torque') {
           layer.set('urls', dashboardInstance.getTiles('torque'));
         }
+      });
+
+      this._updateWidgetURLs({
+        layerId: options.layerId
       });
 
     }.bind(this),

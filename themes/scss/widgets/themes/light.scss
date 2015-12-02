@@ -12,6 +12,7 @@ $elementBorder: rgba(#EEE, 1);
 $link: rgba(#3AA9E3, 1);
 $linkHover: rgba(#227DBD, 1);
 $highlighted: rgba(#9DE0AD, 1);
+$darkHighlighted: rgba(#5BA45E, 1);
 $positive: rgba(#8FB83F, 1);
 $negative: rgba(#F15743, 1);
 $loadingBkg: rgba(#F9F9F9, 1);
@@ -208,6 +209,27 @@ $commonBkg: rgba(#FFF, 1);
     &:before {
       background: $linkHover;
     }
+  }
+
+  .CDB-Chart-bar {
+    fill: $highlighted;
+  }
+
+  .CDB-Chart-bar.is-highlighted {
+    fill: $darkHighlighted;
+  }
+
+  .CDB-Chart-handleRect {
+    stroke: $link;
+    stroke-width: 2;
+  }
+
+  .CDB-Chart-axisTipText {
+    fill: $link;
+  }
+
+  .CDB-Chart-handleLine {
+    stroke: $link;
   }
 
   .CDB-Widget-checkbox {

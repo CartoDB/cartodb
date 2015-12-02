@@ -54,6 +54,10 @@ describe('geo/ui/widgets/histogram/content-view', function() {
     expect(this.view.viewModel.get('total')).not.toBe(0);
   });
 
+  afterEach(function() {
+    this.view.clean();
+  });
+
 });
 
 function genHistogramData(n) {

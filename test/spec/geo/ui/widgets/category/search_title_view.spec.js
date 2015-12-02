@@ -121,4 +121,8 @@ describe('widgets/category/search_title_view', function() {
 
   });
 
+  afterEach(function() {
+    this.view.clean();
+  });
+
 });

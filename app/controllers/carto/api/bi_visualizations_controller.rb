@@ -30,9 +30,11 @@ module Carto
         page, per_page, order = page_per_page_order_params
 
         visualizations = BiVisualization.joins(:bi_dataset)
-                                        .where(bi_datasets: {user_id: current_user.id})
-                                        .offset((page - 1) * per_page)
-                                        .limit(per_page).map do |v|
+          .where(bi_datasets: { user_id: current_user.id })
+          .offset((page - 1) * per_page)
+          .limit(per_page)
+          .order(order)
+          .map do |v|
           Carto::Api::BiVisualizationPresenter.new(v).to_poro
         end
 

@@ -1,5 +1,4 @@
 var _ = require('underscore');
-var Spinner = require('spin.js');
 var $ = require('jquery');
 require('jquery.jscrollpane'); // registers itself to $.jScrollPane
 var log = require('cdb.log');
@@ -19,14 +18,10 @@ var util = require('../../core/util');
  * // Show the infowindow:
  * infowindow.showInfowindow();
  */
-var Infowindow = View.extend({
-  className: "cartodb-infowindow",
 
-  spin_options: {
-    lines: 10, length: 0, width: 4, radius: 6, corners: 1, rotate: 0, color: 'rgba(0,0,0,0.5)',
-    speed: 1, trail: 60, shadow: false, hwaccel: true, className: 'spinner', zIndex: 2e9,
-    top: 'auto', left: 'auto', position: 'absolute'
-  },
+var Infowindow = View.extend({
+
+  className: "cartodb-infowindow",
 
   events: {
     // Close bindings
@@ -296,54 +291,11 @@ var Infowindow = View.extend({
   },
 
   /**
-   *  Check if infowindow is loading the row content
-   */
-  _checkLoading: function() {
-    if (this.isLoadingData()) {
-      this._startSpinner();
-    } else {
-      this._stopSpinner();
-    }
-  },
-
-  /**
-   *  Stop loading spinner
-   */
-  _stopSpinner: function() {
-    if (this.spinner)
-      this.spinner.stop()
-  },
-
-  /**
-   *  Start loading spinner
-   */
-  _startSpinner: function($el) {
-    this._stopSpinner();
-
-    var $el = this.$el.find('.loading');
-
-    if ($el) {
-      // Check if it is dark or other to change color
-      var template_dark = this.model.get('template_name').search('dark') != -1;
-
-      if (template_dark) {
-        this.spin_options.color = '#FFF';
-      } else {
-        this.spin_options.color = 'rgba(0,0,0,0.5)';
-      }
-
-      this.spinner = new Spinner(this.spin_options).spin();
-      $el.append(this.spinner.el);
-    }
-  },
-
-  /**
-   *  Stop loading spinner
+   *  Does header contain cover?
    */
   _containsCover: function() {
     return this.$el.find(".cartodb-popup.header").attr("data-cover") ? true : false;
   },
-
 
   /**
    *  Get cover URL
@@ -371,55 +323,48 @@ var Infowindow = View.extend({
     var $shadow = this.$(".shadow");
     var url = this._getCoverURL();
 
+    if ($img.length > 0) {
+      // If there is alreay an image in the template, we should
+      // leave it as it is.
+      return false;
+    }
+
     if (!this._isValidURL(url)) {
-      $img.hide();
       $shadow.hide();
       log.info("Header image url not valid");
       return;
     }
 
-    // configure spinner
-    var target  = document.getElementById('spinner');
-    var opts    = { lines: 9, length: 4, width: 2, radius: 4, corners: 1, rotate: 0, color: '#ccc', speed: 1, trail: 60, shadow: true, hwaccel: false, zIndex: 2e9 };
-    var spinner = new Spinner(opts).spin(target);
-
     // create the image
-
-    $img.hide(function() {
-      this.remove();
-    });
-
     $img = $("<img />").attr("src", url);
     $cover.append($img);
 
     $img.load(function(){
-      spinner.stop();
-
       var w  = $img.width();
       var h  = $img.height();
       var coverWidth = $cover.width();
       var coverHeight = $cover.height();
-
+      var calculatedHeight = h / (w / coverWidth);
       var ratio = h / w;
       var coverRatio = coverHeight / coverWidth;
+      var styles = {
+        width: coverWidth,
+        top: "50%",
+        position: "absolute",
+        "margin-top": -1*parseInt(calculatedHeight, 10)/2
+      };
 
       // Resize rules
       if ( w > coverWidth && h > coverHeight) { // bigger image
-        if ( ratio < coverRatio ) $img.css({ height: coverHeight });
-        else {
-          var calculatedHeight = h / (w / coverWidth);
-          $img.css({ width: coverWidth, top: "50%", position: "absolute", "margin-top": -1*parseInt(calculatedHeight, 10)/2 });
+        if ( ratio < coverRatio ) {
+          styles = { height: coverHeight };
         }
-      } else {
-        var calculatedHeight = h / (w / coverWidth);
-        $img.css({ width: coverWidth, top: "50%", position: "absolute", "margin-top": -1*parseInt(calculatedHeight, 10)/2 });
       }
 
+      $img.css(styles);
       $img.fadeIn(300);
     })
-    .error(function(){
-      spinner.stop();
-    });
+    .error();
   },
 
   /**

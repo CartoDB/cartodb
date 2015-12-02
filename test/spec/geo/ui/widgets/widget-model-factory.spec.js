@@ -1,8 +1,13 @@
+var Model = require('cdb/core/model');
 var WidgetModelFactory = require('cdb/geo/ui/widgets/widget-model-factory');
 
 describe('geo/ui/widgets/widget-model-factory', function() {
   beforeEach(function() {
     this.factory = new WidgetModelFactory();
+    this.layer = new Model({
+      id: 'layer-uuid',
+      type: 'cartodb'
+    });
   });
 
   it('should call addType for each item', function() {
@@ -57,7 +62,6 @@ describe('geo/ui/widgets/widget-model-factory', function() {
         id: 'widget-uuid',
         layerId: 'layer-id'
       };
-      this.layer = {};
 
       this.createModelSpy = jasmine.createSpy('createModel');
 
@@ -68,7 +72,7 @@ describe('geo/ui/widgets/widget-model-factory', function() {
       beforeEach(function() {
         this.returnedObj = {};
         this.createModelSpy.and.returnValue(this.returnedObj);
-        this.result = this.factory.createModel(this.attrs, this.layerIndex);
+        this.result = this.factory.createModel(this.layer, this.layerIndex, this.attrs);
       });
 
       it('should call create for the matching type', function() {
@@ -77,9 +81,10 @@ describe('geo/ui/widgets/widget-model-factory', function() {
 
       it('should call createModel with given attrs', function() {
         expect(this.createModelSpy).toHaveBeenCalled();
-        expect(this.createModelSpy.calls.argsFor(0).length).toEqual(2);
+        expect(this.createModelSpy.calls.argsFor(0).length).toEqual(3);
         expect(this.createModelSpy.calls.argsFor(0)[0]).toEqual(this.attrs);
-        expect(this.createModelSpy.calls.argsFor(0)[1]).toEqual(this.layerIndex);
+        expect(this.createModelSpy.calls.argsFor(0)[1]).toEqual({ layer: this.layer });
+        expect(this.createModelSpy.calls.argsFor(0)[2]).toEqual(this.layerIndex);
       });
     });
 
@@ -91,7 +96,7 @@ describe('geo/ui/widgets/widget-model-factory', function() {
           layerId: 'meh'
         }
         try {
-          this.factory.createModel(this.attrs, this.layerIndex);
+          this.factory.createModel(this.layer, this.layerIndex, this.attrs);
         } catch(e) {
           this.e = e;
         }

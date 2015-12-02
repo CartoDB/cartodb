@@ -40,6 +40,7 @@ describe('src/windshaft/dashboard', function() {
         ]
       }
     });
+    this.widgets = new Backbone.Collection();
 
     spyOn(this.dashboardInstance, 'getBaseURL').and.returnValue('baseURL');
     spyOn(this.dashboardInstance, 'getTiles').and.callFake(function(type) {
@@ -47,7 +48,7 @@ describe('src/windshaft/dashboard', function() {
         return 'torqueTileURLs';
       }
       return 'tileURLs';
-    }); 
+    });
 
     this.client = {
       instantiateMap: function(options) {
@@ -80,9 +81,10 @@ describe('src/windshaft/dashboard', function() {
     var widget = new HistogramModel({
       id: 'widgetId',
       type: 'list'
-    }, {});
-
-    this.cartoDBLayer1.addWidget(widget);
+    }, {
+      layer: this.cartoDBLayer1
+    });
+    this.widgets.add(widget);
 
     var dashboard = new Dashboard({
       client: this.client,
@@ -90,6 +92,7 @@ describe('src/windshaft/dashboard', function() {
       statTag: 'stat_tag',
       layerGroup: this.cartoDBLayerGroup,
       layers: [ this.cartoDBLayer1, this.cartoDBLayer2, this.torqueLayer ],
+      widgets: this.widgets,
       map: this.map
     });
 
@@ -114,9 +117,12 @@ describe('src/windshaft/dashboard', function() {
     var widget = new HistogramModel({
       id: 'widgetId',
       type: 'list'
-    }, { filter: filter });
+    }, {
+      layer: this.cartoDBLayer1,
+      filter: filter
+    });
 
-    this.cartoDBLayer1.addWidget(widget);
+    this.widgets.add(widget);
 
     var dashboard = new Dashboard({
       client: this.client,
@@ -124,6 +130,7 @@ describe('src/windshaft/dashboard', function() {
       statTag: 'stat_tag',
       layerGroup: this.cartoDBLayerGroup,
       layers: [ this.cartoDBLayer1, this.cartoDBLayer2 ],
+      widgets: this.widgets,
       map: this.map
     });
 
@@ -167,8 +174,10 @@ describe('src/windshaft/dashboard', function() {
     var widget = new HistogramModel({
       id: 'widgetId',
       type: 'list'
-    }, {});
-    this.cartoDBLayer1.addWidget(widget);
+    }, {
+      layer: this.cartoDBLayer1
+    });
+    this.widgets.add(widget);
 
     var dashboard = new Dashboard({
       client: this.client,
@@ -176,6 +185,7 @@ describe('src/windshaft/dashboard', function() {
       statTag: 'stat_tag',
       layerGroup: this.cartoDBLayerGroup,
       layers: [ this.cartoDBLayer1 ],
+      widgets: this.widgets,
       map: this.map
     });
 
@@ -199,8 +209,10 @@ describe('src/windshaft/dashboard', function() {
     var widget = new HistogramModel({
       id: 'widgetId',
       type: 'list'
-    }, {});
-    this.cartoDBLayer1.addWidget(widget);
+    }, {
+      layer: this.cartoDBLayer1
+    });
+    this.widgets.add(widget);
 
     var dashboard = new Dashboard({
       client: this.client,
@@ -208,6 +220,7 @@ describe('src/windshaft/dashboard', function() {
       statTag: 'stat_tag',
       layerGroup: this.cartoDBLayerGroup,
       layers: [ this.cartoDBLayer1, this.cartoDBLayer2 ],
+      widgets: this.widgets,
       map: this.map
     });
 
@@ -230,9 +243,10 @@ describe('src/windshaft/dashboard', function() {
       id: 'widgetId',
       type: 'list'
     }, {
+      layer: this.cartoDBLayer1,
       filter: filter
     });
-    this.cartoDBLayer1.addWidget(widget);
+    this.widgets.add(widget);
 
     var dashboard = new Dashboard({
       client: this.client,
@@ -240,13 +254,14 @@ describe('src/windshaft/dashboard', function() {
       statTag: 'stat_tag',
       layerGroup: this.cartoDBLayerGroup,
       layers: [ this.cartoDBLayer1, this.cartoDBLayer2 ],
+      widgets: this.widgets,
       map: this.map
     });
 
     expect(this.client.instantiateMap.calls.count()).toEqual(1);
 
     // Filter has changed
-    this.cartoDBLayer1.trigger('change:filter', this.cartoDBLayer1);
+    widget.trigger('change:filter', widget);
 
     expect(this.client.instantiateMap.calls.count()).toEqual(2);
   });
@@ -290,14 +305,18 @@ describe('src/windshaft/dashboard', function() {
     var widget1 = new HistogramModel({
       id: 'widgetId1',
       type: 'list'
-    }, {});
-    this.cartoDBLayer1.addWidget(widget1);
+    }, {
+      layer: this.cartoDBLayer1
+    });
+    this.widgets.add(widget1);
 
     var widget2 = new HistogramModel({
       id: 'widgetId2',
       type: 'list'
-    }, {});
-    this.cartoDBLayer2.addWidget(widget2);
+    }, {
+      layer: this.cartoDBLayer2
+    });
+    this.widgets.add(widget2);
 
     var dashboard = new Dashboard({
       client: this.client,
@@ -305,6 +324,7 @@ describe('src/windshaft/dashboard', function() {
       statTag: 'stat_tag',
       layerGroup: this.cartoDBLayerGroup,
       layers: [ this.cartoDBLayer1, this.cartoDBLayer2 ],
+      widgets: this.widgets,
       map: this.map
     });
 
@@ -319,7 +339,7 @@ describe('src/windshaft/dashboard', function() {
     widget2.bind('change:url', callback2);
 
     // Filter has changed by cartoDBLayer1
-    this.cartoDBLayer1.trigger('change:filter', this.cartoDBLayer1);
+    widget1.trigger('change:filter', widget1);
 
     expect(widget1.get('url')).toEqual('http://example.com/widgetId1/1');
     expect(widget2.get('url')).toEqual('http://example.com/widgetId2/1');

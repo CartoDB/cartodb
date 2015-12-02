@@ -17,14 +17,7 @@
     </style>
   </head>
   <body>
-    <div class="CDB-Dashboard-canvas js-dashboard">
-      <div class="CDB-Dashboard-mapWrapper CDB-Dashboard-mapWrapper--margin">
-        <div class="CDB-Map-canvas">
-          <div class="CDB-Map" id="map"></div>
-        </div>
-        <div class="CDB-Dashboard-belowMap js-dashboard-belowMap"></div>
-      </div>
-    </div>
+    <div id="dashboard"></div>
 
     <script>
       window.onload = function() {
@@ -84,139 +77,6 @@
                 "order": 0,
                 "type": "tiled"
               },
-              {
-                "type": "layergroup",
-                "options": {
-                  "layer_definition": {
-                    "stat_tag": "84ec6844-4b4b-11e5-9c1d-080027880ca6",
-                    "version": "1.0.1",
-                    "layers": [
-                      {
-                        "id": "9a6d3c0e-60b7-4dec-aba7-d2dbfd024268",
-                        "type": "CartoDB",
-                        "infowindow": {
-                          "fields": [
-                            {
-                              "name": "n_distri",
-                              "title": true,
-                              "position": 0
-                            }
-                          ],
-                          "template_name": "infowindow_light",
-                          "template": "<div class=\"cartodb-popup v2\">\n  <a href=\"#close\" class=\"cartodb-popup-close-button close\">x</a>\n  <div class=\"cartodb-popup-content-wrapper\">\n    <div class=\"cartodb-popup-content\">\n      {{#content.fields}}\n        {{#title}}<h4>{{title}}</h4>{{/title}}\n        {{#value}}\n          <p {{#type}}class=\"{{ type }}\"{{/type}}>{{{ value }}}</p>\n        {{/value}}\n        {{^value}}\n          <p class=\"empty\">null</p>\n        {{/value}}\n      {{/content.fields}}\n    </div>\n  </div>\n  <div class=\"cartodb-popup-tip-container\"></div>\n</div>\n",
-                          "alternative_names": {},
-                          "width": 226,
-                          "maxHeight": 180
-                        },
-                        "tooltip": {
-                          "fields": [],
-                          "template_name": "tooltip_light",
-                          "template": "<div class=\"cartodb-tooltip-content-wrapper\">\n  <div class=\"cartodb-tooltip-content\">\n  {{#fields}}\n    {{#title}}\n    <h4>{{title}}</h4>\n    {{/title}}\n    <p>{{{ value }}}</p>\n  {{/fields}}\n  </div>\n</div>",
-                          "alternative_names": {},
-                          "maxHeight": 180
-                        },
-                        "legend": {
-                          "type": "none",
-                          "show_title": false,
-                          "title": "",
-                          "template": "",
-                          "visible": true,
-                          "items": [
-                            {
-                              "name": null,
-                              "visible": true,
-                              "value": "#A6CEE3"
-                            }
-                          ]
-                        },
-                        "order": 1,
-                        "visible": true,
-                        "options": {
-                          "sql": "select * from districtes_barcelona",
-                          "layer_name": "Distritos",
-                          "cartocss": "/** simple visualization */\n\n#districtes_barcelona{\n  polygon-fill: #FF6600;\n  polygon-opacity: 0.7;\n  line-color: #FFF;\n  line-width: 0.5;\n  line-opacity: 1;\n}",
-                          "cartocss_version": "2.1.1",
-                          "interactivity": "cartodb_id",
-                          "table_name": "\"\".",
-                        },
-                        "widgets": {
-                          'category_widget_uuid': {
-                            "type": "aggregation",
-                            "title": "Barrios",
-                            "column": "n_distri",
-                            "aggregation": "count"
-                          },
-                          "histogram_widget_uuid": {
-                            "type": "histogram",
-                            "title": "Casas por barrio",
-                            "column": "homes",
-                            "bins": 10
-                          },
-                        }
-                      },
-                      {
-                        "id": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
-                        "type": "CartoDB",
-                        "infowindow": {
-                          "fields": [
-                            {
-                              "name": "name",
-                              "title": true,
-                              "position": 0
-                            }
-                          ],
-                          "template_name": "table/views/infowindow_light",
-                          "template": "<div class=\"cartodb-popup v2\">\n  <a href=\"#close\" class=\"cartodb-popup-close-button close\">x</a>\n  <div class=\"cartodb-popup-content-wrapper\">\n    <div class=\"cartodb-popup-content\">\n      {{#content.fields}}\n        {{#title}}<h4>{{title}}</h4>{{/title}}\n        {{#value}}\n          <p {{#type}}class=\"{{ type }}\"{{/type}}>{{{ value }}}</p>\n        {{/value}}\n        {{^value}}\n          <p class=\"empty\">null</p>\n        {{/value}}\n      {{/content.fields}}\n    </div>\n  </div>\n  <div class=\"cartodb-popup-tip-container\"></div>\n</div>\n",
-                          "alternative_names": {},
-                          "width": 226,
-                          "maxHeight": 180
-                        },
-                        "tooltip": {
-                          "fields": [],
-                          "template_name": "tooltip_light",
-                          "template": "<div class=\"cartodb-tooltip-content-wrapper\">\n  <div class=\"cartodb-tooltip-content\">\n  {{#fields}}\n    {{#title}}\n    <h4>{{title}}</h4>\n    {{/title}}\n    <p>{{{ value }}}</p>\n  {{/fields}}\n  </div>\n</div>",
-                          "alternative_names": {},
-                          "maxHeight": 180
-                        },
-                        "legend": {
-                          "type": "none",
-                          "show_title": false,
-                          "title": "",
-                          "template": "",
-                          "visible": true
-                        },
-                        "order": 2,
-                        "visible": true,
-                        "options": {
-                          "sql": "select * from arboles",
-                          "layer_name": "Árboles",
-                          "cartocss": "/** simple visualization */\n\n#arboles{\n  marker-fill-opacity: 0.9;\n  marker-line-color: #FFF;\n  marker-line-width: 1;\n  marker-line-opacity: 1;\n  marker-placement: point;\n  marker-type: ellipse;\n  marker-width: 10;\n  marker-fill: green;\n  marker-allow-overlap: true;\n}",
-                          "cartocss_version": "2.1.1",
-                          "interactivity": "cartodb_id",
-                          "table_name": "\"\".",
-                        },
-                        "widgets": {
-                          "list_widget": {
-                            "type": "list",
-                            "title": "Arboles",
-                            "bbox": false,
-                            "columns": [
-                              "cartodb_id",
-                              "name"
-                            ],
-                            "columns_title": [
-                              "id",
-                              "tipo"
-                            ]
-                          },
-                        }
-                      }
-                    ]
-                  },
-                  "attribution": "wadus"
-                }
-              },
-
               { // torque time-series widget
                 "id": "9c14474e-d89a-49b2-b19b-7dce60f0a259",
                 "type": "torque",
@@ -269,7 +129,13 @@
                     "bins": 256,
                     start: 1361776558,
                     end: 1362012931
-                  }
+                  },
+                  'category_widget_uuid': {
+                    "type": "aggregation",
+                    "title": "Twitter Usernames",
+                    "column": "_user",
+                    "aggregation": "count"
+                  },
                 }
               }, // END torque time-series widget
 
@@ -362,7 +228,7 @@
             }
           }
 
-          cartodb.createVis('map', vizJSON1, {
+          cartodb.createVis('dashboard', vizJSON1, {
             no_cdn: false,
             layer_selector: true,
           })

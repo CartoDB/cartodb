@@ -21,14 +21,7 @@
     </style>
   </head>
   <body>
-    <div class="CDB-Dashboard-canvas js-dashboard">
-      <div class="CDB-Dashboard-mapWrapper CDB-Dashboard-mapWrapper--margin">
-        <div class="CDB-Map-canvas">
-          <div class="CDB-Map" id="map"></div>
-        </div>
-        <div class="CDB-Dashboard-belowMap js-dashboard-belowMap"></div>
-      </div>
-    </div>
+    <div id="dashboard"></div>
 
     <script>
       window.onload = function() {
@@ -300,7 +293,7 @@
             }
           }
 
-          cartodb.createVis('map', vizJSON1, {
+          cartodb.createVis('dashboard', vizJSON1, {
             no_cdn: false,
           })
           .done(function(vis, layers) {

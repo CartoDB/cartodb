@@ -71,9 +71,15 @@
   fill: #5BA45E;
   opacity: 1;
 }
+<<<<<<< HEAD
 .CDB-ChartBar.is-selected {
   fill: #DDD;
   opacity: 0.7;
+=======
+
+.Bar.is-selected {
+  fill: rgba(#000, 0.06);
+>>>>>>> d530bd741ffd28915555f3233580799f9128def3
 }
 
 .mini {
@@ -145,4 +151,9 @@
 }
 .AxisTip-rect {
   fill: #FFF;
+}
+
+.ShadowBar {
+  fill: rgba(#000, 0.06);
+  shape-rendering: crispEdges;
 }

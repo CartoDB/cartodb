@@ -52,13 +52,15 @@ module.exports = WidgetContent.extend({
   _onFirstLoad: function() {
     this.render();
     this._storeBounds();
-    this.model.bind('change:data', this._onChangeData, this);
+
+    this.model.bind('change', this._onChangeData, this);
     this.model._fetch();
   },
 
   _storeBounds: function() {
     var data = this.model.getData();
     if (data && data.length > 0) {
+      this.initialData = data;
       this.start = data[0].start;
       this.end = data[data.length - 1].end;
       this.binsCount = data.length;
@@ -79,16 +81,14 @@ module.exports = WidgetContent.extend({
       if (this._isZoomed()) {
         this.zoomedData = this.model.getData();
       } else {
+        this.histogramChartView.generateShadowBars(this.initialData);
         this.originalData = this.model.getData();
       }
-
       this.histogramChartView.replaceData(this.model.getData());
     }
 
     if (this.unsettingRange) {
-      this.unsettingRange = false;
-      this.histogramChartView.replaceData(this.originalData);
-      this.viewModel.set({ lo_index: null, hi_index: null });
+      this._unsetRange();
     } else {
       if (this._isZoomed() && !this.lockZoomedData) {
         this.lockZoomedData = true;
@@ -123,6 +123,16 @@ module.exports = WidgetContent.extend({
     return this;
   },
 
+  _unsetRange: function() {
+    this.unsettingRange = false;
+    this.histogramChartView.replaceData(this.originalData);
+    this.viewModel.set({ lo_index: null, hi_index: null });
+
+    if (!this._isZoomed()) {
+      this.histogramChartView.generateShadowBars(this.initialData);
+    }
+  },
+
   _addPlaceholder: function() {
     this.$('.js-content').append(placeholder());
   },
@@ -130,7 +140,8 @@ module.exports = WidgetContent.extend({
   _renderMainChart: function() {
     this.histogramChartView = new HistogramChartView(({
       margin: { top: 4, right: 4, bottom: 4, left: 4 },
-      handles: true,
+      hasShadowBards: true,
+      hasHandles: true,
       hasAxisTip: true,
       width: this.canvasWidth,
       height: this.defaults.chartHeight,
@@ -151,7 +162,6 @@ module.exports = WidgetContent.extend({
   _renderMiniChart: function() {
     this.miniHistogramChartView = new HistogramChartView(({
       className: 'mini',
-      handles: false,
       margin: { top: 0, right: 0, bottom: 4, left: 4 },
       height: 40,
       showOnWidthChange: false,
@@ -377,9 +387,8 @@ module.exports = WidgetContent.extend({
   },
 
   _onZoomIn: function() {
-    this.histogramChartView.expand(20);
-
     this._showMiniRange();
+    this.histogramChartView.expand(20);
 
     this.model.set({ start: null, end: null, bins: null, own_filter: 1 });
     this.model._fetch();
@@ -393,11 +402,12 @@ module.exports = WidgetContent.extend({
   },
 
   _onZoomOut: function() {
-    this.lockedByUser = true;
+    this.lockedByUser   = true;
     this.lockZoomedData = false;
     this.unsettingRange = true;
 
     this.model.set({ start: this.start, end: this.end, bins: this.binsCount, own_filter: null });
+
     this.viewModel.set({ zoom_enabled: false, filter_enabled: false, lo_index: null, hi_index: null });
 
     this.filter.unsetRange();

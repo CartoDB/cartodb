@@ -1,0 +1,104 @@
+// controllers styles
+// ----------------------------------------------
+
+@import '../variables/sizes';
+@import '../variables/mixins';
+
+
+.CDB-overlay {
+  position: relative;
+  min-width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  background: #FFF;
+  box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.24), 0 4px 8px 0 rgba(0, 0, 0, 0.16);
+  z-index: 20000;
+}
+
+.CDB-Zoom {
+  position: absolute;
+  top: 48px;
+  left: 16px;
+}
+
+.CDB-ZoomAction {
+  display: inline-block;
+  position: relative;
+  width: 32px;
+  height: 100%;
+  background: #FFF;
+  color: #636D72;
+  text-align: center;
+  text-decoration: none;
+  z-index: 10;
+
+  &:hover {
+    background: #F9F9F9;
+    cursor: pointer;
+  }
+
+  &.is-disabled {
+    cursor: initial;
+    opacity: 0.2;
+  }
+
+  &:last-child {
+    margin-left: -4px;
+    border-left: 1px solid #F8F8F8;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+  }
+  &:first-child {
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+  }
+}
+
+.CDB-ZoomAction--out:before {
+  position: absolute;
+  left: 50%;
+  width: 11px;
+  height: 1px;
+  margin-left: -5px;
+  background: #636D72;
+  content: '';
+}
+
+.CDB-ZoomAction--in {
+  &:before {
+    position: absolute;
+    left: 50%;
+    width: 11px;
+    height: 1px;
+    margin-left: -5px;
+    background: #636D72;
+    content: '';
+  }
+  &:after {
+    position: absolute;
+    top: 11px;
+    width: 1px;
+    height: 11px;
+    background: #636D72;
+    content: '';
+  } 
+}
+
+.CDB-ZoomInfo {
+  position: absolute;
+  top: -24px;
+  right: 0;
+  left: 0;
+  height: 34px;
+  padding-top: 6px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.64); 
+  color: #FFF;
+  font-family: 'Open Sans';
+  font-size: $sFontSize-smaller;
+  font-weight: $sFontWeight-semibold;
+  line-height: $sLineHeight-smaller;
+  text-align: center;
+  z-index: 1;
+}
+

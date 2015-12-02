@@ -25,38 +25,17 @@
       <div class="Dashboard-mapWrapper js-dashboard-map-wrapper">
         <div class="Map-canvas Map-canvas--margin">
           <div class="Map" id="map">
-
-            <div class="CDB-mapZoom">
-              <div class="CDB-controller">
-                <div class="CDB-mapZoomInner">
-                  <a href="#" class="CDB-mapZoomLink">
-                    <svg class="CDB-mapZoomLinkComponent" width="11px" height="1px" viewBox="0 0 11 1">
-                        <g id="--Mod-/-Map-Elements" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
-                            <g class="CDB-mapZoomComponent" id="Zoom-+-Searchbox" sketch:type="MSLayerGroup" transform="translate(-10.000000, -36.000000)" fill="#616D72">
-                                <g id="Zoom" sketch:type="MSShapeGroup">
-                                    <rect id="Rectangle-79" x="10" y="36" width="11" height="1"></rect>
-                                </g>
-                            </g>
-                        </g>
-                    </svg>
-                  </a>
-                  <a href="#" class="CDB-mapZoomLink">
-                    <svg class="CDB-mapZoomLinkComponent" width="11px" height="11px" viewBox="0 0 11 11">
-                      <g id="--Mod-/-Map-Elements" stroke="none" stroke-  width="1" fill="none" fill-rule="evenodd" sketch:type ="MSPage">
-                        <g class="CDB-mapZoomComponent" id="Zoom-magnify" sketch:type="MSLayerGroup"   transform="translate(-41.000000, -35.000000)" fill= "#636D72">
-                            <g id="Zoom" sketch:type="MSShapeGroup">
-                                <path d="M47,40 L47,35 L46,35 L46,40  L41,40 L41,41 L46,41 L46,46 L47,46 L47,41  L52,41 L52,40 L47,40 Z" id="Rectangle-18"></path>
-                            </g>
-                        </g>
-                      </g>
-                    </svg>
-                  </a>
-                </div>
-                <div class="CDB-mapZoomInfo">
-                  1
-                </div>
+<!--
+            <div class="CDB-Zoom">
+              <div class="CDB-overlay">
+                <button class="CDB-ZoomAction CDB-ZoomAction--out"></button>
+                <button class="CDB-ZoomAction CDB-ZoomAction--in"></button>
               </div>
-
+              <div class="CDB-ZoomInfo">
+                1
+              </div>
+            </div>-->
+<!--
               <div class="CDB-controller CDB-controllerSearch">
                 <input type="text" class="CDB-controllerSearchInput" placeholder="Search a place"/>
                 <button class="CDB-controllerSearchButton js-CDB-controllerSearchButton">
@@ -74,8 +53,8 @@
                   </svg>
                 </button>
               </div>
-            </div>
-
+            </div>-->
+<!--
             <div class="CDB-mapFull">
               <a href="#" class="CDB-mapFullLink">
                 <svg width="12px" height="12px" viewBox="0 0 12 12" version="1.1">
@@ -89,7 +68,9 @@
                   </g>
                 </svg>
               </a>
-            </div>
+            </div>-->
+
+
           </div>
         </div>
       </div>
@@ -448,7 +429,7 @@
                   "x": 20,
                   "y": 20
                 },
-                "template": "<a href=\"#zoom_in\" class=\"zoom_in\">+</a> <a href=\"#zoom_out\" class=\"zoom_out\">-</a>"
+                "template": "<div class=\"CDB-overlay\"><button class=\"CDB-ZoomAction CDB-ZoomAction--out js-CDB-ZoomOut\"></button><button class=\"CDB-ZoomAction CDB-ZoomAction--in js-CDB-ZoomIn\"></button></div><div class=\"CDB-ZoomInfo\">1</div>"
               },
               {
                 "type": "loader",
@@ -791,7 +772,7 @@
                   "x": 20,
                   "y": 20
                 },
-                "template": "<a href=\"#zoom_in\" class=\"zoom_in\">+</a> <a href=\"#zoom_out\" class=\"zoom_out\">-</a>"
+                "template": "<div class=\"CDB-overlay\"><button class=\"CDB-ZoomAction CDB-ZoomAction--out js-CDB-ZoomOut\"></button><button class=\"CDB-ZoomAction CDB-ZoomAction--in js-CDB-ZoomIn\"></button></div><div class=\"CDB-ZoomInfo\">1</div>"
               },
               {
                 "type": "loader",

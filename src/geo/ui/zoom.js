@@ -13,11 +13,11 @@ var View = require('../../core/view');
  */
 module.exports = View.extend({
 
-  className: "cartodb-zoom",
+  className: "CDB-Zoom",
 
   events: {
-    'click .zoom_in': 'zoom_in',
-    'click .zoom_out': 'zoom_out'
+    'click .js-CDB-ZoomIn': 'zoom_in',
+    'click .js-CDB-ZoomOut': 'zoom_out'
   },
 
   default_options: {
@@ -42,8 +42,8 @@ module.exports = View.extend({
 
   _checkZoom: function() {
     var zoom = this.map.get('zoom');
-    this.$('.zoom_in')[ zoom < this.map.get('maxZoom') ? 'removeClass' : 'addClass' ]('disabled')
-    this.$('.zoom_out')[ zoom > this.map.get('minZoom') ? 'removeClass' : 'addClass' ]('disabled')
+    this.$('.js-CDB-ZoomIn')[ zoom < this.map.get('maxZoom') ? 'removeClass' : 'addClass' ]('is-disabled')
+    this.$('.js-CDB-ZoomOut')[ zoom > this.map.get('minZoom') ? 'removeClass' : 'addClass' ]('is-disabled')
   },
 
   zoom_in: function(ev) {

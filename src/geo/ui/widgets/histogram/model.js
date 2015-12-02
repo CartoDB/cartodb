@@ -7,6 +7,9 @@ module.exports = WidgetModel.extend({
   url: function() {
     var params = [];
 
+    if (this.get('columnType')) {
+      params.push('column_type=' + this.get('columnType'));
+    }
     if (_.isNumber(this.get('start'))) {
       params.push('start=' + this.get('start'));
     }

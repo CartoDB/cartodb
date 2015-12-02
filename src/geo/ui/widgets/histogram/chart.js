@@ -273,7 +273,7 @@ module.exports = View.extend({
   },
 
   _onMouseOut: function() {
-    var bars = this.chart.selectAll('.Bar');
+    var bars = this.chart.selectAll('.CDB-ChartBar');
     bars.classed('is-highlighted', false);
     this.trigger('hover', { value: null });
   },
@@ -292,7 +292,7 @@ module.exports = View.extend({
     var freq = data[barIndex].freq;
     var hoverProperties = {};
 
-    var bar = this.chart.select('.Bar:nth-child(' + (barIndex + 1) + ')');
+    var bar = this.chart.select('.CDB-ChartBar:nth-child(' + (barIndex + 1) + ')');
 
     if (bar && bar.node() && !bar.classed('is-selected')) {
 
@@ -319,7 +319,7 @@ module.exports = View.extend({
 
     this.trigger('hover', hoverProperties);
 
-    this.chart.selectAll('.Bar')
+    this.chart.selectAll('.CDB-ChartBar')
     .classed('is-highlighted', false);
 
     if (bar && bar.node()) {
@@ -349,7 +349,7 @@ module.exports = View.extend({
   },
 
   _removeBars: function() {
-    this.chart.selectAll('.Bars').remove();
+    this.chart.selectAll('.CDB-ChartBars').remove();
   },
 
   _removeBrush: function() {
@@ -358,7 +358,7 @@ module.exports = View.extend({
   },
 
   _removeLines: function() {
-    this.chart.select('.Lines').remove();
+    this.chart.select('.CDB-ChartLines').remove();
   },
 
   _removeChartContent: function() {
@@ -386,13 +386,13 @@ module.exports = View.extend({
   },
 
   _generateVerticalLines: function() {
-    var lines = this.chart.select('.Lines');
+    var lines = this.chart.select('.CDB-ChartLines');
 
     lines.append('g')
-    .selectAll('.Line')
+    .selectAll('.CDB-ChartLine')
     .data(this.verticalRange.slice(1, this.verticalRange.length - 1))
     .enter().append('svg:line')
-    .attr('class', 'Line')
+    .attr('class', 'CDB-ChartLine')
     .attr('y1', 0)
     .attr('x1', function(d) { return d; })
     .attr('y2', this.chartHeight())
@@ -401,14 +401,14 @@ module.exports = View.extend({
 
   _generateHorizontalLines: function() {
     var lines = this.chart.append('g')
-    .attr('class', 'Lines');
+    .attr('class', 'CDB-ChartLines');
 
     lines.append('g')
     .attr('class', 'y')
-    .selectAll('.Line')
+    .selectAll('.CDB-ChartLine')
     .data(this.horizontalRange)
     .enter().append('svg:line')
-    .attr('class', 'Line')
+    .attr('class', 'CDB-ChartLine')
     .attr('x1', 0)
     .attr('y1', function(d) { return d; })
     .attr('x2', this.chartWidth())
@@ -416,7 +416,7 @@ module.exports = View.extend({
 
     this.bottomLine = lines
     .append('line')
-    .attr('class', 'Line Line--bottom')
+    .attr('class', 'CDB-ChartLine CDB-ChartLine--bottom')
     .attr('x1', 0)
     .attr('y1', this.chartHeight())
     .attr('x2', this.chartWidth() - 1)
@@ -507,7 +507,7 @@ module.exports = View.extend({
 
     this.model.set({ lo_index: this._getLoBarIndex(), hi_index: this._getHiBarIndex() });
 
-    this.chart.selectAll('.Bar').classed('is-selected', function(d, i) {
+    this.chart.selectAll('.CDB-ChartBar').classed('is-selected', function(d, i) {
       var a = Math.floor(i * self.barWidth);
       var b = Math.floor(a + self.barWidth);
       var LO = Math.floor(self.xScale(lo));
@@ -541,7 +541,7 @@ module.exports = View.extend({
 
   removeSelection: function() {
     this.resetIndexes();
-    this.chart.selectAll('.Bar').classed('is-selected', false);
+    this.chart.selectAll('.CDB-ChartBar').classed('is-selected', false);
     this._removeBrush();
     this._setupBrush();
   },
@@ -597,7 +597,7 @@ module.exports = View.extend({
       self.model.set({ dragging: false });
 
       if (brush.empty()) {
-        self.chart.selectAll('.Bar').classed('is-selected', false);
+        self.chart.selectAll('.CDB-ChartBar').classed('is-selected', false);
         d3.select(this).call(brush.extent([0, 0]));
       } else {
 
@@ -838,13 +838,13 @@ module.exports = View.extend({
     var self = this;
     var data = this.model.get('data');
 
-    var bars = this.chart.selectAll('.Bar')
+    var bars = this.chart.selectAll('.CDB-ChartBar')
     .data(data);
 
     bars
     .enter()
     .append('rect')
-    .attr('class', 'Bar')
+    .attr('class', 'CDB-ChartBar')
     .attr('data', function(d) { return _.isEmpty(d) ? 0 :  d.freq; })
     .attr('transform', function(d, i) {
       return 'translate(' + (i * self.barWidth) + ', 0 )';
@@ -903,14 +903,14 @@ module.exports = View.extend({
 
     var bars = this.chart.append('g')
     .attr('transform', 'translate(0, 0)')
-    .attr('class', 'Bars')
-    .selectAll('.Bar')
+    .attr('class', 'CDB-ChartBars')
+    .selectAll('.CDB-ChartBar')
     .data(data);
 
     bars
     .enter()
     .append('rect')
-    .attr('class', 'Bar')
+    .attr('class', 'CDB-ChartBar')
     .attr('data', function(d) { return _.isEmpty(d) ? 0 :  d.freq; })
     .attr('transform', function(d, i) {
       return 'translate(' + (i * self.barWidth) + ', 0 )';

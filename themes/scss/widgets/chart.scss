@@ -62,40 +62,40 @@
   shape-rendering: crispEdges;
 }
 
-.Bar {
+.CDB-ChartBar {
   fill: #9DE0AD;
   transition: fill 200ms ease;
   shape-rendering: crispEdges;
 }
-.Bar.is-highlighted {
+.CDB-ChartBar.is-highlighted {
   fill: #5BA45E;
   opacity: 1;
 }
-.Bar.is-selected {
+.CDB-ChartBar.is-selected {
   fill: #DDD;
   opacity: 0.7;
 }
 
 .mini {
 
-  .Bar {
+  .CDB-ChartBar {
     fill: #333;
   }
-  .Bar.is-highlighted {
+  .CDB-ChartBar.is-highlighted {
     fill: #333;
   }
-  .Bar.is-selected {
+  .CDB-ChartBar.is-selected {
     fill: #DDD;
   }
 }
 
-.Line {
+.CDB-ChartLine {
   stroke: #EEE;
   stroke-width: 1;
   shape-rendering: crispEdges;
 }
 
-.Line.Line--bottom {
+.CDB-ChartLine.CDB-ChartLine--bottom {
   stroke-width: 1;
   opacity: 0.2;
   stroke: #000;

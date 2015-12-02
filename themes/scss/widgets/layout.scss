@@ -1,29 +1,29 @@
-// Layout styles
+// Widget layout styles
 // ----------------------------------------------
 
 @import '../variables/sizes';
 @import '../variables/mixins';
 
-.Widget-contentSpaced {
+.CDB-Widget-contentSpaced {
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center);
 }
-.Widget-contentSpaced--sideMargins {
+.CDB-Widget-contentSpaced--sideMargins {
   margin-right: $sMargin-section;
   margin-left: $sMargin-section;
 }
-.Widget-contentSpaced--topAligned {
+.CDB-Widget-contentSpaced--topAligned {
   @include align-items(flex-start);
 }
-.Widget-contentSpaced--start {
+.CDB-Widget-contentSpaced--start {
   @include justify-content(flex-start, start);
   text-align: left;
 }
-.Widget-contentFlex {
+.CDB-Widget-contentFlex {
   @include display-flex();
   @include align-items(center);
 }
-.Widget-contentFull {
+.CDB-Widget-contentFull {
   width: 100%;
 }

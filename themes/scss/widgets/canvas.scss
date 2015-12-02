@@ -4,7 +4,7 @@
 @import '../variables/sizes';
 @import '../variables/mixins';
 
-.Widget-canvas {
+.CDB-Widget-canvas {
   position: relative;
   top: 0;
   bottom: 0;
@@ -15,7 +15,7 @@
   border-radius: 4px;
   background: #FFF; // Canvas is out of widget themes
 }
-.Widget-canvasInner {
+.CDB-Widget-canvasInner {
   position: absolute;
   top: 0;
   right: 0;
@@ -25,7 +25,7 @@
   overflow-x: visible;
   border-radius: 4px;
 }
-.Widget-canvasShadow {
+.CDB-Widget-canvasShadow {
   display: none;
   position: absolute;
   right: 0;
@@ -33,34 +33,34 @@
   height: 60px;
   z-index: 1;
 }
-.Widget-canvasShadow--top {
+.CDB-Widget-canvasShadow--top {
   @include background-gradient(#FFF, rgba(255, 255, 255, 0));
   top: 0;
   border-top-left-radius: 4px;
   border-top-right-radius: 4px;
 }
-.Widget-canvasShadow--bottom {
+.CDB-Widget-canvasShadow--bottom {
   @include background-gradient(rgba(255, 255, 255, 0), #FFF);
   bottom: 0;
   border-bottom-left-radius: 4px;
   border-bottom-right-radius: 4px;
 }
-.Widget-canvasShadow.is-visible {
+.CDB-Widget-canvasShadow.is-visible {
   display: block;
 }
-.Widget-canvas .ps-scrollbar-y-rail {
+.CDB-Widget-canvas .ps-scrollbar-y-rail {
   width: 2px !important; // Resetting standard scroll track color
   background: #EEE;
   z-index: 3;
 }
-.Widget-canvas .ps-scrollbar-y {
+.CDB-Widget-canvas .ps-scrollbar-y {
   width: 2px !important; // Resetting standard scroll bar color
   background: #AAA;
 }
 
 // Widget media query
 @include media-query() {
-  .Widget-canvas {
+  .CDB-Widget-canvas {
     @include display-flex();
     @include flex-wrap(nowrap);
     width: calc(100% - 80px);
@@ -73,16 +73,16 @@
     overflow-y: visible;
     border-radius: 0;
   }
-  .LayerWidgets-canvas {
+  .CDB-LayerWidgets-canvas {
     @include display-flex();
     @include flex-wrap(nowrap);
     position: relative;
   }
-  .Widget-canvas .simplebar-content {
+  .CDB-Widget-canvas .simplebar-content {
     @include display-flex();
     @include flex-wrap(nowrap);
   }
-  .Widget-canvasShadow.is-visible {
+  .CDB-Widget-canvasShadow.is-visible {
     display: none;
   }
 }

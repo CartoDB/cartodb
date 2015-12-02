@@ -4,7 +4,7 @@
 @import '../variables/sizes';
 @import '../variables/mixins';
 
-.Widget-loader {
+.CDB-Widget-loader {
   @include css3-prefix(animation, loader-progress 1000ms linear 1);
   @include opacity(0);
   @include transition(opacity, 1000ms);
@@ -15,7 +15,7 @@
   height: 2px;
   z-index: 10;
 }
-.Widget-loader.is-visible {
+.CDB-Widget-loader.is-visible {
   @include css3-prefix(animation, loader-progress 2000ms linear infinite);
   @include opacity(1);
 }

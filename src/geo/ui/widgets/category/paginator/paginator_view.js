@@ -12,7 +12,7 @@ module.exports = View.extend({
     paginator: false
   },
 
-  className: 'Widget-nav Widget-contentSpaced',
+  className: 'CDB-Widget-nav CDB-Widget-contentSpaced',
 
   events: {
     'click .js-searchToggle': '_onSearchClicked',
@@ -74,7 +74,7 @@ module.exports = View.extend({
 
   _scrollToPage: function() {
     var page = this.model.get('page');
-    var pageWidth = this._$target.find('.Widget-listGroup:eq(0)').outerWidth();
+    var pageWidth = this._$target.find('.CDB-Widget-listGroup:eq(0)').outerWidth();
     this._$target.css('margin-left', - (page * pageWidth));
   },
 

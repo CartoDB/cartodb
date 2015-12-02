@@ -16,7 +16,7 @@ var WidgetErrorView = require('./standard/widget_error_view');
  */
 module.exports = View.extend({
 
-  className: 'Widget Widget--light',
+  className: 'CDB-Widget CDB-Widget--light',
 
   options: {
     columns_title: [],

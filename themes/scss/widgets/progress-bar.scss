@@ -3,14 +3,14 @@
 
 @import '../variables/mixins';
 
-.Widget-progressBar {
+.CDB-Widget-progressBar {
   position: relative;
   width: 100%;
   height: 4px;
   margin: 4px 0;
   border-radius: 4px;
 }
-.Widget-progressState {
+.CDB-Widget-progressState {
   // @include css3-prefix(animation, state-progress 600ms ease-out);
   position: absolute;
   top: 0;
@@ -21,7 +21,7 @@
   height: 4px;
   border-radius: 4px;
 }
-.is-disabled .Widget-progressState {
+.is-disabled .CDB-Widget-progressState {
   // @include css3-prefix(animation, state-progress 0 ease-out);
   position: absolute;
   top: 0;
@@ -32,12 +32,12 @@
   border-radius: 4px;
 }
 
-.Widget-progressState--positive {
+.CDB-Widget-progressState--positive {
   left: 0;
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
 }
-.Widget-progressState--negative {
+.CDB-Widget-progressState--negative {
   right: 0;
   left: auto;
   border-top-left-radius: 0;

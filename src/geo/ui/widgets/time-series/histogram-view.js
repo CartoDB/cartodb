@@ -7,7 +7,7 @@ var HistogramChartView = require('../histogram/chart');
  */
 module.exports = View.extend({
 
-  className: 'Widget-content Widget-content--timeSeries',
+  className: 'CDB-Widget-content CDB-Widget-content--timeSeries',
 
   defaults: {
     mobileThreshold: 960, // px; should match CSS media-query

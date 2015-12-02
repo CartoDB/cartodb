@@ -3,7 +3,7 @@
 
 @import '../variables/mixins';
 
-.Widget-error {
+.CDB-Widget-error {
   @include display-flex();
   @include justify-content(center);
   @include align-items(center);
@@ -15,6 +15,6 @@
   border-top: 2px solid transparent;
   z-index: 11;
 }
-.Widget-error.is-hidden {
+.CDB-Widget-error.is-hidden {
   display: none;
 }

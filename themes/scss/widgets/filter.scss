@@ -4,28 +4,28 @@
 @import '../variables/sizes';
 @import '../variables/mixins';
 
-.Widget-filter {
+.CDB-Widget-filter {
   display: block;
   max-height: 200px;
-  margin: 5px 0 8px 0;
+  margin: 5px 0 8px;
   transition: max-height 200ms ease-in;
 }
-.Widget-filter.is-hidden {
+.CDB-Widget-filter.is-hidden {
   max-height: 0;
   transition: max-height 100ms ease-out;
   overflow: hidden;
 }
-.Widget-filterButtons {
+.CDB-Widget-filterButtons {
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center);
 }
-.Widget-filterButton {
+.CDB-Widget-filterButton {
   margin-right: 8px;
   &:last-child {
     margin-right: 0;
   }
 }
-.Widget-filterButton.is-hidden {
+.CDB-Widget-filterButton.is-hidden {
   display: none;
 }

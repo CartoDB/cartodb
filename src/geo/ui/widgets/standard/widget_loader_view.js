@@ -8,7 +8,7 @@ var View = require('cdb/core/view');
  */
 module.exports = View.extend({
 
-  className: 'Widget-loader',
+  className: 'CDB-Widget-loader',
 
   initialize: function() {
     this._initBinds();

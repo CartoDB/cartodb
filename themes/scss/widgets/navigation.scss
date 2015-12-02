@@ -4,33 +4,33 @@
 @import '../variables/sizes';
 @import '../variables/mixins';
 
-.Widget-nav {
+.CDB-Widget-nav {
   width: 100%;
   margin-top: $sMargin-element;
 }
-.Widget-nav.is-hidden {
+.CDB-Widget-nav.is-hidden {
   display: none;
 }
-.Widget-navDots {
+.CDB-Widget-navDots {
   height: 8px;
 }
-.Widget-dot--navigation {
+.CDB-Widget-dot--navigation {
   display: inline-block;
-  vertical-align: top;
   margin: 0 0 0 4px;
+  vertical-align: top;
   &:hover {
     cursor: pointer;
   }
 }
-.Widget-navDotsItem.is-selected {
+.CDB-Widget-navDotsItem.is-selected {
   &:hover {
     cursor: default;
   }
 }
-.Widget-navDotsItem.is-disabled {
+.CDB-Widget-navDotsItem.is-disabled {
   @include opacity(0.5);
 }
-.Widget-navArrows {
+.CDB-Widget-navArrows {
   width: 45px;
   height: 9px;
 }

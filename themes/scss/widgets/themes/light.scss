@@ -18,32 +18,32 @@ $loadingBkg: rgba(#F9F9F9, 1);
 $canvasBkg: rgba(#F2F6F9, 1);
 $commonBkg: rgba(#FFF, 1);
 
-.Widget--light {
+.CDB-Widget--light {
   border-color: $canvasBkg;
   background: $commonBkg;
 
-  .Widget-textBig,
-  .Widget-textNormal,
-  .Widget-textSmall {
+  .CDB-Widget-textBig,
+  .CDB-Widget-textNormal,
+  .CDB-Widget-textSmall {
     color: $primary;
   }
-  .Widget-textBigger {
+  .CDB-Widget-textBigger {
     color: $primary;
   }
-  .Widget-textSmaller {
+  .CDB-Widget-textSmaller {
     color: $secondary;
   }
-  .Widget-textSmaller--dark {
+  .CDB-Widget-textSmaller--dark {
     color: $primary;
   }
-  .Widget-text--secondary {
+  .CDB-Widget-text--secondary {
     color: $secondary;
   }
-  .Widget-textInput {
+  .CDB-Widget-textInput {
     color: $primary;
   }
-  .Widget-link,
-  .Widget-buttonIcon {
+  .CDB-Widget-link,
+  .CDB-Widget-buttonIcon {
     border-color: $link;
     color: $link;
     &:hover {
@@ -51,8 +51,8 @@ $commonBkg: rgba(#FFF, 1);
       color: $linkHover;
     }
   }
-  .Widget-buttonIcon--circle.is-selected,
-  .Widget-buttonIcon--circleBig.is-selected {
+  .CDB-Widget-buttonIcon--circle.is-selected,
+  .CDB-Widget-buttonIcon--circleBig.is-selected {
     background-color: $link;
     color: #FFF;
     &:hover {
@@ -60,62 +60,59 @@ $commonBkg: rgba(#FFF, 1);
       background: $linkHover;
     }
   }
-  .Widget-searchLens {
+  .CDB-Widget-searchLens {
     color: $link;
   }
-  .Widget-progressBar {
+  .CDB-Widget-progressBar {
     background: $elementBkg;
   }
-  .Widget-progressState {
+  .CDB-Widget-progressState {
     background-color: $highlighted;
   }
-  .Widget-progressState--positive {
+  .CDB-Widget-progressState--positive {
     background-color: $positive;
   }
-  .Widget-progressState--negative {
+  .CDB-Widget-progressState--negative {
     background-color: $negative;
   }
-  .Widget-progressState--inactive {
+  .CDB-Widget-progressState--inactive {
     background-color: $elementBkg;
   }
-  .Widget-progressState--pattern {
+  .CDB-Widget-progressState--pattern {
     background-image: repeating-linear-gradient(45deg, transparent 0, rgba($secondary, 0.7) 1px, transparent 2px, transparent 3px);
   }
-  .Widget-dot {
-    background: $highlighted;
-  }
-  .Widget-dot--navigation {
+  .CDB-Widget-dot--navigation {
     background: $elementBkg;
     &:hover {
       background: $elementBkgHover;
     }
   }
-  .Widget-dot--navigation.is-selected {
+  .CDB-Widget-dot--navigation.is-selected {
     background: $secondary;
   }
 
 
-  .Widget-listEdgeBorder {
+  .CDB-Widget-listEdgeBorder {
     background: $elementBorder;
   }
-  .Widget-listEdgeShadow {
+  .CDB-Widget-listEdgeShadow {
     @include background-gradient($commonBkg, rgba($commonBkg, 0));
     background-color: transparent;
   }
-  .Widget-listItemInner--withBorders {
+  .CDB-Widget-listItemInner--withBorders {
     border-bottom: 1px solid $elementBorder;
   }
-  .Widget-listItem--fake {
+  .CDB-Widget-listItem--fake {
     border-color: $loadingBkg;
   }
-  .Widget-listItem--fake:after,
-  .Widget-listItem--fake:before {
+  .CDB-Widget-listItem--fake:after,
+  .CDB-Widget-listItem--fake:before {
     background-color: $loadingBkg;
   }
-  // .Widget-listButton:hover {
+  // .CDB-Widget-listButton:hover {
   //   background: $canvasBkg;
   // }
-  .Widget-listButton--withBorder {
+  .CDB-Widget-listButton--withBorder {
     &:before {
       background: transparent;
     }
@@ -123,40 +120,40 @@ $commonBkg: rgba(#FFF, 1);
       background: $elementBkg;
     }
   }
-  .Widget-listButton--withBorder:hover {
+  .CDB-Widget-listButton--withBorder:hover {
     &:before,
     &:after {
       background: $elementBkg;
     }
   }
-  .Widget-chartItem--fake,
-  .Widget-timeSeriesTimeInfo--fake,
-  .Widget-timeSeriesFakeControl,
-  .Widget-timeSeriesFakeChartItem {
+  .CDB-Widget-chartItem--fake,
+  .CDB-Widget-timeSeriesTimeInfo--fake,
+  .CDB-Widget-timeSeriesFakeControl,
+  .CDB-Widget-timeSeriesFakeChartItem {
     background-color: $loadingBkg;
   }
-  .Widget-timeSeriesPlayIcon {
+  .CDB-Widget-timeSeriesPlayIcon {
     border-left-color: $elementBkg;
   }
-  .Widget-timeSeriesPauseIcon {
+  .CDB-Widget-timeSeriesPauseIcon {
     &:before,
     &:after {
       background-color: $elementBkg;
     }
   }
 
-  .Widget-loader {
+  .CDB-Widget-loader {
     background: $link;
   }
-  .Widget-error {
+  .CDB-Widget-error {
     border-color: $negative;
     background: rgba($canvasBkg, 0.8);
   }
-  .Widget-errorButton {
+  .CDB-Widget-errorButton {
     background: $secondary;
 
-    .Widget-textSmall,
-    .Widget-textSmaller {
+    .CDB-Widget-textSmall,
+    .CDB-Widget-textSmaller {
       color: #FFF;
     }
 
@@ -165,36 +162,38 @@ $commonBkg: rgba(#FFF, 1);
     }
   }
 
-
-  .Widget-threePoints:before,
-  .Widget-threePoints:after {
+  .CDB-Shape-dot {
+    background: $highlighted;
+  }
+  .CDB-Shape-threePoints:before,
+  .CDB-Shape-threePoints:after {
     background-color: $link;
   }
-  .Widget-threePoints:hover {
+  .CDB-Shape-threePoints:hover {
     &:before,
     &:after {
       background-color: $linkHover;
     }
-    .Widget-threePointsItem {
+    .CDB-Shape-threePointsItem {
       background-color: $linkHover;
     }
   }
-  .Widget-threePointsItem {
+  .CDB-Shape-threePointsItem {
     background-color: $link;
   }
 
-  .Widget-arrow:after,
-  .Widget-arrow:before {
+  .CDB-Shape-arrow:after,
+  .CDB-Shape-arrow:before {
     background-color: $link;
   }
-  .Widget-arrow:hover {
+  .CDB-Shape-arrow:hover {
     &:after,
     &:before {
       background-color: $linkHover;
     }
   }
 
-  .Widget-lens {
+  .CDB-Shape-lens {
     &:after {
       border-color: $link;
     }
@@ -202,7 +201,7 @@ $commonBkg: rgba(#FFF, 1);
       background: $link;
     }
   }
-  .Widget-lens:hover {
+  .CDB-Shape-lens:hover {
     &:after {
       border-color: $linkHover;
     }
@@ -211,7 +210,7 @@ $commonBkg: rgba(#FFF, 1);
     }
   }
 
-  .Widget-checkbox {
+  .CDB-Widget-checkbox {
     border-color: $disabled;
 
     &.is-checked {
@@ -221,22 +220,18 @@ $commonBkg: rgba(#FFF, 1);
 
   // States
   .is-disabled {
-    .Widget-textNormal,
-    .Widget-textSmall,
-    .Widget-textSmaller,
-    .Widget-textSmaller--dark {
+    .CDB-Widget-textNormal,
+    .CDB-Widget-textSmall,
+    .CDB-Widget-textSmaller,
+    .CDB-Widget-textSmaller--dark {
       color: $disabled;
     }
-    .Widget-progressState {
+    .CDB-Widget-progressState {
       background-color: $disabled !important; // Preventing problems with inline colors
     }
-    .Widget-progressState--pattern {
+    .CDB-Widget-progressState--pattern {
       background-color: rgba($disabled, 0.3) !important;
       background-image: repeating-linear-gradient(45deg, transparent 0, rgba($secondary, 0.3) 1px, transparent 1px, transparent 2px) !important;
     }
-  }
-
-  .Widget-arrowCircle {
-    background: $link;
   }
 }

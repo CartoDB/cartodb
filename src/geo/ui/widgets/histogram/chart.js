@@ -480,7 +480,7 @@ module.exports = View.extend({
     this.chart = d3.select(this.el)
     .selectAll('.Canvas')
     .append('g')
-    .attr('class', 'Chart')
+    .attr('class', 'CDB-Chart')
     .attr('transform', 'translate(' + margin.left + ', ' + margin.top + ')');
 
     this.chart.classed(this.options.className || '', true);

@@ -129,7 +129,7 @@ var Vis = View.extend({
           });
         },
         customizeWidgetAttrs: function(attrs) {
-          attrs.className += ' Widget--timeSeries';
+          attrs.className += ' CDB-Widget--timeSeries';
           return attrs;
         }
       }, {
@@ -141,7 +141,7 @@ var Vis = View.extend({
           });
         },
         customizeWidgetAttrs: function(attrs) {
-          attrs.className += ' Widget--timeSeries';
+          attrs.className += ' CDB-Widget--timeSeries';
           return attrs;
         }
       }, {

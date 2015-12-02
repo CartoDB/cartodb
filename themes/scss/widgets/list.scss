@@ -4,11 +4,11 @@
 @import '../variables/sizes';
 @import '../variables/mixins';
 
-.Widget-listWrapper {
+.CDB-Widget-listWrapper {
   position: relative;
   // height: 216px;
 }
-.Widget-listEdge {
+.CDB-Widget-listEdge {
   display: block;
   position: absolute;
   right: 0;
@@ -16,7 +16,7 @@
   height: 1px;
   z-index: 2;
 }
-.Widget-listEdgeShadow {
+.CDB-Widget-listEdgeShadow {
   position: absolute;
   right: 0;
   left: 0;
@@ -25,20 +25,20 @@
   z-index: 0;
   pointer-events: none;
 }
-.Widget-listEdgeBorder {
+.CDB-Widget-listEdgeBorder {
   position: absolute;
   right: $sMargin-section;
   left: $sMargin-section;
   height: 1px;
   z-index: 1;
 }
-.Widget-listEdge--top {
+.CDB-Widget-listEdge--top {
   top: 0;
   .Widget-listEdgeShadow {
     top: 0;
   }
 }
-.Widget-listEdge--bottom {
+.CDB-Widget-listEdge--bottom {
   bottom: 0;
   .Widget-listEdgeShadow {
     @include css3-prefix(transform, rotate(180deg));
@@ -46,53 +46,53 @@
   }
 }
 
-.Widget-list {
+.CDB-Widget-list {
   display: block;
   position: relative;
   margin: 0;
   overflow: hidden;
   z-index: 1;
 }
-.Widget-list.is-hidden {
+.CDB-Widget-list.is-hidden {
   display: none;
 }
-.Widget-list--wrapped {
+.CDB-Widget-list--wrapped {
   @include display-flex();
   @include flex-wrap(nowrap);
   @include transition(margin-left, 500ms);
   flex-direction: row;
+  max-height: 232px;
   margin-left: 0;
   overflow: hidden;
-  max-height: 232px;
 }
-.Widget-list--noresults {
+.CDB-Widget-list--noresults {
   @include display-flex();
   @include align-items(center);
   height: 120px;
   padding: 0 24px;
 }
-.Widget-listGroup {
+.CDB-Widget-listGroup {
   @include flex-grow(1);
   min-width: $desktopLayout;
   max-width: $desktopLayout;
 }
-.Widget-listItem {
+.CDB-Widget-listItem {
   display: block;
 }
-.Widget-listItemInner {
+.CDB-Widget-listItemInner {
   margin: 0 $sMargin-section;
   padding: ($sMargin-element / 2) - 1 0;
 }
-.Widget-listItemInner--withBorders {
+.CDB-Widget-listItemInner--withBorders {
   padding: ($sMargin-element / 2) + 1 0;
 }
-.Widget-listItemInner--fullSpace {
+.CDB-Widget-listItemInner--fullSpace {
   @include display-flex();
 }
-.Widget-listItemInner--fullSpace > * {
+.CDB-Widget-listItemInner--fullSpace > * {
   width: 100%;
 }
-.Widget-listItem--fake {
+.CDB-Widget-listItem--fake {
   position: relative;
   height: 40px;
   margin: 8px $sMargin-section;
@@ -115,14 +115,14 @@
     height: 2px;
   }
 }
-.Widget-listSubItem {
+.CDB-Widget-listSubItem {
   display: inline-block;
 }
-.Widget-listDot {
+.CDB-Widget-listDot {
   margin-top: 3px;
   margin-right: 5px;
 }
-.Widget-listButton {
+.CDB-Widget-listButton {
   position: relative;
   width: 100%;
   margin: 0;
@@ -134,7 +134,7 @@
     cursor: pointer;
   }
 }
-.Widget-listButton--withBorder {
+.CDB-Widget-listButton--withBorder {
   padding: 7px $sMargin-section;
   &:before,
   &:after {
@@ -151,7 +151,7 @@
     bottom: 0;
   }
 }
-.Widget-listButton--withBorder:hover {
+.CDB-Widget-listButton--withBorder:hover {
   &:before,
   &:after {
     right: 0;
@@ -159,11 +159,11 @@
   }
 }
 // List within another list :D
-.Widget-inlineList {
+.CDB-Widget-inlineList {
   width: 100%;
   padding: 0;
 }
-.Widget-inlineListItem {
+.CDB-Widget-inlineListItem {
   display: inline-block;
   width: 32%;
   margin: 5px 0 0;
@@ -172,14 +172,14 @@
 
 // Widget media query
 @include media-query() {
-  .Widget-listWrapper {
+  .CDB-Widget-listWrapper {
     overflow-x: hidden;
   }
-  .Widget-listGroup {
+  .CDB-Widget-listGroup {
     min-width: $mobileLayout;
     max-width: $mobileLayout;
   }
-  .Widget-inlineListItem {
+  .CDB-Widget-inlineListItem {
     width: 47%;
   }
 }

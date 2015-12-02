@@ -6,7 +6,7 @@ var Ps = require('perfect-scrollbar');
 
 module.exports = View.extend({
 
-  className: 'Widget-canvas',
+  className: 'CDB-Widget-canvas',
 
   attributes: {
     "data-simplebar-direction": "vertical"
@@ -20,7 +20,8 @@ module.exports = View.extend({
     this._cleanScrollEvent();
     this.clearSubViews();
     this.$el.empty();
-    this.$el.append($('<div>').addClass('Widget-canvasInner'));
+    this._$container = $('<div>').addClass('CDB-Widget-canvasInner');
+    this.$el.append(this._$container);
     this.layers.each(this._renderLayerWidgetsView, this);
     this._renderScroll();
     this._renderShadows();
@@ -35,19 +36,19 @@ module.exports = View.extend({
     });
     var widgets = layer.getWidgets();
     widgets.bind('change:collapsed', this._onWidgetCollapsed, this);
-    this.$('.Widget-canvasInner').append(layerWidgetsView.render().el);
+    this._$container.append(layerWidgetsView.render().el);
     this.addView(layerWidgetsView);
   },
 
   _bindScroll: function() {
-    this.$('.Widget-canvasInner')
+    this._$container
       .on('ps-y-reach-start', _.bind(this._onScrollTop, this))
       .on('ps-y-reach-end', _.bind(this._onScrollBottom, this))
       .on('ps-scroll-y', _.bind(this._onScroll, this));
   },
 
   _renderScroll: function() {
-    Ps.initialize(this.$('.Widget-canvasInner').get(0), {
+    Ps.initialize(this._$container.get(0), {
       wheelSpeed: 2,
       wheelPropagation: true,
       minScrollbarLength: 20
@@ -55,13 +56,13 @@ module.exports = View.extend({
   },
 
   _onWidgetCollapsed: function() {
-    Ps.update(this.$('.Widget-canvasInner').get(0));
+    Ps.update(this._$container.get(0));
   },
 
   _renderShadows: function() {
     var self = this;
-    this.$shadowTop = $('<div>').addClass("Widget-canvasShadow Widget-canvasShadow--top");
-    this.$shadowBottom = $('<div>').addClass("Widget-canvasShadow Widget-canvasShadow--bottom is-visible");
+    this.$shadowTop = $('<div>').addClass("CDB-Widget-canvasShadow CDB-Widget-canvasShadow--top");
+    this.$shadowBottom = $('<div>').addClass("CDB-Widget-canvasShadow CDB-Widget-canvasShadow--bottom is-visible");
     this.$el.append(this.$shadowTop);
     this.$el.append(this.$shadowBottom);
   },
@@ -71,7 +72,7 @@ module.exports = View.extend({
   },
 
   _onScroll: function() {
-    var $el = this.$('.Widget-canvasInner');
+    var $el = this._$container;
     var currentPos = $el.scrollTop();
     var max = $el.get(0).scrollHeight;
     var height = $el.outerHeight();
@@ -85,7 +86,9 @@ module.exports = View.extend({
   },
 
   _cleanScrollEvent: function() {
-    this.$('.Widget-canvasInner').off('ps-scroll-y');
+    if (this._$container) {
+      this._$container.off('ps-scroll-y');
+    }
   },
 
   clean: function() {

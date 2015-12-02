@@ -10,7 +10,7 @@ var TorqueTimeMarkerview = require('./torque-time-marker-view');
  */
 module.exports = View.extend({
 
-  className: 'Widget-content Widget-content--timeSeries',
+  className: 'CDB-Widget-content CDB-Widget-content--timeSeries',
 
   // TODO could be calculated from element styles instead of duplicated numbers here?
   defaults: {

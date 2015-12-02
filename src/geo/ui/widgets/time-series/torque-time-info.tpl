@@ -1,6 +1,6 @@
-<p class="Widget-textBig">
+<p class="CDB-Widget-textBig">
   <%- time %>
 </p>
-<p class="Widget-textBig Widget-text--secondary">
+<p class="CDB-Widget-textBig CDB-Widget-text--secondary">
   <%- date %>
 </p>

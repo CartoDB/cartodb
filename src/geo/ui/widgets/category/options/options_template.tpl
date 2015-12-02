@@ -1,23 +1,23 @@
 <% if (isSearchEnabled) { %>
-  <p class="Widget-textSmaller Widget-textSmaller--bold Widget-textSmaller--dark Widget-textSmaller--upper"><%- totalLocked %> selected</p>
+  <p class="CDB-Widget-textSmaller CDB-Widget-textSmaller--bold CDB-Widget-textSmaller--dark CDB-Widget-textSmaller--upper"><%- totalLocked %> selected</p>
 <% } else { %>
-  <p class="Widget-textSmaller Widget-textSmaller--bold Widget-textSmaller--dark Widget-textSmaller--upper">
+  <p class="CDB-Widget-textSmaller CDB-Widget-textSmaller--bold CDB-Widget-textSmaller--dark CDB-Widget-textSmaller--upper">
     <% if (isLocked) { %>
-      <%- totalCats %> blocked <button class="Widget-link u-lSpace js-unlock">unlock</button>
+      <%- totalCats %> blocked <button class="CDB-Widget-link u-lSpace js-unlock">unlock</button>
     <% } else { %>
       <%- rejectedCats === 0 && acceptedCats === 0 || acceptedCats >= totalCats ? "All selected" : acceptedCats + " selected" %>
       <% if (canBeLocked) { %>
-        <button class="Widget-link u-lSpace js-lock">lock</button>
+        <button class="CDB-Widget-link u-lSpace js-lock">lock</button>
       <% }%>
     <% }%>
   </p>
   <% if (!isLocked) { %>
-    <div class="Widget-filterButtons">
+    <div class="CDB-Widget-filterButtons">
       <% if (rejectedCats > 0 || acceptedCats > 0 || isAllRejected) { %>
-        <button class="Widget-link Widget-filterButton js-all">all</button>
+        <button class="CDB-Widget-link CDB-Widget-filterButton js-all">all</button>
       <% } %>
       <% if (totalCats > rejectedCats && !isAllRejected) { %>
-        <button class="Widget-link Widget-filterButton js-none">none</button>
+        <button class="CDB-Widget-link CDB-Widget-filterButton js-none">none</button>
       <% } %>
     </div>
   <% } %>

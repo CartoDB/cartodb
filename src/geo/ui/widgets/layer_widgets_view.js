@@ -2,7 +2,7 @@ var View = require('cdb/core/view');
 
 module.exports = View.extend({
 
-  className: 'LayerWidgets-canvas',
+  className: 'CDB-LayerWidgets-canvas',
 
   initialize: function() {
     this.model.bind('change:visible', this.toggle, this);

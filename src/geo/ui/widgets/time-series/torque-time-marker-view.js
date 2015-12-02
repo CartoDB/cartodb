@@ -42,7 +42,7 @@ module.exports = View.extend({
         .on('dragend', this._onDragEnd.bind(this));
 
       this.timeMarker = this._chartView.canvas.append('rect')
-        .attr('class', 'TimeMarker')
+        .attr('class', 'CDB-TimeMarker')
         .attr('width', this.defaults.width)
         .attr('height', this._calcHeight())
         .attr('rx', 3)

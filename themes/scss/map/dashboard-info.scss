@@ -136,11 +136,11 @@
   vertical-align: middle;
 }
 
-.CDB-Dashboard-info-footer-item {
+.CDB-Dashboard-infoFooterItem {
   margin-top: 20px;
 }
 
-.CDB-Dashboard-info-snapshots {
+.CDB-Dashboard-infoSnapshots {
   @include transition(opacity, 0.3s, ease-out);
   position: relative;
   width: 280px;
@@ -153,14 +153,14 @@
   box-sizing: border-box;
 }
 
-.CDB-Dashboard-info-snapshots-list {
+.CDB-Dashboard-infoSnapshotsList {
   display: flex;
   position: absolute;
   flex-flow: row wrap;
   width: 1000px;
 }
 
-.CDB-Dashboard-info-snapshots-list-item {
+.CDB-Dashboard-infoSnapshotsListItem {
   width: 96px;
   height: 72px;
   margin-right: 8px;
@@ -170,14 +170,14 @@
   box-sizing: border-box;
 }
 
-.CDB-Dashboard-info-snapshots-list-title {
+.CDB-Dashboard-infoSnapshotsListTitle {
   margin-bottom: 8px;
   font-size: $sFontSize-smaller;
   font-weight: $sFontWeight-semibold;
   line-height: $sLineHeight-smaller;
 }
 
-.CDB-Dashboard-info-snapshots-list-date {
+.CDB-Dashboard-infoSnapshotsListDate {
   color: #636D72;
   font-size: $sFontSize-smaller;
   font-weight: $sFontWeight-lighter;
@@ -191,27 +191,27 @@
     max-width: 100%;
     height: 48px;
   }
-  .CDB-Dashboard-info-header {
+  .CDB-Dashboard-infoHeader {
     position: absolute;
     top: 8px;
     left: 8px;
   }
-  .CDB-Dashboard-info-logo {
+  .CDB-Dashboard-infoLogo {
     width: 32px;
     height: 32px;
     line-height: 32px;
   }
-  .CDB-Dashboard-info-footer {
+  .CDB-Dashboard-infoFooter {
     top: 8px;
     right: 8px;
     bottom: auto;
     left: auto;
     width: 32px;
   }
-  .CDB-Dashboard-info-footer-item {
+  .CDB-Dashboard-infoFooterItem {
     margin-top: 0;
   }
-  .CDB-Dashboard-info-media {
+  .CDB-Dashboard-infoMedia {
     width: 32px;
     margin: 0;
   }

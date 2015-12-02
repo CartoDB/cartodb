@@ -153,9 +153,6 @@ var Infowindow = View.extend({
           });
       }, 1);
 
-      // If the infowindow is loading, show spin
-      this._checkLoading();
-
       // If the template is 'cover-enabled', load the cover
       this._loadCover();
 

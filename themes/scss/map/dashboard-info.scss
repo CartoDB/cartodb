@@ -43,12 +43,12 @@
 }
 .Dashboard-info {
   @include transition(width, 0.25s, cubic-bezier(0.01, 0.99, 0.97, 1.01));
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
+  bottom: 0;
   width: 88px;
   max-width: 352px;
-  height: 100vh;
   padding: 24px;  
   background: #3AA9E3;
   font-family: 'Open Sans';

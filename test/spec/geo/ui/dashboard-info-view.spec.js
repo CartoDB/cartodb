@@ -19,9 +19,9 @@ describe('cdb/geo/ui/dashboard-info-view', function() {
   });
 
   it('should render properly', function() {
-    expect(this.view.$el.find('.Dashboard-info-title').text()).toEqual('Mapaza');
-    expect(this.view.$el.find('.Dashboard-info-description').text()).toEqual('Lorem ipsum...');
-    expect(this.view.$el.find('.Dashboard-info-update').text()).toEqual('UPDATED a day ago');
+    expect(this.view.$el.find('.CDB-Dashboard-info-title').text()).toEqual('Mapaza');
+    expect(this.view.$el.find('.CDB-Dashboard-info-description').text()).toEqual('Lorem ipsum...');
+    expect(this.view.$el.find('.CDB-Dashboard-info-update').text()).toEqual('UPDATED a day ago');
   });
 
   it('should collapse the view', function() {

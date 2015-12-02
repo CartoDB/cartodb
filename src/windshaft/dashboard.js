@@ -58,8 +58,8 @@ WindshaftDashboard.prototype._createInstance = function(options) {
 
       // update other kind of layers too
       this.layers.each(function(layer, layerIndex) {
-        layer.set('meta', dashboardInstance.getLayerMeta(layerIndex));
         if (layer.get('type') === 'torque') {
+          layer.set('meta', dashboardInstance.getLayerMeta(layerIndex));
           layer.set('urls', dashboardInstance.getTiles('torque'));
         }
       });

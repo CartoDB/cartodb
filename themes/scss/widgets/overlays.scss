@@ -21,7 +21,7 @@
   left: 16px;
 }
 
-.CDB-ZoomAction {
+.CDB-Zoom-action {
   display: inline-block;
   position: relative;
   width: 32px;
@@ -54,7 +54,7 @@
   }
 }
 
-.CDB-ZoomAction--out:before {
+.CDB-Zoom-action--out:before {
   position: absolute;
   left: 50%;
   width: 11px;
@@ -64,7 +64,7 @@
   content: '';
 }
 
-.CDB-ZoomAction--in {
+.CDB-Zoom-action--in {
   &:before {
     position: absolute;
     left: 50%;
@@ -84,7 +84,7 @@
   }
 }
 
-.CDB-ZoomInfo {
+.CDB-Zoom-info {
   position: absolute;
   top: -24px;
   right: 0;

@@ -8,7 +8,6 @@ var _console;
 var FakeConsole = function() {};
 FakeConsole.prototype.error = function(){};
 FakeConsole.prototype.log = function(){};
-FakeConsole.prototype.warn = function(){};
 
 //IE7 love
 if (typeof console !== "undefined") {
@@ -39,10 +38,6 @@ var Log = Backbone.Model.extend({
 
   info: function() {
     _console.log.apply(_console, arguments);
-  },
-
-  warn: function() {
-    _console.warn.apply(_console, arguments)
   },
 
   debug: function() {

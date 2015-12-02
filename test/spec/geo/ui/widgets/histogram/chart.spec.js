@@ -41,7 +41,7 @@ describe('geo/ui/widgets/histogram/chart', function() {
     this.view = new WidgetHistogramChart(({
       el: $('.js-chart'),
       margin: this.margin,
-      handles: true,
+      hasHandles: true,
       height: 100,
       data: this.data,
       xAxisTickFormat: function(d, i) {

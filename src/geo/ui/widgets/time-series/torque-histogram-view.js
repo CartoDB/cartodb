@@ -51,7 +51,7 @@ module.exports = View.extend({
         bottom: 4,
         left: 4
       },
-      handles: true,
+      hasHandles: true,
       height: this.defaults.histogramChartHeight,
       data: this.model.getData()
     });

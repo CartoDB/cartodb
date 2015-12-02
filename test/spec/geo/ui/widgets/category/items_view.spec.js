@@ -25,16 +25,16 @@ describe('widgets/category/items_view', function() {
       this.model.setCategories([]);
       this.view.render();
       expect(this.view._renderPlaceholder).toHaveBeenCalled();
-      expect(this.view.$el.hasClass('Widget-list--withBorders')).toBeTruthy();
-      expect(this.view.$el.hasClass('Widget-list--wrapped')).toBeFalsy();
+      expect(this.view.$el.hasClass('CDB-Widget-list--withBorders')).toBeTruthy();
+      expect(this.view.$el.hasClass('CDB-Widget-list--wrapped')).toBeFalsy();
     });
 
     it('should render properly a list of categories', function() {
       this.model.setCategories([{ name: 'Hey' }, { name: 'test' }]);
       this.view.render();
-      expect(this.view.$('.Widget-listGroup').length).toBe(1);
-      expect(this.view.$('.Widget-listItem').length).toBe(2);
-      expect(this.view.$el.hasClass('Widget-list--withBorders')).toBeFalsy();
+      expect(this.view.$('.CDB-Widget-listGroup').length).toBe(1);
+      expect(this.view.$('.CDB-Widget-listItem').length).toBe(2);
+      expect(this.view.$el.hasClass('CDB-Widget-list--withBorders')).toBeFalsy();
     });
 
   });

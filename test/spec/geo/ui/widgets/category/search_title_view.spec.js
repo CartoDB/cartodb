@@ -21,9 +21,9 @@ describe('widgets/category/search_title_view', function() {
   it('should render properly', function() {
     this.view.render();
     var $el = this.view.$el;
-    expect($el.find('.Widget-title').length).toBe(1);
-    expect($el.find('.Widget-options').length).toBe(1);
-    expect($el.find('.Widget-textBig').length).toBe(1);
+    expect($el.find('.CDB-Widget-title').length).toBe(1);
+    expect($el.find('.CDB-Widget-options').length).toBe(1);
+    expect($el.find('.CDB-Widget-textBig').length).toBe(1);
   });
 
   describe('binds', function() {
@@ -48,10 +48,10 @@ describe('widgets/category/search_title_view', function() {
     });
 
     it('should render search form properly', function() {
-      expect(this.view.$('.Widget-search').length).toBe(1);
-      expect(this.view.$('.Widget-searchLens').length).toBe(1);
-      expect(this.view.$('.Widget-textInput').length).toBe(1);
-      expect(this.view.$('.Widget-searchApply').length).toBe(0);
+      expect(this.view.$('.CDB-Widget-search').length).toBe(1);
+      expect(this.view.$('.CDB-Widget-searchLens').length).toBe(1);
+      expect(this.view.$('.CDB-Widget-textInput').length).toBe(1);
+      expect(this.view.$('.CDB-Widget-searchApply').length).toBe(0);
     });
 
     it('should trigger search when text input changes', function() {
@@ -78,7 +78,7 @@ describe('widgets/category/search_title_view', function() {
 
     it('should show apply button when there is any change to apply', function() {
       this.model.acceptFilters('test');
-      expect(this.view.$('.Widget-searchApply').length).toBe(1);
+      expect(this.view.$('.CDB-Widget-searchApply').length).toBe(1);
     });
 
     it('should apply locked categories when apply button is clicked', function() {

@@ -19,7 +19,7 @@ describe('geo/ui/widgets/standard/widget_loader_view', function() {
 
   it('should have render correctly', function() {
     this.view.render();
-    expect(this.view.$el.hasClass('Widget-loader')).toBeTruthy();
+    expect(this.view.$el.hasClass('CDB-Widget-loader')).toBeTruthy();
   });
 
   it('should have a binds from the beginning', function() {

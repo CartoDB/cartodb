@@ -40,7 +40,7 @@ describe('geo/ui/widgets/time-series/torque-content-view', function() {
     });
 
     it('should render a time marker', function() {
-      expect(this.view.$('.TimeMarker').length).toEqual(1);
+      expect(this.view.$('.CDB-TimeMarker').length).toEqual(1);
     });
   });
 });

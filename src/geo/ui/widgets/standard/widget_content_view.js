@@ -23,7 +23,7 @@ module.exports = View.extend({
     var data = this.model.getData();
     var isDataEmpty = _.isEmpty(data) || _.size(data) === 0;
     this.$el.html(
-      template({
+      contentTemplate({
         title: this.model.get('title'),
         itemsCount: !isDataEmpty ? data.length : '-'
       })

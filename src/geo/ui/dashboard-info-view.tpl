@@ -36,13 +36,13 @@
  -->  <ul>
     <!--<li class="Dashboard-info-footer-item">
       <div class="Dashboard-info-media">
-        <img src="/themes/img/icon-save.svg" alt="Save" />
+        <img src="themes/img/icon-save.svg" alt="Save" />
       </div>
       <p class="Dashboard-info-footer-txt">Save snapshot</p>
     </li>
     <li class="Dashboard-info-footer-item">
       <div class="Dashboard-info-media">
-        <img src="/themes/img/icon-share.svg" alt="share" />
+        <img src="themes/img/icon-share.svg" alt="share" />
       </div>
       <p class="Dashboard-info-footer-txt">Share view</p>
     </li>-->

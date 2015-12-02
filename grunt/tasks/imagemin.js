@@ -24,7 +24,7 @@ module.exports = {
         files: [{
           expand: true,
           cwd: 'themes/img',
-          src: [ '**/*.{png,jpg,gif}' ],
+          src: [ '**/*.{png,jpg,gif,svg}' ],
           dest: '<%= config.dist %>/themes/img'
         }]
       }

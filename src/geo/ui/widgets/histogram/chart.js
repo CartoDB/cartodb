@@ -134,7 +134,7 @@ module.exports = View.extend({
     var textLabel = this.chart.select('.AxisTip-text.AxisTip-' + className);
     var axisTip  = this.chart.select('.AxisTip.AxisTip-' + className);
     var rectLabel = this.chart.select('.AxisTip-rect.AxisTip-' + className);
-    var handle    = this.chart.select('.Handle.Handle-' + className);
+    var handle    = this.chart.select('.CDB-ChartHandle.CDB-ChartHandle-' + className);
 
     textLabel.data([this.model.get(className + '_axis_tip')]).text(function(d) {
       return formatter.formatNumber(d);
@@ -341,7 +341,7 @@ module.exports = View.extend({
     this._generateAxis();
     this._updateChart();
 
-    this.chart.select('.Handles').moveToFront();
+    this.chart.select('.CDB-ChartHandles').moveToFront();
     this.chart.select('.Brush').moveToFront();
   },
 
@@ -671,10 +671,10 @@ module.exports = View.extend({
     var leftX  = this.xScale(loExtent) - this.options.handleWidth / 2;
     var rightX = this.xScale(hiExtent) - this.options.handleWidth / 2;
 
-    this.chart.select('.Handle-left')
+    this.chart.select('.CDB-ChartHandle-left')
     .attr('transform', 'translate(' + leftX + ', 0)');
 
-    this.chart.select('.Handle-right')
+    this.chart.select('.CDB-ChartHandle-right')
     .attr('transform', 'translate(' + rightX + ', 0)');
 
     if (this.options.hasAxisTip) {
@@ -687,7 +687,7 @@ module.exports = View.extend({
 
   _generateAxisTip: function(className) {
 
-    var handle = this.chart.select('.Handle.Handle-' + className);
+    var handle = this.chart.select('.CDB-ChartHandle.CDB-ChartHandle-' + className);
 
     var axisTip = handle.selectAll("g")
     .data([''])
@@ -711,9 +711,9 @@ module.exports = View.extend({
     var opts = { width: this.options.handleWidth, height: this.options.handleHeight, radius: this.options.handleRadius };
     var yPos = (this.chartHeight() / 2) - (this.options.handleHeight / 2);
 
-    var handle = this.chart.select('.Handles')
+    var handle = this.chart.select('.CDB-ChartHandles')
     .append('g')
-    .attr('class', 'Handle Handle-' + className);
+    .attr('class', 'CDB-ChartHandle CDB-ChartHandle-' + className);
 
     if (this.options.hasAxisTip) {
       this._generateAxisTip(className);
@@ -721,7 +721,7 @@ module.exports = View.extend({
 
     handle
     .append('line')
-    .attr('class', 'HandleLine')
+    .attr('class', 'CDB-ChartHandleLine')
     .attr('x1', 3)
     .attr('y1', -4)
     .attr('x2', 3)
@@ -730,7 +730,7 @@ module.exports = View.extend({
     if (this.options.hasHandles) {
       handle
       .append('rect')
-      .attr('class', 'HandleRect')
+      .attr('class', 'CDB-ChartHandleRect')
       .attr('transform', 'translate(0, ' + yPos + ')')
       .attr('width', opts.width)
       .attr('height', opts.height)
@@ -742,7 +742,7 @@ module.exports = View.extend({
       for (var i = 0; i < 3; i++) {
         handle
         .append('line')
-        .attr('class', 'HandleGrip')
+        .attr('class', 'CDB-ChartHandleGrip')
         .attr('x1', 2)
         .attr('y1', y + i*3)
         .attr('x2', 4)
@@ -754,14 +754,14 @@ module.exports = View.extend({
   },
 
   _generateHandles: function() {
-    this.chart.append('g').attr('class', 'Handles');
+    this.chart.append('g').attr('class', 'CDB-ChartHandles');
     this.leftHandle  = this._generateHandle('left');
     this.rightHandle = this._generateHandle('right');
   },
 
   _generateHandleLine: function() {
-    return this.chart.select('.Handles').append('line')
-    .attr('class', 'HandleLine')
+    return this.chart.select('.CDB-ChartHandles').append('line')
+    .attr('class', 'CDB-ChartHandleLine')
     .attr('x1', 0)
     .attr('y1', 0)
     .attr('x2', 0)
@@ -769,7 +769,7 @@ module.exports = View.extend({
   },
 
   _removeHandles: function() {
-    this.chart.select('.Handles').remove();
+    this.chart.select('.CDB-ChartHandles').remove();
   },
 
   _removeAxis: function() {

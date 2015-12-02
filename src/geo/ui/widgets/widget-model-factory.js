@@ -1,5 +1,4 @@
 var _ = require('underscore');
-var log = require('cdb.log');
 
 var WidgetModelFactory = function (types) {
   types = types || {};
@@ -16,13 +15,15 @@ WidgetModelFactory.prototype.addType = function (type, createModel) {
   this.types[type] = createModel;
 };
 
-WidgetModelFactory.prototype.createModel = function (attrs, layerIndex) {
+WidgetModelFactory.prototype.createModel = function (layer, layerIndex, attrs) {
   if (!attrs.id) throw new Error('attrs.id is required');
-  if (!attrs.layerId) log.warn('layerId is not set for widget ' + attrs.id);
 
   var createModel = this.types[attrs.type];
   if (createModel) {
-    return createModel(attrs, layerIndex);
+    var opts = {
+      layer: layer
+    };
+    return createModel(attrs, opts, layerIndex);
   } else {
     throw new Error('no model found for arguments ' + arguments);
   }

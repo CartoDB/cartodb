@@ -1,7 +1,6 @@
 var _ = require('underscore');
 var log = require('cdb.log');
 var MapLayer = require('./map-layer');
-var WidgetsCollection = require('../ui/widgets/widgets_collection');
 
 /**
  * Model for a Torque Layer
@@ -22,12 +21,6 @@ var TorqueLayer = MapLayer.extend({
   },
 
   initialize: function() {
-    this.widgets = new WidgetsCollection([]);
-
-    this.widgets.bind('change:filter', function(widget, filter) {
-      this.trigger('change:filter', this, widget, filter);
-    }, this);
-
     MapLayer.prototype.initialize.apply(this, arguments);
   },
 
@@ -139,16 +132,6 @@ var TorqueLayer = MapLayer.extend({
 
   hasInteraction: function() {
     return this.getInteractiveColumnNames() > 0;
-  },
-
-  getFilters: function() {
-    return this.widgets.map(function(widget) {
-      return widget.getFilter();
-    });
-  },
-
-  getWidgets: function() {
-    return this.widgets;
   },
 
   fetchAttributes: function(layer, featureID, callback) {

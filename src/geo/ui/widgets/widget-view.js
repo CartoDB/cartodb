@@ -3,16 +3,8 @@ var WidgetLoaderView = require('./standard/widget_loader_view');
 var WidgetErrorView = require('./standard/widget_error_view');
 
 /**
- *  Default widget view:
- *
- *  It contains:
- *  - view model (viewModel)
- *  - data model (dataModel)
- *
- *  It will offet to the user:
- *  - get current data (getData)
- *  - Sync or unsync widget (sync/unsync), making the proper view
- *  listen or not changes from the current datasource.
+ * Default widget view
+ * The model is a expected to be widget model
  */
 module.exports = View.extend({
 
@@ -21,6 +13,10 @@ module.exports = View.extend({
   options: {
     columns_title: [],
     sync: true
+  },
+
+  initialize: function() {
+    this.model.layer.bind('change:visible', this._onChangeLayerVisible, this);
   },
 
   render: function() {
@@ -33,9 +29,6 @@ module.exports = View.extend({
     this._error = new WidgetErrorView({
       model: this.model
     });
-    this._error.bind('refreshData', function() {
-      console.log("refresh data man!");
-    }, this);
     this.$el.append(this._error.render().el);
     this.addView(this._error);
 
@@ -44,5 +37,10 @@ module.exports = View.extend({
     this.addView(contentView);
 
     return this;
+  },
+
+  _onChangeLayerVisible: function(layer) {
+    // !! to force a boolean value, so only a true value actually shows the view
+    this.$el.toggle(!!layer.get('visible'));
   }
 });

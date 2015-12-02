@@ -1,19 +1,62 @@
-var View = require('cdb/core/view');
 var _ = require('underscore');
 var $ = require('jquery');
-var LayerWidgetsView = require('cdb/geo/ui/widgets/layer_widgets_view');
 var Ps = require('perfect-scrollbar');
+var View = require('cdb/core/view');
+var Model = require('cdb/core/model');
+var CategoryContentView = require('cdb/geo/ui/widgets/category/content_view');
+var FormulaContentView = require('cdb/geo/ui/widgets/formula/content_view');
+var HistogramContentView = require('cdb/geo/ui/widgets/histogram/content-view');
+var ListContentView = require('cdb/geo/ui/widgets/list/content_view');
+var WidgetViewFactory = require('cdb/geo/ui/widgets/widget-view-factory');
 
 module.exports = View.extend({
 
   className: 'Widget-canvas',
 
-  attributes: {
-    "data-simplebar-direction": "vertical"
-  },
-
   initialize: function(options) {
-    this.layers = options.layers;
+    this._widgetViewFactory = new WidgetViewFactory([
+      {
+        type: 'formula',
+        createContentView: function(m) {
+          return new FormulaContentView({
+            model: m
+          });
+        }
+      }, {
+        type: 'list',
+        createContentView: function(m) {
+          return new ListContentView({
+            model: m
+          });
+        }
+      }, {
+        match: function(m) {
+          return m.get('type') === 'histogram' && m.layer.get('type') !== 'torque';
+        },
+        createContentView: function(m) {
+          return new HistogramContentView({
+            dataModel: m,
+            viewModel: new Model(),
+            filter: m.filter
+          });
+        }
+      }, {
+        type: 'aggregation',
+        createContentView: function(m) {
+          return new CategoryContentView({
+            model: m,
+            filter: m.filter
+          });
+        }
+      }
+    ]);
+
+    this._widgets = options.widgets;
+
+    this._widgets.bind('add', this._maybeRenderWidgetView, this);
+    this._widgets.bind('reset', this.render, this);
+    this._widgets.bind('change:collapsed', this._onWidgetCollapsed, this);
+    this.add_related_model(this._widgets);
   },
 
   render: function() {
@@ -21,22 +64,19 @@ module.exports = View.extend({
     this.clearSubViews();
     this.$el.empty();
     this.$el.append($('<div>').addClass('Widget-canvasInner'));
-    this.layers.each(this._renderLayerWidgetsView, this);
+    this._widgets.each(this._maybeRenderWidgetView, this);
     this._renderScroll();
     this._renderShadows();
     this._bindScroll();
     return this;
   },
 
-  _renderLayerWidgetsView: function(layer) {
-    var layerWidgetsView = new LayerWidgetsView({
-      widgetViewFactory: this.options.widgetViewFactory,
-      model: layer
-    });
-    var widgets = layer.getWidgets();
-    widgets.bind('change:collapsed', this._onWidgetCollapsed, this);
-    this.$('.Widget-canvasInner').append(layerWidgetsView.render().el);
-    this.addView(layerWidgetsView);
+  _maybeRenderWidgetView: function(widgetModel) {
+    var view = this._widgetViewFactory.createWidgetView(widgetModel);
+    if (view) {
+      this.addView(view);
+      this.$('.Widget-canvasInner').append(view.render().el);
+    }
   },
 
   _bindScroll: function() {

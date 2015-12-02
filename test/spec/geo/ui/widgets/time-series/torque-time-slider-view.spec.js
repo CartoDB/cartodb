@@ -1,10 +1,9 @@
 var HistogramModel = require('cdb/geo/ui/widgets/histogram/model');
 var HistogramChartView = require('cdb/geo/ui/widgets/histogram/chart');
-var Model = require('cdb/core/model');
 var TorqueLayerModel = require('cdb/geo/map/torque-layer');
-var TorqueTimeMarkerView = require('cdb/geo/ui/widgets/time-series/torque-time-marker-view');
+var TorqueTimeSliderView = require('cdb/geo/ui/widgets/time-series/torque-time-slider-view');
 
-describe('geo/ui/widgets/time-series/torque-time-marker-view', function() {
+describe('geo/ui/widgets/time-series/torque-time-slider-view', function() {
   beforeEach(function() {
     this.model = new HistogramModel({
       bins: 256
@@ -32,7 +31,7 @@ describe('geo/ui/widgets/time-series/torque-time-marker-view', function() {
     this.chartView.render();
     this.chartView.model.set('width', 400);
 
-    this.view = new TorqueTimeMarkerView({
+    this.view = new TorqueTimeSliderView({
       model: this.model,
       torqueLayerModel: this.torqueLayerModel,
       chartView: this.chartView
@@ -45,27 +44,27 @@ describe('geo/ui/widgets/time-series/torque-time-marker-view', function() {
   });
 
   describe('when step changes', function() {
-    describe('when is not dragging the marker', function() {
+    describe('when is not dragging the slider', function() {
       beforeEach(function() {
-        spyOn(this.view.timeMarker, 'data').and.callThrough();
+        spyOn(this.view.timeSlider, 'data').and.callThrough();
         this.torqueLayerModel.set('step', 40);
       });
 
-      it('should move the time-marker', function() {
-        expect(this.view.timeMarker.data).toHaveBeenCalled();
-        expect(this.view.timeMarker.data.calls.argsFor(1)[0]).toEqual([{ x: 62.5, y: 0 }]);
+      it('should move the time-slider', function() {
+        expect(this.view.timeSlider.data).toHaveBeenCalled();
+        expect(this.view.timeSlider.data.calls.argsFor(1)[0]).toEqual([{ x: 62.5, y: 0 }]);
       });
     });
 
-    describe('when is dragging the marker', function() {
+    describe('when is dragging the slider', function() {
       beforeEach(function() {
-        spyOn(this.view.timeMarker, 'data').and.callThrough();
+        spyOn(this.view.timeSlider, 'data').and.callThrough();
         this.view.viewModel.set('isDragging', true);
         this.torqueLayerModel.set('step', 40);
       });
 
       it('should not change anything', function() {
-        expect(this.view.timeMarker.data).not.toHaveBeenCalled();
+        expect(this.view.timeSlider.data).not.toHaveBeenCalled();
       });
     });
   });

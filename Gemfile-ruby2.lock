@@ -181,7 +181,7 @@ GEM
     oauth (0.4.5)
     oauth-plugin (0.4.0.pre4)
       oauth (>= 0.4.4)
-    pg (0.13.2)
+    pg (0.15.0)
     poltergeist (1.0.3)
       capybara (~> 1.1)
       childprocess (~> 0.3)
@@ -364,7 +364,7 @@ DEPENDENCIES
   nokogiri (~> 1.6.6.2)
   oauth (= 0.4.5)
   oauth-plugin (= 0.4.0.pre4)
-  pg (= 0.13.2)
+  pg (= 0.15.0)
   poltergeist (>= 1.0.0)
   rack
   rack-test (= 0.6.2)

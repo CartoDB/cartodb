@@ -1,7 +1,3 @@
-body {
-  font-family: 'Lato';
-}
-
 .start {
   padding: 80px 0;
 }
@@ -33,9 +29,6 @@ body {
   padding-bottom: 10px;
   background: #e5e5e5;
 }
-hr {
-  margin: 80px 0;
-}
 .copy-box {
   cursor: pointer;
 }
@@ -58,17 +51,7 @@ hr {
   margin-bottom: 40px;
 }
 
-pre.zeroclipboard-is-hover {
-  background: #f8f8f8;
-}
-section > div > h2 {
-  font-weight: bold;
-  font-size: 20px;
-}
-
-
 /** BUTTONS **/
-
 .button {
   text-transform: uppercase;
   font: 700 12px 'Lato';
@@ -215,117 +198,6 @@ section > div > h2 {
   right: 0;
   top: 0;
   z-index: 100;
-}
-/** FORMS **/
-
-*:focus {
-  outline: none;
-}
-
-input[type=radio],
-select {
-  cursor: pointer;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-}
-
-input[type="radio"] {
-  width: 20px;
-  height: 20px;
-  border: 2px solid #ddd;
-  border-radius: 50%;
-  position: relative;
-}
-
-input[type="radio"]:checked:before {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  margin-top: -5px;
-  margin-left: -5px;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: #189BDB;
-}
-
-input[type=checkbox] {
-  cursor: pointer;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-}
-
-input[type="checkbox"].checkbox {
-  width: 20px;
-  height: 20px;
-  border: 2px solid #ddd;
-  border-radius: 3px;
-  position: relative;
-}
-
-input[type=checkbox]:checked.checkbox:after {
-  content: '\2713';
-  position: absolute;
-  color: #0090D7;
-  text-align: center;
-  line-height: 18px;
-  font-size: 14px;
-  left: 0;
-  right: 0;
-}
-
-input[type=checkbox].toogle {
-  border: 0;
-  box-shadow: inset 0 1px 0 rgba(0, 0, 0, .1);
-  background: #ddd;
-  border-radius: 50px;
-  width: 36px;
-  height: 20px;
-  position: relative;
-}
-
-input[type=checkbox].toogle:before {
-  content: "";
-  top: 4px;
-  left: 4px;
-  position: absolute;
-  width: 12px;
-  height: 12px;
-  background: #fff;
-  border-radius: 50%;
-  position: absolute;
-  box-shadow: 0 1px 0 rgba(0, 0, 0, .1);
-}
-
-input[type=checkbox]:checked.toogle {
-  background: #8FB83F;
-}
-
-input[type=checkbox]:checked.toogle:before {
-  left: auto;
-  right: 4px;
-}
-
-input[type=text] {
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font: 300 13px 'Lato';
-  color: #666;
-  padding: 11px 13px;
-  display: block;
-  width: 100%;
-}
-
-input[type=text]:placeholder {
-  color: #ccc;
-}
-
-label {
-  font: 300 13px 'Lato';
-  color: #666;
 }
 
 .InputDecoration input[type=text] {
@@ -1277,152 +1149,7 @@ label {
   background: #000;
   height: 1px;
 }
-link {
-  display: block;
-}
 
-html,
-body,
-div,
-span,
-applet,
-object,
-iframe,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-p,
-blockquote,
-a,
-abbr,
-acronym,
-address,
-big,
-cite,
-del,
-dfn,
-em,
-img,
-ins,
-kbd,
-q,
-s,
-samp,
-small,
-strike,
-strong,
-sub,
-sup,
-tt,
-var,
-b,
-u,
-i,
-center,
-dl,
-dt,
-dd,
-ol,
-ul,
-li,
-fieldset,
-form,
-label,
-legend,
-table,
-caption,
-tbody,
-tfoot,
-thead,
-tr,
-th,
-td,
-article,
-aside,
-canvas,
-details,
-embed,
-figure,
-figcaption,
-footer,
-header,
-hgroup,
-menu,
-nav,
-output,
-ruby,
-section,
-summary,
-time,
-mark,
-audio,
-video {
-  margin: 0;
-  padding: 0;
-  border: 0;
-  font-size: 100%;
-  font: inherit;
-  vertical-align: baseline;
-}
-
-/* HTML5 display-role reset for older browsers */
-
-article,
-aside,
-details,
-figcaption,
-figure,
-footer,
-header,
-hgroup,
-menu,
-nav,
-section {
-  display: block;
-}
-
-body {
-  line-height: 1;
-}
-
-ol,
-ul {
-  list-style: none;
-}
-
-blockquote,
-q {
-  quotes: none;
-}
-
-blockquote:before,
-blockquote:after,
-q:before,
-q:after {
-  content: '';
-  content: none;
-}
-
-table {
-  border-collapse: collapse;
-  border-spacing: 0;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-a {
-  color: #0090D7;
-  text-decoration: none;
-}
-
-a:hover {
-  text-decoration: underline;
-}
 .u-vspace-xxl {
   margin-bottom: 40px;
 }
@@ -1672,31 +1399,6 @@ a:hover {
 .Dropdown-item:last-child {
   margin-bottom: 0;
 }
-h1 {
-  font: 400 18px/27px 'Lato';
-}
-
-h2 {
-  font: 400 16px/24px 'Lato';
-}
-
-h3 {
-  font: 400 15px/22px 'Lato';
-}
-
-h4,
-h5,
-h6 {
-  font: 400 13px/20px 'Lato';
-}
-
-p {
-  font: 300 15px/22px 'Lato';
-}
-
-strong {
-  font-weight: 700;
-}
 .clearfix:after {
   content: "";
   display: block;
@@ -1798,28 +1500,6 @@ strong {
   -webkit-line-clamp: 1;
 }
 /* Code blocks */
-pre[class*="language-"] {
-  padding: 0 1em;
-  margin: .5em 0;
-  overflow: auto;
-  line-height: 1.5;
-}
-
-code {
-  font-size: 1.1em;
-}
-
-:not(pre) > code[class*="language-"],
-pre[class*="language-"] {
-  background: #f5f2f0;
-}
-
-/* Inline code */
-:not(pre) > code[class*="language-"] {
-  padding: .1em;
-  border-radius: .3em;
-}
-
 .token.comment,
 .token.prolog,
 .token.doctype,

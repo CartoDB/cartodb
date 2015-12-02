@@ -7,7 +7,7 @@ var template = require('./torque-controls.tpl');
 module.exports = View.extend({
 
   tagName: 'button',
-  className: 'CDB-Widget-buttonIcon CDB-Widget-buttonIcon--circleBig is-selected',
+  className: 'CDB-Widget-controlButton',
 
   events: {
     'click': '_onClick'
@@ -20,9 +20,10 @@ module.exports = View.extend({
   render: function() {
     this.$el.html(
       template({
-        iconClass: this.model.get('isRunning')
-          ? 'CDB-Widget-timeSeriesPauseIcon'
-          : 'CDB-Widget-timeSeriesPlayIcon'
+        iconClass: 'CDB-Widget-controlButton-icon CDB-Widget-controlButton-icon--' + (
+          this.model.get('isRunning')
+            ? 'pause'
+            : 'play')
       })
     );
 

@@ -53,8 +53,7 @@ $commonBkg: rgba(#FFF, 1);
       color: $linkHover;
     }
   }
-  .CDB-Widget-buttonIcon--circle.is-selected,
-  .CDB-Widget-buttonIcon--circleBig.is-selected {
+  .CDB-Widget-buttonIcon--circle.is-selected {
     background-color: $link;
     color: #FFF;
     &:hover {
@@ -62,6 +61,24 @@ $commonBkg: rgba(#FFF, 1);
       background: $linkHover;
     }
   }
+
+  .CDB-Widget-controlButton {
+    background-color: $link;
+    &:hover {
+      border-color: $linkHover;
+      background: $linkHover;
+    }
+  }
+  .CDB-Widget-controlButton-icon--play {
+    border-left-color: $elementBkg;
+  }
+  .CDB-Widget-controlButton-icon--pause {
+    &:before,
+    &:after {
+      background-color: $elementBkg;
+    }
+  }
+
   .CDB-Widget-searchLens {
     color: $link;
   }
@@ -133,15 +150,6 @@ $commonBkg: rgba(#FFF, 1);
   .CDB-Widget-timeSeriesFakeControl,
   .CDB-Widget-timeSeriesFakeChartItem {
     background-color: $loadingBkg;
-  }
-  .CDB-Widget-timeSeriesPlayIcon {
-    border-left-color: $elementBkg;
-  }
-  .CDB-Widget-timeSeriesPauseIcon {
-    &:before,
-    &:after {
-      background-color: $elementBkg;
-    }
   }
 
   .CDB-Widget-loader {

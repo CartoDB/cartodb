@@ -1,0 +1,52 @@
+// Control button
+// ----------------------------------------------
+@import '../variables/sizes';
+@import '../variables/mixins';
+
+$size: 24px;
+
+.CDB-Widget-controlButton {
+  width: $size;
+  min-width: $size; // to avoid the element to be "squashed" due to limited space in container
+  height: $size;
+  border: 1px solid transparent; // border used for :hover, color set in theme
+  border-radius: 50%;
+  &:hover {
+    cursor: pointer;
+  }
+}
+// The flex layout requires a separate element, because a <button> tag don't support flex in all browsers
+// see https://github.com/philipwalton/flexbugs#9-some-html-elements-cant-be-flex-containers for details
+.CDB-Widget-controlButton-content {
+  @include display-flex();
+  @include justify-content(center);
+  @include align-items(center);
+}
+.CDB-Widget-controlButton-icon {
+  display: block;
+  width: 8px;
+  height: 8px;
+}
+.CDB-Widget-controlButton-icon--play {
+  width: 6px;
+  box-sizing: border-box; // for border to appear within the box (to appear as a triangle)
+  margin-left: 1px; // avoid optical illusion; make it appear horizontal center
+  border-top: 4px dotted transparent; // use dotted type for lines to not be jagged in FF
+  border-bottom: 4px dotted transparent;
+  border-left-width: 6px;
+  border-left-style: solid;
+}
+.CDB-Widget-controlButton-icon--pause {
+  margin-top: -6px; // to make the :before/:after appear in vertical center
+  &:before,
+  &:after {
+    display: inline-block;
+    width: 2px;
+    height: 8px;
+    border-radius: 3px;
+    content: '';
+  }
+  &:after {
+    margin-left: 2px; // creates the space between :before and :after
+  }
+}

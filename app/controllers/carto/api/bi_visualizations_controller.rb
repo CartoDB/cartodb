@@ -17,6 +17,7 @@ module Carto
       before_filter :api_authorization_required
       before_filter :load_parameters, except: [:index]
       before_filter :load_bi_visualization, except: [:index]
+      before_filter :load_bi_visualizations, only: [:index]
 
       rescue_from Carto::LoadError, with: :rescue_from_carto_error
       rescue_from Carto::UUIDParameterFormatError, with: :rescue_from_carto_error
@@ -25,20 +26,22 @@ module Carto
       def index
         page, per_page, order = page_per_page_order_params
 
-        users_bi_visualizations = Carto::BiVisualization.joins(:bi_dataset)
-                                                        .where(bi_datasets: { user_id: current_user.id })
-
-        bi_visualizations = users_bi_visualizations.offset((page - 1) * per_page)
-                                                   .limit(per_page)
-                                                   .order(order)
-                                                   .map do |v|
+        paged_bi_visualizations = @bi_visualizations.offset((page - 1) * per_page)
+                                                    .limit(per_page)
+                                                    .order(order)
+                                                    .map do |v|
           Carto::Api::BiVisualizationPresenter.new(v).to_poro
         end
 
+
+        # total_entries - number of datasets owned
+        # total_user_entries - number of datasets created by user
+        # right now they're the same since no privacy settings are implemented:
+        # you only have what you own
         response = {
-          visualizations: bi_visualizations,
-          total_entries: bi_visualizations.count,
-          total_user_entries: users_bi_visualizations.count
+          visualizations: paged_bi_visualizations,
+          total_entries: @bi_visualizations.count,
+          total_user_entries: @bi_visualizations.count
         }
 
         render_jsonp(response)

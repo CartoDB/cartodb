@@ -98,7 +98,6 @@ describe Carto::Api::BiVisualizationsController do
                                                  api_key: @user1.api_key),
                {},
                http_json_headers do |response|
-
         response.status.should == 200
         received_viz = response.body[0].symbolize_keys
 

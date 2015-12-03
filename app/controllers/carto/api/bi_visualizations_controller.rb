@@ -25,24 +25,21 @@ module Carto
       def index
         page, per_page, order = page_per_page_order_params
 
-        bi_visualizations = Carto::BiVisualization.joins(:bi_dataset)
-                                                  .where(bi_datasets: { user_id: current_user.id })
-                                                  .offset((page - 1) * per_page)
-                                                  .limit(per_page)
-                                                  .order(order)
-                                                  .map do |v|
+        users_bi_visualizations = Carto::BiVisualization.joins(:bi_dataset)
+                                                        .where(bi_datasets: { user_id: current_user.id })
+
+        bi_visualizations = users_bi_visualizations.offset((page - 1) * per_page)
+                                                   .limit(per_page)
+                                                   .order(order)
+                                                   .map do |v|
           Carto::Api::BiVisualizationPresenter.new(v).to_poro
         end
 
         response = {
           visualizations: bi_visualizations,
-          total_entries: bi_visualizations.count
+          total_entries: bi_visualizations.count,
+          total_user_entries: users_bi_visualizations.count
         }
-
-        if current_user
-          # redundant but ncessary for now
-          response.merge!(total_user_entries: bi_visualizations.count)
-        end
 
         render_jsonp(response)
       end

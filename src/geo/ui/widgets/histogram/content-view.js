@@ -200,7 +200,9 @@ module.exports = WidgetContent.extend({
     var $tooltip = this.$(".js-tooltip");
 
     if (info && info.data) {
-      $tooltip.css({ top: info.top, left: info.left });
+      var bottom = this.defaults.chartHeight + 3 - info.top;
+
+      $tooltip.css({ bottom: bottom, left: info.left });
       $tooltip.text(info.data);
       $tooltip.css({ left: info.left - $tooltip.width()/2 });
       $tooltip.fadeIn(70);

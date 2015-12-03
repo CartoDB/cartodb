@@ -309,12 +309,12 @@ module.exports = View.extend({
 
       var left = (barIndex * this.barWidth) + (this.barWidth/2);
 
-      var top = this.yScale(freq) + this.model.get('pos').y + this.$el.position().top - 20;
+      var top = this.yScale(freq);
 
       var h = this.chartHeight() - this.yScale(freq);
 
       if (h < this.options.minimumBarHeight && h > 0) {
-        top = this.chartHeight() + this.model.get('pos').y + this.$el.position().top - 20 - this.options.minimumBarHeight;
+        top = this.chartHeight() - this.options.minimumBarHeight;
       }
 
       if (!this._isDragging() && freq > 0) {

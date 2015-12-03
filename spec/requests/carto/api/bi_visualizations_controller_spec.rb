@@ -118,7 +118,7 @@ describe Carto::Api::BiVisualizationsController do
     it 'returns 404 if bi_viz doesnt exist' do
       get_json api_v1_bi_visualizations_show_url(user_domain: @user1.username,
                                                  id: UUIDTools::UUID.timestamp_create.to_s,
-                                                 api_key: @user2.api_key),
+                                                 api_key: @user1.api_key),
                {},
                http_json_headers do |response|
         response.status.should == 404

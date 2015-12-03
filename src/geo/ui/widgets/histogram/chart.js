@@ -512,11 +512,11 @@ module.exports = View.extend({
   },
 
   hide: function() {
-    this.model.set({ display: false });
+    this.model.set('display', false);
   },
 
   show: function() {
-    this.model.set({ display: true });
+    this.model.set('display', true);
   },
 
   _hide: function() {

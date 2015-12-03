@@ -6,6 +6,7 @@ module Carto
       # Also default schema for new users
       SCHEMA_PUBLIC = 'public'
       SCHEMA_CARTODB = 'cartodb'
+      SCHEMA_CDB_GEOCODER = 'cdb_geocoder_client'
       SCHEMA_IMPORTER = 'cdb_importer'
 
     def initialize(user)
@@ -23,6 +24,7 @@ module Carto
 
     # Centralized method to provide the (ordered) search_path
     def self.build_search_path(user_schema, quote_user_schema = true)
+      #TODO Add SCHEMA_CDB_GEOCODER when we open the geocoder API to all the people
       quote_char = quote_user_schema ? "\"" : ""
       "#{quote_char}#{user_schema}#{quote_char}, #{SCHEMA_CARTODB}, #{SCHEMA_PUBLIC}"
     end

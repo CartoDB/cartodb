@@ -1,10 +1,17 @@
 REV=$(shell git rev-parse HEAD)
+RUBY_MAJOR=$(shell ruby -e "puts RUBY_VERSION" | cut -d. -f1)
 
 all:
 	RAILS_ENV=test bundle install
 	# I cannot remmeber why gdal is being skipped from this list...
 	cat python_requirements.txt | grep -v gdal | sudo pip install -r /dev/stdin
 	npm install
+
+prepare-ruby-version:
+ifeq ($(RUBY_MAJOR),2)
+	cp Gemfile-ruby2 Gemfile
+	cp Gemfile-ruby2.lock Gemfile.lock
+endif
 
 PENDING_SPECS = \
   spec/lib/varnish_spec.rb (#321) \
@@ -30,6 +37,7 @@ WORKING_SPECS_1 = \
   spec/requests/carto/api/layer_presenter_spec.rb \
 	spec/requests/carto/api/data_import_presenter_spec.rb \
 	spec/requests/carto/api/database_groups_controller_spec.rb \
+	spec/requests/carto/api/presenter_cache_spec.rb \
   spec/models/map_spec.rb \
   spec/models/map/copier_spec.rb \
 	spec/models/visualization/collection_spec.rb \

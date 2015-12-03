@@ -14,6 +14,8 @@ module CartoDB
       SCHEMA_CARTODB = 'cartodb'
       SCHEMA_IMPORTER = 'cdb_importer'
       SCHEMA_GEOCODING = 'cdb'
+      SCHEMA_CDB_GEOCODER_API = 'cdb_geocoder_client'
+      CDB_GEOCODER_API_VERSION = '0.0.1'
 
       def initialize(user)
         raise "User nil" unless user
@@ -392,6 +394,51 @@ module CartoDB
         end
       end
 
+      def configure_geocoder_extension(organization=nil)
+        config = Cartodb.config[:geocoder]['api']
+        raise("Geocoder API config missing") if config.blank?
+        host = config['host']
+        port = config['port']
+        user = config['user']
+        dbname = config['dbname']
+        raise("Geocoder API config incomplete, some fields are missing") if host.blank? || port.blank? || user.blank? || dbname.blank?
+
+        geocoder_server_config_sql = %{
+          SELECT cartodb.CDB_Conf_SetConf('geocoder_server_config',
+            '{ \"connection_str\": \"host=#{host} port=#{port} dbname=#{dbname} user=#{user}\"}'::json
+          );
+        }
+
+        @user.in_database(as: :superuser) do |db|
+          db.transaction do
+            db.run('CREATE EXTENSION IF NOT EXISTS plproxy SCHEMA public')
+            db.run("CREATE EXTENSION IF NOT EXISTS cdb_geocoder_client VERSION '#{CDB_GEOCODER_API_VERSION}'")
+            db.run(geocoder_server_config_sql)
+          end
+        end
+
+        if !organization.nil?
+          org_users = organization.users
+          org_users.each do |u|
+            # TODO This part is a copy of the build_search_path method to avoid put the geocoder schema path
+            # until we open this to all the users
+            search_path = "\"#{u.database_schema}\", #{SCHEMA_CARTODB}, #{SCHEMA_CDB_GEOCODER_API}, #{SCHEMA_PUBLIC}"
+            @user.in_database(as: :superuser).run("ALTER USER \"#{u.database_username}\"
+              SET search_path TO #{search_path}")
+            # We have to set the search_path to the publicuser too
+            @user.in_database(as: :superuser).run("ALTER USER \"#{u.database_public_username}\"
+              SET search_path TO #{search_path}")
+          end
+        else
+          # TODO This part is a copy of the build_search_path method to avoid put the geocoder schema path
+          # until we open this to all the users
+          search_path = "\"#{@user.database_schema}\", #{SCHEMA_CARTODB}, #{SCHEMA_CDB_GEOCODER_API}, #{SCHEMA_PUBLIC}"
+          @user.in_database(as: :superuser).run("ALTER USER \"#{@user.database_username}\"
+            SET search_path TO #{search_path}")
+        end
+        reset_pooled_connections
+      end
+
       def setup_organization_owner
         setup_organization_role_permissions
         setup_owner_permissions
@@ -406,7 +453,7 @@ module CartoDB
       # Upgrade the cartodb postgresql extension
       def upgrade_cartodb_postgres_extension(statement_timeout = nil, cdb_extension_target_version = nil)
         if cdb_extension_target_version.nil?
-          cdb_extension_target_version = '0.11.4'
+          cdb_extension_target_version = '0.11.5'
         end
 
         @user.in_database(as: :superuser, no_cartodb_in_schema: true) do |db|
@@ -1218,6 +1265,29 @@ module CartoDB
 
                 client = GD.get('invalidation', None)
 
+                if 'syslog' not in GD:
+                  import syslog
+                  GD['syslog'] = syslog
+                else:  
+                  syslog = GD['syslog']
+               
+                if 'time' not in GD:
+                  import time
+                  GD['time'] = time
+                else:  
+                  time = GD['time']
+                
+                if 'json' not in GD:
+                  import json
+                  GD['json'] = json
+                else:  
+                  json = GD['json']
+ 
+                start = time.time()
+                retries = 0
+                termination_state = 1
+                error = ''          
+
                 while True:
 
                   if not client:
@@ -1225,6 +1295,7 @@ module CartoDB
                         import redis
                         client = GD['invalidation'] = redis.Redis(host='#{invalidation_host}', port=#{invalidation_port}, socket_timeout=timeout)
                       except Exception as err:
+                        error = "client_error - %s" % str(err)
                         # NOTE: we won't retry on connection error
                         if critical:
                           plpy.error('Invalidation Service connection error: ' +  str(err))
@@ -1232,8 +1303,11 @@ module CartoDB
 
                   try:
                     client.execute_command('TCH', '#{@user.database_name}', table_name)
+                    termination_state = 0
+                    error = ''
                     break
                   except Exception as err:
+                    error = "request_error - %s" % str(err)
                     if trigger_verbose:
                       plpy.warning('Invalidation Service warning: ' + str(err))
                     client = GD['invalidation'] = None # force reconnect
@@ -1241,7 +1315,18 @@ module CartoDB
                       if critical:
                         plpy.error('Invalidation Service error: ' +  str(err))
                       break
+                    retries = retries + 1
                     retry -= 1 # try reconnecting
+                  
+                end = time.time()
+                invalidation_duration = (end - start)
+                current_time = time.strftime("%Y-%m-%d %H:%M:%S %Z", time.localtime())
+                session_user = plpy.execute("SELECT session_user", 1)[0]["session_user"]
+                invalidation_result = {"timestamp": current_time, "duration": round(invalidation_duration, 8), "termination_state": termination_state, "retries": retries, "error": error, "database": "#{@user.database_name}", "table_name": table_name, "dbuser": session_user}
+                
+                if trigger_verbose:
+                  syslog.syslog(syslog.LOG_INFO, "invalidation: %s" % json.dumps(invalidation_result))
+
             $$
             LANGUAGE 'plpythonu' VOLATILE;
             REVOKE ALL ON FUNCTION public.cdb_invalidate_varnish(TEXT) FROM PUBLIC;

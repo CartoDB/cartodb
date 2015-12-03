@@ -53,7 +53,7 @@ module.exports = WidgetContent.extend({
     this.render();
     this._storeBounds();
 
-    this.model.bind('change', this._onChangeData, this);
+    this.model.bind('change:data', this._onChangeData, this);
     this.model._fetch();
   },
 
@@ -389,6 +389,8 @@ module.exports = WidgetContent.extend({
   _onZoomIn: function() {
     this._showMiniRange();
     this.histogramChartView.expand(20);
+
+    this.histogramChartView.removeShadowBars();
 
     this.model.set({ start: null, end: null, bins: null, own_filter: 1 });
     this.model._fetch();

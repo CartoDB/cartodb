@@ -100,6 +100,41 @@ describe('geo/ui/widgets/histogram/chart', function() {
       expect(this.view.$el.find('.CDB-Chart-handle').size()).toBe(2);
     });
 
+    it('should hide the chart', function() {
+      expect(this.view.$el.css('display')).toBe('inline');
+
+      this.view.hide();
+
+      expect(this.view.isHidden()).toBe(true);
+      expect(this.view.model.get('display')).toBe(false);
+      expect(this.view.$el.css('display')).toBe('none');
+    });
+
+    it('should show the chart', function() {
+      this.view.hide();
+      this.view.show();
+      expect(this.view.$el.css('display')).toBe('inline');
+    });
+
+    it('should set the parent width', function() {
+      this.view.show();
+      this.view._resizeToParentElement();
+      expect(this.view.model.get('width')).toBe(this.width);
+    });
+
+    it('should maintain the visibility after calling _resizeToParentElement', function() {
+      this.view.show();
+      var width = this.view.$el.parent().width() ;
+      this.view._resizeToParentElement();
+      expect(this.view.$el.css('display')).toBe('inline');
+      expect(this.view.model.get('display')).toBe(true);
+
+      this.view.hide();
+      this.view._resizeToParentElement();
+      expect(this.view.$el.css('display')).toBe('none');
+      expect(this.view.model.get('display')).toBe(false);
+    });
+
     it('should calculate the scales', function() {
       var max = _.max(this.view.model.get('data'), function(d) { return d.freq; });
 

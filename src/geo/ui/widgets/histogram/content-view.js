@@ -178,7 +178,7 @@ module.exports = WidgetContent.extend({
     this.addView(this.miniHistogramChartView);
     this.$('.js-content').append(this.miniHistogramChartView.el);
     this.miniHistogramChartView.bind('on_brush_end', this._onMiniRangeUpdated, this);
-    this.miniHistogramChartView.render().hide();
+    this.miniHistogramChartView.render();
   },
 
   _setupBindings: function() {

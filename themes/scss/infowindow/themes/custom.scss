@@ -3,31 +3,31 @@
  */
 
 
-.Cdb-infowindow--custom {
-  .Cdb-hook:before {
-    border-top: 16px solid #fff;
+.CDB-infowindow--custom {
+  .CDB-hook:before {
+    border-top: 16px solid #FFF;
   }
-  
-  .Cdb-infowindow-tabs:before {
-    content:"";
+  .CDB-infowindow-tabs:before {
     position: absolute;
     top: 0;
     right: 0;
     bottom: 0;
     left: 0;
-    background: rgba(0, 0, 0, .16);
+    background: r
+    gba(0, 0, 0, 0.16);
+    content: '';
   }
-  .Cdb-infowindow-tabs-links {
-    color: #fff;
+  .CDB-infowindow-tabsLinks {
+    color: #FFF;
     &.is-active {
-      color: #2E3C43;
       border-bottom: 1px solid #2E3C43;
+      color: #2E3C43;
     }
   }
-  .Cdb-loading-subtitle {
+  .CDB-loading-subtitle {
     background: #F9F9F9;
   }
-  .Cdb-loading-title {
+  .CDB-loading-title {
     background: #F9F9F9;
   }
 }

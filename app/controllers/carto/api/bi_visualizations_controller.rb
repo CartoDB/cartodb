@@ -12,11 +12,11 @@ module Carto
       include Carto::BiVisualizationsControllerHelper
       include PagedSearcher
 
-      ssl_required :index, :vizjson
+      ssl_required :index, :show, :vizjson
 
+      before_filter :api_authorization_required
       before_filter :load_parameters, except: [:index]
       before_filter :load_bi_visualization, except: [:index]
-      before_filter :api_authorization_required
 
       rescue_from Carto::LoadError, with: :rescue_from_carto_error
       rescue_from Carto::UUIDParameterFormatError, with: :rescue_from_carto_error

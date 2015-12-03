@@ -1,6 +1,6 @@
 // cartodb.js version: 3.15.8
 // uncompressed version: cartodb.uncompressed.js
-// sha: a79f7964a794fd21c482a736a4e67fa1d448570a
+// sha: 512193c160bfaebc75378d7954707afae9b99341
 (function() {
   var define;  // Undefine define (require.js), see https://github.com/CartoDB/cartodb.js/issues/543
   var root = this;
@@ -38520,7 +38520,7 @@ var Vis = cdb.core.View.extend({
       legends: legends
     });
 
-    if (!this.mobile_enabled) {
+    if (!this.isMobileEnabled) {
       this.mapView.addOverlay(this.legends);
     }
   },
@@ -38698,13 +38698,18 @@ var Vis = cdb.core.View.extend({
     var scrollwheel       = (options.scrollwheel === undefined)  ? data.scrollwheel : options.scrollwheel;
     var slides_controller = (options.slides_controller === undefined)  ? data.slides_controller : options.slides_controller;
 
-    // Do not allow pan map if zoom overlay and scrollwheel are disabled
+    // Do not allow pan map if zoom overlay and scrollwheel are disabled unless
+    // mobile view is enabled
+    var isMobileDevice = this.isMobileDevice();
     // Check if zoom overlay is present.
     var hasZoomOverlay = _.isObject(_.find(data.overlays, function(overlay) {
       return overlay.type == "zoom"
     }));
 
     var allowDragging = hasZoomOverlay || scrollwheel;
+    if (isMobileDevice) {
+      allowDragging = true;
+    }
 
     // map
     data.maxZoom || (data.maxZoom = 20);
@@ -38890,7 +38895,7 @@ var Vis = cdb.core.View.extend({
       this.torqueLayer.bind('change:time', function(s) {
         this.trigger('change:step', this.torqueLayer, this.torqueLayer.getStep());
       }, this);
-      if (!this.mobile_enabled && this.torqueLayer) {
+      if (!this.isMobileEnabled && this.torqueLayer) {
         this.addTimeSlider(this.torqueLayer);
       }
     }
@@ -39053,7 +39058,7 @@ var Vis = cdb.core.View.extend({
   _createOverlays: function(overlays, vis_data, options) {
 
     // if there's no header overlay, we need to explicitly create the slide controller
-    if ((options["slides_controller"] || options["slides_controller"] === undefined) && !this.mobile_enabled && !_.find(overlays, function(o) { return o.type === 'header' && o.options.display; })) {
+    if ((options["slides_controller"] || options["slides_controller"] === undefined) && !this.isMobileEnabled && !_.find(overlays, function(o) { return o.type === 'header' && o.options.display; })) {
       this._addSlideController(vis_data);
     }
 
@@ -39061,7 +39066,7 @@ var Vis = cdb.core.View.extend({
       var type = data.type;
 
       // We don't render certain overlays if we are in mobile
-      if (this.mobile_enabled && (type === "zoom" || type === "header" || type === "loader")) return;
+      if (this.isMobileEnabled && (type === "zoom" || type === "header" || type === "loader")) return;
 
       // IE<10 doesn't support the Fullscreen API
       if (type === 'fullscreen' && cdb.core.util.browser.ie && cdb.core.util.browser.ie.version <= 10) return;
@@ -39087,7 +39092,7 @@ var Vis = cdb.core.View.extend({
 
       var opt = data.options;
 
-      if (!this.mobile_enabled) {
+      if (!this.isMobileEnabled) {
 
         if (type == 'share' && options["shareable"]  || type == 'share' && overlay.model.get("display") && options["shareable"] == undefined) overlay.show();
         if (type == 'layer_selector' && options[type] || type == 'layer_selector' && overlay.model.get("display") && options[type] == undefined) overlay.show();
@@ -39150,7 +39155,7 @@ var Vis = cdb.core.View.extend({
     var layers;
     var layer = data.layers[1];
 
-    if (this.mobile_enabled) {
+    if (this.isMobileEnabled) {
 
       if (options && options.legends === undefined) {
         options.legends = this.legends ? true : false;
@@ -39309,10 +39314,12 @@ var Vis = cdb.core.View.extend({
       this.gmaps_style = opt.gmaps_style;
     }
 
-    this.mobile = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    this.mobile_enabled = (opt.mobile_layout && this.mobile) || opt.force_mobile;
+    this.mobile = this.isMobileDevice();
+    this.isMobileEnabled = (opt.mobile_layout && this.mobile) || opt.force_mobile;
 
-    if (opt.force_mobile === false || opt.force_mobile === "false") this.mobile_enabled = false;
+    if (opt.force_mobile === false || opt.force_mobile === "false") {
+      this.isMobileEnabled = false;
+    }
 
     if (!opt.title) {
       vizjson.title = null;
@@ -39334,7 +39341,7 @@ var Vis = cdb.core.View.extend({
       opt.search = opt.searchControl;
     }
 
-    if (!this.mobile_enabled && opt.search) {
+    if (!this.isMobileEnabled && opt.search) {
       if (!search_overlay('search')) {
         vizjson.overlays.push({
            type: "search",
@@ -39372,7 +39379,7 @@ var Vis = cdb.core.View.extend({
       }
     }
 
-    if (opt.shareable && !this.mobile_enabled) {
+    if (opt.shareable && !this.isMobileEnabled) {
       if (!search_overlay('share')) {
         vizjson.overlays.push({
           type: "share",
@@ -39383,7 +39390,7 @@ var Vis = cdb.core.View.extend({
     }
 
     // We remove certain overlays in mobile devices
-    if (this.mobile_enabled) {
+    if (this.isMobileEnabled) {
       remove_overlay('logo');
       remove_overlay('share');
     }
@@ -39758,6 +39765,10 @@ var Vis = cdb.core.View.extend({
 
       }
     }, 150);
+  },
+
+  isMobileDevice: function() {
+    return /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
   }
 
 }, {

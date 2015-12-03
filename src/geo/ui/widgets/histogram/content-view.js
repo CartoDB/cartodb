@@ -53,7 +53,7 @@ module.exports = WidgetContent.extend({
     this.render();
     this._storeBounds();
 
-    this.model.bind('change', this._onChangeData, this);
+    this.model.bind('change', this._onChangeModel, this);
     this.model._fetch();
   },
 
@@ -72,7 +72,14 @@ module.exports = WidgetContent.extend({
     return this.viewModel.get('zoomed');
   },
 
-  _onChangeData: function() {
+  _onChangeModel: function() {
+
+    // When the histogram is zoomed, we don't need to rely
+    // on the change url to update the histogram
+    if (this.model.changed.url && this._isZoomed()) {
+      return;
+    }
+
     // if the action was initiated by the user
     // don't replace the stored data
     if (this.lockedByUser) {
@@ -84,7 +91,7 @@ module.exports = WidgetContent.extend({
         this.histogramChartView.generateShadowBars(this.initialData);
         this.originalData = this.model.getData();
       }
-      this.histogramChartView.replaceData(this.model.getData());
+        this.histogramChartView.replaceData(this.model.getData());
     }
 
     if (this.unsettingRange) {
@@ -224,6 +231,10 @@ module.exports = WidgetContent.extend({
 
   _onBrushEnd: function(loBarIndex, hiBarIndex) {
     var data = this._getData();
+    
+    if (!data || !data.length) {
+      return;
+    }
 
     if (this._isZoomed()) {
       this.lockedByUser = true;
@@ -389,6 +400,8 @@ module.exports = WidgetContent.extend({
   _onZoomIn: function() {
     this._showMiniRange();
     this.histogramChartView.expand(20);
+
+    this.histogramChartView.removeShadowBars();
 
     this.model.set({ start: null, end: null, bins: null, own_filter: 1 });
     this.model._fetch();

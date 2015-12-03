@@ -42,7 +42,83 @@ describe('geo/ui/widgets/histogram/content-view', function() {
     expect(this.view.$('h3').text()).toBe('Howdy');
   });
 
-  it('should update stats', function() {
+  it('should revert the lockedByUser state when the model is changed', function() {
+    spyOn(this.view, '_unsetRange').and.callThrough();
+
+    this.dataModel.sync = function(method, model, options) {
+      options.success({ "response": true });
+    };
+
+    this.view.viewModel.set('zoomed', true);
+    this.dataModel._fetch();
+
+    expect(this.view._unsetRange).not.toHaveBeenCalled();
+
+    this.view.lockedByUser = true;
+    this.dataModel.set('url', 'test');
+
+    expect(this.view.lockedByUser).toBe(true);
+  });
+
+  it('shouldn\'t revert the lockedByUser state when the url is changed and the histogram is zoomed', function() {
+    this.dataModel.sync = function(method, model, options) {
+      options.success({ "response": true });
+    };
+
+    this.view.lockedByUser = true;
+    this.dataModel._fetch();
+    this.dataModel.trigger('change:data');
+    expect(this.view.lockedByUser).toBe(false);
+  });
+
+  it('should unset the range when the data is changed', function() {
+    this.dataModel.sync = function(method, model, options) {
+      options.success({ "response": true });
+    };
+
+    spyOn(this.view, '_unsetRange').and.callThrough();
+    this.view.unsettingRange = true;
+    this.dataModel._fetch();
+    this.dataModel._data.reset(genHistogramData(20));
+    this.dataModel.trigger('change:data');
+    expect(this.view._unsetRange).toHaveBeenCalled();
+  });
+
+  it('shouldn\'t unset the range when the url is changed and is zoomed', function() {
+
+    spyOn(this.view, '_unsetRange').and.callThrough();
+
+    this.dataModel.sync = function(method, model, options) {
+      options.success({ "response": true });
+    };
+
+    this.view.viewModel.set('zoomed', true);
+    this.dataModel._fetch();
+
+    expect(this.view._unsetRange).not.toHaveBeenCalled();
+
+    this.view.unsettingRange = true;
+    this.dataModel.set('url', 'test');
+
+    expect(this.view._unsetRange).not.toHaveBeenCalled();
+  });
+
+  it('should update the stats when the model is changed', function() {
+
+    this.dataModel.sync = function(method, model, options) {
+      options.success({ "response": true });
+    };
+
+    spyOn(this.view, '_updateStats').and.callThrough();
+    spyOn(this.view, '_onChangeModel').and.callThrough();
+    this.dataModel._fetch();
+    this.dataModel._data.reset(genHistogramData(20));
+    this.dataModel.trigger('change:data');
+    expect(this.view._onChangeModel).toHaveBeenCalled();
+    expect(this.view._updateStats).toHaveBeenCalled();
+  });
+
+  it('should update the stats values', function() {
     expect(this.view.viewModel.get('min')).toBe(undefined);
     expect(this.view.viewModel.get('max')).toBe(undefined);
     expect(this.view.viewModel.get('avg')).toBe(undefined);

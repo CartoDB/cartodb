@@ -1,3 +1,4 @@
+var Model = require('cdb/core/model');
 var HistogramModel = require('cdb/geo/ui/widgets/histogram/model');
 var RangeFilter = require('cdb/windshaft/filters/range');
 var TorqueLayerModel = require('cdb/geo/map/torque-layer');
@@ -5,7 +6,10 @@ var TimeContentView = require('cdb/geo/ui/widgets/time-series/torque-content-vie
 
 describe('geo/ui/widgets/time-series/torque-content-view', function() {
   beforeEach(function() {
-    this.model = new HistogramModel();
+    this.model = new HistogramModel({}, {
+      filter: new Model(),
+      layer: new Model()
+    });
     this.model.sync = function(method, model, options) {
       this.options = options;
     }.bind(this);

@@ -1,3 +1,4 @@
+var Model = require('cdb/core/model');
 var HistogramModel = require('cdb/geo/ui/widgets/histogram/model');
 var HistogramChartView = require('cdb/geo/ui/widgets/histogram/chart');
 var TorqueLayerModel = require('cdb/geo/map/torque-layer');
@@ -7,6 +8,9 @@ describe('geo/ui/widgets/time-series/torque-time-slider-view', function() {
   beforeEach(function() {
     this.model = new HistogramModel({
       bins: 256
+    }, {
+      filter: new Model(),
+      layer: new Model()
     });
     this.torqueLayerModel = new TorqueLayerModel({
       isRunning: false,

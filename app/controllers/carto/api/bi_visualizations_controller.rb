@@ -25,7 +25,7 @@ module Carto
       def index
         page, per_page, order = page_per_page_order_params
 
-        bi_visualizations = BiVisualization.joins(:bi_dataset)
+        bi_visualizations = Carto::BiVisualization.joins(:bi_dataset)
                                            .where(bi_datasets: { user_id: current_user.id })
                                            .offset((page - 1) * per_page)
                                            .limit(per_page)

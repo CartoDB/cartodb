@@ -398,42 +398,24 @@ module CartoDB
       end
 
       def install_and_configure_geocoder_api_extension
-        begin
           install_geocoder_api_extension
-
-          search_path = build_search_path
           @user.in_database(as: :superuser).run("ALTER USER \"#{@user.database_username}\"
-              SET search_path TO #{search_path}")
-          if @user.organization_user?
-            @user.in_database(as: :superuser).run("ALTER USER \"#{@user.database_public_username}\"
-              SET search_path TO #{search_path}")
-          end
+              SET search_path TO #{build_search_path}")
+          @user.in_database(as: :superuser).run("ALTER USER \"#{@user.database_public_username}\"
+              SET search_path TO #{build_search_path}") if @user.organization_user?
+          return true
         rescue => e
-          CartoDB.notify_error('Error installing an configuring geocoder api extension', error: e.inspect, user: @user)
-        end
+          CartoDB.notify_error('Error installing and configuring geocoder api extension', error: e.inspect, user: @user)
+          return false
       end
 
       def install_geocoder_api_extension
-        config = Cartodb.config[:geocoder]['api']
-        raise("Geocoder API config missing") if config.blank?
-        host = config['host']
-        port = config['port']
-        user = config['user']
-        dbname = config['dbname']
-        raise("Geocoder API config incomplete, some fields are missing") if host.blank? || port.blank? || user.blank? || dbname.blank?
-
-        # Geocoder server connection config (not user related)
-        geocoder_server_config_sql = %{
-          SELECT cartodb.CDB_Conf_SetConf('geocoder_server_config',
-            '{ \"connection_str\": \"host=#{host} port=#{port} dbname=#{dbname} user=#{user}\"}'::json
-          );
-        }
-
         @user.in_database(as: :superuser) do |db|
           db.transaction do
             db.run('CREATE EXTENSION IF NOT EXISTS plproxy SCHEMA public')
             db.run("CREATE EXTENSION IF NOT EXISTS cdb_geocoder_client VERSION '#{CDB_GEOCODER_API_VERSION}'")
-            db.run(geocoder_server_config_sql)
+            db.run(build_geocoder_server_config_sql)
+            db.run(build_entity_config_sql)
           end
         end
       end
@@ -1334,6 +1316,32 @@ module CartoDB
         )
       end
 
+      # Geocoder api extension related
+      def build_geocoder_server_config_sql
+        config = Cartodb.config[:geocoder]['api']
+        raise("Geocoder API config missing") if config.blank?
+        host = config['host']
+        port = config['port']
+        user = config['user']
+        dbname = config['dbname']
+        raise("Geocoder API config incomplete, some fields are missing") if host.blank? || port.blank? || user.blank? || dbname.blank?
+
+        %{
+          SELECT cartodb.CDB_Conf_SetConf('geocoder_server_config',
+            '{ \"connection_str\": \"host=#{host} port=#{port} dbname=#{dbname} user=#{user}\"}'::json
+          );
+        }
+      end
+
+      def build_entity_config_sql
+        # User configuration
+        entity_name = @user.organization_user? ? @user.organization.name : @user.username
+        %{
+          SELECT cartodb.CDB_Conf_SetConf('user_config',
+            '{"is_organization": #{@user.organization_user?}, "entity_name": "#{entity_name}"}'::json
+          );
+        }
+      end
     end
   end
 end

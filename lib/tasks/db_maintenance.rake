@@ -1209,13 +1209,13 @@ namespace :cartodb do
       raise "ERROR: Organization #{args[:organization_name]} don't exists" if organizations.blank? and not args[:all_organizations]
       run_for_organizations_owner(organizations) do |owner|
         begin
-          owner.db_service.install_and_configure_geocoder_api_extension
-          puts "Owner #{owner.username}: OK"
+          result = owner.db_service.install_and_configure_geocoder_api_extension
+          puts "Owner #{owner.username}: #{result ? 'OK' : 'ERROR'}"
           # TODO Improved using the execute_on_users_with_index when orgs have a lot more users
           owner.organization.users.each do |u|
             if not u.organization_owner?
-              u.db_service.install_and_configure_geocoder_api_extension
-              puts "Organization user #{u.username}: OK"
+              result = u.db_service.install_and_configure_geocoder_api_extension
+              puts "Organization user #{u.username}: #{result ? 'OK' : 'ERROR'}"
             end
           end
         rescue => e
@@ -1237,8 +1237,8 @@ namespace :cartodb do
         user = ::User.where(username: args[:username]).first
         raise  "ERROR: User #{args[:username]} don't exists" if user.nil?
         begin
-          user.db_service.install_and_configure_geocoder_api_extension unless user.organization_user?
-          puts "OK #{user.username}"
+          result = user.db_service.install_and_configure_geocoder_api_extension
+          puts "#{result ? 'OK' : 'ERROR'} #{user.username}"
         rescue => e
           puts "Error trying to configure geocoder extension for user #{u.name}: #{e.message}"
         end
@@ -1246,8 +1246,10 @@ namespace :cartodb do
         # TODO Could be improved passing the query to execute_on_users_with_index function to filter by non-org-users
         execute_on_users_with_index(:configure_geocoder_extension_for_non_org_users.to_s, Proc.new { |user, i|
           begin
-            user.db_service.install_and_configure_geocoder_api_extension
-            puts "OK #{user.username}"
+            if not user.organization_user?
+              result = user.db_service.install_and_configure_geocoder_api_extension
+              puts "#{result ? 'OK' : 'ERROR'} #{user.username}"
+            end
           rescue => e
             puts "Error trying to configure geocoder extension for user #{u.name}: #{e.message}"
           end

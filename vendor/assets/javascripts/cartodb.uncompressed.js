@@ -1,6 +1,6 @@
 // cartodb.js version: 3.15.8
 // uncompressed version: cartodb.uncompressed.js
-// sha: 512193c160bfaebc75378d7954707afae9b99341
+// sha: 3798323b953318576fac7ef00dede0aeec81e978
 (function() {
   var define;  // Undefine define (require.js), see https://github.com/CartoDB/cartodb.js/issues/543
   var root = this;
@@ -38706,10 +38706,7 @@ var Vis = cdb.core.View.extend({
       return overlay.type == "zoom"
     }));
 
-    var allowDragging = hasZoomOverlay || scrollwheel;
-    if (isMobileDevice) {
-      allowDragging = true;
-    }
+    var allowDragging = isMobileDevice || hasZoomOverlay || scrollwheel;
 
     // map
     data.maxZoom || (data.maxZoom = 20);

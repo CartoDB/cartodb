@@ -5,7 +5,6 @@ class Carto::Admin::BiVisualizationsController < ::Admin::AdminController
   include Carto::BiVisualizationsControllerHelper
 
   ssl_allowed :embed_map
-  ssl_required :index
 
   before_filter :load_parameters
   before_filter :load_bi_visualization

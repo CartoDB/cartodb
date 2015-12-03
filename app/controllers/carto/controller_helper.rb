@@ -28,12 +28,6 @@ module Carto
     end
   end
 
-  class BoundingBoxError < CartoError
-    def initialize(message, status = 500)
-      super(message, status)
-    end
-  end
-
   module ControllerHelper
     include Carto::UUIDHelper
 

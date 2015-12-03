@@ -11,7 +11,6 @@ module Carto
       include Carto::ControllerHelper
       include Carto::BiVisualizationsControllerHelper
       include PagedSearcher
-      include VisualizationSearcher
 
       ssl_required :index, :vizjson
 
@@ -22,7 +21,6 @@ module Carto
       rescue_from Carto::LoadError, with: :rescue_from_carto_error
       rescue_from Carto::UUIDParameterFormatError, with: :rescue_from_carto_error
       rescue_from Carto::UnauthorizedError, with: :rescue_from_carto_error
-      rescue_from Carto::BoundingBoxError, with: :rescue_from_carto_error
 
       def index
         page, per_page, order = page_per_page_order_params

@@ -112,6 +112,15 @@ module.exports = Model.extend({
     return this.urls;
   },
 
+  getLayerMeta: function(layerIndex) {
+    var layerMeta = {};
+    var layers = this.get('metadata') && this.get('metadata').layers;
+    if (layers && layers[layerIndex]) {
+        layerMeta = layers[layerIndex].meta || {};
+    }
+    return layerMeta;
+  },
+
   _encodeParams: function(params, included) {
     if(!params) return '';
     var url_params = [];

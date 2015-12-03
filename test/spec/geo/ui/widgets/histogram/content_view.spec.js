@@ -13,6 +13,9 @@ describe('geo/ui/widgets/histogram/content-view', function() {
       options: {
         columns: ['cartodb_id', 'title']
       }
+    }, {
+      filter: new Model(),
+      layer: new Model()
     });
 
     this.viewModel = new Model({

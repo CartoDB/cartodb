@@ -56,15 +56,16 @@ WindshaftDashboard.prototype._createInstance = function(options) {
         urls: dashboardInstance.getTiles('mapnik')
       });
 
-      this._updateWidgetURLs({
-        layerId: options.layerId
-      });
-
       // update other kind of layers too
-      this.layers.each(function(layer) {
+      this.layers.each(function(layer, layerIndex) {
         if (layer.get('type') === 'torque') {
+          layer.set('meta', dashboardInstance.getLayerMeta(layerIndex));
           layer.set('urls', dashboardInstance.getTiles('torque'));
         }
+      });
+
+      this._updateWidgetURLs({
+        layerId: options.layerId
       });
 
     }.bind(this),
@@ -94,10 +95,21 @@ WindshaftDashboard.prototype._updateWidgetURLs = function(options) {
       protocol: 'http'
     });
 
-    widget.set({
+    var layerMeta = widget.layer.get('meta') || {};
+    var extraAttrs = {};
+    if (layerMeta.steps && layerMeta.column_type && _.isNumber(layerMeta.start) && _.isNumber(layerMeta.end)) {
+      extraAttrs = {
+        bins: layerMeta.steps,
+        columnType: layerMeta.column_type,
+        start: layerMeta.start  / 1000,
+        end:  layerMeta.end / 1000
+      };
+    }
+
+    widget.set(_.extend({
       'url': url,
       'boundingBox': boundingBox
-    }, {
+    }, extraAttrs), {
       silent: layerId && layerId !== widget.layer.get('id')
     });
   }, this);

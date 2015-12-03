@@ -214,8 +214,7 @@
                         "order": 3,
                         "visible": true,
                         "options": {
-                          // TODO extract is a hack, until Winshaft can handle a Date column
-                          "sql": "select *, extract(epoch from end_at) AS numeric_end_at from mwc13",
+                          "sql": "select * from mwc13",
                           "layer_name": "mwc13-static",
                           "cartocss": [
                             "/** simple visualization */",
@@ -239,11 +238,7 @@
                         "widgets": {
                           "time_series_static_widget_uuid": {
                             "type": "time-series",
-                            "column": "numeric_end_at",
-                            // TODO initial request is hardcoded until the tiler can resolve this itself
-                            "bins": 256,
-                            start: 1361776558,
-                            end: 1362012931
+                            "column": "end_at"
                           }
                         }
                       } // END time-series widget

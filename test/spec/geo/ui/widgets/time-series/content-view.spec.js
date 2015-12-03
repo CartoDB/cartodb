@@ -1,9 +1,13 @@
+var Model = require('cdb/core/model');
 var HistogramModel = require('cdb/geo/ui/widgets/histogram/model');
 var TimeSeriesContentView = require('cdb/geo/ui/widgets/time-series/content-view');
 
 describe('geo/ui/widgets/time-series/content-view', function() {
   beforeEach(function() {
-    this.model = new HistogramModel({});
+    this.model = new HistogramModel({}, {
+      filter: new Model(),
+      layer: new Model()
+    });
 
     this.model.sync = function(method, model, options) {
       this.options = options;

@@ -74,22 +74,35 @@ module ApplicationHelper
       cartodb_com_hosted:         Cartodb.config[:cartodb_com_hosted].present?,
       account_host:               CartoDB.account_host,
       dropbox_api_key:            Cartodb.config[:dropbox_api_key],
-      gdrive_api_key:             Cartodb.config[:gdrive]['api_key'],
-      gdrive_app_id:              Cartodb.config[:gdrive]['app_id'],
-      oauth_dropbox:              Cartodb.config[:oauth]['dropbox']['app_key'],
-      oauth_box:                  Cartodb.config[:oauth]['box']['client_id'],
-      oauth_gdrive:               Cartodb.config[:oauth]['gdrive']['client_id'],
-      oauth_instagram:            Cartodb.config[:oauth]['instagram']['app_key'],
-      oauth_mailchimp:            Cartodb.config[:oauth]['mailchimp']['app_key'],
+      gdrive_api_key:             Cartodb.config[:gdrive].present? ? Cartodb.config[:gdrive]['api_key'] : '',
+      gdrive_app_id:              Cartodb.config[:gdrive].present? ? Cartodb.config[:gdrive]['app_id'] : '',
       bitly_login:                Cartodb.config[:bitly].present? ? Cartodb.config[:bitly]['login'] : '',
       bitly_key:                  Cartodb.config[:bitly].present? ? Cartodb.config[:bitly]['key'] : '',
-      datasource_search_twitter:  nil,
-      tumblr_api_key:             Cartodb.config[:tumblr]['api_key'],
-      max_asset_file_size:        Cartodb.config[:assets]["max_file_size"],
+      tumblr_api_key:             Cartodb.config[:tumblr].present? ? Cartodb.config[:tumblr]['api_key'] : '',
+      max_asset_file_size:        Cartodb.config[:assets].present? ? Cartodb.config[:assets]["max_file_size"] : '',
       watcher_ttl:                Cartodb.config[:watcher].try("fetch", 'ttl', 60),
+      datasource_search_twitter:  nil,
       upgrade_url:                cartodb_com_hosted? ? "''" : "#{current_user.upgrade_url(request.protocol)}",
       licenses:                   Carto::License.all
     }
+
+    # oauth config load
+    if !Cartodb.config[:oauth].nil?
+      auth_dropbox = Cartodb.config[:oauth]['dropbox'].present? ? Cartodb.config[:oauth]['dropbox']['app_key'] : ''
+      config.merge!(auth_dropbox: auth_dropbox)
+
+      auth_box = Cartodb.config[:oauth]['box'].present? ? Cartodb.config[:oauth]['box']['client_id'] : ''
+      config.merge!(auth_box: auth_box)
+
+      oauth_gdrive = Cartodb.config[:oauth]['gdrive'].present? ? Cartodb.config[:oauth]['gdrive']['client_id'] : ''
+      config.merge!(oauth_gdrive: oauth_gdrive)
+
+      oauth_instagram = Cartodb.config[:oauth]['instagram'].present? ? Cartodb.config[:oauth]['instagram']['app_key'] : ''
+      config.merge!(oauth_instagram: oauth_instagram)
+
+      oauth_mailchimp = Cartodb.config[:oauth]['mailchimp'].present? ? Cartodb.config[:oauth]['mailchimp']['app_key'] : ''
+      config.merge!(oauth_mailchimp: oauth_mailchimp)
+    end
 
     if Cartodb.config[:datasource_search].present? && Cartodb.config[:datasource_search]['twitter_search'].present? \
       && Cartodb.config[:datasource_search]['twitter_search']['standard'].present?

@@ -43,7 +43,6 @@ module.exports = View.extend({
     // using tagName: 'svg' doesn't work,
     // and w/o class="" d3 won't instantiate properly
     this.setElement($('<svg class=""></svg>')[0]);
-    this.$el.hide(); // will be toggled on width change
 
     this.canvas = d3.select(this.el)
     .attr('width', 0)
@@ -57,11 +56,13 @@ module.exports = View.extend({
       showLabels: true,
       data: this.options.data,
       height: this.options.height,
+      display: true,
       margin: _.clone(this.options.margin),
       width: 0, // will be set on resize listener
       pos: { x: 0, y: 0 }
     });
 
+    this.model.bind('change:display', this._onChangeDisplay, this);
     this.model.bind('change:width', this._onChangeWidth, this);
     this.model.bind('change:height', this._onChangeHeight, this);
     this.model.bind('change:pos', this._onChangePos, this);
@@ -74,6 +75,8 @@ module.exports = View.extend({
 
     this._setupDimensions();
     this._setupD3Bindings();
+
+    this.hide(); // will be toggled on width change
   },
 
   render: function() {
@@ -111,12 +114,20 @@ module.exports = View.extend({
   },
 
   _resizeToParentElement: function() {
+
     if (this.$el.parent()) {
       // Hide this view temporarily to get actual size of the parent container
-      var wasVisible = this.isHidden();
-      this.$el.hide();
+      var wasHidden = this.isHidden();
+
+      this.hide();
+
       var width = this.$el.parent().width() || 0;
-      this.$el.toggle(wasVisible);
+
+      if (wasHidden) {
+        this.hide();
+      } else {
+        this.show();
+      }
 
       this.model.set('width', width);
     }
@@ -181,7 +192,7 @@ module.exports = View.extend({
     this.$el.width(width);
     this.chart.attr('width', width);
     if (this.options.showOnWidthChange && width > 0) {
-      this.$el.show();
+      this.show();
     }
     this.reset();
 
@@ -492,16 +503,32 @@ module.exports = View.extend({
     this.chart.classed(this.options.className || '', true);
   },
 
+  _onChangeDisplay: function() {
+    if (this.model.get('display')) {
+      this._show();
+    } else {
+      this._hide();
+    }
+  },
+
   hide: function() {
-    this.$el.hide();
+    this.model.set('display', false);
   },
 
   show: function() {
+    this.model.set('display', true);
+  },
+
+  _hide: function() {
+    this.$el.hide();
+  },
+
+  _show: function() {
     this.$el.show();
   },
 
   isHidden: function() {
-    return this.$el.is(':visible');
+    return !this.model.get('display');
   },
 
   _selectBars: function() {

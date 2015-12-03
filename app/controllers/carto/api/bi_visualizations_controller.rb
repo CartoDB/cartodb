@@ -13,43 +13,39 @@ module Carto
       include PagedSearcher
       include VisualizationSearcher
 
-      ssl_required :index
-      ssl_allowed :vizjson
+      ssl_required :index, :vizjson
 
-      before_filter :optional_api_authorization, only: [:index]
       before_filter :load_parameters, except: [:index]
       before_filter :load_bi_visualization, except: [:index]
-
-      skip_before_filter :api_authorization_required, only: [:index]
+      before_filter :api_authorization_required
 
       rescue_from Carto::LoadError, with: :rescue_from_carto_error
       rescue_from Carto::UUIDParameterFormatError, with: :rescue_from_carto_error
       rescue_from Carto::UnauthorizedError, with: :rescue_from_carto_error
+      rescue_from Carto::BoundingBoxError, with: :rescue_from_carto_error
 
       def index
         page, per_page, order = page_per_page_order_params
 
-        visualizations = BiVisualization.joins(:bi_dataset)
-                                        .where(bi_datasets: { user_id: current_user.id })
-                                        .offset((page - 1) * per_page)
-                                        .limit(per_page)
-                                        .order(order)
-                                        .map do |v|
+        bi_visualizations = BiVisualization.joins(:bi_dataset)
+                                           .where(bi_datasets: {user_id: current_user.id})
+                                           .offset((page - 1) * per_page)
+                                           .limit(per_page)
+                                           .order(order)
+                                           .map do |v|
           Carto::Api::BiVisualizationPresenter.new(v).to_poro
         end
 
         response = {
-          visualizations: visualizations,
-          total_entries: visualizations.count
+          visualizations: bi_visualizations,
+          total_entries: bi_visualizations.count
         }
 
         render_jsonp(response)
-      rescue CartoDB::BoundingBoxError => e
-        render_jsonp({ error: e.message }, 400)
       end
 
       def show
-        render_jsonp(@bi_visualization)
+        render_jsonp([Carto::Api::BiVisualizationPresenter.new(@bi_visualization).to_poro])
       end
 
       def vizjson

@@ -26,7 +26,8 @@ module Carto
           id: @bi_visualization.id,
           title: @bi_visualization.extract_value_from_viz_json('title'),
           description: @bi_visualization.extract_value_from_viz_json('description'),
-          updated_at: @bi_visualization.updated_at
+          updated_at: @bi_visualization.updated_at,
+          viz_json: @bi_visualization.viz_json
         }
       end
     end

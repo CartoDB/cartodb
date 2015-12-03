@@ -34,23 +34,15 @@ module.exports = WidgetModel.extend({
   },
 
   initialize: function(attrs, opts) {
+    WidgetModel.prototype.initialize.apply(this, arguments);
     this._data = new Backbone.Collection(this.get('data'));
 
     // BBox should only be included until after the first fetch, since we want to get the range of the full dataset
     this.once('change:data', function() {
       this.set('submitBBox', true);
-    });
-
-    WidgetModel.prototype.initialize.call(this, attrs, opts);
-  },
-
-  _onChangeBinds: function() {
-    WidgetModel.prototype._onChangeBinds.call(this);
-    this.bind('change:histogramSizes', function(mdl, isSizesApplied, d) {
-      if (isSizesApplied) {
-        this.trigger('histogramSizes', this);
-      }
     }, this);
+
+    this.layer.bind('change:meta', this._onChangeLayerMeta, this);
   },
 
   getData: function() {
@@ -109,5 +101,18 @@ module.exports = WidgetModel.extend({
         bins: this.get('bins')
       }
     };
+  },
+
+  _onChangeLayerMeta: function() {
+    this.filter.set('columnType', this.layer.get('meta').column_type);
+  },
+
+  _onChangeBinds: function() {
+    WidgetModel.prototype._onChangeBinds.call(this);
+    this.bind('change:histogramSizes', function(mdl, isSizesApplied, d) {
+      if (isSizesApplied) {
+        this.trigger('histogramSizes', this);
+      }
+    }, this);
   }
 });

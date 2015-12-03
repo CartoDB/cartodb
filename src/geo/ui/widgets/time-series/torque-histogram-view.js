@@ -80,7 +80,6 @@ module.exports = View.extend({
 
   _onBrushEnd: function(loBarIndex, hiBarIndex) {
     var data = this.model.getData();
-    this._rangeFilter.set('columnType', this._torqueLayerModel.get('meta').column_type);
     this._rangeFilter.setRange(
       data[loBarIndex].start,
       data[hiBarIndex - 1].end

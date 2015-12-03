@@ -61,8 +61,8 @@ describe Carto::Api::BiVisualizationsController do
     it 'returns owned indexed bi_visualizations' do
       get_json api_v1_bi_visualizations_index_url(user_domain: @user1.username,
                                                   api_key: @user1.api_key),
-                                                  {},
-                                                  http_json_headers do |response|
+               {},
+               http_json_headers do |response|
         response.status.should == 200
         received_viz = response.body[:visualizations][0]['viz_json']
 
@@ -73,8 +73,8 @@ describe Carto::Api::BiVisualizationsController do
     it 'doesnt return non owned indexed bi_visualizations' do
       get_json api_v1_bi_visualizations_index_url(user_domain: @user2.username,
                                                   api_key: @user2.api_key),
-                                                  {},
-                                                  http_json_headers do |response|
+               {},
+               http_json_headers do |response|
         response.status.should == 200
 
         response.body[:total_entries].should eq 0
@@ -96,8 +96,8 @@ describe Carto::Api::BiVisualizationsController do
       get_json api_v1_bi_visualizations_show_url(user_domain: @user1.username,
                                                  id: @bi_visualization.id,
                                                  api_key: @user1.api_key),
-                                                 {},
-                                                 http_json_headers do |response|
+               {},
+               http_json_headers do |response|
         response.status.should == 200
         received_viz = response.body[0].symbolize_keys
 
@@ -109,8 +109,8 @@ describe Carto::Api::BiVisualizationsController do
       get_json api_v1_bi_visualizations_show_url(user_domain: @user1.username,
                                                  id: @bi_visualization.id,
                                                  api_key: @user2.api_key),
-                                                 {},
-                                                 http_json_headers do |response|
+               {},
+               http_json_headers do |response|
         response.status.should == 403
       end
     end

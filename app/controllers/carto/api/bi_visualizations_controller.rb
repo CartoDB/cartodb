@@ -39,6 +39,11 @@ module Carto
           total_entries: bi_visualizations.count
         }
 
+        if current_user
+          # redundant but ncessary for now
+          response.merge!(total_user_entries: bi_visualizations.count)
+        end
+
         render_jsonp(response)
       end
 

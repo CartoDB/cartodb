@@ -24,7 +24,7 @@ etc) using a web form and then make it public or private.
 
 After it is uploaded, you can visualize it in a table or on a map, search
 it using SQL, and apply map styles using CartoCSS. You can even access it
-using the CartoDB [APIs](http://developers.cartodb.com/cartodb-platform/), or export it
+using the CartoDB [APIs](http://docs.cartodb.com/#cartodb-platform), or export it
 to a file.
 
 In other words, with CartoDB you can make awesome maps and build

@@ -60,7 +60,6 @@ module.exports = WidgetContent.extend({
   _storeBounds: function() {
     var data = this.model.getData();
     if (data && data.length > 0) {
-      this.initialData = data;
       this.start = data[0].start;
       this.end = data[data.length - 1].end;
       this.binsCount = data.length;
@@ -88,7 +87,7 @@ module.exports = WidgetContent.extend({
       if (this._isZoomed()) {
         this.zoomedData = this.model.getData();
       } else {
-        this.histogramChartView.generateShadowBars(this.initialData);
+        this.histogramChartView.showShadowBars();
         this.originalData = this.model.getData();
       }
         this.histogramChartView.replaceData(this.model.getData());
@@ -136,7 +135,7 @@ module.exports = WidgetContent.extend({
     this.viewModel.set({ lo_index: null, hi_index: null });
 
     if (!this._isZoomed()) {
-      this.histogramChartView.generateShadowBars(this.initialData);
+      this.histogramChartView.showShadowBars();
     }
   },
 
@@ -152,7 +151,8 @@ module.exports = WidgetContent.extend({
       hasAxisTip: true,
       width: this.canvasWidth,
       height: this.defaults.chartHeight,
-      data: this.model.getData()
+      data: this.model.getData(),
+      shadowData: this.model.getData()
     }));
 
     this.$('.js-content').append(this.histogramChartView.el);

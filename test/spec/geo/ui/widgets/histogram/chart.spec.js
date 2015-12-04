@@ -44,6 +44,7 @@ describe('geo/ui/widgets/histogram/chart', function() {
       hasHandles: true,
       height: 100,
       data: this.data,
+      shadowData: this.data,
       xAxisTickFormat: function(d, i) {
         return d;
       }
@@ -120,6 +121,15 @@ describe('geo/ui/widgets/histogram/chart', function() {
       this.view.show();
       this.view._resizeToParentElement();
       expect(this.view.model.get('width')).toBe(this.width);
+    });
+
+    it('should generate the shadow bars', function() {
+      expect(this.view.$el.find('.CDB-Chart-shadowBars').length).toBe(1);
+    });
+
+    it('should hide the shadow bars', function() {
+      this.view.removeShadowBars();
+      expect(this.view.$el.find('.CDB-Chart-shadowBars').length).toBe(0);
     });
 
     it('should maintain the visibility after calling _resizeToParentElement', function() {

@@ -53,7 +53,8 @@ module.exports = View.extend({
       },
       hasHandles: true,
       height: this.defaults.histogramChartHeight,
-      data: this.model.getData()
+      data: this.model.getData(),
+      shadowData: this.model.getData()
     });
     this.addView(this._chartView);
     this.$el.append(this._chartView.render().el);

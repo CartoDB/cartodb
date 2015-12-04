@@ -52,27 +52,8 @@ module.exports = View.extend({
     .append('g')
     .attr('class', 'CDB-WidgetCanvas');
 
-    this.model = new Model({
-      showLabels: true,
-      data: this.options.data,
-      height: this.options.height,
-      display: true,
-      margin: _.clone(this.options.margin),
-      width: 0, // will be set on resize listener
-      pos: { x: 0, y: 0 }
-    });
-
-    this.model.bind('change:display', this._onChangeDisplay, this);
-    this.model.bind('change:width', this._onChangeWidth, this);
-    this.model.bind('change:height', this._onChangeHeight, this);
-    this.model.bind('change:pos', this._onChangePos, this);
-    this.model.bind('change:lo_index change:hi_index', this._onChangeRange, this);
-    this.model.bind('change:data', this._onChangeData, this);
-    this.model.bind('change:dragging', this._onChangeDragging, this);
-    this.model.bind('change:right_axis_tip', this._onChangeRightAxisTip, this);
-    this.model.bind('change:left_axis_tip', this._onChangeLeftAxisTip, this);
-    this.model.bind('change:showLabels', this._onChangShowLabels, this);
-
+    this._setupModel();
+    this._setupBindings();
     this._setupDimensions();
     this._setupD3Bindings();
 
@@ -343,7 +324,8 @@ module.exports = View.extend({
     this._setupDimensions();
     this._calcBarWidth();
     this._generateChartContent();
-    this.removeShadowBars();
+    this._removeShadowBars();
+    this._generateShadowBars();
   },
 
   refresh: function() {
@@ -352,6 +334,7 @@ module.exports = View.extend({
     this._generateAxis();
     this._updateChart();
 
+    this._generateShadowBars();
     this.chart.select('.CDB-Chart-handles').moveToFront();
     this.chart.select('.Brush').moveToFront();
   },
@@ -361,6 +344,10 @@ module.exports = View.extend({
   },
 
   removeShadowBars: function() {
+    this.model.set('show_shadow_bars', false);
+  },
+
+  _removeShadowBars: function() {
     this.chart.selectAll('.CDB-Chart-shadowBars').remove();
   },
 
@@ -458,6 +445,33 @@ module.exports = View.extend({
     };
   },
 
+  _setupModel: function() {
+    this.model = new Model({
+      showLabels: true,
+      data: this.options.data,
+      height: this.options.height,
+      display: true,
+      show_shadow_bars: this.options.shadowData,
+      margin: _.clone(this.options.margin),
+      width: 0, // will be set on resize listener
+      pos: { x: 0, y: 0 }
+    });
+  },
+
+  _setupBindings: function() {
+    this.model.bind('change:data', this._onChangeData, this);
+    this.model.bind('change:display', this._onChangeDisplay, this);
+    this.model.bind('change:dragging', this._onChangeDragging, this);
+    this.model.bind('change:height', this._onChangeHeight, this);
+    this.model.bind('change:left_axis_tip', this._onChangeLeftAxisTip, this);
+    this.model.bind('change:lo_index change:hi_index', this._onChangeRange, this);
+    this.model.bind('change:pos', this._onChangePos, this);
+    this.model.bind('change:right_axis_tip', this._onChangeRightAxisTip, this);
+    this.model.bind('change:showLabels', this._onChangShowLabels, this);
+    this.model.bind('change:show_shadow_bars', this._onChangeShowShadowBars, this);
+    this.model.bind('change:width', this._onChangeWidth, this);
+  },
+
   _setupDimensions: function() {
     this._setupScales();
     this._setupRanges();
@@ -501,6 +515,14 @@ module.exports = View.extend({
     .attr('transform', 'translate(' + margin.left + ', ' + margin.top + ')');
 
     this.chart.classed(this.options.className || '', true);
+  },
+
+  _onChangeShowShadowBars: function() {
+    if (this.model.get('show_shadow_bars')) {
+      this._generateShadowBars();
+    } else {
+      this._removeShadowBars();
+    }
   },
 
   _onChangeDisplay: function() {
@@ -986,13 +1008,19 @@ module.exports = View.extend({
     });
   },
 
-  generateShadowBars: function(data) {
+  showShadowBars: function() {
+    this.model.set('show_shadow_bars', true);
+  },
 
-    if (!data || !data.length) {
+  _generateShadowBars: function() {
+    var data = this.options.shadowData;
+
+    if (!data || !data.length || !this.model.get('show_shadow_bars')) {
+      this._removeShadowBars();
       return;
     }
 
-    this.removeShadowBars();
+    this._removeShadowBars();
 
     var self = this;
 

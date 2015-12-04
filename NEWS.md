@@ -1,6 +1,6 @@
 3.15.X (dd/mm/yyyy)
 ------
-*
+* When scrollwheel and zoom are disabled, map panning is disabled unless device is mobile.
 
 3.15.8 (01/10/2015)
 ------
@@ -8,11 +8,11 @@
 
 3.15.7 (23/09/2015)
 ------
-* Undefine `define` so that dependencies aren't loaded via AMD [#543](https://github.com/CartoDB/cartodb.js/issues/543)
+* Undefined `define` so that dependencies aren't loaded via AMD [#543](https://github.com/CartoDB/cartodb.js/issues/543)
 
 3.15.6 (17/09/2015)
 ------
-* Fixed a couple of bugs related with Leaflet attributions [#681](https://github.com/CartoDB/cartodb.js/issues/681) 
+* Fixed a couple of bugs related with Leaflet attributions [#681](https://github.com/CartoDB/cartodb.js/issues/681)
 
 3.15.5 (15/09/2015)
 ------

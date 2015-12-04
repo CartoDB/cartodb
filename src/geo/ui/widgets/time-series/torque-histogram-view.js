@@ -45,6 +45,9 @@ module.exports = View.extend({
     this._chartView = new HistogramChartView({
       type: 'time',
       animationSpeed: 100,
+      animationBarDelay: function(d, i) {
+        return (i * 3);
+      },
       margin: {
         top: 4,
         right: 4,
@@ -56,6 +59,7 @@ module.exports = View.extend({
       data: this.model.getData(),
       shadowData: this.model.getData()
     });
+
     this.addView(this._chartView);
     this.$el.append(this._chartView.render().el);
     this._chartView.show();

@@ -45,7 +45,7 @@ module.exports = View.extend({
       },
       hasHandles: true,
       animationBarDelay: function(d, i) {
-        return (i * 20);
+        return (i * 3);
       },
       height: this.defaults.histogramChartHeight,
       data: this.model.getData()

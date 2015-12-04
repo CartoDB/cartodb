@@ -1,0 +1,44 @@
+{
+  "name": "cartodb-deep-insights.js",
+  "version": "0.0.1",
+  "description": "CartoDB Deep Insights JS library",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/CartoDB/deep-insights.js.git"
+  },
+  "author": {
+    "name": "CartoDB",
+    "url": "http://cartodb.com/",
+    "email": "wadus@cartodb.com"
+  },
+  "contributors": [
+    "Javier Álvarez <jmedina@cartodb.com>",
+    "Javier Arce <javierarce@cartodb.com>",
+    "Javier Santana <jsantana@cartodb.com>",
+    "Raul Ochoa <rochoa@cartodb.com>",
+    "Nicklas Gummesson <nicklas@cartodb.com>",
+    "Pablo Alonso <pablo@cartodb.com>",
+    "Antonio Santiago Pérez <asantiago@cartodb.com>"
+  ],
+  "licenses": [
+    {
+      "type": "BSD"
+    }
+  ],
+  "devDependencies": {
+    "browserify": "11.2.0",
+    "cartodb.js": "3.15.1",
+    "jstify": "0.12.0",
+    "watchify": "3.6.1"
+  },
+  "browserify": {
+    "transform": [
+      "jstify"
+    ]
+  },
+  "main": "index.js",
+  "scripts": {
+    "build": "browserify index.js --standalone cartodb.deepInsights > dist/cartodb-deep-insights.js",
+    "watch": "watchify index.js -d --standalone cartodb.deepInsights -o dist/cartodb-deep-insights.js -v"
+  }
+}

@@ -42,15 +42,12 @@ var Infowindow = View.extend({
   },
 
   initialize: function(){
-    var self = this;
-
-    _.bindAll(this, "render", "setLatLng", "_setTemplate", "_updatePosition",
-      "_update", "toggle", "show", "hide");
-
     this.mapView = this.options.mapView;
 
     // Set template if it is defined in options
-    if (this.options.template) this.model.set('template', this.options.template);
+    if (this.options.template) {
+      this.model.set('template', this.options.template);
+    }
 
     // Set template view variable and
     // compile it if it is necessary
@@ -60,27 +57,7 @@ var Infowindow = View.extend({
       this._setTemplate();
     }
 
-    this.model.bind('change:content',             this.render, this);
-    this.model.bind('change:template_name',       this._setTemplate, this);
-    this.model.bind('change:latlng',              this._update, this);
-    this.model.bind('change:visibility',          this.toggle, this);
-    this.model.bind('change:template',            this._compileTemplate, this);
-    this.model.bind('change:sanitizeTemplate',    this._compileTemplate, this);
-    this.model.bind('change:alternative_names',   this.render, this);
-    this.model.bind('change:width',               this.render, this);
-    this.model.bind('change:maxHeight',           this.render, this);
-
-    this.mapView.map.bind('change',             this._updatePosition, this);
-
-    this.mapView.bind('zoomstart', function(){
-      self.hide(true);
-    });
-
-    this.mapView.bind('zoomend', function() {
-      self.show(true);
-    });
-
-    this.add_related_model(this.mapView.map);
+    this._initBinds();
 
     // Hide the element
     this.$el.hide();
@@ -163,6 +140,27 @@ var Infowindow = View.extend({
     }
 
     return this;
+  },
+
+  _initBinds: function() {
+    this.model.bind('change:content change:alternative_names change:width change:maxHeight', this.render, this);
+    this.model.bind('change:template_name', this._setTemplate, this);
+    this.model.bind('change:latlng', this._update, this);
+    this.model.bind('change:visibility', this.toggle, this);
+    this.model.bind('change:template change:sanitizeTemplate', this._compileTemplate, this);
+
+    this.mapView.map.bind('change', this._updatePosition, this);
+
+    this.mapView.bind('zoomstart', function(){
+      this.hide(true);
+    }, this);
+
+    this.mapView.bind('zoomend', function() {
+      this.show(true);
+    }, this);
+
+    this.add_related_model(this.mapView.map);
+    this.add_related_model(this.mapView);
   },
 
   _getModelTemplate: function() {
@@ -469,11 +467,9 @@ var Infowindow = View.extend({
    *  Show infowindow (update, pan, etc)
    */
   show: function (no_pan) {
-    var self = this;
-
     if (this.model.get("visibility")) {
-      self.$el.css({ left: -5000 });
-      self._update(no_pan);
+      this.$el.css({ left: -5000 });
+      this._update(no_pan);
     }
   },
 

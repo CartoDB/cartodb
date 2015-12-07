@@ -80,6 +80,10 @@ module CartoDB
         create_importer_schema
         create_geocoding_schema
         load_cartodb_functions
+        # TODO Activate when we launch geocoder api for all the users
+        #install_and_configure_geocoder_api_extension
+        # We reset the connections to this database to be sure the change in default search_path is effective
+        reset_pooled_connections
 
         reset_database_permissions # Reset privileges
 
@@ -95,6 +99,10 @@ module CartoDB
         end.join
         create_own_schema
         setup_organization_user_schema
+        # TODO Activate when we launch geocoder api for all the users
+        #install_and_configure_geocoder_api_extension
+        # We reset the connections to this database to be sure the change in default search_path is effective
+        reset_pooled_connections
         revoke_cdb_conf_access
       end
 
@@ -146,9 +154,6 @@ module CartoDB
 
         upgrade_cartodb_postgres_extension(statement_timeout, cdb_extension_target_version)
 
-        # We reset the connections to this database to be sure the change in default search_path is effective
-        reset_pooled_connections
-
         rebuild_quota_trigger
       end
 
@@ -183,7 +188,7 @@ module CartoDB
       # Centralized method to provide the (ordered) search_path
       def self.build_search_path(user_schema, quote_user_schema = true)
         quote_char = quote_user_schema ? "\"" : ""
-        "#{quote_char}#{user_schema}#{quote_char}, #{SCHEMA_CARTODB}, #{SCHEMA_PUBLIC}"
+        "#{quote_char}#{user_schema}#{quote_char}, #{SCHEMA_CARTODB}, #{SCHEMA_CDB_GEOCODER_API}, #{SCHEMA_PUBLIC}"
       end
 
       def set_database_search_path
@@ -394,49 +399,27 @@ module CartoDB
         end
       end
 
-      def configure_geocoder_extension(organization=nil)
-        config = Cartodb.config[:geocoder]['api']
-        raise("Geocoder API config missing") if config.blank?
-        host = config['host']
-        port = config['port']
-        user = config['user']
-        dbname = config['dbname']
-        raise("Geocoder API config incomplete, some fields are missing") if host.blank? || port.blank? || user.blank? || dbname.blank?
+      def install_and_configure_geocoder_api_extension
+          install_geocoder_api_extension
+          @user.in_database(as: :superuser).run("ALTER USER \"#{@user.database_username}\"
+              SET search_path TO #{build_search_path}")
+          @user.in_database(as: :superuser).run("ALTER USER \"#{@user.database_public_username}\"
+              SET search_path TO #{build_search_path}") if @user.organization_user?
+          return true
+        rescue => e
+          CartoDB.notify_error('Error installing and configuring geocoder api extension', error: e.inspect, user: @user)
+          return false
+      end
 
-        geocoder_server_config_sql = %{
-          SELECT cartodb.CDB_Conf_SetConf('geocoder_server_config',
-            '{ \"connection_str\": \"host=#{host} port=#{port} dbname=#{dbname} user=#{user}\"}'::json
-          );
-        }
-
+      def install_geocoder_api_extension
         @user.in_database(as: :superuser) do |db|
           db.transaction do
             db.run('CREATE EXTENSION IF NOT EXISTS plproxy SCHEMA public')
             db.run("CREATE EXTENSION IF NOT EXISTS cdb_geocoder_client VERSION '#{CDB_GEOCODER_API_VERSION}'")
-            db.run(geocoder_server_config_sql)
+            db.run(build_geocoder_server_config_sql)
+            db.run(build_entity_config_sql)
           end
         end
-
-        if !organization.nil?
-          org_users = organization.users
-          org_users.each do |u|
-            # TODO This part is a copy of the build_search_path method to avoid put the geocoder schema path
-            # until we open this to all the users
-            search_path = "\"#{u.database_schema}\", #{SCHEMA_CARTODB}, #{SCHEMA_CDB_GEOCODER_API}, #{SCHEMA_PUBLIC}"
-            @user.in_database(as: :superuser).run("ALTER USER \"#{u.database_username}\"
-              SET search_path TO #{search_path}")
-            # We have to set the search_path to the publicuser too
-            @user.in_database(as: :superuser).run("ALTER USER \"#{u.database_public_username}\"
-              SET search_path TO #{search_path}")
-          end
-        else
-          # TODO This part is a copy of the build_search_path method to avoid put the geocoder schema path
-          # until we open this to all the users
-          search_path = "\"#{@user.database_schema}\", #{SCHEMA_CARTODB}, #{SCHEMA_CDB_GEOCODER_API}, #{SCHEMA_PUBLIC}"
-          @user.in_database(as: :superuser).run("ALTER USER \"#{@user.database_username}\"
-            SET search_path TO #{search_path}")
-        end
-        reset_pooled_connections
       end
 
       def setup_organization_owner
@@ -1268,25 +1251,25 @@ module CartoDB
                 if 'syslog' not in GD:
                   import syslog
                   GD['syslog'] = syslog
-                else:  
+                else:
                   syslog = GD['syslog']
-               
+
                 if 'time' not in GD:
                   import time
                   GD['time'] = time
-                else:  
+                else:
                   time = GD['time']
-                
+
                 if 'json' not in GD:
                   import json
                   GD['json'] = json
-                else:  
+                else:
                   json = GD['json']
- 
+
                 start = time.time()
                 retries = 0
                 termination_state = 1
-                error = ''          
+                error = ''
 
                 while True:
 
@@ -1317,13 +1300,13 @@ module CartoDB
                       break
                     retries = retries + 1
                     retry -= 1 # try reconnecting
-                  
+
                 end = time.time()
                 invalidation_duration = (end - start)
                 current_time = time.strftime("%Y-%m-%d %H:%M:%S %Z", time.localtime())
                 session_user = plpy.execute("SELECT session_user", 1)[0]["session_user"]
                 invalidation_result = {"timestamp": current_time, "duration": round(invalidation_duration, 8), "termination_state": termination_state, "retries": retries, "error": error, "database": "#{@user.database_name}", "table_name": table_name, "dbuser": session_user}
-                
+
                 if trigger_verbose:
                   syslog.syslog(syslog.LOG_INFO, "invalidation: %s" % json.dumps(invalidation_result))
 
@@ -1335,6 +1318,32 @@ module CartoDB
         )
       end
 
+      # Geocoder api extension related
+      def build_geocoder_server_config_sql
+        config = Cartodb.config[:geocoder]['api']
+        raise("Geocoder API config missing") if config.blank?
+        host = config['host']
+        port = config['port']
+        user = config['user']
+        dbname = config['dbname']
+        raise("Geocoder API config incomplete, some fields are missing") if host.blank? || port.blank? || user.blank? || dbname.blank?
+
+        %{
+          SELECT cartodb.CDB_Conf_SetConf('geocoder_server_config',
+            '{ \"connection_str\": \"host=#{host} port=#{port} dbname=#{dbname} user=#{user}\"}'::json
+          );
+        }
+      end
+
+      def build_entity_config_sql
+        # User configuration
+        entity_name = @user.organization_user? ? @user.organization.name : @user.username
+        %{
+          SELECT cartodb.CDB_Conf_SetConf('user_config',
+            '{"is_organization": #{@user.organization_user?}, "entity_name": "#{entity_name}"}'::json
+          );
+        }
+      end
     end
   end
 end

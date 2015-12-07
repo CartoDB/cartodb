@@ -4,8 +4,8 @@ require_relative '../../spec_helper'
 describe Carto::UserService do
   before(:all) do
     @user = create_user({
-        email: 'admin@cartotest.com', 
-        username: 'admin', 
+        email: 'admin@cartotest.com',
+        username: 'admin',
         password: '123456'
       })
 
@@ -73,7 +73,7 @@ describe Carto::UserService do
   end
 
   it "Tests search_path correctly set" do
-    expected_returned_normal_search_path = { search_path: "#{@user.database_schema}, cartodb, public" }
+    expected_returned_normal_search_path = { search_path: "#{@user.database_schema}, cartodb, cdb_geocoder_client, public" }
 
     @normal_search_path = nil
     @normal_search_path_new = nil

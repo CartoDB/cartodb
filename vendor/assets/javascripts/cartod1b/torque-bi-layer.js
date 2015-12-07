@@ -37,6 +37,7 @@ var BITorqueLayer = cartodb.geo.LeafletTorqueLayer.extend({
     layerModel.set('cartocss', DUMMY_CARTOCSS);
     layerModel.set('table_name', this.options.overview_tables[0]);
     this.buildFieldMapping();
+    this._filters = {}
 
     cartodb.geo.LeafletTorqueLayer.prototype.initialize.call(this, layerModel, leafletMap);
 
@@ -52,7 +53,7 @@ var BITorqueLayer = cartodb.geo.LeafletTorqueLayer.extend({
     this.highlightedPixel = null;
     this.options.renderer = null;
 
-    this.styledColumn = this.model.widgets.at(0).get('column');
+    this.styledColumn = null;
 
   },
 
@@ -71,15 +72,35 @@ var BITorqueLayer = cartodb.geo.LeafletTorqueLayer.extend({
     }
   },
 
+  // style using the first styled one, if not, use the default style
+  applyStyles: function(c, active) {
+     _.each(this.fields, function(f) {
+        f.styled = f.name === c ? active: false;
+     })
+     var toStyle = _.find(this.fields, function(f) {
+       return f.styled;
+     })
+     if (toStyle) {
+       this.styledColumn = toStyle.name;
+       this.styleByColumn(toStyle.name);
+     } else {
+       this.styledColumn = null;
+       this.styleByColumn(null);
+     }
+  },
+
   _bindUpdates: function() {
     var self = this;
     // replace _fetch
     this.model.widgets.each(function(w) {
       if (w.get('type') === 'aggregation') {
         w.bind('applyCategoryColors', function() {
-          self.styleByColumn(w.get('column'));
-          self.styledColumn = w.get('column');
+          self.applyStyles(w.get('column'), true)
         });
+        w.bind('cancelCategoryColors', function() {
+          self.applyStyles(w.get('column'), false)
+        });
+        //
         // hack to avoid setting url to range model
         w.rangeModel.setUrl = function() {}
         w._fetch = function(callback) {
@@ -137,8 +158,10 @@ var BITorqueLayer = cartodb.geo.LeafletTorqueLayer.extend({
         w._onChangeBinds()
       } else {
         w.bind('histogramSizes', function() {
-          self.styleByColumn(w.get('column'));
-          self.styledColumn = w.get('column');
+          self.applyStyles(w.get('column'), true);
+        });
+        w.bind('cancelHistogramSizes', function() {
+          self.applyStyles(w.get('column'), false);
         });
         var fn = self.getHistogramForDataset.bind(self);
         w._fetch = function(callback) {
@@ -421,8 +444,14 @@ var BITorqueLayer = cartodb.geo.LeafletTorqueLayer.extend({
 
   // styles the map for the column
   styleByColumn: function(column) {
-    var idx = this.fields[column].index;
-    var css = this.getCartoCSSForAttribute(column, this.options.renderer);
+    var css, idx;
+    if (column) {
+      idx = this.fields[column].index;
+      css = this.getCartoCSSForAttribute(column, this.options.renderer);
+    } else {
+      css = MiniPecan.density();
+      idx = 0;
+    }
     this.model.set('cartocss', css);
     this.setStep(idx);
   },
@@ -469,6 +498,89 @@ var BITorqueLayer = cartodb.geo.LeafletTorqueLayer.extend({
     var changed = this.model.changedAttributes();
     if(changed === false) return;
     changed.cartocss && this.setCartoCSS(this.model.get('cartocss'));
+  },
+
+  setFilters: function() {
+    this.provider.setFilters(this._filters);
+    this._reloadTiles();
+    return this;
+  },
+
+  filterByRange: function(variableName, start, end) {
+    this._filters[variableName] = {type: 'range',  range: {start: start, end: end} }
+    this._filtersChanged()
+    this.fire('dataUpdate')
+    return this
+  },
+
+  filterByCat: function(variableName, categories, exclusive) {
+    this._filters[variableName] = {type: 'cat',  categories: categories, exclusive: !!exclusive };
+    this._filtersChanged()
+    return this
+  },
+
+  clearFilter: function(name){
+    if(name) {
+      delete this._filters[name]
+    }
+    else {
+      this._filters = {}
+    }
+    this._filtersChanged()
+    return this
+  },
+
+  _filtersChanged:function(){
+    this.provider._filters = this._filters;
+    this._clearTileCaches()
+    this._render()
+  },
+
+  getHistogramForDataset: function(varName, start, end, bins, own_filter, callback) {
+    var tiles = [{x: 0, y: 0, z: 0}];
+    this.provider.getHistogramForTiles(varName, start, end, bins, tiles, own_filter, callback);
+  },
+
+  getAggregationForVisibleRegion: function(varName, agg, own_filter, callback) {
+    var tiles = this.visibleTiles();
+    this.provider.getAggregationForTiles(varName, agg, tiles, own_filter, callback);
+  },
+
+  getHistogramForVisibleRegion: function(varName, start, end, bins, own_filter, callback) {
+    var tiles = this.visibleTiles();
+    this.provider.getHistogramForTiles(varName, start, end, bins, tiles, own_filter, callback);
+  },
+
+  getCategoriesForVisibleRegion: function(varName, callback){
+    var tiles = this.visibleTiles();
+    this.provider.getCategoriesForTiles(varName, tiles, callback);
+  },
+
+  // override default getValues to be able to handle categories
+  getValues: function(step) {
+    var values = [];
+    var idx = 0;
+    var mappedValues = [];
+    step = step === undefined ? this.key: step;
+    var t, tile;
+    for(t in this._tiles) {
+      tile = this._tiles[t];
+      if (tile) {
+        this.renderer.getValues(tile, step, values);
+        // map the categories
+        var mapping = tile.categories[step];
+        if (mapping) {
+          for (var i = idx; i <= values.length - idx; ++i) {
+            mappedValues.push(mapping[values[i]]);
+          }
+          idx = values.length;
+        }
+      }
+    }
+    if (mappedValues.length) {
+      return mappedValues;
+    }
+    return values;
   }
 
 });

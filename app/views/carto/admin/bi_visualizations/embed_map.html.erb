@@ -5,7 +5,7 @@
     <title>CartoDB</title>
     <meta name=viewport content="width=device-width initial-scale=1">
     <%= stylesheet_link_tag 'dashboard_embed.css', :media => 'all' %>
-
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700' rel='stylesheet' type='text/css'>
     <style type="text/css">
       html, body {
         position:relative;
@@ -14,6 +14,7 @@
         margin: 0;
       }
     </style>
+    <%= javascript_include_tag 'dashboard_embed.js' -%>
   </head>
   <body>
     <div class="Dashboard-canvas js-dashboard">
@@ -25,16 +26,17 @@
     </div>
     <div class="Widget-canvas js-canvas"></div>
 
-    <%= javascript_include_tag 'dashboard_embed.js' -%>
-
     <script>
       var viz = <%= @bi_visualization.viz_json %>;
 
       window.onload = function() {
-        cartodb.createVis('map', viz, opts)
-          .error(function(e) {
-            console.log(e);
-          });
+        cartodb.createVis('map', viz, {
+          no_cdn: false,
+          layer_selector: false
+        })
+        .error(function(e) {
+          console.log(e);
+        });
       }
     </script>
   </body>

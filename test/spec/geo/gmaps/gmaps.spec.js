@@ -247,7 +247,7 @@ var GmapsPathView = require('cdb/geo/gmaps/gmaps-path-view');
       });
 
       expect(mapView.map_googlemaps.get('draggable')).toBeFalsy();
-      expect(mapView.map_googlemaps.get('disableDoubleClickZoom')).toBeFalsy();
+      expect(mapView.map_googlemaps.get('disableDoubleClickZoom')).toBeTruthy();
     });
 
   });

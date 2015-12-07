@@ -4,27 +4,27 @@ var d3 = cartodb.d3
 
 DENSITY_CARTOCSS = [
 '#layer {',
-  'marker-width: 1; ',
-  'marker-fill-opacity: 0.7;',
+'[zoom > 13] {',
+  'marker-width: 3; ',
+  'marker-fill-opacity: 1;',
   'comp-op: screen;',
-  '[value > 4]  {marker-fill:  #654964;}',
-  '[value > 10] {marker-fill:  #977197;}',
-  '[value > 15] {marker-fill:  #B086B3;}',
-  '[value > 20] {marker-fill:  #CA9BCF;}',
-  '[value > 25] {marker-fill:  #e2cae5;}',
-  '[zoom>=9] {',
-    'marker-width: 2;',
-  '}',
-  '[zoom>=11]{',
-    'marker-fill-opacity: 1;',
-    '[value > 1] { marker-width: 1; }',
-    '[value > 2] { marker-width: 2;  }',
-    '[value > 4] { marker-width: 3; }',
-    '[value > 10] { marker-width: 4;  }',
-    '[value > 15] { marker-width: 5; }',
-    '[value > 20] {marker-width: 6;  }',
-    '[value > 25] {marker-width: 7;  }',
-  '} ',
+  'marker-fill:  #7ce3ae;',
+  'marker-line-color: #157242;',
+  'marker-line-width: 0.5;',
+  '[zoom>=16] {marker-width: 4;}',
+'}',
+'[zoom <= 13] {',
+  'marker-width: 1; ',
+  'marker-fill-opacity: 0.8;',
+  'comp-op: screen;',
+  '[value > 4]  {marker-fill: #0E5933;}',
+  '[value > 10] {marker-fill:  #157242;}',
+  '[value > 15] {marker-fill:  #1B8B52;}',
+  '[value > 20] {marker-fill:  #22A562;}',
+  '[value > 25] {marker-fill:  #a6ecc8;}',
+  '[zoom>=11] { marker-width: 2;}',
+  '[zoom>=13] { marker-width: 3;}',
+'}',
 '}'].join('\n');
 
 
@@ -60,14 +60,11 @@ var MiniPecan = {
             '[zoom>=14]{marker-width: 6;}',
             '[zoom>=16]{marker-width: 8;}',
             '[zoom>=18]{marker-width: 10;}',
-            '[zoom>=15]{marker-line-width: 5;}',
-            '[zoom>=16]{marker-line-width: 4;}',
-            '[zoom>=18]{marker-line-width: 11;}',
           '}',
           '::fill[zoom>=1] {',
             'marker-width: 1;',
             'marker-opacity: 1;',
-            'marker-fill: #c94a79;',
+            'marker-fill: #5B788E;',
             'marker-line-width: 0;',
             '[zoom>=9]{marker-width: 1;}',
             '[zoom>=11]{marker-width: 1.5;}',
@@ -105,13 +102,15 @@ var MiniPecan = {
     buckets = buckets || 5;
     var c = [
       '#layer {',
-      '  marker-width: 1;',
-      '  marker-fill-opacity: 0.7;',
-      '  marker-fill: #FF2900; ',
+        'marker-width: 2;',
+        'marker-fill-opacity: 0.8;',
+        'marker-fill: #7ce3ae; ',
+        'marker-line-color: #157242;',
+        'marker-line-width: 0.5;'
     ]
     for (var i = 0; i < buckets; ++i) {
       var threshold = d3.quantile(values, (i+1)/buckets);
-      c.push('[value > ' + threshold + ']{ marker-width: ' + ((i+1)*2) + ';}')
+      c.push('[value > ' + threshold + ']{ marker-width: ' + ((i+1)*2.0 + 2.0) + ';}')
     }
     c.push('}');
     return c.join('\n');

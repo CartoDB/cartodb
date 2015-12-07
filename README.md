@@ -24,13 +24,12 @@ etc) using a web form and then make it public or private.
 
 After it is uploaded, you can visualize it in a table or on a map, search
 it using SQL, and apply map styles using CartoCSS. You can even access it
-using the CartoDB [API OVERVIEW](http://developers.cartodb.com/documentation/apis-overview.html)
-and [SQL API](http://developers.cartodb.com/documentation/sql-api.html), or export it
+using the CartoDB [APIs](http://docs.cartodb.com/#cartodb-platform), or export it
 to a file.
 
 In other words, with CartoDB you can make awesome maps and build
 powerful geospatial applications! Definitely check out the [CartoDB
-Develop](http://cartodb.com/develop) for interactive examples
+Platform](https://cartodb.com/platform) for interactive examples
 and code.
 
 

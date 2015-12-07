@@ -33,7 +33,6 @@ module Carto
           Carto::Api::BiVisualizationPresenter.new(v).to_poro
         end
 
-
         # total_entries - number of datasets owned
         # total_user_entries - number of datasets created by user
         # right now they're the same since no privacy settings are implemented:

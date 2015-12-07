@@ -71,6 +71,7 @@ class User < Sequel::Model
 
 
   MIN_PASSWORD_LENGTH = 6
+  MAX_PASSWORD_LENGTH = 64
 
   GEOCODING_BLOCK_SIZE = 1000
 
@@ -372,9 +373,12 @@ class User < Sequel::Model
     if @new_password != @new_password_confirmation
       errors.add(:new_password, "New password and confirm password are not the same")
     end
-    errors.add(:new_password, "Missing new password") if @new_password.nil?
-    if !@new_password.nil? && @new_password.length < MIN_PASSWORD_LENGTH
-      errors.add(:new_password, "New password is too short (6 chars min)")
+
+    if !@new_password.nil?
+      errors.add(:new_password, "New password can't be blank")
+    else
+      errors.add(:new_password, "New password is too short (#{MIN_PASSWORD_LENGTH} chars min)") if @new_password.length < MIN_PASSWORD_LENGTH
+      errors.add(:new_password, "New password is too long (#{MAX_PASSWORD_LENGTH} chars max)") if @new_password.length >= MAX_PASSWORD_LENGTH
     end
   end
 
@@ -458,8 +462,9 @@ class User < Sequel::Model
   end
 
   def password=(value)
-    if !value.nil? && value.length < MIN_PASSWORD_LENGTH
-      errors.add(:password, "must be at least #{MIN_PASSWORD_LENGTH} characters long")
+    if !value.nil?
+      errors.add(:password, "Must be at least #{MIN_PASSWORD_LENGTH} characters long") if value.length < MIN_PASSWORD_LENGTH
+      errors.add(:password, "Must be at most #{MAX_PASSWORD_LENGTH} characters long") if value.length >= MAX_PASSWORD_LENGTH
       return
     end
 

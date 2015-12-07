@@ -10,7 +10,9 @@ class Carto::User < ActiveRecord::Base
   extend Forwardable
 
   MIN_PASSWORD_LENGTH = 6
+  MAX_PASSWORD_LENGTH = 64
   GEOCODING_BLOCK_SIZE = 1000
+
   # INFO: select filter is done for security and performance reasons. Add new columns if needed.
   DEFAULT_SELECT = "users.email, users.username, users.admin, users.organization_id, users.id, users.avatar_url," +
                    "users.api_key, users.database_schema, users.database_name, users.name, users.location," +
@@ -64,7 +66,7 @@ class Carto::User < ActiveRecord::Base
   end
 
   def password=(value)
-    return if !value.nil? && value.length < MIN_PASSWORD_LENGTH
+    return if !value.nil? && value.length < MIN_PASSWORD_LENGTH && value.length >= MAX_PASSWORD_LENGTH
 
     @password = value
     self.salt = new_record? ? service.class.make_token : ::User.filter(:id => self.id).select(:salt).first.salt

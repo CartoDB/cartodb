@@ -407,6 +407,23 @@ describe User do
     user.destroy
   end
 
+  it "should validate that password presence and length" do
+    user = ::User.new
+    user.username = "adminipop"
+    user.email = "adminipop@example.com"
+
+    user.valid?.should be_false
+    user.errors[:password].should be_present
+
+    user.password = 'short'
+    user.valid?.should be_false
+    user.errors[:password].should be_present
+
+    user.password = 'manolo' * 11
+    user.valid?.should be_false
+    user.errors[:password].should be_present
+  end
+
   it "should set default statement timeout values" do
     @user.in_database["show statement_timeout"].first[:statement_timeout].should == "5min"
     @user.in_database(as: :public_user)["show statement_timeout"].first[:statement_timeout].should == "5min"

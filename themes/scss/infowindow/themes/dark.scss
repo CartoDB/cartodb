@@ -1,0 +1,75 @@
+/**
+ *  CartoDB infowindow dark styles
+ */
+
+$sBg-dark: #2E3C43;
+
+.Cdb-infowindow--dark {
+  background: $sBg-dark;
+  color: #fff;
+
+  
+  .Cdb-infowindow-title {
+    color: #fff
+  }
+  .Cdb-infowindow-subtitle {
+    color: rgba(255, 255, 255, .32);
+  }
+  .is-scroll:after {
+    background-image: linear-gradient(-180deg, rgba(255, 255, 255 , 0) 0%, $sBg-dark 100%);
+  }
+  .Cdb-hook-inner {
+    background: $sBg-dark
+  }
+
+  .Cdb-hook:before {
+    border-top: 16px solid $sBg-dark;
+  }
+
+  .Cdb-infowindow-media-title {
+    .Cdb-infowindow-subtitle {
+      color: #fff;
+    }
+    .Cdb-infowindow-title {
+      color: #fff;
+    }
+  }
+
+  .Cdb-infowindow-tabs {
+    background: rgba(0, 0, 0, .16);
+  }
+
+  .Cdb-infowindow-tabs-links {
+    &.is-active {
+      color: #fff;
+      border-bottom: 1px solid #fff;
+    }
+  }
+
+  .Cdb-infowindow-navigation {
+    border-top: 1px solid rgba(0, 0, 0, .24);
+    color: rgba(255, 255, 255, .64);
+  }
+
+  .Cdb-loading-subtitle {
+    background: #282C2F;
+  }
+  .Cdb-loading-title {
+    background: #282C2F;
+  }
+
+  .Cdb-loading-bg {
+    opacity: .3;
+  }
+}
+
+.Cdb-infowindow-header-bg--dark {
+  .Cdb-infowindow-subtitle {
+    color: #636D72;
+  } 
+  .Cdb-infowindow-title {
+    color: #2E3C43;
+  }
+}
+
+

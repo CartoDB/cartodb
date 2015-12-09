@@ -1,0 +1,28 @@
+// Data info element styles
+// --------------------------------------------------
+
+@import '../variables/sizes';
+@import '../variables/mixins';
+
+.CDB-Widget-info {
+  @include display-flex();
+  @include justify-content(flex-start, start);
+  @include align-items(center);
+  width: 100%;
+}
+.CDB-Widget-infoItem {
+  margin-right: $sMargin-element;
+  &:last-child {
+    margin-right: 0;
+  }
+}
+
+// Widget sizes
+@include media-query() {
+  .CDB-Widget-info {
+    @include justify-content(space-between, justify);
+  }
+  .CDB-Widget-infoItem {
+    margin-right: 0;
+  }
+}

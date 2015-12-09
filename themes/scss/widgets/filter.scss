@@ -1,0 +1,31 @@
+// Filter element styles
+// --------------------------------------------------
+
+@import '../variables/sizes';
+@import '../variables/mixins';
+
+.CDB-Widget-filter {
+  display: block;
+  max-height: 200px;
+  margin: 5px 0 8px;
+  transition: max-height 200ms ease-in;
+}
+.CDB-Widget-filter.is-hidden {
+  max-height: 0;
+  transition: max-height 100ms ease-out;
+  overflow: hidden;
+}
+.CDB-Widget-filterButtons {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center);
+}
+.CDB-Widget-filterButton {
+  margin-right: 8px;
+  &:last-child {
+    margin-right: 0;
+  }
+}
+.CDB-Widget-filterButton.is-hidden {
+  display: none;
+}

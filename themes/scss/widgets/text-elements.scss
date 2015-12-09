@@ -1,0 +1,70 @@
+// Text elements styles
+// ----------------------------------------------
+
+@import '../variables/sizes';
+@import '../variables/mixins';
+
+.CDB-Widget-textBigger { // 16 size
+  @include text-overflow();
+  font-size: $sFontSize-huge;
+  font-weight: $sFontWeight-normal;
+}
+.CDB-Widget-textBig { // 16 size
+  @include text-overflow();
+  display: inline-block;
+  font-size: $sFontSize-larger;
+  font-weight: $sFontWeight-normal;
+  line-height: $sFontSize-normal + 6;
+}
+.CDB-Widget-textBig--bold {
+  font-weight: $sFontWeight-semibold;
+}
+.CDB-Widget-textNormal { // 14 size
+  @include text-overflow();
+  font-size: $sFontSize-normal;
+  font-weight: $sFontWeight-normal;
+  line-height: $sFontWeight-normal + 1;
+}
+.CDB-Widget-textNormal--bold {
+  font-weight: $sFontWeight-semibold;
+}
+.CDB-Widget-textSmall { // 12 size
+  @include text-overflow();
+  font-size: $sFontSize-small;
+  font-weight: $sFontWeight-normal;
+  line-height: $sFontSize-small + 2;
+}
+.CDB-Widget-textSmall--bold {
+  font-weight: $sFontWeight-semibold;
+}
+.CDB-Widget-textSmall--upper {
+  line-height: $sFontSize-small + 1;
+  text-transform: uppercase;
+}
+.CDB-Widget-textSmaller { // 10 size
+  @include text-overflow();
+  font-size: $sFontSize-smaller;
+  font-weight: $sFontWeight-normal;
+  line-height: $sFontSize-smaller + 3;
+}
+.CDB-Widget-textSmaller--bold {
+  font-weight: $sFontWeight-semibold;
+}
+.CDB-Widget-textSmaller--upper {
+  text-transform: uppercase;
+}
+.CDB-Widget-textSmaller--noEllip {
+  text-overflow: inherit;
+  white-space: inherit;
+  overflow: inherit;
+}
+.CDB-Widget-textBigger--maxWidth {
+  max-width: 304px;
+}
+
+// Widget media query
+@include media-query() {
+  .CDB-Widget-textBigger--maxWidth {
+    max-width: 225px;
+  }
+}

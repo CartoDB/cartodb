@@ -1,0 +1,92 @@
+// Default styles for widgets
+//
+// Expected layout hierarchy:
+//   CDB-Widget
+//     CDB-Widget-loader
+//     CDB-Widget-error
+//     CDB-Widget-body
+//       CDB-Widget-header
+//       CDB-Widget-content
+//       CDB-Widget-footer
+//
+// --------------------------------------------------
+
+@import '../variables/sizes';
+@import '../variables/mixins';
+
+.CDB-Widget {
+  position: relative;
+  width: $desktopLayout;
+  // Due to line-heights, better to substract some pixels in the top
+  padding: ($sMargin-section - 4) 0;
+  box-sizing: border-box;
+  border-bottom: 2px solid transparent;
+  font-family: 'Open Sans';
+}
+.CDB-Widget--timeSeries {
+  width: 100%; // override default width
+}
+.CDB-Widget-title {
+  @include display-flex();
+  @include justify-content(flex-start, start);
+  @include align-items(center);
+  width: 100%;
+  margin: 0 0 6px;
+}
+.CDB-Widget-header,
+.CDB-Widget-footer,
+.CDB-Widget-content {
+  margin-right: $sMargin-section;
+  margin-left: $sMargin-section;
+}
+.CDB-Widget-header--timeSeries {
+  @include display-flex();
+  @include justify-content(flex-start, start);
+  @include align-items(center);
+}
+.CDB-Widget-content {
+  position: relative;
+  margin-top: $sMargin-element;
+}
+.CDB-Widget-content--noSidesMargin {
+  margin-right: 0;
+  margin-left: 0;
+}
+.CDB-Widget-content--histogram {
+  margin-top: 0;
+  margin-left: 20px;
+}
+.CDB-Widget-body.is-collapsed {
+  height: 22px;
+  overflow: hidden;
+}
+
+// Widget media query
+@include media-query() {
+  .CDB-Widget {
+    width: $mobileLayout;
+    min-width: $mobileLayout;
+    min-height: 280px;
+    border-right: 2px solid transparent;
+    border-bottom: 0;
+  }
+  .CDB-Widget--timeSeries {
+    width: 100%; // override default width
+    height: 64px;
+    min-height: 64px; // override default min-height
+    max-height: 64px;
+  }
+  .CDB-Widget-body--timeSeries {
+    @include display-flex();
+    @include justify-content(flex-start, start);
+    @include align-items(flex-start, start);
+    @include flex-direction(row);
+  }
+  .CDB-Widget-header--timeSeries {
+    margin-right: 0; //override default, set on header to avoid double margin for the torque use-case
+  }
+  .CDB-Widget-content--timeSeries {
+    width: 100%;
+    margin-top: 0; // override default
+  }
+}

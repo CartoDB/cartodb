@@ -1,0 +1,29 @@
+// Widget layout styles
+// ----------------------------------------------
+
+@import '../variables/sizes';
+@import '../variables/mixins';
+
+.CDB-Widget-contentSpaced {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center);
+}
+.CDB-Widget-contentSpaced--sideMargins {
+  margin-right: $sMargin-section;
+  margin-left: $sMargin-section;
+}
+.CDB-Widget-contentSpaced--topAligned {
+  @include align-items(flex-start);
+}
+.CDB-Widget-contentSpaced--start {
+  @include justify-content(flex-start, start);
+  text-align: left;
+}
+.CDB-Widget-contentFlex {
+  @include display-flex();
+  @include align-items(center);
+}
+.CDB-Widget-contentFull {
+  width: 100%;
+}

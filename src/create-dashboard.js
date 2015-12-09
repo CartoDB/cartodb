@@ -1,3 +1,3 @@
 module.exports = function(selector, diJSON) {
-  console.warn('TBD');
+  console.warn('TBD', arguments);
 };

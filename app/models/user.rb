@@ -394,7 +394,6 @@ class User < Sequel::Model
   end
 
   def change_password(old_password, new_password_value, new_password_confirmation_value)
-
     # First of all reset fields
     @old_password_validated = nil
     @new_password_confirmation = nil

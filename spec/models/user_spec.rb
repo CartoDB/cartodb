@@ -407,7 +407,7 @@ describe User do
     user.destroy
   end
 
-  it "should validate that password presence and length" do
+  it "should validate password presence and length" do
     user = ::User.new
     user.username = "adminipop"
     user.email = "adminipop@example.com"

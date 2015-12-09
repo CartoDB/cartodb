@@ -66,7 +66,9 @@ class Carto::User < ActiveRecord::Base
   end
 
   def password=(value)
-    return if !value.nil? && value.length < MIN_PASSWORD_LENGTH && value.length >= MAX_PASSWORD_LENGTH
+    return if value.nil?
+    return if value.length < MIN_PASSWORD_LENGTH
+    return if value.length >= MAX_PASSWORD_LENGTH
 
     @password = value
     self.salt = new_record? ? service.class.make_token : ::User.filter(:id => self.id).select(:salt).first.salt

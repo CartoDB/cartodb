@@ -374,7 +374,7 @@ class User < Sequel::Model
       errors.add(:new_password, "New password and confirm password are not the same")
     end
 
-    if !@new_password.nil?
+    if @new_password.nil?
       errors.add(:new_password, "New password can't be blank")
     else
       errors.add(:new_password, "New password is too short (#{MIN_PASSWORD_LENGTH} chars min)") if @new_password.length < MIN_PASSWORD_LENGTH
@@ -465,11 +465,12 @@ class User < Sequel::Model
     if !value.nil?
       errors.add(:password, "Must be at least #{MIN_PASSWORD_LENGTH} characters long") if value.length < MIN_PASSWORD_LENGTH
       errors.add(:password, "Must be at most #{MAX_PASSWORD_LENGTH} characters long") if value.length >= MAX_PASSWORD_LENGTH
-      return
     end
 
+    return if value.nil? || !errors.empty?
+
     @password = value
-    self.salt = new?? self.class.make_token : ::User.filter(:id => self.id).select(:salt).first.salt
+    self.salt = new? ? self.class.make_token : ::User.filter(:id => self.id).select(:salt).first.salt
     self.crypted_password = self.class.password_digest(value, salt)
   end
 

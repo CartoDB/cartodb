@@ -17,6 +17,9 @@
     gba(0, 0, 0, 0.16);
     content: '';
   }
+  .CDB-infowindow-tabs {
+    background: rgba(0, 0, 0, 0.16);
+  }
   .CDB-infowindow-tabsLinks {
     color: #FFF;
     &.is-active {

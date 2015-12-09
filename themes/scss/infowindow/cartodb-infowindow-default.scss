@@ -35,6 +35,9 @@
     padding-top: 12px;
   }
 }
+.CDB-infowindow-header .CDB-infowindow-tabs {
+  margin: -20px -24px 18px;
+}
 .CDB-infowindow-subtitle {
   font-size: 9px;
   font-weight: $sFontWeight-lighter;
@@ -61,12 +64,7 @@
     content: '';
   }
 }
-.CDB-infowindow-list {
-  display: none;
-}
-.CDB-infowindow-list:first-child {
-  display: block;
-}
+
 .CDB-infowindow-listItem {
   margin-top: 8px;
   &:first-child {
@@ -178,6 +176,7 @@
 .CDB-infowindow-tabsLinks {
   display: block;
   padding-bottom: 13px;
+  text-decoration: none;
 }
 .CDB-infowindow-navigation {
   position: relative;

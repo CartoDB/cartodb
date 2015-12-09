@@ -143,6 +143,26 @@ class User < Sequel::Model
     self.private_tables_enabled || privacy == UserTable::PRIVACY_PUBLIC
   end
 
+  def valid_password?(key, value, confirmation_value)
+    if value.nil?
+      errors.add(key, "New password can't be blank")
+    else
+      if value != confirmation_value
+        errors.add(key, "New password doesn't match confirmation")
+      end
+
+      if value.length < MIN_PASSWORD_LENGTH
+        errors.add(key, "Must be at least #{MIN_PASSWORD_LENGTH} characters long")
+      end
+
+      if value.length >= MAX_PASSWORD_LENGTH
+        errors.add(key, "Must be at most #{MAX_PASSWORD_LENGTH} characters long")
+      end
+    end
+
+    errors[key].empty?
+  end
+
   ## Callbacks
   def before_validation
     self.email = self.email.to_s.strip.downcase
@@ -370,23 +390,11 @@ class User < Sequel::Model
 
     errors.add(:old_password, "Old password not valid") unless @old_password_validated
 
-    if @new_password != @new_password_confirmation
-      errors.add(:new_password, "New password and confirm password are not the same")
-    end
-
-    if @new_password.nil?
-      errors.add(:new_password, "New password can't be blank")
-    else
-      if @new_password.length < MIN_PASSWORD_LENGTH
-        errors.add(:new_password, "New password is too short (#{MIN_PASSWORD_LENGTH} chars min)")
-      end
-      if @new_password.length >= MAX_PASSWORD_LENGTH
-        errors.add(:new_password, "New password is too long (#{MAX_PASSWORD_LENGTH} chars max)")
-      end
-    end
+    valid_password?(:new_password, @new_password, @new_password_confirmation)
   end
 
   def change_password(old_password, new_password_value, new_password_confirmation_value)
+
     # First of all reset fields
     @old_password_validated = nil
     @new_password_confirmation = nil
@@ -399,7 +407,7 @@ class User < Sequel::Model
     @old_password_validated = validate_old_password(old_password)
     return unless @old_password_validated
 
-    return unless new_password_value == new_password_confirmation_value && !new_password_value.nil?
+    return unless valid_password?(:new_password, new_password_value, new_password_confirmation_value)
 
     # Must be set AFTER validations
     set_last_password_change_date
@@ -466,16 +474,7 @@ class User < Sequel::Model
   end
 
   def password=(value)
-    if !value.nil?
-      if value.length < MIN_PASSWORD_LENGTH
-        errors.add(:password, "Must be at least #{MIN_PASSWORD_LENGTH} characters long")
-      end
-      if value.length >= MAX_PASSWORD_LENGTH
-        errors.add(:password, "Must be at most #{MAX_PASSWORD_LENGTH} characters long")
-      end
-    end
-
-    return if value.nil? || !errors.empty?
+    return if !valid_password?(:password, value, value)
 
     @password = value
     self.salt = new? ? self.class.make_token : ::User.filter(id: id).select(:salt).first.salt

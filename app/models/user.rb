@@ -644,13 +644,7 @@ class User < Sequel::Model
   #       improved to skip "service" tables
   #
   def tables_effective
-    in_database do |user_database|
-      user_database.synchronize do |conn|
-        query = "select table_name::text from information_schema.tables where table_schema = 'public'"
-        tables = user_database[query].all.map { |i| i[:table_name] }
-        return tables
-      end
-    end
+    self.db_service.tables_effective('public')
   end
 
   # Gets the list of OAuth accounts the user has (currently only used for synchronization)

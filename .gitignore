@@ -3,5 +3,5 @@
 node_modules/*
 !node_modules/app
 npm-debug.log
-spec/
+spec/index.html #specrunner
 vendor

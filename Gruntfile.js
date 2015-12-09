@@ -2,39 +2,51 @@ module.exports = function(grunt) {
   require('load-grunt-tasks')(grunt);
   require('time-grunt')(grunt);
 
-  var pkg = grunt.file.readJSON('package.json');
-
-  var config = {
-    dist: 'dist',
-    tmp: '.tmp',
-    pkg: pkg
-  };
-
   grunt.initConfig({
-    secrets: {},
-    config: config,
-    pkg: pkg,
-    clean: require('./grunt-tasks/clean').task(),
-    concat: require('./grunt-tasks/concat').task(grunt, config),
-    copy: require('./grunt-tasks/copy').task(),
-    cssmin: require('./grunt-tasks/cssmin').task(),
-    imagemin: require('./grunt-tasks/imagemin').task(),
-    sass: require('./grunt-tasks/scss').task(grunt, config)
+    config: {
+      dist: 'dist',
+      tmp: '.tmp',
+    },
+    pkg: grunt.file.readJSON('package.json'),
+    clean: require('./grunt-tasks/clean'),
+    concat: require('./grunt-tasks/concat'),
+    connect: require('./grunt-tasks/connect'),
+    copy: require('./grunt-tasks/copy'),
+    cssmin: require('./grunt-tasks/cssmin'),
+    browserify: require('./grunt-tasks/browserify'),
+    imagemin: require('./grunt-tasks/imagemin'),
+    jasmine: require('./grunt-tasks/jasmine'),
+    sass: require('./grunt-tasks/scss'),
+    watch: require('./grunt-tasks/watch'),
   });
 
-  // Define tasks order for each step as if run in isolation,
-  // when registering the actual tasks _.uniq is used to discard duplicate tasks from begin run
-  var allDeps = [
-  ];
-  var css = allDeps
-    .concat();
+  // required for browserify to use watch files instead
+  grunt.registerTask('preWatch', grunt.config.bind(grunt.config, 'config.doWatchify', true));
 
-  grunt.registerTask('default', [
+  grunt.registerTask('default', ['build']);
+  grunt.registerTask('build', [
     'clean:dist',
+
     'copy',
     'sass',
     'concat',
     'cssmin',
-    'imagemin'
+    'imagemin',
+
+    'browserify',
   ]);
+  grunt.registerTask('dev', [
+    'clean:dist',
+
+    'copy',
+    'sass',
+    'concat',
+    'cssmin',
+    'imagemin',
+
+    'preWatch', // required to be run before browserify, to use watchify instead
+    'browserify',
+    'connect',
+    'watch',
+  ])
 };

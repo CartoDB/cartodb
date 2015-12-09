@@ -478,8 +478,8 @@ class User < Sequel::Model
     return if value.nil? || !errors.empty?
 
     @password = value
-    salt = new? ? class.make_token : ::User.filter(id: self.id).select(:salt).first.salt
-    crypted_password = class.password_digest(value, salt)
+    self.salt = new? ? self.class.make_token : ::User.filter(id: id).select(:salt).first.salt
+    self.crypted_password = self.class.password_digest(value, salt)
   end
 
   def self.authenticate(email, password)

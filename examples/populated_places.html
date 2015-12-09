@@ -304,10 +304,10 @@
           }
         };
 
-        var dashboard = cartodb.deepInsights.createDashboard('.dashboard', diJSON);
-        // vizJSON_OPTS = {
-        //   no_cdn: false,
-        // }
+        var visOpts = {
+          no_cdn: false
+        };
+        var dashboard = cartodb.deepInsights.createDashboard('.dashboard', diJSON, visOpts);
         // .done(function(vis, layers) {
         //   window.layers = layers.models[1].layers;
         // })

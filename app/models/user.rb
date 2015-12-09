@@ -377,8 +377,12 @@ class User < Sequel::Model
     if @new_password.nil?
       errors.add(:new_password, "New password can't be blank")
     else
-      errors.add(:new_password, "New password is too short (#{MIN_PASSWORD_LENGTH} chars min)") if @new_password.length < MIN_PASSWORD_LENGTH
-      errors.add(:new_password, "New password is too long (#{MAX_PASSWORD_LENGTH} chars max)") if @new_password.length >= MAX_PASSWORD_LENGTH
+      if @new_password.length < MIN_PASSWORD_LENGTH
+        errors.add(:new_password, "New password is too short (#{MIN_PASSWORD_LENGTH} chars min)")
+      end
+      if @new_password.length >= MAX_PASSWORD_LENGTH
+        errors.add(:new_password, "New password is too long (#{MAX_PASSWORD_LENGTH} chars max)")
+      end
     end
   end
 
@@ -463,15 +467,19 @@ class User < Sequel::Model
 
   def password=(value)
     if !value.nil?
-      errors.add(:password, "Must be at least #{MIN_PASSWORD_LENGTH} characters long") if value.length < MIN_PASSWORD_LENGTH
-      errors.add(:password, "Must be at most #{MAX_PASSWORD_LENGTH} characters long") if value.length >= MAX_PASSWORD_LENGTH
+      if value.length < MIN_PASSWORD_LENGTH
+        errors.add(:password, "Must be at least #{MIN_PASSWORD_LENGTH} characters long")
+      end
+      if value.length >= MAX_PASSWORD_LENGTH
+        errors.add(:password, "Must be at most #{MAX_PASSWORD_LENGTH} characters long")
+      end
     end
 
     return if value.nil? || !errors.empty?
 
     @password = value
-    self.salt = new? ? self.class.make_token : ::User.filter(:id => self.id).select(:salt).first.salt
-    self.crypted_password = self.class.password_digest(value, salt)
+    salt = new? ? class.make_token : ::User.filter(id: self.id).select(:salt).first.salt
+    crypted_password = class.password_digest(value, salt)
   end
 
   def self.authenticate(email, password)

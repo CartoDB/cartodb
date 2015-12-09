@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>DeepInsights | Populated Places</title>
     <meta name=viewport content="width=device-width initial-scale=1">
-    <link rel="stylesheet" href="/vendor/themes/css/cartodb.css" />
+    <link rel="stylesheet" href="../vendor/themes/css/cartodb.css" />
     <script src="../vendor/cartodb.uncompressed.js"></script>
     <script src="../vendor/cartodb.mod.torque.uncompressed.js"></script>
     <script src="../dist/cartodb-deep-insights.js"></script>
@@ -25,20 +25,98 @@
     <script>
       window.onload = function() {
         var diJSON = {
+          "title": "NBA arenas areas of influence",
+          "description": "The NBA Territory Analysis Tool will allow individual teams to analyze their current and potential marketing territories. Users can see visual reports and develop analyses on the fly.",
+          "user": {
+            "fullname": "Emilio García",
+            "avatar_url": "https://s3.amazonaws.com/com.cartodb.users-assets.production/production/piensaenpixel/assets/20150507074635Captura%20de%20pantalla%202015-05-07%20a%20la%28s%29%2009.46.28.png"
+          },
+          "updated_at": "2015-10-26T11:50:30+00:00",
+
+          "datasource": {
+            "type": "public_map",
+            "user_name": "rochoa-st-ded02",
+            "maps_api_template": "https://{user}.cartodb-staging.com:443",
+            "force_cors": true, // This is sometimes set in the editor,
+            "stat_tag": "84ec6844-4b4b-11e5-9c1d-080027880ca6"
+          },
+
+          "widgets": {
+            "formula_widget_min": {
+              "layerId": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
+              "type": "formula",
+              "title": "Min population",
+              "column": "pop_max",
+              "operation": "min"
+            },
+            "formula_widget_max": {
+              "layerId": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
+              "type": "formula",
+              "title": "Max population",
+              "column": "pop_max",
+              "operation": "max"
+            },
+            "formula_widget_avg": {
+              "layerId": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
+              "type": "formula",
+              "title": "Avg population",
+              "column": "pop_max",
+              "operation": "avg"
+            },
+            "formula_widget_sum": {
+              "layerId": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
+              "type": "formula",
+              "title": "Total population",
+              "column": "pop_max",
+              "operation": "sum"
+            },
+            "formula_widget_count": {
+              "layerId": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
+              "type": "formula",
+              "title": "# places",
+              "column": "pop_max",
+              "operation": "count"
+            },
+            "histogram_widget_amount": {
+              "layerId": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
+              "type": "histogram",
+              "title": "Amount spent",
+              "column": "pop_max",
+              "bins": 10
+            },
+            "histogram_widget_pop_max": {
+              "layerId": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
+              "type": "histogram",
+              "title": "Population",
+              "column": "pop_max",
+              "bins": 10
+            },
+            'category_widget_adm0_a3': {
+              "layerId": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
+              "type": "aggregation",
+                "title": "Country",
+                "column": "adm0_a3",
+                "aggregation": "count",
+                "sync": true
+            },
+            'category_widget_labelrank': {
+              "layerId": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
+              "type": "aggregation",
+                "title": "Rank category",
+                "column": "labelrank",
+                "aggregation": "count",
+                "sync": true
+            }
+          },
+
           "vizJSON": {
             "id": "84ec6844-4b4b-11e5-9c1d-080027880ca6",
             "version": "0.1.0",
-            "title": "NBA arenas areas of influence",
             "likes": 0,
-            "description": "The NBA Territory Analysis Tool will allow individual teams to analyze their current and potential marketing territories. Users can see visual reports and develop analyses on the fly.",
             "scrollwheel": false,
             "legends": true,
             "url": null,
             "map_provider": "leaflet",
-            "user": {
-              "fullname": "Emilio García",
-              "avatar_url": "https://s3.amazonaws.com/com.cartodb.users-assets.production/production/piensaenpixel/assets/20150507074635Captura%20de%20pantalla%202015-05-07%20a%20la%28s%29%2009.46.28.png"
-            },
             "bounds": [
               [
                 -10.3967,
@@ -225,89 +303,14 @@
             "next": null,
             "transition_options": {
               "time": 0
-            },
-            "datasource": {
-              "type": "public_map",
-              "user_name": "rochoa-st-ded02",
-              "maps_api_template": "https://{user}.cartodb-staging.com:443",
-              "force_cors": true, // This is sometimes set in the editor,
-              "stat_tag": "84ec6844-4b4b-11e5-9c1d-080027880ca6"
             }
-          }, // END of vizJSON
-
-          "widgets": {
-            "formula_widget_min": {
-              "layerId": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
-              "type": "formula",
-              "title": "Min population",
-              "column": "pop_max",
-              "operation": "min"
-            },
-            "formula_widget_max": {
-              "layerId": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
-              "type": "formula",
-              "title": "Max population",
-              "column": "pop_max",
-              "operation": "max"
-            },
-            "formula_widget_avg": {
-              "layerId": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
-              "type": "formula",
-              "title": "Avg population",
-              "column": "pop_max",
-              "operation": "avg"
-            },
-            "formula_widget_sum": {
-              "layerId": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
-              "type": "formula",
-              "title": "Total population",
-              "column": "pop_max",
-              "operation": "sum"
-            },
-            "formula_widget_count": {
-              "layerId": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
-              "type": "formula",
-              "title": "# places",
-              "column": "pop_max",
-              "operation": "count"
-            },
-            "histogram_widget_amount": {
-              "layerId": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
-              "type": "histogram",
-              "title": "Amount spent",
-              "column": "pop_max",
-              "bins": 10
-            },
-            "histogram_widget_pop_max": {
-              "layerId": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
-              "type": "histogram",
-              "title": "Population",
-              "column": "pop_max",
-              "bins": 10
-            },
-            'category_widget_adm0_a3': {
-              "layerId": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
-              "type": "aggregation",
-                "title": "Country",
-                "column": "adm0_a3",
-                "aggregation": "count",
-                "sync": true
-            },
-            'category_widget_labelrank': {
-              "layerId": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
-              "type": "aggregation",
-                "title": "Rank category",
-                "column": "labelrank",
-                "aggregation": "count",
-                "sync": true
-            }
-          }
+          } // END of vizJSON
         };
 
         var visOpts = {
           no_cdn: false
         };
-        var dashboard = cartodb.deepInsights.createDashboard('.dashboard', diJSON, visOpts);
+        var dashboard = cartodb.deepInsights.createDashboard('#dashboard', diJSON, visOpts);
         // .done(function(vis, layers) {
         //   window.layers = layers.models[1].layers;
         // })

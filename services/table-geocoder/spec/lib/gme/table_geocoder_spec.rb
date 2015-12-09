@@ -30,7 +30,7 @@ describe Carto::Gme::TableGeocoder do
                            :process_results
                            ]
       interface_methods.each do |method|
-        table_geocoder.respond_to?(method).should == true
+        table_geocoder.respond_to?(method, true).should == true
       end
     end
 

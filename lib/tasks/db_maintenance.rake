@@ -1196,28 +1196,64 @@ namespace :cartodb do
       end
     end
 
-    desc "Configure geocoder extension configuration for user or organization"
-    task :configure_geocoder_extension_configuration, [:entity_name, :is_organization] => :environment do |t, args|
-      args.with_defaults(:entity_name => nil, :is_organization => false)
-      puts "ERROR: You have to provide an username or organization name as first parameter" if args[:entity_name].blank?
-      if args[:is_organization]
-        organizations = Organization.where(name: args[:entity_name]).all
-        raise "ERROR: Organization #{args[:entity_name]} don't exists" if organizations.blank?
-        run_for_organizations_owner(organizations) do |owner|
-          begin
-            owner.db_service.configure_geocoder_extension(owner.organization)
-          rescue => e
-            puts "Error trying to configure geocoder extension for org #{owner.organization.name}: #{e.message}"
-          end
-        end
-      else
-        user = User.where(username: args[:entity_name]).first
-        raise  "ERROR: User #{args[:entity_name]} don't exists" if user.nil?
+    # e.g. bundle exec rake cartodb:db:configure_geocoder_extension_for_organizations[org-name]
+    #      bundle exec rake cartodb:db:configure_geocoder_extension_for_organizations['',true]
+    desc "Configure geocoder extension configuration for organizations"
+    task :configure_geocoder_extension_for_organizations, [:organization_name, :all_organizations] => :environment do |t, args|
+      args.with_defaults(:organization_name => nil, :all_organizations => false)
+      if args[:organization_name].blank? and args[:all_organizations] != 'true'
+        # Double check before launch an update to all the orgs
+        raise "ERROR: You haven't passed an organization name and/or put the :all_organizations flag to true"
+      end
+      organizations = args[:organization_name].blank? ? ::Organization.all : ::Organization.where(name: args[:organization_name]).all
+      raise "ERROR: Organization #{args[:organization_name]} don't exists" if organizations.blank? and not args[:all_organizations]
+      run_for_organizations_owner(organizations) do |owner|
         begin
-          user.db_service.configure_geocoder_extension()
+          result = owner.db_service.install_and_configure_geocoder_api_extension
+          puts "Owner #{owner.username}: #{result ? 'OK' : 'ERROR'}"
+          # TODO Improved using the execute_on_users_with_index when orgs have a lot more users
+          owner.organization.users.each do |u|
+            if not u.organization_owner?
+              result = u.db_service.install_and_configure_geocoder_api_extension
+              puts "Organization user #{u.username}: #{result ? 'OK' : 'ERROR'}"
+            end
+          end
         rescue => e
-          puts "ERROR trying to configure geocoder extension for user #{user.username}: #{e.message}"
+          puts "Error trying to configure geocoder extension for org #{owner.organization.name}: #{e.message}"
         end
+      end
+    end
+
+    # e.g. bundle exec rake cartodb:db:configure_geocoder_extension_for_non_org_users[username]
+    #      bundle exec rake cartodb:db:configure_geocoder_extension_for_non_org_users['',true]
+    desc "Configure geocoder extension configuration for non-organization users"
+    task :configure_geocoder_extension_for_non_org_users, [:username, :all_users] => :environment do |t, args|
+      args.with_defaults(:username => nil, :all_users => false)
+      if args[:username].blank? and args[:all_users] != 'true'
+        # Double check before launch an update to all the orgs
+        raise "ERROR: You haven't passed an username and/or put the :all_users flag to true"
+      end
+      if not args[:username].blank?
+        user = ::User.where(username: args[:username]).first
+        raise  "ERROR: User #{args[:username]} don't exists" if user.nil?
+        begin
+          result = user.db_service.install_and_configure_geocoder_api_extension
+          puts "#{result ? 'OK' : 'ERROR'} #{user.username}"
+        rescue => e
+          puts "Error trying to configure geocoder extension for user #{u.name}: #{e.message}"
+        end
+      elsif args[:all_users]
+        # TODO Could be improved passing the query to execute_on_users_with_index function to filter by non-org-users
+        execute_on_users_with_index(:configure_geocoder_extension_for_non_org_users.to_s, Proc.new { |user, i|
+          begin
+            if not user.organization_user?
+              result = user.db_service.install_and_configure_geocoder_api_extension
+              puts "#{result ? 'OK' : 'ERROR'} #{user.username}"
+            end
+          rescue => e
+            puts "Error trying to configure geocoder extension for user #{u.name}: #{e.message}"
+          end
+        }, 1, 0.3)
       end
     end
   end

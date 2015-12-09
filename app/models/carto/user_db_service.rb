@@ -8,6 +8,7 @@ module Carto
       SCHEMA_CARTODB = 'cartodb'
       SCHEMA_CDB_GEOCODER = 'cdb_geocoder_client'
       SCHEMA_IMPORTER = 'cdb_importer'
+      SCHEMA_CDB_GEOCODER_API = 'cdb_geocoder_client'
 
     def initialize(user)
       @user = user
@@ -26,7 +27,7 @@ module Carto
     def self.build_search_path(user_schema, quote_user_schema = true)
       #TODO Add SCHEMA_CDB_GEOCODER when we open the geocoder API to all the people
       quote_char = quote_user_schema ? "\"" : ""
-      "#{quote_char}#{user_schema}#{quote_char}, #{SCHEMA_CARTODB}, #{SCHEMA_PUBLIC}"
+      "#{quote_char}#{user_schema}#{quote_char}, #{SCHEMA_CARTODB}, #{SCHEMA_CDB_GEOCODER_API}, #{SCHEMA_PUBLIC}"
     end
 
 

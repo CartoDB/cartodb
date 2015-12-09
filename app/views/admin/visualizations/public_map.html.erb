@@ -103,6 +103,12 @@
                   </li>
 
                   <li class="Navmenu-subItem">
+                    <a href="<%= Carto::StaticMapsURLHelper.new.url_for_static_map(request, @visualization, 640, 640) %>" target="_blank" class="Navmenu-link js-Navmenu-link--facebook">
+                      <i class="iconFont iconFont-Instagram Navmenu-icon"></i>
+                    </a>
+                  </li>
+
+                  <li class="Navmenu-subItem">
                     <a href="https://www.linkedin.com/shareArticle?mini=true&url=<%= url_encode(request.original_url) %>&title=<%= url_encode(@visualization.name) %>&summary=<%= url_encode(@visualization.description_clean ? "#{@visualization.description_clean} — Map created by #{@name} in CartoDB" : "Map created by #{@name} in CartoDB") %>&source=CartoDB" target="_blank" class="Navmenu-link js-Navmenu-link--linkedin">
                       <i class="iconFont iconFont-Linkedin Navmenu-icon"></i>
                     </a>

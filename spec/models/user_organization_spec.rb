@@ -81,4 +81,59 @@ describe UserOrganization do
 
     @owner.db_service.schema_exists?(@owner.username).should == false
   end
+
+  it 'keeps tables and metadata if rebuild_quota_trigger fails' do
+    ::User.any_instance.stubs(:create_in_central).returns(true)
+    ::User.any_instance.stubs(:update_in_central).returns(true)
+
+    @organization = Organization.new(quota_in_bytes: 1234567890, name: 'org-that-will-fail-2', seats: 5).save
+    @owner = create_user(quota_in_bytes: 524288000, table_quota: 500)
+    @owner.in_database.run('create table no_cartodbfied_table (test integer)')
+
+    # Checks that should also be met afterwards
+    @owner.database_schema.should == 'public'
+    @owner.real_tables.count.should == 1
+
+    @owner.db_service.schema_exists?(@owner.username).should == false
+
+    CartoDB::UserModule::DBService.any_instance.stubs(:rebuild_quota_trigger).raises(StandardError.new("Failure simulation"))
+
+    # Promote
+    owner_org = CartoDB::UserOrganization.new(@organization.id, @owner.id)
+    expect { owner_org.promote_user_to_admin }.to raise_error StandardError
+    @owner.reload
+
+    @owner.database_schema.should == 'public'
+    @owner.real_tables.count.should == 1
+
+    @owner.db_service.schema_exists?(@owner.username).should == false
+  end
+
+  # Currently, an existing, active organization is the only cause
+  # that might match #6202 sympthoms, but this is a guess.
+  it 'keeps tables and metadata if organization is already active' do
+    ::User.any_instance.stubs(:create_in_central).returns(true)
+    ::User.any_instance.stubs(:update_in_central).returns(true)
+
+    @owner = create_user(quota_in_bytes: 524288000, table_quota: 500)
+    @organization = Organization.new(quota_in_bytes: 1234567890, name: 'org-that-will-fail-3', seats: 5, owner_id: @owner.id).save
+
+    @owner.in_database.run('create table no_cartodbfied_table (test integer)')
+
+    # Checks that should also be met afterwards
+    @owner.database_schema.should == 'public'
+    @owner.real_tables.count.should == 1
+
+    @owner.db_service.schema_exists?(@owner.username).should == false
+
+    # Promote
+    owner_org = CartoDB::UserOrganization.new(@organization.id, @owner.id)
+    expect { owner_org.promote_user_to_admin }.to raise_error StandardError
+    @owner.reload
+
+    @owner.database_schema.should == 'public'
+    @owner.real_tables.count.should == 1
+
+    @owner.db_service.schema_exists?(@owner.username).should == false
+  end
 end

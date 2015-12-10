@@ -37,12 +37,16 @@ class Organization < Sequel::Model
 
   plugin :validation_helpers
 
+  DEFAULT_GEOCODING_QUOTA = 0
+
   def validate
     super
     validates_presence [:name, :quota_in_bytes, :seats]
     validates_unique   :name
     validates_format   /\A[a-z0-9\-]+\z/, :name, message: 'must only contain lowercase letters, numbers & hyphens'
     validates_integer  :default_quota_in_bytes, :allow_nil => true
+    validates_integer :geocoding_quota, allow_nil: false, message: 'geocoding_quota cannot be nil'
+
     if default_quota_in_bytes
       errors.add(:default_quota_in_bytes, 'Default quota must be positive') if default_quota_in_bytes <= 0
     end
@@ -61,6 +65,10 @@ class Organization < Sequel::Model
   def validate_for_signup(errors, quota_in_bytes)
     errors.add(:organization, "not enough seats") if remaining_seats <= 0
     errors.add(:quota_in_bytes, "not enough disk quota") if unassigned_quota <= 0 || (!quota_in_bytes.nil? && unassigned_quota < quota_in_bytes)
+  end
+
+  def before_validation
+    self.geocoding_quota ||= DEFAULT_GEOCODING_QUOTA
   end
 
   # Just to make code more uniform with user.database_schema

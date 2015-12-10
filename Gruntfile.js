@@ -1,3 +1,5 @@
+var _ = require('underscore');
+
 module.exports = function(grunt) {
   require('load-grunt-tasks')(grunt);
   require('time-grunt')(grunt);
@@ -23,30 +25,27 @@ module.exports = function(grunt) {
   // required for browserify to use watch files instead
   grunt.registerTask('preWatch', grunt.config.bind(grunt.config, 'config.doWatchify', true));
 
+  var baseTasks = [
+    'clean:dist',
+    'copy',
+    'sass',
+    'concat',
+    'cssmin',
+    'imagemin',
+    'browserify',
+  ];
+
   grunt.registerTask('default', ['build']);
-  grunt.registerTask('build', [
-    'clean:dist',
-
-    'copy',
-    'sass',
-    'concat',
-    'cssmin',
-    'imagemin',
-
-    'browserify',
-  ]);
-  grunt.registerTask('dev', [
-    'clean:dist',
-
-    'copy',
-    'sass',
-    'concat',
-    'cssmin',
-    'imagemin',
-
-    'preWatch', // required to be run before browserify, to use watchify instead
-    'browserify',
-    'connect',
-    'watch',
-  ])
+  grunt.registerTask('build', baseTasks);
+  grunt.registerTask('dev',
+    _.chain(baseTasks)
+      .clone()
+      .tap(function(tasks) {
+        var browserifyIdx = tasks.indexOf('browserify');
+        tasks.splice(browserifyIdx, 0, 'preWatch'); // add preWatch before browserify task
+        tasks.splice(tasks.length, 0, 'connect', 'watch'); // splice to append more tasks at end
+      })
+      .value()
+  );
+  grunt.registerTask('test', baseTasks.concat('jasmine'));
 };

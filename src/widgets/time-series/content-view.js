@@ -12,6 +12,9 @@ module.exports = View.extend({
 
   initialize: function() {
     this.model.once('change:data', this._onFirstLoad, this);
+    this.model.once('error', function() {
+      alert('the tiler does not support non-torque layers just yet…');
+    });
   },
 
   render: function() {

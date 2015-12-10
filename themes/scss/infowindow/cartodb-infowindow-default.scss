@@ -54,15 +54,6 @@
   max-height: 200px;
   padding-bottom: 24px;
   overflow: scroll;
-
-  &:after {
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    height: 32px;
-    content: '';
-  }
 }
 
 .CDB-infowindow-listItem {

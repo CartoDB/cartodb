@@ -1,5 +1,6 @@
 var _ = cdb._;
 var Model = cdb.core.Model;
+var log = cdb.log;
 var DashboardView = require('./dashboard-view');
 var WidgetsCollection = require('./widgets/widgets-collection');
 var WidgetModelFactory = require('./widgets/widget-model-factory');
@@ -96,32 +97,32 @@ module.exports = function(selector, diJSON, visOpts) {
   var widgetModels = [];
   for (var id in diJSON.widgets) {
     var d = diJSON.widgets[id];
-    var layer = _.find(interactiveLayers, function(l) {
-      return d.layerId === l.get('id');
-    });
-    var layerIndex = interactiveLayers.indexOf(layer);
+    var layer;
+
+    // Find the Layer that the Widget should be created for.
+    // a layerId has top-priority, otherwise it tries with a layerIndex, and even a subLayerIndex (if available)
+    if (d.layerId) {
+      layer = _.find(interactiveLayers, function(l) {
+        return d.layerId === l.get('id');
+      });
+    } else if (Number.isInteger(d.layerIndex)) {
+      layer = vis.map.layers.at(d.layerIndex);
+      if (layer && Number.isInteger(d.subLayerIndex)) {
+        layer = layer.layers.at(d.subLayerIndex);
+      }
+    }
+
     if (layer) {
+      var layerIndex = interactiveLayers.indexOf(layer);
       var attrs = _.extend({
         id: id
       }, d);
       var widgetModel = widgetModelFactory.createModel(layer, layerIndex, attrs);
       widgetModels.push(widgetModel);
     } else {
-      // TODO layers in a namedmap doesn't have layerId, need some other way to find the corresponding layer for a given widget
-      throw Error('no layer found for defined widget');
+      log.error('no layer found for widget ' + id + ':'  + JSON.stringify(d));
     }
   }
-  // _.each(interactiveLayers, function(layer, layerIndex) {
-  //   var widgetsAttrs = layer.get('widgets') || {};
-  //   for (var id in widgetsAttrs) {
-  //     var attrs = _.extend({
-  //       id: id
-  //     }, widgetsAttrs[id]);
-  //     var widgetModel = widgetModelFactory.createModel(layer, layerIndex, attrs);
-  //     widgetModels.push(widgetModel);
-  //   }
-  // });
-
   widgets.reset(widgetModels);
 
   dashboardView.render();

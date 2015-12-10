@@ -95,16 +95,17 @@ var Infowindow = View.extend({
       // Join plan fields values with content to work with
       // custom infowindows and CartoDB infowindows.
       var values = {};
+
       _.each(this.model.get('content').fields, function(pair) {
         values[pair.title] = pair.value;
-      })
+      });
 
       var obj = _.extend({
           content: {
             fields: fields,
             data: data
           }
-        },values);
+        }, values);
 
       this.$el.html(
         sanitize.html(this.template(obj), this.model.get('sanitizeTemplate'))
@@ -143,6 +144,9 @@ var Infowindow = View.extend({
   },
 
   _initBinds: function() {
+
+    _.bindAll(this, '_onKeyUp');
+
     this.model.bind('change:content change:alternative_names change:width change:maxHeight', this.render, this);
     this.model.bind('change:template_name', this._setTemplate, this);
     this.model.bind('change:latlng', this._update, this);
@@ -163,8 +167,14 @@ var Infowindow = View.extend({
     this.add_related_model(this.mapView);
   },
 
+  _onKeyUp: function(e) {
+    if (e && e.keyCode === 27) {
+      this._closeInfowindow();
+    }
+  },
+
   _getModelTemplate: function() {
-    return this.model.get("template_name")
+    return this.model.get("template_name");
   },
 
   /**
@@ -189,9 +199,9 @@ var Infowindow = View.extend({
       this.template = new Template({
         template: template,
         type: this.model.get('template_type') || 'mustache'
-      }).asFunction()
+      }).asFunction();
     } else {
-      this.template = template
+      this.template = template;
     }
 
     this.render();
@@ -236,7 +246,7 @@ var Infowindow = View.extend({
    */
   _sanitizeField: function(attr, template_name, pos) {
     // Check null or undefined :| and set both to empty == ''
-    if (attr.value == null || attr.value == undefined) {
+    if (attr.value === null || attr.value === undefined) {
       attr.value = '';
     }
 
@@ -255,7 +265,7 @@ var Infowindow = View.extend({
     var new_value = attr.value.toString();
 
     // If it is index 0, not any field type, header template type and length bigger than 30... cut off the text!
-    if (!attr.type && pos==0 && attr.value.length > 35 && template_name && template_name.search('_header_') != -1) {
+    if (!attr.type && pos === 0 && attr.value.length > 35 && template_name && template_name.search('_header_') !== -1) {
       new_value = attr.value.substr(0,32) + "...";
     }
 
@@ -266,11 +276,11 @@ var Infowindow = View.extend({
 
     // Is it the value a link?
     if (this._isValidURL(attr.value)) {
-      new_value = "<a href='" + attr.value + "' target='_blank'>" + new_value + "</a>"
+      new_value = "<a href='" + attr.value + "' target='_blank'>" + new_value + "</a>";
     }
 
     // If it is index 0, not any field type, header image template type... don't cut off the text or add any link!!
-    if (pos==0 && template_name.search('_header_with_image') != -1) {
+    if (pos === 0 && template_name.search('_header_with_image') !== -1) {
       new_value = attr.value;
     }
 
@@ -367,8 +377,8 @@ var Infowindow = View.extend({
    */
   _isValidURL: function(url) {
     if (url) {
-      var urlPattern = /^(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-|]*[\w@?^=%&amp;\/~+#-])?$/
-      return String(url).match(urlPattern) != null ? true : false;
+      var urlPattern = /^(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-|]*[\w@?^=%&amp;\/~+#-])?$/;
+      return String(url).match(urlPattern) !== null ? true : false;
     }
 
     return false;
@@ -411,7 +421,8 @@ var Infowindow = View.extend({
         }],
         data: {}
       }
-    })
+    });
+
     return this;
   },
 
@@ -430,7 +441,8 @@ var Infowindow = View.extend({
         }],
         data: {}
       }
-    })
+    });
+
     return this;
   },
 
@@ -467,6 +479,9 @@ var Infowindow = View.extend({
    *  Show infowindow (update, pan, etc)
    */
   show: function (no_pan) {
+
+    $(document).on('keyup', this._onKeyUp);
+
     if (this.model.get("visibility")) {
       this.$el.css({ left: -5000 });
       this._update(no_pan);
@@ -484,6 +499,7 @@ var Infowindow = View.extend({
    *  Set infowindow to hidden
    */
   hide: function (force) {
+    $(document).off('keyup', this._onKeyUp);
     if (force || !this.model.get("visibility")) this._animateOut();
   },
 
@@ -496,7 +512,7 @@ var Infowindow = View.extend({
       var delay = 0;
 
       if (!no_pan) {
-        var delay = this.adjustPan();
+        delay = this.adjustPan();
       }
 
       this._updatePosition();
@@ -580,7 +596,7 @@ var Infowindow = View.extend({
     containerWidth  = this.$el.width(),
     pos             = this.mapView.latLonToPixel(this.model.get("latlng")),
     adjustOffset    = {x: 0, y: 0};
-    size            = this.mapView.getSize()
+    size            = this.mapView.getSize();
     wait_callback   = 0;
 
     if (pos.x - offset[0] < 0) {

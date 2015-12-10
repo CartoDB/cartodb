@@ -45,7 +45,6 @@ module CartoDB
         p cmd
         IO.popen(cmd) do |io|
           puts io.gets while !io.eof?
-          Process.wait(io.pid)
         end
         throw "Error running #{cmd}, output code: #{$?}" if $? != 0
       end

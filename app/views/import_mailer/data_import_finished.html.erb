@@ -70,12 +70,12 @@
                 <tr>
                   <td align="left" style="padding: 5px 50px 10px 50px; font-family: Helvetica, Arial, sans-serif; font-size: 16px; color: #666666;">Dataset files</td>
                 </tr>
-                <% @files_stats.each do |file_data| %>
+                <% @files.each do |filename| %>
                   <tr>
-                    <td align="left" style="padding: 5px 50px 0px 50px; font-family: Helvetica, Arial, sans-serif;">
+                    <td align="left" style="padding: 5px 50px 10px 50px; font-family: Helvetica, Arial, sans-serif;">
                       <table width="100%" border="0" cellspacing="0" cellpadding="0">
                         <tr>
-                          <td align="left" style="font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif; color: #666666;"><strong>File name:</strong> <%= file_data["filename"] %></td>
+                          <td align="left" style="font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif; color: #666666;"><strong>File name:</strong> <%= filename %></td>
                         </tr>
                       </table>
                     </td>

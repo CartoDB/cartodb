@@ -170,9 +170,9 @@ module Resque
         extend ::Resque::Metrics
         @queue = :users
 
-        def self.perform(user_id, imported_tables, total_tables, first_imported_table, first_table, errors, import_file_stats)
+        def self.perform(user_id, imported_tables, total_tables, first_imported_table, first_table, errors, filenames)
           u = ::User.where(id: user_id).first
-          ImportMailer.data_import_finished(u, imported_tables, total_tables, first_imported_table, first_table, errors, import_file_stats).deliver
+          ImportMailer.data_import_finished(u, imported_tables, total_tables, first_imported_table, first_table, errors, filenames).deliver
         end
       end
 

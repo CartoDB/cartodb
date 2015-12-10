@@ -79,9 +79,11 @@ gem 'rollbar',               '0.12.14'
 gem 'resque',                '1.25.2'
 gem 'resque-metrics',        '0.1.1'
 
+# This is weird. In ruby 2 test-unit is required. We don't know why for sure
+gem 'test-unit'
+
 group :test do
   gem 'simplecov',                       require: false
-  gem 'test-unit'
   gem 'db-query-matchers',     '0.4.0'
   gem 'rack-test',             '0.6.2',  require: 'rack/test'
   gem 'factory_girl_rails',    '~> 4.0.0'

@@ -426,6 +426,7 @@ module CartoDB
           db.transaction do
             db.run('CREATE EXTENSION IF NOT EXISTS plproxy SCHEMA public')
             db.run("CREATE EXTENSION IF NOT EXISTS cdb_geocoder_client VERSION '#{CDB_GEOCODER_API_VERSION}'")
+            db.run("ALTER EXTENSION cdb_geocoder_client UPDATE TO '#{CDB_GEOCODER_API_VERSION}'")
             db.run(build_geocoder_server_config_sql)
             db.run(build_entity_config_sql)
           end

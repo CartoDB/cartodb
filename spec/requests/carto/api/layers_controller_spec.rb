@@ -188,7 +188,7 @@ describe Carto::Api::LayersController do
       get api_v1_maps_layers_index_url(user_domain: user_2.username, map_id: table.map.id) do |response|
         response.status.should be_success
         body = JSON.parse(last_response.body)
-        body['layers'].size.should == 3
+        body['layers'].size.should == 4
       end
 
       login_as(user_3, scope: user_3.username)

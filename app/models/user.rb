@@ -644,7 +644,7 @@ class User < Sequel::Model
   #       improved to skip "service" tables
   #
   def tables_effective
-    self.db_service.tables_effective('public')
+    db_service.tables_effective('public')
   end
 
   # Gets the list of OAuth accounts the user has (currently only used for synchronization)

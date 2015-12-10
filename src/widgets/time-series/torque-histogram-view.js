@@ -89,7 +89,7 @@ module.exports = View.extend({
       data[loBarIndex].start,
       data[hiBarIndex - 1].end
     );
-    this._torqueLayerModel.setStepsRange(loBarIndex, hiBarIndex);
+    this._torqueLayerModel.setCumulativeRender(loBarIndex, hiBarIndex);
   },
 
   _onChangeChartWidth: function() {

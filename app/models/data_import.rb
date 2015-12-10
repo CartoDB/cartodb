@@ -772,6 +772,7 @@ class DataImport < Sequel::Model
     importer_stats_aggregator.update_counter('total_size', total_size)
 
     import_time = self.updated_at - self.created_at
+    cartodbfy_throughtput = self.cartodbfy_time == 0 ? 0 : (total_size / self.cartodbfy_time)
 
     import_log = {'user'                   => owner.username,
                   'state'                  => self.state,
@@ -794,7 +795,7 @@ class DataImport < Sequel::Model
                   'total_size'             => total_size,
                   'cartodbfy_time'         => self.cartodbfy_time,
                   'import_throughput'      => (total_size / import_time),
-                  'cartodbfy_throughtput'  => (total_size / self.cartodbfy_time),
+                  'cartodbfy_throughtput'  => cartodbfy_throughtput,
                   'cartodbfy_import_ratio' => (self.cartodbfy_time / import_time)
                  }
     if !self.extra_options.nil?

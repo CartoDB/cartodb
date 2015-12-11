@@ -14,7 +14,6 @@
 .OrganizationUser-quotaProgress {
   display: block;
   width: 300px;
-  margin: 0 20px 0 0;
   @include progress-bar(12px, 20px, false, 6px);
 }
 .OrganizationUser-quotaBar {
@@ -23,12 +22,11 @@
 }
 .OrganizationUser-quotaLegend {
   @include display-flex();
-  @include justify-content(center, center);
   @include align-items(center, center);
   margin: 10px 0 0;
 }
 .OrganizationUser-quotaLegendItem {
-  margin: 0 6px;
+  margin: 0 12px 0 0;
   font-size: $sFontSize-normal;
   color: $cTypography-secondary;
 }
@@ -46,10 +44,11 @@
 .OrganizationUser-quotaLegendIcon--total {}
 
 .OrganizationUser-quotaInfo {
-  position: relative;
+  color: $cTypography-secondary;
+  font-size: $sFontSize-normal;
+  font-weight: $sFontWeight-lighter;
   display: inline-block;
-  color: $cTypography-help;
-  line-height: 14px;
+  line-height: 13px;
 }
 .OrganizationUser-quotaInfoLink {
   color: $cTypography-link;

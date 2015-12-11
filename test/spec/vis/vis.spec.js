@@ -59,7 +59,7 @@ describe('vis/vis', function() {
     jasmine.clock().uninstall();
   });
 
-  it("should insert  default max and minZoom values when not provided", function() {
+  it("should insert default max and minZoom values when not provided", function() {
     expect(this.vis.mapView.map_leaflet.options.maxZoom).toEqual(20);
     expect(this.vis.mapView.map_leaflet.options.minZoom).toEqual(0);
   });
@@ -565,7 +565,6 @@ describe('vis/vis', function() {
       vis.load(this.mapConfig);
       expect(vis.map.get('drag')).toBeFalsy();
     });
-
   });
 
   describe("Legends", function() {

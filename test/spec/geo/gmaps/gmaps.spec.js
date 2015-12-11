@@ -1,13 +1,10 @@
 var $ = require('jquery');
 var _ = require('underscore');
-var L = require('leaflet');
-var Backbone = require('backbone');
 
 var Map = require('cdb/geo/map');
 var GoogleMapsMapView = require('cdb/geo/gmaps/gmaps-map-view');
 var TileLayer = require('cdb/geo/map/tile-layer');
 var GMapsTiledLayerView = require('cdb/geo/gmaps/gmaps-tiled-layer-view');
-var CartoDBLayer = require('cdb/geo/map/cartodb-layer');
 var CartoDBLayerGroupAnonymous = require('cdb/geo/map/cartodb-layer-group-anonymous');
 var CartoDBLayerGroupNamed = require('cdb/geo/map/cartodb-layer-group-named');
 var PlainLayer = require('cdb/geo/map/plain-layer');
@@ -226,8 +223,8 @@ describe('geo/gmaps/gmaps-map-view', function() {
 
   it("should disable gmaps dragging and double click zooming when the map has drag disabled", function() {
     var container = $('<div>').css({
-        'height': '200px',
-        'width': '200px'
+      'height': '200px',
+      'width': '200px'
     });
     var map = new Map({
       drag: false
@@ -238,6 +235,6 @@ describe('geo/gmaps/gmaps-map-view', function() {
     });
 
     expect(mapView.map_googlemaps.get('draggable')).toBeFalsy();
-    expect(mapView.map_googlemaps.get('disableDoubleClickZoom')).toBeFalsy();
+    expect(mapView.map_googlemaps.get('disableDoubleClickZoom')).toBeTruthy();
   });
 });

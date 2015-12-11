@@ -79,7 +79,7 @@ var Vis = View.extend({
       legends: legends
     });
 
-    if (!this.mobile_enabled) {
+    if (!this.isMobileEnabled) {
       this.mapView.addOverlay(this.legends);
     }
   },
@@ -216,13 +216,17 @@ var Vis = View.extend({
 
     var scrollwheel  = (options.scrollwheel === undefined)  ? data.scrollwheel : options.scrollwheel;
 
+    // Do not allow pan map if zoom overlay and scrollwheel are disabled unless
+    // mobile view is enabled
+    var isMobileDevice = this.isMobileDevice();
+
     // Do not allow pan map if zoom overlay and scrollwheel are disabled
     // Check if zoom overlay is present.
     var hasZoomOverlay = _.isObject(_.find(data.overlays, function(overlay) {
       return overlay.type == "zoom";
     }));
 
-    var allowDragging = hasZoomOverlay || scrollwheel;
+    var allowDragging = isMobileDevice || hasZoomOverlay || scrollwheel;
 
     //Force using GMaps ?
     if ( (this.gmaps_base_type) && (data.map_provider === "leaflet") ) {
@@ -393,12 +397,11 @@ var Vis = View.extend({
   },
 
   _createOverlays: function(overlays, vis_data, options) {
-
     _(overlays).each(function(data) {
       var type = data.type;
 
       // We don't render certain overlays if we are in mobile
-      if (this.mobile_enabled && (type === "zoom" || type === "header" || type === "loader")) return;
+      if (this.isMobileEnabled && (type === "zoom" || type === "header" || type === "loader")) return;
 
       // IE<10 doesn't support the Fullscreen API
       if (type === 'fullscreen' && util.browser.ie && util.browser.ie.version <= 10) return;
@@ -424,7 +427,7 @@ var Vis = View.extend({
 
       var opt = data.options;
 
-      if (!this.mobile_enabled) {
+      if (!this.isMobileEnabled) {
 
         if (type == 'share' && options["shareable"]  || type == 'share' && overlay.model.get("display") && options["shareable"] == undefined) overlay.show();
         if (type == 'layer_selector' && options[type] || type == 'layer_selector' && overlay.model.get("display") && options[type] == undefined) overlay.show();
@@ -464,7 +467,7 @@ var Vis = View.extend({
     var layers;
     var layer = data.layers[1];
 
-    if (this.mobile_enabled) {
+    if (this.isMobileEnabled) {
 
       if (options && options.legends === undefined) {
         options.legends = this.legends ? true : false;
@@ -618,10 +621,10 @@ var Vis = View.extend({
       this.gmaps_style = opt.gmaps_style;
     }
 
-    this.mobile = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    this.mobile_enabled = (opt.mobile_layout && this.mobile) || opt.force_mobile;
+    this.mobile = this.isMobileDevice();
+    this.isMobileEnabled = (opt.mobile_layout && this.mobile) || opt.force_mobile;
 
-    if (opt.force_mobile === false || opt.force_mobile === "false") this.mobile_enabled = false;
+    if (opt.force_mobile === false || opt.force_mobile === "false") this.isMobileEnabled = false;
 
     // if (!opt.title) {
     //   vizjson.title = null;
@@ -643,7 +646,7 @@ var Vis = View.extend({
       opt.search = opt.searchControl;
     }
 
-    if (!this.mobile_enabled && opt.search) {
+    if (!this.isMobileEnabled && opt.search) {
       if (!search_overlay('search')) {
         vizjson.overlays.push({
            type: "search",
@@ -680,7 +683,7 @@ var Vis = View.extend({
       }
     }
 
-    if (opt.shareable && !this.mobile_enabled) {
+    if (opt.shareable && !this.isMobileEnabled) {
       if (!search_overlay('share')) {
         vizjson.overlays.push({
           type: "share",
@@ -691,7 +694,7 @@ var Vis = View.extend({
     }
 
     // We remove certain overlays in mobile devices
-    if (this.mobile_enabled) {
+    if (this.isMobileEnabled) {
       remove_overlay('logo');
       remove_overlay('share');
     }
@@ -1063,6 +1066,10 @@ var Vis = View.extend({
 
       }
     }, 150);
+  },
+
+  isMobileDevice: function() {
+    return /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
   }
 }, {
 

@@ -1,7 +1,6 @@
 var $ = require('jquery');
 var Map = require('cdb/geo/map');
 var CartoDBLayer = require('cdb/geo/map/cartodb-layer');
-var TorqueLayer = require('cdb/geo/map/torque-layer');
 var CartoDBLayerGroupAnonymous = require('cdb/geo/map/cartodb-layer-group-anonymous');
 var CartoDBLayerGroupNamed = require('cdb/geo/map/cartodb-layer-group-named');
 var Layers = require('cdb/geo/map/layers');

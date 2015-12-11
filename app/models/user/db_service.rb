@@ -294,6 +294,16 @@ module CartoDB
         end
       end
 
+      def tables_effective(schema = 'public')
+        @user.in_database do |user_database|
+          user_database.synchronize do |conn|
+            query = "select table_name::text from information_schema.tables where table_schema = '#{schema}'"
+            tables = user_database[query].all.map { |i| i[:table_name] }
+            return tables
+          end
+        end
+      end
+
       def drop_owned_by_user(conn, role)
         conn.run("DROP OWNED BY \"#{role}\"")
       end
@@ -951,7 +961,9 @@ module CartoDB
         # Undo metadata changes if process fails
         begin
           @user.this.update database_schema: old_database_schema_name
-          if schema_exists?(new_schema_name)
+
+          # Defensive measure to avoid undesired table dropping
+          if schema_exists?(new_schema_name) && tables_effective(new_schema_name).count == 0
             drop_all_functions_from_schema(new_schema_name)
             @user.in_database.run(%{ DROP SCHEMA "#{new_schema_name}" })
           end

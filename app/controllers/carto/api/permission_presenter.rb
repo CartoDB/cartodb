@@ -21,8 +21,8 @@ module Carto
         return to_public_poro unless !@options[:current_viewer].nil? && @permission.is_owner_user?(@options[:current_viewer])
 
         owner = @presenter_cache.get_poro(@permission.owner) do
-          Carto::Api::UserPresenter.new(@permission.owner, { fetch_groups: false,
-                                                             current_viewer: @options[:current_viewer] })
+          Carto::Api::UserPresenter.new(@permission.owner, fetch_groups: false,
+                                                           current_viewer: @options[:current_viewer])
         end
 
         {
@@ -46,8 +46,8 @@ module Carto
 
       def to_public_poro
         owner = @presenter_cache.get_poro(@permission.owner) do
-          Carto::Api::UserPresenter.new(@permission.owner, { fetch_groups: false,
-                                                             current_viewer: @options[:current_viewer] })
+          Carto::Api::UserPresenter.new(@permission.owner, fetch_groups: false,
+                                                           current_viewer: @options[:current_viewer])
         end
 
         {

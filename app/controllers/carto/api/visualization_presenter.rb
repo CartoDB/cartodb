@@ -29,8 +29,8 @@ module Carto
 
         permission = @visualization.permission.nil? ? nil : Carto::Api::PermissionPresenter.new(@visualization.permission,
                                                                                                 current_viewer: @current_viewer)
-                                                                                            .with_presenter_cache(@presenter_cache)
-                                                                                            .to_poro
+                                                                                           .with_presenter_cache(@presenter_cache)
+                                                                                           .to_poro
 
         poro = {
           id: @visualization.id,

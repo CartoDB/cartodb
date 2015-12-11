@@ -31,6 +31,8 @@ module.exports = View.extend({
 
     this._rangeFilter = this.options.rangeFilter;
     this._torqueLayerModel = this.options.torqueLayerModel;
+    this._torqueLayerModel.bind('change:cumulativeRender', this._onChangeCumulativeRender, this);
+    this.add_related_model(this._torqueLayerModel);
 
     this.model.bind('change:data', this._onChangeData, this);
   },
@@ -80,6 +82,12 @@ module.exports = View.extend({
   _onChangeData: function() {
     if (this._chartView) {
       this._chartView.replaceData(this.model.getData());
+    }
+  },
+
+  _onChangeCumulativeRender: function(m, val) {
+    if (!val) {
+      this._chartView.removeSelection();
     }
   },
 

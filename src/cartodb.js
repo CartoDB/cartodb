@@ -26,6 +26,7 @@ cdb.templates = require('cdb.templates');
 cdb.decorators = require('./core/decorators');
 cdb.createVis = require('./api/create-vis');
 cdb.createLayer = require('./api/create-layer');
+cdb.LZMA = require('lzma');
 
 // Extracted from vis/vis.js,
 // used in libs like torque to add themselves here (or so it seems)
@@ -45,6 +46,7 @@ cdb.core.Template = require('./core/template');
 cdb.core.TemplateList = require('./core/template-list');
 cdb.core.Model = require('./core/model');
 cdb.core.View = require('./core/view');
+cdb.core.format = require('./core/format');
 
 cdb.ui.common.Dialog = require('./ui/common/dialog');
 cdb.ui.common.ShareDialog = require('./ui/common/share');
@@ -116,11 +118,5 @@ cdb.vis.Layers = require('./vis/vis/layers');
 cdb.vis.Vis = require('./vis/vis');
 require('./vis/overlays'); // Overlay.register calls
 require('./vis/layers'); // Layers.register calls
-
-cdb.windshaft.filters.FilterBase = require('./windshaft/filters/base');
-cdb.windshaft.filters.BoundingBoxFilter = require('./windshaft/filters/bounding_box');
-cdb.windshaft.filters.CategoryFilter = require('./windshaft/filters/category');
-cdb.windshaft.filters.Collection = require('./windshaft/filters/collection');
-cdb.windshaft.filters.RangeFilter = require('./windshaft/filters/range');
 
 module.exports = cdb;

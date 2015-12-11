@@ -22,18 +22,6 @@ var Overlay = require('./vis/overlay');
 var INFOWINDOW_TEMPLATE = require('./vis/infowindow-template');
 var CartoDBLayerGroupNamed = require('cdb/geo/map/cartodb-layer-group-named');
 var CartoDBLayerGroupAnonymous = require('cdb/geo/map/cartodb-layer-group-anonymous');
-var RangeFilter = require('cdb/windshaft/filters/range');
-var CategoryFilter = require('cdb/windshaft/filters/category');
-var WidgetModelFactory = require('cdb/geo/ui/widgets/widget-model-factory');
-var ListModel = require('cdb/geo/ui/widgets/list/model');
-var HistogramModel = require('cdb/geo/ui/widgets/histogram/model');
-var CategoryModel = require('cdb/geo/ui/widgets/category/model');
-var FormulaModel = require('cdb/geo/ui/widgets/formula/model');
-var WindshaftConfig = require('cdb/windshaft/config');
-var WindshaftClient = require('cdb/windshaft/client');
-var WindshaftDashboard = require('cdb/windshaft/dashboard');
-var WindshaftPrivateDashboardConfig = require('cdb/windshaft/private-dashboard-config');
-var WindshaftPublicDashboardConfig = require('cdb/windshaft/public-dashboard-config');
 
 /**
  * Visualization creation
@@ -46,46 +34,6 @@ var Vis = View.extend({
 
   initialize: function() {
     _.bindAll(this, 'loadingTiles', 'loadTiles', '_onResize');
-
-    this.dashboardView = this.options.dashboardView;
-    this.widgets = this.options.widgets;
-
-    this.widgetModelFactory = new WidgetModelFactory({
-      list: function(attrs, opts) {
-        return new ListModel(attrs, opts);
-      },
-      formula: function(attrs, opts) {
-        return new FormulaModel(attrs, opts);
-      },
-      histogram: function(attrs, opts, layerIndex) {
-        opts.filter = new RangeFilter({
-          widgetId: attrs.id,
-          layerIndex: layerIndex
-        });
-        return new HistogramModel(attrs, opts);
-      },
-      'time-series': function(attrs, opts, layerIndex) {
-        // change type because time-series because it's really a histogram (for the tiler at least)
-        attrs.type = 'histogram';
-        opts.filter = new RangeFilter({
-          widgetId: attrs.id,
-          layerIndex: layerIndex
-        });
-        var model = new HistogramModel(attrs, opts);
-
-        // since we changed the type of we need some way to identify that it's intended for a time-series view later
-        model.isForTimeSeries = true;
-
-        return model;
-      },
-      aggregation: function(attrs, opts, layerIndex) {
-        opts.filter = new CategoryFilter({
-          widgetId: attrs.id,
-          layerIndex: layerIndex
-        });
-        return new CategoryModel(attrs, opts);
-      }
-    });
 
     this.https = false;
     this.overlays = [];
@@ -401,7 +349,6 @@ var Vis = View.extend({
     var cartoDBLayers;
     var cartoDBLayerGroup;
     var layers = [];
-    var interactiveLayers = [];
     _.each(data.layers, function(layerData) {
       if (layerData.type === 'layergroup' || layerData.type === 'namedmap') {
         var layersData;
@@ -415,7 +362,6 @@ var Vis = View.extend({
         }
         cartoDBLayers = _.map(layersData, function(layerData) {
           var cartoDBLayer = Layers.create("cartodb", self, layerData);
-          interactiveLayers.push(cartoDBLayer);
           return cartoDBLayer;
         });
         cartoDBLayerGroup = new layerGroupClass({}, {
@@ -426,55 +372,7 @@ var Vis = View.extend({
         // Treat differently since this kind of layer is rendered client-side (and not through the tiler)
         var layer = Layers.create(layerData.type, self, layerData);
         layers.push(layer);
-        if (layerData.type === 'torque') {
-          interactiveLayers.push(layer);
-        }
       }
-    });
-
-    // TODO: We can probably move this logic somewhere else
-    var widgetModels = [];
-    _.each(interactiveLayers, function(layer, layerIndex) {
-      var widgetsAttrs = layer.get('widgets') || {};
-      for (var id in widgetsAttrs) {
-        var attrs = _.extend({
-          id: id
-        }, widgetsAttrs[id]);
-        var widgetModel = this.widgetModelFactory.createModel(layer, layerIndex, attrs);
-        widgetModels.push(widgetModel);
-      }
-    }, this);
-    this.widgets.reset(widgetModels);
-
-    this.dashboardView.render();
-
-    // TODO: Perhaps this "endpoint" could be part of the "datasource"?
-    var endpoint = WindshaftConfig.MAPS_API_BASE_URL;
-    var configGenerator = WindshaftPublicDashboardConfig;
-    var datasource = data.datasource;
-    // TODO: We can use something else to differentiate types of "datasource"s
-    if (datasource.template_name) {
-      endpoint = [WindshaftConfig.MAPS_API_BASE_URL, 'named', datasource.template_name].join('/');
-      configGenerator = WindshaftPrivateDashboardConfig;
-    }
-
-    var windshaftClient = new WindshaftClient({
-      endpoint: endpoint,
-      urlTemplate: datasource.maps_api_template,
-      userName: datasource.user_name,
-      statTag: datasource.stat_tag,
-      forceCors: datasource.force_cors
-    });
-
-    var dashboard = new WindshaftDashboard({
-      client: windshaftClient,
-      configGenerator: configGenerator,
-      statTag: datasource.stat_tag,
-      //TODO: assuming here all viz.json has a layergroup and that may not be true
-      layerGroup: cartoDBLayerGroup,
-      layers: interactiveLayers,
-      widgets: this.widgets,
-      map: map
     });
 
     this.map.layers.reset(layers);
@@ -490,13 +388,6 @@ var Vis = View.extend({
     _.defer(function() {
       self.trigger('done', self, map.layers);
     });
-
-    // TODO: rethink this
-    if (this.widgets.size() > 0) {
-      setTimeout(function() {
-        self.mapView.invalidateSize();
-      }, 0);
-    }
 
     return this;
   },

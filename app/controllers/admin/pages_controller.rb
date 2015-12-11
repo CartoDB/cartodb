@@ -335,6 +335,8 @@ class Admin::PagesController < Admin::AdminController
   end
 
   def set_pagination_vars(required)
+    # Force all number pagination vars to be integers avoiding problems with
+    # undesired strings
     @total_count  = required.fetch(:total_count, 0).to_i
     @per_page     = required.fetch(:per_page, 9).to_i
     @current_page = current_page.to_i

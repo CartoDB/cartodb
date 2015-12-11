@@ -133,6 +133,32 @@ class Admin::PagesController < Admin::AdminController
                             CartoDB.path(self, 'public_user_feed_home') and return
       end
 
+      description = @name
+
+      # TODO: move to helper
+      if @maps_count == 0 && @tables_num == 0
+        description << " uses CartoDB to transform location intelligence into dynamic renderings that enable discovery of trends and patterns"
+      else
+        description << " has"
+
+        unless @maps_count == 0
+          description << " created #{@maps_count} map#{@maps_count == 1 ? "" : "s"}"
+        end
+
+        unless @maps_count == 0 || @tables_num == 0
+          description << " and"
+        end
+
+        unless @tables_num == 0
+          description << " published #{@tables_num} public dataset#{@tables_num == 1 ? "" : "s"}"
+        end
+
+        description << " · View #{@name} CartoDB profile for the latest activity and contribute to Open Data by creating an account in CartoDB"
+      end
+
+      @page_description = description
+
+
       respond_to do |format|
         format.html { render 'user_feed', layout: 'public_user_feed' }
       end
@@ -224,16 +250,16 @@ class Admin::PagesController < Admin::AdminController
 
     @datasets.compact!
 
-    description = "#{@name} has"
+    description = @name
 
     # TODO: move to helper
     if @datasets.size == 0
-      description << " not published any public dataset yet"
+      description << " uses CartoDB to transform location intelligence into dynamic renderings that enable discovery of trends and patterns"
     else
-      description << " published #{@datasets.size} public dataset#{@datasets.size == 1 ? "" : "s"}"
+      description << " has published #{@datasets.size} public dataset#{@datasets.size == 1 ? "" : "s"}"
     end
 
-    description << " · Contribute to Open Data by creating an account in CartoDB"
+    description << " · View #{@name} CartoDB profile for the latest activity and contribute to Open Data by creating an account in CartoDB"
 
     @page_description = description
 
@@ -257,12 +283,14 @@ class Admin::PagesController < Admin::AdminController
 
     @visualizations.compact!
 
-    description = "#{@name} has"
+    description = @name
 
     # TODO: move to helper
     if @visualizations.size == 0 && @tables_num == 0
-      description << " not published any public dataset or map yet"
+      description << " uses CartoDB to transform location intelligence into dynamic renderings that enable discovery of trends and patterns"
     else
+      description << " has"
+
       unless @visualizations.size == 0
         description << " created #{@visualizations.size} map#{@visualizations.size == 1 ? "" : "s"}"
       end
@@ -275,7 +303,7 @@ class Admin::PagesController < Admin::AdminController
         description << " published #{@tables_num} public dataset#{@tables_num == 1 ? "" : "s"}"
       end
 
-      description << " · Contribute to Open Data by creating an account in CartoDB"
+      description << " · View #{@name} CartoDB profile for the latest activity and contribute to Open Data by creating an account in CartoDB"
     end
 
     @page_description = description

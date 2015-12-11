@@ -122,7 +122,8 @@ var Infowindow = View.extend({
         this.trigger('domready', this, this.$el);
       }
 
-      this._renderScroll();
+      //
+      //this._renderScroll();
     }
 
     return this;

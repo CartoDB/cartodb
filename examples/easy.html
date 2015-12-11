@@ -13,18 +13,19 @@
       }
     </style>
 
-    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.15/themes/css/cartodb.css" />
+    <link rel="stylesheet" href="/dist/themes/css/cartodb.css" />
   </head>
   <body>
     <div id="map"></div>
 
     <!-- include cartodb.js library -->
-    <script src="http://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.uncompressed.js"></script>
+    <script src="/dist/cartodb.uncompressed.js"></script>
+    <script src="/dist/cartodb.mod.torque.uncompressed.js"></script>
 
     <script>
-      cdb.windshaft = {};
-      cdb.files.push('windshaft/client.js');
-      cdb.files.push('windshaft/public_map.js');
+//      cdb.windshaft = {};
+//      cdb.files.push('windshaft/client.js');
+//      cdb.files.push('windshaft/public_map.js');
 
       function main() {
         cartodb.createVis('map', 'http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json', {

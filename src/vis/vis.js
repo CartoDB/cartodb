@@ -22,18 +22,6 @@ var Overlay = require('./vis/overlay');
 var INFOWINDOW_TEMPLATE = require('./vis/infowindow-template');
 var CartoDBLayerGroupNamed = require('cdb/geo/map/cartodb-layer-group-named');
 var CartoDBLayerGroupAnonymous = require('cdb/geo/map/cartodb-layer-group-anonymous');
-var RangeFilter = require('cdb/windshaft/filters/range');
-var CategoryFilter = require('cdb/windshaft/filters/category');
-var WidgetModelFactory = require('cdb/geo/ui/widgets/widget-model-factory');
-var ListModel = require('cdb/geo/ui/widgets/list/model');
-var HistogramModel = require('cdb/geo/ui/widgets/histogram/model');
-var CategoryModel = require('cdb/geo/ui/widgets/category/model');
-var FormulaModel = require('cdb/geo/ui/widgets/formula/model');
-var WindshaftConfig = require('cdb/windshaft/config');
-var WindshaftClient = require('cdb/windshaft/client');
-var WindshaftDashboard = require('cdb/windshaft/dashboard');
-var WindshaftPrivateDashboardConfig = require('cdb/windshaft/private-dashboard-config');
-var WindshaftPublicDashboardConfig = require('cdb/windshaft/public-dashboard-config');
 
 /**
  * Visualization creation
@@ -46,46 +34,6 @@ var Vis = View.extend({
 
   initialize: function() {
     _.bindAll(this, 'loadingTiles', 'loadTiles', '_onResize');
-
-    this.dashboardView = this.options.dashboardView;
-    this.widgets = this.options.widgets;
-
-    this.widgetModelFactory = new WidgetModelFactory({
-      list: function(attrs, opts) {
-        return new ListModel(attrs, opts);
-      },
-      formula: function(attrs, opts) {
-        return new FormulaModel(attrs, opts);
-      },
-      histogram: function(attrs, opts, layerIndex) {
-        opts.filter = new RangeFilter({
-          widgetId: attrs.id,
-          layerIndex: layerIndex
-        });
-        return new HistogramModel(attrs, opts);
-      },
-      'time-series': function(attrs, opts, layerIndex) {
-        // change type because time-series because it's really a histogram (for the tiler at least)
-        attrs.type = 'histogram';
-        opts.filter = new RangeFilter({
-          widgetId: attrs.id,
-          layerIndex: layerIndex
-        });
-        var model = new HistogramModel(attrs, opts);
-
-        // since we changed the type of we need some way to identify that it's intended for a time-series view later
-        model.isForTimeSeries = true;
-
-        return model;
-      },
-      aggregation: function(attrs, opts, layerIndex) {
-        opts.filter = new CategoryFilter({
-          widgetId: attrs.id,
-          layerIndex: layerIndex
-        });
-        return new CategoryModel(attrs, opts);
-      }
-    });
 
     this.https = false;
     this.overlays = [];
@@ -131,7 +79,7 @@ var Vis = View.extend({
       legends: legends
     });
 
-    if (!this.mobile_enabled) {
+    if (!this.isMobileEnabled) {
       this.mapView.addOverlay(this.legends);
     }
   },
@@ -268,13 +216,17 @@ var Vis = View.extend({
 
     var scrollwheel  = (options.scrollwheel === undefined)  ? data.scrollwheel : options.scrollwheel;
 
+    // Do not allow pan map if zoom overlay and scrollwheel are disabled unless
+    // mobile view is enabled
+    var isMobileDevice = this.isMobileDevice();
+
     // Do not allow pan map if zoom overlay and scrollwheel are disabled
     // Check if zoom overlay is present.
     var hasZoomOverlay = _.isObject(_.find(data.overlays, function(overlay) {
       return overlay.type == "zoom";
     }));
 
-    var allowDragging = hasZoomOverlay || scrollwheel;
+    var allowDragging = isMobileDevice || hasZoomOverlay || scrollwheel;
 
     //Force using GMaps ?
     if ( (this.gmaps_base_type) && (data.map_provider === "leaflet") ) {
@@ -401,7 +353,6 @@ var Vis = View.extend({
     var cartoDBLayers;
     var cartoDBLayerGroup;
     var layers = [];
-    var interactiveLayers = [];
     _.each(data.layers, function(layerData) {
       if (layerData.type === 'layergroup' || layerData.type === 'namedmap') {
         var layersData;
@@ -415,7 +366,6 @@ var Vis = View.extend({
         }
         cartoDBLayers = _.map(layersData, function(layerData) {
           var cartoDBLayer = Layers.create("cartodb", self, layerData);
-          interactiveLayers.push(cartoDBLayer);
           return cartoDBLayer;
         });
         cartoDBLayerGroup = new layerGroupClass({}, {
@@ -426,55 +376,7 @@ var Vis = View.extend({
         // Treat differently since this kind of layer is rendered client-side (and not through the tiler)
         var layer = Layers.create(layerData.type, self, layerData);
         layers.push(layer);
-        if (layerData.type === 'torque') {
-          interactiveLayers.push(layer);
-        }
       }
-    });
-
-    // TODO: We can probably move this logic somewhere else
-    var widgetModels = [];
-    _.each(interactiveLayers, function(layer, layerIndex) {
-      var widgetsAttrs = layer.get('widgets') || {};
-      for (var id in widgetsAttrs) {
-        var attrs = _.extend({
-          id: id
-        }, widgetsAttrs[id]);
-        var widgetModel = this.widgetModelFactory.createModel(layer, layerIndex, attrs);
-        widgetModels.push(widgetModel);
-      }
-    }, this);
-    this.widgets.reset(widgetModels);
-
-    this.dashboardView.render();
-
-    // TODO: Perhaps this "endpoint" could be part of the "datasource"?
-    var endpoint = WindshaftConfig.MAPS_API_BASE_URL;
-    var configGenerator = WindshaftPublicDashboardConfig;
-    var datasource = data.datasource;
-    // TODO: We can use something else to differentiate types of "datasource"s
-    if (datasource.template_name) {
-      endpoint = [WindshaftConfig.MAPS_API_BASE_URL, 'named', datasource.template_name].join('/');
-      configGenerator = WindshaftPrivateDashboardConfig;
-    }
-
-    var windshaftClient = new WindshaftClient({
-      endpoint: endpoint,
-      urlTemplate: datasource.maps_api_template,
-      userName: datasource.user_name,
-      statTag: datasource.stat_tag,
-      forceCors: datasource.force_cors
-    });
-
-    var dashboard = new WindshaftDashboard({
-      client: windshaftClient,
-      configGenerator: configGenerator,
-      statTag: datasource.stat_tag,
-      //TODO: assuming here all viz.json has a layergroup and that may not be true
-      layerGroup: cartoDBLayerGroup,
-      layers: interactiveLayers,
-      widgets: this.widgets,
-      map: map
     });
 
     this.map.layers.reset(layers);
@@ -491,23 +393,15 @@ var Vis = View.extend({
       self.trigger('done', self, map.layers);
     });
 
-    // TODO: rethink this
-    if (this.widgets.size() > 0) {
-      setTimeout(function() {
-        self.mapView.invalidateSize();
-      }, 0);
-    }
-
     return this;
   },
 
   _createOverlays: function(overlays, vis_data, options) {
-
     _(overlays).each(function(data) {
       var type = data.type;
 
       // We don't render certain overlays if we are in mobile
-      if (this.mobile_enabled && (type === "zoom" || type === "header" || type === "loader")) return;
+      if (this.isMobileEnabled && (type === "zoom" || type === "header" || type === "loader")) return;
 
       // IE<10 doesn't support the Fullscreen API
       if (type === 'fullscreen' && util.browser.ie && util.browser.ie.version <= 10) return;
@@ -533,7 +427,7 @@ var Vis = View.extend({
 
       var opt = data.options;
 
-      if (!this.mobile_enabled) {
+      if (!this.isMobileEnabled) {
 
         if (type == 'share' && options["shareable"]  || type == 'share' && overlay.model.get("display") && options["shareable"] == undefined) overlay.show();
         if (type == 'layer_selector' && options[type] || type == 'layer_selector' && overlay.model.get("display") && options[type] == undefined) overlay.show();
@@ -573,7 +467,7 @@ var Vis = View.extend({
     var layers;
     var layer = data.layers[1];
 
-    if (this.mobile_enabled) {
+    if (this.isMobileEnabled) {
 
       if (options && options.legends === undefined) {
         options.legends = this.legends ? true : false;
@@ -727,10 +621,10 @@ var Vis = View.extend({
       this.gmaps_style = opt.gmaps_style;
     }
 
-    this.mobile = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    this.mobile_enabled = (opt.mobile_layout && this.mobile) || opt.force_mobile;
+    this.mobile = this.isMobileDevice();
+    this.isMobileEnabled = (opt.mobile_layout && this.mobile) || opt.force_mobile;
 
-    if (opt.force_mobile === false || opt.force_mobile === "false") this.mobile_enabled = false;
+    if (opt.force_mobile === false || opt.force_mobile === "false") this.isMobileEnabled = false;
 
     // if (!opt.title) {
     //   vizjson.title = null;
@@ -752,7 +646,7 @@ var Vis = View.extend({
       opt.search = opt.searchControl;
     }
 
-    if (!this.mobile_enabled && opt.search) {
+    if (!this.isMobileEnabled && opt.search) {
       if (!search_overlay('search')) {
         vizjson.overlays.push({
            type: "search",
@@ -789,7 +683,7 @@ var Vis = View.extend({
       }
     }
 
-    if (opt.shareable && !this.mobile_enabled) {
+    if (opt.shareable && !this.isMobileEnabled) {
       if (!search_overlay('share')) {
         vizjson.overlays.push({
           type: "share",
@@ -800,7 +694,7 @@ var Vis = View.extend({
     }
 
     // We remove certain overlays in mobile devices
-    if (this.mobile_enabled) {
+    if (this.isMobileEnabled) {
       remove_overlay('logo');
       remove_overlay('share');
     }
@@ -1172,6 +1066,10 @@ var Vis = View.extend({
 
       }
     }, 150);
+  },
+
+  isMobileDevice: function() {
+    return /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
   }
 }, {
 

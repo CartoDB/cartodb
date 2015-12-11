@@ -26,8 +26,10 @@ describe CartoDB::Importer2::MailNotifier do
       @data_import.stubs(:synchronization_id).once.returns(nil)
       set_import_duration(CartoDB::Importer2::MailNotifier::MIN_IMPORT_TIME_TO_NOTIFY + 1)
       @data_import.stubs(:user_id).once.returns(:any_user_id)
+      @data_import.stubs(:stats).returns('[]')
+      @data_import.stubs(:service_item_id).returns('filename.txt')
       @result.stubs(:success).returns(true)
-      @resque.expects(:enqueue).with(::Resque::UserJobs::Mail::DataImportFinished, :any_user_id, 1, 1, @result, @result, nil).returns(true)
+      @resque.expects(:enqueue).with(::Resque::UserJobs::Mail::DataImportFinished, :any_user_id, 1, 1, @result, @result, nil, ['filename.txt']).returns(true)
 
       @mail_notifier.notify_if_needed
 
@@ -39,6 +41,8 @@ describe CartoDB::Importer2::MailNotifier do
     it 'should return true if the import took more than MIN_IMPORT_TIME_TO_NOTIFY and was not a sync' do
       set_import_duration(CartoDB::Importer2::MailNotifier::MIN_IMPORT_TIME_TO_NOTIFY + 1)
       @data_import.stubs(:synchronization_id).once.returns(nil)
+      @data_import.stubs(:stats).returns('[]')
+      @data_import.stubs(:service_item_id).returns('filename.txt')
 
       @mail_notifier.should_notify?.should == true
     end
@@ -61,7 +65,9 @@ describe CartoDB::Importer2::MailNotifier do
   describe '#send!' do
     it 'should inconditionally send a mail to the user who triggered the import' do
       @data_import.stubs(:user_id).once.returns(:any_user_id)
-      @resque.expects(:enqueue).with(::Resque::UserJobs::Mail::DataImportFinished, :any_user_id, 1, 1, @result, @result, nil).returns(true)
+      @data_import.stubs(:stats).returns('[]')
+      @data_import.stubs(:service_item_id).returns('filename.txt')
+      @resque.expects(:enqueue).with(::Resque::UserJobs::Mail::DataImportFinished, :any_user_id, 1, 1, @result, @result, nil, ['filename.txt']).returns(true)
       @result.stubs(:success).returns(true)
       @mail_notifier.send!
       @mail_notifier.mail_sent?.should == true

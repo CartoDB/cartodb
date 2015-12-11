@@ -112,7 +112,9 @@ var Infowindow = View.extend({
         this.$('.js-content').css('width', (this.model.get('width') - padding) + 'px');
       }
 
-      //this.$('.cartodb-popup .cartodb-popup-content').css('max-height', this.model.get('maxHeight') + 'px');
+      if (this.model.get('maxHeight')) {
+        this.$('.js-content').css('max-height', this.model.get('maxHeight') + 'px');
+      }
 
       // If the template is 'cover-enabled', load the cover
       this._loadCover();
@@ -122,8 +124,7 @@ var Infowindow = View.extend({
         this.trigger('domready', this, this.$el);
       }
 
-      //
-      //this._renderScroll();
+      this._renderScroll();
     }
 
     return this;
@@ -319,7 +320,6 @@ var Infowindow = View.extend({
     var self = this;
     var $cover = this.$(".cover");
     var $img = $cover.find("img");
-    var $shadow = this.$(".shadow");
     var url = this._getCoverURL();
 
     if ($img.length > 0) {
@@ -329,7 +329,6 @@ var Infowindow = View.extend({
     }
 
     if (!this._isValidURL(url)) {
-      $shadow.hide();
       log.info("Header image url not valid");
       return;
     }
@@ -445,7 +444,7 @@ var Infowindow = View.extend({
   },
 
   /**
-   * Set the correct position for the popup
+   * Set the correct position for the infowindow
    */
   setLatLng: function (latlng) {
     this.model.set("latlng", latlng);

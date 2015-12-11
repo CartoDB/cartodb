@@ -142,7 +142,7 @@ class Admin::PagesController < Admin::AdminController
         description << " has"
 
         unless @maps_count == 0
-          description << " created #{@maps_count} map#{@maps_count == 1 ? "" : "s"}"
+          description << " created #{@maps_count} map#{@maps_count == 1 ? '' : 's'}"
         end
 
         unless @maps_count == 0 || @tables_num == 0
@@ -157,7 +157,6 @@ class Admin::PagesController < Admin::AdminController
       end
 
       @page_description = description
-
 
       respond_to do |format|
         format.html { render 'user_feed', layout: 'public_user_feed' }
@@ -256,7 +255,7 @@ class Admin::PagesController < Admin::AdminController
     if @datasets.size == 0
       description << " uses CartoDB to transform location intelligence into dynamic renderings that enable discovery of trends and patterns"
     else
-      description << " has published #{@datasets.size} public dataset#{@datasets.size == 1 ? "" : "s"}"
+      description << " has published #{@datasets.size} public dataset#{@datasets.size == 1 ? '' : 's'}"
     end
 
     description << " · View #{@name} CartoDB profile for the latest activity and contribute to Open Data by creating an account in CartoDB"

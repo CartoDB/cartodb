@@ -27,6 +27,9 @@
   position: relative;
   padding-right: 12px;
 }
+.CDB-infowindow-inner.CDB-infowindow-inner--scroll .CDB-infowindow-list {
+  max-height: 200px;
+}
 .is-header {
   .CDB-infowindow-headerBg {
     padding-bottom: 12px;
@@ -52,7 +55,6 @@
 .is-scroll {
   position: relative;
   max-height: 200px;
-  padding-bottom: 24px;
   overflow: scroll;
 }
 
@@ -62,6 +64,22 @@
     margin-top: 0;
   }
 }
+
+.CDB-infowindow-list .ps-scrollbar-y-rail {
+  width: 1px !important; // Resets standard scroll track color
+  opacity: 0.2 !important; // Resets standard scroll track color
+  margin-right: 5px;
+  background: #EEE;
+  z-index: 3;
+}
+
+.CDB-infowindow-list .ps-scrollbar-y-rail > .ps-scrollbar-y {
+  width: 5px !important; // Resets standard scroll track color
+  margin: 0 -2px;
+  padding: 0;
+  background: #AAA;
+}
+
 .is-header .CDB-infowindow-mediaTitle {
   bottom: 12px;
 }
@@ -291,3 +309,4 @@
   -webkit-animation: placeholder ease-in-out 2s infinite;
   animation: placeholder ease-in-out 2s infinite;
 }
+

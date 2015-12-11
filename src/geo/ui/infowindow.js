@@ -1,6 +1,6 @@
 var _ = require('underscore');
 var $ = require('jquery');
-require('jquery.jscrollpane'); // registers itself to $.jScrollPane
+var Ps = require('perfect-scrollbar');
 var log = require('cdb.log');
 var templates = require('cdb.templates');
 var sanitize = require('../../core/sanitize');
@@ -71,12 +71,6 @@ var Infowindow = View.extend({
 
     if(this.template) {
 
-      // If there is content, destroy the jscrollpane first, then remove the content.
-      var $jscrollpane = this.$(".cartodb-popup-content");
-      if ($jscrollpane.length > 0 && $jscrollpane.data() != null) {
-        $jscrollpane.data().jsp && $jscrollpane.data().jsp.destroy();
-      }
-
       // Clone fields and template name
       var fields = _.map(this.model.attributes.content.fields, function(field){
         return _.clone(field);
@@ -101,11 +95,11 @@ var Infowindow = View.extend({
       });
 
       var obj = _.extend({
-          content: {
-            fields: fields,
-            data: data
-          }
-        }, values);
+        content: {
+          fields: fields,
+          data: data
+        }
+      }, values);
 
       this.$el.html(
         sanitize.html(this.template(obj), this.model.get('sanitizeTemplate'))
@@ -114,30 +108,21 @@ var Infowindow = View.extend({
       // Set width and max-height from the model only
       // If there is no width set, we don't force our infowindow
       if (this.model.get('width')) {
-        this.$('.cartodb-popup').css('width', this.model.get('width') + 'px');
+        var padding = 48;
+        this.$('.js-content').css('width', (this.model.get('width') - padding) + 'px');
       }
-      this.$('.cartodb-popup .cartodb-popup-content').css('max-height', this.model.get('maxHeight') + 'px');
 
-      // Hello jscrollpane hacks!
-      // It needs some time to initialize, if not it doesn't render properly the fields
-      // Check the height of the content + the header if exists
-      var self = this;
-      setTimeout(function() {
-        var actual_height = self.$(".cartodb-popup-content").outerHeight();
-        if (self.model.get('maxHeight') <= actual_height)
-          self.$(".cartodb-popup-content").jScrollPane({
-            verticalDragMinHeight: 20,
-            autoReinitialise: true
-          });
-      }, 1);
+      //this.$('.cartodb-popup .cartodb-popup-content').css('max-height', this.model.get('maxHeight') + 'px');
 
       // If the template is 'cover-enabled', load the cover
       this._loadCover();
 
-      if(!this.isLoadingData()) {
+      if (!this.isLoadingData()) {
         this.model.trigger('domready', this, this.$el);
         this.trigger('domready', this, this.$el);
       }
+
+      this._renderScroll();
     }
 
     return this;
@@ -171,6 +156,14 @@ var Infowindow = View.extend({
     if (e && e.keyCode === 27) {
       this._closeInfowindow();
     }
+  },
+
+  _renderScroll: function() {
+    Ps.initialize(this.el.querySelector('.js-content'), {
+      wheelSpeed: 2,
+      wheelPropagation: true,
+      minScrollbarLength: 20
+    });
   },
 
   _getModelTemplate: function() {
@@ -210,7 +203,7 @@ var Infowindow = View.extend({
   /**
    *  Check event origin
    */
-  _checkOrigin: function(ev) {
+  _checkOrigin: function(ev) { // TODO: update this
     // If the mouse down come from jspVerticalBar
     // dont stop the propagation, but if the event
     // is a touchstart, stop the propagation
@@ -388,7 +381,11 @@ var Infowindow = View.extend({
    *  Toggle infowindow visibility
    */
   toggle: function() {
-    this.model.get("visibility") ? this.show() : this.hide();
+    if (this.model.get("visibility")) {
+      this.show();
+    } else {
+      this.hide();
+    }
   },
 
   /**

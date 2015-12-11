@@ -772,7 +772,7 @@ class DataImport < Sequel::Model
     importer_stats_aggregator.update_counter('total_size', total_size)
 
     import_time = self.updated_at - self.created_at
-    cartodbfy_throughtput = self.cartodbfy_time == 0 ? 0 : (total_size / self.cartodbfy_time)
+    cartodbfy_throughtput = (cartodbfy_time == 0.0 ? nil : (total_size / cartodbfy_time))
 
     import_log = {'user'                   => owner.username,
                   'state'                  => self.state,

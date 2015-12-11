@@ -7,9 +7,9 @@
 <% content_for(:js) do %>
   <script type="text/javascript">
     var paginationModelAttrs = {
-      current_page: <%= @current_page.to_i %>,
-      total_count: <%= @total_count.to_i %>,
-      per_page: <%= @per_page.to_i %>,
+      current_page: <%= @current_page %>,
+      total_count: <%= @total_count %>,
+      per_page: <%= @per_page %>,
       url_to: function(page) {
         return '<%= @numbered_page_url %>'.replace('<%= @page_number_placeholder %>', page);
       }

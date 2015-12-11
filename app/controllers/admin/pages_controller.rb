@@ -335,11 +335,11 @@ class Admin::PagesController < Admin::AdminController
   end
 
   def set_pagination_vars(required)
-    @total_count  = required.fetch(:total_count)
-    @per_page     = required.fetch(:per_page)
-    @current_page = current_page
-    @first_page_url = required.fetch(:first_page_url)
-    @numbered_page_url = required.fetch(:numbered_page_url)
+    @total_count  = required.fetch(:total_count).to_i
+    @per_page     = required.fetch(:per_page).to_i
+    @current_page = current_page.to_i
+    @first_page_url = required.fetch(:first_page_url).to_i
+    @numbered_page_url = required.fetch(:numbered_page_url).to_i
     @page_number_placeholder = PAGE_NUMBER_PLACEHOLDER
   end
 

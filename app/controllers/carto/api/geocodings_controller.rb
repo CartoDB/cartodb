@@ -10,7 +10,10 @@ module Carto
       def index
         # data_import_id is set for content guessing geocodes
         # TODO: agree on a more flexible API with params
-        geocodings = Carto::Geocoding.where("user_id = ? AND (state NOT IN (?)) AND (data_import_id IS NULL)", current_user.id, ['failed', 'finished', 'cancelled']).all
+        geocodings = Carto::Geocoding.where(
+          "user_id = ? AND (state NOT IN (?)) AND (data_import_id IS NULL)",
+          current_user.id, ['failed', 'finished', 'cancelled']
+        ).all
         render json: { geocodings: geocodings }, root: false
       end
 

@@ -15,9 +15,9 @@ class Geocoding < Sequel::Model
 
 
   PUBLIC_ATTRIBUTES = [:id, :table_id, :table_name, :state, :kind, :country_code, :region_code, :formatter,
-                       :geometry_type, :error, :processed_rows, :cache_hits, :processable_rows, :real_rows,
-                       :price, :used_credits, :remaining_quota, :country_column, :region_column, :data_import_id,
-                       :error_code]
+                       :geocoder_type, :geometry_type, :error, :processed_rows, :cache_hits, :processable_rows,
+                       :real_rows, :price, :used_credits, :remaining_quota, :country_column, :region_column,
+                       :data_import_id, :error_code]
 
   # Characters in the following Unicode categories: Letter, Mark, Number and Connector_Punctuation,
   # plus spaces and single quotes

@@ -2,6 +2,7 @@ var isLeafletAlreadyLoaded = !!window.L;
 
 var _ = require('underscore');
 var L = require('leaflet');
+var d3 = require('d3');
 require('mousewheel'); // registers itself to $.event; TODO what's this required for? still relevant for supported browsers?
 require('mwheelIntent'); // registers itself to $.event; TODO what's this required for? still relevant for supported browsers?
 
@@ -11,12 +12,11 @@ cdb.Mustache = require('mustache');
 cdb.$ = require('jquery');
 cdb._ = _;
 cdb.L = L;
+cdb.d3 = d3;
 
 if (isLeafletAlreadyLoaded) L.noConflict();
-_.extend(L, require('./geo/leaflet-extensions'));
 _.extend(cdb.geo, require('./geo/leaflet'));
 
-cdb.Image = require('./vis/image')
 cdb.SQL = require('./api/sql');
 
 cdb.config = require('cdb.config');
@@ -26,9 +26,10 @@ cdb.templates = require('cdb.templates');
 cdb.decorators = require('./core/decorators');
 cdb.createVis = require('./api/create-vis');
 cdb.createLayer = require('./api/create-layer');
+cdb.LZMA = require('lzma');
 
 // Extracted from vis/vis.js,
-// used in libs like torque and odyssey to add themselves here (or so it seems)
+// used in libs like torque to add themselves here (or so it seems)
 cdb.moduleLoad = function(name, mod) {
   cdb[name] = mod;
   cdb.config.modules.add({
@@ -45,6 +46,7 @@ cdb.core.Template = require('./core/template');
 cdb.core.TemplateList = require('./core/template-list');
 cdb.core.Model = require('./core/model');
 cdb.core.View = require('./core/view');
+cdb.core.format = require('./core/format');
 
 cdb.ui.common.Dialog = require('./ui/common/dialog');
 cdb.ui.common.ShareDialog = require('./ui/common/share');
@@ -70,9 +72,9 @@ cdb.geo.WMSLayer = require('./geo/map/wms-layer');
 cdb.geo.PlainLayer = require('./geo/map/plain-layer');
 cdb.geo.TorqueLayer = require('./geo/map/torque-layer');
 cdb.geo.CartoDBLayer = require('./geo/map/cartodb-layer');
-cdb.geo.CartoDBNamedMapLayer = require('./geo/map/cartodb-named-map-layer');
+cdb.geo.CartoDBLayerGroupNamed = require('./geo/map/cartodb-layer-group-named');
+cdb.geo.CartoDBLayerGroupAnonymous = require('./geo/map/cartodb-layer-group-anonymous');
 cdb.geo.Layers = require('./geo/map/layers');
-cdb.geo.CartoDBGroupLayer = require('./geo/map/cartodb-group-layer');
 cdb.geo.Map = require('./geo/map');
 cdb.geo.MapView = require('./geo/map-view');
 
@@ -96,15 +98,12 @@ _.extend(cdb.geo.ui.Legend, require('./geo/ui/legend/legend-view-exports'));
 cdb.geo.ui.InfowindowModel = require('./geo/ui/infowindow-model');
 cdb.geo.ui.Infowindow = require('./geo/ui/infowindow');
 
-cdb.geo.ui.SlidesControllerItem = require('./geo/ui/slides-controller-item');
-cdb.geo.ui.SlidesController = require('./geo/ui/slides-controller');
 cdb.geo.ui.Header = require('./geo/ui/header');
 
 cdb.geo.ui.Search = require('./geo/ui/search');
 
 cdb.geo.ui.LayerSelector = require('./geo/ui/layer-selector');
 cdb.geo.ui.LayerView = require('./geo/ui/layer-view');
-cdb.geo.ui.LayerViewFromLayerGroup = require('./geo/ui/layer-view-from-layer-group');
 
 cdb.geo.ui.MobileLayer = require('./geo/ui/mobile-layer');
 cdb.geo.ui.Mobile = require('./geo/ui/mobile');

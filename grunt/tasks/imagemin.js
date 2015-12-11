@@ -5,17 +5,17 @@
 module.exports = {
   task: function() {
     return {
-      distCSSImages: {
-        options: {
-          progressive: true
-        },
-        files: [{
-          expand: true,
-          cwd: 'themes/css',
-          src: [ 'images/**/*.{png,jpg,gif}' ],
-          dest: '<%= config.dist %>/themes/css'
-        }]
-      },
+      // distSVG: {
+      //   options: {
+      //     progressive: true
+      //   },
+      //   files: [{
+      //     expand: true,
+      //     cwd: 'themes/svg',
+      //     src: [ '**/*.svg' ],
+      //     dest: '<%= config.dist %>/themes/svg'
+      //   }]
+      // },
 
       distImages: {
         options: {
@@ -24,7 +24,7 @@ module.exports = {
         files: [{
           expand: true,
           cwd: 'themes/img',
-          src: [ '**/*.{png,jpg,gif}' ],
+          src: [ '**/*.{png,jpg,gif,svg}' ],
           dest: '<%= config.dist %>/themes/img'
         }]
       }

@@ -1,4 +1,5 @@
 var torque = require('cdb/torque');
+require('leaflet').noConflict();
 
 describe('torque', function() {
   it('should set a window.torque object', function() {
@@ -16,6 +17,5 @@ describe('torque', function() {
     expect(cdb.geo.LeafletTorqueLayer).toEqual(jasmine.any(Function));
 
     expect(cdb.geo.ui).toEqual(jasmine.any(Object));
-    expect(cdb.geo.ui.TimeSlider).toEqual(jasmine.any(Function));
   });
 });

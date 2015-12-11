@@ -10,6 +10,7 @@ var Layers = Backbone.Collection.extend({
   model: MapLayer,
 
   initialize: function() {
+    MapLayer.prototype.initialize.apply(this, arguments);
     this.comparator = function(m) {
       return parseInt(m.get('order'), 10);
     };

@@ -5,6 +5,7 @@ var _ = require('underscore');
  */
 function CartoDBLayerCommon() {
   this.visible = true;
+  this.interactionEnabled = [];
 }
 
 CartoDBLayerCommon.prototype = {
@@ -46,14 +47,14 @@ CartoDBLayerCommon.prototype = {
    * @params layer {Boolean} Choose if wants interaction or not
    */
   setInteraction: function(layer, b) {
-    // shift arguments to maintain caompatibility
-    if(b == undefined) {
+    // shift arguments to maintain compatibility
+    if (b == undefined) {
       b = layer;
       layer = 0;
     }
     var layerInteraction;
     this.interactionEnabled[layer] = b;
-    if(!b) {
+    if (!b) {
       layerInteraction = this.interaction[layer];
       if(layerInteraction) {
         layerInteraction.remove();
@@ -63,10 +64,11 @@ CartoDBLayerCommon.prototype = {
       // if urls is null it means that setInteraction will be called
       // when the layergroup token was recieved, then the real interaction
       // layer will be created
-      if(this.urls) {
+      if (this.model.get('urls')) {
         // generate the tilejson from the urls. wax needs it
-        var layer_index = this.getLayerIndexByNumber(+layer);
-        var tilejson = this._tileJSONfromTiles(layer_index, this.urls);
+        // var layer_index = this.getLayerIndexByNumber(+layer);
+        var layer_index = +layer;
+        var tilejson = this.model.getTileJSONFromTiles(layer_index);
 
         // remove previous
         layerInteraction = this.interaction[layer];
@@ -93,33 +95,6 @@ CartoDBLayerCommon.prototype = {
       }
     }
     return this;
-  },
-
-  setOptions: function (opts) {
-
-    if (typeof opts != "object" || opts.length) {
-      throw new Error(opts + ' options must be an object');
-    }
-
-    _.extend(this.options, opts);
-
-    var opts = this.options;
-
-    this.options.query = this.options.query || "select * from " + this.options.table_name;
-    if(this.options.query_wrapper) {
-      this.options.query = _.template(this.options.query_wrapper)({ sql: this.options.query });
-    }
-
-    this.setSilent(true);
-    opts.interaction && this.setInteraction(opts.interaction);
-    opts.opacity && this.setOpacity(opts.opacity);
-    opts.query && this.setQuery(opts.query.replace(/\{\{table_name\}\}/g, this.options.table_name));
-    opts.tile_style && this.setCartoCSS(opts.tile_style.replace(new RegExp( opts.table_name, "g"), "layer0"));
-    opts.cartocss && this.setCartoCSS(opts.cartocss);
-    opts.interactivity && this.setInteractivity(opts.interactivity);
-    opts.visible ? this.show() : this.hide();
-    this.setSilent(false);
-    this._definitionUpdated();
   },
 
   _getLayerDefinition: function() {
@@ -161,6 +136,20 @@ CartoDBLayerCommon.prototype = {
   tilesOk: function() {
   },
 
+  _reloadInteraction: function() {
+
+    // Clear existing interaction
+    this._clearInteraction();
+
+    // Enable interaction for the layers that have interaction
+    // (are visible AND have tooltips OR infowindows)
+    this.model.layers.each(function(layer, index) {
+      if (layer.hasInteraction()) {
+        this.setInteraction(index, true);
+      }
+    }.bind(this))
+  },
+
   _clearInteraction: function() {
     for(var i in this.interactionEnabled) {
       if (this.interactionEnabled.hasOwnProperty(i) &&
@@ -168,54 +157,6 @@ CartoDBLayerCommon.prototype = {
         this.setInteraction(i, false);
       }
     }
-  },
-
-  _reloadInteraction: function() {
-    for(var i in this.interactionEnabled) {
-      if (this.interactionEnabled.hasOwnProperty(i) &&
-        this.interactionEnabled[i]) {
-          this.setInteraction(i, false);
-          this.setInteraction(i, true);
-      }
-    }
-  },
-
-  /**
-   *  Check the tiles
-   */
-  _checkTiles: function() {
-    var xyz = {z: 4, x: 6, y: 6}
-      , self = this
-      , img = new Image()
-      , urls = this._tileJSON()
-
-    getTiles(function(urls) {
-
-      var grid_url = urls.tiles[0]
-          .replace(/\{z\}/g,xyz.z)
-          .replace(/\{x\}/g,xyz.x)
-          .replace(/\{y\}/g,xyz.y);
-
-      this.options.ajax({
-        method: "get",
-        url: grid_url,
-        crossDomain: true,
-        success: function() {
-          self.tilesOk();
-          clearTimeout(timeout)
-        },
-        error: function(xhr, msg, data) {
-          clearTimeout(timeout);
-          self.error(xhr.responseText && JSON.parse(xhr.responseText));
-        }
-      });
-    });
-
-    var timeout = setTimeout(function(){
-      clearTimeout(timeout);
-      self.error("tile timeout");
-    }, 30000);
-
   }
 };
 

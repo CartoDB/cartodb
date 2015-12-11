@@ -1,8 +1,7 @@
 var _ = require('underscore');
-var Vis = require('../vis/vis');
+var Vis = require('cdb/vis/vis');
 
 var createVis = function(el, vizjson, options, callback) {
-
   if (!el) {
     throw new TypeError("a DOM element should be provided");
   }
@@ -17,20 +16,19 @@ var createVis = function(el, vizjson, options, callback) {
 
   el = (typeof el === 'string' ? document.getElementById(el) : el);
 
-  var vis = new Vis({ el: el });
+  var vis = new Vis({
+    el: el
+  });
 
   if (vizjson) {
-
     vis.load(vizjson, options);
 
     if (callback) {
       vis.done(callback);
     }
-
   }
 
   return vis;
-
 };
 
 module.exports = createVis;

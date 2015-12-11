@@ -1,0 +1,69 @@
+/**
+ *  CartoDB infowindow light styles
+ */
+
+.Cdb-infowindow--light {
+  background: #fff;
+
+  .Cdb-infowindow-subtitle {
+    color: #636D72;
+  } 
+
+  .Cdb-infowindow-title {
+    color: #2E3C43;
+  }
+
+  .is-scroll:after{
+    background-image: linear-gradient(-180deg, rgba(255, 255, 255 , 0) 0%, #FFFFFF 100%);
+  }
+
+  .Cdb-hook-inner {
+    background: #fff;
+  }
+
+  .Cdb-hook:before {
+    border-top: 16px solid #fff;
+  }
+
+  .Cdb-infowindow-media-title {
+    .Cdb-infowindow-subtitle {
+      color: #fff;
+    }
+    .Cdb-infowindow-title {
+      color: #fff;
+    }
+  }
+  .Cdb-infowindow-tabs {
+    background: #F2F6F9;
+  }
+  .Cdb-infowindow-tabs-links {
+    color: #3AA9E3;
+    &.is-active {
+      color: #2E3C43;
+      border-bottom: 1px solid #2E3C43;
+    }
+  }
+  .Cdb-loading-subtitle {
+    background: #F9F9F9;
+  }
+  .Cdb-loading-title {
+    background: #F9F9F9;
+  }
+
+  .Cdb-loading-bg {
+    opacity: .04;
+  }
+}
+
+
+.Cdb-infowindow-header {
+  &.Cdb-infowindow-header-bg--light {
+    .Cdb-infowindow-subtitle {
+      color: rgba(255, 255, 255, .64);
+    } 
+
+    .Cdb-infowindow-title {
+      color: #fff;
+    }
+  } 
+}

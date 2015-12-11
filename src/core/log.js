@@ -5,9 +5,9 @@ var config = require('cdb.config');
 
 // TODO: Is this fake console/IE7 still necessary?
 var _console;
-var _fake_console = function() {};
-_fake_console.prototype.error = function(){};
-_fake_console.prototype.log= function(){};
+var FakeConsole = function() {};
+FakeConsole.prototype.error = function(){};
+FakeConsole.prototype.log = function(){};
 
 //IE7 love
 if (typeof console !== "undefined") {
@@ -15,10 +15,10 @@ if (typeof console !== "undefined") {
   try {
     _console.log.apply(_console, ['cartodb.js ' + cdb.VERSION])
   } catch(e) {
-    _console = new _fake_console();
+    _console = new FakeConsole();
   }
 } else {
-  _console = new _fake_console();
+  _console = new FakeConsole();
 }
 
 var Log = Backbone.Model.extend({

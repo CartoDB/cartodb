@@ -1,6 +1,5 @@
 var _ = require('underscore');
 var Overlay = require('./vis/overlay');
-var SlidesController = require('../geo/ui/slides-controller');
 var Model = require('../core/model');
 var Template = require('../core/template');
 var Mobile = require('../geo/ui/mobile');
@@ -17,20 +16,8 @@ var TilesLoader = require('../geo/ui/tiles-loader');
 var Tooltip = require('../geo/ui/tooltip');
 var Zoom = require('../geo/ui/zoom');
 var FullScreen = require('../ui/common/fullscreen');
-var Image = require('./image');
 
 Overlay.register('logo', function(data, vis) {
-
-});
-
-Overlay.register('slides_controller', function(data, vis) {
-
-  var slides_controller = new SlidesController({
-    transitions: data.transitions,
-    visualization: vis
-  });
-
-  return slides_controller.render();
 
 });
 
@@ -62,8 +49,6 @@ Overlay.register('mobile', function(data, vis) {
     template: template,
     mapView: vis.mapView,
     overlays: data.overlays,
-    transitions: data.transitions,
-    slides_data: data.slides,
     visualization: vis,
     layerView: data.layerView,
     visibility_options: data.options,
@@ -72,27 +57,6 @@ Overlay.register('mobile', function(data, vis) {
   });
 
   return mobile.render();
-});
-
-Overlay.register('image', function(data, vis) {
-
-  var options = data.options;
-
-  var template = Template.compile(
-    data.template || '\
-    <div class="content">\
-    <div class="text widget_text">{{{ content }}}</div>\
-    </div>',
-    data.templateType || 'mustache'
-  );
-
-  var widget = new Image({
-    model: new Model(options),
-    template: template
-  });
-
-  return widget.render();
-
 });
 
 Overlay.register('text', function(data, vis) {
@@ -168,8 +132,6 @@ Overlay.register('header', function(data, vis) {
 
   var widget = new Header({
     model: new Model(options),
-    transitions: data.transitions,
-    slides: vis.slides,
     template: template
   });
 
@@ -203,16 +165,6 @@ Overlay.register('loader', function(data) {
 
   return tilesLoader.render();
 });
-
-Overlay.register('time_slider', function(data, viz) {
-  // Expected to be loaded through torque
-  if (!cdb.geo.ui.TimeSlider) {
-    throw new Error('torque library must be loaded for the cdb.geo.ui.TimeSlider to work');
-  }
-  var slider = new cdb.geo.ui.TimeSlider(data);
-  return slider.render();
-});
-
 
 // Header to show informtion (title and description)
 Overlay.register('_header', function(data, vis) {
@@ -302,7 +254,8 @@ Overlay.register('infowindow', function(data, vis) {
     template_type: data.templateType,
     alternative_names: data.alternative_names,
     fields: data.fields,
-    template_name: data.template_name
+    template_name: data.template_name,
+    template_type: data.template_type
   });
 
   var infowindow = new Infowindow({
@@ -343,34 +296,19 @@ Overlay.register('layer_selector', function(data, vis) {
     layer_names: data.layer_names
   });
 
-  var timeSlider = vis.timeSlider;
-  if (timeSlider) {
-    layerSelector.bind('change:visible', function(visible, order, layer) {
-      if (layer.get('type') === 'torque') {
-        timeSlider[visible ? 'show': 'hide']();
-      }
-    });
-  }
   if (vis.legends) {
-
     layerSelector.bind('change:visible', function(visible, order, layer) {
-
-
       if (layer.get('type') === 'layergroup' || layer.get('type') === 'torque') {
-
         var legend = vis.legends && vis.legends.getLegendByIndex(order);
 
         if (legend) {
           legend[visible ? 'show': 'hide']();
         }
-
       }
-
     });
   }
 
   return layerSelector.render();
-
 });
 
 // fullscreen

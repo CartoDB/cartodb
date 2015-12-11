@@ -147,14 +147,12 @@ module.exports = function(map, layer, options, callback) {
         mapView: mapView
       });
 
-      viz.updated_at = visData.updated_at;
       viz.https = options.https;
     }
 
     function createLayer() {
       layerView = viz.createLayer(layerData, { no_base_layer: true });
 
-      var torqueLayer;
       var mobileEnabled = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
       var addMobileLayout = (options.mobile_layout && mobileEnabled) || options.force_mobile;
 
@@ -177,24 +175,13 @@ module.exports = function(map, layer, options, callback) {
         viz._addLegends(viz._createLayerLegendView(layerModel.attributes,  layerView))
       }
 
-      if(options.time_slider && layerView.model.get('type') === 'torque') {
-
-        if (!addMobileLayout) { // don't add the overlay if we are in mobile
-          viz.addTimeSlider(layerView);
-        }
-
-        torqueLayer = layerView;
-      }
-
       if (addMobileLayout) {
-
         options.mapView = map.viz.mapView;
 
         viz.addOverlay({
           type: 'mobile',
           layerView: layerView,
           overlays: [],
-          torqueLayer: torqueLayer,
           options: options
         });
       }

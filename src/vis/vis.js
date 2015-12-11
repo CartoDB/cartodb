@@ -1,7 +1,7 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
 var $ = require('jquery');
-var cdb = require('cdb'); // cdb.odyssey (set through cdb.moduleLoad())
+var cdb = require('cdb');
 var config = require('cdb.config');
 var log = require('cdb.log');
 var util = require('cdb.core.util');
@@ -20,11 +20,17 @@ var Template = require('../core/template');
 var Layers = require('./vis/layers');
 var Overlay = require('./vis/overlay');
 var INFOWINDOW_TEMPLATE = require('./vis/infowindow-template');
+var CartoDBLayerGroupNamed = require('cdb/geo/map/cartodb-layer-group-named');
+var CartoDBLayerGroupAnonymous = require('cdb/geo/map/cartodb-layer-group-anonymous');
 
 /**
- * visulization creation
+ * Visualization creation
  */
 var Vis = View.extend({
+
+  DEFAULT_MAX_ZOOM: 20,
+
+  DEFAULT_MIN_ZOOM: 0,
 
   initialize: function() {
     _.bindAll(this, 'loadingTiles', 'loadTiles', '_onResize');
@@ -32,24 +38,11 @@ var Vis = View.extend({
     this.https = false;
     this.overlays = [];
     this.moduleChecked = false;
-    this.layersLoading = 0;
 
     if (this.options.mapView) {
       this.mapView = this.options.mapView;
       this.map = this.mapView.map;
     }
-
-    // recalculate map position on orientation change
-    if (!window.addEventListener) {
-      window.attachEvent('orientationchange', this.doOnOrientationChange, this);
-    } else {
-      window.addEventListener('orientationchange', _.bind(this.doOnOrientationChange, this));
-    }
-
-  },
-
-  doOnOrientationChange: function() {
-    //this.setMapPosition();
   },
 
   /**
@@ -96,7 +89,6 @@ var Vis = View.extend({
   },
 
   _setLayerOptions: function(options) {
-
     var layers = [];
 
     // flatten layers (except baselayer)
@@ -123,9 +115,6 @@ var Vis = View.extend({
       if(subLayer.model && subLayer.model.get('type') === 'torque') {
         if (o.visible === false) {
           subLayer.model.set('visible', false);
-          if (this.timeSlider) {
-            this.timeSlider.hide();
-          }
         }
       }
     }
@@ -147,25 +136,7 @@ var Vis = View.extend({
     this._createOverlays(overlays, data, options);
   },
 
-  addTimeSlider: function(torqueLayer) {
-    // if a timeslides already exists don't create it again
-    if (torqueLayer && (torqueLayer.options.steps > 1) && !this.timeSlider) {
-      var self = this;
-      // dont use add overlay since this overlay is managed by torque layer
-      var timeSlider = Overlay.create('time_slider', this, { layer: torqueLayer });
-      this.mapView.addOverlay(timeSlider);
-      this.timeSlider = timeSlider;
-      // remove when layer is done
-      torqueLayer.bind('remove', function _remove() {
-        self.timeSlider = null;
-        timeSlider.remove();
-        torqueLayer.unbind('remove', _remove);
-      });
-    }
-  },
-
   _setupSublayers: function(layers, options) {
-
     options.sublayer_options = [];
 
     _.each(layers.slice(1), function(lyr) {
@@ -181,16 +152,13 @@ var Vis = View.extend({
       } else if (lyr.type === 'torque') {
         options.sublayer_options.push({ visible: ( lyr.options.visible !== undefined ? lyr.options.visible : true ) })
       }
-
     });
-
   },
 
   load: function(data, options) {
     var self = this;
 
     if (typeof(data) === 'string') {
-
       var url = data;
 
       Loader.get(url, function(data) {
@@ -202,45 +170,27 @@ var Vis = View.extend({
       });
 
       return this;
-
-    }
-
-    // if the viz.json contains slides, discard the main viz.json and use the slides
-    var slides = data.slides;
-    if (slides && slides.length > 0) {
-      data = slides[0]
-      data.slides = slides.slice(1);
     }
 
     // load modules needed for layers
     var layers = data.layers;
 
-    // check if there are slides and check all the layers
-    if (data.slides && data.slides.length > 0) {
-      layers = layers.concat(_.flatten(data.slides.map(function(s) { return s.layers })));
-    }
-
     if (!this.checkModules(layers)) {
-
       if (this.moduleChecked) {
-
         self.throwError("modules couldn't be loaded");
         return this;
-
       }
 
       this.moduleChecked = true;
-
 
       this.loadModules(layers, function() {
         self.load(data, options);
       });
 
       return this;
-
     }
 
-    // configure the vis in http or https
+    // TODO: This should be part of a model
     if (window && window.location.protocol && window.location.protocol === 'https:') {
       this.https = true;
     }
@@ -258,11 +208,13 @@ var Vis = View.extend({
 
     this.cartodb_logo = (options.cartodb_logo !== undefined) ? options.cartodb_logo: has_logo_overlay;
 
-    if (this.mobile) this.cartodb_logo = false;
-    else if (!has_logo_overlay && options.cartodb_logo === undefined) this.cartodb_logo = true; // We set the logo by default
+    if (this.mobile) {
+      this.cartodb_logo = false;
+    } else if (!has_logo_overlay && options.cartodb_logo === undefined) {
+      this.cartodb_logo = true;
+    }
 
-    var scrollwheel       = (options.scrollwheel === undefined)  ? data.scrollwheel : options.scrollwheel;
-    var slides_controller = (options.slides_controller === undefined)  ? data.slides_controller : options.slides_controller;
+    var scrollwheel  = (options.scrollwheel === undefined)  ? data.scrollwheel : options.scrollwheel;
 
     // Do not allow pan map if zoom overlay and scrollwheel are disabled unless
     // mobile view is enabled
@@ -271,14 +223,10 @@ var Vis = View.extend({
     // Do not allow pan map if zoom overlay and scrollwheel are disabled
     // Check if zoom overlay is present.
     var hasZoomOverlay = _.isObject(_.find(data.overlays, function(overlay) {
-      return overlay.type == "zoom"
+      return overlay.type == "zoom";
     }));
 
     var allowDragging = isMobileDevice || hasZoomOverlay || scrollwheel;
-
-    // map
-    data.maxZoom || (data.maxZoom = 20);
-    data.minZoom || (data.minZoom = 0);
 
     //Force using GMaps ?
     if ( (this.gmaps_base_type) && (data.map_provider === "leaflet") ) {
@@ -305,11 +253,12 @@ var Vis = View.extend({
       }
     }
 
+    // Create the instance of the cdb.geo.Map model
     var mapConfig = {
       title: data.title,
       description: data.description,
-      maxZoom: data.maxZoom,
-      minZoom: data.minZoom,
+      maxZoom: data.maxZoom || this.DEFAULT_MAX_ZOOM,
+      minZoom: data.minZoom || this.DEFAULT_MIN_ZOOM,
       legends: data.legends,
       scrollwheel: scrollwheel,
       drag: allowDragging,
@@ -318,17 +267,13 @@ var Vis = View.extend({
 
     // if the boundaries are defined, we add them to the map
     if (data.bounding_box_sw && data.bounding_box_ne) {
-
       mapConfig.bounding_box_sw = data.bounding_box_sw;
       mapConfig.bounding_box_ne = data.bounding_box_ne;
-
     }
 
     if (data.bounds) {
-
       mapConfig.view_bounds_sw = data.bounds[0];
       mapConfig.view_bounds_ne = data.bounds[1];
-
     } else {
       var center = data.center;
 
@@ -343,8 +288,6 @@ var Vis = View.extend({
     var map = new Map(mapConfig);
     this.map = map;
     this.overlayModels = new Backbone.Collection();
-
-    this.updated_at = data.updated_at || new Date().getTime();
 
     // If a CartoDB embed map is hidden by default, its
     // height is 0 and it will need to recalculate its size
@@ -399,10 +342,6 @@ var Vis = View.extend({
 
     this.mapView.bind('newLayerView', this._addLoading, this);
 
-    if (options.time_slider) {
-      this.mapView.bind('newLayerView', this._addTimeSlider, this);
-    }
-
     if (this.infowindow) {
       this.mapView.bind('newLayerView', this.addInfowindow, this);
     }
@@ -411,10 +350,36 @@ var Vis = View.extend({
       this.mapView.bind('newLayerView', this.addTooltip, this);
     }
 
-    this.map.layers.reset(_.map(data.layers, function(layerData) {
-      return Layers.create(layerData.type || layerData.kind, self, layerData);
-    }));
+    var cartoDBLayers;
+    var cartoDBLayerGroup;
+    var layers = [];
+    _.each(data.layers, function(layerData) {
+      if (layerData.type === 'layergroup' || layerData.type === 'namedmap') {
+        var layersData;
+        var layerGroupClass;
+        if (layerData.type === 'layergroup') {
+          layersData = layerData.options.layer_definition.layers;
+          layerGroupClass = CartoDBLayerGroupAnonymous;
+        } else {
+          layersData = layerData.options.named_map.layers;
+          layerGroupClass = CartoDBLayerGroupNamed;
+        }
+        cartoDBLayers = _.map(layersData, function(layerData) {
+          var cartoDBLayer = Layers.create("cartodb", self, layerData);
+          return cartoDBLayer;
+        });
+        cartoDBLayerGroup = new layerGroupClass({}, {
+          layers: cartoDBLayers
+        });
+        layers.push(cartoDBLayerGroup);
+      } else {
+        // Treat differently since this kind of layer is rendered client-side (and not through the tiler)
+        var layer = Layers.create(layerData.type, self, layerData);
+        layers.push(layer);
+      }
+    });
 
+    this.map.layers.reset(layers);
     this.overlayModels.reset(data.overlays);
 
     // if there are no sublayer_options fill it
@@ -424,209 +389,14 @@ var Vis = View.extend({
 
     this._setLayerOptions(options);
 
-    if (data.slides) {
-
-      this.map.disableKeyboard();
-
-      function odysseyLoaded() {
-        self._createSlides([data].concat(data.slides));
-      };
-
-      if (cdb.odyssey === undefined) {
-        config.bind('moduleLoaded:odyssey', odysseyLoaded);
-        Loader.loadModule('odyssey');
-      } else {
-        odysseyLoaded();
-      }
-
-    }
-
     _.defer(function() {
-      self.trigger('done', self, self.getLayers());
-    })
+      self.trigger('done', self, map.layers);
+    });
 
     return this;
-
-  },
-
-  _addTimeSlider: function() {
-    var self = this;
-    var torque = _(this.getLayers()).find(function(layer) {
-      return layer.model.get('type') === 'torque' && layer.model.get('visible');
-    });
-    if (torque) {
-      this.torqueLayer = torque;
-      // send step events from torque layer
-      this.torqueLayer.bind('change:time', function(s) {
-        this.trigger('change:step', this.torqueLayer, this.torqueLayer.getStep());
-      }, this);
-      if (!this.isMobileEnabled && this.torqueLayer) {
-        this.addTimeSlider(this.torqueLayer);
-      }
-    }
-  },
-
-  // sets the animation step if there is an animation
-  // returns true if succed
-  setAnimationStep: function(s, opt) {
-    if (this.torqueLayer) {
-      this.torqueLayer.setStep(s, opt);
-      return true;
-    }
-    return false;
-  },
-
-  _createSlides: function(slides) {
-
-      function BackboneActions(model) {
-        var actions = {
-          set: function() {
-            var args = arguments;
-            return O.Action({
-              enter: function() {
-                model.set.apply(model, args);
-              }
-            });
-          },
-
-          reset: function() {
-            var args = arguments;
-            return O.Action({
-              enter: function() {
-                model.reset.apply(model, args);
-              }
-            });
-          }
-        };
-        return actions;
-      }
-
-      function SetStepAction(vis, step) {
-        return O.Action(function() {
-          vis.setAnimationStep(step);
-        });
-      }
-
-      function AnimationTrigger(vis, step) {
-        var t = O.Trigger();
-        vis.on('change:step', function (layer, currentStep) {
-          if (currentStep === step) {
-            t.trigger();
-          }
-        });
-        return t;
-      }
-
-      function PrevTrigger(seq, step) {
-        var t = O.Trigger();
-        var c = PrevTrigger._callbacks;
-        if (!c) {
-          c = PrevTrigger._callbacks = []
-          O.Keys().left().then(function() {
-            for (var i = 0; i < c.length; ++i) {
-              if (c[i] === seq.current()) {
-                t.trigger();
-                return;
-              }
-            }
-          });
-        }
-        c.push(step);
-        return t;
-      }
-
-      function NextTrigger(seq, step) {
-        var t = O.Trigger();
-        var c = NextTrigger._callbacks;
-        if (!c) {
-          c = NextTrigger._callbacks = []
-          O.Keys().right().then(function() {
-            for (var i = 0; i < c.length; ++i) {
-              if (c[i] === seq.current()) {
-                t.trigger();
-                return;
-              }
-            }
-          });
-        }
-        c.push(step);
-        return t;
-      }
-
-      function WaitAction(seq, ms) {
-        return O.Step(O.Sleep(ms), O.Action(function() {
-          seq.next();
-        }));
-      }
-
-      var self = this;
-
-      var seq = this.sequence = O.Sequential();
-      this.slides = O.Story();
-
-      // transition - debug, remove
-      //O.Keys().left().then(seq.prev, seq);
-      //O.Keys().right().then(seq.next, seq);
-
-      this.map.actions = BackboneActions(this.map);
-      this.map.layers.actions = BackboneActions(this.map.layers);
-      this.overlayModels.actions = BackboneActions(this.overlayModels)
-
-      function goTo(seq, i) {
-        return function() {
-          seq.current(i);
-        }
-      }
-
-      for (var i = 0; i < slides.length; ++i) {
-        var slide = slides[i];
-        var states = [];
-
-        var mapChanges = O.Step(
-          // map movement
-          this.map.actions.set({
-            'center': typeof slide.center === 'string' ? JSON.parse(slide.center): slide.center,
-            'zoom': slide.zoom
-          }),
-          // wait a little bit
-          O.Sleep(350),
-          // layer change
-          this.map.layers.actions.reset(_.map(slide.layers, function(layerData) {
-            return Layers.create(layerData.type || layerData.kind, self, layerData);
-          }))
-        );
-
-        states.push(mapChanges);
-
-        // overlays
-        states.push(this.overlayModels.actions.reset(slide.overlays));
-
-        if (slide.transition_options) {
-          var to = slide.transition_options;
-          if (to.transition_trigger === 'time') {
-            states.push(WaitAction(seq, to.time * 1000));
-          } else { //default is click
-            NextTrigger(seq, i).then(seq.next, seq);
-            PrevTrigger(seq, i).then(seq.prev, seq);
-          }
-        }
-
-        this.slides.addState(
-          seq.step(i),
-          O.Parallel.apply(window, states)
-        );
-
-      }
-      this.slides.go(0);
   },
 
   _createOverlays: function(overlays, vis_data, options) {
-
-    // if there's no header overlay, we need to explicitly create the slide controller
-    if ((options["slides_controller"] || options["slides_controller"] === undefined) && !this.isMobileEnabled && !_.find(overlays, function(o) { return o.type === 'header' && o.options.display; })) {
-      this._addSlideController(vis_data);
-    }
-
     _(overlays).each(function(data) {
       var type = data.type;
 
@@ -683,40 +453,17 @@ var Vis = View.extend({
           overlay.render();
         }
       }
-
-
     }, this);
-
-  },
-
-  _addSlideController: function(data) {
-
-    if (data.slides && data.slides.length > 0) {
-
-      var transitions = [data.transition_options].concat(_.pluck(data.slides, "transition_options"));
-
-      return this.addOverlay({
-        type: 'slides_controller',
-        transitions: transitions
-      });
-    }
-
   },
 
   _addHeader: function(data, vis_data) {
-
-    var transitions = [vis_data.transition_options].concat(_.pluck(vis_data.slides, "transition_options"))
-
     return this.addOverlay({
       type: 'header',
-      options: data.options,
-      transitions: transitions
+      options: data.options
     });
-
   },
 
   _addMobile: function(data, options) {
-
     var layers;
     var layer = data.layers[1];
 
@@ -732,13 +479,9 @@ var Vis = View.extend({
         layers = layer.options.named_map.layers;
       }
 
-      var transitions = [data.transition_options].concat(_.pluck(data.slides, "transition_options"));
-
       this.mobileOverlay = this.addOverlay({
         type: 'mobile',
         layers: layers,
-        slides: data.slides,
-        transitions:transitions,
         overlays: data.overlays,
         options: options,
         torqueLayer: this.torqueLayer
@@ -804,7 +547,6 @@ var Vis = View.extend({
   },
 
   addOverlay: function(overlay) {
-
     overlay.map = this.map;
 
     var v = Overlay.create(overlay.type, this, overlay);
@@ -884,13 +626,13 @@ var Vis = View.extend({
 
     if (opt.force_mobile === false || opt.force_mobile === "false") this.isMobileEnabled = false;
 
-    if (!opt.title) {
-      vizjson.title = null;
-    }
+    // if (!opt.title) {
+    //   vizjson.title = null;
+    // }
 
-    if (!opt.description) {
-      vizjson.description = null;
-    }
+    // if (!opt.description) {
+    //   vizjson.description = null;
+    // }
 
     if (!opt.tiles_loader) {
       remove_overlay('loader');
@@ -932,7 +674,6 @@ var Vis = View.extend({
         });
       }
     }
-
 
     if (opt.layer_selector) {
       if (!search_overlay('layer_selector')) {
@@ -1013,17 +754,8 @@ var Vis = View.extend({
         }
       }
       _applyLayerOptions(vizjson.layers);
-      if (vizjson.slides) {
-        for(var i = 0; i < vizjson.slides.length; ++i) {
-          _applyLayerOptions(vizjson.slides[i].layers);
-        }
-      }
     }
-
   },
-
-  // Set map top position taking into account header height
-  setMapPosition: function() { },
 
   createLayer: function(layerData, opts) {
     var layerModel = Layers.create(layerData.type || layerData.kind, this, layerData);
@@ -1053,11 +785,12 @@ var Vis = View.extend({
   },
 
   addTooltip: function(layerView) {
-    if(!layerView || !layerView.containTooltip || !layerView.containTooltip()) {
-      return;
-    }
-    for(var i = 0; i < layerView.getLayerCount(); ++i) {
-      var t = layerView.getTooltipData(i);
+
+    var layers = layerView.model && layerView.model.layers || [];
+
+    for(var i = 0; i < layers.length; ++i) {
+      var layerModel = layers.at(i);
+      var t = layerModel.getTooltipData();
       if (t) {
         if (!layerView.tooltip) {
           var tooltip = new Tooltip({
@@ -1076,13 +809,12 @@ var Vis = View.extend({
             this.tooltip.clean();
           });
         }
-        layerView.setInteraction(i, true);
       }
     }
 
     if (layerView.tooltip) {
       layerView.bind("featureOver", function(e, latlng, pos, data, layer) {
-        var t = layerView.getTooltipData(layer);
+        var t = layers.at(layer).getTooltipData();
         if (t) {
           layerView.tooltip.setTemplate(t.template);
           layerView.tooltip.setFields(t.fields);
@@ -1096,24 +828,28 @@ var Vis = View.extend({
   },
 
   addInfowindow: function(layerView) {
-
-    if(!layerView.containInfowindow || !layerView.containInfowindow()) {
-      return;
+    var mapView = this.mapView;
+    var infowindow = null;
+    var layers = [];
+    // TODO: this should be managed at a different level so each layer knows if
+    // the infowindow needs to be added
+    if (layerView.model) {
+      if (layerView.model.layers) {
+        layers = layerView.model.layers;
+      } else {
+        if (layerView.model.getInfowindowData) {
+          layers = new Backbone.Collection([layerView.model]);
+        }
+      }
     }
 
-    var mapView = this.mapView;
-    var eventType = 'featureClick';
-    var infowindow = null;
-
-    // activate interactivity for layers with infowindows
-    for(var i = 0; i < layerView.getLayerCount(); ++i) {
-
-      if (layerView.getInfowindowData(i)) {
+    for(var i = 0; i < layers.length; ++i) {
+      var layerModel = layers.at(i);
+      if (layerModel.getInfowindowData()) {
         if(!infowindow) {
-          infowindow = Overlay.create('infowindow', this, layerView.getInfowindowData(i), true);
+          infowindow = Overlay.create('infowindow', this, layerModel.getInfowindowData(), true);
           mapView.addInfowindow(infowindow);
         }
-        layerView.setInteraction(i, true);
       }
     }
 
@@ -1124,24 +860,27 @@ var Vis = View.extend({
     infowindow.bind('close', function() {
       // when infowindow is closed remove all the filters
       // for tooltips
-      for(var i = 0; i < layerView.getLayerCount(); ++i) {
+      for(var i = 0; i < layers; ++i) {
         var t = layerView.tooltip;
         if (t) {
           t.setFilter(null);
         }
       }
-    })
+    });
+
+    infowindow.model.bind('domready', function() {
+      layerView.trigger('infowindow_ready', infowindow, this);
+    }, this);
 
     // if the layer has no infowindow just pass the interaction
     // data to the infowindow
-    layerView.bind(eventType, function(e, latlng, pos, data, layer) {
+    layerView.bind('featureClick', function(e, latlng, pos, data, layer) {
 
-        var infowindowFields = layerView.getInfowindowData(layer);
+        var infowindowFields = layers.at(layer).getInfowindowData();
         if (!infowindowFields) return;
-        var fields = _.pluck(infowindowFields.fields, 'name');
         var cartodb_id = data.cartodb_id;
 
-        layerView.fetchAttributes(layer, cartodb_id, fields, function(attributes) {
+        layerView.model.fetchAttributes(layer, cartodb_id, function(attributes) {
 
           // Old viz.json doesn't contain width and maxHeight properties
           // and we have to get the default values if there are not defined.
@@ -1215,7 +954,6 @@ var Vis = View.extend({
       layerView.bind('load',    loadTiles);
     }
   },
-
 
   loadingTiles: function() {
 
@@ -1333,7 +1071,6 @@ var Vis = View.extend({
   isMobileDevice: function() {
     return /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
   }
-
 }, {
 
   /**
@@ -1424,7 +1161,6 @@ var Vis = View.extend({
     }
 
     return infowindow;
-
   },
 
   addCursorInteraction: function(map, layer) {
@@ -1442,7 +1178,6 @@ var Vis = View.extend({
     var mapView = map.viz.mapView;
     layer.unbind(null, null, mapView);
   }
-
 });
 
 module.exports = Vis;

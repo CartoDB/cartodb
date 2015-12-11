@@ -13,8 +13,9 @@ module.exports = {
         },
         files: [{
           expand: true,
-          cwd: 'themes/scss',
-          src: ['**/*.scss'],
+          src: [
+            'themes/scss/**/*.scss'
+          ],
           dest: '.tmp/scss',
           ext: '.css'
         }]

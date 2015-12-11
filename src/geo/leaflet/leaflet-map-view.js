@@ -7,11 +7,9 @@ var MapView = require('../map-view');
 var View = require('../../core/view');
 var LeafletTiledLayerView = require('./leaflet-tiled-layer-view');
 var LeafletWMSLayerView = require('./leaflet-wms-layer-view');
-var LeafletLayerCartoDBView = require('./leaflet-layer-cartodb-view');
 var LeafletPlainLayerView = require('./leaflet-plain-layer-view');
 var LeafletGmapsTiledLayerView = require('./leaflet-gmaps-tiled-layer-view');
 var LeafletCartoDBLayerGroupView = require('./leaflet-cartodb-layer-group-view');
-var LeafletCartoDBNamedMapView = require('./leaflet-cartodb-named-map-view');
 var LeafletPointView = require('./leaflet-point-view');
 var LeafletPathView = require('./leaflet-path-view');
 
@@ -69,7 +67,6 @@ var LeafletMapView = MapView.extend({
     this.map.layers.bind('add', this._addLayer, this);
     this.map.layers.bind('remove', this._removeLayer, this);
     this.map.layers.bind('reset', this._addLayers, this);
-    this.map.layers.bind('change:type', this._swicthLayerView, this);
 
     this.map.geometries.bind('add', this._addGeometry, this);
     this.map.geometries.bind('remove', this._removeGeometry, this);
@@ -237,6 +234,7 @@ var LeafletMapView = MapView.extend({
     return LeafletMapView.createLayer(layer, this.map_leaflet);
   },
 
+  // LAYER VIEWS ARE CREATED HERE
   _addLayer: function(layer, layers, opts) {
     var self = this;
     var lyr, layer_view;
@@ -350,15 +348,13 @@ var LeafletMapView = MapView.extend({
   layerTypeMap: {
     "tiled": LeafletTiledLayerView,
     "wms": LeafletWMSLayerView,
-    "cartodb": LeafletLayerCartoDBView,
-    "carto": LeafletLayerCartoDBView,
     "plain": LeafletPlainLayerView,
 
     // Substitutes the GMaps baselayer w/ an equivalent Leaflet tiled layer, since not supporting Gmaps anymore
     "gmapsbase": LeafletGmapsTiledLayerView,
 
     "layergroup": LeafletCartoDBLayerGroupView,
-    "namedmap": LeafletCartoDBNamedMapView,
+    "namedmap": LeafletCartoDBLayerGroupView,
     "torque": function(layer, map) {
       // TODO for now adding this error to be thrown if object is not present, since it's dependency
       // is not included in the standard bundle
@@ -376,8 +372,9 @@ var LeafletMapView = MapView.extend({
     if (layerClass) {
       try {
         layer_view = new layerClass(layer, map);
-      } catch(e) {
+      } catch (e) {
         log.error("MAP: error creating '" +  layer.get('type') + "' layer -> " + e.message);
+        throw e;
       }
     } else {
       log.error("MAP: " + layer.get('type') + " can't be created");

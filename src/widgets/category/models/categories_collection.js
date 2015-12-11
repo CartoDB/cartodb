@@ -22,6 +22,13 @@ module.exports = Backbone.Collection.extend({
     } else {
       return (a.get('value') < b.get('value')) ? 1 : -1;
     }
+  },
+
+  isOtherAvailable: function() {
+    return this.where({
+      agg: true,
+      name: 'Other'
+    }).length > 0
   }
 
 });

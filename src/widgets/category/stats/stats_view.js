@@ -28,6 +28,8 @@ module.exports = View.extend({
       template({
         isSearchEnabled: this.viewModel.isSearchEnabled(),
         isSearchApplied: this.dataModel.isSearchApplied(),
+        isLocked: this.dataModel.isLocked(),
+        isOtherAvailable: this.dataModel.isOtherAvailable(),
         resultsCount: this.dataModel.getSearchCount(),
         totalCats: this._getCategoriesSize(),
         nullsPer: this._getNullPercentage(),

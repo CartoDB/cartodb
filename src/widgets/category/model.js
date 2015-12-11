@@ -279,6 +279,10 @@ module.exports = WidgetModel.extend({
     return this.get('categoriesCount');
   },
 
+  isOtherAvailable: function() {
+    return this._data.isOtherAvailable();
+  },
+
   refresh: function() {
     if (this.isSearchApplied()) {
       this.search.fetch();

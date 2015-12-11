@@ -150,7 +150,7 @@ class Admin::PagesController < Admin::AdminController
         end
 
         unless @tables_num == 0
-          description << " published #{@tables_num} public dataset#{@tables_num == 1 ? "" : "s"}"
+          description << " published #{@tables_num} public dataset#{@tables_num == 1 ? '' : 's'}"
         end
 
         description << " · View #{@name} CartoDB profile for the latest activity and contribute to Open Data by creating an account in CartoDB"
@@ -291,7 +291,7 @@ class Admin::PagesController < Admin::AdminController
       description << " has"
 
       unless @visualizations.size == 0
-        description << " created #{@visualizations.size} map#{@visualizations.size == 1 ? "" : "s"}"
+        description << " created #{@visualizations.size} map#{@visualizations.size == 1 ? '' : 's'}"
       end
 
       unless @visualizations.size == 0 || @tables_num == 0
@@ -299,7 +299,7 @@ class Admin::PagesController < Admin::AdminController
       end
 
       unless @tables_num == 0
-        description << " published #{@tables_num} public dataset#{@tables_num == 1 ? "" : "s"}"
+        description << " published #{@tables_num} public dataset#{@tables_num == 1 ? '' : 's'}"
       end
 
       description << " · View #{@name} CartoDB profile for the latest activity and contribute to Open Data by creating an account in CartoDB"

@@ -163,5 +163,8 @@ module.exports = function(selector, diJSON, visOpts) {
     }, 0);
   }
 
-  return dashboardView;
+  return {
+    dashboardView: dashboardView,
+    vis: vis
+  };
 };

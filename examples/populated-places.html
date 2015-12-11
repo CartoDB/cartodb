@@ -311,13 +311,13 @@
         var visOpts = {
           no_cdn: false
         };
-        var dashboard = cartodb.deepInsights.createDashboard('#dashboard', diJSON, visOpts);
-        // .done(function(vis, layers) {
-        //   window.layers = layers.models[1].layers;
-        // })
-        // .error(function(err) {
-        //   console.log(err);
-        // });
+        cartodb.deepInsights.createDashboard('#dashboard', diJSON, visOpts)
+          .vis.done(function(vis, layers) {
+            window.layers = layers.models[1].layers;
+          })
+          .error(function(err) {
+            console.error(err);
+          });
       }
     </script>
   </body>

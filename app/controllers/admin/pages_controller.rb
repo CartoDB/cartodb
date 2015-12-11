@@ -133,7 +133,7 @@ class Admin::PagesController < Admin::AdminController
                             CartoDB.path(self, 'public_user_feed_home') and return
       end
 
-      description = @name
+      description = "#{@name}"
 
       # TODO: move to helper
       if @maps_count == 0 && @tables_num == 0
@@ -249,7 +249,7 @@ class Admin::PagesController < Admin::AdminController
 
     @datasets.compact!
 
-    description = @name
+    description = "#{@name}"
 
     # TODO: move to helper
     if @datasets.size == 0
@@ -282,7 +282,7 @@ class Admin::PagesController < Admin::AdminController
 
     @visualizations.compact!
 
-    description = @name
+    description = "#{@name}"
 
     # TODO: move to helper
     if @visualizations.size == 0 && @tables_num == 0

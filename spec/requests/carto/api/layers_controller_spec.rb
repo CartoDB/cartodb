@@ -188,7 +188,8 @@ describe Carto::Api::LayersController do
       get api_v1_maps_layers_index_url(user_domain: user_2.username, map_id: table.map.id) do |response|
         response.status.should be_success
         body = JSON.parse(last_response.body)
-        body['layers'].size.should == 4
+
+        body['layers'].count { |l| l['kind'] != 'tiled' }.should == 2
       end
 
       login_as(user_3, scope: user_3.username)
@@ -238,7 +239,7 @@ describe Carto::Api::LayersController do
         last_response.status.should be_success
         response_body = JSON.parse(last_response.body)
         response_body['total_entries'].should   eq 2
-        response_body['layers'].size.should     eq 2
+        body['layers'].count { |l| l['kind'] != 'tiled' }.should eq 2
         response_body['layers'][0]['id'].should eq layer.id
         response_body['layers'][1]['id'].should eq layer2.id
       end
@@ -271,7 +272,7 @@ describe Carto::Api::LayersController do
         last_response.status.should be_success
         response_body = JSON.parse(last_response.body)
         response_body['total_entries'].should == 2 + existing_layers_count
-        response_body['layers'].size.should == 2 + existing_layers_count
+        body['layers'].count { |l| l['kind'] != 'tiled' }.should == 2 + existing_layers_count
         new_layers_ids = response_body['layers'].collect { |layer| layer['id'] }
         (new_layers_ids - existing_layers_ids - expected_layers_ids).should == []
       end

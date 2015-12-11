@@ -122,6 +122,10 @@ module CartoDB
         @temp_table_name ||= %Q{"#{@table_schema}".internal_geocoding_#{Time.now.to_i}}
       end # temp_table_name
 
+      def name
+        'internal'
+      end
+
     end # Geocoder
 
   end # InternalGeocoder

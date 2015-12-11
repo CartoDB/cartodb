@@ -77,6 +77,9 @@ module CartoDB
       return geocoder.used_batch_request?
     end
 
+    def name
+      'heremaps'
+    end
 
     private
 

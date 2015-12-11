@@ -71,6 +71,7 @@ class User < Sequel::Model
 
 
   MIN_PASSWORD_LENGTH = 6
+  MAX_PASSWORD_LENGTH = 64
 
   GEOCODING_BLOCK_SIZE = 1000
 
@@ -140,6 +141,26 @@ class User < Sequel::Model
   #
   def valid_privacy?(privacy)
     self.private_tables_enabled || privacy == UserTable::PRIVACY_PUBLIC
+  end
+
+  def valid_password?(key, value, confirmation_value)
+    if value.nil?
+      errors.add(key, "New password can't be blank")
+    else
+      if value != confirmation_value
+        errors.add(key, "New password doesn't match confirmation")
+      end
+
+      if value.length < MIN_PASSWORD_LENGTH
+        errors.add(key, "Must be at least #{MIN_PASSWORD_LENGTH} characters long")
+      end
+
+      if value.length >= MAX_PASSWORD_LENGTH
+        errors.add(key, "Must be at most #{MAX_PASSWORD_LENGTH} characters long")
+      end
+    end
+
+    errors[key].empty?
   end
 
   ## Callbacks
@@ -369,13 +390,7 @@ class User < Sequel::Model
 
     errors.add(:old_password, "Old password not valid") unless @old_password_validated
 
-    if @new_password != @new_password_confirmation
-      errors.add(:new_password, "New password and confirm password are not the same")
-    end
-    errors.add(:new_password, "Missing new password") if @new_password.nil?
-    if !@new_password.nil? && @new_password.length < MIN_PASSWORD_LENGTH
-      errors.add(:new_password, "New password is too short (6 chars min)")
-    end
+    valid_password?(:new_password, @new_password, @new_password_confirmation)
   end
 
   def change_password(old_password, new_password_value, new_password_confirmation_value)
@@ -391,7 +406,7 @@ class User < Sequel::Model
     @old_password_validated = validate_old_password(old_password)
     return unless @old_password_validated
 
-    return unless new_password_value == new_password_confirmation_value && !new_password_value.nil?
+    return unless valid_password?(:new_password, new_password_value, new_password_confirmation_value)
 
     # Must be set AFTER validations
     set_last_password_change_date
@@ -458,13 +473,10 @@ class User < Sequel::Model
   end
 
   def password=(value)
-    if !value.nil? && value.length < MIN_PASSWORD_LENGTH
-      errors.add(:password, "must be at least #{MIN_PASSWORD_LENGTH} characters long")
-      return
-    end
+    return if !value.nil? && !valid_password?(:password, value, value)
 
     @password = value
-    self.salt = new?? self.class.make_token : ::User.filter(:id => self.id).select(:salt).first.salt
+    self.salt = new? ? self.class.make_token : ::User.filter(id: id).select(:salt).first.salt
     self.crypted_password = self.class.password_digest(value, salt)
   end
 
@@ -644,13 +656,7 @@ class User < Sequel::Model
   #       improved to skip "service" tables
   #
   def tables_effective
-    in_database do |user_database|
-      user_database.synchronize do |conn|
-        query = "select table_name::text from information_schema.tables where table_schema = 'public'"
-        tables = user_database[query].all.map { |i| i[:table_name] }
-        return tables
-      end
-    end
+    db_service.tables_effective('public')
   end
 
   # Gets the list of OAuth accounts the user has (currently only used for synchronization)

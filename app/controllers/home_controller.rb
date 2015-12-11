@@ -11,19 +11,19 @@ class HomeController < ApplicationController
   PG_VERSION = 'PostgreSQL 9.3'
   POSTGIS_VERSION = '2.1'
   CDB_VALID_VERSION = '0.11'
-  CDB_LATEST_VERSION = '0.11.3'
+  CDB_LATEST_VERSION = '0.11.5'
   REDIS_VERSION = '3.0'
   RUBY_BIN_VERSION = 'ruby 1.9.3'
   NODE_VERSION = 'v0.10'
   GEOS_VERSION = '3.4.2'
   GDAL_VERSION = '1.11'
 
-  WINDSHAFT_VALID_VERSION = '2.18'
-  WINDSHAFT_LATEST_VERSION = '2.18.0'
+  WINDSHAFT_VALID_VERSION = '2.19'
+  WINDSHAFT_LATEST_VERSION = '2.19.1'
   RUN_WINDSHAFT_INSTRUCTIONS = 'Run Windshaft: <span class="code">cd /Windshaft-cartodb && node app.js development'\
     '</span>'
   SQL_API_VALID_VERSION = '1.24'
-  SQL_API_LATEST_VERSION = '1.24.0'
+  SQL_API_LATEST_VERSION = '1.24.1'
   RUN_SQL_API_INSTRUCTIONS = 'Run SQL API: <span class="code">cd /CartoDB-SQL-API; node app.js development</span>'
   RUN_RESQUE_INSTRUCTIONS =  'Run Resque: <span class="code">bundle exec script/resque</span>'
 

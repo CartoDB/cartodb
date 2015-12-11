@@ -142,6 +142,27 @@ defaults: &defaults
         baseType: 'roadmap'
         className: 'googlemaps'
     CartoDB:
+      positron_rainbow_labels:
+        default: true
+        url: 'http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png'
+        subdomains: 'abcd'
+        minZoom: '0'
+        maxZoom: '18'
+        name: 'Positron'
+        className: 'positron_rainbow_labels'
+        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="http://cartodb.com/attributions#basemaps">CartoDB</a>'
+        labels:
+          url: 'http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png'
+      dark_matter_rainbow_labels:
+        url: 'http://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png'
+        subdomains: 'abcd'
+        minZoom: '0'
+        maxZoom: '18'
+        name: 'Dark matter'
+        className: 'dark_matter_rainbow_labels'
+        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="http://cartodb.com/attributions#basemaps">CartoDB</a>'
+        labels:
+          url: 'http://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}.png'
       positron_rainbow:
         url: 'http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png'
         subdomains: 'abcd'

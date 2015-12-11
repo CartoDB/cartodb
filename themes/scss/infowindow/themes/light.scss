@@ -10,9 +10,6 @@
   .CDB-infowindow-title {
     color: #2E3C43;
   }
-  .is-scroll:after {
-    background-image: linear-gradient(-180deg, rgba(255, 255, 255 , 0) 0%, #FFF 100%);
-  }
   .CDB-hook-inner {
     background: #FFF;
   }
@@ -57,3 +54,8 @@
     }
   } 
 }
+
+.CDB-infowindow-list .ps-scrollbar-y-rail {
+  background: #999 !important;
+}
+

@@ -46,13 +46,13 @@
   font-weight: $sFontWeight-lighter;
   line-height: $sLineHeight-smaller;
   text-transform: uppercase;
-} 
+}
 .CDB-infowindow-title {
   font-size: $sFontSize-small;
   font-weight: $sFontWeight-lighter;
   line-height: $sLineHeight-small;
 }
-.is-scroll {
+.has-scroll {
   position: relative;
   max-height: 200px;
   overflow: scroll;
@@ -77,7 +77,12 @@
   width: 5px !important; // Resets standard scroll track color
   margin: 0 -2px;
   padding: 0;
-  background: #AAA;
+  transition: background-color 150ms ease-in-out !important;
+  cursor: move;
+}
+
+.CDB-infowindow-list .ps-scrollbar-y-rail > .ps-scrollbar-y:hover {
+  background: #888 !important;
 }
 
 .is-header .CDB-infowindow-mediaTitle {

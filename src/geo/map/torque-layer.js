@@ -43,9 +43,6 @@ var TorqueLayer = MapLayer.extend({
       this._setWithoutReloadingTiles('time', changes.time);
       this._setWithoutReloadingTiles('step', changes.step);
     }, this);
-    torqueLayerView.bind('change:stepsRange', function() {
-      this._setWithoutReloadingTiles('stepsRange', torqueLayerView.getStepsRange());
-    }, this);
 
     // Set initial values, but don't change
     this.set({
@@ -54,13 +51,18 @@ var TorqueLayer = MapLayer.extend({
       time: torqueLayerView.getTime(),
       step: torqueLayerView.getStep(),
       steps: torqueLayerView.options.steps,
-      stepsRange: torqueLayerView.getStepsRange()
+      cumulativeRender: null // TODO mock, awaits https://github.com/CartoDB/torque/issues/246
     }, {
       silent: true
     });
 
     // Binds methods from this model to any views that are initialized
-    var proxyMethods = ['play', 'pause', 'setStep', 'setStepsRange'];
+    var proxyMethods = [
+      // 'cumulativeRender', // TODO mock, awaits https://github.com/CartoDB/torque/issues/246
+      'play',
+      'pause',
+      'setStep'
+    ];
     proxyMethods.forEach(function(name) {
       var method = torqueLayerView[name]
       if (method) {
@@ -93,8 +95,18 @@ var TorqueLayer = MapLayer.extend({
     this.trigger.apply(this, ['setStep'].concat(Array.prototype.slice.call(arguments)));
   },
 
-  setStepsRange: function() {
-    this.trigger.apply(this, ['setStepsRange'].concat(Array.prototype.slice.call(arguments)));
+  setCumulativeRender: function(start, end) {
+    // TODO mock, awaits https://github.com/CartoDB/torque/issues/246
+    this.set('cumulativeRender', {
+      start: start,
+      end: end
+    });
+    this.pause();
+  },
+
+  resetCumulativeRender: function() {
+    // TODO mock, awaits https://github.com/CartoDB/torque/issues/246
+    this.set('cumulativeRender', null);
   },
 
   isEqual: function(other) {

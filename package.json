@@ -65,6 +65,7 @@
     "mustache": "1.1.0",
     "semver": "~4.1.0",
     "source-map-support": "0.3.2",
+    "standard": "5.4.1",
     "time-grunt": "~0.3.1",
     "torque.js": "2.14.0",
     "underscore": "1.8.3",
@@ -118,5 +119,17 @@
   "files": [
     "dist"
   ],
+  "standard": {
+    "ignore": [
+      "/*.js",
+      "/dist",
+      "/doc",
+      "/examples",
+      "/grunt",
+      "/styleguide",
+      "/themes",
+      "/vendor"
+    ]
+  },
   "main": "cartodb.js"
 }

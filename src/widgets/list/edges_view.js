@@ -1,5 +1,5 @@
-var _ = cdb._;
-var View = cdb.core.View;
+var _ = cdb._
+var View = cdb.core.View
 
 /**
  *  List edges view:
@@ -7,51 +7,50 @@ var View = cdb.core.View;
  *  - It shows the borders and the shadows, if needed.
  */
 module.exports = View.extend({
-
   _TEMPLATE: ' ' +
-    '<div class="CDB-Widget-listEdge CDB-Widget-listEdge--top">'+
-      '<div class="CDB-Widget-listEdgeShadow js-topShadow"></div>'+
-      '<div class="CDB-Widget-listEdgeBorder"></div>'+
-    '</div>'+
-    '<div class="CDB-Widget-listEdge CDB-Widget-listEdge--bottom">'+
-      '<div class="CDB-Widget-listEdgeShadow js-bottomShadow"></div>'+
-      '<div class="CDB-Widget-listEdgeBorder"></div>'+
+    '<div class="CDB-Widget-listEdge CDB-Widget-listEdge--top">' +
+    '<div class="CDB-Widget-listEdgeShadow js-topShadow"></div>' +
+    '<div class="CDB-Widget-listEdgeBorder"></div>' +
+    '</div>' +
+    '<div class="CDB-Widget-listEdge CDB-Widget-listEdge--bottom">' +
+    '<div class="CDB-Widget-listEdgeShadow js-bottomShadow"></div>' +
+    '<div class="CDB-Widget-listEdgeBorder"></div>' +
     '</div>',
 
-  initialize: function() {
-    this._$target = this.options.$target;
-    this._initBinds();
+  initialize: function () {
+    this._$target = this.options.$target
+    this._initBinds()
   },
 
-  render: function() {
-    this.clearSubViews();
-    var template = _.template(this._TEMPLATE);
-    this.$el.html(template());
-    this._checkScroll();
-    return this;
+  render: function () {
+    this.clearSubViews()
+    var template = _.template(this._TEMPLATE)
+    this.$el.html(template())
+    this._checkScroll()
+    return this
   },
 
-  _initBinds: function() {
-    var self = this;
-    this._$target.bind('scroll', function() {
-      self._checkScroll();
-    });
+  _initBinds: function () {
+    var self = this
+    this._$target.bind('scroll', function () {
+      self._checkScroll()
+    })
   },
 
-  _unbindScroll: function() {
-    this._$target.unbind('scroll');
+  _unbindScroll: function () {
+    this._$target.unbind('scroll')
   },
 
-  _checkScroll: function() {
-    var currentScroll = this._$target.scrollTop();
-    var maxScroll = this._$target.get(0).scrollHeight - this._$target.outerHeight();
-    this.$('.js-topShadow').toggle(currentScroll !== 0);
-    this.$('.js-bottomShadow').toggle(currentScroll !== maxScroll);
+  _checkScroll: function () {
+    var currentScroll = this._$target.scrollTop()
+    var maxScroll = this._$target.get(0).scrollHeight - this._$target.outerHeight()
+    this.$('.js-topShadow').toggle(currentScroll !== 0)
+    this.$('.js-bottomShadow').toggle(currentScroll !== maxScroll)
   },
 
-  clean: function() {
-    this._unbindScroll();
-    View.prototype.clean.call(this);
+  clean: function () {
+    this._unbindScroll()
+    View.prototype.clean.call(this)
   }
 
-});
+})

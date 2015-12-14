@@ -1,4 +1,4 @@
-var View = cdb.core.View;
+var View = cdb.core.View
 
 /**
  *  Default widget loader view:
@@ -7,27 +7,26 @@ var View = cdb.core.View;
  *  first load is done.
  */
 module.exports = View.extend({
-
   className: 'CDB-Widget-loader',
 
-  initialize: function() {
-    this._initBinds();
+  initialize: function () {
+    this._initBinds()
   },
 
-  _initBinds: function() {
-    this.model.bind('loading', this.show, this);
-    this.model.bind('sync error', this.hide, this);
+  _initBinds: function () {
+    this.model.bind('loading', this.show, this)
+    this.model.bind('sync error', this.hide, this)
   },
 
-  show: function() {
-    this.$el.addClass('is-visible');
+  show: function () {
+    this.$el.addClass('is-visible')
   },
 
-  hide: function() {
-    var self = this;
-    setTimeout(function() {
-      self.$el.removeClass('is-visible');
-    }, 500);
+  hide: function () {
+    var self = this
+    setTimeout(function () {
+      self.$el.removeClass('is-visible')
+    }, 500)
   }
 
-});
+})

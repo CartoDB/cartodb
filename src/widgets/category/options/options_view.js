@@ -1,13 +1,11 @@
-var _ = cdb._;
-var View = cdb.core.View;
-var template = require('./options_template.tpl');
+var View = cdb.core.View
+var template = require('./options_template.tpl')
 
 /**
  * Category filter view
  *
  */
 module.exports = View.extend({
-
   className: 'CDB-Widget-filter CDB-Widget-contentSpaced CDB-Widget-contentSpaced--sideMargins',
 
   events: {
@@ -17,16 +15,16 @@ module.exports = View.extend({
     'click .js-unlock': '_unlockCategories'
   },
 
-  initialize: function() {
-    this.dataModel = this.options.dataModel;
-    this.viewModel = this.options.viewModel;
-    this._initBinds();
+  initialize: function () {
+    this.dataModel = this.options.dataModel
+    this.viewModel = this.options.viewModel
+    this._initBinds()
   },
 
-  render: function() {
-    var totalCats = this.dataModel.getData().size();
-    var rejectedCats = this.dataModel.getRejectedCount();
-    var acceptedCats = this.dataModel.getAcceptedCount();
+  render: function () {
+    var totalCats = this.dataModel.getData().size()
+    var rejectedCats = this.dataModel.getRejectedCount()
+    var acceptedCats = this.dataModel.getAcceptedCount()
 
     this.$el.html(
       template({
@@ -40,31 +38,31 @@ module.exports = View.extend({
         rejectedCats: rejectedCats,
         acceptedCats: acceptedCats
       })
-    );
-    return this;
+    )
+    return this
   },
 
-  _initBinds: function() {
-    this.dataModel.bind('change:data change:filter change:locked change:lockCollection', this.render, this);
-    this.viewModel.bind('change:search', this.render, this);
-    this.add_related_model(this.dataModel);
-    this.add_related_model(this.viewModel);
+  _initBinds: function () {
+    this.dataModel.bind('change:data change:filter change:locked change:lockCollection', this.render, this)
+    this.viewModel.bind('change:search', this.render, this)
+    this.add_related_model(this.dataModel)
+    this.add_related_model(this.viewModel)
   },
 
-  _lockCategories: function() {
-    this.dataModel.lockCategories();
+  _lockCategories: function () {
+    this.dataModel.lockCategories()
   },
 
-  _unlockCategories: function() {
-    this.dataModel.unlockCategories();
+  _unlockCategories: function () {
+    this.dataModel.unlockCategories()
   },
 
-  _onUnselectAll: function() {
-    this.dataModel.rejectAll();
+  _onUnselectAll: function () {
+    this.dataModel.rejectAll()
   },
 
-  _onSelectAll: function() {
-    this.dataModel.acceptAll();
+  _onSelectAll: function () {
+    this.dataModel.acceptAll()
   }
 
-});
+})

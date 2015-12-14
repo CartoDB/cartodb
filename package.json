@@ -58,6 +58,7 @@
   "main": "index.js",
   "standard": {
     "globals": [
+      "alert",
       "cartodb",
       "cdb",
       "jasmine",

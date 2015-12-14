@@ -53,15 +53,13 @@ var TorqueLayer = MapLayer.extend({
       timeBounds: torqueLayerView.getTimeBounds(),
       time: torqueLayerView.getTime(),
       step: torqueLayerView.getStep(),
-      steps: torqueLayerView.options.steps,
-      cumulativeRender: null // TODO mock, awaits https://github.com/CartoDB/torque/issues/246
+      steps: torqueLayerView.options.steps
     }, {
       silent: true
     });
 
     // Binds methods from this model to any views that are initialized
     var proxyMethods = [
-      // 'cumulativeRender', // TODO mock, awaits https://github.com/CartoDB/torque/issues/246
       'play',
       'pause',
       'setStep',

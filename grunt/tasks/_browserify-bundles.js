@@ -48,7 +48,9 @@ module.exports = {
     src: 'src/cartodb.js',
     dest: '<%= config.dist %>/cartodb.uncompressed.js',
     options: {
-      require: ['jquery'], // expose jquery for other bundles (e.g. torque)
+      browserifyOptions: {
+        standalone: 'cartodb'
+      }
     }
   },
   'cartodb-specs': {

@@ -254,6 +254,7 @@ class Geocoding < Sequel::Model
       kind:             kind,
       country_code:     country_code,
       formatter:        formatter,
+      geocoder_type:    geocoder_type,
       geometry_type:    geometry_type,
       processed_rows:   processed_rows,
       cache_hits:       cache_hits,

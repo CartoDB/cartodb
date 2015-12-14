@@ -80,8 +80,7 @@ module CartoDB
         create_importer_schema
         create_geocoding_schema
         load_cartodb_functions
-        # TODO Activate when we launch geocoder api for all the users
-        #install_and_configure_geocoder_api_extension
+        install_and_configure_geocoder_api_extension
         # We reset the connections to this database to be sure the change in default search_path is effective
         reset_pooled_connections
 
@@ -99,8 +98,7 @@ module CartoDB
         end.join
         create_own_schema
         setup_organization_user_schema
-        # TODO Activate when we launch geocoder api for all the users
-        #install_and_configure_geocoder_api_extension
+        install_and_configure_geocoder_api_extension
         # We reset the connections to this database to be sure the change in default search_path is effective
         reset_pooled_connections
         revoke_cdb_conf_access

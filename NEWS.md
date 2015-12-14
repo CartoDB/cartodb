@@ -25,6 +25,7 @@
 * Allow to create sync tables with a map if setting up onw from "connect dataset" from the Maps view
 * Added [#5975 Box integration](https://github.com/CartoDB/cartodb/issues/5975).
 * New rake to install in user or organization the geocoder extension
+* Removing Bitly shortener.
 
 
 3.11.0 (2015-09-09)

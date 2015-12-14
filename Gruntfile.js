@@ -65,5 +65,8 @@ module.exports = function(grunt) {
       })
       .value()
   );
-  grunt.registerTask('test', baseTasks.concat('jasmine'));
+  grunt.registerTask('test', baseTasks.concat([
+    'standard:lint',
+    'jasmine'
+  ]));
 };

@@ -195,11 +195,32 @@ module.exports = function(grunt) {
     'watch'
   ];
 
+  grunt.registerTask('standard:lint', 'lint source files', function() {
+    var done = this.async();
+    require("child_process").exec('PATH=$(npm bin):$PATH standard', function (error, stdout, stderr) {
+      if (error) {
+        grunt.log.fail(error);
+
+        // Filter out lines that are ignored,
+        // e.g. "src/foobar.js:0:0: File ignored because of your .eslintignore file. Use --no-ignore to override."
+        grunt.log.fail(stdout.replace(/.+--no-ignore.+(\r?\n|\r)/g, ''));
+        grunt.fail.warn('try `node_modules/.bin/standard --format src/filename.js` to auto-format code (you might still need to fix some things manually).')
+      } else {
+        grunt.log.ok('All linted files OK!');
+        grunt.log.writeln('Note that files listed in .eslintignore are not linted');
+      }
+      done();
+    });
+  });
+
   grunt.registerTask('default', [ 'build' ]);
   grunt.registerTask('build', _.uniq(buildJS.concat(css)));
   grunt.registerTask('build:js', _.uniq(buildJS));
   grunt.registerTask('build:css', _.uniq(css));
-  grunt.registerTask('test', _.uniq(js.concat('jasmine')));
+  grunt.registerTask('test', _.uniq(js.concat([
+    'standard:lint',
+    'jasmine'
+  ])));
   grunt.registerTask('dev', _.uniq(css.concat(devJS).concat(watch)));
   grunt.registerTask('dev:css', _.uniq(css.concat(watch)));
   grunt.registerTask('dev:js', _.uniq(devJS.concat(watch)));

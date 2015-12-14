@@ -54,7 +54,9 @@ module Carto
       end
 
       log.append "geocoder_class = #{geocoder_class.to_s}"
-      return geocoder_class.new(instance_config)
+      instance = geocoder_class.new(instance_config)
+      log.append "geocoder_type = #{instance.name}"
+      instance
     end
 
   end

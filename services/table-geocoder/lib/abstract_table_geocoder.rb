@@ -41,6 +41,10 @@ module CartoDB
       raise 'Not implemented'
     end
 
+    def name
+      raise 'Not implemented'
+    end
+
     def used_batch_request?
       false
     end

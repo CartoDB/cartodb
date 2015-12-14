@@ -15,9 +15,9 @@ class Geocoding < Sequel::Model
 
 
   PUBLIC_ATTRIBUTES = [:id, :table_id, :table_name, :state, :kind, :country_code, :region_code, :formatter,
-                       :geometry_type, :error, :processed_rows, :cache_hits, :processable_rows, :real_rows,
-                       :price, :used_credits, :remaining_quota, :country_column, :region_column, :data_import_id,
-                       :error_code]
+                       :geocoder_type, :geometry_type, :error, :processed_rows, :cache_hits, :processable_rows,
+                       :real_rows, :price, :used_credits, :remaining_quota, :country_column, :region_column,
+                       :data_import_id, :error_code]
 
   # Characters in the following Unicode categories: Letter, Mark, Number and Connector_Punctuation,
   # plus spaces and single quotes
@@ -325,6 +325,7 @@ class Geocoding < Sequel::Model
 
     @finished_at = Time.now
     self.batched = table_geocoder.used_batch_request?
+    self.geocoder_type = table_geocoder.name
     geocoded_rows = total_geocoded_rows(rows_geocoded_before)
     self.update(state: 'finished', real_rows: geocoded_rows, used_credits: calculate_used_credits)
     send_report_mail(state, self.table_name, nil, self.processable_rows, geocoded_rows)
@@ -340,6 +341,7 @@ class Geocoding < Sequel::Model
   def handle_geocoding_failure(raised_exception, rows_geocoded_before)
     @finished_at = Time.now
     self.batched = table_geocoder.nil? ? false : table_geocoder.used_batch_request?
+    self.geocoder_type = table_geocoder.nil? ? '' : table_geocoder.name
     if raised_exception.is_a? Carto::GeocoderErrors::GeocoderBaseError
       self.error_code = raised_exception.class.additional_info.error_code
     end

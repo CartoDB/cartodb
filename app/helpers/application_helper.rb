@@ -81,7 +81,6 @@ module ApplicationHelper
       oauth_gdrive:               Cartodb.get_config(:oauth, 'gdrive', 'client_id'),
       oauth_instagram:            Cartodb.get_config(:oauth, 'instagram', 'app_key'),
       oauth_mailchimp:            Cartodb.get_config(:oauth, 'mailchimp', 'app_key'),
-      tumblr_api_key:             Cartodb.get_config(:tumblr, 'api_key'),
       datasource_search_twitter:  nil,
       max_asset_file_size:        Cartodb.config[:assets]["max_file_size"],
       watcher_ttl:                Cartodb.config[:watcher].try("fetch", 'ttl', 60),

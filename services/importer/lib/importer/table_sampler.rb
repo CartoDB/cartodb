@@ -25,7 +25,7 @@ module CartoDB
       def sample
         db[sample_query].all
       rescue RangeError
-          raise CartoDB::Importer2::TooManyColumnsGuessedError.new
+        raise CartoDB::Importer2::TooManyColumnsGuessedError.new
       end
 
 

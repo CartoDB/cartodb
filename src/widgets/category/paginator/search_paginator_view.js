@@ -1,45 +1,40 @@
-var $ = cdb.$;
-var _ = cdb._;
-var View = cdb.core.View;
-var Model = cdb.core.Model;
-var PaginatorView = require('./paginator_view');
-var searchTemplate = require('./search_paginator_template.tpl');
+var PaginatorView = require('./paginator_view')
+var searchTemplate = require('./search_paginator_template.tpl')
 
 module.exports = PaginatorView.extend({
-
   className: 'CDB-Widget-nav is-hidden CDB-Widget-contentSpaced',
 
-  render: function() {
-    this.clearSubViews();
-    this.$el.empty();
-    var pages = Math.ceil(this.dataModel.getSearchCount() / this.options.itemsPerPage);
+  render: function () {
+    this.clearSubViews()
+    this.$el.empty()
+    var pages = Math.ceil(this.dataModel.getSearchCount() / this.options.itemsPerPage)
     this.$el.html(
       searchTemplate({
         showPaginator: true,
         currentPage: this.model.get('page'),
         pages: pages
       })
-    );
-    this._scrollToPage();
+    )
+    this._scrollToPage()
 
-    return this;
+    return this
   },
 
-  _setPage: function() {
-    var count = this.dataModel.getSearchCount();
-    var pages = Math.ceil(count / this._ITEMS_PER_PAGE);
+  _setPage: function () {
+    var count = this.dataModel.getSearchCount()
+    var pages = Math.ceil(count / this._ITEMS_PER_PAGE)
     if (this.model.get('page') > (pages - 1)) {
-      this.model.set({ page: 0 }, { silent :true });
+      this.model.set({ page: 0 }, { silent: true })
     }
   },
 
-  toggle: function() {
-    this[ !this.viewModel.isSearchEnabled() ? 'hide' : 'show' ]();
+  toggle: function () {
+    this[ !this.viewModel.isSearchEnabled() ? 'hide' : 'show' ]()
   },
 
-  _onSearchClicked: function() {
-    this.dataModel.cleanSearch();
-    this.viewModel.toggleSearch();
+  _onSearchClicked: function () {
+    this.dataModel.cleanSearch()
+    this.viewModel.toggleSearch()
   }
 
-});
+})

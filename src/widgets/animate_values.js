@@ -1,114 +1,111 @@
-var $ = cdb.$;
-var _ = cdb._;
-var d3 = cdb.d3;
-var log = cdb.log;
-var View = cdb.core.View;
+var _ = cdb._
+var d3 = cdb.d3
+var View = cdb.core.View
 
 /**
  * Animate between two values
  */
 module.exports = View.extend({
-
-  animateFromValues: function(from, to, className, template, opts) {
-    var $el = this.$(className);
-    var options = opts || {};
-    var formatter = options.formatter || d3.format('0,000');
-    var templateData = options.templateData || {};
-    var debounceWait = options.debounceWait || 500;
+  animateFromValues: function (from, to, className, template, opts) {
+    var $el = this.$(className)
+    var options = opts || {}
+    var formatter = options.formatter || d3.format('0,000')
+    var templateData = options.templateData || {}
+    var debounceWait = options.debounceWait || 500
 
     var stepValue = function (i) {
-      value = (_.isNaN(i) || i === undefined) ? (options.defaultValue || 0) : formatter(i);
-      var data = _.extend({ value: value }, templateData);
-      $el.text(template(data));
-    };
-
-    if (options.animationSpeed === 0) {
-      stepValue(to);
-      return;
+      var value = (_.isNaN(i) || i === undefined) ? (options.defaultValue || 0) : formatter(i)
+      var data = _.extend({ value: value }, templateData)
+      $el.text(template(data))
     }
 
-    stepValue(from);
+    if (options.animationSpeed === 0) {
+      stepValue(to)
+      return
+    }
 
-    var animate = _.debounce(function() {
+    stepValue(from)
+
+    var animate = _.debounce(function () {
       $el.prop('counter', from).stop().animate({ counter: to }, {
         duration: options.animationSpeed || 500,
         easing: options.easingMethod || 'swing',
         step: stepValue
-      });
-    }, debounceWait);
+      })
+    }, debounceWait)
 
-    animate();
+    animate()
   },
 
-  animateFromCurrentValue: function(value, className, template, opts) {
-    var $el = this.$(className);
+  animateFromCurrentValue: function (value, className, template, opts) {
+    var $el = this.$(className)
 
-    var options = opts || {};
-    var debounceWait = options.debounceWait || 500;
+    var options = opts || {}
+    var debounceWait = options.debounceWait || 500
 
-    var to   = value;
-    var from = +this.$(className).text();
+    var to = value
+    var from = +this.$(className).text()
 
-    var formatter = options.formatter || d3.format('0,000');
-    var templateData = options.templateData || {};
+    var formatter = options.formatter || d3.format('0,000')
+    var templateData = options.templateData || {}
 
     var stepValue = function (i) {
-      value = (_.isNaN(i) || i === undefined) ? (options.defaultValue || 0) : formatter(i);
-      var data = _.extend({ value: value }, templateData);
-      $el.text(template(data));
-    };
-
-    if (options.animationSpeed === 0) {
-      stepValue(to);
-      return;
+      value = (_.isNaN(i) || i === undefined) ? (options.defaultValue || 0) : formatter(i)
+      var data = _.extend({ value: value }, templateData)
+      $el.text(template(data))
     }
 
-    stepValue(from);
+    if (options.animationSpeed === 0) {
+      stepValue(to)
+      return
+    }
 
-    var animate = _.debounce(function() {
+    stepValue(from)
+
+    var animate = _.debounce(function () {
       $el.prop('counter', from).stop().animate({ counter: to }, {
         duration: options.animationSpeed || 500,
         easing: options.easingMethod || 'swing',
         step: stepValue
-      });
-    }, debounceWait);
+      })
+    }, debounceWait)
 
-    animate();
+    animate()
   },
 
-  animateValue: function(model, what, className, template, opts) {
-    var $el = this.$(className);
+  animateValue: function (model, what, className, template, opts) {
+    var $el = this.$(className)
 
-    var options = opts || {};
-    var debounceWait = options.debounceWait || 500;
+    var options = opts || {}
+    var debounceWait = options.debounceWait || 500
 
-    var to   = model.get(what);
-    var from = model.previous(what) || 0;
+    var to = model.get(what)
+    var from = model.previous(what) || 0
 
-    var formatter = options.formatter || d3.format('0,000');
-    var templateData = options.templateData || {};
+    var formatter = options.formatter || d3.format('0,000')
+    var templateData = options.templateData || {}
 
     var stepValue = function (i) {
-      value = (_.isNaN(i) || i === undefined) ? (options.defaultValue || 0) : formatter(i);
-      var data = _.extend({ value: value }, templateData);
-      $el.text(template(data));
-    };
-
-    if (options.animationSpeed === 0) {
-      stepValue(to);
-      return;
+      var value = (_.isNaN(i) || i === undefined) ? (options.defaultValue || 0) : formatter(i)
+      var data = _.extend({ value: value }, templateData)
+      $el.text(template(data))
     }
 
-    stepValue(from);
+    if (options.animationSpeed === 0) {
+      stepValue(to)
+      return
+    }
 
-    var animate = _.debounce(function() {
+    stepValue(from)
+
+    var animate = _.debounce(function () {
       $el.prop('counter', from).stop().animate({ counter: to }, {
         duration: options.animationSpeed || 500,
         easing: options.easingMethod || 'swing',
         step: stepValue
-      });
-    }, debounceWait);
+      })
+    }, debounceWait)
 
-    animate();
+    animate()
   }
-});
+})

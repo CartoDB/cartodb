@@ -1,14 +1,12 @@
-var _ = cdb._;
-var View = cdb.core.View;
-var formatter = cdb.core.format;
-var clickableTemplate = require('./item_clickable_template.tpl');
-var unclickableTemplate = require('./item_unclickable_template.tpl');
+var View = cdb.core.View
+var formatter = cdb.core.format
+var clickableTemplate = require('./item_clickable_template.tpl')
+var unclickableTemplate = require('./item_unclickable_template.tpl')
 
 /**
  * Category list item view
  */
 module.exports = View.extend({
-
   tagName: 'li',
   className: 'CDB-Widget-listItem',
 
@@ -16,15 +14,16 @@ module.exports = View.extend({
     'click .js-button': '_onItemClick'
   },
 
-  initialize: function(options) {
-    this.dataModel = this.options.dataModel;
-    this._initBinds();
+  initialize: function (options) {
+    this.dataModel = this.options.dataModel
+    this._initBinds()
   },
 
-  render: function() {
-    var value = this.model.get('value');
-    var template = this.model.get('agg') || this.dataModel.isLocked() ?
-      unclickableTemplate : clickableTemplate;
+  render: function () {
+    var value = this.model.get('value')
+    var template = this.model.get('agg') || this.dataModel.isLocked()
+      ? unclickableTemplate
+      : clickableTemplate
 
     this.$el.html(
       template({
@@ -39,19 +38,19 @@ module.exports = View.extend({
         prefix: this.dataModel.get('prefix'),
         suffix: this.dataModel.get('suffix')
       })
-    );
+    )
 
-    return this;
+    return this
   },
 
-  _initBinds: function() {
-    this.model.bind('change', this.render, this);
-    this.dataModel.bind('change:search change:categoryColors', this.render, this);
-    this.add_related_model(this.dataModel);
+  _initBinds: function () {
+    this.model.bind('change', this.render, this)
+    this.dataModel.bind('change:search change:categoryColors', this.render, this)
+    this.add_related_model(this.dataModel)
   },
 
-  _onItemClick: function() {
-    this.trigger('itemClicked', this.model, this);
+  _onItemClick: function () {
+    this.trigger('itemClicked', this.model, this)
   }
 
-});
+})

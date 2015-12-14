@@ -1,4 +1,4 @@
-var Model = cdb.core.Model;
+var Model = cdb.core.Model
 
 /**
  *  View model, special for widgets with search and collapse
@@ -7,25 +7,24 @@ var Model = cdb.core.Model;
  */
 
 module.exports = Model.extend({
-
   defaults: {
     search: false
   },
 
-  toggleSearch: function() {
-    this.set('search', !this.get('search'));
+  toggleSearch: function () {
+    this.set('search', !this.get('search'))
   },
 
-  enableSearch: function() {
-    this.set('search', true);
+  enableSearch: function () {
+    this.set('search', true)
   },
 
-  disableSearch: function() {
-    this.set('search', false);
+  disableSearch: function () {
+    this.set('search', false)
   },
 
-  isSearchEnabled: function() {
-    return this.get('search');
+  isSearchEnabled: function () {
+    return this.get('search')
   }
 
-});
+})

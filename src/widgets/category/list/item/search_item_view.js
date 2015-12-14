@@ -1,14 +1,11 @@
-var $ = cdb.$;
-var _ = cdb._;
-var View = cdb.core.View;
-var formatter = cdb.core.format;
-var template = require('./search_item_clickable_template.tpl');
+var View = cdb.core.View
+var formatter = cdb.core.format
+var template = require('./search_item_clickable_template.tpl')
 
 /**
  * Category search list view
  */
 module.exports = View.extend({
-
   tagName: 'li',
   className: 'CDB-Widget-listItem',
 
@@ -16,16 +13,16 @@ module.exports = View.extend({
     'click .js-button': '_onItemClick'
   },
 
-  initialize: function(options) {
+  initialize: function (options) {
     // This data model comes from the original data in order to get
     // the max value and set properly the progress bar and add the
     // necessary suffix and prefix for the item.
-    this.dataModel = this.options.dataModel;
-    this._initBinds();
+    this.dataModel = this.options.dataModel
+    this._initBinds()
   },
 
-  render: function() {
-    var value = this.model.get('value');
+  render: function () {
+    var value = this.model.get('value')
 
     this.$el.html(
       template({
@@ -37,17 +34,17 @@ module.exports = View.extend({
         prefix: this.dataModel.get('prefix'),
         suffix: this.dataModel.get('suffix')
       })
-    );
+    )
 
-    return this;
+    return this
   },
 
-  _initBinds: function() {
-    this.model.bind('change:selected', this.render, this);
+  _initBinds: function () {
+    this.model.bind('change:selected', this.render, this)
   },
 
-  _onItemClick: function() {
-    this.model.set('selected', !this.model.get('selected'));
+  _onItemClick: function () {
+    this.model.set('selected', !this.model.get('selected'))
   }
 
-});
+})

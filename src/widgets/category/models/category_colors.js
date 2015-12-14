@@ -1,8 +1,8 @@
-var _ = cdb._;
-// var colorbrewer = require('colorbrewer');
-// var categoryColors = _.initial(colorbrewer.Accent[8]); // Color brewer colors
-var categoryColors = ['#2CA095','#E5811B','#4A4DBA','#AD2BAD','#559030','#E1C221']; // Demo colors
-var defaultColor = '#CCC';
+var _ = cdb._
+// var colorbrewer = require('colorbrewer')
+// var categoryColors = _.initial(colorbrewer.Accent[8]) // Color brewer colors
+var categoryColors = ['#2CA095', '#E5811B', '#4A4DBA', '#AD2BAD', '#559030', '#E1C221'] // Demo colors
+var defaultColor = '#CCC'
 
 /**
  *  Class to set categories to each color
@@ -12,52 +12,52 @@ var defaultColor = '#CCC';
  *
  */
 
-function CategoryColors() {
-  this.colors = {};
-  _.each(categoryColors, function(c) {
-    this.colors[c] = null;
-  }, this);
+function CategoryColors () {
+  this.colors = {}
+  _.each(categoryColors, function (c) {
+    this.colors[c] = null
+  }, this)
 }
 
-CategoryColors.prototype.updateData = function(d) {
+CategoryColors.prototype.updateData = function (d) {
   // Remove categories from colors where they are not present anymore
-  _.each(this.colors, function(value, key) {
+  _.each(this.colors, function (value, key) {
     if (!_.contains(d, value)) {
-      this.colors[key] = null;
+      this.colors[key] = null
     } else {
-      d = _.without(d, value);
+      d = _.without(d, value)
     }
-  }, this);
+  }, this)
 
   // Set colors by new categories
-  _.each(d, function(category) {
-    var nextFreeColor = this.getNextAvailableColor();
+  _.each(d, function (category) {
+    var nextFreeColor = this.getNextAvailableColor()
     if (nextFreeColor) {
-      this.colors[nextFreeColor] = category;
+      this.colors[nextFreeColor] = category
     }
-  }, this);
-};
+  }, this)
+}
 
-CategoryColors.prototype.getNextAvailableColor = function() {
+CategoryColors.prototype.getNextAvailableColor = function () {
   for (var i in this.colors) {
     if (this.colors[i] === null) {
-      return i;
+      return i
     }
   }
-  return null;
-};
+  return null
+}
 
 CategoryColors.prototype.getColorByCategory = function (category) {
   for (var i in this.colors) {
     if (this.colors[i] === category) {
-      return i;
+      return i
     }
   }
-  return defaultColor;
-};
+  return defaultColor
+}
 
 CategoryColors.prototype.getCategoryByColor = function (color) {
-  return this.colors[color];
-};
+  return this.colors[color]
+}
 
-module.exports = CategoryColors;
+module.exports = CategoryColors

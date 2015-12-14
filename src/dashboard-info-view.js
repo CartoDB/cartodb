@@ -1,16 +1,15 @@
-var View = cdb.core.View;
-var template = require('./dashboard-info-view.tpl');
-var moment = require('moment');
+var View = cdb.core.View
+var template = require('./dashboard-info-view.tpl')
+var moment = require('moment')
 
 var DashboardInfoView = View.extend({
-
   className: 'CDB-Dashboard-info',
 
   events: {
-    'click .js-toggle-view-link': "_toggleView"
+    'click .js-toggle-view-link': '_toggleView'
   },
 
-  render: function() {
+  render: function () {
     this.$el.html(
       template({
         title: this.model.get('title'),
@@ -19,14 +18,14 @@ var DashboardInfoView = View.extend({
         userName: this.model.get('userName'),
         userAvatarURL: this.model.get('userAvatarURL')
       })
-    );
+    )
 
-    return this;
+    return this
   },
 
-  _toggleView: function() {
-    this.$el.toggleClass('is-active');
+  _toggleView: function () {
+    this.$el.toggleClass('is-active')
   }
-});
+})
 
-module.exports = DashboardInfoView;
+module.exports = DashboardInfoView

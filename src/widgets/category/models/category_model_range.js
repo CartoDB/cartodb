@@ -1,6 +1,5 @@
-var _ = cdb._;
-var Backbone = cdb.Backbone;
-var Model = cdb.core.Model;
+var _ = cdb._
+var Model = cdb.core.Model
 
 /**
  *  This model is used for getting the total amount of values
@@ -9,38 +8,37 @@ var Model = cdb.core.Model;
  */
 
 module.exports = Model.extend({
-
   defaults: {
     url: '',
     totalCount: 0
   },
 
-  url: function() {
-    return this.get('url');
+  url: function () {
+    return this.get('url')
   },
 
-  initialize: function() {
-    this.bind('change:url', function() {
-      this.fetch();
-    }, this);
+  initialize: function () {
+    this.bind('change:url', function () {
+      this.fetch()
+    }, this)
   },
 
-  setUrl: function(url) {
-    this.set('url', url);
+  setUrl: function (url) {
+    this.set('url', url)
   },
 
-  parse: function(d) {
+  parse: function (d) {
     // Calculating the total amount of all categories with the sum of all
     // values from this model included the aggregated (Other)
 
     return {
       totalCount: _.reduce(
         _.pluck(d.categories, 'value'),
-        function(memo, value) {
-          return memo + value;
+        function (memo, value) {
+          return memo + value
         },
         0
       )
-    };
+    }
   }
-});
+})

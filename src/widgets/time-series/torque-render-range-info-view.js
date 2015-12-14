@@ -21,15 +21,15 @@ module.exports = View.extend({
     this._dateFormatter = d3.time.format('%x')
   },
 
-  render: function () {
-    var cumulativeRender = this._torqueLayerModel.get('cumulativeRender')
+  render: function() {
+    var renderRange = this._torqueLayerModel.get('renderRange')
 
     this.$el.html(template({
       timeFormatter: this._timeFormatter,
       dateFormatter: this._dateFormatter,
-      startDate: new Date(this._scale.invert(cumulativeRender.start)),
-      endDate: new Date(this._scale.invert(cumulativeRender.end))
-    }))
+      startDate: new Date(this._scale.invert(renderRange.start)),
+      endDate: new Date(this._scale.invert(renderRange.end))
+    }));
 
     return this
   }

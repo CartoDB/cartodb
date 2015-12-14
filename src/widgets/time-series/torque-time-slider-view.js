@@ -20,11 +20,11 @@ module.exports = View.extend({
     this._torqueLayerModel = this.options.torqueLayerModel
     this.viewModel = new Model()
 
-    this._torqueLayerModel.bind('change:step', this._onChangeStep, this)
-    this._torqueLayerModel.bind('change:steps', this._onChangeSteps, this)
-    this._torqueLayerModel.bind('change:stepsRange', this._onStepsRange, this)
-    this._torqueLayerModel.bind('change:cumulativeRender', this._onChangeCumulativeRender, this)
-    this.add_related_model(this._torqueLayerModel)
+    this._torqueLayerModel.bind('change:step', this._onChangeStep, this);
+    this._torqueLayerModel.bind('change:steps', this._onChangeSteps, this);
+    this._torqueLayerModel.bind('change:stepsRange', this._onStepsRange, this);
+    this._torqueLayerModel.bind('change:renderRange', this._onRenderRangeChanged, this);
+    this.add_related_model(this._torqueLayerModel);
 
     this._chartView.model.bind('change:width', this._onChangeChartWidth, this)
     this._chartView.model.bind('change:height', this._onChangeChartHeight, this)
@@ -130,8 +130,8 @@ module.exports = View.extend({
     }
   },
 
-  _onChangeCumulativeRender: function (m, val) {
-    this.$el.toggle(!val)
+  _onRenderRangeChanged: function(m, val) {
+    this.$el.toggle(!val);
   },
 
   _onChangeChartWidth: function () {

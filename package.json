@@ -45,6 +45,7 @@
     "moment": "2.10.6",
     "perfect-scrollbar": "0.6.7",
     "source-map-support": "0.4.0",
+    "standard": "5.4.1",
     "time-grunt": "1.2.2",
     "underscore": "1.8.3",
     "watchify": "3.6.1"
@@ -54,5 +55,29 @@
       "jstify"
     ]
   },
-  "main": "index.js"
+  "main": "index.js",
+  "standard": {
+    "globals": [
+      "cartodb",
+      "cdb",
+      "jasmine",
+      "describe",
+      "xdescribe",
+      "beforeEach",
+      "afterEach",
+      "spyOn",
+      "it",
+      "xit",
+      "expect"
+    ],
+    "ignore": [
+      "/*.js",
+      "/dist",
+      "/examples",
+      "/grunt-tasks",
+      "/styleguide",
+      "/themes",
+      "/vendor"
+    ]
+  }
 }

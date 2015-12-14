@@ -96,15 +96,16 @@ $br: 4px;
 .PricePlans-button {
   display: block;
   line-height: 38px;
+  width: 140px;
+  margin: 0 auto;
 }
 .PricePlans-button--grey {
   display: block;
-  width: 100%;
   background-color: $cTypography-help;
   color: #FFF;
 }
 .PricePlans-itemContent {
-  padding: 0 40px;
+  padding: 0 30px;
 }
 .PricePlans-itemContentAttr {
   display: block;

@@ -32,9 +32,9 @@ module Carto
         user.organization_id = @organization.id
 
         if user.save
-          render_jsonp status_message(200, Carto::Api::UserPresenter.new(user).to_poro)
+          render_jsonp Carto::Api::UserPresenter.new(user).to_poro, 200
         else
-          render_jsonp status_message(410, user.errors.full_messages)
+          render_jsonp user.errors.full_messages, 410
         end
       end
 

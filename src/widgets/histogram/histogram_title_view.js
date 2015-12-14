@@ -1,8 +1,7 @@
-var _ = cdb._;
-var $ = cdb.$;
-var View = cdb.core.View;
-var TooltipView = require('../widget-tooltip-view');
-var template = require('./histogram_title_template.tpl');
+var $ = cdb.$
+var View = cdb.core.View
+var TooltipView = require('../widget-tooltip-view')
+var template = require('./histogram_title_template.tpl')
 
 /**
  *  Show title + show if histogram sizes are applied or not
@@ -10,7 +9,6 @@ var template = require('./histogram_title_template.tpl');
  */
 
 module.exports = View.extend({
-
   className: 'CDB-Widget-title CDB-Widget-contentSpaced',
 
   events: {
@@ -19,53 +17,53 @@ module.exports = View.extend({
     'click .js-collapse': '_toggleCollapse'
   },
 
-  initialize: function() {
-    this.dataModel = this.options.dataModel;
-    this._initBinds();
+  initialize: function () {
+    this.dataModel = this.options.dataModel
+    this._initBinds()
   },
 
-  render: function() {
+  render: function () {
     this.$el.html(
       template({
         title: this.dataModel.get('title'),
         isSizesApplied: this.dataModel.get('histogramSizes'),
         isCollapsed: this.dataModel.isCollapsed()
       })
-    );
-    this._initViews();
+    )
+    this._initViews()
 
-    return this;
+    return this
   },
 
-  _initBinds: function() {
-    this.dataModel.bind('change:histogramSizes change:collapsed', this.render, this);
-    this.add_related_model(this.dataModel);
+  _initBinds: function () {
+    this.dataModel.bind('change:histogramSizes change:collapsed', this.render, this)
+    this.add_related_model(this.dataModel)
   },
 
-  _initViews: function() {
+  _initViews: function () {
     var sizesTooltip = new TooltipView({
       target: this.$('.js-sizes')
-    });
-    $('body').append(sizesTooltip.render().el);
-    this.addView(sizesTooltip);
+    })
+    $('body').append(sizesTooltip.render().el)
+    this.addView(sizesTooltip)
 
     var collapseTooltip = new TooltipView({
       target: this.$('.js-collapse')
-    });
-    $('body').append(collapseTooltip.render().el);
-    this.addView(collapseTooltip);
+    })
+    $('body').append(collapseTooltip.render().el)
+    this.addView(collapseTooltip)
   },
 
-  _applySizes: function() {
-    this.dataModel.set('histogramSizes', true);
+  _applySizes: function () {
+    this.dataModel.set('histogramSizes', true)
   },
 
-  _cancelSizes: function() {
-    this.dataModel.set('histogramSizes', false);
+  _cancelSizes: function () {
+    this.dataModel.set('histogramSizes', false)
   },
 
-  _toggleCollapse: function() {
-    this.dataModel.toggleCollapsed();
+  _toggleCollapse: function () {
+    this.dataModel.toggleCollapsed()
   }
 
-});
+})

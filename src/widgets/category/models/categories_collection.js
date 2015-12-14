@@ -1,6 +1,5 @@
-var _ = cdb._;
-var Backbone = cdb.Backbone;
-var CategoryItemModel = require('./category_item_model');
+var Backbone = cdb.Backbone
+var CategoryItemModel = require('./category_item_model')
 
 /**
  *  Data categories collection
@@ -9,26 +8,25 @@ var CategoryItemModel = require('./category_item_model');
  */
 
 module.exports = Backbone.Collection.extend({
-
   model: CategoryItemModel,
 
-  comparator: function(a,b) {
+  comparator: function (a, b) {
     if (a.get('name') === 'Other') {
-      return 1;
+      return 1
     } else if (b.get('name') === 'Other') {
-      return -1;
+      return -1
     } else if (a.get('value') === b.get('value')) {
-      return (a.get('selected') < b.get('selected')) ? 1 : -1;
+      return (a.get('selected') < b.get('selected')) ? 1 : -1
     } else {
-      return (a.get('value') < b.get('value')) ? 1 : -1;
+      return (a.get('value') < b.get('value')) ? 1 : -1
     }
   },
 
-  isOtherAvailable: function() {
+  isOtherAvailable: function () {
     return this.where({
       agg: true,
       name: 'Other'
     }).length > 0
   }
 
-});
+})

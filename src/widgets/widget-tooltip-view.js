@@ -1,12 +1,11 @@
-var View = cdb.core.View;
-var _ = cdb._;
+var View = cdb.core.View
+var _ = cdb._
 
 /**
  * Standard widget tooltip view
  *
  */
 module.exports = View.extend({
-
   className: 'CDB-Widget-tooltip',
 
   options: {
@@ -15,46 +14,46 @@ module.exports = View.extend({
     offsetY: -28
   },
 
-  initialize: function(opts) {
+  initialize: function (opts) {
     if (!opts.target) {
-      throw new Error('target is not defined');
+      throw new Error('target is not defined')
     }
-    this._$target = this.options.target;
-    this._initBinds();
+    this._$target = this.options.target
+    this._initBinds()
   },
 
-  render: function() {
-    var value = this._$target.attr(this.options.attribute);
-    this.$el.html(value);
-    return this;
+  render: function () {
+    var value = this._$target.attr(this.options.attribute)
+    this.$el.html(value)
+    return this
   },
 
-  _initBinds: function() {
+  _initBinds: function () {
     this._$target.hover(
       _.bind(this.show, this),
       _.bind(this.hide, this)
-    );
+    )
   },
 
-  _setPosition: function() {
-    var pos = this._$target.offset();
-    var width = this.$el.outerWidth();
+  _setPosition: function () {
+    var pos = this._$target.offset()
+    var width = this.$el.outerWidth()
 
     this.$el.css({
       top: pos.top + this.options.offsetY,
-      left: pos.left - (width/2) + this.options.offsetX
-    });
+      left: pos.left - (width / 2) + this.options.offsetX
+    })
   },
 
-  show: function() {
-    this.render();
-    this._setPosition();
-    View.prototype.show.call(this);
+  show: function () {
+    this.render()
+    this._setPosition()
+    View.prototype.show.call(this)
   },
 
-  clean: function() {
-    this._$target.off('mouseenter mouseleave');
-    View.prototype.clean.call(this);
+  clean: function () {
+    this._$target.off('mouseenter mouseleave')
+    View.prototype.clean.call(this)
   }
 
-});
+})

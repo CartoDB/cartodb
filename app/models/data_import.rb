@@ -702,7 +702,7 @@ class DataImport < Sequel::Model
         synchronization.error_message = nil
       else
         synchronization.state = 'failure'
-        synchronization.error_code = error_code
+        synchronization.error_code = error_code.blank? ? 9999 : error_code
         synchronization.error_message = get_error_text[:title] + ' ' + get_error_text[:what_about]
       end
       log.append "importer.success? #{synchronization.state}"

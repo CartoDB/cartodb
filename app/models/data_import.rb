@@ -116,6 +116,12 @@ class DataImport < Sequel::Model
     self.updated_at = Time.now
   end
 
+  # The objective of this after_create method is to track in the logs every started
+  # import process.
+  def after_create
+    notify(results)
+  end
+
   def from_common_data?
     if Cartodb.config[:common_data] &&
        !Cartodb.config[:common_data]['username'].blank? &&

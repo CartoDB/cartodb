@@ -181,6 +181,11 @@ module CartoDB
       what_about: "The KML file you tried to import failed because a style element doesn't have an ID attribute. To fix this error, please open the file and add an ID to all the style tags.",
       source: ERROR_SOURCE_USER
     },
+    2010 => {
+      title: 'Too many columns for guessing',
+      what_about: "Data has too many columns to be guessed. The guessing process can only support up to 256 columns. Please, disable content guessing on import or reduce the number of columns in the file.",
+      source: ERROR_SOURCE_USER
+    },
     3007 => {
       title: 'JSON may not be valid GeoJSON',
       what_about: "We can only import GeoJSON formated JSON files. See if the source of this data supports GeoJSON or another file format for download.",

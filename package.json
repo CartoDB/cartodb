@@ -120,6 +120,19 @@
     "dist"
   ],
   "standard": {
+    "globals": [
+      "cartodb",
+      "cdb",
+      "jasmine",
+      "describe",
+      "xdescribe",
+      "beforeEach",
+      "afterEach",
+      "spyOn",
+      "it",
+      "xit",
+      "expect"
+    ],
     "ignore": [
       "/*.js",
       "/dist",

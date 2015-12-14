@@ -26,10 +26,10 @@ module.exports = View.extend({
     if (!this.options.torqueLayerModel) throw new Error('torqeLayerModel is required')
     if (!this.options.rangeFilter) throw new Error('rangeFilter is required')
 
-    this._rangeFilter = this.options.rangeFilter;
-    this._torqueLayerModel = this.options.torqueLayerModel;
-    this._torqueLayerModel.bind('change:renderRange', this._onRenderRangeChanged, this);
-    this.add_related_model(this._torqueLayerModel);
+    this._rangeFilter = this.options.rangeFilter
+    this._torqueLayerModel = this.options.torqueLayerModel
+    this._torqueLayerModel.bind('change:renderRange', this._onRenderRangeChanged, this)
+    this.add_related_model(this._torqueLayerModel)
 
     this.model.bind('change:data', this._onChangeData, this)
   },
@@ -82,7 +82,7 @@ module.exports = View.extend({
     }
   },
 
-  _onRenderRangeChanged: function(m, val) {
+  _onRenderRangeChanged: function (m, val) {
     if (!val) {
       this._chartView.removeSelection()
     }
@@ -93,8 +93,8 @@ module.exports = View.extend({
     this._rangeFilter.setRange(
       data[loBarIndex].start,
       data[hiBarIndex - 1].end
-    );
-    this._torqueLayerModel.renderRange(loBarIndex, hiBarIndex);
+    )
+    this._torqueLayerModel.renderRange(loBarIndex, hiBarIndex)
   },
 
   _onChangeChartWidth: function () {

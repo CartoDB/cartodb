@@ -21,7 +21,7 @@ module.exports = View.extend({
     this._dateFormatter = d3.time.format('%x')
   },
 
-  render: function() {
+  render: function () {
     var renderRange = this._torqueLayerModel.get('renderRange')
 
     this.$el.html(template({
@@ -29,7 +29,7 @@ module.exports = View.extend({
       dateFormatter: this._dateFormatter,
       startDate: new Date(this._scale.invert(renderRange.start)),
       endDate: new Date(this._scale.invert(renderRange.end))
-    }));
+    }))
 
     return this
   }

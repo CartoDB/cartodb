@@ -16,7 +16,7 @@ module.exports = View.extend({
     return this
   },
 
-  _onClick: function() {
-    this.model.resetRenderRange();
+  _onClick: function () {
+    this.model.resetRenderRange()
   }
 })

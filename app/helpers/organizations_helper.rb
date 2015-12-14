@@ -1,7 +1,6 @@
 # encoding: UTF-8
 
 module OrganizationsHelper
-
   def load_organization
     @organization = Carto::Organization.where(id: params[:id]).first
     render_jsonp({}, 401) and return if @organization.nil?

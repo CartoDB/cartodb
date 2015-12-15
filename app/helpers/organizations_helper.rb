@@ -9,7 +9,7 @@ module OrganizationsHelper
   def load_group
     if params[:group_id]
       @group = @organization.groups.find(params[:group_id])
-      render_jsonp({ errors: "No #{params[:group_id]} at #{@organization.id}" }, 404) and return unless @group
+      render_jsonp({ errors: "No #{params[:group_id]} at #{@organization.id}" }, 404) && return unless @group
     end
   end
 

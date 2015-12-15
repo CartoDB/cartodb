@@ -1,9 +1,9 @@
 var _ = require('underscore')
-var Model = require('cartodb.js').core.Model
+var cdb = require('cartodb.js')
 var WindshaftConfig = require('./config')
 var EMPTY_GIF = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'
 
-module.exports = Model.extend({
+module.exports = cdb.core.Model.extend({
   TILE_EXTENSIONS_BY_LAYER_TYPE: {
     'mapnik': '.png',
     'torque': '.json.torque'

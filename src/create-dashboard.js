@@ -1,7 +1,5 @@
 var _ = require('underscore')
-var Model = require('cartodb.js').core.Model
-var createVis = require('cartodb.js').createVis
-var log = require('cartodb.js').log
+var cdb = require('cartodb.js')
 var DashboardView = require('./dashboard-view')
 var WidgetsCollection = require('./widgets/widgets-collection')
 var WidgetModelFactory = require('./widgets/widget-model-factory')
@@ -58,7 +56,7 @@ module.exports = function (selector, diJSON, visOpts) {
   // TODO keep this collection in sync with layers individual widgets collections
   var widgets = new WidgetsCollection()
 
-  var dashboardInfoModel = new Model({
+  var dashboardInfoModel = new cdb.core.Model({
     title: diJSON.title,
     description: diJSON.description,
     updatedAt: diJSON.updated_at,
@@ -71,7 +69,7 @@ module.exports = function (selector, diJSON, visOpts) {
     dashboardInfoModel: dashboardInfoModel
   })
 
-  var vis = createVis(dashboardView.$('#map'), diJSON.vizJSON, visOpts)
+  var vis = cdb.createVis(dashboardView.$('#map'), diJSON.vizJSON, visOpts)
 
   var cartoDBLayerGroup
   var interactiveLayers = []
@@ -121,7 +119,7 @@ module.exports = function (selector, diJSON, visOpts) {
       var widgetModel = widgetModelFactory.createModel(layer, layerIndex, attrs)
       widgetModels.push(widgetModel)
     } else {
-      log.error('no layer found for widget ' + id + ':' + JSON.stringify(d))
+      cdb.log.error('no layer found for widget ' + id + ':' + JSON.stringify(d))
     }
   }
   widgets.reset(widgetModels)

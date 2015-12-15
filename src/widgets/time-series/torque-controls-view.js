@@ -1,10 +1,10 @@
-var View = require('cartodb.js').core.View
+var cdb = require('cartodb.js')
 var template = require('./torque-controls.tpl')
 
 /**
  * Torque animation controls, to manage run state
  */
-module.exports = View.extend({
+module.exports = cdb.core.View.extend({
   tagName: 'button',
   className: 'CDB-Widget-controlButton',
 

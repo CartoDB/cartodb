@@ -1,9 +1,9 @@
-var Model = require('cartodb.js').core.Model
+var cdb = require('cartodb.js')
 
 /**
  * Default widget model
  */
-module.exports = Model.extend({
+module.exports = cdb.core.Model.extend({
   defaults: {
     url: '',
     data: [],
@@ -102,7 +102,7 @@ module.exports = Model.extend({
 
   fetch: function (opts) {
     this.trigger('loading', this)
-    return Model.prototype.fetch.call(this, opts)
+    return cdb.core.Model.prototype.fetch.call(this, opts)
   },
 
   toJSON: function () {

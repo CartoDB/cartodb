@@ -1,4 +1,4 @@
-var View = require('cartodb.js').core.View
+var cdb = require('cartodb.js')
 var formatter = require('../../../../formatter')
 var clickableTemplate = require('./item-clickable-template.tpl')
 var unclickableTemplate = require('./item-unclickable-template.tpl')
@@ -6,7 +6,7 @@ var unclickableTemplate = require('./item-unclickable-template.tpl')
 /**
  * Category list item view
  */
-module.exports = View.extend({
+module.exports = cdb.core.View.extend({
   tagName: 'li',
   className: 'CDB-Widget-listItem',
 

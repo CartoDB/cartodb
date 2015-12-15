@@ -1,12 +1,12 @@
-var Model = require('cartodb.js').core.Model
+var cdb = require('cartodb.js')
 var HistogramModel = require('app/widgets/histogram/model')
 var TimeSeriesContentView = require('app/widgets/time-series/content-view')
 
 describe('geo/ui/widgets/time-series/content-view', function () {
   beforeEach(function () {
     this.model = new HistogramModel({}, {
-      filter: new Model(),
-      layer: new Model()
+      filter: new cdb.core.Model(),
+      layer: new cdb.core.Model()
     })
 
     this.model.sync = function (method, model, options) {

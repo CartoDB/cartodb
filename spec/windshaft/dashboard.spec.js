@@ -1,9 +1,7 @@
 var $ = require('jquery')
 var _ = require('underscore')
 var Backbone = require('backbone')
-var Map = require('cartodb.js').geo.Map
-var CartoDBLayer = require('cartodb.js').geo.CartoDBLayer
-var TorqueLayer = require('cartodb.js').geo.TorqueLayer
+var cdb = require('cartodb.js')
 var Dashboard = require('app/windshaft/dashboard')
 var DashboardInstance = require('app/windshaft/dashboard-instance')
 var HistogramModel = require('app/widgets/histogram/model')
@@ -57,15 +55,15 @@ describe('windshaft/dashboard', function () {
       generate: function () {}
     }
 
-    this.map = new Map({
+    this.map = new cdb.geo.Map({
       view_bounds_sw: [],
       view_bounds_ne: []
     })
 
     this.cartoDBLayerGroup = new Backbone.Model()
-    this.cartoDBLayer1 = new CartoDBLayer({ id: '12345-67890' })
-    this.cartoDBLayer2 = new CartoDBLayer({ id: '09876-54321' })
-    this.torqueLayer = new TorqueLayer()
+    this.cartoDBLayer1 = new cdb.geo.CartoDBLayer({ id: '12345-67890' })
+    this.cartoDBLayer2 = new cdb.geo.CartoDBLayer({ id: '09876-54321' })
+    this.torqueLayer = new cdb.geo.TorqueLayer()
   })
 
   afterEach(function () {

@@ -1,10 +1,10 @@
-var Model = require('cartodb.js').core.Model
+var cdb = require('cartodb.js')
 
 /**
  *
  */
 
-module.exports = Model.extend({
+module.exports = cdb.core.Model.extend({
   defaults: {
     name: '',
     agg: false,

@@ -1,8 +1,8 @@
 var $ = require('jquery')
 var _ = require('underscore')
-var View = require('cartodb.js').core.View
+var cdb = require('cartodb.js')
 
-module.exports = View.extend({
+module.exports = cdb.core.View.extend({
   className: 'CDB-Widget-nav CDB-Widget-contentSpaced',
 
   _TEMPLATE: ' ' +
@@ -97,7 +97,7 @@ module.exports = View.extend({
 
   clean: function () {
     this._unbindScroll()
-    View.prototype.clean.call(this)
+    cdb.core.View.prototype.clean.call(this)
   }
 
 })

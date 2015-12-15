@@ -1,10 +1,10 @@
-var Model = require('cartodb.js').core.Model
+var cdb = require('cartodb.js')
 var WidgetModelFactory = require('app/widgets/widget-model-factory')
 
 describe('geo/ui/widgets/widget-model-factory', function () {
   beforeEach(function () {
     this.factory = new WidgetModelFactory()
-    this.layer = new Model({
+    this.layer = new cdb.core.Model({
       id: 'layer-uuid',
       type: 'cartodb'
     })

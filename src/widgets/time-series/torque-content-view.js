@@ -1,5 +1,5 @@
 var _ = require('underscore')
-var View = require('cartodb.js').core.View
+var cdb = require('cartodb.js')
 var torqueTemplate = require('./torque-template.tpl')
 var placeholderTemplate = require('./placeholder.tpl')
 var TorqueControlsView = require('./torque-controls-view')
@@ -9,7 +9,7 @@ var TorqueHistogramView = require('./torque-histogram-view')
 /**
  * Widget content view for a Torque time-series
  */
-module.exports = View.extend({
+module.exports = cdb.core.View.extend({
   className: 'CDB-Widget-body CDB-Widget-body--timeSeries',
 
   initialize: function () {

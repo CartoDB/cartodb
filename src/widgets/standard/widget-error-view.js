@@ -1,4 +1,4 @@
-var View = require('cartodb.js').core.View
+var cdb = require('cartodb.js')
 var template = require('./widget-error-template.tpl')
 
 /**
@@ -7,7 +7,7 @@ var template = require('./widget-error-template.tpl')
  *  It will listen or not to dataModel changes when
  *  first load is done.
  */
-module.exports = View.extend({
+module.exports = cdb.core.View.extend({
   className: 'CDB-Widget-error is-hidden',
 
   events: {

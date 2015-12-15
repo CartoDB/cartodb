@@ -1,11 +1,11 @@
-var View = require('cartodb.js').core.View
+var cdb = require('cartodb.js')
 var _ = require('underscore')
 
 /**
  * Standard widget tooltip view
  *
  */
-module.exports = View.extend({
+module.exports = cdb.core.View.extend({
   className: 'CDB-Widget-tooltip',
 
   options: {
@@ -48,12 +48,12 @@ module.exports = View.extend({
   show: function () {
     this.render()
     this._setPosition()
-    View.prototype.show.call(this)
+    cdb.core.View.prototype.show.call(this)
   },
 
   clean: function () {
     this._$target.off('mouseenter mouseleave')
-    View.prototype.clean.call(this)
+    cdb.core.View.prototype.clean.call(this)
   }
 
 })

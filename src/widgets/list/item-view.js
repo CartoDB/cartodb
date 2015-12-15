@@ -1,9 +1,9 @@
 var _ = require('underscore')
 var format = require('../../formatter')
-var View = require('cartodb.js').core.View
+var cdb = require('cartodb.js')
 var template = require('./item-template.tpl')
 
-module.exports = View.extend({
+module.exports = cdb.core.View.extend({
   tagName: 'li',
   className: 'CDB-Widget-listItem',
 

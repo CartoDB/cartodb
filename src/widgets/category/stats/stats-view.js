@@ -1,5 +1,5 @@
 var _ = require('underscore')
-var View = require('cartodb.js').core.View
+var cdb = require('cartodb.js')
 var formatter = require('../../../formatter')
 var template = require('./stats-template.tpl')
 var animationTemplate = require('./cats-template.tpl')
@@ -10,7 +10,7 @@ var AnimateValues = require('../../animate-values')
  *
  */
 
-module.exports = View.extend({
+module.exports = cdb.core.View.extend({
   className: 'CDB-Widget-info CDB-Widget-textSmaller CDB-Widget-textSmaller--upper',
   tagName: 'dl',
 

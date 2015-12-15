@@ -1,4 +1,4 @@
-var Model = require('cartodb.js').core.Model
+var cdb = require('cartodb.js')
 
 /**
  *  View model, special for widgets with search and collapse
@@ -6,7 +6,7 @@ var Model = require('cartodb.js').core.Model
  *
  */
 
-module.exports = Model.extend({
+module.exports = cdb.core.Model.extend({
   defaults: {
     search: false
   },

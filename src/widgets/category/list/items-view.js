@@ -1,13 +1,13 @@
 var $ = require('jquery')
 var _ = require('underscore')
-var View = require('cartodb.js').core.View
+var cdb = require('cartodb.js')
 var CategoryItemView = require('./item/item-view')
 var placeholder = require('./items-placeholder-template.tpl')
 
 /**
  * Category list view
  */
-module.exports = View.extend({
+module.exports = cdb.core.View.extend({
   options: {
     paginator: false,
     itemsPerPage: 6

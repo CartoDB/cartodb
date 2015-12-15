@@ -1,7 +1,7 @@
-var View = require('cartodb.js').core.View
+var cdb = require('cartodb.js')
 var WidgetListItemView = require('./item-view')
 
-module.exports = View.extend({
+module.exports = cdb.core.View.extend({
   className: 'CDB-Widget-list js-list',
   tagName: 'ul',
 

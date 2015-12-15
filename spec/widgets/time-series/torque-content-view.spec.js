@@ -1,4 +1,4 @@
-var Model = require('cartodb.js').core.Model
+var cdb = require('cartodb.js')
 var TorqueLayerModel = require('cartodb.js/src/geo/map/torque-layer')
 var HistogramModel = require('app/widgets/histogram/model')
 var RangeFilter = require('app/windshaft/filters/range')
@@ -7,8 +7,8 @@ var TimeContentView = require('app/widgets/time-series/torque-content-view')
 describe('geo/ui/widgets/time-series/torque-content-view', function () {
   beforeEach(function () {
     this.model = new HistogramModel({}, {
-      filter: new Model(),
-      layer: new Model()
+      filter: new cdb.core.Model(),
+      layer: new cdb.core.Model()
     })
     this.model.sync = function (method, model, options) {
       this.options = options

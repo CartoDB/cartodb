@@ -1,4 +1,4 @@
-var View = require('cartodb.js').core.View
+var cdb = require('cartodb.js')
 var WidgetLoaderView = require('./standard/widget-loader-view')
 var WidgetErrorView = require('./standard/widget-error-view')
 
@@ -6,7 +6,7 @@ var WidgetErrorView = require('./standard/widget-error-view')
  * Default widget view
  * The model is a expected to be widget model
  */
-module.exports = View.extend({
+module.exports = cdb.core.View.extend({
   className: 'CDB-Widget CDB-Widget--light',
 
   options: {

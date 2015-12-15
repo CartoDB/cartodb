@@ -1,13 +1,13 @@
 var $ = require('jquery')
 var _ = require('underscore')
-var Model = require('cartodb.js').core.Model
+var cdb = require('cartodb.js')
 var AnimateValues = require('app/widgets/animate-values')
 
 describe('geo/ui/widgets/animate-values', function () {
   beforeEach(function () {
     this.$el = $('<div><div class="js-value">123</div></div>')
 
-    this.model = new Model({ value: 123 })
+    this.model = new cdb.core.Model({ value: 123 })
 
     this.animator = new AnimateValues({
       el: this.$el

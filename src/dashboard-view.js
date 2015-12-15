@@ -1,4 +1,4 @@
-var View = require('cartodb.js').core.View
+var cdb = require('cartodb.js')
 var template = require('./dashboard.tpl')
 var DashboardBelowMapView = require('./dashboard-below-map-view')
 var DashboardInfoView = require('./dashboard-info-view')
@@ -8,7 +8,7 @@ var DashboardSidebarView = require('./dashboard-sidebar-view')
  * Dashboard is a wrapper around the map canvas, which contains widget views for the map contdxt
  * Widgets may be rendered in two areas, in the "sidebar" or "below-map".
  */
-module.exports = View.extend({
+module.exports = cdb.core.View.extend({
   className: 'CDB-Dashboard-canvas',
 
   initialize: function (options) {

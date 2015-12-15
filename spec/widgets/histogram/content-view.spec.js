@@ -1,5 +1,5 @@
 var _ = require('underscore')
-var Model = require('cartodb.js').core.Model
+var cdb = require('cartodb.js')
 var WidgetHistogramModel = require('app/widgets/histogram/model')
 var WidgetHistogramContent = require('app/widgets/histogram/content-view')
 
@@ -12,15 +12,15 @@ describe('geo/ui/widgets/histogram/content-view', function () {
         columns: ['cartodb_id', 'title']
       }
     }, {
-      filter: new Model(),
-      layer: new Model()
+      filter: new cdb.core.Model(),
+      layer: new cdb.core.Model()
     })
 
-    this.viewModel = new Model({
+    this.viewModel = new cdb.core.Model({
       sync: true
     })
 
-    this.filter = new Model({
+    this.filter = new cdb.core.Model({
       min: 0,
       max: 100
     })

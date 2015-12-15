@@ -1,11 +1,11 @@
-var View = require('cartodb.js').core.View
+var cdb = require('cartodb.js')
 var template = require('./options-template.tpl')
 
 /**
  * Category filter view
  *
  */
-module.exports = View.extend({
+module.exports = cdb.core.View.extend({
   className: 'CDB-Widget-filter CDB-Widget-contentSpaced CDB-Widget-contentSpaced--sideMargins',
 
   events: {

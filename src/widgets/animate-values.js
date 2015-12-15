@@ -1,11 +1,11 @@
 var _ = require('underscore')
 var d3 = require('d3')
-var View = require('cartodb.js').core.View
+var cdb = require('cartodb.js')
 
 /**
  * Animate between two values
  */
-module.exports = View.extend({
+module.exports = cdb.core.View.extend({
   animateFromValues: function (from, to, className, template, opts) {
     var $el = this.$(className)
     var options = opts || {}

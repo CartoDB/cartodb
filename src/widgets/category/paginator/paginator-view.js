@@ -1,10 +1,9 @@
 var $ = require('jquery')
 var _ = require('underscore')
-var View = require('cartodb.js').core.View
-var Model = require('cartodb.js').core.Model
+var cdb = require('cartodb.js')
 var defaultTemplate = require('./paginator-template.tpl')
 
-module.exports = View.extend({
+module.exports = cdb.core.View.extend({
   options: {
     itemsPerPage: 6,
     template: defaultTemplate,
@@ -22,7 +21,7 @@ module.exports = View.extend({
     this.dataModel = this.options.dataModel
     this.viewModel = this.options.viewModel
     this._$target = this.options.$target
-    this.model = new Model({
+    this.model = new cdb.core.Model({
       page: 0
     })
     this._initBinds()
@@ -96,7 +95,7 @@ module.exports = View.extend({
 
   clean: function () {
     $(window).unbind('resize.' + this.cid)
-    View.prototype.clean.call(this)
+    cdb.core.View.prototype.clean.call(this)
   }
 
 })

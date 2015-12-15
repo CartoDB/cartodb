@@ -1,4 +1,4 @@
-var Model = require('cartodb.js').core.Model
+var cdb = require('cartodb.js')
 var TorqueLayerModel = require('cartodb.js/src/geo/map/torque-layer')
 var HistogramModel = require('app/widgets/histogram/model')
 var HistogramChartView = require('app/widgets/histogram/chart')
@@ -9,8 +9,8 @@ describe('geo/ui/widgets/time-series/torque-time-slider-view', function () {
     this.model = new HistogramModel({
       bins: 256
     }, {
-      filter: new Model(),
-      layer: new Model()
+      filter: new cdb.core.Model(),
+      layer: new cdb.core.Model()
     })
     this.torqueLayerModel = new TorqueLayerModel({
       isRunning: false,

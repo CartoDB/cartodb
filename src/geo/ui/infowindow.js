@@ -347,14 +347,23 @@ var Infowindow = View.extend({
     $img = $("<img class='CDB-infowindow-media-item' />").attr("src", url);
     $cover.append($img);
 
-    $hookImage = $("<img />").attr("src", url);
-    $hook.append($hookImage);
+    if ($hook) {
+      $hookImage = $("<img />").attr("src", url);
+      $hook.append($hookImage);
 
-    var hookPoints = [[0, 0], [0, 100], [100, 0]];
+      var hookPoints = [[0, 0], [0, 100], [100, 0]];
 
-    $hook.clipPath(hookPoints, {
-      isPercentage: true
-    });
+      $hook.clipPath(hookPoints, {
+        isPercentage: true
+      });
+
+      $hookImage.load(function(){
+        $hookImage.css({
+          marginTop: -$cover.height(),
+          width: $cover.width()
+        });
+      });
+    }
 
     $img.load(function(){
       var w = $img.width();
@@ -380,13 +389,6 @@ var Infowindow = View.extend({
       $img.fadeIn(self.options.imageTransitionSpeed);
     })
     .error();
-
-    $hookImage.load(function(){
-      $hookImage.css({
-        marginTop: -$cover.height(),
-        width: $cover.width()
-      });
-    });
   },
 
   /**
@@ -435,6 +437,7 @@ var Infowindow = View.extend({
       content:  {
         fields: [{
           title: null,
+          loading: true,
           alternative_name: null,
           value: 'Loading content...',
           index: null,

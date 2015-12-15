@@ -3,7 +3,7 @@
 var cdb = {};
 
 // Might be set in different bundles (e.g. cartodb.js vs. torque), avoid overriding it once set
-cdb.VERSION = "3.15.8";
+cdb.VERSION = require('../package.json').version;
 cdb.DEBUG = false;
 cdb.CARTOCSS_DEFAULT_VERSION = '2.1.1';
 cdb.CARTOCSS_VERSIONS = {

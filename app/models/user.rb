@@ -720,6 +720,10 @@ class User < Sequel::Model
     return false
   end
 
+  def viewable_by?(user)
+    self.id == user.id || (has_organization? && self.organization.owner.id == user.id)
+  end
+
   def view_dashboard
     self.this.update dashboard_viewed_at: Time.now
     set dashboard_viewed_at: Time.now

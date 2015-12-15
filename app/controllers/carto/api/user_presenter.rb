@@ -14,7 +14,7 @@ module Carto
 
       def to_poro
         return {} if @user.nil?
-        return to_public_poro unless !@options[:current_viewer].nil? && @options[:current_viewer].id == @user.id
+        return to_public_poro unless !@options[:current_viewer].nil? && @user.viewable_by?(@options[:current_viewer])
 
         poro = {
           id:               @user.id,

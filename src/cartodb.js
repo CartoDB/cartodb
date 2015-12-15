@@ -8,7 +8,7 @@ require('mwheelIntent') // registers itself to $.event; TODO what's this require
 var cdb = require('cdb')
 
 if (window) {
-  window.cartodb = window.cdb = cdb;
+  window.cartodb = window.cdb = cdb
 }
 
 cdb.Backbone = require('backbone')

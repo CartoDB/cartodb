@@ -12,7 +12,6 @@ module CartoDB
   module Importer2
     class Unp
       HIDDEN_FILE_REGEX     = /^(\.|\_{2})/
-      UNP_READ_ERROR_REGEX  = /.*Cannot read.*/
       COMPRESSED_EXTENSIONS = %w{ .zip .gz .tgz .tar.gz .bz2 .tar .kmz .rar }
       SUPPORTED_FORMATS     = %w{
         .csv .shp .ods .xls .xlsx .tif .tiff .kml .kmz
@@ -177,7 +176,7 @@ module CartoDB
       end
 
       def unp_failure?(output, exit_code)
-        !!(output =~ UNP_READ_ERROR_REGEX) || (exit_code != 0)
+        (exit_code != 0) || output.include? "Cannot read"
       end
 
       # Return a new temporary file contained inside a tmp subfolder

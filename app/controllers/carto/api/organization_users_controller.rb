@@ -11,7 +11,7 @@ module Carto
 
       before_filter :load_organization
 
-      UPDATE_PARAMS_MAP = { new_email: 'email', new_username: 'username' }
+      UPDATE_PARAMS_MAP = { new_email: :email, new_username: :username }
 
       def create
         render_jsonp({}, 401) && return unless current_viewer_is_owner?
@@ -69,7 +69,7 @@ module Carto
         user = ::User.where(delete_params).first
         render_jsonp("No user with #{delete_params}", 404) && return if user.nil?
 
-        user.update(Hash[update_params.map { |k, v| [UPDATE_PARAMS_MAP[k].to_sym || k, v] }])
+        user.update(Hash[update_params.map { |k, v| [UPDATE_PARAMS_MAP[k] || k, v] }])
 
         render_jsonp(user.errors.full_messages, 410) && return unless user.save
 

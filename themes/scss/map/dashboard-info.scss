@@ -12,6 +12,7 @@
   width: 304px;
   opacity: 0;
 }
+
 .CDB-Dashboard-info {
   @include transition(width, 0.25s, cubic-bezier(0.01, 0.99, 0.97, 1.01));
   position: fixed;
@@ -184,7 +185,83 @@
   line-height: $sLineHeight-smaller;
 }
 
+.CDB-Dashboard-infoMobile {
+  display: none;
+}
+
+@include keyframes(fadeInDown) {
+  from {
+    @include css3-prefix(transform, translate3d(-5%, 0, 0));
+    opacity: 0;
+  }
+
+  to {
+    @include css3-prefix(transform, none);
+    opacity: 1;
+  }
+}
+
 @include media-query-mobile() {
+  .CDB-Dashboard-hideMobile {
+    display: none;
+  }
+  .CDB-Dashboard-info {
+    overflow: visible;
+  }
+  .CDB-Dashboard-infoMobile {
+    @include transition(transform, 0.25s, cubic-bezier(0.01, 0.99, 0.97, 1.01));
+    display: block;
+    position: absolute;
+    top: 0;
+    right: 40px;
+    left: 0;
+    height: calc(100vh - 32px);
+    padding: 16px;
+    transform: translateX(-100%);
+    background: #3AA9E3;
+    .CDB-Dashboard-infoActions {
+      position: absolute;
+      top: 22px;
+      right: 8px;
+    }
+    .CDB-Dashboard-infoFooter {
+      top: auto;
+      right: auto;
+      bottom: 24px;
+      left: auto;
+      width: auto;
+    }
+  }
+  .CDB-Dashboard-info.is-active .CDB-Dashboard-infoMobile {
+    transform: translateX(0);
+    box-shadow: 300px 0 0 rgba(0, 0, 0, 0.45);
+  }
+  .CDB-Dashboard-infoFooter {
+    top: 8px;
+    right: 8px;
+    left: auto;
+    width: 32px;
+    transition: opacity 0.3s;
+  }
+  .CDB-Dashboard-infoFooterItem {
+    margin-top: 0;
+  }
+  .CDB-Dashboard-infoLogo,
+  .CDB-Dashboard-infoActions {
+    display: inline-block;
+    margin: 0;
+    vertical-align: middle;
+  }
+  .CDB-Dashboard-infoActions {
+    height: auto;
+  }
+  .CDB-Dashboard-infoTexts {
+    top: 75px;
+    right: 16px;
+    left: 16px;
+    width: auto;
+    opacity: 1;
+  }
   .CDB-Dashboard-info {
     right: 0;
     width: 100%;
@@ -201,31 +278,20 @@
     height: 32px;
     line-height: 32px;
   }
-  .CDB-Dashboard-infoFooter {
-    top: 8px;
-    right: 8px;
-    bottom: auto;
-    left: auto;
-    width: 32px;
-  }
-  .CDB-Dashboard-infoFooterItem {
-    margin-top: 0;
-  }
   .CDB-Dashboard-infoMedia {
     width: 32px;
-    margin: 0;
+  }
+  .CDB-Dashboard-info.is-active {
+    width: auto;
+    box-shadow: 0 0 0;
+    .CDB-Dashboard-infoFooter {
+      opacity: 0;
+    }
+    .CDB-Dashboard-infoMobile {
+      .CDB-Dashboard-infoFooter {
+        opacity: 1;
+      }
+    }
   }
 }
 
-
-@include keyframes(fadeInDown) {
-  from {
-    @include css3-prefix(transform, translate3d(-5%, 0, 0));
-    opacity: 0;
-  }
-
-  to {
-    @include css3-prefix(transform, none);
-    opacity: 1;
-  }
-}

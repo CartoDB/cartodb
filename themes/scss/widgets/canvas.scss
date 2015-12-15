@@ -57,21 +57,32 @@
   width: 2px !important; // Resetting standard scroll bar color
   background: #AAA;
 }
+.CDB-Widget-canvas .ps-scrollbar-x-rail {
+  height: 2px !important; // Resetting standard scroll track color
+  background: #EEE;
+  z-index: 3;
+}
+.CDB-Widget-canvas .ps-scrollbar-x {
+  height: 2px !important; // Resetting standard scroll bar color
+  background: #AAA;
+}
 
 // Widget media query
 @include media-query() {
   .CDB-Widget-canvas {
-    @include display-flex();
-    @include flex-wrap(nowrap);
-    width: calc(100% - 80px);
-    min-width: calc(100% - 80px);
-    max-width: calc(100% - 80px);
-    height: 350px;
+    width: calc(100% - 88px);
+    min-width: calc(100% - 88px);
+    max-width: calc(100% - 88px);
+    height: auto;
     margin-top: 8px;
-    margin-left: 80px;
-    overflow-x: auto;
-    overflow-y: visible;
+    margin-left: 88px;
     border-radius: 0;
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+  .CDB-Map-canvas {
+    @include display-flex();
+    flex: 2;
   }
   .CDB-LayerWidgets-canvas {
     @include display-flex();
@@ -85,6 +96,10 @@
   .CDB-Widget-canvasShadow.is-visible {
     display: none;
   }
+  .CDB-Widget-canvasInner {
+    @include display-flex();
+    position: relative;
+  }
 }
 
 @include media-query-mobile() {
@@ -92,6 +107,14 @@
     width: 100%;
     min-width: 100%;
     max-width: 100%;
+    margin-left: 0;
+  }
+  .CDB-Widget-canvas {
+    width: 100%;
+    min-width: 100%;
+    max-width: 100%;
+    height: 168px;
+    min-height: 168px;
     margin-left: 0;
   }
 }

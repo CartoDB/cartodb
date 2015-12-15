@@ -49,10 +49,9 @@
   line-height: $sLineHeight-small;
 }
 .CDB-infowindow-link {
-  width: 90%;
   display: inline-block;
+  width: 90%;
   word-break: break-word;
-  // TODO: add style for the hovers
 }
 
 .CDB-infowindow-inner.has-scroll {

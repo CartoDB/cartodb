@@ -1,6 +1,6 @@
-var _ = cdb._
-var $ = cdb.$
-var d3 = cdb.d3
+var _ = require('underscore')
+var $ = require('jquery')
+var d3 = require('d3')
 var WidgetHistogramChart = require('app/widgets/histogram/chart')
 
 describe('geo/ui/widgets/histogram/chart', function () {

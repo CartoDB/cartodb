@@ -1,4 +1,4 @@
-var View = cdb.core.View
+var View = require('cartodb.js').core.View
 var template = require('./dashboard.tpl')
 var DashboardBelowMapView = require('./dashboard-below-map-view')
 var DashboardInfoView = require('./dashboard-info-view')

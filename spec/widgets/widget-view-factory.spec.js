@@ -1,5 +1,5 @@
-var Model = cdb.core.Model
-var View = cdb.core.View
+var Model = require('cartodb.js').core.Model
+var View = require('cartodb.js').core.View
 var WidgetViewFactory = require('app/widgets/widget-view-factory')
 var WidgetModel = require('app/widgets/widget-model')
 var WidgetView = require('app/widgets/widget-view')

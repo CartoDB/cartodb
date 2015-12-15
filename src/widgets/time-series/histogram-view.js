@@ -1,5 +1,5 @@
-var $ = cdb.$
-var View = cdb.core.View
+var $ = require('jquery')
+var View = require('cartodb.js').core.View
 var HistogramChartView = require('../histogram/chart')
 
 /**

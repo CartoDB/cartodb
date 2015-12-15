@@ -1,5 +1,5 @@
-var Backbone = cdb.Backbone
-var CartoDBLayer = cdb.geo.CartoDBLayer
+var Backbone = require('backbone')
+var CartoDBLayer = require('cartodb.js').geo.CartoDBLayer
 var PublicDashboardConfig = require('app/windshaft/public-dashboard-config')
 var HistogramModel = require('app/widgets/histogram/model')
 

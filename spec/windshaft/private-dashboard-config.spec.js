@@ -1,4 +1,4 @@
-var CartoDBLayer = cdb.geo.CartoDBLayer
+var CartoDBLayer = require('cartodb.js').geo.CartoDBLayer
 var PrivateDashboardConfig = require('app/windshaft/private-dashboard-config')
 
 describe('windshaft/private-dashboard-config', function () {

@@ -1,4 +1,4 @@
-var Model = cdb.core.Model
+var Model = require('cartodb.js').core.Model
 var HistogramModel = require('app/widgets/histogram/model')
 var TimeSeriesContentView = require('app/widgets/time-series/content-view')
 

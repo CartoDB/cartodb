@@ -1,6 +1,6 @@
-var _ = cdb._
-var d3 = cdb.d3
-var View = cdb.core.View
+var _ = require('underscore')
+var d3 = require('d3')
+var View = require('cartodb.js').core.View
 
 /**
  * Animate between two values

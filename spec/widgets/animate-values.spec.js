@@ -1,6 +1,6 @@
-var $ = cdb.$
-var _ = cdb._
-var Model = cdb.core.Model
+var $ = require('jquery')
+var _ = require('underscore')
+var Model = require('cartodb.js').core.Model
 var AnimateValues = require('app/widgets/animate-values')
 
 describe('geo/ui/widgets/animate-values', function () {

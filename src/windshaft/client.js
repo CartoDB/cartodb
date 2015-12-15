@@ -1,7 +1,7 @@
-var $ = cdb.$
-var _ = cdb._
-var LZMA = cdb.LZMA
-var util = cdb.core.util
+var $ = require('jquery')
+var _ = require('underscore')
+var LZMA = require('cartodb.js').LZMA
+var util = require('cartodb.js').core.util
 var WindshaftDashboardInstance = require('./dashboard-instance')
 
 var validatePresenceOfOptions = function (options, requiredOptions) {
@@ -36,7 +36,7 @@ WindshaftClient.MAX_GET_SIZE = 2033
  * Creates an instance of a map in Windshaft
  * @param {object} mapDefinition An object that responds to .toJSON with the definition of the map
  * @param  {function} callback A callback that will get the public or private map
- * @return {cdb.windshaft.DashboardInstance} The instance of the dashboard
+ * @return {DashboardInstance} The instance of the dashboard
  */
 WindshaftClient.prototype.instantiateMap = function (options) {
   var mapDefinition = options.mapDefinition

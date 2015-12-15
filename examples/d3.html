@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>D3</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
+    <link rel="stylesheet" href="../dist/themes/css/cartodb.css" />
+    <script src="../src/cartodb.js"></script>
+
+    <style>
+      html, body {
+        margin: 0;
+        padding: 20px;
+        background: #F1F1F1;
+        font: 10px sans-serif;
+      }
+
+      .bar {
+        fill: #9DE0AD;
+      }
+
+      .area {
+        z-index: 30;
+        display: block;
+        visibility: visible;
+        position: relative;
+        padding-top: 15px;
+        margin-top: 15px;
+      }
+      .axis {
+        font: 10px sans-serif;
+      }
+      .axis path,
+      .axis line {
+        fill: none;
+        stroke: #000;
+        shape-rendering: crispEdges;
+      }
+      .x.axis path {
+        display: none;
+      }
+      .resize path {
+        fill: #666;
+        fill-opacity: .8;
+        stroke: #000;
+        stroke-width: 1.5px;
+      }
+      .brush .extent {
+        fill-opacity: 0.1;
+        stroke: #fff;
+        shape-rendering: crispEdges;
+      }
+
+      .selected {
+        fill: #DDD;
+      }
+
+      .axis {
+        font: 12px sans-serif;
+        shape-rendering: crispEdges;
+      }
+      .axis path,
+      .axis line {
+        fill: none;
+        stroke: #000;
+        shape-rendering: crispEdges;
+      }
+      line.x {
+        stroke: #DDD;
+        stroke-width: 2;
+        shape-rendering: crispEdges;
+      }
+      line.y {
+        stroke: #DDD;
+        stroke-width: 2;
+        shape-rendering: crispEdges;
+      }
+
+    </style>
+
+  </head>
+
+  <body>
+
+    <div class="Widget">
+      <h2 class="Widget-title">Transactions by visitors</h2>
+      <ul class="Widget-info">
+        <li class="Widget-infoItem">0 null rows</li>
+        <li class="Widget-infoItem">17k min</li>
+        <li class="Widget-infoItem">142k avg</li>
+        <li class="Widget-infoItem">1.13m max</li>
+      </ul>
+    </div>
+
+    <script>
+
+      function main() {
+
+        // Generate a Bates distribution of 10 random variables.
+        var values = d3.range(1000).map(d3.random.bates(1));
+
+        var width = 500;
+        var height = 100;
+
+        var x = d3.scale.linear()
+        .domain([0, 1])
+        .range([0, width]);
+
+        var data = d3.layout.histogram().bins(x.ticks(20))(values);
+
+        var y = d3.scale.linear()
+        .domain([0, d3.max(data, function(d) { return d.y; })])
+        .range([height, 0]);
+
+        var xAxis = d3.svg.axis()
+        .scale(x)
+        .orient("bottom");
+
+        var svg = d3.select("body").append("svg")
+        .attr('class', 'area')
+        .attr("width", width )
+        .attr("height", height )
+        .append("g");
+
+        var yData = d3.range(0, height + height/2, height/2);
+        var xData = d3.range(0, width + width/4, width/4);
+        console.log(xData);
+
+        svg.selectAll("line.y")
+        .data(yData)
+        .enter().append("svg:line")
+        .attr('class', 'y')
+        .attr("x1", 0)
+        .attr("y1", function(d) { return d; })
+        .attr("x2", width)
+        .attr("y2", function(d) { return d; })
+
+        svg.selectAll("line.x")
+        .data(xData)
+        .enter().append("svg:line")
+        .attr('class', 'x')
+        .attr("y1", 0)
+        .attr("x1", function(d) { return d; })
+        .attr("y2", width)
+        .attr("x2", function(d) { return d; })
+
+
+        var bar = svg.selectAll(".bar")
+        .data(data)
+        .enter().append("g")
+        .attr("class", "bar")
+        .attr("transform", function(d) { return "translate(" + x(d.x) + "," + y(d.y) + ")"; });
+
+        bar.append("rect")
+        .attr("x", 1)
+        .attr("width", x(data[0].dx) - 1)
+        .attr("height", function(d) { return height - y(d.y); });
+
+        function brushed() {
+          var extent = brush.extent();
+          var lo = extent[0];
+          var hi = extent[1];
+
+          svg.selectAll('.bar').classed("selected", function(d, i) {
+            console.log(i, lo, d[i], hi);
+            return d[i] >= lo && d[i] <= hi; 
+          });
+        }
+
+        var brush = d3.svg.brush()
+        .x(x)
+        .on("brush", brushed);
+
+        svg.append("g")
+        .attr("class", "x brush")
+        .call(brush)
+        .selectAll("rect")
+        .attr("y", -6)
+        .attr("height", height + 7);
+      }
+
+      var fn = function() {
+        cartodb.load('../src/', main);
+      }
+      window.onload = fn;
+    </script>
+  </body>
+</html>

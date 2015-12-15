@@ -1,5 +1,5 @@
-var $ = cdb.$
-var View = cdb.core.View
+var $ = require('jquery')
+var View = require('cartodb.js').core.View
 var TooltipView = require('../widget-tooltip-view')
 var template = require('./histogram-title-template.tpl')
 

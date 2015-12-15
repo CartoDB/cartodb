@@ -1,5 +1,5 @@
-var Model = cdb.core.Model
-var TorqueLayerModel = cdb.geo.TorqueLayer
+var Model = require('cartodb.js').core.Model
+var TorqueLayerModel = require('cartodb.js/src/geo/map/torque-layer')
 var HistogramModel = require('app/widgets/histogram/model')
 var HistogramChartView = require('app/widgets/histogram/chart')
 var TorqueTimeSliderView = require('app/widgets/time-series/torque-time-slider-view')

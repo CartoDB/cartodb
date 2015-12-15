@@ -1,5 +1,5 @@
-var _ = cdb._
-var View = cdb.core.View
+var _ = require('underscore')
+var View = require('cartodb.js').core.View
 var placeholderTemplate = require('./placeholder.tpl')
 var HistogramView = require('./histogram-view')
 

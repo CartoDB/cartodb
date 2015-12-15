@@ -1,4 +1,4 @@
-var _ = cdb._
+var _ = require('underscore')
 var WidgetView = require('./widget-view')
 
 var WidgetViewFactory = function (defs) {

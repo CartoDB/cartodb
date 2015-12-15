@@ -1,9 +1,9 @@
-var $ = cdb.$
-var _ = cdb._
-var d3 = cdb.d3
-var formatter = cdb.core.format
-var Model = cdb.core.Model
-var View = cdb.core.View
+var $ = require('jquery')
+var _ = require('underscore')
+var d3 = require('d3')
+var formatter = require('../../formatter')
+var Model = require('cartodb.js').core.Model
+var View = require('cartodb.js').core.View
 
 module.exports = View.extend({
   defaults: {

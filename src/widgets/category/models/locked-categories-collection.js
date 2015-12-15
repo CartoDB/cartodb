@@ -1,5 +1,5 @@
-var _ = cdb._
-var Backbone = cdb.Backbone
+var _ = require('underscore')
+var Backbone = require('backbone')
 var CategoryItemModel = require('./category-item-model')
 
 /**

@@ -1,6 +1,6 @@
-var _ = cdb._
-var log = cdb.log
-var View = cdb.core.View
+var _ = require('underscore')
+var log = require('cartodb.js').log
+var View = require('cartodb.js').core.View
 var contentTemplate = require('./widget-content-template.tpl')
 var placeholderTemplate = require('./widget-placeholder-template.tpl')
 

@@ -1,6 +1,6 @@
-var _ = cdb._
-var $ = cdb.$
-var View = cdb.core.View
+var _ = require('underscore')
+var $ = require('jquery')
+var View = require('cartodb.js').core.View
 var TooltipView = require('../../widget-tooltip-view')
 var template = require('./search-title-template.tpl')
 

@@ -1,5 +1,5 @@
-var _ = cdb._
-var View = cdb.core.View
+var _ = require('underscore')
+var View = require('cartodb.js').core.View
 var WidgetViewFactory = require('./widgets/widget-view-factory')
 var TimeSeriesContentView = require('./widgets/time-series/content-view')
 var TorqueTimeSeriesContentView = require('./widgets/time-series/torque-content-view')

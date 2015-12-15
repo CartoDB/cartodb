@@ -1,7 +1,7 @@
-var $ = cdb.$
-var _ = cdb._
-var View = cdb.core.View
-var Model = cdb.core.Model
+var $ = require('jquery')
+var _ = require('underscore')
+var View = require('cartodb.js').core.View
+var Model = require('cartodb.js').core.Model
 var defaultTemplate = require('./paginator-template.tpl')
 
 module.exports = View.extend({

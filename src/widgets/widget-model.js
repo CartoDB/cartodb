@@ -1,4 +1,4 @@
-var Model = cdb.core.Model
+var Model = require('cartodb.js').core.Model
 
 /**
  * Default widget model

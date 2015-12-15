@@ -1,4 +1,4 @@
-var Model = cdb.core.Model
+var Model = require('cartodb.js').core.Model
 var WidgetModelFactory = require('app/widgets/widget-model-factory')
 
 describe('geo/ui/widgets/widget-model-factory', function () {

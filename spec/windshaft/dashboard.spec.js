@@ -1,9 +1,9 @@
-var $ = cdb.$
-var _ = cdb._
-var Backbone = cdb.Backbone
-var Map = cdb.geo.Map
-var CartoDBLayer = cdb.geo.CartoDBLayer
-var TorqueLayer = cdb.geo.TorqueLayer
+var $ = require('jquery')
+var _ = require('underscore')
+var Backbone = require('backbone')
+var Map = require('cartodb.js').geo.Map
+var CartoDBLayer = require('cartodb.js').geo.CartoDBLayer
+var TorqueLayer = require('cartodb.js').geo.TorqueLayer
 var Dashboard = require('app/windshaft/dashboard')
 var DashboardInstance = require('app/windshaft/dashboard-instance')
 var HistogramModel = require('app/widgets/histogram/model')
@@ -315,7 +315,7 @@ describe('windshaft/dashboard', function () {
     })
     this.widgets.add(widget2)
 
-    new Dashboard({ // eslint-disable-line 
+    new Dashboard({ // eslint-disable-line
       client: this.client,
       configGenerator: this.configGenerator,
       statTag: 'stat_tag',

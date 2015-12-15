@@ -1,5 +1,5 @@
 var moment = require('moment')
-var Backbone = cdb.Backbone
+var Backbone = require('backbone')
 var DashboardInfoView = require('app/dashboard-info-view')
 
 describe('app/dashboard-info-view', function () {

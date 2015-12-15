@@ -1,6 +1,6 @@
-var _ = cdb._
-var format = cdb.core.format
-var View = cdb.core.View
+var _ = require('underscore')
+var format = require('../../formatter')
+var View = require('cartodb.js').core.View
 var template = require('./item-template.tpl')
 
 module.exports = View.extend({

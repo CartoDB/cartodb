@@ -1,5 +1,5 @@
-var _ = cdb._
-var Model = cdb.core.Model
+var _ = require('underscore')
+var Model = require('cartodb.js').core.Model
 var WindshaftConfig = require('./config')
 var EMPTY_GIF = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'
 

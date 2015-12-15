@@ -1,5 +1,5 @@
-var View = cdb.core.View
-var formatter = cdb.core.format
+var View = require('cartodb.js').core.View
+var formatter = require('../../../../formatter')
 var clickableTemplate = require('./item-clickable-template.tpl')
 var unclickableTemplate = require('./item-unclickable-template.tpl')
 

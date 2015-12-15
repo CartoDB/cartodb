@@ -1,6 +1,6 @@
-var d3 = cdb.d3
-var Model = cdb.core.Model
-var View = cdb.core.View
+var d3 = require('d3')
+var Model = require('cartodb.js').core.Model
+var View = require('cartodb.js').core.View
 
 /**
  * Time-slider, expected to be used in a histogram view

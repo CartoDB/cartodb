@@ -1,4 +1,4 @@
-var View = cdb.core.View
+var View = require('cartodb.js').core.View
 var template = require('./widget-error-template.tpl')
 
 /**

@@ -1,4 +1,4 @@
-var Model = cdb.core.Model
+var Model = require('cartodb.js').core.Model
 var WidgetModel = require('app/widgets/histogram/model')
 
 describe('geo/ui/widgets/histogram/model', function () {

@@ -1,4 +1,4 @@
-var _ = cdb._
+var _ = require('underscore')
 var CategoryColors = require('./models/category-colors')
 var WidgetModel = require('../widget-model')
 var WidgetSearchModel = require('./models/search-model')

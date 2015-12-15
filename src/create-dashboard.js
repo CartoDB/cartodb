@@ -1,6 +1,7 @@
-var _ = cdb._
-var Model = cdb.core.Model
-var log = cdb.log
+var _ = require('underscore')
+var Model = require('cartodb.js').core.Model
+var createVis = require('cartodb.js').createVis
+var log = require('cartodb.js').log
 var DashboardView = require('./dashboard-view')
 var WidgetsCollection = require('./widgets/widgets-collection')
 var WidgetModelFactory = require('./widgets/widget-model-factory')
@@ -70,7 +71,7 @@ module.exports = function (selector, diJSON, visOpts) {
     dashboardInfoModel: dashboardInfoModel
   })
 
-  var vis = cdb.createVis(dashboardView.$('#map'), diJSON.vizJSON, visOpts)
+  var vis = createVis(dashboardView.$('#map'), diJSON.vizJSON, visOpts)
 
   var cartoDBLayerGroup
   var interactiveLayers = []
@@ -145,7 +146,7 @@ module.exports = function (selector, diJSON, visOpts) {
     forceCors: datasource.force_cors
   })
 
-  new WindshaftDashboard({ // eslint-disable-line 
+  new WindshaftDashboard({ // eslint-disable-line
     client: windshaftClient,
     configGenerator: configGenerator,
     statTag: datasource.stat_tag,

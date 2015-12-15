@@ -1,5 +1,5 @@
-var d3 = cdb.d3
-var View = cdb.core.View
+var d3 = require('d3')
+var View = require('cartodb.js').core.View
 var template = require('./torque-time-info.tpl')
 
 /**

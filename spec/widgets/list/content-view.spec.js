@@ -1,4 +1,4 @@
-var _ = cdb._
+var _ = require('underscore')
 var WidgetListModel = require('app/widgets/list/model')
 var WidgetListContent = require('app/widgets/list/content-view')
 

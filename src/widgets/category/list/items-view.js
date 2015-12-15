@@ -1,6 +1,6 @@
-var $ = cdb.$
-var _ = cdb._
-var View = cdb.core.View
+var $ = require('jquery')
+var _ = require('underscore')
+var View = require('cartodb.js').core.View
 var CategoryItemView = require('./item/item-view')
 var placeholder = require('./items-placeholder-template.tpl')
 

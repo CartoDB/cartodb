@@ -1,5 +1,5 @@
-var _ = cdb._
-var Model = cdb.core.Model
+var _ = require('underscore')
+var Model = require('cartodb.js').core.Model
 var WidgetHistogramModel = require('app/widgets/histogram/model')
 var WidgetHistogramContent = require('app/widgets/histogram/content-view')
 

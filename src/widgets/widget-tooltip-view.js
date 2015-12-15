@@ -1,5 +1,5 @@
-var View = cdb.core.View
-var _ = cdb._
+var View = require('cartodb.js').core.View
+var _ = require('underscore')
 
 /**
  * Standard widget tooltip view

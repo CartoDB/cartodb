@@ -1,4 +1,4 @@
-var Backbone = cdb.Backbone
+var Backbone = require('backbone')
 var CategoryItemModel = require('./category-item-model')
 
 /**

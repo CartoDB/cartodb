@@ -213,7 +213,7 @@ var Infowindow = View.extend({
   /**
    *  Check event origin
    */
-  _checkOrigin: function(ev) { // TODO: update this
+  _checkOrigin: function(ev) {
     // If the mouse down come from jspVerticalBar
     // dont stop the propagation, but if the event
     // is a touchstart, stop the propagation

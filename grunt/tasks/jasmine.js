@@ -37,13 +37,13 @@ module.exports = {
         }, defaultOptions)
       },
 
-      torque: {
+      'cartodb.mod.torque': {
         src: [
           'dist/cartodb.mod.torque.uncompressed.js',
         ],
         options: _.defaults({
-          outfile: 'test/SpecRunner-torque.html',
-          specs: '<%= config.tmp %>/torque-specs.js',
+          outfile: 'test/SpecRunner-cartodb.mod.torque.html',
+          specs: '<%= config.tmp %>/cartodb.mod.torque-specs.js',
           vendor: defaultOptions.vendor.concat([
             'http://maps.googleapis.com/maps/api/js?sensor=false&v=3.12',
             'dist/cartodb.uncompressed.js',

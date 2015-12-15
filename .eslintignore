@@ -16,7 +16,6 @@
 **/src/cdb.templates.js
 **/src/core/config.js
 **/src/core/decorators.js
-**/src/core/format.js
 **/src/core/loader.js
 **/src/core/log/error-list.js
 **/src/core/log/error.js
@@ -116,7 +115,6 @@
 **/src/geo/ui/tooltip.js
 **/src/geo/ui/zoom-info.js
 **/src/geo/ui/zoom.js
-**/src/torque.js
 **/src/ui/common/dialog.js
 **/src/ui/common/dropdown.js
 **/src/ui/common/fullscreen.js
@@ -141,7 +139,6 @@
 **/test/spec/api/sql.spec.js
 **/test/spec/cartodb.spec.js
 **/test/spec/core/decorators.spec.js
-**/test/spec/core/format.js
 **/test/spec/core/log/error.spec.js
 **/test/spec/core/log.spec.js
 **/test/spec/core/model.spec.js

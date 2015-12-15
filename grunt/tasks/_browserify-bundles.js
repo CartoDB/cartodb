@@ -8,6 +8,17 @@ var torqueSpecs = [
   'test/spec/geo/ui/layer-selector-torque.spec.js'
 ];
 
+// modules that will be exporte from default cartodb bundle, to be used in e.g. cartodb.mod.torque bundle
+var sharedModules = [
+  'backbone',
+  'cdb',
+  'cdb/core/util',
+  'cdb/geo/cartodb-logo',
+  'jquery',
+  'leaflet',
+  'underscore'
+]
+
 module.exports = {
 
   'src-specs': {
@@ -31,26 +42,11 @@ module.exports = {
     dest: '<%= config.tmp %>/src-specs.js',
   },
 
-  'torque': {
-    src: 'src/torque.js',
-    dest: '<%= config.dist %>/cartodb.mod.torque.uncompressed.js',
-    options: {
-      external: ['jquery'], // will be required from cartodb bundle
-    }
-  },
-  'torque-specs': {
-    src: ['test/spec/torque.spec.js']
-      .concat(torqueSpecs),
-    dest: '<%= config.tmp %>/torque-specs.js',
-  },
-
   cartodb: {
     src: 'src/cartodb.js',
     dest: '<%= config.dist %>/cartodb.uncompressed.js',
     options: {
-      browserifyOptions: {
-        standalone: 'cartodb'
-      }
+      require: sharedModules
     }
   },
   'cartodb-specs': {
@@ -59,5 +55,21 @@ module.exports = {
       'test/spec/cartodb.spec.js',
     ],
     dest: '<%= config.tmp %>/cartodb-specs.js',
+  },
+
+  'cartodb.mod.torque': {
+    src: 'src/cartodb.mod.torque.js',
+    dest: '<%= config.dist %>/cartodb.mod.torque.uncompressed.js',
+    options: {
+      external: sharedModules
+    }
+  },
+  'cartodb.mod.torque-specs': {
+    src: ['test/spec/cartodb.mod.torque.spec.js']
+      .concat(torqueSpecs),
+    dest: '<%= config.tmp %>/cartodb.mod.torque-specs.js',
+    options: {
+      external: sharedModules
+    }
   }
 };

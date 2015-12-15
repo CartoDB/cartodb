@@ -1,4 +1,4 @@
-var torque = require('cdb/torque');
+var torque = require('cdb/cartodb.mod.torque');
 require('leaflet').noConflict();
 
 describe('torque', function() {
@@ -7,10 +7,10 @@ describe('torque', function() {
     expect(window.torque).toBe(torque);
   });
 
-  it('should modify the window.cdb object', function() {
-    expect(window.cdb).toEqual(jasmine.any(Object));
+  it('should modify the window.cartodb object', function() {
+    expect(window.cartodb).toEqual(jasmine.any(Object));
 
-    var cdb = window.cdb;
+    var cdb = window.cartodb;
     expect(cdb.geo).toEqual(jasmine.any(Object));
 
     expect(cdb.geo.GMapsTorqueLayerView).toEqual(jasmine.any(Function));

@@ -318,34 +318,9 @@ var Infowindow = View.extend({
     return false;
   },
 
-  /**
-   *  Attempts to load the cover URL and show it
-   */
-  _loadCover: function() {
-
-    if (!this._containsCover()) return;
-
-
-    var self = this;
-
-    var $cover = this.$(".js-cover");
+  _loadImageHook: function(url) {
     var $hook = this.$(".js-hook");
-    var $img = $cover.find("img");
-    var url = this._getCoverURL();
-
-    if ($img.length > 0) {
-      // If there is alreay an image in the template, we should
-      // leave it as it is.
-      return false;
-    }
-
-    if (!this._isValidURL(url)) {
-      log.info("Header image url not valid");
-      return;
-    }
-
-    $img = $("<img class='CDB-infowindow-media-item' />").attr("src", url);
-    $cover.append($img);
+    var $cover = this.$(".js-cover");
 
     if ($hook) {
       $hookImage = $("<img />").attr("src", url);
@@ -364,6 +339,37 @@ var Infowindow = View.extend({
         });
       });
     }
+  },
+
+  /**
+   *  Attempts to load the cover URL and show it
+   */
+  _loadCover: function() {
+
+    if (!this._containsCover()) {
+      return;
+    }
+
+    var self = this;
+
+    var $cover = this.$(".js-cover");
+    var $img = $cover.find("img");
+    var url = this._getCoverURL();
+
+    if ($img.length > 0) {
+      // If there is alreay an image in the template, we should
+      // leave it as it is.
+      return false;
+    }
+
+    if (!this._isValidURL(url)) {
+      log.info("Header image url not valid");
+      return;
+    }
+
+    $img = $("<img class='CDB-infowindow-media-item' />").attr("src", url);
+
+    $cover.append($img);
 
     $img.load(function(){
       var w = $img.width();
@@ -384,9 +390,12 @@ var Infowindow = View.extend({
           styles = { height: coverHeight };
         }
       }
+      
       $img.css(styles);
       $cover.css({ height: h - self.options.hookHeight });
       $img.fadeIn(self.options.imageTransitionSpeed);
+
+      self._loadImageHook(url);
     })
     .error();
   },

@@ -39,42 +39,42 @@ describe('geo/ui/infowindow', function() {
     expect(view.render).toHaveBeenCalled()
   });
 
-  it("should change width of the popup when width attribute changes", function() {
+  it("should change width of the infowindow when width attribute changes", function() {
     spyOn(view, 'render');
     view.model.set({
-      'template': '<div class="cartodb-popup"></div>',
+      'template': '<div class="js-infowindow"></div>',
       'width': 100
     });
-    expect(view.$('.cartodb-popup').css('width')).toBe('100px');
+    expect(view.$('.js-infowindow').css('width')).toBe('100px');
   });
 
-  it("shouldn't change width of the popup when width attribute is undefined", function() {
+  it("shouldn't change width of the infowindow when width attribute is undefined", function() {
     spyOn(view, 'render');
     view.model.set({
-      'template': '<div class="cartodb-popup v2"></div>'
+      'template': '<div class="js-infowindow"></div>'
     })
     view.model.unset('width');
-    expect(view.$('.cartodb-popup').css('width')).toBe(undefined);
+    expect(view.$('.js-infowindow').css('width')).toBe(undefined);
   });
 
-  it("should change maxHeight of the popup when maxHeight attribute changes", function() {
+  it("should change maxHeight of the infowindow when maxHeight attribute changes", function() {
     spyOn(view, 'render');
     view.model.set({
-      'template': '<div class="cartodb-popup"><div class="cartodb-popup-content"></div></div>',
+      'template': '<div class="js-infowindow"><div class="js-content"></div></div>',
       'maxHeight': 100
     });
-    expect(view.$('.cartodb-popup-content').css('max-height')).toBe('100px');
+    expect(view.$('.js-content').css('max-height')).toBe('100px');
   });
 
   it("should render without alternative_name set", function() {
-    var template = '<div class="cartodb-popup">\
+    var template = '<div class="js-infowindow">\
       <a href="#close" class="cartodb-popup-close-button close">x</a>\
        <div class="cartodb-popup-content-wrapper">\
-         <div class="cartodb-popup-content">\
+         <div class="js-content">\
            <ul id="mylist"></ul>\
          </div>\
        </div>\
-       <div class="cartodb-popup-tip-container"></div>\
+       <div class="hook"></div>\
     </div>';
 
     model.unset('alternative_names');
@@ -378,30 +378,24 @@ describe('geo/ui/infowindow', function() {
     });
 
     it("should detect if the infowindow has a cover", function() {
-      model.set('template', '<div class="cartodb-popup header" data-cover="true"><div class="cover"></div></div>');
+      model.set('template', '<div class="js-infowindow" data-cover="true"><div class="js-cover"></div></div>');
       expect(view._containsCover()).toEqual(true);
     });
 
     it("should append the image", function() {
-      model.set('template', '<div class="cartodb-popup header" data-cover="true"><div class="cover"></div></div>');
+      model.set('template', '<div class="js-infowindow" data-cover="true"><div class="js-cover"></div></div>');
       expect(view.$el.find("img").length).toEqual(1);
     });
 
     it("if the image is invalid it shouldn't append it", function() {
       model.set("content", { fields: fieldsWithoutURL });
-      model.set('template', '<div class="cartodb-popup header" data-cover="true"><div class="cover"></div></div>');
+      model.set('template', '<div class="js-infowindow header" data-cover="true"><div class="js-cover"></div></div>');
       expect(view.$el.find("img").length).toEqual(0);
     });
 
-    // it("if the them has a cover and the image is invalid it should hide it", function() {
-    //   model.set("content", { fields: fieldsWithoutURL });
-    //   model.set('template', '<div class="cartodb-popup header" data-cover="true"><div class="cover"><img src="{{ wadus }}"/></div></div>');
-    //   expect(view.$el.find("img").css('display')).toEqual('none');
-    // });
-
     it("if the theme doesn't have cover don't append the image", function() {
       model.set("content", { fields: fields });
-      model.set('template', '<div class="cover"></div>');
+      model.set('template', '<div class="js-cover"></div>');
       expect(view.$el.find("img").length).toEqual(0);
     });
 

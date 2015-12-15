@@ -28,7 +28,7 @@
   "devDependencies": {
     "backbone": "1.2.3",
     "browserify": "11.2.0",
-    "cartodb.js": "CartoDB/cartodb.js#fbf5d43",
+    "cartodb.js": "CartoDB/cartodb.js#a1c5231",
     "leaflet": "0.7.3",
     "d3": "3.5.8",
     "grunt": "0.4.5",

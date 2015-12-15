@@ -23,7 +23,7 @@ module Carto
         users = users_query.all
 
         render_jsonp({ users: users.map { |u|
-          Carto::Api::UserPresenter.new(u).to_poro
+          Carto::Api::UserPresenter.new(u, current_user: current_user).to_poro
         }, total_user_entries: total_user_entries, total_entries: users.count })
       end
     end

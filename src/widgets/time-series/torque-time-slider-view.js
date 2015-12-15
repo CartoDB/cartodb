@@ -1,11 +1,10 @@
-var d3 = cdb.d3
-var Model = cdb.core.Model
-var View = cdb.core.View
+var d3 = require('d3')
+var cdb = require('cartodb.js')
 
 /**
  * Time-slider, expected to be used in a histogram view
  */
-module.exports = View.extend({
+module.exports = cdb.core.View.extend({
   defaults: {
     width: 4,
     height: 8
@@ -18,7 +17,7 @@ module.exports = View.extend({
 
     this._chartView = this.options.chartView
     this._torqueLayerModel = this.options.torqueLayerModel
-    this.viewModel = new Model()
+    this.viewModel = new cdb.core.Model()
 
     this._torqueLayerModel.bind('change:step', this._onChangeStep, this)
     this._torqueLayerModel.bind('change:steps', this._onChangeSteps, this)
@@ -61,7 +60,7 @@ module.exports = View.extend({
     if (this.timeSlider) {
       this.timeSlider.remove()
     }
-    View.prototype.clean.call(this)
+    cdb.core.View.prototype.clean.call(this)
   },
 
   _onDragStart: function () {

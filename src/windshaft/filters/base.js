@@ -1,6 +1,6 @@
-var Model = cdb.core.Model
+var cdb = require('cartodb.js')
 
-module.exports = Model.extend({
+module.exports = cdb.core.Model.extend({
   isEmpty: function () {
     throw new Error('Filters must implement the .isEmpty method')
   },

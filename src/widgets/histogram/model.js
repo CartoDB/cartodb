@@ -1,6 +1,6 @@
-var _ = cdb._
-var Backbone = cdb.Backbone
-var WidgetModel = require('../widget_model')
+var _ = require('underscore')
+var Backbone = require('backbone')
+var WidgetModel = require('../widget-model')
 
 module.exports = WidgetModel.extend({
   url: function () {

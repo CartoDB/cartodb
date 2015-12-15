@@ -1,11 +1,10 @@
-var $ = cdb.$
-var _ = cdb._
-var d3 = cdb.d3
-var formatter = cdb.core.format
-var Model = cdb.core.Model
-var View = cdb.core.View
+var $ = require('jquery')
+var _ = require('underscore')
+var d3 = require('d3')
+var cdb = require('cartodb.js')
+var formatter = require('../../formatter')
 
-module.exports = View.extend({
+module.exports = cdb.core.View.extend({
   defaults: {
     // render the chart once the width is set as default, provide false value for this prop to disable this behavior
     // e.g. for "mini" histogram behavior
@@ -67,7 +66,7 @@ module.exports = View.extend({
 
   clean: function () {
     $(window).unbind('resize', this._onWindowResize)
-    View.prototype.clean.call(this)
+    cdb.core.View.prototype.clean.call(this)
   },
 
   replaceData: function (data) {
@@ -434,7 +433,7 @@ module.exports = View.extend({
   },
 
   _setupModel: function () {
-    this.model = new Model({
+    this.model = new cdb.core.Model({
       showLabels: true,
       data: this.options.data,
       height: this.options.height,

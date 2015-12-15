@@ -1,7 +1,7 @@
-var _ = cdb._
-var Backbone = cdb.Backbone
+var _ = require('underscore')
+var Backbone = require('backbone')
 var WindshaftFiltersCollection = require('./filters/collection')
-var WindshaftFiltersBoundingBoxFilter = require('./filters/bounding_box')
+var WindshaftFiltersBoundingBoxFilter = require('./filters/bounding-box')
 var WindshaftDashboardInstance = require('./dashboard-instance')
 
 var WindshaftDashboard = function (options) {

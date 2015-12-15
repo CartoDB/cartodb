@@ -1,13 +1,13 @@
-var d3 = cdb.d3
-var View = cdb.core.View
+var d3 = require('d3')
+var cdb = require('cartodb.js')
 var template = require('./torque-time-info.tpl')
 
 /**
  * View rendering the current step time
  *
- * Model is expected to be a torque layer model
+ * this.model is expected to be a torque layer model
  */
-module.exports = View.extend({
+module.exports = cdb.core.View.extend({
   className: 'CDB-Widget-timeSeriesTimeInfo',
 
   initialize: function () {

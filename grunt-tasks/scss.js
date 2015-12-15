@@ -8,6 +8,7 @@ module.exports = {
       expand: true,
       src: [
         'node_modules/perfect-scrollbar/**/*.scss',
+        'node_modules/cartodb.js/themes/**/*.scss',
         'themes/scss/**/*.scss'
       ],
       dest: '.tmp/scss',

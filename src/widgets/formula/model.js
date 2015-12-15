@@ -1,5 +1,5 @@
-var _ = cdb._
-var WidgetModel = require('../widget_model')
+var _ = require('underscore')
+var WidgetModel = require('../widget-model')
 
 module.exports = WidgetModel.extend({
   defaults: _.extend(

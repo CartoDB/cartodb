@@ -1,7 +1,6 @@
-var _ = cdb._
-var Model = cdb.core.Model
-var View = cdb.core.View
-var WidgetModel = require('app/widgets/widget_model')
+var _ = require('underscore')
+var cdb = require('cartodb.js')
+var WidgetModel = require('app/widgets/widget-model')
 var WidgetView = require('app/widgets/widget-view')
 
 describe('geo/ui/widgets/widget-view', function () {
@@ -13,11 +12,11 @@ describe('geo/ui/widgets/widget-view', function () {
         columns: ['cartodb_id', 'description']
       }
     }, {
-      layer: new Model()
+      layer: new cdb.core.Model()
     })
     this.view = new WidgetView({
       model: this.model,
-      contentView: new View()
+      contentView: new cdb.core.View()
     })
     this.view.render()
   })

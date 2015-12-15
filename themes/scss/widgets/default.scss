@@ -51,6 +51,10 @@
 .CDB-Widget-content--noSidesMargin {
   margin-right: 0;
   margin-left: 0;
+  .CDB-Widget-listItem--fake {
+    margin-right: $sMargin-section;
+    margin-left: $sMargin-section;
+  }
 }
 .CDB-Widget-content--histogram {
   margin-top: 0;

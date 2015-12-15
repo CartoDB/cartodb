@@ -1,12 +1,12 @@
-var View = cdb.core.View
-var d3 = cdb.d3
+var cdb = require('cartodb.js')
+var d3 = require('d3')
 var template = require('./torque-cumulative-render-info.tpl')
 
 /**
  * View for to display info about the cumulative render data, e.g. the time range that's being displayed
  * this.model is expected to be a torqueLayer model
  */
-module.exports = View.extend({
+module.exports = cdb.core.View.extend({
   initialize: function () {
     this._torqueLayerModel = this.options.torqueLayerModel
 

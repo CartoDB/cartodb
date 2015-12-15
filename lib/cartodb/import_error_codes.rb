@@ -64,11 +64,6 @@ module CartoDB
       what_about: "There was an error connecting to Twitter service to retrieve your tweets. The server might be temporally unavaliable, please try again later.",
       source: ERROR_SOURCE_EXTERNAL
     },
-    1010 => {
-      title: 'Private Google Spreadsheet',
-      what_about: "This spreadsheet seems to be private. Please check in Google Spreadsheet sharing options that the file is public or accessible for those who know the link.",
-      source: ERROR_SOURCE_USER
-    },
     1011 => {
       title: 'Error retrieving data from datasource',
       what_about: "There was an error retrieving data from the datasource. Check that the file/data is still present.",

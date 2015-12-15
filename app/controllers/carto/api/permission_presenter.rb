@@ -4,9 +4,12 @@ module Carto
   module Api
     class PermissionPresenter
 
-      def initialize(permission)
+      # options
+      # - current_viewer
+      def initialize(permission, options = {})
         @permission = permission
         @presenter_cache = Carto::Api::PresenterCache.new
+        @options = options
       end
 
       def with_presenter_cache(presenter_cache)
@@ -15,8 +18,11 @@ module Carto
       end
 
       def to_poro
+        return to_public_poro unless !@options[:current_viewer].nil? && @permission.user_has_read_permission?(@options[:current_viewer])
+
         owner = @presenter_cache.get_poro(@permission.owner) do
-          Carto::Api::UserPresenter.new(@permission.owner, { fetch_groups: false } )
+          Carto::Api::UserPresenter.new(@permission.owner, fetch_groups: false,
+                                                           current_viewer: @options[:current_viewer])
         end
 
         {
@@ -35,6 +41,18 @@ module Carto
           },
           created_at: @permission.created_at,
           updated_at: @permission.updated_at
+        }
+      end
+
+      def to_public_poro
+        owner = @presenter_cache.get_poro(@permission.owner) do
+          Carto::Api::UserPresenter.new(@permission.owner, fetch_groups: false,
+                                                           current_viewer: @options[:current_viewer])
+        end
+
+        {
+          id:         @permission.id,
+          owner:      owner
         }
       end
 

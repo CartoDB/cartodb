@@ -41,6 +41,10 @@ class Carto::Permission < ActiveRecord::Base
     SORTED_ACCESSES.index(permission_for_user(user)) <= SORTED_ACCESSES.index(permission_type)
   end
 
+  def is_owner_user?(user)
+    self.owner_id == user.id
+  end
+
   private
 
   def permission_for_user(user)
@@ -59,10 +63,6 @@ class Carto::Permission < ActiveRecord::Base
       accesses.include?(access)
     }
     SORTED_ACCESSES[index]
-  end
-
-  def is_owner_user?(user)
-    self.owner_id == user.id
   end
 
   def acl_entries_for_user(user)

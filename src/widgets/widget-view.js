@@ -1,6 +1,6 @@
 var View = cdb.core.View
-var WidgetLoaderView = require('./standard/widget_loader_view')
-var WidgetErrorView = require('./standard/widget_error_view')
+var WidgetLoaderView = require('./standard/widget-loader-view')
+var WidgetErrorView = require('./standard/widget-error-view')
 
 /**
  * Default widget view

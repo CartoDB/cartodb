@@ -1,7 +1,7 @@
-var WidgetModel = require('app/widgets/widget_model')
-var WidgetErrorView = require('app/widgets/standard/widget_error_view')
+var WidgetModel = require('app/widgets/widget-model')
+var WidgetErrorView = require('app/widgets/standard/widget-error-view')
 
-describe('geo/ui/widgets/standard/widget_error_view', function () {
+describe('geo/ui/widgets/standard/widget-error-view', function () {
   beforeEach(function () {
     jasmine.clock().install()
 

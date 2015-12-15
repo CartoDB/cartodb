@@ -1,7 +1,7 @@
 var View = cdb.core.View
 var formatter = cdb.core.format
-var clickableTemplate = require('./item_clickable_template.tpl')
-var unclickableTemplate = require('./item_unclickable_template.tpl')
+var clickableTemplate = require('./item-clickable-template.tpl')
+var unclickableTemplate = require('./item-unclickable-template.tpl')
 
 /**
  * Category list item view

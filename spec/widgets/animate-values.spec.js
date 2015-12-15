@@ -1,9 +1,9 @@
 var $ = cdb.$
 var _ = cdb._
 var Model = cdb.core.Model
-var AnimateValues = require('app/widgets/animate_values')
+var AnimateValues = require('app/widgets/animate-values')
 
-describe('geo/ui/widgets/animate_values', function () {
+describe('geo/ui/widgets/animate-values', function () {
   beforeEach(function () {
     this.$el = $('<div><div class="js-value">123</div></div>')
 

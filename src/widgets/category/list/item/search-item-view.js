@@ -1,6 +1,6 @@
 var View = cdb.core.View
 var formatter = cdb.core.format
-var template = require('./search_item_clickable_template.tpl')
+var template = require('./search-item-clickable-template.tpl')
 
 /**
  * Category search list view

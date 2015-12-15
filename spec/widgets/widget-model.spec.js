@@ -1,6 +1,6 @@
-var WidgetModel = require('app/widgets/widget_model')
+var WidgetModel = require('app/widgets/widget-model')
 
-describe('geo/ui/widgets/widget_model', function () {
+describe('geo/ui/widgets/widget-model', function () {
   beforeEach(function () {
     this.model = new WidgetModel()
   })

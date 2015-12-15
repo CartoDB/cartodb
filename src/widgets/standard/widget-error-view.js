@@ -1,5 +1,5 @@
 var View = cdb.core.View
-var template = require('./widget_error_template.tpl')
+var template = require('./widget-error-template.tpl')
 
 /**
  *  Default widget error view:

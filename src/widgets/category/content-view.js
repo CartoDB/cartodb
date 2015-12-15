@@ -1,13 +1,13 @@
-var WidgetContent = require('../standard/widget_content_view')
-var SearchTitleView = require('./title/search_title_view')
-var CategoryOptionsView = require('./options/options_view')
-var CategoryItemsView = require('./list/items_view')
-var WidgetViewModel = require('../widget_content_model')
-var CategoryStatsView = require('./stats/stats_view')
-var CategoryPaginatorView = require('./paginator/paginator_view')
-var SearchCategoryItemsView = require('./list/search_items_view')
-var SearchCategoryPaginatorView = require('./paginator/search_paginator_view')
-var template = require('./content_template.tpl')
+var WidgetContent = require('../standard/widget-content-view')
+var SearchTitleView = require('./title/search-title-view')
+var CategoryOptionsView = require('./options/options-view')
+var CategoryItemsView = require('./list/items-view')
+var WidgetViewModel = require('../widget-content-model')
+var CategoryStatsView = require('./stats/stats-view')
+var CategoryPaginatorView = require('./paginator/paginator-view')
+var SearchCategoryItemsView = require('./list/search-items-view')
+var SearchCategoryPaginatorView = require('./paginator/search-paginator-view')
+var template = require('./content-template.tpl')
 
 /**
  * Content view for category widget

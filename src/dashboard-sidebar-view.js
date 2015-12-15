@@ -3,10 +3,10 @@ var $ = cdb.$
 var Ps = require('perfect-scrollbar')
 var View = cdb.core.View
 var Model = cdb.core.Model
-var CategoryContentView = require('./widgets/category/content_view')
-var FormulaContentView = require('./widgets/formula/content_view')
+var CategoryContentView = require('./widgets/category/content-view')
+var FormulaContentView = require('./widgets/formula/content-view')
 var HistogramContentView = require('./widgets/histogram/content-view')
-var ListContentView = require('./widgets/list/content_view')
+var ListContentView = require('./widgets/list/content-view')
 var WidgetViewFactory = require('./widgets/widget-view-factory')
 var template = require('./dashboard-sidebar.tpl')
 

@@ -1,7 +1,7 @@
 var _ = cdb._
-var CategoryColors = require('app/widgets/category/models/category_colors.js')
+var CategoryColors = require('app/widgets/category/models/category-colors.js')
 
-describe('widgets/category/category_colors', function () {
+describe('widgets/category/category-colors', function () {
   beforeEach(function () {
     this.model = new CategoryColors()
   })

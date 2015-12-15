@@ -1,5 +1,5 @@
 var View = cdb.core.View
-var WidgetListItemView = require('./item_view')
+var WidgetListItemView = require('./item-view')
 
 module.exports = View.extend({
   className: 'CDB-Widget-list js-list',

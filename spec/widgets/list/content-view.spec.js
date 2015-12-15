@@ -1,8 +1,8 @@
 var _ = cdb._
 var WidgetListModel = require('app/widgets/list/model')
-var WidgetListContent = require('app/widgets/list/content_view')
+var WidgetListContent = require('app/widgets/list/content-view')
 
-describe('geo/ui/widgets/list/content_view', function () {
+describe('geo/ui/widgets/list/content-view', function () {
   beforeEach(function () {
     this.model = new WidgetListModel({
       id: 'widget_3',

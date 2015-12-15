@@ -1,8 +1,8 @@
 var _ = cdb._
 var log = cdb.log
 var View = cdb.core.View
-var contentTemplate = require('./widget_content_template.tpl')
-var placeholderTemplate = require('./widget_placeholder_template.tpl')
+var contentTemplate = require('./widget-content-template.tpl')
+var placeholderTemplate = require('./widget-placeholder-template.tpl')
 
 /**
  * Default widget content view:

@@ -42,9 +42,9 @@ var TorqueLayer = MapLayer.extend({
     torqueLayerView.bind('change:time', function(changes) {
       this._setWithoutReloadingTiles('time', changes.time);
       this._setWithoutReloadingTiles('step', changes.step);
-    }, this);
-    torqueLayerView.bind('change:stepsRange', function() {
-      this._setWithoutReloadingTiles('stepsRange', torqueLayerView.getStepsRange());
+      if (_.isNumber(changes.start) && _.isNumber(changes.end)) {
+        this._setWithoutReloadingTiles('renderRange', { start: changes.start, end: changes.end })
+      }
     }, this);
 
     // Set initial values, but don't change
@@ -53,14 +53,19 @@ var TorqueLayer = MapLayer.extend({
       timeBounds: torqueLayerView.getTimeBounds(),
       time: torqueLayerView.getTime(),
       step: torqueLayerView.getStep(),
-      steps: torqueLayerView.options.steps,
-      stepsRange: torqueLayerView.getStepsRange()
+      steps: torqueLayerView.options.steps
     }, {
       silent: true
     });
 
     // Binds methods from this model to any views that are initialized
-    var proxyMethods = ['play', 'pause', 'setStep', 'setStepsRange'];
+    var proxyMethods = [
+      'play',
+      'pause',
+      'setStep',
+      'renderRange',
+      'resetRenderRange'
+    ];
     proxyMethods.forEach(function(name) {
       var method = torqueLayerView[name]
       if (method) {
@@ -93,8 +98,12 @@ var TorqueLayer = MapLayer.extend({
     this.trigger.apply(this, ['setStep'].concat(Array.prototype.slice.call(arguments)));
   },
 
-  setStepsRange: function() {
-    this.trigger.apply(this, ['setStepsRange'].concat(Array.prototype.slice.call(arguments)));
+  renderRange: function(start, end) {
+    this.trigger.apply(this, ['renderRange'].concat(Array.prototype.slice.call(arguments)));
+  },
+
+  resetRenderRange: function() {
+    this.trigger.apply(this, ['resetRenderRange'].concat(Array.prototype.slice.call(arguments)));
   },
 
   isEqual: function(other) {

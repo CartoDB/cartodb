@@ -34,7 +34,7 @@
     "jquery": "2.1.4",
     "leaflet": "0.7.3",
     "mustache": "1.1.0",
-    "torque.js": "2.14.0",
+    "torque.js": "2.15.0",
     "underscore": "1.8.3"
   },
   "devDependencies": {

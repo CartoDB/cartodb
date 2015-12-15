@@ -14,7 +14,7 @@
 .OrganizationUser-quotaProgress {
   display: block;
   width: 300px;
-  @include progress-bar(12px, 20px, false, 6px);
+  @include progress-bar(10px, 20px, false, 6px);
 }
 .OrganizationUser-quotaBar {
   display:block;
@@ -50,6 +50,13 @@
   font-weight: $sFontWeight-lighter;
   display: inline-block;
   line-height: 13px;
+}
+.OrganizationUser-quotaInfoInput {
+  width: 50px;
+  height: 32px;
+  padding: 0 5px;
+  text-align: right;
+  box-sizing: border-box;
 }
 .OrganizationUser-quotaInfoLink {
   color: $cTypography-link;

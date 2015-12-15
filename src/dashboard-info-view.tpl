@@ -3,7 +3,7 @@
     <i class="CDB-Icon CDB-Icon-cartofante"></i>
   </div>
   <div class="CDB-Dashboard-infoActions">
-    <button class="CDB-Dashboard-infoActionsLink js-toggle-view-link"></button>
+    <button class="CDB-Dashboard-infoActionsLink CDB-Dashboard-infoActionsLink--mobile js-toggle-view-link"></button>
   </div>
   <div class="CDB-Dashboard-infoTexts CDB-Dashboard-hideMobile">
     <p class="CDB-Dashboard-infoUpdate">UPDATED <%- updatedAt %></p>

@@ -2,7 +2,7 @@ var _ = cdb._
 var $ = cdb.$
 var View = cdb.core.View
 var TooltipView = require('../../widget-tooltip-view')
-var template = require('./search_title_template.tpl')
+var template = require('./search-title-template.tpl')
 
 /**
  *  Show category title or search any category

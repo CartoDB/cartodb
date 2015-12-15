@@ -1,5 +1,5 @@
 var Backbone = cdb.Backbone
-var CategoryItemModel = require('./category_item_model')
+var CategoryItemModel = require('./category-item-model')
 
 /**
  *  Data categories collection

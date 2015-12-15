@@ -1,13 +1,13 @@
 var _ = cdb._
 var formatter = cdb.core.format
-var HistogramTitleView = require('./histogram_title_view')
-var WidgetContent = require('../standard/widget_content_view')
-var WidgetViewModel = require('../widget_content_model')
+var HistogramTitleView = require('./histogram-title-view')
+var WidgetContent = require('../standard/widget-content-view')
+var WidgetViewModel = require('../widget-content-model')
 var HistogramChartView = require('./chart')
 var placeholder = require('./placeholder.tpl')
 var template = require('./content.tpl')
-var AnimateValues = require('../animate_values.js')
-var animationTemplate = require('./animation_template.tpl')
+var AnimateValues = require('../animate-values.js')
+var animationTemplate = require('./animation-template.tpl')
 
 /**
  * Widget content view for a histogram

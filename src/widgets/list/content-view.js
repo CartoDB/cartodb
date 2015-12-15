@@ -1,10 +1,10 @@
 var _ = cdb._
 var format = cdb.core.format
-var WidgetContentView = require('../standard/widget_content_view')
-var WidgetListItemsView = require('./items_view')
-var WidgetListPaginatorView = require('./paginator_view')
-var WidgetListEdgesView = require('./edges_view')
-var template = require('./content_template.tpl')
+var WidgetContentView = require('../standard/widget-content-view')
+var WidgetListItemsView = require('./items-view')
+var WidgetListPaginatorView = require('./paginator-view')
+var WidgetListEdgesView = require('./edges-view')
+var template = require('./content-template.tpl')
 
 /**
  * Default widget content view:

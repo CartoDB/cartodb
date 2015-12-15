@@ -1,9 +1,9 @@
 var _ = cdb._
 var View = cdb.core.View
 var formatter = cdb.core.format
-var template = require('./stats_template.tpl')
-var animationTemplate = require('./cats_template.tpl')
-var AnimateValues = require('../../animate_values')
+var template = require('./stats-template.tpl')
+var animationTemplate = require('./cats-template.tpl')
+var AnimateValues = require('../../animate-values')
 
 /**
  * Category stats info view

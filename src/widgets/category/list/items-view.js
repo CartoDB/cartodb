@@ -1,8 +1,8 @@
 var $ = cdb.$
 var _ = cdb._
 var View = cdb.core.View
-var CategoryItemView = require('./item/item_view')
-var placeholder = require('./items_placeholder_template.tpl')
+var CategoryItemView = require('./item/item-view')
+var placeholder = require('./items-placeholder-template.tpl')
 
 /**
  * Category list view

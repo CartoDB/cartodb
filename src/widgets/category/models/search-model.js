@@ -1,6 +1,6 @@
 var _ = cdb._
 var Model = cdb.core.Model
-var CategoriesCollection = require('./categories_collection')
+var CategoriesCollection = require('./categories-collection')
 
 /**
  * Category search model

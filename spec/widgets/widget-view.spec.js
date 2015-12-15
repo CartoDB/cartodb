@@ -1,7 +1,7 @@
 var _ = cdb._
 var Model = cdb.core.Model
 var View = cdb.core.View
-var WidgetModel = require('app/widgets/widget_model')
+var WidgetModel = require('app/widgets/widget-model')
 var WidgetView = require('app/widgets/widget-view')
 
 describe('geo/ui/widgets/widget-view', function () {

@@ -1,9 +1,9 @@
 var CategoryModel = require('app/widgets/category/model.js')
-var ViewModel = require('app/widgets/widget_content_model.js')
-var StatsView = require('app/widgets/category/stats/stats_view.js')
+var ViewModel = require('app/widgets/widget-content-model.js')
+var StatsView = require('app/widgets/category/stats/stats-view.js')
 var WindshaftFiltersCategory = require('app/windshaft/filters/category')
 
-describe('widgets/category/stats_view', function () {
+describe('widgets/category/stats-view', function () {
   beforeEach(function () {
     this.model = new CategoryModel(null, {
       filter: new WindshaftFiltersCategory()

@@ -1,5 +1,5 @@
 var Backbone = cdb.Backbone
-var WidgetModel = require('../widget_model')
+var WidgetModel = require('../widget-model')
 
 module.exports = WidgetModel.extend({
   options: {

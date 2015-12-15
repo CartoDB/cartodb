@@ -2,12 +2,12 @@ var _ = cdb._
 var formatter = cdb.core.format
 var d3 = cdb.d3
 var $ = cdb.$
-var WidgetContent = require('../standard/widget_content_view')
-var WidgetViewModel = require('../widget_content_model')
+var WidgetContent = require('../standard/widget-content-view')
+var WidgetViewModel = require('../widget-content-model')
 var template = require('./template.tpl')
 var TooltipView = require('../widget-tooltip-view')
-var animationTemplate = require('./animation_template.tpl')
-var AnimateValues = require('../animate_values.js')
+var animationTemplate = require('./animation-template.tpl')
+var AnimateValues = require('../animate-values.js')
 
 /**
  * Default widget content view:

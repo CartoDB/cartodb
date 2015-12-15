@@ -2,7 +2,7 @@ var $ = cdb.$
 var _ = cdb._
 var View = cdb.core.View
 var Model = cdb.core.Model
-var defaultTemplate = require('./paginator_template.tpl')
+var defaultTemplate = require('./paginator-template.tpl')
 
 module.exports = View.extend({
   options: {

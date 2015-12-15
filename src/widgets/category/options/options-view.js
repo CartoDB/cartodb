@@ -1,5 +1,5 @@
 var View = cdb.core.View
-var template = require('./options_template.tpl')
+var template = require('./options-template.tpl')
 
 /**
  * Category filter view

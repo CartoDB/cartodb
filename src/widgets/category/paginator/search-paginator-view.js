@@ -1,5 +1,5 @@
-var PaginatorView = require('./paginator_view')
-var searchTemplate = require('./search_paginator_template.tpl')
+var PaginatorView = require('./paginator-view')
+var searchTemplate = require('./search-paginator-template.tpl')
 
 module.exports = PaginatorView.extend({
   className: 'CDB-Widget-nav is-hidden CDB-Widget-contentSpaced',

@@ -1,10 +1,10 @@
 var _ = cdb._
-var CategoryColors = require('./models/category_colors')
-var WidgetModel = require('../widget_model')
-var WidgetSearchModel = require('./models/search_model')
-var CategoryModelRange = require('./models/category_model_range')
-var CategoriesCollection = require('./models/categories_collection')
-var LockedCatsCollection = require('./models/locked_categories_collection')
+var CategoryColors = require('./models/category-colors')
+var WidgetModel = require('../widget-model')
+var WidgetSearchModel = require('./models/search-model')
+var CategoryModelRange = require('./models/category-model-range')
+var CategoriesCollection = require('./models/categories-collection')
+var LockedCatsCollection = require('./models/locked-categories-collection')
 
 /**
  *  Category widget model

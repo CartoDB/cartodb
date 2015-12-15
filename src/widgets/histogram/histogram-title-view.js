@@ -1,7 +1,7 @@
 var $ = cdb.$
 var View = cdb.core.View
 var TooltipView = require('../widget-tooltip-view')
-var template = require('./histogram_title_template.tpl')
+var template = require('./histogram-title-template.tpl')
 
 /**
  *  Show title + show if histogram sizes are applied or not

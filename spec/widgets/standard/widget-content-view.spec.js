@@ -1,7 +1,7 @@
-var WidgetModel = require('app/widgets/widget_model')
-var WidgetContentView = require('app/widgets/standard/widget_content_view')
+var WidgetModel = require('app/widgets/widget-model')
+var WidgetContentView = require('app/widgets/standard/widget-content-view')
 
-describe('geo/ui/widgets/standard/widget_content_view', function () {
+describe('geo/ui/widgets/standard/widget-content-view', function () {
   beforeEach(function () {
     this.model = new WidgetModel({
       id: 'widget_3',

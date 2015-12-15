@@ -1,7 +1,7 @@
 var $ = cdb.$
-var CategoryItemsView = require('./items_view')
-var WidgetSearchCategoryItemView = require('./item/search_item_view')
-var placeholder = require('./search_items_no_results_template.tpl')
+var CategoryItemsView = require('./items-view')
+var WidgetSearchCategoryItemView = require('./item/search-item-view')
+var placeholder = require('./search-items-no-results-template.tpl')
 
 /**
  * Category list view

@@ -1,4 +1,4 @@
-var $ = cdb.$
+var $ = require('jquery')
 var CategoryItemsView = require('./items-view')
 var WidgetSearchCategoryItemView = require('./item/search-item-view')
 var placeholder = require('./search-items-no-results-template.tpl')

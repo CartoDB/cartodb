@@ -1,5 +1,5 @@
-var _ = cdb._
-var formatter = cdb.core.format
+var _ = require('underscore')
+var formatter = require('../../formatter')
 var HistogramTitleView = require('./histogram-title-view')
 var WidgetContent = require('../standard/widget-content-view')
 var WidgetViewModel = require('../widget-content-model')

@@ -1,5 +1,5 @@
-var $ = cdb.$
-var View = cdb.core.View
+var $ = require('jquery')
+var cdb = require('cartodb.js')
 var HistogramChartView = require('../histogram/chart')
 var TorqueTimeSliderView = require('./torque-time-slider-view')
 
@@ -8,7 +8,7 @@ var TorqueTimeSliderView = require('./torque-time-slider-view')
  * Extends the common histogram chart view with time-control
  * this.model is a histogram model
  */
-module.exports = View.extend({
+module.exports = cdb.core.View.extend({
   className: 'CDB-Widget-content CDB-Widget-content--timeSeries',
 
   // TODO could be calculated from element styles instead of duplicated numbers here?

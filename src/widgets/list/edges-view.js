@@ -1,12 +1,12 @@
-var _ = cdb._
-var View = cdb.core.View
+var _ = require('underscore')
+var cdb = require('cartodb.js')
 
 /**
  *  List edges view:
  *
  *  - It shows the borders and the shadows, if needed.
  */
-module.exports = View.extend({
+module.exports = cdb.core.View.extend({
   _TEMPLATE: ' ' +
     '<div class="CDB-Widget-listEdge CDB-Widget-listEdge--top">' +
     '<div class="CDB-Widget-listEdgeShadow js-topShadow"></div>' +
@@ -50,7 +50,7 @@ module.exports = View.extend({
 
   clean: function () {
     this._unbindScroll()
-    View.prototype.clean.call(this)
+    cdb.core.View.prototype.clean.call(this)
   }
 
 })

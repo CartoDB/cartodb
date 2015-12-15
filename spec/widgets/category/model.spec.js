@@ -1,4 +1,4 @@
-var _ = cdb._
+var _ = require('underscore')
 var CategoryModel = require('app/widgets/category/model.js')
 var WindshaftFiltersCategory = require('app/windshaft/filters/category')
 

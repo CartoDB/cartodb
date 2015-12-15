@@ -363,10 +363,10 @@ module CartoDB
         self.log_trace      = importer.runner_log_trace
         log.append     "*** Runner log: #{self.log_trace} \n***" unless self.log_trace.nil?
         self.state          = STATE_FAILURE
-        self.error_code     = importer.error_code
+        self.error_code     = importer.error_code.blank? ? 9999 : importer.error_code
         self.error_message  = importer.error_message
         # Try to fill empty messages with the list
-        if self.error_message == '' && !self.error_code.nil?
+        if self.error_message.blank? && !self.error_code.nil?
           default_message = CartoDB::IMPORTER_ERROR_CODES.fetch(self.error_code, {})
           self.error_message = default_message.fetch(:title, '')
         end

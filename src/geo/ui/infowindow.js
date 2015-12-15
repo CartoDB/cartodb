@@ -1,5 +1,6 @@
 var _ = require('underscore');
 var $ = require('jquery');
+var ClipPath = require('clip-path-polygon');
 var Ps = require('perfect-scrollbar');
 var log = require('cdb.log');
 var templates = require('cdb.templates');
@@ -20,6 +21,11 @@ var util = require('../../core/util');
  */
 
 var Infowindow = View.extend({
+
+  options: {
+    imageTransitionSpeed: 300,
+    hookHeight: 16
+  },
 
   className: "cartodb-infowindow",
 
@@ -75,6 +81,7 @@ var Infowindow = View.extend({
       var fields = _.map(this.model.attributes.content.fields, function(field){
         return _.clone(field);
       });
+
       var data = this.model.get('content') ? this.model.get('content').data : {};
 
       // If a custom template is not applied, let's sanitized
@@ -108,8 +115,7 @@ var Infowindow = View.extend({
       // Set width and max-height from the model only
       // If there is no width set, we don't force our infowindow
       if (this.model.get('width')) {
-        var padding = 48;
-        this.$('.js-content').css('width', (this.model.get('width') - padding) + 'px');
+        this.$('.js-infowindow').css('width', this.model.get('width') + 'px');
       }
 
       if (this.model.get('maxHeight')) {
@@ -161,6 +167,8 @@ var Infowindow = View.extend({
   },
 
   _renderScroll: function() {
+    if (this.$(".has-scroll").length === 0) return;
+
     Ps.initialize(this.el.querySelector('.js-content'), {
       wheelSpeed: 2,
       wheelPropagation: true,
@@ -271,7 +279,7 @@ var Infowindow = View.extend({
 
     // Is it the value a link?
     if (this._isValidURL(attr.value)) {
-      new_value = "<a href='" + attr.value + "' target='_blank'>" + new_value + "</a>";
+      new_value = "<a href='" + attr.value + "' target='_blank' class='CDB-infowindow-link'>" + new_value + "</a>";
     }
 
     // If it is index 0, not any field type, header image template type... don't cut off the text or add any link!!
@@ -294,7 +302,7 @@ var Infowindow = View.extend({
    *  Does header contain cover?
    */
   _containsCover: function() {
-    return this.$el.find(".cartodb-popup.header").attr("data-cover") ? true : false;
+    return this.$el.find(".js-infowindow").attr("data-cover") ? true : false;
   },
 
   /**
@@ -317,8 +325,11 @@ var Infowindow = View.extend({
 
     if (!this._containsCover()) return;
 
+
     var self = this;
-    var $cover = this.$(".cover");
+
+    var $cover = this.$(".js-cover");
+    var $hook = this.$(".js-hook");
     var $img = $cover.find("img");
     var url = this._getCoverURL();
 
@@ -333,36 +344,49 @@ var Infowindow = View.extend({
       return;
     }
 
-    // create the image
-    $img = $("<img />").attr("src", url);
+    $img = $("<img class='CDB-infowindow-media-item' />").attr("src", url);
     $cover.append($img);
 
+    $hookImage = $("<img />").attr("src", url);
+    $hook.append($hookImage);
+
+    var hookPoints = [[0, 0], [0, 100], [100, 0]];
+
+    $hook.clipPath(hookPoints, {
+      isPercentage: true
+    });
+
     $img.load(function(){
-      var w  = $img.width();
-      var h  = $img.height();
+      var w = $img.width();
+      var h = $img.height();
+
       var coverWidth = $cover.width();
       var coverHeight = $cover.height();
-      var calculatedHeight = h / (w / coverWidth);
+
       var ratio = h / w;
+
       var coverRatio = coverHeight / coverWidth;
-      var styles = {
-        width: coverWidth,
-        top: "50%",
-        position: "absolute",
-        "margin-top": -1*parseInt(calculatedHeight, 10)/2
-      };
+
+      var styles = {};
 
       // Resize rules
-      if ( w > coverWidth && h > coverHeight) { // bigger image
-        if ( ratio < coverRatio ) {
+      if (w > coverWidth && h > coverHeight) { // bigger image
+        if (ratio < coverRatio) {
           styles = { height: coverHeight };
         }
       }
-
       $img.css(styles);
-      $img.fadeIn(300);
+      $cover.css({ height: h - self.options.hookHeight });
+      $img.fadeIn(self.options.imageTransitionSpeed);
     })
     .error();
+
+    $hookImage.load(function(){
+      $hookImage.css({
+        marginTop: -$cover.height(),
+        width: $cover.width()
+      });
+    });
   },
 
   /**

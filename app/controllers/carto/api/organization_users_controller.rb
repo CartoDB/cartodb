@@ -11,6 +11,8 @@ module Carto
 
       before_filter :load_organization
 
+      UPDATE_PARAMS_MAP = { new_email: 'email', new_username: 'username' }
+
       def create
         render_jsonp({}, 401) && return unless current_viewer_is_owner?
 
@@ -26,7 +28,7 @@ module Carto
 
         user.notify_new_organization_user
         user.organization.notify_if_seat_limit_reached
-        render_jsonp Carto::Api::UserPresenter.new(user).to_poro, 200
+        render_jsonp Carto::Api::UserPresenter.new(user, current_viewer: current_viewer).to_poro, 200
       rescue CartoDB::CentralCommunicationFailure => e
         Rollbar.report_exception(e)
         begin
@@ -41,7 +43,7 @@ module Carto
       def destroy
         render_jsonp({}, 401) && return unless current_viewer_is_owner?
 
-        user = ::User.where(delete_params.symbolize_keys).first
+        user = ::User.where(delete_params).first
 
         render_jsonp("No user with #{delete_params}", 404) && return if user.nil?
         render_jsonp("Can't delete user. #{'Has shared entities' if user.has_shared_entities?}", 410) unless user.can_delete
@@ -60,16 +62,41 @@ module Carto
         end
       end
 
+      def update
+        render_jsonp({}, 401) && return unless current_viewer_is_owner?
+        render_jsonp('No update params provided', 200) && return if update_params.empty?
+
+        user = ::User.where(delete_params).first
+        render_jsonp("No user with #{delete_params}", 404) && return if user.nil?
+
+        user.update(Hash[update_params.map { |k, v| [UPDATE_PARAMS_MAP[k].to_sym || k, v] }])
+
+        render_jsonp(user.errors.full_messages, 410) && return unless user.save
+
+        user.update_in_central
+
+        render_jsonp Carto::Api::UserPresenter.new(user, current_viewer: current_viewer).to_poro, 200
+      rescue CartoDB::CentralCommunicationFailure => e
+        Rollbar.report_exception(e)
+
+        render_jsonp 'Central comunication failure', 500
+      end
+
       private
 
       # TODO: Use native strong params when in Rails 4+
       def create_params
-        permit(:email, :username, :password, :password_confirmation, :quota_in_bytes)
+        permit(:email, :username, :password, :password_confirmation, :quota_in_bytes, :soft_geocoding_limit)
       end
 
       # TODO: Use native strong params when in Rails 4+
       def delete_params
         permit(:email, :username)
+      end
+
+      # TODO: Use native strong params when in Rails 4+
+      def update_params
+        permit(:new_email, :new_username, :password, :password_confirmation, :quota_in_bytes, :soft_geocoding_limit)
       end
     end
   end

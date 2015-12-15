@@ -69,7 +69,7 @@
   <% end %>
 
   <div class="FormAccount-title">
-    <p class="FormAccount-titleText">Account type</p>
+    <p class="FormAccount-titleText">User quotas</p>
   </div>
 
   <span class="FormAccount-separator"></span>
@@ -77,13 +77,14 @@
   <div class="FormAccount-row">
     <div class="OrganizationUser-quota js-quota">
       <div class="FormAccount-rowData FormAccount-rowData--med OrganizationUser-quotaProgress js-quotaProgress">
-        <div class="progress-bar OrganizationUser-quotaBar">
+        <div class="progress-bar overflow-visible OrganizationUser-quotaBar UISlider">
           <% assignedPer = ((@user.quota_in_bytes.to_f * 100) / current_user.organization.quota_in_bytes) %>
           <span class="bar-2 js-assignedBar" style="width:<%= assignedPer %>%"></span>
           <% if !@user.new? %>
             <% usedPer = ((@user.db_size_in_bytes.to_f * 100) / current_user.organization.quota_in_bytes) %>
             <span class="bar-3" style="width:<%= usedPer %>%"></span>
           <% end %>
+          <a class="ui-slider-handle ui-state-default ui-corner-all" href="#" style="left: <%= assignedPer %>%;" quota-available="<%= assignedPer.round(0) %>% of the org available quota"></a>
         </div>
         <ul class="OrganizationUser-quotaLegend">
           <% if !@user.new? %>
@@ -103,10 +104,7 @@
         </ul>
       </div>
       <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft OrganizationUser-quotaInfo js-quotaInfo">
-        <span class="js-assignedSize"><%= number_to_human_size(@user.quota_in_bytes) %></span>
-        <% unless cartodb_com_hosted? %>
-        , <a href="<%= current_user.upgrade_url(request.protocol) %>">upgrade your account</a> if needed.
-        <% end %>
+        <span class="js-assignedSize"><%= number_to_human_size(@user.quota_in_bytes) %><% unless cartodb_com_hosted? %>, <a href="<%= current_user.upgrade_url(request.protocol) %>">upgrade your account</a> if needed.<% end %></span>
 
       </div>
       <%= f.hidden_field :quota_in_bytes, :id => "user_quota" %>

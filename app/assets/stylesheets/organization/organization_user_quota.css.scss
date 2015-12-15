@@ -19,6 +19,7 @@
 .OrganizationUser-quotaBar {
   display:block;
   width: 300px;
+  overflow: visible;
 }
 .OrganizationUser-quotaLegend {
   @include display-flex();

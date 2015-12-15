@@ -19,8 +19,10 @@ module OrganizationsHelper
 
   # To help with strong params until Rails 4+
   def permit(*permitted)
-    params.keep_if { |k, _v| permitted.include?(k.to_sym) }
+    hardened_params = params.dup
 
-    params
+    hardened_params.keep_if { |k, _v| permitted.include?(k.to_sym) }
+
+    hardened_params.symbolize_keys
   end
 end

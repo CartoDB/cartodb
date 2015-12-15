@@ -175,8 +175,6 @@
 }
 
 .CDB-infowindow.is-header-image .CDB-hook-image-inner {
-  -webkit-clip-path: polygon(0px 0px, 0px 100%, 100% 0px);
-  clip-path: url(&quot;#clipPathPolygonGenId1&quot;);
   position: relative;
   width: 100%;
   height: 100%;
@@ -324,6 +322,5 @@
   bottom: 0;
   width: 50%;
   background: linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 1) 50%, rgba(0, 0, 0, 0) 100%);
-  -webkit-animation: placeholder ease-in-out 2s infinite;
   animation: placeholder ease-in-out 2s infinite;
 }

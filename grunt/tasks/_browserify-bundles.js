@@ -1,8 +1,5 @@
 
 var torqueSpecs = [
-  'test/spec/vis/vis-torque.spec.js',
-  'test/spec/api/create-layer-torque.spec.js',
-  'test/spec/geo/gmaps/gmaps-torque-layer-view.spec.js',
   'test/spec/geo/leaflet/leaflet-torque-layer.spec.js',
   'test/spec/geo/ui/mobile-torque.spec.js',
   'test/spec/geo/ui/layer-selector-torque.spec.js'
@@ -12,6 +9,7 @@ var torqueSpecs = [
 var sharedModules = [
   'backbone',
   'cdb',
+  'cdb.log',
   'cdb/core/util',
   'cdb/geo/cartodb-logo',
   'jquery',
@@ -64,9 +62,15 @@ module.exports = {
     }
   },
   'cartodb.mod.torque-specs': {
-    src: ['test/spec/cartodb.mod.torque.spec.js']
-      .concat(torqueSpecs),
+    src: 'test/spec/cartodb.mod.torque.spec.js',
     dest: '<%= config.tmp %>/cartodb.mod.torque-specs.js',
+    options: {
+      external: sharedModules
+    }
+  },
+  'cartodb.mod-torque-srcSpecs': {
+    src: torqueSpecs,
+    dest: '<%= config.tmp %>/cartodb.mod.torque-srcSpecs.js',
     options: {
       external: sharedModules
     }

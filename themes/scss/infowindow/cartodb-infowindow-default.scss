@@ -23,10 +23,6 @@
 .CDB-infowindow-headerBg {
   padding: 20px 24px 18px;
 }
-.CDB-infowindow-inner--scroll {
-  position: relative;
-  padding-right: 12px;
-}
 .CDB-infowindow-inner.CDB-infowindow-inner--scroll .CDB-infowindow-list {
   max-height: 200px;
 }
@@ -52,7 +48,19 @@
   font-weight: $sFontWeight-lighter;
   line-height: $sLineHeight-small;
 }
-.has-scroll {
+.CDB-infowindow-link {
+  width: 90%;
+  display: inline-block;
+  word-break: break-word;
+  // TODO: add style for the hovers
+}
+
+.CDB-infowindow-inner.has-scroll {
+  position: relative;
+  padding-right: 12px;
+}
+
+.has-scroll .CDB-infowindow-list {
   position: relative;
   max-height: 200px;
   overflow: scroll;
@@ -88,6 +96,7 @@
 .is-header .CDB-infowindow-mediaTitle {
   bottom: 12px;
 }
+
 .CDB-infowindow-mediaTitle {
   position: absolute;
   right: 24px;
@@ -154,27 +163,27 @@
   content: '';
   z-index: 2;
 }
-.is-header-image {
-  .CDB-hook-image {
-    position: absolute;
-    left: 24px;
-    width: 24px;
-    height: 16px;
-    z-index: 3;
-    img {
-      margin-left: -24px;
-    }
-  }
-  .CDB-hook-image-inner {
-    -webkit-clip-path: polygon(0px 0px, 0px 100%, 100% 0px);
-    clip-path: url(&quot;#clipPathPolygonGenId1&quot;);
-    position: relative;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    z-index: 3;
+.CDB-infowindow.is-header-image .CDB-hook-image {
+  position: absolute;
+  left: 24px;
+  width: 24px;
+  height: 16px;
+  z-index: 3;
+  img {
+    margin-left: -24px;
   }
 }
+
+.CDB-infowindow.is-header-image .CDB-hook-image-inner {
+  -webkit-clip-path: polygon(0px 0px, 0px 100%, 100% 0px);
+  clip-path: url(&quot;#clipPathPolygonGenId1&quot;);
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 3;
+}
+
 .CDB-infowindow-tabs {
   position: relative;
   width: auto;
@@ -275,6 +284,7 @@
     content: '';
   }
 }
+
 .CDB-loading {
   padding: 4px 0 10px;
 }
@@ -291,6 +301,7 @@
   position: relative;
   overflow: hidden;
 }
+
 @-webkit-keyframes placeholder {
   0% {
     left: -100%;

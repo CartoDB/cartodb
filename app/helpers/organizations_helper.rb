@@ -3,7 +3,7 @@
 module OrganizationsHelper
   def load_organization
     @organization = Carto::Organization.where(id: params[:id]).first
-    render_jsonp({}, 401) and return if @organization.nil?
+    render_jsonp({}, 401) if @organization.nil?
   end
 
   def load_group
@@ -11,6 +11,10 @@ module OrganizationsHelper
       @group = @organization.groups.find(params[:group_id])
       render_jsonp({ errors: "No #{params[:group_id]} at #{@organization.id}" }, 404) and return unless @group
     end
+  end
+
+  def current_viewer_is_owner?
+    current_viewer.id == @organization.owner.id
   end
 
   # To help with strong params until Rails 4+

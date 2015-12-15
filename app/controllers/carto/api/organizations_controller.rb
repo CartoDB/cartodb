@@ -26,24 +26,6 @@ module Carto
           Carto::Api::UserPresenter.new(u).to_poro
         }, total_user_entries: total_user_entries, total_entries: users.count })
       end
-
-      def create_user
-        user = ::User.new(create_user_params)
-        user.organization_id = @organization.id
-
-        if user.save
-          render_jsonp Carto::Api::UserPresenter.new(user).to_poro, 200
-        else
-          render_jsonp user.errors.full_messages, 410
-        end
-      end
-
-      private
-
-      # TODO: Use native strong params when in Rails 4+
-      def create_user_params
-        permit(:email, :username, :password, :password_confirmation, :quota_in_bytes)
-      end
     end
   end
 end

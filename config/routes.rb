@@ -383,7 +383,8 @@ CartoDB::Application.routes.draw do
 
     # Organization (new endpoint that deprecates old, unused one, so v1)
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/:id/users' => 'organizations#users', as: :api_v1_organization_users, constraints: { id: /[^\/]+/ }
-    post '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/:id/create_user' => 'organizations#create_user', as: :api_v1_organization_create_user, constraints: { id: /[^\/]+/ }
+    post '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/:id/create_user' => 'organization_users#create', as: :api_v1_organization_create_user, constraints: { id: /[^\/]+/ }
+    delete '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/:id/delete_user' => 'organization_users#destroy', as: :api_v1_organization_delete_user, constraints: { id: /[^\/]+/ }
 
     # Groups
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/:organization_id/groups' => 'groups#index', as: :api_v1_organization_groups, constraints: { organization_id: /[^\/]+/ }

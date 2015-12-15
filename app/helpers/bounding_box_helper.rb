@@ -136,11 +136,8 @@ module BoundingBoxHelper
   private
 
   def self.save_bounding_box(bounds, table_name, column_name, id)
-    feature_flag = Carto::FeatureFlag.where(name: 'bbox_store').first
-    if !feature_flag.nil? && !feature_flag.restricted
-      polygon_sql = to_polygon(bounds[:minx], bounds[:miny], bounds[:maxx], bounds[:maxy])
-      update_sql = %Q{UPDATE #{table_name} SET #{column_name} = #{polygon_sql} WHERE id = '#{id}';}
-      Rails::Sequel.connection.run(update_sql)
-    end
+    polygon_sql = to_polygon(bounds[:minx], bounds[:miny], bounds[:maxx], bounds[:maxy])
+    update_sql = %Q{UPDATE #{table_name} SET #{column_name} = #{polygon_sql} WHERE id = '#{id}';}
+    Rails::Sequel.connection.run(update_sql)
   end
 end

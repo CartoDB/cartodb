@@ -1,14 +1,12 @@
-// NOTE this is ONLY used for torque bundle AND the leaflet.spec.js, that assumed torque lib to be loaded)
-// Depends on cartodb to be loaded and present in global namespace.
-var cdb = window.cdb;
-var L = cdb.L;
-var _ = cdb._;
-var util = cdb.core.util;
-var LeafletLayerView = require('cdb/geo/leaflet/leaflet-layer-view');
-var CartoDBLogo = cdb.geo.common.CartoDBLogo;
+var torque = require('torque.js');
+var _ = require('underscore');
+var util = require('cdb.core.util');
+var CartoDBLogo = require('../cartodb-logo');
+var LeafletLayerView = require('./leaflet-layer-view');
 
 /**
  * leaflet torque layer
+ * Assumes torque.js to have been loaded
  */
 var LeafletTorqueLayer = L.TorqueLayer.extend({
 

@@ -60,7 +60,6 @@ module.exports = function(grunt) {
     uglify: require('./grunt/tasks/uglify').task(),
     cssmin: require('./grunt/tasks/cssmin').task(),
     imagemin: require('./grunt/tasks/imagemin').task(),
-    copy: require('./grunt/tasks/copy').task(grunt, config),
     jshint: require('./grunt/tasks/jshint').task(),
     jasmine: require('./grunt/tasks/jasmine').task()
   });
@@ -171,7 +170,6 @@ module.exports = function(grunt) {
   ];
   var css = allDeps
     .concat([
-      'copy',
       'sass',
       'concat',
       'cssmin',

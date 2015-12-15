@@ -20,8 +20,8 @@ var Template = require('../core/template');
 var Layers = require('./vis/layers');
 var Overlay = require('./vis/overlay');
 var INFOWINDOW_TEMPLATE = require('./vis/infowindow-template');
-var CartoDBLayerGroupNamed = require('cdb/geo/map/cartodb-layer-group-named');
-var CartoDBLayerGroupAnonymous = require('cdb/geo/map/cartodb-layer-group-anonymous');
+var CartoDBLayerGroupNamed = require('../geo/map/cartodb-layer-group-named');
+var CartoDBLayerGroupAnonymous = require('../geo/map/cartodb-layer-group-anonymous');
 
 /**
  * Visualization creation

@@ -26,7 +26,4 @@ cdb.ui.common = {};
 
 cdb.vis = {};
 
-cdb.windshaft = {};
-cdb.windshaft.filters = {};
-
 module.exports = cdb;

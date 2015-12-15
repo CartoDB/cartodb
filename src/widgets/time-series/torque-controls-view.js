@@ -1,11 +1,10 @@
-var View = cdb.core.View;
-var template = require('./torque-controls.tpl');
+var View = cdb.core.View
+var template = require('./torque-controls.tpl')
 
 /**
  * Torque animation controls, to manage run state
  */
 module.exports = View.extend({
-
   tagName: 'button',
   className: 'CDB-Widget-controlButton',
 
@@ -13,11 +12,11 @@ module.exports = View.extend({
     'click': '_onClick'
   },
 
-  initialize: function() {
-    this.model.bind('change:isRunning', this.render, this);
+  initialize: function () {
+    this.model.bind('change:isRunning', this.render, this)
   },
 
-  render: function() {
+  render: function () {
     this.$el.html(
       template({
         iconClass: 'CDB-Widget-controlButton-icon CDB-Widget-controlButton-icon--' + (
@@ -25,16 +24,16 @@ module.exports = View.extend({
             ? 'pause'
             : 'play')
       })
-    );
+    )
 
-    return this;
+    return this
   },
 
-  _onClick: function() {
+  _onClick: function () {
     if (this.model.get('isRunning')) {
-      this.model.pause();
+      this.model.pause()
     } else {
-      this.model.play();
+      this.model.play()
     }
   }
-});
+})

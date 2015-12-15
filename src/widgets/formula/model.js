@@ -1,8 +1,7 @@
-var _ = cdb._;
-var WidgetModel = require('../widget_model');
+var _ = cdb._
+var WidgetModel = require('../widget-model')
 
 module.exports = WidgetModel.extend({
-
   defaults: _.extend(
     {},
     WidgetModel.prototype.defaults,
@@ -14,21 +13,21 @@ module.exports = WidgetModel.extend({
   ),
 
   // TODO: The response format has probably changed
-  parse: function(r) {
+  parse: function (r) {
     return {
       data: r.result,
       nulls: r.nulls
-    };
+    }
   },
 
-  toJSON: function(d) {
+  toJSON: function (d) {
     return {
-      type: "formula",
+      type: 'formula',
       options: {
         column: this.get('column'),
         operation: this.get('operation')
       }
-    };
+    }
   }
 
-});
+})

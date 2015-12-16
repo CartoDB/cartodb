@@ -1,11 +1,11 @@
-var View = cdb.core.View
-var formatter = cdb.core.format
+var cdb = require('cartodb.js')
+var formatter = require('../../../../formatter')
 var template = require('./search-item-clickable-template.tpl')
 
 /**
  * Category search list view
  */
-module.exports = View.extend({
+module.exports = cdb.core.View.extend({
   tagName: 'li',
   className: 'CDB-Widget-listItem',
 

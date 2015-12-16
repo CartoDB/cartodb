@@ -1,5 +1,5 @@
-var _ = cdb._
-var format = cdb.core.format
+var _ = require('underscore')
+var format = require('../../formatter')
 var WidgetContentView = require('../standard/widget-content-view')
 var WidgetListItemsView = require('./items-view')
 var WidgetListPaginatorView = require('./paginator-view')

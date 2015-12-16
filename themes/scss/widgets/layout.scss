@@ -27,3 +27,11 @@
 .CDB-Widget-contentFull {
   width: 100%;
 }
+
+@include media-query-mobile() {
+  .CDB-Widget-contentSpaced--sideMargins {
+    margin-right: $sMargin-section/3;
+    margin-left: $sMargin-section/3;
+  }
+}
+

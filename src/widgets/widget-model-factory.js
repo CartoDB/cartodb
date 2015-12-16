@@ -1,4 +1,4 @@
-var _ = cdb._
+var _ = require('underscore')
 
 var WidgetModelFactory = function (types) {
   types = types || {}

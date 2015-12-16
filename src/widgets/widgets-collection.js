@@ -1,4 +1,4 @@
-var Backbone = cdb.Backbone
+var Backbone = require('backbone')
 
 /**
  *  Collection that controls widget models per layer

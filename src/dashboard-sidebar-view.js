@@ -1,8 +1,7 @@
-var _ = cdb._
-var $ = cdb.$
+var _ = require('underscore')
+var $ = require('jquery')
 var Ps = require('perfect-scrollbar')
-var View = cdb.core.View
-var Model = cdb.core.Model
+var cdb = require('cartodb.js')
 var CategoryContentView = require('./widgets/category/content-view')
 var FormulaContentView = require('./widgets/formula/content-view')
 var HistogramContentView = require('./widgets/histogram/content-view')
@@ -10,7 +9,7 @@ var ListContentView = require('./widgets/list/content-view')
 var WidgetViewFactory = require('./widgets/widget-view-factory')
 var template = require('./dashboard-sidebar.tpl')
 
-module.exports = View.extend({
+module.exports = cdb.core.View.extend({
   className: 'CDB-Widget-canvas',
 
   initialize: function (options) {
@@ -36,7 +35,7 @@ module.exports = View.extend({
         createContentView: function (m) {
           return new HistogramContentView({
             dataModel: m,
-            viewModel: new Model(),
+            viewModel: new cdb.core.Model(),
             filter: m.filter
           })
         }
@@ -142,7 +141,7 @@ module.exports = View.extend({
 
   clean: function () {
     this._cleanScrollEvent()
-    View.prototype.clean.call(this)
+    cdb.core.View.prototype.clean.call(this)
   }
 
 })

@@ -1,5 +1,5 @@
-var _ = cdb._
-var Model = cdb.core.Model
+var _ = require('underscore')
+var cdb = require('cartodb.js')
 
 /**
  *  This model is used for getting the total amount of values
@@ -7,7 +7,7 @@ var Model = cdb.core.Model
  *
  */
 
-module.exports = Model.extend({
+module.exports = cdb.core.Model.extend({
   defaults: {
     url: '',
     totalCount: 0

@@ -1,11 +1,11 @@
-var $ = cdb.$
-var View = cdb.core.View
+var $ = require('jquery')
+var cdb = require('cartodb.js')
 var HistogramChartView = require('../histogram/chart')
 
 /**
  * Time-series histogram view.
  */
-module.exports = View.extend({
+module.exports = cdb.core.View.extend({
   className: 'CDB-Widget-content CDB-Widget-content--timeSeries',
 
   defaults: {

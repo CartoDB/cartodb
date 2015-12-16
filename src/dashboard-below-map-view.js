@@ -1,10 +1,10 @@
-var _ = cdb._
-var View = cdb.core.View
+var _ = require('underscore')
+var cdb = require('cartodb.js')
 var WidgetViewFactory = require('./widgets/widget-view-factory')
 var TimeSeriesContentView = require('./widgets/time-series/content-view')
 var TorqueTimeSeriesContentView = require('./widgets/time-series/torque-content-view')
 
-module.exports = View.extend({
+module.exports = cdb.core.View.extend({
   className: 'CDB-Dashboard-belowMap',
 
   initialize: function (options) {

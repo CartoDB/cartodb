@@ -1,4 +1,4 @@
-var _ = cdb._
+var _ = require('underscore')
 var CategoryColors = require('app/widgets/category/models/category-colors.js')
 
 describe('widgets/category/category-colors', function () {

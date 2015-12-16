@@ -1,4 +1,4 @@
-var _ = cdb._
+var _ = require('underscore')
 var WidgetModel = require('../widget-model')
 
 module.exports = WidgetModel.extend({

@@ -28,3 +28,20 @@
 .u-iBlock {
   @include inline-block();
 }
+
+.CDB-showDesktop {
+  display: block !important;
+}
+.CDB-showMobile {
+  display: none !important;
+}
+
+@include media-query-mobile() {
+  .CDB-showDesktop {
+    display: none !important;
+  }
+  .CDB-showMobile {
+    display: block !important;
+  }
+}
+

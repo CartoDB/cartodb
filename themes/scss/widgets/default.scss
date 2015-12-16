@@ -70,7 +70,6 @@
   .CDB-Widget {
     width: $mobileLayout;
     min-width: $mobileLayout;
-    min-height: 280px;
     border-right: 2px solid transparent;
     border-bottom: 0;
   }
@@ -92,5 +91,23 @@
   .CDB-Widget-content--timeSeries {
     width: 100%;
     margin-top: 0; // override default
+  }
+}
+
+@include media-query-mobile() {
+  .CDB-Widget {
+    width: 232px;
+    min-width: 232px;
+    padding: 12px 0;
+  }
+  .CDB-Widget-header,
+  .CDB-Widget-footer,
+  .CDB-Widget-content {
+    margin-right: $sMargin-section / 3;
+    margin-left: $sMargin-section / 3;
+  }
+  .CDB-Widget-content--noSidesMargin {
+    margin-right: 0;
+    margin-left: 0;
   }
 }

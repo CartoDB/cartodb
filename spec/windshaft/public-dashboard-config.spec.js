@@ -1,5 +1,5 @@
-var Backbone = cdb.Backbone
-var CartoDBLayer = cdb.geo.CartoDBLayer
+var Backbone = require('backbone')
+var cdb = require('cartodb.js')
 var PublicDashboardConfig = require('app/windshaft/public-dashboard-config')
 var HistogramModel = require('app/widgets/histogram/model')
 
@@ -7,7 +7,7 @@ describe('windshaft/public-dashboard-config', function () {
   beforeEach(function () {
     this.widgets = new Backbone.Collection()
 
-    this.cartoDBLayer1 = new CartoDBLayer({
+    this.cartoDBLayer1 = new cdb.geo.CartoDBLayer({
       id: 'layer1',
       sql: 'sql1',
       cartocss: 'cartoCSS1',
@@ -22,7 +22,7 @@ describe('windshaft/public-dashboard-config', function () {
     })
     this.widgets.add(widget)
 
-    this.cartoDBLayer2 = new CartoDBLayer({
+    this.cartoDBLayer2 = new cdb.geo.CartoDBLayer({
       id: 'layer2',
       sql: 'sql2',
       cartocss: 'cartoCSS2',

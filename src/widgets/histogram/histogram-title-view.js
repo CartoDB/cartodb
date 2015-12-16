@@ -1,5 +1,5 @@
-var $ = cdb.$
-var View = cdb.core.View
+var $ = require('jquery')
+var cdb = require('cartodb.js')
 var TooltipView = require('../widget-tooltip-view')
 var template = require('./histogram-title-template.tpl')
 
@@ -8,7 +8,7 @@ var template = require('./histogram-title-template.tpl')
  *
  */
 
-module.exports = View.extend({
+module.exports = cdb.core.View.extend({
   className: 'CDB-Widget-title CDB-Widget-contentSpaced',
 
   events: {

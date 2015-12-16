@@ -1,11 +1,11 @@
-var _ = cdb._
-var Model = cdb.core.Model
+var _ = require('underscore')
+var cdb = require('cartodb.js')
 var CategoriesCollection = require('./categories-collection')
 
 /**
  * Category search model
  */
-module.exports = Model.extend({
+module.exports = cdb.core.Model.extend({
   defaults: {
     q: '',
     data: [],
@@ -103,7 +103,7 @@ module.exports = Model.extend({
 
   fetch: function (opts) {
     this.trigger('loading', this)
-    return Model.prototype.fetch.call(this, opts)
+    return cdb.core.Model.prototype.fetch.call(this, opts)
   },
 
   sync: function () {
@@ -111,7 +111,7 @@ module.exports = Model.extend({
     if (this._xhr) {
       this._xhr.abort()
     }
-    this._xhr = Model.prototype.sync.apply(this, arguments)
+    this._xhr = cdb.core.Model.prototype.sync.apply(this, arguments)
     this._xhr.always(function () {
       self._xhr = null
     })

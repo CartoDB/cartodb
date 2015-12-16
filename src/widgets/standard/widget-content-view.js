@@ -1,13 +1,12 @@
-var _ = cdb._
-var log = cdb.log
-var View = cdb.core.View
+var _ = require('underscore')
+var cdb = require('cartodb.js')
 var contentTemplate = require('./widget-content-template.tpl')
 var placeholderTemplate = require('./widget-placeholder-template.tpl')
 
 /**
  * Default widget content view:
  */
-module.exports = View.extend({
+module.exports = cdb.core.View.extend({
   className: 'CDB-Widget-body',
 
   initialize: function () {
@@ -41,7 +40,7 @@ module.exports = View.extend({
     if (placeholderTemplate) {
       this.$('.js-content').append(placeholderTemplate())
     } else {
-      log.info("Placeholder template doesn't exist")
+      cdb.log.info("Placeholder template doesn't exist")
     }
   }
 })

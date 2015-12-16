@@ -1,4 +1,4 @@
-var View = cdb.core.View
+var cdb = require('cartodb.js')
 
 /**
  *  Default widget loader view:
@@ -6,7 +6,7 @@ var View = cdb.core.View
  *  It will listen or not to dataModel changes when
  *  first load is done.
  */
-module.exports = View.extend({
+module.exports = cdb.core.View.extend({
   className: 'CDB-Widget-loader',
 
   initialize: function () {

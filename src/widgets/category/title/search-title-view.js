@@ -1,6 +1,6 @@
-var _ = cdb._
-var $ = cdb.$
-var View = cdb.core.View
+var _ = require('underscore')
+var $ = require('jquery')
+var cdb = require('cartodb.js')
 var TooltipView = require('../../widget-tooltip-view')
 var template = require('./search-title-template.tpl')
 
@@ -11,7 +11,7 @@ var template = require('./search-title-template.tpl')
  *
  */
 
-module.exports = View.extend({
+module.exports = cdb.core.View.extend({
   events: {
     'keyup .js-textInput': '_onKeyupInput',
     'submit .js-form': '_onSubmitForm',
@@ -144,7 +144,7 @@ module.exports = View.extend({
 
   clean: function () {
     this._unbindESC()
-    View.prototype.clean.call(this)
+    cdb.core.View.prototype.clean.call(this)
   }
 
 })

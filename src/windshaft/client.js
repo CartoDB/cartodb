@@ -1,7 +1,6 @@
-var $ = cdb.$
-var _ = cdb._
-var LZMA = cdb.LZMA
-var util = cdb.core.util
+var $ = require('jquery')
+var _ = require('underscore')
+var cdb = require('cartodb.js')
 var WindshaftDashboardInstance = require('./dashboard-instance')
 
 var validatePresenceOfOptions = function (options, requiredOptions) {
@@ -36,7 +35,7 @@ WindshaftClient.MAX_GET_SIZE = 2033
  * Creates an instance of a map in Windshaft
  * @param {object} mapDefinition An object that responds to .toJSON with the definition of the map
  * @param  {function} callback A callback that will get the public or private map
- * @return {cdb.windshaft.DashboardInstance} The instance of the dashboard
+ * @return {DashboardInstance} The instance of the dashboard
  */
 WindshaftClient.prototype.instantiateMap = function (options) {
   var mapDefinition = options.mapDefinition
@@ -82,7 +81,7 @@ WindshaftClient.prototype.instantiateMap = function (options) {
 }
 
 WindshaftClient.prototype._usePOST = function (payload, params) {
-  if (util.isCORSSupported() && this.forceCors) {
+  if (cdb.core.util.isCORSSupported() && this.forceCors) {
     return true
   }
   return payload.length >= this.constructor.MAX_GET_SIZE
@@ -126,8 +125,8 @@ WindshaftClient.prototype._getCompressor = function (payload) {
 
   return function (data, level, callback) {
     data = JSON.stringify({ config: data })
-    LZMA.compress(data, level, function (encoded) {
-      callback('lzma=' + encodeURIComponent(util.array2hex(encoded)))
+    cdb.LZMA.compress(data, level, function (encoded) {
+      callback('lzma=' + encodeURIComponent(cdb.core.util.array2hex(encoded)))
     })
   }
 }
@@ -137,7 +136,7 @@ WindshaftClient.prototype._getURL = function (params) {
 }
 
 WindshaftClient.prototype._jsonpCallbackName = function (payload) {
-  return '_cdbc_' + util.uniqueCallbackName(payload)
+  return '_cdbc_' + cdb.core.util.uniqueCallbackName(payload)
 }
 
 module.exports = WindshaftClient

@@ -1,4 +1,4 @@
-var _ = cdb._
+var _ = require('underscore')
 var WindshaftPrivateDashboardConfig = {}
 
 WindshaftPrivateDashboardConfig.generate = function (options) {

@@ -1,12 +1,12 @@
-var _ = cdb._
-var View = cdb.core.View
+var _ = require('underscore')
+var cdb = require('cartodb.js')
 var placeholderTemplate = require('./placeholder.tpl')
 var HistogramView = require('./histogram-view')
 
 /**
  * Widget content view for a time-series
  */
-module.exports = View.extend({
+module.exports = cdb.core.View.extend({
   className: 'CDB-Widget-body CDB-Widget-body--timeSeries',
 
   initialize: function () {

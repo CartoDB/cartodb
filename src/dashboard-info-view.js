@@ -1,8 +1,8 @@
-var View = cdb.core.View
+var cdb = require('cartodb.js')
 var template = require('./dashboard-info-view.tpl')
 var moment = require('moment')
 
-var DashboardInfoView = View.extend({
+var DashboardInfoView = cdb.core.View.extend({
   className: 'CDB-Dashboard-info',
 
   events: {

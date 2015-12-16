@@ -1,5 +1,4 @@
-var Model = cdb.core.Model
-var View = cdb.core.View
+var cdb = require('cartodb.js')
 var WidgetViewFactory = require('app/widgets/widget-view-factory')
 var WidgetModel = require('app/widgets/widget-model')
 var WidgetView = require('app/widgets/widget-view')
@@ -49,7 +48,7 @@ describe('geo/ui/widgets/widget-view-factory', function () {
 
   describe('.createWidgetView', function () {
     beforeEach(function () {
-      this.layer = new Model({
+      this.layer = new cdb.core.Model({
         id: 'layer-uuid',
         type: 'cartodb'
       })
@@ -73,7 +72,7 @@ describe('geo/ui/widgets/widget-view-factory', function () {
 
     describe('when called with a matching match function', function () {
       beforeEach(function () {
-        this.contentView = new View()
+        this.contentView = new cdb.core.View()
         this.matchSpy.and.returnValue(true)
         this.createContentViewSpy.and.returnValue(this.contentView)
         this.widgetView = this.factory.createWidgetView(this.widget)
@@ -102,7 +101,7 @@ describe('geo/ui/widgets/widget-view-factory', function () {
 
     describe('when called with an matching type', function () {
       beforeEach(function () {
-        this.contentView = new View()
+        this.contentView = new cdb.core.View()
         this.widget.set('type', 'wadus') // should match 1st type added to factory
         this.createWadusContentViewSpy.and.returnValue(this.contentView)
         this.widgetView = this.factory.createWidgetView(this.widget)

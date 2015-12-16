@@ -1,5 +1,5 @@
-var $ = cdb.$
-var util = cdb.core.util
+var $ = require('jquery')
+var util = require('cartodb.js/src/core/util')
 var Client = require('app/windshaft/client')
 
 describe('windshaft/client', function () {

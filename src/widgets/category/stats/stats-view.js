@@ -1,6 +1,6 @@
-var _ = cdb._
-var View = cdb.core.View
-var formatter = cdb.core.format
+var _ = require('underscore')
+var cdb = require('cartodb.js')
+var formatter = require('../../../formatter')
 var template = require('./stats-template.tpl')
 var animationTemplate = require('./cats-template.tpl')
 var AnimateValues = require('../../animate-values')
@@ -10,7 +10,7 @@ var AnimateValues = require('../../animate-values')
  *
  */
 
-module.exports = View.extend({
+module.exports = cdb.core.View.extend({
   className: 'CDB-Widget-info CDB-Widget-textSmaller CDB-Widget-textSmaller--upper',
   tagName: 'dl',
 

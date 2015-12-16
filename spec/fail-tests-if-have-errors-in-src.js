@@ -1,5 +1,5 @@
 // Catch any eventual errors that happens when test suite is setup, and re-throw once the test runner is ready
-var _ = cdb._
+var _ = require('underscore')
 var orgOnError = window.onerror
 var onErrorArguments = []
 

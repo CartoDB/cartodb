@@ -1,5 +1,5 @@
-var cdb = require('cartodb.js')
-var template = require('./widget-error-template.tpl')
+var cdb = require('cartodb.js');
+var template = require('./widget-error-template.tpl');
 
 /**
  *  Default widget error view:
@@ -15,29 +15,29 @@ module.exports = cdb.core.View.extend({
   },
 
   initialize: function () {
-    this._initBinds()
+    this._initBinds();
   },
 
   render: function () {
-    this.$el.html(template())
-    return this
+    this.$el.html(template());
+    return this;
   },
 
   _initBinds: function () {
-    this.model.bind('error', this.show, this)
-    this.model.bind('loading', this.hide, this)
+    this.model.bind('error', this.show, this);
+    this.model.bind('loading', this.hide, this);
   },
 
   _onRefreshClick: function () {
-    this.model.refresh()
+    this.model.refresh();
   },
 
   show: function () {
-    this.$el.removeClass('is-hidden')
+    this.$el.removeClass('is-hidden');
   },
 
   hide: function () {
-    this.$el.addClass('is-hidden')
+    this.$el.addClass('is-hidden');
   }
 
-})
+});

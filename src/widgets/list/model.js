@@ -1,5 +1,5 @@
-var Backbone = require('backbone')
-var WidgetModel = require('../widget-model')
+var cdb = require('cartodb.js');
+var WidgetModel = require('../widget-model');
 
 module.exports = WidgetModel.extend({
   options: {
@@ -8,24 +8,24 @@ module.exports = WidgetModel.extend({
   },
 
   initialize: function (attrs, opts) {
-    this._data = new Backbone.Collection(this.get('data'))
-    WidgetModel.prototype.initialize.call(this, attrs, opts)
+    this._data = new cdb.Backbone.Collection(this.get('data'));
+    WidgetModel.prototype.initialize.call(this, attrs, opts);
   },
 
   getData: function () {
-    return this._data
+    return this._data;
   },
 
   getSize: function () {
-    return this._data.size()
+    return this._data.size();
   },
 
   parse: function (data) {
-    var rows = data.rows
-    this._data.reset(rows)
+    var rows = data.rows;
+    this._data.reset(rows);
     return {
       data: rows
-    }
+    };
   },
 
   toJSON: function () {
@@ -34,6 +34,6 @@ module.exports = WidgetModel.extend({
       options: {
         columns: this.get('columns')
       }
-    }
+    };
   }
-})
+});

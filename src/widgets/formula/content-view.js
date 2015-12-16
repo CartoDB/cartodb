@@ -1,13 +1,13 @@
-var _ = require('underscore')
-var d3 = require('d3')
-var $ = require('jquery')
-var formatter = require('app/formatter')
-var WidgetContent = require('../standard/widget-content-view')
-var WidgetViewModel = require('../widget-content-model')
-var template = require('./template.tpl')
-var TooltipView = require('../widget-tooltip-view')
-var animationTemplate = require('./animation-template.tpl')
-var AnimateValues = require('../animate-values.js')
+var _ = require('underscore');
+var d3 = require('d3');
+var $ = require('jquery');
+var formatter = require('app/formatter');
+var WidgetContent = require('../standard/widget-content-view');
+var WidgetViewModel = require('../widget-content-model');
+var template = require('./template.tpl');
+var TooltipView = require('../widget-tooltip-view');
+var animationTemplate = require('./animation-template.tpl');
+var AnimateValues = require('../animate-values.js');
 
 /**
  * Default widget content view:
@@ -18,29 +18,29 @@ module.exports = WidgetContent.extend({
   },
 
   initialize: function () {
-    this.dataModel = this.model
-    this.viewModel = new WidgetViewModel()
-    WidgetContent.prototype.initialize.call(this)
+    this.dataModel = this.model;
+    this.viewModel = new WidgetViewModel();
+    WidgetContent.prototype.initialize.call(this);
   },
 
   render: function () {
-    this.clearSubViews()
-    var value = this.dataModel.get('data')
+    this.clearSubViews();
+    var value = this.dataModel.get('data');
 
     var format = function (value) {
-      var formatter = d3.format('0,000')
+      var formatter = d3.format('0,000');
 
       if (_.isNumber(value)) {
-        return formatter(value.toFixed(2))
+        return formatter(value.toFixed(2));
       }
-      return 0
-    }
+      return 0;
+    };
 
-    var nulls = !_.isUndefined(this.dataModel.get('nulls')) && formatter.formatNumber(this.dataModel.get('nulls')) || '-'
-    var isCollapsed = this.dataModel.isCollapsed()
+    var nulls = !_.isUndefined(this.dataModel.get('nulls')) && formatter.formatNumber(this.dataModel.get('nulls')) || '-';
+    var isCollapsed = this.dataModel.isCollapsed();
 
-    var prefix = this.dataModel.get('prefix')
-    var suffix = this.dataModel.get('suffix')
+    var prefix = this.dataModel.get('prefix');
+    var suffix = this.dataModel.get('suffix');
 
     this.$el.html(
       template({
@@ -52,36 +52,36 @@ module.exports = WidgetContent.extend({
         suffix: suffix,
         isCollapsed: isCollapsed
       })
-    )
+    );
 
     var animator = new AnimateValues({
       el: this.$el
-    })
+    });
 
-    animator.animateValue(this.dataModel, 'data', '.js-value', animationTemplate, { animationSpeed: 700, formatter: format, templateData: { prefix: prefix, suffix: suffix } })
+    animator.animateValue(this.dataModel, 'data', '.js-value', animationTemplate, { animationSpeed: 700, formatter: format, templateData: { prefix: prefix, suffix: suffix } });
 
-    this.$el.toggleClass('is-collapsed', !!isCollapsed)
+    this.$el.toggleClass('is-collapsed', !!isCollapsed);
 
-    this._initViews()
+    this._initViews();
 
-    return this
+    return this;
   },
 
   _initBinds: function () {
-    this.dataModel.bind('change:collapsed', this.render, this)
-    WidgetContent.prototype._initBinds.call(this)
+    this.dataModel.bind('change:collapsed', this.render, this);
+    WidgetContent.prototype._initBinds.call(this);
   },
 
   _initViews: function () {
     var tooltip = new TooltipView({
       target: this.$('.js-collapse')
-    })
-    $('body').append(tooltip.render().el)
-    this.addView(tooltip)
+    });
+    $('body').append(tooltip.render().el);
+    this.addView(tooltip);
   },
 
   _toggleCollapse: function () {
-    this.dataModel.toggleCollapsed()
+    this.dataModel.toggleCollapsed();
   }
 
-})
+});

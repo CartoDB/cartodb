@@ -1,6 +1,6 @@
-var cdb = require('cartodb.js')
-var formatter = require('../../../../formatter')
-var template = require('./search-item-clickable-template.tpl')
+var cdb = require('cartodb.js');
+var formatter = require('../../../../formatter');
+var template = require('./search-item-clickable-template.tpl');
 
 /**
  * Category search list view
@@ -17,12 +17,12 @@ module.exports = cdb.core.View.extend({
     // This data model comes from the original data in order to get
     // the max value and set properly the progress bar and add the
     // necessary suffix and prefix for the item.
-    this.dataModel = this.options.dataModel
-    this._initBinds()
+    this.dataModel = this.options.dataModel;
+    this._initBinds();
   },
 
   render: function () {
-    var value = this.model.get('value')
+    var value = this.model.get('value');
 
     this.$el.html(
       template({
@@ -34,17 +34,17 @@ module.exports = cdb.core.View.extend({
         prefix: this.dataModel.get('prefix'),
         suffix: this.dataModel.get('suffix')
       })
-    )
+    );
 
-    return this
+    return this;
   },
 
   _initBinds: function () {
-    this.model.bind('change:selected', this.render, this)
+    this.model.bind('change:selected', this.render, this);
   },
 
   _onItemClick: function () {
-    this.model.set('selected', !this.model.get('selected'))
+    this.model.set('selected', !this.model.get('selected'));
   }
 
-})
+});

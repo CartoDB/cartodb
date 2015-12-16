@@ -189,3 +189,19 @@
     width: 47%;
   }
 }
+
+@include media-query-mobile() {
+  .CDB-Widget-listButton {
+    padding-right: $sMargin-section / 3;
+    padding-left: $sMargin-section / 3;
+  }
+  .CDB-Widget-listGroup {
+    min-width: 100%;
+    max-width: 100%;
+  }
+  .CDB-Widget-listItemInner {
+    margin: 0;
+    padding-right: $sMargin-section / 3;
+    padding-left: $sMargin-section / 3;
+  }
+}

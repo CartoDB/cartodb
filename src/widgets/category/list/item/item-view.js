@@ -1,7 +1,7 @@
-var cdb = require('cartodb.js')
-var formatter = require('../../../../formatter')
-var clickableTemplate = require('./item-clickable-template.tpl')
-var unclickableTemplate = require('./item-unclickable-template.tpl')
+var cdb = require('cartodb.js');
+var formatter = require('../../../../formatter');
+var clickableTemplate = require('./item-clickable-template.tpl');
+var unclickableTemplate = require('./item-unclickable-template.tpl');
 
 /**
  * Category list item view
@@ -15,15 +15,15 @@ module.exports = cdb.core.View.extend({
   },
 
   initialize: function (options) {
-    this.dataModel = this.options.dataModel
-    this._initBinds()
+    this.dataModel = this.options.dataModel;
+    this._initBinds();
   },
 
   render: function () {
-    var value = this.model.get('value')
+    var value = this.model.get('value');
     var template = this.model.get('agg') || this.dataModel.isLocked()
       ? unclickableTemplate
-      : clickableTemplate
+      : clickableTemplate;
 
     this.$el.html(
       template({
@@ -38,19 +38,19 @@ module.exports = cdb.core.View.extend({
         prefix: this.dataModel.get('prefix'),
         suffix: this.dataModel.get('suffix')
       })
-    )
+    );
 
-    return this
+    return this;
   },
 
   _initBinds: function () {
-    this.model.bind('change', this.render, this)
-    this.dataModel.bind('change:search change:categoryColors', this.render, this)
-    this.add_related_model(this.dataModel)
+    this.model.bind('change', this.render, this);
+    this.dataModel.bind('change:search change:categoryColors', this.render, this);
+    this.add_related_model(this.dataModel);
   },
 
   _onItemClick: function () {
-    this.trigger('itemClicked', this.model, this)
+    this.trigger('itemClicked', this.model, this);
   }
 
-})
+});

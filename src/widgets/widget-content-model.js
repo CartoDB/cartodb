@@ -1,4 +1,4 @@
-var cdb = require('cartodb.js')
+var cdb = require('cartodb.js');
 
 /**
  *  View model, special for widgets with search and collapse
@@ -12,19 +12,19 @@ module.exports = cdb.core.Model.extend({
   },
 
   toggleSearch: function () {
-    this.set('search', !this.get('search'))
+    this.set('search', !this.get('search'));
   },
 
   enableSearch: function () {
-    this.set('search', true)
+    this.set('search', true);
   },
 
   disableSearch: function () {
-    this.set('search', false)
+    this.set('search', false);
   },
 
   isSearchEnabled: function () {
-    return this.get('search')
+    return this.get('search');
   }
 
-})
+});

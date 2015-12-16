@@ -1,6 +1,6 @@
-var cdb = require('cartodb.js')
-var template = require('./dashboard-info-view.tpl')
-var moment = require('moment')
+var cdb = require('cartodb.js');
+var template = require('./dashboard-info-view.tpl');
+var moment = require('moment');
 
 var DashboardInfoView = cdb.core.View.extend({
   className: 'CDB-Dashboard-info',
@@ -18,14 +18,14 @@ var DashboardInfoView = cdb.core.View.extend({
         userName: this.model.get('userName'),
         userAvatarURL: this.model.get('userAvatarURL')
       })
-    )
+    );
 
-    return this
+    return this;
   },
 
   _toggleView: function () {
-    this.$el.toggleClass('is-active')
+    this.$el.toggleClass('is-active');
   }
-})
+});
 
-module.exports = DashboardInfoView
+module.exports = DashboardInfoView;

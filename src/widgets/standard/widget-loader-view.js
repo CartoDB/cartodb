@@ -1,4 +1,4 @@
-var cdb = require('cartodb.js')
+var cdb = require('cartodb.js');
 
 /**
  *  Default widget loader view:
@@ -10,23 +10,23 @@ module.exports = cdb.core.View.extend({
   className: 'CDB-Widget-loader',
 
   initialize: function () {
-    this._initBinds()
+    this._initBinds();
   },
 
   _initBinds: function () {
-    this.model.bind('loading', this.show, this)
-    this.model.bind('sync error', this.hide, this)
+    this.model.bind('loading', this.show, this);
+    this.model.bind('sync error', this.hide, this);
   },
 
   show: function () {
-    this.$el.addClass('is-visible')
+    this.$el.addClass('is-visible');
   },
 
   hide: function () {
-    var self = this
+    var self = this;
     setTimeout(function () {
-      self.$el.removeClass('is-visible')
-    }, 500)
+      self.$el.removeClass('is-visible');
+    }, 500);
   }
 
-})
+});

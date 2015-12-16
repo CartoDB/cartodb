@@ -1,8 +1,8 @@
-var cdb = require('cartodb.js')
+var cdb = require('cartodb.js');
 
 module.exports = cdb.core.Model.extend({
   initialize: function (bounds) {
-    this.setBounds(bounds)
+    this.setBounds(bounds);
   },
 
   setBounds: function (bounds) {
@@ -11,7 +11,7 @@ module.exports = cdb.core.Model.extend({
       south: bounds[0][0],
       east: bounds[1][1],
       north: bounds[1][0]
-    })
+    });
   },
 
   toString: function () {
@@ -20,6 +20,6 @@ module.exports = cdb.core.Model.extend({
       this.get('south'),
       this.get('east'),
       this.get('north')
-    ].join(',')
+    ].join(',');
   }
-})
+});

@@ -1,5 +1,5 @@
-var cdb = require('cartodb.js')
-var template = require('./torque-reset-cumulative-render.tpl')
+var cdb = require('cartodb.js');
+var template = require('./torque-reset-cumulative-render.tpl');
 
 /**
  * View to reset cumulative render.
@@ -12,11 +12,11 @@ module.exports = cdb.core.View.extend({
   },
 
   render: function () {
-    this.$el.html(template())
-    return this
+    this.$el.html(template());
+    return this;
   },
 
   _onClick: function () {
-    this.model.resetRenderRange()
+    this.model.resetRenderRange();
   }
-})
+});

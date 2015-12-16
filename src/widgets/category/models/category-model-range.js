@@ -1,5 +1,5 @@
-var _ = require('underscore')
-var cdb = require('cartodb.js')
+var _ = require('underscore');
+var cdb = require('cartodb.js');
 
 /**
  *  This model is used for getting the total amount of values
@@ -14,17 +14,17 @@ module.exports = cdb.core.Model.extend({
   },
 
   url: function () {
-    return this.get('url')
+    return this.get('url');
   },
 
   initialize: function () {
     this.bind('change:url', function () {
-      this.fetch()
-    }, this)
+      this.fetch();
+    }, this);
   },
 
   setUrl: function (url) {
-    this.set('url', url)
+    this.set('url', url);
   },
 
   parse: function (d) {
@@ -35,10 +35,10 @@ module.exports = cdb.core.Model.extend({
       totalCount: _.reduce(
         _.pluck(d.categories, 'value'),
         function (memo, value) {
-          return memo + value
+          return memo + value;
         },
         0
       )
-    }
+    };
   }
-})
+});

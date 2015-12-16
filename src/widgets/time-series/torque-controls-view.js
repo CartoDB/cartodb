@@ -1,5 +1,5 @@
-var cdb = require('cartodb.js')
-var template = require('./torque-controls.tpl')
+var cdb = require('cartodb.js');
+var template = require('./torque-controls.tpl');
 
 /**
  * Torque animation controls, to manage run state
@@ -13,7 +13,7 @@ module.exports = cdb.core.View.extend({
   },
 
   initialize: function () {
-    this.model.bind('change:isRunning', this.render, this)
+    this.model.bind('change:isRunning', this.render, this);
   },
 
   render: function () {
@@ -24,16 +24,16 @@ module.exports = cdb.core.View.extend({
             ? 'pause'
             : 'play')
       })
-    )
+    );
 
-    return this
+    return this;
   },
 
   _onClick: function () {
     if (this.model.get('isRunning')) {
-      this.model.pause()
+      this.model.pause();
     } else {
-      this.model.play()
+      this.model.play();
     }
   }
-})
+});

@@ -26,11 +26,11 @@ describe('app/dashboard-info-view', function () {
   it('should collapse the view', function () {
     expect(this.view.$el.hasClass('is-active')).toBeFalsy();
 
-    this.view.$el.find('.js-toggle-view-link').click();
+    this.view.$el.find('.js-toggle-view-link').first().click();
 
     expect(this.view.$el.hasClass('is-active')).toBeTruthy();
 
-    this.view.$el.find('.js-toggle-view-link').click();
+    this.view.$el.find('.js-toggle-view-link').first().click();
 
     expect(this.view.$el.hasClass('is-active')).toBeFalsy();
   });

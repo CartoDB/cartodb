@@ -66,9 +66,9 @@
     "gulp-sketch": "0.0.7",
     "jshint-stylish": "~0.1.3",
     "load-grunt-tasks": "~0.6.0",
+    "semistandard": "7.0.4",
     "semver": "~4.1.0",
     "source-map-support": "0.3.2",
-    "standard": "5.4.1",
     "time-grunt": "~0.3.1",
     "watchify": "3.4.0"
   },
@@ -125,7 +125,7 @@
     "vendor"
   ],
   "main": "src/index.js",
-  "standard": {
+  "semistandard": {
     "globals": [
       "cartodb",
       "cdb",

@@ -1,4 +1,4 @@
-var Backbone = require('backbone');
+var cdb = require('cartodb.js');
 var CategoryItemModel = require('./category-item-model');
 
 /**
@@ -7,7 +7,7 @@ var CategoryItemModel = require('./category-item-model');
  *  - It basically sorts by (value, selected and "Other").
  */
 
-module.exports = Backbone.Collection.extend({
+module.exports = cdb.Backbone.Collection.extend({
   model: CategoryItemModel,
 
   comparator: function (a, b) {

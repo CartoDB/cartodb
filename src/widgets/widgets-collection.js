@@ -1,10 +1,10 @@
-var Backbone = require('backbone');
+var cdb = require('cartodb.js');
 
 /**
  *  Collection that controls widget models per layer
  *
  */
-module.exports = Backbone.Collection.extend({
+module.exports = cdb.Backbone.Collection.extend({
   initialize: function () {
     this._initBinds();
   },

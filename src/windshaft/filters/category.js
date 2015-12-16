@@ -1,5 +1,5 @@
 var _ = require('underscore');
-var Backbone = require('backbone');
+var cdb = require('cartodb.js');
 var WindshaftFilterBase = require('./base');
 
 /**
@@ -12,8 +12,8 @@ module.exports = WindshaftFilterBase.extend({
   },
 
   initialize: function () {
-    this.rejectedCategories = new Backbone.Collection();
-    this.acceptedCategories = new Backbone.Collection();
+    this.rejectedCategories = new cdb.Backbone.Collection();
+    this.acceptedCategories = new cdb.Backbone.Collection();
     this._initBinds();
   },
 

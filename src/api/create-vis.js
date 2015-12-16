@@ -1,5 +1,5 @@
 var _ = require('underscore');
-var Vis = require('cdb/vis/vis');
+var Vis = require('../vis/vis');
 
 var createVis = function(el, vizjson, options, callback) {
   if (!el) {

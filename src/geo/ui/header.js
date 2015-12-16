@@ -1,6 +1,6 @@
 var _ = require('underscore');
-var sanitize = require('cdb/core/sanitize');
-var View = require('cdb/core/view');
+var sanitize = require('../../core/sanitize');
+var View = require('../../core/view');
 
 var Header = View.extend({
 

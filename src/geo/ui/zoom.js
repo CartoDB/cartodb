@@ -1,4 +1,3 @@
-var _ = require('underscore');
 var templates = require('cdb.templates');
 var View = require('../../core/view');
 
@@ -13,8 +12,7 @@ var View = require('../../core/view');
  */
 
 module.exports = View.extend({
-
-  className: "CDB-Zoom",
+  className: 'CDB-Zoom',
 
   events: {
     'click .js-zoomIn': '_onZoomIn',
@@ -27,37 +25,37 @@ module.exports = View.extend({
     msg: ''
   },
 
-  initialize: function() {
+  initialize: function () {
     this.map = this.model;
     this.template = this.options.template;
     this.map.bind('change:zoom change:minZoom change:maxZoom', this._checkZoom, this);
   },
 
-  render: function() {
+  render: function () {
     this.$el.html(this.template(this.options));
     this._checkZoom();
     return this;
   },
 
-  _checkZoom: function() {
+  _checkZoom: function () {
     var zoom = this.map.get('zoom');
     this.$('.js-zoomIn')[ zoom < this.map.get('maxZoom') ? 'removeClass' : 'addClass' ]('is-disabled');
     this.$('.js-zoomOut')[ zoom > this.map.get('minZoom') ? 'removeClass' : 'addClass' ]('is-disabled');
     this.$('.js-zoomInfo').text(zoom);
   },
 
-  _onZoomIn: function(ev) {
+  _onZoomIn: function (ev) {
     this.killEvent(ev);
 
-    if (this.map.get("maxZoom") > this.map.getZoom()) {
+    if (this.map.get('maxZoom') > this.map.getZoom()) {
       this.map.setZoom(this.map.getZoom() + 1);
     }
   },
 
-  _onZoomOut: function(ev) {
+  _onZoomOut: function (ev) {
     this.killEvent(ev);
 
-    if (this.map.get("minZoom") < this.map.getZoom()) {
+    if (this.map.get('minZoom') < this.map.getZoom()) {
       this.map.setZoom(this.map.getZoom() - 1);
     }
   }

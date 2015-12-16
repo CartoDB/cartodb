@@ -108,4 +108,48 @@ describe('geo/ui/widgets/time-series/torque-time-slider-view', function () {
       });
     });
   });
+
+  describe('when change cumulativeRender on torque layer model', function () {
+    describe('when set', function () {
+      beforeEach(function () {
+        this.torqueLayerModel.setCumulativeRender(1, 2);
+      });
+
+      it('should hide view', function () {
+        expect(this.view.el.style.display).toEqual('none');
+      });
+
+      describe('when removed', function () {
+        beforeEach(function () {
+          this.torqueLayerModel.resetCumulativeRender();
+        });
+
+        it('should show view', function () {
+          expect(this.view.el.style.display).not.toEqual('none');
+        });
+      });
+    });
+  });
+
+  describe('.clean', function () {
+    beforeEach(function () {
+      this.chartView.$el.appendTo('body');
+      // Precheck, inverted assertions used below
+      expect(document.body.contains(this.view.el)).toBe(true);
+      expect(this.chartView.el.contains(this.view.el)).toBe(true);
+      this.view.clean();
+    });
+
+    afterEach(function () {
+      this.chartView.clean();
+    });
+
+    it('should remove the element from the chart view', function () {
+      expect(this.chartView.el.contains(this.view.el)).toBe(false);
+    });
+
+    it('should remove the element from the DOM', function () {
+      expect(document.body.contains(this.view.el)).toBe(false);
+    });
+  });
 });

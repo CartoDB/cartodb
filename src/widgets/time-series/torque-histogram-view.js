@@ -28,6 +28,8 @@ module.exports = cdb.core.View.extend({
 
     this._rangeFilter = this.options.rangeFilter;
     this._torqueLayerModel = this.options.torqueLayerModel;
+    this._torqueLayerModel.bind('change:renderRange', this._onRenderRangeChanged, this);
+    this.add_related_model(this._torqueLayerModel);
 
     this.model.bind('change:data', this._onChangeData, this);
   },
@@ -80,13 +82,19 @@ module.exports = cdb.core.View.extend({
     }
   },
 
+  _onRenderRangeChanged: function (m, val) {
+    if (!val) {
+      this._chartView.removeSelection();
+    }
+  },
+
   _onBrushEnd: function (loBarIndex, hiBarIndex) {
     var data = this.model.getData();
     this._rangeFilter.setRange(
       data[loBarIndex].start,
       data[hiBarIndex - 1].end
     );
-    this._torqueLayerModel.setStepsRange(loBarIndex, hiBarIndex);
+    this._torqueLayerModel.renderRange(loBarIndex, hiBarIndex);
   },
 
   _onChangeChartWidth: function () {

@@ -2,9 +2,8 @@ var _ = require('underscore')
 var cdb = require('cartodb.js')
 var torqueTemplate = require('./torque-template.tpl')
 var placeholderTemplate = require('./placeholder.tpl')
-var TorqueControlsView = require('./torque-controls-view')
-var TorqueTimeInfoView = require('./torque-time-info-view')
 var TorqueHistogramView = require('./torque-histogram-view')
+var TorqueHeaderView = require('./torque-header-view')
 
 /**
  * Widget content view for a Torque time-series
@@ -13,6 +12,7 @@ module.exports = cdb.core.View.extend({
   className: 'CDB-Widget-body CDB-Widget-body--timeSeries',
 
   initialize: function () {
+    this._torqueLayerModel = this.options.torqueLayerModel
     this.model.once('change:data', this.render, this)
   },
 
@@ -24,32 +24,26 @@ module.exports = cdb.core.View.extend({
         hasTorqueLayer: true
       }))
     } else {
-      this._renderContent()
+      this.$el.html(torqueTemplate())
+
+      this._appendView(
+        new TorqueHeaderView({
+          el: this.$('.js-header'),
+          model: this.model,
+          torqueLayerModel: this._torqueLayerModel
+        })
+      )
+
+      var view = new TorqueHistogramView(this.options)
+      this._appendView(view)
+      this.$el.append(view.el)
     }
 
     return this
   },
 
-  _renderContent: function () {
-    this.$el.html(torqueTemplate())
-    this._appendView(
-      new TorqueControlsView({ model: this.options.torqueLayerModel }),
-      '.js-header'
-    )
-    this._appendView(
-      new TorqueTimeInfoView({ model: this.options.torqueLayerModel }),
-      '.js-header'
-    )
-    this._appendView(new TorqueHistogramView(this.options))
-  },
-
-  _appendView: function (view, selector) {
+  _appendView: function (view) {
     this.addView(view)
-    if (selector) {
-      this.$(selector).append(view.el)
-    } else {
-      this.$el.append(view.el)
-    }
     view.render()
   },
 

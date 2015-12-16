@@ -27,7 +27,7 @@ var Infowindow = View.extend({
     hookHeight: 16
   },
 
-  className: "cartodb-infowindow",
+  className: "CDB-infowindow-wrapper",
 
   events: {
     // Close bindings

@@ -134,3 +134,29 @@
     cursor: pointer;
   }
 }
+
+.CDB-Shape-hamburguer {
+  display: inline-block;
+  vertical-align: middle;
+  position: relative;
+  width: 16px;
+  height: 2px;
+  border: 0;
+  background: #FFF;
+
+  &:before,
+  &:after {
+    display: block;
+    position: absolute;
+    width: 16px;
+    height: 2px;
+    background: #FFF;
+    content: '';
+  }
+  &:before {
+    top: -6px;
+  }
+  &:after {
+    bottom: -6px;
+  }
+}

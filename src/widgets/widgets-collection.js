@@ -1,4 +1,4 @@
-var Backbone = require('backbone')
+var Backbone = require('backbone');
 
 /**
  *  Collection that controls widget models per layer
@@ -6,7 +6,7 @@ var Backbone = require('backbone')
  */
 module.exports = Backbone.Collection.extend({
   initialize: function () {
-    this._initBinds()
+    this._initBinds();
   },
 
   _initBinds: function () {
@@ -16,11 +16,11 @@ module.exports = Backbone.Collection.extend({
       if (isColorCategorized) {
         this.each(function (mdl) {
           if (mdl !== m && mdl.get('categoryColors')) {
-            mdl.set('categoryColors', false)
+            mdl.set('categoryColors', false);
           }
-        })
+        });
       }
-    }, this)
+    }, this);
 
     // If a histogram model applies the histogram sizes, rest should remove/disable
     // the sizes applied before.
@@ -28,11 +28,11 @@ module.exports = Backbone.Collection.extend({
       if (isSizesApplied) {
         this.each(function (mdl) {
           if (mdl !== m && mdl.get('histogramSizes')) {
-            mdl.set('histogramSizes', false)
+            mdl.set('histogramSizes', false);
           }
-        })
+        });
       }
-    }, this)
+    }, this);
   }
 
-})
+});

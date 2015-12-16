@@ -1,5 +1,5 @@
-var _ = require('underscore')
-var WidgetModel = require('../widget-model')
+var _ = require('underscore');
+var WidgetModel = require('../widget-model');
 
 module.exports = WidgetModel.extend({
   defaults: _.extend(
@@ -17,7 +17,7 @@ module.exports = WidgetModel.extend({
     return {
       data: r.result,
       nulls: r.nulls
-    }
+    };
   },
 
   toJSON: function (d) {
@@ -27,7 +27,7 @@ module.exports = WidgetModel.extend({
         column: this.get('column'),
         operation: this.get('operation')
       }
-    }
+    };
   }
 
-})
+});

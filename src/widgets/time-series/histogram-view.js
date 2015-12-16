@@ -1,6 +1,6 @@
-var $ = require('jquery')
-var cdb = require('cartodb.js')
-var HistogramChartView = require('../histogram/chart')
+var $ = require('jquery');
+var cdb = require('cartodb.js');
+var HistogramChartView = require('../histogram/chart');
 
 /**
  * Time-series histogram view.
@@ -19,15 +19,15 @@ module.exports = cdb.core.View.extend({
   },
 
   initialize: function () {
-    this.filter = this.options.filter
+    this.filter = this.options.filter;
 
-    this.model.bind('change:data', this._onChangeData, this)
+    this.model.bind('change:data', this._onChangeData, this);
   },
 
   render: function () {
-    this.clearSubViews()
-    this._createHistogramView()
-    return this
+    this.clearSubViews();
+    this._createHistogramView();
+    return this;
   },
 
   _createHistogramView: function () {
@@ -42,43 +42,43 @@ module.exports = cdb.core.View.extend({
       },
       hasHandles: true,
       animationBarDelay: function (d, i) {
-        return (i * 3)
+        return (i * 3);
       },
       height: this.defaults.histogramChartHeight,
       data: this.model.getData()
-    })
-    this.addView(this._chartView)
-    this.$el.append(this._chartView.render().el)
-    this._chartView.show()
+    });
+    this.addView(this._chartView);
+    this.$el.append(this._chartView.render().el);
+    this._chartView.show();
 
-    this._chartView.bind('on_brush_end', this._onBrushEnd, this)
-    this._chartView.model.bind('change:width', this._onChangeChartWidth, this)
-    this.add_related_model(this._chartView.model)
+    this._chartView.bind('on_brush_end', this._onBrushEnd, this);
+    this._chartView.model.bind('change:width', this._onChangeChartWidth, this);
+    this.add_related_model(this._chartView.model);
   },
 
   _onChangeData: function () {
     if (this._chartView) {
-      this._chartView.replaceData(this.model.getData())
+      this._chartView.replaceData(this.model.getData());
     }
   },
 
   _onBrushEnd: function (loBarIndex, hiBarIndex) {
-    var data = this.model.getData()
+    var data = this.model.getData();
     this.filter.setRange(
       data[loBarIndex].start,
       data[hiBarIndex - 1].end
-    )
+    );
   },
 
   _onChangeChartWidth: function () {
-    var isMobileSize = $(window).width() < this.defaults.mobileThreshold
+    var isMobileSize = $(window).width() < this.defaults.mobileThreshold;
 
-    this._chartView.toggleLabels(!isMobileSize)
+    this._chartView.toggleLabels(!isMobileSize);
 
     var height = isMobileSize
       ? this.defaults.histogramChartMobileHeight
-      : this.defaults.histogramChartHeight
-    this._chartView.model.set('height', height)
+      : this.defaults.histogramChartHeight;
+    this._chartView.model.set('height', height);
   }
 
-})
+});

@@ -28,7 +28,7 @@
   "devDependencies": {
     "backbone": "1.2.3",
     "browserify": "11.2.0",
-    "cartodb.js": "CartoDB/cartodb.js#a1c5231",
+    "cartodb.js": "CartoDB/cartodb.js#v4",
     "leaflet": "0.7.3",
     "d3": "3.5.8",
     "grunt": "0.4.5",
@@ -47,8 +47,8 @@
     "load-grunt-tasks": "3.3.0",
     "moment": "2.10.6",
     "perfect-scrollbar": "0.6.7",
+    "semistandard": "7.0.4",
     "source-map-support": "0.4.0",
-    "standard": "5.4.1",
     "time-grunt": "1.2.2",
     "underscore": "1.8.3",
     "watchify": "3.6.1"
@@ -59,7 +59,7 @@
     ]
   },
   "main": "src/index.js",
-  "standard": {
+  "semistandard": {
     "globals": [
       "alert",
       "cartodb",

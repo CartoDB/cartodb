@@ -108,7 +108,7 @@ describe('widgets/time-series/torque-time-slider-view', function () {
     });
   });
 
-  describe('when change render range on torque layer model', function () {
+  xdescribe('when change render range on torque layer model', function () {
     beforeEach(function () {
       this.torqueLayerModel.renderRange(1, 2);
     });

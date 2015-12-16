@@ -16,12 +16,12 @@ module Cartodb
     private
     def generate_event_properties(user)
       {
-        'username' =>  user.username,
-        'email' => user.email,
-        'plan' => user.account_type,
-        'organization' => user.organization_user? ? user.organization.name: nil,
-        'event_origin' => 'Editor',
-        'creation_time' => Time.now.utc
+        username:  user.username,
+        email: user.email,
+        plan: user.account_type,
+        organization: user.organization_user? ? user.organization.name: nil,
+        event_origin: 'Editor',
+        creation_time: Time.now.utc
       }
     end
 

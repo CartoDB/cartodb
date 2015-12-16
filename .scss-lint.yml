@@ -1,7 +1,7 @@
 scss_files: 'themes/scss/**/*.scss'
 exclude:
-  - 'themes/scss/infowindow/*.scss'
-  - 'themes/scss/map/*.scss'
+  - 'themes/scss/common/reset.scss'
+  - 'themes/scss/map/cartodb-map-light.scss'
   - 'themes/scss/tooltip/*.scss'
   - 'themes/scss/vendor/*.scss'
   - 'vendor/**/*.scss'
@@ -89,7 +89,7 @@ linters:
   PropertyCount:
     enabled: true
     include_nested: false
-    max_properties: 15
+    max_properties: 18
     severity: warning
   PropertySortOrder:
     enabled: true
@@ -101,7 +101,7 @@ linters:
     enabled: true
     extra_properties: []
   PropertyUnits:
-    global: ['em', 'rem', '%', 'px', 's', 'ms'] # Allow relative units globally
+    global: ['em', 'rem', '%', 'px', 's', 'ms', 'vh'] # Allow relative units globally
     properties:
       border: ['px']
       line-height: ['px', '']
@@ -121,17 +121,17 @@ linters:
     # Valid cases
     #  - 0..100%
     #  - i | em | strong | div | span | ...
-    #  - Logo
-    #  - LogoWadus
-    #  - Logo--cartofante
-    #  - LogoWadus--cartofante
-    #  - Logo--cartofantePleased
-    #  - Logo--cartofanteURL
-    #  - Logo-oh
-    #  - Logo-oh:hover
-    #  - Logo:after
-    #  - Logo.is-state
-    convention: '([0-9]+%)|([a-z]+(:.*)*)|([A-Z]+[a-z]*)([A-Z]+[a-z]*)*-{0,2}([a-z]([a-z]*[A-Z]*[a-z]*))(\.[a-z]+-[a-z]*[A-Z]*[a-z]*)?(:.*)*'
+    #  - CDB-Logo
+    #  - CDB-LogoWadus
+    #  - CDB-Logo--cartofante
+    #  - CDB-LogoWadus--cartofante
+    #  - CDB-Logo--cartofantePleased
+    #  - CDB-Logo--cartofanteURL
+    #  - CDB-Logo-oh
+    #  - CDB-Logo-oh:hover
+    #  - CDB-Logo:after
+    #  - CDB-Logo.is-state
+    convention: '([0-9]+%)|([a-z]+(:.*)*)|CDB-([A-Z]+[a-z]*)([A-Z]+[a-z]*)*-{0,2}([a-z]([a-z]*[A-Z]*[a-z]*))(\.[a-z]+-[a-z]*[A-Z]*[a-z]*)?(:.*)*'
     ignored_types: ['id']
   Shorthand:
     enabled: true

@@ -174,7 +174,7 @@ describe('cdb/geo/ui/search', function() {
       });
 
       it('should display address in the search infowindow', function() {
-        expect(this.view._searchInfowindow.$('.cartodb-popup-content-wrapper p').text()).toBe('Madrid, Spain');
+        expect(this.view._searchInfowindow.$('.Cdb-infowindow-title').text()).toBe('Madrid, Spain');
       });
 
       it('should destroy/hide search pin when map is clicked', function(done) {

@@ -60,7 +60,6 @@ module.exports = function(grunt) {
     uglify: require('./grunt/tasks/uglify').task(),
     cssmin: require('./grunt/tasks/cssmin').task(),
     imagemin: require('./grunt/tasks/imagemin').task(),
-    copy: require('./grunt/tasks/copy').task(grunt, config),
     jshint: require('./grunt/tasks/jshint').task(),
     jasmine: require('./grunt/tasks/jasmine').task()
   });
@@ -141,13 +140,22 @@ module.exports = function(grunt) {
     grunt.config('config.doWatchify', true); // required for browserify to use watch files instead
   });
 
-  grunt.event.once('connect.jasmine.listening', function(host, port) {
-    grunt.log.writeln('Jasmine specs available at (one per bundle):');
+  grunt.event.once('connect.server.listening', function(host, port) {
+    grunt.log.writeln('Styleguide:');
+    grunt.log.writeln(' - http://' + host + ':' + port + '/themes/styleguide');
+    grunt.log.writeln('');
 
+    grunt.log.writeln('Examples:');
+    grunt.log.writeln(' - http://' + host + ':' + port + '/examples');
+    grunt.log.writeln('');
+
+    // Needs webserver for source-map-support install to work in a non-headless browserify,
+    // Unfortunately can't get source-maps when spec-runner is opened using file://
+    grunt.log.writeln('Jasmine specs available at (one per bundle):');
     var jasmineConfig = grunt.config('jasmine');
     for (var name in jasmineConfig) {
       var specRunnerFilepath = jasmineConfig[name].options.outfile;
-      grunt.task.run('jasmine:' + name + ':build')
+      grunt.task.run('jasmine:' + name + ':build');
       grunt.log.writeln(' - http://' + host + ':' + port + '/' + specRunnerFilepath);
     }
   });
@@ -162,14 +170,11 @@ module.exports = function(grunt) {
   ];
   var css = allDeps
     .concat([
-      'copy',
       'sass',
       'concat',
       'cssmin',
       'imagemin',
     ]);
-  var devCSS = css
-    .concat('connect:styleguide');
   var js = allDeps
     .concat([
       'browserify',
@@ -182,18 +187,39 @@ module.exports = function(grunt) {
     ]);
   var devJS = allDeps
     .concat('preWatch')
-    .concat(js)
-    .concat([
-      'connect:jasmine',
-      'connect:examples',
-    ]);
+    .concat(js);
+  var watch = [
+    'connect',
+    'watch'
+  ];
+
+  grunt.registerTask('standard:lint', 'lint source files', function() {
+    var done = this.async();
+    require("child_process").exec('PATH=$(npm bin):$PATH semistandard', function (error, stdout, stderr) {
+      if (error) {
+        grunt.log.fail(error);
+
+        // Filter out lines that are ignored,
+        // e.g. "src/foobar.js:0:0: File ignored because of your .eslintignore file. Use --no-ignore to override."
+        grunt.log.fail(stdout.replace(/.+--no-ignore.+(\r?\n|\r)/g, ''));
+        grunt.fail.warn('try `node_modules/.bin/semistandard --format src/filename.js` to auto-format code (you might still need to fix some things manually).')
+      } else {
+        grunt.log.ok('All linted files OK!');
+        grunt.log.writeln('Note that files listed in .eslintignore are not linted');
+      }
+      done();
+    });
+  });
 
   grunt.registerTask('default', [ 'build' ]);
   grunt.registerTask('build', _.uniq(buildJS.concat(css)));
   grunt.registerTask('build:js', _.uniq(buildJS));
   grunt.registerTask('build:css', _.uniq(css));
-  grunt.registerTask('test', _.uniq(js.concat('jasmine')));
-  grunt.registerTask('dev', _.uniq(devCSS.concat(devJS).concat('watch')));
-  grunt.registerTask('dev:css', _.uniq(devCSS.concat('watch')));
-  grunt.registerTask('dev:js', _.uniq(devJS.concat('watch')));
+  grunt.registerTask('test', _.uniq(js.concat([
+    'standard:lint',
+    'jasmine'
+  ])));
+  grunt.registerTask('dev', _.uniq(css.concat(devJS).concat(watch)));
+  grunt.registerTask('dev:css', _.uniq(css.concat(watch)));
+  grunt.registerTask('dev:js', _.uniq(devJS.concat(watch)));
 }

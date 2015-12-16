@@ -1,5 +1,4 @@
 var $ = require('jquery');
-var LeafletTorqueLayer = require('cdb/geo/leaflet/leaflet-torque-layer');
 
 describe('geo/leaflet/leaflet-torque-layer', function() {
   beforeEach(function() {

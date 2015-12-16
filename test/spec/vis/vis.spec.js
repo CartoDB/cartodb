@@ -1,7 +1,7 @@
 var $ = require('jquery');
 var _ = require('underscore');
-var L = require('leaflet');
 var Backbone = require('backbone');
+var View = require('cdb/core/view');
 
 // required due to implicit dependency in vis --> map-view
 var cdb = require('cdb');
@@ -9,7 +9,6 @@ _.extend(cdb.geo, require('cdb/geo/leaflet'));
 _.extend(cdb.geo, require('cdb/geo/gmaps'));
 
 var createVis = require('cdb/api/create-vis');
-var View = require('cdb/core/view');
 var Overlay = require('cdb/vis/vis/overlay');
 var Vis = require('cdb/vis/vis');
 require('cdb/vis/overlays'); // Overlay.register calls
@@ -44,7 +43,15 @@ describe('vis/vis', function() {
       }
     };
 
-    this.vis = new Vis({el: this.container});
+    this.createNewVis = function(attrs) {
+      attrs.dashboardView = new View();
+      attrs.widgets = new Backbone.Collection();
+      this.vis = new Vis(attrs);
+      return this.vis;
+    };
+    this.createNewVis({
+      el: this.container
+    });
     this.vis.load(this.mapConfig);
   });
 
@@ -52,7 +59,7 @@ describe('vis/vis', function() {
     jasmine.clock().uninstall();
   });
 
-  it("should insert  default max and minZoom values when not provided", function() {
+  it("should insert default max and minZoom values when not provided", function() {
     expect(this.vis.mapView.map_leaflet.options.maxZoom).toEqual(20);
     expect(this.vis.mapView.map_leaflet.options.minZoom).toEqual(0);
   });
@@ -143,7 +150,7 @@ describe('vis/vis', function() {
   it("should not invalidate map if map height is 0", function(done) {
     jasmine.clock().install();
     var container = $('<div>').css('height', '0');
-    var vis = new Vis({el: container});
+    var vis = this.createNewVis({el: container});
     this.mapConfig.map_provider = "googlemaps";
 
     vis.load(this.mapConfig);
@@ -158,7 +165,7 @@ describe('vis/vis', function() {
 
   it("should bind resize changes when map height is 0", function() {
     var container = $('<div>').css('height', '0');
-    var vis = new Vis({el: container});
+    var vis = this.createNewVis({el: container});
     spyOn(vis, '_onResize');
 
     this.mapConfig.map_provider = "googlemaps";
@@ -170,7 +177,7 @@ describe('vis/vis', function() {
 
   it("shouldn't bind resize changes when map height is greater than 0", function() {
     var container = $('<div>').css('height', '200px');
-    var vis = new Vis({el: container});
+    var vis = this.createNewVis({el: container});
     spyOn(vis, '_onResize');
 
     this.mapConfig.map_provider = "googlemaps";
@@ -187,7 +194,7 @@ describe('vis/vis', function() {
       _map = vis.map
       return new View()
     })
-    var vis = new Vis({el: this.container});
+    var vis = this.createNewVis({el: this.container});
     this.mapConfig.overlays = [ {type: 'jaja'}];
     vis.load(this.mapConfig);
     expect(_map).not.toEqual(undefined);
@@ -499,7 +506,7 @@ describe('vis/vis', function() {
 
     it("should be enabled with zoom overlay and scrollwheel enabled", function() {
       var container = $('<div>').css('height', '200px');
-      var vis = new Vis({el: container});
+      var vis = this.createNewVis({el: container});
 
       this.mapConfig.overlays = [
         {
@@ -520,7 +527,7 @@ describe('vis/vis', function() {
 
     it("should be enabled with zoom overlay and scrollwheel disabled", function() {
       var container = $('<div>').css('height', '200px');
-      var vis = new Vis({el: container});
+      var vis = this.createNewVis({el: container});
 
       this.mapConfig.overlays = [
         {
@@ -541,7 +548,7 @@ describe('vis/vis', function() {
 
     it("should be enabled without zoom overlay and scrollwheel enabled", function() {
       var container = $('<div>').css('height', '200px');
-      var vis = new Vis({el: container});
+      var vis = this.createNewVis({el: container});
 
       this.mapConfig.scrollwheel = true;
 
@@ -551,14 +558,13 @@ describe('vis/vis', function() {
 
     it("should be disabled without zoom overlay and scrollwheel disabled", function() {
       var container = $('<div>').css('height', '200px');
-      var vis = new Vis({el: container});
+      var vis = this.createNewVis({el: container});
 
       this.mapConfig.scrollwheel = false;
 
       vis.load(this.mapConfig);
       expect(vis.map.get('drag')).toBeFalsy();
     });
-
   });
 
   describe("Legends", function() {

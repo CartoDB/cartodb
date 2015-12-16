@@ -2,17 +2,20 @@ var isLeafletAlreadyLoaded = !!window.L;
 
 var _ = require('underscore');
 var L = require('leaflet');
-var d3 = require('d3');
 require('mousewheel'); // registers itself to $.event; TODO what's this required for? still relevant for supported browsers?
 require('mwheelIntent'); // registers itself to $.event; TODO what's this required for? still relevant for supported browsers?
 
 var cdb = require('cdb');
+
+if (window) {
+  window.cartodb = window.cdb = cdb;
+}
+
 cdb.Backbone = require('backbone');
 cdb.Mustache = require('mustache');
 cdb.$ = require('jquery');
 cdb._ = _;
 cdb.L = L;
-cdb.d3 = d3;
 
 if (isLeafletAlreadyLoaded) L.noConflict();
 _.extend(cdb.geo, require('./geo/leaflet'));
@@ -26,21 +29,15 @@ cdb.templates = require('cdb.templates');
 cdb.decorators = require('./core/decorators');
 cdb.createVis = require('./api/create-vis');
 cdb.createLayer = require('./api/create-layer');
+cdb.LZMA = require('lzma');
 
-// Extracted from vis/vis.js,
 // used in libs like torque to add themselves here (or so it seems)
-cdb.moduleLoad = function(name, mod) {
-  cdb[name] = mod;
-  cdb.config.modules.add({
-    name: name,
-    mod: mod
-  });
-};
+cdb.moduleLoad = require('./api/module-load');
 
 cdb.core.Profiler = require('cdb.core.Profiler');
 cdb.core.util = require('cdb.core.util');
 cdb.core.Loader = cdb.vis.Loader = require('./core/loader');
-cdb.core.sanitize = require('./core/sanitize')
+cdb.core.sanitize = require('./core/sanitize');
 cdb.core.Template = require('./core/template');
 cdb.core.TemplateList = require('./core/template-list');
 cdb.core.Model = require('./core/model');
@@ -86,7 +83,6 @@ cdb.geo.ui.Annotation = require('./geo/ui/annotation');
 cdb.geo.ui.Image = require('./geo/ui/image');
 cdb.geo.ui.Share = require('./geo/ui/share');
 cdb.geo.ui.Zoom = require('./geo/ui/zoom');
-cdb.geo.ui.ZoomInfo = require('./geo/ui/zoom-info');
 
 // setup expected object structure here, to avoid circular references
 _.extend(cdb.geo.ui, require('./geo/ui/legend-exports'));
@@ -116,11 +112,5 @@ cdb.vis.Layers = require('./vis/vis/layers');
 cdb.vis.Vis = require('./vis/vis');
 require('./vis/overlays'); // Overlay.register calls
 require('./vis/layers'); // Layers.register calls
-
-cdb.windshaft.filters.FilterBase = require('./windshaft/filters/base');
-cdb.windshaft.filters.BoundingBoxFilter = require('./windshaft/filters/bounding_box');
-cdb.windshaft.filters.CategoryFilter = require('./windshaft/filters/category');
-cdb.windshaft.filters.Collection = require('./windshaft/filters/collection');
-cdb.windshaft.filters.RangeFilter = require('./windshaft/filters/range');
 
 module.exports = cdb;

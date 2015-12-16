@@ -1,5 +1,4 @@
 var $ = require('jquery');
-var _ = require('underscore');
 var Template = require('cdb/core/template');
 var CartoDBLayerGroupAnonymous = require('cdb/geo/map/cartodb-layer-group-anonymous');
 var CartoDBLayer = require('cdb/geo/map/cartodb-layer');
@@ -10,7 +9,7 @@ var GoogleMapsMapView = require('cdb/geo/gmaps/gmaps-map-view');
 
 describe('geo/ui/mobile (torque)', function() {
 
-  var mobile, map, layerGroup, container, mapView, template, overlays, l1, l2, torque;
+  var map, layerGroup, container, mapView, template, overlays, torque;
 
   beforeEach(function() {
     map = new Map();

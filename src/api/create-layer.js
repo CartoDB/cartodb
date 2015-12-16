@@ -56,7 +56,7 @@ module.exports = function(map, layer, options, callback) {
   }
 
   var layerView, MapType;
-  var options = options || {};
+  options = options || {};
   var args = arguments;
   var fn = args[args.length -1];
   if(_.isFunction(fn)) {

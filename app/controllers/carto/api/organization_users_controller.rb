@@ -40,10 +40,32 @@ module Carto
         render_jsonp 'Central comunication failure', 500
       end
 
-      def destroy
+      def update
         render_jsonp({}, 401) && return unless current_viewer_is_owner?
+        render_jsonp('No update params provided', 410) && return if update_params.empty? || delete_params.empty?
 
         user = ::User.where(delete_params).first
+        render_jsonp("No user with #{delete_params}", 404) && return if user.nil?
+
+        user.update(Hash[update_params.map { |k, v| [UPDATE_PARAMS_MAP[k] || k, v] }])
+
+        render_jsonp(user.errors.full_messages, 410) && return unless user.save
+
+        user.update_in_central
+
+        render_jsonp Carto::Api::UserPresenter.new(user, current_viewer: current_viewer).to_poro, 200
+      rescue CartoDB::CentralCommunicationFailure => e
+        Rollbar.report_exception(e)
+
+        render_jsonp 'Central comunication failure', 500
+      end
+
+      def destroy
+        render_jsonp({}, 401) && return unless current_viewer_is_owner?
+        render_jsonp('No delete params provided', 410) && return if delete_params.empty?
+
+        user = ::User.where(delete_params).first
+        render_jsonp({}, 401) && return if @organization.owner.id == user.id
 
         render_jsonp("No user with #{delete_params}", 404) && return if user.nil?
         render_jsonp("Can't delete user. #{'Has shared entities' if user.has_shared_entities?}", 410) unless user.can_delete
@@ -62,26 +84,6 @@ module Carto
         end
       end
 
-      def update
-        render_jsonp({}, 401) && return unless current_viewer_is_owner?
-        render_jsonp('No update params provided', 200) && return if update_params.empty?
-
-        user = ::User.where(delete_params).first
-        render_jsonp("No user with #{delete_params}", 404) && return if user.nil?
-
-        user.update(Hash[update_params.map { |k, v| [UPDATE_PARAMS_MAP[k] || k, v] }])
-
-        render_jsonp(user.errors.full_messages, 410) && return unless user.save
-
-        user.update_in_central
-
-        render_jsonp Carto::Api::UserPresenter.new(user, current_viewer: current_viewer).to_poro, 200
-      rescue CartoDB::CentralCommunicationFailure => e
-        Rollbar.report_exception(e)
-
-        render_jsonp 'Central comunication failure', 500
-      end
-
       private
 
       # TODO: Use native strong params when in Rails 4+
@@ -96,7 +98,7 @@ module Carto
 
       # TODO: Use native strong params when in Rails 4+
       def update_params
-        permit(:new_email, :new_username, :password, :password_confirmation, :quota_in_bytes, :soft_geocoding_limit)
+        permit(:new_email, :password, :password_confirmation, :quota_in_bytes, :soft_geocoding_limit)
       end
     end
   end

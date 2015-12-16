@@ -360,6 +360,10 @@ var Infowindow = View.extend({
       $img.addClass('CDB-infowindow-media-item');
       url = $img.attr('src');
 
+      var h = $img.height();
+      var coverHeight = $cover.height();
+      $cover.css({ height: h - this.options.hookHeight });
+
       this._loadImageHook(url);
 
       return false;

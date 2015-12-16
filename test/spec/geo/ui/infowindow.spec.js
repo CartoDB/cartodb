@@ -377,10 +377,19 @@ describe('geo/ui/infowindow', function() {
       expect(view._isValidURL(url)).toEqual(true);
     });
 
+    it("shouldn't modify the height of the cover when there are several fields", function() {
+      model.set("content", { fields: fieldsWithoutURL });
+      model.set('template', '<div class="js-infowindow" data-cover="true"><div class="js-cover" style="height:123px"><div class="js-hook"></div></div>');
+      expect(view._containsCover()).toEqual(true);
+      expect(view.$(".js-cover").height()).toEqual(123);
+      expect(view.$(".js-hook img").length).toEqual(0);
+    });
+
     it("should add the image cover class in the custom template", function() {
-      model.set('template', '<div class="js-infowindow" data-cover="true"><div class="js-cover"><img src="//fake"></div><div class="js-hook"></div></div>');
+      model.set('template', '<div class="js-infowindow" data-cover="true"><div class="js-cover" style="height: 123px"><img src="//fake" style="height: 100px"></div><div class="js-hook"></div></div>');
       expect(view._containsCover()).toEqual(true);
       expect(view.$(".CDB-infowindow-media-item").length).toEqual(1);
+      expect(view.$(".js-cover").height()).toEqual(100 - view.options.hookHeight);
       expect(view.$(".js-hook img").length).toEqual(1);
     });
 

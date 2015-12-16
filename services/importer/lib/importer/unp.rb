@@ -176,7 +176,7 @@ module CartoDB
       end
 
       def unp_failure?(output, exit_code)
-        (exit_code != 0) || (output.include? "Cannot read")
+        (exit_code != 0)
       end
 
       # Return a new temporary file contained inside a tmp subfolder

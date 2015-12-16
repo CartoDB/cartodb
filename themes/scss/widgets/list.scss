@@ -95,7 +95,8 @@
 .CDB-Widget-listItem--fake {
   position: relative;
   height: 40px;
-  margin: 8px $sMargin-section;
+  margin-top: 8px;
+  margin-bottom: 8px;
   border-bottom: 1px solid transparent;
 
   &:before,
@@ -115,6 +116,11 @@
     height: 2px;
   }
 }
+/*
+.CDB-Widget-content .CDB-Widget-listItem--fake {
+  margin-right: 0;
+  margin-left: 0;
+}*/
 .CDB-Widget-listSubItem {
   display: inline-block;
 }

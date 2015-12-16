@@ -81,5 +81,4 @@ describe('geo/ui/zoom', function () {
       expect(this.$zoomOut.hasClass('is-disabled')).toBeTruthy();
     });
   });
-
 });

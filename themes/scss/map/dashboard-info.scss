@@ -12,8 +12,7 @@
   width: 304px;
   opacity: 0;
 }
-
-.CDB-Dashboard-info {
+.CDB-Dashboard-infoInner {
   @include transition(width, 0.25s, cubic-bezier(0.01, 0.99, 0.97, 1.01));
   position: fixed;
   top: 0;
@@ -27,26 +26,25 @@
   overflow: hidden;
   box-sizing: border-box;
   z-index: 2;
-
-  &.is-active {
+}
+.CDB-Dashboard-info.is-active {
+  .CDB-Dashboard-infoInner{
     width: 352px;
     box-shadow: 0 0 40px 0 rgba(0, 0, 0, 0.2);
-
-    .CDB-Dashboard-infoTexts {
-      @include animation(fadeInDown 0.8s both);
-    }
-    .CDB-Dashboard-infoFooterTxt {
-      @include animation(fadeInDown 0.8s both);
-    }
-    .CDB-Dashboard-infoSnapshots {
-      opacity: 1;
-    }
-    .CDB-Dashboard-infoActionsLink {
-      transform: rotate(180deg);
-    }
+  }
+  .CDB-Dashboard-infoTexts {
+    @include animation(fadeInDown 0.8s both);
+  }
+  .CDB-Dashboard-infoFooterTxt {
+    @include animation(fadeInDown 0.8s both);
+  }
+  .CDB-Dashboard-infoSnapshots {
+    opacity: 1;
+  }
+  .CDB-Dashboard-infoActionsLink {
+    transform: rotate(180deg);
   }
 }
-
 .CDB-Dashboard-infoLogo {
   width: 40px;
   height: 40px;
@@ -56,20 +54,17 @@
   line-height: 40px;
   text-align: center;
 }
-
 .CDB-Dashboard-infoLogo i {
   margin-top: -4px;
   color: #3C93D8;
   font-size: 22px;
   vertical-align: middle;
 }
-
 .CDB-Dashboard-infoActions {
   width: 40px;
   height: 40px;
   margin-bottom: 48px;
 }
-
 .CDB-Dashboard-infoActionsLink {
   @include transition(all, 0.2s, ease-out);
   display: block;
@@ -80,7 +75,6 @@
   border-radius: 50%;
   background: url('../img/dashboard-show.svg') no-repeat center center;
 }
-
 .CDB-Dashboard-infoUpdate {
   margin-bottom: 8px;
   color: #FFF;
@@ -89,7 +83,6 @@
   line-height: $sLineHeight-small;
   text-transform: uppercase;
 }
-
 .CDB-Dashboard-infoTitle {
   margin-bottom: 20px;
   color: #FFF;
@@ -97,14 +90,12 @@
   font-weight: $sFontWeight-lighter;
   line-height: $sLineHeight-huge;
 }
-
 .CDB-Dashboard-infoDescription {
   color: #FFF;
   font-size: $sFontSize-normal;
   font-weight: $sFontWeight-lighter;
   line-height: $sLineHeight-normal;
 }
-
 .CDB-Dashboard-infoFooter {
   position: absolute;
   right: 24px;
@@ -112,7 +103,6 @@
   left: 24px;
   width: 280px;
 }
-
 .CDB-Dashboard-infoMedia {
   display: inline-block;
   width: 40px;
@@ -120,13 +110,11 @@
   text-align: center;
   vertical-align: middle;
 }
-
 .CDB-Dashboard-infoAvatar img {
   display: inline-block;
   width: 100%;
   border-radius: 4px;
 }
-
 .CDB-Dashboard-infoFooterTxt {
   display: inline-block;
   color: #FFF;
@@ -136,11 +124,9 @@
   opacity: 0;
   vertical-align: middle;
 }
-
 .CDB-Dashboard-infoFooterItem {
   margin-top: 20px;
 }
-
 .CDB-Dashboard-infoSnapshots {
   @include transition(opacity, 0.3s, ease-out);
   position: relative;
@@ -153,14 +139,12 @@
   overflow: hidden;
   box-sizing: border-box;
 }
-
 .CDB-Dashboard-infoSnapshotsList {
   display: flex;
   position: absolute;
   flex-flow: row wrap;
   width: 1000px;
 }
-
 .CDB-Dashboard-infoSnapshotsListItem {
   width: 96px;
   height: 72px;
@@ -170,25 +154,73 @@
   background: #FFF;
   box-sizing: border-box;
 }
-
 .CDB-Dashboard-infoSnapshotsListTitle {
   margin-bottom: 8px;
   font-size: $sFontSize-smaller;
   font-weight: $sFontWeight-semibold;
   line-height: $sLineHeight-smaller;
 }
-
 .CDB-Dashboard-infoSnapshotsListDate {
   color: #636D72;
   font-size: $sFontSize-smaller;
   font-weight: $sFontWeight-lighter;
   line-height: $sLineHeight-smaller;
 }
-
 .CDB-Dashboard-infoMobile {
   display: none;
 }
+.CDB-Dashboard-infoHeaderMobile {
+  box-sizing: border-box;
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  width: 100%;
+  height: 48px;
+  padding: 8px;
+  background: #3AA9E3;
+  .CDB-Dashboard-infoLogo {
+    width: 32px;
+    height: 32px;
+    margin: 0 8px 0 0;
+    line-height: 32px;
+    display: inline-block;
+    vertical-align: middle;
+  }
+  .CDB-Dashboard-infoMedia {
+    width: 32px;
+    margin: 0;
+    position: absolute;
+    right: 8px;
+    top: 8px;
+    transition: opacity .2s ease-in;
+  }
+}
+.CDB-Shape--hamburguer {
+  display: inline-block;
+  vertical-align: middle;
+  position: relative;
+  width: 16px;
+  height: 2px;
+  border: 0;
+  background: #FFF;
 
+  &:before,
+  &:after {
+    display: block;
+    position: absolute;
+    width: 16px;
+    height: 2px;
+    background: #FFF;
+    content: '';
+  }
+  &:before {
+    top: -6px;
+  }
+  &:after {
+    bottom: -6px;
+  }
+}
 @include keyframes(fadeInDown) {
   from {
     @include css3-prefix(transform, translate3d(-5%, 0, 0));
@@ -200,125 +232,34 @@
     opacity: 1;
   }
 }
-
 @include media-query-mobile() {
-  .CDB-Dashboard-hideMobile {
-    display: none;
-  }
-  .CDB-Dashboard-info {
-    overflow: visible;
-  }
-  .CDB-Dashboard-infoMobile {
-    @include transition(transform, 0.25s, cubic-bezier(0.01, 0.99, 0.97, 1.01));
-    display: block;
-    position: absolute;
-    top: 0;
-    right: 40px;
-    left: 0;
-    height: calc(100vh - 32px);
-    padding: 16px;
+  .CDB-Dashboard-infoInner {
     transform: translateX(-100%);
-    background: #3AA9E3;
-    .CDB-Dashboard-infoActions {
-      position: absolute;
-      top: 22px;
-      right: 8px;
-    }
-    .CDB-Dashboard-infoFooter {
-      top: auto;
-      right: auto;
-      bottom: 24px;
-      left: auto;
-      width: auto;
-    }
-  }
-  .CDB-Dashboard-info.is-active .CDB-Dashboard-infoMobile {
-    transform: translateX(0);
-    box-shadow: 300px 0 0 rgba(0, 0, 0, 0.45);
-  }
-  .CDB-Dashboard-infoFooter {
-    top: 8px;
-    right: 8px;
-    left: auto;
-    width: 32px;
-    transition: opacity 0.3s;
-  }
-  .CDB-Dashboard-infoFooterItem {
-    margin-top: 0;
-  }
-  .CDB-Dashboard-infoLogo,
-  .CDB-Dashboard-infoActions {
-    display: inline-block;
-    margin: 0;
-    vertical-align: middle;
-  }
-  .CDB-Dashboard-infoActions {
-    height: auto;
-  }
-  .CDB-Dashboard-infoTexts {
-    top: 75px;
-    right: 16px;
-    left: 16px;
+    overflow: visible;
+    z-index: 2;
+    right: 40px;
     width: auto;
-    opacity: 1;
-  }
-  .CDB-Dashboard-info {
-    right: 0;
-    width: 100%;
     max-width: 100%;
-    height: 48px;
-  }
-  .CDB-Dashboard-infoHeader {
-    position: absolute;
-    top: 8px;
-    left: 8px;
-  }
-  .CDB-Dashboard-infoLogo {
-    width: 32px;
-    height: 32px;
-    line-height: 32px;
-  }
-  .CDB-Dashboard-infoMedia {
-    width: 32px;
   }
   .CDB-Dashboard-info.is-active {
-    width: auto;
-    box-shadow: 0 0 0;
-    .CDB-Dashboard-infoFooter {
-      opacity: 0;
+    .CDB-Dashboard-infoInner {
+      width: auto;
+      box-shadow: 300px 0 0 rgba(0, 0, 0, 0.45);
+      transform: translateX(0);
     }
-    .CDB-Dashboard-infoMobile {
-      .CDB-Dashboard-infoFooter {
-        opacity: 1;
+    .CDB-Dashboard-infoHeaderMobile {
+      .CDB-Dashboard-infoMedia {
+        opacity: 0;
       }
     }
   }
-
-  .CDB-Dashboard-infoActionsLink {
-    &.CDB-Dashboard-infoActionsLink--mobile {
-      position: relative;
-      width: 16px;
-      height: 2px;
-      border: 0;
-      border-radius: 0;
-      background: #FFF;
-
-      &:before,
-      &:after {
-        display: block;
-        position: absolute;
-        width: 16px;
-        height: 2px;
-        background: #FFF;
-        content: '';
-      }
-      &:before {
-        top: -6px;
-      }
-      &:after {
-        bottom: -6px;
-      }
-    }
+  .CDB-Dashboard-infoActions {
+    position: absolute;
+    top: 32px;
+    right: 24px;
+    margin: 0;
+  }
+  .CDB-Dashboard-infoTexts {
+    top: 100px;
   }
 }
-

@@ -15,18 +15,6 @@
 
   <div class="CDB-Dashboard-infoFooter">
     <ul>
-      <!--<li class="CDB-Dashboard-info-footer-item">
-        <div class="CDB-Dashboard-info-media">
-          <img src="/themes/img/icon-save.svg" alt="Save" />
-        </div>
-        <p class="CDB-Dashboard-info-footer-txt">Save snapshot</p>
-      </li>
-      <li class="CDB-Dashboard-info-footer-item">
-        <div class="CDB-Dashboard-info-media">
-          <img src="/themes/img/icon-share.svg" alt="share" />
-        </div>
-        <p class="CDB-Dashboard-info-footer-txt">Share view</p>
-      </li>-->
       <li class="CDB-Dashboard-infoFooterItem ">
         <div class="CDB-Dashboard-infoMedia CDB-Dashboard-infoAvatar">
           <img src="<%- userAvatarURL %>" alt="avatar" class="inline-block"/>

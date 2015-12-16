@@ -377,6 +377,13 @@ describe('geo/ui/infowindow', function() {
       expect(view._isValidURL(url)).toEqual(true);
     });
 
+    it("should add the image cover class in the custom template", function() {
+      model.set('template', '<div class="js-infowindow" data-cover="true"><div class="js-cover"><img src="//fake"></div><div class="js-hook"></div></div>');
+      expect(view._containsCover()).toEqual(true);
+      expect(view.$(".CDB-infowindow-media-item").length).toEqual(1);
+      expect(view.$(".js-hook img").length).toEqual(1);
+    });
+
     it("should detect if the infowindow has a cover", function() {
       model.set('template', '<div class="js-infowindow" data-cover="true"><div class="js-cover"></div></div>');
       expect(view._containsCover()).toEqual(true);

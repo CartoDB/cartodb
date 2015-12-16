@@ -357,8 +357,11 @@ var Infowindow = View.extend({
     var url = this._getCoverURL();
 
     if ($img.length > 0) {
-      // If there is alreay an image in the template, we should
-      // leave it as it is.
+      $img.addClass('CDB-infowindow-media-item');
+      url = $img.attr('src');
+
+      this._loadImageHook(url);
+
       return false;
     }
 
@@ -390,7 +393,7 @@ var Infowindow = View.extend({
           styles = { height: coverHeight };
         }
       }
-      
+
       $img.css(styles);
       $cover.css({ height: h - self.options.hookHeight });
       $img.fadeIn(self.options.imageTransitionSpeed);

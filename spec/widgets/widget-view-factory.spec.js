@@ -3,7 +3,7 @@ var WidgetViewFactory = require('app/widgets/widget-view-factory');
 var WidgetModel = require('app/widgets/widget-model');
 var WidgetView = require('app/widgets/widget-view');
 
-describe('geo/ui/widgets/widget-view-factory', function () {
+describe('widgets/widget-view-factory', function () {
   beforeEach(function () {
     this.factory = new WidgetViewFactory();
   });

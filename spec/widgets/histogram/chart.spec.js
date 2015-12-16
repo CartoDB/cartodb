@@ -3,7 +3,7 @@ var $ = require('jquery');
 var d3 = require('d3');
 var WidgetHistogramChart = require('app/widgets/histogram/chart');
 
-describe('geo/ui/widgets/histogram/chart', function () {
+describe('widgets/histogram/chart', function () {
   var onWindowResizeReal;
   var onWindowResizeSpy;
 

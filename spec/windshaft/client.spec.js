@@ -1,5 +1,5 @@
 var $ = require('jquery');
-var util = require('cartodb.js/src/core/util');
+var cdb = require('cartodb.js');
 var Client = require('app/windshaft/client');
 
 describe('windshaft/client', function () {
@@ -17,7 +17,7 @@ describe('windshaft/client', function () {
         this.ajaxParams = params;
       }.bind(this);
 
-      util.uniqueCallbackName = function () {
+      cdb.core.util.uniqueCallbackName = function () {
         return 'callbackName';
       };
 
@@ -101,7 +101,7 @@ describe('windshaft/client', function () {
     });
 
     it('should use POST if forceCors is true', function () {
-      spyOn(util, 'isCORSSupported').and.returnValue(true);
+      spyOn(cdb.core.util, 'isCORSSupported').and.returnValue(true);
 
       this.client = new Client({
         urlTemplate: 'https://{user}.example.com:443',
@@ -129,7 +129,7 @@ describe('windshaft/client', function () {
     });
 
     it('should use POST if payload is too big to be sent as a URL param', function () {
-      spyOn(util, 'isCORSSupported').and.returnValue(true);
+      spyOn(cdb.core.util, 'isCORSSupported').and.returnValue(true);
 
       this.client = new Client({
         urlTemplate: 'https://{user}.example.com:443',
@@ -162,7 +162,7 @@ describe('windshaft/client', function () {
     });
 
     it('should NOT use POST if forceCors is true but cors is not supported', function () {
-      spyOn(util, 'isCORSSupported').and.returnValue(false);
+      spyOn(cdb.core.util, 'isCORSSupported').and.returnValue(false);
 
       this.client = new Client({
         urlTemplate: 'https://{user}.example.com:443',

@@ -1,7 +1,7 @@
 var cdb = require('cartodb.js');
 var WidgetModel = require('app/widgets/histogram/model');
 
-describe('geo/ui/widgets/histogram/model', function () {
+describe('widgets/histogram/model', function () {
   beforeEach(function () {
     this.filter = new cdb.core.Model();
     this.layer = new cdb.core.Model();

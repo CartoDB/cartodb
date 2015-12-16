@@ -3,7 +3,7 @@ var _ = require('underscore');
 var cdb = require('cartodb.js');
 var AnimateValues = require('app/widgets/animate-values');
 
-describe('geo/ui/widgets/animate-values', function () {
+describe('widgets/animate-values', function () {
   beforeEach(function () {
     this.$el = $('<div><div class="js-value">123</div></div>');
 

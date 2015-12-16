@@ -3,7 +3,7 @@ var cdb = require('cartodb.js');
 var WidgetModel = require('app/widgets/widget-model');
 var WidgetView = require('app/widgets/widget-view');
 
-describe('geo/ui/widgets/widget-view', function () {
+describe('widgets/widget-view', function () {
   beforeEach(function () {
     this.model = new WidgetModel({
       id: 'widget_1',

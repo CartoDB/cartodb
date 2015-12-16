@@ -2,7 +2,7 @@ var cdb = require('cartodb.js');
 var Backbone = require('backbone');
 var DashboardView = require('app/dashboard-view');
 
-describe('geo/ui/dashboard-view', function () {
+describe('dashboard-view', function () {
   beforeEach(function () {
     this.view = new DashboardView({
       widgets: new Backbone.Collection(),

@@ -2,7 +2,7 @@ var cdb = require('cartodb.js');
 var HistogramModel = require('app/widgets/histogram/model');
 var TimeSeriesContentView = require('app/widgets/time-series/content-view');
 
-describe('geo/ui/widgets/time-series/content-view', function () {
+describe('widgets/time-series/content-view', function () {
   beforeEach(function () {
     this.model = new HistogramModel({}, {
       filter: new cdb.core.Model(),

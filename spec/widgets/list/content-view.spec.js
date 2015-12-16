@@ -2,7 +2,7 @@ var _ = require('underscore');
 var WidgetListModel = require('app/widgets/list/model');
 var WidgetListContent = require('app/widgets/list/content-view');
 
-describe('geo/ui/widgets/list/content-view', function () {
+describe('widgets/list/content-view', function () {
   beforeEach(function () {
     this.model = new WidgetListModel({
       id: 'widget_3',

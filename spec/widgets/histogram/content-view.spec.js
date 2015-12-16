@@ -3,7 +3,7 @@ var cdb = require('cartodb.js');
 var WidgetHistogramModel = require('app/widgets/histogram/model');
 var WidgetHistogramContent = require('app/widgets/histogram/content-view');
 
-describe('geo/ui/widgets/histogram/content-view', function () {
+describe('widgets/histogram/content-view', function () {
   beforeEach(function () {
     this.dataModel = new WidgetHistogramModel({
       id: 'widget_3',

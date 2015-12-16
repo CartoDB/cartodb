@@ -1,10 +1,9 @@
 var cdb = require('cartodb.js');
-var TorqueLayerModel = require('cartodb.js/src/geo/map/torque-layer');
 var HistogramModel = require('app/widgets/histogram/model');
 var HistogramChartView = require('app/widgets/histogram/chart');
 var TorqueTimeSliderView = require('app/widgets/time-series/torque-time-slider-view');
 
-describe('geo/ui/widgets/time-series/torque-time-slider-view', function () {
+describe('widgets/time-series/torque-time-slider-view', function () {
   beforeEach(function () {
     this.model = new HistogramModel({
       bins: 256
@@ -12,7 +11,7 @@ describe('geo/ui/widgets/time-series/torque-time-slider-view', function () {
       filter: new cdb.core.Model(),
       layer: new cdb.core.Model()
     });
-    this.torqueLayerModel = new TorqueLayerModel({
+    this.torqueLayerModel = new cdb.geo.TorqueLayer({
       isRunning: false,
       step: 0,
       steps: 256
@@ -109,24 +108,22 @@ describe('geo/ui/widgets/time-series/torque-time-slider-view', function () {
     });
   });
 
-  describe('when change cumulativeRender on torque layer model', function () {
-    describe('when set', function () {
+  describe('when change render range on torque layer model', function () {
+    beforeEach(function () {
+      this.torqueLayerModel.renderRange(1, 2);
+    });
+
+    it('should hide view', function () {
+      expect(this.view.el.style.display).toEqual('none');
+    });
+
+    describe('when removed', function () {
       beforeEach(function () {
-        this.torqueLayerModel.setCumulativeRender(1, 2);
+        this.torqueLayerModel.resetRenderRange();
       });
 
-      it('should hide view', function () {
-        expect(this.view.el.style.display).toEqual('none');
-      });
-
-      describe('when removed', function () {
-        beforeEach(function () {
-          this.torqueLayerModel.resetCumulativeRender();
-        });
-
-        it('should show view', function () {
-          expect(this.view.el.style.display).not.toEqual('none');
-        });
+      it('should show view', function () {
+        expect(this.view.el.style.display).not.toEqual('none');
       });
     });
   });

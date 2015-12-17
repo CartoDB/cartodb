@@ -62,7 +62,7 @@ module CartoDB
 
       def crawl(path, files=[])
         Dir.foreach(path) do |subpath|
-          normalized_subpath = normalize(subpath)
+          normalized_subpath = underscore(subpath)
           next if hidden?(normalized_subpath)
           next if normalized_subpath =~ /.*readme.*\.txt/i
           next if normalized_subpath =~ /\.version\.txt/i

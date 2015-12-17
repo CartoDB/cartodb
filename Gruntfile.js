@@ -10,30 +10,22 @@ module.exports = function(grunt) {
       tmp: '.tmp',
     },
     pkg: grunt.file.readJSON('package.json'),
+    browserify: require('./grunt-tasks/browserify'),
     clean: require('./grunt-tasks/clean'),
     concat: require('./grunt-tasks/concat'),
     connect: require('./grunt-tasks/connect'),
     copy: require('./grunt-tasks/copy'),
     cssmin: require('./grunt-tasks/cssmin'),
-    browserify: require('./grunt-tasks/browserify'),
+    exorcise: require('./grunt-tasks/exorcise'),
     imagemin: require('./grunt-tasks/imagemin'),
     jasmine: require('./grunt-tasks/jasmine'),
     sass: require('./grunt-tasks/scss'),
-    watch: require('./grunt-tasks/watch'),
+    uglify: require('./grunt-tasks/uglify'),
+    watch: require('./grunt-tasks/watch')
   });
 
   // required for browserify to use watch files instead
   grunt.registerTask('preWatch', grunt.config.bind(grunt.config, 'config.doWatchify', true));
-
-  var baseTasks = [
-    'clean:dist',
-    'copy',
-    'sass',
-    'concat',
-    'cssmin',
-    'imagemin',
-    'browserify',
-  ];
 
   grunt.registerTask('lint', 'lint source files', function() {
     var done = this.async();
@@ -53,8 +45,21 @@ module.exports = function(grunt) {
     });
   });
 
+  var baseTasks = [
+    'clean:dist',
+    'copy',
+    'sass',
+    'concat',
+    'cssmin',
+    'imagemin',
+    'browserify',
+  ];
+
   grunt.registerTask('default', ['build']);
-  grunt.registerTask('build', baseTasks);
+  grunt.registerTask('build', baseTasks.concat([
+    'exorcise',
+    'uglify'
+  ]));
   grunt.registerTask('dev',
     _.chain(baseTasks)
       .clone()

@@ -150,10 +150,7 @@ Overlay.register('zoom', function (data, vis) {
 
 // Tiles loader
 Overlay.register('loader', function (data) {
-  var tilesLoader = new TilesLoader({
-    template: Template.compile(data.template)
-  });
-
+  var tilesLoader = new TilesLoader();
   return tilesLoader.render();
 });
 

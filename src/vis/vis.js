@@ -416,7 +416,9 @@ var Vis = View.extend({
     // cause the layergroup view to fetch and render the tiles. This needs
     // to happen everytime a layer that belongs to the layerGroup changes
     // (eg: when the layer is hidden or it's SQL is changed)
-    this._createLayerGroupInstance(cartoDBLayerGroup);
+    if (cartoDBLayerGroup) {
+      this._createLayerGroupInstance(cartoDBLayerGroup);
+    }
 
     return this;
   },

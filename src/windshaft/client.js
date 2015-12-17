@@ -9,7 +9,7 @@ var validatePresenceOfOptions = function (options, requiredOptions) {
     return !options[option];
   });
   if (missingOptions.length) {
-    throw new Error('The following options are required: ' + missingOptions.join(', '));
+    throw new Error('WindshaftClient could not be initialized. The following options are missing: ' + missingOptions.join(', '));
   }
 };
 

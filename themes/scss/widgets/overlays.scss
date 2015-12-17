@@ -135,7 +135,8 @@
   height: 32px;
   overflow: hidden;
   position: relative;
-  
+  transform: width .2s ease-in;
+
   &.is-active {
     width: 184px;
   }

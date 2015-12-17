@@ -18,7 +18,7 @@ describe('widgets/standard/widget-loader-view', function () {
 
   it('should have render correctly', function () {
     this.view.render();
-    expect(this.view.$el.hasClass('CDB-Widget-loader')).toBeTruthy();
+    expect(this.view.$el.hasClass('CDB-Loader')).toBeTruthy();
   });
 
   it('should have a binds from the beginning', function () {

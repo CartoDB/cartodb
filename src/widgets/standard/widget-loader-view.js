@@ -7,7 +7,7 @@ var cdb = require('cartodb.js');
  *  first load is done.
  */
 module.exports = cdb.core.View.extend({
-  className: 'CDB-Widget-loader',
+  className: 'CDB-Loader',
 
   initialize: function () {
     this._initBinds();

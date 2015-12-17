@@ -83,7 +83,6 @@ cdb.geo.ui.Annotation = require('./geo/ui/annotation');
 cdb.geo.ui.Image = require('./geo/ui/image');
 cdb.geo.ui.Share = require('./geo/ui/share');
 cdb.geo.ui.Zoom = require('./geo/ui/zoom');
-cdb.geo.ui.ZoomInfo = require('./geo/ui/zoom-info');
 
 // setup expected object structure here, to avoid circular references
 _.extend(cdb.geo.ui, require('./geo/ui/legend-exports'));

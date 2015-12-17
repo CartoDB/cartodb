@@ -1,6 +1,7 @@
 var _ = require('underscore');
 var $ = require('jquery');
-require('jquery.jscrollpane'); // registers itself to $.jScrollPane
+var ClipPath = require('clip-path-polygon');
+var Ps = require('perfect-scrollbar');
 var log = require('cdb.log');
 var templates = require('cdb.templates');
 var sanitize = require('../../core/sanitize');
@@ -21,7 +22,12 @@ var util = require('../../core/util');
 
 var Infowindow = View.extend({
 
-  className: "cartodb-infowindow",
+  options: {
+    imageTransitionSpeed: 300,
+    hookHeight: 16
+  },
+
+  className: "CDB-infowindow-wrapper",
 
   events: {
     // Close bindings
@@ -42,15 +48,12 @@ var Infowindow = View.extend({
   },
 
   initialize: function(){
-    var self = this;
-
-    _.bindAll(this, "render", "setLatLng", "_setTemplate", "_updatePosition",
-      "_update", "toggle", "show", "hide");
-
     this.mapView = this.options.mapView;
 
     // Set template if it is defined in options
-    if (this.options.template) this.model.set('template', this.options.template);
+    if (this.options.template) {
+      this.model.set('template', this.options.template);
+    }
 
     // Set template view variable and
     // compile it if it is necessary
@@ -60,27 +63,7 @@ var Infowindow = View.extend({
       this._setTemplate();
     }
 
-    this.model.bind('change:content',             this.render, this);
-    this.model.bind('change:template_name',       this._setTemplate, this);
-    this.model.bind('change:latlng',              this._update, this);
-    this.model.bind('change:visibility',          this.toggle, this);
-    this.model.bind('change:template',            this._compileTemplate, this);
-    this.model.bind('change:sanitizeTemplate',    this._compileTemplate, this);
-    this.model.bind('change:alternative_names',   this.render, this);
-    this.model.bind('change:width',               this.render, this);
-    this.model.bind('change:maxHeight',           this.render, this);
-
-    this.mapView.map.bind('change',             this._updatePosition, this);
-
-    this.mapView.bind('zoomstart', function(){
-      self.hide(true);
-    });
-
-    this.mapView.bind('zoomend', function() {
-      self.show(true);
-    });
-
-    this.add_related_model(this.mapView.map);
+    this._initBinds();
 
     // Hide the element
     this.$el.hide();
@@ -94,16 +77,11 @@ var Infowindow = View.extend({
 
     if(this.template) {
 
-      // If there is content, destroy the jscrollpane first, then remove the content.
-      var $jscrollpane = this.$(".cartodb-popup-content");
-      if ($jscrollpane.length > 0 && $jscrollpane.data() != null) {
-        $jscrollpane.data().jsp && $jscrollpane.data().jsp.destroy();
-      }
-
       // Clone fields and template name
       var fields = _.map(this.model.attributes.content.fields, function(field){
         return _.clone(field);
       });
+
       var data = this.model.get('content') ? this.model.get('content').data : {};
 
       // If a custom template is not applied, let's sanitized
@@ -118,16 +96,17 @@ var Infowindow = View.extend({
       // Join plan fields values with content to work with
       // custom infowindows and CartoDB infowindows.
       var values = {};
+
       _.each(this.model.get('content').fields, function(pair) {
         values[pair.title] = pair.value;
-      })
+      });
 
       var obj = _.extend({
-          content: {
-            fields: fields,
-            data: data
-          }
-        },values);
+        content: {
+          fields: fields,
+          data: data
+        }
+      }, values);
 
       this.$el.html(
         sanitize.html(this.template(obj), this.model.get('sanitizeTemplate'))
@@ -136,37 +115,69 @@ var Infowindow = View.extend({
       // Set width and max-height from the model only
       // If there is no width set, we don't force our infowindow
       if (this.model.get('width')) {
-        this.$('.cartodb-popup').css('width', this.model.get('width') + 'px');
+        this.$('.js-infowindow').css('width', this.model.get('width') + 'px');
       }
-      this.$('.cartodb-popup .cartodb-popup-content').css('max-height', this.model.get('maxHeight') + 'px');
 
-      // Hello jscrollpane hacks!
-      // It needs some time to initialize, if not it doesn't render properly the fields
-      // Check the height of the content + the header if exists
-      var self = this;
-      setTimeout(function() {
-        var actual_height = self.$(".cartodb-popup-content").outerHeight();
-        if (self.model.get('maxHeight') <= actual_height)
-          self.$(".cartodb-popup-content").jScrollPane({
-            verticalDragMinHeight: 20,
-            autoReinitialise: true
-          });
-      }, 1);
+      if (this.model.get('maxHeight')) {
+        this.$('.js-content').css('max-height', this.model.get('maxHeight') + 'px');
+      }
 
       // If the template is 'cover-enabled', load the cover
       this._loadCover();
 
-      if(!this.isLoadingData()) {
+      if (!this.isLoadingData()) {
         this.model.trigger('domready', this, this.$el);
         this.trigger('domready', this, this.$el);
       }
+
+      this._renderScroll();
     }
 
     return this;
   },
 
+  _initBinds: function() {
+
+    _.bindAll(this, '_onKeyUp');
+
+    this.model.bind('change:content change:alternative_names change:width change:maxHeight', this.render, this);
+    this.model.bind('change:template_name', this._setTemplate, this);
+    this.model.bind('change:latlng', this._update, this);
+    this.model.bind('change:visibility', this.toggle, this);
+    this.model.bind('change:template change:sanitizeTemplate', this._compileTemplate, this);
+
+    this.mapView.map.bind('change', this._updatePosition, this);
+
+    this.mapView.bind('zoomstart', function(){
+      this.hide(true);
+    }, this);
+
+    this.mapView.bind('zoomend', function() {
+      this.show(true);
+    }, this);
+
+    this.add_related_model(this.mapView.map);
+    this.add_related_model(this.mapView);
+  },
+
+  _onKeyUp: function(e) {
+    if (e && e.keyCode === 27) {
+      this._closeInfowindow();
+    }
+  },
+
+  _renderScroll: function() {
+    if (this.$(".has-scroll").length === 0) return;
+
+    Ps.initialize(this.el.querySelector('.js-content'), {
+      wheelSpeed: 2,
+      wheelPropagation: true,
+      minScrollbarLength: 20
+    });
+  },
+
   _getModelTemplate: function() {
-    return this.model.get("template_name")
+    return this.model.get("template_name");
   },
 
   /**
@@ -191,9 +202,9 @@ var Infowindow = View.extend({
       this.template = new Template({
         template: template,
         type: this.model.get('template_type') || 'mustache'
-      }).asFunction()
+      }).asFunction();
     } else {
-      this.template = template
+      this.template = template;
     }
 
     this.render();
@@ -238,7 +249,7 @@ var Infowindow = View.extend({
    */
   _sanitizeField: function(attr, template_name, pos) {
     // Check null or undefined :| and set both to empty == ''
-    if (attr.value == null || attr.value == undefined) {
+    if (attr.value === null || attr.value === undefined) {
       attr.value = '';
     }
 
@@ -257,7 +268,7 @@ var Infowindow = View.extend({
     var new_value = attr.value.toString();
 
     // If it is index 0, not any field type, header template type and length bigger than 30... cut off the text!
-    if (!attr.type && pos==0 && attr.value.length > 35 && template_name && template_name.search('_header_') != -1) {
+    if (!attr.type && pos === 0 && attr.value.length > 35 && template_name && template_name.search('_header_') !== -1) {
       new_value = attr.value.substr(0,32) + "...";
     }
 
@@ -268,11 +279,11 @@ var Infowindow = View.extend({
 
     // Is it the value a link?
     if (this._isValidURL(attr.value)) {
-      new_value = "<a href='" + attr.value + "' target='_blank'>" + new_value + "</a>"
+      new_value = "<a href='" + attr.value + "' target='_blank' class='CDB-infowindow-link'>" + new_value + "</a>";
     }
 
     // If it is index 0, not any field type, header image template type... don't cut off the text or add any link!!
-    if (pos==0 && template_name.search('_header_with_image') != -1) {
+    if (pos === 0 && template_name.search('_header_with_image') !== -1) {
       new_value = attr.value;
     }
 
@@ -291,7 +302,7 @@ var Infowindow = View.extend({
    *  Does header contain cover?
    */
   _containsCover: function() {
-    return this.$el.find(".cartodb-popup.header").attr("data-cover") ? true : false;
+    return this.$(".js-infowindow").attr("data-cover") ? true : false;
   },
 
   /**
@@ -307,59 +318,91 @@ var Infowindow = View.extend({
     return false;
   },
 
+  _loadImageHook: function(url) {
+    var $hook = this.$(".js-hook");
+    var $cover = this.$(".js-cover");
+
+    if ($hook) {
+      $hookImage = $("<img />").attr("src", url);
+      $hook.append($hookImage);
+
+      var hookPoints = [[0, 0], [0, 100], [100, 0]];
+
+      $hook.clipPath(hookPoints, {
+        isPercentage: true
+      });
+
+      $hookImage.load(function(){
+        $hookImage.css({
+          marginTop: -$cover.height(),
+          width: $cover.width()
+        });
+      });
+    }
+  },
+
   /**
    *  Attempts to load the cover URL and show it
    */
   _loadCover: function() {
 
-    if (!this._containsCover()) return;
+    if (!this._containsCover()) {
+      return;
+    }
 
     var self = this;
-    var $cover = this.$(".cover");
+
+    var $cover = this.$(".js-cover");
     var $img = $cover.find("img");
-    var $shadow = this.$(".shadow");
     var url = this._getCoverURL();
 
     if ($img.length > 0) {
-      // If there is alreay an image in the template, we should
-      // leave it as it is.
+      $img.addClass('CDB-infowindow-media-item');
+      url = $img.attr('src');
+
+      var h = $img.height();
+      var coverHeight = $cover.height();
+      $cover.css({ height: h - this.options.hookHeight });
+
+      this._loadImageHook(url);
+
       return false;
     }
 
     if (!this._isValidURL(url)) {
-      $shadow.hide();
       log.info("Header image url not valid");
       return;
     }
 
-    // create the image
-    $img = $("<img />").attr("src", url);
+    $img = $("<img class='CDB-infowindow-media-item' />").attr("src", url);
+
     $cover.append($img);
 
     $img.load(function(){
-      var w  = $img.width();
-      var h  = $img.height();
+      var w = $img.width();
+      var h = $img.height();
+
       var coverWidth = $cover.width();
       var coverHeight = $cover.height();
-      var calculatedHeight = h / (w / coverWidth);
+
       var ratio = h / w;
+
       var coverRatio = coverHeight / coverWidth;
-      var styles = {
-        width: coverWidth,
-        top: "50%",
-        position: "absolute",
-        "margin-top": -1*parseInt(calculatedHeight, 10)/2
-      };
+
+      var styles = {};
 
       // Resize rules
-      if ( w > coverWidth && h > coverHeight) { // bigger image
-        if ( ratio < coverRatio ) {
+      if (w > coverWidth && h > coverHeight) { // bigger image
+        if (ratio < coverRatio) {
           styles = { height: coverHeight };
         }
       }
 
       $img.css(styles);
-      $img.fadeIn(300);
+      $cover.css({ height: h - self.options.hookHeight });
+      $img.fadeIn(self.options.imageTransitionSpeed);
+
+      self._loadImageHook(url);
     })
     .error();
   },
@@ -369,8 +412,8 @@ var Infowindow = View.extend({
    */
   _isValidURL: function(url) {
     if (url) {
-      var urlPattern = /^(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-|]*[\w@?^=%&amp;\/~+#-])?$/
-      return String(url).match(urlPattern) != null ? true : false;
+      var urlPattern = /^(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-|]*[\w@?^=%&amp;\/~+#-])?$/;
+      return String(url).match(urlPattern) !== null ? true : false;
     }
 
     return false;
@@ -380,7 +423,11 @@ var Infowindow = View.extend({
    *  Toggle infowindow visibility
    */
   toggle: function() {
-    this.model.get("visibility") ? this.show() : this.hide();
+    if (this.model.get("visibility")) {
+      this.show();
+    } else {
+      this.hide();
+    }
   },
 
   /**
@@ -406,6 +453,7 @@ var Infowindow = View.extend({
       content:  {
         fields: [{
           title: null,
+          loading: true,
           alternative_name: null,
           value: 'Loading content...',
           index: null,
@@ -413,7 +461,8 @@ var Infowindow = View.extend({
         }],
         data: {}
       }
-    })
+    });
+
     return this;
   },
 
@@ -432,12 +481,13 @@ var Infowindow = View.extend({
         }],
         data: {}
       }
-    })
+    });
+
     return this;
   },
 
   /**
-   * Set the correct position for the popup
+   * Set the correct position for the infowindow
    */
   setLatLng: function (latlng) {
     this.model.set("latlng", latlng);
@@ -469,11 +519,12 @@ var Infowindow = View.extend({
    *  Show infowindow (update, pan, etc)
    */
   show: function (no_pan) {
-    var self = this;
+
+    $(document).on('keyup', this._onKeyUp);
 
     if (this.model.get("visibility")) {
-      self.$el.css({ left: -5000 });
-      self._update(no_pan);
+      this.$el.css({ left: -5000 });
+      this._update(no_pan);
     }
   },
 
@@ -488,6 +539,7 @@ var Infowindow = View.extend({
    *  Set infowindow to hidden
    */
   hide: function (force) {
+    $(document).off('keyup', this._onKeyUp);
     if (force || !this.model.get("visibility")) this._animateOut();
   },
 
@@ -500,7 +552,7 @@ var Infowindow = View.extend({
       var delay = 0;
 
       if (!no_pan) {
-        var delay = this.adjustPan();
+        delay = this.adjustPan();
       }
 
       this._updatePosition();
@@ -584,7 +636,7 @@ var Infowindow = View.extend({
     containerWidth  = this.$el.width(),
     pos             = this.mapView.latLonToPixel(this.model.get("latlng")),
     adjustOffset    = {x: 0, y: 0};
-    size            = this.mapView.getSize()
+    size            = this.mapView.getSize();
     wait_callback   = 0;
 
     if (pos.x - offset[0] < 0) {

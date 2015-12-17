@@ -20,7 +20,8 @@
     "Carlos Matallín <matallo@cartodb.com>",
     "Jaime Chapinal <jaime.chapinal@cartodb.com>",
     "Nicklas Gummesson <nicklas@cartodb.com>",
-    "Francisco Dans <francisco@cartodb.com>"
+    "Francisco Dans <francisco@cartodb.com>",
+    "Emilio García <emilio@cartodb.com>"
   ],
   "licenses": [
     {
@@ -30,10 +31,12 @@
   "dependencies": {
     "backbone": "1.2.3",
     "browserify-shim": "3.8.10",
-    "jstify": "0.12.0",
+    "clip-path-polygon": "0.1.6",
     "jquery": "2.1.4",
+    "jstify": "0.12.0",
     "leaflet": "0.7.3",
     "mustache": "1.1.0",
+    "perfect-scrollbar": "0.6.7",
     "torque.js": "2.15.0",
     "underscore": "1.8.3"
   },

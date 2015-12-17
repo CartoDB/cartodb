@@ -8,14 +8,13 @@ var CartoDBLayerGroupAnonymous = require('cdb/geo/map/cartodb-layer-group-anonym
 var GoogleMapsMapView = require('cdb/geo/gmaps/gmaps-map-view');
 var Mobile = require('cdb/geo/ui/mobile');
 
-describe('geo/ui/mobile', function() {
-
+describe('geo/ui/mobile', function () {
   var map, layerGroup, container, mapView, template, overlays;
 
-  beforeEach(function() {
+  beforeEach(function () {
     map = new Map();
 
-    torque = new TorqueLayer({ type: "torque", visible: false, urlTemplate: "https://maps.nlp.nokia.com/maptiler/v2/maptile/newest/normal.day/{z}/{x}/{y}/256/png8?lg=eng&token=61YWYROufLu_f8ylE0vn0Q&app_id=qIWDkliFCtLntLma2e6O", name: "Nokia Day", className: "nokia_day", attribution: "©2012 Nokia <a href='http://here.net/services/terms' target='_blank'>Terms of use</a>", kind: "tiled", infowindow: null, id: 1226, order: 0 });
+    torque = new TorqueLayer({ type: 'torque', visible: false, urlTemplate: 'https://maps.nlp.nokia.com/maptiler/v2/maptile/newest/normal.day/{z}/{x}/{y}/256/png8?lg=eng&token=61YWYROufLu_f8ylE0vn0Q&app_id=qIWDkliFCtLntLma2e6O', name: 'Nokia Day', className: 'nokia_day', attribution: "©2012 Nokia <a href='http://here.net/services/terms' target='_blank'>Terms of use</a>", kind: 'tiled', infowindow: null, id: 1226, order: 0 });
 
     layerGroup = new CartoDBLayerGroupAnonymous({
       attribution: 'Custom attribution'
@@ -25,10 +24,10 @@ describe('geo/ui/mobile', function() {
           type: 'cartodb',
           visible: false,
           options: {
-            sql: "select * from european_countries_export",
+            sql: 'select * from european_countries_export',
             cartocss: '#layer { polygon-fill: #000; polygon-opacity: 0.8;}',
-            cartocss_version : '2.0.0',
-            layer_name: "european_countries_export",
+            cartocss_version: '2.0.0',
+            layer_name: 'european_countries_export',
             interactivity: ['created_at', 'cartodb_id']
           }
         }),
@@ -36,10 +35,10 @@ describe('geo/ui/mobile', function() {
           type: 'cartodb',
           visible: false,
           options: {
-            sql: "select * from jamon_countries",
+            sql: 'select * from jamon_countries',
             cartocss: '#layer { polygon-fill: #000; polygon-opacity: 0.8;}',
-            cartocss_version : '2.0.0',
-            layer_name: "jamon_countries",
+            cartocss_version: '2.0.0',
+            layer_name: 'jamon_countries',
             interactivity: ['description', 'cartodb_id']
           }
         }),
@@ -47,22 +46,22 @@ describe('geo/ui/mobile', function() {
           type: 'cartodb',
           visible: true,
           options: {
-            sql: "select * from jamon_countries",
+            sql: 'select * from jamon_countries',
             cartocss: '#layer { polygon-fill: #000; polygon-opacity: 0.8;}',
-            cartocss_version : '2.0.0',
-            layer_name: "layer_with_legend",
+            cartocss_version: '2.0.0',
+            layer_name: 'layer_with_legend',
             interactivity: ['description', 'cartodb_id'],
           },
           legend: {
-            type: "custom",
-            title: "Little legend",
+            type: 'custom',
+            title: 'Little legend',
             show_title: true,
             data: [
-              { name: "Natural Parks",  value: "#58A062" },
-              { name: "Villages",       value: "#F07971" },
-              { name: "Rivers",         value: "#54BFDE" },
-              { name: "Fields",         value: "#9BC562" },
-              { name: "Caves",          value: "#FABB5C" }
+              { name: 'Natural Parks',  value: '#58A062' },
+              { name: 'Villages',       value: '#F07971' },
+              { name: 'Rivers',         value: '#54BFDE' },
+              { name: 'Fields',         value: '#9BC562' },
+              { name: 'Caves',          value: '#FABB5C' }
             ]
           }
         })
@@ -72,21 +71,21 @@ describe('geo/ui/mobile', function() {
     map.layers.reset([layerGroup]);
 
     template = Template.compile('<div class="backdrop"></div>' +
-      '<div class="cartodb-header">' +
-      '<div class="content">' +
-      '<a href="#" class="fullscreen"></a>' +
-      '<a href="#" class="toggle"></a>' +
-      '</div>' +
-      '</div>' +
-      '<div class="aside">' +
-      '<div class="layer-container">' +
-      '<div class="scrollpane"><ul class="layers"></ul></div>' +
-      '</div>' +
-      '</div>' +
-      '<div class="cartodb-attribution"></div>' +
-      '<a href="#" class="cartodb-attribution-button"></a>' +
-      '<div class="torque"></div>'
-    , 'mustache');
+    '<div class="cartodb-header">' +
+    '<div class="content">' +
+    '<a href="#" class="fullscreen"></a>' +
+    '<a href="#" class="toggle"></a>' +
+    '</div>' +
+    '</div>' +
+    '<div class="aside">' +
+    '<div class="layer-container">' +
+    '<div class="scrollpane"><ul class="layers"></ul></div>' +
+    '</div>' +
+    '</div>' +
+    '<div class="cartodb-attribution"></div>' +
+    '<a href="#" class="cartodb-attribution-button"></a>' +
+    '<div class="torque"></div>'
+      , 'mustache');
 
     container = $('<div>').css('height', '200px');
 
@@ -99,7 +98,7 @@ describe('geo/ui/mobile', function() {
 
     overlays.push({
       order: 2,
-      type: "zoom",
+      type: 'zoom',
       url: null
     });
 
@@ -107,24 +106,22 @@ describe('geo/ui/mobile', function() {
       options: {
         extra: {
           description: null,
-          title: "Hello!",
+          title: 'Hello!',
           show_title: true,
           show_description: false
         },
       },
       order: 1,
       shareable: false,
-      type: "header",
+      type: 'header',
       url: null
     });
   });
 
-  describe("with legends, with layer selector, without search", function() {
-
+  describe('with legends, with layer selector, without search', function () {
     var mobile;
 
-    beforeEach(function() {
-
+    beforeEach(function () {
       mobile = new Mobile({
         template: template,
         mapView: mapView,
@@ -140,82 +137,80 @@ describe('geo/ui/mobile', function() {
 
     });
 
-    it("should render properly", function() {
+    it('should render properly', function () {
       mobile.render();
-      expect(mobile.$el.find(".aside").length).toBe(1);
+      expect(mobile.$el.find('.aside').length).toBe(1);
     });
 
-    it("should render the title", function() {
+    it('should render the title', function () {
       mobile.render();
-      expect(mobile.$el.find(".title").text()).toBe("Hello!");
+      expect(mobile.$el.find('.title').text()).toBe('Hello!');
     });
 
-    it("shouldn't render the description", function() {
+    it("shouldn't render the description", function () {
       mobile.render();
-      expect(mobile.$el.find(".description").length).toBe(0);
+      expect(mobile.$el.find('.description').length).toBe(0);
     });
 
-    it("should render the layers", function() {
+    it('should render the layers', function () {
       mobile.render();
-      expect(mobile.$el.hasClass("with-layers")).toBe(true);
-      expect(mobile.$el.find(".layer-container > h3").text()).toBe("3 layers");
-      expect(mobile.$el.find(".layers > li").length).toBe(3);
+      expect(mobile.$el.hasClass('with-layers')).toBe(true);
+      expect(mobile.$el.find('.layer-container > h3').text()).toBe('3 layers');
+      expect(mobile.$el.find('.layers > li').length).toBe(3);
 
       // There's one layer with legend
-      expect(mobile.$el.find(".layers > li:nth-child(3) .cartodb-legend").length).toBe(1);
+      expect(mobile.$el.find('.layers > li:nth-child(3) .cartodb-legend').length).toBe(1);
 
-      expect(mobile.$el.find(".layers > li:nth-child(1) h3").text()).toBe("european_countries_exp&hellip;");
-      expect(mobile.$el.find(".layers > li:nth-child(2) h3").text()).toBe("jamon_countries");
-      expect(mobile.$el.find(".layers > li:nth-child(3) h3").text()).toBe("layer_with_legend");
+      expect(mobile.$el.find('.layers > li:nth-child(1) h3').text()).toBe('european_countries_exp&hellip;');
+      expect(mobile.$el.find('.layers > li:nth-child(2) h3').text()).toBe('jamon_countries');
+      expect(mobile.$el.find('.layers > li:nth-child(3) h3').text()).toBe('layer_with_legend');
     });
 
-    it("shouldn't render the search", function() {
+    it("shouldn't render the search", function () {
       mobile.render();
-      expect(mobile.$el.hasClass("with-search")).toBe(false);
-      expect(mobile.$el.find(".cartodb-searchbox").length).toBe(0);
+      expect(mobile.$el.hasClass('with-search')).toBe(false);
+      expect(mobile.$el.find('.cartodb-searchbox').length).toBe(0);
     });
 
-    it("should render the attribution", function() {
+    it('should render the attribution', function () {
       mobile.render();
-      expect(mobile.$el.find(".cartodb-attribution-button").length).toBe(1);
-      expect(mobile.$el.find(".cartodb-attribution").html()).toBe('<li>Custom attribution</li><li>CartoDB <a href="http://cartodb.com/attributions" target="_blank">attribution</a></li>');
+      expect(mobile.$el.find('.cartodb-attribution-button').length).toBe(1);
+      expect(mobile.$el.find('.cartodb-attribution').html()).toBe('<li>Custom attribution</li><li>CartoDB <a href="http://cartodb.com/attributions" target="_blank">attribution</a></li>');
     });
 
-    it("should has the attribution hidden by default", function() {
+    it('should has the attribution hidden by default', function () {
       mobile.render();
-      expect(mobile.$el.find(".cartodb-attribution").css("display")).toBe("");
+      expect(mobile.$el.find('.cartodb-attribution').css('display')).toBe('');
     });
 
-    it("should show the zoom", function() {
+    it('should show the zoom', function () {
       mobile.render();
-      expect(mobile.$el.find(".cartodb-zoom").length).toBe(1);
+      expect(mobile.$el.find('.CDB-Zoom').length).toBe(1);
     });
 
-    it("should show the toggle button", function() {
+    it('should show the toggle button', function () {
       mobile.render();
-      expect(mobile.$el.find(".cartodb-header .content .toggle").length).toBe(1);
+      expect(mobile.$el.find('.cartodb-header .content .toggle').length).toBe(1);
     });
 
-    it("should show the attribution", function() {
+    it('should show the attribution', function () {
       mobile.render();
-      mobile.$el.find(".cartodb-attribution-button").click();
-      expect(mobile.$el.find(".cartodb-attribution").css("display")).toBe("block");
+      mobile.$el.find('.cartodb-attribution-button').click();
+      expect(mobile.$el.find('.cartodb-attribution').css('display')).toBe('block');
     });
 
-    it("should render the legend", function() {
+    it('should render the legend', function () {
       mobile.render();
-      expect(mobile.$el.find(".layers .cartodb-mobile-layer.has-legend .cartodb-legend .legend-title").text()).toBe("Little legend");
-      expect(mobile.$el.find(".layers .cartodb-mobile-layer.has-legend").length).toBe(1);
+      expect(mobile.$el.find('.layers .cartodb-mobile-layer.has-legend .cartodb-legend .legend-title').text()).toBe('Little legend');
+      expect(mobile.$el.find('.layers .cartodb-mobile-layer.has-legend').length).toBe(1);
     });
 
   });
 
-  describe("without layer_selector, without legends, without search", function() {
-
+  describe('without layer_selector, without legends, without search', function () {
     var mobile;
 
-    beforeEach(function() {
-
+    beforeEach(function () {
       mobile = new Mobile({
         template: template,
         mapView: mapView,
@@ -223,7 +218,7 @@ describe('geo/ui/mobile', function() {
         torqueLayer: null,
         map: map,
         visibility_options: {
-          search:false,
+          search: false,
           legends: false,
           layer_selector: false
         }
@@ -231,64 +226,61 @@ describe('geo/ui/mobile', function() {
 
     });
 
-    it("should render properly", function() {
+    it('should render properly', function () {
       mobile.render();
-      expect(mobile.$el.find(".aside").length).toBe(1);
+      expect(mobile.$el.find('.aside').length).toBe(1);
     });
 
-    it("should render the title", function() {
+    it('should render the title', function () {
       mobile.render();
-      expect(mobile.$el.find(".title").text()).toBe("Hello!");
+      expect(mobile.$el.find('.title').text()).toBe('Hello!');
     });
 
-    it("should set the right classes", function() {
+    it('should set the right classes', function () {
       mobile.render();
-      expect(mobile.$el.hasClass("with-header")).toBe(true);
-      expect(mobile.$el.hasClass("with-layers")).toBe(false);
-      expect(mobile.$el.hasClass("with-search")).toBe(false);
+      expect(mobile.$el.hasClass('with-header')).toBe(true);
+      expect(mobile.$el.hasClass('with-layers')).toBe(false);
+      expect(mobile.$el.hasClass('with-search')).toBe(false);
     });
 
-    it("shouldn't render the layers", function() {
+    it("shouldn't render the layers", function () {
       mobile.render();
-      expect(mobile.$el.find(".layers > li").length).toBe(0);
+      expect(mobile.$el.find('.layers > li').length).toBe(0);
     });
 
-
-    it("should render the attribution", function() {
+    it('should render the attribution', function () {
       mobile.render();
-      expect(mobile.$el.find(".cartodb-attribution-button").length).toBe(1);
-      expect(mobile.$el.find(".cartodb-attribution").html()).toBe('<li>Custom attribution</li><li>CartoDB <a href="http://cartodb.com/attributions" target="_blank">attribution</a></li>');
+      expect(mobile.$el.find('.cartodb-attribution-button').length).toBe(1);
+      expect(mobile.$el.find('.cartodb-attribution').html()).toBe('<li>Custom attribution</li><li>CartoDB <a href="http://cartodb.com/attributions" target="_blank">attribution</a></li>');
     });
 
-    it("should has the attribution hidden by default", function() {
+    it('should has the attribution hidden by default', function () {
       mobile.render();
-      expect(mobile.$el.find(".cartodb-attribution").css("display")).toBe("");
+      expect(mobile.$el.find('.cartodb-attribution').css('display')).toBe('');
     });
 
-    it("should show the zoom", function() {
+    it('should show the zoom', function () {
       mobile.render();
-      expect(mobile.$el.find(".cartodb-zoom").length).toBe(1);
+      expect(mobile.$el.find('.CDB-Zoom').length).toBe(1);
     });
 
-    it("should show the attribution", function() {
+    it('should show the attribution', function () {
       mobile.render();
-      mobile.$el.find(".cartodb-attribution-button").click();
-      expect(mobile.$el.find(".cartodb-attribution").css("display")).toBe("block");
+      mobile.$el.find('.cartodb-attribution-button').click();
+      expect(mobile.$el.find('.cartodb-attribution').css('display')).toBe('block');
     });
 
-    it("shouldn't render the legend", function() {
+    it("shouldn't render the legend", function () {
       mobile.render();
-      expect(mobile.$el.find(".layers .cartodb-mobile-layer.has-legend").length).toBe(0);
+      expect(mobile.$el.find('.layers .cartodb-mobile-layer.has-legend').length).toBe(0);
     });
 
   });
 
-  describe("with legends, without layer selector, without search", function() {
-
+  describe('with legends, without layer selector, without search', function () {
     var mobile;
 
-    beforeEach(function() {
-
+    beforeEach(function () {
       mobile = new Mobile({
         template: template,
         mapView: mapView,
@@ -304,71 +296,69 @@ describe('geo/ui/mobile', function() {
 
     });
 
-    it("should render properly", function() {
+    it('should render properly', function () {
       mobile.render();
-      expect(mobile.$el.find(".aside").length).toBe(1);
+      expect(mobile.$el.find('.aside').length).toBe(1);
     });
 
-    it("should render the title", function() {
+    it('should render the title', function () {
       mobile.render();
-      expect(mobile.$el.find(".title").text()).toBe("Hello!");
+      expect(mobile.$el.find('.title').text()).toBe('Hello!');
     });
 
-    it("should render only the layers with legends", function() {
+    it('should render only the layers with legends', function () {
       mobile.render();
-      expect(mobile.$el.hasClass("with-layers")).toBe(true);
-      expect(mobile.$el.find(".layers > li h3").length).toBe(0); // don't show titles
-      expect(mobile.$el.find(".layers > li").length).toBe(1);
-      expect(mobile.$el.find(".layer-container h3").text()).toBe("1 layer");
+      expect(mobile.$el.hasClass('with-layers')).toBe(true);
+      expect(mobile.$el.find('.layers > li h3').length).toBe(0); // don't show titles
+      expect(mobile.$el.find('.layers > li').length).toBe(1);
+      expect(mobile.$el.find('.layer-container h3').text()).toBe('1 layer');
     });
 
-    it("shouldn't render the search", function() {
+    it("shouldn't render the search", function () {
       mobile.render();
-      expect(mobile.$el.hasClass("with-search")).toBe(false);
-      expect(mobile.$el.find(".cartodb-searchbox").length).toBe(0);
+      expect(mobile.$el.hasClass('with-search')).toBe(false);
+      expect(mobile.$el.find('.cartodb-searchbox').length).toBe(0);
     });
 
-    it("should render the attribution", function() {
+    it('should render the attribution', function () {
       mobile.render();
-      expect(mobile.$el.find(".cartodb-attribution-button").length).toBe(1);
-      expect(mobile.$el.find(".cartodb-attribution").html()).toBe('<li>Custom attribution</li><li>CartoDB <a href="http://cartodb.com/attributions" target="_blank">attribution</a></li>');
+      expect(mobile.$el.find('.cartodb-attribution-button').length).toBe(1);
+      expect(mobile.$el.find('.cartodb-attribution').html()).toBe('<li>Custom attribution</li><li>CartoDB <a href="http://cartodb.com/attributions" target="_blank">attribution</a></li>');
     });
 
-    it("should has the attribution hidden by default", function() {
+    it('should has the attribution hidden by default', function () {
       mobile.render();
-      expect(mobile.$el.find(".cartodb-attribution").css("display")).toBe("");
+      expect(mobile.$el.find('.cartodb-attribution').css('display')).toBe('');
     });
 
-    it("should show the zoom", function() {
+    it('should show the zoom', function () {
       mobile.render();
-      expect(mobile.$el.find(".cartodb-zoom").length).toBe(1);
+      expect(mobile.$el.find('.CDB-Zoom').length).toBe(1);
     });
 
-    it("should show the toggle button", function() {
+    it('should show the toggle button', function () {
       mobile.render();
-      expect(mobile.$el.find(".cartodb-header .content .toggle").length).toBe(1);
+      expect(mobile.$el.find('.cartodb-header .content .toggle').length).toBe(1);
     });
 
-    it("should show the attribution", function() {
+    it('should show the attribution', function () {
       mobile.render();
-      mobile.$el.find(".cartodb-attribution-button").click();
-      expect(mobile.$el.find(".cartodb-attribution").css("display")).toBe("block");
+      mobile.$el.find('.cartodb-attribution-button').click();
+      expect(mobile.$el.find('.cartodb-attribution').css('display')).toBe('block');
     });
 
-    it("should render the legend", function() {
+    it('should render the legend', function () {
       mobile.render();
-      expect(mobile.$el.find(".layers .cartodb-mobile-layer.has-legend .cartodb-legend .legend-title").text()).toBe("Little legend");
-      expect(mobile.$el.find(".layers .cartodb-mobile-layer.has-legend").length).toBe(1);
+      expect(mobile.$el.find('.layers .cartodb-mobile-layer.has-legend .cartodb-legend .legend-title').text()).toBe('Little legend');
+      expect(mobile.$el.find('.layers .cartodb-mobile-layer.has-legend').length).toBe(1);
     });
 
   });
 
-  describe("with layer_selector, without legends, without search", function() {
-
+  describe('with layer_selector, without legends, without search', function () {
     var mobile;
 
-    beforeEach(function() {
-
+    beforeEach(function () {
       mobile = new Mobile({
         template: template,
         mapView: mapView,
@@ -384,64 +374,62 @@ describe('geo/ui/mobile', function() {
 
     });
 
-    it("should render properly", function() {
+    it('should render properly', function () {
       mobile.render();
-      expect(mobile.$el.find(".aside").length).toBe(1);
+      expect(mobile.$el.find('.aside').length).toBe(1);
     });
 
-    it("should render the title", function() {
+    it('should render the title', function () {
       mobile.render();
-      expect(mobile.$el.find(".title").text()).toBe("Hello!");
+      expect(mobile.$el.find('.title').text()).toBe('Hello!');
     });
 
-    it("shouldn't render the search", function() {
+    it("shouldn't render the search", function () {
       mobile.render();
-      expect(mobile.$el.hasClass("with-search")).toBe(false);
+      expect(mobile.$el.hasClass('with-search')).toBe(false);
     });
 
-    it("should render the layers", function() {
+    it('should render the layers', function () {
       mobile.render();
-      expect(mobile.$el.hasClass("with-header")).toBe(true);
-      expect(mobile.$el.hasClass("with-layers")).toBe(true);
-      expect(mobile.$el.find(".layers > li").length).toBe(3);
-      expect(mobile.$el.find(".layers > li:first-child").hasClass("has-toggle")).toBe(true);
+      expect(mobile.$el.hasClass('with-header')).toBe(true);
+      expect(mobile.$el.hasClass('with-layers')).toBe(true);
+      expect(mobile.$el.find('.layers > li').length).toBe(3);
+      expect(mobile.$el.find('.layers > li:first-child').hasClass('has-toggle')).toBe(true);
     });
 
-    it("shouldn't render the legend", function() {
+    it("shouldn't render the legend", function () {
       mobile.render();
-      expect(mobile.$el.find(".layers .cartodb-mobile-layer.has-legend").length).toBe(0);
+      expect(mobile.$el.find('.layers .cartodb-mobile-layer.has-legend').length).toBe(0);
     });
 
-    it("should render the attribution", function() {
+    it('should render the attribution', function () {
       mobile.render();
-      expect(mobile.$el.find(".cartodb-attribution-button").length).toBe(1);
-      expect(mobile.$el.find(".cartodb-attribution").html()).toBe('<li>Custom attribution</li><li>CartoDB <a href="http://cartodb.com/attributions" target="_blank">attribution</a></li>');
+      expect(mobile.$el.find('.cartodb-attribution-button').length).toBe(1);
+      expect(mobile.$el.find('.cartodb-attribution').html()).toBe('<li>Custom attribution</li><li>CartoDB <a href="http://cartodb.com/attributions" target="_blank">attribution</a></li>');
     });
 
-    it("should has the attribution hidden by default", function() {
+    it('should has the attribution hidden by default', function () {
       mobile.render();
-      expect(mobile.$el.find(".cartodb-attribution").css("display")).toBe("");
+      expect(mobile.$el.find('.cartodb-attribution').css('display')).toBe('');
     });
 
-    it("should show the zoom", function() {
+    it('should show the zoom', function () {
       mobile.render();
-      expect(mobile.$el.find(".cartodb-zoom").length).toBe(1);
+      expect(mobile.$el.find('.CDB-Zoom').length).toBe(1);
     });
 
-    it("should show the attribution", function() {
+    it('should show the attribution', function () {
       mobile.render();
-      mobile.$el.find(".cartodb-attribution-button").click();
-      expect(mobile.$el.find(".cartodb-attribution").css("display")).toBe("block");
+      mobile.$el.find('.cartodb-attribution-button').click();
+      expect(mobile.$el.find('.cartodb-attribution').css('display')).toBe('block');
     });
 
   });
 
-  describe("with search, without layer_selector, without legends", function() {
-
+  describe('with search, without layer_selector, without legends', function () {
     var mobile;
 
-    beforeEach(function() {
-
+    beforeEach(function () {
       mobile = new Mobile({
         template: template,
         mapView: mapView,
@@ -449,7 +437,7 @@ describe('geo/ui/mobile', function() {
         torqueLayer: null,
         map: map,
         visibility_options: {
-          search:true,
+          search: true,
           legends: false,
           layer_selector: false
         }
@@ -457,63 +445,61 @@ describe('geo/ui/mobile', function() {
 
     });
 
-    it("should render properly", function() {
+    it('should render properly', function () {
       mobile.render();
-      expect(mobile.$el.find(".aside").length).toBe(1);
+      expect(mobile.$el.find('.aside').length).toBe(1);
     });
 
-    it("should render the title", function() {
+    it('should render the title', function () {
       mobile.render();
-      expect(mobile.$el.find(".title").text()).toBe("Hello!");
+      expect(mobile.$el.find('.title').text()).toBe('Hello!');
     });
 
-    it("should render the search", function() {
+    it('should render the search', function () {
       mobile.render();
-      expect(mobile.$el.hasClass("with-search")).toBe(true);
+      expect(mobile.$el.hasClass('with-search')).toBe(true);
     });
 
-    it("shouldn't render the layers", function() {
+    it("shouldn't render the layers", function () {
       mobile.render();
-      expect(mobile.$el.hasClass("with-header")).toBe(true);
-      expect(mobile.$el.hasClass("with-layers")).toBe(false);
-      expect(mobile.$el.find(".layers > li").length).toBe(0);
+      expect(mobile.$el.hasClass('with-header')).toBe(true);
+      expect(mobile.$el.hasClass('with-layers')).toBe(false);
+      expect(mobile.$el.find('.layers > li').length).toBe(0);
     });
 
-    it("should render the attribution", function() {
+    it('should render the attribution', function () {
       mobile.render();
-      expect(mobile.$el.find(".cartodb-attribution-button").length).toBe(1);
-      expect(mobile.$el.find(".cartodb-attribution").html()).toBe('<li>Custom attribution</li><li>CartoDB <a href="http://cartodb.com/attributions" target="_blank">attribution</a></li>');
+      expect(mobile.$el.find('.cartodb-attribution-button').length).toBe(1);
+      expect(mobile.$el.find('.cartodb-attribution').html()).toBe('<li>Custom attribution</li><li>CartoDB <a href="http://cartodb.com/attributions" target="_blank">attribution</a></li>');
     });
 
-    it("should has the attribution hidden by default", function() {
+    it('should has the attribution hidden by default', function () {
       mobile.render();
-      expect(mobile.$el.find(".cartodb-attribution").css("display")).toBe("");
+      expect(mobile.$el.find('.cartodb-attribution').css('display')).toBe('');
     });
 
-    it("should show the zoom", function() {
+    it('should show the zoom', function () {
       mobile.render();
-      expect(mobile.$el.find(".cartodb-zoom").length).toBe(1);
+      expect(mobile.$el.find('.CDB-Zoom').length).toBe(1);
     });
 
-    it("should show the attribution", function() {
+    it('should show the attribution', function () {
       mobile.render();
-      mobile.$el.find(".cartodb-attribution-button").click();
-      expect(mobile.$el.find(".cartodb-attribution").css("display")).toBe("block");
+      mobile.$el.find('.cartodb-attribution-button').click();
+      expect(mobile.$el.find('.cartodb-attribution').css('display')).toBe('block');
     });
 
-    it("shouldn't render the legend", function() {
+    it("shouldn't render the legend", function () {
       mobile.render();
-      expect(mobile.$el.find(".layers .cartodb-mobile-layer.has-legend").length).toBe(0);
+      expect(mobile.$el.find('.layers .cartodb-mobile-layer.has-legend').length).toBe(0);
     });
 
   });
 
-  describe("without anything", function() {
-
+  describe('without anything', function () {
     var mobile;
 
-    beforeEach(function() {
-
+    beforeEach(function () {
       mobile = new Mobile({
         template: template,
         mapView: mapView,
@@ -528,123 +514,119 @@ describe('geo/ui/mobile', function() {
 
     });
 
-    it("should render properly", function() {
+    it('should render properly', function () {
       mobile.render();
-      expect(mobile.$el.find(".aside").length).toBe(1);
+      expect(mobile.$el.find('.aside').length).toBe(1);
     });
 
-    it("shouldn't render the title", function() {
+    it("shouldn't render the title", function () {
       mobile.render();
-      expect(mobile.$el.find(".title").text()).toBe("");
+      expect(mobile.$el.find('.title').text()).toBe('');
     });
 
-    it("should set the right classes", function() {
+    it('should set the right classes', function () {
       mobile.render();
-      expect(mobile.$el.hasClass("with-header")).toBe(false);
-      expect(mobile.$el.hasClass("with-layers")).toBe(false);
-      expect(mobile.$el.hasClass("with-search")).toBe(false);
+      expect(mobile.$el.hasClass('with-header')).toBe(false);
+      expect(mobile.$el.hasClass('with-layers')).toBe(false);
+      expect(mobile.$el.hasClass('with-search')).toBe(false);
     });
 
-    it("shouldn't render the layers", function() {
+    it("shouldn't render the layers", function () {
       mobile.render();
-      expect(mobile.$el.hasClass("with-layers")).toBe(false);
-      expect(mobile.$el.find(".layers > li").length).toBe(0);
+      expect(mobile.$el.hasClass('with-layers')).toBe(false);
+      expect(mobile.$el.find('.layers > li').length).toBe(0);
     });
 
-
-    it("should render the attribution", function() {
+    it('should render the attribution', function () {
       mobile.render();
-      expect(mobile.$el.find(".cartodb-attribution-button").length).toBe(1);
-      expect(mobile.$el.find(".cartodb-attribution").html()).toBe('<li>Custom attribution</li><li>CartoDB <a href="http://cartodb.com/attributions" target="_blank">attribution</a></li>');
+      expect(mobile.$el.find('.cartodb-attribution-button').length).toBe(1);
+      expect(mobile.$el.find('.cartodb-attribution').html()).toBe('<li>Custom attribution</li><li>CartoDB <a href="http://cartodb.com/attributions" target="_blank">attribution</a></li>');
     });
 
-    it("should has the attribution hidden by default", function() {
+    it('should has the attribution hidden by default', function () {
       mobile.render();
-      expect(mobile.$el.find(".cartodb-attribution").css("display")).toBe("");
+      expect(mobile.$el.find('.cartodb-attribution').css('display')).toBe('');
     });
 
-    it("shouldn't show the zoom", function() {
+    it("shouldn't show the zoom", function () {
       mobile.render();
-      expect(mobile.$el.find(".cartodb-zoom").length).toBe(0);
+      expect(mobile.$el.find('.CDB-Zoom').length).toBe(0);
     });
 
-    it("should show the attribution", function() {
+    it('should show the attribution', function () {
       mobile.render();
-      mobile.$el.find(".cartodb-attribution-button").click();
-      expect(mobile.$el.find(".cartodb-attribution").css("display")).toBe("block");
+      mobile.$el.find('.cartodb-attribution-button').click();
+      expect(mobile.$el.find('.cartodb-attribution').css('display')).toBe('block');
     });
 
-    it("shouldn't render the legend", function() {
+    it("shouldn't render the legend", function () {
       mobile.render();
-      expect(mobile.$el.find(".layers .cartodb-mobile-layer.has-legend").length).toBe(0);
+      expect(mobile.$el.find('.layers .cartodb-mobile-layer.has-legend').length).toBe(0);
     });
   });
 
-  describe("with some disabled layers", function() {
-
+  describe('with some disabled layers', function () {
     var mobile, layerGroup2;
 
-    beforeEach(function() {
+    beforeEach(function () {
+      layerGroup = new CartoDBLayerGroupAnonymous({
+        attribution: 'Custom attribution'
+      }, {
+        layers: [
+          new CartoDBLayer({
+            type: 'cartodb',
+            visible: true,
+            options: {
+              sql: 'select * from european_countries_export',
+              cartocss: '#layer { polygon-fill: #000; polygon-opacity: 0.8;}',
+              cartocss_version: '2.0.0',
+              layer_name: 'european_countries_export',
+              interactivity: ['created_at', 'cartodb_id']
+            }
+          }),
+          new CartoDBLayer({
+            type: 'cartodb',
+            visible: true,
+            options: {
+              sql: 'select * from jamon_countries',
+              cartocss: '#layer { polygon-fill: #000; polygon-opacity: 0.8;}',
+              cartocss_version: '2.0.0',
+              layer_name: 'jamon_countries',
+              interactivity: ['description', 'cartodb_id']
+            }
+          }),
+          new CartoDBLayer({
+            type: 'cartodb',
+            visible: false,
+            options: {
+              sql: 'select * from jamon_countries',
+              cartocss: '#layer { polygon-fill: #000; polygon-opacity: 0.8;}',
+              cartocss_version: '2.0.0',
+              layer_name: 'layer_with_legend',
+              interactivity: ['description', 'cartodb_id'],
+            },
+            legend: {
+              type: 'custom',
+              title: 'Little legend',
+              show_title: true,
+              data: [
+                { name: 'Natural Parks',  value: '#58A062' },
+                { name: 'Villages',       value: '#F07971' },
+                { name: 'Rivers',         value: '#54BFDE' },
+                { name: 'Fields',         value: '#9BC562' },
+                { name: 'Caves',          value: '#FABB5C' }
+              ]
+            }
+          })
+        ]
+      });
 
-    layerGroup = new CartoDBLayerGroupAnonymous({
-      attribution: 'Custom attribution'
-    }, {
-      layers: [
-        new CartoDBLayer({
-          type: 'cartodb',
-          visible: true,
-          options: {
-            sql: "select * from european_countries_export",
-            cartocss: '#layer { polygon-fill: #000; polygon-opacity: 0.8;}',
-            cartocss_version : '2.0.0',
-            layer_name: "european_countries_export",
-            interactivity: ['created_at', 'cartodb_id']
-          }
-        }),
-        new CartoDBLayer({
-          type: 'cartodb',
-          visible: true,
-          options: {
-            sql: "select * from jamon_countries",
-            cartocss: '#layer { polygon-fill: #000; polygon-opacity: 0.8;}',
-            cartocss_version : '2.0.0',
-            layer_name: "jamon_countries",
-            interactivity: ['description', 'cartodb_id']
-          }
-        }),
-        new CartoDBLayer({
-          type: 'cartodb',
-          visible: false,
-          options: {
-            sql: "select * from jamon_countries",
-            cartocss: '#layer { polygon-fill: #000; polygon-opacity: 0.8;}',
-            cartocss_version : '2.0.0',
-            layer_name: "layer_with_legend",
-            interactivity: ['description', 'cartodb_id'],
-          },
-          legend: {
-            type: "custom",
-            title: "Little legend",
-            show_title: true,
-            data: [
-              { name: "Natural Parks",  value: "#58A062" },
-              { name: "Villages",       value: "#F07971" },
-              { name: "Rivers",         value: "#54BFDE" },
-              { name: "Fields",         value: "#9BC562" },
-              { name: "Caves",          value: "#FABB5C" }
-            ]
-          }
-        })
-      ]
-    });
+      map.layers.reset([layerGroup]);
 
-    map.layers.reset([layerGroup]);
-
-
-    mapView = new GoogleMapsMapView({
-      el: container,
-      map: map
-    });
+      mapView = new GoogleMapsMapView({
+        el: container,
+        map: map
+      });
 
       mobile = new Mobile({
         template: template,
@@ -659,89 +641,89 @@ describe('geo/ui/mobile', function() {
 
     });
 
-    it("should render properly", function() {
+    it('should render properly', function () {
       mobile.render();
-      expect(mobile.$el.find(".aside").length).toBe(1);
+      expect(mobile.$el.find('.aside').length).toBe(1);
     });
 
-    it("should render the title", function() {
+    it('should render the title', function () {
       mobile.render();
-      expect(mobile.$el.find(".title").text()).toBe("Hello!");
+      expect(mobile.$el.find('.title').text()).toBe('Hello!');
     });
 
-    it("should render the layers", function() {
+    it('should render the layers', function () {
       mobile.render();
-      expect(mobile.$el.hasClass("with-layers")).toBe(true);
-      expect(mobile.$el.find(".layer-container > h3").text()).toBe("3 layers");
-      expect(mobile.$el.find(".layers > li").length).toBe(3);
+      expect(mobile.$el.hasClass('with-layers')).toBe(true);
+      expect(mobile.$el.find('.layer-container > h3').text()).toBe('3 layers');
+      expect(mobile.$el.find('.layers > li').length).toBe(3);
 
       // There's one hidden layer
-      expect(mobile.$el.find(".layers > li:nth-child(3)").hasClass("hidden")).toBe(true);
+      expect(mobile.$el.find('.layers > li:nth-child(3)').hasClass('hidden')).toBe(true);
 
-      expect(mobile.$el.find(".layers > li:nth-child(1) h3").text()).toBe("european_countries_exp&hellip;");
-      expect(mobile.$el.find(".layers > li:nth-child(2) h3").text()).toBe("jamon_countries");
-      expect(mobile.$el.find(".layers > li:nth-child(3) h3").text()).toBe("layer_with_legend");
+      expect(mobile.$el.find('.layers > li:nth-child(1) h3').text()).toBe('european_countries_exp&hellip;');
+      expect(mobile.$el.find('.layers > li:nth-child(2) h3').text()).toBe('jamon_countries');
+      expect(mobile.$el.find('.layers > li:nth-child(3) h3').text()).toBe('layer_with_legend');
     });
 
-    it("shouldn't render the search", function() {
+    it("shouldn't render the search", function () {
       mobile.render();
-      expect(mobile.$el.hasClass("with-search")).toBe(false);
-      expect(mobile.$el.find(".cartodb-searchbox").length).toBe(0);
+      expect(mobile.$el.hasClass('with-search')).toBe(false);
+      expect(mobile.$el.find('.cartodb-searchbox').length).toBe(0);
     });
 
-    it("should render the attribution", function() {
+    it('should render the attribution', function () {
       mobile.render();
-      expect(mobile.$el.find(".cartodb-attribution-button").length).toBe(1);
-      expect(mobile.$el.find(".cartodb-attribution").html()).toBe('<li>Custom attribution</li><li>CartoDB <a href="http://cartodb.com/attributions" target="_blank">attribution</a></li>');
+      expect(mobile.$el.find('.cartodb-attribution-button').length).toBe(1);
+      expect(mobile.$el.find('.cartodb-attribution').html()).toBe('<li>Custom attribution</li><li>CartoDB <a href="http://cartodb.com/attributions" target="_blank">attribution</a></li>');
     });
 
-    it("should has the attribution hidden by default", function() {
+    it('should has the attribution hidden by default', function () {
       mobile.render();
-      expect(mobile.$el.find(".cartodb-attribution").css("display")).toBe("");
+      expect(mobile.$el.find('.cartodb-attribution').css('display')).toBe('');
     });
 
-    it("should show the zoom", function() {
+    it('should show the zoom', function () {
       mobile.render();
-      expect(mobile.$el.find(".cartodb-zoom").length).toBe(1);
+      expect(mobile.$el.find('.CDB-Zoom').length).toBe(1);
     });
 
-    it("should show the toggle button", function() {
+    it('should show the toggle button', function () {
       mobile.render();
-      expect(mobile.$el.find(".cartodb-header .content .toggle").length).toBe(1);
+      expect(mobile.$el.find('.cartodb-header .content .toggle').length).toBe(1);
     });
 
-    it("should show the attribution", function() {
+    it('should show the attribution', function () {
       mobile.render();
-      mobile.$el.find(".cartodb-attribution-button").click();
-      expect(mobile.$el.find(".cartodb-attribution").css("display")).toBe("block");
+      mobile.$el.find('.cartodb-attribution-button').click();
+      expect(mobile.$el.find('.cartodb-attribution').css('display')).toBe('block');
     });
 
-    it("should render the legend", function() {
+    it('should render the legend', function () {
       mobile.render();
-      expect(mobile.$el.find(".layers .cartodb-mobile-layer.has-legend .cartodb-legend .legend-title").text()).toBe("Little legend");
-      expect(mobile.$el.find(".layers .cartodb-mobile-layer.has-legend").length).toBe(1);
+      expect(mobile.$el.find('.layers .cartodb-mobile-layer.has-legend .cartodb-legend .legend-title').text()).toBe('Little legend');
+      expect(mobile.$el.find('.layers .cartodb-mobile-layer.has-legend').length).toBe(1);
     });
 
-    it("should hide the attribution when clicking on the backdrop", function(done) {
+    it('should hide the attribution when clicking on the backdrop', function (done) {
       mobile.render();
-      mobile.$el.find(".cartodb-attribution-button").click();
+      mobile.$el.find('.cartodb-attribution-button').click();
 
-      setTimeout(function() {
-        expect(mobile.$el.find(".backdrop").css("display")).toBe("block");
+      setTimeout(function () {
+        expect(mobile.$el.find('.backdrop').css('display')).toBe('block');
 
         spyOn($.fn, 'fadeOut');
 
-        mobile.$el.find(".backdrop").click();
+        mobile.$el.find('.backdrop').click();
 
-        setTimeout(function() {
+        setTimeout(function () {
           // FadeOut tests are the hell!!
           expect($.fn.fadeOut).toHaveBeenCalled();
           expect($.fn.fadeOut.calls.count()).toBe(2);
 
           var elements_class = ['backdrop', 'cartodb-attribution'];
           expect(
-            _.every($.fn.fadeOut.calls.all(), function(item, pos) {
-              return _.contains(elements_class, $(item.object).attr('class'))
+            _.every($.fn.fadeOut.calls.all(), function (item, pos) {
+              return _.contains(elements_class, $(item.object).attr('class'));
             })
           ).toBeTruthy();
 
@@ -753,12 +735,10 @@ describe('geo/ui/mobile', function() {
 
   });
 
-  describe("disabling the title and the description", function() {
-
+  describe('disabling the title and the description', function () {
     var mobile;
 
-    beforeEach(function() {
-
+    beforeEach(function () {
       mobile = new Mobile({
         template: template,
         mapView: mapView,
@@ -773,37 +753,35 @@ describe('geo/ui/mobile', function() {
 
     });
 
-    it("should render properly", function() {
+    it('should render properly', function () {
       mobile.render();
-      expect(mobile.$el.find(".aside").length).toBe(1);
+      expect(mobile.$el.find('.aside').length).toBe(1);
     });
 
-    it("shoulnd't render the title", function() {
+    it("shoulnd't render the title", function () {
       mobile.render();
-      expect(mobile.$el.find(".title").length).toBe(0);
+      expect(mobile.$el.find('.title').length).toBe(0);
     });
 
   });
 
-  describe("search overlay", function() {
-
+  describe('search overlay', function () {
     var mobile;
 
-    beforeEach(function() {
-
+    beforeEach(function () {
       mobile = new Mobile({
         template: template,
         mapView: mapView,
         overlays: [{
-            order: 3,
-            type: "search",
-            template: null
-          }],
+          order: 3,
+          type: 'search',
+          template: null
+        }],
         torqueLayer: null,
         map: map,
         visibility_options: {
-          layer_selector:false,
-          legends:false,
+          layer_selector: false,
+          legends: false,
           title: false,
           description: false,
         }
@@ -811,9 +789,9 @@ describe('geo/ui/mobile', function() {
 
     });
 
-    it("should render the search", function() {
+    it('should render the search', function () {
       mobile.render();
-      expect(mobile.$el.hasClass("with-search")).toBe(true);
+      expect(mobile.$el.hasClass('with-search')).toBe(true);
     });
 
   });

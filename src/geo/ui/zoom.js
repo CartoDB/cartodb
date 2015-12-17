@@ -1,4 +1,3 @@
-var _ = require('underscore');
 var templates = require('cdb.templates');
 var View = require('../../core/view');
 
@@ -7,59 +6,58 @@ var View = require('../../core/view');
  *
  * Usage:
  *
- * var zoomControl = new Zoom({ model: map });
+ * var zoomControl = new Zoom({ model: map, template: "" });
  * mapWrapper.$el.append(zoomControl.render().$el);
  *
  */
-module.exports = View.extend({
 
-  className: "cartodb-zoom",
+module.exports = View.extend({
+  className: 'CDB-Zoom',
 
   events: {
-    'click .zoom_in': 'zoom_in',
-    'click .zoom_out': 'zoom_out'
+    'click .js-zoomIn': '_onZoomIn',
+    'click .js-zoomOut': '_onZoomOut',
+    'dblclick': 'killEvent'
   },
 
-  default_options: {
+  options: {
     timeout: 0,
     msg: ''
   },
 
-  initialize: function() {
+  initialize: function () {
     this.map = this.model;
-
-    _.defaults(this.options, this.default_options);
-
-    this.template = this.options.template ? this.options.template : templates.getTemplate('geo/zoom');
+    this.template = this.options.template;
     this.map.bind('change:zoom change:minZoom change:maxZoom', this._checkZoom, this);
   },
 
-  render: function() {
+  render: function () {
     this.$el.html(this.template(this.options));
     this._checkZoom();
     return this;
   },
 
-  _checkZoom: function() {
+  _checkZoom: function () {
     var zoom = this.map.get('zoom');
-    this.$('.zoom_in')[ zoom < this.map.get('maxZoom') ? 'removeClass' : 'addClass' ]('disabled')
-    this.$('.zoom_out')[ zoom > this.map.get('minZoom') ? 'removeClass' : 'addClass' ]('disabled')
+    this.$('.js-zoomIn')[ zoom < this.map.get('maxZoom') ? 'removeClass' : 'addClass' ]('is-disabled');
+    this.$('.js-zoomOut')[ zoom > this.map.get('minZoom') ? 'removeClass' : 'addClass' ]('is-disabled');
+    this.$('.js-zoomInfo').text(zoom);
   },
 
-  zoom_in: function(ev) {
-    if (this.map.get("maxZoom") > this.map.getZoom()) {
+  _onZoomIn: function (ev) {
+    this.killEvent(ev);
+
+    if (this.map.get('maxZoom') > this.map.getZoom()) {
       this.map.setZoom(this.map.getZoom() + 1);
     }
-    ev.preventDefault();
-    ev.stopPropagation();
   },
 
-  zoom_out: function(ev) {
-    if (this.map.get("minZoom") < this.map.getZoom()) {
+  _onZoomOut: function (ev) {
+    this.killEvent(ev);
+
+    if (this.map.get('minZoom') < this.map.getZoom()) {
       this.map.setZoom(this.map.getZoom() - 1);
     }
-    ev.preventDefault();
-    ev.stopPropagation();
   }
 
 });

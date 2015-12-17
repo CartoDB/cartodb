@@ -21,33 +21,32 @@ var util = require('../../core/util');
  */
 
 var Infowindow = View.extend({
-
   options: {
     imageTransitionSpeed: 300,
     hookHeight: 16
   },
 
-  className: "CDB-infowindow-wrapper",
+  className: 'CDB-infowindow-wrapper',
 
   events: {
     // Close bindings
-    "click .close":         "_closeInfowindow",
-    "touchstart .close":    "_closeInfowindow",
-    "MSPointerDown .close": "_closeInfowindow",
+    'click .close': '_closeInfowindow',
+    'touchstart .close': '_closeInfowindow',
+    'MSPointerDown .close': '_closeInfowindow',
     // Rest infowindow bindings
-    "dragstart":            "_checkOrigin",
-    "mousedown":            "_checkOrigin",
-    "touchstart":           "_checkOrigin",
-    "MSPointerDown":        "_checkOrigin",
-    "dblclick":             "_stopPropagation",
-    "DOMMouseScroll":       "_stopBubbling",
-    'MozMousePixelScroll':  "_stopBubbling",
-    "mousewheel":           "_stopBubbling",
-    "dbclick":              "_stopPropagation",
-    "click":                "_stopPropagation"
+    'dragstart': '_checkOrigin',
+    'mousedown': '_checkOrigin',
+    'touchstart': '_checkOrigin',
+    'MSPointerDown': '_checkOrigin',
+    'dblclick': '_stopPropagation',
+    'DOMMouseScroll': '_stopBubbling',
+    'MozMousePixelScroll': '_stopBubbling',
+    'mousewheel': '_stopBubbling',
+    'dbclick': '_stopPropagation',
+    'click': '_stopPropagation'
   },
 
-  initialize: function(){
+  initialize: function () {
     this.mapView = this.options.mapView;
 
     // Set template if it is defined in options
@@ -69,16 +68,13 @@ var Infowindow = View.extend({
     this.$el.hide();
   },
 
-
   /**
    *  Render infowindow content
    */
-  render: function() {
-
-    if(this.template) {
-
+  render: function () {
+    if (this.template) {
       // Clone fields and template name
-      var fields = _.map(this.model.attributes.content.fields, function(field){
+      var fields = _.map(this.model.attributes.content.fields, function (field) {
         return _.clone(field);
       });
 
@@ -97,7 +93,7 @@ var Infowindow = View.extend({
       // custom infowindows and CartoDB infowindows.
       var values = {};
 
-      _.each(this.model.get('content').fields, function(pair) {
+      _.each(this.model.get('content').fields, function (pair) {
         values[pair.title] = pair.value;
       });
 
@@ -136,8 +132,7 @@ var Infowindow = View.extend({
     return this;
   },
 
-  _initBinds: function() {
-
+  _initBinds: function () {
     _.bindAll(this, '_onKeyUp');
 
     this.model.bind('change:content change:alternative_names change:width change:maxHeight', this.render, this);
@@ -148,11 +143,11 @@ var Infowindow = View.extend({
 
     this.mapView.map.bind('change', this._updatePosition, this);
 
-    this.mapView.bind('zoomstart', function(){
+    this.mapView.bind('zoomstart', function () {
       this.hide(true);
     }, this);
 
-    this.mapView.bind('zoomend', function() {
+    this.mapView.bind('zoomend', function () {
       this.show(true);
     }, this);
 
@@ -160,14 +155,14 @@ var Infowindow = View.extend({
     this.add_related_model(this.mapView);
   },
 
-  _onKeyUp: function(e) {
+  _onKeyUp: function (e) {
     if (e && e.keyCode === 27) {
       this._closeInfowindow();
     }
   },
 
-  _renderScroll: function() {
-    if (this.$(".has-scroll").length === 0) return;
+  _renderScroll: function () {
+    if (this.$('.has-scroll').length === 0) return;
 
     Ps.initialize(this.el.querySelector('.js-content'), {
       wheelSpeed: 2,
@@ -176,14 +171,14 @@ var Infowindow = View.extend({
     });
   },
 
-  _getModelTemplate: function() {
-    return this.model.get("template_name");
+  _getModelTemplate: function () {
+    return this.model.get('template_name');
   },
 
   /**
    *  Change template of the infowindow
    */
-  _setTemplate: function() {
+  _setTemplate: function () {
     if (this.model.get('template_name')) {
       this.template = templates.getTemplate(this._getModelTemplate());
       this.render();
@@ -193,12 +188,12 @@ var Infowindow = View.extend({
   /**
    *  Compile template of the infowindow
    */
-  _compileTemplate: function() {
+  _compileTemplate: function () {
     var template = this.model.get('template') ?
       this.model.get('template') :
       templates.getTemplate(this._getModelTemplate());
 
-    if(typeof(template) !== 'function') {
+    if (typeof (template) !== 'function') {
       this.template = new Template({
         template: template,
         type: this.model.get('template_type') || 'mustache'
@@ -213,11 +208,11 @@ var Infowindow = View.extend({
   /**
    *  Check event origin
    */
-  _checkOrigin: function(ev) {
+  _checkOrigin: function (ev) {
     // If the mouse down come from jspVerticalBar
     // dont stop the propagation, but if the event
     // is a touchstart, stop the propagation
-    var come_from_scroll = (($(ev.target).closest(".jspVerticalBar").length > 0) && (ev.type != "touchstart"));
+    var come_from_scroll = (($(ev.target).closest('.jspVerticalBar').length > 0) && (ev.type != 'touchstart'));
 
     if (!come_from_scroll) {
       ev.stopPropagation();
@@ -227,11 +222,11 @@ var Infowindow = View.extend({
   /**
    *  Convert values to string unless value is NULL
    */
-  _fieldsToString: function(fields, template_name) {
+  _fieldsToString: function (fields, template_name) {
     var fields_sanitized = [];
     if (fields && fields.length > 0) {
       var self = this;
-      fields_sanitized = _.map(fields, function(field,i) {
+      fields_sanitized = _.map(fields, function (field, i) {
         // Return whole attribute sanitized
         return self._sanitizeField(field, template_name, field.index || i);
       });
@@ -247,13 +242,13 @@ var Infowindow = View.extend({
    *  - If the value is a valid url, let's make it a link.
    *  - More to come...
    */
-  _sanitizeField: function(attr, template_name, pos) {
+  _sanitizeField: function (attr, template_name, pos) {
     // Check null or undefined :| and set both to empty == ''
     if (attr.value === null || attr.value === undefined) {
       attr.value = '';
     }
 
-    //Get the alternative title
+    // Get the alternative title
     var alternative_name = this.model.getAlternativeName(attr.title);
 
     if (attr.title && alternative_name) {
@@ -261,7 +256,7 @@ var Infowindow = View.extend({
       attr.title = alternative_name;
     } else if (attr.title) {
       // Remove '_' character from titles
-      attr.title = attr.title.replace(/_/g,' ');
+      attr.title = attr.title.replace(/_/g, ' ');
     }
 
     // Cast all values to string due to problems with Mustache 0 number rendering
@@ -269,17 +264,17 @@ var Infowindow = View.extend({
 
     // If it is index 0, not any field type, header template type and length bigger than 30... cut off the text!
     if (!attr.type && pos === 0 && attr.value.length > 35 && template_name && template_name.search('_header_') !== -1) {
-      new_value = attr.value.substr(0,32) + "...";
+      new_value = attr.value.substr(0, 32) + '...';
     }
 
     // If it is index 1, not any field type, header image template type and length bigger than 30... cut off the text!
-    if (!attr.type && pos==1 && attr.value.length > 35 && template_name && template_name.search('_header_with_image') != -1) {
-      new_value = attr.value.substr(0,32) + "...";
+    if (!attr.type && pos == 1 && attr.value.length > 35 && template_name && template_name.search('_header_with_image') != -1) {
+      new_value = attr.value.substr(0, 32) + '...';
     }
 
     // Is it the value a link?
     if (this._isValidURL(attr.value)) {
-      new_value = "<a href='" + attr.value + "' target='_blank' class='CDB-infowindow-link'>" + new_value + "</a>";
+      new_value = "<a href='" + attr.value + "' target='_blank' class='CDB-infowindow-link'>" + new_value + '</a>';
     }
 
     // If it is index 0, not any field type, header image template type... don't cut off the text or add any link!!
@@ -293,23 +288,23 @@ var Infowindow = View.extend({
     return attr;
   },
 
-  isLoadingData: function() {
-    var content = this.model.get("content");
-    return content.fields && content.fields.length == 1 && content.fields[0].type === "loading";
+  isLoadingData: function () {
+    var content = this.model.get('content');
+    return content.fields && content.fields.length == 1 && content.fields[0].type === 'loading';
   },
 
   /**
    *  Does header contain cover?
    */
-  _containsCover: function() {
-    return this.$(".js-infowindow").attr("data-cover") ? true : false;
+  _containsCover: function () {
+    return this.$('.js-infowindow').attr('data-cover') ? true : false;
   },
 
   /**
    *  Get cover URL
    */
-  _getCoverURL: function() {
-    var content = this.model.get("content");
+  _getCoverURL: function () {
+    var content = this.model.get('content');
 
     if (content && content.fields && content.fields.length > 0) {
       return (content.fields[0].value || '').toString();
@@ -318,12 +313,12 @@ var Infowindow = View.extend({
     return false;
   },
 
-  _loadImageHook: function(url) {
-    var $hook = this.$(".js-hook");
-    var $cover = this.$(".js-cover");
+  _loadImageHook: function (url) {
+    var $hook = this.$('.js-hook');
+    var $cover = this.$('.js-cover');
 
     if ($hook) {
-      $hookImage = $("<img />").attr("src", url);
+      $hookImage = $('<img />').attr('src', url);
       $hook.append($hookImage);
 
       var hookPoints = [[0, 0], [0, 100], [100, 0]];
@@ -332,7 +327,7 @@ var Infowindow = View.extend({
         isPercentage: true
       });
 
-      $hookImage.load(function(){
+      $hookImage.load(function () {
         $hookImage.css({
           marginTop: -$cover.height(),
           width: $cover.width()
@@ -344,16 +339,15 @@ var Infowindow = View.extend({
   /**
    *  Attempts to load the cover URL and show it
    */
-  _loadCover: function() {
-
+  _loadCover: function () {
     if (!this._containsCover()) {
       return;
     }
 
     var self = this;
 
-    var $cover = this.$(".js-cover");
-    var $img = $cover.find("img");
+    var $cover = this.$('.js-cover');
+    var $img = $cover.find('img');
     var url = this._getCoverURL();
 
     if ($img.length > 0) {
@@ -370,15 +364,15 @@ var Infowindow = View.extend({
     }
 
     if (!this._isValidURL(url)) {
-      log.info("Header image url not valid");
+      log.info('Header image url not valid');
       return;
     }
 
-    $img = $("<img class='CDB-infowindow-media-item' />").attr("src", url);
+    $img = $("<img class='CDB-infowindow-media-item' />").attr('src', url);
 
     $cover.append($img);
 
-    $img.load(function(){
+    $img.load(function () {
       var w = $img.width();
       var h = $img.height();
 
@@ -404,13 +398,13 @@ var Infowindow = View.extend({
 
       self._loadImageHook(url);
     })
-    .error();
+      .error();
   },
 
   /**
    *  Return true if the provided URL is valid
    */
-  _isValidURL: function(url) {
+  _isValidURL: function (url) {
     if (url) {
       var urlPattern = /^(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-|]*[\w@?^=%&amp;\/~+#-])?$/;
       return String(url).match(urlPattern) !== null ? true : false;
@@ -422,8 +416,8 @@ var Infowindow = View.extend({
   /**
    *  Toggle infowindow visibility
    */
-  toggle: function() {
-    if (this.model.get("visibility")) {
+  toggle: function () {
+    if (this.model.get('visibility')) {
       this.show();
     } else {
       this.hide();
@@ -441,23 +435,23 @@ var Infowindow = View.extend({
   /**
    *  Stop event propagation
    */
-  _stopPropagation: function(ev) {
+  _stopPropagation: function (ev) {
     ev.stopPropagation();
   },
 
   /**
    *  Set loading state adding its content
    */
-  setLoading: function() {
+  setLoading: function () {
     this.model.set({
-      content:  {
+      content: {
         fields: [{
           title: null,
           loading: true,
           alternative_name: null,
           value: 'Loading content...',
           index: null,
-          type: "loading"
+          type: 'loading'
         }],
         data: {}
       }
@@ -469,9 +463,9 @@ var Infowindow = View.extend({
   /**
    *  Set loading state adding its content
    */
-  setError: function() {
+  setError: function () {
     this.model.set({
-      content:  {
+      content: {
         fields: [{
           title: null,
           alternative_name: null,
@@ -490,39 +484,40 @@ var Infowindow = View.extend({
    * Set the correct position for the infowindow
    */
   setLatLng: function (latlng) {
-    this.model.set("latlng", latlng);
+    this.model.set('latlng', latlng);
     return this;
   },
 
   /**
    *  Close infowindow
    */
-  _closeInfowindow: function(ev) {
+  _closeInfowindow: function (ev) {
     if (ev) {
       ev.preventDefault();
       ev.stopPropagation();
     }
-    if (this.model.get("visibility")) {
-       this.model.set("visibility", false);
-       this.trigger('close');
+    if (this.model.get('visibility')) {
+      this.model.set('visibility', false);
+      this.trigger('close');
     }
   },
 
   /**
    *  Set visibility infowindow
    */
-  showInfowindow: function() {
-    this.model.set("visibility", true);
+  showInfowindow: function () {
+    this.model.set('visibility', true);
   },
 
   /**
    *  Show infowindow (update, pan, etc)
    */
   show: function (no_pan) {
+    $(document)
+      .off('keyup', this._onKeyUp)
+      .on('keyup', this._onKeyUp);
 
-    $(document).on('keyup', this._onKeyUp);
-
-    if (this.model.get("visibility")) {
+    if (this.model.get('visibility')) {
       this.$el.css({ left: -5000 });
       this._update(no_pan);
     }
@@ -532,7 +527,7 @@ var Infowindow = View.extend({
    *  Get infowindow visibility
    */
   isHidden: function () {
-    return !this.model.get("visibility");
+    return !this.model.get('visibility');
   },
 
   /**
@@ -540,15 +535,14 @@ var Infowindow = View.extend({
    */
   hide: function (force) {
     $(document).off('keyup', this._onKeyUp);
-    if (force || !this.model.get("visibility")) this._animateOut();
+    if (force || !this.model.get('visibility')) this._animateOut();
   },
 
   /**
    *  Update infowindow
    */
   _update: function (no_pan) {
-
-    if(!this.isHidden()) {
+    if (!this.isHidden()) {
       var delay = 0;
 
       if (!no_pan) {
@@ -563,21 +557,21 @@ var Infowindow = View.extend({
   /**
    *  Animate infowindow to show up
    */
-  _animateIn: function(delay) {
+  _animateIn: function (delay) {
     if (!util.ie || (util.browser.ie && util.browser.ie.version > 8)) {
       this.$el.css({
-        'marginBottom':'-10px',
+        'marginBottom': '-10px',
         'display': 'block',
-        'visibility':'visible',
-        opacity:0
+        'visibility': 'visible',
+        opacity: 0
       });
 
       this.$el
-      .delay(delay)
-      .animate({
-        opacity: 1,
-        marginBottom: 0
-      },300);
+        .delay(delay)
+        .animate({
+          opacity: 1,
+          marginBottom: 0
+        }, 300);
     } else {
       this.$el.show();
     }
@@ -586,15 +580,15 @@ var Infowindow = View.extend({
   /**
    *  Animate infowindow to disappear
    */
-  _animateOut: function() {
+  _animateOut: function () {
     if (!util.ie || (util.browser.ie && util.browser.ie.version > 8)) {
       var self = this;
       this.$el.animate({
-        marginBottom: "-10px",
-        opacity:      "0",
-        display:      "block"
-      }, 180, function() {
-        self.$el.css({visibility: "hidden"});
+        marginBottom: '-10px',
+        opacity: '0',
+        display: 'block'
+      }, 180, function () {
+        self.$el.css({visibility: 'hidden'});
       });
     } else {
       this.$el.hide();
@@ -605,18 +599,17 @@ var Infowindow = View.extend({
    *  Update the position (private)
    */
   _updatePosition: function () {
-    if(this.isHidden()) return;
+    if (this.isHidden()) return;
 
-    var
-    offset          = this.model.get("offset"),
-    pos             = this.mapView.latLonToPixel(this.model.get("latlng")),
-    x               = this.$el.position().left,
-    y               = this.$el.position().top,
-    containerHeight = this.$el.outerHeight(true),
-    containerWidth  = this.$el.width(),
-    left            = pos.x - offset[0],
-    size            = this.mapView.getSize(),
-    bottom          = -1*(pos.y - offset[1] - size.y);
+    var offset = this.model.get('offset'),
+      pos = this.mapView.latLonToPixel(this.model.get('latlng')),
+      x = this.$el.position().left,
+      y = this.$el.position().top,
+      containerHeight = this.$el.outerHeight(true),
+      containerWidth = this.$el.width(),
+      left = pos.x - offset[0],
+      size = this.mapView.getSize(),
+      bottom = -1 * (pos.y - offset[1] - size.y);
 
     this.$el.css({ bottom: bottom, left: left });
   },
@@ -625,19 +618,18 @@ var Infowindow = View.extend({
    *  Adjust pan to show correctly the infowindow
    */
   adjustPan: function () {
-    var offset = this.model.get("offset");
+    var offset = this.model.get('offset');
 
-    if (!this.model.get("autoPan") || this.isHidden()) { return; }
+    if (!this.model.get('autoPan') || this.isHidden()) { return; }
 
-    var
-    x               = this.$el.position().left,
-    y               = this.$el.position().top,
-    containerHeight = this.$el.outerHeight(true) + 15, // Adding some more space
-    containerWidth  = this.$el.width(),
-    pos             = this.mapView.latLonToPixel(this.model.get("latlng")),
-    adjustOffset    = {x: 0, y: 0};
-    size            = this.mapView.getSize();
-    wait_callback   = 0;
+    var x = this.$el.position().left,
+      y = this.$el.position().top,
+      containerHeight = this.$el.outerHeight(true) + 15, // Adding some more space
+      containerWidth = this.$el.width(),
+      pos = this.mapView.latLonToPixel(this.model.get('latlng')),
+      adjustOffset = {x: 0, y: 0};
+    size = this.mapView.getSize();
+    wait_callback = 0;
 
     if (pos.x - offset[0] < 0) {
       adjustOffset.x = pos.x - offset[0] - 10;

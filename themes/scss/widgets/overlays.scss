@@ -144,8 +144,8 @@
 .CDB-Search-action {
   position: relative;
   width: 32px;
-  border-radius: 4px;
   cursor: pointer;
+  overflow: hidden;
 }
 .CDB-Search-text {
   position: absolute;

@@ -72,6 +72,15 @@ describe User do
 
   end
 
+  it 'should not allow an empty password' do
+    user = ::User.new
+    user.username = 'manolo'
+    user.email = 'manolo@cartodb.com'
+
+    user.valid?.should_not be true
+    user.errors[:password].empty?.should_not be true
+  end
+
   it "should set a default database_host" do
     @user.database_host.should eq ::Rails::Sequel.configuration.environment_for(Rails.env)['host']
   end

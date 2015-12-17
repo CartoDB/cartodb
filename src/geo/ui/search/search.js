@@ -1,9 +1,10 @@
 var $ = require('jquery');
-var View = require('../../core/view');
-var NOKIA = require('../../geo/geocoder/nokia-geocoder');
-var InfowindowModel = require('../../geo/ui/infowindow-model');
-var Infowindow = require('../../geo/ui/infowindow');
-var Geometry = require('../../geo/geometry');
+var View = require('../../../core/view');
+var NOKIA = require('../../../geo/geocoder/nokia-geocoder');
+var InfowindowModel = require('../../../geo/ui/infowindow-model');
+var Infowindow = require('../../../geo/ui/infowindow');
+var Geometry = require('../../../geo/geometry');
+var infowindowTemplate = require('./search_infowindow_template.tpl');
 
 /**
  *  UI component to place the map in the
@@ -29,24 +30,6 @@ var Search = View.extend({
 
   options: {
     searchPin: true,
-    infowindowTemplate:
-    '<div class="cartodb-infowindow">'+
-      '<div class="cartodb-popup Cdb-infowindow Cdb-infowindow--light">'+
-        '<div class="Cdb-infowindow-container">'+
-          '<div class="Cdb-infowindow-inner">'+
-           ' <ul class="Cdb-infowindow-list ">'+
-              '<li class="Cdb-infowindow-list-item">'+
-                '<h4 class="Cdb-infowindow-title">{{ address }}</h4>'+
-              '</li>'+
-            '</ul>'+
-          '</div>'+
-          '<div class="Cdb-hook">'+
-            '<div class="Cdb-hook-inner">'+
-            '</div>'+
-          '</div>'+
-        '</div>'+
-      '</div>'+
-    '</div>',
     infowindowWidth: 186,
     infowindowOffset: [30, 80],
     iconUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAfCAYAAADXwvzvAAACuklEQVR4Ae3PQ+AsNxzA8e8vo/Xus237vVN9qW3b7qW2bdu2caxt29bu/meSmaTpqW63Pfc7wemTZPh9K/Xv3zhzxIgVrho0aMsLGo2N9o+iuYDwV02E5NJpM7d5fMGC515dMP/7l6dNMc+OGJY9Uq99cVMc33I4LOJXCQBQuXPBglNnDRm0Xa1RAWewP3yL/vJLul99Q/pNm0/b+qsnbLHngXAVgAI4b9KkXWc1m9vV58ykst56lKdMptyokdTKRJUIV1MMTGTgbOTknWABgFo2SSbOjuN9wlgIBrSIJ0yiVG9QUgGxUigRRAlpCQYrBs+A/QClliuXV6ppPVibDPPqi5irL8G+/QY2S3FZhityrLNYBWkAI2G5WTA2nGTthKDTJfP/FH1sCb76nNBa7I8/knba6Eyj8wJjLbk4qlCdAFNClWXKiiL72kGRUkSRhwUuTUm7XTqZ3z3KnMM7QhAFUfiKMZ9OQci+ydFFH32BIsDh8hxjDF2T0y0KtHHUczCg34P3wgesfWhZozstW1R/cJpuohA8dI7cWrSfxqM4gwEOnoJnn4HXBVDHwHnriNr2W3G0I8FEkKufMbjcIw1DC+iCuRw2OBduEYAKDD8drlkGlk6BHwAtIEDioD/QBnsnnHAI7A9YAAAGenwEnPuAd8+DewHcS+CeB3szvL0b7ADE/FWzYf5BCxa9dMvqa7oLll7WbTlsxKkDYRi9dPqhRz743L0PuKtOPMXtutHmm/InKf5Y6Co15Upl8qSCqVajXiEeUTRb6GqNIojoGaLEDwEA6B0KIKL8lH8JBeS/3AgK73qAPfc/tCLiAACUCmyvsJHnphwEAYFStNs/NoHgn2ATWPmlF54b/9GHH/Khn88/+9SywJx/+q0SsKTZbB45d/6CO0aNHnutv3kbYDQg9JAAIRDwF/0EjlkjUi3fkAMAAAAASUVORK5CYII=',
@@ -175,7 +158,7 @@ var Search = View.extend({
 
   _createInfowindow: function(position, address) {
     var infowindowModel = new InfowindowModel({
-      template: this.options.infowindowTemplate,
+      template: infowindowTemplate,
       latlng: position,
       width: this.options.infowindowWidth,
       offset: this.options.infowindowOffset,

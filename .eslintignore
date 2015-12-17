@@ -107,7 +107,7 @@
 **/src/geo/ui/legends.js
 **/src/geo/ui/mobile-layer.js
 **/src/geo/ui/mobile.js
-**/src/geo/ui/search.js
+**/src/geo/ui/search/search.js
 **/src/geo/ui/share.js
 **/src/geo/ui/text.js
 **/src/geo/ui/tiles-loader.js

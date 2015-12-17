@@ -1,15 +1,14 @@
 var $ = require('jquery');
 var L = require('leaflet');
-var Search = require('cdb/geo/ui/search');
-var NOKIA  = require('cdb/geo/geocoder/nokia-geocoder');
+var Search = require('cdb/geo/ui/search/search');
+var NOKIA = require('cdb/geo/geocoder/nokia-geocoder');
 var Map = require('cdb/geo/map');
 var Template = require('cdb/core/template');
 var LeafletMapView = require('cdb/geo/leaflet/leaflet-map-view');
 
-describe('cdb/geo/ui/search', function() {
-
-  beforeEach(function() {
-    this.$el = $("<div>")
+describe('cdb/geo/ui/search', function () {
+  beforeEach(function () {
+    this.$el = $('<div>')
       .attr('id', 'map')
       .height(500)
       .width(500);
@@ -38,15 +37,15 @@ describe('cdb/geo/ui/search', function() {
     this.view.render();
   });
 
-  it('should render properly', function() {
+  it('should render properly', function () {
     expect(this.view.$('form').length).toBe(1);
     expect(this.view.$('input[type="text"]').length).toBe(1);
     expect(this.view.$('input[type="submit"]').length).toBe(1);
     expect(this.view.$('span.loader').length).toBe(1);
   });
 
-  describe('onSubmit', function() {
-    beforeEach(function(){
+  describe('onSubmit', function () {
+    beforeEach(function () {
       var self = this;
       this.result = {
         lat: 43.0,
@@ -59,39 +58,39 @@ describe('cdb/geo/ui/search', function() {
         },
         type: undefined
       };
-      NOKIA.geocode = function(address, callback) {
+      NOKIA.geocode = function (address, callback) {
         callback([ self.result ]);
       };
 
       this.view.$('input.text').val('Madrid, Spain');
     });
 
-    it('should search with geocoder when form is submit', function() {
+    it('should search with geocoder when form is submit', function () {
       spyOn(NOKIA, 'geocode');
       this.view.$('form').submit();
       expect(NOKIA.geocode).toHaveBeenCalled();
     });
 
-    it('should change map center when geocoder returns any result', function() {
-      var onBoundsChanged = jasmine.createSpy("onBoundsChange");
+    it('should change map center when geocoder returns any result', function () {
+      var onBoundsChanged = jasmine.createSpy('onBoundsChange');
       this.map.bind('change:view_bounds_sw', onBoundsChanged, this.view);
       this.view.$('form').submit();
       expect(onBoundsChanged).toHaveBeenCalled();
       this.map.unbind('change:view_bounds_sw', onBoundsChanged, this.view);
     });
 
-    it('should center map to lat,lon when bbox is not defined', function() {
+    it('should center map to lat,lon when bbox is not defined', function () {
       this.result = {
         lat: 43.0,
         lon: -3.0
-      }
+      };
       this.view.$('form').submit();
       var center = this.map.get('center');
       expect(center[0]).toBe(43.0);
       expect(center[1]).toBe(-3.0);
     });
 
-    it('should center map whith bbox when it is defined', function() {
+    it('should center map whith bbox when it is defined', function () {
       this.view.$('form').submit();
       var ne = this.map.get('view_bounds_ne');
       var sw = this.map.get('view_bounds_sw');
@@ -104,9 +103,8 @@ describe('cdb/geo/ui/search', function() {
       expect(center[1]).not.toBe(-3.0);
     });
 
-    describe('result zoom', function() {
-
-      it('should zoom to 18 when search result is building type', function() {
+    describe('result zoom', function () {
+      it('should zoom to 18 when search result is building type', function () {
         this.result = {
           lat: 43.0,
           lon: -3.0,
@@ -116,7 +114,7 @@ describe('cdb/geo/ui/search', function() {
         expect(this.map.get('zoom')).toBe(18);
       });
 
-      it('should zoom to 15 when search result is building type', function() {
+      it('should zoom to 15 when search result is building type', function () {
         this.result = {
           lat: 43.0,
           lon: -3.0,
@@ -126,7 +124,7 @@ describe('cdb/geo/ui/search', function() {
         expect(this.map.get('zoom')).toBe(15);
       });
 
-      it('should zoom to 12 when search result is unknown type', function() {
+      it('should zoom to 12 when search result is unknown type', function () {
         this.result = {
           lat: 43.0,
           lon: -3.0,
@@ -137,18 +135,18 @@ describe('cdb/geo/ui/search', function() {
       });
     });
 
-    describe('searchPin', function() {
-      beforeEach(function() {
+    describe('searchPin', function () {
+      beforeEach(function () {
         this.view.options.searchPin = true;
         this.view.$('form').submit();
       });
 
-      it('should add a pin and an infowindow when search is completed', function() {
+      it('should add a pin and an infowindow when search is completed', function () {
         expect(this.view._searchPin).toBeDefined();
         expect(this.view._searchInfowindow).toBeDefined();
       });
 
-      it('should place pin in the lat,lon if it is provided', function() {
+      it('should place pin in the lat,lon if it is provided', function () {
         this.result = {
           lat: 43.0,
           lon: -3.0
@@ -158,7 +156,7 @@ describe('cdb/geo/ui/search', function() {
         expect(center[1]).toBe(43.0);
       });
 
-      it('should place pin in the middle of the bbox if lat,lon is not provided', function() {
+      it('should place pin in the middle of the bbox if lat,lon is not provided', function () {
         this.result = {
           boundingbox: {
             south: 6.0,
@@ -173,18 +171,18 @@ describe('cdb/geo/ui/search', function() {
         expect(center[1]).toBe(5.0);
       });
 
-      it('should display address in the search infowindow', function() {
+      it('should display address in the search infowindow', function () {
         expect(this.view._searchInfowindow.$('.Cdb-infowindow-title').text()).toBe('Madrid, Spain');
       });
 
-      it('should destroy/hide search pin when map is clicked', function(done) {
+      it('should destroy/hide search pin when map is clicked', function (done) {
         jasmine.clock().install();
 
         var view = this.view;
         expect(view._searchPin).toBeDefined();
         expect(view._searchInfowindow).toBeDefined();
         this.mapView.trigger('click');
-        setTimeout(function() {
+        setTimeout(function () {
           expect(view._searchPin).toBeUndefined();
           expect(view._searchInfowindow).toBeUndefined();
           done();
@@ -195,9 +193,9 @@ describe('cdb/geo/ui/search', function() {
     });
   });
 
-  afterEach(function() {
+  afterEach(function () {
     this.$el.remove();
     jasmine.clock().uninstall();
-  })
+  });
 
 });

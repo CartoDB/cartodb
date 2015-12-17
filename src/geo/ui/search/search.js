@@ -1,4 +1,5 @@
 var $ = require('jquery');
+var _ = require('underscore');
 var View = require('../../../core/view');
 var NOKIA = require('../../../geo/geocoder/nokia-geocoder');
 var InfowindowModel = require('../../../geo/ui/infowindow-model');
@@ -74,11 +75,11 @@ var Search = View.extend({
     if (!address) {
       return;
     }
-
     // Show geocoder loader
     this._showLoader();
-    // Remove previous pin
-    this._destroySearchPin();
+    // Remove previous pin without any timeout (0 represents the timeout for
+    // the animation)
+    this._destroySearchPin(0);
     NOKIA.geocode(address, function (places) {
       self._onResult(places);
       // Hide loader
@@ -149,10 +150,10 @@ var Search = View.extend({
     this._bindEvents();
   },
 
-  _destroySearchPin: function () {
+  _destroySearchPin: function (timeout) {
     this._unbindEvents();
     this._destroyPin();
-    this._destroyInfowindow();
+    this._destroyInfowindow(timeout);
   },
 
   _createInfowindow: function (position, address) {
@@ -178,8 +179,9 @@ var Search = View.extend({
     infowindowModel.set('visibility', true);
   },
 
-  _destroyInfowindow: function () {
+  _destroyInfowindow: function (timeout) {
     if (this._searchInfowindow) {
+      timeout = !_.isUndefined(timeout) && _.isNumber(timeout) ? timeout : 500;
       // Hide it and then destroy it (when animation ends)
       this._searchInfowindow.hide(true);
       var self = this;
@@ -188,7 +190,7 @@ var Search = View.extend({
           self._searchInfowindow.clean();
           delete self._searchInfowindow;
         }
-      }, 1000);
+      }, timeout);
     }
   },
 

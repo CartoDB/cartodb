@@ -70,8 +70,7 @@ module.exports = function(grunt) {
       })
       .value()
   );
-  grunt.registerTask('test', baseTasks.concat([
-    'lint',
+  grunt.registerTask('test', ['lint'].concat(baseTasks.concat([
     'jasmine'
-  ]));
+  ])));
 };

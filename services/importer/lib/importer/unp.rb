@@ -62,9 +62,10 @@ module CartoDB
 
       def crawl(path, files=[])
         Dir.foreach(path) do |subpath|
-          next if hidden?(subpath)
-          next if subpath =~ /.*readme.*\.txt/i
-          next if subpath =~ /\.version\.txt/i
+          normalized_subpath = normalize(suppath)
+          next if hidden?(normalized_subpath)
+          next if normalized_subpath =~ /.*readme.*\.txt/i
+          next if normalized_subpath =~ /\.version\.txt/i
 
           fullpath = normalize("#{path}/#{subpath}")
           (crawl(fullpath, files) and next) if File.directory?(fullpath)

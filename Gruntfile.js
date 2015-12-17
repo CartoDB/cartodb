@@ -45,6 +45,8 @@ module.exports = function(grunt) {
     });
   });
 
+  grunt.registerTask('verify-dependencies', 'check dependencies are shared with cartodb.js', require('./grunt-tasks/verify-dependencies')(grunt));
+
   var baseTasks = [
     'clean:dist',
     'copy',
@@ -70,7 +72,7 @@ module.exports = function(grunt) {
       })
       .value()
   );
-  grunt.registerTask('test', ['lint'].concat(baseTasks.concat([
+  grunt.registerTask('test', ['verify-dependencies','lint'].concat(baseTasks.concat([
     'jasmine'
   ])));
 };

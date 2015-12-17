@@ -17,12 +17,9 @@ var Tooltip = require('../geo/ui/tooltip');
 var Zoom = require('../geo/ui/zoom');
 var FullScreen = require('../ui/common/fullscreen');
 
-Overlay.register('logo', function(data, vis) {
+Overlay.register('logo', function (data, vis) {});
 
-});
-
-Overlay.register('mobile', function(data, vis) {
-
+Overlay.register('mobile', function (data, vis) {
   var template = Template.compile(
     data.template || '\
     <div class="backdrop"></div>\
@@ -59,8 +56,7 @@ Overlay.register('mobile', function(data, vis) {
   return mobile.render();
 });
 
-Overlay.register('text', function(data, vis) {
-
+Overlay.register('text', function (data, vis) {
   var options = data.options;
 
   var template = Template.compile(
@@ -74,15 +70,14 @@ Overlay.register('text', function(data, vis) {
   var widget = new Text({
     model: new Model(options),
     template: template,
-    className: "cartodb-overlay overlay-text " + options.device
+    className: 'cartodb-overlay overlay-text ' + options.device
   });
 
   return widget.render();
 
 });
 
-Overlay.register('annotation', function(data, vis) {
-
+Overlay.register('annotation', function (data, vis) {
   var options = data.options;
 
   var template = Template.compile(
@@ -97,13 +92,13 @@ Overlay.register('annotation', function(data, vis) {
   var options = data.options;
 
   var widget = new Annotation({
-    className: "cartodb-overlay overlay-annotation " + options.device,
+    className: 'cartodb-overlay overlay-annotation ' + options.device,
     template: template,
     mapView: vis.mapView,
     device: options.device,
     text: options.extra.rendered_text,
-    minZoom: options.style["min-zoom"],
-    maxZoom: options.style["max-zoom"],
+    minZoom: options.style['min-zoom'],
+    maxZoom: options.style['max-zoom'],
     latlng: options.extra.latlng,
     style: options.style
   });
@@ -112,13 +107,11 @@ Overlay.register('annotation', function(data, vis) {
 
 });
 
-
-Overlay.register('zoom_info', function(data, vis) {
-  //console.log("placeholder for the zoom_info overlay");
+Overlay.register('zoom_info', function (data, vis) {
+  // console.log("placeholder for the zoom_info overlay");
 });
 
-Overlay.register('header', function(data, vis) {
-
+Overlay.register('header', function (data, vis) {
   var options = data.options;
 
   var template = Template.compile(
@@ -140,10 +133,9 @@ Overlay.register('header', function(data, vis) {
 });
 
 // map zoom control
-Overlay.register('zoom', function(data, vis) {
-
-  if(!data.template) {
-    vis.trigger('error', 'zoom template is empty')
+Overlay.register('zoom', function (data, vis) {
+  if (!data.template) {
+    vis.trigger('error', 'zoom template is empty');
     return;
   }
 
@@ -157,8 +149,7 @@ Overlay.register('zoom', function(data, vis) {
 });
 
 // Tiles loader
-Overlay.register('loader', function(data) {
-
+Overlay.register('loader', function (data) {
   var tilesLoader = new TilesLoader({
     template: Template.compile(data.template)
   });
@@ -167,7 +158,7 @@ Overlay.register('loader', function(data) {
 });
 
 // Header to show informtion (title and description)
-Overlay.register('_header', function(data, vis) {
+Overlay.register('_header', function (data, vis) {
   var MAX_SHORT_DESCRIPTION_LENGTH = 100;
 
   // Add the complete url for facebook and twitter
@@ -178,11 +169,11 @@ Overlay.register('_header', function(data, vis) {
   }
 
   var template = Template.compile(
-    data.template || "\
+    data.template || '\
       {{#title}}\
         <h1>\
           {{#url}}\
-            <a href='#' onmousedown=\"window.open('{{url}}')\">{{title}}</a>\
+            <a href=\'#\' onmousedown="window.open(\'{{url}}\')">{{title}}</a>\
           {{/url}}\
           {{^url}}\
             {{title}}\
@@ -191,38 +182,38 @@ Overlay.register('_header', function(data, vis) {
       {{/title}}\
       {{#description}}<p>{{{description}}}</p>{{/description}}\
       {{#mobile_shareable}}\
-        <div class='social'>\
-          <a class='facebook' target='_blank'\
-            href='http://www.facebook.com/sharer.php?u={{share_url}}&text=Map of {{title}}: {{description}}'>F</a>\
-          <a class='twitter' href='https://twitter.com/share?url={{share_url}}&text={{twitter_title}}'\
-           target='_blank'>T</a>\
+        <div class=\'social\'>\
+          <a class=\'facebook\' target=\'_blank\'\
+            href=\'http://www.facebook.com/sharer.php?u={{share_url}}&text=Map of {{title}}: {{description}}\'>F</a>\
+          <a class=\'twitter\' href=\'https://twitter.com/share?url={{share_url}}&text={{twitter_title}}\'\
+           target=\'_blank\'>T</a>\
         </div>\
       {{/mobile_shareable}}\
-    ",
+    ',
     data.templateType || 'mustache'
   );
 
-  function truncate(s, length) {
-    return s.substr(0, length-1) + (s.length > length ? '…' : '');
+  function truncate (s, length) {
+    return s.substr(0, length - 1) + (s.length > length ? '…' : '');
   }
 
-  var title       = data.map.get('title');
+  var title = data.map.get('title');
   var description = data.map.get('description');
 
-  var facebook_title = title + ": " + description;
+  var facebook_title = title + ': ' + description;
   var twitter_title;
 
   if (title && description) {
-    twitter_title = truncate(title + ": " + description, 112) + " %23map "
+    twitter_title = truncate(title + ': ' + description, 112) + ' %23map ';
   } else if (title) {
-    twitter_title = truncate(title, 112) + " %23map"
-  } else if (description){
-    twitter_title = truncate(description, 112) + " %23map"
+    twitter_title = truncate(title, 112) + ' %23map';
+  } else if (description) {
+    twitter_title = truncate(description, 112) + ' %23map';
   } else {
-    twitter_title = "%23map"
+    twitter_title = '%23map';
   }
 
-  var shareable = (data.shareable == "false" || !data.shareable) ? null : data.shareable;
+  var shareable = (data.shareable == 'false' || !data.shareable) ? null : data.shareable;
   var mobile_shareable = shareable;
 
   mobile_shareable = mobile_shareable && (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
@@ -243,8 +234,7 @@ Overlay.register('_header', function(data, vis) {
 });
 
 // infowindow
-Overlay.register('infowindow', function(data, vis) {
-
+Overlay.register('infowindow', function (data, vis) {
   if (_.size(data.fields) == 0) {
     return null;
   }
@@ -259,20 +249,18 @@ Overlay.register('infowindow', function(data, vis) {
   });
 
   var infowindow = new Infowindow({
-     model: infowindowModel,
-     mapView: vis.mapView,
-     template: data.template
+    model: infowindowModel,
+    mapView: vis.mapView,
+    template: data.template
   });
 
   return infowindow;
 });
 
-
 // layer_selector
-Overlay.register('layer_selector', function(data, vis) {
-
+Overlay.register('layer_selector', function (data, vis) {
   var options = data.options;
-  //if (!options.display) return;
+  // if (!options.display) return;
 
   var template = Template.compile(
     data.template || '\
@@ -297,12 +285,12 @@ Overlay.register('layer_selector', function(data, vis) {
   });
 
   if (vis.legends) {
-    layerSelector.bind('change:visible', function(visible, order, layer) {
+    layerSelector.bind('change:visible', function (visible, order, layer) {
       if (layer.get('type') === 'layergroup' || layer.get('type') === 'torque') {
         var legend = vis.legends && vis.legends.getLegendByIndex(order);
 
         if (legend) {
-          legend[visible ? 'show': 'hide']();
+          legend[visible ? 'show' : 'hide']();
         }
       }
     });
@@ -312,8 +300,7 @@ Overlay.register('layer_selector', function(data, vis) {
 });
 
 // fullscreen
-Overlay.register('fullscreen', function(data, vis) {
-
+Overlay.register('fullscreen', function (data, vis) {
   var options = data.options;
 
   options.allowWheelOnFullscreen = false;
@@ -324,7 +311,7 @@ Overlay.register('fullscreen', function(data, vis) {
   );
 
   var fullscreen = new FullScreen({
-    doc: "#map > div",
+    doc: '#map > div',
     model: new Model(options),
     mapView: vis.mapView,
     template: template
@@ -335,8 +322,7 @@ Overlay.register('fullscreen', function(data, vis) {
 });
 
 // share content
-Overlay.register('share', function(data, vis) {
-
+Overlay.register('share', function (data, vis) {
   var options = data.options;
 
   var template = Template.compile(
@@ -358,8 +344,7 @@ Overlay.register('share', function(data, vis) {
 });
 
 // search content
-Overlay.register('search', function(data, vis) {
-
+Overlay.register('search', function (data, vis) {
   var template = Template.compile(
     data.template || '\
       <form>\
@@ -384,9 +369,9 @@ Overlay.register('search', function(data, vis) {
 });
 
 // tooltip
-Overlay.register('tooltip', function(data, vis) {
+Overlay.register('tooltip', function (data, vis) {
   if (!data.layer && vis.getLayers().length <= 1) {
-    throw new Error("layer is null");
+    throw new Error('layer is null');
   }
   data.layer = data.layer || vis.getLayers()[1];
   data.layer.setInteraction(true);
@@ -394,17 +379,17 @@ Overlay.register('tooltip', function(data, vis) {
   return new Tooltip(data);
 });
 
-Overlay.register('infobox', function(data, vis) {
+Overlay.register('infobox', function (data, vis) {
   var layer;
   var layers = vis.getLayers();
   if (!data.layer) {
-    if(layers.length > 1) {
+    if (layers.length > 1) {
       layer = layers[1];
     }
     data.layer = layer;
   }
-  if(!data.layer) {
-    throw new Error("layer is null");
+  if (!data.layer) {
+    throw new Error('layer is null');
   }
   data.layer.setInteraction(true);
   var infobox = new InfoBox(data);

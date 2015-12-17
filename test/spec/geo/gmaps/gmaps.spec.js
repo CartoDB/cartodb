@@ -13,12 +13,12 @@ var GMapsPlainLayerView = require('cdb/geo/gmaps/gmaps-plain-layer-view');
 var Geometry = require('cdb/geo/geometry');
 var GmapsPathView = require('cdb/geo/gmaps/gmaps-path-view');
 
-describe('geo/gmaps/gmaps-map-view', function() {
+describe('geo/gmaps/gmaps-map-view', function () {
   var mapView;
   var map;
   var spy;
   var container;
-  beforeEach(function() {
+  beforeEach(function () {
     container = $('<div>').css('height', '200px');
     map = new Map();
     mapView = new GoogleMapsMapView({
@@ -35,18 +35,18 @@ describe('geo/gmaps/gmaps-map-view', function() {
     map.bind('change:scrollwheel', spy.scrollWheelChanged);
   });
 
-  it("should change bounds when center is set", function() {
+  it('should change bounds when center is set', function () {
     var spy = jasmine.createSpy('change:view_bound_ne');
     spyOn(map, 'getViewBounds');
     map.bind('change:view_bounds_ne', spy);
     map.set('center', [10, 10]);
-    expect(spy).toHaveBeenCalled()
+    expect(spy).toHaveBeenCalled();
     expect(map.getViewBounds).not.toHaveBeenCalled();
   });
 
-  it("should change center and zoom when bounds are changed", function(done) {
+  it('should change center and zoom when bounds are changed', function (done) {
     var spy = jasmine.createSpy('change:center');
-    mapView.getSize = function() { return {x: 200, y: 200}; }
+    mapView.getSize = function () { return {x: 200, y: 200}; };
     map.bind('change:center', spy);
     spyOn(mapView, '_setCenter');
     mapView._bindModel();
@@ -56,37 +56,37 @@ describe('geo/gmaps/gmaps-map-view', function() {
       'view_bounds_sw': [-0.3, -1.2]
     });
 
-    setTimeout(function() {
+    setTimeout(function () {
       expect(mapView._setCenter).toHaveBeenCalled();
       done();
     }, 1000);
   });
 
-  it("should allow to disable the scroll wheel", function() {
+  it('should allow to disable the scroll wheel', function () {
     map.disableScrollWheel();
     expect(spy.scrollWheelChanged).toHaveBeenCalled();
-    expect(map.get("scrollwheel")).toEqual(false);
+    expect(map.get('scrollwheel')).toEqual(false);
   });
 
-  it("should change zoom", function() {
+  it('should change zoom', function () {
     mapView._setZoom(null, 10);
     expect(spy.zoomChanged).toHaveBeenCalled();
   });
 
-  it("should allow adding a layer", function() {
+  it('should allow adding a layer', function () {
     map.addLayer(layer);
     expect(map.layers.length).toEqual(1);
   });
 
-  it("should add layers on reset", function() {
+  it('should add layers on reset', function () {
     map.layers.reset([
       layer
     ]);
     expect(map.layers.length).toEqual(1);
   });
 
-  it("should create a layer view when adds a model", function() {
-    var spy = { c: function() {} };
+  it('should create a layer view when adds a model', function () {
+    var spy = { c: function () {} };
     spyOn(spy, 'c');
     mapView.bind('newLayerView', spy.c);
     map.addLayer(layer);
@@ -95,68 +95,46 @@ describe('geo/gmaps/gmaps-map-view', function() {
     expect(spy.c).toHaveBeenCalled();
   });
 
-  it("should allow removing a layer", function() {
+  it('should allow removing a layer', function () {
     map.addLayer(layer);
     map.removeLayer(layer);
     expect(map.layers.length).toEqual(0);
     expect(_.size(mapView.layers)).toEqual(0);
   });
 
-  it("should allow removing a layer by index", function() {
+  it('should allow removing a layer by index', function () {
     map.addLayer(layer);
     map.removeLayerAt(0);
     expect(map.layers.length).toEqual(0);
   });
 
-  it("should allow removing a layer by Cid", function() {
+  it('should allow removing a layer by Cid', function () {
     var cid = map.addLayer(layer);
     map.removeLayerByCid(cid);
     expect(map.layers.length).toEqual(0);
   });
 
-  it("should create a TiledLayerView when the layer is Tiled", function() {
+  it('should create a TiledLayerView when the layer is Tiled', function () {
     var lyr = map.addLayer(layer);
     var layerView = mapView.getLayerByCid(lyr);
     expect(GMapsTiledLayerView.prototype.isPrototypeOf(layerView)).toBeTruthy();
   });
 
-  it("should create a GMapsCartoDBLayerGroupView when the layer is CartoDBLayerGroupAnonymous", function() {
+  it('should create a GMapsCartoDBLayerGroupView when the layer is CartoDBLayerGroupAnonymous', function () {
     layer = new CartoDBLayerGroupAnonymous({}, {});
     var lyr = map.addLayer(layer);
     var layerView = mapView.getLayerByCid(lyr);
     expect(layerView instanceof GMapsCartoDBLayerGroupView).toBeTruthy();
   });
 
-  it("should create a GMapsCartoDBLayerGroupView when the layer is CartoDBLayerGroupNamed", function() {
+  it('should create a GMapsCartoDBLayerGroupView when the layer is CartoDBLayerGroupNamed', function () {
     layer = new CartoDBLayerGroupNamed({}, {});
     var lyr = map.addLayer(layer);
     var layerView = mapView.getLayerByCid(lyr);
     expect(layerView instanceof GMapsCartoDBLayerGroupView).toBeTruthy();
   });
 
-  it("should create a cartodb logo when layer is CartoDBLayerGroupAnonymous", function(done) {
-    layer = new CartoDBLayerGroupAnonymous({}, {});
-    var lyr = map.addLayer(layer);
-    var layerView = mapView.getLayerByCid(lyr);
-
-    setTimeout(function() {
-      expect(container.find("div.cartodb-logo").length).toEqual(1);
-      done();
-    }, 3000);
-  });
-
-  it("should create a cartodb logo when layer is CartoDBLayerGroupNamed", function(done) {
-    layer = new CartoDBLayerGroupNamed({}, {});
-    var lyr = map.addLayer(layer);
-    var layerView = mapView.getLayerByCid(lyr);
-
-    setTimeout(function() {
-      expect(container.find("div.cartodb-logo").length).toEqual(1);
-      done();
-    }, 3000);
-  });
-
-  it("should create a PlainLayer when the layer is cartodb", function() {
+  it('should create a PlainLayer when the layer is cartodb', function () {
     layer = new PlainLayer({});
     var lyr = map.addLayer(layer);
     var layerView = mapView.getLayerByCid(lyr);
@@ -164,23 +142,22 @@ describe('geo/gmaps/gmaps-map-view', function() {
   });
 
   var geojsonFeature = {
-      "type": "Point",
-      "coordinates": [-104.99404, 39.75621]
+    'type': 'Point',
+    'coordinates': [-104.99404, 39.75621]
   };
 
-
-  var multipoly = {"type":"MultiPolygon","coordinates": [
-    [
-      [[40, 40], [20, 45], [45, 30], [40, 40]]
-    ],
-    [
-      [[20, 35], [45, 20], [30, 5], [10, 10], [10, 30], [20, 35]],
-      [[30, 20], [20, 25], [20, 15], [30, 20]]
+  var multipoly = {'type': 'MultiPolygon','coordinates': [
+      [
+        [[40, 40], [20, 45], [45, 30], [40, 40]]
+      ],
+      [
+        [[20, 35], [45, 20], [30, 5], [10, 10], [10, 30], [20, 35]],
+        [[30, 20], [20, 25], [20, 15], [30, 20]]
+      ]
     ]
-  ]
-  }
+  };
 
-  function testGeom(g) {
+  function testGeom (g) {
     var geo = new Geometry({
       geojson: g
     });
@@ -190,15 +167,15 @@ describe('geo/gmaps/gmaps-map-view', function() {
     expect(_.size(mapView.geometries)).toEqual(0);
   }
 
-  it("should add and remove a geometry", function() {
+  it('should add and remove a geometry', function () {
     testGeom(geojsonFeature);
   });
 
-  it("should add and remove a polygon", function() {
+  it('should add and remove a polygon', function () {
     testGeom(multipoly);
   });
 
-  it("should edit a geometry", function() {
+  it('should edit a geometry', function () {
     var geo = new Geometry({
       geojson: geojsonFeature
     });
@@ -206,12 +183,12 @@ describe('geo/gmaps/gmaps-map-view', function() {
     var v = mapView.geometries[geo.cid];
     v.trigger('dragend', null, [10, 20]);
     expect(geo.get('geojson')).toEqual({
-      "type": "Point",
-      "coordinates": [20, 10]
+      'type': 'Point',
+      'coordinates': [20, 10]
     });
   });
 
-  it("should convert to geojson", function() {
+  it('should convert to geojson', function () {
     var geo = new Geometry({
       geojson: multipoly
     });
@@ -221,7 +198,7 @@ describe('geo/gmaps/gmaps-map-view', function() {
     expect(geojson).toEqual(multipoly);
   });
 
-  it("should disable gmaps dragging and double click zooming when the map has drag disabled", function() {
+  it('should disable gmaps dragging and double click zooming when the map has drag disabled', function () {
     var container = $('<div>').css({
       'height': '200px',
       'width': '200px'

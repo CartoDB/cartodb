@@ -1,4 +1,4 @@
-var WidgetModel = require('app/widgets/widget-model');
+var WidgetModel = require('../../src/widgets/widget-model');
 
 describe('widgets/widget-model', function () {
   beforeEach(function () {

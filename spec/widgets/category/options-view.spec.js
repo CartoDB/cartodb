@@ -1,7 +1,7 @@
-var CategoryModel = require('app/widgets/category/model.js');
-var ViewModel = require('app/widgets/widget-content-model.js');
-var OptionsView = require('app/widgets/category/options/options-view.js');
-var WindshaftFiltersCategory = require('app/windshaft/filters/category');
+var CategoryModel = require('../../../src/widgets/category/model.js');
+var ViewModel = require('../../../src/widgets/widget-content-model.js');
+var OptionsView = require('../../../src/widgets/category/options/options-view.js');
+var WindshaftFiltersCategory = require('../../../src/windshaft/filters/category');
 
 describe('widgets/category/options-view', function () {
   beforeEach(function () {

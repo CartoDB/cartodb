@@ -1,4 +1,4 @@
-var DashboardInstance = require('app/windshaft/dashboard-instance');
+var DashboardInstance = require('../../src/windshaft/dashboard-instance');
 
 describe('windshaft/dashboard-instance', function () {
   describe('#getBaseURL', function () {

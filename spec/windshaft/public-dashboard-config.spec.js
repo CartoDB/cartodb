@@ -1,6 +1,6 @@
 var cdb = require('cartodb.js');
-var PublicDashboardConfig = require('app/windshaft/public-dashboard-config');
-var HistogramModel = require('app/widgets/histogram/model');
+var PublicDashboardConfig = require('../../src/windshaft/public-dashboard-config');
+var HistogramModel = require('../../src/widgets/histogram/model');
 
 describe('windshaft/public-dashboard-config', function () {
   beforeEach(function () {

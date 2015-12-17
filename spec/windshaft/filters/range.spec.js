@@ -1,4 +1,4 @@
-var RangeFilter = require('app/windshaft/filters/range');
+var RangeFilter = require('../../../src/windshaft/filters/range');
 
 describe('windshaft/filters/range', function () {
   beforeEach(function () {

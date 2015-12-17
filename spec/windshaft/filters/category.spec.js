@@ -1,4 +1,4 @@
-var WindshaftFiltersCategory = require('app/windshaft/filters/category');
+var WindshaftFiltersCategory = require('../../../src/windshaft/filters/category');
 
 describe('windshaft/filters/category', function () {
   var data;

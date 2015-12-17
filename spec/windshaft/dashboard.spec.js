@@ -1,10 +1,10 @@
 var $ = require('jquery');
 var _ = require('underscore');
 var cdb = require('cartodb.js');
-var Dashboard = require('app/windshaft/dashboard');
-var DashboardInstance = require('app/windshaft/dashboard-instance');
-var HistogramModel = require('app/widgets/histogram/model');
-var CategoryFilter = require('app/windshaft/filters/category');
+var Dashboard = require('../../src/windshaft/dashboard');
+var DashboardInstance = require('../../src/windshaft/dashboard-instance');
+var HistogramModel = require('../../src/widgets/histogram/model');
+var CategoryFilter = require('../../src/windshaft/filters/category');
 
 describe('windshaft/dashboard', function () {
   beforeEach(function () {

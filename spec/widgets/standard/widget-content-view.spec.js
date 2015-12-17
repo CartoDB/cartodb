@@ -1,5 +1,5 @@
-var WidgetModel = require('app/widgets/widget-model');
-var WidgetContentView = require('app/widgets/standard/widget-content-view');
+var WidgetModel = require('../../../src/widgets/widget-model');
+var WidgetContentView = require('../../../src/widgets/standard/widget-content-view');
 
 describe('widgets/standard/widget-content-view', function () {
   beforeEach(function () {

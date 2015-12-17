@@ -22,6 +22,10 @@ var Overlay = require('./vis/overlay');
 var INFOWINDOW_TEMPLATE = require('./vis/infowindow-template');
 var CartoDBLayerGroupNamed = require('../geo/map/cartodb-layer-group-named');
 var CartoDBLayerGroupAnonymous = require('../geo/map/cartodb-layer-group-anonymous');
+var WindshaftConfig = require('cdb/windshaft/config');
+var WindshaftClient = require('cdb/windshaft/client');
+var WindshaftLayerGroupConfig = require('cdb/windshaft/layergroup-config');
+var WindshaftNamedMapConfig = require('cdb/windshaft/namedmap-config');
 
 /**
  * Visualization creation
@@ -341,18 +345,32 @@ var Vis = View.extend({
       if (layerData.type === 'layergroup' || layerData.type === 'namedmap') {
         var layersData;
         var layerGroupClass;
+        var layerGroupOptions = layerData.options;
+        var layerGroupAttributes = {};
         if (layerData.type === 'layergroup') {
           layersData = layerData.options.layer_definition.layers;
           layerGroupClass = CartoDBLayerGroupAnonymous;
+          layerGroupAttributes = {
+            userName: layerGroupOptions['user_name'],
+            mapsApiTemplate: layerGroupOptions['maps_api_template'],
+            statTag: layerGroupOptions['layer_definition']['stat_tag']
+          };
         } else {
           layersData = layerData.options.named_map.layers;
           layerGroupClass = CartoDBLayerGroupNamed;
+          layerGroupAttributes = {
+            userName: layerGroupOptions['user_name'],
+            mapsApiTemplate: layerGroupOptions['maps_api_template'],
+            statTag: layerGroupOptions['named_map']['stat_tag'],
+            namedMapId: layerGroupOptions['named_map']['name']
+          };
         }
         cartoDBLayers = _.map(layersData, function (layerData) {
           var cartoDBLayer = Layers.create('cartodb', self, layerData);
           return cartoDBLayer;
         });
-        cartoDBLayerGroup = new layerGroupClass({}, {
+
+        cartoDBLayerGroup = new layerGroupClass(layerGroupAttributes, {
           layers: cartoDBLayers
         });
         layers.push(cartoDBLayerGroup);
@@ -377,7 +395,59 @@ var Vis = View.extend({
       self.trigger('done', self, map.layers);
     });
 
+    // TODO: This method is creating an instance of the layer group
+    // and setting the tiles and grid urls on the layerGroup model, which
+    // cause the layergroup view to fetch and render the tiles. This needs
+    // to happen everytime a layer that belongs to the layerGroup changes
+    // (eg: when the layer is hidden or it's SQL is changed)
+    if (cartoDBLayerGroup) {
+      this._createLayerGroupInstance(cartoDBLayerGroup);
+    }
+
     return this;
+  },
+
+  _createLayerGroupInstance: function (layerGroup) {
+    if (!layerGroup) {
+      throw new Error('Error creating instance of layergroup, layerGroup is not defined.');
+    }
+    if (layerGroup.get('type') === 'namedmap') {
+      var userName = layerGroup.get('userName');
+      var mapsApiTemplate = layerGroup.get('mapsApiTemplate');
+      var namedMapId = layerGroup.get('namedMapId');
+      var statTag = layerGroup.get('statTag');
+      var endpoint = [
+        WindshaftConfig.MAPS_API_BASE_URL, 'named', namedMapId
+      ].join('/');
+      var configGenerator = WindshaftNamedMapConfig;
+    } else if (layerGroup.get('type') === 'layergroup') {
+      var userName = layerGroup.get('userName');
+      var mapsApiTemplate = layerGroup.get('mapsApiTemplate');
+      var statTag = layerGroup.get('statTag');
+      var endpoint = WindshaftConfig.MAPS_API_BASE_URL;
+      var configGenerator = WindshaftLayerGroupConfig;
+    }
+
+    var windshaftClient = new WindshaftClient({
+      endpoint: endpoint,
+      urlTemplate: mapsApiTemplate,
+      userName: userName,
+      statTag: statTag
+    });
+
+    var mapConfig = configGenerator.generate({
+      layers: layerGroup.layers.models
+    });
+
+    windshaftClient.instantiateMap({
+      mapDefinition: mapConfig,
+      success: function (dashboardInstance) {
+        layerGroup.set({
+          baseURL: dashboardInstance.getBaseURL(),
+          urls: dashboardInstance.getTiles('mapnik')
+        });
+      }
+    });
   },
 
   _createOverlays: function (overlays, vis_data, options) {

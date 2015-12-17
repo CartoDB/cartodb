@@ -380,7 +380,6 @@ describe('vis/vis', function () {
     });
 
     it('should add an overlay to the first layer and enable interaction', function (done) {
-      var layer;
       var vizjson = {
         layers: [
           {
@@ -392,7 +391,10 @@ describe('vis/vis', function () {
           {
             type: 'layergroup',
             options: {
+              user_name: 'pablo',
+              maps_api_template: 'https://{user}.cartodb-staging.com:443',
               layer_definition: {
+                stat_tag: 'ece6faac-7271-11e5-a85f-04013fc66a01',
                 layers: []
               }
             }

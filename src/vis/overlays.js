@@ -342,32 +342,16 @@ Overlay.register('share', function (data, vis) {
 
 // search content
 Overlay.register('search', function (data, vis) {
-  var template = Template.compile(
-    data.template || '\
-    <div class="CDB-Overlay">\
-      <div class="CDB-Search-inner">\
-        <form class="js-form">\
-          <button class="CDB-Search-action js-toggle" value="">\
-            <span class="CDB-Shape-magnify"></span>\
-          </button>\
-          <input type="text" placeholder="Search Location" class="CDB-Search-text js-textInput" value="" />\
-        </form>\
-      </div>\
-    </div>\
-    ',
-    data.templateType || 'mustache'
-  );
+  var opts = _.extend(data, {
+    mapView: vis.mapView,
+    model: vis.map
+  });
 
-  var search = new Search(
-    _.extend(data, {
-      template: template,
-      mapView: vis.mapView,
-      model: vis.map
-    })
-  );
-
+  if (data.template) {
+    opts.template = Template.compile(data.template, data.templateType || 'mustache');
+  }
+  var search = new Search(opts);
   return search.render();
-
 });
 
 // tooltip

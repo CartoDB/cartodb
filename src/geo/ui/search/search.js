@@ -5,6 +5,7 @@ var NOKIA = require('../../../geo/geocoder/nokia-geocoder');
 var InfowindowModel = require('../../../geo/ui/infowindow-model');
 var Infowindow = require('../../../geo/ui/infowindow');
 var Geometry = require('../../../geo/geometry');
+var template = require('./search_template.tpl');
 var infowindowTemplate = require('./search_infowindow_template.tpl');
 
 /**
@@ -21,8 +22,8 @@ var Search = View.extend({
   },
 
   events: {
-    "click input[type='text']": '_onFocus',
-    'submit form': '_onSubmit',
+    'click .js-toggle': '_onToggleClick',
+    'submit .js-form': '_onSubmit',
     'click': '_stopPropagation',
     'dblclick': '_stopPropagation',
     'mousedown': '_stopPropagation'
@@ -38,7 +39,7 @@ var Search = View.extend({
 
   initialize: function () {
     this.mapView = this.options.mapView;
-    this.template = this.options.template;
+    this.template = this.options.template || template;
   },
 
   render: function () {
@@ -52,44 +53,25 @@ var Search = View.extend({
     }
   },
 
-  _onFocus: function (ev) {
-    if (ev) {
-      ev.preventDefault();
-      $(ev.target).focus();
-    }
-  },
-
-  _showLoader: function () {
-    this.$('span.loader').show();
-  },
-
-  _hideLoader: function () {
-    this.$('span.loader').hide();
-  },
-
   _onSubmit: function (ev) {
     ev.preventDefault();
     var self = this;
-    var address = this.$('input.text').val();
+    var address = this.$('.js-textInput').val();
 
     if (!address) {
       return;
     }
-    // Show geocoder loader
-    this._showLoader();
     // Remove previous pin without any timeout (0 represents the timeout for
     // the animation)
     this._destroySearchPin(0);
     NOKIA.geocode(address, function (places) {
       self._onResult(places);
-      // Hide loader
-      self._hideLoader();
     });
   },
 
   _onResult: function (places) {
     var position = '';
-    var address = this.$('input.text').val();
+    var address = this.$('.js-textInput').val();
 
     if (places && places.length > 0) {
       var location = places[0];
@@ -125,6 +107,11 @@ var Search = View.extend({
         this._createSearchPin(position, address);
       }
     }
+  },
+
+  _onToggleClick: function () {
+    this.$('.CDB-Search-inner').toggleClass('is-active');
+    this.$('.js-textInput').focus();
   },
 
   // Getting zoom for each type of location

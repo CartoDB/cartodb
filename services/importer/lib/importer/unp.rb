@@ -62,7 +62,7 @@ module CartoDB
 
       def crawl(path, files=[])
         Dir.foreach(path) do |subpath|
-          normalized_subpath = normalize(suppath)
+          normalized_subpath = normalize(subpath)
           next if hidden?(normalized_subpath)
           next if normalized_subpath =~ /.*readme.*\.txt/i
           next if normalized_subpath =~ /\.version\.txt/i
@@ -141,7 +141,7 @@ module CartoDB
       end
 
       def underscore(filename)
-        filename.encode('UTF-8')
+        filename.encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '')
           .gsub(' ', '_')
           .gsub(/\(/, '')
           .gsub(/\)/, '')

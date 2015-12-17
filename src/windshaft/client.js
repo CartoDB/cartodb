@@ -4,12 +4,12 @@ var LZMA = require('lzma');
 var util = require('cdb/core/util');
 var WindshaftDashboardInstance = require('cdb/windshaft/dashboard-instance');
 
-var validatePresenceOfOptions = function(options, requiredOptions) {
-  var missingOptions = _.filter(requiredOptions, function(option) {
+var validatePresenceOfOptions = function (options, requiredOptions) {
+  var missingOptions = _.filter(requiredOptions, function (option) {
     return !options[option];
   });
   if (missingOptions.length) {
-    throw 'The following options are required: ' + missingOptions.join(', ');
+    throw new Error('The following options are required: ' + missingOptions.join(', '));
   }
 };
 
@@ -17,7 +17,7 @@ var validatePresenceOfOptions = function(options, requiredOptions) {
  * Windshaft client. It provides a method to create instances of dashboards.
  * @param {object} options Options to set up the client
  */
-WindshaftClient = function(options) {
+var WindshaftClient = function (options) {
   validatePresenceOfOptions(options, ['urlTemplate', 'userName', 'endpoint', 'statTag']);
 
   this.urlTemplate = options.urlTemplate;
@@ -38,15 +38,15 @@ WindshaftClient.MAX_GET_SIZE = 2033;
  * @param  {function} callback A callback that will get the public or private map
  * @return {cdb.windshaft.DashboardInstance} The instance of the dashboard
  */
-WindshaftClient.prototype.instantiateMap = function(options) {
+WindshaftClient.prototype.instantiateMap = function (options) {
   var mapDefinition = options.mapDefinition;
-  var filters = options.filters;
+  var filters = options.filters || {};
   var successCallback = options.success;
   var errorCallback = options.error;
   var payload = JSON.stringify(mapDefinition);
 
-  var options = {
-    success: function(data) {
+  var ajaxOptions = {
+    success: function (data) {
       if (data.errors) {
         errorCallback(data.errors[0]);
       } else {
@@ -55,40 +55,39 @@ WindshaftClient.prototype.instantiateMap = function(options) {
         successCallback(new WindshaftDashboardInstance(data));
       }
     }.bind(this),
-    error: function(xhr) {
+    error: function (xhr) {
       var err = { errors: ['Unknown error'] };
       try {
         err = JSON.parse(xhr.responseText);
-      } catch(e) {}
+      } catch (e) {}
       errorCallback(err.errors[0]);
     }
   };
 
   // TODO: Move this
   var params = [
-    ["stat_tag", this.statTag].join("=")
+    ['stat_tag', this.statTag].join('=')
   ];
 
-  var filters = filters || {};
   if (Object.keys(filters).length) {
-    params.push(["filters", encodeURIComponent(JSON.stringify(filters))].join('='));
+    params.push(['filters', encodeURIComponent(JSON.stringify(filters))].join('='));
   }
 
   if (this._usePOST(payload, params)) {
-    this._post(payload, params, options);
+    this._post(payload, params, ajaxOptions);
   } else {
-    this._get(payload, params, options);
+    this._get(payload, params, ajaxOptions);
   }
-}
+};
 
-WindshaftClient.prototype._usePOST = function(payload, params) {
+WindshaftClient.prototype._usePOST = function (payload, params) {
   if (util.isCORSSupported() && this.forceCors) {
     return true;
   }
   return payload.length >= this.constructor.MAX_GET_SIZE;
-}
+};
 
-WindshaftClient.prototype._post = function(payload, params, options) {
+WindshaftClient.prototype._post = function (payload, params, options) {
   $.ajax({
     crossOrigin: true,
     method: 'POST',
@@ -99,11 +98,11 @@ WindshaftClient.prototype._post = function(payload, params, options) {
     success: options.success,
     error: options.error
   });
-}
+};
 
-WindshaftClient.prototype._get = function(payload, params, options) {
+WindshaftClient.prototype._get = function (payload, params, options) {
   var compressFunction = this._getCompressor(payload);
-  compressFunction(payload, this.constructor.DEFAULT_COMPRESSION_LEVEL, function(dataParameter) {
+  compressFunction(payload, this.constructor.DEFAULT_COMPRESSION_LEVEL, function (dataParameter) {
     params.push(dataParameter);
     $.ajax({
       url: this._getURL(params),
@@ -115,30 +114,29 @@ WindshaftClient.prototype._get = function(payload, params, options) {
       error: options.error
     });
   }.bind(this));
-}
+};
 
-WindshaftClient.prototype._getCompressor = function(payload) {
+WindshaftClient.prototype._getCompressor = function (payload) {
   if (payload.length < this.constructor.MAX_GET_SIZE) {
-    return function(data, level, callback) {
-      callback("config=" + encodeURIComponent(data));
+    return function (data, level, callback) {
+      callback('config=' + encodeURIComponent(data));
     };
   }
 
-  return function(data, level, callback) {
+  return function (data, level, callback) {
     data = JSON.stringify({ config: data });
-    LZMA.compress(data, level, function(encoded) {
-      callback("lzma=" + encodeURIComponent(util.array2hex(encoded)));
+    LZMA.compress(data, level, function (encoded) {
+      callback('lzma=' + encodeURIComponent(util.array2hex(encoded)));
     });
   };
-}
+};
 
-
-WindshaftClient.prototype._getURL = function(params) {
+WindshaftClient.prototype._getURL = function (params) {
   return [this.url, this.endpoint].join('/') + '?' + params.join('&');
-}
+};
 
-WindshaftClient.prototype._jsonpCallbackName = function(payload) {
+WindshaftClient.prototype._jsonpCallbackName = function (payload) {
   return '_cdbc_' + util.uniqueCallbackName(payload);
-}
+};
 
 module.exports = WindshaftClient;

@@ -1,11 +1,11 @@
 var _ = require('underscore');
 var NamedMapConfig = {};
 
-NamedMapConfig.generate = function(options) {
+NamedMapConfig.generate = function (options) {
   var layers = options.layers;
   var config = {};
 
-  _.each(layers, function(layer, index){
+  _.each(layers, function (layer, index) {
     config['layer' + index] = layer.isVisible() ? 1 : 0;
   });
 

@@ -1,10 +1,10 @@
 var _ = require('underscore');
 var LayerGroupConfig = {};
 
-LayerGroupConfig.generate = function(options) {
+LayerGroupConfig.generate = function (options) {
   var layers = options.layers;
   var config = { layers: [] };
-  _.each(layers, function(layer) {
+  _.each(layers, function (layer) {
     if (layer.isVisible()) {
       var layerConfig = {
         type: layer.get('type').toLowerCase(),
@@ -17,7 +17,7 @@ LayerGroupConfig.generate = function(options) {
       };
       if (layer.getInfowindowFieldNames().length) {
         layerConfig.options.attributes = {
-          id: "cartodb_id",
+          id: 'cartodb_id',
           columns: layer.getInfowindowFieldNames()
         };
       }

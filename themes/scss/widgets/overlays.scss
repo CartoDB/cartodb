@@ -5,6 +5,7 @@
 @import '../variables/mixins';
 
 
+// zoom overlay
 .CDB-Overlay {
   position: relative;
   min-width: 32px;
@@ -14,13 +15,11 @@
   box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.24), 0 4px 8px 0 rgba(0, 0, 0, 0.16);
   z-index: 20000;
 }
-
 .CDB-Zoom {
   position: absolute;
-  top: 48px;
+  bottom: 16px;
   left: 16px;
 }
-
 .CDB-Zoom-action {
   display: inline-block;
   position: relative;
@@ -53,7 +52,6 @@
     border-bottom-left-radius: 4px;
   }
 }
-
 .CDB-Zoom-action--out:before {
   position: absolute;
   left: 50%;
@@ -63,7 +61,6 @@
   background: #636D72;
   content: '';
 }
-
 .CDB-Zoom-action--in {
   &:before {
     position: absolute;
@@ -83,7 +80,6 @@
     content: '';
   }
 }
-
 .CDB-Zoom-info {
   position: absolute;
   top: -24px;
@@ -101,4 +97,34 @@
   text-align: center;
   z-index: 1;
 }
+
+// loader overlay 
+
+.CDB-Loader {
+  @include css3-prefix(animation, loader-progress 1000ms linear 1);
+  @include opacity(0);
+  @include transition(opacity, 1000ms);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  z-index: 10;
+  background: rgba(#3AA9E3, 1);
+}
+.CDB-Loader.is-visible {
+  @include css3-prefix(animation, loader-progress 2000ms linear infinite);
+  @include opacity(1);
+}
+
+@include keyframes(loader-progress) {
+  0% {
+    width: 0;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
+
 

@@ -22,10 +22,10 @@ var Overlay = require('./vis/overlay');
 var INFOWINDOW_TEMPLATE = require('./vis/infowindow-template');
 var CartoDBLayerGroupNamed = require('../geo/map/cartodb-layer-group-named');
 var CartoDBLayerGroupAnonymous = require('../geo/map/cartodb-layer-group-anonymous');
-var WindshaftConfig = require('cdb/windshaft/config');
-var WindshaftClient = require('cdb/windshaft/client');
-var WindshaftLayerGroupConfig = require('cdb/windshaft/layergroup-config');
-var WindshaftNamedMapConfig = require('cdb/windshaft/namedmap-config');
+var WindshaftConfig = require('../windshaft/config');
+var WindshaftClient = require('../windshaft/client');
+var WindshaftLayerGroupConfig = require('../windshaft/layergroup-config');
+var WindshaftNamedMapConfig = require('../windshaft/namedmap-config');
 
 /**
  * Visualization creation

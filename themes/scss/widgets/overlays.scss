@@ -129,21 +129,27 @@
   position: absolute;
   left: 92px;
   bottom: 16px;
+}
+.CDB-Search-inner {
   width: 32px;
   height: 32px;
+  overflow: hidden;
+  position: relative;
+  
   &.is-active {
     width: 184px;
   }
 }
-.CDB-Search-Action {
+.CDB-Search-action {
   position: relative;
   width: 32px;
   border-radius: 4px;
-  display: inline-block;
-  vertical-align: middle;
   cursor: pointer;
 }
-.CDB-Search-Text {
+.CDB-Search-text {
+  position: absolute;
+  left: 33px;
+  top: 8px;
   width: 130px;
   display: inline-block;
   vertical-align: middle;

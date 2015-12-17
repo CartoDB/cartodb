@@ -5,7 +5,7 @@ require_relative './user_presenter'
 module Carto
   module Api
     class OrganizationUsersController < ::Api::ApplicationController
-      include OrganizationsHelper
+      include OrganizationUsersHelper
 
       ssl_required
 
@@ -14,30 +14,21 @@ module Carto
       UPDATE_PARAMS_MAP = { new_email: :email, new_username: :username }
 
       def create
-        render_jsonp({}, 401) && return unless current_viewer_is_owner?
+        account_creator = CartoDB::UserAccountCreator.new.with_organization(@organization)
 
-        user = ::User.new(create_params)
-        user.organization_id = @organization.id
-        current_viewer.copy_account_features(user)
+        account_creator.with_username(create_params[:username]) if create_params[:username].present?
+        account_creator.with_email(create_params[:email]) if create_params[:email].present?
+        account_creator.with_password(create_params[:password]) if create_params[:password].present?
 
-        render_jsonp(user.errors.full_messages, 410) && return unless user.save
+        render_jsonp(account_creator.validation_errors.full_messages, 410) && return unless account_creator.valid?
 
-        user.create_in_central
-        common_data_url = CartoDB::Visualization::CommonDataService.build_url(self)
-        ::Resque.enqueue(::Resque::UserJobs::CommonData::LoadCommonData, user.id, common_data_url)
+        account_creator.enqueue_creation(self)
 
-        user.notify_new_organization_user
-        user.organization.notify_if_seat_limit_reached
-        render_jsonp Carto::Api::UserPresenter.new(user, current_viewer: current_viewer).to_poro, 200
-      rescue CartoDB::CentralCommunicationFailure => e
-        Rollbar.report_exception(e)
-        begin
-          @user.destroy
-        rescue => ee
-          Rollbar.report_exception(ee)
-        end
+        render_jsonp Carto::Api::UserPresenter.new(account_creator.user, current_viewer: current_viewer).to_poro, 200
+      rescue => e
+        CartoDB.notify_exception(e, { new_user: account_creator.user.inspect })
 
-        render_jsonp 'Central comunication failure', 500
+        render_jsonp('An error has ocurred. Please contact support', 500)
       end
 
       def update

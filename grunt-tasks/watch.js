@@ -1,6 +1,9 @@
 module.exports = {
   scss: {
-    files: ['themes/scss/**/*.scss'],
+    files: [
+      'node_modules/cartodb.js/themes/scss/**/*.scss',
+      'themes/scss/**/*.scss'
+    ],
     tasks: [
       'sass',
       'concat:themes',

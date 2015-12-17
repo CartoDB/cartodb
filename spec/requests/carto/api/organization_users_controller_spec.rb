@@ -8,7 +8,7 @@ describe Carto::Api::OrganizationUsersController do
   include Rack::Test::Methods
   include Warden::Test::Helpers
 
-  describe  'user creation' do
+  describe 'user creation' do
     it 'returns 401 for non authorized calls' do
       post api_v1_organization_users_create_url(id: @organization.id), @headers
       last_response.status.should == 401
@@ -103,7 +103,7 @@ describe Carto::Api::OrganizationUsersController do
     end
   end
 
-  describe  'user update' do
+  describe 'user update' do
     it 'returns 401 for non authorized calls' do
       put api_v1_organization_users_update_url(id: @organization.id), @headers
       last_response.status.should == 401
@@ -274,7 +274,7 @@ describe Carto::Api::OrganizationUsersController do
     end
   end
 
-  describe  'user deletion' do
+  describe 'user deletion' do
     it 'returns 401 for non authorized calls' do
       delete api_v1_organization_users_delete_url(id: @organization.id), @headers
       last_response.status.should == 401
@@ -305,7 +305,7 @@ describe Carto::Api::OrganizationUsersController do
       last_response.status.should == 200
 
       @organization.reload
-      @organization.users.map { |u| u.id }.include?(user_to_be_deleted.id).should eq false
+      @organization.users.map(&:id).include?(user_to_be_deleted.id).should eq false
     end
 
     it 'should delete users by email' do
@@ -319,7 +319,7 @@ describe Carto::Api::OrganizationUsersController do
       last_response.status.should == 200
 
       @organization.reload
-      @organization.users.map { |u| u.id }.include?(user_to_be_deleted.id).should eq false
+      @organization.users.map(&:id).include?(user_to_be_deleted.id).should eq false
     end
 
     it 'should not allow to delete the org owner' do

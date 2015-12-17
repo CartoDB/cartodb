@@ -98,8 +98,7 @@
   z-index: 1;
 }
 
-// loader overlay 
-
+// loader overlay
 .CDB-Loader {
   @include css3-prefix(animation, loader-progress 1000ms linear 1);
   @include opacity(0);
@@ -116,7 +115,6 @@
   @include css3-prefix(animation, loader-progress 2000ms linear infinite);
   @include opacity(1);
 }
-
 @include keyframes(loader-progress) {
   0% {
     width: 0;

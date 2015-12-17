@@ -252,14 +252,15 @@ class Api::Json::VisualizationsController < Api::ApplicationController
         end
 
         custom_properties = {
-                             action: 'like',
-                             vis_id: vis.id,
-                             vis_name: vis.name,
-                             vis_type: vis.type == 'derived' ? 'map' : 'dataset',
-                             vis_author: vis.user.username,
-                             vis_author_email: vis.user.email,
-                             vis_author_id: vis.user.id
+                              action: 'like',
+                              vis_id: vis.id,
+                              vis_name: vis.name,
+                              vis_type: vis.type == 'derived' ? 'map' : 'dataset',
+                              vis_author: vis.user.username,
+                              vis_author_email: vis.user.email,
+                              vis_author_id: vis.user.id
                             }
+
         Cartodb::EventTracker.new.send_event(current_viewer, 'Liked map', custom_properties)
 
         render_jsonp({
@@ -296,16 +297,16 @@ class Api::Json::VisualizationsController < Api::ApplicationController
         end
 
         custom_properties = {
-                             action: 'remove',
-                             vis_id: vis.id,
-                             vis_name: vis.name,
-                             vis_type: vis.type == 'derived' ? 'map' : 'dataset',
-                             vis_author: vis.user.username,
-                             vis_author_email: vis.user.email,
-                             vis_author_id: vis.user.id
+                              action: 'remove',
+                              vis_id: vis.id,
+                              vis_name: vis.name,
+                              vis_type: vis.type == 'derived' ? 'map' : 'dataset',
+                              vis_author: vis.user.username,
+                              vis_author_email: vis.user.email,
+                              vis_author_id: vis.user.id
                             }
-        Cartodb::EventTracker.new.send_event(current_viewer, 'Liked map', custom_properties)
 
+        Cartodb::EventTracker.new.send_event(current_viewer, 'Liked map', custom_properties)
 
         render_jsonp({
                        id:    vis.id,

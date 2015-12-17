@@ -1,5 +1,5 @@
 module Cartodb
-  
+
   class EventTracker
 
     def send_event(user, event_name, custom_properties = {})
@@ -7,7 +7,7 @@ module Cartodb
       return unless user_valid?(user, event_name, custom_properties)
 
       # Some events register custom properties
-      # Monitary values associated with the event should use 'revenue' reserved key	
+      # Monitary values associated with the event should use 'revenue' reserved key
       properties = generate_event_properties(user).merge(custom_properties)
 
       Resque.enqueue(Resque::EventDeliveryJobs::TrackEvent, user.id, event_name, properties)
@@ -19,7 +19,7 @@ module Cartodb
         username:  user.username,
         email: user.email,
         plan: user.account_type,
-        organization: user.organization_user? ? user.organization.name: nil,
+        organization: user.organization_user? ? user.organization.name : nil,
         event_origin: 'Editor',
         creation_time: Time.now.utc
       }

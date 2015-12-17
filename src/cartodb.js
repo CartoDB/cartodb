@@ -54,8 +54,6 @@ cdb.ui.common.TableProperties = require('./ui/common/table/table-properties');
 cdb.ui.common.RowView = require('./ui/common/table/row-view');
 cdb.ui.common.Table = require('./ui/common/table');
 
-cdb.geo.common.CartoDBLogo = require('./geo/cartodb-logo');
-
 cdb.geo.geocoder.NOKIA = require('./geo/geocoder/nokia-geocoder');
 cdb.geo.geocoder.YAHOO = require('./geo/geocoder/yahoo-geocoder');
 cdb.geo.Geometry = require('./geo/geometry');

@@ -1,4 +1,3 @@
-
 var torqueSpecs = [
   'test/spec/geo/leaflet/leaflet-torque-layer.spec.js',
   'test/spec/geo/ui/mobile-torque.spec.js',
@@ -11,30 +10,28 @@ var sharedModules = [
   'cdb',
   'cdb.log',
   'cdb/core/util',
-  'cdb/geo/cartodb-logo',
   'jquery',
   'leaflet',
   'underscore'
-]
+];
 
 module.exports = {
-
   'src-specs': {
     src: [
-        'test/fail-tests-if-have-errors-in-src.js',
-        'test/spec/api/**/*',
-        'test/spec/core/**/*',
-        'test/spec/geo/**/*',
-        'test/spec/ui/**/*',
-        'test/spec/vis/**/*',
+      'test/fail-tests-if-have-errors-in-src.js',
+      'test/spec/api/**/*',
+      'test/spec/core/**/*',
+      'test/spec/geo/**/*',
+      'test/spec/ui/**/*',
+      'test/spec/vis/**/*',
 
-        // not actually used anywhere in cartodb.js, only for editor?
-        // TODO can be (re)moved?
-        '!test/spec/ui/common/tabpane.spec.js',
-      ]
+      // not actually used anywhere in cartodb.js, only for editor?
+      // TODO can be (re)moved?
+      '!test/spec/ui/common/tabpane.spec.js',
+    ]
       // Exclude torque specs
-      .concat(torqueSpecs.map(function(uri) {
-        return '!' + uri
+      .concat(torqueSpecs.map(function (uri) {
+        return '!' + uri;
       })),
     dest: '<%= config.tmp %>/src-specs.js',
   },

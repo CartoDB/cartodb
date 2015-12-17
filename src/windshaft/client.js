@@ -2,7 +2,7 @@ var $ = require('jquery');
 var _ = require('underscore');
 var LZMA = require('lzma');
 var util = require('../core/util');
-var WindshaftDashboardInstance = require('../windshaft/dashboard-instance');
+var WindshaftDashboardInstance = require('./dashboard-instance');
 
 var validatePresenceOfOptions = function (options, requiredOptions) {
   var missingOptions = _.filter(requiredOptions, function (option) {

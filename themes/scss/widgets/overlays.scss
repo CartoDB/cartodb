@@ -108,8 +108,8 @@
   left: 0;
   width: 100%;
   height: 2px;
-  z-index: 10;
   background: rgba(#3AA9E3, 1);
+  z-index: 10;
 }
 .CDB-Loader.is-visible {
   @include css3-prefix(animation, loader-progress 2000ms linear infinite);

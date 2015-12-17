@@ -1,7 +1,7 @@
 module.exports = {
   src: {
     src: 'src/index.js',
-    dest: '<%= config.dist %>/deep-insights.js',
+    dest: '<%= config.dist %>/deep-insights.uncompressed.js',
     options: {
       watch: '<%= config.doWatchify %>',
       browserifyOptions: {

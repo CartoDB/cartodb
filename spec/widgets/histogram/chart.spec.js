@@ -1,7 +1,7 @@
 var _ = require('underscore');
 var $ = require('jquery');
 var d3 = require('d3');
-var WidgetHistogramChart = require('app/widgets/histogram/chart');
+var WidgetHistogramChart = require('../../../src/widgets/histogram/chart');
 
 describe('widgets/histogram/chart', function () {
   var onWindowResizeReal;

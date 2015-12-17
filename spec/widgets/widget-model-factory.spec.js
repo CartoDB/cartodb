@@ -1,5 +1,5 @@
 var cdb = require('cartodb.js');
-var WidgetModelFactory = require('app/widgets/widget-model-factory');
+var WidgetModelFactory = require('../../src/widgets/widget-model-factory');
 
 describe('widgets/widget-model-factory', function () {
   beforeEach(function () {

@@ -1,6 +1,6 @@
 var _ = require('underscore');
-var CategoryModel = require('app/widgets/category/model.js');
-var WindshaftFiltersCategory = require('app/windshaft/filters/category');
+var CategoryModel = require('../../../src/widgets/category/model.js');
+var WindshaftFiltersCategory = require('../../../src/windshaft/filters/category');
 
 describe('widgets/category/model', function () {
   beforeEach(function () {

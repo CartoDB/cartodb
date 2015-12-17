@@ -1,4 +1,4 @@
-var formatter = require('app/formatter');
+var formatter = require('../src/formatter');
 
 describe('formatter', function () {
   it('should format numbers', function () {

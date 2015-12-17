@@ -1,7 +1,7 @@
 var _ = require('underscore');
 var cdb = require('cartodb.js');
-var WidgetHistogramModel = require('app/widgets/histogram/model');
-var WidgetHistogramContent = require('app/widgets/histogram/content-view');
+var WidgetHistogramModel = require('../../../src/widgets/histogram/model');
+var WidgetHistogramContent = require('../../../src/widgets/histogram/content-view');
 
 describe('widgets/histogram/content-view', function () {
   beforeEach(function () {

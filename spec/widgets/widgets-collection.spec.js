@@ -1,4 +1,4 @@
-var WidgetsCollection = require('app/widgets/widgets-collection');
+var WidgetsCollection = require('../../src/widgets/widgets-collection');
 
 describe('widgets/widgets-collection', function () {
   beforeEach(function () {

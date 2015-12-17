@@ -1,7 +1,7 @@
 var _ = require('underscore');
 var $ = require('jquery');
-var ClipPath = require('clip-path-polygon');
 var Ps = require('perfect-scrollbar');
+var ClipPath = require('clip-path');
 var log = require('cdb.log');
 var templates = require('cdb.templates');
 var sanitize = require('../../core/sanitize');
@@ -24,6 +24,7 @@ var Infowindow = View.extend({
 
   options: {
     imageTransitionSpeed: 300,
+    hookMargin: 24,
     hookHeight: 16
   },
 
@@ -196,18 +197,18 @@ var Infowindow = View.extend({
   _compileTemplate: function() {
     var template = this.model.get('template') ?
       this.model.get('template') :
-      templates.getTemplate(this._getModelTemplate());
+        templates.getTemplate(this._getModelTemplate());
 
-    if(typeof(template) !== 'function') {
-      this.template = new Template({
-        template: template,
-        type: this.model.get('template_type') || 'mustache'
-      }).asFunction();
-    } else {
-      this.template = template;
-    }
+        if(typeof(template) !== 'function') {
+          this.template = new Template({
+            template: template,
+            type: this.model.get('template_type') || 'mustache'
+          }).asFunction();
+        } else {
+          this.template = template;
+        }
 
-    this.render();
+        this.render();
   },
 
   /**
@@ -318,7 +319,7 @@ var Infowindow = View.extend({
     return false;
   },
 
-  _loadImageHook: function(url) {
+  _loadImageHook: function(width, height, y, url) {
     var $hook = this.$(".js-hook");
     var $cover = this.$(".js-cover");
 
@@ -326,11 +327,10 @@ var Infowindow = View.extend({
       $hookImage = $("<img />").attr("src", url);
       $hook.append($hookImage);
 
-      var hookPoints = [[0, 0], [0, 100], [100, 0]];
+      var $img = $hook.find('img');
 
-      $hook.clipPath(hookPoints, {
-        isPercentage: true
-      });
+      $img.attr('data-clipPath', "M0,0 L0,16 L24,0 L0,0 Z");
+      $img.clipPath(width, height, -this.options.hookMargin, y);
 
       $hookImage.load(function(){
         $hookImage.css({
@@ -364,7 +364,7 @@ var Infowindow = View.extend({
       var coverHeight = $cover.height();
       $cover.css({ height: h - this.options.hookHeight });
 
-      this._loadImageHook(url);
+      this._loadImageHook($img.width(), coverHeight, h - this.options.hookHeight, url);
 
       return false;
     }
@@ -373,6 +373,7 @@ var Infowindow = View.extend({
       log.info("Header image url not valid");
       return;
     }
+
 
     $img = $("<img class='CDB-infowindow-media-item' />").attr("src", url);
 
@@ -402,9 +403,11 @@ var Infowindow = View.extend({
       $cover.css({ height: h - self.options.hookHeight });
       $img.fadeIn(self.options.imageTransitionSpeed);
 
-      self._loadImageHook(url);
+      self._loadImageHook($img.width(), $img.height(), h - self.options.hookHeight, url);
+      //this._loadImageHook($img.width(), $img.height(), h - this.options.hookHeight, url);
     })
     .error();
+
   },
 
   /**
@@ -503,8 +506,8 @@ var Infowindow = View.extend({
       ev.stopPropagation();
     }
     if (this.model.get("visibility")) {
-       this.model.set("visibility", false);
-       this.trigger('close');
+      this.model.set("visibility", false);
+      this.trigger('close');
     }
   },
 
@@ -605,18 +608,19 @@ var Infowindow = View.extend({
    *  Update the position (private)
    */
   _updatePosition: function () {
-    if(this.isHidden()) return;
+    if (this.isHidden()) {
+      return;
+    }
 
-    var
-    offset          = this.model.get("offset"),
-    pos             = this.mapView.latLonToPixel(this.model.get("latlng")),
-    x               = this.$el.position().left,
-    y               = this.$el.position().top,
-    containerHeight = this.$el.outerHeight(true),
-    containerWidth  = this.$el.width(),
-    left            = pos.x - offset[0],
-    size            = this.mapView.getSize(),
-    bottom          = -1*(pos.y - offset[1] - size.y);
+    var offset          = this.model.get("offset");
+    var pos             = this.mapView.latLonToPixel(this.model.get("latlng"));
+    var x               = this.$el.position().left;
+    var y               = this.$el.position().top;
+    var containerHeight = this.$el.outerHeight(true);
+    var containerWidth  = this.$el.width();
+    var left            = pos.x - offset[0];
+    var size            = this.mapView.getSize();
+    var bottom          = -1*(pos.y - offset[1] - size.y);
 
     this.$el.css({ bottom: bottom, left: left });
   },
@@ -629,15 +633,14 @@ var Infowindow = View.extend({
 
     if (!this.model.get("autoPan") || this.isHidden()) { return; }
 
-    var
-    x               = this.$el.position().left,
-    y               = this.$el.position().top,
-    containerHeight = this.$el.outerHeight(true) + 15, // Adding some more space
-    containerWidth  = this.$el.width(),
-    pos             = this.mapView.latLonToPixel(this.model.get("latlng")),
-    adjustOffset    = {x: 0, y: 0};
-    size            = this.mapView.getSize();
-    wait_callback   = 0;
+    var x = this.$el.position().left;
+    var y = this.$el.position().top;
+    var containerHeight = this.$el.outerHeight(true) + 15; // Adding some more space
+    var containerWidth  = this.$el.width();
+    var pos             = this.mapView.latLonToPixel(this.model.get("latlng"));
+    var adjustOffset    = {x: 0, y: 0};
+    var size            = this.mapView.getSize();
+    var wait_callback   = 0;
 
     if (pos.x - offset[0] < 0) {
       adjustOffset.x = pos.x - offset[0] - 10;
@@ -662,7 +665,6 @@ var Infowindow = View.extend({
 
     return wait_callback;
   }
-
 });
 
 module.exports = Infowindow;

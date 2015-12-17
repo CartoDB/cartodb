@@ -196,7 +196,6 @@ describe('cartodb.js bundle', function() {
 
     it('should have a cdb.common object', function() {
       expect(cdb.geo.common).toEqual(jasmine.any(Object));
-      expect(cdb.geo.common.CartoDBLogo).toEqual(jasmine.any(Object));
     });
 
     it('should have a core.vis', function() {

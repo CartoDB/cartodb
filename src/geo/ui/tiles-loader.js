@@ -14,7 +14,7 @@ var util = require('../../core/util');
  */
 var TilesLoader = View.extend({
 
-  className: "cartodb-tiles-loader",
+  className: "CDB-Loader",
 
   default_options: {
     animationSpeed: 500

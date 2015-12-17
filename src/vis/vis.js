@@ -31,12 +31,11 @@ var WindshaftNamedMapConfig = require('cdb/windshaft/namedmap-config');
  * Visualization creation
  */
 var Vis = View.extend({
-
   DEFAULT_MAX_ZOOM: 20,
 
   DEFAULT_MIN_ZOOM: 0,
 
-  initialize: function() {
+  initialize: function () {
     _.bindAll(this, 'loadingTiles', 'loadTiles', '_onResize');
 
     this.https = false;
@@ -52,15 +51,15 @@ var Vis = View.extend({
   /**
    * check if all the modules needed to create layers are loaded
    */
-  checkModules: function(layers) {
+  checkModules: function (layers) {
     var mods = Layers.modulesForLayers(layers);
-    return _.every(_.map(mods, function(m) { return cdb[m] !== undefined; }));
+    return _.every(_.map(mods, function (m) { return cdb[m] !== undefined; }));
   },
 
-  loadModules: function(layers, done) {
+  loadModules: function (layers, done) {
     var self = this;
     var mods = Layers.modulesForLayers(layers);
-    for(var i = 0; i < mods.length; ++i) {
+    for (var i = 0; i < mods.length; ++i) {
       Loader.loadModule(mods[i]);
     }
     function loaded () {
@@ -74,7 +73,7 @@ var Vis = View.extend({
     _.defer(loaded);
   },
 
-  _addLegends: function(legends) {
+  _addLegends: function (legends) {
     if (this.legends) {
       this.legends.remove();
     }
@@ -88,15 +87,15 @@ var Vis = View.extend({
     }
   },
 
-  addLegends: function(layers) {
+  addLegends: function (layers) {
     this._addLegends(this.createLegendView(layers));
   },
 
-  _setLayerOptions: function(options) {
+  _setLayerOptions: function (options) {
     var layers = [];
 
     // flatten layers (except baselayer)
-    var layers = _.map(this.getLayers().slice(1), function(layer) {
+    var layers = _.map(this.getLayers().slice(1), function (layer) {
       if (layer.getSubLayers) {
         return layer.getSubLayers();
       }
@@ -106,17 +105,16 @@ var Vis = View.extend({
     layers = _.flatten(layers);
 
     for (i = 0; i < Math.min(options.sublayer_options.length, layers.length); ++i) {
-
       var o = options.sublayer_options[i];
       var subLayer = layers[i];
       var legend = this.legends && this.legends.getLegendByIndex(i);
 
       if (legend) {
-        legend[o.visible ? 'show': 'hide']();
+        legend[o.visible ? 'show' : 'hide']();
       }
 
       // HACK
-      if(subLayer.model && subLayer.model.get('type') === 'torque') {
+      if (subLayer.model && subLayer.model.get('type') === 'torque') {
         if (o.visible === false) {
           subLayer.model.set('visible', false);
         }
@@ -124,12 +122,11 @@ var Vis = View.extend({
     }
   },
 
-  _addOverlays: function(overlays, data, options) {
-
+  _addOverlays: function (overlays, data, options) {
     overlays = overlays.toJSON();
     // Sort the overlays by its internal order
-    overlays = _.sortBy(overlays, function(overlay) {
-      return overlay.order === null ? Number.MAX_VALUE: overlay.order;
+    overlays = _.sortBy(overlays, function (overlay) {
+      return overlay.order === null ? Number.MAX_VALUE : overlay.order;
     });
 
     // clean current overlays
@@ -140,32 +137,31 @@ var Vis = View.extend({
     this._createOverlays(overlays, data, options);
   },
 
-  _setupSublayers: function(layers, options) {
+  _setupSublayers: function (layers, options) {
     options.sublayer_options = [];
 
-    _.each(layers.slice(1), function(lyr) {
-
+    _.each(layers.slice(1), function (lyr) {
       if (lyr.type === 'layergroup') {
-        _.each(lyr.options.layer_definition.layers, function(l) {
-          options.sublayer_options.push({ visible: ( l.visible !== undefined ? l.visible : true ) })
+        _.each(lyr.options.layer_definition.layers, function (l) {
+          options.sublayer_options.push({ visible: ( l.visible !== undefined ? l.visible : true) });
         });
       } else if (lyr.type === 'namedmap') {
-        _.each(lyr.options.named_map.layers, function(l) {
-          options.sublayer_options.push({ visible: ( l.visible !== undefined ? l.visible : true ) })
+        _.each(lyr.options.named_map.layers, function (l) {
+          options.sublayer_options.push({ visible: ( l.visible !== undefined ? l.visible : true) });
         });
       } else if (lyr.type === 'torque') {
-        options.sublayer_options.push({ visible: ( lyr.options.visible !== undefined ? lyr.options.visible : true ) })
+        options.sublayer_options.push({ visible: ( lyr.options.visible !== undefined ? lyr.options.visible : true) });
       }
     });
   },
 
-  load: function(data, options) {
+  load: function (data, options) {
     var self = this;
 
-    if (typeof(data) === 'string') {
+    if (typeof (data) === 'string') {
       var url = data;
 
-      Loader.get(url, function(data) {
+      Loader.get(url, function (data) {
         if (data) {
           self.load(data, options);
         } else {
@@ -187,7 +183,7 @@ var Vis = View.extend({
 
       this.moduleChecked = true;
 
-      this.loadModules(layers, function() {
+      this.loadModules(layers, function () {
         self.load(data, options);
       });
 
@@ -207,18 +203,7 @@ var Vis = View.extend({
 
     this._applyOptions(data, options);
 
-    // to know if the logo is enabled search in the overlays and see if logo overlay is included and is shown
-    var has_logo_overlay = !!_.find(data.overlays, function(o) { return o.type === 'logo' && o.options.display; });
-
-    this.cartodb_logo = (options.cartodb_logo !== undefined) ? options.cartodb_logo: has_logo_overlay;
-
-    if (this.mobile) {
-      this.cartodb_logo = false;
-    } else if (!has_logo_overlay && options.cartodb_logo === undefined) {
-      this.cartodb_logo = true;
-    }
-
-    var scrollwheel  = (options.scrollwheel === undefined)  ? data.scrollwheel : options.scrollwheel;
+    var scrollwheel = (options.scrollwheel === undefined) ? data.scrollwheel : options.scrollwheel;
 
     // Do not allow pan map if zoom overlay and scrollwheel are disabled unless
     // mobile view is enabled
@@ -226,16 +211,15 @@ var Vis = View.extend({
 
     // Do not allow pan map if zoom overlay and scrollwheel are disabled
     // Check if zoom overlay is present.
-    var hasZoomOverlay = _.isObject(_.find(data.overlays, function(overlay) {
-      return overlay.type == "zoom";
+    var hasZoomOverlay = _.isObject(_.find(data.overlays, function (overlay) {
+      return overlay.type == 'zoom';
     }));
 
     var allowDragging = isMobileDevice || hasZoomOverlay || scrollwheel;
 
-    //Force using GMaps ?
-    if ( (this.gmaps_base_type) && (data.map_provider === "leaflet") ) {
-
-      //Check if base_type is correct
+    // Force using GMaps ?
+    if ( (this.gmaps_base_type) && (data.map_provider === 'leaflet')) {
+      // Check if base_type is correct
       var typesAllowed = ['roadmap', 'gray_roadmap', 'dark_roadmap', 'hybrid', 'satellite', 'terrain'];
       if (_.contains(typesAllowed, this.gmaps_base_type)) {
         if (data.layers) {
@@ -244,11 +228,11 @@ var Vis = View.extend({
           data.layers[0].options.name = this.gmaps_base_type;
 
           if (this.gmaps_style) {
-            data.layers[0].options.style = typeof this.gmaps_style === 'string' ? JSON.parse(this.gmaps_style): this.gmaps_style;
+            data.layers[0].options.style = typeof this.gmaps_style === 'string' ? JSON.parse(this.gmaps_style) : this.gmaps_style;
           }
 
           data.map_provider = 'googlemaps';
-          data.layers[0].options.attribution = ''; //GMaps has its own attribution
+          data.layers[0].options.attribution = ''; // GMaps has its own attribution
         } else {
           log.error('No base map loaded. Using Leaflet.');
         }
@@ -281,12 +265,12 @@ var Vis = View.extend({
     } else {
       var center = data.center;
 
-      if (typeof(center) === "string") {
+      if (typeof (center) === 'string') {
         center = $.parseJSON(center);
       }
 
       mapConfig.center = center || [0, 0];
-      mapConfig.zoom = data.zoom === undefined ? 4: data.zoom;
+      mapConfig.zoom = data.zoom === undefined ? 4 : data.zoom;
     }
 
     var map = new Map(mapConfig);
@@ -316,9 +300,9 @@ var Vis = View.extend({
 
     // Another div to prevent leaflet grabbing the div
     var div_hack = $('<div>')
-      .addClass("cartodb-map-wrapper")
+      .addClass('cartodb-map-wrapper')
       .css({
-        position: "absolute",
+        position: 'absolute',
         top: 0,
         left: 0,
         right: 0,
@@ -331,15 +315,15 @@ var Vis = View.extend({
     this.$el.append(div);
 
     // Create the map
-    var mapView  = new MapView.create(div_hack, map);
+    var mapView = new MapView.create(div_hack, map);
 
     this.mapView = mapView;
 
-    if (options.legends || (options.legends === undefined && this.map.get("legends") !== false)) {
+    if (options.legends || (options.legends === undefined && this.map.get('legends') !== false)) {
       map.layers.bind('reset', this.addLegends, this);
     }
 
-    this.overlayModels.bind('reset', function(overlays) {
+    this.overlayModels.bind('reset', function (overlays) {
       this._addOverlays(overlays, data, options);
       this._addMobile(data, options);
     }, this);
@@ -357,7 +341,7 @@ var Vis = View.extend({
     var cartoDBLayers;
     var cartoDBLayerGroup;
     var layers = [];
-    _.each(data.layers, function(layerData) {
+    _.each(data.layers, function (layerData) {
       if (layerData.type === 'layergroup' || layerData.type === 'namedmap') {
         var layersData;
         var layerGroupClass;
@@ -381,8 +365,8 @@ var Vis = View.extend({
             namedMapId: layerGroupOptions['named_map']['name']
           };
         }
-        cartoDBLayers = _.map(layersData, function(layerData) {
-          var cartoDBLayer = Layers.create("cartodb", self, layerData);
+        cartoDBLayers = _.map(layersData, function (layerData) {
+          var cartoDBLayer = Layers.create('cartodb', self, layerData);
           return cartoDBLayer;
         });
 
@@ -407,7 +391,7 @@ var Vis = View.extend({
 
     this._setLayerOptions(options);
 
-    _.defer(function() {
+    _.defer(function () {
       self.trigger('done', self, map.layers);
     });
 
@@ -466,19 +450,19 @@ var Vis = View.extend({
     });
   },
 
-  _createOverlays: function(overlays, vis_data, options) {
-    _(overlays).each(function(data) {
+  _createOverlays: function (overlays, vis_data, options) {
+    _(overlays).each(function (data) {
       var type = data.type;
 
       // We don't render certain overlays if we are in mobile
-      if (this.isMobileEnabled && (type === "zoom" || type === "header" || type === "loader")) return;
+      if (this.isMobileEnabled && (type === 'zoom' || type === 'header' || type === 'loader')) return;
 
       // IE<10 doesn't support the Fullscreen API
       if (type === 'fullscreen' && util.browser.ie && util.browser.ie.version <= 10) return;
 
       // Decide to create or not the custom overlays
       if (type === 'image' || type === 'text' || type === 'annotation') {
-        var isDevice = data.options.device == "mobile" ? true : false;
+        var isDevice = data.options.device == 'mobile' ? true : false;
         if (this.mobile !== isDevice) return;
         if (!options[type] && options[type] !== undefined) {
           return;
@@ -498,26 +482,24 @@ var Vis = View.extend({
       var opt = data.options;
 
       if (!this.isMobileEnabled) {
-
-        if (type == 'share' && options["shareable"]  || type == 'share' && overlay.model.get("display") && options["shareable"] == undefined) overlay.show();
-        if (type == 'layer_selector' && options[type] || type == 'layer_selector' && overlay.model.get("display") && options[type] == undefined) overlay.show();
-        if (type == 'fullscreen' && options[type] || type == 'fullscreen' && overlay.model.get("display") && options[type] == undefined) overlay.show();
+        if (type == 'share' && options['shareable'] || type == 'share' && overlay.model.get('display') && options['shareable'] == undefined) overlay.show();
+        if (type == 'layer_selector' && options[type] || type == 'layer_selector' && overlay.model.get('display') && options[type] == undefined) overlay.show();
+        if (type == 'fullscreen' && options[type] || type == 'fullscreen' && overlay.model.get('display') && options[type] == undefined) overlay.show();
         if (type == 'search' && options[type] || type == 'search' && opt.display && options[type] == undefined) overlay.show();
 
         if (type === 'header') {
-
           var m = overlay.model;
 
           if (options.title !== undefined) {
-            m.set("show_title", options.title);
+            m.set('show_title', options.title);
           }
 
           if (options.description !== undefined) {
-            m.set("show_description", options.description);
+            m.set('show_description', options.description);
           }
 
           if (m.get('show_title') || m.get('show_description')) {
-            $(".cartodb-map-wrapper").addClass("with_header");
+            $('.cartodb-map-wrapper').addClass('with_header');
           }
 
           overlay.render();
@@ -526,19 +508,18 @@ var Vis = View.extend({
     }, this);
   },
 
-  _addHeader: function(data, vis_data) {
+  _addHeader: function (data, vis_data) {
     return this.addOverlay({
       type: 'header',
       options: data.options
     });
   },
 
-  _addMobile: function(data, options) {
+  _addMobile: function (data, options) {
     var layers;
     var layer = data.layers[1];
 
     if (this.isMobileEnabled) {
-
       if (options && options.legends === undefined) {
         options.legends = this.legends ? true : false;
       }
@@ -559,7 +540,7 @@ var Vis = View.extend({
     }
   },
 
-  _createLegendView: function(layer, layerView) {
+  _createLegendView: function (layer, layerView) {
     if (layer.legend) {
       layer.legend.data = layer.legend.items;
       var legend = layer.legend;
@@ -570,8 +551,8 @@ var Vis = View.extend({
         });
         var legendModel = new LegendModel(legendAttrs);
         var legendView = new Legend({ model: legendModel });
-        layerView.bind('change:visibility', function(layer, hidden) {
-          legendView[hidden ? 'hide': 'show']();
+        layerView.bind('change:visibility', function (layer, hidden) {
+          legendView[hidden ? 'hide' : 'show']();
         });
         layerView.legend = legendModel;
         return legendView;
@@ -580,7 +561,7 @@ var Vis = View.extend({
     return null;
   },
 
-  createLegendView: function(layers) {
+  createLegendView: function (layers) {
     var legends = [];
     var self = this;
     for (var i = layers.length - 1; i >= 0; --i) {
@@ -597,33 +578,33 @@ var Vis = View.extend({
     return _.flatten(legends);
   },
 
-  _createLayerLegendView: function(layer, layerView) {
+  _createLayerLegendView: function (layer, layerView) {
     var self = this;
     var legends = [];
     if (layer.options && layer.options.layer_definition) {
       var sublayers = layer.options.layer_definition.layers;
-      _(sublayers).each(function(sub, i) {
+      _(sublayers).each(function (sub, i) {
         legends.push(self._createLegendView(sub, layerView.getSubLayer(i)));
       });
-    } else if(layer.options && layer.options.named_map && layer.options.named_map.layers) {
+    } else if (layer.options && layer.options.named_map && layer.options.named_map.layers) {
       var sublayers = layer.options.named_map.layers;
-      _(sublayers).each(function(sub, i) {
+      _(sublayers).each(function (sub, i) {
         legends.push(self._createLegendView(sub, layerView.getSubLayer(i)));
       });
     } else {
-      legends.push(this._createLegendView(layer, layerView))
+      legends.push(this._createLegendView(layer, layerView));
     }
     return _.compact(legends).reverse();
   },
 
-  addOverlay: function(overlay) {
+  addOverlay: function (overlay) {
     overlay.map = this.map;
 
     var v = Overlay.create(overlay.type, this, overlay);
 
     if (v) {
       // Save tiles loader view for later
-      if (overlay.type == "loader") {
+      if (overlay.type == 'loader') {
         this.loader = v;
       }
 
@@ -631,11 +612,11 @@ var Vis = View.extend({
 
       this.overlays.push(v);
 
-      v.bind('clean', function() {
-        for(var i in this.overlays) {
+      v.bind('clean', function () {
+        for (var i in this.overlays) {
           var o = this.overlays[i];
           if (v.cid === o.cid) {
-            this.overlays.splice(i, 1)
+            this.overlays.splice(i, 1);
             return;
           }
         }
@@ -645,7 +626,7 @@ var Vis = View.extend({
   },
 
   // change vizjson based on options
-  _applyOptions: function(vizjson, opt) {
+  _applyOptions: function (vizjson, opt) {
     opt = opt || {};
     opt = _.defaults(opt, {
       tiles_loader: true,
@@ -657,18 +638,18 @@ var Vis = View.extend({
     vizjson.overlays = vizjson.overlays || [];
     vizjson.layers = vizjson.layers || [];
 
-    function search_overlay(name) {
+    function search_overlay (name) {
       if (!vizjson.overlays) return null;
-      for(var i = 0; i < vizjson.overlays.length; ++i) {
+      for (var i = 0; i < vizjson.overlays.length; ++i) {
         if (vizjson.overlays[i].type === name) {
           return vizjson.overlays[i];
         }
       }
     }
 
-    function remove_overlay(name) {
+    function remove_overlay (name) {
       if (!vizjson.overlays) return;
-      for(var i = 0; i < vizjson.overlays.length; ++i) {
+      for (var i = 0; i < vizjson.overlays.length; ++i) {
         if (vizjson.overlays[i].type === name) {
           vizjson.overlays.splice(i, 1);
           return;
@@ -677,7 +658,7 @@ var Vis = View.extend({
     }
 
     this.infowindow = opt.infowindow;
-    this.tooltip    = opt.tooltip;
+    this.tooltip = opt.tooltip;
 
     if (opt.https) {
       this.https = true;
@@ -694,7 +675,7 @@ var Vis = View.extend({
     this.mobile = this.isMobileDevice();
     this.isMobileEnabled = (opt.mobile_layout && this.mobile) || opt.force_mobile;
 
-    if (opt.force_mobile === false || opt.force_mobile === "false") this.isMobileEnabled = false;
+    if (opt.force_mobile === false || opt.force_mobile === 'false') this.isMobileEnabled = false;
 
     // if (!opt.title) {
     //   vizjson.title = null;
@@ -719,19 +700,18 @@ var Vis = View.extend({
     if (!this.isMobileEnabled && opt.search) {
       if (!search_overlay('search')) {
         vizjson.overlays.push({
-           type: "search",
-           order: 3
+          type: 'search',
+          order: 3
         });
       }
     }
 
-    if ( (opt.title && vizjson.title) || (opt.description && vizjson.description) ) {
-
+    if ( (opt.title && vizjson.title) || (opt.description && vizjson.description)) {
       if (!search_overlay('header')) {
         vizjson.overlays.unshift({
-          type: "header",
+          type: 'header',
           order: 1,
-          shareable: opt.shareable ? true: false,
+          shareable: opt.shareable ? true : false,
           url: vizjson.url,
           options: {
             extra: {
@@ -748,7 +728,7 @@ var Vis = View.extend({
     if (opt.layer_selector) {
       if (!search_overlay('layer_selector')) {
         vizjson.overlays.push({
-          type: "layer_selector"
+          type: 'layer_selector'
         });
       }
     }
@@ -756,7 +736,7 @@ var Vis = View.extend({
     if (opt.shareable && !this.isMobileEnabled) {
       if (!search_overlay('share')) {
         vizjson.overlays.push({
-          type: "share",
+          type: 'share',
           order: 2,
           url: vizjson.url
         });
@@ -769,11 +749,11 @@ var Vis = View.extend({
       remove_overlay('share');
     }
 
-    if (this.mobile || ((opt.zoomControl !== undefined) && (!opt.zoomControl)) ){
+    if (this.mobile || ((opt.zoomControl !== undefined) && (!opt.zoomControl))) {
       remove_overlay('zoom');
     }
 
-    if (this.mobile || ((opt.search !== undefined) && (!opt.search)) ){
+    if (this.mobile || ((opt.search !== undefined) && (!opt.search))) {
       remove_overlay('search');
     }
 
@@ -787,7 +767,7 @@ var Vis = View.extend({
     // Center coordinates?
     var center_lat = parseFloat(opt.center_lat);
     var center_lon = parseFloat(opt.center_lon);
-    if ( !isNaN(center_lat) && !isNaN(center_lon) ) {
+    if ( !isNaN(center_lat) && !isNaN(center_lon)) {
       vizjson.center = [center_lat, center_lon];
       vizjson.bounds = null;
     }
@@ -804,7 +784,7 @@ var Vis = View.extend({
     var ne_lat = parseFloat(opt.ne_lat);
     var ne_lon = parseFloat(opt.ne_lon);
 
-    if ( !isNaN(sw_lat) && !isNaN(sw_lon) && !isNaN(ne_lat) && !isNaN(ne_lon) ) {
+    if ( !isNaN(sw_lat) && !isNaN(sw_lon) && !isNaN(ne_lat) && !isNaN(ne_lon)) {
       vizjson.bounds = [
         [ sw_lat, sw_lon ],
         [ ne_lat, ne_lon ]
@@ -813,12 +793,12 @@ var Vis = View.extend({
 
     if (vizjson.layers.length > 1) {
       var token = opt.auth_token;
-      function _applyLayerOptions(layers) {
-        for(var i = 1; i < layers.length; ++i) {
+      function _applyLayerOptions (layers) {
+        for (var i = 1; i < layers.length; ++i) {
           var o = layers[i].options;
           o.no_cdn = opt.no_cdn;
           o.force_cors = opt.force_cors;
-          if(token) {
+          if (token) {
             o.auth_token = token;
           }
         }
@@ -827,20 +807,20 @@ var Vis = View.extend({
     }
   },
 
-  createLayer: function(layerData, opts) {
+  createLayer: function (layerData, opts) {
     var layerModel = Layers.create(layerData.type || layerData.kind, this, layerData);
     return this.mapView.createLayer(layerModel);
   },
 
-  _getSqlApi: function(attrs) {
+  _getSqlApi: function (attrs) {
     attrs = attrs || {};
-    var port = attrs.sql_api_port
-    var domain = attrs.sql_api_domain + (port ? ':' + port: '')
+    var port = attrs.sql_api_port;
+    var domain = attrs.sql_api_domain + (port ? ':' + port : '');
     var protocol = attrs.sql_api_protocol;
     var version = 'v1';
     if (domain.indexOf('cartodb.com') !== -1) {
       protocol = 'http';
-      domain = "cartodb.com";
+      domain = 'cartodb.com';
       version = 'v2';
     }
 
@@ -854,11 +834,10 @@ var Vis = View.extend({
     return sql;
   },
 
-  addTooltip: function(layerView) {
-
+  addTooltip: function (layerView) {
     var layers = layerView.model && layerView.model.layers || [];
 
-    for(var i = 0; i < layers.length; ++i) {
+    for (var i = 0; i < layers.length; ++i) {
       var layerModel = layers.at(i);
       var t = layerModel.getTooltipData();
       if (t) {
@@ -875,7 +854,7 @@ var Vis = View.extend({
           });
           layerView.tooltip = tooltip;
           this.mapView.addOverlay(tooltip);
-          layerView.bind('remove', function() {
+          layerView.bind('remove', function () {
             this.tooltip.clean();
           });
         }
@@ -883,7 +862,7 @@ var Vis = View.extend({
     }
 
     if (layerView.tooltip) {
-      layerView.bind("featureOver", function(e, latlng, pos, data, layer) {
+      layerView.bind('featureOver', function (e, latlng, pos, data, layer) {
         var t = layers.at(layer).getTooltipData();
         if (t) {
           layerView.tooltip.setTemplate(t.template);
@@ -897,7 +876,7 @@ var Vis = View.extend({
     }
   },
 
-  addInfowindow: function(layerView) {
+  addInfowindow: function (layerView) {
     var mapView = this.mapView;
     var infowindow = null;
     var layers = [];
@@ -913,24 +892,24 @@ var Vis = View.extend({
       }
     }
 
-    for(var i = 0; i < layers.length; ++i) {
+    for (var i = 0; i < layers.length; ++i) {
       var layerModel = layers.at(i);
       if (layerModel.getInfowindowData()) {
-        if(!infowindow) {
+        if (!infowindow) {
           infowindow = Overlay.create('infowindow', this, layerModel.getInfowindowData(), true);
           mapView.addInfowindow(infowindow);
         }
       }
     }
 
-    if(!infowindow) {
+    if (!infowindow) {
       return;
     }
 
-    infowindow.bind('close', function() {
+    infowindow.bind('close', function () {
       // when infowindow is closed remove all the filters
       // for tooltips
-      for(var i = 0; i < layers; ++i) {
+      for (var i = 0; i < layers; ++i) {
         var t = layerView.tooltip;
         if (t) {
           t.setFilter(null);
@@ -938,70 +917,68 @@ var Vis = View.extend({
       }
     });
 
-    infowindow.model.bind('domready', function() {
+    infowindow.model.bind('domready', function () {
       layerView.trigger('infowindow_ready', infowindow, this);
     }, this);
 
     // if the layer has no infowindow just pass the interaction
     // data to the infowindow
-    layerView.bind('featureClick', function(e, latlng, pos, data, layer) {
+    layerView.bind('featureClick', function (e, latlng, pos, data, layer) {
+      var infowindowFields = layers.at(layer).getInfowindowData();
+      if (!infowindowFields) return;
+      var cartodb_id = data.cartodb_id;
 
-        var infowindowFields = layers.at(layer).getInfowindowData();
-        if (!infowindowFields) return;
-        var cartodb_id = data.cartodb_id;
+      layerView.model.fetchAttributes(layer, cartodb_id, function (attributes) {
+        // Old viz.json doesn't contain width and maxHeight properties
+        // and we have to get the default values if there are not defined.
+        var extra = _.defaults(
+          {
+            offset: infowindowFields.offset,
+            width: infowindowFields.width,
+            maxHeight: infowindowFields.maxHeight
+          },
+          InfowindowModel.prototype.defaults
+        );
 
-        layerView.model.fetchAttributes(layer, cartodb_id, function(attributes) {
-
-          // Old viz.json doesn't contain width and maxHeight properties
-          // and we have to get the default values if there are not defined.
-          var extra = _.defaults(
-            {
-              offset: infowindowFields.offset,
-              width: infowindowFields.width,
-              maxHeight: infowindowFields.maxHeight
-            },
-            InfowindowModel.prototype.defaults
-          );
-
-          infowindow.model.set({
-            'fields': infowindowFields.fields,
-            'template': infowindowFields.template,
-            'template_type': infowindowFields.template_type,
-            'alternative_names': infowindowFields.alternative_names,
-            'sanitizeTemplate': infowindowFields.sanitizeTemplate,
-            'offset': extra.offset,
-            'width': extra.width,
-            'maxHeight': extra.maxHeight
-          });
-
-          if (attributes) {
-            infowindow.model.updateContent(attributes);
-            infowindow.adjustPan();
-          } else {
-            infowindow.setError();
-          }
+        infowindow.model.set({
+          'fields': infowindowFields.fields,
+          'template': infowindowFields.template,
+          'template_type': infowindowFields.template_type,
+          'alternative_names': infowindowFields.alternative_names,
+          'sanitizeTemplate': infowindowFields.sanitizeTemplate,
+          'offset': extra.offset,
+          'width': extra.width,
+          'maxHeight': extra.maxHeight
         });
 
-        // Show infowindow with loading state
-        infowindow
-          .setLatLng(latlng)
-          .setLoading()
-          .showInfowindow();
-
-        if (layerView.tooltip) {
-          layerView.tooltip.setFilter(function(feature) {
-            return feature.cartodb_id !== cartodb_id;
-          }).hide();
+        if (attributes) {
+          infowindow.model.updateContent(attributes);
+          infowindow.adjustPan();
+        } else {
+          infowindow.setError();
         }
+      });
+
+      // Show infowindow with loading state
+      infowindow
+        .setLatLng(latlng)
+        .setLoading()
+        .showInfowindow();
+
+      if (layerView.tooltip) {
+        layerView.tooltip.setFilter(function (feature) {
+          return feature.cartodb_id !== cartodb_id;
+        }).hide();
+      }
     });
 
     var hovers = [];
 
-    layerView.bind('mouseover', function() {
+    layerView.bind('mouseover', function () {
       mapView.setCursor('pointer');
     });
 
-    layerView.bind('mouseout', function(m, layer) {
+    layerView.bind('mouseout', function (m, layer) {
       mapView.setCursor('auto');
     });
 
@@ -1012,36 +989,34 @@ var Vis = View.extend({
     if (layerView) {
       var self = this;
 
-      var loadingTiles = function() {
+      var loadingTiles = function () {
         self.loadingTiles();
       };
 
-      var loadTiles = function() {
+      var loadTiles = function () {
         self.loadTiles();
       };
 
       layerView.bind('loading', loadingTiles);
-      layerView.bind('load',    loadTiles);
+      layerView.bind('load', loadTiles);
     }
   },
 
-  loadingTiles: function() {
-
+  loadingTiles: function () {
     if (this.mobileOverlay) {
       this.mobileOverlay.loadingTiles();
     }
 
     if (this.loader) {
-      this.loader.show()
+      this.loader.show();
     }
-    if(this.layersLoading === 0) {
-        this.trigger('loading');
+    if (this.layersLoading === 0) {
+      this.trigger('loading');
     }
     this.layersLoading++;
   },
 
-  loadTiles: function() {
-
+  loadTiles: function () {
     if (this.mobileOverlay) {
       this.mobileOverlay.loadTiles();
     }
@@ -1052,25 +1027,25 @@ var Vis = View.extend({
     this.layersLoading--;
     // check less than 0 because loading event sometimes is
     // thrown before visualization creation
-    if(this.layersLoading <= 0) {
+    if (this.layersLoading <= 0) {
       this.layersLoading = 0;
       this.trigger('load');
     }
   },
 
-  throwError: function(msg, lyr) {
+  throwError: function (msg, lyr) {
     log.error(msg);
     var self = this;
-    _.defer(function() {
+    _.defer(function () {
       self.trigger('error', msg, lyr);
     });
   },
 
-  error: function(fn) {
+  error: function (fn) {
     return this.bind('error', fn);
   },
 
-  done: function(fn) {
+  done: function (fn) {
     return this.bind('done', fn);
   },
 
@@ -1078,36 +1053,35 @@ var Vis = View.extend({
   //
 
   // get the native map used behind the scenes
-  getNativeMap: function() {
+  getNativeMap: function () {
     return this.mapView.getNativeMap();
   },
 
   // returns an array of layers
-  getLayers: function() {
+  getLayers: function () {
     var self = this;
-    return _.compact(this.map.layers.map(function(layer) {
+    return _.compact(this.map.layers.map(function (layer) {
       return self.mapView.getLayerByCid(layer.cid);
     }));
   },
 
-  getOverlays: function() {
+  getOverlays: function () {
     return this.overlays;
   },
 
-  getOverlay: function(type) {
-    return _(this.overlays).find(function(v) {
+  getOverlay: function (type) {
+    return _(this.overlays).find(function (v) {
       return v.type == type;
     });
   },
 
-  getOverlaysByType: function(type) {
-    return _(this.overlays).filter(function(v) {
+  getOverlaysByType: function (type) {
+    return _(this.overlays).filter(function (v) {
       return v.type == type;
     });
   },
 
-  _onResize: function() {
-
+  _onResize: function () {
     $(window).unbind('resize', this._onResize);
 
     var self = this;
@@ -1116,19 +1090,16 @@ var Vis = View.extend({
 
     // This timeout is necessary due to GMaps needs time
     // to load tiles and recalculate its bounds :S
-    setTimeout(function() {
-
+    setTimeout(function () {
       var c = self.mapConfig;
 
       if (c.view_bounds_sw) {
-
         self.mapView.map.setBounds([
           c.view_bounds_sw,
           c.view_bounds_ne
         ]);
 
       } else {
-
         self.mapView.map.set({
           center: c.center,
           zoom: c.zoom
@@ -1138,11 +1109,10 @@ var Vis = View.extend({
     }, 150);
   },
 
-  isMobileDevice: function() {
+  isMobileDevice: function () {
     return /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
   }
 }, {
-
   /**
    * adds an infowindow to the map controlled by layer events.
    * it enables interaction and overrides the layer interacivity
@@ -1150,7 +1120,7 @@ var Vis = View.extend({
    * ``map`` native map object, leaflet of gmaps
    * ``layer`` cartodb layer (or sublayer)
    */
-  addInfowindow: function(map, layer, fields, opts) {
+  addInfowindow: function (map, layer, fields, opts) {
     var options = _.defaults(opts || {}, {
       infowindowTemplate: INFOWINDOW_TEMPLATE.light,
       templateType: 'mustache',
@@ -1160,13 +1130,13 @@ var Vis = View.extend({
       cursorInteraction: true
     });
 
-    if(!map) throw new Error('map is not valid');
-    if(!layer) throw new Error('layer is not valid');
-    if(!fields && fields.length === undefined ) throw new Error('fields should be a list of strings');
+    if (!map) throw new Error('map is not valid');
+    if (!layer) throw new Error('layer is not valid');
+    if (!fields && fields.length === undefined) throw new Error('fields should be a list of strings');
 
     var f = [];
     fields = fields.concat(options.extraFields);
-    for(var i = 0; i < fields.length; ++i) {
+    for (var i = 0; i < fields.length; ++i) {
       f.push({ name: fields, order: i});
     }
 
@@ -1176,12 +1146,12 @@ var Vis = View.extend({
     });
 
     var infowindow = new Infowindow({
-       model: infowindowModel,
-       mapView: map.viz.mapView,
-       template: new Template({
-         template: options.infowindowTemplate,
-         type: options.templateType
-       }).asFunction()
+      model: infowindowModel,
+      mapView: map.viz.mapView,
+      template: new Template({
+        template: options.infowindowTemplate,
+        type: options.templateType
+      }).asFunction()
     });
 
     map.viz.mapView.addInfowindow(infowindow);
@@ -1190,11 +1160,10 @@ var Vis = View.extend({
     // the fields it needs
     try {
       layer.setInteractivity(fields);
-    } catch(e) {
-    }
+    } catch(e) {}
     layer.setInteraction(true);
 
-    layer.bind(options.triggerEvent, function(e, latlng, pos, data, layer) {
+    layer.bind(options.triggerEvent, function (e, latlng, pos, data, layer) {
       var render_fields = [];
       var d;
       for (var f = 0; f < fields.length; ++f) {
@@ -1209,7 +1178,7 @@ var Vis = View.extend({
       }
 
       infowindow.model.set({
-        content:  {
+        content: {
           fields: render_fields,
           data: data
         }
@@ -1222,29 +1191,29 @@ var Vis = View.extend({
     }, infowindow);
 
     // remove the callback on clean
-    infowindow.bind('clean', function() {
+    infowindow.bind('clean', function () {
       layer.unbind(options.triggerEvent, null, infowindow);
     });
 
-    if(options.cursorInteraction) {
+    if (options.cursorInteraction) {
       Vis.addCursorInteraction(map, layer);
     }
 
     return infowindow;
   },
 
-  addCursorInteraction: function(map, layer) {
+  addCursorInteraction: function (map, layer) {
     var mapView = map.viz.mapView;
-    layer.bind('mouseover', function() {
+    layer.bind('mouseover', function () {
       mapView.setCursor('pointer');
     });
 
-    layer.bind('mouseout', function(m, layer) {
+    layer.bind('mouseout', function (m, layer) {
       mapView.setCursor('auto');
     });
   },
 
-  removeCursorInteraction: function(map, layer) {
+  removeCursorInteraction: function (map, layer) {
     var mapView = map.viz.mapView;
     layer.unbind(null, null, mapView);
   }

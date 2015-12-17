@@ -5,7 +5,7 @@ module Cartodb
       return unless user_valid?(user, event_name, custom_properties)
 
       # Some events register custom properties
-      # Monitary values associated with the event should use 'revenue' reserved key
+      # Monetary values associated with the event should use 'revenue' reserved key
       properties = generate_event_properties(user).merge(custom_properties)
 
       Resque.enqueue(Resque::EventDeliveryJobs::TrackEvent, user.id, event_name, properties)

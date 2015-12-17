@@ -8,8 +8,7 @@ bower_components
 cartodb.js-bower/
 dist
 Gemfile.lock
-node_modules/*
-!node_modules/cdb
+node_modules
 npm-debug.log
 secrets.json
 test/SpecRunner*.html

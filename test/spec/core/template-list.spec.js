@@ -1,5 +1,5 @@
 var log = require('cdb.log');
-var TemplateList = require('cdb/core/template-list');
+var TemplateList = require('../../../src/core/template-list');
 
 describe('core/template-list', function() {
   var tmpl;

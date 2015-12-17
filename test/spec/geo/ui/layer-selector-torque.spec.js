@@ -1,10 +1,10 @@
 var $ = require('jquery');
-var Map = require('cdb/geo/map');
-var TorqueLayer = require('cdb/geo/map/torque-layer');
-var Layers = require('cdb/geo/map/layers');
-var LeafletMapView = require('cdb/geo/leaflet/leaflet-map-view');
-var Template = require('cdb/core/template');
-var LayerSelector = require('cdb/geo/ui/layer-selector');
+var Map = require('../../../../src/geo/map');
+var TorqueLayer = require('../../../../src/geo/map/torque-layer');
+var Layers = require('../../../../src/geo/map/layers');
+var LeafletMapView = require('../../../../src/geo/leaflet/leaflet-map-view');
+var Template = require('../../../../src/core/template');
+var LayerSelector = require('../../../../src/geo/ui/layer-selector');
 
 describe('geo/ui/layer-selector (torque)', function() {
 

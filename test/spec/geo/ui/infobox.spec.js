@@ -1,7 +1,7 @@
 var Backbone = require('backbone');
-var Template = require('cdb/core/template');
-var Model = require('cdb/core/model');
-var InfoBox = require('cdb/geo/ui/infobox');
+var Template = require('../../../../src/core/template');
+var Model = require('../../../../src/core/model');
+var InfoBox = require('../../../../src/geo/ui/infobox');
 
 describe('geo/ui/infobox', function() {
   var view;

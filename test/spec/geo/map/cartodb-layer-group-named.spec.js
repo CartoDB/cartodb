@@ -1,4 +1,4 @@
-var CartoDBLayerGroupNamed = require('cdb/geo/map/cartodb-layer-group-named');
+var CartoDBLayerGroupNamed = require('../../../../src/geo/map/cartodb-layer-group-named');
 
 describe('geo/map/cartodb-layer-group-named', function() {
   it("should be type namedmap", function() {

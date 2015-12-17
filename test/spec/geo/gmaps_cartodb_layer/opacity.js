@@ -1,5 +1,5 @@
 // var $ = require('jquery');
-// var CartoDBLayerGMaps = require('cdb/geo/gmaps/cartodb-layer-gmaps');
+// var CartoDBLayerGMaps = require('../../../../src/geo/gmaps/cartodb-layer-gmaps');
 
 // describe('CartoDBLayerGMaps: Opacity interaction', function() {
 //   var div, map, cdb_layer;

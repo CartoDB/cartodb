@@ -1,12 +1,12 @@
 var $ = require('jquery');
-var Map = require('cdb/geo/map');
-var CartoDBLayer = require('cdb/geo/map/cartodb-layer');
-var CartoDBLayerGroupAnonymous = require('cdb/geo/map/cartodb-layer-group-anonymous');
-var CartoDBLayerGroupNamed = require('cdb/geo/map/cartodb-layer-group-named');
-var Layers = require('cdb/geo/map/layers');
-var LeafletMapView = require('cdb/geo/leaflet/leaflet-map-view');
-var Template = require('cdb/core/template');
-var LayerSelector = require('cdb/geo/ui/layer-selector');
+var Map = require('../../../../src/geo/map');
+var CartoDBLayer = require('../../../../src/geo/map/cartodb-layer');
+var CartoDBLayerGroupAnonymous = require('../../../../src/geo/map/cartodb-layer-group-anonymous');
+var CartoDBLayerGroupNamed = require('../../../../src/geo/map/cartodb-layer-group-named');
+var Layers = require('../../../../src/geo/map/layers');
+var LeafletMapView = require('../../../../src/geo/leaflet/leaflet-map-view');
+var Template = require('../../../../src/core/template');
+var LayerSelector = require('../../../../src/geo/ui/layer-selector');
 
 describe('geo/ui/layer-selector', function() {
 

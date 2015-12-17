@@ -1,7 +1,7 @@
 var config = require('cdb.config');
-var PlainLayer = require('cdb/geo/map/plain-layer');
-var CartoDBLayer = require('cdb/geo/map/cartodb-layer');
-var Map = require('cdb/geo/map');
+var PlainLayer = require('../../../src/geo/map/plain-layer');
+var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
+var Map = require('../../../src/geo/map');
 
 describe('core/geo/map', function() {
   var map;

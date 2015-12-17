@@ -1,8 +1,8 @@
 var _ = require('underscore');
 var $ = require('jquery');
 var Backbone = require('backbone');
-var Promise = require('cdb/api/promise');
-var SQL = require('cdb/api/sql');
+var Promise = require('../../../src/api/promise');
+var SQL = require('../../../src/api/sql');
 
 describe('api/sql', function() {
   var USER = 'rambo';

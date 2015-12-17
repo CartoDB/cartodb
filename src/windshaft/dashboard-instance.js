@@ -1,5 +1,5 @@
 var _ = require('underscore');
-var Model = require('cdb/core/model');
+var Model = require('../core/model');
 var WindshaftConfig = require('./config');
 var EMPTY_GIF = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 

@@ -1,18 +1,18 @@
 var $ = require('jquery');
 var _ = require('underscore');
 var Backbone = require('backbone');
-var View = require('cdb/core/view');
+var View = require('../../../src/core/view');
 
 // required due to implicit dependency in vis --> map-view
 var cdb = require('cdb');
-_.extend(cdb.geo, require('cdb/geo/leaflet'));
-_.extend(cdb.geo, require('cdb/geo/gmaps'));
+_.extend(cdb.geo, require('../../../src/geo/leaflet'));
+_.extend(cdb.geo, require('../../../src/geo/gmaps'));
 
-var createVis = require('cdb/api/create-vis');
-var Overlay = require('cdb/vis/vis/overlay');
-var Vis = require('cdb/vis/vis');
-require('cdb/vis/overlays'); // Overlay.register calls
-require('cdb/vis/layers'); // Layers.register calls
+var createVis = require('../../../src/api/create-vis');
+var Overlay = require('../../../src/vis/vis/overlay');
+var Vis = require('../../../src/vis/vis');
+require('../../../src/vis/overlays'); // Overlay.register calls
+require('../../../src/vis/layers'); // Layers.register calls
 
 describe('vis/vis', function () {
   beforeEach(function () {

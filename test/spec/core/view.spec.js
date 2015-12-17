@@ -2,7 +2,7 @@ var $ = require('jquery');
 var _ = require('underscore');
 var Backbone = require('backbone');
 var templates = require('cdb.templates');
-var View = require('cdb/core/view');
+var View = require('../../../src/core/view');
 
 describe('core/view', function() {
   var TestView;

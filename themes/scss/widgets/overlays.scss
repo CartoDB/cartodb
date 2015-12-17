@@ -124,5 +124,37 @@
   }
 }
 
+// loader search
+.CDB-Search {
+  position: absolute;
+  left: 92px;
+  bottom: 16px;
+  width: 32px;
+  height: 32px;
+  &.is-active {
+    width: 184px;
+  }
+}
+.CDB-Search-Action {
+  position: relative;
+  width: 32px;
+  border-radius: 4px;
+  display: inline-block;
+  vertical-align: middle;
+  cursor: pointer;
+}
+.CDB-Search-Text {
+  width: 130px;
+  display: inline-block;
+  vertical-align: middle;
+  padding-left: 8px;
+  margin-right: 8px;
+  border: 0;
+  border-left: 1px solid #F8F8F8;
+  font: 12px 'Open Sans';
+  &:focus {
+    outline: none;
+  }
+}
 
 

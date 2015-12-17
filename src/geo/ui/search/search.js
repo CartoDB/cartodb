@@ -11,7 +11,7 @@ var infowindowTemplate = require('./search_infowindow_template.tpl');
  *  location found by the geocoder.
  */
 var Search = View.extend({
-  className: 'cartodb-searchbox',
+  className: 'CDB-Search',
 
   _ZOOM_BY_CATEGORY: {
     'building': 18,

@@ -299,7 +299,7 @@ describe('vis/vis', function () {
   it('should add search', function () {
     this.mapConfig.overlays = [{ type: 'search' }];
     this.vis.load(this.mapConfig);
-    expect(this.vis.$('.cartodb-searchbox').length).toEqual(1);
+    expect(this.vis.$('.CDB-Search').length).toEqual(1);
   });
 
   it("should enable search if it's specified by searchControl", function () {
@@ -307,7 +307,7 @@ describe('vis/vis', function () {
     this.vis.load(this.mapConfig, {
       searchControl: true
     });
-    expect(this.vis.$('.cartodb-searchbox').length).toEqual(1);
+    expect(this.vis.$('.CDB-Search').length).toEqual(1);
   });
 
   it("should disable search if it's specified by searchControl", function () {
@@ -315,7 +315,7 @@ describe('vis/vis', function () {
     this.vis.load(this.mapConfig, {
       searchControl: false
     });
-    expect(this.vis.$('.cartodb-searchbox').length).toEqual(0);
+    expect(this.vis.$('.CDB-Search').length).toEqual(0);
   });
 
   it('should use zoom', function () {

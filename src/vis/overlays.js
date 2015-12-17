@@ -344,11 +344,14 @@ Overlay.register('share', function (data, vis) {
 Overlay.register('search', function (data, vis) {
   var template = Template.compile(
     data.template || '\
-      <form>\
-        <span class="loader"></span>\
-        <input type="text" class="text" value="" />\
-        <input type="submit" class="submit" value="" />\
+    <div class="CDB-Overlay">\
+      <form class="js-form">\
+        <button class="CDB-Search-Action js-toggle" value="">\
+          <span class="CDB-Shape-Magnify"></span>\
+        </button>\
+        <input type="text" placeholder="Search Location" class="CDB-Search-Text js-textInput" value="" />\
       </form>\
+    </div>\
     ',
     data.templateType || 'mustache'
   );

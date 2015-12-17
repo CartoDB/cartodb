@@ -12,6 +12,7 @@ module Cartodb
     end
 
     private
+
     def generate_event_properties(user)
       {
         username:  user.username,

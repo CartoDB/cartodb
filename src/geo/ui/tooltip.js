@@ -130,7 +130,6 @@ var Tooltip = InfoBox.extend({
       return this;
     }
     this.render(data);
-    //this.elder('show', pos, data);
     this.setPosition(pos);
     if (!this._showing) {
       this._showing = true;

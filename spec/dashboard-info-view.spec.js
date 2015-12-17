@@ -1,11 +1,11 @@
 var moment = require('moment');
-var Backbone = require('backbone');
+var cdb = require('cartodb.js');
 var DashboardInfoView = require('app/dashboard-info-view');
 
 describe('app/dashboard-info-view', function () {
   beforeEach(function () {
     var yesterday = moment().subtract(1, 'days').format(); // 2015-11-26T13:19:32+01:00
-    var model = new Backbone.Model({
+    var model = new cdb.Backbone.Model({
       title: 'Mapaza',
       description: 'Lorem ipsum...',
       updatedAt: yesterday

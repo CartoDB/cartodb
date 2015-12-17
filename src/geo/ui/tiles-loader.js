@@ -1,8 +1,5 @@
 var _ = require('underscore');
-var $ = require('jquery');
-var templates = require('cdb.templates');
 var View = require('../../core/view');
-var util = require('../../core/util');
 
 /**
  * Show or hide tiles loader
@@ -13,46 +10,38 @@ var util = require('../../core/util');
  * mapWrapper.$el.append(tiles_loader.render().$el);
  */
 var TilesLoader = View.extend({
+  className: 'CDB-Loader',
 
-  className: "CDB-Loader",
-
-  default_options: {
+  options: {
     animationSpeed: 500
   },
 
-  initialize: function() {
-    _.defaults(this.options, this.default_options);
+  initialize: function () {
     this.isVisible = 0;
-    this.template = this.options.template ? this.options.template : templates.getTemplate('geo/tiles_loader');
   },
 
-  render: function() {
-    this.$el.html($(this.template(this.options)));
+  render: function () {
     return this;
   },
 
-  show: function(ev) {
-    if(this.isVisible) return;
-    if (!util.ie || (util.browser.ie && util.browser.ie.version >= 10)) {
-      this.$el.fadeTo(this.options.animationSpeed, 1)
-    } else {
-      this.$el.show();
+  show: function (ev) {
+    if (this.isVisible) {
+      return;
     }
+    this.$el.addClass('is-visible');
     this.isVisible++;
   },
 
-  hide: function(ev) {
+  hide: function (ev) {
     this.isVisible--;
-    if(this.isVisible > 0) return;
-    this.isVisible = 0;
-    if (!util.ie || (util.browser.ie && util.browser.ie.version >= 10)) {
-      this.$el.stop(true).fadeTo(this.options.animationSpeed, 0)
-    } else {
-      this.$el.hide();
+    if (this.isVisible > 0) {
+      return;
     }
+    this.isVisible = 0;
+    this.$el.removeClass('is-visible');
   },
 
-  visible: function() {
+  visible: function () {
     return this.isVisible > 0;
   }
 

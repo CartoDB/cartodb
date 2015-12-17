@@ -1,7 +1,5 @@
 module Cartodb
-
   class EventTracker
-
     def send_event(user, event_name, custom_properties = {})
       return unless is_tracking_active?
       return unless user_valid?(user, event_name, custom_properties)

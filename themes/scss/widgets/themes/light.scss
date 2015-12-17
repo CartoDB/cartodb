@@ -152,9 +152,6 @@ $commonBkg: rgba(#FFF, 1);
     background-color: $loadingBkg;
   }
 
-  .CDB-Widget-loader {
-    background: $link;
-  }
   .CDB-Widget-error {
     border-color: $negative;
     background: rgba($canvasBkg, 0.8);

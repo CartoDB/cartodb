@@ -274,8 +274,8 @@
                   "x": 20,
                   "y": 20
                 },
-                "template": "<a href=\"#zoom_in\" class=\"zoom_in\">+</a> <a href=\"#zoom_out\" class=\"zoom_out\">-</a>"
-              },
+              "template": "<div class=\"CDB-Overlay\"><button class=\"CDB-Zoom-action CDB-Zoom-action--out js-zoomOut\"></button><button class=\"CDB-Zoom-action CDB-Zoom-action--in js-zoomIn\"></button></div><div class=\"CDB-Zoom-info js-zoomInfo\">1</div>"
+            },
               {
                 "type": "loader",
                 "order": 8,
@@ -283,16 +283,6 @@
                   "display": true,
                   "x": 20,
                   "y": 150
-                },
-                "template": "<div class=\"loader\" original-title=\"\"></div>"
-              },
-              {
-                "type": "logo",
-                "order": 9,
-                "options": {
-                  "display": true,
-                  "x": 10,
-                  "y": 40
                 },
                 "template": ""
               }
@@ -306,7 +296,8 @@
         };
 
         var visOpts = {
-          no_cdn: false
+          no_cdn: false,
+          cartodb_logo: false
         };
         cartodb.deepInsights.createDashboard('#dashboard', diJSON, visOpts)
           .vis.done(function(vis, layers) {

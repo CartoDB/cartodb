@@ -134,18 +134,19 @@
   width: 32px;
   height: 32px;
   overflow: hidden;
-  position: relative;
-  transform: width .2s ease-in;
-
+  transition: width .2s ease-in;
   &.is-active {
     width: 184px;
+    .CDB-Search-text {
+      opacity: 1;
+    }
   }
 }
 .CDB-Search-action {
   position: relative;
   width: 32px;
   cursor: pointer;
-  overflow: hidden;
+  display: block;
 }
 .CDB-Search-text {
   position: absolute;
@@ -154,11 +155,16 @@
   width: 130px;
   display: inline-block;
   vertical-align: middle;
-  padding-left: 8px;
+  padding: 0 0 0 8px;
   margin-right: 8px;
   border: 0;
-  border-left: 1px solid #F8F8F8;
-  font: 12px 'Open Sans';
+  border-left: 1px solid #f8f8f8;
+  font: 12px/16px 'Open Sans';
+  opacity: 0;
+  transition: opacity .2s ease-in;
+  background: none;
+
+
   &:focus {
     outline: none;
   }

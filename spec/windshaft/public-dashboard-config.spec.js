@@ -1,11 +1,10 @@
-var Backbone = require('backbone');
 var cdb = require('cartodb.js');
 var PublicDashboardConfig = require('app/windshaft/public-dashboard-config');
 var HistogramModel = require('app/widgets/histogram/model');
 
 describe('windshaft/public-dashboard-config', function () {
   beforeEach(function () {
-    this.widgets = new Backbone.Collection();
+    this.widgets = new cdb.Backbone.Collection();
 
     this.cartoDBLayer1 = new cdb.geo.CartoDBLayer({
       id: 'layer1',

@@ -1,6 +1,6 @@
 var _ = require('underscore');
-var WidgetListModel = require('app/widgets/list/model');
-var WidgetListContent = require('app/widgets/list/content-view');
+var WidgetListModel = require('../../../src/widgets/list/model');
+var WidgetListContent = require('../../../src/widgets/list/content-view');
 
 describe('widgets/list/content-view', function () {
   beforeEach(function () {

@@ -1,7 +1,7 @@
 var _ = require('underscore');
 var cdb = require('cartodb.js');
-var WidgetModel = require('app/widgets/widget-model');
-var WidgetView = require('app/widgets/widget-view');
+var WidgetModel = require('../../src/widgets/widget-model');
+var WidgetView = require('../../src/widgets/widget-view');
 
 describe('widgets/widget-view', function () {
   beforeEach(function () {

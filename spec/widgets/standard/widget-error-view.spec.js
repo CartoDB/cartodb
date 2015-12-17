@@ -1,5 +1,5 @@
-var WidgetModel = require('app/widgets/widget-model');
-var WidgetErrorView = require('app/widgets/standard/widget-error-view');
+var WidgetModel = require('../../../src/widgets/widget-model');
+var WidgetErrorView = require('../../../src/widgets/standard/widget-error-view');
 
 describe('widgets/standard/widget-error-view', function () {
   beforeEach(function () {

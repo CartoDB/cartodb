@@ -1,6 +1,6 @@
 var cdb = require('cartodb.js');
-var HistogramModel = require('app/widgets/histogram/model');
-var TimeSeriesContentView = require('app/widgets/time-series/content-view');
+var HistogramModel = require('../../../src/widgets/histogram/model');
+var TimeSeriesContentView = require('../../../src/widgets/time-series/content-view');
 
 describe('widgets/time-series/content-view', function () {
   beforeEach(function () {

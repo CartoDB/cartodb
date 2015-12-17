@@ -1,5 +1,5 @@
 var cdb = require('cartodb.js');
-var WidgetModel = require('app/widgets/histogram/model');
+var WidgetModel = require('../../../src/widgets/histogram/model');
 
 describe('widgets/histogram/model', function () {
   beforeEach(function () {

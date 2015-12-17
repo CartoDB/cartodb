@@ -1,5 +1,5 @@
 var cdb = require('cartodb.js');
-var DashboardView = require('app/dashboard-view');
+var DashboardView = require('../src/dashboard-view');
 
 describe('dashboard-view', function () {
   beforeEach(function () {

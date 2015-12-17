@@ -1,7 +1,7 @@
 var cdb = require('cartodb.js');
-var HistogramModel = require('app/widgets/histogram/model');
-var RangeFilter = require('app/windshaft/filters/range');
-var TimeContentView = require('app/widgets/time-series/torque-content-view');
+var HistogramModel = require('../../../src/widgets/histogram/model');
+var RangeFilter = require('../../../src/windshaft/filters/range');
+var TimeContentView = require('../../../src/widgets/time-series/torque-content-view');
 
 describe('widgets/time-series/torque-content-view', function () {
   beforeEach(function () {

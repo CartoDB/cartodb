@@ -1,7 +1,7 @@
 var cdb = require('cartodb.js');
-var WidgetViewFactory = require('app/widgets/widget-view-factory');
-var WidgetModel = require('app/widgets/widget-model');
-var WidgetView = require('app/widgets/widget-view');
+var WidgetViewFactory = require('../../src/widgets/widget-view-factory');
+var WidgetModel = require('../../src/widgets/widget-model');
+var WidgetView = require('../../src/widgets/widget-view');
 
 describe('widgets/widget-view-factory', function () {
   beforeEach(function () {

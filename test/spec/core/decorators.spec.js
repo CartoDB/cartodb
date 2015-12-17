@@ -1,5 +1,5 @@
 var Backbone = require('backbone');
-var decorators = require('cdb/core/decorators');
+var decorators = require('../../../src/core/decorators');
 
 describe("core/decorators", function() {
 

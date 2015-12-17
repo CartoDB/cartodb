@@ -1,5 +1,5 @@
 var $ = require('jquery');
-var ErrorModel = require('cdb/core/log/error');
+var ErrorModel = require('../../../../src/core/log/error');
 
 describe('core/log/error', function() {
   it('should set a browser info when created', function() {

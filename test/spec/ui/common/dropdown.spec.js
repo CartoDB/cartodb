@@ -1,5 +1,5 @@
 var $ = require('jquery');
-var Dropdown = require('cdb/ui/common/dropdown');
+var Dropdown = require('../../../../src/ui/common/dropdown');
 
 describe('ui/common/dropdown', function() {
   beforeEach(function() {

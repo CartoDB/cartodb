@@ -1,4 +1,4 @@
-var torque = require('cdb/cartodb.mod.torque');
+var torque = require('../../src/cartodb.mod.torque');
 require('leaflet').noConflict();
 
 describe('torque', function () {

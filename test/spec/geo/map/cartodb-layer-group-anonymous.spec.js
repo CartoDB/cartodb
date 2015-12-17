@@ -1,4 +1,4 @@
-var CartoDBLayerGroupAnonymous = require('cdb/geo/map/cartodb-layer-group-anonymous');
+var CartoDBLayerGroupAnonymous = require('../../../../src/geo/map/cartodb-layer-group-anonymous');
 
 describe('geo/map/cartodb-layer-group-anonymous', function() {
   it("should be type layergroup", function() {

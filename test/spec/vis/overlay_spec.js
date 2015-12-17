@@ -1,5 +1,5 @@
-var Overlay = require('cdb/vis/vis/overlay');
-var View = require('cdb/core/view');
+var Overlay = require('../../../src/vis/vis/overlay');
+var View = require('../../../src/core/view');
 
 describe('vis/vis/overlay', function() {
 

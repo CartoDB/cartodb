@@ -1,8 +1,8 @@
 var $ = require('jquery');
 var Backbone = require('backbone');
-var Map = require('cdb/geo/map');
-var LeafletMapView = require('cdb/geo/leaflet/leaflet-map-view');
-var Tooltip = require('cdb/geo/ui/tooltip');
+var Map = require('../../../../src/geo/map');
+var LeafletMapView = require('../../../../src/geo/leaflet/leaflet-map-view');
+var Tooltip = require('../../../../src/geo/ui/tooltip');
 
 describe('geo/ui/tooltip', function() {
 

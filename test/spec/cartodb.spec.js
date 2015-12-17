@@ -1,4 +1,4 @@
-var cdb = require('cdb/cartodb');
+var cdb = require('../../src/cartodb');
 
 describe('cartodb.js bundle', function() {
   it('should set cartodb object in global namespace', function() {

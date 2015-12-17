@@ -3,12 +3,12 @@ var _ = require('underscore');
 
 // required due to implicit dependency in vis --> map-view
 var cdb = require('cdb');
-_.extend(cdb.geo, require('cdb/geo/leaflet'));
-_.extend(cdb.geo, require('cdb/geo/gmaps'));
+_.extend(cdb.geo, require('../../../src/geo/leaflet'));
+_.extend(cdb.geo, require('../../../src/geo/gmaps'));
 
-var Vis = require('cdb/vis/vis');
-var Layers = require('cdb/vis/vis/layers');
-require('cdb/vis/layers'); // Layers.register calls
+var Vis = require('../../../src/vis/vis');
+var Layers = require('../../../src/vis/vis/layers');
+require('../../../src/vis/layers'); // Layers.register calls
 
 describe('vis/layers', function() {
   var vis;

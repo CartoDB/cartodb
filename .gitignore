@@ -2,8 +2,7 @@
 .grunt
 .tmp
 dist
-node_modules/*
-!node_modules/app
+node_modules
 npm-debug.log
 spec/index.html #specrunner
 vendor

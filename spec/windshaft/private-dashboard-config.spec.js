@@ -1,5 +1,5 @@
 var cdb = require('cartodb.js');
-var PrivateDashboardConfig = require('app/windshaft/private-dashboard-config');
+var PrivateDashboardConfig = require('../../src/windshaft/private-dashboard-config');
 
 describe('windshaft/private-dashboard-config', function () {
   beforeEach(function () {

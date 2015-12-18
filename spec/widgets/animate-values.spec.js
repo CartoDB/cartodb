@@ -1,7 +1,7 @@
 var $ = require('jquery');
 var _ = require('underscore');
 var cdb = require('cartodb.js');
-var AnimateValues = require('app/widgets/animate-values');
+var AnimateValues = require('../../src/widgets/animate-values');
 
 describe('widgets/animate-values', function () {
   beforeEach(function () {

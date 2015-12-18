@@ -1,6 +1,6 @@
 var $ = require('jquery');
 var cdb = require('cartodb.js');
-var Client = require('app/windshaft/client');
+var Client = require('../../src/windshaft/client');
 
 describe('windshaft/client', function () {
   it('should throw an error if required options are not passed to the constructor', function () {

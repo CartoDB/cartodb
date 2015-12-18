@@ -1,7 +1,7 @@
 var cdb = require('cartodb.js');
-var HistogramModel = require('app/widgets/histogram/model');
-var HistogramChartView = require('app/widgets/histogram/chart');
-var TorqueTimeSliderView = require('app/widgets/time-series/torque-time-slider-view');
+var HistogramModel = require('../../../src/widgets/histogram/model');
+var HistogramChartView = require('../../../src/widgets/histogram/chart');
+var TorqueTimeSliderView = require('../../../src/widgets/time-series/torque-time-slider-view');
 
 describe('widgets/time-series/torque-time-slider-view', function () {
   beforeEach(function () {

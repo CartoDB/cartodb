@@ -1,5 +1,5 @@
-var WidgetModel = require('app/widgets/widget-model');
-var WidgetLoaderView = require('app/widgets/standard/widget-loader-view');
+var WidgetModel = require('../../../src/widgets/widget-model');
+var WidgetLoaderView = require('../../../src/widgets/standard/widget-loader-view');
 
 describe('widgets/standard/widget-loader-view', function () {
   beforeEach(function () {
@@ -18,7 +18,7 @@ describe('widgets/standard/widget-loader-view', function () {
 
   it('should have render correctly', function () {
     this.view.render();
-    expect(this.view.$el.hasClass('CDB-Widget-loader')).toBeTruthy();
+    expect(this.view.$el.hasClass('CDB-Loader')).toBeTruthy();
   });
 
   it('should have a binds from the beginning', function () {

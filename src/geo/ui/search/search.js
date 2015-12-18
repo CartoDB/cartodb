@@ -183,7 +183,7 @@ var Search = View.extend({
   _createPin: function (position, address) {
     this._searchPin = this.mapView._addGeomToMap(
       new Geometry({
-        geojson: { type: 'Point', 'coordinates': [ position[1], position[0]] },
+        geojson: { type: 'Point', 'coordinates': [position[1], position[0]] },
         iconUrl: this.options.iconUrl,
         iconAnchor: this.options.iconAnchor
       })

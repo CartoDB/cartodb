@@ -390,7 +390,12 @@ describe('geo/ui/infowindow', function() {
       expect(view._containsCover()).toEqual(true);
       expect(view.$(".CDB-infowindow-media-item").length).toEqual(1);
       expect(view.$(".js-cover").height()).toEqual(100 - view.options.hookHeight);
-      expect(view.$(".js-hook img").length).toEqual(1);
+    });
+
+    it("should setup the hook correctly", function() {
+      model.set('template', '<div class="js-infowindow" data-cover="true"><div class="js-cover" style="height: 123px"><img src="//fake" style="height: 100px"></div><div class="js-hook"></div></div>');
+      expect(view.$(".js-hook svg").length).toEqual(1);
+      expect(view.$(".js-hook svg path").attr('d')).toEqual('M0,0 L0,16 L24,0 L0,0 Z');
     });
 
     it("should detect if the infowindow has a cover", function() {

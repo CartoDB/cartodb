@@ -124,5 +124,47 @@
   }
 }
 
+// loader search
+.CDB-Search {
+  position: absolute;
+  bottom: 16px;
+  left: 84px;
+}
+.CDB-Search-inner {
+  @include transition(opacity, 200ms ease-in);
+  width: 32px;
+  height: 32px;
+  overflow: hidden;
+  &.is-active {
+    width: 184px;
+    .CDB-Search-text {
+      opacity: 1;
+    }
+  }
+}
+.CDB-Search-action {
+  display: block;
+  position: relative;
+  width: 32px;
+  cursor: pointer;
+}
+.CDB-Search-text {
+  @include transition(opacity, 200ms ease-in);
+  display: inline-block;
+  position: absolute;
+  top: 8px;
+  left: 33px;
+  width: 130px;
+  margin-right: 8px;
+  padding: 0 0 0 8px;
+  border: 0;
+  border-left: 1px solid #F8F8F8;
+  background: none;
+  font: 12px/16px 'Open Sans';
+  opacity: 0;
+  vertical-align: middle;
 
-
+  &:focus {
+    outline: none;
+  }
+}

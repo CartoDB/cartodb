@@ -510,7 +510,9 @@ var Infowindow = View.extend({
    *  Show infowindow (update, pan, etc)
    */
   show: function (no_pan) {
-    $(document).on('keyup', this._onKeyUp);
+    $(document)
+      .off('keyup', this._onKeyUp)
+      .on('keyup', this._onKeyUp);
 
     if (this.model.get('visibility')) {
       this.$el.css({ left: -5000 });

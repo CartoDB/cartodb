@@ -1,5 +1,5 @@
 var $ = require('jquery');
-var Model = require('cdb/core/model');
+var Model = require('../../../src/core/model');
 
 describe('core/model', function() {
   var TestModel;

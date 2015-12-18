@@ -1,4 +1,4 @@
-var Template = require('cdb/core/template');
+var Template = require('../../../src/core/template');
 
 describe("core/template", function() {
     var tmpl;

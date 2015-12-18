@@ -1,5 +1,5 @@
 var $ = require('jquery');
-var Dialog = require('cdb/ui/common/dialog');
+var Dialog = require('../../../../src/ui/common/dialog');
 
 describe('ui/common/dialog', function() {
 

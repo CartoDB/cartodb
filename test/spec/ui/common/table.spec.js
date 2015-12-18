@@ -1,10 +1,10 @@
 var _ = require('underscore');
 var $ = require('jquery');
-var TableData = require('cdb/ui/common/table/table-data');
-var Row = require('cdb/ui/common/table/row');
-var RowView = require('cdb/ui/common/table/row-view');
-var TableProperties = require('cdb/ui/common/table/table-properties');
-var Table = require('cdb/ui/common/table');
+var TableData = require('../../../../src/ui/common/table/table-data');
+var Row = require('../../../../src/ui/common/table/row');
+var RowView = require('../../../../src/ui/common/table/row-view');
+var TableProperties = require('../../../../src/ui/common/table/table-properties');
+var Table = require('../../../../src/ui/common/table');
 
 describe('ui/common/table', function() {
 

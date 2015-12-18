@@ -1,4 +1,4 @@
-var sanitize = require('cdb/core/sanitize');
+var sanitize = require('../../../src/core/sanitize');
 
 describe("core/sanitize", function() {
 

@@ -1,5 +1,5 @@
 var config = require('cdb.config');
-var CartoDBLayer = require('cdb/geo/map/cartodb-layer');
+var CartoDBLayer = require('../../../../src/geo/map/cartodb-layer');
 
 describe('geo/map/cartodb-layer', function() {
   it("should be type CartoDB", function() {

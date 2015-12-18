@@ -1,12 +1,12 @@
 var $ = require('jquery');
 var L = require('leaflet');
-var Search = require('cdb/geo/ui/search/search');
-var NOKIA = require('cdb/geo/geocoder/nokia-geocoder');
-var Map = require('cdb/geo/map');
-var Template = require('cdb/core/template');
-var LeafletMapView = require('cdb/geo/leaflet/leaflet-map-view');
+var Search = require('../../../../src/geo/ui/search/search');
+var NOKIA = require('../../../../src/geo/geocoder/nokia-geocoder');
+var Map = require('../../../../src/geo/map');
+var Template = require('../../../../src/core/template');
+var LeafletMapView = require('../../../../src/geo/leaflet/leaflet-map-view');
 
-describe('cdb/geo/ui/search', function () {
+describe('geo/ui/search', function () {
   beforeEach(function () {
     this.$el = $('<div>')
       .attr('id', 'map')

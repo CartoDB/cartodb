@@ -1,6 +1,6 @@
-var Template = require('cdb/core/template');
-var Model = require('cdb/core/model');
-var Header = require('cdb/geo/ui/header');
+var Template = require('../../../../src/core/template');
+var Model = require('../../../../src/core/model');
+var Header = require('../../../../src/geo/ui/header');
 
 describe('geo/ui/header', function() {
 

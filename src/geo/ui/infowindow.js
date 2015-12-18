@@ -296,7 +296,7 @@ var Infowindow = View.extend({
    *  Does header contain cover?
    */
   _containsCover: function () {
-    return this.$('.js-infowindow').attr('data-cover');
+    return !!this.$('.js-infowindow').attr('data-cover');
   },
 
   /**

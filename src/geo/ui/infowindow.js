@@ -1,7 +1,7 @@
 var _ = require('underscore');
 var $ = require('jquery');
-var ClipPath = require('clip-path-polygon');
 var Ps = require('perfect-scrollbar');
+require('clip-path');
 var log = require('cdb.log');
 var templates = require('cdb.templates');
 var sanitize = require('../../core/sanitize');
@@ -23,6 +23,7 @@ var util = require('../../core/util');
 var Infowindow = View.extend({
   options: {
     imageTransitionSpeed: 300,
+    hookMargin: 24,
     hookHeight: 16
   },
 
@@ -189,9 +190,7 @@ var Infowindow = View.extend({
    *  Compile template of the infowindow
    */
   _compileTemplate: function () {
-    var template = this.model.get('template') ?
-      this.model.get('template') :
-      templates.getTemplate(this._getModelTemplate());
+    var template = this.model.get('template') ? this.model.get('template') : templates.getTemplate(this._getModelTemplate());
 
     if (typeof (template) !== 'function') {
       this.template = new Template({
@@ -212,7 +211,7 @@ var Infowindow = View.extend({
     // If the mouse down come from jspVerticalBar
     // dont stop the propagation, but if the event
     // is a touchstart, stop the propagation
-    var come_from_scroll = (($(ev.target).closest('.jspVerticalBar').length > 0) && (ev.type != 'touchstart'));
+    var come_from_scroll = (($(ev.target).closest('.jspVerticalBar').length > 0) && (ev.type !== 'touchstart'));
 
     if (!come_from_scroll) {
       ev.stopPropagation();
@@ -268,7 +267,7 @@ var Infowindow = View.extend({
     }
 
     // If it is index 1, not any field type, header image template type and length bigger than 30... cut off the text!
-    if (!attr.type && pos == 1 && attr.value.length > 35 && template_name && template_name.search('_header_with_image') != -1) {
+    if (!attr.type && pos === 1 && attr.value.length > 35 && template_name && template_name.search('_header_with_image') !== -1) {
       new_value = attr.value.substr(0, 32) + '...';
     }
 
@@ -290,14 +289,14 @@ var Infowindow = View.extend({
 
   isLoadingData: function () {
     var content = this.model.get('content');
-    return content.fields && content.fields.length == 1 && content.fields[0].type === 'loading';
+    return content.fields && content.fields.length === 1 && content.fields[0].type === 'loading';
   },
 
   /**
    *  Does header contain cover?
    */
   _containsCover: function () {
-    return this.$('.js-infowindow').attr('data-cover') ? true : false;
+    return !!this.$('.js-infowindow').attr('data-cover');
   },
 
   /**
@@ -313,19 +312,18 @@ var Infowindow = View.extend({
     return false;
   },
 
-  _loadImageHook: function (url) {
+  _loadImageHook: function (width, height, y, url) {
     var $hook = this.$('.js-hook');
     var $cover = this.$('.js-cover');
 
     if ($hook) {
-      $hookImage = $('<img />').attr('src', url);
+      var $hookImage = $('<img />').attr('src', url);
       $hook.append($hookImage);
 
-      var hookPoints = [[0, 0], [0, 100], [100, 0]];
+      var $img = $hook.find('img');
 
-      $hook.clipPath(hookPoints, {
-        isPercentage: true
-      });
+      $img.attr('data-clipPath', 'M0,0 L0,16 L24,0 L0,0 Z');
+      $img.clipPath(width, height, -this.options.hookMargin, y);
 
       $hookImage.load(function () {
         $hookImage.css({
@@ -358,7 +356,7 @@ var Infowindow = View.extend({
       var coverHeight = $cover.height();
       $cover.css({ height: h - this.options.hookHeight });
 
-      this._loadImageHook(url);
+      this._loadImageHook($img.width(), coverHeight, h - this.options.hookHeight, url);
 
       return false;
     }
@@ -396,9 +394,8 @@ var Infowindow = View.extend({
       $cover.css({ height: h - self.options.hookHeight });
       $img.fadeIn(self.options.imageTransitionSpeed);
 
-      self._loadImageHook(url);
-    })
-      .error();
+      self._loadImageHook($img.width(), $img.height(), h - self.options.hookHeight, url);
+    }).error();
   },
 
   /**
@@ -407,7 +404,7 @@ var Infowindow = View.extend({
   _isValidURL: function (url) {
     if (url) {
       var urlPattern = /^(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-|]*[\w@?^=%&amp;\/~+#-])?$/;
-      return String(url).match(urlPattern) !== null ? true : false;
+      return String(url).match(urlPattern) !== null;
     }
 
     return false;
@@ -599,17 +596,15 @@ var Infowindow = View.extend({
    *  Update the position (private)
    */
   _updatePosition: function () {
-    if (this.isHidden()) return;
+    if (this.isHidden()) {
+      return;
+    }
 
-    var offset = this.model.get('offset'),
-      pos = this.mapView.latLonToPixel(this.model.get('latlng')),
-      x = this.$el.position().left,
-      y = this.$el.position().top,
-      containerHeight = this.$el.outerHeight(true),
-      containerWidth = this.$el.width(),
-      left = pos.x - offset[0],
-      size = this.mapView.getSize(),
-      bottom = -1 * (pos.y - offset[1] - size.y);
+    var offset = this.model.get('offset');
+    var pos = this.mapView.latLonToPixel(this.model.get('latlng'));
+    var left = pos.x - offset[0];
+    var size = this.mapView.getSize();
+    var bottom = -1 * (pos.y - offset[1] - size.y);
 
     this.$el.css({ bottom: bottom, left: left });
   },
@@ -622,14 +617,12 @@ var Infowindow = View.extend({
 
     if (!this.model.get('autoPan') || this.isHidden()) { return; }
 
-    var x = this.$el.position().left,
-      y = this.$el.position().top,
-      containerHeight = this.$el.outerHeight(true) + 15, // Adding some more space
-      containerWidth = this.$el.width(),
-      pos = this.mapView.latLonToPixel(this.model.get('latlng')),
-      adjustOffset = {x: 0, y: 0};
-    size = this.mapView.getSize();
-    wait_callback = 0;
+    var containerHeight = this.$el.outerHeight(true) + 15; // Adding some more space
+    var containerWidth = this.$el.width();
+    var pos = this.mapView.latLonToPixel(this.model.get('latlng'));
+    var adjustOffset = {x: 0, y: 0};
+    var size = this.mapView.getSize();
+    var wait_callback = 0;
 
     if (pos.x - offset[0] < 0) {
       adjustOffset.x = pos.x - offset[0] - 10;
@@ -654,7 +647,6 @@ var Infowindow = View.extend({
 
     return wait_callback;
   }
-
 });
 
 module.exports = Infowindow;

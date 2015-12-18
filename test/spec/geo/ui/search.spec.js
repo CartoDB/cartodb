@@ -1,9 +1,7 @@
 var $ = require('jquery');
-var L = require('leaflet');
 var Search = require('../../../../src/geo/ui/search/search');
 var NOKIA = require('../../../../src/geo/geocoder/nokia-geocoder');
 var Map = require('../../../../src/geo/map');
-var Template = require('../../../../src/core/template');
 var LeafletMapView = require('../../../../src/geo/leaflet/leaflet-map-view');
 
 describe('geo/ui/search', function () {
@@ -185,5 +183,4 @@ describe('geo/ui/search', function () {
     this.$el.remove();
     jasmine.clock().uninstall();
   });
-
 });

@@ -1,7 +1,7 @@
 var _ = require('underscore');
 var $ = require('jquery');
 var Ps = require('perfect-scrollbar');
-var ClipPath = require('clip-path');
+require('clip-path');
 var log = require('cdb.log');
 var templates = require('cdb.templates');
 var sanitize = require('../../core/sanitize');

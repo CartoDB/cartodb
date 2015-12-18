@@ -31,7 +31,6 @@
   "dependencies": {
     "backbone": "1.2.3",
     "browserify-shim": "3.8.10",
-    "clip-path-polygon": "0.1.6",
     "jquery": "2.1.4",
     "jstify": "0.12.0",
     "leaflet": "0.7.3",
@@ -92,6 +91,7 @@
     "jquery.jscrollpane": "./vendor/jscrollpane.js",
     "geojson": "./vendor/GeoJSON.js",
     "html-css-sanitizer": "./vendor/html-css-sanitizer-bundle.js",
+    "clip-path": "./vendor/clip-path.js",
     "lzma": "./vendor/lzma.js",
     "mousewheel": "./vendor/mousewheel.js",
     "mwheelIntent": "./vendor/mwheelIntent.js",
@@ -104,6 +104,12 @@
     "lzma": "LZMA",
     "jquery.jscrollpane": {
       "depends": [
+        "jquery:jQuery"
+      ]
+    },
+    "clip-path": {
+      "depends": [
+        "underscore:_",
         "jquery:jQuery"
       ]
     },

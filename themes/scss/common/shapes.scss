@@ -137,12 +137,12 @@
 
 .CDB-Shape-hamburguer {
   display: inline-block;
-  vertical-align: middle;
   position: relative;
   width: 16px;
   height: 2px;
   border: 0;
   background: #FFF;
+  vertical-align: middle;
 
   &:before,
   &:after {
@@ -163,10 +163,10 @@
 
 .CDB-Shape-magnify {
   display: block;
+  position: relative;
   width: 32px;
   height: 32px;
-  position: relative;
-  &:before{
+  &:before {
     display: block;
     position: absolute;
     top: 10px;
@@ -177,15 +177,15 @@
     border-radius: 50%;
     content: '';
   }
-  &:after{
+  &:after {
     display: block;
     position: absolute;
     top: 17px;
     left: 19px;
     width: 1px;
     height: 6px;
-    background: #636D72;
     transform: rotate(314deg);
+    background: #636D72;
     content: '';
   }
 }

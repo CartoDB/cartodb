@@ -1,4 +1,3 @@
-var $ = require('jquery');
 var _ = require('underscore');
 var View = require('../../../core/view');
 var NOKIA = require('../../../geo/geocoder/nokia-geocoder');
@@ -123,8 +122,8 @@ var Search = View.extend({
   },
 
   _isBBoxValid: function (location) {
-    if (!location.boundingbox || location.boundingbox.south == location.boundingbox.north ||
-      location.boundingbox.east == location.boundingbox.west) {
+    if (!location.boundingbox || location.boundingbox.south === location.boundingbox.north ||
+      location.boundingbox.east === location.boundingbox.west) {
       return false;
     }
     return true;

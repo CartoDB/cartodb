@@ -432,7 +432,8 @@ var Vis = View.extend({
       endpoint: endpoint,
       urlTemplate: mapsApiTemplate,
       userName: userName,
-      statTag: statTag
+      statTag: statTag,
+      forceCors: true
     });
 
     var mapConfig = configGenerator.generate({

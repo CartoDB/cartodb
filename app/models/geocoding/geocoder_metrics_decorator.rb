@@ -66,7 +66,7 @@ module CartoDB
         metrics[:cache_hits]
       )
       cache_metrics.add_responses(
-        CartoDB::GeocoderMetrics::CACHE_MISSES_TYPE,
+        CartoDB::GeocoderMetrics::CACHE_MISS_TYPE,
         today,
         metrics[:cache_misses]
       )

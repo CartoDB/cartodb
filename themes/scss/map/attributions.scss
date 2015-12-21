@@ -11,7 +11,6 @@ $size: 20px;
   position: absolute;
   right: 10px;
   bottom: 10px;
-  padding: 0 7px;
   border-radius: 16px;
   background: #FFF;
   font-family: 'Open Sans';
@@ -36,11 +35,18 @@ $size: 20px;
     display: inline-block;
   }
 }
+.CDB-Attribution-text {
+  padding: 0 7px;
+}
 .CDB-Attribution-text a {
   color: #3AA9E3;
   &:hover {
     color: #2E3C43;
   }
+}
+.CDB-Attribution-button {
+  width: $size;
+  text-align: center;
 }
 .CDB-Attribution-button:hover {
   cursor: pointer;

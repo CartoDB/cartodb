@@ -6,7 +6,7 @@ var InfowindowModel = require('./infowindow-model');
 var Tooltip = InfoBox.extend({
 
   defaultTemplate: '<p>{{text}}</p>',
-  className: 'cartodb-tooltip',
+  className: 'CDB-Tooltip',
 
   defaults: {
     vertical_offset: 0,

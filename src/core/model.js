@@ -1,7 +1,6 @@
 var $ = require('jquery');
 var _ = require('underscore');
 var Backbone = require('backbone');
-require('./decorators'); // since it monkey-patches Backbone.Model
 
 /**
  * Base Model for all CartoDB model.
@@ -23,7 +22,7 @@ var Model = Backbone.Model.extend({
     var self = this;
     // var date = new Date();
     this.trigger('loadModelStarted');
-    $.when(this.elder('fetch', args)).done(function(ev){
+    $.when(Backbone.Model.prototype.fetch.call(this, args)).done(function(ev){
       self.trigger('loadModelCompleted', ev);
       // var dateComplete = new Date()
       // console.log('completed in '+(dateComplete - date));

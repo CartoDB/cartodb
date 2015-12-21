@@ -18,13 +18,18 @@
   <body>
     <div id="map"></div>
 
+    <!-- include google maps library -->
+    <script type="text/javascript" src="http://www.maps.google.com/maps/api/js?sensor=false&v=3.12"></script>
+
     <!-- include cartodb.js library -->
     <script src="../dist/cartodb.uncompressed.js"></script>
 
     <script>
       function main() {
-      	var vizjson = 'https://documentation.cartodb.com/api/v2/viz/318ab654-c989-11e4-97c6-0e9d821ea90d/viz.json';
-        cartodb.createVis('map', vizjson, {})
+      	var vizjson = 'http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json';
+        cartodb.createVis('map', vizjson, {
+          gmaps_base_type: 'roadmap'
+        })
         .done(function(vis, layers) {
         })
         .error(function(err) {

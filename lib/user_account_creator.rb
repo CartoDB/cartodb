@@ -113,9 +113,9 @@ module CartoDB
       if @google_user_data
         @google_user_data.set_values(@user)
       else
-        @user.email = @user_params[PARAM_EMAIL] if @user_params[PARAM_EMAIL]
-        @user.password = @user_params[PARAM_PASSWORD] if @user_params[PARAM_PASSWORD]
-        @user.password_confirmation = @user_params[PARAM_PASSWORD] if @user_params[PARAM_PASSWORD]
+        @user.email = @user_params[PARAM_EMAIL]
+        @user.password = @user_params[PARAM_PASSWORD]
+        @user.password_confirmation = @user_params[PARAM_PASSWORD]
       end
 
       @user.invitation_token = @invitation_token

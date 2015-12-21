@@ -473,7 +473,7 @@ class User < Sequel::Model
   end
 
   def password=(value)
-    return if !value.nil? && !valid_password?(:password, value, value)
+    return if !Carto::Ldap::Manager.new.configuration_present? && !valid_password?(:password, value, value)
 
     @password = value
     self.salt = new? ? self.class.make_token : ::User.filter(id: id).select(:salt).first.salt

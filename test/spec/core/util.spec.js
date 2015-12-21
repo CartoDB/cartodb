@@ -1,4 +1,4 @@
-var util = require('cdb/core/util');
+var util = require('../../../src/core/util');
 
 describe('core/util', function() {
   it('should identify user agents properly', function() {

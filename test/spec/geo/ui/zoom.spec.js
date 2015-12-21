@@ -1,6 +1,6 @@
-var Map = require('cdb/geo/map');
-var Zoom = require('cdb/geo/ui/zoom');
-var Template = require('cdb/core/template');
+var Map = require('../../../../src/geo/map');
+var Zoom = require('../../../../src/geo/ui/zoom');
+var Template = require('../../../../src/core/template');
 
 describe('geo/ui/zoom', function () {
   beforeEach(function () {

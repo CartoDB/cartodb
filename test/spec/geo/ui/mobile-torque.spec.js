@@ -1,11 +1,11 @@
 var $ = require('jquery');
-var Template = require('cdb/core/template');
-var CartoDBLayerGroupAnonymous = require('cdb/geo/map/cartodb-layer-group-anonymous');
-var CartoDBLayer = require('cdb/geo/map/cartodb-layer');
-var TorqueLayer = require('cdb/geo/map/torque-layer');
-var Map = require('cdb/geo/map');
-var Mobile = require('cdb/geo/ui/mobile');
-var GoogleMapsMapView = require('cdb/geo/gmaps/gmaps-map-view');
+var Template = require('../../../../src/core/template');
+var CartoDBLayerGroupAnonymous = require('../../../../src/geo/map/cartodb-layer-group-anonymous');
+var CartoDBLayer = require('../../../../src/geo/map/cartodb-layer');
+var TorqueLayer = require('../../../../src/geo/map/torque-layer');
+var Map = require('../../../../src/geo/map');
+var Mobile = require('../../../../src/geo/ui/mobile');
+var GoogleMapsMapView = require('../../../../src/geo/gmaps/gmaps-map-view');
 
 describe('geo/ui/mobile (torque)', function() {
 

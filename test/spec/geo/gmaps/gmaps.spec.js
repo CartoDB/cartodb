@@ -1,17 +1,17 @@
 var $ = require('jquery');
 var _ = require('underscore');
 
-var Map = require('cdb/geo/map');
-var GoogleMapsMapView = require('cdb/geo/gmaps/gmaps-map-view');
-var TileLayer = require('cdb/geo/map/tile-layer');
-var GMapsTiledLayerView = require('cdb/geo/gmaps/gmaps-tiled-layer-view');
-var CartoDBLayerGroupAnonymous = require('cdb/geo/map/cartodb-layer-group-anonymous');
-var CartoDBLayerGroupNamed = require('cdb/geo/map/cartodb-layer-group-named');
-var PlainLayer = require('cdb/geo/map/plain-layer');
-var GMapsCartoDBLayerGroupView = require('cdb/geo/gmaps/gmaps-cartodb-layer-group-view');
-var GMapsPlainLayerView = require('cdb/geo/gmaps/gmaps-plain-layer-view');
-var Geometry = require('cdb/geo/geometry');
-var GmapsPathView = require('cdb/geo/gmaps/gmaps-path-view');
+var Map = require('../../../../src/geo/map');
+var GoogleMapsMapView = require('../../../../src/geo/gmaps/gmaps-map-view');
+var TileLayer = require('../../../../src/geo/map/tile-layer');
+var GMapsTiledLayerView = require('../../../../src/geo/gmaps/gmaps-tiled-layer-view');
+var CartoDBLayerGroupAnonymous = require('../../../../src/geo/map/cartodb-layer-group-anonymous');
+var CartoDBLayerGroupNamed = require('../../../../src/geo/map/cartodb-layer-group-named');
+var PlainLayer = require('../../../../src/geo/map/plain-layer');
+var GMapsCartoDBLayerGroupView = require('../../../../src/geo/gmaps/gmaps-cartodb-layer-group-view');
+var GMapsPlainLayerView = require('../../../../src/geo/gmaps/gmaps-plain-layer-view');
+var Geometry = require('../../../../src/geo/geometry');
+var GmapsPathView = require('../../../../src/geo/gmaps/gmaps-path-view');
 
 describe('geo/gmaps/gmaps-map-view', function () {
   var mapView;

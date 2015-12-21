@@ -8,8 +8,8 @@ var torqueSpecs = [
 var sharedModules = [
   'backbone',
   'cdb',
+  'cdb.core.util',
   'cdb.log',
-  'cdb/core/util',
   'jquery',
   'leaflet',
   'underscore'

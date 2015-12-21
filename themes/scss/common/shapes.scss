@@ -137,12 +137,12 @@
 
 .CDB-Shape-hamburguer {
   display: inline-block;
-  vertical-align: middle;
   position: relative;
   width: 16px;
   height: 2px;
   border: 0;
   background: #FFF;
+  vertical-align: middle;
 
   &:before,
   &:after {
@@ -158,5 +158,34 @@
   }
   &:after {
     bottom: -6px;
+  }
+}
+
+.CDB-Shape-magnify {
+  display: block;
+  position: relative;
+  width: 32px;
+  height: 32px;
+  &:before {
+    display: block;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 7px;
+    height: 7px;
+    border: 1px solid #636D72;
+    border-radius: 50%;
+    content: '';
+  }
+  &:after {
+    display: block;
+    position: absolute;
+    top: 17px;
+    left: 19px;
+    width: 1px;
+    height: 6px;
+    transform: rotate(314deg);
+    background: #636D72;
+    content: '';
   }
 }

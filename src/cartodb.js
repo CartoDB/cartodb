@@ -91,7 +91,7 @@ cdb.geo.ui.Infowindow = require('./geo/ui/infowindow');
 
 cdb.geo.ui.Header = require('./geo/ui/header');
 
-cdb.geo.ui.Search = require('./geo/ui/search');
+cdb.geo.ui.Search = require('./geo/ui/search/search');
 
 cdb.geo.ui.LayerSelector = require('./geo/ui/layer-selector');
 cdb.geo.ui.LayerView = require('./geo/ui/layer-view');

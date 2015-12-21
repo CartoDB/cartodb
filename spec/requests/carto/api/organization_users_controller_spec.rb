@@ -33,8 +33,7 @@ describe Carto::Api::OrganizationUsersController do
 
       post api_v1_organization_users_create_url(id: @organization.id,
                                                 username: "#{random_username}",
-                                                password: 'patata',
-                                                password_confirmation: 'patata'),
+                                                password: 'patata'),
            @headers
 
       last_response.body.include?('email is not present').should be true
@@ -46,8 +45,7 @@ describe Carto::Api::OrganizationUsersController do
 
       post api_v1_organization_users_create_url(id: @organization.id,
                                                 email: "#{random_username}@cartodb.com",
-                                                password: 'patata',
-                                                password_confirmation: 'patata'),
+                                                password: 'patata'),
            @headers
 
       last_response.body.include?('username is not present').should be true
@@ -57,28 +55,14 @@ describe Carto::Api::OrganizationUsersController do
     it 'returns 410 if password is not present' do
       login(@organization.owner)
 
-      username = random_username
+      username = 'manolo'
       post api_v1_organization_users_create_url(id: @organization.id,
                                                 username: "#{username}",
                                                 email: "#{username}@cartodb.com"),
            @headers
 
+      last_response.status.should == 410
       last_response.body.include?('password is not present').should be true
-      last_response.status.should == 410
-    end
-
-    it 'returns 410 if password is not confirmed' do
-      login(@organization.owner)
-
-      username = random_username
-      post api_v1_organization_users_create_url(id: @organization.id,
-                                                username: "#{username}",
-                                                email: "#{username}@cartodb.com",
-                                                password: 'patata'),
-           @headers
-
-      last_response.body.include?('password is not confirmed').should be true
-      last_response.status.should == 410
     end
 
     it 'correctly creates a user' do
@@ -88,14 +72,13 @@ describe Carto::Api::OrganizationUsersController do
                                                 username: "#{username}",
                                                 email: "#{username}@cartodb.com",
                                                 password: 'patata',
-                                                password_confirmation: 'patata',
                                                 soft_geocoding_limit: false,
                                                 quota_in_bytes: 1024),
            @headers
 
       last_response.status.should == 200
 
-      last_user_created = @organization.users[0]
+      last_user_created = @organization.users.select{ |user| user.username == username }.first
       last_user_created.username.should == username
       last_user_created.email.should == "#{username}@cartodb.com"
       last_user_created.soft_geocoding_limit.should == false
@@ -145,27 +128,13 @@ describe Carto::Api::OrganizationUsersController do
       last_response.body.include?('No update params provided').should be true
     end
 
-    it 'should not update password if not confirmed' do
-      login(@organization.owner)
-
-      user_to_update = @organization.users[0]
-      put api_v1_organization_users_update_url(id: @organization.id,
-                                               email: user_to_update.email,
-                                               password: 'limonero'),
-          @headers
-
-      last_response.status.should == 410
-      last_response.body.include?('password is not confirmed').should be true
-    end
-
     it 'should update password' do
       login(@organization.owner)
 
       user_to_update = @organization.users[0]
       put api_v1_organization_users_update_url(id: @organization.id,
                                                email: user_to_update.email,
-                                               password: 'limonero',
-                                               password_confirmation: 'limonero'),
+                                               password: 'limonero'),
           @headers
 
       last_response.status.should == 200
@@ -236,7 +205,6 @@ describe Carto::Api::OrganizationUsersController do
                                                email: user_to_update.email,
                                                new_email: new_email,
                                                password: 'pataton',
-                                               password_confirmation: 'pataton',
                                                soft_geocoding_limit: true,
                                                quota_in_bytes: 2048),
           @headers
@@ -259,7 +227,6 @@ describe Carto::Api::OrganizationUsersController do
                                                username: user_to_update.username,
                                                new_email: new_email,
                                                password: 'pataton',
-                                               password_confirmation: 'pataton',
                                                soft_geocoding_limit: true,
                                                quota_in_bytes: 2048),
           @headers

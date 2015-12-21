@@ -1,5 +1,5 @@
 var _ = require('underscore');
-var cdb = require('cartodb.js');
+var Backbone = require('backbone');
 var WindshaftFiltersCollection = require('./filters/collection');
 var WindshaftFiltersBoundingBoxFilter = require('./filters/bounding-box');
 var WindshaftDashboardInstance = require('./dashboard-instance');
@@ -8,7 +8,7 @@ var WindshaftDashboard = function (options) {
   var BOUNDING_BOX_FILTER_WAIT = 500;
 
   this.layerGroup = options.layerGroup;
-  this.layers = new cdb.Backbone.Collection(options.layers);
+  this.layers = new Backbone.Collection(options.layers);
   this.widgets = options.widgets;
   this.map = options.map;
   this.client = options.client;

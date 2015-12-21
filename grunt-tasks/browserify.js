@@ -7,7 +7,12 @@ module.exports = {
       browserifyOptions: {
         debug: true, // to generate source-maps
         standalone: 'cartodb'
-      }
+      },
+      plugin: [
+        ['browserify-resolutions', '*']
+        // To be more specific we could use the following
+        // ['browserify-resolutions', ['backbone']]
+      ]
     }
   },
 
@@ -21,7 +26,12 @@ module.exports = {
       watch: '<%= config.doWatchify %>',
       browserifyOptions: {
         debug: true, // to generate source-maps
-      }
+      },
+      plugin: [
+        ['browserify-resolutions', '*']
+        // To be more specific we could use the following
+        // ['browserify-resolutions', ['backbone']]
+      ]
     }
   }
 }

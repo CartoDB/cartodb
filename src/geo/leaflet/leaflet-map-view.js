@@ -33,7 +33,8 @@ var LeafletMapView = MapView.extend({
       center: new L.LatLng(center[0], center[1]),
       zoom: this.map.get('zoom'),
       minZoom: this.map.get('minZoom'),
-      maxZoom: this.map.get('maxZoom')
+      maxZoom: this.map.get('maxZoom'),
+      attributionControl: false
     };
 
     if (!this.options.map_object) {

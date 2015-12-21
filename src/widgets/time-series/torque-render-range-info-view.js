@@ -9,6 +9,8 @@ var template = require('./torque-render-range-info.tpl');
 module.exports = cdb.core.View.extend({
   initialize: function () {
     this._torqueLayerModel = this.options.torqueLayerModel;
+    this._torqueLayerModel.bind('change:renderRange', this.render, this);
+    this.add_related_model(this._torqueLayerModel);
 
     var data = this.model.get('data');
     this._scale = d3.time.scale()

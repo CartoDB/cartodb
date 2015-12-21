@@ -1,4 +1,4 @@
-var cdb = require('cartodb.js');
+var Backbone = require('backbone');
 var WidgetModel = require('../widget-model');
 
 module.exports = WidgetModel.extend({
@@ -8,7 +8,7 @@ module.exports = WidgetModel.extend({
   },
 
   initialize: function (attrs, opts) {
-    this._data = new cdb.Backbone.Collection(this.get('data'));
+    this._data = new Backbone.Collection(this.get('data'));
     WidgetModel.prototype.initialize.call(this, attrs, opts);
   },
 

@@ -1,5 +1,5 @@
 var _ = require('underscore');
-var cdb = require('cartodb.js');
+var Backbone = require('backbone');
 var WidgetModel = require('../widget-model');
 
 module.exports = WidgetModel.extend({
@@ -34,7 +34,7 @@ module.exports = WidgetModel.extend({
 
   initialize: function (attrs, opts) {
     WidgetModel.prototype.initialize.apply(this, arguments);
-    this._data = new cdb.Backbone.Collection(this.get('data'));
+    this._data = new Backbone.Collection(this.get('data'));
 
     // BBox should only be included until after the first fetch, since we want to get the range of the full dataset
     this.once('change:data', function () {

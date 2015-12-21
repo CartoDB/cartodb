@@ -1,10 +1,10 @@
-var cdb = require('cartodb.js');
+var Backbone = require('backbone');
 var DashboardView = require('../src/dashboard-view');
 
 describe('dashboard-view', function () {
   beforeEach(function () {
     this.view = new DashboardView({
-      widgets: new cdb.Backbone.Collection(),
+      widgets: new Backbone.Collection(),
       dashboardInfoModel: new cdb.core.Model()
     });
   });

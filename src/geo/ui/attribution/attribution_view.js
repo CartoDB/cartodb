@@ -1,6 +1,5 @@
 var $ = require('jquery');
 var _ = require('underscore');
-var Model = require('../../../core/model');
 var View = require('../../../core/view');
 var template = require('./attribution_template.tpl');
 var Sanitize = require('../../../core/sanitize');

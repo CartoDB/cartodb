@@ -1,9 +1,9 @@
 var cdb = require('cartodb.js');
 var d3 = require('d3');
-var template = require('./torque-cumulative-render-info.tpl');
+var template = require('./torque-render-range-info.tpl');
 
 /**
- * View for to display info about the cumulative render data, e.g. the time range that's being displayed
+ * View for to display info about a selected render range
  * this.model is expected to be a torqueLayer model
  */
 module.exports = cdb.core.View.extend({

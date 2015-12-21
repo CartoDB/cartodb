@@ -153,7 +153,7 @@ module CartoDB
     },
     2004 => {
       title: 'Too many columns',
-      what_about: "Data has too many columns. You can only import up to 1600 columns. You can delete the columns you're not interested in, or split the file into smaller ones.",
+      what_about: "Data has too many columns. You can only import up to 250 columns. You can delete the columns you're not interested in, or split the file into smaller ones.",
       source: ERROR_SOURCE_USER
     },
     2005 => {
@@ -179,11 +179,6 @@ module CartoDB
     2009 => {
       title: 'KML without style Id',
       what_about: "The KML file you tried to import failed because a style element doesn't have an ID attribute. To fix this error, please open the file and add an ID to all the style tags.",
-      source: ERROR_SOURCE_USER
-    },
-    2010 => {
-      title: 'Too many columns for guessing',
-      what_about: "Data has too many columns to be guessed. The guessing process can only support up to 256 columns. Please, disable content guessing on import or reduce the number of columns in the file.",
       source: ERROR_SOURCE_USER
     },
     3007 => {

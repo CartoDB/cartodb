@@ -33,6 +33,7 @@ $size: 20px;
   line-height: $size;
   &.is-visible {
     display: inline-block;
+    vertical-align: top;
   }
 }
 .CDB-Attribution-text {

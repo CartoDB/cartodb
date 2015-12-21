@@ -105,6 +105,7 @@
 **/src/geo/ui/legend.js
 **/src/geo/ui/legends.js
 **/src/geo/ui/mobile-layer.js
+**/src/geo/ui/mobile.js
 **/src/geo/ui/share.js
 **/src/geo/ui/text.js
 **/src/geo/ui/tiles-loader.js
@@ -169,6 +170,7 @@
 **/test/spec/geo/ui/layer-selector.spec.js
 **/test/spec/geo/ui/legend.spec.js
 **/test/spec/geo/ui/mobile-torque.spec.js
+**/test/spec/geo/ui/mobile.spec.js
 **/test/spec/geo/ui/tooltip.spec.js
 **/test/spec/SpecHelper.js
 **/test/spec/torque.spec.js

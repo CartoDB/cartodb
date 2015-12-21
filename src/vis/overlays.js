@@ -16,8 +16,17 @@ var TilesLoader = require('../geo/ui/tiles-loader');
 var Tooltip = require('../geo/ui/tooltip');
 var Zoom = require('../geo/ui/zoom');
 var FullScreen = require('../ui/common/fullscreen');
+var Attribution = require('../geo/ui/attribution/attribution_view');
 
 Overlay.register('logo', function (data, vis) {});
+
+Overlay.register('attribution', function (data, vis) {
+  var overlay = new Attribution({
+    map: data.map
+  });
+
+  return overlay.render();
+});
 
 Overlay.register('mobile', function (data, vis) {
   var template = Template.compile(
@@ -35,8 +44,6 @@ Overlay.register('mobile', function (data, vis) {
     <div class="scrollpane"><ul class="layers"></ul></div>\
     </div>\
     </div>\
-    <div class="cartodb-attribution"></div>\
-    <a href="#" class="cartodb-attribution-button"></a>\
     <div class="torque"></div>\
     ',
     data.templateType || 'mustache'

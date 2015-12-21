@@ -245,7 +245,7 @@ var Search = View.extend({
   clean: function() {
     this._unbindEvents();
     this._destroySearchPin();
-    Search.__super__.clean.call(this);
+    View.prototype.clean.call(this);
   }
 
 });

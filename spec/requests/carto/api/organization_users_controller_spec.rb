@@ -78,7 +78,7 @@ describe Carto::Api::OrganizationUsersController do
 
       last_response.status.should == 200
 
-      last_user_created = @organization.users.find{ |user| user.username == username }
+      last_user_created = @organization.users.find { |user| user.username == username }
       last_user_created.username.should == username
       last_user_created.email.should == "#{username}@cartodb.com"
       last_user_created.soft_geocoding_limit.should == false

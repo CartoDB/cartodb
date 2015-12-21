@@ -4,7 +4,6 @@ var sanitize = require('../../core/sanitize');
 var InfowindowModel = require('./infowindow-model');
 
 var Tooltip = InfoBox.extend({
-
   defaultTemplate: '<p>{{text}}</p>',
   className: 'CDB-Tooltip',
 
@@ -14,9 +13,9 @@ var Tooltip = InfoBox.extend({
     position: 'top|center'
   },
 
-  initialize: function() {
-    if(!this.options.mapView) {
-      throw new Error("mapView should be present");
+  initialize: function () {
+    if (!this.options.mapView) {
+      throw new Error('mapView should be present');
     }
     this.options.template = this.options.template || this.defaultTemplate;
     InfoBox.prototype.initialize.call(this);
@@ -25,7 +24,13 @@ var Tooltip = InfoBox.extend({
     this.showhideTimeout = null;
   },
 
-  setLayer: function(layer) {
+  render: function (data) {
+    var sanitizedOutput = sanitize.html(this.template(data));
+    this.$el.html(sanitizedOutput);
+    return this;
+  },
+
+  setLayer: function (layer) {
     this.options.layer = layer;
     return this;
   },
@@ -35,29 +40,27 @@ var Tooltip = InfoBox.extend({
    * pass the filter the tooltip is shown
    * setFilter(null) removes the filter
    */
-  setFilter: function(f) {
+  setFilter: function (f) {
     this._filter = f;
     return this;
   },
 
-  setFields: function(fields) {
+  setFields: function (fields) {
     this.options.fields = fields;
     return this;
   },
 
-  setAlternativeNames: function(n) {
+  setAlternativeNames: function (n) {
     this.options.alternative_names = n;
   },
 
-  enable: function() {
-    if(this.options.layer) {
+  enable: function () {
+    if (this.options.layer) {
       // unbind previous events
       this.options.layer.unbind(null, null, this);
       this.options.layer
-        .on('mouseover', function(e, latlng, pos, data) {
-
+        .on('mouseover', function (e, latlng, pos, data) {
           if (this.options.fields && this.options.fields.length > 0) {
-
             var non_valid_keys = ['fields', 'content'];
 
             if (this.options.omit_columns) {
@@ -78,7 +81,7 @@ var Tooltip = InfoBox.extend({
             // alternamte names
             var names = this.options.alternative_names;
             if (names) {
-              for(var i = 0; i < data.fields.length; ++i) {
+              for (var i = 0; i < data.fields.length; ++i) {
                 var f = data.fields[i];
                 f.title = names[f.title] || f.title;
               }
@@ -90,7 +93,7 @@ var Tooltip = InfoBox.extend({
             this.showing = false;
           }
         }, this)
-        .on('mouseout', function() {
+        .on('mouseout', function () {
           if (this.showing) {
             this.hide();
             this.showing = false;
@@ -100,32 +103,32 @@ var Tooltip = InfoBox.extend({
     }
   },
 
-  disable: function() {
-    if(this.options.layer) {
+  disable: function () {
+    if (this.options.layer) {
       this.options.layer.unbind(null, null, this);
     }
     this.hide();
     this.showing = false;
   },
 
-  _visibility: function() {
+  _visibility: function () {
     var self = this;
     clearTimeout(this.showhideTimeout);
     this.showhideTimeout = setTimeout(self._showing ?
-      function() { self.$el.fadeIn(100); }
+      function () { self.$el.fadeIn(100); }
       :
-      function() { self.$el.fadeOut(200); }
-    , 50);
+      function () { self.$el.fadeOut(200); }
+      , 50);
   },
 
-  hide: function() {
+  hide: function () {
     if (this._showing) {
       this._showing = false;
       this._visibility();
     }
   },
 
-  show: function(pos, data) {
+  show: function (pos, data) {
     if (this._filter && !this._filter(data)) {
       return this;
     }
@@ -138,19 +141,23 @@ var Tooltip = InfoBox.extend({
     return this;
   },
 
-  setPosition: function(point) {
+  setPosition: function (point) {
     var pos = this.options.position;
     var height = this.$el.innerHeight();
     var width = this.$el.innerWidth();
     var mapViewSize = this.options.mapView.getSize();
     var top = 0;
     var left = 0;
+    var modifierClass = 'CDB-Tooltip--';
+
+    // Remove tick class
+    this.$el.attr('class', 'CDB-Tooltip');
 
     // Vertically
     if (pos.indexOf('top') !== -1) {
       top = point.y - height;
     } else if (pos.indexOf('middle') !== -1) {
-      top = point.y - (height/2);
+      top = point.y - (height / 2);
     } else { // bottom
       top = point.y;
     }
@@ -158,15 +165,19 @@ var Tooltip = InfoBox.extend({
     // Fix vertical overflow
     if (top < 0) {
       top = point.y;
+      modifierClass += 'top';
     } else if (top + height > mapViewSize.y) {
       top = point.y - height;
+      modifierClass += 'bottom';
+    } else {
+      modifierClass += 'top';
     }
 
     // Horizontally
-    if(pos.indexOf('left') !== -1) {
+    if (pos.indexOf('left') !== -1) {
       left = point.x - width;
-    } else if(pos.indexOf('center') !== -1) {
-      left = point.x - (width/2);
+    } else if (pos.indexOf('center') !== -1) {
+      left = point.x - (width / 2);
     } else { // right
       left = point.x;
     }
@@ -174,8 +185,12 @@ var Tooltip = InfoBox.extend({
     // Fix horizontal overflow
     if (left < 0) {
       left = point.x;
+      modifierClass += 'Left';
     } else if (left + width > mapViewSize.x) {
       left = point.x - width;
+      modifierClass += 'Right';
+    } else {
+      modifierClass += 'Left';
     }
 
     // Add offsets
@@ -183,15 +198,9 @@ var Tooltip = InfoBox.extend({
     left += this.options.horizontal_offset;
 
     this.$el.css({
-      top:  top,
+      top: top,
       left: left
-    });
-  },
-
-  render: function(data) {
-    var sanitizedOutput = sanitize.html(this.template(data));
-    this.$el.html( sanitizedOutput );
-    return this;
+    }).addClass(modifierClass);
   }
 
 });

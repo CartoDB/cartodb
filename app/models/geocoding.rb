@@ -367,7 +367,8 @@ class Geocoding < Sequel::Model
   end
 
   def total_geocoded_rows(rows_geocoded_before)
-    rows_geocoded_after = table_service.owner.in_database.select.from(table_service.sequel_qualified_table_name).where('cartodb_georef_status is true and the_geom is not null').count rescue 0
+    rows_geocoded_after = table_service.owner.in_database.select.from(table_service.sequel_qualified_table_name).
+      where('cartodb_georef_status is true and the_geom is not null').count rescue 0
     rows_geocoded_after - rows_geocoded_before
   end
 

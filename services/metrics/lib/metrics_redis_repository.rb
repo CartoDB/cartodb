@@ -1,10 +1,15 @@
 module CartoDB
   class MetricsRedisRepository
 
-    include Singleton
+    @@instance = nil
 
     def initialize(redis_conn = $users_metadata)
       @redis_conn = redis_conn
+    end
+
+    def self.instance
+      @@instance = MetricsRedisRepository.new if @@instance.nil?
+      @@instance
     end
 
     def store(prefix, key, value)

@@ -5,6 +5,17 @@
   <title>Deep-Insights.js | Populated Places (local)</title>
   <meta name=viewport content="width=device-width initial-scale=1">
   <link rel="stylesheet" href="../dist/themes/css/deep-insights.css" />
+  <!--
+    Placing a local-config.js file with:
+
+    window.GLOBAL_CDB_CONFIG = {
+      maps_api_template: "http://{user}.localhost.lan:8181",
+      user_name: "development"
+    };
+
+    will override this example user/maps api template
+  -->
+  <script src="./local-config.js"></script>
   <script src="../dist/deep-insights.uncompressed.js"></script>
   <style type="text/css">
     html, body {
@@ -20,6 +31,10 @@
 
   <script>
     window.onload = function() {
+      var cdbConfig = window.GLOBAL_CDB_CONFIG || {};
+      cdbConfig.maps_api_template = cdbConfig.maps_api_template || "http://{user}.localhost.lan:8181";
+      cdbConfig.user_name = cdbConfig.user_name || "cdb";
+
       var diJSON = {
         "title": "NBA arenas areas of influence",
         "description": "The NBA Territory Analysis Tool will allow individual teams to analyze their current and potential marketing territories. Users can see visual reports and develop analyses on the fly.",
@@ -31,9 +46,9 @@
 
         "datasource": {
           "type": "public_map",
-          "user_name": "cdb",
+          "user_name": cdbConfig.user_name,
           "stat_tag": "ece6faac-7271-11e5-a85f-04013fc66a02",
-          "maps_api_template": "http://{user}.localhost.lan:8181",
+          "maps_api_template": cdbConfig.maps_api_template,
           "force_cors": true // This is sometimes set in the editor
         },
 
@@ -151,8 +166,8 @@
             {
               "type": "layergroup",
               "options": {
-                "user_name": "rochoa-st-ded02",
-                "maps_api_template": "https://{user}.cartodb-staging.com:443",
+                "user_name": cdbConfig.user_name,
+                "maps_api_template": cdbConfig.maps_api_template,
                 "layer_definition": {
                   "stat_tag": "84ec6844-4b4b-11e5-9c1d-080027880ca6",
                   "version": "1.0.1",

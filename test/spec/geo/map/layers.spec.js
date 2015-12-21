@@ -1,8 +1,8 @@
-var Layers = require('cdb/geo/map/layers');
-var PlainLayer = require('cdb/geo/map/plain-layer');
-var TileLayer = require('cdb/geo/map/tile-layer');
-var TorqueLayer = require('cdb/geo/map/torque-layer');
-var CartoDBLayer = require('cdb/geo/map/cartodb-layer');
+var Layers = require('../../../../src/geo/map/layers');
+var PlainLayer = require('../../../../src/geo/map/plain-layer');
+var TileLayer = require('../../../../src/geo/map/tile-layer');
+var TorqueLayer = require('../../../../src/geo/map/torque-layer');
+var CartoDBLayer = require('../../../../src/geo/map/cartodb-layer');
 
 describe('geo/map/layers', function() {
   var layers;

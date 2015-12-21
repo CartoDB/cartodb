@@ -1,18 +1,18 @@
 var $ = require('jquery');
 var _ = require('underscore');
 var Backbone = require('backbone');
-var View = require('cdb/core/view');
+var View = require('../../../src/core/view');
 
 // required due to implicit dependency in vis --> map-view
 var cdb = require('cdb');
-_.extend(cdb.geo, require('cdb/geo/leaflet'));
-_.extend(cdb.geo, require('cdb/geo/gmaps'));
+_.extend(cdb.geo, require('../../../src/geo/leaflet'));
+_.extend(cdb.geo, require('../../../src/geo/gmaps'));
 
-var createVis = require('cdb/api/create-vis');
-var Overlay = require('cdb/vis/vis/overlay');
-var Vis = require('cdb/vis/vis');
-require('cdb/vis/overlays'); // Overlay.register calls
-require('cdb/vis/layers'); // Layers.register calls
+var createVis = require('../../../src/api/create-vis');
+var Overlay = require('../../../src/vis/vis/overlay');
+var Vis = require('../../../src/vis/vis');
+require('../../../src/vis/overlays'); // Overlay.register calls
+require('../../../src/vis/layers'); // Layers.register calls
 
 describe('vis/vis', function () {
   beforeEach(function () {
@@ -299,7 +299,7 @@ describe('vis/vis', function () {
   it('should add search', function () {
     this.mapConfig.overlays = [{ type: 'search' }];
     this.vis.load(this.mapConfig);
-    expect(this.vis.$('.cartodb-searchbox').length).toEqual(1);
+    expect(this.vis.$('.CDB-Search').length).toEqual(1);
   });
 
   it("should enable search if it's specified by searchControl", function () {
@@ -307,7 +307,7 @@ describe('vis/vis', function () {
     this.vis.load(this.mapConfig, {
       searchControl: true
     });
-    expect(this.vis.$('.cartodb-searchbox').length).toEqual(1);
+    expect(this.vis.$('.CDB-Search').length).toEqual(1);
   });
 
   it("should disable search if it's specified by searchControl", function () {
@@ -315,7 +315,7 @@ describe('vis/vis', function () {
     this.vis.load(this.mapConfig, {
       searchControl: false
     });
-    expect(this.vis.$('.cartodb-searchbox').length).toEqual(0);
+    expect(this.vis.$('.CDB-Search').length).toEqual(0);
   });
 
   it('should use zoom', function () {
@@ -380,7 +380,6 @@ describe('vis/vis', function () {
     });
 
     it('should add an overlay to the first layer and enable interaction', function (done) {
-      var layer;
       var vizjson = {
         layers: [
           {
@@ -392,7 +391,10 @@ describe('vis/vis', function () {
           {
             type: 'layergroup',
             options: {
+              user_name: 'pablo',
+              maps_api_template: 'https://{user}.cartodb-staging.com:443',
               layer_definition: {
+                stat_tag: 'ece6faac-7271-11e5-a85f-04013fc66a01',
                 layers: []
               }
             }

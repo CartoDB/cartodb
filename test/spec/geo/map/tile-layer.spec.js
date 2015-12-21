@@ -1,4 +1,4 @@
-var TileLayer = require('cdb/geo/map/tile-layer');
+var TileLayer = require('../../../../src/geo/map/tile-layer');
 
 describe('TileLayer', function() {
   it("should be type tiled", function() {

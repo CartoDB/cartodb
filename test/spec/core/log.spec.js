@@ -1,6 +1,6 @@
 var config = require('cdb.config');
 var errors = require('cdb.errors');
-var Log = require('cdb/core/log');
+var Log = require('../../../src/core/log');
 
 describe('core/log', function() {
   beforeEach(function() {

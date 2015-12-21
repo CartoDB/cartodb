@@ -10,7 +10,7 @@ var Infowindow = require('../geo/ui/infowindow');
 var InfowindowModel = require('../geo/ui/infowindow-model');
 var LayerSelector = require('../geo/ui/layer-selector');
 var Share = require('../geo/ui/share');
-var Search = require('../geo/ui/search');
+var Search = require('../geo/ui/search/search');
 var Text = require('../geo/ui/text');
 var TilesLoader = require('../geo/ui/tiles-loader');
 var Tooltip = require('../geo/ui/tooltip');
@@ -342,27 +342,16 @@ Overlay.register('share', function (data, vis) {
 
 // search content
 Overlay.register('search', function (data, vis) {
-  var template = Template.compile(
-    data.template || '\
-      <form>\
-        <span class="loader"></span>\
-        <input type="text" class="text" value="" />\
-        <input type="submit" class="submit" value="" />\
-      </form>\
-    ',
-    data.templateType || 'mustache'
-  );
+  var opts = _.extend(data, {
+    mapView: vis.mapView,
+    model: vis.map
+  });
 
-  var search = new Search(
-    _.extend(data, {
-      template: template,
-      mapView: vis.mapView,
-      model: vis.map
-    })
-  );
-
+  if (data.template) {
+    opts.template = Template.compile(data.template, data.templateType || 'mustache');
+  }
+  var search = new Search(opts);
   return search.render();
-
 });
 
 // tooltip

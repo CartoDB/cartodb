@@ -26,7 +26,6 @@ cdb.config = require('cdb.config');
 cdb.log = require('cdb.log');
 cdb.errors = require('cdb.errors');
 cdb.templates = require('cdb.templates');
-cdb.decorators = require('./core/decorators');
 cdb.createVis = require('./api/create-vis');
 cdb.createLayer = require('./api/create-layer');
 cdb.LZMA = require('lzma');
@@ -92,7 +91,7 @@ cdb.geo.ui.Infowindow = require('./geo/ui/infowindow');
 
 cdb.geo.ui.Header = require('./geo/ui/header');
 
-cdb.geo.ui.Search = require('./geo/ui/search');
+cdb.geo.ui.Search = require('./geo/ui/search/search');
 
 cdb.geo.ui.LayerSelector = require('./geo/ui/layer-selector');
 cdb.geo.ui.LayerView = require('./geo/ui/layer-view');

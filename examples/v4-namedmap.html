@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Easy example | CartoDB.js</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
+    <style>
+      html, body, #map {
+        height: 100%;
+        padding: 0;
+        margin: 0;
+      }
+    </style>
+
+    <link rel="stylesheet" href="../dist/themes/css/cartodb.css" />
+  </head>
+  <body>
+    <div id="map"></div>
+
+    <!-- include cartodb.js library -->
+    <script src="../dist/cartodb.uncompressed.js"></script>
+
+    <script>
+      function main() {
+      	var vizjson = 'https://documentation.cartodb.com/api/v2/viz/318ab654-c989-11e4-97c6-0e9d821ea90d/viz.json';
+        cartodb.createVis('map', vizjson, {})
+        .done(function(vis, layers) {
+        })
+        .error(function(err) {
+          console.log(err);
+        });
+      }
+
+      window.onload = main;
+
+    </script>
+  </body>
+</html>

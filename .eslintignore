@@ -34,8 +34,10 @@
 **/src/geo/geometry.js
 **/src/geo/gmaps/cartodb-default-options.js
 **/src/geo/gmaps/gmaps-base-layer-view.js
+**/src/geo/gmaps/gmaps-cartodb-layer-group-view.js
 **/src/geo/gmaps/gmaps-default-map-style.js
 **/src/geo/gmaps/gmaps-layer-view.js
+**/src/geo/gmaps/gmaps-map-view.js
 **/src/geo/gmaps/gmaps-path-view.js
 **/src/geo/gmaps/gmaps-plain-layer-view.js
 **/src/geo/gmaps/gmaps-point-view.js
@@ -43,8 +45,10 @@
 **/src/geo/gmaps/gmaps-torque-layer-view.js
 **/src/geo/gmaps/projector.js
 **/src/geo/gmaps.js
+**/src/geo/leaflet/leaflet-cartodb-layer-group-view.js
 **/src/geo/leaflet/leaflet-gmaps-tiled-layer-view.js
 **/src/geo/leaflet/leaflet-layer-view.js
+**/src/geo/leaflet/leaflet-map-view.js
 **/src/geo/leaflet/leaflet-path-view.js
 **/src/geo/leaflet/leaflet-plain-layer-view.js
 **/src/geo/leaflet/leaflet-point-view.js
@@ -119,6 +123,7 @@
 **/src/ui/common/tabpane.js
 **/src/vis/image/queue.js
 **/src/vis/layers.js
+**/src/vis/overlays.js
 **/src/vis/vis/infowindow-template.js
 **/src/vis/vis/layers.js
 **/src/vis/vis/overlay.js

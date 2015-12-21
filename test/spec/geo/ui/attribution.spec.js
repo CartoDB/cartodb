@@ -39,6 +39,13 @@ describe('geo/ui/attribution', function () {
     beforeEach(function () {
       spyOn(this.view, '_onKeyDown').and.callThrough();
       spyOn(this.view, '_hideAttributions').and.callThrough();
+      spyOn(this.view, 'render').and.callThrough();
+    });
+
+    it('should render when map attributions has changed', function () {
+      this.view._showAttributions();
+      this.map.trigger('change:attribution');
+      expect(this.view.render).toHaveBeenCalled();
     });
 
     it('should not have any map bind when attributions text is not visible', function () {

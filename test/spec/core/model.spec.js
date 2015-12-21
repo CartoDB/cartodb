@@ -9,7 +9,7 @@ describe('core/model', function() {
     TestModel = Model.extend({
       initialize: function() {
         this.initCalled = true;
-        this.elder('initialize');
+        Model.prototype.initialize.call(this);
       },
       url: 'irrelevant.json',
       test_method: function() {}

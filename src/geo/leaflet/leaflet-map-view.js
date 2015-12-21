@@ -188,7 +188,6 @@ var LeafletMapView = MapView.extend({
       delete this.layers[layer];
     }
 
-    // do not change by elder
     View.prototype.clean.call(this);
   },
 

@@ -109,5 +109,4 @@ describe('geo/ui/attribution', function () {
       expect(this.$text.hasClass('is-visible')).toBeFalsy();
     });
   });
-
 });

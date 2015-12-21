@@ -252,14 +252,8 @@ var LeafletCartoDBLayerGroupView = L.TileLayer.extend({
   setAttribution: function (attribution) {
     this._checkLayer();
 
-    // Remove old one
-    this.map.attributionControl.removeAttribution(this.options.attribution);
-
     // Set new attribution in the options
     this.options.attribution = attribution;
-
-    // Change text
-    this.map.attributionControl.addAttribution(this.options.attribution);
 
     // Change in the layer
     this.options.attribution = this.options.attribution;

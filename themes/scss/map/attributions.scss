@@ -23,19 +23,24 @@ $size: 20px;
   cursor: pointer;
 }
 .CDB-Attribution--gmaps {
-  bottom: 40px;
+  bottom: 20px;
 }
 .CDB-Attribution-text,
 .CDB-Attribution-button {
   display: none;
+  height: $size;
+  color: #000;
+  font-size: $sFontSize-small;
+  line-height: $size;
   &.is-visible {
     display: inline-block;
   }
 }
-.CDB-Attribution-button {
-  height: $size;
-  color: #000;
-  font-size: $sFontSize-small;
+.CDB-Attribution-text a {
+  color: #3AA9E3;
+  &:hover {
+    color: #2E3C43;
+  }
 }
 .CDB-Attribution-button:hover {
   cursor: pointer;

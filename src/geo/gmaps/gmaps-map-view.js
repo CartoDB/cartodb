@@ -12,20 +12,19 @@ var PointView = require('./gmaps-point-view');
 var PathView = require('./gmaps-path-view');
 
 var GoogleMapsMapView = MapView.extend({
-
   layerTypeMap: {
-    "tiled": GMapsTiledLayerView,
-    "plain": GMapsPlainLayerView,
-    "gmapsbase": GMapsBaseLayerView,
-    "layergroup": GMapsCartoDBLayerGroupView,
-    "namedmap": GMapsCartoDBLayerGroupView,
-    "torque": function(layer, map) {
+    'tiled': GMapsTiledLayerView,
+    'plain': GMapsPlainLayerView,
+    'gmapsbase': GMapsBaseLayerView,
+    'layergroup': GMapsCartoDBLayerGroupView,
+    'namedmap': GMapsCartoDBLayerGroupView,
+    'torque': function (layer, map) {
       return new cdb.geo.GMapsTorqueLayerView(layer, map);
     },
-    "wms": LeafletWMSLayerView
+    'wms': LeafletWMSLayerView
   },
 
-  initialize: function() {
+  initialize: function () {
     _.bindAll(this, '_ready');
     this._isReady = false;
     var self = this;
@@ -41,32 +40,30 @@ var GoogleMapsMapView = MapView.extend({
     var center = this.map.get('center');
 
     if (!this.options.map_object) {
-
       this.map_googlemaps = new google.maps.Map(this.el, {
         center: new google.maps.LatLng(center[0], center[1]),
         zoom: this.map.get('zoom'),
         minZoom: this.map.get('minZoom'),
         maxZoom: this.map.get('maxZoom'),
         disableDefaultUI: true,
-        scrollwheel: this.map.get("scrollwheel"),
-        draggable: this.map.get("drag"),
-        disableDoubleClickZoom: !this.map.get("drag"),
-        mapTypeControl:false,
+        scrollwheel: this.map.get('scrollwheel'),
+        draggable: this.map.get('drag'),
+        disableDoubleClickZoom: !this.map.get('drag'),
+        mapTypeControl: false,
         mapTypeId: google.maps.MapTypeId.ROADMAP,
         backgroundColor: 'white',
         tilt: 0
       });
 
-      this.map.bind('change:maxZoom', function() {
+      this.map.bind('change:maxZoom', function () {
         self.map_googlemaps.setOptions({ maxZoom: self.map.get('maxZoom') });
       }, this);
 
-      this.map.bind('change:minZoom', function() {
+      this.map.bind('change:minZoom', function () {
         self.map_googlemaps.setOptions({ minZoom: self.map.get('minZoom') });
       }, this);
 
     } else {
-
       this.map_googlemaps = this.options.map_object;
       this.setElement(this.map_googlemaps.getDiv());
 
@@ -85,32 +82,30 @@ var GoogleMapsMapView = MapView.extend({
     this.map.geometries.bind('add', this._addGeometry, this);
     this.map.geometries.bind('remove', this._removeGeometry, this);
 
-
     this._bindModel();
     this._addLayers();
-    this.setAttribution();
 
-    google.maps.event.addListener(this.map_googlemaps, 'center_changed', function() {
+    google.maps.event.addListener(this.map_googlemaps, 'center_changed', function () {
       var c = self.map_googlemaps.getCenter();
       self._setModelProperty({ center: [c.lat(), c.lng()] });
     });
 
-    google.maps.event.addListener(this.map_googlemaps, 'zoom_changed', function() {
+    google.maps.event.addListener(this.map_googlemaps, 'zoom_changed', function () {
       self._setModelProperty({
         zoom: self.map_googlemaps.getZoom()
       });
     });
 
-    google.maps.event.addListener(this.map_googlemaps, 'click', function(e) {
+    google.maps.event.addListener(this.map_googlemaps, 'click', function (e) {
       self.trigger('click', e, [e.latLng.lat(), e.latLng.lng()]);
     });
 
-    google.maps.event.addListener(this.map_googlemaps, 'dragend', function(e) {
+    google.maps.event.addListener(this.map_googlemaps, 'dragend', function (e) {
       var c = self.map_googlemaps.getCenter();
       self.trigger('dragend', e, [c.lat(), c.lng()]);
     });
 
-    google.maps.event.addListener(this.map_googlemaps, 'dblclick', function(e) {
+    google.maps.event.addListener(this.map_googlemaps, 'dblclick', function (e) {
       self.trigger('dblclick', e);
     });
 
@@ -123,48 +118,48 @@ var GoogleMapsMapView = MapView.extend({
     this.projector.draw = this._ready;
   },
 
-  _ready: function() {
-    this.projector.draw = function() {};
+  _ready: function () {
+    this.projector.draw = function () {};
     this.trigger('ready');
     this._isReady = true;
   },
 
-  _setKeyboard: function(model, z) {
+  _setKeyboard: function (model, z) {
     this.map_googlemaps.setOptions({ keyboardShortcuts: z });
   },
 
-  _setScrollWheel: function(model, z) {
+  _setScrollWheel: function (model, z) {
     this.map_googlemaps.setOptions({ scrollwheel: z });
   },
 
-  _setZoom: function(model, z) {
+  _setZoom: function (model, z) {
     z = z || 0;
     this.map_googlemaps.setZoom(z);
   },
 
-  _setCenter: function(model, center) {
+  _setCenter: function (model, center) {
     var c = new google.maps.LatLng(center[0], center[1]);
     this.map_googlemaps.setCenter(c);
   },
 
-  createLayer: function(layer) {
+  createLayer: function (layer) {
     var layer_view,
-    layerClass = this.layerTypeMap[layer.get('type').toLowerCase()];
+      layerClass = this.layerTypeMap[layer.get('type').toLowerCase()];
 
     if (layerClass) {
       try {
         layer_view = new layerClass(layer, this.map_googlemaps);
       } catch (e) {
-        log.error("MAP: error creating '" +  layer.get('type') + "' layer -> " + e.message);
+        log.error("MAP: error creating '" + layer.get('type') + "' layer -> " + e.message);
         throw e;
       }
     } else {
-      log.error("MAP: " + layer.get('type') + " can't be created");
+      log.error('MAP: ' + layer.get('type') + " can't be created");
     }
     return layer_view;
   },
 
-  _addLayer: function(layer, layers, opts) {
+  _addLayer: function (layer, layers, opts) {
     opts = opts || {};
     var self = this;
     var lyr, layer_view;
@@ -177,7 +172,7 @@ var GoogleMapsMapView = MapView.extend({
     return this._addLayerToMap(layer_view, opts);
   },
 
-  _addLayerToMap: function(layer_view, opts) {
+  _addLayerToMap: function (layer_view, opts) {
     var layer = layer_view.model;
 
     this.layers[layer.cid] = layer_view;
@@ -185,9 +180,9 @@ var GoogleMapsMapView = MapView.extend({
     if (layer_view) {
       var isBaseLayer = _.keys(this.layers).length === 1 || (opts && opts.index === 0) || layer.get('order') === 0;
       // set base layer
-      if(isBaseLayer && !opts.no_base_layer) {
+      if (isBaseLayer && !opts.no_base_layer) {
         var m = layer_view.model;
-        if(m.get('type') !== 'GMapsBase') {
+        if (m.get('type') !== 'GMapsBase') {
           layer_view.isBase = true;
         }
       } else {
@@ -202,36 +197,36 @@ var GoogleMapsMapView = MapView.extend({
           layer_view.gmapsLayer.setMap(this.map_googlemaps);
         }
       }
-      if(opts === undefined || !opts.silent) {
+      if (opts === undefined || !opts.silent) {
         this.trigger('newLayerView', layer_view, layer, this);
       }
     } else {
-      log.error("layer type not supported");
+      log.error('layer type not supported');
     }
 
     return layer_view;
   },
 
-  pixelToLatLon: function(pos) {
+  pixelToLatLon: function (pos) {
     var latLng = this.projector.pixelToLatLng(new google.maps.Point(pos[0], pos[1]));
     return {
       lat: latLng.lat(),
       lng: latLng.lng()
-    }
+    };
   },
 
-  latLonToPixel: function(latlon) {
+  latLonToPixel: function (latlon) {
     return this.projector.latLngToPixel(new google.maps.LatLng(latlon[0], latlon[1]));
   },
 
-  getSize: function() {
+  getSize: function () {
     return {
       x: this.$el.width(),
       y: this.$el.height()
     };
   },
 
-  panBy: function(p) {
+  panBy: function (p) {
     var c = this.map.get('center');
     var pc = this.latLonToPixel(c);
     p.x += pc.x;
@@ -240,8 +235,8 @@ var GoogleMapsMapView = MapView.extend({
     this.map.setCenter([ll.lat(), ll.lng()]);
   },
 
-  getBounds: function() {
-    if(this._isReady) {
+  getBounds: function () {
+    if (this._isReady) {
       var b = this.map_googlemaps.getBounds();
       var sw = b.getSouthWest();
       var ne = b.getNorthEast();
@@ -250,66 +245,10 @@ var GoogleMapsMapView = MapView.extend({
         [ne.lat(), ne.lng()]
       ];
     }
-    return [ [0,0], [0,0] ];
+    return [ [0, 0], [0, 0] ];
   },
 
-setAttribution: function() {
-  // Remove old one
-  var old = document.getElementById("cartodb-gmaps-attribution")
-    , attribution = this.map.get("attribution").join(", ");
-
-    // If div already exists, remove it
-    if (old) {
-      old.parentNode.removeChild(old);
-    }
-
-    // Add new one
-    var container           = this.map_googlemaps.getDiv()
-      , cartodb_attribution = document.createElement("div");
-
-    cartodb_attribution.setAttribute('id','cartodb-gmaps-attribution');
-    cartodb_attribution.setAttribute('class', 'gmaps');
-    container.appendChild(cartodb_attribution);
-    cartodb_attribution.innerHTML = attribution;
-  },
-
-  setCursor: function(cursor) {
-    this.map_googlemaps.setOptions({ draggableCursor: cursor });
-  },
-
-  _addGeomToMap: function(geom) {
-    var geo = GoogleMapsMapView.createGeometry(geom);
-    if(geo.geom.length) {
-      for(var i = 0 ; i < geo.geom.length; ++i) {
-        geo.geom[i].setMap(this.map_googlemaps);
-      }
-    } else {
-        geo.geom.setMap(this.map_googlemaps);
-    }
-    return geo;
-  },
-
-  _removeGeomFromMap: function(geo) {
-    if(geo.geom.length) {
-      for(var i = 0 ; i < geo.geom.length; ++i) {
-        geo.geom[i].setMap(null);
-      }
-    } else {
-      geo.geom.setMap(null);
-    }
-  },
-
-  getNativeMap: function() {
-    return this.map_googlemaps;
-  },
-
-  invalidateSize: function() {
-    google.maps.event.trigger(this.map_googlemaps, 'resize');
-  }
-
-}, {
-
-  addLayerToMap: function(layer, map, pos) {
+  addLayerToMap: function (layer, map, pos) {
     pos = pos || 0;
     if (!layer) {
       log.error("gmaps layer can't be null");
@@ -324,8 +263,8 @@ setAttribution: function() {
   /**
    * create the view for the geometry model
    */
-  createGeometry: function(geometryModel) {
-    if(geometryModel.isPoint()) {
+  createGeometry: function (geometryModel) {
+    if (geometryModel.isPoint()) {
       return new PointView(geometryModel);
     }
     return new PathView(geometryModel);

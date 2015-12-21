@@ -37,7 +37,6 @@
 **/src/geo/gmaps/gmaps-cartodb-layer-group-view.js
 **/src/geo/gmaps/gmaps-default-map-style.js
 **/src/geo/gmaps/gmaps-layer-view.js
-**/src/geo/gmaps/gmaps-map-view.js
 **/src/geo/gmaps/gmaps-path-view.js
 **/src/geo/gmaps/gmaps-plain-layer-view.js
 **/src/geo/gmaps/gmaps-point-view.js

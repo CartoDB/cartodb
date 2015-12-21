@@ -80,7 +80,7 @@ module CartoDB
     class XLSXFormatError                       < StandardError; end
     class MalformedCSVException                 < GenericImportError; end
     class TooManyColumnsError                   < GenericImportError; end
-    class TooManyColumnsGuessedError            < GenericImportError; end
+    class TooManyColumnsProcessingError         < GenericImportError; end
     class DuplicatedColumnError                 < GenericImportError; end
     class RowsEncodingColumnError               < GenericImportError; end
     class EncodingError                         < StandardError; end
@@ -113,12 +113,12 @@ module CartoDB
       EncodingDetectionError                => 2002,
       MalformedCSVException                 => 2003,
       TooManyColumnsError                   => 2004,
+      TooManyColumnsProcessingError         => 2004,
       DuplicatedColumnError                 => 2005,
       EncodingError                         => 2006,
       RowsEncodingColumnError               => 2007,
       MalformedXLSException                 => 2008,
       KmlWithoutStyleIdError                => 2009,
-      TooManyColumnsGuessedError            => 2010,
       InvalidGeoJSONError                   => 3007,
       UnknownSridError                      => 3008,
       ShpNormalizationError                 => 3009,

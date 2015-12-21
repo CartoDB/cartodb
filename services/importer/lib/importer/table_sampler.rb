@@ -21,11 +21,11 @@ module CartoDB
         @sample_size = sample_size
       end
 
-      # @throws TooManyColumnsGuessedError
+      # @throws TooManyColumnsProcessingError
       def sample
         db[sample_query].all
       rescue RangeError
-        raise CartoDB::Importer2::TooManyColumnsGuessedError.new
+        raise CartoDB::Importer2::TooManyColumnsProcessingError.new
       end
 
 

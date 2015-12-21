@@ -82,8 +82,8 @@ module.exports = cdb.core.View.extend({
     }
   },
 
-  _onRenderRangeChanged: function (m, val) {
-    if (!val) {
+  _onRenderRangeChanged: function (m, r) {
+    if (!r || r.start === r.end) {
       this._chartView.removeSelection();
     }
   },

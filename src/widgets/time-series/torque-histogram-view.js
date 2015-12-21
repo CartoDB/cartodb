@@ -90,8 +90,8 @@ module.exports = cdb.core.View.extend({
   },
 
   _onBrushEnd: function (loBarIndex, hiBarIndex) {
-    var data = this.model.getData();
     // TODO setting range filter causes selected-range to be reset, how to fix?
+    // var data = this.model.getData();
     // this._rangeFilter.setRange(
     //   data[loBarIndex].start,
     //   data[hiBarIndex - 1].end

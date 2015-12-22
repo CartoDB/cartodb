@@ -1,4 +1,4 @@
 <a href="<%= mapUrl %>" target="_blank">
-  <span class="CDB-Shape-FullScreen CDB-Shape-FullScreen--top"></span>
-  <span class="CDB-Shape-FullScreen CDB-Shape-FullScreen--bottom"></span>
+  <span class="CDB-Shape-Arrow CDB-Shape-Arrow--top"></span>
+  <span class="CDB-Shape-Arrow CDB-Shape-Arrow--bottom"></span>
 </a>

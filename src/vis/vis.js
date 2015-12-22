@@ -744,6 +744,10 @@ var Vis = View.extend({
       }
     }
 
+    vizjson.overlays.push({
+      type: 'attribution'
+    });
+
     // We remove certain overlays in mobile devices
     if (this.isMobileEnabled) {
       remove_overlay('logo');

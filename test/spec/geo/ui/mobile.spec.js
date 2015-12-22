@@ -82,8 +82,6 @@ describe('geo/ui/mobile', function () {
     '<div class="scrollpane"><ul class="layers"></ul></div>' +
     '</div>' +
     '</div>' +
-    '<div class="cartodb-attribution"></div>' +
-    '<a href="#" class="cartodb-attribution-button"></a>' +
     '<div class="torque"></div>'
       , 'mustache');
 
@@ -172,17 +170,6 @@ describe('geo/ui/mobile', function () {
       expect(mobile.$el.find('.cartodb-searchbox').length).toBe(0);
     });
 
-    it('should render the attribution', function () {
-      mobile.render();
-      expect(mobile.$el.find('.cartodb-attribution-button').length).toBe(1);
-      expect(mobile.$el.find('.cartodb-attribution').html()).toBe('<li>Custom attribution</li><li>CartoDB <a href="http://cartodb.com/attributions" target="_blank">attribution</a></li>');
-    });
-
-    it('should has the attribution hidden by default', function () {
-      mobile.render();
-      expect(mobile.$el.find('.cartodb-attribution').css('display')).toBe('');
-    });
-
     it('should show the zoom', function () {
       mobile.render();
       expect(mobile.$el.find('.CDB-Zoom').length).toBe(1);
@@ -191,12 +178,6 @@ describe('geo/ui/mobile', function () {
     it('should show the toggle button', function () {
       mobile.render();
       expect(mobile.$el.find('.cartodb-header .content .toggle').length).toBe(1);
-    });
-
-    it('should show the attribution', function () {
-      mobile.render();
-      mobile.$el.find('.cartodb-attribution-button').click();
-      expect(mobile.$el.find('.cartodb-attribution').css('display')).toBe('block');
     });
 
     it('should render the legend', function () {
@@ -248,26 +229,9 @@ describe('geo/ui/mobile', function () {
       expect(mobile.$el.find('.layers > li').length).toBe(0);
     });
 
-    it('should render the attribution', function () {
-      mobile.render();
-      expect(mobile.$el.find('.cartodb-attribution-button').length).toBe(1);
-      expect(mobile.$el.find('.cartodb-attribution').html()).toBe('<li>Custom attribution</li><li>CartoDB <a href="http://cartodb.com/attributions" target="_blank">attribution</a></li>');
-    });
-
-    it('should has the attribution hidden by default', function () {
-      mobile.render();
-      expect(mobile.$el.find('.cartodb-attribution').css('display')).toBe('');
-    });
-
     it('should show the zoom', function () {
       mobile.render();
       expect(mobile.$el.find('.CDB-Zoom').length).toBe(1);
-    });
-
-    it('should show the attribution', function () {
-      mobile.render();
-      mobile.$el.find('.cartodb-attribution-button').click();
-      expect(mobile.$el.find('.cartodb-attribution').css('display')).toBe('block');
     });
 
     it("shouldn't render the legend", function () {
@@ -320,17 +284,6 @@ describe('geo/ui/mobile', function () {
       expect(mobile.$el.find('.cartodb-searchbox').length).toBe(0);
     });
 
-    it('should render the attribution', function () {
-      mobile.render();
-      expect(mobile.$el.find('.cartodb-attribution-button').length).toBe(1);
-      expect(mobile.$el.find('.cartodb-attribution').html()).toBe('<li>Custom attribution</li><li>CartoDB <a href="http://cartodb.com/attributions" target="_blank">attribution</a></li>');
-    });
-
-    it('should has the attribution hidden by default', function () {
-      mobile.render();
-      expect(mobile.$el.find('.cartodb-attribution').css('display')).toBe('');
-    });
-
     it('should show the zoom', function () {
       mobile.render();
       expect(mobile.$el.find('.CDB-Zoom').length).toBe(1);
@@ -339,12 +292,6 @@ describe('geo/ui/mobile', function () {
     it('should show the toggle button', function () {
       mobile.render();
       expect(mobile.$el.find('.cartodb-header .content .toggle').length).toBe(1);
-    });
-
-    it('should show the attribution', function () {
-      mobile.render();
-      mobile.$el.find('.cartodb-attribution-button').click();
-      expect(mobile.$el.find('.cartodb-attribution').css('display')).toBe('block');
     });
 
     it('should render the legend', function () {
@@ -402,26 +349,9 @@ describe('geo/ui/mobile', function () {
       expect(mobile.$el.find('.layers .cartodb-mobile-layer.has-legend').length).toBe(0);
     });
 
-    it('should render the attribution', function () {
-      mobile.render();
-      expect(mobile.$el.find('.cartodb-attribution-button').length).toBe(1);
-      expect(mobile.$el.find('.cartodb-attribution').html()).toBe('<li>Custom attribution</li><li>CartoDB <a href="http://cartodb.com/attributions" target="_blank">attribution</a></li>');
-    });
-
-    it('should has the attribution hidden by default', function () {
-      mobile.render();
-      expect(mobile.$el.find('.cartodb-attribution').css('display')).toBe('');
-    });
-
     it('should show the zoom', function () {
       mobile.render();
       expect(mobile.$el.find('.CDB-Zoom').length).toBe(1);
-    });
-
-    it('should show the attribution', function () {
-      mobile.render();
-      mobile.$el.find('.cartodb-attribution-button').click();
-      expect(mobile.$el.find('.cartodb-attribution').css('display')).toBe('block');
     });
 
   });
@@ -467,26 +397,9 @@ describe('geo/ui/mobile', function () {
       expect(mobile.$el.find('.layers > li').length).toBe(0);
     });
 
-    it('should render the attribution', function () {
-      mobile.render();
-      expect(mobile.$el.find('.cartodb-attribution-button').length).toBe(1);
-      expect(mobile.$el.find('.cartodb-attribution').html()).toBe('<li>Custom attribution</li><li>CartoDB <a href="http://cartodb.com/attributions" target="_blank">attribution</a></li>');
-    });
-
-    it('should has the attribution hidden by default', function () {
-      mobile.render();
-      expect(mobile.$el.find('.cartodb-attribution').css('display')).toBe('');
-    });
-
     it('should show the zoom', function () {
       mobile.render();
       expect(mobile.$el.find('.CDB-Zoom').length).toBe(1);
-    });
-
-    it('should show the attribution', function () {
-      mobile.render();
-      mobile.$el.find('.cartodb-attribution-button').click();
-      expect(mobile.$el.find('.cartodb-attribution').css('display')).toBe('block');
     });
 
     it("shouldn't render the legend", function () {
@@ -537,26 +450,9 @@ describe('geo/ui/mobile', function () {
       expect(mobile.$el.find('.layers > li').length).toBe(0);
     });
 
-    it('should render the attribution', function () {
-      mobile.render();
-      expect(mobile.$el.find('.cartodb-attribution-button').length).toBe(1);
-      expect(mobile.$el.find('.cartodb-attribution').html()).toBe('<li>Custom attribution</li><li>CartoDB <a href="http://cartodb.com/attributions" target="_blank">attribution</a></li>');
-    });
-
-    it('should has the attribution hidden by default', function () {
-      mobile.render();
-      expect(mobile.$el.find('.cartodb-attribution').css('display')).toBe('');
-    });
-
     it("shouldn't show the zoom", function () {
       mobile.render();
       expect(mobile.$el.find('.CDB-Zoom').length).toBe(0);
-    });
-
-    it('should show the attribution', function () {
-      mobile.render();
-      mobile.$el.find('.cartodb-attribution-button').click();
-      expect(mobile.$el.find('.cartodb-attribution').css('display')).toBe('block');
     });
 
     it("shouldn't render the legend", function () {
@@ -671,17 +567,6 @@ describe('geo/ui/mobile', function () {
       expect(mobile.$el.find('.cartodb-searchbox').length).toBe(0);
     });
 
-    it('should render the attribution', function () {
-      mobile.render();
-      expect(mobile.$el.find('.cartodb-attribution-button').length).toBe(1);
-      expect(mobile.$el.find('.cartodb-attribution').html()).toBe('<li>Custom attribution</li><li>CartoDB <a href="http://cartodb.com/attributions" target="_blank">attribution</a></li>');
-    });
-
-    it('should has the attribution hidden by default', function () {
-      mobile.render();
-      expect(mobile.$el.find('.cartodb-attribution').css('display')).toBe('');
-    });
-
     it('should show the zoom', function () {
       mobile.render();
       expect(mobile.$el.find('.CDB-Zoom').length).toBe(1);
@@ -692,45 +577,10 @@ describe('geo/ui/mobile', function () {
       expect(mobile.$el.find('.cartodb-header .content .toggle').length).toBe(1);
     });
 
-    it('should show the attribution', function () {
-      mobile.render();
-      mobile.$el.find('.cartodb-attribution-button').click();
-      expect(mobile.$el.find('.cartodb-attribution').css('display')).toBe('block');
-    });
-
     it('should render the legend', function () {
       mobile.render();
       expect(mobile.$el.find('.layers .cartodb-mobile-layer.has-legend .cartodb-legend .legend-title').text()).toBe('Little legend');
       expect(mobile.$el.find('.layers .cartodb-mobile-layer.has-legend').length).toBe(1);
-    });
-
-    it('should hide the attribution when clicking on the backdrop', function (done) {
-      mobile.render();
-      mobile.$el.find('.cartodb-attribution-button').click();
-
-      setTimeout(function () {
-        expect(mobile.$el.find('.backdrop').css('display')).toBe('block');
-
-        spyOn($.fn, 'fadeOut');
-
-        mobile.$el.find('.backdrop').click();
-
-        setTimeout(function () {
-          // FadeOut tests are the hell!!
-          expect($.fn.fadeOut).toHaveBeenCalled();
-          expect($.fn.fadeOut.calls.count()).toBe(2);
-
-          var elements_class = ['backdrop', 'cartodb-attribution'];
-          expect(
-            _.every($.fn.fadeOut.calls.all(), function (item, pos) {
-              return _.contains(elements_class, $(item.object).attr('class'));
-            })
-          ).toBeTruthy();
-
-          done();
-        }, 500);
-
-      }, 500);
     });
 
   });

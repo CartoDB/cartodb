@@ -9,14 +9,15 @@ $size: 20px;
 
 .CDB-Attribution {
   position: absolute;
-  right: 10px;
-  bottom: 10px;
-  border-radius: 16px;
-  background: #FFF;
+  right: 16px;
+  bottom: 16px;
+  width: 60%;
+  height: 30px;
   font-family: 'Open Sans';
   line-height: $size;
-  box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.24), 0 4px 8px 0 rgba(0, 0, 0, 0.16);
+  //box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.24), 0 4px 8px 0 rgba(0, 0, 0, 0.16);
   z-index: 10;
+  pointer-events: all;
 }
 .CDB-Attribution:hover {
   cursor: pointer;
@@ -24,35 +25,47 @@ $size: 20px;
 .CDB-Attribution--gmaps {
   bottom: 20px;
 }
-.CDB-Attribution-text,
 .CDB-Attribution-button {
-  display: none;
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: $size;
   height: $size;
-  color: #000;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 50%;
+  background: #FFF;
+  color: #666;
   font-size: $sFontSize-small;
   line-height: $size;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.3);
+  z-index: 1;
   &.is-visible {
     display: inline-block;
     vertical-align: top;
   }
-}
-.CDB-Attribution-text {
-  padding: 0 7px;
-}
-.CDB-Attribution-text a {
-  color: #3AA9E3;
   &:hover {
-    color: #2E3C43;
+    cursor: pointer;
   }
 }
-.CDB-Attribution-button {
-  width: $size;
-  text-align: center;
+.CDB-Attribution-text {
+  display: none;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  padding: 5px 30px 5px 10px;
+  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.64);
+  color: #FFF;
+  font-size: $sFontSize-small;
+  line-height: $size;
+  &.is-visible {
+    display: block;
+  }
 }
-.CDB-Attribution-button:hover {
-  cursor: pointer;
+.CDB-Attribution-text a {
+  color: #FFF !important;
+  text-decoration: underline;
 }
-
 
 @include media-query-mobile() {
   .CDB-Attribution {

@@ -100,19 +100,16 @@ describe('geo/ui/attribution', function () {
     });
 
     it('should show text when button is clicked', function () {
-      expect(this.$button.hasClass('is-visible')).toBeFalsy();
       expect(this.$text.hasClass('is-visible')).toBeTruthy();
     });
 
     it('should hide text when ESC is pressed', function () {
       this.keyEsc();
-      expect(this.$button.hasClass('is-visible')).toBeTruthy();
       expect(this.$text.hasClass('is-visible')).toBeFalsy();
     });
 
     it('should hide text when user clicks anywhere', function () {
       $(document).trigger('click');
-      expect(this.$button.hasClass('is-visible')).toBeTruthy();
       expect(this.$text.hasClass('is-visible')).toBeFalsy();
     });
   });

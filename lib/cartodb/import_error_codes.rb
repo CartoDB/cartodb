@@ -151,7 +151,7 @@ module CartoDB
     },
     2004 => {
       title: 'Too many columns',
-      what_about: "Data has too many columns. You can only import up to 1600 columns. You can delete the columns you're not interested in, or split the file into smaller ones.",
+      what_about: "Data has too many columns. You can only import up to 250 columns. You can delete the columns you're not interested in, or split the file into smaller ones.",
       source: ERROR_SOURCE_USER
     },
     2005 => {

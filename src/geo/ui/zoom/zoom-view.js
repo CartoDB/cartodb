@@ -1,5 +1,5 @@
-var templates = require('cdb.templates');
-var View = require('../../core/view');
+var View = require('../../../core/view');
+var template = require('./zoom-template.tpl');
 
 /**
  * View to control the zoom of the map.
@@ -27,7 +27,7 @@ module.exports = View.extend({
 
   initialize: function () {
     this.map = this.model;
-    this.template = this.options.template;
+    this.template = this.options.template || template;
     this.map.bind('change:zoom change:minZoom change:maxZoom', this._checkZoom, this);
   },
 

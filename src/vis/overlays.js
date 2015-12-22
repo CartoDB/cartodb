@@ -14,7 +14,7 @@ var Search = require('../geo/ui/search/search');
 var Text = require('../geo/ui/text');
 var TilesLoader = require('../geo/ui/tiles-loader');
 var Tooltip = require('../geo/ui/tooltip');
-var Zoom = require('../geo/ui/zoom');
+var Zoom = require('../geo/ui/zoom/zoom-view');
 var FullScreen = require('../ui/common/fullscreen/fullscreen-view');
 var Attribution = require('../geo/ui/attribution/attribution-view');
 
@@ -114,10 +114,6 @@ Overlay.register('annotation', function (data, vis) {
 
 });
 
-Overlay.register('zoom_info', function (data, vis) {
-  // console.log("placeholder for the zoom_info overlay");
-});
-
 Overlay.register('header', function (data, vis) {
   var options = data.options;
 
@@ -141,16 +137,15 @@ Overlay.register('header', function (data, vis) {
 
 // map zoom control
 Overlay.register('zoom', function (data, vis) {
-  if (!data.template) {
-    vis.trigger('error', 'zoom template is empty');
-    return;
+  var opts = {
+    model: data.map
+  };
+
+  if (data.template) {
+    opts.template = Template.compile(data.template);
   }
 
-  var zoom = new Zoom({
-    model: data.map,
-    template: Template.compile(data.template)
-  });
-
+  var zoom = new Zoom(opts);
   return zoom.render();
 
 });

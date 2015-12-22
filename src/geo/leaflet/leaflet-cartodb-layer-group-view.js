@@ -239,35 +239,6 @@ var LeafletCartoDBLayerGroupView = L.TileLayer.extend({
     }
   },
 
-  _checkLayer: function () {
-    if (!this.options.added) {
-      throw new Error('the layer is not still added to the map');
-    }
-  },
-
-  /**
-   * Set a new layer attribution
-   * @params {String} New attribution string
-   */
-  setAttribution: function (attribution) {
-    this._checkLayer();
-
-    // Remove old one
-    this.map.attributionControl.removeAttribution(this.options.attribution);
-
-    // Set new attribution in the options
-    this.options.attribution = attribution;
-
-    // Change text
-    this.map.attributionControl.addAttribution(this.options.attribution);
-
-    // Change in the layer
-    this.options.attribution = this.options.attribution;
-    this.tilejson.attribution = this.options.attribution;
-
-    this.fire('updated');
-  },
-
   /**
    * Bind events for wax interaction
    * @param {Object} Layer map object

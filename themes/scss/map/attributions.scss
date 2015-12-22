@@ -1,0 +1,78 @@
+/**
+ *  Map attribution
+ */
+
+@import '../variables/sizes';
+@import '../variables/mixins';
+
+$size: 20px;
+
+.CDB-Attribution {
+  @include transition(background, 100ms);
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  padding: 5px 30px 5px 10px;
+  border-radius: 3px;
+  box-sizing: border-box;
+  font-family: 'Open Sans';
+  line-height: $size;
+  //box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.24), 0 4px 8px 0 rgba(0, 0, 0, 0.16);
+  z-index: 10;
+
+  &.is-active {
+    background: rgba(0, 0, 0, 0.64);
+    .CDB-Attribution-text {
+      width: auto;
+      opacity: 1;
+    }
+  }
+}
+.CDB-Attribution:hover {
+  cursor: pointer;
+}
+.CDB-Attribution--gmaps {
+  bottom: 20px;
+}
+.CDB-Attribution-button {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: $size;
+  height: $size;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 50%;
+  background: #FFF;
+  color: #666;
+  font-size: $sFontSize-small;
+  line-height: $size;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.3);
+  z-index: 1;
+  &:hover {
+    cursor: pointer;
+  }
+}
+.CDB-Attribution-text {
+  @include transition(opacity, 150ms);
+  color: #FFF;
+  font-size: $sFontSize-small;
+  line-height: $size;
+  opacity: 0;
+}
+.CDB-Attribution-text a {
+  color: #FFF !important;
+  text-decoration: underline;
+}
+
+@include media-query-mobile() {
+  .CDB-Attribution {
+    width: 90%;
+    max-width: 90%;
+    border-radius: 2px;
+  }
+
+  .CDB-Attribution-text {
+    height: auto;
+    min-height: $size;
+  }
+}

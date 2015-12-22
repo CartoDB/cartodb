@@ -16,7 +16,6 @@ var Mobile = View.extend({
   className: 'cartodb-mobile',
 
   events: {
-    'click .cartodb-attribution-button': '_onAttributionClick',
     'click .toggle': '_toggle',
     'click .fullscreen': '_toggleFullScreen',
     'click .backdrop': '_onBackdropClick',
@@ -125,16 +124,7 @@ var Mobile = View.extend({
     e.preventDefault();
     e.stopPropagation();
 
-    this.$el.find('.backdrop').fadeOut(250);
-    this.$el.find('.cartodb-attribution').fadeOut(250);
-  },
-
-  _onAttributionClick: function (e) {
-    e.preventDefault();
-    e.stopPropagation();
-
-    this.$el.find('.backdrop').fadeIn(250);
-    this.$el.find('.cartodb-attribution').fadeIn(250);
+    this.$('.backdrop').fadeOut(250);
   },
 
   _toggle: function (e) {
@@ -171,16 +161,12 @@ var Mobile = View.extend({
 
     this.$el.find('.cartodb-header').animate({ right: right }, 200);
     this.$el.find('.aside').animate({ right: 0 }, 200);
-    this.$el.find('.cartodb-attribution-button').animate({ right: right + parseInt(this.$el.find('.cartodb-attribution-button').css('right')) }, 200);
-    this.$el.find('.cartodb-attribution').animate({ right: right + parseInt(this.$el.find('.cartodb-attribution-button').css('right')) }, 200);
     this._initScrollPane();
   },
 
   _close: function () {
     this.$el.find('.cartodb-header').animate({ right: 0 }, 200);
     this.$el.find('.aside').animate({ right: - this.$el.find('.aside').width() }, 200);
-    this.$el.find('.cartodb-attribution-button').animate({ right: 20 }, 200);
-    this.$el.find('.cartodb-attribution').animate({ right: 20 }, 200);
   },
 
   default_options: {
@@ -429,31 +415,6 @@ var Mobile = View.extend({
     }
   },
 
-  _addAttributions: function () {
-    var attributions = '';
-
-    this.options.mapView.$el.find('.leaflet-control-attribution').hide(); // TODO: remove this from here
-
-    if (this.options.layerView) {
-      attributions = this.options.layerView.model.get('attribution');
-      this.$el.find('.cartodb-attribution').append(attributions);
-
-    } else if (this.options.map.get('attribution')) {
-      attributions = this.options.map.get('attribution');
-
-      _.each(attributions, function (attribution) {
-        var $li = $('<li></li>');
-        var $el = $li.html(attribution);
-        this.$el.find('.cartodb-attribution').append($li);
-      }, this);
-
-    }
-
-    if (attributions) {
-      this.$el.find('.cartodb-attribution-button').fadeIn(250);
-    }
-  },
-
   _renderLayers: function () {
     var hasLegendOverlay = this.visibility_options.legends;
 
@@ -515,8 +476,6 @@ var Mobile = View.extend({
     this.$header.show();
 
     this._renderOverlays();
-
-    this._addAttributions();
 
     this._getLayers();
     this._renderLayers();

@@ -40,7 +40,7 @@ var GoogleMapsMapView = MapView.extend({
 
     var center = this.map.get('center');
 
-    if (!this.options.map_object) {
+    if (!this.isMapAlreadyCreated()) {
 
       this.map_googlemaps = new google.maps.Map(this.el, {
         center: new google.maps.LatLng(center[0], center[1]),
@@ -253,24 +253,10 @@ var GoogleMapsMapView = MapView.extend({
     return [ [0,0], [0,0] ];
   },
 
-setAttribution: function() {
-  // Remove old one
-  var old = document.getElementById("cartodb-gmaps-attribution")
-    , attribution = this.map.get("attribution").join(", ");
-
-    // If div already exists, remove it
-    if (old) {
-      old.parentNode.removeChild(old);
-    }
-
-    // Add new one
-    var container           = this.map_googlemaps.getDiv()
-      , cartodb_attribution = document.createElement("div");
-
-    cartodb_attribution.setAttribute('id','cartodb-gmaps-attribution');
-    cartodb_attribution.setAttribute('class', 'gmaps');
-    container.appendChild(cartodb_attribution);
-    cartodb_attribution.innerHTML = attribution;
+  setAttribution: function() {
+    // There is no control over Google Maps attribution component, so we can't add
+    // any attribution text there (if Map is already created using createLayer for example)
+    // and there is no CartoDB attribution component.
   },
 
   setCursor: function(cursor) {

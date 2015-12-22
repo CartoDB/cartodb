@@ -357,17 +357,14 @@ describe('geo/leaflet/leaflet-map-view', function () {
       });
     });
 
-    it('should render the right attributions', function () {
-      var attributions = mapView.$el.find('.leaflet-control-attribution').text();
-      expect(attributions).toEqual('CartoDB attribution');
-
+    it('should not render Leaflet attributions', function () {
+      var attributions = mapView.$el.find('.leaflet-control-attribution');
+      expect(attributions.length).toBe(0);
       layer = new CartoDBLayerGroupAnonymous({
         attribution: 'custom attribution'
       });
       map.addLayer(layer);
-
-      var attributions = mapView.$el.find('.leaflet-control-attribution').text();
-      expect(attributions).toEqual('custom attribution, CartoDB attribution');
+      expect(attributions.length).toBe(0);
     });
 
     it('should respect the attribution of existing Leaflet layers', function () {
@@ -394,10 +391,10 @@ describe('geo/leaflet/leaflet-map-view', function () {
       map.addLayer(layer);
 
       var attributions = mapView.$el.find('.leaflet-control-attribution').text();
-      expect(attributions).toEqual('Leaflet | Stamen, custom attribution, CartoDB attribution');
+      expect(attributions).toEqual('Leaflet | Stamen, CartoDB attribution, custom attribution');
     });
 
-    it('should render attributions when the Leaflet map has attributionControl disabled', function () {
+    it('should not render attributions when the Leaflet map has attributionControl disabled', function () {
       var leafletMap = new L.Map(container[0], {
         center: [43, 0],
         zoom: 3,
@@ -422,7 +419,7 @@ describe('geo/leaflet/leaflet-map-view', function () {
       map.addLayer(layer);
 
       var attributions = mapView.$el.find('.leaflet-control-attribution').text();
-      expect(attributions).toEqual('Stamen, custom attribution, CartoDB attribution');
+      expect(attributions).toEqual('');
     });
   });
 

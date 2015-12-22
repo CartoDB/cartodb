@@ -1,5 +1,5 @@
 var Map = require('../../../../src/geo/map');
-var Zoom = require('../../../../src/geo/ui/zoom');
+var Zoom = require('../../../../src/geo/ui/zoom/zoom-view');
 var Template = require('../../../../src/core/template');
 
 describe('geo/ui/zoom', function () {

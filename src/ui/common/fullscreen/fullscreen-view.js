@@ -31,7 +31,7 @@ var FullScreen = View.extend({
     var options = _.extend(
       this.options,
       {
-        mapUrl: location.href || ''
+        mapUrl: window.location.href || ''
       }
     );
     this.$el.html(this.template(options));

@@ -113,7 +113,6 @@
 **/src/geo/ui/zoom.js
 **/src/ui/common/dialog.js
 **/src/ui/common/dropdown.js
-**/src/ui/common/fullscreen.js
 **/src/ui/common/notification.js
 **/src/ui/common/share.js
 **/src/ui/common/table/row-view.js

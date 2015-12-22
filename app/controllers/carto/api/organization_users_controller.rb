@@ -42,7 +42,7 @@ module Carto
         user = ::User.where(delete_params).first
         render_jsonp("No user with #{delete_params}", 404) && return if user.nil?
 
-        # Turn new_email: into email:, new_password: into password:, etc
+        # Turn new_email: into email:, etc
         transformed_update_params = Hash[update_params.map { |k, v| [UPDATE_PARAMS_MAP[k] || k, v] }]
 
         # ::User validation requires confirmation

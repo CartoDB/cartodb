@@ -15,7 +15,7 @@ var View = require('../../core/view');
 var FullScreen = View.extend({
 
   tagName: 'div',
-  className: 'cartodb-fullscreen',
+  className: 'CDB-Fullscreen',
 
   events: {
     "click a": "_toggleFullScreen"

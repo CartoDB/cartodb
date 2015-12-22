@@ -168,3 +168,52 @@
     outline: none;
   }
 }
+
+//FullScreen overlay
+.CDB-Fullscreen {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 63px;
+  height: 48px;
+  cursor: pointer;
+  z-index: 10;
+
+  &:before {
+    display: block;
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 0;
+    height: 0;
+    border-top: 48px solid #FFF;
+    border-left: 48px solid transparent;
+    content: '';
+  }
+  &:after {
+    display: block;
+    position: absolute;
+    top: -22px;
+    left: 31px;
+    width: 10px;
+    height: 100px;
+    transform: rotate(-45deg);
+    background-image: linear-gradient(-90deg, #000 0%, rgba(0, 0, 0, 0) 100%);
+    content: '';
+    opacity: 0.2;
+  }
+
+  &:hover {
+    .CDB-Shape-FullScreen--top {
+      top: 6px;
+      right: 6px;
+      transition: all 200ms ease-out;
+    }
+    .CDB-Shape-FullScreen--bottom {
+      top: 18px;
+      left: 45px;
+      transition: all 200ms ease-out;
+    }
+  }
+}
+

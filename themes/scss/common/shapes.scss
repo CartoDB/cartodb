@@ -189,3 +189,49 @@
     content: '';
   }
 }
+
+.CDB-Shape-FullScreen {
+  display: block;
+  position: absolute;
+  width: 1px;
+  height: 7px;
+  background: #32A8E6;
+
+  &:before {
+    display: block;
+    position: absolute;
+    top: 1px;
+    left: 0;
+    width: 5px;
+    height: 1px;
+    transform: rotate(45deg);
+    background: #32A8E6;
+    content: '';
+  }
+
+  &:after {
+    display: block;
+    position: absolute;
+    top: 1px;
+    left: -4px;
+    width: 5px;
+    height: 1px;
+    transform: rotate(-45deg);
+    background: #32A8E6;
+    content: '';
+  }
+}
+
+.CDB-Shape-FullScreen--top {
+  top: 8px;
+  right: 8px;
+  transform: rotate(45deg);
+}
+
+.CDB-Shape-FullScreen--bottom {
+  top: 16px;
+  left: 46px;
+  transform: rotate(-135deg);
+}
+
+

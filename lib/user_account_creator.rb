@@ -9,6 +9,10 @@ module CartoDB
     PARAM_EMAIL = :email
     PARAM_PASSWORD = :password
 
+    # For user creations from orgs
+    PARAM_SOFT_GEOCODING_LIMIT = :soft_geocoding_limit
+    PARAM_QUOTA_IN_BYTES = :quota_in_bytes
+
     def initialize
       @built = false
       @organization = nil
@@ -28,6 +32,14 @@ module CartoDB
 
     def with_password(value)
       with_param(PARAM_PASSWORD, value)
+    end
+
+    def with_soft_geocoding_limit(value)
+      with_param(PARAM_SOFT_GEOCODING_LIMIT, value)
+    end
+
+    def with_quota_in_bytes(value)
+      with_param(PARAM_QUOTA_IN_BYTES, value)
     end
 
     def with_organization(organization)
@@ -78,7 +90,7 @@ module CartoDB
       ::Resque.enqueue(::Resque::UserJobs::Signup::NewUser, user_creation.id, common_data_url,
         promote_to_organization_owner?)
 
-      {id: user_creation.id, username: user_creation.username}
+      { id: user_creation.id, username: user_creation.username }
     end
 
     private
@@ -106,9 +118,13 @@ module CartoDB
         @user.password_confirmation = @user_params[PARAM_PASSWORD]
       end
 
-      @user.username = @user_params[PARAM_USERNAME] if @user_params[PARAM_USERNAME]
       @user.invitation_token = @invitation_token
-    end
 
+      @user.username = @user_params[PARAM_USERNAME] if @user_params[PARAM_USERNAME]
+      @user.soft_geocoding_limit = @user_params[PARAM_SOFT_GEOCODING_LIMIT] if @user_params[PARAM_SOFT_GEOCODING_LIMIT]
+      @user.quota_in_bytes = @user_params[PARAM_QUOTA_IN_BYTES] if @user_params[PARAM_QUOTA_IN_BYTES]
+
+      @built = true
+    end
   end
 end

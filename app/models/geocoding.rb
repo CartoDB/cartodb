@@ -15,9 +15,9 @@ class Geocoding < Sequel::Model
 
 
   PUBLIC_ATTRIBUTES = [:id, :table_id, :table_name, :state, :kind, :country_code, :region_code, :formatter,
-                       :geocoder_type, :geometry_type, :error, :processed_rows, :cache_hits, :processable_rows,
-                       :real_rows, :price, :used_credits, :remaining_quota, :country_column, :region_column,
-                       :data_import_id, :error_code]
+                       :geocoder_type, :geometry_type, :error, :processed_rows, :failed_processed_rows,
+                       :successful_processed_rows, :empty_processed_rows, :cache_hits, :processable_rows, :real_rows, :price,
+                       :used_credits, :remaining_quota, :country_column, :region_column, :data_import_id, :error_code]
 
   # Characters in the following Unicode categories: Letter, Mark, Number and Connector_Punctuation,
   # plus spaces and single quotes
@@ -124,7 +124,14 @@ class Geocoding < Sequel::Model
 
     processable_rows = self.class.processable_rows(table_service)
     if processable_rows == 0
-      self.update(state: 'finished', real_rows: 0, used_credits: 0, processed_rows: 0, cache_hits: 0)
+      self.update(state: 'finished', 
+                  real_rows: 0, 
+                  used_credits: 0, 
+                  processed_rows: 0, 
+                  successful_processed_rows: 0,
+                  failed_processed_rows: 0,
+                  empty_processed_rows: 0,
+                  cache_hits: 0)
       self.report
       return
     end
@@ -257,6 +264,9 @@ class Geocoding < Sequel::Model
       geocoder_type:    geocoder_type,
       geometry_type:    geometry_type,
       processed_rows:   processed_rows,
+      successful_processed_rows: successful_processed_rows,
+      failed_processed_rows: failed_processed_rows,
+      empty_processed_rows: empty_processed_rows,
       cache_hits:       cache_hits,
       processable_rows: processable_rows,
       real_rows:        real_rows,
@@ -346,13 +356,13 @@ class Geocoding < Sequel::Model
     if raised_exception.is_a? Carto::GeocoderErrors::GeocoderBaseError
       self.error_code = raised_exception.class.additional_info.error_code
     end
-    self.update(state: 'failed', processed_rows: 0, cache_hits: 0)
     CartoDB::notify_exception(raised_exception, user: user)
     geocoded_rows = total_geocoded_rows(rows_geocoded_before)
     send_report_mail(state, self.table_name, error_code, self.processable_rows, geocoded_rows)
     log.append "Unexpected exception: #{raised_exception.to_s}"
     log.append raised_exception.backtrace
     self.report(raised_exception)
+    self.update(state: 'failed', processed_rows: 0, cache_hits: 0)
   end
 
   def total_geocoded_rows(rows_geocoded_before)

@@ -46,7 +46,13 @@ module CartoDB
     # TODO: make the geocoders update status directly in the model
     def update_geocoding_status
       geocoder.update_status
-      { processed_rows: geocoder.processed_rows, state: geocoder.status }
+      {
+        processed_rows: geocoder.processed_rows,
+        successful_processed_rows: geocoder.successful_processed_rows,
+        failed_processed_rows: geocoder.failed_processed_rows,
+        empty_processed_rows: geocoder.empty_processed_rows,
+        state: geocoder.status
+      }
     end
 
     def cancel

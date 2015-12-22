@@ -149,6 +149,7 @@ WORKING_SPECS_5 = \
 	spec/requests/carto/api/synchronizations_controller_spec.rb \
 	services/geocoder/spec/geocoder_spec.rb \
 	services/table-geocoder/spec/table_geocoder_spec.rb \
+	services/table-geocoder/spec/internal_geocoder_spec.rb \
 	services/table-geocoder/spec/internal-geocoder/input_type_resolver_spec.rb \
 	services/table-geocoder/spec/internal-geocoder/query_generator_factory_spec.rb \
 	services/table-geocoder/spec/lib/gme/table_geocoder_spec.rb \

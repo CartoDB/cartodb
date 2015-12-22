@@ -13,7 +13,8 @@ module Carto
       # See https://developers.google.com/maps/documentation/geocoding/#Types
       ACCEPTED_ADDRESS_TYPES = ['street_address', 'route', 'intersection', 'neighborhood']
 
-      attr_reader :original_formatter, :processed_rows, :state, :max_block_size
+      attr_reader :original_formatter, :processed_rows, :successful_processed_rows, :failed_processed_rows,
+                  :empty_processed_rows, :state, :max_block_size
 
       def initialize(arguments)
         super(arguments)
@@ -32,6 +33,9 @@ module Carto
       def run
         @state = 'processing'
         @processed_rows = 0
+        @successful_processed_rows = 0
+        @failed_processed_rows = 0
+        @empty_processed_rows = 0
         ensure_georef_status_colummn_valid
 
         # Here's the actual stuff
@@ -52,7 +56,13 @@ module Carto
       def process_results; end # TODO: can be removed from here and abstract class
 
       def update_geocoding_status
-        { processed_rows: processed_rows, state: state }
+        { 
+          processed_rows: processed_rows, 
+          successful_processed_rows: successful_processed_rows,
+          failed_processed_rows: failed_processed_rows,
+          empty_processed_rows: empty_processed_rows,
+          state: state 
+        }
       end
 
       def name
@@ -93,14 +103,17 @@ module Carto
 
       def geocode(data_block)
         data_block.each do |row|
-          response = @geocoder_client.geocode(row[:searchtext])
+          response = fetch_from_gme(row[:searchtext])
           if response['status'] != 'OK'
+            @empty_processed_rows += 1
             row.merge!(cartodb_georef_status: false)
           else
             result = response['results'].select { |r| r['types'] & ACCEPTED_ADDRESS_TYPES }.first
             if result.nil?
+              @empty_processed_rows += 1
               row.merge!(cartodb_georef_status: false)
             else
+              @successful_processed_rows += 1
               location = result['geometry']['location']
               row.merge!(location.deep_symbolize_keys.merge(cartodb_georef_status: true))
             end
@@ -142,6 +155,14 @@ module Carto
         end
       end
 
+      private
+
+      def fetch_from_gme(search_text)
+        @geocoder_client.geocode(search_text)
+      rescue => e
+        CartoDB.notify_error('Error geocoding using GME', error: e.inspect, search_text: search_text)
+        @failed_processed_rows += 1
+      end
     end
   end
 end

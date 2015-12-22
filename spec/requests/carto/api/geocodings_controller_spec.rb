@@ -251,14 +251,14 @@ describe 'legacy behaviour tests' do
       get api_v1_geocodings_index_url
       last_response.status.should eq 200
 
-      expected = {"geocodings"=>[{"table_name" => nil, "processed_rows" => 1, "remote_id" => nil, "formatter" => nil,
-                                  "geocoder_type" => nil, "state" => "started", "cache_hits" => 0,
-                                  "id" => geocoding1.id, "user_id" => @user1.id,"table_id" => nil,
-                                  "automatic_geocoding_id" => nil, "kind" => "high-resolution", "country_code" => nil,
-                                  "geometry_type" => nil, "processable_rows" => nil, "real_rows" => nil,
-                                  "used_credits" => nil, "country_column" => nil, "data_import_id" => nil,
-                                  "region_code" => nil, "region_column" => nil, "batched" => nil, "error_code" => nil,
-                                  "force_all_rows" => false, "log_id" => nil}]}
+      expected = {"geocodings" => [{"automatic_geocoding_id"=>nil, "batched"=>nil, "cache_hits"=>0, "country_code"=>nil, 
+                                    "country_column"=>nil, "data_import_id"=>nil, "empty_processed_rows"=>nil, "error_code"=>nil, 
+                                    "failed_processed_rows"=>nil, "force_all_rows"=>false, "formatter"=>nil, "geocoder_type"=>nil, 
+                                    "geometry_type"=>nil, "id"=> geocoding1.id, "kind"=>"high-resolution", "log_id"=>nil, 
+                                    "processable_rows"=>nil, "processed_rows"=>1, "real_rows"=>nil, "region_code"=>nil, 
+                                    "region_column"=>nil, "remote_id"=>nil, "state"=>"started", "successful_processed_rows"=>nil, 
+                                    "table_id"=>nil, "table_name"=>nil, "used_credits"=>nil, "user_id"=> @user1.id}]}
+
       received_without_dates = {
         'geocodings' => JSON.parse(last_response.body)['geocodings'].map { |g| remove_dates(g) }
       }

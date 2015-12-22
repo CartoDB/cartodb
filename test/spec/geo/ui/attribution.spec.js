@@ -1,5 +1,5 @@
 var $ = require('jquery');
-var Attribution = require('../../../../src/geo/ui/attribution/attribution_view');
+var Attribution = require('../../../../src/geo/ui/attribution/attribution-view');
 var Map = require('../../../../src/geo/map');
 
 describe('geo/ui/attribution', function () {

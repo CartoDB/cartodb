@@ -16,7 +16,7 @@ var TilesLoader = require('../geo/ui/tiles-loader');
 var Tooltip = require('../geo/ui/tooltip');
 var Zoom = require('../geo/ui/zoom');
 var FullScreen = require('../ui/common/fullscreen');
-var Attribution = require('../geo/ui/attribution/attribution_view');
+var Attribution = require('../geo/ui/attribution/attribution-view');
 
 Overlay.register('logo', function (data, vis) {});
 

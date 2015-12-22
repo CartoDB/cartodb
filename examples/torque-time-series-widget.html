@@ -5,6 +5,7 @@
   <title>Deep-Insights.js | Torque Time-Series Widget</title>
   <meta name=viewport content="width=device-width initial-scale=1">
   <link rel="stylesheet" href="../dist/themes/css/deep-insights.css" />
+  <script src="./local-config.js"></script>
   <script src="../dist/deep-insights.uncompressed.js"></script>
   <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700' rel='stylesheet' type='text/css'>
   <style type="text/css">
@@ -21,6 +22,9 @@
 
   <script>
     window.onload = function() {
+      var cdbConfig = window.GLOBAL_CDB_CONFIG || {};
+      cdbConfig.maps_api_template = cdbConfig.maps_api_template || "http://localhost.lan:8181/user/{user}";
+      cdbConfig.user_name = cdbConfig.user_name || "orgowner";
       var diJSON = {
         "title": "Torque Time-Series Widget",
         "description": null,
@@ -32,8 +36,8 @@
 
         "datasource": {
           "type": "public_map",
-          "user_name": "orgowner",
-          "maps_api_template": "http://localhost.lan:8181/user/{user}",
+          "user_name": cdbConfig.user_name,
+          "maps_api_template": cdbConfig.maps_api_template,
           "stat_tag": "4c07a352-892d-11e5-9380-080027880ca6",
           "force_cors": true // This is sometimes set in the editor
         },
@@ -115,7 +119,7 @@
               },
               "options": {
                 "stat_tag": "4c07a352-892d-11e5-9380-080027880ca6",
-                "sql_api_template": "http://localhost.lan:8080/user/{user}",
+                "sql_api_template": cdbConfig.maps_api_template,
                 "tiler_protocol": "http",
                 "tiler_domain": "localhost.lan",
                 "tiler_port": "8181",
@@ -124,8 +128,8 @@
                 "sql_api_endpoint": "/api/v1/sql",
                 "sql_api_port": 8080,
                 "visible": true,
-                "user_name": "orgowner",
-                "maps_api_template": "http://localhost.lan:8181/user/{user}",
+                "user_name": cdbConfig.user_name,
+                "maps_api_template": cdbConfig.maps_api_template,
                 "table_name": "mwc13",
                 "layer_name": "mwc13-torque",
                 "interactivity": 'cartodb_id',

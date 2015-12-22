@@ -15,7 +15,7 @@ var Text = require('../geo/ui/text');
 var TilesLoader = require('../geo/ui/tiles-loader');
 var Tooltip = require('../geo/ui/tooltip');
 var Zoom = require('../geo/ui/zoom');
-var FullScreen = require('../ui/common/fullscreen/fullscreen_view');
+var FullScreen = require('../ui/common/fullscreen/fullscreen-view');
 var Attribution = require('../geo/ui/attribution/attribution-view');
 
 Overlay.register('logo', function (data, vis) {});
@@ -306,7 +306,7 @@ Overlay.register('layer_selector', function (data, vis) {
 // fullscreen
 Overlay.register('fullscreen', function (data, vis) {
   var options = _.extend(data, {
-    doc: '#map > div',
+    doc: vis.$el.find('> div').get(0),
     allowWheelOnFullscreen: false,
     mapView: vis.mapView
   });

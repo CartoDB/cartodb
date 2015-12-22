@@ -485,7 +485,7 @@ var Vis = View.extend({
       if (!this.isMobileEnabled) {
         if (type == 'share' && options['shareable'] || type == 'share' && overlay.model.get('display') && options['shareable'] == undefined) overlay.show();
         if (type == 'layer_selector' && options[type] || type == 'layer_selector' && overlay.model.get('display') && options[type] == undefined) overlay.show();
-        if (type == 'fullscreen' && options[type] || type == 'fullscreen' && overlay.model.get('display') && options[type] == undefined) overlay.show();
+        if (type == 'fullscreen' && options[type] || type == 'fullscreen' && opt.display && options[type] == undefined) overlay.show();
         if (type == 'search' && options[type] || type == 'search' && opt.display && options[type] == undefined) overlay.show();
 
         if (type === 'header') {

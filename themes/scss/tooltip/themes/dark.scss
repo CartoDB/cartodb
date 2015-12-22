@@ -1,0 +1,15 @@
+/**
+ *  CartoDB tooltip dark styles
+ */
+
+.CDB-Tooltip--isDark {
+  &.CDB-Tooltip {
+    background: #2E3C43;
+  }
+  .CDB-Tooltip-ListTitle {
+    color: rgba(255, 255, 255, 0.64);
+  }
+  .CDB-Tooltip-ListText {
+    color: #FFF;
+  }
+}

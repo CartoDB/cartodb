@@ -1,0 +1,14 @@
+/**
+ *  CartoDB tooltip light styles
+ */
+
+.CDB-Tooltip--isLight {
+  &.CDB-Tooltip {
+    background: #FFF;
+  }
+  .CDB-Tooltip-ListTitle {
+    color: #636D72;
+  }
+}
+
+

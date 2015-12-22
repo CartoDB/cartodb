@@ -1,4 +1,3 @@
-var templates = require('cdb.templates');
 var View = require('../../../core/view');
 var template = require('./zoom-template.tpl');
 
@@ -28,7 +27,7 @@ module.exports = View.extend({
 
   initialize: function () {
     this.map = this.model;
-    this.template = this.options.template || template;
+    this.template = this.options.template || template;
     this.map.bind('change:zoom change:minZoom change:maxZoom', this._checkZoom, this);
   },
 

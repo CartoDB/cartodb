@@ -82,18 +82,20 @@ module.exports = cdb.core.View.extend({
     }
   },
 
-  _onRenderRangeChanged: function (m, val) {
-    if (!val) {
+  _onRenderRangeChanged: function (m, r) {
+    var prev = m.previous('renderRange');
+    if (!r || (r.start === r.end && prev.start !== prev.end)) {
       this._chartView.removeSelection();
     }
   },
 
   _onBrushEnd: function (loBarIndex, hiBarIndex) {
-    var data = this.model.getData();
-    this._rangeFilter.setRange(
-      data[loBarIndex].start,
-      data[hiBarIndex - 1].end
-    );
+    // TODO setting range filter causes selected-range to be reset, how to fix?
+    // var data = this.model.getData();
+    // this._rangeFilter.setRange(
+    //   data[loBarIndex].start,
+    //   data[hiBarIndex - 1].end
+    // );
     this._torqueLayerModel.renderRange(loBarIndex, hiBarIndex);
   },
 

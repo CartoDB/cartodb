@@ -22,7 +22,7 @@ module.exports = cdb.core.View.extend({
     this._torqueLayerModel.bind('change:step', this._onChangeStep, this);
     this._torqueLayerModel.bind('change:steps', this._onChangeSteps, this);
     this._torqueLayerModel.bind('change:stepsRange', this._onStepsRange, this);
-    this._torqueLayerModel.bind('change:time', this._onRenderRangeChanged, this);
+    this._torqueLayerModel.bind('change:renderRange', this._onRenderRangeChanged, this);
     this.add_related_model(this._torqueLayerModel);
 
     this._chartView.model.bind('change:width', this._onChangeChartWidth, this);
@@ -129,8 +129,8 @@ module.exports = cdb.core.View.extend({
     }
   },
 
-  _onRenderRangeChanged: function (m, val) {
-    this.$el.toggle(!val);
+  _onRenderRangeChanged: function (m, renderRange) {
+    this.$el.toggle(renderRange.start === renderRange.end);
   },
 
   _onChangeChartWidth: function () {

@@ -10,16 +10,17 @@ var TorqueResetRenderRangeView = require('./torque-reset-render-range-view');
 module.exports = cdb.core.View.extend({
   initialize: function () {
     this._torqueLayerModel = this.options.torqueLayerModel;
-    this._torqueLayerModel.bind('change:renderRange', this.render, this);
+    this._torqueLayerModel.bind('change:renderRange', this._onRenderRangeChange, this);
     this.add_related_model(this._torqueLayerModel);
+
+    this._setHasSelectedRange();
   },
 
   render: function () {
     this.clearSubViews();
 
-    if (this._torqueLayerModel.get('renderRange')) {
+    if (this._hasRenderRange) {
       this.el.classList.add('CDB-Widget-contentSpaced');
-      // TODO implement view for selected range of cumulativeRender + clear-button
       this._appendView(
         new TorqueRenderRangeInfoView({
           model: this.model,
@@ -46,6 +47,19 @@ module.exports = cdb.core.View.extend({
     }
 
     return this;
+  },
+
+  _onRenderRangeChange: function () {
+    var prev = this._hasRenderRange;
+    this._setHasSelectedRange();
+    if (prev !== this._hasRenderRange) {
+      this.render();
+    }
+  },
+
+  _setHasSelectedRange: function () {
+    var r = this._torqueLayerModel.get('renderRange');
+    this._hasRenderRange = r && r.start !== r.end;
   },
 
   _appendView: function (view) {

@@ -79,6 +79,7 @@ module CartoDB
     class XLSXFormatError                       < StandardError; end
     class MalformedCSVException                 < GenericImportError; end
     class TooManyColumnsError                   < GenericImportError; end
+    class TooManyColumnsProcessingError         < GenericImportError; end
     class DuplicatedColumnError                 < GenericImportError; end
     class RowsEncodingColumnError               < GenericImportError; end
     class EncodingError                         < StandardError; end
@@ -110,6 +111,7 @@ module CartoDB
       EncodingDetectionError                => 2002,
       MalformedCSVException                 => 2003,
       TooManyColumnsError                   => 2004,
+      TooManyColumnsProcessingError         => 2004,
       DuplicatedColumnError                 => 2005,
       EncodingError                         => 2006,
       RowsEncodingColumnError               => 2007,

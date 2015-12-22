@@ -60,14 +60,13 @@ var Attribution = View.extend({
     }
   },
 
-  _showAttributions: function (e) {
-    this.killEvent(e);
-    this.$('.js-text').addClass('is-visible');
+  _showAttributions: function () {
+    this.$el.addClass('is-active');
     this._initBinds();
   },
 
   _hideAttributions: function () {
-    this.$('.js-text').removeClass('is-visible');
+    this.$el.removeClass('is-active');
     this._disableBinds();
   },
 

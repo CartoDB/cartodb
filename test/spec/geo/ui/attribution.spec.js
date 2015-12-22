@@ -19,98 +19,75 @@ describe('geo/ui/attribution', function () {
     this.view.render();
     this.$button = this.view.$('.js-button');
     this.$text = this.view.$('.js-text');
+    this.viewHasClass = function (className) {
+      return this.view.$el.hasClass(className);
+    };
   });
 
   describe('render', function () {
     it('should render properly', function () {
-      expect(this.$text.length).toBe(1);
       expect(this.$button.length).toBe(1);
-    });
-
-    it('should add GMaps properly when provider is not Leaflet', function () {
-      expect(this.view.$el.hasClass('CDB-Attribution--gmaps')).toBeFalsy();
-      this.map.set('provider', 'gmaps');
-      this.view.render();
-      expect(this.view.$el.hasClass('CDB-Attribution--gmaps')).toBeTruthy();
-    });
-  });
-
-  describe('binding', function () {
-    beforeEach(function () {
-      spyOn(this.view, '_onKeyDown').and.callThrough();
-      spyOn(this.view, '_hideAttributions').and.callThrough();
-      spyOn(this.view, 'render').and.callThrough();
+      expect(this.$text.length).toBe(1);
     });
 
     it('should render when map attributions has changed', function () {
-      this.view._showAttributions();
+      spyOn(this.view, 'render');
+      this.$button.click();
       this.map.trigger('change:attribution');
       expect(this.view.render).toHaveBeenCalled();
     });
 
-    it('should not have any map bind when attributions text is not visible', function () {
-      expect(this.map.bind).not.toHaveBeenCalled();
-      $(document).trigger('click');
-      expect(this.view._hideAttributions).not.toHaveBeenCalled();
-    });
-
-    it('should have document click bind when attributions text is not visible', function () {
-      $(document).trigger('click');
-      expect(this.view._hideAttributions).not.toHaveBeenCalled();
-    });
-
-    it('should not have any keyup bind when attributions text is not visible', function () {
-      this.keyEsc();
-      expect(this.view._onKeyDown).not.toHaveBeenCalled();
-    });
-
-    describe('on visible', function () {
-      beforeEach(function () {
-        this.view._showAttributions();
-      });
-
-      it('should have map bind when attributions text is visible', function () {
-        expect(this.map.bind).toHaveBeenCalled();
-      });
-
-      it('should have document click bind when attributions text is visible', function () {
-        expect(this.view._hideAttributions.calls.count()).toEqual(0);
-        $(document).trigger('click');
-        expect(this.view._hideAttributions).toHaveBeenCalled();
-        expect(this.view._hideAttributions.calls.count()).toEqual(1);
-        $(document).trigger('click');
-        expect(this.view._hideAttributions.calls.count()).toEqual(1);
-      });
-
-      it('should have keyup bind when attributions text is visible', function () {
-        expect(this.view._onKeyDown.calls.count()).toEqual(0);
-        this.keyEsc();
-        expect(this.view._onKeyDown).toHaveBeenCalled();
-        expect(this.view._onKeyDown.calls.count()).toEqual(1);
-        this.keyEsc();
-        expect(this.view._onKeyDown.calls.count()).toEqual(1);
-      });
+    it('should add GMaps properly when provider is not Leaflet', function () {
+      expect(this.viewHasClass('CDB-Attribution--gmaps')).toBeFalsy();
+      this.map.set('provider', 'gmaps');
+      this.view.render();
+      expect(this.viewHasClass('CDB-Attribution--gmaps')).toBeTruthy();
     });
   });
 
-  describe('visibility', function () {
+  describe('when the attributions are displayed', function () {
     beforeEach(function () {
-      spyOn(this.view, '_hideAttributions').and.callThrough();
       this.$button.click();
     });
 
-    it('should show text when button is clicked', function () {
-      expect(this.$text.hasClass('is-visible')).toBeTruthy();
+    it('should hide attributions text when js-button is clicked', function () {
+      this.$button.click();
+      expect(this.viewHasClass('is-active')).toBeFalsy();
     });
 
-    it('should hide text when ESC is pressed', function () {
+    it('should collapse the attributions when ESC is pressed', function () {
       this.keyEsc();
-      expect(this.$text.hasClass('is-visible')).toBeFalsy();
+      expect(this.viewHasClass('is-active')).toBeFalsy();
     });
 
-    it('should hide text when user clicks anywhere', function () {
+    it('should collapse the attributions when user clicks on the document', function () {
       $(document).trigger('click');
-      expect(this.$text.hasClass('is-visible')).toBeFalsy();
+      expect(this.viewHasClass('is-active')).toBeFalsy();
+    });
+
+  });
+
+  describe('when attributions are hidden', function () {
+    beforeEach(function () {
+      this.$button.click();
+      this.keyEsc();
+    });
+
+    it('should show attributions text when js-button is clicked', function () {
+      this.$button.click();
+      expect(this.viewHasClass('is-active')).toBeTruthy();
+    });
+
+    it('should not respond to ESC', function () {
+      expect(this.viewHasClass('is-active')).toBeFalsy();
+      this.keyEsc();
+      expect(this.viewHasClass('is-active')).toBeFalsy();
+    });
+
+    it('should not respond to clicks on the document', function () {
+      expect(this.viewHasClass('is-active')).toBeFalsy();
+      $(document).trigger('click');
+      expect(this.viewHasClass('is-active')).toBeFalsy();
     });
   });
 });

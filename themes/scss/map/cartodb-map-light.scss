@@ -74,41 +74,6 @@ div.cartodb-share a:active, div.cartodb-share a:hover:active {
   background: #ffffff url('../img/share.png') no-repeat 7px 8px;
 }
 
-.cartodb-fullscreen {
-  display:none;
-  position:relative;
-  margin: 11px 0 0 20px;
-  float:left;
-  clear:both;
-
-  z-index: 105;
-}
-.cartodb-fullscreen a {
-  display:block;
-  width: 14px;
-  height: 14px;
-  padding: 7px;
-  box-sizing: content-box;
-
-  background: #ffffff url('../img/fullscreen.png') no-repeat 7px 3px;
-
-  -webkit-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
-  -moz-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
-  box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
-  -webkit-border-radius: 4px;
-  -moz-border-radius: 4px;
-  -ms-border-radius: 4px;
-  -o-border-radius: 4px;
-  border-radius: 4px;
-  border: 1px solid #999999;
-}
-.cartodb-fullscreen a:active {
-  background-position: 7px 3px!important;
-}
-.cartodb-fullscreen a:hover {
-  background-position: -19px 5px;
-}
-
 /* CartoDB Share Dialog styles */
 
 .cartodb-share-dialog {
@@ -452,64 +417,7 @@ only screen and (                min-resolution: 2dppx) {
 .cartodb-mobile.with-header .cartodb-header {
   background-color: rgba(0, 0, 0, 0.5);
 }
-.cartodb-mobile.with-fullscreen .cartodb-header .content .fullscreen {
-  display:block;
-}
-.cartodb-mobile.with-header .cartodb-header .content .fullscreen {
-  background: none;
-}
-.cartodb-mobile .cartodb-header .content .fullscreen {
-  display: none;
-  position:relative;
-  top: 0px;
-  left: 0px;
-  float: left;
-  width: 60px;
-  height: 60px;
-  margin: auto;
-  padding: 0;
-  background: rgba(0,0,0,.5);
-  cursor: pointer;
-  z-index: 10;
-  -webkit-border-radius: 0 0 5px 0;
-  -moz-border-radius: 0 0 5px 0;
-  -ms-border-radius: 0 0 5px 0;
-  -o-border-radius: 0 0 5px 0;
-  border-radius: 0 0 5px 0;
-  -webkit-transform-style: "ease-in";
-  -moz-transform-style: "ease-in";
-  -ms-transform-style: "ease-in";
-  -o-transform-style: "ease-in";
-  transform-style: "ease-in";
-  -webkit-transition-property: background;
-  -moz-transition-property: background;
-  -o-transition-property: background;
-  transition-property: background;
-  -webkit-transition-duration: 150ms;
-  -moz-transition-duration: 150ms;
-  -o-transition-duration: 150ms;
-  transition-duration: 150ms;
-}
-.cartodb-mobile.with-header .cartodb-header .content .fullscreen {
-  border-right: 1px solid rgba(255, 255, 255, .35);
-  -webkit-border-radius: 0;
-  -moz-border-radius: 0;
-  -ms-border-radius: 0;
-  -o-border-radius: 0;
-  border-radius: 0;
-}
-.cartodb-mobile .cartodb-header .content .fullscreen:hover,
-.cartodb-mobile.with-header .cartodb-header .content .fullscreen:hover {
-  background: rgba(0,0,0,.3);
-}
-.cartodb-mobile .cartodb-header .content .fullscreen:before {
-  content: '';
-  width: 60px;
-  height: 60px;
-  background:url('../img/fullscreen_mobile.png') no-repeat 50% 50%;
-  background-size: 28px 28px;
-  position: absolute;
-}
+
 .cartodb-mobile.with-search .cartodb-header .content .toggle,
 .cartodb-mobile.with-layers .cartodb-header .content .toggle {
   display: block;

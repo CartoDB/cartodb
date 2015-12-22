@@ -1,7 +1,8 @@
 var $ = require('jquery');
 var _ = require('underscore');
 var log = require('cdb.log');
-var View = require('../../core/view');
+var View = require('../../../core/view');
+var template = require('./fullscreen-template.tpl');
 
 /**
  *  FullScreen widget:
@@ -13,44 +14,60 @@ var View = require('../../core/view');
  *
  */
 var FullScreen = View.extend({
-
   tagName: 'div',
-  className: 'cartodb-fullscreen',
+  className: 'CDB-Fullscreen',
 
   events: {
-    "click a": "_toggleFullScreen"
+    'click': '_toggleFullScreen'
   },
 
-  initialize: function() {
+  initialize: function () {
     _.bindAll(this, 'render');
-    _.defaults(this.options, this.default_options);
+    this.template = this.options.template || template;
     this._addWheelEvent();
   },
 
-  _addWheelEvent: function() {
-    var self    = this;
+  render: function () {
+    var options = _.extend(
+      this.options,
+      {
+        mapUrl: window.location.href || ''
+      }
+    );
+    this.$el.html(this.template(options));
+
+    if (!this._canFullScreenBeEnabled()) {
+      this.undelegateEvents();
+      log.info('FullScreen API is deprecated on insecure origins. See https://goo.gl/rStTGz for more details.');
+    }
+
+    return this;
+  },
+
+  _addWheelEvent: function () {
+    var self = this;
     var mapView = this.options.mapView;
 
-    $(document).on('webkitfullscreenchange mozfullscreenchange fullscreenchange', function() {
+    $(document).on('webkitfullscreenchange mozfullscreenchange fullscreenchange', function () {
       if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.mozFullScreenElement && !document.msFullscreenElement) {
-        if (self.model.get("allowWheelOnFullscreen")) {
-          mapView.options.map.set("scrollwheel", false);
+        if (self.options.allowWheelOnFullscreen) {
+          mapView.options.map.set('scrollwheel', false);
         }
       }
       mapView.invalidateSize();
     });
   },
 
-  _toggleFullScreen: function(ev) {
+  _toggleFullScreen: function (ev) {
     if (ev) {
       this.killEvent(ev);
     }
 
-    var doc   = window.document;
+    var doc = window.document;
     var docEl = doc.documentElement;
 
     if (this.options.doc) { // we use a custom element
-      docEl = $(this.options.doc)[0];
+      docEl = this.options.doc;
     }
 
     var requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
@@ -71,32 +88,15 @@ var FullScreen = View.extend({
         }
       }
 
-      if (mapView && this.model.get("allowWheelOnFullscreen")) {
-        mapView.map.set("scrollwheel", true);
+      if (mapView && this.options.allowWheelOnFullscreen) {
+        mapView.map.set('scrollwheel', true);
       }
     } else {
       cancelFullScreen.call(doc);
     }
   },
 
-  render: function() {
-    var options = _.extend(
-      this.options,
-      {
-        mapUrl: location.href || ''
-      }
-    );
-    this.$el.html(this.options.template(options));
-
-    if (!this._canFullScreenBeEnabled()) {
-      this.undelegateEvents();
-      log.info('FullScreen API is deprecated on insecure origins. See https://goo.gl/rStTGz for more details.');
-    }
-
-    return this;
-  },
-
-  _canFullScreenBeEnabled: function() {
+  _canFullScreenBeEnabled: function () {
     if (this._isInIframe()) {
       var parentUrl = document.referrer;
       if (parentUrl.search('https:') !== 0) {
@@ -106,14 +106,13 @@ var FullScreen = View.extend({
     return true;
   },
 
-  _isInIframe: function() {
+  _isInIframe: function () {
     try {
       return window.self !== window.top;
     } catch (e) {
       return true;
     }
   }
-
 });
 
 module.exports = FullScreen;

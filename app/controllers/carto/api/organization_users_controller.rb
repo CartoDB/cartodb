@@ -11,7 +11,7 @@ module Carto
 
       before_filter :load_organization
 
-      UPDATE_PARAMS_MAP = { new_email: :email, new_username: :username }
+      UPDATE_PARAMS_MAP = { new_username: :username, new_password: :password }
 
       def create
         render_jsonp({}, 401) && return unless current_viewer_is_owner?
@@ -91,7 +91,7 @@ module Carto
 
       # TODO: Use native strong params when in Rails 4+
       def create_params
-        permit(:email, :username, :password, :password_confirmation, :quota_in_bytes, :soft_geocoding_limit)
+        permit(:email, :username, :password, :quota_in_bytes, :soft_geocoding_limit)
       end
 
       # TODO: Use native strong params when in Rails 4+
@@ -101,7 +101,7 @@ module Carto
 
       # TODO: Use native strong params when in Rails 4+
       def update_params
-        permit(:new_email, :password, :password_confirmation, :quota_in_bytes, :soft_geocoding_limit)
+        permit(:new_email, :password, :new_password, :quota_in_bytes, :soft_geocoding_limit)
       end
     end
   end

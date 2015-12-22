@@ -30,17 +30,17 @@ module Carto
 
         render_jsonp Carto::Api::UserPresenter.new(account_creator.user, current_viewer: current_viewer).to_poro, 200
       rescue => e
-        CartoDB.notify_exception(e, { new_user: account_creator.user.inspect })
+        CartoDB.notify_exception(e, user: account_creator.user.inspect)
 
         render_jsonp('An error has ocurred. Please contact support', 500)
       end
 
       def update
         render_jsonp({}, 401) && return unless current_viewer_is_owner?
-        render_jsonp('No update params provided', 410) && return if update_params.empty? || delete_params.empty?
+        render_jsonp('No update params provided', 410) && return if update_params.empty? || identify_params.empty?
 
-        user = ::User.where(delete_params).first
-        render_jsonp("No user with #{delete_params}", 404) && return if user.nil?
+        user = ::User.where(identify_params).first
+        render_jsonp("No user with #{identify_params}", 404) && return if user.nil?
 
         # Turn new_email: into email:, etc
         transformed_update_params = Hash[update_params.map { |k, v| [UPDATE_PARAMS_MAP[k] || k, v] }]
@@ -58,7 +58,7 @@ module Carto
 
         render_jsonp Carto::Api::UserPresenter.new(user, current_viewer: current_viewer).to_poro, 200
       rescue CartoDB::CentralCommunicationFailure => e
-        Rollbar.report_exception(e)
+        CartoDB.notify_exception(e)
 
         render_jsonp 'Central comunication failure', 500
       end
@@ -78,7 +78,7 @@ module Carto
 
         render_jsonp 'User deleted', 200
       rescue CartoDB::CentralCommunicationFailure => e
-        Rollbar.report_exception(e)
+        CartoDB.notify_exception(e)
         if e.user_message =~ /No user found with username/
           user.destroy
           render_jsonp 'User deleted', 200
@@ -95,8 +95,13 @@ module Carto
       end
 
       # TODO: Use native strong params when in Rails 4+
-      def delete_params
+      def identify_params
         permit(:email, :username)
+      end
+
+      # TODO: Use native strong params when in Rails 4+
+      def delete_params
+        identify_params
       end
 
       # TODO: Use native strong params when in Rails 4+

@@ -7,7 +7,7 @@ module Carto
     class OrganizationUsersController < ::Api::ApplicationController
       include OrganizationUsersHelper
 
-      ssl_required
+      ssl_required :create, :update, :destroy
 
       before_filter :load_organization
 

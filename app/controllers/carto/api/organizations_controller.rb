@@ -8,7 +8,7 @@ module Carto
       include OrganizationsHelper
       include PagedSearcher
 
-      ssl_required
+      ssl_required :users
 
       before_filter :load_organization, :load_group
 

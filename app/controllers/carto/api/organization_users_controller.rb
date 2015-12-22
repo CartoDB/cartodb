@@ -11,7 +11,7 @@ module Carto
 
       before_filter :load_organization
 
-      UPDATE_PARAMS_MAP = { new_username: :username }
+      UPDATE_PARAMS_MAP = { new_email: :email }
 
       def create
         render_jsonp({}, 401) && return unless current_viewer_is_owner?

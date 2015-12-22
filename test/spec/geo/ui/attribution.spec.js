@@ -64,7 +64,6 @@ describe('geo/ui/attribution', function () {
       $(document).trigger('click');
       expect(this.viewHasClass('is-active')).toBeFalsy();
     });
-
   });
 
   describe('when attributions are hidden', function () {

@@ -5,6 +5,7 @@ var cdb = require('cdb'); // cdb.geo.LeafletTorqueLayer
 var log = require('cdb.log');
 var MapView = require('../map-view');
 var View = require('../../core/view');
+var Sanitize = require('../../core/sanitize');
 var LeafletTiledLayerView = require('./leaflet-tiled-layer-view');
 var LeafletWMSLayerView = require('./leaflet-wms-layer-view');
 var LeafletPlainLayerView = require('./leaflet-plain-layer-view');
@@ -37,8 +38,7 @@ var LeafletMapView = MapView.extend({
       attributionControl: false
     };
 
-    if (!this.options.map_object) {
-
+    if (!this.isMapAlreadyCreated()) {
       this.map_leaflet = new L.Map(this.el, mapConfig);
       if (this.map.get("scrollwheel") == false) this.map_leaflet.scrollWheelZoom.disable();
       if (this.map.get("keyboard") == false) this.map_leaflet.keyboard.disable();
@@ -46,20 +46,18 @@ var LeafletMapView = MapView.extend({
         this.map_leaflet.dragging.disable();
         this.map_leaflet.doubleClickZoom.disable();
       }
-
     } else {
-
       this.map_leaflet = this.options.map_object;
       this.setElement(this.map_leaflet.getContainer());
 
       var c = self.map_leaflet.getCenter();
 
-      self._setModelProperty({ center: [c.lat, c.lng] });
-      self._setModelProperty({ zoom: self.map_leaflet.getZoom() });
+      this._setModelProperty({ center: [c.lat, c.lng] });
+      this._setModelProperty({ zoom: self.map_leaflet.getZoom() });
 
       // unset bounds to not change mapbounds
-      self.map.unset('view_bounds_sw', { silent: true });
-      self.map.unset('view_bounds_ne', { silent: true });
+      this.map.unset('view_bounds_sw', { silent: true });
+      this.map.unset('view_bounds_ne', { silent: true });
     }
 
     this.map.bind('set_view', this._setView, this);
@@ -72,6 +70,7 @@ var LeafletMapView = MapView.extend({
 
     this._bindModel();
     this._addLayers();
+    this.setAttribution();
 
     this.map_leaflet.on('layeradd', function(lyr) {
       this.trigger('layeradd', lyr, self);
@@ -279,6 +278,23 @@ var LeafletMapView = MapView.extend({
       [sw.lat, sw.lng],
       [ne.lat, ne.lng]
     ];
+  },
+
+  setAttribution: function(mdl) {
+    var attributionControl = this.map_leaflet.attributionControl;
+    if (this.isMapAlreadyCreated() && attributionControl) {
+      // If this method comes from an attribution property change
+      if (mdl) {
+        var previousAttributions = mdl.previous('attribution');
+        _.each(previousAttributions, function(text) {
+          attributionControl.removeAttribution(Sanitize.html(text));
+        });
+      }
+      var currentAttributions = this.map.get('attribution');
+      _.each(currentAttributions, function(text) {
+        attributionControl.addAttribution(Sanitize.html(text));
+      });
+    }
   },
 
   getSize: function() {

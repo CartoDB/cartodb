@@ -40,7 +40,7 @@ var GoogleMapsMapView = MapView.extend({
 
     var center = this.map.get('center');
 
-    if (!this.options.map_object) {
+    if (!this.isMapAlreadyCreated()) {
 
       this.map_googlemaps = new google.maps.Map(this.el, {
         center: new google.maps.LatLng(center[0], center[1]),
@@ -88,6 +88,7 @@ var GoogleMapsMapView = MapView.extend({
 
     this._bindModel();
     this._addLayers();
+    this.setAttribution();
 
     google.maps.event.addListener(this.map_googlemaps, 'center_changed', function() {
       var c = self.map_googlemaps.getCenter();
@@ -250,6 +251,12 @@ var GoogleMapsMapView = MapView.extend({
       ];
     }
     return [ [0,0], [0,0] ];
+  },
+
+  setAttribution: function() {
+    // There is no control over Google Maps attribution component, so we can't add
+    // any attribution text there (if Map is already created using createLayer for example)
+    // and there is no CartoDB attribution component.
   },
 
   setCursor: function(cursor) {

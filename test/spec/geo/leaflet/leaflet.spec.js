@@ -347,6 +347,82 @@ describe('geo/leaflet/leaflet-map-view', function () {
     });
   });
 
+  describe('attributions', function () {
+    var container;
+
+    beforeEach(function () {
+      container = $('<div>').css({
+        'height': '200px',
+        'width': '200px'
+      });
+    });
+
+    it('should not render Leaflet attributions', function () {
+      var attributions = mapView.$el.find('.leaflet-control-attribution');
+      expect(attributions.length).toBe(0);
+      layer = new CartoDBLayerGroupAnonymous({
+        attribution: 'custom attribution'
+      });
+      map.addLayer(layer);
+      expect(attributions.length).toBe(0);
+    });
+
+    it('should respect the attribution of existing Leaflet layers', function () {
+      var leafletMap = new L.Map(container[0], {
+        center: [43, 0],
+        zoom: 3
+      });
+
+      // Add a tile layer with some attribution
+      L.tileLayer('http://tile.stamen.com/toner/{z}/{x}/{y}.png', {
+        attribution: 'Stamen'
+      }).addTo(leafletMap);
+
+      mapView = new LeafletMapView({
+        el: container,
+        map: map,
+        map_object: leafletMap
+      });
+
+      // Add a CartoDB layer with some custom attribution
+      layer = new CartoDBLayerGroupAnonymous({
+        attribution: 'custom attribution'
+      });
+      map.addLayer(layer);
+
+      var attributions = mapView.$el.find('.leaflet-control-attribution').text();
+      expect(attributions).toEqual('Leaflet | Stamen, CartoDB attribution, custom attribution');
+    });
+
+    it('should not render attributions when the Leaflet map has attributionControl disabled', function () {
+      var leafletMap = new L.Map(container[0], {
+        center: [43, 0],
+        zoom: 3,
+        attributionControl: false
+      });
+
+      // Add a tile layer with some attribution
+      L.tileLayer('http://tile.stamen.com/toner/{z}/{x}/{y}.png', {
+        attribution: 'Stamen'
+      }).addTo(leafletMap);
+
+      mapView = new LeafletMapView({
+        el: container,
+        map: map,
+        map_object: leafletMap
+      });
+
+      // Add a CartoDB layer with some custom attribution
+      layer = new CartoDBLayerGroupAnonymous({
+        attribution: 'custom attribution'
+      });
+      map.addLayer(layer);
+
+      var attributions = mapView.$el.find('.leaflet-control-attribution').text();
+      expect(attributions).toEqual('');
+    });
+  });
+
   it('should disable leaflet dragging and double click zooming when the map has drag disabled', function () {
     var container = $('<div>').css({
       'height': '200px',

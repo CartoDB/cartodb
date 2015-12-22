@@ -60,6 +60,12 @@ var MapView = View.extend({
     throw "to be implemented";
   },
 
+  isMapAlreadyCreated: function() {
+    return this.options.map_object;
+  },
+
+  setAttribution: function() {},
+
   /**
   * set model property but unbind changes first in order to not create an infinite loop
   */

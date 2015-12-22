@@ -57,52 +57,6 @@
   border-radius: 50%;
 }
 
-.CDB-Shape-arrow {
-  display: inline-block;
-  position: relative;
-  width: 17px;
-  height: 10px;
-
-  &:hover {
-    cursor: pointer;
-  }
-
-  &:after,
-  &:before {
-    position: absolute;
-    top: 5px;
-    width: 10px;
-    height: 1px;
-    content: '';
-  }
-}
-.CDB-Shape-arrow.is-disabled {
-  @include opacity(0.5);
-  &:hover {
-    cursor: default;
-  }
-}
-.CDB-Shape-arrow--up {
-  &:after {
-    @include css3-prefix(transform, rotate(45deg));
-    right: 0;
-  }
-  &:before {
-    @include css3-prefix(transform, rotate(-45deg));
-    left: 0;
-  }
-}
-.CDB-Shape-arrow--down {
-  &:after {
-    @include css3-prefix(transform, rotate(-45deg));
-    right: 0;
-  }
-  &:before {
-    @include css3-prefix(transform, rotate(45deg));
-    left: 0;
-  }
-}
-
 .CDB-Shape-lens {
   display: inline-block;
   position: relative;
@@ -190,17 +144,17 @@
   }
 }
 
-.CDB-Shape-FullScreen {
+.CDB-Shape-Arrow {
   display: block;
   position: absolute;
   width: 1px;
-  height: 7px;
+  height: 8px;
   background: #32A8E6;
 
   &:before {
     display: block;
     position: absolute;
-    top: 1px;
+    top: 2px;
     left: 0;
     width: 5px;
     height: 1px;
@@ -212,7 +166,7 @@
   &:after {
     display: block;
     position: absolute;
-    top: 1px;
+    top: 2px;
     left: -4px;
     width: 5px;
     height: 1px;
@@ -222,14 +176,14 @@
   }
 }
 
-.CDB-Shape-FullScreen--top {
-  top: 8px;
-  right: 8px;
+.CDB-Shape-Arrow--top {
+  top: 6px;
+  right: 9px;
   transform: rotate(45deg);
 }
 
-.CDB-Shape-FullScreen--bottom {
-  top: 16px;
+.CDB-Shape-Arrow--bottom {
+  top: 13px;
   left: 46px;
   transform: rotate(-135deg);
 }

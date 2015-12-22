@@ -204,15 +204,15 @@
   }
 
   &:hover {
-    .CDB-Shape-FullScreen--top {
-      top: 6px;
-      right: 6px;
-      transition: all 200ms ease-out;
+    .CDB-Shape-Arrow--top {
+      @include transition(all, 100ms);
+      top: 4px;
+      right: 7px;
     }
-    .CDB-Shape-FullScreen--bottom {
-      top: 18px;
-      left: 45px;
-      transition: all 200ms ease-out;
+    .CDB-Shape-Arrow--bottom {
+      @include transition(all, 100ms);
+      top: 15px;
+      left: 44px;
     }
   }
 }

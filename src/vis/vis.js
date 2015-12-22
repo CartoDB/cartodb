@@ -745,8 +745,7 @@ var Vis = View.extend({
     }
 
     vizjson.overlays.push({
-      type: 'attribution',
-      order: 5
+      type: 'attribution'
     });
 
     // We remove certain overlays in mobile devices

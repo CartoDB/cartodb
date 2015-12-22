@@ -64,7 +64,9 @@ var MapView = View.extend({
     return this.options.map_object;
   },
 
-  setAttribution: function() {},
+  setAttribution: function() {
+    throw new Error('Subclasses of src/geo/map-view.js must implement .setAttribution');
+  },
 
   /**
   * set model property but unbind changes first in order to not create an infinite loop

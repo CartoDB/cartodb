@@ -50,6 +50,10 @@ describe('geo/ui/attribution', function () {
       this.$button.click();
     });
 
+    it('should have is-active class', function () {
+      expect(this.viewHasClass('is-active')).toBeTruthy();
+    });
+
     it('should hide attributions text when js-button is clicked', function () {
       this.$button.click();
       expect(this.viewHasClass('is-active')).toBeFalsy();
@@ -72,19 +76,21 @@ describe('geo/ui/attribution', function () {
       this.keyEsc();
     });
 
+    it('shouldn\'t have is-active class', function () {
+      expect(this.viewHasClass('is-active')).toBeFalsy();
+    });
+
     it('should show attributions text when js-button is clicked', function () {
       this.$button.click();
       expect(this.viewHasClass('is-active')).toBeTruthy();
     });
 
     it('should not respond to ESC', function () {
-      expect(this.viewHasClass('is-active')).toBeFalsy();
       this.keyEsc();
       expect(this.viewHasClass('is-active')).toBeFalsy();
     });
 
     it('should not respond to clicks on the document', function () {
-      expect(this.viewHasClass('is-active')).toBeFalsy();
       $(document).trigger('click');
       expect(this.viewHasClass('is-active')).toBeFalsy();
     });

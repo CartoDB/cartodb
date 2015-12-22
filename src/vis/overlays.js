@@ -15,7 +15,7 @@ var Text = require('../geo/ui/text');
 var TilesLoader = require('../geo/ui/tiles-loader');
 var Tooltip = require('../geo/ui/tooltip');
 var Zoom = require('../geo/ui/zoom');
-var FullScreen = require('../ui/common/fullscreen');
+var FullScreen = require('../ui/common/fullscreen/fullscreen_view');
 
 Overlay.register('logo', function (data, vis) {});
 
@@ -298,24 +298,21 @@ Overlay.register('layer_selector', function (data, vis) {
 
 // fullscreen
 Overlay.register('fullscreen', function (data, vis) {
-  var options = data.options;
-
-  options.allowWheelOnFullscreen = false;
-
-  var template = Template.compile(
-    data.template || '<a href="{{ mapUrl }}" target="_blank"></a>',
-    data.templateType || 'mustache'
-  );
-
-  var fullscreen = new FullScreen({
-    doc: '#map > div',
-    model: new Model(options),
+  var options = {
+    doc: 'body > div',
+    allowWheelOnFullscreen: false,
     mapView: vis.mapView,
-    template: template
-  });
+  }
 
+  if (data.template) {
+    options.template = Template.compile(
+      data.template,
+      data.templateType || 'mustache'
+    );
+  }
+
+  var fullscreen = new FullScreen(options);
   return fullscreen.render();
-
 });
 
 // share content

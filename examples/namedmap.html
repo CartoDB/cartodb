@@ -38,39 +38,49 @@
           "force_cors": true // This is sometimes set in the editor
         },
 
-        "widgets": {
-          'category_widget_uuid': {
-            "layerIndex": 1, // namedmap
-            "subLayerIndex": 0, // districtes_barcelona
-            "type": "aggregation",
+        "widgets": [
+          {
+            "type": "category",
             "title": "Barrios",
-            "column": "n_distri",
-            "aggregation": "count"
-          },
-          "histogram_widget_uuid": {
-            "layerIndex": 1, // namedmap
-            "subLayerIndex": 0, // districtes_barcelona
+            "dataview": {
+              "id": "category_widget_uuid",
+              "layerIndex": 1, // namedmap
+              "subLayerIndex": 0, // districtes_barcelona
+              "type": "aggregation",
+              "column": "n_distri",
+              "aggregation": "count"
+            }
+          }, {
             "type": "histogram",
             "title": "Casas por barrio",
-            "column": "homes",
-            "bins": 10
-          },
-          "list_widget": {
-            "layerIndex": 1, // namedmap
-            "subLayerIndex": 1, // arboles
+            "dataview": {
+              "id": "histogram_widget_uuid",
+              "layerIndex": 1, // namedmap
+              "subLayerIndex": 0, // districtes_barcelona
+              "type": "histogram",
+              "column": "homes",
+              "bins": 10
+            }
+          }, {
             "type": "list",
             "title": "Arboles",
-            "bbox": true,
-            "columns": [
-              "cartodb_id",
-              "name"
-            ],
-            "columns_title": [
-              "id",
-              "tipo"
-            ]
+            "dataview": {
+              "id": "list_widget",
+              "layerIndex": 1, // namedmap
+              "subLayerIndex": 1, // arboles
+              "type": "list",
+              "bbox": true,
+              "columns": [
+                "cartodb_id",
+                "name"
+              ],
+              "columns_title": [
+                "id",
+                "tipo"
+              ]
+            }
           }
-        },
+        ],
 
         "vizJSON": {
           "id": "84ec6844-4b4b-11e5-9c1d-080027880ca6",

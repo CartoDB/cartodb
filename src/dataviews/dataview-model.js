@@ -22,7 +22,7 @@ module.exports = cdb.core.Model.extend({
     opts = opts || {};
 
     if (!attrs.id) {
-      this.set('id', this.cid);
+      this.set('id', attrs.type + '-' + this.cid);
     }
 
     this.layer = opts.layer;

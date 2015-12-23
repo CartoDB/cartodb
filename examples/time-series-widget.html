@@ -38,41 +38,50 @@
             "force_cors": true // This is sometimes set in the editor
           },
 
-          "widgets": {
-            'category_widget_uuid': {
-              "layerId": "9a6d3c0e-60b7-4dec-aba7-d2dbfd024268",
-              "type": "aggregation",
+          "widgets": [
+            {
+              "type": "category",
               "title": "Barrios",
-              "column": "n_distri",
-              "aggregation": "count"
-            },
-            "histogram_widget_uuid": {
-              "layerId": "9a6d3c0e-60b7-4dec-aba7-d2dbfd024268",
+              'dataview': {
+                "layerId": "9a6d3c0e-60b7-4dec-aba7-d2dbfd024268",
+                "type": "aggregation",
+                "column": "n_distri",
+                "aggregation": "count"
+              }
+            }, {
               "type": "histogram",
               "title": "Casas por barrio",
-              "column": "homes",
-              "bins": 10
-            },
-            "list_widget": {
-              "layerId": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
+              "dataview": {
+                "layerId": "9a6d3c0e-60b7-4dec-aba7-d2dbfd024268",
+                "type": "histogram",
+                "column": "homes",
+                "bins": 10
+              }
+            }, {
               "type": "list",
               "title": "Arboles",
-              "bbox": false,
-              "columns": [
-                "cartodb_id",
-                "name"
-              ],
-              "columns_title": [
-                "id",
-                "tipo"
-              ]
-            },
-            "time_series_static_widget_uuid": {
-              "layerId": "101e17db-1466-4842-8eef-f81da32f48db",
+              "dataview": {
+                "layerId": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
+                "type": "list",
+                "bbox": false,
+                "columns": [
+                  "cartodb_id",
+                  "name"
+                ],
+                "columns_title": [
+                  "id",
+                  "tipo"
+                ]
+              }
+            }, {
               "type": "time-series",
-              "column": "end_at"
+              "dataview": {
+                "layerId": "101e17db-1466-4842-8eef-f81da32f48db",
+                "type": "histogram",
+                "column": "end_at"
+              }
             }
-          },
+          ],
 
           "vizJSON": {
             "id": "84ec6844-4b4b-11e5-9c1d-080027880ca6",
@@ -128,6 +137,7 @@
                 "options": {
                   "user_name": "orgowner",
                   "maps_api_template": "http://localhost.lan:8181/user/{user}",
+                  "sql_api_template": "http://localhost.lan:8181/user/{user}",
                   "layer_definition": {
                     "stat_tag": "84ec6844-4b4b-11e5-9c1d-080027880ca6",
                     "version": "1.0.1",

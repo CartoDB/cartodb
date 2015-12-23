@@ -30,7 +30,8 @@ module.exports = cdb.core.View.extend({
         }
       }, {
         match: function (m) {
-          var hasTorqueLayer = m.dataview && m.dataview.layer && m.dataview.layer.get('type') === 'torque';
+          // TODO should check type === 'time-series', once the dataview and widget models are separated
+          var hasTorqueLayer = m.layer && m.layer.get('type') === 'torque';
           return m.get('type') === 'histogram' && !hasTorqueLayer;
         },
         createContentView: function (m) {
@@ -40,7 +41,8 @@ module.exports = cdb.core.View.extend({
           });
         }
       }, {
-        type: 'category',
+        // TODO rename to category once using a widget model instead of dataview model
+        type: 'aggregation',
         createContentView: function (m) {
           return new CategoryContentView({
             model: m

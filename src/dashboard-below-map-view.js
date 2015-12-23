@@ -12,13 +12,15 @@ module.exports = cdb.core.View.extend({
       {
         // same type as below, but also check if the associated layer is a a toruqe layer
         match: function (m) {
-          var hasTorqueLayer = m.dataview && m.dataview.layer && m.dataview.layer.get('type') === 'torque';
-          return m.get('type') === 'time-series' && hasTorqueLayer;
+          // TODO should check type === 'time-series', once the dataview and widget models are separated
+          var hasTorqueLayer = m.layer.get('type') === 'torque';
+          return m.get('type') === 'histogram' && hasTorqueLayer;
         },
         createContentView: function (m) {
           return new TorqueTimeSeriesContentView({
             model: m,
-            torqueLayerModel: m.dataview.layer
+            torqueLayerModel: m.layer,
+            rangeFilter: m.filter
           });
         },
         customizeWidgetAttrs: function (attrs) {

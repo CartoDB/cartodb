@@ -42,20 +42,25 @@
           "force_cors": true // This is sometimes set in the editor
         },
 
-        "widgets": {
-          "time_torque_widget_uuid": {
-            "layerId": "9c14474e-d89a-49b2-b19b-7dce60f0a259",
+        "widgets": [
+          {
             "type": "time-series",
-            "column": "end_at"
-          },
-          'category_widget_uuid': {
-            "layerId": "9c14474e-d89a-49b2-b19b-7dce60f0a259",
-            "type": "aggregation",
+            "dataview": {
+              "layerId": "9c14474e-d89a-49b2-b19b-7dce60f0a259",
+              "type": "histogram",
+              "column": "end_at"
+            }
+          }, {
+            "type": "category",
             "title": "Twitter Usernames",
-            "column": "_user",
-            "aggregation": "count"
-          },
-        },
+            "dataview": {
+              "layerId": "9c14474e-d89a-49b2-b19b-7dce60f0a259",
+              "type": "aggregation",
+              "column": "_user",
+              "aggregation": "count"
+            }
+          }
+        ],
 
         "vizJSON": {
           "id": "84ec6844-4b4b-11e5-9c1d-080027880ca6",

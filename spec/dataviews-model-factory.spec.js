@@ -1,7 +1,7 @@
 var cdb = require('cartodb.js');
-var DataviewModelFactory = require('../../src/dataviews/dataview-model-factory');
+var DataviewModelFactory = require('../src/dataview-model-factory');
 
-describe('dataviews/dataview-model-factory', function () {
+describe('dataview-model-factory', function () {
   beforeEach(function () {
     this.factory = new DataviewModelFactory();
     this.layer = new cdb.core.Model({
@@ -81,10 +81,10 @@ describe('dataviews/dataview-model-factory', function () {
 
       it('should call createModel with given attrs', function () {
         expect(this.createModelSpy).toHaveBeenCalled();
-        expect(this.createModelSpy.calls.argsFor(0).length).toEqual(2);
+        expect(this.createModelSpy.calls.argsFor(0).length).toEqual(3);
         expect(this.createModelSpy.calls.argsFor(0)[0]).toEqual(this.attrs);
-        expect(this.createModelSpy.calls.argsFor(0)[1]).toEqual(jasmine.objectContaining({ layer: this.layer }));
-        expect(this.createModelSpy.calls.argsFor(0)[1]).toEqual(jasmine.objectContaining({ layerIndex: this.layerIndex }));
+        expect(this.createModelSpy.calls.argsFor(0)[1]).toBe(this.layer);
+        expect(this.createModelSpy.calls.argsFor(0)[2]).toBe(this.layerIndex);
       });
     });
 

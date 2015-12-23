@@ -2,9 +2,9 @@ var _ = require('underscore');
 var Backbone = require('backbone');
 var cdb = require('cartodb.js');
 var DashboardView = require('./dashboard-view');
-var DataviewsCollection = require('./dataviews/dataviews-collection');
-var DataviewModelFactory = require('./dataviews/dataview-model-factory');
 var WidgetModelFactory = require('./widgets/widget-model-factory');
+var DataviewModelFactory = require('./dataview-model-factory');
+var DataviewsCollection = require('./dataviews/dataviews-collection');
 var ListDataviewModel = require('./dataviews/list-dataview-model');
 var HistogramDataviewModel = require('./dataviews/histogram-dataview-model');
 var CategorDataviewModel = require('./dataviews/category-dataview-model');
@@ -24,20 +24,34 @@ var CategoryWidgetModel = require('./widgets/category/category-widget-model');
 
 module.exports = function (selector, diJSON, visOpts) {
   var dataviewModelFactory = new DataviewModelFactory({
-    list: function (attrs, opts) {
-      return new ListDataviewModel(attrs, opts);
+    list: function (attrs, layer, layerIndex) {
+      return new ListDataviewModel(attrs, {
+        layer: layer,
+        layerIndex: layerIndex
+      });
     },
-    formula: function (attrs, opts) {
-      return new FormulaDataviewModel(attrs, opts);
+    formula: function (attrs, layer, layerIndex) {
+      // TODO once dataviews are moved to cartodb.js, replace with proper API call, something like this I imagine:
+      // return foobar.dataviews.createList(layer, attrs.column, attrs.operation);
+      return new FormulaDataviewModel(attrs, {
+        layer: layer,
+        layerIndex: layerIndex
+      });
     },
-    histogram: function (attrs, opts) {
-      opts.filter = new RangeFilter();
-      return new HistogramDataviewModel(attrs, opts);
+    histogram: function (attrs, layer, layerIndex) {
+      return new HistogramDataviewModel(attrs, {
+        filter: new RangeFilter(),
+        layer: layer,
+        layerIndex: layerIndex
+      });
     },
     // TODO: Rename type to category instead of aggregation?
-    aggregation: function (attrs, opts) {
-      opts.filter = new CategoryFilter();
-      return new CategorDataviewModel(attrs, opts);
+    aggregation: function (attrs, layer, layerIndex) {
+      return new CategorDataviewModel(attrs, {
+        filter: new CategoryFilter(),
+        layer: layer,
+        layerIndex: layerIndex
+      });
     }
   });
 

@@ -36,11 +36,19 @@ module CartoDB
       end
     end
 
+    class TooManyNamedMapTemplatesError < BaseImportError
+      def initialize(message="User reached the limit on number of templates (4096/4096)")
+        super(message, 6670)
+      end
+    end
+
     class DownloadTimeoutError < BaseImportError
       def initialize(message="Data download timed out. Check the source is not running slow and/or try again.")
         super(message, 1020)
       end
     end
+
+
 
     class InstallError                          < StandardError; end
     class EmptyFileError                        < StandardError; end

@@ -256,6 +256,11 @@ module CartoDB
       what_about: "You cannot import more data until one of your active imports finishes. If you need further import slots contact our support team at <a href='mailto:support@cartodb.com?subject=Dataset%20too%20many%20concurrent%20imports%20error'>support@cartodb.com</a>.",
       source: ERROR_SOURCE_USER
     },
+    6670 => {
+      title: 'Too many named map templates',
+      what_about: "You reached the limit on number of templates (4096/4096). If you need further help contact our support team at <a href='mailto:support@cartodb.com?subject=Dataset%20too%20many%20concurrent%20imports%20error'>support@cartodb.com</a>.",
+      source: ERROR_SOURCE_USER
+    },
     99999 => {
       title: 'Unknown',
       what_about: "Sorry, something went wrong and we're not sure what. Try

@@ -10,7 +10,6 @@ module.exports = cdb.core.View.extend({
   className: 'CDB-Widget-body',
 
   initialize: function () {
-    this.filter = this.options.filter;
     this._initBinds();
   },
 

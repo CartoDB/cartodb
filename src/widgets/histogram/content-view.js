@@ -24,6 +24,7 @@ module.exports = WidgetContent.extend({
 
   initialize: function () {
     this.model = this.options.dataModel;
+    this.filter = this.options.dataModel.filter;
     this.viewModel = new WidgetViewModel();
     this.lockedByUser = false;
     WidgetContent.prototype.initialize.call(this);

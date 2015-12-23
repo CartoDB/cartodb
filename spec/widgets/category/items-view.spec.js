@@ -1,11 +1,11 @@
-var CategoryModel = require('../../../src/widgets/category/model.js');
-var ViewModel = require('../../../src/widgets/widget-content-model.js');
-var ItemsView = require('../../../src/widgets/category/list/items-view.js');
+var CategoryDataviewModel = require('../../../src/dataviews/category-dataview-model');
+var ViewModel = require('../../../src/widgets/widget-content-model');
+var ItemsView = require('../../../src/widgets/category/list/items-view');
 var WindshaftFiltersCategory = require('../../../src/windshaft/filters/category');
 
 describe('widgets/category/items-view', function () {
   beforeEach(function () {
-    this.model = new CategoryModel(null, {
+    this.model = new CategoryDataviewModel(null, {
       filter: new WindshaftFiltersCategory()
     });
     this.viewModel = new ViewModel();

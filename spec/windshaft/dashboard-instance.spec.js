@@ -291,8 +291,8 @@ describe('windshaft/dashboard-instance', function () {
     });
   });
 
-  describe('#getWidgetURL', function () {
-    it('should return undefined if widget is not found', function () {
+  describe('#getDataviewURL', function () {
+    it('should return undefined if dataview is not found', function () {
       var dashboard = new DashboardInstance({
         'layergroupid': '0123456789',
         'urlTemplate': 'https://{user}.example.com:443',
@@ -311,8 +311,8 @@ describe('windshaft/dashboard-instance', function () {
         }
       });
 
-      var widgetURL = dashboard.getWidgetURL({ widgetId: 'whatever', protocol: 'http' });
-      expect(widgetURL).toBeUndefined();
+      var dataviewURL = dashboard.getDataviewURL({ dataviewId: 'whatever', protocol: 'http' });
+      expect(dataviewURL).toBeUndefined();
 
       dashboard = new DashboardInstance({
         'layergroupid': '0123456789',
@@ -340,11 +340,11 @@ describe('windshaft/dashboard-instance', function () {
         }
       });
 
-      widgetURL = dashboard.getWidgetURL({ widgetId: 'whatever', protocol: 'http' });
-      expect(widgetURL).toBeUndefined();
+      dataviewURL = dashboard.getDataviewURL({ dataviewId: 'whatever', protocol: 'http' });
+      expect(dataviewURL).toBeUndefined();
     });
 
-    it('should return the URL for the given widgetId and protocol', function () {
+    it('should return the URL for the given dataviewId and protocol', function () {
       var dashboard = new DashboardInstance({
         'layergroupid': '0123456789',
         'urlTemplate': 'https://{user}.example.com:443',
@@ -355,7 +355,7 @@ describe('windshaft/dashboard-instance', function () {
               'type': 'mapnik',
               'meta': {},
               'widgets': {
-                'widgetId': {
+                'dataviewId': {
                   'url': {
                     'http': 'http://example.com',
                     'https': 'https://example.com'
@@ -371,11 +371,11 @@ describe('windshaft/dashboard-instance', function () {
         }
       });
 
-      var widgetURL = dashboard.getWidgetURL({ widgetId: 'widgetId', protocol: 'http' });
-      expect(widgetURL).toEqual('http://example.com');
+      var dataviewURL = dashboard.getDataviewURL({ dataviewId: 'dataviewId', protocol: 'http' });
+      expect(dataviewURL).toEqual('http://example.com');
 
-      widgetURL = dashboard.getWidgetURL({ widgetId: 'widgetId', protocol: 'https' });
-      expect(widgetURL).toEqual('https://example.com');
+      dataviewURL = dashboard.getDataviewURL({ dataviewId: 'dataviewId', protocol: 'https' });
+      expect(dataviewURL).toEqual('https://example.com');
     });
   });
 });

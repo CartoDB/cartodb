@@ -193,17 +193,18 @@ module.exports = cdb.core.Model.extend({
     return tilerLayerIndex[index];
   },
 
-  getWidgetURL: function (options) {
-    var widgetId = options.widgetId;
+  getDataviewURL: function (options) {
+    var dataviewId = options.dataviewId;
     var protocol = options.protocol;
     var url;
     var layers = this.get('metadata') && this.get('metadata').layers;
 
     _.each(layers, function (layer) {
-      var widgets = layer.widgets;
-      for (var id in widgets) {
-        if (widgetId === id) {
-          url = widgets[id].url[protocol];
+      // TODO layer.widgets is the raw data returned from metadata… should be renamed once the result from Windshaft is changed
+      var dataviews = layer.widgets;
+      for (var id in dataviews) {
+        if (dataviewId === id) {
+          url = dataviews[id].url[protocol];
           return;
         }
       }

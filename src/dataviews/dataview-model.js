@@ -1,7 +1,7 @@
 var cdb = require('cartodb.js');
 
 /**
- * Default widget model
+ * Default dataview model
  */
 module.exports = cdb.core.Model.extend({
   defaults: {
@@ -18,10 +18,20 @@ module.exports = cdb.core.Model.extend({
   },
 
   initialize: function (attrs, opts) {
+    attrs = attrs || {};
     opts = opts || {};
 
+    if (!attrs.id) {
+      this.set('id', this.cid);
+    }
+
     this.layer = opts.layer;
-    this.filter = opts.filter; // optional/might be undefined
+
+    // filter is optional, so have to guard before using it
+    this.filter = opts.filter;
+    if (this.filter) {
+      this.filter.set('dataviewId', this.id);
+    }
 
     this._initBinds();
   },
@@ -106,6 +116,6 @@ module.exports = cdb.core.Model.extend({
   },
 
   toJSON: function () {
-    throw new Error('toJSON should be defined for each widget');
+    throw new Error('toJSON should be defined for each dataview');
   }
 });

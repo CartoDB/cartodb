@@ -1,10 +1,10 @@
 var _ = require('underscore');
-var WidgetListModel = require('../../../src/widgets/list/model');
+var ListDataviewModel = require('../../../src/dataviews/list-dataview-model');
 var WidgetListContent = require('../../../src/widgets/list/content-view');
 
 describe('widgets/list/content-view', function () {
   beforeEach(function () {
-    this.model = new WidgetListModel({
+    this.model = new ListDataviewModel({
       id: 'widget_3',
       title: 'Howdy',
       columns: ['cartodb_id', 'title']

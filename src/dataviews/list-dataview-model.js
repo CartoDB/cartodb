@@ -1,7 +1,7 @@
 var Backbone = require('backbone');
-var WidgetModel = require('../widget-model');
+var DataviewModel = require('./dataview-model');
 
-module.exports = WidgetModel.extend({
+module.exports = DataviewModel.extend({
   options: {
     page: 0,
     per_page: 100
@@ -9,7 +9,7 @@ module.exports = WidgetModel.extend({
 
   initialize: function (attrs, opts) {
     this._data = new Backbone.Collection(this.get('data'));
-    WidgetModel.prototype.initialize.call(this, attrs, opts);
+    DataviewModel.prototype.initialize.call(this, attrs, opts);
   },
 
   getData: function () {

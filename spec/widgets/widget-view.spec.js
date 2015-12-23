@@ -1,11 +1,11 @@
 var _ = require('underscore');
 var cdb = require('cartodb.js');
-var WidgetModel = require('../../src/widgets/widget-model');
+var DataviewModel = require('../../src/dataviews/dataview-model');
 var WidgetView = require('../../src/widgets/widget-view');
 
 describe('widgets/widget-view', function () {
   beforeEach(function () {
-    this.model = new WidgetModel({
+    this.model = new DataviewModel({
       id: 'widget_1',
       options: {
         title: 'Hello widget',

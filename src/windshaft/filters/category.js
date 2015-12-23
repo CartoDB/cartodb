@@ -3,7 +3,7 @@ var Backbone = require('backbone');
 var WindshaftFilterBase = require('./base');
 
 /**
- *  Filter used by the category widget
+ *  Filter used by the category dataview
  *
  */
 module.exports = WindshaftFilterBase.extend({
@@ -134,7 +134,7 @@ module.exports = WindshaftFilterBase.extend({
     }
 
     var json = {};
-    json[this.get('widgetId')] = filter;
+    json[this.get('dataviewId')] = filter;
 
     return json;
   }

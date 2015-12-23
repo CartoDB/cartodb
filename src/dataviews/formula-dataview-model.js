@@ -1,10 +1,10 @@
 var _ = require('underscore');
-var WidgetModel = require('../widget-model');
+var DataviewModel = require('./dataview-model');
 
-module.exports = WidgetModel.extend({
+module.exports = DataviewModel.extend({
   defaults: _.extend(
     {},
-    WidgetModel.prototype.defaults,
+    DataviewModel.prototype.defaults,
     {
       data: '',
       suffix: '',

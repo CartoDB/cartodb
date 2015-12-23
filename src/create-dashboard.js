@@ -1,12 +1,14 @@
 var _ = require('underscore');
+var Backbone = require('backbone');
 var cdb = require('cartodb.js');
 var DashboardView = require('./dashboard-view');
-var WidgetsCollection = require('./widgets/widgets-collection');
+var DataviewsCollection = require('./dataviews/dataviews-collection');
+var DataviewModelFactory = require('./dataviews/dataview-model-factory');
 var WidgetModelFactory = require('./widgets/widget-model-factory');
-var ListModel = require('./widgets/list/model');
-var HistogramModel = require('./widgets/histogram/model');
-var CategoryModel = require('./widgets/category/model');
-var FormulaModel = require('./widgets/formula/model');
+var ListDataviewModel = require('./dataviews/list-dataview-model');
+var HistogramDataviewModel = require('./dataviews/histogram-dataview-model');
+var CategorDataviewModel = require('./dataviews/category-dataview-model');
+var FormulaDataviewModel = require('./dataviews/formula-dataview-model');
 var RangeFilter = require('./windshaft/filters/range');
 var CategoryFilter = require('./windshaft/filters/category');
 var WindshaftConfig = require('./windshaft/config');
@@ -16,45 +18,39 @@ var WindshaftPrivateDashboardConfig = require('./windshaft/private-dashboard-con
 var WindshaftPublicDashboardConfig = require('./windshaft/public-dashboard-config');
 
 module.exports = function (selector, diJSON, visOpts) {
-  var widgetModelFactory = new WidgetModelFactory({
+  var dataviewModelFactory = new DataviewModelFactory({
     list: function (attrs, opts) {
-      return new ListModel(attrs, opts);
+      return new ListDataviewModel(attrs, opts);
     },
     formula: function (attrs, opts) {
-      return new FormulaModel(attrs, opts);
+      return new FormulaDataviewModel(attrs, opts);
     },
-    histogram: function (attrs, opts, layerIndex) {
-      opts.filter = new RangeFilter({
-        widgetId: attrs.id,
-        layerIndex: layerIndex
-      });
-      return new HistogramModel(attrs, opts);
+    histogram: function (attrs, opts) {
+      opts.filter = new RangeFilter();
+      return new HistogramDataviewModel(attrs, opts);
     },
-    'time-series': function (attrs, opts, layerIndex) {
-      // change type because time-series because it's really a histogram (for the tiler at least)
-      attrs.type = 'histogram';
-      opts.filter = new RangeFilter({
-        widgetId: attrs.id,
-        layerIndex: layerIndex
-      });
-      var model = new HistogramModel(attrs, opts);
-
-      // since we changed the type of we need some way to identify that it's intended for a time-series view later
-      model.isForTimeSeries = true;
-
-      return model;
-    },
-    aggregation: function (attrs, opts, layerIndex) {
-      opts.filter = new CategoryFilter({
-        widgetId: attrs.id,
-        layerIndex: layerIndex
-      });
-      return new CategoryModel(attrs, opts);
+    // TODO: Rename type to category instead of aggregation?
+    aggregation: function (attrs, opts) {
+      opts.filter = new CategoryFilter();
+      return new CategorDataviewModel(attrs, opts);
     }
   });
 
-  // TODO keep this collection in sync with layers individual widgets collections
-  var widgets = new WidgetsCollection();
+  // TODO just pass the dataviewModel as the model until have extracted the widget specific stuff to separate models
+  var getDataviewModelAsWidgetModel = function (attrs, opts) {
+    var dataviewModel = opts.dataviewModel;
+    dataviewModel.set('title', attrs.title);
+    return dataviewModel;
+  };
+  var widgetModelFactory = new WidgetModelFactory({
+    list: getDataviewModelAsWidgetModel,
+    formula: getDataviewModelAsWidgetModel,
+    histogram: getDataviewModelAsWidgetModel,
+    'time-series': getDataviewModelAsWidgetModel,
+    category: getDataviewModelAsWidgetModel
+  });
+
+  var widgets = new Backbone.Collection();
 
   var dashboardInfoModel = new cdb.core.Model({
     title: diJSON.title,
@@ -93,37 +89,47 @@ module.exports = function (selector, diJSON, visOpts) {
   });
 
   // TODO: We can probably move this logic somewhere else
+  var dataviews = new DataviewsCollection();
   var widgetModels = [];
-  for (var id in diJSON.widgets) {
-    var d = diJSON.widgets[id];
-    var layer;
+  diJSON.widgets.forEach(function (widget) {
+    var widgetAttrs = _.omit(widget, 'dataview');
 
-    // Find the Layer that the Widget should be created for.
-    // a layerId has top-priority, otherwise it tries with a layerIndex, and even a subLayerIndex (if available)
-    if (d.layerId) {
-      layer = _.find(interactiveLayers, function (l) {
-        return d.layerId === l.get('id');
-      });
-    } else if (Number.isInteger(d.layerIndex)) {
-      layer = vis.map.layers.at(d.layerIndex);
-      if (layer && Number.isInteger(d.subLayerIndex)) {
-        layer = layer.layers.at(d.subLayerIndex);
+    // Create dataview if there's a definition provided
+    var dataviewModel;
+    var d = widget.dataview;
+    if (d) {
+      var layer;
+
+      // Find the Layer that the Widget should be created for.
+      // a layerId has top-priority, otherwise it tries with a layerIndex, and even a subLayerIndex (if available)
+      if (d.layerId) {
+        layer = _.find(interactiveLayers, function (l) {
+          return d.layerId === l.get('id');
+        });
+      } else if (Number.isInteger(d.layerIndex)) {
+        layer = vis.map.layers.at(d.layerIndex);
+        if (layer && Number.isInteger(d.subLayerIndex)) {
+          layer = layer.layers.at(d.subLayerIndex);
+        }
+      }
+
+      if (layer) {
+        var layerIndex = interactiveLayers.indexOf(layer);
+        dataviewModel = dataviewModelFactory.createModel(d, layer, layerIndex);
+        dataviews.add(dataviewModel);
+      } else {
+        cdb.log.error('no layer found for dataview ' + JSON.stringify(d));
       }
     }
 
-    if (layer) {
-      var layerIndex = interactiveLayers.indexOf(layer);
-      var attrs = _.extend({
-        id: id
-      }, d);
-      var widgetModel = widgetModelFactory.createModel(layer, layerIndex, attrs);
-      widgetModels.push(widgetModel);
-    } else {
-      cdb.log.error('no layer found for widget ' + id + ':' + JSON.stringify(d));
-    }
-  }
-  widgets.reset(widgetModels);
+    var widgetOpts = {
+      dataviewModel: dataviewModel
+    };
+    var widgetModel = widgetModelFactory.createModel(widgetAttrs, widgetOpts);
+    widgetModels.push(widgetModel);
+  });
 
+  widgets.reset(widgetModels);
   dashboardView.render();
 
   // TODO: Perhaps this "endpoint" could be part of the "datasource"?
@@ -151,12 +157,12 @@ module.exports = function (selector, diJSON, visOpts) {
     // TODO: assuming here all viz.json has a layergroup and that may not be true
     layerGroup: cartoDBLayerGroup,
     layers: interactiveLayers,
-    widgets: widgets,
+    dataviews: dataviews,
     map: vis.map
   });
 
   // TODO: rethink this
-  if (widgets.size() > 0) {
+  if (dataviews.size() > 0) {
     setTimeout(function () {
       vis.mapView.invalidateSize();
     }, 0);

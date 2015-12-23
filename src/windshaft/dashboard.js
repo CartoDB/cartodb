@@ -9,7 +9,7 @@ var WindshaftDashboard = function (options) {
 
   this.layerGroup = options.layerGroup;
   this.layers = new Backbone.Collection(options.layers);
-  this.widgets = options.widgets;
+  this.dataviews = options.dataviews;
   this.map = options.map;
   this.client = options.client;
   this.statTag = options.statTag;
@@ -20,7 +20,7 @@ var WindshaftDashboard = function (options) {
   this.map.bind('change:center change:zoom', _.debounce(this._boundingBoxChanged, BOUNDING_BOX_FILTER_WAIT), this);
 
   this.layers.bind('change', this._layerChanged, this);
-  this.widgets.bind('change:filter', this._filterChanged, this);
+  this.dataviews.bind('change:filter', this._filterChanged, this);
 
   this._createInstance();
 };
@@ -30,13 +30,13 @@ WindshaftDashboard.prototype._createInstance = function (options) {
 
   var dashboardConfig = this.configGenerator.generate({
     layers: this.layers.models,
-    widgets: this.widgets
+    dataviews: this.dataviews
   });
 
-  var filtersFromVisibleLayers = this.widgets.chain()
-    .filter(function (w) { return w.layer.isVisible(); })
-    .map(function (w) { return w.filter; })
-    .compact() // not all widgets have filters
+  var filtersFromVisibleLayers = this.dataviews.chain()
+    .filter(function (m) { return m.layer.isVisible(); })
+    .map(function (m) { return m.filter; })
+    .compact() // not all dataviews have filters
     .value();
 
   var filters = new WindshaftFiltersCollection(filtersFromVisibleLayers);
@@ -62,7 +62,7 @@ WindshaftDashboard.prototype._createInstance = function (options) {
         }
       });
 
-      this._updateWidgetURLs({
+      this._updateDataviewURLs({
         layerId: options.layerId
       });
     }.bind(this),
@@ -76,23 +76,23 @@ WindshaftDashboard.prototype._createInstance = function (options) {
 
 WindshaftDashboard.prototype._boundingBoxChanged = function () {
   if (this.instance.isLoaded()) {
-    this._updateWidgetURLs();
+    this._updateDataviewURLs();
   }
 };
 
-WindshaftDashboard.prototype._updateWidgetURLs = function (options) {
+WindshaftDashboard.prototype._updateDataviewURLs = function (options) {
   options = options || {};
   var boundingBoxFilter = new WindshaftFiltersBoundingBoxFilter(this.map.getViewBounds());
   var boundingBox = boundingBoxFilter.toString();
   var layerId = options.layerId;
 
-  this.widgets.each(function (widget) {
-    var url = this.instance.getWidgetURL({
-      widgetId: widget.get('id'),
+  this.dataviews.each(function (dataview) {
+    var url = this.instance.getDataviewURL({
+      dataviewId: dataview.get('id'),
       protocol: 'http'
     });
 
-    var layerMeta = widget.layer.get('meta') || {};
+    var layerMeta = dataview.layer.get('meta') || {};
     var extraAttrs = {};
     if (layerMeta.steps && layerMeta.column_type && _.isNumber(layerMeta.start) && _.isNumber(layerMeta.end)) {
       extraAttrs = {
@@ -103,11 +103,11 @@ WindshaftDashboard.prototype._updateWidgetURLs = function (options) {
       };
     }
 
-    widget.set(_.extend({
+    dataview.set(_.extend({
       'url': url,
       'boundingBox': boundingBox
     }, extraAttrs), {
-      silent: layerId && layerId !== widget.layer.get('id')
+      silent: layerId && layerId !== dataview.layer.get('id')
     });
   }, this);
 };

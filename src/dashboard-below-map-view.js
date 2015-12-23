@@ -10,16 +10,15 @@ module.exports = cdb.core.View.extend({
   initialize: function (options) {
     this._widgetViewFactory = new WidgetViewFactory([
       {
+        // same type as below, but also check if the associated layer is a a toruqe layer
         match: function (m) {
-          // isForTimeSeries is set to true to distinguish from default type 'histogram'
-          // This match needs to be done before the default time-series widget's match below to have presedence
-          return m.isForTimeSeries && m.layer.get('type') === 'torque';
+          var hasTorqueLayer = m.dataview && m.dataview.layer && m.dataview.layer.get('type') === 'torque';
+          return m.get('type') === 'time-series' && hasTorqueLayer;
         },
         createContentView: function (m) {
           return new TorqueTimeSeriesContentView({
             model: m,
-            rangeFilter: m.filter,
-            torqueLayerModel: m.layer
+            torqueLayerModel: m.dataview.layer
           });
         },
         customizeWidgetAttrs: function (attrs) {
@@ -27,14 +26,10 @@ module.exports = cdb.core.View.extend({
           return attrs;
         }
       }, {
-        match: function (m) {
-          // isForTimeSeries is set to true to distinguish from default type 'histogram'
-          return m.isForTimeSeries;
-        },
+        type: 'time-series',
         createContentView: function (m) {
           return new TimeSeriesContentView({
-            model: m,
-            filter: m.filter
+            model: m
           });
         },
         customizeWidgetAttrs: function (attrs) {

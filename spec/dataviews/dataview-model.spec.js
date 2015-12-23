@@ -1,8 +1,8 @@
-var WidgetModel = require('../../src/widgets/widget-model');
+var DataviewModel = require('../../src/dataviews/dataview-model');
 
-describe('widgets/widget-model', function () {
+describe('dataviews/dataview-model', function () {
   beforeEach(function () {
-    this.model = new WidgetModel();
+    this.model = new DataviewModel();
   });
 
   it('should listen to a dashboardBaseURL attribute change at the beginning', function () {
@@ -38,7 +38,7 @@ describe('widgets/widget-model', function () {
       expect(this.model.fetch).not.toHaveBeenCalled();
     });
 
-    it('should not fetch new data when url changes and widget is collapsed', function () {
+    it('should not fetch new data when url changes and dataview is collapsed', function () {
       this.model.set('collapsed', true);
       spyOn(this.model, 'fetch');
       this.model.trigger('change:url', this.model);
@@ -52,7 +52,7 @@ describe('widgets/widget-model', function () {
       expect(this.model.fetch).not.toHaveBeenCalled();
     });
 
-    it('should not fetch new data when bbox changes and widget is collapsed', function () {
+    it('should not fetch new data when bbox changes and dataview is collapsed', function () {
       this.model.set('collapsed', true);
       spyOn(this.model, 'fetch');
       this.model.trigger('change:boundingBox', this.model);

@@ -1,11 +1,11 @@
 var cdb = require('cartodb.js');
-var HistogramModel = require('../../../src/widgets/histogram/model');
+var HistogramDataviewModel = require('../../../src/dataviews/histogram-dataview-model');
 var HistogramChartView = require('../../../src/widgets/histogram/chart');
 var TorqueTimeSliderView = require('../../../src/widgets/time-series/torque-time-slider-view');
 
 describe('widgets/time-series/torque-time-slider-view', function () {
   beforeEach(function () {
-    this.model = new HistogramModel({
+    this.model = new HistogramDataviewModel({
       bins: 256
     }, {
       filter: new cdb.core.Model(),

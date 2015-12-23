@@ -1,10 +1,10 @@
 var _ = require('underscore');
-var CategoryModel = require('../../../src/widgets/category/model.js');
-var WindshaftFiltersCategory = require('../../../src/windshaft/filters/category');
+var CategoryDataviewModel = require('../../src/dataviews/category-dataview-model.js');
+var WindshaftFiltersCategory = require('../../src/windshaft/filters/category');
 
-describe('widgets/category/model', function () {
+describe('dataviews/category-dataview-model', function () {
   beforeEach(function () {
-    this.model = new CategoryModel(null, {
+    this.model = new CategoryDataviewModel(null, {
       filter: new WindshaftFiltersCategory()
     });
   });
@@ -168,13 +168,13 @@ describe('widgets/category/model', function () {
         spyOn(this.model, 'acceptAll');
       });
 
-      it('should lock widget', function () {
+      it('should lock dataview', function () {
         this.model.lockCategories();
         expect(this.model.get('locked')).toBeTruthy();
         expect(this.model._fetch).toHaveBeenCalled();
       });
 
-      it('should unlock widget', function () {
+      it('should unlock dataview', function () {
         this.model.unlockCategories();
         expect(this.model.get('locked')).toBeFalsy();
         expect(this.model._fetch).not.toHaveBeenCalled();
@@ -249,7 +249,7 @@ describe('widgets/category/model', function () {
       expect(areColored).toBeTruthy();
     });
 
-    it('should complete data with accepted items (if they are not present already) when widget is locked', function () {
+    it('should complete data with accepted items (if they are not present already) when dataview is locked', function () {
       spyOn(this.model, 'isLocked').and.returnValue(true);
       this.model.acceptFilters(['9', '10', '11']);
       var r = this.model._parseData(_generateData(8));

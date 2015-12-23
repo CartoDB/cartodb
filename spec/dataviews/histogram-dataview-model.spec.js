@@ -1,11 +1,11 @@
 var cdb = require('cartodb.js');
-var WidgetModel = require('../../../src/widgets/histogram/model');
+var HistogramDataviewModel = require('../../src/dataviews/histogram-dataview-model');
 
-describe('widgets/histogram/model', function () {
+describe('dataviews/histogram-dataview-model', function () {
   beforeEach(function () {
     this.filter = new cdb.core.Model();
     this.layer = new cdb.core.Model();
-    this.model = new WidgetModel({}, {
+    this.model = new HistogramDataviewModel({}, {
       filter: this.filter,
       layer: this.layer
     });

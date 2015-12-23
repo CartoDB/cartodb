@@ -5,7 +5,7 @@ describe('windshaft/filters/category', function () {
 
   beforeEach(function () {
     this.filter = new WindshaftFiltersCategory({
-      widgetId: 'category_widget'
+      dataviewId: 'category_dataview'
     });
 
     data = [];
@@ -165,25 +165,25 @@ describe('windshaft/filters/category', function () {
     it('should generate an object with attributes when it is serialized', function () {
       this.filter.reject([1, 2]);
       var result = this.filter.toJSON();
-      expect(result['category_widget']).toBeDefined();
-      expect(result['category_widget']['reject']).toBeDefined();
+      expect(result['category_dataview']).toBeDefined();
+      expect(result['category_dataview']['reject']).toBeDefined();
     });
 
     it('should not generate any value when accept and reject are empty', function () {
       var result = this.filter.toJSON();
-      expect(result['category_widget']).toBeDefined();
-      expect(result['category_widget']['reject']).not.toBeDefined();
-      expect(result['category_widget']['accept']).not.toBeDefined();
+      expect(result['category_dataview']).toBeDefined();
+      expect(result['category_dataview']['reject']).not.toBeDefined();
+      expect(result['category_dataview']['accept']).not.toBeDefined();
     });
 
     it('should send accept when there is any accept, no matter rejects', function () {
       this.filter.reject([1, 2]);
       this.filter.accept(3);
       var result = this.filter.toJSON();
-      expect(result['category_widget']).toBeDefined();
-      expect(result['category_widget']['reject']).not.toBeDefined();
-      expect(result['category_widget']['accept']).toBeDefined();
-      var accept = result['category_widget']['accept'];
+      expect(result['category_dataview']).toBeDefined();
+      expect(result['category_dataview']['reject']).not.toBeDefined();
+      expect(result['category_dataview']['accept']).toBeDefined();
+      var accept = result['category_dataview']['accept'];
       expect(accept.length).toBe(1);
       expect(accept[0]).toBe(3);
     });
@@ -191,10 +191,10 @@ describe('windshaft/filters/category', function () {
     it('should send reject when accept is empty but reject', function () {
       this.filter.reject([1, 2]);
       var result = this.filter.toJSON();
-      expect(result['category_widget']).toBeDefined();
-      expect(result['category_widget']['reject']).toBeDefined();
-      expect(result['category_widget']['accept']).not.toBeDefined();
-      var reject = result['category_widget']['reject'];
+      expect(result['category_dataview']).toBeDefined();
+      expect(result['category_dataview']['reject']).toBeDefined();
+      expect(result['category_dataview']['accept']).not.toBeDefined();
+      var reject = result['category_dataview']['reject'];
       expect(reject.length).toBe(2);
       expect(reject[0]).toBe(1);
       expect(reject[1]).toBe(2);
@@ -204,10 +204,10 @@ describe('windshaft/filters/category', function () {
       this.filter.reject([1, 2]);
       this.filter.accept([3]);
       var result = this.filter.toJSON();
-      expect(result['category_widget']).toBeDefined();
-      expect(result['category_widget']['reject']).not.toBeDefined();
-      expect(result['category_widget']['accept']).toBeDefined();
-      var accept = result['category_widget']['accept'];
+      expect(result['category_dataview']).toBeDefined();
+      expect(result['category_dataview']['reject']).not.toBeDefined();
+      expect(result['category_dataview']['accept']).toBeDefined();
+      var accept = result['category_dataview']['accept'];
       expect(accept.length).toBe(1);
       expect(accept[0]).toBe(3);
     });
@@ -216,10 +216,10 @@ describe('windshaft/filters/category', function () {
     it('should send a special character in accept when all categories are rejected', function () {
       this.filter.rejectAll(data);
       var result = this.filter.toJSON();
-      expect(result['category_widget']).toBeDefined();
-      expect(result['category_widget']['reject']).not.toBeDefined();
-      expect(result['category_widget']['accept']).toBeDefined();
-      var accept = result['category_widget']['accept'];
+      expect(result['category_dataview']).toBeDefined();
+      expect(result['category_dataview']['reject']).not.toBeDefined();
+      expect(result['category_dataview']['accept']).toBeDefined();
+      var accept = result['category_dataview']['accept'];
       expect(accept.length).toBe(0);
     });
   });

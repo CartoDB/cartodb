@@ -1,11 +1,11 @@
 var _ = require('underscore');
 var cdb = require('cartodb.js');
-var WidgetHistogramModel = require('../../../src/widgets/histogram/model');
+var HistogramDataviewModel = require('../../../src/dataviews/histogram-dataview-model');
 var WidgetHistogramContent = require('../../../src/widgets/histogram/content-view');
 
 describe('widgets/histogram/content-view', function () {
   beforeEach(function () {
-    this.dataModel = new WidgetHistogramModel({
+    this.dataModel = new HistogramDataviewModel({
       id: 'widget_3',
       title: 'Howdy',
       options: {

@@ -1,11 +1,11 @@
 var cdb = require('cartodb.js');
 var Backbone = require('backbone');
 var PublicDashboardConfig = require('../../src/windshaft/public-dashboard-config');
-var HistogramModel = require('../../src/widgets/histogram/model');
+var HistogramDataviewModel = require('../../src/dataviews/histogram-dataview-model');
 
 describe('windshaft/public-dashboard-config', function () {
   beforeEach(function () {
-    this.widgets = new Backbone.Collection();
+    this.dataviews = new Backbone.Collection();
 
     this.cartoDBLayer1 = new cdb.geo.CartoDBLayer({
       id: 'layer1',
@@ -13,14 +13,14 @@ describe('windshaft/public-dashboard-config', function () {
       cartocss: 'cartoCSS1',
       cartocss_version: '2.0'
     });
-    var widget = new HistogramModel({
-      id: 'widgetId',
+    var dataview = new HistogramDataviewModel({
+      id: 'dataviewId',
       column: 'column1',
       bins: 10
     }, {
       layer: this.cartoDBLayer1
     });
-    this.widgets.add(widget);
+    this.dataviews.add(dataview);
 
     this.cartoDBLayer2 = new cdb.geo.CartoDBLayer({
       id: 'layer2',
@@ -28,20 +28,20 @@ describe('windshaft/public-dashboard-config', function () {
       cartocss: 'cartoCSS2',
       cartocss_version: '2.0'
     });
-    var widget2 = new HistogramModel({
-      id: 'widgetId2',
+    var dataview2 = new HistogramDataviewModel({
+      id: 'dataviewId2',
       column: 'column2',
       bins: 5
     }, {
       layer: this.cartoDBLayer2
     });
-    this.widgets.add(widget2);
+    this.dataviews.add(dataview2);
   });
 
   describe('.generate', function () {
     it('should generate the config', function () {
       var config = PublicDashboardConfig.generate({
-        widgets: this.widgets,
+        dataviews: this.dataviews,
         layers: [ this.cartoDBLayer1, this.cartoDBLayer2 ]
       });
 
@@ -55,7 +55,7 @@ describe('windshaft/public-dashboard-config', function () {
               cartocss_version: '2.0',
               interactivity: [ 'cartodb_id' ],
               widgets: {
-                widgetId: {
+                dataviewId: {
                   type: 'histogram',
                   options: {
                     column: 'column1',
@@ -73,7 +73,7 @@ describe('windshaft/public-dashboard-config', function () {
               cartocss_version: '2.0',
               interactivity: [ 'cartodb_id' ],
               widgets: {
-                widgetId2: {
+                dataviewId2: {
                   type: 'histogram',
                   options: {
                     column: 'column2',
@@ -91,7 +91,7 @@ describe('windshaft/public-dashboard-config', function () {
       this.cartoDBLayer1.set('visible', false);
 
       var config = PublicDashboardConfig.generate({
-        widgets: this.widgets,
+        dataviews: this.dataviews,
         layers: [ this.cartoDBLayer1, this.cartoDBLayer2 ]
       });
 
@@ -105,7 +105,7 @@ describe('windshaft/public-dashboard-config', function () {
               cartocss_version: '2.0',
               interactivity: [ 'cartodb_id' ],
               widgets: {
-                widgetId2: {
+                dataviewId2: {
                   type: 'histogram',
                   options: {
                     column: 'column2',

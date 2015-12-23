@@ -1,8 +1,8 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
-var WidgetModel = require('../widget-model');
+var DataviewModel = require('./dataview-model');
 
-module.exports = WidgetModel.extend({
+module.exports = DataviewModel.extend({
   url: function () {
     var params = [];
 
@@ -33,7 +33,7 @@ module.exports = WidgetModel.extend({
   },
 
   initialize: function (attrs, opts) {
-    WidgetModel.prototype.initialize.apply(this, arguments);
+    DataviewModel.prototype.initialize.apply(this, arguments);
     this._data = new Backbone.Collection(this.get('data'));
 
     // BBox should only be included until after the first fetch, since we want to get the range of the full dataset
@@ -106,7 +106,7 @@ module.exports = WidgetModel.extend({
   },
 
   _onChangeBinds: function () {
-    WidgetModel.prototype._onChangeBinds.call(this);
+    DataviewModel.prototype._onChangeBinds.call(this);
     this.bind('change:histogramSizes', function (mdl, isSizesApplied, d) {
       if (isSizesApplied) {
         this.trigger('histogramSizes', this);

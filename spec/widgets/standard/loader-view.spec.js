@@ -1,9 +1,9 @@
-var WidgetModel = require('../../../src/widgets/widget-model');
+var DataviewModel = require('../../../src/dataviews/dataview-model');
 var WidgetLoaderView = require('../../../src/widgets/standard/widget-loader-view');
 
 describe('widgets/standard/widget-loader-view', function () {
   beforeEach(function () {
-    this.model = new WidgetModel({
+    this.model = new DataviewModel({
       id: 'widget_1',
       title: 'Hello widget',
       columns: ['cartodb_id', 'description']

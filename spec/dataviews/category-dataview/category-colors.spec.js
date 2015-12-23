@@ -1,7 +1,7 @@
 var _ = require('underscore');
-var CategoryColors = require('../../../src/widgets/category/models/category-colors.js');
+var CategoryColors = require('../../../src/dataviews/category-dataview/category-colors.js');
 
-describe('widgets/category/category-colors', function () {
+describe('dataviews/category-dataview/category-colors', function () {
   beforeEach(function () {
     this.model = new CategoryColors();
   });

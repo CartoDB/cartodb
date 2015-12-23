@@ -1,15 +1,10 @@
-var cdb = require('cartodb.js');
+var Backbone = require('backbone');
 
 /**
- *  Collection that controls widget models per layer
- *
+ * Collection of Dataviews
  */
-module.exports = cdb.Backbone.Collection.extend({
+module.exports = Backbone.Collection.extend({
   initialize: function () {
-    this._initBinds();
-  },
-
-  _initBinds: function () {
     // If a category model applies the category colors, rest should remove/disable
     // the category colors applied before.
     this.bind('change:categoryColors', function (m, isColorCategorized) {
@@ -34,5 +29,4 @@ module.exports = cdb.Backbone.Collection.extend({
       }
     }, this);
   }
-
 });

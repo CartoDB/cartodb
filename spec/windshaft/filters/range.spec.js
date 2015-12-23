@@ -2,9 +2,9 @@ var RangeFilter = require('../../../src/windshaft/filters/range');
 
 describe('windshaft/filters/range', function () {
   beforeEach(function () {
-    this.widgetId = 'range-filter-uuid';
+    this.dataviewId = 'range-filter-uuid';
     this.filter = new RangeFilter({
-      widgetId: this.widgetId
+      dataviewId: this.dataviewId
     });
   });
 
@@ -56,7 +56,7 @@ describe('windshaft/filters/range', function () {
 
     it('should return a JSON object', function () {
       expect(this.res).toEqual(jasmine.any(Object));
-      var res = this.res[this.widgetId];
+      var res = this.res[this.dataviewId];
       expect(res).toEqual(jasmine.any(Object));
       expect(res.min).toEqual(2);
       expect(res.max).toEqual(4);

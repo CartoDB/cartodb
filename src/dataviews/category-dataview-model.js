@@ -1,13 +1,13 @@
 var _ = require('underscore');
-var CategoryColors = require('./models/category-colors');
-var WidgetModel = require('../widget-model');
-var WidgetSearchModel = require('./models/search-model');
-var CategoryModelRange = require('./models/category-model-range');
-var CategoriesCollection = require('./models/categories-collection');
-var LockedCatsCollection = require('./models/locked-categories-collection');
+var DataviewModel = require('./dataview-model');
+var CategoryColors = require('./category-dataview/category-colors');
+var SearchModel = require('./category-dataview/search-model');
+var CategoryModelRange = require('./category-dataview/category-model-range');
+var CategoriesCollection = require('./category-dataview/categories-collection');
+var LockedCatsCollection = require('./category-dataview/locked-categories-collection');
 
 /**
- *  Category widget model
+ *  Category dataview model
  *
  *  - It has several internal models/collections
  *
@@ -17,7 +17,7 @@ var LockedCatsCollection = require('./models/locked-categories-collection');
  *
  */
 
-module.exports = WidgetModel.extend({
+module.exports = DataviewModel.extend({
   url: function () {
     return this.get('url') + '?bbox=' + this.get('boundingBox') + '&own_filter=' + (this.get('locked') ? 1 : 0);
   },
@@ -25,7 +25,7 @@ module.exports = WidgetModel.extend({
   initialize: function (attrs, opts) {
     this._data = new CategoriesCollection();
 
-    WidgetModel.prototype.initialize.call(this, attrs, opts);
+    DataviewModel.prototype.initialize.call(this, attrs, opts);
 
     // Locked categories collection
     this.locked = new LockedCatsCollection();
@@ -37,7 +37,7 @@ module.exports = WidgetModel.extend({
     this.colors = new CategoryColors();
 
     // Search model
-    this.search = new WidgetSearchModel({}, {
+    this.search = new SearchModel({}, {
       locked: this.locked
     });
   },

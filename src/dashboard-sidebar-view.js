@@ -30,21 +30,20 @@ module.exports = cdb.core.View.extend({
         }
       }, {
         match: function (m) {
-          return m.get('type') === 'histogram' && m.layer.get('type') !== 'torque';
+          var hasTorqueLayer = m.dataview && m.dataview.layer && m.dataview.layer.get('type') === 'torque';
+          return m.get('type') === 'histogram' && !hasTorqueLayer;
         },
         createContentView: function (m) {
           return new HistogramContentView({
             dataModel: m,
-            viewModel: new cdb.core.Model(),
-            filter: m.filter
+            viewModel: new cdb.core.Model()
           });
         }
       }, {
-        type: 'aggregation',
+        type: 'category',
         createContentView: function (m) {
           return new CategoryContentView({
-            model: m,
-            filter: m.filter
+            model: m
           });
         }
       }

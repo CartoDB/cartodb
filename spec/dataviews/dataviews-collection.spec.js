@@ -1,12 +1,12 @@
-var WidgetsCollection = require('../../src/widgets/widgets-collection');
+var DataviewsCollection = require('../../src/dataviews/dataviews-collection');
 
-describe('widgets/widgets-collection', function () {
+describe('dataviews/dataviews-collection', function () {
   beforeEach(function () {
-    this.collection = new WidgetsCollection();
+    this.collection = new DataviewsCollection();
   });
 
   describe('bind', function () {
-    it('should disable categoryColors attribute if any other widget enables it', function () {
+    it('should disable categoryColors attribute if any other dataview enables it', function () {
       this.collection.reset([{ name: 'hello' }, { name: 'howdy' }, { name: 'hey', categoryColors: true }]);
       var mdl1 = this.collection.at(0);
       var mdl2 = this.collection.at(1);

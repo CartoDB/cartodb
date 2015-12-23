@@ -1,5 +1,5 @@
 var _ = require('underscore');
-var cdb = require('cartodb.js');
+var WidgetContentView = require('../standard/widget-content-view');
 var torqueTemplate = require('./torque-template.tpl');
 var placeholderTemplate = require('./placeholder.tpl');
 var TorqueHistogramView = require('./torque-histogram-view');
@@ -8,12 +8,12 @@ var TorqueHeaderView = require('./torque-header-view');
 /**
  * Widget content view for a Torque time-series
  */
-module.exports = cdb.core.View.extend({
+module.exports = WidgetContentView.extend({
   className: 'CDB-Widget-body CDB-Widget-body--timeSeries',
 
-  initialize: function () {
-    this._torqueLayerModel = this.options.torqueLayerModel;
-    this.model.once('change:data', this.render, this);
+  _initBinds: function () {
+    this._dataviewModel.once('change:data', this.render, this);
+    this.add_related_model(this._dataviewModel);
   },
 
   render: function () {
@@ -26,15 +26,21 @@ module.exports = cdb.core.View.extend({
     } else {
       this.$el.html(torqueTemplate());
 
+      var torqueLayerModel = this._dataviewModel.layer;
+
       this._appendView(
         new TorqueHeaderView({
           el: this.$('.js-header'),
-          model: this.model,
-          torqueLayerModel: this._torqueLayerModel
+          model: this._dataviewModel,
+          torqueLayerModel: torqueLayerModel
         })
       );
 
-      var view = new TorqueHistogramView(this.options);
+      var view = new TorqueHistogramView({
+        model: this._dataviewModel,
+        rangeFilter: this._dataviewModel.filter,
+        torqueLayerModel: torqueLayerModel
+      });
       this._appendView(view);
       this.$el.append(view.el);
     }
@@ -48,7 +54,7 @@ module.exports = cdb.core.View.extend({
   },
 
   _isDataEmpty: function () {
-    var data = this.model.getData();
+    var data = this._dataviewModel.getData();
     return _.isEmpty(data) || _.size(data) === 0;
   }
 });

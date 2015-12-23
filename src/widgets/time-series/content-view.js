@@ -1,19 +1,21 @@
 var _ = require('underscore');
-var cdb = require('cartodb.js');
+var WidgetContentView = require('../standard/widget-content-view');
 var placeholderTemplate = require('./placeholder.tpl');
 var HistogramView = require('./histogram-view');
 
 /**
  * Widget content view for a time-series
  */
-module.exports = cdb.core.View.extend({
+module.exports = WidgetContentView.extend({
   className: 'CDB-Widget-body CDB-Widget-body--timeSeries',
 
-  initialize: function () {
-    this.model.once('change:data', this._onFirstLoad, this);
-    this.model.once('error', function () {
+  _initBinds: function () {
+    this._dataviewModel = this.model.dataviewModel;
+    this._dataviewModel.once('change:data', this._onFirstLoad, this);
+    this._dataviewModel.once('error', function () {
       alert('the tiler does not support non-torque layers just yet…');
     });
+    this.add_related_model(this._dataviewModel);
   },
 
   render: function () {
@@ -25,7 +27,11 @@ module.exports = cdb.core.View.extend({
         hasTorqueLayer: false
       }));
     } else {
-      this._appendView(new HistogramView(this.options));
+      this._appendView(new HistogramView({
+        model: this._dataviewModel,
+        rangeFilter: this._dataviewModel.filter,
+        torqueLayerModel: this._dataviewModel.layer
+      }));
     }
 
     return this;
@@ -33,16 +39,16 @@ module.exports = cdb.core.View.extend({
 
   _onFirstLoad: function () {
     this._storeBounds();
-    this.model.once('change:data', this.render, this);
-    this.model._fetch();
+    this._dataviewModel.once('change:data', this.render, this);
+    this._dataviewModel._fetch();
   },
 
   _storeBounds: function () {
-    var data = this.model.getData();
+    var data = this._dataviewModel.getData();
     if (data && data.length > 0) {
       var start = data[0].start;
       var end = data[data.length - 1].end;
-      this.model.set({ start: start, end: end, bins: data.length });
+      this._dataviewModel.set({ start: start, end: end, bins: data.length });
     }
   },
 
@@ -52,7 +58,7 @@ module.exports = cdb.core.View.extend({
   },
 
   _isDataEmpty: function () {
-    var data = this.model.getData();
+    var data = this._dataviewModel.getData();
     return _.isEmpty(data) || _.size(data) === 0;
   }
 });

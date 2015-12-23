@@ -33,7 +33,7 @@ module.exports = cdb.core.View.extend({
       template({
         isCollapsed: this.dataModel.isCollapsed(),
         isColorApplied: this.dataModel.isColorApplied(),
-        title: this.dataModel.get('title'),
+        title: this.viewModel.get('title'),
         columnName: this.dataModel.get('column'),
         q: this.dataModel.getSearchQuery(),
         isLocked: this.dataModel.isLocked(),

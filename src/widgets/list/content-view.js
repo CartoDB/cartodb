@@ -16,7 +16,7 @@ module.exports = WidgetContentView.extend({
 
   render: function () {
     this.clearSubViews();
-    var data = this.model.getData();
+    var data = this._dataviewModel.getData();
     var isDataEmpty = _.isEmpty(data) || _.size(data) === 0;
     this.$el.html(
       template({
@@ -37,7 +37,7 @@ module.exports = WidgetContentView.extend({
   _initViews: function () {
     // List view -> items view
     this._list = new WidgetListItemsView({
-      model: this.model
+      model: this._dataviewModel
     });
     this.$('.js-content').html(this._list.render().el);
     this.addView(this._list);

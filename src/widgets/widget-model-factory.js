@@ -15,10 +15,10 @@ WidgetModelFactory.prototype.addType = function (type, createModel) {
   this.types[type] = createModel;
 };
 
-WidgetModelFactory.prototype.createModel = function (attrs, opts) {
+WidgetModelFactory.prototype.createModel = function (attrs, dataviewModel) {
   var createModel = this.types[attrs.type];
   if (createModel) {
-    return createModel(attrs, opts);
+    return createModel(attrs, dataviewModel);
   } else {
     throw new Error('no widget model found for arguments ' + JSON.stringify(arguments));
   }

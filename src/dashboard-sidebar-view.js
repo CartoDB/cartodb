@@ -16,36 +16,31 @@ module.exports = cdb.core.View.extend({
     this._widgetViewFactory = new WidgetViewFactory([
       {
         type: 'formula',
-        createContentView: function (m) {
+        createContentView: function (widgetModel) {
           return new FormulaContentView({
-            model: m
+            model: widgetModel
           });
         }
       }, {
         type: 'list',
-        createContentView: function (m) {
+        createContentView: function (widgetModel) {
           return new ListContentView({
-            model: m
+            model: widgetModel
           });
         }
       }, {
-        match: function (m) {
-          // TODO should check type === 'time-series', once the dataview and widget models are separated
-          var hasTorqueLayer = m.layer && m.layer.get('type') === 'torque';
-          return m.get('type') === 'histogram' && !hasTorqueLayer;
-        },
-        createContentView: function (m) {
+        type: 'histogram',
+        createContentView: function (widgetModel) {
           return new HistogramContentView({
-            dataModel: m,
-            viewModel: new cdb.core.Model()
+            dataModel: widgetModel.dataviewModel,
+            viewModel: widgetModel
           });
         }
       }, {
-        // TODO rename to category once using a widget model instead of dataview model
-        type: 'aggregation',
-        createContentView: function (m) {
+        type: 'category',
+        createContentView: function (widgetModel) {
           return new CategoryContentView({
-            model: m
+            model: widgetModel
           });
         }
       }

@@ -2,7 +2,6 @@ var _ = require('underscore');
 var formatter = require('../../formatter');
 var HistogramTitleView = require('./histogram-title-view');
 var WidgetContent = require('../standard/widget-content-view');
-var WidgetViewModel = require('../widget-content-model');
 var HistogramChartView = require('./chart');
 var placeholder = require('./placeholder.tpl');
 var template = require('./content.tpl');
@@ -25,7 +24,7 @@ module.exports = WidgetContent.extend({
   initialize: function () {
     this.model = this.options.dataModel;
     this.filter = this.options.dataModel.filter;
-    this.viewModel = new WidgetViewModel();
+    this.viewModel = this.options.viewModel;
     this.lockedByUser = false;
     WidgetContent.prototype.initialize.call(this);
   },
@@ -74,6 +73,7 @@ module.exports = WidgetContent.extend({
   _onChangeModel: function () {
     // When the histogram is zoomed, we don't need to rely
     // on the change url to update the histogram
+    // TODO the widget should not know about the URL… could this state be got from the dataview model somehow?
     if (this.model.changed.url && this._isZoomed()) {
       return;
     }

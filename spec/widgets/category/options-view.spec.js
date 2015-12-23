@@ -1,5 +1,5 @@
 var CategoryDataviewModel = require('../../../src/dataviews/category-dataview-model');
-var ViewModel = require('../../../src/widgets/widget-content-model');
+var CategoryWidgetModel = require('../../../src/widgets/category/category-widget-model');
 var OptionsView = require('../../../src/widgets/category/options/options-view');
 var WindshaftFiltersCategory = require('../../../src/windshaft/filters/category');
 
@@ -8,7 +8,9 @@ describe('widgets/category/options-view', function () {
     this.model = new CategoryDataviewModel(null, {
       filter: new WindshaftFiltersCategory()
     });
-    this.viewModel = new ViewModel();
+    this.viewModel = new CategoryWidgetModel({}, {
+      dataviewModel: this.model
+    });
     this.view = new OptionsView({
       viewModel: this.viewModel,
       dataModel: this.model

@@ -16,6 +16,11 @@ var WindshaftClient = require('./windshaft/client');
 var WindshaftDashboard = require('./windshaft/dashboard');
 var WindshaftPrivateDashboardConfig = require('./windshaft/private-dashboard-config');
 var WindshaftPublicDashboardConfig = require('./windshaft/public-dashboard-config');
+var FormulaWidgetModel = require('./widgets/formula/formula-widget-model');
+var HistogramWidgetModel = require('./widgets/histogram/histogram-widget-model');
+var ListWidgetModel = require('./widgets/list/list-widget-model');
+var TimeSeriesWidgetModel = require('./widgets/time-series/time-series-widget-model');
+var CategoryWidgetModel = require('./widgets/category/category-widget-model');
 
 module.exports = function (selector, diJSON, visOpts) {
   var dataviewModelFactory = new DataviewModelFactory({
@@ -36,18 +41,22 @@ module.exports = function (selector, diJSON, visOpts) {
     }
   });
 
-  // TODO just pass the dataviewModel as the model until have extracted the widget specific stuff to separate models
-  var getDataviewModelAsWidgetModel = function (attrs, opts) {
-    var dataviewModel = opts.dataviewModel;
-    dataviewModel.set('title', attrs.title);
-    return dataviewModel;
-  };
   var widgetModelFactory = new WidgetModelFactory({
-    list: getDataviewModelAsWidgetModel,
-    formula: getDataviewModelAsWidgetModel,
-    histogram: getDataviewModelAsWidgetModel,
-    'time-series': getDataviewModelAsWidgetModel,
-    category: getDataviewModelAsWidgetModel
+    list: function (widgetAttrs, widgetOpts) {
+      return new ListWidgetModel(widgetAttrs, widgetOpts);
+    },
+    formula: function (widgetAttrs, widgetOpts) {
+      return new FormulaWidgetModel(widgetAttrs, widgetOpts);
+    },
+    histogram: function (widgetAttrs, widgetOpts) {
+      return new HistogramWidgetModel(widgetAttrs, widgetOpts);
+    },
+    'time-series': function (widgetAttrs, widgetOpts) {
+      return new TimeSeriesWidgetModel(widgetAttrs, widgetOpts);
+    },
+    category: function (widgetAttrs, widgetOpts) {
+      return new CategoryWidgetModel(widgetAttrs, widgetOpts);
+    }
   });
 
   var widgets = new Backbone.Collection();

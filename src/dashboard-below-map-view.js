@@ -10,17 +10,17 @@ module.exports = cdb.core.View.extend({
   initialize: function (options) {
     this._widgetViewFactory = new WidgetViewFactory([
       {
-        // same type as below, but also check if the associated layer is a a toruqe layer
-        match: function (m) {
-          // TODO should check type === 'time-series', once the dataview and widget models are separated
-          var hasTorqueLayer = m.layer.get('type') === 'torque';
-          return m.get('type') === 'histogram' && hasTorqueLayer;
+        // same type as below, but also check if the associated layer is a a torque layer
+        match: function (widgetModel) {
+          if (widgetModel.get('type') === 'time-series') {
+            var d = widgetModel.dataviewModel;
+            return d && d.layer.get('type') === 'torque';
+          }
+          return false;
         },
-        createContentView: function (m) {
+        createContentView: function (widgetModel) {
           return new TorqueTimeSeriesContentView({
-            model: m,
-            torqueLayerModel: m.layer,
-            rangeFilter: m.filter
+            model: widgetModel
           });
         },
         customizeWidgetAttrs: function (attrs) {
@@ -29,9 +29,9 @@ module.exports = cdb.core.View.extend({
         }
       }, {
         type: 'time-series',
-        createContentView: function (m) {
+        createContentView: function (widgetModel) {
           return new TimeSeriesContentView({
-            model: m
+            model: widgetModel
           });
         },
         customizeWidgetAttrs: function (attrs) {

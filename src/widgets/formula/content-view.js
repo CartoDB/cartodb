@@ -3,7 +3,6 @@ var d3 = require('d3');
 var $ = require('jquery');
 var formatter = require('../../formatter');
 var WidgetContent = require('../standard/widget-content-view');
-var WidgetViewModel = require('../widget-content-model');
 var template = require('./template.tpl');
 var TooltipView = require('../widget-tooltip-view');
 var animationTemplate = require('./animation-template.tpl');
@@ -18,8 +17,7 @@ module.exports = WidgetContent.extend({
   },
 
   initialize: function () {
-    this.dataModel = this.model;
-    this.viewModel = new WidgetViewModel();
+    this.dataModel = this.model.dataviewModel;
     WidgetContent.prototype.initialize.call(this);
   },
 
@@ -44,7 +42,7 @@ module.exports = WidgetContent.extend({
 
     this.$el.html(
       template({
-        title: this.dataModel.get('title'),
+        title: this.model.get('title'),
         operation: this.dataModel.get('operation'),
         value: value,
         nulls: nulls,

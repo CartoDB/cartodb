@@ -1,13 +1,12 @@
-var cdb = require('cartodb.js');
+var WidgetModel = require('../widget-model');
 
 /**
- *  View model, special for widgets with search and collapse
- *  functionalities
- *
+ * Model for a category widget
  */
+module.exports = WidgetModel.extend({
 
-module.exports = cdb.core.Model.extend({
   defaults: {
+    title: '',
     search: false
   },
 

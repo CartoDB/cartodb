@@ -18,6 +18,7 @@ module.exports = cdb.core.View.extend({
   },
 
   initialize: function () {
+    this.viewModel = this.options.viewModel;
     this.dataModel = this.options.dataModel;
     this._initBinds();
   },
@@ -26,7 +27,7 @@ module.exports = cdb.core.View.extend({
     this.clearSubViews();
     this.$el.html(
       template({
-        title: this.dataModel.get('title'),
+        title: this.viewModel.get('title'),
         isSizesApplied: this.dataModel.get('histogramSizes'),
         isCollapsed: this.dataModel.isCollapsed()
       })

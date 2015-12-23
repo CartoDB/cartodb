@@ -31,6 +31,7 @@ module CartoDB
 
       # Create a new named map
       # @throws HTTPResponseError
+      # @throws TooManyTemplatesError
       def self.create_new(visualization, parent)
         NamedMap.stats_aggregator.timing('named-map.create') do
           template_data = NamedMap.get_template_data( visualization, parent )
@@ -44,6 +45,10 @@ module CartoDB
             connecttimeout:  HTTP_CONNECT_TIMEOUT,
             timeout:          HTTP_REQUEST_TIMEOUT
             } )
+
+          if response.body =~ /reached limit on number of templates/
+            raise TooManyTemplatesError.new("Reached limit on number of named map templates")
+          end
 
           unless response.code == 200
             raise HTTPResponseError.new("POST:#{response.code} #{response.request.url} #{response.body}", template_data)

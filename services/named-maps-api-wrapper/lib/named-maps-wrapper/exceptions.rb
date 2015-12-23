@@ -15,5 +15,6 @@ module CartoDB
     class NamedMapsDataError < NamedMapsGenericError; end
     class HTTPResponseError < NamedMapsGenericError; end
     class NamedMapsPresenterError < NamedMapsGenericError; end
+    class TooManyTemplatesError < NamedMapsGenericError; end
   end
 end

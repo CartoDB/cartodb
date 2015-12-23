@@ -31,7 +31,7 @@ module.exports = cdb.core.View.extend({
     this.clearSubViews();
     this.$el.html(
       template({
-        isCollapsed: this.dataModel.isCollapsed(),
+        isCollapsed: this.viewModel.isCollapsed(),
         isColorApplied: this.dataModel.isColorApplied(),
         title: this.viewModel.get('title'),
         columnName: this.dataModel.get('column'),
@@ -48,7 +48,8 @@ module.exports = cdb.core.View.extend({
 
   _initBinds: function () {
     this.viewModel.bind('change:search', this._onSearchToggled, this);
-    this.dataModel.bind('change:filter change:lockCollection change:categoryColors change:collapsed', this.render, this);
+    this.viewModel.bind('change:collapsed', this.render, this);
+    this.dataModel.bind('change:filter change:lockCollection change:categoryColors', this.render, this);
     this.add_related_model(this.dataModel);
     this.add_related_model(this.viewModel);
   },
@@ -139,7 +140,7 @@ module.exports = cdb.core.View.extend({
   },
 
   _toggleCollapse: function () {
-    this.dataModel.toggleCollapsed();
+    this.viewModel.toggleCollapsed();
   },
 
   clean: function () {

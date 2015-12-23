@@ -37,7 +37,7 @@ describe('widgets/category/search-title-view', function () {
     });
 
     it('should change to search state when search event is triggered', function () {
-      expect(this.model.bind.calls.argsFor(0)[0]).toEqual('change:filter change:lockCollection change:categoryColors change:collapsed');
+      expect(this.model.bind.calls.argsFor(0)[0]).toEqual('change:filter change:lockCollection change:categoryColors');
     });
   });
 
@@ -111,9 +111,9 @@ describe('widgets/category/search-title-view', function () {
     });
 
     it('should call to collapse function when it is clicked', function () {
-      spyOn(this.model, 'toggleCollapsed').and.callThrough();
+      spyOn(this.viewModel, 'toggleCollapsed').and.callThrough();
       this.view.$('.js-collapse').click();
-      expect(this.model.toggleCollapsed).toHaveBeenCalled();
+      expect(this.viewModel.toggleCollapsed).toHaveBeenCalled();
     });
   });
 

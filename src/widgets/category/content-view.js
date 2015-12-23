@@ -28,7 +28,7 @@ module.exports = WidgetContent.extend({
   },
 
   _initBinds: function () {
-    this._dataviewModel.bind('change:collapsed', function (mdl, isCollapsed) {
+    this.model.bind('change:collapsed', function (mdl, isCollapsed) {
       this.$el.toggleClass('is-collapsed', !!isCollapsed);
     }, this);
   },

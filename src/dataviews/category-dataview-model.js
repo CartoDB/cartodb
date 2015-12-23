@@ -62,7 +62,7 @@ module.exports = DataviewModel.extend({
     }, this);
 
     this.bind('change:url', function () {
-      if (this.get('sync') && !this.isCollapsed()) {
+      if (this.get('sync') && !this.isDisabled()) {
         this._fetch();
       }
     }, this);
@@ -70,7 +70,7 @@ module.exports = DataviewModel.extend({
     this.bind('change:boundingBox', function () {
       // If a search is applied and bounding bounds has changed,
       // don't fetch new raw data
-      if (this.get('bbox') && !this.isSearchApplied() && !this.isCollapsed()) {
+      if (this.get('bbox') && !this.isSearchApplied() && !this.isDisabled()) {
         this._fetch();
       }
     }, this);
@@ -82,8 +82,8 @@ module.exports = DataviewModel.extend({
       });
     }, this);
 
-    this.bind('change:collapsed', function (mdl, isCollapsed) {
-      if (!isCollapsed) {
+    this.bind('change:disabled', function (mdl, isDisabled) {
+      if (!isDisabled) {
         if (mdl.changedAttributes(this._previousAttrs)) {
           this._fetch();
         }

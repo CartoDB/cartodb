@@ -10,7 +10,7 @@ module.exports = cdb.core.Model.extend({
     columns: [],
     sync: true,
     bbox: true,
-    collapsed: false
+    disabled: false
   },
 
   url: function () {
@@ -52,18 +52,18 @@ module.exports = cdb.core.Model.extend({
 
   _onChangeBinds: function () {
     this.bind('change:url', function () {
-      if (this.get('sync') && !this.isCollapsed()) {
+      if (this.get('sync') && !this.isDisabled()) {
         this._fetch();
       }
     }, this);
     this.bind('change:boundingBox', function () {
-      if (this.get('bbox') && !this.isCollapsed()) {
+      if (this.get('bbox') && !this.isDisabled()) {
         this._fetch();
       }
     }, this);
 
-    this.bind('change:collapsed', function (mdl, isCollapsed) {
-      if (!isCollapsed) {
+    this.bind('change:disabled', function (mdl, isDisabled) {
+      if (!isDisabled) {
         if (mdl.changedAttributes(this._previousAttrs)) {
           this._fetch();
         }
@@ -90,12 +90,12 @@ module.exports = cdb.core.Model.extend({
     this._fetch();
   },
 
-  isCollapsed: function () {
-    return this.get('collapsed');
+  isDisabled: function () {
+    return this.get('disabled');
   },
 
-  toggleCollapsed: function () {
-    this.set('collapsed', !this.get('collapsed'));
+  setDisabled: function (disabled) {
+    this.set('disabled', !!disabled);
   },
 
   _onFilterChanged: function (filter) {

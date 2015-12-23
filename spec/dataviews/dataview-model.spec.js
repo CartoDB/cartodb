@@ -38,8 +38,8 @@ describe('dataviews/dataview-model', function () {
       expect(this.model.fetch).not.toHaveBeenCalled();
     });
 
-    it('should not fetch new data when url changes and dataview is collapsed', function () {
-      this.model.set('collapsed', true);
+    it('should not fetch new data when url changes and dataview is disabled', function () {
+      this.model.set('disabled', true);
       spyOn(this.model, 'fetch');
       this.model.trigger('change:url', this.model);
       expect(this.model.fetch).not.toHaveBeenCalled();
@@ -52,8 +52,8 @@ describe('dataviews/dataview-model', function () {
       expect(this.model.fetch).not.toHaveBeenCalled();
     });
 
-    it('should not fetch new data when bbox changes and dataview is collapsed', function () {
-      this.model.set('collapsed', true);
+    it('should not fetch new data when bbox changes and dataview is disabled', function () {
+      this.model.set('disabled', true);
       spyOn(this.model, 'fetch');
       this.model.trigger('change:boundingBox', this.model);
       expect(this.model.fetch).not.toHaveBeenCalled();
@@ -63,15 +63,15 @@ describe('dataviews/dataview-model', function () {
   describe('when collapse', function () {
     it('should fetch again when collapse is disabled and url or boundingBox has changed', function () {
       spyOn(this.model, '_fetch');
-      this.model.set('collapsed', true);
+      this.model.set('disabled', true);
       this.model.set('url', 'hello');
-      this.model.set('collapsed', false);
+      this.model.set('disabled', false);
       expect(this.model._fetch).toHaveBeenCalled();
     });
 
-    it('should not fetch when collapsed is enabled', function () {
+    it('should not fetch when disabled is enabled', function () {
       spyOn(this.model, '_fetch');
-      this.model.set('collapsed', true);
+      this.model.set('disabled', true);
       expect(this.model._fetch).not.toHaveBeenCalled();
     });
   });

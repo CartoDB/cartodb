@@ -156,7 +156,7 @@ var Tooltip = InfoBox.extend({
     _.each(tickPositions, function(str) {
       removedClass += modifierClass + str + ' ';
     });
-    this.$('.CDB-Tooltip-wrapper').removeClass(removedClass);
+    this.$el.removeClass(removedClass);
 
     // Vertically
     if (pos.indexOf('top') !== -1) {

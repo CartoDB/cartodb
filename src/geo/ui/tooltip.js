@@ -149,9 +149,14 @@ var Tooltip = InfoBox.extend({
     var top = 0;
     var left = 0;
     var modifierClass = 'CDB-Tooltip--';
+    var tickPositions = ['topLeft', 'topRight', 'bottomRight', 'bottomLeft'];
 
     // Remove tick class
-    this.$el.attr('class', 'CDB-Tooltip');
+    var removedClass = '';
+    _.each(tickPositions, function(str) {
+      removedClass += modifierClass + str + ' ';
+    });
+    this.$('.CDB-Tooltip').removeClass(removedClass);
 
     // Vertically
     if (pos.indexOf('top') !== -1) {

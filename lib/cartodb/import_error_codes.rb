@@ -258,7 +258,7 @@ module CartoDB
     },
     6670 => {
       title: 'Too many named map templates',
-      what_about: "You reached the limit on number of templates (4096/4096). If you need further help contact our support team at <a href='mailto:support@cartodb.com?subject=Dataset%20too%20many%20concurrent%20imports%20error'>support@cartodb.com</a>.",
+      what_about: "You reached the limit on the number of named map templates (4096/4096).",
       source: ERROR_SOURCE_USER
     },
     99999 => {

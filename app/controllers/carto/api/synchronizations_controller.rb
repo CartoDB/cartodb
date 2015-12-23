@@ -16,7 +16,7 @@ module Carto
       def index
         synchronizations = Carto::Synchronization.where(user_id: current_user.id)
         representation = synchronizations.map(&:to_hash)
-        response  = {
+        response = {
           synchronizations: representation,
           total_entries: synchronizations.count
         }

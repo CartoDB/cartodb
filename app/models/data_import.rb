@@ -180,7 +180,6 @@ class DataImport < Sequel::Model
       end
     end
 
-
     log.append 'After dispatch'
     if self.results.empty?
       self.error_code = 1002

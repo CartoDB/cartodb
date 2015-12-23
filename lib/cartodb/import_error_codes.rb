@@ -258,7 +258,7 @@ module CartoDB
     },
     6670 => {
       title: 'Too many named map templates',
-      what_about: "You reached the limit on the number of named map templates (4096/4096).",
+      what_about: "You reached the limit on the number of named map templates.",
       source: ERROR_SOURCE_USER
     },
     99999 => {

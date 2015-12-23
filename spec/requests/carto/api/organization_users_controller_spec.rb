@@ -97,6 +97,7 @@ describe Carto::Api::OrganizationUsersController do
 
       last_response.status.should == 200
 
+      @organization.reload
       last_user_created = @organization.users.find { |user| user.username == username }
       last_user_created.soft_geocoding_limit.should == false
     end

@@ -48,8 +48,6 @@ module CartoDB
       end
     end
 
-
-
     class InstallError                          < StandardError; end
     class EmptyFileError                        < StandardError; end
     class ExtractionError                       < StandardError; end

@@ -131,7 +131,7 @@
   left: 84px;
 }
 .CDB-Search-inner {
-  @include transition(opacity, 200ms ease-in);
+  @include transition(width, 100ms ease-in);
   width: 32px;
   height: 32px;
   overflow: hidden;
@@ -149,7 +149,7 @@
   cursor: pointer;
 }
 .CDB-Search-text {
-  @include transition(opacity, 200ms ease-in);
+  @include transition(opacity, 100ms ease-in);
   display: inline-block;
   position: absolute;
   top: 8px;

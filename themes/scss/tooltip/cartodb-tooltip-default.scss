@@ -3,45 +3,45 @@
 
 /* new tooltip styles */
 
-.CDB-Tooltip {
+.CDB-Tooltip-wrapper {
   display: none;
   position: absolute;
   min-width: 120px;
   max-width: 180px;
-  padding: 20px 24px;
-  overflow-y: hidden;
   border-radius: 4px;
-  background: #FFF;
-  font-family: 'Open Sans';
-  box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.05);
-  z-index: 50;
-
-  &.CDB-Tooltip--topLeft {
+  overflow: hidden;
+  &.CDB-Tooltip-wrapper--topLeft {
     border-top-left-radius: 0;
   }
-  &.CDB-Tooltip--topRight {
+  &.CDB-Tooltip-wrapper--topRight {
     border-top-right-radius: 0;
   }
-  &.CDB-Tooltip--bottomLeft {
+  &.CDB-Tooltip-wrapper--bottomLeft {
     border-bottom-left-radius: 0;
   }
-  &.CDB-Tooltip--bottomRight {
+  &.CDB-Tooltip-wrapper--bottomRight {
     border-bottom-right-radius: 0;
   }
 }
-.CDB-Tooltip-ListItem {
+.CDB-Tooltip {
+  padding: 20px 24px;
+  font-family: 'Open Sans';
+  box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.05);
+  z-index: 50;
+}
+.CDB-Tooltip-listItem {
   margin-top: 8px;
   &:first-child {
     margin-top: 0;
   }
 }
-.CDB-Tooltip-ListTitle {
+.CDB-Tooltip-listTitle {
   font-size: 10px;
   font-weight: 400;
   line-height: 15px;
   text-transform: uppercase;
 }
-.CDB-Tooltip-ListText {
+.CDB-Tooltip-listText {
   font-size: 12px;
   font-weight: 600;
   line-height: 16px;

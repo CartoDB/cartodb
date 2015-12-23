@@ -164,7 +164,6 @@ class DataImport < Sequel::Model
     values
   end
 
-  # @throws TooManyNamedMapTemplatesError
   def run_import!
     self.resque_ppid = Process.ppid
     self.server = Socket.gethostname
@@ -198,16 +197,17 @@ class DataImport < Sequel::Model
     CartoDB::notify_warning_exception(quota_exception)
     handle_failure(quota_exception)
     self
+  rescue CartoDB::NamedMapsWrapper::TooManyTemplatesError
+    templates_exception = CartoDB::Importer2::TooManyNamedMapTemplatesError.new
+    CartoDB::notify_warning_exception(templates_exception)
+    handle_failure(templates_exception)
+    self
   rescue => exception
     log.append "Exception: #{exception.to_s}"
     log.append exception.backtrace, truncate = false
     stacktrace = exception.to_s + exception.backtrace.join
     Rollbar.report_message('Import error', 'error', error_info: stacktrace)
-    if exception.is_a? CartoDB::NamedMapsWrapper::TooManyTemplatesError
-      handle_failure(CartoDB::Importer2::TooManyNamedMapTemplatesError.new)
-    else
-      handle_failure(exception)
-    end
+    handle_failure(exception)
     self
   end
 
@@ -315,7 +315,6 @@ class DataImport < Sequel::Model
   def handle_failure(supplied_exception = nil)
     self.success    = false
     self.state      = STATE_FAILURE
-    debugger
     if !supplied_exception.nil? && supplied_exception.respond_to?(:error_code)
       self.error_code = supplied_exception.error_code
     end
@@ -818,7 +817,6 @@ class DataImport < Sequel::Model
     dataimport_logger.info(import_log.to_json)
     CartoDB::Importer2::MailNotifier.new(self, results, ::Resque).notify_if_needed
     results.each { |result| CartoDB::Metrics.new.report(:import, payload_for(result)) }
-    debugger
   end
 
   def importer_stats_aggregator

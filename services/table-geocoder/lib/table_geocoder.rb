@@ -84,7 +84,7 @@ module CartoDB
     end
 
     def name
-      'heremaps'
+      'here_geocoder'
     end
 
     private

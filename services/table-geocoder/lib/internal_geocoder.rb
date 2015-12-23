@@ -124,7 +124,7 @@ module CartoDB
       end
 
       def name
-        'internal'
+        'cdb_geocoder'
       end
 
       def update_stats(response, number_of_terms)

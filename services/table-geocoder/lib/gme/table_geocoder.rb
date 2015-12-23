@@ -66,7 +66,7 @@ module Carto
       end
 
       def name
-        'google'
+        'google_geocoder'
       end
 
       private

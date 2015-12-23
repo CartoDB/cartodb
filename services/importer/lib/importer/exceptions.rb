@@ -37,7 +37,7 @@ module CartoDB
     end
 
     class TooManyNamedMapTemplatesError < BaseImportError
-      def initialize(message="User reached the limit on number of templates (4096/4096)")
+      def initialize(message="User reached the limit on number of templates")
         super(message, 6670)
       end
     end

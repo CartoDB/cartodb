@@ -198,7 +198,7 @@ class DataImport < Sequel::Model
     self
   rescue CartoDB::NamedMapsWrapper::TooManyTemplatesError
     templates_exception = CartoDB::Importer2::TooManyNamedMapTemplatesError.new
-    log.append "Exception: #{templates_exception.to_s}"
+    log.append "Exception: #{templates_exception}"
     CartoDB::notify_warning_exception(templates_exception)
     handle_failure(templates_exception)
     self

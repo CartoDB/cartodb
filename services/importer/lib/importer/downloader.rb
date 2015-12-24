@@ -322,24 +322,19 @@ module CartoDB
       end
 
       def content_length_from(headers)
-        content_length = headers.fetch('Content-Length', nil)
-        content_length ||= headers.fetch('Content-length', nil)
-        content_length ||= headers.fetch('content-length', -1)
+        content_length = headers['content-length']
+        return -1 unless content_length
         content_length.to_i
       end
 
       def etag_from(headers)
-        etag  =   headers.fetch('ETag', nil)
-        etag  ||= headers.fetch('Etag', nil)
-        etag  ||= headers.fetch('etag', nil)
-        etag  = etag.delete('"').delete("'") if etag
+        etag = headers['etag']
+        etag = etag.delete('"').delete("'") if etag
         etag
       end
 
       def last_modified_from(headers)
-        last_modified =   headers.fetch('Last-Modified', nil)
-        last_modified ||= headers.fetch('Last-modified', nil)
-        last_modified ||= headers.fetch('last-modified', nil)
+        last_modified = headers['last-modified']
         last_modified = last_modified.delete('"').delete("'") if last_modified
         if last_modified
           begin
@@ -374,15 +369,13 @@ module CartoDB
       end
 
       def content_type
-        full_content_type = headers['content-type']
-        return nil unless full_content_type
-        full_content_type.split(';').first
+        media_type = headers['content-type']
+        return nil unless media_type
+        media_type.split(';').first
       end
 
       def name_from_http(headers)
-        disposition = headers.fetch('Content-Disposition', nil)
-        disposition ||= headers.fetch('Content-disposition', nil)
-        disposition ||= headers.fetch('content-disposition', nil)
+        disposition = headers['content-disposition']
         return false unless disposition
         filename = disposition.match(CONTENT_DISPOSITION_RE).to_a[1]
         return false unless filename
@@ -410,7 +403,7 @@ module CartoDB
       end
 
       def gdrive_deny_in?(headers)
-        headers.fetch('X-Frame-Options', nil) == 'DENY'
+        headers['x-frame-options'] == 'DENY'
       end
 
       def md5_command_for(name)

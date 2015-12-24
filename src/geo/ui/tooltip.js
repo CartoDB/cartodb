@@ -5,7 +5,7 @@ var InfowindowModel = require('./infowindow-model');
 
 var Tooltip = InfoBox.extend({
   defaultTemplate: '<p>{{text}}</p>',
-  className: 'CDB-Tooltip',
+  className: 'CDB-Tooltip-wrapper',
 
   defaults: {
     vertical_offset: 0,
@@ -148,10 +148,10 @@ var Tooltip = InfoBox.extend({
     var mapViewSize = this.options.mapView.getSize();
     var top = 0;
     var left = 0;
-    var modifierClass = 'CDB-Tooltip--';
+    var modifierClass = 'CDB-Tooltip-wrapper--';
 
     // Remove tick class
-    this.$el.attr('class', 'CDB-Tooltip');
+    this._removePositionModifiers();
 
     // Vertically
     if (pos.indexOf('top') !== -1) {
@@ -201,8 +201,19 @@ var Tooltip = InfoBox.extend({
       top: top,
       left: left
     }).addClass(modifierClass);
-  }
+  },
 
+  _removePositionModifiers: function () {
+    var positions = [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ];
+    var positionModifiers = _.map(positions, function (className) {
+      return this._modifierClassName(className);
+    }, this);
+    this.$el.removeClass(positionModifiers.join(' '));
+  },
+
+  _modifierClassName: function (className) {
+    return this.className + '--' + className;
+  }
 });
 
 module.exports = Tooltip;

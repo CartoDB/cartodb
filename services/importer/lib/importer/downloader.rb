@@ -260,7 +260,6 @@ module CartoDB
           @last_modified  = last_modified_from(headers)
         end
         request.run
-
         if download_error && !error_response.nil?
           if error_response.timed_out?
             raise DownloadTimeoutError.new("TIMEOUT ERROR: Body:#{error_response.body}")
@@ -278,7 +277,6 @@ module CartoDB
         end
 
         File.rename(temp_name, filepath(name))
-
         # Just return the source file structure
         self.source_file  = SourceFile.new(filepath(name), name)
       end
@@ -376,9 +374,9 @@ module CartoDB
       end
 
       def content_type
-        headers.fetch('Content-Type', nil) ||
-          headers.fetch('Content-type', nil) ||
-          headers.fetch('content-type', nil)
+        full_content_type = headers['content-type']
+        return nil unless full_content_type
+        full_content_type.split(';').first
       end
 
       def name_from_http(headers)

@@ -149,14 +149,9 @@ var Tooltip = InfoBox.extend({
     var top = 0;
     var left = 0;
     var modifierClass = 'CDB-Tooltip-wrapper--';
-    var tickPositions = ['topLeft', 'topRight', 'bottomRight', 'bottomLeft'];
 
     // Remove tick class
-    var removedClass = '';
-    _.each(tickPositions, function(str) {
-      removedClass += modifierClass + str + ' ';
-    });
-    this.$el.removeClass(removedClass);
+    this._removePositionModifiers();
 
     // Vertically
     if (pos.indexOf('top') !== -1) {
@@ -206,8 +201,19 @@ var Tooltip = InfoBox.extend({
       top: top,
       left: left
     }).addClass(modifierClass);
-  }
+  },
 
+  _removePositionModifiers: function () {
+    var positions = [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ];
+    var positionModifiers = _.map(positions, function (className) {
+      return this._modifierClassName(className);
+    }, this);
+    this.$el.removeClass(positionModifiers.join(' '));
+  },
+
+  _modifierClassName: function (className) {
+    return this.className + '--' + className;
+  }
 });
 
 module.exports = Tooltip;

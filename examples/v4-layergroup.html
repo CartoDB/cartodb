@@ -170,14 +170,16 @@
                         ],
                         "template_name":"tooltip_light",
                         "template": ' '+
-                            '<ul class="CDB-Tooltip-List">'+
-                              '{{#fields}}'+
-                              '<li class="CDB-Tooltip-ListItem">'+
-                                '<h3 class="CDB-Tooltip-ListTitle">ISO CODE</h3>'+
-                                '<h4 class="CDB-Tooltip-ListText">{{value}}</h4>'+
-                              '</li>'+
-                              '{{/fields}}'+
-                            '</ul>',
+                            '<div class="CDB-Tooltip CDB-Tooltip--isDark js-content">'+
+                              '<ul class="CDB-Tooltip-list">'+
+                                '{{#fields}}'+
+                                '<li class="CDB-Tooltip-listItem">'+
+                                  '<h3 class="CDB-Tooltip-listTitle">ISO CODE</h3>'+
+                                  '<h4 class="CDB-Tooltip-listText">{{value}}</h4>'+
+                                '</li>'+
+                                '{{/fields}}'+
+                              '</ul>'+
+                            '</div>',
                         "alternative_names":{},
                         "maxHeight":180
                       },

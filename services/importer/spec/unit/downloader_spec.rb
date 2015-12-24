@@ -79,6 +79,13 @@ describe Downloader do
       downloader.source_file.filename.should eq 'ngos.csv'
     end
 
+    it 'ignores extra type parameters in Content-Type header' do
+      stub_download(url: @file_url_without_extension, filepath: @file_filepath_without_extension, headers: { 'Content-Type' => 'vnd.ms-excel;charset=UTF-8' })
+      downloader = Downloader.new(@file_url_without_extension)
+      downloader.run
+      downloader.send(:content_type).should eq 'vnd.ms-excel'
+    end
+
     it 'uses Content-Type header extension for files with different extension' do
       stub_download(
           url: @file_url_with_wrong_extension,
@@ -207,17 +214,19 @@ describe Downloader do
 
   describe '#name_from' do
     it 'gets the file name from the Content-Disposition header if present' do
-      headers = { "Content-Disposition" => %{attachment; filename="bar.csv"} }
+      # header hash keys are downcased to take advantage of typhoeus case
+      # insensitive headers lookup (https://github.com/typhoeus/typhoeus/issues/227)
+      headers = { "content-disposition" => %{attachment; filename="bar.csv"} }
       downloader = Downloader.new(@file_url)
       downloader.send(:name_from, headers, @file_url).should eq 'bar.csv'
 
-      headers = { "Content-Disposition" => %{attachment; filename=bar.csv} }
+      headers = { "content-disposition" => %{attachment; filename=bar.csv} }
       downloader = Downloader.new(@file_url)
       downloader.send(:name_from, headers, @file_url).should eq 'bar.csv'
 
       disposition = "attachment; filename=map_gaudi3d.geojson; " +
                     'modification-date="Tue, 06 Aug 2013 15:05:35 GMT'
-      headers = { "Content-Disposition" => disposition }
+      headers = { "content-disposition" => disposition }
       downloader = Downloader.new(@file_url)
       downloader.send(:name_from, headers, @file_url).should eq 'map_gaudi3d.geojson'
     end

@@ -18,9 +18,9 @@
   top: 0;
   bottom: 0;
   left: 0;
-  width: 88px;
+  width: 76px;
   max-width: 352px;
-  padding: 24px;  
+  padding: 16px 18px;  
   background: #3AA9E3;
   font-family: 'Open Sans';
   overflow: hidden;
@@ -28,7 +28,7 @@
   z-index: 2;
 }
 .CDB-Dashboard-info.is-active {
-  .CDB-Dashboard-infoInner{
+  .CDB-Dashboard-infoInner {
     width: 352px;
     box-shadow: 0 0 40px 0 rgba(0, 0, 0, 0.2);
   }
@@ -98,9 +98,9 @@
 }
 .CDB-Dashboard-infoFooter {
   position: absolute;
-  right: 24px;
-  bottom: 24px;
-  left: 24px;
+  right: 18px;
+  bottom: 16px;
+  left: 18px;
   width: 280px;
 }
 .CDB-Dashboard-infoMedia {

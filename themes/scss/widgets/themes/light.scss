@@ -35,6 +35,9 @@ $commonBkg: rgba(#FFF, 1);
   .CDB-Widget-textSmaller {
     color: $secondary;
   }
+  .CDB-Widget-textBig.is-collapsed {
+    color: $secondary;
+  }
   .CDB-Widget-textSmaller--dark {
     color: $primary;
   }

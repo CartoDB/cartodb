@@ -452,9 +452,6 @@ var Vis = View.extend({
     _(overlays).each(function (data) {
       var type = data.type;
 
-      // We don't render certain overlays if we are in mobile
-      if (this.isMobileEnabled && (type === 'zoom' || type === 'header' || type === 'loader')) return;
-
       // IE<10 doesn't support the Fullscreen API
       if (type === 'fullscreen' && util.browser.ie && util.browser.ie.version <= 10) return;
 
@@ -644,9 +641,6 @@ var Vis = View.extend({
     }
 
     this.mobile = this.isMobileDevice();
-    this.isMobileEnabled = (opt.mobile_layout && this.mobile) || opt.force_mobile;
-
-    if (opt.force_mobile === false || opt.force_mobile === 'false') this.isMobileEnabled = false;
 
     if (!opt.tiles_loader) {
       remove_overlay('loader');
@@ -694,7 +688,7 @@ var Vis = View.extend({
       }
     }
 
-    if (opt.shareable && !this.isMobileEnabled) {
+    if (opt.shareable) {
       if (!search_overlay('share')) {
         vizjson.overlays.push({
           type: 'share',

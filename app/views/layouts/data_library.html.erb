@@ -43,7 +43,7 @@
     <%= yield :js %>
 
     <%= insert_trackjs() -%>
-    <%= insert_google_analytics('primary') -%>
+    <%= insert_google_analytics('primary', {}, true) -%>
     <%= insert_hubspot() -%>
   </body>
 </html>

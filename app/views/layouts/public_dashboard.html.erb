@@ -65,5 +65,6 @@
     <% end %>
     <%= javascript_include_tag 'cdb.js', 'templates', 'public_dashboard_deps', 'public_dashboard' %>
     <%= yield :js %>
+    <%= insert_google_analytics('primary', {}, true) %>
   </body>
 </html>

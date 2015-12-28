@@ -12,7 +12,7 @@
     <%= stylesheet_link_tag 'old_common.css', 'front.css', :media => 'all' %>
     <!--[if gt IE 8]><%= stylesheet_link_tag 'fonts_ie.css' %><![endif]-->
     <%= insert_trackjs() %>
-    <%= insert_google_analytics('primary') %>
+    <%= insert_google_analytics('primary', {}, true) %>
     <%= yield :js %>
     <noscript><meta http-equiv="refresh" content="0;url=/no_javascript.html"></noscript>
   </head>

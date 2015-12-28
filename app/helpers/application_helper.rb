@@ -158,7 +158,7 @@ module ApplicationHelper
     current_user.present? ? current_user.account_type.to_s.upcase : 'UNAUTHENTICATED'
   end
 
-  def insert_google_analytics(track, custom_vars = {}, public_view = false)
+  def insert_google_analytics(track, public_view = false, custom_vars = {})
     if !Cartodb.config[:google_analytics].blank? && !Cartodb.config[:google_analytics][track].blank? && !Cartodb.config[:google_analytics]["domain"].blank?
       ua = Cartodb.config[:google_analytics][track]
       domain = Cartodb.config[:google_analytics]["domain"]

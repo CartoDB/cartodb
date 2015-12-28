@@ -214,19 +214,17 @@ describe Downloader do
 
   describe '#name_from' do
     it 'gets the file name from the Content-Disposition header if present' do
-      # header hash keys are downcased to take advantage of typhoeus case
-      # insensitive headers lookup (https://github.com/typhoeus/typhoeus/issues/227)
-      headers = { "content-disposition" => %{attachment; filename="bar.csv"} }
+      headers = { "Content-Disposition" => %{attachment; filename="bar.csv"} }
       downloader = Downloader.new(@file_url)
       downloader.send(:name_from, headers, @file_url).should eq 'bar.csv'
 
-      headers = { "content-disposition" => %{attachment; filename=bar.csv} }
+      headers = { "Content-Disposition" => %{attachment; filename=bar.csv} }
       downloader = Downloader.new(@file_url)
       downloader.send(:name_from, headers, @file_url).should eq 'bar.csv'
 
       disposition = "attachment; filename=map_gaudi3d.geojson; " +
                     'modification-date="Tue, 06 Aug 2013 15:05:35 GMT'
-      headers = { "content-disposition" => disposition }
+      headers = { "Content-Disposition" => disposition }
       downloader = Downloader.new(@file_url)
       downloader.send(:name_from, headers, @file_url).should eq 'map_gaudi3d.geojson'
     end

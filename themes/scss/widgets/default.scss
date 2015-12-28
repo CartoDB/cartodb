@@ -29,6 +29,7 @@
   @include display-flex();
   @include justify-content(flex-start, start);
   @include align-items(center);
+  position: relative;
   width: 100%;
   margin: 0 0 6px;
 }

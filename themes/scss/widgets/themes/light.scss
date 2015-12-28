@@ -254,6 +254,21 @@ $commonBkg: rgba(#FFF, 1);
     }
   }
 
+  .CDB-Dropdown {
+    background: #FFF;
+  }
+
+  .CDB-Dropdown-item {
+    border-bottom: 1px solid #F2F6F9;
+  }
+
+  .CDB-Dropdown-link {
+    color: $link;
+    &.is-delete {
+      color: $negative;
+    }
+  }
+
   // States
   .is-disabled {
     .CDB-Widget-textNormal,

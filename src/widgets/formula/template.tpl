@@ -9,6 +9,13 @@
     <button class="CDB-Shape-threePoints js-collapse" data-tooltip="<%- isCollapsed ? 'Show' : 'Hide' %>">
       <span class="CDB-Shape-threePointsItem"></span>
     </button>
+    <div class="CDB-Dropdown">
+      <ul>
+        <li class="CDB-Dropdown-item"><a href="#" class="CDB-Dropdown-link">Minimize</a></li> 
+        <li class="CDB-Dropdown-item"><a href="#" class="CDB-Dropdown-link">Pin Widget</a></li> 
+        <li class="CDB-Dropdown-item"><a href="#" class="CDB-Dropdown-link is-delete">Delete</a></li>
+      </ul>
+    </div>
   </div>
   <dl class="CDB-Widget-info">
     <dt class="CDB-Widget-infoItem CDB-Widget-textSmaller CDB-Widget-textSmaller--upper"><%- nulls %> null rows</dt>

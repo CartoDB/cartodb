@@ -33,7 +33,7 @@ module.exports = DataviewModelBase.extend({
   },
 
   initialize: function (attrs, opts) {
-    DataviewModel.prototype.initialize.apply(this, arguments);
+    DataviewModelBase.prototype.initialize.apply(this, arguments);
     this._data = new Backbone.Collection(this.get('data'));
 
     // BBox should only be included until after the first fetch, since we want to get the range of the full dataset

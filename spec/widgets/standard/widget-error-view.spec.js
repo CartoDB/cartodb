@@ -1,11 +1,11 @@
-var DataviewModel = require('../../../src/dataviews/dataview-model');
+var DataviewModelBase = require('../../../src/dataviews/dataview-model-base');
 var WidgetErrorView = require('../../../src/widgets/standard/widget-error-view');
 
 describe('widgets/standard/widget-error-view', function () {
   beforeEach(function () {
     jasmine.clock().install();
 
-    this.model = new DataviewModel({
+    this.model = new DataviewModelBase({
       id: 'widget_98334',
       title: 'Helloooo',
       columns: ['cartodb_id', 'title']

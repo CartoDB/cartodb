@@ -1,8 +1,8 @@
-var DataviewModel = require('../../src/dataviews/dataview-model');
+var DataviewModelBase = require('../../src/dataviews/dataview-model-base');
 
-describe('dataviews/dataview-model', function () {
+describe('dataviews/dataview-model-base', function () {
   beforeEach(function () {
-    this.model = new DataviewModel();
+    this.model = new DataviewModelBase();
   });
 
   it('should listen to a dashboardBaseURL attribute change at the beginning', function () {

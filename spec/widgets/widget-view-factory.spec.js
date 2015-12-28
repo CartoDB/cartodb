@@ -1,6 +1,6 @@
 var cdb = require('cartodb.js');
 var WidgetViewFactory = require('../../src/widgets/widget-view-factory');
-var DataviewModel = require('../../src/dataviews/dataview-model');
+var DataviewModelBase = require('../../src/dataviews/dataview-model-base');
 var WidgetView = require('../../src/widgets/widget-view');
 
 describe('widgets/widget-view-factory', function () {
@@ -52,7 +52,7 @@ describe('widgets/widget-view-factory', function () {
         id: 'layer-uuid',
         type: 'cartodb'
       });
-      this.widget = new DataviewModel({}, {
+      this.widget = new DataviewModelBase({}, {
         layer: this.layer
       });
 

@@ -82,9 +82,7 @@ var Vis = View.extend({
       legends: legends
     });
 
-    if (!this.isMobileEnabled) {
-      this.mapView.addOverlay(this.legends);
-    }
+    this.mapView.addOverlay(this.legends);
   },
 
   addLegends: function (layers) {
@@ -325,7 +323,6 @@ var Vis = View.extend({
 
     this.overlayModels.bind('reset', function (overlays) {
       this._addOverlays(overlays, data, options);
-      this._addMobile(data, options);
     }, this);
 
     this.mapView.bind('newLayerView', this._addLoading, this);
@@ -482,29 +479,27 @@ var Vis = View.extend({
 
       var opt = data.options;
 
-      if (!this.isMobileEnabled) {
-        if (type == 'share' && options['shareable'] || type == 'share' && overlay.model.get('display') && options['shareable'] == undefined) overlay.show();
-        if (type == 'layer_selector' && options[type] || type == 'layer_selector' && overlay.model.get('display') && options[type] == undefined) overlay.show();
-        if (type == 'fullscreen' && options[type] || type == 'fullscreen' && opt.display && options[type] == undefined) overlay.show();
-        if (type == 'search' && options[type] || type == 'search' && opt.display && options[type] == undefined) overlay.show();
+      if (type == 'share' && options['shareable'] || type == 'share' && overlay.model.get('display') && options['shareable'] == undefined) overlay.show();
+      if (type == 'layer_selector' && options[type] || type == 'layer_selector' && overlay.model.get('display') && options[type] == undefined) overlay.show();
+      if (type == 'fullscreen' && options[type] || type == 'fullscreen' && opt.display && options[type] == undefined) overlay.show();
+      if (type == 'search' && options[type] || type == 'search' && opt.display && options[type] == undefined) overlay.show();
 
-        if (type === 'header') {
-          var m = overlay.model;
+      if (type === 'header') {
+        var m = overlay.model;
 
-          if (options.title !== undefined) {
-            m.set('show_title', options.title);
-          }
-
-          if (options.description !== undefined) {
-            m.set('show_description', options.description);
-          }
-
-          if (m.get('show_title') || m.get('show_description')) {
-            $('.cartodb-map-wrapper').addClass('with_header');
-          }
-
-          overlay.render();
+        if (options.title !== undefined) {
+          m.set('show_title', options.title);
         }
+
+        if (options.description !== undefined) {
+          m.set('show_description', options.description);
+        }
+
+        if (m.get('show_title') || m.get('show_description')) {
+          $('.cartodb-map-wrapper').addClass('with_header');
+        }
+
+        overlay.render();
       }
     }, this);
   },
@@ -514,31 +509,6 @@ var Vis = View.extend({
       type: 'header',
       options: data.options
     });
-  },
-
-  _addMobile: function (data, options) {
-    var layers;
-    var layer = data.layers[1];
-
-    if (this.isMobileEnabled) {
-      if (options && options.legends === undefined) {
-        options.legends = this.legends ? true : false;
-      }
-
-      if (layer.options && layer.options.layer_definition) {
-        layers = layer.options.layer_definition.layers;
-      } else if (layer.options && layer.options.named_map && layer.options.named_map.layers) {
-        layers = layer.options.named_map.layers;
-      }
-
-      this.mobileOverlay = this.addOverlay({
-        type: 'mobile',
-        layers: layers,
-        overlays: data.overlays,
-        options: options,
-        torqueLayer: this.torqueLayer
-      });
-    }
   },
 
   _createLegendView: function (layer, layerView) {
@@ -678,14 +648,6 @@ var Vis = View.extend({
 
     if (opt.force_mobile === false || opt.force_mobile === 'false') this.isMobileEnabled = false;
 
-    // if (!opt.title) {
-    //   vizjson.title = null;
-    // }
-
-    // if (!opt.description) {
-    //   vizjson.description = null;
-    // }
-
     if (!opt.tiles_loader) {
       remove_overlay('loader');
     }
@@ -698,13 +660,11 @@ var Vis = View.extend({
       opt.search = opt.searchControl;
     }
 
-    if (!this.isMobileEnabled && opt.search) {
-      if (!search_overlay('search')) {
-        vizjson.overlays.push({
-          type: 'search',
-          order: 3
-        });
-      }
+    if (!search_overlay('search') && opt.search) {
+      vizjson.overlays.push({
+        type: 'search',
+        order: 3
+      });
     }
 
     if ( (opt.title && vizjson.title) || (opt.description && vizjson.description)) {
@@ -748,17 +708,11 @@ var Vis = View.extend({
       type: 'attribution'
     });
 
-    // We remove certain overlays in mobile devices
-    if (this.isMobileEnabled) {
-      remove_overlay('logo');
-      remove_overlay('share');
-    }
-
-    if (this.mobile || ((opt.zoomControl !== undefined) && (!opt.zoomControl))) {
+    if (opt.zoomControl !== undefined && !opt.zoomControl) {
       remove_overlay('zoom');
     }
 
-    if (this.mobile || ((opt.search !== undefined) && (!opt.search))) {
+    if (opt.search !== undefined && !opt.search) {
       remove_overlay('search');
     }
 
@@ -1008,10 +962,6 @@ var Vis = View.extend({
   },
 
   loadingTiles: function () {
-    if (this.mobileOverlay) {
-      this.mobileOverlay.loadingTiles();
-    }
-
     if (this.loader) {
       this.loader.show();
     }
@@ -1022,10 +972,6 @@ var Vis = View.extend({
   },
 
   loadTiles: function () {
-    if (this.mobileOverlay) {
-      this.mobileOverlay.loadTiles();
-    }
-
     if (this.loader) {
       this.loader.hide();
     }

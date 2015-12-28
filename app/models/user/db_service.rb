@@ -1087,15 +1087,12 @@ module CartoDB
         conn.run("
           DO language plpgsql $$
           DECLARE
-              ver INT[];
+              ver INT;
               sql TEXT;
           BEGIN
-              SELECT INTO ver regexp_split_to_array(
-                regexp_replace(version(), '^PostgreSQL ([^ ]*) .*', '\\1'),
-                '\\.'
-              );
+              SELECT INTO ver setting from pg_settings where name='server_version_num';
               sql := 'SELECT pg_terminate_backend(';
-              IF ver[1] > 9 OR ( ver[1] = 9 AND ver[2] > 1 ) THEN
+              IF ver > 90199 THEN
                 sql := sql || 'pid';
               ELSE
                 sql := sql || 'procpid';

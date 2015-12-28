@@ -242,6 +242,8 @@ module CartoDB
           elsif exception.kind_of?(CartoDB::Importer2::FileTooBigError)
             set_general_failure_state_from(exception, exception.error_code,
                                            CartoDB::IMPORTER_ERROR_CODES[exception.error_code][:title])
+          elsif exception.kind_of?(AuthError)
+            set_general_failure_state_from(exception, 1011, 'Unauthorized')
           else
             set_general_failure_state_from(exception)
           end

@@ -1,7 +1,7 @@
 <div class="CDB-Widget-header">
   <div class="CDB-Widget-title CDB-Widget-contentSpaced">
     <div class="CDB-Widget-contentSpaced">
-      <h3 class="CDB-Widget-textBig js-title"><%- title %></h3>
+      <h3 class="CDB-Widget-textBig js-title<%- isCollapsed ? ' is-collapsed' : '' %>"><% if (isCollapsed) { %><%- formatedValue %><% } else { %> <%- title %><% } %></h3>
       <div class="CDB-Widget-tag CDB-Widget-tag--<%- operation %>">
         <span class="CDB-Widget-textSmaller CDB-Widget-textSmaller--upper"><%- operation %></span>
       </div>

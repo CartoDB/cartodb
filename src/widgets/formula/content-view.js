@@ -47,6 +47,7 @@ module.exports = WidgetContent.extend({
         title: this.dataModel.get('title'),
         operation: this.dataModel.get('operation'),
         value: value,
+        formatedValue: format(value),
         nulls: nulls,
         prefix: prefix,
         suffix: suffix,
@@ -61,12 +62,6 @@ module.exports = WidgetContent.extend({
     animator.animateValue(this.dataModel, 'data', '.js-value', animationTemplate, { animationSpeed: 700, formatter: format, templateData: { prefix: prefix, suffix: suffix } });
 
     this.$el.toggleClass('is-collapsed', !!isCollapsed);
-
-    if (isCollapsed) {
-      this.$('.js-title')
-      .text(format(value))
-      .addClass('is-collapsed');
-    }
 
     this._initViews();
 

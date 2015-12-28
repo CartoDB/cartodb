@@ -1,8 +1,8 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
-var DataviewModel = require('./dataview-model');
+var DataviewModelBase = require('./dataview-model-base');
 
-module.exports = DataviewModel.extend({
+module.exports = DataviewModelBase.extend({
   url: function () {
     var params = [];
 
@@ -106,7 +106,7 @@ module.exports = DataviewModel.extend({
   },
 
   _onChangeBinds: function () {
-    DataviewModel.prototype._onChangeBinds.call(this);
+    DataviewModelBase.prototype._onChangeBinds.call(this);
     this.bind('change:histogramSizes', function (mdl, isSizesApplied, d) {
       if (isSizesApplied) {
         this.trigger('histogramSizes', this);

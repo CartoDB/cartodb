@@ -1,5 +1,5 @@
 var _ = require('underscore');
-var DataviewModel = require('./dataview-model');
+var DataviewModelBase = require('./dataview-model-base');
 var CategoryColors = require('./category-dataview/category-colors');
 var SearchModel = require('./category-dataview/search-model');
 var CategoryModelRange = require('./category-dataview/category-model-range');
@@ -17,7 +17,7 @@ var LockedCatsCollection = require('./category-dataview/locked-categories-collec
  *
  */
 
-module.exports = DataviewModel.extend({
+module.exports = DataviewModelBase.extend({
   url: function () {
     return this.get('url') + '?bbox=' + this.get('boundingBox') + '&own_filter=' + (this.get('locked') ? 1 : 0);
   },
@@ -25,7 +25,7 @@ module.exports = DataviewModel.extend({
   initialize: function (attrs, opts) {
     this._data = new CategoriesCollection();
 
-    DataviewModel.prototype.initialize.call(this, attrs, opts);
+    DataviewModelBase.prototype.initialize.call(this, attrs, opts);
 
     // Locked categories collection
     this.locked = new LockedCatsCollection();

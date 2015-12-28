@@ -10,7 +10,8 @@ var cdb = require('cartodb.js');
 module.exports = cdb.core.Model.extend({
   defaults: {
     url: '',
-    totalCount: 0
+    totalCount: 0,
+    categoriesCount: 0
   },
 
   url: function () {
@@ -30,8 +31,8 @@ module.exports = cdb.core.Model.extend({
   parse: function (d) {
     // Calculating the total amount of all categories with the sum of all
     // values from this model included the aggregated (Other)
-
     return {
+      categoriesCount: d.categoriesCount,
       totalCount: _.reduce(
         _.pluck(d.categories, 'value'),
         function (memo, value) {

@@ -324,8 +324,7 @@ module CartoDB
       end
 
       def content_length_from(headers)
-        content_length = headers['content-length']
-        return -1 unless content_length
+        content_length = headers['content-length'] || -1
         content_length.to_i
       end
 

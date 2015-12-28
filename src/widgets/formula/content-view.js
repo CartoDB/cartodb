@@ -47,6 +47,7 @@ module.exports = WidgetContent.extend({
         title: this.dataModel.get('title'),
         operation: this.dataModel.get('operation'),
         value: value,
+        formatedValue: format(value),
         nulls: nulls,
         prefix: prefix,
         suffix: suffix,

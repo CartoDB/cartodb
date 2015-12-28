@@ -112,7 +112,10 @@ $sLabel-width: 140px;
 }
 .Form-label--multipleLines { line-height: 20px }
 .Form-label.Form-label--large { font-size: $sFontSize-large }
-.Form-label.Form-label--step { @include flex-grow(1) }
+.Form-label.Form-label--step {
+  @include flex-grow(1);
+  line-height: normal;
+}
 .Form-rowPreview { width: 735px }
 .Form-separator {
   position: relative;
@@ -576,4 +579,3 @@ $sLabel-width: 140px;
   .tagit-choice { padding: 0 11px }
   .tagit-choice .tagit-close { display: none }
 }
-

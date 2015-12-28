@@ -255,15 +255,18 @@ $commonBkg: rgba(#FFF, 1);
   }
 
   .CDB-Dropdown {
-    background: #FFF;
+    background: $commonBkg;
   }
 
   .CDB-Dropdown-item {
-    border-bottom: 1px solid #F2F6F9;
+    border-bottom: 1px solid $canvasBkg;
   }
 
   .CDB-Dropdown-link {
     color: $link;
+    &:hover {
+      background: $loadingBkg;
+    }
     &.is-delete {
       color: $negative;
     }

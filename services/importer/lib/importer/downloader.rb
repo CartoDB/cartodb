@@ -313,6 +313,7 @@ module CartoDB
 
         file_extension = File.extname(name).split('.').last
         name_without_extension = File.basename(name, ".*")
+
         #If there is no extension or file extension match in the content type extensions, add content type
         #extension to the file name deleting the previous extension (if exist)
         if (file_extension.nil? || file_extension.empty?) || !content_type_extensions.include?(file_extension)

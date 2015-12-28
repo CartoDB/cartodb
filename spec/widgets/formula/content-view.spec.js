@@ -1,7 +1,7 @@
 var WidgetFormulaModel = require('../../../src/widgets/formula/model');
 var WidgetFormulaContent = require('../../../src/widgets/formula/content-view');
 
-describe('widgets/list/content-view', function () {
+describe('widgets/formula/content-view', function () {
   beforeEach(function () {
     this.model = new WidgetFormulaModel({
       id: 'widget_3',
@@ -21,7 +21,7 @@ describe('widgets/list/content-view', function () {
     expect(this.view.$('.js-title').text().trim()).toBe('Max population');
   });
 
-  it('should render the formula', function () {
+  it('should render the collapsed formula', function () {
     spyOn(this.view, 'render').and.callThrough();
     this.view._initBinds();
     this.model.set({ data: 123, collapsed: true });

@@ -413,7 +413,7 @@
 
   </script>
 
-  <%= insert_trackjs() %>
-  <%= insert_google_analytics('primary', [{ title: "Public Pages", value: "Other", num: 3 }], true) -%>
+  <%= insert_trackjs('embeds') %>
+  <%= insert_google_analytics('embeds', true, [{ title: "Public Pages", value: "Other", num: 3 }]) -%>
   <%= insert_hubspot() -%>
 <% end %>

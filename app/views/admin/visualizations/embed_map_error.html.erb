@@ -18,6 +18,8 @@
         Looks like this map no longer exists or is set as private
       </p>
     </div>
-    <%= insert_google_analytics('primary', {}, true) -%>
+    <%= insert_trackjs('embeds') %>
+    <%= insert_google_analytics('embeds', true) %>
+    <%= insert_hubspot() %>
   </body>
 </html>

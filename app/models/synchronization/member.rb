@@ -237,12 +237,12 @@ module CartoDB
         log.append exception.backtrace.join('\n'), truncate = false
 
         if importer.nil?
-          if exception.kind_of?(NotFoundDownloadError)
+          if exception.is_a?(NotFoundDownloadError)
             set_general_failure_state_from(exception, 1017, 'File not found, you must import it again')
-          elsif exception.kind_of?(CartoDB::Importer2::FileTooBigError)
+          elsif exception.is_a?(CartoDB::Importer2::FileTooBigError)
             set_general_failure_state_from(exception, exception.error_code,
                                            CartoDB::IMPORTER_ERROR_CODES[exception.error_code][:title])
-          elsif exception.kind_of?(AuthError)
+          elsif exception.is_a?(AuthError)
             set_general_failure_state_from(exception, 1011, 'Unauthorized')
           else
             set_general_failure_state_from(exception)
@@ -253,7 +253,7 @@ module CartoDB
 
         store
 
-        if exception.kind_of?(TokenExpiredOrInvalidError)
+        if exception.is_a?(TokenExpiredOrInvalidError)
           begin
             user.oauths.remove(exception.service_name)
           rescue => ex

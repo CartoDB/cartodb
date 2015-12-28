@@ -2,7 +2,6 @@ var _ = require('underscore');
 var Overlay = require('./vis/overlay');
 var Model = require('../core/model');
 var Template = require('../core/template');
-var Mobile = require('../geo/ui/mobile');
 var Annotation = require('../geo/ui/annotation');
 var Header = require('../geo/ui/header');
 var InfoBox = require('../geo/ui/infobox');
@@ -26,41 +25,6 @@ Overlay.register('attribution', function (data, vis) {
   });
 
   return overlay.render();
-});
-
-Overlay.register('mobile', function (data, vis) {
-  var template = Template.compile(
-    data.template || '\
-    <div class="backdrop"></div>\
-    <div class="cartodb-header">\
-      <div class="content">\
-        <a href="#" class="fullscreen"></a>\
-        <a href="#" class="toggle"></a>\
-        </div>\
-      </div>\
-    </div>\
-    <div class="aside">\
-    <div class="layer-container">\
-    <div class="scrollpane"><ul class="layers"></ul></div>\
-    </div>\
-    </div>\
-    <div class="torque"></div>\
-    ',
-    data.templateType || 'mustache'
-  );
-
-  var mobile = new Mobile({
-    template: template,
-    mapView: vis.mapView,
-    overlays: data.overlays,
-    visualization: vis,
-    layerView: data.layerView,
-    visibility_options: data.options,
-    torqueLayer: data.torqueLayer,
-    map: data.map
-  });
-
-  return mobile.render();
 });
 
 Overlay.register('text', function (data, vis) {

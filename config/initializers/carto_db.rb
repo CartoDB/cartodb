@@ -61,10 +61,10 @@ module CartoDB
   def self.extract_subdomain(request)
     user_domain = self.username_from_request(request)
     if user_domain.nil?
-      if subdomainless_urls? && is_ip?(request.host)
+      if subdomainless_urls? && ip?(request.host)
         ''
       else
-        self.subdomain_from_request(request)
+        subdomain_from_request(request)
       end
     else
       user_domain
@@ -162,17 +162,17 @@ module CartoDB
   def self.domainless_base_url(subdomain, protocol_override=nil)
     protocol = self.protocol(protocol_override)
     port = protocol == 'http' ? self.http_port : self.https_port
-    if is_ip?(self.request_host)
-      "#{protocol}://#{self.request_host}#{port}/user/#{subdomain}"
+    if ip?(request_host)
+      "#{protocol}://#{request_host}#{port}/user/#{subdomain}"
     else
-      request_subdomain = self.request_host.sub(self.session_domain, '')
-      request_subdomain += '.' if (request_subdomain.length > 0 && !request_subdomain.end_with?('.'))
+      request_subdomain = request_host.sub(session_domain, '')
+      request_subdomain += '.' if request_subdomain.length > 0 && !request_subdomain.end_with?('.')
 
-      "#{protocol}://#{request_subdomain}#{self.session_domain}#{port}/user/#{subdomain}"
+      "#{protocol}://#{request_subdomain}#{session_domain}#{port}/user/#{subdomain}"
     end
   end
 
-  def self.is_ip?(string)
+  def self.ip?(string)
     !!(string =~ Resolv::IPv4::Regex)
   end
 

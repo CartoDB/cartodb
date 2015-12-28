@@ -62,6 +62,10 @@ module.exports = WidgetContent.extend({
 
     this.$el.toggleClass('is-collapsed', !!isCollapsed);
 
+    if (isCollapsed) {
+      this.$('.js-title').text(format(value));
+    }
+
     this._initViews();
 
     return this;

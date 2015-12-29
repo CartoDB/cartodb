@@ -89,8 +89,8 @@ module.exports = cdb.core.View.extend({
   },
 
   _pin: function () {
-    this.trigger('click', 'pin');
     this.viewModel.set('open', false);
+    this.trigger('click', 'pin');
   },
 
   _toggle: function () {

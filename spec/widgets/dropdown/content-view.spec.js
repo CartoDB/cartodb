@@ -27,6 +27,22 @@ describe('widgets/dropdown/widget-dropdown-view', function () {
     expect(this.view._toggleClick).toHaveBeenCalled();
   });
 
+  it('should trigger an event when clicking an option', function () {
+    var called = false;
+    var name = null;
+
+    this.view.bind('click', function (action) {
+      called = true;
+      name = action;
+    });
+
+    this.view.render();
+    this.view.$('button:nth(1)').click();
+
+    expect(called).toBe(true);
+    expect(name).toBe('pin');
+  });
+
   it('should close the dropdown when clicking an option', function () {
     spyOn(this.view, '_close').and.callThrough();
     $('.js-button').click();

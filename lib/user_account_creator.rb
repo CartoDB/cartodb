@@ -121,7 +121,7 @@ module CartoDB
       @user.invitation_token = @invitation_token
 
       @user.username = @user_params[PARAM_USERNAME] if @user_params[PARAM_USERNAME]
-      @user.soft_geocoding_limit = @user_params[PARAM_SOFT_GEOCODING_LIMIT] if @user_params[PARAM_SOFT_GEOCODING_LIMIT]
+      @user.soft_geocoding_limit = @user_params[PARAM_SOFT_GEOCODING_LIMIT] == 'true'
       @user.quota_in_bytes = @user_params[PARAM_QUOTA_IN_BYTES] if @user_params[PARAM_QUOTA_IN_BYTES]
 
       @built = true

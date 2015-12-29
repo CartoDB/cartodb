@@ -84,6 +84,23 @@ describe Carto::Api::OrganizationUsersController do
       last_user_created.soft_geocoding_limit.should == false
       last_user_created.quota_in_bytes.should == 1024
     end
+
+    it 'assigns soft_geocoding_limit to false by default' do
+      login(@organization.owner)
+      username = 'soft-geocoding-limit-false-user'
+      post api_v1_organization_users_create_url(id: @organization.id,
+                                                username: "#{username}",
+                                                email: "#{username}@cartodb.com",
+                                                password: 'patata',
+                                                quota_in_bytes: 1024),
+           @headers
+
+      last_response.status.should == 200
+
+      @organization.reload
+      last_user_created = @organization.users.find { |user| user.username == username }
+      last_user_created.soft_geocoding_limit.should == false
+    end
   end
 
   describe 'user update' do

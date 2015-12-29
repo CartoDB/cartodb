@@ -871,6 +871,7 @@ var Vis = View.extend({
     }
 
     infowindow.bind('close', function () {
+      // TODO: create a test checking this behaviour.
       // when infowindow is closed remove all the filters
       // for tooltips
       layers.each(function(layerView) {

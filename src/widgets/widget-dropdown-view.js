@@ -66,8 +66,7 @@ module.exports = cdb.core.View.extend({
   },
 
   _onGlobalClick: function (ev) {
-    if (this._$target.get(0) === ev.target) {
-    } else {
+    if (this._$target.get(0) !== $(ev.target).closest(this._$target).get(0)) {
       this.viewModel.set('open', false);
     }
   },

@@ -75,6 +75,36 @@ module Carto
       raise VisualizationsExportServiceError.new("Import error: #{exception.message} #{exception.backtrace}")
     end
 
+    def restore_from_json(dump_data)
+      user = ::User.where(id: dump_data["owner"]["id"]).first
+
+      base_layer = create_base_layer(user, dump_data)
+
+      map = create_map(user, base_layer)
+
+      add_data_layers(map, dump_data)
+
+      add_labels_layer(map, base_layer, dump_data)
+
+      set_map_data(map, dump_data)
+
+      description = dump_data["description"]
+      visualization = create_visualization(
+        id: dump_data["id"],
+        name: dump_data["title"],
+        description: (description.nil? || description.empty?) ? "" : CGI.unescapeHTML(description),
+        type: CartoDB::Visualization::Member::TYPE_DERIVED,
+        privacy: CartoDB::Visualization::Member::PRIVACY_LINK,
+        user_id: user.id,
+        map_id: map.id,
+        kind: CartoDB::Visualization::Member::KIND_GEOM
+      )
+
+      add_overlays(visualization, dump_data)
+
+      true
+    end
+
     private
 
     # Mainly intended for testing
@@ -107,36 +137,6 @@ module Carto
       dump_data = get_restore_data(visualization_id, skip_version_check)
 
       restore_from_json(dump_data)
-    end
-
-    def restore_from_json(dump_data)
-      user = ::User.where(id: dump_data["owner"]["id"]).first
-
-      base_layer = create_base_layer(user, dump_data)
-
-      map = create_map(user, base_layer)
-
-      add_data_layers(map, dump_data)
-
-      add_labels_layer(map, base_layer, dump_data)
-
-      set_map_data(map, dump_data)
-
-      description = dump_data["description"]
-      visualization = create_visualization(
-        id: dump_data["id"],
-        name: dump_data["title"],
-        description: (description.nil? || description.empty?) ? "" : CGI.unescapeHTML(description),
-        type: CartoDB::Visualization::Member::TYPE_DERIVED,
-        privacy: CartoDB::Visualization::Member::PRIVACY_LINK,
-        user_id: user.id,
-        map_id: map.id,
-        kind: CartoDB::Visualization::Member::KIND_GEOM
-      )
-
-      add_overlays(visualization, dump_data)
-
-      true
     end
 
     def get_restore_data(visualization_id, skip_version_check)

@@ -1,4 +1,4 @@
-<div class="CDB-Widget-header">
+<div class="CDB-Widget-header js-header">
   <div class="CDB-Widget-title CDB-Widget-contentSpaced">
     <div class="CDB-Widget-contentSpaced">
       <h3 class="CDB-Widget-textBig"><%- title %></h3>
@@ -6,16 +6,9 @@
         <span class="CDB-Widget-textSmaller CDB-Widget-textSmaller--upper"><%- operation %></span>
       </div>
     </div>
-    <button class="CDB-Shape-threePoints js-collapse" data-tooltip="<%- isCollapsed ? 'Show' : 'Hide' %>">
+    <button class="CDB-Shape-threePoints js-actions" data-tooltip="Show actions">
       <span class="CDB-Shape-threePointsItem"></span>
     </button>
-    <div class="CDB-Dropdown">
-      <ul>
-        <li class="CDB-Dropdown-item"><a href="#" class="CDB-Dropdown-link">Minimize</a></li> 
-        <li class="CDB-Dropdown-item"><a href="#" class="CDB-Dropdown-link">Pin Widget</a></li> 
-        <li class="CDB-Dropdown-item"><a href="#" class="CDB-Dropdown-link is-delete">Delete</a></li>
-      </ul>
-    </div>
   </div>
   <dl class="CDB-Widget-info">
     <dt class="CDB-Widget-infoItem CDB-Widget-textSmaller CDB-Widget-textSmaller--upper"><%- nulls %> null rows</dt>

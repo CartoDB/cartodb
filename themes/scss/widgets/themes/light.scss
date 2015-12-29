@@ -265,6 +265,10 @@ $commonBkg: rgba(#FFF, 1);
     border-bottom: 1px solid $canvasBkg;
   }
 
+  .CDB-Dropdown-item:last-child {
+    border-bottom: 0;
+  }
+
   .CDB-Dropdown-link {
     color: $link;
     &:hover {

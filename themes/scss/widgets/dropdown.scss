@@ -1,6 +1,5 @@
 // Tooltip styles
-// ----------------------------------------------
-
+// ---------------------------------------------- 
 @import '../variables/mixins';
 @import '../variables/sizes';
 
@@ -13,10 +12,6 @@
   line-height: 15px;
   box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.24), 0 8px 16px 0 rgba(0, 0, 0, 0.16);
   z-index: 20;
-}
-
-.CDB-Dropdown-item:last-child {
-  border-bottom: 0;
 }
 
 .CDB-Dropdown-link {

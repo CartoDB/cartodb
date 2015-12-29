@@ -175,17 +175,6 @@ module.exports = function(map, layer, options, callback) {
         viz._addLegends(viz._createLayerLegendView(layerModel.attributes,  layerView))
       }
 
-      if (addMobileLayout) {
-        options.mapView = map.viz.mapView;
-
-        viz.addOverlay({
-          type: 'mobile',
-          layerView: layerView,
-          overlays: [],
-          options: options
-        });
-      }
-
       callback && callback(layerView);
       promise.trigger('done', layerView);
     }

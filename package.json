@@ -88,7 +88,6 @@
     "cdb.log": "./src/cdb.log.js",
     "cdb.errors": "./src/cdb.errors.js",
     "cdb.templates": "./src/cdb.templates.js",
-    "jquery.jscrollpane": "./vendor/jscrollpane.js",
     "geojson": "./vendor/GeoJSON.js",
     "html-css-sanitizer": "./vendor/html-css-sanitizer-bundle.js",
     "clip-path": "./vendor/clip-path.js",
@@ -102,11 +101,6 @@
     "geojson": "GeoJSON",
     "html-css-sanitizer": "html",
     "lzma": "LZMA",
-    "jquery.jscrollpane": {
-      "depends": [
-        "jquery:jQuery"
-      ]
-    },
     "clip-path": {
       "depends": [
         "underscore:_",

@@ -1,7 +1,7 @@
 var $ = require('jquery');
 var _ = require('underscore');
 var cdb = require('cartodb.js');
-var template = require('./widget-dropdown-template.tpl');
+var template = require('./template.tpl');
 
 /**
  * Standard widget dropdown view
@@ -24,14 +24,11 @@ module.exports = cdb.core.View.extend({
     this.viewModel = new cdb.core.Model({ open: false });
 
     this._$target = this.options.target;
-    this._$parent = this.options.parent;
+    this._$container = this.options.container;
     this._initBinds();
   },
 
   render: function () {
-    this._bindESC();
-    this._bindGlobalClick();
-
     this.$el.html(
       template()
     );
@@ -50,7 +47,7 @@ module.exports = cdb.core.View.extend({
   },
 
   _bindGlobalClick: function () {
-    $(document).bind('click.' + this.cid,_.bind(this._onGlobalClick, this));
+    $(document).bind('click.' + this.cid, _.bind(this._onGlobalClick, this));
   },
 
   _unbindGlobalClick: function () {
@@ -78,7 +75,7 @@ module.exports = cdb.core.View.extend({
     }
   },
 
-  _onChangeOpen: function() {
+  _onChangeOpen: function () {
     if (this.viewModel.get('open')) {
       this._open();
     } else {
@@ -86,33 +83,37 @@ module.exports = cdb.core.View.extend({
     }
   },
 
-  _delete: function() {
+  _delete: function () {
     this.viewModel.set('open', false);
     this.trigger('click', 'delete');
   },
 
-  _pin: function() {
+  _pin: function () {
     this.trigger('click', 'pin');
     this.viewModel.set('open', false);
   },
 
-  _toggle: function() {
+  _toggle: function () {
     this.viewModel.set('open', false);
     this.trigger('click', 'toggle');
   },
 
-  _open: function() {
+  _open: function () {
+    this._bindESC();
+    this._bindGlobalClick();
+
     this.render();
-    this._$parent.append(this.$el);
+    this._$container.append(this.$el);
     this.$el.show();
   },
 
-  _close: function() {
-    this.$el.hide();
+  _close: function () {
+    this._unbindESC();
     this._unbindGlobalClick();
+    this.$el.hide();
   },
 
-  _toggleClick: function() {
+  _toggleClick: function () {
     this.viewModel.set('open', !this.viewModel.get('open'));
   },
 
@@ -122,5 +123,4 @@ module.exports = cdb.core.View.extend({
     this._$target.off('click');
     cdb.core.View.prototype.clean.call(this);
   }
-
 });

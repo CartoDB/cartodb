@@ -5,7 +5,7 @@ var formatter = require('../../formatter');
 var WidgetContent = require('../standard/widget-content-view');
 var WidgetViewModel = require('../widget-content-model');
 var template = require('./template.tpl');
-var DropdownView = require('../widget-dropdown-view');
+var DropdownView = require('../dropdown/widget-dropdown-view');
 var TooltipView = require('../widget-tooltip-view');
 var animationTemplate = require('./animation-template.tpl');
 var AnimateValues = require('../animate-values.js');
@@ -73,10 +73,10 @@ module.exports = WidgetContent.extend({
   _initViews: function () {
     var dropdown = new DropdownView({
       target: this.$('.js-actions'),
-      parent: this.$('.js-header')
+      container: this.$('.js-header')
     });
 
-    dropdown.bind('click', function(action) {
+    dropdown.bind('click', function (action) {
       if (action === 'toggle') {
         this.dataModel.toggleCollapsed();
       }
@@ -84,12 +84,12 @@ module.exports = WidgetContent.extend({
 
     this.addView(dropdown);
 
-     var tooltip = new TooltipView({
-       target: this.$('.js-actions')
-     });
+    var tooltip = new TooltipView({
+      target: this.$('.js-actions')
+    });
 
-     $('body').append(tooltip.render().el);
-     this.addView(tooltip);
+    $('body').append(tooltip.render().el);
+    this.addView(tooltip);
   },
 
   _toggleCollapse: function () {

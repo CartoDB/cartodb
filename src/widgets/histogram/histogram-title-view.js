@@ -13,8 +13,7 @@ module.exports = cdb.core.View.extend({
 
   events: {
     'click .js-applySizes': '_applySizes',
-    'click .js-cancelSizes': '_cancelSizes',
-    'click .js-collapse': '_toggleCollapse'
+    'click .js-cancelSizes': '_cancelSizes'
   },
 
   initialize: function () {
@@ -49,7 +48,7 @@ module.exports = cdb.core.View.extend({
     this.addView(sizesTooltip);
 
     var collapseTooltip = new TooltipView({
-      target: this.$('.js-collapse')
+      target: this.$('.js-actions')
     });
     $('body').append(collapseTooltip.render().el);
     this.addView(collapseTooltip);

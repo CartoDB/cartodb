@@ -27,7 +27,7 @@
     <div class="Widget-canvas js-canvas"></div>
 
     <script>
-      var viz = <%= @bi_visualization.viz_json %>;
+      var viz = <%= @bi_visualization.viz_json.html_safe %>;
 
       window.onload = function() {
         cartodb.createVis('map', viz, {

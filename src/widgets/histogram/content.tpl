@@ -1,4 +1,4 @@
-<div class="CDB-Widget-header">
+<div class="CDB-Widget-header js-header">
   <div class="js-title">
     <div class="CDB-Widget-title CDB-Widget-contentSpaced">
       <h3 class="CDB-Widget-textBig"><%- title %></h3>

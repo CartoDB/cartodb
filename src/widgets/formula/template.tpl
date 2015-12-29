@@ -1,4 +1,4 @@
-<div class="CDB-Widget-header">
+<div class="CDB-Widget-header js-header">
   <div class="CDB-Widget-title CDB-Widget-contentSpaced">
     <div class="CDB-Widget-contentSpaced">
       <h3 class="CDB-Widget-textBig js-title<%- isCollapsed ? ' is-collapsed' : '' %>"><% if (isCollapsed) { %><%- formatedValue %><% } else { %> <%- title %><% } %></h3>
@@ -6,7 +6,7 @@
         <span class="CDB-Widget-textSmaller CDB-Widget-textSmaller--upper"><%- operation %></span>
       </div>
     </div>
-    <button class="CDB-Shape-threePoints js-collapse" data-tooltip="<%- isCollapsed ? 'Show' : 'Hide' %>">
+    <button class="CDB-Shape-threePoints js-actions">
       <span class="CDB-Shape-threePointsItem"></span>
     </button>
   </div>

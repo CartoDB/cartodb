@@ -1,6 +1,7 @@
 var _ = require('underscore');
 var $ = require('jquery');
 var cdb = require('cartodb.js');
+var DropdownView = require('../../dropdown/widget-dropdown-view');
 var TooltipView = require('../../widget-tooltip-view');
 var template = require('./search-title-template.tpl');
 
@@ -17,8 +18,7 @@ module.exports = cdb.core.View.extend({
     'submit .js-form': '_onSubmitForm',
     'click .js-applyLocked': '_applyLocked',
     'click .js-applyColors': '_applyColors',
-    'click .js-cancelColors': '_cancelColors',
-    'click .js-collapse': '_toggleCollapse'
+    'click .js-cancelColors': '_cancelColors'
   },
 
   initialize: function () {
@@ -54,8 +54,20 @@ module.exports = cdb.core.View.extend({
   },
 
   _initViews: function () {
+    var dropdown = new DropdownView({
+      target: this.$('.js-actions'),
+      container: this.$el
+    });
+
+    dropdown.bind('click', function (action) {
+      if (action === 'toggle') {
+        this.dataModel.toggleCollapsed();
+      }
+    }, this);
+
+    this.addView(dropdown);
     var collapseTooltip = new TooltipView({
-      target: this.$('.js-collapse')
+      target: this.$('.js-actions')
     });
     $('body').append(collapseTooltip.render().el);
     this.addView(collapseTooltip);

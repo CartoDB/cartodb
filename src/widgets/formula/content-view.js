@@ -6,7 +6,6 @@ var WidgetContent = require('../standard/widget-content-view');
 var WidgetViewModel = require('../widget-content-model');
 var template = require('./template.tpl');
 var DropdownView = require('../dropdown/widget-dropdown-view');
-var TooltipView = require('../widget-tooltip-view');
 var animationTemplate = require('./animation-template.tpl');
 var AnimateValues = require('../animate-values.js');
 
@@ -83,13 +82,6 @@ module.exports = WidgetContent.extend({
     }, this);
 
     this.addView(dropdown);
-
-    var tooltip = new TooltipView({
-      target: this.$('.js-actions')
-    });
-
-    $('body').append(tooltip.render().el);
-    this.addView(tooltip);
   },
 
   _toggleCollapse: function () {

@@ -46,12 +46,6 @@ module.exports = cdb.core.View.extend({
     });
     $('body').append(sizesTooltip.render().el);
     this.addView(sizesTooltip);
-
-    var collapseTooltip = new TooltipView({
-      target: this.$('.js-actions')
-    });
-    $('body').append(collapseTooltip.render().el);
-    this.addView(collapseTooltip);
   },
 
   _applySizes: function () {

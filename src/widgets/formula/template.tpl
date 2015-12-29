@@ -6,7 +6,7 @@
         <span class="CDB-Widget-textSmaller CDB-Widget-textSmaller--upper"><%- operation %></span>
       </div>
     </div>
-    <button class="CDB-Shape-threePoints js-actions" data-tooltip="Show actions">
+    <button class="CDB-Shape-threePoints js-actions">
       <span class="CDB-Shape-threePointsItem"></span>
     </button>
   </div>

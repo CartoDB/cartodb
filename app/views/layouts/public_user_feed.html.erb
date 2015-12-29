@@ -57,8 +57,8 @@
     <%= javascript_include_tag 'cdb.js', 'templates', 'user_feed_deps', 'user_feed' %>
     <%= yield :js %>
 
-    <%= insert_trackjs() -%>
-    <%= insert_google_analytics('primary') -%>
-    <%= insert_hubspot() -%>
+    <%= insert_trackjs('embeds') %>
+    <%= insert_google_analytics('embeds', true) %>
+    <%= insert_hubspot() %>
   </body>
 </html>

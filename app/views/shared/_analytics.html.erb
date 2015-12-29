@@ -1,14 +1,14 @@
 <script type="text/javascript">
-  var _gaq = _gaq || []; 
+  var _gaq = _gaq || [];
   _gaq.push(['_setAccount', '<%= ua %>']);
   _gaq.push(['_setDomainName', '<%= domain %>']);
   _gaq.push(['_setAllowLinker', true]);
-  <% if defined? custom_vars -%> 
+  <% if defined? custom_vars -%>
   <% custom_vars.each do |var| %>
     _gaq.push(['_setCustomVar', 1, '<%= var[:title] %>', '<%= var[:value] %>', <%= var[:num] %> ]);
   <% end %>
   <% end -%>
-  <% unless defined? page_owner -%> 
+  <% if !public_view -%>
   _gaq.push(['_setCustomVar', 1, 'Member Type', '<%= stringified_member_type %>', 1]);
   <% end -%>
   _gaq.push(['_trackPageview']);

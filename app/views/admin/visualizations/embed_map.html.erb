@@ -48,4 +48,6 @@
 
 <%= content_for(:js) do %>
   <%= render :partial => 'admin/visualizations/public/embed_map_inline_js' %>
+  <%= insert_trackjs('embeds') %>
+  <%= insert_google_analytics('embeds', true) %>
 <% end %>

@@ -40,7 +40,8 @@
   <body class="public">
     <%= yield :content %>
     <%= yield :js %>
-    <%= insert_trackjs() %>
-    <%= insert_google_analytics('primary') %>
+    <%= insert_trackjs('embeds') %>
+    <%= insert_google_analytics('embeds', true) %>
+    <%= insert_hubspot() %>
   </body>
 </html>

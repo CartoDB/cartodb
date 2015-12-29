@@ -18,9 +18,8 @@
         Looks like this map no longer exists or is set as private
       </p>
     </div>
-    <%= render partial: 'shared/analytics', locals: { 
-      ua:     Cartodb.config[:google_analytics]['embeds'],
-      domain: Cartodb.config[:google_analytics]['domain']
-    } %>
+    <%= insert_trackjs('embeds') %>
+    <%= insert_google_analytics('embeds', true) %>
+    <%= insert_hubspot() %>
   </body>
 </html>

@@ -23,3 +23,10 @@
   text-decoration: none;
   cursor: pointer;
 }
+
+.CDB-Dropdown-link:first-child:hover {
+  border-radius: 4px 4px 0 0;
+}
+.CDB-Dropdown-link:last-child:hover {
+  border-radius: 0 0 4px 4px;
+}

@@ -1,6 +1,5 @@
 var _ = require('underscore');
 var d3 = require('d3');
-var $ = require('jquery');
 var formatter = require('../../formatter');
 var WidgetContent = require('../standard/widget-content-view');
 var WidgetViewModel = require('../widget-content-model');

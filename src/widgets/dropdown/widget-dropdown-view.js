@@ -12,8 +12,7 @@ module.exports = cdb.core.View.extend({
 
   events: {
     'click .js-pin': '_pin',
-    'click .js-toggle': '_toggle',
-    'click .js-delete': '_delete'
+    'click .js-toggle': '_toggle'
   },
 
   initialize: function (opts) {
@@ -81,11 +80,6 @@ module.exports = cdb.core.View.extend({
     } else {
       this._close();
     }
-  },
-
-  _delete: function () {
-    this.viewModel.set('open', false);
-    this.trigger('click', 'delete');
   },
 
   _pin: function () {

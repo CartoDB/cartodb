@@ -403,7 +403,7 @@ describe('geo/ui/infowindow', function() {
       expect(view._containsCover()).toEqual(true);
     });
 
-    it("should show the loader", function() {
+    it("should render the loader by default", function() {
       model.set('template', '<div class="js-infowindow"><div class="js-inner"></div></div>');
       expect(view.$el.find(".js-loader").length).toEqual(1);
     });

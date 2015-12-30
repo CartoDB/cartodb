@@ -182,6 +182,11 @@ var Infowindow = View.extend({
     this.$('.js-loader').removeClass('is-visible');
   },
 
+  _stopCoverLoader: function () {
+    this._coverLoading = false;
+    this._stopLoader();
+  },
+
   _renderScroll: function () {
     if (this.$('.has-scroll').length === 0) return;
 
@@ -417,8 +422,7 @@ var Infowindow = View.extend({
       $cover.css({ height: h - self.options.hookHeight });
       $img.fadeIn(self.options.imageTransitionSpeed);
 
-      self._coverLoading = false;
-      self._stopLoader();
+      self._stopCoverLoader();
 
       self._loadImageHook($img.width(), $img.height(), h - self.options.hookHeight, url);
     }).error();

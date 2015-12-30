@@ -91,11 +91,12 @@ describe('widgets/category/options-view', function () {
       expect(this.view.$('.js-none').length).toBe(1);
     });
 
-    it('should render all button if all categories are rejected', function () {
+    it('should render all button and none selected text if all categories are rejected', function () {
       spyOn(this.model, 'isAllFiltersRejected').and.returnValue(true);
       this.view.render();
       expect(this.view.$('.js-all').length).toBe(1);
       expect(this.view.$('.js-none').length).toBe(0);
+      expect(this.view.$('p.CDB-Widget-textSmaller').text()).toContain('None selected');
     });
 
     it('should render none button if all categories are not rejected', function () {

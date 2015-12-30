@@ -119,8 +119,10 @@ var Infowindow = View.extend({
         this.$('.js-content').css('max-height', this.model.get('maxHeight') + 'px');
       }
 
-      this._loadCover();
       this._renderLoader();
+      this._startLoader();
+
+      this._loadCover();
 
       if (!this.isLoadingData()) {
         this.model.trigger('domready', this, this.$el);
@@ -164,11 +166,18 @@ var Infowindow = View.extend({
   },
 
   _renderLoader: function () {
+    this.$('.js-inner').append('<div class="CDB-Loader js-loader"></div>');
+  },
+
+  _startLoader: function () {
     this.$('.js-inner').addClass('is-loading');
-    this.$('.js-inner').append('<div class="CDB-Loader js-loader is-visible"></div>');
+    this.$('.js-loader').addClass('is-visible');
   },
 
   _stopLoader: function () {
+    if (this._containsCover() && this._coverLoading) {
+      return;
+    }
     this.$('.js-inner').removeClass('is-loading');
     this.$('.js-loader').removeClass('is-visible');
   },
@@ -377,6 +386,9 @@ var Infowindow = View.extend({
       return;
     }
 
+    this._startLoader();
+    this._coverLoading = true;
+
     $img = $("<img class='CDB-infowindow-media-item' />").attr('src', url);
 
     $cover.append($img);
@@ -404,6 +416,9 @@ var Infowindow = View.extend({
       $img.css(styles);
       $cover.css({ height: h - self.options.hookHeight });
       $img.fadeIn(self.options.imageTransitionSpeed);
+
+      self._coverLoading = false;
+      self._stopLoader();
 
       self._loadImageHook($img.width(), $img.height(), h - self.options.hookHeight, url);
     }).error();
@@ -445,27 +460,6 @@ var Infowindow = View.extend({
    */
   _stopPropagation: function (ev) {
     ev.stopPropagation();
-  },
-
-  /**
-   *  Set loading state adding its content
-   */
-  setLoading: function () {
-    this.model.set({
-      content: {
-        fields: [{
-          title: null,
-          loading: true,
-          alternative_name: null,
-          value: 'Loading content...',
-          index: null,
-          type: 'loading'
-        }],
-        data: {}
-      }
-    });
-
-    return this;
   },
 
   /**

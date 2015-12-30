@@ -403,6 +403,11 @@ describe('geo/ui/infowindow', function() {
       expect(view._containsCover()).toEqual(true);
     });
 
+    it("should show the loader", function() {
+      model.set('template', '<div class="js-infowindow"><div class="js-inner"></div></div>');
+      expect(view.$el.find(".js-loader").length).toEqual(1);
+    });
+
     it("should append the image", function() {
       model.set('template', '<div class="js-infowindow" data-cover="true"><div class="js-cover"></div></div>');
       expect(view.$el.find("img").length).toEqual(1);

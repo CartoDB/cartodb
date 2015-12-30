@@ -89,12 +89,15 @@ module Carto
       set_map_data(map, dump_data)
 
       description = dump_data["description"]
+
+      default_privacy = CartoDB::Visualization::Member::PRIVACY_LINK
+      privacy = user.valid_privacy?(default_privacy) ? default_privacy : CartoDB::Visualization::Member::PRIVACY_PUBLIC
       visualization = create_visualization(
         id: dump_data["id"],
         name: dump_data["title"],
         description: (description.nil? || description.empty?) ? "" : CGI.unescapeHTML(description),
         type: CartoDB::Visualization::Member::TYPE_DERIVED,
-        privacy: CartoDB::Visualization::Member::PRIVACY_LINK,
+        privacy: privacy,
         user_id: user.id,
         map_id: map.id,
         kind: CartoDB::Visualization::Member::KIND_GEOM

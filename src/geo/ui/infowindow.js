@@ -119,12 +119,13 @@ var Infowindow = View.extend({
         this.$('.js-content').css('max-height', this.model.get('maxHeight') + 'px');
       }
 
-      // If the template is 'cover-enabled', load the cover
       this._loadCover();
+      this._renderLoader();
 
       if (!this.isLoadingData()) {
         this.model.trigger('domready', this, this.$el);
         this.trigger('domready', this, this.$el);
+        this._stopLoader();
       }
 
       this._renderScroll();
@@ -160,6 +161,16 @@ var Infowindow = View.extend({
     if (e && e.keyCode === 27) {
       this._closeInfowindow();
     }
+  },
+
+  _renderLoader: function () {
+    this.$('.js-inner').addClass('is-loading');
+    this.$('.js-inner').append('<div class="CDB-Loader js-loader is-visible"></div>');
+  },
+
+  _stopLoader: function () {
+    this.$('.js-inner').removeClass('is-loading');
+    this.$('.js-loader').removeClass('is-visible');
   },
 
   _renderScroll: function () {

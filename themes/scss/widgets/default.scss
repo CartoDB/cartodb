@@ -61,8 +61,12 @@
   margin-left: 20px;
 }
 .CDB-Widget-body.is-collapsed {
-  height: 22px;
+  height: 26px;
   overflow: hidden;
+}
+
+.CDB-Widget-body.is-collapsed .CDB-Widget-textBig {
+  line-height: 100%;
 }
 
 // Widget media query

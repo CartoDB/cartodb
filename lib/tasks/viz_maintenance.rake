@@ -80,7 +80,14 @@ namespace :cartodb do
       user_id = args[:user_id]
       raise "user_id argument missing" unless user_id
 
+      user = Carto::User.find(user_id)
+
       json["owner"]["id"] = user_id
+      json["layers"].each do |layer|
+        if layer.fetch("options", {}).fetch("user_name", nil)
+          layer["options"]["user_name"] = user.username
+        end
+      end
 
       Carto::VisualizationsExportService.new.restore_from_json(json)
     end

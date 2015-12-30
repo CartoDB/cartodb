@@ -23,6 +23,10 @@
 .CDB-infowindow-headerBg {
   padding: 20px 24px 18px;
 }
+.is-loading {
+  position: relative;
+  min-height: 50px;
+}
 .CDB-infowindow-inner.CDB-infowindow-inner--scroll .CDB-infowindow-list {
   max-height: 200px;
 }
@@ -107,6 +111,9 @@
   min-height: 100px;
   overflow: hidden;
   z-index: 1;
+  &.is-loading {
+    background: #F5F5F5;
+  }
 
   .CDB-infowindow-title > span {
     display: inline;
@@ -284,6 +291,7 @@
   }
 }
 
+/*
 .CDB-loading {
   padding: 4px 0 10px;
 }
@@ -325,6 +333,7 @@
   background: linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 1) 50%, rgba(0, 0, 0, 0) 100%);
   animation: placeholder ease-in-out 2s infinite;
 }
+*/
 
 img[data-clipPath]{
   visibility: hidden;

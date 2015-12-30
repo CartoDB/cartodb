@@ -29,10 +29,19 @@
     <script>
       var viz = <%= @bi_visualization.viz_json.html_safe %>;
 
+      var opts = {
+        no_cdn: false,
+        layer_selector: false
+      }
+      var mapPos = L.Hash.parseHash(location.hash);
+      if (mapPos) {
+        opts.zoom = mapPos.zoom;
+        opts.center = [mapPos.center.lat, mapPos.center.lng];
+      }
       window.onload = function() {
-        cartodb.createVis('map', viz, {
-          no_cdn: false,
-          layer_selector: false
+        cartodb.createVis('map', viz, opts)
+        .done(function(vis, layers) {
+          var hash = new L.Hash(vis.getNativeMap());
         })
         .error(function(e) {
           console.log(e);

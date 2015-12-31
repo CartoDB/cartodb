@@ -61,13 +61,15 @@
   margin-left: 20px;
 }
 .CDB-Widget-body.is-collapsed {
-  height: 26px;
-  overflow: hidden;
+  height: 22px;
 }
 
-.CDB-Widget-body.is-collapsed .CDB-Widget-textBig {
-  line-height: 100%;
+.CDB-Widget-body.is-collapsed .CDB-Widget-content,
+.CDB-Widget-body.is-collapsed .CDB-Widget-info,
+.CDB-Widget-body.is-collapsed .CDB-Widget-nav {
+  display: none;
 }
+
 
 // Widget media query
 @include media-query() {

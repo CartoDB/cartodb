@@ -106,11 +106,11 @@ module.exports = cdb.core.View.extend({
     this._adjustVerticalPosition();
   },
 
-  _adjustVerticalPosition: function() {
+  _adjustVerticalPosition: function () {
     var bodyHeight = $('body').height();
     var bottom = this.$el.offset().top + this.$el.height();
 
-    if (bottom + this._WIDGET_BOTTOM_PADDING> bodyHeight) {
+    if (bottom + this._WIDGET_BOTTOM_PADDING > bodyHeight) {
       this.$el.addClass('has-top-position');
     }
   },

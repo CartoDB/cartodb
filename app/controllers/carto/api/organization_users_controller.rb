@@ -47,7 +47,7 @@ module Carto
           params_to_update[:password_confirmation] = params_to_update[:password]
         end
 
-        unless @user.update_fields(params_to_update, params_to_update.keys())
+        unless @user.update_fields(params_to_update, params_to_update.keys)
           render_jsonp(@user.errors.full_messages, 410)
           return
         end

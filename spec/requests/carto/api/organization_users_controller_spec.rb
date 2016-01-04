@@ -62,13 +62,11 @@ describe Carto::Api::OrganizationUsersController do
     it 'correctly creates a user' do
       login(@organization.owner)
       username = 'manolo-escobar'
-      params = {
-                  username: "#{username}",
-                  email: "#{username}@cartodb.com",
-                  password: 'patata',
-                  soft_geocoding_limit: false,
-                  quota_in_bytes: 1024
-               }
+      params = { username: "#{username}",
+                 email: "#{username}@cartodb.com",
+                 password: 'patata',
+                 soft_geocoding_limit: false,
+                 quota_in_bytes: 1024 }
       post api_v1_organization_users_create_url(name: @organization.name), params
 
       last_response.status.should == 200
@@ -83,12 +81,10 @@ describe Carto::Api::OrganizationUsersController do
     it 'assigns soft_geocoding_limit to false by default' do
       login(@organization.owner)
       username = 'soft-geocoding-limit-false-user'
-      params = {
-                username: "#{username}",
-                email: "#{username}@cartodb.com",
-                password: 'patata',
-                quota_in_bytes: 1024
-               }
+      params = { username: "#{username}",
+                 email: "#{username}@cartodb.com",
+                 password: 'patata',
+                 quota_in_bytes: 1024 }
       post api_v1_organization_users_create_url(name: @organization.name), params
 
       last_response.status.should == 200
@@ -192,12 +188,10 @@ describe Carto::Api::OrganizationUsersController do
 
       user_to_update = @organization.users[0]
       new_email = "#{user_to_update.email}.es"
-      params = {
-                 email: new_email,
+      params = { email: new_email,
                  password: 'pataton',
                  soft_geocoding_limit: true,
-                 quota_in_bytes: 2048
-               }
+                 quota_in_bytes: 2048 }
       put api_v1_organization_users_update_url(name: @organization.name, u_username: user_to_update.username), params
 
       @organization.reload

@@ -2,9 +2,9 @@
 
 module OrganizationUsersHelper
   def load_organization
-    @organization = current_viewer.organization
+    @organization = Organization.where(name: params[:name]).first
     if @organization.nil?
-      render_jsonp('User has no organization', 404)
+      render_jsonp({}, 401) # Not giving clues to guessers via 404
       return
     end
   end

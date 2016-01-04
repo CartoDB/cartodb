@@ -40,12 +40,14 @@ module Carto
       def update
         render_jsonp('No update params provided', 410) && return if update_params.empty?
 
+        params_to_update = update_params
+
         # ::User validation requires confirmation
-        if update_params[:password].present?
-          update_params[:password_confirmation] = update_params[:password]
+        if params_to_update[:password].present?
+          params_to_update[:password_confirmation] = params_to_update[:password]
         end
 
-        unless @user.update_fields(update_params, update_params.keys())
+        unless @user.update_fields(params_to_update, params_to_update.keys())
           render_jsonp(@user.errors.full_messages, 410)
           return
         end
@@ -62,7 +64,9 @@ module Carto
       def destroy
         render_jsonp({}, 401) && return if @organization.owner_id == @user.id
 
-        render_jsonp("Can't delete @user. #{'Has shared entities' if @user.has_shared_entities?}", 410) unless @user.can_delete
+        unless @user.can_delete
+          render_jsonp("Can't delete @user. #{'Has shared entities' if @user.has_shared_entities?}", 410)
+        end
 
         @user.delete_in_central
         @user.destroy

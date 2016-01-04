@@ -100,19 +100,37 @@
   bottom: 12px;
 }
 
+.CDB-infowindow-fail {
+  color: rgb(243, 86, 60);
+  font-size: 9px;
+  text-transform: uppercase;
+  transform: translateY(50px);
+  display: block;
+  text-align: center;
+}
+
+
 .CDB-infowindow-mediaTitle {
   position: absolute;
   right: 24px;
   bottom: 24px;
   left: 24px;
+  + .CDB-infowindow-fail {
+    padding: 16px 0 0 20px;
+    text-align: left;
+    transform: translateY(0);
+  }
 }
 .CDB-infowindow-headerMedia {
   position: relative;
-  min-height: 100px;
+  min-height: 104px;
   overflow: hidden;
   z-index: 1;
   &.is-loading {
     background: #F5F5F5;
+  }
+  &.is-fail {
+    background: rgba(241, 87, 67, 0.04);
   }
 
   .CDB-infowindow-title > span {

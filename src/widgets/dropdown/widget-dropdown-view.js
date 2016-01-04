@@ -8,6 +8,9 @@ var template = require('./template.tpl');
  *
  */
 module.exports = cdb.core.View.extend({
+
+  _WIDGET_BOTTOM_PADDING: 20,
+
   className: 'CDB-Dropdown',
 
   events: {
@@ -99,6 +102,17 @@ module.exports = cdb.core.View.extend({
     this.render();
     this._$container.append(this.$el);
     this.$el.show();
+
+    this._adjustVerticalPosition();
+  },
+
+  _adjustVerticalPosition: function () {
+    var bodyHeight = $('body').height();
+    var bottom = this.$el.offset().top + this.$el.height();
+
+    if (bottom + this._WIDGET_BOTTOM_PADDING > bodyHeight) {
+      this.$el.addClass('has-top-position');
+    }
   },
 
   _close: function () {

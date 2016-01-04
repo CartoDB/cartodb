@@ -32,6 +32,7 @@
   left: 0;
   height: 60px;
   z-index: 1;
+  pointer-events: none;
 }
 .CDB-Widget-canvasShadow--top {
   @include background-gradient(#FFF, rgba(255, 255, 255, 0));

@@ -5,14 +5,14 @@ module OrganizationUsersHelper
     @organization = Organization.where(name: params[:name]).first
     if @organization.nil?
       render_jsonp({}, 401) # Not giving clues to guessers via 404
-      return
+      return false
     end
   end
 
   def owners_only
     unless current_viewer_is_owner?
       render_jsonp({}, 401)
-      return
+      return false
     end
   end
 
@@ -21,7 +21,7 @@ module OrganizationUsersHelper
 
     if @user.nil?
       render_jsonp("No user with username '#{params[:u_username]}' in '#{@organization.name}'", 404)
-      return
+      return false
     end
   end
 

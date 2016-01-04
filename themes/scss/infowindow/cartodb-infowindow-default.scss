@@ -101,14 +101,13 @@
 }
 
 .CDB-infowindow-fail {
+  display: block;
+  transform: translateY(50px);
   color: rgb(243, 86, 60);
   font-size: 9px;
-  text-transform: uppercase;
-  transform: translateY(50px);
-  display: block;
   text-align: center;
+  text-transform: uppercase;
 }
-
 
 .CDB-infowindow-mediaTitle {
   position: absolute;
@@ -117,8 +116,8 @@
   left: 24px;
   + .CDB-infowindow-fail {
     padding: 16px 0 0 20px;
-    text-align: left;
     transform: translateY(0);
+    text-align: left;
   }
 }
 .CDB-infowindow-headerMedia {

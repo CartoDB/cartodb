@@ -5,8 +5,9 @@ require_relative '../../lib/carto/http/client'
 
 module CartoDB
   class SQLApi
-    class SQLError        < StandardError; end
-    class PermissionError < StandardError; end
+    class SQLApiError < StandardError; end
+    class SQLError < SQLApiError; end
+    class PermissionError < SQLApiError; end
 
     # seconds
     CONNECT_TIMEOUT = 45

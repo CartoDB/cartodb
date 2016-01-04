@@ -10,19 +10,14 @@ module Carto
       ssl_required :create, :update, :destroy, :show
 
       before_filter :load_organization
+      before_filter :owners_only
+      before_filter :load_user, only: [:show, :update, :destroy]
 
       def show
-        render_jsonp({}, 401) && return unless current_viewer_is_owner?
-
-        user = ::User.where(username: params[:u_username], organization: @organization).first
-        render_jsonp("No user with username '#{params[:u_username]}'", 404) && return if user.nil?
-
-        render_jsonp Carto::Api::UserPresenter.new(user, current_viewer: current_viewer).to_poro, 200
+        render_jsonp(Carto::Api::UserPresenter.new(@user, current_viewer: current_viewer).to_poro, 200)
       end
 
       def create
-        render_jsonp({}, 401) && return unless current_viewer_is_owner?
-
         account_creator = CartoDB::UserAccountCreator.new.with_organization(@organization)
 
         account_creator.with_username(create_params[:username]) if create_params[:username].present?
@@ -43,25 +38,21 @@ module Carto
       end
 
       def update
-        render_jsonp({}, 401) && return unless current_viewer_is_owner?
         render_jsonp('No update params provided', 410) && return if update_params.empty?
-
-        user = ::User.where(username: params[:u_username]).first
-        render_jsonp("No user with username '#{params[:u_username]}'", 404) && return if user.nil?
 
         # ::User validation requires confirmation
         if update_params[:password].present?
           update_params[:password_confirmation] = update_params[:password]
         end
 
-        unless user.update_fields(update_params, update_params.keys())
-          render_jsonp(user.errors.full_messages, 410)
+        unless @user.update_fields(update_params, update_params.keys())
+          render_jsonp(@user.errors.full_messages, 410)
           return
         end
 
-        user.update_in_central
+        @user.update_in_central
 
-        render_jsonp Carto::Api::UserPresenter.new(user, current_viewer: current_viewer).to_poro, 200
+        render_jsonp Carto::Api::UserPresenter.new(@user, current_viewer: current_viewer).to_poro, 200
       rescue CartoDB::CentralCommunicationFailure => e
         CartoDB.notify_exception(e)
 
@@ -69,23 +60,18 @@ module Carto
       end
 
       def destroy
-        render_jsonp({}, 401) && return unless current_viewer_is_owner?
-        render_jsonp('No delete params provided', 410) && return if params[:u_username].empty?
+        render_jsonp({}, 401) && return if @organization.owner_id == @user.id
 
-        user = ::User.where(username: params[:u_username]).first
-        render_jsonp({}, 401) && return if @organization.owner.id == user.id
+        render_jsonp("Can't delete @user. #{'Has shared entities' if @user.has_shared_entities?}", 410) unless @user.can_delete
 
-        render_jsonp("No user with username '#{params[:u_username]}'", 404) && return if user.nil?
-        render_jsonp("Can't delete user. #{'Has shared entities' if user.has_shared_entities?}", 410) unless user.can_delete
-
-        user.delete_in_central
-        user.destroy
+        @user.delete_in_central
+        @user.destroy
 
         render_jsonp 'User deleted', 200
       rescue CartoDB::CentralCommunicationFailure => e
         CartoDB.notify_exception(e)
         if e.user_message =~ /No user found with username/
-          user.destroy
+          @user.destroy
           render_jsonp 'User deleted', 200
         else
           render_jsonp "User couldn't be deleted", 500

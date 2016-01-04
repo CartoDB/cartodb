@@ -99,7 +99,6 @@ describe Carto::Api::SynchronizationsController do
         last_response.status.should == 200
       end
     end
-
   end
 
 end

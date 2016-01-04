@@ -54,7 +54,10 @@ module Carto
           update_params[:password_confirmation] = update_params[:password]
         end
 
-        render_jsonp(user.errors.full_messages, 410) && return unless user.update_fields(update_params, update_params.keys())
+        unless user.update_fields(update_params, update_params.keys())
+          render_jsonp(user.errors.full_messages, 410)
+          return
+        end
 
         user.update_in_central
 

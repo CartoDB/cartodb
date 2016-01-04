@@ -110,9 +110,7 @@ module.exports = cdb.core.View.extend({
     var bodyHeight = $('body').height();
     var bottom = this.$el.offset().top + this.$el.height();
 
-    if (bottom + this._WIDGET_BOTTOM_PADDING > bodyHeight) {
-      this.$el.addClass('has-top-position');
-    }
+    this.$el.toggleClass('has-top-position', bottom + this._WIDGET_BOTTOM_PADDING > bodyHeight);
   },
 
   _close: function () {

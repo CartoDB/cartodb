@@ -7,15 +7,17 @@ module Carto
     class OrganizationUsersController < ::Api::ApplicationController
       include OrganizationUsersHelper
 
-      ssl_required :create, :update, :destroy
+      ssl_required :create, :update, :destroy, :show
 
       before_filter :load_organization
+      before_filter :owners_only
+      before_filter :load_user, only: [:show, :update, :destroy]
 
-      UPDATE_PARAMS_MAP = { new_email: :email }
+      def show
+        render_jsonp(Carto::Api::UserPresenter.new(@user, current_viewer: current_viewer).to_poro, 200)
+      end
 
       def create
-        render_jsonp({}, 401) && return unless current_viewer_is_owner?
-
         account_creator = CartoDB::UserAccountCreator.new.with_organization(@organization)
 
         account_creator.with_username(create_params[:username]) if create_params[:username].present?
@@ -36,27 +38,21 @@ module Carto
       end
 
       def update
-        render_jsonp({}, 401) && return unless current_viewer_is_owner?
-        render_jsonp('No update params provided', 410) && return if update_params.empty? || identify_params.empty?
+        render_jsonp('No update params provided', 410) && return if update_params.empty?
 
-        user = ::User.where(identify_params).first
-        render_jsonp("No user with #{identify_params}", 404) && return if user.nil?
-
-        # Turn new_email: into email:, etc
-        transformed_update_params = Hash[update_params.map { |k, v| [UPDATE_PARAMS_MAP[k] || k, v] }]
+        params_to_update = update_params
 
         # ::User validation requires confirmation
-        if transformed_update_params[:password].present?
-          transformed_update_params[:password_confirmation] = transformed_update_params[:password]
+        params_to_update[:password_confirmation] = params_to_update[:password]
+
+        unless @user.update_fields(params_to_update, params_to_update.keys)
+          render_jsonp(@user.errors.full_messages, 410)
+          return
         end
 
-        user.update(transformed_update_params)
+        @user.update_in_central
 
-        render_jsonp(user.errors.full_messages, 410) && return unless user.save
-
-        user.update_in_central
-
-        render_jsonp Carto::Api::UserPresenter.new(user, current_viewer: current_viewer).to_poro, 200
+        render_jsonp Carto::Api::UserPresenter.new(@user, current_viewer: current_viewer).to_poro, 200
       rescue CartoDB::CentralCommunicationFailure => e
         CartoDB.notify_exception(e)
 
@@ -64,23 +60,20 @@ module Carto
       end
 
       def destroy
-        render_jsonp({}, 401) && return unless current_viewer_is_owner?
-        render_jsonp('No delete params provided', 410) && return if delete_params.empty?
+        render_jsonp("Can't delete org owner", 401) && return if @organization.owner_id == @user.id
 
-        user = ::User.where(delete_params).first
-        render_jsonp({}, 401) && return if @organization.owner.id == user.id
+        unless @user.can_delete
+          render_jsonp("Can't delete @user. #{'Has shared entities' if @user.has_shared_entities?}", 410)
+        end
 
-        render_jsonp("No user with #{delete_params}", 404) && return if user.nil?
-        render_jsonp("Can't delete user. #{'Has shared entities' if user.has_shared_entities?}", 410) unless user.can_delete
-
-        user.delete_in_central
-        user.destroy
+        @user.delete_in_central
+        @user.destroy
 
         render_jsonp 'User deleted', 200
       rescue CartoDB::CentralCommunicationFailure => e
         CartoDB.notify_exception(e)
         if e.user_message =~ /No user found with username/
-          user.destroy
+          @user.destroy
           render_jsonp 'User deleted', 200
         else
           render_jsonp "User couldn't be deleted", 500
@@ -95,18 +88,8 @@ module Carto
       end
 
       # TODO: Use native strong params when in Rails 4+
-      def identify_params
-        permit(:email, :username)
-      end
-
-      # TODO: Use native strong params when in Rails 4+
-      def delete_params
-        identify_params
-      end
-
-      # TODO: Use native strong params when in Rails 4+
       def update_params
-        permit(:new_email, :password, :quota_in_bytes, :soft_geocoding_limit)
+        permit(:email, :password, :quota_in_bytes, :soft_geocoding_limit)
       end
     end
   end

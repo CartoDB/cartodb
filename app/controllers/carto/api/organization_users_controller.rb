@@ -60,7 +60,7 @@ module Carto
       end
 
       def destroy
-        render_jsonp({}, 401) && return if @organization.owner_id == @user.id
+        render_jsonp("Can't delete org owner", 401) && return if @organization.owner_id == @user.id
 
         unless @user.can_delete
           render_jsonp("Can't delete @user. #{'Has shared entities' if @user.has_shared_entities?}", 410)

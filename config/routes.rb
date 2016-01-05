@@ -9,6 +9,10 @@
 # Can be also done at controller source files by using -> skip_before_filter :ensure_org_url_if_org_user
 
 CartoDB::Application.routes.draw do
+
+  # SAML authentication
+  post '/(user/:user_domain)(u/:user_domain)/:saml_idp/acs' => 'saml#acs'
+
   # Double use: for user public dashboard AND org dashboard
   get   '/[(user/:user_domain)(u/:user_domain)]'                 => 'admin/pages#public', as: :root
   root :to => 'admin/pages#index'
@@ -19,7 +23,6 @@ CartoDB::Application.routes.draw do
   get   '(/user/:user_domain)(/u/:user_domain)/enable_account_token/:id' => 'account_tokens#enable',     as: :enable_account_token_show
   get   '(/user/:user_domain)(/u/:user_domain)/resend_validation_mail/:user_id' => 'account_tokens#resend',     as: :resend_validation_mail
   get   '(/user/:user_domain)(/u/:user_domain)/account_token_authentication_error' => 'sessions#account_token_authentication_error',     as: :account_token_authentication_error
-
   get   '/login'           => 'sessions#new',     as: :login
   get   '(/user/:user_domain)(/u/:user_domain)/logout'          => 'sessions#destroy', as: :logout
   match '(/user/:user_domain)(/u/:user_domain)/sessions/create' => 'sessions#create',  as: :create_session

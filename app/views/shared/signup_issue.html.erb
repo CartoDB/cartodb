@@ -21,9 +21,11 @@
                 <% end %>
                 </ul>
               </p>
+              <% if @organization %>
               <p class="Sessions-description Sessions-description--small">Please, <% if @organization.owner %><a href="mailto:<%= @organization.owner.email %>"><% end %>
                 contact the administrator of <%= @organization.name %><% if @organization.owner %></a><% end %> to begin your signup process.</p>
             </div>
+            <% end %>
           <% else %>
             <div class="js-info">
               <h1 class="Sessions-title u-tspace-m">Service temporarily unavailable</h1>

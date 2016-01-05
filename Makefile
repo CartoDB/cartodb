@@ -7,12 +7,6 @@ all:
 	cat python_requirements.txt | grep -v gdal | sudo pip install -r /dev/stdin
 	npm install
 
-prepare-ruby-version:
-ifeq ($(RUBY_MAJOR),2)
-	cp Gemfile-ruby2 Gemfile
-	cp Gemfile-ruby2.lock Gemfile.lock
-endif
-
 PENDING_SPECS = \
   spec/lib/varnish_spec.rb (#321) \
   $(NULL)

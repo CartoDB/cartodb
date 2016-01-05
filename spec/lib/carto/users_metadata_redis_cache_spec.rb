@@ -12,7 +12,7 @@ describe Carto::UsersMetadataRedisCache do
 
   describe '#update_if_old' do
     it 'sets db_size_in_bytes for users that have not seen the dashboard in 2 days' do
-      user_mock.stubs(:dashboard_viewed_at).returns(Time.now - 2.days)
+      user_mock.stubs(:dashboard_viewed_at).returns(Time.now.utc - 2.days)
       umrc.expects(:set_db_size_in_bytes).with(user_mock).once
 
       umrc.update_if_old(user_mock)
@@ -22,7 +22,7 @@ describe Carto::UsersMetadataRedisCache do
     end
 
     it 'does not set db_size_in_bytes for users that have seen the dashboard in 2 hours' do
-      user_mock.stubs(:dashboard_viewed_at).returns(Time.now - 2.hours)
+      user_mock.stubs(:dashboard_viewed_at).returns(Time.now.utc - 2.hours)
       umrc.expects(:set_db_size_in_bytes).never
 
       umrc.update_if_old(user_mock)

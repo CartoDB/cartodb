@@ -12,7 +12,7 @@ module Carto
     end
 
     def update_if_old(user)
-      if user.dashboard_viewed_at.nil? || user.dashboard_viewed_at < (Time.now - UPDATE_PROPAGATION_THRESHOLD)
+      if user.dashboard_viewed_at.nil? || user.dashboard_viewed_at < (Time.now.utc - UPDATE_PROPAGATION_THRESHOLD)
         set_db_size_in_bytes(user)
       end
     end

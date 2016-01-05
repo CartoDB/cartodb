@@ -78,6 +78,17 @@ module CartoDB
               usage_metrics.incr_total_requests(search_terms.length)
             end
 
+            # Count empty and successfully geocoded responses
+            empty_responses = 0
+            success_responses = 0
+            CSV.parse(response) do |row|
+              empty_responses += 1 if row[4] == "false"
+              success_responses += 1 if row[4] == "true"
+            end
+            # TODO move > 0 condition to metrics class
+            usage_metrics.incr_success_responses(success_responses) if success_responses > 0
+            usage_metrics.incr_empty_responses(empty_responses) if empty_responses > 0
+
             log.append "Saving results to #{geocoding_results}"
             File.open(geocoding_results, 'a') { |f| f.write(response.force_encoding("UTF-8")) } unless response == "\n"
           end

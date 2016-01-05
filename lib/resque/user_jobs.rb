@@ -2,6 +2,7 @@
 require_relative './base_job'
 require 'resque-metrics'
 require_relative '../cartodb/metrics'
+require_relative '../carto/users_metadata_redis_cache'
 
 module Resque
 
@@ -207,7 +208,32 @@ module Resque
           UserMailer.trending_map(visualization, mapviews, vis_preview_image).deliver
         end
       end
+    end
 
+    module Metadata
+      module UserMetadataPropagation
+        extend ::Resque::Metrics
+        @queue = :users
+
+        USER_METADATA_PROPAGATION_THRESHOLD = 8.hours
+
+        def self.trigger_metadata_propagation_if_needed(user)
+          if self.trigger_metadata_propagation?(user)
+            ::Resque.enqueue(::Resque::UserJobs::Metadata::UserMetadataPropagation, user.id)
+          end
+        end
+
+        def self.perform(user_id)
+          user = ::User.where(id: user_id).first
+          Carto::UsersMetadataRedisCache.new.set_db_size_in_bytes(user)
+        end
+
+        private
+
+        def self.trigger_metadata_propagation?(user)
+          user.dashboard_viewed_at.nil? || user.dashboard_viewed_at < Time.now - USER_METADATA_PROPAGATION_THRESHOLD
+        end
+      end
     end
   end
 end

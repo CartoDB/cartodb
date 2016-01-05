@@ -2,7 +2,6 @@
 require_relative './base_job'
 require 'resque-metrics'
 require_relative '../cartodb/metrics'
-require_relative '../carto/users_metadata_redis_cache'
 
 module Resque
 

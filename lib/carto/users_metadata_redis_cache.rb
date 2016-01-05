@@ -3,17 +3,18 @@
 module Carto
   class UsersMetadataRedisCache
 
-    # This needs to be changed whenever there're changes in the code that require invalidation of old keys
-    VERSION = '1'
-
     DB_SIZE_IN_BYTES_EXPIRATION = 2.days
+
+    UPDATE_PROPAGATION_THRESHOLD = 8.hours
 
     def initialize(redis_cache = $users_metadata)
       @redis = $users_metadata
     end
 
-    def set_db_size_in_bytes(user)
-      @redis.setex(db_size_in_bytes_key(user), DB_SIZE_IN_BYTES_EXPIRATION.to_i, user.db_size_in_bytes)
+    def update_if_old(user)
+      if user.dashboard_viewed_at.nil? || user.dashboard_viewed_at < (Time.now - UPDATE_PROPAGATION_THRESHOLD)
+        set_db_size_in_bytes(user)
+      end
     end
 
     def db_size_in_bytes(user)
@@ -21,6 +22,10 @@ module Carto
     end
 
     private
+
+    def set_db_size_in_bytes(user)
+      @redis.setex(db_size_in_bytes_key(user), DB_SIZE_IN_BYTES_EXPIRATION.to_i, user.db_size_in_bytes)
+    end
 
     def db_size_in_bytes_key(user)
       "rails:users:#{user.username}:db_size_in_bytes"

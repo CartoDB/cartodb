@@ -537,18 +537,8 @@ describe Admin::VisualizationsController do
       $user_1.stubs(:should_load_common_data?).returns(false)
     end
 
-    it 'triggers UserMetadataPropagation job if it should' do
-      ::Resque.expects(:enqueue).with(::Resque::UserJobs::Metadata::UserMetadataPropagation, $user_1.id).once
-      ::Resque::UserJobs::Metadata::UserMetadataPropagation.stubs(:trigger_metadata_propagation?).with($user_1).returns(true)
-
-      login_as($user_1, scope: $user_1.username)
-      get dashboard_path, {}, @headers
-    end
-
-    it 'does not trigger UserMetadataPropagation job if t should not do it' do
-      ::Resque.expects(:enqueue).with(::Resque::UserJobs::Metadata::UserMetadataPropagation).never
-      ::Resque::UserJobs::Metadata::UserMetadataPropagation.stubs(:trigger_metadata_propagation?).with($user_1).returns(false)
-
+    it 'invokes user metadata redis caching' do
+      Carto::UsersMetadataRedisCache.any_instance.expects(:update_if_old).with($user_1).once
       login_as($user_1, scope: $user_1.username)
       get dashboard_path, {}, @headers
     end

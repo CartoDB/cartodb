@@ -444,7 +444,7 @@ class Admin::VisualizationsController < Admin::AdminController
   def user_metadata_propagation
     return true if current_user.nil?
 
-    ::Resque::UserJobs::Metadata::UserMetadataPropagation.trigger_metadata_propagation_if_needed(current_user)
+    Carto::UsersMetadataRedisCache.new.update_if_old(current_user)
   end
 
   def load_common_data

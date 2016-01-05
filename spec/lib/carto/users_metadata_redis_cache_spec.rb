@@ -28,5 +28,4 @@ describe Carto::UsersMetadataRedisCache do
       umrc.update_if_old(user_mock)
     end
   end
-
 end

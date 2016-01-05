@@ -30,6 +30,5 @@ module Carto
     def db_size_in_bytes_key(user)
       "rails:users:#{user.username}:db_size_in_bytes"
     end
-
   end
 end

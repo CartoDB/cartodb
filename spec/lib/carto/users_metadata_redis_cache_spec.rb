@@ -3,7 +3,7 @@ require_relative '../../../lib/carto/users_metadata_redis_cache'
 
 describe Carto::UsersMetadataRedisCache do
   let(:user_mock) do
-    OpenStruct.new(id: 'kk', username:'myusername', db_size_in_bytes: 123)
+    OpenStruct.new(id: 'kk', username: 'myusername', db_size_in_bytes: 123)
   end
 
   let(:umrc) do

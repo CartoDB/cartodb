@@ -8,7 +8,7 @@ module Carto
     UPDATE_PROPAGATION_THRESHOLD = 8.hours
 
     def initialize(redis_cache = $users_metadata)
-      @redis = $users_metadata
+      @redis = redis_cache
     end
 
     def update_if_old(user)

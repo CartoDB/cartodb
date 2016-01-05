@@ -75,8 +75,8 @@
   <span class="FormAccount-separator"></span>
 
   <div class="FormAccount-row">
-    <div class="OrganizationUser-quota js-quota">
-      <div class="FormAccount-rowData FormAccount-rowData--med OrganizationUser-quotaProgress js-quotaProgress">
+    <div class="OrganizationUser-quota js-userQuota">
+      <div class="FormAccount-rowData FormAccount-rowData--med OrganizationUser-quotaProgress js-userQuotaSlider">
         <div class="UISlider UserQuotaDropdown-slider js-slider progress-bar overflow-visible">
           <% assignedPer = ((@user.quota_in_bytes.to_f * 100) / current_user.organization.quota_in_bytes) %>
           <% if !@user.new? %>
@@ -101,7 +101,7 @@
           </li>
         </ul>
       </div>
-      <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft OrganizationUser-quotaInfo js-quotaInfo">
+      <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft OrganizationUser-quotaInfo js-userQuotaSliderInput">
         <span><%= text_field_tag nil, nil, :class => "FormAccount-input OrganizationUser-quotaInfoInput js-assignedSize" %> MB<% unless cartodb_com_hosted? %>, <a href="<%= current_user.upgrade_url(request.protocol) %>">upgrade your account</a> if needed.<% end %></span>
 
       </div>

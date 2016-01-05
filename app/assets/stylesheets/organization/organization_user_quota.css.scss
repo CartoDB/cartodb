@@ -14,7 +14,7 @@
 .OrganizationUser-quotaProgress {
   display: block;
   width: 300px;
-  @include progress-bar(10px, 20px, false, 6px);
+  @include progress-bar(10px, 20px, false, 3px);
 }
 .OrganizationUser-quotaBar {
   display:block;

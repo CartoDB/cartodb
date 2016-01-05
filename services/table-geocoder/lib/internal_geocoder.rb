@@ -3,6 +3,7 @@ require_relative '../../sql-api/sql_api'
 require_relative '../../importer/lib/importer/query_batcher'
 require_relative 'internal-geocoder/query_generator_factory'
 require_relative 'abstract_table_geocoder'
+require_relative 'geocoder_usage_metrics'
 
 module CartoDB
   module InternalGeocoder
@@ -65,7 +66,18 @@ module CartoDB
           search_terms = get_search_terms(count)
           unless search_terms.size == 0
             sql = @query_generator.dataservices_query(search_terms)
-            response = sql_api.fetch(sql, 'csv').gsub(/\A.*/, '').gsub(/^$\n/, '')
+
+            # Getting data from the internal geocoder is an all-or-nothing thing, so we
+            # log it as such, total_requests and failed_responses
+            begin
+              response = sql_api.fetch(sql, 'csv').gsub(/\A.*/, '').gsub(/^$\n/, '')
+            rescue SQLApiError => ex
+              usage_metrics.incr_failed_responses(search_terms.length)
+              raise ex
+            ensure
+              usage_metrics.incr_total_requests(search_terms.length)
+            end
+
             log.append "Saving results to #{geocoding_results}"
             File.open(geocoding_results, 'a') { |f| f.write(response.force_encoding("UTF-8")) } unless response == "\n"
           end
@@ -124,6 +136,12 @@ module CartoDB
 
       def name
         'internal'
+      end
+
+      private
+
+      def usage_metrics
+        @usage_metrics ||= ::CartoDB::GeocoderUsageMetrics.new
       end
 
     end # Geocoder

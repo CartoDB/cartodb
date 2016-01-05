@@ -56,8 +56,6 @@ module CartoDB
         @state = 'failed'
         raise e
       ensure
-        # INFO: Sometimes the ensure block is called twice
-        # TODO: deal with this
         success_rows_after
         usage_metrics.incr_success_rows(success_rows)
         usage_metrics.incr_empty_rows(empty_rows)

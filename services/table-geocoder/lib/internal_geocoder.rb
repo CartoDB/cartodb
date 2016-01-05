@@ -45,6 +45,8 @@ module CartoDB
         log.append 'run()'
         @state = 'processing'
         ensure_georef_status_colummn_valid
+        usage_metrics.incr_processable_rows(processable_rows)
+        success_rows_before
         download_results
         create_temp_table
         load_results_to_temp_table
@@ -55,6 +57,11 @@ module CartoDB
         raise e
       ensure
         # INFO: Sometimes the ensure block is called twice
+        # TODO: deal with this
+        success_rows_after
+        usage_metrics.incr_success_rows(success_rows)
+        usage_metrics.incr_empty_rows(empty_rows)
+        usage_metrics.incr_failed_rows(failed_rows)
         drop_temp_table
         FileUtils.remove_entry_secure @working_dir if Dir.exists?(@working_dir)
       end
@@ -153,6 +160,30 @@ module CartoDB
 
       def usage_metrics
         @usage_metrics ||= ::CartoDB::GeocoderUsageMetrics.new
+      end
+
+      def processable_rows
+        @processable_rows ||= connection.select.from(@sequel_qualified_table_name).where(:cartodb_georef_status => nil).count
+      end
+
+      def success_rows_before
+        @success_rows_before ||= connection.select.from(@sequel_qualified_table_name).where(:cartodb_georef_status => true).count
+      end
+
+      def success_rows_after
+        @success_rows_after ||= connection.select.from(@sequel_qualified_table_name).where(:cartodb_georef_status => true).count
+      end
+
+      def success_rows
+        @success_rows ||= success_rows_after - success_rows_before
+      end
+
+      def empty_rows
+        @empty_rows ||= connection.select.from(@sequel_qualified_table_name).where(:cartodb_georef_status => false).count
+      end
+
+      def failed_rows
+        @failed_rows ||= processable_rows - success_rows - empty_rows
       end
 
     end # Geocoder

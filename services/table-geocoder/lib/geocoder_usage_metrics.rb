@@ -13,5 +13,15 @@ module CartoDB
       # TODO implement
       CartoDB.notify_debug "#{__method__}(n=#{n})"
     end
+
+    def incr_success_responses(n=1)
+      # TODO implement
+      CartoDB.notify_debug "#{__method__}(n=#{n})"
+    end
+
+    def incr_empty_responses(n=1)
+      # TODO implement
+      CartoDB.notify_debug "#{__method__}(n=#{n})"
+    end
   end
 end

@@ -23,11 +23,8 @@ module Carto
     private
 
     def db_size_in_bytes_key(user)
-      "rails:users:#{user.username}:db_size_in_bytes:#{date_key}"
+      "rails:users:#{user.username}:db_size_in_bytes"
     end
 
-    def date_key
-      Time.now.strftime('%Y%m%d')
-    end
   end
 end

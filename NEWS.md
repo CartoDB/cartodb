@@ -1,4 +1,11 @@
-3.11.1 (2015-mm-dd)
+3.12.1 (2016-mm-dd)
+-------------------
+
+3.12.0 (2016-01-05)
+-------------------
+* Ruby 2 support in CartoDB. Ruby 1.9 is now deprecated and not supported from this moment.
+
+3.11.1 (2016-01-05)
 -------------------
 * Now the owner of the dataset is going to receive an email when the synchronization fails hits the max allowed number [#3501](https://github.com/CartoDB/cartodb/issues/3501)
 * If the dataset don't have an associated map we avoid to use the zoom property [#5447](https://github.com/CartoDB/cartodb/issues/5447)

@@ -3,7 +3,7 @@ source 'http://rubygems.org'
 gem 'rails',                   '3.2.22'
 
 gem 'rake',                    '0.9.2.2'
-gem 'pg',                      '0.13.2'
+gem 'pg',                      '0.15.0'
 gem 'sequel',                  '3.42.0'
 gem 'sequel_pg',               '1.6.3', require: 'sequel'
 
@@ -38,7 +38,7 @@ gem 'net-ldap',                '0.11'
 group :production, :staging do
   gem 'unicorn',               '4.8.2'
   gem 'unicorn-worker-killer'
-  gem 'raindrops',             '0.12.0'
+  gem 'raindrops',             '0.15.0'
 end
 
 group :assets do
@@ -55,11 +55,11 @@ gem 'faraday',                 '0.9.0'
 gem 'retriable',               '1.4.1'  # google-api-client needs this
 gem 'google-api-client',       '0.7.0'
 gem 'dropbox-sdk',             '1.6.3'
-gem 'instagram',               '1.1.3'
+gem 'instagram',               '1.1.6'
 gem 'gibbon',                  '1.1.4'
 
 # Geocoder (synchronizer doesn't needs it anymore)
-gem 'eventmachine',            '1.0.3'
+gem 'eventmachine',            '1.0.4'
 gem 'em-pg-client',            '0.2.1'
 
 # Service components (/services)
@@ -79,9 +79,11 @@ gem 'rollbar',               '0.12.14'
 gem 'resque',                '1.25.2'
 gem 'resque-metrics',        '0.1.1'
 
+# This is weird. In ruby 2 test-unit is required. We don't know why for sure
+gem 'test-unit'
+
 group :test do
   gem 'simplecov',                       require: false
-
   gem 'db-query-matchers',     '0.4.0'
   gem 'rack-test',             '0.6.2',  require: 'rack/test'
   gem 'factory_girl_rails',    '~> 4.0.0'
@@ -100,7 +102,7 @@ end
 group :development, :test do
   gem 'rspec-rails',           '2.12.0'
   gem 'rb-readline'
-  gem 'debugger',              '1.6.8'
+  gem 'byebug'
   gem 'rack'
 
   # Server

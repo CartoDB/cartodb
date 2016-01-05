@@ -5,6 +5,7 @@ var WidgetContent = require('../standard/widget-content-view');
 var HistogramChartView = require('./chart');
 var placeholder = require('./placeholder.tpl');
 var template = require('./content.tpl');
+var DropdownView = require('../dropdown/widget-dropdown-view');
 var AnimateValues = require('../animate-values.js');
 var animationTemplate = require('./animation-template.tpl');
 
@@ -34,8 +35,22 @@ module.exports = WidgetContent.extend({
       viewModel: this.viewModel,
       dataModel: this.model
     });
+
     this.$('.js-title').html(titleView.render().el);
     this.addView(titleView);
+
+    var dropdown = new DropdownView({
+      target: this.$('.js-actions'),
+      container: this.$('.js-header')
+    });
+
+    dropdown.bind('click', function (action) {
+      if (action === 'toggle') {
+        this.viewModel.toggleCollapsed();
+      }
+    }, this);
+
+    this.addView(dropdown);
 
     this._renderMiniChart();
     this._renderMainChart();
@@ -43,9 +58,7 @@ module.exports = WidgetContent.extend({
 
   _initBinds: function () {
     this.model.once('change:data', this._onFirstLoad, this);
-    this.viewModel.bind('change:collapsed', function (mdl, isCollapsed) {
-      this.$el.toggleClass('is-collapsed', !!isCollapsed);
-    }, this);
+    this.viewModel.bind('change:collapsed', this.render, this);
   },
 
   _onFirstLoad: function () {
@@ -122,6 +135,8 @@ module.exports = WidgetContent.extend({
     } else {
       this.originalData = this.model.getData();
       this._setupBindings();
+      var isCollapsed = this.viewModel.isCollapsed();
+      this.$el.toggleClass('is-collapsed', !!isCollapsed);
       this._initViews();
     }
 

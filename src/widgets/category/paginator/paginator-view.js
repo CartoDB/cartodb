@@ -2,6 +2,12 @@ var $ = require('jquery');
 var _ = require('underscore');
 var cdb = require('cartodb.js');
 var defaultTemplate = require('./paginator-template.tpl');
+var MINCATEGORIES = 5;
+
+/**
+ *  Display paginator for category widget
+ *
+ */
 
 module.exports = cdb.core.View.extend({
   options: {
@@ -30,15 +36,22 @@ module.exports = cdb.core.View.extend({
   render: function () {
     this.clearSubViews();
     this.$el.empty();
-    var pages = Math.ceil(this.dataModel.getSize() / this.options.itemsPerPage);
-    var template = this.options.template;
-    this.$el.html(
-      template({
-        showPaginator: this.options.paginator,
-        currentPage: this.model.get('page'),
-        pages: pages
-      })
-    );
+    var categoriesCount = this.dataModel.getCount();
+
+    if (categoriesCount > MINCATEGORIES) {
+      var pages = Math.ceil(this.dataModel.getSize() / this.options.itemsPerPage);
+      var template = this.options.template;
+      this.$el.html(
+        template({
+          showPaginator: this.options.paginator,
+          currentPage: this.model.get('page'),
+          categoriesCount: categoriesCount,
+          pages: pages
+        })
+      );
+    } else {
+      this.model.set('page', 0);
+    }
     this._scrollToPage();
 
     return this;
@@ -47,6 +60,7 @@ module.exports = cdb.core.View.extend({
   _initBinds: function () {
     $(window).bind('resize.' + this.cid, _.bind(this._scrollToPage, this));
     this.model.bind('change:page', this.render, this);
+    this.dataModel.bind('change:categoriesCount', this.render, this);
     this.dataModel.bind('change:data change:searchData', function () {
       this._setPage();
       this.render();

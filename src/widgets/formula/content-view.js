@@ -1,10 +1,9 @@
 var _ = require('underscore');
 var d3 = require('d3');
-var $ = require('jquery');
 var formatter = require('../../formatter');
 var WidgetContent = require('../standard/widget-content-view');
 var template = require('./template.tpl');
-var TooltipView = require('../widget-tooltip-view');
+var DropdownView = require('../dropdown/widget-dropdown-view');
 var animationTemplate = require('./animation-template.tpl');
 var AnimateValues = require('../animate-values.js');
 
@@ -12,10 +11,6 @@ var AnimateValues = require('../animate-values.js');
  * Default widget content view:
  */
 module.exports = WidgetContent.extend({
-  events: {
-    'click .js-collapse': '_toggleCollapse'
-  },
-
   initialize: function () {
     this.dataModel = this.model.dataviewModel;
     WidgetContent.prototype.initialize.call(this);
@@ -45,6 +40,7 @@ module.exports = WidgetContent.extend({
         title: this.model.get('title'),
         operation: this.dataModel.get('operation'),
         value: value,
+        formatedValue: format(value),
         nulls: nulls,
         prefix: prefix,
         suffix: suffix,
@@ -71,15 +67,18 @@ module.exports = WidgetContent.extend({
   },
 
   _initViews: function () {
-    var tooltip = new TooltipView({
-      target: this.$('.js-collapse')
+    var dropdown = new DropdownView({
+      target: this.$('.js-actions'),
+      container: this.$('.js-header')
     });
-    $('body').append(tooltip.render().el);
-    this.addView(tooltip);
-  },
 
-  _toggleCollapse: function () {
-    this.model.toggleCollapsed();
+    dropdown.bind('click', function (action) {
+      if (action === 'toggle') {
+        this.model.toggleCollapsed();
+      }
+    }, this);
+
+    this.addView(dropdown);
   }
 
 });

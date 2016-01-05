@@ -2,7 +2,7 @@
   <button class="u-rSpace--m CDB-Widget-buttonIcon CDB-Widget-textSmaller CDB-Widget-textSmaller--upper js-searchToggle">
     <i class="CDB-Icon CDB-Icon--center CDB-Icon-lens u-rSpace"></i>
     <span class="u-iBlock">
-      search
+      search in <%- categoriesCount %> categor<%- categoriesCount === 1 ? 'y' : 'ies' %>
     </span>
   </button>
 </div>

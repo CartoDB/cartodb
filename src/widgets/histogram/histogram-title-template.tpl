@@ -6,7 +6,7 @@
     " data-tooltip="<%- isSizesApplied ? 'Remove sizes' : 'Apply sizes' %>">
     <i class="CDB-Icon CDB-Icon-syringe CDB-Icon--top"></i>
   </button>
-  <button class="CDB-Shape-threePoints js-collapse" data-tooltip="<%- isCollapsed ? 'Show' : 'Hide' %>">
+  <button class="CDB-Shape-threePoints js-actions">
     <span class="CDB-Shape-threePointsItem"></span>
   </button>
 </div>

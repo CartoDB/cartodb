@@ -23,25 +23,14 @@ describe('widgets/category/stats-view', function () {
       expect(this.view.$('.CDB-Widget-infoItem').length).toBe(2);
     });
 
-    describe('standard', function () {
-      it('should say "TOP" word when Others aggreated value is present', function () {
-        this.model._data.reset([{ name: 'ES', agg: false, value: 2 }, { name: 'Other', agg: true, value: 1 }]);
-        this.view.render();
-        expect(this.view.$('.CDB-Widget-infoItem:eq(1)').text()).toContain(' 0% in top 1 category ');
-      });
-
-      it('should not say "TOP" word when Others aggreated value is not present', function () {
-        this.model._data.reset([{ name: 'ES', agg: false, value: 2 }, { name: 'FR', agg: false, value: 1 }]);
-        this.view.render();
-        expect(this.view.$('.CDB-Widget-infoItem:eq(1)').text()).toContain(' 0% in  2 categories ');
-      });
-
-      it('should not say "TOP" word when it is locked', function () {
-        spyOn(this.model, 'isLocked').and.returnValue(true);
-        this.model._data.reset([{ name: 'ES', agg: false, value: 2 }, { name: 'Other', agg: true, value: 1 }]);
-        this.view.render();
-        expect(this.view.$('.CDB-Widget-infoItem:eq(1)').text()).toContain(' 0% in  1 category ');
-      });
+    it('should say "of total" words when it is rendered', function () {
+      this.model._data.reset([
+        { name: 'ES', agg: false, value: 2 },
+        { name: 'FR', agg: false, value: 2 },
+        { name: 'Other', agg: true, value: 1 }
+      ]);
+      this.view.render();
+      expect(this.view.$('.CDB-Widget-infoItem:eq(1)').text()).toContain('% of total');
     });
 
     describe('search', function () {

@@ -35,6 +35,9 @@ $commonBkg: rgba(#FFF, 1);
   .CDB-Widget-textSmaller {
     color: $secondary;
   }
+  .CDB-Widget-textBig.is-collapsed {
+    color: $secondary;
+  }
   .CDB-Widget-textSmaller--dark {
     color: $primary;
   }
@@ -251,6 +254,28 @@ $commonBkg: rgba(#FFF, 1);
 
     &.is-checked {
       background: $link;
+    }
+  }
+
+  .CDB-Dropdown {
+    background: $commonBkg;
+  }
+
+  .CDB-Dropdown-item {
+    border-bottom: 1px solid $canvasBkg;
+  }
+
+  .CDB-Dropdown-item:last-child {
+    border-bottom: 0;
+  }
+
+  .CDB-Dropdown-link {
+    color: $link;
+    &:hover {
+      background: $loadingBkg;
+    }
+    &.is-delete {
+      color: $negative;
     }
   }
 

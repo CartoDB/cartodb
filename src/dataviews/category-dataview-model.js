@@ -57,8 +57,11 @@ module.exports = DataviewModelBase.extend({
   _onChangeBinds: function () {
     this._setInternalModels();
 
-    this.rangeModel.bind('change:totalCount', function (mdl, value) {
-      this.set('totalCount', value);
+    this.rangeModel.bind('change:totalCount change:categoriesCount', function () {
+      this.set({
+        totalCount: this.rangeModel.get('totalCount'),
+        categoriesCount: this.rangeModel.get('categoriesCount')
+      });
     }, this);
 
     this.bind('change:url', function () {
@@ -356,8 +359,7 @@ module.exports = DataviewModelBase.extend({
       nulls: d.nulls,
       min: d.min,
       max: d.max,
-      count: d.count,
-      categoriesCount: d.categoriesCount
+      count: d.count
     }
     );
     this._data.reset(attrs.data);

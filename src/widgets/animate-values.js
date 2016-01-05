@@ -13,7 +13,10 @@ module.exports = cdb.core.View.extend({
     var templateData = options.templateData || {};
     var debounceWait = options.debounceWait || 500;
 
+    var hasDecimals = (to % 1 === 0);
+
     var stepValue = function (i) {
+      i = hasDecimals ? Math.round(i) : i;
       var value = (_.isNaN(i) || i === undefined) ? (options.defaultValue || 0) : formatter(i);
       var data = _.extend({ value: value }, templateData);
       $el.text(template(data));
@@ -49,7 +52,10 @@ module.exports = cdb.core.View.extend({
     var formatter = options.formatter || d3.format('0,000');
     var templateData = options.templateData || {};
 
+    var hasDecimals = (to % 1 === 0);
+
     var stepValue = function (i) {
+      i = hasDecimals ? Math.round(i) : i;
       value = (_.isNaN(i) || i === undefined) ? (options.defaultValue || 0) : formatter(i);
       var data = _.extend({ value: value }, templateData);
       $el.text(template(data));
@@ -85,7 +91,10 @@ module.exports = cdb.core.View.extend({
     var formatter = options.formatter || d3.format('0,000');
     var templateData = options.templateData || {};
 
+    var hasDecimals = (to % 1 === 0);
+
     var stepValue = function (i) {
+      i = hasDecimals ? Math.round(i) : i;
       var value = (_.isNaN(i) || i === undefined) ? (options.defaultValue || 0) : formatter(i);
       var data = _.extend({ value: value }, templateData);
       $el.text(template(data));

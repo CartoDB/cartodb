@@ -13,8 +13,7 @@ module.exports = cdb.core.View.extend({
 
   events: {
     'click .js-applySizes': '_applySizes',
-    'click .js-cancelSizes': '_cancelSizes',
-    'click .js-collapse': '_toggleCollapse'
+    'click .js-cancelSizes': '_cancelSizes'
   },
 
   initialize: function () {
@@ -49,12 +48,6 @@ module.exports = cdb.core.View.extend({
     });
     $('body').append(sizesTooltip.render().el);
     this.addView(sizesTooltip);
-
-    var collapseTooltip = new TooltipView({
-      target: this.$('.js-collapse')
-    });
-    $('body').append(collapseTooltip.render().el);
-    this.addView(collapseTooltip);
   },
 
   _applySizes: function () {
@@ -63,10 +56,6 @@ module.exports = cdb.core.View.extend({
 
   _cancelSizes: function () {
     this.dataModel.set('histogramSizes', false);
-  },
-
-  _toggleCollapse: function () {
-    this.viewModel.toggleCollapsed();
   }
 
 });

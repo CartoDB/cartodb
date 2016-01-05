@@ -60,8 +60,8 @@ describe('dataviews/dataview-model-base', function () {
     });
   });
 
-  describe('when collapse', function () {
-    it('should fetch again when collapse is disabled and url or boundingBox has changed', function () {
+  describe('when disabled', function () {
+    it('should fetch again when disabled is disabled and url or boundingBox has changed', function () {
       spyOn(this.model, '_fetch');
       this.model.set('disabled', true);
       this.model.set('url', 'hello');

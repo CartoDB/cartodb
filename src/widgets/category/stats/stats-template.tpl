@@ -9,6 +9,6 @@
 <% } else { %>
   <dt class="CDB-Widget-infoItem"><%- nullsPer %>% null rows</dt>
   <dt class="CDB-Widget-infoItem">
-    <span class="js-cats"><%- catsPer %></span>% in <%- !isLocked && isOtherAvailable ? "top" : "" %> <%- totalCats %> categor<%- totalCats !== 1 ? 'ies' : 'y' %>
+    <span class="js-cats"><%- catsPer %></span>% of total
   </dt>
 <% } %>

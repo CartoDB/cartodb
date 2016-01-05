@@ -109,12 +109,6 @@ describe('widgets/category/search-title-view', function () {
       this.view.$('.js-cancelColors').click();
       expect(this.model.cancelCategoryColors).toHaveBeenCalled();
     });
-
-    it('should call to collapse function when it is clicked', function () {
-      spyOn(this.viewModel, 'toggleCollapsed').and.callThrough();
-      this.view.$('.js-collapse').click();
-      expect(this.viewModel.toggleCollapsed).toHaveBeenCalled();
-    });
   });
 
   afterEach(function () {

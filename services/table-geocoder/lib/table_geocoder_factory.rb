@@ -51,6 +51,9 @@ module Carto
         end
       else
         geocoder_class = CartoDB::InternalGeocoder::Geocoder
+        # TODO move to a more appropriate place
+        redis_stub = ::CartoDB::RedisStub.new
+        instance_config.merge!(usage_metrics: CartoDB::GeocoderUsageMetrics.new(user.username, :internal_geocoder, redis_stub))
       end
 
       log.append "geocoder_class = #{geocoder_class.to_s}"

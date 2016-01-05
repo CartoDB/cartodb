@@ -35,6 +35,7 @@ module CartoDB
         @geocoding_results = File.join(working_dir, "#{temp_table_name}_results.csv".gsub('"', ''))
         @query_generator = CartoDB::InternalGeocoder::QueryGeneratorFactory.get self
         @log = arguments[:log]
+        @usage_metrics = arguments.fetch(:usage_metrics)
       end # initialize
 
       def set_log(log)
@@ -45,7 +46,7 @@ module CartoDB
         log.append 'run()'
         @state = 'processing'
         ensure_georef_status_colummn_valid
-        usage_metrics.incr(:processable_rows, processable_rows)
+        @usage_metrics.incr(:processable_rows, processable_rows)
         success_rows_before
         download_results
         create_temp_table
@@ -57,9 +58,9 @@ module CartoDB
         raise e
       ensure
         success_rows_after
-        usage_metrics.incr(:success_rows, success_rows)
-        usage_metrics.incr(:empty_rows, empty_rows)
-        usage_metrics.incr(:failed_rows, failed_rows)
+        @usage_metrics.incr(:success_rows, success_rows)
+        @usage_metrics.incr(:empty_rows, empty_rows)
+        @usage_metrics.incr(:failed_rows, failed_rows)
         drop_temp_table
         FileUtils.remove_entry_secure @working_dir if Dir.exists?(@working_dir)
       end
@@ -77,10 +78,10 @@ module CartoDB
             begin
               response = sql_api.fetch(sql, 'csv').gsub(/\A.*/, '').gsub(/^$\n/, '')
             rescue SQLApiError => ex
-              usage_metrics.incr(:failed_responses, search_terms.length)
+              @usage_metrics.incr(:failed_responses, search_terms.length)
               raise ex
             ensure
-              usage_metrics.incr(:total_requests, search_terms.length)
+              @usage_metrics.incr(:total_requests, search_terms.length)
             end
 
             # Count empty and successfully geocoded responses
@@ -90,8 +91,8 @@ module CartoDB
               empty_responses += 1 if row[4] == "false"
               success_responses += 1 if row[4] == "true"
             end
-            usage_metrics.incr(:success_responses, success_responses)
-            usage_metrics.incr(:empty_responses, empty_responses)
+            @usage_metrics.incr(:success_responses, success_responses)
+            @usage_metrics.incr(:empty_responses, empty_responses)
 
             log.append "Saving results to #{geocoding_results}"
             File.open(geocoding_results, 'a') { |f| f.write(response.force_encoding("UTF-8")) } unless response == "\n"
@@ -154,10 +155,6 @@ module CartoDB
       end
 
       private
-
-      def usage_metrics
-        @usage_metrics ||= ::CartoDB::GeocoderUsageMetrics.new
-      end
 
       def processable_rows
         @processable_rows ||= connection.select.from(@sequel_qualified_table_name).where(:cartodb_georef_status => nil).count

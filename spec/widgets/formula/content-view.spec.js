@@ -1,12 +1,12 @@
 var FormulaDataviewModel = require('../../../src/dataviews/formula-dataview-model');
-var FormulaWidgetModel = require('../../../src/widgets/formula/formula-widget-model');
+var WidgetModel = require('../../../src/widgets/widget-model');
 var FormulaWidgetContent = require('../../../src/widgets/formula/content-view');
 
 describe('widgets/formula/content-view', function () {
   beforeEach(function () {
     this.dataviewModel = new FormulaDataviewModel({
     });
-    this.model = new FormulaWidgetModel({
+    this.model = new WidgetModel({
       title: 'Max population'
     }, {
       dataviewModel: this.dataviewModel

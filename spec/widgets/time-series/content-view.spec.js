@@ -1,7 +1,7 @@
 var cdb = require('cartodb.js');
 var HistogramDataviewModel = require('../../../src/dataviews/histogram-dataview-model');
 var TimeSeriesContentView = require('../../../src/widgets/time-series/content-view');
-var TimeSeriesWidgetModel = require('../../../src/widgets/time-series/time-series-widget-model');
+var WidgetModel = require('../../../src/widgets/widget-model');
 
 describe('widgets/time-series/content-view', function () {
   beforeEach(function () {
@@ -14,7 +14,7 @@ describe('widgets/time-series/content-view', function () {
       this.options = options;
     }.bind(this);
 
-    this.model = new TimeSeriesWidgetModel({}, {
+    this.model = new WidgetModel({}, {
       dataviewModel: this.dataviewModel
     });
 

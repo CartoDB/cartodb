@@ -16,10 +16,7 @@ var WindshaftClient = require('./windshaft/client');
 var WindshaftDashboard = require('./windshaft/dashboard');
 var WindshaftPrivateDashboardConfig = require('./windshaft/private-dashboard-config');
 var WindshaftPublicDashboardConfig = require('./windshaft/public-dashboard-config');
-var FormulaWidgetModel = require('./widgets/formula/formula-widget-model');
-var HistogramWidgetModel = require('./widgets/histogram/histogram-widget-model');
-var ListWidgetModel = require('./widgets/list/list-widget-model');
-var TimeSeriesWidgetModel = require('./widgets/time-series/time-series-widget-model');
+var WidgetModel = require('./widgets/widget-model');
 var CategoryWidgetModel = require('./widgets/category/category-widget-model');
 
 module.exports = function (selector, diJSON, visOpts) {
@@ -57,16 +54,16 @@ module.exports = function (selector, diJSON, visOpts) {
 
   var widgetModelFactory = new WidgetModelFactory({
     list: function (widgetAttrs, widgetOpts) {
-      return new ListWidgetModel(widgetAttrs, widgetOpts);
+      return new WidgetModel(widgetAttrs, widgetOpts);
     },
     formula: function (widgetAttrs, widgetOpts) {
-      return new FormulaWidgetModel(widgetAttrs, widgetOpts);
+      return new WidgetModel(widgetAttrs, widgetOpts);
     },
     histogram: function (widgetAttrs, widgetOpts) {
-      return new HistogramWidgetModel(widgetAttrs, widgetOpts);
+      return new WidgetModel(widgetAttrs, widgetOpts);
     },
     'time-series': function (widgetAttrs, widgetOpts) {
-      return new TimeSeriesWidgetModel(widgetAttrs, widgetOpts);
+      return new WidgetModel(widgetAttrs, widgetOpts);
     },
     category: function (widgetAttrs, widgetOpts) {
       return new CategoryWidgetModel(widgetAttrs, widgetOpts);

@@ -2,7 +2,7 @@ var _ = require('underscore');
 var cdb = require('cartodb.js');
 var HistogramDataviewModel = require('../../../src/dataviews/histogram-dataview-model');
 var WidgetHistogramContent = require('../../../src/widgets/histogram/content-view');
-var HistogramWidgetModel = require('../../../src/widgets/histogram/histogram-widget-model');
+var WidgetModel = require('../../../src/widgets/widget-model');
 
 describe('widgets/histogram/content-view', function () {
   beforeEach(function () {
@@ -21,7 +21,7 @@ describe('widgets/histogram/content-view', function () {
       layer: new cdb.core.Model()
     });
 
-    this.viewModel = new HistogramWidgetModel({
+    this.viewModel = new WidgetModel({
       title: 'Howdy'
     }, {
       dataviewModel: this.dataviewModel

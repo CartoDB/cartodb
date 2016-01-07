@@ -456,6 +456,10 @@ class User < Sequel::Model
     end
   end
 
+  def self.db_size_in_bytes_change
+    ::User.where(username: Carto::UsersMetadataRedisCache.new.db_size_in_bytes_change_users.keys).all
+  end
+
   def self.password_digest(password, salt)
     digest = AUTH_DIGEST
     10.times do

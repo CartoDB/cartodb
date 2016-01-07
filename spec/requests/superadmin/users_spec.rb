@@ -347,6 +347,15 @@ feature "Superadmin's users API" do
       end
     end
 
+    it "gets db_size_in_bytes_change users" do
+      ::User.expects(:db_size_in_bytes_change).returns({}).once
+
+      get_json superadmin_users_path, { db_size_in_bytes_change: true }, superadmin_headers do |response|
+        response.status.should == 200
+        response.body.length.should == 0
+      end
+    end
+
     it "doesn't get organization users" do
       ::User.stubs(:organization).returns(Organization.new)
       ::User.stubs(:organization_id).returns("organization-id")

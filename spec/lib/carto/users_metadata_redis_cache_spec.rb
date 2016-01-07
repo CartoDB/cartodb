@@ -6,19 +6,23 @@ describe Carto::UsersMetadataRedisCache do
     OpenStruct.new(id: 'kk', username: 'myusername', db_size_in_bytes: 123)
   end
 
+  let(:updatable_user_mock) do
+    user_mock.stubs(:dashboard_viewed_at).returns(Time.now.utc - 2.days)
+    user_mock
+  end
+
   let(:umrc) do
     Carto::UsersMetadataRedisCache.new
   end
 
   describe '#update_if_old' do
     it 'sets db_size_in_bytes for users that have not seen the dashboard in 2 days' do
-      user_mock.stubs(:dashboard_viewed_at).returns(Time.now.utc - 2.days)
-      umrc.expects(:set_db_size_in_bytes).with(user_mock).once
+      umrc.expects(:set_db_size_in_bytes).with(updatable_user_mock).once
 
-      umrc.update_if_old(user_mock)
+      umrc.update_if_old(updatable_user_mock)
 
-      user_mock.db_size_in_bytes = 0
-      umrc.db_size_in_bytes(user_mock).should == user_mock.db_size_in_bytes
+      updatable_user_mock.db_size_in_bytes = 0
+      umrc.db_size_in_bytes(updatable_user_mock).should == updatable_user_mock.db_size_in_bytes
     end
 
     it 'does not set db_size_in_bytes for users that have seen the dashboard in 2 hours' do
@@ -26,6 +30,16 @@ describe Carto::UsersMetadataRedisCache do
       umrc.expects(:set_db_size_in_bytes).never
 
       umrc.update_if_old(user_mock)
+    end
+  end
+
+  describe '#db_size_in_bytes_change_users' do
+    it 'returns db_size_in_bytes_change in a hash with username keys' do
+      umrc.update_if_old(updatable_user_mock)
+
+      db_size_in_bytes_change_users = umrc.db_size_in_bytes_change_users
+      db_size_in_bytes_change_users.keys.should == [updatable_user_mock.username]
+      db_size_in_bytes_change_users.values.should == [updatable_user_mock.db_size_in_bytes]
     end
   end
 end

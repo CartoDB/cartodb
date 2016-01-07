@@ -544,6 +544,19 @@ describe User do
     end
   end
 
+  describe '#db_size_in_bytes_change' do
+    it "gets db_size_in_bytes_change users" do
+      db_size_in_bytes_change_users = {
+        @user.username => 12345
+      }
+      Carto::UsersMetadataRedisCache.any_instance.stubs(:db_size_in_bytes_change_users).returns(db_size_in_bytes_change_users)
+
+      users = ::User.db_size_in_bytes_change
+      users.length.should == 1
+      users[0].username.should == @user.username
+    end
+  end
+
   describe '#overquota' do
     it "should return users over their map view quota, excluding organization users" do
       ::User.overquota.should be_empty

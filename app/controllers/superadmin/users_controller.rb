@@ -14,7 +14,13 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   end
 
   def index
-    @users = (params[:overquota].present? ? ::User.overquota(0.20) : ::User.all)
+    if(params[:overquota].present?)
+      @users =  ::User.overquota(0.20)
+    elsif(params[:db_size_in_bytes_change].present?)
+      @users = ::User.db_size_in_bytes_change
+    else
+      @users = ::User.all
+    end
     respond_with(:superadmin, @users.map { |user| user.data })
   end
 

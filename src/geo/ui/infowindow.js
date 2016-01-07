@@ -2,7 +2,6 @@ var _ = require('underscore');
 var $ = require('jquery');
 var Ps = require('perfect-scrollbar');
 require('clip-path');
-var log = require('cdb.log');
 var templates = require('cdb.templates');
 var sanitize = require('../../core/sanitize');
 var Template = require('../../core/template');
@@ -166,11 +165,15 @@ var Infowindow = View.extend({
   },
 
   _renderLoader: function () {
-    this.$('.js-inner').append('<div class="CDB-Loader js-loader"></div>');
+    if (this.$('.js-cover').length > 0) {
+      this.$('.js-cover').append('<div class="CDB-Loader js-loader"></div>');
+    } else {
+      this.$('.js-inner').append('<div class="CDB-Loader js-loader"></div>');
+    }
   },
 
   _startLoader: function () {
-    this.$('.js-inner').addClass('is-loading');
+    this.$('.js-infowindow').addClass('is-loading');
     this.$('.js-loader').addClass('is-visible');
   },
 
@@ -178,7 +181,7 @@ var Infowindow = View.extend({
     if (this._containsCover() && this._coverLoading) {
       return;
     }
-    this.$('.js-inner').removeClass('is-loading');
+    this.$('.js-infowindow').removeClass('is-loading');
     this.$('.js-loader').removeClass('is-visible');
   },
 
@@ -351,6 +354,7 @@ var Infowindow = View.extend({
       $img.clipPath(width, height, -this.options.hookMargin, y);
 
       $hookImage.load(function () {
+        $hook.parent().addClass('has-image');
         $hookImage.css({
           marginTop: -$cover.height(),
           width: $cover.width()
@@ -373,22 +377,24 @@ var Infowindow = View.extend({
     var $img = $cover.find('img');
     var url = this._getCoverURL();
 
+    if (!this._isValidURL(url)) {
+      this._showInfowindowImageError();
+      return;
+    } else {
+      this._clearInfowindowImageError();
+    }
+
     if ($img.length > 0) {
       $img.addClass('CDB-infowindow-media-item');
       url = $img.attr('src');
 
       var h = $img.height();
       var coverHeight = $cover.height();
-      $cover.css({ height: h - this.options.hookHeight });
+      $cover.animate({ height: h - this.options.hookHeight }, 150);
 
       this._loadImageHook($img.width(), coverHeight, h - this.options.hookHeight, url);
 
       return false;
-    }
-
-    if (!this._isValidURL(url)) {
-      log.info('Header image url not valid');
-      return;
     }
 
     this._startLoader();
@@ -418,14 +424,20 @@ var Infowindow = View.extend({
         }
       }
 
-      $img.css(styles);
-      $cover.css({ height: h - self.options.hookHeight });
-      $img.fadeIn(self.options.imageTransitionSpeed);
-
+      $img.animate(styles, { duration: 300 });
+      $cover.animate({ height: h - self.options.hookHeight }, { duration: 300 });
       self._stopCoverLoader();
-
       self._loadImageHook($img.width(), $img.height(), h - self.options.hookHeight, url);
     }).error();
+  },
+
+  _clearInfowindowImageError: function () {
+    this.$('.js-infowindow').removeClass('is-fail');
+  },
+
+  _showInfowindowImageError: function () {
+    this.$('.js-infowindow').addClass('is-fail');
+    this.$('.js-cover').append('<p class="CDB-infowindow-fail">Non-valid picture URL</p>');
   },
 
   /**

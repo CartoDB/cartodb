@@ -129,12 +129,12 @@
 }
 
 .CDB-infowindow-fail {
-  font-size: 9px;
-  text-transform: uppercase;
-  color: rgb(243, 86, 60);
-  width: 100%;
-  text-align: center;
   display: block;
+  width: 100%;
+  color: rgb(243, 86, 60);
+  font-size: 9px;
+  text-align: center;
+  text-transform: uppercase;
 }
 
 .CDB-infowindow-mediaTitle {
@@ -146,7 +146,6 @@
 .CDB-infowindow-mediaTitle .CDB-infowindow-fail {
   padding: 16px 0 0 20px;
   text-align: left;
-  transform: translateY(0);
 }
 
 .CDB-infowindow-headerMedia {
@@ -182,8 +181,6 @@
 }
 .CDB-infowindow.is-loading .CDB-infowindow-headerMedia {
   min-height: 104px;
-}
-.CDB-infowindow.is-loading .CDB-infowindow-headerMedia {
   background: #F5F5F5;
 }
 .CDB-infowindow.is-fail .CDB-infowindow-headerMedia {
@@ -210,11 +207,9 @@
   width: 0;
   height: 0;
   border-right: 24px solid transparent;
+  border-top: 16px solid #FFF;
   content: '';
   z-index: 3;
-}
-.CDB-hook:before {
-  border-top: 16px solid #FFF;
 }
 .CDB-hook--green.CDB-hook:before {
   border-top: 16px solid #98E0A8 !important;

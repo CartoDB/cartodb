@@ -3,7 +3,7 @@ require 'tmpdir'
 require 'fileutils'
 require_relative '../../../spec/rspec_configuration.rb'
 require_relative '../lib/hires_batch_geocoder'
-
+require 'byebug'
 
 describe CartoDB::HiresBatchGeocoder do
 
@@ -96,12 +96,18 @@ describe CartoDB::HiresBatchGeocoder do
       expected_status = 'cancelled'
       expected_processed_rows = '20'
       expected_total_rows = '30'
+      expected_successful_rows = '20'
+      expected_invalid_rows = '0'
+      expected_error_rows = '0'
 
       response_body = <<END_XML
 <Response>
   <Status>#{expected_status}</Status>
   <ProcessedCount>#{expected_processed_rows}</ProcessedCount>
   <TotalCount>#{expected_total_rows}</TotalCount>
+  <InvalidCount>#{expected_invalid_rows}</InvalidCount>
+  <SuccessCount>#{expected_successful_rows}</SuccessCount>
+  <ErrorCount>#{expected_error_rows}</ErrorCount>
 </Response>
 END_XML
 
@@ -125,12 +131,19 @@ END_XML
       expected_status = 'running'
       expected_processed_rows = '20'
       expected_total_rows = '30'
+      expected_successful_rows = '20'
+      expected_invalid_rows = '0'
+      expected_error_rows = '0'
+
 
       response_body = <<END_XML
 <Response>
   <Status>#{expected_status}</Status>
   <ProcessedCount>#{expected_processed_rows}</ProcessedCount>
   <TotalCount>#{expected_total_rows}</TotalCount>
+  <InvalidCount>#{expected_invalid_rows}</InvalidCount>
+  <SuccessCount>#{expected_successful_rows}</SuccessCount>
+  <ErrorCount>#{expected_error_rows}</ErrorCount>
 </Response>
 END_XML
 

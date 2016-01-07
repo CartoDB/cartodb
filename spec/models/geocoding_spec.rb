@@ -105,10 +105,16 @@ describe Geocoding do
       hires_geocoder_mock.stubs(:status).returns 'completed'
       hires_geocoder_mock.stubs(:update_status).returns true
       hires_geocoder_mock.stubs(:processed_rows).returns 10
+      hires_geocoder_mock.stubs(:successful_processed_rows).returns 10
+      hires_geocoder_mock.stubs(:failed_processed_rows).returns 0
+      hires_geocoder_mock.stubs(:empty_processed_rows).returns 0
       geocoding.table_geocoder.stubs(:geocoder).returns hires_geocoder_mock
 
       geocoding.run!
       geocoding.processed_rows.should eq 10
+      geocoding.successful_processed_rows.should eq 10
+      geocoding.failed_processed_rows.should eq 0
+      geocoding.empty_processed_rows.should eq 0
       geocoding.state.should eq 'finished'
       geocoding.cache_hits.should eq 5000
       geocoding.used_credits.should eq 4810
@@ -181,8 +187,14 @@ describe Geocoding do
     it 'succeeds if there are no rows to geocode' do
       geocoding = FactoryGirl.build(:geocoding, user: @user, formatter: 'a', user_table: @table, formatter: 'b')
       geocoding.class.stubs(:processable_rows).returns 0
+      geocoding.class.stubs(:successful_processed_rows).returns 0
+      geocoding.class.stubs(:failed_processed_rows).returns 0
+      geocoding.class.stubs(:empty_processed_rows).returns 0
       geocoding.run!
       geocoding.processed_rows.should eq 0
+      geocoding.successful_processed_rows.should eq 0
+      geocoding.failed_processed_rows.should eq 0
+      geocoding.empty_processed_rows.should eq 0
       geocoding.state.should eq 'finished'
       geocoding.cache_hits.should eq 0
       geocoding.used_credits.should eq 0
@@ -355,9 +367,5 @@ describe Geocoding do
       geocoding.failed_rows.should eq 100
       geocoding.successful_rows.should eq 0
     end
-  end
-
-  describe '#successful_rows' do
-
   end
 end

@@ -2,7 +2,6 @@
 require_relative '../../../spec/rspec_configuration.rb'
 require_relative '../lib/hires_batch_geocoder'
 
-
 # TODO rename to hires_batch_geocoder_spec.rb or split into batch/non-batch
 
 describe CartoDB::HiresBatchGeocoder do
@@ -32,9 +31,13 @@ describe CartoDB::HiresBatchGeocoder do
     it 'raises error on failure' do
       stub_api_request 400, 'response_failure.xml'
       filepath = path_to 'without_country.csv'
-      expect {
-        CartoDB::HiresBatchGeocoder.new(filepath, @working_dir).upload
-      }.to raise_error('Geocoding API communication failure: Input parameter validation failed. JobId: 9rFyj7kbGMmpF50ZUFAkRnroEiOpDOEZ Email Address is missing!')
+      begin
+        geocoder = CartoDB::HiresBatchGeocoder.new(filepath, @working_dir)
+        geocoder.upload
+      rescue => e
+        e.message.should eq "Geocoding API communication failure: Input parameter validation failed. JobId: 9rFyj7kbGMmpF50ZUFAkRnroEiOpDOEZ Email Address is missing!"
+        geocoder.failed_processed_rows.should eq 4
+      end
     end
   end
 

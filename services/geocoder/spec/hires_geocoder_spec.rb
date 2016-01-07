@@ -4,6 +4,7 @@ require 'fileutils'
 require 'csv'
 require_relative '../../../spec/rspec_configuration'
 require_relative '../lib/hires_geocoder'
+require 'byebug'
 
 
 describe CartoDB::HiresGeocoder do
@@ -109,7 +110,9 @@ describe CartoDB::HiresGeocoder do
       Typhoeus.stub(//, method: :get).and_return(mocked_response)
       CartoDB.expects(:notify_debug).with("Non-batched geocoder couldn't parse response", anything()).once
 
-      @geocoder.send(:geocode_text, input_text).should == [nil, nil]
+      expect {
+        @geocoder.send(:geocode_text, input_text).should == nil
+      }.to raise_exception StandardError
     end
 
     it 'returns nil coordinates and stops there if the response does not contain any location' do

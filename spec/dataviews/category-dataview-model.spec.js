@@ -94,25 +94,6 @@ describe('dataviews/category-dataview-model', function () {
     });
   });
 
-  describe('category colors', function () {
-    it('should enable category colors', function () {
-      var applySpy = jasmine.createSpy('apply');
-      this.model.bind('applyCategoryColors', applySpy);
-      this.model.applyCategoryColors();
-      expect(applySpy).toHaveBeenCalled();
-      expect(this.model.get('categoryColors')).toBeTruthy();
-    });
-
-    it('should disable category colors', function () {
-      var cancelSpy = jasmine.createSpy('cancel');
-      this.model.bind('cancelCategoryColors', cancelSpy);
-      this.model.cancelCategoryColors();
-      expect(cancelSpy).toHaveBeenCalled();
-      this.model.cancelCategoryColors();
-      expect(this.model.get('categoryColors')).toBeFalsy();
-    });
-  });
-
   describe('locked collection helpers', function () {
     describe('canApplyLocked', function () {
       beforeEach(function () {
@@ -198,7 +179,7 @@ describe('dataviews/category-dataview-model', function () {
       expect(this.model.search.resetData).toHaveBeenCalled();
     });
 
-    describe('setupSeach', function () {
+    describe('setupSearch', function () {
       beforeEach(function () {
         spyOn(this.model.locked, 'addItems').and.callThrough();
         spyOn(this.model.search, 'setData').and.callThrough();
@@ -213,7 +194,7 @@ describe('dataviews/category-dataview-model', function () {
 
       it('should setup search if it is gonna be enabled', function () {
         spyOn(this.model, 'isSearchApplied').and.returnValue(false);
-        this.model.setCategories(_generateData(3));
+        _parseData(this.model, _generateData(3));
         this.model.acceptFilters(['4', '5', '6']);
         this.model.setupSearch();
         expect(this.model.locked.addItems).toHaveBeenCalled();
@@ -239,67 +220,34 @@ describe('dataviews/category-dataview-model', function () {
 
   describe('parseData', function () {
     it('should provide data as an object', function () {
-      var r = this.model._parseData(_generateData(10));
-      expect(r.data).toBeDefined();
-      expect(r.data.length).toBe(10);
-    });
-
-    it('should assign a color to each category', function () {
-      var r = this.model._parseData(_generateData(10));
-      var areColored = true;
-      _.each(r.data, function (item) {
-        if (!item.color) {
-          areColored = false;
-        }
-      });
-      expect(areColored).toBeTruthy();
+      _parseData(this.model, _generateData(10));
+      var data = this.model.get('data');
+      expect(data).toBeDefined();
+      expect(data.length).toBe(10);
     });
 
     it('should complete data with accepted items (if they are not present already) when dataview is locked', function () {
       spyOn(this.model, 'isLocked').and.returnValue(true);
       this.model.acceptFilters(['9', '10', '11']);
-      var r = this.model._parseData(_generateData(8));
-      expect(r.data.length).toBe(11);
+      _parseData(this.model, _generateData(8));
+      var data = this.model.get('data');
+      expect(data.length).toBe(11);
 
       this.model.acceptFilters(['2']);
-      // It will be repeated in the data array
-      r = this.model._parseData(_generateData(8));
-      expect(r.data.length).toBe(11);
+      // The '2' should not be repeated in the data array
+      _parseData(this.model, _generateData(8));
+      data = this.model.get('data');
+      expect(data.length).toBe(11);
     });
   });
 
-  it('should provide a function for setting categories directly', function () {
-    expect(this.model.setCategories).toBeDefined();
-    var changeSpy = jasmine.createSpy('change');
-    this.model.bind('change', changeSpy);
-    this.model.setCategories(_generateData(9));
-    expect(this.model._data.size()).toBe(9);
-    expect(this.model.get('data').length).toBe(9);
-    expect(changeSpy).toHaveBeenCalled();
-
-    spyOn(this.model, 'applyCategoryColors');
-    spyOn(this.model, 'isColorApplied').and.returnValue(true);
-    this.model.setCategories(_generateData(9));
-    expect(this.model.applyCategoryColors).toHaveBeenCalled();
-  });
-
-  describe('parse', function () {
+  describe('.parse', function () {
     it('should change internal data collection when parse is called', function () {
       var resetSpy = jasmine.createSpy('reset');
       this.model._data.bind('reset', resetSpy);
-      this.model.parse({
-        categories: _generateData(2)
-      });
-      expect(resetSpy).toHaveBeenCalled();
-    });
 
-    it('should send applied colors if it is enabled', function () {
-      spyOn(this.model, 'applyCategoryColors');
-      spyOn(this.model, 'isColorApplied').and.returnValue(true);
-      this.model.parse({
-        categories: _generateData(2)
-      });
-      expect(this.model.applyCategoryColors).toHaveBeenCalled();
+      _parseData(this.model, _generateData(2));
+      expect(resetSpy).toHaveBeenCalled();
     });
   });
 
@@ -322,4 +270,13 @@ function _generateData (n) {
       value: 2
     };
   });
+}
+
+function _parseData (model, categories) {
+  model.sync = function (method, model, options) {
+    options.success({
+      'categories': categories
+    });
+  };
+  model.fetch();
 }

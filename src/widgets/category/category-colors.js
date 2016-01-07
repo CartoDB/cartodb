@@ -1,5 +1,5 @@
 var _ = require('underscore');
-var categoryColors = ['#2CA095', '#E5811B', '#4A4DBA', '#AD2BAD', '#559030', '#E1C221']; // Demo colors
+var colors = ['#2CA095', '#E5811B', '#4A4DBA', '#AD2BAD', '#559030', '#E1C221']; // Demo colors
 var defaultColor = '#CCC';
 
 /**
@@ -12,7 +12,7 @@ var defaultColor = '#CCC';
 
 function CategoryColors () {
   this.colors = {};
-  _.each(categoryColors, function (c) {
+  _.each(colors, function (c) {
     this.colors[c] = null;
   }, this);
 }

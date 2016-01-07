@@ -15,11 +15,13 @@ module.exports = cdb.core.View.extend({
   },
 
   initialize: function (options) {
+    this.viewModel = this.options.viewModel;
     this.dataModel = this.options.dataModel;
     this._initBinds();
   },
 
   render: function () {
+    var name = this.model.get('name');
     var value = this.model.get('value');
     var template = this.model.get('agg') || this.dataModel.isLocked()
       ? unclickableTemplate
@@ -27,13 +29,13 @@ module.exports = cdb.core.View.extend({
 
     this.$el.html(
       template({
-        customColor: this.dataModel.isColorApplied(),
+        customColor: this.viewModel.isColorApplied(),
         isAggregated: this.model.get('agg'),
-        name: this.model.get('name'),
+        name: name,
         value: value,
         formattedValue: formatter.formatNumber(value),
         percentage: ((value / this.dataModel.get('max')) * 100),
-        color: this.model.get('color'),
+        color: this.viewModel.colors.getColorByCategory(name),
         isDisabled: !this.model.get('selected') ? 'is-disabled' : '',
         prefix: this.dataModel.get('prefix'),
         suffix: this.dataModel.get('suffix')
@@ -45,8 +47,8 @@ module.exports = cdb.core.View.extend({
 
   _initBinds: function () {
     this.model.bind('change', this.render, this);
-    this.dataModel.bind('change:search change:categoryColors', this.render, this);
-    this.add_related_model(this.dataModel);
+    this.viewModel.bind('change:search change:isColorsApplied', this.render, this);
+    this.add_related_model(this.viewModel);
   },
 
   _onItemClick: function () {

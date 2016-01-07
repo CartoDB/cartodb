@@ -25,22 +25,6 @@ describe('widgets/category/search-title-view', function () {
     expect($el.find('.CDB-Widget-textBig').length).toBe(1);
   });
 
-  describe('binds', function () {
-    beforeEach(function () {
-      spyOn(this.viewModel, 'bind').and.callThrough();
-      spyOn(this.model, 'bind').and.callThrough();
-      this.view._initBinds();
-    });
-
-    it('should change to search state when search event is triggered', function () {
-      expect(this.viewModel.bind.calls.argsFor(0)[0]).toEqual('change:search');
-    });
-
-    it('should change to search state when search event is triggered', function () {
-      expect(this.model.bind.calls.argsFor(0)[0]).toEqual('change:filter change:lockCollection change:categoryColors');
-    });
-  });
-
   describe('search', function () {
     beforeEach(function () {
       this.viewModel.toggleSearch();
@@ -95,19 +79,19 @@ describe('widgets/category/search-title-view', function () {
 
     it('should render "apply colors" button and apply them when is clicked', function () {
       expect(this.view.$('.js-applyColors').length).toBe(1);
-      spyOn(this.model, 'applyCategoryColors').and.callThrough();
+      spyOn(this.viewModel, 'applyColors').and.callThrough();
       this.view.$('.js-applyColors').click();
-      expect(this.model.applyCategoryColors).toHaveBeenCalled();
+      expect(this.viewModel.applyColors).toHaveBeenCalled();
       expect(this.view.$('.js-applyColors').length).toBe(0);
       expect(this.view.$('.js-cancelColors').length).toBe(1);
     });
 
     it('should remove category colors when they are applied and button is clicked', function () {
-      spyOn(this.model, 'cancelCategoryColors').and.callThrough();
+      spyOn(this.viewModel, 'cancelColors').and.callThrough();
       this.view.$('.js-applyColors').click();
       expect(this.view.$('.js-cancelColors').hasClass('is-selected')).toBeTruthy();
       this.view.$('.js-cancelColors').click();
-      expect(this.model.cancelCategoryColors).toHaveBeenCalled();
+      expect(this.viewModel.cancelColors).toHaveBeenCalled();
     });
   });
 

@@ -16,10 +16,6 @@ var template = require('./content-template.tpl');
 module.exports = WidgetContent.extend({
   _ITEMS_PER_PAGE: 6,
 
-  initialize: function (opts) {
-    WidgetContent.prototype.initialize.call(this, arguments);
-  },
-
   render: function () {
     this.clearSubViews();
     this.$el.html(template());

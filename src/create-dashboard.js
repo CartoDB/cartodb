@@ -1,5 +1,4 @@
 var _ = require('underscore');
-var Backbone = require('backbone');
 var cdb = require('cartodb.js');
 var DashboardView = require('./dashboard-view');
 var WidgetModelFactory = require('./widgets/widget-model-factory');
@@ -16,6 +15,7 @@ var WindshaftClient = require('./windshaft/client');
 var WindshaftDashboard = require('./windshaft/dashboard');
 var WindshaftPrivateDashboardConfig = require('./windshaft/private-dashboard-config');
 var WindshaftPublicDashboardConfig = require('./windshaft/public-dashboard-config');
+var WidgetsCollection = require('./widgets/widgets-collection');
 var WidgetModel = require('./widgets/widget-model');
 var CategoryWidgetModel = require('./widgets/category/category-widget-model');
 
@@ -70,7 +70,7 @@ module.exports = function (selector, diJSON, visOpts) {
     }
   });
 
-  var widgets = new Backbone.Collection();
+  var widgets = new WidgetsCollection();
 
   var dashboardInfoModel = new cdb.core.Model({
     title: diJSON.title,

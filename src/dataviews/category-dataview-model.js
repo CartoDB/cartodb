@@ -1,6 +1,5 @@
 var _ = require('underscore');
 var DataviewModelBase = require('./dataview-model-base');
-var CategoryColors = require('./category-dataview/category-colors');
 var SearchModel = require('./category-dataview/search-model');
 var CategoryModelRange = require('./category-dataview/category-model-range');
 var CategoriesCollection = require('./category-dataview/categories-collection');
@@ -18,6 +17,14 @@ var LockedCatsCollection = require('./category-dataview/locked-categories-collec
  */
 
 module.exports = DataviewModelBase.extend({
+
+  defaults: _.extend(
+    {
+      allCategoryNames: [] // all (new + previously locked), updated on data fetch (see parse)
+    },
+    DataviewModelBase.prototype.defaults
+  ),
+
   url: function () {
     return this.get('url') + '?bbox=' + this.get('boundingBox') + '&own_filter=' + (this.get('locked') ? 1 : 0);
   },
@@ -32,9 +39,6 @@ module.exports = DataviewModelBase.extend({
 
     // Internal model for calculating total amount of values in the category
     this.rangeModel = new CategoryModelRange();
-
-    // Colors class
-    this.colors = new CategoryColors();
 
     // Search model
     this.search = new SearchModel({}, {
@@ -117,30 +121,6 @@ module.exports = DataviewModelBase.extend({
       this.trigger('change:searchData', this.search, this);
     }, this);
   },
-
-  /*
-   *  Helper methods for internal models/collections
-   *
-   */
-
-  applyCategoryColors: function () {
-    this.set('categoryColors', true);
-    var colorsData = this._data.map(function (m) {
-      return [ m.get('name'), m.get('color') ];
-    });
-    this.trigger('applyCategoryColors', colorsData, this);
-  },
-
-  cancelCategoryColors: function () {
-    this.set('categoryColors', false);
-    this.trigger('cancelCategoryColors', this);
-  },
-
-  isColorApplied: function () {
-    return this.get('categoryColors');
-  },
-
-  // Locked collection helper methods //
 
   getLockedSize: function () {
     return this.locked.size();
@@ -290,25 +270,18 @@ module.exports = DataviewModelBase.extend({
     }
   },
 
-  // Data parser methods //
-
-  _parseData: function (categories) {
+  parse: function (d) {
     var newData = [];
     var _tmpArray = {};
-    var acceptedCats = this.filter.getAccepted();
+    var allNewCategories = d.categories;
+    var allNewCategoryNames = [];
+    var acceptedCategoryNames = [];
 
-    // Update colors by data categories
-    this.colors.updateData(
-      _.uniq(
-        _.union(
-          _.pluck(categories, 'category'),
-          _.pluck(acceptedCats, 'name')
-        )
-      )
-    );
+    _.each(allNewCategories, function (datum, i) {
+      // Category might be a non-string type (e.g. number), make sure it's always a string for concistency
+      var category = datum.category.toString();
 
-    _.each(categories, function (datum, i) {
-      var category = datum.category;
+      allNewCategoryNames.push(category);
       var isRejected = this.filter.isRejected(category);
       _tmpArray[category] = true;
 
@@ -316,19 +289,18 @@ module.exports = DataviewModelBase.extend({
         selected: !isRejected,
         name: category,
         agg: datum.agg,
-        value: datum.value,
-        color: this.colors.getColorByCategory(category)
+        value: datum.value
       });
     }, this);
 
     if (this.isLocked()) {
       // Add accepted items that are not present in the categories data
-      acceptedCats.each(function (mdl, i) {
-        var category = mdl.get('name').toString();
+      this.filter.getAccepted().each(function (mdl, i) {
+        var category = mdl.get('name');
+        acceptedCategoryNames.push(category);
         if (!_tmpArray[category]) {
           newData.push({
             selected: true,
-            color: this.colors.getColorByCategory(category),
             name: category,
             agg: false,
             value: 0
@@ -337,40 +309,22 @@ module.exports = DataviewModelBase.extend({
       }, this);
     }
 
+    this._data.reset(newData);
     return {
-      data: newData
-    };
-  },
-
-  setCategories: function (d) {
-    var attrs = this._parseData(d);
-    this._data.reset(attrs.data);
-    this.set(attrs);
-    if (this.isColorApplied()) {
-      this.applyCategoryColors();
-    }
-  },
-
-  parse: function (d) {
-    var categories = d.categories;
-    var attrs = this._parseData(categories);
-
-    _.extend(attrs, {
+      allCategoryNames: _
+        .chain(allNewCategoryNames)
+        .union(acceptedCategoryNames)
+        .unique()
+        .value(),
+      data: newData,
       nulls: d.nulls,
       min: d.min,
       max: d.max,
       count: d.count
-    }
-    );
-    this._data.reset(attrs.data);
-    if (this.isColorApplied()) {
-      this.applyCategoryColors();
-    }
-    return attrs;
+    };
   },
 
   // Backbone toJson function override
-
   toJSON: function () {
     return {
       type: 'aggregation',

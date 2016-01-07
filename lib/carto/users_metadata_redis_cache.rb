@@ -24,13 +24,13 @@ module Carto
     end
 
     def db_size_in_bytes_change_users
-      keys = $users_metadata.scan_each(match: db_size_in_bytes_key('*')).to_a.uniq
+      keys = @redis.scan_each(match: db_size_in_bytes_key('*')).to_a.uniq
 
       db_size_in_bytes_change_users = {}
 
       keys.each_slice(BATCH_SIZE) do |key_batch|
         usernames = key_batch.map { |key| extract_username_from_key(key) }
-        db_size_in_bytes_change_users.merge!(Hash[usernames.zip($users_metadata.mget(key_batch).map(&:to_i))])
+        db_size_in_bytes_change_users.merge!(Hash[usernames.zip(@redis.mget(key_batch).map(&:to_i))])
       end
 
       db_size_in_bytes_change_users

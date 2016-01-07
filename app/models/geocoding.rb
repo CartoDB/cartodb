@@ -1,17 +1,21 @@
 # encoding: UTF-8'
 require 'socket'
+require_relative './geocoding/geocoder_metrics_decorator'
 require_relative '../../services/table-geocoder/lib/table_geocoder_factory'
 require_relative '../../services/table-geocoder/lib/exceptions'
 require_relative '../../services/table-geocoder/lib/mail_geocoder'
 require_relative '../../services/geocoder/lib/geocoder_config'
+require_relative '../../services/metrics/lib/geocoder_metrics'
 require_relative '../../lib/cartodb/metrics'
 require_relative '../../app/helpers/bounding_box_helper'
 require_relative 'log'
 require_relative '../../lib/cartodb/stats/geocoding'
 
 class Geocoding < Sequel::Model
+  include CartoDB::GeocoderMetricsDecorator
 
   ALLOWED_KINDS   = %w(admin0 admin1 namedplace postalcode high-resolution ipaddress)
+  HIGH_RESOLUTION_GEOCODER = 'high-resolution'
 
 
   PUBLIC_ATTRIBUTES = [:id, :table_id, :table_name, :state, :kind, :country_code, :region_code, :formatter,
@@ -35,7 +39,7 @@ class Geocoding < Sequel::Model
   attr_reader :log
 
   def self.get_geocoding_calls(dataset, date_from, date_to)
-    dataset.where(kind: 'high-resolution').where('geocodings.created_at >= ? and geocodings.created_at <= ?', date_from, date_to + 1.days).sum("processed_rows + cache_hits".lit).to_i
+    dataset.where(kind: HIGH_RESOLUTION_GEOCODER).where('geocodings.created_at >= ? and geocodings.created_at <= ?', date_from, date_to + 1.days).sum("processed_rows + cache_hits".lit).to_i
   end
 
   def public_values
@@ -168,6 +172,10 @@ class Geocoding < Sequel::Model
   def report(error = nil)
     payload = metrics_payload(error)
     CartoDB::Metrics.new.report(:geocoding, payload)
+    if !geocoder_type.blank?
+      # We only want to store when we have geocoder defined
+      store_metrics(payload)
+    end
     payload.delete_if {|k,v| %w{distinct_id email table_id}.include?(k.to_s)}
     geocoding_logger.info(payload.to_json)
   end
@@ -181,7 +189,7 @@ class Geocoding < Sequel::Model
   end # self.processable_rows
 
   def calculate_used_credits
-    return 0 unless kind == 'high-resolution'
+    return 0 unless kind == HIGH_RESOLUTION_GEOCODER
     total_rows       = processed_rows.to_i + cache_hits.to_i
     geocoding_quota  = user.organization.present? ? user.organization.geocoding_quota.to_i : user.geocoding_quota
     # ::User#get_geocoding_calls includes this geocoding run, so we discount it
@@ -197,7 +205,7 @@ class Geocoding < Sequel::Model
   end # price
 
   def cost
-    return 0 unless kind == 'high-resolution'
+    return 0 unless kind == HIGH_RESOLUTION_GEOCODER
     processed_rows.to_i * CartoDB::GeocoderConfig.instance.get['cost_per_hit_in_cents'] rescue 0
   end
 
@@ -346,17 +354,21 @@ class Geocoding < Sequel::Model
     if raised_exception.is_a? Carto::GeocoderErrors::GeocoderBaseError
       self.error_code = raised_exception.class.additional_info.error_code
     end
-    self.update(state: 'failed', processed_rows: 0, cache_hits: 0)
+    self.state = 'failed'
     CartoDB::notify_exception(raised_exception, user: user)
     geocoded_rows = total_geocoded_rows(rows_geocoded_before)
     send_report_mail(state, self.table_name, error_code, self.processable_rows, geocoded_rows)
     log.append "Unexpected exception: #{raised_exception.to_s}"
     log.append raised_exception.backtrace
     self.report(raised_exception)
+    # We set this to 0 to not compute the non-processed rows to the user if the
+    # geocoder is a payment one
+    self.update(processed_rows: 0, cache_hits: 0)
   end
 
   def total_geocoded_rows(rows_geocoded_before)
-    rows_geocoded_after = table_service.owner.in_database.select.from(table_service.sequel_qualified_table_name).where('cartodb_georef_status is true and the_geom is not null').count rescue 0
+    rows_geocoded_after = table_service.owner.in_database.select.from(table_service.sequel_qualified_table_name).
+      where('cartodb_georef_status is true and the_geom is not null').count rescue 0
     rows_geocoded_after - rows_geocoded_before
   end
 
@@ -365,5 +377,4 @@ class Geocoding < Sequel::Model
     geocoding_time = @finished_at - @started_at
     CartoDB::Geocoder::MailNotifier.new(user.id, state, table_name, error_code, processable_rows, number_geocoded_rows, geocoding_time).notify_if_needed
   end
-
 end

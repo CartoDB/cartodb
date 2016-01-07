@@ -6,7 +6,10 @@ require_relative '../../../services/table-geocoder/lib/exceptions'
 module Carto
   class Geocoding < ActiveRecord::Base
 
-    PUBLIC_ATTRIBUTES = [:id, :table_id, :table_name, :state, :kind, :country_code, :region_code, :formatter, :geometry_type, :error, :processed_rows, :cache_hits, :processable_rows, :real_rows, :price, :used_credits, :remaining_quota, :country_column, :region_column, :data_import_id, :error_code]
+    PUBLIC_ATTRIBUTES = [:id, :table_id, :table_name, :state, :kind, :country_code, :region_code, :formatter,
+                        :geocoder_type, :geometry_type, :error, :processed_rows, :cache_hits, :processable_rows,
+                        :real_rows, :price, :used_credits, :remaining_quota, :country_column, :region_column,
+                        :data_import_id, :error_code]
 
     def self.processable_rows(table_service, force_all_rows=false)
       dataset = table_service.owner.in_database.select.from(table_service.sequel_qualified_table_name)
@@ -31,7 +34,7 @@ module Carto
         { title: 'Geocoding error', description: '' }
       end
     end
-    
+
     def price
       return 0 unless used_credits.to_i > 0
       (user.geocoding_block_price * used_credits) / Carto::User::GEOCODING_BLOCK_SIZE.to_f
@@ -40,8 +43,6 @@ module Carto
     def remaining_quota
       user.remaining_geocoding_quota
     end
-
-    private
 
   end
 end

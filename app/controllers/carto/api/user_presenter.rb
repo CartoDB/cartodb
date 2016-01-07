@@ -4,15 +4,17 @@ module Carto
   module Api
     class UserPresenter
 
-      # fetching_options:
+      # options:
       # - fetch_groups
-      def initialize(user, fetching_options = {})
+      # - current_viewer
+      def initialize(user, options = {})
         @user = user
-        @fetching_options = fetching_options
+        @options = options
       end
 
       def to_poro
         return {} if @user.nil?
+        return to_public_poro unless !@options[:current_viewer].nil? && @user.viewable_by?(@options[:current_viewer])
 
         poro = {
           id:               @user.id,
@@ -27,7 +29,24 @@ module Carto
           all_visualization_count: @user.all_visualization_count
         }
 
-        if @fetching_options[:fetch_groups] == true
+        if @options[:fetch_groups] == true
+          poro.merge!(groups: @user.groups ? @user.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro } : [])
+        end
+
+        poro
+      end
+
+      def to_public_poro
+        return {} if @user.nil?
+
+        poro = {
+          id:               @user.id,
+          username:         @user.username,
+          avatar_url:       @user.avatar_url,
+          base_url:         @user.public_url
+        }
+
+        if @options[:fetch_groups] == true
           poro.merge!(groups: @user.groups ? @user.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro } : [])
         end
 

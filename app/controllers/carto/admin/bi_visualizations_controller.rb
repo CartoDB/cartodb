@@ -4,7 +4,11 @@ class Carto::Admin::BiVisualizationsController < ::Admin::AdminController
   include Carto::ControllerHelper
   include Carto::BiVisualizationsControllerHelper
 
+  before_filter :api_authorization_required
+
   ssl_allowed :embed_map
+
+  layout false
 
   before_filter :load_parameters
   before_filter :load_bi_visualization

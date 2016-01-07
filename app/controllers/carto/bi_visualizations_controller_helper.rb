@@ -11,5 +11,9 @@ module Carto
     rescue ActiveRecord::RecordNotFound
       raise Carto::LoadError.new("BiVisualization not found: #{@bi_visualization_id}")
     end
+
+    def load_bi_visualizations
+      @bi_visualizations = Carto::BiVisualization.joins(:bi_dataset).where(bi_datasets: { user_id: current_user.id })
+    end
   end
 end

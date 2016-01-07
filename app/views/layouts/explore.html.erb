@@ -42,5 +42,9 @@
 
     <%= javascript_include_tag 'cdb.js', 'templates', 'explore_deps', 'explore' %>
     <%= yield :js %>
+
+    <%= insert_trackjs('embeds') -%>
+    <%= insert_google_analytics('embeds', true) -%>
+    <%= insert_hubspot() -%>
   </body>
 </html>

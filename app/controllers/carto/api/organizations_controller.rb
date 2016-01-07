@@ -5,6 +5,7 @@ require_relative './user_presenter'
 module Carto
   module Api
     class OrganizationsController < ::Api::ApplicationController
+      include OrganizationsHelper
       include PagedSearcher
 
       ssl_required :users
@@ -22,22 +23,9 @@ module Carto
         users = users_query.all
 
         render_jsonp({ users: users.map { |u|
-          Carto::Api::UserPresenter.new(u).to_poro
+          Carto::Api::UserPresenter.new(u, current_user: current_user).to_poro
         }, total_user_entries: total_user_entries, total_entries: users.count })
       end
-
-      def load_organization
-        @organization = Carto::Organization.where(id: params[:id]).first
-        render_jsonp({}, 401) and return if @organization.nil?
-      end
-
-      def load_group
-        if params[:group_id]
-          @group = @organization.groups.find(params[:group_id])
-          render_jsonp({ errors: "No #{params[:group_id]} at #{@organization.id}" }, 404) and return unless @group
-        end
-      end
-
     end
   end
 end

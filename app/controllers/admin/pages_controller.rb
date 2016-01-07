@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+require 'active_support/inflector'
+
 require_relative '../../models/table'
 require_relative '../../models/visualization/member'
 require_relative '../../models/visualization/collection'
@@ -133,6 +135,31 @@ class Admin::PagesController < Admin::AdminController
                             CartoDB.path(self, 'public_user_feed_home') and return
       end
 
+      description = @name.dup
+
+      # TODO: move to helper
+      if @maps_count == 0 && @tables_num == 0
+        description << " uses CartoDB to transform location intelligence into dynamic renderings that enable discovery of trends and patterns"
+      else
+        description << " has"
+
+        unless @maps_count == 0
+          description << " created #{@maps_count} #{'map'.pluralize(@maps_count)}"
+        end
+
+        unless @maps_count == 0 || @tables_num == 0
+          description << " and"
+        end
+
+        unless @tables_num == 0
+          description << " published #{@tables_num} public #{'dataset'.pluralize(@tables_num)}"
+        end
+
+        description << " · View #{@name} CartoDB profile for the latest activity and contribute to Open Data by creating an account in CartoDB"
+      end
+
+      @page_description = description
+
       respond_to do |format|
         format.html { render 'user_feed', layout: 'public_user_feed' }
       end
@@ -224,16 +251,16 @@ class Admin::PagesController < Admin::AdminController
 
     @datasets.compact!
 
-    description = "#{@name} has"
+    description = @name.dup
 
     # TODO: move to helper
     if @datasets.size == 0
-      description << " not published any public dataset yet"
+      description << " uses CartoDB to transform location intelligence into dynamic renderings that enable discovery of trends and patterns"
     else
-      description << " published #{@datasets.size} public dataset#{@datasets.size == 1 ? "" : "s"}"
+      description << " has published #{@datasets.size} public #{'dataset'.pluralize(@datasets.size)}"
     end
 
-    description << " · Contribute to Open Data by creating an account in CartoDB"
+    description << " · View #{@name} CartoDB profile for the latest activity and contribute to Open Data by creating an account in CartoDB"
 
     @page_description = description
 
@@ -257,14 +284,16 @@ class Admin::PagesController < Admin::AdminController
 
     @visualizations.compact!
 
-    description = "#{@name} has"
+    description = @name.dup
 
     # TODO: move to helper
     if @visualizations.size == 0 && @tables_num == 0
-      description << " not published any public dataset or map yet"
+      description << " uses CartoDB to transform location intelligence into dynamic renderings that enable discovery of trends and patterns"
     else
+      description << " has"
+
       unless @visualizations.size == 0
-        description << " created #{@visualizations.size} map#{@visualizations.size == 1 ? "" : "s"}"
+        description << " created #{@visualizations.size} #{'map'.pluralize(@visualizations.size)}"
       end
 
       unless @visualizations.size == 0 || @tables_num == 0
@@ -272,10 +301,10 @@ class Admin::PagesController < Admin::AdminController
       end
 
       unless @tables_num == 0
-        description << " published #{@tables_num} public dataset#{@tables_num == 1 ? "" : "s"}"
+        description << " published #{@tables_num} public #{'dataset'.pluralize(@tables_num)}"
       end
 
-      description << " · Contribute to Open Data by creating an account in CartoDB"
+      description << " · View #{@name} CartoDB profile for the latest activity and contribute to Open Data by creating an account in CartoDB"
     end
 
     @page_description = description
@@ -335,9 +364,11 @@ class Admin::PagesController < Admin::AdminController
   end
 
   def set_pagination_vars(required)
-    @total_count  = required.fetch(:total_count)
-    @per_page     = required.fetch(:per_page)
-    @current_page = current_page
+    # Force all number pagination vars to be integers avoiding problems with
+    # undesired strings
+    @total_count  = required.fetch(:total_count, 0).to_i
+    @per_page     = required.fetch(:per_page, 9).to_i
+    @current_page = current_page.to_i
     @first_page_url = required.fetch(:first_page_url)
     @numbered_page_url = required.fetch(:numbered_page_url)
     @page_number_placeholder = PAGE_NUMBER_PLACEHOLDER

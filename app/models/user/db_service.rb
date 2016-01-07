@@ -80,8 +80,7 @@ module CartoDB
         create_importer_schema
         create_geocoding_schema
         load_cartodb_functions
-        # TODO Activate when we launch geocoder api for all the users
-        #install_and_configure_geocoder_api_extension
+        install_and_configure_geocoder_api_extension
         # We reset the connections to this database to be sure the change in default search_path is effective
         reset_pooled_connections
 
@@ -99,8 +98,7 @@ module CartoDB
         end.join
         create_own_schema
         setup_organization_user_schema
-        # TODO Activate when we launch geocoder api for all the users
-        #install_and_configure_geocoder_api_extension
+        install_and_configure_geocoder_api_extension
         # We reset the connections to this database to be sure the change in default search_path is effective
         reset_pooled_connections
         revoke_cdb_conf_access
@@ -290,6 +288,16 @@ module CartoDB
                 database.run(%{ SELECT cartodb.CDB_CartodbfyTable('#{new_schema}'::TEXT, '#{new_name}'::REGCLASS) })
               end
             end
+          end
+        end
+      end
+
+      def tables_effective(schema = 'public')
+        @user.in_database do |user_database|
+          user_database.synchronize do |conn|
+            query = "select table_name::text from information_schema.tables where table_schema = '#{schema}'"
+            tables = user_database[query].all.map { |i| i[:table_name] }
+            return tables
           end
         end
       end
@@ -951,13 +959,15 @@ module CartoDB
         # Undo metadata changes if process fails
         begin
           @user.this.update database_schema: old_database_schema_name
-          if schema_exists?(new_schema_name)
+
+          # Defensive measure to avoid undesired table dropping
+          if schema_exists?(new_schema_name) && tables_effective(new_schema_name).count == 0
             drop_all_functions_from_schema(new_schema_name)
             @user.in_database.run(%{ DROP SCHEMA "#{new_schema_name}" })
           end
-        rescue => e
+        rescue => ee
           # Avoid shadowing the actual error
-          CartoDB.notify_exception(e, user: @user)
+          CartoDB.notify_exception(ee, user: @user)
         end
         raise e
       end
@@ -1077,15 +1087,12 @@ module CartoDB
         conn.run("
           DO language plpgsql $$
           DECLARE
-              ver INT[];
+              ver INT;
               sql TEXT;
           BEGIN
-              SELECT INTO ver regexp_split_to_array(
-                regexp_replace(version(), '^PostgreSQL ([^ ]*) .*', '\\1'),
-                '\\.'
-              );
+              SELECT INTO ver setting from pg_settings where name='server_version_num';
               sql := 'SELECT pg_terminate_backend(';
-              IF ver[1] > 9 OR ( ver[1] = 9 AND ver[2] > 1 ) THEN
+              IF ver > 90199 THEN
                 sql := sql || 'pid';
               ELSE
                 sql := sql || 'procpid';

@@ -10,7 +10,9 @@ class Carto::User < ActiveRecord::Base
   extend Forwardable
 
   MIN_PASSWORD_LENGTH = 6
+  MAX_PASSWORD_LENGTH = 64
   GEOCODING_BLOCK_SIZE = 1000
+
   # INFO: select filter is done for security and performance reasons. Add new columns if needed.
   DEFAULT_SELECT = "users.email, users.username, users.admin, users.organization_id, users.id, users.avatar_url," +
                    "users.api_key, users.database_schema, users.database_name, users.name, users.location," +
@@ -65,6 +67,7 @@ class Carto::User < ActiveRecord::Base
 
   def password=(value)
     return if !value.nil? && value.length < MIN_PASSWORD_LENGTH
+    return if !value.nil? && value.length >= MAX_PASSWORD_LENGTH
 
     @password = value
     self.salt = new_record? ? service.class.make_token : ::User.filter(:id => self.id).select(:salt).first.salt
@@ -333,6 +336,10 @@ class Carto::User < ActiveRecord::Base
 
     return true if self.private_tables_enabled # Note private_tables_enabled => private_maps_enabled
     return false
+  end
+
+  def viewable_by?(user)
+    self.id == user.id || (has_organization? && self.organization.owner.id == user.id)
   end
 
   # Some operations, such as user deletion, won't ask for password confirmation if password is not set (because of Google sign in, for example)

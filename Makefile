@@ -7,12 +7,6 @@ all:
 	cat python_requirements.txt | grep -v gdal | sudo pip install -r /dev/stdin
 	npm install
 
-prepare-ruby-version:
-ifeq ($(RUBY_MAJOR),2)
-	cp Gemfile-ruby2 Gemfile
-	cp Gemfile-ruby2.lock Gemfile.lock
-endif
-
 PENDING_SPECS = \
   spec/lib/varnish_spec.rb (#321) \
   $(NULL)
@@ -128,6 +122,7 @@ WORKING_SPECS_4 = \
   spec/requests/admin/tables_spec.rb \
   spec/requests/admin/pages_controller_spec.rb \
 	spec/requests/carto/api/organizations_controller_spec.rb \
+	spec/requests/carto/api/organization_users_controller_spec.rb \
   spec/requests/api/imports_spec.rb \
   spec/requests/api/json/imports_controller_spec.rb \
 	spec/requests/carto/api/imports_controller_spec.rb \

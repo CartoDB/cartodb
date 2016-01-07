@@ -23,7 +23,14 @@ module Carto
       end
 
       def to_poro
+        return to_public_poro unless @visualization.is_viewable_by_user?(@current_viewer)
+
         show_stats = @options.fetch(:show_stats, true)
+
+        permission = @visualization.permission.nil? ? nil : Carto::Api::PermissionPresenter.new(@visualization.permission,
+                                                                                                current_viewer: @current_viewer)
+                                                                                           .with_presenter_cache(@presenter_cache)
+                                                                                           .to_poro
 
         poro = {
           id: @visualization.id,
@@ -38,7 +45,7 @@ module Carto
           stats: show_stats ? @visualization.stats : {},
           created_at: @visualization.created_at,
           updated_at: @visualization.updated_at,
-          permission: @visualization.permission.nil? ? nil : Carto::Api::PermissionPresenter.new(@visualization.permission).with_presenter_cache(@presenter_cache).to_poro,
+          permission: permission,
           locked: @visualization.locked,
           source: @visualization.source,
           title: @visualization.title,

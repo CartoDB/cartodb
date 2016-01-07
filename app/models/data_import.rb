@@ -116,6 +116,12 @@ class DataImport < Sequel::Model
     self.updated_at = Time.now
   end
 
+  # The objective of this after_create method is to track in the logs every started
+  # import process.
+  def after_create
+    notify(results)
+  end
+
   def from_common_data?
     if Cartodb.config[:common_data] &&
        !Cartodb.config[:common_data]['username'].blank? &&
@@ -702,7 +708,7 @@ class DataImport < Sequel::Model
         synchronization.error_message = nil
       else
         synchronization.state = 'failure'
-        synchronization.error_code = error_code
+        synchronization.error_code = error_code.blank? ? 9999 : error_code
         synchronization.error_message = get_error_text[:title] + ' ' + get_error_text[:what_about]
       end
       log.append "importer.success? #{synchronization.state}"
@@ -772,6 +778,7 @@ class DataImport < Sequel::Model
     importer_stats_aggregator.update_counter('total_size', total_size)
 
     import_time = self.updated_at - self.created_at
+    cartodbfy_throughtput = (cartodbfy_time == 0.0 ? nil : (total_size / cartodbfy_time))
 
     import_log = {'user'                   => owner.username,
                   'state'                  => self.state,
@@ -794,7 +801,7 @@ class DataImport < Sequel::Model
                   'total_size'             => total_size,
                   'cartodbfy_time'         => self.cartodbfy_time,
                   'import_throughput'      => (total_size / import_time),
-                  'cartodbfy_throughtput'  => (total_size / self.cartodbfy_time),
+                  'cartodbfy_throughtput'  => cartodbfy_throughtput,
                   'cartodbfy_import_ratio' => (self.cartodbfy_time / import_time)
                  }
     if !self.extra_options.nil?

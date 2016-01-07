@@ -93,6 +93,12 @@ describe Carto::Api::SynchronizationsController do
       end
     end
 
+    describe 'GET /api/v1/synchronizations/' do
+      it 'returns sync list' do
+        get "/api/v1/synchronizations?api_key=#{@api_key}", nil, @headers
+        last_response.status.should == 200
+      end
+    end
   end
 
 end

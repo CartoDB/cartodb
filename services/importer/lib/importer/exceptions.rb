@@ -74,12 +74,12 @@ module CartoDB
     class CouldntResolveDownloadError           < DownloadError; end
 
     class TooManyNodesError                     < StandardError; end
-    class GDriveNotPublicError                  < StandardError; end
     class EncodingDetectionError                < StandardError; end
     class MalformedXLSException                 < StandardError; end
     class XLSXFormatError                       < StandardError; end
     class MalformedCSVException                 < GenericImportError; end
     class TooManyColumnsError                   < GenericImportError; end
+    class TooManyColumnsProcessingError         < GenericImportError; end
     class DuplicatedColumnError                 < GenericImportError; end
     class RowsEncodingColumnError               < GenericImportError; end
     class EncodingError                         < StandardError; end
@@ -103,7 +103,6 @@ module CartoDB
       EmptyFileError                        => 1005,
       InvalidShpError                       => 1006,
       TooManyNodesError                     => 1007,
-      GDriveNotPublicError                  => 1010,
       InvalidNameError                      => 1014,
       PasswordNeededForExtractionError      => 1018,
       TooManyLayersError                    => 1019,
@@ -112,6 +111,7 @@ module CartoDB
       EncodingDetectionError                => 2002,
       MalformedCSVException                 => 2003,
       TooManyColumnsError                   => 2004,
+      TooManyColumnsProcessingError         => 2004,
       DuplicatedColumnError                 => 2005,
       EncodingError                         => 2006,
       RowsEncodingColumnError               => 2007,

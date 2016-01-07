@@ -81,9 +81,6 @@ module ApplicationHelper
       oauth_gdrive:               Cartodb.get_config(:oauth, 'gdrive', 'client_id'),
       oauth_instagram:            Cartodb.get_config(:oauth, 'instagram', 'app_key'),
       oauth_mailchimp:            Cartodb.get_config(:oauth, 'mailchimp', 'app_key'),
-      tumblr_api_key:             Cartodb.get_config(:tumblr, 'api_key'),
-      bitly_login:                Cartodb.get_config(:bitly, 'login'),
-      bitly_key:                  Cartodb.get_config(:bitly, 'key'),
       datasource_search_twitter:  nil,
       max_asset_file_size:        Cartodb.config[:assets]["max_file_size"],
       watcher_ttl:                Cartodb.config[:watcher].try("fetch", 'ttl', 60),
@@ -161,12 +158,12 @@ module ApplicationHelper
     current_user.present? ? current_user.account_type.to_s.upcase : 'UNAUTHENTICATED'
   end
 
-  def insert_google_analytics(track, custom_vars = {})
+  def insert_google_analytics(track, public_view = false, custom_vars = {})
     if !Cartodb.config[:google_analytics].blank? && !Cartodb.config[:google_analytics][track].blank? && !Cartodb.config[:google_analytics]["domain"].blank?
       ua = Cartodb.config[:google_analytics][track]
       domain = Cartodb.config[:google_analytics]["domain"]
 
-      render(:partial => 'shared/analytics', :locals => { ua: ua, domain: domain, custom_vars: custom_vars })
+      render(:partial => 'shared/analytics', :locals => { ua: ua, domain: domain, custom_vars: custom_vars, public_view: public_view })
     end
   end
 

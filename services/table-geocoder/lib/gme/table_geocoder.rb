@@ -55,6 +55,9 @@ module Carto
         { processed_rows: processed_rows, state: state }
       end
 
+      def name
+        'google'
+      end
 
       private
 

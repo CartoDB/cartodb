@@ -1,4 +1,5 @@
 require 'active_record'
+require 'json'
 
 module Carto
   class BiVisualization < ActiveRecord::Base
@@ -13,5 +14,8 @@ module Carto
       bi_dataset.accessible_by?(user)
     end
 
+    def extract_value_from_viz_json(key)
+      JSON.load(viz_json)[key]
+    end
   end
 end

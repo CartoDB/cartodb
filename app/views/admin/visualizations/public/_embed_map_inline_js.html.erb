@@ -124,7 +124,7 @@
         loadingTime.end();
       });
 
-      var like = new cdb.open.LikeView({ 
+      var like = new cdb.open.LikeView({
         el: $(".js-like"),
         auto_fetch: false,
         model: cdb.open.Like.newByVisData({
@@ -163,11 +163,3 @@
   <% end %>
 
 </script>
-
-<%= insert_trackjs('embeds') %>
-
-<%= render partial: 'shared/analytics', locals: {
-  ua:     Cartodb.config[:google_analytics]['embeds'],
-  domain: Cartodb.config[:google_analytics]['domain'],
-  page_owner: @visualization.user
-} %>

@@ -10,16 +10,13 @@ module CartoDB
       :failed_responses,
       :success_responses,
       :empty_responses,
-      :processable_rows,
-      :success_rows,
-      :empty_rows,
-      :failed_rows
     ]
 
     VALID_SERVICES = [
-      :internal_geocoder,
-      :here_geocoder,
-      :google_geocoder
+      :geocoder_internal,
+      :geocoder_here,
+      :geocoder_google,
+      :geocoder_cache
     ]
 
     def initialize(username, service, redis)

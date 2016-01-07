@@ -181,19 +181,4 @@
   <% if !@user.new? %>
     var organization_user_data = <%= safe_js_object @user.data.to_json %>;
   <% end %>
-  <%
-    assigned_quota_in_bytes = 0
-    current_user.organization.users.map { |u|
-      if (u.username != @user.username)
-        assigned_quota_in_bytes = assigned_quota_in_bytes + u.quota_in_bytes
-      end
-    }
-  %>
-  var assigned_user_quota = <%= @user.quota_in_bytes %>;
-  var used_user_quota = <%= @user.db_size_in_bytes rescue 0 %>;
-  var user_name = "<%= @user.username %>";
-  var organization_data = {
-    quota_in_bytes: <%= current_user.organization.quota_in_bytes %>,
-    used_quota_in_bytes: <%= assigned_quota_in_bytes %>
-  };
 </script>

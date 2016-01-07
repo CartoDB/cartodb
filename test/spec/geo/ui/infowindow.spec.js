@@ -412,17 +412,22 @@ describe('geo/ui/infowindow', function() {
       expect(view.$el.find("img").length).toEqual(1);
     });
 
-    it("if the image is invalid it shouldn't append it", function() {
+    it("shouldn't append an image if it's not valid", function() {
       model.set("content", { fields: fieldsWithoutURL });
       model.set('template', '<div class="js-infowindow header" data-cover="true"><div class="js-cover"></div></div>');
       expect(view.$el.find("img").length).toEqual(0);
     });
 
-    it("if the theme doesn't have cover don't append the image", function() {
+    it("shouldn't append the image if the theme doesn't have cover", function() {
       model.set("content", { fields: fields });
       model.set('template', '<div class="js-cover"></div>');
       expect(view.$el.find("img").length).toEqual(0);
     });
 
+    it("shouldn append a non-valid error message if the image is not valid", function() {
+      model.set("content", { fields: fieldsWithoutURL });
+      model.set('template', '<div class="js-infowindow header" data-cover="true"><div class="js-cover"></div></div>');
+      expect(view.$el.find(".CDB-infowindow-fail").length).toEqual(1);
+    });
   });
 });

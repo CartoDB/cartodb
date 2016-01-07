@@ -8,33 +8,40 @@ module CartoDB
     DEFAULT_BATCH_SIZE = 5000
     DEFAULT_MAX_ROWS   = 1000000
 
-    attr_reader :connection, :working_dir, :table_name, :hits,
+    attr_reader :connection, :working_dir, :table_name, :hits, :misses,
                 :max_rows, :sql_api, :formatter, :cache_results
 
     def initialize(arguments)
-      @sql_api       = arguments.fetch(:sql_api)
-      @connection    = arguments.fetch(:connection)
-      @table_name    = arguments.fetch(:table_name)
+      @sql_api = arguments.fetch(:sql_api)
+      @connection = arguments.fetch(:connection)
+      @table_name = arguments.fetch(:table_name)
       @qualified_table_name = arguments.fetch(:qualified_table_name)
-      @working_dir   = arguments[:working_dir] || Dir.mktmpdir
+      @working_dir = arguments[:working_dir] || Dir.mktmpdir
       `chmod 777 #{@working_dir}`
-      @formatter     = arguments.fetch(:formatter)
-      @max_rows      = arguments[:max_rows] || DEFAULT_MAX_ROWS
+      @formatter = arguments.fetch(:formatter)
+      @max_rows = arguments[:max_rows] || DEFAULT_MAX_ROWS
       @cache_results = nil
-      @batch_size    = arguments[:batch_size] || DEFAULT_BATCH_SIZE
+      @batch_size = arguments[:batch_size] || DEFAULT_BATCH_SIZE
       @cache_results = File.join(working_dir, "#{temp_table_name}_results.csv")
-      @hits          = 0
-    end # initialize
+      @usage_metrics = arguments.fetch(:usage_metrics)
+      init_rows_count
+    end
 
     def run
       get_cache_results
       create_temp_table
       load_results_to_temp_table
+      @total_rows = connection.select.from(temp_table_name).count.to_i
       @hits = connection.select.from(temp_table_name).where('longitude is not null and latitude is not null').count.to_i
       copy_results_to_table
     rescue => e
       handle_cache_exception e
-    end # run
+    ensure
+      @usage_metrics.incr(:geocoder_cache, :total_requests, @total_rows)
+      @usage_metrics.incr(:geocoder_cache, :success_responses, @hits)
+      @usage_metrics.incr(:geocoder_cache, :empty_responses, @total_rows - @hits)
+      @usage_metrics.incr(:geocoder_cache, :failed_responses, @failed_rows)
+    end
 
     def get_cache_results
       begin
@@ -58,7 +65,7 @@ module CartoDB
       begin
         count = count + 1 rescue 0
         sql   = %Q{
-           WITH 
+           WITH
             -- write the new values
            n(searchtext, the_geom) AS (
               VALUES %%VALUES%%
@@ -78,7 +85,7 @@ module CartoDB
            );
         }
         rows = connection.fetch(%Q{
-          SELECT DISTINCT(quote_nullable(#{formatter})) AS searchtext, the_geom 
+          SELECT DISTINCT(quote_nullable(#{formatter})) AS searchtext, the_geom
           FROM #{@qualified_table_name} AS orig
           WHERE orig.cartodb_georef_status IS TRUE AND the_geom IS NOT NULL
           LIMIT #{@batch_size} OFFSET #{count * @batch_size}
@@ -90,7 +97,7 @@ module CartoDB
       handle_cache_exception e
     ensure
       drop_temp_table
-    end # store
+    end
 
     def create_temp_table
       connection.run(%Q{
@@ -98,11 +105,11 @@ module CartoDB
           longitude text, latitude text, geocode_string text
         );
       })
-    end # create_temp_table
+    end
 
     def load_results_to_temp_table
       connection.copy_into(temp_table_name.lit, data: File.read(cache_results), format: :csv)
-    end # load_results_to_temp_table
+    end
 
     def copy_results_to_table
       connection.run(%Q{
@@ -118,11 +125,11 @@ module CartoDB
 
     def drop_temp_table
       connection.run("DROP TABLE IF EXISTS #{temp_table_name}")
-    end # drop_temp_table
+    end
 
     def temp_table_name
       @temp_table_name ||= "geocoding_cache_#{Time.now.to_i}"
-    end # temp_table_name
+    end
 
     def run_query(query, format = '')
       params = { q: query, api_key: sql_api[:api_key], format: format }
@@ -132,7 +139,7 @@ module CartoDB
         body: URI.encode_www_form(params)
       )
       response.body
-    end # run_query
+    end
 
     # It handles in such a way that the caching is silently stopped
     def handle_cache_exception(exception)
@@ -141,8 +148,17 @@ module CartoDB
         # for the moment we just wrap the exception to get a specific error in rollbar
         exception =  Carto::GeocoderErrors::GeocoderCacheDbTimeoutError.new(exception)
       end
+      # In case we get some error we are going to pass all the rows as failed
+      @failed_rows = @total_rows
       CartoDB.notify_exception(exception)
     end
 
-  end # GeocoderCache
-end # CartoDB
+    private
+
+    def init_rows_count
+      @hits = 0
+      @total_rows = 0
+      @failed_rows = 0
+    end
+  end
+end

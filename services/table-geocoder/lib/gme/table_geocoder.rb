@@ -13,7 +13,8 @@ module Carto
       # See https://developers.google.com/maps/documentation/geocoding/#Types
       ACCEPTED_ADDRESS_TYPES = ['street_address', 'route', 'intersection', 'neighborhood']
 
-      attr_reader :original_formatter, :processed_rows, :state, :max_block_size
+      attr_reader :original_formatter, :processed_rows, :successful_processed_rows, :failed_processed_rows,
+                  :empty_processed_rows,:state, :max_block_size
 
       def initialize(arguments)
         super(arguments)
@@ -23,6 +24,7 @@ module Carto
         @max_block_size = arguments[:max_block_size] || DEFAULT_MAX_BLOCK_SIZE
         gme_client = Client.new(client_id, private_key)
         @geocoder_client = GeocoderClient.new(gme_client)
+        @usage_metrics = arguments.fetch(:usage_metrics)
       end
 
       def cancel
@@ -31,7 +33,7 @@ module Carto
 
       def run
         @state = 'processing'
-        @processed_rows = 0
+        init_rows_count
         ensure_georef_status_colummn_valid
 
         # Here's the actual stuff
@@ -45,6 +47,11 @@ module Carto
       rescue => e
         @state = 'failed'
         raise e
+      ensure
+        @usage_metrics.incr(:geocoder_google, :success_responses, @successful_processed_rows)
+        @usage_metrics.incr(:geocoder_google, :empty_responses, @empty_processed_rows)
+        @usage_metrics.incr(:geocoder_google, :failed_responses, @failed_processed_rows)
+        @usage_metrics.incr(:geocoder_google, :total_requests, @processed_rows)
       end
 
       # Empty methods, needed because they're triggered from geocoding.rb
@@ -93,14 +100,17 @@ module Carto
 
       def geocode(data_block)
         data_block.each do |row|
-          response = @geocoder_client.geocode(row[:searchtext])
+          response = fetch_from_gme(row[:searchtext])
           if response['status'] != 'OK'
+            @empty_processed_rows += 1
             row.merge!(cartodb_georef_status: false)
           else
             result = response['results'].select { |r| r['types'] & ACCEPTED_ADDRESS_TYPES }.first
             if result.nil?
+              @empty_processed_rows += 1
               row.merge!(cartodb_georef_status: false)
             else
+              @successful_processed_rows += 1
               location = result['geometry']['location']
               row.merge!(location.deep_symbolize_keys.merge(cartodb_georef_status: true))
             end
@@ -142,6 +152,21 @@ module Carto
         end
       end
 
+      private
+
+      def init_rows_count
+        @processed_rows = 0
+        @successful_processed_rows = 0
+        @failed_processed_rows = 0
+        @empty_processed_rows = 0
+      end
+
+      def fetch_from_gme(search_text)
+        @geocoder_client.geocode(search_text)
+      rescue => e
+        CartoDB.notify_error('Error geocoding using GME', error: e.backtrace.join('\n'), search_text: search_text)
+        @failed_processed_rows += 1
+      end
     end
   end
 end

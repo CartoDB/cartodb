@@ -21,6 +21,7 @@ module CartoDB
       @formatter   = arguments[:formatter]
       @remote_id   = arguments[:remote_id]
       @max_rows    = arguments.fetch(:max_rows)
+      @usage_metrics = arguments.fetch(:usage_metrics)
       @cache       = CartoDB::GeocoderCache.new(
         connection:  connection,
         formatter:   clean_formatter,
@@ -28,19 +29,24 @@ module CartoDB
         working_dir: working_dir,
         table_name:  table_name,
         qualified_table_name: @qualified_table_name,
-        max_rows:    @max_rows
+        max_rows:    @max_rows,
+        usage_metrics: @usage_metrics
       )
     end # initialize
 
     def run
       ensure_georef_status_colummn_valid
-
       cache.run unless cache_disabled?
       @csv_file = generate_csv()
       geocoder.run
       self.remote_id = geocoder.request_id
       process_results if geocoder.status == 'completed'
       cache.store unless cache_disabled?
+    ensure
+      @usage_metrics.incr(:geocoder_here, :success_responses, geocoder.successful_processed_rows)
+      @usage_metrics.incr(:geocoder_here, :empty_responses, geocoder.empty_processed_rows)
+      @usage_metrics.incr(:geocoder_here, :failed_responses, geocoder.failed_processed_rows)
+      @usage_metrics.incr(:geocoder_here, :total_requests, geocoder.processed_rows)
     end
 
     # TODO: make the geocoders update status directly in the model

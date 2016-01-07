@@ -19,34 +19,49 @@ module CartoDB
       :geocoder_cache
     ]
 
-    def initialize(username, service, redis)
-      raise 'Invalid service' unless VALID_SERVICES.include?(service)
+    def initialize(redis, username, orgname=nil)
       @username = username
-      @service = service
+      @orgname = orgname
       @redis = redis
     end
 
-    def incr(metric, amount=1)
-      raise 'invalid amount' if amount < 0
-      raise 'invalid metric' unless VALID_METRICS.include?(metric)
+    def incr(service, metric, amount=1)
+      check_valid_data(service, metric, amount)
       return if amount == 0
 
-      @redis.incrby("#{key_prefix}:#{metric}:#{current_date}", amount)
+      # TODO We could add EXPIRE command to add TTL to the keys
+      if !@orgname.nil?
+        @redis.zincrby("#{org_key_prefix(service, metric)}", amount, "#{current_day}")
+      end
+
+      @redis.zincrby("#{user_key_prefix(service, metric)}", amount, "#{current_day}")
     end
 
     private
 
-    # TODO: actually this should cover also orgs
-    def key_prefix
-      "user:#{@username}:#{@service}"
+    def check_valid_data(service, metric, amount)
+      raise 'Invalid service' unless VALID_SERVICES.include?(service)
+      raise 'invalid metric' unless VALID_METRICS.include?(metric)
+      raise 'invalid amount' if amount < 0
     end
 
-    def current_date
-      DateTime.now.strftime('%Y%m%d')
+    def user_key_prefix(service, metric)
+      "user:#{@username}:#{service}:#{metric}:#{current_year_month}"
+    end
+
+    def org_key_prefix(service, metric)
+      "org:#{@orgname}:#{@username}:#{service}:#{metric}:#{current_year_month}"
+    end
+
+    def current_day
+      DateTime.now.day
+    end
+
+    def current_year_month
+      DateTime.now.strftime('%Y%m')
     end
 
   end
-
 
   class RedisStub
     def incrby(key, increment)

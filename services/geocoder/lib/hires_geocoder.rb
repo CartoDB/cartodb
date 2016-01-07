@@ -22,12 +22,11 @@ module CartoDB
       maxresults: 1
     }
 
-    attr_reader   :app_id, :token, :mailto,
-                  :status, :processed_rows, :total_rows, :dir,
-                  :non_batch_base_url
+    attr_reader :app_id, :token, :mailto,
+                :status, :processed_rows, :total_rows, :successful_processed_rows, :failed_processed_rows,
+                :empty_processed_rows, :dir, :non_batch_base_url
 
     attr_accessor :input_file
-
 
     def initialize(input_csv_file, working_dir)
       @input_file         = input_csv_file
@@ -38,10 +37,11 @@ module CartoDB
       @token              = config.fetch('token')
       @mailto             = config.fetch('mailto')
 
-      @processed_rows = 0
+      init_rows_count
     end
 
     def run
+      init_rows_count
       @result = File.join(dir, 'generated_csv_out.txt')
       @status = 'running'
       @total_rows = input_rows
@@ -74,7 +74,6 @@ module CartoDB
       nil
     end
 
-
     private
 
     def config
@@ -83,25 +82,29 @@ module CartoDB
 
     def http_client
       @http_client ||= Carto::Http::Client.get('hires_geocoder',
-        log_requests: true,
-        connecttimeout: HTTP_CONNECTION_TIMEOUT,
-        timeout: HTTP_REQUEST_TIMEOUT
-        )
+                                               log_requests: true,
+                                               connecttimeout: HTTP_CONNECTION_TIMEOUT,
+                                               timeout: HTTP_REQUEST_TIMEOUT)
     end
 
     def input_rows
-      stdout, stderr, status  = Open3.capture3('wc', '-l', input_file)
+      stdout, _stderr, _status = Open3.capture3('wc', '-l', input_file)
       stdout.to_i
-    rescue => e
+    rescue
       0
     end
 
     def process_row(input_row, output_csv_file)
-      @processed_rows = @processed_rows + 1
+      @processed_rows += 1
       latitude, longitude = geocode_text(input_row["searchtext"])
-      if !(latitude.nil? || latitude == "" || longitude.nil? && longitude == "")
+      if !(latitude.nil? || latitude == "") && !(longitude.nil? || longitude == "")
+        @successful_processed_rows += 1
         output_csv_file.add_row [input_row["searchtext"], 1, 1, latitude, longitude]
+      else
+        @empty_processed_rows += 1
       end
+    rescue
+      @failed_processed_rows += 1
     end
 
     def geocode_text(text)
@@ -109,7 +112,7 @@ module CartoDB
       url = "#{non_batch_base_url}?#{URI.encode_www_form(options)}"
       http_response = http_client.get(url)
       if http_response.success?
-        response =  ::JSON.parse(http_response.body)["response"]
+        response = ::JSON.parse(http_response.body)["response"]
         if response['view'].empty?
           # no location info for the text input, stop here
           return [nil, nil]
@@ -121,8 +124,9 @@ module CartoDB
         return [nil, nil]
       end
     rescue => e
-      CartoDB.notify_debug("Non-batched geocoder couldn't parse response", {error: e.inspect, backtrace: e.backtrace, text: text, response_body: http_response.body})
-      [nil, nil]
+      CartoDB.notify_debug("Non-batched geocoder couldn't parse response",
+                           error: e.backtrace.join('\n'), backtrace: e.backtrace, text: text, response_body: http_response.body)
+      raise e
     end
 
     def api_url(arguments, extra_components = nil)
@@ -131,6 +135,13 @@ module CartoDB
       components << extra_components unless extra_components.nil?
       components << '?' + URI.encode_www_form(arguments)
       components.join('/')
+    end
+
+    def init_rows_count
+      @processed_rows = 0
+      @successful_processed_rows = 0
+      @failed_processed_rows = 0
+      @empty_processed_rows = 0
     end
 
   end

@@ -29,8 +29,9 @@ module CartoDB
 
     # INFO: the request_id is the most important thing to care for batch requests
     # INFO: it is called remote_id in upper layers
-    attr_reader   :base_url, :request_id, :app_id, :token, :mailto,
-                  :status, :processed_rows, :total_rows, :dir, :input_file
+    attr_reader :base_url, :request_id, :app_id, :token, :mailto,
+                :status, :processed_rows, :processed_rows, :successful_processed_rows, :failed_processed_rows, 
+                :empty_processed_rows,:total_rows, :dir, :input_file
 
     class ServiceDisabled < StandardError; end
 
@@ -83,7 +84,7 @@ module CartoDB
       @used_batch_request = true
       response = http_client.post(
         api_url(UPLOAD_OPTIONS),
-        body: File.open(input_file,"r").read,
+        body: File.open(input_file, "r").read,
         headers: { "Content-Type" => "text/plain" },
         timeout: 5.hours # more than generous timeout for big file upload
       )
@@ -92,7 +93,7 @@ module CartoDB
       # TODO: this is a critical error, deal with it appropriately
       raise 'Could not get the request ID' unless @request_id
 
-      return @request_id
+      @request_id
     end
 
     def used_batch_request?
@@ -103,18 +104,14 @@ module CartoDB
       assert_batch_api_enabled
       response = http_client.put api_url(action: 'cancel')
       handle_api_error(response)
-      @status         = extract_response_field(response.body, '//Response/Status')
-      @processed_rows = extract_response_field(response.body, '//Response/ProcessedCount')
-      @total_rows     = extract_response_field(response.body, '//Response/TotalCount')
+      update_stats(response)
     end
 
     def update_status
       assert_batch_api_enabled
       response = http_client.get api_url(action: 'status')
       handle_api_error(response)
-      @status         = extract_response_field(response.body, '//Response/Status')
-      @processed_rows = extract_response_field(response.body, '//Response/ProcessedCount')
-      @total_rows     = extract_response_field(response.body, '//Response/TotalCount')
+      update_stats(response)
     end
 
     def assert_batch_api_enabled
@@ -127,12 +124,10 @@ module CartoDB
       raise 'No request_id provided' unless request_id
       results_filename = File.join(dir, "#{request_id}.zip")
       download_url = api_url({}, 'result')
-
-      request = http_client.request(
-        download_url,
-        method: :get,
-        timeout: 5.hours # generous timeout for download of results
-        )
+      # generous timeout for download of results
+      request = http_client.request(download_url,
+                                    method: :get,
+                                    timeout: 5.hours)
 
       File.open(results_filename, 'wb') do |download_file|
 
@@ -169,10 +164,9 @@ module CartoDB
 
     def http_client
       @http_client ||= Carto::Http::Client.get('hires_batch_geocoder',
-        log_requests: true,
-        connecttimeout: HTTP_CONNECTION_TIMEOUT,
-        timeout: HTTP_REQUEST_TIMEOUT
-        )
+                                               log_requests: true,
+                                               connecttimeout: HTTP_CONNECTION_TIMEOUT,
+                                               timeout: HTTP_REQUEST_TIMEOUT)
     end
 
     def api_url(arguments, extra_components = nil)
@@ -192,7 +186,10 @@ module CartoDB
     end
 
     def handle_api_error(response)
-      raise "Geocoding API communication failure: #{extract_response_field(response.body, '//Details')}" if response.success? == false
+      if response.success? == false
+        @failed_processed_rows = number_of_input_file_rows
+        raise "Geocoding API communication failure: #{extract_response_field(response.body, '//Details')}"
+      end
     end
 
     def default_timeout
@@ -203,5 +200,19 @@ module CartoDB
       POLLING_SLEEP_TIME
     end
 
-  end # Geocoder
-end # CartoDB
+    def number_of_input_file_rows
+      `wc -l #{input_file}`.to_i
+    end
+
+    def update_stats(response)
+      @status = extract_response_field(response.body, '//Response/Status')
+      @processed_rows = extract_response_field(response.body, '//Response/ProcessedCount')
+      @successful_processed_rows = extract_response_field(response.body, '//Response/SuccessCount')
+      # addresses that could not be matched
+      @empty_processed_rows = extract_response_field(response.body, '//Response/ErrorCount')
+      # invalid input that could not be processed
+      @failed_processed_rows = extract_response_field(response.body, '//Response/InvalidCount')
+      @total_rows = extract_response_field(response.body, '//Response/TotalCount')
+    end
+  end
+end

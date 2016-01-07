@@ -107,34 +107,31 @@
   justify-content: center;
 }
 
-.CDB-infowindow.has-items.has-title .CDB-infowindow-fail {
-  position: absolute;
-  left: 20px;
-  text-align: left;
-}
-
-.CDB-infowindow.has-title .CDB-infowindow-fail {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  text-align: left;
-}
-
-.CDB-infowindow.has-title .CDB-infowindow-fail {
-  position: absolute;
-  left: 0;
-  top: 20px;
-  width: 100%;
-  text-align: center;
-}
 
 .CDB-infowindow-fail {
   display: block;
-  width: 100%;
   color: rgb(243, 86, 60);
   font-size: 9px;
   text-align: center;
   text-transform: uppercase;
+}
+.CDB-infowindow.has-title.has-items.has-header-image .CDB-infowindow-fail {
+  position: absolute;
+  left: 20px;
+  top: 20px;
+  text-align: left;
+}
+.CDB-infowindow.has-title .CDB-infowindow-fail {
+  position: absolute;
+  left: 0px;
+  top: 20px;
+  width: 100%;
+  text-align: center;
+}
+.CDB-infowindow-mediaTitle .CDB-infowindow-fail {
+  width: auto;
+  padding: 16px 0 0 20px;
+  text-align: left;
 }
 
 .CDB-infowindow-mediaTitle {
@@ -142,10 +139,6 @@
   right: 24px;
   bottom: 24px;
   left: 24px;
-}
-.CDB-infowindow-mediaTitle .CDB-infowindow-fail {
-  padding: 16px 0 0 20px;
-  text-align: left;
 }
 
 .CDB-infowindow-headerMedia {
@@ -268,16 +261,13 @@
 }
 
 .CDB-infowindow.has-header-image .CDB-hook-image:before {
-  border-top: 16px solid #F5F5F5;
-}
-
-.CDB-infowindow.has-header-image .CDB-hook-image:before {
   position: absolute;
   top: 0;
   left: 0;
   width: 0;
   height: 0;
   border-right: 24px solid transparent;
+  border-top: 16px solid #F5F5F5;
   content: '';
   z-index: 3;
 }

@@ -97,8 +97,8 @@
 }
 
 .CDB-infowindow.is-header .CDB-infowindow-mediaTitle {
-  bottom: 12px;
   display: block;
+  bottom: 12px;
 }
 
 .CDB-infowindow.is-fail .CDB-infowindow-header {
@@ -117,14 +117,14 @@
 }
 .CDB-infowindow.has-title.has-items.has-header-image .CDB-infowindow-fail {
   position: absolute;
-  left: 20px;
   top: 20px;
+  left: 20px;
   text-align: left;
 }
 .CDB-infowindow.has-title .CDB-infowindow-fail {
   position: absolute;
-  left: 0px;
   top: 20px;
+  left: 0;
   width: 100%;
   text-align: center;
 }
@@ -164,11 +164,6 @@
   }
 }
 
-.CDB-infowindow-media-item {
-  transition: opacity 150ms ease-in-out;
-  border-radius: 4px;
-  opacity: 1;
-}
 .CDB-infowindow.is-loading .CDB-infowindow-media-item {
   opacity: 0;
 }
@@ -185,6 +180,9 @@
 .CDB-infowindow-media-item {
   display: block;
   width: 100%;
+  transition: opacity 150ms ease-in-out;
+  border-radius: 4px;
+  opacity: 1;
 }
 .CDB-hook {
   position: absolute;
@@ -199,8 +197,8 @@
   left: 0;
   width: 0;
   height: 0;
-  border-right: 24px solid transparent;
   border-top: 16px solid #FFF;
+  border-right: 24px solid transparent;
   content: '';
   z-index: 3;
 }
@@ -266,8 +264,8 @@
   left: 0;
   width: 0;
   height: 0;
-  border-right: 24px solid transparent;
   border-top: 16px solid #F5F5F5;
+  border-right: 24px solid transparent;
   content: '';
   z-index: 3;
 }

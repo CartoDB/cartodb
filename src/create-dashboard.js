@@ -31,23 +31,26 @@ module.exports = function (selector, diJSON, visOpts) {
       // TODO once dataviews are moved to cartodb.js, replace with proper API call, something like this I imagine:
       // return foobar.dataviews.createList(layer, attrs.column, attrs.operation);
       return new FormulaDataviewModel(attrs, {
-        layer: layer,
-        layerIndex: layerIndex
+        layer: layer
       });
     },
     histogram: function (attrs, layer, layerIndex) {
       return new HistogramDataviewModel(attrs, {
-        filter: new RangeFilter(),
-        layer: layer,
-        layerIndex: layerIndex
+        filter: new RangeFilter({
+          // TODO Setting layer-index on filters here is not good, if order change the filters won't work on the expected layer anymore!
+          layerIndex: layerIndex
+        }),
+        layer: layer
       });
     },
     // TODO: Rename type to category instead of aggregation?
     aggregation: function (attrs, layer, layerIndex) {
       return new CategorDataviewModel(attrs, {
-        filter: new CategoryFilter(),
-        layer: layer,
-        layerIndex: layerIndex
+        filter: new CategoryFilter({
+          // TODO Setting layer-index on filters here is not good, if order change the filters won't work on the expected layer anymore!
+          layerIndex: layerIndex
+        }),
+        layer: layer
       });
     }
   });

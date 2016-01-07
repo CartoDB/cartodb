@@ -10,10 +10,14 @@ module.exports = cdb.Backbone.Collection.extend({
       _.each(activeFilters, function (filter) {
         if (!filter.isEmpty()) {
           var index = filter.get('layerIndex');
-          if (json.layers[index]) {
-            _.extend(json.layers[index], filter.toJSON());
+          if (index >= 0) {
+            if (json.layers[index]) {
+              _.extend(json.layers[index], filter.toJSON());
+            } else {
+              json.layers[index] = filter.toJSON();
+            }
           } else {
-            json.layers[index] = filter.toJSON();
+            throw new Error('layerIndex missing for filter ' + JSON.stringify(filter.toJSON()));
           }
         }
       });

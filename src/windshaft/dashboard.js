@@ -34,8 +34,8 @@ WindshaftDashboard.prototype._createInstance = function (options) {
   });
 
   var filtersFromVisibleLayers = this.dataviews.chain()
-    .filter(function (m) { return m.layer.isVisible(); })
-    .map(function (m) { return m.filter; })
+    .filter(function (dataview) { return dataview.layer.isVisible(); })
+    .map(function (dataview) { return dataview.filter; })
     .compact() // not all dataviews have filters
     .value();
 
@@ -112,9 +112,9 @@ WindshaftDashboard.prototype._updateDataviewURLs = function (options) {
   }, this);
 };
 
-WindshaftDashboard.prototype._filterChanged = function (w) {
+WindshaftDashboard.prototype._filterChanged = function (dataview) {
   this._createInstance({
-    layerId: w.layer.get('id')
+    layerId: dataview.layer.get('id')
   });
 };
 

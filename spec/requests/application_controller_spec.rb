@@ -47,47 +47,71 @@ describe ApplicationController do
     end
 
     describe 'email autentication' do
+      before(:each) do
+        stub_http_header_authentication_configuration('email')
+      end
+
       it 'loads the dashboard for a known user email' do
         stub_load_common_data
-        stub_http_header_authentication_configuration
         get dashboard_url, {}, authentication_headers($user_1.email)
         response.status.should == 200
         response.body.should_not include("Login to Carto")
       end
 
       it 'does not load the dashboard for an unknown user email' do
-        stub_http_header_authentication_configuration
         get dashboard_url, {}, authentication_headers('wadus@wadus.com')
+        response.status.should == 302
+      end
+
+      it 'does not load the dashboard for a known user username' do
+        get dashboard_url, {}, authentication_headers($user_1.username)
+        response.status.should == 302
       end
     end
 
     describe 'username autentication configuration' do
+      before(:each) do
+        stub_http_header_authentication_configuration('username')
+      end
+
       it 'loads the dashboard for a known user username' do
         stub_load_common_data
-        stub_http_header_authentication_configuration('username')
         get dashboard_url, {}, authentication_headers($user_1.username)
         response.status.should == 200
         response.body.should_not include("Login to Carto")
       end
 
       it 'does not load the dashboard for an unknown user username' do
-        stub_http_header_authentication_configuration('username')
         get dashboard_url, {}, authentication_headers("unknownuser")
+        response.status.should == 302
+      end
+
+      it 'does not load the dashboard for a known user id' do
+        get dashboard_url, {}, authentication_headers($user_1.id)
+        response.status.should == 302
       end
     end
 
     describe 'id autentication configuration' do
+      before(:each) do
+        stub_http_header_authentication_configuration('id')
+      end
+
       it 'loads the dashboard for a known user id' do
         stub_load_common_data
-        stub_http_header_authentication_configuration('id')
         get dashboard_url, {}, authentication_headers($user_1.id)
         response.status.should == 200
         response.body.should_not include("Login to Carto")
       end
 
       it 'does not load the dashboard for an unknown user id' do
-        stub_http_header_authentication_configuration('id')
         get dashboard_url, {}, authentication_headers(UUIDTools::UUID.timestamp_create.to_s)
+        response.status.should == 302
+      end
+
+      it 'does not load the dashboard for a known user email' do
+        get dashboard_url, {}, authentication_headers($user_1.email)
+        response.status.should == 302
       end
     end
 

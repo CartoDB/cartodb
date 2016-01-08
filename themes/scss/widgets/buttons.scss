@@ -8,7 +8,7 @@
   @include transition(background, 250ms);
   display: inline-block;
   padding: 0 26px;
-  border-radius: 4px;
+  border-radius: $baseSize / 2;
   font-family: 'Open Sans';
   line-height: 40px;
 }
@@ -21,8 +21,8 @@
   }
 }
 .CDB-Widget-buttonIcon--circle {
-  width: 16px;
-  height: 16px;
+  width: $baseSize * 2;
+  height: $baseSize * 2;
   border: 1px solid transparent; // border used for :hover, color set in theme
   border-radius: 14px;
   text-align: center;

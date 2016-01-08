@@ -12,11 +12,11 @@
   display: none;
 }
 .CDB-Widget-navDots {
-  height: 8px;
+  height: $baseSize;
 }
 .CDB-Widget-dot--navigation {
   display: inline-block;
-  margin: 0 0 0 4px;
+  margin: 0 0 0 $baseSize / 2;
   vertical-align: top;
   &:hover {
     cursor: pointer;

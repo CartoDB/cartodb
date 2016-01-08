@@ -18,16 +18,16 @@
 @import '../variables/mixins';
 
 .CDB-Widget-timeSeriesFakeControl {
-  width: 16px;
-  height: 16px;
+  width: $baseSize * 2;
+  height: $baseSize * 2;
 }
 .CDB-Widget-timeSeriesTimeInfo {
-  margin-left: 16px;
+  margin-left: $baseSize * 2;
   white-space: nowrap;
 }
 .CDB-Widget-timeSeriesTimeInfo--fake {
   width: 140px;
-  height: 8px;
+  height: $baseSize;
 }
 
 .CDB-Widget-timeSeriesFakeChart {
@@ -43,11 +43,11 @@
 .CDB-Widget-timeSeriesFakeChartItem {
   @include flex-grow(1);
   display: inline-block;
-  margin-right: 2px;
+  margin-right: $baseSize / 4;
 }
 
 @include media-query() {
   .CDB-Widget-timeSeriesFakeChart {
-    height: 16px;
+    height: $baseSize * 2;
   }
 }

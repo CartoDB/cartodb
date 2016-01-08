@@ -19,6 +19,12 @@ $negative: rgba(#F15743, 1);
 $loadingBkg: rgba(#F9F9F9, 1);
 $canvasBkg: rgba(#F2F6F9, 1);
 $commonBkg: rgba(#FFF, 1);
+$blackBkg: rgba(#000, 1);
+$chartHandleGrip: rgba(#CCC, 1);
+$chartLine: rgba(#EEE, 1);
+$chartAxis: rgba(#979EA1, 1);
+$chartMini: rgba(#DDD, 1);
+$chartMiniHighlight: rgba(#333, 1);
 
 .CDB-Widget--light {
   border-color: $canvasBkg;
@@ -220,6 +226,29 @@ $commonBkg: rgba(#FFF, 1);
     }
   }
 
+
+  .CDB-Widget-checkbox {
+    border-color: $disabled;
+
+    &.is-checked {
+      background: $link;
+    }
+  }
+
+  // Tooltip 
+  .CDB-Widget-tooltip {
+    background: $blackBkg;
+    color: $commonBkg;
+  }
+  .CDB-Widget-tooltip:after {
+    border-top-color: $blackBkg;
+  }
+
+  //Charts
+  .extent {
+    stroke: $link;
+  }
+
   .CDB-Chart-bar {
     fill: $highlighted;
   }
@@ -239,6 +268,7 @@ $commonBkg: rgba(#FFF, 1);
   .CDB-Chart-handleRect {
     stroke: $link;
     stroke-width: 2;
+    fill: $commonBkg;
   }
 
   .CDB-Chart-axisTipText {
@@ -249,12 +279,45 @@ $commonBkg: rgba(#FFF, 1);
     stroke: $link;
   }
 
-  .CDB-Widget-checkbox {
-    border-color: $disabled;
-
-    &.is-checked {
-      background: $link;
+  .CDB-Chart.CDB-Chart--mini {
+    .CDB-Chart-bar {
+      fill: $chartMiniHighlight;
     }
+    .CDB-Chart-bar.is-highlighted {
+      fill: $chartMiniHighlight;
+    }
+    .CDB-Chart-bar.is-selected {
+      fill: $chartMini;
+    }
+  } 
+
+  .CDB-Chart-line {
+    stroke: $chartLine;
+  }
+
+  .CDB-Chart-line.CDB-Chart-line--bottom {
+    stroke: $blackBkg;
+  }
+
+  .CDB-Chart-handleGrip {
+    stroke: $chartHandleGrip;
+  }
+
+  .CDB-Chart-axis {
+    fill: $chartAxis;
+  }
+
+  .CDB-Chart-axis line {
+    stroke: $chartLine;
+  }
+
+  .CDB-Chart-axisTipRect {
+    fill: $commonBkg;
+  }
+
+  // TimeSlider
+  .CDB-TimeSlider {
+    fill: $link;
   }
 
   .CDB-Dropdown {

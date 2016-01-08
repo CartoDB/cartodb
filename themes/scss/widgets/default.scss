@@ -31,7 +31,7 @@
   @include align-items(center);
   position: relative;
   width: 100%;
-  margin: 0 0 6px;
+  margin: 0 0 $baseSize - 2;
 }
 .CDB-Widget-header,
 .CDB-Widget-footer,
@@ -81,9 +81,9 @@
   }
   .CDB-Widget--timeSeries {
     width: 100%; // override default width
-    height: 64px;
-    min-height: 64px; // override default min-height
-    max-height: 64px;
+    height: $baseSize * 8;
+    min-height: $baseSize * 8; // override default min-height
+    max-height: $baseSize * 8;
   }
   .CDB-Widget-body--timeSeries {
     @include display-flex();
@@ -104,7 +104,7 @@
   .CDB-Widget {
     width: 232px;
     min-width: 232px;
-    padding: 12px 0;
+    padding: $baseSize + 4 0;
   }
   .CDB-Widget-header,
   .CDB-Widget-footer,

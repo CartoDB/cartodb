@@ -11,8 +11,8 @@
   width: 352px;
   min-width: 352px;
   max-width: 352px;
-  margin-left: 8px;
-  border-radius: 4px;
+  margin-left: $baseSize;
+  border-radius: $baseSize / 2;
   background: #FFF; // Canvas is out of widget themes
 }
 .CDB-Widget-canvasInner {
@@ -23,7 +23,7 @@
   width: 100%;
   overflow-y: auto;
   overflow-x: visible;
-  border-radius: 4px;
+  border-radius: $baseSize / 2;
 }
 .CDB-Widget-canvasShadow {
   display: none;
@@ -37,14 +37,14 @@
 .CDB-Widget-canvasShadow--top {
   @include background-gradient(#FFF, rgba(255, 255, 255, 0));
   top: 0;
-  border-top-left-radius: 4px;
-  border-top-right-radius: 4px;
+  border-top-left-radius: $baseSize / 2;
+  border-top-right-radius: $baseSize / 2;
 }
 .CDB-Widget-canvasShadow--bottom {
   @include background-gradient(rgba(255, 255, 255, 0), #FFF);
   bottom: 0;
-  border-bottom-left-radius: 4px;
-  border-bottom-right-radius: 4px;
+  border-bottom-left-radius: $baseSize / 2;
+  border-bottom-right-radius: $baseSize / 2;
 }
 .CDB-Widget-canvasShadow.is-visible {
   display: block;
@@ -71,12 +71,12 @@
 // Widget media query
 @include media-query() {
   .CDB-Widget-canvas {
-    width: calc(100% - 88px);
-    min-width: calc(100% - 88px);
-    max-width: calc(100% - 88px);
+    width: calc(100% - $baseSize * 11);
+    min-width: calc(100% - $baseSize * 11);
+    max-width: calc(100% - $baseSize * 11);
     height: auto;
-    margin-top: 8px;
-    margin-left: 88px;
+    margin-top: $baseSize;
+    margin-left: $baseSize * 11;
     border-radius: 0;
     overflow: hidden;
     box-sizing: border-box;

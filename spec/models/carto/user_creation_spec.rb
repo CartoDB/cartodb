@@ -258,10 +258,11 @@ describe Carto::UserCreation do
       user_creation.next_creation_step until user_creation.finished?
     end
 
-    it 'should not send validation email if user is created via API' do
+    it 'should send invitation emial but not validation email if user is created via API' do
       ::User.any_instance.stubs(:create_in_central).returns(true)
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
-      ::Resque.expects(:enqueue).with(Resque::UserJobs::Mail::NewOrganizationUser, instance_of(String)).never
+      ::Resque.expects(:enqueue).with(Resque::OrganizationJobs::Mail::Invitation, instance_of(String)).never
+      ::Resque.expects(:enqueue).with(Resque::UserJobs::Mail::NewOrganizationUser, instance_of(String)).once
 
       user_data = FactoryGirl.build(:valid_user)
       user_data.organization = @organization

@@ -85,7 +85,7 @@ class Carto::UserCreation < ActiveRecord::Base
 
   # TODO: Shorcut, search for a better solution to detect requirement
   def requires_validation_email?
-    google_sign_in != true && !has_valid_invitation? && !Carto::Ldap::Manager.new.configuration_present?
+    google_sign_in != true && !has_valid_invitation? && !Carto::Ldap::Manager.new.configuration_present? && !created_via_api?
   end
 
   def autologin?
@@ -206,7 +206,6 @@ class Carto::UserCreation < ActiveRecord::Base
   end
 
   def use_invitation
-    return if created_via_api?
     return unless invitation_token
     invitation = unused_invitation
     return unless invitation
@@ -241,7 +240,7 @@ class Carto::UserCreation < ActiveRecord::Base
 
   def close_creation
     clean_password
-    cartodb_user.notify_new_organization_user unless has_valid_invitation? || created_via_api?
+    cartodb_user.notify_new_organization_user unless has_valid_invitation?
     cartodb_user.organization.notify_if_disk_quota_limit_reached if cartodb_user.organization
     cartodb_user.organization.notify_if_seat_limit_reached if cartodb_user.organization
   rescue => e

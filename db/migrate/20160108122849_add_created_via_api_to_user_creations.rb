@@ -1,6 +1,6 @@
 Sequel.migration do
   up do
-    add_column :user_creations, :created_via_api, :boolean
+    add_column :user_creations, :created_via_api, :boolean, null: false, default: false
   end
 
   down do

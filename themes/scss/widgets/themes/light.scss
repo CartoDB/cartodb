@@ -75,10 +75,10 @@ $chartMiniHighlight: rgba(#333, 1);
       background: $linkHover;
     }
   }
-  .CDB-Widget-controlButton-icon--play {
+  .CDB-Widget-controlButtonIcon--play {
     border-left-color: $elementBkg;
   }
-  .CDB-Widget-controlButton-icon--pause {
+  .CDB-Widget-controlButtonIcon--pause {
     &:before,
     &:after {
       background-color: $elementBkg;

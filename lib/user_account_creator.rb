@@ -54,6 +54,11 @@ module CartoDB
       self
     end
 
+    def with_api
+      @created_through_api = true
+      self
+    end
+
     def user
       @user
     end
@@ -83,7 +88,10 @@ module CartoDB
       build
 
       user_creation = Carto::UserCreation.new_user_signup(@user).
-                      with_invitation_token(@invitation_token)
+                                          with_invitation_token(@invitation_token)
+
+      user_creation = user_creation.with_options(created_through_api: true) if @created_through_api
+
       user_creation.save
 
       common_data_url = CartoDB::Visualization::CommonDataService.build_url(current_controller)

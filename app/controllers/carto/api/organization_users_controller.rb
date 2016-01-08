@@ -20,6 +20,8 @@ module Carto
       def create
         account_creator = CartoDB::UserAccountCreator.new.with_organization(@organization)
 
+        account_creator.with_api
+
         account_creator.with_username(create_params[:username]) if create_params[:username].present?
         account_creator.with_email(create_params[:email]) if create_params[:email].present?
         account_creator.with_password(create_params[:password]) if create_params[:password].present?

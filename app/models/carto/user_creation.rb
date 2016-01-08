@@ -101,6 +101,19 @@ class Carto::UserCreation < ActiveRecord::Base
     self
   end
 
+  def with_options(options)
+    self.options = load_options.merge!(options).to_json
+    self
+  end
+
+  def created_through_api?
+    load_options[:created_through_api]
+  end
+
+  def load_options
+    self.options.blank? ? {} : JSON.load(self.options).symbolize_keys
+  end
+
   def has_valid_invitation?
     return false unless invitation_token
     !valid_invitation.nil?
@@ -166,7 +179,7 @@ class Carto::UserCreation < ActiveRecord::Base
     @cartodb_user.soft_geocoding_limit = soft_geocoding_limit unless soft_geocoding_limit.nil?
     @cartodb_user.google_sign_in = google_sign_in
     @cartodb_user.invitation_token = invitation_token
-    @cartodb_user.enable_account_token = ::User.make_token if requires_validation_email?
+    @cartodb_user.enable_account_token = ::User.make_token if requires_validation_email? && !created_through_api?
     unless @promote_to_organization_owner
       organization = ::Organization.where(id: organization_id).first
       raise "Trying to copy organization settings from one without owner" if organization.owner.nil?
@@ -197,6 +210,7 @@ class Carto::UserCreation < ActiveRecord::Base
   end
 
   def use_invitation
+    return if created_through_api?
     return unless invitation_token
     invitation = unused_invitation
     return unless invitation
@@ -231,7 +245,7 @@ class Carto::UserCreation < ActiveRecord::Base
 
   def close_creation
     clean_password
-    cartodb_user.notify_new_organization_user unless has_valid_invitation?
+    cartodb_user.notify_new_organization_user unless has_valid_invitation? || created_through_api?
     cartodb_user.organization.notify_if_disk_quota_limit_reached if cartodb_user.organization
     cartodb_user.organization.notify_if_seat_limit_reached if cartodb_user.organization
   rescue => e

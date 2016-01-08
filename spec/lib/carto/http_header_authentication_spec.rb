@@ -26,7 +26,7 @@ describe Carto::HttpHeaderAuthentication do
 
   let(:authenticated_header) { 'auth_header' }
 
-  def stub_http_header_authentication_configuration(field = 'email')
+  def stub_http_header_authentication_configuration(field = 'email', autocreation = false)
     Cartodb.stubs(:get_config)
     Cartodb.stubs(:get_config).
       with(:http_header_authentication, 'header').
@@ -34,6 +34,9 @@ describe Carto::HttpHeaderAuthentication do
     Cartodb.stubs(:get_config).
       with(:http_header_authentication, 'field').
       returns(field)
+    Cartodb.stubs(:get_config).
+      with(:http_header_authentication, 'autocreation').
+      returns(autocreation)
   end
 
   let(:mock_unauthenticated_request) do
@@ -97,7 +100,15 @@ describe Carto::HttpHeaderAuthentication do
         User.expects(:where).with("id = ?", mock_id_request.headers[authenticated_header]).once.returns mock_user_search
         Carto::HttpHeaderAuthentication.new.get_user(mock_id_request).should == mock_user
       end
+    end
+  end
 
+  describe '#autocreation_enabled?' do
+    it 'returns autocreation configuration' do
+      stub_http_header_authentication_configuration('auto', true)
+      Carto::HttpHeaderAuthentication.new.autocreation_enabled?.should be_true
+      stub_http_header_authentication_configuration('auto', false)
+      Carto::HttpHeaderAuthentication.new.autocreation_enabled?.should be_false
     end
   end
 end

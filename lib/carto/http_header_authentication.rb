@@ -17,6 +17,10 @@ module Carto
       ::User.where("#{field(request)} = ?", header).first
     end
 
+    def autocreation_enabled?
+      Cartodb.get_config(:http_header_authentication, 'autocreation') == true
+    end
+
     private
 
     def field(request)

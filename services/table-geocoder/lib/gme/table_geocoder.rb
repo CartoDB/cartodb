@@ -48,10 +48,11 @@ module Carto
         @state = 'failed'
         raise e
       ensure
+        total_requests = @successful_processed_rows + @empty_processed_rows + @failed_processed_rows
         @usage_metrics.incr(:geocoder_google, :success_responses, @successful_processed_rows)
         @usage_metrics.incr(:geocoder_google, :empty_responses, @empty_processed_rows)
         @usage_metrics.incr(:geocoder_google, :failed_responses, @failed_processed_rows)
-        @usage_metrics.incr(:geocoder_google, :total_requests, @processed_rows)
+        @usage_metrics.incr(:geocoder_google, :total_requests, total_requests)
       end
 
       # Empty methods, needed because they're triggered from geocoding.rb
@@ -101,6 +102,8 @@ module Carto
       def geocode(data_block)
         data_block.each do |row|
           response = fetch_from_gme(row[:searchtext])
+          # If we get an error we get nil so we pass to the next row
+          next if response.nil?
           if response['status'] != 'OK'
             @empty_processed_rows += 1
             row.merge!(cartodb_georef_status: false)
@@ -166,6 +169,7 @@ module Carto
       rescue => e
         CartoDB.notify_error('Error geocoding using GME', error: e.backtrace.join('\n'), search_text: search_text)
         @failed_processed_rows += 1
+        nil
       end
     end
   end

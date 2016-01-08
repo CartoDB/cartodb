@@ -31,7 +31,6 @@ module CartoDB
       get_cache_results
       create_temp_table
       load_results_to_temp_table
-      @total_rows = connection.select.from(temp_table_name).count.to_i
       @hits = connection.select.from(temp_table_name).where('longitude is not null and latitude is not null').count.to_i
       copy_results_to_table
     rescue => e
@@ -39,7 +38,7 @@ module CartoDB
     ensure
       @usage_metrics.incr(:geocoder_cache, :total_requests, @total_rows)
       @usage_metrics.incr(:geocoder_cache, :success_responses, @hits)
-      @usage_metrics.incr(:geocoder_cache, :empty_responses, @total_rows - @hits)
+      @usage_metrics.incr(:geocoder_cache, :empty_responses, (@total_rows - @hits))
       @usage_metrics.incr(:geocoder_cache, :failed_responses, @failed_rows)
     end
 
@@ -53,6 +52,7 @@ module CartoDB
             WHERE cartodb_georef_status IS NULL
             LIMIT #{limit} OFFSET #{count * @batch_size}
         }).all
+        @total_rows += rows.size
         sql   = "WITH addresses(address) AS (VALUES "
         sql << rows.map { |r| "('#{r[:searchtext]}')" }.join(',')
         sql << ") SELECT DISTINCT ON(geocode_string) st_x(g.the_geom) longitude, st_y(g.the_geom) latitude,g.geocode_string FROM addresses a INNER JOIN #{sql_api[:table_name]} g ON md5(g.geocode_string)=a.address"

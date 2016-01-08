@@ -43,10 +43,11 @@ module CartoDB
       process_results if geocoder.status == 'completed'
       cache.store unless cache_disabled?
     ensure
+      total_requests = geocoder.successful_processed_rows + geocoder.empty_processed_rows + geocoder.failed_processed_rows
       @usage_metrics.incr(:geocoder_here, :success_responses, geocoder.successful_processed_rows)
       @usage_metrics.incr(:geocoder_here, :empty_responses, geocoder.empty_processed_rows)
       @usage_metrics.incr(:geocoder_here, :failed_responses, geocoder.failed_processed_rows)
-      @usage_metrics.incr(:geocoder_here, :total_requests, geocoder.processed_rows)
+      @usage_metrics.incr(:geocoder_here, :total_requests, total_requests)
     end
 
     # TODO: make the geocoders update status directly in the model

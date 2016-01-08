@@ -269,7 +269,6 @@ describe Carto::UserCreation do
       user_creation = Carto::UserCreation.new_user_signup(user_data).with_options(created_through_api: true)
       user_creation.next_creation_step until user_creation.finished?
     end
-
   end
 
   describe 'organization overquota email' do

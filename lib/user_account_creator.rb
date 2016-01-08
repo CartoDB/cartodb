@@ -87,8 +87,7 @@ module CartoDB
     def enqueue_creation(current_controller)
       build
 
-      user_creation = Carto::UserCreation.new_user_signup(@user).
-                                          with_invitation_token(@invitation_token)
+      user_creation = Carto::UserCreation.new_user_signup(@user).with_invitation_token(@invitation_token)
 
       user_creation = user_creation.with_options(created_through_api: true) if @created_through_api
 

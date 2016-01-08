@@ -111,7 +111,7 @@ class Carto::UserCreation < ActiveRecord::Base
   end
 
   def load_options
-    self.options.blank? ? {} : JSON.load(self.options).symbolize_keys
+    options.blank? ? {} : JSON.load(options).symbolize_keys
   end
 
   def has_valid_invitation?

@@ -19,17 +19,25 @@ module.exports = cdb.core.View.extend({
   },
 
   render: function () {
-    this.$el.html(template());
+    if (this.model.dataviewModel) {
+      this.$el.html(template());
+    } else {
+      this.$el.empty();
+    }
     return this;
   },
 
   _initBinds: function () {
-    this.model.bind('error', this.show, this);
-    this.model.bind('loading', this.hide, this);
+    var m = this.model.dataviewModel;
+    if (m) {
+      m.bind('error', this.show, this);
+      m.bind('loading', this.hide, this);
+      this.add_related_model(m);
+    }
   },
 
   _onRefreshClick: function () {
-    this.model.refresh();
+    this.model.dataviewModel.refresh();
   },
 
   show: function () {

@@ -1,19 +1,13 @@
 var cdb = require('cartodb.js');
-var CategoryFilter = require('../../../src/windshaft/filters/category');
-var CategoryDataviewModel = require('../../../src/dataviews/category-dataview-model');
 var CategoryWidgetModel = require('../../../src/widgets/category/category-widget-model');
 var CategoryContentView = require('../../../src/widgets/category/content-view');
 
 describe('widgets/category/content-view', function () {
   beforeEach(function () {
-    this.filter = new CategoryFilter();
-    this.dataviewModel = new CategoryDataviewModel({
-      id: 'widget_3'
-    }, {
-      filter: this.filter,
-      layer: new cdb.core.Model()
+    var vis = cdb.createVis(document.createElement('div'), {
+      layers: [{type: 'torque'}]
     });
-
+    this.dataviewModel = vis.dataviewsFactory.createCategoryDataview(vis.map.layers.first(), {});
     this.model = new CategoryWidgetModel({
       title: 'Categories of something'
     }, {

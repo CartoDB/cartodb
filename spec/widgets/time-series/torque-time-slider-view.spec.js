@@ -1,15 +1,14 @@
 var cdb = require('cartodb.js');
-var HistogramDataviewModel = require('../../../src/dataviews/histogram-dataview-model');
 var HistogramChartView = require('../../../src/widgets/histogram/chart');
 var TorqueTimeSliderView = require('../../../src/widgets/time-series/torque-time-slider-view');
 
 describe('widgets/time-series/torque-time-slider-view', function () {
   beforeEach(function () {
-    this.model = new HistogramDataviewModel({
+    var vis = cdb.createVis(document.createElement('div'), {
+      layers: [{type: 'torque'}]
+    });
+    this.model = vis.dataviewsFactory.createHistogramDataview(vis.map.layers.first(), {
       bins: 256
-    }, {
-      filter: new cdb.core.Model(),
-      layer: new cdb.core.Model()
     });
     this.torqueLayerModel = new cdb.geo.TorqueLayer({
       isRunning: false,

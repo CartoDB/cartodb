@@ -1,12 +1,12 @@
-var CategoryDataviewModel = require('../../../src/dataviews/category-dataview-model');
+var cdb = require('cartodb.js');
 var CategoryWidgetModel = require('../../../src/widgets/category/category-widget-model');
-var CategoryFilter = require('../../../src/windshaft/filters/category');
 
 describe('widgets/category/category-widget-model', function () {
   beforeEach(function () {
-    this.dataviewModel = new CategoryDataviewModel({}, {
-      filter: new CategoryFilter()
+    var vis = cdb.createVis(document.createElement('div'), {
+      layers: [{type: 'torque'}]
     });
+    this.dataviewModel = vis.dataviewsFactory.createCategoryDataview(vis.map.layers.first(), {});
     this.model = new CategoryWidgetModel({}, {
       dataviewModel: this.dataviewModel
     });

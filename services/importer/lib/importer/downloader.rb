@@ -390,7 +390,7 @@ module CartoDB
 
       def name_in(url)
         parsed_filepath = URI.parse(url).path.to_s
-        url_basename = File.basename(parsed_path)
+        url_basename = File.basename(parsed_filepath)
         extension = File.extname(url_basename)
 
         if (!url_basename.empty? && SUPPORTED_EXTENSIONS.include?(extension))

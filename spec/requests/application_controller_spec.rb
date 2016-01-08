@@ -115,5 +115,48 @@ describe ApplicationController do
       end
     end
 
+    describe 'auto autentication configuration' do
+      before(:each) do
+        stub_http_header_authentication_configuration('auto')
+      end
+
+      it 'loads the dashboard for a known user id' do
+        stub_load_common_data
+        get dashboard_url, {}, authentication_headers($user_1.id)
+        response.status.should == 200
+        response.body.should_not include("Login to Carto")
+      end
+
+      it 'loads the dashboard for a known user username' do
+        stub_load_common_data
+        get dashboard_url, {}, authentication_headers($user_1.username)
+        response.status.should == 200
+        response.body.should_not include("Login to Carto")
+      end
+
+      it 'loads the dashboard for a known user email' do
+        stub_load_common_data
+        get dashboard_url, {}, authentication_headers($user_1.email)
+        response.status.should == 200
+        response.body.should_not include("Login to Carto")
+      end
+
+      it 'does not load the dashboard for an unknown user id' do
+        get dashboard_url, {}, authentication_headers(UUIDTools::UUID.timestamp_create.to_s)
+        response.status.should == 302
+      end
+
+      it 'does not load the dashboard for an unknown user username' do
+        get dashboard_url, {}, authentication_headers("unknownuser")
+        response.status.should == 302
+      end
+
+      it 'does not load the dashboard for an unknown user email' do
+        get dashboard_url, {}, authentication_headers("wadus@wadus.com")
+        response.status.should == 302
+      end
+
+    end
+
   end
 end

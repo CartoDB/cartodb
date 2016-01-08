@@ -6,17 +6,10 @@ describe ApplicationController do
   # This filter should always be invoked if http_header_authentication is set,
   # tests are based in dashboard requests because of genericity.
   describe '#http_header_authentication' do
-    let(:authenticated_header) do
-      'auth_header'
-    end
+    let(:authenticated_header) { 'auth_header' }
 
-    let(:authenticated_headers) do
-      { "#{authenticated_header}" => $user_1.email }
-    end
-
-    let(:wrong_authenticated_headers) do
-      { "#{authenticated_header}" => 'wadus@wadus.com' }
-    end
+    let(:authenticated_email_header) { { "#{authenticated_header}" => $user_1.email } }
+    let(:wrong_authenticated_email_header) { { "#{authenticated_header}" => 'wadus@wadus.com' } }
 
     def stub_http_header_authentication_configuration
       Cartodb.stubs(:get_config)
@@ -30,7 +23,7 @@ describe ApplicationController do
     it 'is triggered if http_header_authentication is configured and header is sent' do
       stub_http_header_authentication_configuration
       ApplicationController.any_instance.expects(:http_header_authentication)
-      get dashboard_url, {}, authenticated_headers
+      get dashboard_url, {}, authenticated_email_header
     end
 
     it 'is not triggered if http_header_authentication is configured and header is not set' do
@@ -42,20 +35,20 @@ describe ApplicationController do
     it 'is not triggered if http_header_authentication is not configured' do
       ApplicationController.any_instance.expects(:http_header_authentication).never
       get dashboard_url, {}, {}
-      get dashboard_url, {}, authenticated_headers
+      get dashboard_url, {}, authenticated_email_header
     end
 
-    it 'loads the dashboard for a known user' do
+    it 'loads the dashboard for a known user email' do
       stub_load_common_data
       stub_http_header_authentication_configuration
-      get dashboard_url, {}, authenticated_headers
+      get dashboard_url, {}, authenticated_email_header
       response.status.should == 200
       response.body.should_not include("Login to Carto")
     end
 
-    it 'does not load the dashboard for an unknown user' do
+    it 'does not load the dashboard for an unknown user email' do
       stub_http_header_authentication_configuration
-      get dashboard_url, {}, wrong_authenticated_headers
+      get dashboard_url, {}, wrong_authenticated_email_header
     end
   end
 end

@@ -214,6 +214,10 @@ WORKING_SPECS_9 = \
   $(NULL)
   # spec/models/synchronization/collection_spec.rb not working right now \
 
+# This batch needs separation from Rails
+WORKING_SPECS_UNIT = \
+  spec/lib/carto/http_header_authentication_spec.rb
+
 # This class must be tested isolated as pollutes namespace
 WORKING_SPECS_carto_db_class = \
 	spec/helpers/carto_db_spec.rb \
@@ -245,6 +249,8 @@ check-7:
 	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_7)
 check-9:
 	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_9)
+check-unit:
+	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_UNIT)
 check-carto-db-class:
 	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_carto_db_class)
 check-integrations:
@@ -252,7 +258,7 @@ check-integrations:
 
 check-external: prepare-test-db check-integrations
 
-check-prepared: check-1 check-2 check-4 check-5 check-7 check-9 check-carto-db-class
+check-prepared: check-1 check-2 check-4 check-5 check-7 check-9 check-unit check-carto-db-class
 
 check: prepare-test-db check-prepared
 check-frontend:

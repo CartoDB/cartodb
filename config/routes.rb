@@ -358,6 +358,7 @@ CartoDB::Application.routes.draw do
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:visualization_id/overlays'     => 'overlays#index',    as: :api_v1_visualizations_overlays_index,  constraints: { visualization_id: /[^\/]+/ }
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:visualization_id/overlays/:id' => 'overlays#show',     as: :api_v1_visualizations_overlays_show,   constraints: { visualization_id: /[^\/]+/ }
 
+    get    '(/user/:user_domain)(/u/:user_domain)/api/v1/synchronizations'                => 'synchronizations#index',     as: :api_v1_synchronizations_index
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1/synchronizations/:id'            => 'synchronizations#show',     as: :api_v1_synchronizations_show
     # INFO: sync_now is public API
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1/synchronizations/:id/sync_now'   => 'synchronizations#syncing?', as: :api_v1_synchronizations_syncing
@@ -385,10 +386,10 @@ CartoDB::Application.routes.draw do
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/:id/users' => 'organizations#users', as: :api_v1_organization_users, constraints: { id: /[^\/]+/ }
 
     # Organization user management
-    get '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/users' => 'organization_users#show', as: :api_v1_organization_users_show
-    post '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/users' => 'organization_users#create', as: :api_v1_organization_users_create
-    delete '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/users' => 'organization_users#destroy', as: :api_v1_organization_users_delete
-    put '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/users' => 'organization_users#update', as: :api_v1_organization_users_update
+    post '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/:name/users' => 'organization_users#create', as: :api_v1_organization_users_create
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/:name/users/:u_username' => 'organization_users#show', as: :api_v1_organization_users_show
+    delete '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/:name/users/:u_username' => 'organization_users#destroy', as: :api_v1_organization_users_delete
+    put '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/:name/users/:u_username' => 'organization_users#update', as: :api_v1_organization_users_update
 
     # Groups
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/:organization_id/groups' => 'groups#index', as: :api_v1_organization_groups, constraints: { organization_id: /[^\/]+/ }

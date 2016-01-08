@@ -26,18 +26,7 @@ module Carto
       visualization = Carto::Visualization.where(id: visualization_id).first
       raise "Visualization with id #{visualization_id} not found" unless visualization
 
-      vizjson_options = {
-        full: true,
-        user_name: visualization.user.username,
-        user_api_key: visualization.user.api_key,
-        user: visualization.user,
-        viewer_user: visualization.user
-      }
-
-      data = CartoDB::Visualization::VizJSON.new(
-        Carto::Api::VisualizationVizJSONAdapter.new(visualization, $tables_metadata), vizjson_options, Cartodb.config)
-                                            .to_export_poro(export_version)
-                                            .to_json
+      data = export_to_json(visualization)
 
       backup_present = Carto::VisualizationBackup.where(
         username: visualization.user.username,
@@ -61,6 +50,21 @@ module Carto
       raise VisualizationsExportServiceError.new("Export error: #{exception.message} #{exception.backtrace}")
     end
 
+    def export_to_json(visualization)
+      vizjson_options = {
+        full: true,
+        user_name: visualization.user.username,
+        user_api_key: visualization.user.api_key,
+        user: visualization.user,
+        viewer_user: visualization.user
+      }
+
+      CartoDB::Visualization::VizJSON.new(
+        Carto::Api::VisualizationVizJSONAdapter.new(visualization, $tables_metadata), vizjson_options, Cartodb.config)
+                                            .to_export_poro(export_version)
+                                            .to_json
+    end
+
     def import(visualization_id, skip_version_check = false)
       restore_result = restore_backup(visualization_id, skip_version_check)
       remove_backup(visualization_id) if restore_result
@@ -69,6 +73,39 @@ module Carto
       raise export_error
     rescue => exception
       raise VisualizationsExportServiceError.new("Import error: #{exception.message} #{exception.backtrace}")
+    end
+
+    def restore_from_json(dump_data)
+      user = ::User.where(id: dump_data["owner"]["id"]).first
+
+      base_layer = create_base_layer(user, dump_data)
+
+      map = create_map(user, base_layer)
+
+      add_data_layers(map, dump_data)
+
+      add_labels_layer(map, base_layer, dump_data)
+
+      set_map_data(map, dump_data)
+
+      description = dump_data["description"]
+
+      default_privacy = CartoDB::Visualization::Member::PRIVACY_LINK
+      privacy = user.valid_privacy?(default_privacy) ? default_privacy : CartoDB::Visualization::Member::PRIVACY_PUBLIC
+      visualization = create_visualization(
+        id: dump_data["id"],
+        name: dump_data["title"],
+        description: (description.nil? || description.empty?) ? "" : CGI.unescapeHTML(description),
+        type: CartoDB::Visualization::Member::TYPE_DERIVED,
+        privacy: privacy,
+        user_id: user.id,
+        map_id: map.id,
+        kind: CartoDB::Visualization::Member::KIND_GEOM
+      )
+
+      add_overlays(visualization, dump_data)
+
+      true
     end
 
     private
@@ -102,33 +139,7 @@ module Carto
 
       dump_data = get_restore_data(visualization_id, skip_version_check)
 
-      user = ::User.where(id: dump_data["owner"]["id"]).first
-
-      base_layer = create_base_layer(user, dump_data)
-
-      map = create_map(user, base_layer)
-
-      add_data_layers(map, dump_data)
-
-      add_labels_layer(map, base_layer, dump_data)
-
-      set_map_data(map, dump_data)
-
-      description = dump_data["description"]
-      visualization = create_visualization(
-        id: dump_data["id"],
-        name: dump_data["title"],
-        description: (description.nil? || description.empty?) ? "" : CGI.unescapeHTML(description),
-        type: CartoDB::Visualization::Member::TYPE_DERIVED,
-        privacy: CartoDB::Visualization::Member::PRIVACY_LINK,
-        user_id: user.id,
-        map_id: map.id,
-        kind: CartoDB::Visualization::Member::KIND_GEOM
-      )
-
-      add_overlays(visualization, dump_data)
-
-      true
+      restore_from_json(dump_data)
     end
 
     def get_restore_data(visualization_id, skip_version_check)

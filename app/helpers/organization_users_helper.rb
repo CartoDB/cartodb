@@ -2,8 +2,27 @@
 
 module OrganizationUsersHelper
   def load_organization
-    @organization = current_viewer.organization
-    render_jsonp('User has no organization', 404) if @organization.nil?
+    @organization = Organization.where(name: params[:name]).first
+    if @organization.nil?
+      render_jsonp({}, 401) # Not giving clues to guessers via 404
+      return false
+    end
+  end
+
+  def owners_only
+    unless current_viewer_is_owner?
+      render_jsonp({}, 401)
+      return false
+    end
+  end
+
+  def load_user
+    @user = ::User.where(username: params[:u_username], organization: @organization).first
+
+    if @user.nil?
+      render_jsonp("No user with username '#{params[:u_username]}' in '#{@organization.name}'", 404)
+      return false
+    end
   end
 
   def current_viewer_is_owner?

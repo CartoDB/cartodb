@@ -175,7 +175,7 @@ class Carto::UserCreation < ActiveRecord::Base
     @cartodb_user.soft_geocoding_limit = soft_geocoding_limit unless soft_geocoding_limit.nil?
     @cartodb_user.google_sign_in = google_sign_in
     @cartodb_user.invitation_token = invitation_token
-    @cartodb_user.enable_account_token = ::User.make_token if requires_validation_email? && !created_via_api?
+    @cartodb_user.enable_account_token = ::User.make_token if requires_validation_email?
     unless @promote_to_organization_owner
       organization = ::Organization.where(id: organization_id).first
       raise "Trying to copy organization settings from one without owner" if organization.owner.nil?

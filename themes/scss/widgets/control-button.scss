@@ -3,12 +3,10 @@
 @import '../variables/sizes';
 @import '../variables/mixins';
 
-$size: 24px;
-
 .CDB-Widget-controlButton {
-  width: $size;
-  min-width: $size; // to avoid the element to be "squashed" due to limited space in container
-  height: $size;
+  width: $baseSize * 3;
+  min-width: $baseSize * 3; // to avoid the element to be "squashed" due to limited space in container
+  height: $baseSize * 3;
   border: 1px solid transparent; // border used for :hover, color set in theme
   border-radius: 50%;
   &:hover {
@@ -24,11 +22,11 @@ $size: 24px;
 }
 .CDB-Widget-controlButton-icon {
   display: block;
-  width: 8px;
-  height: 8px;
+  width: $baseSize;
+  height: $baseSize;
 }
 .CDB-Widget-controlButton-icon--play {
-  width: 6px;
+  width: $baseSize - 2;
   box-sizing: border-box; // for border to appear within the box (to appear as a triangle)
   margin-left: 1px; // avoid optical illusion; make it appear horizontal center
   border-top: 4px dotted transparent; // use dotted type for lines to not be jagged in FF
@@ -41,12 +39,12 @@ $size: 24px;
   &:before,
   &:after {
     display: inline-block;
-    width: 2px;
-    height: 8px;
-    border-radius: 3px;
+    width: $baseSize / 4;
+    height: $baseSize;
+    border-radius: $baseSize;
     content: '';
   }
   &:after {
-    margin-left: 2px; // creates the space between :before and :after
+    margin-left: $baseSize / 4; // creates the space between :before and :after
   }
 }

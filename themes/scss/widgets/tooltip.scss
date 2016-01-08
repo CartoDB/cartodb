@@ -2,6 +2,7 @@
 // ----------------------------------------------
 
 @import '../variables/mixins';
+@import '../variables/sizes';
 
 .CDB-Widget-tooltip {
   @include css3-prefix(user-select, none);
@@ -12,11 +13,8 @@
   max-width: 120px;
   padding: 5px;
   box-sizing: border-box;
-  border-radius: 3px;
-  background: #000;
-  color: #FFF;
-  font-family: 'Open Sans';
-  font-size: 10px;
+  border-radius: $baseSize / 2;
+  font: $sFontSize-smaller 'Open Sans';
   text-align: center;
   pointer-events: none;
   z-index: 10;
@@ -25,12 +23,13 @@
 .CDB-Widget-tooltip:after {
   display: inline-block;
   position: absolute;
-  bottom: -3px;
+  bottom: $baseSize / 2;
   left: 50%;
   margin-left: -7px;
-  border-top: 5px solid #000;
-  border-right: 5px solid transparent;
-  border-left: 5px solid transparent;
+  border-right: $baseSize / 2 solid transparent;
+  border-left: $baseSize / 2 solid transparent;
+  border-top-width: $baseSize / 2;
+  border-top-style: solid;
   content: '';
 }
 

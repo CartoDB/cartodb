@@ -7,7 +7,7 @@
 .CDB-Widget-filter {
   display: block;
   max-height: 200px;
-  margin: 5px 0 8px;
+  margin: 5px 0 $baseSize;
   transition: max-height 200ms ease-in;
 }
 .CDB-Widget-filter.is-hidden {
@@ -21,7 +21,7 @@
   @include align-items(center);
 }
 .CDB-Widget-filterButton {
-  margin-right: 8px;
+  margin-right: $baseSize;
   &:last-child {
     margin-right: 0;
   }

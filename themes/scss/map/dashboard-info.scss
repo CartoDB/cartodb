@@ -74,9 +74,7 @@
   border: 2px solid #FFF;
   border-radius: 50%;
   background: url('../img/dashboard-show.svg') no-repeat center center;
-  &:hover {
-    cursor: pointer;
-  }
+  cursor: pointer;
 }
 .CDB-Dashboard-infoUpdate {
   margin-bottom: 8px;

@@ -5,7 +5,7 @@
 @import '../variables/mixins';
 
 .CDB-Widget-form {
-  height: 24px;
+  height: $baseSize * 3;
 }
 .CDB-Widget-textInput {
   border: none;
@@ -23,22 +23,21 @@
   font-weight: $sFontWeight-lighter;
 }
 
-$size: 8px;
 .CDB-Widget-checkbox {
   display: inline;
-  width: $size;
-  min-width: $size;
-  max-width: $size;
-  height: $size;
-  margin-top: 2px;
+  width: $baseSize;
+  min-width: $baseSize;
+  max-width: $baseSize;
+  height: $baseSize;
+  margin-top: $baseSize / 4;
   border: 1px solid transparent;
-  border-radius: 2px;
+  border-radius: $baseSize / 4;
   vertical-align: top;
 }
 .CDB-Widget-checkbox.is-checked {
-  width: $size + 2;
-  min-width: $size + 2;
-  max-width: $size + 2;
-  height: $size + 2;
+  width: $baseSize + 2;
+  min-width: $baseSize + 2;
+  max-width: $baseSize + 2;
+  height: $baseSize + 2;
   border: 0;
 }

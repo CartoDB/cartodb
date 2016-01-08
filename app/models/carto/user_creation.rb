@@ -106,12 +106,12 @@ class Carto::UserCreation < ActiveRecord::Base
     self
   end
 
-  def created_through_api?
-    load_options[:created_through_api]
-  end
-
   def load_options
     options.blank? ? {} : JSON.load(options).symbolize_keys
+  end
+
+  def created_through_api?
+    load_options[:created_through_api]
   end
 
   def has_valid_invitation?

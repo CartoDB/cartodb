@@ -386,10 +386,9 @@ describe('geo/ui/infowindow', function() {
     });
 
     it("should add the image cover class in the custom template", function() {
-      model.set('template', '<div class="js-infowindow" data-cover="true"><div class="js-cover" style="height: 123px"><img src="//fake" style="height: 100px"></div><div class="js-hook"></div></div>');
+      model.set('template', '<div class="js-infowindow has-title has-header-image is-header" data-cover="true"><div class="js-cover" style="height: 123px"><img src="//fake" style="height: 100px"></div><div class="js-hook"></div></div>');
       expect(view._containsCover()).toEqual(true);
       expect(view.$(".CDB-infowindow-media-item").length).toEqual(1);
-      expect(view.$(".js-cover").height()).toEqual(100 - view.options.hookHeight);
     });
 
     it("should setup the hook correctly", function() {
@@ -403,22 +402,32 @@ describe('geo/ui/infowindow', function() {
       expect(view._containsCover()).toEqual(true);
     });
 
+    it("should render the loader by default", function() {
+      model.set('template', '<div class="js-infowindow"><div class="js-inner"></div></div>');
+      expect(view.$el.find(".js-loader").length).toEqual(1);
+    });
+
     it("should append the image", function() {
       model.set('template', '<div class="js-infowindow" data-cover="true"><div class="js-cover"></div></div>');
       expect(view.$el.find("img").length).toEqual(1);
     });
 
-    it("if the image is invalid it shouldn't append it", function() {
+    it("shouldn't append an image if it's not valid", function() {
       model.set("content", { fields: fieldsWithoutURL });
       model.set('template', '<div class="js-infowindow header" data-cover="true"><div class="js-cover"></div></div>');
       expect(view.$el.find("img").length).toEqual(0);
     });
 
-    it("if the theme doesn't have cover don't append the image", function() {
+    it("shouldn't append the image if the theme doesn't have cover", function() {
       model.set("content", { fields: fields });
       model.set('template', '<div class="js-cover"></div>');
       expect(view.$el.find("img").length).toEqual(0);
     });
 
+    it("shouldn append a non-valid error message if the image is not valid", function() {
+      model.set("content", { fields: fieldsWithoutURL });
+      model.set('template', '<div class="js-infowindow header" data-cover="true"><div class="js-cover"></div></div>');
+      expect(view.$el.find(".CDB-infowindow-fail").length).toEqual(1);
+    });
   });
 });

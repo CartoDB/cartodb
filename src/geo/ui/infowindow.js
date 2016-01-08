@@ -377,11 +377,11 @@ var Infowindow = View.extend({
     var $img = $cover.find('img');
     var url = this._getCoverURL();
 
-    if (!this._isValidURL(url)) {
+    if (this._isValidURL(url)) {
+      this._clearInfowindowImageError();
+    } else {
       this._showInfowindowImageError();
       return;
-    } else {
-      this._clearInfowindowImageError();
     }
 
     if ($img.length > 0) {

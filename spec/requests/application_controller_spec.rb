@@ -62,8 +62,6 @@ describe ApplicationController do
     end
 
     describe 'username autentication configuration' do
-      let(:wrong_authenticated_username_header) { { "#{authenticated_header}" => 'wadus' } }
-
       it 'loads the dashboard for a known user username' do
         stub_load_common_data
         stub_http_header_authentication_configuration('username')
@@ -73,8 +71,23 @@ describe ApplicationController do
       end
 
       it 'does not load the dashboard for an unknown user username' do
-        stub_http_header_authentication_configuration
+        stub_http_header_authentication_configuration('username')
         get dashboard_url, {}, authentication_headers("unknownuser")
+      end
+    end
+
+    describe 'id autentication configuration' do
+      it 'loads the dashboard for a known user id' do
+        stub_load_common_data
+        stub_http_header_authentication_configuration('id')
+        get dashboard_url, {}, authentication_headers($user_1.id)
+        response.status.should == 200
+        response.body.should_not include("Login to Carto")
+      end
+
+      it 'does not load the dashboard for an unknown user id' do
+        stub_http_header_authentication_configuration('id')
+        get dashboard_url, {}, authentication_headers(UUIDTools::UUID.timestamp_create.to_s)
       end
     end
 

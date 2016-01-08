@@ -8,12 +8,18 @@ describe ApplicationController do
   describe '#http_header_authentication' do
     let(:authenticated_header) { 'auth_header' }
 
-    let(:authenticated_email_header) { { "#{authenticated_header}" => $user_1.email } }
-    let(:wrong_authenticated_email_header) { { "#{authenticated_header}" => 'wadus@wadus.com' } }
+    def authentication_headers(value = $user_1.email)
+      { "#{authenticated_header}" => value }
+    end
 
-    def stub_http_header_authentication_configuration
+    def stub_http_header_authentication_configuration(field = 'email')
       Cartodb.stubs(:get_config)
-      Cartodb.expects(:get_config).with(:http_header_authentication, 'header').returns(authenticated_header).at_least_once
+      Cartodb.expects(:get_config).
+        with(:http_header_authentication, 'header').
+        returns(authenticated_header).at_least_once
+      Cartodb.stubs(:get_config).
+        with(:http_header_authentication, 'field').
+        returns(field)
     end
 
     def stub_load_common_data
@@ -24,7 +30,7 @@ describe ApplicationController do
       it 'enabled if http_header_authentication is configured and header is sent' do
         stub_http_header_authentication_configuration
         ApplicationController.any_instance.expects(:http_header_authentication)
-        get dashboard_url, {}, authenticated_email_header
+        get dashboard_url, {}, authentication_headers
       end
 
       it 'disabled if http_header_authentication is configured and header is not set' do
@@ -36,7 +42,7 @@ describe ApplicationController do
       it 'disabled if http_header_authentication is not configured' do
         ApplicationController.any_instance.expects(:http_header_authentication).never
         get dashboard_url, {}, {}
-        get dashboard_url, {}, authenticated_email_header
+        get dashboard_url, {}, authentication_headers
       end
     end
 
@@ -44,14 +50,31 @@ describe ApplicationController do
       it 'loads the dashboard for a known user email' do
         stub_load_common_data
         stub_http_header_authentication_configuration
-        get dashboard_url, {}, authenticated_email_header
+        get dashboard_url, {}, authentication_headers($user_1.email)
         response.status.should == 200
         response.body.should_not include("Login to Carto")
       end
 
       it 'does not load the dashboard for an unknown user email' do
         stub_http_header_authentication_configuration
-        get dashboard_url, {}, wrong_authenticated_email_header
+        get dashboard_url, {}, authentication_headers('wadus@wadus.com')
+      end
+    end
+
+    describe 'username autentication configuration' do
+      let(:wrong_authenticated_username_header) { { "#{authenticated_header}" => 'wadus' } }
+
+      it 'loads the dashboard for a known user username' do
+        stub_load_common_data
+        stub_http_header_authentication_configuration('username')
+        get dashboard_url, {}, authentication_headers($user_1.username)
+        response.status.should == 200
+        response.body.should_not include("Login to Carto")
+      end
+
+      it 'does not load the dashboard for an unknown user username' do
+        stub_http_header_authentication_configuration
+        get dashboard_url, {}, authentication_headers("unknownuser")
       end
     end
 

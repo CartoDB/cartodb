@@ -258,8 +258,9 @@ defaults: &defaults
   users_dumps:
     service:
       port: 00000
-  http_authentication:
+  http_header_authentication:
     header:
+    field: # email / username / id
   oauth:
     # If the client_id/app_key is not set won't appear at the UI. @see application_helper.rb -> frontend_config
     # Must be the same as CartoDB::Datasources::xxxx DATASOURCE_NAME constants

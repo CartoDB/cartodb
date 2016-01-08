@@ -1,5 +1,6 @@
 # coding: UTF-8
 require_relative '../../lib/cartodb/profiler.rb'
+require_dependency 'carto/http_header_authentication'
 
 class ApplicationController < ActionController::Base
   include ::SslRequirement
@@ -9,6 +10,7 @@ class ApplicationController < ActionController::Base
 
   around_filter :wrap_in_profiler
 
+  before_filter :http_header_authentication, if: :http_header_authentication?
   before_filter :store_request_host
   before_filter :ensure_user_organization_valid
   before_filter :ensure_org_url_if_org_user
@@ -58,6 +60,11 @@ class ApplicationController < ActionController::Base
 
   def is_https?
     request.protocol == 'https://'
+  end
+
+  def http_header_authentication
+    authenticate(:http_header_authentication, :scope => CartoDB.extract_subdomain(request))
+    validate_session(current_user) if current_user
   end
 
   # To be used only when domainless urls are present, to replicate sent subdomain
@@ -322,5 +329,11 @@ class ApplicationController < ActionController::Base
   end
 
   protected :current_user
+
+  private
+
+  def http_header_authentication?
+    Carto::HttpHeaderAuthentication.new.valid?(request)
+  end
 
 end

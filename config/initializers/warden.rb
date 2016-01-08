@@ -156,6 +156,26 @@ Warden::Strategies.add(:api_key) do
   end
 end
 
+Warden::Strategies.add(:http_header_authentication) do
+  def valid?
+    Carto::HttpHeaderAuthentication.new.valid?(request)
+  end
+
+  def authenticate!
+    begin
+      header = Carto::HttpHeaderAuthentication.new.header_value(request.headers)
+      return fail! unless header.present?
+
+      user = ::User.where(email: header).first
+      return fail! unless user.present?
+
+      success!(user)
+    rescue
+      return fail!
+    end
+  end
+end
+
 # @see ApplicationController.update_session_security_token
 Warden::Manager.after_set_user except: :fetch do |user, auth, opts|
   auth.session(opts[:scope])[:sec_token] = Digest::SHA1.hexdigest(user.crypted_password)

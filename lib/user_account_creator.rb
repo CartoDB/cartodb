@@ -55,7 +55,7 @@ module CartoDB
     end
 
     def with_api
-      @created_through_api = true
+      @created_via_api = true
       self
     end
 
@@ -89,7 +89,7 @@ module CartoDB
 
       user_creation = Carto::UserCreation.new_user_signup(@user).with_invitation_token(@invitation_token)
 
-      user_creation = user_creation.with_options(created_through_api: true) if @created_through_api
+      user_creation = user_creation.with_api if @created_via_api
 
       user_creation.save
 

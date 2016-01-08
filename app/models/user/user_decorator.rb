@@ -77,7 +77,10 @@ module CartoDB
         needs_password_confirmation: self.needs_password_confirmation?
       }
 
-      data[:organization] = self.organization.to_poro if self.organization.present?
+      if self.organization.present?
+        data[:organization] = self.organization.to_poro
+        data[:organization][:available_quota_for_user] = self.organization.unassigned_quota + self.quota_in_bytes
+      end
 
       if !groups.nil?
         data[:groups] = self.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro }

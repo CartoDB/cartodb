@@ -62,8 +62,14 @@
 }
 .CDB-Widget-body.is-collapsed {
   height: 22px;
-  overflow: hidden;
 }
+
+.CDB-Widget-body.is-collapsed .CDB-Widget-content,
+.CDB-Widget-body.is-collapsed .CDB-Widget-info,
+.CDB-Widget-body.is-collapsed .CDB-Widget-nav {
+  display: none;
+}
+
 
 // Widget media query
 @include media-query() {

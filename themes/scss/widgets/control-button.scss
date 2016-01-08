@@ -15,17 +15,17 @@
 }
 // The flex layout requires a separate element, because a <button> tag don't support flex in all browsers
 // see https://github.com/philipwalton/flexbugs#9-some-html-elements-cant-be-flex-containers for details
-.CDB-Widget-controlButton-content {
+.CDB-Widget-controlButtonContent {
   @include display-flex();
   @include justify-content(center);
   @include align-items(center);
 }
-.CDB-Widget-controlButton-icon {
+.CDB-Widget-controlButtonIcon {
   display: block;
   width: $baseSize;
   height: $baseSize;
 }
-.CDB-Widget-controlButton-icon--play {
+.CDB-Widget-controlButtonIcon--play {
   width: $baseSize - 2;
   box-sizing: border-box; // for border to appear within the box (to appear as a triangle)
   margin-left: 1px; // avoid optical illusion; make it appear horizontal center
@@ -34,7 +34,7 @@
   border-left-width: 6px;
   border-left-style: solid;
 }
-.CDB-Widget-controlButton-icon--pause {
+.CDB-Widget-controlButtonIcon--pause {
   margin-top: -6px; // to make the :before/:after appear in vertical center
   &:before,
   &:after {

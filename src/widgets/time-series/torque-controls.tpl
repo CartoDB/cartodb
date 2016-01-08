@@ -1,3 +1,3 @@
-<div class="CDB-Widget-controlButton-content">
+<div class="CDB-Widget-controlButtonContent">
   <i class="<%- iconClass %>"></i>
 </div>

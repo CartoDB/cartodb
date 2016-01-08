@@ -19,7 +19,7 @@ module.exports = cdb.core.View.extend({
   render: function () {
     this.$el.html(
       template({
-        iconClass: 'CDB-Widget-controlButton-icon CDB-Widget-controlButton-icon--' + (
+        iconClass: 'CDB-Widget-controlButtonIcon CDB-Widget-controlButtonIcon--' + (
           this.model.get('isRunning')
             ? 'pause'
             : 'play')

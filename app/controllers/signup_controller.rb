@@ -74,12 +74,14 @@ class SignupController < ApplicationController
 
   def create_http_authentication
     authenticator = Carto::HttpHeaderAuthentication.new
-    render_404 and return false unless authenticator.autocreation_enabled?
-    render_500 and return false unless authenticator.autocreation_valid?(request)
-    render_403 and return false unless authenticator.valid?(request)
+    render_404 && return false unless authenticator.autocreation_enabled?
+    render_500 && return false unless authenticator.autocreation_valid?(request)
+    render_403 && return false unless authenticator.valid?(request)
 
-    account_creator = CartoDB::UserAccountCreator.new.with_email_only(authenticator.email(request)).with_created_via(Carto::UserCreation::CREATED_VIA_HTTP_AUTENTICATION)
-    
+    account_creator = CartoDB::UserAccountCreator.new.
+      with_email_only(authenticator.email(request)).
+      with_created_via(Carto::UserCreation::CREATED_VIA_HTTP_AUTENTICATION)
+
     account_creator = account_creator.with_organization(@organization) if @organization
 
     if account_creator.valid?
@@ -87,12 +89,10 @@ class SignupController < ApplicationController
 
       render 'shared/signup_confirmation'
     else
-      byebug
       render_500
     end
   rescue => e
-      byebug
-    CartoDB.notify_exception(e, { new_user: account_creator.user.inspect })
+    CartoDB.notify_exception(e, new_user: account_creator.user.inspect)
     flash.now[:error] = e.message
     render_500
   end
@@ -137,17 +137,17 @@ class SignupController < ApplicationController
       check_signup_errors = Sequel::Model::Errors.new
       @organization.validate_for_signup(check_signup_errors, ::User.new_with_organization(@organization).quota_in_bytes)
       @signup_source = 'Organization'
-      render 'shared/signup_issue' and return false if check_signup_errors.length > 0
+      render 'shared/signup_issue' && return false if check_signup_errors.length > 0
     end
   end
 
   def load_mandatory_organization
     load_organization
-    render_404 and return false unless @organization && @organization.signup_page_enabled
+    render_404 && return false unless @organization && @organization.signup_page_enabled
   end
 
   def disable_if_ldap_configured
-    render_404 and return false if Carto::Ldap::Manager.new.configuration_present?
+    render_404 && return false if Carto::Ldap::Manager.new.configuration_present?
   end
 
 end

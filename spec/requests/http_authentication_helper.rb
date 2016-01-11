@@ -18,7 +18,7 @@ module HttpAuthenticationHelper
 
     config.each do |f, v|
       Cartodb.stubs(:get_config).with(:http_header_authentication, f).
-        returns(enabled ? v: nil)
+        returns(enabled ? v : nil)
     end
 
     config

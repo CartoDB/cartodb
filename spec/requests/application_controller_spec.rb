@@ -1,30 +1,14 @@
 # encoding: utf-8
 
 require_relative '../spec_helper'
+require_relative './http_authentication_helper'
 
 describe ApplicationController do
+  include HttpAuthenticationHelper
+
   # This filter should always be invoked if http_header_authentication is set,
   # tests are based in dashboard requests because of genericity.
   describe '#http_header_authentication' do
-    let(:authenticated_header) { 'auth_header' }
-
-    def authentication_headers(value = $user_1.email)
-      { "#{authenticated_header}" => value }
-    end
-
-    def stub_http_header_authentication_configuration(field = 'email', autocreation = false)
-      Cartodb.stubs(:get_config)
-      Cartodb.expects(:get_config).
-        with(:http_header_authentication, 'header').
-        returns(authenticated_header).at_least_once
-      Cartodb.stubs(:get_config).
-        with(:http_header_authentication, 'field').
-        returns(field)
-      Cartodb.stubs(:get_config).
-        with(:http_header_authentication, 'autocreation').
-        returns(autocreation)
-    end
-
     def stub_load_common_data
       Admin::VisualizationsController.any_instance.stubs(:load_common_data).returns(true)
     end
@@ -51,7 +35,7 @@ describe ApplicationController do
 
     describe 'email autentication' do
       before(:each) do
-        stub_http_header_authentication_configuration('email')
+        stub_http_header_authentication_configuration(field: 'email')
       end
 
       it 'loads the dashboard for a known user email' do
@@ -74,7 +58,7 @@ describe ApplicationController do
 
     describe 'username autentication configuration' do
       before(:each) do
-        stub_http_header_authentication_configuration('username')
+        stub_http_header_authentication_configuration(field: 'username')
       end
 
       it 'loads the dashboard for a known user username' do
@@ -97,7 +81,7 @@ describe ApplicationController do
 
     describe 'id autentication configuration' do
       before(:each) do
-        stub_http_header_authentication_configuration('id')
+        stub_http_header_authentication_configuration(field: 'id')
       end
 
       it 'loads the dashboard for a known user id' do
@@ -120,7 +104,7 @@ describe ApplicationController do
 
     describe 'auto autentication configuration' do
       before(:each) do
-        stub_http_header_authentication_configuration('auto')
+        stub_http_header_authentication_configuration(field: 'auto')
       end
 
       it 'loads the dashboard for a known user id' do
@@ -163,7 +147,7 @@ describe ApplicationController do
     describe 'autocreation' do
       describe 'disabled' do
         before(:each) do
-          stub_http_header_authentication_configuration('auto', false)
+          stub_http_header_authentication_configuration(field: 'auto', autocreation: false)
         end
 
         it 'redirects to login for unknown emails' do
@@ -177,13 +161,11 @@ describe ApplicationController do
 
       describe 'enabled' do
         before(:each) do
-          stub_http_header_authentication_configuration('auto', true)
+          stub_http_header_authentication_configuration(field: 'auto', autocreation: true)
         end
 
-        # TODO: is this what we want?
         it 'redirects to user creation for unknown emails' do
           get dashboard_url, {}, authentication_headers('unknown@company.com')
-          byebug
           response.status.should == 302
           follow_redirect!
           response.status.should == 200

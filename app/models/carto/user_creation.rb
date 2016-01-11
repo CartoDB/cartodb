@@ -2,6 +2,13 @@
 
 class Carto::UserCreation < ActiveRecord::Base
 
+  CREATED_VIA_ORG_LDAP = 'ldap'
+  CREATED_VIA_ORG_SIGNUP = 'org_signup'
+  CREATED_VIA_API = 'api'
+  CREATED_VIA_HTTP_AUTENTICATION = 'http_authentication'
+
+  VALID_CREATED_VIA = [CREATED_VIA_ORG_SIGNUP, CREATED_VIA_API, CREATED_VIA_HTTP_AUTENTICATION]
+
   belongs_to :log, class_name: Carto::Log
   belongs_to :user, class_name: Carto::User
 
@@ -9,7 +16,6 @@ class Carto::UserCreation < ActiveRecord::Base
 
   def self.new_user_signup(user)
     # Normal validation breaks state_machine method generation
-    raise 'User needs an organization' unless user.organization
     raise 'User needs username' unless user.username
     raise 'User needs email' unless user.email
 
@@ -18,11 +24,12 @@ class Carto::UserCreation < ActiveRecord::Base
     user_creation.email = user.email
     user_creation.crypted_password = user.crypted_password
     user_creation.salt = user.salt
-    user_creation.organization_id = user.organization.id
+    user_creation.organization_id = user.organization.nil? ? nil : user.organization.id
     user_creation.quota_in_bytes = user.quota_in_bytes
     user_creation.soft_geocoding_limit = user.soft_geocoding_limit
     user_creation.google_sign_in = user.google_sign_in
     user_creation.log = Carto::Log.new_user_creation
+    user_creation.created_via = CREATED_VIA_ORG_SIGNUP
 
     user_creation
   end
@@ -85,7 +92,7 @@ class Carto::UserCreation < ActiveRecord::Base
 
   # TODO: Shorcut, search for a better solution to detect requirement
   def requires_validation_email?
-    google_sign_in != true && !has_valid_invitation? && !Carto::Ldap::Manager.new.configuration_present? && !created_via_api?
+    google_sign_in != true && !has_valid_invitation? && !Carto::Ldap::Manager.new.configuration_present? && !created_via_api? && !created_via_http_authentication?
   end
 
   def autologin?
@@ -101,13 +108,20 @@ class Carto::UserCreation < ActiveRecord::Base
     self
   end
 
-  def with_api
-    self.created_via_api = true
+  # Maybe some functionality of UserAccountCreator should be moved here to avoid this setter
+  def with_created_via(created_via)
+    raise "#{created_via} is not a valid value: #{VALID_CREATED_VIA.join(', ')}" unless VALID_CREATED_VIA.include?(created_via)
+
+    self.created_via = created_via
     self
   end
 
   def created_via_api?
-    self.created_via_api
+    self.created_via == CREATED_VIA_API
+  end
+
+  def created_via_http_authentication?
+    self.created_via == CREATED_VIA_HTTP_AUTENTICATION
   end
 
   def has_valid_invitation?

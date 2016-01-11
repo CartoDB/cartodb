@@ -24,6 +24,7 @@ WORKING_SPECS_1 = \
 	spec/models/user_table_spec.rb \
   spec/models/layer_spec.rb \
   spec/models/layer/presenter_spec.rb \
+	spec/requests/application_controller_spec.rb \
 	spec/requests/sessions_spec.rb \
   spec/requests/api/json/layer_presenter_spec.rb \
   spec/requests/carto/admin/bi_visualizations_controller_spec.rb \
@@ -58,6 +59,7 @@ WORKING_SPECS_1 = \
   spec/lib/central_spec.rb \
   spec/lib/trending_maps_spec.rb \
   spec/lib/explore_api_spec.rb \
+	spec/lib/user_account_creator_spec.rb \
   spec/lib/carto/http/client_spec.rb \
 	spec/helpers/uuidhelper_spec.rb \
 	spec/helpers/url_validator_spec.rb \
@@ -216,7 +218,8 @@ WORKING_SPECS_9 = \
 
 # This batch needs separation from Rails
 WORKING_SPECS_UNIT = \
-  spec/lib/carto/http_header_authentication_spec.rb
+  spec/lib/carto/http_header_authentication_spec.rb \
+  $(NULL)
 
 # This class must be tested isolated as pollutes namespace
 WORKING_SPECS_carto_db_class = \

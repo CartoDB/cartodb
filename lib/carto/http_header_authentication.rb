@@ -11,7 +11,7 @@ module Carto
     end
 
     def get_user(request)
-      header = header_value(request.headers)
+      header = identity(request) 
       return nil if header.nil? || header.empty?
 
       ::User.where("#{field(request)} = ?", header).first
@@ -19,6 +19,19 @@ module Carto
 
     def autocreation_enabled?
       Cartodb.get_config(:http_header_authentication, 'autocreation') == true
+    end
+
+    def autocreation_valid?(request)
+      autocreation_enabled? && field(request) == 'email'
+    end
+
+    def identity(request)
+      header_value(request.headers)
+    end
+
+    def email(request)
+      raise "You can only fetch email if configuration is set to email or auto and request has an email" unless field(request) == 'email'
+      identity(request)
     end
 
     private
@@ -30,6 +43,7 @@ module Carto
 
     def field_from_value(request)
       value = header_value(request.headers)
+      return nil unless value
 
       if value.include?('@')
         'email'

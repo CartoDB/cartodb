@@ -267,7 +267,7 @@ describe Carto::UserCreation do
       user_data = FactoryGirl.build(:valid_user)
       user_data.organization = @organization
 
-      user_creation = Carto::UserCreation.new_user_signup(user_data).with_api
+      user_creation = Carto::UserCreation.new_user_signup(user_data).with_created_via('api')
       user_creation.next_creation_step until user_creation.finished?
     end
   end

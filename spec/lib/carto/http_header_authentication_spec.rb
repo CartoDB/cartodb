@@ -6,6 +6,7 @@ require 'rspec/mocks'
 require 'rspec/core'
 require 'rspec/expectations'
 require_relative '../../../lib/carto/http_header_authentication'
+require_relative '../../requests/http_authentication_helper'
 
 RSpec.configure do |config|
    config.mock_with :mocha
@@ -20,24 +21,11 @@ class User
 end
 
 describe Carto::HttpHeaderAuthentication do
+  include HttpAuthenticationHelper
+
   EMAIL = "user@cartodb.com"
   USERNAME = "user"
   ID = UUIDTools::UUID.timestamp_create.to_s
-
-  let(:authenticated_header) { 'auth_header' }
-
-  def stub_http_header_authentication_configuration(field = 'email', autocreation = false)
-    Cartodb.stubs(:get_config)
-    Cartodb.stubs(:get_config).
-      with(:http_header_authentication, 'header').
-      returns(authenticated_header)
-    Cartodb.stubs(:get_config).
-      with(:http_header_authentication, 'field').
-      returns(field)
-    Cartodb.stubs(:get_config).
-      with(:http_header_authentication, 'autocreation').
-      returns(autocreation)
-  end
 
   let(:mock_unauthenticated_request) do
     OpenStruct.new(headers: {})
@@ -61,19 +49,19 @@ describe Carto::HttpHeaderAuthentication do
     end
 
     it 'returns false with configuration without header' do
-      stub_http_header_authentication_configuration('email')
+      stub_http_header_authentication_configuration(field: 'email')
       Carto::HttpHeaderAuthentication.new.valid?(mock_unauthenticated_request).should == false
     end
 
     it 'returns true with configuration and header' do
-      stub_http_header_authentication_configuration('email')
+      stub_http_header_authentication_configuration(field: 'email')
       Carto::HttpHeaderAuthentication.new.valid?(mock_email_request).should == true
     end
   end
 
   describe '#get_user?' do
     before(:each) do
-      stub_http_header_authentication_configuration('email')
+      stub_http_header_authentication_configuration(field: 'email')
     end
 
     it 'returns nil without header' do
@@ -87,7 +75,7 @@ describe Carto::HttpHeaderAuthentication do
 
     describe 'auto field' do
       before(:each) do
-        stub_http_header_authentication_configuration('auto')
+        stub_http_header_authentication_configuration(field: 'auto')
       end
 
       it 'searches by field depending on header' do
@@ -105,10 +93,32 @@ describe Carto::HttpHeaderAuthentication do
 
   describe '#autocreation_enabled?' do
     it 'returns autocreation configuration' do
-      stub_http_header_authentication_configuration('auto', true)
+      stub_http_header_authentication_configuration(field: 'auto', autocreation: true)
       Carto::HttpHeaderAuthentication.new.autocreation_enabled?.should be_true
-      stub_http_header_authentication_configuration('auto', false)
+      stub_http_header_authentication_configuration(field: 'auto', autocreation: false)
       Carto::HttpHeaderAuthentication.new.autocreation_enabled?.should be_false
+    end
+  end
+
+  describe '#email' do
+    let(:authenticator) { Carto::HttpHeaderAuthentication.new }
+    it 'returns email for email requests' do
+      stub_http_header_authentication_configuration(field: 'email')
+      authenticator.email(mock_email_request).should == EMAIL
+    end
+
+    it 'raises error if configuration is not email (or auto with an email in the request)' do
+      stub_http_header_authentication_configuration(field: 'id')
+      expect { authenticator.email(mock_email_request) }.to raise_error
+      stub_http_header_authentication_configuration(field: 'username')
+      expect { authenticator.email(mock_email_request) }.to raise_error
+      stub_http_header_authentication_configuration(field: 'auto')
+      expect { authenticator.email(mock_username_request) }.to raise_error
+    end
+
+    it 'returns email if configuration is auto and request contains an email' do
+      stub_http_header_authentication_configuration(field: 'auto')
+      expect { authenticator.email(mock_email_request) }.not_to raise_error
     end
   end
 end

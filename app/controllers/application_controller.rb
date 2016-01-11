@@ -64,7 +64,11 @@ class ApplicationController < ActionController::Base
 
   def http_header_authentication
     authenticate(:http_header_authentication, :scope => CartoDB.extract_subdomain(request))
-    validate_session(current_user) if current_user
+    if current_user
+      validate_session(current_user)
+    elsif Carto::HttpHeaderAuthentication.new.autocreation_enabled?
+      redirect_to CartoDB.path(self, 'signup_http_authentication')
+    end
   end
 
   # To be used only when domainless urls are present, to replicate sent subdomain
@@ -153,11 +157,13 @@ class ApplicationController < ActionController::Base
   end
 
   def render_500
-    format.html do
-      render :file => 'public/500.html', :status => 500, :layout => false
-    end
-    format.json do
-      render :status => 500
+    respond_to do |format|
+      format.html do
+        render :file => 'public/500.html', :status => 500, :layout => false
+      end
+      format.json do
+        render :status => 500
+      end
     end
   end
 

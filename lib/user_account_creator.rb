@@ -1,5 +1,6 @@
 # coding: UTF-8
 
+require 'securerandom'
 require_dependency 'google_plus_api'
 
 module CartoDB
@@ -54,8 +55,15 @@ module CartoDB
       self
     end
 
-    def with_api
-      @created_via_api = true
+    def with_created_via(created_via)
+      @created_via = created_via
+      self
+    end
+
+    def with_email_only(email)
+      with_email(email)
+      with_username(email.split('@')[0])
+      with_password(SecureRandom.hex)
       self
     end
 
@@ -89,7 +97,7 @@ module CartoDB
 
       user_creation = Carto::UserCreation.new_user_signup(@user).with_invitation_token(@invitation_token)
 
-      user_creation = user_creation.with_api if @created_via_api
+      user_creation = user_creation.with_created_via(@created_via)
 
       user_creation.save
 
@@ -98,20 +106,6 @@ module CartoDB
         promote_to_organization_owner?)
 
       { id: user_creation.id, username: user_creation.username }
-    end
-
-    private
-
-    def with_param(key, value)
-      @built = false
-      @user_params[key] = value
-      self
-    end
-
-    def promote_to_organization_owner?
-      # INFO: Custom installs convention: org owner always has `<orgname>-admin` format
-      !!(@organization && !@organization.owner_id && @user_params[PARAM_USERNAME] &&
-        @user_params[PARAM_USERNAME] == "#{@organization.name}-admin")
     end
 
     def build
@@ -132,6 +126,21 @@ module CartoDB
       @user.quota_in_bytes = @user_params[PARAM_QUOTA_IN_BYTES] if @user_params[PARAM_QUOTA_IN_BYTES]
 
       @built = true
+      @user
+    end
+
+    private
+
+    def with_param(key, value)
+      @built = false
+      @user_params[key] = value
+      self
+    end
+
+    def promote_to_organization_owner?
+      # INFO: Custom installs convention: org owner always has `<orgname>-admin` format
+      !!(@organization && !@organization.owner_id && @user_params[PARAM_USERNAME] &&
+        @user_params[PARAM_USERNAME] == "#{@organization.name}-admin")
     end
   end
 end

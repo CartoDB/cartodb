@@ -103,7 +103,7 @@ defaults: &defaults
   common_data:
     protocol: 'https'
     username: 'common-data'
-    # base_url: 'https://common-data.cartodb.com'
+    base_url: 'https://common-data.cartodb.com'
     format: 'shp'
     generate_every: 86400
   explore_api:
@@ -261,6 +261,7 @@ defaults: &defaults
   http_header_authentication:
     header:
     field: # email / username / id / auto (autodetection)
+    autocreation: # true / false
   oauth:
     # If the client_id/app_key is not set won't appear at the UI. @see application_helper.rb -> frontend_config
     # Must be the same as CartoDB::Datasources::xxxx DATASOURCE_NAME constants

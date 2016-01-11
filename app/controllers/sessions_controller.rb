@@ -91,7 +91,7 @@ class SessionsController < ApplicationController
 
     @organization = ::Organization.where(id: organization_id).first
 
-    account_creator = CartoDB::UserAccountCreator.new
+    account_creator = CartoDB::UserAccountCreator.new.with_created_via(Carto::UserCreation::CREATED_VIA_LDAP)
 
     account_creator.with_organization(@organization)
                    .with_username(cartodb_username)

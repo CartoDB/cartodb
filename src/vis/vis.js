@@ -415,7 +415,7 @@ var Vis = View.extend({
     }, this);
 
     this._dataviewsCollection = new DataviewCollection();
-    this.dataviewsFactory = new DataviewsFactory(null, {
+    this.dataviews = new DataviewsFactory(null, {
       dataviewsCollection: this._dataviewsCollection,
       interactiveLayersCollection: this.interactiveLayers
     });

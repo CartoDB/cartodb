@@ -96,7 +96,7 @@ module CartoDB
 
       def self.url_filename_regex
         @url_filename_regex ||= Regexp.new(
-                                "[[:word:]]+" + Regexp.union(supported_extensions).to_s,
+                                "[[:word:]]+#{Regexp.union(supported_extensions)}+",
                                 true)
       end
 

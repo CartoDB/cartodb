@@ -50,7 +50,7 @@ module CartoDB
     end
 
     def org_key_prefix(service, metric)
-      "org:#{@orgname}:#{@username}:#{service}:#{metric}:#{current_year_month}"
+      "org:#{@orgname}:#{service}:#{metric}:#{current_year_month}"
     end
 
     def current_day

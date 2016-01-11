@@ -65,7 +65,6 @@ module Carto
     private
 
     def self.get_geocoder_metrics_instance(user)
-      #redis_stub = ::CartoDB::RedisStub.new
       orgname = user.organization.nil? ? nil : user.organization.name
       CartoDB::GeocoderUsageMetrics.new($users_metadata, user.username, orgname)
     end

@@ -162,15 +162,13 @@ Warden::Strategies.add(:http_header_authentication) do
   end
 
   def authenticate!
-    begin
-      user = Carto::HttpHeaderAuthentication.new.get_user(request)
-      return fail! unless user.present?
+    user = Carto::HttpHeaderAuthentication.new.get_user(request)
+    return fail! unless user.present?
 
-      success!(user)
-    rescue => e
-      CartoDB.notify_exception(e)
-      return fail!
-    end
+    success!(user)
+  rescue => e
+    CartoDB.notify_exception(e)
+    return fail!
   end
 end
 

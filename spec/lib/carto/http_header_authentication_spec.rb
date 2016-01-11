@@ -9,11 +9,11 @@ require_relative '../../../lib/carto/http_header_authentication'
 require_relative '../../requests/http_authentication_helper'
 
 RSpec.configure do |config|
-   config.mock_with :mocha
+  config.mock_with :mocha
 end
 
 module Cartodb
-  def self.get_config(*args)
+  def self.get_config(*)
   end
 end
 
@@ -31,9 +31,9 @@ describe Carto::HttpHeaderAuthentication do
     OpenStruct.new(headers: {})
   end
 
-  let(:mock_email_request) { OpenStruct.new(headers: { "#{authenticated_header}" => EMAIL } ) }
-  let(:mock_username_request) { OpenStruct.new(headers: { "#{authenticated_header}" => USERNAME } ) }
-  let(:mock_id_request) { OpenStruct.new(headers: { "#{authenticated_header}" => ID } ) }
+  let(:mock_email_request) { OpenStruct.new(headers: { "#{authenticated_header}" => EMAIL }) }
+  let(:mock_username_request) { OpenStruct.new(headers: { "#{authenticated_header}" => USERNAME }) }
+  let(:mock_id_request) { OpenStruct.new(headers: { "#{authenticated_header}" => ID }) }
 
   let(:mock_user) do
     OpenStruct.new(

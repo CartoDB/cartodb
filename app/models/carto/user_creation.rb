@@ -92,7 +92,11 @@ class Carto::UserCreation < ActiveRecord::Base
 
   # TODO: Shorcut, search for a better solution to detect requirement
   def requires_validation_email?
-    google_sign_in != true && !has_valid_invitation? && !Carto::Ldap::Manager.new.configuration_present? && !created_via_api? && !created_via_http_authentication?
+    google_sign_in != true &&
+      !has_valid_invitation? &&
+      !Carto::Ldap::Manager.new.configuration_present? &&
+      !created_via_api? &&
+      !created_via_http_authentication?
   end
 
   def autologin?
@@ -110,18 +114,18 @@ class Carto::UserCreation < ActiveRecord::Base
 
   # Maybe some functionality of UserAccountCreator should be moved here to avoid this setter
   def with_created_via(created_via)
-    raise "#{created_via} is not a valid value: #{VALID_CREATED_VIA.join(', ')}" unless VALID_CREATED_VIA.include?(created_via)
+    raise "Not valid #{created_via}: #{VALID_CREATED_VIA.join(', ')}" unless VALID_CREATED_VIA.include?(created_via)
 
     self.created_via = created_via
     self
   end
 
   def created_via_api?
-    self.created_via == CREATED_VIA_API
+    created_via == CREATED_VIA_API
   end
 
   def created_via_http_authentication?
-    self.created_via == CREATED_VIA_HTTP_AUTENTICATION
+    created_via == CREATED_VIA_HTTP_AUTENTICATION
   end
 
   def has_valid_invitation?

@@ -11,7 +11,7 @@ module Carto
     end
 
     def get_user(request)
-      header = identity(request) 
+      header = identity(request)
       return nil if header.nil? || header.empty?
 
       ::User.where("#{field(request)} = ?", header).first
@@ -30,7 +30,7 @@ module Carto
     end
 
     def email(request)
-      raise "You can only fetch email if configuration is set to email or auto and request has an email" unless field(request) == 'email'
+      raise "Configuration is not set to email, or it's auto but request hasn't email" unless field(request) == 'email'
       identity(request)
     end
 

@@ -295,7 +295,5 @@ describe SignupController do
         end
       end
     end
-
   end
-
 end

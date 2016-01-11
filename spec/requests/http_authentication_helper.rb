@@ -16,9 +16,9 @@ module HttpAuthenticationHelper
       'autocreation' => autocreation
     }
 
-    config.each do |field, value|
-      Cartodb.stubs(:get_config).with(:http_header_authentication, field).
-        returns(enabled ? value : nil)
+    config.each do |f, v|
+      Cartodb.stubs(:get_config).with(:http_header_authentication, f).
+        returns(enabled ? v: nil)
     end
 
     config

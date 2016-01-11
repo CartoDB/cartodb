@@ -82,7 +82,7 @@
           <% assignedPer = ((@user.quota_in_bytes.to_f * 100) / available_quota_for_user) %>
           <% if !@user.new? %>
             <% usedPer = ((@user.db_size_in_bytes.to_f * 100) / available_quota_for_user) %>
-            <span class="bar-3" style="width:<%= usedPer %>%"></span>
+            <span class="js-usedUserQuota bar-3" style="width:<%= usedPer %>%"></span>
           <% end %>
         </div>
         <ul class="OrganizationUser-quotaLegend">

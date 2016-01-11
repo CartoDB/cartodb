@@ -12,7 +12,7 @@ describe ApplicationController do
       { "#{authenticated_header}" => value }
     end
 
-    def stub_http_header_authentication_configuration(field = 'email')
+    def stub_http_header_authentication_configuration(field = 'email', autocreation = false)
       Cartodb.stubs(:get_config)
       Cartodb.expects(:get_config).
         with(:http_header_authentication, 'header').
@@ -20,6 +20,9 @@ describe ApplicationController do
       Cartodb.stubs(:get_config).
         with(:http_header_authentication, 'field').
         returns(field)
+      Cartodb.stubs(:get_config).
+        with(:http_header_authentication, 'autocreation').
+        returns(autocreation)
     end
 
     def stub_load_common_data
@@ -155,8 +158,38 @@ describe ApplicationController do
         get dashboard_url, {}, authentication_headers("wadus@wadus.com")
         response.status.should == 302
       end
-
     end
 
+    describe 'autocreation' do
+      describe 'disabled' do
+        before(:each) do
+          stub_http_header_authentication_configuration('auto', false)
+        end
+
+        it 'redirects to login for unknown emails' do
+          get dashboard_url, {}, authentication_headers('unknown@company.com')
+          response.status.should == 302
+          follow_redirect!
+          response.status.should == 200
+          response.body.should include("Login to Carto")
+        end
+      end
+
+      describe 'enabled' do
+        before(:each) do
+          stub_http_header_authentication_configuration('auto', true)
+        end
+
+        # TODO: is this what we want?
+        it 'redirects to user creation for unknown emails' do
+          get dashboard_url, {}, authentication_headers('unknown@company.com')
+          byebug
+          response.status.should == 302
+          follow_redirect!
+          response.status.should == 200
+          response.body.should include("Your account is being created")
+        end
+      end
+    end
   end
 end

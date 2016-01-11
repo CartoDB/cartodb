@@ -1,14 +1,13 @@
-var DataviewModelBase = require('../../../src/dataviews/dataview-model-base');
+var cdb = require('cartodb.js');
 var WidgetModel = require('../../../src/widgets/widget-model');
 var WidgetContentView = require('../../../src/widgets/standard/widget-content-view');
 
 describe('widgets/standard/widget-content-view', function () {
   beforeEach(function () {
-    this.dataviewModel = new DataviewModelBase({
-      id: 'widget_3',
-      title: 'Howdy',
-      columns: ['cartodb_id', 'title']
+    this.dataviewModel = new cdb.core.Model({
+      title: 'Howdy'
     });
+    this.dataviewModel.getData = jasmine.createSpy('getData');
     this.model = new WidgetModel({}, {
       dataviewModel: this.dataviewModel
     });

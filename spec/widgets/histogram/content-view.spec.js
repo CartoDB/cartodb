@@ -1,24 +1,19 @@
 var _ = require('underscore');
 var cdb = require('cartodb.js');
-var HistogramDataviewModel = require('../../../src/dataviews/histogram-dataview-model');
 var WidgetHistogramContent = require('../../../src/widgets/histogram/content-view');
 var WidgetModel = require('../../../src/widgets/widget-model');
 
 describe('widgets/histogram/content-view', function () {
   beforeEach(function () {
-    this.filter = new cdb.core.Model({
-      min: 0,
-      max: 100
+    var vis = cdb.createVis(document.createElement('div'), {
+      layers: [{type: 'torque'}]
     });
-    this.dataviewModel = new HistogramDataviewModel({
+    this.dataviewModel = vis.dataviews.createHistogramDataview(vis.map.layers.first(), {
       id: 'widget_3',
       sync: true,
       options: {
         columns: ['cartodb_id', 'title']
       }
-    }, {
-      filter: this.filter,
-      layer: new cdb.core.Model()
     });
 
     this.viewModel = new WidgetModel({

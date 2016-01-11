@@ -1,11 +1,13 @@
-var FormulaDataviewModel = require('../../../src/dataviews/formula-dataview-model');
+var cdb = require('cartodb.js');
 var WidgetModel = require('../../../src/widgets/widget-model');
 var FormulaWidgetContent = require('../../../src/widgets/formula/content-view');
 
 describe('widgets/formula/content-view', function () {
   beforeEach(function () {
-    this.dataviewModel = new FormulaDataviewModel({
+    var vis = cdb.createVis(document.createElement('div'), {
+      layers: [{type: 'torque'}]
     });
+    this.dataviewModel = vis.dataviews.createFormulaDataview(vis.map.layers.first(), {});
     this.model = new WidgetModel({
       title: 'Max population'
     }, {

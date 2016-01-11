@@ -1,20 +1,16 @@
 var cdb = require('cartodb.js');
-var HistogramDataviewModel = require('../../../src/dataviews/histogram-dataview-model');
-var RangeFilter = require('../../../src/windshaft/filters/range');
 var TorqueTimesSeriesContentView = require('../../../src/widgets/time-series/torque-content-view');
 var WidgetModel = require('../../../src/widgets/widget-model');
 
 describe('widgets/time-series/torque-content-view', function () {
   beforeEach(function () {
-    this.dataviewModel = new HistogramDataviewModel({}, {
-      filter: new cdb.core.Model(),
-      layer: new cdb.core.Model()
+    var vis = cdb.createVis(document.createElement('div'), {
+      layers: [{type: 'torque'}]
     });
+    this.dataviewModel = vis.dataviews.createHistogramDataview(vis.map.layers.first(), {});
     this.dataviewModel.sync = function (method, model, options) {
       this.options = options;
     }.bind(this);
-
-    this.rangeFilter = new RangeFilter();
     this.torqueLayerModel = new cdb.geo.TorqueLayer({
     });
     this.model = new WidgetModel({}, {

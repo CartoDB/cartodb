@@ -52,6 +52,14 @@ module Carto
       display_name.nil? ? name : display_name
     end
 
+    def assigned_quota
+      self.users.sum(:quota_in_bytes).to_i
+    end
+
+    def unassigned_quota
+      self.quota_in_bytes - assigned_quota
+    end
+
     private
 
     def destroy_groups_with_extension

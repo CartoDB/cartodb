@@ -12,7 +12,6 @@ module.exports = DataviewModelBase.extend({
     }
   ),
 
-  // TODO: The response format has probably changed
   parse: function (r) {
     return {
       data: r.result,

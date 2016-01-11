@@ -7,7 +7,7 @@ describe('widgets/category/search-title-view', function () {
     var vis = cdb.createVis(document.createElement('div'), {
       layers: [{type: 'torque'}]
     });
-    this.model = vis.dataviewsFactory.createCategoryDataview(vis.map.layers.first(), {});
+    this.model = vis.dataviews.createCategoryDataview(vis.map.layers.first(), {});
     this.viewModel = new CategoryWidgetModel({}, {
       dataviewModel: this.model
     });

@@ -7,7 +7,7 @@ describe('widgets/list/content-view', function () {
     var vis = cdb.createVis(document.createElement('div'), {
       layers: [{type: 'torque'}]
     });
-    this.model = vis.dataviewsFactory.createListDataview(vis.map.layers.first(), {
+    this.model = vis.dataviews.createListDataview(vis.map.layers.first(), {
       id: 'widget_3',
       title: 'Howdy',
       columns: ['cartodb_id', 'title']

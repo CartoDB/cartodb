@@ -7,7 +7,7 @@ describe('widgets/category/content-view', function () {
     var vis = cdb.createVis(document.createElement('div'), {
       layers: [{type: 'torque'}]
     });
-    this.dataviewModel = vis.dataviewsFactory.createCategoryDataview(vis.map.layers.first(), {});
+    this.dataviewModel = vis.dataviews.createCategoryDataview(vis.map.layers.first(), {});
     this.model = new CategoryWidgetModel({
       title: 'Categories of something'
     }, {

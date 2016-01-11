@@ -7,7 +7,7 @@ describe('widgets/formula/content-view', function () {
     var vis = cdb.createVis(document.createElement('div'), {
       layers: [{type: 'torque'}]
     });
-    this.dataviewModel = vis.dataviewsFactory.createFormulaDataview(vis.map.layers.first(), {});
+    this.dataviewModel = vis.dataviews.createFormulaDataview(vis.map.layers.first(), {});
     this.model = new WidgetModel({
       title: 'Max population'
     }, {

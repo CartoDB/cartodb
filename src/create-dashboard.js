@@ -29,17 +29,17 @@ module.exports = function (selector, diJSON, visOpts) {
 
   var dataviewModelFactory = new DataviewModelFactory({
     list: function (attrs, layer) {
-      return vis.dataviewsFactory.createListDataview(layer, attrs);
+      return vis.dataviews.createListDataview(layer, attrs);
     },
     formula: function (attrs, layer) {
-      return vis.dataviewsFactory.createFormulaDataview(layer, attrs);
+      return vis.dataviews.createFormulaDataview(layer, attrs);
     },
     histogram: function (attrs, layer) {
-      return vis.dataviewsFactory.createHistogramDataview(layer, attrs);
+      return vis.dataviews.createHistogramDataview(layer, attrs);
     },
     // TODO: Rename type to category instead of aggregation?
     aggregation: function (attrs, layer) {
-      return vis.dataviewsFactory.createCategoryDataview(layer, attrs);
+      return vis.dataviews.createCategoryDataview(layer, attrs);
     }
   });
 

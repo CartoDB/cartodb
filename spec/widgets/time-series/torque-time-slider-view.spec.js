@@ -7,7 +7,7 @@ describe('widgets/time-series/torque-time-slider-view', function () {
     var vis = cdb.createVis(document.createElement('div'), {
       layers: [{type: 'torque'}]
     });
-    this.model = vis.dataviewsFactory.createHistogramDataview(vis.map.layers.first(), {
+    this.model = vis.dataviews.createHistogramDataview(vis.map.layers.first(), {
       bins: 256
     });
     this.torqueLayerModel = new cdb.geo.TorqueLayer({

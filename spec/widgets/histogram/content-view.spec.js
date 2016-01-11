@@ -8,7 +8,7 @@ describe('widgets/histogram/content-view', function () {
     var vis = cdb.createVis(document.createElement('div'), {
       layers: [{type: 'torque'}]
     });
-    this.dataviewModel = vis.dataviewsFactory.createHistogramDataview(vis.map.layers.first(), {
+    this.dataviewModel = vis.dataviews.createHistogramDataview(vis.map.layers.first(), {
       id: 'widget_3',
       sync: true,
       options: {

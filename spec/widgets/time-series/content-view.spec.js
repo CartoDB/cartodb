@@ -7,7 +7,7 @@ describe('widgets/time-series/content-view', function () {
     var vis = cdb.createVis(document.createElement('div'), {
       layers: [{type: 'torque'}]
     });
-    this.dataviewModel = vis.dataviewsFactory.createHistogramDataview(vis.map.layers.first(), {});
+    this.dataviewModel = vis.dataviews.createHistogramDataview(vis.map.layers.first(), {});
     this.dataviewModel.sync = function (method, dataviewModel, options) {
       this.options = options;
     }.bind(this);

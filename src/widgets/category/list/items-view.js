@@ -38,6 +38,9 @@ module.exports = cdb.core.View.extend({
 
   _initBinds: function () {
     this.viewModel.bind('change:search', this.toggle, this);
+    this.viewModel.bind('change:isColorsApplied', this.render, this);
+    this.add_related_model(this.viewModel);
+
     this.dataModel.bind('change:data change:searchData', this.render, this);
     this.add_related_model(this.dataModel);
   },
@@ -70,6 +73,7 @@ module.exports = cdb.core.View.extend({
   _addItem: function (mdl, $parent) {
     var v = new CategoryItemView({
       model: mdl,
+      viewModel: this.viewModel,
       dataModel: this.dataModel
     });
     v.bind('itemClicked', this._setFilters, this);

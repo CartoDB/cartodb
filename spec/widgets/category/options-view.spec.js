@@ -1,14 +1,16 @@
-var CategoryModel = require('../../../src/widgets/category/model.js');
-var ViewModel = require('../../../src/widgets/widget-content-model.js');
-var OptionsView = require('../../../src/widgets/category/options/options-view.js');
-var WindshaftFiltersCategory = require('../../../src/windshaft/filters/category');
+var cdb = require('cartodb.js');
+var CategoryWidgetModel = require('../../../src/widgets/category/category-widget-model');
+var OptionsView = require('../../../src/widgets/category/options/options-view');
 
 describe('widgets/category/options-view', function () {
   beforeEach(function () {
-    this.model = new CategoryModel(null, {
-      filter: new WindshaftFiltersCategory()
+    var vis = cdb.createVis(document.createElement('div'), {
+      layers: [{type: 'torque'}]
     });
-    this.viewModel = new ViewModel();
+    this.model = vis.dataviews.createCategoryDataview(vis.map.layers.first(), {});
+    this.viewModel = new CategoryWidgetModel({}, {
+      dataviewModel: this.model
+    });
     this.view = new OptionsView({
       viewModel: this.viewModel,
       dataModel: this.model
@@ -16,7 +18,14 @@ describe('widgets/category/options-view', function () {
   });
 
   it('should render properly', function () {
-    this.model.setCategories([{ name: 'test' }]);
+    this.model.sync = function (method, model, options) {
+      options.success({
+        'categories': [
+          {category: 'test'}
+        ]
+      });
+    };
+    this.model.fetch();
     this.view.render();
     var $el = this.view.$el;
     expect($el.find('.CDB-Widget-textSmaller').length).toBe(1);
@@ -70,7 +79,15 @@ describe('widgets/category/options-view', function () {
 
     it('should render number of selected items and lock button if widget is still not locked', function () {
       spyOn(this.model, 'isLocked').and.returnValue(false);
-      this.model.setCategories([{ name: 'test' }, { name: 'one' }]);
+      this.model.sync = function (method, model, options) {
+        options.success({
+          'categories': [
+            {category: 'test'},
+            {category: 'one'}
+          ]
+        });
+      };
+      this.model.fetch();
       this.model.acceptFilters('one');
       expect(this.view.$('.CDB-Widget-textSmaller').length).toBe(1);
       expect(this.view.$('.CDB-Widget-textSmaller').text()).toContain('1 selected');
@@ -82,7 +99,15 @@ describe('widgets/category/options-view', function () {
       spyOn(this.model, 'isLocked').and.returnValue(false);
       spyOn(this.viewModel, 'isSearchEnabled').and.returnValue(false);
       this.model.acceptFilters('Hey');
-      this.model.setCategories([{ name: 'Hey' }, { name: 'Buddy' }]);
+      this.model.sync = function (method, model, options) {
+        options.success({
+          'categories': [
+            {category: 'Hey'},
+            {category: 'Buddy'}
+          ]
+        });
+      };
+      this.model.fetch();
       this.view.render();
       expect(this.view.$('.CDB-Widget-textSmaller').length).toBe(1);
       expect(this.view.$('.CDB-Widget-textSmaller').text()).toContain('1 selected');
@@ -101,7 +126,15 @@ describe('widgets/category/options-view', function () {
 
     it('should render none button if all categories are not rejected', function () {
       spyOn(this.model, 'isAllFiltersRejected').and.returnValue(false);
-      this.model.setCategories([{ name: 'Hey' }, { name: 'Buddy' }]);
+      this.model.sync = function (method, model, options) {
+        options.success({
+          'categories': [
+            {category: 'Hey'},
+            {category: 'Buddy'}
+          ]
+        });
+      };
+      this.model.fetch();
       this.view.render();
       expect(this.view.$('.js-all').length).toBe(0);
       expect(this.view.$('.js-none').length).toBe(1);
@@ -110,7 +143,15 @@ describe('widgets/category/options-view', function () {
 
   it('should reject all when none button is clicked', function () {
     spyOn(this.model, 'rejectAll');
-    this.model.setCategories([{ name: 'Hey' }, { name: 'Buddy' }]);
+    this.model.sync = function (method, model, options) {
+      options.success({
+        'categories': [
+          {category: 'Hey'},
+          {category: 'Buddy'}
+        ]
+      });
+    };
+    this.model.fetch();
     this.view.render();
     this.view.$('.js-none').click();
     expect(this.model.rejectAll).toHaveBeenCalled();
@@ -118,7 +159,15 @@ describe('widgets/category/options-view', function () {
 
   it('should accept all when all button is clicked', function () {
     spyOn(this.model, 'acceptAll');
-    this.model.setCategories([{ name: 'Hey' }, { name: 'Buddy' }]);
+    this.model.sync = function (method, model, options) {
+      options.success({
+        'categories': [
+          {category: 'Hey'},
+          {category: 'Buddy'}
+        ]
+      });
+    };
+    this.model.fetch();
     this.model.acceptFilters('Hey');
     this.view.render();
     this.view.$('.js-all').click();

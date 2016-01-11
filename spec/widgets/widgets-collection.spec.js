@@ -3,22 +3,25 @@ var WidgetsCollection = require('../../src/widgets/widgets-collection');
 describe('widgets/widgets-collection', function () {
   beforeEach(function () {
     this.collection = new WidgetsCollection();
+    this.collection.reset([
+      {isColorsApplied: false},
+      {},
+      {isColorsApplied: true}
+    ]);
   });
 
-  describe('bind', function () {
-    it('should disable categoryColors attribute if any other widget enables it', function () {
-      this.collection.reset([{ name: 'hello' }, { name: 'howdy' }, { name: 'hey', categoryColors: true }]);
-      var mdl1 = this.collection.at(0);
-      var mdl2 = this.collection.at(1);
-      var mdl3 = this.collection.at(2);
-      expect(mdl3.get('categoryColors')).toBeTruthy();
-      mdl1.set('categoryColors', true);
-      expect(mdl3.get('categoryColors')).toBeFalsy();
-      expect(mdl2.get('categoryColors')).toBeUndefined();
+  it('should only allow applying colors in one widget at a time', function () {
+    var m1 = this.collection.at(0);
+    var m2 = this.collection.at(1);
+    var m3 = this.collection.at(2);
 
-      mdl2.set('categoryColors', true);
-      expect(mdl1.get('categoryColors')).toBeFalsy();
-      expect(mdl3.get('categoryColors')).toBeFalsy();
-    });
+    expect(m1.get('isColorsApplied')).toBeFalsy();
+    expect(m2.get('isColorsApplied')).toBeUndefined();
+    expect(m3.get('isColorsApplied')).toBeTruthy();
+
+    m1.set('isColorsApplied', true);
+    expect(m1.get('isColorsApplied')).toBeTruthy();
+    expect(m2.get('isColorsApplied')).toBeUndefined();
+    expect(m3.get('isColorsApplied')).toBeFalsy();
   });
 });

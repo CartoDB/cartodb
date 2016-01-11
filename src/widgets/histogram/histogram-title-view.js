@@ -17,6 +17,7 @@ module.exports = cdb.core.View.extend({
   },
 
   initialize: function () {
+    this.viewModel = this.options.viewModel;
     this.dataModel = this.options.dataModel;
     this._initBinds();
   },
@@ -25,9 +26,9 @@ module.exports = cdb.core.View.extend({
     this.clearSubViews();
     this.$el.html(
       template({
-        title: this.dataModel.get('title'),
+        title: this.viewModel.get('title'),
         isSizesApplied: this.dataModel.get('histogramSizes'),
-        isCollapsed: this.dataModel.isCollapsed()
+        isCollapsed: this.viewModel.isCollapsed()
       })
     );
     this._initViews();
@@ -36,7 +37,8 @@ module.exports = cdb.core.View.extend({
   },
 
   _initBinds: function () {
-    this.dataModel.bind('change:histogramSizes change:collapsed', this.render, this);
+    this.viewModel.bind('change:collapsed', this.render, this);
+    this.dataModel.bind('change:histogramSizes', this.render, this);
     this.add_related_model(this.dataModel);
   },
 
@@ -54,10 +56,6 @@ module.exports = cdb.core.View.extend({
 
   _cancelSizes: function () {
     this.dataModel.set('histogramSizes', false);
-  },
-
-  _toggleCollapse: function () {
-    this.dataModel.toggleCollapsed();
   }
 
 });

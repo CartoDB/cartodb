@@ -1,14 +1,16 @@
-var CategoryModel = require('../../../src/widgets/category/model.js');
-var ViewModel = require('../../../src/widgets/widget-content-model.js');
-var StatsView = require('../../../src/widgets/category/stats/stats-view.js');
-var WindshaftFiltersCategory = require('../../../src/windshaft/filters/category');
+var cdb = require('cartodb.js');
+var CategoryWidgetModel = require('../../../src/widgets/category/category-widget-model');
+var StatsView = require('../../../src/widgets/category/stats/stats-view');
 
 describe('widgets/category/stats-view', function () {
   beforeEach(function () {
-    this.model = new CategoryModel(null, {
-      filter: new WindshaftFiltersCategory()
+    var vis = cdb.createVis(document.createElement('div'), {
+      layers: [{type: 'torque'}]
     });
-    this.viewModel = new ViewModel();
+    this.model = vis.dataviews.createCategoryDataview(vis.map.layers.first(), {});
+    this.viewModel = new CategoryWidgetModel({}, {
+      dataviewModel: this.model
+    });
     this.view = new StatsView({
       viewModel: this.viewModel,
       dataModel: this.model

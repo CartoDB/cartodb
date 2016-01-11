@@ -1,5 +1,5 @@
 var _ = require('underscore');
-var CategoryColors = require('../../../src/widgets/category/models/category-colors.js');
+var CategoryColors = require('../../../src/widgets/category/category-colors');
 
 describe('widgets/category/category-colors', function () {
   beforeEach(function () {

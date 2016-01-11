@@ -2,7 +2,6 @@ var _ = require('underscore');
 var formatter = require('../../formatter');
 var HistogramTitleView = require('./histogram-title-view');
 var WidgetContent = require('../standard/widget-content-view');
-var WidgetViewModel = require('../widget-content-model');
 var HistogramChartView = require('./chart');
 var placeholder = require('./placeholder.tpl');
 var template = require('./content.tpl');
@@ -25,7 +24,8 @@ module.exports = WidgetContent.extend({
 
   initialize: function () {
     this.model = this.options.dataModel;
-    this.viewModel = new WidgetViewModel();
+    this.filter = this.options.dataModel.filter;
+    this.viewModel = this.options.viewModel;
     this.lockedByUser = false;
     WidgetContent.prototype.initialize.call(this);
   },
@@ -46,7 +46,7 @@ module.exports = WidgetContent.extend({
 
     dropdown.bind('click', function (action) {
       if (action === 'toggle') {
-        this.model.toggleCollapsed();
+        this.viewModel.toggleCollapsed();
       }
     }, this);
 
@@ -58,7 +58,7 @@ module.exports = WidgetContent.extend({
 
   _initBinds: function () {
     this.model.once('change:data', this._onFirstLoad, this);
-    this.model.bind('change:collapsed', this.render, this);
+    this.viewModel.bind('change:collapsed', this.render, this);
   },
 
   _onFirstLoad: function () {
@@ -86,6 +86,7 @@ module.exports = WidgetContent.extend({
   _onChangeModel: function () {
     // When the histogram is zoomed, we don't need to rely
     // on the change url to update the histogram
+    // TODO the widget should not know about the URL… could this state be got from the dataview model somehow?
     if (this.model.changed.url && this._isZoomed()) {
       return;
     }
@@ -134,7 +135,7 @@ module.exports = WidgetContent.extend({
     } else {
       this.originalData = this.model.getData();
       this._setupBindings();
-      var isCollapsed = this.model.isCollapsed();
+      var isCollapsed = this.viewModel.isCollapsed();
       this.$el.toggleClass('is-collapsed', !!isCollapsed);
       this._initViews();
     }

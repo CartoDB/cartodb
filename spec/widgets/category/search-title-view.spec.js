@@ -1,14 +1,16 @@
-var CategoryModel = require('../../../src/widgets/category/model.js');
-var ViewModel = require('../../../src/widgets/widget-content-model.js');
-var SearchTitleView = require('../../../src/widgets/category/title/search-title-view.js');
-var WindshaftFiltersCategory = require('../../../src/windshaft/filters/category');
+var cdb = require('cartodb.js');
+var CategoryWidgetModel = require('../../../src/widgets/category/category-widget-model');
+var SearchTitleView = require('../../../src/widgets/category/title/search-title-view');
 
 describe('widgets/category/search-title-view', function () {
   beforeEach(function () {
-    this.model = new CategoryModel(null, {
-      filter: new WindshaftFiltersCategory()
+    var vis = cdb.createVis(document.createElement('div'), {
+      layers: [{type: 'torque'}]
     });
-    this.viewModel = new ViewModel();
+    this.model = vis.dataviews.createCategoryDataview(vis.map.layers.first(), {});
+    this.viewModel = new CategoryWidgetModel({}, {
+      dataviewModel: this.model
+    });
     this.view = new SearchTitleView({
       viewModel: this.viewModel,
       dataModel: this.model
@@ -21,22 +23,6 @@ describe('widgets/category/search-title-view', function () {
     expect($el.find('.CDB-Widget-title').length).toBe(1);
     expect($el.find('.CDB-Widget-options').length).toBe(1);
     expect($el.find('.CDB-Widget-textBig').length).toBe(1);
-  });
-
-  describe('binds', function () {
-    beforeEach(function () {
-      spyOn(this.viewModel, 'bind').and.callThrough();
-      spyOn(this.model, 'bind').and.callThrough();
-      this.view._initBinds();
-    });
-
-    it('should change to search state when search event is triggered', function () {
-      expect(this.viewModel.bind.calls.argsFor(0)[0]).toEqual('change:search');
-    });
-
-    it('should change to search state when search event is triggered', function () {
-      expect(this.model.bind.calls.argsFor(0)[0]).toEqual('change:filter change:lockCollection change:categoryColors change:collapsed');
-    });
   });
 
   describe('search', function () {
@@ -93,19 +79,19 @@ describe('widgets/category/search-title-view', function () {
 
     it('should render "apply colors" button and apply them when is clicked', function () {
       expect(this.view.$('.js-applyColors').length).toBe(1);
-      spyOn(this.model, 'applyCategoryColors').and.callThrough();
+      spyOn(this.viewModel, 'applyColors').and.callThrough();
       this.view.$('.js-applyColors').click();
-      expect(this.model.applyCategoryColors).toHaveBeenCalled();
+      expect(this.viewModel.applyColors).toHaveBeenCalled();
       expect(this.view.$('.js-applyColors').length).toBe(0);
       expect(this.view.$('.js-cancelColors').length).toBe(1);
     });
 
     it('should remove category colors when they are applied and button is clicked', function () {
-      spyOn(this.model, 'cancelCategoryColors').and.callThrough();
+      spyOn(this.viewModel, 'cancelColors').and.callThrough();
       this.view.$('.js-applyColors').click();
       expect(this.view.$('.js-cancelColors').hasClass('is-selected')).toBeTruthy();
       this.view.$('.js-cancelColors').click();
-      expect(this.model.cancelCategoryColors).toHaveBeenCalled();
+      expect(this.viewModel.cancelColors).toHaveBeenCalled();
     });
   });
 

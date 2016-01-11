@@ -10,13 +10,18 @@ module.exports = cdb.core.View.extend({
   className: 'CDB-Widget-body',
 
   initialize: function () {
-    this.filter = this.options.filter;
+    this._dataviewModel = this.model.dataviewModel;
+
+    // TODO inheritance strikes again; this should always be called, but some views override _initBinds,
+    // so make sure this is always called
+    this.model.bind('change:collapsed', this._onCollapsedChange, this);
+
     this._initBinds();
   },
 
   render: function () {
     this.clearSubViews();
-    var data = this.model.getData();
+    var data = this._dataviewModel.getData();
     var isDataEmpty = _.isEmpty(data) || _.size(data) === 0;
     this.$el.html(
       contentTemplate({
@@ -33,7 +38,12 @@ module.exports = cdb.core.View.extend({
   },
 
   _initBinds: function () {
-    this.model.bind('change:data', this.render, this);
+    this._dataviewModel.bind('change:data', this.render, this);
+    this.add_related_model(this._dataviewModel);
+  },
+
+  _onCollapsedChange: function (m, isCollapsed) {
+    this._dataviewModel.setDisabled(isCollapsed);
   },
 
   _addPlaceholder: function () {

@@ -31,83 +31,102 @@
           },
           "updated_at": "2015-10-26T11:50:30+00:00",
 
-          "datasource": {
-            "type": "public_map",
-            "user_name": "rochoa-st-ded02",
-            "maps_api_template": "https://{user}.cartodb-staging.com:443",
-            "force_cors": true, // This is sometimes set in the editor,
-            "stat_tag": "84ec6844-4b4b-11e5-9c1d-080027880ca6"
-          },
-
-          "widgets": {
-            "formula_widget_min": {
-              "layerId": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
+          "widgets": [
+            {
               "type": "formula",
               "title": "Min population",
-              "column": "pop_max",
-              "operation": "min"
-            },
-            "formula_widget_max": {
-              "layerId": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
+              "dataview": {
+                "layerId": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
+                "type": "formula",
+                "column": "pop_max",
+                "operation": "min"
+              }
+            }, {
               "type": "formula",
               "title": "Max population",
-              "column": "pop_max",
-              "operation": "max"
-            },
-            "formula_widget_avg": {
-              "layerId": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
+              "dataview": {
+                "layerId": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
+                "type": "formula",
+                "column": "pop_max",
+                "operation": "max"
+              }
+            }, {
               "type": "formula",
               "title": "Avg population",
-              "column": "pop_max",
-              "operation": "avg"
-            },
-            "formula_widget_sum": {
-              "layerId": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
+              "dataview": {
+                "layerId": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
+                "type": "formula",
+                "column": "pop_max",
+                "operation": "avg"
+              }
+            }, {
               "type": "formula",
               "title": "Total population",
-              "column": "pop_max",
-              "operation": "sum"
-            },
-            "formula_widget_count": {
-              "layerId": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
+              "dataview": {
+                "layerId": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
+                "type": "formula",
+                "column": "pop_max",
+                "operation": "sum"
+              }
+            }, {
               "type": "formula",
               "title": "# places",
-              "column": "pop_max",
-              "operation": "count"
-            },
-            "histogram_widget_amount": {
-              "layerId": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
+              "dataview": {
+                "layerId": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
+                "type": "formula",
+                "column": "pop_max",
+                "operation": "count"
+              }
+            }, {
               "type": "histogram",
               "title": "Amount spent",
-              "column": "pop_max",
-              "bins": 10
-            },
-            "histogram_widget_pop_max": {
-              "layerId": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
+              "dataview": {
+                "layerId": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
+                "type": "histogram",
+                "column": "pop_max",
+                "bins": 10
+              }
+            }, {
               "type": "histogram",
               "title": "Population",
-              "column": "pop_max",
-              "bins": 10
-            },
-            'category_widget_adm0_a3': {
-              "layerId": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
-              "type": "aggregation",
-                "title": "Country",
+              "dataview": {
+                "layerId": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
+                "type": "histogram",
+                "column": "pop_max",
+                "bins": 10
+              }
+            }, {
+              "type": "category",
+              "title": "Country",
+              "dataview": {
+                "layerId": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
+                "type": "aggregation",
                 "column": "adm0_a3",
                 "aggregation": "count",
                 "sync": true
-            },
-            'category_widget_labelrank': {
-              "layerId": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
-              "type": "aggregation",
-                "title": "Rank category",
+              },
+            }, {
+              "type": "category",
+              "title": "Rank category",
+              "dataview": {
+                "layerId": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
+                "type": "aggregation",
                 "column": "labelrank",
                 "aggregation": "count",
                 "sync": true
+              }
             }
-          },
+          ],
 
           "vizJSON": {
+            "datasource": {
+              "type": "public_map",
+              "user_name": "rochoa-st-ded02",
+              "maps_api_template": "https://{user}.cartodb-staging.com:443",
+              "force_cors": true, // This is sometimes set in the editor,
+              "stat_tag": "84ec6844-4b4b-11e5-9c1d-080027880ca6"
+            },
+
             "id": "84ec6844-4b4b-11e5-9c1d-080027880ca6",
             "version": "0.1.0",
             "likes": 0,

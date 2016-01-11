@@ -14,17 +14,22 @@ module.exports = cdb.core.View.extend({
   },
 
   _initBinds: function () {
-    this.model.bind('loading', this.show, this);
-    this.model.bind('sync error', this.hide, this);
+    var m = this.model.dataviewModel;
+    if (m) {
+      m.bind('loading', this.show, this);
+      m.bind('sync error', this.hide, this);
+      this.add_related_model(m);
+    }
   },
 
   show: function () {
     this.$el.addClass('is-visible');
+    clearTimeout(this._timeout);
   },
 
   hide: function () {
     var self = this;
-    setTimeout(function () {
+    this._timeout = setTimeout(function () {
       self.$el.removeClass('is-visible');
     }, 500);
   }

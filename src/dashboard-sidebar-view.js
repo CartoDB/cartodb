@@ -16,35 +16,31 @@ module.exports = cdb.core.View.extend({
     this._widgetViewFactory = new WidgetViewFactory([
       {
         type: 'formula',
-        createContentView: function (m) {
+        createContentView: function (widgetModel) {
           return new FormulaContentView({
-            model: m
+            model: widgetModel
           });
         }
       }, {
         type: 'list',
-        createContentView: function (m) {
+        createContentView: function (widgetModel) {
           return new ListContentView({
-            model: m
+            model: widgetModel
           });
         }
       }, {
-        match: function (m) {
-          return m.get('type') === 'histogram' && m.layer.get('type') !== 'torque';
-        },
-        createContentView: function (m) {
+        type: 'histogram',
+        createContentView: function (widgetModel) {
           return new HistogramContentView({
-            dataModel: m,
-            viewModel: new cdb.core.Model(),
-            filter: m.filter
+            dataModel: widgetModel.dataviewModel,
+            viewModel: widgetModel
           });
         }
       }, {
-        type: 'aggregation',
-        createContentView: function (m) {
+        type: 'category',
+        createContentView: function (widgetModel) {
           return new CategoryContentView({
-            model: m,
-            filter: m.filter
+            model: widgetModel
           });
         }
       }

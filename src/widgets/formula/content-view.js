@@ -2,7 +2,6 @@ var _ = require('underscore');
 var d3 = require('d3');
 var formatter = require('../../formatter');
 var WidgetContent = require('../standard/widget-content-view');
-var WidgetViewModel = require('../widget-content-model');
 var template = require('./template.tpl');
 var DropdownView = require('../dropdown/widget-dropdown-view');
 var animationTemplate = require('./animation-template.tpl');
@@ -13,8 +12,7 @@ var AnimateValues = require('../animate-values.js');
  */
 module.exports = WidgetContent.extend({
   initialize: function () {
-    this.dataModel = this.model;
-    this.viewModel = new WidgetViewModel();
+    this.dataModel = this.model.dataviewModel;
     WidgetContent.prototype.initialize.call(this);
   },
 
@@ -32,14 +30,14 @@ module.exports = WidgetContent.extend({
     };
 
     var nulls = !_.isUndefined(this.dataModel.get('nulls')) && formatter.formatNumber(this.dataModel.get('nulls')) || '-';
-    var isCollapsed = this.dataModel.isCollapsed();
+    var isCollapsed = this.model.isCollapsed();
 
     var prefix = this.dataModel.get('prefix');
     var suffix = this.dataModel.get('suffix');
 
     this.$el.html(
       template({
-        title: this.dataModel.get('title'),
+        title: this.model.get('title'),
         operation: this.dataModel.get('operation'),
         value: value,
         formatedValue: format(value),
@@ -64,7 +62,7 @@ module.exports = WidgetContent.extend({
   },
 
   _initBinds: function () {
-    this.dataModel.bind('change:collapsed', this.render, this);
+    this.model.bind('change:collapsed', this.render, this);
     WidgetContent.prototype._initBinds.call(this);
   },
 
@@ -76,15 +74,11 @@ module.exports = WidgetContent.extend({
 
     dropdown.bind('click', function (action) {
       if (action === 'toggle') {
-        this.dataModel.toggleCollapsed();
+        this.model.toggleCollapsed();
       }
     }, this);
 
     this.addView(dropdown);
-  },
-
-  _toggleCollapse: function () {
-    this.dataModel.toggleCollapsed();
   }
 
 });

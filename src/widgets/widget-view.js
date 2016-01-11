@@ -15,27 +15,31 @@ module.exports = cdb.core.View.extend({
   },
 
   initialize: function () {
-    this.model.layer.bind('change:visible', this._onChangeLayerVisible, this);
+    if (this.model.dataviewModel) {
+      this.model.dataviewModel.layer.bind('change:visible', this._onChangeLayerVisible, this);
+    }
   },
 
   render: function () {
-    this._loader = new WidgetLoaderView({
-      model: this.model
-    });
-    this.$el.append(this._loader.render().el);
-    this.addView(this._loader);
+    var dataviewModel = this.model.dataviewModel;
+    if (dataviewModel) {
+      this._appendView(new WidgetLoaderView({
+        model: dataviewModel
+      }));
 
-    this._error = new WidgetErrorView({
-      model: this.model
-    });
-    this.$el.append(this._error.render().el);
-    this.addView(this._error);
+      this._appendView(new WidgetErrorView({
+        model: dataviewModel
+      }));
+    }
 
-    var contentView = this.options.contentView;
-    this.$el.append(contentView.render().el);
-    this.addView(contentView);
+    this._appendView(this.options.contentView);
 
     return this;
+  },
+
+  _appendView: function (view) {
+    this.$el.append(view.render().el);
+    this.addView(view);
   },
 
   _onChangeLayerVisible: function (layer) {

@@ -1,17 +1,23 @@
 var _ = require('underscore');
-var WidgetListModel = require('../../../src/widgets/list/model');
+var WidgetModel = require('../../../src/widgets/widget-model');
 var WidgetListContent = require('../../../src/widgets/list/content-view');
 
 describe('widgets/list/content-view', function () {
   beforeEach(function () {
-    this.model = new WidgetListModel({
+    var vis = cdb.createVis(document.createElement('div'), {
+      layers: [{type: 'torque'}]
+    });
+    this.model = vis.dataviews.createListDataview(vis.map.layers.first(), {
       id: 'widget_3',
       title: 'Howdy',
       columns: ['cartodb_id', 'title']
     });
+    this.widgetModel = new WidgetModel({}, {
+      dataviewModel: this.model
+    });
     this.view = new WidgetListContent({
       showScroll: true,
-      model: this.model
+      model: this.widgetModel
     });
   });
 

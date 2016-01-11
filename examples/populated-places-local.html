@@ -44,77 +44,94 @@
         },
         "updated_at": "2015-10-26T11:50:30+00:00",
 
-        "datasource": {
-          "type": "public_map",
-          "user_name": cdbConfig.user_name,
-          "stat_tag": "ece6faac-7271-11e5-a85f-04013fc66a02",
-          "maps_api_template": cdbConfig.maps_api_template,
-          "force_cors": true // This is sometimes set in the editor
-        },
-
-        "widgets": {
-          "histogram_widget_pop_max": {
-            "layerId": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
+        "widgets": [
+          {
             "type": "histogram",
             "title": "Population",
-            "column": "pop_max",
-            "bins": 10
-          },
-          'category_widget_adm0_a3': {
-            "layerId": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
-            "type": "aggregation",
+            "dataview": {
+              "layerId": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
+              "type": "histogram",
+              "column": "pop_max",
+              "bins": 10
+            },
+          }, {
+            "type": "category",
             "title": "Population by country",
-            "column": "adm0name",
-            "aggregation": "sum",
-            "aggregationColumn": "pop_max"
-          },
-          'category_widget_labelrank': {
-            "layerId": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
-            "type": "aggregation",
+            "dataview": {
+              "layerId": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
+              "type": "aggregation",
+              "column": "adm0name",
+              "aggregation": "sum",
+              "aggregationColumn": "pop_max"
+            },
+          }, {
+            "type": "category",
             "title": "Rank category",
-            "column": "labelrank",
-            "aggregation": "count"
-          },
-          "formula_widget_avg": {
-            "layerId": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
+            'dataview': {
+              "layerId": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
+              "type": "aggregation",
+              "column": "labelrank",
+              "aggregation": "count"
+            },
+          }, {
             "type": "formula",
             "title": "Avg population",
-            "column": "pop_max",
-            "operation": "avg"
-          },
-          "formula_widget_sum": {
-            "layerId": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
+            "dataview": {
+              "layerId": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
+              "type": "formula",
+              "column": "pop_max",
+              "operation": "avg"
+            },
+          }, {
             "type": "formula",
             "title": "Total population",
-            "column": "pop_max",
-            "operation": "sum",
-            "suffix": " people"
-          },
-          "formula_widget_count": {
-            "layerId": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
+            "dataview": {
+              "layerId": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
+              "type": "formula",
+              "column": "pop_max",
+              "operation": "sum",
+              "suffix": " people"
+            },
+          }, {
             "type": "formula",
             "title": "# places",
-            "column": "pop_max",
-            "operation": "count",
-            "prefix": "$"
-          },
-          "formula_widget_min": {
-            "layerId": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
+            "dataview": {
+              "layerId": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
+              "type": "formula",
+              "column": "pop_max",
+              "operation": "count",
+              "prefix": "$"
+            },
+          }, {
             "type": "formula",
             "title": "Min population",
-            "column": "pop_max",
-            "operation": "min"
-          },
-          "formula_widget_max": {
-            "layerId": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
+            "dataview": {
+              "layerId": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
+              "type": "formula",
+              "column": "pop_max",
+              "operation": "min"
+            },
+          }, {
             "type": "formula",
             "title": "Max population",
-            "column": "pop_max",
-            "operation": "max"
+            "dataview": {
+              "layerId": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
+              "type": "formula",
+              "column": "pop_max",
+              "operation": "max"
+            }
           }
-        },
+        ],
 
         "vizJSON": {
+          "datasource": {
+            "type": "public_map",
+            "user_name": cdbConfig.user_name,
+            "stat_tag": "ece6faac-7271-11e5-a85f-04013fc66a02",
+            "maps_api_template": cdbConfig.maps_api_template,
+            "force_cors": true // This is sometimes set in the editor
+          },
+
           "id": "84ec6844-4b4b-11e5-9c1d-080027880ca6",
           "version": "0.1.0",
           "likes": 0,

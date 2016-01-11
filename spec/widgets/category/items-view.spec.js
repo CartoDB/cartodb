@@ -1,14 +1,16 @@
-var CategoryModel = require('../../../src/widgets/category/model.js');
-var ViewModel = require('../../../src/widgets/widget-content-model.js');
-var ItemsView = require('../../../src/widgets/category/list/items-view.js');
-var WindshaftFiltersCategory = require('../../../src/windshaft/filters/category');
+var cdb = require('cartodb.js');
+var CategoryWidgetModel = require('../../../src/widgets/category/category-widget-model');
+var ItemsView = require('../../../src/widgets/category/list/items-view');
 
 describe('widgets/category/items-view', function () {
   beforeEach(function () {
-    this.model = new CategoryModel(null, {
-      filter: new WindshaftFiltersCategory()
+    var vis = cdb.createVis(document.createElement('div'), {
+      layers: [{type: 'torque'}]
     });
-    this.viewModel = new ViewModel();
+    this.model = vis.dataviews.createCategoryDataview(vis.map.layers.first(), {});
+    this.viewModel = new CategoryWidgetModel({}, {
+      dataviewModel: this.model
+    });
     this.view = new ItemsView({
       viewModel: this.viewModel,
       dataModel: this.model
@@ -18,19 +20,31 @@ describe('widgets/category/items-view', function () {
   describe('render', function () {
     it('should render placeholder when data is empty', function () {
       spyOn(this.view, '_renderPlaceholder').and.callThrough();
-      this.model.setCategories([]);
       this.view.render();
       expect(this.view._renderPlaceholder).toHaveBeenCalled();
       expect(this.view.$el.hasClass('CDB-Widget-list--withBorders')).toBeTruthy();
       expect(this.view.$el.hasClass('CDB-Widget-list--wrapped')).toBeFalsy();
     });
 
-    it('should render properly a list of categories', function () {
-      this.model.setCategories([{ name: 'Hey' }, { name: 'test' }]);
-      this.view.render();
-      expect(this.view.$('.CDB-Widget-listGroup').length).toBe(1);
-      expect(this.view.$('.CDB-Widget-listItem').length).toBe(2);
-      expect(this.view.$el.hasClass('CDB-Widget-list--withBorders')).toBeFalsy();
+    describe('when have at least one category', function () {
+      beforeEach(function () {
+        this.model.sync = function (method, model, options) {
+          options.success({
+            'categories': [
+              {category: 'Hey'},
+              {category: 'test'}
+            ]
+          });
+        };
+        this.model.fetch();
+        this.view.render();
+      });
+
+      it('should render properly a list of categories', function () {
+        expect(this.view.$('.CDB-Widget-listGroup').length).toBe(1);
+        expect(this.view.$('.CDB-Widget-listItem').length).toBe(2);
+        expect(this.view.$el.hasClass('CDB-Widget-list--withBorders')).toBeFalsy();
+      });
     });
   });
 

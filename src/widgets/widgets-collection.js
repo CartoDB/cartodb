@@ -1,38 +1,22 @@
-var cdb = require('cartodb.js');
+var _ = require('underscore');
+var Backbone = require('backbone');
 
 /**
- *  Collection that controls widget models per layer
- *
+ * Collection of Dataviews
  */
-module.exports = cdb.Backbone.Collection.extend({
+module.exports = Backbone.Collection.extend({
   initialize: function () {
-    this._initBinds();
-  },
-
-  _initBinds: function () {
     // If a category model applies the category colors, rest should remove/disable
     // the category colors applied before.
-    this.bind('change:categoryColors', function (m, isColorCategorized) {
+    this.bind('change:isColorsApplied', function (m, isColorCategorized) {
       if (isColorCategorized) {
-        this.each(function (mdl) {
-          if (mdl !== m && mdl.get('categoryColors')) {
-            mdl.set('categoryColors', false);
-          }
-        });
-      }
-    }, this);
-
-    // If a histogram model applies the histogram sizes, rest should remove/disable
-    // the sizes applied before.
-    this.bind('change:histogramSizes', function (m, isSizesApplied) {
-      if (isSizesApplied) {
-        this.each(function (mdl) {
-          if (mdl !== m && mdl.get('histogramSizes')) {
-            mdl.set('histogramSizes', false);
+        this.each(function (widgetModel) {
+          // Only set if model actually has the attr (i.e. it's a category model)
+          if (m !== widgetModel && _.isBoolean(widgetModel.get('isColorsApplied'))) {
+            widgetModel.set('isColorsApplied', false);
           }
         });
       }
     }, this);
   }
-
 });

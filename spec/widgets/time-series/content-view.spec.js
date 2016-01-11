@@ -1,17 +1,20 @@
 var cdb = require('cartodb.js');
-var HistogramModel = require('../../../src/widgets/histogram/model');
 var TimeSeriesContentView = require('../../../src/widgets/time-series/content-view');
+var WidgetModel = require('../../../src/widgets/widget-model');
 
 describe('widgets/time-series/content-view', function () {
   beforeEach(function () {
-    this.model = new HistogramModel({}, {
-      filter: new cdb.core.Model(),
-      layer: new cdb.core.Model()
+    var vis = cdb.createVis(document.createElement('div'), {
+      layers: [{type: 'torque'}]
     });
-
-    this.model.sync = function (method, model, options) {
+    this.dataviewModel = vis.dataviews.createHistogramDataview(vis.map.layers.first(), {});
+    this.dataviewModel.sync = function (method, dataviewModel, options) {
       this.options = options;
     }.bind(this);
+
+    this.model = new WidgetModel({}, {
+      dataviewModel: this.dataviewModel
+    });
 
     this.view = new TimeSeriesContentView({
       model: this.model
@@ -33,7 +36,7 @@ describe('widgets/time-series/content-view', function () {
       var timeOffset = 10000;
       var startTime = (new Date()).getTime() - timeOffset;
 
-      this.model.fetch();
+      this.dataviewModel.fetch();
       this.options.success({
         bins_count: 3,
         bin_width: 100,

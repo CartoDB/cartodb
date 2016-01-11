@@ -31,9 +31,9 @@ module.exports = cdb.core.View.extend({
     this.clearSubViews();
     this.$el.html(
       template({
-        isCollapsed: this.dataModel.isCollapsed(),
-        isColorApplied: this.dataModel.isColorApplied(),
-        title: this.dataModel.get('title'),
+        isCollapsed: this.viewModel.isCollapsed(),
+        isColorApplied: this.viewModel.isColorApplied(),
+        title: this.viewModel.get('title'),
         columnName: this.dataModel.get('column'),
         q: this.dataModel.getSearchQuery(),
         isLocked: this.dataModel.isLocked(),
@@ -48,7 +48,8 @@ module.exports = cdb.core.View.extend({
 
   _initBinds: function () {
     this.viewModel.bind('change:search', this._onSearchToggled, this);
-    this.dataModel.bind('change:filter change:lockCollection change:categoryColors change:collapsed', this.render, this);
+    this.viewModel.bind('change:collapsed change:isColorsApplied', this.render, this);
+    this.dataModel.bind('change:filter change:lockCollection', this.render, this);
     this.add_related_model(this.dataModel);
     this.add_related_model(this.viewModel);
   },
@@ -61,7 +62,7 @@ module.exports = cdb.core.View.extend({
 
     dropdown.bind('click', function (action) {
       if (action === 'toggle') {
-        this.dataModel.toggleCollapsed();
+        this.viewModel.toggleCollapsed();
       }
     }, this);
 
@@ -133,20 +134,16 @@ module.exports = cdb.core.View.extend({
   },
 
   _applyColors: function () {
-    this.dataModel.applyCategoryColors();
+    this.viewModel.applyColors();
   },
 
   _cancelColors: function () {
-    this.dataModel.cancelCategoryColors();
+    this.viewModel.cancelColors();
   },
 
   _cancelSearch: function () {
     this.dataModel.cleanSearch();
     this.viewModel.disableSearch();
-  },
-
-  _toggleCollapse: function () {
-    this.dataModel.toggleCollapsed();
   },
 
   clean: function () {

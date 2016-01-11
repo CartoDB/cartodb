@@ -1,18 +1,14 @@
 var _ = require('underscore');
 var cdb = require('cartodb.js');
-var WidgetModel = require('../../src/widgets/widget-model');
 var WidgetView = require('../../src/widgets/widget-view');
+var WidgetModel = require('../../src/widgets/widget-model');
 
 describe('widgets/widget-view', function () {
   beforeEach(function () {
-    this.model = new WidgetModel({
-      id: 'widget_1',
-      options: {
-        title: 'Hello widget',
-        columns: ['cartodb_id', 'description']
-      }
-    }, {
-      layer: new cdb.core.Model()
+    this.dataviewModel = new cdb.core.Model();
+    this.dataviewModel.layer = new cdb.core.Model();
+    this.model = new WidgetModel({}, {
+      dataviewModel: this.dataviewModel
     });
     this.view = new WidgetView({
       model: this.model,

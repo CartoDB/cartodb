@@ -78,9 +78,10 @@
     <div class="OrganizationUser-quota js-userQuota">
       <div class="FormAccount-rowData FormAccount-rowData--med OrganizationUser-quotaProgress js-userQuotaSlider">
         <div class="UISlider UserQuotaDropdown-slider js-slider progress-bar overflow-visible">
-          <% assignedPer = ((@user.quota_in_bytes.to_f * 100) / current_user.organization.quota_in_bytes) %>
+        <% available_quota_for_user = current_user.organization.unassigned_quota + current_user.quota_in_bytes %>
+          <% assignedPer = ((@user.quota_in_bytes.to_f * 100) / available_quota_for_user) %>
           <% if !@user.new? %>
-            <% usedPer = ((@user.db_size_in_bytes.to_f * 100) / current_user.organization.quota_in_bytes) %>
+            <% usedPer = ((@user.db_size_in_bytes.to_f * 100) / available_quota_for_user) %>
             <span class="bar-3" style="width:<%= usedPer %>%"></span>
           <% end %>
         </div>

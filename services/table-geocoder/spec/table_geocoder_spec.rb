@@ -6,7 +6,12 @@ require 'set'
 require_relative '../../../spec/rspec_configuration'
 
 describe CartoDB::TableGeocoder do
-  let(:default_params) { {app_id: '', token: '', mailto: ''} }
+  let(:default_params) {{
+    app_id: '',
+    token: '',
+    mailto: '',
+    usage_metrics: mock('usage_metrics')
+    }}
   before do
     conn          = CartoDB::Importer2::Factories::PGConnection.new
     @db           = conn.connection
@@ -27,6 +32,16 @@ describe CartoDB::TableGeocoder do
 
   describe '#run' do
     before do
+      # TODO: Note the coupling of the geocoder object and the metrics
+      success_rows = 10
+      empty_rows = 3
+      failed_rows = 4
+      total = success_rows + empty_rows + failed_rows
+      default_params[:usage_metrics].expects(:incr).with(:geocoder_here, :success_responses, success_rows)
+      default_params[:usage_metrics].expects(:incr).with(:geocoder_here, :empty_responses, empty_rows)
+      default_params[:usage_metrics].expects(:incr).with(:geocoder_here, :failed_responses, failed_rows)
+      default_params[:usage_metrics].expects(:incr).with(:geocoder_here, :total_requests, total)
+
       @tg = CartoDB::TableGeocoder.new(default_params.merge({
         table_name: @table_name,
         qualified_table_name: @table_name,
@@ -40,6 +55,12 @@ describe CartoDB::TableGeocoder do
       geocoder.stubs(:request_id).returns('111')
       geocoder.stubs(:run).returns(true)
       geocoder.stubs(:status).returns('foo')
+
+      # TODO: Note the coupling of the geocoder object and the metrics
+      geocoder.stubs(:successful_processed_rows).returns(success_rows)
+      geocoder.stubs(:empty_processed_rows).returns(empty_rows)
+      geocoder.stubs(:failed_processed_rows).returns(failed_rows)
+
       @tg.stubs(:geocoder).returns(geocoder)
       @tg.stubs(:cache_disabled?).returns(true)
       @tg.run

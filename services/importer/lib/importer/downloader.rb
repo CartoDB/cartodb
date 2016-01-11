@@ -91,13 +91,13 @@ module CartoDB
       def self.supported_extensions
         @supported_extensions ||= CartoDB::Importer2::Unp::SUPPORTED_FORMATS
                                   .concat(CartoDB::Importer2::Unp::COMPRESSED_EXTENSIONS)
-                                  .sort_by { |s| s.length }.reverse
+                                  .sort_by(&:length).reverse
       end
 
       def self.url_filename_regex
         @url_filename_regex ||= Regexp.new(
-                                "[[:word:]]+#{Regexp.union(supported_extensions)}+",
-                                true)
+                                 "[[:word:]]+#{Regexp.union(supported_extensions)}+",
+                                 true)
       end
 
       def initialize(url, http_options = {}, options = {}, seed = nil, repository = nil)

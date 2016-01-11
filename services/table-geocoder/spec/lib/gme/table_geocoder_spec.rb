@@ -9,12 +9,14 @@ describe Carto::Gme::TableGeocoder do
   before(:all) do
     connection_stub = mock
     connection_stub.stubs(:run)
+    @usage_metrics_stub = stub
 
     @mandatory_args = {
       connection: connection_stub,
       original_formatter: '{mock}',
       client_id: 'my_client_id',
-      private_key: 'my_private_key'
+      private_key: 'my_private_key',
+      usage_metrics: @usage_metrics_stub
     }
   end
 
@@ -73,6 +75,12 @@ describe Carto::Gme::TableGeocoder do
     end
 
     it "set's the state to 'completed' when it ends" do
+      # TODO: there's something weird that needs review here
+      @usage_metrics_stub.expects(:incr).with(:geocoder_google, :total_requests, 0)
+      @usage_metrics_stub.expects(:incr).with(:geocoder_google, :success_responses, 0)
+      @usage_metrics_stub.expects(:incr).with(:geocoder_google, :empty_responses, 0)
+      @usage_metrics_stub.expects(:incr).with(:geocoder_google, :failed_responses, 0)
+
       @table_geocoder.stubs(:ensure_georef_status_colummn_valid)
       @table_geocoder.stubs(:data_input_blocks).returns([])
 
@@ -81,6 +89,12 @@ describe Carto::Gme::TableGeocoder do
     end
 
     it "if there's an uncontrolled exception, sets the state to 'failed' and raises it" do
+      # TODO: there's something weird that needs review here
+      @usage_metrics_stub.expects(:incr).with(:geocoder_google, :total_requests, 0)
+      @usage_metrics_stub.expects(:incr).with(:geocoder_google, :success_responses, 0)
+      @usage_metrics_stub.expects(:incr).with(:geocoder_google, :empty_responses, 0)
+      @usage_metrics_stub.expects(:incr).with(:geocoder_google, :failed_responses, 0)
+
       @table_geocoder.stubs(:ensure_georef_status_colummn_valid)
       @table_geocoder.stubs(:data_input_blocks).returns([{cartodb_id: 1, searchtext: 'dummy text'}])
       @table_geocoder.stubs(:geocode).raises(StandardError, 'unexpected exception')
@@ -92,6 +106,12 @@ describe Carto::Gme::TableGeocoder do
     end
 
     it "processes 1 block at a time, keeping track of processed rows in each block" do
+      # TODO: there's something weird that needs review here
+      @usage_metrics_stub.expects(:incr).with(:geocoder_google, :total_requests, 0)
+      @usage_metrics_stub.expects(:incr).with(:geocoder_google, :success_responses, 0)
+      @usage_metrics_stub.expects(:incr).with(:geocoder_google, :empty_responses, 0)
+      @usage_metrics_stub.expects(:incr).with(:geocoder_google, :failed_responses, 0)
+
       @table_geocoder.stubs(:ensure_georef_status_colummn_valid)
       mocked_input = Enumerator.new do |enum|
         # 2 blocks of 2 rows each as input
@@ -131,7 +151,8 @@ describe Carto::Gme::TableGeocoder do
         original_formatter: "{name}, {iso3}",
         client_id: 'my_client_id',
         private_key: 'my_private_key',
-        max_block_size: 4
+        max_block_size: 4,
+        usage_metrics: @usage_metrics_stub
       }
 
       @table_geocoder = Carto::Gme::TableGeocoder.new(params)

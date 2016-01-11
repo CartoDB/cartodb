@@ -21,6 +21,7 @@ class Admin::UsersController < Admin::AdminController
 
   ssl_required  :account, :profile, :account_update, :profile_update, :delete
 
+  before_filter :invalidate_browser_cache
   before_filter :login_required
   before_filter :setup_user
   before_filter :initialize_google_plus_config, only: [:profile, :account]
@@ -185,5 +186,4 @@ class Admin::UsersController < Admin::AdminController
   def setup_user
     @user = current_user
   end
-
 end

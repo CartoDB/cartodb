@@ -40,18 +40,6 @@ class Admin::VisualizationsController < Admin::AdminController
                                                    :show_organization_embed_map, :show_protected_embed_map,
                                                    :track_embed]
 
-  skip_before_filter :invalidate_browser_cache, only: [:show_organization_embed_map,
-                                                       :show_protected_embed_map,
-                                                       :embed_map,
-                                                       :embed_protected,
-                                                       :embed_forbidden,
-                                                       :public_table,
-                                                       :public_map,
-                                                       :show_organization_public_map,
-                                                       :show_protected_public_map,
-                                                       :public_map_protected,
-                                                       :track_embed]
-
   def index
     @first_time    = !current_user.dashboard_viewed?
     @just_logged_in = !!flash['logged']

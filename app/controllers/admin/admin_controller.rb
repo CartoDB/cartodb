@@ -1,6 +1,5 @@
 class Admin::AdminController < ApplicationController
   before_filter :x_frame_options_deny
-  before_filter :invalidate_browser_cache
 
   protected
 

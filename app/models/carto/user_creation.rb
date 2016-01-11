@@ -85,7 +85,7 @@ class Carto::UserCreation < ActiveRecord::Base
 
   # TODO: Shorcut, search for a better solution to detect requirement
   def requires_validation_email?
-    google_sign_in != true && !has_valid_invitation? && !Carto::Ldap::Manager.new.configuration_present?
+    google_sign_in != true && !has_valid_invitation? && !Carto::Ldap::Manager.new.configuration_present? && !created_via_api?
   end
 
   def autologin?
@@ -99,6 +99,15 @@ class Carto::UserCreation < ActiveRecord::Base
   def with_invitation_token(invitation_token)
     self.invitation_token = invitation_token
     self
+  end
+
+  def with_api
+    self.created_via_api = true
+    self
+  end
+
+  def created_via_api?
+    self.created_via_api
   end
 
   def has_valid_invitation?

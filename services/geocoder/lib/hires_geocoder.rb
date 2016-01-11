@@ -123,10 +123,14 @@ module CartoDB
         CartoDB.notify_debug('Non-batched geocoder failed request', http_response)
         return [nil, nil]
       end
-    rescue => e
-      CartoDB.notify_debug("Non-batched geocoder couldn't parse response",
-                           error: e.backtrace.join('\n'), backtrace: e.backtrace, text: text, response_body: http_response.body)
-      raise e
+    rescue NoMethodError => e
+      if e.message == %q(undefined method `[]' for nil:NilClass)
+        CartoDB.notify_debug("Non-batched geocoder couldn't parse response",
+          error: e.backtrace.join('\n'), backtrace: e.backtrace, text: text, response_body: http_response.body)
+        [nil, nil]
+      else
+        raise e
+      end
     end
 
     def api_url(arguments, extra_components = nil)

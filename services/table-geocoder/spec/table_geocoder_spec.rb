@@ -115,7 +115,7 @@ describe CartoDB::TableGeocoder do
 
   describe '#download_results' do
     it 'gets the geocoder results' do
-      tg = CartoDB::TableGeocoder.new(table_name: 'a', connection: @db, max_rows: 1000)
+      tg = CartoDB::TableGeocoder.new(table_name: 'a', connection: @db, max_rows: 1000, usage_metrics: nil)
       geocoder = mock
       geocoder.expects(:result).times(1).returns('a')
       tg.stubs(:geocoder).returns(geocoder)
@@ -127,14 +127,14 @@ describe CartoDB::TableGeocoder do
   describe '#deflate_results' do
     it 'does not raise an error if no results file' do
       dir = Dir.mktmpdir
-      tg = CartoDB::TableGeocoder.new(table_name: 'a', connection: @db, working_dir: dir, max_rows: 1000)
+      tg = CartoDB::TableGeocoder.new(table_name: 'a', connection: @db, working_dir: dir, max_rows: 1000, usage_metrics: nil)
       expect { tg.send(:deflate_results) }.to_not raise_error
     end
 
     it 'extracts nokia result files' do
       dir = Dir.mktmpdir
       `cp #{path_to('kXYkQhuDfxnUSmWFP3dmq6TzTZAzwy4x.zip')} #{dir}`
-      tg = CartoDB::TableGeocoder.new(table_name: 'a', connection: @db, working_dir: dir, max_rows: 1000)
+      tg = CartoDB::TableGeocoder.new(table_name: 'a', connection: @db, working_dir: dir, max_rows: 1000, usage_metrics: nil)
       tg.send(:deflate_results)
       filename = 'result_20130919-04-55_6.2.46.1_out.txt'
       destfile = File.open(File.join(dir, filename))
@@ -144,12 +144,12 @@ describe CartoDB::TableGeocoder do
 
   describe '#create_temp_table' do
     it 'raises error if no remote_id' do
-      tg = CartoDB::TableGeocoder.new(table_name: 'a', connection: @db, max_rows: 1000)
+      tg = CartoDB::TableGeocoder.new(table_name: 'a', connection: @db, max_rows: 1000, usage_metrics: nil)
       expect { tg.send(:create_temp_table) }.to raise_error(Sequel::DatabaseError)
     end
 
     it 'creates a temporary table' do
-      tg = CartoDB::TableGeocoder.new(table_name: 'a', connection: @db, remote_id: 'geo_HvyxzttLyFhaQ7JKmnrZxdCVySd8N0Ua', schema: 'public', max_rows: 1000)
+      tg = CartoDB::TableGeocoder.new(table_name: 'a', connection: @db, remote_id: 'geo_HvyxzttLyFhaQ7JKmnrZxdCVySd8N0Ua', schema: 'public', max_rows: 1000, usage_metrics: nil)
       tg.send(:drop_temp_table)
       tg.send(:create_temp_table)
       @db.fetch("select * from #{tg.send(:temp_table_name)}").all.should eq []
@@ -158,7 +158,7 @@ describe CartoDB::TableGeocoder do
 
   describe '#import_results_to_temp_table' do
     before do
-      @tg = CartoDB::TableGeocoder.new(table_name: 'a', connection: @db, remote_id: 'temp_table', schema: 'public', max_rows: 1000)
+      @tg = CartoDB::TableGeocoder.new(table_name: 'a', connection: @db, remote_id: 'temp_table', schema: 'public', max_rows: 1000, usage_metrics: nil)
       @tg.send(:create_temp_table)
     end
 
@@ -186,7 +186,8 @@ describe CartoDB::TableGeocoder do
                                        sequel_qualified_table_name: table_name,
                                        connection: @db,
                                        remote_id: 'wadus',
-                                       max_rows: 1000)
+                                       max_rows: 1000,
+                                       usage_metrics: nil)
     end
 
     after do

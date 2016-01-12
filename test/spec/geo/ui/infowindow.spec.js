@@ -325,7 +325,7 @@ describe('geo/ui/infowindow', function() {
   });
 
   describe("image template", function() {
-    var model, view, container, fields, fieldsWithoutURL, url;
+    var model, view, container, fields, fieldsWithURL, fieldsWithoutURL, url;
 
     beforeEach(function() {
 
@@ -335,6 +335,11 @@ describe('geo/ui/infowindow', function() {
 
       fields = [
         { title: 'test1', position: 1, value: url },
+        { title: 'test2', position: 2, value: "b"}
+      ];
+
+      fieldsWithURL = [
+        { title: 'test1', position: 1, value: "http://fake.url/image.jpg" },
         { title: 'test2', position: 2, value: "b"}
       ];
 
@@ -386,13 +391,16 @@ describe('geo/ui/infowindow', function() {
     });
 
     it("should add the image cover class in the custom template", function() {
-      model.set('template', '<div class="js-infowindow has-title has-header-image is-header" data-cover="true"><div class="js-cover" style="height: 123px"><img src="//fake" style="height: 100px"></div><div class="js-hook"></div></div>');
+      model.set('template', '<div class="js-infowindow has-title has-header-image is-header" data-cover="true"><div class="js-cover" style="height: 123px"><img src="http://fake.url" style="height: 100px"></div><div class="js-hook"></div></div>');
       expect(view._containsCover()).toEqual(true);
       expect(view.$(".CDB-infowindow-media-item").length).toEqual(1);
     });
 
     it("should setup the hook correctly", function() {
-      model.set('template', '<div class="js-infowindow" data-cover="true"><div class="js-cover" style="height: 123px"><img src="//fake" style="height: 100px"></div><div class="js-hook"></div></div>');
+      model.set("content", { fields: fieldsWithURL });
+      model.set('template', '<div class="js-infowindow" data-cover="true"><div class="js-cover"></div><div class="js-hook"></div></div>');
+
+      view._loadImageHook();
       expect(view.$(".js-hook svg").length).toEqual(1);
       expect(view.$(".js-hook svg path").attr('d')).toEqual('M0,0 L0,16 L24,0 L0,0 Z');
     });
@@ -429,5 +437,7 @@ describe('geo/ui/infowindow', function() {
       model.set('template', '<div class="js-infowindow header" data-cover="true"><div class="js-cover"></div></div>');
       expect(view.$el.find(".CDB-infowindow-fail").length).toEqual(1);
     });
+
+
   });
 });

@@ -136,7 +136,7 @@ var Infowindow = View.extend({
   },
 
   _initBinds: function () {
-    _.bindAll(this, '_onKeyUp');
+    _.bindAll(this, '_onKeyUp', '_onLoadImage');
 
     this.model.bind('change:content change:alternative_names change:width change:maxHeight', this.render, this);
     this.model.bind('change:template_name', this._setTemplate, this);
@@ -327,13 +327,19 @@ var Infowindow = View.extend({
     return !!this.$('.js-infowindow').attr('data-cover');
   },
 
+  _containsTemplateCover: function () {
+    return this.$('.js-cover img').length > 0;
+  },
+
   /**
    *  Get cover URL
    */
   _getCoverURL: function () {
     var content = this.model.get('content');
 
-    if (content && content.fields && content.fields.length > 0) {
+    if (this.$('.js-cover img').attr('src')) {
+      return this.$('.js-cover img').attr('src');
+    } else if (content && content.fields && content.fields.length > 0) {
       return (content.fields[0].value || '').toString();
     }
 
@@ -363,18 +369,62 @@ var Infowindow = View.extend({
     }
   },
 
-  /**
-   *  Attempts to load the cover URL and show it
-   */
+  _loadCoverFromTemplate: function (url) {
+    this.$('.js-cover img').remove();
+    this._loadCoverFromUrl(url);
+  },
+
+  _loadCoverFromUrl: function (url) {
+    var $cover = this.$('.js-cover');
+
+    this._startLoader();
+    this._coverLoading = true;
+
+    var $img = $("<img class='CDB-infowindow-media-item' />").attr('src', url);
+    $cover.append($img);
+    $img.load(this._onLoadImage).error();
+  },
+
+  _onLoadImage: function () {
+    var $cover = this.$('.js-cover');
+    var $img = this.$('.CDB-infowindow-media-item');
+    var url = $img.attr('src');
+
+    var w = $img.width();
+    var h = $img.height();
+
+    var coverWidth = $cover.width();
+    var coverHeight = $cover.height();
+
+    var ratio = h / w;
+
+    var coverRatio = coverHeight / coverWidth;
+
+    var styles = {};
+
+    if (w > coverWidth && h > coverHeight) { // bigger image
+      if (ratio < coverRatio) {
+        styles = { height: coverHeight };
+      }
+    } else {
+      styles = { width: w };
+    }
+
+    $img.css(styles);
+    $cover.css({ height: h - this.options.hookHeight });
+
+    this._stopCoverLoader();
+
+    $img.fadeIn(150);
+
+    this._loadImageHook($img.width(), $img.height(), h - this.options.hookHeight, url);
+  },
+
   _loadCover: function () {
     if (!this._containsCover()) {
       return;
     }
 
-    var self = this;
-
-    var $cover = this.$('.js-cover');
-    var $img = $cover.find('img');
     var url = this._getCoverURL();
 
     if (this._isValidURL(url)) {
@@ -384,51 +434,11 @@ var Infowindow = View.extend({
       return;
     }
 
-    if ($img.length > 0) {
-      $img.addClass('CDB-infowindow-media-item');
-      url = $img.attr('src');
-
-      var h = $img.height();
-      var coverHeight = $cover.height();
-      $cover.animate({ height: h - this.options.hookHeight }, 150);
-
-      this._loadImageHook($img.width(), coverHeight, h - this.options.hookHeight, url);
-
-      return false;
+    if (this._containsTemplateCover()) {
+      this._loadCoverFromTemplate(url);
+    } else {
+      this._loadCoverFromUrl(url);
     }
-
-    this._startLoader();
-    this._coverLoading = true;
-
-    $img = $("<img class='CDB-infowindow-media-item' />").attr('src', url);
-
-    $cover.append($img);
-
-    $img.load(function () {
-      var w = $img.width();
-      var h = $img.height();
-
-      var coverWidth = $cover.width();
-      var coverHeight = $cover.height();
-
-      var ratio = h / w;
-
-      var coverRatio = coverHeight / coverWidth;
-
-      var styles = {};
-
-      // Resize rules
-      if (w > coverWidth && h > coverHeight) { // bigger image
-        if (ratio < coverRatio) {
-          styles = { height: coverHeight };
-        }
-      }
-
-      $img.animate(styles, { duration: 300 });
-      $cover.animate({ height: h - self.options.hookHeight }, { duration: 300 });
-      self._stopCoverLoader();
-      self._loadImageHook($img.width(), $img.height(), h - self.options.hookHeight, url);
-    }).error();
   },
 
   _clearInfowindowImageError: function () {

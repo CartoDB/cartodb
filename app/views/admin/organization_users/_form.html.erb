@@ -150,7 +150,7 @@
       <div class="FormAccount-rowData">
         <%= f.text_field :api_key, :class => "FormAccount-input FormAccount-input--med is-disabled", :readonly => true %>
         <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
-          <button class="Button--link js-regenerateOrgUserApiKey" data-username="<%= @user.username %>" data-current_username="<%= current_user.username %>">Regenerate API key</button>
+          <button class="Button--link js-regenerateOrgUserApiKey" data-username="<%= @user.username %>" data-current_username="<%= current_user.username %>" type="button">Regenerate API key</button>
         </div>
       </div>
     </div>

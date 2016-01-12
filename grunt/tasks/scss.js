@@ -14,6 +14,7 @@ module.exports = {
         files: [{
           expand: true,
           src: [
+            'node_modules/perfect-scrollbar/**/*.scss',
             'themes/scss/**/*.scss'
           ],
           dest: '.tmp/scss',

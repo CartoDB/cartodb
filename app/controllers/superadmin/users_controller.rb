@@ -17,7 +17,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
     if(params[:overquota].present?)
       @users =  ::User.overquota(0.20)
     elsif(params[:db_size_in_bytes_change].present?)
-      @users = ::User.db_size_in_bytes_change
+      @users = ::User.where_db_size_changed.all
     else
       @users = ::User.all
     end
@@ -32,8 +32,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
 
     if @user.save
       @user.reload
-      common_data_url = CartoDB::Visualization::CommonDataService.build_url(self)
-      @user.load_common_data(common_data_url)
+      CartoDB::Visualization::CommonDataService.load_common_data(user, self)
       @user.set_relationships_from_central(params[:user])
     end
     respond_with(:superadmin, @user)

@@ -1,7 +1,12 @@
 # encoding: utf-8
+
+require 'ostruct'
 require_relative '../../acceptance_helper'
 
 feature "Superadmin's users API" do
+  before(:all) do
+  end
+
   background do
     Capybara.current_driver = :rack_test
     @new_user = new_user(password: "this_is_a_password")
@@ -347,8 +352,8 @@ feature "Superadmin's users API" do
       end
     end
 
-    it "gets db_size_in_bytes_change users" do
-      ::User.expects(:db_size_in_bytes_change).returns({}).once
+    it "gets where_db_size_changed users" do
+      ::User.expects(:where_db_size_changed).returns(OpenStruct.new({ all: [] })).once
 
       get_json superadmin_users_path, { db_size_in_bytes_change: true }, superadmin_headers do |response|
         response.status.should == 200

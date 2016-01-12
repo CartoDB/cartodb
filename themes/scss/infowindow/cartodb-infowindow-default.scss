@@ -53,18 +53,18 @@
   word-break: break-word;
 }
 
-.CDB-infowindow-inner.has-scroll {
+.CDB-infowindow.has-scroll .CDB-infowindow-inner {
   position: relative;
   padding-right: 12px;
 }
 
-.CDB-infowindow-inner.has-scroll .CDB-infowindow-list {
+.CDB-infowindow.has-scroll .CDB-infowindow-inner .CDB-infowindow-list {
   position: relative;
   max-height: 200px;
   overflow: scroll;
 }
 
-.CDB-infowindow-inner.has-scroll .CDB-infowindow-list .CDB-infowindow-listItem {
+.CDB-infowindow.has-scroll .CDB-infowindow-list .CDB-infowindow-listItem {
   margin-right: 20px;
 }
 

@@ -38,6 +38,14 @@ class Geocoding < Sequel::Model
     dataset.where(kind: 'high-resolution').where('geocodings.created_at >= ? and geocodings.created_at <= ?', date_from, date_to + 1.days).sum("processed_rows + cache_hits".lit).to_i
   end
 
+  def self.get_not_aggregated_geocoding_calls(dataset, date_from, date_to)
+    geocoding_calls_sql = "SELECT date(created_at), sum(processed_rows) as processed_rows, " \
+                          "sum(cache_hits) as cache_hits FROM geocodings WHERE kind = 'high-resolution' " \
+                          "AND geocodings.created_at >= ? and geocodings.created_at <= ?" \
+                          "GROUP BY date(created_at) ORDER BY date(created_at) DESC"
+    dataset.db.fetch(geocoding_calls_sql, date_from, date_to + 1.days).all
+  end
+
   def public_values
     Hash[PUBLIC_ATTRIBUTES.map{ |k| [k, (self.send(k) rescue self[k].to_s)] }]
   end

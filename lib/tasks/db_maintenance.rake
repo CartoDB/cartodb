@@ -1,4 +1,5 @@
 require_relative 'thread_pool'
+require_relative '../../services/table-geocoder/lib/table_geocoder_factory'
 require 'timeout'
 
 namespace :cartodb do
@@ -1255,6 +1256,26 @@ namespace :cartodb do
           end
         }, 1, 0.3)
       end
+    end
+
+    desc 'Migrate the current billing geocoding data to Redis'
+    task :migrate_current_geocoder_billing_to_redis => [:environment] do |task, args|
+      execute_on_users_with_index(:migrate_current_geocoder_billing_to_redis.to_s, Proc.new { |user, i|
+        begin
+          usage_metrics = Carto::TableGeocoderFactory.get_geocoder_metrics_instance(user)
+          geocoder_key = user.google_maps_geocoder_enabled? ? :geocoder_google : :geocoder_here
+          geocoding_calls = user.get_not_aggregated_geocoding_calls({from: date_from, to: date_to})
+          geocoding_calls.each do |metric|
+            usage_metrics.incr(geocoder_key, :success_responses, metric[:processed_rows], metric[:date])
+            usage_metrics.incr(geocoder_key, :total_requests, metric[:processed_rows], metric[:date])
+            usage_metrics.incr(:geocoder_cache, :success_responses, metric[:cache_hits], metric[:date])
+            usage_metrics.incr(:geocoder_cache, :total_requests, metric[:cache_hits], metric[:date])
+            puts "Imported metrics for day #{metric[:date]} and user #{user.username}: #{metric}"
+          end
+        rescue => e
+          puts "Error trying to migrate user current billing cycle to redis #{user.name}: #{e.message}"
+        end
+      }, 1, 0.3)
     end
   end
 end

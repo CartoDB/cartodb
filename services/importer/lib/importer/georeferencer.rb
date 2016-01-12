@@ -5,6 +5,7 @@ require_relative './query_batcher'
 require_relative './content_guesser'
 
 require_relative '../../../../lib/cartodb/stats/importer'
+require_relative '../../../table-geocoder/lib/geocoder_usage_metrics'
 
 module CartoDB
   module Importer2
@@ -209,6 +210,8 @@ module CartoDB
         @importer_stats.timing("geocoding.#{kind}") do
           @tracker.call('geocoding')
           create_the_geom_in(table_name)
+          orgname = user.organization.nil? ? nil : user.organization.name
+          usage_metrics = CartoDB::GeocoderUsageMetrics.new($users_metadata, user.username, orgname)
           config = @options[:geocoder].merge(
             table_schema: schema,
             table_name: table_name,
@@ -219,7 +222,8 @@ module CartoDB
             kind: kind,
             max_rows: nil,
             country_column: country_column_name,
-            countries: country.present? ? "'#{country}'" : nil
+            countries: country.present? ? "'#{country}'" : nil,
+            usage_metrics: usage_metrics
           )
           geocoder = CartoDB::InternalGeocoder::Geocoder.new(config)
 

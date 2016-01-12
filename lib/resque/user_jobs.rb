@@ -207,7 +207,6 @@ module Resque
           UserMailer.trending_map(visualization, mapviews, vis_preview_image).deliver
         end
       end
-
     end
   end
 end

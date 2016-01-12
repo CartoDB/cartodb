@@ -14,6 +14,17 @@ module CartoDB
         @datasets = datasets
       end
 
+      def self.load_common_data(user, controller)
+        if self.configured?
+          common_data_url = CartoDB::Visualization::CommonDataService.build_url(controller)
+          user.load_common_data(common_data_url)
+        end
+      end
+
+      def self.configured?
+        !Cartodb.config[:common_data].nil?
+      end
+
       def self.build_url(controller)
         common_data_config = Cartodb.config[:common_data]
         return nil unless common_data_config

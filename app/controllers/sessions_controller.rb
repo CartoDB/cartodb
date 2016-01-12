@@ -12,13 +12,13 @@ class SessionsController < ApplicationController
   ssl_required :new, :create, :destroy, :show, :unauthenticated, :account_token_authentication_error,
                :ldap_user_not_at_cartodb
 
+  skip_before_filter :ensure_org_url_if_org_user # Don't force org urls
+  skip_before_filter :ensure_account_has_been_activated,
+                     only: [:account_token_authentication_error, :ldap_user_not_at_cartodb]
+
   before_filter :load_organization
   before_filter :initialize_google_plus_config
-  before_filter :api_authorization_required, :only => :show
-  # Don't force org urls
-  skip_before_filter :ensure_org_url_if_org_user
-  skip_before_filter :ensure_account_has_been_activated, :only => [ :account_token_authentication_error,
-                     :ldap_user_not_at_cartodb ]
+  before_filter :api_authorization_required, only: :show
 
   def new
     if logged_in?(CartoDB.extract_subdomain(request))

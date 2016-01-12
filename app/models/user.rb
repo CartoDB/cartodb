@@ -15,6 +15,7 @@ require_relative '../../lib/cartodb/stats/api_calls'
 require_relative '../../lib/carto/http/client'
 require_dependency 'cartodb_config_utils'
 require_relative './user/db_service'
+require_dependency 'carto/user_db_size_cache'
 
 class User < Sequel::Model
   include CartoDB::MiniSequel
@@ -456,6 +457,10 @@ class User < Sequel::Model
     end
   end
 
+  def self.where_db_size_changed
+    ::User.where(username: Carto::UserDbSizeCache.new.db_size_in_bytes_change_users.keys)
+  end
+
   def self.password_digest(password, salt)
     digest = AUTH_DIGEST
     10.times do
@@ -871,10 +876,10 @@ class User < Sequel::Model
       $users_metadata.HMSET key, 'api_calls', api_calls.to_json
     end
   end
-  ##
 
   def last_billing_cycle
     day = period_end_date.day rescue 29.days.ago.day
+    # << operator substract 1 month from the date object
     date = (day > Date.today.day ? Date.today << 1 : Date.today)
     begin
       Date.parse("#{date.year}-#{date.month}-#{day}")

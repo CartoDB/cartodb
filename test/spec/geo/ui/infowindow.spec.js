@@ -311,13 +311,15 @@ describe('geo/ui/infowindow', function() {
     });
 
     it("should add the image cover class in the custom template", function() {
+      spyOn(view, '_loadCoverFromTemplate').and.callThrough();
       model.set('template', '<div class="js-infowindow has-title has-header-image is-header" data-cover="true"><div class="js-cover" style="height: 123px"><img src="http://fake.url" style="height: 100px"></div><div class="js-hook"></div></div>');
+      expect(view._loadCoverFromTemplate).toHaveBeenCalled();
       expect(view._containsCover()).toEqual(true);
       expect(view.$(".CDB-infowindow-media-item").length).toEqual(1);
     });
 
     it("should setup the hook correctly", function() {
-      spyOn(view, '_loadCoverFromUrl');
+      spyOn(view, '_loadCoverFromUrl').and.callThrough();
       model.set("content", { fields: fieldsWithURL });
       model.set('template', '<div class="js-infowindow" data-cover="true"><div class="js-cover"></div><div class="js-hook"></div></div>');
 

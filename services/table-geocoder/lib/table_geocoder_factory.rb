@@ -4,6 +4,7 @@ require_relative 'table_geocoder'
 require_relative 'internal_geocoder'
 require_relative 'gme/table_geocoder'
 require_relative 'exceptions'
+require_relative 'geocoder_usage_metrics'
 
 module Carto
   class TableGeocoderFactory
@@ -53,11 +54,17 @@ module Carto
         geocoder_class = CartoDB::InternalGeocoder::Geocoder
       end
 
+      instance_config.merge!(usage_metrics: get_geocoder_metrics_instance(user))
+
       log.append "geocoder_class = #{geocoder_class.to_s}"
       instance = geocoder_class.new(instance_config)
       log.append "geocoder_type = #{instance.name}"
       instance
     end
 
+    def self.get_geocoder_metrics_instance(user)
+      orgname = user.organization.nil? ? nil : user.organization.name
+      CartoDB::GeocoderUsageMetrics.new($users_metadata, user.username, orgname)
+    end
   end
 end

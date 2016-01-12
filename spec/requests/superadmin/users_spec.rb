@@ -1,4 +1,6 @@
 # encoding: utf-8
+
+require 'ostruct'
 require_relative '../../acceptance_helper'
 
 feature "Superadmin's users API" do
@@ -344,6 +346,15 @@ feature "Superadmin's users API" do
         response.status.should == 200
         response.body[0]["username"].should == @user.username
         response.body.length.should == 1
+      end
+    end
+
+    it "gets where_db_size_changed users" do
+      ::User.expects(:where_db_size_changed).returns(OpenStruct.new({ all: [] })).once
+
+      get_json superadmin_users_path, { db_size_in_bytes_change: true }, superadmin_headers do |response|
+        response.status.should == 200
+        response.body.length.should == 0
       end
     end
 

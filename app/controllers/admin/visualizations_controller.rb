@@ -7,6 +7,7 @@ require_relative '../carto/admin/visualization_public_map_adapter'
 require_relative '../carto/api/visualization_presenter'
 require_relative '../../helpers/embed_redis_cache'
 require_dependency 'static_maps_url_helper'
+require_dependency 'carto/user_db_size_cache'
 
 class Admin::VisualizationsController < Admin::AdminController
 
@@ -23,6 +24,7 @@ class Admin::VisualizationsController < Admin::AdminController
   before_filter :table_and_schema_from_params, only: [:show, :public_table, :public_map, :show_protected_public_map,
                                                       :show_protected_embed_map, :embed_map]
   before_filter :link_ghost_tables, only: [:index]
+  before_filter :user_metadata_propagation, only: [:index]
   before_filter :get_viewed_user, only: [:public_map, :public_table]
   before_filter :load_common_data, only: [:index]
 
@@ -438,6 +440,12 @@ class Admin::VisualizationsController < Admin::AdminController
         ::Resque.enqueue(::Resque::UserJobs::SyncTables::LinkGhostTables, current_user.id)
       end
     end
+  end
+
+  def user_metadata_propagation
+    return true if current_user.nil?
+
+    Carto::UserDbSizeCache.new.update_if_old(current_user)
   end
 
   def load_common_data

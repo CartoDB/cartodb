@@ -875,7 +875,7 @@ var Vis = View.extend({
       // when infowindow is closed remove all the filters
       // for tooltips
       layers.each(function(layerView) {
-        var layerTooltip = layerView.tooltip;
+        var layerTooltip = layerView.getTooltipData();
         if (layerTooltip) {
           layerTooltip.setFilter(null);
         }

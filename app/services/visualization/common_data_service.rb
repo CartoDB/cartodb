@@ -15,7 +15,7 @@ module CartoDB
       end
 
       def self.load_common_data(user, controller)
-        if configured?
+        if self.configured?
           common_data_url = CartoDB::Visualization::CommonDataService.build_url(controller)
           user.load_common_data(common_data_url)
         end

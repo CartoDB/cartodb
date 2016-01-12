@@ -278,7 +278,8 @@ describe SignupController do
           end
 
           it 'triggers user creation with organization' do
-            email = "authenticated@#{@organization.whitelisted_email_domains.first}"
+            username = "authenticated"
+            email = "#{username}@#{@organization.whitelisted_email_domains.first}"
 
             ::Resque.expects(:enqueue).
               with(::Resque::UserJobs::Signup::NewUser, instance_of(String), anything, instance_of(FalseClass)).
@@ -291,6 +292,9 @@ describe SignupController do
             last_user_creation = Carto::UserCreation.order('created_at desc').limit(1).first
             last_user_creation.organization_id.should == @organization.id
             last_user_creation.requires_validation_email?.should == false
+            last_user_creation.username.should == username
+            last_user_creation.email.should == email
+            last_user_creation.crypted_password.should_not be_empty
           end
         end
       end

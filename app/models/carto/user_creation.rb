@@ -14,10 +14,11 @@ class Carto::UserCreation < ActiveRecord::Base
 
   after_create :use_invitation
 
-  def self.new_user_signup(user)
+  def self.new_user_signup(user, created_via = CREATED_VIA_ORG_SIGNUP)
     # Normal validation breaks state_machine method generation
     raise 'User needs username' unless user.username
     raise 'User needs email' unless user.email
+    raise "Not valid #{created_via}: #{VALID_CREATED_VIA.join(', ')}" unless VALID_CREATED_VIA.include?(created_via)
 
     user_creation = Carto::UserCreation.new
     user_creation.username = user.username
@@ -29,7 +30,7 @@ class Carto::UserCreation < ActiveRecord::Base
     user_creation.soft_geocoding_limit = user.soft_geocoding_limit
     user_creation.google_sign_in = user.google_sign_in
     user_creation.log = Carto::Log.new_user_creation
-    user_creation.created_via = CREATED_VIA_ORG_SIGNUP
+    user_creation.created_via = created_via
 
     user_creation
   end
@@ -109,14 +110,6 @@ class Carto::UserCreation < ActiveRecord::Base
 
   def with_invitation_token(invitation_token)
     self.invitation_token = invitation_token
-    self
-  end
-
-  # Maybe some functionality of UserAccountCreator should be moved here to avoid this setter
-  def with_created_via(created_via)
-    raise "Not valid #{created_via}: #{VALID_CREATED_VIA.join(', ')}" unless VALID_CREATED_VIA.include?(created_via)
-
-    self.created_via = created_via
     self
   end
 

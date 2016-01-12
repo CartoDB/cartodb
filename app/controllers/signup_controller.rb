@@ -22,10 +22,9 @@ class SignupController < ApplicationController
   end
 
   def create
-    account_creator = CartoDB::UserAccountCreator.new.
+    account_creator = CartoDB::UserAccountCreator.new(Carto::UserCreation::CREATED_VIA_ORG_SIGNUP).
                       with_organization(@organization).
-                      with_invitation_token(params[:invitation_token]).
-                      with_created_via(Carto::UserCreation::CREATED_VIA_ORG_SIGNUP)
+                      with_invitation_token(params[:invitation_token])
 
     raise "Organization doesn't allow user + password authentication" if user_password_signup? && !@organization.auth_username_password_enabled
 
@@ -78,9 +77,8 @@ class SignupController < ApplicationController
     render_500 and return false unless authenticator.autocreation_valid?(request)
     render_403 and return false unless authenticator.valid?(request)
 
-    account_creator = CartoDB::UserAccountCreator.new.
-      with_email_only(authenticator.email(request)).
-      with_created_via(Carto::UserCreation::CREATED_VIA_HTTP_AUTENTICATION)
+    account_creator = CartoDB::UserAccountCreator.new(Carto::UserCreation::CREATED_VIA_HTTP_AUTENTICATION).
+      with_email_only(authenticator.email(request))
 
     account_creator = account_creator.with_organization(@organization) if @organization
 

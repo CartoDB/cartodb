@@ -18,7 +18,7 @@ module Carto
       end
 
       def create
-        account_creator = CartoDB::UserAccountCreator.new.with_organization(@organization).with_created_via('api')
+        account_creator = CartoDB::UserAccountCreator.new(Carto::UserCreation::CREATED_VIA_API).with_organization(@organization)
 
         account_creator.with_username(create_params[:username]) if create_params[:username].present?
         account_creator.with_email(create_params[:email]) if create_params[:email].present?

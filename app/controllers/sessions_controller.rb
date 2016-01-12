@@ -90,7 +90,7 @@ class SessionsController < ApplicationController
 
     @organization = ::Organization.where(id: organization_id).first
 
-    account_creator = CartoDB::UserAccountCreator.new.with_created_via(Carto::UserCreation::CREATED_VIA_LDAP)
+    account_creator = CartoDB::UserAccountCreator.new(Carto::UserCreation::CREATED_VIA_LDAP)
 
     account_creator.with_organization(@organization)
                    .with_username(cartodb_username)
@@ -112,7 +112,7 @@ class SessionsController < ApplicationController
       render 'shared/signup_issue'
     end
   rescue => e
-    CartoDB.notify_exception(e, { new_user: account_creator.nil? ? "account_creator nil" : account_creator.user.inspect })
+    CartoDB.notify_exception(e, new_user: account_creator.nil? ? "account_creator nil" : account_creator.user.inspect)
     flash.now[:error] = e.message
     render action: 'new'
   end

@@ -3,6 +3,7 @@
 require 'securerandom'
 require_dependency 'google_plus_api'
 
+# This class is quite coupled to UserCreation.
 module CartoDB
   class UserAccountCreator
 
@@ -14,13 +15,14 @@ module CartoDB
     PARAM_SOFT_GEOCODING_LIMIT = :soft_geocoding_limit
     PARAM_QUOTA_IN_BYTES = :quota_in_bytes
 
-    def initialize
+    def initialize(created_via = Carto::UserCreation::CREATED_VIA_ORG_SIGNUP)
       @built = false
       @organization = nil
       @google_user_data = nil
       @user = ::User.new
       @user_params = {}
       @custom_errors = {}
+      @created_via = created_via
     end
 
     def with_username(value)
@@ -52,11 +54,6 @@ module CartoDB
 
     def with_invitation_token(invitation_token)
       @invitation_token = invitation_token
-      self
-    end
-
-    def with_created_via(created_via)
-      @created_via = created_via
       self
     end
 
@@ -93,11 +90,7 @@ module CartoDB
     end
 
     def enqueue_creation(current_controller)
-      build
-
-      user_creation = Carto::UserCreation.new_user_signup(@user).with_invitation_token(@invitation_token)
-
-      user_creation = user_creation.with_created_via(@created_via)
+      user_creation = build_user_creation
 
       user_creation.save
 
@@ -106,6 +99,12 @@ module CartoDB
         promote_to_organization_owner?)
 
       { id: user_creation.id, username: user_creation.username }
+    end
+
+    def build_user_creation
+      build
+
+      Carto::UserCreation.new_user_signup(@user, @created_via).with_invitation_token(@invitation_token)
     end
 
     def build

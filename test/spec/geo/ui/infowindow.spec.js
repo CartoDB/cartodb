@@ -245,21 +245,20 @@ describe('geo/ui/infowindow', function() {
   });
 
   describe("image template", function() {
-    var model, view, container, fields, fieldsWithURL, fieldsWithoutURL, url;
+    var model, view, container, fields, fieldsWithoutURL, fieldsWithInvalidURL, url;
 
     beforeEach(function() {
 
-      url = "http://assets.javierarce.com/lion.png";
-
       container = $('<div>').css('height', '200px');
+      url = "http://fake.url/image.jpg";
 
       fields = [
-        { title: 'test1', position: 1, value: url },
+        { title: 'test1', position: 1, value: "http://fake.url/image.jpg" },
         { title: 'test2', position: 2, value: "b"}
       ];
 
-      fieldsWithURL = [
-        { title: 'test1', position: 1, value: "http://fake.url/image.jpg" },
+      fieldsWithInvalidURL = [
+        { title: 'test1', position: 1, value: "invalid_url" },
         { title: 'test2', position: 2, value: "b"}
       ];
 
@@ -320,7 +319,7 @@ describe('geo/ui/infowindow', function() {
 
     it("should setup the hook correctly", function() {
       spyOn(view, '_loadCoverFromUrl').and.callThrough();
-      model.set("content", { fields: fieldsWithURL });
+      model.set("content", { fields: fields });
       model.set('template', '<div class="js-infowindow" data-cover="true"><div class="js-cover"></div><div class="js-hook"></div></div>');
 
       expect(view._loadCoverFromUrl).toHaveBeenCalled();
@@ -362,8 +361,8 @@ describe('geo/ui/infowindow', function() {
       expect(view.$el.find("img").length).toEqual(0);
     });
 
-    it("shouldn append a non-valid error message if the image is not valid", function() {
-      model.set("content", { fields: fieldsWithoutURL });
+    it("should append a non-valid error message if the image is not valid", function() {
+      model.set("content", { fields: fieldsWithInvalidURL });
       model.set('template', '<div class="js-infowindow header" data-cover="true"><div class="js-cover"></div></div>');
       expect(view.$el.find(".CDB-infowindow-fail").length).toEqual(1);
     });

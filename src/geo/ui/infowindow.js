@@ -136,7 +136,7 @@ var Infowindow = View.extend({
   },
 
   _initBinds: function () {
-    _.bindAll(this, '_onKeyUp', '_onLoadImage');
+    _.bindAll(this, '_onKeyUp', '_onLoadImage', '_onLoadImageError');
 
     this.model.bind('change:content change:alternative_names change:width change:maxHeight', this.render, this);
     this.model.bind('change:template_name', this._setTemplate, this);
@@ -384,7 +384,12 @@ var Infowindow = View.extend({
 
     var $img = $("<img class='CDB-infowindow-media-item' />").attr('src', url);
     $cover.append($img);
-    $img.load(this._onLoadImage).error();
+    $img.load(this._onLoadImage).error(this._onLoadImageError);
+  },
+
+  _onLoadImageError: function () {
+    this._stopCoverLoader();
+    this._showInfowindowImageError();
   },
 
   _onLoadImage: function () {

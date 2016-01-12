@@ -93,7 +93,7 @@ describe SessionsController do
       FakeNetLdap.register_query(Net::LDAP::Filter.eq('cn', admin_user_username), ldap_entry_data)
 
       ::Resque.expects(:enqueue).with(::Resque::UserJobs::Signup::NewUser,
-                                      instance_of(String), instance_of(String), instance_of(TrueClass)).returns(true)
+                                      instance_of(String), anything, instance_of(TrueClass)).returns(true)
 
       host! "#{@organization.name}.localhost.lan"
       post create_session_url(user_domain: nil, email: admin_user_username, password: admin_user_password)
@@ -131,7 +131,7 @@ describe SessionsController do
       FakeNetLdap.register_query(Net::LDAP::Filter.eq('cn', normal_user_username), ldap_entry_data)
 
       ::Resque.expects(:enqueue).with(::Resque::UserJobs::Signup::NewUser,
-                                      instance_of(String), instance_of(String), instance_of(FalseClass)).returns(true)
+                                      instance_of(String), anything, instance_of(FalseClass)).returns(true)
 
       host! "#{@organization.name}.localhost.lan"
       post create_session_url(user_domain: nil, email: normal_user_username, password: normal_user_password)

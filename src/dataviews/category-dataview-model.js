@@ -3,68 +3,57 @@ var DataviewModelBase = require('./dataview-model-base');
 var SearchModel = require('./category-dataview/search-model');
 var CategoryModelRange = require('./category-dataview/category-model-range');
 var CategoriesCollection = require('./category-dataview/categories-collection');
-var LockedCatsCollection = require('./category-dataview/locked-categories-collection');
 
 /**
- *  Category dataview model
+ * Category dataview model
  *
- *  - It has several internal models/collections
- *
- *  · search model: it manages category search results.
- *  · locked collection: it stores locked items.
- *  · filter model: it knows which items are accepted or rejected.
- *
+ * - It has several internal models/collections
+ *   - search model: it manages category search results.
+ *   - filter model: it knows which items are accepted or rejected.
  */
-
 module.exports = DataviewModelBase.extend({
 
   defaults: _.extend(
     {
-      allCategoryNames: [] // all (new + previously locked), updated on data fetch (see parse)
+      ownFilter: false,
+      allCategoryNames: [] // all (new + previously accepted), updated on data fetch (see parse)
     },
     DataviewModelBase.prototype.defaults
   ),
 
   url: function () {
-    return this.get('url') + '?bbox=' + this.get('boundingBox') + '&own_filter=' + (this.get('locked') ? 1 : 0);
+    return this.get('url') + '?bbox=' + this.get('boundingBox') + '&own_filter=' + (this.get('ownFilter') ? 1 : 0);
   },
 
   initialize: function (attrs, opts) {
-    this._data = new CategoriesCollection();
-
     DataviewModelBase.prototype.initialize.call(this, attrs, opts);
 
-    // Locked categories collection
-    this.locked = new LockedCatsCollection();
-
     // Internal model for calculating total amount of values in the category
-    this.rangeModel = new CategoryModelRange();
+    this._rangeModel = new CategoryModelRange();
 
-    // Search model
-    this.search = new SearchModel({}, {
-      locked: this.locked
-    });
+    this._data = new CategoriesCollection();
+    this._searchModel = new SearchModel();
   },
 
   // Set any needed parameter when they have changed in this model
   _setInternalModels: function () {
     var url = this.get('url');
 
-    this.search.set({
+    this._searchModel.set({
       url: url,
       boundingBox: this.get('boundingBox')
     });
 
-    this.rangeModel.setUrl(url);
+    this._rangeModel.setUrl(url);
   },
 
   _onChangeBinds: function () {
     this._setInternalModels();
 
-    this.rangeModel.bind('change:totalCount change:categoriesCount', function () {
+    this._rangeModel.bind('change:totalCount change:categoriesCount', function () {
       this.set({
-        totalCount: this.rangeModel.get('totalCount'),
-        categoriesCount: this.rangeModel.get('categoriesCount')
+        totalCount: this._rangeModel.get('totalCount'),
+        categoriesCount: this._rangeModel.get('categoriesCount')
       });
     }, this);
 
@@ -83,7 +72,7 @@ module.exports = DataviewModelBase.extend({
     }, this);
 
     this.bind('change:url change:boundingBox', function () {
-      this.search.set({
+      this._searchModel.set({
         url: this.get('url'),
         boundingBox: this.get('boundingBox')
       });
@@ -102,113 +91,59 @@ module.exports = DataviewModelBase.extend({
       }
     }, this);
 
-    this.locked.bind('change add remove', function () {
-      this.trigger('change:lockCollection', this.locked, this);
-    }, this);
-
-    this.search.bind('loading', function () {
+    this._searchModel.bind('loading', function () {
       this.trigger('loading', this);
     }, this);
-    this.search.bind('sync', function () {
+    this._searchModel.bind('sync', function () {
       this.trigger('sync', this);
     }, this);
-    this.search.bind('error', function (e) {
+    this._searchModel.bind('error', function (e) {
       if (!e || (e && e.statusText !== 'abort')) {
         this.trigger('error', this);
       }
     }, this);
-    this.search.bind('change:data', function () {
-      this.trigger('change:searchData', this.search, this);
+    this._searchModel.bind('change:data', function () {
+      this.trigger('change:searchData', this);
     }, this);
-  },
-
-  getLockedSize: function () {
-    return this.locked.size();
-  },
-
-  isLocked: function () {
-    return this.get('locked');
-  },
-
-  canBeLocked: function () {
-    return this.isLocked() ||
-    this.getAcceptedCount() > 0;
-  },
-
-  canApplyLocked: function () {
-    var acceptedCollection = this.filter.getAccepted();
-    if (this.filter.getAccepted().size() !== this.locked.size()) {
-      return true;
-    }
-
-    return acceptedCollection.find(function (m) {
-      return !this.locked.isItemLocked(m.get('name'));
-    }, this);
-  },
-
-  applyLocked: function () {
-    var currentLocked = this.locked.getItemsName();
-    if (!currentLocked.length) {
-      this.unlockCategories();
-      return false;
-    }
-    this.set('locked', true);
-    this.filter.cleanFilter(false);
-    this.filter.accept(currentLocked);
-    this.filter.applyFilter();
-    this.cleanSearch();
-  },
-
-  lockCategories: function () {
-    this.set('locked', true);
-    this._fetch();
-  },
-
-  unlockCategories: function () {
-    this.set('locked', false);
-    this.acceptAll();
   },
 
   // Search model helper methods //
 
   getSearchQuery: function () {
-    return this.search.getSearchQuery();
+    return this._searchModel.getSearchQuery();
   },
 
   setSearchQuery: function (q) {
-    this.search.set('q', q);
+    this._searchModel.set('q', q);
   },
 
   isSearchValid: function () {
-    return this.search.isValid();
+    return this._searchModel.isValid();
   },
 
   getSearchResult: function () {
-    return this.search.getData();
+    return this._searchModel.getData();
   },
 
   getSearchCount: function () {
-    return this.search.getCount();
+    return this._searchModel.getCount();
   },
 
   applySearch: function () {
-    this.search.fetch();
+    this._searchModel.fetch();
   },
 
   isSearchApplied: function () {
-    return this.search.isSearchApplied();
+    return this._searchModel.isSearchApplied();
   },
 
   cleanSearch: function () {
-    this.locked.resetItems([]);
-    this.search.resetData();
+    this._searchModel.resetData();
   },
 
   setupSearch: function () {
     if (!this.isSearchApplied()) {
-      var acceptedCats = this.filter.getAccepted().toJSON();
-      this.locked.addItems(acceptedCats);
-      this.search.setData(
+      this._searchModel.setData(
         this._data.toJSON()
       );
     }
@@ -264,7 +199,7 @@ module.exports = DataviewModelBase.extend({
 
   refresh: function () {
     if (this.isSearchApplied()) {
-      this.search.fetch();
+      this._searchModel.fetch();
     } else {
       this._fetch();
     }
@@ -293,7 +228,7 @@ module.exports = DataviewModelBase.extend({
       });
     }, this);
 
-    if (this.isLocked()) {
+    if (this.get('ownFilter')) {
       // Add accepted items that are not present in the categories data
       this.filter.getAccepted().each(function (mdl, i) {
         var category = mdl.get('name');

@@ -17,15 +17,11 @@ module.exports = Model.extend({
   },
 
   initialize: function (attrs, opts) {
-    // Locked collection will have the status
-    // of the selected/locked items
-    this.locked = opts.locked;
     this._data = new CategoriesCollection();
     this._initBinds();
   },
 
   _initBinds: function () {
-    this._data.bind('change:selected', this._onChangeSelected, this);
     this.bind('change:boundingBox', function () {
       if (this.isSearchApplied()) {
         this.fetch();
@@ -56,8 +52,6 @@ module.exports = Model.extend({
     return !!(str || '');
   },
 
-  isLocked: function () {},
-
   resetData: function () {
     this.setData([]);
     this.set('q', '');
@@ -71,19 +65,13 @@ module.exports = Model.extend({
     return this.isValid() && this.getSize() > 0;
   },
 
-  _onChangeSelected: function (mdl, isSelected) {
-    this.locked[ isSelected ? 'addItem' : 'removeItem' ](mdl);
-  },
-
   _parseData: function (categories) {
     var newData = [];
     _.each(categories, function (d) {
       if (!d.agg) {
-        var category = (d.category || d.name).toString();
-        var isLocked = this.locked.isItemLocked(category);
         newData.push({
-          selected: isLocked,
-          name: category,
+          selected: false,
+          name: (d.category || d.name).toString(),
           agg: d.agg,
           value: d.value
         });

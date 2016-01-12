@@ -398,7 +398,7 @@ module CartoDB
       end
 
       def name_in(url)
-        url_name = Downloader.url_filename_regex.match(url).to_s
+        url_name = self.class.url_filename_regex.match(url).to_s
 
         url_name if !url_name.empty?
       end

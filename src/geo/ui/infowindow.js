@@ -333,15 +333,15 @@ var Infowindow = View.extend({
     return this.$('.js-cover img').length > 0;
   },
 
-  /**
-   *  Get cover URL
-   */
   _getCoverURL: function () {
     var content = this.model.get('content');
+    var imageSRC = this.$('.js-cover img').attr('src');
 
-    if (this.$('.js-cover img').attr('src')) {
-      return this.$('.js-cover img').attr('src');
-    } else if (content && content.fields && content.fields.length > 0) {
+    if (imageSRC) {
+      return imageSRC;
+    }
+
+    if (content && content.fields && content.fields.length > 0) {
       return (content.fields[0].value || '').toString();
     }
 

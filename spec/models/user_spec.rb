@@ -1,4 +1,6 @@
 # coding: UTF-8
+
+require 'ostruct'
 require_relative '../spec_helper'
 require_relative 'user_shared_examples'
 
@@ -1705,6 +1707,12 @@ describe User do
     it 'is true for users that signed in with Google but changed the password' do
       user = FactoryGirl.build(:user, :google_sign_in => true, :last_password_change_date => Time.now)
       user.needs_password_confirmation?.should == true
+    end
+
+    it 'is false for users that were created with http authentication' do
+      user = FactoryGirl.build(:valid_user, :last_password_change_date => nil)
+      Carto::UserCreation.http_authentication.stubs(:where).returns(OpenStruct(first: FactoryGirl.build(:user_creation)))
+      user.needs_password_confirmation?.should == false
     end
   end
 

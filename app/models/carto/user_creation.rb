@@ -1,13 +1,14 @@
 # encoding: UTF-8
 
 class Carto::UserCreation < ActiveRecord::Base
-
   CREATED_VIA_LDAP = 'ldap'
   CREATED_VIA_ORG_SIGNUP = 'org_signup'
   CREATED_VIA_API = 'api'
   CREATED_VIA_HTTP_AUTENTICATION = 'http_authentication'
 
   VALID_CREATED_VIA = [CREATED_VIA_LDAP, CREATED_VIA_ORG_SIGNUP, CREATED_VIA_API, CREATED_VIA_HTTP_AUTENTICATION]
+
+  scope :http_authentication, where(created_via: CREATED_VIA_HTTP_AUTENTICATION)
 
   belongs_to :log, class_name: Carto::Log
   belongs_to :user, class_name: Carto::User

@@ -145,10 +145,10 @@
       <% end %>
 
       <div class="FormAccount-footer <%= !current_user.organization_owner? ? 'FormAccount-footer--noMarginBottom' : '' %>">
-        <% if current_user.organization_owner? -%>
+        <% if @can_be_deleted %>
           <p class="FormAccount-footerText">
             <i class="iconFont iconFont-Info FormAccount-footerIcon"></i>
-            <span>You can't delete your account because you are admin of an organization</span>
+            <span>@can_be_deleted_reason</span>
           </p>
         <% else %>
           <p class="FormAccount-footerText"></p>
@@ -159,7 +159,7 @@
         <% end %>
       </div>
 
-      <% if !current_user.organization_owner? -%>
+      <% if @can_be_deleted %>
         <div class="FormAccount-title">
           <p class="FormAccount-titleText">Delete account</p>
         </div>

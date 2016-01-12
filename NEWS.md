@@ -1,5 +1,6 @@
 3.12.1 (2016-mm-dd)
 -------------------
+* Support for HTTP Header authentication.
 
 3.12.0 (2016-01-05)
 -------------------

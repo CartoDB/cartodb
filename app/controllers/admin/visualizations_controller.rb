@@ -618,8 +618,8 @@ class Admin::VisualizationsController < Admin::AdminController
                                                       }
                                                     .first
 
-    render_pretty_404 if !visualization.nil? && visualization.kind == Visualization::Member::KIND_RASTER
     return get_visualization_and_table_from_table_id(table_id) if visualization.nil?
+    render_pretty_404 if visualization.kind == CartoDB::Visualization::Member::KIND_RASTER
     return Carto::Admin::VisualizationPublicMapAdapter.new(visualization, current_user, self), visualization.table_service
   end
 

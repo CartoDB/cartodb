@@ -20,9 +20,11 @@ module.exports = {
       'test/fail-tests-if-have-errors-in-src.js',
       'test/spec/api/**/*',
       'test/spec/core/**/*',
+      'test/spec/dataviews/**/*',
       'test/spec/geo/**/*',
       'test/spec/ui/**/*',
       'test/spec/vis/**/*',
+      'test/spec/windshaft/**/*',
 
       // not actually used anywhere in cartodb.js, only for editor?
       // TODO can be (re)moved?

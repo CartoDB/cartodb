@@ -22,17 +22,19 @@ var Overlay = require('./vis/overlay');
 var INFOWINDOW_TEMPLATE = require('./vis/infowindow-template');
 var CartoDBLayerGroupNamed = require('../geo/map/cartodb-layer-group-named');
 var CartoDBLayerGroupAnonymous = require('../geo/map/cartodb-layer-group-anonymous');
+var DataviewsFactory = require('../dataviews/dataviews-factory');
+var DataviewCollection = require('../dataviews/dataviews-collection');
 var WindshaftConfig = require('../windshaft/config');
 var WindshaftClient = require('../windshaft/client');
 var WindshaftLayerGroupConfig = require('../windshaft/layergroup-config');
 var WindshaftNamedMapConfig = require('../windshaft/namedmap-config');
+var WindshaftDashboard = require('../windshaft/dashboard');
 
 /**
  * Visualization creation
  */
 var Vis = View.extend({
   DEFAULT_MAX_ZOOM: 20,
-
   DEFAULT_MIN_ZOOM: 0,
 
   initialize: function () {
@@ -156,6 +158,7 @@ var Vis = View.extend({
   load: function (data, options) {
     var self = this;
 
+    // Load the viz.json in case we receive a url instead of a JSON object
     if (typeof (data) === 'string') {
       var url = data;
 
@@ -170,7 +173,7 @@ var Vis = View.extend({
       return this;
     }
 
-    // load modules needed for layers
+    // Load the modules (torque) for layers in the viz.json
     var layers = data.layers;
 
     if (!this.checkModules(layers)) {
@@ -205,15 +208,12 @@ var Vis = View.extend({
 
     // Do not allow pan map if zoom overlay and scrollwheel are disabled unless
     // mobile view is enabled
-    var isMobileDevice = this.isMobileDevice();
-
-    // Do not allow pan map if zoom overlay and scrollwheel are disabled
     // Check if zoom overlay is present.
     var hasZoomOverlay = _.isObject(_.find(data.overlays, function (overlay) {
       return overlay.type == 'zoom';
     }));
 
-    var allowDragging = isMobileDevice || hasZoomOverlay || scrollwheel;
+    var allowDragging = this.isMobileDevice() || hasZoomOverlay || scrollwheel;
 
     // Force using GMaps ?
     if ( (this.gmaps_base_type) && (data.map_provider === 'leaflet')) {
@@ -273,7 +273,6 @@ var Vis = View.extend({
 
     var map = new Map(mapConfig);
     this.map = map;
-    this.overlayModels = new Backbone.Collection();
 
     // If a CartoDB embed map is hidden by default, its
     // height is 0 and it will need to recalculate its size
@@ -313,17 +312,17 @@ var Vis = View.extend({
     this.$el.append(div);
 
     // Create the map
-    var mapView = new MapView.create(div_hack, map);
-
-    this.mapView = mapView;
+    this.mapView = new MapView.create(div_hack, map);
 
     if (options.legends || (options.legends === undefined && this.map.get('legends') !== false)) {
       map.layers.bind('reset', this.addLegends, this);
     }
 
+    this.overlayModels = new Backbone.Collection();
     this.overlayModels.bind('reset', function (overlays) {
       this._addOverlays(overlays, data, options);
     }, this);
+    this.overlayModels.reset(data.overlays);
 
     this.mapView.bind('newLayerView', this._addLoading, this);
 
@@ -338,6 +337,9 @@ var Vis = View.extend({
     var cartoDBLayers;
     var cartoDBLayerGroup;
     var layers = [];
+
+    // This attribute is public (used by deep-insights)
+    this.interactiveLayers = new Backbone.Collection();
     _.each(data.layers, function (layerData) {
       if (layerData.type === 'layergroup' || layerData.type === 'namedmap') {
         var layersData;
@@ -364,6 +366,7 @@ var Vis = View.extend({
         }
         cartoDBLayers = _.map(layersData, function (layerData) {
           var cartoDBLayer = Layers.create('cartodb', self, layerData);
+          self.interactiveLayers.add(cartoDBLayer);
           return cartoDBLayer;
         });
 
@@ -375,11 +378,89 @@ var Vis = View.extend({
         // Treat differently since this kind of layer is rendered client-side (and not through the tiler)
         var layer = Layers.create(layerData.type, self, layerData);
         layers.push(layer);
+        if (layerData.type === 'torque') {
+          self.interactiveLayers.add(layer);
+        }
       }
     });
 
+    // Map layers are resetted and the mapView adds the layers to the map
     this.map.layers.reset(layers);
-    this.overlayModels.reset(data.overlays);
+
+    this._dataviewsCollection = new DataviewCollection();
+    this.dataviews = new DataviewsFactory(null, {
+      dataviewsCollection: this._dataviewsCollection,
+      interactiveLayersCollection: this.interactiveLayers
+    });
+
+    // TODO: rethink this
+    this._dataviewsCollection.on('add reset remove', _.debounce(this._invalidateSizeOnDataviewsChanges, 10), this);
+
+    // TODO: This method is creating an instance of the layer group
+    // and setting the tiles and grid urls on the layerGroup model, which
+    // cause the layergroup view to fetch and render the tiles. This needs
+    // to happen everytime a layer that belongs to the layerGroup changes
+    // (eg: when the layer is hidden or it's SQL is changed)
+    if (cartoDBLayerGroup) {
+      var endpoint;
+      var mapsApiTemplate;
+      var userName;
+      var statTag;
+      var forceCors = true;
+      var configGenerator;
+
+      var datasource = data.datasource;
+      if (datasource) {
+        mapsApiTemplate = datasource.maps_api_template;
+        userName = datasource.user_name;
+        statTag = datasource.stat_tag;
+        forceCors = datasource.force_cors;
+
+        // TODO: We can use something else to differentiate types of "datasource"s
+        if (datasource.template_name) {
+          endpoint = [WindshaftConfig.MAPS_API_BASE_URL, 'named', datasource.template_name].join('/');
+          configGenerator = WindshaftNamedMapConfig;
+        } else {
+          endpoint = WindshaftConfig.MAPS_API_BASE_URL;
+          configGenerator = WindshaftLayerGroupConfig;
+        }
+      } else {
+        // No datasource, get necessary windshaft data from layerGroup directly instead
+        userName = cartoDBLayerGroup.get('userName');
+        mapsApiTemplate = cartoDBLayerGroup.get('mapsApiTemplate');
+        statTag = cartoDBLayerGroup.get('statTag');
+
+        if (cartoDBLayerGroup.get('type') === 'namedmap') {
+          var namedMapId = cartoDBLayerGroup.get('namedMapId');
+          endpoint = [
+            WindshaftConfig.MAPS_API_BASE_URL, 'named', namedMapId
+          ].join('/');
+          configGenerator = WindshaftNamedMapConfig;
+        } else if (cartoDBLayerGroup.get('type') === 'layergroup') {
+          endpoint = WindshaftConfig.MAPS_API_BASE_URL;
+          configGenerator = WindshaftLayerGroupConfig;
+        }
+      }
+
+      var windshaftClient = new WindshaftClient({
+        endpoint: endpoint,
+        urlTemplate: mapsApiTemplate,
+        userName: userName,
+        statTag: statTag,
+        forceCors: forceCors
+      });
+
+      new WindshaftDashboard({ // eslint-disable-line
+        client: windshaftClient,
+        configGenerator: configGenerator,
+        statTag: statTag,
+        // TODO: assuming here all viz.json has a layergroup and that may not be true
+        layerGroup: cartoDBLayerGroup,
+        layers: this.interactiveLayers,
+        dataviews: this._dataviewsCollection,
+        map: this.map
+      });
+    }
 
     // if there are no sublayer_options fill it
     if (!options.sublayer_options) {
@@ -392,60 +473,13 @@ var Vis = View.extend({
       self.trigger('done', self, map.layers);
     });
 
-    // TODO: This method is creating an instance of the layer group
-    // and setting the tiles and grid urls on the layerGroup model, which
-    // cause the layergroup view to fetch and render the tiles. This needs
-    // to happen everytime a layer that belongs to the layerGroup changes
-    // (eg: when the layer is hidden or it's SQL is changed)
-    if (cartoDBLayerGroup) {
-      this._createLayerGroupInstance(cartoDBLayerGroup);
-    }
-
     return this;
   },
 
-  _createLayerGroupInstance: function (layerGroup) {
-    if (!layerGroup) {
-      throw new Error('Error creating instance of layergroup, layerGroup is not defined.');
+  _invalidateSizeOnDataviewsChanges: function () {
+    if (this._dataviewsCollection.size() > 0) {
+      this.mapView.invalidateSize();
     }
-    if (layerGroup.get('type') === 'namedmap') {
-      var userName = layerGroup.get('userName');
-      var mapsApiTemplate = layerGroup.get('mapsApiTemplate');
-      var namedMapId = layerGroup.get('namedMapId');
-      var statTag = layerGroup.get('statTag');
-      var endpoint = [
-        WindshaftConfig.MAPS_API_BASE_URL, 'named', namedMapId
-      ].join('/');
-      var configGenerator = WindshaftNamedMapConfig;
-    } else if (layerGroup.get('type') === 'layergroup') {
-      var userName = layerGroup.get('userName');
-      var mapsApiTemplate = layerGroup.get('mapsApiTemplate');
-      var statTag = layerGroup.get('statTag');
-      var endpoint = WindshaftConfig.MAPS_API_BASE_URL;
-      var configGenerator = WindshaftLayerGroupConfig;
-    }
-
-    var windshaftClient = new WindshaftClient({
-      endpoint: endpoint,
-      urlTemplate: mapsApiTemplate,
-      userName: userName,
-      statTag: statTag,
-      forceCors: true
-    });
-
-    var mapConfig = configGenerator.generate({
-      layers: layerGroup.layers.models
-    });
-
-    windshaftClient.instantiateMap({
-      mapDefinition: mapConfig,
-      success: function (dashboardInstance) {
-        layerGroup.set({
-          baseURL: dashboardInstance.getBaseURL(),
-          urls: dashboardInstance.getTiles('mapnik')
-        });
-      }
-    });
   },
 
   _createOverlays: function (overlays, vis_data, options) {

@@ -187,14 +187,17 @@ class Carto::UserCreation < ActiveRecord::Base
     @cartodb_user.google_sign_in = google_sign_in
     @cartodb_user.invitation_token = invitation_token
     @cartodb_user.enable_account_token = ::User.make_token if requires_validation_email?
-    unless @promote_to_organization_owner
+    unless organization_id.nil? || @promote_to_organization_owner
       organization = ::Organization.where(id: organization_id).first
       raise "Trying to copy organization settings from one without owner" if organization.owner.nil?
       @cartodb_user.organization = organization
       @cartodb_user.organization.owner.copy_account_features(@cartodb_user)
     end
+
+    @cartodb_user
   rescue => e
     handle_failure(e, mark_as_failure = true)
+    nil
   end
 
   # Central validation

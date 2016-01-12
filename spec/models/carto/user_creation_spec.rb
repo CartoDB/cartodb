@@ -267,7 +267,7 @@ describe Carto::UserCreation do
       user_data = FactoryGirl.build(:valid_user)
       user_data.organization = @organization
 
-      user_creation = Carto::UserCreation.new_user_signup(user_data).with_created_via('api')
+      user_creation = Carto::UserCreation.new_user_signup(user_data, Carto::UserCreation::CREATED_VIA_API)
       user_creation.next_creation_step until user_creation.finished?
     end
   end
@@ -324,6 +324,18 @@ describe Carto::UserCreation do
 
       user_creation = Carto::UserCreation.new_user_signup(user_data)
       user_creation.next_creation_step until user_creation.finished?
+    end
+  end
+
+  describe '#initialize_user' do
+    it 'initializes users with http_authentication without organization' do
+      created_via = Carto::UserCreation::CREATED_VIA_HTTP_AUTENTICATION
+      user = FactoryGirl.build(:valid_user)
+      user.organization_id.should == nil
+      user_creation = Carto::UserCreation.new_user_signup(user, created_via)
+      initialized_user = user_creation.send(:initialize_user)
+      initialized_user.should_not be_nil
+      initialized_user.organization_id.should be_nil
     end
   end
 end

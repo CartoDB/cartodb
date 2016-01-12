@@ -20,6 +20,7 @@ describe CartoDB::UserAccountCreator do
       user_creation.email.should == EMAIL
       user_creation.username.should == USERNAME
       user_creation.crypted_password.should_not be_empty
+      user_creation.organization_id.should be_nil
     end
   end
 end

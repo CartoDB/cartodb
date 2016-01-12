@@ -15,6 +15,7 @@ require_relative '../../lib/cartodb/stats/api_calls'
 require_relative '../../lib/carto/http/client'
 require_dependency 'cartodb_config_utils'
 require_relative './user/db_service'
+require_dependency 'carto/user_db_size_cache'
 
 class User < Sequel::Model
   include CartoDB::MiniSequel

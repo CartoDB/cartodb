@@ -71,7 +71,7 @@ module CartoDB
             # log it as such, total_requests and failed_responses
             begin
               response = sql_api.fetch(sql, 'csv').gsub(/\A.*/, '').gsub(/^$\n/, '')
-            rescue SQLApiError => ex
+            rescue CartoDB::SQLApi::SQLApiError => ex
               @usage_metrics.incr(:geocoder_internal, :failed_responses, search_terms.length)
               raise ex
             ensure

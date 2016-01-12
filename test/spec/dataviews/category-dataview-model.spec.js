@@ -106,7 +106,7 @@ describe('dataviews/category-dataview-model', function () {
       it('should setup search if it is gonna be enabled', function () {
         spyOn(this.model, 'isSearchApplied').and.returnValue(false);
         _parseData(this.model, _generateData(3));
-        this.model.acceptFilters(['4', '5', '6']);
+        this.model.filter.accept(['4', '5', '6']);
         this.model.setupSearch();
         expect(this.model._searchModel.setData).toHaveBeenCalled();
         expect(this.model.getSearchCount()).toBe(3);
@@ -137,12 +137,12 @@ describe('dataviews/category-dataview-model', function () {
 
     it('should complete data with accepted items (if they are not present already) when has ownFilter set', function () {
       this.model.set('ownFilter', true);
-      this.model.acceptFilters(['9', '10', '11']);
+      this.model.filter.accept(['9', '10', '11']);
       _parseData(this.model, _generateData(8));
       var data = this.model.get('data');
       expect(data.length).toBe(11);
 
-      this.model.acceptFilters(['2']);
+      this.model.filter.accept(['2']);
       // The '2' should not be repeated in the data array
       _parseData(this.model, _generateData(8));
       data = this.model.get('data');

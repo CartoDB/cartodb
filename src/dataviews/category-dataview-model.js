@@ -149,38 +149,6 @@ module.exports = DataviewModelBase.extend({
     }
   },
 
-  // Filter model helper methods //
-
-  getRejectedCount: function () {
-    return this.filter.rejectedCategories.size();
-  },
-
-  getAcceptedCount: function () {
-    return this.filter.acceptedCategories.size();
-  },
-
-  acceptFilters: function (values) {
-    this.filter.accept(values);
-  },
-
-  rejectFilters: function (values) {
-    this.filter.reject(values);
-  },
-
-  rejectAll: function () {
-    this.filter.rejectAll();
-  },
-
-  acceptAll: function () {
-    this.filter.acceptAll();
-  },
-
-  isAllFiltersRejected: function () {
-    return this.filter.get('rejectAll');
-  },
-
-  // Proper model helper methods //
-
   getData: function () {
     return this._data;
   },
@@ -212,7 +180,7 @@ module.exports = DataviewModelBase.extend({
     var allNewCategoryNames = [];
     var acceptedCategoryNames = [];
 
-    _.each(allNewCategories, function (datum, i) {
+    _.each(allNewCategories, function (datum) {
       // Category might be a non-string type (e.g. number), make sure it's always a string for concistency
       var category = datum.category.toString();
 
@@ -230,7 +198,7 @@ module.exports = DataviewModelBase.extend({
 
     if (this.get('ownFilter')) {
       // Add accepted items that are not present in the categories data
-      this.filter.getAccepted().each(function (mdl, i) {
+      this.filter.acceptedCategories.each(function (mdl) {
         var category = mdl.get('name');
         acceptedCategoryNames.push(category);
         if (!_tmpArray[category]) {

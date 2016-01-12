@@ -1,7 +1,10 @@
 # encoding: utf-8
 require 'open3'
 require_relative '../../../lib/gme/table_geocoder'
+require_relative '../../../../../lib/url_signer'
+require_relative '../../../lib/gme/exceptions'
 require_relative '../../factories/pg_connection'
+require_relative '../../../../../spec/spec_helper.rb'
 require_relative '../../../../../spec/rspec_configuration.rb'
 
 describe Carto::Gme::TableGeocoder do
@@ -62,11 +65,8 @@ describe Carto::Gme::TableGeocoder do
 
   describe '#run' do
 
-    before(:all) do
-      gme_client_mock = mock
-      Carto::Gme::Client.expects(:new).with('my_client_id', 'my_private_key').once.returns(gme_client_mock)
-      Carto::Gme::GeocoderClient.expects(:new).with(gme_client_mock).once
-
+    before(:each) do
+      Carto::UrlSigner.any_instance.stubs(:sign_url).returns('https://maps.googleapis.com/maps/api/geocode/json')
       @table_geocoder = Carto::Gme::TableGeocoder.new(@mandatory_args)
     end
 
@@ -95,7 +95,7 @@ describe Carto::Gme::TableGeocoder do
       @usage_metrics_stub.expects(:incr).with(:geocoder_google, :empty_responses, 0)
       @usage_metrics_stub.expects(:incr).with(:geocoder_google, :failed_responses, 0)
 
-      @table_geocoder.stubs(:ensure_georef_status_colummn_valid)
+      @table_geocoder.stubs(:ensure_georef_status_aolummn_valid)
       @table_geocoder.stubs(:data_input_blocks).returns([{cartodb_id: 1, searchtext: 'dummy text'}])
       @table_geocoder.stubs(:geocode).raises(StandardError, 'unexpected exception')
 
@@ -107,8 +107,8 @@ describe Carto::Gme::TableGeocoder do
 
     it "processes 1 block at a time, keeping track of processed rows in each block" do
       # TODO: there's something weird that needs review here
-      @usage_metrics_stub.expects(:incr).with(:geocoder_google, :total_requests, 0)
-      @usage_metrics_stub.expects(:incr).with(:geocoder_google, :success_responses, 0)
+      @usage_metrics_stub.expects(:incr).with(:geocoder_google, :total_requests, 4)
+      @usage_metrics_stub.expects(:incr).with(:geocoder_google, :success_responses, 4)
       @usage_metrics_stub.expects(:incr).with(:geocoder_google, :empty_responses, 0)
       @usage_metrics_stub.expects(:incr).with(:geocoder_google, :failed_responses, 0)
 
@@ -119,11 +119,70 @@ describe Carto::Gme::TableGeocoder do
         enum.yield [{cartodb_id: 3, searchtext: 'dummy text'}, {cartodb_id: 4, searchtext: 'dummy text'}]
       end
       @table_geocoder.stubs(:data_input_blocks).returns(mocked_input)
-      @table_geocoder.expects(:geocode).twice
+      response = Typhoeus::Response.new(code: 200, body: read_fixture_file('gme_output_ok.json'))
+      Typhoeus.stub('https://maps.googleapis.com/maps/api/geocode/json', method: :get).and_return(response)
       @table_geocoder.expects(:update_table).twice
 
       @table_geocoder.run
       @table_geocoder.processed_rows.should == 4
+    end
+
+    it "processes empty response" do
+      @usage_metrics_stub.expects(:incr).with(:geocoder_google, :total_requests, 1)
+      @usage_metrics_stub.expects(:incr).with(:geocoder_google, :success_responses, 0)
+      @usage_metrics_stub.expects(:incr).with(:geocoder_google, :empty_responses, 1)
+      @usage_metrics_stub.expects(:incr).with(:geocoder_google, :failed_responses, 0)
+
+      @table_geocoder.stubs(:ensure_georef_status_colummn_valid)
+      mocked_input = Enumerator.new do |enum|
+        enum.yield [{cartodb_id: 1, searchtext: 'dummy text'}]
+      end
+      @table_geocoder.stubs(:data_input_blocks).returns(mocked_input)
+      response = Typhoeus::Response.new(code: 200, body: read_fixture_file('gme_output_empty.json'))
+      Typhoeus.stub('https://maps.googleapis.com/maps/api/geocode/json', method: :get).and_return(response)
+      @table_geocoder.expects(:update_table).once
+
+      @table_geocoder.run
+      @table_geocoder.processed_rows.should == 1
+    end
+
+    it "processes error rows response" do
+      @usage_metrics_stub.expects(:incr).with(:geocoder_google, :total_requests, 1)
+      @usage_metrics_stub.expects(:incr).with(:geocoder_google, :success_responses, 0)
+      @usage_metrics_stub.expects(:incr).with(:geocoder_google, :empty_responses, 0)
+      @usage_metrics_stub.expects(:incr).with(:geocoder_google, :failed_responses, 1)
+
+      @table_geocoder.stubs(:ensure_georef_status_colummn_valid)
+      mocked_input = Enumerator.new do |enum|
+        enum.yield [{cartodb_id: 1, searchtext: 'dummy text'}]
+      end
+      @table_geocoder.stubs(:data_input_blocks).returns(mocked_input)
+      response = Typhoeus::Response.new(code: 200, body: read_fixture_file('gme_output_error.json'))
+      Typhoeus.stub('https://maps.googleapis.com/maps/api/geocode/json', method: :get).and_return(response)
+      @table_geocoder.expects(:update_table).once
+
+      @table_geocoder.run
+      @table_geocoder.processed_rows.should == 1
+    end
+
+    it "processes error with message response" do
+      @usage_metrics_stub.expects(:incr).with(:geocoder_google, :total_requests, 1)
+      @usage_metrics_stub.expects(:incr).with(:geocoder_google, :success_responses, 0)
+      @usage_metrics_stub.expects(:incr).with(:geocoder_google, :empty_responses, 0)
+      @usage_metrics_stub.expects(:incr).with(:geocoder_google, :failed_responses, 1)
+
+      @table_geocoder.stubs(:ensure_georef_status_colummn_valid)
+      mocked_input = Enumerator.new do |enum|
+        enum.yield [{cartodb_id: 1, searchtext: 'dummy text'}]
+      end
+      @table_geocoder.stubs(:data_input_blocks).returns(mocked_input)
+      response = Typhoeus::Response.new(code: 200, body: read_fixture_file('gme_output_error_with_message.json'))
+      Typhoeus.stub('https://maps.googleapis.com/maps/api/geocode/json', method: :get).and_return(response)
+      @table_geocoder.expects(:update_table).once
+      CartoDB.expects(:notify_error).once
+
+      @table_geocoder.run
+      @table_geocoder.processed_rows.should == 1
     end
 
   end
@@ -139,7 +198,7 @@ describe Carto::Gme::TableGeocoder do
 
       # Avoid issues on some machines if postgres system account can't read fixtures subfolder for the COPY
       filename = 'populated_places_short.csv'
-      stdout, stderr, status =  Open3.capture3("cp #{path_to(filename)} /tmp/#{filename}")
+      _stdout, stderr, _status =  Open3.capture3("cp #{path_to(filename)} /tmp/#{filename}")
       raise if stderr != ''
       load_csv "/tmp/#{filename}"
 
@@ -183,6 +242,10 @@ describe Carto::Gme::TableGeocoder do
     File.expand_path(
       File.join(File.dirname(__FILE__), "../../fixtures/#{filepath}")
     )
+  end
+
+  def read_fixture_file(filename)
+    File.read(path_to(filename))
   end
 
   def load_csv(path)

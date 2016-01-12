@@ -104,8 +104,8 @@ module Carto
           response = fetch_from_gme(row[:searchtext])
           # If we get an error we get nil so we pass to the next row
           next if response.nil?
-          if response['status'] != 'OK'
-            @empty_processed_rows += 1
+          if response['status'] != Client::OK_STATUS
+            process_error_or_empty_status(response['status'])
             row.merge!(cartodb_georef_status: false)
           else
             result = response['results'].select { |r| r['types'] & ACCEPTED_ADDRESS_TYPES }.first
@@ -170,6 +170,13 @@ module Carto
         CartoDB.notify_error('Error geocoding using GME', error: e.backtrace.join('\n'), search_text: search_text)
         @failed_processed_rows += 1
         nil
+      end
+
+      def process_error_or_empty_status(status)
+        case status
+          when Client::ZERO_RESULTS_STATUS then @empty_processed_rows += 1
+          else @failed_processed_rows += 1
+        end
       end
     end
   end

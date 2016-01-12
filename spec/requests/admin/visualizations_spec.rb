@@ -538,7 +538,7 @@ describe Admin::VisualizationsController do
     end
 
     it 'invokes user metadata redis caching' do
-      Carto::UsersMetadataRedisCache.any_instance.expects(:update_if_old).with($user_1).once
+      Carto::UserDbSizeCache.any_instance.expects(:update_if_old).with($user_1).once
       login_as($user_1, scope: $user_1.username)
       get dashboard_path, {}, @headers
     end

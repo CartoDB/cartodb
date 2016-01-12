@@ -457,7 +457,7 @@ class User < Sequel::Model
   end
 
   def self.where_db_size_changed
-    ::User.where(username: Carto::UsersMetadataRedisCache.new.db_size_in_bytes_change_users.keys)
+    ::User.where(username: Carto::UserDbSizeCache.new.db_size_in_bytes_change_users.keys)
   end
 
   def self.password_digest(password, salt)

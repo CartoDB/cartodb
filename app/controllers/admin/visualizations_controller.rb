@@ -7,7 +7,7 @@ require_relative '../carto/admin/visualization_public_map_adapter'
 require_relative '../carto/api/visualization_presenter'
 require_relative '../../helpers/embed_redis_cache'
 require_dependency 'static_maps_url_helper'
-require_dependency 'carto/users_metadata_redis_cache'
+require_dependency 'carto/user_db_size_cache'
 
 class Admin::VisualizationsController < Admin::AdminController
 
@@ -445,7 +445,7 @@ class Admin::VisualizationsController < Admin::AdminController
   def user_metadata_propagation
     return true if current_user.nil?
 
-    Carto::UsersMetadataRedisCache.new.update_if_old(current_user)
+    Carto::UserDbSizeCache.new.update_if_old(current_user)
   end
 
   def load_common_data

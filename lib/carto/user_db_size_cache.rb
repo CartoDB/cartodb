@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 module Carto
-  class UsersMetadataRedisCache
+  class UserDbSizeCache
 
     DB_SIZE_IN_BYTES_EXPIRATION = 2.days
 

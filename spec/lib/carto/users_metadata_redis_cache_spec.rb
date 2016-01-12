@@ -1,7 +1,7 @@
 require_relative '../../spec_helper'
-require_relative '../../../lib/carto/users_metadata_redis_cache'
+require_relative '../../../lib/carto/user_db_size_cache'
 
-describe Carto::UsersMetadataRedisCache do
+describe Carto::UserDbSizeCache do
   let(:user_mock) do
     OpenStruct.new(id: 'kk', username: 'myusername', db_size_in_bytes: 123)
   end
@@ -12,7 +12,7 @@ describe Carto::UsersMetadataRedisCache do
   end
 
   let(:umrc) do
-    Carto::UsersMetadataRedisCache.new
+    Carto::UserDbSizeCache.new
   end
 
   describe '#update_if_old' do

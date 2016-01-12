@@ -549,7 +549,7 @@ describe User do
       db_size_in_bytes_change_users = {
         @user.username => 12345
       }
-      Carto::UsersMetadataRedisCache.any_instance.expects(:db_size_in_bytes_change_users).at_least_once.returns(db_size_in_bytes_change_users)
+      Carto::UserDbSizeCache.any_instance.expects(:db_size_in_bytes_change_users).at_least_once.returns(db_size_in_bytes_change_users)
 
       users = ::User.where_db_size_changed.all
       users.length.should == 1

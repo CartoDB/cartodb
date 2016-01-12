@@ -408,17 +408,18 @@ var Infowindow = View.extend({
     this._loadImageHook(imageDimensions, coverDimensions, url);
   },
 
-  _calcImageStyle: function (w, h, coverWidth, coverHeight) {
+  _calcImageStyle: function (imageDimensions, coverDimensions) {
     var styles = {};
-    var ratio = h / w;
-    var coverRatio = coverHeight / coverWidth;
 
-    if (w > coverWidth && h > coverHeight) {
-      if (ratio < coverRatio) {
-        styles = { height: coverHeight };
+    var imageRatio = imageDimensions.height / imageDimensions.width;
+    var coverRatio = coverDimensions.height / coverDimensions.width;
+
+    if (imageDimensions.width > coverDimensions.width && imageDimensions.height > coverDimensions.height) {
+      if (imageRatio < coverRatio) {
+        styles = { height: coverDimensions.height };
       }
     } else {
-      styles = { width: w };
+      styles = { width: imageDimensions.width };
     }
 
     return styles;

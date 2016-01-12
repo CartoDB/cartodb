@@ -4,9 +4,6 @@ require 'ostruct'
 require_relative '../../acceptance_helper'
 
 feature "Superadmin's users API" do
-  before(:all) do
-  end
-
   background do
     Capybara.current_driver = :rack_test
     @new_user = new_user(password: "this_is_a_password")

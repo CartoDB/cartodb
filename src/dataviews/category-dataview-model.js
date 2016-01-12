@@ -173,6 +173,10 @@ module.exports = DataviewModelBase.extend({
     }
   },
 
+  forceFetch: function () {
+    this._fetch();
+  },
+
   parse: function (d) {
     var newData = [];
     var _tmpArray = {};

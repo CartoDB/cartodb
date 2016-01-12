@@ -57,27 +57,7 @@
         }
       ],
       "formatted_address": "1600 Amphitheatre Parkway, Mountain View, CA 94043, USA",
-      "geometry": {
-        "location": {
-          "lat": 37.4224764,
-          "lng": -122.0842499
-        },
-        "location_type": "ROOFTOP",
-        "viewport": {
-          "northeast": {
-            "lat": 37.4238253802915,
-            "lng": -122.0829009197085
-          },
-          "southwest": {
-            "lat": 37.4211274197085,
-            "lng": -122.0855988802915
-          }
-        }
-      },
-      "place_id": "ChIJ2eUgeAK6j4ARbn5u_wAGqWA",
-      "types": [
-        "street_address"
-      ]
+      "geometry": {}
     }
   ],
   "status": "ZERO_RESULTS"

@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+require 'active_support/time'
+
 module CartoDB
   # The purpose of this class is to encapsulate storage of usage metrics.
   # This shall be used for billing, quota checking and metrics.
@@ -19,13 +21,13 @@ module CartoDB
       :geocoder_cache
     ]
 
-    def initialize(redis, username, orgname=nil)
+    def initialize(redis, username, orgname = nil)
       @username = username
       @orgname = orgname
       @redis = redis
     end
 
-    def incr(service, metric, amount=1)
+    def incr(service, metric, amount = 1)
       check_valid_data(service, metric, amount)
       return if amount == 0
 
@@ -54,11 +56,11 @@ module CartoDB
     end
 
     def current_day
-      DateTime.now.day
+      DateTime.current.strftime('%d')
     end
 
     def current_year_month
-      DateTime.now.strftime('%Y%m')
+      DateTime.current.strftime('%Y%m')
     end
 
   end
@@ -68,5 +70,4 @@ module CartoDB
       CartoDB.notify_debug("redis.incr(#{key}, #{increment})")
     end
   end
-
 end

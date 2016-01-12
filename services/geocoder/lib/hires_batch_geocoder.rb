@@ -30,8 +30,8 @@ module CartoDB
     # INFO: the request_id is the most important thing to care for batch requests
     # INFO: it is called remote_id in upper layers
     attr_reader :base_url, :request_id, :app_id, :token, :mailto,
-                :status, :processed_rows, :processed_rows, :successful_processed_rows, :failed_processed_rows, 
-                :empty_processed_rows,:total_rows, :dir, :input_file
+                :status, :processed_rows, :processed_rows, :successful_processed_rows, :failed_processed_rows,
+                :empty_processed_rows, :total_rows, :dir, :input_file
 
     class ServiceDisabled < StandardError; end
 

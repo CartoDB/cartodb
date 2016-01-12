@@ -38,7 +38,7 @@ module CartoDB
     ensure
       @usage_metrics.incr(:geocoder_cache, :total_requests, @total_rows)
       @usage_metrics.incr(:geocoder_cache, :success_responses, @hits)
-      @usage_metrics.incr(:geocoder_cache, :empty_responses, (@total_rows - @hits))
+      @usage_metrics.incr(:geocoder_cache, :empty_responses, (@total_rows - @hits - @failed_rows))
       @usage_metrics.incr(:geocoder_cache, :failed_responses, @failed_rows)
     end
 

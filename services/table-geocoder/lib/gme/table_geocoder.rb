@@ -14,7 +14,7 @@ module Carto
       ACCEPTED_ADDRESS_TYPES = ['street_address', 'route', 'intersection', 'neighborhood']
 
       attr_reader :original_formatter, :processed_rows, :successful_processed_rows, :failed_processed_rows,
-                  :empty_processed_rows,:state, :max_block_size
+                  :empty_processed_rows, :state, :max_block_size
 
       def initialize(arguments)
         super(arguments)

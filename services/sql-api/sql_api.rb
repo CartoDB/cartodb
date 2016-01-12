@@ -5,8 +5,11 @@ require_relative '../../lib/carto/http/client'
 
 module CartoDB
   class SQLApi
-    class SQLError        < StandardError; end
-    class PermissionError < StandardError; end
+    class SQLApiError < StandardError; end
+    class SQLError < SQLApiError; end
+    class PermissionError < SQLApiError; end
+    class TimeoutError < SQLApiError; end
+    class DnsError < SQLApiError; end
 
     # seconds
     CONNECT_TIMEOUT = 45
@@ -36,7 +39,7 @@ module CartoDB
       @response_code    = response.response_code
       body              = inflate(response.body.to_s)
       @parsed_response  = ::JSON.parse(body) rescue nil
-      raise_if_error
+      raise_if_error(response)
       parsed_response["rows"] rescue body
     end
 
@@ -46,8 +49,10 @@ module CartoDB
       return text
     end
 
-    def raise_if_error
+    def raise_if_error(response)
       error_message   = parsed_response["error"].first rescue nil
+      raise DnsError if response.return_code == :couldnt_resolve_host
+      raise TimeoutError if response.timed_out?
       raise PermissionError if error_message =~ /^permission denied for relation/
       raise SQLError.new(error_message) if response_code != 200
     end

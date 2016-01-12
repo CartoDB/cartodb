@@ -79,6 +79,13 @@ describe Downloader do
       downloader.source_file.filename.should eq 'ngos.csv'
     end
 
+    it 'ignores extra type parameters in Content-Type header' do
+      stub_download(url: @file_url_without_extension, filepath: @file_filepath_without_extension, headers: { 'Content-Type' => 'vnd.ms-excel;charset=UTF-8' })
+      downloader = Downloader.new(@file_url_without_extension)
+      downloader.run
+      downloader.send(:content_type).should eq 'vnd.ms-excel'
+    end
+
     it 'uses Content-Type header extension for files with different extension' do
       stub_download(
           url: @file_url_with_wrong_extension,

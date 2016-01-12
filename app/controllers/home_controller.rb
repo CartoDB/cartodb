@@ -13,7 +13,7 @@ class HomeController < ApplicationController
   CDB_VALID_VERSION = '0.11'
   CDB_LATEST_VERSION = '0.11.5'
   REDIS_VERSION = '3.0'
-  RUBY_BIN_VERSION = 'ruby 1.9.3'
+  RUBY_BIN_VERSION = 'ruby 2.2.3'
   NODE_VERSION = 'v0.10'
   GEOS_VERSION = '3.4.2'
   GDAL_VERSION = '1.11'

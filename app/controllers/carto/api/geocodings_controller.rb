@@ -71,7 +71,11 @@ module Carto
 
         list = input.map { |v| "'#{v.to_s.gsub("'", "''")}'" }.join(",")
 
-        services = CartoDB::SQLApi.new({ username: 'geocoding', timeout: GEOCODING_SQLAPI_CALLS_TIMEOUT}).fetch("SELECT (admin0_available_services(Array[#{list}])).*")
+        internal_geocoder_api_config = CartoDB::GeocoderConfig.instance.get['internal']
+          .symbolize_keys
+          .merge(timeout: GEOCODING_SQLAPI_CALLS_TIMEOUT)
+        services = CartoDB::SQLApi.new(internal_geocoder_api_config)
+          .fetch("SELECT (admin0_available_services(Array[#{list}])).*")
 
         geometries = []
         points = services.select { |s| s['postal_code_points'] }.size

@@ -63,7 +63,7 @@ class ApplicationController < ActionController::Base
   end
 
   def http_header_authentication
-    authenticate(:http_header_authentication, :scope => CartoDB.extract_subdomain(request))
+    authenticate(:http_header_authentication, scope: CartoDB.extract_subdomain(request))
     if current_user
       validate_session(current_user)
     elsif Carto::HttpHeaderAuthentication.new.autocreation_enabled?
@@ -159,10 +159,10 @@ class ApplicationController < ActionController::Base
   def render_500
     respond_to do |format|
       format.html do
-        render :file => 'public/500.html', :status => 500, :layout => false
+        render file: 'public/500.html', status: 500, layout: false
       end
       format.json do
-        render :status => 500
+        render status: 500
       end
     end
   end

@@ -9,10 +9,18 @@ var placeholder = require('./search-items-no-results-template.tpl');
 module.exports = CategoryItemsView.extend({
   className: 'CDB-Widget-list is-hidden CDB-Widget-list--wrapped js-list',
 
+  initialize: function () {
+    CategoryItemsView.prototype.initialize.apply(this, arguments);
+
+    this._searchResultsCollection = this.dataModel.getSearchResult();
+    this._searchResultsCollection.on('change:selected', this._onSelectedItemChange, this);
+    this.add_related_model(this._searchResultsCollection);
+  },
+
   render: function () {
     this.clearSubViews();
     this.$el.empty();
-    var data = this.dataModel.getSearchResult();
+    var data = this._searchResultsCollection;
     var isDataEmpty = data.isEmpty() || data.size() === 0;
 
     if (isDataEmpty) {
@@ -28,7 +36,7 @@ module.exports = CategoryItemsView.extend({
     this.$el.addClass('CDB-Widget-list--wrapped');
 
     var groupItem;
-    var data = this.dataModel.getSearchResult();
+    var data = this._searchResultsCollection;
 
     data.each(function (mdl, i) {
       if (i % this.options.itemsPerPage === 0) {
@@ -63,6 +71,10 @@ module.exports = CategoryItemsView.extend({
 
   toggle: function () {
     this[this.viewModel.isSearchEnabled() ? 'show' : 'hide']();
+  },
+
+  _onSelectedItemChange: function (m, isSelected) {
+    this.viewModel.lockedCategories[isSelected ? 'addItem' : 'removeItem'](m);
   }
 
 });

@@ -62,13 +62,15 @@ describe('widgets/category/stats-view', function () {
 
     it('should render when any of this events are triggered from data model', function () {
       var bind = this.model.bind.calls.argsFor(0);
-      expect(bind[0]).toEqual('change:data change:locked change:search change:totalCount');
+      expect(bind[0]).toContain('change:data');
+      expect(bind[0]).toContain('change:totalCount');
       expect(bind[1]).toEqual(this.view.render);
     });
 
-    it('should render when search is enabled/disabled', function () {
+    it('should render when search or locked is enabled/disabled', function () {
       var bind = this.viewModel.bind.calls.argsFor(0);
-      expect(bind[0]).toEqual('change:search');
+      expect(bind[0]).toContain('change:search');
+      expect(bind[0]).toContain('change:locked');
       expect(bind[1]).toEqual(this.view.render);
     });
   });

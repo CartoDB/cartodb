@@ -23,7 +23,7 @@ module.exports = cdb.core.View.extend({
   render: function () {
     var name = this.model.get('name');
     var value = this.model.get('value');
-    var template = this.model.get('agg') || this.dataModel.isLocked()
+    var template = this.model.get('agg') || this.viewModel.isLocked()
       ? unclickableTemplate
       : clickableTemplate;
 

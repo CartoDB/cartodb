@@ -80,8 +80,7 @@ module.exports = cdb.core.View.extend({
   },
 
   _onSearchClicked: function () {
-    this.dataModel.setupSearch();
-    this.viewModel.toggleSearch();
+    this.viewModel.setupSearch();
   },
 
   _scrollToPage: function () {

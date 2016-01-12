@@ -36,10 +36,10 @@ module.exports = cdb.core.View.extend({
         title: this.viewModel.get('title'),
         columnName: this.dataModel.get('column'),
         q: this.dataModel.getSearchQuery(),
-        isLocked: this.dataModel.isLocked(),
-        canBeLocked: this.dataModel.canBeLocked(),
+        isLocked: this.viewModel.isLocked(),
+        canBeLocked: this.viewModel.canBeLocked(),
         isSearchEnabled: this.viewModel.isSearchEnabled(),
-        canShowApply: this.dataModel.canApplyLocked()
+        canShowApply: this.viewModel.canApplyLocked()
       })
     );
     this._initViews();
@@ -49,9 +49,11 @@ module.exports = cdb.core.View.extend({
   _initBinds: function () {
     this.viewModel.bind('change:search', this._onSearchToggled, this);
     this.viewModel.bind('change:collapsed change:isColorsApplied', this.render, this);
-    this.dataModel.bind('change:filter change:lockCollection', this.render, this);
+    this.viewModel.lockedCategories.bind('change add remove', this.render, this);
+    this.dataModel.bind('change:filter', this.render, this);
     this.add_related_model(this.dataModel);
     this.add_related_model(this.viewModel);
+    this.add_related_model(this.viewModel.lockedCategories);
   },
 
   _initViews: function () {
@@ -130,7 +132,7 @@ module.exports = cdb.core.View.extend({
 
   _applyLocked: function () {
     this.viewModel.toggleSearch();
-    this.dataModel.applyLocked();
+    this.viewModel.applyLocked();
   },
 
   _applyColors: function () {
@@ -142,7 +144,7 @@ module.exports = cdb.core.View.extend({
   },
 
   _cancelSearch: function () {
-    this.dataModel.cleanSearch();
+    this.viewModel.cleanSearch();
     this.viewModel.disableSearch();
   },
 

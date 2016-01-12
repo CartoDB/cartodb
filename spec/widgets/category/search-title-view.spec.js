@@ -60,15 +60,15 @@ describe('widgets/category/search-title-view', function () {
     });
 
     it('should show apply button when there is any change to apply', function () {
-      this.model.acceptFilters('test');
+      this.model.filter.accept('test');
       expect(this.view.$('.CDB-Widget-searchApply').length).toBe(1);
     });
 
     it('should apply locked categories when apply button is clicked', function () {
-      spyOn(this.model, 'applyLocked');
-      this.model.acceptFilters('one');
+      spyOn(this.viewModel, 'applyLocked');
+      this.model.filter.accept('one');
       this.view.$('.js-applyLocked').click();
-      expect(this.model.applyLocked).toHaveBeenCalled();
+      expect(this.viewModel.applyLocked).toHaveBeenCalled();
     });
   });
 

@@ -22,47 +22,46 @@ module.exports = cdb.core.View.extend({
   },
 
   render: function () {
-    var totalCats = this.dataModel.getData().size();
-    var rejectedCats = this.dataModel.getRejectedCount();
-    var acceptedCats = this.dataModel.getAcceptedCount();
-
+    var f = this.dataModel.filter;
     this.$el.html(
       template({
-        isLocked: this.dataModel.isLocked(),
-        canBeLocked: this.dataModel.canBeLocked(),
-        totalLocked: this.dataModel.getLockedSize(),
+        acceptedCats: f.acceptedCategories.size(),
+        rejectedCats: f.rejectedCategories.size(),
+        areAllRejected: f.areAllRejected(),
+        isLocked: this.viewModel.isLocked(),
+        canBeLocked: this.viewModel.canBeLocked(),
+        totalLocked: this.viewModel.lockedCategories.size(),
         isSearchEnabled: this.viewModel.isSearchEnabled(),
         isSearchApplied: this.dataModel.isSearchApplied(),
-        isAllRejected: this.dataModel.isAllFiltersRejected(),
-        totalCats: totalCats,
-        rejectedCats: rejectedCats,
-        acceptedCats: acceptedCats
+        totalCats: this.dataModel.getData().size()
       })
     );
     return this;
   },
 
   _initBinds: function () {
-    this.dataModel.bind('change:data change:filter change:locked change:lockCollection', this.render, this);
-    this.viewModel.bind('change:search', this.render, this);
+    this.dataModel.bind('change:data change:filter', this.render, this);
+    this.viewModel.bind('change:search change:locked', this.render, this);
+    this.viewModel.lockedCategories.bind('change add remove', this.render, this);
     this.add_related_model(this.dataModel);
     this.add_related_model(this.viewModel);
+    this.add_related_model(this.viewModel.lockedCategories);
   },
 
   _lockCategories: function () {
-    this.dataModel.lockCategories();
+    this.viewModel.lockCategories();
   },
 
   _unlockCategories: function () {
-    this.dataModel.unlockCategories();
+    this.viewModel.unlockCategories();
   },
 
   _onUnselectAll: function () {
-    this.dataModel.rejectAll();
+    this.dataModel.filter.rejectAll();
   },
 
   _onSelectAll: function () {
-    this.dataModel.acceptAll();
+    this.dataModel.filter.acceptAll();
   }
 
 });

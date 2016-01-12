@@ -25,7 +25,7 @@ module.exports = cdb.core.View.extend({
       template({
         isSearchEnabled: this.viewModel.isSearchEnabled(),
         isSearchApplied: this.dataModel.isSearchApplied(),
-        isLocked: this.dataModel.isLocked(),
+        isLocked: this.viewModel.isLocked(),
         isOtherAvailable: this.dataModel.isOtherAvailable(),
         resultsCount: this.dataModel.getSearchCount(),
         totalCats: this._getCategoriesSize(),
@@ -46,8 +46,8 @@ module.exports = cdb.core.View.extend({
   },
 
   _initBinds: function () {
-    this.dataModel.bind('change:data change:locked change:search change:totalCount', this.render, this);
-    this.viewModel.bind('change:search', this.render, this);
+    this.dataModel.bind('change:data change:totalCount', this.render, this);
+    this.viewModel.bind('change:search change:locked', this.render, this);
     this.add_related_model(this.dataModel);
     this.add_related_model(this.viewModel);
   },

@@ -33,7 +33,7 @@ module.exports = PaginatorView.extend({
   },
 
   _onSearchClicked: function () {
-    this.dataModel.cleanSearch();
+    this.viewModel.cleanSearch();
     this.viewModel.toggleSearch();
   }
 

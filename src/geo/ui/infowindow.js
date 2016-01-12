@@ -348,27 +348,27 @@ var Infowindow = View.extend({
     return false;
   },
 
-  _loadImageHook: function (width, height, y, url) {
+  _loadImageHook: function (imageDimensions, coverDimensions, url) {
     var $hook = this.$('.js-hook');
-    var $cover = this.$('.js-cover');
 
-    if ($hook) {
-      var $hookImage = $('<img />').attr('src', url);
-      $hook.append($hookImage);
-
-      var $img = $hook.find('img');
-
-      $img.attr('data-clipPath', 'M0,0 L0,16 L24,0 L0,0 Z');
-      $img.clipPath(width, height, -this.options.hookMargin, y);
-
-      $hookImage.load(function () {
-        $hook.parent().addClass('has-image');
-        $hookImage.css({
-          marginTop: -$cover.height(),
-          width: $cover.width()
-        });
-      });
+    if (!$hook) {
+      return;
     }
+
+    var $hookImage = $('<img />').attr('src', url);
+
+    $hook.append($hookImage);
+
+    $hookImage.attr('data-clipPath', 'M0,0 L0,16 L24,0 L0,0 Z');
+    $hookImage.clipPath(imageDimensions.width, imageDimensions.height, -this.options.hookMargin, imageDimensions.height - this.options.hookHeight);
+
+    $hookImage.load(function () {
+      $hook.parent().addClass('has-image');
+      $hookImage.css({
+        marginTop: -coverDimensions.height,
+        width: coverDimensions.width
+      });
+    });
   },
 
   _loadCoverFromTemplate: function (url) {
@@ -392,19 +392,28 @@ var Infowindow = View.extend({
     var $img = this.$('.CDB-infowindow-media-item');
     var url = $img.attr('src');
 
-    var w = $img.width();
-    var h = $img.height();
+    var imageDimensions = { width: $img.width(), height: $img.height() };
+    var coverDimensions = { width: $cover.width(), height: $cover.height() };
 
-    var coverWidth = $cover.width();
-    var coverHeight = $cover.height();
+    var styles = this._calcImageStyle(imageDimensions, coverDimensions);
 
+    $img.css(styles);
+
+    $cover.css({ height: imageDimensions.height - this.options.hookHeight });
+
+    this._stopCoverLoader();
+
+    $img.fadeIn(150);
+
+    this._loadImageHook(imageDimensions, coverDimensions, url);
+  },
+
+  _calcImageStyle: function (w, h, coverWidth, coverHeight) {
+    var styles = {};
     var ratio = h / w;
-
     var coverRatio = coverHeight / coverWidth;
 
-    var styles = {};
-
-    if (w > coverWidth && h > coverHeight) { // bigger image
+    if (w > coverWidth && h > coverHeight) {
       if (ratio < coverRatio) {
         styles = { height: coverHeight };
       }
@@ -412,14 +421,7 @@ var Infowindow = View.extend({
       styles = { width: w };
     }
 
-    $img.css(styles);
-    $cover.css({ height: h - this.options.hookHeight });
-
-    this._stopCoverLoader();
-
-    $img.fadeIn(150);
-
-    this._loadImageHook($img.width(), $img.height(), h - this.options.hookHeight, url);
+    return styles;
   },
 
   _loadCover: function () {

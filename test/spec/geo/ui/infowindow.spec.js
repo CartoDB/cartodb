@@ -317,10 +317,13 @@ describe('geo/ui/infowindow', function() {
     });
 
     it("should setup the hook correctly", function() {
+      spyOn(view, '_loadCoverFromUrl');
       model.set("content", { fields: fieldsWithURL });
       model.set('template', '<div class="js-infowindow" data-cover="true"><div class="js-cover"></div><div class="js-hook"></div></div>');
 
-      view._loadImageHook();
+      expect(view._loadCoverFromUrl).toHaveBeenCalled();
+
+      view._onLoadImage();
       expect(view.$(".js-hook svg").length).toEqual(1);
       expect(view.$(".js-hook svg path").attr('d')).toEqual('M0,0 L0,16 L24,0 L0,0 Z');
     });

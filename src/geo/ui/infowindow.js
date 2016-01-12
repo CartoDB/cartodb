@@ -195,7 +195,7 @@ var Infowindow = View.extend({
   _renderScroll: function () {
     if (this.$('.has-scroll').length === 0) return;
 
-    Ps.initialize(this.el.querySelector('.js-content'), {
+    Ps.initialize(this.$('.js-content').get(0), {
       wheelSpeed: 2,
       wheelPropagation: true,
       minScrollbarLength: 20

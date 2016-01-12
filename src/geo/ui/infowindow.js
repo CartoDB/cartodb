@@ -165,10 +165,12 @@ var Infowindow = View.extend({
   },
 
   _renderLoader: function () {
+    var $loader = $('<div class="CDB-Loader js-loader"></div>');
+
     if (this.$('.js-cover').length > 0) {
-      this.$('.js-cover').append('<div class="CDB-Loader js-loader"></div>');
+      this.$('.js-cover').append($loader);
     } else {
-      this.$('.js-inner').append('<div class="CDB-Loader js-loader"></div>');
+      this.$('.js-inner').append($loader);
     }
   },
 

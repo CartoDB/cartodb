@@ -154,86 +154,6 @@ describe('geo/ui/infowindow', function() {
     expect(view.$el.html()).toEqual('');
   });
 
-  // describe("loading state", function() {
-  //   var model, view;
-  //
-  //   beforeEach(function() {
-  //
-  //     var container = $('<div>').css('height', '200px');
-  //
-  //     map = new Map();
-  //
-  //     mapView = new MapView({
-  //       el: container,
-  //       map: map
-  //     });
-  //
-  //     model = new InfowindowModel({
-  //       fields: [
-  //         { value: 'Loading content...', index: null, title: null, type: 'loading'}
-  //       ]
-  //     });
-  //
-  //     view = new Infowindow({
-  //       model: model,
-  //       mapView: mapView
-  //     });
-  //
-  //   });
-  //
-  //   it("should show loading state", function() {
-  //     spyOn(view, '_startSpinner');
-  //     model.set({
-  //       'template': 'jaja',
-  //       'content': {
-  //         fields: [
-  //           { value: 'Loading content...', index: null, title: null, type: 'loading'}
-  //         ]
-  //       }
-  //     });
-  //     expect(view._startSpinner).toHaveBeenCalled();
-  //   });
-  //
-  //   it("should hide loading state", function() {
-  //     model.set({
-  //       'template': 'jaja',
-  //       'content': {
-  //         fields: [
-  //           { value: 'Loading content...', index: null, title: null, type: 'loading'}
-  //         ]
-  //       }
-  //     });
-  //
-  //     spyOn(view, '_stopSpinner');
-  //     model.set({
-  //       'template': 'jaja',
-  //       'content': {
-  //         fields: [
-  //           { value: 'Any kind of value', index: 0, title: 'TITLE'}
-  //         ]
-  //       }
-  //     });
-  //     expect(view._stopSpinner).toHaveBeenCalled();
-  //   });
-  //
-  //   it("shouldn't show the loader if there are several fields", function() {
-  //     spyOn(view, '_stopSpinner');
-  //     spyOn(view, '_startSpinner');
-  //     model.set({
-  //       'template': 'jaja',
-  //       'content': {
-  //         fields: [
-  //           { value: 'Loading content...', index: null, title: null, type: 'loading'},
-  //           { value: 'Loading content...', index: null, title: null, type: 'loading'}
-  //         ]
-  //       }
-  //     });
-  //     expect(view._stopSpinner).toHaveBeenCalled();
-  //     expect(view._startSpinner).not.toHaveBeenCalled();
-  //   });
-  // });
-
-
   describe("custom template", function() {
     var model, view;
 
@@ -412,7 +332,12 @@ describe('geo/ui/infowindow', function() {
 
     it("should render the loader by default", function() {
       model.set('template', '<div class="js-infowindow"><div class="js-inner"></div></div>');
-      expect(view.$el.find(".js-loader").length).toEqual(1);
+      expect(view.$el.find(".js-inner .js-loader").length).toEqual(1);
+    });
+
+    it("should render the loader for infowindows with cover", function() {
+      model.set('template', '<div class="js-infowindow"><div class="js-cover"></div></div>');
+      expect(view.$el.find(".js-cover .js-loader").length).toEqual(1);
     });
 
     it("should append the image", function() {

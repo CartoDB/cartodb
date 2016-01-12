@@ -158,6 +158,7 @@ var Vis = View.extend({
   load: function (data, options) {
     var self = this;
 
+    // Load the viz.json in case we receive a url instead of a JSON object
     if (typeof (data) === 'string') {
       var url = data;
 
@@ -172,7 +173,7 @@ var Vis = View.extend({
       return this;
     }
 
-    // load modules needed for layers
+    // Load the modules (torque) for layers in the viz.json
     var layers = data.layers;
 
     if (!this.checkModules(layers)) {
@@ -207,15 +208,12 @@ var Vis = View.extend({
 
     // Do not allow pan map if zoom overlay and scrollwheel are disabled unless
     // mobile view is enabled
-    var isMobileDevice = this.isMobileDevice();
-
-    // Do not allow pan map if zoom overlay and scrollwheel are disabled
     // Check if zoom overlay is present.
     var hasZoomOverlay = _.isObject(_.find(data.overlays, function (overlay) {
       return overlay.type == 'zoom';
     }));
 
-    var allowDragging = isMobileDevice || hasZoomOverlay || scrollwheel;
+    var allowDragging = this.isMobileDevice() || hasZoomOverlay || scrollwheel;
 
     // Force using GMaps ?
     if ( (this.gmaps_base_type) && (data.map_provider === 'leaflet')) {
@@ -275,7 +273,6 @@ var Vis = View.extend({
 
     var map = new Map(mapConfig);
     this.map = map;
-    this.overlayModels = new Backbone.Collection();
 
     // If a CartoDB embed map is hidden by default, its
     // height is 0 and it will need to recalculate its size
@@ -315,17 +312,17 @@ var Vis = View.extend({
     this.$el.append(div);
 
     // Create the map
-    var mapView = new MapView.create(div_hack, map);
-
-    this.mapView = mapView;
+    this.mapView = new MapView.create(div_hack, map);
 
     if (options.legends || (options.legends === undefined && this.map.get('legends') !== false)) {
       map.layers.bind('reset', this.addLegends, this);
     }
 
+    this.overlayModels = new Backbone.Collection();
     this.overlayModels.bind('reset', function (overlays) {
       this._addOverlays(overlays, data, options);
     }, this);
+    this.overlayModels.reset(data.overlays);
 
     this.mapView.bind('newLayerView', this._addLoading, this);
 
@@ -340,6 +337,9 @@ var Vis = View.extend({
     var cartoDBLayers;
     var cartoDBLayerGroup;
     var layers = [];
+
+    // This attribute is public (used by deep-insights)
+    this.interactiveLayers = new Backbone.Collection();
     _.each(data.layers, function (layerData) {
       if (layerData.type === 'layergroup' || layerData.type === 'namedmap') {
         var layersData;
@@ -366,6 +366,7 @@ var Vis = View.extend({
         }
         cartoDBLayers = _.map(layersData, function (layerData) {
           var cartoDBLayer = Layers.create('cartodb', self, layerData);
+          self.interactiveLayers.add(cartoDBLayer);
           return cartoDBLayer;
         });
 
@@ -377,48 +378,21 @@ var Vis = View.extend({
         // Treat differently since this kind of layer is rendered client-side (and not through the tiler)
         var layer = Layers.create(layerData.type, self, layerData);
         layers.push(layer);
-      }
-    });
-
-    this.map.layers.reset(layers);
-    this.overlayModels.reset(data.overlays);
-
-    // if there are no sublayer_options fill it
-    if (!options.sublayer_options) {
-      this._setupSublayers(data.layers, options);
-    }
-
-    this._setLayerOptions(options);
-
-    _.defer(function () {
-      self.trigger('done', self, map.layers);
-    });
-
-    this.interactiveLayers = new Backbone.Collection();
-    this.map.layers.each(function (layer) {
-      var layerType = layer.get('type');
-      var isLayerGroup = layerType === 'layergroup';
-
-      if (isLayerGroup) {
-        cartoDBLayerGroup = layer;
-      }
-
-      if (isLayerGroup || layerType === 'namedmap') {
-        layer.layers.each(function (subLayer) {
-          this.interactiveLayers.add(subLayer);
-        }, this);
-      } else {
-        if (layerType === 'torque') {
-          this.interactiveLayers.add(layer);
+        if (layerData.type === 'torque') {
+          self.interactiveLayers.add(layer);
         }
       }
-    }, this);
+    });
+
+    // Map layers are resetted and the mapView adds the layers to the map
+    this.map.layers.reset(layers);
 
     this._dataviewsCollection = new DataviewCollection();
     this.dataviews = new DataviewsFactory(null, {
       dataviewsCollection: this._dataviewsCollection,
       interactiveLayersCollection: this.interactiveLayers
     });
+
     // TODO: rethink this
     this._dataviewsCollection.on('add reset remove', _.debounce(this._invalidateSizeOnDataviewsChanges, 10), this);
 
@@ -486,8 +460,18 @@ var Vis = View.extend({
         dataviews: this._dataviewsCollection,
         map: this.map
       });
-      // this._createLayerGroupInstance(cartoDBLayerGroup);
     }
+
+    // if there are no sublayer_options fill it
+    if (!options.sublayer_options) {
+      this._setupSublayers(data.layers, options);
+    }
+
+    this._setLayerOptions(options);
+
+    _.defer(function () {
+      self.trigger('done', self, map.layers);
+    });
 
     return this;
   },

@@ -167,9 +167,7 @@ describe ApplicationController do
         it 'redirects to user creation for unknown emails' do
           get dashboard_url, {}, authentication_headers('unknown@company.com')
           response.status.should == 302
-          follow_redirect!
-          response.status.should == 200
-          response.body.should include("Your account is being created")
+          response.location.should match /#{signup_http_authentication_path}/
         end
       end
     end

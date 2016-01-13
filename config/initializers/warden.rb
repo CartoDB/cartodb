@@ -167,7 +167,7 @@ Warden::Strategies.add(:http_header_authentication) do
 
     success!(user)
   rescue => e
-    CartoDB.notify_exception(e)
+    CartoDB.report_exception(e, "Authenticating with http_header_authentication", user: user)
     return fail!
   end
 end

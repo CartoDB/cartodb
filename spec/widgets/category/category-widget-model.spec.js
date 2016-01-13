@@ -144,11 +144,18 @@ describe('widgets/category/category-widget-model', function () {
     });
 
     describe('when locked state changes', function () {
+      beforeEach(function () {
+        spyOn(this.dataviewModel, 'enableFilter');
+        spyOn(this.dataviewModel, 'disableFilter');
+      });
+
       it('should update ownFilter attr on dataview model', function () {
         this.model.set('locked', true);
-        expect(this.dataviewModel.get('ownFilter')).toBe(true);
+        expect(this.dataviewModel.disableFilter).toHaveBeenCalled();
+        expect(this.dataviewModel.enableFilter).not.toHaveBeenCalled();
+
         this.model.set('locked', false);
-        expect(this.dataviewModel.get('ownFilter')).toBe(false);
+        expect(this.dataviewModel.enableFilter).toHaveBeenCalled();
       });
     });
   });

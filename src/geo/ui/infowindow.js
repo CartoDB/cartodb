@@ -118,15 +118,11 @@ var Infowindow = View.extend({
         this.$('.js-content').css('max-height', this.model.get('maxHeight') + 'px');
       }
 
-      this._renderLoader();
-      this._startLoader();
-
       this._loadCover();
 
       if (!this.isLoadingData()) {
         this.model.trigger('domready', this, this.$el);
         this.trigger('domready', this, this.$el);
-        this._stopLoader();
       }
 
       this._renderScroll();
@@ -164,32 +160,22 @@ var Infowindow = View.extend({
     }
   },
 
-  _renderLoader: function () {
+  _renderCoverLoader: function () {
     var $loader = $('<div class="CDB-Loader js-loader"></div>');
 
     if (this.$('.js-cover').length > 0) {
       this.$('.js-cover').append($loader);
-    } else {
-      this.$('.js-inner').append($loader);
     }
   },
 
-  _startLoader: function () {
+  _startCoverLoader: function () {
     this.$('.js-infowindow').addClass('is-loading');
     this.$('.js-loader').addClass('is-visible');
   },
 
-  _stopLoader: function () {
-    if (this._containsCover() && this._coverLoading) {
-      return;
-    }
+  _stopCoverLoader: function () {
     this.$('.js-infowindow').removeClass('is-loading');
     this.$('.js-loader').removeClass('is-visible');
-  },
-
-  _stopCoverLoader: function () {
-    this._coverLoading = false;
-    this._stopLoader();
   },
 
   _renderScroll: function () {
@@ -318,8 +304,7 @@ var Infowindow = View.extend({
   },
 
   isLoadingData: function () {
-    var content = this.model.get('content');
-    return content.fields && content.fields.length === 1 && content.fields[0].type === 'loading';
+    return this.model.get('loading');
   },
 
   /**
@@ -379,8 +364,7 @@ var Infowindow = View.extend({
   _loadCoverFromUrl: function (url) {
     var $cover = this.$('.js-cover');
 
-    this._startLoader();
-    this._coverLoading = true;
+    this._startCoverLoader();
 
     var $img = $("<img class='CDB-infowindow-media-item' />").attr('src', url);
     $cover.append($img);
@@ -434,6 +418,9 @@ var Infowindow = View.extend({
     if (!this._containsCover()) {
       return;
     }
+
+    this._renderCoverLoader();
+    this._startCoverLoader();
 
     var url = this._getCoverURL();
 
@@ -491,16 +478,23 @@ var Infowindow = View.extend({
     e.stopPropagation();
   },
 
-  /**
-   *  Stop event propagation
-   */
   _stopPropagation: function (ev) {
     ev.stopPropagation();
   },
 
-  /**
-   *  Set loading state adding its content
-   */
+  setLoading: function () {
+    this.model.set({
+      content: {
+        fields: [{
+          type: 'loading',
+          title: 'loading',
+          value: '…'
+        }]
+      }
+    });
+    return this;
+  },
+
   setError: function () {
     this.model.set({
       content: {

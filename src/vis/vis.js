@@ -961,6 +961,7 @@ var Vis = View.extend({
       // Show infowindow with loading state
       infowindow
         .setLatLng(latlng)
+        .setLoading()
         .showInfowindow();
 
       if (layerView.tooltip) {

@@ -334,13 +334,9 @@ describe('geo/ui/infowindow', function() {
       expect(view._containsCover()).toEqual(true);
     });
 
-    it("should render the loader by default", function() {
-      model.set('template', '<div class="js-infowindow"><div class="js-inner"></div></div>');
-      expect(view.$el.find(".js-inner .js-loader").length).toEqual(1);
-    });
-
     it("should render the loader for infowindows with cover", function() {
-      model.set('template', '<div class="js-infowindow"><div class="js-cover"></div></div>');
+      model.set("content", { fields: fields });
+      model.set('template', '<div class="js-infowindow" data-cover="true"><div class="js-cover"></div></div>');
       expect(view.$el.find(".js-cover .js-loader").length).toEqual(1);
     });
 

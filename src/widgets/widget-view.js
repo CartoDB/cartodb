@@ -10,8 +10,7 @@ module.exports = cdb.core.View.extend({
   className: 'CDB-Widget CDB-Widget--light',
 
   options: {
-    columns_title: [],
-    sync: true
+    columns_title: []
   },
 
   initialize: function () {

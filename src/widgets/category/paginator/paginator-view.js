@@ -24,8 +24,8 @@ module.exports = cdb.core.View.extend({
   },
 
   initialize: function () {
-    this.dataModel = this.options.dataModel;
-    this.viewModel = this.options.viewModel;
+    this.dataviewModel = this.options.dataviewModel;
+    this.widgetModel = this.options.widgetModel;
     this._$target = this.options.$target;
     this.model = new cdb.core.Model({
       page: 0
@@ -36,10 +36,10 @@ module.exports = cdb.core.View.extend({
   render: function () {
     this.clearSubViews();
     this.$el.empty();
-    var categoriesCount = this.dataModel.getCount();
+    var categoriesCount = this.dataviewModel.getCount();
 
     if (categoriesCount > MINCATEGORIES) {
-      var pages = Math.ceil(this.dataModel.getSize() / this.options.itemsPerPage);
+      var pages = Math.ceil(this.dataviewModel.getSize() / this.options.itemsPerPage);
       var template = this.options.template;
       this.$el.html(
         template({
@@ -60,19 +60,19 @@ module.exports = cdb.core.View.extend({
   _initBinds: function () {
     $(window).bind('resize.' + this.cid, _.bind(this._scrollToPage, this));
     this.model.bind('change:page', this.render, this);
-    this.dataModel.bind('change:categoriesCount', this.render, this);
-    this.dataModel.bind('change:data change:searchData', function () {
+    this.dataviewModel.bind('change:categoriesCount', this.render, this);
+    this.dataviewModel.bind('change:data change:searchData', function () {
       this._setPage();
       this.render();
     }, this);
-    this.viewModel.bind('change:search', this.toggle, this);
-    this.add_related_model(this.dataModel);
-    this.add_related_model(this.viewModel);
+    this.widgetModel.bind('change:search', this.toggle, this);
+    this.add_related_model(this.dataviewModel);
+    this.add_related_model(this.widgetModel);
   },
 
   // If current page doesn't exist due to a data change, we should reset it
   _setPage: function () {
-    var count = this.dataModel.getSize();
+    var count = this.dataviewModel.getSize();
     var pages = Math.ceil(count / this._ITEMS_PER_PAGE);
     if (this.model.get('page') > (pages - 1)) {
       this.model.set({ page: 0 }, { silent: true });
@@ -80,8 +80,7 @@ module.exports = cdb.core.View.extend({
   },
 
   _onSearchClicked: function () {
-    this.dataModel.setupSearch();
-    this.viewModel.toggleSearch();
+    this.widgetModel.setupSearch();
   },
 
   _scrollToPage: function () {
@@ -96,7 +95,7 @@ module.exports = cdb.core.View.extend({
   },
 
   toggle: function () {
-    this[ this.viewModel.isSearchEnabled() ? 'hide' : 'show' ]();
+    this[ this.widgetModel.isSearchEnabled() ? 'hide' : 'show' ]();
   },
 
   hide: function () {

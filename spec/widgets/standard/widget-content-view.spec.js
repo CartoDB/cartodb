@@ -8,14 +8,14 @@ describe('widgets/standard/widget-content-view', function () {
       title: 'Howdy'
     });
     this.dataviewModel.getData = jasmine.createSpy('getData');
-    this.model = new WidgetModel({}, {
+    var widgetModel = new WidgetModel({}, {
       dataviewModel: this.dataviewModel
     });
 
     spyOn(this.dataviewModel, 'bind').and.callThrough();
 
     this.view = new WidgetContentView({
-      model: this.model
+      model: widgetModel
     });
   });
 

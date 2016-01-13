@@ -16,53 +16,52 @@ module.exports = cdb.core.View.extend({
   },
 
   initialize: function () {
-    this.dataModel = this.options.dataModel;
-    this.viewModel = this.options.viewModel;
+    this.dataviewModel = this.options.dataviewModel;
+    this.widgetModel = this.options.widgetModel;
     this._initBinds();
   },
 
   render: function () {
-    var totalCats = this.dataModel.getData().size();
-    var rejectedCats = this.dataModel.getRejectedCount();
-    var acceptedCats = this.dataModel.getAcceptedCount();
-
+    var f = this.dataviewModel.filter;
     this.$el.html(
       template({
-        isLocked: this.dataModel.isLocked(),
-        canBeLocked: this.dataModel.canBeLocked(),
-        totalLocked: this.dataModel.getLockedSize(),
-        isSearchEnabled: this.viewModel.isSearchEnabled(),
-        isSearchApplied: this.dataModel.isSearchApplied(),
-        isAllRejected: this.dataModel.isAllFiltersRejected(),
-        totalCats: totalCats,
-        rejectedCats: rejectedCats,
-        acceptedCats: acceptedCats
+        acceptedCats: f.acceptedCategories.size(),
+        rejectedCats: f.rejectedCategories.size(),
+        areAllRejected: f.areAllRejected(),
+        isLocked: this.widgetModel.isLocked(),
+        canBeLocked: this.widgetModel.canBeLocked(),
+        totalLocked: this.widgetModel.lockedCategories.size(),
+        isSearchEnabled: this.widgetModel.isSearchEnabled(),
+        isSearchApplied: this.dataviewModel.isSearchApplied(),
+        totalCats: this.dataviewModel.getData().size()
       })
     );
     return this;
   },
 
   _initBinds: function () {
-    this.dataModel.bind('change:data change:filter change:locked change:lockCollection', this.render, this);
-    this.viewModel.bind('change:search', this.render, this);
-    this.add_related_model(this.dataModel);
-    this.add_related_model(this.viewModel);
+    this.dataviewModel.bind('change:data change:filter', this.render, this);
+    this.widgetModel.bind('change:search change:locked', this.render, this);
+    this.widgetModel.lockedCategories.bind('change add remove', this.render, this);
+    this.add_related_model(this.dataviewModel);
+    this.add_related_model(this.widgetModel);
+    this.add_related_model(this.widgetModel.lockedCategories);
   },
 
   _lockCategories: function () {
-    this.dataModel.lockCategories();
+    this.widgetModel.lockCategories();
   },
 
   _unlockCategories: function () {
-    this.dataModel.unlockCategories();
+    this.widgetModel.unlockCategories();
   },
 
   _onUnselectAll: function () {
-    this.dataModel.rejectAll();
+    this.dataviewModel.filter.rejectAll();
   },
 
   _onSelectAll: function () {
-    this.dataModel.acceptAll();
+    this.dataviewModel.filter.acceptAll();
   }
 
 });

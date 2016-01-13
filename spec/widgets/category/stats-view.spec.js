@@ -9,13 +9,13 @@ describe('widgets/category/stats-view', function () {
         type: 'torque'
       }]
     });
-    this.model = vis.dataviews.createCategoryDataview(vis.map.layers.first(), {})
-    this.viewModel = new CategoryWidgetModel({}, {
-      dataviewModel: this.model
+    this.dataviewModel = vis.dataviews.createCategoryDataview(vis.map.layers.first(), {});
+    this.widgetModel = new CategoryWidgetModel({}, {
+      dataviewModel: this.dataviewModel
     });
     this.view = new StatsView({
-      viewModel: this.viewModel,
-      dataModel: this.model
+      widgetModel: this.widgetModel,
+      dataviewModel: this.dataviewModel
     });
   });
 
@@ -26,10 +26,10 @@ describe('widgets/category/stats-view', function () {
     });
 
     it('should say "of total" words when it is rendered', function () {
-      this.model._data.reset([
+      this.dataviewModel._data.reset([
         { name: 'ES', agg: false, value: 2 },
         { name: 'FR', agg: false, value: 2 },
-        { name: 'Other', agg: true, value: 1}
+        { name: 'Other', agg: true, value: 1 }
       ]);
       this.view.render();
       expect(this.view.$('.CDB-Widget-infoDescription:eq(1)').text()).toContain('of total');
@@ -37,18 +37,18 @@ describe('widgets/category/stats-view', function () {
 
     describe('search', function () {
       it('should show number of results when a search is applied', function () {
-        spyOn(this.viewModel, 'isSearchEnabled').and.returnValue(true);
-        spyOn(this.model, 'isSearchApplied').and.returnValue(true);
-        spyOn(this.model, 'getSearchCount').and.returnValue(10);
+        spyOn(this.widgetModel, 'isSearchEnabled').and.returnValue(true);
+        spyOn(this.dataviewModel, 'isSearchApplied').and.returnValue(true);
+        spyOn(this.dataviewModel, 'getSearchCount').and.returnValue(10);
         this.view.render();
         expect(this.view.$('.CDB-Widget-infoCount').length).toBe(1);
         var totalString = this.view.$('.CDB-Widget-infoCount').text() + ' ' + this.view.$('.CDB-Widget-infoDescription').text();
         expect(totalString).toContain('10 found');
       });
 
-      it('should appear nothing when search is enabled but not applied', function () {
-        spyOn(this.viewModel, 'isSearchEnabled').and.returnValue(true);
-        spyOn(this.model, 'isSearchApplied').and.returnValue(false);
+      it('should nothing when search is enabled but not applied', function () {
+        spyOn(this.widgetModel, 'isSearchEnabled').and.returnValue(true);
+        spyOn(this.dataviewModel, 'isSearchApplied').and.returnValue(false);
         this.view.render();
         expect(this.view.$('.CDB-Widget-infoCount').length).toBe(0);
       });
@@ -57,20 +57,22 @@ describe('widgets/category/stats-view', function () {
 
   describe('bind', function () {
     beforeEach(function () {
-      spyOn(this.model, 'bind');
-      spyOn(this.viewModel, 'bind');
+      spyOn(this.dataviewModel, 'bind');
+      spyOn(this.widgetModel, 'bind');
       this.view._initBinds();
     });
 
-    it('should render when any of this events are triggered from data model', function () {
-      var bind = this.model.bind.calls.argsFor(0);
-      expect(bind[0]).toEqual('change:data change:locked change:search change:totalCount');
+    it('should render when any of this events are triggered from data dataviewModel', function () {
+      var bind = this.dataviewModel.bind.calls.argsFor(0);
+      expect(bind[0]).toContain('change:data');
+      expect(bind[0]).toContain('change:totalCount');
       expect(bind[1]).toEqual(this.view.render);
     });
 
-    it('should render when search is enabled/disabled', function () {
-      var bind = this.viewModel.bind.calls.argsFor(0);
-      expect(bind[0]).toEqual('change:search');
+    it('should render when search or locked is enabled/disabled', function () {
+      var bind = this.widgetModel.bind.calls.argsFor(0);
+      expect(bind[0]).toContain('change:search');
+      expect(bind[0]).toContain('change:locked');
       expect(bind[1]).toEqual(this.view.render);
     });
   });

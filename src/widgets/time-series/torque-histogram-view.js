@@ -6,7 +6,7 @@ var TorqueTimeSliderView = require('./torque-time-slider-view');
 /**
  * Torque time-series histogram view.
  * Extends the common histogram chart view with time-control
- * this.model is a histogram model
+ * this._dataviewModel is a histogram model
  */
 module.exports = cdb.core.View.extend({
   className: 'CDB-Widget-content CDB-Widget-content--timeSeries',
@@ -31,7 +31,9 @@ module.exports = cdb.core.View.extend({
     this._torqueLayerModel.bind('change:renderRange', this._onRenderRangeChanged, this);
     this.add_related_model(this._torqueLayerModel);
 
-    this.model.bind('change:data', this._onChangeData, this);
+    this._dataviewModel = this.options.dataviewModel;
+    this._dataviewModel.bind('change:data', this._onChangeData, this);
+    this.add_related_model(this._dataviewModel);
   },
 
   render: function () {
@@ -55,8 +57,8 @@ module.exports = cdb.core.View.extend({
       },
       hasHandles: true,
       height: this.defaults.histogramChartHeight,
-      data: this.model.getData(),
-      shadowData: this.model.getData()
+      data: this._dataviewModel.getData(),
+      shadowData: this._dataviewModel.getData()
     });
 
     this.addView(this._chartView);
@@ -68,7 +70,7 @@ module.exports = cdb.core.View.extend({
     this.add_related_model(this._chartView.model);
 
     var timeSliderView = new TorqueTimeSliderView({
-      model: this.model, // a histogram model
+      dataviewModel: this._dataviewModel, // a histogram model
       chartView: this._chartView,
       torqueLayerModel: this._torqueLayerModel
     });
@@ -78,7 +80,7 @@ module.exports = cdb.core.View.extend({
 
   _onChangeData: function () {
     if (this._chartView) {
-      this._chartView.replaceData(this.model.getData());
+      this._chartView.replaceData(this._dataviewModel.getData());
     }
   },
 
@@ -91,7 +93,7 @@ module.exports = cdb.core.View.extend({
 
   _onBrushEnd: function (loBarIndex, hiBarIndex) {
     // TODO setting range filter causes selected-range to be reset, how to fix?
-    // var data = this.model.getData();
+    // var data = this._dataviewModel.getData();
     // this._rangeFilter.setRange(
     //   data[loBarIndex].start,
     //   data[hiBarIndex - 1].end

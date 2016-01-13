@@ -1,6 +1,6 @@
 var _ = require('underscore');
 var cdb = require('cartodb.js');
-var WidgetHistogramContent = require('../../../src/widgets/histogram/content-view');
+var HistogramContentView = require('../../../src/widgets/histogram/content-view');
 var WidgetModel = require('../../../src/widgets/widget-model');
 
 describe('widgets/histogram/content-view', function () {
@@ -10,21 +10,20 @@ describe('widgets/histogram/content-view', function () {
     });
     this.dataviewModel = vis.dataviews.createHistogramDataview(vis.map.layers.first(), {
       id: 'widget_3',
-      sync: true,
       options: {
         columns: ['cartodb_id', 'title']
       }
     });
 
-    this.viewModel = new WidgetModel({
+    this.widgetModel = new WidgetModel({
       title: 'Howdy'
     }, {
       dataviewModel: this.dataviewModel
     });
 
-    this.view = new WidgetHistogramContent({
-      viewModel: this.viewModel,
-      dataModel: this.dataviewModel
+    this.view = new HistogramContentView({
+      model: this.widgetModel,
+      dataviewModel: this.dataviewModel
     });
   });
 
@@ -43,7 +42,7 @@ describe('widgets/histogram/content-view', function () {
       options.success({ 'response': true });
     };
 
-    this.view.viewModel.set('zoomed', true);
+    this.widgetModel.set('zoomed', true);
     this.dataviewModel._fetch();
 
     expect(this.view._unsetRange).not.toHaveBeenCalled();
@@ -85,7 +84,7 @@ describe('widgets/histogram/content-view', function () {
       options.success({ 'response': true });
     };
 
-    this.view.viewModel.set('zoomed', true);
+    this.widgetModel.set('zoomed', true);
     this.dataviewModel._fetch();
 
     expect(this.view._unsetRange).not.toHaveBeenCalled();
@@ -111,18 +110,18 @@ describe('widgets/histogram/content-view', function () {
   });
 
   it('should update the stats values', function () {
-    expect(this.view.viewModel.get('min')).toBe(undefined);
-    expect(this.view.viewModel.get('max')).toBe(undefined);
-    expect(this.view.viewModel.get('avg')).toBe(undefined);
-    expect(this.view.viewModel.get('total')).toBe(undefined);
+    expect(this.widgetModel.get('min')).toBe(undefined);
+    expect(this.widgetModel.get('max')).toBe(undefined);
+    expect(this.widgetModel.get('avg')).toBe(undefined);
+    expect(this.widgetModel.get('total')).toBe(undefined);
 
     this.dataviewModel._data.reset(genHistogramData(20));
     this.dataviewModel.trigger('change:data');
 
-    expect(this.view.viewModel.get('min')).not.toBe(0);
-    expect(this.view.viewModel.get('max')).not.toBe(0);
-    expect(this.view.viewModel.get('avg')).not.toBe(0);
-    expect(this.view.viewModel.get('total')).not.toBe(0);
+    expect(this.widgetModel.get('min')).not.toBe(0);
+    expect(this.widgetModel.get('max')).not.toBe(0);
+    expect(this.widgetModel.get('avg')).not.toBe(0);
+    expect(this.widgetModel.get('total')).not.toBe(0);
   });
 
   afterEach(function () {

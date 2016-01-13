@@ -7,13 +7,13 @@ describe('widgets/category/search-title-view', function () {
     var vis = cdb.createVis(document.createElement('div'), {
       layers: [{type: 'torque'}]
     });
-    this.model = vis.dataviews.createCategoryDataview(vis.map.layers.first(), {});
-    this.viewModel = new CategoryWidgetModel({}, {
-      dataviewModel: this.model
+    this.dataviewModel = vis.dataviews.createCategoryDataview(vis.map.layers.first(), {});
+    this.widgetModel = new CategoryWidgetModel({}, {
+      dataviewModel: this.dataviewModel
     });
     this.view = new SearchTitleView({
-      viewModel: this.viewModel,
-      dataModel: this.model
+      widgetModel: this.widgetModel,
+      dataviewModel: this.dataviewModel
     });
   });
 
@@ -27,7 +27,7 @@ describe('widgets/category/search-title-view', function () {
 
   describe('search', function () {
     beforeEach(function () {
-      this.viewModel.toggleSearch();
+      this.widgetModel.toggleSearch();
     });
 
     it('should render search form properly', function () {
@@ -38,37 +38,37 @@ describe('widgets/category/search-title-view', function () {
     });
 
     it('should trigger search when text input changes', function () {
-      spyOn(this.model, 'applySearch');
+      spyOn(this.dataviewModel, 'applySearch');
       this.view.$('.js-textInput').val('ES');
       this.view._onSubmitForm();
-      expect(this.model.applySearch).toHaveBeenCalled();
+      expect(this.dataviewModel.applySearch).toHaveBeenCalled();
     });
 
     it('should not trigger search when text input changes are not valid', function () {
-      spyOn(this.model, 'applySearch');
+      spyOn(this.dataviewModel, 'applySearch');
       this.view.$('.js-textInput').val('');
       this.view._onSubmitForm();
-      expect(this.model.applySearch).not.toHaveBeenCalled();
+      expect(this.dataviewModel.applySearch).not.toHaveBeenCalled();
     });
 
     it('should not trigger search when text input changes are same as last search query value', function () {
-      spyOn(this.model, 'applySearch');
-      this.model.setSearchQuery('ES');
+      spyOn(this.dataviewModel, 'applySearch');
+      this.dataviewModel.setSearchQuery('ES');
       this.view.$('.js-textInput').val('ES');
       this.view._onSubmitForm();
-      expect(this.model.applySearch).not.toHaveBeenCalled();
+      expect(this.dataviewModel.applySearch).not.toHaveBeenCalled();
     });
 
     it('should show apply button when there is any change to apply', function () {
-      this.model.acceptFilters('test');
+      this.dataviewModel.filter.accept('test');
       expect(this.view.$('.CDB-Widget-searchApply').length).toBe(1);
     });
 
     it('should apply locked categories when apply button is clicked', function () {
-      spyOn(this.model, 'applyLocked');
-      this.model.acceptFilters('one');
+      spyOn(this.widgetModel, 'applyLocked');
+      this.dataviewModel.filter.accept('one');
       this.view.$('.js-applyLocked').click();
-      expect(this.model.applyLocked).toHaveBeenCalled();
+      expect(this.widgetModel.applyLocked).toHaveBeenCalled();
     });
   });
 
@@ -79,19 +79,19 @@ describe('widgets/category/search-title-view', function () {
 
     it('should render "apply colors" button and apply them when is clicked', function () {
       expect(this.view.$('.js-applyColors').length).toBe(1);
-      spyOn(this.viewModel, 'applyColors').and.callThrough();
+      spyOn(this.widgetModel, 'applyColors').and.callThrough();
       this.view.$('.js-applyColors').click();
-      expect(this.viewModel.applyColors).toHaveBeenCalled();
+      expect(this.widgetModel.applyColors).toHaveBeenCalled();
       expect(this.view.$('.js-applyColors').length).toBe(0);
       expect(this.view.$('.js-cancelColors').length).toBe(1);
     });
 
     it('should remove category colors when they are applied and button is clicked', function () {
-      spyOn(this.viewModel, 'cancelColors').and.callThrough();
+      spyOn(this.widgetModel, 'cancelColors').and.callThrough();
       this.view.$('.js-applyColors').click();
       expect(this.view.$('.js-cancelColors').hasClass('is-selected')).toBeTruthy();
       this.view.$('.js-cancelColors').click();
-      expect(this.viewModel.cancelColors).toHaveBeenCalled();
+      expect(this.widgetModel.cancelColors).toHaveBeenCalled();
     });
   });
 

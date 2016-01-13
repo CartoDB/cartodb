@@ -12,7 +12,7 @@ module.exports = cdb.core.View.extend({
   },
 
   initialize: function () {
-    this.viewModel = this.options.viewModel;
+    this._dataviewModel = this.options.dataviewModel;
   },
 
   render: function () {
@@ -43,7 +43,7 @@ module.exports = cdb.core.View.extend({
       return key === 'cartodb_id';
     });
 
-    var columnTitles = this.viewModel.get('columns_title');
+    var columnTitles = this._dataviewModel.get('columns_title');
     if (hasInteractivity && !_.isEmpty(columnTitles)) {
       columnTitles = _.rest(columnTitles, 1);
     }

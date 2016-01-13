@@ -8,15 +8,16 @@ var template = require('./torque-render-range-info.tpl');
  */
 module.exports = cdb.core.View.extend({
   initialize: function () {
+    this._dataviewModel = this.options.dataviewModel;
     this._torqueLayerModel = this.options.torqueLayerModel;
     this._torqueLayerModel.bind('change:renderRange', this.render, this);
     this.add_related_model(this._torqueLayerModel);
 
-    var data = this.model.get('data');
+    var data = this._dataviewModel.get('data');
     this._scale = d3.time.scale()
       .domain([data[0].start * 1000, data[data.length - 1].end * 1000])
       .nice()
-      .range([0, this.model.get('bins')]);
+      .range([0, this._dataviewModel.get('bins')]);
 
     // for format rules see https://github.com/mbostock/d3/wiki/Time-Formatting
     this._timeFormatter = d3.time.format('%H:%M');

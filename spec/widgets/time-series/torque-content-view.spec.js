@@ -13,11 +13,11 @@ describe('widgets/time-series/torque-content-view', function () {
     }.bind(this);
     this.torqueLayerModel = new cdb.geo.TorqueLayer({
     });
-    this.model = new WidgetModel({}, {
+    var widgetModel = new WidgetModel({}, {
       dataviewModel: this.dataviewModel
     });
     this.view = new TorqueTimesSeriesContentView({
-      model: this.model
+      model: widgetModel
     });
     this.renderResult = this.view.render();
   });

@@ -3,7 +3,7 @@ var cdb = require('cartodb.js');
 /**
  *  Default widget loader view:
  *
- *  It will listen or not to dataModel changes when
+ *  It will listen or not to dataviewModel changes when
  *  first load is done.
  */
 module.exports = cdb.core.View.extend({

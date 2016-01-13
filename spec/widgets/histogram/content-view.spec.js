@@ -10,7 +10,6 @@ describe('widgets/histogram/content-view', function () {
     });
     this.dataviewModel = vis.dataviews.createHistogramDataview(vis.map.layers.first(), {
       id: 'widget_3',
-      sync: true,
       options: {
         columns: ['cartodb_id', 'title']
       }

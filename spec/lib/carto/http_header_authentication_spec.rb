@@ -2,23 +2,9 @@
 
 require 'ostruct'
 require 'uuidtools'
-require 'rspec/mocks'
-require 'rspec/core'
-require 'rspec/expectations'
+require_relative '../../spec_helper'
 require_relative '../../../lib/carto/http_header_authentication'
 require_relative '../../requests/http_authentication_helper'
-
-RSpec.configure do |config|
-  config.mock_with :mocha
-end
-
-module Cartodb
-  def self.get_config(*)
-  end
-end
-
-class User
-end
 
 describe Carto::HttpHeaderAuthentication do
   include HttpAuthenticationHelper
@@ -102,6 +88,7 @@ describe Carto::HttpHeaderAuthentication do
 
   describe '#email' do
     let(:authenticator) { Carto::HttpHeaderAuthentication.new }
+
     it 'returns email for email requests' do
       stub_http_header_authentication_configuration(field: 'email')
       authenticator.email(mock_email_request).should == EMAIL
@@ -119,6 +106,36 @@ describe Carto::HttpHeaderAuthentication do
     it 'returns email if configuration is auto and request contains an email' do
       stub_http_header_authentication_configuration(field: 'auto')
       expect { authenticator.email(mock_email_request) }.not_to raise_error
+    end
+  end
+
+  describe '#creation_in_progress?' do
+    let(:authenticator) { Carto::HttpHeaderAuthentication.new }
+
+    it 'returns true if there is a matching creation in progress by (user) id' do
+      stub_http_header_authentication_configuration(field: 'id')
+      uc = FactoryGirl.create(:user_creation, state: 'enqueuing', user_id: ID)
+      authenticator.creation_in_progress?(mock_id_request).should be_true
+      uc.destroy
+    end
+
+    it 'returns true if there is a matching creation in progress by username' do
+      stub_http_header_authentication_configuration(field: 'username')
+      uc = FactoryGirl.create(:user_creation, state: 'enqueuing', username: USERNAME)
+      authenticator.creation_in_progress?(mock_username_request).should be_true
+      uc.destroy
+    end
+
+    it 'returns true if there is a matching creation in progress by email' do
+      stub_http_header_authentication_configuration(field: 'email')
+      uc = FactoryGirl.create(:user_creation, state: 'enqueuing', email: EMAIL)
+      authenticator.creation_in_progress?(mock_email_request).should be_true
+      uc.destroy
+    end
+
+    it 'returns false if there is not a matching creation in progress' do
+      stub_http_header_authentication_configuration(field: 'auto')
+      authenticator.creation_in_progress?(mock_email_request).should be_false
     end
   end
 end

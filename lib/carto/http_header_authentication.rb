@@ -34,11 +34,11 @@ module Carto
       identity(request)
     end
 
-    def creation_in_progress(request)
+    def creation_in_progress?(request)
       header = identity(request)
       return false unless header
 
-      Carto::UserCreation.in_progress.where("#{field(request)} = ?", header).first.present?
+      Carto::UserCreation.in_progress.where("#{user_creation_field(request)} = ?", header).first.present?
     end
 
     private
@@ -46,6 +46,18 @@ module Carto
     def field(request)
       field = Cartodb.get_config(:http_header_authentication, 'field')
       field == 'auto' ? field_from_value(request) : field
+    end
+
+    def user_creation_field(request)
+      field = field(request)
+      case field
+      when 'username', 'email'
+        field
+      when 'id'
+        'user_id'
+      else
+        raise "Unknown field #{field}"
+      end
     end
 
     def field_from_value(request)

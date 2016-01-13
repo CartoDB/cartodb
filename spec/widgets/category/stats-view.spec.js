@@ -31,7 +31,7 @@ describe('widgets/category/stats-view', function () {
         { name: 'FR', agg: false, value: 2 },
         { name: 'Other', agg: true, value: 1}
       ]);
-      this.view.render()
+      this.view.render();
       expect(this.view.$('.CDB-Widget-infoDescription:eq(1)').text()).toContain('of total');
     });
 

@@ -1,19 +1,19 @@
 <% light = false if !light.present? %>
 
 <footer id="Footer" class="Footer <%= 'Footer--light' if light %> Footer--public u-pr">
-  <div class="Footer-inner Footer-inner--public <%= 'Footer-inner--noborder' if light %>">
+  <div class="Footer-inner Footer-inner--public">
     <div class="u-inner u-inner--10">
-      <div class="Grid Footer-columns">
+      <div class="Grid Footer-columns <%= 'Footer-columns--noborder' if light %>">
         <div class="Grid-inner Grid-inner--vcenter">
           <div class="Grid-cell Grid-cell--col6 Grid-cell--col12--mobile u-tspace-l">
-            <h3 class="Title Title--feature u-vspace--12">Subscribe</h3>
+            <h3 class="PublicTitle PublicTitle--feature u-vspace--12">Subscribe</h3>
             <p class="Feature-text u-vspace--20">Keep up with CartoDB product announcements, events, and&nbsp;webinars.</p>
             <div class="Newsletter u-tspace-m">
               <%= insert_hubspot_form() -%>
             </div>
           </div>
           <div class="Grid-cell Grid-cell--col6 Grid-cell--col12--mobile u-tspace-l">
-            <h3 class="Title Title--feature u-vspace--12">Follow</h3>
+            <h3 class="PublicTitle PublicTitle--feature u-vspace--12">Follow</h3>
             <p class="Feature-text">There are already 150,000 people around the world who love using&nbsp;CartoDB.</p>
             <ul class="Grid-inner Grid-inner--shortpadding">
               <li class="Grid-cell Grid-cell--col4 Grid-cell--col12--mobile u-tspace--20">

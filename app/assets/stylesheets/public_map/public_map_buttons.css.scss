@@ -4,6 +4,7 @@
 
 $spacing-unit: 20px;
 $blue1: #3AA9E3;
+$grey2: #2E3C43;
 $twitter: #55ACEE;
 $facebook: #3A5999;
 $linkedin: #007BB6;
@@ -29,6 +30,12 @@ $linkedin: #007BB6;
     &:hover {
       background: $color1;
       color: $color2;
+    }
+  }
+
+  &.is-hover--dark {
+    &:hover {
+      color: $grey2;
     }
   }
 }

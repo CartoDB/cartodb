@@ -2,8 +2,9 @@ var _ = require('underscore');
 var WindshaftFiltersCollection = require('./filters/collection');
 var WindshaftFiltersBoundingBoxFilter = require('./filters/bounding-box');
 var WindshaftMapInstance = require('./windshaft-map-instance');
+
 /**
- * This class represents the concept of a map in Windshaft. It holds a reference 
+ * This class represents the concept of a map in Windshaft. It holds a reference
  * to the current map instance in Windshaft and observes some objects (map, layers,
  * dataviews) that cause the instance to be re-created.
  *

@@ -17,15 +17,15 @@ module.exports = cdb.core.View.extend({
   tagName: 'ul',
 
   initialize: function () {
-    this.viewModel = this.options.viewModel;
-    this.dataModel = this.options.dataModel;
+    this.widgetModel = this.options.widgetModel;
+    this.dataviewModel = this.options.dataviewModel;
     this._initBinds();
   },
 
   render: function () {
     this.clearSubViews();
     this.$el.empty();
-    var data = this.dataModel.getData();
+    var data = this.dataviewModel.getData();
     var isDataEmpty = _.isEmpty(data) || _.size(data) === 0;
 
     if (isDataEmpty) {
@@ -37,12 +37,12 @@ module.exports = cdb.core.View.extend({
   },
 
   _initBinds: function () {
-    this.viewModel.bind('change:search', this.toggle, this);
-    this.viewModel.bind('change:isColorsApplied', this.render, this);
-    this.add_related_model(this.viewModel);
+    this.widgetModel.bind('change:search', this.toggle, this);
+    this.widgetModel.bind('change:isColorsApplied', this.render, this);
+    this.add_related_model(this.widgetModel);
 
-    this.dataModel.bind('change:data change:searchData', this.render, this);
-    this.add_related_model(this.dataModel);
+    this.dataviewModel.bind('change:data change:searchData', this.render, this);
+    this.add_related_model(this.dataviewModel);
   },
 
   _renderPlaceholder: function () {
@@ -59,7 +59,7 @@ module.exports = cdb.core.View.extend({
     this.$el[this.options.paginator ? 'addClass' : 'removeClass']('CDB-Widget-list--wrapped');
 
     var groupItem;
-    var data = this.dataModel.getData();
+    var data = this.dataviewModel.getData();
 
     data.each(function (mdl, i) {
       if (i % this.options.itemsPerPage === 0) {
@@ -73,8 +73,8 @@ module.exports = cdb.core.View.extend({
   _addItem: function (mdl, $parent) {
     var v = new CategoryItemView({
       model: mdl,
-      viewModel: this.viewModel,
-      dataModel: this.dataModel
+      widgetModel: this.widgetModel,
+      dataviewModel: this.dataviewModel
     });
     v.bind('itemClicked', this._setFilters, this);
     this.addView(v);
@@ -83,30 +83,34 @@ module.exports = cdb.core.View.extend({
 
   _setFilters: function (mdl) {
     var isSelected = mdl.get('selected');
+    var filter = this.dataviewModel.filter;
 
     if (isSelected) {
-      if (!this.dataModel.getRejectedCount() && !this.dataModel.getAcceptedCount() && this.dataModel.getCount() > 1) {
-        var data = this.dataModel.getData();
+      if (filter.rejectedCategories.size() === 0 &&
+          filter.acceptedCategories.size() === 0 &&
+          this.dataviewModel.getCount() > 1
+      ) {
+        var data = this.dataviewModel.getData();
         // Make elements "unselected"
-        data.map(function (m) {
+        data.each(function (m) {
           var name = m.get('name');
           if (name !== mdl.get('name')) {
             m.set('selected', false);
           }
         });
-        this.dataModel.acceptFilters(mdl.get('name'));
+        filter.accept(mdl.get('name'));
       } else {
         mdl.set('selected', false);
-        this.dataModel.rejectFilters(mdl.get('name'));
+        filter.reject(mdl.get('name'));
       }
     } else {
       mdl.set('selected', true);
-      this.dataModel.acceptFilters(mdl.get('name'));
+      filter.accept(mdl.get('name'));
     }
   },
 
   toggle: function () {
-    this[!this.viewModel.isSearchEnabled() ? 'show' : 'hide']();
+    this[!this.widgetModel.isSearchEnabled() ? 'show' : 'hide']();
   },
 
   show: function () {

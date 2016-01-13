@@ -7,13 +7,13 @@ describe('widgets/category/items-view', function () {
     var vis = cdb.createVis(document.createElement('div'), {
       layers: [{type: 'torque'}]
     });
-    this.model = vis.dataviews.createCategoryDataview(vis.map.layers.first(), {});
-    this.viewModel = new CategoryWidgetModel({}, {
-      dataviewModel: this.model
+    this.dataviewModel = vis.dataviews.createCategoryDataview(vis.map.layers.first(), {});
+    this.widgetModel = new CategoryWidgetModel({}, {
+      dataviewModel: this.dataviewModel
     });
     this.view = new ItemsView({
-      viewModel: this.viewModel,
-      dataModel: this.model
+      widgetModel: this.widgetModel,
+      dataviewModel: this.dataviewModel
     });
   });
 
@@ -28,7 +28,7 @@ describe('widgets/category/items-view', function () {
 
     describe('when have at least one category', function () {
       beforeEach(function () {
-        this.model.sync = function (method, model, options) {
+        this.dataviewModel.sync = function (method, model, options) {
           options.success({
             'categories': [
               {category: 'Hey'},
@@ -36,7 +36,7 @@ describe('widgets/category/items-view', function () {
             ]
           });
         };
-        this.model.fetch();
+        this.dataviewModel.fetch();
         this.view.render();
       });
 
@@ -50,19 +50,19 @@ describe('widgets/category/items-view', function () {
 
   describe('bind', function () {
     beforeEach(function () {
-      spyOn(this.model, 'bind');
-      spyOn(this.viewModel, 'bind');
+      spyOn(this.dataviewModel, 'bind');
+      spyOn(this.widgetModel, 'bind');
       this.view._initBinds();
     });
 
     it('should render when any data has changed (origin or search data)', function () {
-      var bind = this.model.bind.calls.argsFor(0);
+      var bind = this.dataviewModel.bind.calls.argsFor(0);
       expect(bind[0]).toEqual('change:data change:searchData');
       expect(bind[1]).toEqual(this.view.render);
     });
 
     it('should toggle view when search is enabled/disabled', function () {
-      var bind = this.viewModel.bind.calls.argsFor(0);
+      var bind = this.widgetModel.bind.calls.argsFor(0);
       expect(bind[0]).toEqual('change:search');
       expect(bind[1]).toEqual(this.view.toggle);
     });

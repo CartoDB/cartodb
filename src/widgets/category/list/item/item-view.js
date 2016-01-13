@@ -15,30 +15,30 @@ module.exports = cdb.core.View.extend({
   },
 
   initialize: function (options) {
-    this.viewModel = this.options.viewModel;
-    this.dataModel = this.options.dataModel;
+    this.widgetModel = this.options.widgetModel;
+    this.dataviewModel = this.options.dataviewModel;
     this._initBinds();
   },
 
   render: function () {
     var name = this.model.get('name');
     var value = this.model.get('value');
-    var template = this.model.get('agg') || this.dataModel.isLocked()
+    var template = this.model.get('agg') || this.widgetModel.isLocked()
       ? unclickableTemplate
       : clickableTemplate;
 
     this.$el.html(
       template({
-        customColor: this.viewModel.isColorApplied(),
+        customColor: this.widgetModel.isColorApplied(),
         isAggregated: this.model.get('agg'),
         name: name,
         value: value,
         formattedValue: formatter.formatNumber(value),
-        percentage: ((value / this.dataModel.get('max')) * 100),
-        color: this.viewModel.colors.getColorByCategory(name),
+        percentage: ((value / this.dataviewModel.get('max')) * 100),
+        color: this.widgetModel.colors.getColorByCategory(name),
         isDisabled: !this.model.get('selected') ? 'is-disabled' : '',
-        prefix: this.dataModel.get('prefix'),
-        suffix: this.dataModel.get('suffix')
+        prefix: this.dataviewModel.get('prefix'),
+        suffix: this.dataviewModel.get('suffix')
       })
     );
 
@@ -47,8 +47,8 @@ module.exports = cdb.core.View.extend({
 
   _initBinds: function () {
     this.model.bind('change', this.render, this);
-    this.viewModel.bind('change:search change:isColorsApplied', this.render, this);
-    this.add_related_model(this.viewModel);
+    this.widgetModel.bind('change:search change:isColorsApplied', this.render, this);
+    this.add_related_model(this.widgetModel);
   },
 
   _onItemClick: function () {

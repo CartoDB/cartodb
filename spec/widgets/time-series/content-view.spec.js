@@ -12,12 +12,12 @@ describe('widgets/time-series/content-view', function () {
       this.options = options;
     }.bind(this);
 
-    this.model = new WidgetModel({}, {
+    var widgetModel = new WidgetModel({}, {
       dataviewModel: this.dataviewModel
     });
 
     this.view = new TimeSeriesContentView({
-      model: this.model
+      model: widgetModel
     });
 
     this.view.render();

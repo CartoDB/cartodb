@@ -15,19 +15,19 @@ module.exports = cdb.core.View.extend({
   tagName: 'dl',
 
   initialize: function () {
-    this.viewModel = this.options.viewModel;
-    this.dataModel = this.options.dataModel;
+    this.widgetModel = this.options.widgetModel;
+    this.dataviewModel = this.options.dataviewModel;
     this._initBinds();
   },
 
   render: function () {
     this.$el.html(
       template({
-        isSearchEnabled: this.viewModel.isSearchEnabled(),
-        isSearchApplied: this.dataModel.isSearchApplied(),
-        isLocked: this.dataModel.isLocked(),
-        isOtherAvailable: this.dataModel.isOtherAvailable(),
-        resultsCount: this.dataModel.getSearchCount(),
+        isSearchEnabled: this.widgetModel.isSearchEnabled(),
+        isSearchApplied: this.dataviewModel.isSearchApplied(),
+        isLocked: this.widgetModel.isLocked(),
+        isOtherAvailable: this.dataviewModel.isOtherAvailable(),
+        resultsCount: this.dataviewModel.getSearchCount(),
         totalCats: this._getCategoriesSize(),
         nullsPer: this._getNullPercentage(),
         catsPer: this._getCurrentCategoriesPercentage()
@@ -46,27 +46,27 @@ module.exports = cdb.core.View.extend({
   },
 
   _initBinds: function () {
-    this.dataModel.bind('change:data change:locked change:search change:totalCount', this.render, this);
-    this.viewModel.bind('change:search', this.render, this);
-    this.add_related_model(this.dataModel);
-    this.add_related_model(this.viewModel);
+    this.dataviewModel.bind('change:data change:totalCount', this.render, this);
+    this.widgetModel.bind('change:search change:locked', this.render, this);
+    this.add_related_model(this.dataviewModel);
+    this.add_related_model(this.widgetModel);
   },
 
   _getNullPercentage: function () {
-    var nulls = this.dataModel.get('nulls');
-    var total = this.dataModel.get('totalCount') || 0;
+    var nulls = this.dataviewModel.get('nulls');
+    var total = this.dataviewModel.get('totalCount') || 0;
     return !nulls ? 0 : ((nulls / total) * 100).toFixed(2);
   },
 
   _getPreviousCategoriesPercentage: function () {
-    var total = this.dataModel.previous('totalCount') || 0;
-    var data = this.dataModel.getPreviousData();
+    var total = this.dataviewModel.previous('totalCount') || 0;
+    var data = this.dataviewModel.getPreviousData();
     return this._getCategoriesPercentage(data, total);
   },
 
   _getCurrentCategoriesPercentage: function () {
-    var total = this.dataModel.get('totalCount') || 0;
-    var data = this.dataModel.getData().toJSON();
+    var total = this.dataviewModel.get('totalCount') || 0;
+    var data = this.dataviewModel.getData().toJSON();
     return this._getCategoriesPercentage(data, total);
   },
 
@@ -88,7 +88,7 @@ module.exports = cdb.core.View.extend({
 
   _getCategoriesSize: function () {
     return _.pluck(
-      this.dataModel.getData().reject(function (mdl) {
+      this.dataviewModel.getData().reject(function (mdl) {
         return mdl.get('agg');
       }), 'name').length;
   }

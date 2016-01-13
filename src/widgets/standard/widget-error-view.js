@@ -2,10 +2,9 @@ var cdb = require('cartodb.js');
 var template = require('./widget-error-template.tpl');
 
 /**
- *  Default widget error view:
+ * Default widget error view:
  *
- *  It will listen or not to dataModel changes when
- *  first load is done.
+ * It will listen or not to dataviewModel changes when first load is done.
  */
 module.exports = cdb.core.View.extend({
   className: 'CDB-Widget-error is-hidden',

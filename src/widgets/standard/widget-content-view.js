@@ -43,7 +43,7 @@ module.exports = cdb.core.View.extend({
   },
 
   _onCollapsedChange: function (m, isCollapsed) {
-    this._dataviewModel.setDisabled(isCollapsed);
+    this._dataviewModel.set('enabled', !isCollapsed);
   },
 
   _addPlaceholder: function () {

@@ -8,7 +8,7 @@ describe('widgets/standard/widget-error-view', function () {
 
     this.dataviewModel = new cdb.core.Model();
     this.dataviewModel.refresh = jasmine.createSpy('refresh');
-    this.model = new WidgetModel({
+    var widgetModel = new WidgetModel({
       id: 'widget_98334',
       title: 'Helloooo',
       columns: ['cartodb_id', 'title']
@@ -17,7 +17,7 @@ describe('widgets/standard/widget-error-view', function () {
     });
 
     this.view = new WidgetErrorView({
-      model: this.model
+      model: widgetModel
     });
     this.renderResult = this.view.render();
   });

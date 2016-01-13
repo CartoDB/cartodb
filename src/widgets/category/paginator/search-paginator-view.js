@@ -7,7 +7,7 @@ module.exports = PaginatorView.extend({
   render: function () {
     this.clearSubViews();
     this.$el.empty();
-    var pages = Math.ceil(this.dataModel.getSearchCount() / this.options.itemsPerPage);
+    var pages = Math.ceil(this.dataviewModel.getSearchCount() / this.options.itemsPerPage);
     this.$el.html(
       searchTemplate({
         showPaginator: true,
@@ -21,7 +21,7 @@ module.exports = PaginatorView.extend({
   },
 
   _setPage: function () {
-    var count = this.dataModel.getSearchCount();
+    var count = this.dataviewModel.getSearchCount();
     var pages = Math.ceil(count / this._ITEMS_PER_PAGE);
     if (this.model.get('page') > (pages - 1)) {
       this.model.set({ page: 0 }, { silent: true });
@@ -29,12 +29,12 @@ module.exports = PaginatorView.extend({
   },
 
   toggle: function () {
-    this[ !this.viewModel.isSearchEnabled() ? 'hide' : 'show' ]();
+    this[ !this.widgetModel.isSearchEnabled() ? 'hide' : 'show' ]();
   },
 
   _onSearchClicked: function () {
-    this.dataModel.cleanSearch();
-    this.viewModel.toggleSearch();
+    this.widgetModel.cleanSearch();
+    this.widgetModel.toggleSearch();
   }
 
 });

@@ -7,7 +7,7 @@ describe('widgets/time-series/torque-time-slider-view', function () {
     var vis = cdb.createVis(document.createElement('div'), {
       layers: [{type: 'torque'}]
     });
-    this.model = vis.dataviews.createHistogramDataview(vis.map.layers.first(), {
+    this.dataviewModel = vis.dataviews.createHistogramDataview(vis.map.layers.first(), {
       bins: 256
     });
     this.torqueLayerModel = new cdb.geo.TorqueLayer({
@@ -34,7 +34,7 @@ describe('widgets/time-series/torque-time-slider-view', function () {
     this.chartView.model.set('width', 400);
 
     this.view = new TorqueTimeSliderView({
-      model: this.model,
+      dataviewModel: this.dataviewModel,
       torqueLayerModel: this.torqueLayerModel,
       chartView: this.chartView
     });
@@ -61,7 +61,7 @@ describe('widgets/time-series/torque-time-slider-view', function () {
     describe('when is dragging the slider', function () {
       beforeEach(function () {
         spyOn(this.view.timeSlider, 'data').and.callThrough();
-        this.view.viewModel.set('isDragging', true);
+        this.view.model.set('isDragging', true);
         this.torqueLayerModel.set('step', 40);
       });
 
@@ -81,7 +81,7 @@ describe('widgets/time-series/torque-time-slider-view', function () {
       beforeEach(function () {
         this.torqueLayerModel.set('stepsRange', {
           start: 0,
-          end: this.model.get('bins')
+          end: this.dataviewModel.get('bins')
         });
       });
 

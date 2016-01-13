@@ -3,6 +3,14 @@ var WindshaftFiltersCollection = require('./filters/collection');
 var WindshaftFiltersBoundingBoxFilter = require('./filters/bounding-box');
 var WindshaftMapInstance = require('./windshaft-map-instance');
 
+/**
+ * This class represents the concept of a map in Windshaft. It holds a reference 
+ * to the current map instance in Windshaft and observes some objects (map, layers,
+ * dataviews) that cause the instance to be re-created.
+ *
+ * NOTE: We couldn't use a Backbone.Model for this because this class uses a client
+ * which is a bit smart about how requests to Windshaft shoud be made.
+ */
 var WindshaftMap = function (options) {
   var BOUNDING_BOX_FILTER_WAIT = 500;
 

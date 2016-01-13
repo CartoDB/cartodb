@@ -30,7 +30,7 @@ describe('widgets/category/stats-view', function () {
         { name: 'Other', agg: true, value: 1 }
       ]);
       this.view.render();
-      expect(this.view.$('.CDB-Widget-infoCount:eq(1)').text()).toContain('% of total');
+      expect(this.view.$('.CDB-Widget-infoDescription:eq(1)').text()).toContain('of total');
     });
 
     describe('search', function () {
@@ -40,15 +40,15 @@ describe('widgets/category/stats-view', function () {
         spyOn(this.model, 'getSearchCount').and.returnValue(10);
         this.view.render();
         expect(this.view.$('.CDB-Widget-infoCount').length).toBe(1);
-        expect(this.view.$('.CDB-Widget-infoCount').text()).toContain('10 found');
+        var totalString = this.view.$('.CDB-Widget-infoCount').text() + ' '  + this.view.$('.CDB-Widget-infoDescription').text();
+        expect(totalString).toContain('10 found');
       });
 
-      it('should nothing when search is enabled but not applied', function () {
+      it('should appear nothing when search is enabled but not applied', function () {
         spyOn(this.viewModel, 'isSearchEnabled').and.returnValue(true);
         spyOn(this.model, 'isSearchApplied').and.returnValue(false);
         this.view.render();
-        expect(this.view.$('.CDB-Widget-infoCount').length).toBe(1);
-        expect(this.view.$('.CDB-Widget-infoCount').text()).not.toContain('found');
+        expect(this.view.$('.CDB-Widget-infoCount').length).toBe(0);
       });
     });
   });

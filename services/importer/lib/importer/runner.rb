@@ -393,7 +393,7 @@ module CartoDB
 
       # This function cleans any stale cdb_importer.importer_* table
       # related with the running process which should be discarded
-      def clean_stale_importer_tables(database, schema, table_names)
+      def clean_importer_tables(database, schema, table_names)
         table_names.each do |table|
           database.execute(%Q{
             DROP TABLE IF EXISTS "#{schema}"."#{table}"

@@ -12,14 +12,14 @@
         margin: 0;
       }
     </style>
-    <link rel="stylesheet" href="../dist/themes/css/cartodb.css" />
+    <link rel="stylesheet" href="../../dist/themes/css/cartodb.css" />
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700' rel='stylesheet' type='text/css'>
   </head>
   <body>
     <div id="map"></div>
 
     <!-- include cartodb.js library -->
-    <script src="../dist/cartodb.uncompressed.js"></script>
+    <script src="../../dist/cartodb.uncompressed.js"></script>
 
     <script>
       function main() {
@@ -46,6 +46,12 @@
           "center":"[52.5897007687178, 52.734375]",
           "zoom":2,
           "updated_at":"2015-03-13T11:24:37+00:00",
+          "datasource": {
+            "user_name": "documentation",
+            "maps_api_template": "http://{user}.cartodb.com:80",
+            "force_cors": true, // This is sometimes set in the editor,
+            "stat_tag": "84ec6844-4b4b-11e5-9c1d-080027880ca6"
+          },
           "layers":[
             {
               "options":{
@@ -73,20 +79,7 @@
             {
               "type":"layergroup",
               "options":{
-                "user_name":"documentation",
-                "maps_api_template":"http://{user}.cartodb.com:80",
-                "sql_api_template":"http://{user}.cartodb.com:80",
-                "tiler_protocol":"http",
-                "tiler_domain":"cartodb.com",
-                "tiler_port":"80",
-                "sql_api_protocol":"http",
-                "sql_api_domain":"cartodb.com",
-                "sql_api_endpoint":"/api/v2/sql",
-                "sql_api_port":80,
-                "filter":"mapnik",
                 "layer_definition":{
-                  "stat_tag":"2b13c956-e7c1-11e2-806b-5404a6a683d5",
-                  "version":"1.0.1",
                   "layers":[
                     {
                       "id":"923b7812-2d56-41c6-ac15-3ce430db090f",

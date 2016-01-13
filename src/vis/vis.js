@@ -344,25 +344,12 @@ var Vis = View.extend({
       if (layerData.type === 'layergroup' || layerData.type === 'namedmap') {
         var layersData;
         var layerGroupClass;
-        var layerGroupOptions = layerData.options;
-        var layerGroupAttributes = {};
         if (layerData.type === 'layergroup') {
           layersData = layerData.options.layer_definition.layers;
           layerGroupClass = CartoDBLayerGroupAnonymous;
-          layerGroupAttributes = {
-            userName: layerGroupOptions['user_name'],
-            mapsApiTemplate: layerGroupOptions['maps_api_template'],
-            statTag: layerGroupOptions['layer_definition']['stat_tag']
-          };
         } else {
           layersData = layerData.options.named_map.layers;
           layerGroupClass = CartoDBLayerGroupNamed;
-          layerGroupAttributes = {
-            userName: layerGroupOptions['user_name'],
-            mapsApiTemplate: layerGroupOptions['maps_api_template'],
-            statTag: layerGroupOptions['named_map']['stat_tag'],
-            namedMapId: layerGroupOptions['named_map']['name']
-          };
         }
         cartoDBLayers = _.map(layersData, function (layerData) {
           var cartoDBLayer = Layers.create('cartodb', self, layerData);
@@ -370,7 +357,7 @@ var Vis = View.extend({
           return cartoDBLayer;
         });
 
-        cartoDBLayerGroup = new layerGroupClass(layerGroupAttributes, {
+        cartoDBLayerGroup = new layerGroupClass(null, {
           layers: cartoDBLayers
         });
         layers.push(cartoDBLayerGroup);

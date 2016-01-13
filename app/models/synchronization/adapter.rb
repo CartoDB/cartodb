@@ -59,7 +59,9 @@ module CartoDB
         fix_oid(table_name)
       rescue => exception
         puts "Sync overwrite ERROR: #{exception.message}: #{exception.backtrace.join}"
-        Rollbar.report_exception(exception)
+        CartoDB.notify_error('Error in sync cartodbfy',
+                             error: exception.backtrace.join('\n'), user_id: user.id,
+                             table: table_name, result: result)
         drop(result.table_name) if exists?(result.table_name)
       end
 
@@ -86,7 +88,8 @@ module CartoDB
         update_cdb_tablemetadata(table.name)
       rescue => exception
         puts "Sync cartodbfy ERROR: #{exception.message}: #{exception.backtrace.join}"
-        Rollbar.report_exception(exception)
+        CartoDB.notify_error('Error in sync cartodbfy',
+                             error: exception.backtrace.join('\n'), user_id: user.id, table: table_name)
         table.send(:invalidate_varnish_cache)
       end
 

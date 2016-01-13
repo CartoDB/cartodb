@@ -34,6 +34,13 @@ module Carto
       identity(request)
     end
 
+    def creation_in_progress(request)
+      header = identity(request)
+      return false unless header
+
+      Carto::UserCreation.in_progress.where("#{field(request)} = ?", header).first.present?
+    end
+
     private
 
     def field(request)

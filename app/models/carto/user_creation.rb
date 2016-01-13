@@ -8,7 +8,11 @@ class Carto::UserCreation < ActiveRecord::Base
 
   VALID_CREATED_VIA = [CREATED_VIA_LDAP, CREATED_VIA_ORG_SIGNUP, CREATED_VIA_API, CREATED_VIA_HTTP_AUTENTICATION]
 
+  IN_PROGRESS_STATES = [:initial, :enqueuing, :creating_user, :validating_user, :saving_user, :promoting_user, :load_common_data, :creating_user_in_central]
+  FINAL_STATES = [:success, :failure]
+
   scope :http_authentication, where(created_via: CREATED_VIA_HTTP_AUTENTICATION)
+  scope :in_progress, where(state: IN_PROGRESS_STATES)
 
   belongs_to :log, class_name: Carto::Log
   belongs_to :user, class_name: Carto::User

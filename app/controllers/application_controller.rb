@@ -66,8 +66,15 @@ class ApplicationController < ActionController::Base
     authenticate(:http_header_authentication, scope: CartoDB.extract_subdomain(request))
     if current_user
       validate_session(current_user)
-    elsif Carto::HttpHeaderAuthentication.new.autocreation_enabled?
-      redirect_to CartoDB.path(self, 'signup_http_authentication')
+    else
+      authenticator = Carto::HttpHeaderAuthentication.new
+      if authenticator.autocreation_enabled?
+        if authenticator.creation_in_progress(request)
+          render_http_code(409, 500, 'Creation already in progress')
+        else
+          redirect_to CartoDB.path(self, 'signup_http_authentication')
+        end
+      end
     end
   end
 
@@ -157,12 +164,16 @@ class ApplicationController < ActionController::Base
   end
 
   def render_500
+    render_http_code(500)
+  end
+
+  def render_http_code(error_code, public_page_error_code = error_code, error_message = 'Unknown error')
     respond_to do |format|
       format.html do
-        render file: 'public/500.html', status: 500, layout: false
+        render file: "public/#{public_page_error_code}.html", status: error_code, layout: false
       end
       format.json do
-        render status: 500
+        render json: { error_message: error_message }, status: error_code
       end
     end
   end

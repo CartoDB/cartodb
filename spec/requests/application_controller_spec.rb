@@ -169,6 +169,23 @@ describe ApplicationController do
           response.status.should == 302
           response.location.should match /#{signup_http_authentication_path}/
         end
+
+        # This behaviour allows recreation of deleted users. Related to next one.
+        it 'redirects to user creation for unknown emails if there is another finished user creation for that user' do
+          email = 'unknown@company.com'
+          FactoryGirl.create(:user_creation, state: 'success', email: email)
+          get dashboard_url, {}, authentication_headers(email)
+          response.status.should == 302
+          response.location.should match /#{signup_http_authentication_path}/
+        end
+
+        # This behaviour avoids filling `user_creations` table with failed repetitions because of polling.
+        it 'returns 409 instead of redirecting to user creation if there is another user creation not finished for that email' do
+          email = 'unknown2@company.com'
+          FactoryGirl.create(:user_creation, state: 'enqueuing', email: email)
+          get dashboard_url, {}, authentication_headers(email)
+          response.status.should == 409
+        end
       end
     end
   end

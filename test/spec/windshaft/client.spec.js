@@ -5,8 +5,8 @@ var WindshaftClient = require('../../../src/windshaft/client');
 describe('windshaft/client', function () {
   it('should throw an error if required options are not passed to the constructor', function () {
     expect(function () {
-      new WindshaftClient({}, ['urlTemplate', 'userName', 'endpoint', 'statTag']); // eslint-disable-line
-    }).toThrowError('WindshaftClient could not be initialized. The following options are missing: urlTemplate, userName, endpoint, statTag');
+      new WindshaftClient({}, ['urlTemplate', 'userName', 'endpoint']); // eslint-disable-line
+    }).toThrowError('WindshaftClient could not be initialized. The following options are missing: urlTemplate, userName, endpoint');
   });
 
   describe('#instantiateMap', function () {
@@ -22,7 +22,6 @@ describe('windshaft/client', function () {
       this.client = new WindshaftClient({
         urlTemplate: 'https://{user}.example.com:443',
         userName: 'rambo',
-        statTag: 'stat_tag',
         endpoint: 'api/v1'
       });
     });
@@ -30,6 +29,7 @@ describe('windshaft/client', function () {
     it('should trigger a GET request to instantiate a map', function () {
       this.client.instantiateMap({
         mapDefinition: { some: 'json that must be encoded' },
+        statTag: 'stat_tag',
         filters: { some: 'filters that will be applied' }
       });
 
@@ -100,13 +100,13 @@ describe('windshaft/client', function () {
       this.client = new WindshaftClient({
         urlTemplate: 'https://{user}.example.com:443',
         userName: 'rambo',
-        statTag: 'stat_tag',
         endpoint: 'api/v1',
         forceCors: true
       });
 
       this.client.instantiateMap({
         mapDefinition: { some: 'json that must be encoded' },
+        statTag: 'stat_tag',
         filters: { some: 'filters that will be applied' }
       });
 
@@ -128,7 +128,6 @@ describe('windshaft/client', function () {
       this.client = new WindshaftClient({
         urlTemplate: 'https://{user}.example.com:443',
         userName: 'rambo',
-        statTag: 'stat_tag',
         endpoint: 'api/v1',
         forceCors: false
       });
@@ -140,6 +139,7 @@ describe('windshaft/client', function () {
 
       this.client.instantiateMap({
         mapDefinition: mapDefinition,
+        statTag: 'stat_tag',
         filters: { some: 'filters that will be applied' }
       });
 
@@ -161,7 +161,6 @@ describe('windshaft/client', function () {
       this.client = new WindshaftClient({
         urlTemplate: 'https://{user}.example.com:443',
         userName: 'rambo',
-        statTag: 'stat_tag',
         endpoint: 'api/v1',
         forceCors: true
       });

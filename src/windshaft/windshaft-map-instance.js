@@ -3,7 +3,12 @@ var Model = require('../core/model');
 var WindshaftConfig = require('./config');
 var EMPTY_GIF = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 
-module.exports = Model.extend({
+/**
+ * This class represents an instance of a map in Windshaft. It's basically a wrapper
+ * of the response that Windshaft returns when a new instance of a map is created
+ * and provides some methods to access it's information (eg: the id of the "layergroup").
+ */
+var WindshaftMapInstance = Model.extend({
   TILE_EXTENSIONS_BY_LAYER_TYPE: {
     'mapnik': '.png',
     'torque': '.json.torque'
@@ -213,3 +218,5 @@ module.exports = Model.extend({
     return url;
   }
 });
+
+module.exports = WindshaftMapInstance;

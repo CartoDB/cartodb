@@ -5,7 +5,7 @@ describe('dataviews/dataview-model-base', function () {
     this.model = new DataviewModelBase();
   });
 
-  it('should listen to a dashboardBaseURL attribute change at the beginning', function () {
+  it('should listen to a url attribute change at the beginning', function () {
     spyOn(this.model, 'once').and.callThrough();
     this.model._initBinds(); // _initBinds is called when object is created, so
     // it is necessary to called again to have the spy

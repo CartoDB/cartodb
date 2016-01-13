@@ -1,18 +1,18 @@
-var WindshaftDashboardInstance = require('../../../src/windshaft/dashboard-instance');
+var WindshaftMapInstance = require('../../../src/windshaft/windshaft-map-instance');
 
-describe('windshaft/dashboard-instance', function () {
+describe('windshaft/windshaft-map-instance', function () {
   describe('#getBaseURL', function () {
     it("should return Windshaft's url if no CDN info is present", function () {
-      var dashboard = new WindshaftDashboardInstance({
+      var windshaftMapInstance = new WindshaftMapInstance({
         layergroupid: '0123456789',
         urlTemplate: 'https://{user}.example.com:443',
         userName: 'rambo'
       });
-      expect(dashboard.getBaseURL()).toEqual('https://rambo.example.com:443/api/v1/map/0123456789');
+      expect(windshaftMapInstance.getBaseURL()).toEqual('https://rambo.example.com:443/api/v1/map/0123456789');
     });
 
     it('should return the CDN URL for http when CDN info is present', function () {
-      var dashboard = new WindshaftDashboardInstance({
+      var windshaftMapInstance = new WindshaftMapInstance({
         urlTemplate: 'http://{user}.example.com:80',
         userName: 'rambo',
         cdn_url: {
@@ -20,11 +20,11 @@ describe('windshaft/dashboard-instance', function () {
           https: 'cdn.https.example.com'
         }
       });
-      expect(dashboard.getBaseURL()).toEqual('http://cdn.http.example.com/rambo/api/v1/map/');
+      expect(windshaftMapInstance.getBaseURL()).toEqual('http://cdn.http.example.com/rambo/api/v1/map/');
     });
 
     it('should return the CDN URL for https when CDN info is present', function () {
-      var dashboard = new WindshaftDashboardInstance({
+      var windshaftMapInstance = new WindshaftMapInstance({
         urlTemplate: 'https://{user}.example.com:80',
         userName: 'rambo',
         cdn_url: {
@@ -32,13 +32,13 @@ describe('windshaft/dashboard-instance', function () {
           https: 'cdn.https.example.com'
         }
       });
-      expect(dashboard.getBaseURL()).toEqual('https://cdn.https.example.com/rambo/api/v1/map/');
+      expect(windshaftMapInstance.getBaseURL()).toEqual('https://cdn.https.example.com/rambo/api/v1/map/');
     });
   });
 
   describe('#getTiles', function () {
     it('should return the URLs for tiles and grids by default or when requesting "mapnik" layers', function () {
-      var dashboard = new WindshaftDashboardInstance({
+      var windshaftMapInstance = new WindshaftMapInstance({
         'layergroupid': '0123456789',
         'urlTemplate': 'https://{user}.example.com:443',
         'userName': 'rambo',
@@ -57,7 +57,7 @@ describe('windshaft/dashboard-instance', function () {
       });
 
       // No type specified
-      expect(dashboard.getTiles()).toEqual({
+      expect(windshaftMapInstance.getTiles()).toEqual({
         tiles: [ 'https://rambo.example.com:443/api/v1/map/0123456789/0/{z}/{x}/{y}.png' ],
         grids: [
           [ 'https://rambo.example.com:443/api/v1/map/0123456789/0/{z}/{x}/{y}.grid.json' ]
@@ -65,7 +65,7 @@ describe('windshaft/dashboard-instance', function () {
       });
 
       // Request tiles for "mapnik" layers specifically
-      expect(dashboard.getTiles('mapnik')).toEqual({
+      expect(windshaftMapInstance.getTiles('mapnik')).toEqual({
         tiles: [ 'https://rambo.example.com:443/api/v1/map/0123456789/0/{z}/{x}/{y}.png' ],
         grids: [
           [ 'https://rambo.example.com:443/api/v1/map/0123456789/0/{z}/{x}/{y}.grid.json' ]
@@ -74,7 +74,7 @@ describe('windshaft/dashboard-instance', function () {
     });
 
     it('should return the URLs for tiles and grids for "torque" layers', function () {
-      var dashboard = new WindshaftDashboardInstance({
+      var windshaftMapInstance = new WindshaftMapInstance({
         'layergroupid': '0123456789',
         'urlTemplate': 'https://{user}.example.com:443',
         'userName': 'rambo',
@@ -93,14 +93,14 @@ describe('windshaft/dashboard-instance', function () {
       });
 
       // Request tiles for "torque" layers specifically
-      expect(dashboard.getTiles('torque')).toEqual({
+      expect(windshaftMapInstance.getTiles('torque')).toEqual({
         tiles: [ 'https://rambo.example.com:443/api/v1/map/0123456789/1/{z}/{x}/{y}.json.torque' ],
         grids: []
       });
     });
 
     it('should handle layer indexes correctly when a layer type is specified', function () {
-      var dashboard = new WindshaftDashboardInstance({
+      var windshaftMapInstance = new WindshaftMapInstance({
         'layergroupid': '0123456789',
         'urlTemplate': 'https://{user}.example.com:443',
         'userName': 'rambo',
@@ -127,7 +127,7 @@ describe('windshaft/dashboard-instance', function () {
       });
 
       // Request tiles for "mapnik" layers specifically (#0 and #2)
-      expect(dashboard.getTiles('mapnik')).toEqual({
+      expect(windshaftMapInstance.getTiles('mapnik')).toEqual({
         tiles: [ 'https://rambo.example.com:443/api/v1/map/0123456789/0,2/{z}/{x}/{y}.png' ],
         grids: [
           [ 'https://rambo.example.com:443/api/v1/map/0123456789/0/{z}/{x}/{y}.grid.json' ],
@@ -136,7 +136,7 @@ describe('windshaft/dashboard-instance', function () {
       });
 
       // Request tiles for "torque" layers specifically (#1 and #3)
-      expect(dashboard.getTiles('torque')).toEqual({
+      expect(windshaftMapInstance.getTiles('torque')).toEqual({
         tiles: [ 'https://rambo.example.com:443/api/v1/map/0123456789/1,3/{z}/{x}/{y}.json.torque' ],
         grids: []
       });
@@ -144,7 +144,7 @@ describe('windshaft/dashboard-instance', function () {
 
     describe('when NOT using a CDN', function () {
       it('should return the URLS for tiles and grids for https', function () {
-        var dashboard = new WindshaftDashboardInstance({
+        var windshaftMapInstance = new WindshaftMapInstance({
           'layergroupid': '0123456789',
           'urlTemplate': 'https://{user}.example.com:443',
           'userName': 'rambo',
@@ -161,7 +161,7 @@ describe('windshaft/dashboard-instance', function () {
             ]
           }
         });
-        expect(dashboard.getTiles()).toEqual({
+        expect(windshaftMapInstance.getTiles()).toEqual({
           tiles: [ 'https://rambo.example.com:443/api/v1/map/0123456789/0,1/{z}/{x}/{y}.png' ],
           grids: [
             [ 'https://rambo.example.com:443/api/v1/map/0123456789/0/{z}/{x}/{y}.grid.json' ],
@@ -171,7 +171,7 @@ describe('windshaft/dashboard-instance', function () {
       });
 
       it('should return the URLS for tiles and grids for http', function () {
-        var dashboard = new WindshaftDashboardInstance({
+        var windshaftMapInstance = new WindshaftMapInstance({
           'layergroupid': '0123456789',
           'urlTemplate': 'http://{user}.example.com:443',
           'userName': 'rambo',
@@ -188,7 +188,7 @@ describe('windshaft/dashboard-instance', function () {
             ]
           }
         });
-        expect(dashboard.getTiles()).toEqual({
+        expect(windshaftMapInstance.getTiles()).toEqual({
           'tiles': [
             'http://rambo.example.com:443/api/v1/map/0123456789/0,1/{z}/{x}/{y}.png',
             'http://rambo.example.com:443/api/v1/map/0123456789/0,1/{z}/{x}/{y}.png',
@@ -214,7 +214,7 @@ describe('windshaft/dashboard-instance', function () {
 
     describe('when using a CDN', function () {
       it('should return the URLS for tiles and grids for https', function () {
-        var dashboard = new WindshaftDashboardInstance({
+        var windshaftMapInstance = new WindshaftMapInstance({
           'layergroupid': '0123456789',
           'urlTemplate': 'https://{user}.example.com:443',
           'userName': 'rambo',
@@ -235,7 +235,7 @@ describe('windshaft/dashboard-instance', function () {
             ]
           }
         });
-        expect(dashboard.getTiles()).toEqual({
+        expect(windshaftMapInstance.getTiles()).toEqual({
           'tiles': [ 'https://cdn.https.example.com/rambo/api/v1/map/0123456789/0,1/{z}/{x}/{y}.png' ],
           'grids': [
             [ 'https://cdn.https.example.com/rambo/api/v1/map/0123456789/0/{z}/{x}/{y}.grid.json' ],
@@ -245,7 +245,7 @@ describe('windshaft/dashboard-instance', function () {
       });
 
       it('should return the URLS for tiles and grids for http', function () {
-        var dashboard = new WindshaftDashboardInstance({
+        var windshaftMapInstance = new WindshaftMapInstance({
           'layergroupid': '0123456789',
           'urlTemplate': 'http://{user}.example.com:443',
           'userName': 'rambo',
@@ -266,7 +266,7 @@ describe('windshaft/dashboard-instance', function () {
             ]
           }
         });
-        expect(dashboard.getTiles()).toEqual({
+        expect(windshaftMapInstance.getTiles()).toEqual({
           'tiles': [
             'http://0.cdn.http.example.com/rambo/api/v1/map/0123456789/0,1/{z}/{x}/{y}.png',
             'http://1.cdn.http.example.com/rambo/api/v1/map/0123456789/0,1/{z}/{x}/{y}.png',
@@ -293,7 +293,7 @@ describe('windshaft/dashboard-instance', function () {
 
   describe('#getDataviewURL', function () {
     it('should return undefined if dataview is not found', function () {
-      var dashboard = new WindshaftDashboardInstance({
+      var windshaftMapInstance = new WindshaftMapInstance({
         'layergroupid': '0123456789',
         'urlTemplate': 'https://{user}.example.com:443',
         'userName': 'rambo',
@@ -311,10 +311,10 @@ describe('windshaft/dashboard-instance', function () {
         }
       });
 
-      var dataviewURL = dashboard.getDataviewURL({ dataviewId: 'whatever', protocol: 'http' });
+      var dataviewURL = windshaftMapInstance.getDataviewURL({ dataviewId: 'whatever', protocol: 'http' });
       expect(dataviewURL).toBeUndefined();
 
-      dashboard = new WindshaftDashboardInstance({
+      windshaftMapInstance = new WindshaftMapInstance({
         'layergroupid': '0123456789',
         'urlTemplate': 'https://{user}.example.com:443',
         'userName': 'rambo',
@@ -340,12 +340,12 @@ describe('windshaft/dashboard-instance', function () {
         }
       });
 
-      dataviewURL = dashboard.getDataviewURL({ dataviewId: 'whatever', protocol: 'http' });
+      dataviewURL = windshaftMapInstance.getDataviewURL({ dataviewId: 'whatever', protocol: 'http' });
       expect(dataviewURL).toBeUndefined();
     });
 
     it('should return the URL for the given dataviewId and protocol', function () {
-      var dashboard = new WindshaftDashboardInstance({
+      var windshaftMapInstance = new WindshaftMapInstance({
         'layergroupid': '0123456789',
         'urlTemplate': 'https://{user}.example.com:443',
         'userName': 'rambo',
@@ -371,10 +371,10 @@ describe('windshaft/dashboard-instance', function () {
         }
       });
 
-      var dataviewURL = dashboard.getDataviewURL({ dataviewId: 'dataviewId', protocol: 'http' });
+      var dataviewURL = windshaftMapInstance.getDataviewURL({ dataviewId: 'dataviewId', protocol: 'http' });
       expect(dataviewURL).toEqual('http://example.com');
 
-      dataviewURL = dashboard.getDataviewURL({ dataviewId: 'dataviewId', protocol: 'https' });
+      dataviewURL = windshaftMapInstance.getDataviewURL({ dataviewId: 'dataviewId', protocol: 'https' });
       expect(dataviewURL).toEqual('https://example.com');
     });
   });

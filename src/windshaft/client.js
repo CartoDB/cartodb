@@ -2,7 +2,7 @@ var $ = require('jquery');
 var _ = require('underscore');
 var LZMA = require('lzma');
 var util = require('../core/util');
-var WindshaftDashboardInstance = require('./dashboard-instance');
+var WindshaftMapInstance = require('./windshaft-map-instance');
 
 var validatePresenceOfOptions = function (options, requiredOptions) {
   var missingOptions = _.filter(requiredOptions, function (option) {
@@ -14,11 +14,11 @@ var validatePresenceOfOptions = function (options, requiredOptions) {
 };
 
 /**
- * Windshaft client. It provides a method to create instances of dashboards.
+ * Windshaft client. It provides a method to create instances of maps in Windshaft.
  * @param {object} options Options to set up the client
  */
 var WindshaftClient = function (options) {
-  validatePresenceOfOptions(options, ['urlTemplate', 'userName', 'endpoint', 'statTag']);
+  validatePresenceOfOptions(options, ['urlTemplate', 'userName', 'endpoint']);
 
   this.urlTemplate = options.urlTemplate;
   this.userName = options.userName;
@@ -36,10 +36,11 @@ WindshaftClient.MAX_GET_SIZE = 2033;
  * Creates an instance of a map in Windshaft
  * @param {object} mapDefinition An object that responds to .toJSON with the definition of the map
  * @param  {function} callback A callback that will get the public or private map
- * @return {cdb.windshaft.DashboardInstance} The instance of the dashboard
+ * @return {cdb.windshaft.WindshaftMapInstance} The instance of the windshaft map
  */
 WindshaftClient.prototype.instantiateMap = function (options) {
   var mapDefinition = options.mapDefinition;
+  var statTag = options.statTag;
   var filters = options.filters || {};
   var successCallback = options.success;
   var errorCallback = options.error;
@@ -52,7 +53,7 @@ WindshaftClient.prototype.instantiateMap = function (options) {
       } else {
         data.urlTemplate = this.urlTemplate;
         data.userName = this.userName;
-        successCallback(new WindshaftDashboardInstance(data));
+        successCallback(new WindshaftMapInstance(data));
       }
     }.bind(this),
     error: function (xhr) {
@@ -66,7 +67,7 @@ WindshaftClient.prototype.instantiateMap = function (options) {
 
   // TODO: Move this
   var params = [
-    ['stat_tag', this.statTag].join('=')
+    ['stat_tag', statTag].join('=')
   ];
 
   if (Object.keys(filters).length) {

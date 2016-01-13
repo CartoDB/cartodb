@@ -6,11 +6,11 @@ var Map = require('../../../src/geo/map');
 var TorqueLayer = require('../../../src/geo/map/torque-layer');
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
 var HistogramDataviewModel = require('../../../src/dataviews/histogram-dataview-model');
-var WindshaftDashboard = require('../../../src/windshaft/dashboard');
-var WindshaftDashboardInstance = require('../../../src/windshaft/dashboard-instance');
+var WindshaftMap = require('../../../src/windshaft/windshaft-map');
+var WindshaftMapInstance = require('../../../src/windshaft/windshaft-map-instance');
 var CategoryFilter = require('../../../src/windshaft/filters/category');
 
-describe('windshaft/dashboard', function () {
+describe('windshaft/map', function () {
   beforeEach(function () {
     jasmine.clock().install();
 
@@ -18,7 +18,7 @@ describe('windshaft/dashboard', function () {
     spyOn($, 'ajax').and.callFake(function () {});
     spyOn(_, 'debounce').and.callFake(function (func) { return function () { func.apply(this, arguments); }; });
 
-    this.dashboardInstance = new WindshaftDashboardInstance({
+    this.windshaftMapInstance = new WindshaftMapInstance({
       metadata: {
         layers: [
           {
@@ -38,8 +38,8 @@ describe('windshaft/dashboard', function () {
     });
     this.dataviews = new Backbone.Collection();
 
-    spyOn(this.dashboardInstance, 'getBaseURL').and.returnValue('baseURL');
-    spyOn(this.dashboardInstance, 'getTiles').and.callFake(function (type) {
+    spyOn(this.windshaftMapInstance, 'getBaseURL').and.returnValue('baseURL');
+    spyOn(this.windshaftMapInstance, 'getTiles').and.callFake(function (type) {
       if (type === 'torque') {
         return 'torqueTileURLs';
       }
@@ -48,7 +48,7 @@ describe('windshaft/dashboard', function () {
 
     this.client = {
       instantiateMap: function (options) {
-        options.success(this.dashboardInstance);
+        options.success(this.windshaftMapInstance);
       }.bind(this)
     };
 
@@ -71,7 +71,7 @@ describe('windshaft/dashboard', function () {
     jasmine.clock().uninstall();
   });
 
-  it('should create an instance of the dashboard and update the URLs of layers and dataviews', function () {
+  it('should create an instance of the windshaft map and update the URLs of layers and dataviews', function () {
     var dataview = new HistogramDataviewModel({
       id: 'dataviewId',
       type: 'list'
@@ -80,7 +80,7 @@ describe('windshaft/dashboard', function () {
     });
     this.dataviews.add(dataview);
 
-    new WindshaftDashboard({ // eslint-disable-line
+    new WindshaftMap({ // eslint-disable-line
       client: this.client,
       configGenerator: this.configGenerator,
       statTag: 'stat_tag',
@@ -119,7 +119,7 @@ describe('windshaft/dashboard', function () {
 
     this.dataviews.add(dataview);
 
-    new WindshaftDashboard({ // eslint-disable-line
+    new WindshaftMap({ // eslint-disable-line
       client: this.client,
       configGenerator: this.configGenerator,
       statTag: 'stat_tag',
@@ -145,8 +145,8 @@ describe('windshaft/dashboard', function () {
 
   it('should update the urls of dataviews when bounding box changes', function () {
     this.client.instantiateMap = function (args) {
-      this.dashboardInstance.set({
-        layergroupid: 'dashboardId',
+      this.windshaftMapInstance.set({
+        layergroupid: 'whatever',
         metadata: {
           layers: [
             {
@@ -164,7 +164,7 @@ describe('windshaft/dashboard', function () {
           ]
         }
       });
-      args.success(this.dashboardInstance);
+      args.success(this.windshaftMapInstance);
     }.bind(this);
 
     var dataview = new HistogramDataviewModel({
@@ -175,7 +175,7 @@ describe('windshaft/dashboard', function () {
     });
     this.dataviews.add(dataview);
 
-    new WindshaftDashboard({ // eslint-disable-line
+    new WindshaftMap({ // eslint-disable-line
       client: this.client,
       configGenerator: this.configGenerator,
       statTag: 'stat_tag',
@@ -211,7 +211,7 @@ describe('windshaft/dashboard', function () {
     });
     this.dataviews.add(dataview);
 
-    new WindshaftDashboard({ // eslint-disable-line
+    new WindshaftMap({ // eslint-disable-line
       client: this.client,
       configGenerator: this.configGenerator,
       statTag: 'stat_tag',
@@ -246,7 +246,7 @@ describe('windshaft/dashboard', function () {
     });
     this.dataviews.add(dataview);
 
-    new WindshaftDashboard({ // eslint-disable-line
+    new WindshaftMap({ // eslint-disable-line
       client: this.client,
       configGenerator: this.configGenerator,
       statTag: 'stat_tag',
@@ -268,7 +268,7 @@ describe('windshaft/dashboard', function () {
   it('should refresh the URLs of dataviews and only trigger a change event if the dataview belongs to the layer that changed', function () {
     var i = 0;
     this.client.instantiateMap = function (args) {
-      this.dashboardInstance.set('metadata', {
+      this.windshaftMapInstance.set('metadata', {
         layers: [
           {
             'type': 'mapnik',
@@ -297,7 +297,7 @@ describe('windshaft/dashboard', function () {
         ]
       });
 
-      args.success(this.dashboardInstance);
+      args.success(this.windshaftMapInstance);
       i++;
     }.bind(this);
 
@@ -317,7 +317,7 @@ describe('windshaft/dashboard', function () {
     });
     this.dataviews.add(dataview2);
 
-    new WindshaftDashboard({ // eslint-disable-line
+    new WindshaftMap({ // eslint-disable-line
       client: this.client,
       configGenerator: this.configGenerator,
       statTag: 'stat_tag',

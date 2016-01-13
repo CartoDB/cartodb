@@ -1,9 +1,9 @@
 var _ = require('underscore');
 var WindshaftFiltersCollection = require('./filters/collection');
 var WindshaftFiltersBoundingBoxFilter = require('./filters/bounding-box');
-var WindshaftDashboardInstance = require('./dashboard-instance');
+var WindshaftMapInstance = require('./windshaft-map-instance');
 
-var WindshaftDashboard = function (options) {
+var WindshaftMap = function (options) {
   var BOUNDING_BOX_FILTER_WAIT = 500;
 
   this.layerGroup = options.layerGroup;
@@ -13,7 +13,7 @@ var WindshaftDashboard = function (options) {
   this.client = options.client;
   this.statTag = options.statTag;
   this.configGenerator = options.configGenerator;
-  this.instance = new WindshaftDashboardInstance();
+  this.instance = new WindshaftMapInstance();
 
   this.map.bind('change:center change:zoom', _.debounce(this._boundingBoxChanged, BOUNDING_BOX_FILTER_WAIT), this);
   this.layers.bind('change', this._layerChanged, this);
@@ -31,7 +31,7 @@ var WindshaftDashboard = function (options) {
   }, this);
 };
 
-WindshaftDashboard.prototype._createInstance = function (options) {
+WindshaftMap.prototype._createInstance = function (options) {
   options = options || {};
 
   var cfg = this.configGenerator.generate({
@@ -50,21 +50,21 @@ WindshaftDashboard.prototype._createInstance = function (options) {
   this.client.instantiateMap({
     mapDefinition: cfg,
     filters: filters.toJSON(),
-    success: function (dashboardInstance) {
-      // Update the dashboard instance with the attributes of the new one
-      this.instance.set(dashboardInstance.toJSON());
+    success: function (mapInstance) {
+      // Update the map instance with the attributes of the newly created one
+      this.instance.set(mapInstance.toJSON());
 
-      // TODO: Set the URL of the attributes service once it's available
+      // TODO: Extract this.
       this.layerGroup && this.layerGroup.set({
-        baseURL: dashboardInstance.getBaseURL(),
-        urls: dashboardInstance.getTiles('mapnik')
+        baseURL: mapInstance.getBaseURL(),
+        urls: mapInstance.getTiles('mapnik')
       });
 
       // update other kind of layers too
       this.layers.each(function (layer, layerIndex) {
         if (layer.get('type') === 'torque') {
-          layer.set('meta', dashboardInstance.getLayerMeta(layerIndex));
-          layer.set('urls', dashboardInstance.getTiles('torque'));
+          layer.set('meta', mapInstance.getLayerMeta(layerIndex));
+          layer.set('urls', mapInstance.getTiles('torque'));
         }
       });
 
@@ -73,20 +73,20 @@ WindshaftDashboard.prototype._createInstance = function (options) {
       });
     }.bind(this),
     error: function (error) {
-      console.log('Error creating dashboard instance: ' + error);
+      console.log('Error creating the map instance on Windshaft: ' + error);
     }
   });
 
   return this.instance;
 };
 
-WindshaftDashboard.prototype._boundingBoxChanged = function () {
+WindshaftMap.prototype._boundingBoxChanged = function () {
   if (this.instance.isLoaded()) {
     this._updateDataviewURLs();
   }
 };
 
-WindshaftDashboard.prototype._updateDataviewURLs = function (options) {
+WindshaftMap.prototype._updateDataviewURLs = function (options) {
   options = options || {};
   var boundingBoxFilter = new WindshaftFiltersBoundingBoxFilter(this.map.getViewBounds());
   var boundingBox = boundingBoxFilter.toString();
@@ -118,16 +118,16 @@ WindshaftDashboard.prototype._updateDataviewURLs = function (options) {
   }, this);
 };
 
-WindshaftDashboard.prototype._dataviewChanged = function (dataview) {
+WindshaftMap.prototype._dataviewChanged = function (dataview) {
   this._createInstance({
     layerId: dataview.layer.get('id')
   });
 };
 
-WindshaftDashboard.prototype._layerChanged = function (layer) {
+WindshaftMap.prototype._layerChanged = function (layer) {
   this._createInstance({
     layerId: layer.get('id')
   });
 };
 
-module.exports = WindshaftDashboard;
+module.exports = WindshaftMap;

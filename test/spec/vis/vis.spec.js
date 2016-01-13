@@ -43,7 +43,6 @@ describe('vis/vis', function () {
     };
 
     this.createNewVis = function (attrs) {
-      attrs.dashboardView = new View();
       attrs.widgets = new Backbone.Collection();
       this.vis = new Vis(attrs);
       return this.vis;

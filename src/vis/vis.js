@@ -28,7 +28,7 @@ var WindshaftConfig = require('../windshaft/config');
 var WindshaftClient = require('../windshaft/client');
 var WindshaftLayerGroupConfig = require('../windshaft/layergroup-config');
 var WindshaftNamedMapConfig = require('../windshaft/namedmap-config');
-var WindshaftDashboard = require('../windshaft/dashboard');
+var WindshaftMap = require('../windshaft/windshaft-map');
 
 /**
  * Visualization creation
@@ -450,7 +450,7 @@ var Vis = View.extend({
         forceCors: forceCors
       });
 
-      new WindshaftDashboard({ // eslint-disable-line
+      new WindshaftMap({ // eslint-disable-line
         client: windshaftClient,
         configGenerator: configGenerator,
         statTag: statTag,

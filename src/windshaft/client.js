@@ -2,7 +2,7 @@ var $ = require('jquery');
 var _ = require('underscore');
 var LZMA = require('lzma');
 var util = require('../core/util');
-var WindshaftDashboardInstance = require('./dashboard-instance');
+var WindshaftMapInstance = require('./windshaft-map-instance');
 
 var validatePresenceOfOptions = function (options, requiredOptions) {
   var missingOptions = _.filter(requiredOptions, function (option) {
@@ -14,7 +14,7 @@ var validatePresenceOfOptions = function (options, requiredOptions) {
 };
 
 /**
- * Windshaft client. It provides a method to create instances of dashboards.
+ * Windshaft client. It provides a method to create instances of maps in Windshaft.
  * @param {object} options Options to set up the client
  */
 var WindshaftClient = function (options) {
@@ -36,7 +36,7 @@ WindshaftClient.MAX_GET_SIZE = 2033;
  * Creates an instance of a map in Windshaft
  * @param {object} mapDefinition An object that responds to .toJSON with the definition of the map
  * @param  {function} callback A callback that will get the public or private map
- * @return {cdb.windshaft.DashboardInstance} The instance of the dashboard
+ * @return {cdb.windshaft.WindshaftMapInstance} The instance of the windshaft map
  */
 WindshaftClient.prototype.instantiateMap = function (options) {
   var mapDefinition = options.mapDefinition;
@@ -52,7 +52,7 @@ WindshaftClient.prototype.instantiateMap = function (options) {
       } else {
         data.urlTemplate = this.urlTemplate;
         data.userName = this.userName;
-        successCallback(new WindshaftDashboardInstance(data));
+        successCallback(new WindshaftMapInstance(data));
       }
     }.bind(this),
     error: function (xhr) {

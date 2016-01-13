@@ -390,19 +390,10 @@ var Vis = View.extend({
     // (eg: when the layer is hidden or it's SQL is changed)
     if (cartoDBLayerGroup) {
       var endpoint;
-      var mapsApiTemplate;
-      var userName;
-      var statTag;
-      var forceCors = true;
       var configGenerator;
 
       var datasource = data.datasource;
       if (datasource) {
-        mapsApiTemplate = datasource.maps_api_template;
-        userName = datasource.user_name;
-        statTag = datasource.stat_tag;
-        forceCors = datasource.force_cors;
-
         // TODO: We can use something else to differentiate types of "datasource"s
         if (datasource.template_name) {
           endpoint = [WindshaftConfig.MAPS_API_BASE_URL, 'named', datasource.template_name].join('/');
@@ -411,35 +402,19 @@ var Vis = View.extend({
           endpoint = WindshaftConfig.MAPS_API_BASE_URL;
           configGenerator = WindshaftLayerGroupConfig;
         }
-      } else {
-        // No datasource, get necessary windshaft data from layerGroup directly instead
-        userName = cartoDBLayerGroup.get('userName');
-        mapsApiTemplate = cartoDBLayerGroup.get('mapsApiTemplate');
-        statTag = cartoDBLayerGroup.get('statTag');
-
-        if (cartoDBLayerGroup.get('type') === 'namedmap') {
-          var namedMapId = cartoDBLayerGroup.get('namedMapId');
-          endpoint = [
-            WindshaftConfig.MAPS_API_BASE_URL, 'named', namedMapId
-          ].join('/');
-          configGenerator = WindshaftNamedMapConfig;
-        } else if (cartoDBLayerGroup.get('type') === 'layergroup') {
-          endpoint = WindshaftConfig.MAPS_API_BASE_URL;
-          configGenerator = WindshaftLayerGroupConfig;
-        }
       }
 
       var windshaftClient = new WindshaftClient({
         endpoint: endpoint,
-        urlTemplate: mapsApiTemplate,
-        userName: userName,
-        forceCors: forceCors
+        urlTemplate: datasource.maps_api_template,
+        userName: datasource.user_name,
+        forceCors: datasource.force_cors || true
       });
 
       new WindshaftMap({ // eslint-disable-line
         client: windshaftClient,
         configGenerator: configGenerator,
-        statTag: statTag,
+        statTag: datasource.stat_tag,
         // TODO: assuming here all viz.json has a layergroup and that may not be true
         layerGroup: cartoDBLayerGroup,
         layers: this.interactiveLayers,

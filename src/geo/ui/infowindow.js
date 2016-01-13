@@ -118,13 +118,16 @@ var Infowindow = View.extend({
         this.$('.js-content').css('max-height', this.model.get('maxHeight') + 'px');
       }
 
-      this._loadCover();
+      if (this._containsCover()) {
+        this._loadCover();
+      }
 
       if (!this.isLoadingData()) {
         this.model.trigger('domready', this, this.$el);
         this.trigger('domready', this, this.$el);
       }
 
+      this._setupClasses();
       this._renderScroll();
     }
 
@@ -178,8 +181,34 @@ var Infowindow = View.extend({
     this.$('.js-loader').removeClass('is-visible');
   },
 
+  _setupClasses: function () {
+    var $infowindow = this.$('.js-infowindow');
+
+    var hasHeader = this.$('.js-header').length;
+    var hasCover = this.$('.js-cover').length;
+    var hasContent = this.$('.js-content').length;
+    var hasTitle = this.$('.CDB-infowindow-title').length;
+
+    if (hasCover) {
+      $infowindow.addClass('has-header-image');
+    }
+    if (hasHeader) {
+      $infowindow.addClass('has-header');
+    }
+    if (hasContent) {
+      $infowindow.addClass('has-fields');
+    }
+    if (hasTitle) {
+      $infowindow.addClass('has-title');
+    }
+  },
+
   _renderScroll: function () {
-    if (this.$('.has-scroll').length === 0) return;
+    if (this.$('.js-content').length === 0) {
+      return;
+    }
+
+    this.$('.js-infowindow').addClass('has-scroll');
 
     Ps.initialize(this.$('.js-content').get(0), {
       wheelSpeed: 2,
@@ -415,10 +444,6 @@ var Infowindow = View.extend({
   },
 
   _loadCover: function () {
-    if (!this._containsCover()) {
-      return;
-    }
-
     this._renderCoverLoader();
     this._startCoverLoader();
 

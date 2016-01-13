@@ -140,15 +140,37 @@
                           }
                         ],
                         "template_name":"table/views/infowindow_light",
-                        template: '' +
-                        '<div class=\"CDB-infowindow CDB-infowindow--light js-infowindow\" data-cover=\"true\">' +
-                        '  <div class=\"CDB-infowindow-container\">' +
-                        '    <div class=\"CDB-infowindow-header CDB-infowindow-headerMedia js-cover\">' +
-                        '      <img src=\"http://i.imgur.com/njD36iC.gif\"></div><div class=\"CDB-hook-image\">' +
-                        '      <div class=\"CDB-hook-image-inner js-hook\"></div>'+
-                        '    </div>' +
-                        '  </div>' +
-                        '</div>',
+
+                        template: '<div class=\"CDB-infowindow CDB-infowindow--light js-infowindow\" data-cover=\"true\">'+
+                        '  <div class=\"CDB-infowindow-container\">'+
+                        '    <div class=\"CDB-infowindow-header CDB-infowindow-headerMedia js-header js-cover\">'+
+                        '      {{#loading}}<div class=\"CDB-Loader js-loader\"></div>{{/loading}}'+
+                        '      <div class=\"CDB-infowindow-mediaTitle\">'+
+                        '        <h4 class=\"CDB-infowindow-title\">'+
+                        '          <span>{{ name }}</span>'+
+                        '          </h4>'+
+                        '        </div>'+
+                        '        <img src=\"http://fake_domain_url.com/my-image.jpg\">'+
+                        '      </div>'+
+                        '      <div class=\"CDB-infowindow-inner js-inner\">'+
+                        '        {{#loading}}<div class=\"CDB-Loader js-loader\"></div>{{/loading}}'+
+                        '        <div class=\"CDB-infowindow-list js-content\">'+
+                        '          {{#content.fields}}'+
+                        '          <div class=\"CDB-infowindow-listItem\">'+
+                        '            {{#title}}<h5 class=\"CDB-infowindow-subtitle\">{{title}}</h5>{{/title}}'+
+                        '            {{#value}}<h4 class=\"CDB-infowindow-title\">{{{ value }}}</h4>{{/value}}'+
+                        '            {{^value}}<h4 class=\"CDB-infowindow-title\">null</h4>{{/value}}'+
+                        '          </div>'+
+                        '          {{/content.fields}} '+
+                        '          </div>'+
+                        '        </div>'+
+                        '      </div>'+
+                        '      <div class=\"CDB-hook\">'+
+                        '        <div class=\"CDB-hook-inner\">'+
+                        '        </div>'+
+                        '      </div>'+
+                        '    </div>'+
+                        '  </div>',
                         "alternative_names":{},
                         "width":226,
                         "maxHeight":180

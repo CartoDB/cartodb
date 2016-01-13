@@ -235,14 +235,6 @@ $chartMiniHighlight: rgba(#333, 1);
     }
   }
 
-  // Tooltip 
-  .CDB-Widget-tooltip {
-    background: $blackBkg;
-    color: $commonBkg;
-  }
-  .CDB-Widget-tooltip:after {
-    border-top-color: $blackBkg;
-  }
 
   //Charts
   .extent {
@@ -357,5 +349,15 @@ $chartMiniHighlight: rgba(#333, 1);
       background-color: rgba($disabled, 0.3) !important;
       background-image: repeating-linear-gradient(45deg, transparent 0, rgba($secondary, 0.3) 1px, transparent 1px, transparent 2px) !important;
     }
+  }
+}
+
+.CDB-Widget-tooltip--light {
+  &.CDB-Widget-tooltip {
+    background: $blackBkg;
+    color: $commonBkg;
+  }
+  &.CDB-Widget-tooltip:after {
+    border-top-color: $blackBkg;
   }
 }

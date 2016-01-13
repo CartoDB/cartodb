@@ -446,7 +446,6 @@ var Vis = View.extend({
         endpoint: endpoint,
         urlTemplate: mapsApiTemplate,
         userName: userName,
-        statTag: statTag,
         forceCors: forceCors
       });
 

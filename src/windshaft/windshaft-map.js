@@ -49,6 +49,7 @@ WindshaftMap.prototype._createInstance = function (options) {
 
   this.client.instantiateMap({
     mapDefinition: cfg,
+    statTag: this.statTag,
     filters: filters.toJSON(),
     success: function (mapInstance) {
       // Update the map instance with the attributes of the newly created one

@@ -18,7 +18,7 @@ var validatePresenceOfOptions = function (options, requiredOptions) {
  * @param {object} options Options to set up the client
  */
 var WindshaftClient = function (options) {
-  validatePresenceOfOptions(options, ['urlTemplate', 'userName', 'endpoint', 'statTag']);
+  validatePresenceOfOptions(options, ['urlTemplate', 'userName', 'endpoint']);
 
   this.urlTemplate = options.urlTemplate;
   this.userName = options.userName;
@@ -40,6 +40,7 @@ WindshaftClient.MAX_GET_SIZE = 2033;
  */
 WindshaftClient.prototype.instantiateMap = function (options) {
   var mapDefinition = options.mapDefinition;
+  var statTag = options.statTag;
   var filters = options.filters || {};
   var successCallback = options.success;
   var errorCallback = options.error;
@@ -66,7 +67,7 @@ WindshaftClient.prototype.instantiateMap = function (options) {
 
   // TODO: Move this
   var params = [
-    ['stat_tag', this.statTag].join('=')
+    ['stat_tag', statTag].join('=')
   ];
 
   if (Object.keys(filters).length) {

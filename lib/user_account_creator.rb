@@ -15,7 +15,7 @@ module CartoDB
     PARAM_SOFT_GEOCODING_LIMIT = :soft_geocoding_limit
     PARAM_QUOTA_IN_BYTES = :quota_in_bytes
 
-    def initialize(created_via = Carto::UserCreation::CREATED_VIA_ORG_SIGNUP)
+    def initialize(created_via)
       @built = false
       @organization = nil
       @google_user_data = nil

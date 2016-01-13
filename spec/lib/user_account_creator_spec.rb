@@ -8,7 +8,7 @@ describe CartoDB::UserAccountCreator do
     EMAIL = "#{USERNAME}@company.com"
 
     it 'sets email, username and (random) password' do
-      creator = CartoDB::UserAccountCreator.new
+      creator = CartoDB::UserAccountCreator.new(Carto::UserCreation::CREATED_VIA_ORG_SIGNUP)
       creator.with_email_only(EMAIL)
 
       user = creator.build

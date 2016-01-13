@@ -10,8 +10,8 @@
       <span class="CDB-Shape-threePointsItem"></span>
     </button>
   </div>
-  <dl class="CDB-Widget-info">
-    <dt class="CDB-Widget-infoItem CDB-Widget-textSmaller CDB-Widget-textSmaller--upper"><%- nulls %> null rows</dt>
+  <dl class="CDB-Widget-info CDB-Widget-textSmaller CDB-Widget-textSmaller--upper">
+    <dt class="CDB-Widget-infoCount"><%- nulls %></dt><dd class="CDB-Widget-infoDescription">null rows</dd>
   </dl>
 </div>
 <div class="CDB-Widget-content">

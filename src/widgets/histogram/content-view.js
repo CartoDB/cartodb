@@ -321,23 +321,23 @@ module.exports = WidgetContentView.extend({
   },
 
   _onChangeNulls: function () {
-    this._changeHeaderValue('.js-nulls', 'nulls', 'NULL ROWS');
+    this._changeHeaderValue('.js-nulls', 'nulls', '');
   },
 
   _onChangeTotal: function () {
-    this._changeHeaderValue('.js-val', 'total', 'SELECTED');
+    this._changeHeaderValue('.js-val', 'total', '');
   },
 
   _onChangeMax: function () {
-    this._changeHeaderValue('.js-max', 'max', 'MAX');
+    this._changeHeaderValue('.js-max', 'max', '');
   },
 
   _onChangeMin: function () {
-    this._changeHeaderValue('.js-min', 'min', 'MIN');
+    this._changeHeaderValue('.js-min', 'min', '');
   },
 
   _onChangeAvg: function () {
-    this._changeHeaderValue('.js-avg', 'avg', 'AVG');
+    this._changeHeaderValue('.js-avg', 'avg', '');
   },
 
   _addTitleForValue: function (className, what, unit) {

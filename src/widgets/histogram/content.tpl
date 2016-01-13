@@ -5,10 +5,10 @@
     </div>
   </div>
   <dl class="CDB-Widget-info CDB-Widget-textSmaller CDB-Widget-textSmaller--upper">
-    <dt class="CDB-Widget-infoItem js-nulls">0 NULL ROWS</dt>
-    <dt class="CDB-Widget-infoItem js-min">0 MIN</dt>
-    <dt class="CDB-Widget-infoItem js-avg">0 AVG</dt>
-    <dt class="CDB-Widget-infoItem js-max">0 MAX</dt>
+    <dt class="CDB-Widget-infoCount js-nulls">0</dt><dd class="CDB-Widget-infoDescription">NULL ROWS</dd>
+    <dt class="CDB-Widget-infoCount js-min">0</dt><dd class="CDB-Widget-infoDescription">MIN</dd>
+    <dt class="CDB-Widget-infoCount js-avg">0</dt><dd class="CDB-Widget-infoDescription">AVG</dd>
+    <dt class="CDB-Widget-infoCount js-max">0</dt><dd class="CDB-Widget-infoDescription">MAX</dd>
   </dl>
 </div>
 <div class="CDB-Widget-content js-content">

@@ -19,7 +19,7 @@ module Concerns
         if organization.present?
           cartodb_central_client.create_organization_user(organization.name, allowed_attributes_to_central(:create))
         else
-          CartoDB.notify_debug("User creation without organization at box are not notified to Central", user: self)
+          CartoDB.notify_debug("User creations at box without organization are not notified to Central", user: self)
         end
       elsif self.is_a?(Organization)
         raise "Can't create organizations in editor"

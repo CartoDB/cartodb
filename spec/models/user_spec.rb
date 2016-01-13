@@ -1711,7 +1711,7 @@ describe User do
 
     it 'is false for users that were created with http authentication' do
       user = FactoryGirl.build(:valid_user, :last_password_change_date => nil)
-      Carto::UserCreation.http_authentication.stubs(:where).returns(OpenStruct(first: FactoryGirl.build(:user_creation)))
+      Carto::UserCreation.stubs(:http_authentication).returns(stub(find_by_user_id: FactoryGirl.build(:user_creation)))
       user.needs_password_confirmation?.should == false
     end
   end

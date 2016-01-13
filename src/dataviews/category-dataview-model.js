@@ -15,14 +15,14 @@ module.exports = DataviewModelBase.extend({
 
   defaults: _.extend(
     {
-      ownFilter: false,
+      enableFilter: true,
       allCategoryNames: [] // all (new + previously accepted), updated on data fetch (see parse)
     },
     DataviewModelBase.prototype.defaults
   ),
 
   url: function () {
-    return this.get('url') + '?bbox=' + this.get('boundingBox') + '&own_filter=' + (this.get('ownFilter') ? 1 : 0);
+    return this.get('url') + '?bbox=' + this.get('boundingBox') + '&own_filter=' + (this.get('enableFilter') ? 0 : 1);
   },
 
   initialize: function (attrs, opts) {
@@ -105,6 +105,14 @@ module.exports = DataviewModelBase.extend({
     this._searchModel.bind('change:data', function () {
       this.trigger('change:searchData', this);
     }, this);
+  },
+
+  enableFilter: function () {
+    this.set('enableFilter', true);
+  },
+
+  disableFilter: function () {
+    this.set('enableFilter', false);
   },
 
   // Search model helper methods //

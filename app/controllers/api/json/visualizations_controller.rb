@@ -121,7 +121,10 @@ class Api::Json::VisualizationsController < Api::ApplicationController
           end
         end
 
-        render_jsonp(vis)
+        visualization = Carto::Visualization.find(vis.id)
+        presenter = Carto::Api::VisualizationPresenter.new(visualization, current_viewer, self)
+
+        render_jsonp(presenter.to_poro)
       rescue KeyError
         head(404)
       rescue CartoDB::InvalidMember

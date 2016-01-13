@@ -57,6 +57,9 @@
     "time-grunt": "1.2.2",
     "watchify": "3.6.1"
   },
+  "scripts": {
+    "postinstall": "cd node_modules/grunt-contrib-imagemin/node_modules/imagemin && rm -rf node_modules/vinyl-fs && npm i vinyl-fs@2.2.x"
+  },
   "browserify": {
     "transform": [
       "jstify"

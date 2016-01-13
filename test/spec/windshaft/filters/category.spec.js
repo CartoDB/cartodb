@@ -39,7 +39,7 @@ describe('windshaft/filters/category', function () {
 
   describe('accept', function () {
     it('should accept an array or a string as an argument', function () {
-      var acceptedCats = this.filter.getAccepted();
+      var acceptedCats = this.filter.acceptedCategories;
       this.filter.accept(1);
       expect(acceptedCats.size()).toBe(1);
       this.filter.accept(2);
@@ -55,8 +55,8 @@ describe('windshaft/filters/category', function () {
 
     it('should remove value from rejected if it is present when it is accepted', function () {
       this.filter.reject(1);
-      var rejectedCats = this.filter.getRejected();
-      var acceptedCats = this.filter.getAccepted();
+      var rejectedCats = this.filter.rejectedCategories;
+      var acceptedCats = this.filter.acceptedCategories;
       expect(rejectedCats.size()).toBe(1);
       this.filter.accept(1);
       expect(rejectedCats.size()).toBe(0);
@@ -65,7 +65,7 @@ describe('windshaft/filters/category', function () {
 
     it('should not accept a value if it is already present', function () {
       this.filter.accept(1);
-      var acceptedCats = this.filter.getAccepted();
+      var acceptedCats = this.filter.acceptedCategories;
       expect(acceptedCats.size()).toBe(1);
       this.filter.accept(1);
       expect(acceptedCats.size()).toBe(1);
@@ -76,13 +76,13 @@ describe('windshaft/filters/category', function () {
     this.filter.accept([1, 2, 3]);
     this.filter.reject([4, 5, 6]);
     this.filter.acceptAll();
-    expect(this.filter.getRejected().size()).toBe(0);
-    expect(this.filter.getAccepted().size()).toBe(0);
+    expect(this.filter.rejectedCategories.size()).toBe(0);
+    expect(this.filter.acceptedCategories.size()).toBe(0);
   });
 
   describe('reject', function () {
     it('should reject an array or a string as an argument', function () {
-      var rejectedCats = this.filter.getRejected();
+      var rejectedCats = this.filter.rejectedCategories;
       this.filter.reject([1]);
       expect(rejectedCats.size()).toBe(1);
       this.filter.reject(2);
@@ -98,8 +98,8 @@ describe('windshaft/filters/category', function () {
 
     it('should remove value from accepted if it is present when it is rejected', function () {
       this.filter.accept([1, 2]);
-      var acceptedCats = this.filter.getAccepted();
-      var rejectedCats = this.filter.getRejected();
+      var acceptedCats = this.filter.acceptedCategories;
+      var rejectedCats = this.filter.rejectedCategories;
       expect(acceptedCats.size()).toBe(2);
       this.filter.reject(1);
       expect(rejectedCats.size()).toBe(0);
@@ -114,7 +114,7 @@ describe('windshaft/filters/category', function () {
 
     it('should not reject a value if it is already present', function () {
       this.filter.reject(1);
-      var rejectedCats = this.filter.getRejected();
+      var rejectedCats = this.filter.rejectedCategories;
       expect(rejectedCats.size()).toBe(1);
       this.filter.reject(1);
       expect(rejectedCats.size()).toBe(1);
@@ -127,8 +127,8 @@ describe('windshaft/filters/category', function () {
     this.filter.accept([1, 2, 3]);
     this.filter.reject([4]);
     this.filter.rejectAll();
-    expect(this.filter.getRejected().size()).toBe(0);
-    expect(this.filter.getAccepted().size()).toBe(0);
+    expect(this.filter.rejectedCategories.size()).toBe(0);
+    expect(this.filter.acceptedCategories.size()).toBe(0);
     expect(this.filter.get('rejectAll')).toBeTruthy();
     expect(callback).toHaveBeenCalled();
   });

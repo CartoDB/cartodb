@@ -38,7 +38,7 @@ class Admin::UsersController < Admin::AdminController
   end
 
   def account
-    @can_be_deleted, @can_be_deleted_reason = can_be_deleted?(@user)
+    @can_be_deleted, @cant_be_deleted_reason = can_be_deleted?(@user)
     respond_to do |format|
       format.html { render 'account' }
     end

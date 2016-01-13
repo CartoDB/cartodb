@@ -144,11 +144,11 @@
         <div class="js-datasourcesContent"></div>
       <% end %>
 
-      <div class="FormAccount-footer <%= !current_user.organization_owner? ? 'FormAccount-footer--noMarginBottom' : '' %>">
-        <% if @can_be_deleted %>
+      <div class="FormAccount-footer <%= !@can_be_deleted ? 'FormAccount-footer--noMarginBottom' : '' %>">
+        <% if !@can_be_deleted -%>
           <p class="FormAccount-footerText">
             <i class="iconFont iconFont-Info FormAccount-footerIcon"></i>
-            <span>@can_be_deleted_reason</span>
+            <span><%= @cant_be_deleted_reason %></span>
           </p>
         <% else %>
           <p class="FormAccount-footerText"></p>
@@ -159,7 +159,7 @@
         <% end %>
       </div>
 
-      <% if @can_be_deleted %>
+      <% if @can_be_deleted -%>
         <div class="FormAccount-title">
           <p class="FormAccount-titleText">Delete account</p>
         </div>

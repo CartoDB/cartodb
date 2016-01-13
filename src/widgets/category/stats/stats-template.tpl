@@ -1,14 +1,11 @@
 <% if (isSearchEnabled) { %>
-  <dt class="CDB-Widget-infoItem">
     <% if (isSearchApplied) { %>
-      <%- resultsCount %> found
+      <dt class="CDB-Widget-infoCount"><%- resultsCount %></dt><dd class="CDB-Widget-infoDescription">found</dd>
     <% } else { %>
       &nbsp;
     <% } %>
   </dt>
 <% } else { %>
-  <dt class="CDB-Widget-infoItem"><%- nullsPer %>% null rows</dt>
-  <dt class="CDB-Widget-infoItem">
-    <span class="js-cats"><%- catsPer %></span>% of total
-  </dt>
+  <dt class="CDB-Widget-infoCount"><%- nullsPer %></dt><dd class="CDB-Widget-infoDescription">% null rows</dd>
+  <dt class="CDB-Widget-infoCount"><%- catsPer %></dt><dd class="CDB-Widget-infoDescription">% of total</dd>
 <% } %>

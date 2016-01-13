@@ -196,7 +196,7 @@ module CartoDB
         else
           valid_table_names = loader.valid_table_names
           additional_support_tables = loader.additional_support_tables
-          clean_stale_importer_tables(@job.db, @job.schema, valid_table_names)
+          clean_importer_tables(@job.db, @job.schema, valid_table_names)
         end
 
         @job.log "Errored importing data from #{source_file.fullpath}:"

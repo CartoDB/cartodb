@@ -125,7 +125,11 @@ module.exports = WidgetModel.extend({
   },
 
   _onLockedChange: function (m, isLocked) {
-    this.dataviewModel.set('ownFilter', isLocked);
+    if (isLocked) {
+      this.dataviewModel.disableFilter();
+    } else {
+      this.dataviewModel.enableFilter();
+    }
   },
 
   _acceptedCategories: function () {

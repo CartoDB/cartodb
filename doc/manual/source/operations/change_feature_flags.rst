@@ -8,7 +8,7 @@ Enabling a feature for all users
 --------------------------------
 
 Enabling a feature for all users is done with a rake task called ``enable_feature_for_all_users`` and it takes one parameter.
-a
+
 * ``feature_flag_name`` is the name of the feature flag to be enabled. For example: 'special_dashboard'.
 
 This task is executed like:

@@ -112,7 +112,7 @@ class SessionsController < ApplicationController
       render 'shared/signup_issue'
     end
   rescue => e
-    CartoDB.notify_exception(e, new_user: account_creator.nil? ? "account_creator nil" : account_creator.user.inspect)
+    CartoDB.report_exception(e, "Creating LDAP user", new_user: account_creator.nil? ? "account_creator nil" : account_creator.user.inspect)
     flash.now[:error] = e.message
     render action: 'new'
   end

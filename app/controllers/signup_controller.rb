@@ -90,7 +90,7 @@ class SignupController < ApplicationController
       render_500
     end
   rescue => e
-    CartoDB.notify_exception(e, new_user: account_creator.user.inspect)
+    CartoDB.report_exception(e, "Creating user with HTTP authentication", new_user: account_creator.user.inspect)
     flash.now[:error] = e.message
     render_500
   end

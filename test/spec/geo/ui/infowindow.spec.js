@@ -311,7 +311,7 @@ describe('geo/ui/infowindow', function() {
 
     it("should add the image cover class in the custom template", function() {
       spyOn(view, '_loadCoverFromTemplate').and.callThrough();
-      model.set('template', '<div class="js-infowindow has-title has-header-image is-header" data-cover="true"><div class="js-cover" style="height: 123px"><img src="http://fake.url" style="height: 100px"></div><div class="js-hook"></div></div>');
+      model.set('template', '<div class="js-infowindow" data-cover="true"><div class="js-cover" style="height: 123px"><img src="http://fake.url" style="height: 100px"></div><div class="js-hook"></div></div>');
       expect(view._loadCoverFromTemplate).toHaveBeenCalled();
       expect(view._containsCover()).toEqual(true);
       expect(view.$(".CDB-infowindow-media-item").length).toEqual(1);
@@ -361,6 +361,22 @@ describe('geo/ui/infowindow', function() {
       model.set("content", { fields: fieldsWithInvalidURL });
       model.set('template', '<div class="js-infowindow header" data-cover="true"><div class="js-cover"></div></div>');
       expect(view.$el.find(".CDB-infowindow-fail").length).toEqual(1);
+    });
+
+    it("should add header class", function() {
+      model.set('template', '<div class="js-infowindow" data-cover="true"><div class="js-header"></div></div>');
+      expect(view.$el.find(".has-header").length).toEqual(1);
+    });
+
+    it("should add has-header-image class", function() {
+      model.set('template', '<div class="js-infowindow" data-cover="true"><div class="js-cover"></div></div>');
+      expect(view.$el.find(".has-header-image").length).toEqual(1);
+    });
+
+    it("should add has-fields class", function() {
+      model.set("content", { fields: fields });
+      model.set('template', '<div class="js-infowindow"><div class="js-content"></div></div>');
+      expect(view.$el.find(".has-fields").length).toEqual(1);
     });
 
 

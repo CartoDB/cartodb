@@ -154,86 +154,6 @@ describe('geo/ui/infowindow', function() {
     expect(view.$el.html()).toEqual('');
   });
 
-  // describe("loading state", function() {
-  //   var model, view;
-  //
-  //   beforeEach(function() {
-  //
-  //     var container = $('<div>').css('height', '200px');
-  //
-  //     map = new Map();
-  //
-  //     mapView = new MapView({
-  //       el: container,
-  //       map: map
-  //     });
-  //
-  //     model = new InfowindowModel({
-  //       fields: [
-  //         { value: 'Loading content...', index: null, title: null, type: 'loading'}
-  //       ]
-  //     });
-  //
-  //     view = new Infowindow({
-  //       model: model,
-  //       mapView: mapView
-  //     });
-  //
-  //   });
-  //
-  //   it("should show loading state", function() {
-  //     spyOn(view, '_startSpinner');
-  //     model.set({
-  //       'template': 'jaja',
-  //       'content': {
-  //         fields: [
-  //           { value: 'Loading content...', index: null, title: null, type: 'loading'}
-  //         ]
-  //       }
-  //     });
-  //     expect(view._startSpinner).toHaveBeenCalled();
-  //   });
-  //
-  //   it("should hide loading state", function() {
-  //     model.set({
-  //       'template': 'jaja',
-  //       'content': {
-  //         fields: [
-  //           { value: 'Loading content...', index: null, title: null, type: 'loading'}
-  //         ]
-  //       }
-  //     });
-  //
-  //     spyOn(view, '_stopSpinner');
-  //     model.set({
-  //       'template': 'jaja',
-  //       'content': {
-  //         fields: [
-  //           { value: 'Any kind of value', index: 0, title: 'TITLE'}
-  //         ]
-  //       }
-  //     });
-  //     expect(view._stopSpinner).toHaveBeenCalled();
-  //   });
-  //
-  //   it("shouldn't show the loader if there are several fields", function() {
-  //     spyOn(view, '_stopSpinner');
-  //     spyOn(view, '_startSpinner');
-  //     model.set({
-  //       'template': 'jaja',
-  //       'content': {
-  //         fields: [
-  //           { value: 'Loading content...', index: null, title: null, type: 'loading'},
-  //           { value: 'Loading content...', index: null, title: null, type: 'loading'}
-  //         ]
-  //       }
-  //     });
-  //     expect(view._stopSpinner).toHaveBeenCalled();
-  //     expect(view._startSpinner).not.toHaveBeenCalled();
-  //   });
-  // });
-
-
   describe("custom template", function() {
     var model, view;
 
@@ -325,16 +245,20 @@ describe('geo/ui/infowindow', function() {
   });
 
   describe("image template", function() {
-    var model, view, container, fields, fieldsWithoutURL, url;
+    var model, view, container, fields, fieldsWithoutURL, fieldsWithInvalidURL, url;
 
     beforeEach(function() {
 
-      url = "http://assets.javierarce.com/lion.png";
-
       container = $('<div>').css('height', '200px');
+      url = "http://fake.url/image.jpg";
 
       fields = [
-        { title: 'test1', position: 1, value: url },
+        { title: 'test1', position: 1, value: "http://fake.url/image.jpg" },
+        { title: 'test2', position: 2, value: "b"}
+      ];
+
+      fieldsWithInvalidURL = [
+        { title: 'test1', position: 1, value: "invalid_url" },
         { title: 'test2', position: 2, value: "b"}
       ];
 
@@ -386,13 +310,21 @@ describe('geo/ui/infowindow', function() {
     });
 
     it("should add the image cover class in the custom template", function() {
-      model.set('template', '<div class="js-infowindow has-title has-header-image is-header" data-cover="true"><div class="js-cover" style="height: 123px"><img src="//fake" style="height: 100px"></div><div class="js-hook"></div></div>');
+      spyOn(view, '_loadCoverFromTemplate').and.callThrough();
+      model.set('template', '<div class="js-infowindow has-title has-header-image is-header" data-cover="true"><div class="js-cover" style="height: 123px"><img src="http://fake.url" style="height: 100px"></div><div class="js-hook"></div></div>');
+      expect(view._loadCoverFromTemplate).toHaveBeenCalled();
       expect(view._containsCover()).toEqual(true);
       expect(view.$(".CDB-infowindow-media-item").length).toEqual(1);
     });
 
     it("should setup the hook correctly", function() {
-      model.set('template', '<div class="js-infowindow" data-cover="true"><div class="js-cover" style="height: 123px"><img src="//fake" style="height: 100px"></div><div class="js-hook"></div></div>');
+      spyOn(view, '_loadCoverFromUrl').and.callThrough();
+      model.set("content", { fields: fields });
+      model.set('template', '<div class="js-infowindow" data-cover="true"><div class="js-cover"></div><div class="js-hook"></div></div>');
+
+      expect(view._loadCoverFromUrl).toHaveBeenCalled();
+
+      view._onLoadImage();
       expect(view.$(".js-hook svg").length).toEqual(1);
       expect(view.$(".js-hook svg path").attr('d')).toEqual('M0,0 L0,16 L24,0 L0,0 Z');
     });
@@ -402,9 +334,10 @@ describe('geo/ui/infowindow', function() {
       expect(view._containsCover()).toEqual(true);
     });
 
-    it("should render the loader by default", function() {
-      model.set('template', '<div class="js-infowindow"><div class="js-inner"></div></div>');
-      expect(view.$el.find(".js-loader").length).toEqual(1);
+    it("should render the loader for infowindows with cover", function() {
+      model.set("content", { fields: fields });
+      model.set('template', '<div class="js-infowindow" data-cover="true"><div class="js-cover"></div></div>');
+      expect(view.$el.find(".js-cover .js-loader").length).toEqual(1);
     });
 
     it("should append the image", function() {
@@ -424,10 +357,12 @@ describe('geo/ui/infowindow', function() {
       expect(view.$el.find("img").length).toEqual(0);
     });
 
-    it("shouldn append a non-valid error message if the image is not valid", function() {
-      model.set("content", { fields: fieldsWithoutURL });
+    it("should append a non-valid error message if the image is not valid", function() {
+      model.set("content", { fields: fieldsWithInvalidURL });
       model.set('template', '<div class="js-infowindow header" data-cover="true"><div class="js-cover"></div></div>');
       expect(view.$el.find(".CDB-infowindow-fail").length).toEqual(1);
     });
+
+
   });
 });

@@ -118,15 +118,11 @@ var Infowindow = View.extend({
         this.$('.js-content').css('max-height', this.model.get('maxHeight') + 'px');
       }
 
-      this._renderLoader();
-      this._startLoader();
-
       this._loadCover();
 
       if (!this.isLoadingData()) {
         this.model.trigger('domready', this, this.$el);
         this.trigger('domready', this, this.$el);
-        this._stopLoader();
       }
 
       this._renderScroll();
@@ -136,7 +132,7 @@ var Infowindow = View.extend({
   },
 
   _initBinds: function () {
-    _.bindAll(this, '_onKeyUp');
+    _.bindAll(this, '_onKeyUp', '_onLoadImage', '_onLoadImageError');
 
     this.model.bind('change:content change:alternative_names change:width change:maxHeight', this.render, this);
     this.model.bind('change:template_name', this._setTemplate, this);
@@ -164,36 +160,28 @@ var Infowindow = View.extend({
     }
   },
 
-  _renderLoader: function () {
+  _renderCoverLoader: function () {
+    var $loader = $('<div>').addClass('CDB-Loader js-loader');
+
     if (this.$('.js-cover').length > 0) {
-      this.$('.js-cover').append('<div class="CDB-Loader js-loader"></div>');
-    } else {
-      this.$('.js-inner').append('<div class="CDB-Loader js-loader"></div>');
+      this.$('.js-cover').append($loader);
     }
   },
 
-  _startLoader: function () {
+  _startCoverLoader: function () {
     this.$('.js-infowindow').addClass('is-loading');
     this.$('.js-loader').addClass('is-visible');
   },
 
-  _stopLoader: function () {
-    if (this._containsCover() && this._coverLoading) {
-      return;
-    }
+  _stopCoverLoader: function () {
     this.$('.js-infowindow').removeClass('is-loading');
     this.$('.js-loader').removeClass('is-visible');
-  },
-
-  _stopCoverLoader: function () {
-    this._coverLoading = false;
-    this._stopLoader();
   },
 
   _renderScroll: function () {
     if (this.$('.has-scroll').length === 0) return;
 
-    Ps.initialize(this.el.querySelector('.js-content'), {
+    Ps.initialize(this.$('.js-content').get(0), {
       wheelSpeed: 2,
       wheelPropagation: true,
       minScrollbarLength: 20
@@ -316,8 +304,7 @@ var Infowindow = View.extend({
   },
 
   isLoadingData: function () {
-    var content = this.model.get('content');
-    return content.fields && content.fields.length === 1 && content.fields[0].type === 'loading';
+    return this.model.get('loading');
   },
 
   /**
@@ -327,11 +314,17 @@ var Infowindow = View.extend({
     return !!this.$('.js-infowindow').attr('data-cover');
   },
 
-  /**
-   *  Get cover URL
-   */
+  _containsTemplateCover: function () {
+    return this.$('.js-cover img').length > 0;
+  },
+
   _getCoverURL: function () {
     var content = this.model.get('content');
+    var imageSRC = this.$('.js-cover img').attr('src');
+
+    if (imageSRC) {
+      return imageSRC;
+    }
 
     if (content && content.fields && content.fields.length > 0) {
       return (content.fields[0].value || '').toString();
@@ -340,41 +333,95 @@ var Infowindow = View.extend({
     return false;
   },
 
-  _loadImageHook: function (width, height, y, url) {
+  _loadImageHook: function (imageDimensions, coverDimensions, url) {
     var $hook = this.$('.js-hook');
-    var $cover = this.$('.js-cover');
 
-    if ($hook) {
-      var $hookImage = $('<img />').attr('src', url);
-      $hook.append($hookImage);
-
-      var $img = $hook.find('img');
-
-      $img.attr('data-clipPath', 'M0,0 L0,16 L24,0 L0,0 Z');
-      $img.clipPath(width, height, -this.options.hookMargin, y);
-
-      $hookImage.load(function () {
-        $hook.parent().addClass('has-image');
-        $hookImage.css({
-          marginTop: -$cover.height(),
-          width: $cover.width()
-        });
-      });
+    if (!$hook) {
+      return;
     }
+
+    var $hookImage = $('<img />').attr('src', url);
+
+    $hook.append($hookImage);
+
+    $hookImage.attr('data-clipPath', 'M0,0 L0,16 L24,0 L0,0 Z');
+    $hookImage.clipPath(imageDimensions.width, imageDimensions.height, -this.options.hookMargin, imageDimensions.height - this.options.hookHeight);
+
+    $hookImage.load(function () {
+      $hook.parent().addClass('has-image');
+      $hookImage.css({
+        marginTop: -coverDimensions.height,
+        width: coverDimensions.width
+      });
+    });
   },
 
-  /**
-   *  Attempts to load the cover URL and show it
-   */
+  _loadCoverFromTemplate: function (url) {
+    this.$('.js-cover img').remove();
+    this._loadCoverFromUrl(url);
+  },
+
+  _loadCoverFromUrl: function (url) {
+    var $cover = this.$('.js-cover');
+
+    this._startCoverLoader();
+
+    var $img = $("<img class='CDB-infowindow-media-item' />").attr('src', url);
+    $cover.append($img);
+    $img.load(this._onLoadImage).error(this._onLoadImageError);
+  },
+
+  _onLoadImageError: function () {
+    this._stopCoverLoader();
+    this._showInfowindowImageError();
+  },
+
+  _onLoadImage: function () {
+    var $cover = this.$('.js-cover');
+    var $img = this.$('.CDB-infowindow-media-item');
+    var url = $img.attr('src');
+
+    var imageDimensions = { width: $img.width(), height: $img.height() };
+    var coverDimensions = { width: $cover.width(), height: $cover.height() };
+
+    var styles = this._calcImageStyle(imageDimensions, coverDimensions);
+
+    $img.css(styles);
+
+    $cover.css({ height: imageDimensions.height - this.options.hookHeight });
+
+    this._stopCoverLoader();
+
+    $img.fadeIn(150);
+
+    this._loadImageHook(imageDimensions, coverDimensions, url);
+  },
+
+  _calcImageStyle: function (imageDimensions, coverDimensions) {
+    var styles = {};
+
+    var imageRatio = imageDimensions.height / imageDimensions.width;
+    var coverRatio = coverDimensions.height / coverDimensions.width;
+
+    if (imageDimensions.width > coverDimensions.width && imageDimensions.height > coverDimensions.height) {
+      if (imageRatio < coverRatio) {
+        styles = { height: coverDimensions.height };
+      }
+    } else {
+      styles = { width: imageDimensions.width };
+    }
+
+    return styles;
+  },
+
   _loadCover: function () {
     if (!this._containsCover()) {
       return;
     }
 
-    var self = this;
+    this._renderCoverLoader();
+    this._startCoverLoader();
 
-    var $cover = this.$('.js-cover');
-    var $img = $cover.find('img');
     var url = this._getCoverURL();
 
     if (this._isValidURL(url)) {
@@ -384,51 +431,11 @@ var Infowindow = View.extend({
       return;
     }
 
-    if ($img.length > 0) {
-      $img.addClass('CDB-infowindow-media-item');
-      url = $img.attr('src');
-
-      var h = $img.height();
-      var coverHeight = $cover.height();
-      $cover.animate({ height: h - this.options.hookHeight }, 150);
-
-      this._loadImageHook($img.width(), coverHeight, h - this.options.hookHeight, url);
-
-      return false;
+    if (this._containsTemplateCover()) {
+      this._loadCoverFromTemplate(url);
+    } else {
+      this._loadCoverFromUrl(url);
     }
-
-    this._startLoader();
-    this._coverLoading = true;
-
-    $img = $("<img class='CDB-infowindow-media-item' />").attr('src', url);
-
-    $cover.append($img);
-
-    $img.load(function () {
-      var w = $img.width();
-      var h = $img.height();
-
-      var coverWidth = $cover.width();
-      var coverHeight = $cover.height();
-
-      var ratio = h / w;
-
-      var coverRatio = coverHeight / coverWidth;
-
-      var styles = {};
-
-      // Resize rules
-      if (w > coverWidth && h > coverHeight) { // bigger image
-        if (ratio < coverRatio) {
-          styles = { height: coverHeight };
-        }
-      }
-
-      $img.animate(styles, { duration: 300 });
-      $cover.animate({ height: h - self.options.hookHeight }, { duration: 300 });
-      self._stopCoverLoader();
-      self._loadImageHook($img.width(), $img.height(), h - self.options.hookHeight, url);
-    }).error();
   },
 
   _clearInfowindowImageError: function () {
@@ -471,16 +478,23 @@ var Infowindow = View.extend({
     e.stopPropagation();
   },
 
-  /**
-   *  Stop event propagation
-   */
   _stopPropagation: function (ev) {
     ev.stopPropagation();
   },
 
-  /**
-   *  Set loading state adding its content
-   */
+  setLoading: function () {
+    this.model.set({
+      content: {
+        fields: [{
+          type: 'loading',
+          title: 'loading',
+          value: '…'
+        }]
+      }
+    });
+    return this;
+  },
+
   setError: function () {
     this.model.set({
       content: {

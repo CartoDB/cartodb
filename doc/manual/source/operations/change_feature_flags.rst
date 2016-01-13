@@ -147,7 +147,7 @@ And an example to disable the 'special_dashboard' feature for organization 'cart
 Adding a feature flag
 ---------------------
 
-Adding feature flags should be done using the rake task called ``add_feature flag``. This rake task only takes one argument:
+Adding feature flags should be done using the rake task called ``add_feature_flag``. This rake task only takes one argument:
 
 * ``feature_flag_name`` is the name of the feature flag to be created.
 
@@ -155,19 +155,19 @@ This task is executed like:
 
 .. code-block:: bash
 
-  $ bundle exec rake cartodb:features:add_feature flag[<feature_flag_name>]
+  $ bundle exec rake cartodb:features:add_feature_flag[<feature_flag_name>]
 
 And an example to create a feature flag named "special_dashboard" could be:
 
 .. code-block:: bash
 
-  $ bundle exec rake cartodb:features:add_feature flag["special_dashboard"]
+  $ bundle exec rake cartodb:features:add_feature_flag["special_dashboard"]
 
 
 Removing a feature flag
 -----------------------
 
-Removing feature flags should be done using the rake task called ``remove_feature flag``. This rake task only takes one argument:
+Removing feature flags should be done using the rake task called ``remove_feature_flag``. This rake task only takes one argument:
 
 * ``feature_flag_name`` is the name of the feature flag to be removed.
 
@@ -175,13 +175,13 @@ This task is executed like:
 
 .. code-block:: bash
 
-  $ bundle exec rake cartodb:features:remove_feature flag[<feature_flag_name>]
+  $ bundle exec rake cartodb:features:remove_feature_flag[<feature_flag_name>]
 
 And an example to remove a feature flag named "special_dashboard" could be:
 
 .. code-block:: bash
 
-  $ bundle exec rake cartodb:features:remove_feature flag["special_dashboard"]
+  $ bundle exec rake cartodb:features:remove_feature_flag["special_dashboard"]
 
 
 Listing all feature flags

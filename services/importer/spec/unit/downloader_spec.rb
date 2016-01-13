@@ -257,6 +257,14 @@ describe Downloader do
       downloader.send(:name_from, headers, "#{@file_url}?foo=bar&woo=wee")
         .should eq 'ne_110m_lakes.zip'
     end
+
+    it 'matches longer extension available from filename' do
+      headers = {}
+      hard_url = "https://cartofante.net/my_file.xlsx"
+
+      downloader = Downloader.new(hard_url)
+      downloader.send(:name_from, headers, hard_url).should eq 'my_file.xlsx'
+    end
   end #name_from
 
   def stub_download(options)

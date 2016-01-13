@@ -23,7 +23,7 @@
 .CDB-Widget-tooltip:after {
   display: inline-block;
   position: absolute;
-  bottom: $baseSize / 2;
+  bottom: -$baseSize / 2;
   left: 50%;
   margin-left: -7px;
   border-right: $baseSize / 2 solid transparent;

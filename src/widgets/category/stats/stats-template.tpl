@@ -7,5 +7,5 @@
   </dt>
 <% } else { %>
   <dt class="CDB-Widget-infoCount"><%- nullsPer %></dt><dd class="CDB-Widget-infoDescription">% null rows</dd>
-  <dt class="CDB-Widget-infoCount"><%- catsPer %></dt><dd class="CDB-Widget-infoDescription">% of total</dd>
+  <dt class="CDB-Widget-infoCount js-cats"><%- catsPer %></dt><dd class="CDB-Widget-infoDescription">% of total</dd>
 <% } %>

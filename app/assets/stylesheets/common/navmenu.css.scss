@@ -100,12 +100,14 @@
   vertical-align: middle;
 }
 .Navmenu-rarrow {
-  width: 2px;
+  position: relative;
+  top: -1px;
+  width: 3px;
   height: 9px;
   margin-right: 20px;
   margin-left: -20px;
   color: $cNavmenu-arrow;
-  font-size: 9px;
+  font-size: 6px;
 }
 .Navmenu-separator {
   position: absolute;

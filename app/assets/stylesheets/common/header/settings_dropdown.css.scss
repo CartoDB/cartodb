@@ -4,7 +4,7 @@
 @import "../../variables/progress-bar";
 
 .SettingsDropdown {
-  min-width: 220px;
+  min-width: 180px;
 }
 .SettingsDropdown-item {
   margin-top: 15px !important;
@@ -56,6 +56,17 @@
   line-height: $sLineHeight-large;
 }
 .SettingsDropdown-itemLink--public {
-  color: #797f8a;
-  font-size: 14px;
+  display: inline-block;
+  font-weight: normal;
+  font-size: 13px;
+  line-height: 26px;
+  color: #3AA9E3;
+  transition: color .2s ease;
+
+  &:hover {
+    color: #2E3C43;
+  }
+}
+.Dropdown > ul > li.SettingsDropdown-item--public > p {
+  margin-top: 0;
 }

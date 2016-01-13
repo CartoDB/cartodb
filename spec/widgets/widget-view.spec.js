@@ -7,11 +7,11 @@ describe('widgets/widget-view', function () {
   beforeEach(function () {
     this.dataviewModel = new cdb.core.Model();
     this.dataviewModel.layer = new cdb.core.Model();
-    this.model = new WidgetModel({}, {
+    var widgetModel = new WidgetModel({}, {
       dataviewModel: this.dataviewModel
     });
     this.view = new WidgetView({
-      model: this.model,
+      model: widgetModel,
       contentView: new cdb.core.View()
     });
     this.view.render();

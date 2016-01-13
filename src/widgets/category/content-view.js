@@ -31,29 +31,29 @@ module.exports = WidgetContent.extend({
 
   _initViews: function () {
     var searchTitle = new SearchTitleView({
-      viewModel: this.model,
-      dataModel: this._dataviewModel
+      widgetModel: this.model,
+      dataviewModel: this._dataviewModel
     });
     this.$('.js-header').append(searchTitle.render().el);
     this.addView(searchTitle);
 
     var stats = new CategoryStatsView({
-      viewModel: this.model,
-      dataModel: this._dataviewModel
+      widgetModel: this.model,
+      dataviewModel: this._dataviewModel
     });
     this.$('.js-header').append(stats.render().el);
     this.addView(stats);
 
     var options = new CategoryOptionsView({
-      dataModel: this._dataviewModel,
-      viewModel: this.model
+      widgetModel: this.model,
+      dataviewModel: this._dataviewModel
     });
     this.$('.js-content').html(options.render().el);
     this.addView(options);
 
     var dataList = new CategoryItemsView({
-      viewModel: this.model,
-      dataModel: this._dataviewModel,
+      widgetModel: this.model,
+      dataviewModel: this._dataviewModel,
       itemsPerPage: this._ITEMS_PER_PAGE
     });
     this.$('.js-content').append(dataList.render().el);
@@ -61,16 +61,16 @@ module.exports = WidgetContent.extend({
 
     var pagination = new CategoryPaginatorView({
       $target: dataList.$el,
-      viewModel: this.model,
-      dataModel: this._dataviewModel,
+      widgetModel: this.model,
+      dataviewModel: this._dataviewModel,
       itemsPerPage: this._ITEMS_PER_PAGE
     });
     this.$('.js-footer').append(pagination.render().el);
     this.addView(pagination);
 
     var searchList = new SearchCategoryItemsView({
-      viewModel: this.model,
-      dataModel: this._dataviewModel,
+      widgetModel: this.model,
+      dataviewModel: this._dataviewModel,
       itemsPerPage: this._ITEMS_PER_PAGE,
       paginator: true
     });
@@ -79,8 +79,8 @@ module.exports = WidgetContent.extend({
 
     var searchPagination = new SearchCategoryPaginatorView({
       $target: searchList.$el,
-      viewModel: this.model,
-      dataModel: this._dataviewModel,
+      widgetModel: this.model,
+      dataviewModel: this._dataviewModel,
       itemsPerPage: this._ITEMS_PER_PAGE,
       paginator: true
     });

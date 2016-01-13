@@ -23,7 +23,7 @@ module.exports = cdb.core.View.extend({
       throw new Error('target is not defined');
     }
 
-    this.viewModel = new cdb.core.Model({ open: false });
+    this.model = new cdb.core.Model({ open: false });
 
     this._$target = this.options.target;
     this._$container = this.options.container;
@@ -39,9 +39,9 @@ module.exports = cdb.core.View.extend({
   },
 
   _initBinds: function () {
-    this.add_related_model(this.viewModel);
+    this.add_related_model(this.model);
 
-    this.viewModel.bind('change:open', this._onChangeOpen, this);
+    this.model.bind('change:open', this._onChangeOpen, this);
 
     this._$target.click(
       _.bind(this._toggleClick, this)
@@ -66,19 +66,19 @@ module.exports = cdb.core.View.extend({
 
   _onGlobalClick: function (ev) {
     if (this._$target.get(0) !== $(ev.target).closest(this._$target).get(0)) {
-      this.viewModel.set('open', false);
+      this.model.set('open', false);
     }
   },
 
   _onKeyUp: function (ev) {
     if (ev.keyCode === 27) {
-      this.viewModel.set('open', false);
+      this.model.set('open', false);
       return false;
     }
   },
 
   _onChangeOpen: function () {
-    if (this.viewModel.get('open')) {
+    if (this.model.get('open')) {
       this._open();
     } else {
       this._close();
@@ -86,12 +86,12 @@ module.exports = cdb.core.View.extend({
   },
 
   _pin: function () {
-    this.viewModel.set('open', false);
+    this.model.set('open', false);
     this.trigger('click', 'pin');
   },
 
   _toggle: function () {
-    this.viewModel.set('open', false);
+    this.model.set('open', false);
     this.trigger('click', 'toggle');
   },
 
@@ -120,7 +120,7 @@ module.exports = cdb.core.View.extend({
   },
 
   _toggleClick: function () {
-    this.viewModel.set('open', !this.viewModel.get('open'));
+    this.model.set('open', !this.model.get('open'));
   },
 
   clean: function () {

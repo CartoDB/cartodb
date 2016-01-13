@@ -27,16 +27,16 @@ module CartoDB
       @redis = redis
     end
 
-    def incr(service, metric, amount = 1)
+    def incr(service, metric, amount = 1, date = DateTime.current)
       check_valid_data(service, metric, amount)
       return if amount == 0
 
       # TODO We could add EXPIRE command to add TTL to the keys
       if !@orgname.nil?
-        @redis.zincrby("#{org_key_prefix(service, metric)}", amount, "#{current_day}")
+        @redis.zincrby("#{org_key_prefix(service, metric, date)}", amount, "#{date_day(date)}")
       end
 
-      @redis.zincrby("#{user_key_prefix(service, metric)}", amount, "#{current_day}")
+      @redis.zincrby("#{user_key_prefix(service, metric, date)}", amount, "#{date_day(date)}")
     end
 
     private
@@ -47,20 +47,20 @@ module CartoDB
       raise 'invalid amount' if amount < 0
     end
 
-    def user_key_prefix(service, metric)
-      "user:#{@username}:#{service}:#{metric}:#{current_year_month}"
+    def user_key_prefix(service, metric, date)
+      "user:#{@username}:#{service}:#{metric}:#{date_year_month(date)}"
     end
 
-    def org_key_prefix(service, metric)
-      "org:#{@orgname}:#{service}:#{metric}:#{current_year_month}"
+    def org_key_prefix(service, metric, date)
+      "org:#{@orgname}:#{service}:#{metric}:#{date_year_month(date)}"
     end
 
-    def current_day
-      DateTime.current.strftime('%d')
+    def date_day(date)
+      date.strftime('%d')
     end
 
-    def current_year_month
-      DateTime.current.strftime('%Y%m')
+    def date_year_month(date)
+      date.strftime('%Y%m')
     end
 
   end

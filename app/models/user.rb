@@ -784,8 +784,13 @@ class User < Sequel::Model
 
   def get_geocoding_calls(options = {})
     date_from, date_to = quota_dates(options)
-    Geocoding.get_geocoding_calls(self.geocodings_dataset, date_from, date_to)
-  end # get_geocoding_calls
+    Geocoding.get_geocoding_calls(geocodings_dataset, date_from, date_to)
+  end
+
+  def get_not_aggregated_geocoding_calls(options = {})
+    date_from, date_to = quota_dates(options)
+    Geocoding.get_not_aggregated_user_geocoding_calls(geocodings_dataset.db, self.id, date_from, date_to)
+  end
 
   def effective_twitter_block_price
     organization.present? ? organization.twitter_datasource_block_price : self.twitter_datasource_block_price

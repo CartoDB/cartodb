@@ -8,9 +8,9 @@ module.exports = Model.extend({
     url: '',
     data: [],
     columns: [],
-    sync: true,
-    bbox: true,
-    disabled: false
+    syncData: true,
+    syncBoundingBox: true,
+    enabled: true
   },
 
   url: function () {
@@ -52,18 +52,18 @@ module.exports = Model.extend({
 
   _onChangeBinds: function () {
     this.bind('change:url', function () {
-      if (this.get('sync') && !this.isDisabled()) {
+      if (this.get('syncData') && this.get('enabled')) {
         this._fetch();
       }
     }, this);
     this.bind('change:boundingBox', function () {
-      if (this.get('bbox') && !this.isDisabled()) {
+      if (this.get('enabled') && this.get('syncBoundingBox')) {
         this._fetch();
       }
     }, this);
 
-    this.bind('change:disabled', function (mdl, isDisabled) {
-      if (!isDisabled) {
+    this.bind('change:enabled', function (mdl, isEnabled) {
+      if (isEnabled) {
         if (mdl.changedAttributes(this._previousAttrs)) {
           this._fetch();
         }
@@ -88,14 +88,6 @@ module.exports = Model.extend({
 
   refresh: function () {
     this._fetch();
-  },
-
-  isDisabled: function () {
-    return this.get('disabled');
-  },
-
-  setDisabled: function (disabled) {
-    this.set('disabled', !!disabled);
   },
 
   _onFilterChanged: function (filter) {

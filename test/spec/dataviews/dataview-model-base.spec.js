@@ -31,29 +31,29 @@ describe('dataviews/dataview-model-base', function () {
       this.model.set('url', 'newurl');
     });
 
-    it('should not fetch new data when url changes and sync is not enabled', function () {
-      this.model.set('sync', false);
+    it('should not fetch new data when url changes and syncData is disabled', function () {
+      this.model.set('syncData', false);
       spyOn(this.model, 'fetch');
       this.model.trigger('change:url', this.model);
       expect(this.model.fetch).not.toHaveBeenCalled();
     });
 
     it('should not fetch new data when url changes and dataview is disabled', function () {
-      this.model.set('disabled', true);
+      this.model.set('enabled', false);
       spyOn(this.model, 'fetch');
       this.model.trigger('change:url', this.model);
       expect(this.model.fetch).not.toHaveBeenCalled();
     });
 
-    it('should not fetch new data when bbox changes and bbox is not enabled', function () {
-      this.model.set('bbox', false);
+    it('should not fetch new data when bbox changes and bbox is disabled', function () {
+      this.model.set('syncBoundingBox', false);
       spyOn(this.model, 'fetch');
       this.model.trigger('change:boundingBox', this.model);
       expect(this.model.fetch).not.toHaveBeenCalled();
     });
 
     it('should not fetch new data when bbox changes and dataview is disabled', function () {
-      this.model.set('disabled', true);
+      this.model.set('enabled', false);
       spyOn(this.model, 'fetch');
       this.model.trigger('change:boundingBox', this.model);
       expect(this.model.fetch).not.toHaveBeenCalled();
@@ -63,15 +63,15 @@ describe('dataviews/dataview-model-base', function () {
   describe('when disabled', function () {
     it('should fetch again when disabled is disabled and url or boundingBox has changed', function () {
       spyOn(this.model, '_fetch');
-      this.model.set('disabled', true);
+      this.model.set('enabled', false);
       this.model.set('url', 'hello');
-      this.model.set('disabled', false);
+      this.model.set('enabled', true);
       expect(this.model._fetch).toHaveBeenCalled();
     });
 
     it('should not fetch when disabled is enabled', function () {
       spyOn(this.model, '_fetch');
-      this.model.set('disabled', true);
+      this.model.set('enabled', false);
       expect(this.model._fetch).not.toHaveBeenCalled();
     });
   });

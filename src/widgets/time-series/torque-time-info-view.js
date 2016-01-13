@@ -4,14 +4,14 @@ var template = require('./torque-time-info.tpl');
 
 /**
  * View rendering the current step time
- *
- * this.model is expected to be a torque layer model
  */
 module.exports = cdb.core.View.extend({
   className: 'CDB-Widget-timeSeriesTimeInfo',
 
   initialize: function () {
-    this.model.bind('change:step', this.render, this);
+    this._torqueLayerModel = this.options.torqueLayerModel;
+    this._torqueLayerModel.bind('change:step', this.render, this);
+    this.add_related_model(this._torqueLayerModel);
 
     // for format rules see https://github.com/mbostock/d3/wiki/Time-Formatting
     this._timeFormatter = d3.time.format('%H:%M');
@@ -19,7 +19,7 @@ module.exports = cdb.core.View.extend({
   },
 
   render: function () {
-    var date = this.model.get('time');
+    var date = this._torqueLayerModel.get('time');
 
     this.$el.html(
       isNaN(date && date.getTime())

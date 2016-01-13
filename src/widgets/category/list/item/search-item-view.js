@@ -17,7 +17,7 @@ module.exports = cdb.core.View.extend({
     // This data model comes from the original data in order to get
     // the max value and set properly the progress bar and add the
     // necessary suffix and prefix for the item.
-    this.dataModel = this.options.dataModel;
+    this.dataviewModel = this.options.dataviewModel;
     this._initBinds();
   },
 
@@ -29,10 +29,10 @@ module.exports = cdb.core.View.extend({
         name: this.model.get('name'),
         value: value,
         formattedValue: formatter.formatNumber(value),
-        percentage: ((value / this.dataModel.get('max')) * 100),
+        percentage: ((value / this.dataviewModel.get('max')) * 100),
         isDisabled: !this.model.get('selected'),
-        prefix: this.dataModel.get('prefix'),
-        suffix: this.dataModel.get('suffix')
+        prefix: this.dataviewModel.get('prefix'),
+        suffix: this.dataviewModel.get('suffix')
       })
     );
 

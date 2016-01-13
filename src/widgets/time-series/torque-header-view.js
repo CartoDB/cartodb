@@ -9,6 +9,7 @@ var TorqueResetRenderRangeView = require('./torque-reset-render-range-view');
  */
 module.exports = cdb.core.View.extend({
   initialize: function () {
+    this._dataviewModel = this.options.dataviewModel;
     this._torqueLayerModel = this.options.torqueLayerModel;
     this._torqueLayerModel.bind('change:renderRange', this._onRenderRangeChange, this);
     this.add_related_model(this._torqueLayerModel);
@@ -23,25 +24,25 @@ module.exports = cdb.core.View.extend({
       this.el.classList.add('CDB-Widget-contentSpaced');
       this._appendView(
         new TorqueRenderRangeInfoView({
-          model: this.model,
+          dataviewModel: this.dataviewModel,
           torqueLayerModel: this._torqueLayerModel
         })
       );
       this._appendView(
         new TorqueResetRenderRangeView({
-          model: this._torqueLayerModel
+          torqueLayerModel: this._torqueLayerModel
         })
       );
     } else {
       this.el.classList.remove('CDB-Widget-contentSpaced');
       this._appendView(
         new TorqueControlsView({
-          model: this._torqueLayerModel
+          torqueLayerModel: this._torqueLayerModel
         })
       );
       this._appendView(
         new TorqueTimeInfoView({
-          model: this._torqueLayerModel
+          torqueLayerModel: this._torqueLayerModel
         })
       );
     }

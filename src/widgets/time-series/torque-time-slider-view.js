@@ -11,13 +11,14 @@ module.exports = cdb.core.View.extend({
   },
 
   initialize: function () {
-    if (!this.options.model) throw new Error('model is required');
     if (!this.options.chartView) throw new Error('chartView is required');
     if (!this.options.torqueLayerModel) throw new Error('torqeLayerModel is required');
 
+    this.model = new cdb.core.Model();
+
+    this._dataviewModel = this.options.dataviewModel;
     this._chartView = this.options.chartView;
     this._torqueLayerModel = this.options.torqueLayerModel;
-    this.viewModel = new cdb.core.Model();
 
     this._torqueLayerModel.bind('change:step', this._onChangeStep, this);
     this._torqueLayerModel.bind('change:steps', this._onChangeSteps, this);
@@ -68,7 +69,7 @@ module.exports = cdb.core.View.extend({
     if (isRunning) {
       this._torqueLayerModel.pause();
     }
-    this.viewModel.set({
+    this.model.set({
       isDragging: true,
       wasRunning: isRunning
     });
@@ -86,8 +87,8 @@ module.exports = cdb.core.View.extend({
   },
 
   _onDragEnd: function () {
-    this.viewModel.set('isDragging', false);
-    if (this.viewModel.get('wasRunning')) {
+    this.model.set('isDragging', false);
+    if (this.model.get('wasRunning')) {
       this._torqueLayerModel.play();
     }
   },
@@ -102,7 +103,7 @@ module.exports = cdb.core.View.extend({
 
   _onChangeStep: function () {
     // Time slider might not be created when this method is first called
-    if (this.timeSlider && !this.viewModel.get('isDragging')) {
+    if (this.timeSlider && !this.model.get('isDragging')) {
       var data = this.timeSlider.data();
       var newX = this._xScale(this._torqueLayerModel.get('step'));
       if (!isNaN(newX)) {
@@ -122,7 +123,7 @@ module.exports = cdb.core.View.extend({
 
   _onStepsRange: function () {
     var r = this._torqueLayerModel.get('stepsRange');
-    if (r.start === 0 && r.end === this.model.get('bins')) {
+    if (r.start === 0 && r.end === this._dataviewModel.get('bins')) {
       this._chartView.removeSelection();
     } else {
       this._chartView.selectRange(r.start, r.end);

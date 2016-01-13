@@ -13,14 +13,16 @@ module.exports = cdb.core.View.extend({
   },
 
   initialize: function () {
-    this.model.bind('change:isRunning', this.render, this);
+    this._torqueLayerModel = this.options.torqueLayerModel;
+    this._torqueLayerModel.bind('change:isRunning', this.render, this);
+    this.add_related_model(this._torqueLayerModel);
   },
 
   render: function () {
     this.$el.html(
       template({
         iconClass: 'CDB-Widget-controlButtonIcon CDB-Widget-controlButtonIcon--' + (
-          this.model.get('isRunning')
+          this._torqueLayerModel.get('isRunning')
             ? 'pause'
             : 'play')
       })
@@ -30,10 +32,10 @@ module.exports = cdb.core.View.extend({
   },
 
   _onClick: function () {
-    if (this.model.get('isRunning')) {
-      this.model.pause();
+    if (this._torqueLayerModel.get('isRunning')) {
+      this._torqueLayerModel.pause();
     } else {
-      this.model.play();
+      this._torqueLayerModel.play();
     }
   }
 });

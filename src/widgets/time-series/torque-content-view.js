@@ -31,13 +31,13 @@ module.exports = WidgetContentView.extend({
       this._appendView(
         new TorqueHeaderView({
           el: this.$('.js-header'),
-          model: this._dataviewModel,
+          dataviewModel: this._dataviewModel,
           torqueLayerModel: torqueLayerModel
         })
       );
 
       var view = new TorqueHistogramView({
-        model: this._dataviewModel,
+        dataviewModel: this._dataviewModel,
         rangeFilter: this._dataviewModel.filter,
         torqueLayerModel: torqueLayerModel
       });

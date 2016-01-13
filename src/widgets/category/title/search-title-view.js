@@ -22,8 +22,8 @@ module.exports = cdb.core.View.extend({
   },
 
   initialize: function () {
-    this.viewModel = this.options.viewModel;
-    this.dataModel = this.options.dataModel;
+    this.widgetModel = this.options.widgetModel;
+    this.dataviewModel = this.options.dataviewModel;
     this._initBinds();
   },
 
@@ -31,15 +31,15 @@ module.exports = cdb.core.View.extend({
     this.clearSubViews();
     this.$el.html(
       template({
-        isCollapsed: this.viewModel.isCollapsed(),
-        isColorApplied: this.viewModel.isColorApplied(),
-        title: this.viewModel.get('title'),
-        columnName: this.dataModel.get('column'),
-        q: this.dataModel.getSearchQuery(),
-        isLocked: this.viewModel.isLocked(),
-        canBeLocked: this.viewModel.canBeLocked(),
-        isSearchEnabled: this.viewModel.isSearchEnabled(),
-        canShowApply: this.viewModel.canApplyLocked()
+        isCollapsed: this.widgetModel.isCollapsed(),
+        isColorApplied: this.widgetModel.isColorApplied(),
+        title: this.widgetModel.get('title'),
+        columnName: this.dataviewModel.get('column'),
+        q: this.dataviewModel.getSearchQuery(),
+        isLocked: this.widgetModel.isLocked(),
+        canBeLocked: this.widgetModel.canBeLocked(),
+        isSearchEnabled: this.widgetModel.isSearchEnabled(),
+        canShowApply: this.widgetModel.canApplyLocked()
       })
     );
     this._initViews();
@@ -47,13 +47,13 @@ module.exports = cdb.core.View.extend({
   },
 
   _initBinds: function () {
-    this.viewModel.bind('change:search', this._onSearchToggled, this);
-    this.viewModel.bind('change:collapsed change:isColorsApplied', this.render, this);
-    this.viewModel.lockedCategories.bind('change add remove', this.render, this);
-    this.dataModel.bind('change:filter', this.render, this);
-    this.add_related_model(this.dataModel);
-    this.add_related_model(this.viewModel);
-    this.add_related_model(this.viewModel.lockedCategories);
+    this.widgetModel.bind('change:search', this._onSearchToggled, this);
+    this.widgetModel.bind('change:collapsed change:isColorsApplied', this.render, this);
+    this.widgetModel.lockedCategories.bind('change add remove', this.render, this);
+    this.dataviewModel.bind('change:filter', this.render, this);
+    this.add_related_model(this.dataviewModel);
+    this.add_related_model(this.widgetModel);
+    this.add_related_model(this.widgetModel.lockedCategories);
   },
 
   _initViews: function () {
@@ -64,7 +64,7 @@ module.exports = cdb.core.View.extend({
 
     dropdown.bind('click', function (action) {
       if (action === 'toggle') {
-        this.viewModel.toggleCollapsed();
+        this.widgetModel.toggleCollapsed();
       }
     }, this);
 
@@ -78,7 +78,7 @@ module.exports = cdb.core.View.extend({
   },
 
   _onSearchToggled: function () {
-    var isSearchEnabled = this.viewModel.isSearchEnabled();
+    var isSearchEnabled = this.widgetModel.isSearchEnabled();
     this[isSearchEnabled ? '_bindESC' : '_unbindESC']();
     this.render();
     if (isSearchEnabled) {
@@ -91,10 +91,10 @@ module.exports = cdb.core.View.extend({
       ev.preventDefault();
     }
     var q = this.$('.js-textInput').val();
-    if (this.dataModel.getSearchQuery() !== q) {
-      this.dataModel.setSearchQuery(q);
-      if (this.dataModel.isSearchValid()) {
-        this.dataModel.applySearch();
+    if (this.dataviewModel.getSearchQuery() !== q) {
+      this.dataviewModel.setSearchQuery(q);
+      if (this.dataviewModel.isSearchValid()) {
+        this.dataviewModel.applySearch();
       }
     }
   },
@@ -131,21 +131,21 @@ module.exports = cdb.core.View.extend({
   },
 
   _applyLocked: function () {
-    this.viewModel.toggleSearch();
-    this.viewModel.applyLocked();
+    this.widgetModel.toggleSearch();
+    this.widgetModel.applyLocked();
   },
 
   _applyColors: function () {
-    this.viewModel.applyColors();
+    this.widgetModel.applyColors();
   },
 
   _cancelColors: function () {
-    this.viewModel.cancelColors();
+    this.widgetModel.cancelColors();
   },
 
   _cancelSearch: function () {
-    this.viewModel.cleanSearch();
-    this.viewModel.disableSearch();
+    this.widgetModel.cleanSearch();
+    this.widgetModel.disableSearch();
   },
 
   clean: function () {

@@ -12,7 +12,7 @@ module.exports = CategoryItemsView.extend({
   initialize: function () {
     CategoryItemsView.prototype.initialize.apply(this, arguments);
 
-    this._searchResultsCollection = this.dataModel.getSearchResult();
+    this._searchResultsCollection = this.dataviewModel.getSearchResult();
     this._searchResultsCollection.on('change:selected', this._onSelectedItemChange, this);
     this.add_related_model(this._searchResultsCollection);
   },
@@ -55,7 +55,7 @@ module.exports = CategoryItemsView.extend({
 
     this.$el.html(
       placeholder({
-        q: this.dataModel.getSearchQuery()
+        q: this.dataviewModel.getSearchQuery()
       })
     );
   },
@@ -63,18 +63,18 @@ module.exports = CategoryItemsView.extend({
   _addItem: function (mdl, $parent) {
     var v = new WidgetSearchCategoryItemView({
       model: mdl,
-      dataModel: this.dataModel
+      dataviewModel: this.dataviewModel
     });
     this.addView(v);
     $parent.append(v.render().el);
   },
 
   toggle: function () {
-    this[this.viewModel.isSearchEnabled() ? 'show' : 'hide']();
+    this[this.widgetModel.isSearchEnabled() ? 'show' : 'hide']();
   },
 
   _onSelectedItemChange: function (m, isSelected) {
-    this.viewModel.lockedCategories[isSelected ? 'addItem' : 'removeItem'](m);
+    this.widgetModel.lockedCategories[isSelected ? 'addItem' : 'removeItem'](m);
   }
 
 });

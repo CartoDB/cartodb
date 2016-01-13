@@ -32,8 +32,7 @@ module.exports = cdb.core.View.extend({
         type: 'histogram',
         createContentView: function (widgetModel) {
           return new HistogramContentView({
-            dataModel: widgetModel.dataviewModel,
-            viewModel: widgetModel
+            model: widgetModel
           });
         }
       }, {

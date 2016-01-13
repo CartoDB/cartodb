@@ -1,7 +1,7 @@
 var _ = require('underscore');
 var d3 = require('d3');
 var formatter = require('../../formatter');
-var WidgetContent = require('../standard/widget-content-view');
+var WidgetContentView = require('../standard/widget-content-view');
 var template = require('./template.tpl');
 var DropdownView = require('../dropdown/widget-dropdown-view');
 var animationTemplate = require('./animation-template.tpl');
@@ -10,15 +10,11 @@ var AnimateValues = require('../animate-values.js');
 /**
  * Default widget content view:
  */
-module.exports = WidgetContent.extend({
-  initialize: function () {
-    this.dataModel = this.model.dataviewModel;
-    WidgetContent.prototype.initialize.call(this);
-  },
+module.exports = WidgetContentView.extend({
 
   render: function () {
     this.clearSubViews();
-    var value = this.dataModel.get('data');
+    var value = this._dataviewModel.get('data');
 
     var format = function (value) {
       var formatter = d3.format('0,000');
@@ -29,16 +25,16 @@ module.exports = WidgetContent.extend({
       return 0;
     };
 
-    var nulls = !_.isUndefined(this.dataModel.get('nulls')) && formatter.formatNumber(this.dataModel.get('nulls')) || '-';
+    var nulls = !_.isUndefined(this._dataviewModel.get('nulls')) && formatter.formatNumber(this._dataviewModel.get('nulls')) || '-';
     var isCollapsed = this.model.isCollapsed();
 
-    var prefix = this.dataModel.get('prefix');
-    var suffix = this.dataModel.get('suffix');
+    var prefix = this._dataviewModel.get('prefix');
+    var suffix = this._dataviewModel.get('suffix');
 
     this.$el.html(
       template({
         title: this.model.get('title'),
-        operation: this.dataModel.get('operation'),
+        operation: this._dataviewModel.get('operation'),
         value: value,
         formatedValue: format(value),
         nulls: nulls,
@@ -52,7 +48,7 @@ module.exports = WidgetContent.extend({
       el: this.$el
     });
 
-    animator.animateValue(this.dataModel, 'data', '.js-value', animationTemplate, { animationSpeed: 700, formatter: format, templateData: { prefix: prefix, suffix: suffix } });
+    animator.animateValue(this._dataviewModel, 'data', '.js-value', animationTemplate, { animationSpeed: 700, formatter: format, templateData: { prefix: prefix, suffix: suffix } });
 
     this.$el.toggleClass('is-collapsed', !!isCollapsed);
 
@@ -63,7 +59,7 @@ module.exports = WidgetContent.extend({
 
   _initBinds: function () {
     this.model.bind('change:collapsed', this.render, this);
-    WidgetContent.prototype._initBinds.call(this);
+    WidgetContentView.prototype._initBinds.call(this);
   },
 
   _initViews: function () {

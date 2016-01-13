@@ -3,12 +3,15 @@ var template = require('./torque-reset-render-range.tpl');
 
 /**
  * View to reset render range.
- * this.model is expected to be a torqueLayer model
  */
 module.exports = cdb.core.View.extend({
   className: 'CDB-Widget-filterButtons',
   events: {
     'click .js-clear': '_onClick'
+  },
+
+  initialize: function () {
+    this._torqueLayerModel = this.options.torqueLayerModel;
   },
 
   render: function () {
@@ -17,6 +20,6 @@ module.exports = cdb.core.View.extend({
   },
 
   _onClick: function () {
-    this.model.resetRenderRange();
+    this._torqueLayerModel.resetRenderRange();
   }
 });

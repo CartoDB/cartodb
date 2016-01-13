@@ -7,7 +7,7 @@ module.exports = function(grunt) {
   grunt.initConfig({
     config: {
       dist: 'dist',
-      tmp: '.tmp',
+      tmp: '.tmp'
     },
     pkg: grunt.file.readJSON('package.json'),
     browserify: require('./grunt-tasks/browserify'),
@@ -54,7 +54,7 @@ module.exports = function(grunt) {
     'concat',
     'cssmin',
     'imagemin',
-    'browserify',
+    'browserify'
   ];
 
   grunt.registerTask('default', ['build']);

@@ -196,6 +196,7 @@ module CartoDB
         else
           valid_table_names = loader.valid_table_names
           additional_support_tables = loader.additional_support_tables
+          clean_stale_importer_tables(@job.db, @job.schema, valid_table_names)
         end
 
         @job.log "Errored importing data from #{source_file.fullpath}:"
@@ -388,6 +389,16 @@ module CartoDB
                                                                user: user,
                                                                db: db
                                                              })
+      end
+
+      # This function cleans any stale cdb_importer.importer_* table
+      # related with the running process which should be discarded
+      def clean_stale_importer_tables(database, schema, table_names)
+        table_names.each do |table|
+          database.execute(%Q{
+            DROP TABLE IF EXISTS "#{schema}"."#{table}"
+         })
+        end
       end
 
       def add_warning(warning)

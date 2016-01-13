@@ -395,6 +395,7 @@ module CartoDB
       # related with the running process which should be discarded
       def clean_importer_tables(database, schema, table_names)
         table_names.each do |table|
+          CartoDB.notify_debug('Dropping cdb_importer table', { schema: schema, table: table, database: database })
           database.execute(%Q{
             DROP TABLE IF EXISTS "#{schema}"."#{table}"
          })

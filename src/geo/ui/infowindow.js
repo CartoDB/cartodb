@@ -161,7 +161,7 @@ var Infowindow = View.extend({
   },
 
   _renderCoverLoader: function () {
-    var $loader = $('<div class="CDB-Loader js-loader"></div>');
+    var $loader = $('<div>').addClass('CDB-Loader js-loader');
 
     if (this.$('.js-cover').length > 0) {
       this.$('.js-cover').append($loader);

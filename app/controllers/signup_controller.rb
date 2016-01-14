@@ -19,7 +19,7 @@ class SignupController < ApplicationController
   end
 
   def create
-    account_creator = CartoDB::UserAccountCreator.new.
+    account_creator = CartoDB::UserAccountCreator.new(Carto::UserCreation::CREATED_VIA_ORG_SIGNUP).
                       with_organization(@organization).
                       with_invitation_token(params[:invitation_token])
 

@@ -129,6 +129,7 @@ describe SignupController do
       last_user_creation.organization_id.should == @organization.id
       last_user_creation.quota_in_bytes.should == @organization.default_quota_in_bytes
       last_user_creation.requires_validation_email?.should == true
+      last_user_creation.created_via.should == Carto::UserCreation::CREATED_VIA_ORG_SIGNUP
     end
 
     it 'Returns 422 for not whitelisted domains' do

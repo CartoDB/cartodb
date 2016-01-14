@@ -1,17 +1,30 @@
 # encoding: UTF-8
 
 class Carto::UserCreation < ActiveRecord::Base
+  def self.columns
+    super.reject { |c| c.name == "created_via_api" }
+  end
+
+  CREATED_VIA_LDAP = 'ldap'
+  CREATED_VIA_ORG_SIGNUP = 'org_signup'
+  CREATED_VIA_API = 'api'
+  CREATED_VIA_HTTP_AUTENTICATION = 'http_authentication'
+
+  VALID_CREATED_VIA = [CREATED_VIA_LDAP, CREATED_VIA_ORG_SIGNUP, CREATED_VIA_API, CREATED_VIA_HTTP_AUTENTICATION]
+
+  scope :http_authentication, where(created_via: CREATED_VIA_HTTP_AUTENTICATION)
 
   belongs_to :log, class_name: Carto::Log
   belongs_to :user, class_name: Carto::User
 
   after_create :use_invitation
 
-  def self.new_user_signup(user)
+  def self.new_user_signup(user, created_via = CREATED_VIA_ORG_SIGNUP)
     # Normal validation breaks state_machine method generation
     raise 'User needs an organization' unless user.organization
     raise 'User needs username' unless user.username
     raise 'User needs email' unless user.email
+    raise "Not valid #{created_via}: #{VALID_CREATED_VIA.join(', ')}" unless VALID_CREATED_VIA.include?(created_via)
 
     user_creation = Carto::UserCreation.new
     user_creation.username = user.username
@@ -23,6 +36,7 @@ class Carto::UserCreation < ActiveRecord::Base
     user_creation.soft_geocoding_limit = user.soft_geocoding_limit
     user_creation.google_sign_in = user.google_sign_in
     user_creation.log = Carto::Log.new_user_creation
+    user_creation.created_via = created_via
 
     user_creation
   end
@@ -85,7 +99,11 @@ class Carto::UserCreation < ActiveRecord::Base
 
   # TODO: Shorcut, search for a better solution to detect requirement
   def requires_validation_email?
-    google_sign_in != true && !has_valid_invitation? && !Carto::Ldap::Manager.new.configuration_present? && !created_via_api?
+    google_sign_in != true &&
+      !has_valid_invitation? &&
+      !Carto::Ldap::Manager.new.configuration_present? &&
+      !created_via_api? &&
+      !created_via_http_authentication?
   end
 
   def autologin?
@@ -101,13 +119,12 @@ class Carto::UserCreation < ActiveRecord::Base
     self
   end
 
-  def with_api
-    self.created_via_api = true
-    self
+  def created_via_api?
+    created_via == CREATED_VIA_API
   end
 
-  def created_via_api?
-    self.created_via_api
+  def created_via_http_authentication?
+    created_via == CREATED_VIA_HTTP_AUTENTICATION
   end
 
   def has_valid_invitation?

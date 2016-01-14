@@ -47,8 +47,8 @@
   text-align: center;
 }
 .Footer-columns {
-  border-top: 1px solid #EEE;
   padding-bottom: 60px;
+  border-top: 1px solid #EEE;
 }
 .Footer-columns--noBorder {
   border-top: 0;
@@ -58,16 +58,16 @@
 }
 .Footer-columnTitle {
   margin-bottom: 12px;
-  font-weight: 600;
-  font-size: 12px;
-  text-transform: uppercase;
   color: #2E3C43;
+  font-size: 12px;
+  font-weight: 600;
   letter-spacing: 1px;
+  text-transform: uppercase;
 }
 .Footer-link {
   line-height: 28px;
   color: #979EA1;
-  transition: color .2s ease;
+  transition: color 0.2s ease;
 
   &:hover {
     color: #2E3C43;
@@ -85,8 +85,8 @@
   color: #979EA1;
 }
 .Footer-title {
-  font-weight: 600;
   color: #2E3C43;
+  font-weight: 600;
 }
 .Colophon {
   padding-top: 13px;
@@ -105,7 +105,7 @@
   width: 85%;
 
   .hs-form {
-    margin-right:0;
+    margin-right: 0;
     padding-left: 0;
 
     .input {
@@ -114,8 +114,8 @@
     }
 
     .hs-input {
-      border-radius: 23px;
       padding: 12px 80px 11px 16px;
+      border-radius: 23px;
     }
   }
 }
@@ -128,7 +128,7 @@
   border: 0;
   font: 400 12px Lato, sans-serif;
   text-transform: uppercase;
-  background: #fff;
+  background: #FFF;
   color: #3AA9E3;
   border-radius: 21px;
   transition: all .15s;
@@ -137,7 +137,7 @@
 
   &:hover {
     background: darken(#3AA9E3, 5%);
-    color: #fff;
+    color: #FFF;
   }
 }
 

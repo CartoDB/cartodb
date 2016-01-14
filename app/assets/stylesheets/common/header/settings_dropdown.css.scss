@@ -57,11 +57,11 @@
 }
 .SettingsDropdown-itemLink--public {
   display: inline-block;
-  font-weight: normal;
-  font-size: 13px;
-  line-height: 26px;
+  transition: color 0.2s ease;
   color: #3AA9E3;
-  transition: color .2s ease;
+  font-size: 13px;
+  font-weight: normal;
+  line-height: 26px;
 
   &:hover {
     color: #2E3C43;

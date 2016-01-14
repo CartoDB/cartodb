@@ -5,7 +5,9 @@ var StatsView = require('../../../src/widgets/category/stats/stats-view');
 describe('widgets/category/stats-view', function () {
   beforeEach(function () {
     var vis = cdb.createVis(document.createElement('div'), {
-      layers: [{type: 'torque'}]
+      layers: [{
+        type: 'torque'
+      }]
     });
     this.dataviewModel = vis.dataviews.createCategoryDataview(vis.map.layers.first(), {});
     this.widgetModel = new CategoryWidgetModel({}, {
@@ -20,7 +22,7 @@ describe('widgets/category/stats-view', function () {
   describe('render', function () {
     it('should render properly data stats', function () {
       this.view.render();
-      expect(this.view.$('.CDB-Widget-infoItem').length).toBe(2);
+      expect(this.view.$('.CDB-Widget-infoCount').length).toBe(2);
     });
 
     it('should say "of total" words when it is rendered', function () {
@@ -30,7 +32,7 @@ describe('widgets/category/stats-view', function () {
         { name: 'Other', agg: true, value: 1 }
       ]);
       this.view.render();
-      expect(this.view.$('.CDB-Widget-infoItem:eq(1)').text()).toContain('% of total');
+      expect(this.view.$('.CDB-Widget-infoDescription:eq(1)').text()).toContain('of total');
     });
 
     describe('search', function () {
@@ -39,16 +41,16 @@ describe('widgets/category/stats-view', function () {
         spyOn(this.dataviewModel, 'isSearchApplied').and.returnValue(true);
         spyOn(this.dataviewModel, 'getSearchCount').and.returnValue(10);
         this.view.render();
-        expect(this.view.$('.CDB-Widget-infoItem').length).toBe(1);
-        expect(this.view.$('.CDB-Widget-infoItem').text()).toContain('10 found');
+        expect(this.view.$('.CDB-Widget-infoCount').length).toBe(1);
+        var totalString = this.view.$('.CDB-Widget-infoCount').text() + ' ' + this.view.$('.CDB-Widget-infoDescription').text();
+        expect(totalString).toContain('10 found');
       });
 
       it('should nothing when search is enabled but not applied', function () {
         spyOn(this.widgetModel, 'isSearchEnabled').and.returnValue(true);
         spyOn(this.dataviewModel, 'isSearchApplied').and.returnValue(false);
         this.view.render();
-        expect(this.view.$('.CDB-Widget-infoItem').length).toBe(1);
-        expect(this.view.$('.CDB-Widget-infoItem').text()).not.toContain('found');
+        expect(this.view.$('.CDB-Widget-infoCount').length).toBe(0);
       });
     });
   });

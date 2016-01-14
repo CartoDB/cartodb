@@ -2,8 +2,8 @@
   <div class="CDB-Widget-title CDB-Widget-contentSpaced">
     <h3 class="CDB-Widget-textBig" title="<%- title %>"><%- title %></h3>
   </div>
-  <dl class="CDB-Widget-info">
-    <dt class="CDB-Widget-infoItem CDB-Widget-textSmaller CDB-Widget-textSmaller--upper"><%- itemsCount %> rows</dt>
+  <dl class="CDB-Widget-info CDB-Widget-textSmaller CDB-Widget-textSmaller--upper">
+    <dt><%- itemsCount %></dt><dd class="CDB-Widget-info">rows</dd>
   </dl>
 </div>
 <div class="CDB-Widget-content CDB-Widget-content--noSidesMargin">

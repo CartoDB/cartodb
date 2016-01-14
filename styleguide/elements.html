@@ -1,0 +1,394 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>CartoDB.js styleguide</title>
+    <link href='http://fonts.googleapis.com/css?family=Lato:300,400,700' rel='stylesheet' type='text/css'>
+    <link href='styleguide.css' rel='stylesheet' type='text/css'>
+    <link href='../vendor/themes/css/cartodb.css' rel='stylesheet' type='text/css'>
+    <link href='../dist/themes/css/deep-insights.css' rel='stylesheet' type='text/css'>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://cdn.rawgit.com/zenorocha/clipboard.js/master/dist/clipboard.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/0.0.1/prism.min.js"></script>
+    <script src="styleguide.js"></script>
+  </head>
+  <body>
+
+    <div class="container start">
+      <div class="HeaderFixed">
+        <div class="container u-txt-center clearfix u-valign">
+          <h1 class="u-left"><strong>CartoDB</strong>Style</h1>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <section>
+        <div class="clearfix">
+          <h2>CDB-Widgets</h2>
+          <div class="block clearfix u-tspace-xl">
+
+            <div class="u-tspace-xl">
+              <div class="CDB-Widget CDB-Widget--light CDB-Widget--timeSeries">
+                <div class="CDB-Widget-body CDB-Widget-body--timeSeries">
+                  <div class="CDB-Widget-header CDB-Widget-header--timeSeries">
+                    <button class="CDB-Widget-controlButton">
+                      <div class="CDB-Widget-controlButtonContent">
+                        <i class="CDB-Widget-controlButtonIcon CDB-Widget-controlButtonIcon--play"></i>
+                      </div>
+                    </button>
+                    <button class="CDB-Widget-controlButton">
+                      <div class="CDB-Widget-controlButtonContent">
+                        <i class="CDB-Widget-controlButtonIcon CDB-Widget-controlButtonIcon--pause"></i>
+                      </div>
+                    </button>
+                    <div class="CDB-Widget-timeSeriesTimeInfo">
+                      <p class="CDB-Widget-textBig">10:19</p>
+                      <p class="CDB-Widget-textBig CDB-Widget-text--secondary">02/26/2015</p>
+                    </div>
+                  </div>
+                  <div class="CDB-Widget-content CDB-Widget-content--timeSeries">
+                    <div class="CDB-Widget-timeSeriesFakeChart">
+                      <div class="CDB-Widget-timeSeriesFakeChartItem" style="height: 90%"></div>
+                      <div class="CDB-Widget-timeSeriesFakeChartItem" style="height: 60%"></div>
+                      <div class="CDB-Widget-timeSeriesFakeChartItem" style="height: 30%"></div>
+                      <div class="CDB-Widget-timeSeriesFakeChartItem" style="height: 45%"></div>
+                      <div class="CDB-Widget-timeSeriesFakeChartItem" style="height: 90%"></div>
+                      <div class="CDB-Widget-timeSeriesFakeChartItem" style="height: 60%"></div>
+                      <div class="CDB-Widget-timeSeriesFakeChartItem" style="height: 30%"></div>
+                      <div class="CDB-Widget-timeSeriesFakeChartItem" style="height: 45%"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="CDB-Widget CDB-Widget--light u-tspace-xl">
+              <div class="CDB-Widget-header">
+                <h3 class="CDB-Widget-title CDB-Widget-textBig">Transactions by visitors NBA stadium arenas big ones</h3>
+                <dl class="CDB-Widget-info CDB-Widget-textSmaller CDB-Widget-textSmaller--upper">
+                  <dt class="CDB-Widget-infoCount">0</dt><dd class="CDB-Widget-infoDescription">null rows</dd>
+                  <dt class="CDB-Widget-infoCount">17k</dt><dd class="CDB-Widget-infoDescription">min</dd>
+                  <dt class="CDB-Widget-infoCount">142k</dt><dd class="CDB-Widget-infoDescription">avg</dd>
+                  <dt class="CDB-Widget-infoCount">1.13m</dt><dd class="CDB-Widget-infoDescription">max</dd>
+                </dl>
+              </div>
+              <div class="CDB-Widget-content CDB-Widget-content--noSidesMargin">
+                <div class="CDB-Widget-listWrapper">
+                  <ul class="CDB-Widget-list">
+                    <li class="CDB-Widget-listItem">
+                      <button type="button" class="CDB-Widget-listItemInner CDB-Widget-listButton">
+                        <div class="CDB-Widget-contentSpaced">
+                          <p class="CDB-Widget-textSmall CDB-Widget-textSmall--bold CDB-Widget-textSmall--upper">Los Angeles Lakers</p>
+                          <p class="CDB-Widget-textSmaller">~179k</p>
+                        </div>
+                        <div class="CDB-Widget-progressBar">
+                          <div class="CDB-Widget-progressState" style="width:10%"></div>
+                        </div>
+                      </button>
+                    </li>
+                    <li class="CDB-Widget-listItem">
+                      <button type="button" class="CDB-Widget-listItemInner CDB-Widget-listButton is-disabled">
+                        <div class="CDB-Widget-contentSpaced">
+                          <p class="CDB-Widget-textSmall CDB-Widget-textSmall--bold CDB-Widget-textSmall--upper">Chicago Bulls</p>
+                          <p class="CDB-Widget-textSmaller">~83k</p>
+                        </div>
+                        <div class="CDB-Widget-progressBar">
+                          <div class="CDB-Widget-progressState" style="width:5%"></div>
+                        </div>
+                      </button>
+                    </li>
+                    <li class="CDB-Widget-listItem">
+                      <button type="button" class="CDB-Widget-listItemInner CDB-Widget-listButton">
+                        <div class="CDB-Widget-contentSpaced">
+                          <p class="CDB-Widget-textSmall CDB-Widget-textSmall--bold CDB-Widget-textSmall--upper">Minnesota Timberwolves</p>
+                          <p class="CDB-Widget-textSmaller">~201k</p>
+                        </div>
+                        <div class="CDB-Widget-progressBar">
+                          <div class="CDB-Widget-progressState" style="width:20%"></div>
+                        </div>
+                      </button>
+                    </li>
+                    <li class="CDB-Widget-listItem">
+                      <button type="button" class="CDB-Widget-listItemInner CDB-Widget-listButton is-disabled">
+                        <div class="CDB-Widget-contentSpaced">
+                          <p class="CDB-Widget-textSmall CDB-Widget-textSmall--bold CDB-Widget-textSmall--upper">New York Knicks</p>
+                          <p class="CDB-Widget-textSmaller">~801k</p>
+                        </div>
+                        <div class="CDB-Widget-progressBar">
+                          <div class="CDB-Widget-progressState" style="width:80%"></div>
+                        </div>
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div class="CDB-Widget-footer">
+                <div class="CDB-Widget-nav CDB-Widget-contentSpaced">
+                  <p class="CDB-Widget-textSmaller CDB-Widget-textSmaller--bold CDB-Widget-textSmall--upper">47 categories more</p>
+                  <div class="CDB-Widget-navDots">
+                    <button class="CDB-Shape-dot CDB-Widget-dot--navigation is-selected"></button>
+                    <button class="CDB-Shape-dot CDB-Widget-dot--navigation"></button>
+                    <button class="CDB-Shape-dot CDB-Widget-dot--navigation"></button>
+                    <button class="CDB-Shape-dot CDB-Widget-dot--navigation"></button>
+                    <button class="CDB-Shape-dot CDB-Widget-dot--navigation"></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="CDB-Widget CDB-Widget--light u-tspace-xl">
+              <div class="CDB-Widget-header">
+                <h3 class="CDB-Widget-title CDB-Widget-textBig">Banned Zip Codes</h3>
+                <dl class="CDB-Widget-info CDB-Widget-textSmaller CDB-Widget-textSmaller--upper">
+                  <dt class="CDB-Widget-infoCount">1% </dt><dd class="CDB-Widget-infoDescription">null rows</dd>
+                </dl>
+              </div>
+              <div class="CDB-Widget-content">
+                <ul class="CDB-Widget-list">
+                  <li class="CDB-Widget-listItem">
+                    <div class="CDB-Widget-contentSpaced CDB-Widget-textSmall CDB-Widget-textSmall--bold CDB-Widget-textSmall--upper">
+                      <p>True</p>
+                      <p>False</p>
+                    </div>
+                    <div class="CDB-Widget-progressBar">
+                      <div class="CDB-Widget-progressState CDB-Widget-progressState--positive" style="width:30%"></div>
+                      <div class="CDB-Widget-progressState CDB-Widget-progressState--negative" style="width:70%"></div>
+                    </div>
+                    <div class="CDB-Widget-contentSpaced CDB-Widget-textSmaller">
+                      <p>~30K</p>
+                      <p>~70K</p>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="CDB-Widget CDB-Widget--light u-tspace-xl">
+              <div class="CDB-Widget-header">
+                <h3 class="CDB-Widget-title CDB-Widget-textBig">Banned Zip Codes</h3>
+                <dl class="CDB-Widget-info CDB-Widget-textSmaller CDB-Widget-textSmaller--upper">
+                  <dt class="CDB-Widget-infoCount">1%</dt><dd class="CDB-Widget-infoDescription">null rows</dd>
+                </dl>
+              </div>
+              <div class="CDB-Widget-content CDB-Widget-content--noSidesMargin">
+                <div class="CDB-Widget-filter CDB-Widget-contentSpaced CDB-Widget-contentSpaced--sideMargins">
+                  <p class="CDB-Widget-textSmaller CDB-Widget-textSmaller--bold CDB-Widget-textSmaller--dark CDB-Widget-textSmaller--upper">1 selected</p>
+                  <div class="CDB-Widget-filterButtons">
+                    <button class="CDB-Widget-link CDB-Widget-filterButton">select all</button>
+                    <button class="CDB-Widget-link CDB-Widget-filterButton">unselect all</button>
+                  </div>
+                </div>
+                <ul class="CDB-Widget-list">
+                  <li class="CDB-Widget-listItem">
+                    <button type="button" class="CDB-Widget-listItemInner CDB-Widget-listButton is-disabled">
+                      <div class="CDB-Widget-contentSpaced">
+                        <p class="CDB-Widget-textSmall CDB-Widget-textSmall--bold CDB-Widget-textSmall--upper">True</p>
+                        <p class="CDB-Widget-textSmaller">30K</p>
+                      </div>
+                      <div class="CDB-Widget-progressBar">
+                        <div class="CDB-Widget-progressState" style="width:30%"></div>
+                      </div>
+                    </button>
+                  </li>
+                  <li class="CDB-Widget-listItem">
+                    <button type="button" class="CDB-Widget-listItemInner CDB-Widget-listButton">
+                      <div class="CDB-Widget-contentSpaced">
+                        <p class="CDB-Widget-textSmall CDB-Widget-textSmall--bold CDB-Widget-textSmall--upper">False</p>
+                        <p class="CDB-Widget-textSmaller">70k</p>
+                      </div>
+                      <div class="CDB-Widget-progressBar">
+                        <div class="CDB-Widget-progressState" style="width:70%"></div>
+                      </div>
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="CDB-Widget CDB-Widget--light u-tspace-xl">
+              <div class="CDB-Widget-header">
+                <div class="CDB-Widget-title">
+                  <h3 class="CDB-Widget-textBig">Average transactions</h3>
+                  <div class="CDB-Widget-tag CDB-Widget-tag--sum">
+                    <span class="CDB-Widget-textSmaller CDB-Widget-textSmaller--upper">SUM</span>
+                  </div>
+                </div>
+                <dl class="CDB-Widget-info CDB-Widget-textSmaller CDB-Widget-textSmaller--upper">
+                  <dt class="CDB-Widget-infoCount">232 </dt><dd class="CDB-Widget-infoDescription">NULL ROWS</dd>
+                </dl>
+              </div>
+              <div class="CDB-Widget-content">
+                <p class="CDB-Widget-textBigger">2,093,232,234,000M</p>
+                <p class="CDB-Widget-textSmaller u-tSpace">Day where most of the transactions where done</p>
+              </div>
+            </div>
+
+            <div class="CDB-Widget CDB-Widget--light u-tspace-xl">
+              <div class="CDB-Widget-header">
+                <div class="CDB-Widget-title CDB-Widget-contentSpaced">
+                  <h3 class="CDB-Widget-textBig">Affected Postal Codes</h3>
+                  <button class="CDB-Widget-lens"></button>
+                </div>
+                <dl class="CDB-Widget-info CDB-Widget-textSmaller CDB-Widget-textSmaller--upper">
+                  <dt class="CDB-Widget-infoCount">37,321</dt><dd class="CDB-Widget-infoDescription">rows</dd>
+                </dl>
+              </div>
+              <div class="CDB-Widget-content CDB-Widget-content--noSidesMargin">
+                <div class="CDB-Widget-listWrapper">
+                  <div class="CDB-Widget-listEdge CDB-Widget-listEdge--top">
+                    <span class="CDB-Widget-listEdgeBorder"></span>
+                  </div>
+                  <ul class="CDB-Widget-list">
+                    <li class="CDB-Widget-listItem">
+                      <button type="button" class="CDB-Widget-listItemInner CDB-Widget-listButton CDB-Widget-listButton--withBorder">
+                        <div class="CDB-Widget-contentSpaced CDB-Widget-contentSpaced--topAligned CDB-Widget-contentSpaced--start">
+                          <em class="CDB-Shape-dot CDB-Widget-listDot"></em>
+                          <div class="CDB-Widget-contentFull">
+                            <p class="CDB-Widget-textSmall CDB-Widget-textSmall--upper">038990</p>
+                            <dl class="CDB-Widget-inlineList">
+                              <div class="CDB-Widget-inlineListItem CDB-Widget-textSmaller CDB-Widget-textSmaller--noEllip">
+                                <dd class="CDB-Widget-textSmaller--bold CDB-Widget-textSmaller--dark">1,934</dd>
+                                <dt>People affected</dt>
+                              </div>
+                              <div class="CDB-Widget-inlineListItem CDB-Widget-textSmaller CDB-Widget-textSmaller--noEllip">
+                                <dd class="CDB-Widget-textSmaller--bold CDB-Widget-textSmaller--dark">8,129</dd>
+                                <dt>Gross Per Capita</dt>
+                              </div>
+                              <div class="CDB-Widget-inlineListItem CDB-Widget-textSmaller CDB-Widget-textSmaller--noEllip">
+                                <dd class="CDB-Widget-textSmaller--bold CDB-Widget-textSmaller--dark">5,678</dd>
+                                <dt>Fans of new stadiums in NY</dt>
+                              </div>
+                            </dl>
+                          </div>
+                        </div>
+                      </button>
+                    </li>
+                    <li class="CDB-Widget-listItem">
+                      <button type="button" class="CDB-Widget-listItemInner CDB-Widget-listButton CDB-Widget-listButton--withBorder is-disabled">
+                        <div class="CDB-Widget-contentSpaced CDB-Widget-contentSpaced--topAligned CDB-Widget-contentSpaced--start">
+                          <em class="CDB-Shape-dot CDB-Widget-listDot"></em>
+                          <div class="CDB-Widget-contentFull">
+                            <p class="CDB-Widget-textSmall CDB-Widget-textSmall--upper">038990</p>
+                            <dl class="CDB-Widget-textSmaller CDB-Widget-textSmaller--noEllip u-tSpace">
+                              <dd class="CDB-Widget-textSmaller--bold CDB-Widget-textSmaller--dark">1,934</dd>
+                              <dt>People affected</dt>
+                            </dl>
+                          </div>
+                        </div>
+                      </button>
+                    </li>
+                    <li class="CDB-Widget-listItem">
+                      <button type="button" class="CDB-Widget-listItemInner CDB-Widget-listButton CDB-Widget-listButton--withBorder">
+                        <div class="CDB-Widget-contentSpaced CDB-Widget-contentSpaced--topAligned CDB-Widget-contentSpaced--start">
+                          <em class="CDB-Shape-dot CDB-Widget-listDot"></em>
+                          <div class="CDB-Widget-contentFull">
+                            <p class="CDB-Widget-textSmall CDB-Widget-textSmall--upper">039901</p>
+                            <dl class="CDB-Widget-inlineList">
+                              <div class="CDB-Widget-inlineListItem CDB-Widget-textSmaller CDB-Widget-textSmaller--noEllip">
+                                <dd class="CDB-Widget-textSmaller--bold CDB-Widget-textSmaller--dark">782</dd>
+                                <dt>Things</dt>
+                              </div>
+                              <div class="CDB-Widget-inlineListItem CDB-Widget-textSmaller CDB-Widget-textSmaller--noEllip">
+                                <dd class="CDB-Widget-textSmaller--bold CDB-Widget-textSmaller--dark">-</dd>
+                                <dt>People non affected</dt>
+                              </div>
+                            </dl>
+                          </div>
+                        </div>
+                      </button>
+                    </li>
+                  </ul>
+                  <div class="CDB-Widget-listEdge CDB-Widget-listEdge--bottom">
+                    <span class="CDB-Widget-listEdgeShadow"></span>
+                    <span class="CDB-Widget-listEdgeBorder"></span>
+                  </div>
+                </div>
+              </div>
+              <div class="CDB-Widget-footer">
+                <div class="CDB-Widget-nav CDB-Widget-contentSpaced">
+                  <span></span>
+                  <div class="CDB-Widget-navArrows CDB-Widget-contentSpaced">
+                    <button class="CDB-Shape-arrow CDB-Shape-arrow--up"></button>
+                    <button class="CDB-Shape-arrow CDB-Shape-arrow--down"></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="CDB-Widget CDB-Widget--light u-tspace-xl">
+              <div class="CDB-Widget-header">
+                <div class="CDB-Widget-title CDB-Widget-contentSpaced">
+                  <h3 class="CDB-Widget-textBig">Affected Postal Codes</h3>
+                  <button class="CDB-Widget-lens"></button>
+                </div>
+                <dl class="CDB-Widget-info CDB-Widget-textSmaller CDB-Widget-textSmaller--upper">
+                  <dt class="CDB-Widget-infoCount">37,321 rows</dt><dd class="CDB-Widget-infoDescription"></dd>
+                </dl>
+              </div>
+              <div class="CDB-Widget-content CDB-Widget-content--noSidesMargin">
+                <div class="CDB-Widget-listWrapper">
+                  <ul class="CDB-Widget-list CDB-Widget-list--withBorders">
+                    <li class="CDB-Widget-listItem CDB-Widget-listItem--fake"></li>
+                    <li class="CDB-Widget-listItem CDB-Widget-listItem--fake"></li>
+                    <li class="CDB-Widget-listItem CDB-Widget-listItem--fake"></li>
+                    <li class="CDB-Widget-listItem CDB-Widget-listItem--fake"></li>
+                  </ul>
+                </div>
+              </div>
+              <div class="CDB-Loader is-visible"></div>
+            </div>
+
+            <div class="CDB-Widget CDB-Widget--light u-tspace-xl">
+              <div class="CDB-Widget-header">
+                <div class="CDB-Widget-title CDB-Widget-contentSpaced">
+                  <h3 class="CDB-Widget-textBig">Affected Postal Codes</h3>
+                  <button class="CDB-Widget-lens"></button>
+                </div>
+                <dl class="CDB-Widget-info CDB-Widget-textSmaller CDB-Widget-textSmaller--upper">
+                  <dt class="CDB-Widget-infoCount">37,321</dt> <dd class="CDB-Widget-infoDescription">rows</dd>
+                </dl>
+              </div>
+              <div class="CDB-Widget-content CDB-Widget-content--noSidesMargin">
+                <div class="CDB-Widget-listWrapper">
+                  <ul class="CDB-Widget-list CDB-Widget-list--withBorders">
+                    <li class="CDB-Widget-listItem CDB-Widget-listItem--fake"></li>
+                    <li class="CDB-Widget-listItem CDB-Widget-listItem--fake"></li>
+                    <li class="CDB-Widget-listItem CDB-Widget-listItem--fake"></li>
+                    <li class="CDB-Widget-listItem CDB-Widget-listItem--fake"></li>
+                  </ul>
+                </div>
+              </div>
+              <div class="CDB-Widget-error is-visible" style="display:flex">
+                <button class="CDB-Widget-button CDB-Widget-errorButton">
+                  <span class="CDB-Widget-textSmall CDB-Widget-textSmall--bold">REFRESH</span>
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+        <div class="clearfix u-tspace-xl">
+          <h3>HTML</H3>
+          <pre class="prettyprint copy-box" data-clipboard-target="html-widgets">
+            <code class="language-markup" id="html-widgets">
+&lt;div class="CDB-Widget">
+  &lt;h2 class="CDB-Widget-title">Hello&lt;/h2>
+  &lt;p class="CDB-Widget-info">info&lt;/p>
+&lt;/div>
+            </code>
+          </pre>
+        </div>
+        <div class="clearfix u-tspace-xl">
+          <h3>CSS</H3>
+          <pre class="prettyprint">
+            <code class="language-css">
+.u-ilist > li { display: inline-block; }
+            </code>
+          </pre>
+        </div>
+        <hr/>
+      </section>
+    </div>
+  </body>
+</html>

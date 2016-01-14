@@ -10,8 +10,9 @@
   @include align-items(center);
   width: 100%;
 }
-.CDB-Widget-infoItem {
+.CDB-Widget-infoDescription {
   margin-right: $sMargin-element;
+  margin-left: $baseSize / 4;
   &:last-child {
     margin-right: 0;
   }
@@ -22,7 +23,7 @@
   .CDB-Widget-info {
     @include justify-content(space-between, justify);
   }
-  .CDB-Widget-infoItem {
+  .CDB-Widget-infoDescription {
     margin-right: 0;
   }
 }

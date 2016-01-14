@@ -42,7 +42,6 @@
 **/src/geo/gmaps/gmaps-plain-layer-view.js
 **/src/geo/gmaps/gmaps-point-view.js
 **/src/geo/gmaps/gmaps-tiled-layer-view.js
-**/src/geo/gmaps/gmaps-torque-layer-view.js
 **/src/geo/gmaps/projector.js
 **/src/geo/gmaps.js
 **/src/geo/leaflet/leaflet-cartodb-layer-group-view.js
@@ -53,7 +52,6 @@
 **/src/geo/leaflet/leaflet-plain-layer-view.js
 **/src/geo/leaflet/leaflet-point-view.js
 **/src/geo/leaflet/leaflet-tiled-layer-view.js
-**/src/geo/leaflet/leaflet-torque-layer.js
 **/src/geo/leaflet/leaflet-wms-layer-view.js
 **/src/geo/leaflet.js
 **/src/geo/map/cartodb-layer-group-anonymous.js

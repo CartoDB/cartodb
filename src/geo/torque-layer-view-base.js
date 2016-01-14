@@ -2,12 +2,51 @@ var _ = require('underscore');
 
 /**
  * Implementation of all common logic of a torque-layer view.
- * Should be extended on an implementing model.
- * All the methods and attributes here need to be consistent across all implementing models!
+ * All the methods and attributes here need to be consistent across all implementing models.
+ *
+ * Methods are prefixed with _ to indicate that they are not intended to be used outside the implementing models.
  */
 module.exports = {
 
-  _init: function (model) {
+  _initialAttrs: function (layerModel) {
+    var extra = layerModel.get('extra_params');
+    return {
+      table: layerModel.get('table_name'),
+      user: layerModel.get('user_name'),
+      column: layerModel.get('property'),
+      blendmode: layerModel.get('torque-blend-mode'),
+      resolution: 1,
+      // TODO: manage time columns
+      countby: 'count(cartodb_id)',
+      sql_api_domain: layerModel.get('sql_api_domain'),
+      sql_api_protocol: layerModel.get('sql_api_protocol'),
+      sql_api_port: layerModel.get('sql_api_port'),
+      tiler_protocol: layerModel.get('tiler_protocol'),
+      tiler_domain: layerModel.get('tiler_domain'),
+      tiler_port: layerModel.get('tiler_port'),
+      maps_api_template: layerModel.get('maps_api_template'),
+      stat_tag: layerModel.get('stat_tag'),
+      animationDuration: layerModel.get('torque-duration'),
+      steps: layerModel.get('torque-steps'),
+      sql: this._getQuery(layerModel),
+      visible: layerModel.get('visible'),
+      extra_params: {
+        api_key: extra ? extra.map_key : ''
+      },
+      attribution: layerModel.get('attribution'),
+      cartocss: layerModel.get('cartocss') || layerModel.get('tile_style'),
+      named_map: layerModel.get('named_map'),
+      auth_token: layerModel.get('auth_token'),
+      no_cdn: layerModel.get('no_cdn'),
+      loop: !(layerModel.get('loop') === false)
+    };
+  },
+
+  _init: function (layerModel) {
+    if (layerModel.get('visible')) {
+      this.play();
+    }
+
     this.on('tilesLoaded', function () {
       this.trigger('load');
     }, this);
@@ -39,11 +78,11 @@ module.exports = {
       this._callModel('pause');
     });
 
-    this.model.set({
+    layerModel.set({
       isRunning: this.isRunning(),
       time: this.getTime(),
       step: this.getStep(),
-      steps: this.model.get('torque-steps') || (this.provider && this.provider.getSteps()) || this.options.steps || 0
+      steps: layerModel.get('torque-steps') || (this.provider && this.provider.getSteps()) || this.options.steps || 0
     });
 
     this._onModel();
@@ -108,5 +147,14 @@ module.exports = {
     } else {
       this.resetRenderRange();
     }
+  },
+
+  _getQuery: function (layerModel) {
+    var query = layerModel.get('query');
+    var qw = layerModel.get('query_wrapper');
+    if (qw) {
+      query = _.template(qw)({ sql: query || ('select * from ' + layerModel.get('table_name')) });
+    }
+    return query;
   }
 };

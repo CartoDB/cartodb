@@ -156,6 +156,10 @@ var Vis = View.extend({
   },
 
   load: function (data, options) {
+    if (!data.datasource) {
+      throw new Error('viz.json needs to include a "datasource" attribute.');
+    }
+
     var self = this;
 
     // Load the viz.json in case we receive a url instead of a JSON object
@@ -391,17 +395,15 @@ var Vis = View.extend({
     if (cartoDBLayerGroup) {
       var endpoint;
       var configGenerator;
-
       var datasource = data.datasource;
-      if (datasource) {
-        // TODO: We can use something else to differentiate types of "datasource"s
-        if (datasource.template_name) {
-          endpoint = [WindshaftConfig.MAPS_API_BASE_URL, 'named', datasource.template_name].join('/');
-          configGenerator = WindshaftNamedMapConfig;
-        } else {
-          endpoint = WindshaftConfig.MAPS_API_BASE_URL;
-          configGenerator = WindshaftLayerGroupConfig;
-        }
+
+      // TODO: We can use something else to differentiate types of "datasource"s
+      if (datasource.template_name) {
+        endpoint = [WindshaftConfig.MAPS_API_BASE_URL, 'named', datasource.template_name].join('/');
+        configGenerator = WindshaftNamedMapConfig;
+      } else {
+        endpoint = WindshaftConfig.MAPS_API_BASE_URL;
+        configGenerator = WindshaftLayerGroupConfig;
       }
 
       var windshaftClient = new WindshaftClient({

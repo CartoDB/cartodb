@@ -1,5 +1,5 @@
-@import '../variables/sizes';
-@import '../variables/mixins';
+@import '../../../node_modules/cartoassets/src/scss/variables/sizes';
+@import '../../../node_modules/cartoassets/src/scss/utilities/mixins';
 
 .CDB-infowindow-wrapper {
   position: absolute;
@@ -317,7 +317,7 @@
     display: block;
     position: absolute;
     top: 0;
-    left: 0; 
+    left: 0;
     width: 6px;
     height: 1px;
     transform: rotate(-45deg);
@@ -328,7 +328,7 @@
     display: block;
     position: absolute;
     bottom: 2px;
-    left: 0; 
+    left: 0;
     width: 6px;
     height: 1px;
     transform: rotate(45deg);
@@ -360,7 +360,7 @@
     display: block;
     position: absolute;
     bottom: 2px;
-    left: 0; 
+    left: 0;
     width: 6px;
     height: 1px;
     transform: rotate(-45deg);

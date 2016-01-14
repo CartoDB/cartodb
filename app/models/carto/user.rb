@@ -281,7 +281,7 @@ class Carto::User < ActiveRecord::Base
   end
 
   def get_new_system_geocoding_calls(options = {})
-    date_to = (options[:to] ? options[:to].to_date : Date.today)
+    date_to = (options[:to] ? options[:to].to_date : Date.current)
     date_from = (options[:from] ? options[:from].to_date : last_billing_cycle)
     get_user_geocoding_data(self, date_from, date_to)
   end

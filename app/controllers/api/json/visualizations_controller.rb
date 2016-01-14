@@ -60,10 +60,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
         track_event(vis, 'Created')
 
-        visualization = Carto::Visualization.find(vis.id)
-        presenter = Carto::Api::VisualizationPresenter.new(visualization, current_viewer, self)
-
-        render_jsonp(presenter.to_poro)
+        render_jsonp(vis)
       rescue CartoDB::InvalidMember
         render_jsonp({ errors: vis.full_errors }, 400)
       rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
@@ -124,10 +121,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
           end
         end
 
-        visualization = Carto::Visualization.find(vis.id)
-        presenter = Carto::Api::VisualizationPresenter.new(visualization, current_viewer, self)
-
-        render_jsonp(presenter.to_poro)
+        render_jsonp(vis)
       rescue KeyError
         head(404)
       rescue CartoDB::InvalidMember

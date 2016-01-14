@@ -393,7 +393,9 @@ module CartoDB
       end
 
       def to_hash(options={})
-        presenter = Presenter.new(self, options.merge(real_privacy: true))
+        options = options.merge(real_privacy: true, synchronization: CartoDB::Visualization::Member.new(id: self.id))
+        presenter = Presenter.new(self, options)
+
         options.delete(:public_fields_only) === true ? presenter.to_public_poro : presenter.to_poro
       end
 

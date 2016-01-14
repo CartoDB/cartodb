@@ -1,6 +1,6 @@
-@import "../variables/mixins";
-@import "../variables/colors";
-@import "../variables/sizes";
+@import '../variables/mixins';
+@import '../variables/colors';
+@import '../variables/sizes';
 
 $spacing-unit: 20px;
 $blue1: #3AA9E3;
@@ -11,10 +11,10 @@ $linkedin: #007BB6;
 
 @mixin button($color1, $color2) {
   color: $color1;
-  border-color: rgba($color1, .3);
+  border-color: rgba($color1, 0.3);
 
   &:hover {
-    border-color: rgba($color1, .4);
+    border-color: rgba($color1, 0.4);
   }
 
   &.is-highlight {
@@ -22,7 +22,7 @@ $linkedin: #007BB6;
     color: $color2;
 
     &:hover {
-      opacity: .9;
+      opacity: 0.9;
     }
   }
 
@@ -45,16 +45,16 @@ $linkedin: #007BB6;
 
 .PublicButton {
   display: inline-block;
+  transition: all 0.3s;
   border-width: 2px;
   border-style: solid;
+  border-radius: 50px;
+  outline: none;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
   text-align: center;
   white-space: nowrap;
-  font-weight: 600;
-  font-size: 12px;
-  line-height: 1;
-  border-radius: 50px;
-  transition: all .3s;
-  outline: none;
 
   &:hover {
     text-decoration: none;
@@ -108,32 +108,32 @@ $linkedin: #007BB6;
   @include button($blue1, #fff);
 
   &.is-highlight--fb {
-    background: $facebook;
     border-color: $facebook;
+    background: $facebook;
 
     &:hover {
-      background: darken($facebook, 5%);
       border-color: darken($facebook, 5%);
+      background: darken($facebook, 5%);
     }
   }
 
   &.is-highlight--tw {
-    background: $twitter;
     border: 2px solid $twitter;
+    background: $twitter;
 
     &:hover {
-      background: darken($twitter, 5%);
       border-color: darken($twitter, 5%);
+      background: darken($twitter, 5%);
     }
   }
 
   &.is-highlight--li {
-    background: $linkedin;
     border: 2px solid $linkedin;
+    background: $linkedin;
 
     &:hover {
-      background: darken($linkedin, 5%);
       border-color: darken($linkedin, 5%);
+      background: darken($linkedin, 5%);
     }
   }
 }

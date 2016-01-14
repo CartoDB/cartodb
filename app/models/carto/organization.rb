@@ -1,7 +1,9 @@
 require 'active_record'
+require_relative '../../helpers/geocoder_metrics_helper'
 
 module Carto
   class Organization < ActiveRecord::Base
+    include GeocoderMetricsHelper
 
     has_many :users, inverse_of: :organization, order: :username
     belongs_to :owner, class_name: Carto::User, inverse_of: :owned_organization
@@ -24,6 +26,12 @@ module Carto
         where('geocodings.kind' => 'high-resolution').
         where('geocodings.created_at >= ? and geocodings.created_at <= ?', date_from, date_to + 1.days).
         sum("processed_rows + cache_hits".lit).to_i
+    end
+
+    def get_new_system_geocoding_calls(options = {})
+      date_to = (options[:to] ? options[:to].to_date : Date.current)
+      date_from = (options[:from] ? options[:from].to_date : owner.last_billing_cycle)
+      get_organization_geocoding_data(self, date_from, date_to)
     end
 
     def twitter_imports_count(options = {})

@@ -25,7 +25,7 @@
   </div>
 </div>
 
-<div class="CDB-Dashboard-infoHeaderMobile CDB-showMobile">
+<div class="CDB-Dashboard-infoHeaderMobile u-showMobile">
   <div class="CDB-Dashboard-infoLogo">
     <i class="CDB-Icon CDB-Icon-cartofante"></i>
   </div>

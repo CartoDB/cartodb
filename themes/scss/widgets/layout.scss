@@ -1,8 +1,8 @@
 // Widget layout styles
 // ----------------------------------------------
 
-@import '../variables/sizes';
-@import '../variables/mixins';
+@import '../../../node_modules/cartoassets/src/scss/variables/sizes';
+@import '../../../node_modules/cartoassets/src/scss/utilities/mixins';
 
 .CDB-Widget-contentSpaced {
   @include display-flex();
@@ -30,8 +30,7 @@
 
 @include media-query-mobile() {
   .CDB-Widget-contentSpaced--sideMargins {
-    margin-right: $sMargin-section/3;
-    margin-left: $sMargin-section/3;
+    margin-right: $sMargin-section / 3;
+    margin-left: $sMargin-section / 3;
   }
 }
-

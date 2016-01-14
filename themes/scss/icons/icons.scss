@@ -1,7 +1,7 @@
 // Default icon styles
 // --------------------------------------------------
 
-@import '../variables/mixins';
+@import '../../../node_modules/cartoassets/src/scss/utilities/mixins';
 @include font-face('CDBIcon', '../../fonts/CDBIcon.eot', '../../fonts/CDBIcon.woff', '../../fonts/CDBIcon.ttf', '../../fonts/CDBIcon.svg');
 
 .CDB-Icon {

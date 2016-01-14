@@ -1,8 +1,8 @@
 // Buttons styles
 // ----------------------------------------------
 
-@import '../variables/sizes';
-@import '../variables/mixins';
+@import '../../../node_modules/cartoassets/src/scss/variables/sizes';
+@import '../../../node_modules/cartoassets/src/scss/utilities/mixins';
 
 .CDB-Widget-button {
   @include transition(background, 250ms);

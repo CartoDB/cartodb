@@ -1,7 +1,7 @@
 // Default styles for error state
 // --------------------------------------------------
 
-@import '../variables/mixins';
+@import '../../../node_modules/cartoassets/src/scss/utilities/mixins';
 
 .CDB-Widget-error {
   @include display-flex();

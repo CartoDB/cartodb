@@ -349,12 +349,22 @@ feature "Superadmin's users API" do
       end
     end
 
-    it "gets where_db_size_changed users" do
-      ::User.expects(:where_db_size_changed).returns(OpenStruct.new({ all: [] })).once
+    it "gets cached db_size_in_bytes_change_users and returns username and db_size_in_bytes_change" do
+      cached_users_mock = {
+        'username1' => 1111,
+        'username2' => 2222
+      }
+      Carto::UserDbSizeCache.any_instance.expects(:db_size_in_bytes_change_users).once.returns(cached_users_mock)
 
       get_json superadmin_users_path, { db_size_in_bytes_change: true }, superadmin_headers do |response|
         response.status.should == 200
-        response.body.length.should == 0
+        users = response.body
+        users.length.should == cached_users_mock.length
+        users.each do |user|
+          user.keys.should == ['username', 'db_size_in_bytes']
+        end
+        users.each.map { |u| u['username'] }.sort.should == cached_users_mock.keys.sort
+        users.each.map { |u| u['db_size_in_bytes'] }.sort.should == cached_users_mock.values.sort
       end
     end
 

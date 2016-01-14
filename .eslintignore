@@ -151,7 +151,6 @@
 **/test/spec/geo/gmaps_cartodb_layer/interaction.js
 **/test/spec/geo/gmaps_cartodb_layer/opacity.js
 **/test/spec/geo/gmaps_cartodb_layer/show.js
-**/test/spec/geo/leaflet/leaflet-torque-layer.spec.js
 **/test/spec/geo/leaflet/leaflet.spec.js
 **/test/spec/geo/map/cartodb-layer-group-anonymous.spec.js
 **/test/spec/geo/map/cartodb-layer-group-named.spec.js

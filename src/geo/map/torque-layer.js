@@ -1,5 +1,4 @@
 var _ = require('underscore');
-var log = require('cdb.log');
 var MapLayer = require('./map-layer');
 
 /**

@@ -2,6 +2,7 @@ var _ = require('underscore');
 var torque = require('torque.js');
 var Backbone = require('backbone');
 var GMapsLayerView = require('./gmaps-layer-view');
+var TorqueLayerViewBase = require('../torque-layer-view-base');
 
 var GMapsTorqueLayerView = function (layerModel, gmapsMap) {
   var extra = layerModel.get('extra_params');
@@ -45,13 +46,14 @@ var GMapsTorqueLayerView = function (layerModel, gmapsMap) {
     this.play();
   }
 
-  layerModel.initForTorqueLayerView(this);
+  this._init(layerModel); // available due to this model being extended with torque-layer-base
 };
 
 _.extend(
   GMapsTorqueLayerView.prototype,
   GMapsLayerView.prototype,
   torque.GMapsTorqueLayer.prototype,
+  TorqueLayerViewBase,
   {
     _update: function () {
       var changed = this.model.changedAttributes();

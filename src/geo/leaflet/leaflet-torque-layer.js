@@ -1,7 +1,9 @@
-var torque = require('torque.js'); // required to setup the "L" object
+/* global L */
+require('torque.js'); // required to setup the "L" object
 var _ = require('underscore');
 var util = require('cdb.core.util');
 var LeafletLayerView = require('./leaflet-layer-view');
+var TorqueLayerViewBase = require('../torque-layer-view-base');
 
 /**
  * leaflet torque layer
@@ -61,106 +63,7 @@ var LeafletTorqueLayer = L.TorqueLayer.extend({
       this.play();
     }
 
-    this.bind('tilesLoaded', function () {
-      this.trigger('load');
-    }, this);
-
-    this.bind('tilesLoading', function () {
-      this.trigger('loading');
-    }, this);
-
-    this.bind('change:time', function (changes) {
-      this._setModelAttrs({
-        step: changes.step,
-        time: changes.time,
-        renderRange: {
-          start: changes.start,
-          end: changes.end
-        }
-      });
-    }, this);
-
-    this.bind('change:steps', function (changes) {
-      this._setModelAttrs({ steps: changes.steps });
-    }, this);
-
-    this.bind('play', function () {
-      this._callModel('play');
-    });
-
-    this.bind('pause', function () {
-      this._callModel('pause');
-    });
-
-    this.model.set({
-      isRunning: this.isRunning(),
-      time: this.getTime(),
-      step: this.getStep(),
-      steps: this.provider.getSteps() || this.options.steps || 0
-    });
-
-    this._bindModel();
-  },
-
-  /**
-   * Set model property but unbind changes first in order to not create an infinite loop
-   */
-  _setModelAttrs: function (attrs) {
-    this._unbindModel();
-    this.model.set(attrs);
-    this._bindModel();
-  },
-
-  _callModel: function (method) {
-    this._unbindModel();
-    var args = Array.prototype.slice.call(arguments, 1);
-    this.model[method].apply(this.model, args);
-    this._bindModel();
-  },
-
-  _bindModel: function () {
-    this._unbindModel();
-    this.listenTo(this.model, 'change:isRunning', this._isRunningChanged);
-    this.listenTo(this.model, 'change:time', this._timeChanged);
-    this.listenTo(this.model, 'change:step', this._stepChanged);
-    this.listenTo(this.model, 'change:steps', this._stepsChanged);
-    this.listenTo(this.model, 'change:renderRange', this._renderRangeChanged);
-  },
-
-  _unbindModel: function () {
-    this.stopListening(this.model, 'change:isRunning', this._isRunningChanged);
-    this.stopListening(this.model, 'change:time', this._timeChanged);
-    this.stopListening(this.model, 'change:step', this._stepChanged);
-    this.stopListening(this.model, 'change:steps', this._stepsChanged);
-    this.stopListening(this.model, 'change:renderRange', this._renderRangeChanged);
-  },
-
-  _isRunningChanged: function (m, isRunning) {
-    if (isRunning) {
-      this.play();
-    } else {
-      this.pause();
-    }
-  },
-
-  _timeChanged: function (m, time) {
-    this.setStep(this.timeToStep(time));
-  },
-
-  _stepChanged: function (m, step) {
-    this.setStep(step);
-  },
-
-  _stepsChanged: function (m, steps) {
-    this.setSteps(steps);
-  },
-
-  _renderRangeChanged: function (m, r) {
-    if (_.isObject(r) && _.isNumber(r.start) && _.isNumber(r.end)) {
-      this.renderRange(r.start, r.end);
-    } else {
-      this.resetRenderRange();
-    }
+    this._init(layerModel); // available due to this model being extended with torque-layer-base
   },
 
   _getQuery: function (layerModel) {
@@ -195,5 +98,6 @@ var LeafletTorqueLayer = L.TorqueLayer.extend({
 });
 
 _.extend(LeafletTorqueLayer.prototype, LeafletLayerView.prototype);
+_.extend(LeafletTorqueLayer.prototype, TorqueLayerViewBase);
 
 module.exports = LeafletTorqueLayer;

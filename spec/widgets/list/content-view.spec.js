@@ -5,6 +5,10 @@ var WidgetListContent = require('../../../src/widgets/list/content-view');
 describe('widgets/list/content-view', function () {
   beforeEach(function () {
     var vis = cdb.createVis(document.createElement('div'), {
+      datasource: {
+        maps_api_template: 'asd',
+        user_name: 'pepe'
+      },
       layers: [{type: 'torque'}]
     });
     this.dataviewModel = vis.dataviews.createListDataview(vis.map.layers.first(), {

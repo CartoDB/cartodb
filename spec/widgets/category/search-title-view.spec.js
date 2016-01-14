@@ -5,6 +5,10 @@ var SearchTitleView = require('../../../src/widgets/category/title/search-title-
 describe('widgets/category/search-title-view', function () {
   beforeEach(function () {
     var vis = cdb.createVis(document.createElement('div'), {
+      datasource: {
+        maps_api_template: 'asd',
+        user_name: 'pepe'
+      },
       layers: [{type: 'torque'}]
     });
     this.dataviewModel = vis.dataviews.createCategoryDataview(vis.map.layers.first(), {});

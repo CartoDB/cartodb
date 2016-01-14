@@ -24,7 +24,7 @@ module.exports = cdb.core.View.extend({
       this.el.classList.add('CDB-Widget-contentSpaced');
       this._appendView(
         new TorqueRenderRangeInfoView({
-          dataviewModel: this.dataviewModel,
+          dataviewModel: this._dataviewModel,
           torqueLayerModel: this._torqueLayerModel
         })
       );

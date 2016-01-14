@@ -6,6 +6,10 @@ var WidgetModel = require('../../../src/widgets/widget-model');
 describe('widgets/histogram/content-view', function () {
   beforeEach(function () {
     var vis = cdb.createVis(document.createElement('div'), {
+      datasource: {
+        maps_api_template: 'asd',
+        user_name: 'pepe'
+      },
       layers: [{type: 'torque'}]
     });
     this.dataviewModel = vis.dataviews.createHistogramDataview(vis.map.layers.first(), {

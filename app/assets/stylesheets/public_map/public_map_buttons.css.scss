@@ -102,10 +102,10 @@ $linkedin: #007BB6;
 
 // Colors
 .PublicButton--cWhite {
-  @include button(#fff, $blue1);
+  @include button(#FFF, $blue1);
 }
 .PublicButton--cBlue {
-  @include button($blue1, #fff);
+  @include button($blue1, #FFF);
 
   &.is-highlight--fb {
     border-color: $facebook;

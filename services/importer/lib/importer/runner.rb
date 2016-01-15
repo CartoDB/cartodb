@@ -198,6 +198,9 @@ module CartoDB
           additional_support_tables = loader.additional_support_tables
         end
 
+        # Delete job temporary table from cdb_importer schema
+        @job.delete_job_table
+
         @job.log "Errored importing data from #{source_file.fullpath}:"
         @job.log "#{exception.class.to_s}: #{exception.to_s}", truncate=false
         @job.log '----------------------------------------------------'

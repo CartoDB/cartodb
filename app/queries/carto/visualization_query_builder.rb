@@ -44,6 +44,7 @@ class Carto::VisualizationQueryBuilder
     @off_database_order = {}
     @exclude_synced_external_sources = false
     @exclude_imported_remote_visualizations = false
+    @exclude_raster = false
   end
 
   def with_id_or_name(id_or_name)
@@ -71,6 +72,11 @@ class Carto::VisualizationQueryBuilder
 
   def without_imported_remote_visualizations
     @exclude_imported_remote_visualizations = true
+    self
+  end
+
+  def without_raster
+    @exclude_raster = true
     self
   end
 
@@ -250,6 +256,10 @@ class Carto::VisualizationQueryBuilder
       # of datasets, for example, make a query with multiples types (table, remote) and we don't
       # want to filter the table ones
       query = query.where('("visualizations"."type" <> \'remote\' OR "visualizations"."type" = \'remote\' AND "visualizations"."display_name" IS NOT NULL)')
+    end
+
+    if @exclude_raster
+      query = query.where("\"visualizations\".\"kind\" != '#{CartoDB::Visualization::Member::KIND_RASTER}'")
     end
 
     if @type

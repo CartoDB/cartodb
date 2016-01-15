@@ -44,7 +44,7 @@ class Carto::VisualizationQueryBuilder
     @off_database_order = {}
     @exclude_synced_external_sources = false
     @exclude_imported_remote_visualizations = false
-    @exclude_raster = false
+    @excluded_kinds = []
   end
 
   def with_id_or_name(id_or_name)
@@ -76,7 +76,7 @@ class Carto::VisualizationQueryBuilder
   end
 
   def without_raster
-    @exclude_raster = true
+    @excluded_kinds << CartoDB::Visualization::Member::KIND_RASTER
     self
   end
 
@@ -258,8 +258,8 @@ class Carto::VisualizationQueryBuilder
       query = query.where('("visualizations"."type" <> \'remote\' OR "visualizations"."type" = \'remote\' AND "visualizations"."display_name" IS NOT NULL)')
     end
 
-    if @exclude_raster
-      query = query.where("\"visualizations\".\"kind\" != '#{CartoDB::Visualization::Member::KIND_RASTER}'")
+    @excluded_kinds.each do |kind|
+      query = query.where("\"visualizations\".\"kind\" != '#{kind}'")
     end
 
     if @type

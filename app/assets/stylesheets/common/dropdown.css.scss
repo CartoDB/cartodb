@@ -195,3 +195,11 @@
   border-bottom: none;
   border-top: none;
 }
+.Dropdown--public {
+  width: 220px;
+  box-shadow: 0 1px 3px rgba(#000, 0.2);
+
+  .SettingsDropdown {
+    margin: 12px 20px;
+  }
+}

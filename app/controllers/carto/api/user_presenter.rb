@@ -133,6 +133,7 @@ module Carto
 
         if @user.organization.present?
           data[:organization] = Carto::Api::OrganizationPresenter.new(@user.organization).to_poro
+          data[:organization][:available_quota_for_user] = @user.organization.unassigned_quota + @user.quota_in_bytes
         end
 
         if !@user.groups.nil?

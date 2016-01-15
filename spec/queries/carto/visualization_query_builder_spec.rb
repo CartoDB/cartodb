@@ -303,7 +303,24 @@ describe Carto::VisualizationQueryBuilder do
         .all.map(&:id)
     ids.should == [ remote_vis_2.id, remote_vis_1.id, table.table_visualization.id]
 
-
+    ExternalDataImport.all { |edi| edi.destroy } # Clean up to avoid foreign key not null violation
   end
 
+  it 'filters raster tables' do
+    stub_named_maps_calls
+
+    table = create_random_table(@user1)
+    table_visualization = table.table_visualization
+    table_visualization.store
+
+    raster_table = create_random_table(@user1)
+    raster_table_visualization = raster_table.table_visualization
+    raster_table_visualization.kind = CartoDB::Visualization::Member::KIND_RASTER
+    raster_table_visualization.store
+
+    visualizations = @vqb.without_raster.build
+
+    visualizations.map(&:id).should include table_visualization.id
+    visualizations.map(&:id).should_not include raster_table_visualization.id
+  end
 end

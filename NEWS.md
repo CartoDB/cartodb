@@ -1,10 +1,7 @@
 3.12.2 (2016-05-15)
 -------------------
-* New feature in organizations management: user quota slider.
-
-3.12.1 (2016-mm-dd)
--------------------
 * Update navigation in public pages.
+* New feature in organizations management: user quota slider.
 
 3.12.0 (2016-01-05)
 -------------------

@@ -340,7 +340,7 @@ var Vis = View.extend({
 
     var cartoDBLayers;
     var cartoDBLayerGroup;
-    var layers = [];
+    layers = [];
 
     // This attribute is public (used by deep-insights)
     this.interactiveLayers = new Backbone.Collection();
@@ -387,43 +387,35 @@ var Vis = View.extend({
     // TODO: rethink this
     this._dataviewsCollection.on('add reset remove', _.debounce(this._invalidateSizeOnDataviewsChanges, 10), this);
 
-    // TODO: This method is creating an instance of the layer group
-    // and setting the tiles and grid urls on the layerGroup model, which
-    // cause the layergroup view to fetch and render the tiles. This needs
-    // to happen everytime a layer that belongs to the layerGroup changes
-    // (eg: when the layer is hidden or it's SQL is changed)
-    if (cartoDBLayerGroup) {
-      var endpoint;
-      var configGenerator;
-      var datasource = data.datasource;
+    var endpoint;
+    var configGenerator;
+    var datasource = data.datasource;
 
-      // TODO: We can use something else to differentiate types of "datasource"s
-      if (datasource.template_name) {
-        endpoint = [WindshaftConfig.MAPS_API_BASE_URL, 'named', datasource.template_name].join('/');
-        configGenerator = WindshaftNamedMapConfig;
-      } else {
-        endpoint = WindshaftConfig.MAPS_API_BASE_URL;
-        configGenerator = WindshaftLayerGroupConfig;
-      }
-
-      var windshaftClient = new WindshaftClient({
-        endpoint: endpoint,
-        urlTemplate: datasource.maps_api_template,
-        userName: datasource.user_name,
-        forceCors: datasource.force_cors || true
-      });
-
-      new WindshaftMap({ // eslint-disable-line
-        client: windshaftClient,
-        configGenerator: configGenerator,
-        statTag: datasource.stat_tag,
-        // TODO: assuming here all viz.json has a layergroup and that may not be true
-        layerGroup: cartoDBLayerGroup,
-        layers: this.interactiveLayers,
-        dataviews: this._dataviewsCollection,
-        map: this.map
-      });
+    // TODO: We can use something else to differentiate types of "datasource"s
+    if (datasource.template_name) {
+      endpoint = [WindshaftConfig.MAPS_API_BASE_URL, 'named', datasource.template_name].join('/');
+      configGenerator = WindshaftNamedMapConfig;
+    } else {
+      endpoint = WindshaftConfig.MAPS_API_BASE_URL;
+      configGenerator = WindshaftLayerGroupConfig;
     }
+
+    var windshaftClient = new WindshaftClient({
+      endpoint: endpoint,
+      urlTemplate: datasource.maps_api_template,
+      userName: datasource.user_name,
+      forceCors: datasource.force_cors || true
+    });
+
+    new WindshaftMap({ // eslint-disable-line
+      client: windshaftClient,
+      configGenerator: configGenerator,
+      statTag: datasource.stat_tag,
+      layerGroup: cartoDBLayerGroup,
+      layers: this.interactiveLayers,
+      dataviews: this._dataviewsCollection,
+      map: this.map
+    });
 
     // if there are no sublayer_options fill it
     if (!options.sublayer_options) {

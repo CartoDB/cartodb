@@ -22,7 +22,7 @@ module.exports = {
         api_key: extra ? extra.map_key : ''
       },
       attribution: layerModel.get('attribution'),
-      cartocss: layerModel.get('cartocss') || layerModel.get('tile_style'),
+      cartocss: layerModel.get('cartocss'),
       named_map: layerModel.get('named_map'),
       auth_token: layerModel.get('auth_token'),
       no_cdn: layerModel.get('no_cdn'),

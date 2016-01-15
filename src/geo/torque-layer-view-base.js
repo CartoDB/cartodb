@@ -9,7 +9,6 @@ var _ = require('underscore');
 module.exports = {
 
   _initialAttrs: function (layerModel) {
-    var extra = layerModel.get('extra_params');
     return {
       table: layerModel.get('table_name'),
       user: layerModel.get('user_name'),
@@ -18,9 +17,7 @@ module.exports = {
       animationDuration: layerModel.get('torque-duration'),
       sql: this._getQuery(layerModel),
       visible: layerModel.get('visible'),
-      extra_params: {
-        api_key: extra ? extra.map_key : ''
-      },
+      extra_params: layerModel.get('extra_params'), // e.g. {api_key:'abc123'}
       attribution: layerModel.get('attribution'),
       cartocss: layerModel.get('cartocss'),
       named_map: layerModel.get('named_map'),

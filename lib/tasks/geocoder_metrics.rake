@@ -17,10 +17,11 @@ namespace :geocoder do
         legacy_quota_value = user.get_geocoding_calls
         new_system_quota_value = user.get_new_system_geocoding_calls
         if legacy_quota_value != new_system_quota_value
-          puts "User #{user.username} has differente value between LEGACY (#{legacy_quota_value}) " \
+          puts "User #{user.username} has different values between LEGACY (#{legacy_quota_value}) " \
                "and NEW (#{new_system_quota_value}) metrics systems"
         else
-          puts "User #{user.username} OK"
+          puts "User #{user.username} OK => LEGACY (#{legacy_quota_value}) " \
+               "and NEW (#{new_system_quota_value})"
         end
       end
     end

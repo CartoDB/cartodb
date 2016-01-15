@@ -185,6 +185,15 @@ module CartoDB
       nil
     end
 
+    def extract_numeric_response_field(response, query)
+      value = extract_response_field(response, query)
+      return nil if value.blank?
+      Integer(value)
+    rescue ArgumentError => e
+      CartoDB.notify_error("Batch geocoder value error", error: e.message, value: value)
+      nil
+    end
+
     def handle_api_error(response)
       if response.success? == false
         @failed_processed_rows = number_of_input_file_rows
@@ -206,13 +215,13 @@ module CartoDB
 
     def update_stats(response)
       @status = extract_response_field(response.body, '//Response/Status')
-      @processed_rows = extract_response_field(response.body, '//Response/ProcessedCount')
-      @successful_processed_rows = extract_response_field(response.body, '//Response/SuccessCount')
+      @processed_rows = extract_numeric_response_field(response.body, '//Response/ProcessedCount')
+      @successful_processed_rows = extract_numeric_response_field(response.body, '//Response/SuccessCount')
       # addresses that could not be matched
-      @empty_processed_rows = extract_response_field(response.body, '//Response/ErrorCount')
+      @empty_processed_rows = extract_numeric_response_field(response.body, '//Response/ErrorCount')
       # invalid input that could not be processed
-      @failed_processed_rows = extract_response_field(response.body, '//Response/InvalidCount')
-      @total_rows = extract_response_field(response.body, '//Response/TotalCount')
+      @failed_processed_rows = extract_numeric_response_field(response.body, '//Response/InvalidCount')
+      @total_rows = extract_numeric_response_field(response.body, '//Response/TotalCount')
     end
   end
 end

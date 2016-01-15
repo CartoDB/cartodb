@@ -303,7 +303,7 @@ describe Carto::VisualizationQueryBuilder do
         .all.map(&:id)
     ids.should == [ remote_vis_2.id, remote_vis_1.id, table.table_visualization.id]
 
-    ExternalDataImport.all { |edi| edi.destroy } # Clean up to avoid forgein key not null violation
+    ExternalDataImport.all { |edi| edi.destroy } # Clean up to avoid foreign key not null violation
   end
 
   it 'filters raster tables' do

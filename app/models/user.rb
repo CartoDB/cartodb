@@ -5,6 +5,7 @@ require_relative './user/oauths'
 require_relative './synchronization/synchronization_oauth'
 require_relative './visualization/member'
 require_relative '../helpers/redis_vizjson_cache'
+require_relative '../helpers/geocoder_metrics_helper'
 require_relative './visualization/collection'
 require_relative './user/user_organization'
 require_relative './synchronization/collection.rb'
@@ -22,6 +23,7 @@ class User < Sequel::Model
   include CartoDB::UserDecorator
   include Concerns::CartodbCentralSynchronizable
   include CartoDB::ConfigUtils
+  include GeocoderMetricsHelper
 
   self.strict_param_setting = false
 
@@ -457,10 +459,6 @@ class User < Sequel::Model
     end
   end
 
-  def self.where_db_size_changed
-    ::User.where(username: Carto::UserDbSizeCache.new.db_size_in_bytes_change_users.keys)
-  end
-
   def self.password_digest(password, salt)
     digest = AUTH_DIGEST
     10.times do
@@ -785,6 +783,11 @@ class User < Sequel::Model
   def get_geocoding_calls(options = {})
     date_from, date_to = quota_dates(options)
     Geocoding.get_geocoding_calls(geocodings_dataset, date_from, date_to)
+  end
+
+  def get_new_system_geocoding_calls(options = {})
+    date_from, date_to = quota_dates(options)
+    get_user_geocoding_data(self, date_from, date_to)
   end
 
   def get_not_aggregated_geocoding_calls(options = {})

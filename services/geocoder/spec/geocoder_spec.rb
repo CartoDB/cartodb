@@ -49,10 +49,10 @@ describe CartoDB::HiresBatchGeocoder do
       expect { geocoder.update_status }.to change(geocoder, :status).from(nil).to('completed')
     end
     it "updates processed rows" do
-      expect { geocoder.update_status }.to change(geocoder, :processed_rows).from(nil).to("2")
+      expect { geocoder.update_status }.to change(geocoder, :processed_rows).from(nil).to(2)
     end
     it "updates total rows" do
-      expect { geocoder.update_status }.to change(geocoder, :total_rows).from(nil).to("3")
+      expect { geocoder.update_status }.to change(geocoder, :total_rows).from(nil).to(3)
     end
   end
 

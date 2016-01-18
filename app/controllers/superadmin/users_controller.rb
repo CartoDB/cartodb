@@ -17,7 +17,12 @@ class Superadmin::UsersController < Superadmin::SuperadminController
     if params[:overquota].present?
       @users =  ::User.overquota(0.20)
     elsif params[:db_size_in_bytes_change].present?
-      @users = ::User.where_db_size_changed.all
+      # This use case is specific: we only return cached db_size_in_bytes, which is
+      # much faster and doesn't add load to the database.
+      username_dbsize = Carto::UserDbSizeCache.new.db_size_in_bytes_change_users
+      respond_with(:superadmin, username_dbsize.map do |username, db_size_in_bytes|
+        { 'username' => username, 'db_size_in_bytes' => db_size_in_bytes }
+      end) and return
     else
       @users = ::User.all
     end

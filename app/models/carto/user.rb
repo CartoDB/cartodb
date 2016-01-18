@@ -4,10 +4,12 @@ require 'active_record'
 require_relative 'user_service'
 require_relative 'user_db_service'
 require_relative 'synchronization_oauth'
+require_relative '../../helpers/geocoder_metrics_helper'
 
 # TODO: This probably has to be moved as the service of the proper User Model
 class Carto::User < ActiveRecord::Base
   extend Forwardable
+  include GeocoderMetricsHelper
 
   MIN_PASSWORD_LENGTH = 6
   MAX_PASSWORD_LENGTH = 64
@@ -276,6 +278,12 @@ class Carto::User < ActiveRecord::Base
     date_from = (options[:from] ? options[:from].to_date : last_billing_cycle)
     self.geocodings.where(kind: 'high-resolution').where('created_at >= ? and created_at <= ?', date_from, date_to + 1.days)
       .sum("processed_rows + cache_hits".lit).to_i
+  end
+
+  def get_new_system_geocoding_calls(options = {})
+    date_to = (options[:to] ? options[:to].to_date : Date.current)
+    date_from = (options[:from] ? options[:from].to_date : last_billing_cycle)
+    get_user_geocoding_data(self, date_from, date_to)
   end
 
   #TODO: Remove unused param `use_total`

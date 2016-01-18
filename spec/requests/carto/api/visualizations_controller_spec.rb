@@ -240,6 +240,7 @@ describe Carto::Api::VisualizationsController do
       response = response_body(type: CartoDB::Visualization::Member::TYPE_CANONICAL)
       # INFO: old API won't support server side generated urls for visualizations. See #5250 and #5279
       response['visualizations'][0].delete('url')
+      response['visualizations'][0]['synchronization'] = {}
       response.should == {
         'visualizations' => [expected_visualization],
         'total_entries' => 1,
@@ -1957,7 +1958,7 @@ describe Carto::Api::VisualizationsController do
 
   private
 
-  # Custom hash comparation, since in the ActiveModel-based controllers
+  # Custom hash comparison, since in the ActiveModel-based controllers
   # we allow some differences:
   # - x to many associations can return [] instead of nil
   def normalize_hash(h, normalized_attributes = NORMALIZED_ASSOCIATION_ATTRIBUTES)

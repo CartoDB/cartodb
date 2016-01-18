@@ -2,6 +2,7 @@
 require 'tmpdir'
 require 'fileutils'
 require_relative '../../../spec/rspec_configuration.rb'
+require_relative '../../../spec/spec_helper.rb'
 require_relative '../lib/hires_batch_geocoder'
 
 
@@ -94,8 +95,8 @@ describe CartoDB::HiresBatchGeocoder do
       url.should match(%r'action=cancel')
 
       expected_status = 'cancelled'
-      expected_processed_rows = '20'
-      expected_total_rows = '30'
+      expected_processed_rows = 20
+      expected_total_rows = 30
 
       response_body = <<END_XML
 <Response>
@@ -123,8 +124,8 @@ END_XML
       url.should match(%r'action=status')
 
       expected_status = 'running'
-      expected_processed_rows = '20'
-      expected_total_rows = '30'
+      expected_processed_rows = 20
+      expected_total_rows = 30
 
       response_body = <<END_XML
 <Response>

@@ -1,6 +1,6 @@
 // cartodb.js version: 3.15.8
 // uncompressed version: cartodb.uncompressed.js
-// sha: be76b55caeeb0dfc147e3fa36628d9e215717ce5
+// sha: 3798323b953318576fac7ef00dede0aeec81e978
 (function() {
   var define;  // Undefine define (require.js), see https://github.com/CartoDB/cartodb.js/issues/543
   var root = this;
@@ -37045,7 +37045,7 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
           scrollwheel: this.map.get("scrollwheel"),
           // Allow dragging (and double click zoom)
           draggable: this.map.get("drag"),
-          disableDoubleClickZoom: !this.map.get("drag"),
+          disableDoubleClickZoom: this.map.get("drag"),
           mapTypeControl:false,
           mapTypeId: google.maps.MapTypeId.ROADMAP,
           backgroundColor: 'white',

@@ -1,5 +1,7 @@
 require_relative 'thread_pool'
+require_relative '../../services/table-geocoder/lib/table_geocoder_factory'
 require 'timeout'
+require 'date'
 
 namespace :cartodb do
   namespace :db do
@@ -1255,6 +1257,38 @@ namespace :cartodb do
           end
         }, 1, 0.3)
       end
+    end
+
+    # e.g. bundle exec rake cartodb:db:migrate_current_geocoder_billing_to_redis[YYYYMM,YYYYMMDD]
+    desc 'Migrate the current billing geocoding data to Redis'
+    task :migrate_current_geocoder_billing_to_redis, [:date_from, :date_to] => [:environment] do |task, args|
+      args.with_defaults(:date_from => nil, :date_to => nil)
+      if args[:date_from].blank? or args[:date_to].blank?
+        raise "ERROR: Is mandatory to pass a date from and to for the migration"
+      end
+      begin
+        date_from = DateTime.parse(args[:date_from])
+        date_to = DateTime.parse(args[:date_to])
+      rescue => e
+        raise "Error converting argument dates, check the arguments"
+      end
+      execute_on_users_with_index(:migrate_current_geocoder_billing_to_redis.to_s, Proc.new { |user, i|
+        begin
+          # We are working on the v2 which is only Nokia
+          next if user.google_maps_geocoder_enabled?
+          usage_metrics = Carto::TableGeocoderFactory.get_geocoder_metrics_instance(user)
+          geocoding_calls = user.get_not_aggregated_geocoding_calls({from: date_from, to: date_to})
+          geocoding_calls.each do |metric|
+            usage_metrics.incr(:geocoder_here, :success_responses, metric[:processed_rows], metric[:date])
+            usage_metrics.incr(:geocoder_here, :total_requests, metric[:processed_rows], metric[:date])
+            usage_metrics.incr(:geocoder_cache, :success_responses, metric[:cache_hits], metric[:date])
+            usage_metrics.incr(:geocoder_cache, :total_requests, metric[:cache_hits], metric[:date])
+            puts "Imported metrics for day #{metric[:date]} and user #{user.username}: #{metric}"
+          end
+        rescue => e
+          puts "Error trying to migrate user current billing cycle to redis #{user.username}: #{e.message}"
+        end
+      }, 1, 0.3)
     end
   end
 end

@@ -14,6 +14,10 @@ class Carto::UserCreation < ActiveRecord::Base
   scope :http_authentication, where(created_via: CREATED_VIA_HTTP_AUTENTICATION)
   scope :in_progress, where(state: IN_PROGRESS_STATES)
 
+  def self.columns
+    super.reject { |c| c.name == "created_via_api" }
+  end
+
   belongs_to :log, class_name: Carto::Log
   belongs_to :user, class_name: Carto::User
 

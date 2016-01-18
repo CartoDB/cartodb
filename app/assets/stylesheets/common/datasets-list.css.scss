@@ -152,7 +152,10 @@ $bannedColor: #E1A7A5;
   @include display-flex();
   @include align-items(center);
 }
-.DatasetsList-itemTitle.is--disabled { color: $cTypography-help }
+.DatasetsList-itemTitle.is-disabled {
+  color: $cTypography-help;
+  font-weight: normal;
+}
 .DatasetsList-itemTitlePermission {
   margin-left: $sMargin-elementInline;
   background: white;

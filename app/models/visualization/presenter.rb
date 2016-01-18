@@ -11,7 +11,7 @@ module CartoDB
         @viewing_user    = options.fetch(:user, nil)
         @options         = options
         @table           = options[:table] || visualization.table
-        @synchronization = options[:synchronization]
+        @synchronization = options[:synchronization] || visualization.synchronization
         # Expose real privacy (used for normal JSON purposes)
         @real_privacy    = options[:real_privacy] || false
       end

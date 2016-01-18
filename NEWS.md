@@ -1,6 +1,8 @@
-3.12.1 (2016-mm-dd)
+3.12.2 (2016-05-15)
 -------------------
 * Support for HTTP Header authentication.
+* Update navigation in public pages.
+* New feature in organizations management: user quota slider.
 
 3.12.0 (2016-01-05)
 -------------------

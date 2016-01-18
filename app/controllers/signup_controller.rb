@@ -77,7 +77,8 @@ class SignupController < ApplicationController
     render_500 and return false unless authenticator.autocreation_valid?(request)
     render_403 and return false unless authenticator.valid?(request)
 
-    account_creator = CartoDB::UserAccountCreator.new(Carto::UserCreation::CREATED_VIA_HTTP_AUTENTICATION).
+    account_creator = CartoDB::UserAccountCreator.
+      new(Carto::UserCreation::CREATED_VIA_HTTP_AUTENTICATION).
       with_email_only(authenticator.email(request))
 
     account_creator = account_creator.with_organization(@organization) if @organization

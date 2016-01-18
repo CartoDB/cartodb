@@ -211,7 +211,7 @@ module CartoDB
           @tracker.call('geocoding')
           create_the_geom_in(table_name)
           orgname = user.organization.nil? ? nil : user.organization.name
-          usage_metrics = CartoDB::GeocoderUsageMetrics.new($users_metadata, user.username, orgname)
+          usage_metrics = CartoDB::GeocoderUsageMetrics.new($geocoder_metrics, user.username, orgname)
           config = @options[:geocoder].merge(
             table_schema: schema,
             table_name: table_name,

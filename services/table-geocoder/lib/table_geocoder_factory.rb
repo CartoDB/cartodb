@@ -64,7 +64,7 @@ module Carto
 
     def self.get_geocoder_metrics_instance(user)
       orgname = user.organization.nil? ? nil : user.organization.name
-      CartoDB::GeocoderUsageMetrics.new($users_metadata, user.username, orgname)
+      CartoDB::GeocoderUsageMetrics.new($geocoder_metrics, user.username, orgname)
     end
   end
 end

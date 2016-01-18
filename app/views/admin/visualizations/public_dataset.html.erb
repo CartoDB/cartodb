@@ -163,7 +163,7 @@
       <div class="PublicMap-block">
         <div class="PublicMap-leftBlock PublicMap-leftBlock--large">
           <div class="js-user-meta">
-            <h1 class="PublicMap-title js-PublicMap-title Title Title--m"><%= @visualization.name %></h1>
+            <h1 class="PublicMap-title js-PublicMap-title Title Title--m"><%= @visualization.display_name_or_name %></h1>
             <% if @visualization.description_clean %>
               <div class="PublicMap-description"><%= raw @visualization.description_html_safe %></div>
             <% end %>

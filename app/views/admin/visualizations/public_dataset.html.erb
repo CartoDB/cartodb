@@ -199,7 +199,7 @@
                   <li class="PublicMap-metaItem">
                     <i class="PublicMap-metaIcon iconFont iconFont-Anchor"></i>
                     <%# Keep on one line to avoid unwanted spaces %>
-                    <%= @visualization.visualization.source %>
+                    <%= raw @visualization.source_html_safe %>
                   </li>
                 <% end %>
               </ul>

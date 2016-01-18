@@ -170,7 +170,7 @@
 
             <div class="PublicMap-meta">
               <ul class="PublicMap-metaList">
-                <li class="PublicMap-metaItem"><i class="PublicMap-metaIcon iconFont iconFont-Calendar"></i> <%= time_ago_in_words(@visualization.updated_at) %> ago</li>
+                <li class="PublicMap-metaItem"><i class="PublicMap-metaIcon iconFont iconFont-Calendar"></i>  <span title="<%= time_ago_in_words(@visualization.updated_at) %> ago"><%= time_ago_in_words(@visualization.updated_at) %> ago</span></li>
               </ul>
 
               <ul class="PublicMap-metaList PublicMap-metaList--mobile js-PublicMap-metaList--mobile">
@@ -182,7 +182,7 @@
                     <% else %>
                       <%= number_to_human(@table.rows_counted, units: { unit:"", thousand: "K", million: "M" }, precision: 2, format: '%n%u') %>
                     <% end %>
-                    <%= 'row'.pluralize(@table.rows_counted) %>
+                     <span title="<%= 'row'.pluralize(@table.rows_counted) %>"><%= 'row'.pluralize(@table.rows_counted) %></span>
                   </li>
                 <% end %>
 
@@ -191,7 +191,7 @@
                     <%# Defaulting on CC icon for license https://github.com/CartoDB/cartodb/issues/6413 %>
                     <i class="PublicMap-metaIcon iconFont iconFont-CreativeCommons iconFont-License iconFont-License<%= @visualization.visualization.license_info.id.to_s.gsub(/_/,"").downcase %>"></i>
                     <%# Keep on one line to avoid unwanted spaces %>
-                    <%= @visualization.visualization.license_info.name %>
+                    <span title="<%= @visualization.visualization.license_info.name %>"><%= @visualization.visualization.license_info.name %></span>
                   </li>
                 <% end %>
 
@@ -199,7 +199,7 @@
                   <li class="PublicMap-metaItem">
                     <i class="PublicMap-metaIcon iconFont iconFont-Anchor"></i>
                     <%# Keep on one line to avoid unwanted spaces %>
-                    <%= raw @visualization.source_html_safe %>
+                    <span title="<%= @visualization.visualization.source %>"><%= raw @visualization.source_html_safe %></span>
                   </li>
                 <% end %>
               </ul>

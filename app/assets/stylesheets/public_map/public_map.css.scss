@@ -88,9 +88,19 @@
 .PublicMap-metaItem {
   display: inline-block;
   margin-right: 30px;
+  max-width: 165px;
 }
+.PublicMap-metaItem,
 .PublicMap-metaItem p {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.PublicMap-metaItem p,
+.PublicMap-metaItem i {
   display: inline-block;
+  max-width: 135px;
+  vertical-align: middle;
 }
 .PublicMap-metaItem:last-child {
   margin-right: 0;

@@ -64,7 +64,7 @@ module CartoDB
       end
 
       def delete_job_table
-        CartoDB.notify_debug('Dropping temp table', schema: @schema, table: table_name, database: @db)
+        CartoDB.notify_debug('Dropping temp table', schema: @schema, table: table_name)
         delete_temp_table(table_name)
       end
 

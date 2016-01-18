@@ -188,7 +188,8 @@
 
                 <% if !@visualization.visualization.license_info.nil? %>
                   <li class="PublicMap-metaItem">
-                    <i class="PublicMap-metaIcon iconFont iconFont-License iconFont-License<%= @visualization.visualization.license_info.id.to_s.gsub(/_/,"").downcase %>"></i>
+                    <%# Defaulting on CC icon for license https://github.com/CartoDB/cartodb/issues/6413 %>
+                    <i class="PublicMap-metaIcon iconFont iconFont-CreativeCommons iconFont-License iconFont-License<%= @visualization.visualization.license_info.id.to_s.gsub(/_/,"").downcase %>"></i>
                     <%# Keep on one line to avoid unwanted spaces %>
                     <%= @visualization.visualization.license_info.name %>
                   </li>

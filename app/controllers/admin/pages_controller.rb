@@ -441,7 +441,7 @@ class Admin::PagesController < Admin::AdminController
 
     begin
       vis_item(dataset).merge({
-        rows_count:    dataset.table.rows_counted,
+        rows_count: dataset.table.rows_counted,
         size_in_bytes: dataset.table.table_size,
         geometry_type: geometry_type,
         source_html_safe: dataset.table.source_html_safe

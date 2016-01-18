@@ -192,8 +192,9 @@ class Geocoding < Sequel::Model
     return 0 unless kind == 'high-resolution'
     total_rows       = processed_rows.to_i + cache_hits.to_i
     geocoding_quota  = user.organization.present? ? user.organization.geocoding_quota.to_i : user.geocoding_quota
+    used_geocoding_calls = user.organization_user? ? user.organization.get_geocoding_calls : user.get_geocoding_calls
     # ::User#get_geocoding_calls includes this geocoding run, so we discount it
-    remaining_quota  = geocoding_quota + total_rows - user.get_geocoding_calls
+    remaining_quota  = geocoding_quota + total_rows - used_geocoding_calls
     remaining_quota  = (remaining_quota > 0 ? remaining_quota : 0)
     used_credits     = total_rows - remaining_quota
     (used_credits > 0 ? used_credits : 0)

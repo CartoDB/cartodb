@@ -146,7 +146,11 @@ class Organization < Sequel::Model
 
   def get_geocoding_calls(options = {})
     date_from, date_to = quota_dates(options)
-    Geocoding.get_geocoding_calls(users_dataset.join(:geocodings, :user_id => :id), date_from, date_to)
+    if owner.has_feature_flag?('new_geocoder_quota')
+      get_organization_geocoding_data(self, date_from, date_to)
+    else
+      Geocoding.get_geocoding_calls(users_dataset.join(:geocodings, :user_id => :id), date_from, date_to)
+    end
   end
 
   def get_new_system_geocoding_calls(options = {})

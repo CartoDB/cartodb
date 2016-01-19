@@ -1,4 +1,4 @@
-# coding: UTF-8
+# encoding: UTF-8
 require 'cartodb/per_request_sequel_cache'
 require_relative './user/user_decorator'
 require_relative './user/oauths'
@@ -736,12 +736,17 @@ class User < Sequel::Model
     !!dashboard_viewed_at
   end
 
+  def geocoder_type
+    google_maps_geocoder_enabled? ? "google" : "heremaps"
+  end
+
   # create the core user_metadata key that is used in redis
   def key
     "rails:users:#{username}"
   end
 
-  # save users basic metadata to redis for node sql api to use
+  # save users basic metadata to redis for other services (node sql api, geocoder api, etc)
+  # to use
   def save_metadata
     $users_metadata.HMSET key,
       'id', id,
@@ -749,7 +754,13 @@ class User < Sequel::Model
       'database_password', database_password,
       'database_host', database_host,
       'database_publicuser', database_public_username,
-      'map_key', api_key
+      'map_key', api_key,
+      'geocoder_type', geocoder_type,
+      'geocoding_quota', geocoding_quota,
+      'soft_geocoding_limit', soft_geocoding_limit,
+      'google_maps_client_id', google_maps_key,
+      'google_maps_api_key', google_maps_private_key,
+      'period_end_date', period_end_date
   end
 
   def get_auth_tokens

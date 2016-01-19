@@ -1299,21 +1299,30 @@ namespace :cartodb do
       if args[:username].blank?
         execute_on_users_with_index(:update_user_and_org_redis_metadata.to_s, Proc.new { |user, i|
           update_user_metadata(user)
+          update_organization_metadata(user)
         }, 1, 0.3)
       else
         user = ::User.where(username: args[:username]).first
         update_user_metadata(user)
+        update_organization_metadata(user)
       end
     end
 
     def update_user_metadata(user)
       begin
+        user.save_metadata
+        puts "Updated redis metadata for user #{user.username}"
+      rescue => e
+        puts "Error trying to update the user  metadata for user #{user.username}: #{e.message}"
+      end
+    end
+
+    def update_organization_metadata(user)
+      begin
         if user.organization_owner?
           user.organization.save_metadata
           puts "Updated redis metadata for organization #{user.organization.name}"
         end
-        user.save_metadata
-        puts "Updated redis metadata for user #{user.username}"
       rescue => e
         puts "Error trying to update the user and/or org metadata for user #{user.username}: #{e.message}"
       end

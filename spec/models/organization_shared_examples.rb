@@ -19,7 +19,7 @@ shared_examples_for "organization models" do
       expect {
         ::User.any_instance.expects(:get_geocoding_calls).never
         get_geocoding_calls_by_organization_id(@organization.id).should == 14
-      }.to make_database_queries(count: 0..1)
+      }.to make_database_queries(count: 0..5)
     end
 
   end

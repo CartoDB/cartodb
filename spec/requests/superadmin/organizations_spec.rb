@@ -5,6 +5,7 @@ feature "Superadmin's organization API" do
   before(:all) do
     # Capybara.current_driver = :rack_test
     @organization = create_organization_with_users(name: 'vizzuality')
+    @organization2 = create_organization_with_users(name: 'vizzuality-2')
     @org_atts = @organization.values
   end
 
@@ -95,8 +96,12 @@ feature "Superadmin's organization API" do
   end
 
   describe "GET /superadmin/organization" do
+
+    before(:all) do
+      @organization.owner.stubs(:has_feature_flag?).with('new_geocoder_quota').returns(true)
+    end
+
     it "gets all organizations" do
-      @organization2 = FactoryGirl.create(:organization, name: 'wadus-org')
       get_json superadmin_organizations_path, {}, superadmin_headers do |response|
         response.status.should == 200
         response.body.map { |u| u["name"] }.should include(@organization.name, @organization2.name)

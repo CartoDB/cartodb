@@ -782,7 +782,11 @@ class User < Sequel::Model
 
   def get_geocoding_calls(options = {})
     date_from, date_to = quota_dates(options)
-    Geocoding.get_geocoding_calls(geocodings_dataset, date_from, date_to)
+    if has_feature_flag?('new_geocoder_quota')
+      get_user_geocoding_data(self, date_from, date_to)
+    else
+      Geocoding.get_geocoding_calls(geocodings_dataset, date_from, date_to)
+    end
   end
 
   def get_new_system_geocoding_calls(options = {})

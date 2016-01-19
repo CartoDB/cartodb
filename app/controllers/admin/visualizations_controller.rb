@@ -176,6 +176,8 @@ class Admin::VisualizationsController < Admin::AdminController
     # Public export API SQL url
     @export_sql_api_url = "#{ sql_api_url("SELECT * FROM #{ @table.owner.sql_safe_database_schema }.#{ @table.name }", @user) }&format=shp"
 
+    @data_library_url = CartoDB.data_library_path.nil? ? nil : "#{request.protocol}#{CartoDB.account_host}#{CartoDB.data_library_path}"
+
     respond_to do |format|
       format.html { render 'public_dataset', layout: 'application_table_public' }
     end

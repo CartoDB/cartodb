@@ -36,7 +36,7 @@ module CartoDB
 
   def self.report_exception(e, message = nil, additional_data = {})
     backtrace = e.backtrace ? e.backtrace.join('\n') : ''
-    self.notify_error(message, additional_data.merge(error: e.inspect, backtrace: backtrace))
+    notify_error(message, additional_data.merge(error: e.inspect, backtrace: backtrace))
   end
 
   def self.notify_debug(message, additional_data={})

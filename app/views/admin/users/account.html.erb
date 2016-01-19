@@ -145,7 +145,7 @@
       <% end %>
 
       <div class="FormAccount-footer <%= !@can_be_deleted ? 'FormAccount-footer--noMarginBottom' : '' %>">
-        <% if !@can_be_deleted -%>
+        <% unless @can_be_deleted -%>
           <p class="FormAccount-footerText">
             <i class="iconFont iconFont-Info FormAccount-footerIcon"></i>
             <span><%= @cant_be_deleted_reason %></span>

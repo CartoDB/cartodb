@@ -108,6 +108,10 @@ module Carto
         map.nil? ? nil : map.zoom
       end
 
+      def display_name_or_name
+        @visualization.display_name.nil? ? @visualization.name : @visualization.display_name
+      end
+
       private
 
       def simplify_geometry_types(geometry_types)

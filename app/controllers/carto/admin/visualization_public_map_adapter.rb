@@ -18,7 +18,7 @@ module Carto
       delegate [
         :type_slide?, :has_permission?, :derived?, :organization, :organization?, :id, :likes,
         :password_protected?, :varnish_key, :related_tables, :is_password_valid?, :get_auth_tokens, :table, :name,
-        :display_name, :overlays, :created_at, :updated_at, :description, :mapviews, :geometry_types, :privacy, :tags,
+        :overlays, :created_at, :updated_at, :description, :mapviews, :geometry_types, :privacy, :tags,
         :surrogate_key, :has_password?, :total_mapviews, :is_viewable_by_user?, :is_accesible_by_user?,
         :can_be_cached?, :is_privacy_private?
       ] => :visualization

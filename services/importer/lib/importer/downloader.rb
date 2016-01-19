@@ -226,7 +226,7 @@ module CartoDB
           ssl_verifypeer:   verify_ssl,
           ssl_verifyhost:   (verify_ssl ? 2 : 0),
           forbid_reuse:     true,
-          connecttimeout:  HTTP_CONNECT_TIMEOUT,
+          connecttimeout:   HTTP_CONNECT_TIMEOUT,
           timeout:          http_options.fetch(:http_timeout, DEFAULT_HTTP_REQUEST_TIMEOUT)
         }
       end

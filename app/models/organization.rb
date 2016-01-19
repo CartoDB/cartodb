@@ -340,7 +340,7 @@ class Organization < Sequel::Model
   end
 
   def period_end_date
-    owner.period_end_date
+    owner ? owner.period_end_date : nil
   end
 
   def public_vis_count_by_type(type)

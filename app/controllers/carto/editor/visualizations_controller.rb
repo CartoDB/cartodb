@@ -10,7 +10,8 @@ module Carto
       after_filter :update_user_last_activity, only: [:show]
 
       def show
-        @vizjson = Carto::Api::VizJSONPresenter.new(@visualization, $tables_metadata).to_vizjson({ https_request: is_https? })
+        @vizjson = Carto::Api::VizJSONPresenter.new(@visualization, $tables_metadata)
+                                               .to_vizjson(https_request: is_https?)
       end
 
       private

@@ -7,7 +7,7 @@ module Editor
     private
 
     def editor_user?(user)
-      user.has_feature_flag?('new_editor')
+      user.has_feature_flag?('editor-3')
     end
   end
 end

@@ -45,8 +45,12 @@ CartoDB::Application.routes.draw do
   post '/google/signup' => 'google_plus#google_signup', as: :google_plus_signup
 
   # Editor v3
-  namespace :editor do
-    resources :visualizations, only: [:show]
+  scope '(/user/:user_domain)(/u/:user_domain)' do
+    namespace :editor do
+
+      # Visualizations
+      resources :visualizations, only: :show, path: '/'
+    end
   end
 
   # Internally, some of this methods will forcibly rewrite to the org-url if user belongs to an organization

@@ -159,6 +159,10 @@ class Carto::Visualization < ActiveRecord::Base
     type == TYPE_SLIDE
   end
 
+  def kind_raster?
+    kind == KIND_RASTER
+  end
+
   def canonical?
     type == TYPE_CANONICAL
   end

@@ -26,7 +26,7 @@ module Editor
         else
           return redirects_to CartoDB.url(self,
                                           'public_visualizations_public_map',
-                                          { id: request.params[:id], redirected:true })
+                                          { id: request.params[:id], redirected: true })
         end
       end
 

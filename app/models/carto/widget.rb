@@ -2,7 +2,7 @@
 
 class Carto::Widget < ActiveRecord::Base
   belongs_to :layer, class_name: Carto::Layer
- 
+
   # INFO: disable ActiveRecord inheritance column
   self.inheritance_column = :_type
 

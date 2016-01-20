@@ -10,8 +10,7 @@ require_dependency 'static_maps_url_helper'
 require_dependency 'carto/user_db_size_cache'
 
 class Admin::VisualizationsController < Admin::AdminController
-
-  include CartoDB
+  include CartoDB, VisualizationsControllerHelper
 
   MAX_MORE_VISUALIZATIONS = 3
   DEFAULT_PLACEHOLDER_CHARS = 4
@@ -616,15 +615,7 @@ class Admin::VisualizationsController < Admin::AdminController
     user_id = user ? user.id : nil
 
     # Implicit order due to legacy code: 1st return canonical/table/Dataset if present, else derived/visualization/Map
-    visualization = Carto::VisualizationQueryBuilder.new
-                                                    .with_id_or_name(table_id)
-                                                    .with_user_id(user_id)
-                                                    .build
-                                                    .all
-                                                    .sort { |vis_a, vis_b|
-                                                        vis_a.type == Carto::Visualization::TYPE_CANONICAL ? -1 : 1
-                                                      }
-                                                    .first
+    visualization = get_priority_visualization(table_id, user_id)
 
     return get_visualization_and_table_from_table_id(table_id) if visualization.nil?
     render_pretty_404 if visualization.kind == CartoDB::Visualization::Member::KIND_RASTER

@@ -1,9 +1,11 @@
 module Carto
   module Editor
     class VisualizationsController < EditorController
+      include VisualizationsControllerHelper
+
       ssl_required :show
 
-      before_filter :load_visualization_and_table, only: [:show]
+      before_filter :load_visualization, only: [:show]
 
       after_filter :update_user_last_activity, only: [:show]
 
@@ -12,22 +14,10 @@ module Carto
 
       private
 
-      def load_visualization_and_table
-        visualization = Carto::VisualizationQueryBuilder.new
-                                                        .with_id_or_name(params[:id])
-                                                        .with_user_id(current_user.id)
-                                                        .build
-                                                        .all
-                                                        .sort do |vis_a, _vis_b|
-                                                          vis_a.type == Carto::Visualization::TYPE_CANONICAL ? -1 : 1
-                                                        end
-                                                        .first
+      def load_visualization
+        @visualization = get_priority_visualization(params[:id], current_user.id)
 
-
-        @visualization = Carto::Admin::VisualizationPublicMapAdapter.new(visualization, current_user, self)
-        @table = visualization.table_service
-
-        render_pretty_404 if disallowed?(@visualization)
+        render_404 unless allowed?(@visualization)
       end
 
       def update_user_last_activity
@@ -36,12 +26,8 @@ module Carto
         current_user.set_last_ip_address request.remote_ip
       end
 
-      def disallowed?(visualization)
-        visualization.nil? || visualization.type_slide? || visualization.kind_raster?
-      end
-
-      def render_pretty_404
-        render(file: "public/404.html", layout: false, status: 404)
+      def allowed?(visualization)
+        true unless visualization.nil? || visualization.type_slide? || visualization.kind_raster?
       end
     end
   end

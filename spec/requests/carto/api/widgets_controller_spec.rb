@@ -43,5 +43,12 @@ describe Carto::Api::WidgetsController do
 
     end
 
+    it 'returns the source widget content' do
+      get_json api_v3_widgets_show_url(user_domain: @user1.username, map_id: @map.id, layer_id: @widget.layer_id, widget_id: @widget.id, api_key: @user1.api_key), {}, http_json_headers do |response|
+        response.status.should == 200
+        response.body[:widget_json].should == @widget.widget_json
+      end
+    end
+
   end
 end

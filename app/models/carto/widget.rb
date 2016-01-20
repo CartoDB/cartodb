@@ -13,6 +13,10 @@ class Carto::Widget < ActiveRecord::Base
     widget_json_json[:dataview]
   end
 
+  def belongs_to_map?(map_id)
+    !layer.nil? && !layer.maps.nil? && layer.maps.map(&:id).include?(map_id)
+  end
+
   private
 
   def dataview_layer_id_must_match

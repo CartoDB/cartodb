@@ -73,8 +73,9 @@
   margin: 0 auto;
   border: 2px solid #FFF;
   border-radius: 50%;
-  background: url('../img/dashboard-show.svg') no-repeat center center;
+  color: #FFF;
   cursor: pointer;
+  font-size: $sFontSize-medium;
 }
 .CDB-Dashboard-infoUpdate {
   margin-bottom: 8px;

@@ -1,10 +1,12 @@
 <div class="CDB-Dashboard-infoInner">
   <div class="CDB-Dashboard-infoHeader">
     <div class="CDB-Dashboard-infoLogo">
-      <i class="CDB-Icon CDB-Icon-cartofante"></i>
+      <i class="CDB-IconFont CDB-IconFont--cartoFante"></i>
     </div>
     <div class="CDB-Dashboard-infoActions">
-      <button class="CDB-Dashboard-infoActionsLink CDB-Dashboard-infoActionsLink--mobile js-toggle-view-link"></button>
+      <button class="CDB-Dashboard-infoActionsLink CDB-Dashboard-infoActionsLink--mobile js-toggle-view-link">
+        <i class="CDB-IconFont CDB-IconFont--arrowNext"></i>
+      </button>
     </div>
     <div class="CDB-Dashboard-infoTexts CDB-Dashboard-hideMobile">
       <p class="CDB-Dashboard-infoUpdate">UPDATED <%- updatedAt %></p>
@@ -27,7 +29,7 @@
 
 <div class="CDB-Dashboard-infoHeaderMobile u-showMobile">
   <div class="CDB-Dashboard-infoLogo">
-    <i class="CDB-Icon CDB-Icon-cartofante"></i>
+    <i class="CDB-IconFont CDB-IconFont--cartoFante"></i>
   </div>
   <button class="js-toggle-view-link">
     <span class="CDB-Shape CDB-Shape--hamburguer"></span>

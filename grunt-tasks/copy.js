@@ -7,4 +7,4 @@ module.exports = {
       dest: '<%= config.dist %>/themes/fonts'
     }]
   }
-}
+};

@@ -1,9 +1,6 @@
 // Dashboard info
 // --------------------------------------------------
 
-@import '../../../node_modules/cartoassets/src/scss/variables/sizes';
-@import '../../../node_modules/cartoassets/src/scss/utilities/mixins';
-
 .CDB-Dashboard-infoTexts {
   position: absolute;
   top: 150px;
@@ -74,8 +71,8 @@
   border: 2px solid #FFF;
   border-radius: 50%;
   color: #FFF;
-  cursor: pointer;
   font-size: $sFontSize-medium;
+  cursor: pointer;
 }
 .CDB-Dashboard-infoUpdate {
   margin-bottom: 8px;

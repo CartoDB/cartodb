@@ -1,9 +1,6 @@
 // Chart styles
 // ----------------------------------------------
 
-@import '../../../node_modules/cartoassets/src/scss/variables/sizes';
-@import '../../../node_modules/cartoassets/src/scss/utilities/mixins';
-
 .CDB-Widget-chart.Widget-chart--fake {
   @include display-flex();
   @include justify-content(space-between, justify);

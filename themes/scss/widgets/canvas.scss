@@ -1,9 +1,6 @@
 // Canvas for widgets
 // --------------------------------------------------
 
-@import '../../../node_modules/cartoassets/src/scss/variables/sizes';
-@import '../../../node_modules/cartoassets/src/scss/utilities/mixins';
-
 .CDB-Widget-canvas {
   position: relative;
   top: 0;
@@ -13,7 +10,6 @@
   max-width: 352px;
   margin-left: $baseSize;
   border-radius: $baseSize / 2;
-  background: #FFF; // Canvas is out of widget themes
 }
 .CDB-Widget-canvasInner {
   position: absolute;

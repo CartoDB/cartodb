@@ -3,20 +3,19 @@ require_relative '../../app/models/carto/widget'
 FactoryGirl.define do
   factory :widget, class: Carto::Widget do
     order 1
-    widget_json {
+    type 'formula'
+    title 'The Title'
+    dataview {
       %Q(
-            {
-              "type": "formula",
-              "title": "Min population",
-              "dataview": {
-                "layer_id": "#{layer.id}",
-                "type": "formula",
-                "column": "pop_max",
-                "operation": "min"
-              }
-            }
+          {
+            "type": "formula",
+            "column": "pop_max",
+            "operation": "min"
+          }
       )
     }
+    created_at { Time.now }
+    updated_at { Time.now }
 
     factory :widget_with_layer do
       association :layer, factory: :carto_layer

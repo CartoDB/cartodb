@@ -57,17 +57,19 @@ describe Carto::Api::WidgetsController do
 
     end
 
-    it 'returns the source widget content' do
-      get_json api_v3_widgets_show_url(user_domain: @user1.username, map_id: @map.id, layer_id: @widget.layer_id, widget_id: @widget.id, api_key: @user1.api_key), {}, http_json_headers do |response|
-        response.status.should == 200
-        response.body[:widget_json].should == @widget.widget_json
-      end
+    def response_widget_should_match_widget(response_widget, widget)
+      response_widget[:id].should == widget.id
+      response_widget[:order].should == widget.order
+      response_widget[:type].should == widget.type
+      response_widget[:title].should == widget.title
+      response_widget[:layer_id].should == widget.layer.id
+      response_widget[:dataview].should == widget.dataview
     end
 
     it 'returns the source widget content' do
       get_json api_v3_widgets_show_url(user_domain: @user1.username, map_id: @map.id, layer_id: @widget.layer_id, widget_id: @widget.id, api_key: @user1.api_key), {}, http_json_headers do |response|
         response.status.should == 200
-        response.body[:widget_json].should == @widget.widget_json
+        response_widget_should_match_widget(response.body, @widget)
       end
     end
 
@@ -81,7 +83,7 @@ describe Carto::Api::WidgetsController do
       get_json api_v3_widgets_show_url(user_domain: @user2.username, map_id: @public_map.id, layer_id: @public_widget.layer_id, widget_id: @public_widget.id), {}, http_json_headers do |response|
 
         response.status.should == 200
-        response.body[:widget_json].should == @public_widget.widget_json
+        response_widget_should_match_widget(response.body, @public_widget)
       end
     end
 

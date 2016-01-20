@@ -22,5 +22,4 @@ FactoryGirl.define do
     name 'factory visualization'
     privacy 'public'
   end
-
 end

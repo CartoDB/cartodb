@@ -5,6 +5,9 @@ module Carto
 
       ssl_required :show
 
+      skip_before_filter :api_authorization_required, only: [:show]
+      before_filter :optional_api_authorization, only: [:show]
+
       before_filter :load_parameters
       before_filter :load_widget
 

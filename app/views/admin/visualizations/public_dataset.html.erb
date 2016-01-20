@@ -113,7 +113,7 @@
               <a href="<%= @user_url %>" class="Navmenu-link Navmenu-link--owner" title="<%= @name %>"><%= @name %></a>
             </li>
 
-            <% unless @data_library_username %>
+            <% unless @is_data_library %>
               <li class="Navmenu-item">
                 <i class="Navmenu-rarrow iconFont iconFont-Rarrow"></i>
                 <a href="<%= CartoDB.url(self, 'public_datasets_home', {}, @visualization.user) %>" class="Navmenu-link">Datasets</a>

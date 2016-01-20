@@ -147,8 +147,9 @@ class Admin::VisualizationsController < Admin::AdminController
     @user_url = CartoDB.url(self, 'public_user_feed_home', {}, @visualization.user)
 
     has_data_library_username = Cartodb.config[:data_library].present? && !Cartodb.config[:data_library]['username'].blank?
+    @is_data_library = has_data_library_username && data_library_user?
 
-    if has_data_library_username && data_library_user?
+    if @is_data_library
       @name = "Data Library"
       @user_url = Cartodb.config[:data_library].present? && !Cartodb.config[:data_library]['path'].blank? ? "#{request.protocol}#{CartoDB.account_host}#{Cartodb.config[:data_library]['path']}" : @user_url
     end

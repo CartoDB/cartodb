@@ -12,16 +12,16 @@
 .CDB-Widget-textBig { // 16 size
   @include text-overflow();
   display: inline-block;
-  font-size: $sFontSize-larger;
+  font-size: $sFontSize-large;
   font-weight: $sFontWeight-normal;
-  line-height: $sFontSize-normal + 6;
+  line-height: $sFontSize-medium + 6;
 }
 .CDB-Widget-textBig--bold {
   font-weight: $sFontWeight-semibold;
 }
 .CDB-Widget-textNormal { // 14 size
   @include text-overflow();
-  font-size: $sFontSize-normal;
+  font-size: $sFontSize-medium;
   font-weight: $sFontWeight-normal;
   line-height: $sFontWeight-normal + 1;
 }
@@ -43,9 +43,9 @@
 }
 .CDB-Widget-textSmaller { // 10 size
   @include text-overflow();
-  font-size: $sFontSize-smaller;
+  font-size: $sFontSize-small;
   font-weight: $sFontWeight-normal;
-  line-height: $sFontSize-smaller + 3;
+  line-height: $sFontSize-small + 3;
 }
 .CDB-Widget-textSmaller--bold {
   font-weight: $sFontWeight-semibold;

@@ -66,6 +66,7 @@ WORKING_SPECS_1 = \
 	spec/models/carto/bi_visualization_spec.rb \
 	spec/models/carto/template_spec.rb \
 	spec/models/carto/group_spec.rb \
+	spec/models/carto/widget_spec.rb \
 	spec/models/carto/ldap/configuration_spec.rb \
 	spec/requests/sessions_controller_spec.rb \
 	spec/services/carto/visualizations_export_service_spec.rb \

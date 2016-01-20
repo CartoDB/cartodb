@@ -1,12 +1,11 @@
-/**
- *  CartoDB infowindow light styles
- */
+// Light infowindow styles
+// ----------------------------------------------
 
 .CDB-infowindow--light {
   background: #FFF;
   .CDB-infowindow-subtitle {
     color: #636D72;
-  } 
+  }
   .CDB-infowindow-title {
     color: #2E3C43;
   }
@@ -52,10 +51,9 @@
     .CDB-infowindow-title {
       color: #FFF;
     }
-  } 
+  }
 }
 
 .CDB-infowindow-list .ps-scrollbar-y-rail {
   background: #999 !important;
 }
-

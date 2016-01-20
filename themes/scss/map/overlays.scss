@@ -1,9 +1,5 @@
-// controllers styles
+// Map overlays styles
 // ----------------------------------------------
-
-@import '../../../node_modules/cartoassets/src/scss/variables/sizes';
-@import '../../../node_modules/cartoassets/src/scss/utilities/mixins';
-
 
 // zoom overlay
 .CDB-Overlay {
@@ -91,9 +87,9 @@
   background: rgba(0, 0, 0, 0.64);
   color: #FFF;
   font-family: 'Open Sans';
-  font-size: $sFontSize-smaller;
+  font-size: $sFontSize-small;
   font-weight: $sFontWeight-semibold;
-  line-height: $sLineHeight-smaller;
+  line-height: $sLineHeight-small;
   text-align: center;
   z-index: 1;
 }

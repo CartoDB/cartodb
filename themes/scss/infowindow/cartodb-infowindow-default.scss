@@ -1,5 +1,5 @@
-@import '../../../node_modules/cartoassets/src/scss/variables/sizes';
-@import '../../../node_modules/cartoassets/src/scss/utilities/mixins';
+// Infowindow styles
+// ----------------------------------------------
 
 .CDB-infowindow-wrapper {
   position: absolute;
@@ -39,7 +39,7 @@
 .CDB-infowindow-subtitle {
   font-size: 9px;
   font-weight: $sFontWeight-lighter;
-  line-height: $sLineHeight-smaller;
+  line-height: $sLineHeight-small;
   text-transform: uppercase;
 }
 .CDB-infowindow-title {

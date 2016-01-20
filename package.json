@@ -38,7 +38,7 @@
     "perfect-scrollbar": "0.6.7",
     "torque.js": "2.15.0",
     "underscore": "1.8.3",
-    "cartoassets": "0.1.9"
+    "cartoassets": "0.1.14"
   },
   "devDependencies": {
     "browserify": "11.2.0",

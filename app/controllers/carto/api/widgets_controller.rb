@@ -5,9 +5,6 @@ module Carto
 
       ssl_required :show
 
-      skip_before_filter :api_authorization_required, only: [:show]
-      before_filter :optional_api_authorization, only: [:show]
-
       before_filter :load_parameters
       before_filter :load_widget
 
@@ -34,7 +31,7 @@ module Carto
 
         raise Carto::LoadError.new("Widget not found: #{@widget_id} for that map (#{@map_id})") unless @widget.belongs_to_map?(@map_id)
 
-        raise Carto::UnauthorizedError.new("Not authorized for widget #{@widget_id}") unless @widget.viewable_by_user?(current_user)
+        raise Carto::UnauthorizedError.new("Not authorized for widget #{@widget_id}") unless @widget.writable_by_user?(current_user)
 
         true
       end

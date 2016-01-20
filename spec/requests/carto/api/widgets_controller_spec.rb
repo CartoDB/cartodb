@@ -33,9 +33,7 @@ describe Carto::Api::WidgetsController do
   let(:random_widget_id) { UUIDTools::UUID.timestamp_create.to_s }
 
   describe '#show' do
-
-    # TODO: is #show needed outside the private editor?
-    xit 'returns 401 for non-authenticated requests' do
+    it 'returns 401 for non-authenticated requests' do
       get_json api_v3_widgets_show_url(user_domain: @user1.username, map_id: random_map_id, layer_id: random_layer_id, widget_id: random_widget_id), {}, http_json_headers do |response|
         response.status.should == 401
       end
@@ -79,11 +77,9 @@ describe Carto::Api::WidgetsController do
       end
     end
 
-    it 'returns the source widget content for public visualizations even without authentication' do
-      get_json api_v3_widgets_show_url(user_domain: @user2.username, map_id: @public_map.id, layer_id: @public_widget.layer_id, widget_id: @public_widget.id), {}, http_json_headers do |response|
-
-        response.status.should == 200
-        response_widget_should_match_widget(response.body, @public_widget)
+    it 'returns 403 if visualization is public and current user is not the owner' do
+      get_json api_v3_widgets_show_url(user_domain: @user2.username, map_id: @public_map.id, layer_id: @public_widget.layer_id, widget_id: @public_widget.id, api_key: @user2.api_key), {}, http_json_headers do |response|
+        response.status.should == 403
       end
     end
 

@@ -34,8 +34,6 @@ class Admin::VisualizationsController < Admin::AdminController
 
   before_filter :resolve_visualization_and_table_if_not_cached, only: [:embed_map]
 
-  before_filter :get_data_library_config, only: [:public_table]
-
   skip_before_filter :browser_is_html5_compliant?, only: [:public_map, :embed_map, :track_embed,
                                                           :show_protected_embed_map, :show_protected_public_map]
   skip_before_filter :verify_authenticity_token, only: [:show_protected_public_map, :show_protected_embed_map]
@@ -146,6 +144,15 @@ class Admin::VisualizationsController < Admin::AdminController
     end
 
     @name = @visualization.user.name.present? ? @visualization.user.name : @visualization.user.username.truncate(20)
+    @user_url = CartoDB.url(self, 'public_user_feed_home', {}, @visualization.user)
+
+    has_data_library_username = Cartodb.config[:data_library].present? && !Cartodb.config[:data_library]['username'].blank?
+
+    if has_data_library_username && is_data_library_user?
+      @name = "Data Library"
+      @user_url = Cartodb.config[:data_library].present? && !Cartodb.config[:data_library]['path'].blank? ? "#{request.protocol}#{CartoDB.account_host}#{Cartodb.config[:data_library]['path']}" : @user_url
+    end
+
     @avatar_url             = @visualization.user.avatar
     @twitter_username       = @visualization.user.twitter_username.present? ? @visualization.user.twitter_username : nil
     @location               = @visualization.user.location.present? ? @visualization.user.location : nil
@@ -679,10 +686,8 @@ class Admin::VisualizationsController < Admin::AdminController
     @viewed_user = ::User.where(username: username).first
   end
 
-  def get_data_library_config
-    @data_library_username = Cartodb.config[:data_library].present? && !Cartodb.config[:data_library]['username'].blank? ? Cartodb.config[:data_library]['username'] : nil
-    @data_library_name_or_name = @data_library_username.nil? ? @name : "Data Library"
-    @data_library_url_or_url = Cartodb.config[:data_library].present? && !Cartodb.config[:data_library]['path'].blank? ? "#{request.protocol}#{CartoDB.account_host}#{Cartodb.config[:data_library]['path']}" : CartoDB.url(self, 'public_user_feed_home', {}, @visualization.user)
+  def is_data_library_user?
+    Cartodb.config[:data_library] && (Cartodb.config[:data_library]['username'] == @viewed_user.username)
   end
 
 end

@@ -102,15 +102,15 @@
         <div class="PublicMap-leftBlock PublicMap-leftBlock--owner">
           <ul class="Navmenu-list Navmenu-list--owner Navmenu-list--avatar">
             <li class="Navmenu-item">
-              <a href="<%= @data_library_url_or_url %>" class="UserAvatar">
-                <img class="UserAvatar-img--medium" src="<%= @visualization.user.avatar %>" alt="<%= @data_library_name_or_name %>" title="<%= @data_library_name_or_name %>" />
+              <a href="<%= @user_url %>" class="UserAvatar">
+                <img class="UserAvatar-img--medium" src="<%= @visualization.user.avatar %>" alt="<%= @name %>" title="<%= @name %>" />
               </a>
             </li>
           </ul>
 
           <ul class="Navmenu-list Navmenu-list--owner">
             <li class="Navmenu-item u-hideOnTablet last-child">
-              <a href="<%= @data_library_url_or_url %>" class="Navmenu-link Navmenu-link--owner" title="<%= @data_library_name_or_name %>"><%= @data_library_name_or_name %></a>
+              <a href="<%= @user_url %>" class="Navmenu-link Navmenu-link--owner" title="<%= @name %>"><%= @name %></a>
             </li>
 
             <% unless @data_library_username %>

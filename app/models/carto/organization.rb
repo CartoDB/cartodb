@@ -31,6 +31,10 @@ module Carto
       end
     end
 
+    def period_end_date
+      owner.period_end_date
+    end
+
     def get_new_system_geocoding_calls(options = {})
       date_to = (options[:to] ? options[:to].to_date : Date.current)
       date_from = (options[:from] ? options[:from].to_date : owner.last_billing_cycle)

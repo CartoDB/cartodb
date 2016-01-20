@@ -9,9 +9,9 @@ module Editor
     def show
       unless current_user.present?
         if request.original_fullpath =~ %r{/tables/}
-          return(redirect_to CartoDB.url(self, 'public_table_map', {id: request.params[:id]}))
+          return(redirect_to CartoDB.url(self, 'public_table_map', id: request.params[:id]))
         else
-          return(redirect_to CartoDB.url(self, 'public_visualizations_public_map', {id: request.params[:id]}))
+          return(redirect_to CartoDB.url(self, 'public_visualizations_public_map', id: request.params[:id]))
         end
       end
 
@@ -20,9 +20,13 @@ module Editor
 
       unless @visualization.has_permission?(current_user, CartoDB::Visualization::Member::PERMISSION_READWRITE)
         if request.original_fullpath =~ %r{/tables/}
-          return redirect_to CartoDB.url(self, 'public_table_map', {id: request.params[:id], redirected:true})
+          return redirect_to CartoDB.url(self,
+                                         'public_table_map',
+                                         { id: request.params[:id], redirected:true })
         else
-          return redirects_to CartoDB.url(self, 'public_visualizations_public_map', {id: request.params[:id], redirected:true})
+          return redirects_to CartoDB.url(self,
+                                          'public_visualizations_public_map',
+                                          { id: request.params[:id], redirected:true })
         end
       end
 

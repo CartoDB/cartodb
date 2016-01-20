@@ -1,6 +1,5 @@
 module Editor
   module VisualizationsHelper
-
     MAX_MORE_VISUALIZATIONS = 3
 
     def load_visualization_and_table
@@ -22,10 +21,12 @@ module Editor
 
       begin
         visualizations_api_url = CartoDB::Visualization::CommonDataService.build_url(self)
-        ::Resque.enqueue(::Resque::UserJobs::CommonData::LoadCommonData, current_user.id, visualizations_api_url) if current_user.should_load_common_data?
+        if current_user.should_load_common_data?
+          ::Resque.enqueue(::Resque::UserJobs::CommonData::LoadCommonData, current_user.id, visualizations_api_url)
+        end
       rescue Exception => e
         # We don't block the load of the dashboard because we aren't able to load common data
-        CartoDB.notify_exception(e, {user:current_user})
+        CartoDB.notify_exception(e, user: current_user)
         return true
       end
     end
@@ -47,7 +48,7 @@ module Editor
       visualization.type_slide?
     end
 
-    def get_visualization_and_table(table_id, schema, filter)
+    def get_visualization_and_table(table_id, schema, _filter)
       user = Carto::User.where(username: schema).first
       # INFO: organization public visualizations
       user_id = user ? user.id : nil
@@ -58,24 +59,26 @@ module Editor
                                                       .with_user_id(user_id)
                                                       .build
                                                       .all
-                                                      .sort { |vis_a, vis_b|
-                                                          vis_a.type == Carto::Visualization::TYPE_CANONICAL ? -1 : 1
-                                                        }
+                                                      .sort do |vis_a, _vis_b|
+                                                        vis_a.type == Carto::Visualization::TYPE_CANONICAL ? -1 : 1
+                                                      end
                                                       .first
 
       return get_visualization_and_table_from_table_id(table_id) if visualization.nil?
       render_pretty_404 if visualization.kind == CartoDB::Visualization::Member::KIND_RASTER
-      return Carto::Admin::VisualizationPublicMapAdapter.new(visualization, current_user, self), visualization.table_service
+      return Carto::Admin::VisualizationPublicMapAdapter.new(visualization, current_user, self),
+             visualization.table_service
     end
 
     def get_visualization_and_table_from_table_id(table_id)
       return nil, nil if !is_uuid?(table_id)
 
-      user_table = Carto::UserTable.where({ id: table_id }).first
+      user_table = Carto::UserTable.where(id: table_id).first
       return nil, nil if user_table.nil?
 
       visualization = user_table.visualization
-      return Carto::Admin::VisualizationPublicMapAdapter.new(visualization, current_user, self), visualization.table_service
+      return Carto::Admin::VisualizationPublicMapAdapter.new(visualization, current_user, self),
+             visualization.table_service
     end
 
     def more_visualizations(user, excluded_visualization)

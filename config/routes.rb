@@ -47,7 +47,6 @@ CartoDB::Application.routes.draw do
   # Editor v3
   scope '(/user/:user_domain)(/u/:user_domain)' do
     namespace :editor do
-
       # Visualizations
       resources :visualizations, only: :show, path: '/'
     end

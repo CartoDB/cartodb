@@ -1,12 +1,13 @@
 // Entry point
 // ----------------------------------------------
 
-@import '../../node_modules/cartoassets/src/scss/variables/sizes';
-@import '../../node_modules/cartoassets/src/scss/utilities/mixins';
-
+// Variables and functions
+@import 'variables/sizes';
+@import 'utilities/mixins';
+// Deep-insights styles
 @import 'map/canvas';
 @import 'map/dashboard-info';
-
+// Widgets styles
 @import 'widgets/themes/light';
 @import 'widgets/buttons';
 @import 'widgets/canvas';

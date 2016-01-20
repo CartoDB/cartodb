@@ -44,6 +44,7 @@ module CartoDB
         return false unless runner.remote_data_updated?
 
         temporary_name = temporary_name_for(result.table_name)
+        @previous_table_column_count = get_column_count(table_name)
 
         # The relation might (and probably will) already exist in the user public schema
         # as source table is a synchronization and those keep same ID along their life
@@ -56,7 +57,10 @@ module CartoDB
           move_to_schema(result)
           rename(result.table_name, table_name)
         end
+
         fix_oid(table_name)
+        @current_table_column_count = get_column_count(table_name)
+
       rescue => exception
         puts "Sync overwrite ERROR: #{exception.message}: #{exception.backtrace.join}"
         Rollbar.report_exception(exception)
@@ -228,9 +232,18 @@ module CartoDB
         }
       end
 
+      def get_column_count(table_name)
+        ::Table.new(:user_table => ::UserTable.where(name: table_name, user_id: user.id).first).column_count if exists?(table_name)
+      end
+
+      def columns_removed?
+        runner.remote_data_updated? ? @previous_table_column_count > @current_table_column_count : false
+      end
+
       private
 
-      attr_reader :table_name, :runner, :database, :user
+      attr_reader :table_name, :runner, :database, :user, :previous_table_column_count, :current_table_column_count
+
     end
   end
 end

@@ -1313,6 +1313,10 @@ class Table
     name.tr('_', ' ').split.map(&:capitalize).join(' ')
   end
 
+  def column_count
+    schema(reload: true).collect { |c| c[0] }.count
+  end
+
   private
 
   def previous_privacy

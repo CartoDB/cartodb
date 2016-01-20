@@ -36,6 +36,8 @@ module CartoDB
       STATE_SYNCING   = 'syncing'
       STATE_SUCCESS   = 'success'
       STATE_FAILURE   = 'failure'
+      # Column/s dropped, schema modified
+      STATE_MODIFIED  = 'modified'
 
       attribute :id,                      String
       attribute :name,                    String
@@ -215,9 +217,12 @@ module CartoDB
 
         importer.run
         self.ran_at   = Time.now
+
         self.run_at   = Time.now + interval
 
-        if importer.success?
+        if importer.columns_removed?
+          set_modified_state_from(importer)
+        elsif importer.success?
           set_success_state_from(importer)
         else
           set_failure_state_from(importer)
@@ -342,10 +347,8 @@ module CartoDB
         end
       end
 
-      def set_success_state_from(importer)
-        log.append     '******** synchronization succeeded ********'
+      def set_state_metadata(importer)
         self.log_trace      = importer.runner_log_trace
-        self.state          = STATE_SUCCESS
         self.etag           = importer.etag
         self.checksum       = importer.checksum
         self.error_code     = nil
@@ -356,6 +359,23 @@ module CartoDB
         geocode_table
       rescue
         self
+      end
+
+
+      # Modified state, currently meaning the schema has changed and column/s have been dropped
+      def set_modified_state_from(importer)
+        log.append     '******** synchronization modified schema ********'
+        set_state_metadata(importer)
+        self.state          = STATE_MODIFIED
+        self.error_code     = 6665
+        self.error_message  = 'Table schema has changed, dropping one or more columns. In order to solve this issue, please add a new layer with the updated dataset'
+        self.run_at         = Time.now
+      end
+
+      def set_success_state_from(importer)
+        log.append     '******** synchronization succeeded ********'
+        set_state_metadata(importer)
+        self.state          = STATE_SUCCESS
       end
 
       def set_failure_state_from(importer)

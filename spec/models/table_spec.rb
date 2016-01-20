@@ -2412,6 +2412,14 @@ describe Table do
 
   end
 
+  describe '#column_count' do
+    it "should return column counts" do
+      table = new_table(:user_id => $user_1.id)
+      table.stubs(:schema).returns([[:cartodb_id, "integer"], [:bed, "text"], [:the_geom, "point"]])
+      table.column_count.should == 3
+    end
+  end
+
   describe '#estimated_row_count and #actual_row_count' do
     it "should return row counts" do
       table = new_table(:user_id => $user_1.id)

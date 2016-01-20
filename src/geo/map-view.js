@@ -18,7 +18,8 @@ var MapView = View.extend({
 
     this.autoSaveBounds = false;
 
-    // this var stores views information for each model
+    // A map of the LayerView that is linked to each LayerModel
+    // TODO: Rename this
     this.layers = {};
     this.geometries = {};
 
@@ -131,17 +132,23 @@ var MapView = View.extend({
 
   _removeLayers: function(layer) {
     for(var i in this.layers) {
-      var layer_view = this.layers[i];
-      layer_view.remove();
+      var layerView = this.layers[i];
+      layerView.remove();
       delete this.layers[i];
     }
   },
 
-  _removeLayer: function(layer) {
-    var layer_view = this.layers[layer.cid];
-    if(layer_view) {
-      layer_view.remove();
-      delete this.layers[layer.cid];
+  _removeLayer: function(layerModel) {
+    if (layerModel.get('type') === 'CartoDB') {
+      this.layerGroupModel.layers.remove(layerModel);
+      if (this.layerGroupModel.layers.size() === 0) {
+        delete this.layerGroupModel;
+      }
+    }
+    var layerView = this.layers[layerModel.cid];
+    if (layerView) {
+      layerView.remove();
+      delete this.layers[layerModel.cid];
     }
   },
 
@@ -150,6 +157,7 @@ var MapView = View.extend({
     delete this.layers[layer.cid];
   },
 
+  // TODO: Rename to getLayerViewByLayerModelCID
   getLayerByCid: function(cid) {
     var l = this.layers[cid];
     if(!l) {

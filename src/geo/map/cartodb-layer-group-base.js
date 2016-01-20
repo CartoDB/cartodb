@@ -1,7 +1,6 @@
 var $ = require('jquery');
 var Backbone = require('backbone');
 var MapLayer = require('./map-layer');
-var Layers = require('./layers');
 var util = require('cdb.core.util');
 
 var CartoDBLayerGroupBase = MapLayer.extend({
@@ -14,16 +13,20 @@ var CartoDBLayerGroupBase = MapLayer.extend({
     MapLayer.prototype.initialize.apply(this, arguments);
     options = options || {};
     this.layers = new Backbone.Collection(options.layers || {});
+    this._windshaftMap = options.windshaftMap;
+
+    // When a new instance of the map is created in Windshaft, we will need to use
+    // new URLs for the tiles (`urls` attribute) and also for the attributes (`baseURL`)
+    this._windshaftMap.instance.bind('change', function (mapInstance) {
+      this.set({
+        baseURL: mapInstance.getBaseURL(),
+        urls: mapInstance.getTiles('mapnik')
+      });
+    }, this);
   },
 
   isEqual: function() {
     return false;
-  },
-
-  getVisibleLayers: function() {
-    return this.layers.filter(function(layer) {
-      return layer.get('visible');
-    });
   },
 
   getTileJSONFromTiles: function(layerIndex) {
@@ -50,6 +53,7 @@ var CartoDBLayerGroupBase = MapLayer.extend({
       throw 'Attributes cannot be fetched until baseURL is set';
     }
 
+    // 
     var index = this._getIndexOfVisibleLayer(layer);
     var url = [
       this.get('baseURL'),

@@ -71,7 +71,7 @@ describe('windshaft/map', function () {
     jasmine.clock().uninstall();
   });
 
-  it('should create an instance of the windshaft map and update the URLs of layers and dataviews', function () {
+  it('should create an instance of the windshaft map', function () {
     var dataview = new HistogramDataviewModel({
       id: 'dataviewId',
       type: 'list'
@@ -90,10 +90,6 @@ describe('windshaft/map', function () {
       map: this.map
     });
     jasmine.clock().tick(100);
-
-    // urls of the layerGroup have been updated
-    expect(this.cartoDBLayerGroup.get('baseURL')).toEqual('baseURL');
-    expect(this.cartoDBLayerGroup.get('urls')).toEqual('tileURLs');
 
     // urls of torque layers have been updated too!
     expect(this.torqueLayer.get('urls')).toEqual('torqueTileURLs');

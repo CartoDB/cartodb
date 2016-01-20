@@ -82,13 +82,6 @@ var GoogleMapsMapView = MapView.extend({
 
     }
 
-    this.map.geometries.bind('add', this._addGeometry, this);
-    this.map.geometries.bind('remove', this._removeGeometry, this);
-
-
-    this._bindModel();
-    this._addLayers();
-    this.setAttribution();
 
     google.maps.event.addListener(this.map_googlemaps, 'center_changed', function() {
       var c = self.map_googlemaps.getCenter();
@@ -117,6 +110,13 @@ var GoogleMapsMapView = MapView.extend({
     this.map.layers.bind('add', this._addLayer, this);
     this.map.layers.bind('remove', this._removeLayer, this);
     this.map.layers.bind('reset', this._addLayers, this);
+
+    this.map.geometries.bind('add', this._addGeometry, this);
+    this.map.geometries.bind('remove', this._removeGeometry, this);
+
+    this._bindModel();
+    this._addLayers();
+    this.setAttribution();
 
     this.projector = new Projector(this.map_googlemaps);
 

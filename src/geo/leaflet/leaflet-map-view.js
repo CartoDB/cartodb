@@ -14,6 +14,9 @@ var LeafletCartoDBLayerGroupView = require('./leaflet-cartodb-layer-group-view')
 var LeafletPointView = require('./leaflet-point-view');
 var LeafletPathView = require('./leaflet-path-view');
 
+// TODO: var CartoDBLayerGroupNamed = require('../../geo/map/cartodb-layer-group-named');
+var CartoDBLayerGroupAnonymous = require('../../geo/map/cartodb-layer-group-anonymous');
+
 /**
  * leaflet implementation of a map
  */
@@ -140,8 +143,8 @@ var LeafletMapView = MapView.extend({
     this.layers = {};
 
     function findLayerView(layer) {
-      var lv = _.find(oldLayers, function(layer_view) {
-        var m = layer_view.model;
+      var lv = _.find(oldLayers, function(layerView) {
+        var m = layerView.model;
         return m.isEqual(layer);
       });
       return lv;
@@ -155,9 +158,9 @@ var LeafletMapView = MapView.extend({
 
     // remove all
     for(var layer in oldLayers) {
-      var layer_view = oldLayers[layer];
-      if (!canReused(layer_view.model)) {
-        layer_view.remove();
+      var layerView = oldLayers[layer];
+      if (!canReused(layerView.model)) {
+        layerView.remove();
       }
     }
 
@@ -180,10 +183,12 @@ var LeafletMapView = MapView.extend({
 
     // remove layer views
     for(var layer in this.layers) {
-      var layer_view = this.layers[layer];
-      layer_view.remove();
+      var layerView = this.layers[layer];
+      layerView.remove();
       delete this.layers[layer];
     }
+
+    delete this.layerGroupModel;
 
     View.prototype.clean.call(this);
   },
@@ -231,32 +236,60 @@ var LeafletMapView = MapView.extend({
   },
 
   // LAYER VIEWS ARE CREATED HERE
-  _addLayer: function(layer, layers, opts) {
-    var self = this;
-    var lyr, layer_view;
-    layer_view = LeafletMapView.createLayer(layer, this.map_leaflet);
-    if (!layer_view) {
+  // TODO: layers param is not being used here
+  _addLayer: function(layerModel, layers, opts) {
+    var layerView;
+
+    // CartoDBLayers are grouped visually that's why we need an instance of a
+    // CartoDBLayerGroupAnonymous or CartoDBLayerGroupNamed
+    if (layerModel.get('type') === 'CartoDB') {
+      if (!this.layerGroupModel) {
+        this.layerGroupModel = new CartoDBLayerGroupAnonymous({}, {
+          windshaftMap: this.map.windshaftMap,
+          layers: [layerModel]
+        });
+        layerView = LeafletMapView.createLayer(this.layerGroupModel, this.map_leaflet);
+      } else {
+        // Add that layer to the group
+        // TODO: The only reason why the layerGroupModel needs to access individual layers
+        // is to know if layers are visible of not, so that URLs for attributes can use the
+        // right indexes. There should be a better way to do this.
+        this.layerGroupModel.layers.add(layerModel);
+        this.layers[layerModel.cid] = this.getLayerByCid(this.layerGroupModel.layers.at(0).cid);
+      }
+    } else {
+      layerView = LeafletMapView.createLayer(layerModel, this.map_leaflet);
+    }
+
+    if (!layerView) {
       return;
     }
-    return this._addLayerToMap(layer_view, opts);
+    return this._addLayerToMap(layerView, layerModel, opts);
   },
 
-  _addLayerToMap: function(layer_view, opts) {
-    var layer = layer_view.model;
+  _addLayerToMap: function(layerView, layerModel, opts) {
+    this.layers[layerModel.cid] = layerView;
+    LeafletMapView.addLayerToMap(layerView, this.map_leaflet);
 
-    this.layers[layer.cid] = layer_view;
-    LeafletMapView.addLayerToMap(layer_view, this.map_leaflet);
+    this._reorderLayerViews();
 
-    // reorder layers
-    for(var i in this.layers) {
-      var lv = this.layers[i];
-      lv.setZIndex(lv.model.get('order'));
+    if (opts === undefined || !opts.silent) {
+      this.trigger('newLayerView', layerView);
     }
+    return layerView;
+  },
 
-    if(opts === undefined || !opts.silent) {
-      this.trigger('newLayerView', layer_view, layer_view.model, this);
-    }
-    return layer_view;
+  // TODO: Move to mapView
+  _reorderLayerViews: function () {
+    this.map.layers.each(function (layerModel) {
+      var layerView = this.getLayerByCid(layerModel.cid);
+
+      // CartoDBLayers share the same layerView so the zIndex is being overriden on every iteration.
+      // The layerView will get the order of the last CartoDB layer as the zIndex
+      if (layerView) {
+        layerView.setZIndex(layerModel.get('order'));
+      }
+    }, this);
   },
 
   pixelToLatLon: function(pos) {
@@ -333,7 +366,6 @@ var LeafletMapView = MapView.extend({
 
     // Substitutes the GMaps baselayer w/ an equivalent Leaflet tiled layer, since not supporting Gmaps anymore
     "gmapsbase": LeafletGmapsTiledLayerView,
-
     "layergroup": LeafletCartoDBLayerGroupView,
     "namedmap": LeafletCartoDBLayerGroupView,
     "torque": function(layer, map) {
@@ -347,12 +379,12 @@ var LeafletMapView = MapView.extend({
   },
 
   createLayer: function(layer, map) {
-    var layer_view = null;
+    var layerView = null;
     var layerClass = this.layerTypeMap[layer.get('type').toLowerCase()];
 
     if (layerClass) {
       try {
-        layer_view = new layerClass(layer, map);
+        layerView = new layerClass(layer, map);
       } catch (e) {
         log.error("MAP: error creating '" +  layer.get('type') + "' layer -> " + e.message);
         throw e;
@@ -360,14 +392,14 @@ var LeafletMapView = MapView.extend({
     } else {
       log.error("MAP: " + layer.get('type') + " can't be created");
     }
-    return layer_view;
+    return layerView;
   },
 
-  addLayerToMap: function(layer_view, map, pos) {
-    map.addLayer(layer_view.leafletLayer);
+  addLayerToMap: function(layerView, map, pos) {
+    map.addLayer(layerView.leafletLayer);
     if(pos !== undefined) {
-      if (layer_view.setZIndex) {
-        layer_view.setZIndex(pos);
+      if (layerView.setZIndex) {
+        layerView.setZIndex(pos);
       }
     }
   },

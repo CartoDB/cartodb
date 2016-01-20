@@ -70,35 +70,25 @@ var LayerSelector = View.extend({
     var self = this;
     this.layers = [];
 
-    _.each(this.map.layers.models, function(layer) {
+    _.each(this.map.layers.models, function (layer) {
 
-      if (layer.get("type") == 'layergroup' || layer.get('type') === 'namedmap') {
-        layer.layers.each(function(layerModel, index){
+      if (layer.get("type") == 'CartoDB') {
+        var m = new Model({
+          visible: layer.get('visible') || true,
+          layer_name: layer.getName()
+        });
 
-          var layerName = layerModel.getName();
-          if(self.options.layer_names) {
-            layerName = self.options.layer_names[index];
-          }
+        m.bind('change:visible', function(model) {
+          this.trigger("change:visible", model.get('visible'), model.get('order'), model);
+          layer.set('visible', model.get('visible'));
+        }, self);
 
-          var m = new Model({
-            order: index,
-            visible: layerModel.get('visible') || true,
-            layer_name: layerName
-          });
-
-          m.bind('change:visible', function(model) {
-            this.trigger("change:visible", model.get('visible'), model.get('order'), model);
-            layerModel.set('visible', model.get('visible'));
-          }, self);
-
-          layerModel.bind('change:visible', function() {
-            m.set('visible', layerModel.get('visible'));
-          });
-
-          var layerView = self._createLayerView(m);
-          layerView.bind('switchChanged', self._setCount, self);
-          self.layers.push(layerView);
-        })
+        var layerView = self._createLayerView(m);
+        layerView.bind('switchChanged', self._setCount, self);
+        self.layers.push(layerView);
+        layer.bind('change:visible', function() {
+          m.set('visible', layer.get('visible'));
+        });
       } else if (layer.get('type') === 'torque') {
         var layerView = self._createLayerView(layer);
         layerView.bind('switchChanged', self._setCount, self);

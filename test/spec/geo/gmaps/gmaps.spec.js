@@ -120,14 +120,14 @@ describe('geo/gmaps/gmaps-map-view', function () {
     expect(GMapsTiledLayerView.prototype.isPrototypeOf(layerView)).toBeTruthy();
   });
 
-  it('should create a GMapsCartoDBLayerGroupView when the layer is CartoDBLayerGroupAnonymous', function () {
+  xit('should create a GMapsCartoDBLayerGroupView when the layer is CartoDBLayerGroupAnonymous', function () {
     layer = new CartoDBLayerGroupAnonymous({}, {});
     var lyr = map.addLayer(layer);
     var layerView = mapView.getLayerByCid(lyr);
     expect(layerView instanceof GMapsCartoDBLayerGroupView).toBeTruthy();
   });
 
-  it('should create a GMapsCartoDBLayerGroupView when the layer is CartoDBLayerGroupNamed', function () {
+  xit('should create a GMapsCartoDBLayerGroupView when the layer is CartoDBLayerGroupNamed', function () {
     layer = new CartoDBLayerGroupNamed({}, {});
     var lyr = map.addLayer(layer);
     var layerView = mapView.getLayerByCid(lyr);

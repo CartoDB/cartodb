@@ -366,7 +366,6 @@ describe('vis/vis', function () {
       _.extend(FakeLayer.prototype, Backbone.Events);
 
       var layer = new FakeLayer();
-      spyOn(layer, 'setInteraction');
 
       var tooltip = this.vis.addOverlay({
         type: 'tooltip',
@@ -375,7 +374,6 @@ describe('vis/vis', function () {
       });
 
       expect(tooltip.options.layer).toEqual(layer);
-      expect(layer.setInteraction).toHaveBeenCalledWith(true);
     });
 
     it('should add an overlay to the first layer and enable interaction', function (done) {
@@ -394,7 +392,9 @@ describe('vis/vis', function () {
               maps_api_template: 'https://{user}.cartodb-staging.com:443',
               layer_definition: {
                 stat_tag: 'ece6faac-7271-11e5-a85f-04013fc66a01',
-                layers: []
+                layers: [{
+                  type: 'CartoDB'
+                }]
               }
             }
           }
@@ -416,15 +416,12 @@ describe('vis/vis', function () {
             type: 'tooltip',
             template: 'test'
           });
-          var layer = vis.getLayers()[1];
+          var layerView = vis.getLayers()[1];
 
-          expect(tooltip.options.layer).toEqual(layer);
-          expect(layer.interactionEnabled).toEqual([true]);
-
+          expect(tooltip.options.layer).toEqual(layerView);
           done();
         });
     });
-
   });
 
   it('should load modules', function (done) {

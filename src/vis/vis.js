@@ -20,8 +20,6 @@ var Template = require('../core/template');
 var Layers = require('./vis/layers');
 var Overlay = require('./vis/overlay');
 var INFOWINDOW_TEMPLATE = require('./vis/infowindow-template');
-var CartoDBLayerGroupNamed = require('../geo/map/cartodb-layer-group-named');
-var CartoDBLayerGroupAnonymous = require('../geo/map/cartodb-layer-group-anonymous');
 var DataviewsFactory = require('../dataviews/dataviews-factory');
 var DataviewCollection = require('../dataviews/dataviews-collection');
 var WindshaftConfig = require('../windshaft/config');
@@ -338,45 +336,28 @@ var Vis = View.extend({
       this.mapView.bind('newLayerView', this.addTooltip, this);
     }
 
-    var cartoDBLayers;
-    var cartoDBLayerGroup;
-    layers = [];
+    var layers = [];
 
-    // This attribute is public (used by deep-insights)
-    this.interactiveLayers = new Backbone.Collection();
     _.each(data.layers, function (layerData) {
       if (layerData.type === 'layergroup' || layerData.type === 'namedmap') {
         var layersData;
-        var layerGroupClass;
         if (layerData.type === 'layergroup') {
           layersData = layerData.options.layer_definition.layers;
-          layerGroupClass = CartoDBLayerGroupAnonymous;
         } else {
           layersData = layerData.options.named_map.layers;
-          layerGroupClass = CartoDBLayerGroupNamed;
         }
-        cartoDBLayers = _.map(layersData, function (layerData) {
-          var cartoDBLayer = Layers.create('cartodb', self, layerData);
-          self.interactiveLayers.add(cartoDBLayer);
-          return cartoDBLayer;
+        _.each(layersData, function (layerData) {
+          layers.push(Layers.create('cartodb', self, layerData));
         });
-
-        cartoDBLayerGroup = new layerGroupClass(null, {
-          layers: cartoDBLayers
-        });
-        layers.push(cartoDBLayerGroup);
       } else {
-        // Treat differently since this kind of layer is rendered client-side (and not through the tiler)
-        var layer = Layers.create(layerData.type, self, layerData);
-        layers.push(layer);
-        if (layerData.type === 'torque') {
-          self.interactiveLayers.add(layer);
-        }
+        layers.push(Layers.create(layerData.type, self, layerData));
       }
     });
 
-    // Map layers are resetted and the mapView adds the layers to the map
-    this.map.layers.reset(layers);
+    // TODO: This is PUBLIC. Remove dependency on this attribute from deep-insights.js
+    this.interactiveLayers = new Backbone.Collection(_.select(layers, function (layer) {
+      return layer.get('type') === 'CartoDB' || layer.get('type') === 'torque';
+    }));
 
     this._dataviewsCollection = new DataviewCollection();
     this.dataviews = new DataviewsFactory(null, {
@@ -407,15 +388,21 @@ var Vis = View.extend({
       forceCors: datasource.force_cors || true
     });
 
-    new WindshaftMap({ // eslint-disable-line
+    var windshaftMap = new WindshaftMap({ // eslint-disable-line
       client: windshaftClient,
       configGenerator: configGenerator,
       statTag: datasource.stat_tag,
-      layerGroup: cartoDBLayerGroup,
       layers: this.interactiveLayers,
       dataviews: this._dataviewsCollection,
       map: this.map
     });
+
+    // TODO: Bind this through a method
+    this.map.windshaftMap = windshaftMap;
+
+    // Map layers are resetted and the mapView adds the layers to the map
+    this.map.layers.reset(layers);
+
 
     // if there are no sublayer_options fill it
     if (!options.sublayer_options) {
@@ -1004,6 +991,7 @@ var Vis = View.extend({
   },
 
   // returns an array of layers
+  // TODO: Rename to getLayerViews
   getLayers: function () {
     var self = this;
     return _.compact(this.map.layers.map(function (layer) {
@@ -1101,13 +1089,6 @@ var Vis = View.extend({
     });
 
     map.viz.mapView.addInfowindow(infowindow);
-    // try to change interactivity, it the layer is a named map
-    // it's inmutable so it'a assumed the interactivity already has
-    // the fields it needs
-    try {
-      layer.setInteractivity(fields);
-    } catch(e) {}
-    layer.setInteraction(true);
 
     layer.bind(options.triggerEvent, function (e, latlng, pos, data, layer) {
       var render_fields = [];

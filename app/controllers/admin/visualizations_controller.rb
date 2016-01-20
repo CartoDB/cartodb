@@ -148,7 +148,7 @@ class Admin::VisualizationsController < Admin::AdminController
 
     has_data_library_username = Cartodb.config[:data_library].present? && !Cartodb.config[:data_library]['username'].blank?
 
-    if has_data_library_username && is_data_library_user?
+    if has_data_library_username && data_library_user?
       @name = "Data Library"
       @user_url = Cartodb.config[:data_library].present? && !Cartodb.config[:data_library]['path'].blank? ? "#{request.protocol}#{CartoDB.account_host}#{Cartodb.config[:data_library]['path']}" : @user_url
     end
@@ -686,7 +686,7 @@ class Admin::VisualizationsController < Admin::AdminController
     @viewed_user = ::User.where(username: username).first
   end
 
-  def is_data_library_user?
+  def data_library_user?
     Cartodb.config[:data_library] && (Cartodb.config[:data_library]['username'] == @viewed_user.username)
   end
 

@@ -71,12 +71,13 @@
 // Widget media query
 @include media-query() {
   .CDB-Widget-canvas {
-    width: calc(100% - $baseSize * 11);
-    min-width: calc(100% - $baseSize * 11);
-    max-width: calc(100% - $baseSize * 11);
+    $w: calc(100% - #{$baseSize} * 9);
+    width: $w;
+    min-width: $w;
+    max-width: $w;
     height: auto;
     margin-top: $baseSize;
-    margin-left: $baseSize * 11;
+    margin-left: $baseSize * 9;
     border-radius: 0;
     overflow: hidden;
     box-sizing: border-box;

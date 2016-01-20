@@ -230,7 +230,7 @@ module CartoDB
   end
 
   def self.get_data_library_path
-    Cartodb.config[:data_library_path]
+    Cartodb.config[:data_library] && Cartodb.config[:data_library]['path']
   end
 
 end

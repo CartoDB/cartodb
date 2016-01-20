@@ -100,40 +100,26 @@
         <div class="PublicMap-gradient"></div>
 
         <div class="PublicMap-leftBlock PublicMap-leftBlock--owner">
-          <% if @viewed_user.has_feature_flag?("data_library") && @data_library_url %>
-            <ul class="Navmenu-list Navmenu-list--owner Navmenu-list--avatar">
-              <li class="Navmenu-item">
-                <a href="<%= @data_library_url %>" class="UserAvatar">
-                  <img class="UserAvatar-img--medium" src="<%= @visualization.user.avatar %>" alt="Data Library" title="Data Library" />
-                </a>
-              </li>
-            </ul>
+          <ul class="Navmenu-list Navmenu-list--owner Navmenu-list--avatar">
+            <li class="Navmenu-item">
+              <a href="<%= @data_library_url_or_url %>" class="UserAvatar">
+                <img class="UserAvatar-img--medium" src="<%= @visualization.user.avatar %>" alt="<%= @data_library_name_or_name %>" title="<%= @data_library_name_or_name %>" />
+              </a>
+            </li>
+          </ul>
 
-            <ul class="Navmenu-list Navmenu-list--owner">
-              <li class="Navmenu-item u-hideOnTablet last-child">
-                <a href="<%= @data_library_url %>" class="Navmenu-link Navmenu-link--owner" title="Data Library">Data Library</a>
-              </li>
-            </ul>
-          <% else %>
-            <ul class="Navmenu-list Navmenu-list--owner Navmenu-list--avatar">
-              <li class="Navmenu-item">
-                <a href="<%= CartoDB.url(self, 'public_user_feed_home', {}, @visualization.user) %>" class="UserAvatar">
-                  <img class="UserAvatar-img--medium" src="<%= @visualization.user.avatar %>" alt="<%= @name %>" title="<%= @name %>" />
-                </a>
-              </li>
-            </ul>
+          <ul class="Navmenu-list Navmenu-list--owner">
+            <li class="Navmenu-item u-hideOnTablet last-child">
+              <a href="<%= @data_library_url_or_url %>" class="Navmenu-link Navmenu-link--owner" title="<%= @data_library_name_or_name %>"><%= @data_library_name_or_name %></a>
+            </li>
 
-            <ul class="Navmenu-list Navmenu-list--owner">
-              <li class="Navmenu-item u-hideOnTablet last-child">
-                <a href="<%= CartoDB.url(self, 'public_user_feed_home', {}, @visualization.user) %>" class="Navmenu-link Navmenu-link--owner" title="<%= @name %>"><%= @name %></a>
-              </li>
-
+            <% unless @data_library_username %>
               <li class="Navmenu-item">
                 <i class="Navmenu-rarrow iconFont iconFont-Rarrow"></i>
                 <a href="<%= CartoDB.url(self, 'public_datasets_home', {}, @visualization.user) %>" class="Navmenu-link">Datasets</a>
               </li>
-            </ul>
-          <% end %>
+            <% end %>
+          </ul>
         </div>
 
         <div class="PublicMap-rightBlock PublicMap-rightBlock--owner u-txt-right">

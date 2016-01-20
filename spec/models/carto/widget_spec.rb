@@ -12,5 +12,14 @@ describe Carto::Widget do
       loaded_widget.widget_json_json.should == JSON.parse(widget.widget_json).symbolize_keys
     end
   end
+
+  describe 'dataview layer_id' do
+    it 'trigger validation error if it does not match with widget id' do
+      layer = FactoryGirl.create(:carto_layer)
+      widget = FactoryGirl.build(:widget, layer: layer)
+      widget.save.should be_false
+      widget.errors.should_not be_empty
+    end
+  end
 end
 

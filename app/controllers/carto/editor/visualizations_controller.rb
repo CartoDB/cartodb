@@ -5,6 +5,7 @@ module Carto
 
       before_filter :load_visualization_and_table, only: [:show]
 
+      MAX_MORE_VISUALIZATIONS = 3
 
       def show
         unless current_user.present?
@@ -22,7 +23,7 @@ module Carto
           if request.original_fullpath =~ %r{/tables/}
             return redirect_to CartoDB.url(self,
                                            'public_table_map',
-                                           { id: request.params[:id], redirected:true })
+                                           { id: request.params[:id], redirected: true })
           else
             return redirects_to CartoDB.url(self,
                                             'public_visualizations_public_map',
@@ -32,10 +33,6 @@ module Carto
 
         update_user_last_activity
       end
-
-      private
-
-      MAX_MORE_VISUALIZATIONS = 3
 
       def load_visualization_and_table
         filters = { exclude_raster: true }
@@ -88,7 +85,8 @@ module Carto
         # INFO: organization public visualizations
         user_id = user ? user.id : nil
 
-        # Implicit order due to legacy code: 1st return canonical/table/Dataset if present, else derived/visualization/Map
+        # Implicit order due to legacy code: 1st return
+        # canonical/table/Dataset if present, else derived/visualization/Map
         visualization = Carto::VisualizationQueryBuilder.new
                                                         .with_id_or_name(table_id)
                                                         .with_user_id(user_id)

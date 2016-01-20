@@ -80,12 +80,23 @@ class Organization < Sequel::Model
 
   def before_save
     super
+    @geocoding_quota_modified = changed_columns.include?(:geocoding_quota)
     self.updated_at = Time.now
     raise errors.join('; ') unless valid?
   end
 
   def before_destroy
     destroy_groups
+  end
+
+  def after_create
+    super
+    save_metadata
+  end
+
+  def after_save
+    super
+    save_metadata
   end
 
   # INFO: replacement for destroy because destroying owner triggers
@@ -146,7 +157,11 @@ class Organization < Sequel::Model
 
   def get_geocoding_calls(options = {})
     date_from, date_to = quota_dates(options)
-    Geocoding.get_geocoding_calls(users_dataset.join(:geocodings, :user_id => :id), date_from, date_to)
+    if owner.has_feature_flag?('new_geocoder_quota')
+      get_organization_geocoding_data(self, date_from, date_to)
+    else
+      Geocoding.get_geocoding_calls(users_dataset.join(:geocodings, :user_id => :id), date_from, date_to)
+    end
   end
 
   def get_new_system_geocoding_calls(options = {})
@@ -278,6 +293,22 @@ class Organization < Sequel::Model
     display_name.nil? ? name : display_name
   end
 
+  # create the key that is used in redis
+  def key
+    "rails:orgs:#{name}"
+  end
+
+  # save orgs basic metadata to redis for other services (node sql api, geocoder api, etc)
+  # to use
+  def save_metadata
+    $users_metadata.HMSET key,
+      'id', id,
+      'geocoding_quota', geocoding_quota,
+      'google_maps_client_id', google_maps_key,
+      'google_maps_api_key', google_maps_private_key,
+      'period_end_date', period_end_date
+  end
+
   private
 
   def destroy_groups
@@ -306,6 +337,10 @@ class Organization < Sequel::Model
 
   def last_billing_cycle
     owner ? owner.last_billing_cycle : Date.today
+  end
+
+  def period_end_date
+    owner ? owner.period_end_date : nil
   end
 
   def public_vis_count_by_type(type)

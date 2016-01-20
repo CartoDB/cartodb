@@ -337,6 +337,14 @@ module CartoDB
         end
       end
 
+      def source_html_safe
+        if source.present?
+          renderer = Redcarpet::Render::Safe
+          markdown = Redcarpet::Markdown.new(renderer, extensions = {})
+          markdown.render source
+        end
+      end
+
       def attributions=(value)
         self.dirty = true if value != @attributions
         self.attributions_changed = true if value != @attributions

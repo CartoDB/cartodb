@@ -6,13 +6,22 @@ require_relative '../../../factories/users_helper'
 describe Carto::Api::WidgetsController do
   include_context 'users helper'
 
-  before(:all) do
+  before(:each) do
+    @public_map = FactoryGirl.create(:carto_map_with_layers)
+    @public_layer = @map.layers.first
+    @public_widget = FactoryGirl.create(:widget, layer: @layer)
+
+    @public_visualization = FactoryGirl.create(:carto_visualization, map: @map, privacy: Carto::Visualization::PRIVACY_PUBLIC, user_id: @user1.id)
+
     @map = FactoryGirl.create(:carto_map_with_layers)
     @layer = @map.layers.first
     @widget = FactoryGirl.create(:widget, layer: @layer)
+
+    @visualization = FactoryGirl.create(:carto_visualization, map: @map, privacy: Carto::Visualization::PRIVACY_PRIVATE, user_id: @user1.id)
   end
 
-  after(:all) do
+  after(:each) do
+    @visualization.destroy if @visualization
     @widget.destroy if @widget
   end
 
@@ -45,6 +54,26 @@ describe Carto::Api::WidgetsController do
 
     it 'returns the source widget content' do
       get_json api_v3_widgets_show_url(user_domain: @user1.username, map_id: @map.id, layer_id: @widget.layer_id, widget_id: @widget.id, api_key: @user1.api_key), {}, http_json_headers do |response|
+        response.status.should == 200
+        response.body[:widget_json].should == @widget.widget_json
+      end
+    end
+
+    it 'returns the source widget content' do
+      get_json api_v3_widgets_show_url(user_domain: @user1.username, map_id: @map.id, layer_id: @widget.layer_id, widget_id: @widget.id, api_key: @user1.api_key), {}, http_json_headers do |response|
+        response.status.should == 200
+        response.body[:widget_json].should == @widget.widget_json
+      end
+    end
+
+    it 'returns 403 if visualization is private and current user is not the owner' do
+      get_json api_v3_widgets_show_url(user_domain: @user2.username, map_id: @map.id, layer_id: @widget.layer_id, widget_id: @widget.id, api_key: @user2.api_key), {}, http_json_headers do |response|
+        response.status.should == 403
+      end
+    end
+
+    it 'returns the source widget content for public visualizations even without authentication' do
+      get_json api_v3_widgets_show_url(user_domain: @user2.username, map_id: @public_map.id, layer_id: @public_widget.layer_id, widget_id: @public_widget.id), {}, http_json_headers do |response|
         response.status.should == 200
         response.body[:widget_json].should == @widget.widget_json
       end

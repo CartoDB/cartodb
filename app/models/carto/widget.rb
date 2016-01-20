@@ -17,6 +17,15 @@ class Carto::Widget < ActiveRecord::Base
     !layer.nil? && !layer.maps.nil? && layer.maps.map(&:id).include?(map_id)
   end
 
+  def viewable_by_user?(user)
+    return false unless layer
+    return false unless layer.maps
+
+    visualizations = Carto::Visualization.where(map_id: layer.maps(&:id)).all
+
+    !visualizations.select { |v| v.is_viewable_by_user?(user) }.empty?
+  end
+
   private
 
   def dataview_layer_id_must_match

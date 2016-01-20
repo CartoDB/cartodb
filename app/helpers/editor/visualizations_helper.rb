@@ -67,7 +67,7 @@ module Editor
       return get_visualization_and_table_from_table_id(table_id) if visualization.nil?
       render_pretty_404 if visualization.kind == CartoDB::Visualization::Member::KIND_RASTER
 
-      Carto::Admin::VisualizationPublicMapAdapter.new(visualization, current_user, self), visualization.table_service
+      [Carto::Admin::VisualizationPublicMapAdapter.new(visualization, current_user, self), visualization.table_service]
     end
 
     def get_visualization_and_table_from_table_id(table_id)
@@ -78,7 +78,7 @@ module Editor
 
       visualization = user_table.visualization
 
-      Carto::Admin::VisualizationPublicMapAdapter.new(visualization, current_user, self), visualization.table_service
+      [Carto::Admin::VisualizationPublicMapAdapter.new(visualization, current_user, self), visualization.table_service]
     end
 
     def more_visualizations(user, excluded_visualization)

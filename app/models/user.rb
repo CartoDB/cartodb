@@ -391,7 +391,7 @@ class User < Sequel::Model
   def validate_password_change
     return if @changing_passwords.nil?  # Called always, validate whenever proceeds
 
-    errors.add(:old_password, "Old password not valid") unless @old_password_validated
+    errors.add(:old_password, "Old password not valid") unless @old_password_validated || !needs_password_confirmation?
 
     valid_password?(:new_password, @new_password, @new_password_confirmation)
   end
@@ -427,7 +427,7 @@ class User < Sequel::Model
 
   # Some operations, such as user deletion, won't ask for password confirmation if password is not set (because of Google sign in, for example)
   def needs_password_confirmation?
-    google_sign_in.nil? || !google_sign_in || !last_password_change_date.nil?
+    (google_sign_in.nil? || !google_sign_in || !last_password_change_date.nil?) && Carto::UserCreation.http_authentication.find_by_user_id(id).nil?
   end
 
   def password_confirmation

@@ -1,7 +1,9 @@
 # coding: UTF-8
 
+require 'securerandom'
 require_dependency 'google_plus_api'
 
+# This class is quite coupled to UserCreation.
 module CartoDB
   class UserAccountCreator
 
@@ -52,6 +54,13 @@ module CartoDB
 
     def with_invitation_token(invitation_token)
       @invitation_token = invitation_token
+      self
+    end
+
+    def with_email_only(email)
+      with_email(email)
+      with_username(email.split('@')[0])
+      with_password(SecureRandom.hex)
       self
     end
 

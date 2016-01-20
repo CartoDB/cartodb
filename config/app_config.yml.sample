@@ -258,6 +258,10 @@ defaults: &defaults
   users_dumps:
     service:
       port: 00000
+  http_header_authentication:
+    header: # name of the trusted, safe header that your server adds to the request
+    field: # 'email' / 'username' / 'id' / 'auto' (autodetection)
+    autocreation: # true / false (true requires field to be email)
   oauth:
     # If the client_id/app_key is not set won't appear at the UI. @see application_helper.rb -> frontend_config
     # Must be the same as CartoDB::Datasources::xxxx DATASOURCE_NAME constants

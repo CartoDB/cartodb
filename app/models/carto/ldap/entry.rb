@@ -1,3 +1,6 @@
+# See http://www.rubydoc.info/gems/net-ldap/0.11
+require 'net/ldap'
+
 class Carto::Ldap::Entry
 
   def initialize(ldap_entry, ldap_configuration)

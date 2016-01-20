@@ -440,6 +440,9 @@ CartoDB::Application.routes.draw do
     # ImageProxy
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/image_proxy' => 'image_proxy#show'
 
+    # V3
+    get '(/user/:user_domain)(/u/:user_domain)/api/v3/maps/:map_id/layers/:layer_id/widgets/:widget_id'     => 'widgets#show',    as: :api_v3_widgets_show,  constraints: { map_id: /[^\/]+/, layer_id: /[^\/]+/, widget_id: /[^\/]+/ }
+
   end
 
   scope :module => 'api/json', :format => :json do

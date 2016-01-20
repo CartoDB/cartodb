@@ -3,6 +3,8 @@
 * Support for HTTP Header authentication.
 * Update navigation in public pages.
 * New feature in organizations management: user quota slider.
+* Added `data_library` to the config. Usage instructions:
+  1. Configure data-library path. You can copy `data_library` config from `config/app_config.yml.sample` into your `config/app_config.yml`.
 
 3.12.0 (2016-01-05)
 -------------------

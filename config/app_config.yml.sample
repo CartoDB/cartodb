@@ -17,6 +17,9 @@ defaults: &defaults
   secret_token:       '71c2b25921b84a1cb21c71503ab8fb23'
   account_host:       'localhost.lan:3000'
   account_path:       '/account'
+  data_library:
+    username:         'common-data'
+    path:             '/data-library'
   disable_file:       '~/disable'
   watcher:
     ttl:              60

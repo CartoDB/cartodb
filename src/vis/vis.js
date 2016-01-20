@@ -156,6 +156,10 @@ var Vis = View.extend({
   },
 
   load: function (data, options) {
+    if (!data.datasource) {
+      throw new Error('viz.json needs to include a "datasource" attribute.');
+    }
+
     var self = this;
 
     // Load the viz.json in case we receive a url instead of a JSON object
@@ -336,7 +340,7 @@ var Vis = View.extend({
 
     var cartoDBLayers;
     var cartoDBLayerGroup;
-    var layers = [];
+    layers = [];
 
     // This attribute is public (used by deep-insights)
     this.interactiveLayers = new Backbone.Collection();
@@ -344,25 +348,12 @@ var Vis = View.extend({
       if (layerData.type === 'layergroup' || layerData.type === 'namedmap') {
         var layersData;
         var layerGroupClass;
-        var layerGroupOptions = layerData.options;
-        var layerGroupAttributes = {};
         if (layerData.type === 'layergroup') {
           layersData = layerData.options.layer_definition.layers;
           layerGroupClass = CartoDBLayerGroupAnonymous;
-          layerGroupAttributes = {
-            userName: layerGroupOptions['user_name'],
-            mapsApiTemplate: layerGroupOptions['maps_api_template'],
-            statTag: layerGroupOptions['layer_definition']['stat_tag']
-          };
         } else {
           layersData = layerData.options.named_map.layers;
           layerGroupClass = CartoDBLayerGroupNamed;
-          layerGroupAttributes = {
-            userName: layerGroupOptions['user_name'],
-            mapsApiTemplate: layerGroupOptions['maps_api_template'],
-            statTag: layerGroupOptions['named_map']['stat_tag'],
-            namedMapId: layerGroupOptions['named_map']['name']
-          };
         }
         cartoDBLayers = _.map(layersData, function (layerData) {
           var cartoDBLayer = Layers.create('cartodb', self, layerData);
@@ -370,7 +361,7 @@ var Vis = View.extend({
           return cartoDBLayer;
         });
 
-        cartoDBLayerGroup = new layerGroupClass(layerGroupAttributes, {
+        cartoDBLayerGroup = new layerGroupClass(null, {
           layers: cartoDBLayers
         });
         layers.push(cartoDBLayerGroup);
@@ -396,70 +387,35 @@ var Vis = View.extend({
     // TODO: rethink this
     this._dataviewsCollection.on('add reset remove', _.debounce(this._invalidateSizeOnDataviewsChanges, 10), this);
 
-    // TODO: This method is creating an instance of the layer group
-    // and setting the tiles and grid urls on the layerGroup model, which
-    // cause the layergroup view to fetch and render the tiles. This needs
-    // to happen everytime a layer that belongs to the layerGroup changes
-    // (eg: when the layer is hidden or it's SQL is changed)
-    if (cartoDBLayerGroup) {
-      var endpoint;
-      var mapsApiTemplate;
-      var userName;
-      var statTag;
-      var forceCors = true;
-      var configGenerator;
+    var endpoint;
+    var configGenerator;
+    var datasource = data.datasource;
 
-      var datasource = data.datasource;
-      if (datasource) {
-        mapsApiTemplate = datasource.maps_api_template;
-        userName = datasource.user_name;
-        statTag = datasource.stat_tag;
-        forceCors = datasource.force_cors;
-
-        // TODO: We can use something else to differentiate types of "datasource"s
-        if (datasource.template_name) {
-          endpoint = [WindshaftConfig.MAPS_API_BASE_URL, 'named', datasource.template_name].join('/');
-          configGenerator = WindshaftNamedMapConfig;
-        } else {
-          endpoint = WindshaftConfig.MAPS_API_BASE_URL;
-          configGenerator = WindshaftLayerGroupConfig;
-        }
-      } else {
-        // No datasource, get necessary windshaft data from layerGroup directly instead
-        userName = cartoDBLayerGroup.get('userName');
-        mapsApiTemplate = cartoDBLayerGroup.get('mapsApiTemplate');
-        statTag = cartoDBLayerGroup.get('statTag');
-
-        if (cartoDBLayerGroup.get('type') === 'namedmap') {
-          var namedMapId = cartoDBLayerGroup.get('namedMapId');
-          endpoint = [
-            WindshaftConfig.MAPS_API_BASE_URL, 'named', namedMapId
-          ].join('/');
-          configGenerator = WindshaftNamedMapConfig;
-        } else if (cartoDBLayerGroup.get('type') === 'layergroup') {
-          endpoint = WindshaftConfig.MAPS_API_BASE_URL;
-          configGenerator = WindshaftLayerGroupConfig;
-        }
-      }
-
-      var windshaftClient = new WindshaftClient({
-        endpoint: endpoint,
-        urlTemplate: mapsApiTemplate,
-        userName: userName,
-        forceCors: forceCors
-      });
-
-      new WindshaftMap({ // eslint-disable-line
-        client: windshaftClient,
-        configGenerator: configGenerator,
-        statTag: statTag,
-        // TODO: assuming here all viz.json has a layergroup and that may not be true
-        layerGroup: cartoDBLayerGroup,
-        layers: this.interactiveLayers,
-        dataviews: this._dataviewsCollection,
-        map: this.map
-      });
+    // TODO: We can use something else to differentiate types of "datasource"s
+    if (datasource.template_name) {
+      endpoint = [WindshaftConfig.MAPS_API_BASE_URL, 'named', datasource.template_name].join('/');
+      configGenerator = WindshaftNamedMapConfig;
+    } else {
+      endpoint = WindshaftConfig.MAPS_API_BASE_URL;
+      configGenerator = WindshaftLayerGroupConfig;
     }
+
+    var windshaftClient = new WindshaftClient({
+      endpoint: endpoint,
+      urlTemplate: datasource.maps_api_template,
+      userName: datasource.user_name,
+      forceCors: datasource.force_cors || true
+    });
+
+    new WindshaftMap({ // eslint-disable-line
+      client: windshaftClient,
+      configGenerator: configGenerator,
+      statTag: datasource.stat_tag,
+      layerGroup: cartoDBLayerGroup,
+      layers: this.interactiveLayers,
+      dataviews: this._dataviewsCollection,
+      map: this.map
+    });
 
     // if there are no sublayer_options fill it
     if (!options.sublayer_options) {

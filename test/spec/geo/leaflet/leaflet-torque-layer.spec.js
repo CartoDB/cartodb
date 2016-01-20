@@ -1,10 +1,12 @@
+/* global L */
 var $ = require('jquery');
+var SharedTestsForTorqueLayer = require('../shared-tests-for-torque-layer');
 
-describe('geo/leaflet/leaflet-torque-layer', function() {
-  beforeEach(function() {
+describe('geo/leaflet/leaflet-torque-layer', function () {
+  beforeEach(function () {
     var container = $('<div>').css({
-        'height': '200px',
-        'width': '200px'
+      'height': '200px',
+      'width': '200px'
     });
     this.map = new cdb.geo.Map();
     this.mapView = new cdb.geo.LeafletMapView({
@@ -12,23 +14,39 @@ describe('geo/leaflet/leaflet-torque-layer', function() {
       map: this.map
     });
 
-    var layerURL = 'http://{s}.tiles.mapbox.com/v3/cartodb.map-1nh578vv/{z}/{x}/{y}.png';
-    this.layer = new cdb.geo.TileLayer({ urlTemplate: layerURL });
+    spyOn(L.TorqueLayer.prototype, 'initialize').and.callThrough();
+
+    var model = new cdb.geo.TorqueLayer({
+      type: 'torque',
+      sql: 'select * from table',
+      cartocss: '#test {}',
+      dynamic_cdn: 'dynamic-cdn-value'
+    });
+    this.map.addLayer(model);
+    this.view = this.mapView.layers[model.cid];
   });
 
-  it('should reuse layer view', function() {
-    var layer1 = new cdb.geo.TorqueLayer({ type: 'torque', sql: 'select * from table', cartocss: '#test {}' });
-    this.map.addLayer(layer1);
+  SharedTestsForTorqueLayer.call(this);
 
-    expect(this.mapView.layers[layer1.cid] instanceof L.TorqueLayer).toEqual(true);
+  it('should reuse layer view', function () {
+    expect(this.view instanceof L.TorqueLayer).toEqual(true);
 
-    this.mapView.layers[layer1.cid].check = 'testing';
-    var newLayer = layer1.clone();
+    this.view.check = 'testing';
+    var newLayer = this.view.model.clone();
     newLayer.set({ sql: 'select * from table', cartocss: '#test {}' });
     this.map.layers.reset([newLayer]);
 
     expect(this.mapView.layers[newLayer.cid] instanceof L.TorqueLayer).toEqual(true);
-    expect(this.mapView.layers[newLayer.cid].model).toEqual(newLayer)
+    expect(this.mapView.layers[newLayer.cid].model).toEqual(newLayer);
     expect(this.mapView.layers[newLayer.cid].check).toEqual('testing');
+  });
+
+  it('should apply Leaflet TorqueLayer initialize method on the extended view with a bunch of attrs', function () {
+    expect(L.TorqueLayer.prototype.initialize).toHaveBeenCalled();
+
+    var attrs = L.TorqueLayer.prototype.initialize.calls.argsFor(0)[0];
+    expect(attrs.cartocss).toEqual(jasmine.any(String));
+    expect(attrs.dynamic_cdn).toEqual('dynamic-cdn-value');
+    expect(attrs.instanciateCallback).toEqual(jasmine.any(Function));
   });
 });

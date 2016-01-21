@@ -19,7 +19,7 @@ module Carto
       def create
         widget = Carto::Widget.new(
           layer_id: params[:layer_id],
-          order: 1,
+          order: Carto::Widget.where(layer_id: params[:layer_id]).count + 1,
           type: params[:type],
           title: params[:title],
           dataview: params[:dataview].to_json)

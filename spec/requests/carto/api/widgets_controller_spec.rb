@@ -143,5 +143,20 @@ describe Carto::Api::WidgetsController do
         response.status.should == 403
       end
     end
+
+    it 'assigns consecutive orders for widgets for the same layer' do
+      layer = FactoryGirl.create(:carto_layer, maps: [@map])
+
+      payload = widget_payload
+      post_json api_v3_widgets_create_url(user_domain: @user1.username, map_id: @map.id, layer_id: layer.id, api_key: @user1.api_key), payload, http_json_headers do |response|
+        response.body[:order].should == 1
+      end
+      post_json api_v3_widgets_create_url(user_domain: @user1.username, map_id: @map.id, layer_id: @widget.layer.id, api_key: @user1.api_key), payload, http_json_headers do |response|
+        response.body[:order].should == 2
+      end
+
+      Carto::Widget.where(layer_id: layer.id).destroy_all
+      layer.destroy
+    end
   end
 end

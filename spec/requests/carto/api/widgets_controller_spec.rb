@@ -195,4 +195,15 @@ describe Carto::Api::WidgetsController do
       end
     end
   end
+
+  describe '#delete' do
+    include_context 'layer hierarchy'
+
+    it 'returns 200 and deletes the widget' do
+      delete_json api_v3_widgets_delete_url(user_domain: @user1.username, map_id: @map.id, map_layer_id: @widget.layer_id, widget_id: @widget.id, api_key: @user1.api_key), {}, http_json_headers do |response|
+        response.status.should == 200
+        Carto::Widget.where(id: @widget.id).first.should be_nil
+      end
+    end
+  end
 end

@@ -3,10 +3,10 @@ module Carto
     class WidgetsController < ::Api::ApplicationController
       include Carto::ControllerHelper
 
-      ssl_required :show, :create, :update
+      ssl_required :show, :create, :update, :delete
 
       before_filter :load_parameters
-      before_filter :load_widget, only: [:show, :update]
+      before_filter :load_widget, only: [:show, :update, :delete]
 
       rescue_from Carto::LoadError, with: :rescue_from_carto_error
       rescue_from Carto::UnauthorizedError, with: :rescue_from_carto_error
@@ -34,6 +34,11 @@ module Carto
         @widget.dataview = params[:dataview].to_json if params[:dataview]
         @widget.save
 
+        render_jsonp(@widget.attributes)
+      end
+
+      def delete
+        @widget.destroy
         render_jsonp(@widget.attributes)
       end
 

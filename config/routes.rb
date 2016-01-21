@@ -444,6 +444,7 @@ CartoDB::Application.routes.draw do
     get '(/user/:user_domain)(/u/:user_domain)/api/v3/maps/:map_id/layers/:map_layer_id/widgets/:widget_id'     => 'widgets#show',    as: :api_v3_widgets_show,  constraints: { map_id: /[^\/]+/, map_layer_id: /[^\/]+/, widget_id: /[^\/]+/ }
     post '(/user/:user_domain)(/u/:user_domain)/api/v3/maps/:map_id/layers/:map_layer_id/widgets'     => 'widgets#create',    as: :api_v3_widgets_create,  constraints: { map_id: /[^\/]+/, map_layer_id: /[^\/]+/ }
     put '(/user/:user_domain)(/u/:user_domain)/api/v3/maps/:map_id/layers/:map_layer_id/widgets/:widget_id'     => 'widgets#update',    as: :api_v3_widgets_update,  constraints: { map_id: /[^\/]+/, map_layer_id: /[^\/]+/, widget_id: /[^\/]+/ }
+    delete '(/user/:user_domain)(/u/:user_domain)/api/v3/maps/:map_id/layers/:map_layer_id/widgets/:widget_id'     => 'widgets#delete',    as: :api_v3_widgets_delete,  constraints: { map_id: /[^\/]+/, map_layer_id: /[^\/]+/, widget_id: /[^\/]+/ }
 
   end
 

@@ -36,6 +36,18 @@ shared_context 'layer hierarchy' do
     response_widget[:title].should == payload[:title]
     JSON.parse(response_widget[:dataview]).should == payload[:dataview]
   end
+
+  def widget_payload
+    {
+      layer_id: @layer.id,
+      type: 'formula',
+      title: 'the title',
+      dataview: {
+        'a field' => 'first',
+        'another field' => 'second'
+      }
+    }
+  end
 end
 
 describe Carto::Api::WidgetsController do
@@ -103,18 +115,6 @@ describe Carto::Api::WidgetsController do
 
   describe '#create' do
     include_context 'layer hierarchy'
-
-    def widget_payload
-      {
-        layer_id: @layer.id,
-        type: 'formula',
-        title: 'the title',
-        dataview: {
-          'a field' => 'first',
-          'another field' => 'second'
-        }
-      }
-    end
 
     it 'creates a new widget' do
       payload = widget_payload

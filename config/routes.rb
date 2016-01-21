@@ -442,6 +442,7 @@ CartoDB::Application.routes.draw do
 
     # V3
     get '(/user/:user_domain)(/u/:user_domain)/api/v3/maps/:map_id/layers/:layer_id/widgets/:widget_id'     => 'widgets#show',    as: :api_v3_widgets_show,  constraints: { map_id: /[^\/]+/, layer_id: /[^\/]+/, widget_id: /[^\/]+/ }
+    post '(/user/:user_domain)(/u/:user_domain)/api/v3/maps/:map_id/layers/:layer_id/widgets'     => 'widgets#create',    as: :api_v3_widgets_create,  constraints: { map_id: /[^\/]+/, layer_id: /[^\/]+/ }
 
   end
 

@@ -3,16 +3,27 @@ module Carto
     class WidgetsController < ::Api::ApplicationController
       include Carto::ControllerHelper
 
-      ssl_required :show
+      ssl_required :show, :create
 
       before_filter :load_parameters
-      before_filter :load_widget
+      before_filter :load_widget, only: [:show]
 
       rescue_from Carto::LoadError, with: :rescue_from_carto_error
       rescue_from Carto::UnauthorizedError, with: :rescue_from_carto_error
 
       def show
         render_jsonp(@widget.attributes)
+      end
+
+      def create
+        widget = Carto::Widget.new(
+          layer_id: params[:layer_id],
+          order: 1,
+          type: params[:type],
+          title: params[:title],
+          dataview: params[:dataview].to_json)
+        widget.save!
+        render_jsonp(widget.attributes, 201)
       end
 
       private

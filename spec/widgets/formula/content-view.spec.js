@@ -5,6 +5,10 @@ var FormulaWidgetContent = require('../../../src/widgets/formula/content-view');
 describe('widgets/formula/content-view', function () {
   beforeEach(function () {
     var vis = cdb.createVis(document.createElement('div'), {
+      datasource: {
+        maps_api_template: 'asd',
+        user_name: 'pepe'
+      },
       layers: [{type: 'torque'}]
     });
     this.dataviewModel = vis.dataviews.createFormulaDataview(vis.map.layers.first(), {});

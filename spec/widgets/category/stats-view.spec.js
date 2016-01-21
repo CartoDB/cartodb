@@ -5,6 +5,10 @@ var StatsView = require('../../../src/widgets/category/stats/stats-view');
 describe('widgets/category/stats-view', function () {
   beforeEach(function () {
     var vis = cdb.createVis(document.createElement('div'), {
+      datasource: {
+        maps_api_template: 'asd',
+        user_name: 'pepe'
+      },
       layers: [{
         type: 'torque'
       }]

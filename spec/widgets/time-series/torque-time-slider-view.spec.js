@@ -5,6 +5,10 @@ var TorqueTimeSliderView = require('../../../src/widgets/time-series/torque-time
 describe('widgets/time-series/torque-time-slider-view', function () {
   beforeEach(function () {
     var vis = cdb.createVis(document.createElement('div'), {
+      datasource: {
+        maps_api_template: 'asd',
+        user_name: 'pepe'
+      },
       layers: [{type: 'torque'}]
     });
     this.dataviewModel = vis.dataviews.createHistogramDataview(vis.map.layers.first(), {
@@ -107,7 +111,7 @@ describe('widgets/time-series/torque-time-slider-view', function () {
     });
   });
 
-  xdescribe('when change render range on torque layer model', function () {
+  describe('when change render range on torque layer model', function () {
     beforeEach(function () {
       this.torqueLayerModel.renderRange(1, 2);
     });

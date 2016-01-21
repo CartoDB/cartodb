@@ -5,6 +5,10 @@ var ItemsView = require('../../../src/widgets/category/list/items-view');
 describe('widgets/category/items-view', function () {
   beforeEach(function () {
     var vis = cdb.createVis(document.createElement('div'), {
+      datasource: {
+        maps_api_template: 'asd',
+        user_name: 'pepe'
+      },
       layers: [{type: 'torque'}]
     });
     this.dataviewModel = vis.dataviews.createCategoryDataview(vis.map.layers.first(), {});

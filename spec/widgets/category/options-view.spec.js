@@ -5,6 +5,10 @@ var OptionsView = require('../../../src/widgets/category/options/options-view');
 describe('widgets/category/options-view', function () {
   beforeEach(function () {
     var vis = cdb.createVis(document.createElement('div'), {
+      datasource: {
+        maps_api_template: 'asd',
+        user_name: 'pepe'
+      },
       layers: [{type: 'torque'}]
     });
     this.dataviewModel = vis.dataviews.createCategoryDataview(vis.map.layers.first(), {});

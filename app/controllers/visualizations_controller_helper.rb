@@ -1,4 +1,5 @@
 module VisualizationsControllerHelper
+  # Implicit order due to legacy code: 1st return canonical/table/Dataset if present, else derived/visualization/Map
   def get_priority_visualization(visualization_id, user_id)
     Carto::VisualizationQueryBuilder.new
                                     .with_id_or_name(visualization_id)

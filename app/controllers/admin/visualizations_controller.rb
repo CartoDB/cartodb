@@ -19,6 +19,7 @@ class Admin::VisualizationsController < Admin::AdminController
               :show_organization_public_map, :show_organization_embed_map,
               :embed_protected, :public_map_protected, :embed_forbidden, :track_embed
   ssl_required :index, :show, :protected_public_map, :show_protected_public_map
+
   before_filter :login_required, only: [:index]
   before_filter :table_and_schema_from_params, only: [:show, :public_table, :public_map, :show_protected_public_map,
                                                       :show_protected_embed_map, :embed_map]
@@ -33,6 +34,8 @@ class Admin::VisualizationsController < Admin::AdminController
 
   before_filter :resolve_visualization_and_table_if_not_cached, only: [:embed_map]
 
+  after_filter :update_user_last_activity, only: [:index, :show]
+
   skip_before_filter :browser_is_html5_compliant?, only: [:public_map, :embed_map, :track_embed,
                                                           :show_protected_embed_map, :show_protected_public_map]
   skip_before_filter :verify_authenticity_token, only: [:show_protected_public_map, :show_protected_embed_map]
@@ -46,7 +49,6 @@ class Admin::VisualizationsController < Admin::AdminController
     @just_logged_in = !!flash['logged']
     @google_maps_query_string = current_user.google_maps_query_string
     current_user.view_dashboard
-    update_user_last_activity
 
     respond_to do |format|
       format.html { render 'index', layout: 'application' }
@@ -75,8 +77,6 @@ class Admin::VisualizationsController < Admin::AdminController
     end
 
     respond_to { |format| format.html }
-
-    update_user_last_activity
   end
 
   def public_table
@@ -591,12 +591,6 @@ class Admin::VisualizationsController < Admin::AdminController
     vis.liked_by?(current_user.id)
   end
 
-  def update_user_last_activity
-    return false unless current_user.present?
-    current_user.set_last_active_time
-    current_user.set_last_ip_address request.remote_ip
-  end
-
   def render_pretty_404
     render(file: "public/404.html", layout: false, status: 404)
   end
@@ -614,7 +608,6 @@ class Admin::VisualizationsController < Admin::AdminController
     # INFO: organization public visualizations
     user_id = user ? user.id : nil
 
-    # Implicit order due to legacy code: 1st return canonical/table/Dataset if present, else derived/visualization/Map
     visualization = get_priority_visualization(table_id, user_id)
 
     return get_visualization_and_table_from_table_id(table_id) if visualization.nil?

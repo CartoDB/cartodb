@@ -20,12 +20,7 @@ module Carto
         @visualization = get_priority_visualization(params[:id], current_user.id)
 
         render_404 unless allowed?(@visualization)
-      end
-
-      def update_user_last_activity
-        return false unless current_user.present?
-        current_user.set_last_active_time
-        current_user.set_last_ip_address request.remote_ip
+        render_403 unless @visualization.is_writable_by_user?(current_user)
       end
 
       def allowed?(visualization)

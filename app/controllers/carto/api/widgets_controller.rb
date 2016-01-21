@@ -28,9 +28,7 @@ module Carto
       end
 
       def update
-        @widget.order = params[:order] if params[:order]
-        @widget.type = params[:type] if params[:type]
-        @widget.title = params[:title] if params[:title]
+        @widget.update_attributes(params.slice(:order, :type, :title))
         @widget.dataview = params[:dataview].to_json if params[:dataview]
         @widget.save
 

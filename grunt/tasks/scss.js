@@ -4,7 +4,7 @@
  */
 
 module.exports = {
-  task: function(grunt, config) {
+  task: function (grunt, config) {
     return {
       dist: {
         options: {
@@ -25,6 +25,6 @@ module.exports = {
           ext: '.css'
         }]
       }
-    }
+    };
   }
 };

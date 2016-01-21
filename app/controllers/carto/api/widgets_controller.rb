@@ -3,10 +3,10 @@ module Carto
     class WidgetsController < ::Api::ApplicationController
       include Carto::ControllerHelper
 
-      ssl_required :show, :create, :update, :delete
+      ssl_required :show, :create, :update, :destroy
 
       before_filter :load_parameters
-      before_filter :load_widget, only: [:show, :update, :delete]
+      before_filter :load_widget, only: [:show, :update, :destroy]
 
       rescue_from Carto::LoadError, with: :rescue_from_carto_error
       rescue_from Carto::UnauthorizedError, with: :rescue_from_carto_error
@@ -35,7 +35,7 @@ module Carto
         render_jsonp(@widget.attributes)
       end
 
-      def delete
+      def destroy
         @widget.destroy
         render_jsonp(@widget.attributes)
       end
@@ -58,7 +58,7 @@ module Carto
         @layer = Carto::Layer.where(id: @layer_id).first
         raise LoadError.new("Layer not found: #{@layer_id}") unless @layer
 
-        @widget_id = params[:widget_id]
+        @widget_id = params[:id]
         if [@widget_id, params[:id]].compact.uniq.length >= 2
           raise UnprocesableEntityError.new("URL id (#{@widget_id}) and payload id (#{params[:id]}) don't match")
         end

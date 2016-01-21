@@ -4,8 +4,7 @@ Sequel.migration do
 
     create_table :widgets do
       Uuid :id, primary_key: true, default: 'uuid_generate_v4()'.lit
-      # TODO: on delete cascade
-      foreign_key :layer_id, :layers, type: 'uuid', null: false
+      foreign_key :layer_id, :layers, type: 'uuid', null: false, on_delete: :cascade
       Integer :order, null: false
       String :type, null: false
       String :title

@@ -7,7 +7,7 @@ module Carto
       private
 
       def editor_users_only
-        render_pretty_404 unless editor_user?(current_user)
+        render_404 unless editor_user?(current_user)
       end
 
       def editor_user?(user)

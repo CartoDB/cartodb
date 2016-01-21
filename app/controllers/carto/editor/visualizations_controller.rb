@@ -19,12 +19,12 @@ module Carto
       def load_visualization
         @visualization = get_priority_visualization(params[:id], current_user.id)
 
-        render_404 unless allowed?(@visualization)
-        render_403 unless @visualization.is_writable_by_user?(current_user)
+        render_404 && return if @visualization.nil?
+        render_403 && return unless allowed?(@visualization)
       end
 
       def allowed?(visualization)
-        true unless visualization.nil? || visualization.type_slide? || visualization.kind_raster?
+        !(visualization.type_slide? || visualization.kind_raster? || !visualization.is_writable_by_user(current_user))
       end
     end
   end

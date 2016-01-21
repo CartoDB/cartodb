@@ -45,10 +45,16 @@ CartoDB::Application.routes.draw do
   post '/google/signup' => 'google_plus#google_signup', as: :google_plus_signup
 
   # Editor v3
-  scope module: 'carto/editor', path: '(/user/:user_domain)(/u/:user_domain)/editor' do
-    # Visualizations
-    resources :visualizations, only: :show, path: '/'
+  scope module: 'carto', path: '(/user/:user_domain)(/u/:user_domain)' do
+    namespace :editor do
+      # Visualizations
+      resources :visualizations, only: :show, path: '/', constraints: { id: /[0-z\.\-]+/ }
+    end
   end
+
+  # scope module: 'carto/editor' do
+  #   get '(/user/:user_domain)(/u/:user_domain)/editor/:id' => 'visualizations#show', constraints: { id: /[0-z\.\-]+/ }, as: :editor_visualization
+  # end
 
   # Internally, some of this methods will forcibly rewrite to the org-url if user belongs to an organization
   scope :module => :admin do

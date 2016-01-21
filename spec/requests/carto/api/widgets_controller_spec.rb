@@ -45,7 +45,7 @@ shared_context 'layer hierarchy' do
       dataview: dataview
     }
 
-    payload.merge!(order: order) if order
+    payload[:order] = order if order
 
     payload
   end

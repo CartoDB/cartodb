@@ -35,14 +35,13 @@ describe CartoDB::Importer2::Excel2Csv do
         filepath = path_to('csv_as_xls.xls')
         @excel2csv      = CartoDB::Importer2::Excel2Csv.new("xls", filepath, @job, @csv_normalizer)
         @excel2csv.stubs(:converted_filepath).returns("/tmp")
-        expect {  @excel2csv.run }.to raise_error CartoDB::Importer2::MalformedXLSException
-
+        expect { @excel2csv.run }.to raise_error CartoDB::Importer2::MalformedXLSException
       end
       it "raise if a csv file is passed as xlsx" do
         filepath = path_to('csv_as_xlsx.xlsx')
         @excel2csv      = CartoDB::Importer2::Excel2Csv.new("xlsx", filepath, @job, @csv_normalizer)
         @excel2csv.stubs(:converted_filepath).returns("/tmp")
-        expect {  @excel2csv.run }.to raise_error CartoDB::Importer2::MalformedXLSException
+        expect { @excel2csv.run }.to raise_error CartoDB::Importer2::MalformedXLSException
       end
     end
   end

@@ -137,9 +137,6 @@ module CartoDB
             db.run('CREATE EXTENSION plpythonu FROM unpackaged') unless db.fetch(%{
                 SELECT count(*) FROM pg_extension WHERE extname='plpythonu'
               }).first[:count] > 0
-            db.run('CREATE EXTENSION schema_triggers') unless db.fetch(%{
-                SELECT count(*) FROM pg_extension WHERE extname='schema_triggers'
-              }).first[:count] > 0
             db.run('CREATE EXTENSION postgis FROM unpackaged') unless db.fetch(%{
                 SELECT count(*) FROM pg_extension WHERE extname='postgis'
               }).first[:count] > 0

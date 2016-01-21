@@ -179,18 +179,6 @@ PostGIS
       
    sudo PGUSER=postgres make installcheck # to run tests
 
-.. warning::
-    if test_ddl_triggers fails it's likely due to an incomplete installation of schema_triggers.
-    You need to add schema_triggers.so to the shared_preload_libraries setting in postgresql.conf :
-
-    ::
-
-        $ sudo vim /etc/postgresql/9.3/main/postgresql.conf
-         shared_preload_libraries = 'schema_triggers.so'
-        $ sudo service postgresql restart # restart postgres
-
-  After this change the 2nd installcheck of cartodb-postresql should be OK.
-  
   Check https://github.com/cartodb/cartodb-postgresql for further reference
 
 * Restart PostgreSQL after all this process

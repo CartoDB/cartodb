@@ -747,7 +747,7 @@ var Vis = View.extend({
     }
   },
 
-  createLayer: function (layerData, opts) {
+  createLayer: function (layerData) {
     var layerModel = Layers.create(layerData.type || layerData.kind, this, layerData);
     return this.mapView.createLayer(layerModel);
   },

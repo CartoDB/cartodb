@@ -91,11 +91,13 @@ describe('geo/leaflet/leaflet-map-view', function () {
     expect(map.layers.length).toEqual(1);
   });
 
-  it('should create a layer view when adds a model', function () {
+  it('should trigger an event when a new layerView is added to the map', function () {
     var spy = { c: function () {} };
     spyOn(spy, 'c');
     mapView.bind('newLayerView', spy.c);
+
     map.addLayer(layer);
+
     expect(map.layers.length).toEqual(1);
     expect(_.size(mapView.layers)).toEqual(1);
     expect(spy.c).toHaveBeenCalled();
@@ -124,34 +126,6 @@ describe('geo/leaflet/leaflet-map-view', function () {
     var lyr = map.addLayer(layer);
     var layerView = mapView.getLayerByCid(lyr);
     expect(LeafletTiledLayerView.prototype.isPrototypeOf(layerView)).isPrototypeOf();
-  });
-
-  it('should group CartoDB layers into a LeafletCartoDBLayerGroupView', function () {
-    var layer1 = new CartoDBLayer();
-    var layer2 = new CartoDBLayer();
-
-    // Adding more than one layer
-    map.addLayer(layer1);
-    map.addLayer(layer2);
-
-    var layerViewForLayer1 = mapView.getLayerByCid(layer1.cid);
-    expect(layerViewForLayer1 instanceof LeafletCartoDBLayerGroupView).toBeTruthy();
-    var layerViewForLayer2 = mapView.getLayerByCid(layer2.cid);
-    expect(layerViewForLayer2 instanceof LeafletCartoDBLayerGroupView).toBeTruthy();
-    expect(layerViewForLayer1).toEqual(layerViewForLayer2);
-
-    // Remove one layer
-    map.layers.remove(layer1);
-
-    layerViewForLayer1 = mapView.getLayerByCid(layer1.cid);
-    expect(layerViewForLayer1).not.toBeDefined();
-    layerViewForLayer2 = mapView.getLayerByCid(layer2.cid);
-    expect(layerViewForLayer2 instanceof LeafletCartoDBLayerGroupView).toBeTruthy();
-
-    map.layers.remove(layer2);
-
-    layerViewForLayer2 = mapView.getLayerByCid(layer2.cid);
-    expect(layerViewForLayer2).not.toBeDefined();
   });
 
   it('should create a PlainLayer when the layer is cartodb', function () {
@@ -197,7 +171,7 @@ describe('geo/leaflet/leaflet-map-view', function () {
     expect(mapView.layerGroupModel).not.toBeDefined();
   });
 
-  it("should not all a layer when it can't be creadted", function () {
+  it("should not add a layer view when it can't be created", function () {
     var layer = new TileLayer({type: 'rambo'});
     map.addLayer(layer);
     expect(_.size(mapView.layers)).toEqual(0);

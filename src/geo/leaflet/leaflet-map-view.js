@@ -14,9 +14,6 @@ var LeafletCartoDBLayerGroupView = require('./leaflet-cartodb-layer-group-view')
 var LeafletPointView = require('./leaflet-point-view');
 var LeafletPathView = require('./leaflet-path-view');
 
-// TODO: var CartoDBLayerGroupNamed = require('../../geo/map/cartodb-layer-group-named');
-var CartoDBLayerGroupAnonymous = require('../../geo/map/cartodb-layer-group-anonymous');
-
 /**
  * leaflet implementation of a map
  */
@@ -64,9 +61,6 @@ var LeafletMapView = MapView.extend({
     }
 
     this.map.bind('set_view', this._setView, this);
-    this.map.layers.bind('add', this._addLayer, this);
-    this.map.layers.bind('remove', this._removeLayer, this);
-    this.map.layers.bind('reset', this._addLayers, this);
 
     this.map.geometries.bind('add', this._addGeometry, this);
     this.map.geometries.bind('remove', this._removeGeometry, this);
@@ -136,7 +130,7 @@ var LeafletMapView = MapView.extend({
 
   // this replaces the default functionality to search for
   // already added views so they are not replaced
-  _addLayers: function() {
+  _addLayers: function(layerCollection, options) {
     var self = this;
 
     var oldLayers = this.layers;
@@ -164,14 +158,17 @@ var LeafletMapView = MapView.extend({
       }
     }
 
-    this.map.layers.each(function(lyr) {
-      var lv = findLayerView(lyr);
-      if (!lv) {
-        self._addLayer(lyr);
+    this.map.layers.each(function(layerModel) {
+      var layerView = findLayerView(layerModel);
+      if (!layerView) {
+        self._addLayer(layerModel, layerCollection, {
+          silent: (options && options.silent) || false,
+          index: options && options.index
+        });
       } else {
-        lv.setModel(lyr);
-        self.layers[lyr.cid] = lv;
-        self.trigger('newLayerView', lv, lv.model, self);
+        layerView.setModel(layerModel);
+        self.layers[layerModel.cid] = layerView;
+        self.trigger('newLayerView', layerView, layerModel, self);
       }
     });
 
@@ -187,8 +184,6 @@ var LeafletMapView = MapView.extend({
       layerView.remove();
       delete this.layers[layer];
     }
-
-    delete this.layerGroupModel;
 
     View.prototype.clean.call(this);
   },
@@ -235,51 +230,17 @@ var LeafletMapView = MapView.extend({
     return LeafletMapView.createLayer(layer, this.map_leaflet);
   },
 
-  // LAYER VIEWS ARE CREATED HERE
-  // TODO: layers param is not being used here
-  _addLayer: function(layerModel, layers, opts) {
-    var layerView;
-
-    // CartoDBLayers are grouped visually that's why we need an instance of a
-    // CartoDBLayerGroupAnonymous or CartoDBLayerGroupNamed
-    if (layerModel.get('type') === 'CartoDB') {
-      if (!this.layerGroupModel) {
-        this.layerGroupModel = new CartoDBLayerGroupAnonymous({}, {
-          windshaftMap: this.map.windshaftMap,
-          layers: [layerModel]
-        });
-        layerView = LeafletMapView.createLayer(this.layerGroupModel, this.map_leaflet);
-      } else {
-        // Add that layer to the group
-        // TODO: The only reason why the layerGroupModel needs to access individual layers
-        // is to know if layers are visible of not, so that URLs for attributes can use the
-        // right indexes. There should be a better way to do this.
-        this.layerGroupModel.layers.add(layerModel);
-        this.layers[layerModel.cid] = this.getLayerByCid(this.layerGroupModel.layers.at(0).cid);
-      }
-    } else {
-      layerView = LeafletMapView.createLayer(layerModel, this.map_leaflet);
-    }
-
-    if (!layerView) {
-      return;
-    }
-    return this._addLayerToMap(layerView, layerModel, opts);
-  },
-
   _addLayerToMap: function(layerView, layerModel, opts) {
-    this.layers[layerModel.cid] = layerView;
     LeafletMapView.addLayerToMap(layerView, this.map_leaflet);
 
     this._reorderLayerViews();
 
-    if (opts === undefined || !opts.silent) {
+    if (!opts.silent) {
       this.trigger('newLayerView', layerView);
     }
     return layerView;
   },
 
-  // TODO: Move to mapView
   _reorderLayerViews: function () {
     this.map.layers.each(function (layerModel) {
       var layerView = this.getLayerByCid(layerModel.cid);

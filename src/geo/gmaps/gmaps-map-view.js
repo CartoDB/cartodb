@@ -107,10 +107,6 @@ var GoogleMapsMapView = MapView.extend({
       self.trigger('dblclick', e);
     });
 
-    this.map.layers.bind('add', this._addLayer, this);
-    this.map.layers.bind('remove', this._removeLayer, this);
-    this.map.layers.bind('reset', this._addLayers, this);
-
     this.map.geometries.bind('add', this._addGeometry, this);
     this.map.geometries.bind('remove', this._removeGeometry, this);
 
@@ -148,12 +144,12 @@ var GoogleMapsMapView = MapView.extend({
   },
 
   createLayer: function(layer) {
-    var layer_view,
+    var layerView,
     layerClass = this.layerTypeMap[layer.get('type').toLowerCase()];
 
     if (layerClass) {
       try {
-        layer_view = new layerClass(layer, this.map_googlemaps);
+        layerView = new layerClass(layer, this.map_googlemaps);
       } catch (e) {
         log.error("MAP: error creating '" +  layer.get('type') + "' layer -> " + e.message);
         throw e;
@@ -161,55 +157,38 @@ var GoogleMapsMapView = MapView.extend({
     } else {
       log.error("MAP: " + layer.get('type') + " can't be created");
     }
-    return layer_view;
+    return layerView;
   },
 
-  _addLayer: function(layer, layers, opts) {
-    opts = opts || {};
-    var self = this;
-    var lyr, layer_view;
-
-    layer_view = this.createLayer(layer);
-
-    if (!layer_view) {
-      return;
-    }
-    return this._addLayerToMap(layer_view, opts);
-  },
-
-  _addLayerToMap: function(layer_view, opts) {
-    var layer = layer_view.model;
-
-    this.layers[layer.cid] = layer_view;
-
-    if (layer_view) {
-      var isBaseLayer = _.keys(this.layers).length === 1 || (opts && opts.index === 0) || layer.get('order') === 0;
+  _addLayerToMap: function(layerView, layerModel, opts) {
+    if (layerView) {
+      var isBaseLayer = _.keys(this.layers).length === 1 || (opts && opts.index === 0) || layerModel.get('order') === 0;
       // set base layer
-      if(isBaseLayer && !opts.no_base_layer) {
-        var m = layer_view.model;
+      if(isBaseLayer) {
+        var m = layerView.model;
         if(m.get('type') !== 'GMapsBase') {
-          layer_view.isBase = true;
+          layerView.isBase = true;
         }
       } else {
         // TODO: Make sure this order will be right
-        var idx = layer.get('order');
-        if (layer_view.getTile) {
-          if (!layer_view.gmapsLayer) {
+        var idx = layerModel.get('order');
+        if (layerView.getTile) {
+          if (!layerView.gmapsLayer) {
             log.error("gmaps layer can't be null");
           }
-          this.map_googlemaps.overlayMapTypes.setAt(idx, layer_view.gmapsLayer);
+          this.map_googlemaps.overlayMapTypes.setAt(idx, layerView.gmapsLayer);
         } else {
-          layer_view.gmapsLayer.setMap(this.map_googlemaps);
+          layerView.gmapsLayer.setMap(this.map_googlemaps);
         }
       }
-      if(opts === undefined || !opts.silent) {
-        this.trigger('newLayerView', layer_view, layer, this);
+      if (opts === undefined || !opts.silent) {
+        this.trigger('newLayerView', layerView, layerModel, this);
       }
     } else {
       log.error("layer type not supported");
     }
 
-    return layer_view;
+    return layerView;
   },
 
   pixelToLatLon: function(pos) {

@@ -3,6 +3,8 @@ var cdb = require('cdb'); // cdb.geo.LeafletMapView, cdb.geo.GoogleMapsMapView
 var log = require('cdb.log');
 var View = require('../core/view');
 var Infowindow = require('./ui/infowindow');
+// TODO: var CartoDBLayerGroupNamed = require('../../geo/map/cartodb-layer-group-named');
+var CartoDBLayerGroupAnonymous = require('../geo/map/cartodb-layer-group-anonymous');
 
 var MapView = View.extend({
 
@@ -23,6 +25,9 @@ var MapView = View.extend({
     this.layers = {};
     this.geometries = {};
 
+    this.map.layers.bind('add', this._addLayer, this);
+    this.map.layers.bind('remove', this._removeLayer, this);
+    this.map.layers.bind('reset', this._addLayers, this);
     this.bind('clean', this._removeLayers, this);
   },
 
@@ -119,14 +124,54 @@ var MapView = View.extend({
   },
 
   showBounds: function(bounds) {
-    this.map.fitBounds(bounds, this.getSize())
+    this.map.fitBounds(bounds, this.getSize());
   },
 
-  _addLayers: function() {
+  _addLayers: function(layerCollection, options) {
     var self = this;
     this._removeLayers();
-    this.map.layers.each(function(lyr) {
-      self._addLayer(lyr);
+    this.map.layers.each(function (layerModel) {
+      self._addLayer(layerModel, layerCollection, {
+        silent: (options && options.silent) || false,
+        index: options && options.index
+      });
+    });
+  },
+
+  _addLayer: function(layerModel, layerCollection, options) {
+    var layerView;
+
+    // CartoDBLayers are grouped visually that's why we need an instance of a
+    // CartoDBLayerGroupAnonymous or CartoDBLayerGroupNamed
+    if (layerModel.get('type') === 'CartoDB') {
+      if (!this._cartoDBLayerGroup) {
+        this._cartoDBLayerGroup = new CartoDBLayerGroupAnonymous({}, {
+          windshaftMap: this.map.windshaftMap,
+          layers: [layerModel]
+        });
+        layerView = this.createLayer(this._cartoDBLayerGroup, this.map_leaflet);
+        this.layers[layerModel.cid] = layerView;
+      } else {
+        // Add that layer to the group
+        // TODO: The only reason why the _cartoDBLayerGroup needs to access individual layers
+        // is to know if layers are visible of not, so that URLs for attributes can use the
+        // right indexes. There should be a better way to do this.
+        this._cartoDBLayerGroup.layers.add(layerModel);
+        this.layers[layerModel.cid] = this.getLayerByCid(this._cartoDBLayerGroup.layers.at(0).cid);
+      }
+    } else {
+      layerView = this.createLayer(layerModel, this.map_leaflet);
+      if (layerView) {
+        this.layers[layerModel.cid] = layerView;
+      }
+    }
+
+    if (!layerView) {
+      return;
+    }
+    this._addLayerToMap(layerView, layerModel, {
+      silent: options.silent,
+      index: options.index
     });
   },
 
@@ -140,9 +185,9 @@ var MapView = View.extend({
 
   _removeLayer: function(layerModel) {
     if (layerModel.get('type') === 'CartoDB') {
-      this.layerGroupModel.layers.remove(layerModel);
-      if (this.layerGroupModel.layers.size() === 0) {
-        delete this.layerGroupModel;
+      this._cartoDBLayerGroup.layers.remove(layerModel);
+      if (this._cartoDBLayerGroup.layers.size() === 0) {
+        delete this._cartoDBLayerGroup;
       }
     }
     var layerView = this.layers[layerModel.cid];
@@ -174,15 +219,19 @@ var MapView = View.extend({
     throw "to be implemented";
   },
 
-  _addLayer: function(layer, layers, opts) {
-    throw "to be implemented";
-  },
-
   _addGeomToMap: function(geom) {
     throw "to be implemented";
   },
 
   _removeGeomFromMap: function(geo) {
+    throw "to be implemented";
+  },
+
+  createLayer: function() {
+    throw "to be implemented";
+  },
+
+  _addLayerToMap: function() {
     throw "to be implemented";
   },
 

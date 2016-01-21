@@ -33,6 +33,7 @@ module Carto
         @map_id = params[:map_id]
         @map = Carto::Map.where(id: @map_id).first
         raise LoadError.new("Map not found: #{@map_id}") unless @map
+        raise Carto::UnauthorizedError.new("Not authorized for map #{@map.id}") unless @map.writable_by_user?(current_user)
 
         @layer_id = params[:layer_id]
         @layer = Carto::Layer.where(id: @layer_id).first

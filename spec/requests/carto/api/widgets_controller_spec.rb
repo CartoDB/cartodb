@@ -137,5 +137,11 @@ describe Carto::Api::WidgetsController do
         response.status.should == 404
       end
     end
+
+    it 'returns 403 if visualization is private and current user is not the owner' do
+      post_json api_v3_widgets_create_url(user_domain: @user2.username, map_id: @map.id, layer_id: @widget.layer_id, api_key: @user2.api_key), widget_payload, http_json_headers do |response|
+        response.status.should == 403
+      end
+    end
   end
 end

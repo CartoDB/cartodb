@@ -18,9 +18,7 @@ class Carto::Widget < ActiveRecord::Base
     return false unless layer
     return false unless layer.maps
 
-    visualizations = Carto::Visualization.where(map_id: layer.maps(&:id)).all
-
-    !visualizations.select { |v| v.is_writable_by_user(user) }.empty?
+    layer.maps { |l| l.writable_by_user?(user) }.select { |writable| !writable }.empty?
   end
 
 end

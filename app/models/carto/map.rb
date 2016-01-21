@@ -100,6 +100,11 @@ class Carto::Map < ActiveRecord::Base
     }
   end
 
+  def writable_by_user?(user)
+    visualizations = Carto::Visualization.where(map_id: id).all
+    !visualizations.select { |v| v.is_writable_by_user(user) }.empty?
+  end
+
   private
 
   def get_the_last_time_tiles_have_changed_to_render_it_in_vizjsons

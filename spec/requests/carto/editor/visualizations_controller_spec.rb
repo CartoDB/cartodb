@@ -22,8 +22,6 @@ describe Carto::Editor::VisualizationsController do
       get editor_visualization_url(id: @visualization.id)
 
       response.status.should == 404
-
-      @user1.stubs(:has_feature_flag?).with('editor-3').returns(true)
     end
 
     it 'returns 404 for non-existent visualizations' do

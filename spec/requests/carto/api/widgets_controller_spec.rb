@@ -182,7 +182,7 @@ describe Carto::Api::WidgetsController do
       new_order = @widget.order + 1
       new_type = "new #{@widget.type}"
       new_title = "new #{@widget.title}"
-      new_dataview = @widget.dataview_json.merge({ new: 'whatever' })
+      new_dataview = @widget.dataview_json.merge(new: 'whatever')
 
       payload = widget_payload(order: new_order, type: new_type, title: new_title, dataview: new_dataview)
 

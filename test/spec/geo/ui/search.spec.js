@@ -14,7 +14,8 @@ describe('geo/ui/search', function () {
     this.map = new Map();
     this.mapView = new LeafletMapView({
       el: this.$el,
-      map: this.map
+      map: this.map,
+      layerViewFactory: jasmine.createSpyObj('layerViewFactory', ['createLayerView'])
     });
     this.view = new Search({
       model: this.map,

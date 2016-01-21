@@ -9,10 +9,6 @@ describe('core/geo/map-view', function() {
   beforeEach(function() {
     this.container = $('<div>').css('height', '200px');
 
-    var windshaftMap = {
-      instance: new Backbone.Model()
-    };
-
     this.map = new Map();
 
     // Map needs a WindshaftMap so we're setting up a fake one
@@ -20,9 +16,11 @@ describe('core/geo/map-view', function() {
       instance: new Backbone.Model()
     };
 
+    var layerViewFactory = jasmine.createSpyObj('layerViewFactory', ['createLayerView']);
     this.mapView = new MapView({
       el: this.container,
-      map: this.map
+      map: this.map,
+      layerViewFactory: layerViewFactory
     });
   });
 

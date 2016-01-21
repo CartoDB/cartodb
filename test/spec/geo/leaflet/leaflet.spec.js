@@ -3,20 +3,17 @@ var _ = require('underscore');
 var Backbone = require('backbone');
 var L = require('leaflet');
 global.L = L;
-var config = require('cdb.config');
-var log = require('cdb.log');
+
 var Map = require('../../../../src/geo/map');
-var LeafletMapView = require('../../../../src/geo/leaflet/leaflet-map-view');
-var TileLayer = require('../../../../src/geo/map/tile-layer');
-var LeafletTiledLayerView = require('../../../../src/geo/leaflet/leaflet-tiled-layer-view');
-var LeafletCartoDBLayerGroupView = require('../../../../src/geo/leaflet/leaflet-cartodb-layer-group-view');
-var CartoDBLayer = require('../../../../src/geo/map/cartodb-layer');
-var CartoDBLayerGroupNamed = require('../../../../src/geo/map/cartodb-layer-group-named');
-var CartoDBLayerGroupAnonymous = require('../../../../src/geo/map/cartodb-layer-group-anonymous');
-var PlainLayer = require('../../../../src/geo/map/plain-layer');
-var LeafletPlainLayerView = require('../../../../src/geo/leaflet/leaflet-plain-layer-view');
 var Geometry = require('../../../../src/geo/geometry');
+var TileLayer = require('../../../../src/geo/map/tile-layer');
+var CartoDBLayer = require('../../../../src/geo/map/cartodb-layer');
+var PlainLayer = require('../../../../src/geo/map/plain-layer');
 var GMapsBaseLayer = require('../../../../src/geo/map/gmaps-base-layer');
+var LeafletMapView = require('../../../../src/geo/leaflet/leaflet-map-view');
+var LeafletLayerViewFactory = require('../../../../src/geo/leaflet/leaflet-layer-view-factory');
+var LeafletTiledLayerView = require('../../../../src/geo/leaflet/leaflet-tiled-layer-view');
+var LeafletPlainLayerView = require('../../../../src/geo/leaflet/leaflet-plain-layer-view');
 
 describe('geo/leaflet/leaflet-map-view', function () {
   var mapView;
@@ -39,7 +36,8 @@ describe('geo/leaflet/leaflet-map-view', function () {
 
     mapView = new LeafletMapView({
       el: container,
-      map: map
+      map: map,
+      layerViewFactory: new LeafletLayerViewFactory()
     });
 
     var layerURL = 'http://{s}.tiles.mapbox.com/v3/cartodb.map-1nh578vv/{z}/{x}/{y}.png';
@@ -380,7 +378,8 @@ describe('geo/leaflet/leaflet-map-view', function () {
       mapView = new LeafletMapView({
         el: container,
         map: map,
-        map_object: leafletMap
+        map_object: leafletMap,
+        layerViewFactory: new LeafletLayerViewFactory()
       });
 
       // Add a CartoDB layer with some custom attribution
@@ -408,7 +407,8 @@ describe('geo/leaflet/leaflet-map-view', function () {
       mapView = new LeafletMapView({
         el: container,
         map: map,
-        map_object: leafletMap
+        map_object: leafletMap,
+        layerViewFactory: new LeafletLayerViewFactory()
       });
 
       // Add a CartoDB layer with some custom attribution
@@ -432,7 +432,8 @@ describe('geo/leaflet/leaflet-map-view', function () {
     });
     var mapView = new LeafletMapView({
       el: container,
-      map: map
+      map: map,
+      layerViewFactory: new LeafletLayerViewFactory()
     });
 
     expect(mapView.map_leaflet.dragging.enabled()).toBeFalsy();

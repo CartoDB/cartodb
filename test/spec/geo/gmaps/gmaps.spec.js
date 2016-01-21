@@ -2,16 +2,17 @@ var $ = require('jquery');
 var _ = require('underscore');
 
 var Map = require('../../../../src/geo/map');
-var GoogleMapsMapView = require('../../../../src/geo/gmaps/gmaps-map-view');
+var Geometry = require('../../../../src/geo/geometry');
 var TileLayer = require('../../../../src/geo/map/tile-layer');
+var PlainLayer = require('../../../../src/geo/map/plain-layer');
+var GmapsPathView = require('../../../../src/geo/gmaps/gmaps-path-view');
+var GoogleMapsMapView = require('../../../../src/geo/gmaps/gmaps-map-view');
+var GMapsLayerViewFactory = require('../../../../src/geo/gmaps/gmaps-layer-view-factory');
 var GMapsTiledLayerView = require('../../../../src/geo/gmaps/gmaps-tiled-layer-view');
 var CartoDBLayerGroupAnonymous = require('../../../../src/geo/map/cartodb-layer-group-anonymous');
 var CartoDBLayerGroupNamed = require('../../../../src/geo/map/cartodb-layer-group-named');
-var PlainLayer = require('../../../../src/geo/map/plain-layer');
 var GMapsCartoDBLayerGroupView = require('../../../../src/geo/gmaps/gmaps-cartodb-layer-group-view');
 var GMapsPlainLayerView = require('../../../../src/geo/gmaps/gmaps-plain-layer-view');
-var Geometry = require('../../../../src/geo/geometry');
-var GmapsPathView = require('../../../../src/geo/gmaps/gmaps-path-view');
 
 describe('geo/gmaps/gmaps-map-view', function () {
   var mapView;
@@ -23,7 +24,8 @@ describe('geo/gmaps/gmaps-map-view', function () {
     map = new Map();
     mapView = new GoogleMapsMapView({
       el: container,
-      map: map
+      map: map,
+      layerViewFactory: new GMapsLayerViewFactory()
     });
 
     layerURL = 'http://localhost/{s}/light_nolabels/{z}/{x}/{y}.png';
@@ -208,7 +210,8 @@ describe('geo/gmaps/gmaps-map-view', function () {
     });
     var mapView = new GoogleMapsMapView({
       el: container,
-      map: map
+      map: map,
+      layerViewFactory: new GMapsLayerViewFactory()
     });
 
     expect(mapView.map_googlemaps.get('draggable')).toBeFalsy();

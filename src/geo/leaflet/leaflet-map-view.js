@@ -1,16 +1,9 @@
 var $ = require('jquery');
 var _ = require('underscore');
 var L = require('leaflet');
-var cdb = require('cdb'); // cdb.geo.LeafletTorqueLayer
-var log = require('cdb.log');
 var MapView = require('../map-view');
 var View = require('../../core/view');
 var Sanitize = require('../../core/sanitize');
-var LeafletTiledLayerView = require('./leaflet-tiled-layer-view');
-var LeafletWMSLayerView = require('./leaflet-wms-layer-view');
-var LeafletPlainLayerView = require('./leaflet-plain-layer-view');
-var LeafletGmapsTiledLayerView = require('./leaflet-gmaps-tiled-layer-view');
-var LeafletCartoDBLayerGroupView = require('./leaflet-cartodb-layer-group-view');
 var LeafletPointView = require('./leaflet-point-view');
 var LeafletPathView = require('./leaflet-path-view');
 
@@ -226,8 +219,8 @@ var LeafletMapView = MapView.extend({
     this.map_leaflet.removeLayer(geo.geom);
   },
 
-  createLayer: function(layer) {
-    return LeafletMapView.createLayer(layer, this.map_leaflet);
+  _getNativeMap: function () {
+    return this.map_leaflet;
   },
 
   _addLayerToMap: function(layerView, layerModel, opts) {
@@ -319,43 +312,6 @@ var LeafletMapView = MapView.extend({
   }
 
 }, {
-
-  layerTypeMap: {
-    "tiled": LeafletTiledLayerView,
-    "wms": LeafletWMSLayerView,
-    "plain": LeafletPlainLayerView,
-
-    // Substitutes the GMaps baselayer w/ an equivalent Leaflet tiled layer, since not supporting Gmaps anymore
-    "gmapsbase": LeafletGmapsTiledLayerView,
-    "layergroup": LeafletCartoDBLayerGroupView,
-    "namedmap": LeafletCartoDBLayerGroupView,
-    "torque": function(layer, map) {
-      // TODO for now adding this error to be thrown if object is not present, since it's dependency
-      // is not included in the standard bundle
-      if (!cdb.geo.LeafletTorqueLayer) {
-        throw new Error('torque library must have been loaded for a torque layer to work');
-      }
-      return new cdb.geo.LeafletTorqueLayer(layer, map);
-    }
-  },
-
-  createLayer: function(layer, map) {
-    var layerView = null;
-    var layerClass = this.layerTypeMap[layer.get('type').toLowerCase()];
-
-    if (layerClass) {
-      try {
-        layerView = new layerClass(layer, map);
-      } catch (e) {
-        log.error("MAP: error creating '" +  layer.get('type') + "' layer -> " + e.message);
-        throw e;
-      }
-    } else {
-      log.error("MAP: " + layer.get('type') + " can't be created");
-    }
-    return layerView;
-  },
-
   addLayerToMap: function(layerView, map, pos) {
     map.addLayer(layerView.leafletLayer);
     if(pos !== undefined) {

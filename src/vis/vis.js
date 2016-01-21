@@ -9,7 +9,7 @@ var Loader = require('../core/loader');
 var View = require('../core/view');
 var StackedLegend = require('../geo/ui/legend/stacked-legend');
 var Map = require('../geo/map');
-var MapView = require('../geo/map-view');
+var MapViewFactory = require('../geo/map-view-factory');
 var LegendModel = require('../geo/ui/legend-model');
 var Legend = require('../geo/ui/legend');
 var SQL = require('../api/sql');
@@ -314,7 +314,8 @@ var Vis = View.extend({
     this.$el.append(div);
 
     // Create the map
-    this.mapView = new MapView.create(div_hack, map);
+    var mapViewFactory = new MapViewFactory();
+    this.mapView = mapViewFactory.createMapView(map.get('provider'), map, div_hack);
 
     if (options.legends || (options.legends === undefined && this.map.get('legends') !== false)) {
       map.layers.bind('reset', this.addLegends, this);

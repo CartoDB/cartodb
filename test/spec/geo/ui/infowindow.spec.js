@@ -17,7 +17,8 @@ describe('geo/ui/infowindow', function() {
 
     mapView = new MapView({
       el: container,
-      map: map
+      map: map,
+      layerViewFactory: jasmine.createSpyObj('layerViewFactory', ['createLayerView'])
     });
 
     model = new InfowindowModel({
@@ -165,7 +166,8 @@ describe('geo/ui/infowindow', function() {
 
       mapView = new MapView({
         el: container,
-        map: map
+        map: map,
+        layerViewFactory: jasmine.createSpyObj('layerViewFactory', ['createLayerView'])
       });
 
       model = new InfowindowModel({
@@ -271,7 +273,8 @@ describe('geo/ui/infowindow', function() {
 
       mapView = new MapView({
         el: container,
-        map: map
+        map: map,
+        layerViewFactory: jasmine.createSpyObj('layerViewFactory', ['createLayerView'])
       });
 
       model = new InfowindowModel({

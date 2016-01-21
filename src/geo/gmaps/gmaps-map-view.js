@@ -1,29 +1,11 @@
 var _ = require('underscore');
-var cdb = require('cdb'); // cdb.geo.GMapsTorqueLayerView
 var log = require('cdb.log');
 var MapView = require('../map-view');
-var GMapsTiledLayerView = require('./gmaps-tiled-layer-view');
-var GMapsPlainLayerView = require('./gmaps-plain-layer-view');
-var GMapsBaseLayerView = require('./gmaps-base-layer-view');
-var GMapsCartoDBLayerGroupView = require('./gmaps-cartodb-layer-group-view');
-var LeafletWMSLayerView = require('../leaflet/leaflet-wms-layer-view');
 var Projector = require('./projector');
 var PointView = require('./gmaps-point-view');
 var PathView = require('./gmaps-path-view');
 
 var GoogleMapsMapView = MapView.extend({
-
-  layerTypeMap: {
-    "tiled": GMapsTiledLayerView,
-    "plain": GMapsPlainLayerView,
-    "gmapsbase": GMapsBaseLayerView,
-    "layergroup": GMapsCartoDBLayerGroupView,
-    "namedmap": GMapsCartoDBLayerGroupView,
-    "torque": function(layer, map) {
-      return new cdb.geo.GMapsTorqueLayerView(layer, map);
-    },
-    "wms": LeafletWMSLayerView
-  },
 
   initialize: function() {
     _.bindAll(this, '_ready');
@@ -143,21 +125,8 @@ var GoogleMapsMapView = MapView.extend({
     this.map_googlemaps.setCenter(c);
   },
 
-  createLayer: function(layer) {
-    var layerView,
-    layerClass = this.layerTypeMap[layer.get('type').toLowerCase()];
-
-    if (layerClass) {
-      try {
-        layerView = new layerClass(layer, this.map_googlemaps);
-      } catch (e) {
-        log.error("MAP: error creating '" +  layer.get('type') + "' layer -> " + e.message);
-        throw e;
-      }
-    } else {
-      log.error("MAP: " + layer.get('type') + " can't be created");
-    }
-    return layerView;
+  _getNativeMap: function () {
+    return this.map_googlemaps;
   },
 
   _addLayerToMap: function(layerView, layerModel, opts) {

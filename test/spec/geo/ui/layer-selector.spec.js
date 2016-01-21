@@ -2,9 +2,10 @@ var $ = require('jquery');
 var Backbone = require('backbone');
 var Map = require('../../../../src/geo/map');
 var CartoDBLayer = require('../../../../src/geo/map/cartodb-layer');
-var LeafletMapView = require('../../../../src/geo/leaflet/leaflet-map-view');
 var Template = require('../../../../src/core/template');
 var LayerSelector = require('../../../../src/geo/ui/layer-selector');
+var LeafletMapView = require('../../../../src/geo/leaflet/leaflet-map-view');
+var LeafletLayerViewFactory = require('../../../../src/geo/leaflet/leaflet-layer-view-factory');
 
 describe('geo/ui/layer-selector', function () {
 
@@ -25,7 +26,8 @@ describe('geo/ui/layer-selector', function () {
 
     var mapView2 = new LeafletMapView({
       el: $("<div>"),
-      map: map2
+      map: map2,
+      layerViewFactory: new LeafletLayerViewFactory()
     });
 
     layerSelector = new LayerSelector({

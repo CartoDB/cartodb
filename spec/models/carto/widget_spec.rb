@@ -12,6 +12,7 @@ describe Carto::Widget do
       loaded_widget.layer.should == widget.layer
       loaded_widget.dataview.should == widget.dataview
       loaded_widget.dataview_json.should == JSON.parse(widget.dataview).symbolize_keys
+      widget.destroy
     end
   end
 end

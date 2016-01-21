@@ -10,6 +10,7 @@ module Carto
 
       rescue_from Carto::LoadError, with: :rescue_from_carto_error
       rescue_from Carto::UnauthorizedError, with: :rescue_from_carto_error
+      rescue_from Carto::UnprocesableEntityError, with: :rescue_from_carto_error
 
       def show
         render_jsonp(@widget.attributes)
@@ -30,7 +31,13 @@ module Carto
 
       def load_parameters
         @map_id = params[:map_id]
+        @map = Carto::Map.where(id: @map_id).first
+        raise LoadError.new("Map not found: #{@map_id}") unless @map
+
         @layer_id = params[:layer_id]
+        @layer = Carto::Layer.where(id: @layer_id).first
+        raise LoadError.new("Layer not found: #{@layer_id}") unless @layer
+
         @widget_id = params[:widget_id]
 
         true

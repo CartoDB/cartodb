@@ -12,8 +12,12 @@ shared_context 'layer hierarchy' do
   end
 
   after(:each) do
+    Carto::Widget.destroy_all
     @visualization.destroy if @visualization
-    @widget.destroy if @widget
+  end
+
+  def random_uuid
+    UUIDTools::UUID.random_create.to_s
   end
 
   def response_widget_should_match_widget(response_widget, widget)
@@ -47,8 +51,8 @@ describe Carto::Api::WidgetsController do
   end
 
   after(:each) do
-    @public_visualization.destroy if @public_visualization
     @public_widget.destroy if @public_widget
+    @public_visualization.destroy if @public_visualization
   end
 
   let(:random_map_id) { UUIDTools::UUID.timestamp_create.to_s }
@@ -120,6 +124,17 @@ describe Carto::Api::WidgetsController do
         response_widget_should_match_payload(response_widget, payload)
         widget = Carto::Widget.find(response_widget[:id])
         response_widget_should_match_widget(response_widget, widget)
+        widget.destroy
+      end
+    end
+
+    it 'returns 404 for unknown map or layer ids' do
+      post_json api_v3_widgets_create_url(user_domain: @user1.username, map_id: random_uuid, layer_id: @widget.layer_id, api_key: @user1.api_key), widget_payload, http_json_headers do |response|
+        response.status.should == 404
+      end
+
+      post_json api_v3_widgets_create_url(user_domain: @user1.username, map_id: @map.id, layer_id: random_uuid, api_key: @user1.api_key), widget_payload, http_json_headers do |response|
+        response.status.should == 404
       end
     end
   end

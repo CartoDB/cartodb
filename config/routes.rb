@@ -52,10 +52,6 @@ CartoDB::Application.routes.draw do
     end
   end
 
-  # scope module: 'carto/editor' do
-  #   get '(/user/:user_domain)(/u/:user_domain)/editor/:id' => 'visualizations#show', constraints: { id: /[0-z\.\-]+/ }, as: :editor_visualization
-  # end
-
   # Internally, some of this methods will forcibly rewrite to the org-url if user belongs to an organization
   scope :module => :admin do
 

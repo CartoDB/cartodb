@@ -76,36 +76,37 @@
 
   <div class="FormAccount-row">
     <div class="OrganizationUser-quota js-userQuota">
-      <div class="FormAccount-rowData FormAccount-rowData--med OrganizationUser-quotaProgress js-userQuotaSlider">
-        <div class="UISlider UserQuotaDropdown-slider js-slider progress-bar overflow-visible">
-        <% available_quota_for_user = current_user.organization.unassigned_quota + current_user.quota_in_bytes %>
-          <% assignedPer = ((@user.quota_in_bytes.to_f * 100) / available_quota_for_user) %>
-          <% if !@user.new? %>
-            <% usedPer = ((@user.db_size_in_bytes.to_f * 100) / available_quota_for_user) %>
-            <span class="js-usedUserQuota bar-3" style="width:<%= usedPer %>%"></span>
-          <% end %>
-        </div>
-        <ul class="OrganizationUser-quotaLegend">
-          <% if !@user.new? %>
+      <% if !@user.new? %>
+        <div class="FormAccount-rowData FormAccount-rowData--med OrganizationUser-quotaProgress js-userQuotaSlider">
+          <div class="UISlider UserQuotaDropdown-slider js-slider progress-bar overflow-visible">
+          <% available_quota_for_user = current_user.organization.unassigned_quota + current_user.quota_in_bytes %>
+            <% assignedPer = ((@user.quota_in_bytes.to_f * 100) / available_quota_for_user) %>
+            <% if !@user.new? %>
+              <% usedPer = ((@user.db_size_in_bytes.to_f * 100) / available_quota_for_user) %>
+              <span class="js-usedUserQuota bar-3" style="width:<%= usedPer %>%"></span>
+            <% end %>
+          </div>
+          <ul class="OrganizationUser-quotaLegend">
+            <% if !@user.new? %>
+              <li class="OrganizationUser-quotaLegendItem">
+                <i class="OrganizationUser-quotaLegendIcon OrganizationUser-quotaLegendIcon--used"></i>
+                Used by user
+              </li>
+            <% end %>
             <li class="OrganizationUser-quotaLegendItem">
-              <i class="OrganizationUser-quotaLegendIcon OrganizationUser-quotaLegendIcon--used"></i>
-              Used by user
+              <i class="OrganizationUser-quotaLegendIcon OrganizationUser-quotaLegendIcon--assigned"></i>
+              Assigned to user
             </li>
-          <% end %>
-          <li class="OrganizationUser-quotaLegendItem">
-            <i class="OrganizationUser-quotaLegendIcon OrganizationUser-quotaLegendIcon--assigned"></i>
-            Assigned to user
-          </li>
-          <li class="OrganizationUser-quotaLegendItem">
-            <i class="OrganizationUser-quotaLegendIcon"></i>
-            Total
-          </li>
-        </ul>
-      </div>
-      <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft OrganizationUser-quotaInfo js-userQuotaSliderInput">
-        <span><%= text_field_tag nil, nil, :class => "FormAccount-input OrganizationUser-quotaInfoInput js-assignedSize" %> MB<% unless cartodb_com_hosted? %>, <a href="<%= current_user.upgrade_url(request.protocol) %>">upgrade your account</a> if needed.<% end %></span>
-
-      </div>
+            <li class="OrganizationUser-quotaLegendItem">
+              <i class="OrganizationUser-quotaLegendIcon"></i>
+              Total
+            </li>
+          </ul>
+        </div>
+        <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft OrganizationUser-quotaInfo js-userQuotaSliderInput">
+          <span><%= text_field_tag nil, nil, :class => "FormAccount-input OrganizationUser-quotaInfoInput js-assignedSize" %> MB<% unless cartodb_com_hosted? %>, <a href="<%= current_user.upgrade_url(request.protocol) %>">upgrade your account</a> if needed.<% end %></span>
+        </div>
+      <% end %>
       <%= f.hidden_field :quota_in_bytes, :id => "user_quota" %>
     </div>
   </div>

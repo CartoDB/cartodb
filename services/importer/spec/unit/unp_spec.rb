@@ -41,7 +41,11 @@ describe Unp do
       unp.without_unpacking(zipfile_factory)
       unp.source_files.size.should eq 1
     end
-  end #withount_unpacking
+
+    it 'raises if the path does not belong to a file' do
+      expect { Unp.new.without_unpacking('/var/tmp') }.to raise_error NotAFileError
+    end
+  end #without_unpacking
 
   describe '#compressed?' do
     it 'returns true if extension denotes a compressed file' do

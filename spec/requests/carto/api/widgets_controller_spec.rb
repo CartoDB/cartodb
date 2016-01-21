@@ -34,19 +34,20 @@ shared_context 'layer hierarchy' do
     response_widget[:layer_id].should == payload[:layer_id]
     response_widget[:type].should == payload[:type]
     response_widget[:title].should == payload[:title]
-    JSON.parse(response_widget[:dataview]).should == payload[:dataview]
+    JSON.parse(response_widget[:dataview]).symbolize_keys.should == payload[:dataview].symbolize_keys
   end
 
-  def widget_payload
-    {
-      layer_id: @layer.id,
-      type: 'formula',
-      title: 'the title',
-      dataview: {
-        'a field' => 'first',
-        'another field' => 'second'
-      }
+  def widget_payload(layer_id: @layer.id, type: 'formula', title: 'the title', dataview: { 'a field' => 'first', 'another field' => 'second' }, order: nil)
+    payload = {
+      layer_id: layer_id,
+      type: type,
+      title: title,
+      dataview: dataview
     }
+
+    payload.merge!(order: order) if order
+
+    payload
   end
 end
 
@@ -73,41 +74,41 @@ describe Carto::Api::WidgetsController do
 
   describe '#show' do
     it 'returns 401 for non-authenticated requests' do
-      get_json api_v3_widgets_show_url(user_domain: @user1.username, map_id: random_map_id, layer_id: random_layer_id, widget_id: random_widget_id), {}, http_json_headers do |response|
+      get_json api_v3_widgets_show_url(user_domain: @user1.username, map_id: random_map_id, map_layer_id: random_layer_id, widget_id: random_widget_id), {}, http_json_headers do |response|
         response.status.should == 401
       end
     end
 
     it 'returns 404 for requests without matching map, layer or widget' do
       map_id = @map.id
-      get_json api_v3_widgets_show_url(user_domain: @user1.username, map_id: random_map_id, layer_id: @layer.id, widget_id: @widget.id, api_key: @user1.api_key), {}, http_json_headers do |response|
+      get_json api_v3_widgets_show_url(user_domain: @user1.username, map_id: random_map_id, map_layer_id: @layer.id, widget_id: @widget.id, api_key: @user1.api_key), {}, http_json_headers do |response|
         response.status.should == 404
       end
 
-      get_json api_v3_widgets_show_url(user_domain: @user1.username, map_id: map_id, layer_id: random_layer_id, widget_id: @widget.id, api_key: @user1.api_key), {}, http_json_headers do |response|
+      get_json api_v3_widgets_show_url(user_domain: @user1.username, map_id: map_id, map_layer_id: random_layer_id, widget_id: @widget.id, api_key: @user1.api_key), {}, http_json_headers do |response|
         response.status.should == 404
       end
 
-      get_json api_v3_widgets_show_url(user_domain: @user1.username, map_id: map_id, layer_id: @widget.layer_id, widget_id: random_widget_id, api_key: @user1.api_key), {}, http_json_headers do |response|
+      get_json api_v3_widgets_show_url(user_domain: @user1.username, map_id: map_id, map_layer_id: @widget.layer_id, widget_id: random_widget_id, api_key: @user1.api_key), {}, http_json_headers do |response|
         response.status.should == 404
       end
     end
 
     it 'returns the source widget content' do
-      get_json api_v3_widgets_show_url(user_domain: @user1.username, map_id: @map.id, layer_id: @widget.layer_id, widget_id: @widget.id, api_key: @user1.api_key), {}, http_json_headers do |response|
+      get_json api_v3_widgets_show_url(user_domain: @user1.username, map_id: @map.id, map_layer_id: @widget.layer_id, widget_id: @widget.id, api_key: @user1.api_key), {}, http_json_headers do |response|
         response.status.should == 200
         response_widget_should_match_widget(response.body, @widget)
       end
     end
 
     it 'returns 403 if visualization is private and current user is not the owner' do
-      get_json api_v3_widgets_show_url(user_domain: @user2.username, map_id: @map.id, layer_id: @widget.layer_id, widget_id: @widget.id, api_key: @user2.api_key), {}, http_json_headers do |response|
+      get_json api_v3_widgets_show_url(user_domain: @user2.username, map_id: @map.id, map_layer_id: @widget.layer_id, widget_id: @widget.id, api_key: @user2.api_key), {}, http_json_headers do |response|
         response.status.should == 403
       end
     end
 
     it 'returns 403 if visualization is public and current user is not the owner' do
-      get_json api_v3_widgets_show_url(user_domain: @user2.username, map_id: @public_map.id, layer_id: @public_widget.layer_id, widget_id: @public_widget.id, api_key: @user2.api_key), {}, http_json_headers do |response|
+      get_json api_v3_widgets_show_url(user_domain: @user2.username, map_id: @public_map.id, map_layer_id: @public_widget.layer_id, widget_id: @public_widget.id, api_key: @user2.api_key), {}, http_json_headers do |response|
         response.status.should == 403
       end
     end
@@ -118,7 +119,7 @@ describe Carto::Api::WidgetsController do
 
     it 'creates a new widget' do
       payload = widget_payload
-      post_json api_v3_widgets_create_url(user_domain: @user1.username, map_id: @map.id, layer_id: @widget.layer_id, api_key: @user1.api_key), payload, http_json_headers do |response|
+      post_json api_v3_widgets_create_url(user_domain: @user1.username, map_id: @map.id, map_layer_id: @widget.layer_id, api_key: @user1.api_key), payload, http_json_headers do |response|
         response.status.should == 201
         response_widget = response.body
         response_widget_should_match_payload(response_widget, payload)
@@ -128,18 +129,20 @@ describe Carto::Api::WidgetsController do
       end
     end
 
-    it 'returns 404 for unknown map or layer ids' do
-      post_json api_v3_widgets_create_url(user_domain: @user1.username, map_id: random_uuid, layer_id: @widget.layer_id, api_key: @user1.api_key), widget_payload, http_json_headers do |response|
-        response.status.should == 404
-      end
-
-      post_json api_v3_widgets_create_url(user_domain: @user1.username, map_id: @map.id, layer_id: random_uuid, api_key: @user1.api_key), widget_payload, http_json_headers do |response|
+    it 'returns 404 for unknown map id' do
+      post_json api_v3_widgets_create_url(user_domain: @user1.username, map_id: random_uuid, map_layer_id: @widget.layer_id, api_key: @user1.api_key), widget_payload, http_json_headers do |response|
         response.status.should == 404
       end
     end
 
+    it 'returns 422 if layer id do not match' do
+      post_json api_v3_widgets_create_url(user_domain: @user1.username, map_id: @map.id, map_layer_id: random_uuid, api_key: @user1.api_key), widget_payload, http_json_headers do |response|
+        response.status.should == 422
+      end
+    end
+
     it 'returns 403 if visualization is private and current user is not the owner' do
-      post_json api_v3_widgets_create_url(user_domain: @user2.username, map_id: @map.id, layer_id: @widget.layer_id, api_key: @user2.api_key), widget_payload, http_json_headers do |response|
+      post_json api_v3_widgets_create_url(user_domain: @user2.username, map_id: @map.id, map_layer_id: @widget.layer_id, api_key: @user2.api_key), widget_payload, http_json_headers do |response|
         response.status.should == 403
       end
     end
@@ -147,16 +150,49 @@ describe Carto::Api::WidgetsController do
     it 'assigns consecutive orders for widgets for the same layer' do
       layer = FactoryGirl.create(:carto_layer, maps: [@map])
 
-      payload = widget_payload
-      post_json api_v3_widgets_create_url(user_domain: @user1.username, map_id: @map.id, layer_id: layer.id, api_key: @user1.api_key), payload, http_json_headers do |response|
+      payload = widget_payload(layer_id: layer.id)
+      post_json api_v3_widgets_create_url(user_domain: @user1.username, map_id: @map.id, map_layer_id: layer.id, api_key: @user1.api_key), payload, http_json_headers do |response|
+        response.status.should == 201
         response.body[:order].should == 1
       end
-      post_json api_v3_widgets_create_url(user_domain: @user1.username, map_id: @map.id, layer_id: @widget.layer.id, api_key: @user1.api_key), payload, http_json_headers do |response|
+      post_json api_v3_widgets_create_url(user_domain: @user1.username, map_id: @map.id, map_layer_id: layer.id, api_key: @user1.api_key), payload, http_json_headers do |response|
+        response.status.should == 201
         response.body[:order].should == 2
       end
 
       Carto::Widget.where(layer_id: layer.id).destroy_all
       layer.destroy
+    end
+  end
+
+  describe '#update' do
+    include_context 'layer hierarchy'
+
+    it 'returns 422 if id or layer id does not match in url and payload' do
+      put_json api_v3_widgets_update_url(user_domain: @user1.username, map_id: @map.id, map_layer_id: @widget.layer_id, widget_id: @widget.id, api_key: @user1.api_key), widget_payload(layer_id: random_uuid), http_json_headers do |response|
+        response.status.should == 422
+      end
+
+      put_json api_v3_widgets_update_url(user_domain: @user1.username, map_id: @map.id, map_layer_id: @widget.layer_id, widget_id: @widget.id, api_key: @user1.api_key), widget_payload.merge(id: random_uuid), http_json_headers do |response|
+        response.status.should == 422
+      end
+    end
+
+    it 'returns 200 and updates the model' do
+      new_order = @widget.order + 1
+      new_type = "new #{@widget.type}"
+      new_title = "new #{@widget.title}"
+      new_dataview = @widget.dataview_json.merge({ new: 'whatever' })
+
+      payload = widget_payload(order: new_order, type: new_type, title: new_title, dataview: new_dataview)
+
+      put_json api_v3_widgets_update_url(user_domain: @user1.username, map_id: @map.id, map_layer_id: @widget.layer_id, widget_id: @widget.id, api_key: @user1.api_key), payload, http_json_headers do |response|
+        response.status.should == 200
+        response_widget_should_match_payload(response.body, payload)
+
+        loaded_widget = Carto::Widget.find(response.body[:id])
+        response_widget_should_match_widget(response.body, Carto::Widget.find(response.body[:id]))
+      end
     end
   end
 end

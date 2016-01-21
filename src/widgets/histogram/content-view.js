@@ -325,7 +325,7 @@ module.exports = WidgetContentView.extend({
   },
 
   _onChangeTotal: function () {
-    this._changeHeaderValue('.js-val', 'total', '');
+    this._changeHeaderValue('.js-val', 'total', 'SELECTED');
   },
 
   _onChangeMax: function () {

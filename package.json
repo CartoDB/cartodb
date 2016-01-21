@@ -27,14 +27,14 @@
   ],
   "dependencies": {
     "backbone": "1.2.3",
-    "cartodb.js": "CartoDB/cartodb.js#f0bd380",
+    "cartodb.js": "CartoDB/cartodb.js#v4",
     "d3": "3.5.8",
     "jquery": "2.1.4",
     "jstify": "0.12.0",
     "moment": "2.10.6",
     "perfect-scrollbar": "0.6.7",
     "underscore": "1.8.3",
-    "cartoassets": "0.1.14"
+    "cartoassets": "0.1.16"
   },
   "devDependencies": {
     "browserify": "11.2.0",

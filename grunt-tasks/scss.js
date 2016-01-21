@@ -12,7 +12,7 @@ module.exports = {
       src: [
         'node_modules/cartoassets/src/scss/**/*.scss',
         'node_modules/perfect-scrollbar/**/*.scss',
-        'node_modules/cartodb.js/themes/**/*.scss',
+        'node_modules/cartodb.js/themes/scss/entry.scss',
         'themes/scss/entry.scss'
       ],
       dest: '.tmp/scss',

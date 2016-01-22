@@ -4,8 +4,6 @@ var WMSLayer = require('../geo/map/wms-layer');
 var GMapsBaseLayer = require('../geo/map/gmaps-base-layer');
 var PlainLayer = require('../geo/map/plain-layer');
 var CartoDBLayer = require('../geo/map/cartodb-layer');
-var CartoDBLayerGroupAnonymous = require('../geo/map/cartodb-layer-group-anonymous');
-var CartoDBLayerGroupNamed = require('../geo/map/cartodb-layer-group-named');
 var TorqueLayer = require('../geo/map/torque-layer');
 
 /*
@@ -45,8 +43,7 @@ Layers.register('tilejson', function (vis, data) {
   var url = data.tiles[0];
   if (vis.https === true) {
     url = transformToHTTPS(url);
-  }
-  else if (vis.https === false) { // Checking for an explicit false value. If it's undefined the url is left as is.
+  } else if (vis.https === false) { // Checking for an explicit false value. If it's undefined the url is left as is.
     url = transformToHTTP(url);
   }
   return new TileLayer({
@@ -58,8 +55,7 @@ Layers.register('tiled', function (vis, data) {
   var url = data.urlTemplate;
   if (vis.https === true) {
     url = transformToHTTPS(url);
-  }
-  else if (vis.https === false) { // Checking for an explicit false value. If it's undefined the url is left as is.
+  } else if (vis.https === false) { // Checking for an explicit false value. If it's undefined the url is left as is.
     url = transformToHTTP(url);
   }
 
@@ -83,49 +79,9 @@ Layers.register('background', function (vis, data) {
   return new PlainLayer(data);
 });
 
-function normalizeOptions (vis, data) {
-  if (data.infowindow && data.infowindow.fields) {
-    if (data.interactivity) {
-      if (data.interactivity.indexOf('cartodb_id') === -1) {
-        data.interactivity = data.interactivity + ',cartodb_id';
-      }
-    } else {
-      data.interactivity = 'cartodb_id';
-    }
-  }
-  // if https is forced
-  if (vis.https) {
-    data.tiler_protocol = 'https';
-    data.tiler_port = 443;
-    data.sql_api_protocol = 'https';
-    data.sql_api_port = 443;
-  }
-}
-
-var cartoLayer = function (vis, data) {
+Layers.register('cartodb', function (vis, data) {
   normalizeOptions(vis, data);
-  // if sublayers are included that means a layergroup should
-  // be created
-  if (data.sublayers) {
-    data.type = 'layergroup';
-    return new CartoDBGroupLayer(data);
-  }
   return new CartoDBLayer(data);
-};
-
-Layers.register('cartodb', cartoLayer);
-Layers.register('carto', cartoLayer);
-
-// TODO: This can be removed
-Layers.register('layergroup', function (vis, data) {
-  normalizeOptions(vis, data);
-  return new CartoDBLayerGroupAnonymous(data);
-});
-
-// TODO: This can be removed
-Layers.register('namedmap', function (vis, data) {
-  normalizeOptions(vis, data);
-  return new CartoDBLayerGroupNamed(data);
 });
 
 Layers.register('torque', function (vis, data) {
@@ -141,3 +97,15 @@ Layers.register('torque', function (vis, data) {
   }
   return new TorqueLayer(data);
 });
+
+function normalizeOptions (vis, data) {
+  if (data.infowindow && data.infowindow.fields) {
+    if (data.interactivity) {
+      if (data.interactivity.indexOf('cartodb_id') === -1) {
+        data.interactivity = data.interactivity + ',cartodb_id';
+      }
+    } else {
+      data.interactivity = 'cartodb_id';
+    }
+  }
+}

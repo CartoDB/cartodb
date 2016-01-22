@@ -17,7 +17,7 @@ var LayerView = View.extend({
 
   defaults: {
     template: '\
-      <a class="layer" href="#/change-layer"><%- layer_name %></a>\
+      <a class="layer" href="#/change-layer"><%- layerName %></a>\
       <a href="#switch" class="right <%- visible ? "enabled" : "disabled" %> switch"><span class="handle"></span></a>\
     '
   },
@@ -41,8 +41,10 @@ var LayerView = View.extend({
   },
 
   render: function() {
-    var attrs = _.clone(this.model.attributes);
-    attrs.layer_name = attrs.layer_name || attrs.table_name;
+    var attrs = {
+      layerName: this.model.getName(),
+      visible: this.model.isVisible()
+    };
     this.$el.append(this.template(attrs));
     return this;
   },

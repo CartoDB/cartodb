@@ -321,12 +321,6 @@ var Vis = View.extend({
       map.layers.bind('reset', this.addLegends, this);
     }
 
-    this.overlayModels = new Backbone.Collection();
-    this.overlayModels.bind('reset', function (overlays) {
-      this._addOverlays(overlays, data, options);
-    }, this);
-    this.overlayModels.reset(data.overlays);
-
     this.mapView.bind('newLayerView', this._addLoading, this);
 
     if (this.infowindow) {
@@ -402,16 +396,22 @@ var Vis = View.extend({
     // TODO: Bind this through a method
     this.map.windshaftMap = windshaftMap;
 
-    // Map layers are resetted and the mapView adds the layers to the map
-    this.map.layers.reset(layers);
-
-
     // if there are no sublayer_options fill it
     if (!options.sublayer_options) {
       this._setupSublayers(data.layers, options);
     }
 
     this._setLayerOptions(options);
+
+    // Map layers are resetted and the mapView adds the layers to the map
+    this.map.layers.reset(layers);
+
+    this.overlayModels = new Backbone.Collection();
+    this.overlayModels.bind('reset', function (overlays) {
+      this._addOverlays(overlays, data, options);
+    }, this);
+    this.overlayModels.reset(data.overlays);
+
 
     _.defer(function () {
       self.trigger('done', self, map.layers);

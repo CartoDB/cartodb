@@ -69,35 +69,20 @@ var LayerSelector = View.extend({
   _getLayers: function() {
     var self = this;
     this.layers = [];
+    var layerModels = this._getLayerModelsFromMap();
+    _.each(layerModels, function (layerModel) {
+      var layerView = self._createLayerView(layerModel);
+      layerView.bind('switchChanged', self._setCount, self);
+      self.layers.push(layerView);
+      layerModel.bind('change:visible', function (model) {
+        this.trigger("change:visible", model.get('visible'), model.get('order'), model);
+      }, self);
+    });
+  },
 
-    _.each(this.map.layers.models, function (layer) {
-
-      if (layer.get("type") == 'CartoDB') {
-        var m = new Model({
-          visible: layer.get('visible') || true,
-          layer_name: layer.getName()
-        });
-
-        m.bind('change:visible', function(model) {
-          this.trigger("change:visible", model.get('visible'), model.get('order'), model);
-          layer.set('visible', model.get('visible'));
-        }, self);
-
-        var layerView = self._createLayerView(m);
-        layerView.bind('switchChanged', self._setCount, self);
-        self.layers.push(layerView);
-        layer.bind('change:visible', function() {
-          m.set('visible', layer.get('visible'));
-        });
-      } else if (layer.get('type') === 'torque') {
-        var layerView = self._createLayerView(layer);
-        layerView.bind('switchChanged', self._setCount, self);
-        self.layers.push(layerView);
-        layerView.model.bind('change:visible', function(model) {
-          this.trigger("change:visible", model.get('visible'), model.get('order'), model);
-        }, self);
-      }
-
+  _getLayerModelsFromMap: function () {
+    return this.map.layers.filter(function (layer) {
+      return layer.get("type") === 'CartoDB' || layer.get("type") === 'torque';
     });
   },
 

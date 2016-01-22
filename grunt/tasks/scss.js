@@ -4,23 +4,27 @@
  */
 
 module.exports = {
-  task: function(grunt, config) {
+  task: function (grunt, config) {
     return {
       dist: {
         options: {
           sourceMap: false,
-          outputStyle: 'compressed'
+          outputStyle: 'compressed',
+          includePaths: [
+            'node_modules/cartoassets/src/scss'
+          ]
         },
         files: [{
           expand: true,
           src: [
+            'node_modules/cartoassets/src/scss/**/*.scss',
             'node_modules/perfect-scrollbar/**/*.scss',
-            'themes/scss/**/*.scss'
+            'themes/scss/entry.scss'
           ],
           dest: '.tmp/scss',
           ext: '.css'
         }]
       }
-    }
+    };
   }
-}
+};

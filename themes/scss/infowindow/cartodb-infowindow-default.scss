@@ -1,5 +1,5 @@
-@import '../variables/sizes';
-@import '../variables/mixins';
+// Infowindow styles
+// ----------------------------------------------
 
 .CDB-infowindow-wrapper {
   position: absolute;
@@ -39,7 +39,7 @@
 .CDB-infowindow-subtitle {
   font-size: 9px;
   font-weight: $sFontWeight-lighter;
-  line-height: $sLineHeight-smaller;
+  line-height: $sLineHeight-small;
   text-transform: uppercase;
 }
 .CDB-infowindow-title {
@@ -317,7 +317,7 @@
     display: block;
     position: absolute;
     top: 0;
-    left: 0; 
+    left: 0;
     width: 6px;
     height: 1px;
     transform: rotate(-45deg);
@@ -328,7 +328,7 @@
     display: block;
     position: absolute;
     bottom: 2px;
-    left: 0; 
+    left: 0;
     width: 6px;
     height: 1px;
     transform: rotate(45deg);
@@ -360,7 +360,7 @@
     display: block;
     position: absolute;
     bottom: 2px;
-    left: 0; 
+    left: 0;
     width: 6px;
     height: 1px;
     transform: rotate(-45deg);

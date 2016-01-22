@@ -73,7 +73,7 @@ describe('core/geo/map-view', function () {
 
         var layerViewForLayer1 = this.mapView.getLayerByCid(layer1.cid);
         expect(layerViewForLayer1).toBeDefined();
-        expect(Object.keys(this.mapView.layers).length).toEqual(1);
+        expect(Object.keys(this.mapView._layerViews).length).toEqual(1);
         expect(this.mapView._addLayerToMap).toHaveBeenCalled();
       });
 
@@ -97,7 +97,7 @@ describe('core/geo/map-view', function () {
         expect(this.mapView._addLayerToMap).not.toHaveBeenCalled();
 
         // There are only two layerViews cause the CartoDBLayers have been grouped
-        expect(Object.keys(this.mapView.layers).length).toEqual(3);
+        expect(Object.keys(this.mapView._layerViews).length).toEqual(3);
         expect(this.mapView.getLayerByCid(cartoDBLayer1.cid)).toBeDefined();
         expect(this.mapView.getLayerByCid(cartoDBLayer2.cid)).toBeDefined();
         expect(this.mapView.getLayerByCid(tileLayer.cid)).toBeDefined();

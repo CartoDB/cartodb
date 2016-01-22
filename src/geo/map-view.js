@@ -24,9 +24,9 @@ var MapView = View.extend({
 
     this.autoSaveBounds = false;
 
-    // A map of the LayerView that is linked to each LayerModel
-    // TODO: Rename this
-    this.layers = {};
+    // A map of the LayerViews that is linked to each of the Layer models.
+    // The cid of the layer model is used as the key for this mapping.
+    this._layerViews = {};
     this.geometries = {};
 
     this.map.layers.bind('reset', this._addLayers, this);
@@ -155,14 +155,14 @@ var MapView = View.extend({
         layers: [layerModel]
       });
       layerView = this.createLayer(this._cartoDBLayerGroup);
-      this.layers[layerModel.cid] = layerView;
+      this._layerViews[layerModel.cid] = layerView;
     } else {
       // Add that layer to the group
       // TODO: The only reason why the _cartoDBLayerGroup needs to access individual layers
       // is to know if layers are visible of not, so that URLs for attributes can use the
       // right indexes. There should be a better way to do this.
       this._cartoDBLayerGroup.layers.add(layerModel);
-      this.layers[layerModel.cid] = this.getLayerByCid(this._cartoDBLayerGroup.layers.at(0).cid);
+      this._layerViews[layerModel.cid] = this.getLayerByCid(this._cartoDBLayerGroup.layers.at(0).cid);
     }
 
     return layerView;
@@ -171,7 +171,7 @@ var MapView = View.extend({
   _addIndividualLayer: function (layerModel) {
     var layerView = this.createLayer(layerModel);
     if (layerView) {
-      this.layers[layerModel.cid] = layerView;
+      this._layerViews[layerModel.cid] = layerView;
     }
     return layerView;
   },
@@ -181,15 +181,15 @@ var MapView = View.extend({
   },
 
   _removeLayers: function () {
-    for (var i in this.layers) {
-      var layerView = this.layers[i];
+    for (var i in this._layerViews) {
+      var layerView = this._layerViews[i];
       layerView.remove();
-      delete this.layers[i];
+      delete this._layerViews[i];
     }
   },
 
   _removeLayer: function (layerModel) {
-    var layerView = this.layers[layerModel.cid];
+    var layerView = this._layerViews[layerModel.cid];
     if (layerModel.get('type') === 'CartoDB') {
       this._cartoDBLayerGroup.layers.remove(layerModel);
       if (this._cartoDBLayerGroup.layers.size() === 0) {
@@ -199,12 +199,12 @@ var MapView = View.extend({
     } else {
       layerView.remove();
     }
-    delete this.layers[layerModel.cid];
+    delete this._layerViews[layerModel.cid];
   },
 
   // TODO: Rename to getLayerViewByLayerModelCID
   getLayerByCid: function(cid) {
-    var l = this.layers[cid];
+    var l = this._layerViews[cid];
     if(!l) {
       log.debug("layer with cid " + cid + " can't be get");
     }

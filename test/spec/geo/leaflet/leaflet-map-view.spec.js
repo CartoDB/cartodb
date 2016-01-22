@@ -96,7 +96,7 @@ describe('geo/leaflet/leaflet-map-view', function () {
     map.addLayer(layer);
 
     expect(map.layers.length).toEqual(1);
-    expect(_.size(mapView.layers)).toEqual(1);
+    expect(_.size(mapView._layerViews)).toEqual(1);
     expect(spy.c).toHaveBeenCalled();
   });
 
@@ -104,7 +104,7 @@ describe('geo/leaflet/leaflet-map-view', function () {
     map.addLayer(layer);
     map.removeLayer(layer);
     expect(map.layers.length).toEqual(0);
-    expect(_.size(mapView.layers)).toEqual(0);
+    expect(_.size(mapView._layerViews)).toEqual(0);
   });
 
   it('should allow removing a layer by index', function () {
@@ -152,7 +152,7 @@ describe('geo/leaflet/leaflet-map-view', function () {
     map.addLayer(cartoDBLayer2);
     map.addLayer(tileLayer);
 
-    expect(_.size(mapView.layers)).toEqual(3);
+    expect(_.size(mapView._layerViews)).toEqual(3);
 
     var layerGroupView = mapView.getLayerByCid(cartoDBLayer1.cid);
     spyOn(layerGroupView, 'remove');
@@ -162,7 +162,7 @@ describe('geo/leaflet/leaflet-map-view', function () {
 
     mapView.clean();
 
-    expect(_.size(mapView.layers)).toEqual(0);
+    expect(_.size(mapView._layerViews)).toEqual(0);
     expect(layerGroupView.remove).toHaveBeenCalled();
     expect(tileLayerView.remove).toHaveBeenCalled();
     expect(mapView.layerGroupModel).not.toBeDefined();
@@ -171,7 +171,7 @@ describe('geo/leaflet/leaflet-map-view', function () {
   it("should not add a layer view when it can't be created", function () {
     var layer = new TileLayer({type: 'rambo'});
     map.addLayer(layer);
-    expect(_.size(mapView.layers)).toEqual(0);
+    expect(_.size(mapView._layerViews)).toEqual(0);
   });
 
   var geojsonFeature = {

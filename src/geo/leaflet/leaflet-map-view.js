@@ -123,8 +123,8 @@ var LeafletMapView = MapView.extend({
   _addLayers: function(layerCollection, options) {
     var self = this;
 
-    var oldLayers = this.layers;
-    this.layers = {};
+    var oldLayers = this._layerViews;
+    this._layerViews = {};
 
     function findLayerView(layer) {
       var lv = _.find(oldLayers, function(layerView) {
@@ -168,10 +168,10 @@ var LeafletMapView = MapView.extend({
     L.DomEvent.off(window, 'resize', this.map_leaflet._onResize, this.map_leaflet);
 
     // remove layer views
-    for(var layer in this.layers) {
-      var layerView = this.layers[layer];
+    for(var layer in this._layerViews) {
+      var layerView = this._layerViews[layer];
       layerView.remove();
-      delete this.layers[layer];
+      delete this._layerViews[layer];
     }
 
     View.prototype.clean.call(this);

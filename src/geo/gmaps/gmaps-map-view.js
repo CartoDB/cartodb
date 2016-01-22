@@ -130,7 +130,7 @@ var GoogleMapsMapView = MapView.extend({
 
   _addLayerToMap: function(layerView, layerModel, opts) {
     if (layerView) {
-      var isBaseLayer = _.keys(this.layers).length === 1 || (opts && opts.index === 0) || layerModel.get('order') === 0;
+      var isBaseLayer = _.keys(this._layerViews).length === 1 || (opts && opts.index === 0) || layerModel.get('order') === 0;
       // set base layer
       if(isBaseLayer) {
         var m = layerView.model;

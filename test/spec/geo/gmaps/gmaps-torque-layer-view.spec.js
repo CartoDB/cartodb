@@ -21,7 +21,7 @@ describe('geo/gmaps/gmaps-torque-layer-view', function () {
     });
     spyOn(torque, 'GMapsTorqueLayer').and.callThrough();
     map.addLayer(model);
-    this.view = mapView.layers[model.cid];
+    this.view = mapView._layerViews[model.cid];
   });
 
   it('should apply TorqueLayer initialize method on the extended view with a bunch of attrs', function () {

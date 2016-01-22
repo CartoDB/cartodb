@@ -25,7 +25,7 @@ fdescribe('geo/leaflet/leaflet-torque-layer', function () {
       dynamic_cdn: 'dynamic-cdn-value'
     });
     this.map.addLayer(model);
-    this.view = this.mapView.layers[model.cid];
+    this.view = this.mapView._layerViews[model.cid];
   });
 
   SharedTestsForTorqueLayer.call(this);
@@ -38,9 +38,9 @@ fdescribe('geo/leaflet/leaflet-torque-layer', function () {
     newLayer.set({ sql: 'select * from table', cartocss: '#test {}' });
     this.map.layers.reset([newLayer]);
 
-    expect(this.mapView.layers[newLayer.cid] instanceof L.TorqueLayer).toEqual(true);
-    expect(this.mapView.layers[newLayer.cid].model).toEqual(newLayer);
-    expect(this.mapView.layers[newLayer.cid].check).toEqual('testing');
+    expect(this.mapView._layerViews[newLayer.cid] instanceof L.TorqueLayer).toEqual(true);
+    expect(this.mapView._layerViews[newLayer.cid].model).toEqual(newLayer);
+    expect(this.mapView._layerViews[newLayer.cid].check).toEqual('testing');
   });
 
   it('should apply Leaflet TorqueLayer initialize method on the extended view with a bunch of attrs', function () {

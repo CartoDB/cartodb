@@ -91,7 +91,7 @@ describe('geo/gmaps/gmaps-map-view', function () {
     mapView.bind('newLayerView', spy.c);
     map.addLayer(layer);
     expect(map.layers.length).toEqual(1);
-    expect(_.size(mapView.layers)).toEqual(1);
+    expect(_.size(mapView._layerViews)).toEqual(1);
     expect(spy.c).toHaveBeenCalled();
   });
 
@@ -99,7 +99,7 @@ describe('geo/gmaps/gmaps-map-view', function () {
     map.addLayer(layer);
     map.removeLayer(layer);
     expect(map.layers.length).toEqual(0);
-    expect(_.size(mapView.layers)).toEqual(0);
+    expect(_.size(mapView._layerViews)).toEqual(0);
   });
 
   it('should allow removing a layer by index', function () {

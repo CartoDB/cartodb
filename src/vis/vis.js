@@ -366,7 +366,6 @@ var Vis = View.extend({
     var endpoint;
     var configGenerator;
     var datasource = data.datasource;
-    var windshaftMapType;
 
     // TODO: We can use something else to differentiate types of "datasource"s
     if (datasource.template_name) {

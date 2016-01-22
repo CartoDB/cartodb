@@ -88,7 +88,7 @@ module CartoDB
       table.js
       public_dashboard.js
       public_like.js
-      deep_insights_embed.js
+      cartod1b.js
       common.js
       old_common.js
       old_common_without_core.js
@@ -134,7 +134,7 @@ module CartoDB
       data_library.css
       public_table.css
       sessions.css
-      deep_insights_embed.css
+      cartod1b.css
       user_feed.css
       explore.css
 

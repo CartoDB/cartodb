@@ -10,8 +10,8 @@ describe Carto::Widget do
       loaded_widget.type.should == widget.type
       loaded_widget.title.should == widget.title
       loaded_widget.layer.should == widget.layer
-      loaded_widget.dataview.should == widget.dataview
-      loaded_widget.dataview_json.should == JSON.parse(widget.dataview).symbolize_keys
+      loaded_widget.options.should == widget.options
+      loaded_widget.options_json.should == JSON.parse(widget.options).symbolize_keys
       widget.destroy
     end
 

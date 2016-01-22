@@ -8,7 +8,7 @@ Sequel.migration do
       Integer :order, null: false
       String :type, null: false
       String :title
-      String :dataview, null: false, type: 'json'
+      String :options, null: false, type: 'json'
       DateTime :created_at, default: Sequel::CURRENT_TIMESTAMP
       DateTime :updated_at, default: Sequel::CURRENT_TIMESTAMP
     end

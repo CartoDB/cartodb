@@ -5,7 +5,7 @@ FactoryGirl.define do
     order 1
     type 'formula'
     title 'The Title'
-    dataview {
+    options {
       %Q(
           {
             "type": "formula",

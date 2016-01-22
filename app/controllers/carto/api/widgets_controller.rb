@@ -22,7 +22,7 @@ module Carto
           order: Carto::Widget.where(layer_id: @layer_id).count + 1,
           type: params[:type],
           title: params[:title],
-          dataview: params[:dataview].to_json)
+          options: params[:options].to_json)
         widget.save!
         render_jsonp(widget.attributes, 201)
       rescue => e
@@ -32,7 +32,7 @@ module Carto
 
       def update
         @widget.update_attributes(params.slice(:order, :type, :title))
-        @widget.dataview = params[:dataview].to_json if params[:dataview]
+        @widget.options = params[:options].to_json if params[:options]
         @widget.save!
 
         render_jsonp(@widget.attributes)

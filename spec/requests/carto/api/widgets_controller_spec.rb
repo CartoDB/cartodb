@@ -26,23 +26,23 @@ shared_context 'layer hierarchy' do
     response_widget[:type].should == widget.type
     response_widget[:title].should == widget.title
     response_widget[:layer_id].should == widget.layer.id
-    response_widget[:dataview].should == widget.dataview
-    JSON.parse(response_widget[:dataview]).should == JSON.parse(widget.dataview)
+    response_widget[:options].should == widget.options
+    JSON.parse(response_widget[:options]).should == JSON.parse(widget.options)
   end
 
   def response_widget_should_match_payload(response_widget, payload)
     response_widget[:layer_id].should == payload[:layer_id]
     response_widget[:type].should == payload[:type]
     response_widget[:title].should == payload[:title]
-    JSON.parse(response_widget[:dataview]).symbolize_keys.should == payload[:dataview].symbolize_keys
+    JSON.parse(response_widget[:options]).symbolize_keys.should == payload[:options].symbolize_keys
   end
 
-  def widget_payload(layer_id: @layer.id, type: 'formula', title: 'the title', dataview: { 'a field' => 'first', 'another field' => 'second' }, order: nil)
+  def widget_payload(layer_id: @layer.id, type: 'formula', title: 'the title', options: { 'a field' => 'first', 'another field' => 'second' }, order: nil)
     payload = {
       layer_id: layer_id,
       type: type,
       title: title,
-      dataview: dataview
+      options: options
     }
 
     payload[:order] = order if order
@@ -184,9 +184,9 @@ describe Carto::Api::WidgetsController do
       new_order = @widget.order + 1
       new_type = "new #{@widget.type}"
       new_title = "new #{@widget.title}"
-      new_dataview = @widget.dataview_json.merge(new: 'whatever')
+      new_options = @widget.options_json.merge(new: 'whatever')
 
-      payload = widget_payload(order: new_order, type: new_type, title: new_title, dataview: new_dataview)
+      payload = widget_payload(order: new_order, type: new_type, title: new_title, options: new_options)
 
       put_json widget_url(user_domain: @user1.username, map_id: @map.id, map_layer_id: @widget.layer_id, id: @widget.id, api_key: @user1.api_key), payload, http_json_headers do |response|
         response.status.should == 200

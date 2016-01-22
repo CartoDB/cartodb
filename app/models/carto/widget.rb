@@ -3,13 +3,13 @@
 class Carto::Widget < ActiveRecord::Base
   belongs_to :layer, class_name: Carto::Layer
 
-  validates :layer, :order, :type, :dataview, presence: true
+  validates :layer, :order, :type, :options, presence: true
 
   # INFO: disable ActiveRecord inheritance column
   self.inheritance_column = :_type
 
-  def dataview_json
-    JSON.parse(dataview).symbolize_keys
+  def options_json
+    JSON.parse(options).symbolize_keys
   end
 
   def belongs_to_map?(map_id)

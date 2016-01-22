@@ -41,6 +41,7 @@ $tables_metadata     = Redis.new(redis_conf.merge(db: databases[:tables_metadata
 $api_credentials     = Redis.new(redis_conf.merge(db: databases[:api_credentials]))
 $users_metadata      = Redis.new(redis_conf.merge(db: databases[:users_metadata]))
 $redis_migrator_logs = Redis.new(redis_conf.merge(db: databases[:redis_migrator_logs]))
+$geocoder_metrics    = Redis.new(redis_conf.merge(db: databases[:users_metadata]))
 
 # When in the "test" environment we don't expect a Redis
 # server to be up and running at this point. Later code
@@ -51,6 +52,7 @@ unless Rails.env.test?
     $api_credentials.ping
     $users_metadata.ping
     $redis_migrator_logs.ping
+    $geocoder_metrics.ping
   rescue => e
     raise "Error connecting to Redis databases: #{e}" 
   end

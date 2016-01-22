@@ -1,5 +1,6 @@
 # coding: UTF-8
 require_relative '../../lib/cartodb/profiler.rb'
+require_dependency 'carto/http_header_authentication'
 
 class ApplicationController < ActionController::Base
   include ::SslRequirement
@@ -9,6 +10,7 @@ class ApplicationController < ActionController::Base
 
   around_filter :wrap_in_profiler
 
+  before_filter :http_header_authentication, if: :http_header_authentication?
   before_filter :store_request_host
   before_filter :ensure_user_organization_valid
   before_filter :ensure_org_url_if_org_user
@@ -58,6 +60,22 @@ class ApplicationController < ActionController::Base
 
   def is_https?
     request.protocol == 'https://'
+  end
+
+  def http_header_authentication
+    authenticate(:http_header_authentication, scope: CartoDB.extract_subdomain(request))
+    if current_user
+      validate_session(current_user)
+    else
+      authenticator = Carto::HttpHeaderAuthentication.new
+      if authenticator.autocreation_enabled?
+        if authenticator.creation_in_progress?(request)
+          render_http_code(409, 500, 'Creation already in progress')
+        else
+          redirect_to CartoDB.path(self, 'signup_http_authentication')
+        end
+      end
+    end
   end
 
   # To be used only when domainless urls are present, to replicate sent subdomain
@@ -146,11 +164,17 @@ class ApplicationController < ActionController::Base
   end
 
   def render_500
-    format.html do
-      render :file => 'public/500.html', :status => 500, :layout => false
-    end
-    format.json do
-      render :status => 500
+    render_http_code(500)
+  end
+
+  def render_http_code(error_code, public_page_error_code = error_code, error_message = 'Unknown error')
+    respond_to do |format|
+      format.html do
+        render file: "public/#{public_page_error_code}.html", status: error_code, layout: false
+      end
+      format.json do
+        render json: { error_message: error_message }, status: error_code
+      end
     end
   end
 
@@ -322,5 +346,11 @@ class ApplicationController < ActionController::Base
   end
 
   protected :current_user
+
+  private
+
+  def http_header_authentication?
+    Carto::HttpHeaderAuthentication.new.valid?(request)
+  end
 
 end

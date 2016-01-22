@@ -1,4 +1,4 @@
-# coding: UTF-8
+# encoding: UTF-8
 require 'cartodb/per_request_sequel_cache'
 require_relative './user/user_decorator'
 require_relative './user/oauths'
@@ -391,7 +391,7 @@ class User < Sequel::Model
   def validate_password_change
     return if @changing_passwords.nil?  # Called always, validate whenever proceeds
 
-    errors.add(:old_password, "Old password not valid") unless @old_password_validated
+    errors.add(:old_password, "Old password not valid") unless @old_password_validated || !needs_password_confirmation?
 
     valid_password?(:new_password, @new_password, @new_password_confirmation)
   end
@@ -427,7 +427,7 @@ class User < Sequel::Model
 
   # Some operations, such as user deletion, won't ask for password confirmation if password is not set (because of Google sign in, for example)
   def needs_password_confirmation?
-    google_sign_in.nil? || !google_sign_in || !last_password_change_date.nil?
+    (google_sign_in.nil? || !google_sign_in || !last_password_change_date.nil?) && Carto::UserCreation.http_authentication.find_by_user_id(id).nil?
   end
 
   def password_confirmation
@@ -736,12 +736,17 @@ class User < Sequel::Model
     !!dashboard_viewed_at
   end
 
+  def geocoder_type
+    google_maps_geocoder_enabled? ? "google" : "heremaps"
+  end
+
   # create the core user_metadata key that is used in redis
   def key
     "rails:users:#{username}"
   end
 
-  # save users basic metadata to redis for node sql api to use
+  # save users basic metadata to redis for other services (node sql api, geocoder api, etc)
+  # to use
   def save_metadata
     $users_metadata.HMSET key,
       'id', id,
@@ -749,7 +754,13 @@ class User < Sequel::Model
       'database_password', database_password,
       'database_host', database_host,
       'database_publicuser', database_public_username,
-      'map_key', api_key
+      'map_key', api_key,
+      'geocoder_type', geocoder_type,
+      'geocoding_quota', geocoding_quota,
+      'soft_geocoding_limit', soft_geocoding_limit,
+      'google_maps_client_id', google_maps_key,
+      'google_maps_api_key', google_maps_private_key,
+      'period_end_date', period_end_date
   end
 
   def get_auth_tokens
@@ -782,7 +793,11 @@ class User < Sequel::Model
 
   def get_geocoding_calls(options = {})
     date_from, date_to = quota_dates(options)
-    Geocoding.get_geocoding_calls(geocodings_dataset, date_from, date_to)
+    if has_feature_flag?('new_geocoder_quota')
+      get_user_geocoding_data(self, date_from, date_to)
+    else
+      Geocoding.get_geocoding_calls(geocodings_dataset, date_from, date_to)
+    end
   end
 
   def get_new_system_geocoding_calls(options = {})

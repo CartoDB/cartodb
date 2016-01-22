@@ -119,6 +119,10 @@ module CartoDB
     @@account_path ||= self.get_account_path
   end
 
+  def self.data_library_path
+    @@data_library_path ||= self.get_data_library_path
+  end
+
   def self.request_host=(value)
     @@request_host=value
   end
@@ -223,6 +227,10 @@ module CartoDB
 
   def self.get_account_path
     Cartodb.config[:account_path]
+  end
+
+  def self.get_data_library_path
+    Cartodb.config[:data_library] && Cartodb.config[:data_library]['path']
   end
 
 end

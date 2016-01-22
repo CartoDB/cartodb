@@ -14,6 +14,7 @@ module CartoDB
     remove_class_variable(:@@subdomainless_urls) if defined?(@@subdomainless_urls)
     remove_class_variable(:@@account_host) if defined?(@@account_host)
     remove_class_variable(:@@account_path) if defined?(@@account_path)
+    remove_class_variable(:@@data_library_path) if defined?(@@data_library_path)
   end
 end
 

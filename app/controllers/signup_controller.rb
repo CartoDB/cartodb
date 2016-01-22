@@ -7,9 +7,12 @@ class SignupController < ApplicationController
 
   layout 'frontend'
 
-  ssl_required :signup, :create
+  ssl_required :signup, :create, :create_http_authentication
 
-  before_filter :load_organization
+  skip_before_filter :http_header_authentication, only: [:create_http_authentication]
+
+  before_filter :load_organization, only: [:create_http_authentication]
+  before_filter :load_mandatory_organization, only: [:signup, :create]
   before_filter :disable_if_ldap_configured
   before_filter :initialize_google_plus_config
 
@@ -41,13 +44,7 @@ class SignupController < ApplicationController
     end
 
     if account_creator.valid?
-      creation_data = account_creator.enqueue_creation(self)
-
-      flash.now[:success] = 'User creation in progress'
-      # Template variables
-      @user_creation_id = creation_data[:id]
-      @user_name = creation_data[:id]
-      @redirect_url = CartoDB.url(self, 'dashboard')
+      trigger_account_creation(account_creator)
       render 'shared/signup_confirmation'
     else
       @user = account_creator.user
@@ -74,7 +71,42 @@ class SignupController < ApplicationController
     render action: 'signup', status: 400
   end
 
+  def create_http_authentication
+    authenticator = Carto::HttpHeaderAuthentication.new
+    render_404 and return false unless authenticator.autocreation_enabled?
+    render_500 and return false unless authenticator.autocreation_valid?(request)
+    render_403 and return false unless authenticator.valid?(request)
+
+    account_creator = CartoDB::UserAccountCreator.
+      new(Carto::UserCreation::CREATED_VIA_HTTP_AUTENTICATION).
+      with_email_only(authenticator.email(request))
+
+    account_creator = account_creator.with_organization(@organization) if @organization
+
+    if account_creator.valid?
+      trigger_account_creation(account_creator)
+
+      render 'shared/signup_confirmation'
+    else
+      render_500
+    end
+  rescue => e
+    CartoDB.report_exception(e, "Creating user with HTTP authentication", new_user: account_creator.user.inspect)
+    flash.now[:error] = e.message
+    render_500
+  end
+
   private
+
+  def trigger_account_creation(account_creator)
+    creation_data = account_creator.enqueue_creation(self)
+
+    flash.now[:success] = 'User creation in progress'
+    # Template variables
+    @user_creation_id = creation_data[:id]
+    @user_name = creation_data[:id]
+    @redirect_url = CartoDB.url(self, 'dashboard')
+  end
 
   def existing_user(user)
     !Carto::User.find_by_username_and_email(user.username, user.email).nil?
@@ -100,11 +132,17 @@ class SignupController < ApplicationController
   def load_organization
     subdomain = CartoDB.subdomain_from_request(request)
     @organization = ::Organization.where(name: subdomain).first if subdomain
+    if @organization
+      check_signup_errors = Sequel::Model::Errors.new
+      @organization.validate_for_signup(check_signup_errors, ::User.new_with_organization(@organization).quota_in_bytes)
+      @signup_source = 'Organization'
+      render 'shared/signup_issue' and return false if check_signup_errors.length > 0
+    end
+  end
+
+  def load_mandatory_organization
+    load_organization
     render_404 and return false unless @organization && @organization.signup_page_enabled
-    check_signup_errors = Sequel::Model::Errors.new
-    @organization.validate_for_signup(check_signup_errors, ::User.new_with_organization(@organization).quota_in_bytes)
-    @signup_source = 'Organization'
-    render 'shared/signup_issue' if check_signup_errors.length > 0
   end
 
   def disable_if_ldap_configured

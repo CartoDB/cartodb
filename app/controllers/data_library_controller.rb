@@ -7,7 +7,7 @@ class DataLibraryController < ApplicationController
   before_filter :get_viewed_user
 
   def index
-    render_404 and return if @viewed_user.nil? || !@viewed_user.has_feature_flag?("data_library")
+    render_404 and return if @viewed_user.nil? || (Cartodb.get_config(:data_library, 'username') && (Cartodb.config[:data_library]['username'] != @viewed_user.username))
 
     @dataset_base_url = (Rails.env.production? || Rails.env.staging?) ? "#{request.protocol}#{CartoDB.account_host}/dataset/" : "#{@viewed_user.public_url(nil, request.protocol == "https://" ? "https" : "http")}/tables/"
 

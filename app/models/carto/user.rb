@@ -303,6 +303,15 @@ class Carto::User < ActiveRecord::Base
     end
   end
 
+  # Get the count of all visualizations
+  def all_visualization_count
+    self.visualizations.count { |viz| viz.type == Carto::Visualization::TYPE_CANONICAL }
+  end
+
+  def table_count(filters={})
+    self.visualizations.count
+  end
+
   def organization_user?
     self.organization.present?
   end

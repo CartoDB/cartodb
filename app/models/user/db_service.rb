@@ -302,6 +302,23 @@ module CartoDB
         end
       end
 
+      def triggers_in_user_schema
+        triggers_in_schema(@user.database_schema)
+      end
+
+      def triggers_in_schema(schema, database = @user.database_name)
+        @user.in_database do |user_database|
+          query = %Q{
+            select table_catalog, table_schema, relname, tgname, tgtype, proname, tgdeferrable, tginitdeferred, tgnargs,
+            tgattr, tgargs from (pg_trigger join pg_class on tgrelid=pg_class.oid)
+            join pg_proc on (tgfoid=pg_proc.oid) join information_schema.tables ist on relname = table_name
+            where table_schema = '#{schema}'
+            and table_catalog = '#{database}'
+          }
+          user_database[query].all.map { |t| Trigger.new(database_name: t[:table_catalog], database_schema: t[:table_schema], table_name: t[:table_name], trigger_name: t[:tgname]) }
+        end
+      end
+
       def drop_owned_by_user(conn, role)
         conn.run("DROP OWNED BY \"#{role}\"")
       end

@@ -25,19 +25,28 @@ module Carto
           dataview: params[:dataview].to_json)
         widget.save!
         render_jsonp(widget.attributes, 201)
+      rescue => e
+        CartoDB.report_exception(e, "Error creating widget", { widget: (widget ? widget : 'not created'), request: request, user: current_user })
+        render json: { errors: e.message }, status: 500
       end
 
       def update
         @widget.update_attributes(params.slice(:order, :type, :title))
         @widget.dataview = params[:dataview].to_json if params[:dataview]
-        @widget.save
+        @widget.save!
 
         render_jsonp(@widget.attributes)
+      rescue => e
+        CartoDB.report_exception(e, "Error updating widget", { widget: @widget, request: request, user: current_user })
+        render json: { errors: e.message }, status: 500
       end
 
       def destroy
         @widget.destroy
         render_jsonp(@widget.attributes)
+      rescue => e
+        CartoDB.report_exception(e, "Error destroying widget", { widget: @widget, request: request, user: current_user })
+        render json: { errors: e.message }, status: 500
       end
 
       private

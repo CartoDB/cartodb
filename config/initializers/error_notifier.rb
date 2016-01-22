@@ -34,6 +34,7 @@ module CartoDB
     Rollbar.report_message(message, 'error', additional_data)
   end
 
+  # Add `:request` and `:user` to additional_data if you want request content
   def self.report_exception(e, message = nil, additional_data = {})
     backtrace = e.backtrace ? e.backtrace.join('\n') : ''
     notify_error(message, additional_data.merge(error: e.inspect, backtrace: backtrace))

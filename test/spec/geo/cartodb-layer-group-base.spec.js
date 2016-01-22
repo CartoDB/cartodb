@@ -1,14 +1,13 @@
 var $ = require('jquery');
 var Backbone = require('backbone');
-var CartoDBLayerGroupBase = require('../../../../src/geo/map/cartodb-layer-group-base');
-var CartoDBLayer = require('../../../../src/geo/map/cartodb-layer');
-var CartoDBLayerGroupAnonymous = require('../../../../src/geo/map/cartodb-layer-group-anonymous');
+var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
+var CartoDBLayerGroupBase = require('../../../src/geo/cartodb-layer-group-base');
 
 var MyCartoDBLayerGroup = CartoDBLayerGroupBase.extend({
   _getIndexOfVisibleLayer: function () {}
 });
 
-describe('geo/map/cartodb-layer-group-base', function () {
+describe('geo/cartodb-layer-group-base', function () {
   beforeEach(function () {
     this.windshaftMap = jasmine.createSpyObj('windshaftMap', ['isNamedMap', 'isAnonymousMap']);
     this.windshaftMap.isAnonymousMap.and.returnValue(true);

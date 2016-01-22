@@ -1,9 +1,9 @@
 var $ = require('jquery');
 var Backbone = require('backbone');
-var CartoDBLayer = require('../../../../src/geo/map/cartodb-layer');
-var CartoDBLayerGroupAnonymous = require('../../../../src/geo/map/cartodb-layer-group-anonymous');
+var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
+var CartoDBLayerGroupAnonymousMap = require('../../../../src/geo/cartodb-layer-group-anonymous-map');
 
-describe('geo/map/cartodb-layer-group-anonymous', function () {
+describe('geo/layer-group-anonymous-map', function () {
   beforeEach(function () {
     this.windshaftMap = jasmine.createSpyObj('windshaftMap', ['isNamedMap', 'isAnonymousMap']);
     this.windshaftMap.isAnonymousMap.and.returnValue(true);
@@ -12,7 +12,7 @@ describe('geo/map/cartodb-layer-group-anonymous', function () {
 
   // TODO: This test is a bit useless
   it('should be type layergroup', function () {
-    var layer = new CartoDBLayerGroupAnonymous(null, {
+    var layer = new CartoDBLayerGroupAnonymousMap(null, {
       windshaftMap: this.windshaftMap
     });
     expect(layer.get('type')).toEqual('layergroup');
@@ -28,7 +28,7 @@ describe('geo/map/cartodb-layer-group-anonymous', function () {
         options.success('attributes!');
       });
 
-      var layer = new CartoDBLayerGroupAnonymous({
+      var layer = new CartoDBLayerGroupAnonymousMap({
         baseURL: 'http://wadus.com'
       }, {
         windshaftMap: this.windshaftMap,

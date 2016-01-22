@@ -1,7 +1,7 @@
 var $ = require('jquery');
 var Backbone = require('backbone');
-var CartoDBLayer = require('../../../../src/geo/map/cartodb-layer');
-var CartoDBLayerGroupNamed = require('../../../../src/geo/map/cartodb-layer-group-named');
+var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
+var CartoDBLayerGroupNamed = require('../../../src/geo/cartodb-layer-group-named-map');
 
 describe('geo/map/cartodb-layer-group-named', function () {
   beforeEach(function () {

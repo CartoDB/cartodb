@@ -2,8 +2,8 @@ var _ = require('underscore');
 var log = require('cdb.log');
 var View = require('../core/view');
 
-var CartoDBLayerGroupNamed = require('./map/cartodb-layer-group-named');
-var CartoDBLayerGroupAnonymous = require('./map/cartodb-layer-group-anonymous');
+var CartoDBLayerGroupNamedMap = require('./cartodb-layer-group-named-map');
+var CartoDBLayerGroupAnonymousMap = require('./cartodb-layer-group-anonymous-map');
 
 var MapView = View.extend({
 
@@ -141,18 +141,14 @@ var MapView = View.extend({
     });
   },
 
-  createLayer: function (layerModel) {
-    return this._layerViewFactory.createLayerView(layerModel, this.getNativeMap());
-  },
-
   _addGroupedLayer: function (layerModel) {
     var layerView;
     if (!this._cartoDBLayerGroup) {
       var LayerGroupClass;
       if (this.map.windshaftMap.isNamedMap()) {
-        LayerGroupClass = CartoDBLayerGroupNamed;
+        LayerGroupClass = CartoDBLayerGroupNamedMap;
       } else {
-        LayerGroupClass = CartoDBLayerGroupAnonymous;
+        LayerGroupClass = CartoDBLayerGroupAnonymousMap;
       }
       this._cartoDBLayerGroup = new LayerGroupClass({}, {
         windshaftMap: this.map.windshaftMap,
@@ -178,6 +174,10 @@ var MapView = View.extend({
       this.layers[layerModel.cid] = layerView;
     }
     return layerView;
+  },
+
+  createLayer: function (layerModel) {
+    return this._layerViewFactory.createLayerView(layerModel, this.getNativeMap());
   },
 
   _removeLayers: function () {

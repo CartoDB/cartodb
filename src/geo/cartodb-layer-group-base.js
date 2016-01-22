@@ -1,6 +1,6 @@
 var $ = require('jquery');
 var Backbone = require('backbone');
-var MapLayer = require('./map-layer');
+var MapLayer = require('./map/map-layer');
 var util = require('cdb.core.util');
 
 var CartoDBLayerGroupBase = MapLayer.extend({

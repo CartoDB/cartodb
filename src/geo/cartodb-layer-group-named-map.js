@@ -1,6 +1,6 @@
 var CartoDBLayerGroupBase = require('./cartodb-layer-group-base');
 
-var CartoDBLayerGroupNamed = CartoDBLayerGroupBase.extend({
+var CartoDBLayerGroupNamedMap = CartoDBLayerGroupBase.extend({
 
   defaults: {
     type: 'namedmap'
@@ -15,4 +15,4 @@ var CartoDBLayerGroupNamed = CartoDBLayerGroupBase.extend({
   }
 });
 
-module.exports = CartoDBLayerGroupNamed;
+module.exports = CartoDBLayerGroupNamedMap;

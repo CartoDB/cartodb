@@ -1,6 +1,6 @@
 var CartoDBLayerGroupBase = require('./cartodb-layer-group-base');
 
-var CartoDBLayerGroupAnonymous = CartoDBLayerGroupBase.extend({
+var CartoDBLayerGroupAnonymousMap = CartoDBLayerGroupBase.extend({
 
   defaults: {
     type: 'layergroup'
@@ -27,4 +27,4 @@ var CartoDBLayerGroupAnonymous = CartoDBLayerGroupBase.extend({
   }
 });
 
-module.exports = CartoDBLayerGroupAnonymous;
+module.exports = CartoDBLayerGroupAnonymousMap;

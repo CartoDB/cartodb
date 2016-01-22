@@ -20,7 +20,7 @@ module Carto
         :password_protected?, :varnish_key, :related_tables, :is_password_valid?, :get_auth_tokens, :table, :name,
         :overlays, :created_at, :updated_at, :description, :mapviews, :geometry_types, :privacy, :tags,
         :surrogate_key, :has_password?, :total_mapviews, :is_viewable_by_user?, :is_accesible_by_user?,
-        :can_be_cached?, :is_privacy_private?, :source
+        :can_be_cached?, :is_privacy_private?, :source, :kind_raster?
       ] => :visualization
 
       attr_reader :visualization

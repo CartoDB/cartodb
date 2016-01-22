@@ -345,6 +345,12 @@ class ApplicationController < ActionController::Base
     @current_viewer
   end
 
+  def update_user_last_activity
+    return false if current_user.nil?
+    current_user.set_last_active_time
+    current_user.set_last_ip_address request.remote_ip
+  end
+
   protected :current_user
 
   private

@@ -144,16 +144,7 @@ var MapView = View.extend({
   _addGroupedLayer: function (layerModel) {
     var layerView;
     if (!this._cartoDBLayerGroup) {
-      var LayerGroupClass;
-      if (this.map.windshaftMap.isNamedMap()) {
-        LayerGroupClass = CartoDBLayerGroupNamedMap;
-      } else {
-        LayerGroupClass = CartoDBLayerGroupAnonymousMap;
-      }
-      this._cartoDBLayerGroup = new LayerGroupClass({}, {
-        windshaftMap: this.map.windshaftMap,
-        layers: [layerModel]
-      });
+      this._cartoDBLayerGroup = this._newCartoDBLayerGroup(layerModel);
       layerView = this.createLayer(this._cartoDBLayerGroup);
       this._layerViews[layerModel.cid] = layerView;
     } else {
@@ -166,6 +157,18 @@ var MapView = View.extend({
     }
 
     return layerView;
+  },
+
+  _newCartoDBLayerGroup: function (layerModel) {
+    var LayerGroupClass = CartoDBLayerGroupAnonymousMap;
+    if (this.map.windshaftMap.isNamedMap()) {
+      LayerGroupClass = CartoDBLayerGroupNamedMap;
+    }
+
+    return new LayerGroupClass({}, {
+      windshaftMap: this.map.windshaftMap,
+      layers: [layerModel]
+    });
   },
 
   _addIndividualLayer: function (layerModel) {

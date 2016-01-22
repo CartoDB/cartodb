@@ -8,6 +8,7 @@ var MapViewFactory = function () {};
 MapViewFactory.prototype.createMapView = function (provider, mapModel, el) {
   var MapViewClass;
   var LayerViewFactoryClass;
+
   if (provider === 'leaflet') {
     MapViewClass = cdb.geo.LeafletMapView;
     LayerViewFactoryClass = LeafletLayerViewFactory;

@@ -1,9 +1,9 @@
 var _ = require('underscore');
 var log = require('cdb.log');
 var View = require('../core/view');
-var Infowindow = require('./ui/infowindow');
-// TODO: var CartoDBLayerGroupNamed = require('../../geo/map/cartodb-layer-group-named');
-var CartoDBLayerGroupAnonymous = require('../geo/map/cartodb-layer-group-anonymous');
+
+var CartoDBLayerGroupNamed = require('./map/cartodb-layer-group-named');
+var CartoDBLayerGroupAnonymous = require('./map/cartodb-layer-group-anonymous');
 
 var MapView = View.extend({
 
@@ -54,29 +54,8 @@ var MapView = View.extend({
     }
   },
 
-  /**
-  * search in the subviews and return the infowindows
-  */
-  getInfoWindows: function() {
-    var result = [];
-    for (var s in this._subviews) {
-      if(this._subviews[s] instanceof Infowindow) {
-        result.push(this._subviews[s]);
-      }
-    }
-    return result;
-  },
-
-  showBounds: function(bounds) {
-    throw "to be implemented";
-  },
-
   isMapAlreadyCreated: function() {
     return this.options.map_object;
-  },
-
-  setAttribution: function() {
-    throw new Error('Subclasses of src/geo/map-view.js must implement .setAttribution');
   },
 
   /**
@@ -146,8 +125,6 @@ var MapView = View.extend({
   _addLayer: function(layerModel, layerCollection, options) {
     var layerView;
 
-    // CartoDBLayers are grouped visually that's why we need an instance of a
-    // CartoDBLayerGroupAnonymous or CartoDBLayerGroupNamed
     if (layerModel.get('type') === 'CartoDB') {
       layerView = this._addGroupedLayer(layerModel);
     } else {
@@ -170,7 +147,13 @@ var MapView = View.extend({
   _addGroupedLayer: function (layerModel) {
     var layerView;
     if (!this._cartoDBLayerGroup) {
-      this._cartoDBLayerGroup = new CartoDBLayerGroupAnonymous({}, {
+      var LayerGroupClass;
+      if (this.map.windshaftMap.isNamedMap()) {
+        LayerGroupClass = CartoDBLayerGroupNamed;
+      } else {
+        LayerGroupClass = CartoDBLayerGroupAnonymous;
+      }
+      this._cartoDBLayerGroup = new LayerGroupClass({}, {
         windshaftMap: this.map.windshaftMap,
         layers: [layerModel]
       });
@@ -227,24 +210,32 @@ var MapView = View.extend({
     return l;
   },
 
-  _setZoom: function(model, z) {
-    throw "to be implemented";
+  setAttribution: function() {
+    throw new Error('Subclasses of src/geo/map-view.js must implement .setAttribution');
   },
 
-  _setCenter: function(model, center) {
-    throw "to be implemented";
-  },
-
-  _addGeomToMap: function(geom) {
-    throw "to be implemented";
-  },
-
-  _removeGeomFromMap: function(geo) {
-    throw "to be implemented";
+  getNativeMap: function () {
+    throw new Error('Subclasses of src/geo/map-view.js must implement .getNativeMap');
   },
 
   _addLayerToMap: function() {
-    throw "to be implemented";
+    throw new Error('Subclasses of src/geo/map-view.js must implement ._addLayerToMap');
+  },
+
+  _setZoom: function(model, z) {
+    throw new Error('Subclasses of src/geo/map-view.js must implement ._setZoom');
+  },
+
+  _setCenter: function(model, center) {
+    throw new Error('Subclasses of src/geo/map-view.js must implement ._setCenter');
+  },
+
+  _addGeomToMap: function(geom) {
+    throw new Error('Subclasses of src/geo/map-view.js must implement ._addGeomToMap');
+  },
+
+  _removeGeomFromMap: function(geo) {
+    throw new Error('Subclasses of src/geo/map-view.js must implement ._removeGeomFromMap');
   },
 
   setAutoSaveBounds: function() {

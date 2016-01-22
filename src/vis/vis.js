@@ -348,7 +348,7 @@ var Vis = View.extend({
           layersData = layerData.options.named_map.layers;
         }
         _.each(layersData, function (layerData) {
-          layers.push(Layers.create('cartodb', self, layerData));
+          layers.push(Layers.create('CartoDB', self, layerData));
         });
       } else {
         layers.push(Layers.create(layerData.type, self, layerData));
@@ -372,14 +372,17 @@ var Vis = View.extend({
     var endpoint;
     var configGenerator;
     var datasource = data.datasource;
+    var windshaftMapType;
 
     // TODO: We can use something else to differentiate types of "datasource"s
     if (datasource.template_name) {
       endpoint = [WindshaftConfig.MAPS_API_BASE_URL, 'named', datasource.template_name].join('/');
       configGenerator = WindshaftNamedMapConfig;
+      windshaftMapType = WindshaftMap.TYPES.NAMED;
     } else {
       endpoint = WindshaftConfig.MAPS_API_BASE_URL;
       configGenerator = WindshaftLayerGroupConfig;
+      windshaftMapType = WindshaftMap.TYPES.ANONYMOUS;
     }
 
     var windshaftClient = new WindshaftClient({
@@ -390,6 +393,7 @@ var Vis = View.extend({
     });
 
     var windshaftMap = new WindshaftMap({ // eslint-disable-line
+      type: windshaftMapType,
       client: windshaftClient,
       configGenerator: configGenerator,
       statTag: datasource.stat_tag,

@@ -64,7 +64,6 @@ var GoogleMapsMapView = MapView.extend({
 
     }
 
-
     google.maps.event.addListener(this.map_googlemaps, 'center_changed', function() {
       var c = self.map_googlemaps.getCenter();
       self._setModelProperty({ center: [c.lat(), c.lng()] });

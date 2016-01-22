@@ -1,5 +1,4 @@
 var $ = require('jquery');
-var Backbone = require('backbone');
 var Map = require('../../../../src/geo/map');
 var CartoDBLayer = require('../../../../src/geo/map/cartodb-layer');
 var Template = require('../../../../src/core/template');
@@ -15,9 +14,9 @@ describe('geo/ui/layer-selector', function () {
     var map2 = new Map();
 
     // Map needs a WindshaftMap so we're setting up a fake one
-    map2.windshaftMap = {
-      instance: new Backbone.Model()
-    };
+    map2.windshaftMap = jasmine.createSpyObj('windshaftMap', ['isNamedMap', 'isAnonymousMap']);
+    map2.windshaftMap.isAnonymousMap.and.returnValue(true);
+    map2.windshaftMap.instance = jasmine.createSpyObj('windshaftMapInstance', ['bind']);
 
     layer1 = new CartoDBLayer({ options: { layer_name: 'Layer 1' } });
     layer2 = new CartoDBLayer({ options: { layer_name: 'Layer 2' } });

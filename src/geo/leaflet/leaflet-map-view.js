@@ -7,9 +7,6 @@ var Sanitize = require('../../core/sanitize');
 var LeafletPointView = require('./leaflet-point-view');
 var LeafletPathView = require('./leaflet-path-view');
 
-/**
- * leaflet implementation of a map
- */
 var LeafletMapView = MapView.extend({
 
   initialize: function() {
@@ -164,7 +161,6 @@ var LeafletMapView = MapView.extend({
         self.trigger('newLayerView', layerView, layerModel, self);
       }
     });
-
   },
 
   clean: function() {

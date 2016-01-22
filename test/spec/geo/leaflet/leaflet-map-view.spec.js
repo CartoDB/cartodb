@@ -1,6 +1,5 @@
 var $ = require('jquery');
 var _ = require('underscore');
-var Backbone = require('backbone');
 var L = require('leaflet');
 global.L = L;
 
@@ -30,9 +29,9 @@ describe('geo/leaflet/leaflet-map-view', function () {
     map = new Map();
 
     // Map needs a WindshaftMap so we're setting up a fake one
-    map.windshaftMap = {
-      instance: new Backbone.Model()
-    };
+    map.windshaftMap = jasmine.createSpyObj('windshaftMap', ['isNamedMap', 'isAnonymousMap']);
+    map.windshaftMap.isAnonymousMap.and.returnValue(true);
+    map.windshaftMap.instance = jasmine.createSpyObj('windshaftMapInstance', ['bind']);
 
     mapView = new LeafletMapView({
       el: container,

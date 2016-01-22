@@ -5,52 +5,41 @@ var MapView = require('../../../src/geo/map-view');
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
 var Infowindow = require('../../../src/geo/ui/infowindow');
 
-describe('core/geo/map-view', function() {
+describe('core/geo/map-view', function () {
   beforeEach(function() {
     this.container = $('<div>').css('height', '200px');
 
     this.map = new Map();
 
     // Map needs a WindshaftMap so we're setting up a fake one
-    this.map.windshaftMap = {
-      instance: new Backbone.Model()
-    };
+    this.map.windshaftMap = jasmine.createSpyObj('windshaftMap', ['isNamedMap', 'isAnonymousMap']);
+    this.map.windshaftMap.isAnonymousMap.and.returnValue(true);
+    this.map.windshaftMap.instance = jasmine.createSpyObj('windshaftMapInstance', ['bind']);
 
-    var layerViewFactory = jasmine.createSpyObj('layerViewFactory', ['createLayerView']);
+    this.layerViewFactory = jasmine.createSpyObj('layerViewFactory', ['createLayerView']);
     this.mapView = new MapView({
       el: this.container,
       map: this.map,
-      layerViewFactory: layerViewFactory
+      layerViewFactory: this.layerViewFactory
     });
+
+    spyOn(this.mapView, 'getNativeMap');
+    spyOn(this.mapView, '_addLayerToMap');
   });
 
-  it('should be able to add a infowindow', function() {
+  it('should be able to add a infowindow', function () {
     var infow = new Infowindow({mapView: this.mapView, model: new Backbone.Model()});
     this.mapView.addInfowindow(infow);
 
-    expect(this.mapView._subviews[infow.cid]).toBeTruthy()
-    expect(this.mapView._subviews[infow.cid] instanceof Infowindow).toBeTruthy()
-  });
-
-  it('should be able to retrieve the infowindows', function() {
-    var infow = new Infowindow({mapView: this.mapView, model: new Backbone.Model()});
-    this.mapView._subviews['irrelevant'] = new Backbone.View();
-    this.mapView.addInfowindow(infow);
-
-    var infowindows = this.mapView.getInfoWindows()
-
-    expect(infowindows.length).toEqual(1);
-    expect(infowindows[0]).toEqual(infow);
+    expect(this.mapView._subviews[infow.cid]).toBeTruthy();
+    expect(this.mapView._subviews[infow.cid] instanceof Infowindow).toBeTruthy();
   });
 
   it('should group CartoDB layers into a single layerView', function () {
     var layer1 = new CartoDBLayer();
     var layer2 = new CartoDBLayer();
 
-    spyOn(this.mapView, 'createLayer').and.callFake(function () {
-      return jasmine.createSpyObj('layerView', ['remove']);
-    });
-    spyOn(this.mapView, '_addLayerToMap');
+    this.layerViewFactory.createLayerView.and.returnValue(jasmine.createSpyObj('layerView', ['remove']));
 
     // Adding more than one layer
     this.map.addLayer(layer1);

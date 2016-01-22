@@ -19,6 +19,7 @@ describe('geo/gmaps/gmaps-map-view', function () {
   var map;
   var spy;
   var container;
+  var layer;
   beforeEach(function () {
     container = $('<div>').css('height', '200px');
     map = new Map();
@@ -28,7 +29,7 @@ describe('geo/gmaps/gmaps-map-view', function () {
       layerViewFactory: new GMapsLayerViewFactory()
     });
 
-    layerURL = 'http://localhost/{s}/light_nolabels/{z}/{x}/{y}.png';
+    var layerURL = 'http://localhost/{s}/light_nolabels/{z}/{x}/{y}.png';
     layer = new TileLayer({ urlTemplate: layerURL });
 
     spy = jasmine.createSpyObj('spy', ['zoomChanged', 'centerChanged', 'scrollWheelChanged']);

@@ -74,6 +74,7 @@ module CartoDB
       public_map.js
       public_map_deps.js
       editor.js
+      editor3.js
       account_templates.js
       account_deps.js
       account.js

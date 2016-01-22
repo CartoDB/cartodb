@@ -51,6 +51,7 @@
     "gulp-iconfont-css": "0.0.9",
     "gulp-install": "0.2.0",
     "gulp-sketch": "0.0.7",
+    "jstify": "0.13.0",
     "load-grunt-tasks": "3.2.0",
     "moment": "2.10.6",
     "open": "0.0.5",
@@ -64,7 +65,8 @@
   },
   "browserify": {
     "transform": [
-      "browserify-shim"
+      "browserify-shim",
+      "jstify"
     ]
   },
   "browserify-shim": {

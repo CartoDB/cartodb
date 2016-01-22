@@ -9,9 +9,6 @@ var GmapsPathView = require('../../../../src/geo/gmaps/gmaps-path-view');
 var GoogleMapsMapView = require('../../../../src/geo/gmaps/gmaps-map-view');
 var GMapsLayerViewFactory = require('../../../../src/geo/gmaps/gmaps-layer-view-factory');
 var GMapsTiledLayerView = require('../../../../src/geo/gmaps/gmaps-tiled-layer-view');
-var CartoDBLayerGroupAnonymous = require('../../../../src/geo/map/cartodb-layer-group-anonymous');
-var CartoDBLayerGroupNamed = require('../../../../src/geo/map/cartodb-layer-group-named');
-var GMapsCartoDBLayerGroupView = require('../../../../src/geo/gmaps/gmaps-cartodb-layer-group-view');
 var GMapsPlainLayerView = require('../../../../src/geo/gmaps/gmaps-plain-layer-view');
 
 describe('geo/gmaps/gmaps-map-view', function () {
@@ -121,20 +118,6 @@ describe('geo/gmaps/gmaps-map-view', function () {
     var lyr = map.addLayer(layer);
     var layerView = mapView.getLayerByCid(lyr);
     expect(GMapsTiledLayerView.prototype.isPrototypeOf(layerView)).toBeTruthy();
-  });
-
-  xit('should create a GMapsCartoDBLayerGroupView when the layer is CartoDBLayerGroupAnonymous', function () {
-    layer = new CartoDBLayerGroupAnonymous({}, {});
-    var lyr = map.addLayer(layer);
-    var layerView = mapView.getLayerByCid(lyr);
-    expect(layerView instanceof GMapsCartoDBLayerGroupView).toBeTruthy();
-  });
-
-  xit('should create a GMapsCartoDBLayerGroupView when the layer is CartoDBLayerGroupNamed', function () {
-    layer = new CartoDBLayerGroupNamed({}, {});
-    var lyr = map.addLayer(layer);
-    var layerView = mapView.getLayerByCid(lyr);
-    expect(layerView instanceof GMapsCartoDBLayerGroupView).toBeTruthy();
   });
 
   it('should create a PlainLayer when the layer is cartodb', function () {

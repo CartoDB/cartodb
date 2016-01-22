@@ -3,7 +3,7 @@ var Backbone = require('backbone');
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
 var CartoDBLayerGroupNamed = require('../../../src/geo/cartodb-layer-group-named-map');
 
-describe('geo/map/cartodb-layer-group-named', function () {
+describe('geo/cartodb-layer-group-named-map', function () {
   beforeEach(function () {
     this.windshaftMap = jasmine.createSpyObj('windshaftMap', ['isNamedMap', 'isAnonymousMap']);
     this.windshaftMap.isAnonymousMap.and.returnValue(true);

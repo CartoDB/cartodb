@@ -1,4 +1,8 @@
-<div id="dashboard"></div>
+<%= stylesheet_link_tag  'deep-insights', :media => 'all' %>
+
+<div style="width: 100vw; height: 100vh; position: relative;">
+  <div id="dashboard"></div>
+</div>
 
 <script>
   var vizJSON = <%= safe_js_object @vizjson.to_hash.to_json %>

@@ -40,8 +40,8 @@ module CartoDB
       source: ERROR_SOURCE_USER
     },
     1005 => {
-      title: 'Zero byte file',
-      what_about: "The file appears to have no information. Double check using a local tool such as QGIS that the file is indeed correct. If everything appears fine, try uploading it again or <a href='mailto:support@cartodb.com?subject=Zero byte file'>contact us</a>.",
+      title: 'Empty file',
+      what_about: "The file appears to have no processable information. Double check that the file is indeed correct and it contains supported data. If everything appears fine, try uploading it again or <a href='mailto:support@cartodb.com?subject=Empty file'>contact us</a>.",
       source: ERROR_SOURCE_USER
     },
     1006 => {

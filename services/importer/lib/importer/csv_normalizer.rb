@@ -169,7 +169,12 @@ module CartoDB
       end
 
       def single_column?
-        ::CSV.parse(first_line, csv_options).first.to_s.length < 2
+        columns = ::CSV.parse(first_line, csv_options)
+        if !columns.any?
+          raise EmptyFileError.new
+        else
+          columns.first.length < 2
+        end
       end
 
       def multiple_column(row)

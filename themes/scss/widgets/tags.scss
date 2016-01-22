@@ -1,9 +1,6 @@
 // Text elements styles
 // ----------------------------------------------
 
-@import '../variables/sizes';
-@import '../variables/mixins';
-
 .CDB-Widget-tag {
   @include display-flex();
   @include align-items(center);

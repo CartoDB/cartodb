@@ -10,16 +10,13 @@
 //
 // --------------------------------------------------
 
-@import '../variables/sizes';
-@import '../variables/mixins';
-
 .CDB-Widget {
   position: relative;
   width: $desktopLayout;
+  margin-bottom: 2px;
   // Due to line-heights, better to substract some pixels in the top
   padding: ($sMargin-section - 4) 0;
   box-sizing: border-box;
-  border-bottom: 2px solid transparent;
   font-family: 'Open Sans';
 }
 .CDB-Widget--timeSeries {

@@ -1,8 +1,6 @@
 // Default styles for error state
 // --------------------------------------------------
 
-@import '../variables/mixins';
-
 .CDB-Widget-error {
   @include display-flex();
   @include justify-content(center);

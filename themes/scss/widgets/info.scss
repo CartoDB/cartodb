@@ -1,9 +1,6 @@
 // Data info element styles
 // --------------------------------------------------
 
-@import '../variables/sizes';
-@import '../variables/mixins';
-
 .CDB-Widget-info {
   @include display-flex();
   @include justify-content(flex-start, start);

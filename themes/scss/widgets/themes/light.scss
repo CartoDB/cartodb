@@ -1,8 +1,6 @@
 // Template light
 // --------------------------------------------------
 
-@import '../../variables/mixins';
-
 $primary: rgba(#2E3C43, 1);
 $secondary: rgba(#636D72, 1);
 $disabled: rgba(#CBCED0, 1);
@@ -281,7 +279,7 @@ $chartMiniHighlight: rgba(#333, 1);
     .CDB-Chart-bar.is-selected {
       fill: $chartMini;
     }
-  } 
+  }
 
   .CDB-Chart-line {
     stroke: $chartLine;

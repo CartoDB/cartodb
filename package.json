@@ -27,7 +27,7 @@
   ],
   "dependencies": {
     "backbone": "1.2.3",
-    "cartodb.js": "CartoDB/cartodb.js#5aa87cf",
+    "cartodb.js": "CartoDB/cartodb.js#v4",
     "d3": "3.5.8",
     "jquery": "2.1.4",
     "jstify": "0.12.0",
@@ -55,7 +55,8 @@
     "semistandard": "7.0.4",
     "source-map-support": "0.4.0",
     "time-grunt": "1.2.2",
-    "watchify": "3.6.1"
+    "watchify": "3.6.1",
+    "cartoassets": "0.1.18"
   },
   "browserify": {
     "transform": [

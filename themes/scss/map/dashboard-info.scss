@@ -1,9 +1,6 @@
 // Dashboard info
 // --------------------------------------------------
 
-@import '../variables/sizes';
-@import '../variables/mixins';
-
 .CDB-Dashboard-infoTexts {
   position: absolute;
   top: 150px;
@@ -20,7 +17,7 @@
   left: 0;
   width: 76px;
   max-width: 352px;
-  padding: 16px 18px;  
+  padding: 16px 18px;
   background: #3AA9E3;
   font-family: 'Open Sans';
   overflow: hidden;
@@ -73,7 +70,8 @@
   margin: 0 auto;
   border: 2px solid #FFF;
   border-radius: 50%;
-  background: url('../img/dashboard-show.svg') no-repeat center center;
+  color: #FFF;
+  font-size: $sFontSize-medium;
   cursor: pointer;
 }
 .CDB-Dashboard-infoUpdate {
@@ -93,9 +91,9 @@
 }
 .CDB-Dashboard-infoDescription {
   color: #FFF;
-  font-size: $sFontSize-normal;
+  font-size: $sFontSize-medium;
   font-weight: $sFontWeight-lighter;
-  line-height: $sLineHeight-normal;
+  line-height: $sLineHeight-medium;
 }
 .CDB-Dashboard-infoFooter {
   position: absolute;
@@ -119,9 +117,9 @@
 .CDB-Dashboard-infoFooterTxt {
   display: inline-block;
   color: #FFF;
-  font-size: $sFontSize-larger;
+  font-size: $sFontSize-large;
   font-weight: $sFontWeight-lighter;
-  line-height: $sLineHeight-larger;
+  line-height: $sLineHeight-large;
   opacity: 0;
   vertical-align: middle;
 }
@@ -157,15 +155,15 @@
 }
 .CDB-Dashboard-infoSnapshotsListTitle {
   margin-bottom: 8px;
-  font-size: $sFontSize-smaller;
+  font-size: $sFontSize-small;
   font-weight: $sFontWeight-semibold;
-  line-height: $sLineHeight-smaller;
+  line-height: $sLineHeight-small;
 }
 .CDB-Dashboard-infoSnapshotsListDate {
   color: #636D72;
-  font-size: $sFontSize-smaller;
+  font-size: $sFontSize-small;
   font-weight: $sFontWeight-lighter;
-  line-height: $sLineHeight-smaller;
+  line-height: $sLineHeight-small;
 }
 .CDB-Dashboard-infoMobile {
   display: none;
@@ -180,26 +178,25 @@
   height: 48px;
   padding: 8px;
   background: #3AA9E3;
+
   .CDB-Dashboard-infoLogo {
+    @include inline-block();
     width: 32px;
     height: 32px;
     margin: 0 8px 0 0;
     line-height: 32px;
-    display: inline-block;
-    vertical-align: middle;
   }
   .CDB-Dashboard-infoMedia {
+    position: absolute;
+    top: 8px;
+    right: 8px;
     width: 32px;
     margin: 0;
-    position: absolute;
-    right: 8px;
-    top: 8px;
-    transition: opacity .2s ease-in;
+    transition: opacity 0.2s ease-in;
   }
 }
 .CDB-Shape--hamburguer {
-  display: inline-block;
-  vertical-align: middle;
+  @include inline-block();
   position: relative;
   width: 16px;
   height: 2px;
@@ -235,18 +232,18 @@
 }
 @include media-query-mobile() {
   .CDB-Dashboard-infoInner {
-    transform: translateX(-100%);
-    overflow: visible;
-    z-index: 2;
     right: 40px;
     width: auto;
     max-width: 100%;
+    transform: translateX(-100%);
+    overflow: visible;
+    z-index: 2;
   }
   .CDB-Dashboard-info.is-active {
     .CDB-Dashboard-infoInner {
       width: auto;
-      box-shadow: 300px 0 0 rgba(0, 0, 0, 0.45);
       transform: translateX(0);
+      box-shadow: 300px 0 0 rgba(0, 0, 0, 0.45);
     }
     .CDB-Dashboard-infoHeaderMobile {
       .CDB-Dashboard-infoMedia {

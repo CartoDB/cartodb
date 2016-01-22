@@ -1,9 +1,6 @@
 // Canvas for widgets
 // --------------------------------------------------
 
-@import '../variables/sizes';
-@import '../variables/mixins';
-
 .CDB-Widget-canvas {
   position: relative;
   top: 0;
@@ -13,7 +10,6 @@
   max-width: 352px;
   margin-left: $baseSize;
   border-radius: $baseSize / 2;
-  background: #FFF; // Canvas is out of widget themes
 }
 .CDB-Widget-canvasInner {
   position: absolute;
@@ -71,12 +67,13 @@
 // Widget media query
 @include media-query() {
   .CDB-Widget-canvas {
-    width: calc(100% - $baseSize * 11);
-    min-width: calc(100% - $baseSize * 11);
-    max-width: calc(100% - $baseSize * 11);
+    $w: calc(100% - #{$baseSize} * 9);
+    width: $w;
+    min-width: $w;
+    max-width: $w;
     height: auto;
     margin-top: $baseSize;
-    margin-left: $baseSize * 11;
+    margin-left: $baseSize * 9;
     border-radius: 0;
     overflow: hidden;
     box-sizing: border-box;

@@ -1,10 +1,6 @@
 // Styles for search component
 // --------------------------------------------------
 
-@import '../variables/sizes';
-@import '../variables/mixins';
-
-
 .CDB-Widget-search {
   @include display-flex();
   @include justify-content(space-between, justify);

@@ -1,5 +1,5 @@
-@import '../variables/mixins';
-@import '../variables/sizes';
+// Chart styles
+// ----------------------------------------------
 
 .CDB-Widget-chart.Widget-chart--fake {
   @include display-flex();
@@ -77,7 +77,7 @@
 
 .CDB-Chart-axis {
   @include css3-prefix(user-select, none);
-  font: $sFontSize-smaller sans-serif;
+  font: $sFontSize-small sans-serif;
   shape-rendering: crispEdges;
 }
 
@@ -92,7 +92,7 @@
 
 .CDB-Chart-axisTipText {
   @include css3-prefix(user-select, none);
-  font-size: $sFontSize-smaller;
+  font-size: $sFontSize-small;
 }
 
 .CDB-Chart-shadowBar {

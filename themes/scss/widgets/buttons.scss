@@ -1,9 +1,6 @@
 // Buttons styles
 // ----------------------------------------------
 
-@import '../variables/sizes';
-@import '../variables/mixins';
-
 .CDB-Widget-button {
   @include transition(background, 250ms);
   display: inline-block;
@@ -13,7 +10,7 @@
   line-height: 40px;
 }
 .CDB-Widget-link {
-  font-size: $sFontSize-smaller;
+  font-size: $sFontSize-small;
   font-weight: $sFontWeight-normal;
   text-transform: uppercase;
   &:hover {
@@ -35,12 +32,4 @@
   &:hover {
     cursor: pointer;
   }
-}
-
-.CDB-Icon--center {
-  vertical-align: middle;
-}
-
-.CDB-Icon--top {
-  vertical-align: top;
 }

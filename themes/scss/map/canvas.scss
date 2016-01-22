@@ -1,9 +1,6 @@
 // Dashboard canvas
 // --------------------------------------------------
 
-@import '../variables/sizes';
-@import '../variables/mixins';
-
 .CDB-Dashboard-canvas {
   @include display-flex();
   @include justify-content(space-between, justify);

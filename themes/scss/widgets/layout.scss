@@ -1,9 +1,6 @@
 // Widget layout styles
 // ----------------------------------------------
 
-@import '../variables/sizes';
-@import '../variables/mixins';
-
 .CDB-Widget-contentSpaced {
   @include display-flex();
   @include justify-content(space-between, justify);
@@ -30,8 +27,7 @@
 
 @include media-query-mobile() {
   .CDB-Widget-contentSpaced--sideMargins {
-    margin-right: $sMargin-section/3;
-    margin-left: $sMargin-section/3;
+    margin-right: $sMargin-section / 3;
+    margin-left: $sMargin-section / 3;
   }
 }
-

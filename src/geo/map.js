@@ -136,7 +136,7 @@ var Map = Model.extend({
     return this.layers.at(i);
   },
 
-  getLayerByCid: function(cid) {
+  getLayerViewByLayerCid: function(cid) {
     return this.layers.get(cid);
   },
 

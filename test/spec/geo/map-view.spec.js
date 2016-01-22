@@ -50,15 +50,15 @@ describe('core/geo/map-view', function () {
         this.map.layers.reset([tileLayer, cartoDBLayer1, cartoDBLayer2]);
         expect(this.mapView._addLayerToMap.calls.count()).toEqual(2);
 
-        expect(this.mapView.getLayerByCid(cartoDBLayer1.cid)).toBeDefined();
-        expect(this.mapView.getLayerByCid(cartoDBLayer2.cid)).toBeDefined();
-        expect(this.mapView.getLayerByCid(tileLayer.cid)).toBeDefined();
+        expect(this.mapView.getLayerViewByLayerCid(cartoDBLayer1.cid)).toBeDefined();
+        expect(this.mapView.getLayerViewByLayerCid(cartoDBLayer2.cid)).toBeDefined();
+        expect(this.mapView.getLayerViewByLayerCid(tileLayer.cid)).toBeDefined();
 
         // Both CartoDBLayer layers share the same layer view
-        expect(this.mapView.getLayerByCid(cartoDBLayer1.cid)).toEqual(this.mapView.getLayerByCid(cartoDBLayer2.cid));
+        expect(this.mapView.getLayerViewByLayerCid(cartoDBLayer1.cid)).toEqual(this.mapView.getLayerViewByLayerCid(cartoDBLayer2.cid));
 
         // Tile Layer has a different layer view
-        expect(this.mapView.getLayerByCid(tileLayer.cid)).not.toEqual(this.mapView.getLayerByCid(cartoDBLayer1.cid));
+        expect(this.mapView.getLayerViewByLayerCid(tileLayer.cid)).not.toEqual(this.mapView.getLayerViewByLayerCid(cartoDBLayer1.cid));
       });
     });
 
@@ -71,7 +71,7 @@ describe('core/geo/map-view', function () {
 
         this.map.addLayer(layer1);
 
-        var layerViewForLayer1 = this.mapView.getLayerByCid(layer1.cid);
+        var layerViewForLayer1 = this.mapView.getLayerViewByLayerCid(layer1.cid);
         expect(layerViewForLayer1).toBeDefined();
         expect(Object.keys(this.mapView._layerViews).length).toEqual(1);
         expect(this.mapView._addLayerToMap).toHaveBeenCalled();
@@ -98,15 +98,15 @@ describe('core/geo/map-view', function () {
 
         // There are only two layerViews cause the CartoDBLayers have been grouped
         expect(Object.keys(this.mapView._layerViews).length).toEqual(3);
-        expect(this.mapView.getLayerByCid(cartoDBLayer1.cid)).toBeDefined();
-        expect(this.mapView.getLayerByCid(cartoDBLayer2.cid)).toBeDefined();
-        expect(this.mapView.getLayerByCid(tileLayer.cid)).toBeDefined();
+        expect(this.mapView.getLayerViewByLayerCid(cartoDBLayer1.cid)).toBeDefined();
+        expect(this.mapView.getLayerViewByLayerCid(cartoDBLayer2.cid)).toBeDefined();
+        expect(this.mapView.getLayerViewByLayerCid(tileLayer.cid)).toBeDefined();
 
         // Both CartoDBLayer layers share the same layer view
-        expect(this.mapView.getLayerByCid(cartoDBLayer1.cid)).toEqual(this.mapView.getLayerByCid(cartoDBLayer2.cid));
+        expect(this.mapView.getLayerViewByLayerCid(cartoDBLayer1.cid)).toEqual(this.mapView.getLayerViewByLayerCid(cartoDBLayer2.cid));
 
         // Tile Layer has a different layer view
-        expect(this.mapView.getLayerByCid(tileLayer.cid)).not.toEqual(this.mapView.getLayerByCid(cartoDBLayer1.cid));
+        expect(this.mapView.getLayerViewByLayerCid(tileLayer.cid)).not.toEqual(this.mapView.getLayerViewByLayerCid(cartoDBLayer1.cid));
       });
     });
 
@@ -119,14 +119,14 @@ describe('core/geo/map-view', function () {
 
         this.map.layers.reset([tileLayer]);
 
-        var tileLayerView = this.mapView.getLayerByCid(tileLayer.cid);
+        var tileLayerView = this.mapView.getLayerViewByLayerCid(tileLayer.cid);
         expect(tileLayerView).toBeDefined();
 
         this.map.layers.remove(tileLayer);
 
         // View for the tileLayer has been removed
         expect(tileLayerView.remove).toHaveBeenCalled();
-        expect(this.mapView.getLayerByCid(tileLayer.cid)).not.toBeDefined();
+        expect(this.mapView.getLayerViewByLayerCid(tileLayer.cid)).not.toBeDefined();
       });
 
       it ('should should onley remove a group layerView when all grouped layerModels have been removed', function () {
@@ -138,25 +138,25 @@ describe('core/geo/map-view', function () {
 
         this.map.layers.reset([cartoDBLayer1, cartoDBLayer2]);
 
-        expect(this.mapView.getLayerByCid(cartoDBLayer1.cid)).toBeDefined();
-        expect(this.mapView.getLayerByCid(cartoDBLayer2.cid)).toBeDefined();
-        expect(this.mapView.getLayerByCid(cartoDBLayer1.cid)).toEqual(this.mapView.getLayerByCid(cartoDBLayer2.cid));
+        expect(this.mapView.getLayerViewByLayerCid(cartoDBLayer1.cid)).toBeDefined();
+        expect(this.mapView.getLayerViewByLayerCid(cartoDBLayer2.cid)).toBeDefined();
+        expect(this.mapView.getLayerViewByLayerCid(cartoDBLayer1.cid)).toEqual(this.mapView.getLayerViewByLayerCid(cartoDBLayer2.cid));
 
-        var cartoDBLayerGroupView = this.mapView.getLayerByCid(cartoDBLayer1.cid);
+        var cartoDBLayerGroupView = this.mapView.getLayerViewByLayerCid(cartoDBLayer1.cid);
 
         this.map.layers.remove(cartoDBLayer1);
 
         // There's one more CartoDBLayer so the layer view has not been removed
-        // this.mapView.getLayerByCid(cartoDBLayer1.cid)
+        // this.mapView.getLayerViewByLayerCid(cartoDBLayer1.cid)
         expect(cartoDBLayerGroupView.remove).not.toHaveBeenCalled();
-        expect(this.mapView.getLayerByCid(cartoDBLayer1.cid)).not.toBeDefined();
-        expect(this.mapView.getLayerByCid(cartoDBLayer2.cid)).toBeDefined();
+        expect(this.mapView.getLayerViewByLayerCid(cartoDBLayer1.cid)).not.toBeDefined();
+        expect(this.mapView.getLayerViewByLayerCid(cartoDBLayer2.cid)).toBeDefined();
 
         this.map.layers.remove(cartoDBLayer2);
 
         // There's one more CartoDBLayer so the layer view has not been removed
         expect(cartoDBLayerGroupView.remove).toHaveBeenCalled();
-        expect(this.mapView.getLayerByCid(cartoDBLayer2.cid)).not.toBeDefined();
+        expect(this.mapView.getLayerViewByLayerCid(cartoDBLayer2.cid)).not.toBeDefined();
       });
     });
   });

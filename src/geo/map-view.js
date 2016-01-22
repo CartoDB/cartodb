@@ -153,7 +153,7 @@ var MapView = View.extend({
       // is to know if layers are visible of not, so that URLs for attributes can use the
       // right indexes. There should be a better way to do this.
       this._cartoDBLayerGroup.layers.add(layerModel);
-      this._layerViews[layerModel.cid] = this.getLayerByCid(this._cartoDBLayerGroup.layers.at(0).cid);
+      this._layerViews[layerModel.cid] = this.getLayerViewByLayerCid(this._cartoDBLayerGroup.layers.at(0).cid);
     }
 
     return layerView;
@@ -205,8 +205,7 @@ var MapView = View.extend({
     delete this._layerViews[layerModel.cid];
   },
 
-  // TODO: Rename to getLayerViewByLayerModelCID
-  getLayerByCid: function(cid) {
+  getLayerViewByLayerCid: function(cid) {
     var l = this._layerViews[cid];
     if(!l) {
       log.debug("layer with cid " + cid + " can't be get");

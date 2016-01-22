@@ -524,9 +524,9 @@ var Vis = View.extend({
       var cid = layers.at(i).cid;
       var layer = layers.at(i).attributes;
       if (layer.visible) {
-        var layerView = this.mapView.getLayerByCid(cid);
+        var layerView = this.mapView.getLayerViewByLayerCid(cid);
         if (layerView) {
-          var layerView = this.mapView.getLayerByCid(cid);
+          var layerView = this.mapView.getLayerViewByLayerCid(cid);
           legends.push(this._createLayerLegendView(layer, layerView));
         }
       }
@@ -996,7 +996,7 @@ var Vis = View.extend({
   getLayers: function () {
     var self = this;
     return _.compact(this.map.layers.map(function (layer) {
-      return self.mapView.getLayerByCid(layer.cid);
+      return self.mapView.getLayerViewByLayerCid(layer.cid);
     }));
   },
 

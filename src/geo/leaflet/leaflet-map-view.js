@@ -157,7 +157,7 @@ var LeafletMapView = MapView.extend({
         });
       } else {
         layerView.setModel(layerModel);
-        self._layers_view[layerModel.cid] = layerView;
+        self._layerViews[layerModel.cid] = layerView;
         self.trigger('newLayerView', layerView, layerModel, self);
       }
     });
@@ -232,7 +232,7 @@ var LeafletMapView = MapView.extend({
 
   _reorderLayerViews: function () {
     this.map.layers.each(function (layerModel) {
-      var layerView = this.getLayerByCid(layerModel.cid);
+      var layerView = this.getLayerViewByLayerCid(layerModel.cid);
 
       // CartoDBLayers share the same layerView so the zIndex is being overriden on every iteration.
       // The layerView will get the order of the last CartoDB layer as the zIndex

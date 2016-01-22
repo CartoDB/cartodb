@@ -116,14 +116,14 @@ describe('geo/gmaps/gmaps-map-view', function () {
 
   it('should create a TiledLayerView when the layer is Tiled', function () {
     var lyr = map.addLayer(layer);
-    var layerView = mapView.getLayerByCid(lyr);
+    var layerView = mapView.getLayerViewByLayerCid(lyr);
     expect(GMapsTiledLayerView.prototype.isPrototypeOf(layerView)).toBeTruthy();
   });
 
   it('should create a PlainLayer when the layer is cartodb', function () {
     layer = new PlainLayer({});
     var lyr = map.addLayer(layer);
-    var layerView = mapView.getLayerByCid(lyr);
+    var layerView = mapView.getLayerViewByLayerCid(lyr);
     expect(GMapsPlainLayerView.prototype.isPrototypeOf(layerView)).toBeTruthy();
   });
 

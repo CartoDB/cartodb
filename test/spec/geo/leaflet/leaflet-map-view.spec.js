@@ -121,14 +121,14 @@ describe('geo/leaflet/leaflet-map-view', function () {
 
   it('should create a TiledLayerView when the layer is Tiled', function () {
     var lyr = map.addLayer(layer);
-    var layerView = mapView.getLayerByCid(lyr);
+    var layerView = mapView.getLayerViewByLayerCid(lyr);
     expect(LeafletTiledLayerView.prototype.isPrototypeOf(layerView)).isPrototypeOf();
   });
 
   it('should create a PlainLayer when the layer is cartodb', function () {
     layer = new PlainLayer({});
     var lyr = map.addLayer(layer);
-    var layerView = mapView.getLayerByCid(lyr);
+    var layerView = mapView.getLayerViewByLayerCid(lyr);
     expect(layerView.setQuery).not.toEqual(LeafletPlainLayerView);
   });
 
@@ -139,8 +139,8 @@ describe('geo/leaflet/leaflet-map-view', function () {
     var tileLayer2 = new TileLayer({ urlTemplate: 'http://tilelayer2.com' });
     map.addLayer(tileLayer2, { at: 0 });
 
-    expect(mapView.getLayerByCid(tileLayer.cid).options.zIndex).toEqual(1);
-    expect(mapView.getLayerByCid(tileLayer2.cid).options.zIndex).toEqual(0);
+    expect(mapView.getLayerViewByLayerCid(tileLayer.cid).options.zIndex).toEqual(1);
+    expect(mapView.getLayerViewByLayerCid(tileLayer2.cid).options.zIndex).toEqual(0);
   });
 
   it('should remove all layers when map view is cleaned', function () {
@@ -154,10 +154,10 @@ describe('geo/leaflet/leaflet-map-view', function () {
 
     expect(_.size(mapView._layerViews)).toEqual(3);
 
-    var layerGroupView = mapView.getLayerByCid(cartoDBLayer1.cid);
+    var layerGroupView = mapView.getLayerViewByLayerCid(cartoDBLayer1.cid);
     spyOn(layerGroupView, 'remove');
 
-    var tileLayerView = mapView.getLayerByCid(tileLayer.cid);
+    var tileLayerView = mapView.getLayerViewByLayerCid(tileLayer.cid);
     spyOn(tileLayerView, 'remove');
 
     mapView.clean();
@@ -216,8 +216,8 @@ describe('geo/leaflet/leaflet-map-view', function () {
   it('should set z-order', function () {
     var layer1 = new TileLayer({urlTemplate: 'test1'});
     var layer2 = new TileLayer({urlTemplate: 'test2'});
-    var layerView1 = mapView.getLayerByCid(map.addLayer(layer1));
-    var layerView2 = mapView.getLayerByCid(map.addLayer(layer2, { at: 0 }));
+    var layerView1 = mapView.getLayerViewByLayerCid(map.addLayer(layer1));
+    var layerView2 = mapView.getLayerViewByLayerCid(map.addLayer(layer2, { at: 0 }));
     expect(layerView1.options.zIndex > layerView2.options.zIndex).toEqual(true);
   });
 

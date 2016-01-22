@@ -69,6 +69,28 @@ describe UserOrganization do
 
       @owner.db_service.triggers_in_schema('public').should be_empty
     end
+
+    # See #6295: Moving user to its own schema (i.e on org creation) leaves triggers on public schema
+    it 'moves materialized views to the new schema' do
+      table = create_random_table(@owner)
+
+      materialized_view_name = 'mv_test'
+      create_materialized_view_query = %Q{
+        CREATE MATERIALIZED VIEW #{materialized_view_name}
+            AS select name from #{table.qualified_table_name};
+      }
+
+      @owner.in_database.run(create_materialized_view_query)
+
+      @owner.db_service.materialized_views.map { |mv| mv.name }.should include(materialized_view_name)
+
+      owner_org = CartoDB::UserOrganization.new(@organization.id, @owner.id)
+      owner_org.promote_user_to_admin
+      @owner.reload
+
+      @owner.db_service.materialized_views.map { |mv| mv.name }.should include(materialized_view_name)
+      @owner.db_service.materialized_views('public').map { |mv| mv.name }.should be_empty
+    end
   end
 
   # See #5477 Error assigning as owner a user with non-cartodbfied tables

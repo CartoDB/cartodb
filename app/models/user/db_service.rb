@@ -302,19 +302,41 @@ module CartoDB
         end
       end
 
+      def materialized_views(schema = @user.database_schema)
+        database = @user.database_name
+        query = %Q{
+          select ns.nspname as schemaname,
+                 mv.relname as matviewname,
+                 string_agg(atr.attname ||' '||pg_catalog.format_type(atr.atttypid, NULL), ', ') as columns
+          from pg_class mv
+            join pg_namespace ns on mv.relnamespace = ns.oid
+            join pg_attribute atr
+              on atr.attrelid = mv.oid
+             and atr.attnum > 0
+             and not atr.attisdropped
+          where mv.relkind = 'm'
+             and ns.nspname = '#{schema}'
+          group by ns.nspname, mv.relname;
+        }
+        @user.in_database do |user_database|
+          user_database[query].all.map { |t| MaterializedView.new(database_name: @user.database_name, database_schema: t[:schemaname], name: t[:matviewname]) }
+        end
+      end
+
       def triggers_in_user_schema
         triggers_in_schema(@user.database_schema)
       end
 
       def triggers_in_schema(schema, database = @user.database_name)
+        query = %Q{
+          select table_catalog, table_schema, relname, tgname, tgtype, proname, tgdeferrable, tginitdeferred, tgnargs,
+          tgattr, tgargs from (pg_trigger join pg_class on tgrelid=pg_class.oid)
+          join pg_proc on (tgfoid=pg_proc.oid) join information_schema.tables ist on relname = table_name
+          where table_schema = '#{schema}'
+          and table_catalog = '#{database}'
+        }
+
         @user.in_database do |user_database|
-          query = %Q{
-            select table_catalog, table_schema, relname, tgname, tgtype, proname, tgdeferrable, tginitdeferred, tgnargs,
-            tgattr, tgargs from (pg_trigger join pg_class on tgrelid=pg_class.oid)
-            join pg_proc on (tgfoid=pg_proc.oid) join information_schema.tables ist on relname = table_name
-            where table_schema = '#{schema}'
-            and table_catalog = '#{database}'
-          }
           user_database[query].all.map { |t| Trigger.new(database_name: t[:table_catalog], database_schema: t[:table_schema], table_name: t[:table_name], trigger_name: t[:tgname]) }
         end
       end

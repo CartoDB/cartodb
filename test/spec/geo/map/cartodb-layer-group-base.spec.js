@@ -1,7 +1,12 @@
+var $ = require('jquery');
 var Backbone = require('backbone');
 var CartoDBLayerGroupBase = require('../../../../src/geo/map/cartodb-layer-group-base');
+var CartoDBLayer = require('../../../../src/geo/map/cartodb-layer');
+var CartoDBLayerGroupAnonymous = require('../../../../src/geo/map/cartodb-layer-group-anonymous');
 
-var MyCartoDBLayerGroup = CartoDBLayerGroupBase;
+var MyCartoDBLayerGroup = CartoDBLayerGroupBase.extend({
+  _getIndexOfVisibleLayer: function () {}
+});
 
 describe('geo/map/cartodb-layer-group-base', function () {
   beforeEach(function () {
@@ -27,5 +32,75 @@ describe('geo/map/cartodb-layer-group-base', function () {
     // Assert that layerGroup has been updated
     expect(layerGroup.get('baseURL')).toEqual('baseURL');
     expect(layerGroup.get('urls')).toEqual('urls');
+  });
+
+  describe('fetchAttributes', function () {
+
+    it ('should trigger a request to the right URL', function () {
+      var callback = jasmine.createSpy('callback');
+      var cartoDBLayer1 = new CartoDBLayer();
+
+      var layer = new MyCartoDBLayerGroup({
+        baseURL: 'http://wadus.com'
+      }, {
+        windshaftMap: this.windshaftMap,
+        layers: [ cartoDBLayer1 ]
+      });
+
+      spyOn(layer, '_getIndexOfVisibleLayer').and.returnValue(0);
+      spyOn($, 'ajax').and.callFake(function (options) {
+        options.success('attributes!');
+      });
+
+      layer.fetchAttributes(0, 1000, callback);
+
+      expect(callback).toHaveBeenCalledWith('attributes!');
+      expect($.ajax.calls.mostRecent().args[0].url).toEqual('http://wadus.com/0/attributes/1000');
+    });
+
+    it ('should not trigger a request when the layer index is invalid and callback should return null', function () {
+      var callback = jasmine.createSpy('callback');
+      var cartoDBLayer1 = new CartoDBLayer();
+
+      var layer = new MyCartoDBLayerGroup({
+        baseURL: 'http://wadus.com'
+      }, {
+        windshaftMap: this.windshaftMap,
+        layers: [ cartoDBLayer1 ]
+      });
+
+      spyOn(layer, '_getIndexOfVisibleLayer').and.returnValue(-1);
+      spyOn($, 'ajax').and.callFake(function (options) {
+        options.success('attributes!');
+      });
+
+      layer.fetchAttributes(999, 1000, callback);
+
+      expect(callback).toHaveBeenCalledWith(null);
+      expect($.ajax).not.toHaveBeenCalled();
+    });
+
+    it ('should invoke the callback with null when the ajax request fails', function () {
+      var callback = jasmine.createSpy('callback');
+      var cartoDBLayer1 = new CartoDBLayer();
+
+      var layer = new MyCartoDBLayerGroup({
+        baseURL: 'http://wadus.com'
+      }, {
+        windshaftMap: this.windshaftMap,
+        layers: [ cartoDBLayer1 ]
+      });
+
+      spyOn(layer, '_getIndexOfVisibleLayer').and.returnValue(-1);
+      spyOn($, 'ajax').and.callFake(function (options) {
+        options.error('error!');
+      });
+
+      layer.fetchAttributes(999, 1000, callback);
+
+      expect(callback).toHaveBeenCalledWith(null);
+      expect($.ajax).not.toHaveBeenCalled();
+    });
+
   });
 });

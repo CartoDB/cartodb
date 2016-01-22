@@ -53,30 +53,34 @@ var CartoDBLayerGroupBase = MapLayer.extend({
       throw 'Attributes cannot be fetched until baseURL is set';
     }
 
-    // 
+    // TODO: We need to improve this
     var index = this._getIndexOfVisibleLayer(layer);
-    var url = [
-      this.get('baseURL'),
-      index,
-      'attributes',
-      featureID
-    ].join('/');
+    if (index >= 0) {
+      var url = [
+        this.get('baseURL'),
+        index,
+        'attributes',
+        featureID
+      ].join('/');
 
-    $.ajax({
-      dataType: 'jsonp',
-      url: url,
-      jsonpCallback: '_cdbi_layer_attributes_' + util.uniqueCallbackName(this.toJSON()),
-      cache: true,
-      success: function(data) {
-        // loadingTime.end();
-        callback(data);
-      },
-      error: function(data) {
-        // loadingTime.end();
-        // cartodb.core.Profiler.metric('cartodb-js.named_map.attributes.error').inc();
-        callback(null);
-      }
-    });
+      $.ajax({
+        dataType: 'jsonp',
+        url: url,
+        jsonpCallback: '_cdbi_layer_attributes_' + util.uniqueCallbackName(this.toJSON()),
+        cache: true,
+        success: function(data) {
+          // loadingTime.end();
+          callback(data);
+        },
+        error: function(data) {
+          // loadingTime.end();
+          // cartodb.core.Profiler.metric('cartodb-js.named_map.attributes.error').inc();
+          callback(null);
+        }
+      });
+    } else {
+      callback(null);
+    }
   }
 });
 

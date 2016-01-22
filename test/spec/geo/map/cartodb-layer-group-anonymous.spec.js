@@ -1,4 +1,6 @@
+var $ = require('jquery');
 var Backbone = require('backbone');
+var CartoDBLayer = require('../../../../src/geo/map/cartodb-layer');
 var CartoDBLayerGroupAnonymous = require('../../../../src/geo/map/cartodb-layer-group-anonymous');
 
 describe('geo/map/cartodb-layer-group-anonymous', function () {
@@ -14,5 +16,46 @@ describe('geo/map/cartodb-layer-group-anonymous', function () {
       windshaftMap: this.windshaftMap
     });
     expect(layer.get('type')).toEqual('layergroup');
+  });
+
+  describe('fetchAttributes', function () {
+
+    it ('should calculate indexes correctly', function () {
+      var cartoDBLayer1 = new CartoDBLayer();
+      var cartoDBLayer2 = new CartoDBLayer();
+
+      spyOn($, 'ajax').and.callFake(function (options) {
+        options.success('attributes!');
+      });
+
+      var layer = new CartoDBLayerGroupAnonymous({
+        baseURL: 'http://wadus.com'
+      }, {
+        windshaftMap: this.windshaftMap,
+        layers: [ cartoDBLayer1, cartoDBLayer2]
+      });
+      var callback = jasmine.createSpy('callback');
+
+      layer.fetchAttributes(0, 1000, callback);
+
+      expect(callback).toHaveBeenCalledWith('attributes!');
+      expect($.ajax.calls.mostRecent().args[0].url).toEqual('http://wadus.com/0/attributes/1000');
+
+      layer.fetchAttributes(1, 10, callback);
+
+      expect(callback).toHaveBeenCalledWith('attributes!');
+      expect($.ajax.calls.mostRecent().args[0].url).toEqual('http://wadus.com/1/attributes/10');
+
+      // Hide the first layer
+      cartoDBLayer1.set('visible', false);
+
+      // We fetch the attributes of layer #1
+      layer.fetchAttributes(1, 100, callback);
+
+      expect(callback).toHaveBeenCalledWith('attributes!');
+      // There's only one visible layer now so layer #1 (in the context of the CartoDB.js) is layer #0 for
+      // Windshaft (hidden layers are not sent to Windhsaft)
+      expect($.ajax.calls.mostRecent().args[0].url).toEqual('http://wadus.com/0/attributes/100');
+    });
   });
 });

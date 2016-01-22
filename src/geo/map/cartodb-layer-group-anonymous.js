@@ -6,7 +6,7 @@ var CartoDBLayerGroupAnonymous = CartoDBLayerGroupBase.extend({
     type: 'layergroup'
   },
 
-  // Returns the position of a visible layer in relation to all layers when the map is 
+  // Returns the index of the CartoDB layer in relation to all layers when the map is
   // an "Anonymous Map". For example, if there are two CartoDB layers and layer #0 is
   // hidden, this method would return -1 for #0 and 0 for layer #1.
   _getIndexOfVisibleLayer: function(layerIndex) {

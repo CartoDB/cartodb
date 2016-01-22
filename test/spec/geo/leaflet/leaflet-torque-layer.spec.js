@@ -1,5 +1,6 @@
 /* global L */
 var $ = require('jquery');
+var LeafletLayerViewFactory = require('../../../../src/geo/leaflet/leaflet-layer-view-factory');
 var SharedTestsForTorqueLayer = require('../shared-tests-for-torque-layer');
 
 describe('geo/leaflet/leaflet-torque-layer', function () {
@@ -11,7 +12,8 @@ describe('geo/leaflet/leaflet-torque-layer', function () {
     this.map = new cdb.geo.Map();
     this.mapView = new cdb.geo.LeafletMapView({
       el: container,
-      map: this.map
+      map: this.map,
+      layerViewFactory: new LeafletLayerViewFactory()
     });
 
     spyOn(L.TorqueLayer.prototype, 'initialize').and.callThrough();

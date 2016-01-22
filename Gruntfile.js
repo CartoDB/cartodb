@@ -35,12 +35,6 @@
       assets_dir: ASSETS_DIR,
       root_assets_dir: ROOT_ASSETS_DIR,
 
-      browserify_modules: {
-        tests: {
-          dest: '.grunt/browserify_modules_tests.js'
-        }
-      },
-
       // Concat task
       concat:   require('./lib/build/tasks/concat').task(),
 
@@ -154,11 +148,16 @@
 
     grunt.registerTask('jasmine-server', 'start web server for jasmine tests in browser', function() {
       grunt.task.run('jasmine:cartodbui:build');
+      grunt.task.run('jasmine:editor3:build');
 
       grunt.event.once('connect.jasmine.listening', function(host, port) {
         var specRunnerUrl = 'http://localhost:' + port + '/_SpecRunner.html';
         grunt.log.writeln('Jasmine specs available at: ' + specRunnerUrl);
         require('open')(specRunnerUrl);
+
+        var specRunnerUrlForEditor3 = 'http://localhost:' + port + '/_SpecRunner-editor3.html';
+        grunt.log.writeln('Jasmine specs available at: ' + specRunnerUrlForEditor3);
+        require('open')(specRunnerUrlForEditor3);
       });
 
       grunt.task.run('connect:jasmine:keepalive');

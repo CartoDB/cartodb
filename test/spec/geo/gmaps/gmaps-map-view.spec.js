@@ -124,7 +124,7 @@ describe('geo/gmaps/gmaps-map-view', function () {
     layer = new PlainLayer({});
     var lyr = map.addLayer(layer);
     var layerView = mapView.getLayerByCid(lyr);
-    expect(layerView.__proto__.constructor).toEqual(GMapsPlainLayerView);
+    expect(GMapsPlainLayerView.prototype.isPrototypeOf(layerView)).toBeTruthy();
   });
 
   var geojsonFeature = {
@@ -132,7 +132,9 @@ describe('geo/gmaps/gmaps-map-view', function () {
     'coordinates': [-104.99404, 39.75621]
   };
 
-  var multipoly = {'type': 'MultiPolygon','coordinates': [
+  var multipoly = {
+    'type': 'MultiPolygon',
+    'coordinates': [
       [
         [[40, 40], [20, 45], [45, 30], [40, 40]]
       ],

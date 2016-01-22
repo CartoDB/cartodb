@@ -34,8 +34,7 @@ describe('geo/cartodb-layer-group-base', function () {
   });
 
   describe('fetchAttributes', function () {
-
-    it ('should trigger a request to the right URL', function () {
+    it('should trigger a request to the right URL', function () {
       var callback = jasmine.createSpy('callback');
       var cartoDBLayer1 = new CartoDBLayer();
 
@@ -57,7 +56,7 @@ describe('geo/cartodb-layer-group-base', function () {
       expect($.ajax.calls.mostRecent().args[0].url).toEqual('http://wadus.com/0/attributes/1000');
     });
 
-    it ('should not trigger a request when the layer index is invalid and callback should return null', function () {
+    it('should not trigger a request when the layer index is invalid and callback should return null', function () {
       var callback = jasmine.createSpy('callback');
       var cartoDBLayer1 = new CartoDBLayer();
 
@@ -79,7 +78,7 @@ describe('geo/cartodb-layer-group-base', function () {
       expect($.ajax).not.toHaveBeenCalled();
     });
 
-    it ('should invoke the callback with null when the ajax request fails', function () {
+    it('should invoke the callback with null when the ajax request fails', function () {
       var callback = jasmine.createSpy('callback');
       var cartoDBLayer1 = new CartoDBLayer();
 
@@ -100,6 +99,5 @@ describe('geo/cartodb-layer-group-base', function () {
       expect(callback).toHaveBeenCalledWith(null);
       expect($.ajax).not.toHaveBeenCalled();
     });
-
   });
 });

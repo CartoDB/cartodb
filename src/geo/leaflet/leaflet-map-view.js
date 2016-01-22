@@ -157,7 +157,7 @@ var LeafletMapView = MapView.extend({
         });
       } else {
         layerView.setModel(layerModel);
-        self.layers[layerModel.cid] = layerView;
+        self._layers_view[layerModel.cid] = layerView;
         self.trigger('newLayerView', layerView, layerModel, self);
       }
     });

@@ -4,12 +4,11 @@ var MapLayer = require('./map/map-layer');
 var util = require('cdb.core.util');
 
 var CartoDBLayerGroupBase = MapLayer.extend({
-
   defaults: {
     visible: true
   },
 
-  initialize: function(attributes, options) {
+  initialize: function (attributes, options) {
     MapLayer.prototype.initialize.apply(this, arguments);
     options = options || {};
     this.layers = new Backbone.Collection(options.layers || {});
@@ -25,14 +24,14 @@ var CartoDBLayerGroupBase = MapLayer.extend({
     }, this);
   },
 
-  isEqual: function() {
+  isEqual: function () {
     return false;
   },
 
-  getTileJSONFromTiles: function(layerIndex) {
+  getTileJSONFromTiles: function (layerIndex) {
     var urls = this.get('urls');
     if (!urls) {
-      throw 'tileJSON for the layer cannot be calculated until urls are set';
+      throw new Error('tileJSON for the layer cannot be calculated until urls are set');
     }
 
     return {
@@ -40,17 +39,17 @@ var CartoDBLayerGroupBase = MapLayer.extend({
       scheme: 'xyz',
       grids: urls.grids[this._getIndexOfVisibleLayer(layerIndex)],
       tiles: urls.tiles,
-      formatter: function(options, data) { return data; }
+      formatter: function (options, data) { return data; }
     };
   },
 
-  _getIndexOfVisibleLayer: function(layerIndex) {
-    throw "_getIndexOfVisibleLayer must be implemented";
+  _getIndexOfVisibleLayer: function (layerIndex) {
+    throw new Error('_getIndexOfVisibleLayer must be implemented');
   },
 
-  fetchAttributes: function(layer, featureID, callback) {
+  fetchAttributes: function (layer, featureID, callback) {
     if (!this.get('baseURL')) {
-      throw 'Attributes cannot be fetched until baseURL is set';
+      throw new Error('Attributes cannot be fetched until baseURL is set');
     }
 
     // TODO: We need to improve this
@@ -68,11 +67,11 @@ var CartoDBLayerGroupBase = MapLayer.extend({
         url: url,
         jsonpCallback: '_cdbi_layer_attributes_' + util.uniqueCallbackName(this.toJSON()),
         cache: true,
-        success: function(data) {
+        success: function (data) {
           // loadingTime.end();
           callback(data);
         },
-        error: function(data) {
+        error: function (data) {
           // loadingTime.end();
           // cartodb.core.Profiler.metric('cartodb-js.named_map.attributes.error').inc();
           callback(null);

@@ -200,7 +200,6 @@ describe('geo/leaflet/leaflet-map-view', function () {
       'type': 'Point',
       'coordinates': [20, 10]
     });
-
   });
 
   it('should save automatically when the zoom or center changes', function (done) {
@@ -212,12 +211,11 @@ describe('geo/leaflet/leaflet-map-view', function () {
       expect(map.save).toHaveBeenCalled();
       done();
     }, 1500);
-
   });
 
   it('should set z-order', function () {
-    var layer1 = new TileLayer({ urlTemplate: 'test1'});
-    var layer2 = new TileLayer({ urlTemplate: 'test2'});
+    var layer1 = new TileLayer({urlTemplate: 'test1'});
+    var layer2 = new TileLayer({urlTemplate: 'test2'});
     var layerView1 = mapView.getLayerByCid(map.addLayer(layer1));
     var layerView2 = mapView.getLayerByCid(map.addLayer(layer2, { at: 0 }));
     expect(layerView1.options.zIndex > layerView2.options.zIndex).toEqual(true);
@@ -291,7 +289,7 @@ describe('geo/leaflet/leaflet-map-view', function () {
     var testContext;
 
     if (baseType) {
-      layerOpts = { base_type: baseType};
+      layerOpts = {base_type: baseType};
       testContext = 'with basemap "' + baseType + '"';
     } else {
       testContext = 'with default basemap "gray_roadmap"';
@@ -344,7 +342,6 @@ describe('geo/leaflet/leaflet-map-view', function () {
         mapView._setKeyboard(null, false);
         expect(spy.keyboardChanged).toHaveBeenCalled();
       });
-
     });
   });
 
@@ -438,5 +435,4 @@ describe('geo/leaflet/leaflet-map-view', function () {
     expect(mapView.map_leaflet.dragging.enabled()).toBeFalsy();
     expect(mapView.map_leaflet.doubleClickZoom.enabled()).toBeFalsy();
   });
-
 });

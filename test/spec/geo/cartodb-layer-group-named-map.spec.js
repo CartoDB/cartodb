@@ -19,8 +19,7 @@ describe('geo/cartodb-layer-group-named-map', function () {
   });
 
   describe('fetchAttributes', function () {
-
-    it ('should calculate indexes correctly', function () {
+    it('should calculate indexes correctly', function () {
       var cartoDBLayer1 = new CartoDBLayer();
       var cartoDBLayer2 = new CartoDBLayer();
 
@@ -32,7 +31,7 @@ describe('geo/cartodb-layer-group-named-map', function () {
         baseURL: 'http://wadus.com'
       }, {
         windshaftMap: this.windshaftMap,
-        layers: [ cartoDBLayer1, cartoDBLayer2]
+        layers: [cartoDBLayer1, cartoDBLayer2]
       });
       var callback = jasmine.createSpy('callback');
 
@@ -60,5 +59,4 @@ describe('geo/cartodb-layer-group-named-map', function () {
       expect($.ajax.calls.mostRecent().args[0].url).toEqual('http://wadus.com/2/attributes/100');
     });
   });
-
 });

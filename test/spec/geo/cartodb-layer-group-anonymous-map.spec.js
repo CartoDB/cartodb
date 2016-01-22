@@ -19,8 +19,7 @@ describe('geo/layer-group-anonymous-map', function () {
   });
 
   describe('fetchAttributes', function () {
-
-    it ('should calculate indexes correctly', function () {
+    it('should calculate indexes correctly', function () {
       var cartoDBLayer1 = new CartoDBLayer();
       var cartoDBLayer2 = new CartoDBLayer();
 
@@ -32,7 +31,7 @@ describe('geo/layer-group-anonymous-map', function () {
         baseURL: 'http://wadus.com'
       }, {
         windshaftMap: this.windshaftMap,
-        layers: [ cartoDBLayer1, cartoDBLayer2]
+        layers: [cartoDBLayer1, cartoDBLayer2]
       });
       var callback = jasmine.createSpy('callback');
 

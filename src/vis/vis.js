@@ -378,11 +378,9 @@ var Vis = View.extend({
     if (datasource.template_name) {
       endpoint = [WindshaftConfig.MAPS_API_BASE_URL, 'named', datasource.template_name].join('/');
       configGenerator = WindshaftNamedMapConfig;
-      windshaftMapType = WindshaftMap.TYPES.NAMED;
     } else {
       endpoint = WindshaftConfig.MAPS_API_BASE_URL;
       configGenerator = WindshaftLayerGroupConfig;
-      windshaftMapType = WindshaftMap.TYPES.ANONYMOUS;
     }
 
     var windshaftClient = new WindshaftClient({
@@ -393,7 +391,6 @@ var Vis = View.extend({
     });
 
     var windshaftMap = new WindshaftMap({ // eslint-disable-line
-      type: windshaftMapType,
       client: windshaftClient,
       configGenerator: configGenerator,
       statTag: datasource.stat_tag,

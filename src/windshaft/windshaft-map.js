@@ -2,6 +2,8 @@ var _ = require('underscore');
 var WindshaftFiltersCollection = require('./filters/collection');
 var WindshaftFiltersBoundingBoxFilter = require('./filters/bounding-box');
 var WindshaftMapInstance = require('./windshaft-map-instance');
+var WindshaftLayerGroupConfig = require('./layergroup-config');
+var WindshaftNamedMapConfig = require('./namedmap-config');
 
 /**
  * This class represents the concept of a map in Windshaft. It holds a reference
@@ -39,17 +41,12 @@ var WindshaftMap = function (options) {
   }, this);
 };
 
-WindshaftMap.TYPES = {
-  NAMED: 'named',
-  ANONYMOUS: 'anonymous'
-};
-
 WindshaftMap.prototype.isNamedMap = function () {
-  return this._type === this.constructor.TYPES.NAMED;
+  return this.configGenerator === WindshaftNamedMapConfig;
 };
 
 WindshaftMap.prototype.isAnonymousMap = function () {
-  return this._type === this.constructor.TYPES.ANONYMOUS;
+  return this.configGenerator === WindshaftLayerGroupConfig;
 };
 
 WindshaftMap.prototype._createInstance = function (options) {

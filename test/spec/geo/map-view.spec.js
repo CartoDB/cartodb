@@ -2,6 +2,7 @@ var $ = require('jquery');
 var Backbone = require('backbone');
 var Map = require('../../../src/geo/map');
 var MapView = require('../../../src/geo/map-view');
+var TileLayer = require('../../../src/geo/map/tile-layer');
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
 var Infowindow = require('../../../src/geo/ui/infowindow');
 
@@ -35,34 +36,128 @@ describe('core/geo/map-view', function () {
     expect(this.mapView._subviews[infow.cid] instanceof Infowindow).toBeTruthy();
   });
 
-  it('should group CartoDB layers into a single layerView', function () {
-    var layer1 = new CartoDBLayer();
-    var layer2 = new CartoDBLayer();
+  describe('bindings to map.layers', function () {
 
-    this.layerViewFactory.createLayerView.and.returnValue(jasmine.createSpyObj('layerView', ['remove']));
+    describe('when layers of map.layers are resetted', function () {
+      it ('should group CartoDB layers into a single layerView and add one layerView for each non-CartoDB layer', function () {
+        this.layerViewFactory.createLayerView.and.callFake(function () {
+          return jasmine.createSpyObj('layerView', ['something']);
+        });
+        var tileLayer = new TileLayer();
+        var cartoDBLayer1 = new CartoDBLayer();
+        var cartoDBLayer2 = new CartoDBLayer();
 
-    // Adding more than one layer
-    this.map.addLayer(layer1);
-    this.map.addLayer(layer2);
+        this.map.layers.reset([tileLayer, cartoDBLayer1, cartoDBLayer2]);
+        expect(this.mapView._addLayerToMap.calls.count()).toEqual(2);
 
-    var layerViewForLayer1 = this.mapView.getLayerByCid(layer1.cid);
-    expect(layerViewForLayer1).toBeDefined();
-    var layerViewForLayer2 = this.mapView.getLayerByCid(layer2.cid);
-    expect(layerViewForLayer2).toBeDefined();
-    expect(layerViewForLayer1).toEqual(layerViewForLayer2);
+        expect(this.mapView.getLayerByCid(cartoDBLayer1.cid)).toBeDefined();
+        expect(this.mapView.getLayerByCid(cartoDBLayer2.cid)).toBeDefined();
+        expect(this.mapView.getLayerByCid(tileLayer.cid)).toBeDefined();
 
-    // Remove one layer
-    this.map.layers.remove(layer1);
+        // Both CartoDBLayer layers share the same layer view
+        expect(this.mapView.getLayerByCid(cartoDBLayer1.cid)).toEqual(this.mapView.getLayerByCid(cartoDBLayer2.cid));
 
-    layerViewForLayer1 = this.mapView.getLayerByCid(layer1.cid);
-    expect(layerViewForLayer1).not.toBeDefined();
-    layerViewForLayer2 = this.mapView.getLayerByCid(layer2.cid);
-    expect(layerViewForLayer2).toBeDefined();
-    // expect(layerViewForLayer2 instanceof LeafletCartoDBLayerGroupView).toBeTruthy();
+        // Tile Layer has a different layer view
+        expect(this.mapView.getLayerByCid(tileLayer.cid)).not.toEqual(this.mapView.getLayerByCid(cartoDBLayer1.cid));
+      });
+    });
 
-    this.map.layers.remove(layer2);
+    describe('when new layerModels are added to map.layers', function () {
+      it ('should add a new layer view to the map', function () {
+        this.layerViewFactory.createLayerView.and.callFake(function () {
+          return jasmine.createSpyObj('layerView', ['something']);
+        });
+        var layer1 = new CartoDBLayer();
 
-    layerViewForLayer2 = this.mapView.getLayerByCid(layer2.cid);
-    expect(layerViewForLayer2).not.toBeDefined();
+        this.map.addLayer(layer1);
+
+        var layerViewForLayer1 = this.mapView.getLayerByCid(layer1.cid);
+        expect(layerViewForLayer1).toBeDefined();
+        expect(Object.keys(this.mapView.layers).length).toEqual(1);
+        expect(this.mapView._addLayerToMap).toHaveBeenCalled();
+      });
+
+      it ('should group CartoDB layers into a single layerView', function () {
+        this.layerViewFactory.createLayerView.and.callFake(function () {
+          return jasmine.createSpyObj('layerView', ['something']);
+        });
+        var tileLayer = new TileLayer();
+        var cartoDBLayer1 = new CartoDBLayer();
+        var cartoDBLayer2 = new CartoDBLayer();
+
+        this.map.addLayer(tileLayer);
+        expect(this.mapView._addLayerToMap).toHaveBeenCalled();
+        this.mapView._addLayerToMap.calls.reset();
+
+        this.map.addLayer(cartoDBLayer1);
+        expect(this.mapView._addLayerToMap).toHaveBeenCalled();
+        this.mapView._addLayerToMap.calls.reset();
+
+        this.map.addLayer(cartoDBLayer2);
+        expect(this.mapView._addLayerToMap).not.toHaveBeenCalled();
+
+        // There are only two layerViews cause the CartoDBLayers have been grouped
+        expect(Object.keys(this.mapView.layers).length).toEqual(3);
+        expect(this.mapView.getLayerByCid(cartoDBLayer1.cid)).toBeDefined();
+        expect(this.mapView.getLayerByCid(cartoDBLayer2.cid)).toBeDefined();
+        expect(this.mapView.getLayerByCid(tileLayer.cid)).toBeDefined();
+
+        // Both CartoDBLayer layers share the same layer view
+        expect(this.mapView.getLayerByCid(cartoDBLayer1.cid)).toEqual(this.mapView.getLayerByCid(cartoDBLayer2.cid));
+
+        // Tile Layer has a different layer view
+        expect(this.mapView.getLayerByCid(tileLayer.cid)).not.toEqual(this.mapView.getLayerByCid(cartoDBLayer1.cid));
+      });
+    });
+
+    describe('when layerModels are removed from map.layers', function () {
+      it ('should should remove the corresponding layerView for layers that are rendered individually (not grouped)', function () {
+        this.layerViewFactory.createLayerView.and.callFake(function () {
+          return jasmine.createSpyObj('layerView', ['remove']);
+        });
+        var tileLayer = new TileLayer();
+
+        this.map.layers.reset([tileLayer]);
+
+        var tileLayerView = this.mapView.getLayerByCid(tileLayer.cid);
+        expect(tileLayerView).toBeDefined();
+
+        this.map.layers.remove(tileLayer);
+
+        // View for the tileLayer has been removed
+        expect(tileLayerView.remove).toHaveBeenCalled();
+        expect(this.mapView.getLayerByCid(tileLayer.cid)).not.toBeDefined();
+      });
+
+      it ('should should onley remove a group layerView when all grouped layerModels have been removed', function () {
+        this.layerViewFactory.createLayerView.and.callFake(function () {
+          return jasmine.createSpyObj('layerView', ['remove']);
+        });
+        var cartoDBLayer1 = new CartoDBLayer();
+        var cartoDBLayer2 = new CartoDBLayer();
+
+        this.map.layers.reset([cartoDBLayer1, cartoDBLayer2]);
+
+        expect(this.mapView.getLayerByCid(cartoDBLayer1.cid)).toBeDefined();
+        expect(this.mapView.getLayerByCid(cartoDBLayer2.cid)).toBeDefined();
+        expect(this.mapView.getLayerByCid(cartoDBLayer1.cid)).toEqual(this.mapView.getLayerByCid(cartoDBLayer2.cid));
+
+        var cartoDBLayerGroupView = this.mapView.getLayerByCid(cartoDBLayer1.cid);
+
+        this.map.layers.remove(cartoDBLayer1);
+
+        // There's one more CartoDBLayer so the layer view has not been removed
+        // this.mapView.getLayerByCid(cartoDBLayer1.cid)
+        expect(cartoDBLayerGroupView.remove).not.toHaveBeenCalled();
+        expect(this.mapView.getLayerByCid(cartoDBLayer1.cid)).not.toBeDefined();
+        expect(this.mapView.getLayerByCid(cartoDBLayer2.cid)).toBeDefined();
+
+        this.map.layers.remove(cartoDBLayer2);
+
+        // There's one more CartoDBLayer so the layer view has not been removed
+        expect(cartoDBLayerGroupView.remove).toHaveBeenCalled();
+        expect(this.mapView.getLayerByCid(cartoDBLayer2.cid)).not.toBeDefined();
+      });
+    });
   });
 });

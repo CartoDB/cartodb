@@ -349,5 +349,4 @@ L.Icon.Default.imagePath = (function () {
   }
 }());
 
-
 module.exports = LeafletMapView;

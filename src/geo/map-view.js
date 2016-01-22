@@ -19,7 +19,6 @@ var MapView = View.extend({
 
     this.map = this.options.map;
     this.add_related_model(this.map);
-    this.add_related_model(this.map.layers);
 
     this._layerViewFactory = this.options.layerViewFactory;
 
@@ -30,9 +29,11 @@ var MapView = View.extend({
     this.layers = {};
     this.geometries = {};
 
+    this.map.layers.bind('reset', this._addLayers, this);
     this.map.layers.bind('add', this._addLayer, this);
     this.map.layers.bind('remove', this._removeLayer, this);
-    this.map.layers.bind('reset', this._addLayers, this);
+    this.add_related_model(this.map.layers);
+
     this.bind('clean', this._removeLayers, this);
   },
 
@@ -188,17 +189,17 @@ var MapView = View.extend({
   },
 
   _removeLayer: function (layerModel) {
+    var layerView = this.layers[layerModel.cid];
     if (layerModel.get('type') === 'CartoDB') {
       this._cartoDBLayerGroup.layers.remove(layerModel);
       if (this._cartoDBLayerGroup.layers.size() === 0) {
         delete this._cartoDBLayerGroup;
+        layerView.remove();
       }
-    }
-    var layerView = this.layers[layerModel.cid];
-    if (layerView) {
+    } else {
       layerView.remove();
-      delete this.layers[layerModel.cid];
     }
+    delete this.layers[layerModel.cid];
   },
 
   // TODO: Rename to getLayerViewByLayerModelCID

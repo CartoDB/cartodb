@@ -148,16 +148,16 @@
 
     grunt.registerTask('jasmine-server', 'start web server for jasmine tests in browser', function() {
       grunt.task.run('jasmine:cartodbui:build');
-      grunt.task.run('jasmine:editor3:build');
+      grunt.task.run('jasmine:cartodb3:build');
 
       grunt.event.once('connect.jasmine.listening', function(host, port) {
         var specRunnerUrl = 'http://localhost:' + port + '/_SpecRunner.html';
         grunt.log.writeln('Jasmine specs available at: ' + specRunnerUrl);
         require('open')(specRunnerUrl);
 
-        var specRunnerUrlForEditor3 = 'http://localhost:' + port + '/_SpecRunner-editor3.html';
-        grunt.log.writeln('Jasmine specs available at: ' + specRunnerUrlForEditor3);
-        require('open')(specRunnerUrlForEditor3);
+        var cartodb3SpecRunnerUrl = 'http://localhost:' + port + '/_SpecRunner-cartodb3.html';
+        grunt.log.writeln('Jasmine specs available at: ' + cartodb3SpecRunnerUrl);
+        require('open')(cartodb3SpecRunnerUrl);
       });
 
       grunt.task.run('connect:jasmine:keepalive');

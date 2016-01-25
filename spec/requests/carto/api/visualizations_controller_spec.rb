@@ -4,6 +4,7 @@ require_relative '../../../spec_helper'
 require_relative '../../../factories/users_helper'
 require_relative '../../api/json/visualizations_controller_shared_examples'
 require_relative '../../../../app/controllers/carto/api/visualizations_controller'
+require_relative '../../../factories/visualization_creation_helpers'
 
 # TODO: Remove once Carto::Visualization is complete enough
 require_relative '../../../../app/models/visualization/member'
@@ -1456,6 +1457,47 @@ describe Carto::Api::VisualizationsController do
         layer_group_attributions.should include(modified_table_2_attribution)
       end
 
+    end
+
+    # Initialli vizjson3 is a vizjson2 extension, so tests covering vizjson2 also cover vizjson3
+    describe '#vizjson3' do
+      include_context 'visualization creation helpers'
+
+      before(:each) do
+        @visualization = create_visualization($user_1)
+      end
+
+      after(:each) do
+        @visualization.delete
+      end
+
+      it 'returns a vizjson with empty widgets array for visualizations without widgets' do
+        get_json api_v3_visualizations_vizjson_url(user_domain: $user_1.username, id: @visualization.id, api_key: $user_1.api_key), @headers do |request|
+          request.status.should == 200
+          vizjson3 = request.body
+          vizjson3.keys.should include(:widgets)
+          vizjson3[:widgets].should == []
+        end
+      end
+
+      it 'returns visualization widgets' do
+        layer = create_layer('table_1', $user_1.username, 1).save
+        map = @visualization.map.add_layer(layer)
+        widget = FactoryGirl.create(:widget, layer: Carto::Layer.find(layer.id))
+
+        widget2 = FactoryGirl.create(:widget_with_layer, type: 'fake')
+
+        get_json api_v3_visualizations_vizjson_url(user_domain: $user_1.username, id: @visualization.id, api_key: $user_1.api_key), @headers do |request|
+          request.status.should == 200
+          vizjson3 = request.body
+          vizjson3[:widgets].length.should == 1
+
+          vizjson3[:widgets].map { |w| w['type'] }.should include(widget.type)
+
+          widget2.destroy
+          widget.destroy
+        end
+      end
     end
 
     describe 'tests visualization listing filters' do

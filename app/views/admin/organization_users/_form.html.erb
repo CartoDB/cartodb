@@ -160,7 +160,7 @@
   <div class="FormAccount-footer">
     <% if !@user.new? && current_user.organization_owner? -%>
       <% if @user != current_user %>
-        <button href="<%= CartoDB.url(self, 'delete_organization_user', {id: @user.username}, current_user) %>" class="Button Button--secondary js-deleteAccount">
+        <button href="<%= CartoDB.url(self, 'delete_organization_user', {id: @user.username}, current_user) %>" type="button" class="Button Button--secondary js-deleteAccount">
           <span>Delete this user</span>
         </button>
       <% else %>

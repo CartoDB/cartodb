@@ -200,7 +200,7 @@ describe('geo/gmaps/gmaps-map-view', function () {
       layerViewFactory: new GMapsLayerViewFactory()
     });
 
-    expect(mapView.map_googlemaps.get('draggable')).toBeFalsy();
-    expect(mapView.map_googlemaps.get('disableDoubleClickZoom')).toBeTruthy();
+    expect(mapView._gmapsMap.get('draggable')).toBeFalsy();
+    expect(mapView._gmapsMap.get('disableDoubleClickZoom')).toBeTruthy();
   });
 });

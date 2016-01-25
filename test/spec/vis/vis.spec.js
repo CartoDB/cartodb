@@ -58,8 +58,8 @@ describe('vis/vis', function () {
   });
 
   it('should insert default max and minZoom values when not provided', function () {
-    expect(this.vis.mapView.map_leaflet.options.maxZoom).toEqual(20);
-    expect(this.vis.mapView.map_leaflet.options.minZoom).toEqual(0);
+    expect(this.vis.mapView._leafletMap.options.maxZoom).toEqual(20);
+    expect(this.vis.mapView._leafletMap.options.minZoom).toEqual(0);
   });
 
   it('should insert user max and minZoom values when provided', function () {
@@ -68,8 +68,8 @@ describe('vis/vis', function () {
     this.mapConfig.minZoom = 5;
     this.vis.load(this.mapConfig);
 
-    expect(this.vis.mapView.map_leaflet.options.maxZoom).toEqual(10);
-    expect(this.vis.mapView.map_leaflet.options.minZoom).toEqual(5);
+    expect(this.vis.mapView._leafletMap.options.maxZoom).toEqual(10);
+    expect(this.vis.mapView._leafletMap.options.minZoom).toEqual(5);
   });
 
   it('should insert the max boundaries when provided', function () {
@@ -142,7 +142,7 @@ describe('vis/vis', function () {
     this.container = $('<div>').css('height', '200px');
     this.mapConfig.map_provider = 'googlemaps';
     this.vis.load(this.mapConfig);
-    expect(this.vis.mapView.map_googlemaps).not.toEqual(undefined);
+    expect(this.vis.mapView._gmapsMap).not.toEqual(undefined);
   });
 
   it('should not invalidate map if map height is 0', function (done) {
@@ -212,7 +212,7 @@ describe('vis/vis', function () {
   });
 
   it('should return the native map obj', function () {
-    expect(this.vis.getNativeMap()).toEqual(this.vis.mapView.map_leaflet);
+    expect(this.vis.getNativeMap()).toEqual(this.vis.mapView._leafletMap);
   });
 
   it('load should call done', function (done) {

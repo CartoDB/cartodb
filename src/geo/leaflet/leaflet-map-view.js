@@ -29,21 +29,21 @@ var LeafletMapView = MapView.extend({
     };
 
     if (!this.isMapAlreadyCreated()) {
-      this.map_leaflet = new L.Map(this.el, mapConfig);
-      if (this.map.get("scrollwheel") == false) this.map_leaflet.scrollWheelZoom.disable();
-      if (this.map.get("keyboard") == false) this.map_leaflet.keyboard.disable();
+      this._leafletMap = new L.Map(this.el, mapConfig);
+      if (this.map.get("scrollwheel") == false) this._leafletMap.scrollWheelZoom.disable();
+      if (this.map.get("keyboard") == false) this._leafletMap.keyboard.disable();
       if (this.map.get("drag") == false) {
-        this.map_leaflet.dragging.disable();
-        this.map_leaflet.doubleClickZoom.disable();
+        this._leafletMap.dragging.disable();
+        this._leafletMap.doubleClickZoom.disable();
       }
     } else {
-      this.map_leaflet = this.options.map_object;
-      this.setElement(this.map_leaflet.getContainer());
+      this._leafletMap = this.options.map_object;
+      this.setElement(this._leafletMap.getContainer());
 
-      var c = self.map_leaflet.getCenter();
+      var c = self._leafletMap.getCenter();
 
       this._setModelProperty({ center: [c.lat, c.lng] });
-      this._setModelProperty({ zoom: self.map_leaflet.getZoom() });
+      this._setModelProperty({ zoom: self._leafletMap.getZoom() });
 
       // unset bounds to not change mapbounds
       this.map.unset('view_bounds_sw', { silent: true });
@@ -59,41 +59,41 @@ var LeafletMapView = MapView.extend({
     this._addLayers();
     this.setAttribution();
 
-    this.map_leaflet.on('layeradd', function(lyr) {
+    this._leafletMap.on('layeradd', function(lyr) {
       this.trigger('layeradd', lyr, self);
     }, this);
 
-    this.map_leaflet.on('zoomstart', function() {
+    this._leafletMap.on('zoomstart', function() {
       self.trigger('zoomstart');
     });
 
-    this.map_leaflet.on('click', function(e) {
+    this._leafletMap.on('click', function(e) {
       self.trigger('click', e.originalEvent, [e.latlng.lat, e.latlng.lng]);
     });
 
-    this.map_leaflet.on('dblclick', function(e) {
+    this._leafletMap.on('dblclick', function(e) {
       self.trigger('dblclick', e.originalEvent);
     });
 
-    this.map_leaflet.on('zoomend', function() {
+    this._leafletMap.on('zoomend', function() {
       self._setModelProperty({
-        zoom: self.map_leaflet.getZoom()
+        zoom: self._leafletMap.getZoom()
       });
       self.trigger('zoomend');
     }, this);
 
-    this.map_leaflet.on('move', function() {
-      var c = self.map_leaflet.getCenter();
+    this._leafletMap.on('move', function() {
+      var c = self._leafletMap.getCenter();
       self._setModelProperty({ center: [c.lat, c.lng] });
     });
 
-    this.map_leaflet.on('dragend', function() {
-      var c = self.map_leaflet.getCenter();
+    this._leafletMap.on('dragend', function() {
+      var c = self._leafletMap.getCenter();
       this.trigger('dragend', [c.lat, c.lng]);
     }, this);
 
-    this.map_leaflet.on('drag', function() {
-      var c = self.map_leaflet.getCenter();
+    this._leafletMap.on('drag', function() {
+      var c = self._leafletMap.getCenter();
       self._setModelProperty({
         center: [c.lat, c.lng]
       });
@@ -101,11 +101,11 @@ var LeafletMapView = MapView.extend({
     }, this);
 
     this.map.bind('change:maxZoom', function() {
-      L.Util.setOptions(self.map_leaflet, { maxZoom: self.map.get('maxZoom') });
+      L.Util.setOptions(self._leafletMap, { maxZoom: self.map.get('maxZoom') });
     }, this);
 
     this.map.bind('change:minZoom', function() {
-      L.Util.setOptions(self.map_leaflet, { minZoom: self.map.get('minZoom') });
+      L.Util.setOptions(self._leafletMap, { minZoom: self.map.get('minZoom') });
     }, this);
 
     this.trigger('ready');
@@ -165,7 +165,7 @@ var LeafletMapView = MapView.extend({
 
   clean: function() {
     //see https://github.com/CloudMade/Leaflet/issues/1101
-    L.DomEvent.off(window, 'resize', this.map_leaflet._onResize, this.map_leaflet);
+    L.DomEvent.off(window, 'resize', this._leafletMap._onResize, this._leafletMap);
 
     // remove layer views
     for(var layer in this._layerViews) {
@@ -179,17 +179,17 @@ var LeafletMapView = MapView.extend({
 
   _setKeyboard: function(model, z) {
     if (z) {
-      this.map_leaflet.keyboard.enable();
+      this._leafletMap.keyboard.enable();
     } else {
-      this.map_leaflet.keyboard.disable();
+      this._leafletMap.keyboard.disable();
     }
   },
 
   _setScrollWheel: function(model, z) {
     if (z) {
-      this.map_leaflet.scrollWheelZoom.enable();
+      this._leafletMap.scrollWheelZoom.enable();
     } else {
-      this.map_leaflet.scrollWheelZoom.disable();
+      this._leafletMap.scrollWheelZoom.disable();
     }
   },
 
@@ -202,25 +202,25 @@ var LeafletMapView = MapView.extend({
   },
 
   _setView: function() {
-    this.map_leaflet.setView(this.map.get("center"), this.map.get("zoom") || 0 );
+    this._leafletMap.setView(this.map.get("center"), this.map.get("zoom") || 0 );
   },
 
   _addGeomToMap: function(geom) {
     var geo = LeafletMapView.createGeometry(geom);
-    geo.geom.addTo(this.map_leaflet);
+    geo.geom.addTo(this._leafletMap);
     return geo;
   },
 
   _removeGeomFromMap: function(geo) {
-    this.map_leaflet.removeLayer(geo.geom);
+    this._leafletMap.removeLayer(geo.geom);
   },
 
   _getNativeMap: function () {
-    return this.map_leaflet;
+    return this._leafletMap;
   },
 
   _addLayerToMap: function(layerView, layerModel, opts) {
-    LeafletMapView.addLayerToMap(layerView, this.map_leaflet);
+    LeafletMapView.addLayerToMap(layerView, this._leafletMap);
 
     this._reorderLayerViews();
 
@@ -243,18 +243,18 @@ var LeafletMapView = MapView.extend({
   },
 
   pixelToLatLon: function(pos) {
-    var point = this.map_leaflet.containerPointToLatLng([pos[0], pos[1]]);
+    var point = this._leafletMap.containerPointToLatLng([pos[0], pos[1]]);
     return point;
   },
 
   latLonToPixel: function(latlon) {
-    var point = this.map_leaflet.latLngToLayerPoint(new L.LatLng(latlon[0], latlon[1]));
-    return this.map_leaflet.layerPointToContainerPoint(point);
+    var point = this._leafletMap.latLngToLayerPoint(new L.LatLng(latlon[0], latlon[1]));
+    return this._leafletMap.layerPointToContainerPoint(point);
   },
 
   // return the current bounds of the map view
   getBounds: function() {
-    var b = this.map_leaflet.getBounds();
+    var b = this._leafletMap.getBounds();
     var sw = b.getSouthWest();
     var ne = b.getNorthEast();
     return [
@@ -264,7 +264,7 @@ var LeafletMapView = MapView.extend({
   },
 
   setAttribution: function(mdl) {
-    var attributionControl = this.map_leaflet.attributionControl;
+    var attributionControl = this._leafletMap.attributionControl;
     if (this.isMapAlreadyCreated() && attributionControl) {
       // If this method comes from an attribution property change
       if (mdl) {
@@ -281,19 +281,19 @@ var LeafletMapView = MapView.extend({
   },
 
   getSize: function() {
-    return this.map_leaflet.getSize();
+    return this._leafletMap.getSize();
   },
 
   panBy: function(p) {
-    this.map_leaflet.panBy(new L.Point(p.x, p.y));
+    this._leafletMap.panBy(new L.Point(p.x, p.y));
   },
 
   setCursor: function(cursor) {
-    $(this.map_leaflet.getContainer()).css('cursor', cursor);
+    $(this._leafletMap.getContainer()).css('cursor', cursor);
   },
 
   getNativeMap: function() {
-    return this.map_leaflet;
+    return this._leafletMap;
   },
 
   invalidateSize: function() {
@@ -301,8 +301,8 @@ var LeafletMapView = MapView.extend({
     // and at the same time the center is set the final center is displaced
     // so set pan to false so the map is not moved and then force the map
     // to be at the place it should be
-    this.map_leaflet.invalidateSize({ pan: false })//, animate: false });
-    this.map_leaflet.setView(this.map.get("center"), this.map.get("zoom") || 0, {
+    this._leafletMap.invalidateSize({ pan: false })//, animate: false });
+    this._leafletMap.setView(this.map.get("center"), this.map.get("zoom") || 0, {
       animate: false
     });
   }

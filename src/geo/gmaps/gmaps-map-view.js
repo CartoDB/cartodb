@@ -24,7 +24,7 @@ var GoogleMapsMapView = MapView.extend({
 
     if (!this.isMapAlreadyCreated()) {
 
-      this.map_googlemaps = new google.maps.Map(this.el, {
+      this._gmapsMap = new google.maps.Map(this.el, {
         center: new google.maps.LatLng(center[0], center[1]),
         zoom: this.map.get('zoom'),
         minZoom: this.map.get('minZoom'),
@@ -40,23 +40,23 @@ var GoogleMapsMapView = MapView.extend({
       });
 
       this.map.bind('change:maxZoom', function() {
-        self.map_googlemaps.setOptions({ maxZoom: self.map.get('maxZoom') });
+        self._gmapsMap.setOptions({ maxZoom: self.map.get('maxZoom') });
       }, this);
 
       this.map.bind('change:minZoom', function() {
-        self.map_googlemaps.setOptions({ minZoom: self.map.get('minZoom') });
+        self._gmapsMap.setOptions({ minZoom: self.map.get('minZoom') });
       }, this);
 
     } else {
 
-      this.map_googlemaps = this.options.map_object;
-      this.setElement(this.map_googlemaps.getDiv());
+      this._gmapsMap = this.options.map_object;
+      this.setElement(this._gmapsMap.getDiv());
 
       // fill variables
-      var c = self.map_googlemaps.getCenter();
+      var c = self._gmapsMap.getCenter();
 
       self._setModelProperty({ center: [c.lat(), c.lng()] });
-      self._setModelProperty({ zoom: self.map_googlemaps.getZoom() });
+      self._setModelProperty({ zoom: self._gmapsMap.getZoom() });
 
       // unset bounds to not change mapbounds
       self.map.unset('view_bounds_sw', { silent: true });
@@ -64,27 +64,27 @@ var GoogleMapsMapView = MapView.extend({
 
     }
 
-    google.maps.event.addListener(this.map_googlemaps, 'center_changed', function() {
-      var c = self.map_googlemaps.getCenter();
+    google.maps.event.addListener(this._gmapsMap, 'center_changed', function() {
+      var c = self._gmapsMap.getCenter();
       self._setModelProperty({ center: [c.lat(), c.lng()] });
     });
 
-    google.maps.event.addListener(this.map_googlemaps, 'zoom_changed', function() {
+    google.maps.event.addListener(this._gmapsMap, 'zoom_changed', function() {
       self._setModelProperty({
-        zoom: self.map_googlemaps.getZoom()
+        zoom: self._gmapsMap.getZoom()
       });
     });
 
-    google.maps.event.addListener(this.map_googlemaps, 'click', function(e) {
+    google.maps.event.addListener(this._gmapsMap, 'click', function(e) {
       self.trigger('click', e, [e.latLng.lat(), e.latLng.lng()]);
     });
 
-    google.maps.event.addListener(this.map_googlemaps, 'dragend', function(e) {
-      var c = self.map_googlemaps.getCenter();
+    google.maps.event.addListener(this._gmapsMap, 'dragend', function(e) {
+      var c = self._gmapsMap.getCenter();
       self.trigger('dragend', e, [c.lat(), c.lng()]);
     });
 
-    google.maps.event.addListener(this.map_googlemaps, 'dblclick', function(e) {
+    google.maps.event.addListener(this._gmapsMap, 'dblclick', function(e) {
       self.trigger('dblclick', e);
     });
 
@@ -95,7 +95,7 @@ var GoogleMapsMapView = MapView.extend({
     this._addLayers();
     this.setAttribution();
 
-    this.projector = new Projector(this.map_googlemaps);
+    this.projector = new Projector(this._gmapsMap);
 
     this.projector.draw = this._ready;
   },
@@ -107,25 +107,25 @@ var GoogleMapsMapView = MapView.extend({
   },
 
   _setKeyboard: function(model, z) {
-    this.map_googlemaps.setOptions({ keyboardShortcuts: z });
+    this._gmapsMap.setOptions({ keyboardShortcuts: z });
   },
 
   _setScrollWheel: function(model, z) {
-    this.map_googlemaps.setOptions({ scrollwheel: z });
+    this._gmapsMap.setOptions({ scrollwheel: z });
   },
 
   _setZoom: function(model, z) {
     z = z || 0;
-    this.map_googlemaps.setZoom(z);
+    this._gmapsMap.setZoom(z);
   },
 
   _setCenter: function(model, center) {
     var c = new google.maps.LatLng(center[0], center[1]);
-    this.map_googlemaps.setCenter(c);
+    this._gmapsMap.setCenter(c);
   },
 
   _getNativeMap: function () {
-    return this.map_googlemaps;
+    return this._gmapsMap;
   },
 
   _addLayerToMap: function(layerView, layerModel, opts) {
@@ -144,9 +144,9 @@ var GoogleMapsMapView = MapView.extend({
           if (!layerView.gmapsLayer) {
             log.error("gmaps layer can't be null");
           }
-          this.map_googlemaps.overlayMapTypes.setAt(idx, layerView.gmapsLayer);
+          this._gmapsMap.overlayMapTypes.setAt(idx, layerView.gmapsLayer);
         } else {
-          layerView.gmapsLayer.setMap(this.map_googlemaps);
+          layerView.gmapsLayer.setMap(this._gmapsMap);
         }
       }
       if (opts === undefined || !opts.silent) {
@@ -189,7 +189,7 @@ var GoogleMapsMapView = MapView.extend({
 
   getBounds: function() {
     if(this._isReady) {
-      var b = this.map_googlemaps.getBounds();
+      var b = this._gmapsMap.getBounds();
       var sw = b.getSouthWest();
       var ne = b.getNorthEast();
       return [
@@ -207,17 +207,17 @@ var GoogleMapsMapView = MapView.extend({
   },
 
   setCursor: function(cursor) {
-    this.map_googlemaps.setOptions({ draggableCursor: cursor });
+    this._gmapsMap.setOptions({ draggableCursor: cursor });
   },
 
   _addGeomToMap: function(geom) {
     var geo = GoogleMapsMapView.createGeometry(geom);
     if(geo.geom.length) {
       for(var i = 0 ; i < geo.geom.length; ++i) {
-        geo.geom[i].setMap(this.map_googlemaps);
+        geo.geom[i].setMap(this._gmapsMap);
       }
     } else {
-        geo.geom.setMap(this.map_googlemaps);
+        geo.geom.setMap(this._gmapsMap);
     }
     return geo;
   },
@@ -233,11 +233,11 @@ var GoogleMapsMapView = MapView.extend({
   },
 
   getNativeMap: function() {
-    return this.map_googlemaps;
+    return this._gmapsMap;
   },
 
   invalidateSize: function() {
-    google.maps.event.trigger(this.map_googlemaps, 'resize');
+    google.maps.event.trigger(this._gmapsMap, 'resize');
   }
 
 }, {

@@ -432,7 +432,7 @@ describe('geo/leaflet/leaflet-map-view', function () {
       layerViewFactory: new LeafletLayerViewFactory()
     });
 
-    expect(mapView.map_leaflet.dragging.enabled()).toBeFalsy();
-    expect(mapView.map_leaflet.doubleClickZoom.enabled()).toBeFalsy();
+    expect(mapView._leafletMap.dragging.enabled()).toBeFalsy();
+    expect(mapView._leafletMap.doubleClickZoom.enabled()).toBeFalsy();
   });
 });

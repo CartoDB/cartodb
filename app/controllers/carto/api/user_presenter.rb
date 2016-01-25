@@ -50,6 +50,10 @@ module Carto
           poro.merge!(groups: @user.groups ? @user.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro } : [])
         end
 
+        if @options[:current_user].organization_owner?
+          poro.merge!(table_count: @user.table_count, all_visualization_count: @user.all_visualization_count)
+        end
+
         poro
       end
 

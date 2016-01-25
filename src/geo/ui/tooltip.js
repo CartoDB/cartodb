@@ -30,11 +30,6 @@ var Tooltip = InfoBox.extend({
     return this;
   },
 
-  setLayer: function (layer) {
-    this.options.layer = layer;
-    return this;
-  },
-
   /**
    * sets a filter to open the tooltip. If the feature being hovered
    * pass the filter the tooltip is shown

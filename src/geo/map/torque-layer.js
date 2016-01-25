@@ -57,6 +57,10 @@ var TorqueLayer = MapLayer.extend({
     return true;
   },
 
+  getName: function () {
+    return this.get('layer_name') || this.get('table_name');
+  },
+
   getInfowindowData: function() {
     // TODO: use infowindow model in the future
     var infowindow = this.get('infowindow');

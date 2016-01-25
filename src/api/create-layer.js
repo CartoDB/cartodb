@@ -151,7 +151,7 @@ module.exports = function(map, layer, options, callback) {
     }
 
     function createLayer() {
-      layerView = viz.createLayer(layerData, { no_base_layer: true });
+      layerView = viz.createLayer(layerData);
 
       var mobileEnabled = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
       var addMobileLayout = (options.mobile_layout && mobileEnabled) || options.force_mobile;

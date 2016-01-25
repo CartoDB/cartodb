@@ -2,31 +2,31 @@ var $ = require('jquery');
 var _ = require('underscore');
 
 var Map = require('../../../../src/geo/map');
-var GoogleMapsMapView = require('../../../../src/geo/gmaps/gmaps-map-view');
-var TileLayer = require('../../../../src/geo/map/tile-layer');
-var GMapsTiledLayerView = require('../../../../src/geo/gmaps/gmaps-tiled-layer-view');
-var CartoDBLayerGroupAnonymous = require('../../../../src/geo/map/cartodb-layer-group-anonymous');
-var CartoDBLayerGroupNamed = require('../../../../src/geo/map/cartodb-layer-group-named');
-var PlainLayer = require('../../../../src/geo/map/plain-layer');
-var GMapsCartoDBLayerGroupView = require('../../../../src/geo/gmaps/gmaps-cartodb-layer-group-view');
-var GMapsPlainLayerView = require('../../../../src/geo/gmaps/gmaps-plain-layer-view');
 var Geometry = require('../../../../src/geo/geometry');
+var TileLayer = require('../../../../src/geo/map/tile-layer');
+var PlainLayer = require('../../../../src/geo/map/plain-layer');
 var GmapsPathView = require('../../../../src/geo/gmaps/gmaps-path-view');
+var GoogleMapsMapView = require('../../../../src/geo/gmaps/gmaps-map-view');
+var GMapsLayerViewFactory = require('../../../../src/geo/gmaps/gmaps-layer-view-factory');
+var GMapsTiledLayerView = require('../../../../src/geo/gmaps/gmaps-tiled-layer-view');
+var GMapsPlainLayerView = require('../../../../src/geo/gmaps/gmaps-plain-layer-view');
 
 describe('geo/gmaps/gmaps-map-view', function () {
   var mapView;
   var map;
   var spy;
   var container;
+  var layer;
   beforeEach(function () {
     container = $('<div>').css('height', '200px');
     map = new Map();
     mapView = new GoogleMapsMapView({
       el: container,
-      map: map
+      map: map,
+      layerViewFactory: new GMapsLayerViewFactory()
     });
 
-    layerURL = 'http://localhost/{s}/light_nolabels/{z}/{x}/{y}.png';
+    var layerURL = 'http://localhost/{s}/light_nolabels/{z}/{x}/{y}.png';
     layer = new TileLayer({ urlTemplate: layerURL });
 
     spy = jasmine.createSpyObj('spy', ['zoomChanged', 'centerChanged', 'scrollWheelChanged']);
@@ -91,7 +91,7 @@ describe('geo/gmaps/gmaps-map-view', function () {
     mapView.bind('newLayerView', spy.c);
     map.addLayer(layer);
     expect(map.layers.length).toEqual(1);
-    expect(_.size(mapView.layers)).toEqual(1);
+    expect(_.size(mapView._layerViews)).toEqual(1);
     expect(spy.c).toHaveBeenCalled();
   });
 
@@ -99,7 +99,7 @@ describe('geo/gmaps/gmaps-map-view', function () {
     map.addLayer(layer);
     map.removeLayer(layer);
     expect(map.layers.length).toEqual(0);
-    expect(_.size(mapView.layers)).toEqual(0);
+    expect(_.size(mapView._layerViews)).toEqual(0);
   });
 
   it('should allow removing a layer by index', function () {
@@ -116,29 +116,15 @@ describe('geo/gmaps/gmaps-map-view', function () {
 
   it('should create a TiledLayerView when the layer is Tiled', function () {
     var lyr = map.addLayer(layer);
-    var layerView = mapView.getLayerByCid(lyr);
+    var layerView = mapView.getLayerViewByLayerCid(lyr);
     expect(GMapsTiledLayerView.prototype.isPrototypeOf(layerView)).toBeTruthy();
-  });
-
-  it('should create a GMapsCartoDBLayerGroupView when the layer is CartoDBLayerGroupAnonymous', function () {
-    layer = new CartoDBLayerGroupAnonymous({}, {});
-    var lyr = map.addLayer(layer);
-    var layerView = mapView.getLayerByCid(lyr);
-    expect(layerView instanceof GMapsCartoDBLayerGroupView).toBeTruthy();
-  });
-
-  it('should create a GMapsCartoDBLayerGroupView when the layer is CartoDBLayerGroupNamed', function () {
-    layer = new CartoDBLayerGroupNamed({}, {});
-    var lyr = map.addLayer(layer);
-    var layerView = mapView.getLayerByCid(lyr);
-    expect(layerView instanceof GMapsCartoDBLayerGroupView).toBeTruthy();
   });
 
   it('should create a PlainLayer when the layer is cartodb', function () {
     layer = new PlainLayer({});
     var lyr = map.addLayer(layer);
-    var layerView = mapView.getLayerByCid(lyr);
-    expect(layerView.__proto__.constructor).toEqual(GMapsPlainLayerView);
+    var layerView = mapView.getLayerViewByLayerCid(lyr);
+    expect(GMapsPlainLayerView.prototype.isPrototypeOf(layerView)).toBeTruthy();
   });
 
   var geojsonFeature = {
@@ -146,7 +132,9 @@ describe('geo/gmaps/gmaps-map-view', function () {
     'coordinates': [-104.99404, 39.75621]
   };
 
-  var multipoly = {'type': 'MultiPolygon','coordinates': [
+  var multipoly = {
+    'type': 'MultiPolygon',
+    'coordinates': [
       [
         [[40, 40], [20, 45], [45, 30], [40, 40]]
       ],
@@ -208,10 +196,11 @@ describe('geo/gmaps/gmaps-map-view', function () {
     });
     var mapView = new GoogleMapsMapView({
       el: container,
-      map: map
+      map: map,
+      layerViewFactory: new GMapsLayerViewFactory()
     });
 
-    expect(mapView.map_googlemaps.get('draggable')).toBeFalsy();
-    expect(mapView.map_googlemaps.get('disableDoubleClickZoom')).toBeTruthy();
+    expect(mapView._gmapsMap.get('draggable')).toBeFalsy();
+    expect(mapView._gmapsMap.get('disableDoubleClickZoom')).toBeTruthy();
   });
 });

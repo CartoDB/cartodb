@@ -1,3 +1,4 @@
+/* global google */
 var _ = require('underscore');
 var DEFAULT_MAP_STYLE = require('./gmaps-default-map-style');
 var GMapsLayerView = require('./gmaps-layer-view');

@@ -58,8 +58,8 @@ describe('vis/vis', function () {
   });
 
   it('should insert default max and minZoom values when not provided', function () {
-    expect(this.vis.mapView.map_leaflet.options.maxZoom).toEqual(20);
-    expect(this.vis.mapView.map_leaflet.options.minZoom).toEqual(0);
+    expect(this.vis.mapView._leafletMap.options.maxZoom).toEqual(20);
+    expect(this.vis.mapView._leafletMap.options.minZoom).toEqual(0);
   });
 
   it('should insert user max and minZoom values when provided', function () {
@@ -68,8 +68,8 @@ describe('vis/vis', function () {
     this.mapConfig.minZoom = 5;
     this.vis.load(this.mapConfig);
 
-    expect(this.vis.mapView.map_leaflet.options.maxZoom).toEqual(10);
-    expect(this.vis.mapView.map_leaflet.options.minZoom).toEqual(5);
+    expect(this.vis.mapView._leafletMap.options.maxZoom).toEqual(10);
+    expect(this.vis.mapView._leafletMap.options.minZoom).toEqual(5);
   });
 
   it('should insert the max boundaries when provided', function () {
@@ -142,7 +142,7 @@ describe('vis/vis', function () {
     this.container = $('<div>').css('height', '200px');
     this.mapConfig.map_provider = 'googlemaps';
     this.vis.load(this.mapConfig);
-    expect(this.vis.mapView.map_googlemaps).not.toEqual(undefined);
+    expect(this.vis.mapView._gmapsMap).not.toEqual(undefined);
   });
 
   it('should not invalidate map if map height is 0', function (done) {
@@ -212,7 +212,7 @@ describe('vis/vis', function () {
   });
 
   it('should return the native map obj', function () {
-    expect(this.vis.getNativeMap()).toEqual(this.vis.mapView.map_leaflet);
+    expect(this.vis.getNativeMap()).toEqual(this.vis.mapView._leafletMap);
   });
 
   it('load should call done', function (done) {
@@ -366,7 +366,6 @@ describe('vis/vis', function () {
       _.extend(FakeLayer.prototype, Backbone.Events);
 
       var layer = new FakeLayer();
-      spyOn(layer, 'setInteraction');
 
       var tooltip = this.vis.addOverlay({
         type: 'tooltip',
@@ -375,7 +374,6 @@ describe('vis/vis', function () {
       });
 
       expect(tooltip.options.layer).toEqual(layer);
-      expect(layer.setInteraction).toHaveBeenCalledWith(true);
     });
 
     it('should add an overlay to the first layer and enable interaction', function (done) {
@@ -394,7 +392,9 @@ describe('vis/vis', function () {
               maps_api_template: 'https://{user}.cartodb-staging.com:443',
               layer_definition: {
                 stat_tag: 'ece6faac-7271-11e5-a85f-04013fc66a01',
-                layers: []
+                layers: [{
+                  type: 'CartoDB'
+                }]
               }
             }
           }
@@ -416,15 +416,12 @@ describe('vis/vis', function () {
             type: 'tooltip',
             template: 'test'
           });
-          var layer = vis.getLayers()[1];
+          var layerView = vis.getLayers()[1];
 
-          expect(tooltip.options.layer).toEqual(layer);
-          expect(layer.interactionEnabled).toEqual([true]);
-
+          expect(tooltip.options.layer).toEqual(layerView);
           done();
         });
     });
-
   });
 
   it('should load modules', function (done) {

@@ -1,26 +1,38 @@
 var _ = require('underscore');
-var cdb = require('cdb'); // cdb.geo.LeafletMapView, cdb.geo.GoogleMapsMapView
 var log = require('cdb.log');
 var View = require('../core/view');
-var Infowindow = require('./ui/infowindow');
+
+var CartoDBLayerGroupNamedMap = require('./cartodb-layer-group-named-map');
+var CartoDBLayerGroupAnonymousMap = require('./cartodb-layer-group-anonymous-map');
 
 var MapView = View.extend({
 
-  initialize: function() {
+  initialize: function () {
 
     if (this.options.map === undefined) {
-      throw "you should specify a map model";
+      throw new Error('you should specify a map model');
+    }
+
+    if (this.options.layerViewFactory === undefined) {
+      throw new Error('you should specify a layerViewFactory');
     }
 
     this.map = this.options.map;
     this.add_related_model(this.map);
-    this.add_related_model(this.map.layers);
+
+    this._layerViewFactory = this.options.layerViewFactory;
 
     this.autoSaveBounds = false;
 
-    // this var stores views information for each model
-    this.layers = {};
+    // A map of the LayerViews that is linked to each of the Layer models.
+    // The cid of the layer model is used as the key for this mapping.
+    this._layerViews = {};
     this.geometries = {};
+
+    this.map.layers.bind('reset', this._addLayers, this);
+    this.map.layers.bind('add', this._addLayer, this);
+    this.map.layers.bind('remove', this._removeLayer, this);
+    this.add_related_model(this.map.layers);
 
     this.bind('clean', this._removeLayers, this);
   },
@@ -43,29 +55,8 @@ var MapView = View.extend({
     }
   },
 
-  /**
-  * search in the subviews and return the infowindows
-  */
-  getInfoWindows: function() {
-    var result = [];
-    for (var s in this._subviews) {
-      if(this._subviews[s] instanceof Infowindow) {
-        result.push(this._subviews[s]);
-      }
-    }
-    return result;
-  },
-
-  showBounds: function(bounds) {
-    throw "to be implemented";
-  },
-
   isMapAlreadyCreated: function() {
     return this.options.map_object;
-  },
-
-  setAttribution: function() {
-    throw new Error('Subclasses of src/geo/map-view.js must implement .setAttribution');
   },
 
   /**
@@ -118,68 +109,139 @@ var MapView = View.extend({
   },
 
   showBounds: function(bounds) {
-    this.map.fitBounds(bounds, this.getSize())
+    this.map.fitBounds(bounds, this.getSize());
   },
 
-  _addLayers: function() {
+  _addLayers: function(layerCollection, options) {
     var self = this;
     this._removeLayers();
-    this.map.layers.each(function(lyr) {
-      self._addLayer(lyr);
+    this.map.layers.each(function (layerModel) {
+      self._addLayer(layerModel, layerCollection, {
+        silent: (options && options.silent) || false,
+        index: options && options.index
+      });
     });
   },
 
-  _removeLayers: function(layer) {
-    for(var i in this.layers) {
-      var layer_view = this.layers[i];
-      layer_view.remove();
-      delete this.layers[i];
+  _addLayer: function(layerModel, layerCollection, options) {
+    var layerView;
+
+    if (layerModel.get('type') === 'CartoDB') {
+      layerView = this._addGroupedLayer(layerModel);
+    } else {
+      layerView = this._addIndividualLayer(layerModel);
+    }
+
+    if (!layerView) {
+      return;
+    }
+    this._addLayerToMap(layerView, layerModel, {
+      silent: options.silent,
+      index: options.index
+    });
+  },
+
+  _addGroupedLayer: function (layerModel) {
+    var layerView;
+    if (!this._cartoDBLayerGroup) {
+      this._cartoDBLayerGroup = this._newCartoDBLayerGroup(layerModel);
+      layerView = this.createLayer(this._cartoDBLayerGroup);
+      this._layerViews[layerModel.cid] = layerView;
+    } else {
+      // Add that layer to the group
+      // TODO: The only reason why the _cartoDBLayerGroup needs to access individual layers
+      // is to know if layers are visible of not, so that URLs for attributes can use the
+      // right indexes. There should be a better way to do this.
+      this._cartoDBLayerGroup.layers.add(layerModel);
+      this._layerViews[layerModel.cid] = this.getLayerViewByLayerCid(this._cartoDBLayerGroup.layers.at(0).cid);
+    }
+
+    return layerView;
+  },
+
+  _newCartoDBLayerGroup: function (layerModel) {
+    var LayerGroupClass = CartoDBLayerGroupAnonymousMap;
+    if (this.map.windshaftMap.isNamedMap()) {
+      LayerGroupClass = CartoDBLayerGroupNamedMap;
+    }
+
+    return new LayerGroupClass({}, {
+      windshaftMap: this.map.windshaftMap,
+      layers: [layerModel]
+    });
+  },
+
+  _addIndividualLayer: function (layerModel) {
+    var layerView = this.createLayer(layerModel);
+    if (layerView) {
+      this._layerViews[layerModel.cid] = layerView;
+    }
+    return layerView;
+  },
+
+  createLayer: function (layerModel) {
+    return this._layerViewFactory.createLayerView(layerModel, this.getNativeMap());
+  },
+
+  _removeLayers: function () {
+    for (var i in this._layerViews) {
+      var layerView = this._layerViews[i];
+      layerView.remove();
+      delete this._layerViews[i];
     }
   },
 
-  _removeLayer: function(layer) {
-    var layer_view = this.layers[layer.cid];
-    if(layer_view) {
-      layer_view.remove();
-      delete this.layers[layer.cid];
+  _removeLayer: function (layerModel) {
+    var layerView = this._layerViews[layerModel.cid];
+    if (layerModel.get('type') === 'CartoDB') {
+      this._cartoDBLayerGroup.layers.remove(layerModel);
+      if (this._cartoDBLayerGroup.layers.size() === 0) {
+        delete this._cartoDBLayerGroup;
+        layerView.remove();
+      }
+    } else {
+      layerView.remove();
     }
+    delete this._layerViews[layerModel.cid];
   },
 
-  _removeGeometry: function(geo) {
-    var geo_view = this.geometries[geo.cid];
-    delete this.layers[layer.cid];
-  },
-
-  getLayerByCid: function(cid) {
-    var l = this.layers[cid];
+  getLayerViewByLayerCid: function(cid) {
+    var l = this._layerViews[cid];
     if(!l) {
       log.debug("layer with cid " + cid + " can't be get");
     }
     return l;
   },
 
+  setAttribution: function() {
+    throw new Error('Subclasses of src/geo/map-view.js must implement .setAttribution');
+  },
+
+  getNativeMap: function () {
+    throw new Error('Subclasses of src/geo/map-view.js must implement .getNativeMap');
+  },
+
+  _addLayerToMap: function() {
+    throw new Error('Subclasses of src/geo/map-view.js must implement ._addLayerToMap');
+  },
+
   _setZoom: function(model, z) {
-    throw "to be implemented";
+    throw new Error('Subclasses of src/geo/map-view.js must implement ._setZoom');
   },
 
   _setCenter: function(model, center) {
-    throw "to be implemented";
-  },
-
-  _addLayer: function(layer, layers, opts) {
-    throw "to be implemented";
+    throw new Error('Subclasses of src/geo/map-view.js must implement ._setCenter');
   },
 
   _addGeomToMap: function(geom) {
-    throw "to be implemented";
+    throw new Error('Subclasses of src/geo/map-view.js must implement ._addGeomToMap');
   },
 
   _removeGeomFromMap: function(geo) {
-    throw "to be implemented";
+    throw new Error('Subclasses of src/geo/map-view.js must implement ._removeGeomFromMap');
   },
 
   setAutoSaveBounds: function() {
-    var self = this;
     this.autoSaveBounds = true;
   },
 
@@ -196,28 +258,6 @@ var MapView = View.extend({
     var geo_view = this.geometries[geo.cid];
     this._removeGeomFromMap(geo_view);
     delete this.geometries[geo.cid];
-  }
-
-
-}, {
-  _getClass: function(provider) {
-    var mapViewClass = cdb.geo.LeafletMapView;
-    if(provider === 'googlemaps') {
-      if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
-        mapViewClass = cdb.geo.GoogleMapsMapView;
-      } else {
-        log.error("you must include google maps library _before_ include cdb");
-      }
-    }
-    return mapViewClass;
-  },
-
-  create: function(el, mapModel) {
-    var _mapViewClass = MapView._getClass(mapModel.get('provider'));
-    return new _mapViewClass({
-      el: el,
-      map: mapModel
-    });
   }
 });
 

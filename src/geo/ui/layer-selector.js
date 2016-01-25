@@ -69,45 +69,20 @@ var LayerSelector = View.extend({
   _getLayers: function() {
     var self = this;
     this.layers = [];
+    var layerModels = this._getLayerModelsFromMap();
+    _.each(layerModels, function (layerModel) {
+      var layerView = self._createLayerView(layerModel);
+      layerView.bind('switchChanged', self._setCount, self);
+      self.layers.push(layerView);
+      layerModel.bind('change:visible', function (model) {
+        this.trigger("change:visible", model.get('visible'), model.get('order'), model);
+      }, self);
+    });
+  },
 
-    _.each(this.map.layers.models, function(layer) {
-
-      if (layer.get("type") == 'layergroup' || layer.get('type') === 'namedmap') {
-        layer.layers.each(function(layerModel, index){
-
-          var layerName = layerModel.getName();
-          if(self.options.layer_names) {
-            layerName = self.options.layer_names[index];
-          }
-
-          var m = new Model({
-            order: index,
-            visible: layerModel.get('visible') || true,
-            layer_name: layerName
-          });
-
-          m.bind('change:visible', function(model) {
-            this.trigger("change:visible", model.get('visible'), model.get('order'), model);
-            layerModel.set('visible', model.get('visible'));
-          }, self);
-
-          layerModel.bind('change:visible', function() {
-            m.set('visible', layerModel.get('visible'));
-          });
-
-          var layerView = self._createLayerView(m);
-          layerView.bind('switchChanged', self._setCount, self);
-          self.layers.push(layerView);
-        })
-      } else if (layer.get('type') === 'torque') {
-        var layerView = self._createLayerView(layer);
-        layerView.bind('switchChanged', self._setCount, self);
-        self.layers.push(layerView);
-        layerView.model.bind('change:visible', function(model) {
-          this.trigger("change:visible", model.get('visible'), model.get('order'), model);
-        }, self);
-      }
-
+  _getLayerModelsFromMap: function () {
+    return this.map.layers.filter(function (layer) {
+      return layer.get("type") === 'CartoDB' || layer.get("type") === 'torque';
     });
   },
 

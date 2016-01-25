@@ -21,7 +21,8 @@ describe('geo/ui/layer-selector (torque)', function() {
 
     var mapView = new LeafletMapView({
       el: $("<div>"),
-      map: map
+      map: map,
+      layerViewFactory: jasmine.createSpyObj('layerViewFactory', ['createLayerView'])
     });
 
     layerSelector = new LayerSelector({

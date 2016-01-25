@@ -13,7 +13,8 @@ describe('geo/ui/tooltip', function() {
     var map = new Map();
     mapView = new LeafletMapView({
       el: $('#map'),
-      map: map
+      map: map,
+      layerViewFactory: jasmine.createSpyObj('layerViewFactory', ['createLayerView'])
     });
 
     layer = new Backbone.Model();

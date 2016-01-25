@@ -1,29 +1,11 @@
 var _ = require('underscore');
-var cdb = require('cdb'); // cdb.geo.GMapsTorqueLayerView
 var log = require('cdb.log');
 var MapView = require('../map-view');
-var GMapsTiledLayerView = require('./gmaps-tiled-layer-view');
-var GMapsPlainLayerView = require('./gmaps-plain-layer-view');
-var GMapsBaseLayerView = require('./gmaps-base-layer-view');
-var GMapsCartoDBLayerGroupView = require('./gmaps-cartodb-layer-group-view');
-var LeafletWMSLayerView = require('../leaflet/leaflet-wms-layer-view');
 var Projector = require('./projector');
 var PointView = require('./gmaps-point-view');
 var PathView = require('./gmaps-path-view');
 
 var GoogleMapsMapView = MapView.extend({
-
-  layerTypeMap: {
-    "tiled": GMapsTiledLayerView,
-    "plain": GMapsPlainLayerView,
-    "gmapsbase": GMapsBaseLayerView,
-    "layergroup": GMapsCartoDBLayerGroupView,
-    "namedmap": GMapsCartoDBLayerGroupView,
-    "torque": function(layer, map) {
-      return new cdb.geo.GMapsTorqueLayerView(layer, map);
-    },
-    "wms": LeafletWMSLayerView
-  },
 
   initialize: function() {
     _.bindAll(this, '_ready');
@@ -42,7 +24,7 @@ var GoogleMapsMapView = MapView.extend({
 
     if (!this.isMapAlreadyCreated()) {
 
-      this.map_googlemaps = new google.maps.Map(this.el, {
+      this._gmapsMap = new google.maps.Map(this.el, {
         center: new google.maps.LatLng(center[0], center[1]),
         zoom: this.map.get('zoom'),
         minZoom: this.map.get('minZoom'),
@@ -58,23 +40,23 @@ var GoogleMapsMapView = MapView.extend({
       });
 
       this.map.bind('change:maxZoom', function() {
-        self.map_googlemaps.setOptions({ maxZoom: self.map.get('maxZoom') });
+        self._gmapsMap.setOptions({ maxZoom: self.map.get('maxZoom') });
       }, this);
 
       this.map.bind('change:minZoom', function() {
-        self.map_googlemaps.setOptions({ minZoom: self.map.get('minZoom') });
+        self._gmapsMap.setOptions({ minZoom: self.map.get('minZoom') });
       }, this);
 
     } else {
 
-      this.map_googlemaps = this.options.map_object;
-      this.setElement(this.map_googlemaps.getDiv());
+      this._gmapsMap = this.options.map_object;
+      this.setElement(this._gmapsMap.getDiv());
 
       // fill variables
-      var c = self.map_googlemaps.getCenter();
+      var c = self._gmapsMap.getCenter();
 
       self._setModelProperty({ center: [c.lat(), c.lng()] });
-      self._setModelProperty({ zoom: self.map_googlemaps.getZoom() });
+      self._setModelProperty({ zoom: self._gmapsMap.getZoom() });
 
       // unset bounds to not change mapbounds
       self.map.unset('view_bounds_sw', { silent: true });
@@ -82,43 +64,38 @@ var GoogleMapsMapView = MapView.extend({
 
     }
 
+    google.maps.event.addListener(this._gmapsMap, 'center_changed', function() {
+      var c = self._gmapsMap.getCenter();
+      self._setModelProperty({ center: [c.lat(), c.lng()] });
+    });
+
+    google.maps.event.addListener(this._gmapsMap, 'zoom_changed', function() {
+      self._setModelProperty({
+        zoom: self._gmapsMap.getZoom()
+      });
+    });
+
+    google.maps.event.addListener(this._gmapsMap, 'click', function(e) {
+      self.trigger('click', e, [e.latLng.lat(), e.latLng.lng()]);
+    });
+
+    google.maps.event.addListener(this._gmapsMap, 'dragend', function(e) {
+      var c = self._gmapsMap.getCenter();
+      self.trigger('dragend', e, [c.lat(), c.lng()]);
+    });
+
+    google.maps.event.addListener(this._gmapsMap, 'dblclick', function(e) {
+      self.trigger('dblclick', e);
+    });
+
     this.map.geometries.bind('add', this._addGeometry, this);
     this.map.geometries.bind('remove', this._removeGeometry, this);
-
 
     this._bindModel();
     this._addLayers();
     this.setAttribution();
 
-    google.maps.event.addListener(this.map_googlemaps, 'center_changed', function() {
-      var c = self.map_googlemaps.getCenter();
-      self._setModelProperty({ center: [c.lat(), c.lng()] });
-    });
-
-    google.maps.event.addListener(this.map_googlemaps, 'zoom_changed', function() {
-      self._setModelProperty({
-        zoom: self.map_googlemaps.getZoom()
-      });
-    });
-
-    google.maps.event.addListener(this.map_googlemaps, 'click', function(e) {
-      self.trigger('click', e, [e.latLng.lat(), e.latLng.lng()]);
-    });
-
-    google.maps.event.addListener(this.map_googlemaps, 'dragend', function(e) {
-      var c = self.map_googlemaps.getCenter();
-      self.trigger('dragend', e, [c.lat(), c.lng()]);
-    });
-
-    google.maps.event.addListener(this.map_googlemaps, 'dblclick', function(e) {
-      self.trigger('dblclick', e);
-    });
-
-    this.map.layers.bind('add', this._addLayer, this);
-    this.map.layers.bind('remove', this._removeLayer, this);
-    this.map.layers.bind('reset', this._addLayers, this);
-
-    this.projector = new Projector(this.map_googlemaps);
+    this.projector = new Projector(this._gmapsMap);
 
     this.projector.draw = this._ready;
   },
@@ -130,86 +107,56 @@ var GoogleMapsMapView = MapView.extend({
   },
 
   _setKeyboard: function(model, z) {
-    this.map_googlemaps.setOptions({ keyboardShortcuts: z });
+    this._gmapsMap.setOptions({ keyboardShortcuts: z });
   },
 
   _setScrollWheel: function(model, z) {
-    this.map_googlemaps.setOptions({ scrollwheel: z });
+    this._gmapsMap.setOptions({ scrollwheel: z });
   },
 
   _setZoom: function(model, z) {
     z = z || 0;
-    this.map_googlemaps.setZoom(z);
+    this._gmapsMap.setZoom(z);
   },
 
   _setCenter: function(model, center) {
     var c = new google.maps.LatLng(center[0], center[1]);
-    this.map_googlemaps.setCenter(c);
+    this._gmapsMap.setCenter(c);
   },
 
-  createLayer: function(layer) {
-    var layer_view,
-    layerClass = this.layerTypeMap[layer.get('type').toLowerCase()];
-
-    if (layerClass) {
-      try {
-        layer_view = new layerClass(layer, this.map_googlemaps);
-      } catch (e) {
-        log.error("MAP: error creating '" +  layer.get('type') + "' layer -> " + e.message);
-        throw e;
-      }
-    } else {
-      log.error("MAP: " + layer.get('type') + " can't be created");
-    }
-    return layer_view;
+  _getNativeMap: function () {
+    return this._gmapsMap;
   },
 
-  _addLayer: function(layer, layers, opts) {
-    opts = opts || {};
-    var self = this;
-    var lyr, layer_view;
-
-    layer_view = this.createLayer(layer);
-
-    if (!layer_view) {
-      return;
-    }
-    return this._addLayerToMap(layer_view, opts);
-  },
-
-  _addLayerToMap: function(layer_view, opts) {
-    var layer = layer_view.model;
-
-    this.layers[layer.cid] = layer_view;
-
-    if (layer_view) {
-      var isBaseLayer = _.keys(this.layers).length === 1 || (opts && opts.index === 0) || layer.get('order') === 0;
+  _addLayerToMap: function(layerView, layerModel, opts) {
+    if (layerView) {
+      var isBaseLayer = _.keys(this._layerViews).length === 1 || (opts && opts.index === 0) || layerModel.get('order') === 0;
       // set base layer
-      if(isBaseLayer && !opts.no_base_layer) {
-        var m = layer_view.model;
+      if(isBaseLayer) {
+        var m = layerView.model;
         if(m.get('type') !== 'GMapsBase') {
-          layer_view.isBase = true;
+          layerView.isBase = true;
         }
       } else {
         // TODO: Make sure this order will be right
-        var idx = layer.get('order');
-        if (layer_view.getTile) {
-          if (!layer_view.gmapsLayer) {
+        var idx = layerModel.get('order');
+        if (layerView.getTile) {
+          if (!layerView.gmapsLayer) {
             log.error("gmaps layer can't be null");
           }
-          this.map_googlemaps.overlayMapTypes.setAt(idx, layer_view.gmapsLayer);
+          this._gmapsMap.overlayMapTypes.setAt(idx, layerView.gmapsLayer);
         } else {
-          layer_view.gmapsLayer.setMap(this.map_googlemaps);
+          layerView.gmapsLayer.setMap(this._gmapsMap);
         }
       }
-      if(opts === undefined || !opts.silent) {
-        this.trigger('newLayerView', layer_view, layer, this);
+      if (opts === undefined || !opts.silent) {
+        this.trigger('newLayerView', layerView, layerModel, this);
       }
     } else {
       log.error("layer type not supported");
     }
 
-    return layer_view;
+    return layerView;
   },
 
   pixelToLatLon: function(pos) {
@@ -242,7 +189,7 @@ var GoogleMapsMapView = MapView.extend({
 
   getBounds: function() {
     if(this._isReady) {
-      var b = this.map_googlemaps.getBounds();
+      var b = this._gmapsMap.getBounds();
       var sw = b.getSouthWest();
       var ne = b.getNorthEast();
       return [
@@ -260,17 +207,17 @@ var GoogleMapsMapView = MapView.extend({
   },
 
   setCursor: function(cursor) {
-    this.map_googlemaps.setOptions({ draggableCursor: cursor });
+    this._gmapsMap.setOptions({ draggableCursor: cursor });
   },
 
   _addGeomToMap: function(geom) {
     var geo = GoogleMapsMapView.createGeometry(geom);
     if(geo.geom.length) {
       for(var i = 0 ; i < geo.geom.length; ++i) {
-        geo.geom[i].setMap(this.map_googlemaps);
+        geo.geom[i].setMap(this._gmapsMap);
       }
     } else {
-        geo.geom.setMap(this.map_googlemaps);
+        geo.geom.setMap(this._gmapsMap);
     }
     return geo;
   },
@@ -286,11 +233,11 @@ var GoogleMapsMapView = MapView.extend({
   },
 
   getNativeMap: function() {
-    return this.map_googlemaps;
+    return this._gmapsMap;
   },
 
   invalidateSize: function() {
-    google.maps.event.trigger(this.map_googlemaps, 'resize');
+    google.maps.event.trigger(this._gmapsMap, 'resize');
   }
 
 }, {

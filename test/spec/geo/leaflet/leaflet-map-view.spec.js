@@ -1,22 +1,18 @@
 var $ = require('jquery');
 var _ = require('underscore');
-var Backbone = require('backbone');
 var L = require('leaflet');
 global.L = L;
-var config = require('cdb.config');
-var log = require('cdb.log');
+
 var Map = require('../../../../src/geo/map');
-var LeafletMapView = require('../../../../src/geo/leaflet/leaflet-map-view');
-var TileLayer = require('../../../../src/geo/map/tile-layer');
-var LeafletTiledLayerView = require('../../../../src/geo/leaflet/leaflet-tiled-layer-view');
-var LeafletCartoDBLayerGroupView = require('../../../../src/geo/leaflet/leaflet-cartodb-layer-group-view');
-var CartoDBLayerGroupNamed = require('../../../../src/geo/map/cartodb-layer-group-named');
-var CartoDBLayerGroupAnonymous = require('../../../../src/geo/map/cartodb-layer-group-anonymous');
-var PlainLayer = require('../../../../src/geo/map/plain-layer');
-var LeafletPlainLayerView = require('../../../../src/geo/leaflet/leaflet-plain-layer-view');
 var Geometry = require('../../../../src/geo/geometry');
+var TileLayer = require('../../../../src/geo/map/tile-layer');
+var CartoDBLayer = require('../../../../src/geo/map/cartodb-layer');
+var PlainLayer = require('../../../../src/geo/map/plain-layer');
 var GMapsBaseLayer = require('../../../../src/geo/map/gmaps-base-layer');
-var TorqueLayer = require('../../../../src/geo/map/torque-layer');
+var LeafletMapView = require('../../../../src/geo/leaflet/leaflet-map-view');
+var LeafletLayerViewFactory = require('../../../../src/geo/leaflet/leaflet-layer-view-factory');
+var LeafletTiledLayerView = require('../../../../src/geo/leaflet/leaflet-tiled-layer-view');
+var LeafletPlainLayerView = require('../../../../src/geo/leaflet/leaflet-plain-layer-view');
 
 describe('geo/leaflet/leaflet-map-view', function () {
   var mapView;
@@ -31,9 +27,16 @@ describe('geo/leaflet/leaflet-map-view', function () {
       'width': '200px'
     });
     map = new Map();
+
+    // Map needs a WindshaftMap so we're setting up a fake one
+    map.windshaftMap = jasmine.createSpyObj('windshaftMap', ['isNamedMap', 'isAnonymousMap']);
+    map.windshaftMap.isAnonymousMap.and.returnValue(true);
+    map.windshaftMap.instance = jasmine.createSpyObj('windshaftMapInstance', ['bind']);
+
     mapView = new LeafletMapView({
       el: container,
-      map: map
+      map: map,
+      layerViewFactory: new LeafletLayerViewFactory()
     });
 
     var layerURL = 'http://{s}.tiles.mapbox.com/v3/cartodb.map-1nh578vv/{z}/{x}/{y}.png';
@@ -85,13 +88,15 @@ describe('geo/leaflet/leaflet-map-view', function () {
     expect(map.layers.length).toEqual(1);
   });
 
-  it('should create a layer view when adds a model', function () {
+  it('should trigger an event when a new layerView is added to the map', function () {
     var spy = { c: function () {} };
     spyOn(spy, 'c');
     mapView.bind('newLayerView', spy.c);
+
     map.addLayer(layer);
+
     expect(map.layers.length).toEqual(1);
-    expect(_.size(mapView.layers)).toEqual(1);
+    expect(_.size(mapView._layerViews)).toEqual(1);
     expect(spy.c).toHaveBeenCalled();
   });
 
@@ -99,7 +104,7 @@ describe('geo/leaflet/leaflet-map-view', function () {
     map.addLayer(layer);
     map.removeLayer(layer);
     expect(map.layers.length).toEqual(0);
-    expect(_.size(mapView.layers)).toEqual(0);
+    expect(_.size(mapView._layerViews)).toEqual(0);
   });
 
   it('should allow removing a layer by index', function () {
@@ -116,61 +121,57 @@ describe('geo/leaflet/leaflet-map-view', function () {
 
   it('should create a TiledLayerView when the layer is Tiled', function () {
     var lyr = map.addLayer(layer);
-    var layerView = mapView.getLayerByCid(lyr);
+    var layerView = mapView.getLayerViewByLayerCid(lyr);
     expect(LeafletTiledLayerView.prototype.isPrototypeOf(layerView)).isPrototypeOf();
   });
 
-  it('should create a LeafletCartoDBLayerGroupView when the layer is CartoDBLayerGroupAnonymous', function () {
-    layer = new CartoDBLayerGroupAnonymous({}, {});
-    var lyr = map.addLayer(layer);
-    var layerView = mapView.getLayerByCid(lyr);
-    expect(layerView instanceof LeafletCartoDBLayerGroupView).toBeTruthy();
-  });
-
-  it('should create a LeafletCartoDBLayerGroupView when the layer is CartoDBLayerGroupNamed', function () {
-    layer = new CartoDBLayerGroupNamed({}, {});
-    var lyr = map.addLayer(layer);
-    var layerView = mapView.getLayerByCid(lyr);
-    expect(layerView instanceof LeafletCartoDBLayerGroupView).toBeTruthy();
-  });
-
-  it('should create a PlaiLayer when the layer is cartodb', function () {
+  it('should create a PlainLayer when the layer is cartodb', function () {
     layer = new PlainLayer({});
     var lyr = map.addLayer(layer);
-    var layerView = mapView.getLayerByCid(lyr);
+    var layerView = mapView.getLayerViewByLayerCid(lyr);
     expect(layerView.setQuery).not.toEqual(LeafletPlainLayerView);
   });
 
   it('should insert layers in specified order', function () {
-    var tileLayer = new TileLayer({urlTemplate: 'test' });
+    var tileLayer = new TileLayer({ urlTemplate: 'http://tilelayer1.com' });
     map.addLayer(tileLayer);
 
-    var tileLayer2 = new TileLayer({urlTemplate: 'test' });
+    var tileLayer2 = new TileLayer({ urlTemplate: 'http://tilelayer2.com' });
     map.addLayer(tileLayer2, { at: 0 });
 
-    expect(mapView.getLayerByCid(tileLayer.cid).options.zIndex).toEqual(1);
-    expect(mapView.getLayerByCid(tileLayer2.cid).options.zIndex).toEqual(0);
+    expect(mapView.getLayerViewByLayerCid(tileLayer.cid).options.zIndex).toEqual(1);
+    expect(mapView.getLayerViewByLayerCid(tileLayer2.cid).options.zIndex).toEqual(0);
   });
 
   it('should remove all layers when map view is cleaned', function () {
-    var id1 = map.addLayer(new CartoDBLayerGroupAnonymous({}, {}));
-    var id2 = map.addLayer(new CartoDBLayerGroupAnonymous({}, {}));
+    var cartoDBLayer1 = new CartoDBLayer();
+    var cartoDBLayer2 = new CartoDBLayer();
+    var tileLayer = new TileLayer({ urlTemplate: 'test' });
 
-    expect(_.size(mapView.layers)).toEqual(2);
-    var layer = mapView.getLayerByCid(id1);
-    var layer2 = mapView.getLayerByCid(id2);
-    spyOn(layer, 'remove');
-    spyOn(layer2, 'remove');
+    map.addLayer(cartoDBLayer1);
+    map.addLayer(cartoDBLayer2);
+    map.addLayer(tileLayer);
+
+    expect(_.size(mapView._layerViews)).toEqual(3);
+
+    var layerGroupView = mapView.getLayerViewByLayerCid(cartoDBLayer1.cid);
+    spyOn(layerGroupView, 'remove');
+
+    var tileLayerView = mapView.getLayerViewByLayerCid(tileLayer.cid);
+    spyOn(tileLayerView, 'remove');
+
     mapView.clean();
-    expect(_.size(mapView.layers)).toEqual(0);
-    expect(layer.remove).toHaveBeenCalled();
-    expect(layer2.remove).toHaveBeenCalled();
+
+    expect(_.size(mapView._layerViews)).toEqual(0);
+    expect(layerGroupView.remove).toHaveBeenCalled();
+    expect(tileLayerView.remove).toHaveBeenCalled();
+    expect(mapView.layerGroupModel).not.toBeDefined();
   });
 
-  it("should not all a layer when it can't be creadted", function () {
+  it("should not add a layer view when it can't be created", function () {
     var layer = new TileLayer({type: 'rambo'});
     map.addLayer(layer);
-    expect(_.size(mapView.layers)).toEqual(0);
+    expect(_.size(mapView._layerViews)).toEqual(0);
   });
 
   var geojsonFeature = {
@@ -199,7 +200,6 @@ describe('geo/leaflet/leaflet-map-view', function () {
       'type': 'Point',
       'coordinates': [20, 10]
     });
-
   });
 
   it('should save automatically when the zoom or center changes', function (done) {
@@ -211,14 +211,13 @@ describe('geo/leaflet/leaflet-map-view', function () {
       expect(map.save).toHaveBeenCalled();
       done();
     }, 1500);
-
   });
 
   it('should set z-order', function () {
-    var layer1 = new TileLayer({ urlTemplate: 'test1'});
-    var layer2 = new TileLayer({ urlTemplate: 'test2'});
-    var layerView1 = mapView.getLayerByCid(map.addLayer(layer1));
-    var layerView2 = mapView.getLayerByCid(map.addLayer(layer2, { at: 0 }));
+    var layer1 = new TileLayer({urlTemplate: 'test1'});
+    var layer2 = new TileLayer({urlTemplate: 'test2'});
+    var layerView1 = mapView.getLayerViewByLayerCid(map.addLayer(layer1));
+    var layerView2 = mapView.getLayerViewByLayerCid(map.addLayer(layer2, { at: 0 }));
     expect(layerView1.options.zIndex > layerView2.options.zIndex).toEqual(true);
   });
 
@@ -290,7 +289,7 @@ describe('geo/leaflet/leaflet-map-view', function () {
     var testContext;
 
     if (baseType) {
-      layerOpts = { base_type: baseType};
+      layerOpts = {base_type: baseType};
       testContext = 'with basemap "' + baseType + '"';
     } else {
       testContext = 'with default basemap "gray_roadmap"';
@@ -343,7 +342,6 @@ describe('geo/leaflet/leaflet-map-view', function () {
         mapView._setKeyboard(null, false);
         expect(spy.keyboardChanged).toHaveBeenCalled();
       });
-
     });
   });
 
@@ -359,11 +357,6 @@ describe('geo/leaflet/leaflet-map-view', function () {
 
     it('should not render Leaflet attributions', function () {
       var attributions = mapView.$el.find('.leaflet-control-attribution');
-      expect(attributions.length).toBe(0);
-      layer = new CartoDBLayerGroupAnonymous({
-        attribution: 'custom attribution'
-      });
-      map.addLayer(layer);
       expect(attributions.length).toBe(0);
     });
 
@@ -381,11 +374,12 @@ describe('geo/leaflet/leaflet-map-view', function () {
       mapView = new LeafletMapView({
         el: container,
         map: map,
-        map_object: leafletMap
+        map_object: leafletMap,
+        layerViewFactory: new LeafletLayerViewFactory()
       });
 
       // Add a CartoDB layer with some custom attribution
-      layer = new CartoDBLayerGroupAnonymous({
+      layer = new CartoDBLayer({
         attribution: 'custom attribution'
       });
       map.addLayer(layer);
@@ -409,11 +403,12 @@ describe('geo/leaflet/leaflet-map-view', function () {
       mapView = new LeafletMapView({
         el: container,
         map: map,
-        map_object: leafletMap
+        map_object: leafletMap,
+        layerViewFactory: new LeafletLayerViewFactory()
       });
 
       // Add a CartoDB layer with some custom attribution
-      layer = new CartoDBLayerGroupAnonymous({
+      layer = new CartoDBLayer({
         attribution: 'custom attribution'
       });
       map.addLayer(layer);
@@ -433,11 +428,11 @@ describe('geo/leaflet/leaflet-map-view', function () {
     });
     var mapView = new LeafletMapView({
       el: container,
-      map: map
+      map: map,
+      layerViewFactory: new LeafletLayerViewFactory()
     });
 
-    expect(mapView.map_leaflet.dragging.enabled()).toBeFalsy();
-    expect(mapView.map_leaflet.doubleClickZoom.enabled()).toBeFalsy();
+    expect(mapView._leafletMap.dragging.enabled()).toBeFalsy();
+    expect(mapView._leafletMap.doubleClickZoom.enabled()).toBeFalsy();
   });
-
 });

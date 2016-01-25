@@ -1,22 +1,12 @@
 var $ = require('jquery');
 var _ = require('underscore');
 var L = require('leaflet');
-var cdb = require('cdb'); // cdb.geo.LeafletTorqueLayer
-var log = require('cdb.log');
 var MapView = require('../map-view');
 var View = require('../../core/view');
 var Sanitize = require('../../core/sanitize');
-var LeafletTiledLayerView = require('./leaflet-tiled-layer-view');
-var LeafletWMSLayerView = require('./leaflet-wms-layer-view');
-var LeafletPlainLayerView = require('./leaflet-plain-layer-view');
-var LeafletGmapsTiledLayerView = require('./leaflet-gmaps-tiled-layer-view');
-var LeafletCartoDBLayerGroupView = require('./leaflet-cartodb-layer-group-view');
 var LeafletPointView = require('./leaflet-point-view');
 var LeafletPathView = require('./leaflet-path-view');
 
-/**
- * leaflet implementation of a map
- */
 var LeafletMapView = MapView.extend({
 
   initialize: function() {
@@ -39,21 +29,21 @@ var LeafletMapView = MapView.extend({
     };
 
     if (!this.isMapAlreadyCreated()) {
-      this.map_leaflet = new L.Map(this.el, mapConfig);
-      if (this.map.get("scrollwheel") == false) this.map_leaflet.scrollWheelZoom.disable();
-      if (this.map.get("keyboard") == false) this.map_leaflet.keyboard.disable();
+      this._leafletMap = new L.Map(this.el, mapConfig);
+      if (this.map.get("scrollwheel") == false) this._leafletMap.scrollWheelZoom.disable();
+      if (this.map.get("keyboard") == false) this._leafletMap.keyboard.disable();
       if (this.map.get("drag") == false) {
-        this.map_leaflet.dragging.disable();
-        this.map_leaflet.doubleClickZoom.disable();
+        this._leafletMap.dragging.disable();
+        this._leafletMap.doubleClickZoom.disable();
       }
     } else {
-      this.map_leaflet = this.options.map_object;
-      this.setElement(this.map_leaflet.getContainer());
+      this._leafletMap = this.options.map_object;
+      this.setElement(this._leafletMap.getContainer());
 
-      var c = self.map_leaflet.getCenter();
+      var c = self._leafletMap.getCenter();
 
       this._setModelProperty({ center: [c.lat, c.lng] });
-      this._setModelProperty({ zoom: self.map_leaflet.getZoom() });
+      this._setModelProperty({ zoom: self._leafletMap.getZoom() });
 
       // unset bounds to not change mapbounds
       this.map.unset('view_bounds_sw', { silent: true });
@@ -61,9 +51,6 @@ var LeafletMapView = MapView.extend({
     }
 
     this.map.bind('set_view', this._setView, this);
-    this.map.layers.bind('add', this._addLayer, this);
-    this.map.layers.bind('remove', this._removeLayer, this);
-    this.map.layers.bind('reset', this._addLayers, this);
 
     this.map.geometries.bind('add', this._addGeometry, this);
     this.map.geometries.bind('remove', this._removeGeometry, this);
@@ -72,41 +59,41 @@ var LeafletMapView = MapView.extend({
     this._addLayers();
     this.setAttribution();
 
-    this.map_leaflet.on('layeradd', function(lyr) {
+    this._leafletMap.on('layeradd', function(lyr) {
       this.trigger('layeradd', lyr, self);
     }, this);
 
-    this.map_leaflet.on('zoomstart', function() {
+    this._leafletMap.on('zoomstart', function() {
       self.trigger('zoomstart');
     });
 
-    this.map_leaflet.on('click', function(e) {
+    this._leafletMap.on('click', function(e) {
       self.trigger('click', e.originalEvent, [e.latlng.lat, e.latlng.lng]);
     });
 
-    this.map_leaflet.on('dblclick', function(e) {
+    this._leafletMap.on('dblclick', function(e) {
       self.trigger('dblclick', e.originalEvent);
     });
 
-    this.map_leaflet.on('zoomend', function() {
+    this._leafletMap.on('zoomend', function() {
       self._setModelProperty({
-        zoom: self.map_leaflet.getZoom()
+        zoom: self._leafletMap.getZoom()
       });
       self.trigger('zoomend');
     }, this);
 
-    this.map_leaflet.on('move', function() {
-      var c = self.map_leaflet.getCenter();
+    this._leafletMap.on('move', function() {
+      var c = self._leafletMap.getCenter();
       self._setModelProperty({ center: [c.lat, c.lng] });
     });
 
-    this.map_leaflet.on('dragend', function() {
-      var c = self.map_leaflet.getCenter();
+    this._leafletMap.on('dragend', function() {
+      var c = self._leafletMap.getCenter();
       this.trigger('dragend', [c.lat, c.lng]);
     }, this);
 
-    this.map_leaflet.on('drag', function() {
-      var c = self.map_leaflet.getCenter();
+    this._leafletMap.on('drag', function() {
+      var c = self._leafletMap.getCenter();
       self._setModelProperty({
         center: [c.lat, c.lng]
       });
@@ -114,11 +101,11 @@ var LeafletMapView = MapView.extend({
     }, this);
 
     this.map.bind('change:maxZoom', function() {
-      L.Util.setOptions(self.map_leaflet, { maxZoom: self.map.get('maxZoom') });
+      L.Util.setOptions(self._leafletMap, { maxZoom: self.map.get('maxZoom') });
     }, this);
 
     this.map.bind('change:minZoom', function() {
-      L.Util.setOptions(self.map_leaflet, { minZoom: self.map.get('minZoom') });
+      L.Util.setOptions(self._leafletMap, { minZoom: self.map.get('minZoom') });
     }, this);
 
     this.trigger('ready');
@@ -133,15 +120,15 @@ var LeafletMapView = MapView.extend({
 
   // this replaces the default functionality to search for
   // already added views so they are not replaced
-  _addLayers: function() {
+  _addLayers: function(layerCollection, options) {
     var self = this;
 
-    var oldLayers = this.layers;
-    this.layers = {};
+    var oldLayers = this._layerViews;
+    this._layerViews = {};
 
     function findLayerView(layer) {
-      var lv = _.find(oldLayers, function(layer_view) {
-        var m = layer_view.model;
+      var lv = _.find(oldLayers, function(layerView) {
+        var m = layerView.model;
         return m.isEqual(layer);
       });
       return lv;
@@ -155,34 +142,36 @@ var LeafletMapView = MapView.extend({
 
     // remove all
     for(var layer in oldLayers) {
-      var layer_view = oldLayers[layer];
-      if (!canReused(layer_view.model)) {
-        layer_view.remove();
+      var layerView = oldLayers[layer];
+      if (!canReused(layerView.model)) {
+        layerView.remove();
       }
     }
 
-    this.map.layers.each(function(lyr) {
-      var lv = findLayerView(lyr);
-      if (!lv) {
-        self._addLayer(lyr);
+    this.map.layers.each(function(layerModel) {
+      var layerView = findLayerView(layerModel);
+      if (!layerView) {
+        self._addLayer(layerModel, layerCollection, {
+          silent: (options && options.silent) || false,
+          index: options && options.index
+        });
       } else {
-        lv.setModel(lyr);
-        self.layers[lyr.cid] = lv;
-        self.trigger('newLayerView', lv, lv.model, self);
+        layerView.setModel(layerModel);
+        self._layerViews[layerModel.cid] = layerView;
+        self.trigger('newLayerView', layerView, layerModel, self);
       }
     });
-
   },
 
   clean: function() {
     //see https://github.com/CloudMade/Leaflet/issues/1101
-    L.DomEvent.off(window, 'resize', this.map_leaflet._onResize, this.map_leaflet);
+    L.DomEvent.off(window, 'resize', this._leafletMap._onResize, this._leafletMap);
 
     // remove layer views
-    for(var layer in this.layers) {
-      var layer_view = this.layers[layer];
-      layer_view.remove();
-      delete this.layers[layer];
+    for(var layer in this._layerViews) {
+      var layerView = this._layerViews[layer];
+      layerView.remove();
+      delete this._layerViews[layer];
     }
 
     View.prototype.clean.call(this);
@@ -190,17 +179,17 @@ var LeafletMapView = MapView.extend({
 
   _setKeyboard: function(model, z) {
     if (z) {
-      this.map_leaflet.keyboard.enable();
+      this._leafletMap.keyboard.enable();
     } else {
-      this.map_leaflet.keyboard.disable();
+      this._leafletMap.keyboard.disable();
     }
   },
 
   _setScrollWheel: function(model, z) {
     if (z) {
-      this.map_leaflet.scrollWheelZoom.enable();
+      this._leafletMap.scrollWheelZoom.enable();
     } else {
-      this.map_leaflet.scrollWheelZoom.disable();
+      this._leafletMap.scrollWheelZoom.disable();
     }
   },
 
@@ -213,65 +202,59 @@ var LeafletMapView = MapView.extend({
   },
 
   _setView: function() {
-    this.map_leaflet.setView(this.map.get("center"), this.map.get("zoom") || 0 );
+    this._leafletMap.setView(this.map.get("center"), this.map.get("zoom") || 0 );
   },
 
   _addGeomToMap: function(geom) {
     var geo = LeafletMapView.createGeometry(geom);
-    geo.geom.addTo(this.map_leaflet);
+    geo.geom.addTo(this._leafletMap);
     return geo;
   },
 
   _removeGeomFromMap: function(geo) {
-    this.map_leaflet.removeLayer(geo.geom);
+    this._leafletMap.removeLayer(geo.geom);
   },
 
-  createLayer: function(layer) {
-    return LeafletMapView.createLayer(layer, this.map_leaflet);
+  _getNativeMap: function () {
+    return this._leafletMap;
   },
 
-  // LAYER VIEWS ARE CREATED HERE
-  _addLayer: function(layer, layers, opts) {
-    var self = this;
-    var lyr, layer_view;
-    layer_view = LeafletMapView.createLayer(layer, this.map_leaflet);
-    if (!layer_view) {
-      return;
+  _addLayerToMap: function(layerView, layerModel, opts) {
+    LeafletMapView.addLayerToMap(layerView, this._leafletMap);
+
+    this._reorderLayerViews();
+
+    if (!opts.silent) {
+      this.trigger('newLayerView', layerView);
     }
-    return this._addLayerToMap(layer_view, opts);
+    return layerView;
   },
 
-  _addLayerToMap: function(layer_view, opts) {
-    var layer = layer_view.model;
+  _reorderLayerViews: function () {
+    this.map.layers.each(function (layerModel) {
+      var layerView = this.getLayerViewByLayerCid(layerModel.cid);
 
-    this.layers[layer.cid] = layer_view;
-    LeafletMapView.addLayerToMap(layer_view, this.map_leaflet);
-
-    // reorder layers
-    for(var i in this.layers) {
-      var lv = this.layers[i];
-      lv.setZIndex(lv.model.get('order'));
-    }
-
-    if(opts === undefined || !opts.silent) {
-      this.trigger('newLayerView', layer_view, layer_view.model, this);
-    }
-    return layer_view;
+      // CartoDBLayers share the same layerView so the zIndex is being overriden on every iteration.
+      // The layerView will get the order of the last CartoDB layer as the zIndex
+      if (layerView) {
+        layerView.setZIndex(layerModel.get('order'));
+      }
+    }, this);
   },
 
   pixelToLatLon: function(pos) {
-    var point = this.map_leaflet.containerPointToLatLng([pos[0], pos[1]]);
+    var point = this._leafletMap.containerPointToLatLng([pos[0], pos[1]]);
     return point;
   },
 
   latLonToPixel: function(latlon) {
-    var point = this.map_leaflet.latLngToLayerPoint(new L.LatLng(latlon[0], latlon[1]));
-    return this.map_leaflet.layerPointToContainerPoint(point);
+    var point = this._leafletMap.latLngToLayerPoint(new L.LatLng(latlon[0], latlon[1]));
+    return this._leafletMap.layerPointToContainerPoint(point);
   },
 
   // return the current bounds of the map view
   getBounds: function() {
-    var b = this.map_leaflet.getBounds();
+    var b = this._leafletMap.getBounds();
     var sw = b.getSouthWest();
     var ne = b.getNorthEast();
     return [
@@ -281,7 +264,7 @@ var LeafletMapView = MapView.extend({
   },
 
   setAttribution: function(mdl) {
-    var attributionControl = this.map_leaflet.attributionControl;
+    var attributionControl = this._leafletMap.attributionControl;
     if (this.isMapAlreadyCreated() && attributionControl) {
       // If this method comes from an attribution property change
       if (mdl) {
@@ -298,19 +281,19 @@ var LeafletMapView = MapView.extend({
   },
 
   getSize: function() {
-    return this.map_leaflet.getSize();
+    return this._leafletMap.getSize();
   },
 
   panBy: function(p) {
-    this.map_leaflet.panBy(new L.Point(p.x, p.y));
+    this._leafletMap.panBy(new L.Point(p.x, p.y));
   },
 
   setCursor: function(cursor) {
-    $(this.map_leaflet.getContainer()).css('cursor', cursor);
+    $(this._leafletMap.getContainer()).css('cursor', cursor);
   },
 
   getNativeMap: function() {
-    return this.map_leaflet;
+    return this._leafletMap;
   },
 
   invalidateSize: function() {
@@ -318,56 +301,18 @@ var LeafletMapView = MapView.extend({
     // and at the same time the center is set the final center is displaced
     // so set pan to false so the map is not moved and then force the map
     // to be at the place it should be
-    this.map_leaflet.invalidateSize({ pan: false })//, animate: false });
-    this.map_leaflet.setView(this.map.get("center"), this.map.get("zoom") || 0, {
+    this._leafletMap.invalidateSize({ pan: false })//, animate: false });
+    this._leafletMap.setView(this.map.get("center"), this.map.get("zoom") || 0, {
       animate: false
     });
   }
 
 }, {
-
-  layerTypeMap: {
-    "tiled": LeafletTiledLayerView,
-    "wms": LeafletWMSLayerView,
-    "plain": LeafletPlainLayerView,
-
-    // Substitutes the GMaps baselayer w/ an equivalent Leaflet tiled layer, since not supporting Gmaps anymore
-    "gmapsbase": LeafletGmapsTiledLayerView,
-
-    "layergroup": LeafletCartoDBLayerGroupView,
-    "namedmap": LeafletCartoDBLayerGroupView,
-    "torque": function(layer, map) {
-      // TODO for now adding this error to be thrown if object is not present, since it's dependency
-      // is not included in the standard bundle
-      if (!cdb.geo.LeafletTorqueLayer) {
-        throw new Error('torque library must have been loaded for a torque layer to work');
-      }
-      return new cdb.geo.LeafletTorqueLayer(layer, map);
-    }
-  },
-
-  createLayer: function(layer, map) {
-    var layer_view = null;
-    var layerClass = this.layerTypeMap[layer.get('type').toLowerCase()];
-
-    if (layerClass) {
-      try {
-        layer_view = new layerClass(layer, map);
-      } catch (e) {
-        log.error("MAP: error creating '" +  layer.get('type') + "' layer -> " + e.message);
-        throw e;
-      }
-    } else {
-      log.error("MAP: " + layer.get('type') + " can't be created");
-    }
-    return layer_view;
-  },
-
-  addLayerToMap: function(layer_view, map, pos) {
-    map.addLayer(layer_view.leafletLayer);
+  addLayerToMap: function(layerView, map, pos) {
+    map.addLayer(layerView.leafletLayer);
     if(pos !== undefined) {
-      if (layer_view.setZIndex) {
-        layer_view.setZIndex(pos);
+      if (layerView.setZIndex) {
+        layerView.setZIndex(pos);
       }
     }
   },
@@ -403,6 +348,5 @@ L.Icon.Default.imagePath = (function () {
     }
   }
 }());
-
 
 module.exports = LeafletMapView;

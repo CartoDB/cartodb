@@ -2,6 +2,8 @@ var _ = require('underscore');
 var WindshaftFiltersCollection = require('./filters/collection');
 var WindshaftFiltersBoundingBoxFilter = require('./filters/bounding-box');
 var WindshaftMapInstance = require('./windshaft-map-instance');
+var WindshaftLayerGroupConfig = require('./layergroup-config');
+var WindshaftNamedMapConfig = require('./namedmap-config');
 
 /**
  * This class represents the concept of a map in Windshaft. It holds a reference
@@ -14,7 +16,7 @@ var WindshaftMapInstance = require('./windshaft-map-instance');
 var WindshaftMap = function (options) {
   var BOUNDING_BOX_FILTER_WAIT = 500;
 
-  this.layerGroup = options.layerGroup;
+  this._type = options.type;
   this.layers = options.layers;
   this.dataviews = options.dataviews;
   this.map = options.map;
@@ -37,6 +39,14 @@ var WindshaftMap = function (options) {
     // Dataviews incoming, skip initial instance creation
     clearTimeout(timeout);
   }, this);
+};
+
+WindshaftMap.prototype.isNamedMap = function () {
+  return this.configGenerator === WindshaftNamedMapConfig;
+};
+
+WindshaftMap.prototype.isAnonymousMap = function () {
+  return this.configGenerator === WindshaftLayerGroupConfig;
 };
 
 WindshaftMap.prototype._createInstance = function (options) {
@@ -62,12 +72,6 @@ WindshaftMap.prototype._createInstance = function (options) {
     success: function (mapInstance) {
       // Update the map instance with the attributes of the newly created one
       this.instance.set(mapInstance.toJSON());
-
-      // TODO: Extract this.
-      this.layerGroup && this.layerGroup.set({
-        baseURL: mapInstance.getBaseURL(),
-        urls: mapInstance.getTiles('mapnik')
-      });
 
       // update other kind of layers too
       this.layers.each(function (layer, layerIndex) {

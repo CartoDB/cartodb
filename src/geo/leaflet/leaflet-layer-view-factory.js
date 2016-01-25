@@ -7,32 +7,26 @@ var LeafletCartoDBLayerGroupView = require('./leaflet-cartodb-layer-group-view')
 
 var LeafletLayerViewFactory = function () {};
 
+LeafletLayerViewFactory.prototype._constructors = {
+  'tiled': LeafletTiledLayerView,
+  'wms': LeafletWMSLayerView,
+  'plain': LeafletPlainLayerView,
+  'gmapsbase': LeafletGmapsTiledLayerView,
+  'layergroup': LeafletCartoDBLayerGroupView,
+  'namedmap': LeafletCartoDBLayerGroupView,
+  'torque': function (layer, map) {
+    // TODO for now adding this error to be thrown if object is not present, since it's dependency
+    // is not included in the standard bundle
+    if (!cdb.geo.LeafletTorqueLayer) {
+      throw new Error('torque library must have been loaded for a torque layer to work');
+    }
+    return new cdb.geo.LeafletTorqueLayer(layer, map);
+  }
+};
+
 LeafletLayerViewFactory.prototype.createLayerView = function (layerModel, mapModel) {
   var layerType = layerModel.get('type').toLowerCase();
-  var LayerViewClass;
-
-  if (layerType === 'tiled') {
-    LayerViewClass = LeafletTiledLayerView;
-  } else if (layerType === 'wms') {
-    LayerViewClass = LeafletWMSLayerView;
-  } else if (layerType === 'plain') {
-    LayerViewClass = LeafletPlainLayerView;
-  } else if (layerType === 'gmapsbase') {
-    LayerViewClass = LeafletGmapsTiledLayerView;
-  } else if (layerType === 'layergroup') {
-    LayerViewClass = LeafletCartoDBLayerGroupView;
-  } else if (layerType === 'namedmap') {
-    LayerViewClass = LeafletCartoDBLayerGroupView;
-  } else if (layerType === 'torque') {
-    LayerViewClass = function (layer, map) {
-      // TODO for now adding this error to be thrown if object is not present, since it's dependency
-      // is not included in the standard bundle
-      if (!cdb.geo.LeafletTorqueLayer) {
-        throw new Error('torque library must have been loaded for a torque layer to work');
-      }
-      return new cdb.geo.LeafletTorqueLayer(layer, map);
-    };
-  }
+  var LayerViewClass = this._constructors[layerType];
 
   if (LayerViewClass) {
     try {

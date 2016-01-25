@@ -30,11 +30,15 @@ module.exports = {
 
       cartodb: {
         src: [
-          'dist/cartodb.uncompressed.js',
+          'dist/cartodb.uncompressed.js'
         ],
         options: _.defaults({
           outfile: 'test/SpecRunner-cartodb.html',
           specs: '<%= config.tmp %>/cartodb-specs.js',
+          vendor: defaultOptions.vendor
+            .concat([
+              'http://maps.googleapis.com/maps/api/js?sensor=false&v=3.12'
+            ])
         }, defaultOptions)
       },
       'cartodb-src': {

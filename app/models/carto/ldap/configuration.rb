@@ -97,7 +97,7 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
 
   # INFO: Resets connection if already made
   def test_connection
-    result = connection(reset=true).bind
+    result = ldap_connection(true).bind
     if result
       { success: true, connection: result }
     else
@@ -122,7 +122,7 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
   end
 
   def last_operation_result
-    ldap_result = connection.get_operation_result
+    ldap_result = ldap_connection.get_operation_result
     Carto::Ldap::OperationResult.new(ldap_result.code, ldap_result.error_message, ldap_result.matched_dn,
       ldap_result.message)
   end
@@ -144,14 +144,14 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
   # @Param Net::LDAP::Filter filter (Optional)
   def search(base, filter = nil)
     if filter
-      connection.search(base: base, filter: filter)
+      ldap_connection.search(base: base, filter: filter)
     else
-      connection.search(base: base)
+      ldap_connection.search(base: base)
     end
   end
 
   # Performs connection always with the search connection user
-  def connection(reset=false)
+  def ldap_connection(reset = false)
     @conn = nil if reset
     @conn ||= connect
   end

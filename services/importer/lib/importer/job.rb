@@ -64,11 +64,12 @@ module CartoDB
       end
 
       def delete_job_table
+        CartoDB.notify_debug('Dropping temp table', schema: @schema, table: table_name)
         delete_temp_table(table_name)
       end
 
       def delete_temp_table(table_name)
-        db.run(%Q{DROP TABLE #{@schema}.#{table_name}})
+        db.run(%{DROP TABLE IF EXISTS #{@schema}.#{table_name}})
       end
 
       attr_reader :id, :logger, :pg_options, :schema

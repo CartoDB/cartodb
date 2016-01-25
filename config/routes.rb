@@ -15,6 +15,7 @@ CartoDB::Application.routes.draw do
 
   get   '/signup'           => 'signup#signup',     as: :signup
   post  '/signup'           => 'signup#create',  as: :signup_organization_user
+  get   '(/user/:user_domain)(/u/:user_domain)/signup_http_authentication' => 'signup#create_http_authentication', as: :signup_http_authentication
 
   get   '(/user/:user_domain)(/u/:user_domain)/enable_account_token/:id' => 'account_tokens#enable',     as: :enable_account_token_show
   get   '(/user/:user_domain)(/u/:user_domain)/resend_validation_mail/:user_id' => 'account_tokens#resend',     as: :resend_validation_mail
@@ -43,6 +44,14 @@ CartoDB::Application.routes.draw do
 
   get '/google_plus' => 'google_plus#google_plus', as: :google_plus
   post '/google/signup' => 'google_plus#google_signup', as: :google_plus_signup
+
+  # Editor v3
+  scope module: 'carto', path: '(/user/:user_domain)(/u/:user_domain)' do
+    namespace :editor do
+      # Visualizations
+      resources :visualizations, only: :show, path: '/', constraints: { id: /[0-z\.\-]+/ }
+    end
+  end
 
   # Internally, some of this methods will forcibly rewrite to the org-url if user belongs to an organization
   scope :module => :admin do

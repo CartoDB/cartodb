@@ -24,10 +24,12 @@ WORKING_SPECS_1 = \
 	spec/models/user_table_spec.rb \
   spec/models/layer_spec.rb \
   spec/models/layer/presenter_spec.rb \
+	spec/requests/application_controller_spec.rb \
 	spec/requests/sessions_spec.rb \
   spec/requests/api/json/layer_presenter_spec.rb \
   spec/requests/carto/admin/bi_visualizations_controller_spec.rb \
 	spec/requests/carto/api/bi_visualizations_controller_spec.rb \
+	spec/requests/carto/editor/visualizations_controller_spec.rb \
   spec/requests/carto/api/layer_presenter_spec.rb \
 	spec/requests/carto/api/data_import_presenter_spec.rb \
 	spec/requests/carto/api/database_groups_controller_spec.rb \
@@ -58,6 +60,8 @@ WORKING_SPECS_1 = \
   spec/lib/central_spec.rb \
   spec/lib/trending_maps_spec.rb \
   spec/lib/explore_api_spec.rb \
+	spec/lib/user_account_creator_spec.rb \
+  spec/lib/carto/http_header_authentication_spec.rb \
 	spec/lib/carto/users_metadata_redis_cache_spec.rb \
   spec/lib/carto/http/client_spec.rb \
 	spec/helpers/uuidhelper_spec.rb \

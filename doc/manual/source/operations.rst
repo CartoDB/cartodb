@@ -12,7 +12,7 @@ Common operations in CartoDB include:
   operations/change_feature_flags.rst
   operations/changing_limits.rst
   operations/exporting_importing_visualizations.rst
-
+  operations/http_headers_authentication
 
 
 

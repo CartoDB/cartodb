@@ -38,6 +38,7 @@ class Admin::UsersController < Admin::AdminController
   end
 
   def account
+    @can_be_deleted, @cant_be_deleted_reason = can_be_deleted?(@user)
     respond_to do |format|
       format.html { render 'account' }
     end
@@ -132,6 +133,16 @@ class Admin::UsersController < Admin::AdminController
   end
 
   private
+
+  def can_be_deleted?(user)
+    if user.organization_owner?
+      return false, "You can't delete your account because you are admin of an organization"
+    elsif Carto::UserCreation.http_authentication.where(user_id: user.id).first.present?
+      return false, "You can't delete your account because you are using HTTP Header Authentication"
+    else
+      return true, nil
+    end
+  end
 
   def initialize_google_plus_config
     signup_action = Cartodb::Central.sync_data_with_cartodb_central? ? Cartodb::Central.new.google_signup_url : '/google/signup'

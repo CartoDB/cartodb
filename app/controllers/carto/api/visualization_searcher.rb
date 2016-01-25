@@ -21,6 +21,7 @@ module Carto
         only_liked = params[:only_liked] == 'true'
         only_shared = params[:only_shared] == 'true'
         exclude_shared = params[:exclude_shared] == 'true'
+        exclude_raster = params[:exclude_raster] == 'true'
         locked = params[:locked]
         shared = compose_shared(params[:shared], only_shared, exclude_shared)
         tags = params.fetch(:tags, '').split(',')
@@ -59,6 +60,10 @@ module Carto
           when FILTER_SHARED_ONLY
             vqb.with_shared_with_user_id(current_user.id)
                 .with_user_id_not(current_user.id)
+          end
+
+          if exclude_raster
+            vqb.without_raster
           end
 
           if locked == 'true'

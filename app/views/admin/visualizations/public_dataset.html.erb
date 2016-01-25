@@ -102,7 +102,7 @@
         <div class="PublicMap-leftBlock PublicMap-leftBlock--owner">
           <ul class="Navmenu-list Navmenu-list--owner Navmenu-list--avatar">
             <li class="Navmenu-item">
-              <a href="<%= CartoDB.url(self, 'public_user_feed_home', {}, @visualization.user) %>" target="_blank" class="UserAvatar">
+              <a href="<%= @user_url %>" class="UserAvatar">
                 <img class="UserAvatar-img--medium" src="<%= @visualization.user.avatar %>" alt="<%= @name %>" title="<%= @name %>" />
               </a>
             </li>
@@ -110,13 +110,15 @@
 
           <ul class="Navmenu-list Navmenu-list--owner">
             <li class="Navmenu-item u-hideOnTablet last-child">
-              <a href="<%= CartoDB.url(self, 'public_user_feed_home', {}, @visualization.user) %>" class="Navmenu-link Navmenu-link--owner" title="<%= @name %>"><%= @name %></a>
+              <a href="<%= @user_url %>" class="Navmenu-link Navmenu-link--owner" title="<%= @name %>"><%= @name %></a>
             </li>
 
-            <li class="Navmenu-item">
-              <i class="Navmenu-rarrow iconFont iconFont-Rarrow"></i>
-              <a href="<%= CartoDB.url(self, 'public_datasets_home', {}, @visualization.user) %>" class="Navmenu-link">Datasets</a>
-            </li>
+            <% unless @is_data_library %>
+              <li class="Navmenu-item">
+                <i class="Navmenu-rarrow iconFont iconFont-Rarrow"></i>
+                <a href="<%= CartoDB.url(self, 'public_datasets_home', {}, @visualization.user) %>" class="Navmenu-link">Datasets</a>
+              </li>
+            <% end %>
           </ul>
         </div>
 
@@ -163,14 +165,14 @@
       <div class="PublicMap-block">
         <div class="PublicMap-leftBlock PublicMap-leftBlock--large">
           <div class="js-user-meta">
-            <h1 class="PublicMap-title js-PublicMap-title Title Title--m"><%= @visualization.name %></h1>
+            <h1 class="PublicMap-title js-PublicMap-title Title Title--m"><%= @visualization.display_name_or_name %></h1>
             <% if @visualization.description_clean %>
               <div class="PublicMap-description"><%= raw @visualization.description_html_safe %></div>
             <% end %>
 
             <div class="PublicMap-meta">
               <ul class="PublicMap-metaList">
-                <li class="PublicMap-metaItem"><i class="PublicMap-metaIcon iconFont iconFont-Calendar"></i> <%= time_ago_in_words(@visualization.updated_at) %> ago</li>
+                <li class="PublicMap-metaItem"><i class="PublicMap-metaIcon iconFont iconFont-Calendar"></i>  <span title="<%= time_ago_in_words(@visualization.updated_at) %> ago"><%= time_ago_in_words(@visualization.updated_at) %> ago</span></li>
               </ul>
 
               <ul class="PublicMap-metaList PublicMap-metaList--mobile js-PublicMap-metaList--mobile">
@@ -182,15 +184,16 @@
                     <% else %>
                       <%= number_to_human(@table.rows_counted, units: { unit:"", thousand: "K", million: "M" }, precision: 2, format: '%n%u') %>
                     <% end %>
-                    <%= 'row'.pluralize(@table.rows_counted) %>
+                     <span title="<%= 'row'.pluralize(@table.rows_counted) %>"><%= 'row'.pluralize(@table.rows_counted) %></span>
                   </li>
                 <% end %>
 
                 <% if !@visualization.visualization.license_info.nil? %>
                   <li class="PublicMap-metaItem">
-                    <i class="PublicMap-metaIcon iconFont iconFont-License iconFont-License<%= @visualization.visualization.license_info.id.to_s.gsub(/_/,"").downcase %>"></i>
+                    <%# Defaulting on CC icon for license https://github.com/CartoDB/cartodb/issues/6413 %>
+                    <i class="PublicMap-metaIcon iconFont iconFont-CreativeCommons iconFont-License iconFont-License<%= @visualization.visualization.license_info.id.to_s.gsub(/_/,"").downcase %>"></i>
                     <%# Keep on one line to avoid unwanted spaces %>
-                    <%= @visualization.visualization.license_info.name %>
+                    <span title="<%= @visualization.visualization.license_info.name %>"><%= @visualization.visualization.license_info.name %></span>
                   </li>
                 <% end %>
 
@@ -198,7 +201,7 @@
                   <li class="PublicMap-metaItem">
                     <i class="PublicMap-metaIcon iconFont iconFont-Anchor"></i>
                     <%# Keep on one line to avoid unwanted spaces %>
-                    <%= @visualization.visualization.source %>
+                    <span title="<%= @visualization.visualization.source %>"><%= raw @visualization.source_html_safe %></span>
                   </li>
                 <% end %>
               </ul>

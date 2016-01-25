@@ -1,7 +1,9 @@
 # coding: UTF-8
 
+require 'securerandom'
 require_dependency 'google_plus_api'
 
+# This class is quite coupled to UserCreation.
 module CartoDB
   class UserAccountCreator
 
@@ -13,13 +15,14 @@ module CartoDB
     PARAM_SOFT_GEOCODING_LIMIT = :soft_geocoding_limit
     PARAM_QUOTA_IN_BYTES = :quota_in_bytes
 
-    def initialize
+    def initialize(created_via)
       @built = false
       @organization = nil
       @google_user_data = nil
       @user = ::User.new
       @user_params = {}
       @custom_errors = {}
+      @created_via = created_via
     end
 
     def with_username(value)
@@ -54,8 +57,10 @@ module CartoDB
       self
     end
 
-    def with_api
-      @created_via_api = true
+    def with_email_only(email)
+      with_email(email)
+      with_username(email.split('@')[0])
+      with_password(SecureRandom.hex)
       self
     end
 
@@ -85,11 +90,7 @@ module CartoDB
     end
 
     def enqueue_creation(current_controller)
-      build
-
-      user_creation = Carto::UserCreation.new_user_signup(@user).with_invitation_token(@invitation_token)
-
-      user_creation = user_creation.with_api if @created_via_api
+      user_creation = build_user_creation
 
       user_creation.save
 
@@ -100,18 +101,10 @@ module CartoDB
       { id: user_creation.id, username: user_creation.username }
     end
 
-    private
+    def build_user_creation
+      build
 
-    def with_param(key, value)
-      @built = false
-      @user_params[key] = value
-      self
-    end
-
-    def promote_to_organization_owner?
-      # INFO: Custom installs convention: org owner always has `<orgname>-admin` format
-      !!(@organization && !@organization.owner_id && @user_params[PARAM_USERNAME] &&
-        @user_params[PARAM_USERNAME] == "#{@organization.name}-admin")
+      Carto::UserCreation.new_user_signup(@user, @created_via).with_invitation_token(@invitation_token)
     end
 
     def build
@@ -132,6 +125,21 @@ module CartoDB
       @user.quota_in_bytes = @user_params[PARAM_QUOTA_IN_BYTES] if @user_params[PARAM_QUOTA_IN_BYTES]
 
       @built = true
+      @user
+    end
+
+    private
+
+    def with_param(key, value)
+      @built = false
+      @user_params[key] = value
+      self
+    end
+
+    def promote_to_organization_owner?
+      # INFO: Custom installs convention: org owner always has `<orgname>-admin` format
+      !!(@organization && !@organization.owner_id && @user_params[PARAM_USERNAME] &&
+        @user_params[PARAM_USERNAME] == "#{@organization.name}-admin")
     end
   end
 end

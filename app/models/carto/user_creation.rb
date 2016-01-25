@@ -1,28 +1,41 @@
 # encoding: UTF-8
 
 class Carto::UserCreation < ActiveRecord::Base
+  CREATED_VIA_LDAP = 'ldap'
+  CREATED_VIA_ORG_SIGNUP = 'org_signup'
+  CREATED_VIA_API = 'api'
+  CREATED_VIA_HTTP_AUTENTICATION = 'http_authentication'
+
+  VALID_CREATED_VIA = [CREATED_VIA_LDAP, CREATED_VIA_ORG_SIGNUP, CREATED_VIA_API, CREATED_VIA_HTTP_AUTENTICATION]
+
+  IN_PROGRESS_STATES = [:initial, :enqueuing, :creating_user, :validating_user, :saving_user, :promoting_user, :load_common_data, :creating_user_in_central]
+  FINAL_STATES = [:success, :failure]
+
+  scope :http_authentication, where(created_via: CREATED_VIA_HTTP_AUTENTICATION)
+  scope :in_progress, where(state: IN_PROGRESS_STATES)
 
   belongs_to :log, class_name: Carto::Log
   belongs_to :user, class_name: Carto::User
 
   after_create :use_invitation
 
-  def self.new_user_signup(user)
+  def self.new_user_signup(user, created_via = CREATED_VIA_ORG_SIGNUP)
     # Normal validation breaks state_machine method generation
-    raise 'User needs an organization' unless user.organization
     raise 'User needs username' unless user.username
     raise 'User needs email' unless user.email
+    raise "Not valid #{created_via}: #{VALID_CREATED_VIA.join(', ')}" unless VALID_CREATED_VIA.include?(created_via)
 
     user_creation = Carto::UserCreation.new
     user_creation.username = user.username
     user_creation.email = user.email
     user_creation.crypted_password = user.crypted_password
     user_creation.salt = user.salt
-    user_creation.organization_id = user.organization.id
+    user_creation.organization_id = user.organization.nil? ? nil : user.organization.id
     user_creation.quota_in_bytes = user.quota_in_bytes
     user_creation.soft_geocoding_limit = user.soft_geocoding_limit
     user_creation.google_sign_in = user.google_sign_in
     user_creation.log = Carto::Log.new_user_creation
+    user_creation.created_via = created_via
 
     user_creation
   end
@@ -85,7 +98,11 @@ class Carto::UserCreation < ActiveRecord::Base
 
   # TODO: Shorcut, search for a better solution to detect requirement
   def requires_validation_email?
-    google_sign_in != true && !has_valid_invitation? && !Carto::Ldap::Manager.new.configuration_present? && !created_via_api?
+    google_sign_in != true &&
+      !has_valid_invitation? &&
+      !Carto::Ldap::Manager.new.configuration_present? &&
+      !created_via_api? &&
+      !created_via_http_authentication?
   end
 
   def autologin?
@@ -101,13 +118,12 @@ class Carto::UserCreation < ActiveRecord::Base
     self
   end
 
-  def with_api
-    self.created_via_api = true
-    self
+  def created_via_api?
+    created_via == CREATED_VIA_API
   end
 
-  def created_via_api?
-    self.created_via_api
+  def created_via_http_authentication?
+    created_via == CREATED_VIA_HTTP_AUTENTICATION
   end
 
   def has_valid_invitation?
@@ -176,14 +192,17 @@ class Carto::UserCreation < ActiveRecord::Base
     @cartodb_user.google_sign_in = google_sign_in
     @cartodb_user.invitation_token = invitation_token
     @cartodb_user.enable_account_token = ::User.make_token if requires_validation_email?
-    unless @promote_to_organization_owner
+    unless organization_id.nil? || @promote_to_organization_owner
       organization = ::Organization.where(id: organization_id).first
       raise "Trying to copy organization settings from one without owner" if organization.owner.nil?
       @cartodb_user.organization = organization
       @cartodb_user.organization.owner.copy_account_features(@cartodb_user)
     end
+
+    @cartodb_user
   rescue => e
     handle_failure(e, mark_as_failure = true)
+    nil
   end
 
   # Central validation

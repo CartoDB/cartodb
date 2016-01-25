@@ -97,5 +97,11 @@ describe Carto::Api::DataImportPresenter do
       expected = { :rejected_layers => ["manolo", "escobar"], :user_max_layers => 4, "max_tables_per_import" => 10 }
       presenter.api_public_values[:warnings].should eq expected
     end
+
+    it 'shows if import is raster' do
+      @data_import.send('is_raster?=', true)
+      presenter = Carto::Api::DataImportPresenter.new(@data_import)
+      presenter.api_public_values[:is_raster].should eq true
+    end
   end
 end

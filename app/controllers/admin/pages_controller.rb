@@ -441,10 +441,11 @@ class Admin::PagesController < Admin::AdminController
 
     begin
       vis_item(dataset).merge({
-          rows_count:    dataset.table.rows_counted,
-          size_in_bytes: dataset.table.table_size,
-          geometry_type: geometry_type,
-        })
+        rows_count: dataset.table.rows_counted,
+        size_in_bytes: dataset.table.table_size,
+        geometry_type: geometry_type,
+        source_html_safe: dataset.source_html_safe
+      })
     rescue => e
       # A dataset might be invalid. For example, having the table deleted and not yet cleaned.
       # We don't want public page to be broken, but error must be traced.

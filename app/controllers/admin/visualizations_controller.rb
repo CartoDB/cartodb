@@ -10,8 +10,7 @@ require_dependency 'static_maps_url_helper'
 require_dependency 'carto/user_db_size_cache'
 
 class Admin::VisualizationsController < Admin::AdminController
-
-  include CartoDB
+  include CartoDB, VisualizationsControllerHelper
 
   MAX_MORE_VISUALIZATIONS = 3
   DEFAULT_PLACEHOLDER_CHARS = 4
@@ -20,6 +19,7 @@ class Admin::VisualizationsController < Admin::AdminController
               :show_organization_public_map, :show_organization_embed_map,
               :embed_protected, :public_map_protected, :embed_forbidden, :track_embed
   ssl_required :index, :show, :protected_public_map, :show_protected_public_map
+
   before_filter :login_required, only: [:index]
   before_filter :table_and_schema_from_params, only: [:show, :public_table, :public_map, :show_protected_public_map,
                                                       :show_protected_embed_map, :embed_map]
@@ -34,6 +34,8 @@ class Admin::VisualizationsController < Admin::AdminController
 
   before_filter :resolve_visualization_and_table_if_not_cached, only: [:embed_map]
 
+  after_filter :update_user_last_activity, only: [:index, :show]
+
   skip_before_filter :browser_is_html5_compliant?, only: [:public_map, :embed_map, :track_embed,
                                                           :show_protected_embed_map, :show_protected_public_map]
   skip_before_filter :verify_authenticity_token, only: [:show_protected_public_map, :show_protected_embed_map]
@@ -47,7 +49,6 @@ class Admin::VisualizationsController < Admin::AdminController
     @just_logged_in = !!flash['logged']
     @google_maps_query_string = current_user.google_maps_query_string
     current_user.view_dashboard
-    update_user_last_activity
 
     respond_to do |format|
       format.html { render 'index', layout: 'application' }
@@ -76,8 +77,6 @@ class Admin::VisualizationsController < Admin::AdminController
     end
 
     respond_to { |format| format.html }
-
-    update_user_last_activity
   end
 
   def public_table
@@ -144,6 +143,15 @@ class Admin::VisualizationsController < Admin::AdminController
     end
 
     @name = @visualization.user.name.present? ? @visualization.user.name : @visualization.user.username.truncate(20)
+    @user_url = CartoDB.url(self, 'public_user_feed_home', {}, @visualization.user)
+
+    @is_data_library = data_library_user?
+
+    if @is_data_library
+      @name = "Data Library"
+      @user_url = Cartodb.get_config(:data_library, 'path') ? "#{request.protocol}#{CartoDB.account_host}#{Cartodb.config[:data_library]['path']}" : @user_url
+    end
+
     @avatar_url             = @visualization.user.avatar
     @twitter_username       = @visualization.user.twitter_username.present? ? @visualization.user.twitter_username : nil
     @location               = @visualization.user.location.present? ? @visualization.user.location : nil
@@ -592,12 +600,6 @@ class Admin::VisualizationsController < Admin::AdminController
     vis.liked_by?(current_user.id)
   end
 
-  def update_user_last_activity
-    return false unless current_user.present?
-    current_user.set_last_active_time
-    current_user.set_last_ip_address request.remote_ip
-  end
-
   def render_pretty_404
     render(file: "public/404.html", layout: false, status: 404)
   end
@@ -615,16 +617,7 @@ class Admin::VisualizationsController < Admin::AdminController
     # INFO: organization public visualizations
     user_id = user ? user.id : nil
 
-    # Implicit order due to legacy code: 1st return canonical/table/Dataset if present, else derived/visualization/Map
-    visualization = Carto::VisualizationQueryBuilder.new
-                                                    .with_id_or_name(table_id)
-                                                    .with_user_id(user_id)
-                                                    .build
-                                                    .all
-                                                    .sort { |vis_a, vis_b|
-                                                        vis_a.type == Carto::Visualization::TYPE_CANONICAL ? -1 : 1
-                                                      }
-                                                    .first
+    visualization = get_priority_visualization(table_id, user_id)
 
     return get_visualization_and_table_from_table_id(table_id) if visualization.nil?
     render_pretty_404 if visualization.kind == CartoDB::Visualization::Member::KIND_RASTER
@@ -675,6 +668,10 @@ class Admin::VisualizationsController < Admin::AdminController
   def get_viewed_user
     username = CartoDB.extract_subdomain(request).strip.downcase
     @viewed_user = ::User.where(username: username).first
+  end
+
+  def data_library_user?
+    Cartodb.get_config(:data_library, 'username') && (Cartodb.config[:data_library]['username'] == @viewed_user.username)
   end
 
 end

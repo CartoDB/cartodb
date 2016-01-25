@@ -43,7 +43,6 @@
 **/src/geo/gmaps/gmaps-point-view.js
 **/src/geo/gmaps/gmaps-tiled-layer-view.js
 **/src/geo/gmaps/projector.js
-**/src/geo/gmaps.js
 **/src/geo/leaflet/leaflet-cartodb-layer-group-view.js
 **/src/geo/leaflet/leaflet-gmaps-tiled-layer-view.js
 **/src/geo/leaflet/leaflet-layer-view.js
@@ -53,10 +52,6 @@
 **/src/geo/leaflet/leaflet-point-view.js
 **/src/geo/leaflet/leaflet-tiled-layer-view.js
 **/src/geo/leaflet/leaflet-wms-layer-view.js
-**/src/geo/leaflet.js
-**/src/geo/map/cartodb-layer-group-anonymous.js
-**/src/geo/map/cartodb-layer-group-base.js
-**/src/geo/map/cartodb-layer-group-named.js
 **/src/geo/map/cartodb-layer.js
 **/src/geo/map/gmaps-base-layer.js
 **/src/geo/map/layers.js
@@ -144,14 +139,10 @@
 **/test/spec/geo/geocoder/nokia-geocoder.spec.js
 **/test/spec/geo/geocoder/yahoo-geocoder.spec.js
 **/test/spec/geo/geometry.spec.js
-**/test/spec/geo/gmaps/gmaps.spec.js
 **/test/spec/geo/gmaps_cartodb_layer/hide.js
 **/test/spec/geo/gmaps_cartodb_layer/interaction.js
 **/test/spec/geo/gmaps_cartodb_layer/opacity.js
 **/test/spec/geo/gmaps_cartodb_layer/show.js
-**/test/spec/geo/leaflet/leaflet.spec.js
-**/test/spec/geo/map/cartodb-layer-group-anonymous.spec.js
-**/test/spec/geo/map/cartodb-layer-group-named.spec.js
 **/test/spec/geo/map/cartodb-layer.spec.js
 **/test/spec/geo/map/gmaps-base-layer.spec.js
 **/test/spec/geo/map/layers.spec.js

@@ -1,7 +1,7 @@
 var gmapsModels = {};
 
 // only add models if google.maps lib is loaded
-if (typeof(window.google) != 'undefined' && typeof(window.google.maps) != 'undefined') {
+if (typeof (window.google) !== 'undefined' && typeof (window.google.maps) !== 'undefined') {
   gmapsModels = {
     gmaps: {
       PointView: require('./gmaps/gmaps-point-view'),
@@ -12,7 +12,7 @@ if (typeof(window.google) != 'undefined' && typeof(window.google.maps) != 'undef
     GMapsLayerView: require('./gmaps/gmaps-layer-view'),
     GMapsPlainLayerView: require('./gmaps/gmaps-plain-layer-view'),
     GMapsBaseLayerView: require('./gmaps/gmaps-base-layer-view'),
-    GMapsCartoDBLayerGroupView: require('./gmaps/gmaps-cartodb-layer-group-view'),
+    GMapsCartoDBLayerGroupView: require('./gmaps/gmaps-cartodb-layer-group-view')
   };
 }
 

@@ -1,7 +1,10 @@
+/* global google */
 var cdb = require('cdb');
 var log = require('cdb.log');
 
 var GMapsLayerViewFactory = function () {};
+
+var constructors = {};
 
 // Only "register" the layer view mappings if Google Maps library is present
 if (typeof (google) !== 'undefined' && typeof (google.maps) !== 'undefined') {
@@ -11,7 +14,7 @@ if (typeof (google) !== 'undefined' && typeof (google.maps) !== 'undefined') {
   var GMapsPlainLayerView = require('./gmaps-plain-layer-view');
   var GMapsCartoDBLayerGroupView = require('./gmaps-cartodb-layer-group-view');
 
-  GMapsLayerViewFactory.prototype._constructors = {
+  constructors = {
     'tiled': GMapsTiledLayerView,
     'wms': LeafletWMSLayerView,
     'plain': GMapsPlainLayerView,
@@ -28,6 +31,8 @@ if (typeof (google) !== 'undefined' && typeof (google.maps) !== 'undefined') {
     }
   };
 }
+
+GMapsLayerViewFactory.prototype._constructors = constructors;
 
 GMapsLayerViewFactory.prototype.createLayerView = function (layerModel, mapModel) {
   var layerType = layerModel.get('type').toLowerCase();

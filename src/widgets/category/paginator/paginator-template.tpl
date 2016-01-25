@@ -1,6 +1,6 @@
 <div class="CDB-Widget-contentFlex">
   <button class="u-rSpace--m CDB-Widget-buttonIcon CDB-Widget-textSmaller CDB-Widget-textSmaller--upper js-searchToggle">
-    <i class="CDB-IconFont CDB-IconFont--center CDB-IconFont--lens u-rSpace"></i>
+    <i class="CDB-IconFont CDB-IconFont--center CDB-IconFont-lens u-rSpace"></i>
     <span class="u-iBlock">
       search in <%- categoriesCount %> categor<%- categoriesCount === 1 ? 'y' : 'ies' %>
     </span>

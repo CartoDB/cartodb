@@ -4,7 +4,7 @@
     <%- isSizesApplied ? 'is-selected' : '' %>
     <%- isSizesApplied ? 'js-cancelSizes' : 'js-applySizes' %>
     " data-tooltip="<%- isSizesApplied ? 'Remove sizes' : 'Apply sizes' %>">
-    <i class="CDB-IconFont CDB-IconFont--drop CDB-IconFont--small CDB-IconFont--top"></i>
+    <i class="CDB-IconFont CDB-IconFont-drop CDB-IconFont--small CDB-IconFont--top"></i>
   </button>
   <button class="CDB-Shape-threePoints js-actions">
     <span class="CDB-Shape-threePointsItem"></span>

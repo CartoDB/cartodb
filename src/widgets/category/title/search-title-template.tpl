@@ -1,6 +1,6 @@
 <% if (isSearchEnabled) { %>
   <form class="CDB-Widget-search js-form">
-    <i class="CDB-IconFont CDB-IconFont--lens CDB-Widget-searchLens"></i>
+    <i class="CDB-IconFont CDB-IconFont-lens CDB-Widget-searchLens"></i>
     <input type="text" class="CDB-Widget-textInput CDB-Widget-searchTextInput js-textInput" value="<%- q %>" placeholder="Search by <%- columnName %>"/>
     <% if (canShowApply) { %>
       <button type="button" class="CDB-Widget-link CDB-Widget-searchApply js-applyLocked">apply</button>
@@ -16,7 +16,7 @@
         " data-tooltip="
           <%- isColorApplied ? 'Remove colors' : 'Apply colors' %>
         ">
-        <i class="CDB-IconFont CDB-IconFont--drop CDB-IconFont--small CDB-IconFont--top"></i>
+        <i class="CDB-IconFont CDB-IconFont-drop CDB-IconFont--small CDB-IconFont--top"></i>
       </button>
       <button class="CDB-Shape-threePoints js-actions">
         <span class="CDB-Shape-threePointsItem"></span>

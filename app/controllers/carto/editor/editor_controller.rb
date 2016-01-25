@@ -1,3 +1,5 @@
+require_relative '../api/vizjson_presenter'
+
 module Carto
   module Editor
     class EditorController < ApplicationController

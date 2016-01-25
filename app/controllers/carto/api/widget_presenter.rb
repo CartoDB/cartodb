@@ -13,6 +13,7 @@ module Carto
 
         {
           type: @widget.type,
+          title: @widget.title,
           order: @widget.order,
           options: @widget.options_json
         }

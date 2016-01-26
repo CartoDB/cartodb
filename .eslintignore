@@ -115,10 +115,8 @@
 **/src/ui/common/table.js
 **/src/ui/common/tabpane.js
 **/src/vis/image/queue.js
-**/src/vis/layers.js
 **/src/vis/overlays.js
 **/src/vis/vis/infowindow-template.js
-**/src/vis/vis/layers.js
 **/src/vis/vis/overlay.js
 **/src/vis/vis/overlays.js
 **/src/vis/vis.js
@@ -166,6 +164,5 @@
 **/test/spec/ui/common/notification.spec.js
 **/test/spec/ui/common/table.spec.js
 **/test/spec/ui/common/tabpane.spec.js
-**/test/spec/vis/layers.spec.js
 **/test/spec/vis/overlay_spec.js
 **/test/spec/vis/vis.spec.js

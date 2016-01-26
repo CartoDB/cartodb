@@ -21,4 +21,30 @@ describe Carto::Widget do
       Carto::Widget.where(id: widget.id).first.should be_nil
     end
   end
+
+  describe '#from_visualization_id' do
+    before(:each) do
+      @map = FactoryGirl.create(:carto_map_with_layers)
+      @visualization = FactoryGirl.create(:carto_visualization, map: @map)
+    end
+
+    after(:each) do
+      @visualization.destroy
+      @map.destroy
+    end
+
+    it 'retrieves all visualization widgets' do
+      layer = @visualization.data_layers.first
+      widget = FactoryGirl.create(:widget, layer: layer)
+      widget2 = FactoryGirl.create(:widget_with_layer)
+
+      widgets = Carto::Widget.from_visualization_id(@visualization.id)
+      widgets.length.should == 1
+      widgets.should include(widget)
+      widgets.should_not include(widget2)
+
+      widget2.destroy
+      widget.destroy
+    end
+  end
 end

@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "3.23.24",
+  "version": "3.23.25",
   "description": "CartoDB UI frontend",
   "repository": {
     "type": "git",
@@ -58,6 +58,8 @@
     "source-map-support": "0.3.2",
     "uglify-js": "2.4.x",
     "underscore": "1.8.3",
+    "node-polyglot": "1.0.0",
+    "gomoob.i18n": "1.0.0-alpha.1",
     "watchify": "3.1.1"
   },
   "files": [
@@ -76,5 +78,8 @@
     "cartodb.js": "global:cdb",
     "backbone": "global:Backbone",
     "moment": "global:moment"
+  },
+  "dependencies": {
+    "node-polyglot": "^1.0.0"
   }
 }

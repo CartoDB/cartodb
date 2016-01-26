@@ -10,15 +10,14 @@ module Carto
         @redis_vizjson_cache = CartoDB::Visualization::RedisVizjsonCache.new(redis_cache)
       end
 
-      def to_vizjson(options={})
-        vizjson = Carto::Api::VizJSONPresenter.new(@visualization, @redis_cache).to_vizjson
-        vizjson[:widgets] = Carto::Widget.from_visualization_id(@visualization.id).map { |w| Carto::Api::WidgetPresenter.new(w).to_poro }
+      def to_vizjson(options = {})
+        vizjson = Carto::Api::VizJSONPresenter.new(@visualization, @redis_cache).to_vizjson(options)
+        vizjson[:widgets] = Carto::Widget.from_visualization_id(@visualization.id).map do |w|
+          Carto::Api::WidgetPresenter.new(w).to_poro
+        end
         vizjson
       end
-
-      private
 
     end
   end
 end
-

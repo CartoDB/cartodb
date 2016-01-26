@@ -1482,7 +1482,7 @@ describe Carto::Api::VisualizationsController do
 
       it 'returns visualization widgets' do
         layer = create_layer('table_1', $user_1.username, 1).save
-        map = @visualization.map.add_layer(layer)
+        @visualization.map.add_layer(layer)
         widget = FactoryGirl.create(:widget, layer: Carto::Layer.find(layer.id))
 
         widget2 = FactoryGirl.create(:widget_with_layer, type: 'fake')

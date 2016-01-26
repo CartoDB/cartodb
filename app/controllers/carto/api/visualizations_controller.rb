@@ -122,11 +122,11 @@ module Carto
       private
 
       def generate_vizjson2
-        Carto::Api::VizJSONPresenter.new(@visualization, $tables_metadata).to_vizjson( { https_request: is_https? } )
+        Carto::Api::VizJSONPresenter.new(@visualization, $tables_metadata).to_vizjson(https_request: is_https?)
       end
 
       def generate_vizjson3
-        Carto::Api::VizJSON3Presenter.new(@visualization, $tables_metadata).to_vizjson( { https_request: is_https? } )
+        Carto::Api::VizJSON3Presenter.new(@visualization, $tables_metadata).to_vizjson(https_request: is_https?)
       end
 
       def render_vizjson(vizjson)
@@ -135,7 +135,7 @@ module Carto
       rescue KeyError => exception
         render(text: exception.message, status: 403)
       rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
-        CartoDB.notify_exception(exception, { user: current_user, template_data: exception.template_data })
+        CartoDB.notify_exception(exception, user: current_user, template_data: exception.template_data)
         render_jsonp({ errors: { named_maps_api: "Communication error with tiler API. HTTP Code: #{exception.message}" } }, 400)
       rescue CartoDB::NamedMapsWrapper::NamedMapDataError => exception
         CartoDB.notify_exception(exception)

@@ -58,7 +58,7 @@ shared_context 'visualization creation helpers' do
                   '"cache_policy":"persist"},"cdn_url":"","tile_style_history":[],"style_version":"2.1.1",' \
                   '"table_name":"districtes_barcelona","user_name":"ethervoid-common",' \
                   '"tile_style":"#districtes_barcelona {\n  polygon-fill:#FF6600;\n  polygon-opacity: 0.7;\n  ' \
-                  'line-opacity:1;\n  line-color: #FFFFFF;\n}"}'
+                  'line-opacity:1;\n  line-color: #FFFFFF;\n}"}'.freeze
 
   def create_layer(table_name, user_name, order = 1)
     options = JSON.parse(CARTO_OPTIONS)

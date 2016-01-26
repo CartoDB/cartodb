@@ -18,11 +18,8 @@ describe Carto::Api::ImportsController do
 
   after(:all) do
     stub_named_maps_calls
-    Resque.inline = false
     delete_user_data $user_1
   end
-
-  let(:params) { { :api_key => $user_1.api_key } }
 
   let(:params) { { :api_key => $user_1.api_key } }
 
@@ -439,7 +436,5 @@ describe Carto::Api::ImportsController do
 
   end
 
-  #include Rack::Test::Methods
-  #include Warden::Test::Helpers
 end
 

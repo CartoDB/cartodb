@@ -109,6 +109,11 @@ defaults: &defaults
       base_url: ''
       api_key: ''
       table_name: ''
+    api:
+      host: 'localhost'
+      port: 12345
+      dbname: 'my_sample_db'
+      user: 'my_sample_user'
   importer:
     s3:
       access_key_id:

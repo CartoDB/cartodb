@@ -22,7 +22,7 @@ var MapLayer = Model.extend({
   },
 
   needsUpdate: function() {
-    return true;
+    return false;
   },
 
   /***

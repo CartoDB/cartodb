@@ -17,6 +17,7 @@
       "type": "BSD"
     }
   ],
+  "dependencies": {},
   "devDependencies": {
     "autoprefixer-core": "5.2.1",
     "aws-sdk": "2.0.0-rc11",

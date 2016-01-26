@@ -51,7 +51,8 @@ module Carto
         end
 
         if @options[:current_user].organization_owner?
-          poro.merge!(table_count: @user.table_count, all_visualization_count: @user.all_visualization_count)
+          poro[:table_count] = @user.table_count
+          poro[:all_visualization_count] = @user.all_visualization_count
         end
 
         poro

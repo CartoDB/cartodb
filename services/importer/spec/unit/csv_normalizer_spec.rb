@@ -9,7 +9,7 @@ include CartoDB::Importer2::Doubles
 describe CartoDB::Importer2::CsvNormalizer do
 
   BUG_COLUMNS_WRONG_SPLIT_FIXTURE_FILE = "#{File.dirname(__FILE__)}/bug_columns_wrong_split.csv"
-  
+
   describe '#run' do
     it 'transforms the file using a proper comma delimiter' do
       fixture = tab_delimiter_factory
@@ -20,6 +20,16 @@ describe CartoDB::Importer2::CsvNormalizer do
       csv.delimiter.should eq "\t"
       csv.run
       csv.delimiter.should eq ','
+    end
+    it 'raise if detects an empty file' do
+      fixture = empty_file_factory
+
+      csv     = CartoDB::Importer2::CsvNormalizer.new(fixture, Log.new)
+      expect {
+        csv.run
+      }.to raise_exception CartoDB::Importer2::EmptyFileError
+
+      FileUtils.rm(fixture)
     end
   end
 
@@ -211,6 +221,14 @@ describe CartoDB::Importer2::CsvNormalizer do
       csv << ['header_1']
       csv << ['row 1']
     end
+
+    filepath
+  end
+
+  def empty_file_factory
+    filepath = get_temp_csv_fullpath
+
+    FileUtils.touch(filepath)
 
     filepath
   end

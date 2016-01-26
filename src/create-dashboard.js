@@ -7,25 +7,35 @@ var WidgetsCollection = require('./widgets/widgets-collection');
 var WidgetModel = require('./widgets/widget-model');
 var CategoryWidgetModel = require('./widgets/category/category-widget-model');
 
-module.exports = function (selector, diJSON, visOpts) {
+/**
+ * Translates a vizJSON v3 datastructure into a working dashboard which will be rendered in given selector.
+ *
+ * @param {String} selector e.g. "#foobar-id", ".some-class"
+ * @param {Object} vizJSON JSON datastructure
+ * @param {Object} opts (Optional) flags, see 3rd param for cdb.createVis for available ones.
+ * @return {Object} with keys:
+ *   dashboardView: root (backbone) view of the dashboard
+ *   vis: the instantiated vis map, same result as given from cdb.createVis()
+ */
+module.exports = function (selector, vizJSON, opts) {
   var dashboardEl = document.querySelector(selector);
   if (!dashboardEl) throw new Error('no element found with selector ' + selector);
 
   var widgets = new WidgetsCollection();
 
   var dashboardInfoModel = new cdb.core.Model({
-    title: diJSON.title,
-    description: diJSON.description,
-    updatedAt: diJSON.updated_at,
-    userName: diJSON.user.fullname,
-    userAvatarURL: diJSON.user.avatar_url
+    title: vizJSON.title,
+    description: vizJSON.description,
+    updatedAt: vizJSON.updated_at,
+    userName: vizJSON.user.fullname,
+    userAvatarURL: vizJSON.user.avatar_url
   });
   var dashboardView = new DashboardView({
     el: dashboardEl,
     widgets: widgets,
     dashboardInfoModel: dashboardInfoModel
   });
-  var vis = cdb.createVis(dashboardView.$('#map'), diJSON.vizJSON, visOpts);
+  var vis = cdb.createVis(dashboardView.$('#map'), vizJSON, opts);
 
   var dataviewModelFactory = new DataviewModelFactory({
     list: function (attrs, layer) {
@@ -63,7 +73,7 @@ module.exports = function (selector, diJSON, visOpts) {
 
   // TODO: We can probably move this logic somewhere else
   var widgetModels = [];
-  diJSON.widgets.forEach(function (widget) {
+  vizJSON.widgets.forEach(function (widget) {
     var widgetAttrs = _.omit(widget, 'dataview');
 
     // Create dataview if there's a definition provided

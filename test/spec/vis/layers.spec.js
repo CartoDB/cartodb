@@ -5,16 +5,10 @@ var cdb = require('cdb');
 _.extend(cdb.geo, require('../../../src/geo/leaflet'));
 _.extend(cdb.geo, require('../../../src/geo/gmaps'));
 
-var Vis = require('../../../src/vis/vis');
 var Layers = require('../../../src/vis/vis/layers');
 require('../../../src/vis/layers'); // Layers.register calls
 
 describe('vis/layers', function () {
-  var vis;
-  beforeEach(function () {
-    vis = new Vis({});
-  });
-
   describe('https/http', function () {
     it('torque layer should not rewrite to http if https is not present', function () {
       var layer = Layers.create('torque', {

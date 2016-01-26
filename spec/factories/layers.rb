@@ -1,8 +1,13 @@
 FactoryGirl.define do
 
-  factory :carto_layer, class: Layer do
-    kind 'carto'
+  factory :layer, class: Layer do
     order 1
+    kind 'carto'
+  end
+
+  factory :carto_layer, class: Carto::Layer do
+    order 1
+    kind 'carto'
   end
 
 end

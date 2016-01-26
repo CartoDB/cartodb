@@ -21,6 +21,7 @@
   "devDependencies": {
     "autoprefixer-core": "5.2.1",
     "aws-sdk": "2.0.0-rc11",
+    "backbone": "1.2.3",
     "browserify": "11.0.1",
     "browserify-shim": "3.8.10",
     "cartodb-pecan": "0.2.x",
@@ -53,6 +54,7 @@
     "gulp-install": "0.2.0",
     "gulp-sketch": "0.0.7",
     "jstify": "0.13.0",
+    "jquery": "2.1.4",
     "load-grunt-tasks": "3.2.0",
     "moment": "2.10.6",
     "open": "0.0.5",
@@ -70,12 +72,12 @@
     ]
   },
   "browserify-shim": {
-    "jquery": "global:$",
+    "jquery-cdb-v3": "global:$",
     "underscore-cdb-v3": "global:_",
     "cdb.admin": "global:cdb.admin",
     "cdb.Utils": "global:cdb.Utils",
     "cartodb.js": "global:cdb",
-    "backbone": "global:Backbone",
+    "backbone-cdb-v3": "global:Backbone",
     "moment": "global:moment"
   },
   "semistandard": {

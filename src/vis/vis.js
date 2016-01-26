@@ -195,7 +195,7 @@ var Vis = View.extend({
 
     options = options || {};
 
-    this._applyOptions(data, options);
+    this._applyOptionsToVizJSON(data, options);
 
     var scrollwheel = (options.scrollwheel === undefined) ? data.scrollwheel : options.scrollwheel;
 
@@ -207,30 +207,6 @@ var Vis = View.extend({
     }));
 
     var allowDragging = this.isMobileDevice() || hasZoomOverlay || scrollwheel;
-
-    // Force using GMaps ?
-    if ( (this.gmaps_base_type) && (data.map_provider === 'leaflet')) {
-      // Check if base_type is correct
-      var typesAllowed = ['roadmap', 'gray_roadmap', 'dark_roadmap', 'hybrid', 'satellite', 'terrain'];
-      if (_.contains(typesAllowed, this.gmaps_base_type)) {
-        if (data.layers) {
-          data.layers[0].options.type = 'GMapsBase';
-          data.layers[0].options.base_type = this.gmaps_base_type;
-          data.layers[0].options.name = this.gmaps_base_type;
-
-          if (this.gmaps_style) {
-            data.layers[0].options.style = typeof this.gmaps_style === 'string' ? JSON.parse(this.gmaps_style) : this.gmaps_style;
-          }
-
-          data.map_provider = 'googlemaps';
-          data.layers[0].options.attribution = ''; // GMaps has its own attribution
-        } else {
-          log.error('No base map loaded. Using Leaflet.');
-        }
-      } else {
-        log.error('GMaps base_type "' + this.gmaps_base_type + ' is not supported. Using leaflet.');
-      }
-    }
 
     // Create the instance of the cdb.geo.Map model
     var mapConfig = {
@@ -393,12 +369,12 @@ var Vis = View.extend({
     return this;
   },
 
-  _newLayerModels: function (vizJSON) {
+  _newLayerModels: function (vizjson) {
     var layerModels = [];
     var layersOptions = {
       https: this.https
     };
-    _.each(vizJSON.layers, function (layerData) {
+    _.each(vizjson.layers, function (layerData) {
       if (layerData.type === 'layergroup' || layerData.type === 'namedmap') {
         var layersData;
         if (layerData.type === 'layergroup') {
@@ -416,7 +392,6 @@ var Vis = View.extend({
 
     return layerModels;
   },
-
 
   _invalidateSizeOnDataviewsChanges: function () {
     if (this._dataviewsCollection.size() > 0) {
@@ -581,7 +556,7 @@ var Vis = View.extend({
   },
 
   // change vizjson based on options
-  _applyOptions: function (vizjson, opt) {
+  _applyOptionsToVizJSON: function (vizjson, opt) {
     opt = opt || {};
     opt = _.defaults(opt, {
       tiles_loader: true,
@@ -648,7 +623,7 @@ var Vis = View.extend({
       });
     }
 
-    if ( (opt.title && vizjson.title) || (opt.description && vizjson.description)) {
+    if ((opt.title && vizjson.title) || (opt.description && vizjson.description)) {
       if (!search_overlay('header')) {
         vizjson.overlays.unshift({
           type: 'header',
@@ -744,6 +719,30 @@ var Vis = View.extend({
         }
       }
       _applyLayerOptions(vizjson.layers);
+    }
+
+    // Force using GMaps ?
+    if ((this.gmaps_base_type) && (vizjson.map_provider === 'leaflet')) {
+      // Check if base_type is correct
+      var typesAllowed = ['roadmap', 'gray_roadmap', 'dark_roadmap', 'hybrid', 'satellite', 'terrain'];
+      if (_.contains(typesAllowed, this.gmaps_base_type)) {
+        if (vizjson.layers) {
+          vizjson.layers[0].options.type = 'GMapsBase';
+          vizjson.layers[0].options.base_type = this.gmaps_base_type;
+          vizjson.layers[0].options.name = this.gmaps_base_type;
+
+          if (this.gmaps_style) {
+            vizjson.layers[0].options.style = typeof this.gmaps_style === 'string' ? JSON.parse(this.gmaps_style) : this.gmaps_style;
+          }
+
+          vizjson.map_provider = 'googlemaps';
+          vizjson.layers[0].options.attribution = ''; // GMaps has its own attribution
+        } else {
+          log.error('No base map loaded. Using Leaflet.');
+        }
+      } else {
+        log.error('GMaps base_type "' + this.gmaps_base_type + ' is not supported. Using leaflet.');
+      }
     }
   },
 

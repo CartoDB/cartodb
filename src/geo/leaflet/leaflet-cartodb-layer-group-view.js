@@ -1,5 +1,6 @@
 var wax = require('wax.cartodb.js');
 var L = require('leaflet');
+require("d3.cartodb")
 var config = require('cdb.config');
 var Profiler = require('cdb.core.Profiler');
 var LeafletLayerView = require('./leaflet-layer-view');
@@ -7,7 +8,7 @@ var CartoDBLayerCommon = require('../cartodb-layer-common');
 var _ = require('underscore');
 var Backbone = require('backbone');
 
-var LeafletCartoDBLayerGroupView = L.TileLayer.extend({
+var LeafletCartoDBLayerGroupView = L.CartoDBd3Layer.extend({
   includes: [
     Backbone.Events,
     LeafletLayerView.prototype,
@@ -53,6 +54,7 @@ var LeafletCartoDBLayerGroupView = L.TileLayer.extend({
     var previousEvent;
     var eventTimeout = -1;
 
+
     opts.featureOver = function (e, latlon, pxPos, data, layer) {
       if (!hovers[layer]) {
         self.trigger('layerenter', e, latlon, pxPos, data, layer);
@@ -97,6 +99,7 @@ var LeafletCartoDBLayerGroupView = L.TileLayer.extend({
 
     // Bind changes to the urls of the model
     layerModel.bind('change:urls', function () {
+      var model = this
       self.__update(function () {
         // if while the layer was processed in the server is removed
         // it should not be added to the map
@@ -104,17 +107,22 @@ var LeafletCartoDBLayerGroupView = L.TileLayer.extend({
         if (!leafletMap._layers[id]) {
           return;
         }
-
-        L.TileLayer.prototype.onAdd.call(self, leafletMap);
+        self.options.styles = model.layers.pluck('cartocss')
+        L.CartoDBd3Layer.prototype.onAdd.call(self, leafletMap);
         self.fire('added');
         self.options.added = true;
       });
     });
 
+    layerModel.layers.bind('change:cartocss', function (child, style) {
+      var index = child.get("order") - 1
+      self.setCartoCSS(index, style)
+    })
+
     this.addProfiling();
 
     CartoDBLayerCommon.call(this);
-    L.TileLayer.prototype.initialize.call(this);
+    L.CartoDBd3Layer.prototype.initialize.call(this);
     LeafletLayerView.call(this, layerModel, this, leafletMap);
   },
 
@@ -229,6 +237,10 @@ var LeafletCartoDBLayerGroupView = L.TileLayer.extend({
     if (tilejson) {
       self.tilejson = tilejson;
       self.setUrl(self.tilejson.tiles[0]);
+      // self.setProvider({
+      //   styles: [],
+      //   templateUrl: self.tilejson.tiles[0]
+      // });
       // manage interaction
       self._reloadInteraction();
       self.ok && self.ok();

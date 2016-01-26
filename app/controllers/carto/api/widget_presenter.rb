@@ -15,6 +15,7 @@ module Carto
           type: @widget.type,
           title: @widget.title,
           order: @widget.order,
+          layerId: @widget.layer_id,
           options: @widget.options_json
         }
       end

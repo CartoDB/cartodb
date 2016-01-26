@@ -16,7 +16,7 @@ describe UserOrganization do
     after(:each) do
       stub_named_maps_calls
       @organization.destroy_cascade if @organization
-      @owner = ::User.where(id: @owner.id).first
+      @owner = ::User.where(id: @owner.id).first if @owner
       @owner.destroy if @owner
     end
 
@@ -68,6 +68,28 @@ describe UserOrganization do
       triggers_after.map { |t| [t.database_name, t.table_name, t.trigger_name] } .should == triggers_before.map { |t| [t.database_name, t.table_name, t.trigger_name] }
 
       @owner.db_service.triggers_in_schema('public').should be_empty
+    end
+
+    # See #6295: Moving user to its own schema (i.e on org creation) leaves triggers on public schema
+    it 'moves views to the new schema' do
+      table = create_random_table(@owner)
+
+      view_name = 'mv_test'
+      create_view_query = %Q{
+        CREATE VIEW #{view_name}
+            AS select name from #{table.qualified_table_name};
+      }
+
+      @owner.in_database.run(create_view_query)
+
+      @owner.db_service.views.map { |v| v.name }.should include(view_name)
+
+      owner_org = CartoDB::UserOrganization.new(@organization.id, @owner.id)
+      owner_org.promote_user_to_admin
+      @owner.reload
+
+      @owner.db_service.views.map { |v| v.name }.should include(view_name)
+      @owner.db_service.views('public').map { |v| v.name }.should be_empty
     end
 
     # See #6295: Moving user to its own schema (i.e on org creation) leaves triggers on public schema

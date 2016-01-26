@@ -276,18 +276,9 @@ module CartoDB
       def move_tables_to_schema(old_schema, new_schema)
         @user.in_database(as: :superuser) do |database|
           database.transaction do
-            @user.real_tables(old_schema).each do |t|
-              old_name = "#{old_schema}.#{t[:relname]}"
-              new_name = "#{new_schema}.#{t[:relname]}"
-
-              was_cartodbfied = Carto::UserTable.find_by_user_id_and_name(@user.id, t[:relname]).present?
-
-              database.run(%{ SELECT cartodb._CDB_drop_triggers('#{old_name}'::REGCLASS) }) if was_cartodbfied
-              database.run(%{ ALTER TABLE #{old_name} SET SCHEMA "#{new_schema}" })
-              if was_cartodbfied
-                database.run(%{ SELECT cartodb.CDB_CartodbfyTable('#{new_schema}'::TEXT, '#{new_name}'::REGCLASS) })
-              end
-            end
+            @user.real_tables(old_schema).each { |t| move_table_to_schema(t, database, old_schema, new_schema) }
+            views(@user.database_username, old_schema).each { |v| move_view_to_schema(v, database, old_schema, new_schema) }
+            materialized_views(@user.database_username, old_schema).each { |v| move_materialized_view_to_schema(v, database, old_schema, new_schema) }
           end
         end
       end
@@ -302,25 +293,12 @@ module CartoDB
         end
       end
 
-      def materialized_views(schema = @user.database_schema)
-        database = @user.database_name
-        query = %Q{
-          select ns.nspname as schemaname,
-                 mv.relname as matviewname,
-                 string_agg(atr.attname ||' '||pg_catalog.format_type(atr.atttypid, NULL), ', ') as columns
-          from pg_class mv
-            join pg_namespace ns on mv.relnamespace = ns.oid
-            join pg_attribute atr
-              on atr.attrelid = mv.oid
-             and atr.attnum > 0
-             and not atr.attisdropped
-          where mv.relkind = 'm'
-             and ns.nspname = '#{schema}'
-          group by ns.nspname, mv.relname;
-        }
-        @user.in_database do |user_database|
-          user_database[query].all.map { |t| MaterializedView.new(database_name: @user.database_name, database_schema: t[:schemaname], name: t[:matviewname]) }
-        end
+      def views(owner_role = @user.database_username, schema = @user.database_schema)
+        views_from_pg_class(owner_role, schema, 'v')
+      end
+
+      def materialized_views(owner_role = @user.database_username, schema = @user.database_schema)
+        views_from_pg_class(owner_role, schema, 'm')
       end
 
       def triggers_in_user_schema
@@ -1150,6 +1128,58 @@ module CartoDB
       end
 
       private
+
+      def move_table_to_schema(t, database, old_schema, new_schema)
+        old_name = "#{old_schema}.#{t[:relname]}"
+        new_name = "#{new_schema}.#{t[:relname]}"
+
+        was_cartodbfied = Carto::UserTable.find_by_user_id_and_name(@user.id, t[:relname]).present?
+
+        database.run(%{ SELECT cartodb._CDB_drop_triggers('#{old_name}'::REGCLASS) }) if was_cartodbfied
+        database.run(%{ ALTER TABLE #{old_name} SET SCHEMA "#{new_schema}" })
+        if was_cartodbfied
+          database.run(%{ SELECT cartodb.CDB_CartodbfyTable('#{new_schema}'::TEXT, '#{new_name}'::REGCLASS) })
+        end
+      end
+
+      def move_view_to_schema(view, database, old_schema, new_schema)
+        old_name = "#{old_schema}.#{view.name}"
+        new_name = "#{new_schema}.#{view.name}"
+
+        database.run(%{ ALTER VIEW #{old_name} SET SCHEMA "#{new_schema}" })
+      end
+
+      def move_materialized_view_to_schema(view, database, old_schema, new_schema)
+        old_name = "#{old_schema}.#{view.name}"
+        new_name = "#{new_schema}.#{view.name}"
+
+        database.run(%{ ALTER MATERIALIZED VIEW #{old_name} SET SCHEMA "#{new_schema}" })
+      end
+
+      # relkind: 'm' (materialized view) or 'v' (view). Default: 'v'.
+      def views_from_pg_class(owner_role = @user.database_username, schema = @user.database_schema, relkind = 'v')
+        database = @user.database_name
+        query = %Q{
+          select ns.nspname as schemaname,
+                 pc.relname as matviewname,
+                 string_agg(atr.attname ||' '||pg_catalog.format_type(atr.atttypid, NULL), ', ') as columns
+          from pg_class pc
+            join pg_namespace ns on pc.relnamespace = ns.oid
+            join pg_attribute atr
+              on atr.attrelid = pc.oid
+             and atr.attnum > 0
+             and not atr.attisdropped
+            join pg_roles
+              on pc.relowner = pg_roles.oid
+          where pc.relkind = '#{relkind}'
+             and ns.nspname = '#{schema}'
+             and rolname = '#{owner_role}'
+          group by ns.nspname, pc.relname;
+        }
+        @user.in_database do |user_database|
+          user_database[query].all.map { |t| View.new(database_name: @user.database_name, database_schema: t[:schemaname], name: t[:matviewname], relkind: relkind) }
+        end
+      end
 
       def http_client
         @http_client ||= Carto::Http::Client.get('old_user', log_requests: true)

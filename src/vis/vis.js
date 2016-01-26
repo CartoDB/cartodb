@@ -38,7 +38,6 @@ var Vis = View.extend({
   initialize: function () {
     _.bindAll(this, 'loadingTiles', 'loadTiles', '_onResize');
 
-    this.https = false;
     this.overlays = [];
     this.moduleChecked = false;
 
@@ -159,6 +158,7 @@ var Vis = View.extend({
     }
 
     var self = this;
+    this.https = (window && window.location.protocol && window.location.protocol === 'https:') || !!data.https;
 
     // Load the viz.json in case we receive a url instead of a JSON object
     if (typeof (data) === 'string') {
@@ -191,15 +191,6 @@ var Vis = View.extend({
       });
 
       return this;
-    }
-
-    // TODO: This should be part of a model
-    if (window && window.location.protocol && window.location.protocol === 'https:') {
-      this.https = true;
-    }
-
-    if (data.https) {
-      this.https = data.https;
     }
 
     options = options || {};
@@ -331,23 +322,7 @@ var Vis = View.extend({
       this.mapView.bind('newLayerView', this.addTooltip, this);
     }
 
-    var layers = [];
-
-    _.each(data.layers, function (layerData) {
-      if (layerData.type === 'layergroup' || layerData.type === 'namedmap') {
-        var layersData;
-        if (layerData.type === 'layergroup') {
-          layersData = layerData.options.layer_definition.layers;
-        } else {
-          layersData = layerData.options.named_map.layers;
-        }
-        _.each(layersData, function (layerData) {
-          layers.push(Layers.create('CartoDB', self, layerData));
-        });
-      } else {
-        layers.push(Layers.create(layerData.type, self, layerData));
-      }
-    });
+    var layers = this._newLayerModels(data);
 
     // TODO: This is PUBLIC. Remove dependency on this attribute from deep-insights.js
     this.interactiveLayers = new Backbone.Collection(_.select(layers, function (layer) {
@@ -411,13 +386,37 @@ var Vis = View.extend({
     }, this);
     this.overlayModels.reset(data.overlays);
 
-
     _.defer(function () {
       self.trigger('done', self, map.layers);
     });
 
     return this;
   },
+
+  _newLayerModels: function (vizJSON) {
+    var layerModels = [];
+    var layersOptions = {
+      https: this.https
+    };
+    _.each(vizJSON.layers, function (layerData) {
+      if (layerData.type === 'layergroup' || layerData.type === 'namedmap') {
+        var layersData;
+        if (layerData.type === 'layergroup') {
+          layersData = layerData.options.layer_definition.layers;
+        } else {
+          layersData = layerData.options.named_map.layers;
+        }
+        _.each(layersData, function (layerData) {
+          layerModels.push(Layers.create('CartoDB', layerData, layersOptions));
+        });
+      } else {
+        layerModels.push(Layers.create(layerData.type, layerData, layersOptions));
+      }
+    });
+
+    return layerModels;
+  },
+
 
   _invalidateSizeOnDataviewsChanges: function () {
     if (this._dataviewsCollection.size() > 0) {

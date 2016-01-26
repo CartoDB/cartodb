@@ -10,7 +10,6 @@ var TorqueLayer = require('../geo/map/torque-layer');
  *  if we are using http and the tiles of base map need to be fetched from
  *  https try to fix it
  */
-
 var HTTPS_TO_HTTP = {
   'https://dnv9my2eseobd.cloudfront.net/': 'http://a.tiles.mapbox.com/',
   'https://maps.nlp.nokia.com/': 'http://maps.nlp.nokia.com/',
@@ -39,11 +38,11 @@ function transformToHTTPS (tilesTemplate) {
   return tilesTemplate;
 }
 
-Layers.register('tilejson', function (vis, data) {
+Layers.register('tilejson', function (data, options) {
   var url = data.tiles[0];
-  if (vis.https === true) {
+  if (options.https === true) {
     url = transformToHTTPS(url);
-  } else if (vis.https === false) { // Checking for an explicit false value. If it's undefined the url is left as is.
+  } else if (options.https === false) { // Checking for an explicit false value. If it's undefined the url is left as is.
     url = transformToHTTP(url);
   }
   return new TileLayer({
@@ -51,11 +50,11 @@ Layers.register('tilejson', function (vis, data) {
   });
 });
 
-Layers.register('tiled', function (vis, data) {
+Layers.register('tiled', function (data, options) {
   var url = data.urlTemplate;
-  if (vis.https === true) {
+  if (options.https === true) {
     url = transformToHTTPS(url);
-  } else if (vis.https === false) { // Checking for an explicit false value. If it's undefined the url is left as is.
+  } else if (options.https === false) { // Checking for an explicit false value. If it's undefined the url is left as is.
     url = transformToHTTP(url);
   }
 
@@ -63,31 +62,31 @@ Layers.register('tiled', function (vis, data) {
   return new TileLayer(data);
 });
 
-Layers.register('wms', function (vis, data) {
+Layers.register('wms', function (data, options) {
   return new WMSLayer(data);
 });
 
-Layers.register('gmapsbase', function (vis, data) {
+Layers.register('gmapsbase', function (data, options) {
   return new GMapsBaseLayer(data);
 });
 
-Layers.register('plain', function (vis, data) {
+Layers.register('plain', function (data, options) {
   return new PlainLayer(data);
 });
 
-Layers.register('background', function (vis, data) {
+Layers.register('background', function (data, options) {
   return new PlainLayer(data);
 });
 
-Layers.register('cartodb', function (vis, data) {
-  normalizeOptions(vis, data);
+Layers.register('cartodb', function (data, options) {
+  normalizeOptions(data, options);
   return new CartoDBLayer(data);
 });
 
-Layers.register('torque', function (vis, data) {
-  normalizeOptions(vis, data);
+Layers.register('torque', function (data, options) {
+  normalizeOptions(data, options);
   // default is https
-  if (vis.https) {
+  if (options.https) {
     if (data.sql_api_domain && data.sql_api_domain.indexOf('cartodb.com') !== -1) {
       data.sql_api_protocol = 'https';
       data.sql_api_port = 443;
@@ -98,7 +97,7 @@ Layers.register('torque', function (vis, data) {
   return new TorqueLayer(data);
 });
 
-function normalizeOptions (vis, data) {
+function normalizeOptions (data, options) {
   if (data.infowindow && data.infowindow.fields) {
     if (data.interactivity) {
       if (data.interactivity.indexOf('cartodb_id') === -1) {

@@ -22,6 +22,14 @@ var TorqueLayer = MapLayer.extend({
     MapLayer.prototype.initialize.apply(this, arguments);
   },
 
+  needsUpdate: function() {
+    var changed = this.changedAttributes()
+    if (changed) {
+      return changed.cartocss || changed.sql
+    }
+    return false;
+  },
+
   play: function () {
     this.set('isRunning', true);
   },

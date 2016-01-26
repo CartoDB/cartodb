@@ -17,6 +17,7 @@
       "type": "BSD"
     }
   ],
+  "dependencies": {},
   "devDependencies": {
     "autoprefixer-core": "5.2.1",
     "aws-sdk": "2.0.0-rc11",
@@ -24,6 +25,7 @@
     "browserify-shim": "3.8.10",
     "cartodb-pecan": "0.2.x",
     "csswring": "^3.0.5",
+    "cartodb-deep-insights.js": "CartoDB/deep-insights.js#f643810",
     "git-rev": "0.2.1",
     "grunt": "0.4.5",
     "grunt-available-tasks": "0.5.4",
@@ -50,31 +52,73 @@
     "gulp-iconfont-css": "0.0.9",
     "gulp-install": "0.2.0",
     "gulp-sketch": "0.0.7",
+    "jstify": "0.13.0",
     "load-grunt-tasks": "3.2.0",
     "moment": "2.10.6",
     "open": "0.0.5",
     "queue-async": "^1.0.7",
-    "shelljs": "0.5.3",
+    "semistandard": "7.0.4",
     "source-map-support": "0.3.2",
     "uglify-js": "2.4.x",
     "underscore": "1.8.3",
     "watchify": "3.1.1"
   },
-  "files": [
-    "dist"
-  ],
   "browserify": {
     "transform": [
-      "browserify-shim"
+      "browserify-shim",
+      "jstify"
     ]
   },
   "browserify-shim": {
     "jquery": "global:$",
-    "underscore": "global:_",
+    "underscore-cdb-v3": "global:_",
     "cdb.admin": "global:cdb.admin",
     "cdb.Utils": "global:cdb.Utils",
     "cartodb.js": "global:cdb",
     "backbone": "global:Backbone",
     "moment": "global:moment"
+  },
+  "semistandard": {
+    "globals": [
+      "alert",
+      "cartodb",
+      "cdb",
+      "jasmine",
+      "describe",
+      "xdescribe",
+      "beforeEach",
+      "afterEach",
+      "spyOn",
+      "it",
+      "xit",
+      "expect"
+    ],
+    "ignore": [
+      "/.grunt",
+      "/*.js",
+      "/app",
+      "/config",
+      "/db",
+      "/doc",
+      "/engines",
+      "/lib/assets/javascripts/cdb",
+      "/lib/assets/javascripts/utils",
+      "/lib/assets/test/lib",
+      "/lib/build",
+      "/lib/carto",
+      "/lib/cartodb",
+      "/lib/importer",
+      "/lib/resque",
+      "/lib/sql",
+      "/lib/tasks",
+      "/lib/varnish",
+      "/log",
+      "/public",
+      "/script",
+      "/services",
+      "/spec",
+      "/tmp",
+      "/vendor"
+    ]
   }
 }

@@ -15,7 +15,7 @@ module CartoDB
       SCHEMA_IMPORTER = 'cdb_importer'
       SCHEMA_GEOCODING = 'cdb'
       SCHEMA_CDB_GEOCODER_API = 'cdb_geocoder_client'
-      CDB_GEOCODER_API_VERSION = '0.0.1'
+      CDB_GEOCODER_API_VERSION = '0.1.0'
 
       def initialize(user)
         raise "User nil" unless user

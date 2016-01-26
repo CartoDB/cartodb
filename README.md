@@ -56,8 +56,6 @@ Check the [testing doc](TESTING.md) section.
 
 CartoDB works in any modern browser, but if you want more info:
 
-- [Internet Explorer](http://windows.microsoft.com/en-us/internet-explorer/download-ie) from v10.
-- [Opera](http://www.opera.com/) from v31.
-- [Firefox](https://www.mozilla.org/en-US/firefox/new/) from v38.
-- [Safari](http://www.apple.com/safari/) from v8.
-- [Chrome](https://www.google.com/chrome/browser/desktop/) from v31.
+![Chrome](https://raw.github.com/alrra/browser-logos/master/chrome/chrome_48x48.png) | ![Firefox](https://raw.github.com/alrra/browser-logos/master/firefox/firefox_48x48.png) | ![IE](https://raw.github.com/alrra/browser-logos/master/internet-explorer/internet-explorer_48x48.png) | ![Opera](https://raw.github.com/alrra/browser-logos/master/opera/opera_48x48.png) | ![Safari](https://raw.github.com/alrra/browser-logos/master/safari/safari_48x48.png)
+--- | --- | --- | --- | --- |
+31+ ✔ | 38+ ✔ | 10+ ✔ | 31+ ✔ | 8+ ✔ |

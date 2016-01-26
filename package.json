@@ -57,7 +57,6 @@
     "open": "0.0.5",
     "queue-async": "^1.0.7",
     "semistandard": "7.0.4",
-    "shelljs": "0.5.3",
     "source-map-support": "0.3.2",
     "uglify-js": "2.4.x",
     "underscore": "1.8.3",

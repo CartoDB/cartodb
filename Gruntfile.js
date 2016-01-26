@@ -1,5 +1,3 @@
-
- require('shelljs/global');
  var timer = require("grunt-timer");
 
   /**

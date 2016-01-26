@@ -69,29 +69,31 @@ describe UserOrganization do
 
       @owner.db_service.triggers_in_schema('public').should be_empty
     end
-    #
+
     # See #6295: Moving user to its own schema (i.e on org creation) leaves triggers on public schema
     it 'moves functions to the new schema' do
+      name = 'test_function'
       function_creation = %Q{
-        create function test_function() returns integer as $test_function$
+        create function #{name}() returns integer as $test_function$
         begin
           return 1;
         end;
       $test_function$ language plpgsql;
       }
 
-      @owner.in_database.run(truncate_table_function_creation)
+      @owner.in_database.run(function_creation)
 
       functions_before = @owner.db_service.functions
-      # TODO: check exists
+      functions_before.map(&:name).should include(name)
 
       owner_org = CartoDB::UserOrganization.new(@organization.id, @owner.id)
       owner_org.promote_user_to_admin
       @owner.reload
 
       functions_after = @owner.db_service.functions
-      # TODO: check exists
+      functions_after.map(&:name).should include(name)
 
+      @owner.db_service.functions('public').map(&:name).should_not include(name)
     end
 
     # See #6295: Moving user to its own schema (i.e on org creation) leaves triggers on public schema

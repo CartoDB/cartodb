@@ -279,6 +279,7 @@ module CartoDB
             @user.real_tables(old_schema).each { |t| move_table_to_schema(t, database, old_schema, new_schema) }
             views(@user.database_username, old_schema).each { |v| move_view_to_schema(v, database, old_schema, new_schema) }
             materialized_views(@user.database_username, old_schema).each { |v| move_materialized_view_to_schema(v, database, old_schema, new_schema) }
+            functions(@user.database_username, old_schema).each { |v| move_functions_to_schema(v, database, old_schema, new_schema) }
           end
         end
       end
@@ -303,6 +304,10 @@ module CartoDB
 
       def triggers_in_user_schema
         triggers_in_schema(@user.database_schema)
+      end
+
+      def functions(owner_role = @user.database_username, schema = @user.database_schema)
+        functions_from_pg_proc(owner_role, schema)
       end
 
       def triggers_in_schema(schema, database = @user.database_name)
@@ -1144,16 +1149,20 @@ module CartoDB
 
       def move_view_to_schema(view, database, old_schema, new_schema)
         old_name = "#{old_schema}.#{view.name}"
-        new_name = "#{new_schema}.#{view.name}"
 
         database.run(%{ ALTER VIEW #{old_name} SET SCHEMA "#{new_schema}" })
       end
 
       def move_materialized_view_to_schema(view, database, old_schema, new_schema)
         old_name = "#{old_schema}.#{view.name}"
-        new_name = "#{new_schema}.#{view.name}"
 
         database.run(%{ ALTER MATERIALIZED VIEW #{old_name} SET SCHEMA "#{new_schema}" })
+      end
+
+      def move_functions_to_schema(function, database, old_schema, new_schema)
+        old_name = "#{old_schema}.#{function.name}"
+
+        database.run(%{ ALTER FUNCTION #{old_name}(#{function.argument_data_types}) SET SCHEMA "#{new_schema}" })
       end
 
       # relkind: 'm' (materialized view) or 'v' (view). Default: 'v'.
@@ -1181,24 +1190,22 @@ module CartoDB
         end
       end
 
-      def functions_from_pg_proc
-        %Q{
-SELECT n.nspname as "Schema",
-  p.proname as "Name",
-  pg_catalog.pg_get_function_result(p.oid) as "Result data type",
-  pg_catalog.pg_get_function_arguments(p.oid) as "Argument data types",
- CASE
-  WHEN p.proisagg THEN 'agg'
-  WHEN p.proiswindow THEN 'window'
-  WHEN p.prorettype = 'pg_catalog.trigger'::pg_catalog.regtype THEN 'trigger'
-  ELSE 'normal'
- END as "Type"
-FROM pg_catalog.pg_proc p
-     LEFT JOIN pg_catalog.pg_namespace n ON n.oid = p.pronamespace
-WHERE pg_catalog.pg_function_is_visible(p.oid)
-      AND n.nspname <> 'pg_catalog'
-      AND n.nspname <> 'information_schema'
+      def functions_from_pg_proc(owner_role = @user.database_username, schema = @user.database_schema)
+        query = %Q{
+          SELECT n.nspname,
+            p.proname,
+            pg_catalog.pg_get_function_arguments(p.oid) as argument_data_types
+          FROM pg_catalog.pg_proc p
+               LEFT JOIN pg_catalog.pg_namespace n ON n.oid = p.pronamespace
+               JOIN pg_roles
+                 on p.proowner = pg_roles.oid
+          WHERE pg_catalog.pg_function_is_visible(p.oid)
+                AND n.nspname = '#{schema}'
+                AND rolname = '#{owner_role}'
         }
+        @user.in_database do |user_database|
+          user_database[query].all.map { |t| Function.new(database_name: @user.database_name, database_schema: [:nspname], name: t[:proname], argument_data_types: t[:argument_data_types]) }
+        end
       end
 
       def http_client

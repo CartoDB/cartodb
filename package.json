@@ -92,6 +92,33 @@
       "it",
       "xit",
       "expect"
+    ],
+    "ignore": [
+      "/.grunt",
+      "/*.js",
+      "/app",
+      "/config",
+      "/db",
+      "/doc",
+      "/engines",
+      "/lib/assets/javascripts/cdb",
+      "/lib/assets/javascripts/utils",
+      "/lib/assets/test/lib",
+      "/lib/build",
+      "/lib/carto",
+      "/lib/cartodb",
+      "/lib/importer",
+      "/lib/resque",
+      "/lib/sql",
+      "/lib/tasks",
+      "/lib/varnish",
+      "/log",
+      "/public",
+      "/script",
+      "/services",
+      "/spec",
+      "/tmp",
+      "/vendor"
     ]
   }
 }

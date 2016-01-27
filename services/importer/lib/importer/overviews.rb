@@ -30,11 +30,15 @@ class Overviews
   private
 
   def table_row_count(schema, table)
+    # TODO: TableRowCount is not intended to be used like this
+    # (to compute the table row count; method `get` is protected)
+    # could have a class (derived from TableRowCount for implementation)
+    # with this purpose
     table_row_count = CartoDB::PlatformLimits::Importer::TableRowCount.new(
       user: @user,
       db: @database
     )
-    table_row_count.get(table_name: table, tables_schema: schema)
+    table_row_count.send(:get, table_name: table, tables_schema: schema)
   end
 
   def schema_from_options(options = {})

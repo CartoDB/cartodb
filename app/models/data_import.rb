@@ -8,7 +8,6 @@ require_relative './log'
 require_relative './visualization/member'
 require_relative './table_registrar'
 require_relative './quota_checker'
-require_relative './overviews'
 require_relative '../../lib/cartodb/errors'
 require_relative '../../lib/cartodb/import_error_codes'
 require_relative '../../lib/cartodb/metrics'
@@ -24,6 +23,8 @@ require_relative '../../services/importer/lib/importer/post_import_handler'
 require_relative '../../services/importer/lib/importer/mail_notifier'
 require_relative '../../services/importer/lib/importer/cartodbfy_time'
 require_relative '../../services/platform-limits/platform_limits'
+require_relative '../../services/importer/lib/importer/overviews'
+
 require_relative '../../lib/cartodb/event_tracker'
 
 include CartoDB::Datasources

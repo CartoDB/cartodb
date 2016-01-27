@@ -26,7 +26,7 @@
     "browserify-shim": "3.8.10",
     "cartodb-pecan": "0.2.x",
     "csswring": "^3.0.5",
-    "cartodb-deep-insights.js": "CartoDB/deep-insights.js#f643810",
+    "cartodb-deep-insights.js": "CartoDB/deep-insights.js#1265afb",
     "git-rev": "0.2.1",
     "grunt": "0.4.5",
     "grunt-available-tasks": "0.5.4",

@@ -1137,7 +1137,7 @@ module CartoDB
       private
 
       def move_schema_content_by_renaming(old_name, new_name)
-        @user.in_database(as: :superuser) do |db|
+        @user.in_database(as: :superuser) do |database|
           db.transaction do
             rename_schema_with_database(database, old_name, new_name)
             create_schema_with_database(database, old_database_schema_name)

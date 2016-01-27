@@ -1499,6 +1499,20 @@ describe Carto::Api::VisualizationsController do
           widget.destroy
         end
       end
+
+      it 'returns datasource' do
+        get_json api_v3_visualizations_vizjson_url(user_domain: $user_1.username, id: @visualization.id, api_key: $user_1.api_key), @headers do |request|
+          request.status.should == 200
+          vizjson3 = request.body
+          vizjson3[:datasource]['user_name'].should == $user_1.username
+          vizjson3[:datasource]['maps_api_template'].should_not be_nil
+          vizjson3[:datasource]['stat_tag'].should_not be_nil
+          vizjson3[:datasource]['template_name'].should_not be_nil
+
+          vizjson3[:user]['fullname'].should == ($user_1.name.nil? ? $user_1.username : $user_1.name)
+          vizjson3[:user]['avatar_url'].should_not be_nil
+        end
+      end
     end
 
     describe 'tests visualization listing filters' do

@@ -975,13 +975,7 @@ module CartoDB
         if @user.database_schema != new_schema_name
           @user.database_schema = new_schema_name
           @user.this.update database_schema: new_schema_name
-          create_user_schema
-          rebuild_quota_trigger
-          if schema_exists?(new_schema_name)
-            move_tables_to_schema(old_database_schema_name, @user.database_schema)
-          else
-            move_schema_content_by_renaming(old_database_schema_name, @user.database_schema)
-          end
+          move_schema_content_by_renaming(old_database_schema_name, @user.database_schema)
           create_public_db_user
           set_database_search_path
         end
@@ -1142,7 +1136,6 @@ module CartoDB
 
       private
 
-
       def move_schema_content_by_renaming(old_name, new_name)
         @user.in_database(as: :superuser) do |db|
           db.transaction do
@@ -1152,8 +1145,8 @@ module CartoDB
         end
       end
 
-      def rename_schema(database, old_name, new_name)
-        database.run(%{ALTER SCHEMA "#{schema}" RENAME TO "#{new_name}"})
+      def rename_schema_with_database(database, old_name, new_name)
+        database.run(%{ALTER SCHEMA "#{old_name}" RENAME TO "#{new_name}"})
       end
 
       def move_table_to_schema(t, database, old_schema, new_schema)

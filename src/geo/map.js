@@ -30,8 +30,9 @@ var Map = Model.extend({
 
   bindToDataviews: function (dataviews) {
     this._dataviewsCollection = dataviews;
-    this._dataviewsCollection.bind('change:filter', this._onDataviewChanged, this);
-    this._dataviewsCollection.bind('add', _.debounce(this._onDataviewChanged, 10), this);
+
+    // When new dataviews are defined, a new instance of the map needs to be created
+    this._dataviewsCollection.bind('add', _.debounce(this._onDataviewAdded, 10), this);
   },
 
   bindToWindshaftMap: function (windshaftMap) {
@@ -50,39 +51,32 @@ var Map = Model.extend({
     this.layers.bind('reset', this._onLayersResetted, this);
     this.layers.bind('add', this._onLayerAdded, this);
     this.layers.bind('remove', this._onLayerRemoved, this);
-    this.layers.bind('change', this._onLayerChanged, this);
     this.layers.bind('change:attribution', this._updateAttributions, this);
   },
 
   _onLayersResetted: function () {
-    this._createWindshaftMapInstance();
+    this.reload();
     this._updateAttributions();
   },
 
   _onLayerAdded: function (layerModel) {
-    this._createWindshaftMapInstance({
+    this.reload({
       sourceLayerId: layerModel.get('id')
     });
     this._updateAttributions();
   },
 
   _onLayerRemoved: function () {
-    this._createWindshaftMapInstance();
+    this.reload();
     this._updateAttributions();
   },
 
-  _onLayerChanged: function (layerModel) {
-    if (layerModel.needsRefresh()) {
-      this._createWindshaftMapInstance({
-        sourceLayerId: layerModel.get('id')
-      });
-    }
+  _onDataviewAdded: function (layerModel) {
+    this.reload();
   },
 
-  _onDataviewChanged: function (dataview) {
-    this._createWindshaftMapInstance({
-      sourceLayerId: dataview.layer.get('id')
-    });
+  reload: function (options) {
+    this._createWindshaftMapInstance(options);
   },
 
   _createWindshaftMapInstance: function (options) {

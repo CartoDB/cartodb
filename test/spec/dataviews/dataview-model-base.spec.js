@@ -2,7 +2,14 @@ var DataviewModelBase = require('../../../src/dataviews/dataview-model-base');
 
 describe('dataviews/dataview-model-base', function () {
   beforeEach(function () {
-    this.model = new DataviewModelBase();
+    var map = jasmine.createSpyObj('map', ['getViewBounds', 'bind', 'reload']);
+    map.getViewBounds.and.returnValue([[1, 2], [3, 4]]);
+    var windshaftMap = jasmine.createSpyObj('windhsaftMap', ['bind']);
+    this.model = new DataviewModelBase(null, {
+      map: map,
+      windshaftMap: windshaftMap,
+      layer: jasmine.createSpyObj('layer', ['get'])
+    });
   });
 
   it('should listen to a url attribute change at the beginning', function () {
@@ -81,4 +88,6 @@ describe('dataviews/dataview-model-base', function () {
     this.model.fetch();
     expect(this.model.trigger).toHaveBeenCalledWith('loading', this.model);
   });
+
+  // TODO: Test bindings to map and windshaftMap
 });

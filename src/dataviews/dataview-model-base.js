@@ -23,6 +23,13 @@ module.exports = Model.extend({
     attrs = attrs || {};
     opts = opts || {};
 
+    if (!opts.map) {
+      throw new Error('map is required');
+    }
+    if (!opts.windshaftMap) {
+      throw new Error('windshaftMap is required');
+    }
+
     if (!attrs.id) {
       this.set('id', attrs.type + '-' + this.cid);
     }
@@ -42,9 +49,6 @@ module.exports = Model.extend({
   },
 
   _initBinds: function () {
-    var BOUNDING_BOX_FILTER_WAIT = 500;
-    this._map.bind('change:center change:zoom', _.debounce(this._onMapBoundsChanged.bind(this), BOUNDING_BOX_FILTER_WAIT));
-
     this._windshaftMap.bind('instanceCreated', this._onNewWindshaftMapInstance, this);
 
     this.once('change:url', function () {
@@ -84,6 +88,9 @@ module.exports = Model.extend({
   },
 
   _onChangeBinds: function () {
+    var BOUNDING_BOX_FILTER_WAIT = 500;
+    this._map.bind('change:center change:zoom', _.debounce(this._onMapBoundsChanged.bind(this), BOUNDING_BOX_FILTER_WAIT));
+
     this.bind('change:url', function () {
       if (this.get('syncData') && this.get('enabled')) {
         this._fetch();
@@ -124,7 +131,9 @@ module.exports = Model.extend({
   },
 
   _onFilterChanged: function (filter) {
-    this.trigger('change:filter', this, filter);
+    this._map.reload({
+      sourceLayerId: this.layer.get('id')
+    });
   },
 
   getData: function () {

@@ -44,8 +44,6 @@ WindshaftClient.prototype.instantiateMap = function (options) {
       if (data.errors) {
         errorCallback(data.errors[0]);
       } else {
-        data.urlTemplate = this.urlTemplate;
-        data.userName = this.userName;
         successCallback(data);
       }
     }.bind(this),

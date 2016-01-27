@@ -13,9 +13,8 @@ describe('core/geo/map-view', function () {
     this.map = new Map();
 
     // Map needs a WindshaftMap so we're setting up a fake one
-    this.map.windshaftMap = jasmine.createSpyObj('windshaftMap', ['isNamedMap', 'isAnonymousMap']);
+    this.map.windshaftMap = jasmine.createSpyObj('windshaftMap', ['bind', 'isNamedMap', 'isAnonymousMap', 'createInstance']);
     this.map.windshaftMap.isAnonymousMap.and.returnValue(true);
-    this.map.windshaftMap.instance = jasmine.createSpyObj('windshaftMapInstance', ['bind']);
 
     this.layerViewFactory = jasmine.createSpyObj('layerViewFactory', ['createLayerView']);
     this.mapView = new MapView({

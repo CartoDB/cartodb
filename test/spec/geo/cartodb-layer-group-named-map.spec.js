@@ -5,9 +5,7 @@ var CartoDBLayerGroupNamed = require('../../../src/geo/cartodb-layer-group-named
 
 describe('geo/cartodb-layer-group-named-map', function () {
   beforeEach(function () {
-    this.windshaftMap = jasmine.createSpyObj('windshaftMap', ['isNamedMap', 'isAnonymousMap']);
-    this.windshaftMap.isAnonymousMap.and.returnValue(true);
-    this.windshaftMap.instance = new Backbone.Model();
+    this.windshaftMap = new Backbone.Model();
   });
 
   // TODO: This test is a bit useless
@@ -47,7 +45,7 @@ describe('geo/cartodb-layer-group-named-map', function () {
       expect($.ajax.calls.mostRecent().args[0].url).toEqual('http://wadus.com/2/attributes/10');
 
       // Hide the first layer
-      cartoDBLayer1.set('visible', false);
+      cartoDBLayer1.set('visible', false, { silent: true });
 
       // We fetch the attributes of layer #1
       layer.fetchAttributes(1, 100, callback);

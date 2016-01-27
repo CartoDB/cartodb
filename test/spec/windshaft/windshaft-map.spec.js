@@ -109,7 +109,7 @@ describe('windshaft/map', function () {
 
     it('should not send filters linked to hidden layers', function () {
       // Hide this.cartoDBLayer1 -> Filters of that layer should be ignored
-      this.cartoDBLayer1.set('visible', false);
+      this.cartoDBLayer1.set('visible', false, { silent: true });
 
       this.windshaftMap.createInstance({
         layers: [ this.cartoDBLayer1, this.cartoDBLayer2, this.torqueLayer ],

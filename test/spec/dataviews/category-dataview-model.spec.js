@@ -4,7 +4,13 @@ var WindshaftFiltersCategory = require('../../../src/windshaft/filters/category'
 
 describe('dataviews/category-dataview-model', function () {
   beforeEach(function () {
+    var map = jasmine.createSpyObj('map', ['getViewBounds', 'bind', 'reload']);
+    map.getViewBounds.and.returnValue([[1, 2], [3, 4]]);
+    var windshaftMap = jasmine.createSpyObj('windhsaftMap', ['bind']);
     this.model = new CategoryDataviewModel(null, {
+      map: map,
+      windshaftMap: windshaftMap,
+      layer: jasmine.createSpyObj('layer', ['get']),
       filter: new WindshaftFiltersCategory()
     });
   });
@@ -44,7 +50,7 @@ describe('dataviews/category-dataview-model', function () {
 
     describe('boundingBox', function () {
       it('should set search boundingBox when it changes', function () {
-        expect(this.model._searchModel.get('boundingBox')).toBeUndefined();
+        expect(this.model._searchModel.get('boundingBox')).toBe('2,1,4,3');
         this.model.set('boundingBox', 'hey');
         expect(this.model._searchModel.get('boundingBox')).toBe('hey');
       });

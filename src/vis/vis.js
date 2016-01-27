@@ -294,8 +294,7 @@ var Vis = View.extend({
     var windshaftMap = new WindshaftMap(null, { // eslint-disable-line
       client: windshaftClient,
       configGenerator: configGenerator,
-      statTag: datasource.stat_tag,
-      map: this.map
+      statTag: datasource.stat_tag
     });
 
 // CREATE THE MAP MODEL
@@ -407,7 +406,7 @@ var Vis = View.extend({
 
 // CREATE THE COLLECTION OF LAYERS
 
-    var layers = this._newLayerModels(data);
+    var layers = this._newLayerModels(data, this.map);
 
     // TODO: This is PUBLIC. Remove dependency on this attribute from deep-insights.js
     this.interactiveLayers = new Backbone.Collection(_.select(layers, function (layer) {
@@ -443,10 +442,11 @@ var Vis = View.extend({
     return this;
   },
 
-  _newLayerModels: function (vizjson) {
+  _newLayerModels: function (vizjson, map) {
     var layerModels = [];
     var layersOptions = {
-      https: this.https
+      https: this.https,
+      map: map
     };
     _.each(vizjson.layers, function (layerData) {
       if (layerData.type === 'layergroup' || layerData.type === 'namedmap') {

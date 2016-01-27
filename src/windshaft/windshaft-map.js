@@ -24,6 +24,11 @@ var WindshaftMap = Backbone.Model.extend({
     // TODO: What params are really used?
     this.pngParams = ['map_key', 'api_key', 'cache_policy', 'updated_at'];
     this.gridParams = ['map_key', 'api_key', 'cache_policy', 'updated_at'];
+
+    this.set({
+      urlTemplate: this.client.urlTemplate,
+      userName: this.client.userName
+    });
   },
 
   isNamedMap: function () {
@@ -68,10 +73,10 @@ var WindshaftMap = Backbone.Model.extend({
         // Should we move it somewhere else?
         _.each(layers, function (layer, layerIndex) {
           if (layer.get('type') === 'torque') {
-            layer.set('meta', mapInstance.getLayerMeta(layerIndex));
-            layer.set('urls', mapInstance.getTiles('torque'));
+            layer.set('meta', this.getLayerMeta(layerIndex));
+            layer.set('urls', this.getTiles('torque'));
           }
-        });
+        }, this);
       }.bind(this),
       error: function (error) {
         console.log('Error creating the map instance on Windshaft: ' + error);

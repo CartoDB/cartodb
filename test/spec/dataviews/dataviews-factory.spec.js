@@ -7,7 +7,9 @@ describe('dataviews/dataviews-factory', function () {
     this.interactiveLayersCollection = new Backbone.Collection();
     this.factory = new DataviewsFactory(null, {
       dataviewsCollection: this.dataviewsCollection,
-      interactiveLayersCollection: this.interactiveLayersCollection
+      interactiveLayersCollection: this.interactiveLayersCollection,
+      map: {},
+      windshaftMap: {}
     });
   });
 

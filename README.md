@@ -1,6 +1,8 @@
 Deep-Insights.js
 ====================
 
+[![Build Status](http://travis-ci.org/CartoDB/deep-insights.js.png)](http://travis-ci.org/CartoDB/deep-insights.js)
+
 ## Development
 
 `npm install` and then `grunt dev` to build dev dist files

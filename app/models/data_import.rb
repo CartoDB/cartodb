@@ -8,6 +8,7 @@ require_relative './log'
 require_relative './visualization/member'
 require_relative './table_registrar'
 require_relative './quota_checker'
+require_relative './overviews'
 require_relative '../../lib/cartodb/errors'
 require_relative '../../lib/cartodb/import_error_codes'
 require_relative '../../lib/cartodb/metrics'
@@ -616,6 +617,8 @@ class DataImport < Sequel::Model
       database_options = pg_options
       self.host = database_options[:host]
 
+      overviews_creator = Overviews.new(current_user, current_user.in_database)
+
       runner = CartoDB::Importer2::Runner.new({
                                                 pg: database_options,
                                                 downloader: downloader,
@@ -633,6 +636,7 @@ class DataImport < Sequel::Model
       destination_schema = current_user.database_schema
       public_user_roles = current_user.db_service.public_user_roles
       importer      = CartoDB::Connector::Importer.new(runner, registrar, quota_checker, database, id,
+                                                       overviews_creator,
                                                        destination_schema, public_user_roles)
       log.append 'Before importer run'
       importer.run(tracker)

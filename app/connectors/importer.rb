@@ -22,6 +22,7 @@ module CartoDB
       # @param destination_schema String|nil
       # @param public_user_roles Array|nil
       def initialize(runner, table_registrar, quota_checker, database, data_import_id,
+                     overviews_creator,
                      destination_schema = DESTINATION_SCHEMA, public_user_roles=[CartoDB::PUBLIC_DB_USER])
         @aborted                = false
         @runner                 = runner
@@ -29,6 +30,7 @@ module CartoDB
         @quota_checker          = quota_checker
         @database               = database
         @data_import_id         = data_import_id
+        @overviews_creator      = overviews_creator
         @destination_schema     = destination_schema
         @support_tables_helper  = CartoDB::Visualization::SupportTables.new(database,
                                                                             {public_user_roles: public_user_roles})
@@ -50,6 +52,9 @@ module CartoDB
           runner.log.append('Proceeding to register')
           results.select(&:success?).each { |result|
             register(result)
+          }
+          results.select(&:success?).each { |result|
+            create_overviews(result)
           }
 
           if data_import.create_visualization
@@ -82,6 +87,12 @@ module CartoDB
           )
         else
           raise exception
+        end
+      end
+
+      def create_overviews(result)
+        if  @overviews_creator.required?(result.name, schema: @destination_schema)
+           @overviews_creator.create!(result.name, schema: @destination_schema)
         end
       end
 
@@ -237,4 +248,3 @@ module CartoDB
     end
   end
 end
-

@@ -1,23 +1,5 @@
 # Overview creation
 #
-# This should be done after we have a cartodbfied table, so we could do in
-# the Importer after register each result.
-#
-#
-# Use either from Importer:
-#
-#     overviews = Overviews.new(::User[data_import.user_id], @database)
-#
-# Or from DataImport:
-#
-#     overviews = Overviews.new(current_user, current_user.in_database)
-#
-# Then, for applying it in the Importer for one elment of results:
-#
-#     if  overviews.required?(results.name, schema: @destination_schema)
-#        overviews.create!(results.name, schema: @destination_schema)
-#     end
-#
 # Pending issues: metrics, quotas/limits, timing, logging, ...
 #
 class Overviews
@@ -51,7 +33,7 @@ class Overviews
     table_row_count = CartoDB::PlatformLimits::Importer::TableRowCount.new(
       user: @user,
       db: @database
-    )    s:
+    )
     table_row_count.get(table_name: table, tables_schema: schema)
   end
 

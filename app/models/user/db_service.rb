@@ -380,6 +380,9 @@ module CartoDB
                   s,
                   [@user.database_username, @user.database_public_username, CartoDB::PUBLIC_DB_USER])
               end
+
+              # To avoid "cannot drop function" errors
+              database.run("drop extension if exists plproxy cascade")
             end
 
             # If user is in an organization should never have public schema, but to be safe (& tests which stub stuff)
@@ -975,7 +978,10 @@ module CartoDB
         if @user.database_schema != new_schema_name
           @user.database_schema = new_schema_name
           @user.this.update database_schema: new_schema_name
+
           move_schema_content_by_renaming(old_database_schema_name, @user.database_schema)
+
+          move_postgis_to_schema(old_database_schema_name)
           create_public_db_user
           set_database_search_path
         end
@@ -1139,9 +1145,25 @@ module CartoDB
       def move_schema_content_by_renaming(old_name, new_name)
         @user.in_database(as: :superuser) do |database|
           database.transaction do
+            cartodbfied_tables = {}
+            @user.real_tables(old_name).each { |t|
+              cartodbfied_tables[t] = cdb_drop_triggers(t, database, old_name)
+            }
+
             rename_schema_with_database(database, old_name, new_name)
             create_schema_with_database(database, old_name)
+            rebuild_quota_trigger
+
+            cartodbfied_tables.select { |t, is_cartodbfied| is_cartodbfied }.map { |t, _|
+              cdb_cartodbfy(t, database, new_name)
+            }
           end
+        end
+      end
+
+      def move_postgis_to_schema(schema)
+        @user.in_database(as: :superuser) do |database|
+          database.run(%{ALTER EXTENSION postgis SET SCHEMA "#{schema}"})
         end
       end
 
@@ -1153,13 +1175,27 @@ module CartoDB
         old_name = "#{old_schema}.#{t[:relname]}"
         new_name = "#{new_schema}.#{t[:relname]}"
 
-        was_cartodbfied = Carto::UserTable.find_by_user_id_and_name(@user.id, t[:relname]).present?
+        was_cartodbfied = cdb_drop_triggers(t, database, old_schema)
 
-        database.run(%{ SELECT cartodb._CDB_drop_triggers('#{old_name}'::REGCLASS) }) if was_cartodbfied
         database.run(%{ ALTER TABLE #{old_name} SET SCHEMA "#{new_schema}" })
-        if was_cartodbfied
-          database.run(%{ SELECT cartodb.CDB_CartodbfyTable('#{new_schema}'::TEXT, '#{new_name}'::REGCLASS) })
-        end
+
+        cdb_cartodbfy(t, database, new_schema) if was_cartodbfied
+      end
+
+      def cdb_drop_triggers(t, database, schema)
+        name = "#{schema}.#{t[:relname]}"
+
+        cartodbfied = Carto::UserTable.find_by_user_id_and_name(@user.id, t[:relname]).present?
+
+        database.run(%{ SELECT cartodb._CDB_drop_triggers('#{name}'::REGCLASS) }) if cartodbfied
+
+        cartodbfied
+      end
+
+      def cdb_cartodbfy(t, database, schema)
+        name = "#{schema}.#{t[:relname]}"
+
+        database.run(%{ SELECT cartodb.CDB_CartodbfyTable('#{schema}'::TEXT, '#{name}'::REGCLASS) })
       end
 
       def move_view_to_schema(view, database, old_schema, new_schema)

@@ -166,6 +166,7 @@ describe UserOrganization do
 
     # This is coupled to DBService#move_tables_to_schema implementation, but we need a way to simulate a failure
     Carto::UserTable.stubs(:find_by_user_id_and_name).raises(StandardError.new("Simulation of table movement failure"))
+    CartoDB::UserModule::DBService.any_instance.stubs(:move_schema_content_by_renaming).raises(StandardError.new("Simulation of table movement failure"))
 
     @organization = Organization.new(quota_in_bytes: 1234567890, name: 'org-that-will-fail', seats: 5).save
     @owner = create_user(quota_in_bytes: 524288000, table_quota: 500)

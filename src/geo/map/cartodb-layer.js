@@ -14,6 +14,10 @@ var CartoDBLayer = MapLayer.extend({
     MapLayer.prototype.initialize.apply(this, arguments);
   },
 
+  needsUpdate: function() {
+    return true;
+  },
+
   activate: function() {
     this.set({active: true, opacity: 0.99, visible: true});
   },

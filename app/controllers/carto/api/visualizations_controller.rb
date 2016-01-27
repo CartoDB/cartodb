@@ -5,6 +5,7 @@ require_relative 'paged_searcher'
 require_relative '../controller_helper'
 require_dependency 'carto/uuidhelper'
 require_dependency 'static_maps_url_helper'
+require_relative 'vizjson3_presenter'
 
 module Carto
   module Api

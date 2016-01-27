@@ -1,3 +1,5 @@
+require_relative '../api/vizjson_presenter'
+
 module Carto
   module Editor
     class EditorController < ApplicationController
@@ -7,7 +9,7 @@ module Carto
       private
 
       def editor_users_only
-        render_404 unless editor_user?(current_user)
+        render_404 unless current_user && editor_user?(current_user)
       end
 
       def editor_user?(user)

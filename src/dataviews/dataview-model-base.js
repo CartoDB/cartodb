@@ -1,4 +1,6 @@
+var _ = require('underscore');
 var Model = require('../core/model');
+var WindshaftFiltersBoundingBoxFilter = require('../windshaft/filters/bounding-box');
 
 /**
  * Default dataview model
@@ -26,6 +28,8 @@ module.exports = Model.extend({
     }
 
     this.layer = opts.layer;
+    this._map = opts.map;
+    this._windshaftMap = opts.windshaftMap;
 
     // filter is optional, so have to guard before using it
     this.filter = opts.filter;
@@ -33,10 +37,16 @@ module.exports = Model.extend({
       this.filter.set('dataviewId', this.id);
     }
 
+    this._updateBoundingBox();
     this._initBinds();
   },
 
   _initBinds: function () {
+    var BOUNDING_BOX_FILTER_WAIT = 500;
+    this._map.bind('change:center change:zoom', _.debounce(this._onMapBoundsChanged.bind(this), BOUNDING_BOX_FILTER_WAIT));
+
+    this._windshaftMap.bind('instanceCreated', this._onNewWindshaftMapInstance, this);
+
     this.once('change:url', function () {
       var self = this;
       this._fetch(function () {
@@ -48,6 +58,29 @@ module.exports = Model.extend({
     if (this.filter) {
       this.filter.bind('change', this._onFilterChanged, this);
     }
+  },
+
+  _onNewWindshaftMapInstance: function (windshaftMapInstance, sourceLayerId) {
+    var url = windshaftMapInstance.getDataviewURL({
+      dataviewId: this.get('id'),
+      protocol: 'http'
+    });
+
+    if (url) {
+      var silent = this.get('url') && (sourceLayerId && sourceLayerId !== this.layer.get('id'));
+
+      // TODO: Instead of setting the url here, we could invoke fetch directly
+      this.set('url', url, { silent: silent });
+    }
+  },
+
+  _onMapBoundsChanged: function () {
+    this._updateBoundingBox();
+  },
+
+  _updateBoundingBox: function () {
+    var boundingBoxFilter = new WindshaftFiltersBoundingBoxFilter(this._map.getViewBounds());
+    this.set('boundingBox', boundingBoxFilter.toString());
   },
 
   _onChangeBinds: function () {

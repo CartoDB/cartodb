@@ -134,6 +134,70 @@ var Vis = View.extend({
     this._createOverlays(overlays, data, options);
   },
 
+  _createOverlays: function (overlays, vis_data, options) {
+    _(overlays).each(function (data) {
+      var type = data.type;
+
+      // IE<10 doesn't support the Fullscreen API
+      if (type === 'fullscreen' && util.browser.ie && util.browser.ie.version <= 10) return;
+
+      // Decide to create or not the custom overlays
+      if (type === 'image' || type === 'text' || type === 'annotation') {
+        var isDevice = data.options.device == 'mobile' ? true : false;
+        if (this.mobile !== isDevice) return;
+        if (!options[type] && options[type] !== undefined) {
+          return;
+        }
+      }
+
+      // We add the header overlay
+      if (type === 'header') {
+        var overlay = this._addHeader(data, vis_data);
+      } else {
+        var overlay = this.addOverlay(data);
+      }
+
+      // We show/hide the overlays
+      if (overlay && (type in options) && options[type] === false) overlay.hide();
+
+      var opt = data.options;
+
+      if (type == 'share' && options['shareable'] || type == 'share' && overlay.model.get('display') && options['shareable'] == undefined) {
+        overlay.show();
+      }
+
+      if (type == 'layer_selector' && options[type] || type == 'layer_selector' && overlay.model.get('display') && options[type] == undefined) {
+        overlay.show();
+      }
+
+      if (type == 'fullscreen' && options[type] || type == 'fullscreen' && opt.display && options[type] == undefined) {
+        overlay.show();
+      }
+
+      if (type == 'search' && options[type] || type == 'search' && opt.display && options[type] == undefined) {
+        overlay.show();
+      }
+
+      if (type === 'header') {
+        var m = overlay.model;
+
+        if (options.title !== undefined) {
+          m.set('show_title', options.title);
+        }
+
+        if (options.description !== undefined) {
+          m.set('show_description', options.description);
+        }
+
+        if (m.get('show_title') || m.get('show_description')) {
+          $('.cartodb-map-wrapper').addClass('with_header');
+        }
+
+        overlay.render();
+      }
+    }, this);
+  },
+
   _setupSublayers: function (layers, options) {
     options.sublayer_options = [];
 
@@ -197,6 +261,45 @@ var Vis = View.extend({
 
     this._applyOptionsToVizJSON(data, options);
 
+// CREATE THE COLLECTION OF DATAVIEWS
+
+    this._dataviewsCollection = new DataviewCollection();
+    // TODO: rethink this
+    this._dataviewsCollection.on('add reset remove', _.debounce(this._invalidateSizeOnDataviewsChanges, 10), this);
+
+// CREATE THE WINDSHAFT CLIENT
+
+    var endpoint;
+    var configGenerator;
+    var datasource = data.datasource;
+
+    // TODO: We can use something else to differentiate types of "datasource"s
+    if (datasource.template_name) {
+      endpoint = [WindshaftConfig.MAPS_API_BASE_URL, 'named', datasource.template_name].join('/');
+      configGenerator = WindshaftNamedMapConfig;
+    } else {
+      endpoint = WindshaftConfig.MAPS_API_BASE_URL;
+      configGenerator = WindshaftLayerGroupConfig;
+    }
+
+    var windshaftClient = new WindshaftClient({
+      endpoint: endpoint,
+      urlTemplate: datasource.maps_api_template,
+      userName: datasource.user_name,
+      forceCors: datasource.force_cors || true
+    });
+
+// CREATE THE WINDSHAFT MAP
+
+    var windshaftMap = new WindshaftMap(null, { // eslint-disable-line
+      client: windshaftClient,
+      configGenerator: configGenerator,
+      statTag: datasource.stat_tag,
+      map: this.map
+    });
+
+// CREATE THE MAP MODEL
+
     var scrollwheel = (options.scrollwheel === undefined) ? data.scrollwheel : options.scrollwheel;
 
     // Do not allow pan map if zoom overlay and scrollwheel are disabled unless
@@ -240,8 +343,9 @@ var Vis = View.extend({
       mapConfig.zoom = data.zoom === undefined ? 4 : data.zoom;
     }
 
-    var map = new Map(mapConfig);
-    this.map = map;
+    this.map = new Map(mapConfig);
+    this.map.bindToWindshaftMap(windshaftMap);
+    this.map.bindToDataviews(this._dataviewsCollection);
 
     // If a CartoDB embed map is hidden by default, its
     // height is 0 and it will need to recalculate its size
@@ -255,6 +359,8 @@ var Vis = View.extend({
       this.mapConfig = mapConfig;
       $(window).bind('resize', this._onResize);
     }
+
+// CREATE THE MAP VIEW
 
     var div = $('<div>').css({
       position: 'relative',
@@ -280,12 +386,13 @@ var Vis = View.extend({
 
     this.$el.append(div);
 
-    // Create the map
     var mapViewFactory = new MapViewFactory();
-    this.mapView = mapViewFactory.createMapView(map.get('provider'), map, div_hack);
+    this.mapView = mapViewFactory.createMapView(this.map.get('provider'), this.map, div_hack);
+
+// BINDINGS
 
     if (options.legends || (options.legends === undefined && this.map.get('legends') !== false)) {
-      map.layers.bind('reset', this.addLegends, this);
+      this.map.layers.bind('reset', this.addLegends, this);
     }
 
     this.mapView.bind('newLayerView', this._addLoading, this);
@@ -298,6 +405,8 @@ var Vis = View.extend({
       this.mapView.bind('newLayerView', this.addTooltip, this);
     }
 
+// CREATE THE COLLECTION OF LAYERS
+
     var layers = this._newLayerModels(data);
 
     // TODO: This is PUBLIC. Remove dependency on this attribute from deep-insights.js
@@ -305,65 +414,30 @@ var Vis = View.extend({
       return layer.get('type') === 'CartoDB' || layer.get('type') === 'torque';
     }));
 
-    this._dataviewsCollection = new DataviewCollection();
-    this.dataviews = new DataviewsFactory(null, {
-      dataviewsCollection: this._dataviewsCollection,
-      interactiveLayersCollection: this.interactiveLayers
-    });
+// RESET THE LAYERS ON this.map
 
-    // TODO: rethink this
-    this._dataviewsCollection.on('add reset remove', _.debounce(this._invalidateSizeOnDataviewsChanges, 10), this);
-
-    var endpoint;
-    var configGenerator;
-    var datasource = data.datasource;
-
-    // TODO: We can use something else to differentiate types of "datasource"s
-    if (datasource.template_name) {
-      endpoint = [WindshaftConfig.MAPS_API_BASE_URL, 'named', datasource.template_name].join('/');
-      configGenerator = WindshaftNamedMapConfig;
-    } else {
-      endpoint = WindshaftConfig.MAPS_API_BASE_URL;
-      configGenerator = WindshaftLayerGroupConfig;
-    }
-
-    var windshaftClient = new WindshaftClient({
-      endpoint: endpoint,
-      urlTemplate: datasource.maps_api_template,
-      userName: datasource.user_name,
-      forceCors: datasource.force_cors || true
-    });
-
-    var windshaftMap = new WindshaftMap({ // eslint-disable-line
-      client: windshaftClient,
-      configGenerator: configGenerator,
-      statTag: datasource.stat_tag,
-      layers: this.interactiveLayers,
-      dataviews: this._dataviewsCollection,
-      map: this.map
-    });
-
-    // TODO: Bind this through a method
-    this.map.windshaftMap = windshaftMap;
-
-    // if there are no sublayer_options fill it
-    if (!options.sublayer_options) {
-      this._setupSublayers(data.layers, options);
-    }
-
-    this._setLayerOptions(options);
-
-    // Map layers are resetted and the mapView adds the layers to the map
     this.map.layers.reset(layers);
 
-    this.overlayModels = new Backbone.Collection();
-    this.overlayModels.bind('reset', function (overlays) {
+// CREATE THE COLLECTION OF LAYERS AND ADD OVERLAYS
+
+    var overlaysCollection = new Backbone.Collection();
+    overlaysCollection.bind('reset', function (overlays) {
       this._addOverlays(overlays, data, options);
     }, this);
-    this.overlayModels.reset(data.overlays);
+    overlaysCollection.reset(data.overlays);
 
+// CREATE THE PUBLIC DATAVIEW FACTORY
+
+    this.dataviews = new DataviewsFactory(null, {
+      dataviewsCollection: this._dataviewsCollection,
+      interactiveLayersCollection: this.interactiveLayers,
+      map: this.map,
+      windshaftMap: windshaftMap
+    });
+
+// TRIGGER DONE EVENT WITH LAYERS
     _.defer(function () {
-      self.trigger('done', self, map.layers);
+      self.trigger('done', self, self.map.layers);
     });
 
     return this;
@@ -397,70 +471,6 @@ var Vis = View.extend({
     if (this._dataviewsCollection.size() > 0) {
       this.mapView.invalidateSize();
     }
-  },
-
-  _createOverlays: function (overlays, vis_data, options) {
-    _(overlays).each(function (data) {
-      var type = data.type;
-
-      // IE<10 doesn't support the Fullscreen API
-      if (type === 'fullscreen' && util.browser.ie && util.browser.ie.version <= 10) return;
-
-      // Decide to create or not the custom overlays
-      if (type === 'image' || type === 'text' || type === 'annotation') {
-        var isDevice = data.options.device == 'mobile' ? true : false;
-        if (this.mobile !== isDevice) return;
-        if (!options[type] && options[type] !== undefined) {
-          return;
-        }
-      }
-
-      // We add the header overlay
-      if (type === 'header') {
-        var overlay = this._addHeader(data, vis_data);
-      } else {
-        var overlay = this.addOverlay(data);
-      }
-
-      // We show/hide the overlays
-      if (overlay && (type in options) && options[type] === false) overlay.hide();
-
-      var opt = data.options;
-
-      if (type == 'share' && options['shareable'] || type == 'share' && overlay.model.get('display') && options['shareable'] == undefined) {
-        overlay.show();
-      }
-
-      if (type == 'layer_selector' && options[type] || type == 'layer_selector' && overlay.model.get('display') && options[type] == undefined) {
-        overlay.show();
-      }
-
-      if (type == 'fullscreen' && options[type] || type == 'fullscreen' && opt.display && options[type] == undefined) {
-        overlay.show();
-      }
-
-      if (type == 'search' && options[type] || type == 'search' && opt.display && options[type] == undefined) {
-        overlay.show();
-      }
-
-      if (type === 'header') {
-        var m = overlay.model;
-
-        if (options.title !== undefined) {
-          m.set('show_title', options.title);
-        }
-
-        if (options.description !== undefined) {
-          m.set('show_description', options.description);
-        }
-
-        if (m.get('show_title') || m.get('show_description')) {
-          $('.cartodb-map-wrapper').addClass('with_header');
-        }
-
-        overlay.render();
-      }
-    }, this);
   },
 
   _addHeader: function (data, vis_data) {

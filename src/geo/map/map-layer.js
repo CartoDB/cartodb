@@ -79,6 +79,10 @@ var MapLayer = Model.extend({
       }
     }
     return false; // different type
+  },
+
+  needsRefresh: function () {
+    return false;
   }
 });
 

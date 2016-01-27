@@ -87,8 +87,11 @@ var TorqueLayer = MapLayer.extend({
   },
 
   fetchAttributes: function(layer, featureID, callback) {
-  }
+  },
 
+  needsRefresh: function () {
+    return this.hasChanged('visible');
+  }
 });
 
 module.exports = TorqueLayer;

@@ -14,9 +14,13 @@ var ListDataviewModel = require('./list-dataview-model');
 module.exports = Model.extend({
 
   initialize: function (attrs, opts) {
+    if (!opts.map) throw new Error('map is required');
+    if (!opts.windshaftMap) throw new Error('windshaftMap is required');
     if (!opts.dataviewsCollection) throw new Error('dataviewsCollection is required');
     if (!opts.interactiveLayersCollection) throw new Error('interactiveLayersCollection is required');
 
+    this._map = opts.map;
+    this._windshaftMap = opts.windshaftMap;
     this._dataviewsCollection = opts.dataviewsCollection;
     this._interactiveLayersCollection = opts.interactiveLayersCollection;
   },
@@ -28,6 +32,8 @@ module.exports = Model.extend({
     });
     return this._newModel(
       new CategorDataviewModel(attrs, {
+        map: this._map,
+        windshaftMap: this._windshaftMap,
         filter: categoryFilter,
         layer: layerModel
       })
@@ -37,6 +43,8 @@ module.exports = Model.extend({
   createFormulaDataview: function (layerModel, attrs) {
     return this._newModel(
       new FormulaDataviewModel(attrs, {
+        map: this._map,
+        windshaftMap: this._windshaftMap,
         layer: layerModel
       })
     );
@@ -49,6 +57,8 @@ module.exports = Model.extend({
     });
     return this._newModel(
       new HistogramDataviewModel(attrs, {
+        map: this._map,
+        windshaftMap: this._windshaftMap,
         filter: rangeFilter,
         layer: layerModel
       })
@@ -58,6 +68,8 @@ module.exports = Model.extend({
   createListDataview: function (layerModel, attrs) {
     return this._newModel(
       new ListDataviewModel(attrs, {
+        map: this._map,
+        windshaftMap: this._windshaftMap,
         layer: layerModel
       })
     );

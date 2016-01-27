@@ -16,7 +16,7 @@ var CartoDBLayerGroupBase = MapLayer.extend({
 
     // When a new instance of the map is created in Windshaft, we will need to use
     // new URLs for the tiles (`urls` attribute) and also for the attributes (`baseURL`)
-    this._windshaftMap.instance.bind('change', function (mapInstance) {
+    this._windshaftMap.bind('instanceCreated', function (mapInstance) {
       this.set({
         baseURL: mapInstance.getBaseURL(),
         urls: mapInstance.getTiles('mapnik')

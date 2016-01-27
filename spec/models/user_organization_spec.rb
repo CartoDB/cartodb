@@ -10,7 +10,7 @@ describe UserOrganization do
       ::User.any_instance.stubs(:update_in_central).returns(true)
       @organization = Organization.new(quota_in_bytes: 1234567890, name: 'wadus', seats: 5).save
 
-      @owner = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
+      @owner = create_user(quota_in_bytes: 524288000, table_quota: 500)
     end
 
     after(:each) do
@@ -40,7 +40,7 @@ describe UserOrganization do
     it 'moves triggers to the new schema' do
       table = create_random_table(@owner)
 
-      truncate_table_function_creation = %Q{
+      truncate_table_function_creation = %{
         create function truncate_table() returns trigger as $truncate_table$
         begin
           delete from #{table.qualified_table_name};
@@ -73,7 +73,7 @@ describe UserOrganization do
     # See #6295: Moving user to its own schema (i.e on org creation) leaves triggers on public schema
     it 'moves functions to the new schema' do
       name = 'test_function'
-      function_creation = %Q{
+      function_creation = %{
         create function #{name}() returns integer as $test_function$
         begin
           return 1;
@@ -101,21 +101,21 @@ describe UserOrganization do
       table = create_random_table(@owner)
 
       view_name = 'mv_test'
-      create_view_query = %Q{
+      create_view_query = %{
         CREATE VIEW #{view_name}
             AS select name from #{table.qualified_table_name};
       }
 
       @owner.in_database.run(create_view_query)
 
-      @owner.db_service.views.map { |v| v.name }.should include(view_name)
+      @owner.db_service.views.map(&:name).should include(view_name)
 
       owner_org = CartoDB::UserOrganization.new(@organization.id, @owner.id)
       owner_org.promote_user_to_admin
       @owner.reload
 
       @owner.db_service.views.map { |v| v.name }.should include(view_name)
-      @owner.db_service.views('public').map { |v| v.name }.should be_empty
+      @owner.db_service.views('public').map(&:name).should be_empty
     end
 
     # See #6295: Moving user to its own schema (i.e on org creation) leaves triggers on public schema
@@ -123,21 +123,21 @@ describe UserOrganization do
       table = create_random_table(@owner)
 
       materialized_view_name = 'mv_test'
-      create_materialized_view_query = %Q{
+      create_materialized_view_query = %{
         CREATE MATERIALIZED VIEW #{materialized_view_name}
             AS select name from #{table.qualified_table_name};
       }
 
       @owner.in_database.run(create_materialized_view_query)
 
-      @owner.db_service.materialized_views.map { |mv| mv.name }.should include(materialized_view_name)
+      @owner.db_service.materialized_views.map(&:name).should include(materialized_view_name)
 
       owner_org = CartoDB::UserOrganization.new(@organization.id, @owner.id)
       owner_org.promote_user_to_admin
       @owner.reload
 
-      @owner.db_service.materialized_views.map { |mv| mv.name }.should include(materialized_view_name)
-      @owner.db_service.materialized_views('public').map { |mv| mv.name }.should be_empty
+      @owner.db_service.materialized_views.map(&:name).should include(materialized_view_name)
+      @owner.db_service.materialized_views('public').map(&:name).should be_empty
     end
   end
 

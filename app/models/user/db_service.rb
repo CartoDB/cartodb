@@ -311,7 +311,7 @@ module CartoDB
       end
 
       def triggers_in_schema(schema, database = @user.database_name)
-        query = %Q{
+        query = %{
           select table_catalog, table_schema, relname, tgname, tgtype, proname, tgdeferrable, tginitdeferred, tgnargs,
           tgattr, tgargs from (pg_trigger join pg_class on tgrelid=pg_class.oid)
           join pg_proc on (tgfoid=pg_proc.oid) join information_schema.tables ist on relname = table_name
@@ -1168,7 +1168,7 @@ module CartoDB
       # relkind: 'm' (materialized view) or 'v' (view). Default: 'v'.
       def views_from_pg_class(owner_role = @user.database_username, schema = @user.database_schema, relkind = 'v')
         database = @user.database_name
-        query = %Q{
+        query = %{
           select ns.nspname as schemaname,
                  pc.relname as matviewname,
                  string_agg(atr.attname ||' '||pg_catalog.format_type(atr.atttypid, NULL), ', ') as columns
@@ -1191,7 +1191,7 @@ module CartoDB
       end
 
       def functions_from_pg_proc(owner_role = @user.database_username, schema = @user.database_schema)
-        query = %Q{
+        query = %{
           SELECT n.nspname,
             p.proname,
             pg_catalog.pg_get_function_arguments(p.oid) as argument_data_types

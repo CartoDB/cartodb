@@ -41,7 +41,7 @@ class Overviews
 
     # TODO: timing, loggin, ...
     @database.run %{
-      SELECT cartodb.CDB_Overviews('#{table_name}'::REGCLASS);
+      SELECT cartodb.CDB_CreateOverviews('#{table_name}'::REGCLASS);
     }
   end
 

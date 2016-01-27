@@ -1,1 +1,1 @@
-<div><%- polyglot.t('dashboard.hello') %></div>
+<div><%- cdb.T('dashboard.hello') %></div>

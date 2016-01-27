@@ -38,7 +38,7 @@ describe('create-dashboard', function () {
     });
 
     it('should return a dashboard object with expected props', function () {
-      expect(this.results).not.toBeDefined();
+      expect(this.results).toBeDefined();
       expect(this.results.dashboardView).toEqual(jasmine.any(Object));
       expect(this.results.vis).toEqual(jasmine.any(Object));
     });

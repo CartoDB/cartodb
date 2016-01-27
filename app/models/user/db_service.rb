@@ -1140,7 +1140,7 @@ module CartoDB
         @user.in_database(as: :superuser) do |database|
           database.transaction do
             rename_schema_with_database(database, old_name, new_name)
-            create_schema_with_database(database, old_database_schema_name)
+            create_schema_with_database(database, old_name)
           end
         end
       end

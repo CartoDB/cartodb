@@ -1,5 +1,7 @@
 {
-  "dashboard": {
-    "hello": "Hej"
+  "editor": {
+    "map": "karta",
+    "map_name": "%{name} karta",
+    "map_pluralize": "%{smart_count} karta |||| %{smart_count} kartor"
   }
 }

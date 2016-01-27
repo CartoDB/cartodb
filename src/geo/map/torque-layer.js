@@ -25,7 +25,7 @@ var TorqueLayer = MapLayer.extend({
   needsUpdate: function() {
     var changed = this.changedAttributes()
     if (changed) {
-      return changed.cartocss || changed.sql
+      return changed.cartocss || changed.query || changed.table_name
     }
     return false;
   },

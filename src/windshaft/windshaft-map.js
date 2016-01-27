@@ -138,7 +138,7 @@ WindshaftMap.prototype._dataviewChanged = function (dataview) {
 };
 
 WindshaftMap.prototype._layerChanged = function (layer) {
-  if (layer.needsUpdate())
+  if (layer.needsUpdate()) {
     this._createInstance({
       layerId: layer.get('id')
     });

@@ -144,21 +144,8 @@
       grunt.config.set(name, val);
     });
 
-    grunt.registerTask('jasmine-server', 'start web server for jasmine tests in browser', function() {
-      grunt.task.run('jasmine:cartodbui:build');
-      grunt.task.run('jasmine:cartodb3:build');
-
-      grunt.event.once('connect.jasmine.listening', function(host, port) {
-        var specRunnerUrl = 'http://localhost:' + port + '/_SpecRunner.html';
-        grunt.log.writeln('Jasmine specs available at: ' + specRunnerUrl);
-        require('open')(specRunnerUrl);
-
-        var cartodb3SpecRunnerUrl = 'http://localhost:' + port + '/_SpecRunner-cartodb3.html';
-        grunt.log.writeln('Jasmine specs available at: ' + cartodb3SpecRunnerUrl);
-        require('open')(cartodb3SpecRunnerUrl);
-      });
-
-      grunt.task.run('connect:jasmine:keepalive');
+    grunt.registerTask('jasmine-server', function () {
+      grunt.log.writeln('Deprecated, just use `grunt dev`, open http://localhost:8089 (if not opened automatically)');
     });
 
     grunt.registerTask('lint', 'lint source files', function () {
@@ -189,7 +176,7 @@
     grunt.registerTask('minimize',    ['default', 'copy:js', 'exorcise', 'uglify']);
     grunt.registerTask('release',     ['check_release', 'minimize', 's3', 'invalidate']);
     grunt.registerTask('dev',         'Typical task for frontend development (watch JS/CSS changes)',
-      ['setConfig:env.browserify_watch:true', 'browserify', 'watch']);
+      ['setConfig:env.browserify_watch:true', 'browserify', 'connect', 'watch']);
     grunt.registerTask('sourcemaps', 'generate sourcemaps, to be used w/ trackjs.com for bughunting',
       ['setConfig:assets_dir:./tmp/sourcemaps', 'config', 'js', 'copy:js', 'exorcise', 'uglify']);
   };

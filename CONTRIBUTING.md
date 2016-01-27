@@ -88,9 +88,8 @@ All tests can be run by:
 ```bash
 grunt jasmine
 
-# or if you want to run tests in browser it's preferrable to use:
-grunt jasmine-server
 ```
+…or if you want to run tests in browser open http://localhost:8089/ after running `grunt dev`.
 
 If you only want to run a subset of tests the easiest and fastest way is to use [focused tests](jasmine.github.io/2.1/focused_specs.html), but you can also append  `?spec=str-matching-a-describe` to test URL, or use [--filter flag](https://github.com/gruntjs/grunt-contrib-jasmine#filtering-specs) if running tests in a terminal.
 

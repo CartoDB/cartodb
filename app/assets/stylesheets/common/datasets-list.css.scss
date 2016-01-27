@@ -207,7 +207,7 @@ $bannedColor: #E1A7A5;
   .DatasetsList-itemTitle,
   .DatasetsList-itemDescription,
   .SizeIndicator,
-  .SizeIndicator .iconFont { color: $bannedColor }
+  .SizeIndicator .CDB-IconFont { color: $bannedColor }
 
   .DatasetsList-itemCategory { @include geometry-type-icon(-160px, -80px) }
   .DatasetsList-itemCategory.is--lineDataset { @include geometry-type-icon(-40px, -80px) }

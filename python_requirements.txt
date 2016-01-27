@@ -6,3 +6,4 @@ python-varnish==0.1.2
 gdal==1.10.0
 csvkit==0.9.0
 openpyxl==2.1.3
+

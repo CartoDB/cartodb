@@ -14,6 +14,6 @@ class Function
     @database_name == other.database_name &&
       @database_schema == other.database_schema &&
       @name == other.name &&
-      @argument_data_types == argument_data_types
+      @argument_data_types == other.argument_data_types
   end
 end

@@ -1,8 +1,6 @@
 var _ = require('underscore');
 var cdb = require('cartodb.js');
 var DashboardView = require('./dashboard-view');
-var WidgetModelFactory = require('./widgets/widget-model-factory');
-var DataviewModelFactory = require('./dataview-model-factory');
 var WidgetsCollection = require('./widgets/widgets-collection');
 var WidgetModel = require('./widgets/widget-model');
 var CategoryWidgetModel = require('./widgets/category/category-widget-model');
@@ -37,22 +35,15 @@ module.exports = function (selector, vizJSON, opts) {
   });
   var vis = cdb.createVis(dashboardView.$('#map'), vizJSON, opts);
 
-  var dataviewModelFactory = new DataviewModelFactory({
-    list: function (attrs, layer) {
-      return vis.dataviews.createListDataview(layer, attrs);
-    },
-    formula: function (attrs, layer) {
-      return vis.dataviews.createFormulaDataview(layer, attrs);
-    },
-    histogram: function (attrs, layer) {
-      return vis.dataviews.createHistogramDataview(layer, attrs);
-    },
-    category: function (attrs, layer) {
-      return vis.dataviews.createCategoryDataview(layer, attrs);
-    }
-  });
+  var dw = vis.dataviews;
+  var dataviewModelsMap = {
+    list: dw.createListDataview.bind(dw),
+    formula: dw.createFormulaDataview.bind(dw),
+    histogram: dw.createHistogramDataview.bind(dw),
+    category: dw.createCategoryDataview.bind(dw)
+  };
 
-  var widgetModelFactory = new WidgetModelFactory({
+  var widgetModelsMap = {
     list: function (widgetAttrs, widgetOpts) {
       return new WidgetModel(widgetAttrs, widgetOpts);
     },
@@ -68,7 +59,7 @@ module.exports = function (selector, vizJSON, opts) {
     category: function (widgetAttrs, widgetOpts) {
       return new CategoryWidgetModel(widgetAttrs, widgetOpts);
     }
-  });
+  };
 
   // TODO: We can probably move this logic somewhere else
   var widgetModels = [];
@@ -99,7 +90,7 @@ module.exports = function (selector, vizJSON, opts) {
       }
 
       if (layer) {
-        dataviewModel = dataviewModelFactory.createModel(dataviewAttrs, layer);
+        dataviewModel = dataviewModelsMap[dataviewAttrs.type](layer, dataviewAttrs);
       } else {
         cdb.log.error('no layer found for dataview ' + JSON.stringify(dataviewAttrs));
       }
@@ -108,7 +99,7 @@ module.exports = function (selector, vizJSON, opts) {
     var widgetOpts = {
       dataviewModel: dataviewModel
     };
-    var widgetModel = widgetModelFactory.createModel(widgetAttrs, widgetOpts);
+    var widgetModel = widgetModelsMap[widgetAttrs.type](widgetAttrs, widgetOpts);
     widgetModels.push(widgetModel);
   });
 

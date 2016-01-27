@@ -1167,7 +1167,6 @@ module CartoDB
 
       # relkind: 'm' (materialized view) or 'v' (view). Default: 'v'.
       def views_from_pg_class(owner_role = @user.database_username, schema = @user.database_schema, relkind = 'v')
-        database = @user.database_name
         query = %{
           select ns.nspname as schemaname,
                  pc.relname as matviewname,

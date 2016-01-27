@@ -60,6 +60,8 @@ Source code is located at `lib/assets/javascripts`, dependencies at `vendor/asse
 
 See [doc/frontend/README.md](doc/frontend/README.md) for more in-depth documentation.
 
+We apply [semistandard](https://github.com/Flet/semistandard) for syntax consistency of all new code at least, it's checked as part of test run. It's recommended to use [a linter in your IDE of choice](https://github.com/Flet/semistandard#editor-plugins).
+
 Until our guidelines are publically available follow the existing file/directory and style structure.
 
 ### Update CartoDB.js

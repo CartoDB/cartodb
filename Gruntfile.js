@@ -1,5 +1,3 @@
-
- require('shelljs/global');
  var timer = require("grunt-timer");
 
   /**
@@ -34,12 +32,6 @@
 
       assets_dir: ASSETS_DIR,
       root_assets_dir: ROOT_ASSETS_DIR,
-
-      browserify_modules: {
-        tests: {
-          dest: '.grunt/browserify_modules_tests.js'
-        }
-      },
 
       // Concat task
       concat:   require('./lib/build/tasks/concat').task(),
@@ -154,21 +146,44 @@
 
     grunt.registerTask('jasmine-server', 'start web server for jasmine tests in browser', function() {
       grunt.task.run('jasmine:cartodbui:build');
+      grunt.task.run('jasmine:cartodb3:build');
 
       grunt.event.once('connect.jasmine.listening', function(host, port) {
         var specRunnerUrl = 'http://localhost:' + port + '/_SpecRunner.html';
         grunt.log.writeln('Jasmine specs available at: ' + specRunnerUrl);
         require('open')(specRunnerUrl);
+
+        var cartodb3SpecRunnerUrl = 'http://localhost:' + port + '/_SpecRunner-cartodb3.html';
+        grunt.log.writeln('Jasmine specs available at: ' + cartodb3SpecRunnerUrl);
+        require('open')(cartodb3SpecRunnerUrl);
       });
 
       grunt.task.run('connect:jasmine:keepalive');
+    });
+
+    grunt.registerTask('lint', 'lint source files', function () {
+      var done = this.async();
+      require('child_process').exec('PATH=$(npm bin):$PATH semistandard', function (error, stdout, stderr) {
+        if (error) {
+          grunt.log.fail(error);
+
+          // Filter out lines that are ignored,
+          // e.g. "src/foobar.js:0:0: File ignored because of your .eslintignore file. Use --no-ignore to override."
+          grunt.log.fail(stdout.replace(/.+--no-ignore.+(\r?\n|\r)/g, ''));
+          grunt.fail.warn('try `node_modules/.bin/semistandard --format src/filename.js` to auto-format code (you might still need to fix some things manually).');
+        } else {
+          grunt.log.ok('All linted files OK!');
+          grunt.log.writeln('Note that files listed in .eslintignore are not linted');
+        }
+        done();
+      });
     });
 
     // Order in terms of task dependencies
     grunt.registerTask('js',          ['cdb', 'browserify', 'concat:js', 'jst']);
     grunt.registerTask('pre_default', ['clean', 'config', 'js']);
     grunt.registerTask('test', '(CI env) Re-build JS files and run all tests. ' +
-    'For manual testing use `grunt jasmine` directly', ['pre_default', 'jasmine']);
+    'For manual testing use `grunt jasmine` directly', ['lint', 'pre_default', 'jasmine']);
     grunt.registerTask('css',         ['copy:vendor', 'copy:app', 'compass', 'concat:css']);
     grunt.registerTask('default',     ['pre_default', 'css', 'manifest']);
     grunt.registerTask('minimize',    ['default', 'copy:js', 'exorcise', 'uglify']);

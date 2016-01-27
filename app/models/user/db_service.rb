@@ -214,14 +214,18 @@ module CartoDB
       # Does not raise exception if the schema already exists
       def create_schema(schema, role = nil)
         @user.in_database(as: :superuser) do |database|
-          if role
-            database.run(%{CREATE SCHEMA "#{schema}" AUTHORIZATION "#{role}"})
-          else
-            database.run(%{CREATE SCHEMA "#{schema}"})
-          end
+          create_schema_with_database(database, schema, role)
         end
       rescue Sequel::DatabaseError => e
         raise unless e.message =~ /schema .* already exists/
+      end
+
+      def create_schema_with_database(database, schema, role = nil)
+        if role
+          database.run(%{CREATE SCHEMA "#{schema}" AUTHORIZATION "#{role}"})
+        else
+          database.run(%{CREATE SCHEMA "#{schema}"})
+        end
       end
 
       def setup_owner_permissions
@@ -973,7 +977,11 @@ module CartoDB
           @user.this.update database_schema: new_schema_name
           create_user_schema
           rebuild_quota_trigger
-          move_tables_to_schema(old_database_schema_name, @user.database_schema)
+          if schema_exists?(new_schema_name)
+            move_tables_to_schema(old_database_schema_name, @user.database_schema)
+          else
+            move_schema_content_by_renaming(old_database_schema_name, @user.database_schema)
+          end
           create_public_db_user
           set_database_search_path
         end
@@ -1133,6 +1141,20 @@ module CartoDB
       end
 
       private
+
+
+      def move_schema_content_by_renaming(old_name, new_name)
+        @user.in_database(as: :superuser) do |db|
+          db.transaction do
+            rename_schema_with_database(database, old_name, new_name)
+            create_schema_with_database(database, old_database_schema_name)
+          end
+        end
+      end
+
+      def rename_schema(database, old_name, new_name)
+        database.run(%{ALTER SCHEMA "#{schema}" RENAME TO "#{new_name}"})
+      end
 
       def move_table_to_schema(t, database, old_schema, new_schema)
         old_name = "#{old_schema}.#{t[:relname]}"

@@ -22,7 +22,7 @@ describe UserOrganization do
 
     # See #3534: Quota trigger re-creation not done correctly when promoting user to org
     it 'recreates existing tables triggers' do
-      table = create_random_table(@owner)
+      table = create_random_table(@owner, name = "table-#{rand(999)}")
       id = table.id
       table.insert_row!({})
       table.rows_counted.should == 1
@@ -38,7 +38,7 @@ describe UserOrganization do
 
     # See #6295: Moving user to its own schema (i.e on org creation) leaves triggers on public schema
     it 'moves triggers to the new schema' do
-      table = create_random_table(@owner)
+      table = create_random_table(@owner, name = "table-#{rand(999)}")
 
       truncate_table_function_creation = %{
         create function truncate_table() returns trigger as $truncate_table$
@@ -98,7 +98,7 @@ describe UserOrganization do
 
     # See #6295: Moving user to its own schema (i.e on org creation) leaves triggers on public schema
     it 'moves views to the new schema' do
-      table = create_random_table(@owner)
+      table = create_random_table(@owner, name = "table-#{rand(999)}")
 
       view_name = 'mv_test'
       create_view_query = %{
@@ -120,7 +120,7 @@ describe UserOrganization do
 
     # See #6295: Moving user to its own schema (i.e on org creation) leaves triggers on public schema
     it 'moves materialized views to the new schema' do
-      table = create_random_table(@owner)
+      table = create_random_table(@owner, name = "table-#{rand(999)}")
 
       materialized_view_name = 'mv_test'
       create_materialized_view_query = %{

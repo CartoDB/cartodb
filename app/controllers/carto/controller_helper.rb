@@ -28,6 +28,12 @@ module Carto
     end
   end
 
+  class UnprocesableEntityError < CartoError
+    def initialize(message, status = 422)
+      super(message, status)
+    end
+  end
+
   module ControllerHelper
     include Carto::UUIDHelper
 

@@ -255,7 +255,7 @@ def create_layer(table_name, user_name, order = 1)
   options = JSON.parse(CARTO_OPTIONS)
   options["table_name"] = table_name
   options["user_name"] = user_name
-  FactoryGirl.build(:carto_layer, options: options, order: order)
+  FactoryGirl.build(:layer, kind: 'carto', options: options, order: order)
 end
 
 def add_date_data(visualization_id, username, date, value)

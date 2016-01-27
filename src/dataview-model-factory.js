@@ -15,10 +15,10 @@ DataviewModelFactory.prototype.addType = function (type, createModel) {
   this.types[type] = createModel;
 };
 
-DataviewModelFactory.prototype.createModel = function (attrs, layer, layerIndex) {
+DataviewModelFactory.prototype.createModel = function (attrs, layer) {
   var createModel = this.types[attrs.type];
   if (createModel) {
-    return createModel(attrs, layer, layerIndex);
+    return createModel(attrs, layer);
   } else {
     throw new Error('no dataview model found for arguments ' + JSON.stringify(arguments));
   }

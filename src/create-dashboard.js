@@ -88,22 +88,18 @@ module.exports = function (selector, vizJSON, opts) {
       var layer;
 
       // Find the Layer that the Widget should be created for.
-      // a layerId has top-priority, otherwise it tries with a layerIndex, and even a subLayerIndex (if available)
       if (layerId) {
-        layer = vis.interactiveLayers.find(function (m) {
+        layer = vis.map.layers.find(function (m) {
           return layerId === m.get('id');
         });
-      // } else if (Number.isInteger(rawWidgetData.layerIndex)) {
-      //   layer = vis.map.layers.at(rawWidgetData.layerIndex);
-      //   if (layer && Number.isInteger(rawWidgetData.subLayerIndex)) {
-      //     layer = layer.collection.at(rawWidgetData.subLayerIndex);
-      //   }
+      } else if (Number.isInteger(rawWidgetData.layerIndex)) {
+        // TODO Since namedmap doesn't have ids we need to map in another way, here using index
+        //   should we solve this in another way?
+        layer = vis.map.layers.at(rawWidgetData.layerIndex);
       }
 
       if (layer) {
-        // TODO the layerIndex could change when layers are added/removed, which would introduce unexpected bugs
-        var layerIndex = vis.interactiveLayers.indexOf(layer);
-        dataviewModel = dataviewModelFactory.createModel(dataviewAttrs, layer, layerIndex);
+        dataviewModel = dataviewModelFactory.createModel(dataviewAttrs, layer);
       } else {
         cdb.log.error('no layer found for dataview ' + JSON.stringify(dataviewAttrs));
       }

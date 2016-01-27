@@ -212,12 +212,16 @@ $sEditButtonSize: 50px;
   line-height: 38px !important;
   font-size: 24px;
 }
-.MapCard-headerFakeIcon.CDB-IconFont-notes { font-size: 26px }
+.MapCard-headerFakeIcon.CDB-IconFont-notes {
+  font-size: 26px;
+}
 .MapCard-headerFakeIcon.CDB-IconFont-mountain {
   font-size: 28px;
   line-height: 40px !important
 }
-.MapCard-headerFakeIcon.CDB-IconFont-rectangles { font-size: 22px }
+.MapCard-headerFakeIcon.CDB-IconFont-rectangles {
+  font-size: 22px;
+}
 .MapCard-header .MapCard-loader {
   display: none;
   position: absolute;

@@ -36,17 +36,15 @@
         "widgets": [
           {
             "type": "time-series",
-            "dataview": {
-              "layerId": "9c14474e-d89a-49b2-b19b-7dce60f0a259",
-              "type": "histogram",
+            "layerId": "9c14474e-d89a-49b2-b19b-7dce60f0a259",
+            "options": {
               "column": "end_at"
             }
           }, {
             "type": "category",
             "title": "Twitter Usernames",
-            "dataview": {
-              "layerId": "9c14474e-d89a-49b2-b19b-7dce60f0a259",
-              "type": "aggregation",
+            "layerId": "9c14474e-d89a-49b2-b19b-7dce60f0a259",
+            "options": {
               "column": "_user",
               "aggregation": "count"
             }
@@ -54,7 +52,6 @@
         ],
 
         "datasource": {
-          "type": "public_map",
           "user_name": cdbConfig.user_name,
           "maps_api_template": cdbConfig.maps_api_template,
           "stat_tag": "4c07a352-892d-11e5-9380-080027880ca6",

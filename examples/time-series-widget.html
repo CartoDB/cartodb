@@ -33,27 +33,24 @@
             {
               "type": "category",
               "title": "Barrios",
-              'dataview': {
-                "layerId": "9a6d3c0e-60b7-4dec-aba7-d2dbfd024268",
-                "type": "aggregation",
+              "layerId": "9a6d3c0e-60b7-4dec-aba7-d2dbfd024268",
+              'options': {
                 "column": "n_distri",
                 "aggregation": "count"
               }
             }, {
               "type": "histogram",
               "title": "Casas por barrio",
-              "dataview": {
-                "layerId": "9a6d3c0e-60b7-4dec-aba7-d2dbfd024268",
-                "type": "histogram",
+              "layerId": "9a6d3c0e-60b7-4dec-aba7-d2dbfd024268",
+              "options": {
                 "column": "homes",
                 "bins": 10
               }
             }, {
               "type": "list",
               "title": "Arboles",
-              "dataview": {
-                "layerId": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
-                "type": "list",
+              "layerId": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
+              "options": {
                 "bbox": false,
                 "columns": [
                   "cartodb_id",
@@ -66,16 +63,14 @@
               }
             }, {
               "type": "time-series",
-              "dataview": {
-                "layerId": "101e17db-1466-4842-8eef-f81da32f48db",
-                "type": "histogram",
+              "layerId": "101e17db-1466-4842-8eef-f81da32f48db",
+              "options": {
                 "column": "end_at"
               }
             }
           ],
 
           "datasource": {
-            "type": "public_map",
             "user_name": "orgowner",
             "maps_api_template": "http://localhost.lan:8181/user/{user}",
             "stat_tag": "84ec6844-4b4b-11e5-9c1d-080027880ca6",

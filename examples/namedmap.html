@@ -33,33 +33,27 @@
           {
             "type": "category",
             "title": "Barrios",
-            "dataview": {
+            "layerId": "districtes-barcelona",
+            "options": {
               "id": "category_widget_uuid",
-              "layerIndex": 1, // namedmap
-              "subLayerIndex": 0, // districtes_barcelona
-              "type": "aggregation",
               "column": "n_distri",
               "aggregation": "count"
             }
           }, {
             "type": "histogram",
             "title": "Casas por barrio",
-            "dataview": {
+            "layerId": "districtes-barcelona",
+            "options": {
               "id": "histogram_widget_uuid",
-              "layerIndex": 1, // namedmap
-              "subLayerIndex": 0, // districtes_barcelona
-              "type": "histogram",
               "column": "homes",
               "bins": 10
             }
           }, {
             "type": "list",
             "title": "Arboles",
-            "dataview": {
+            "layerId": "arboles_barcelona",
+            "options": {
               "id": "list_widget",
-              "layerIndex": 1, // namedmap
-              "subLayerIndex": 1, // arboles
-              "type": "list",
               "bbox": true,
               "columns": [
                 "cartodb_id",
@@ -74,7 +68,6 @@
         ],
 
         "datasource": {
-          "type": "namedmap",
           "user_name": "pablo",
           "maps_api_template": "https://{user}.cartodb-staging.com:443",
           "template_name": "widgets",
@@ -145,6 +138,7 @@
                 },
                 "layers": [
                   {
+                    "id": "districtes-barcelona",
                     "layer_name": "districtes_barcelona",
                     "interactivity": "cartodb_id,area,c_distri,coord_x,coord_y,dones,homes,n_distri,perim,web_1,web_2,web_3",
                     "visible": true,
@@ -277,6 +271,7 @@
                     }
                   },
                   {
+                    "id": "arboles_barcelona",
                     "layer_name": "arboles",
                     "interactivity": "cartodb_id",
                     "visible": true,

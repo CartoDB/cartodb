@@ -47,8 +47,7 @@ module.exports = function (selector, vizJSON, opts) {
     histogram: function (attrs, layer) {
       return vis.dataviews.createHistogramDataview(layer, attrs);
     },
-    // TODO: Rename type to category instead of aggregation?
-    aggregation: function (attrs, layer) {
+    category: function (attrs, layer) {
       return vis.dataviews.createCategoryDataview(layer, attrs);
     }
   });
@@ -73,34 +72,40 @@ module.exports = function (selector, vizJSON, opts) {
 
   // TODO: We can probably move this logic somewhere else
   var widgetModels = [];
-  vizJSON.widgets.forEach(function (widget) {
-    var widgetAttrs = _.omit(widget, 'dataview');
+  vizJSON.widgets.forEach(function (rawWidgetData) {
+    var layerId = rawWidgetData.layerId;
+    var widgetAttrs = _.omit(rawWidgetData, 'options', 'layerId');
+    var dataviewModel;
 
     // Create dataview if there's a definition provided
-    var dataviewModel;
-    var d = widget.dataview;
-    if (d) {
+    var dataviewAttrs = rawWidgetData.options;
+    if (dataviewAttrs) {
+      // TODO not ideal, should have a more maintainable way of mapping
+      dataviewAttrs.type = rawWidgetData.type === 'time-series'
+        ? 'histogram' // Time-series widget is represented by a histogram, so re-map the type
+        : rawWidgetData.type;
+
       var layer;
 
       // Find the Layer that the Widget should be created for.
       // a layerId has top-priority, otherwise it tries with a layerIndex, and even a subLayerIndex (if available)
-      if (d.layerId) {
+      if (layerId) {
         layer = vis.interactiveLayers.find(function (m) {
-          return d.layerId === m.get('id');
+          return layerId === m.get('id');
         });
-      } else if (Number.isInteger(d.layerIndex)) {
-        layer = vis.map.layers.at(d.layerIndex);
-        if (layer && Number.isInteger(d.subLayerIndex)) {
-          layer = layer.layers.at(d.subLayerIndex);
-        }
+      // } else if (Number.isInteger(rawWidgetData.layerIndex)) {
+      //   layer = vis.map.layers.at(rawWidgetData.layerIndex);
+      //   if (layer && Number.isInteger(rawWidgetData.subLayerIndex)) {
+      //     layer = layer.collection.at(rawWidgetData.subLayerIndex);
+      //   }
       }
 
       if (layer) {
         // TODO the layerIndex could change when layers are added/removed, which would introduce unexpected bugs
         var layerIndex = vis.interactiveLayers.indexOf(layer);
-        dataviewModel = dataviewModelFactory.createModel(d, layer, layerIndex);
+        dataviewModel = dataviewModelFactory.createModel(dataviewAttrs, layer, layerIndex);
       } else {
-        cdb.log.error('no layer found for dataview ' + JSON.stringify(d));
+        cdb.log.error('no layer found for dataview ' + JSON.stringify(dataviewAttrs));
       }
     }
 

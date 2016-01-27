@@ -4,19 +4,19 @@
 .iconFont--super:before {
   vertical-align: super;
 }
-.iconFont-Play:before {
+.CDB-IconFont-play:before {
   vertical-align: 6px; // center it, super pushes it too high
 } 
-.iconFont.iconFont--with-label {
+.CDB-IconFont.iconFont--with-label {
   margin-right: 5px;
 }
-.iconFont.iconFont--with-label:before {
+.CDB-IconFont.iconFont--with-label:before {
   @include display-flex();
   @include align-items(center, center);
 }
-.iconFont.iconFont--small:before {
+.CDB-IconFont.iconFont--small:before {
   font-size: 9px;
 }
-.iconFont.iconFont--big:before {
+.CDB-IconFont.iconFont--big:before {
   font-size: 19px;
 }

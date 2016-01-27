@@ -31,7 +31,7 @@
     padding-bottom: 8px;
 
     div b:before {
-      // since can't use iconFont here, we'll inline the iconFont styles here
+      // since can't use CDB-IconFont here, we'll inline the CDB-IconFont styles here
       font-family:'CartoIcon';
       display: inline-block;
       font-style: normal;
@@ -40,7 +40,7 @@
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
 
-      // use the content of "iconFont-ChevronDown" to achieve the "arrow down" artifact
+      // use the content of "CDB-IconFont-chevronDown" to achieve the "arrow down" artifact
       position: absolute;
       top: 14px;
       right: 12px;

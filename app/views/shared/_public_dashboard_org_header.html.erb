@@ -34,19 +34,19 @@
   <ul class="UserInfo-links">
     <% if @website.present? %>
       <li class="UserInfo-linksItem">
-        <i class="iconFont iconFont-Dribbble"></i>
+        <i class="CDB-IconFont CDB-IconFont-dribbble"></i>
         <%= link_to @website_clean, @website %>
       </li>
     <% end %>
     <% if @twitter_username.present? %>
       <li class="UserInfo-linksItem">
-        <i class="iconFont iconFont-Twitter"></i>
+        <i class="CDB-IconFont CDB-IconFont-twitter"></i>
         <%= link_to @twitter_username, "https://twitter.com/#{@twitter_username}" %>
       </li>
     <% end %>
     <% if @available_for_hire %>
       <li class="UserInfo-linksItem UserInfo-linksItem--positive">
-        <i class="iconFont iconFont-Check"></i>
+        <i class="CDB-IconFont CDB-IconFont-check"></i>
         <%= mail_to @email, "Available for hire" %>
       </li>
     <% end %>

@@ -67,6 +67,8 @@ module Carto
         @layer = Carto::Layer.where(id: @layer_id).first
         raise LoadError.new("Layer not found: #{@layer_id}") unless @layer
 
+        raise UnprocesableEntityError.new("Layer #{@layer_id} doesn't belong to map #{@map_id}") unless @map.contains_layer?(@layer)
+
         @widget_id = params[:id]
         if [@widget_id, params[:id]].compact.uniq.length >= 2
           raise UnprocesableEntityError.new("URL id (#{@widget_id}) and payload id (#{params[:id]}) don't match")

@@ -105,6 +105,12 @@ class Carto::Map < ActiveRecord::Base
     !visualizations.select { |v| v.is_writable_by_user(user) }.empty?
   end
 
+  def contains_layer?(layer)
+    return false unless layer
+
+    layers_maps.map(&:layer_id).include?(layer.id)
+  end
+
   private
 
   def get_the_last_time_tiles_have_changed_to_render_it_in_vizjsons

@@ -14,9 +14,9 @@ module CartoDB
         @runner = runner
         @user = user
         @database = options[:database] || user.in_database
-        @min_rows =  options[:min_rows] ||
-                     (Cartodb.config[:overviews] && Cartodb.config[:overviews]['min_rows']) ||
-                     DEFAULT_MIN_ROWS
+        @min_rows = options[:min_rows] ||
+                    Cartodb.get_config(:overviews, 'min_rows') ||
+                    DEFAULT_MIN_ROWS
       end
 
       def required?(table, options = {})

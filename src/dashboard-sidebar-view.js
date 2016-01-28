@@ -58,6 +58,7 @@ module.exports = cdb.core.View.extend({
     this.clearSubViews();
 
     this.$el.html(template());
+    this.$el.toggleClass('CDB-Widget-canvas--withMenu', this.model.get('renderMenu'));
     this._widgets.each(this._maybeRenderWidgetView, this);
     this.$el.toggle(!_.isEmpty(this._subviews));
 

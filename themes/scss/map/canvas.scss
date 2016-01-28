@@ -17,7 +17,7 @@
   @include flex-direction(column);
   @include flex-grow(1);
 }
-.CDB-Dashboard-mapWrapper--margin {
+.CDB-Dashboard-mapWrapper--withMenu {
   margin-left: 76px;
 }
 .CDB-Map-canvas {
@@ -48,7 +48,7 @@
   .CDB-Dashboard-canvas {
     padding: 8px;
   }
-  .CDB-Dashboard-mapWrapper--margin {
+  .CDB-Dashboard-mapWrapper--withMenu {
     margin-top: 48px;
     margin-left: 0;
   }

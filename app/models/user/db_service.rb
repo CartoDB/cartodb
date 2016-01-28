@@ -1145,9 +1145,9 @@ module CartoDB
         @user.in_database(as: :superuser) do |database|
           database.transaction do
             cartodbfied_tables = {}
-            @user.real_tables(old_name).each { |t|
+            @user.real_tables(old_name).each do |t|
               cartodbfied_tables[t] = cdb_drop_triggers(t, database, old_name)
-            }
+            end
 
             rename_schema_with_database(database, old_name, new_name)
 
@@ -1155,9 +1155,9 @@ module CartoDB
             move_postgis_to_schema(old_name)
             rebuild_quota_trigger
 
-            cartodbfied_tables.select { |t, is_cartodbfied| is_cartodbfied }.map { |t, _|
+            cartodbfied_tables.select { |_, is_cartodbfied| is_cartodbfied }.map do |t, _|
               cdb_cartodbfy(t, database, new_name)
-            }
+            end
           end
         end
       end
@@ -1174,7 +1174,6 @@ module CartoDB
 
       def move_table_to_schema(t, database, old_schema, new_schema)
         old_name = "#{old_schema}.#{t[:relname]}"
-        new_name = "#{new_schema}.#{t[:relname]}"
 
         was_cartodbfied = cdb_drop_triggers(t, database, old_schema)
 

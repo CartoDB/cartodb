@@ -48,28 +48,8 @@ module.exports = DataviewModelBase.extend({
   },
 
   _onChangeBinds: function () {
+    DataviewModelBase.prototype._onChangeBinds.call(this);
     this._setInternalModels();
-
-    this._rangeModel.bind('change:totalCount change:categoriesCount', function () {
-      this.set({
-        totalCount: this._rangeModel.get('totalCount'),
-        categoriesCount: this._rangeModel.get('categoriesCount')
-      });
-    }, this);
-
-    this.bind('change:url', function () {
-      if (this.get('enabled') && this.get('syncData')) {
-        this._fetch();
-      }
-    }, this);
-
-    this.bind('change:boundingBox', function () {
-      // If a search is applied and bounding bounds has changed,
-      // don't fetch new raw data
-      if (this.get('enabled') && this.get('syncBoundingBox') && !this.isSearchApplied()) {
-        this._fetch();
-      }
-    }, this);
 
     this.bind('change:url change:boundingBox', function () {
       this._searchModel.set({
@@ -91,6 +71,13 @@ module.exports = DataviewModelBase.extend({
       }
     }, this);
 
+    this._rangeModel.bind('change:totalCount change:categoriesCount', function () {
+      this.set({
+        totalCount: this._rangeModel.get('totalCount'),
+        categoriesCount: this._rangeModel.get('categoriesCount')
+      });
+    }, this);
+
     this._searchModel.bind('loading', function () {
       this.trigger('loading', this);
     }, this);
@@ -105,6 +92,10 @@ module.exports = DataviewModelBase.extend({
     this._searchModel.bind('change:data', function () {
       this.trigger('change:searchData', this);
     }, this);
+  },
+
+  _shouldFetchOnBoundingBoxChange: function () {
+    return DataviewModelBase.prototype._shouldFetchOnBoundingBoxChange.call(this) && !this.isSearchApplied();
   },
 
   enableFilter: function () {

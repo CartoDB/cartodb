@@ -71,7 +71,7 @@ module.exports = Model.extend({
     });
 
     if (url) {
-      var silent = this.get('url') && (sourceLayerId && sourceLayerId !== this.layer.get('id'));
+      var silent = (sourceLayerId && sourceLayerId !== this.layer.get('id'));
 
       // TODO: Instead of setting the url here, we could invoke fetch directly
       this.set('url', url, { silent: silent });
@@ -92,12 +92,12 @@ module.exports = Model.extend({
     this._map.bind('change:center change:zoom', _.debounce(this._onMapBoundsChanged.bind(this), BOUNDING_BOX_FILTER_WAIT));
 
     this.bind('change:url', function () {
-      if (this.get('syncData') && this.get('enabled')) {
+      if (this._shouldFetchOnURLChange()) {
         this._fetch();
       }
     }, this);
     this.bind('change:boundingBox', function () {
-      if (this.get('enabled') && this.get('syncBoundingBox')) {
+      if (this._shouldFetchOnBoundingBoxChange()) {
         this._fetch();
       }
     }, this);
@@ -114,6 +114,14 @@ module.exports = Model.extend({
         };
       }
     }, this);
+  },
+
+  _shouldFetchOnURLChange: function () {
+    return this.get('syncData') && this.get('enabled');
+  },
+
+  _shouldFetchOnBoundingBoxChange: function () {
+    return this.get('enabled') && this.get('syncBoundingBox');
   },
 
   _fetch: function (callback) {

@@ -1,13 +1,19 @@
+var _ = require('underscore');
+var Backbone = require('backbone');
 var DataviewModelBase = require('../../../src/dataviews/dataview-model-base');
 
 describe('dataviews/dataview-model-base', function () {
   beforeEach(function () {
-    var map = jasmine.createSpyObj('map', ['getViewBounds', 'bind', 'reload']);
-    map.getViewBounds.and.returnValue([[1, 2], [3, 4]]);
-    var windshaftMap = jasmine.createSpyObj('windhsaftMap', ['bind']);
+    this.map = new Backbone.Model();
+    this.map.getViewBounds = function () {};
+    this.map.reload = function () {};
+    spyOn(this.map, 'getViewBounds').and.returnValue([[1, 2], [3, 4]]);
+
+    this.windshaftMap = new Backbone.Model();
+
     this.model = new DataviewModelBase(null, {
-      map: map,
-      windshaftMap: windshaftMap,
+      map: this.map,
+      windshaftMap: this.windshaftMap,
       layer: jasmine.createSpyObj('layer', ['get'])
     });
   });
@@ -89,5 +95,65 @@ describe('dataviews/dataview-model-base', function () {
     expect(this.model.trigger).toHaveBeenCalledWith('loading', this.model);
   });
 
-  // TODO: Test bindings to map and windshaftMap
+  describe('bindings to windhsaftMap', function () {
+    beforeEach(function () {
+      this.windshaftMap.getDataviewURL = function () {};
+      spyOn(this.windshaftMap, 'getDataviewURL').and.returnValue('http://wadus.com');
+    });
+
+    it('should update the url attribute when a new windshaftMap instance have been created', function () {
+      this.windshaftMap.trigger('instanceCreated', this.windshaftMap, {});
+
+      expect(this.model.get('url')).toEqual('http://wadus.com');
+    });
+
+    it('should trigger a change:url event if the sourceLayerId matches the id of the dataview\'s layer', function () {
+      var callback = jasmine.createSpy('callback');
+      this.model.bind('change:url', callback);
+      this.model.layer.get.and.returnValue('123456789');
+
+      this.windshaftMap.trigger('instanceCreated', this.windshaftMap, '123456789');
+
+      expect(callback).toHaveBeenCalled();
+    });
+
+    it('should NOT trigger a change:url event if the sourceLayerId doesn\'t match the id of the dataview\'s layer', function () {
+      var callback = jasmine.createSpy('callback');
+      this.model.bind('change:url', callback);
+      this.model.layer.get.and.returnValue('123456789');
+
+      this.windshaftMap.trigger('instanceCreated', this.windshaftMap, '987654321');
+
+      expect(callback).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('bindings to map', function () {
+    beforeEach(function () {
+      spyOn(_, 'debounce').and.callFake(function (func) { return function () { func.apply(this, arguments); }; });
+    });
+
+    it('should NOT update the bounding box when map bounds change and URL hasn\'t been set yet', function () {
+      var previousBoundingBox = this.model.get('boundingBox');
+
+      this.map.getViewBounds.and.returnValue([100, 200], [300, 400]);
+      this.map.trigger('change:center');
+
+      expect(this.model.get('boundingBox')).toEqual(previousBoundingBox);
+    });
+
+    it('should update the bounding box when map bounds change and URL has been set', function () {
+      spyOn(_, 'debounce').and.callFake(function (func) { return function () { func.apply(this, arguments); }; });
+
+      var previousBoundingBox = this.model.get('boundingBox');
+
+      this.model._onChangeBinds();
+
+      this.map.getViewBounds.and.returnValue([[100, 200], [300, 400]]);
+      this.map.trigger('change:center');
+
+      expect(this.model.get('boundingBox')).not.toEqual(previousBoundingBox);
+      expect(this.model.get('boundingBox')).toEqual('200,100,400,300');
+    });
+  });
 });

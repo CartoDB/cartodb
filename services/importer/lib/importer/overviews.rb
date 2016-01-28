@@ -24,10 +24,7 @@ class Overviews
     @runner.log.append("Will create overviews for #{table_name}")
     # TODO: timing, exception handling, ...
 
-    # We need to execute CDB_CreateOverviews as superuser, in the user db
-    # for testing we're ignoring @database now, we may either remove it
-    # or change this to use it...
-    @user.in_database(as: :superuser).run %{
+    @database.run %{
       SELECT cartodb.CDB_CreateOverviews('#{table_name}'::REGCLASS);
     }
     @runner.log.append("Overviews created for #{table_name}")

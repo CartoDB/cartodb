@@ -1,3 +1,5 @@
+require 'carto/api/vizjson3_presenter'
+
 module Carto
   module Editor
     class VisualizationsController < EditorController
@@ -12,7 +14,7 @@ module Carto
       layout 'application_editor3'
 
       def show
-        @vizjson = Carto::Api::VizJSONPresenter.new(@visualization, $tables_metadata)
+        @vizjson = Carto::Api::VizJSON3Presenter.new(@visualization, $tables_metadata)
                                                .to_vizjson(https_request: is_https?)
       end
 

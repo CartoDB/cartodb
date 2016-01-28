@@ -190,6 +190,11 @@ class Carto::Visualization < ActiveRecord::Base
     map.data_layers
   end
 
+  def layers
+    return [] if map.nil?
+    map.layers
+  end
+
   def is_password_valid?(password)
     has_password? && ( password_digest(password, password_salt) == encrypted_password )
   end

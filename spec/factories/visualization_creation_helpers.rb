@@ -52,6 +52,21 @@ end
 shared_context 'visualization creation helpers' do
   include Warden::Test::Helpers
 
+  CARTO_OPTIONS = '{"query":"","opacity":0.99,"auto_bound":false,"interactivity":"cartodb_id","debug":false,' \
+                  '"visible":true,"tiler_domain":"localhost.lan","tiler_port":"80","tiler_protocol":"http",' \
+                  '"sql_domain":"localhost.lan","sql_port":"80","sql_protocol":"http","extra_params":{' \
+                  '"cache_policy":"persist"},"cdn_url":"","tile_style_history":[],"style_version":"2.1.1",' \
+                  '"table_name":"districtes_barcelona","user_name":"ethervoid-common",' \
+                  '"tile_style":"#districtes_barcelona {\n  polygon-fill:#FF6600;\n  polygon-opacity: 0.7;\n  ' \
+                  'line-opacity:1;\n  line-color: #FFFFFF;\n}"}'.freeze
+
+  def create_layer(table_name, user_name, order = 1)
+    options = JSON.parse(CARTO_OPTIONS)
+    options["table_name"] = table_name
+    options["user_name"] = user_name
+    FactoryGirl.build(:layer, kind: 'carto', options: options, order: order)
+  end
+
   before(:each) do
     bypass_named_maps
   end

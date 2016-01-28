@@ -5,6 +5,10 @@ class Carto::Widget < ActiveRecord::Base
 
   validates :layer, :order, :type, :options, presence: true
 
+  def self.from_visualization_id(visualization_id)
+    Carto::Visualization.find(visualization_id).layers.map(&:widgets).flatten
+  end
+
   # INFO: disable ActiveRecord inheritance column
   self.inheritance_column = :_type
 

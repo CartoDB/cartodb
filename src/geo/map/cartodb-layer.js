@@ -87,11 +87,6 @@ var CartoDBLayer = MapLayer.extend({
   // Layers inside a "namedmap" layer have the layer_name defined in the root of their definition
   getName: function () {
     return this.get('options') && this.get('options').layer_name || this.get('layer_name');
-  },
-
-  needsRefresh: function () {
-    // TODO: We will need check if the filter for this layer (dataprovider) has changed here
-    return this.hasChanged('visible') || this.hasChanged('sql') || this.hasChanged('cartocss');
   }
 });
 

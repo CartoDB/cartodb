@@ -53,26 +53,26 @@ module.exports = function (selector, vizJSON, opts) {
   // Create the set of widgets through the widgetsService
   var widgetsService = new WidgetsService(widgets, vis.dataviews);
   vizJSON.widgets.forEach(function (rawWidgetData) {
-    var layerId = rawWidgetData.layerId;
-    var widgetAttrs = _.omit(rawWidgetData, 'options', 'layerId');
-
-    // Find the Layer that the Widget should be created for.
-    var layer;
-    if (layerId) {
-      layer = vis.map.layers.findWhere({ id: layerId });
-    } else if (Number.isInteger(rawWidgetData.layerIndex)) {
-      // TODO Since namedmap doesn't have ids we need to map in another way, here using index
-      //   should we solve this in another way?
-      layer = vis.map.layers.at(rawWidgetData.layerIndex);
-    }
-
     var type = widgetAttrs.type;
-    // Create widget model and add to the widgetsCollection.
     var addWidget = widgetModelsMap[type];
+
     if (_.isFunction(addWidget)) {
-        addWidget(layer, widgetAttrs);
+      var layerId = rawWidgetData.layerId;
+      var widgetAttrs = _.omit(rawWidgetData, 'options', 'layerId');
+
+      // Find the Layer that the Widget should be created for.
+      var layer;
+      if (layerId) {
+        layer = vis.map.layers.findWhere({ id: layerId });
+      } else if (Number.isInteger(rawWidgetData.layerIndex)) {
+        // TODO Since namedmap doesn't have ids we need to map in another way, here using index
+        //   should we solve this in another way?
+        layer = vis.map.layers.at(rawWidgetData.layerIndex);
+      }
+
+      addWidget(layer, widgetAttrs);
     } else {
-      throw new Error('no widget type registered for type ' + type);
+      cdb.log.error('No widget found for type ' + type);
     }
   });
 

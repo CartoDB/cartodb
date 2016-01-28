@@ -21,10 +21,6 @@ var MapLayer = Model.extend({
     });
   },
 
-  needsUpdate: function() {
-    return false;
-  },
-
   /***
   * Compare the layer with the received one
   * @method isEqual

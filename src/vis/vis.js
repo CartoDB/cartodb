@@ -134,296 +134,6 @@ var Vis = View.extend({
     this._createOverlays(overlays, data, options);
   },
 
-  _setupSublayers: function (layers, options) {
-    options.sublayer_options = [];
-
-    _.each(layers.slice(1), function (lyr) {
-      if (lyr.type === 'layergroup') {
-        _.each(lyr.options.layer_definition.layers, function (l) {
-          options.sublayer_options.push({ visible: ( l.visible !== undefined ? l.visible : true) });
-        });
-      } else if (lyr.type === 'namedmap') {
-        _.each(lyr.options.named_map.layers, function (l) {
-          options.sublayer_options.push({ visible: ( l.visible !== undefined ? l.visible : true) });
-        });
-      } else if (lyr.type === 'torque') {
-        options.sublayer_options.push({ visible: ( lyr.options.visible !== undefined ? lyr.options.visible : true) });
-      }
-    });
-  },
-
-  load: function (data, options) {
-    if (!data.datasource) {
-      throw new Error('viz.json needs to include a "datasource" attribute.');
-    }
-
-    var self = this;
-    this.https = (window && window.location.protocol && window.location.protocol === 'https:') || !!data.https;
-
-    // Load the viz.json in case we receive a url instead of a JSON object
-    if (typeof (data) === 'string') {
-      var url = data;
-
-      Loader.get(url, function (data) {
-        if (data) {
-          self.load(data, options);
-        } else {
-          self.throwError('error fetching viz.json file');
-        }
-      });
-
-      return this;
-    }
-
-    // Load the modules (torque) for layers in the viz.json
-    var layers = data.layers;
-
-    if (!this.checkModules(layers)) {
-      if (this.moduleChecked) {
-        self.throwError("modules couldn't be loaded");
-        return this;
-      }
-
-      this.moduleChecked = true;
-
-      this.loadModules(layers, function () {
-        self.load(data, options);
-      });
-
-      return this;
-    }
-
-    options = options || {};
-
-    this._applyOptions(data, options);
-
-    var scrollwheel = (options.scrollwheel === undefined) ? data.scrollwheel : options.scrollwheel;
-
-    // Do not allow pan map if zoom overlay and scrollwheel are disabled unless
-    // mobile view is enabled
-    // Check if zoom overlay is present.
-    var hasZoomOverlay = _.isObject(_.find(data.overlays, function (overlay) {
-      return overlay.type == 'zoom';
-    }));
-
-    var allowDragging = this.isMobileDevice() || hasZoomOverlay || scrollwheel;
-
-    // Force using GMaps ?
-    if ( (this.gmaps_base_type) && (data.map_provider === 'leaflet')) {
-      // Check if base_type is correct
-      var typesAllowed = ['roadmap', 'gray_roadmap', 'dark_roadmap', 'hybrid', 'satellite', 'terrain'];
-      if (_.contains(typesAllowed, this.gmaps_base_type)) {
-        if (data.layers) {
-          data.layers[0].options.type = 'GMapsBase';
-          data.layers[0].options.base_type = this.gmaps_base_type;
-          data.layers[0].options.name = this.gmaps_base_type;
-
-          if (this.gmaps_style) {
-            data.layers[0].options.style = typeof this.gmaps_style === 'string' ? JSON.parse(this.gmaps_style) : this.gmaps_style;
-          }
-
-          data.map_provider = 'googlemaps';
-          data.layers[0].options.attribution = ''; // GMaps has its own attribution
-        } else {
-          log.error('No base map loaded. Using Leaflet.');
-        }
-      } else {
-        log.error('GMaps base_type "' + this.gmaps_base_type + ' is not supported. Using leaflet.');
-      }
-    }
-
-    // Create the instance of the cdb.geo.Map model
-    var mapConfig = {
-      title: data.title,
-      description: data.description,
-      maxZoom: data.maxZoom || this.DEFAULT_MAX_ZOOM,
-      minZoom: data.minZoom || this.DEFAULT_MIN_ZOOM,
-      legends: data.legends,
-      scrollwheel: scrollwheel,
-      drag: allowDragging,
-      provider: data.map_provider
-    };
-
-    // if the boundaries are defined, we add them to the map
-    if (data.bounding_box_sw && data.bounding_box_ne) {
-      mapConfig.bounding_box_sw = data.bounding_box_sw;
-      mapConfig.bounding_box_ne = data.bounding_box_ne;
-    }
-
-    if (data.bounds) {
-      mapConfig.view_bounds_sw = data.bounds[0];
-      mapConfig.view_bounds_ne = data.bounds[1];
-    } else {
-      var center = data.center;
-
-      if (typeof (center) === 'string') {
-        center = $.parseJSON(center);
-      }
-
-      mapConfig.center = center || [0, 0];
-      mapConfig.zoom = data.zoom === undefined ? 4 : data.zoom;
-    }
-
-    var map = new Map(mapConfig);
-    this.map = map;
-
-    // If a CartoDB embed map is hidden by default, its
-    // height is 0 and it will need to recalculate its size
-    // and re-center again.
-    // We will wait until it is resized and then apply
-    // the center provided in the parameters and the
-    // correct size.
-    var map_h = this.$el.outerHeight();
-
-    if (map_h === 0) {
-      this.mapConfig = mapConfig;
-      $(window).bind('resize', this._onResize);
-    }
-
-    var div = $('<div>').css({
-      position: 'relative',
-      width: '100%',
-      height: '100%'
-    });
-
-    this.container = div;
-
-    // Another div to prevent leaflet grabbing the div
-    var div_hack = $('<div>')
-      .addClass('cartodb-map-wrapper')
-      .css({
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        width: '100%'
-      });
-
-    div.append(div_hack);
-
-    this.$el.append(div);
-
-    // Create the map
-    var mapViewFactory = new MapViewFactory();
-    this.mapView = mapViewFactory.createMapView(map.get('provider'), map, div_hack);
-
-    if (options.legends || (options.legends === undefined && this.map.get('legends') !== false)) {
-      map.layers.bind('reset', this.addLegends, this);
-    }
-
-    this.mapView.bind('newLayerView', this._addLoading, this);
-
-    if (this.infowindow) {
-      this.mapView.bind('newLayerView', this.addInfowindow, this);
-    }
-
-    if (this.tooltip) {
-      this.mapView.bind('newLayerView', this.addTooltip, this);
-    }
-
-    var layers = this._newLayerModels(data);
-
-    // TODO: This is PUBLIC. Remove dependency on this attribute from deep-insights.js
-    this.interactiveLayers = new Backbone.Collection(_.select(layers, function (layer) {
-      return layer.get('type') === 'CartoDB' || layer.get('type') === 'torque';
-    }));
-
-    this._dataviewsCollection = new DataviewCollection();
-    this.dataviews = new DataviewsFactory(null, {
-      dataviewsCollection: this._dataviewsCollection,
-      interactiveLayersCollection: this.interactiveLayers
-    });
-
-    // TODO: rethink this
-    this._dataviewsCollection.on('add reset remove', _.debounce(this._invalidateSizeOnDataviewsChanges, 10), this);
-
-    var endpoint;
-    var configGenerator;
-    var datasource = data.datasource;
-
-    // TODO: We can use something else to differentiate types of "datasource"s
-    if (datasource.template_name) {
-      endpoint = [WindshaftConfig.MAPS_API_BASE_URL, 'named', datasource.template_name].join('/');
-      configGenerator = WindshaftNamedMapConfig;
-    } else {
-      endpoint = WindshaftConfig.MAPS_API_BASE_URL;
-      configGenerator = WindshaftLayerGroupConfig;
-    }
-
-    var windshaftClient = new WindshaftClient({
-      endpoint: endpoint,
-      urlTemplate: datasource.maps_api_template,
-      userName: datasource.user_name,
-      forceCors: datasource.force_cors || true
-    });
-
-    var windshaftMap = new WindshaftMap({ // eslint-disable-line
-      client: windshaftClient,
-      configGenerator: configGenerator,
-      statTag: datasource.stat_tag,
-      layers: this.interactiveLayers,
-      dataviews: this._dataviewsCollection,
-      map: this.map
-    });
-
-    // TODO: Bind this through a method
-    this.map.windshaftMap = windshaftMap;
-
-    // if there are no sublayer_options fill it
-    if (!options.sublayer_options) {
-      this._setupSublayers(data.layers, options);
-    }
-
-    this._setLayerOptions(options);
-
-    // Map layers are resetted and the mapView adds the layers to the map
-    this.map.layers.reset(layers);
-
-    this.overlayModels = new Backbone.Collection();
-    this.overlayModels.bind('reset', function (overlays) {
-      this._addOverlays(overlays, data, options);
-    }, this);
-    this.overlayModels.reset(data.overlays);
-
-    _.defer(function () {
-      self.trigger('done', self, map.layers);
-    });
-
-    return this;
-  },
-
-  _newLayerModels: function (vizJSON) {
-    var layerModels = [];
-    var layersOptions = {
-      https: this.https
-    };
-    _.each(vizJSON.layers, function (layerData) {
-      if (layerData.type === 'layergroup' || layerData.type === 'namedmap') {
-        var layersData;
-        if (layerData.type === 'layergroup') {
-          layersData = layerData.options.layer_definition.layers;
-        } else {
-          layersData = layerData.options.named_map.layers;
-        }
-        _.each(layersData, function (layerData) {
-          layerModels.push(Layers.create('CartoDB', layerData, layersOptions));
-        });
-      } else {
-        layerModels.push(Layers.create(layerData.type, layerData, layersOptions));
-      }
-    });
-
-    return layerModels;
-  },
-
-
-  _invalidateSizeOnDataviewsChanges: function () {
-    if (this._dataviewsCollection.size() > 0) {
-      this.mapView.invalidateSize();
-    }
-  },
-
   _createOverlays: function (overlays, vis_data, options) {
     _(overlays).each(function (data) {
       var type = data.type;
@@ -486,6 +196,271 @@ var Vis = View.extend({
         overlay.render();
       }
     }, this);
+  },
+
+  _setupSublayers: function (layers, options) {
+    options.sublayer_options = [];
+
+    _.each(layers.slice(1), function (lyr) {
+      if (lyr.type === 'layergroup') {
+        _.each(lyr.options.layer_definition.layers, function (l) {
+          options.sublayer_options.push({ visible: ( l.visible !== undefined ? l.visible : true) });
+        });
+      } else if (lyr.type === 'namedmap') {
+        _.each(lyr.options.named_map.layers, function (l) {
+          options.sublayer_options.push({ visible: ( l.visible !== undefined ? l.visible : true) });
+        });
+      } else if (lyr.type === 'torque') {
+        options.sublayer_options.push({ visible: ( lyr.options.visible !== undefined ? lyr.options.visible : true) });
+      }
+    });
+  },
+
+  load: function (data, options) {
+    if (!data.datasource) {
+      throw new Error('viz.json needs to include a "datasource" attribute.');
+    }
+
+    var self = this;
+    this.https = (window && window.location.protocol && window.location.protocol === 'https:') || !!data.https;
+
+    // Load the viz.json in case we receive a url instead of a JSON object
+    if (typeof (data) === 'string') {
+      var url = data;
+
+      Loader.get(url, function (data) {
+        if (data) {
+          self.load(data, options);
+        } else {
+          self.throwError('error fetching viz.json file');
+        }
+      });
+
+      return this;
+    }
+
+    // Load the modules (torque) for layers in the viz.json
+    var layers = data.layers;
+
+    if (!this.checkModules(layers)) {
+      if (this.moduleChecked) {
+        self.throwError("modules couldn't be loaded");
+        return this;
+      }
+
+      this.moduleChecked = true;
+
+      this.loadModules(layers, function () {
+        self.load(data, options);
+      });
+
+      return this;
+    }
+
+    options = options || {};
+
+    this._applyOptionsToVizJSON(data, options);
+
+    this._dataviewsCollection = new DataviewCollection();
+    this._dataviewsCollection.on('add reset remove', _.debounce(this._invalidateSizeOnDataviewsChanges, 10), this);
+
+    // Create the WindhaftClient
+
+    var endpoint;
+    var configGenerator;
+    var datasource = data.datasource;
+
+    // TODO: We can use something else to differentiate types of "datasource"s
+    if (datasource.template_name) {
+      endpoint = [WindshaftConfig.MAPS_API_BASE_URL, 'named', datasource.template_name].join('/');
+      configGenerator = WindshaftNamedMapConfig;
+    } else {
+      endpoint = WindshaftConfig.MAPS_API_BASE_URL;
+      configGenerator = WindshaftLayerGroupConfig;
+    }
+
+    var windshaftClient = new WindshaftClient({
+      endpoint: endpoint,
+      urlTemplate: datasource.maps_api_template,
+      userName: datasource.user_name,
+      forceCors: datasource.force_cors || true
+    });
+
+    // Create the WindshaftMap
+
+    var windshaftMap = new WindshaftMap(null, { // eslint-disable-line
+      client: windshaftClient,
+      configGenerator: configGenerator,
+      statTag: datasource.stat_tag
+    });
+
+    // Create the Map
+
+    var scrollwheel = (options.scrollwheel === undefined) ? data.scrollwheel : options.scrollwheel;
+
+    // Do not allow pan map if zoom overlay and scrollwheel are disabled unless
+    // mobile view is enabled
+    // Check if zoom overlay is present.
+    var hasZoomOverlay = _.isObject(_.find(data.overlays, function (overlay) {
+      return overlay.type == 'zoom';
+    }));
+
+    var allowDragging = this.isMobileDevice() || hasZoomOverlay || scrollwheel;
+
+    var mapConfig = {
+      title: data.title,
+      description: data.description,
+      maxZoom: data.maxZoom || this.DEFAULT_MAX_ZOOM,
+      minZoom: data.minZoom || this.DEFAULT_MIN_ZOOM,
+      legends: data.legends,
+      scrollwheel: scrollwheel,
+      drag: allowDragging,
+      provider: data.map_provider
+    };
+
+    // if the boundaries are defined, we add them to the map
+    if (data.bounding_box_sw && data.bounding_box_ne) {
+      mapConfig.bounding_box_sw = data.bounding_box_sw;
+      mapConfig.bounding_box_ne = data.bounding_box_ne;
+    }
+
+    if (data.bounds) {
+      mapConfig.view_bounds_sw = data.bounds[0];
+      mapConfig.view_bounds_ne = data.bounds[1];
+    } else {
+      var center = data.center;
+
+      if (typeof (center) === 'string') {
+        center = $.parseJSON(center);
+      }
+
+      mapConfig.center = center || [0, 0];
+      mapConfig.zoom = data.zoom === undefined ? 4 : data.zoom;
+    }
+
+    this.map = new Map(mapConfig, {
+      windshaftMap: windshaftMap,
+      dataviewsCollection: this._dataviewsCollection
+    });
+
+    // If a CartoDB embed map is hidden by default, its
+    // height is 0 and it will need to recalculate its size
+    // and re-center again.
+    // We will wait until it is resized and then apply
+    // the center provided in the parameters and the
+    // correct size.
+    var map_h = this.$el.outerHeight();
+
+    if (map_h === 0) {
+      this.mapConfig = mapConfig;
+      $(window).bind('resize', this._onResize);
+    }
+
+    // Create the MapView
+
+    var div = $('<div>').css({
+      position: 'relative',
+      width: '100%',
+      height: '100%'
+    });
+
+    this.container = div;
+
+    // Another div to prevent leaflet grabbing the div
+    var div_hack = $('<div>')
+      .addClass('cartodb-map-wrapper')
+      .css({
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        width: '100%'
+      });
+
+    div.append(div_hack);
+
+    this.$el.append(div);
+
+    var mapViewFactory = new MapViewFactory();
+    this.mapView = mapViewFactory.createMapView(this.map.get('provider'), this.map, div_hack);
+
+    // Bindings
+
+    if (options.legends || (options.legends === undefined && this.map.get('legends') !== false)) {
+      this.map.layers.bind('reset', this.addLegends, this);
+    }
+
+    this.mapView.bind('newLayerView', this._addLoading, this);
+
+    if (this.infowindow) {
+      this.mapView.bind('newLayerView', this.addInfowindow, this);
+    }
+
+    if (this.tooltip) {
+      this.mapView.bind('newLayerView', this.addTooltip, this);
+    }
+
+    // Create the Layer Models and set them on hte map
+
+    var layers = this._newLayerModels(data, this.map);
+    this.map.layers.reset(layers);
+
+    // Create the collection of Overlays
+
+    var overlaysCollection = new Backbone.Collection();
+    overlaysCollection.bind('reset', function (overlays) {
+      this._addOverlays(overlays, data, options);
+    }, this);
+    overlaysCollection.reset(data.overlays);
+
+    // Create the public Dataview Factory
+
+    this.dataviews = new DataviewsFactory(null, {
+      dataviewsCollection: this._dataviewsCollection,
+      layersCollection: this.map.layers,
+      map: this.map,
+      windshaftMap: windshaftMap
+    });
+
+    // Trigger 'done' event
+
+    _.defer(function () {
+      self.trigger('done', self, self.map.layers);
+    });
+
+    return this;
+  },
+
+  _newLayerModels: function (vizjson, map) {
+    var layerModels = [];
+    var layersOptions = {
+      https: this.https,
+      map: map
+    };
+    _.each(vizjson.layers, function (layerData) {
+      if (layerData.type === 'layergroup' || layerData.type === 'namedmap') {
+        var layersData;
+        if (layerData.type === 'layergroup') {
+          layersData = layerData.options.layer_definition.layers;
+        } else {
+          layersData = layerData.options.named_map.layers;
+        }
+        _.each(layersData, function (layerData) {
+          layerModels.push(Layers.create('CartoDB', layerData, layersOptions));
+        });
+      } else {
+        layerModels.push(Layers.create(layerData.type, layerData, layersOptions));
+      }
+    });
+
+    return layerModels;
+  },
+
+  _invalidateSizeOnDataviewsChanges: function () {
+    if (this._dataviewsCollection.size() > 0) {
+      this.mapView.invalidateSize();
+    }
   },
 
   _addHeader: function (data, vis_data) {
@@ -581,7 +556,7 @@ var Vis = View.extend({
   },
 
   // change vizjson based on options
-  _applyOptions: function (vizjson, opt) {
+  _applyOptionsToVizJSON: function (vizjson, opt) {
     opt = opt || {};
     opt = _.defaults(opt, {
       tiles_loader: true,
@@ -648,7 +623,7 @@ var Vis = View.extend({
       });
     }
 
-    if ( (opt.title && vizjson.title) || (opt.description && vizjson.description)) {
+    if ((opt.title && vizjson.title) || (opt.description && vizjson.description)) {
       if (!search_overlay('header')) {
         vizjson.overlays.unshift({
           type: 'header',
@@ -744,6 +719,30 @@ var Vis = View.extend({
         }
       }
       _applyLayerOptions(vizjson.layers);
+    }
+
+    // Force using GMaps ?
+    if ((this.gmaps_base_type) && (vizjson.map_provider === 'leaflet')) {
+      // Check if base_type is correct
+      var typesAllowed = ['roadmap', 'gray_roadmap', 'dark_roadmap', 'hybrid', 'satellite', 'terrain'];
+      if (_.contains(typesAllowed, this.gmaps_base_type)) {
+        if (vizjson.layers) {
+          vizjson.layers[0].options.type = 'GMapsBase';
+          vizjson.layers[0].options.base_type = this.gmaps_base_type;
+          vizjson.layers[0].options.name = this.gmaps_base_type;
+
+          if (this.gmaps_style) {
+            vizjson.layers[0].options.style = typeof this.gmaps_style === 'string' ? JSON.parse(this.gmaps_style) : this.gmaps_style;
+          }
+
+          vizjson.map_provider = 'googlemaps';
+          vizjson.layers[0].options.attribution = ''; // GMaps has its own attribution
+        } else {
+          log.error('No base map loaded. Using Leaflet.');
+        }
+      } else {
+        log.error('GMaps base_type "' + this.gmaps_base_type + ' is not supported. Using leaflet.');
+      }
     }
   },
 

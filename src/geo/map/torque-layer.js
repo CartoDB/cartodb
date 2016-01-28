@@ -18,16 +18,11 @@ var TorqueLayer = MapLayer.extend({
     time: undefined // should be a Date instance
   },
 
-  initialize: function() {
+  initialize: function(attrs, options) {
+    options = options || {};
     MapLayer.prototype.initialize.apply(this, arguments);
-  },
 
-  needsUpdate: function() {
-    var changed = this.changedAttributes()
-    if (changed) {
-      return changed.cartocss || changed.query || changed.table_name
-    }
-    return false;
+    this._map = options.map;
   },
 
   play: function () {
@@ -96,7 +91,6 @@ var TorqueLayer = MapLayer.extend({
 
   fetchAttributes: function(layer, featureID, callback) {
   }
-
 });
 
 module.exports = TorqueLayer;

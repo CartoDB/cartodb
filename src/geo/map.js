@@ -21,24 +21,74 @@ var Map = Model.extend({
     provider: 'leaflet'
   },
 
-  initialize: function() {
+  initialize: function (attrs, options) {
+    options = options || {};
     this.layers = new Layers();
+    this.geometries = new Backbone.Collection();
 
-    this.layers.bind('reset', function() {
-      if(this.layers.size() >= 1) {
+    this._windshaftMap = options.windshaftMap;
+    this._dataviewsCollection = options.dataviewsCollection;
+
+    this._initBinds();
+  },
+
+  _initBinds: function () {
+    this.layers.bind('reset', function () {
+      if (this.layers.size() >= 1) {
         this._adjustZoomtoLayer(this.layers.models[0]);
       }
     }, this);
 
-    this.layers.bind('reset', this._updateAttributions, this);
-    this.layers.bind('add', this._updateAttributions, this);
-    this.layers.bind('remove', this._updateAttributions, this);
+    // TODO: When the order of the layers change, the instance of the map needs
+    // to be re-recreated
+    this.layers.bind('reset', this._onLayersResetted, this);
+    this.layers.bind('add', this._onLayerAdded, this);
+    this.layers.bind('remove', this._onLayerRemoved, this);
     this.layers.bind('change:attribution', this._updateAttributions, this);
 
-    this.geometries = new Backbone.Collection();
+    if (this._dataviewsCollection) {
+
+      // When new dataviews are defined, a new instance of the map needs to be created
+      this.listenTo(this._dataviewsCollection, 'add', _.debounce(this._onDataviewAdded.bind(this), 10));
+    }
   },
 
-  _updateAttributions: function() {
+  _onLayersResetted: function () {
+    this.reload();
+    this._updateAttributions();
+  },
+
+  _onLayerAdded: function (layerModel) {
+    this.reload({
+      sourceLayerId: layerModel.get('id')
+    });
+    this._updateAttributions();
+  },
+
+  _onLayerRemoved: function () {
+    this.reload();
+    this._updateAttributions();
+  },
+
+  _onDataviewAdded: function (layerModel) {
+    this.reload();
+  },
+
+  reload: function (options) {
+    if (this._windshaftMap) {
+      var instanceOptions = {
+        layers: this.layers.models,
+        sourceLayerId: options && options.sourceLayerId
+      };
+
+      if (this._dataviewsCollection) {
+        instanceOptions.dataviews = this._dataviewsCollection;
+      }
+      this._windshaftMap.createInstance(instanceOptions);
+    }
+  },
+
+  _updateAttributions: function () {
     var defaultCartoDBAttribution = this.defaults.attribution[0];
     var attributions = _.chain(this.layers.models)
       .map(function(layer) { return sanitize.html(layer.get('attribution')); })
@@ -50,6 +100,10 @@ var Map = Model.extend({
     attributions.push(defaultCartoDBAttribution);
 
     this.set('attribution', attributions);
+  },
+
+  getWindshaftMap: function () {
+    return this._windshaftMap;
   },
 
   setView: function(latlng, zoom) {
@@ -289,7 +343,6 @@ var Map = Model.extend({
 
     return zoom - 1;
   }
-
 }, {
   latlngToMercator: function(latlng, zoom) {
     var ll = new L.LatLng(latlng[0], latlng[1]);

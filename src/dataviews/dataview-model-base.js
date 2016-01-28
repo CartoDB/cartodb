@@ -1,4 +1,6 @@
+var _ = require('underscore');
 var Model = require('../core/model');
+var WindshaftFiltersBoundingBoxFilter = require('../windshaft/filters/bounding-box');
 
 /**
  * Default dataview model
@@ -21,11 +23,20 @@ module.exports = Model.extend({
     attrs = attrs || {};
     opts = opts || {};
 
+    if (!opts.map) {
+      throw new Error('map is required');
+    }
+    if (!opts.windshaftMap) {
+      throw new Error('windshaftMap is required');
+    }
+
     if (!attrs.id) {
       this.set('id', attrs.type + '-' + this.cid);
     }
 
     this.layer = opts.layer;
+    this._map = opts.map;
+    this._windshaftMap = opts.windshaftMap;
 
     // filter is optional, so have to guard before using it
     this.filter = opts.filter;
@@ -33,10 +44,13 @@ module.exports = Model.extend({
       this.filter.set('dataviewId', this.id);
     }
 
+    this._updateBoundingBox();
     this._initBinds();
   },
 
   _initBinds: function () {
+    this._windshaftMap.bind('instanceCreated', this._onNewWindshaftMapInstance, this);
+
     this.once('change:url', function () {
       var self = this;
       this._fetch(function () {
@@ -50,14 +64,40 @@ module.exports = Model.extend({
     }
   },
 
+  _onNewWindshaftMapInstance: function (windshaftMapInstance, sourceLayerId) {
+    var url = windshaftMapInstance.getDataviewURL({
+      dataviewId: this.get('id'),
+      protocol: 'http'
+    });
+
+    if (url) {
+      var silent = (sourceLayerId && sourceLayerId !== this.layer.get('id'));
+
+      // TODO: Instead of setting the url here, we could invoke fetch directly
+      this.set('url', url, { silent: silent });
+    }
+  },
+
+  _onMapBoundsChanged: function () {
+    this._updateBoundingBox();
+  },
+
+  _updateBoundingBox: function () {
+    var boundingBoxFilter = new WindshaftFiltersBoundingBoxFilter(this._map.getViewBounds());
+    this.set('boundingBox', boundingBoxFilter.toString());
+  },
+
   _onChangeBinds: function () {
+    var BOUNDING_BOX_FILTER_WAIT = 500;
+    this._map.bind('change:center change:zoom', _.debounce(this._onMapBoundsChanged.bind(this), BOUNDING_BOX_FILTER_WAIT));
+
     this.bind('change:url', function () {
-      if (this.get('syncData') && this.get('enabled')) {
+      if (this._shouldFetchOnURLChange()) {
         this._fetch();
       }
     }, this);
     this.bind('change:boundingBox', function () {
-      if (this.get('enabled') && this.get('syncBoundingBox')) {
+      if (this._shouldFetchOnBoundingBoxChange()) {
         this._fetch();
       }
     }, this);
@@ -76,6 +116,14 @@ module.exports = Model.extend({
     }, this);
   },
 
+  _shouldFetchOnURLChange: function () {
+    return this.get('syncData') && this.get('enabled');
+  },
+
+  _shouldFetchOnBoundingBoxChange: function () {
+    return this.get('enabled') && this.get('syncBoundingBox');
+  },
+
   _fetch: function (callback) {
     var self = this;
     this.fetch({
@@ -91,7 +139,9 @@ module.exports = Model.extend({
   },
 
   _onFilterChanged: function (filter) {
-    this.trigger('change:filter', this, filter);
+    this._map.reload({
+      sourceLayerId: this.layer.get('id')
+    });
   },
 
   getData: function () {

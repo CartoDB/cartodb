@@ -10,12 +10,13 @@ describe('core/geo/map-view', function () {
   beforeEach(function() {
     this.container = $('<div>').css('height', '200px');
 
-    this.map = new Map();
-
     // Map needs a WindshaftMap so we're setting up a fake one
-    this.map.windshaftMap = jasmine.createSpyObj('windshaftMap', ['isNamedMap', 'isAnonymousMap']);
-    this.map.windshaftMap.isAnonymousMap.and.returnValue(true);
-    this.map.windshaftMap.instance = jasmine.createSpyObj('windshaftMapInstance', ['bind']);
+    var windshaftMap = jasmine.createSpyObj('windshaftMap', ['bind', 'isNamedMap', 'isAnonymousMap', 'createInstance']);
+    windshaftMap.isAnonymousMap.and.returnValue(true);
+
+    this.map = new Map(null, {
+      windshaftMap: windshaftMap
+    });
 
     this.layerViewFactory = jasmine.createSpyObj('layerViewFactory', ['createLayerView']);
     this.mapView = new MapView({

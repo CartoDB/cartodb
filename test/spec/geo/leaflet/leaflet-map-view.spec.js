@@ -26,12 +26,13 @@ describe('geo/leaflet/leaflet-map-view', function () {
       'height': '200px',
       'width': '200px'
     });
-    map = new Map();
 
     // Map needs a WindshaftMap so we're setting up a fake one
-    map.windshaftMap = jasmine.createSpyObj('windshaftMap', ['isNamedMap', 'isAnonymousMap']);
-    map.windshaftMap.isAnonymousMap.and.returnValue(true);
-    map.windshaftMap.instance = jasmine.createSpyObj('windshaftMapInstance', ['bind']);
+    var fakeWindshaftMap = jasmine.createSpyObj('windshaftMap', ['isNamedMap', 'isAnonymousMap', 'createInstance', 'bind']);
+
+    map = new Map(null, {
+      windshaftMap: fakeWindshaftMap
+    });
 
     mapView = new LeafletMapView({
       el: container,

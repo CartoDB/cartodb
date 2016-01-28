@@ -5,7 +5,9 @@ describe('dashboard-view', function () {
   beforeEach(function () {
     this.view = new DashboardView({
       widgets: new Backbone.Collection(),
-      dashboardInfoModel: new cdb.core.Model()
+      model: new cdb.core.Model({
+        renderMenu: true
+      })
     });
   });
 

@@ -44,78 +44,45 @@ module.exports = function (selector, vizJSON, opts) {
   });
   var vis = cdb.createVis(dashboardView.$('#map'), vizJSON, opts);
 
-  var dw = vis.dataviews;
-  var dataviewModelsMap = {
-    list: dw.createListDataview.bind(dw),
-    formula: dw.createFormulaDataview.bind(dw),
-    histogram: dw.createHistogramDataview.bind(dw),
-    category: dw.createCategoryDataview.bind(dw)
-  };
-
   var widgetModelsMap = {
-    list: function (widgetAttrs, widgetOpts) {
-      return new WidgetModel(widgetAttrs, widgetOpts);
-    },
-    formula: function (widgetAttrs, widgetOpts) {
-      return new WidgetModel(widgetAttrs, widgetOpts);
-    },
-    histogram: function (widgetAttrs, widgetOpts) {
-      return new WidgetModel(widgetAttrs, widgetOpts);
-    },
-    'time-series': function (widgetAttrs, widgetOpts) {
-      return new WidgetModel(widgetAttrs, widgetOpts);
-    },
-    category: function (widgetAttrs, widgetOpts) {
-      return new CategoryWidgetModel(widgetAttrs, widgetOpts);
-    }
+    list: widgetsService.addListWidget.bind(widgetsService),
+    formula: widgetsService.addFormulaWidget.bind(widgetsService),
+    histogram: widgetsService.addHistogramWidget.bind(widgetsService),
+    'time-series': widgetsService.addTimeSeriesWidget.bind(widgetsService),
+    category: widgetsService.addCategoryWidget.bind(widgetsService)
   };
 
-  // TODO: We can probably move this logic somewhere else
-  var widgetModels = [];
+  // Create the set of widgets through the widgetsService
+  var widgetsService = new WidgetsService(widgets, vis.dataviews);
   vizJSON.widgets.forEach(function (rawWidgetData) {
     var layerId = rawWidgetData.layerId;
     var widgetAttrs = _.omit(rawWidgetData, 'options', 'layerId');
-    var dataviewModel;
 
-    // Create dataview if there's a definition provided
-    var dataviewAttrs = rawWidgetData.options;
-    if (dataviewAttrs) {
-      // TODO not ideal, should have a more maintainable way of mapping
-      dataviewAttrs.type = rawWidgetData.type === 'time-series'
-        ? 'histogram' // Time-series widget is represented by a histogram, so re-map the type
-        : rawWidgetData.type;
-
-      var layer;
-
-      // Find the Layer that the Widget should be created for.
-      if (layerId) {
-        layer = vis.map.layers.findWhere({ id: layerId });
-      } else if (Number.isInteger(rawWidgetData.layerIndex)) {
-        // TODO Since namedmap doesn't have ids we need to map in another way, here using index
-        //   should we solve this in another way?
-        layer = vis.map.layers.at(rawWidgetData.layerIndex);
-      }
-
-      if (layer) {
-        dataviewModel = dataviewModelsMap[dataviewAttrs.type](layer, dataviewAttrs);
-      } else {
-        cdb.log.error('no layer found for dataview ' + JSON.stringify(dataviewAttrs));
-      }
+    // Find the Layer that the Widget should be created for.
+    var layer;
+    if (layerId) {
+      layer = vis.map.layers.findWhere({ id: layerId });
+    } else if (Number.isInteger(rawWidgetData.layerIndex)) {
+      // TODO Since namedmap doesn't have ids we need to map in another way, here using index
+      //   should we solve this in another way?
+      layer = vis.map.layers.at(rawWidgetData.layerIndex);
     }
 
-    var widgetOpts = {
-      dataviewModel: dataviewModel
-    };
-    var widgetModel = widgetModelsMap[widgetAttrs.type](widgetAttrs, widgetOpts);
-    widgetModels.push(widgetModel);
+    var type = widgetAttrs.type;
+    // Create widget model and add to the widgetsCollection.
+    var addWidget = widgetModelsMap[type];
+    if (_.isFunction(addWidget)) {
+        addWidget(layer, widgetAttrs);
+    } else {
+      throw new Error('no widget type registered for type ' + type);
+    }
   });
 
-  widgets.reset(widgetModels);
   dashboardView.render();
 
   return {
     dashboardView: dashboardView,
-    widgets: WidgetsService.getInstance(widgets),
+    widgets: widgetsService,
     vis: vis
   };
 };

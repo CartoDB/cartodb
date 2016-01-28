@@ -73,10 +73,12 @@
     max-width: $w;
     height: auto;
     margin-top: $baseSize;
-    margin-left: $baseSize * 9;
     border-radius: 0;
     overflow: hidden;
     box-sizing: border-box;
+  }
+  .CDB-Widget-canvas--withMenu {
+    margin-left: $baseSize * 9;
   }
   .CDB-Map-canvas {
     @include display-flex();

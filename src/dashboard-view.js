@@ -1,7 +1,7 @@
 var cdb = require('cartodb.js');
 var template = require('./dashboard.tpl');
 var DashboardBelowMapView = require('./dashboard-below-map-view');
-var DashboardInfoView = require('./dashboard-info-view');
+var DashboardMenuView = require('./dashboard-menu-view');
 var DashboardSidebarView = require('./dashboard-sidebar-view');
 
 /**
@@ -13,7 +13,7 @@ module.exports = cdb.core.View.extend({
 
   initialize: function (options) {
     this._widgets = options.widgets;
-    this._dashboardInfoModel = options.dashboardInfoModel;
+    this._infoView = options.infoView;
 
     // TODO parent context requires some markup to be present already, but NOT the other views
     this.el.classList.add(this.className);
@@ -24,20 +24,27 @@ module.exports = cdb.core.View.extend({
     this.clearSubViews();
 
     var view;
-    view = new DashboardInfoView({
-      model: this._dashboardInfoModel
-    });
-    this.addView(view);
-    this.$el.append(view.render().el);
+    var doRenderMenu = this.model.get('renderMenu');
+
+    if (doRenderMenu) {
+      view = new DashboardMenuView({
+        model: this.model
+      });
+      this.addView(view);
+      this.$el.append(view.render().el);
+    }
 
     view = new DashboardBelowMapView({
       widgets: this._widgets
     });
     this.addView(view);
-    this.$('.js-map-wrapper').append(view.render().el);
+    this.$('.js-map-wrapper')
+      .toggleClass('CDB-Dashboard-mapWrapper--withMenu', doRenderMenu)
+      .append(view.render().el);
 
     view = new DashboardSidebarView({
-      widgets: this._widgets
+      widgets: this._widgets,
+      model: this.model
     });
     this.addView(view);
     this.$el.append(view.render().el);

@@ -1,9 +1,9 @@
 var cdb = require('cartodb.js');
-var template = require('./dashboard-info-view.tpl');
+var template = require('./dashboard-menu-view.tpl');
 var moment = require('moment');
 
-var DashboardInfoView = cdb.core.View.extend({
-  className: 'CDB-Dashboard-info',
+var DashboardMenuView = cdb.core.View.extend({
+  className: 'CDB-Dashboard-menu',
 
   events: {
     'click .js-toggle-view-link': '_toggleView'
@@ -28,4 +28,4 @@ var DashboardInfoView = cdb.core.View.extend({
   }
 });
 
-module.exports = DashboardInfoView;
+module.exports = DashboardMenuView;

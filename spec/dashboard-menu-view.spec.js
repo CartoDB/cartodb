@@ -1,8 +1,8 @@
 var moment = require('moment');
 var Backbone = require('backbone');
-var DashboardInfoView = require('../src/dashboard-info-view');
+var DashboardMenuView = require('../src/dashboard-menu-view');
 
-describe('../src/dashboard-info-view', function () {
+describe('../src/dashboard-menu-view', function () {
   beforeEach(function () {
     var yesterday = moment().subtract(1, 'days').format(); // 2015-11-26T13:19:32+01:00
     var model = new Backbone.Model({
@@ -10,7 +10,7 @@ describe('../src/dashboard-info-view', function () {
       description: 'Lorem ipsum...',
       updatedAt: yesterday
     });
-    this.view = new DashboardInfoView({
+    this.view = new DashboardMenuView({
       model: model
     });
 
@@ -18,9 +18,9 @@ describe('../src/dashboard-info-view', function () {
   });
 
   it('should render properly', function () {
-    expect(this.view.$el.find('.CDB-Dashboard-infoTitle').text()).toEqual('Mapaza');
-    expect(this.view.$el.find('.CDB-Dashboard-infoDescription').text()).toEqual('Lorem ipsum...');
-    expect(this.view.$el.find('.CDB-Dashboard-infoUpdate').text()).toEqual('UPDATED a day ago');
+    expect(this.view.$el.find('.CDB-Dashboard-menuTitle').text()).toEqual('Mapaza');
+    expect(this.view.$el.find('.CDB-Dashboard-menuDescription').text()).toEqual('Lorem ipsum...');
+    expect(this.view.$el.find('.CDB-Dashboard-menuUpdate').text()).toEqual('UPDATED a day ago');
   });
 
   it('should collapse the view', function () {

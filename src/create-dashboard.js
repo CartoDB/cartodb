@@ -11,7 +11,8 @@ var WidgetsService = require('./widgets-service');
  *
  * @param {String} selector e.g. "#foobar-id", ".some-class"
  * @param {Object} vizJSON JSON datastructure
- * @param {Object} opts (Optional) flags, see 3rd param for cdb.createVis for available ones.
+ * @param {Object} opts (Optional) flags, see 3rd param for cdb.createVis for available ones. Keys used here:
+ *   renderMenu: {Boolean} If true (default), render a top-level menu on the left side.
  * @return {Object} with keys:
  *   dashboardView: root (backbone) view of the dashboard
  *   vis: the instantiated vis map, same result as given from cdb.createVis()
@@ -20,19 +21,26 @@ module.exports = function (selector, vizJSON, opts) {
   var dashboardEl = document.querySelector(selector);
   if (!dashboardEl) throw new Error('no element found with selector ' + selector);
 
+  // Default options
+  opts = opts || {};
+  opts.renderMenu = _.isBoolean(opts.renderMenu)
+    ? opts.renderMenu
+    : true;
+
   var widgets = new WidgetsCollection();
 
-  var dashboardInfoModel = new cdb.core.Model({
+  var model = new cdb.core.Model({
     title: vizJSON.title,
     description: vizJSON.description,
     updatedAt: vizJSON.updated_at,
     userName: vizJSON.user.fullname,
-    userAvatarURL: vizJSON.user.avatar_url
+    userAvatarURL: vizJSON.user.avatar_url,
+    renderMenu: opts.renderMenu
   });
   var dashboardView = new DashboardView({
     el: dashboardEl,
     widgets: widgets,
-    dashboardInfoModel: dashboardInfoModel
+    model: model
   });
   var vis = cdb.createVis(dashboardView.$('#map'), vizJSON, opts);
 

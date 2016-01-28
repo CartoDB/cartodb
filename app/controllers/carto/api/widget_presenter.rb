@@ -12,6 +12,7 @@ module Carto
         return {} unless @widget
 
         {
+          id: @widget.id,
           type: @widget.type,
           title: @widget.title,
           order: @widget.order,

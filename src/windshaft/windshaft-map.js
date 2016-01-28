@@ -6,14 +6,6 @@ var WindshaftNamedMapConfig = require('./namedmap-config');
 var WindshaftConfig = require('./config');
 var EMPTY_GIF = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 
-/**
- * This class represents the concept of a map in Windshaft. It holds a reference
- * to the current map instance in Windshaft and observes some objects (map, layers,
- * dataviews) that cause the instance to be re-created.
- *
- * NOTE: We couldn't use a Backbone.Model for this because this class uses a client
- * which is a bit smart about how requests to Windshaft shoud be made.
- */
 var WindshaftMap = Backbone.Model.extend({
 
   initialize: function (attrs, options) {

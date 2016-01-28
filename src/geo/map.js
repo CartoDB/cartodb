@@ -27,7 +27,7 @@ var Map = Model.extend({
     this.geometries = new Backbone.Collection();
 
     this._windshaftMap = options.windshaftMap;
-    this._dataviewsCollection = options._dataviewsCollection;
+    this._dataviewsCollection = options.dataviewsCollection;
 
     this._initBinds();
   },
@@ -49,7 +49,7 @@ var Map = Model.extend({
     if (this._dataviewsCollection) {
 
       // When new dataviews are defined, a new instance of the map needs to be created
-      this._dataviewsCollection.bind('add', _.debounce(this._onDataviewAdded, 10), this);
+      this.listenTo(this._dataviewsCollection, 'add', _.debounce(this._onDataviewAdded.bind(this), 10));
     }
   },
 

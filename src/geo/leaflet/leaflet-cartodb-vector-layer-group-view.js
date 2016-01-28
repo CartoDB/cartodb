@@ -54,49 +54,6 @@ var LeafletCartoDBLayerGroupView = L.CartoDBd3Layer.extend({
     var previousEvent;
     var eventTimeout = -1;
 
-
-    opts.featureOver = function (e, latlon, pxPos, data, layer) {
-      if (!hovers[layer]) {
-        self.trigger('layerenter', e, latlon, pxPos, data, layer);
-      }
-      hovers[layer] = 1;
-      _featureOver && _featureOver.apply(this, arguments);
-      self.featureOver && self.featureOver.apply(self, arguments);
-      // if the event is the same than before just cancel the event
-      // firing because there is a layer on top of it
-      if (e.timeStamp === previousEvent) {
-        clearTimeout(eventTimeout);
-      }
-      eventTimeout = setTimeout(function () {
-        self.trigger('mouseover', e, latlon, pxPos, data, layer);
-        self.trigger('layermouseover', e, latlon, pxPos, data, layer);
-      }, 0);
-      previousEvent = e.timeStamp;
-
-    };
-
-    opts.featureOut = function (m, layer) {
-      if (hovers[layer]) {
-        self.trigger('layermouseout', layer);
-      }
-      hovers[layer] = 0;
-      if (!_.any(hovers)) {
-        self.trigger('mouseout');
-      }
-      _featureOut && _featureOut.apply(this, arguments);
-      self.featureOut && self.featureOut.apply(self, arguments);
-    };
-
-    opts.featureClick = _.debounce(function () {
-      _featureClick && _featureClick.apply(self, arguments);
-      self.featureClick && self.featureClick.apply(self, arguments);
-    }, 10);
-
-    // Set options
-    L.Util.setOptions(this, opts);
-
-    this.fire = this.trigger;
-
     // Bind changes to the urls of the model
     layerModel.bind('change:urls', function () {
       var model = this

@@ -981,7 +981,6 @@ module CartoDB
 
           move_schema_content_by_renaming(old_database_schema_name, @user.database_schema)
 
-          move_postgis_to_schema(old_database_schema_name)
           create_public_db_user
           set_database_search_path
         end
@@ -1151,7 +1150,9 @@ module CartoDB
             }
 
             rename_schema_with_database(database, old_name, new_name)
+
             create_schema_with_database(database, old_name)
+            move_postgis_to_schema(old_name)
             rebuild_quota_trigger
 
             cartodbfied_tables.select { |t, is_cartodbfied| is_cartodbfied }.map { |t, _|

@@ -4,18 +4,21 @@
 #
 class Overviews
 
-  MIN_ROWS = 1000000
+  DEFAULT_MIN_ROWS = 1000000
 
-  def initialize(runner, user, database = nil)
+  def initialize(runner, user, options = {})
     @runner = runner
     @user = user
-    @database = database || user.in_database
+    @database = options[:database] || user.in_database
+    @min_rows =  options[:min_rows] ||
+                 (Cartodb.config[:overviews] && Cartodb.config[:overviews]['min_rows']) ||
+                 DEFAULT_MIN_ROWS
   end
 
   def required?(table, options = {})
     schema = schema_from_options(options)
     # TODO: check quotas, etc...
-    table_row_count(schema, table) >= MIN_ROWS
+    table_row_count(schema, table) >= @min_rows
   end
 
   def create!(table, options = {})

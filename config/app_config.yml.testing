@@ -290,6 +290,8 @@ defaults: &defaults
   users_dumps:
     service:
       port: 0000
+  overviews:
+    min_rows: 1000000
 
 development:
   <<: *defaults

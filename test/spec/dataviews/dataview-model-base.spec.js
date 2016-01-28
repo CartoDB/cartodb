@@ -143,8 +143,6 @@ describe('dataviews/dataview-model-base', function () {
     });
 
     it('should update the bounding box when map bounds change and URL has been set', function () {
-      spyOn(_, 'debounce').and.callFake(function (func) { return function () { func.apply(this, arguments); }; });
-
       var previousBoundingBox = this.model.get('boundingBox');
 
       this.model._onChangeBinds();

@@ -4,10 +4,10 @@ var DataviewsFactory = require('../../../src/dataviews/dataviews-factory');
 describe('dataviews/dataviews-factory', function () {
   beforeEach(function () {
     this.dataviewsCollection = new Backbone.Collection();
-    this.interactiveLayersCollection = new Backbone.Collection();
+    this.layers = new Backbone.Collection();
     this.factory = new DataviewsFactory(null, {
       dataviewsCollection: this.dataviewsCollection,
-      interactiveLayersCollection: this.interactiveLayersCollection,
+      layersCollection: this.layers,
       map: {},
       windshaftMap: {}
     });

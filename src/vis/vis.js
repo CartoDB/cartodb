@@ -261,13 +261,10 @@ var Vis = View.extend({
 
     this._applyOptionsToVizJSON(data, options);
 
-// CREATE THE COLLECTION OF DATAVIEWS
-
     this._dataviewsCollection = new DataviewCollection();
-    // TODO: rethink this
     this._dataviewsCollection.on('add reset remove', _.debounce(this._invalidateSizeOnDataviewsChanges, 10), this);
 
-// CREATE THE WINDSHAFT CLIENT
+    // Create the WindhaftClient
 
     var endpoint;
     var configGenerator;
@@ -289,7 +286,7 @@ var Vis = View.extend({
       forceCors: datasource.force_cors || true
     });
 
-// CREATE THE WINDSHAFT MAP
+    // Create the WindshaftMap
 
     var windshaftMap = new WindshaftMap(null, { // eslint-disable-line
       client: windshaftClient,
@@ -297,7 +294,7 @@ var Vis = View.extend({
       statTag: datasource.stat_tag
     });
 
-// CREATE THE MAP MODEL
+    // Create the Map
 
     var scrollwheel = (options.scrollwheel === undefined) ? data.scrollwheel : options.scrollwheel;
 
@@ -310,7 +307,6 @@ var Vis = View.extend({
 
     var allowDragging = this.isMobileDevice() || hasZoomOverlay || scrollwheel;
 
-    // Create the instance of the cdb.geo.Map model
     var mapConfig = {
       title: data.title,
       description: data.description,
@@ -359,7 +355,7 @@ var Vis = View.extend({
       $(window).bind('resize', this._onResize);
     }
 
-// CREATE THE MAP VIEW
+    // Create the MapView
 
     var div = $('<div>').css({
       position: 'relative',
@@ -388,7 +384,7 @@ var Vis = View.extend({
     var mapViewFactory = new MapViewFactory();
     this.mapView = mapViewFactory.createMapView(this.map.get('provider'), this.map, div_hack);
 
-// BINDINGS
+    // Bindings
 
     if (options.legends || (options.legends === undefined && this.map.get('legends') !== false)) {
       this.map.layers.bind('reset', this.addLegends, this);
@@ -404,20 +400,12 @@ var Vis = View.extend({
       this.mapView.bind('newLayerView', this.addTooltip, this);
     }
 
-// CREATE THE COLLECTION OF LAYERS
+    // Create the Layer Models and set them on hte map
 
     var layers = this._newLayerModels(data, this.map);
-
-    // TODO: This is PUBLIC. Remove dependency on this attribute from deep-insights.js
-    this.interactiveLayers = new Backbone.Collection(_.select(layers, function (layer) {
-      return layer.get('type') === 'CartoDB' || layer.get('type') === 'torque';
-    }));
-
-// RESET THE LAYERS ON this.map
-
     this.map.layers.reset(layers);
 
-// CREATE THE COLLECTION OF LAYERS AND ADD OVERLAYS
+    // Create the collection of Overlays
 
     var overlaysCollection = new Backbone.Collection();
     overlaysCollection.bind('reset', function (overlays) {
@@ -425,16 +413,17 @@ var Vis = View.extend({
     }, this);
     overlaysCollection.reset(data.overlays);
 
-// CREATE THE PUBLIC DATAVIEW FACTORY
+    // Create the public Dataview Factory
 
     this.dataviews = new DataviewsFactory(null, {
       dataviewsCollection: this._dataviewsCollection,
-      interactiveLayersCollection: this.interactiveLayers,
+      layersCollection: this.map.layers,
       map: this.map,
       windshaftMap: windshaftMap
     });
 
-// TRIGGER DONE EVENT WITH LAYERS
+    // Trigger 'done' event
+
     _.defer(function () {
       self.trigger('done', self, self.map.layers);
     });

@@ -796,3 +796,4 @@
 **/lib/assets/test/spec/cartodb/table_public/row_view_public.spec.js
 **/lib/assets/test/spec/cartodb/table_public/tableview_public.spec.js
 **/lib/assets/test/spec/SpecHelper.js
+**/lib/assets/test/spec/SpecHelper3.js

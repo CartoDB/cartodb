@@ -149,7 +149,7 @@ describe('windshaft/map', function () {
   describe('#getBaseURL', function () {
     it("should return Windshaft's url if no CDN info is present", function () {
       var windshaftMapInstance = new WindshaftMap({
-        layergroupid: '0123456789',
+        layergroupid: '0123456789'
       }, {
         client: new WindshaftClient({
           urlTemplate: 'https://{user}.example.com:443',

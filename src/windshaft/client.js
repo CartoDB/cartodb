@@ -46,7 +46,7 @@ WindshaftClient.prototype.instantiateMap = function (options) {
       } else {
         successCallback(data);
       }
-    }.bind(this),
+    },
     error: function (xhr) {
       var err = { errors: ['Unknown error'] };
       try {

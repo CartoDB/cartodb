@@ -10,11 +10,13 @@ describe('geo/ui/layer-selector', function () {
   var layerSelector, layer1, layer2;
 
   beforeEach(function() {
-    var map2 = new Map();
-
     // Map needs a WindshaftMap so we're setting up a fake one
-    map2.windshaftMap = jasmine.createSpyObj('windshaftMap', ['bind', 'isNamedMap', 'isAnonymousMap', 'createInstance', 'reload']);
-    map2.windshaftMap.isAnonymousMap.and.returnValue(true);
+    var windshaftMap = jasmine.createSpyObj('windshaftMap', ['bind', 'isNamedMap', 'isAnonymousMap', 'createInstance', 'reload']);
+    windshaftMap.isAnonymousMap.and.returnValue(true);
+
+    var map2 = new Map(null, {
+      windshaftMap: windshaftMap
+    });
 
     layer1 = new CartoDBLayer({ options: { layer_name: 'Layer 1' } }, { map: map2 });
     layer2 = new CartoDBLayer({ options: { layer_name: 'Layer 2' } }, { map: map2 });

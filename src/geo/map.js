@@ -21,22 +21,15 @@ var Map = Model.extend({
     provider: 'leaflet'
   },
 
-  initialize: function () {
+  initialize: function (attrs, options) {
+    options = options || {};
     this.layers = new Layers();
     this.geometries = new Backbone.Collection();
 
+    this._windshaftMap = options.windshaftMap;
+    this._dataviewsCollection = options._dataviewsCollection;
+
     this._initBinds();
-  },
-
-  bindToDataviews: function (dataviews) {
-    this._dataviewsCollection = dataviews;
-
-    // When new dataviews are defined, a new instance of the map needs to be created
-    this._dataviewsCollection.bind('add', _.debounce(this._onDataviewAdded, 10), this);
-  },
-
-  bindToWindshaftMap: function (windshaftMap) {
-    this.windshaftMap = windshaftMap;
   },
 
   _initBinds: function () {
@@ -52,6 +45,12 @@ var Map = Model.extend({
     this.layers.bind('add', this._onLayerAdded, this);
     this.layers.bind('remove', this._onLayerRemoved, this);
     this.layers.bind('change:attribution', this._updateAttributions, this);
+
+    if (this._dataviewsCollection) {
+
+      // When new dataviews are defined, a new instance of the map needs to be created
+      this._dataviewsCollection.bind('add', _.debounce(this._onDataviewAdded, 10), this);
+    }
   },
 
   _onLayersResetted: function () {
@@ -80,7 +79,7 @@ var Map = Model.extend({
   },
 
   _createWindshaftMapInstance: function (options) {
-    if (this.windshaftMap) {
+    if (this._windshaftMap) {
       var instanceOptions = {
         layers: this.layers.models,
         sourceLayerId: options && options.sourceLayerId
@@ -89,7 +88,7 @@ var Map = Model.extend({
       if (this._dataviewsCollection) {
         instanceOptions.dataviews = this._dataviewsCollection;
       }
-      this.windshaftMap.createInstance(instanceOptions);
+      this._windshaftMap.createInstance(instanceOptions);
     }
   },
 
@@ -105,6 +104,10 @@ var Map = Model.extend({
     attributions.push(defaultCartoDBAttribution);
 
     this.set('attribution', attributions);
+  },
+
+  getWindshaftMap: function () {
+    return this._windshaftMap;
   },
 
   setView: function(latlng, zoom) {

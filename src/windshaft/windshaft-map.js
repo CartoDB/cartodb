@@ -45,11 +45,14 @@ var WindshaftMap = Backbone.Model.extend({
       dataviews: dataviews
     });
 
-    var filtersFromVisibleLayers = dataviews.chain()
-      .filter(function (dataview) { return dataview.layer.isVisible(); })
-      .map(function (dataview) { return dataview.filter; })
-      .compact() // not all dataviews have filters
-      .value();
+    var filtersFromVisibleLayers = [];
+    if (dataviews) {
+      filtersFromVisibleLayers = dataviews.chain()
+        .filter(function (dataview) { return dataview.layer.isVisible(); })
+        .map(function (dataview) { return dataview.filter; })
+        .compact() // not all dataviews have filters
+        .value();
+    }
 
     var filters = new WindshaftFiltersCollection(filtersFromVisibleLayers);
 

@@ -338,9 +338,10 @@ var Vis = View.extend({
       mapConfig.zoom = data.zoom === undefined ? 4 : data.zoom;
     }
 
-    this.map = new Map(mapConfig);
-    this.map.bindToWindshaftMap(windshaftMap);
-    this.map.bindToDataviews(this._dataviewsCollection);
+    this.map = new Map(mapConfig, {
+      windshaftMap: windshaftMap,
+      dataviewsCollection: this._dataviewsCollection
+    });
 
     // If a CartoDB embed map is hidden by default, its
     // height is 0 and it will need to recalculate its size

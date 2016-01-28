@@ -176,7 +176,7 @@
     grunt.registerTask('minimize',    ['default', 'copy:js', 'exorcise', 'uglify']);
     grunt.registerTask('release',     ['check_release', 'minimize', 's3', 'invalidate']);
     grunt.registerTask('dev',         'Typical task for frontend development (watch JS/CSS changes)',
-      ['setConfig:env.browserify_watch:true', 'browserify', 'connect', 'watch']);
+      ['setConfig:env.browserify_watch:true', 'browserify', 'jasmine:cartodb3', 'connect', 'watch']);
     grunt.registerTask('sourcemaps', 'generate sourcemaps, to be used w/ trackjs.com for bughunting',
       ['setConfig:assets_dir:./tmp/sourcemaps', 'config', 'js', 'copy:js', 'exorcise', 'uglify']);
   };

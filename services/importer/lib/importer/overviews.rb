@@ -6,7 +6,8 @@ class Overviews
 
   MIN_ROWS = 1000000
 
-  def initialize(user, database = nil)
+  def initialize(runner, user, database = nil)
+    @runner = runner
     @user = user
     @database = database || user.in_database
   end
@@ -20,11 +21,13 @@ class Overviews
   def create!(table, options = {})
     schema = schema_from_options(options)
     table_name = table_name_with_schema(schema, table)
+    @runner.log.append("Will create overviews for #{table_name}")
+    # TODO: timing, exception handling, ...
 
-    # TODO: timing, loggin, ...
     @database.run %{
       SELECT cartodb.CDB_CreateOverviews('#{table_name}'::REGCLASS);
     }
+    @runner.log.append("Overviews created for #{table_name}")
   end
 
   private

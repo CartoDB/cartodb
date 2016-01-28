@@ -42,6 +42,8 @@ module.exports = function (selector, vizJSON, opts) {
   });
   var vis = cdb.createVis(dashboardView.$('#map'), vizJSON, opts);
 
+  // Create widgets
+  var widgetsService = new WidgetsService(widgets, vis.dataviews);
   var widgetModelsMap = {
     list: widgetsService.addListWidget.bind(widgetsService),
     formula: widgetsService.addFormulaWidget.bind(widgetsService),
@@ -49,30 +51,24 @@ module.exports = function (selector, vizJSON, opts) {
     'time-series': widgetsService.addTimeSeriesWidget.bind(widgetsService),
     category: widgetsService.addCategoryWidget.bind(widgetsService)
   };
-
-  // Create the set of widgets through the widgetsService
-  var widgetsService = new WidgetsService(widgets, vis.dataviews);
-  vizJSON.widgets.forEach(function (rawWidgetData) {
-    var type = widgetAttrs.type;
-    var addWidget = widgetModelsMap[type];
+  vizJSON.widgets.forEach(function (d) {
+    var attrs = _.omit(d, 'layerId', 'layerIndex');
+    var addWidget = widgetModelsMap[d.type];
 
     if (_.isFunction(addWidget)) {
-      var layerId = rawWidgetData.layerId;
-      var widgetAttrs = _.omit(rawWidgetData, 'options', 'layerId');
-
       // Find the Layer that the Widget should be created for.
       var layer;
-      if (layerId) {
-        layer = vis.map.layers.findWhere({ id: layerId });
-      } else if (Number.isInteger(rawWidgetData.layerIndex)) {
+      if (d.layerId) {
+        layer = vis.map.layers.get(d.layerId);
+      } else if (Number.isInteger(d.layerIndex)) {
         // TODO Since namedmap doesn't have ids we need to map in another way, here using index
         //   should we solve this in another way?
-        layer = vis.map.layers.at(rawWidgetData.layerIndex);
+        layer = vis.map.layers.at(d.layerIndex);
       }
 
-      addWidget(layer, widgetAttrs);
+      addWidget(attrs, layer);
     } else {
-      cdb.log.error('No widget found for type ' + type);
+      cdb.log.error('No widget found for type ' + d.type);
     }
   });
 

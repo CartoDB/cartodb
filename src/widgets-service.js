@@ -35,33 +35,31 @@ WidgetsService.prototype.get = function (id) {
   return this._widgetsCollection.get(id);
 };
 
-WidgetsService.prototype.addCategoryWidget = function (layer, attrs) {
-  this._addWidget(layer, attrs);
+WidgetsService.prototype.addCategoryWidget = function (attrs, layer) {
+  this._addWidget(attrs, layer);
 };
 
-WidgetsService.prototype.addHistogramWidget = function (layer, attrs) {
-  this._addWidget(layer, attrs);
+WidgetsService.prototype.addHistogramWidget = function (attrs, layer) {
+  this._addWidget(attrs, layer);
 };
 
-WidgetsService.prototype.addFormulaWidget = function (layer, attrs) {
-  this._addWidget(layer, attrs);
+WidgetsService.prototype.addFormulaWidget = function (attrs, layer) {
+  this._addWidget(attrs, layer);
 };
 
-WidgetsService.prototype.addTimeSeriesWidget = function (layer, attrs) {
-  this._addWidget(layer, attrs);
+WidgetsService.prototype.addTimeSeriesWidget = function (attrs, layer) {
+  this._addWidget(attrs, layer);
 };
 
-WidgetsService.prototype.addListWidget = function (layer, attrs) {
-  this._addWidget(layer, attrs);
+WidgetsService.prototype.addListWidget = function (attrs, layer) {
+  this._addWidget(attrs, layer);
 };
 
-WidgetsService.prototype._addWidget = function (layer, attrs) {
-  if (!layer) {
-    cdb.log.error('no layer found for dataview ' + JSON.stringify(dataviewAttrs));
-  } else {
-    // Create dataview if there's a definition provided
+WidgetsService.prototype._addWidget = function (attrs, layer) {
+  var dataviewAttrs = attrs.options;
+
+  if (layer) {
     var dataviewModel;
-    var dataviewAttrs = attrs.options;
     if (dataviewAttrs) {
       // TODO not ideal, should have a more maintainable way of mapping
       dataviewAttrs.type = attrs.type === 'time-series'
@@ -76,6 +74,8 @@ WidgetsService.prototype._addWidget = function (layer, attrs) {
     };
     var widgetModel = this._widgetModelsMap[attrs.type](attrs, widgetOpts);
     this._widgetsCollection.add(widgetModel);
+  } else {
+    cdb.log.error('no layer found for dataview ' + JSON.stringify(dataviewAttrs));
   }
 };
 

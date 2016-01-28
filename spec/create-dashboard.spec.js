@@ -37,10 +37,21 @@ describe('create-dashboard', function () {
       document.body.removeChild(this.$el);
     });
 
-    it('should return a dashboard object with expected props', function () {
+    it('should return a dashboard object', function () {
       expect(this.results).toBeDefined();
+    });
+
+    it('should expose a dashboard view', function () {
       expect(this.results.dashboardView).toEqual(jasmine.any(Object));
+    });
+
+    it('should expose the vis object', function () {
       expect(this.results.vis).toEqual(jasmine.any(Object));
+    });
+
+    it('should expose a public API to interact with widgets', function () {
+      expect(this.results.widgets).toBeDefined();
+      expect(this.results.widgets.get).toBeDefined();
     });
   });
 });

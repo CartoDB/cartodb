@@ -1,5 +1,5 @@
 /**
- * Public API to interact with dashboard widgets.
+ * Singleton defining the public API to interact with dashboard widgets.
  */
 var WidgetsService = function (widgetsCollection) {
   this._widgetsCollection = widgetsCollection;
@@ -21,4 +21,13 @@ WidgetsService.prototype.addFormulaWidget = function () {
 WidgetsService.prototype.addTimeSeriesWidget = function (layer, attrs) {
 };
 
-module.exports = WidgetsService;
+var instance = null;
+module.exports = {
+  getInstance: function (widgetsCollection) {
+    if (!instance) {
+      instance = new WidgetsService(widgetsCollection);
+    }
+
+    return instance;
+  }
+};

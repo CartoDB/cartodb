@@ -4,6 +4,7 @@ var DashboardView = require('./dashboard-view');
 var WidgetsCollection = require('./widgets/widgets-collection');
 var WidgetModel = require('./widgets/widget-model');
 var CategoryWidgetModel = require('./widgets/category/category-widget-model');
+var WidgetsService = require('./widgets-service');
 
 /**
  * Translates a vizJSON v3 datastructure into a working dashboard which will be rendered in given selector.
@@ -104,11 +105,9 @@ module.exports = function (selector, vizJSON, opts) {
   widgets.reset(widgetModels);
   dashboardView.render();
 
-  var widgetsFactory = new WidgetsFactory();
-
   return {
     dashboardView: dashboardView,
-    widgets: widgetsFactory,
+    widgets: WidgetsService.getInstance(widgets),
     vis: vis
   };
 };

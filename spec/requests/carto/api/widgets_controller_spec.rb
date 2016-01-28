@@ -141,6 +141,24 @@ describe Carto::Api::WidgetsController do
       end
     end
 
+    it 'returns 422 if payload layer id do not match' do
+      post_json widgets_url(user_domain: @user1.username, map_id: @map.id, map_layer_id: @widget.layer_id, api_key: @user1.api_key), widget_payload(layer_id: random_uuid), http_json_headers do |response|
+        response.status.should == 422
+      end
+    end
+
+    it 'returns 422 if layer id do not match map' do
+      other_map = FactoryGirl.create(:carto_map_with_layers)
+      other_layer = other_map.data_layers.first
+      other_layer.should_not be_nil
+
+      post_json widgets_url(user_domain: @user1.username, map_id: @map.id, map_layer_id: other_layer.id, api_key: @user1.api_key), widget_payload(layer_id: other_layer.id), http_json_headers do |response|
+        response.status.should == 422
+      end
+
+      other_map.destroy
+    end
+
     it 'returns 403 if visualization is private and current user is not the owner' do
       post_json widgets_url(user_domain: @user2.username, map_id: @map.id, map_layer_id: @widget.layer_id, api_key: @user2.api_key), widget_payload, http_json_headers do |response|
         response.status.should == 403

@@ -2,8 +2,6 @@ var _ = require('underscore');
 var cdb = require('cartodb.js');
 var DashboardView = require('./dashboard-view');
 var WidgetsCollection = require('./widgets/widgets-collection');
-var WidgetModel = require('./widgets/widget-model');
-var CategoryWidgetModel = require('./widgets/category/category-widget-model');
 var WidgetsService = require('./widgets-service');
 
 /**

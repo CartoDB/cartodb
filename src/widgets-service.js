@@ -1,3 +1,6 @@
+var WidgetModel = require('./widgets/widget-model');
+var CategoryWidgetModel = require('./widgets/category/category-widget-model');
+
 /**
  * Public API to interact with dashboard widgets.
  */

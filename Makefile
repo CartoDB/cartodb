@@ -260,7 +260,7 @@ check-prepared: check-1 check-2 check-4 check-5 check-7 check-9 check-carto-db-c
 
 check: prepare-test-db check-prepared
 check-frontend:
-	./node-modules/.bin/grunt test
+	./node_modules/.bin/grunt test
 
 travis: check-frontend check
 

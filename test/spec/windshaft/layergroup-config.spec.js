@@ -6,6 +6,9 @@ var HistogramDataviewModel = require('../../../src/dataviews/histogram-dataview-
 describe('windshaft/layergroup-config', function () {
   beforeEach(function () {
     this.dataviews = new Backbone.Collection();
+    var map = jasmine.createSpyObj('map', ['getViewBounds', 'bind', 'reload']);
+    map.getViewBounds.and.returnValue([[1, 2], [3, 4]]);
+    var windshaftMap = jasmine.createSpyObj('windhsaftMap', ['bind']);
 
     this.cartoDBLayer1 = new CartoDBLayer({
       id: 'layer1',
@@ -18,6 +21,8 @@ describe('windshaft/layergroup-config', function () {
       column: 'column1',
       bins: 10
     }, {
+      map: map,
+      windshaftMap: windshaftMap,
       layer: this.cartoDBLayer1
     });
     this.dataviews.add(dataview);
@@ -33,6 +38,8 @@ describe('windshaft/layergroup-config', function () {
       column: 'column2',
       bins: 5
     }, {
+      map: map,
+      windshaftMap: windshaftMap,
       layer: this.cartoDBLayer2
     });
     this.dataviews.add(dataview2);
@@ -88,7 +95,7 @@ describe('windshaft/layergroup-config', function () {
     });
 
     it('should not include hidden layers', function () {
-      this.cartoDBLayer1.set('visible', false);
+      this.cartoDBLayer1.set('visible', false, { silent: true });
 
       var config = LayerGroupConfig.generate({
         dataviews: this.dataviews,

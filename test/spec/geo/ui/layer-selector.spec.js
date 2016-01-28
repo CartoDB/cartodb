@@ -7,19 +7,19 @@ var LeafletMapView = require('../../../../src/geo/leaflet/leaflet-map-view');
 var LeafletLayerViewFactory = require('../../../../src/geo/leaflet/leaflet-layer-view-factory');
 
 describe('geo/ui/layer-selector', function () {
-
   var layerSelector, layer1, layer2;
 
   beforeEach(function() {
-    var map2 = new Map();
-
     // Map needs a WindshaftMap so we're setting up a fake one
-    map2.windshaftMap = jasmine.createSpyObj('windshaftMap', ['isNamedMap', 'isAnonymousMap']);
-    map2.windshaftMap.isAnonymousMap.and.returnValue(true);
-    map2.windshaftMap.instance = jasmine.createSpyObj('windshaftMapInstance', ['bind']);
+    var windshaftMap = jasmine.createSpyObj('windshaftMap', ['bind', 'isNamedMap', 'isAnonymousMap', 'createInstance', 'reload']);
+    windshaftMap.isAnonymousMap.and.returnValue(true);
 
-    layer1 = new CartoDBLayer({ options: { layer_name: 'Layer 1' } });
-    layer2 = new CartoDBLayer({ options: { layer_name: 'Layer 2' } });
+    var map2 = new Map(null, {
+      windshaftMap: windshaftMap
+    });
+
+    layer1 = new CartoDBLayer({ options: { layer_name: 'Layer 1' } }, { map: map2 });
+    layer2 = new CartoDBLayer({ options: { layer_name: 'Layer 2' } }, { map: map2 });
 
     map2.layers.reset([layer1, layer2]);
 

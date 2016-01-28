@@ -46,7 +46,7 @@ describe('windshaft/client', function () {
       expect(this.ajaxParams.cache).toEqual(true);
     });
 
-    it('should invoke the success callback with an instance of the dasboard', function () {
+    it('should invoke the success callback', function () {
       var successCallback = jasmine.createSpy('successCallback');
 
       this.client.instantiateMap({
@@ -55,13 +55,12 @@ describe('windshaft/client', function () {
         success: successCallback
       });
 
-      this.ajaxParams.success({});
+      this.ajaxParams.success({ layergroupid: '123456789' });
 
       expect(successCallback).toHaveBeenCalled();
       var dasboardInstance = successCallback.calls.mostRecent().args[0];
 
-      expect(dasboardInstance).toBeDefined();
-      expect(dasboardInstance.getBaseURL()).toEqual('https://rambo.example.com:443/api/v1/map/');
+      expect(dasboardInstance).toEqual({ layergroupid: '123456789' });
     });
 
     it('should invoke the error callback if Windshaft returns some errors', function () {

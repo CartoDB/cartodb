@@ -47,6 +47,8 @@ Layers.register('tilejson', function (data, options) {
   }
   return new TileLayer({
     urlTemplate: url
+  }, {
+    map: options.map
   });
 });
 
@@ -80,7 +82,9 @@ Layers.register('background', function (data, options) {
 
 Layers.register('cartodb', function (data, options) {
   normalizeOptions(data, options);
-  return new CartoDBLayer(data);
+  return new CartoDBLayer(data, {
+    map: options.map
+  });
 });
 
 Layers.register('torque', function (data, options) {
@@ -94,7 +98,9 @@ Layers.register('torque', function (data, options) {
       data.tiler_port = 443;
     }
   }
-  return new TorqueLayer(data);
+  return new TorqueLayer(data, {
+    map: options.map
+  });
 });
 
 function normalizeOptions (data, options) {

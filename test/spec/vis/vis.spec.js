@@ -325,105 +325,6 @@ describe('vis/vis', function () {
     expect(this.vis.map.getZoom()).toEqual(10);
   });
 
-  it('should retrieve the overlays of a given type', function () {
-    Overlay.register('wadus', function (data, vis) {
-      return new View();
-    });
-
-    var tooltip1 = this.vis.addOverlay({
-      type: 'wadus'
-    });
-    var tooltip2 = this.vis.addOverlay({
-      type: 'wadus'
-    });
-    var tooltip3 = this.vis.addOverlay({
-      type: 'wadus'
-    });
-    var tooltips = this.vis.getOverlaysByType('wadus');
-    expect(tooltips.length).toEqual(3);
-    expect(tooltips[0]).toEqual(tooltip1);
-    expect(tooltips[1]).toEqual(tooltip2);
-    expect(tooltips[2]).toEqual(tooltip3);
-    tooltip1.clean();
-    tooltip2.clean();
-    tooltip3.clean();
-    expect(this.vis.getOverlaysByType('wadus').length).toEqual(0);
-  });
-
-  describe('addOverlay', function () {
-    it('should throw an error if no layers are available', function () {
-      expect(function () {
-        this.vis.addOverlay({
-          type: 'tooltip',
-          template: 'test'
-        });
-      }.bind(this)).toThrow(new Error('layer is null'));
-    });
-
-    it('should add an overlay to the specified layer and enable interaction', function () {
-      var FakeLayer = function () {};
-      FakeLayer.prototype.setInteraction = function () {};
-      _.extend(FakeLayer.prototype, Backbone.Events);
-
-      var layer = new FakeLayer();
-
-      var tooltip = this.vis.addOverlay({
-        type: 'tooltip',
-        template: 'test',
-        layer: layer
-      });
-
-      expect(tooltip.options.layer).toEqual(layer);
-    });
-
-    it('should add an overlay to the first layer and enable interaction', function (done) {
-      var vizjson = {
-        layers: [
-          {
-            type: 'tiled',
-            options: {
-              urlTemplate: ''
-            }
-          },
-          {
-            type: 'layergroup',
-            options: {
-              user_name: 'pablo',
-              maps_api_template: 'https://{user}.cartodb-staging.com:443',
-              layer_definition: {
-                stat_tag: 'ece6faac-7271-11e5-a85f-04013fc66a01',
-                layers: [{
-                  type: 'CartoDB'
-                }]
-              }
-            }
-          }
-        ],
-        user: {
-          fullname: 'Chuck Norris',
-          avatar_url: 'http://example.com/avatar.jpg'
-        },
-        datasource: {
-          user_name: 'wadus',
-          maps_api_template: 'https://{user}.example.com:443',
-          stat_tag: 'ece6faac-7271-11e5-a85f-04013fc66a01',
-          force_cors: true // This is sometimes set in the editor
-        }
-      };
-      createVis('map', vizjson, {})
-        .done(function (vis, layers) {
-          var tooltip = vis.addOverlay({
-            type: 'tooltip',
-            template: 'test'
-          });
-          var layerView = vis.getLayers()[1];
-
-          expect(tooltip.options.layer).toEqual(layerView);
-          done();
-        });
-    });
-  });
-
   it('should load modules', function (done) {
     // Ensure the torque module is not loaded (might have been loaded in other tests)
     delete cdb.torque;
@@ -612,4 +513,104 @@ describe('vis/vis', function () {
       expect(this.vis.legends.$el.html()).not.toContain('invisible legend item');
     });
   });
+
+  it('should retrieve the overlays of a given type', function () {
+    Overlay.register('wadus', function (data, vis) {
+      return new View();
+      });
+
+    var tooltip1 = this.vis.addOverlay({
+      type: 'wadus'
+    });
+    var tooltip2 = this.vis.addOverlay({
+      type: 'wadus'
+    });
+    var tooltip3 = this.vis.addOverlay({
+      type: 'wadus'
+    });
+    var tooltips = this.vis.getOverlaysByType('wadus');
+    expect(tooltips.length).toEqual(3);
+    expect(tooltips[0]).toEqual(tooltip1);
+    expect(tooltips[1]).toEqual(tooltip2);
+    expect(tooltips[2]).toEqual(tooltip3);
+    tooltip1.clean();
+    tooltip2.clean();
+    tooltip3.clean();
+    expect(this.vis.getOverlaysByType('wadus').length).toEqual(0);
+  });
+
+  describe('addOverlay', function () {
+    it('should throw an error if no layers are available', function () {
+      expect(function () {
+        this.vis.addOverlay({
+          type: 'tooltip',
+          template: 'test'
+        });
+      }.bind(this)).toThrow(new Error('layer is null'));
+    });
+
+    it('should add an overlay to the specified layer and enable interaction', function () {
+      var FakeLayer = function () {};
+      FakeLayer.prototype.setInteraction = function () {};
+      _.extend(FakeLayer.prototype, Backbone.Events);
+
+      var layer = new FakeLayer();
+
+      var tooltip = this.vis.addOverlay({
+        type: 'tooltip',
+        template: 'test',
+        layer: layer
+      });
+
+      expect(tooltip.options.layer).toEqual(layer);
+    });
+
+    it('should add an overlay to the first layer and enable interaction', function (done) {
+      var vizjson = {
+        layers: [
+          {
+            type: 'tiled',
+            options: {
+              urlTemplate: ''
+            }
+          },
+          {
+            type: 'layergroup',
+            options: {
+              user_name: 'pablo',
+              maps_api_template: 'https://{user}.cartodb-staging.com:443',
+              layer_definition: {
+                stat_tag: 'ece6faac-7271-11e5-a85f-04013fc66a01',
+                layers: [{
+                  type: 'CartoDB'
+                }]
+              }
+            }
+          }
+        ],
+        user: {
+          fullname: 'Chuck Norris',
+          avatar_url: 'http://example.com/avatar.jpg'
+        },
+        datasource: {
+          user_name: 'wadus',
+          maps_api_template: 'https://{user}.example.com:443',
+          stat_tag: 'ece6faac-7271-11e5-a85f-04013fc66a01',
+          force_cors: true // This is sometimes set in the editor
+        }
+      };
+      createVis('map', vizjson, {})
+        .done(function (vis, layers) {
+          var tooltip = vis.addOverlay({
+            type: 'tooltip',
+            template: 'test'
+          });
+          var layerView = vis.getLayers()[1];
+
+          expect(tooltip.options.layer).toEqual(layerView);
+          done();
+        });
+    });
+  });
+
 });

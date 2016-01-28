@@ -979,6 +979,12 @@ module CartoDB
           @user.database_schema = new_schema_name
           @user.this.update database_schema: new_schema_name
 
+          # Previous approach: move object by object (tables, views, materialized and functions)
+          # create_user_schema
+          # rebuild_quota_trigger
+          # move_tables_to_schema(old_database_schema_name, @user.database_schema)
+
+          # Alternative approach: rename the schema and handle the exceptions
           move_schema_content_by_renaming(old_database_schema_name, @user.database_schema)
 
           create_public_db_user

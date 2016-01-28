@@ -24,12 +24,15 @@ module Carto
 
       def datasource(options)
         api_templates_type = options.fetch(:https_request, false) ? 'private' : 'public'
-        {
+        ds = {
           user_name: @visualization.user.username,
           maps_api_template: ApplicationHelper.maps_api_template(api_templates_type),
-          stat_tag: @visualization.id,
-          template_name: CartoDB::NamedMapsWrapper::NamedMap.template_name(@visualization.id)
+          stat_tag: @visualization.id
         }
+
+        ds[:template_name] = CartoDB::NamedMapsWrapper::NamedMap.template_name(@visualization.id) if @visualization.retrieve_named_map?
+
+        ds
       end
 
       def user

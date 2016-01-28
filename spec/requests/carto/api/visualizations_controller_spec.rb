@@ -1507,10 +1507,27 @@ describe Carto::Api::VisualizationsController do
           vizjson3[:datasource]['user_name'].should == $user_1.username
           vizjson3[:datasource]['maps_api_template'].should_not be_nil
           vizjson3[:datasource]['stat_tag'].should_not be_nil
-          vizjson3[:datasource]['template_name'].should_not be_nil
 
           vizjson3[:user]['fullname'].should == ($user_1.name.nil? ? $user_1.username : $user_1.name)
           vizjson3[:user]['avatar_url'].should_not be_nil
+        end
+      end
+
+      it 'returns datasource.template_name for visualizations with retrieve_named_map? true' do
+        Carto::Visualization.any_instance.stubs(:retrieve_named_map?).returns(true)
+        get_json api_v3_visualizations_vizjson_url(user_domain: $user_1.username, id: @visualization.id, api_key: $user_1.api_key), @headers do |request|
+          request.status.should == 200
+          vizjson3 = request.body
+          vizjson3[:datasource]['template_name'].should_not be_nil
+        end
+      end
+
+      it 'returns nil datasource.template_name for visualizations with retrieve_named_map? false' do
+        Carto::Visualization.any_instance.stubs(:retrieve_named_map?).returns(false)
+        get_json api_v3_visualizations_vizjson_url(user_domain: $user_1.username, id: @visualization.id, api_key: $user_1.api_key), @headers do |request|
+          request.status.should == 200
+          vizjson3 = request.body
+          vizjson3[:datasource]['template_name'].should be_nil
         end
       end
     end

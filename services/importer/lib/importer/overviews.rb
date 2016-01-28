@@ -2,7 +2,6 @@
 
 module CartoDB
   module Importer2
-
     # Overview creation
     #
     # Pending issues: metrics, quotas/limits, timing, logging, ...

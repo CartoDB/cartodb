@@ -108,14 +108,23 @@ var LeafletCartoDBLayerGroupView = L.CartoDBd3Layer.extend({
           return;
         }
         self.options.styles = model.layers.pluck('cartocss')
-        L.CartoDBd3Layer.prototype.onAdd.call(self, leafletMap);
+        if (self.renderers.length === 0) {
+          L.CartoDBd3Layer.prototype.onAdd.call(self, leafletMap);
+        } else {
+          self.setProvider({
+            styles: model.layers.pluck('cartocss'),
+            urlTemplate: self.tilejson.tiles[0]
+          })
+        }
         self.fire('added');
         self.options.added = true;
       });
     });
 
+    la = layerModel
+
     layerModel.layers.bind('change:cartocss', function (child, style) {
-      var index = child.get("order") - 1
+      var index = child.get('order') - 1
       self.setCartoCSS(index, style)
     })
 

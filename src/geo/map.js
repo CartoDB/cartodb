@@ -75,10 +75,6 @@ var Map = Model.extend({
   },
 
   reload: function (options) {
-    this._createWindshaftMapInstance(options);
-  },
-
-  _createWindshaftMapInstance: function (options) {
     if (this._windshaftMap) {
       var instanceOptions = {
         layers: this.layers.models,

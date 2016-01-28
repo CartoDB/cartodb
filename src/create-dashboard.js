@@ -104,8 +104,11 @@ module.exports = function (selector, vizJSON, opts) {
   widgets.reset(widgetModels);
   dashboardView.render();
 
+  var widgetsFactory = new WidgetsFactory();
+
   return {
     dashboardView: dashboardView,
+    widgets: widgetsFactory,
     vis: vis
   };
 };

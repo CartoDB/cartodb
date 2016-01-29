@@ -2,25 +2,31 @@ var WidgetsService = require('../src/widgets-service');
 var WidgetsCollection = require('../src/widgets/widgets-collection');
 
 describe('widgets-service', function () {
-  describe('get service singleton', function () {
-    var widgetsCollection;
-    var instance;
+  beforeEach(function () {
+    var vis = cdb.createVis(document.createElement('div'), {
+      datasource: {
+        maps_api_template: 'asd',
+        user_name: 'pepe'
+      },
+      layers: [{type: 'torque'}]
+    });
+    this.dataviews = vis.dataviews;
+    this.widgetsCollection = new WidgetsCollection();
+    this.widgetsService = new WidgetsService(this.widgetsCollection, this.dataviews);
+  });
 
-    beforeEach(function () {
-      var vis = cdb.createVis(document.createElement('div'), {
-        datasource: {
-          maps_api_template: 'asd',
-          user_name: 'pepe'
-        },
-        layers: [{type: 'torque'}]
+  it('should return the WidgetsService instance', function () {
+    expect(this.widgetsService).toBeDefined();
+  });
+
+  describe('.get', function () {
+    it('should return the corresponding widgetModel for given id', function () {
+      expect(this.widgetsService.get('some-id')).toBeUndefined();
+
+      var aWidgetModel = this.widgetsCollection.add({
+        id: 'some-id'
       });
-      widgetsCollection = new WidgetsCollection();
-      instance = new WidgetsService(widgetsCollection, vis.dataviews);
+      expect(this.widgetsService.get('some-id')).toBe(aWidgetModel);
     });
-
-    it('should return the WidgetsService instance', function () {
-      expect(instance).not.toBe(null);
-    });
-
   });
 });

@@ -1,5 +1,4 @@
 var cdb = require('cartodb.js');
-var WidgetModel = require('../../../src/widgets/widget-model');
 var WidgetLoaderView = require('../../../src/widgets/standard/widget-loader-view');
 
 describe('widgets/standard/widget-loader-view', function () {

@@ -22,7 +22,14 @@ module.exports = DataviewModelBase.extend({
   ),
 
   url: function () {
-    return this.get('url') + '?bbox=' + this.get('boundingBox') + '&own_filter=' + (this.get('enableFilter') ? 0 : 1);
+    var params = [];
+    if (this.get('boundingBox')) {
+      params.push('bbox=' + this.get('boundingBox'));
+    }
+
+    params.push('own_filter=' + (this.get('enableFilter') ? 0 : 1));
+
+    return this.get('url') + '?' + params.join('&');
   },
 
   initialize: function (attrs, opts) {

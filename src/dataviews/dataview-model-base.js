@@ -16,7 +16,11 @@ module.exports = Model.extend({
   },
 
   url: function () {
-    return this.get('url') + '?bbox=' + this.get('boundingBox');
+    var params = [];
+    if (this.get('boundingBox')) {
+      params.push('bbox=' + this.get('boundingBox'));
+    }
+    return this.get('url') + '?' + params.join('&');
   },
 
   initialize: function (attrs, opts) {

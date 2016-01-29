@@ -408,31 +408,32 @@ module CartoDB
       end
 
       def install_and_configure_geocoder_api_extension
-          install_geocoder_api_extension
+          geocoder_api_config = Cartodb.get_config(:geocoder, 'api')
+          # If there's no config we assume there's no need to install the
+          # geocoder client as it is an independent API
+          return if geocoder_api_config.blank?
+          install_geocoder_api_extension(geocoder_api_config)
           @user.in_database(as: :superuser).run("ALTER USER \"#{@user.database_username}\"
               SET search_path TO #{build_search_path}")
           @user.in_database(as: :superuser).run("ALTER USER \"#{@user.database_public_username}\"
               SET search_path TO #{build_search_path}") if @user.organization_user?
           return true
         rescue => e
-          # For now CartoDB.com is the only host with Geocoder API installed
-          # so we want to avoid noise to OSS users
-          if Cartodb.config[:cartodb_com_hosted] == false
-            CartoDB.notify_error(
-              'Error installing and configuring geocoder api extension',
-              error: e.inspect, user: @user
-            )
-          end
+          CartoDB.notify_error(
+            'Error installing and configuring geocoder api extension',
+            error: e.inspect, user: @user
+          )
           return false
       end
 
-      def install_geocoder_api_extension
+      def install_geocoder_api_extension(geocoder_api_config)
         @user.in_database(as: :superuser) do |db|
           db.transaction do
             db.run('CREATE EXTENSION IF NOT EXISTS plproxy SCHEMA public')
             db.run("CREATE EXTENSION IF NOT EXISTS cdb_geocoder_client VERSION '#{CDB_GEOCODER_API_VERSION}'")
             db.run("ALTER EXTENSION cdb_geocoder_client UPDATE TO '#{CDB_GEOCODER_API_VERSION}'")
-            db.run(build_geocoder_server_config_sql)
+            geocoder_server_sql = build_geocoder_server_config_sql(geocoder_api_config)
+            db.run(geocoder_server_sql)
             db.run(build_entity_config_sql)
           end
         end
@@ -1334,15 +1335,11 @@ module CartoDB
       end
 
       # Geocoder api extension related
-      def build_geocoder_server_config_sql
-        config = Cartodb.config[:geocoder]['api']
-        raise("Geocoder API config missing") if config.blank?
+      def build_geocoder_server_config_sql(config)
         host = config['host']
         port = config['port']
         user = config['user']
         dbname = config['dbname']
-        raise("Geocoder API config incomplete, some fields are missing") if host.blank? || port.blank? || user.blank? || dbname.blank?
-
         %{
           SELECT cartodb.CDB_Conf_SetConf('geocoder_server_config',
             '{ \"connection_str\": \"host=#{host} port=#{port} dbname=#{dbname} user=#{user}\"}'::json

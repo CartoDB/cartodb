@@ -5,11 +5,8 @@ var WidgetLoaderView = require('../../../src/widgets/standard/widget-loader-view
 describe('widgets/standard/widget-loader-view', function () {
   beforeEach(function () {
     this.dataviewModel = new cdb.core.Model();
-    var widgetModel = new WidgetModel(null, {
-      dataviewModel: this.dataviewModel
-    });
     this.view = new WidgetLoaderView({
-      model: widgetModel
+      model: this.dataviewModel
     });
   });
 

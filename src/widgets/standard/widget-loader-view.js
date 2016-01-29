@@ -14,12 +14,8 @@ module.exports = cdb.core.View.extend({
   },
 
   _initBinds: function () {
-    var m = this.model.dataviewModel;
-    if (m) {
-      m.bind('loading', this.show, this);
-      m.bind('sync error', this.hide, this);
-      this.add_related_model(m);
-    }
+    this.model.bind('loading', this.show, this);
+    this.model.bind('sync error', this.hide, this);
   },
 
   show: function () {

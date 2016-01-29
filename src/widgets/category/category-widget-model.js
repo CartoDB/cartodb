@@ -19,10 +19,10 @@ module.exports = WidgetModel.extend({
     this.colors = new CategoryColors();
     this.lockedCategories = new LockedCategoriesCollection();
 
-    this.dataviewModel.on('change:allCategoryNames', this._onDataviewAllCategoryNamesChange, this);
-    this.dataviewModel.on('change:searchData', this._onDataviewChangeSearchData, this);
+    this.listenTo(this.dataviewModel, 'change:allCategoryNames', this._onDataviewAllCategoryNamesChange);
+    this.listenTo(this.dataviewModel, 'change:searchData', this._onDataviewChangeSearchData);
 
-    this.bind('change:locked', this._onLockedChange, this);
+    this.listenTo(this, 'change:locked', this._onLockedChange);
   },
 
   setupSearch: function () {

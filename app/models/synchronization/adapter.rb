@@ -245,7 +245,7 @@ module CartoDB
 
       def get_columns(table_name)
         user_table = ::UserTable.where(name: table_name, user_id: user.id).first
-        ::Table.new(:user_table => user_table).get_columns
+        ::Table.new(user_table: user_table).get_columns
       end
 
       def check_schema_changed(old_columns, new_columns)

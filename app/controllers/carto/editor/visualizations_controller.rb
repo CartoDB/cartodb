@@ -1,3 +1,5 @@
+require 'carto/api/vizjson3_presenter'
+
 module Carto
   module Editor
     class VisualizationsController < EditorController
@@ -10,7 +12,7 @@ module Carto
       after_filter :update_user_last_activity, only: [:show]
 
       def show
-        @vizjson = Carto::Api::VizJSONPresenter.new(@visualization, $tables_metadata)
+        @vizjson = Carto::Api::VizJSON3Presenter.new(@visualization, $tables_metadata)
                                                .to_vizjson(https_request: is_https?)
       end
 

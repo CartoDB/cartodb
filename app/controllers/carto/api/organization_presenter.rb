@@ -28,6 +28,7 @@ module Carto
             :groups     => @organization.owner && @organization.owner.groups ? @organization.owner.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro } : []
           },
           :quota_in_bytes           => @organization.quota_in_bytes,
+          :unassigned_quota         => @organization.unassigned_quota,
           :geocoding_quota          => @organization.geocoding_quota,
           :map_view_quota           => @organization.map_view_quota,
           :twitter_datasource_quota => @organization.twitter_datasource_quota,

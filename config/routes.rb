@@ -449,6 +449,16 @@ CartoDB::Application.routes.draw do
     # ImageProxy
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/image_proxy' => 'image_proxy#show'
 
+    # V3
+    scope '(/user/:user_domain)(/u/:user_domain)/api/v3' do
+      scope 'maps/:map_id/layers/:map_layer_id', constraints: { map_id: /[^\/]+/, map_layer_id: /[^\/]+/ } do
+        resources :widgets, only: [:show, :create, :update, :destroy], constraints: { id: /[^\/]+/ }
+      end
+
+      scope '/viz/:id', constraints: { id: /[^\/]+/ } do
+        match 'viz' => 'visualizations#vizjson3', as: :api_v3_visualizations_vizjson
+      end
+    end
   end
 
   scope :module => 'api/json', :format => :json do

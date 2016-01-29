@@ -15,9 +15,9 @@ describe('dataviews/dataviews-factory', function () {
 
   it('should create the factory as expected', function () {
     expect(this.factory).toBeDefined();
-    expect(this.factory.createCategoryDataview).toEqual(jasmine.any(Function));
-    expect(this.factory.createFormulaDataview).toEqual(jasmine.any(Function));
-    expect(this.factory.createHistogramDataview).toEqual(jasmine.any(Function));
-    expect(this.factory.createListDataview).toEqual(jasmine.any(Function));
+    expect(this.factory.createCategoryModel).toEqual(jasmine.any(Function));
+    expect(this.factory.createFormulaModel).toEqual(jasmine.any(Function));
+    expect(this.factory.createHistogramModel).toEqual(jasmine.any(Function));
+    expect(this.factory.createListModel).toEqual(jasmine.any(Function));
   });
 });

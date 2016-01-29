@@ -26,9 +26,8 @@ module.exports = DataviewModelBase.extend({
     if (this.get('boundingBox')) {
       params.push('bbox=' + this.get('boundingBox'));
     }
-    if (this.get('enableFilter')) {
-      params.push('own_filter=' + (this.get('enableFilter') ? 0 : 1));
-    }
+
+    params.push('own_filter=' + (this.get('enableFilter') ? 0 : 1));
 
     return this.get('url') + '?' + params.join('&');
   },

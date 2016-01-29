@@ -24,7 +24,7 @@ describe UserOrganization do
     it 'moves tables with geometries' do
       table = create_random_table(@owner, "table-#{rand(999)}")
       id = table.id
-      table.insert_row!({the_geom: %{{"type":"Point","coordinates":[40.392949,-3.69084]}}})
+      table.insert_row!(the_geom: %{{"type":"Point","coordinates":[40.392949,-3.69084]}})
       table.rows_counted.should == 1
 
       owner_org = CartoDB::UserOrganization.new(@organization.id, @owner.id)

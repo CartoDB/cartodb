@@ -1581,8 +1581,7 @@ class Table
       ST_Transform(ST_GeomFromGeoJSON('#{geojson}'),4326) where cartodb_id =
       #{primary_key}})
     rescue => e
-      byebug
-      raise CartoDB::InvalidGeoJSONFormat, 'Invalid geometry'
+      raise CartoDB::InvalidGeoJSONFormat, "Invalid geometry: #{e.message}"
     end
   end
 

@@ -264,9 +264,14 @@ module CartoDB
         @user.in_database(as: :superuser) do |database|
           database.transaction do
             @user.real_tables(old_schema).each { |t| move_table_to_schema(t, database, old_schema, new_schema) }
-            views(@user.database_username, old_schema).each { |v| move_view_to_schema(v, database, old_schema, new_schema) }
-            materialized_views(@user.database_username, old_schema).each { |v| move_materialized_view_to_schema(v, database, old_schema, new_schema) }
-            functions(@user.database_username, old_schema).each { |f| move_function_to_schema(f, database, old_schema, new_schema) }
+            views(@user.database_username, old_schema).
+              each { |v| move_view_to_schema(v, database, old_schema, new_schema) }
+
+            materialized_views(@user.database_username, old_schema).
+              each { |v| move_materialized_view_to_schema(v, database, old_schema, new_schema) }
+
+            functions(@user.database_username, old_schema).
+              each { |f| move_function_to_schema(f, database, old_schema, new_schema) }
           end
         end
       end

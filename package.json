@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "3.23.26",
+  "version": "3.23.27",
   "description": "CartoDB UI frontend",
   "repository": {
     "type": "git",
@@ -17,14 +17,17 @@
       "type": "BSD"
     }
   ],
+  "dependencies": {},
   "devDependencies": {
     "autoprefixer-core": "5.2.1",
     "aws-sdk": "2.0.0-rc11",
+    "backbone": "1.2.3",
     "browserify": "11.0.1",
     "browserify-shim": "3.8.10",
     "cartoassets": "0.1.22",
     "cartodb-pecan": "0.2.x",
     "csswring": "^3.0.5",
+    "cartodb-deep-insights.js": "CartoDB/deep-insights.js#0cd40b4",
     "git-rev": "0.2.1",
     "grunt": "0.4.5",
     "grunt-available-tasks": "0.5.4",
@@ -46,31 +49,75 @@
     "grunt-mustache": "0.1.7",
     "grunt-postcss": "0.5.5",
     "grunt-timer": "0.3.3",
+    "jstify": "0.13.0",
+    "jquery": "2.1.4",
     "load-grunt-tasks": "3.2.0",
     "moment": "2.10.6",
     "open": "0.0.5",
     "queue-async": "^1.0.7",
-    "shelljs": "0.5.3",
+    "semistandard": "7.0.4",
     "source-map-support": "0.3.2",
     "uglify-js": "2.4.x",
     "underscore": "1.8.3",
+    "node-polyglot": "1.0.0",
     "watchify": "3.1.1"
   },
-  "files": [
-    "dist"
-  ],
   "browserify": {
     "transform": [
-      "browserify-shim"
+      "browserify-shim",
+      "jstify"
     ]
   },
   "browserify-shim": {
-    "jquery": "global:$",
-    "underscore": "global:_",
+    "jquery-cdb-v3": "global:$",
+    "underscore-cdb-v3": "global:_",
     "cdb.admin": "global:cdb.admin",
     "cdb.Utils": "global:cdb.Utils",
     "cartodb.js": "global:cdb",
-    "backbone": "global:Backbone",
+    "backbone-cdb-v3": "global:Backbone",
     "moment": "global:moment"
+  },
+  "semistandard": {
+    "globals": [
+      "alert",
+      "cartodb",
+      "cdb",
+      "jasmine",
+      "describe",
+      "xdescribe",
+      "beforeEach",
+      "afterEach",
+      "spyOn",
+      "it",
+      "xit",
+      "expect"
+    ],
+    "ignore": [
+      "/.grunt",
+      "/*.js",
+      "/app",
+      "/config",
+      "/db",
+      "/doc",
+      "/engines",
+      "/lib/assets/javascripts/cdb",
+      "/lib/assets/javascripts/utils",
+      "/lib/assets/test/lib",
+      "/lib/build",
+      "/lib/carto",
+      "/lib/cartodb",
+      "/lib/importer",
+      "/lib/resque",
+      "/lib/sql",
+      "/lib/tasks",
+      "/lib/varnish",
+      "/log",
+      "/public",
+      "/script",
+      "/services",
+      "/spec",
+      "/tmp",
+      "/vendor"
+    ]
   }
 }

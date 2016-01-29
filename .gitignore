@@ -1,6 +1,7 @@
 .rvmrc
 .DS_Store
 .bundle
+_SpecRunner*.html
 dump.rdb
 db/*.sqlite3
 log
@@ -54,7 +55,6 @@ vendor/cache/*
 Vagrantfile
 node_modules
 .grunt/*
-_SpecRunner.html
 vendor/assets/javascripts/cartodb.*
 vendor/assets/stylesheets/cartodb.*
 public/test_support.csv

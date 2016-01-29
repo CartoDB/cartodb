@@ -634,7 +634,7 @@ class DataImport < Sequel::Model
       database      = current_user.in_database
       destination_schema = current_user.database_schema
       public_user_roles = current_user.db_service.public_user_roles
-      overviews_creator = CartoDB::Importer2::Overviews.new(runner, current_user, database: current_user.in_database)
+      overviews_creator = CartoDB::Importer2::Overviews.new(runner, current_user)
       importer      = CartoDB::Connector::Importer.new(runner, registrar, quota_checker, database, id,
                                                        overviews_creator,
                                                        destination_schema, public_user_roles)

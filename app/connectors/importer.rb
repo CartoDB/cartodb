@@ -91,8 +91,8 @@ module CartoDB
       end
 
       def create_overviews(result)
-        if @overviews_creator.required?(result.name, schema: @destination_schema)
-          @overviews_creator.create!(result.name, schema: @destination_schema)
+        if @overviews_creator.required?(result.name)
+          @overviews_creator.create!(result.name)
         end
       end
 

@@ -962,13 +962,11 @@ module CartoDB
           @user.database_schema = new_schema_name
           @user.this.update database_schema: new_schema_name
 
-          # Previous approach: move object by object (tables, views, materialized and functions)
-          # create_user_schema
-          # rebuild_quota_trigger
-          # move_tables_to_schema(old_database_schema_name, @user.database_schema)
+          # Approach: move object by object (tables, views, materialized and functions)
+          move_schema_content_step_by_step(old_database_schema_name, @user.database_schema)
 
           # Alternative approach: rename the schema and handle the exceptions
-          move_schema_content_by_renaming(old_database_schema_name, @user.database_schema)
+          # move_schema_content_by_renaming(old_database_schema_name, @user.database_schema)
 
           create_public_db_user
           set_database_search_path
@@ -1151,6 +1149,16 @@ module CartoDB
         end
       end
 
+      # Moves the schema by moving tables, views...
+      def move_schema_content_step_by_step(old_name, new_name)
+        create_user_schema
+        rebuild_quota_trigger
+        move_tables_to_schema(old_name, new_name)
+      end
+
+      # Moves the schema by renaming + moving some things back
+      # EXPERIMENTAL. See #6295 and #6467.
+      # move_schema_content_step_by_step is preferred right now.
       def move_schema_content_by_renaming(old_name, new_name)
         @user.in_database(as: :superuser) do |database|
           database.transaction do

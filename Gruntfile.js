@@ -1,4 +1,6 @@
+ var _ = require('underscore');
  var timer = require("grunt-timer");
+ var jasmineCfg = require('./lib/build/tasks/jasmine.js');
 
   /**
    *  CartoDB UI assets generation
@@ -51,8 +53,7 @@
       // Clean folders before other tasks
       clean:    require('./lib/build/tasks/clean').task(),
 
-      // Jasmine tests
-      jasmine:  require('./lib/build/tasks/jasmine.js').task(),
+      jasmine:  jasmineCfg,
 
       s3: require('./lib/build/tasks/s3.js').task(),
 
@@ -175,8 +176,14 @@
     grunt.registerTask('default',     ['pre_default', 'css', 'manifest']);
     grunt.registerTask('minimize',    ['default', 'copy:js', 'exorcise', 'uglify']);
     grunt.registerTask('release',     ['check_release', 'minimize', 's3', 'invalidate']);
-    grunt.registerTask('dev',         'Typical task for frontend development (watch JS/CSS changes)',
-      ['setConfig:env.browserify_watch:true', 'browserify', 'connect', 'watch']);
+    grunt.registerTask('pre-jasmine', _.chain(jasmineCfg)
+      .keys()
+      .map(function (name) {
+        return ['jasmine', name, 'build'].join(':');
+      })
+      .value());
+    grunt.registerTask('dev', 'Typical task for frontend development (watch JS/CSS changes)',
+      ['setConfig:env.browserify_watch:true', 'browserify', 'jasmine:cartodbui:build', 'pre-jasmine', 'connect', 'watch']);
     grunt.registerTask('sourcemaps', 'generate sourcemaps, to be used w/ trackjs.com for bughunting',
       ['setConfig:assets_dir:./tmp/sourcemaps', 'config', 'js', 'copy:js', 'exorcise', 'uglify']);
   };

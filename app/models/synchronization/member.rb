@@ -223,7 +223,9 @@ module CartoDB
         self.ran_at   = Time.now
         self.run_at   = Time.now + interval
 
-        if importer.success?
+        if importer.schema_broken?
+          set_broken_state_from(importer)
+        elsif importer.success?
           set_success_state_from(importer)
         else
           set_failure_state_from(importer)
@@ -357,6 +359,22 @@ module CartoDB
         self.etag           = importer.etag
         self.checksum       = importer.checksum
         self.error_code     = nil
+        self.error_message  = nil
+        self.retried_times  = 0
+        self.run_at         = Time.now + interval
+        self.modified_at    = importer.last_modified
+        geocode_table
+      rescue
+        self
+      end
+
+      def set_broken_state_from(importer)
+        log.append     '******** synchronization broken ********'
+        self.log_trace      = importer.runner_log_trace
+        self.state          = STATE_BROKEN
+        self.etag           = importer.etag
+        self.checksum       = importer.checksum
+        self.error_code     = 6670
         self.error_message  = nil
         self.retried_times  = 0
         self.run_at         = Time.now + interval

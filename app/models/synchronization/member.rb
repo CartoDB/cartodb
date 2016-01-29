@@ -31,11 +31,13 @@ module CartoDB
 
       STATE_CREATED   = 'created'
       # Already at resque, waiting for slot
-      STATE_QUEUED   = 'queued'
+      STATE_QUEUED    = 'queued'
       # Actually syncing
       STATE_SYNCING   = 'syncing'
       STATE_SUCCESS   = 'success'
       STATE_FAILURE   = 'failure'
+      # Schema broken: change type colun, drop column
+      STATE_BROKEN    = 'broken'
 
       attribute :id,                      String
       attribute :name,                    String

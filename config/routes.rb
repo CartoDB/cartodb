@@ -45,6 +45,14 @@ CartoDB::Application.routes.draw do
   get '/google_plus' => 'google_plus#google_plus', as: :google_plus
   post '/google/signup' => 'google_plus#google_signup', as: :google_plus_signup
 
+  # Editor v3
+  scope module: 'carto', path: '(/user/:user_domain)(/u/:user_domain)' do
+    namespace :editor do
+      # Visualizations
+      resources :visualizations, only: :show, path: '/', constraints: { id: /[0-z\.\-]+/ }
+    end
+  end
+
   # Internally, some of this methods will forcibly rewrite to the org-url if user belongs to an organization
   scope :module => :admin do
 
@@ -441,6 +449,16 @@ CartoDB::Application.routes.draw do
     # ImageProxy
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/image_proxy' => 'image_proxy#show'
 
+    # V3
+    scope '(/user/:user_domain)(/u/:user_domain)/api/v3' do
+      scope 'maps/:map_id/layers/:map_layer_id', constraints: { map_id: /[^\/]+/, map_layer_id: /[^\/]+/ } do
+        resources :widgets, only: [:show, :create, :update, :destroy], constraints: { id: /[^\/]+/ }
+      end
+
+      scope '/viz/:id', constraints: { id: /[^\/]+/ } do
+        match 'viz' => 'visualizations#vizjson3', as: :api_v3_visualizations_vizjson
+      end
+    end
   end
 
   scope :module => 'api/json', :format => :json do

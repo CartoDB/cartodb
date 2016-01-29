@@ -321,17 +321,17 @@ Ruby
 
     sudo apt-get install libreadline6-dev openssl
   
-* Install ruby 1.9.3. CartoDB has been deeply tested with Ruby 1.9.3. It should safely work with ruby 2.2 but it's not fully guaranteed.
+* Install ruby 2.2.3. CartoDB has been deeply tested with Ruby 2.2.
 
   .. code-block:: bash
 
-    sudo ruby-install ruby 1.9.3
+    sudo ruby-install ruby 2.2.3
 
-* Ruby-install will leave everything in /opt/rubies/ruby-1.9.3-p547/bin. To be able to run ruby and gem later on, you'll need to add the Ruby 1.9.3 bin folder to your PATH variable. It's also a good idea to include this line in your bashrc so that it gets loaded on restart
+* Ruby-install will leave everything in /opt/rubies/ruby-2.2.3/bin. To be able to run ruby and gem later on, you'll need to add the Ruby 2.2.3 bin folder to your PATH variable. It's also a good idea to include this line in your bashrc so that it gets loaded on restart
 
   .. code-block:: bash
 
-    export PATH=$PATH:/opt/rubies/ruby-1.9.3-p547/bin
+    export PATH=$PATH:/opt/rubies/ruby-2.2.3/bin
 
 * Install bundler. Bundler is an app used to manage ruby dependencies. It is needed by CartoDB's editor
 

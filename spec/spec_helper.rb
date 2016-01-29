@@ -84,7 +84,7 @@ RSpec.configure do |config|
       }
     end
 
-    $user_1 = create_user(quota_in_bytes: 524288000, table_quota: 500, private_tables_enabled: true)
+    $user_1 = create_user(quota_in_bytes: 524288000, table_quota: 500, private_tables_enabled: true, name: 'User 1 Full Name')
     $user_2 = create_user(quota_in_bytes: 524288000, table_quota: 500, private_tables_enabled: true)
   end
 

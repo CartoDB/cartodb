@@ -29,10 +29,13 @@ WORKING_SPECS_1 = \
   spec/requests/api/json/layer_presenter_spec.rb \
   spec/requests/carto/admin/bi_visualizations_controller_spec.rb \
 	spec/requests/carto/api/bi_visualizations_controller_spec.rb \
-  spec/requests/carto/api/layer_presenter_spec.rb \
+    spec/requests/carto/api/layer_presenter_spec.rb \
 	spec/requests/carto/api/data_import_presenter_spec.rb \
 	spec/requests/carto/api/database_groups_controller_spec.rb \
-	spec/requests/carto/api/presenter_cache_spec.rb \
+  spec/requests/carto/api/layer_presenter_spec.rb \
+  spec/requests/carto/api/presenter_cache_spec.rb \
+  spec/requests/carto/api/widgets_controller_spec.rb \
+  spec/requests/carto/editor/visualizations_controller_spec.rb \
   spec/models/map_spec.rb \
   spec/models/map/copier_spec.rb \
 	spec/models/visualization/collection_spec.rb \
@@ -69,6 +72,7 @@ WORKING_SPECS_1 = \
 	spec/models/carto/bi_visualization_spec.rb \
 	spec/models/carto/template_spec.rb \
 	spec/models/carto/group_spec.rb \
+	spec/models/carto/widget_spec.rb \
 	spec/models/carto/ldap/configuration_spec.rb \
 	spec/requests/sessions_controller_spec.rb \
 	spec/services/carto/visualizations_export_service_spec.rb \

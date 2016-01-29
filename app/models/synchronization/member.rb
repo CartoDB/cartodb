@@ -36,7 +36,7 @@ module CartoDB
       STATE_SYNCING   = 'syncing'
       STATE_SUCCESS   = 'success'
       STATE_FAILURE   = 'failure'
-      # Schema broken: change type colun, drop column
+      # Schema broken: column type changed, column dropped
       STATE_BROKEN    = 'broken'
 
       attribute :id,                      String

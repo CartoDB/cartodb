@@ -369,7 +369,7 @@ module CartoDB
       end
 
       def set_broken_state_from(importer)
-        log.append     '******** synchronization broken ********'
+        log.append '******** synchronization broken ********'
         self.log_trace      = importer.runner_log_trace
         self.state          = STATE_BROKEN
         self.etag           = importer.etag

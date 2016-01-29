@@ -415,7 +415,14 @@ module CartoDB
               SET search_path TO #{build_search_path}") if @user.organization_user?
           return true
         rescue => e
-          CartoDB.notify_error('Error installing and configuring geocoder api extension', error: e.inspect, user: @user)
+          # For now CartoDB.com is the only host with Geocoder API installed
+          # so we want to avoid noise to OSS users
+          if Cartodb.config[:cartodb_com_hosted] == false
+            CartoDB.notify_error(
+              'Error installing and configuring geocoder api extension',
+              error: e.inspect, user: @user
+            )
+          end
           return false
       end
 

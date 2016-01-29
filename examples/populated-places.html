@@ -290,13 +290,12 @@
           }
         };
 
-        var opts = {
+        var dashboard = cartodb.deepInsights.createDashboard('#dashboard', vizJSON, {
           no_cdn: false,
           cartodb_logo: false
-        };
-        cartodb.deepInsights.createDashboard('#dashboard', vizJSON, opts)
-          .vis.done(function(vis, layers) {
-            window.layers = layers.models[1].layers;
+        });
+        dashboard.vis.done(function() {
+            window.dashboard = dashboard
           })
           .error(function(err) {
             console.error(err);

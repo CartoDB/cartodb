@@ -53,7 +53,7 @@ module CartoDB
 
         def supports_overviews?
           # TODO: check quotas, etc...
-          table_row_count >= @service.min_rows
+          supported_geometry? && table_row_count >= @service.min_rows
         end
 
         def create_overviews!
@@ -67,6 +67,10 @@ module CartoDB
 
         def table_row_count
           @table.rows_estimated(@service.user)
+        end
+
+        def supported_geometry?
+          @table.geometry_types == ['ST_Point']
         end
 
         def table_name_with_schema(schema, table)

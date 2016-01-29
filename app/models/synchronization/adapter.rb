@@ -13,6 +13,7 @@ module CartoDB
         @database     = database
         @user         = user
         @failed       = false
+        @broken       = false
       end
 
       def run(&tracker)
@@ -102,6 +103,10 @@ module CartoDB
 
       def success?
         (!@failed  && runner.success?)
+      end
+
+      def schema_broken?
+        @broken
       end
 
       def etag

@@ -187,7 +187,7 @@ body.is-inDialog {
 .Dialog-headerIcon--neutral {
   // TODO: !important to not be overrided by .CreateDialog-headerIcon overriding stuff over here :(
   border-color: $cIcons-active !important;
-  .iconFont {
+  .CDB-IconFont {
     color: $cIcons-active !important;
   }
 }

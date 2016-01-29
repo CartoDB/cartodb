@@ -200,24 +200,28 @@ $sEditButtonSize: 50px;
   border: 1px solid #EEEEEE;
 }
 
-.MapCard-headerFakeIcon.iconFont-People {
+.MapCard-headerFakeIcon.CDB-IconFont-people {
   line-height: 35px !important;
   font-size: 30px;
 }
-.MapCard-headerFakeIcon.iconFont-Snake {
+.MapCard-headerFakeIcon.CDB-IconFont-snake {
   line-height: 33px !important;
   font-size: 30px;
 }
-.MapCard-headerFakeIcon.iconFont-Points {
+.MapCard-headerFakeIcon.CDB-IconFont-points {
   line-height: 38px !important;
   font-size: 24px;
 }
-.MapCard-headerFakeIcon.iconFont-Notes { font-size: 26px }
-.MapCard-headerFakeIcon.iconFont-Mountain {
+.MapCard-headerFakeIcon.CDB-IconFont-notes {
+  font-size: 26px;
+}
+.MapCard-headerFakeIcon.CDB-IconFont-mountain {
   font-size: 28px;
   line-height: 40px !important
 }
-.MapCard-headerFakeIcon.iconFont-Rectangles { font-size: 22px }
+.MapCard-headerFakeIcon.CDB-IconFont-rectangles {
+  font-size: 22px;
+}
 .MapCard-header .MapCard-loader {
   display: none;
   position: absolute;
@@ -339,7 +343,7 @@ $sEditButtonSize: 50px;
   margin-right: 20px;
 }
 
-.MapCard-contentFooter.MapCard-contentFooter--lefty .iconFont {
+.MapCard-contentFooter.MapCard-contentFooter--lefty .CDB-IconFont {
   margin-right: 3px;
 }
 .MapCard--squared .MapCard-contentFooterIcons {
@@ -349,7 +353,7 @@ $sEditButtonSize: 50px;
   @include flex-wrap(nowrap);
 }
 .MapCard-contentFooterIcon,
-.MapCard-contentFooterIcon .iconFont {
+.MapCard-contentFooterIcon .CDB-IconFont {
   color: #979EA1;
   &:before { color: #CBCED0; }
 }

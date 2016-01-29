@@ -15,7 +15,7 @@
   </dl>
 </div>
 <div class="CDB-Widget-content">
-  <% if (value) { %>
+  <% if (_.isNumber(value)) { %>
     <h4 class="CDB-Widget-textBigger CDB-Widget-textBigger--maxWidth js-value" title="<%- value %>">
       <%- prefix %><%- value %><%- suffix %>
     </h4>

@@ -249,7 +249,6 @@ module CartoDB
       end
 
       def check_schema_changed(old_columns, new_columns)
-        
         if old_columns.size < new_columns.size
           return
         end

@@ -2,6 +2,7 @@ var _ = require('underscore');
 var WindshaftFilterBase = require('./base');
 
 module.exports = WindshaftFilterBase.extend({
+
   isEmpty: function () {
     return _.isUndefined(this.get('min')) && _.isUndefined(this.get('max'));
   },

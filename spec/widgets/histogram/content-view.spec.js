@@ -1,18 +1,12 @@
 var _ = require('underscore');
-var cdb = require('cartodb.js');
+var specHelper = require('../../spec-helper');
 var HistogramContentView = require('../../../src/widgets/histogram/content-view');
 var WidgetModel = require('../../../src/widgets/widget-model');
 
 describe('widgets/histogram/content-view', function () {
   beforeEach(function () {
-    var vis = cdb.createVis(document.createElement('div'), {
-      datasource: {
-        maps_api_template: 'asd',
-        user_name: 'pepe'
-      },
-      layers: [{type: 'torque'}]
-    });
-    this.dataviewModel = vis.dataviews.createHistogramDataview(vis.map.layers.first(), {
+    var vis = specHelper.createDefaultVis();
+    this.dataviewModel = vis.dataviews.createHistogramModel(vis.map.layers.first(), {
       id: 'widget_3',
       options: {
         columns: ['cartodb_id', 'title']

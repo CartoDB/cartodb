@@ -1,15 +1,10 @@
+var specHelper = require('./spec-helper');
 var WidgetsService = require('../src/widgets-service');
 var WidgetsCollection = require('../src/widgets/widgets-collection');
 
 describe('widgets-service', function () {
   beforeEach(function () {
-    this.vis = cdb.createVis(document.createElement('div'), {
-      datasource: {
-        maps_api_template: 'asd',
-        user_name: 'pepe'
-      },
-      layers: [{type: 'torque'}]
-    });
+    this.vis = specHelper.createDefaultVis();
     this.widgetsCollection = new WidgetsCollection();
     this.widgetsService = new WidgetsService(this.widgetsCollection, this.vis.dataviews);
   });

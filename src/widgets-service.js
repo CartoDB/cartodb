@@ -33,7 +33,7 @@ WidgetsService.prototype.newCategoryModel = function (attrs, layer) {
     return;
   }
 
-  var dataviewModel = this._dataviews.createCategoryDataview(layer, {
+  var dataviewModel = this._dataviews.createCategoryModel(layer, {
     type: 'category',
     column: attrs.column,
     aggregation: attrs.aggregation || 'count'
@@ -66,7 +66,7 @@ WidgetsService.prototype.newHistogramModel = function (attrs, layer) {
     return;
   }
 
-  var dataviewModel = this._dataviews.createHistogramDataview(layer, {
+  var dataviewModel = this._dataviews.createHistogramModel(layer, {
     type: 'histogram',
     column: attrs.column,
     bins: attrs.bins || 10
@@ -99,7 +99,7 @@ WidgetsService.prototype.newFormulaModel = function (attrs, layer) {
     return;
   }
 
-  var dataviewModel = this._dataviews.createFormulaDataview(layer, {
+  var dataviewModel = this._dataviews.createFormulaModel(layer, {
     type: 'formula',
     column: attrs.column,
     operation: attrs.operation
@@ -133,7 +133,7 @@ WidgetsService.prototype.newListModel = function (attrs, layer) {
     return;
   }
 
-  var dataviewModel = this._dataviews.createFormulaDataview(layer, {
+  var dataviewModel = this._dataviews.createFormulaModel(layer, {
     type: 'list',
     columns: attrs.columns,
     columns_title: attrs.columns_title
@@ -164,7 +164,7 @@ WidgetsService.prototype.newTimeSeriesModel = function (attrs, layer) {
     return;
   }
 
-  var dataviewModel = this._dataviews.createHistogramDataview(layer, {
+  var dataviewModel = this._dataviews.createHistogramModel(layer, {
     type: 'histogram',
     column: attrs.column
   });

@@ -1,17 +1,11 @@
-var cdb = require('cartodb.js');
+var specHelper = require('../../spec-helper');
 var CategoryWidgetModel = require('../../../src/widgets/category/category-widget-model');
 var OptionsView = require('../../../src/widgets/category/options/options-view');
 
 describe('widgets/category/options-view', function () {
   beforeEach(function () {
-    var vis = cdb.createVis(document.createElement('div'), {
-      datasource: {
-        maps_api_template: 'asd',
-        user_name: 'pepe'
-      },
-      layers: [{type: 'torque'}]
-    });
-    this.dataviewModel = vis.dataviews.createCategoryDataview(vis.map.layers.first(), {});
+    var vis = specHelper.createDefaultVis();
+    this.dataviewModel = vis.dataviews.createCategoryModel(vis.map.layers.first(), {});
     this.widgetModel = new CategoryWidgetModel({}, {
       dataviewModel: this.dataviewModel
     });
@@ -47,7 +41,6 @@ describe('widgets/category/options-view', function () {
     it('should render when any of this events are triggered from data model', function () {
       var bind = this.dataviewModel.bind.calls.argsFor(0);
       expect(bind[0]).toContain('change:data');
-      expect(bind[0]).toContain('change:filter');
       expect(bind[1]).toEqual(this.view.render);
     });
 

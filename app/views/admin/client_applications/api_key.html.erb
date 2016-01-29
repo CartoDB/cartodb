@@ -34,7 +34,7 @@
       </div>
       <div class="FormAccount-rowData">
         <input type="text" class="FormAccount-input FormAccount-input--long has-icon js-input" placeholder="No API key" value="<%= current_user.api_key %>" readonly />
-        <i data-title="Copy this" class="iconFont iconFont-Anchor FormAccount-inputIcon FormAccount-copyIcon js-copy-value"></i>
+        <i data-title="Copy this" class="CDB-IconFont CDB-IconFont-anchor FormAccount-inputIcon FormAccount-copyIcon js-copy-value"></i>
         <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
           <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>" />
           <a class="js-regenerateApiKey" href="#">Request a new API key</a>
@@ -92,7 +92,7 @@
 
     <div class="FormAccount-footer">
       <p class="FormAccount-footerText">
-        <i class="iconFont iconFont-Info FormAccount-footerIcon"></i>
+        <i class="CDB-IconFont CDB-IconFont-info FormAccount-footerIcon"></i>
         <span>Learn more about <%= link_to "using your simple app key", Cartodb.config[:developers_host] + "/cartodb-editor/your-account/#api-key" %> in CartoDB</span>
       </p>
     </div>

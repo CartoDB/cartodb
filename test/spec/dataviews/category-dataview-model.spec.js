@@ -164,6 +164,20 @@ describe('dataviews/category-dataview-model', function () {
       _parseData(this.model, _generateData(2));
       expect(resetSpy).toHaveBeenCalled();
     });
+
+    it('should cast any category value to string', function () {
+      _parseData(this.model, _.map([null, undefined, 0, 'hello', false], function (v) {
+        return {
+          category: v,
+          value: 1
+        };
+      }));
+      var data = this.model.get('data');
+      var areNamesString = _.every(data, function (obj) {
+        return obj.name;
+      });
+      expect(areNamesString).toBeTruthy();
+    });
   });
 
   it('should have defined "_onFilterChanged" method', function () {

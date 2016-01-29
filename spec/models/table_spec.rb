@@ -2428,7 +2428,7 @@ describe Table do
       table = new_table(user_id: $user_1.id)
       columns = [[cartodb_id: "integer"], [did: "integer"], [date_prod: "date"], [the_geom: "geometry"]]
       table.stubs(:schema).returns(columns)
-      table.get_columns.should == [[cartodb_id: "integer"], [did: "integer"], [date_prod: "date"], [the_geom: "geometry"]]
+      table.get_columns.should == columns
     end
   end
 

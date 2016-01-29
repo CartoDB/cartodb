@@ -26,7 +26,7 @@ var WindshaftMap = function (options) {
   this.instance = new WindshaftMapInstance();
 
   this.map.bind('change:center change:zoom', _.debounce(this._boundingBoxChanged, BOUNDING_BOX_FILTER_WAIT), this);
-  this.layers.bind('change', this._layerChanged, this);
+  this.layers.bind('change:urls', this._layerChanged, this);
   this.dataviews.bind('change:filter', this._dataviewChanged, this);
   this.dataviews.bind('add', _.debounce(this._dataviewChanged, 10), this);
 

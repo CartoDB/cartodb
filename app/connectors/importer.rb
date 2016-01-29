@@ -91,8 +91,9 @@ module CartoDB
       end
 
       def create_overviews(result)
-        if @overviews_creator.required?(result.name)
-          @overviews_creator.create!(result.name)
+        dataset = @overviews_creator.dataset(result.name)
+        if dataset.supports_overviews?
+          dataset.create_overviews!
         end
       end
 

@@ -2,7 +2,7 @@
 
 module CartoDB
   module Importer2
-    # Overview creation
+    # Overviews creation service
     #
     # Pending issues: metrics, quotas/limits, timing, logging, ...
     #
@@ -20,32 +20,59 @@ module CartoDB
                     DEFAULT_MIN_ROWS
       end
 
-      def required?(table)
-        # TODO: check quotas, etc...
-        table_row_count(table) >= @min_rows
+      attr_reader :user, :min_rows, :schema
+
+      # Obtain an object fo thandle the creation of overviews for a dataset
+      def dataset(table_name)
+        Dataset.new(self, table_name)
       end
 
-      def create!(table)
-        table_name = table_name_with_schema(@schema, table)
-        @runner.log.append("Will create overviews for #{table_name}")
+      def log(message)
+        @runner.log.append(message)
+      end
+
+      def get_table(table_name)
+        UserTable.find_by_identifier(@user.id, table_name).service
+      end
+
+      def run_in_database(sql)
         # TODO: timing, exception handling, ...
-
-        @database.run %{
-          SELECT cartodb.CDB_CreateOverviews('#{table_name}'::REGCLASS);
-        }
-
-        @runner.log.append("Overviews created for #{table_name}")
+        log("Will create overviews for #{@table_name}")
+        @database.run sql
+        log("Overviews created for #{@table_name}")
       end
 
-      private
+      # Dataset overview creation
+      class Dataset
+        def initialize(overviews_service, table_name)
+          @service = overviews_service
+          @name = table_name
+          @table = @service.get_table(@name)
+          @table_name = table_name_with_schema(@service.schema, @name)
+        end
 
-      def table_row_count(table)
-        UserTable.find_by_identifier(@user.id, table).service.rows_estimated(@user)
-      end
+        def supports_overviews?
+          # TODO: check quotas, etc...
+          table_row_count >= @service.min_rows
+        end
 
-      def table_name_with_schema(schema, table)
-        # TODO: quote if necessary
-        "#{schema}.#{table}"
+        def create_overviews!
+          # TODO: metrics...
+          @service.run_in_database %{
+            SELECT cartodb.CDB_CreateOverviews('#{@table_name}'::REGCLASS);
+          }
+        end
+
+        private
+
+        def table_row_count
+          @table.rows_estimated(@service.user)
+        end
+
+        def table_name_with_schema(schema, table)
+          # TODO: quote if necessary
+          "#{schema}.#{table}"
+        end
       end
     end
   end

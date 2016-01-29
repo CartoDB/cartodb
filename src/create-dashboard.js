@@ -52,7 +52,8 @@ module.exports = function (selector, vizJSON, opts) {
     category: widgetsService.newCategoryModel.bind(widgetsService)
   };
   vizJSON.widgets.forEach(function (d) {
-    var attrs = _.omit(d, 'layerId', 'layerIndex');
+    // Flatten the data structure given in vizJSON, the widgetsService will use whatever it needs and ignore the rest
+    var attrs = _.extend({}, d, d.options);
     var newWidgetModel = widgetModelsMap[d.type];
 
     if (_.isFunction(newWidgetModel)) {

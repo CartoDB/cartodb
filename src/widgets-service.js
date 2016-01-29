@@ -6,79 +6,140 @@ var CategoryWidgetModel = require('./widgets/category/category-widget-model');
  */
 var WidgetsService = function (widgetsCollection, dataviews) {
   this._widgetsCollection = widgetsCollection;
-  this._dataviewModelsMap = {
-    list: dataviews.createListDataview.bind(dataviews),
-    formula: dataviews.createFormulaDataview.bind(dataviews),
-    histogram: dataviews.createHistogramDataview.bind(dataviews),
-    category: dataviews.createCategoryDataview.bind(dataviews)
-  };
-  this._widgetModelsMap = {
-    list: function (widgetAttrs, widgetOpts) {
-      return new WidgetModel(widgetAttrs, widgetOpts);
-    },
-    formula: function (widgetAttrs, widgetOpts) {
-      return new WidgetModel(widgetAttrs, widgetOpts);
-    },
-    histogram: function (widgetAttrs, widgetOpts) {
-      return new WidgetModel(widgetAttrs, widgetOpts);
-    },
-    'time-series': function (widgetAttrs, widgetOpts) {
-      return new WidgetModel(widgetAttrs, widgetOpts);
-    },
-    category: function (widgetAttrs, widgetOpts) {
-      return new CategoryWidgetModel(widgetAttrs, widgetOpts);
-    }
-  };
+  this._dataviews = dataviews;
 };
 
 WidgetsService.prototype.get = function (id) {
   return this._widgetsCollection.get(id);
 };
 
+/**
+ * @param {Object} attrs
+ * @param {string} attrs.title Title rendered on the widget view
+ * @param {String} attrs.column Name of column
+ * @param {String} attrs.aggregation Name of aggregation operation to apply to get categories
+ *   can be any of ['sum', 'count']. Default is 'count'
+ * @param {String} attrs.aggregationColumn Name of column to use for aggregation(?)
+ * @param {Object} layer Instance of a layer model (cartodb.js)
+ * @return {CategoryWidgetModel}
+ */
 WidgetsService.prototype.newCategoryModel = function (attrs, layer) {
-  attrs.type = attrs.options.type = 'category';
-  return this._newModel(attrs, layer);
+  var dataviewModel = this._dataviews.createCategoryDataview(layer, {
+    type: 'category',
+    column: attrs.column,
+    aggregation: attrs.aggregation || 'count'
+  });
+
+  var widgetModel = new CategoryWidgetModel({
+    type: 'category',
+    title: attrs.title
+  }, {
+    dataviewModel: dataviewModel
+  });
+  this._widgetsCollection.add(widgetModel);
+
+  return widgetModel;
 };
 
+/**
+ * @param {Object} attrs
+ * @param {string} attrs.title Title rendered on the widget view
+ * @param {String} attrs.column Name of column
+ * @param {Number} attrs.bins Count of bins
+ * @param {Object} layer Instance of a layer model (cartodb.js)
+ * @return {WidgetModel}
+ */
 WidgetsService.prototype.newHistogramModel = function (attrs, layer) {
-  attrs.type = attrs.options.type = 'histogram';
-  return this._newModel(attrs, layer);
+  var dataviewModel = this._dataviews.createHistogramDataview(layer, {
+    type: 'histogram',
+    column: attrs.column,
+    bins: attrs.bins || 10
+  });
+
+  var widgetModel = new WidgetModel({
+    type: 'histogram',
+    title: attrs.title
+  }, {
+    dataviewModel: dataviewModel
+  });
+  this._widgetsCollection.add(widgetModel);
+
+  return widgetModel;
 };
 
+/**
+ * @param {Object} attrs
+ * @param {string} attrs.title Title rendered on the widget view
+ * @param {String} attrs.column Name of column
+ * @param {String} attrs.operation Name of operation to use, can be any of ['min', 'max', 'avg', 'sum']
+ * @param {Object} layer Instance of a layer model (cartodb.js)
+ * @return {CategoryWidgetModel}
+ */
 WidgetsService.prototype.newFormulaModel = function (attrs, layer) {
-  attrs.type = attrs.options.type = 'formula';
-  return this._newModel(attrs, layer);
+  var dataviewModel = this._dataviews.createFormulaDataview(layer, {
+    type: 'formula',
+    column: attrs.column,
+    operation: attrs.operation
+  });
+
+  var widgetModel = new WidgetModel({
+    type: 'formula',
+    title: attrs.title
+  }, {
+    dataviewModel: dataviewModel
+  });
+  this._widgetsCollection.add(widgetModel);
+
+  return widgetModel;
 };
 
+/**
+ * @param {Object} attrs
+ * @param {string} attrs.title Title rendered on the widget view
+ * @param {Array} attrs.columns Names of columns
+ * @param {Array} attrs.columns_title Names of title, should match columns size & order of items.
+ * @param {Number} attrs.bins Count of bins
+ * @param {Object} layer Instance of a layer model (cartodb.js)
+ * @return {WidgetModel}
+ */
 WidgetsService.prototype.newListModel = function (attrs, layer) {
-  attrs.type = attrs.options.type = 'list';
-  return this._newModel(attrs, layer);
+  var dataviewModel = this._dataviews.createFormulaDataview(layer, {
+    type: 'list',
+    columns: attrs.columns,
+    columns_title: attrs.columns_title
+  });
+
+  var widgetModel = new WidgetModel({
+    type: 'list',
+    title: attrs.title
+  }, {
+    dataviewModel: dataviewModel
+  });
+  this._widgetsCollection.add(widgetModel);
+
+  return widgetModel;
 };
 
+/**
+ * @param {Object} attrs
+ * @param {String} attrs.column Name of column that contains
+ * @param {Object} layer Instance of a layer model (cartodb.js)
+ * @return {WidgetModel}
+ */
 WidgetsService.prototype.newTimeSeriesModel = function (attrs, layer) {
-  attrs.type = 'time-series';
-  attrs.options.type = 'histogram';
-  return this._newModel(attrs, layer);
-};
+  var dataviewModel = this._dataviews.createHistogramDataview(layer, {
+    type: 'histogram',
+    column: attrs.column
+  });
 
-WidgetsService.prototype._newModel = function (attrs, layer) {
-  var dataviewAttrs = attrs.options;
+  var widgetModel = new WidgetModel({
+    type: 'time-series'
+  }, {
+    dataviewModel: dataviewModel
+  });
+  this._widgetsCollection.add(widgetModel);
 
-  if (layer) {
-    var dataviewModel;
-    if (dataviewAttrs) {
-      dataviewModel = this._dataviewModelsMap[dataviewAttrs.type](layer, dataviewAttrs);
-      var widgetOpts = {
-        dataviewModel: dataviewModel
-      };
-      var widgetModel = this._widgetModelsMap[attrs.type](attrs, widgetOpts);
-      return this._widgetsCollection.add(widgetModel);
-    } else {
-      cdb.log.error('options are required');
-    }
-  } else {
-    cdb.log.error('layer is required');
-  }
+  return widgetModel;
 };
 
 module.exports = WidgetsService;

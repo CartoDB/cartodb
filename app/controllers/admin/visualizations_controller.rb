@@ -671,7 +671,7 @@ class Admin::VisualizationsController < Admin::AdminController
   end
 
   def data_library_user?
-    @viewed_user && Cartodb.get_config(:data_library, 'username') && (@viewed_user.username == Cartodb.config[:data_library]['username'])
+    @viewed_user && Cartodb.get_config(:data_library, 'username') == @viewed_user.username
   end
 
 end

@@ -233,7 +233,7 @@ describe('widgets-service', function () {
       it('columns_title', function () {
         this.results = this.widgetsService.newListModel({
           title: 'my list',
-          columns: ['a', 'b'],
+          columns: ['a', 'b']
         }, this.vis.map.layers.first());
         expect(this.results).not.toBeDefined();
       });

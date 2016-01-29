@@ -219,7 +219,7 @@ describe UserOrganization do
 
     @owner.db_service.schema_exists?(@owner.username).should == false
 
-    CartoDB::UserModule::DBService.any_instance.stubs(:rebuild_quota_trigger).raises(StandardError.new("Failure simulation"))
+    CartoDB::UserModule::DBService.any_instance.stubs(:rebuild_quota_trigger_with_database).raises(StandardError.new("Failure simulation"))
 
     # Promote
     owner_org = CartoDB::UserOrganization.new(@organization.id, @owner.id)

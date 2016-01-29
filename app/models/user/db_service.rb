@@ -157,24 +157,7 @@ module CartoDB
 
       def rebuild_quota_trigger
         @user.in_database(as: :superuser) do |db|
-          if !cartodb_extension_version_pre_mu? && @user.has_organization?
-            db.run("DROP FUNCTION IF EXISTS public._CDB_UserQuotaInBytes();")
-          end
-
-          db.transaction do
-            # NOTE: this has been written to work for both databases that switched to "cartodb" extension
-            #       and those before the switch.
-            #       In the future we should guarantee that exntension lives in cartodb schema so we don't need to set
-            #       a search_path before
-            search_path = db.fetch("SHOW search_path;").first[:search_path]
-            db.run("SET search_path TO #{SCHEMA_CARTODB}, #{SCHEMA_PUBLIC};")
-            if cartodb_extension_version_pre_mu?
-              db.run("SELECT CDB_SetUserQuotaInBytes(#{@user.quota_in_bytes});")
-            else
-              db.run("SELECT CDB_SetUserQuotaInBytes('#{@user.database_schema}', #{@user.quota_in_bytes});")
-            end
-            db.run("SET search_path TO #{search_path};")
-          end
+          rebuild_quota_trigger_with_database(db)
         end
       end
 
@@ -283,7 +266,7 @@ module CartoDB
             @user.real_tables(old_schema).each { |t| move_table_to_schema(t, database, old_schema, new_schema) }
             views(@user.database_username, old_schema).each { |v| move_view_to_schema(v, database, old_schema, new_schema) }
             materialized_views(@user.database_username, old_schema).each { |v| move_materialized_view_to_schema(v, database, old_schema, new_schema) }
-            functions(@user.database_username, old_schema).each { |v| move_functions_to_schema(v, database, old_schema, new_schema) }
+            functions(@user.database_username, old_schema).each { |f| move_function_to_schema(f, database, old_schema, new_schema) }
           end
         end
       end
@@ -1147,6 +1130,27 @@ module CartoDB
 
       private
 
+      def rebuild_quota_trigger_with_database(db)
+        if !cartodb_extension_version_pre_mu? && @user.has_organization?
+          db.run("DROP FUNCTION IF EXISTS public._CDB_UserQuotaInBytes();")
+        end
+
+        db.transaction do
+          # NOTE: this has been written to work for both databases that switched to "cartodb" extension
+          #       and those before the switch.
+          #       In the future we should guarantee that exntension lives in cartodb schema so we don't need to set
+          #       a search_path before
+          search_path = db.fetch("SHOW search_path;").first[:search_path]
+          db.run("SET search_path TO #{SCHEMA_CARTODB}, #{SCHEMA_PUBLIC};")
+          if cartodb_extension_version_pre_mu?
+            db.run("SELECT CDB_SetUserQuotaInBytes(#{@user.quota_in_bytes});")
+          else
+            db.run("SELECT CDB_SetUserQuotaInBytes('#{@user.database_schema}', #{@user.quota_in_bytes});")
+          end
+          db.run("SET search_path TO #{search_path};")
+        end
+      end
+
       def move_schema_content_by_renaming(old_name, new_name)
         @user.in_database(as: :superuser) do |database|
           database.transaction do
@@ -1158,8 +1162,9 @@ module CartoDB
             rename_schema_with_database(database, old_name, new_name)
 
             create_schema_with_database(database, old_name)
-            move_postgis_to_schema(old_name)
-            rebuild_quota_trigger
+            move_postgis_to_schema(database, old_name)
+            move_plproxy_to_schema(database, old_name, new_name)
+            rebuild_quota_trigger_with_database(database)
 
             cartodbfied_tables.select { |_, is_cartodbfied| is_cartodbfied }.map do |t, _|
               cdb_cartodbfy(t, database, new_name)
@@ -1168,10 +1173,15 @@ module CartoDB
         end
       end
 
-      def move_postgis_to_schema(schema)
-        @user.in_database(as: :superuser) do |database|
-          database.run(%{ALTER EXTENSION postgis SET SCHEMA "#{schema}"})
-        end
+      def move_postgis_to_schema(database, schema)
+        database.run(%{ALTER EXTENSION postgis SET SCHEMA "#{schema}"})
+      end
+
+      def move_plproxy_to_schema(database, old_schema, new_schema)
+        # extension "plproxy" does not support SET SCHEMA
+        functions(@user.database_username, old_schema).
+          select { |f| /^plproxy/.match(f.name) }.
+          each { |f| move_function_to_schema(f, database, old_schema, new_schema) }
       end
 
       def rename_schema_with_database(database, old_name, new_name)
@@ -1216,7 +1226,7 @@ module CartoDB
         database.run(%{ ALTER MATERIALIZED VIEW #{old_name} SET SCHEMA "#{new_schema}" })
       end
 
-      def move_functions_to_schema(function, database, old_schema, new_schema)
+      def move_function_to_schema(function, database, old_schema, new_schema)
         old_name = "#{old_schema}.#{function.name}"
 
         database.run(%{ ALTER FUNCTION #{old_name}(#{function.argument_data_types}) SET SCHEMA "#{new_schema}" })

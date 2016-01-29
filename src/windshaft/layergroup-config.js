@@ -15,14 +15,18 @@ LayerGroupConfig.generate = function (options) {
           cartocss_version: layer.get('cartocss_version'),
           interactivity: layer.getInteractiveColumnNames(),
           // TODO widgets should be renamed to dataviews, requires Windshaft to be changed first though
-          widgets: dataviews.reduce(function (memo, m) {
-            if (layer.get('id') === m.layer.get('id')) {
-              memo[m.get('id')] = m.toJSON();
-            }
-            return memo;
-          }, {})
+          widgets: {}
         }
       };
+
+      if (dataviews) {
+        layerConfig.options.widgets = dataviews.reduce(function (memo, m) {
+          if (layer.get('id') === m.layer.get('id')) {
+            memo[m.get('id')] = m.toJSON();
+          }
+          return memo;
+        }, {});
+      }
 
       if (layer.getInfowindowFieldNames().length) {
         layerConfig.options.attributes = {

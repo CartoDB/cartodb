@@ -10,32 +10,19 @@ var CartoDBLayer = MapLayer.extend({
     visible: true
   },
 
-  initialize: function() {
+  initialize: function(attrs, options) {
+    options = options || {};
     MapLayer.prototype.initialize.apply(this, arguments);
+
+    this._map = options.map;
+
+    this.bind('change:visible change:sql change:cartocss', this._onAttributeChanged, this);
   },
 
-  activate: function() {
-    this.set({active: true, opacity: 0.99, visible: true});
-  },
-
-  deactivate: function() {
-    this.set({active: false, opacity: 0, visible: false});
-  },
-
-  // TODO: This is probably not used anymore
-  invalidate: function() {
-    var e = this.get('extra_params') || e;
-    e.cache_buster = new Date().getTime();
-    this.set('extra_params', e);
-    this.trigger('change', this);
-  },
-
-  toggle: function() {
-    if(this.get('active')) {
-      this.deactivate();
-    } else {
-      this.activate();
-    }
+  _onAttributeChanged: function () {
+    this._map.reload({
+      sourceLayerId: this.get('id')
+    });
   },
 
   hasInteraction: function() {
@@ -98,7 +85,7 @@ var CartoDBLayer = MapLayer.extend({
 
   // Layers inside a "layergroup" layer have the layer_name defined in options.layer_name
   // Layers inside a "namedmap" layer have the layer_name defined in the root of their definition
-  getName: function() {
+  getName: function () {
     return this.get('options') && this.get('options').layer_name || this.get('layer_name');
   }
 });

@@ -11,12 +11,17 @@ var CartoDBLayerGroupBase = MapLayer.extend({
   initialize: function (attributes, options) {
     MapLayer.prototype.initialize.apply(this, arguments);
     options = options || {};
+
+    if (!options.windshaftMap) {
+      throw new Error('windshaftMap option is required');
+    }
+
     this.layers = new Backbone.Collection(options.layers || {});
     this._windshaftMap = options.windshaftMap;
 
     // When a new instance of the map is created in Windshaft, we will need to use
     // new URLs for the tiles (`urls` attribute) and also for the attributes (`baseURL`)
-    this._windshaftMap.instance.bind('change', function (mapInstance) {
+    this._windshaftMap.bind('instanceCreated', function (mapInstance) {
       this.set({
         baseURL: mapInstance.getBaseURL(),
         urls: mapInstance.getTiles('mapnik')

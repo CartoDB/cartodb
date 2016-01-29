@@ -3,11 +3,16 @@ var HistogramDataviewModel = require('../../../src/dataviews/histogram-dataview-
 
 describe('dataviews/histogram-dataview-model', function () {
   beforeEach(function () {
+    var map = jasmine.createSpyObj('map', ['getViewBounds', 'bind', 'reload']);
+    map.getViewBounds.and.returnValue([[1, 2], [3, 4]]);
+    var windshaftMap = jasmine.createSpyObj('windhsaftMap', ['bind']);
     this.filter = new Model();
     this.layer = new Model();
     this.model = new HistogramDataviewModel({}, {
-      filter: this.filter,
-      layer: this.layer
+      map: map,
+      windshaftMap: windshaftMap,
+      layer: this.layer,
+      filter: this.filter
     });
   });
 

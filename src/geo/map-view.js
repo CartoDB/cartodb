@@ -161,12 +161,13 @@ var MapView = View.extend({
 
   _newCartoDBLayerGroup: function (layerModel) {
     var LayerGroupClass = CartoDBLayerGroupAnonymousMap;
-    if (this.map.windshaftMap.isNamedMap()) {
+    var windshaftMap = this.map.getWindshaftMap();
+    if (windshaftMap.isNamedMap()) {
       LayerGroupClass = CartoDBLayerGroupNamedMap;
     }
 
     return new LayerGroupClass({}, {
-      windshaftMap: this.map.windshaftMap,
+      windshaftMap: windshaftMap,
       layers: [layerModel]
     });
   },

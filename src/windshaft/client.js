@@ -2,7 +2,6 @@ var $ = require('jquery');
 var _ = require('underscore');
 var LZMA = require('lzma');
 var util = require('../core/util');
-var WindshaftMapInstance = require('./windshaft-map-instance');
 
 var validatePresenceOfOptions = function (options, requiredOptions) {
   var missingOptions = _.filter(requiredOptions, function (option) {
@@ -32,12 +31,6 @@ var WindshaftClient = function (options) {
 WindshaftClient.DEFAULT_COMPRESSION_LEVEL = 3;
 WindshaftClient.MAX_GET_SIZE = 2033;
 
-/**
- * Creates an instance of a map in Windshaft
- * @param {object} mapDefinition An object that responds to .toJSON with the definition of the map
- * @param  {function} callback A callback that will get the public or private map
- * @return {cdb.windshaft.WindshaftMapInstance} The instance of the windshaft map
- */
 WindshaftClient.prototype.instantiateMap = function (options) {
   var mapDefinition = options.mapDefinition;
   var statTag = options.statTag;
@@ -51,11 +44,9 @@ WindshaftClient.prototype.instantiateMap = function (options) {
       if (data.errors) {
         errorCallback(data.errors[0]);
       } else {
-        data.urlTemplate = this.urlTemplate;
-        data.userName = this.userName;
-        successCallback(new WindshaftMapInstance(data));
+        successCallback(data);
       }
-    }.bind(this),
+    },
     error: function (xhr) {
       var err = { errors: ['Unknown error'] };
       try {

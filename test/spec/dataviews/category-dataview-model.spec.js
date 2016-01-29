@@ -50,7 +50,6 @@ describe('dataviews/category-dataview-model', function () {
 
     describe('boundingBox', function () {
       it('should set search boundingBox when it changes', function () {
-        expect(this.model._searchModel.get('boundingBox')).toBe('2,1,4,3');
         this.model.set('boundingBox', 'hey');
         expect(this.model._searchModel.get('boundingBox')).toBe('hey');
       });

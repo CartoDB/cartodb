@@ -44,7 +44,6 @@ module.exports = Model.extend({
       this.filter.set('dataviewId', this.id);
     }
 
-    this._updateBoundingBox();
     this._initBinds();
   },
 

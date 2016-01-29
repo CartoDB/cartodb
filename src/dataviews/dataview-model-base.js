@@ -44,23 +44,19 @@ module.exports = Model.extend({
       this.filter.set('dataviewId', this.id);
     }
 
-    this._updateBoundingBox();
     this._initBinds();
   },
 
   _initBinds: function () {
-    this._windshaftMap.bind('instanceCreated', this._onNewWindshaftMapInstance, this);
+    this.listenTo(this._windshaftMap, 'instanceCreated', this._onNewWindshaftMapInstance);
 
-    this.once('change:url', function () {
-      var self = this;
-      this._fetch(function () {
-        self._onChangeBinds();
-      });
-    }, this);
+    this.listenToOnce(this, 'change:url', function () {
+      this._fetch(this._onChangeBinds.bind(this));
+    });
 
     // Retrigger an event when the filter changes
     if (this.filter) {
-      this.filter.bind('change', this._onFilterChanged, this);
+      this.listenTo(this.filter, 'change', this._onFilterChanged);
     }
   },
 
@@ -89,20 +85,20 @@ module.exports = Model.extend({
 
   _onChangeBinds: function () {
     var BOUNDING_BOX_FILTER_WAIT = 500;
-    this._map.bind('change:center change:zoom', _.debounce(this._onMapBoundsChanged.bind(this), BOUNDING_BOX_FILTER_WAIT));
+    this.listenTo(this._map, 'change:center change:zoom', _.debounce(this._onMapBoundsChanged.bind(this), BOUNDING_BOX_FILTER_WAIT));
 
-    this.bind('change:url', function () {
+    this.listenTo(this, 'change:url', function () {
       if (this._shouldFetchOnURLChange()) {
         this._fetch();
       }
-    }, this);
-    this.bind('change:boundingBox', function () {
+    });
+    this.listenTo(this, 'change:boundingBox', function () {
       if (this._shouldFetchOnBoundingBoxChange()) {
         this._fetch();
       }
-    }, this);
+    });
 
-    this.bind('change:enabled', function (mdl, isEnabled) {
+    this.listenTo(this, 'change:enabled', function (mdl, isEnabled) {
       if (isEnabled) {
         if (mdl.changedAttributes(this._previousAttrs)) {
           this._fetch();
@@ -113,7 +109,7 @@ module.exports = Model.extend({
           boundingBox: this.get('boundingBox')
         };
       }
-    }, this);
+    });
   },
 
   _shouldFetchOnURLChange: function () {
@@ -159,5 +155,13 @@ module.exports = Model.extend({
 
   toJSON: function () {
     throw new Error('toJSON should be defined for each dataview');
+  },
+
+  remove: function () {
+    if (this.filter) {
+      this.filter.remove();
+    }
+    this.trigger('destroy', this);
+    this.stopListening();
   }
 });

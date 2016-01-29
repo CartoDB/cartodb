@@ -1316,7 +1316,7 @@ class Table
   def get_columns
     schema(reload: true)
   end
-  
+
   private
 
   def previous_privacy

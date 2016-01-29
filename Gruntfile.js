@@ -140,26 +140,6 @@ module.exports = function(grunt) {
     grunt.config('config.doWatchify', true); // required for browserify to use watch files instead
   });
 
-  grunt.event.once('connect.server.listening', function(host, port) {
-    grunt.log.writeln('Styleguide:');
-    grunt.log.writeln(' - http://' + host + ':' + port + '/themes/styleguide');
-    grunt.log.writeln('');
-
-    grunt.log.writeln('Examples:');
-    grunt.log.writeln(' - http://' + host + ':' + port + '/examples');
-    grunt.log.writeln('');
-
-    // Needs webserver for source-map-support install to work in a non-headless browserify,
-    // Unfortunately can't get source-maps when spec-runner is opened using file://
-    grunt.log.writeln('Jasmine specs available at (one per bundle):');
-    var jasmineConfig = grunt.config('jasmine');
-    for (var name in jasmineConfig) {
-      var specRunnerFilepath = jasmineConfig[name].options.outfile;
-      grunt.task.run('jasmine:' + name + ':build');
-      grunt.log.writeln(' - http://' + host + ':' + port + '/' + specRunnerFilepath);
-    }
-  });
-
   // Define tasks order for each step as if run in isolation,
   // when registering the actual tasks _.uniq is used to discard duplicate tasks from begin run
   var allDeps = [

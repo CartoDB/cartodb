@@ -21,6 +21,22 @@ describe UserOrganization do
     end
 
     # See #3534: Quota trigger re-creation not done correctly when promoting user to org
+    it 'moves tables with geometries' do
+      table = create_random_table(@owner, "table-#{rand(999)}")
+      id = table.id
+      table.insert_row!({the_geom: %{{"type":"Point","coordinates":[40.392949,-3.69084]}}})
+      table.rows_counted.should == 1
+
+      owner_org = CartoDB::UserOrganization.new(@organization.id, @owner.id)
+      owner_org.promote_user_to_admin
+      @owner.reload
+
+      table = UserTable.where(id: id).first.service
+      table.insert_row!({})
+      table.rows_counted.should == 2
+    end
+
+    # See #3534: Quota trigger re-creation not done correctly when promoting user to org
     it 'recreates existing tables triggers' do
       table = create_random_table(@owner, "table-#{rand(999)}")
       id = table.id

@@ -1580,7 +1580,8 @@ class Table
       owner.in_database(:as => :superuser).run(%Q{UPDATE #{qualified_table_name} SET the_geom =
       ST_Transform(ST_GeomFromGeoJSON('#{geojson}'),4326) where cartodb_id =
       #{primary_key}})
-    rescue
+    rescue => e
+      byebug
       raise CartoDB::InvalidGeoJSONFormat, 'Invalid geometry'
     end
   end

@@ -35,47 +35,49 @@ WidgetsService.prototype.get = function (id) {
   return this._widgetsCollection.get(id);
 };
 
-WidgetsService.prototype.addCategoryWidget = function (attrs, layer) {
-  this._addWidget(attrs, layer);
+WidgetsService.prototype.newCategoryModel = function (attrs, layer) {
+  attrs.type = attrs.options.type = 'category';
+  return this._newModel(attrs, layer);
 };
 
-WidgetsService.prototype.addHistogramWidget = function (attrs, layer) {
-  this._addWidget(attrs, layer);
+WidgetsService.prototype.newHistogramModel = function (attrs, layer) {
+  attrs.type = attrs.options.type = 'histogram';
+  return this._newModel(attrs, layer);
 };
 
-WidgetsService.prototype.addFormulaWidget = function (attrs, layer) {
-  this._addWidget(attrs, layer);
+WidgetsService.prototype.newFormulaModel = function (attrs, layer) {
+  attrs.type = attrs.options.type = 'formula';
+  return this._newModel(attrs, layer);
 };
 
-WidgetsService.prototype.addTimeSeriesWidget = function (attrs, layer) {
-  this._addWidget(attrs, layer);
+WidgetsService.prototype.newListModel = function (attrs, layer) {
+  attrs.type = attrs.options.type = 'list';
+  return this._newModel(attrs, layer);
 };
 
-WidgetsService.prototype.addListWidget = function (attrs, layer) {
-  this._addWidget(attrs, layer);
+WidgetsService.prototype.newTimeSeriesModel = function (attrs, layer) {
+  attrs.type = 'time-series';
+  attrs.options.type = 'histogram';
+  return this._newModel(attrs, layer);
 };
 
-WidgetsService.prototype._addWidget = function (attrs, layer) {
+WidgetsService.prototype._newModel = function (attrs, layer) {
   var dataviewAttrs = attrs.options;
 
   if (layer) {
     var dataviewModel;
     if (dataviewAttrs) {
-      // TODO not ideal, should have a more maintainable way of mapping
-      dataviewAttrs.type = attrs.type === 'time-series'
-        ? 'histogram' // Time-series widget is represented by a histogram, so re-map the type
-        : attrs.type;
-
       dataviewModel = this._dataviewModelsMap[dataviewAttrs.type](layer, dataviewAttrs);
+      var widgetOpts = {
+        dataviewModel: dataviewModel
+      };
+      var widgetModel = this._widgetModelsMap[attrs.type](attrs, widgetOpts);
+      return this._widgetsCollection.add(widgetModel);
+    } else {
+      cdb.log.error('options are required');
     }
-
-    var widgetOpts = {
-      dataviewModel: dataviewModel
-    };
-    var widgetModel = this._widgetModelsMap[attrs.type](attrs, widgetOpts);
-    this._widgetsCollection.add(widgetModel);
   } else {
-    cdb.log.error('no layer found for dataview ' + JSON.stringify(dataviewAttrs));
+    cdb.log.error('layer is required');
   }
 };
 

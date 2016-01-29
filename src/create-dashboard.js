@@ -45,17 +45,17 @@ module.exports = function (selector, vizJSON, opts) {
   // Create widgets
   var widgetsService = new WidgetsService(widgets, vis.dataviews);
   var widgetModelsMap = {
-    list: widgetsService.addListWidget.bind(widgetsService),
-    formula: widgetsService.addFormulaWidget.bind(widgetsService),
-    histogram: widgetsService.addHistogramWidget.bind(widgetsService),
-    'time-series': widgetsService.addTimeSeriesWidget.bind(widgetsService),
-    category: widgetsService.addCategoryWidget.bind(widgetsService)
+    list: widgetsService.newListModel.bind(widgetsService),
+    formula: widgetsService.newFormulaModel.bind(widgetsService),
+    histogram: widgetsService.newHistogramModel.bind(widgetsService),
+    'time-series': widgetsService.newTimeSeriesModel.bind(widgetsService),
+    category: widgetsService.newCategoryModel.bind(widgetsService)
   };
   vizJSON.widgets.forEach(function (d) {
     var attrs = _.omit(d, 'layerId', 'layerIndex');
-    var addWidget = widgetModelsMap[d.type];
+    var newWidgetModel = widgetModelsMap[d.type];
 
-    if (_.isFunction(addWidget)) {
+    if (_.isFunction(newWidgetModel)) {
       // Find the Layer that the Widget should be created for.
       var layer;
       if (d.layerId) {
@@ -66,7 +66,7 @@ module.exports = function (selector, vizJSON, opts) {
         layer = vis.map.layers.at(d.layerIndex);
       }
 
-      addWidget(attrs, layer);
+      newWidgetModel(attrs, layer);
     } else {
       cdb.log.error('No widget found for type ' + d.type);
     }

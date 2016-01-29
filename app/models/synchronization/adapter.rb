@@ -26,11 +26,18 @@ module CartoDB
             data_for_exception << "1st result:#{runner.results.first.inspect}"
             raise data_for_exception
           end
+          # Store columns types before overwriting
+          old_columns = get_columns(table_name)
+
           copy_privileges(user.database_schema, table_name, result.schema, result.table_name)
           index_statements = generate_index_statements(user.database_schema, table_name)
           overwrite(table_name, result)
           cartodbfy(table_name)
           run_index_statements(index_statements)
+
+          # Chech if the schema has changed
+          new_columns = get_columns(table_name)
+          check_schema_changed(old_columns, new_columns)
         end
         self
       rescue => exception
@@ -234,6 +241,27 @@ module CartoDB
             end
           end
         }
+      end
+
+      def get_columns(table_name)
+        user_table = ::UserTable.where(name: table_name, user_id: user.id).first
+        ::Table.new(:user_table => user_table).get_columns
+      end
+
+      def check_schema_changed(old_columns, new_columns)
+        
+        if old_columns.size < new_columns.size
+          return
+        end
+
+        if old_columns.size > new_columns.size
+          @broken = true
+          return
+        end
+
+        if !old_columns.zip(new_columns).map { |x, y| x == y }.all?
+          @broken = true
+        end
       end
 
       private

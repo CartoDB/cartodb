@@ -172,8 +172,7 @@ describe('dataviews/category-dataview-model', function () {
           value: 1
         };
       }));
-      var data = this.model.get('data');
-      var areNamesString = _.every(data, function (obj) {
+      var areNamesString = _.every(this.model.get('data'), function (obj) {
         return obj.name;
       });
       expect(areNamesString).toBeTruthy();

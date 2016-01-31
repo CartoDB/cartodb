@@ -243,24 +243,10 @@ module CartoDB
         }
       end
 
-      def get_columns(table_name)
-        user_table = ::UserTable.where(name: table_name, user_id: user.id).first
-        ::Table.new(user_table: user_table).get_columns
-      end
-
-      def check_schema_changed(old_columns, new_columns)
-        if old_columns.size < new_columns.size
-          return
-        end
-
-        if old_columns.size > new_columns.size
-          @broken = true
-          return
-        end
-
-        if !old_columns.zip(new_columns).map { |x, y| x == y }.all?
-          @broken = true
-        end
+      def check_schema_changed(old_schema, new_schema)
+        return if old_schema.size < new_schema.size
+        @broken = old_schema.size > new_schema.size and return
+        @broken = !old_schema.zip(new_schema).map { |x, y| x == y }.all? and return 
       end
 
       private

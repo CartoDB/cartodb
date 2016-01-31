@@ -2423,11 +2423,11 @@ describe Table do
     end
   end
 
-  describe 'self.get_by_table_name' do
+  describe "self.get_by_table_name" do
     it "should return a schema based in table name" do
-      table = create_table(name: 'dummy_table_name', user_id: $user_1.id)
+      table = create_table(name: "dummy_table_name", user_id: $user_1.id)
       user_table = ::UserTable[table.id]
-      table_by_name = Table.get_by_table_name('dummy_table_name', $user_1)
+      table_by_name = Table.get_by_table_name("dummy_table_name", $user_1)
       table_by_name.id.should == ::Table.new(user_table: user_table).id
     end
   end

@@ -248,7 +248,7 @@ module CartoDB
       def check_schema_changed(old_schema, new_schema)
         return if old_schema.size < new_schema.size
         @broken = old_schema.size > new_schema.size && return
-        @broken = !old_schema.zip(new_schema).map { |x, y| x == y }.all? && return
+        @broken = !old_schema.zip(new_schema).map { |x, y| x == y }.all?
       end
 
       private

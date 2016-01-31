@@ -27,7 +27,8 @@ module CartoDB
             raise data_for_exception
           end
           # Store columns types before overwriting
-          old_schema = ::Table.get_by_table_name(table_name, user).schema(reload: true)
+          old_schema = ::Table.get_by_table_name(table_name, user)
+            .schema(reload: true)
 
           copy_privileges(user.database_schema, table_name, result.schema, result.table_name)
           index_statements = generate_index_statements(user.database_schema, table_name)
@@ -36,7 +37,8 @@ module CartoDB
           run_index_statements(index_statements)
 
           # Chech if the schema has changed
-          new_schema = ::Table.get_by_table_name(table_name, user).schema(reload: true)
+          new_schema = ::Table.get_by_table_name(table_name, user)
+            .schema(reload: true)
           check_schema_changed(old_schema, new_schema)
         end
         self

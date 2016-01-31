@@ -257,8 +257,9 @@ module CartoDB
       source: ERROR_SOURCE_USER
     },
     6670 => {
-      title: 'Schema broken: a column has been dropped or a type changed',
-      what_about: "The schema of the table is broken due a schema modification. The dataset needs to be reimported",
+      title: "Schema broken: a column has been dropped or a type changed",
+      what_about: "The schema of the table is broken due a schema modification. " \
+      "The dataset needs to be reimported",
       source: ERROR_SOURCE_USER
     },
     99999 => {

@@ -1318,10 +1318,6 @@ class Table
     name.tr('_', ' ').split.map(&:capitalize).join(' ')
   end
 
-  def get_columns
-    schema(reload: true)
-  end
-
   private
 
   def previous_privacy

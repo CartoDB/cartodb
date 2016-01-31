@@ -2423,13 +2423,18 @@ describe Table do
     end
   end
 
-  describe '#get_columns' do
-    it "should return a set of columns" do
-      table = new_table(user_id: $user_1.id)
-      columns = [[cartodb_id: "integer"], [did: "integer"], [date_prod: "date"], [the_geom: "geometry"]]
-      table.stubs(:schema).returns(columns)
-      table.get_columns.should == columns
+  describe 'self.get_by_table_name' do
+    it "should return a schema based in table name" do
+
+      table = create_table(name: 'dummy_table_name', user_id: $user_1.id)
+      user_table = ::UserTable[table.id]
+
+      user_table = ::UserTable.where(name: table.name, user_id: $user_1.id).first
+      
+      table_by_name = Table.get_by_table_name('dummy_table_name', $user_1)
+      table_by_name.id.should == ::Table.new(user_table: user_table).id
     end
+
   end
 
 end

@@ -2425,7 +2425,6 @@ describe Table do
 
   describe 'self.get_by_table_name' do
     it "should return a schema based in table name" do
-
       table = create_table(name: 'dummy_table_name', user_id: $user_1.id)
       user_table = ::UserTable[table.id]
 

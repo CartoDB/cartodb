@@ -2433,7 +2433,6 @@ describe Table do
       table_by_name = Table.get_by_table_name('dummy_table_name', $user_1)
       table_by_name.id.should == ::Table.new(user_table: user_table).id
     end
-
   end
 
 end

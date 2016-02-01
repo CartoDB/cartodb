@@ -50,7 +50,6 @@ describe('dataviews/category-dataview-model', function () {
 
     describe('boundingBox', function () {
       it('should set search boundingBox when it changes', function () {
-        expect(this.model._searchModel.get('boundingBox')).toBe('2,1,4,3');
         this.model.set('boundingBox', 'hey');
         expect(this.model._searchModel.get('boundingBox')).toBe('hey');
       });
@@ -163,6 +162,19 @@ describe('dataviews/category-dataview-model', function () {
 
       _parseData(this.model, _generateData(2));
       expect(resetSpy).toHaveBeenCalled();
+    });
+
+    it('should cast any category value to string', function () {
+      _parseData(this.model, _.map([null, undefined, 0, 'hello', false], function (v) {
+        return {
+          category: v,
+          value: 1
+        };
+      }));
+      var areNamesString = _.every(this.model.get('data'), function (obj) {
+        return obj.name;
+      });
+      expect(areNamesString).toBeTruthy();
     });
   });
 

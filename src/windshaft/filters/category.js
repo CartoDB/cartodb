@@ -3,10 +3,10 @@ var Backbone = require('backbone');
 var WindshaftFilterBase = require('./base');
 
 /**
- *  Filter used by the category dataview
- *
+ * Filter used by the category dataview
  */
 module.exports = WindshaftFilterBase.extend({
+
   defaults: {
     rejectAll: false
   },
@@ -18,12 +18,12 @@ module.exports = WindshaftFilterBase.extend({
   },
 
   _initBinds: function () {
-    this.rejectedCategories.bind('add remove', function () {
+    this.listenTo(this.rejectedCategories, 'add remove', function () {
       this.set('rejectAll', false);
-    }, this);
-    this.acceptedCategories.bind('add remove', function () {
+    });
+    this.listenTo(this.acceptedCategories, 'add remove', function () {
       this.set('rejectAll', false);
-    }, this);
+    });
   },
 
   isEmpty: function () {

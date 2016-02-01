@@ -22,7 +22,14 @@ module.exports = DataviewModelBase.extend({
   ),
 
   url: function () {
-    return this.get('url') + '?bbox=' + this.get('boundingBox') + '&own_filter=' + (this.get('enableFilter') ? 0 : 1);
+    var params = [];
+    if (this.get('boundingBox')) {
+      params.push('bbox=' + this.get('boundingBox'));
+    }
+
+    params.push('own_filter=' + (this.get('enableFilter') ? 0 : 1));
+
+    return this.get('url') + '?' + params.join('&');
   },
 
   initialize: function (attrs, opts) {
@@ -185,7 +192,7 @@ module.exports = DataviewModelBase.extend({
 
     _.each(allNewCategories, function (datum) {
       // Category might be a non-string type (e.g. number), make sure it's always a string for concistency
-      var category = datum.category.toString();
+      var category = String(datum.category);
 
       allNewCategoryNames.push(category);
       var isRejected = this.filter.isRejected(category);

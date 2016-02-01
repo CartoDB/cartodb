@@ -16,24 +16,32 @@ describe('dataviews/dataview-model-base', function () {
       windshaftMap: this.windshaftMap,
       layer: jasmine.createSpyObj('layer', ['get'])
     });
+    this.model.toJSON = jasmine.createSpy('toJSON').and.returnValue({});
   });
 
-  it('should listen to a url attribute change at the beginning', function () {
-    spyOn(this.model, 'once').and.callThrough();
-    this.model._initBinds(); // _initBinds is called when object is created, so
-    // it is necessary to called again to have the spy
-    // correctly set.
-    expect(this.model.once.calls.argsFor(0)[0]).toEqual('change:url');
-  });
+  describe('when url changes', function () {
+    beforeEach(function () {
+      spyOn(this.model, '_fetch');
+      spyOn(this.model, 'listenTo');
+      this.model.set('url', 'new-url');
+    });
 
-  it('should add binds for url and bbox changes after first load', function () {
-    spyOn(this.model, 'bind').and.callThrough();
-    this.model.fetch = function (opts) {
-      opts.success();
-    };
-    this.model.set('url', 'newurl');
-    expect(this.model.bind.calls.argsFor(0)[0]).toEqual('change:url');
-    expect(this.model.bind.calls.argsFor(1)[0]).toEqual('change:boundingBox');
+    it('should fetch', function () {
+      expect(this.model._fetch).toHaveBeenCalled();
+    });
+
+    describe('when fetch succeeds', function () {
+      beforeEach(function () {
+        this.model._fetch.calls.argsFor(0)[0]();
+      });
+
+      it('should change bounds', function () {
+        expect(this.model.listenTo.calls.argsFor(0)[1]).toEqual('change:center change:zoom');
+        expect(this.model.listenTo.calls.argsFor(1)[1]).toEqual('change:url');
+        expect(this.model.listenTo.calls.argsFor(2)[1]).toEqual('change:boundingBox');
+        expect(this.model.listenTo.calls.argsFor(3)[1]).toEqual('change:enabled');
+      });
+    });
   });
 
   describe('after first load', function () {
@@ -107,7 +115,7 @@ describe('dataviews/dataview-model-base', function () {
       expect(this.model.get('url')).toEqual('http://wadus.com');
     });
 
-    it('should trigger a change:url event if the sourceLayerId matches the id of the dataview\'s layer', function () {
+    it("should trigger a change:url event if the sourceLayerId matches the id of the dataview's layer", function () {
       var callback = jasmine.createSpy('callback');
       this.model.bind('change:url', callback);
       this.model.layer.get.and.returnValue('123456789');
@@ -117,7 +125,7 @@ describe('dataviews/dataview-model-base', function () {
       expect(callback).toHaveBeenCalled();
     });
 
-    it('should NOT trigger a change:url event if the sourceLayerId doesn\'t match the id of the dataview\'s layer', function () {
+    it("should NOT trigger a change:url event if the sourceLayerId doesn't match the id of the dataview's layer", function () {
       var callback = jasmine.createSpy('callback');
       this.model.bind('change:url', callback);
       this.model.layer.get.and.returnValue('123456789');
@@ -133,7 +141,7 @@ describe('dataviews/dataview-model-base', function () {
       spyOn(_, 'debounce').and.callFake(function (func) { return function () { func.apply(this, arguments); }; });
     });
 
-    it('should NOT update the bounding box when map bounds change and URL hasn\'t been set yet', function () {
+    it("should NOT update the bounding box when map bounds change and URL hasn't been set yet", function () {
       var previousBoundingBox = this.model.get('boundingBox');
 
       this.map.getViewBounds.and.returnValue([100, 200], [300, 400]);
@@ -152,6 +160,28 @@ describe('dataviews/dataview-model-base', function () {
 
       expect(this.model.get('boundingBox')).not.toEqual(previousBoundingBox);
       expect(this.model.get('boundingBox')).toEqual('200,100,400,300');
+    });
+  });
+
+  describe('.remove', function () {
+    beforeEach(function () {
+      this.removeSpy = jasmine.createSpy('remove');
+      this.model.once('destroy', this.removeSpy);
+      spyOn(this.model, 'stopListening');
+      this.model.filter = jasmine.createSpyObj('filter', ['remove']);
+      this.model.remove();
+    });
+
+    it('should trigger a destroy event', function () {
+      expect(this.removeSpy).toHaveBeenCalledWith(this.model);
+    });
+
+    it('should remove filter', function () {
+      expect(this.model.filter.remove).toHaveBeenCalled();
+    });
+
+    it('should stop listening to events', function () {
+      expect(this.model.stopListening).toHaveBeenCalled();
     });
   });
 });

@@ -1,6 +1,7 @@
 var L = require('leaflet');
 require('d3.cartodb');
 var LeafletLayerView = require('./leaflet-layer-view');
+var GeoJSONDataProvider = require('../data-providers/geojson-data-provider');
 
 var LeafletCartoDBLayerGroupView = L.CartoDBd3Layer.extend({
   includes: [
@@ -18,6 +19,18 @@ var LeafletCartoDBLayerGroupView = L.CartoDBd3Layer.extend({
       var index = child.get('order') - 1;
       this.setCartoCSS(index, style);
     }, this);
+
+    layerModel.layers.each(function (layer) {
+      this._onLayerAdded(layer, layerModel.layers);
+    }, this);
+
+    layerModel.layers.bind('add', this._onLayerAdded, this);
+  },
+
+  _onLayerAdded: function (layerModel, layersCollection) {
+    var layerIndex = layersCollection.indexOf(layerModel);
+
+    layerModel.setDataProvider(new GeoJSONDataProvider(this, layerIndex));
   },
 
   _onTileJSONChanged: function () {
@@ -34,6 +47,12 @@ var LeafletCartoDBLayerGroupView = L.CartoDBd3Layer.extend({
         urlTemplate: tilejson.tiles[0]
       });
     }
+  },
+
+  onAdd: function (map) {
+    L.CartoDBd3Layer.prototype.onAdd.call(this, map);
+    this.trigger('added', this);
+    this.added = true;
   },
 
   // Invoked by LeafletLayerView

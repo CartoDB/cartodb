@@ -1,4 +1,5 @@
 var _ = require('underscore');
+var Model = require('../core/model');
 var DataviewModelBase = require('./dataview-model-base');
 var SearchModel = require('./category-dataview/search-model');
 var CategoryModelRange = require('./category-dataview/category-model-range');
@@ -181,6 +182,48 @@ module.exports = DataviewModelBase.extend({
 
   forceFetch: function () {
     this._fetch();
+  },
+
+  fetch: function (opts) {
+    if (this.layer.getDataProvider()) {
+      this._fetchFromDataProvider(opts);
+    } else {
+      return Model.prototype.fetch.call(this, opts);
+    }
+    this.trigger('loading', this);
+  },
+
+  _fetchFromDataProvider: function (opts) {
+    var dataProvider = this.layer.getDataProvider();
+    dataProvider.bind('featuresChanged', function (features) {
+      
+      // TODO: This can be extracted from here
+      var groups = _.groupBy(features, function (feature) { return feature['adm0_a3']; });
+      var groupCounts = _.map(Object.keys(groups), function (key) { return [key, groups[key].length]; });
+      var sortedGroups = _.sortBy(groupCounts, function (group) { return group[1]; }).reverse();
+
+      var data = {
+        categories: [],
+        categoriesCount: 3,
+        count: 7446,
+        max: 4580,
+        min: 106,
+        nulls: 0,
+        type: 'aggregation'
+      };
+
+      _.each(sortedGroups.slice(0, 5), function (category) {
+        data.categories.push({
+          category: category[0],
+          value: category[1],
+          agg: false
+        });
+      });
+
+      this.set(this.parse(data));
+      this.trigger('sync');
+      opts && opts.success && opts.success(this);
+    }.bind(this));
   },
 
   parse: function (d) {

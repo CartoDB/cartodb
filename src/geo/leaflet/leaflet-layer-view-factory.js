@@ -1,3 +1,5 @@
+var Backbone = require('backbone');
+var _ = require('underscore');
 var log = require('cdb.log');
 var LeafletTiledLayerView = require('./leaflet-tiled-layer-view');
 var LeafletWMSLayerView = require('./leaflet-wms-layer-view');
@@ -6,17 +8,19 @@ var LeafletGmapsTiledLayerView = require('./leaflet-gmaps-tiled-layer-view');
 var LeafletCartoDBLayerGroupView = require('./leaflet-cartodb-layer-group-view');
 var LeafletCartoDBVectorLayerGroupView = require('./leaflet-cartodb-vector-layer-group-view');
 
-var LeafletLayerViewFactory = function () {};
-
-var LayerGroupViewConstructor = function (layerModel, mapModel) {
+var LayerGroupViewConstructor = function (layerGroupModel, mapModel) {
   // TODO: We will need to determine this dinamically.
   // Setting it to `true` for now for testing purposes.
   var vectorRendering = true;
   if (vectorRendering) {
-    return new LeafletCartoDBVectorLayerGroupView(layerModel, mapModel);
+    var layerView = new LeafletCartoDBVectorLayerGroupView(layerGroupModel, mapModel);
+
+    return layerView;
   }
-  return new LeafletCartoDBLayerGroupView(layerModel, mapModel);
+  return new LeafletCartoDBLayerGroupView(layerGroupModel, mapModel);
 };
+
+var LeafletLayerViewFactory = function () {};
 
 LeafletLayerViewFactory.prototype._constructors = {
   'tiled': LeafletTiledLayerView,

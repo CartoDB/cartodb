@@ -32,6 +32,8 @@ var MapView = View.extend({
     this.map.layers.bind('reset', this._addLayers, this);
     this.map.layers.bind('add', this._addLayer, this);
     this.map.layers.bind('remove', this._removeLayer, this);
+
+    // TODO: When this.map.layers get new indexes, something needs to happen
     this.add_related_model(this.map.layers);
 
     this.bind('clean', this._removeLayers, this);

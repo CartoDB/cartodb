@@ -59,8 +59,8 @@ module.exports = function (selector, vizJSON, opts) {
     if (_.isFunction(newWidgetModel)) {
       // Find the Layer that the Widget should be created for.
       var layer;
-      if (d.layerId) {
-        layer = vis.map.layers.get(d.layerId);
+      if (d.layer_id) {
+        layer = vis.map.layers.get(d.layer_id);
       } else if (Number.isInteger(d.layerIndex)) {
         // TODO Since namedmap doesn't have ids we need to map in another way, here using index
         //   should we solve this in another way?

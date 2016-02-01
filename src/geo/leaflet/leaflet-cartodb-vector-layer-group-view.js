@@ -35,18 +35,8 @@ var LeafletCartoDBLayerGroupView = L.CartoDBd3Layer.extend({
 
   _onTileJSONChanged: function () {
     var tilejson = this.model.get('urls');
-    this.setUrl(tilejson.tiles[0]);
-
     this.options.styles = this.model.layers.pluck('cartocss');
-
-    if (this.renderers.length === 0) {
-      L.CartoDBd3Layer.prototype.onAdd.call(this, this.leafletMap);
-    } else {
-      this.setProvider({
-        styles: this.model.layers.pluck('cartocss'),
-        urlTemplate: tilejson.tiles[0]
-      });
-    }
+    this.setUrl(tilejson.tiles[0]);
   },
 
   onAdd: function (map) {

@@ -44,13 +44,13 @@ module Carto
             @user.real_tables(old_schema).
               each { |t| move_table_to_schema(t, conn, old_schema, new_schema) }
 
-            views(conn, @user.database_username, old_schema).
+            views(conn, old_schema).
               each { |v| move_view_to_schema(v, conn, old_schema, new_schema) }
 
-            materialized_views(conn, @user.database_username, old_schema).
+            materialized_views(conn, old_schema).
               each { |v| move_materialized_view_to_schema(v, conn, old_schema, new_schema) }
 
-            functions(conn, @user.database_username, old_schema).
+            functions(conn, old_schema).
               each { |f| move_function_to_schema(f, conn, old_schema, new_schema) }
           end
         end
@@ -100,15 +100,15 @@ module Carto
         database.run(%{ ALTER FUNCTION #{old_name}(#{function.argument_data_types}) SET SCHEMA "#{new_schema}" })
       end
 
-      def views(db, owner_role = @user.database_username, schema = @user.database_schema)
+      def views(db, schema = @user.database_schema, owner_role = @user.database_username)
         Carto::Db::Database.new(@user.database_name, db).views(schema, owner_role, 'v')
       end
 
-      def materialized_views(db, owner_role = @user.database_username, schema = @user.database_schema)
+      def materialized_views(db, schema = @user.database_schema, owner_role = @user.database_username)
         Carto::Db::Database.new(@user.database_name, db).views(schema, owner_role, 'm')
       end
 
-      def functions(db, owner_role = @user.database_username, schema = @user.database_schema)
+      def functions(db, schema = @user.database_schema, owner_role = @user.database_username)
         Carto::Db::Database.new(@user.database_name, db).functions(schema, owner_role)
       end
 

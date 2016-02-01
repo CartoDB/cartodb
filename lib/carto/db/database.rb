@@ -11,7 +11,6 @@ module Carto
         Database.new(user.database_name, user.in_database)
       end
 
-      # TODO: remove database_name?
       def initialize(database_name, conn)
         @database_name = database_name
         @conn = conn

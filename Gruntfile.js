@@ -184,7 +184,7 @@
       })
       .value());
     grunt.registerTask('dev', 'Typical task for frontend development (watch JS/CSS changes)',
-      ['setConfig:env.browserify_watch:true', 'browserify', 'jasmine:cartodbui:build', 'pre-jasmine', 'jasmine:cartodb3', 'connect', 'watch']);
+      ['setConfig:env.browserify_watch:true', 'browserify', 'jasmine:cartodbui:build', 'pre-jasmine', 'connect', 'watch']);
     grunt.registerTask('sourcemaps', 'generate sourcemaps, to be used w/ trackjs.com for bughunting',
       ['setConfig:assets_dir:./tmp/sourcemaps', 'config', 'js', 'copy:js', 'exorcise', 'uglify']);
   };

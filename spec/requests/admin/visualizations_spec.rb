@@ -187,7 +187,7 @@ describe Admin::VisualizationsController do
 
       get "/viz/#{id}/public", {}, @headers
       last_response.status.should == 404
-      last_response.body.should =~ %r{<title>CartoDB - 404 Error</title>}
+      last_response.body.should =~ %r{<title>404 Error — CartoDB</title>}
     end
 
     it "redirects to embed_map if visualization is 'derived'" do

@@ -172,10 +172,10 @@ defaults: &defaults
       api_key: ''
       table_name: ''
     api:
-      host: ''
-      port: ''
-      dbname: ''
-      user: ''
+      host: 'localhost'
+      port: 12345
+      dbname: 'my_sample_db'
+      user: 'my_sample_user'
   importer:
     content_guessing:        # Depends on geocoding
       enabled:         false # Disabled if false or not present

@@ -10,7 +10,7 @@ module.exports = {
         tasks: ['sass', 'concat:themes', 'cssmin:themes'],
         options: {
           spawn: false,
-          livereload: true
+          livereload: 35730
         }
       },
       livereload: {

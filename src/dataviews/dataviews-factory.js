@@ -25,7 +25,7 @@ module.exports = Model.extend({
     this._layersCollection = opts.layersCollection;
   },
 
-  createCategoryDataview: function (layerModel, attrs) {
+  createCategoryModel: function (layerModel, attrs) {
     var categoryFilter = new CategoryFilter({
       // TODO Setting layer-index on filters here is not good, if order change the filters won't work on the expected layer anymore!
       layerIndex: this._indexOf(layerModel)
@@ -40,7 +40,7 @@ module.exports = Model.extend({
     );
   },
 
-  createFormulaDataview: function (layerModel, attrs) {
+  createFormulaModel: function (layerModel, attrs) {
     return this._newModel(
       new FormulaDataviewModel(attrs, {
         map: this._map,
@@ -50,7 +50,7 @@ module.exports = Model.extend({
     );
   },
 
-  createHistogramDataview: function (layerModel, attrs) {
+  createHistogramModel: function (layerModel, attrs) {
     var rangeFilter = new RangeFilter({
       // TODO Setting layer-index on filters here is not good, if order change the filters won't work on the expected layer anymore!
       layerIndex: this._indexOf(layerModel)
@@ -65,7 +65,7 @@ module.exports = Model.extend({
     );
   },
 
-  createListDataview: function (layerModel, attrs) {
+  createListModel: function (layerModel, attrs) {
     return this._newModel(
       new ListDataviewModel(attrs, {
         map: this._map,

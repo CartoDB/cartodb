@@ -40,12 +40,19 @@ module.exports = cdb.core.View.extend({
   },
 
   _initBinds: function () {
-    this.dataviewModel.bind('change:data change:filter', this.render, this);
     this.widgetModel.bind('change:search change:locked', this.render, this);
     this.widgetModel.lockedCategories.bind('change add remove', this.render, this);
-    this.add_related_model(this.dataviewModel);
     this.add_related_model(this.widgetModel);
     this.add_related_model(this.widgetModel.lockedCategories);
+
+    this.dataviewModel.bind('change:data', this.render, this);
+    this.add_related_model(this.dataviewModel);
+
+    var f = this.dataviewModel.filter;
+    f.acceptedCategories.bind('change add remove', this.render, this);
+    f.rejectedCategories.bind('change add remove', this.render, this);
+    this.add_related_model(f.rejectedCategories);
+    this.add_related_model(f.acceptedCategories);
   },
 
   _lockCategories: function () {

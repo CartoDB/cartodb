@@ -2,8 +2,7 @@ var _ = require('underscore');
 var cdb = require('cartodb.js');
 var DashboardView = require('./dashboard-view');
 var WidgetsCollection = require('./widgets/widgets-collection');
-var WidgetModel = require('./widgets/widget-model');
-var CategoryWidgetModel = require('./widgets/category/category-widget-model');
+var WidgetsService = require('./widgets-service');
 
 /**
  * Translates a vizJSON v3 datastructure into a working dashboard which will be rendered in given selector.
@@ -43,77 +42,42 @@ module.exports = function (selector, vizJSON, opts) {
   });
   var vis = cdb.createVis(dashboardView.$('#map'), vizJSON, opts);
 
-  var dw = vis.dataviews;
-  var dataviewModelsMap = {
-    list: dw.createListDataview.bind(dw),
-    formula: dw.createFormulaDataview.bind(dw),
-    histogram: dw.createHistogramDataview.bind(dw),
-    category: dw.createCategoryDataview.bind(dw)
-  };
-
+  // Create widgets
+  var widgetsService = new WidgetsService(widgets, vis.dataviews);
   var widgetModelsMap = {
-    list: function (widgetAttrs, widgetOpts) {
-      return new WidgetModel(widgetAttrs, widgetOpts);
-    },
-    formula: function (widgetAttrs, widgetOpts) {
-      return new WidgetModel(widgetAttrs, widgetOpts);
-    },
-    histogram: function (widgetAttrs, widgetOpts) {
-      return new WidgetModel(widgetAttrs, widgetOpts);
-    },
-    'time-series': function (widgetAttrs, widgetOpts) {
-      return new WidgetModel(widgetAttrs, widgetOpts);
-    },
-    category: function (widgetAttrs, widgetOpts) {
-      return new CategoryWidgetModel(widgetAttrs, widgetOpts);
-    }
+    list: widgetsService.newListModel.bind(widgetsService),
+    formula: widgetsService.newFormulaModel.bind(widgetsService),
+    histogram: widgetsService.newHistogramModel.bind(widgetsService),
+    'time-series': widgetsService.newTimeSeriesModel.bind(widgetsService),
+    category: widgetsService.newCategoryModel.bind(widgetsService)
   };
+  vizJSON.widgets.forEach(function (d) {
+    // Flatten the data structure given in vizJSON, the widgetsService will use whatever it needs and ignore the rest
+    var attrs = _.extend({}, d, d.options);
+    var newWidgetModel = widgetModelsMap[d.type];
 
-  // TODO: We can probably move this logic somewhere else
-  var widgetModels = [];
-  vizJSON.widgets.forEach(function (rawWidgetData) {
-    var layerId = rawWidgetData.layerId;
-    var widgetAttrs = _.omit(rawWidgetData, 'options', 'layerId');
-    var dataviewModel;
-
-    // Create dataview if there's a definition provided
-    var dataviewAttrs = rawWidgetData.options;
-    if (dataviewAttrs) {
-      // TODO not ideal, should have a more maintainable way of mapping
-      dataviewAttrs.type = rawWidgetData.type === 'time-series'
-        ? 'histogram' // Time-series widget is represented by a histogram, so re-map the type
-        : rawWidgetData.type;
-
-      var layer;
-
+    if (_.isFunction(newWidgetModel)) {
       // Find the Layer that the Widget should be created for.
-      if (layerId) {
-        layer = vis.map.layers.findWhere({ id: layerId });
-      } else if (Number.isInteger(rawWidgetData.layerIndex)) {
+      var layer;
+      if (d.layerId) {
+        layer = vis.map.layers.get(d.layerId);
+      } else if (Number.isInteger(d.layerIndex)) {
         // TODO Since namedmap doesn't have ids we need to map in another way, here using index
         //   should we solve this in another way?
-        layer = vis.map.layers.at(rawWidgetData.layerIndex);
+        layer = vis.map.layers.at(d.layerIndex);
       }
 
-      if (layer) {
-        dataviewModel = dataviewModelsMap[dataviewAttrs.type](layer, dataviewAttrs);
-      } else {
-        cdb.log.error('no layer found for dataview ' + JSON.stringify(dataviewAttrs));
-      }
+      newWidgetModel(attrs, layer);
+    } else {
+      cdb.log.error('No widget found for type ' + d.type);
     }
-
-    var widgetOpts = {
-      dataviewModel: dataviewModel
-    };
-    var widgetModel = widgetModelsMap[widgetAttrs.type](widgetAttrs, widgetOpts);
-    widgetModels.push(widgetModel);
   });
 
-  widgets.reset(widgetModels);
   dashboardView.render();
 
   return {
     dashboardView: dashboardView,
+    widgets: widgetsService,
     vis: vis
   };
 };

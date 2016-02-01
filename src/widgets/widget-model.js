@@ -19,5 +19,11 @@ module.exports = cdb.core.Model.extend({
 
   toggleCollapsed: function () {
     this.set('collapsed', !this.get('collapsed'));
+  },
+
+  remove: function () {
+    this.dataviewModel.remove();
+    this.trigger('destroy', this);
+    this.stopListening();
   }
 });

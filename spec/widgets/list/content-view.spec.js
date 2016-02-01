@@ -1,17 +1,12 @@
 var _ = require('underscore');
+var specHelper = require('../../spec-helper');
 var WidgetModel = require('../../../src/widgets/widget-model');
 var WidgetListContent = require('../../../src/widgets/list/content-view');
 
 describe('widgets/list/content-view', function () {
   beforeEach(function () {
-    var vis = cdb.createVis(document.createElement('div'), {
-      datasource: {
-        maps_api_template: 'asd',
-        user_name: 'pepe'
-      },
-      layers: [{type: 'torque'}]
-    });
-    this.dataviewModel = vis.dataviews.createListDataview(vis.map.layers.first(), {
+    var vis = specHelper.createDefaultVis();
+    this.dataviewModel = vis.dataviews.createListModel(vis.map.layers.first(), {
       id: 'widget_3',
       title: 'Howdy',
       columns: ['cartodb_id', 'title']

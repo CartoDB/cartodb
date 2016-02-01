@@ -1,5 +1,8 @@
+# encoding: utf-8
 
 require_relative 'db_queries'
+require_dependency 'carto/db/database'
+require_dependency 'carto/db/user_schema_mover'
 
 # To avoid collisions with User model
 module CartoDB
@@ -161,6 +164,27 @@ module CartoDB
         end
       end
 
+      def rebuild_quota_trigger_with_database(db)
+        if !cartodb_extension_version_pre_mu? && @user.has_organization?
+          db.run("DROP FUNCTION IF EXISTS public._CDB_UserQuotaInBytes();")
+        end
+
+        db.transaction do
+          # NOTE: this has been written to work for both databases that switched to "cartodb" extension
+          #       and those before the switch.
+          #       In the future we should guarantee that exntension lives in cartodb schema so we don't need to set
+          #       a search_path before
+          search_path = db.fetch("SHOW search_path;").first[:search_path]
+          db.run("SET search_path TO #{SCHEMA_CARTODB}, #{SCHEMA_PUBLIC};")
+          if cartodb_extension_version_pre_mu?
+            db.run("SELECT CDB_SetUserQuotaInBytes(#{@user.quota_in_bytes});")
+          else
+            db.run("SELECT CDB_SetUserQuotaInBytes('#{@user.database_schema}', #{@user.quota_in_bytes});")
+          end
+          db.run("SET search_path TO #{search_path};")
+        end
+      end
+
       def build_search_path(user_schema = nil, quote_user_schema = true)
         user_schema ||= @user.database_schema
         DBService.build_search_path(user_schema, quote_user_schema)
@@ -193,21 +217,9 @@ module CartoDB
         create_schema(@user.database_schema, @user.database_username)
       end
 
-      # Attempts to create a new database schema
-      # Does not raise exception if the schema already exists
       def create_schema(schema, role = nil)
-        @user.in_database(as: :superuser) do |database|
-          create_schema_with_database(database, schema, role)
-        end
-      rescue Sequel::DatabaseError => e
-        raise unless e.message =~ /schema .* already exists/
-      end
-
-      def create_schema_with_database(database, schema, role = nil)
-        if role
-          database.run(%{CREATE SCHEMA "#{schema}" AUTHORIZATION "#{role}"})
-        else
-          database.run(%{CREATE SCHEMA "#{schema}"})
+        @user.in_database(as: :superuser) do |db|
+          Carto::Db::Database.new(@user.database_name, db).create_schema(schema, role)
         end
       end
 
@@ -260,22 +272,6 @@ module CartoDB
         end
       end
 
-      def move_tables_to_schema(old_schema, new_schema)
-        @user.in_database(as: :superuser) do |database|
-          database.transaction do
-            @user.real_tables(old_schema).each { |t| move_table_to_schema(t, database, old_schema, new_schema) }
-            views(@user.database_username, old_schema).
-              each { |v| move_view_to_schema(v, database, old_schema, new_schema) }
-
-            materialized_views(@user.database_username, old_schema).
-              each { |v| move_materialized_view_to_schema(v, database, old_schema, new_schema) }
-
-            functions(@user.database_username, old_schema).
-              each { |f| move_function_to_schema(f, database, old_schema, new_schema) }
-          end
-        end
-      end
-
       def tables_effective(schema = 'public')
         @user.in_database do |user_database|
           user_database.synchronize do |conn|
@@ -283,36 +279,6 @@ module CartoDB
             tables = user_database[query].all.map { |i| i[:table_name] }
             return tables
           end
-        end
-      end
-
-      def views(owner_role = @user.database_username, schema = @user.database_schema)
-        views_from_pg_class(owner_role, schema, 'v')
-      end
-
-      def materialized_views(owner_role = @user.database_username, schema = @user.database_schema)
-        views_from_pg_class(owner_role, schema, 'm')
-      end
-
-      def triggers_in_user_schema
-        triggers_in_schema(@user.database_schema)
-      end
-
-      def functions(owner_role = @user.database_username, schema = @user.database_schema)
-        functions_from_pg_proc(owner_role, schema)
-      end
-
-      def triggers_in_schema(schema, database = @user.database_name)
-        query = %{
-          select table_catalog, table_schema, relname, tgname, tgtype, proname, tgdeferrable, tginitdeferred, tgnargs,
-          tgattr, tgargs from (pg_trigger join pg_class on tgrelid=pg_class.oid)
-          join pg_proc on (tgfoid=pg_proc.oid) join information_schema.tables ist on relname = table_name
-          where table_schema = '#{schema}'
-          and table_catalog = '#{database}'
-        }
-
-        @user.in_database do |user_database|
-          user_database[query].all.map { |t| Trigger.new(database_name: t[:table_catalog], database_schema: t[:table_schema], table_name: t[:table_name], trigger_name: t[:tgname]) }
         end
       end
 
@@ -964,14 +930,7 @@ module CartoDB
         new_schema_name = @user.username
         old_database_schema_name = @user.database_schema
         if @user.database_schema != new_schema_name
-          @user.database_schema = new_schema_name
-          @user.this.update database_schema: new_schema_name
-
-          # Approach: move object by object (tables, views, materialized and functions)
-          move_schema_content_step_by_step(old_database_schema_name, @user.database_schema)
-
-          # Alternative approach: rename the schema and handle the exceptions
-          # move_schema_content_by_renaming(old_database_schema_name, @user.database_schema)
+          Carto::Db::UserSchemaMover.new(@user).move_objects(new_schema_name)
 
           create_public_db_user
           set_database_search_path
@@ -1131,60 +1090,23 @@ module CartoDB
         conn.disconnect
       end
 
+      def triggers(schema = @user.database_schema)
+        Carto::Db::Database.build_with_user(@user).triggers(schema)
+      end
+
+      def functions(schema = @user.database_schema)
+        Carto::Db::Database.build_with_user(@user).functions(schema, @user.database_username)
+      end
+
+      def views(schema = @user.database_schema)
+        Carto::Db::Database.build_with_user(@user).views(schema, @user.database_username)
+      end
+
+      def materialized_views(schema = @user.database_schema)
+        Carto::Db::Database.build_with_user(@user).materialized_views(schema, @user.database_username)
+      end
+
       private
-
-      def rebuild_quota_trigger_with_database(db)
-        if !cartodb_extension_version_pre_mu? && @user.has_organization?
-          db.run("DROP FUNCTION IF EXISTS public._CDB_UserQuotaInBytes();")
-        end
-
-        db.transaction do
-          # NOTE: this has been written to work for both databases that switched to "cartodb" extension
-          #       and those before the switch.
-          #       In the future we should guarantee that exntension lives in cartodb schema so we don't need to set
-          #       a search_path before
-          search_path = db.fetch("SHOW search_path;").first[:search_path]
-          db.run("SET search_path TO #{SCHEMA_CARTODB}, #{SCHEMA_PUBLIC};")
-          if cartodb_extension_version_pre_mu?
-            db.run("SELECT CDB_SetUserQuotaInBytes(#{@user.quota_in_bytes});")
-          else
-            db.run("SELECT CDB_SetUserQuotaInBytes('#{@user.database_schema}', #{@user.quota_in_bytes});")
-          end
-          db.run("SET search_path TO #{search_path};")
-        end
-      end
-
-      # Moves the schema by moving tables, views...
-      def move_schema_content_step_by_step(old_name, new_name)
-        create_user_schema
-        rebuild_quota_trigger
-        move_tables_to_schema(old_name, new_name)
-      end
-
-      # Moves the schema by renaming + moving some things back
-      # EXPERIMENTAL. See #6295 and #6467.
-      # move_schema_content_step_by_step is preferred right now.
-      def move_schema_content_by_renaming(old_name, new_name)
-        @user.in_database(as: :superuser) do |database|
-          database.transaction do
-            cartodbfied_tables = {}
-            @user.real_tables(old_name).each do |t|
-              cartodbfied_tables[t] = cdb_drop_triggers(t, database, old_name)
-            end
-
-            rename_schema_with_database(database, old_name, new_name)
-
-            create_schema_with_database(database, old_name)
-            move_postgis_to_schema(database, old_name)
-            move_plproxy_to_schema(database, old_name, new_name)
-            rebuild_quota_trigger_with_database(database)
-
-            cartodbfied_tables.select { |_, is_cartodbfied| is_cartodbfied }.map do |t, _|
-              cdb_cartodbfy(t, database, new_name)
-            end
-          end
-        end
-      end
 
       def move_postgis_to_schema(database, schema)
         database.run(%{ALTER EXTENSION postgis SET SCHEMA "#{schema}"})
@@ -1199,92 +1121,6 @@ module CartoDB
 
       def rename_schema_with_database(database, old_name, new_name)
         database.run(%{ALTER SCHEMA "#{old_name}" RENAME TO "#{new_name}"})
-      end
-
-      def move_table_to_schema(t, database, old_schema, new_schema)
-        old_name = "#{old_schema}.#{t[:relname]}"
-
-        was_cartodbfied = cdb_drop_triggers(t, database, old_schema)
-
-        database.run(%{ ALTER TABLE #{old_name} SET SCHEMA "#{new_schema}" })
-
-        cdb_cartodbfy(t, database, new_schema) if was_cartodbfied
-      end
-
-      def cdb_drop_triggers(t, database, schema)
-        name = "#{schema}.#{t[:relname]}"
-
-        cartodbfied = Carto::UserTable.find_by_user_id_and_name(@user.id, t[:relname]).present?
-
-        database.run(%{ SELECT cartodb._CDB_drop_triggers('#{name}'::REGCLASS) }) if cartodbfied
-
-        cartodbfied
-      end
-
-      def cdb_cartodbfy(t, database, schema)
-        name = "#{schema}.#{t[:relname]}"
-
-        database.run(%{ SELECT cartodb.CDB_CartodbfyTable('#{schema}'::TEXT, '#{name}'::REGCLASS) })
-      end
-
-      def move_view_to_schema(view, database, old_schema, new_schema)
-        old_name = "#{old_schema}.#{view.name}"
-
-        database.run(%{ ALTER VIEW #{old_name} SET SCHEMA "#{new_schema}" })
-      end
-
-      def move_materialized_view_to_schema(view, database, old_schema, new_schema)
-        old_name = "#{old_schema}.#{view.name}"
-
-        database.run(%{ ALTER MATERIALIZED VIEW #{old_name} SET SCHEMA "#{new_schema}" })
-      end
-
-      def move_function_to_schema(function, database, old_schema, new_schema)
-        old_name = "#{old_schema}.#{function.name}"
-
-        database.run(%{ ALTER FUNCTION #{old_name}(#{function.argument_data_types}) SET SCHEMA "#{new_schema}" })
-      end
-
-      # relkind: 'm' (materialized view) or 'v' (view). Default: 'v'.
-      def views_from_pg_class(owner_role = @user.database_username, schema = @user.database_schema, relkind = 'v')
-        query = %{
-          select ns.nspname as schemaname,
-                 pc.relname as matviewname,
-                 string_agg(atr.attname ||' '||pg_catalog.format_type(atr.atttypid, NULL), ', ') as columns
-          from pg_class pc
-            join pg_namespace ns on pc.relnamespace = ns.oid
-            join pg_attribute atr
-              on atr.attrelid = pc.oid
-             and atr.attnum > 0
-             and not atr.attisdropped
-            join pg_roles
-              on pc.relowner = pg_roles.oid
-          where pc.relkind = '#{relkind}'
-             and ns.nspname = '#{schema}'
-             and rolname = '#{owner_role}'
-          group by ns.nspname, pc.relname;
-        }
-        @user.in_database do |user_database|
-          user_database[query].all.map { |t| View.new(database_name: @user.database_name, database_schema: t[:schemaname], name: t[:matviewname], relkind: relkind) }
-        end
-      end
-
-      def functions_from_pg_proc(owner_role = @user.database_username, schema = @user.database_schema)
-        query = %{
-          SELECT n.nspname,
-            p.proname,
-            pg_catalog.pg_get_function_arguments(p.oid) as argument_data_types
-          FROM pg_catalog.pg_proc p
-               LEFT JOIN pg_catalog.pg_namespace n ON n.oid = p.pronamespace
-               JOIN pg_roles
-                 on p.proowner = pg_roles.oid
-          WHERE pg_catalog.pg_function_is_visible(p.oid)
-                AND n.nspname = '#{schema}'
-                AND rolname = '#{owner_role}'
-        }
-        @user.in_database do |user_database|
-          user_database[query].all.map { |t| Function.new(database_name: @user.database_name, database_schema: [:nspname], name: t[:proname], argument_data_types: t[:argument_data_types]) }
-        end
       end
 
       def http_client

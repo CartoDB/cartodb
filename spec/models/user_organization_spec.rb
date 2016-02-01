@@ -73,17 +73,17 @@ describe UserOrganization do
       table.insert_row!(new_row)
       table.actual_row_count.should == 0
 
-      triggers_before = @owner.db_service.triggers_in_user_schema
+      triggers_before = @owner.db_service.triggers
       triggers_before.map(&:trigger_name).should include(trigger_name)
 
       owner_org = CartoDB::UserOrganization.new(@organization.id, @owner.id)
       owner_org.promote_user_to_admin
       @owner.reload
 
-      triggers_after = @owner.db_service.triggers_in_user_schema
+      triggers_after = @owner.db_service.triggers
       triggers_after.map { |t| [t.database_name, t.table_name, t.trigger_name] } .should == triggers_before.map { |t| [t.database_name, t.table_name, t.trigger_name] }
 
-      @owner.db_service.triggers_in_schema('public').should be_empty
+      @owner.db_service.triggers('public').should be_empty
     end
 
     # See #6295: Moving user to its own schema (i.e on org creation) leaves triggers on public schema
@@ -109,7 +109,7 @@ describe UserOrganization do
       functions_after = @owner.db_service.functions
       functions_after.map(&:name).should include(name)
 
-      @owner.db_service.functions('public').map(&:name).should_not include(name)
+     @owner.db_service.functions('public').map(&:name).should_not include(name)
     end
 
     # See #6295: Moving user to its own schema (i.e on org creation) leaves triggers on public schema

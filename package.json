@@ -74,7 +74,7 @@
     "underscore-cdb-v3": "global:_",
     "cdb.admin": "global:cdb.admin",
     "cdb.Utils": "global:cdb.Utils",
-    "cartodb-v3": "global:cdb",
+    "cartodb.js-v3": "global:cdb",
     "backbone-cdb-v3": "global:Backbone",
     "moment": "global:moment"
   },

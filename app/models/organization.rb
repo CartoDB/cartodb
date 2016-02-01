@@ -204,6 +204,7 @@ class Organization < Sequel::Model
         :groups     => self.owner && self.owner.groups ? self.owner.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro } : []
       },
       :quota_in_bytes           => self.quota_in_bytes,
+      :unassigned_quota         => self.unassigned_quota,
       :geocoding_quota          => self.geocoding_quota,
       :map_view_quota           => self.map_view_quota,
       :twitter_datasource_quota => self.twitter_datasource_quota,

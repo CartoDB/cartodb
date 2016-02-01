@@ -1,0 +1,7 @@
+{
+  "editor": {
+    "map": "map",
+    "map_name": "%{name} map",
+    "map_pluralize": "%{smart_count} map |||| %{smart_count} maps"
+  }
+}

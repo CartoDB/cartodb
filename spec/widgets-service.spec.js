@@ -32,47 +32,47 @@ describe('widgets-service', function () {
           column: 'my_column',
           aggregation: 'avg'
         };
-        this.results = this.widgetsService.newCategoryModel(attrs, this.vis.map.layers.first());
+        this.widgetModel = this.widgetsService.newCategoryModel(attrs, this.vis.map.layers.first());
       });
 
       it('should return a category widget model', function () {
-        expect(this.results).toBeDefined();
+        expect(this.widgetModel).toBeDefined();
       });
 
       it('should have a title', function () {
-        expect(this.results.get('title')).toEqual('some_title');
+        expect(this.widgetModel.get('title')).toEqual('some_title');
       });
 
       it('should have a column', function () {
-        expect(this.results.dataviewModel.get('column')).toEqual('my_column');
+        expect(this.widgetModel.dataviewModel.get('column')).toEqual('my_column');
       });
 
       it('should have an aggregation operation', function () {
-        expect(this.results.dataviewModel.get('aggregation')).toEqual('avg');
+        expect(this.widgetModel.dataviewModel.get('aggregation')).toEqual('avg');
       });
     });
 
     it('when no aggregation specified should use the default operation', function () {
-      this.results = this.widgetsService.newCategoryModel({
+      this.widgetModel = this.widgetsService.newCategoryModel({
         title: 'some_title',
         column: 'my_column'
       }, this.vis.map.layers.first());
-      expect(this.results.dataviewModel.get('aggregation')).toEqual('count');
+      expect(this.widgetModel.dataviewModel.get('aggregation')).toEqual('count');
     });
 
     describe('fails when the input has no', function () {
       it('title', function () {
-        this.results = this.widgetsService.newCategoryModel({
+        this.widgetModel = this.widgetsService.newCategoryModel({
           column: 'my_column'
         }, this.vis.map.layers.first());
-        expect(this.results).not.toBeDefined();
+        expect(this.widgetModel).not.toBeDefined();
       });
 
       it('column', function () {
-        this.results = this.widgetsService.newCategoryModel({
+        this.widgetModel = this.widgetsService.newCategoryModel({
           title: 'some_title'
         }, this.vis.map.layers.first());
-        expect(this.results).not.toBeDefined();
+        expect(this.widgetModel).not.toBeDefined();
       });
     });
   });
@@ -85,47 +85,47 @@ describe('widgets-service', function () {
           column: 'a_column',
           bins: 20
         };
-        this.results = this.widgetsService.newHistogramModel(attrs, this.vis.map.layers.first());
+        this.widgetModel = this.widgetsService.newHistogramModel(attrs, this.vis.map.layers.first());
       });
 
       it('should return a widget model', function () {
-        expect(this.results).toBeDefined();
+        expect(this.widgetModel).toBeDefined();
       });
 
       it('should set title', function () {
-        expect(this.results.get('title')).toEqual('my histogram');
+        expect(this.widgetModel.get('title')).toEqual('my histogram');
       });
 
       it('should set column', function () {
-        expect(this.results.dataviewModel.get('column')).toEqual('a_column');
+        expect(this.widgetModel.dataviewModel.get('column')).toEqual('a_column');
       });
 
       it('should set default bins', function () {
-        expect(this.results.dataviewModel.get('bins')).toEqual(20);
+        expect(this.widgetModel.dataviewModel.get('bins')).toEqual(20);
       });
     });
 
     it('when no bins specified should use the default value', function () {
-      this.results = this.widgetsService.newHistogramModel({
+      this.widgetModel = this.widgetsService.newHistogramModel({
         title: 'some_title',
         column: 'my_column'
       }, this.vis.map.layers.first());
-      expect(this.results.dataviewModel.get('bins')).toEqual(10);
+      expect(this.widgetModel.dataviewModel.get('bins')).toEqual(10);
     });
 
     describe('fails when the input has no', function () {
       it('title', function () {
-        this.results = this.widgetsService.newHistogramModel({
+        this.widgetModel = this.widgetsService.newHistogramModel({
           column: 'my_column'
         }, this.vis.map.layers.first());
-        expect(this.results).not.toBeDefined();
+        expect(this.widgetModel).not.toBeDefined();
       });
 
       it('column', function () {
-        this.results = this.widgetsService.newHistogramModel({
+        this.widgetModel = this.widgetsService.newHistogramModel({
           title: 'some_title'
         }, this.vis.map.layers.first());
-        expect(this.results).not.toBeDefined();
+        expect(this.widgetModel).not.toBeDefined();
       });
     });
   });
@@ -138,49 +138,49 @@ describe('widgets-service', function () {
           column: 'a_column',
           operation: 'sum'
         };
-        this.results = this.widgetsService.newFormulaModel(attrs, this.vis.map.layers.first());
+        this.widgetModel = this.widgetsService.newFormulaModel(attrs, this.vis.map.layers.first());
       });
 
       it('should return a widget model', function () {
-        expect(this.results).toBeDefined();
+        expect(this.widgetModel).toBeDefined();
       });
 
       it('should set title', function () {
-        expect(this.results.get('title')).toEqual('my formula');
+        expect(this.widgetModel.get('title')).toEqual('my formula');
       });
 
       it('should set column', function () {
-        expect(this.results.dataviewModel.get('column')).toEqual('a_column');
+        expect(this.widgetModel.dataviewModel.get('column')).toEqual('a_column');
       });
 
       it('should set operation', function () {
-        expect(this.results.dataviewModel.get('operation')).toEqual('sum');
+        expect(this.widgetModel.dataviewModel.get('operation')).toEqual('sum');
       });
     });
 
     describe('fails when the input has no', function () {
       it('title', function () {
-        this.results = this.widgetsService.newFormulaModel({
+        this.widgetModel = this.widgetsService.newFormulaModel({
           column: 'my_column',
           operation: 'sum'
         }, this.vis.map.layers.first());
-        expect(this.results).not.toBeDefined();
+        expect(this.widgetModel).not.toBeDefined();
       });
 
       it('column', function () {
-        this.results = this.widgetsService.newFormulaModel({
+        this.widgetModel = this.widgetsService.newFormulaModel({
           title: 'some_title',
           operation: 'sum'
         }, this.vis.map.layers.first());
-        expect(this.results).not.toBeDefined();
+        expect(this.widgetModel).not.toBeDefined();
       });
 
       it('operation', function () {
-        this.results = this.widgetsService.newFormulaModel({
+        this.widgetModel = this.widgetsService.newFormulaModel({
           title: 'some_title',
           column: 'my_column'
         }, this.vis.map.layers.first());
-        expect(this.results).not.toBeDefined();
+        expect(this.widgetModel).not.toBeDefined();
       });
     });
   });
@@ -193,49 +193,49 @@ describe('widgets-service', function () {
           columns: ['a', 'b'],
           columns_title: ['first', '2nd']
         };
-        this.results = this.widgetsService.newListModel(attrs, this.vis.map.layers.first());
+        this.widgetModel = this.widgetsService.newListModel(attrs, this.vis.map.layers.first());
       });
 
       it('should return a widget model', function () {
-        expect(this.results).toBeDefined();
+        expect(this.widgetModel).toBeDefined();
       });
 
       it('should set title', function () {
-        expect(this.results.get('title')).toEqual('my list');
+        expect(this.widgetModel.get('title')).toEqual('my list');
       });
 
       it('should set columns', function () {
-        expect(this.results.dataviewModel.get('columns')).toEqual(['a', 'b']);
+        expect(this.widgetModel.dataviewModel.get('columns')).toEqual(['a', 'b']);
       });
 
       it('should set columns title', function () {
-        expect(this.results.dataviewModel.get('columns_title')).toEqual(['first', '2nd']);
+        expect(this.widgetModel.dataviewModel.get('columns_title')).toEqual(['first', '2nd']);
       });
     });
 
     describe('fails when the input has no', function () {
       it('title', function () {
-        this.results = this.widgetsService.newListModel({
+        this.widgetModel = this.widgetsService.newListModel({
           columns: ['a', 'b'],
           columns_title: ['first', '2nd']
         }, this.vis.map.layers.first());
-        expect(this.results).not.toBeDefined();
+        expect(this.widgetModel).not.toBeDefined();
       });
 
       it('columns', function () {
-        this.results = this.widgetsService.newListModel({
+        this.widgetModel = this.widgetsService.newListModel({
           title: 'my list',
           columns_title: ['first', '2nd']
         }, this.vis.map.layers.first());
-        expect(this.results).not.toBeDefined();
+        expect(this.widgetModel).not.toBeDefined();
       });
 
       it('columns_title', function () {
-        this.results = this.widgetsService.newListModel({
+        this.widgetModel = this.widgetsService.newListModel({
           title: 'my list',
           columns: ['a', 'b']
         }, this.vis.map.layers.first());
-        expect(this.results).not.toBeDefined();
+        expect(this.widgetModel).not.toBeDefined();
       });
     });
   });
@@ -246,29 +246,29 @@ describe('widgets-service', function () {
         var attrs = {
           column: 'dates'
         };
-        this.results = this.widgetsService.newTimeSeriesModel(attrs, this.vis.map.layers.first());
+        this.widgetModel = this.widgetsService.newTimeSeriesModel(attrs, this.vis.map.layers.first());
       });
 
       it('should return a widget model', function () {
-        expect(this.results).toBeDefined();
+        expect(this.widgetModel).toBeDefined();
       });
 
       it('should set column', function () {
-        expect(this.results.dataviewModel.get('column')).toEqual('dates');
+        expect(this.widgetModel.dataviewModel.get('column')).toEqual('dates');
       });
 
       it('should be backed up by a histogram dataview model', function () {
-        expect(this.results.dataviewModel.get('type')).toEqual('histogram');
+        expect(this.widgetModel.dataviewModel.get('type')).toEqual('histogram');
       });
     });
   });
 
   describe('fails when the input has no', function () {
     it('column', function () {
-      this.results = this.widgetsService.newTimeSeriesModel({
+      this.widgetModel = this.widgetsService.newTimeSeriesModel({
         title: 'some_title'
       }, this.vis.map.layers.first());
-      expect(this.results).not.toBeDefined();
+      expect(this.widgetModel).not.toBeDefined();
     });
   });
 });

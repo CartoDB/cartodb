@@ -30,7 +30,8 @@ describe('widgets-service', function () {
         var attrs = {
           title: 'some_title',
           column: 'my_column',
-          aggregation: 'avg'
+          aggregation: 'avg',
+          aggregationColumn: 'my_column2'
         };
         this.widgetModel = this.widgetsService.newCategoryModel(attrs, this.vis.map.layers.first());
       });
@@ -55,7 +56,8 @@ describe('widgets-service', function () {
     it('when no aggregation specified should use the default operation', function () {
       this.widgetModel = this.widgetsService.newCategoryModel({
         title: 'some_title',
-        column: 'my_column'
+        column: 'my_column',
+        aggregationColumn: 'my_column2'
       }, this.vis.map.layers.first());
       expect(this.widgetModel.dataviewModel.get('aggregation')).toEqual('count');
     });

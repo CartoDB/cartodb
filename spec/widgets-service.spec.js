@@ -28,6 +28,7 @@ describe('widgets-service', function () {
     describe('when given valid input', function () {
       beforeEach(function () {
         var attrs = {
+          id: 'abc-123',
           title: 'some_title',
           column: 'my_column',
           aggregation: 'avg'
@@ -37,6 +38,10 @@ describe('widgets-service', function () {
 
       it('should return a category widget model', function () {
         expect(this.widgetModel).toBeDefined();
+      });
+
+      it('should have id', function () {
+        expect(this.widgetModel.id).toEqual('abc-123');
       });
 
       it('should have a title', function () {
@@ -81,6 +86,7 @@ describe('widgets-service', function () {
     describe('when given valid input', function () {
       beforeEach(function () {
         var attrs = {
+          id: 'abc-123',
           title: 'my histogram',
           column: 'a_column',
           bins: 20
@@ -90,6 +96,10 @@ describe('widgets-service', function () {
 
       it('should return a widget model', function () {
         expect(this.widgetModel).toBeDefined();
+      });
+
+      it('should have id', function () {
+        expect(this.widgetModel.id).toEqual('abc-123');
       });
 
       it('should set title', function () {
@@ -134,6 +144,7 @@ describe('widgets-service', function () {
     describe('when given valid input', function () {
       beforeEach(function () {
         var attrs = {
+          id: 'abc-123',
           title: 'my formula',
           column: 'a_column',
           operation: 'sum'
@@ -143,6 +154,10 @@ describe('widgets-service', function () {
 
       it('should return a widget model', function () {
         expect(this.widgetModel).toBeDefined();
+      });
+
+      it('should have id', function () {
+        expect(this.widgetModel.id).toEqual('abc-123');
       });
 
       it('should set title', function () {
@@ -161,6 +176,7 @@ describe('widgets-service', function () {
     describe('fails when the input has no', function () {
       it('title', function () {
         this.widgetModel = this.widgetsService.newFormulaModel({
+          id: 'abc-123',
           column: 'my_column',
           operation: 'sum'
         }, this.vis.map.layers.first());
@@ -189,6 +205,7 @@ describe('widgets-service', function () {
     describe('when given valid input', function () {
       beforeEach(function () {
         var attrs = {
+          id: 'abc-123',
           title: 'my list',
           columns: ['a', 'b'],
           columns_title: ['first', '2nd']
@@ -198,6 +215,10 @@ describe('widgets-service', function () {
 
       it('should return a widget model', function () {
         expect(this.widgetModel).toBeDefined();
+      });
+
+      it('should have id', function () {
+        expect(this.widgetModel.id).toEqual('abc-123');
       });
 
       it('should set title', function () {
@@ -244,6 +265,7 @@ describe('widgets-service', function () {
     describe('when given valid input', function () {
       beforeEach(function () {
         var attrs = {
+          id: 'abc-123',
           column: 'dates'
         };
         this.widgetModel = this.widgetsService.newTimeSeriesModel(attrs, this.vis.map.layers.first());
@@ -251,6 +273,10 @@ describe('widgets-service', function () {
 
       it('should return a widget model', function () {
         expect(this.widgetModel).toBeDefined();
+      });
+
+      it('should have id', function () {
+        expect(this.widgetModel.id).toEqual('abc-123');
       });
 
       it('should set column', function () {

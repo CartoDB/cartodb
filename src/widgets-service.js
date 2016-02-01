@@ -40,6 +40,7 @@ WidgetsService.prototype.newCategoryModel = function (attrs, layer) {
   });
 
   var widgetModel = new CategoryWidgetModel({
+    id: attrs.id,
     type: 'category',
     title: attrs.title
   }, {
@@ -73,6 +74,7 @@ WidgetsService.prototype.newHistogramModel = function (attrs, layer) {
   });
 
   var widgetModel = new WidgetModel({
+    id: attrs.id,
     type: 'histogram',
     title: attrs.title
   }, {
@@ -106,6 +108,7 @@ WidgetsService.prototype.newFormulaModel = function (attrs, layer) {
   });
 
   var widgetModel = new WidgetModel({
+    id: attrs.id,
     type: 'formula',
     title: attrs.title
   }, {
@@ -140,6 +143,7 @@ WidgetsService.prototype.newListModel = function (attrs, layer) {
   });
 
   var widgetModel = new WidgetModel({
+    id: attrs.id,
     type: 'list',
     title: attrs.title
   }, {
@@ -170,6 +174,7 @@ WidgetsService.prototype.newTimeSeriesModel = function (attrs, layer) {
   });
 
   var widgetModel = new WidgetModel({
+    id: attrs.id,
     type: 'time-series'
   }, {
     dataviewModel: dataviewModel

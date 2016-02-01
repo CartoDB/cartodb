@@ -28,6 +28,7 @@
     "cartodb-pecan": "0.2.x",
     "csswring": "^3.0.5",
     "cartodb-deep-insights.js": "CartoDB/deep-insights.js#b7d23dc",
+    "cartodb.js": "CartoDB/cartodb.js#v4",
     "git-rev": "0.2.1",
     "grunt": "0.4.5",
     "grunt-available-tasks": "0.5.4",
@@ -73,7 +74,7 @@
     "underscore-cdb-v3": "global:_",
     "cdb.admin": "global:cdb.admin",
     "cdb.Utils": "global:cdb.Utils",
-    "cartodb.js": "global:cdb",
+    "cartodb-v3": "global:cdb",
     "backbone-cdb-v3": "global:Backbone",
     "moment": "global:moment"
   },

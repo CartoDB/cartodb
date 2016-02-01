@@ -1105,21 +1105,6 @@ module CartoDB
 
       private
 
-      def move_postgis_to_schema(database, schema)
-        database.run(%{ALTER EXTENSION postgis SET SCHEMA "#{schema}"})
-      end
-
-      def move_plproxy_to_schema(database, old_schema, new_schema)
-        # extension "plproxy" does not support SET SCHEMA
-        functions(@user.database_username, old_schema).
-          select { |f| /^plproxy/.match(f.name) }.
-          each { |f| move_function_to_schema(f, database, old_schema, new_schema) }
-      end
-
-      def rename_schema_with_database(database, old_name, new_name)
-        database.run(%{ALTER SCHEMA "#{old_name}" RENAME TO "#{new_name}"})
-      end
-
       def http_client
         @http_client ||= Carto::Http::Client.get('old_user', log_requests: true)
       end

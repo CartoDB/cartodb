@@ -2,7 +2,7 @@ require_relative '../spec_helper'
 
 describe UserOrganization do
 
-  describe 'promoting a user to owner' do
+  shared_examples 'promoting a user to owner' do
     include_context 'visualization creation helpers'
 
     before(:each) do
@@ -258,5 +258,21 @@ describe UserOrganization do
     @owner.real_tables.count.should == 1
 
     @owner.db_service.schema_exists?(@owner.username).should == false
+  end
+
+  describe 'move_schema_content_step_by_step' do
+    it_behaves_like 'promoting a user to owner'
+
+    before(:each) do
+      Carto::Db::UserSchemaMover.any_instance.stubs(:default_strategy).returns(Carto::Db::UserSchemaMover::STEPS_STRATEGY)
+    end
+  end
+
+  describe 'move_schema_content_by_renaming' do
+    it_behaves_like 'promoting a user to owner'
+
+    before(:each) do
+      Carto::Db::UserSchemaMover.any_instance.stubs(:default_strategy).returns(Carto::Db::UserSchemaMover::RENAMING_STRATEGY)
+    end
   end
 end

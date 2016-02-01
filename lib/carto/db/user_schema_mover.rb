@@ -16,7 +16,11 @@ module Carto
         @user = user
       end
 
-      def move_objects(new_schema, strategy = DEFAULT_STRAGEGY)
+      def default_strategy
+        STEPS_STRATEGY
+      end
+
+      def move_objects(new_schema, strategy = default_strategy)
         raise "Not valid: #{strategy}" unless STRATEGIES.include?(strategy)
 
         old_schema = @user.database_schema
@@ -121,10 +125,10 @@ module Carto
 
             rename_schema_with_database(database, old_name, new_name)
 
-            create_schema_with_database(database, old_name)
+            Database.new(@database_name, database).create_schema(old_name)
             move_postgis_to_schema(database, old_name)
             move_plproxy_to_schema(database, old_name, new_name)
-            rebuild_quota_trigger_with_database(database)
+            @user.db_service.rebuild_quota_trigger_with_database(database)
 
             cartodbfied_tables.select { |_, is_cartodbfied| is_cartodbfied }.map do |t, _|
               cdb_cartodbfy(t, database, new_name)
@@ -132,6 +136,22 @@ module Carto
           end
         end
       end
+
+      def rename_schema_with_database(database, old_name, new_name)
+        database.run(%{ALTER SCHEMA "#{old_name}" RENAME TO "#{new_name}"})
+      end
+
+      def move_postgis_to_schema(database, schema)
+        database.run(%{ALTER EXTENSION postgis SET SCHEMA "#{schema}"})
+      end
+
+      def move_plproxy_to_schema(database, old_schema, new_schema)
+        # extension "plproxy" does not support SET SCHEMA
+        functions(database, @user.database_username, old_schema).
+          select { |f| /^plproxy/.match(f.name) }.
+          each { |f| move_function_to_schema(f, database, old_schema, new_schema) }
+      end
+
     end
   end
 end

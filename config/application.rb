@@ -111,7 +111,7 @@ module CartoDB
       modernizr.js
       statsc.js
 
-      deep-insights.css
+      deep_insights.css
       cdb.css
       cdb/themes/css/cartodb.css
       cdb/themes/css/cartodb.ie.css

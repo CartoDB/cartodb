@@ -1493,7 +1493,7 @@ describe Carto::Api::VisualizationsController do
           vizjson3[:widgets].length.should == 1
 
           vizjson3[:widgets].map { |w| w['type'] }.should include(widget.type)
-          vizjson3[:widgets].map { |w| w['layerId'] }.should include(layer.id)
+          vizjson3[:widgets].map { |w| w['layer_id'] }.should include(layer.id)
 
           widget2.destroy
           widget.destroy

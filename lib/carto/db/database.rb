@@ -25,7 +25,7 @@ module Carto
         raise unless e.message =~ /schema .* already exists/
       end
 
-    def triggers(schema)
+      def triggers(schema)
         query = %{
           select table_catalog, table_schema, relname, tgname, tgtype, proname, tgdeferrable, tginitdeferred, tgnargs,
           tgattr, tgargs from (pg_trigger join pg_class on tgrelid=pg_class.oid)
@@ -34,7 +34,13 @@ module Carto
           and table_catalog = '#{@database_name}'
         }
 
-        @conn[query].all.map { |t| Trigger.new(database_name: t[:table_catalog], database_schema: t[:table_schema], table_name: t[:table_name], trigger_name: t[:tgname]) }
+        @conn[query].all.map do |t|
+          Trigger.new(
+            database_name: t[:table_catalog],
+            database_schema: t[:table_schema],
+            table_name: t[:table_name],
+            trigger_name: t[:tgname])
+        end
       end
 
       def materialized_views(schema, owner_role)
@@ -60,7 +66,13 @@ module Carto
              and rolname = '#{owner_role}'
           group by ns.nspname, pc.relname;
         }
-        @conn[query].all.map { |t| View.new(database_name: @database_name, database_schema: t[:schemaname], name: t[:matviewname], relkind: relkind) }
+        @conn[query].all.map do |t|
+          View.new(
+            database_name: @database_name,
+            database_schema: t[:schemaname],
+            name: t[:matviewname],
+            relkind: relkind)
+        end
       end
 
       def functions(schema, owner_role)
@@ -76,7 +88,13 @@ module Carto
                 AND n.nspname = '#{schema}'
                 AND rolname = '#{owner_role}'
         }
-        @conn[query].all.map { |t| Function.new(database_name: @database_name, database_schema: [:nspname], name: t[:proname], argument_data_types: t[:argument_data_types]) }
+        @conn[query].all.map do |t|
+          Function.new(
+            database_name: @database_name,
+            database_schema: [:nspname],
+            name: t[:proname],
+            argument_data_types: t[:argument_data_types])
+        end
       end
 
       private

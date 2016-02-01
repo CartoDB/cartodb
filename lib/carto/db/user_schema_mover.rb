@@ -10,7 +10,7 @@ module Carto
       RENAMING_STRATEGY = :move_schema_content_by_renaming
 
       DEFAULT_STRAGEGY = STEPS_STRATEGY
-      STRATEGIES = [STEPS_STRATEGY, RENAMING_STRATEGY]
+      STRATEGIES = [STEPS_STRATEGY, RENAMING_STRATEGY].freeze
 
       def initialize(user)
         @user = user
@@ -24,7 +24,7 @@ module Carto
         @user.database_schema = new_schema
         @user.this.update database_schema: new_schema
 
-        self.send(strategy, old_schema, new_schema)
+        send(strategy, old_schema, new_schema)
       end
 
       private

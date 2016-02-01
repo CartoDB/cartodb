@@ -109,7 +109,7 @@ describe UserOrganization do
       functions_after = @owner.db_service.functions
       functions_after.map(&:name).should include(name)
 
-     @owner.db_service.functions('public').map(&:name).should_not include(name)
+      @owner.db_service.functions('public').map(&:name).should_not include(name)
     end
 
     # See #6295: Moving user to its own schema (i.e on org creation) leaves triggers on public schema
@@ -130,7 +130,7 @@ describe UserOrganization do
       owner_org.promote_user_to_admin
       @owner.reload
 
-      @owner.db_service.views.map { |v| v.name }.should include(view_name)
+      @owner.db_service.views.map(&:name).should include(view_name)
       @owner.db_service.views('public').map(&:name).should be_empty
     end
 

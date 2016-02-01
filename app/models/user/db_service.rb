@@ -137,9 +137,6 @@ module CartoDB
             db.run('CREATE EXTENSION plpythonu FROM unpackaged') unless db.fetch(%{
                 SELECT count(*) FROM pg_extension WHERE extname='plpythonu'
               }).first[:count] > 0
-            db.run('CREATE EXTENSION schema_triggers') unless db.fetch(%{
-                SELECT count(*) FROM pg_extension WHERE extname='schema_triggers'
-              }).first[:count] > 0
             db.run('CREATE EXTENSION postgis FROM unpackaged') unless db.fetch(%{
                 SELECT count(*) FROM pg_extension WHERE extname='postgis'
               }).first[:count] > 0
@@ -445,7 +442,7 @@ module CartoDB
       # Upgrade the cartodb postgresql extension
       def upgrade_cartodb_postgres_extension(statement_timeout = nil, cdb_extension_target_version = nil)
         if cdb_extension_target_version.nil?
-          cdb_extension_target_version = '0.11.5'
+          cdb_extension_target_version = '0.12.0'
         end
 
         @user.in_database(as: :superuser, no_cartodb_in_schema: true) do |db|

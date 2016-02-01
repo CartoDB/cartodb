@@ -19,7 +19,11 @@ module Carto
       # Attempts to create a new database schema
       # Does not raise exception if the schema already exists
       def create_schema(schema, role = nil)
-        create_schema_with_database(@conn, schema, role)
+        if role
+          @conn.run(%{CREATE SCHEMA "#{schema}" AUTHORIZATION "#{role}"})
+        else
+          @conn.run(%{CREATE SCHEMA "#{schema}"})
+        end
       rescue Sequel::DatabaseError => e
         raise unless e.message =~ /schema .* already exists/
       end
@@ -93,16 +97,6 @@ module Carto
             database_schema: [:nspname],
             name: t[:proname],
             argument_data_types: t[:argument_data_types])
-        end
-      end
-
-      private
-
-      def create_schema_with_database(database, schema, role = nil)
-        if role
-          database.run(%{CREATE SCHEMA "#{schema}" AUTHORIZATION "#{role}"})
-        else
-          database.run(%{CREATE SCHEMA "#{schema}"})
         end
       end
 

@@ -27,7 +27,7 @@ WidgetsService.prototype.get = function (id) {
  */
 WidgetsService.prototype.newCategoryModel = function (attrs, layer) {
   try {
-    _checkProperties(attrs, ['title', 'column']);
+    _checkProperties(attrs, ['title', 'column', 'aggregationColumn']);
   } catch (err) {
     cdb.log.error('Error creating newCategoryModel, ' + err.message);
     return;
@@ -36,7 +36,8 @@ WidgetsService.prototype.newCategoryModel = function (attrs, layer) {
   var dataviewModel = this._dataviews.createCategoryModel(layer, {
     type: 'category',
     column: attrs.column,
-    aggregation: attrs.aggregation || 'count'
+    aggregation: attrs.aggregation || 'count',
+    aggregationColumn: attrs.aggregationColumn
   });
 
   var widgetModel = new CategoryWidgetModel({

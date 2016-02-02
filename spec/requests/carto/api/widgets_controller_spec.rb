@@ -26,15 +26,14 @@ shared_context 'layer hierarchy' do
     response_widget[:type].should == widget.type
     response_widget[:title].should == widget.title
     response_widget[:layer_id].should == widget.layer.id
-    response_widget[:options].should == widget.options
-    JSON.parse(response_widget[:options]).should == JSON.parse(widget.options)
+    response_widget[:options].symbolize_keys.should == widget.options_json
   end
 
   def response_widget_should_match_payload(response_widget, payload)
     response_widget[:layer_id].should == payload[:layer_id]
     response_widget[:type].should == payload[:type]
     response_widget[:title].should == payload[:title]
-    JSON.parse(response_widget[:options]).symbolize_keys.should == payload[:options].symbolize_keys
+    response_widget[:options].symbolize_keys.should == payload[:options].symbolize_keys
   end
 
   def widget_payload(layer_id: @layer.id, type: 'formula', title: 'the title', options: { 'a field' => 'first', 'another field' => 'second' }, order: nil)
@@ -99,6 +98,13 @@ describe Carto::Api::WidgetsController do
         response.status.should == 200
         response_widget_should_match_widget(response.body, @widget)
       end
+    end
+
+    it 'returns options as json' do
+      get widget_url(user_domain: @user1.username, map_id: @map.id, map_layer_id: @widget.layer_id, id: @widget.id, api_key: @user1.api_key), {}, http_json_headers
+        response.status.should == 200
+        JSON.parse(response.body).class.should == Hash
+        JSON.parse(response.body)['options'].class.should == Hash
     end
 
     it 'returns 403 if visualization is private and current user is not the owner' do

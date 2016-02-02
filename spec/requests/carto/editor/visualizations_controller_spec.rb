@@ -9,7 +9,7 @@ describe Carto::Editor::VisualizationsController do
   describe '#show' do
     before(:each) do
       map = FactoryGirl.create(:map, user_id: @user1.id)
-      @visualization = FactoryGirl.create(:carto_visualization, user_id: @user1.id, map_id: map.id)
+      @visualization = FactoryGirl.create(:carto_visualization, user_id: @user1.id, map: map)
       @user1.stubs(:has_feature_flag?).with('editor-3').returns(true)
 
       login(@user1)

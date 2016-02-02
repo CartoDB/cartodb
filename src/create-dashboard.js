@@ -45,11 +45,11 @@ module.exports = function (selector, vizJSON, opts) {
   // Create widgets
   var widgetsService = new WidgetsService(widgets, vis.dataviews);
   var widgetModelsMap = {
-    list: widgetsService.newListModel.bind(widgetsService),
-    formula: widgetsService.newFormulaModel.bind(widgetsService),
-    histogram: widgetsService.newHistogramModel.bind(widgetsService),
-    'time-series': widgetsService.newTimeSeriesModel.bind(widgetsService),
-    category: widgetsService.newCategoryModel.bind(widgetsService)
+    list: widgetsService.createListModel.bind(widgetsService),
+    formula: widgetsService.createFormulaModel.bind(widgetsService),
+    histogram: widgetsService.createHistogramModel.bind(widgetsService),
+    'time-series': widgetsService.createTimeSeriesModel.bind(widgetsService),
+    category: widgetsService.createCategoryModel.bind(widgetsService)
   };
   vizJSON.widgets.forEach(function (d) {
     // Flatten the data structure given in vizJSON, the widgetsService will use whatever it needs and ignore the rest

@@ -177,6 +177,7 @@ defaults: &defaults
       dbname: ''
       user: ''
   importer:
+    blacklisted_ip_addr: []
     content_guessing:        # Depends on geocoding
       enabled:         false # Disabled if false or not present
       threshold:       0.9   # 90% or more matches

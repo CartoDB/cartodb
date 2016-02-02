@@ -74,6 +74,7 @@ module CartoDB
     class CouldntResolveDownloadError           < DownloadError; end
 
     class TooManyNodesError                     < StandardError; end
+    class NotAFileError                         < StandardError; end
     class EncodingDetectionError                < StandardError; end
     class MalformedXLSException                 < StandardError; end
     class XLSXFormatError                       < StandardError; end
@@ -103,6 +104,7 @@ module CartoDB
       EmptyFileError                        => 1005,
       InvalidShpError                       => 1006,
       TooManyNodesError                     => 1007,
+      NotAFileError                         => 1010,
       InvalidNameError                      => 1014,
       PasswordNeededForExtractionError      => 1018,
       TooManyLayersError                    => 1019,

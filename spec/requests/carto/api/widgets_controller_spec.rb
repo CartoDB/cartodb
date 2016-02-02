@@ -102,9 +102,9 @@ describe Carto::Api::WidgetsController do
 
     it 'returns options as json' do
       get widget_url(user_domain: @user1.username, map_id: @map.id, map_layer_id: @widget.layer_id, id: @widget.id, api_key: @user1.api_key), {}, http_json_headers
-        response.status.should == 200
-        JSON.parse(response.body).class.should == Hash
-        JSON.parse(response.body)['options'].class.should == Hash
+      response.status.should == 200
+      JSON.parse(response.body).class.should == Hash
+      JSON.parse(response.body)['options'].class.should == Hash
     end
 
     it 'returns 403 if visualization is private and current user is not the owner' do

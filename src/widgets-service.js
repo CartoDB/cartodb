@@ -18,10 +18,11 @@ WidgetsService.prototype.get = function (id) {
 /**
  * @param {Object} attrs
  * @param {String} attrs.title Title rendered on the widget view
- * @param {String} attrs.column Name of column
+ * @param {String} attrs.column Name of column to use to aggregate
  * @param {String} attrs.aggregation Name of aggregation operation to apply to get categories
  *   can be any of ['sum', 'count']. Default is 'count'
- * @param {String} attrs.aggregationColumn Name of column to use for aggregation(?)
+ * @param {String} attrs.aggregationColumn column to be used for the aggregation operation
+ *  it only applies for sum operations.
  * @param {Object} layer Instance of a layer model (cartodb.js)
  * @return {CategoryWidgetModel}
  */
@@ -36,7 +37,8 @@ WidgetsService.prototype.createCategoryModel = function (attrs, layer) {
   var dataviewModel = this._dataviews.createCategoryModel(layer, {
     type: 'category',
     column: attrs.column,
-    aggregation: attrs.aggregation || 'count'
+    aggregation: attrs.aggregation || 'count',
+    aggregationColumn: attrs.aggregationColumn || attrs.column
   });
 
   var widgetModel = new CategoryWidgetModel({

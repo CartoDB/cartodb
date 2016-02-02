@@ -222,7 +222,7 @@ NodeJS is required by different parts of the stack. The more significant are the
    
     sudo apt-get install nodejs 
 
-  Note this should install both NodeJS 0.10.26 and npm 1.4.3. You can verify the installation went as expected with:
+  Note this should install both NodeJS 0.10.26 and npm 2.14.16. You can verify the installation went as expected with:
   
   .. code-block:: bash
    

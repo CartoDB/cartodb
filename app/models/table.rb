@@ -554,6 +554,7 @@ class Table
     Tag.filter(:user_id => user_id, :table_id => id).delete
     remove_table_from_stats
     invalidate_varnish_cache
+    update_cdb_tablemetadata
     cache.del geometry_types_key
     @dependent_visualizations_cache.each(&:delete)
     @non_dependent_visualizations_cache.each do |visualization|
@@ -871,7 +872,8 @@ class Table
     cartodb_type = options[:type].convert_to_cartodb_type
     column_name = options[:name].to_s.sanitize_column_name
     owner.in_database.add_column name, column_name, type
-    self.invalidate_varnish_cache
+    invalidate_varnish_cache
+    update_cdb_tablemetadata
     return {:name => column_name, :type => type, :cartodb_type => cartodb_type}
   rescue => e
     if e.message =~ /^(PG::Error|PGError)/
@@ -884,7 +886,8 @@ class Table
   def drop_column!(options)
     raise if CARTODB_COLUMNS.include?(options[:name].to_s)
     owner.in_database.drop_column name, options[:name].to_s
-    self.invalidate_varnish_cache
+    invalidate_varnish_cache
+    update_cdb_tablemetadata
   end
 
   def modify_column!(options)

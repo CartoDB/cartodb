@@ -45,11 +45,11 @@ module.exports = function (selector, vizJSON, opts) {
   // Create widgets
   var widgetsService = new WidgetsService(widgets, vis.dataviews);
   var widgetModelsMap = {
-    list: widgetsService.newListModel.bind(widgetsService),
-    formula: widgetsService.newFormulaModel.bind(widgetsService),
-    histogram: widgetsService.newHistogramModel.bind(widgetsService),
-    'time-series': widgetsService.newTimeSeriesModel.bind(widgetsService),
-    category: widgetsService.newCategoryModel.bind(widgetsService)
+    list: widgetsService.createListModel.bind(widgetsService),
+    formula: widgetsService.createFormulaModel.bind(widgetsService),
+    histogram: widgetsService.createHistogramModel.bind(widgetsService),
+    'time-series': widgetsService.createTimeSeriesModel.bind(widgetsService),
+    category: widgetsService.createCategoryModel.bind(widgetsService)
   };
   vizJSON.widgets.forEach(function (d) {
     // Flatten the data structure given in vizJSON, the widgetsService will use whatever it needs and ignore the rest
@@ -59,8 +59,8 @@ module.exports = function (selector, vizJSON, opts) {
     if (_.isFunction(newWidgetModel)) {
       // Find the Layer that the Widget should be created for.
       var layer;
-      if (d.layerId) {
-        layer = vis.map.layers.get(d.layerId);
+      if (d.layer_id) {
+        layer = vis.map.layers.get(d.layer_id);
       } else if (Number.isInteger(d.layerIndex)) {
         // TODO Since namedmap doesn't have ids we need to map in another way, here using index
         //   should we solve this in another way?

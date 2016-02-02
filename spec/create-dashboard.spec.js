@@ -15,7 +15,7 @@ describe('create-dashboard', function () {
           type: 'formula',
           title: 'Test coverage',
           order: 0,
-          layerId: 'first-layer',
+          layer_id: 'first-layer',
           options: {
             column: 'coverage_pct',
             operation: 'avg'

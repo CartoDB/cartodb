@@ -26,7 +26,7 @@ WidgetsService.prototype.get = function (id) {
  * @param {Object} layer Instance of a layer model (cartodb.js)
  * @return {CategoryWidgetModel}
  */
-WidgetsService.prototype.newCategoryModel = function (attrs, layer) {
+WidgetsService.prototype.createCategoryModel = function (attrs, layer) {
   try {
     _checkProperties(attrs, ['title', 'column']);
   } catch (err) {
@@ -42,6 +42,7 @@ WidgetsService.prototype.newCategoryModel = function (attrs, layer) {
   });
 
   var widgetModel = new CategoryWidgetModel({
+    id: attrs.id,
     type: 'category',
     title: attrs.title
   }, {
@@ -60,7 +61,7 @@ WidgetsService.prototype.newCategoryModel = function (attrs, layer) {
  * @param {Object} layer Instance of a layer model (cartodb.js)
  * @return {WidgetModel}
  */
-WidgetsService.prototype.newHistogramModel = function (attrs, layer) {
+WidgetsService.prototype.createHistogramModel = function (attrs, layer) {
   try {
     _checkProperties(attrs, ['title', 'column']);
   } catch (err) {
@@ -75,6 +76,7 @@ WidgetsService.prototype.newHistogramModel = function (attrs, layer) {
   });
 
   var widgetModel = new WidgetModel({
+    id: attrs.id,
     type: 'histogram',
     title: attrs.title
   }, {
@@ -93,7 +95,7 @@ WidgetsService.prototype.newHistogramModel = function (attrs, layer) {
  * @param {Object} layer Instance of a layer model (cartodb.js)
  * @return {CategoryWidgetModel}
  */
-WidgetsService.prototype.newFormulaModel = function (attrs, layer) {
+WidgetsService.prototype.createFormulaModel = function (attrs, layer) {
   try {
     _checkProperties(attrs, ['title', 'column', 'operation']);
   } catch (err) {
@@ -108,6 +110,7 @@ WidgetsService.prototype.newFormulaModel = function (attrs, layer) {
   });
 
   var widgetModel = new WidgetModel({
+    id: attrs.id,
     type: 'formula',
     title: attrs.title
   }, {
@@ -127,7 +130,7 @@ WidgetsService.prototype.newFormulaModel = function (attrs, layer) {
  * @param {Object} layer Instance of a layer model (cartodb.js)
  * @return {WidgetModel}
  */
-WidgetsService.prototype.newListModel = function (attrs, layer) {
+WidgetsService.prototype.createListModel = function (attrs, layer) {
   try {
     _checkProperties(attrs, ['title', 'columns', 'columns_title']);
   } catch (err) {
@@ -142,6 +145,7 @@ WidgetsService.prototype.newListModel = function (attrs, layer) {
   });
 
   var widgetModel = new WidgetModel({
+    id: attrs.id,
     type: 'list',
     title: attrs.title
   }, {
@@ -158,7 +162,7 @@ WidgetsService.prototype.newListModel = function (attrs, layer) {
  * @param {Object} layer Instance of a layer model (cartodb.js)
  * @return {WidgetModel}
  */
-WidgetsService.prototype.newTimeSeriesModel = function (attrs, layer) {
+WidgetsService.prototype.createTimeSeriesModel = function (attrs, layer) {
   try {
     _checkProperties(attrs, ['column']);
   } catch (err) {
@@ -172,6 +176,7 @@ WidgetsService.prototype.newTimeSeriesModel = function (attrs, layer) {
   });
 
   var widgetModel = new WidgetModel({
+    id: attrs.id,
     type: 'time-series'
   }, {
     dataviewModel: dataviewModel

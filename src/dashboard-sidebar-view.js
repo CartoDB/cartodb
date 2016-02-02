@@ -50,6 +50,7 @@ module.exports = cdb.core.View.extend({
     this._widgets.bind('add', this._maybeRenderWidgetView, this);
     this._widgets.bind('reset', this.render, this);
     this._widgets.bind('change:collapsed', this._onWidgetCollapsed, this);
+    this._widgets.bind('add remove reset', this._onUpdate, this); // have to be called _after_ any other add/remove/reset
     this.add_related_model(this._widgets);
   },
 
@@ -133,6 +134,10 @@ module.exports = cdb.core.View.extend({
     if (this._$container()) {
       this._$container().off('ps-scroll-y');
     }
+  },
+
+  _onUpdate: function () {
+    this.$el.toggle(_.size(this._subviews) > 0);
   },
 
   clean: function () {

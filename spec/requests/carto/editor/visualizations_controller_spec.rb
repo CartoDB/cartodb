@@ -8,9 +8,8 @@ describe Carto::Editor::VisualizationsController do
 
   describe '#show' do
     before(:each) do
-      @visualization = FactoryGirl.create(:carto_visualization, user: Carto::User.find(@user1.id))
-      Carto::Api::VizJSONPresenter.any_instance.stubs(:to_vizjson).returns(id: @visualization.id)
-
+      map = FactoryGirl.create(:map, user_id: @user1.id)
+      @visualization = FactoryGirl.create(:carto_visualization, user_id: @user1.id, map_id: map.id)
       @user1.stubs(:has_feature_flag?).with('editor-3').returns(true)
 
       login(@user1)

@@ -1,9 +1,10 @@
 var L = require('leaflet');
+var _ = require('underscore');
 require('d3.cartodb');
 var LeafletLayerView = require('./leaflet-layer-view');
-var GeoJSONDataProvider = require('../data-providers/geojson-data-provider');
+var GeoJSONDataProvider = require('../data-providers/geojson/geojson-data-provider');
 
-var LeafletCartoDBLayerGroupView = L.CartoDBd3Layer.extend({
+var LeafletCartoDBVectorLayerGroupView = L.CartoDBd3Layer.extend({
   includes: [
     LeafletLayerView.prototype
   ],
@@ -49,4 +50,14 @@ var LeafletCartoDBLayerGroupView = L.CartoDBd3Layer.extend({
   _modelUpdated: function () {}
 });
 
-module.exports = LeafletCartoDBLayerGroupView;
+// TODO: Remove these once L.CartoDBd3Layer implements them
+_.extend(LeafletCartoDBVectorLayerGroupView.prototype, {
+  featuresLoaded: function () {
+    return false;
+  },
+  getFeatures: function () {
+    return [];
+  }
+});
+
+module.exports = LeafletCartoDBVectorLayerGroupView;

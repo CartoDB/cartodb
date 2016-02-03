@@ -24,7 +24,9 @@ module.exports = DataviewModelBase.extend({
       type: 'formula',
       options: {
         column: this.get('column'),
-        operation: this.get('operation')
+        operation: this.get('operation'),
+        suffix: this.get('suffix'),
+        prefix: this.get('prefix')
       }
     };
   }

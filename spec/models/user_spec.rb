@@ -3,6 +3,7 @@
 require 'ostruct'
 require_relative '../spec_helper'
 require_relative 'user_shared_examples'
+require 'factories/organizations_contexts'
 
 describe 'refactored behaviour' do
 
@@ -1357,6 +1358,43 @@ describe User do
 
       @user.tables.all.each { |t| t.destroy }
       @user2.tables.all.each { |t| t.destroy }
+    end
+  end
+
+  describe '#destroy' do
+    it 'deletes database role' do
+      u1 = create_user(email: 'ddr@example.com', username: 'ddr', password: 'admin123')
+      role = u1.database_username
+      db = u1.in_database
+      db_service = u1.db_service
+
+      db_service.role_exists?(db, role).should == true
+
+      u1.destroy
+
+      expect do
+      db_service.role_exists?(db, role).should == false
+      end.to raise_error(/role "#{role}" does not exist/)
+      db.disconnect
+    end
+
+    describe "on organizations" do
+      include_context 'organization with users helper'
+
+      it 'deletes database role' do
+        role = @org_user_1.database_username
+        db = @org_user_1.in_database
+        db_service = @org_user_1.db_service
+        
+        db_service.role_exists?(db, role).should == true
+
+        @org_user_1.destroy
+
+        expect do
+          db_service.role_exists?(db, role).should == false
+        end.to raise_error(/role "#{role}" does not exist/)
+        db.disconnect
+      end
     end
   end
 

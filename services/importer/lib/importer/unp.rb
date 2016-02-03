@@ -46,6 +46,8 @@ module CartoDB
       end
 
       def without_unpacking(path)
+        raise NotAFileError if !File.file?(path)
+
         local_path = "#{temporary_directory}/#{File.basename(path)}"
         FileUtils.cp(path, local_path)
         self.source_files.push(source_file_for(normalize(local_path)))

@@ -77,12 +77,6 @@ PostgreSQL
                          postgresql-plpython-9.3
 
   
-* Install schema triggers. This is a extension of packaged by cartodb needed for other postgresql extensions
-
-  .. code-block:: bash
-  
-    sudo add-apt-repository ppa:cartodb/pg-schema-trigger && sudo apt-get update
-    sudo apt-get install postgresql-9.3-pg-schema-triggers
 
 
 PostgreSQL access authorization is managed through pg_hba.conf configuration file, which is normally in /etc/postgresql/9.3/main/pg_hba.conf. Here it's defined how the users created in postgresql cluster can access the server. This involves several aspects like type of authentication (md5, no password, etc..) or source IP of the connection. In order to simplify the process of the installation we are going to allow connections with postgres user from localhost without authentication. Of course this can be configured in a different way at any moment but changes here should imply changes in database access configuration of CartoDB apps. 
@@ -179,18 +173,6 @@ PostGIS
       
    sudo PGUSER=postgres make installcheck # to run tests
 
-.. warning::
-    if test_ddl_triggers fails it's likely due to an incomplete installation of schema_triggers.
-    You need to add schema_triggers.so to the shared_preload_libraries setting in postgresql.conf :
-
-    ::
-
-        $ sudo vim /etc/postgresql/9.3/main/postgresql.conf
-         shared_preload_libraries = 'schema_triggers.so'
-        $ sudo service postgresql restart # restart postgres
-
-  After this change the 2nd installcheck of cartodb-postresql should be OK.
-  
   Check https://github.com/cartodb/cartodb-postgresql for further reference
 
 * Restart PostgreSQL after all this process
@@ -240,7 +222,7 @@ NodeJS is required by different parts of the stack. The more significant are the
    
     sudo apt-get install nodejs 
 
-  Note this should install both NodeJS 0.10.26 and npm 1.4.3. You can verify the installation went as expected with:
+  Note this should install both NodeJS 0.10.26 and npm 2.14.16. You can verify the installation went as expected with:
   
   .. code-block:: bash
    

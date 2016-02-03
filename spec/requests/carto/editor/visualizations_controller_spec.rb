@@ -9,7 +9,7 @@ describe Carto::Editor::VisualizationsController do
   describe '#show' do
     before(:each) do
       @visualization = FactoryGirl.create(:carto_visualization, user: Carto::User.find(@user1.id))
-      Carto::Api::VizJSONPresenter.any_instance.stubs(:to_vizjson).returns({ id: @visualization.id }.to_json)
+      Carto::Api::VizJSONPresenter.any_instance.stubs(:to_vizjson).returns(id: @visualization.id)
 
       @user1.stubs(:has_feature_flag?).with('editor-3').returns(true)
 

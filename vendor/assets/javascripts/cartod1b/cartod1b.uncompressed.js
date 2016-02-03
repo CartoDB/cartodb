@@ -28,7 +28,7 @@ require=// cartodb.js version: 3.15.8
   // Next for Node.js or CommonJS. jQuery may not be needed as a module.
   } else if (typeof exports !== 'undefined') {
     var _ = require('underscore'), $;
-    try { $ = require('jquery'); } catch(e) {}
+    try { $ = require('jquery-cdb-v3'); } catch(e) {}
     factory(root, exports, _, $);
 
   // Finally, as a browser global.
@@ -27779,7 +27779,7 @@ module.exports = createVis;
 
 },{"../vis/vis":223,"underscore":27}],30:[function(require,module,exports){
 var _ = require('underscore');
-var Backbone = require('backbone');
+var Backbone = require('backbone-cdb-v3');
 
 // NOTE only for usage in non-core bundles (where Backbone is available)
 function Promise() {
@@ -27798,7 +27798,7 @@ module.exports = Promise;
 
 },{"backbone":1,"underscore":27}],31:[function(require,module,exports){
 var _ = require('underscore');
-var $ = require('jquery');
+var $ = require('jquery-cdb-v3');
 var Mustache = require('mustache');
 var Promise = require('./promise');
 
@@ -28484,9 +28484,9 @@ require('mousewheel'); // registers itself to $.event; TODO what's this required
 require('mwheelIntent'); // registers itself to $.event; TODO what's this required for? still relevant for supported browsers?
 
 var cdb = require('cdb');
-cdb.Backbone = require('backbone');
+cdb.Backbone = require('backbone-cdb-v3');
 cdb.Mustache = require('mustache');
-cdb.$ = require('jquery');
+cdb.$ = require('jquery-cdb-v3');
 cdb._ = _;
 cdb.L = L;
 cdb.d3 = d3;
@@ -28666,7 +28666,7 @@ var TemplateList = require('./core/template-list');
 module.exports = new TemplateList();
 
 },{"./core/template-list":48}],38:[function(require,module,exports){
-var Backbone = require('backbone');
+var Backbone = require('backbone-cdb-v3');
 
 /**
  * global configuration
@@ -28732,7 +28732,7 @@ var Config = Backbone.Model.extend({
 module.exports = Config;
 
 },{"backbone":1}],39:[function(require,module,exports){
-var Backbone = require('backbone');
+var Backbone = require('backbone-cdb-v3');
 
 /**
 * Decorators to extend funcionality of cdb related objects
@@ -28922,7 +28922,7 @@ window.vizjson = function(data) {
 module.exports = Loader;
 
 },{"cdb":35}],42:[function(require,module,exports){
-var Backbone = require('backbone');
+var Backbone = require('backbone-cdb-v3');
 var cdb = require('cdb'); // cdb.DEBUG
 var errors = require('cdb.errors');
 var config = require('cdb.config');
@@ -28977,7 +28977,7 @@ var Log = Backbone.Model.extend({
 module.exports = Log;
 
 },{"backbone":1,"cdb":35,"cdb.config":33,"cdb.errors":34}],43:[function(require,module,exports){
-var Backbone = require('backbone');
+var Backbone = require('backbone-cdb-v3');
 var ErrorModel = require('./error');
 
 var ErrorList = Backbone.Collection.extend({
@@ -29001,8 +29001,8 @@ var ErrorList = Backbone.Collection.extend({
 module.exports = ErrorList;
 
 },{"./error":44,"backbone":1}],44:[function(require,module,exports){
-var Backbone = require('backbone');
-var $ = require('jquery');
+var Backbone = require('backbone-cdb-v3');
+var $ = require('jquery-cdb-v3');
 var config = require('cdb.config');
 
 var ErrorModel = Backbone.Model.extend({
@@ -29018,9 +29018,9 @@ var ErrorModel = Backbone.Model.extend({
 module.exports = ErrorModel;
 
 },{"backbone":1,"cdb.config":33,"jquery":"jquery"}],45:[function(require,module,exports){
-var $ = require('jquery');
+var $ = require('jquery-cdb-v3');
 var _ = require('underscore');
-var Backbone = require('backbone');
+var Backbone = require('backbone-cdb-v3');
 require('./decorators'); // since it monkey-patches Backbone.Model
 
 /**
@@ -29292,7 +29292,7 @@ module.exports = htmlCssSanitizer;
 
 },{"html-css-sanitizer":240}],48:[function(require,module,exports){
 var _ = require('underscore');
-var Backbone = require('backbone');
+var Backbone = require('backbone-cdb-v3');
 var log = require('cdb.log');
 var Template = require('./template');
 
@@ -29322,7 +29322,7 @@ module.exports = TemplateList;
 
 },{"./template":49,"backbone":1,"cdb.log":36,"underscore":27}],49:[function(require,module,exports){
 var _ = require('underscore');
-var Backbone = require('backbone');
+var Backbone = require('backbone-cdb-v3');
 var Mustache = require('mustache');
 var log = require('cdb.log');
 
@@ -29545,7 +29545,7 @@ module.exports = util;
 
 },{}],51:[function(require,module,exports){
 var _ = require('underscore');
-var Backbone = require('backbone');
+var Backbone = require('backbone-cdb-v3');
 var Profiler = require('cdb.core.Profiler');
 var templates = require('cdb.templates');
 
@@ -29936,7 +29936,7 @@ var CartoDBLogo = {
 module.exports = CartoDBLogo;
 
 },{"cdb.config":33}],54:[function(require,module,exports){
-var $ = require('jquery');
+var $ = require('jquery-cdb-v3');
 
 /**
  * geocoders for different services
@@ -30009,7 +30009,7 @@ module.exports = NOKIA;
 
 },{"jquery":"jquery"}],55:[function(require,module,exports){
 var _ = require('underscore');
-var $ = require('jquery');
+var $ = require('jquery-cdb-v3');
 
 /**
 * geocoders for different services
@@ -30078,7 +30078,7 @@ module.exports = YAHOO;
 
 },{"jquery":"jquery","underscore":27}],56:[function(require,module,exports){
 var _ = require('underscore');
-var Backbone = require('backbone');
+var Backbone = require('backbone-cdb-v3');
 
 /**
  * create a geometry
@@ -30613,7 +30613,7 @@ module.exports = DEFAULT_MAP_STYLE;
 
 },{}],63:[function(require,module,exports){
 var _ = require('underscore');
-var Backbone = require('backbone');
+var Backbone = require('backbone-cdb-v3');
 
 /**
  * base layer for all google maps
@@ -31393,7 +31393,7 @@ var LeafletLayerView = require('./leaflet-layer-view');
 var CartoDBLayerCommon = require('../cartodb-layer-common');
 var CartoDBLogo = require('../cartodb-logo');
 var _ = require('underscore');
-var Backbone = require('backbone');
+var Backbone = require('backbone-cdb-v3');
 
 var LeafletCartoDBLayerGroupView = L.TileLayer.extend({
 
@@ -31828,7 +31828,7 @@ module.exports = LeafletGmapsTiledLayerView;
 
 },{"./leaflet-layer-view":73,"leaflet":3,"underscore":27}],73:[function(require,module,exports){
 var _ = require('underscore');
-var Backbone = require('backbone');
+var Backbone = require('backbone-cdb-v3');
 
 /**
  * base layer for all leaflet layers
@@ -31874,7 +31874,7 @@ _.extend(LeafletLayerView.prototype, {
 module.exports = LeafletLayerView;
 
 },{"backbone":1,"underscore":27}],74:[function(require,module,exports){
-var $ = require('jquery');
+var $ = require('jquery-cdb-v3');
 var _ = require('underscore');
 var L = require('leaflet');
 var cdb = require('cdb'); // cdb.geo.LeafletTorqueLayer
@@ -32795,7 +32795,7 @@ module.exports = MapView;
 },{"../core/view":51,"./ui/infowindow":100,"cdb":35,"cdb.log":36,"underscore":27}],81:[function(require,module,exports){
 var _ = require('underscore');
 var L = require('leaflet');
-var Backbone = require('backbone');
+var Backbone = require('backbone-cdb-v3');
 var config = require('cdb.config');
 var log = require('cdb.log');
 var Model = require('../core/model');
@@ -33133,8 +33133,8 @@ var CartoDBLayerGroupAnonymous = CartoDBLayerGroupBase.extend({
 module.exports = CartoDBLayerGroupAnonymous;
 
 },{"./cartodb-layer-group-base":83}],83:[function(require,module,exports){
-var $ = require('jquery');
-var Backbone = require('backbone');
+var $ = require('jquery-cdb-v3');
+var Backbone = require('backbone-cdb-v3');
 var MapLayer = require('./map-layer');
 var Layers = require('./layers');
 var util = require('cdb/core/util');
@@ -33388,7 +33388,7 @@ var GMapsBaseLayer = MapLayer.extend({
 module.exports = GMapsBaseLayer;
 
 },{"./map-layer":88}],87:[function(require,module,exports){
-var Backbone = require('backbone');
+var Backbone = require('backbone-cdb-v3');
 var MapLayer = require('./map-layer');
 
 var TILED_LAYER_TYPE = 'Tiled';
@@ -33744,7 +33744,7 @@ module.exports = WMSLayer;
 
 },{"./map-layer":88}],93:[function(require,module,exports){
 var _ = require('underscore');
-var $ = require('jquery');
+var $ = require('jquery-cdb-v3');
 var Model = require('../../core/model');
 var Template = require('../../core/template');
 var View = require('../../core/view');
@@ -34218,7 +34218,7 @@ module.exports = Header;
 
 },{"cdb/core/sanitize":47,"cdb/core/view":51,"underscore":27}],97:[function(require,module,exports){
 var _ = require('underscore');
-var $ = require('jquery');
+var $ = require('jquery-cdb-v3');
 var sanitize = require('../../core/sanitize');
 var Text = require('./text');
 
@@ -34386,8 +34386,8 @@ module.exports = InfoBox;
 
 },{"../../core/template":49,"../../core/view":51,"underscore":27}],99:[function(require,module,exports){
 var _ = require('underscore');
-var $ = require('jquery');
-var Backbone = require('backbone');
+var $ = require('jquery-cdb-v3');
+var Backbone = require('backbone-cdb-v3');
 
 /**
  * Usage:
@@ -34597,7 +34597,7 @@ module.exports = InfowindowModel;
 },{"backbone":1,"jquery":"jquery","underscore":27}],100:[function(require,module,exports){
 var _ = require('underscore');
 var Spinner = require('spin.js');
-var $ = require('jquery');
+var $ = require('jquery-cdb-v3');
 require('jquery.jscrollpane'); // registers itself to $.jScrollPane
 var log = require('cdb.log');
 var templates = require('cdb.templates');
@@ -35569,7 +35569,7 @@ var LegendItem = View.extend({
 module.exports = LegendItem;
 
 },{"../../core/view":51,"cdb.templates":37,"underscore":27}],106:[function(require,module,exports){
-var Backbone = require('backbone');
+var Backbone = require('backbone-cdb-v3');
 var LegendItemModel = require('./legend-item-model');
 
 /**
@@ -35787,7 +35787,7 @@ var Legend = View.extend({
 module.exports = Legend;
 
 },{"../../core/view":51,"./legend-exports":103,"./legend-model":107,"underscore":27}],109:[function(require,module,exports){
-var $ = require('jquery');
+var $ = require('jquery-cdb-v3');
 var View = require('../../../core/view');
 
 /**
@@ -36861,7 +36861,7 @@ module.exports = NoneLegend;
 
 },{"./base-legend":109}],129:[function(require,module,exports){
 var _ = require('underscore');
-var $ = require('jquery');
+var $ = require('jquery-cdb-v3');
 var View = require('../../../core/view');
 
 var StackedLegend = View.extend({
@@ -36955,7 +36955,7 @@ var StackedLegend = View.extend({
 module.exports = StackedLegend;
 
 },{"../../../core/view":51,"jquery":"jquery","underscore":27}],130:[function(require,module,exports){
-var Backbone = require('backbone');
+var Backbone = require('backbone-cdb-v3');
 var LegendModel = require('./legend-model');
 
 module.exports = Backbone.Collection.extend({
@@ -37069,9 +37069,9 @@ module.exports = MobileLayer;
 
 },{"../../core/template":49,"../../core/view":51,"./legend":108,"underscore":27}],132:[function(require,module,exports){
 var _ = require('underscore');
-var Backbone = require('backbone');
+var Backbone = require('backbone-cdb-v3');
 var cdb = require('cdb'); // cdb.geo.ui.*
-var $ = require('jquery');
+var $ = require('jquery-cdb-v3');
 require('jquery.jscrollpane'); // registers itself to $.jScrollPane
 var templates = require('cdb.templates');
 var sanitize = require('../../core/sanitize.js');
@@ -37606,7 +37606,7 @@ var Mobile = View.extend({
 module.exports = Mobile;
 
 },{"../../core/sanitize.js":47,"../../core/template":49,"../../core/view":51,"./mobile-layer":131,"./search":133,"./tiles-loader":136,"./zoom":210,"backbone":1,"cdb":35,"cdb.templates":37,"jquery":"jquery","jquery.jscrollpane":241,"underscore":27}],133:[function(require,module,exports){
-var $ = require('jquery');
+var $ = require('jquery-cdb-v3');
 var View = require('../../core/view');
 var NOKIA = require('../../geo/geocoder/nokia-geocoder');
 var InfowindowModel = require('../../geo/ui/infowindow-model');
@@ -37852,7 +37852,7 @@ module.exports = Search;
 
 },{"../../core/view":51,"../../geo/geocoder/nokia-geocoder":54,"../../geo/geometry":57,"../../geo/ui/infowindow":100,"../../geo/ui/infowindow-model":99,"jquery":"jquery"}],134:[function(require,module,exports){
 var _ = require('underscore');
-var $ = require('jquery');
+var $ = require('jquery-cdb-v3');
 var sanitize = require('../../core/sanitize');
 var View = require('../../core/view');
 var Template = require('../../core/template');
@@ -37969,7 +37969,7 @@ module.exports = View.extend({
 var _ = require('underscore');
 var View = require('../../core/view');
 var sanitize = require('../../core/sanitize');
-var $ = require('jquery');
+var $ = require('jquery-cdb-v3');
 
 var Text = View.extend({
 
@@ -38160,7 +38160,7 @@ module.exports = Text;
 
 },{"../../core/sanitize":47,"../../core/view":51,"jquery":"jquery","underscore":27}],136:[function(require,module,exports){
 var _ = require('underscore');
-var $ = require('jquery');
+var $ = require('jquery-cdb-v3');
 var templates = require('cdb.templates');
 var View = require('../../core/view');
 var util = require('../../core/util');
@@ -38424,7 +38424,7 @@ var Tooltip = InfoBox.extend({
 module.exports = Tooltip;
 
 },{"../../core/sanitize":47,"./infobox":98,"./infowindow-model":99,"underscore":27}],138:[function(require,module,exports){
-var $ = require('jquery');
+var $ = require('jquery-cdb-v3');
 var _ = require('underscore');
 var d3 = require('d3');
 var log = require('cdb.log');
@@ -38780,7 +38780,7 @@ return __p;
 };
 
 },{"underscore":27}],145:[function(require,module,exports){
-var $ = require('jquery');
+var $ = require('jquery-cdb-v3');
 var _ = require('underscore');
 var View = require('cdb/core/view');
 var template = require('./search_item_clickable_template.tpl');
@@ -38845,7 +38845,7 @@ return __p;
 };
 
 },{"underscore":27}],147:[function(require,module,exports){
-var $ = require('jquery');
+var $ = require('jquery-cdb-v3');
 var _ = require('underscore');
 var View = require('cdb/core/view');
 var CategoryItemView = require('./item/item_view');
@@ -38977,7 +38977,7 @@ return __p;
 };
 
 },{"underscore":27}],149:[function(require,module,exports){
-var $ = require('jquery');
+var $ = require('jquery-cdb-v3');
 var _ = require('underscore');
 var View = require('cdb/core/view');
 var CategoryItemsView = require('./items_view');
@@ -39051,7 +39051,7 @@ module.exports = CategoryItemsView.extend({
 
 },{"./item/search_item_view":145,"./items_view":147,"./search_items_no_results_template.tpl":148,"cdb/core/view":51,"jquery":"jquery","underscore":27}],150:[function(require,module,exports){
 var _ = require('underscore');
-var Backbone = require('backbone');
+var Backbone = require('backbone-cdb-v3');
 var Model = require('cdb/core/model');
 var d3 = require('d3');
 var CategoryColors = require('./models/category_colors');
@@ -39436,7 +39436,7 @@ module.exports = WidgetModel.extend({
 
 },{"../widget_model":206,"./models/categories_collection":151,"./models/category_colors":152,"./models/category_model_range":154,"./models/locked_categories_collection":155,"./models/search_model":156,"backbone":1,"cdb/core/model":45,"d3":2,"underscore":27}],151:[function(require,module,exports){
 var _ = require('underscore');
-var Backbone = require('backbone');
+var Backbone = require('backbone-cdb-v3');
 var CategoryItemModel = require('./category_item_model');
 
 /**
@@ -39548,7 +39548,7 @@ module.exports = Model.extend({
 
 },{"cdb/core/model":45}],154:[function(require,module,exports){
 var _ = require('underscore');
-var Backbone = require('backbone');
+var Backbone = require('backbone-cdb-v3');
 var Model = require('cdb/core/model');
 
 /**
@@ -39596,7 +39596,7 @@ module.exports = Model.extend({
 
 },{"backbone":1,"cdb/core/model":45,"underscore":27}],155:[function(require,module,exports){
 var _ = require('underscore');
-var Backbone = require('backbone');
+var Backbone = require('backbone-cdb-v3');
 var CategoryItemModel = require('./category_item_model');
 
 /**
@@ -39651,7 +39651,7 @@ module.exports = Backbone.Collection.extend({
 
 },{"./category_item_model":153,"backbone":1,"underscore":27}],156:[function(require,module,exports){
 var _ = require('underscore');
-var Backbone = require('backbone');
+var Backbone = require('backbone-cdb-v3');
 var cdb = require('cdb');
 var Model = require('cdb/core/model');
 var CategoriesCollection = require('./categories_collection');
@@ -39916,7 +39916,7 @@ return __p;
 };
 
 },{"underscore":27}],160:[function(require,module,exports){
-var $ = require('jquery');
+var $ = require('jquery-cdb-v3');
 var _ = require('underscore');
 var View = require('cdb/core/view');
 var Model = require('cdb/core/model');
@@ -40045,7 +40045,7 @@ return __p;
 };
 
 },{"underscore":27}],162:[function(require,module,exports){
-var $ = require('jquery');
+var $ = require('jquery-cdb-v3');
 var _ = require('underscore');
 var View = require('cdb/core/view');
 var Model = require('cdb/core/model');
@@ -40136,7 +40136,7 @@ return __p;
 };
 
 },{"underscore":27}],165:[function(require,module,exports){
-var $ = require('jquery');
+var $ = require('jquery-cdb-v3');
 var _ = require('underscore');
 var cdb = require('cdb');
 var template = require('./stats_template.tpl');
@@ -40269,7 +40269,7 @@ return __p;
 },{"underscore":27}],167:[function(require,module,exports){
 var _ = require('underscore');
 var cdb = require('cdb');
-var $ = require('jquery');
+var $ = require('jquery-cdb-v3');
 var View = require('cdb/core/view');
 var template = require('./search_title_template.tpl');
 
@@ -40580,7 +40580,7 @@ return __p;
 };
 
 },{"underscore":27}],173:[function(require,module,exports){
-var $ = require('jquery');
+var $ = require('jquery-cdb-v3');
 var _ = require('underscore');
 var d3 = require('d3');
 var formatter = require('cdb/core/format');
@@ -41997,7 +41997,7 @@ return __p;
 },{"underscore":27}],177:[function(require,module,exports){
 var _ = require('underscore');
 var cdb = require('cdb');
-var $ = require('jquery');
+var $ = require('jquery-cdb-v3');
 var View = require('cdb/core/view');
 var template = require('./histogram_title_template.tpl');
 
@@ -42052,7 +42052,7 @@ module.exports = View.extend({
 });
 
 },{"./histogram_title_template.tpl":176,"cdb":35,"cdb/core/view":51,"jquery":"jquery","underscore":27}],178:[function(require,module,exports){
-var Backbone = require('backbone');
+var Backbone = require('backbone-cdb-v3');
 var WidgetModel = require('../widget_model');
 var _ = require('underscore');
 
@@ -42513,7 +42513,7 @@ module.exports = View.extend({
 });
 
 },{"./item_view":183,"cdb/core/view":51}],185:[function(require,module,exports){
-var Backbone = require('backbone');
+var Backbone = require('backbone-cdb-v3');
 var WidgetModel = require('../widget_model');
 
 module.exports = WidgetModel.extend({
@@ -42660,7 +42660,7 @@ module.exports = View.extend({
 });
 
 },{"cdb/core/view":51,"underscore":27}],187:[function(require,module,exports){
-var $ = require('jquery');
+var $ = require('jquery-cdb-v3');
 var _ = require('underscore');
 var log = require('cdb.log');
 var View = require('cdb/core/view');
@@ -42879,7 +42879,7 @@ module.exports = View.extend({
 });
 
 },{"./histogram-view":192,"./placeholder.tpl":193,"cdb/core/view":51,"underscore":27}],192:[function(require,module,exports){
-var $ = require('jquery');
+var $ = require('jquery-cdb-v3');
 var View = require('cdb/core/view');
 var HistogramChartView = require('../histogram/chart');
 
@@ -43108,7 +43108,7 @@ return __p;
 };
 
 },{"underscore":27}],197:[function(require,module,exports){
-var $ = require('jquery');
+var $ = require('jquery-cdb-v3');
 var View = require('cdb/core/view');
 var HistogramChartView = require('../histogram/chart');
 var TorqueTimeMarkerview = require('./torque-time-marker-view');
@@ -43713,7 +43713,7 @@ module.exports = Model.extend({
 });
 
 },{"cdb/core/model":45}],207:[function(require,module,exports){
-var Backbone = require('backbone');
+var Backbone = require('backbone-cdb-v3');
 var _ = require('underscore');
 
 /**
@@ -43758,7 +43758,7 @@ module.exports = Backbone.Collection.extend({
 },{"backbone":1,"underscore":27}],208:[function(require,module,exports){
 var View = require('cdb/core/view');
 var _ = require('underscore');
-var $ = require('jquery');
+var $ = require('jquery-cdb-v3');
 var LayerWidgetsView = require('cdb/geo/ui/widgets/layer_widgets_view');
 var Ps = require('perfect-scrollbar');
 
@@ -43948,7 +43948,7 @@ module.exports = View.extend({
 
 },{"../../core/view":51,"cdb.templates":37,"underscore":27}],211:[function(require,module,exports){
 var _ = require('underscore');
-var $ = require('jquery');
+var $ = require('jquery-cdb-v3');
 var templates = require('cdb.templates');
 var View = require('../../core/view');
 
@@ -44119,7 +44119,7 @@ module.exports = View.extend({
 });
 
 },{"../../core/view":51,"cdb.templates":37,"jquery":"jquery","underscore":27}],212:[function(require,module,exports){
-var $ = require('jquery');
+var $ = require('jquery-cdb-v3');
 var cdb = require('cdb');
 var _ = require('underscore');
 var templates = require('cdb.templates');
@@ -44278,7 +44278,7 @@ var Dropdown = View.extend({
 module.exports = Dropdown;
 
 },{"../../core/view":51,"cdb":35,"cdb.templates":37,"jquery":"jquery","underscore":27}],213:[function(require,module,exports){
-var $ = require('jquery');
+var $ = require('jquery-cdb-v3');
 var _ = require('underscore');
 var log = require('cdb.log');
 var View = require('../../core/view');
@@ -44487,7 +44487,7 @@ module.exports = Notification;
 
 },{"../../core/view":51,"cdb.templates":37,"underscore":27}],215:[function(require,module,exports){
 var _ = require('underscore');
-var $ = require('jquery');
+var $ = require('jquery-cdb-v3');
 var Dialog = require('./dialog');
 var sanitize = require('../../core/sanitize');
 
@@ -44676,7 +44676,7 @@ module.exports = Dialog.extend({
 
 },{"../../core/sanitize":47,"./dialog":211,"jquery":"jquery","underscore":27}],216:[function(require,module,exports){
 var _ = require('underscore');
-var $ = require('jquery');
+var $ = require('jquery-cdb-v3');
 var View = require('../../core/view');
 var RowView = require('./table/row-view');
 
@@ -45095,7 +45095,7 @@ var Row = Model.extend({
 module.exports = Row;
 
 },{"../../../core/model":45}],219:[function(require,module,exports){
-var Backbone = require('backbone');
+var Backbone = require('backbone-cdb-v3');
 var Row = require('./row');
 
 var TableData = Backbone.Collection.extend({
@@ -45715,8 +45715,8 @@ Overlay.register('infobox', function(data, vis) {
 
 },{"../core/model":45,"../core/template":49,"../geo/ui/annotation":93,"../geo/ui/header":96,"../geo/ui/infobox":98,"../geo/ui/infowindow":100,"../geo/ui/infowindow-model":99,"../geo/ui/layer-selector":101,"../geo/ui/mobile":132,"../geo/ui/search":133,"../geo/ui/share":134,"../geo/ui/text":135,"../geo/ui/tiles-loader":136,"../geo/ui/tooltip":137,"../geo/ui/zoom":210,"../ui/common/fullscreen":213,"./vis/overlay":226,"underscore":27}],223:[function(require,module,exports){
 var _ = require('underscore');
-var Backbone = require('backbone');
-var $ = require('jquery');
+var Backbone = require('backbone-cdb-v3');
+var $ = require('jquery-cdb-v3');
 var cdb = require('cdb');
 var config = require('cdb.config');
 var log = require('cdb.log');
@@ -47218,7 +47218,7 @@ var Overlay = {
 module.exports = Overlay;
 
 },{"cdb.log":36}],227:[function(require,module,exports){
-var Backbone = require('backbone');
+var Backbone = require('backbone-cdb-v3');
 
 var Overlays = Backbone.Collection.extend({
   comparator: function() {
@@ -47228,7 +47228,7 @@ var Overlays = Backbone.Collection.extend({
 module.exports = Overlays;
 
 },{"backbone":1}],228:[function(require,module,exports){
-var $ = require('jquery');
+var $ = require('jquery-cdb-v3');
 var _ = require('underscore');
 var LZMA = require('lzma');
 var util = require('cdb/core/util');
@@ -47590,7 +47590,7 @@ module.exports = Model.extend({
 
 },{"./config":229,"cdb/core/model":45,"underscore":27}],231:[function(require,module,exports){
 var _ = require('underscore');
-var Backbone = require('backbone');
+var Backbone = require('backbone-cdb-v3');
 var WindshaftFiltersCollection = require('./filters/collection');
 var WindshaftFiltersBoundingBoxFilter = require('./filters/bounding_box');
 var WindshaftDashboardInstance = require('./dashboard-instance');
@@ -47748,7 +47748,7 @@ module.exports = Model.extend({
 
 },{"cdb/core/model":45}],234:[function(require,module,exports){
 var _ = require('underscore');
-var Backbone = require('backbone');
+var Backbone = require('backbone-cdb-v3');
 var WindshaftFilterBase = require('./base');
 
 /**
@@ -47894,7 +47894,7 @@ module.exports = WindshaftFilterBase.extend({
 
 },{"./base":232,"backbone":1,"underscore":27}],235:[function(require,module,exports){
 var _ = require('underscore');
-var Backbone = require('backbone');
+var Backbone = require('backbone-cdb-v3');
 
 module.exports = Backbone.Collection.extend({
 
@@ -53123,7 +53123,7 @@ if (typeof window !== 'undefined') {
 },{}],241:[function(require,module,exports){
 (function (global){
 
-; jQuery = global.jQuery = require("jquery");
+; jQuery = global.jQuery = require('jquery-cdb-v3');
 ; var __browserify_shim_require__=require;(function browserifyShim(module, define, require) {
 /*!
  * jScrollPane - v2.0.0beta12 - 2012-09-27
@@ -58460,7 +58460,7 @@ this.LZMA = LZMA;
 },{}],243:[function(require,module,exports){
 (function (global){
 
-; jQuery = global.jQuery = require("jquery");
+; jQuery = global.jQuery = require('jquery-cdb-v3');
 ; var __browserify_shim_require__=require;(function browserifyShim(module, define, require) {
 /*! Copyright (c) 2011 Brandon Aaron (http://brandonaaron.net)
  * Licensed under the MIT License (LICENSE.txt).
@@ -58553,7 +58553,7 @@ function handler(event) {
 },{"jquery":"jquery"}],244:[function(require,module,exports){
 (function (global){
 
-; jQuery = global.jQuery = require("jquery");
+; jQuery = global.jQuery = require('jquery-cdb-v3');
 ; var __browserify_shim_require__=require;(function browserifyShim(module, define, require) {
 /**
  * @author trixta and bodrovis
@@ -62052,7 +62052,7 @@ wax.g.connector.prototype.getTileUrl = function(coord, z) {
 		// For environments that do not have a `window` with a `document`
 		// (such as Node.js), expose a factory as module.exports.
 		// This accentuates the need for the creation of a real `window`.
-		// e.g. var jQuery = require("jquery")(window);
+		// e.g. var jQuery = require('jquery-cdb-v3')(window);
 		// See ticket #14549 for more info.
 		module.exports = global.document ?
 			factory( global, true ) :

@@ -1,6 +1,6 @@
-
- require('shelljs/global');
+ var _ = require('underscore');
  var timer = require("grunt-timer");
+ var jasmineCfg = require('./lib/build/tasks/jasmine.js');
 
   /**
    *  CartoDB UI assets generation
@@ -35,12 +35,6 @@
       assets_dir: ASSETS_DIR,
       root_assets_dir: ROOT_ASSETS_DIR,
 
-      browserify_modules: {
-        tests: {
-          dest: '.grunt/browserify_modules_tests.js'
-        }
-      },
-
       // Concat task
       concat:   require('./lib/build/tasks/concat').task(),
 
@@ -59,8 +53,7 @@
       // Clean folders before other tasks
       clean:    require('./lib/build/tasks/clean').task(),
 
-      // Jasmine tests
-      jasmine:  require('./lib/build/tasks/jasmine.js').task(),
+      jasmine:  jasmineCfg,
 
       s3: require('./lib/build/tasks/s3.js').task(),
 
@@ -152,29 +145,46 @@
       grunt.config.set(name, val);
     });
 
-    grunt.registerTask('jasmine-server', 'start web server for jasmine tests in browser', function() {
-      grunt.task.run('jasmine:cartodbui:build');
+    grunt.registerTask('jasmine-server', function () {
+      grunt.log.writeln('Deprecated, just use `grunt dev`, open http://localhost:8089 (if not opened automatically)');
+    });
 
-      grunt.event.once('connect.jasmine.listening', function(host, port) {
-        var specRunnerUrl = 'http://localhost:' + port + '/_SpecRunner.html';
-        grunt.log.writeln('Jasmine specs available at: ' + specRunnerUrl);
-        require('open')(specRunnerUrl);
+    grunt.registerTask('lint', 'lint source files', function () {
+      var done = this.async();
+      require('child_process').exec('PATH=$(npm bin):$PATH semistandard', function (error, stdout, stderr) {
+        if (error) {
+          grunt.log.fail(error);
+
+          // Filter out lines that are ignored,
+          // e.g. "src/foobar.js:0:0: File ignored because of your .eslintignore file. Use --no-ignore to override."
+          grunt.log.fail(stdout.replace(/.+--no-ignore.+(\r?\n|\r)/g, ''));
+          grunt.fail.warn('try `node_modules/.bin/semistandard --format src/filename.js` to auto-format code (you might still need to fix some things manually).');
+        } else {
+          grunt.log.ok('All linted files OK!');
+          grunt.log.writeln('Note that files listed in .eslintignore are not linted');
+        }
+        done();
       });
-
-      grunt.task.run('connect:jasmine:keepalive');
     });
 
     // Order in terms of task dependencies
     grunt.registerTask('js',          ['cdb', 'browserify', 'concat:js', 'jst']);
     grunt.registerTask('pre_default', ['clean', 'config', 'js']);
     grunt.registerTask('test', '(CI env) Re-build JS files and run all tests. ' +
-    'For manual testing use `grunt jasmine` directly', ['pre_default', 'jasmine']);
-    grunt.registerTask('css',         ['copy:vendor', 'copy:app', 'compass', 'concat:css']);
+    'For manual testing use `grunt jasmine` directly', ['lint', 'pre_default', 'jasmine']);
+    grunt.registerTask('css_editor_3', ['copy:cartofonts', 'copy:iconfont', 'copy:cartoassets', 'copy:deep_insights', 'copy:cartodbjs_v4']);
+    grunt.registerTask('css',         ['copy:vendor', 'css_editor_3', 'copy:app', 'compass', 'concat:css']);
     grunt.registerTask('default',     ['pre_default', 'css', 'manifest']);
     grunt.registerTask('minimize',    ['default', 'copy:js', 'exorcise', 'uglify']);
     grunt.registerTask('release',     ['check_release', 'minimize', 's3', 'invalidate']);
-    grunt.registerTask('dev',         'Typical task for frontend development (watch JS/CSS changes)',
-      ['setConfig:env.browserify_watch:true', 'browserify', 'watch']);
+    grunt.registerTask('pre-jasmine', _.chain(jasmineCfg)
+      .keys()
+      .map(function (name) {
+        return ['jasmine', name, 'build'].join(':');
+      })
+      .value());
+    grunt.registerTask('dev', 'Typical task for frontend development (watch JS/CSS changes)',
+      ['setConfig:env.browserify_watch:true', 'browserify', 'jasmine:cartodbui:build', 'pre-jasmine', 'connect', 'watch']);
     grunt.registerTask('sourcemaps', 'generate sourcemaps, to be used w/ trackjs.com for bughunting',
       ['setConfig:assets_dir:./tmp/sourcemaps', 'config', 'js', 'copy:js', 'exorcise', 'uglify']);
   };

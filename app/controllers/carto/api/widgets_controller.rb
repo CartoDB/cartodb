@@ -13,7 +13,7 @@ module Carto
       rescue_from Carto::UnprocesableEntityError, with: :rescue_from_carto_error
 
       def show
-        render_jsonp(@widget.attributes)
+        render_jsonp(WidgetPresenter.new(@widget).to_poro)
       end
 
       def create
@@ -24,7 +24,7 @@ module Carto
           title: params[:title],
           options: params[:options].to_json)
         widget.save!
-        render_jsonp(widget.attributes, 201)
+        render_jsonp(WidgetPresenter.new(widget).to_poro, 201)
       rescue => e
         CartoDB.report_exception(e, "Error creating widget", { widget: (widget ? widget : 'not created'), request: request, user: current_user })
         render json: { errors: e.message }, status: 500
@@ -35,7 +35,7 @@ module Carto
         @widget.options = params[:options].to_json if params[:options]
         @widget.save!
 
-        render_jsonp(@widget.attributes)
+        render_jsonp(WidgetPresenter.new(@widget).to_poro)
       rescue => e
         CartoDB.report_exception(e, "Error updating widget", { widget: @widget, request: request, user: current_user })
         render json: { errors: e.message }, status: 500
@@ -43,7 +43,7 @@ module Carto
 
       def destroy
         @widget.destroy
-        render_jsonp(@widget.attributes)
+        render_jsonp(WidgetPresenter.new(@widget).to_poro)
       rescue => e
         CartoDB.report_exception(e, "Error destroying widget", { widget: @widget, request: request, user: current_user })
         render json: { errors: e.message }, status: 500
@@ -66,6 +66,8 @@ module Carto
 
         @layer = Carto::Layer.where(id: @layer_id).first
         raise LoadError.new("Layer not found: #{@layer_id}") unless @layer
+
+        raise UnprocesableEntityError.new("Layer #{@layer_id} doesn't belong to map #{@map_id}") unless @map.contains_layer?(@layer)
 
         @widget_id = params[:id]
         if [@widget_id, params[:id]].compact.uniq.length >= 2

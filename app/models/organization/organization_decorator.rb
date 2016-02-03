@@ -17,6 +17,7 @@ module CartoDB
           groups:     self.owner && self.owner.groups ? self.owner.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro } : []
         },
         quota_in_bytes:  self.quota_in_bytes,
+        unassigned_quota: self.unassigned_quota,
         api_calls:       self.get_api_calls(from: self.owner.present? ? self.owner.last_billing_cycle : nil, to: Date.today),
         api_calls_quota: self.map_view_quota,
         geocoding: {

@@ -42,7 +42,7 @@ group :production, :staging do
 end
 
 group :assets do
-  gem "compass",               "0.12.3"
+  gem "compass",               "1.0.3"
 end
 
 # Importer & sync tables

@@ -134,9 +134,10 @@ describe('dataviews/category-dataview-model', function () {
 
   describe('toJSON', function () {
     it('should return suffix and prefix values', function () {
+      this.model.set('suffix', '$');
       var data = this.model.toJSON();
-      expect(data.suffix).toBeDefined();
-      expect(data.prefix).toBeDefined();
+      expect(data.options.suffix).toBe('$');
+      expect(data.options.prefix).toBeDefined();
     });
   });
 

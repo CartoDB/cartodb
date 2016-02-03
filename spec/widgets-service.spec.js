@@ -266,7 +266,10 @@ describe('widgets-service', function () {
       beforeEach(function () {
         var attrs = {
           id: 'abc-123',
-          column: 'dates'
+          column: 'dates',
+          bins: 50,
+          start: 0,
+          end: 10
         };
         this.widgetModel = this.widgetsService.createTimeSeriesModel(attrs, this.vis.map.layers.first());
       });

@@ -164,7 +164,7 @@ WidgetsService.prototype.createListModel = function (attrs, layer) {
  */
 WidgetsService.prototype.createTimeSeriesModel = function (attrs, layer) {
   try {
-    _checkProperties(attrs, ['column']);
+    _checkProperties(attrs, ['column', 'bins', 'start', 'end']);
   } catch (err) {
     cdb.log.error('Error creating newTimeSeriesModel, ' + err.message);
     return;
@@ -172,7 +172,11 @@ WidgetsService.prototype.createTimeSeriesModel = function (attrs, layer) {
 
   var dataviewModel = this._dataviews.createHistogramModel(layer, {
     type: 'histogram',
-    column: attrs.column
+    column: attrs.column,
+    columnType: 'date',
+    bins: attrs.bins,
+    start: attrs.start,
+    end: attrs.end
   });
 
   var widgetModel = new WidgetModel({

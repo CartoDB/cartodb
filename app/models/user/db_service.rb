@@ -68,6 +68,9 @@ module CartoDB
         if @user.organization_owner?
           setup_organization_owner
         end
+
+        # Rebuild the geocoder api user config to reflect that is an organization user
+        install_and_configure_geocoder_api_extension
       end
 
       # INFO: main setup for non-org users

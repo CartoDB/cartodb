@@ -19,7 +19,7 @@ module.exports = DataviewModelBase.extend({
     };
   },
 
-  toJSON: function (d) {
+  toJSON: function () {
     return {
       type: 'formula',
       options: {

@@ -46,7 +46,7 @@ module CartoDB
             timeout:          HTTP_REQUEST_TIMEOUT
             } )
 
-          if response.body =~ /reached limit on number of templates/
+          if response.code == 409 && response.body =~ /reached limit on number of templates/
             raise TooManyTemplatesError.new("Reached limit on number of named map templates")
           end
 

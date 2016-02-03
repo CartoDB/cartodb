@@ -9,7 +9,6 @@ module Carto
       # Currently experimental, prone to side effects and not as generic as expected.
       RENAMING_STRATEGY = :move_schema_content_by_renaming
 
-      DEFAULT_STRAGEGY = STEPS_STRATEGY
       STRATEGIES = [STEPS_STRATEGY, RENAMING_STRATEGY].freeze
 
       def initialize(user)

@@ -55,28 +55,28 @@ module Carto
         end
       end
 
-      def move_table_to_schema(t, database, old_schema, new_schema)
-        old_name = "#{old_schema}.#{t[:relname]}"
+      def move_table_to_schema(table, database, old_schema, new_schema)
+        old_name = "#{old_schema}.#{table[:relname]}"
 
-        was_cartodbfied = cdb_drop_triggers(t, database, old_schema)
+        was_cartodbfied = cdb_drop_triggers(table, database, old_schema)
 
         database.run(%{ ALTER TABLE #{old_name} SET SCHEMA "#{new_schema}" })
 
-        cdb_cartodbfy(t, database, new_schema) if was_cartodbfied
+        cdb_cartodbfy(table, database, new_schema) if was_cartodbfied
       end
 
-      def cdb_drop_triggers(t, database, schema)
-        name = "#{schema}.#{t[:relname]}"
+      def cdb_drop_triggers(table, database, schema)
+        name = "#{schema}.#{table[:relname]}"
 
-        cartodbfied = Carto::UserTable.find_by_user_id_and_name(@user.id, t[:relname]).present?
+        cartodbfied = Carto::UserTable.find_by_user_id_and_name(@user.id, table[:relname]).present?
 
         database.run(%{ SELECT cartodb._CDB_drop_triggers('#{name}'::REGCLASS) }) if cartodbfied
 
         cartodbfied
       end
 
-      def cdb_cartodbfy(t, database, schema)
-        name = "#{schema}.#{t[:relname]}"
+      def cdb_cartodbfy(table, database, schema)
+        name = "#{schema}.#{table[:relname]}"
 
         database.run(%{ SELECT cartodb.CDB_CartodbfyTable('#{schema}'::TEXT, '#{name}'::REGCLASS) })
       end

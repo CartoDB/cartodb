@@ -30,7 +30,8 @@ describe('widgets-service', function () {
         var attrs = {
           title: 'some_title',
           column: 'my_column',
-          aggregation: 'avg'
+          aggregation: 'avg',
+          suffix: ' people' 
         };
         this.widgetModel = this.widgetsService.newCategoryModel(attrs, this.vis.map.layers.first());
       });
@@ -49,6 +50,14 @@ describe('widgets-service', function () {
 
       it('should have an aggregation operation', function () {
         expect(this.widgetModel.dataviewModel.get('aggregation')).toEqual('avg');
+      });
+
+      it('should have a suffix text', function () {
+        expect(this.widgetModel.dataviewModel.get('suffix')).toEqual(' people');
+      });
+
+      it('should have a default prefix text', function () {
+        expect(this.widgetModel.dataviewModel.get('prefix')).toEqual('');
       });
     });
 
@@ -136,7 +145,8 @@ describe('widgets-service', function () {
         var attrs = {
           title: 'my formula',
           column: 'a_column',
-          operation: 'sum'
+          operation: 'sum',
+          prefix: 'hello'
         };
         this.widgetModel = this.widgetsService.newFormulaModel(attrs, this.vis.map.layers.first());
       });
@@ -155,6 +165,14 @@ describe('widgets-service', function () {
 
       it('should set operation', function () {
         expect(this.widgetModel.dataviewModel.get('operation')).toEqual('sum');
+      });
+
+      it('should have a default suffix text', function () {
+        expect(this.widgetModel.dataviewModel.get('suffix')).toEqual('');
+      });
+
+      it('should have a prefix text', function () {
+        expect(this.widgetModel.dataviewModel.get('prefix')).toEqual('hello');
       });
     });
 

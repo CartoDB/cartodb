@@ -38,7 +38,9 @@ WidgetsService.prototype.newCategoryModel = function (attrs, layer) {
     type: 'category',
     column: attrs.column,
     aggregation: attrs.aggregation || 'count',
-    aggregationColumn: attrs.aggregationColumn || attrs.column
+    aggregationColumn: attrs.aggregationColumn || attrs.column,
+    suffix: attrs.suffix,
+    prefix: attrs.prefix
   });
 
   var widgetModel = new CategoryWidgetModel({
@@ -104,7 +106,9 @@ WidgetsService.prototype.newFormulaModel = function (attrs, layer) {
   var dataviewModel = this._dataviews.createFormulaModel(layer, {
     type: 'formula',
     column: attrs.column,
-    operation: attrs.operation
+    operation: attrs.operation,
+    suffix: attrs.suffix,
+    prefix: attrs.prefix
   });
 
   var widgetModel = new WidgetModel({

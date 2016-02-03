@@ -5,7 +5,7 @@ class Carto::Widget < ActiveRecord::Base
 
   validates :layer, :order, :type, :options, presence: true
 
-  validate :options_format
+  validate :options_must_be_json
 
   def self.from_visualization_id(visualization_id)
     Carto::Visualization.find(visualization_id).layers.map(&:widgets).flatten
@@ -31,7 +31,7 @@ class Carto::Widget < ActiveRecord::Base
 
   private
 
-  def options_format
+  def options_must_be_json
     options_json
   rescue JSON::ParserError
     errors.add(:options, 'is wrongly formatted (invalid JSON)')

@@ -22,6 +22,20 @@ describe Carto::Widget do
     end
   end
 
+  describe 'Format and validation' do
+    it 'checks options format is correct' do
+      widget = FactoryGirl.create(:widget_with_layer)
+      widget.save
+
+      widget.errors[:options].empty?.should be_true
+
+      widget.options = 'badformat'
+      widget.save
+
+      widget.errors[:options].empty?.should be_false
+    end
+  end
+
   describe '#from_visualization_id' do
     before(:each) do
       @map = FactoryGirl.create(:carto_map_with_layers)

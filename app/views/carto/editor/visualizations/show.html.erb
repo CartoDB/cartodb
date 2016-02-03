@@ -7,7 +7,6 @@
 </div>
 
 <script>
-  var mapId = '<%= @visualization.map_id %>';
   var visualizationData = <%= safe_js_object @visualization_data.to_json %>
   var vizJSON = <%= safe_js_object @vizjson.to_hash.to_json %>;
   var userData = <%= safe_js_object current_user.data({ show_api_calls: false }).to_json %>;

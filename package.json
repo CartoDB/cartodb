@@ -17,18 +17,20 @@
       "type": "BSD"
     }
   ],
-  "dependencies": {},
+  "dependencies": {
+  },
   "devDependencies": {
     "autoprefixer-core": "5.2.1",
     "aws-sdk": "2.0.0-rc11",
     "backbone": "1.2.3",
     "browserify": "11.0.1",
+    "browserify-resolutions": "1.0.6",
     "browserify-shim": "3.8.10",
     "cartoassets": "0.1.22",
     "cartodb-pecan": "0.2.x",
     "csswring": "^3.0.5",
-    "cartodb-deep-insights.js": "CartoDB/deep-insights.js#b7d23dc",
-    "cartodb.js": "CartoDB/cartodb.js#v4",
+    "cartodb-deep-insights.js": "CartoDB/deep-insights.js#183c4b3",
+    "cartodb.js": "CartoDB/cartodb.js#b4c5f49",
     "git-rev": "0.2.1",
     "grunt": "0.4.5",
     "grunt-available-tasks": "0.5.4",

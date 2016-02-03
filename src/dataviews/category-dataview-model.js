@@ -16,7 +16,9 @@ module.exports = DataviewModelBase.extend({
   defaults: _.extend(
     {
       enableFilter: true,
-      allCategoryNames: [] // all (new + previously accepted), updated on data fetch (see parse)
+      allCategoryNames: [], // all (new + previously accepted), updated on data fetch (see parse)
+      suffix: '',
+      prefix: ''
     },
     DataviewModelBase.prototype.defaults
   ),
@@ -244,7 +246,9 @@ module.exports = DataviewModelBase.extend({
       options: {
         column: this.get('column'),
         aggregation: this.get('aggregation'),
-        aggregationColumn: this.get('aggregationColumn')
+        aggregationColumn: this.get('aggregationColumn'),
+        suffix: this.get('suffix'),
+        prefix: this.get('prefix')
       }
     };
   }

@@ -192,7 +192,7 @@ WidgetsService.prototype.createTimeSeriesModel = function (attrs, layer) {
 
 function _checkProperties (obj, propertiesArray) {
   _.each(propertiesArray, function (prop) {
-    if (!obj[prop]) {
+    if (obj[prop] === undefined) {
       throw new Error('\'' + prop + '\' should be provided');
     }
   });

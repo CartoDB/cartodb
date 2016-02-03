@@ -23,8 +23,8 @@ describe Carto::Widget do
   end
 
   describe 'Format and validation' do
-    before(:all) do
-      @widget = FactoryGirl.create(:widget_with_layer, options: { valid: 'format' }.to_json)
+    before(:each) do
+      @widget = FactoryGirl.build(:widget_with_layer, options: { valid: 'format' }.to_json)
     end
 
     it 'validates correct options format' do
@@ -37,8 +37,6 @@ describe Carto::Widget do
 
       @widget.valid?.should be_false
       @widget.errors[:options].empty?.should be_false
-
-      @widget.options = { valid: 'format' }.to_json
     end
   end
 

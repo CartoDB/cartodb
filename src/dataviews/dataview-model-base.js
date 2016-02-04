@@ -145,6 +145,11 @@ module.exports = Model.extend({
 
   _fetchFromDataProvider: function (opts) {
     var dataProvider = this.layer.getDataProvider();
+
+    // TODO: At the beginning, the dataProvider will not have any features
+    // loaded so we will have to listen to the `featuresChanged` event, but
+    // once the dataProvider has been initialized, we should implement and use
+    // dataProvider.getFeatures() instead of adding yet another binding.
     dataProvider.bind('featuresChanged', function (features) {
       try {
         var data = dataProvider.generateDataForDataview(this, features);

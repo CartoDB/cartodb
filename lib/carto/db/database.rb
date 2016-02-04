@@ -2,6 +2,7 @@
 
 require_dependency 'carto/db/view'
 require_dependency 'carto/db/function'
+require_dependency 'carto/db/trigger'
 
 module Carto
   module Db

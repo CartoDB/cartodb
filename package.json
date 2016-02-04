@@ -20,11 +20,7 @@
     "Pablo Alonso <pablo@cartodb.com>",
     "Antonio Santiago Pérez <asantiago@cartodb.com>"
   ],
-  "licenses": [
-    {
-      "type": "BSD"
-    }
-  ],
+  "license": "BSD-3-Clause",
   "dependencies": {
     "backbone": "1.2.3",
     "cartodb.js": "CartoDB/cartodb.js#b4c5f49",

@@ -9,6 +9,11 @@ var LeafletCartoDBVectorLayerGroupView = L.CartoDBd3Layer.extend({
     LeafletLayerView.prototype
   ],
 
+  // TODO: There's a conflict between LeafletLayerView.protoype.on
+  // and L.CartoDBd3Layer.prototype.on. The GeoJSONDataProvider needs
+  // to use the former one, so we have to add an alias.
+  _on: L.CartoDBd3Layer.prototype.on,
+
   initialize: function (layerModel, leafletMap) {
     LeafletLayerView.call(this, layerModel, this, leafletMap);
     L.CartoDBd3Layer.prototype.initialize.call(this);
@@ -54,9 +59,6 @@ var LeafletCartoDBVectorLayerGroupView = L.CartoDBd3Layer.extend({
 _.extend(LeafletCartoDBVectorLayerGroupView.prototype, {
   featuresLoaded: function () {
     return false;
-  },
-  getFeatures: function () {
-    return [];
   }
 });
 

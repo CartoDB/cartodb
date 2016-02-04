@@ -1,6 +1,5 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
-var fakeFeatures = require('./fake-geojson-features');
 
 var GeoJSONDataProvider = function (vectorLayerView, layerIndex) {
   this._vectorLayerView = vectorLayerView;
@@ -9,24 +8,10 @@ var GeoJSONDataProvider = function (vectorLayerView, layerIndex) {
   if (this._vectorLayerView.featuresLoaded()) {
     this.trigger('featuresChanged', this._vectorLayerView.getFeatures()[this._layerIndex]);
   } else {
-    vectorLayerView.on('featuresChanged', function (features) {
+    vectorLayerView._on('featuresChanged', function (features) {
       this.trigger('featuresChanged', features[this._layerIndex]);
     }.bind(this));
   }
-
-  // Simulate the featureChanged event that will be triggered by the d3.Layer
-  // TODO: Remove this when this is working
-  setTimeout(function () {
-    vectorLayerView.trigger('featuresChanged', fakeFeatures);
-  }, 3000);
-
-  setTimeout(function () {
-    vectorLayerView.trigger('featuresChanged', [fakeFeatures[0].slice(0, 20)]);
-  }, 6000);
-
-  setTimeout(function () {
-    vectorLayerView.trigger('featuresChanged', fakeFeatures);
-  }, 9000);
 };
 
 // TODO: We can extract each "generator" to an individual file so that this file doesn't get too BIG

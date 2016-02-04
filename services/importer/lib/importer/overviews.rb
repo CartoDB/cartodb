@@ -42,6 +42,10 @@ module CartoDB
         log("Overviews created for #{@table_name}")
       end
 
+      def can_create_overviews?
+        @user.has_feature_flag?('create_overviews')
+      end
+
       # Dataset overview creation
       class Dataset
         def initialize(overviews_service, table_name)
@@ -51,9 +55,11 @@ module CartoDB
           @table_name = table_name_with_schema(@service.schema, @name)
         end
 
-        def supports_overviews?
+        def should_create_overviews?
           # TODO: check quotas, etc...
-          supported_geometry? && table_row_count >= @service.min_rows
+          @service.can_create_overviews? &&
+            supported_geometry? &&
+            table_row_count >= @service.min_rows
         end
 
         def create_overviews!

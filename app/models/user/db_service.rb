@@ -1,5 +1,8 @@
+# encoding: utf-8
 
 require_relative 'db_queries'
+require_dependency 'carto/db/database'
+require_dependency 'carto/db/user_schema_mover'
 
 # To avoid collisions with User model
 module CartoDB
@@ -68,6 +71,9 @@ module CartoDB
         if @user.organization_owner?
           setup_organization_owner
         end
+
+        # Rebuild the geocoder api user config to reflect that is an organization user
+        install_and_configure_geocoder_api_extension
       end
 
       # INFO: main setup for non-org users
@@ -154,24 +160,28 @@ module CartoDB
 
       def rebuild_quota_trigger
         @user.in_database(as: :superuser) do |db|
-          if !cartodb_extension_version_pre_mu? && @user.has_organization?
-            db.run("DROP FUNCTION IF EXISTS public._CDB_UserQuotaInBytes();")
-          end
+          rebuild_quota_trigger_with_database(db)
+        end
+      end
 
-          db.transaction do
-            # NOTE: this has been written to work for both databases that switched to "cartodb" extension
-            #       and those before the switch.
-            #       In the future we should guarantee that exntension lives in cartodb schema so we don't need to set
-            #       a search_path before
-            search_path = db.fetch("SHOW search_path;").first[:search_path]
-            db.run("SET search_path TO #{SCHEMA_CARTODB}, #{SCHEMA_PUBLIC};")
-            if cartodb_extension_version_pre_mu?
-              db.run("SELECT CDB_SetUserQuotaInBytes(#{@user.quota_in_bytes});")
-            else
-              db.run("SELECT CDB_SetUserQuotaInBytes('#{@user.database_schema}', #{@user.quota_in_bytes});")
-            end
-            db.run("SET search_path TO #{search_path};")
+      def rebuild_quota_trigger_with_database(db)
+        if !cartodb_extension_version_pre_mu? && @user.has_organization?
+          db.run("DROP FUNCTION IF EXISTS public._CDB_UserQuotaInBytes();")
+        end
+
+        db.transaction do
+          # NOTE: this has been written to work for both databases that switched to "cartodb" extension
+          #       and those before the switch.
+          #       In the future we should guarantee that exntension lives in cartodb schema so we don't need to set
+          #       a search_path before
+          search_path = db.fetch("SHOW search_path;").first[:search_path]
+          db.run("SET search_path TO #{SCHEMA_CARTODB}, #{SCHEMA_PUBLIC};")
+          if cartodb_extension_version_pre_mu?
+            db.run("SELECT CDB_SetUserQuotaInBytes(#{@user.quota_in_bytes});")
+          else
+            db.run("SELECT CDB_SetUserQuotaInBytes('#{@user.database_schema}', #{@user.quota_in_bytes});")
           end
+          db.run("SET search_path TO #{search_path};")
         end
       end
 
@@ -207,18 +217,10 @@ module CartoDB
         create_schema(@user.database_schema, @user.database_username)
       end
 
-      # Attempts to create a new database schema
-      # Does not raise exception if the schema already exists
       def create_schema(schema, role = nil)
-        @user.in_database(as: :superuser) do |database|
-          if role
-            database.run(%{CREATE SCHEMA "#{schema}" AUTHORIZATION "#{role}"})
-          else
-            database.run(%{CREATE SCHEMA "#{schema}"})
-          end
+        @user.in_database(as: :superuser) do |db|
+          Carto::Db::Database.new(@user.database_name, db).create_schema(schema, role)
         end
-      rescue Sequel::DatabaseError => e
-        raise unless e.message =~ /schema .* already exists/
       end
 
       def setup_owner_permissions
@@ -267,25 +269,6 @@ module CartoDB
           database.run(%{ CREATE USER "#{@user.database_public_username}" LOGIN INHERIT })
           database.run(%{ GRANT publicuser TO "#{@user.database_public_username}" })
           database.run(%{ ALTER USER "#{@user.database_public_username}" SET search_path = #{build_search_path} })
-        end
-      end
-
-      def move_tables_to_schema(old_schema, new_schema)
-        @user.in_database(as: :superuser) do |database|
-          database.transaction do
-            @user.real_tables(old_schema).each do |t|
-              old_name = "#{old_schema}.#{t[:relname]}"
-              new_name = "#{new_schema}.#{t[:relname]}"
-
-              was_cartodbfied = Carto::UserTable.find_by_user_id_and_name(@user.id, t[:relname]).present?
-
-              database.run(%{ SELECT cartodb._CDB_drop_triggers('#{old_name}'::REGCLASS) }) if was_cartodbfied
-              database.run(%{ ALTER TABLE #{old_name} SET SCHEMA "#{new_schema}" })
-              if was_cartodbfied
-                database.run(%{ SELECT cartodb.CDB_CartodbfyTable('#{new_schema}'::TEXT, '#{new_name}'::REGCLASS) })
-              end
-            end
-          end
         end
       end
 
@@ -351,6 +334,9 @@ module CartoDB
                   s,
                   [@user.database_username, @user.database_public_username, CartoDB::PUBLIC_DB_USER])
               end
+
+              # To avoid "cannot drop function" errors
+              database.run("drop extension if exists plproxy cascade")
             end
 
             # If user is in an organization should never have public schema, but to be safe (& tests which stub stuff)
@@ -952,11 +938,8 @@ module CartoDB
         new_schema_name = @user.username
         old_database_schema_name = @user.database_schema
         if @user.database_schema != new_schema_name
-          @user.database_schema = new_schema_name
-          @user.this.update database_schema: new_schema_name
-          create_user_schema
-          rebuild_quota_trigger
-          move_tables_to_schema(old_database_schema_name, @user.database_schema)
+          Carto::Db::UserSchemaMover.new(@user).move_objects(new_schema_name)
+
           create_public_db_user
           set_database_search_path
         end
@@ -1113,6 +1096,22 @@ module CartoDB
           $$
         ")
         conn.disconnect
+      end
+
+      def triggers(schema = @user.database_schema)
+        Carto::Db::Database.build_with_user(@user).triggers(schema)
+      end
+
+      def functions(schema = @user.database_schema)
+        Carto::Db::Database.build_with_user(@user).functions(schema, @user.database_username)
+      end
+
+      def views(schema = @user.database_schema)
+        Carto::Db::Database.build_with_user(@user).views(schema, @user.database_username)
+      end
+
+      def materialized_views(schema = @user.database_schema)
+        Carto::Db::Database.build_with_user(@user).materialized_views(schema, @user.database_username)
       end
 
       private

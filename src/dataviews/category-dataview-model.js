@@ -1,5 +1,4 @@
 var _ = require('underscore');
-var Model = require('../core/model');
 var DataviewModelBase = require('./dataview-model-base');
 var SearchModel = require('./category-dataview/search-model');
 var CategoryModelRange = require('./category-dataview/category-model-range');

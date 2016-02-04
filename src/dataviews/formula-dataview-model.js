@@ -1,5 +1,4 @@
 var _ = require('underscore');
-var Model = require('../core/model');
 var DataviewModelBase = require('./dataview-model-base');
 
 module.exports = DataviewModelBase.extend({

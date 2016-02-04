@@ -5,7 +5,7 @@ var AnimateValues = require('../../../src/widgets/animate-values');
 
 describe('widgets/formula/content-view', function () {
   beforeEach(function () {
-    AnimateValues.prototype.animateValue = function() {};
+    AnimateValues.prototype.animateValue = function () {};
     var vis = specHelper.createDefaultVis();
     this.dataviewModel = vis.dataviews.createFormulaModel(vis.map.layers.first(), {});
     this.model = new WidgetModel({
@@ -29,7 +29,7 @@ describe('widgets/formula/content-view', function () {
     expect(this.view.$('.js-value').text()).toBe('123');
   });
 
-  it('should not disable dataviewModel when it is collapsed', function() {
+  it('should not disable dataviewModel when it is collapsed', function () {
     this.model.set('collapsed', true);
     expect(this.dataviewModel.get('enabled')).toBeTruthy();
     this.dataviewModel.set('data', 67);

@@ -32,13 +32,12 @@ module CartoDB
         job.log "Converting #{@format.upcase} to CSV"
 
         Open3.popen3("file -b --mime-type #{filepath}") do |stdin, stdout, stderr, process|
-          @file_mime_type = stdout.read.delete("\n")
+          file_mime_type = stdout.read.delete("\n")
           job.log "Can't get the mime type of the file" unless process.value.to_s =~ /exit 0/
+          # CSV files with XLS extensions are considered malformed files
+          raise CartoDB::Importer2::MalformedXLSException.new if file_mime_type == "text/plain"
         end
-
-        # Take into account that here should come or csv files with xls extensions or xls documents
-        file_format = (@file_mime_type == "text/plain") ? "-f csv" : ""
-        in2csv_command_line = %Q[in2csv #{filepath} #{file_format} | #{in2csv_warning_filter} | #{newline_remover_path} > #{converted_filepath}]
+        in2csv_command_line = %Q[in2csv #{filepath} | #{in2csv_warning_filter} | #{newline_remover_path} > #{converted_filepath}]
         job.log "About to execute in2csv: " + in2csv_command_line
         Open3.popen3(in2csv_command_line) do |stdin, stdout, stderr, process|
           raise CartoDB::Importer2::MalformedXLSException.new if stderr.read =~ /Unsupported format, or corrupt file:/

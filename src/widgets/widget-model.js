@@ -12,6 +12,7 @@ module.exports = cdb.core.Model.extend({
   defaults: {
     title: '',
     collapsed: false,
+    attrsNames: ['title', 'collapsed'],
     dataviewModelAttrsNames: []
   },
 
@@ -39,18 +40,11 @@ module.exports = cdb.core.Model.extend({
    * @throws {Error} Should throw an error if the attrs are invalid or inconsistent
    */
   update: function (changes) {
-    var attrs = _.pick(changes, this._attrsNames());
+    var attrs = _.pick(changes, this.get('attrsNames'));
     this.set(attrs);
     attrs = _.pick(changes, this.get('dataviewModelAttrsNames'));
     this.dataviewModel.set(attrs);
     return !!(this.changedAttributes() || this.dataviewModel.changedAttributes());
-  },
-
-  /**
-   * @return {Array<String>} names of attrs on dataviewModel
-   */
-  _attrsNames: function () {
-    return ['title', 'collapsed'];
   },
 
   /**

@@ -10,7 +10,7 @@ describe('dataviews/category-dataview-model', function () {
     this.model = new CategoryDataviewModel(null, {
       map: map,
       windshaftMap: windshaftMap,
-      layer: jasmine.createSpyObj('layer', ['get']),
+      layer: jasmine.createSpyObj('layer', ['get', 'getDataProvider']),
       filter: new WindshaftFiltersCategory()
     });
   });

@@ -14,7 +14,7 @@ describe('dataviews/dataview-model-base', function () {
     this.model = new DataviewModelBase(null, {
       map: this.map,
       windshaftMap: this.windshaftMap,
-      layer: jasmine.createSpyObj('layer', ['get'])
+      layer: jasmine.createSpyObj('layer', ['get', 'getDataProvider'])
     });
     this.model.toJSON = jasmine.createSpy('toJSON').and.returnValue({});
   });
@@ -182,6 +182,41 @@ describe('dataviews/dataview-model-base', function () {
 
     it('should stop listening to events', function () {
       expect(this.model.stopListening).toHaveBeenCalled();
+    });
+  });
+
+  describe('when the layer has a data provider', function () {
+    it('it should fetch from the data provider', function () {
+      var layer = new Backbone.Model();
+      var syncCallback = jasmine.createSpy('syncCallback');
+      var loadingCallback = jasmine.createSpy('loadingCallback');
+      var dataview = new DataviewModelBase(null, {
+        map: this.map,
+        windshaftMap: this.windshaftMap,
+        layer: layer
+      });
+      dataview.bind('sync', syncCallback);
+      dataview.bind('loading', loadingCallback);
+
+      var dataProvider = new Backbone.Model();
+      dataProvider.generateDataForDataview = function () {
+        return { c: 'd' };
+      };
+      layer.getDataProvider = function () {
+        return dataProvider;
+      };
+
+      // Fetch binds the dataview to the dataProvider of the layer
+      dataview.fetch();
+
+      expect(loadingCallback).toHaveBeenCalled();
+
+      // The dataProvider triggers a featuresChanged event with some features
+      dataProvider.trigger('featuresChanged', [[{a: 'b'}]]);
+
+      // The dataview has been updated and events have been triggered
+      expect(dataview.get('c')).toEqual('d');
+      expect(syncCallback).toHaveBeenCalled();
     });
   });
 });

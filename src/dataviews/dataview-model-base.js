@@ -135,12 +135,12 @@ module.exports = Model.extend({
   },
 
   fetch: function (opts) {
+    this.trigger('loading', this);
     if (this.layer.getDataProvider()) {
       this._fetchFromDataProvider(opts);
     } else {
       return Model.prototype.fetch.call(this, opts);
     }
-    this.trigger('loading', this);
   },
 
   _fetchFromDataProvider: function (opts) {

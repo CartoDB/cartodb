@@ -5,13 +5,9 @@ var GeoJSONDataProvider = function (vectorLayerView, layerIndex) {
   this._vectorLayerView = vectorLayerView;
   this._layerIndex = layerIndex;
 
-  if (this._vectorLayerView.featuresLoaded()) {
-    this.trigger('featuresChanged', this._vectorLayerView.getFeatures()[this._layerIndex]);
-  } else {
-    vectorLayerView._on('featuresChanged', function (features) {
-      this.trigger('featuresChanged', features[this._layerIndex]);
-    }.bind(this));
-  }
+  vectorLayerView._on('featuresChanged', function (features) {
+    this.trigger('featuresChanged', features[this._layerIndex]);
+  }.bind(this));
 };
 
 // TODO: We can extract each "generator" to an individual file so that this file doesn't get too BIG
@@ -20,7 +16,7 @@ GeoJSONDataProvider.prototype._dataGeneratorsForDataviews = {
     var columnName = options.column;
     var numberOfCategories = 5;
 
-    // TODO: There's probably a more efficient way to do this
+    // TODO: There's probably a more efficient way of doing this
     var groups = _.groupBy(features, function (feature) { return feature.properties[columnName]; });
     var groupCounts = _.map(Object.keys(groups), function (key) { return [key, groups[key].length]; });
     var sortedGroups = _.sortBy(groupCounts, function (group) { return group[1]; }).reverse();

@@ -35,7 +35,6 @@ var LeafletCartoDBVectorLayerGroupView = L.CartoDBd3Layer.extend({
 
   _onLayerAdded: function (layerModel, layersCollection) {
     var layerIndex = layersCollection.indexOf(layerModel);
-
     layerModel.setDataProvider(new GeoJSONDataProvider(this, layerIndex));
   },
 

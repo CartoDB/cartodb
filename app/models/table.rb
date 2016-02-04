@@ -231,6 +231,11 @@ class Table
     end
   end
 
+  def self.get_by_table_name(table_name, user)
+    user_table = ::UserTable.where(name: table_name, user_id: user.id).first
+    ::Table.new(user_table: user_table)
+  end
+
   ## Callbacks
 
   # Core validation method that is automatically called before create and save

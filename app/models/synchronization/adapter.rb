@@ -13,6 +13,7 @@ module CartoDB
         @database     = database
         @user         = user
         @failed       = false
+        @broken       = false
       end
 
       def run(&tracker)
@@ -25,11 +26,20 @@ module CartoDB
             data_for_exception << "1st result:#{runner.results.first.inspect}"
             raise data_for_exception
           end
+          # Store columns types before overwriting
+          old_schema = ::Table.get_by_table_name(table_name, user)
+                              .schema(reload: true)
+
           copy_privileges(user.database_schema, table_name, result.schema, result.table_name)
           index_statements = generate_index_statements(user.database_schema, table_name)
           overwrite(table_name, result)
           cartodbfy(table_name)
           run_index_statements(index_statements)
+
+          # Chech if the schema has changed
+          new_schema = ::Table.get_by_table_name(table_name, user)
+                              .schema(reload: true)
+          check_schema_changed(old_schema, new_schema)
         end
         self
       rescue => exception
@@ -102,6 +112,10 @@ module CartoDB
 
       def success?
         (!@failed  && runner.success?)
+      end
+
+      def schema_broken?
+        @broken
       end
 
       def etag
@@ -229,6 +243,12 @@ module CartoDB
             end
           end
         }
+      end
+
+      def check_schema_changed(old_schema, new_schema)
+        return if old_schema.size < new_schema.size
+        @broken = old_schema.size > new_schema.size && return
+        @broken = !old_schema.zip(new_schema).map { |x, y| x == y }.all?
       end
 
       private

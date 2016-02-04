@@ -31,7 +31,7 @@ describe('widgets-service', function () {
           title: 'some_title',
           column: 'my_column',
           aggregation: 'avg',
-          suffix: ' people' 
+          suffix: ' people'
         };
         this.widgetModel = this.widgetsService.newCategoryModel(attrs, this.vis.map.layers.first());
       });

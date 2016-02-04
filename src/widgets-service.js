@@ -44,7 +44,8 @@ WidgetsService.prototype.createCategoryModel = function (attrs, layer) {
   var widgetModel = new CategoryWidgetModel({
     id: attrs.id,
     type: 'category',
-    title: attrs.title
+    title: attrs.title,
+    dataviewModelAttrsNames: ['column', 'aggregation', 'aggregationColumn']
   }, {
     dataviewModel: dataviewModel
   });
@@ -78,7 +79,8 @@ WidgetsService.prototype.createHistogramModel = function (attrs, layer) {
   var widgetModel = new WidgetModel({
     id: attrs.id,
     type: 'histogram',
-    title: attrs.title
+    title: attrs.title,
+    dataviewModelAttrsNames: ['column', 'bins']
   }, {
     dataviewModel: dataviewModel
   });
@@ -112,7 +114,8 @@ WidgetsService.prototype.createFormulaModel = function (attrs, layer) {
   var widgetModel = new WidgetModel({
     id: attrs.id,
     type: 'formula',
-    title: attrs.title
+    title: attrs.title,
+    dataviewModelAttrsNames: ['column', 'operation']
   }, {
     dataviewModel: dataviewModel
   });
@@ -147,7 +150,8 @@ WidgetsService.prototype.createListModel = function (attrs, layer) {
   var widgetModel = new WidgetModel({
     id: attrs.id,
     type: 'list',
-    title: attrs.title
+    title: attrs.title,
+    dataviewModelAttrsNames: ['columns', 'columns_title']
   }, {
     dataviewModel: dataviewModel
   });
@@ -181,7 +185,8 @@ WidgetsService.prototype.createTimeSeriesModel = function (attrs, layer) {
 
   var widgetModel = new WidgetModel({
     id: attrs.id,
-    type: 'time-series'
+    type: 'time-series',
+    dataviewModelAttrsNames: ['column', 'columnType', 'bins', 'start', 'end']
   }, {
     dataviewModel: dataviewModel
   });

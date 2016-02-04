@@ -30,8 +30,6 @@ module.exports = Model.extend({
       // TODO Setting layer-index on filters here is not good, if order change the filters won't work on the expected layer anymore!
       layerIndex: this._indexOf(layerModel)
     });
-
-    // layer.filters.add(categoryFilter);
     return this._newModel(
       new CategorDataviewModel(attrs, {
         map: this._map,

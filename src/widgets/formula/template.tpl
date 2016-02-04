@@ -6,11 +6,13 @@
         <span class="CDB-Widget-textSmaller CDB-Widget-textSmaller--upper"><%- operation %></span>
       </div>
     </div>
-    <button class="CDB-Shape-threePoints is-blue is-small js-actions">
-      <div class="CDB-Shape-threePointsItem"></div>
-      <div class="CDB-Shape-threePointsItem"></div>
-      <div class="CDB-Shape-threePointsItem"></div>
-    </button>
+    <div class="CDB-Shape js-actions">
+      <button class="CDB-Shape-threePoints is-blue is-small">
+        <div class="CDB-Shape-threePointsItem"></div>
+        <div class="CDB-Shape-threePointsItem"></div>
+        <div class="CDB-Shape-threePointsItem"></div>
+      </button>
+    </div>
   </div>
   <dl class="CDB-Widget-info CDB-Widget-textSmaller CDB-Widget-textSmaller--upper">
     <dt class="CDB-Widget-infoCount"><%- nulls %></dt><dd class="CDB-Widget-infoDescription">null rows</dd>

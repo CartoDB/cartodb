@@ -223,6 +223,7 @@ module.exports = DataviewModelBase.extend({
     }
 
     this._data.reset(newData);
+
     return {
       allCategoryNames: _
         .chain(allNewCategoryNames)

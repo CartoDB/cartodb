@@ -4,7 +4,7 @@ var Backbone = require('backbone');
 /**
  * base layer for all leaflet layers
  */
-var LeafletLayerView = function(layerModel, leafletLayer, leafletMap) {
+var LeafletLayerView = function (layerModel, leafletLayer, leafletMap) {
   this.leafletLayer = leafletLayer;
   this.leafletMap = leafletMap;
   this.model = layerModel;
@@ -18,7 +18,7 @@ var LeafletLayerView = function(layerModel, leafletLayer, leafletMap) {
 _.extend(LeafletLayerView.prototype, Backbone.Events);
 _.extend(LeafletLayerView.prototype, {
 
-  setModel: function(model) {
+  setModel: function (model) {
     if (this.model) {
       this.model.unbind('change', this._modelUpdated, this);
     }
@@ -29,17 +29,16 @@ _.extend(LeafletLayerView.prototype, {
   /**
    * remove layer from the map and unbind events
    */
-  remove: function() {
+  remove: function () {
     this.leafletMap.removeLayer(this.leafletLayer);
     this.trigger('remove', this);
     this.model.unbind(null, null, this);
     this.unbind();
   },
 
-  reload: function() {
+  reload: function () {
     this.leafletLayer.redraw();
   }
-
 });
 
 module.exports = LeafletLayerView;

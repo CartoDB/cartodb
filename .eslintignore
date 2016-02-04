@@ -45,7 +45,6 @@
 **/src/geo/gmaps/projector.js
 **/src/geo/leaflet/leaflet-cartodb-layer-group-view.js
 **/src/geo/leaflet/leaflet-gmaps-tiled-layer-view.js
-**/src/geo/leaflet/leaflet-layer-view.js
 **/src/geo/leaflet/leaflet-map-view.js
 **/src/geo/leaflet/leaflet-path-view.js
 **/src/geo/leaflet/leaflet-plain-layer-view.js

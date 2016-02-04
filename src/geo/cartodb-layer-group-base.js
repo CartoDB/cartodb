@@ -16,7 +16,7 @@ var CartoDBLayerGroupBase = MapLayer.extend({
       throw new Error('windshaftMap option is required');
     }
 
-    this.layers = new Backbone.Collection(options.layers || {});
+    this.layers = new Backbone.Collection(options.layers || []);
     this._windshaftMap = options.windshaftMap;
 
     // When a new instance of the map is created in Windshaft, we will need to use

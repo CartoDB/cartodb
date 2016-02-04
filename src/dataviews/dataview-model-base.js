@@ -58,9 +58,19 @@ module.exports = Model.extend({
       this._fetch(this._onChangeBinds.bind(this));
     });
 
-    // Retrigger an event when the filter changes
     if (this.filter) {
       this.listenTo(this.filter, 'change', this._onFilterChanged);
+    }
+  },
+
+  _onFilterChanged: function (filter) {
+    var dataProvider = this.layer.getDataProvider();
+    if (dataProvider) {
+      dataProvider.applyFilter(this.get('column'), filter);
+    } else {
+      this._map.reload({
+        sourceLayerId: this.layer.get('id')
+      });
     }
   },
 
@@ -76,15 +86,6 @@ module.exports = Model.extend({
       // TODO: Instead of setting the url here, we could invoke fetch directly
       this.set('url', url, { silent: silent });
     }
-  },
-
-  _onMapBoundsChanged: function () {
-    this._updateBoundingBox();
-  },
-
-  _updateBoundingBox: function () {
-    var boundingBoxFilter = new WindshaftFiltersBoundingBoxFilter(this._map.getViewBounds());
-    this.set('boundingBox', boundingBoxFilter.toString());
   },
 
   _onChangeBinds: function () {
@@ -116,6 +117,15 @@ module.exports = Model.extend({
     });
   },
 
+  _onMapBoundsChanged: function () {
+    this._updateBoundingBox();
+  },
+
+  _updateBoundingBox: function () {
+    var boundingBoxFilter = new WindshaftFiltersBoundingBoxFilter(this._map.getViewBounds());
+    this.set('boundingBox', boundingBoxFilter.toString());
+  },
+
   _shouldFetchOnURLChange: function () {
     return this.get('syncData') && this.get('enabled');
   },
@@ -145,6 +155,11 @@ module.exports = Model.extend({
 
   _fetchFromDataProvider: function (opts) {
     var dataProvider = this.layer.getDataProvider();
+
+    // TODO: At the beginning, the dataProvider will not have any features
+    // loaded so we will have to listen to the `featuresChanged` event, but
+    // once the dataProvider has been initialized, we should implement and use
+    // dataProvider.getFeatures() instead of adding yet another binding.
     dataProvider.bind('featuresChanged', function (features) {
       try {
         var data = dataProvider.generateDataForDataview(this, features);
@@ -164,12 +179,6 @@ module.exports = Model.extend({
 
   refresh: function () {
     this._fetch();
-  },
-
-  _onFilterChanged: function (filter) {
-    this._map.reload({
-      sourceLayerId: this.layer.get('id')
-    });
   },
 
   getData: function () {

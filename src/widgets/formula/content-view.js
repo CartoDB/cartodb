@@ -48,7 +48,20 @@ module.exports = WidgetContentView.extend({
       el: this.$el
     });
 
-    animator.animateValue(this._dataviewModel, 'data', '.js-value', animationTemplate, { animationSpeed: 700, formatter: format, templateData: { prefix: prefix, suffix: suffix } });
+    animator.animateValue(
+      this._dataviewModel,
+      'data',
+      '.js-value',
+      animationTemplate,
+      {
+        animationSpeed: 700,
+        formatter: format,
+        templateData: {
+          prefix: prefix,
+          suffix: suffix
+        }
+      }
+    );
 
     this.$el.toggleClass('is-collapsed', !!isCollapsed);
 
@@ -75,6 +88,11 @@ module.exports = WidgetContentView.extend({
     }, this);
 
     this.addView(dropdown);
+  },
+
+  _onCollapsedChange: function () {
+    // Although formula widget is collapsed, it should be updated
+    // when new data arrives
   }
 
 });

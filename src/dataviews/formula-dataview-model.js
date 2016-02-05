@@ -19,12 +19,14 @@ module.exports = DataviewModelBase.extend({
     };
   },
 
-  toJSON: function (d) {
+  toJSON: function () {
     return {
       type: 'formula',
       options: {
         column: this.get('column'),
-        operation: this.get('operation')
+        operation: this.get('operation'),
+        suffix: this.get('suffix'),
+        prefix: this.get('prefix')
       }
     };
   }

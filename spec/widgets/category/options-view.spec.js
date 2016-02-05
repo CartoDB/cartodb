@@ -27,8 +27,7 @@ describe('widgets/category/options-view', function () {
     this.view.render();
     var $el = this.view.$el;
     expect($el.find('.CDB-Widget-textSmaller').length).toBe(1);
-    expect($el.find('.CDB-Widget-link').length).toBe(1);
-    expect($el.find('.CDB-Widget-link').text()).toBe('none');
+    expect($el.find('.CDB-Widget-link').length).toBe(0);
   });
 
   describe('bind', function () {
@@ -123,48 +122,14 @@ describe('widgets/category/options-view', function () {
       expect(this.view.$('.CDB-Widget-textSmaller').text()).toContain('1 selected');
       expect(this.view.$('.CDB-Widget-filterButtons').length).toBe(1);
       expect(this.view.$('.js-all').length).toBe(1);
-      expect(this.view.$('.js-none').length).toBe(1);
     });
 
-    it('should render all button and none selected text if all categories are rejected', function () {
+    it('should render all button selected text if all categories are rejected', function () {
       spyOn(this.dataviewModel.filter, 'areAllRejected').and.returnValue(true);
       this.view.render();
       expect(this.view.$('.js-all').length).toBe(1);
-      expect(this.view.$('.js-none').length).toBe(0);
       expect(this.view.$('p.CDB-Widget-textSmaller').text()).toContain('None selected');
     });
-
-    it('should render none button if all categories are not rejected', function () {
-      spyOn(this.dataviewModel.filter, 'areAllRejected').and.returnValue(false);
-      this.dataviewModel.sync = function (method, model, options) {
-        options.success({
-          'categories': [
-            {category: 'Hey'},
-            {category: 'Buddy'}
-          ]
-        });
-      };
-      this.dataviewModel.fetch();
-      this.view.render();
-      expect(this.view.$('.js-all').length).toBe(0);
-      expect(this.view.$('.js-none').length).toBe(1);
-    });
-  });
-
-  it('should reject all when none button is clicked', function () {
-    spyOn(this.dataviewModel.filter, 'rejectAll');
-    this.dataviewModel.sync = function (method, model, options) {
-      options.success({
-        'categories': [
-          {category: 'Hey'},
-          {category: 'Buddy'}
-        ]
-      });
-    };
-    this.dataviewModel.fetch();
-    this.view.render();
-    this.view.$('.js-none').click();
-    expect(this.dataviewModel.filter.rejectAll).toHaveBeenCalled();
   });
 
   it('should accept all when all button is clicked', function () {

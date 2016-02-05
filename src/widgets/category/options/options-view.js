@@ -10,7 +10,6 @@ module.exports = cdb.core.View.extend({
 
   events: {
     'click .js-all': '_onSelectAll',
-    'click .js-none': '_onUnselectAll',
     'click .js-lock': '_lockCategories',
     'click .js-unlock': '_unlockCategories'
   },
@@ -61,10 +60,6 @@ module.exports = cdb.core.View.extend({
 
   _unlockCategories: function () {
     this.widgetModel.unlockCategories();
-  },
-
-  _onUnselectAll: function () {
-    this.dataviewModel.filter.rejectAll();
   },
 
   _onSelectAll: function () {

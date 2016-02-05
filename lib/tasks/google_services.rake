@@ -1,7 +1,5 @@
 # encoding: utf-8
 
-require_relative '../../app/models/carto/organization'
-
 namespace :cartodb do
   namespace :services do
     namespace :external do
@@ -35,8 +33,8 @@ namespace :cartodb do
         end
 
         desc 'Enable Google Services for all users'
-        task :enable_for_all do |task|
-          Carto::Organization.each do |organization|
+        task :enable_for_all, [:google_maps_key, :google_maps_private_key] => [:environment] do |task, args|
+          Carto::Organization.all.each do |organization|
             puts "Enabling google services for organization '#{organization.name}'..."
 
             organization.google_maps_key = args[:google_maps_key]

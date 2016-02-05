@@ -98,7 +98,14 @@ module.exports = cdb.core.View.extend({
     //   data[loBarIndex].start,
     //   data[hiBarIndex - 1].end
     // );
-    this._torqueLayerModel.renderRange(loBarIndex, hiBarIndex);
+
+    // transform histogram bins to torque steps
+    var bins = this._dataviewModel.get('bins');
+    var steps = this._torqueLayerModel.get('steps');
+    var loStep = Math.round(steps * loBarIndex / bins);
+    var hiStep = Math.round(steps * hiBarIndex / bins);
+
+    this._torqueLayerModel.renderRange(loStep, hiStep);
   },
 
   _onChangeChartWidth: function () {

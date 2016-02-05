@@ -41,6 +41,9 @@ module.exports = WidgetContentView.extend({
     this._storeBounds();
     this._dataviewModel.once('change:data', this.render, this);
     this._dataviewModel._fetch();
+    if (!this._isDataEmpty()) {
+      this.render();
+    }
   },
 
   _storeBounds: function () {

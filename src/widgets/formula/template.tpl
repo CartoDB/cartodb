@@ -6,8 +6,12 @@
         <span class="CDB-Widget-textSmaller CDB-Widget-textSmaller--upper"><%- operation %></span>
       </div>
     </div>
-    <button class="CDB-Shape-threePoints js-actions">
-      <span class="CDB-Shape-threePointsItem"></span>
+    <button class="CDB-Shape js-actions">
+      <div class="CDB-Shape-threePoints is-blue is-small">
+        <div class="CDB-Shape-threePointsItem"></div>
+        <div class="CDB-Shape-threePointsItem"></div>
+        <div class="CDB-Shape-threePointsItem"></div>
+      </div>
     </button>
   </div>
   <dl class="CDB-Widget-info CDB-Widget-textSmaller CDB-Widget-textSmaller--upper">

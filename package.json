@@ -20,11 +20,7 @@
     "Pablo Alonso <pablo@cartodb.com>",
     "Antonio Santiago Pérez <asantiago@cartodb.com>"
   ],
-  "licenses": [
-    {
-      "type": "BSD"
-    }
-  ],
+  "license": "BSD-3-Clause",
   "dependencies": {
     "backbone": "1.2.3",
     "cartodb.js": "CartoDB/cartodb.js#b4c5f49",
@@ -56,7 +52,7 @@
     "source-map-support": "0.4.0",
     "time-grunt": "1.2.2",
     "watchify": "3.6.1",
-    "cartoassets": "0.1.20"
+    "cartoassets": "0.1.24"
   },
   "browserify": {
     "transform": [

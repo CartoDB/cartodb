@@ -14,6 +14,7 @@ module.exports = cdb.core.View.extend({
 
     // TODO inheritance strikes again; this should always be called, but some views override _initBinds,
     // so make sure this is always called
+    this.model.bind('change:title', this.render, this);
     this.model.bind('change:collapsed', this._onCollapsedChange, this);
 
     this._initBinds();

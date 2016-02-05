@@ -1,3 +1,4 @@
+var _ = require('underscore');
 var WidgetModel = require('../widget-model');
 var CategoryColors = require('./category-colors');
 var LockedCategoriesCollection = require('./locked-categories-collection');
@@ -7,12 +8,14 @@ var LockedCategoriesCollection = require('./locked-categories-collection');
  */
 module.exports = WidgetModel.extend({
 
-  defaults: {
-    title: '',
-    search: false,
-    locked: false,
-    isColorsApplied: false
-  },
+  defaults: _.extend(
+    {
+      search: false,
+      locked: false,
+      isColorsApplied: false
+    },
+    WidgetModel.prototype.defaults
+  ),
 
   initialize: function () {
     WidgetModel.prototype.initialize.apply(this, arguments);

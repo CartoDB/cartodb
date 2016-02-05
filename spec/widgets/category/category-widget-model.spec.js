@@ -10,6 +10,11 @@ describe('widgets/category/category-widget-model', function () {
     });
   });
 
+  it('should have defaults', function () {
+    expect(this.widgetModel.get('title')).toEqual('');
+    expect(this.widgetModel.get('collapsed')).toBe(false);
+  });
+
   describe('colors', function () {
     beforeEach(function () {
       spyOn(this.widgetModel.colors, 'updateData').and.callThrough();

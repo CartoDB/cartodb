@@ -98,7 +98,7 @@ GeoJSONDataProvider.prototype.applyFilter = function (columnName, filter) {
       filterType = 'accept';
       filterOptions = { column: columnName, values: filter.getAcceptedCategoryNames() };
     } else if (filter.rejectedCategories.size()) {
-      filterType = 'cancel';
+      filterType = 'reject';
       filterOptions = { column: columnName, values: filter.getRejectedCategoryNames() };
     }
   } else if (filter instanceof RangeFilter) {

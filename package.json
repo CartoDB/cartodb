@@ -30,7 +30,7 @@
     "cartoassets": "0.1.22",
     "cartodb-pecan": "0.2.x",
     "csswring": "^3.0.5",
-    "cartodb-deep-insights.js": "CartoDB/deep-insights.js#183c4b3",
+    "cartodb-deep-insights.js": "CartoDB/deep-insights.js#1b2bdd0",
     "cartodb.js": "CartoDB/cartodb.js#b4c5f49",
     "git-rev": "0.2.1",
     "grunt": "0.4.5",

@@ -85,25 +85,34 @@ GeoJSONDataProvider.prototype.generateDataForDataview = function (dataview, feat
 };
 
 GeoJSONDataProvider.prototype.applyFilter = function (columnName, filter) {
+  var filterType;
+  var filterOptions;
   if (filter instanceof CategoryFilter) {
     if (filter.isEmpty()) {
-      this._vectorLayerView.applyFilter(this._layerIndex, 'accept', { column: columnName, values: 'all' });
+      filterType = 'accept';
+      filterOptions = { column: columnName, values: 'all' };
     } else if (filter.get('rejectAll')) {
-      this._vectorLayerView.applyFilter(this._layerIndex, 'reject', { column: columnName, values: 'all' });
+      filterType = 'reject';
+      filterOptions = { column: columnName, values: 'all' };
     } else if (filter.acceptedCategories.size()) {
-      this._vectorLayerView.applyFilter(this._layerIndex, 'accept', { column: columnName, values: filter.getAcceptedCategoryNames() });
+      filterType = 'accept';
+      filterOptions = { column: columnName, values: filter.getAcceptedCategoryNames() };
     } else if (filter.rejectedCategories.size()) {
-      this._vectorLayerView.applyFilter(this._layerIndex, 'cancel', { column: columnName, values: filter.getRejectedCategoryNames() });
+      filterType = 'cancel';
+      filterOptions = { column: columnName, values: filter.getRejectedCategoryNames() };
     }
   } else if (filter instanceof RangeFilter) {
+    filterType = 'range';
     if (filter.isEmpty()) {
-      this._vectorLayerView.applyFilter(0, 'range', { column: 'age', min: 0, max: Infinity });
+      filterOptions = { column: 'age', min: 0, max: Infinity };
     } else {
-      this._vectorLayerView.applyFilter(0, 'range', { column: columnName, min: filter.get('min'), max: filter.get('max') });
+      filterOptions = { column: columnName, min: filter.get('min'), max: filter.get('max') };
     }
   } else {
     throw new Error('Filter on ' + columnName + "couldn't be applied. Filter type wasn't recognized.");
   }
+
+  this._vectorLayerView.applyFilter(this._layerIndex, filterType, filterOptions);
 };
 
 _.extend(GeoJSONDataProvider.prototype, Backbone.Events);

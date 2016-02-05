@@ -173,7 +173,7 @@ WidgetsService.prototype.createTimeSeriesModel = function (attrs, layer) {
   var dataviewModel = this._dataviews.createHistogramModel(layer, {
     type: 'histogram',
     column: attrs.column,
-    columnType: 'date',
+    columnType: attrs.columnType || 'date',
     bins: attrs.bins,
     start: attrs.start,
     end: attrs.end

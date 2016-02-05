@@ -8,3 +8,5 @@ spec/index.html #specrunner
 vendor
 .idea/
 examples/local-config.js
+*.swp
+*.swo

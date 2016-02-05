@@ -1,4 +1,7 @@
 # encoding: utf-8
+
+require_relative '../../app/models/carto/organization'
+
 namespace :cartodb do
   namespace :services do
     namespace :external do

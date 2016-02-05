@@ -179,23 +179,7 @@ $chartMiniHighlight: rgba(#333, 1);
   .CDB-Shape-dot {
     background: $elementBorder;
   }
-  .CDB-Shape-threePoints:before,
-  .CDB-Shape-threePoints:after {
-    background-color: $link;
-  }
-  .CDB-Shape-threePoints:hover {
-    &:before,
-    &:after {
-      background-color: $linkHover;
-    }
-    .CDB-Shape-threePointsItem {
-      background-color: $linkHover;
-    }
-  }
-  .CDB-Shape-threePointsItem {
-    background-color: $link;
-  }
-
+  
   .CDB-Shape-arrow:after,
   .CDB-Shape-arrow:before {
     background-color: $link;

@@ -52,7 +52,7 @@
     "source-map-support": "0.4.0",
     "time-grunt": "1.2.2",
     "watchify": "3.6.1",
-    "cartoassets": "0.1.20"
+    "cartoassets": "0.1.24"
   },
   "browserify": {
     "transform": [

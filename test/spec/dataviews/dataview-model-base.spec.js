@@ -186,33 +186,35 @@ describe('dataviews/dataview-model-base', function () {
   });
 
   describe('when the layer has a data provider', function () {
-    it('it should fetch from the data provider', function () {
+    it('it should gets data from that provider when features changed', function () {
       var layer = new Backbone.Model();
       var syncCallback = jasmine.createSpy('syncCallback');
-      var loadingCallback = jasmine.createSpy('loadingCallback');
+
+      var dataProvider = new Backbone.Model();
+      dataProvider.generateDataForDataview = function (dataview, data) {
+        return data[0];
+      };
+      layer.getDataProvider = function () {
+        return dataProvider;
+      };
+
       var dataview = new DataviewModelBase(null, {
         map: this.map,
         windshaftMap: this.windshaftMap,
         layer: layer
       });
       dataview.bind('sync', syncCallback);
-      dataview.bind('loading', loadingCallback);
-
-      var dataProvider = new Backbone.Model();
-      dataProvider.generateDataForDataview = function () {
-        return { c: 'd' };
-      };
-      layer.getDataProvider = function () {
-        return dataProvider;
-      };
-
-      // Fetch binds the dataview to the dataProvider of the layer
-      dataview.fetch();
-
-      expect(loadingCallback).toHaveBeenCalled();
 
       // The dataProvider triggers a featuresChanged event with some features
-      dataProvider.trigger('featuresChanged', [[{a: 'b'}]]);
+      dataProvider.trigger('featuresChanged', [{ a: 'b' }]);
+
+      // The dataview has been updated and events have been triggered
+      expect(dataview.get('a')).toEqual('b');
+      expect(syncCallback).toHaveBeenCalled();
+      syncCallback.calls.reset();
+
+      // The dataProvider triggers a featuresChanged event with some features
+      dataProvider.trigger('featuresChanged', [{ c: 'd' }]);
 
       // The dataview has been updated and events have been triggered
       expect(dataview.get('c')).toEqual('d');

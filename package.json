@@ -27,7 +27,7 @@
   ],
   "dependencies": {
     "backbone": "1.2.3",
-    "cartodb.js": "CartoDB/cartodb.js#c626329",
+    "cartodb.js": "CartoDB/cartodb.js#477789befbcf391a3364f5c7779ac375450577f3",
     "d3": "3.5.8",
     "jquery": "2.1.4",
     "jstify": "0.12.0",

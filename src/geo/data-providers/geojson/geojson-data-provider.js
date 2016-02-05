@@ -87,7 +87,7 @@ GeoJSONDataProvider.prototype.generateDataForDataview = function (dataview, feat
 GeoJSONDataProvider.prototype.applyFilter = function (columnName, filter) {
   if (filter instanceof CategoryFilter) {
     if (filter.isEmpty()) {
-      this._vectorLayerView.applyFilter(this._layerIndex, 'reject', { column: columnName, values: 'all' });
+      this._vectorLayerView.applyFilter(this._layerIndex, 'accept', { column: columnName, values: 'all' });
     } else if (filter.get('rejectAll')) {
       this._vectorLayerView.applyFilter(this._layerIndex, 'reject', { column: columnName, values: 'all' });
     } else if (filter.acceptedCategories.size()) {

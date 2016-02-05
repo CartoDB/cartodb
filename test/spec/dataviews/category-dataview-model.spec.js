@@ -132,6 +132,15 @@ describe('dataviews/category-dataview-model', function () {
     expect(this.model._fetch.calls.count()).toEqual(1);
   });
 
+  describe('toJSON', function () {
+    it('should return suffix and prefix values', function () {
+      this.model.set('suffix', '$');
+      var data = this.model.toJSON();
+      expect(data.options.suffix).toBe('$');
+      expect(data.options.prefix).toBeDefined();
+    });
+  });
+
   describe('parseData', function () {
     it('should provide data as an object', function () {
       _parseData(this.model, _generateData(10));

@@ -59,7 +59,7 @@ GeoJSONDataProvider.prototype._dataGeneratorsForDataviews = {
     } else if (operation === 'avg') {
       var total = 0;
       _.each(features, function (feature) {
-        total += parseInt(feature.properties[columnName], 16);
+        total += parseInt(feature.properties[columnName], 10);
       });
       data = {
         'operation': 'avg',

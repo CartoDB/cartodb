@@ -8,6 +8,7 @@ describe('dataviews/histogram-dataview-model', function () {
     var windshaftMap = jasmine.createSpyObj('windhsaftMap', ['bind']);
     this.filter = new Model();
     this.layer = new Model();
+    this.layer.getDataProvider = function () {};
     this.model = new HistogramDataviewModel({}, {
       map: map,
       windshaftMap: windshaftMap,

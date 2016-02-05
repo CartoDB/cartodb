@@ -18,7 +18,8 @@
     }
   ],
   "dependencies": {
-    "backbone": "1.2.3"
+    "backbone": "1.2.3",
+    "perfect-scrollbar": "0.6.7"
   },
   "devDependencies": {
     "autoprefixer-core": "5.2.1",
@@ -27,7 +28,7 @@
     "browserify": "11.0.1",
     "browserify-resolutions": "1.0.6",
     "browserify-shim": "3.8.10",
-    "cartoassets": "0.1.22",
+    "cartoassets": "0.1.24",
     "cartodb-pecan": "0.2.x",
     "csswring": "^3.0.5",
     "cartodb-deep-insights.js": "CartoDB/deep-insights.js#1b2bdd0",

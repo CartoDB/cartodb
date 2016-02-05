@@ -5,9 +5,8 @@ require_relative '../doubles/result'
 require 'csv'
 
 describe CartoDB::Importer2::Overviews do
-
   before(:all) do
-    @user = create_user(:quota_in_bytes => 1000.megabyte, :table_quota => 400)
+    @user = create_user(quota_in_bytes: 1000.megabyte, table_quota: 400)
     @feature_flag = FactoryGirl.create(:feature_flag, name: 'create_overviews', restricted: true)
   end
 
@@ -71,18 +70,18 @@ describe CartoDB::Importer2::Overviews do
 
   it 'should not create overviews if the feature flag is not enabled' do
     user = set_feature_flag @user, 'create_overviews', false
-    Cartodb.with_config overviews: { 'min_rows'=>500 } do
+    Cartodb.with_config overviews: { 'min_rows' => 500 } do
       user.has_feature_flag?('create_overviews').should eq false
       Cartodb.get_config(:overviews, 'min_rows').should eq 500
 
       # cities_box is a ~900 points dataset
       filepath = "#{Rails.root}/spec/support/data/cities-box.csv"
       data_import = DataImport.create(
-        :user_id       => user.id,
-        :data_source   => filepath,
-        :updated_at    => Time.now,
-        :append        => false,
-        :privacy       => (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['public']
+        user_id:     user.id,
+        data_source: filepath,
+        updated_at:  Time.now,
+        append:      false,
+        privacy:     (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['public']
       )
       data_import.values[:data_source] = filepath
       data_import.run_import!
@@ -96,18 +95,18 @@ describe CartoDB::Importer2::Overviews do
 
   it 'should not create overviews for small datasets' do
     user = set_feature_flag @user, 'create_overviews', true
-    Cartodb.with_config overviews: { 'min_rows'=>1000 } do
+    Cartodb.with_config overviews: { 'min_rows' => 1000 } do
       user.has_feature_flag?('create_overviews').should eq true
       Cartodb.get_config(:overviews, 'min_rows').should eq 1000
 
       # cities_box is a ~900 points dataset
       filepath = "#{Rails.root}/spec/support/data/cities-box.csv"
       data_import = DataImport.create(
-        :user_id       => user.id,
-        :data_source   => filepath,
-        :updated_at    => Time.now,
-        :append        => false,
-        :privacy       => (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['public']
+        user_id:     user.id,
+        data_source: filepath,
+        updated_at:  Time.now,
+        append:      false,
+        privacy:     (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['public']
       )
       data_import.values[:data_source] = filepath
       data_import.run_import!
@@ -121,18 +120,18 @@ describe CartoDB::Importer2::Overviews do
 
   it 'should not create overviews for datasets with non-supported geometries' do
     user = set_feature_flag @user, 'create_overviews', true
-    Cartodb.with_config overviews: { 'min_rows'=>100 } do
+    Cartodb.with_config overviews: { 'min_rows' => 100 } do
       user.has_feature_flag?('create_overviews').should eq true
       Cartodb.get_config(:overviews, 'min_rows').should eq 100
 
       # countries_simplified is a ~200 polygons dataset
       filepath = "#{Rails.root}/spec/support/data/countries_simplified.zip"
       data_import = DataImport.create(
-        :user_id       => user.id,
-        :data_source   => filepath,
-        :updated_at    => Time.now,
-        :append        => false,
-        :privacy       => (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['public']
+        user_id:     user.id,
+        data_source: filepath,
+        updated_at:  Time.now,
+        append:      false,
+        privacy:     (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['public']
       )
       data_import.values[:data_source] = filepath
       data_import.run_import!
@@ -146,18 +145,19 @@ describe CartoDB::Importer2::Overviews do
 
   it 'should create overviews for large datasets of the correct geometry kind' do
     user = set_feature_flag @user, 'create_overviews', true
-    Cartodb.with_config overviews: { 'min_rows'=>500 } do
+    Cartodb.with_config overviews: { 'min_rows' => 500 } do
+      puts "FF: #{user.has_feature_flag?('create_overviews')}"
       user.has_feature_flag?('create_overviews').should eq true
       Cartodb.get_config(:overviews, 'min_rows').should eq 500
 
       # cities_box is a ~900 points dataset
       filepath = "#{Rails.root}/spec/support/data/cities-box.csv"
       data_import = DataImport.create(
-        :user_id       => user.id,
-        :data_source   => filepath,
-        :updated_at    => Time.now,
-        :append        => false,
-        :privacy       => (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['public']
+        user_id:     user.id,
+        data_source: filepath,
+        updated_at:  Time.now,
+        append:      false,
+        privacy:     (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['public']
       )
       data_import.values[:data_source] = filepath
       data_import.run_import!

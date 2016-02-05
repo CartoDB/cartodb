@@ -19,7 +19,8 @@ namespace :cartodb do
         end
 
         desc 'Enable Google Services for an organization'
-        task :enable_for_organization, [:google_maps_key, :google_maps_private_key, :org_name] => [:environment] do |task, args|
+        task :enable_for_organization,
+             [:google_maps_key, :google_maps_private_key, :org_name] => [:environment] do |task, args|
           organization = Carto::Organization.where(name: args[:org_name]).first
 
           raise "No organization with username '#{args[:org_name]}'" if organization.nil?
@@ -27,7 +28,10 @@ namespace :cartodb do
           puts "Enabling google services for organization '#{organization.name}'..."
 
           organization.google_maps_key = args[:google_maps_key]
-          organization.google_maps_private_key = args[:google_maps_private_key] unless args[:google_maps_private_key].blank?
+
+          unless args[:google_maps_private_key].blank?
+            organization.google_maps_private_key = args[:google_maps_private_key]
+          end
 
           puts organization.errors.full_messages unless organization.save
         end
@@ -38,7 +42,10 @@ namespace :cartodb do
             puts "Enabling google services for organization '#{organization.name}'..."
 
             organization.google_maps_key = args[:google_maps_key]
-            organization.google_maps_private_key = args[:google_maps_private_key] unless args[:google_maps_private_key].blank?
+
+            unless args[:google_maps_private_key].blank?
+              organization.google_maps_private_key = args[:google_maps_private_key]
+            end
 
             puts organization.errors.full_messages unless organization.save
           end

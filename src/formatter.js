@@ -4,6 +4,10 @@ var d3 = require('d3');
 var format = {};
 
 format.formatNumber = function (value, unit) {
+  if (!_.isNumber(value)) {
+    return value;
+  }
+
   var format = d3.format('.2s');
 
   if (value < 1000) {

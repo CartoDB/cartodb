@@ -43,7 +43,9 @@ module CartoDB
       end
 
       def can_create_overviews?
-        @user.has_feature_flag?('create_overviews')
+        # To check for up-to-date feature flags we need a fresh record obejct
+        user = User.where(id: @user.id).first
+        user.has_feature_flag?('create_overviews')
       end
 
       # Dataset overview creation

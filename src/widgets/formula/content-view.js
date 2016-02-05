@@ -1,7 +1,7 @@
 var _ = require('underscore');
 var d3 = require('d3');
+var cdb = require('cartodb.js');
 var formatter = require('../../formatter');
-var WidgetContentView = require('../standard/widget-content-view');
 var template = require('./template.tpl');
 var DropdownView = require('../dropdown/widget-dropdown-view');
 var animationTemplate = require('./animation-template.tpl');
@@ -10,7 +10,13 @@ var AnimateValues = require('../animate-values.js');
 /**
  * Default widget content view:
  */
-module.exports = WidgetContentView.extend({
+module.exports = cdb.core.View.extend({
+  className: 'CDB-Widget-body',
+
+  initialize: function () {
+    this._dataviewModel = this.model.dataviewModel;
+    this._initBinds();
+  },
 
   render: function () {
     this.clearSubViews();
@@ -26,7 +32,7 @@ module.exports = WidgetContentView.extend({
     };
 
     var nulls = !_.isUndefined(this._dataviewModel.get('nulls')) && formatter.formatNumber(this._dataviewModel.get('nulls')) || '-';
-    var isCollapsed = this.model.isCollapsed();
+    var isCollapsed = this.model.get('collapsed');
 
     var prefix = this._dataviewModel.get('prefix');
     var suffix = this._dataviewModel.get('suffix');
@@ -71,8 +77,9 @@ module.exports = WidgetContentView.extend({
   },
 
   _initBinds: function () {
-    this.model.bind('change:collapsed', this.render, this);
-    WidgetContentView.prototype._initBinds.call(this);
+    this.model.bind('change:title change:collapsed', this.render, this);
+    this._dataviewModel.bind('change:data', this.render, this);
+    this.add_related_model(this._dataviewModel);
   },
 
   _initViews: function () {
@@ -83,16 +90,11 @@ module.exports = WidgetContentView.extend({
 
     dropdown.bind('click', function (action) {
       if (action === 'toggle') {
-        this.model.toggleCollapsed();
+        this.model.set('collapsed', !this.model.get('collapsed'));
       }
     }, this);
 
     this.addView(dropdown);
-  },
-
-  _onCollapsedChange: function () {
-    // Although formula widget is collapsed, it should be updated
-    // when new data arrives
   }
 
 });

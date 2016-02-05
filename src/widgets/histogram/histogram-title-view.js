@@ -28,7 +28,7 @@ module.exports = cdb.core.View.extend({
       template({
         title: this.widgetModel.get('title'),
         isSizesApplied: this.dataviewModel.get('histogramSizes'),
-        isCollapsed: this.widgetModel.isCollapsed()
+        isCollapsed: this.widgetModel.get('collapsed')
       })
     );
     this._initViews();
@@ -37,7 +37,7 @@ module.exports = cdb.core.View.extend({
   },
 
   _initBinds: function () {
-    this.widgetModel.bind('change:collapsed', this.render, this);
+    this.widgetModel.bind('change:title change:collapsed', this.render, this);
     this.dataviewModel.bind('change:histogramSizes', this.render, this);
     this.add_related_model(this.dataviewModel);
   },

@@ -10,28 +10,12 @@ var cdb = require('cartodb.js');
  */
 module.exports = cdb.core.Model.extend({
   defaults: {
-    title: '',
-    collapsed: false,
-    attrsNames: ['title', 'collapsed'],
+    attrsNames: [],
     dataviewModelAttrsNames: []
   },
 
   initialize: function (attrs, opts) {
     this.dataviewModel = opts.dataviewModel;
-  },
-
-  /**
-   * @public
-   */
-  isCollapsed: function () {
-    return this.get('collapsed');
-  },
-
-  /**
-   * @public
-   */
-  toggleCollapsed: function () {
-    this.set('collapsed', !this.get('collapsed'));
   },
 
   /**

@@ -1,17 +1,25 @@
 var _ = require('underscore');
+var cdb = require('cartodb.js');
 var format = require('../../formatter');
-var WidgetContentView = require('../standard/widget-content-view');
 var WidgetListItemsView = require('./items-view');
 var WidgetListPaginatorView = require('./paginator-view');
 var WidgetListEdgesView = require('./edges-view');
 var template = require('./content-template.tpl');
+var placeholderTemplate = require('./placeholder-template.tpl');
 
 /**
  * Default widget content view:
  */
-module.exports = WidgetContentView.extend({
+module.exports = cdb.core.View.extend({
+  className: 'CDB-Widget-body',
+
   options: {
     showScroll: false
+  },
+
+  initialize: function () {
+    this._dataviewModel = this.model.dataviewModel;
+    this._initBinds();
   },
 
   render: function () {
@@ -26,12 +34,17 @@ module.exports = WidgetContentView.extend({
     );
 
     if (isDataEmpty) {
-      this._addPlaceholder();
+      this.$('.js-content').append(placeholderTemplate());
     } else {
       this._initViews();
     }
 
     return this;
+  },
+
+  _initBinds: function () {
+    this.listenTo(this.model, 'change:title', this.render);
+    this.listenTo(this._dataviewModel, 'change:data', this.render);
   },
 
   _initViews: function () {

@@ -2,6 +2,7 @@ var _ = require('underscore');
 var cdb = require('cartodb.js');
 var WidgetModel = require('./widgets/widget-model');
 var CategoryWidgetModel = require('./widgets/category/category-widget-model');
+var HistogramWidgetModel = require('./widgets/histogram/histogram-widget-model');
 
 /**
  * Public API to interact with dashboard widgets.
@@ -45,6 +46,7 @@ WidgetsService.prototype.createCategoryModel = function (attrs, layer) {
     id: attrs.id,
     type: 'category',
     title: attrs.title,
+    attrsNames: ['title', 'collapsed'],
     dataviewModelAttrsNames: ['column', 'aggregation', 'aggregationColumn']
   }, {
     dataviewModel: dataviewModel
@@ -76,10 +78,11 @@ WidgetsService.prototype.createHistogramModel = function (attrs, layer) {
     bins: attrs.bins || 10
   });
 
-  var widgetModel = new WidgetModel({
+  var widgetModel = new HistogramWidgetModel({
     id: attrs.id,
     type: 'histogram',
     title: attrs.title,
+    attrsNames: ['title', 'collapsed'],
     dataviewModelAttrsNames: ['column', 'bins']
   }, {
     dataviewModel: dataviewModel
@@ -115,6 +118,7 @@ WidgetsService.prototype.createFormulaModel = function (attrs, layer) {
     id: attrs.id,
     type: 'formula',
     title: attrs.title,
+    attrsNames: ['title', 'collapsed'],
     dataviewModelAttrsNames: ['column', 'operation']
   }, {
     dataviewModel: dataviewModel
@@ -151,6 +155,7 @@ WidgetsService.prototype.createListModel = function (attrs, layer) {
     id: attrs.id,
     type: 'list',
     title: attrs.title,
+    attrsNames: ['title'],
     dataviewModelAttrsNames: ['columns', 'columns_title']
   }, {
     dataviewModel: dataviewModel

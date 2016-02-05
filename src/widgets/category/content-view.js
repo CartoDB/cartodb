@@ -1,4 +1,4 @@
-var WidgetContent = require('../standard/widget-content-view');
+var cdb = require('cartodb.js');
 var SearchTitleView = require('./title/search-title-view');
 var CategoryOptionsView = require('./options/options-view');
 var CategoryItemsView = require('./list/items-view');
@@ -10,11 +10,16 @@ var template = require('./content-template.tpl');
 
 /**
  * Content view for category widget
- *
  */
+module.exports = cdb.core.View.extend({
+  className: 'CDB-Widget-body',
 
-module.exports = WidgetContent.extend({
   _ITEMS_PER_PAGE: 6,
+
+  initialize: function () {
+    this._dataviewModel = this.model.dataviewModel;
+    this._initBinds();
+  },
 
   render: function () {
     this.clearSubViews();

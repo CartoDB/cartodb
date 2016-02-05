@@ -1,7 +1,7 @@
 var _ = require('underscore');
 var specHelper = require('../../spec-helper');
 var HistogramContentView = require('../../../src/widgets/histogram/content-view');
-var WidgetModel = require('../../../src/widgets/widget-model');
+var HistogramWidgetModel = require('../../../src/widgets/histogram/histogram-widget-model');
 
 describe('widgets/histogram/content-view', function () {
   beforeEach(function () {
@@ -13,7 +13,7 @@ describe('widgets/histogram/content-view', function () {
       }
     });
 
-    this.widgetModel = new WidgetModel({
+    this.widgetModel = new HistogramWidgetModel({
       title: 'Howdy'
     }, {
       dataviewModel: this.dataviewModel

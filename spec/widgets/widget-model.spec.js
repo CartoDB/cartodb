@@ -34,8 +34,11 @@ describe('widgets/widget-model', function () {
       });
     });
 
-    describe('when there are no dataview attrs names defined', function () {
+    describe('when there are some attrsNames but no dataview attrs names defined', function () {
       beforeEach(function () {
+        this.model.set({
+          attrsNames: ['title']
+        }, { silent: true });
         this.result = this.model.update({
           title: 'new title',
           column: 'col',
@@ -69,9 +72,12 @@ describe('widgets/widget-model', function () {
       });
     });
 
-    describe('when there are some dataview attrs names defined', function () {
+    describe('when there are both widget and dataview attrs names defined', function () {
       beforeEach(function () {
-        this.model.set('dataviewModelAttrsNames', ['column', 'operation'], { silent: true });
+        this.model.set({
+          attrsNames: ['title'],
+          dataviewModelAttrsNames: ['column', 'operation']
+        }, { silent: true });
         this.result = this.model.update({
           title: 'new title',
           column: 'col',

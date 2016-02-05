@@ -10,9 +10,24 @@ describe('widgets/category/category-widget-model', function () {
     });
   });
 
-  it('should have defaults', function () {
-    expect(this.widgetModel.get('title')).toEqual('');
-    expect(this.widgetModel.get('collapsed')).toBe(false);
+  describe('when model is set to collapsed', function () {
+    beforeEach(function () {
+      this.widgetModel.set('collapsed', true);
+    });
+
+    it('should disable dataview', function () {
+      expect(this.widgetModel.dataviewModel.get('enabled')).toBe(false);
+    });
+
+    describe('when model is expanded', function () {
+      beforeEach(function () {
+        this.widgetModel.set('collapsed', false);
+      });
+
+      it('should enable dataview', function () {
+        expect(this.widgetModel.dataviewModel.get('enabled')).toBe(true);
+      });
+    });
   });
 
   describe('colors', function () {

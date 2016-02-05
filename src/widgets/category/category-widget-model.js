@@ -24,8 +24,8 @@ module.exports = WidgetModel.extend({
 
     this.listenTo(this.dataviewModel, 'change:allCategoryNames', this._onDataviewAllCategoryNamesChange);
     this.listenTo(this.dataviewModel, 'change:searchData', this._onDataviewChangeSearchData);
-
-    this.listenTo(this, 'change:locked', this._onLockedChange);
+    this.on('change:locked', this._onLockedChange, this);
+    this.on('change:collapsed', this._onCollapsedChange, this);
   },
 
   setupSearch: function () {
@@ -137,6 +137,10 @@ module.exports = WidgetModel.extend({
 
   _acceptedCategories: function () {
     return this.dataviewModel.filter.acceptedCategories;
+  },
+
+  _onCollapsedChange: function (m, isCollapsed) {
+    this.dataviewModel.set('enabled', !isCollapsed);
   }
 
 });

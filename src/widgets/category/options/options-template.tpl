@@ -18,9 +18,6 @@
       <% if (rejectedCats > 0 || acceptedCats > 0 || areAllRejected) { %>
         <button class="CDB-Widget-link CDB-Widget-filterButton js-all">all</button>
       <% } %>
-      <% if (totalCats > rejectedCats && !areAllRejected) { %>
-        <button class="CDB-Widget-link CDB-Widget-filterButton js-none">none</button>
-      <% } %>
     </div>
   <% } %>
 <% } %>

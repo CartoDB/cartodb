@@ -64,9 +64,14 @@ module.exports = Model.extend({
   },
 
   _onFilterChanged: function (filter) {
-    this._map.reload({
-      sourceLayerId: this.layer.get('id')
-    });
+    var dataProvider = this.layer.getDataProvider();
+    if (dataProvider) {
+      dataProvider.applyFilter(this.get('column'), filter);
+    } else {
+      this._map.reload({
+        sourceLayerId: this.layer.get('id')
+      });
+    }
   },
 
   _onNewWindshaftMapInstance: function (windshaftMapInstance, sourceLayerId) {

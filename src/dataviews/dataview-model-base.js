@@ -60,10 +60,19 @@ module.exports = Model.extend({
 
     // Retrigger an event when the filter changes
     if (this.filter) {
-      this.listenTo(this.filter, 'change', this._onFilterChanged);
+      this.listenTo(this.filter, 'change', this._reloadMap);
     }
 
-    this.bind('change:operation', this._onFilterChanged, this);
+    this.bind('change:operation', this._reloadMap, this);
+  },
+
+  /**
+   * @protected
+   */
+  _reloadMap: function () {
+    this._map.reload({
+      sourceLayerId: this.layer.get('id')
+    });
   },
 
   _onNewWindshaftMapInstance: function (windshaftMapInstance, sourceLayerId) {
@@ -138,12 +147,6 @@ module.exports = Model.extend({
 
   refresh: function () {
     this._fetch();
-  },
-
-  _onFilterChanged: function (filter) {
-    this._map.reload({
-      sourceLayerId: this.layer.get('id')
-    });
   },
 
   getData: function () {

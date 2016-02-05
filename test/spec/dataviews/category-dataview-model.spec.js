@@ -4,15 +4,29 @@ var WindshaftFiltersCategory = require('../../../src/windshaft/filters/category'
 
 describe('dataviews/category-dataview-model', function () {
   beforeEach(function () {
-    var map = jasmine.createSpyObj('map', ['getViewBounds', 'bind', 'reload']);
-    map.getViewBounds.and.returnValue([[1, 2], [3, 4]]);
+    this.map = jasmine.createSpyObj('map', ['getViewBounds', 'bind', 'reload']);
+    this.map.getViewBounds.and.returnValue([[1, 2], [3, 4]]);
     var windshaftMap = jasmine.createSpyObj('windhsaftMap', ['bind']);
     this.model = new CategoryDataviewModel(null, {
-      map: map,
+      map: this.map,
       windshaftMap: windshaftMap,
       layer: jasmine.createSpyObj('layer', ['get']),
       filter: new WindshaftFiltersCategory()
     });
+  });
+
+  it('should reload map on changing attrs', function () {
+    this.map.reload.calls.reset();
+    this.model.set('column', 'random_col');
+    expect(this.map.reload).toHaveBeenCalled();
+
+    this.map.reload.calls.reset();
+    this.model.set('aggregation', 'count');
+    expect(this.map.reload).toHaveBeenCalled();
+
+    this.map.reload.calls.reset();
+    this.model.set('aggregationColumn', 'other');
+    expect(this.map.reload).toHaveBeenCalled();
   });
 
   it('should define several internal models/collections', function () {
@@ -176,10 +190,6 @@ describe('dataviews/category-dataview-model', function () {
       });
       expect(areNamesString).toBeTruthy();
     });
-  });
-
-  it('should have defined "_onFilterChanged" method', function () {
-    expect(this.model._onFilterChanged).toBeDefined();
   });
 });
 

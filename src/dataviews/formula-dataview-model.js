@@ -3,14 +3,18 @@ var DataviewModelBase = require('./dataview-model-base');
 
 module.exports = DataviewModelBase.extend({
   defaults: _.extend(
-    {},
-    DataviewModelBase.prototype.defaults,
     {
       data: '',
       suffix: '',
       prefix: ''
-    }
+    },
+    DataviewModelBase.prototype.defaults
   ),
+
+  initialize: function () {
+    DataviewModelBase.prototype.initialize.apply(this, arguments);
+    this.on('change:operation', this._reloadMap, this);
+  },
 
   parse: function (r) {
     return {

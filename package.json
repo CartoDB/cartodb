@@ -23,7 +23,7 @@
   "license": "BSD-3-Clause",
   "dependencies": {
     "backbone": "1.2.3",
-    "cartodb.js": "CartoDB/cartodb.js#477789befbcf391a3364f5c7779ac375450577f3",
+    "cartodb.js": "CartoDB/cartodb.js#13bd452",
     "d3": "3.5.8",
     "jquery": "2.1.4",
     "jstify": "0.12.0",
@@ -34,6 +34,7 @@
   "devDependencies": {
     "browserify": "11.2.0",
     "browserify-resolutions": "1.0.6",
+    "cartoassets": "CartoDB/CartoAssets#master",
     "grunt": "0.4.5",
     "grunt-browserify": "4.0.1",
     "grunt-contrib-clean": "0.7.0",
@@ -51,8 +52,7 @@
     "semistandard": "7.0.4",
     "source-map-support": "0.4.0",
     "time-grunt": "1.2.2",
-    "watchify": "3.6.1",
-    "cartoassets": "0.1.24"
+    "watchify": "3.6.1"
   },
   "browserify": {
     "transform": [

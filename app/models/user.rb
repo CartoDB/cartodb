@@ -1325,6 +1325,11 @@ class User < Sequel::Model
     self.feature_flags.present? && self.feature_flags.include?(feature_flag_name)
   end
 
+  def reload
+    @feature_flag_names = nil
+    super
+  end
+
   def create_client_application
     ClientApplication.create(:user_id => self.id)
   end

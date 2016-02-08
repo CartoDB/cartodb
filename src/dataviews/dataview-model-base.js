@@ -83,12 +83,7 @@ module.exports = Model.extend({
    * @private
    */
   _onFilterChanged: function (filter) {
-    var dataProvider = this.layer.getDataProvider();
-    if (dataProvider) {
-      dataProvider.applyFilter(this.get('column'), filter);
-    } else {
-      this._reloadMap();
-    }
+    this._reloadMap();
   },
 
   /**

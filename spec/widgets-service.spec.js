@@ -67,7 +67,7 @@ describe('widgets-service', function () {
 
       it('should enable dataview by default', function () {
         expect(this.widgetModel.dataviewModel.get('sync_on_bbox_change')).toBe(true);
-        expect(this.widgetModel.dataviewModel.get('sync_on_source_change')).toBe(true);
+        expect(this.widgetModel.dataviewModel.get('sync_on_data_change')).toBe(true);
         expect(this.widgetModel.dataviewModel.get('enabled')).toBe(true);
       });
     });
@@ -81,7 +81,7 @@ describe('widgets-service', function () {
           aggregation: 'avg',
           suffix: ' people',
           sync_on_bbox_change: false,
-          sync_on_source_change: false,
+          sync_on_data_change: false,
           enabled: false
         };
         this.widgetModel = this.widgetsService.createCategoryModel(attrs, this.vis.map.layers.first());
@@ -89,7 +89,7 @@ describe('widgets-service', function () {
 
       it('should take them into account', function () {
         expect(this.widgetModel.dataviewModel.get('sync_on_bbox_change')).toBe(false);
-        expect(this.widgetModel.dataviewModel.get('sync_on_source_change')).toBe(false);
+        expect(this.widgetModel.dataviewModel.get('sync_on_data_change')).toBe(false);
         expect(this.widgetModel.dataviewModel.get('enabled')).toBe(false);
       });
     });
@@ -155,7 +155,7 @@ describe('widgets-service', function () {
 
       it('should enable dataview by default', function () {
         expect(this.widgetModel.dataviewModel.get('sync_on_bbox_change')).toBe(true);
-        expect(this.widgetModel.dataviewModel.get('sync_on_source_change')).toBe(true);
+        expect(this.widgetModel.dataviewModel.get('sync_on_data_change')).toBe(true);
         expect(this.widgetModel.dataviewModel.get('enabled')).toBe(true);
       });
     });
@@ -230,7 +230,7 @@ describe('widgets-service', function () {
 
       it('should enable dataview by default', function () {
         expect(this.widgetModel.dataviewModel.get('sync_on_bbox_change')).toBe(true);
-        expect(this.widgetModel.dataviewModel.get('sync_on_source_change')).toBe(true);
+        expect(this.widgetModel.dataviewModel.get('sync_on_data_change')).toBe(true);
         expect(this.widgetModel.dataviewModel.get('enabled')).toBe(true);
       });
     });
@@ -300,7 +300,7 @@ describe('widgets-service', function () {
 
       it('should enable dataview by default', function () {
         expect(this.widgetModel.dataviewModel.get('sync_on_bbox_change')).toBe(true);
-        expect(this.widgetModel.dataviewModel.get('sync_on_source_change')).toBe(true);
+        expect(this.widgetModel.dataviewModel.get('sync_on_data_change')).toBe(true);
         expect(this.widgetModel.dataviewModel.get('enabled')).toBe(true);
       });
     });
@@ -366,7 +366,7 @@ describe('widgets-service', function () {
 
       it('should enable dataview by default', function () {
         expect(this.widgetModel.dataviewModel.get('sync_on_bbox_change')).toBe(true);
-        expect(this.widgetModel.dataviewModel.get('sync_on_source_change')).toBe(true);
+        expect(this.widgetModel.dataviewModel.get('sync_on_data_change')).toBe(true);
         expect(this.widgetModel.dataviewModel.get('enabled')).toBe(true);
       });
     });

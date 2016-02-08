@@ -222,7 +222,7 @@ WidgetsService.prototype.createTimeSeriesModel = function (attrs, layer) {
 
 WidgetsService.prototype._dataviewModelAttrsNames = function (customAttrsNames) {
   return [
-    'sync_on_source_change',
+    'sync_on_data_change',
     'sync_on_bbox_change',
     'enabled'
   ].concat(customAttrsNames);
@@ -231,8 +231,8 @@ WidgetsService.prototype._dataviewModelAttrsNames = function (customAttrsNames) 
 WidgetsService.prototype._dataviewModelAttrs = function (allAttrs, customAttrs) {
   return _.extend(
     {
-      sync_on_source_change: _.isBoolean(allAttrs.sync_on_source_change)
-        ? allAttrs.sync_on_source_change
+      sync_on_data_change: _.isBoolean(allAttrs.sync_on_data_change)
+        ? allAttrs.sync_on_data_change
         : true,
       sync_on_bbox_change: _.isBoolean(allAttrs.sync_on_bbox_change)
         ? allAttrs.sync_on_bbox_change

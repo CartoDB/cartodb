@@ -70,7 +70,7 @@ describe CartoDB::Importer2::Overviews do
         data_source: filepath,
         updated_at:  Time.now,
         append:      false,
-        privacy:     (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['public']
+        privacy:     ::UserTable::PRIVACY_VALUES_TO_TEXTS.invert['public']
       )
       data_import.values[:data_source] = filepath
       data_import.run_import!
@@ -95,7 +95,7 @@ describe CartoDB::Importer2::Overviews do
         data_source: filepath,
         updated_at:  Time.now,
         append:      false,
-        privacy:     (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['public']
+        privacy:     ::UserTable::PRIVACY_VALUES_TO_TEXTS.invert['public']
       )
       data_import.values[:data_source] = filepath
       data_import.run_import!
@@ -120,7 +120,7 @@ describe CartoDB::Importer2::Overviews do
         data_source: filepath,
         updated_at:  Time.now,
         append:      false,
-        privacy:     (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['public']
+        privacy:     ::UserTable::PRIVACY_VALUES_TO_TEXTS.invert['public']
       )
       data_import.values[:data_source] = filepath
       data_import.run_import!
@@ -145,7 +145,7 @@ describe CartoDB::Importer2::Overviews do
         data_source: filepath,
         updated_at:  Time.now,
         append:      false,
-        privacy:     (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['public']
+        privacy:     ::UserTable::PRIVACY_VALUES_TO_TEXTS.invert['public']
       )
       data_import.values[:data_source] = filepath
       data_import.run_import!

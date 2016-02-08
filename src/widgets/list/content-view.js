@@ -45,6 +45,7 @@ module.exports = cdb.core.View.extend({
   _initBinds: function () {
     this.listenTo(this.model, 'change:title', this.render);
     this.listenTo(this._dataviewModel, 'change:data', this.render);
+    this.add_related_model(this._dataviewModel);
   },
 
   _initViews: function () {

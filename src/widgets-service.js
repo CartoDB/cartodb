@@ -79,7 +79,7 @@ WidgetsService.prototype.createHistogramModel = function (attrs, layer) {
     type: 'histogram',
     column: attrs.column,
     bins: attrs.bins || 10
-  }))
+  }));
 
   var widgetModel = new HistogramWidgetModel({
     id: attrs.id,
@@ -248,7 +248,7 @@ WidgetsService.prototype._dataviewModelAttrs = function (allAttrs, customAttrs) 
 function _checkProperties (obj, propertiesArray) {
   _.each(propertiesArray, function (prop) {
     if (obj[prop] === undefined) {
-      throw new Error('\'' + prop + '\' should be provided');
+      throw new Error("'" + prop + "' should be provided");
     }
   });
 }

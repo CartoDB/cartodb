@@ -15,6 +15,7 @@ module.exports = DataviewModelBase.extend({
 
   defaults: _.extend(
     {
+      type: 'aggregation',
       enableFilter: true,
       allCategoryNames: [], // all (new + previously accepted), updated on data fetch (see parse)
       prefix: '',
@@ -258,5 +259,16 @@ module.exports = DataviewModelBase.extend({
       }
     };
   }
+},
 
-});
+  // Class props
+  {
+    ATTRS_NAMES: DataviewModelBase.ATTRS_NAMES.concat([
+      'column',
+      'aggregation',
+      'aggregation_column',
+      'prefix',
+      'suffix'
+    ])
+  }
+);

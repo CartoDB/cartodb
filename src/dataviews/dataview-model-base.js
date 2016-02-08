@@ -9,7 +9,6 @@ module.exports = Model.extend({
   defaults: {
     url: '',
     data: [],
-    columns: [],
     sync_on_data_change: true,
     sync_on_bbox_change: true,
     enabled: true
@@ -178,4 +177,14 @@ module.exports = Model.extend({
     this.trigger('destroy', this);
     this.stopListening();
   }
-});
+},
+
+  // Class props
+  {
+    ATTRS_NAMES: [
+      'sync_on_data_change',
+      'sync_on_bbox_change',
+      'enabled'
+    ]
+  }
+);

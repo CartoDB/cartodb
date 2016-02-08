@@ -4,6 +4,7 @@ var DataviewModelBase = require('./dataview-model-base');
 module.exports = DataviewModelBase.extend({
   defaults: _.extend(
     {
+      type: 'formula',
       data: '',
       suffix: '',
       prefix: ''
@@ -34,5 +35,15 @@ module.exports = DataviewModelBase.extend({
       }
     };
   }
+},
 
-});
+  // Class props
+  {
+    ATTRS_NAMES: DataviewModelBase.ATTRS_NAMES.concat([
+      'column',
+      'operation',
+      'prefix',
+      'suffix'
+    ])
+  }
+);

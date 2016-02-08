@@ -25,7 +25,7 @@ describe('dataviews/category-dataview-model', function () {
     expect(this.map.reload).toHaveBeenCalled();
 
     this.map.reload.calls.reset();
-    this.model.set('aggregationColumn', 'other');
+    this.model.set('aggregation_column', 'other');
     expect(this.map.reload).toHaveBeenCalled();
   });
 

@@ -54,8 +54,8 @@ describe('dataviews/dataview-model-base', function () {
       this.model.set('url', 'newurl');
     });
 
-    it('should not fetch new data when url changes and syncData is disabled', function () {
-      this.model.set('syncData', false);
+    it('should not fetch new data when url changes and sync_on_data_change is disabled', function () {
+      this.model.set('sync_on_data_change', false);
       spyOn(this.model, 'fetch');
       this.model.trigger('change:url', this.model);
       expect(this.model.fetch).not.toHaveBeenCalled();
@@ -69,7 +69,7 @@ describe('dataviews/dataview-model-base', function () {
     });
 
     it('should not fetch new data when bbox changes and bbox is disabled', function () {
-      this.model.set('syncBoundingBox', false);
+      this.model.set('sync_on_bbox_change', false);
       spyOn(this.model, 'fetch');
       this.model.trigger('change:boundingBox', this.model);
       expect(this.model.fetch).not.toHaveBeenCalled();

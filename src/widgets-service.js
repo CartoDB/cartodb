@@ -33,21 +33,25 @@ WidgetsService.prototype.createCategoryModel = function (attrs, layer) {
     throw new Error('Error creating newCategoryModel, ' + err.message);
   }
 
-  var dataviewModel = this._dataviews.createCategoryModel(layer, {
+  var dataviewModel = this._dataviews.createCategoryModel(layer, this._dataviewModelAttrs(attrs, {
     type: 'category',
     column: attrs.column,
     aggregation: attrs.aggregation || 'count',
     aggregation_column: attrs.aggregation_column || attrs.column,
     suffix: attrs.suffix,
     prefix: attrs.prefix
-  });
+  }));
 
   var widgetModel = new CategoryWidgetModel({
     id: attrs.id,
     type: 'category',
     title: attrs.title,
     attrsNames: ['title', 'collapsed'],
-    dataviewModelAttrsNames: ['column', 'aggregation', 'aggregation_column']
+    dataviewModelAttrsNames: this._dataviewModelAttrsNames([
+      'column',
+      'aggregation',
+      'aggregation_column'
+    ])
   }, {
     dataviewModel: dataviewModel
   });
@@ -71,18 +75,21 @@ WidgetsService.prototype.createHistogramModel = function (attrs, layer) {
     throw new Error('Error creating newHistogramModel, ' + err.message);
   }
 
-  var dataviewModel = this._dataviews.createHistogramModel(layer, {
+  var dataviewModel = this._dataviews.createHistogramModel(layer, this._dataviewModelAttrs(attrs, {
     type: 'histogram',
     column: attrs.column,
     bins: attrs.bins || 10
-  });
+  }))
 
   var widgetModel = new HistogramWidgetModel({
     id: attrs.id,
     type: 'histogram',
     title: attrs.title,
     attrsNames: ['title', 'collapsed'],
-    dataviewModelAttrsNames: ['column', 'bins']
+    dataviewModelAttrsNames: this._dataviewModelAttrsNames([
+      'column',
+      'bins'
+    ])
   }, {
     dataviewModel: dataviewModel
   });
@@ -106,20 +113,25 @@ WidgetsService.prototype.createFormulaModel = function (attrs, layer) {
     throw new Error('Error creating newFormulaModel, ' + err.message);
   }
 
-  var dataviewModel = this._dataviews.createFormulaModel(layer, {
+  var dataviewModel = this._dataviews.createFormulaModel(layer, this._dataviewModelAttrs(attrs, {
     type: 'formula',
     column: attrs.column,
     operation: attrs.operation,
     suffix: attrs.suffix,
     prefix: attrs.prefix
-  });
+  }));
 
   var widgetModel = new WidgetModel({
     id: attrs.id,
     type: 'formula',
     title: attrs.title,
     attrsNames: ['title', 'collapsed'],
-    dataviewModelAttrsNames: ['column', 'operation', 'prefix', 'suffix']
+    dataviewModelAttrsNames: this._dataviewModelAttrsNames([
+      'column',
+      'operation',
+      'prefix',
+      'suffix'
+    ])
   }, {
     dataviewModel: dataviewModel
   });
@@ -143,10 +155,10 @@ WidgetsService.prototype.createListModel = function (attrs, layer) {
     throw new Error('Error creating newListModel, ' + err.message);
   }
 
-  var dataviewModel = this._dataviews.createListModel(layer, {
+  var dataviewModel = this._dataviews.createListModel(layer, this._dataviewModelAttrs(attrs, {
     type: 'list',
     columns: attrs.columns
-  });
+  }));
 
   var widgetModel = new WidgetModel({
     id: attrs.id,
@@ -154,7 +166,9 @@ WidgetsService.prototype.createListModel = function (attrs, layer) {
     title: attrs.title,
     columns_title: attrs.columns_title,
     attrsNames: ['title'],
-    dataviewModelAttrsNames: ['columns']
+    dataviewModelAttrsNames: this._dataviewModelAttrsNames([
+      'columns'
+    ])
   }, {
     dataviewModel: dataviewModel
   });
@@ -179,25 +193,56 @@ WidgetsService.prototype.createTimeSeriesModel = function (attrs, layer) {
     throw new Error('Error creating newTimeSeriesModel, ' + err.message);
   }
 
-  var dataviewModel = this._dataviews.createHistogramModel(layer, {
+  var dataviewModel = this._dataviews.createHistogramModel(layer, this._dataviewModelAttrs(attrs, {
     type: 'histogram',
     column: attrs.column,
     column_type: attrs.column_type || 'date',
     bins: attrs.bins,
     start: attrs.start,
     end: attrs.end
-  });
+  }));
 
   var widgetModel = new WidgetModel({
     id: attrs.id,
     type: 'time-series',
-    dataviewModelAttrsNames: ['column', 'column_type', 'bins', 'start', 'end']
+    dataviewModelAttrsNames: this._dataviewModelAttrsNames([
+      'column',
+      'column_type',
+      'bins',
+      'start',
+      'end'
+    ])
   }, {
     dataviewModel: dataviewModel
   });
   this._widgetsCollection.add(widgetModel);
 
   return widgetModel;
+};
+
+WidgetsService.prototype._dataviewModelAttrsNames = function (customAttrsNames) {
+  return [
+    'sync_on_source_change',
+    'sync_on_bbox_change',
+    'enabled'
+  ].concat(customAttrsNames);
+};
+
+WidgetsService.prototype._dataviewModelAttrs = function (allAttrs, customAttrs) {
+  return _.extend(
+    {
+      sync_on_source_change: _.isBoolean(allAttrs.sync_on_source_change)
+        ? allAttrs.sync_on_source_change
+        : true,
+      sync_on_bbox_change: _.isBoolean(allAttrs.sync_on_bbox_change)
+        ? allAttrs.sync_on_bbox_change
+        : true,
+      enabled: _.isBoolean(allAttrs.enabled)
+        ? allAttrs.enabled
+        : true
+    },
+    customAttrs
+  );
 };
 
 function _checkProperties (obj, propertiesArray) {

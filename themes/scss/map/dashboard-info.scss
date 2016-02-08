@@ -15,9 +15,9 @@
   top: 0;
   bottom: 0;
   left: 0;
-  width: 76px;
+  width: 72px;
   max-width: 352px;
-  padding: 16px 18px;
+  padding: 16px;
   background: #3AA9E3;
   font-family: 'Open Sans';
   overflow: hidden;
@@ -27,6 +27,7 @@
 .CDB-Dashboard-menu.is-active {
   .CDB-Dashboard-menuInner {
     width: 352px;
+    background: #FFF;
     box-shadow: 0 0 40px 0 rgba(0, 0, 0, 0.2);
   }
   .CDB-Dashboard-menuTexts {
@@ -40,6 +41,9 @@
   }
   .CDB-Dashboard-menuActionsLink {
     transform: rotate(180deg);
+  }
+  .CDB-Dashboard-menuLogo {
+    background: #F9F9F9;
   }
 }
 .CDB-Dashboard-menuLogo {

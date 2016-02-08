@@ -23,7 +23,7 @@ module.exports = WindshaftFilterBase.extend({
     json[this.get('dataviewId')] = {
       min: this.get('min'),
       max: this.get('max'),
-      column_type: this.get('columnType')
+      column_type: this.get('column_type')
     };
 
     return json;

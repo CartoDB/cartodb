@@ -59,7 +59,7 @@ describe('dataviews/histogram-dataview-model', function () {
 
   describe('when layer changes meta', function () {
     beforeEach(function () {
-      expect(this.model.filter.get('columnType')).not.toEqual('date');
+      expect(this.model.filter.get('column_type')).not.toEqual('date');
       this.model.layer.set({
         meta: {
           column_type: 'date'
@@ -67,8 +67,8 @@ describe('dataviews/histogram-dataview-model', function () {
       });
     });
 
-    it('should change the filter columnType', function () {
-      expect(this.model.filter.get('columnType')).toEqual('date');
+    it('should change the filter column_type', function () {
+      expect(this.model.filter.get('column_type')).toEqual('date');
     });
   });
 });

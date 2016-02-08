@@ -248,7 +248,7 @@ describe('widgets-service', function () {
       });
 
       it('should set columns title', function () {
-        expect(this.widgetModel.dataviewModel.get('columns_title')).toEqual(['first', '2nd']);
+        expect(this.widgetModel.get('columns_title')).toEqual(['first', '2nd']);
       });
     });
 

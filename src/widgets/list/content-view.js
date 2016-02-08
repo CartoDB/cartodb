@@ -51,7 +51,8 @@ module.exports = cdb.core.View.extend({
   _initViews: function () {
     // List view -> items view
     this._list = new WidgetListItemsView({
-      model: this._dataviewModel
+      model: this.model,
+      dataviewModel: this._dataviewModel
     });
     this.$('.js-content').html(this._list.render().el);
     this.addView(this._list);

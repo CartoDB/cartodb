@@ -142,7 +142,7 @@ WidgetsService.prototype.createFormulaModel = function (attrs, layer) {
  */
 WidgetsService.prototype.createListModel = function (attrs, layer) {
   try {
-    _checkProperties(attrs, ['title', 'columns']);
+    _checkProperties(attrs, ['title', 'columns', 'columns_title']);
   } catch (err) {
     cdb.log.error('Error creating newListModel, ' + err.message);
     return;
@@ -157,6 +157,7 @@ WidgetsService.prototype.createListModel = function (attrs, layer) {
     id: attrs.id,
     type: 'list',
     title: attrs.title,
+    columns_title: attrs.columns_title,
     attrsNames: ['title'],
     dataviewModelAttrsNames: ['columns']
   }, {

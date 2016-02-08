@@ -175,13 +175,6 @@ module.exports = Model.extend({
     return Model.prototype.fetch.call(this, opts);
   },
 
-<<<<<<< HEAD
-  refresh: function () {
-    this._fetch();
-  },
-
-=======
->>>>>>> origin/v4
   getData: function () {
     return this.get('data');
   },

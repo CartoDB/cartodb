@@ -22,7 +22,7 @@ WidgetsService.prototype.get = function (id) {
  * @param {String} attrs.column Name of column to use to aggregate
  * @param {String} attrs.aggregation Name of aggregation operation to apply to get categories
  *   can be any of ['sum', 'count']. Default is 'count'
- * @param {String} attrs.aggregationColumn column to be used for the aggregation operation
+ * @param {String} attrs.aggregation_column column to be used for the aggregation operation
  *  it only applies for sum operations.
  * @param {Object} layer Instance of a layer model (cartodb.js)
  * @return {CategoryWidgetModel}
@@ -39,7 +39,7 @@ WidgetsService.prototype.createCategoryModel = function (attrs, layer) {
     type: 'category',
     column: attrs.column,
     aggregation: attrs.aggregation || 'count',
-    aggregationColumn: attrs.aggregationColumn || attrs.column,
+    aggregation_column: attrs.aggregation_column || attrs.column,
     suffix: attrs.suffix,
     prefix: attrs.prefix
   });
@@ -49,7 +49,7 @@ WidgetsService.prototype.createCategoryModel = function (attrs, layer) {
     type: 'category',
     title: attrs.title,
     attrsNames: ['title', 'collapsed'],
-    dataviewModelAttrsNames: ['column', 'aggregation', 'aggregationColumn']
+    dataviewModelAttrsNames: ['column', 'aggregation', 'aggregation_column']
   }, {
     dataviewModel: dataviewModel
   });
@@ -136,14 +136,13 @@ WidgetsService.prototype.createFormulaModel = function (attrs, layer) {
  * @param {Object} attrs
  * @param {String} attrs.title Title rendered on the widget view
  * @param {Array} attrs.columns Names of columns
- * @param {Array} attrs.columns_title Names of title, should match columns size & order of items.
  * @param {Number} attrs.bins Count of bins
  * @param {Object} layer Instance of a layer model (cartodb.js)
  * @return {WidgetModel}
  */
 WidgetsService.prototype.createListModel = function (attrs, layer) {
   try {
-    _checkProperties(attrs, ['title', 'columns', 'columns_title']);
+    _checkProperties(attrs, ['title', 'columns']);
   } catch (err) {
     cdb.log.error('Error creating newListModel, ' + err.message);
     return;
@@ -151,8 +150,7 @@ WidgetsService.prototype.createListModel = function (attrs, layer) {
 
   var dataviewModel = this._dataviews.createFormulaModel(layer, {
     type: 'list',
-    columns: attrs.columns,
-    columns_title: attrs.columns_title
+    columns: attrs.columns
   });
 
   var widgetModel = new WidgetModel({
@@ -160,7 +158,7 @@ WidgetsService.prototype.createListModel = function (attrs, layer) {
     type: 'list',
     title: attrs.title,
     attrsNames: ['title'],
-    dataviewModelAttrsNames: ['columns', 'columns_title']
+    dataviewModelAttrsNames: ['columns']
   }, {
     dataviewModel: dataviewModel
   });
@@ -173,6 +171,9 @@ WidgetsService.prototype.createListModel = function (attrs, layer) {
  * @param {Object} attrs
  * @param {String} attrs.column Name of column that contains
  * @param {Object} layer Instance of a layer model (cartodb.js)
+ * @param {Number} bins
+ * @param {Number} attrs.start
+ * @param {Number} attrs.end
  * @return {WidgetModel}
  */
 WidgetsService.prototype.createTimeSeriesModel = function (attrs, layer) {
@@ -186,7 +187,7 @@ WidgetsService.prototype.createTimeSeriesModel = function (attrs, layer) {
   var dataviewModel = this._dataviews.createHistogramModel(layer, {
     type: 'histogram',
     column: attrs.column,
-    columnType: attrs.columnType || 'date',
+    column_type: attrs.column_type || 'date',
     bins: attrs.bins,
     start: attrs.start,
     end: attrs.end
@@ -195,7 +196,7 @@ WidgetsService.prototype.createTimeSeriesModel = function (attrs, layer) {
   var widgetModel = new WidgetModel({
     id: attrs.id,
     type: 'time-series',
-    dataviewModelAttrsNames: ['column', 'columnType', 'bins', 'start', 'end']
+    dataviewModelAttrsNames: ['column', 'column_type', 'bins', 'start', 'end']
   }, {
     dataviewModel: dataviewModel
   });

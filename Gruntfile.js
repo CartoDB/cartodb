@@ -1,6 +1,7 @@
 var _ = require('underscore');
+var jasmineCfg = require('./grunt-tasks/jasmine');
 
-module.exports = function(grunt) {
+module.exports = function (grunt) {
   require('load-grunt-tasks')(grunt);
   require('time-grunt')(grunt);
 
@@ -18,7 +19,7 @@ module.exports = function(grunt) {
     cssmin: require('./grunt-tasks/cssmin'),
     exorcise: require('./grunt-tasks/exorcise'),
     imagemin: require('./grunt-tasks/imagemin'),
-    jasmine: require('./grunt-tasks/jasmine'),
+    jasmine: jasmineCfg,
     sass: require('./grunt-tasks/scss'),
     uglify: require('./grunt-tasks/uglify'),
     watch: require('./grunt-tasks/watch')
@@ -27,16 +28,16 @@ module.exports = function(grunt) {
   // required for browserify to use watch files instead
   grunt.registerTask('preWatch', grunt.config.bind(grunt.config, 'config.doWatchify', true));
 
-  grunt.registerTask('lint', 'lint source files', function() {
+  grunt.registerTask('lint', 'lint source files', function () {
     var done = this.async();
-    require("child_process").exec('PATH=$(npm bin):$PATH semistandard', function (error, stdout, stderr) {
+    require('child_process').exec('PATH=$(npm bin):$PATH semistandard', function (error, stdout, stderr) {
       if (error) {
         grunt.log.fail(error);
 
         // Filter out lines that are ignored,
         // e.g. "src/foobar.js:0:0: File ignored because of your .eslintignore file. Use --no-ignore to override."
         grunt.log.fail(stdout.replace(/.+--no-ignore.+(\r?\n|\r)/g, ''));
-        grunt.fail.warn('try `node_modules/.bin/semistandard --format src/filename.js` to auto-format code (you might still need to fix some things manually).')
+        grunt.fail.warn('try `node_modules/.bin/semistandard --format src/filename.js` to auto-format code (you might still need to fix some things manually).');
       } else {
         grunt.log.ok('All linted files OK!');
         grunt.log.writeln('Note that files listed in .eslintignore are not linted');
@@ -47,6 +48,14 @@ module.exports = function(grunt) {
 
   grunt.registerTask('verify-dependencies', 'check dependencies are shared with cartodb.js', require('./grunt-tasks/verify-dependencies')(grunt));
 
+  grunt.registerTask('build-jasmine-specrunners', _
+    .chain(jasmineCfg)
+    .keys()
+    .map(function (name) {
+      return ['jasmine', name, 'build'].join(':');
+    })
+    .value());
+
   var baseTasks = [
     'clean:dist',
     'copy',
@@ -54,7 +63,8 @@ module.exports = function(grunt) {
     'concat',
     'cssmin',
     'imagemin',
-    'browserify'
+    'browserify',
+    'build-jasmine-specrunners'
   ];
 
   grunt.registerTask('default', ['build']);
@@ -65,14 +75,14 @@ module.exports = function(grunt) {
   grunt.registerTask('dev',
     _.chain(baseTasks)
       .clone()
-      .tap(function(tasks) {
+      .tap(function (tasks) {
         var browserifyIdx = tasks.indexOf('browserify');
         tasks.splice(browserifyIdx, 0, 'preWatch'); // add preWatch before browserify task
         tasks.splice(tasks.length, 0, 'connect', 'watch'); // splice to append more tasks at end
       })
       .value()
   );
-  grunt.registerTask('test', ['verify-dependencies','lint'].concat(baseTasks.concat([
+  grunt.registerTask('test', ['verify-dependencies', 'lint'].concat(baseTasks.concat([
     'jasmine'
   ])));
 };

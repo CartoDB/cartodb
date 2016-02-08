@@ -10,7 +10,7 @@ module.exports = Model.extend({
     url: '',
     data: [],
     columns: [],
-    sync_on_source_change: true,
+    sync_on_data_change: true,
     sync_on_bbox_change: true,
     enabled: true
   },
@@ -133,7 +133,7 @@ module.exports = Model.extend({
   },
 
   _shouldFetchOnURLChange: function () {
-    return this.get('sync_on_source_change') && this.get('enabled');
+    return this.get('sync_on_data_change') && this.get('enabled');
   },
 
   _shouldFetchOnBoundingBoxChange: function () {

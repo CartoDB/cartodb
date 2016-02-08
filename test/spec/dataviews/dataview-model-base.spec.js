@@ -54,8 +54,8 @@ describe('dataviews/dataview-model-base', function () {
       this.model.set('url', 'newurl');
     });
 
-    it('should not fetch new data when url changes and sync_on_source_change is disabled', function () {
-      this.model.set('sync_on_source_change', false);
+    it('should not fetch new data when url changes and sync_on_data_change is disabled', function () {
+      this.model.set('sync_on_data_change', false);
       spyOn(this.model, 'fetch');
       this.model.trigger('change:url', this.model);
       expect(this.model.fetch).not.toHaveBeenCalled();

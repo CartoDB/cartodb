@@ -78,7 +78,7 @@ GeoJSONDataProvider.prototype._dataGeneratorsForDataviews = {
 };
 
 GeoJSONDataProvider.prototype.generateDataForDataview = function (dataview, features) {
-  var generateData = this._dataGeneratorsForDataviews[dataview.get('type')];
+  var generateData = this._dataGeneratorsForDataviews[dataview.get('type')].bind(this._vectorLayerView.renderers[this._layerIndex]);
   if (!generateData) {
     throw new Error("Couldn't generate data for dataview of type: " + dataview.get('type'));
   }

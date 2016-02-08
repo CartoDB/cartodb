@@ -64,6 +64,22 @@ module.exports = Model.extend({
     }
   },
 
+  /**
+   * @private
+   */
+  _onFilterChanged: function () {
+    this._reloadMap();
+  },
+
+  /**
+   * @protected
+   */
+  _reloadMap: function () {
+    this._map.reload({
+      sourceLayerId: this.layer.get('id')
+    });
+  },
+
   _onNewWindshaftMapInstance: function (windshaftMapInstance, sourceLayerId) {
     var url = windshaftMapInstance.getDataviewURL({
       dataviewId: this.get('id'),
@@ -91,18 +107,18 @@ module.exports = Model.extend({
     var BOUNDING_BOX_FILTER_WAIT = 500;
     this.listenTo(this._map, 'change:center change:zoom', _.debounce(this._onMapBoundsChanged.bind(this), BOUNDING_BOX_FILTER_WAIT));
 
-    this.listenTo(this, 'change:url', function () {
+    this.on('change:url', function () {
       if (this._shouldFetchOnURLChange()) {
         this._fetch();
       }
-    });
-    this.listenTo(this, 'change:boundingBox', function () {
+    }, this);
+    this.on('change:boundingBox', function () {
       if (this._shouldFetchOnBoundingBoxChange()) {
         this._fetch();
       }
-    });
+    }, this);
 
-    this.listenTo(this, 'change:enabled', function (mdl, isEnabled) {
+    this.on('change:enabled', function (mdl, isEnabled) {
       if (isEnabled) {
         if (mdl.changedAttributes(this._previousAttrs)) {
           this._fetch();
@@ -113,7 +129,7 @@ module.exports = Model.extend({
           boundingBox: this.get('boundingBox')
         };
       }
-    });
+    }, this);
   },
 
   _shouldFetchOnURLChange: function () {
@@ -136,12 +152,6 @@ module.exports = Model.extend({
 
   refresh: function () {
     this._fetch();
-  },
-
-  _onFilterChanged: function (filter) {
-    this._map.reload({
-      sourceLayerId: this.layer.get('id')
-    });
   },
 
   getData: function () {

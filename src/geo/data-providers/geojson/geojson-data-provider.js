@@ -17,16 +17,19 @@ GeoJSONDataProvider.prototype._dataGeneratorsForDataviews = {
   category: function (features, options) {
     var columnName = options.column;
     var numberOfCategories = 5;
-
-    // TODO: There's probably a more efficient way of doing this
-    var groups = _.groupBy(features, function (feature) { return feature.properties[columnName]; });
-    var groupCounts = _.map(Object.keys(groups), function (key) { return [key, groups[key].length]; });
-    var sortedGroups = _.sortBy(groupCounts, function (group) { return group[1]; }).reverse();
+    var sortedGroups = this.filter.getColumnValues(columnName);
+    var lastCat = {
+      category: 'Other',
+      value: sortedGroups.slice(6).reduce(function (p, c) {
+        return p+c.value
+      }, 0),
+      agg: true
+    }
 
     // TODO: Calculate harcoded values
     var data = {
       categories: [],
-      categoriesCount: 3,
+      categoriesCount: sortedGroups.length,
       count: 7446,
       max: 4580,
       min: 106,
@@ -36,12 +39,12 @@ GeoJSONDataProvider.prototype._dataGeneratorsForDataviews = {
 
     _.each(sortedGroups.slice(0, numberOfCategories), function (category) {
       data.categories.push({
-        category: category[0],
-        value: category[1],
+        category: category.key,
+        value: category.value,
         agg: false
       });
     });
-
+    data.categories.push(lastCat)
     return data;
   },
 

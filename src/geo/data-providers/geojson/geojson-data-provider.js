@@ -21,18 +21,18 @@ GeoJSONDataProvider.prototype._dataGeneratorsForDataviews = {
     var lastCat = {
       category: 'Other',
       value: sortedGroups.slice(6).reduce(function (p, c) {
-        return p+c.value
+        return p + c.value
       }, 0),
       agg: true
-    }
+    };
 
     // TODO: Calculate harcoded values
     var data = {
       categories: [],
       categoriesCount: sortedGroups.length,
-      count: 7446,
-      max: 4580,
-      min: 106,
+      count: this.filter.dimensions[columnName].groupAll().value(),
+      max: sortedGroups[0].value,
+      min: sortedGroups[sortedGroups.length - 1].value,
       nulls: 0,
       type: 'aggregation'
     };

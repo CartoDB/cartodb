@@ -148,7 +148,7 @@ WidgetsService.prototype.createListModel = function (attrs, layer) {
     return;
   }
 
-  var dataviewModel = this._dataviews.createFormulaModel(layer, {
+  var dataviewModel = this._dataviews.createListModel(layer, {
     type: 'list',
     columns: attrs.columns
   });

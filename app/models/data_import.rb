@@ -465,10 +465,10 @@ class DataImport < Sequel::Model
         connection: current_user.in_database,
         database_schema: current_user.database_schema
     })
-    current_user.in_database.run(%Q{CREATE TABLE #{table_name} AS #{query}})
+    current_user.in_database.run(%{CREATE TABLE #{table_name} AS #{query}})
     if current_user.over_disk_quota?
       log.append "Over storage quota. Dropping table #{table_name}"
-      current_user.in_database.run(%Q{DROP TABLE #{table_name}})
+      current_user.in_database.run(%{DROP TABLE #{table_name}})
       self.error_code = 8001
       self.state      = STATE_FAILURE
       save

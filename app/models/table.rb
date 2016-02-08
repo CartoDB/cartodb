@@ -572,7 +572,8 @@ class Table
       rescue => e
         CartoDB::Logger.info 'Table#after_destroy error', "maybe table #{qualified_table_name} doesn't exist: #{e.inspect}"
       end
-      user_database.run(%Q{DROP TABLE IF EXISTS #{qualified_table_name}})
+      user_database.run(%{SELECT CDB_DropOverviews('#{qualified_table_name}'::regclass)})
+      user_database.run(%{DROP TABLE IF EXISTS #{qualified_table_name}})
     end
   end
   ## End of Callbacks

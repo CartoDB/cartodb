@@ -49,6 +49,9 @@ module.exports = cdb.core.View.extend({
     this.model.bind('change', this.render, this);
     this.widgetModel.bind('change:search change:isColorsApplied', this.render, this);
     this.add_related_model(this.widgetModel);
+
+    this.dataviewModel.bind('change:prefix change:suffix', this.render, this);
+    this.add_related_model(this.dataviewModel);
   },
 
   _onItemClick: function () {

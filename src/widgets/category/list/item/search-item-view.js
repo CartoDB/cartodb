@@ -41,6 +41,8 @@ module.exports = cdb.core.View.extend({
 
   _initBinds: function () {
     this.model.bind('change:selected', this.render, this);
+    this.dataviewModel.bind('change:prefix change:suffix', this.render, this);
+    this.add_related_model(this.dataviewModel);
   },
 
   _onItemClick: function () {

@@ -1,5 +1,4 @@
 var _ = require('underscore');
-var cdb = require('cartodb.js');
 var WidgetModel = require('./widgets/widget-model');
 var CategoryWidgetModel = require('./widgets/category/category-widget-model');
 var HistogramWidgetModel = require('./widgets/histogram/histogram-widget-model');
@@ -31,8 +30,7 @@ WidgetsService.prototype.createCategoryModel = function (attrs, layer) {
   try {
     _checkProperties(attrs, ['title', 'column']);
   } catch (err) {
-    cdb.log.error('Error creating newCategoryModel, ' + err.message);
-    return;
+    throw new Error('Error creating newCategoryModel, ' + err.message);
   }
 
   var dataviewModel = this._dataviews.createCategoryModel(layer, {
@@ -70,8 +68,7 @@ WidgetsService.prototype.createHistogramModel = function (attrs, layer) {
   try {
     _checkProperties(attrs, ['title', 'column']);
   } catch (err) {
-    cdb.log.error('Error creating newHistogramModel, ' + err.message);
-    return;
+    throw new Error('Error creating newHistogramModel, ' + err.message);
   }
 
   var dataviewModel = this._dataviews.createHistogramModel(layer, {
@@ -106,8 +103,7 @@ WidgetsService.prototype.createFormulaModel = function (attrs, layer) {
   try {
     _checkProperties(attrs, ['title', 'column', 'operation']);
   } catch (err) {
-    cdb.log.error('Error creating newFormulaModel, ' + err.message);
-    return;
+    throw new Error('Error creating newFormulaModel, ' + err.message);
   }
 
   var dataviewModel = this._dataviews.createFormulaModel(layer, {
@@ -144,8 +140,7 @@ WidgetsService.prototype.createListModel = function (attrs, layer) {
   try {
     _checkProperties(attrs, ['title', 'columns', 'columns_title']);
   } catch (err) {
-    cdb.log.error('Error creating newListModel, ' + err.message);
-    return;
+    throw new Error('Error creating newListModel, ' + err.message);
   }
 
   var dataviewModel = this._dataviews.createListModel(layer, {
@@ -181,8 +176,7 @@ WidgetsService.prototype.createTimeSeriesModel = function (attrs, layer) {
   try {
     _checkProperties(attrs, ['column', 'bins', 'start', 'end']);
   } catch (err) {
-    cdb.log.error('Error creating newTimeSeriesModel, ' + err.message);
-    return;
+    throw new Error('Error creating newTimeSeriesModel, ' + err.message);
   }
 
   var dataviewModel = this._dataviews.createHistogramModel(layer, {

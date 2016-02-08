@@ -76,17 +76,19 @@ describe('widgets-service', function () {
 
     describe('fails when the input has no', function () {
       it('title', function () {
-        this.widgetModel = this.widgetsService.createCategoryModel({
-          column: 'my_column'
-        }, this.vis.map.layers.first());
-        expect(this.widgetModel).not.toBeDefined();
+        expect(function () {
+          this.widgetModel = this.widgetsService.createCategoryModel({
+            column: 'my_column'
+          }, this.vis.map.layers.first());
+        }).toThrowError();
       });
 
       it('column', function () {
-        this.widgetModel = this.widgetsService.createCategoryModel({
-          title: 'some_title'
-        }, this.vis.map.layers.first());
-        expect(this.widgetModel).not.toBeDefined();
+        expect(function () {
+          this.widgetModel = this.widgetsService.createCategoryModel({
+            title: 'some_title'
+          }, this.vis.map.layers.first());
+        }).toThrowError();
       });
     });
   });
@@ -134,17 +136,19 @@ describe('widgets-service', function () {
 
     describe('fails when the input has no', function () {
       it('title', function () {
-        this.widgetModel = this.widgetsService.createHistogramModel({
-          column: 'my_column'
-        }, this.vis.map.layers.first());
-        expect(this.widgetModel).not.toBeDefined();
+        expect(function () {
+          this.widgetModel = this.widgetsService.createHistogramModel({
+            column: 'my_column'
+          }, this.vis.map.layers.first());
+        }).toThrowError();
       });
 
       it('column', function () {
-        this.widgetModel = this.widgetsService.createHistogramModel({
-          title: 'some_title'
-        }, this.vis.map.layers.first());
-        expect(this.widgetModel).not.toBeDefined();
+        expect(function () {
+          this.widgetModel = this.widgetsService.createHistogramModel({
+            title: 'some_title'
+          }, this.vis.map.layers.first());
+        }).toThrowError();
       });
     });
   });
@@ -193,28 +197,31 @@ describe('widgets-service', function () {
 
     describe('fails when the input has no', function () {
       it('title', function () {
-        this.widgetModel = this.widgetsService.createFormulaModel({
-          id: 'abc-123',
-          column: 'my_column',
-          operation: 'sum'
-        }, this.vis.map.layers.first());
-        expect(this.widgetModel).not.toBeDefined();
+        expect(function () {
+          this.widgetModel = this.widgetsService.createFormulaModel({
+            id: 'abc-123',
+            column: 'my_column',
+            operation: 'sum'
+          }, this.vis.map.layers.first());
+        }).toThrowError();
       });
 
       it('column', function () {
-        this.widgetModel = this.widgetsService.createFormulaModel({
-          title: 'some_title',
-          operation: 'sum'
-        }, this.vis.map.layers.first());
-        expect(this.widgetModel).not.toBeDefined();
+        expect(function () {
+          this.widgetModel = this.widgetsService.createFormulaModel({
+            title: 'some_title',
+            operation: 'sum'
+          }, this.vis.map.layers.first());
+        }).toThrowError();
       });
 
       it('operation', function () {
-        this.widgetModel = this.widgetsService.createFormulaModel({
-          title: 'some_title',
-          column: 'my_column'
-        }, this.vis.map.layers.first());
-        expect(this.widgetModel).not.toBeDefined();
+        expect(function () {
+          this.widgetModel = this.widgetsService.createFormulaModel({
+            title: 'some_title',
+            column: 'my_column'
+          }, this.vis.map.layers.first());
+        }).toThrowError();
       });
     });
   });
@@ -254,27 +261,30 @@ describe('widgets-service', function () {
 
     describe('fails when the input has no', function () {
       it('title', function () {
-        this.widgetModel = this.widgetsService.createListModel({
-          columns: ['a', 'b'],
-          columns_title: ['first', '2nd']
-        }, this.vis.map.layers.first());
-        expect(this.widgetModel).not.toBeDefined();
+        expect(function () {
+          this.widgetModel = this.widgetsService.createListModel({
+            columns: ['a', 'b'],
+            columns_title: ['first', '2nd']
+          }, this.vis.map.layers.first());
+        }).toThrowError();
       });
 
       it('columns', function () {
-        this.widgetModel = this.widgetsService.createListModel({
-          title: 'my list',
-          columns_title: ['first', '2nd']
-        }, this.vis.map.layers.first());
-        expect(this.widgetModel).not.toBeDefined();
+        expect(function () {
+          this.widgetModel = this.widgetsService.createListModel({
+            title: 'my list',
+            columns_title: ['first', '2nd']
+          }, this.vis.map.layers.first());
+        }).toThrowError();
       });
 
       it('columns_title', function () {
-        this.widgetModel = this.widgetsService.createListModel({
-          title: 'my list',
-          columns: ['a', 'b']
-        }, this.vis.map.layers.first());
-        expect(this.widgetModel).not.toBeDefined();
+        expect(function () {
+          this.widgetModel = this.widgetsService.createListModel({
+            title: 'my list',
+            columns: ['a', 'b']
+          }, this.vis.map.layers.first());
+        }).toThrowError();
       });
     });
   });
@@ -312,10 +322,11 @@ describe('widgets-service', function () {
 
   describe('fails when the input has no', function () {
     it('column', function () {
-      this.widgetModel = this.widgetsService.createTimeSeriesModel({
-        title: 'some_title'
-      }, this.vis.map.layers.first());
-      expect(this.widgetModel).not.toBeDefined();
+      expect(function () {
+        this.widgetModel = this.widgetsService.createTimeSeriesModel({
+          title: 'some_title'
+        }, this.vis.map.layers.first());
+      }).toThrowError();
     });
   });
 });

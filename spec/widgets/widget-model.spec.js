@@ -76,7 +76,7 @@ describe('widgets/widget-model', function () {
       beforeEach(function () {
         this.model.set({
           attrsNames: ['title'],
-          dataviewModelAttrsNames: ['column', 'operation']
+          dataviewAttrsNames: ['column', 'operation']
         }, { silent: true });
         this.result = this.model.update({
           title: 'new title',

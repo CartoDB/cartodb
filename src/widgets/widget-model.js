@@ -11,7 +11,7 @@ var cdb = require('cartodb.js');
 module.exports = cdb.core.Model.extend({
   defaults: {
     attrsNames: [],
-    dataviewModelAttrsNames: []
+    dataviewAttrsNames: []
   },
 
   initialize: function (attrs, opts) {
@@ -26,7 +26,7 @@ module.exports = cdb.core.Model.extend({
   update: function (changes) {
     var attrs = _.pick(changes, this.get('attrsNames'));
     this.set(attrs);
-    attrs = _.pick(changes, this.get('dataviewModelAttrsNames'));
+    attrs = _.pick(changes, this.get('dataviewAttrsNames'));
     this.dataviewModel.set(attrs);
     return !!(this.changedAttributes() || this.dataviewModel.changedAttributes());
   },

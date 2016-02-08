@@ -3,6 +3,12 @@ var WidgetModel = require('./widgets/widget-model');
 var CategoryWidgetModel = require('./widgets/category/category-widget-model');
 var HistogramWidgetModel = require('./widgets/histogram/histogram-widget-model');
 
+var DEFAULT_DATAVIEW_ATTR_NAMES = [
+  'sync_on_data_change',
+  'sync_on_bbox_change',
+  'enabled'
+];
+
 /**
  * Public API to interact with dashboard widgets.
  */
@@ -47,13 +53,15 @@ WidgetsService.prototype.createCategoryModel = function (attrs, layer) {
     type: 'category',
     title: attrs.title,
     attrsNames: ['title', 'collapsed'],
-    dataviewModelAttrsNames: this._dataviewModelAttrsNames([
-      'column',
-      'aggregation',
-      'aggregation_column',
-      'prefix',
-      'suffix'
-    ])
+    dataviewAttrsNames:
+      [
+        'column',
+        'aggregation',
+        'aggregation_column',
+        'prefix',
+        'suffix'
+      ]
+      .concat(DEFAULT_DATAVIEW_ATTR_NAMES)
   }, {
     dataviewModel: dataviewModel
   });
@@ -88,10 +96,12 @@ WidgetsService.prototype.createHistogramModel = function (attrs, layer) {
     type: 'histogram',
     title: attrs.title,
     attrsNames: ['title', 'collapsed'],
-    dataviewModelAttrsNames: this._dataviewModelAttrsNames([
-      'column',
-      'bins'
-    ])
+    dataviewAttrsNames:
+      [
+        'column',
+        'bins'
+      ]
+      .concat(DEFAULT_DATAVIEW_ATTR_NAMES)
   }, {
     dataviewModel: dataviewModel
   });
@@ -128,12 +138,14 @@ WidgetsService.prototype.createFormulaModel = function (attrs, layer) {
     type: 'formula',
     title: attrs.title,
     attrsNames: ['title', 'collapsed'],
-    dataviewModelAttrsNames: this._dataviewModelAttrsNames([
-      'column',
-      'operation',
-      'prefix',
-      'suffix'
-    ])
+    dataviewAttrsNames:
+      [
+        'column',
+        'operation',
+        'prefix',
+        'suffix'
+      ]
+      .concat(DEFAULT_DATAVIEW_ATTR_NAMES)
   }, {
     dataviewModel: dataviewModel
   });
@@ -168,9 +180,11 @@ WidgetsService.prototype.createListModel = function (attrs, layer) {
     title: attrs.title,
     columns_title: attrs.columns_title,
     attrsNames: ['title'],
-    dataviewModelAttrsNames: this._dataviewModelAttrsNames([
-      'columns'
-    ])
+    dataviewAttrsNames:
+      [
+        'columns'
+      ]
+      .concat(DEFAULT_DATAVIEW_ATTR_NAMES)
   }, {
     dataviewModel: dataviewModel
   });
@@ -207,27 +221,21 @@ WidgetsService.prototype.createTimeSeriesModel = function (attrs, layer) {
   var widgetModel = new WidgetModel({
     id: attrs.id,
     type: 'time-series',
-    dataviewModelAttrsNames: this._dataviewModelAttrsNames([
-      'column',
-      'column_type',
-      'bins',
-      'start',
-      'end'
-    ])
+    dataviewAttrsNames:
+      [
+        'column',
+        'column_type',
+        'bins',
+        'start',
+        'end'
+      ]
+      .concat(DEFAULT_DATAVIEW_ATTR_NAMES)
   }, {
     dataviewModel: dataviewModel
   });
   this._widgetsCollection.add(widgetModel);
 
   return widgetModel;
-};
-
-WidgetsService.prototype._dataviewModelAttrsNames = function (customAttrsNames) {
-  return [
-    'sync_on_data_change',
-    'sync_on_bbox_change',
-    'enabled'
-  ].concat(customAttrsNames);
 };
 
 WidgetsService.prototype._dataviewModelAttrs = function (allAttrs, customAttrs) {

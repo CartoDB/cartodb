@@ -1,3 +1,4 @@
+var _ = require('underscore');
 var WidgetModel = require('../widget-model');
 var CategoryColors = require('./category-colors');
 var LockedCategoriesCollection = require('./locked-categories-collection');
@@ -7,12 +8,14 @@ var LockedCategoriesCollection = require('./locked-categories-collection');
  */
 module.exports = WidgetModel.extend({
 
-  defaults: {
-    title: '',
-    search: false,
-    locked: false,
-    isColorsApplied: false
-  },
+  defaults: _.extend(
+    {
+      search: false,
+      locked: false,
+      isColorsApplied: false
+    },
+    WidgetModel.prototype.defaults
+  ),
 
   initialize: function () {
     WidgetModel.prototype.initialize.apply(this, arguments);
@@ -21,8 +24,8 @@ module.exports = WidgetModel.extend({
 
     this.listenTo(this.dataviewModel, 'change:allCategoryNames', this._onDataviewAllCategoryNamesChange);
     this.listenTo(this.dataviewModel, 'change:searchData', this._onDataviewChangeSearchData);
-
-    this.listenTo(this, 'change:locked', this._onLockedChange);
+    this.on('change:locked', this._onLockedChange, this);
+    this.on('change:collapsed', this._onCollapsedChange, this);
   },
 
   setupSearch: function () {
@@ -134,6 +137,10 @@ module.exports = WidgetModel.extend({
 
   _acceptedCategories: function () {
     return this.dataviewModel.filter.acceptedCategories;
+  },
+
+  _onCollapsedChange: function (m, isCollapsed) {
+    this.dataviewModel.set('enabled', !isCollapsed);
   }
 
 });

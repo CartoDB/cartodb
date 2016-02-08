@@ -4,7 +4,7 @@
 dist
 node_modules
 npm-debug.log
-spec/index.html #specrunner
+spec/index.html
 vendor
 .idea/
 examples/local-config.js

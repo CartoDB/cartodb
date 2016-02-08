@@ -1,6 +1,6 @@
 var cdb = require('cartodb.js');
-var WidgetLoaderView = require('./standard/widget-loader-view');
-var WidgetErrorView = require('./standard/widget-error-view');
+var WidgetLoaderView = require('./widget-loader-view');
+var WidgetErrorView = require('./widget-error-view');
 
 /**
  * Default widget view

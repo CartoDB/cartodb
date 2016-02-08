@@ -1,16 +1,20 @@
 var _ = require('underscore');
-var WidgetContentView = require('../standard/widget-content-view');
+var cdb = require('cartodb.js');
 var placeholderTemplate = require('./placeholder.tpl');
 var HistogramView = require('./histogram-view');
 
 /**
  * Widget content view for a time-series
  */
-module.exports = WidgetContentView.extend({
+module.exports = cdb.core.View.extend({
   className: 'CDB-Widget-body CDB-Widget-body--timeSeries',
 
-  _initBinds: function () {
+  initialize: function () {
     this._dataviewModel = this.model.dataviewModel;
+    this._initBinds();
+  },
+
+  _initBinds: function () {
     this._dataviewModel.once('change:data', this._onFirstLoad, this);
     this._dataviewModel.once('error', function () {
       alert('the tiler does not support non-torque layers just yet…');

@@ -1,8 +1,8 @@
 var cdb = require('cartodb.js');
-var WidgetModel = require('../../../src/widgets/widget-model');
-var WidgetErrorView = require('../../../src/widgets/standard/widget-error-view');
+var WidgetModel = require('../../src/widgets/widget-model');
+var WidgetErrorView = require('../../src/widgets/widget-error-view');
 
-describe('widgets/standard/widget-error-view', function () {
+describe('widgets/widget-error-view', function () {
   beforeEach(function () {
     jasmine.clock().install();
 

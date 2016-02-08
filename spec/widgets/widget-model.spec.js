@@ -1,9 +1,101 @@
+var cdb = require('cartodb.js');
 var WidgetModel = require('../../src/widgets/widget-model');
 
-describe('widgets/widget-view', function () {
+describe('widgets/widget-model', function () {
   beforeEach(function () {
+    var dataviewModel = new cdb.core.Model();
+    dataviewModel.remove = jasmine.createSpy('dataviewModel.remove');
     this.model = new WidgetModel(null, {
-      dataviewModel: jasmine.createSpyObj('dataviewModel', ['remove'])
+      dataviewModel: dataviewModel
+    });
+  });
+
+  describe('.update', function () {
+    beforeEach(function () {
+      this.widgetChangeSpy = jasmine.createSpy('widgetModel change');
+      this.dataviewModelChangeSpy = jasmine.createSpy('dataviewModel change');
+      this.model.on('change', this.widgetChangeSpy);
+      this.model.dataviewModel.on('change', this.dataviewModelChangeSpy);
+    });
+
+    describe('when given empty object', function () {
+      beforeEach(function () {
+        this.result = this.model.update();
+        this.result = this.model.update({}) || this.result;
+      });
+
+      it('should return false since did not change anything', function () {
+        expect(this.result).toBe(false);
+      });
+
+      it('should not change anything', function () {
+        expect(this.widgetChangeSpy).not.toHaveBeenCalled();
+        expect(this.dataviewModelChangeSpy).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('when there are some attrsNames but no dataview attrs names defined', function () {
+      beforeEach(function () {
+        this.model.set({
+          attrsNames: ['title']
+        }, { silent: true });
+        this.result = this.model.update({
+          title: 'new title',
+          column: 'col',
+          operation: 'count',
+          invalid: 'attr, should not be set'
+        });
+      });
+
+      it('should return true since attrs were changed', function () {
+        expect(this.result).toBe(true);
+      });
+
+      it('should update widget', function () {
+        expect(this.widgetChangeSpy).toHaveBeenCalled();
+      });
+
+      it('should have changed the valid attrs and leave the rest', function () {
+        expect(this.model.hasChanged('title')).toBe(true);
+      });
+
+      it('should not change existing attrs', function () {
+        expect(this.model.hasChanged('collapsed')).toBe(false);
+      });
+
+      it('should not set any invalid attrs', function () {
+        expect(this.model.get('invalid')).toBeUndefined();
+      });
+
+      it('should not update dataviewModel', function () {
+        expect(this.dataviewModelChangeSpy).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('when there are both widget and dataview attrs names defined', function () {
+      beforeEach(function () {
+        this.model.set({
+          attrsNames: ['title'],
+          dataviewModelAttrsNames: ['column', 'operation']
+        }, { silent: true });
+        this.result = this.model.update({
+          title: 'new title',
+          column: 'col',
+          operation: 'count',
+          invalid: 'attr, should not be set'
+        });
+      });
+
+      it('should return true since attrs were changed', function () {
+        expect(this.result).toBe(true);
+      });
+
+      it('should update the attrs', function () {
+        expect(this.model.dataviewModel.changedAttributes()).toEqual({
+          column: 'col',
+          operation: 'count'
+        });
+      });
     });
   });
 

@@ -1,5 +1,5 @@
 var _ = require('underscore');
-var WidgetContentView = require('../standard/widget-content-view');
+var cdb = require('cartodb.js');
 var torqueTemplate = require('./torque-template.tpl');
 var placeholderTemplate = require('./placeholder.tpl');
 var TorqueHistogramView = require('./torque-histogram-view');
@@ -8,8 +8,13 @@ var TorqueHeaderView = require('./torque-header-view');
 /**
  * Widget content view for a Torque time-series
  */
-module.exports = WidgetContentView.extend({
+module.exports = cdb.core.View.extend({
   className: 'CDB-Widget-body CDB-Widget-body--timeSeries',
+
+  initialize: function () {
+    this._dataviewModel = this.model.dataviewModel;
+    this._initBinds();
+  },
 
   _initBinds: function () {
     this._dataviewModel.once('change:data', this.render, this);

@@ -3,7 +3,7 @@ var WidgetListItemView = require('./item-view');
 
 /**
  * View to render a set of list items
- * this.model is a dataviewModel
+ * this.model is a widget Model
  */
 module.exports = cdb.core.View.extend({
   className: 'CDB-Widget-list js-list',
@@ -13,6 +13,10 @@ module.exports = cdb.core.View.extend({
     'scroll': '_checkScroll'
   },
 
+  initialize: function (opts) {
+    this._dataviewModel = opts.dataviewModel;
+  },
+
   render: function () {
     this.clearSubViews();
     this._renderList();
@@ -20,13 +24,14 @@ module.exports = cdb.core.View.extend({
   },
 
   _renderList: function () {
-    this.model.getData().each(this._addItem, this);
+    this._dataviewModel.getData().each(this._addItem, this);
   },
 
   _addItem: function (mdl) {
     var v = new WidgetListItemView({
       model: mdl,
-      dataviewModel: this.model
+      widgetModel: this.model,
+      dataviewModel: this._dataviewModel
     });
     v.bind('itemClicked', function () {
       this.trigger('itemClicked', mdl, this);

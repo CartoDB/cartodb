@@ -1,7 +1,7 @@
 <div class="CDB-Widget-header js-header">
   <div class="js-title">
     <div class="CDB-Widget-title CDB-Widget-contentSpaced">
-      <h3 class="CDB-Widget-textBig"><%- title %></h3>
+      <h3 class="CDB-Widget-textBig js-title"><%- title %></h3>
     </div>
   </div>
   <dl class="CDB-Widget-info CDB-Widget-textSmaller CDB-Widget-textSmaller--upper">

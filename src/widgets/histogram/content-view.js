@@ -1,7 +1,7 @@
 var _ = require('underscore');
+var cdb = require('cartodb.js');
 var formatter = require('../../formatter');
 var HistogramTitleView = require('./histogram-title-view');
-var WidgetContentView = require('../standard/widget-content-view');
 var HistogramChartView = require('./chart');
 var placeholder = require('./placeholder.tpl');
 var template = require('./content.tpl');
@@ -12,7 +12,9 @@ var animationTemplate = require('./animation-template.tpl');
 /**
  * Widget content view for a histogram
  */
-module.exports = WidgetContentView.extend({
+module.exports = cdb.core.View.extend({
+  className: 'CDB-Widget-body',
+
   defaults: {
     chartHeight: 48 + 20 + 4
   },
@@ -23,9 +25,10 @@ module.exports = WidgetContentView.extend({
   },
 
   initialize: function () {
-    WidgetContentView.prototype.initialize.call(this);
+    this._dataviewModel = this.model.dataviewModel;
     this.filter = this._dataviewModel.filter;
     this.lockedByUser = false;
+    this._initBinds();
   },
 
   _initViews: function () {
@@ -44,7 +47,7 @@ module.exports = WidgetContentView.extend({
 
     dropdown.bind('click', function (action) {
       if (action === 'toggle') {
-        this.model.toggleCollapsed();
+        this.model.set('collapsed', !this.model.get('collapsed'));
       }
     }, this);
 
@@ -64,6 +67,7 @@ module.exports = WidgetContentView.extend({
     this._storeBounds();
 
     this._dataviewModel.bind('change', this._onChangeModel, this);
+    this.add_related_model(this._dataviewModel);
     this._dataviewModel._fetch();
   },
 
@@ -133,8 +137,7 @@ module.exports = WidgetContentView.extend({
     } else {
       this.originalData = this._dataviewModel.getData();
       this._setupBindings();
-      var isCollapsed = this.model.isCollapsed();
-      this.$el.toggleClass('is-collapsed', !!isCollapsed);
+      this.$el.toggleClass('is-collapsed', !!this.model.get('collapsed'));
       this._initViews();
     }
 

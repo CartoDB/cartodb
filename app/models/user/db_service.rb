@@ -17,8 +17,8 @@ module CartoDB
       SCHEMA_CARTODB = 'cartodb'
       SCHEMA_IMPORTER = 'cdb_importer'
       SCHEMA_GEOCODING = 'cdb'
-      SCHEMA_CDB_GEOCODER_API = 'cdb_geocoder_client'
-      CDB_GEOCODER_API_VERSION = '0.1.0'
+      SCHEMA_CDB_DATASERVICES_API = 'cdb_dataservices_client'
+      CDB_DATASERVICES_CLIENT_VERSION = '0.1.0'
 
       def initialize(user)
         raise "User nil" unless user
@@ -193,7 +193,7 @@ module CartoDB
       # Centralized method to provide the (ordered) search_path
       def self.build_search_path(user_schema, quote_user_schema = true)
         quote_char = quote_user_schema ? "\"" : ""
-        "#{quote_char}#{user_schema}#{quote_char}, #{SCHEMA_CARTODB}, #{SCHEMA_CDB_GEOCODER_API}, #{SCHEMA_PUBLIC}"
+        "#{quote_char}#{user_schema}#{quote_char}, #{SCHEMA_CARTODB}, #{SCHEMA_CDB_DATASERVICES_API}, #{SCHEMA_PUBLIC}"
       end
 
       def set_database_search_path
@@ -413,8 +413,8 @@ module CartoDB
         @user.in_database(as: :superuser) do |db|
           db.transaction do
             db.run('CREATE EXTENSION IF NOT EXISTS plproxy SCHEMA public')
-            db.run("CREATE EXTENSION IF NOT EXISTS cdb_geocoder_client VERSION '#{CDB_GEOCODER_API_VERSION}'")
-            db.run("ALTER EXTENSION cdb_geocoder_client UPDATE TO '#{CDB_GEOCODER_API_VERSION}'")
+            db.run("CREATE EXTENSION IF NOT EXISTS cdb_dataservices_client VERSION '#{CDB_DATASERVICES_CLIENT_VERSION}'")
+            db.run("ALTER EXTENSION cdb_dataservices_client UPDATE TO '#{CDB_DATASERVICES_CLIENT_VERSION}'")
             geocoder_server_sql = build_geocoder_server_config_sql(geocoder_api_config)
             db.run(geocoder_server_sql)
             db.run(build_entity_config_sql)

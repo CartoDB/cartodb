@@ -8,7 +8,6 @@ describe('widgets/list/content-view', function () {
     var vis = specHelper.createDefaultVis();
     this.dataviewModel = vis.dataviews.createListModel(vis.map.layers.first(), {
       id: 'widget_3',
-      title: 'Howdy',
       columns: ['cartodb_id', 'title']
     });
     this.widgetModel = new WidgetModel({}, {

@@ -26,7 +26,7 @@ module.exports = cdb.core.Model.extend({
   update: function (changes) {
     var attrs = _.pick(changes, this.get('attrsNames'));
     this.set(attrs);
-    attrs = _.pick(changes, this.get('dataviewAttrsNames'));
+    attrs = _.pick(changes, this.dataviewModel.constructor.ATTRS_NAMES);
     this.dataviewModel.set(attrs);
     return !!(this.changedAttributes() || this.dataviewModel.changedAttributes());
   },

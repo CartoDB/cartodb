@@ -8,9 +8,7 @@ describe('widgets/histogram/content-view', function () {
     var vis = specHelper.createDefaultVis();
     this.dataviewModel = vis.dataviews.createHistogramModel(vis.map.layers.first(), {
       id: 'widget_3',
-      options: {
-        columns: ['cartodb_id', 'title']
-      }
+      column: 'col'
     });
 
     this.widgetModel = new HistogramWidgetModel({

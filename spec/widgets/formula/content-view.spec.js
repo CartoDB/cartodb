@@ -7,7 +7,10 @@ describe('widgets/formula/content-view', function () {
   beforeEach(function () {
     AnimateValues.prototype.animateValue = function () {};
     var vis = specHelper.createDefaultVis();
-    this.dataviewModel = vis.dataviews.createFormulaModel(vis.map.layers.first(), {});
+    this.dataviewModel = vis.dataviews.createFormulaModel(vis.map.layers.first(), {
+      column: 'col',
+      operation: 'avg'
+    });
     this.model = new WidgetModel({
       title: 'Max population'
     }, {

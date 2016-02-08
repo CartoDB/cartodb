@@ -10,6 +10,7 @@ module.exports = WidgetModel.extend({
 
   defaults: _.extend(
     {
+      type: 'category',
       search: false,
       locked: false,
       isColorsApplied: false

@@ -149,7 +149,7 @@ describe('widgets-service', function () {
         expect(this.widgetModel.dataviewModel.get('column')).toEqual('a_column');
       });
 
-      it('should set default bins', function () {
+      it('should set bins', function () {
         expect(this.widgetModel.dataviewModel.get('bins')).toEqual(20);
       });
 

@@ -74,9 +74,9 @@ describe('widgets/widget-model', function () {
 
     describe('when there are both widget and dataview attrs names defined', function () {
       beforeEach(function () {
+        this.model.dataviewModel.constructor.ATTRS_NAMES = ['column', 'operation'];
         this.model.set({
-          attrsNames: ['title'],
-          dataviewAttrsNames: ['column', 'operation']
+          attrsNames: ['title']
         }, { silent: true });
         this.result = this.model.update({
           title: 'new title',

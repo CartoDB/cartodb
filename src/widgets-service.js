@@ -39,7 +39,9 @@ WidgetsService.prototype.createCategoryModel = function (attrs, layer) {
     type: 'category',
     column: attrs.column,
     aggregation: attrs.aggregation || 'count',
-    aggregationColumn: attrs.aggregationColumn || attrs.column
+    aggregationColumn: attrs.aggregationColumn || attrs.column,
+    suffix: attrs.suffix,
+    prefix: attrs.prefix
   });
 
   var widgetModel = new CategoryWidgetModel({
@@ -111,7 +113,9 @@ WidgetsService.prototype.createFormulaModel = function (attrs, layer) {
   var dataviewModel = this._dataviews.createFormulaModel(layer, {
     type: 'formula',
     column: attrs.column,
-    operation: attrs.operation
+    operation: attrs.operation,
+    suffix: attrs.suffix,
+    prefix: attrs.prefix
   });
 
   var widgetModel = new WidgetModel({
@@ -182,7 +186,7 @@ WidgetsService.prototype.createTimeSeriesModel = function (attrs, layer) {
   var dataviewModel = this._dataviews.createHistogramModel(layer, {
     type: 'histogram',
     column: attrs.column,
-    columnType: 'date',
+    columnType: attrs.columnType || 'date',
     bins: attrs.bins,
     start: attrs.start,
     end: attrs.end

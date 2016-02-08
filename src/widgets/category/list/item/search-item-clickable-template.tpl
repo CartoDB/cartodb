@@ -2,7 +2,7 @@
   <span class="CDB-Widget-checkbox <%- isDisabled ? '' : 'is-checked' %>"></span>
   <div class="u-lSpace--xl">
     <div class="CDB-Widget-contentSpaced">
-      <p class="CDB-Widget-textSmall CDB-Widget-textSmall--bold CDB-Widget-textSmall--upper" title="<%- name %>"><%- name %></p>
+      <p class="CDB-Text is-semibold is-upper CDB-Size-medium" title="<%- name %>"><%- name %></p>
       <p class="CDB-Widget-textSmaller" title="<%- value %>"><%- prefix %><%- value %><%- suffix %></p>
     </div>
     <div class="CDB-Widget-progressBar">

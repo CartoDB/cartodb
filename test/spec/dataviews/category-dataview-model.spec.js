@@ -27,6 +27,14 @@ describe('dataviews/category-dataview-model', function () {
     this.map.reload.calls.reset();
     this.model.set('aggregation_column', 'other');
     expect(this.map.reload).toHaveBeenCalled();
+
+    this.map.reload.calls.reset();
+    this.model.set('prefix', '$');
+    expect(this.map.reload).toHaveBeenCalled();
+
+    this.map.reload.calls.reset();
+    this.model.set('suffix', 'k');
+    expect(this.map.reload).toHaveBeenCalled();
   });
 
   it('should define several internal models/collections', function () {

@@ -104,7 +104,7 @@ GeoJSONDataProvider.prototype.applyFilter = function (columnName, filter) {
   } else if (filter instanceof RangeFilter) {
     filterType = 'range';
     if (filter.isEmpty()) {
-      filterOptions = { column: 'age', min: 0, max: Infinity };
+      filterOptions = { column: columnName, min: 0, max: Infinity };
     } else {
       filterOptions = { column: columnName, min: filter.get('min'), max: filter.get('max') };
     }

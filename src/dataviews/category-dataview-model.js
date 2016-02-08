@@ -43,7 +43,7 @@ module.exports = DataviewModelBase.extend({
     this._data = new CategoriesCollection();
     this._searchModel = new SearchModel();
 
-    this.on('change:column change:aggregation change:aggregationColumn', this._reloadMap, this);
+    this.on('change:column change:aggregation change:aggregation_column', this._reloadMap, this);
   },
 
   // Set any needed parameter when they have changed in this model
@@ -248,7 +248,7 @@ module.exports = DataviewModelBase.extend({
       options: {
         column: this.get('column'),
         aggregation: this.get('aggregation'),
-        aggregationColumn: this.get('aggregationColumn'),
+        aggregation_column: this.get('aggregation_column'),
         suffix: this.get('suffix'),
         prefix: this.get('prefix')
       }

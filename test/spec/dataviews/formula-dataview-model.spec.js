@@ -15,25 +15,25 @@ describe('dataviews/formula-dataview-model', function () {
   });
 
   it('should reload map on operation change', function () {
-    this.map.reload.calls.reset()
+    this.map.reload.calls.reset();
     this.model.set('operation', 'avg');
     expect(this.map.reload).toHaveBeenCalled();
   });
 
   it('should reload map on column change', function () {
-    this.map.reload.calls.reset()
+    this.map.reload.calls.reset();
     this.model.set('column', 'other_col');
     expect(this.map.reload).toHaveBeenCalled();
   });
 
   it('should reload map on prefix change', function () {
-    this.map.reload.calls.reset()
+    this.map.reload.calls.reset();
     this.model.set('prefix', '$');
     expect(this.map.reload).toHaveBeenCalled();
   });
 
   it('should reload map on suffix change', function () {
-    this.map.reload.calls.reset()
+    this.map.reload.calls.reset();
     this.model.set('suffix', '€');
     expect(this.map.reload).toHaveBeenCalled();
   });

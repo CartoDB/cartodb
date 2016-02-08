@@ -62,8 +62,6 @@ module.exports = Model.extend({
     if (this.filter) {
       this.listenTo(this.filter, 'change', this._reloadMap);
     }
-
-    this.bind('change:operation', this._reloadMap, this);
   },
 
   /**

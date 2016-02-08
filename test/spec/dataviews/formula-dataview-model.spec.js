@@ -18,4 +18,9 @@ describe('dataviews/formula-dataview-model', function () {
     this.model.set('operation', 'avg');
     expect(this.map.reload).toHaveBeenCalled();
   });
+
+  it('should reload map on column change', function () {
+    this.model.set('column', 'other_col');
+    expect(this.map.reload).toHaveBeenCalled();
+  });
 });

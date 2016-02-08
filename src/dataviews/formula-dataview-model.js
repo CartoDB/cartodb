@@ -13,7 +13,7 @@ module.exports = DataviewModelBase.extend({
 
   initialize: function () {
     DataviewModelBase.prototype.initialize.apply(this, arguments);
-    this.on('change:operation', this._reloadMap, this);
+    this.on('change:column change:operation', this._reloadMap, this);
   },
 
   parse: function (r) {

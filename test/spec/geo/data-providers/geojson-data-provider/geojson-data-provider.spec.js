@@ -4,7 +4,6 @@ var CategoryFilter = require('../../../../../src/windshaft/filters/category');
 var RangeFilter = require('../../../../../src/windshaft/filters/range');
 
 describe('src/geo/data-providers/geojson/geojson-data-provider.js', function () {
-
   it('should trigger a FeaturesChanged event when the features on the layerView have changed', function () {
     var vectorLayerView = jasmine.createSpyObj('vectorLayerView', ['_on']);
 
@@ -40,7 +39,6 @@ describe('src/geo/data-providers/geojson/geojson-data-provider.js', function () 
     ]);
   });
 
-
   describe('applyFilter', function () {
     beforeEach(function () {
       this.vectorLayerView = jasmine.createSpyObj('vectorLayerView', ['_on', 'applyFilter']);
@@ -50,7 +48,7 @@ describe('src/geo/data-providers/geojson/geojson-data-provider.js', function () 
     describe('when the filter is unknown', function () {
       it('should raise an error', function () {
         var filter = {};
-        
+
         expect(function () {
           this.geoJSONProvider.applyFilter('city', filter);
         }.bind(this)).toThrowError("Filter on city couldn't be applied. Filter type wasn't recognized.");

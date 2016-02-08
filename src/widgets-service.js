@@ -38,8 +38,8 @@ WidgetsService.prototype.createCategoryModel = function (attrs, layer) {
     column: attrs.column,
     aggregation: attrs.aggregation || 'count',
     aggregation_column: attrs.aggregation_column || attrs.column,
-    suffix: attrs.suffix,
-    prefix: attrs.prefix
+    prefix: attrs.prefix,
+    suffix: attrs.suffix
   }));
 
   var widgetModel = new CategoryWidgetModel({
@@ -50,7 +50,9 @@ WidgetsService.prototype.createCategoryModel = function (attrs, layer) {
     dataviewModelAttrsNames: this._dataviewModelAttrsNames([
       'column',
       'aggregation',
-      'aggregation_column'
+      'aggregation_column',
+      'prefix',
+      'suffix'
     ])
   }, {
     dataviewModel: dataviewModel

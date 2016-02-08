@@ -60,8 +60,15 @@ module.exports = Model.extend({
 
     // Retrigger an event when the filter changes
     if (this.filter) {
-      this.listenTo(this.filter, 'change', this._reloadMap);
+      this.listenTo(this.filter, 'change', this._onFilterChanged);
     }
+  },
+
+  /**
+   * @private
+   */
+  _onFilterChanged: function () {
+    this._reloadMap();
   },
 
   /**

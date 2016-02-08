@@ -20,7 +20,7 @@ GeoJSONDataProvider.prototype._dataGeneratorsForDataviews = {
     var sortedGroups = this.filter.getColumnValues(columnName);
     var lastCat = {
       category: 'Other',
-      value: sortedGroups.slice(6).reduce(function (p, c) {
+      value: sortedGroups.slice(numberOfCategories).reduce(function (p, c) {
         return p + c.value
       }, 0),
       agg: true

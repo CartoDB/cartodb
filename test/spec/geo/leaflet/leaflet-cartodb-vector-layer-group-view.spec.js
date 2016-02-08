@@ -4,7 +4,6 @@ var GeoJSONDataProvider = require('../../../../src/geo/data-providers/geojson/ge
 var LeafletCartoDBVectorLayerGroupView = require('../../../../src/geo/leaflet/leaflet-cartodb-vector-layer-group-view');
 
 describe('src/geo/leaflet/leaflet-cartodb-vector-layer-group-view.js', function () {
-
   beforeEach(function () {
     this.leafletMap;
     this.layerGroupModel = new Backbone.Model({ type: 'wadus' });

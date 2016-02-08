@@ -1,5 +1,7 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
+var CategoryFilter = require('../../../windshaft/filters/category');
+var RangeFilter = require('../../../windshaft/filters/range');
 
 var GeoJSONDataProvider = function (vectorLayerView, layerIndex) {
   this._vectorLayerView = vectorLayerView;
@@ -80,6 +82,37 @@ GeoJSONDataProvider.prototype.generateDataForDataview = function (dataview, feat
 
   var data = generateData(features, dataview.attributes);
   return data;
+};
+
+GeoJSONDataProvider.prototype.applyFilter = function (columnName, filter) {
+  var filterType;
+  var filterOptions;
+  if (filter instanceof CategoryFilter) {
+    if (filter.isEmpty()) {
+      filterType = 'accept';
+      filterOptions = { column: columnName, values: 'all' };
+    } else if (filter.get('rejectAll')) {
+      filterType = 'reject';
+      filterOptions = { column: columnName, values: 'all' };
+    } else if (filter.acceptedCategories.size()) {
+      filterType = 'accept';
+      filterOptions = { column: columnName, values: filter.getAcceptedCategoryNames() };
+    } else if (filter.rejectedCategories.size()) {
+      filterType = 'reject';
+      filterOptions = { column: columnName, values: filter.getRejectedCategoryNames() };
+    }
+  } else if (filter instanceof RangeFilter) {
+    filterType = 'range';
+    if (filter.isEmpty()) {
+      filterOptions = { column: columnName, min: 0, max: Infinity };
+    } else {
+      filterOptions = { column: columnName, min: filter.get('min'), max: filter.get('max') };
+    }
+  } else {
+    throw new Error('Filter on ' + columnName + " couldn't be applied. Filter type wasn't recognized.");
+  }
+
+  this._vectorLayerView.applyFilter(this._layerIndex, filterType, filterOptions);
 };
 
 _.extend(GeoJSONDataProvider.prototype, Backbone.Events);

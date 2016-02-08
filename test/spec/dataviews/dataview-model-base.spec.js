@@ -165,6 +165,59 @@ describe('dataviews/dataview-model-base', function () {
     });
   });
 
+  describe('bindings to the filter', function () {
+    beforeEach(function () {
+      spyOn(this.map, 'reload');
+      this.layer = new Backbone.Model({
+        id: 'layerId'
+      });
+      this.layer.getDataProvider = jasmine.createSpy('getDataProvider').and.returnValue(undefined);
+    });
+
+    it('should reload the map by default when the filter changes', function () {
+      var filter = new Backbone.Model();
+      new DataviewModelBase(null, { // eslint-disable-line
+        map: this.map,
+        windshaftMap: this.windshaftMap,
+        layer: this.layer,
+        filter: filter
+      });
+
+      // Filter changes
+      filter.trigger('change', filter);
+
+      expect(this.map.reload).toHaveBeenCalledWith({ sourceLayerId: 'layerId' });
+    });
+
+    it('should apply the filter to the data provider when the filter changes', function () {
+      // Set up a new data provider
+      var dataProvider = new Backbone.Model();
+      dataProvider.generateDataForDataview = function (dataview, data) {
+        return data[0];
+      };
+      dataProvider.applyFilter = jasmine.createSpy('applyFilter');
+
+      // Layer has a dataProvider
+      this.layer.getDataProvider.and.returnValue(dataProvider);
+
+      var filter = new Backbone.Model();
+      var dataview = new DataviewModelBase({ // eslint-disable-line
+        column: 'columnName'
+      }, {
+        map: this.map,
+        windshaftMap: this.windshaftMap,
+        layer: this.layer,
+        filter: filter
+      });
+
+      // Filter changes
+      filter.trigger('change', filter);
+
+      expect(this.map.reload).not.toHaveBeenCalled();
+      expect(dataProvider.applyFilter).toHaveBeenCalledWith('columnName', filter);
+    });
+  });
+
   describe('.remove', function () {
     beforeEach(function () {
       this.removeSpy = jasmine.createSpy('remove');
@@ -188,7 +241,7 @@ describe('dataviews/dataview-model-base', function () {
   });
 
   describe('when the layer has a data provider', function () {
-    it('it should gets data from that provider when features changed', function () {
+    it('it should get data from that provider when features changed', function () {
       var layer = new Backbone.Model();
       var syncCallback = jasmine.createSpy('syncCallback');
 

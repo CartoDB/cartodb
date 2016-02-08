@@ -1,5 +1,3 @@
-var Backbone = require('backbone');
-var _ = require('underscore');
 var log = require('cdb.log');
 var LeafletTiledLayerView = require('./leaflet-tiled-layer-view');
 var LeafletWMSLayerView = require('./leaflet-wms-layer-view');

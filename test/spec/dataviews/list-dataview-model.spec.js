@@ -9,17 +9,13 @@ describe('dataviews/list-dataview-model', function () {
     }, {
       map: this.map,
       windshaftMap: windshaftMap,
-      layer: jasmine.createSpyObj('layer', ['get'])
+      layer: jasmine.createSpyObj('layer', ['get', 'getDataProvider'])
     });
   });
 
-  it('should reload map on operation change', function () {
+  it('should reload map on columns change', function () {
     this.map.reload.calls.reset();
     this.model.set('columns', ['asd']);
-    expect(this.map.reload).toHaveBeenCalled();
-
-    this.map.reload.calls.reset();
-    this.model.set('columns_title', ['asd']);
     expect(this.map.reload).toHaveBeenCalled();
   });
 });

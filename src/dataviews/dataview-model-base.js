@@ -10,8 +10,8 @@ module.exports = Model.extend({
     url: '',
     data: [],
     columns: [],
-    syncData: true,
-    syncBoundingBox: true,
+    sync_on_data_change: true,
+    sync_on_bbox_change: true,
     enabled: true
   },
 
@@ -83,12 +83,7 @@ module.exports = Model.extend({
    * @private
    */
   _onFilterChanged: function (filter) {
-    var dataProvider = this.layer.getDataProvider();
-    if (dataProvider) {
-      dataProvider.applyFilter(this.get('column'), filter);
-    } else {
-      this._reloadMap();
-    }
+    this._reloadMap();
   },
 
   /**
@@ -153,11 +148,11 @@ module.exports = Model.extend({
   },
 
   _shouldFetchOnURLChange: function () {
-    return this.get('syncData') && this.get('enabled');
+    return this.get('sync_on_data_change') && this.get('enabled');
   },
 
   _shouldFetchOnBoundingBoxChange: function () {
-    return this.get('enabled') && this.get('syncBoundingBox');
+    return this.get('enabled') && this.get('sync_on_bbox_change');
   },
 
   _fetch: function (callback) {

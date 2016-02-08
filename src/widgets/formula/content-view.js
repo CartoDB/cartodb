@@ -78,7 +78,7 @@ module.exports = cdb.core.View.extend({
 
   _initBinds: function () {
     this.model.bind('change:title change:collapsed', this.render, this);
-    this._dataviewModel.bind('change:data', this.render, this);
+    this._dataviewModel.bind('change:data change:prefix change:suffix', this.render, this);
     this.add_related_model(this._dataviewModel);
   },
 

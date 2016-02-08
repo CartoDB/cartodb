@@ -123,7 +123,7 @@ WidgetsService.prototype.createFormulaModel = function (attrs, layer) {
     type: 'formula',
     title: attrs.title,
     attrsNames: ['title', 'collapsed'],
-    dataviewModelAttrsNames: ['column', 'operation']
+    dataviewModelAttrsNames: ['column', 'operation', 'prefix', 'suffix']
   }, {
     dataviewModel: dataviewModel
   });

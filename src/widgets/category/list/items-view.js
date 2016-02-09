@@ -84,28 +84,29 @@ module.exports = cdb.core.View.extend({
   _setFilters: function (mdl) {
     var isSelected = mdl.get('selected');
     var filter = this.dataviewModel.filter;
+    var clickedName = mdl.get('name');
 
     if (isSelected) {
       if (filter.rejectedCategories.size() === 0 &&
           filter.acceptedCategories.size() === 0 &&
-          this.dataviewModel.getCount() > 1
+          this.dataviewModel.getSize() > 2
       ) {
         var data = this.dataviewModel.getData();
         // Make elements "unselected"
         data.each(function (m) {
           var name = m.get('name');
-          if (name !== mdl.get('name')) {
+          if (name !== clickedName) {
             m.set('selected', false);
           }
         });
         filter.accept(mdl.get('name'));
       } else {
         mdl.set('selected', false);
-        filter.reject(mdl.get('name'));
+        filter.reject(clickedName);
       }
     } else {
       mdl.set('selected', true);
-      filter.accept(mdl.get('name'));
+      filter.accept(clickedName);
     }
   },
 

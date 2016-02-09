@@ -10,8 +10,7 @@ var cdb = require('cartodb.js');
  */
 module.exports = cdb.core.Model.extend({
   defaults: {
-    attrsNames: [],
-    dataviewAttrsNames: []
+    attrsNames: []
   },
 
   initialize: function (attrs, opts) {

@@ -1,8 +1,6 @@
 var _ = require('underscore');
 var GeoJSONDataProvider = require('../../../../../src/geo/data-providers/geojson/geojson-data-provider');
-
 describe('src/geo/data-providers/geojson/geojson-data-provider.js', function () {
-
   it('should trigger a FeaturesChanged event when the features on the layerView have changed', function () {
     var vectorLayerView = jasmine.createSpyObj('vectorLayerView', ['_on', 'getFeatures']);
 

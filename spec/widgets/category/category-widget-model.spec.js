@@ -4,7 +4,9 @@ var specHelper = require('../../spec-helper');
 describe('widgets/category/category-widget-model', function () {
   beforeEach(function () {
     var vis = specHelper.createDefaultVis();
-    this.dataviewModel = vis.dataviews.createCategoryModel(vis.map.layers.first(), {});
+    this.dataviewModel = vis.dataviews.createCategoryModel(vis.map.layers.first(), {
+      column: 'col'
+    });
     this.widgetModel = new CategoryWidgetModel({}, {
       dataviewModel: this.dataviewModel
     });

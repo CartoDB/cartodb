@@ -6,6 +6,7 @@ describe('widgets/time-series/torque-time-slider-view', function () {
   beforeEach(function () {
     var vis = specHelper.createDefaultVis();
     this.dataviewModel = vis.dataviews.createHistogramModel(vis.map.layers.first(), {
+      column: 'dates',
       bins: 256
     });
     this.torqueLayerModel = new cdb.geo.TorqueLayer({

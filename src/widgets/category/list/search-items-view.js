@@ -63,6 +63,7 @@ module.exports = CategoryItemsView.extend({
   _addItem: function (mdl, $parent) {
     var v = new WidgetSearchCategoryItemView({
       model: mdl,
+      widgetModel: this.widgetModel,
       dataviewModel: this.dataviewModel
     });
     this.addView(v);

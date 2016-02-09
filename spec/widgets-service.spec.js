@@ -32,6 +32,7 @@ describe('widgets-service', function () {
           title: 'some_title',
           column: 'my_column',
           aggregation: 'avg',
+          prefix: '$',
           suffix: ' people'
         };
         this.widgetModel = this.widgetsService.createCategoryModel(attrs, this.vis.map.layers.first());
@@ -58,11 +59,39 @@ describe('widgets-service', function () {
       });
 
       it('should have a suffix text', function () {
-        expect(this.widgetModel.dataviewModel.get('suffix')).toEqual(' people');
+        expect(this.widgetModel.get('suffix')).toEqual(' people');
       });
 
-      it('should have a default prefix text', function () {
-        expect(this.widgetModel.dataviewModel.get('prefix')).toEqual('');
+      it('should have a prefix text', function () {
+        expect(this.widgetModel.get('prefix')).toEqual('$');
+      });
+
+      it('should enable dataview by default', function () {
+        expect(this.widgetModel.dataviewModel.get('sync_on_bbox_change')).toBe(true);
+        expect(this.widgetModel.dataviewModel.get('sync_on_data_change')).toBe(true);
+        expect(this.widgetModel.dataviewModel.get('enabled')).toBe(true);
+      });
+    });
+
+    describe('when given custom sync options', function () {
+      beforeEach(function () {
+        var attrs = {
+          id: 'abc-123',
+          title: 'some_title',
+          column: 'my_column',
+          aggregation: 'avg',
+          suffix: ' people',
+          sync_on_bbox_change: false,
+          sync_on_data_change: false,
+          enabled: false
+        };
+        this.widgetModel = this.widgetsService.createCategoryModel(attrs, this.vis.map.layers.first());
+      });
+
+      it('should take them into account', function () {
+        expect(this.widgetModel.dataviewModel.get('sync_on_bbox_change')).toBe(false);
+        expect(this.widgetModel.dataviewModel.get('sync_on_data_change')).toBe(false);
+        expect(this.widgetModel.dataviewModel.get('enabled')).toBe(false);
       });
     });
 
@@ -76,17 +105,19 @@ describe('widgets-service', function () {
 
     describe('fails when the input has no', function () {
       it('title', function () {
-        this.widgetModel = this.widgetsService.createCategoryModel({
-          column: 'my_column'
-        }, this.vis.map.layers.first());
-        expect(this.widgetModel).not.toBeDefined();
+        expect(function () {
+          this.widgetModel = this.widgetsService.createCategoryModel({
+            column: 'my_column'
+          }, this.vis.map.layers.first());
+        }).toThrowError();
       });
 
       it('column', function () {
-        this.widgetModel = this.widgetsService.createCategoryModel({
-          title: 'some_title'
-        }, this.vis.map.layers.first());
-        expect(this.widgetModel).not.toBeDefined();
+        expect(function () {
+          this.widgetModel = this.widgetsService.createCategoryModel({
+            title: 'some_title'
+          }, this.vis.map.layers.first());
+        }).toThrowError();
       });
     });
   });
@@ -119,8 +150,14 @@ describe('widgets-service', function () {
         expect(this.widgetModel.dataviewModel.get('column')).toEqual('a_column');
       });
 
-      it('should set default bins', function () {
+      it('should set bins', function () {
         expect(this.widgetModel.dataviewModel.get('bins')).toEqual(20);
+      });
+
+      it('should enable dataview by default', function () {
+        expect(this.widgetModel.dataviewModel.get('sync_on_bbox_change')).toBe(true);
+        expect(this.widgetModel.dataviewModel.get('sync_on_data_change')).toBe(true);
+        expect(this.widgetModel.dataviewModel.get('enabled')).toBe(true);
       });
     });
 
@@ -134,17 +171,19 @@ describe('widgets-service', function () {
 
     describe('fails when the input has no', function () {
       it('title', function () {
-        this.widgetModel = this.widgetsService.createHistogramModel({
-          column: 'my_column'
-        }, this.vis.map.layers.first());
-        expect(this.widgetModel).not.toBeDefined();
+        expect(function () {
+          this.widgetModel = this.widgetsService.createHistogramModel({
+            column: 'my_column'
+          }, this.vis.map.layers.first());
+        }).toThrowError();
       });
 
       it('column', function () {
-        this.widgetModel = this.widgetsService.createHistogramModel({
-          title: 'some_title'
-        }, this.vis.map.layers.first());
-        expect(this.widgetModel).not.toBeDefined();
+        expect(function () {
+          this.widgetModel = this.widgetsService.createHistogramModel({
+            title: 'some_title'
+          }, this.vis.map.layers.first());
+        }).toThrowError();
       });
     });
   });
@@ -157,7 +196,8 @@ describe('widgets-service', function () {
           title: 'my formula',
           column: 'a_column',
           operation: 'sum',
-          prefix: 'hello'
+          prefix: '$',
+          suffix: '¢'
         };
         this.widgetModel = this.widgetsService.createFormulaModel(attrs, this.vis.map.layers.first());
       });
@@ -183,38 +223,47 @@ describe('widgets-service', function () {
       });
 
       it('should have a default suffix text', function () {
-        expect(this.widgetModel.dataviewModel.get('suffix')).toEqual('');
+        expect(this.widgetModel.get('suffix')).toEqual('¢');
       });
 
       it('should have a prefix text', function () {
-        expect(this.widgetModel.dataviewModel.get('prefix')).toEqual('hello');
+        expect(this.widgetModel.get('prefix')).toEqual('$');
+      });
+
+      it('should enable dataview by default', function () {
+        expect(this.widgetModel.dataviewModel.get('sync_on_bbox_change')).toBe(true);
+        expect(this.widgetModel.dataviewModel.get('sync_on_data_change')).toBe(true);
+        expect(this.widgetModel.dataviewModel.get('enabled')).toBe(true);
       });
     });
 
     describe('fails when the input has no', function () {
       it('title', function () {
-        this.widgetModel = this.widgetsService.createFormulaModel({
-          id: 'abc-123',
-          column: 'my_column',
-          operation: 'sum'
-        }, this.vis.map.layers.first());
-        expect(this.widgetModel).not.toBeDefined();
+        expect(function () {
+          this.widgetModel = this.widgetsService.createFormulaModel({
+            id: 'abc-123',
+            column: 'my_column',
+            operation: 'sum'
+          }, this.vis.map.layers.first());
+        }).toThrowError();
       });
 
       it('column', function () {
-        this.widgetModel = this.widgetsService.createFormulaModel({
-          title: 'some_title',
-          operation: 'sum'
-        }, this.vis.map.layers.first());
-        expect(this.widgetModel).not.toBeDefined();
+        expect(function () {
+          this.widgetModel = this.widgetsService.createFormulaModel({
+            title: 'some_title',
+            operation: 'sum'
+          }, this.vis.map.layers.first());
+        }).toThrowError();
       });
 
       it('operation', function () {
-        this.widgetModel = this.widgetsService.createFormulaModel({
-          title: 'some_title',
-          column: 'my_column'
-        }, this.vis.map.layers.first());
-        expect(this.widgetModel).not.toBeDefined();
+        expect(function () {
+          this.widgetModel = this.widgetsService.createFormulaModel({
+            title: 'some_title',
+            column: 'my_column'
+          }, this.vis.map.layers.first());
+        }).toThrowError();
       });
     });
   });
@@ -250,31 +299,40 @@ describe('widgets-service', function () {
       it('should set columns title', function () {
         expect(this.widgetModel.get('columns_title')).toEqual(['first', '2nd']);
       });
+
+      it('should enable dataview by default', function () {
+        expect(this.widgetModel.dataviewModel.get('sync_on_bbox_change')).toBe(true);
+        expect(this.widgetModel.dataviewModel.get('sync_on_data_change')).toBe(true);
+        expect(this.widgetModel.dataviewModel.get('enabled')).toBe(true);
+      });
     });
 
     describe('fails when the input has no', function () {
       it('title', function () {
-        this.widgetModel = this.widgetsService.createListModel({
-          columns: ['a', 'b'],
-          columns_title: ['first', '2nd']
-        }, this.vis.map.layers.first());
-        expect(this.widgetModel).not.toBeDefined();
+        expect(function () {
+          this.widgetModel = this.widgetsService.createListModel({
+            columns: ['a', 'b'],
+            columns_title: ['first', '2nd']
+          }, this.vis.map.layers.first());
+        }).toThrowError();
       });
 
       it('columns', function () {
-        this.widgetModel = this.widgetsService.createListModel({
-          title: 'my list',
-          columns_title: ['first', '2nd']
-        }, this.vis.map.layers.first());
-        expect(this.widgetModel).not.toBeDefined();
+        expect(function () {
+          this.widgetModel = this.widgetsService.createListModel({
+            title: 'my list',
+            columns_title: ['first', '2nd']
+          }, this.vis.map.layers.first());
+        }).toThrowError();
       });
 
       it('columns_title', function () {
-        this.widgetModel = this.widgetsService.createListModel({
-          title: 'my list',
-          columns: ['a', 'b']
-        }, this.vis.map.layers.first());
-        expect(this.widgetModel).not.toBeDefined();
+        expect(function () {
+          this.widgetModel = this.widgetsService.createListModel({
+            title: 'my list',
+            columns: ['a', 'b']
+          }, this.vis.map.layers.first());
+        }).toThrowError();
       });
     });
   });
@@ -307,15 +365,22 @@ describe('widgets-service', function () {
       it('should be backed up by a histogram dataview model', function () {
         expect(this.widgetModel.dataviewModel.get('type')).toEqual('histogram');
       });
+
+      it('should enable dataview by default', function () {
+        expect(this.widgetModel.dataviewModel.get('sync_on_bbox_change')).toBe(true);
+        expect(this.widgetModel.dataviewModel.get('sync_on_data_change')).toBe(true);
+        expect(this.widgetModel.dataviewModel.get('enabled')).toBe(true);
+      });
     });
   });
 
   describe('fails when the input has no', function () {
     it('column', function () {
-      this.widgetModel = this.widgetsService.createTimeSeriesModel({
-        title: 'some_title'
-      }, this.vis.map.layers.first());
-      expect(this.widgetModel).not.toBeDefined();
+      expect(function () {
+        this.widgetModel = this.widgetsService.createTimeSeriesModel({
+          title: 'some_title'
+        }, this.vis.map.layers.first());
+      }).toThrowError();
     });
   });
 });

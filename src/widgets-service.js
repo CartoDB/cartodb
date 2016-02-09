@@ -1,5 +1,4 @@
 var _ = require('underscore');
-var cdb = require('cartodb.js');
 var WidgetModel = require('./widgets/widget-model');
 var CategoryWidgetModel = require('./widgets/category/category-widget-model');
 var HistogramWidgetModel = require('./widgets/histogram/histogram-widget-model');
@@ -28,29 +27,15 @@ WidgetsService.prototype.get = function (id) {
  * @return {CategoryWidgetModel}
  */
 WidgetsService.prototype.createCategoryModel = function (attrs, layer) {
-  try {
-    _checkProperties(attrs, ['title', 'column']);
-  } catch (err) {
-    cdb.log.error('Error creating newCategoryModel, ' + err.message);
-    return;
-  }
+  _checkProperties(attrs, ['title']);
 
-  var dataviewModel = this._dataviews.createCategoryModel(layer, {
-    type: 'category',
-    column: attrs.column,
-    aggregation: attrs.aggregation || 'count',
-    aggregation_column: attrs.aggregation_column || attrs.column,
-    suffix: attrs.suffix,
-    prefix: attrs.prefix
-  });
+  var dataviewModel = this._dataviews.createCategoryModel(layer, attrs);
 
-  var widgetModel = new CategoryWidgetModel({
-    id: attrs.id,
-    type: 'category',
-    title: attrs.title,
-    attrsNames: ['title', 'collapsed'],
-    dataviewModelAttrsNames: ['column', 'aggregation', 'aggregation_column']
-  }, {
+  var attrsNames = ['id', 'title', 'collapsed', 'prefix', 'suffix'];
+  var widgetAttrs = _.pick(attrs, attrsNames);
+  widgetAttrs.attrsNames = attrsNames;
+
+  var widgetModel = new CategoryWidgetModel(widgetAttrs, {
     dataviewModel: dataviewModel
   });
   this._widgetsCollection.add(widgetModel);
@@ -67,26 +52,16 @@ WidgetsService.prototype.createCategoryModel = function (attrs, layer) {
  * @return {WidgetModel}
  */
 WidgetsService.prototype.createHistogramModel = function (attrs, layer) {
-  try {
-    _checkProperties(attrs, ['title', 'column']);
-  } catch (err) {
-    cdb.log.error('Error creating newHistogramModel, ' + err.message);
-    return;
-  }
+  _checkProperties(attrs, ['title']);
 
-  var dataviewModel = this._dataviews.createHistogramModel(layer, {
-    type: 'histogram',
-    column: attrs.column,
-    bins: attrs.bins || 10
-  });
+  var dataviewModel = this._dataviews.createHistogramModel(layer, attrs);
 
-  var widgetModel = new HistogramWidgetModel({
-    id: attrs.id,
-    type: 'histogram',
-    title: attrs.title,
-    attrsNames: ['title', 'collapsed'],
-    dataviewModelAttrsNames: ['column', 'bins']
-  }, {
+  var attrsNames = ['id', 'title', 'collapsed'];
+  var widgetAttrs = _.pick(attrs, attrsNames);
+  widgetAttrs.type = 'histogram';
+  widgetAttrs.attrsNames = attrsNames;
+
+  var widgetModel = new HistogramWidgetModel(widgetAttrs, {
     dataviewModel: dataviewModel
   });
   this._widgetsCollection.add(widgetModel);
@@ -103,28 +78,16 @@ WidgetsService.prototype.createHistogramModel = function (attrs, layer) {
  * @return {CategoryWidgetModel}
  */
 WidgetsService.prototype.createFormulaModel = function (attrs, layer) {
-  try {
-    _checkProperties(attrs, ['title', 'column', 'operation']);
-  } catch (err) {
-    cdb.log.error('Error creating newFormulaModel, ' + err.message);
-    return;
-  }
+  _checkProperties(attrs, ['title']);
 
-  var dataviewModel = this._dataviews.createFormulaModel(layer, {
-    type: 'formula',
-    column: attrs.column,
-    operation: attrs.operation,
-    suffix: attrs.suffix,
-    prefix: attrs.prefix
-  });
+  var dataviewModel = this._dataviews.createFormulaModel(layer, attrs);
 
-  var widgetModel = new WidgetModel({
-    id: attrs.id,
-    type: 'formula',
-    title: attrs.title,
-    attrsNames: ['title', 'collapsed'],
-    dataviewModelAttrsNames: ['column', 'operation', 'prefix', 'suffix']
-  }, {
+  var attrsNames = ['id', 'title', 'collapsed', 'prefix', 'suffix'];
+  var widgetAttrs = _.pick(attrs, attrsNames);
+  widgetAttrs.type = 'formula';
+  widgetAttrs.attrsNames = attrsNames;
+
+  var widgetModel = new WidgetModel(widgetAttrs, {
     dataviewModel: dataviewModel
   });
   this._widgetsCollection.add(widgetModel);
@@ -141,26 +104,16 @@ WidgetsService.prototype.createFormulaModel = function (attrs, layer) {
  * @return {WidgetModel}
  */
 WidgetsService.prototype.createListModel = function (attrs, layer) {
-  try {
-    _checkProperties(attrs, ['title', 'columns', 'columns_title']);
-  } catch (err) {
-    cdb.log.error('Error creating newListModel, ' + err.message);
-    return;
-  }
+  _checkProperties(attrs, ['title', 'columns_title']);
 
-  var dataviewModel = this._dataviews.createListModel(layer, {
-    type: 'list',
-    columns: attrs.columns
-  });
+  var dataviewModel = this._dataviews.createListModel(layer, attrs);
 
-  var widgetModel = new WidgetModel({
-    id: attrs.id,
-    type: 'list',
-    title: attrs.title,
-    columns_title: attrs.columns_title,
-    attrsNames: ['title'],
-    dataviewModelAttrsNames: ['columns']
-  }, {
+  var attrsNames = ['id', 'title', 'columns_title'];
+  var widgetAttrs = _.pick(attrs, attrsNames);
+  widgetAttrs.type = 'list';
+  widgetAttrs.attrsNames = attrsNames;
+
+  var widgetModel = new WidgetModel(widgetAttrs, {
     dataviewModel: dataviewModel
   });
   this._widgetsCollection.add(widgetModel);
@@ -178,27 +131,18 @@ WidgetsService.prototype.createListModel = function (attrs, layer) {
  * @return {WidgetModel}
  */
 WidgetsService.prototype.createTimeSeriesModel = function (attrs, layer) {
-  try {
-    _checkProperties(attrs, ['column', 'bins', 'start', 'end']);
-  } catch (err) {
-    cdb.log.error('Error creating newTimeSeriesModel, ' + err.message);
-    return;
-  }
+  _checkProperties(attrs, ['start', 'end']);
 
-  var dataviewModel = this._dataviews.createHistogramModel(layer, {
-    type: 'histogram',
-    column: attrs.column,
-    column_type: attrs.column_type || 'date',
-    bins: attrs.bins,
-    start: attrs.start,
-    end: attrs.end
-  });
+  // TODO will other kind really work for a time-series?
+  attrs.column_type = attrs.column_type || 'date';
+  var dataviewModel = this._dataviews.createHistogramModel(layer, attrs);
 
-  var widgetModel = new WidgetModel({
-    id: attrs.id,
-    type: 'time-series',
-    dataviewModelAttrsNames: ['column', 'column_type', 'bins', 'start', 'end']
-  }, {
+  var attrsNames = ['id'];
+  var widgetAttrs = _.pick(attrs, attrsNames);
+  widgetAttrs.type = 'time-series';
+  widgetAttrs.attrsNames = attrsNames;
+
+  var widgetModel = new WidgetModel(widgetAttrs, {
     dataviewModel: dataviewModel
   });
   this._widgetsCollection.add(widgetModel);
@@ -209,7 +153,7 @@ WidgetsService.prototype.createTimeSeriesModel = function (attrs, layer) {
 function _checkProperties (obj, propertiesArray) {
   _.each(propertiesArray, function (prop) {
     if (obj[prop] === undefined) {
-      throw new Error('\'' + prop + '\' should be provided');
+      throw new Error(prop + ' is required');
     }
   });
 }

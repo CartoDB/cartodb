@@ -60,7 +60,7 @@ describe('windshaft/filters/category', function () {
       expect(rejectedCats.size()).toBe(1);
       this.filter.accept(1);
       expect(rejectedCats.size()).toBe(0);
-      expect(acceptedCats.size()).toBe(1);
+      expect(acceptedCats.size()).toBe(0);
     });
 
     it('should not accept a value if it is already present', function () {

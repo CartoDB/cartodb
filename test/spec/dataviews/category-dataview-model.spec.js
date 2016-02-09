@@ -155,29 +155,6 @@ describe('dataviews/category-dataview-model', function () {
     });
   });
 
-  describe('parseData', function () {
-    it('should provide data as an object', function () {
-      _parseData(this.model, _generateData(10));
-      var data = this.model.get('data');
-      expect(data).toBeDefined();
-      expect(data.length).toBe(10);
-    });
-
-    it('should complete data with accepted items (if they are not present already) when has ownFilter set', function () {
-      this.model.set('ownFilter', true);
-      this.model.filter.accept(['9', '10', '11']);
-      _parseData(this.model, _generateData(8));
-      var data = this.model.get('data');
-      expect(data.length).toBe(11);
-
-      this.model.filter.accept(['2']);
-      // The '2' should not be repeated in the data array
-      _parseData(this.model, _generateData(8));
-      data = this.model.get('data');
-      expect(data.length).toBe(11);
-    });
-  });
-
   describe('.parse', function () {
     it('should change internal data collection when parse is called', function () {
       var resetSpy = jasmine.createSpy('reset');
@@ -201,7 +178,7 @@ describe('dataviews/category-dataview-model', function () {
     });
 
     describe('when enableFilter is enabled', function () {
-      it('should add categories that are accepted when they are not present in the new categories', function () {
+      it('should NOT add categories that are accepted when they are not present in the new categories', function () {
         this.model.filter.accept('Madrid');
 
         // Enable `enableFilter`
@@ -215,14 +192,13 @@ describe('dataviews/category-dataview-model', function () {
         }));
 
         var categories = this.model.get('data');
-        expect(categories.length).toEqual(2);
+        expect(categories.length).toEqual(1);
         expect(categories[0].name).toEqual('Barcelona');
-        expect(categories[1].name).toEqual('Madrid');
       });
     });
 
     describe('when enableFilter is disabled', function () {
-      it('should NOT add categories that are accepted when they are not present in the new categories', function () {
+      it('should add categories that are accepted when they are not present in the new categories', function () {
         this.model.filter.accept('Madrid');
 
         // Disable `enableFilter`
@@ -236,8 +212,9 @@ describe('dataviews/category-dataview-model', function () {
         }));
 
         var categories = this.model.get('data');
-        expect(categories.length).toEqual(1);
+        expect(categories.length).toEqual(2);
         expect(categories[0].name).toEqual('Barcelona');
+        expect(categories[1].name).toEqual('Madrid');
       });
     });
   });

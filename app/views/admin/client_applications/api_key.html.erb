@@ -47,7 +47,11 @@
         <label class="FormAccount-label FormAccount-label--verticalAlignTop">Example write</label>
       </div>
       <div class="FormAccount-rowPreview">
+        <% if CartoDB.subdomainless_urls? %>
+        <p class="FormAccount-text FormAccount-text--preview">https://<%= CartoDB.account_host %>/user/<%= current_user.username %>/api/v2/sql?q=INSERT INTO table_name (the_geom, observation) VALUES (ST_GeomFromText(’POINT(-71.2 42.5)’, 4326),'rare bird spotted')&api_key=<%= current_user.api_key %></p>
+        <% else %>
         <p class="FormAccount-text FormAccount-text--preview">https://<%= current_user.username %>.<%= CartoDB.account_host %>/api/v2/sql?q=INSERT INTO table_name (the_geom, observation) VALUES (ST_GeomFromText(’POINT(-71.2 42.5)’, 4326),'rare bird spotted')&api_key=<%= current_user.api_key %></p>
+        <% end%>
       </div>
     </div>
 
@@ -56,7 +60,11 @@
         <label class="FormAccount-label FormAccount-label--verticalAlignTop">Example read private</label>
       </div>
       <div class="FormAccount-rowPreview">
+        <% if CartoDB.subdomainless_urls? %>
+        <p class="FormAccount-text FormAccount-text--preview">https://<%= CartoDB.account_host %>/user/<%= current_user.username %>/api/v2/sql?q=SELECT * FROM private_table&api_key=<%= current_user.api_key %></p>
+        <% else %>
         <p class="FormAccount-text FormAccount-text--preview">https://<%= current_user.username %>.<%= CartoDB.account_host %>/api/v2/sql?q=SELECT * FROM private_table&api_key=<%= current_user.api_key %></p>
+        <% end %>
       </div>
     </div>
 

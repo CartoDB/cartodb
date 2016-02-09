@@ -18,21 +18,36 @@ GeoJSONDataProvider.prototype._dataGeneratorsForDataviews = {
   histogram: function (features, options) {
     var filter = this._vectorLayerView.getFilter(this._layerIndex);
     var columnName = options.column;
-    var end = typeof options.end !== 'undefined' ? options.end : filter.getMax(columnName);
-    var start = typeof options.start !== 'undefined' ? options.start : filter.getMin(columnName);
-    var width = (end - start) / options.bins;
-    filter._createDimension(columnName)
-    var hist = filter.dimensions[columnName].group(function (f) { return Math.floor(f / width) }).top(Infinity)
-
-    var bins = hist.map(function (bin, index) {
-      return {
-        bin: index,
-        max: 0,
-        min: 0,
-        avg: 0,
-        freq: bin.value
-      }
-    })
+    if (options.own_filter === 1) {
+      var end = filter.getMax(columnName);
+      var start = filter.getMin(columnName);
+      var hist = d3.layout.histogram().bins(options.data.length)(filter.getValues().map(function(f){return f.properties[options.column]}))
+      var width = (end - start) / options.data.length;
+      var bins = hist.map(function (bin, index) {
+        return {
+          bin: index,
+          max: 0,
+          min: 0,
+          avg: 0,
+          freq: bin.length
+        }
+      })
+    } else {
+      var end = typeof options.end !== 'undefined' ? options.end : filter.getMax(columnName);
+      var start = typeof options.start !== 'undefined' ? options.start : filter.getMin(columnName);
+      var width = (end - start) / options.bins;
+      filter._createDimension(columnName)
+      var hist = filter.dimensions[columnName].group(function (f) { return Math.floor(f / width) }).top(Infinity)
+      var bins = hist.map(function (bin, index) {
+        return {
+          bin: index,
+          max: 0,
+          min: 0,
+          avg: 0,
+          freq: bin.value
+        }
+      })
+    }
     var histogram = {"bin_width": width,"bins_count":bins.length, "bins_start": start,"nulls":0,"avg":67.24617244157938,"bins": bins,"type":"histogram"}
     return histogram;
   },

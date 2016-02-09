@@ -25,59 +25,54 @@ var requiredVendorForModuleLoad = [
  * Load order: vendor, helpers, source, specs,
  */
 module.exports = {
-  task: function() {
-    return {
+  cartodb: {
+    src: [
+      'dist/cartodb.uncompressed.js'
+    ],
+    options: _.defaults({
+      outfile: 'test/SpecRunner-cartodb.html',
+      specs: '<%= config.tmp %>/cartodb-specs.js'
+    }, defaultOptions)
+  },
+  'cartodb-src': {
+    src: [], // actual src files are require'd in the *.spec.js files
+    options: _.defaults({
+      outfile: 'test/SpecRunner-src.html',
+      specs: '<%= config.tmp %>/src-specs.js',
+      vendor: defaultOptions.vendor
+        .concat([
+          'http://maps.googleapis.com/maps/api/js?sensor=false&v=3.12'
+        ])
+        .concat(requiredVendorForModuleLoad)
+    }, defaultOptions)
+  },
 
-      cartodb: {
-        src: [
-          'dist/cartodb.uncompressed.js'
-        ],
-        options: _.defaults({
-          outfile: 'test/SpecRunner-cartodb.html',
-          specs: '<%= config.tmp %>/cartodb-specs.js'
-        }, defaultOptions)
-      },
-      'cartodb-src': {
-        src: [], // actual src files are require'd in the *.spec.js files
-        options: _.defaults({
-          outfile: 'test/SpecRunner-src.html',
-          specs: '<%= config.tmp %>/src-specs.js',
-          vendor: defaultOptions.vendor
-            .concat([
-              'http://maps.googleapis.com/maps/api/js?sensor=false&v=3.12'
-            ])
-            .concat(requiredVendorForModuleLoad)
-        }, defaultOptions)
-      },
-
-      'cartodb.mod.torque': {
-        src: [], // actual src files are require'd in the *.spec.js files
-        options: _.defaults({
-          outfile: 'test/SpecRunner-cartodb.mod.torque.html',
-          specs: '<%= config.tmp %>/cartodb.mod.torque-specs.js',
-          vendor: defaultOptions.vendor
-            .concat([
-              'http://maps.googleapis.com/maps/api/js?sensor=false&v=3.12',
-              'dist/cartodb.uncompressed.js',
-              'dist/cartodb.mod.torque.uncompressed.js'
-            ])
-            .concat(requiredVendorForModuleLoad)
-        }, defaultOptions)
-      },
-      'cartodb.mod.torque-srcSpecs': {
-        src: [], // actual src files are require'd in the *.spec.js files
-        options: _.defaults({
-          outfile: 'test/SpecRunner-cartodb.mod.torque-src.html',
-          specs: '<%= config.tmp %>/cartodb.mod.torque-srcSpecs.js',
-          vendor: defaultOptions.vendor
-            .concat([
-              'http://maps.googleapis.com/maps/api/js?sensor=false&v=3.12',
-              'dist/cartodb.uncompressed.js',
-              'dist/cartodb.mod.torque.uncompressed.js'
-            ])
-            .concat(requiredVendorForModuleLoad)
-        }, defaultOptions)
-      }
-    }
+  'cartodb.mod.torque': {
+    src: [], // actual src files are require'd in the *.spec.js files
+    options: _.defaults({
+      outfile: 'test/SpecRunner-cartodb.mod.torque.html',
+      specs: '<%= config.tmp %>/cartodb.mod.torque-specs.js',
+      vendor: defaultOptions.vendor
+        .concat([
+          'http://maps.googleapis.com/maps/api/js?sensor=false&v=3.12',
+          'dist/cartodb.uncompressed.js',
+          'dist/cartodb.mod.torque.uncompressed.js'
+        ])
+        .concat(requiredVendorForModuleLoad)
+    }, defaultOptions)
+  },
+  'cartodb.mod.torque-srcSpecs': {
+    src: [], // actual src files are require'd in the *.spec.js files
+    options: _.defaults({
+      outfile: 'test/SpecRunner-cartodb.mod.torque-src.html',
+      specs: '<%= config.tmp %>/cartodb.mod.torque-srcSpecs.js',
+      vendor: defaultOptions.vendor
+        .concat([
+          'http://maps.googleapis.com/maps/api/js?sensor=false&v=3.12',
+          'dist/cartodb.uncompressed.js',
+          'dist/cartodb.mod.torque.uncompressed.js'
+        ])
+        .concat(requiredVendorForModuleLoad)
+    }, defaultOptions)
   }
 }

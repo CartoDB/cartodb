@@ -27,14 +27,6 @@ describe('dataviews/category-dataview-model', function () {
     this.map.reload.calls.reset();
     this.model.set('aggregation_column', 'other');
     expect(this.map.reload).toHaveBeenCalled();
-
-    this.map.reload.calls.reset();
-    this.model.set('prefix', '$');
-    expect(this.map.reload).toHaveBeenCalled();
-
-    this.map.reload.calls.reset();
-    this.model.set('suffix', 'k');
-    expect(this.map.reload).toHaveBeenCalled();
   });
 
   it('should define several internal models/collections', function () {
@@ -152,15 +144,6 @@ describe('dataviews/category-dataview-model', function () {
     this.model.refresh();
     expect(this.model._searchModel.fetch).toHaveBeenCalled();
     expect(this.model._fetch.calls.count()).toEqual(1);
-  });
-
-  describe('toJSON', function () {
-    it('should return suffix and prefix values', function () {
-      this.model.set('suffix', '$');
-      var data = this.model.toJSON();
-      expect(data.options.suffix).toBe('$');
-      expect(data.options.prefix).toBeDefined();
-    });
   });
 
   describe('parseData', function () {

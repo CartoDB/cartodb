@@ -17,9 +17,7 @@ module.exports = DataviewModelBase.extend({
     {
       type: 'aggregation',
       enableFilter: true,
-      allCategoryNames: [], // all (new + previously accepted), updated on data fetch (see parse)
-      prefix: '',
-      suffix: ''
+      allCategoryNames: [] // all (new + previously accepted), updated on data fetch (see parse)
     },
     DataviewModelBase.prototype.defaults
   ),
@@ -45,7 +43,6 @@ module.exports = DataviewModelBase.extend({
     this._searchModel = new SearchModel();
 
     this.on('change:column change:aggregation change:aggregation_column', this._reloadMap, this);
-    this.on('change:prefix change:suffix', this._reloadMap, this);
   },
 
   // Set any needed parameter when they have changed in this model
@@ -252,10 +249,7 @@ module.exports = DataviewModelBase.extend({
         aggregation: this.get('aggregation'),
 
         // TODO server-side is using camelCased attr name, update once fixed
-        aggregationColumn: this.get('aggregation_column'),
-
-        prefix: this.get('prefix'),
-        suffix: this.get('suffix')
+        aggregationColumn: this.get('aggregation_column')
       }
     };
   }
@@ -266,9 +260,7 @@ module.exports = DataviewModelBase.extend({
     ATTRS_NAMES: DataviewModelBase.ATTRS_NAMES.concat([
       'column',
       'aggregation',
-      'aggregation_column',
-      'prefix',
-      'suffix'
+      'aggregation_column'
     ])
   }
 );

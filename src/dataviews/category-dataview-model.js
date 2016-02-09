@@ -210,7 +210,7 @@ module.exports = DataviewModelBase.extend({
       });
     }, this);
 
-    if (this.get('ownFilter')) {
+    if (this.get('enableFilter')) {
       // Add accepted items that are not present in the categories data
       this.filter.acceptedCategories.each(function (mdl) {
         var category = mdl.get('name');

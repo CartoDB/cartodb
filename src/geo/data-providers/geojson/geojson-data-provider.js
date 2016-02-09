@@ -11,7 +11,28 @@ var GeoJSONDataProvider = function (vectorLayerView, layerIndex) {
 };
 
 // TODO: We can extract each "generator" to an individual file so that this file doesn't get too BIG
-GeoJSONDataProvider.prototype._dataGeneratorsForDataviews = {
+GeoJSONDataProvider.prototype._dataGeneratorsForDataviews = {,
+  histogram: function (features, options) {
+    var filter = this._vectorLayerView.renderers[this._layerIndex].filter;
+    var columnName = options.column;
+    var end = typeof options.end !== 'undefined' ? options.end : filter.getMin;
+    var start = typeof options.start !== 'undefined' ? options.start : filter.getMax;
+    var width = (end - start) / options.bins;
+    filter.createDimension(columnName)
+    var hist = filter.dimensions[columnName].group(function (f) { return Math.floor(f / width) }).top(Infinity)
+
+    var bins = hist.map(function (bin, index) {
+      return {
+        bin: index,
+        max: 0,
+        min: 0,
+        avg: 0,
+        freq: bin.value
+      }
+    })
+    var histogram = {"bin_width": width,"bins_count":bins.length, "bins_start": start,"nulls":0,"avg":67.24617244157938,"bins": bins,"type":"histogram"}
+    return histogram;
+  },
   category: function (features, options) {
     var columnName = options.column;
     var numberOfCategories = 5;

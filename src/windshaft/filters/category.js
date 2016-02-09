@@ -39,8 +39,7 @@ module.exports = WindshaftFilterBase.extend({
       var acceptedMdls = this.acceptedCategories.where(d);
       if (rejectedMdls.length > 0) {
         this.rejectedCategories.remove(rejectedMdls);
-      }
-      if (!acceptedMdls.length) {
+      } else if (!acceptedMdls.length) {
         this.acceptedCategories.add(d);
       }
     }, this);

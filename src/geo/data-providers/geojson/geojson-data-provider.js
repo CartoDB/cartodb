@@ -18,37 +18,44 @@ GeoJSONDataProvider.prototype._dataGeneratorsForDataviews = {
   histogram: function (features, options) {
     var filter = this._vectorLayerView.getFilter(this._layerIndex);
     var columnName = options.column;
+    var end, start, hist, width
+    var numberOfBins = options.bins || options.data.length;
     if (options.own_filter === 1) {
-      var end = filter.getMax(columnName);
-      var start = filter.getMin(columnName);
-      var hist = d3.layout.histogram().bins(options.data.length)(filter.getValues().map(function(f){return f.properties[options.column]}))
-      var width = (end - start) / options.data.length;
-      var bins = hist.map(function (bin, index) {
-        return {
-          bin: index,
-          max: 0,
-          min: 0,
-          avg: 0,
-          freq: bin.length
-        }
-      })
+      end = filter.getMax(columnName);
+      start = filter.getMin(columnName);
+      bins = d3.layout.histogram().bins(options.data.length)(filter.getValues().map(function (f) { return f.properties[options.column] }));
+      width = (end - start) / options.data.length;
     } else {
-      var end = typeof options.end !== 'undefined' ? options.end : filter.getMax(columnName);
-      var start = typeof options.start !== 'undefined' ? options.start : filter.getMin(columnName);
-      var width = (end - start) / options.bins;
+      end = filter.getMax(columnName);
+      start = filter.getMin(columnName);
+      width = (end - start) / options.bins;
       filter._createDimension(columnName)
-      var hist = filter.dimensions[columnName].group(function (f) { return Math.floor(f / width) }).top(Infinity)
-      var bins = hist.map(function (bin, index) {
-        return {
-          bin: index,
-          max: 0,
-          min: 0,
-          avg: 0,
-          freq: bin.value
+      bins = []
+      var entered = false
+      filter.dimensions[columnName].group(function (f) { 
+        if(!entered){
+          bins = []
+          for (var i = 0; i < numberOfBins; i++){
+            bins[i] = []
+          }
+          entered = true
         }
-      })
+        var binIndex = Math.floor(f / width) 
+        if (typeof bins[binIndex] === 'undefined' || bins[binIndex].constructor !== Array) bins[binIndex] = []
+        bins[binIndex].push(f)
+      }).top(Infinity)
     }
-    var histogram = {"bin_width": width,"bins_count":bins.length, "bins_start": start,"nulls":0,"avg":67.24617244157938,"bins": bins,"type":"histogram"}
+    bins = bins.map(function (bin, index) {
+      return {
+        bin: index,
+        max: d3.max(bin),
+        min: d3.min(bin),
+        avg: d3.mean(bin),
+        freq: bin.length
+      }
+    });
+    var average = bins.reduce(function(p,c){return p+c.avg}, 0)/bins.reduce(function(p,c){return p+c.freq}, 0);
+    var histogram = {"bin_width": width,"bins_count":bins.length, "bins_start": start, "nulls":0,"avg": average, "bins": bins, "type":"histogram"}
     return histogram;
   },
   category: function (features, options) {

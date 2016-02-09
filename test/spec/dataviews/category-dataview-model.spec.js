@@ -146,29 +146,6 @@ describe('dataviews/category-dataview-model', function () {
     expect(this.model._fetch.calls.count()).toEqual(1);
   });
 
-  describe('parseData', function () {
-    it('should provide data as an object', function () {
-      _parseData(this.model, _generateData(10));
-      var data = this.model.get('data');
-      expect(data).toBeDefined();
-      expect(data.length).toBe(10);
-    });
-
-    it('should complete data with accepted items (if they are not present already) when has ownFilter set', function () {
-      this.model.set('ownFilter', true);
-      this.model.filter.accept(['9', '10', '11']);
-      _parseData(this.model, _generateData(8));
-      var data = this.model.get('data');
-      expect(data.length).toBe(11);
-
-      this.model.filter.accept(['2']);
-      // The '2' should not be repeated in the data array
-      _parseData(this.model, _generateData(8));
-      data = this.model.get('data');
-      expect(data.length).toBe(11);
-    });
-  });
-
   describe('.parse', function () {
     it('should change internal data collection when parse is called', function () {
       var resetSpy = jasmine.createSpy('reset');

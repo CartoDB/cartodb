@@ -1,13 +1,37 @@
-<div class="CDB-Dashboard-menuInner">
+<div class="CDB-Dashboard-menuInner js-toggle-view-link">
   <div class="CDB-Dashboard-menuHeader">
     <div class="CDB-Dashboard-menuLogo">
       <i class="CDB-IconFont CDB-IconFont-cartoFante"></i>
     </div>
     <div class="CDB-Dashboard-menuActions">
       <button class="CDB-Dashboard-menuActionsLink CDB-Dashboard-menuActionsLink--mobile js-toggle-view-link">
-        <i class="CDB-IconFont CDB-IconFont-arrowNext"></i>
+        <div class="CDB-Shape ">
+
+        </div>
       </button>
     </div>
+    <ul class="CDB-Dashboard-menuShare">
+      <li class="CDB-Dashboard-menuShareItem">
+        <a href="#" class="CDB-Dashboard-menuShareLink">
+          <i class="CDB-IconFont CDB-IconFont-heartFill CDB-Size-large"></i>
+        </a>
+      </li>
+      <li class="CDB-Dashboard-menuShareItem">
+        <a href="#" class="CDB-Dashboard-menuShareLink">
+          <i class="CDB-IconFont CDB-IconFont-twitter CDB-Size-large"></i>
+        </a>
+      </li>
+      <li class="CDB-Dashboard-menuShareItem">
+        <a href="#" class="CDB-Dashboard-menuShareLink">
+          <i class="CDB-IconFont CDB-IconFont-facebook CDB-Size-medium"></i>
+        </a>
+      </li>
+      <li class="CDB-Dashboard-menuShareItem">
+        <a href="#" class="CDB-Dashboard-menuShareLink">
+          <i class="CDB-IconFont CDB-IconFont-anchor CDB-Size-medium"></i>
+        </a>
+      </li>
+    </ul>
     <div class="CDB-Dashboard-menuTexts CDB-Dashboard-hideMobile">
       <p class="CDB-Dashboard-menuUpdate">UPDATED <%- updatedAt %></p>
       <h1 class="CDB-Dashboard-menuTitle"><%- title %></h1>

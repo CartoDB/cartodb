@@ -3,11 +3,31 @@
 
 .CDB-Dashboard-menuTexts {
   position: absolute;
-  top: 150px;
+  top: 77px;
   right: 18px;
-  left: 18px;
+  left: 72px;
   width: 304px;
   opacity: 0;
+}
+.CDB-Dashboard-menuShare {
+  position: absolute;
+  top: 26px;
+  right: 18px;
+  left: 72px;
+  width: 304px;
+  opacity: 0;
+}
+.CDB-Dashboard-menuShareItem {
+  display: inline-block;
+  margin-right: 8px;
+  vertical-align: middle;
+  &:first-child {
+    margin-right: 26px;
+  }
+}
+.CDB-Dashboard-menuShareLink {
+  display: block;
+  color: #CBCED0;
 }
 .CDB-Dashboard-menuInner {
   @include transition(width, 0.25s, cubic-bezier(0.01, 0.99, 0.97, 1.01));
@@ -16,7 +36,7 @@
   bottom: 0;
   left: 0;
   width: 72px;
-  max-width: 352px;
+  max-width: 400px;
   padding: 16px;
   background: #3AA9E3;
   font-family: 'Open Sans';
@@ -25,14 +45,22 @@
   z-index: 2;
 }
 .CDB-Dashboard-menu.is-active {
+  @include transition(background, 0.4s, cubic-bezier(0.01, 0.99, 0.97, 1.01));
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 2;
+
   .CDB-Dashboard-menuInner {
-    width: 352px;
+    width: 400px;
     background: #FFF;
     box-shadow: 0 0 40px 0 rgba(0, 0, 0, 0.2);
   }
-  .CDB-Dashboard-menuTexts {
-    @include animation(fadeInDown 0.8s both);
-  }
+  .CDB-Dashboard-menuTexts,
+  .CDB-Dashboard-menuShare,
   .CDB-Dashboard-menuFooterTxt {
     @include animation(fadeInDown 0.8s both);
   }
@@ -80,7 +108,7 @@
 }
 .CDB-Dashboard-menuUpdate {
   margin-bottom: 8px;
-  color: #FFF;
+  color: #CBCED0;
   font-size: $sFontSize-small;
   font-weight: $sFontWeight-lighter;
   line-height: $sLineHeight-small;
@@ -88,16 +116,16 @@
 }
 .CDB-Dashboard-menuTitle {
   margin-bottom: 20px;
-  color: #FFF;
+  color: #2E3C43;
   font-size: $sFontSize-huge;
-  font-weight: $sFontWeight-lighter;
+  font-weight: 400;
   line-height: $sLineHeight-huge;
 }
 .CDB-Dashboard-menuDescription {
-  color: #FFF;
-  font-size: $sFontSize-medium;
-  font-weight: $sFontWeight-lighter;
-  line-height: $sLineHeight-medium;
+  color: #636D72;
+  font-size: 16px;
+  font-weight: 300;
+  line-height: 22px;
 }
 .CDB-Dashboard-menuFooter {
   position: absolute;
@@ -120,10 +148,10 @@
 }
 .CDB-Dashboard-menuFooterTxt {
   display: inline-block;
-  color: #FFF;
-  font-size: $sFontSize-large;
-  font-weight: $sFontWeight-lighter;
-  line-height: $sLineHeight-large;
+  color: #2E3C43;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 16px;
   opacity: 0;
   vertical-align: middle;
 }

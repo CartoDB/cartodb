@@ -83,7 +83,12 @@ module.exports = Model.extend({
    * @private
    */
   _onFilterChanged: function (filter) {
-    this._reloadMap();
+    var dataProvider = this.layer.getDataProvider();
+    if (dataProvider) {
+      dataProvider.applyFilter(this.get('column'), filter);
+    } else {
+      this._reloadMap();
+    }
   },
 
   /**
@@ -107,15 +112,6 @@ module.exports = Model.extend({
       // TODO: Instead of setting the url here, we could invoke fetch directly
       this.set('url', url, { silent: silent });
     }
-  },
-
-  _onMapBoundsChanged: function () {
-    this._updateBoundingBox();
-  },
-
-  _updateBoundingBox: function () {
-    var boundingBoxFilter = new WindshaftFiltersBoundingBoxFilter(this._map.getViewBounds());
-    this.set('boundingBox', boundingBoxFilter.toString());
   },
 
   _onChangeBinds: function () {
@@ -147,6 +143,15 @@ module.exports = Model.extend({
     }, this);
   },
 
+  _onMapBoundsChanged: function () {
+    this._updateBoundingBox();
+  },
+
+  _updateBoundingBox: function () {
+    var boundingBoxFilter = new WindshaftFiltersBoundingBoxFilter(this._map.getViewBounds());
+    this.set('boundingBox', boundingBoxFilter.toString());
+  },
+
   _shouldFetchOnURLChange: function () {
     return this.get('sync_on_data_change') && this.get('enabled');
   },
@@ -167,6 +172,7 @@ module.exports = Model.extend({
 
   fetch: function (opts) {
     this.trigger('loading', this);
+
     return Model.prototype.fetch.call(this, opts);
   },
 

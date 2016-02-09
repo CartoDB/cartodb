@@ -44,8 +44,16 @@ var LeafletTorqueLayer = L.TorqueLayer.extend({
     if ('urls' in changed) {
       // REAL HACK
       this.provider.templateUrl = this.model.get('urls').tiles[0];
-      this.provider._setReady(true);
-      this._reloadTiles();
+      // set meta
+      _.extend(this.provider.options, this.model.get('meta'));
+      // this needs to be deferred in order to break the infinite loop
+      // of setReady changing keys and keys updating the model
+      // If we do this in the next iteration 'urls' will not be in changedAttributes
+      // so this will not pass through this code
+      setTimeout(function () {
+        this.provider._setReady(true);
+        this._reloadTiles();
+      }.bind(this), 0);
     }
   }
 });

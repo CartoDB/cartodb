@@ -173,7 +173,7 @@ module.exports = function(grunt) {
     'watch'
   ];
 
-  grunt.registerTask('standard:lint', 'lint source files', function() {
+  grunt.registerTask('lint', 'lint source files', function() {
     var done = this.async();
     require("child_process").exec('PATH=$(npm bin):$PATH semistandard', function (error, stdout, stderr) {
       if (error) {
@@ -196,7 +196,7 @@ module.exports = function(grunt) {
   grunt.registerTask('build:js', _.uniq(buildJS));
   grunt.registerTask('build:css', _.uniq(css));
   grunt.registerTask('test', _.uniq(js.concat([
-    'standard:lint',
+    'lint',
     'jasmine'
   ])));
   grunt.registerTask('dev', _.uniq(css.concat(devJS).concat(watch)));

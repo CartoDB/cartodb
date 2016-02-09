@@ -4,15 +4,29 @@ var WindshaftFiltersCategory = require('../../../src/windshaft/filters/category'
 
 describe('dataviews/category-dataview-model', function () {
   beforeEach(function () {
-    var map = jasmine.createSpyObj('map', ['getViewBounds', 'bind', 'reload']);
-    map.getViewBounds.and.returnValue([[1, 2], [3, 4]]);
+    this.map = jasmine.createSpyObj('map', ['getViewBounds', 'bind', 'reload']);
+    this.map.getViewBounds.and.returnValue([[1, 2], [3, 4]]);
     var windshaftMap = jasmine.createSpyObj('windhsaftMap', ['bind']);
     this.model = new CategoryDataviewModel(null, {
-      map: map,
+      map: this.map,
       windshaftMap: windshaftMap,
       layer: jasmine.createSpyObj('layer', ['get', 'getDataProvider']),
       filter: new WindshaftFiltersCategory()
     });
+  });
+
+  it('should reload map on changing attrs', function () {
+    this.map.reload.calls.reset();
+    this.model.set('column', 'random_col');
+    expect(this.map.reload).toHaveBeenCalled();
+
+    this.map.reload.calls.reset();
+    this.model.set('aggregation', 'count');
+    expect(this.map.reload).toHaveBeenCalled();
+
+    this.map.reload.calls.reset();
+    this.model.set('aggregation_column', 'other');
+    expect(this.map.reload).toHaveBeenCalled();
   });
 
   it('should define several internal models/collections', function () {
@@ -132,6 +146,15 @@ describe('dataviews/category-dataview-model', function () {
     expect(this.model._fetch.calls.count()).toEqual(1);
   });
 
+  describe('toJSON', function () {
+    it('should return suffix and prefix values', function () {
+      this.model.set('suffix', '$');
+      var data = this.model.toJSON();
+      expect(data.options.suffix).toBe('$');
+      expect(data.options.prefix).toBeDefined();
+    });
+  });
+
   describe('parseData', function () {
     it('should provide data as an object', function () {
       _parseData(this.model, _generateData(10));
@@ -176,10 +199,47 @@ describe('dataviews/category-dataview-model', function () {
       });
       expect(areNamesString).toBeTruthy();
     });
-  });
 
-  it('should have defined "_onFilterChanged" method', function () {
-    expect(this.model._onFilterChanged).toBeDefined();
+    describe('when enableFilter is enabled', function () {
+      it('should add categories that are accepted when they are not present in the new categories', function () {
+        this.model.filter.accept('Madrid');
+
+        // Enable `enableFilter`
+        this.model.set('enableFilter', true);
+
+        _parseData(this.model, _.map(['Barcelona'], function (v) {
+          return {
+            category: v,
+            value: 1
+          };
+        }));
+
+        var categories = this.model.get('data');
+        expect(categories.length).toEqual(2);
+        expect(categories[0].name).toEqual('Barcelona');
+        expect(categories[1].name).toEqual('Madrid');
+      });
+    });
+
+    describe('when enableFilter is disabled', function () {
+      it('should NOT add categories that are accepted when they are not present in the new categories', function () {
+        this.model.filter.accept('Madrid');
+
+        // Disable `enableFilter`
+        this.model.set('enableFilter', false);
+
+        _parseData(this.model, _.map(['Barcelona'], function (v) {
+          return {
+            category: v,
+            value: 1
+          };
+        }));
+
+        var categories = this.model.get('data');
+        expect(categories.length).toEqual(1);
+        expect(categories[0].name).toEqual('Barcelona');
+      });
+    });
   });
 });
 

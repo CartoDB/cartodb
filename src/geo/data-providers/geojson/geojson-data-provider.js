@@ -1,5 +1,7 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
+var CategoryFilter = require('../../../windshaft/filters/category');
+var RangeFilter = require('../../../windshaft/filters/range');
 
 var GeoJSONDataProvider = function (vectorLayerView, layerIndex) {
   this._vectorLayerView = vectorLayerView;
@@ -34,33 +36,37 @@ GeoJSONDataProvider.prototype._dataGeneratorsForDataviews = {,
     return histogram;
   },
   category: function (features, options) {
+    var filter = this._vectorLayerView.renderers[this._layerIndex].filter;
     var columnName = options.column;
     var numberOfCategories = 5;
-
-    // TODO: There's probably a more efficient way of doing this
-    var groups = _.groupBy(features, function (feature) { return feature.properties[columnName]; });
-    var groupCounts = _.map(Object.keys(groups), function (key) { return [key, groups[key].length]; });
-    var sortedGroups = _.sortBy(groupCounts, function (group) { return group[1]; }).reverse();
+    var sortedGroups = filter.getColumnValues(columnName);
+    var lastCat = {
+      category: 'Other',
+      value: sortedGroups.slice(numberOfCategories).reduce(function (p, c) {
+        return p + c.value;
+      }, 0),
+      agg: true
+    };
 
     // TODO: Calculate harcoded values
     var data = {
       categories: [],
-      categoriesCount: 3,
-      count: 7446,
-      max: 4580,
-      min: 106,
+      categoriesCount: sortedGroups.length,
+      count: filter.getCount(columnName),
+      max: sortedGroups[0].value,
+      min: sortedGroups[sortedGroups.length - 1].value,
       nulls: 0,
       type: 'aggregation'
     };
 
     _.each(sortedGroups.slice(0, numberOfCategories), function (category) {
       data.categories.push({
-        category: category[0],
-        value: category[1],
+        category: category.key,
+        value: category.value,
         agg: false
       });
     });
-
+    data.categories.push(lastCat);
     return data;
   },
 
@@ -94,13 +100,44 @@ GeoJSONDataProvider.prototype._dataGeneratorsForDataviews = {,
 };
 
 GeoJSONDataProvider.prototype.generateDataForDataview = function (dataview, features) {
-  var generateData = this._dataGeneratorsForDataviews[dataview.get('type')];
+  var generateData = this._dataGeneratorsForDataviews[dataview.get('type')].bind(this);
   if (!generateData) {
     throw new Error("Couldn't generate data for dataview of type: " + dataview.get('type'));
   }
 
   var data = generateData(features, dataview.attributes);
   return data;
+};
+
+GeoJSONDataProvider.prototype.applyFilter = function (columnName, filter) {
+  var filterType;
+  var filterOptions;
+  if (filter instanceof CategoryFilter) {
+    if (filter.isEmpty()) {
+      filterType = 'accept';
+      filterOptions = { column: columnName, values: 'all' };
+    } else if (filter.get('rejectAll')) {
+      filterType = 'reject';
+      filterOptions = { column: columnName, values: 'all' };
+    } else if (filter.acceptedCategories.size()) {
+      filterType = 'accept';
+      filterOptions = { column: columnName, values: filter.getAcceptedCategoryNames() };
+    } else if (filter.rejectedCategories.size()) {
+      filterType = 'reject';
+      filterOptions = { column: columnName, values: filter.getRejectedCategoryNames() };
+    }
+  } else if (filter instanceof RangeFilter) {
+    filterType = 'range';
+    if (filter.isEmpty()) {
+      filterOptions = { column: columnName, min: 0, max: Infinity };
+    } else {
+      filterOptions = { column: columnName, min: filter.get('min'), max: filter.get('max') };
+    }
+  } else {
+    throw new Error('Filter on ' + columnName + " couldn't be applied. Filter type wasn't recognized.");
+  }
+
+  this._vectorLayerView.applyFilter(this._layerIndex, filterType, filterOptions);
 };
 
 _.extend(GeoJSONDataProvider.prototype, Backbone.Events);

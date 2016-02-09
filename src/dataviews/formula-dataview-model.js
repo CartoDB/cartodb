@@ -3,14 +3,18 @@ var DataviewModelBase = require('./dataview-model-base');
 
 module.exports = DataviewModelBase.extend({
   defaults: _.extend(
-    {},
-    DataviewModelBase.prototype.defaults,
     {
       data: '',
       suffix: '',
       prefix: ''
-    }
+    },
+    DataviewModelBase.prototype.defaults
   ),
+
+  initialize: function () {
+    DataviewModelBase.prototype.initialize.apply(this, arguments);
+    this.on('change:column change:operation change:prefix change:suffix', this._reloadMap, this);
+  },
 
   parse: function (r) {
     return {
@@ -19,12 +23,14 @@ module.exports = DataviewModelBase.extend({
     };
   },
 
-  toJSON: function (d) {
+  toJSON: function () {
     return {
       type: 'formula',
       options: {
         column: this.get('column'),
-        operation: this.get('operation')
+        operation: this.get('operation'),
+        suffix: this.get('suffix'),
+        prefix: this.get('prefix')
       }
     };
   }

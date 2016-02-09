@@ -6,8 +6,8 @@ module.exports = DataviewModelBase.extend({
   url: function () {
     var params = [];
 
-    if (this.get('columnType')) {
-      params.push('column_type=' + this.get('columnType'));
+    if (this.get('column_type')) {
+      params.push('column_type=' + this.get('column_type'));
     }
     if (_.isNumber(this.get('start'))) {
       params.push('start=' + this.get('start'));
@@ -37,11 +37,9 @@ module.exports = DataviewModelBase.extend({
     this._data = new Backbone.Collection(this.get('data'));
 
     // BBox should only be included until after the first fetch, since we want to get the range of the full dataset
-    this.once('change:data', function () {
-      this.set('submitBBox', true);
-    }, this);
-
-    this.layer.bind('change:meta', this._onChangeLayerMeta, this);
+    this.once('change:data', this.set.bind(this, 'submitBBox', true));
+    this.listenTo(this.layer, 'change:meta', this._onChangeLayerMeta);
+    this.on('change:column change:bins', this._reloadMap, this);
   },
 
   getData: function () {
@@ -91,14 +89,14 @@ module.exports = DataviewModelBase.extend({
   },
 
   _onChangeLayerMeta: function () {
-    this.filter.set('columnType', this.layer.get('meta').column_type);
+    this.filter.set('column_type', this.layer.get('meta').column_type);
   },
 
   _onChangeBinds: function () {
     DataviewModelBase.prototype._onChangeBinds.call(this);
-    this.bind('change:histogramSizes', function (mdl, isSizesApplied, d) {
+    this.bind('change:histogram_sizes', function (mdl, isSizesApplied, d) {
       if (isSizesApplied) {
-        this.trigger('histogramSizes', this);
+        this.trigger('histogram_sizes', this);
       }
     }, this);
   }

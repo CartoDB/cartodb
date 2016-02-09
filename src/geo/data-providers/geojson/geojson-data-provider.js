@@ -15,9 +15,10 @@ var GeoJSONDataProvider = function (vectorLayerView, layerIndex) {
 // TODO: We can extract each "generator" to an individual file so that this file doesn't get too BIG
 GeoJSONDataProvider.prototype._dataGeneratorsForDataviews = {
   category: function (features, options) {
+    var filter = this._vectorLayerView.renderers[this._layerIndex].filter;
     var columnName = options.column;
     var numberOfCategories = 5;
-    var sortedGroups = this.filter.getColumnValues(columnName);
+    var sortedGroups = filter.getColumnValues(columnName);
     var lastCat = {
       category: 'Other',
       value: sortedGroups.slice(numberOfCategories).reduce(function (p, c) {
@@ -30,7 +31,7 @@ GeoJSONDataProvider.prototype._dataGeneratorsForDataviews = {
     var data = {
       categories: [],
       categoriesCount: sortedGroups.length,
-      count: this.filter.dimensions[columnName].groupAll().value(),
+      count: filter.dimensions[columnName].groupAll().value(),
       max: sortedGroups[0].value,
       min: sortedGroups[sortedGroups.length - 1].value,
       nulls: 0,
@@ -78,7 +79,7 @@ GeoJSONDataProvider.prototype._dataGeneratorsForDataviews = {
 };
 
 GeoJSONDataProvider.prototype.generateDataForDataview = function (dataview, features) {
-  var generateData = this._dataGeneratorsForDataviews[dataview.get('type')].bind(this._vectorLayerView.renderers[this._layerIndex]);
+  var generateData = this._dataGeneratorsForDataviews[dataview.get('type')].bind(this);
   if (!generateData) {
     throw new Error("Couldn't generate data for dataview of type: " + dataview.get('type'));
   }
@@ -107,7 +108,7 @@ GeoJSONDataProvider.prototype.applyFilter = function (columnName, filter) {
   } else if (filter instanceof RangeFilter) {
     filterType = 'range';
     if (filter.isEmpty()) {
-      filterOptions = { column: 'age', min: 0, max: Infinity };
+      filterOptions = { column: columnName, min: 0, max: Infinity };
     } else {
       filterOptions = { column: columnName, min: filter.get('min'), max: filter.get('max') };
     }

@@ -29,10 +29,10 @@ describe('dataviews/histogram-dataview-model', function () {
 
   it('should submit the bbox if enabled', function () {
     this.model.set({ boundingBox: 1234 });
-    expect(this.model.url()).toBe('');
+    expect(this.model.url()).not.toContain('bbox=');
 
     this.model.set({ submitBBox: true });
-    expect(this.model.url()).toBe('?bbox=1234');
+    expect(this.model.url()).toContain('bbox=1234');
   });
 
   it('should parse the bins', function () {

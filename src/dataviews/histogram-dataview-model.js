@@ -3,6 +3,15 @@ var Backbone = require('backbone');
 var DataviewModelBase = require('./dataview-model-base');
 
 module.exports = DataviewModelBase.extend({
+
+  defaults: _.extend(
+    {
+      type: 'histogram',
+      bins: 10
+    },
+    DataviewModelBase.prototype.defaults
+  ),
+
   url: function () {
     var params = [];
 
@@ -100,4 +109,16 @@ module.exports = DataviewModelBase.extend({
       }
     }, this);
   }
-});
+},
+
+  // Class props
+  {
+    ATTRS_NAMES: DataviewModelBase.ATTRS_NAMES.concat([
+      'column',
+      'column_type',
+      'bins',
+      'start',
+      'end'
+    ])
+  }
+);

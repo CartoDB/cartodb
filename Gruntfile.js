@@ -1,4 +1,5 @@
 var _ = require('underscore');
+var jasmineCfg = require('./grunt/tasks/jasmine');
 
 /**
  *  Grunfile runner file for CartoDB.js
@@ -61,7 +62,7 @@ module.exports = function(grunt) {
     cssmin: require('./grunt/tasks/cssmin').task(),
     imagemin: require('./grunt/tasks/imagemin').task(),
     jshint: require('./grunt/tasks/jshint').task(),
-    jasmine: require('./grunt/tasks/jasmine').task()
+    jasmine: jasmineCfg
   });
 
   grunt.registerTask('release', [
@@ -140,6 +141,14 @@ module.exports = function(grunt) {
     grunt.config('config.doWatchify', true); // required for browserify to use watch files instead
   });
 
+  grunt.registerTask('build-jasmine-specrunners', _
+    .chain(jasmineCfg)
+    .keys()
+    .map(function (name) {
+      return ['jasmine', name, 'build'].join(':');
+    })
+    .value());
+
   // Define tasks order for each step as if run in isolation,
   // when registering the actual tasks _.uniq is used to discard duplicate tasks from begin run
   var allDeps = [
@@ -158,6 +167,7 @@ module.exports = function(grunt) {
   var js = allDeps
     .concat([
       'browserify',
+      'build-jasmine-specrunners'
     ]);
   var buildJS = allDeps
     .concat(js)

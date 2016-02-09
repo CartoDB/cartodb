@@ -146,15 +146,6 @@ describe('dataviews/category-dataview-model', function () {
     expect(this.model._fetch.calls.count()).toEqual(1);
   });
 
-  describe('toJSON', function () {
-    it('should return suffix and prefix values', function () {
-      this.model.set('suffix', '$');
-      var data = this.model.toJSON();
-      expect(data.options.suffix).toBe('$');
-      expect(data.options.prefix).toBeDefined();
-    });
-  });
-
   describe('.parse', function () {
     it('should change internal data collection when parse is called', function () {
       var resetSpy = jasmine.createSpy('reset');
@@ -216,6 +207,25 @@ describe('dataviews/category-dataview-model', function () {
         expect(categories[0].name).toEqual('Barcelona');
         expect(categories[1].name).toEqual('Madrid');
       });
+    });
+  });
+
+  describe('.update', function () {
+    beforeEach(function () {
+      expect(this.model.get('foo')).toBeUndefined();
+      expect(this.model.get('sync_on_bbox_change')).toBe(true);
+      expect(this.model.get('aggregation')).not.toEqual('sum');
+      this.model.update({
+        sync_on_bbox_change: false,
+        aggregation: 'sum',
+        foo: 'bar'
+      });
+    });
+
+    it('should allow to set attrs but only the defined ones', function () {
+      expect(this.model.get('sync_on_bbox_change')).toBe(false);
+      expect(this.model.get('aggregation')).toEqual('sum');
+      expect(this.model.get('foo')).toBeUndefined();
     });
   });
 });

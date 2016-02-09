@@ -15,33 +15,37 @@ var GeoJSONDataProvider = function (vectorLayerView, layerIndex) {
 // TODO: We can extract each "generator" to an individual file so that this file doesn't get too BIG
 GeoJSONDataProvider.prototype._dataGeneratorsForDataviews = {
   category: function (features, options) {
+    var filter = this._vectorLayerView.renderers[this._layerIndex].filter;
     var columnName = options.column;
     var numberOfCategories = 5;
-
-    // TODO: There's probably a more efficient way of doing this
-    var groups = _.groupBy(features, function (feature) { return feature.properties[columnName]; });
-    var groupCounts = _.map(Object.keys(groups), function (key) { return [key, groups[key].length]; });
-    var sortedGroups = _.sortBy(groupCounts, function (group) { return group[1]; }).reverse();
+    var sortedGroups = filter.getColumnValues(columnName);
+    var lastCat = {
+      category: 'Other',
+      value: sortedGroups.slice(numberOfCategories).reduce(function (p, c) {
+        return p + c.value;
+      }, 0),
+      agg: true
+    };
 
     // TODO: Calculate harcoded values
     var data = {
       categories: [],
-      categoriesCount: 3,
-      count: 7446,
-      max: 4580,
-      min: 106,
+      categoriesCount: sortedGroups.length,
+      count: filter.getCount(columnName),
+      max: sortedGroups[0].value,
+      min: sortedGroups[sortedGroups.length - 1].value,
       nulls: 0,
       type: 'aggregation'
     };
 
     _.each(sortedGroups.slice(0, numberOfCategories), function (category) {
       data.categories.push({
-        category: category[0],
-        value: category[1],
+        category: category.key,
+        value: category.value,
         agg: false
       });
     });
-
+    data.categories.push(lastCat);
     return data;
   },
 
@@ -75,7 +79,7 @@ GeoJSONDataProvider.prototype._dataGeneratorsForDataviews = {
 };
 
 GeoJSONDataProvider.prototype.generateDataForDataview = function (dataview, features) {
-  var generateData = this._dataGeneratorsForDataviews[dataview.get('type')];
+  var generateData = this._dataGeneratorsForDataviews[dataview.get('type')].bind(this);
   if (!generateData) {
     throw new Error("Couldn't generate data for dataview of type: " + dataview.get('type'));
   }

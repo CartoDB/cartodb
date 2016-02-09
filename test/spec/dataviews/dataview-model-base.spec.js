@@ -186,4 +186,20 @@ describe('dataviews/dataview-model-base', function () {
       expect(this.model.stopListening).toHaveBeenCalled();
     });
   });
+
+  describe('.update', function () {
+    it('should only update the attrs set on ATTRS_NAMES', function () {
+      this.model.update({ foo: 'bar' });
+      expect(this.model.changedAttributes()).toBe(false);
+
+      expect(this.model.get('sync_on_bbox_change')).toBe(true);
+      this.model.update({
+        sync_on_bbox_change: false,
+        foo: 'bar'
+      });
+      expect(this.model.changedAttributes()).toEqual({
+        sync_on_bbox_change: false
+      });
+    });
+  });
 });

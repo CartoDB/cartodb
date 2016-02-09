@@ -208,6 +208,25 @@ describe('dataviews/category-dataview-model', function () {
       expect(areNamesString).toBeTruthy();
     });
   });
+
+  describe('.update', function () {
+    beforeEach(function () {
+      expect(this.model.get('foo')).toBeUndefined();
+      expect(this.model.get('sync_on_bbox_change')).toBe(true);
+      expect(this.model.get('aggregation')).not.toEqual('sum');
+      this.model.update({
+        sync_on_bbox_change: false,
+        aggregation: 'sum',
+        foo: 'bar'
+      });
+    });
+
+    it('should allow to set attrs but only the defined ones', function () {
+      expect(this.model.get('sync_on_bbox_change')).toBe(false);
+      expect(this.model.get('aggregation')).toEqual('sum');
+      expect(this.model.get('foo')).toBeUndefined();
+    });
+  });
 });
 
 function eventDispatcher (originModel, eventName, triggerName) {

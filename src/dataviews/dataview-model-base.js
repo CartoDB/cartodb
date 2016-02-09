@@ -153,6 +153,11 @@ module.exports = Model.extend({
     this._fetch();
   },
 
+  update: function (attrs) {
+    attrs = _.pick(attrs, this.constructor.ATTRS_NAMES);
+    this.set(attrs);
+  },
+
   getData: function () {
     return this.get('data');
   },

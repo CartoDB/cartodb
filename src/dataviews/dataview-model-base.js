@@ -161,13 +161,18 @@ module.exports = Model.extend({
   },
 
   _fetch: function (callback) {
-    var self = this;
-    this.fetch({
-      success: callback,
-      error: function () {
-        self.trigger('error');
-      }
-    });
+    var dataProvider = this.layer.getDataProvider();
+    if (dataProvider) {
+       this._onDataProviderChanged(null);
+    } else {
+      var self = this;
+      this.fetch({
+        success: callback,
+        error: function () {
+          self.trigger('error');
+        }
+      });
+    }
   },
 
   fetch: function (opts) {

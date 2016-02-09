@@ -15,10 +15,9 @@ module.exports = DataviewModelBase.extend({
 
   defaults: _.extend(
     {
+      type: 'aggregation',
       enableFilter: true,
-      allCategoryNames: [], // all (new + previously accepted), updated on data fetch (see parse)
-      suffix: '',
-      prefix: ''
+      allCategoryNames: [] // all (new + previously accepted), updated on data fetch (see parse)
     },
     DataviewModelBase.prototype.defaults
   ),
@@ -236,11 +235,20 @@ module.exports = DataviewModelBase.extend({
       options: {
         column: this.get('column'),
         aggregation: this.get('aggregation'),
-        aggregation_column: this.get('aggregation_column'),
-        suffix: this.get('suffix'),
-        prefix: this.get('prefix')
+
+        // TODO server-side is using camelCased attr name, update once fixed
+        aggregationColumn: this.get('aggregation_column')
       }
     };
   }
+},
 
-});
+  // Class props
+  {
+    ATTRS_NAMES: DataviewModelBase.ATTRS_NAMES.concat([
+      'column',
+      'aggregation',
+      'aggregation_column'
+    ])
+  }
+);

@@ -9,7 +9,6 @@ module.exports = Model.extend({
   defaults: {
     url: '',
     data: [],
-    columns: [],
     sync_on_data_change: true,
     sync_on_bbox_change: true,
     enabled: true
@@ -154,6 +153,11 @@ module.exports = Model.extend({
     this._fetch();
   },
 
+  update: function (attrs) {
+    attrs = _.pick(attrs, this.constructor.ATTRS_NAMES);
+    this.set(attrs);
+  },
+
   getData: function () {
     return this.get('data');
   },
@@ -178,4 +182,14 @@ module.exports = Model.extend({
     this.trigger('destroy', this);
     this.stopListening();
   }
-});
+},
+
+  // Class props
+  {
+    ATTRS_NAMES: [
+      'sync_on_data_change',
+      'sync_on_bbox_change',
+      'enabled'
+    ]
+  }
+);

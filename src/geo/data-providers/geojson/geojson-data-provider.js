@@ -15,7 +15,7 @@ var GeoJSONDataProvider = function (vectorLayerView, layerIndex) {
 // TODO: We can extract each "generator" to an individual file so that this file doesn't get too BIG
 GeoJSONDataProvider.prototype._dataGeneratorsForDataviews = {
   category: function (features, options) {
-    var filter = this._vectorLayerView.renderers[this._layerIndex].filter;
+    var filter = this._vectorLayerView.getFilter(this._layerIndex);
     var columnName = options.column;
     var numberOfCategories = 5;
     var sortedGroups = filter.getColumnValues(columnName);

@@ -190,6 +190,47 @@ describe('dataviews/category-dataview-model', function () {
       });
       expect(areNamesString).toBeTruthy();
     });
+
+    describe('when enableFilter is enabled', function () {
+      it('should NOT add categories that are accepted when they are not present in the new categories', function () {
+        this.model.filter.accept('Madrid');
+
+        // Enable `enableFilter`
+        this.model.set('enableFilter', true);
+
+        _parseData(this.model, _.map(['Barcelona'], function (v) {
+          return {
+            category: v,
+            value: 1
+          };
+        }));
+
+        var categories = this.model.get('data');
+        expect(categories.length).toEqual(1);
+        expect(categories[0].name).toEqual('Barcelona');
+      });
+    });
+
+    describe('when enableFilter is disabled', function () {
+      it('should add categories that are accepted when they are not present in the new categories', function () {
+        this.model.filter.accept('Madrid');
+
+        // Disable `enableFilter`
+        this.model.set('enableFilter', false);
+
+        _parseData(this.model, _.map(['Barcelona'], function (v) {
+          return {
+            category: v,
+            value: 1
+          };
+        }));
+
+        var categories = this.model.get('data');
+        expect(categories.length).toEqual(2);
+        expect(categories[0].name).toEqual('Barcelona');
+        expect(categories[1].name).toEqual('Madrid');
+      });
+    });
   });
 
   describe('.update', function () {

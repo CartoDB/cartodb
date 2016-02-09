@@ -68,19 +68,6 @@ module.exports = DataviewModelBase.extend({
       });
     }, this);
 
-    this.bind('change:enabled', function (mdl, isEnabled) {
-      if (isEnabled) {
-        if (mdl.changedAttributes(this._previousAttrs)) {
-          this._fetch();
-        }
-      } else {
-        this._previousAttrs = {
-          url: this.get('url'),
-          boundingBox: this.get('boundingBox')
-        };
-      }
-    }, this);
-
     this._rangeModel.bind('change:totalCount change:categoriesCount', function () {
       this.set({
         totalCount: this._rangeModel.get('totalCount'),
@@ -209,7 +196,8 @@ module.exports = DataviewModelBase.extend({
       });
     }, this);
 
-    if (this.get('ownFilter')) {
+    // Only accepted categories should appear when enableFilter is false
+    if (!this.get('enableFilter')) {
       // Add accepted items that are not present in the categories data
       this.filter.acceptedCategories.each(function (mdl) {
         var category = mdl.get('name');

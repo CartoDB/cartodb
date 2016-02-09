@@ -1,5 +1,6 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
+var d3 = require('d3')
 var CategoryFilter = require('../../../windshaft/filters/category');
 var RangeFilter = require('../../../windshaft/filters/range');
 

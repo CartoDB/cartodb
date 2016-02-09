@@ -31,7 +31,7 @@ GeoJSONDataProvider.prototype._dataGeneratorsForDataviews = {
     var data = {
       categories: [],
       categoriesCount: sortedGroups.length,
-      count: filter.dimensions[columnName].groupAll().value(),
+      count: filter.getCount(columnName),
       max: sortedGroups[0].value,
       min: sortedGroups[sortedGroups.length - 1].value,
       nulls: 0,

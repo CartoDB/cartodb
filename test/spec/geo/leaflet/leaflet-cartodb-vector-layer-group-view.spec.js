@@ -2,7 +2,6 @@ var Backbone = require('backbone');
 var CartoDBLayer = require('../../../../src/geo/map/cartodb-layer');
 var GeoJSONDataProvider = require('../../../../src/geo/data-providers/geojson/geojson-data-provider');
 var LeafletCartoDBVectorLayerGroupView = require('../../../../src/geo/leaflet/leaflet-cartodb-vector-layer-group-view');
-
 describe('src/geo/leaflet/leaflet-cartodb-vector-layer-group-view.js', function () {
   beforeEach(function () {
     this.leafletMap;

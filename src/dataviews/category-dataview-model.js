@@ -15,7 +15,7 @@ module.exports = DataviewModelBase.extend({
 
   defaults: _.extend(
     {
-      type: 'aggregation',
+      type: 'category',
       enableFilter: true,
       allCategoryNames: [] // all (new + previously accepted), updated on data fetch (see parse)
     },

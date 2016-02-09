@@ -28,7 +28,7 @@
     "browserify": "11.0.1",
     "browserify-resolutions": "1.0.6",
     "browserify-shim": "3.8.10",
-    "cartoassets": "0.1.24",
+    "cartoassets": "CartoDB/CartoAssets#master",
     "cartodb-pecan": "0.2.x",
     "csswring": "^3.0.5",
     "cartodb-deep-insights.js": "CartoDB/deep-insights.js#05922ec",

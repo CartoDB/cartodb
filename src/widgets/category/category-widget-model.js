@@ -135,8 +135,44 @@ module.exports = WidgetModel.extend({
     }
   },
 
+  sizeAcceptedCatsInData: function () {
+    var acceptedCats = this._acceptedCategories();
+    var rejectedCatsInData = this.sizeRejectedCatsInData();
+    var data = this.dataviewModel.getData();
+    var totalCats = data.size();
+    var acceptedCatsInData = data.reduce(
+      function (memo, cat) {
+        var isCategoryInData = acceptedCats.where({ name: cat.get('name') }).length > 0;
+        return memo + (isCategoryInData ? 1 : 0);
+      },
+      0
+    );
+
+    if (rejectedCatsInData === 0) {
+      return acceptedCatsInData;
+    } else {
+      return totalCats - rejectedCatsInData + acceptedCatsInData;
+    }
+  },
+
+  sizeRejectedCatsInData: function () {
+    var rejectCats = this._rejectedCategories();
+    var data = this.dataviewModel.getData();
+    return data.reduce(
+      function (memo, cat) {
+        var isCategoryInData = rejectCats.where({ name: cat.get('name') }).length > 0;
+        return memo + (isCategoryInData ? 1 : 0);
+      },
+      0
+    );
+  },
+
   _acceptedCategories: function () {
     return this.dataviewModel.filter.acceptedCategories;
+  },
+
+  _rejectedCategories: function () {
+    return this.dataviewModel.filter.rejectedCategories;
   },
 
   _onCollapsedChange: function (m, isCollapsed) {

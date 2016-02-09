@@ -28,7 +28,7 @@ describe('dataviews/histogram-dataview-model', function () {
 
   it('should include the bbox after the first fetch', function () {
     this.model.set('url', 'http://example.com', { silent: true });
-    this.map.getViewBounds.and.returnValue([[1, 2], [3, 4]]);
+    this.model.set('boundingBox', 'fakeBoundingBox');
     spyOn(this.model, 'sync').and.callFake(function (args) {
       this.model.set('data', 'something');
     }.bind(this));
@@ -39,7 +39,7 @@ describe('dataviews/histogram-dataview-model', function () {
     this.model.fetch();
 
     // url now has the bbox
-    expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3');
+    expect(this.model.url()).toEqual('http://example.com?bbox=fakeBoundingBox');
   });
 
   it('should parse the bins', function () {

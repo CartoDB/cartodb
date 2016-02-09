@@ -36,7 +36,7 @@ GeoJSONDataProvider.prototype._dataGeneratorsForDataviews = {,
     return histogram;
   },
   category: function (features, options) {
-    var filter = this._vectorLayerView.renderers[this._layerIndex].filter;
+    var filter = this._vectorLayerView.getFilter(this._layerIndex);
     var columnName = options.column;
     var numberOfCategories = 5;
     var sortedGroups = filter.getColumnValues(columnName);

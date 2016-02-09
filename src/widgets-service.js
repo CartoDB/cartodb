@@ -31,7 +31,7 @@ WidgetsService.prototype.createCategoryModel = function (attrs, layer) {
 
   var dataviewModel = this._dataviews.createCategoryModel(layer, attrs);
 
-  var attrsNames = ['id', 'title', 'collapsed'];
+  var attrsNames = ['id', 'title', 'collapsed', 'prefix', 'suffix'];
   var widgetAttrs = _.pick(attrs, attrsNames);
   widgetAttrs.attrsNames = attrsNames;
 
@@ -82,7 +82,7 @@ WidgetsService.prototype.createFormulaModel = function (attrs, layer) {
 
   var dataviewModel = this._dataviews.createFormulaModel(layer, attrs);
 
-  var attrsNames = ['id', 'title', 'collapsed'];
+  var attrsNames = ['id', 'title', 'collapsed', 'prefix', 'suffix'];
   var widgetAttrs = _.pick(attrs, attrsNames);
   widgetAttrs.type = 'formula';
   widgetAttrs.attrsNames = attrsNames;

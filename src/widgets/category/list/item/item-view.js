@@ -37,8 +37,8 @@ module.exports = cdb.core.View.extend({
         percentage: ((value / this.dataviewModel.get('max')) * 100),
         color: this.widgetModel.colors.getColorByCategory(name),
         isDisabled: !this.model.get('selected') ? 'is-disabled' : '',
-        prefix: this.dataviewModel.get('prefix'),
-        suffix: this.dataviewModel.get('suffix')
+        prefix: this.widgetModel.get('prefix'),
+        suffix: this.widgetModel.get('suffix')
       })
     );
 
@@ -47,11 +47,8 @@ module.exports = cdb.core.View.extend({
 
   _initBinds: function () {
     this.model.bind('change', this.render, this);
-    this.widgetModel.bind('change:search change:isColorsApplied', this.render, this);
+    this.widgetModel.bind('change:search change:isColorsApplied change:prefix change:suffix', this.render, this);
     this.add_related_model(this.widgetModel);
-
-    this.dataviewModel.bind('change:prefix change:suffix', this.render, this);
-    this.add_related_model(this.dataviewModel);
   },
 
   _onItemClick: function () {

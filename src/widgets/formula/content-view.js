@@ -34,13 +34,13 @@ module.exports = cdb.core.View.extend({
     var nulls = !_.isUndefined(this._dataviewModel.get('nulls')) && formatter.formatNumber(this._dataviewModel.get('nulls')) || '-';
     var isCollapsed = this.model.get('collapsed');
 
-    var prefix = this._dataviewModel.get('prefix');
-    var suffix = this._dataviewModel.get('suffix');
+    var prefix = this.model.get('prefix');
+    var suffix = this.model.get('suffix');
 
     this.$el.html(
       template({
         title: this.model.get('title'),
-        operation: this._dataviewModel.get('operation'),
+        operation: this.model.get('operation'),
         value: value,
         formatedValue: format(value),
         nulls: nulls,
@@ -77,8 +77,8 @@ module.exports = cdb.core.View.extend({
   },
 
   _initBinds: function () {
-    this.model.bind('change:title change:collapsed', this.render, this);
-    this._dataviewModel.bind('change:data change:prefix change:suffix', this.render, this);
+    this.model.bind('change:title change:collapsed change:prefix change:suffix', this.render, this);
+    this._dataviewModel.bind('change:data', this.render, this);
     this.add_related_model(this._dataviewModel);
   },
 

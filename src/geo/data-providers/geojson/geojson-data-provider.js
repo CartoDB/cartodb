@@ -22,7 +22,7 @@ GeoJSONDataProvider.prototype._dataGeneratorsForDataviews = {
     var lastCat = {
       category: 'Other',
       value: sortedGroups.slice(numberOfCategories).reduce(function (p, c) {
-        return p + c.value
+        return p + c.value;
       }, 0),
       agg: true
     };
@@ -45,7 +45,7 @@ GeoJSONDataProvider.prototype._dataGeneratorsForDataviews = {
         agg: false
       });
     });
-    data.categories.push(lastCat)
+    data.categories.push(lastCat);
     return data;
   },
 

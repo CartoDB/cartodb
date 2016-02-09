@@ -8,8 +8,9 @@ module.exports = DataviewModelBase.extend({
   },
 
   initialize: function (attrs, opts) {
-    this._data = new Backbone.Collection(this.get('data'));
     DataviewModelBase.prototype.initialize.call(this, attrs, opts);
+    this._data = new Backbone.Collection(this.get('data'));
+    this.on('change:columns', this._reloadMap, this);
   },
 
   getData: function () {

@@ -1,10 +1,11 @@
-var L = require('leaflet');
-var _ = require('underscore');
-require('d3.cartodb');
+require('d3.cartodb');// TODO: The 'd3.cartodb' module doens't currently export L.CartoDBd3Layer
+// and it's currently relying on window.L so weed to do the following trick.
+// Check out: https://github.com/CartoDB/d3.cartodb/issues/93 for more info
+var CartoDBd3Layer = window.L.CartoDBd3Layer;
 var LeafletLayerView = require('./leaflet-layer-view');
 var GeoJSONDataProvider = require('../data-providers/geojson/geojson-data-provider');
 
-var LeafletCartoDBVectorLayerGroupView = L.CartoDBd3Layer.extend({
+var LeafletCartoDBVectorLayerGroupView = CartoDBd3Layer.extend({
   includes: [
     LeafletLayerView.prototype
   ],
@@ -12,11 +13,11 @@ var LeafletCartoDBVectorLayerGroupView = L.CartoDBd3Layer.extend({
   // TODO: There's a conflict between LeafletLayerView.protoype.on
   // and L.CartoDBd3Layer.prototype.on. The GeoJSONDataProvider needs
   // to use the former one, so we have to add an alias.
-  _on: L.CartoDBd3Layer.prototype.on,
+  _on: CartoDBd3Layer.prototype.on,
 
   initialize: function (layerModel, leafletMap) {
     LeafletLayerView.call(this, layerModel, this, leafletMap);
-    L.CartoDBd3Layer.prototype.initialize.call(this);
+    CartoDBd3Layer.prototype.initialize.call(this);
 
     // Bind changes to the urls of the model
     layerModel.bind('change:urls', this._onTileJSONChanged, this);
@@ -45,20 +46,13 @@ var LeafletCartoDBVectorLayerGroupView = L.CartoDBd3Layer.extend({
   },
 
   onAdd: function (map) {
-    L.CartoDBd3Layer.prototype.onAdd.call(this, map);
+    CartoDBd3Layer.prototype.onAdd.call(this, map);
     this.trigger('added', this);
     this.added = true;
   },
 
   // Invoked by LeafletLayerView
   _modelUpdated: function () {}
-});
-
-// TODO: Remove these once L.CartoDBd3Layer implements them
-_.extend(LeafletCartoDBVectorLayerGroupView.prototype, {
-  featuresLoaded: function () {
-    return false;
-  }
 });
 
 module.exports = LeafletCartoDBVectorLayerGroupView;

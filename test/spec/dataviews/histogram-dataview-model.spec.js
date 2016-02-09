@@ -3,18 +3,28 @@ var HistogramDataviewModel = require('../../../src/dataviews/histogram-dataview-
 
 describe('dataviews/histogram-dataview-model', function () {
   beforeEach(function () {
-    var map = jasmine.createSpyObj('map', ['getViewBounds', 'bind', 'reload']);
-    map.getViewBounds.and.returnValue([[1, 2], [3, 4]]);
+    this.map = jasmine.createSpyObj('map', ['getViewBounds', 'bind', 'reload']);
+    this.map.getViewBounds.and.returnValue([[1, 2], [3, 4]]);
     var windshaftMap = jasmine.createSpyObj('windhsaftMap', ['bind']);
     this.filter = new Model();
     this.layer = new Model();
     this.layer.getDataProvider = function () {};
     this.model = new HistogramDataviewModel({}, {
-      map: map,
+      map: this.map,
       windshaftMap: windshaftMap,
       layer: this.layer,
       filter: this.filter
     });
+  });
+
+  it('should reload map on changing attrs', function () {
+    this.map.reload.calls.reset();
+    this.model.set('column', 'random_col');
+    expect(this.map.reload).toHaveBeenCalled();
+
+    this.map.reload.calls.reset();
+    this.model.set('bins', 123);
+    expect(this.map.reload).toHaveBeenCalled();
   });
 
   it('should submit the bbox if enabled', function () {
@@ -50,7 +60,7 @@ describe('dataviews/histogram-dataview-model', function () {
 
   describe('when layer changes meta', function () {
     beforeEach(function () {
-      expect(this.model.filter.get('columnType')).not.toEqual('date');
+      expect(this.model.filter.get('column_type')).not.toEqual('date');
       this.model.layer.set({
         meta: {
           column_type: 'date'
@@ -58,8 +68,8 @@ describe('dataviews/histogram-dataview-model', function () {
       });
     });
 
-    it('should change the filter columnType', function () {
-      expect(this.model.filter.get('columnType')).toEqual('date');
+    it('should change the filter column_type', function () {
+      expect(this.model.filter.get('column_type')).toEqual('date');
     });
   });
 });

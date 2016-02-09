@@ -42,6 +42,8 @@ module.exports = DataviewModelBase.extend({
 
     this._data = new CategoriesCollection();
     this._searchModel = new SearchModel();
+
+    this.on('change:column change:aggregation change:aggregation_column', this._reloadMap, this);
   },
 
   // Set any needed parameter when they have changed in this model
@@ -208,7 +210,7 @@ module.exports = DataviewModelBase.extend({
       });
     }, this);
 
-    if (this.get('ownFilter')) {
+    if (this.get('enableFilter')) {
       // Add accepted items that are not present in the categories data
       this.filter.acceptedCategories.each(function (mdl) {
         var category = mdl.get('name');
@@ -247,7 +249,7 @@ module.exports = DataviewModelBase.extend({
       options: {
         column: this.get('column'),
         aggregation: this.get('aggregation'),
-        aggregationColumn: this.get('aggregationColumn'),
+        aggregation_column: this.get('aggregation_column'),
         suffix: this.get('suffix'),
         prefix: this.get('prefix')
       }

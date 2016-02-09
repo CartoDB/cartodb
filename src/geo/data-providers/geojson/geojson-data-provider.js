@@ -113,7 +113,7 @@ GeoJSONDataProvider.prototype.applyFilter = function (columnName, filter) {
       filterOptions = { column: columnName, min: filter.get('min'), max: filter.get('max') };
     }
   } else {
-    throw new Error('Filter on ' + columnName + "couldn't be applied. Filter type wasn't recognized.");
+    throw new Error('Filter on ' + columnName + " couldn't be applied. Filter type wasn't recognized.");
   }
 
   this._vectorLayerView.applyFilter(this._layerIndex, filterType, filterOptions);

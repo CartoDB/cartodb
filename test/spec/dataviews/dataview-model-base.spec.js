@@ -23,6 +23,7 @@ describe('dataviews/dataview-model-base', function () {
     beforeEach(function () {
       spyOn(this.model, '_fetch');
       spyOn(this.model, 'listenTo');
+      spyOn(this.model, 'on');
       this.model.set('url', 'new-url');
     });
 
@@ -36,10 +37,11 @@ describe('dataviews/dataview-model-base', function () {
       });
 
       it('should change bounds', function () {
+        expect(this.model.listenTo.calls.argsFor(0)[0]).toEqual(this.model._map);
         expect(this.model.listenTo.calls.argsFor(0)[1]).toEqual('change:center change:zoom');
-        expect(this.model.listenTo.calls.argsFor(1)[1]).toEqual('change:url');
-        expect(this.model.listenTo.calls.argsFor(2)[1]).toEqual('change:boundingBox');
-        expect(this.model.listenTo.calls.argsFor(3)[1]).toEqual('change:enabled');
+        expect(this.model.on.calls.argsFor(0)[0]).toEqual('change:url');
+        expect(this.model.on.calls.argsFor(1)[0]).toEqual('change:boundingBox');
+        expect(this.model.on.calls.argsFor(2)[0]).toEqual('change:enabled');
       });
     });
   });
@@ -52,8 +54,8 @@ describe('dataviews/dataview-model-base', function () {
       this.model.set('url', 'newurl');
     });
 
-    it('should not fetch new data when url changes and syncData is disabled', function () {
-      this.model.set('syncData', false);
+    it('should not fetch new data when url changes and sync_on_data_change is disabled', function () {
+      this.model.set('sync_on_data_change', false);
       spyOn(this.model, 'fetch');
       this.model.trigger('change:url', this.model);
       expect(this.model.fetch).not.toHaveBeenCalled();
@@ -67,7 +69,7 @@ describe('dataviews/dataview-model-base', function () {
     });
 
     it('should not fetch new data when bbox changes and bbox is disabled', function () {
-      this.model.set('syncBoundingBox', false);
+      this.model.set('sync_on_bbox_change', false);
       spyOn(this.model, 'fetch');
       this.model.trigger('change:boundingBox', this.model);
       expect(this.model.fetch).not.toHaveBeenCalled();
@@ -163,6 +165,59 @@ describe('dataviews/dataview-model-base', function () {
     });
   });
 
+  describe('bindings to the filter', function () {
+    beforeEach(function () {
+      spyOn(this.map, 'reload');
+      this.layer = new Backbone.Model({
+        id: 'layerId'
+      });
+      this.layer.getDataProvider = jasmine.createSpy('getDataProvider').and.returnValue(undefined);
+    });
+
+    it('should reload the map by default when the filter changes', function () {
+      var filter = new Backbone.Model();
+      new DataviewModelBase(null, { // eslint-disable-line
+        map: this.map,
+        windshaftMap: this.windshaftMap,
+        layer: this.layer,
+        filter: filter
+      });
+
+      // Filter changes
+      filter.trigger('change', filter);
+
+      expect(this.map.reload).toHaveBeenCalledWith({ sourceLayerId: 'layerId' });
+    });
+
+    it('should apply the filter to the data provider when the filter changes', function () {
+      // Set up a new data provider
+      var dataProvider = new Backbone.Model();
+      dataProvider.generateDataForDataview = function (dataview, data) {
+        return data[0];
+      };
+      dataProvider.applyFilter = jasmine.createSpy('applyFilter');
+
+      // Layer has a dataProvider
+      this.layer.getDataProvider.and.returnValue(dataProvider);
+
+      var filter = new Backbone.Model();
+      var dataview = new DataviewModelBase({ // eslint-disable-line
+        column: 'columnName'
+      }, {
+        map: this.map,
+        windshaftMap: this.windshaftMap,
+        layer: this.layer,
+        filter: filter
+      });
+
+      // Filter changes
+      filter.trigger('change', filter);
+
+      expect(this.map.reload).not.toHaveBeenCalled();
+      expect(dataProvider.applyFilter).toHaveBeenCalledWith('columnName', filter);
+    });
+  });
+
   describe('.remove', function () {
     beforeEach(function () {
       this.removeSpy = jasmine.createSpy('remove');
@@ -186,7 +241,7 @@ describe('dataviews/dataview-model-base', function () {
   });
 
   describe('when the layer has a data provider', function () {
-    it('it should gets data from that provider when features changed', function () {
+    it('it should get data from that provider when features changed', function () {
       var layer = new Backbone.Model();
       var syncCallback = jasmine.createSpy('syncCallback');
 

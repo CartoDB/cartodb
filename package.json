@@ -34,7 +34,7 @@
   "devDependencies": {
     "browserify": "11.2.0",
     "browserify-resolutions": "1.0.6",
-    "cartoassets": "CartoDB/CartoAssets#master",
+    "cartoassets": "CartoDB/CartoAssets#bd7b7db",
     "grunt": "0.4.5",
     "grunt-browserify": "4.0.1",
     "grunt-contrib-clean": "0.7.0",

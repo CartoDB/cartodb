@@ -20,14 +20,14 @@ module.exports = cdb.core.Model.extend({
 
   /**
    * @public
-   * @param {Object} changes, not that it should be
+   * @param {Object} attrs, not that it should be
+   * @return {Boolean} true if at least one attribute was changed
    * @throws {Error} Should throw an error if the attrs are invalid or inconsistent
    */
-  update: function (changes) {
-    var attrs = _.pick(changes, this.get('attrsNames'));
-    this.set(attrs);
-    attrs = _.pick(changes, this.dataviewModel.constructor.ATTRS_NAMES);
-    this.dataviewModel.set(attrs);
+  update: function (attrs) {
+    var wAttrs = _.pick(attrs, this.get('attrsNames'));
+    this.set(wAttrs);
+    this.dataviewModel.update(attrs);
     return !!(this.changedAttributes() || this.dataviewModel.changedAttributes());
   },
 

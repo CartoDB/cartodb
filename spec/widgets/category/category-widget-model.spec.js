@@ -87,6 +87,24 @@ describe('widgets/category/category-widget-model', function () {
       });
     });
 
+    describe('search state', function () {
+      beforeEach(function () {
+        this.dataviewModel.filter.accept(['Hey']);
+        this.dataviewModel._searchModel.setData([{ name: 'Hey' }, { name: 'Vamos' }, { name: 'Neno' }]);
+        this.dataviewModel.trigger('change:searchData');
+      });
+
+      it('should check if search results are already selected or not', function () {
+        var data = this.dataviewModel.getSearchResult();
+        expect(data.size()).toBe(3);
+        expect(data.at(0).get('selected')).toBeTruthy();
+        expect(data.at(0).get('name')).toBe('Hey');
+        expect(data.at(1).get('selected')).toBeFalsy();
+        expect(data.at(2).get('selected')).toBeFalsy();
+      });
+
+    });
+
     describe('locked collection helpers', function () {
       describe('canApplyLocked', function () {
         beforeEach(function () {
@@ -160,6 +178,34 @@ describe('widgets/category/category-widget-model', function () {
           expect(this.dataviewModel.forceFetch).not.toHaveBeenCalled();
           expect(this.dataviewModel.filter.acceptAll).toHaveBeenCalled();
         });
+      });
+    });
+
+    describe('filters over data', function () {
+      beforeEach(function () {
+        this.dataviewModel._data.reset([{ name: 'one' }, { name: 'buddy' }, { name: 'neno' }]);
+      });
+
+      it('should count accepted categories over the current data', function () {
+        this.dataviewModel.filter.accept('vamos');
+        expect(this.widgetModel.sizeAcceptedCatsInData()).toBe(0);
+        this.dataviewModel.filter.accept('buddy');
+        expect(this.widgetModel.sizeAcceptedCatsInData()).toBe(1);
+        this.dataviewModel.filter.reject('neno');
+        expect(this.widgetModel.sizeAcceptedCatsInData()).toBe(2);
+        this.dataviewModel._data.reset([]);
+        expect(this.widgetModel.sizeAcceptedCatsInData()).toBe(0);
+      });
+
+      it('should count rejected categories over the current data', function () {
+        this.dataviewModel.filter.reject('vamos');
+        expect(this.widgetModel.sizeRejectedCatsInData()).toBe(0);
+        this.dataviewModel.filter.reject('buddy');
+        expect(this.widgetModel.sizeRejectedCatsInData()).toBe(1);
+        this.dataviewModel.filter.accept('neno');
+        expect(this.widgetModel.sizeRejectedCatsInData()).toBe(1);
+        this.dataviewModel._data.reset([]);
+        expect(this.widgetModel.sizeRejectedCatsInData()).toBe(0);
       });
     });
 

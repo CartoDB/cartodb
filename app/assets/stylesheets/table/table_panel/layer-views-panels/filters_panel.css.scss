@@ -16,7 +16,7 @@
   @import "../../../old_common/common-sprite";
   @import "../../../old_common/vars";
   @import "../../../old_common/mixins";
-  
+
 
   div.filters_panel {
     width:100%;
@@ -207,12 +207,12 @@
           .empty     { float: left; display:none; font-size:13px; color: #FF9999; vertical-align: top; }
           .only      { float: left; display:none; font-size:13px; color: #FFAB37; vertical-align: top; }
           .loading   { float: left; display:none; font-size:13px; color: #FFAB37; vertical-align: top; }
-          .range     { float:left;  display:none; font-size:13px; color: #4DC964; }
+          .range, .range-number     { float:left;  display:none; font-size:13px; color: #4DC964; }
 
           .title  { float: left; margin: 0 0 0 30px; }
         }
 
-        &.date .range { clear:both; margin: 6px 0 0 0; }
+        &.date .range, .range-number { clear:both; margin: 6px 0 0 0; }
 
         &:hover .remove { @include opacity(1); }
 
@@ -536,6 +536,9 @@
 
       .loading   { display:block; }
 
+      .range-number { height: 35px; }
+      .range-number input { width: 45%; }
+      .range-number .subtext { display: none; color: #666666; font-size: 11px; }
       .hist { margin: auto; position: relative; @include inline-block(); bottom: -3px; }
       .background.bar { fill: #E5E5E5; }
       .foreground.bar { fill: #4DC964; fill-opacity: .3; }

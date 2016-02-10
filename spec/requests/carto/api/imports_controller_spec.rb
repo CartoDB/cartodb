@@ -10,18 +10,22 @@ describe Carto::Api::ImportsController do
 
   @headers = { 'CONTENT_TYPE'  => 'application/json' }
 
-  before(:each) do
-    stub_named_maps_calls
-    delete_user_data $user_1
-    host! "#{$user_1.username}.localhost.lan"
+  before(:all) do
+    @user = FactoryGirl.create(:valid_user)
   end
 
   after(:all) do
-    stub_named_maps_calls
-    delete_user_data $user_1
+    delete_user_data @user
+    @user.destroy
   end
 
-  let(:params) { { :api_key => $user_1.api_key } }
+  before(:each) do
+    stub_named_maps_calls
+    delete_user_data @user
+    host! "#{@user.username}.localhost.lan"
+  end
+
+  let(:params) { { :api_key => @user.api_key } }
 
   it 'gets a list of all pending imports' do
     Resque.inline = false
@@ -62,7 +66,7 @@ describe Carto::Api::ImportsController do
   end
 
   it 'gets the detail of an import' do
-    post api_v1_imports_create_url(:api_key => $user_1.api_key,
+    post api_v1_imports_create_url(:api_key => @user.api_key,
                         :table_name => 'wadus',
                         :filename   => File.basename('wadus.csv')),
       upload_file('db/fake_data/column_number_to_boolean.csv', 'text/csv')
@@ -79,7 +83,7 @@ describe Carto::Api::ImportsController do
   end
 
   it 'gets the detail of an import stuck unpacking' do
-    post api_v1_imports_create_url(:api_key => $user_1.api_key,
+    post api_v1_imports_create_url(:api_key => @user.api_key,
                         :table_name => 'wadus',
                         :filename   => File.basename('wadus.csv')),
       upload_file('db/fake_data/column_number_to_boolean.csv', 'text/csv')
@@ -146,7 +150,7 @@ describe Carto::Api::ImportsController do
     response.code.should be == '200'
 
     @table_from_import = UserTable.all.last.service
-    post api_v1_imports_create_url(:api_key    => $user_1.api_key,
+    post api_v1_imports_create_url(:api_key    => @user.api_key,
                         :table_name => 'wadus_2',
                         :sql        => "SELECT * FROM #{@table_from_import.name}")
 
@@ -164,7 +168,7 @@ describe Carto::Api::ImportsController do
   end
 
   it 'returns derived visualization id if created with create_vis flag' do
-    $user_1.update private_tables_enabled: false
+    @user.update private_tables_enabled: false
     post api_v1_imports_create_url,
          params.merge({
                         filename: upload_file('spec/support/data/csv_with_lat_lon.csv', 'application/octet-stream'),
@@ -186,7 +190,7 @@ describe Carto::Api::ImportsController do
     vis.nil?.should eq false
     vis.name =~ /csv_with_lat_lon/  # just in case we change the prefix
 
-    $user_1.update private_tables_enabled: true
+    @user.update private_tables_enabled: true
   end
 
   describe 'service_token_valid?' do
@@ -200,7 +204,7 @@ describe Carto::Api::ImportsController do
     end
 
     it 'returns 400 for known service token without known service datasource' do
-      synchronization_oauth = Carto::SynchronizationOauth.new(user_id: $user_1.id, service: 'kk-s', token: 'kk-t')
+      synchronization_oauth = Carto::SynchronizationOauth.new(user_id: @user.id, service: 'kk-s', token: 'kk-t')
       synchronization_oauth.save
       get api_v1_imports_service_token_valid_url(id: synchronization_oauth.service), params
       response.code.should == '400'
@@ -208,7 +212,7 @@ describe Carto::Api::ImportsController do
     end
 
     it 'returns 400 for known service token for a service datasource which is not BaseOAuth' do
-      synchronization_oauth = Carto::SynchronizationOauth.new(user_id: $user_1.id, service: 'arcgis', token: 'kk-t')
+      synchronization_oauth = Carto::SynchronizationOauth.new(user_id: @user.id, service: 'arcgis', token: 'kk-t')
       synchronization_oauth.save
       get api_v1_imports_service_token_valid_url(id: synchronization_oauth.service), params
       response.code.should == '400'
@@ -217,7 +221,7 @@ describe Carto::Api::ImportsController do
 
     it 'returns oauth_valid false for not valid tokens and deletes them' do
       CartoDB::Datasources::Url::MailChimp.any_instance.stubs(:token_valid?).returns(false)
-      synchronization_oauth = Carto::SynchronizationOauth.new(user_id: $user_1.id, service: 'mailchimp', token: 'kk-t')
+      synchronization_oauth = Carto::SynchronizationOauth.new(user_id: @user.id, service: 'mailchimp', token: 'kk-t')
       synchronization_oauth.save
       get api_v1_imports_service_token_valid_url(id: synchronization_oauth.service), params
       response.code.should == '200'
@@ -231,7 +235,7 @@ describe Carto::Api::ImportsController do
 
     it 'returns 401 for expired tokens on assignment and deletes them' do
       CartoDB::Datasources::Url::MailChimp.any_instance.stubs(:token=).raises(CartoDB::Datasources::TokenExpiredOrInvalidError.new('kk', 'mailchimp'))
-      synchronization_oauth = Carto::SynchronizationOauth.new(user_id: $user_1.id, service: 'mailchimp', token: 'kk-t')
+      synchronization_oauth = Carto::SynchronizationOauth.new(user_id: @user.id, service: 'mailchimp', token: 'kk-t')
       synchronization_oauth.save
 
       get api_v1_imports_service_token_valid_url(id: synchronization_oauth.service), params, @headers
@@ -243,7 +247,7 @@ describe Carto::Api::ImportsController do
 
     it 'returns 401 for expired tokens on validation and deletes them' do
       CartoDB::Datasources::Url::MailChimp.any_instance.stubs(:token_valid?).raises(CartoDB::Datasources::TokenExpiredOrInvalidError.new('kk', 'mailchimp'))
-      synchronization_oauth = Carto::SynchronizationOauth.new(user_id: $user_1.id, service: 'mailchimp', token: 'kk-t')
+      synchronization_oauth = Carto::SynchronizationOauth.new(user_id: @user.id, service: 'mailchimp', token: 'kk-t')
       synchronization_oauth.save
 
       get api_v1_imports_service_token_valid_url(id: synchronization_oauth.service), params, @headers
@@ -277,7 +281,7 @@ describe Carto::Api::ImportsController do
       service = 'mailchimp'
       fake_files = fake_resource_list(service)
       CartoDB::Datasources::Url::MailChimp.any_instance.stubs(:get_resources_list).returns(fake_files)
-      synchronization_oauth = Carto::SynchronizationOauth.new(user_id: $user_1.id, service: service, token: 'kk-t')
+      synchronization_oauth = Carto::SynchronizationOauth.new(user_id: @user.id, service: service, token: 'kk-t')
       synchronization_oauth.save
       get api_v1_imports_service_list_files_url(id: service), params
       response.code.should == '200'
@@ -289,7 +293,7 @@ describe Carto::Api::ImportsController do
 
     it 'returns 401 for expired tokens on resource listing and deletes them' do
       CartoDB::Datasources::Url::MailChimp.any_instance.stubs(:get_resources_list).raises(CartoDB::Datasources::TokenExpiredOrInvalidError.new('kk', 'mailchimp'))
-      synchronization_oauth = Carto::SynchronizationOauth.new(user_id: $user_1.id, service: 'mailchimp', token: 'kk-t')
+      synchronization_oauth = Carto::SynchronizationOauth.new(user_id: @user.id, service: 'mailchimp', token: 'kk-t')
       synchronization_oauth.save
 
       get api_v1_imports_service_list_files_url(id: 'mailchimp'), params
@@ -305,7 +309,7 @@ describe Carto::Api::ImportsController do
 
     it 'returns 400 for existing tokens services' do
       service = 'mailchimp'
-      synchronization_oauth = Carto::SynchronizationOauth.new(user_id: $user_1.id, service: service, token: 'kk-t')
+      synchronization_oauth = Carto::SynchronizationOauth.new(user_id: @user.id, service: service, token: 'kk-t')
       synchronization_oauth.save
       get api_v1_imports_service_auth_url_url(id: service), params
       response.code.should == '400'
@@ -338,7 +342,7 @@ describe Carto::Api::ImportsController do
 
     it 'returns 400 for existing tokens services' do
       service = 'mailchimp'
-      synchronization_oauth = Carto::SynchronizationOauth.new(user_id: $user_1.id, service: service, token: 'kk-t')
+      synchronization_oauth = Carto::SynchronizationOauth.new(user_id: @user.id, service: service, token: 'kk-t')
       synchronization_oauth.save
       get api_v1_imports_service_validate_code_url(id: service, code: 'kk'), params
       response.code.should == '400'
@@ -393,7 +397,7 @@ describe Carto::Api::ImportsController do
 
       synchronization_oauth = SynchronizationOauth.where(service: 'mailchimp').first
       synchronization_oauth.token.should eq token
-      synchronization_oauth.user_id.should eq $user_1.id
+      synchronization_oauth.user_id.should eq @user.id
       synchronization_oauth.destroy
     end
 
@@ -403,7 +407,7 @@ describe Carto::Api::ImportsController do
 
     it 'returns 400 for existing tokens services' do
       service = 'mailchimp'
-      synchronization_oauth = Carto::SynchronizationOauth.new(user_id: $user_1.id, service: service, token: 'kk-t')
+      synchronization_oauth = Carto::SynchronizationOauth.new(user_id: @user.id, service: service, token: 'kk-t')
       synchronization_oauth.save
       get api_v1_imports_service_oauth_callback_url(id: service), params
       response.code.should == '400'
@@ -430,11 +434,10 @@ describe Carto::Api::ImportsController do
 
       synchronization_oauth = SynchronizationOauth.where(service: 'mailchimp').first
       synchronization_oauth.token.should eq token
-      synchronization_oauth.user_id.should eq $user_1.id
+      synchronization_oauth.user_id.should eq @user.id
       synchronization_oauth.destroy
     end
 
   end
 
 end
-

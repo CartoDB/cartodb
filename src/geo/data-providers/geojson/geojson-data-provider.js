@@ -15,23 +15,36 @@ var GeoJSONDataProvider = function (vectorLayerView, layerIndex) {
 // TODO: We can extract each "generator" to an individual file so that this file doesn't get too BIG
 GeoJSONDataProvider.prototype._dataGeneratorsForDataviews = {
   category: function (features, options) {
-    var filter = this._vectorLayerView.getFilter(this._layerIndex);
     var columnName = options.column;
+    // TODO: enableFilter is wrong and it should be actually be called
+    // disableFilter, that's why we use !options.enableFilter here
+    var filterEnabled = !options.enableFilter;
     var numberOfCategories = 5;
-    var sortedGroups = filter.getColumnValues(columnName);
-    var lastCat = {
-      category: 'Other',
-      value: sortedGroups.slice(numberOfCategories).reduce(function (p, c) {
-        return p + c.value;
-      }, 0),
-      agg: true
-    };
 
-    // TODO: Calculate harcoded values
+    var sortedGroups;
+    var count;
+    if (filterEnabled) {
+      // TODO: There's probably a more efficient way of doing this
+      var groups = _.groupBy(features, function (feature) { return feature.properties[columnName]; });
+      var groupCounts = _.map(Object.keys(groups), function (key) {
+        return {
+          key: key,
+          value: groups[key].length
+        };
+      });
+      sortedGroups = _.sortBy(groupCounts, function (group) {
+        return group.value;
+      }).reverse();
+      count = features.length;
+    } else {
+      var filter = this._vectorLayerView.getFilter(this._layerIndex);
+      sortedGroups = filter.getColumnValues(columnName);
+      count = filter.getCount(columnName);
+    }
     var data = {
       categories: [],
       categoriesCount: sortedGroups.length,
-      count: filter.getCount(columnName),
+      count: count,
       max: sortedGroups[0].value,
       min: sortedGroups[sortedGroups.length - 1].value,
       nulls: 0,
@@ -45,7 +58,17 @@ GeoJSONDataProvider.prototype._dataGeneratorsForDataviews = {
         agg: false
       });
     });
-    data.categories.push(lastCat);
+
+    if (!filterEnabled) {
+      var lastCat = {
+        category: 'Other',
+        value: sortedGroups.slice(numberOfCategories).reduce(function (p, c) {
+          return p + c.value;
+        }, 0),
+        agg: true
+      };
+      data.categories.push(lastCat);
+    }
     return data;
   },
 
@@ -84,6 +107,8 @@ GeoJSONDataProvider.prototype.generateDataForDataview = function (dataview, feat
     throw new Error("Couldn't generate data for dataview of type: " + dataview.get('type'));
   }
 
+  // TODO: Each generator needs different options show we should be more
+  // explicit instead of passing dataview.attributes through.
   var data = generateData(features, dataview.attributes);
   return data;
 };

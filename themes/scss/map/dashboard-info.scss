@@ -23,6 +23,9 @@
     margin-right: 26px;
   }
 }
+.CDB-Dashboard-menuInfo--active {
+  display: none;
+}
 .CDB-Dashboard-menuInner {
   @include transition(width, 150ms, cubic-bezier(0.01, 0.99, 0.97, 1.01));
   position: fixed;
@@ -52,6 +55,7 @@
     @include transition(background, 150ms, cubic-bezier(0.01, 0.99, 0.97, 1.01));
     height: 100%;
     background: rgba($cSecondaryDark, 0.8);
+    cursor: pointer;
   }
   .CDB-Dashboard-bg:hover {
     background: rgba($cSecondaryDark, 0.6);
@@ -78,13 +82,17 @@
     background: $cThirdBackground;
   }
   .CDB-Dashboard-menuInfo {
-    opacity: 0;
+    display: none;
+  }
+  .CDB-Dashboard-menuInfo--active {
+    display: block;
+    opacity: 0.24;
   }
 }
 .CDB-Dashboard-menuLogo {
   width: 40px;
   height: 40px;
-  margin-bottom: $baseSize + 4;
+  margin-bottom: $baseSize * 2;
   border-radius: 4px;
   background: $cWhite;
   line-height: 40px;
@@ -97,6 +105,7 @@
   vertical-align: middle;
 }
 .CDB-Dashboard-menuInfo {
+  width: 40px;
   margin-bottom: 48px;
   text-align: center;
 }

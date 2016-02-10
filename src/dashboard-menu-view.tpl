@@ -13,6 +13,15 @@
           </div>
         </button>
       </div>
+      <div class="CDB-Dashboard-menuInfo CDB-Dashboard-menuInfo--active">
+        <button class="CDB-Shape CDB-Shape--medium js-toggle-view">
+          <div class="CDB-Shape-threePoints is-horizontal is-medium">
+            <div class="CDB-Shape-threePointsItem is-round"></div>
+            <div class="CDB-Shape-threePointsItem is-round"></div>
+            <div class="CDB-Shape-threePointsItem is-round"></div>
+          </div>
+        </button>
+      </div>
       <ul class="CDB-Dashboard-menuActions">
         <li class="CDB-Dashboard-menuActionsItem">
           <a href="#" class="u-hintTextColor">

@@ -168,12 +168,11 @@ describe('dataviews/category-dataview-model', function () {
       expect(areNamesString).toBeTruthy();
     });
 
-    describe('when enableFilter is enabled', function () {
+    describe('when filter is disabled', function () {
       it('should NOT add categories that are accepted when they are not present in the new categories', function () {
         this.model.filter.accept('Madrid');
 
-        // Enable `enableFilter`
-        this.model.set('enableFilter', true);
+        this.model.disableFilter();
 
         _parseData(this.model, _.map(['Barcelona'], function (v) {
           return {
@@ -188,12 +187,11 @@ describe('dataviews/category-dataview-model', function () {
       });
     });
 
-    describe('when enableFilter is disabled', function () {
+    describe('when filter is enabled', function () {
       it('should add categories that are accepted when they are not present in the new categories', function () {
         this.model.filter.accept('Madrid');
 
-        // Disable `enableFilter`
-        this.model.set('enableFilter', false);
+        this.model.enableFilter();
 
         _parseData(this.model, _.map(['Barcelona'], function (v) {
           return {

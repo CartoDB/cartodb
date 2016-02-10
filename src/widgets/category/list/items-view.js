@@ -89,7 +89,7 @@ module.exports = cdb.core.View.extend({
     if (isSelected) {
       if (filter.rejectedCategories.size() === 0 &&
           filter.acceptedCategories.size() === 0 &&
-          this.dataviewModel.getSize() > 1
+          this.dataviewModel.getSize() > 2
       ) {
         var data = this.dataviewModel.getData();
         // Make elements "unselected"

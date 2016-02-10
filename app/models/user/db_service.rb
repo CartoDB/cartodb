@@ -1165,7 +1165,7 @@ module CartoDB
                     #       "not_this_one" when table "this" changes :/
                     #       --strk-20131203;
                     #
-                    client.fetch('#{purge_command} obj.http.X-Cache-Channel ~ "^#{@user.database_name}:(.*%s.*)|(cdb_tablemetadata)|(table)$"' % table_name.replace('"',''))
+                    client.fetch('#{purge_command} obj.http.X-Cache-Channel ~ "(^|;;)#{@user.database_name}:((?:(?!;;).)*%s.*)|(cdb_tablemetadata)|(table)$"' % table_name.replace('"',''))
                     break
                   except Exception as err:
                     if trigger_verbose:
@@ -1217,7 +1217,7 @@ module CartoDB
                     #       --strk-20131203;
                     #
                     client = httplib.HTTPConnection('#{varnish_host}', #{varnish_port}, False, timeout)
-                    client.request('PURGE', '/batch', '', {"Invalidation-Match": ('^#{@user.database_name}:(.*%s.*)|(cdb_tablemetadata)|(table)$' % table_name.replace('"',''))  })
+                    client.request('PURGE', '/batch', '', {"Invalidation-Match": ('(^|;;)#{@user.database_name}:((?:(?!;;).)*%s.*)|(cdb_tablemetadata)|(table)$' % table_name.replace('"',''))  })
                     response = client.getresponse()
                     assert response.status == 204
                     break

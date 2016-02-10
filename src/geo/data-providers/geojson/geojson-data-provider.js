@@ -26,8 +26,8 @@ GeoJSONDataProvider.prototype._dataGeneratorsForDataviews = {
       bins = d3.layout.histogram().bins(numberOfBins)(filter.getValues().map(function (f) { return f.properties[options.column] }));
       width = (end - start) / options.data.length;
     } else {
-      end = filter.getMax(columnName);
-      start = filter.getMin(columnName);
+      end = options.end || filter.getMax(columnName);
+      start = options.start > -1 ? options.start : filter.getMin(columnName);
       width = (end - start) / options.bins;
       bins = d3.layout.histogram().bins(numberOfBins)(filter.getValues(false, columnName).map(function (f) { return f.properties[options.column] }));
     }

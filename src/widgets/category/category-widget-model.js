@@ -123,7 +123,7 @@ module.exports = WidgetModel.extend({
   _onDataviewChangeSearchData: function () {
     // Update selected state for each search result item based on locked categories
     this.dataviewModel.getSearchResult().each(function (m) {
-      var selected = this.lockedCategories.isItemLocked(m.get('name'));
+      var selected = this.dataviewModel.filter.isAccepted(m.get('name'));
       m.set('selected', selected);
     }, this);
   },
@@ -148,11 +148,10 @@ module.exports = WidgetModel.extend({
       },
       0
     );
-
     if (rejectedCatsInData === 0) {
       return acceptedCatsInData;
     } else {
-      return totalCats - rejectedCatsInData + acceptedCatsInData;
+      return totalCats - rejectedCatsInData;
     }
   },
 

@@ -1,4 +1,4 @@
-# encoding: UTF-8'
+# encoding: UTF-8
 require 'socket'
 require_relative '../../services/table-geocoder/lib/table_geocoder_factory'
 require_relative '../../services/table-geocoder/lib/exceptions'

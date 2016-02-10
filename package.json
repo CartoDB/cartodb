@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "3.23.30",
+  "version": "3.23.31",
   "description": "CartoDB UI frontend",
   "repository": {
     "type": "git",
@@ -17,18 +17,22 @@
       "type": "BSD"
     }
   ],
-  "dependencies": {},
+  "dependencies": {
+    "backbone": "1.2.3",
+    "perfect-scrollbar": "0.6.7"
+  },
   "devDependencies": {
     "autoprefixer-core": "5.2.1",
     "aws-sdk": "2.0.0-rc11",
-    "backbone": "1.2.3",
+    "backbone-forms": "^0.14.0",
     "browserify": "11.0.1",
+    "browserify-resolutions": "1.0.6",
     "browserify-shim": "3.8.10",
-    "cartoassets": "0.1.22",
+    "cartoassets": "CartoDB/CartoAssets#master",
     "cartodb-pecan": "0.2.x",
     "csswring": "^3.0.5",
-    "cartodb-deep-insights.js": "CartoDB/deep-insights.js#b7d23dc",
-    "cartodb.js": "CartoDB/cartodb.js#v4",
+    "cartodb-deep-insights.js": "CartoDB/deep-insights.js#179783e",
+    "cartodb.js": "CartoDB/cartodb.js#94bb6f3",
     "git-rev": "0.2.1",
     "grunt": "0.4.5",
     "grunt-available-tasks": "0.5.4",

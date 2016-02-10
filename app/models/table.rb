@@ -872,7 +872,8 @@ class Table
     cartodb_type = options[:type].convert_to_cartodb_type
     column_name = options[:name].to_s.sanitize_column_name
     owner.in_database.add_column name, column_name, type
-    self.invalidate_varnish_cache
+    invalidate_varnish_cache
+    update_cdb_tablemetadata
     return {:name => column_name, :type => type, :cartodb_type => cartodb_type}
   rescue => e
     if e.message =~ /^(PG::Error|PGError)/
@@ -885,7 +886,8 @@ class Table
   def drop_column!(options)
     raise if CARTODB_COLUMNS.include?(options[:name].to_s)
     owner.in_database.drop_column name, options[:name].to_s
-    self.invalidate_varnish_cache
+    invalidate_varnish_cache
+    update_cdb_tablemetadata
   end
 
   def modify_column!(options)
@@ -1581,8 +1583,8 @@ class Table
       owner.in_database(:as => :superuser).run(%Q{UPDATE #{qualified_table_name} SET the_geom =
       ST_Transform(ST_GeomFromGeoJSON('#{geojson}'),4326) where cartodb_id =
       #{primary_key}})
-    rescue
-      raise CartoDB::InvalidGeoJSONFormat, 'Invalid geometry'
+    rescue => e
+      raise CartoDB::InvalidGeoJSONFormat, "Invalid geometry: #{e.message}"
     end
   end
 

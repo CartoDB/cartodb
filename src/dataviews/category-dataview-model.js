@@ -161,6 +161,37 @@ module.exports = DataviewModelBase.extend({
     return this._data.isOtherAvailable();
   },
 
+  numberOfAcceptedCategories: function () {
+    var acceptedCategories = this.filter.acceptedCategories;
+    var numberOfRejectedCategories = this.numberOfRejectedCategories();
+    var data = this.getData();
+    var totalCategories = data.size();
+    var numberOfAcceptedCategories = data.reduce(
+      function (memo, cat) {
+        var isCategoryInData = acceptedCategories.where({ name: cat.get('name') }).length > 0;
+        return memo + (isCategoryInData ? 1 : 0);
+      },
+      0
+    );
+    if (!numberOfRejectedCategories) {
+      return numberOfAcceptedCategories;
+    } else {
+      return totalCategories - numberOfRejectedCategories;
+    }
+  },
+
+  numberOfRejectedCategories: function () {
+    var rejectedCategories = this.filter.rejectedCategories;
+    var data = this.getData();
+    return data.reduce(
+      function (memo, cat) {
+        var isCategoryInData = rejectedCategories.where({ name: cat.get('name') }).length > 0;
+        return memo + (isCategoryInData ? 1 : 0);
+      },
+      0
+    );
+  },
+
   refresh: function () {
     if (this.isSearchApplied()) {
       this._searchModel.fetch();

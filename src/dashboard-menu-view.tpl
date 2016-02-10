@@ -1,12 +1,14 @@
-<div class="CDB-Dashboard-menuInner js-toggle-view-link">
+<div class="CDB-Dashboard-menuInner">
   <div class="CDB-Dashboard-menuHeader">
     <div class="CDB-Dashboard-menuLogo">
       <i class="CDB-IconFont CDB-IconFont-cartoFante"></i>
     </div>
     <div class="CDB-Dashboard-menuActions">
-      <button class="CDB-Dashboard-menuActionsLink CDB-Dashboard-menuActionsLink--mobile js-toggle-view-link">
-        <div class="CDB-Shape ">
-
+      <button class="CDB-Shape CDB-Shape--medium js-toggle-view-link">
+        <div class="CDB-Shape-threePoints is-horizontal is-medium is-white">
+          <div class="CDB-Shape-threePointsItem is-round"></div>
+          <div class="CDB-Shape-threePointsItem is-round"></div>
+          <div class="CDB-Shape-threePointsItem is-round"></div>
         </div>
       </button>
     </div>

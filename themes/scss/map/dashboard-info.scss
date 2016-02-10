@@ -73,11 +73,14 @@
   .CDB-Dashboard-menuLogo {
     background: #F9F9F9;
   }
+  .CDB-Dashboard-menuActions {
+    opacity: 0;
+  }
 }
 .CDB-Dashboard-menuLogo {
   width: 40px;
   height: 40px;
-  margin-bottom: $sMargin-section;
+  margin-bottom: $baseSize + 4;
   border-radius: 4px;
   background: #FFF;
   line-height: 40px;
@@ -90,10 +93,10 @@
   vertical-align: middle;
 }
 .CDB-Dashboard-menuActions {
-  width: 40px;
-  height: 40px;
   margin-bottom: 48px;
+  text-align: center;
 }
+/*
 .CDB-Dashboard-menuActionsLink {
   @include transition(all, 0.2s, ease-out);
   display: block;
@@ -105,7 +108,7 @@
   color: #FFF;
   font-size: $sFontSize-medium;
   cursor: pointer;
-}
+}*/
 .CDB-Dashboard-menuUpdate {
   margin-bottom: 8px;
   color: #CBCED0;

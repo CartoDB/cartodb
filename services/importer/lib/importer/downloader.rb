@@ -14,10 +14,13 @@ require_relative './url_translator/google_docs'
 require_relative './url_translator/kimono_labs'
 require_relative './unp'
 require_relative '../../../../lib/carto/http/client'
+require_relative '../../../../lib/carto/url_validator'
 
 module CartoDB
   module Importer2
     class Downloader
+
+      extend Carto::UrlValidator
 
       # in seconds
       HTTP_CONNECT_TIMEOUT = 60
@@ -244,13 +247,26 @@ module CartoDB
 
         downloaded_file = File.open(temp_name, 'wb')
         request = http_client.request(@translated_url, typhoeus_options)
+
         request.on_headers do |response|
           @http_response_code = response.code if !response.code.nil?
+
           unless response.success?
             download_error = true
             error_response = response
           end
+
+          # If there is any redirection we want to check again if
+          # the final IP is in the IP blacklist
+          if response.redirect_count.to_i > 0
+            begin
+              CartoDB::Importer2::Downloader.validate_url!(response.effective_url)
+            rescue Carto::UrlValidator::InvalidUrlError
+              raise CartoDB::Importer2::CouldntResolveDownloadError
+            end
+          end
         end
+
         request.on_body do |chunk|
           downloaded_file.write(chunk)
         end

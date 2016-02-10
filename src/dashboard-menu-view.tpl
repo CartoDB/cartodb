@@ -1,11 +1,11 @@
-<div class="CDB-Dashboard-menuContainer js-toggle-view">
+<div class="CDB-Dashboard-menuContainer">
   <div class="CDB-Dashboard-menuInner">
     <div class="CDB-Dashboard-menuHeader">
       <div class="CDB-Dashboard-menuLogo">
         <i class="CDB-IconFont CDB-IconFont-cartoFante"></i>
       </div>
       <div class="CDB-Dashboard-menuInfo">
-        <button class="CDB-Shape CDB-Shape--medium js-show-info">
+        <button class="CDB-Shape CDB-Shape--medium js-toggle-view">
           <div class="CDB-Shape-threePoints is-horizontal is-medium is-white">
             <div class="CDB-Shape-threePointsItem is-round"></div>
             <div class="CDB-Shape-threePointsItem is-round"></div>
@@ -15,22 +15,22 @@
       </div>
       <ul class="CDB-Dashboard-menuActions">
         <li class="CDB-Dashboard-menuActionsItem">
-          <a href="#" class="u-hintTextColor js-stop-propagation">
+          <a href="#" class="u-hintTextColor">
             <i class="CDB-IconFont CDB-IconFont-heartFill CDB-Size-large"></i>
           </a>
         </li>
         <li class="CDB-Dashboard-menuActionsItem">
-          <a href="#" class="u-hintTextColor js-stop-propagation">
+          <a href="#" class="u-hintTextColor">
             <i class="CDB-IconFont CDB-IconFont-twitter CDB-Size-large"></i>
           </a>
         </li>
         <li class="CDB-Dashboard-menuActionsItem">
-          <a href="#" class="u-hintTextColor js-stop-propagation">
+          <a href="#" class="u-hintTextColor">
             <i class="CDB-IconFont CDB-IconFont-facebook CDB-Size-medium"></i>
           </a>
         </li>
         <li class="CDB-Dashboard-menuActionsItem">
-          <a href="#" class="u-hintTextColor js-stop-propagation">
+          <a href="#" class="u-hintTextColor">
             <i class="CDB-IconFont CDB-IconFont-anchor CDB-Size-medium"></i>
           </a>
         </li>
@@ -53,7 +53,7 @@
       </ul>
     </div>
   </div>
-  <div class="CDB-Dashboard-bg"></div>
+  <div class="CDB-Dashboard-bg js-toggle-view"></div>
 
   <div class="CDB-Dashboard-menuHeaderMobile u-showMobile">
     <div class="CDB-Dashboard-menuLogo">

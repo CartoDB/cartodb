@@ -217,11 +217,11 @@ describe('widgets/category/category-widget-model', function () {
 
       it('should update ownFilter attr on dataview model', function () {
         this.widgetModel.set('locked', true);
-        expect(this.dataviewModel.disableFilter).toHaveBeenCalled();
-        expect(this.dataviewModel.enableFilter).not.toHaveBeenCalled();
+        expect(this.dataviewModel.enableFilter).toHaveBeenCalled();
+        expect(this.dataviewModel.disableFilter).not.toHaveBeenCalled();
 
         this.widgetModel.set('locked', false);
-        expect(this.dataviewModel.enableFilter).toHaveBeenCalled();
+        expect(this.dataviewModel.disableFilter).toHaveBeenCalled();
       });
     });
   });

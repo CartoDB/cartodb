@@ -5,7 +5,6 @@
   <title>Deep-Insights.js | Torque Time-Series Widget</title>
   <meta name=viewport content="width=device-width initial-scale=1">
   <link rel="stylesheet" href="../dist/themes/css/deep-insights.css" />
-  <script src="./local-config.js"></script>
   <script src="../dist/deep-insights.uncompressed.js"></script>
   <style type="text/css">
     html, body {
@@ -22,8 +21,8 @@
   <script>
     window.onload = function() {
       var cdbConfig = window.GLOBAL_CDB_CONFIG || {};
-      cdbConfig.maps_api_template = cdbConfig.maps_api_template || "http://localhost.lan:8181/user/{user}";
-      cdbConfig.user_name = cdbConfig.user_name || "orgowner";
+      cdbConfig.maps_api_template = "http://{user}.cartodb.com";
+      cdbConfig.user_name = "editor3";
       var vizJSON = {
         "title": "Torque Time-Series Widget",
         "description": null,
@@ -124,12 +123,12 @@
               "stat_tag": "4c07a352-892d-11e5-9380-080027880ca6",
               "sql_api_template": cdbConfig.maps_api_template,
               "tiler_protocol": "http",
-              "tiler_domain": "localhost.lan",
-              "tiler_port": "8181",
+              "tiler_domain": "cartodb.com",
+              "tiler_port": "",
               "sql_api_protocol": "http",
-              "sql_api_domain": "localhost.lan",
+              "sql_api_domain": "cartodb.com",
               "sql_api_endpoint": "/api/v1/sql",
-              "sql_api_port": 8080,
+              "sql_api_port": "",
               "visible": true,
               "user_name": cdbConfig.user_name,
               "maps_api_template": cdbConfig.maps_api_template,
@@ -206,7 +205,7 @@
               "x": 20,
               "y": 20
             },
-            "template": "<a href=\"#zoom_in\" class=\"zoom_in\">+</a> <a href=\"#zoom_out\" class=\"zoom_out\">-</a>"
+            "template": ""
           },
           {
             "type": "loader",
@@ -216,7 +215,7 @@
               "x": 20,
               "y": 150
             },
-            "template": "<div class=\"loader\" original-title=\"\"></div>"
+            "template": ""
           },
           {
             "type": "logo",

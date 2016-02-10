@@ -1,6 +1,7 @@
 // Text elements styles
 // ----------------------------------------------
 
+/*
 .CDB-Widget-textBigger { // 16 size
   @include text-overflow();
   font-size: $sFontSize-huge;
@@ -50,6 +51,7 @@
 .CDB-Widget-textSmaller--upper {
   text-transform: uppercase;
 }
+
 .CDB-Widget-textSmaller--noEllip {
   text-overflow: inherit;
   white-space: inherit;
@@ -69,4 +71,4 @@
   .CDB-Widget-textBigger--maxWidth {
     max-width: 225px;
   }
-}
+}*/

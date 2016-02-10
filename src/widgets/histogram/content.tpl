@@ -4,7 +4,7 @@
       <h3 class="CDB-Widget-textBig js-title"><%- title %></h3>
     </div>
   </div>
-  <dl class="CDB-Widget-info CDB-Widget-textSmaller CDB-Widget-textSmaller--upper">
+  <dl class="CDB-Widget-info CDB-Text CDB-Size-small u-secondaryTextColor is-upper">
     <dt class="CDB-Widget-infoCount js-nulls">0</dt><dd class="CDB-Widget-infoDescription">NULL ROWS</dd>
     <dt class="CDB-Widget-infoCount js-min">0</dt><dd class="CDB-Widget-infoDescription">MIN</dd>
     <dt class="CDB-Widget-infoCount js-avg">0</dt><dd class="CDB-Widget-infoDescription">AVG</dd>

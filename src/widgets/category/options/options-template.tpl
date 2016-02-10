@@ -1,7 +1,7 @@
 <% if (isSearchEnabled) { %>
-  <p class="CDB-Widget-textSmaller CDB-Widget-textSmaller--bold CDB-Widget-textSmaller--dark CDB-Widget-textSmaller--upper"><%- totalLocked %> selected</p>
+  <p class="CDB-Text is-semibold CDB-Size-small is-upper"><%- totalLocked %> selected</p>
 <% } else { %>
-  <p class="CDB-Widget-textSmaller CDB-Widget-textSmaller--bold CDB-Widget-textSmaller--dark CDB-Widget-textSmaller--upper">
+  <p class="CDB-Text is-semibold CDB-Size-small is-upper">
     <% if (isLocked) { %>
       <%- totalCats %> blocked <button class="CDB-Widget-link u-lSpace js-unlock">unlock</button>
     <% } else if (areAllRejected) { %>

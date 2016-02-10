@@ -14,13 +14,13 @@
       </div>
     </button>
   </div>
-  <dl class="CDB-Widget-info CDB-Widget-textSmaller CDB-Widget-textSmaller--upper">
+  <dl class="CDB-Widget-info CDB-Text CDB-Size-small u-secondaryTextColor is-upper">
     <dt class="CDB-Widget-infoCount"><%- nulls %></dt><dd class="CDB-Widget-infoDescription">null rows</dd>
   </dl>
 </div>
 <div class="CDB-Widget-content">
   <% if (_.isNumber(value)) { %>
-    <h4 class="CDB-Widget-textBigger CDB-Widget-textBigger--maxWidth <%- !isCollapsed ? 'js-value' : '' %>" title="<%- value %>">
+    <h4 class="CDB-Text CDB-Size-huge <%- !isCollapsed ? 'js-value' : '' %>" title="<%- value %>">
       <%- prefix %><%- value %><%- suffix %>
     </h4>
   <% } else { %>

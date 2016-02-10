@@ -296,7 +296,7 @@ describe('dataviews/dataview-model-base', function () {
       // Set up a new data provider
       var dataProvider = new Backbone.Model();
       dataProvider.getData = jasmine.createSpy('getData').and.callFake(function () {
-        return [ { a: 'b' }, { b: 'c' }];
+        return [{ a: 'b' }, { b: 'c' }];
       });
 
       dataProvider.generateDataForDataview = jasmine.createSpy('generateDataForDataview').and.callFake(function (dataview, data) {

@@ -102,7 +102,6 @@ describe('widgets/category/category-widget-model', function () {
         expect(data.at(1).get('selected')).toBeFalsy();
         expect(data.at(2).get('selected')).toBeFalsy();
       });
-
     });
 
     describe('locked collection helpers', function () {

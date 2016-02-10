@@ -22,7 +22,8 @@ module.exports = function (grunt) {
     jasmine: jasmineCfg,
     sass: require('./grunt-tasks/scss'),
     uglify: require('./grunt-tasks/uglify'),
-    watch: require('./grunt-tasks/watch')
+    watch: require('./grunt-tasks/watch'),
+    'gh-pages': require('./grunt-tasks/gh-pages')
   });
 
   // required for browserify to use watch files instead
@@ -85,4 +86,5 @@ module.exports = function (grunt) {
   grunt.registerTask('test', ['verify-dependencies', 'lint'].concat(baseTasks.concat([
     'jasmine'
   ])));
+  grunt.registerTask('publish', ['build', 'gh-pages']);
 };

@@ -1,2 +1,2 @@
 #!/bin/sh
-VVERBOSE=true QUEUE=imports,users,geocodings,synchronizations,tracker rake environment resque:work
+QUEUE=imports,users,geocodings,synchronizations,tracker rake environment resque:work

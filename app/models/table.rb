@@ -572,7 +572,13 @@ class Table
       rescue => e
         CartoDB::Logger.info 'Table#after_destroy error', "maybe table #{qualified_table_name} doesn't exist: #{e.inspect}"
       end
-      user_database.run(%{SELECT CDB_DropOverviews('#{qualified_table_name}'::regclass)})
+      begin
+        # TODO: this is not very elegant, we could detect the existence of the
+        # table some otherway or hava a CDB_DropOverviews(text)  function...
+        user_database.run(%{SELECT CDB_DropOverviews('#{qualified_table_name}'::regclass)})
+      rescue Sequel::DatabaseError => e
+        raise unless e.to_s.match /relation .+ does not exist/
+      end
       user_database.run(%{DROP TABLE IF EXISTS #{qualified_table_name}})
     end
   end

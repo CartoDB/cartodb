@@ -16,9 +16,7 @@ var GeoJSONDataProvider = function (vectorLayerView, layerIndex) {
 GeoJSONDataProvider.prototype._dataGeneratorsForDataviews = {
   category: function (features, options) {
     var columnName = options.column;
-    // TODO: enableFilter is wrong and it should be actually be called
-    // disableFilter, that's why we use !options.enableFilter here
-    var filterEnabled = !options.enableFilter;
+    var filterEnabled = options.filterEnabled;
     var numberOfCategories = 5;
 
     var sortedGroups;

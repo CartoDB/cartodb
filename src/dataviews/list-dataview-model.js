@@ -1,11 +1,16 @@
+var _ = require('underscore');
 var Backbone = require('backbone');
 var DataviewModelBase = require('./dataview-model-base');
 
 module.exports = DataviewModelBase.extend({
-  options: {
-    page: 0,
-    per_page: 100
-  },
+
+  defaults: _.extend(
+    {
+      type: 'list',
+      columns: []
+    },
+    DataviewModelBase.prototype.defaults
+  ),
 
   initialize: function (attrs, opts) {
     DataviewModelBase.prototype.initialize.call(this, attrs, opts);
@@ -37,4 +42,12 @@ module.exports = DataviewModelBase.extend({
       }
     };
   }
-});
+},
+
+  // Class props
+  {
+    ATTRS_NAMES: DataviewModelBase.ATTRS_NAMES.concat([
+      'columns'
+    ])
+  }
+);

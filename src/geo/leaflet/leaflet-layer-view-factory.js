@@ -5,11 +5,12 @@ var LeafletPlainLayerView = require('./leaflet-plain-layer-view');
 var LeafletGmapsTiledLayerView = require('./leaflet-gmaps-tiled-layer-view');
 var LeafletCartoDBLayerGroupView = require('./leaflet-cartodb-layer-group-view');
 var LeafletCartoDBVectorLayerGroupView = require('./leaflet-cartodb-vector-layer-group-view');
+var config = require('cdb.config');
 
 var LayerGroupViewConstructor = function (layerGroupModel, mapModel) {
   // TODO: We will need to determine this dinamically.
   // Setting it to `true` for now for testing purposes.
-  var vectorRendering = true;
+  var vectorRendering = config.FORCE_CLIENT_SIDE_RENDERING;
   if (vectorRendering) {
     var layerView = new LeafletCartoDBVectorLayerGroupView(layerGroupModel, mapModel);
 

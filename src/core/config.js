@@ -4,7 +4,7 @@ var Backbone = require('backbone');
  * global configuration
  */
 var Config = Backbone.Model.extend({
-  VERSION: 2,
+  VERSION: 4,
 
   initialize: function() {
     this.modules = new Backbone.Collection();
@@ -18,47 +18,8 @@ var Config = Backbone.Model.extend({
   REPORT_ERROR_URL: '/api/v0/error',
   ERROR_TRACK_ENABLED: false,
 
-  /**
-   * returns the base url to compose the final url
-   * http://user.cartodb.com/
-   */
-  getSqlApiBaseUrl: function() {
-    var url;
-    if (this.get('sql_api_template')) {
-      url = this.get("sql_api_template").replace('{user}', this.get('user_name'));
-    } else {
-      url = this.get('sql_api_protocol') + '://' +
-        this.get('user_name') + '.' +
-        this.get('sql_api_domain') + ':' +
-        this.get('sql_api_port');
-    }
-    return url;
-  },
-
-  /**
-   * returns the full sql api url, including the api endpoint
-   * allos to specify the version
-   * http://user.cartodb.com/api/v1/sql
-   */
-  getSqlApiUrl: function(version) {
-    version = version || 'v2';
-    return this.getSqlApiBaseUrl() + "/api/" + version + "/sql";
-  },
-
-  /**
-   *  returns the maps api host, removing user template
-   *  and the protocol.
-   *  cartodb.com:3333
-   */
-  getMapsApiHost: function() {
-    var url;
-    var mapsApiTemplate = this.get('maps_api_template');
-    if (mapsApiTemplate) {
-      url = mapsApiTemplate.replace(/https?:\/\/{user}\./, '');
-    }
-    return url;
-  }
-
+  // Forces rendering in the client
+  FORCE_CLIENT_SIDE_RENDERING: true
 });
 
 module.exports = Config;

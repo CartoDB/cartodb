@@ -2,6 +2,7 @@ var $ = require('jquery');
 var _ = require('underscore');
 var Backbone = require('backbone');
 var View = require('../../../src/core/view');
+var config = require('cdb.config');
 
 // required due to implicit dependency in vis --> map-view
 var cdb = require('cdb');
@@ -16,6 +17,8 @@ require('../../../src/vis/layers'); // Layers.register calls
 
 describe('vis/vis', function () {
   beforeEach(function () {
+    config.FORCE_CLIENT_SIDE_RENDERING = false;
+
     this.container = $('<div>').css('height', '200px');
     this.mapConfig = {
       updated_at: 'cachebuster',
@@ -565,7 +568,7 @@ describe('vis/vis', function () {
       expect(tooltip.options.layer).toEqual(layer);
     });
 
-    it('should add an overlay to the first layer and enable interaction', function (done) {
+    it('should add an overlay to the first layer and enable interaction', function () {
       var vizjson = {
         layers: [
           {
@@ -599,18 +602,16 @@ describe('vis/vis', function () {
           force_cors: true // This is sometimes set in the editor
         }
       };
-      createVis('map', vizjson, {})
-        .done(function (vis, layers) {
-          var tooltip = vis.addOverlay({
-            type: 'tooltip',
-            template: 'test'
-          });
-          var layerView = vis.getLayers()[1];
 
-          expect(tooltip.options.layer).toEqual(layerView);
-          done();
-        });
+      this.vis.load(vizjson);
+      var tooltip = this.vis.addOverlay({
+        type: 'tooltip',
+        template: 'test'
+      });
+
+      var layerView = this.vis.getLayers()[1];
+
+      expect(tooltip.options.layer).toEqual(layerView);
     });
   });
-
 });

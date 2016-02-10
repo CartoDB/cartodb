@@ -23,7 +23,7 @@
     margin-right: 26px;
   }
 }
-.CDB-Dashboard-menuInfo--active {
+.CDB-Dashboard-menuInfo.is-active {
   display: none;
 }
 .CDB-Dashboard-menuInner {
@@ -84,7 +84,7 @@
   .CDB-Dashboard-menuInfo {
     display: none;
   }
-  .CDB-Dashboard-menuInfo--active {
+  .CDB-Dashboard-menuInfo.is-active {
     display: block;
     opacity: 0.24;
   }

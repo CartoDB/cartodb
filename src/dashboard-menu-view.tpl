@@ -13,7 +13,7 @@
           </div>
         </button>
       </div>
-      <div class="CDB-Dashboard-menuInfo CDB-Dashboard-menuInfo--active">
+      <div class="CDB-Dashboard-menuInfo is-active">
         <button class="CDB-Shape CDB-Shape--medium js-toggle-view">
           <div class="CDB-Shape-threePoints is-horizontal is-medium">
             <div class="CDB-Shape-threePointsItem is-round"></div>

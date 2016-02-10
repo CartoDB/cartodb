@@ -5,6 +5,7 @@ describe('widgets/histogram/histogram-widget-model', function () {
   beforeEach(function () {
     var vis = specHelper.createDefaultVis();
     this.dataviewModel = vis.dataviews.createHistogramModel(vis.map.layers.first(), {
+      column: 'col'
     });
     this.widgetModel = new HistogramWidgetModel({}, {
       dataviewModel: this.dataviewModel

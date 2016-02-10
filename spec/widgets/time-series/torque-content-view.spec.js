@@ -5,7 +5,9 @@ var WidgetModel = require('../../../src/widgets/widget-model');
 describe('widgets/time-series/torque-content-view', function () {
   beforeEach(function () {
     var vis = specHelper.createDefaultVis();
-    this.dataviewModel = vis.dataviews.createHistogramModel(vis.map.layers.first(), {});
+    this.dataviewModel = vis.dataviews.createHistogramModel(vis.map.layers.first(), {
+      column: 'col'
+    });
     this.dataviewModel.sync = function (method, model, options) {
       this.options = options;
     }.bind(this);

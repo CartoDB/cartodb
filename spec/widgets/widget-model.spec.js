@@ -1,10 +1,15 @@
-var cdb = require('cartodb.js');
+var specHelper = require('../spec-helper');
 var WidgetModel = require('../../src/widgets/widget-model');
 
 describe('widgets/widget-model', function () {
   beforeEach(function () {
-    var dataviewModel = new cdb.core.Model();
-    dataviewModel.remove = jasmine.createSpy('dataviewModel.remove');
+    var vis = specHelper.createDefaultVis();
+    // Use a category dataview as example
+    var dataviewModel = vis.dataviews.createCategoryModel(vis.map.layers.first(), {
+      column: 'col'
+    });
+    dataviewModel.remove = spyOn(dataviewModel, 'remove');
+
     this.model = new WidgetModel(null, {
       dataviewModel: dataviewModel
     });
@@ -13,9 +18,7 @@ describe('widgets/widget-model', function () {
   describe('.update', function () {
     beforeEach(function () {
       this.widgetChangeSpy = jasmine.createSpy('widgetModel change');
-      this.dataviewModelChangeSpy = jasmine.createSpy('dataviewModel change');
       this.model.on('change', this.widgetChangeSpy);
-      this.model.dataviewModel.on('change', this.dataviewModelChangeSpy);
     });
 
     describe('when given empty object', function () {
@@ -30,7 +33,7 @@ describe('widgets/widget-model', function () {
 
       it('should not change anything', function () {
         expect(this.widgetChangeSpy).not.toHaveBeenCalled();
-        expect(this.dataviewModelChangeSpy).not.toHaveBeenCalled();
+        expect(this.model.dataviewModel.changedAttributes()).toBe(false);
       });
     });
 
@@ -42,7 +45,7 @@ describe('widgets/widget-model', function () {
         this.result = this.model.update({
           title: 'new title',
           column: 'col',
-          operation: 'count',
+          aggregation: 'count',
           invalid: 'attr, should not be set'
         });
       });
@@ -68,21 +71,20 @@ describe('widgets/widget-model', function () {
       });
 
       it('should not update dataviewModel', function () {
-        expect(this.dataviewModelChangeSpy).not.toHaveBeenCalled();
+        expect(this.model.dataviewModel.changedAttributes()).toBe(false);
       });
     });
 
     describe('when there are both widget and dataview attrs names defined', function () {
       beforeEach(function () {
         this.model.set({
-          attrsNames: ['title'],
-          dataviewModelAttrsNames: ['column', 'operation']
+          attrsNames: ['title']
         }, { silent: true });
         this.result = this.model.update({
           title: 'new title',
-          column: 'col',
-          operation: 'count',
-          invalid: 'attr, should not be set'
+          column: 'other',
+          aggregation: 'sum',
+          foo: 'attr, should not be set'
         });
       });
 
@@ -90,10 +92,16 @@ describe('widgets/widget-model', function () {
         expect(this.result).toBe(true);
       });
 
-      it('should update the attrs', function () {
+      it('should update the widget', function () {
+        expect(this.model.changedAttributes()).toEqual({
+          title: 'new title'
+        });
+      });
+
+      it('should update the dataview model attrs', function () {
         expect(this.model.dataviewModel.changedAttributes()).toEqual({
-          column: 'col',
-          operation: 'count'
+          column: 'other',
+          aggregation: 'sum'
         });
       });
     });

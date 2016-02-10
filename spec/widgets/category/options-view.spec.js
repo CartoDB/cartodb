@@ -5,7 +5,9 @@ var OptionsView = require('../../../src/widgets/category/options/options-view');
 describe('widgets/category/options-view', function () {
   beforeEach(function () {
     var vis = specHelper.createDefaultVis();
-    this.dataviewModel = vis.dataviews.createCategoryModel(vis.map.layers.first(), {});
+    this.dataviewModel = vis.dataviews.createCategoryModel(vis.map.layers.first(), {
+      column: 'col'
+    });
     this.widgetModel = new CategoryWidgetModel({}, {
       dataviewModel: this.dataviewModel
     });

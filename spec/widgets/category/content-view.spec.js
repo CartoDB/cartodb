@@ -5,7 +5,9 @@ var CategoryContentView = require('../../../src/widgets/category/content-view');
 describe('widgets/category/content-view', function () {
   beforeEach(function () {
     var vis = specHelper.createDefaultVis();
-    this.dataviewModel = vis.dataviews.createCategoryModel(vis.map.layers.first(), {});
+    this.dataviewModel = vis.dataviews.createCategoryModel(vis.map.layers.first(), {
+      column: 'col'
+    });
     this.model = new CategoryWidgetModel({
       title: 'Categories of something'
     }, {

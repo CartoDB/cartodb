@@ -5,7 +5,9 @@ var WidgetModel = require('../../../src/widgets/widget-model');
 describe('widgets/time-series/content-view', function () {
   beforeEach(function () {
     var vis = specHelper.createDefaultVis();
-    this.dataviewModel = vis.dataviews.createHistogramModel(vis.map.layers.first(), {});
+    this.dataviewModel = vis.dataviews.createHistogramModel(vis.map.layers.first(), {
+      column: 'col'
+    });
     this.dataviewModel.sync = function (method, dataviewModel, options) {
       this.options = options;
     }.bind(this);

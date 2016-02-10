@@ -5,7 +5,9 @@ var StatsView = require('../../../src/widgets/category/stats/stats-view');
 describe('widgets/category/stats-view', function () {
   beforeEach(function () {
     var vis = specHelper.createDefaultVis();
-    this.dataviewModel = vis.dataviews.createCategoryModel(vis.map.layers.first(), {});
+    this.dataviewModel = vis.dataviews.createCategoryModel(vis.map.layers.first(), {
+      column: 'col'
+    });
     this.widgetModel = new CategoryWidgetModel({}, {
       dataviewModel: this.dataviewModel
     });

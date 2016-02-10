@@ -10,12 +10,18 @@ require_relative '../../doubles/support_tables.rb'
 include CartoDB
 
 describe Visualization::Member do
-  before do
+  before(:all) do
     @db = Rails::Sequel.connection
     Sequel.extension(:pagination)
 
     Visualization.repository  = DataRepository::Backend::Sequel.new(@db, :visualizations)
     Overlay.repository        = DataRepository.new # In-memory storage
+
+    @user = FactoryGirl.create(:valid_user)
+  end
+
+  after(:all) do
+    @user.destroy
   end
 
   before(:each) do
@@ -35,7 +41,6 @@ describe Visualization::Member do
 
     support_tables_mock = Doubles::Visualization::SupportTables.new
     Visualization::Relator.any_instance.stubs(:support_tables).returns(support_tables_mock)
-
   end
 
   describe '#initialize' do
@@ -44,7 +49,7 @@ describe Visualization::Member do
       member.should be_an_instance_of Visualization::Member
       member.id.should_not be_nil
     end
-  end #initialize
+  end
 
   describe '#store' do
 

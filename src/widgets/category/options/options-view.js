@@ -23,8 +23,8 @@ module.exports = cdb.core.View.extend({
   render: function () {
     this.$el.html(
       template({
-        acceptedCats: this.widgetModel.sizeRejectedCatsInData(),
-        rejectedCats: this.widgetModel.sizeAcceptedCatsInData(),
+        acceptedCats: this.widgetModel.sizeAcceptedCatsInData(),
+        rejectedCats: this.widgetModel.sizeRejectedCatsInData(),
         areAllRejected: this.dataviewModel.filter.areAllRejected(),
         isLocked: this.widgetModel.isLocked(),
         canBeLocked: this.widgetModel.canBeLocked(),

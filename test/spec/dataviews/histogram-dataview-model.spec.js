@@ -26,12 +26,20 @@ describe('dataviews/histogram-dataview-model', function () {
     expect(this.map.reload).toHaveBeenCalled();
   });
 
-  it('should submit the bbox if enabled', function () {
-    this.model.set({ boundingBox: 1234 });
-    expect(this.model.url()).not.toContain('bbox=');
+  it('should include the bbox after the first fetch', function () {
+    this.model.set('url', 'http://example.com', { silent: true });
+    this.model.set('boundingBox', 'fakeBoundingBox');
+    spyOn(this.model, 'sync').and.callFake(function (args) {
+      this.model.set('data', 'something');
+    }.bind(this));
 
-    this.model.set({ submitBBox: true });
-    expect(this.model.url()).toContain('bbox=1234');
+    // url doesn't include bbox the first time
+    expect(this.model.url()).toEqual('http://example.com?bins=10');
+
+    this.model.fetch();
+
+    // url now has the bbox
+    expect(this.model.url()).toEqual('http://example.com?bins=10&bbox=fakeBoundingBox');
   });
 
   it('should parse the bins', function () {

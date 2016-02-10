@@ -9,8 +9,8 @@ shared_context 'users helper' do
 
   before(:all) do
     # TODO: Remove this and either all use the global instances or create a true general context with sample users
-    @user1 = $user_1
-    @user2 = $user_2
+    @user1 = FactoryGirl.create(:valid_user, private_tables_enabled: true)
+    @user2 = FactoryGirl.create(:valid_user, private_tables_enabled: true)
   end
 
   before(:each) do

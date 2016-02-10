@@ -146,7 +146,7 @@ describe('dataviews/category-dataview-model', function () {
     expect(this.model._fetch.calls.count()).toEqual(1);
   });
 
-  fdescribe('.parse', function () {
+  describe('.parse', function () {
     it('should change internal data collection when parse is called', function () {
       var resetSpy = jasmine.createSpy('reset');
       this.model._data.bind('reset', resetSpy);

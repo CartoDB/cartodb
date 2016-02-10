@@ -99,12 +99,6 @@ describe('dataviews/dataview-model-base', function () {
     });
   });
 
-  it('should trigger loading event when fetch is launched', function () {
-    spyOn(this.model, 'trigger');
-    this.model.fetch();
-    expect(this.model.trigger).toHaveBeenCalledWith('loading', this.model);
-  });
-
   describe('bindings to windhsaftMap', function () {
     beforeEach(function () {
       this.windshaftMap.getDataviewURL = function () {};
@@ -243,8 +237,6 @@ describe('dataviews/dataview-model-base', function () {
   describe('when the layer has a data provider', function () {
     it('it should get data from that provider when features changed', function () {
       var layer = new Backbone.Model();
-      var syncCallback = jasmine.createSpy('syncCallback');
-
       var dataProvider = new Backbone.Model();
       dataProvider.generateDataForDataview = function (dataview, data) {
         return data[0];
@@ -258,22 +250,18 @@ describe('dataviews/dataview-model-base', function () {
         windshaftMap: this.windshaftMap,
         layer: layer
       });
-      dataview.bind('sync', syncCallback);
 
       // The dataProvider triggers a featuresChanged event with some features
       dataProvider.trigger('featuresChanged', [{ a: 'b' }]);
 
       // The dataview has been updated and events have been triggered
       expect(dataview.get('a')).toEqual('b');
-      expect(syncCallback).toHaveBeenCalled();
-      syncCallback.calls.reset();
 
       // The dataProvider triggers a featuresChanged event with some features
       dataProvider.trigger('featuresChanged', [{ c: 'd' }]);
 
       // The dataview has been updated and events have been triggered
       expect(dataview.get('c')).toEqual('d');
-      expect(syncCallback).toHaveBeenCalled();
     });
   });
 
@@ -290,6 +278,59 @@ describe('dataviews/dataview-model-base', function () {
       expect(this.model.changedAttributes()).toEqual({
         sync_on_bbox_change: false
       });
+    });
+  });
+
+  describe('.fetch', function () {
+    it('should fetch from the url by default', function () {
+      spyOn(this.model, 'trigger');
+      this.model.fetch();
+      expect(this.model.trigger).toHaveBeenCalledWith('loading', this.model);
+    });
+
+    it('should get data from a data provider if present', function () {
+      this.layer = new Backbone.Model({
+        id: 'layerId'
+      });
+
+      // Set up a new data provider
+      var dataProvider = new Backbone.Model();
+      dataProvider.getData = jasmine.createSpy('getData').and.callFake(function () {
+        return [ { a: 'b' }, { b: 'c' }];
+      });
+
+      dataProvider.generateDataForDataview = jasmine.createSpy('generateDataForDataview').and.callFake(function (dataview, data) {
+        return {
+          something: 'else'
+        };
+      });
+
+      // Layer has a dataProvider
+      this.layer.getDataProvider = jasmine.createSpy('getDataProvider').and.returnValue(dataProvider);
+
+      var dataview = new DataviewModelBase({ // eslint-disable-line
+        column: 'columnName'
+      }, {
+        map: this.map,
+        windshaftMap: this.windshaftMap,
+        layer: this.layer
+      });
+
+      spyOn(dataview, 'parse').and.callFake(function () {
+        return {
+          else: 'something'
+        };
+      });
+
+      var syncCallback = jasmine.createSpy('syncCallback');
+      dataview.bind('sync', syncCallback);
+
+      dataview.fetch();
+
+      expect(dataProvider.generateDataForDataview).toHaveBeenCalledWith(dataview, [{ a: 'b' }, { b: 'c' }]);
+      expect(dataview.parse).toHaveBeenCalledWith({ something: 'else' });
+      expect(dataview.get('else')).toEqual('something');
+      expect(syncCallback).toHaveBeenCalled();
     });
   });
 });

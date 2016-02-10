@@ -119,6 +119,10 @@ GeoJSONDataProvider.prototype.applyFilter = function (columnName, filter) {
   this._vectorLayerView.applyFilter(this._layerIndex, filterType, filterOptions);
 };
 
+GeoJSONDataProvider.prototype.getData = function () {
+  return this._vectorLayerView.getFeatures()[this._layerIndex];
+};
+
 _.extend(GeoJSONDataProvider.prototype, Backbone.Events);
 
 module.exports = GeoJSONDataProvider;

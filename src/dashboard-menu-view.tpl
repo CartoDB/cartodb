@@ -36,9 +36,9 @@
         </li>
       </ul>
       <div class="CDB-Dashboard-menuTexts CDB-Dashboard-hideMobile">
-        <p class="CDB-Text CDB-Size-small is-upper u-altTextColor u-bSpace--m">UPDATED <%- updatedAt %></p>
-        <h1 class="CDB-Dashboard-menuTitle CDB-Text CDB-Size-huge"><%- title %></h1>
-        <h2 class="CDB-Text CDB-Size-large is-light u-secondaryTextColor"><%- description %></h2>
+        <p class="CDB-Text CDB-Size-small is-upper u-altTextColor u-bSpace--m js-timeAgo">UPDATED <%- updatedAt %></p>
+        <h1 class="CDB-Dashboard-menuTitle CDB-Text CDB-Size-huge js-title"><%- title %></h1>
+        <h2 class="CDB-Text CDB-Size-large is-light u-secondaryTextColor js-description"><%- description %></h2>
       </div>
     </div>
 

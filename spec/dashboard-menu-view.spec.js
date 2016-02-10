@@ -18,20 +18,16 @@ describe('../src/dashboard-menu-view', function () {
   });
 
   it('should render properly', function () {
-    expect(this.view.$el.find('.CDB-Dashboard-menuTitle').text()).toEqual('Mapaza');
-    expect(this.view.$el.find('.CDB-Dashboard-menuDescription').text()).toEqual('Lorem ipsum...');
-    expect(this.view.$el.find('.CDB-Dashboard-menuUpdate').text()).toEqual('UPDATED a day ago');
+    expect(this.view.$el.find('.js-title').text()).toEqual('Mapaza');
+    expect(this.view.$el.find('.js-description').text()).toEqual('Lorem ipsum...');
+    expect(this.view.$el.find('.js-timeAgo').text()).toEqual('UPDATED a day ago');
   });
 
   it('should collapse the view', function () {
     expect(this.view.$el.hasClass('is-active')).toBeFalsy();
-
-    this.view.$el.find('.js-toggle-view-link').first().click();
-
+    this.view.$el.find('.js-toggle-view').first().click();
     expect(this.view.$el.hasClass('is-active')).toBeTruthy();
-
-    this.view.$el.find('.js-toggle-view-link').first().click();
-
+    this.view.$el.find('.js-toggle-view').first().click();
     expect(this.view.$el.hasClass('is-active')).toBeFalsy();
   });
 });

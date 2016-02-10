@@ -65,14 +65,17 @@
               "type": "time-series",
               "layer_id": "101e17db-1466-4842-8eef-f81da32f48db",
               "options": {
-                "column": "end_at"
+                "column": "end_at",
+                "bins": 256,
+                "start": "2013-02-25T00:00:00Z",
+                "end": "2013-02-28T01:00:00Z"
               }
             }
           ],
 
           "datasource": {
-            "user_name": "orgowner",
-            "maps_api_template": "http://localhost.lan:8181/user/{user}",
+            "user_name": "editor3",
+            "maps_api_template": "http://{user}.cartodb.com",
             "stat_tag": "84ec6844-4b4b-11e5-9c1d-080027880ca6",
             "force_cors": true // This is sometimes set in the editor
           },
@@ -128,9 +131,9 @@
             {
               "type": "layergroup",
               "options": {
-                "user_name": "orgowner",
-                "maps_api_template": "http://localhost.lan:8181/user/{user}",
-                "sql_api_template": "http://localhost.lan:8181/user/{user}",
+                "user_name": "editor3",
+                "maps_api_template": "http://{user}.cartodb.com",
+                "sql_api_template": "http://{user}.cartodb.com",
                 "layer_definition": {
                   "stat_tag": "84ec6844-4b4b-11e5-9c1d-080027880ca6",
                   "version": "1.0.1",
@@ -176,9 +179,9 @@
                       "order": 1,
                       "visible": true,
                       "options": {
-                        "sql": "select * from districtes_barcelona",
+                        "sql": "select * from districtes_barna",
                         "layer_name": "Distritos",
-                        "cartocss": "/** simple visualization */\n\n#districtes_barcelona{\n  polygon-fill: #FF6600;\n  polygon-opacity: 0.7;\n  line-color: #FFF;\n  line-width: 0.5;\n  line-opacity: 1;\n}",
+                        "cartocss": "/** simple visualization */\n\n#districtes_barna{\n  polygon-fill: #FF6600;\n  polygon-opacity: 0.7;\n  line-color: #FFF;\n  line-width: 0.5;\n  line-opacity: 1;\n}",
                         "cartocss_version": "2.1.1",
                         "interactivity": "cartodb_id",
                         "table_name": "\"\".",
@@ -218,9 +221,9 @@
                       "order": 2,
                       "visible": true,
                       "options": {
-                        "sql": "select * from arboles",
+                        "sql": "select * from arboles_barna",
                         "layer_name": "Árboles",
-                        "cartocss": "/** simple visualization */\n\n#arboles{\n  marker-fill-opacity: 0.9;\n  marker-line-color: #FFF;\n  marker-line-width: 1;\n  marker-line-opacity: 1;\n  marker-placement: point;\n  marker-type: ellipse;\n  marker-width: 10;\n  marker-fill: green;\n  marker-allow-overlap: true;\n}",
+                        "cartocss": "/** simple visualization */\n\n#arboles_barna{\n  marker-fill-opacity: 0.9;\n  marker-line-color: #FFF;\n  marker-line-width: 1;\n  marker-line-opacity: 1;\n  marker-placement: point;\n  marker-type: ellipse;\n  marker-width: 10;\n  marker-fill: green;\n  marker-allow-overlap: true;\n}",
                         "cartocss_version": "2.1.1",
                         "interactivity": "cartodb_id",
                         "table_name": "\"\".",
@@ -315,7 +318,7 @@
                 "x": 20,
                 "y": 20
               },
-              "template": "<a href=\"#zoom_in\" class=\"zoom_in\">+</a> <a href=\"#zoom_out\" class=\"zoom_out\">-</a>"
+              "template": ""
             },
             {
               "type": "loader",
@@ -325,7 +328,7 @@
                 "x": 20,
                 "y": 150
               },
-              "template": "<div class=\"loader\" original-title=\"\"></div>"
+              "template": ""
             },
             {
               "type": "logo",

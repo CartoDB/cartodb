@@ -1,5 +1,6 @@
 var CategoryWidgetModel = require('../../../src/widgets/category/category-widget-model');
 var specHelper = require('../../spec-helper');
+var _ = require('underscore');
 
 describe('widgets/category/category-widget-model', function () {
   beforeEach(function () {
@@ -29,6 +30,23 @@ describe('widgets/category/category-widget-model', function () {
       it('should enable dataview', function () {
         expect(this.widgetModel.dataviewModel.get('enabled')).toBe(true);
       });
+    });
+  });
+
+  describe('search state', function () {
+    beforeEach(function () {
+      this.dataviewModel.filter.accept(['hey']);
+      this.dataviewModel._searchModel.setData([{ name: 'hey' }, { name: 'vamos' }, { name: 'neno' }]);
+      this.dataviewModel.trigger('change:searchData');
+    });
+
+    it('should check if search results are already selected or not', function () {
+      var data = this.dataviewModel.getSearchResult();
+      expect(data.size()).toBe(3);
+      var selectedCategories = data.where({ selected: true });
+      var selectedCategory = selectedCategories[0];
+      expect(_.size(selectedCategories)).toBe(1);
+      expect(selectedCategory.get('name')).toBe('hey');
     });
   });
 
@@ -84,23 +102,6 @@ describe('widgets/category/category-widget-model', function () {
         it('should disable colors', function () {
           expect(this.widgetModel.isColorApplied()).toBe(false);
         });
-      });
-    });
-
-    describe('search state', function () {
-      beforeEach(function () {
-        this.dataviewModel.filter.accept(['Hey']);
-        this.dataviewModel._searchModel.setData([{ name: 'Hey' }, { name: 'Vamos' }, { name: 'Neno' }]);
-        this.dataviewModel.trigger('change:searchData');
-      });
-
-      it('should check if search results are already selected or not', function () {
-        var data = this.dataviewModel.getSearchResult();
-        expect(data.size()).toBe(3);
-        expect(data.at(0).get('selected')).toBeTruthy();
-        expect(data.at(0).get('name')).toBe('Hey');
-        expect(data.at(1).get('selected')).toBeFalsy();
-        expect(data.at(2).get('selected')).toBeFalsy();
       });
     });
 

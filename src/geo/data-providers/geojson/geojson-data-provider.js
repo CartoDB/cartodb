@@ -23,27 +23,13 @@ GeoJSONDataProvider.prototype._dataGeneratorsForDataviews = {
     if (options.own_filter === 1) {
       end = filter.getMax(columnName);
       start = filter.getMin(columnName);
-      bins = d3.layout.histogram().bins(options.data.length)(filter.getValues().map(function (f) { return f.properties[options.column] }));
+      bins = d3.layout.histogram().bins(numberOfBins)(filter.getValues().map(function (f) { return f.properties[options.column] }));
       width = (end - start) / options.data.length;
     } else {
       end = filter.getMax(columnName);
       start = filter.getMin(columnName);
       width = (end - start) / options.bins;
-      filter._createDimension(columnName)
-      bins = []
-      var entered = false
-      filter.dimensions[columnName].group(function (f) { 
-        if(!entered){
-          bins = []
-          for (var i = 0; i < numberOfBins; i++){
-            bins[i] = []
-          }
-          entered = true
-        }
-        var binIndex = Math.floor(f / width) 
-        if (typeof bins[binIndex] === 'undefined' || bins[binIndex].constructor !== Array) bins[binIndex] = []
-        bins[binIndex].push(f)
-      }).top(Infinity)
+      bins = d3.layout.histogram().bins(numberOfBins)(filter.getValues(false, columnName).map(function (f) { return f.properties[options.column] }));
     }
     bins = bins.map(function (bin, index) {
       return {

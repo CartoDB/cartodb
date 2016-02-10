@@ -257,7 +257,7 @@ describe Visualization::Member do
           privacy: Visualization::Member::PRIVACY_PUBLIC,
           name: 'test',
           type: Visualization::Member::TYPE_CANONICAL,
-          user_id: $user_1.id
+          user_id: @user.id
       )
       visualization.store
 
@@ -307,7 +307,7 @@ describe Visualization::Member do
       visualization.has_permission?(user4_mock, Visualization::Member::PERMISSION_READONLY).should eq false
       visualization.has_permission?(user4_mock, Visualization::Member::PERMISSION_READWRITE).should eq false
 
-      delete_user_data($user_1)
+      delete_user_data(@user)
     end
   end
 
@@ -559,13 +559,13 @@ describe Visualization::Member do
   end
 
   it 'should not allow to change permission from the outside' do
-    member = Visualization::Member.new(random_attributes_for_vis_member({user_id: $user_1.id}))
+    member = Visualization::Member.new(random_attributes_for_vis_member({user_id: @user.id}))
     member.store
     member = Visualization::Member.new(id: member.id).fetch
     member.permission.should_not be nil
     member.permission_id = UUIDTools::UUID.timestamp_create.to_s
     member.valid?.should eq false
-    delete_user_data($user_1)
+    delete_user_data(@user)
   end
 
   describe '#likes' do

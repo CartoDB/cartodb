@@ -16,7 +16,7 @@ module.exports = DataviewModelBase.extend({
   defaults: _.extend(
     {
       type: 'category',
-      enableFilter: true,
+      filterEnabled: false,
       allCategoryNames: [] // all (new + previously accepted), updated on data fetch (see parse)
     },
     DataviewModelBase.prototype.defaults
@@ -28,7 +28,7 @@ module.exports = DataviewModelBase.extend({
       params.push('bbox=' + this.get('boundingBox'));
     }
 
-    params.push('own_filter=' + (this.get('enableFilter') ? 0 : 1));
+    params.push('own_filter=' + (this.get('filterEnabled') ? 1 : 0));
 
     return this.get('url') + '?' + params.join('&');
   },
@@ -96,11 +96,11 @@ module.exports = DataviewModelBase.extend({
   },
 
   enableFilter: function () {
-    this.set('enableFilter', true);
+    this.set('filterEnabled', true);
   },
 
   disableFilter: function () {
-    this.set('enableFilter', false);
+    this.set('filterEnabled', false);
   },
 
   // Search model helper methods //
@@ -196,8 +196,8 @@ module.exports = DataviewModelBase.extend({
       });
     }, this);
 
-    // Only accepted categories should appear when enableFilter is false
-    if (!this.get('enableFilter')) {
+    // Only accepted categories should appear when filterEnabled is true
+    if (this.get('filterEnabled')) {
       // Add accepted items that are not present in the categories data
       this.filter.acceptedCategories.each(function (mdl) {
         var category = mdl.get('name');

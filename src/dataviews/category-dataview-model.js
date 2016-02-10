@@ -15,10 +15,9 @@ module.exports = DataviewModelBase.extend({
 
   defaults: _.extend(
     {
-      enableFilter: true,
-      allCategoryNames: [], // all (new + previously accepted), updated on data fetch (see parse)
-      suffix: '',
-      prefix: ''
+      type: 'category',
+      filterEnabled: false,
+      allCategoryNames: [] // all (new + previously accepted), updated on data fetch (see parse)
     },
     DataviewModelBase.prototype.defaults
   ),
@@ -29,7 +28,7 @@ module.exports = DataviewModelBase.extend({
       params.push('bbox=' + this.get('boundingBox'));
     }
 
-    params.push('own_filter=' + (this.get('enableFilter') ? 0 : 1));
+    params.push('own_filter=' + (this.get('filterEnabled') ? 1 : 0));
 
     return this.get('url') + '?' + params.join('&');
   },
@@ -69,19 +68,6 @@ module.exports = DataviewModelBase.extend({
       });
     }, this);
 
-    this.bind('change:enabled', function (mdl, isEnabled) {
-      if (isEnabled) {
-        if (mdl.changedAttributes(this._previousAttrs)) {
-          this._fetch();
-        }
-      } else {
-        this._previousAttrs = {
-          url: this.get('url'),
-          boundingBox: this.get('boundingBox')
-        };
-      }
-    }, this);
-
     this._rangeModel.bind('change:totalCount change:categoriesCount', function () {
       this.set({
         totalCount: this._rangeModel.get('totalCount'),
@@ -110,11 +96,11 @@ module.exports = DataviewModelBase.extend({
   },
 
   enableFilter: function () {
-    this.set('enableFilter', true);
+    this.set('filterEnabled', true);
   },
 
   disableFilter: function () {
-    this.set('enableFilter', false);
+    this.set('filterEnabled', false);
   },
 
   // Search model helper methods //
@@ -210,7 +196,8 @@ module.exports = DataviewModelBase.extend({
       });
     }, this);
 
-    if (this.get('enableFilter')) {
+    // Only accepted categories should appear when filterEnabled is true
+    if (this.get('filterEnabled')) {
       // Add accepted items that are not present in the categories data
       this.filter.acceptedCategories.each(function (mdl) {
         var category = mdl.get('name');
@@ -248,11 +235,20 @@ module.exports = DataviewModelBase.extend({
       options: {
         column: this.get('column'),
         aggregation: this.get('aggregation'),
-        aggregation_column: this.get('aggregation_column'),
-        suffix: this.get('suffix'),
-        prefix: this.get('prefix')
+
+        // TODO server-side is using camelCased attr name, update once fixed
+        aggregationColumn: this.get('aggregation_column')
       }
     };
   }
+},
 
-});
+  // Class props
+  {
+    ATTRS_NAMES: DataviewModelBase.ATTRS_NAMES.concat([
+      'column',
+      'aggregation',
+      'aggregation_column'
+    ])
+  }
+);

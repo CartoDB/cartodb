@@ -34,12 +34,12 @@ describe('dataviews/histogram-dataview-model', function () {
     }.bind(this));
 
     // url doesn't include bbox the first time
-    expect(this.model.url()).toEqual('http://example.com');
+    expect(this.model.url()).toEqual('http://example.com?bins=10');
 
     this.model.fetch();
 
     // url now has the bbox
-    expect(this.model.url()).toEqual('http://example.com?bbox=fakeBoundingBox');
+    expect(this.model.url()).toEqual('http://example.com?bins=10&bbox=fakeBoundingBox');
   });
 
   it('should parse the bins', function () {

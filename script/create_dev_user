@@ -13,19 +13,13 @@ else
 fi
 
 if test -n "$3"; then
-	ADMIN_PASSWORD="$3"
-else
-	echo -n "Enter an admin password (cleartext!): "; read ADMIN_PASSWORD
-fi
-
-if test -n "$4"; then
-	EMAIL="$4"
+	EMAIL="$3"
 else
 	echo -n "Enter an email: "; read EMAIL
 fi
 
 echo "--- Creating dev user"
 bundle exec rake cartodb:db:create_dev_user --trace SUBDOMAIN="${SUBDOMAIN}" \
-	PASSWORD="${PASSWORD}" ADMIN_PASSWORD="${ADMIN_PASSWORD}" \
+	PASSWORD="${PASSWORD}" \
 	EMAIL="${EMAIL}"
 if test $? -ne 0; then exit 1; fi

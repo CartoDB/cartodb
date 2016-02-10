@@ -36,6 +36,7 @@ module CartoDB
       STATE_SYNCING   = 'syncing'
       STATE_SUCCESS   = 'success'
       STATE_FAILURE   = 'failure'
+      STATE_MODIFIED  = 'modified'
 
       attribute :id,                      String
       attribute :name,                    String
@@ -142,6 +143,7 @@ module CartoDB
         # Last sync ok, last sync failed, or too much time in queued state
         (  self.state == STATE_SUCCESS ||
            self.state == STATE_FAILURE ||
+           self.state == STATE_MODIFIED ||
           (self.state == STATE_QUEUED && self.updated_at + SYNC_NOW_TIMESPAN < Time.now)
          ) && (self.ran_at + SYNC_NOW_TIMESPAN < Time.now)
       end
@@ -223,6 +225,8 @@ module CartoDB
 
         if importer.success?
           set_success_state_from(importer)
+        elsif importer.modified?
+          set_modified_state_from(importer)
         else
           set_failure_state_from(importer)
         end
@@ -382,6 +386,20 @@ module CartoDB
         else
           ::Resque.enqueue(::Resque::UserJobs::Mail::Sync::MaxRetriesReached, self.user_id,
                            self.visualization_id, self.name, self.error_code, self.error_message)
+        end
+      end
+
+      def set_modified_state_from(importer)
+        log.append     '******** synchronization modified ********'
+        self.log_trace      = importer.runner_log_trace
+        log.append     "*** Runner log: #{self.log_trace} \n***" unless self.log_trace.nil?
+        self.state          = STATE_MODIFIED
+        self.error_code     = importer.error_code.blank? ? 9999 : importer.error_code
+        self.error_message  = importer.error_message
+        # Try to fill empty messages with the list
+        if self.error_message.blank? && !self.error_code.nil?
+          default_message = CartoDB::IMPORTER_ERROR_CODES.fetch(self.error_code, {})
+          self.error_message = default_message.fetch(:title, '')
         end
       end
 

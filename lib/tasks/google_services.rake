@@ -90,8 +90,8 @@ namespace :cartodb do
         end
 
         desc 'Disable Google Services for all users'
-        task :disable_for_all do |task|
-          Carto::Organization.each do |organization|
+        task :disable_for_all => [:environment] do |task, args|
+          Carto::Organization.all.each do |organization|
             puts "Disabling google services for organization '#{organization.name}'..."
 
             organization.google_maps_key = nil

@@ -163,7 +163,6 @@ describe('dataviews/category-dataview-model', function () {
     expect(this.model._fetch.calls.count()).toEqual(1);
   });
 
-
   describe('filters over data', function () {
     beforeEach(function () {
       this.model._data.reset([{ name: 'one' }, { name: 'buddy' }, { name: 'neno' }]);

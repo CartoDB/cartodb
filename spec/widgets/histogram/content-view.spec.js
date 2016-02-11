@@ -39,7 +39,7 @@ describe('widgets/histogram/content-view', function () {
     };
 
     this.widgetModel.set('zoomed', true);
-    this.dataviewModel._fetch();
+    this.dataviewModel.fetch();
 
     expect(this.view._unsetRange).not.toHaveBeenCalled();
 
@@ -55,7 +55,7 @@ describe('widgets/histogram/content-view', function () {
     };
 
     this.view.lockedByUser = true;
-    this.dataviewModel._fetch();
+    this.dataviewModel.fetch();
     this.dataviewModel.trigger('change:data');
     expect(this.view.lockedByUser).toBe(false);
   });
@@ -67,7 +67,7 @@ describe('widgets/histogram/content-view', function () {
 
     spyOn(this.view, '_unsetRange').and.callThrough();
     this.view.unsettingRange = true;
-    this.dataviewModel._fetch();
+    this.dataviewModel.fetch();
     this.dataviewModel._data.reset(genHistogramData(20));
     this.dataviewModel.trigger('change:data');
     expect(this.view._unsetRange).toHaveBeenCalled();
@@ -81,7 +81,7 @@ describe('widgets/histogram/content-view', function () {
     };
 
     this.widgetModel.set('zoomed', true);
-    this.dataviewModel._fetch();
+    this.dataviewModel.fetch();
 
     expect(this.view._unsetRange).not.toHaveBeenCalled();
 
@@ -98,7 +98,7 @@ describe('widgets/histogram/content-view', function () {
 
     spyOn(this.view, '_updateStats').and.callThrough();
     spyOn(this.view, '_onChangeModel').and.callThrough();
-    this.dataviewModel._fetch();
+    this.dataviewModel.fetch();
     this.dataviewModel._data.reset(genHistogramData(20));
     this.dataviewModel.trigger('change:data');
     expect(this.view._onChangeModel).toHaveBeenCalled();

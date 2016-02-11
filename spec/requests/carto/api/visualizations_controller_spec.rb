@@ -96,10 +96,10 @@ describe Carto::Api::VisualizationsController do
       ApplicationHelper.stubs(:maps_api_template)
                        .returns("http://#{@user_1.username}.localhost.lan:8181")
 
-      get api_v2_visualizations_static_map_url({user_domain: @user_1.username,
-                                                id: table1.table_visualization.id,
-                                                width: width,
-                                                height: height}),
+      get api_v2_visualizations_static_map_url(user_domain: @user_1.username,
+                                               id: table1.table_visualization.id,
+                                               width: width,
+                                               height: height),
           @headers
       last_response.status.should == 302
 
@@ -148,31 +148,27 @@ describe Carto::Api::VisualizationsController do
       ApplicationHelper.stubs(:maps_api_template)
                        .returns("http://#{@user_1.username}.localhost.lan:8181")
 
-      get api_v2_visualizations_static_map_url({user_domain: @user_1.username,
-                                                id: public_table.table_visualization.id,
-                                                width: width,
-                                                height: height}),
+      get api_v2_visualizations_static_map_url(user_domain: @user_1.username,
+                                               id: public_table.table_visualization.id,
+                                               width: width,
+                                               height: height),
           @headers
       last_response.status.should == 302
       tpl_id = CartoDB::NamedMapsWrapper::NamedMap.template_name(public_table.table_visualization.id)
       last_response.location.should == "http://#{@user_1.username}.localhost.lan:8181/api/v1/map/static/named/#{tpl_id}/#{width}/#{height}.png"
 
-      get api_v2_visualizations_static_map_url({
-          user_domain: @user_1.username,
-          id: private_table.table_visualization.id,
-          width: width,
-          height: height
-        }),
-        @headers
+      get api_v2_visualizations_static_map_url(user_domain: @user_1.username,
+                                               id: private_table.table_visualization.id,
+                                               width: width,
+                                               height: height),
+          @headers
       last_response.status.should == 403
 
-      get api_v2_visualizations_static_map_url({
-          user_domain: @user_1.username,
-          api_key: @user_1.api_key,
-          id: private_table.table_visualization.id,
-          width: width,
-          height: height
-        }),
+      get api_v2_visualizations_static_map_url(user_domain: @user_1.username,
+                                               api_key: @user_1.api_key,
+                                               id: private_table.table_visualization.id,
+                                               width: width,
+                                               height: height),
         @headers
       last_response.status.should == 302
       tpl_id = CartoDB::NamedMapsWrapper::NamedMap.template_name(private_table.table_visualization.id)
@@ -189,14 +185,11 @@ describe Carto::Api::VisualizationsController do
                                      .stubs(:get_cdn_config)
                                      .returns("http" => "cdn.local.lan")
 
-      get api_v2_visualizations_static_map_url({
-          user_domain: @user_1.username,
-          #api_key: @user_1.api_key,
-          id: table1.table_visualization.id,
-          width: width,
-          height: height
-        }),
-        @headers
+      get api_v2_visualizations_static_map_url(user_domain: @user_1.username,
+                                               id: table1.table_visualization.id,
+                                               width: width,
+                                               height: height),
+          @headers
       last_response.status.should == 302
       last_response.headers["X-Cache-Channel"].should include(table1.name)
       last_response.headers["X-Cache-Channel"].should include(table1.table_visualization.varnish_key)

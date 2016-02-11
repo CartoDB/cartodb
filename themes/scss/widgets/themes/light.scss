@@ -66,9 +66,6 @@ $chartMiniHighlight: rgba(#333, 1);
     }
   }
 
-  .CDB-Widget-searchLens {
-    color: $link;
-  }
   .CDB-Widget-progressBar {
     background: $elementBkg;
   }
@@ -289,7 +286,7 @@ $chartMiniHighlight: rgba(#333, 1);
   .CDB-Dropdown-link {
     color: $link;
     &:hover {
-      background: $loadingBkg;
+      background: $cSecondaryLine;
     }
     &.is-delete {
       color: $negative;

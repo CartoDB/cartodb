@@ -17,7 +17,6 @@
   // Due to line-heights, better to substract some pixels in the top
   padding: ($sMargin-section - 4) 0;
   box-sizing: border-box;
-  font-family: 'Open Sans';
 }
 .CDB-Widget--timeSeries {
   width: 100%; // override default width

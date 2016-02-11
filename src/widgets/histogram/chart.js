@@ -831,7 +831,7 @@ module.exports = cdb.core.View.extend({
     var adjustTextAnchor = this._generateAdjustAnchorMethod(this.verticalRange);
 
     var axis = this.chart.append('g')
-      .attr('class', 'CDB-Chart-axis');
+      .attr('class', 'CDB-Chart-axis CDB-Text CDB-Size-small');
 
     axis
       .append('g')
@@ -859,7 +859,7 @@ module.exports = cdb.core.View.extend({
       .orient('bottom');
 
     var axis = this.canvas.append('g')
-      .attr('class', 'CDB-Chart-axis')
+      .attr('class', 'CDB-Chart-axis CDB-Text CDB-Size-small')
       .attr('transform', 'translate(0,' + (this.chartHeight() + 5) + ')')
       .call(xAxis);
 

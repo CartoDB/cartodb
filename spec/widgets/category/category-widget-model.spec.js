@@ -33,23 +33,6 @@ describe('widgets/category/category-widget-model', function () {
     });
   });
 
-  describe('search state', function () {
-    beforeEach(function () {
-      this.dataviewModel.filter.accept(['hey']);
-      this.dataviewModel._searchModel.setData([{ name: 'hey' }, { name: 'vamos' }, { name: 'neno' }]);
-      this.dataviewModel.trigger('change:searchData');
-    });
-
-    it('should check if search results are already selected or not', function () {
-      var data = this.dataviewModel.getSearchResult();
-      expect(data.size()).toBe(3);
-      var selectedCategories = data.where({ selected: true });
-      var selectedCategory = selectedCategories[0];
-      expect(_.size(selectedCategories)).toBe(1);
-      expect(selectedCategory.get('name')).toBe('hey');
-    });
-  });
-
   describe('colors', function () {
     beforeEach(function () {
       spyOn(this.widgetModel.colors, 'updateData').and.callThrough();

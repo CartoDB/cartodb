@@ -2,6 +2,29 @@
   "editor": {
     "map": "map",
     "map_name": "%{name} map",
-    "map_pluralize": "%{smart_count} map |||| %{smart_count} maps"
+    "map_pluralize": "%{smart_count} map |||| %{smart_count} maps",
+    "widgets": {
+      "edit": "Edit",
+      "data": {
+        "aggregation": "Aggregation",
+        "aggregation_column": "Aggregation Column",
+        "bins": "Buckets",
+        "column": "Column",
+        "end": "End",
+        "loading": "loading…",
+        "operation": "Operation",
+        "prefix": "Prefix",
+        "start": "Start",
+        "suffix": "Suffix",
+        "title": "Title",
+        "value": "Value"
+      },
+      "style": {
+        "sync_on_data_change": "Unfiltered",
+        "sync_on_bbox_change": "Dynamic",
+        "yes": "Yes",
+        "no": "No"
+      }
+    }
   }
 }

@@ -1027,8 +1027,8 @@ describe User do
     uuid      = UserTable.where(id: table_id).first.table_visualization.id
 
     CartoDB::Varnish.any_instance.expects(:purge)
-      .with("#{doomed_user.database_name}.*")
-      .returns(true)
+                    .with("#{doomed_user.database_name}.*")
+                    .returns(true)
     CartoDB::Varnish.any_instance.expects(:purge)
       .with("(^|;;)#{doomed_user.database_name}:((?:(?!;;).)*public(\\\\\")?\\.clubbing.*)|(table)$")
       .returns(true)

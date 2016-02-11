@@ -23,7 +23,7 @@
   "license": "BSD-3-Clause",
   "dependencies": {
     "backbone": "1.2.3",
-    "cartodb.js": "CartoDB/cartodb.js#94bb6f3",
+    "cartodb.js": "CartoDB/cartodb.js#53aa111",
     "d3": "3.5.8",
     "jquery": "2.1.4",
     "jstify": "0.12.0",
@@ -47,6 +47,7 @@
     "grunt-contrib-uglify": "0.11.0",
     "grunt-contrib-watch": "0.6.1",
     "grunt-exorcise": "2.1.0",
+    "grunt-gh-pages": "1.0.0",
     "grunt-sass": "1.1.0",
     "load-grunt-tasks": "3.3.0",
     "semistandard": "7.0.4",

@@ -3,98 +3,117 @@
 
 .CDB-Dashboard-menuTexts {
   position: absolute;
-  top: 150px;
+  top: 77px;
+  right: 64px;
+  left: 72px;
+  opacity: 0;
+}
+.CDB-Dashboard-menuActions {
+  position: absolute;
+  top: 26px;
   right: 18px;
-  left: 18px;
+  left: 72px;
   width: 304px;
   opacity: 0;
 }
+.CDB-Dashboard-menuActionsItem {
+  @include inline-block();
+  margin-right: 8px;
+  &:first-child {
+    margin-right: 26px;
+  }
+}
+.CDB-Dashboard-menuInfo.is-active {
+  display: none;
+}
 .CDB-Dashboard-menuInner {
-  @include transition(width, 0.25s, cubic-bezier(0.01, 0.99, 0.97, 1.01));
+  @include transition(width, 150ms, cubic-bezier(0.01, 0.99, 0.97, 1.01));
   position: fixed;
   top: 0;
   bottom: 0;
   left: 0;
-  width: 76px;
-  max-width: 352px;
-  padding: 16px 18px;
-  background: #3AA9E3;
-  font-family: 'Open Sans';
+  width: 72px;
+  max-width: 400px;
+  padding: 16px;
+  background: $cBlue;
   overflow: hidden;
   box-sizing: border-box;
   z-index: 2;
 }
 .CDB-Dashboard-menu.is-active {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 2;
+  .CDB-Dashboard-menuContainer {
+    width: 100%;
+    height: 100%;
+  }
+  .CDB-Dashboard-bg {
+    @include transition(background, 150ms, cubic-bezier(0.01, 0.99, 0.97, 1.01));
+    height: 100%;
+    background: rgba($cSecondaryDark, 0.8);
+    cursor: pointer;
+  }
+  .CDB-Dashboard-bg:hover {
+    background: rgba($cSecondaryDark, 0.6);
+  }
+
   .CDB-Dashboard-menuInner {
-    width: 352px;
-    box-shadow: 0 0 40px 0 rgba(0, 0, 0, 0.2);
+    width: 400px;
+    background: $cWhite;
+    box-shadow: 0 0 40px 0 rgba($cMainBg, 0.4);
   }
-  .CDB-Dashboard-menuTexts {
-    @include animation(fadeInDown 0.8s both);
-  }
+
+  .CDB-Dashboard-menuTexts,
+  .CDB-Dashboard-menuActions,
   .CDB-Dashboard-menuFooterTxt {
     @include animation(fadeInDown 0.8s both);
   }
   .CDB-Dashboard-menuSnapshots {
     opacity: 1;
   }
-  .CDB-Dashboard-menuActionsLink {
+  .CDB-Dashboard-menuInfoLink {
     transform: rotate(180deg);
+  }
+  .CDB-Dashboard-menuLogo {
+    background: $cThirdBackground;
+  }
+  .CDB-Dashboard-menuInfo {
+    display: none;
+  }
+  .CDB-Dashboard-menuInfo.is-active {
+    display: block;
+    opacity: 0.24;
   }
 }
 .CDB-Dashboard-menuLogo {
   width: 40px;
   height: 40px;
-  margin-bottom: $sMargin-section;
+  margin-bottom: $baseSize * 2;
   border-radius: 4px;
-  background: #FFF;
+  background: $cWhite;
   line-height: 40px;
   text-align: center;
 }
 .CDB-Dashboard-menuLogo i {
   margin-top: -4px;
-  color: #3C93D8;
+  color: $cBlue;
   font-size: 22px;
   vertical-align: middle;
 }
-.CDB-Dashboard-menuActions {
+.CDB-Dashboard-menuInfo {
   width: 40px;
-  height: 40px;
   margin-bottom: 48px;
+  text-align: center;
 }
-.CDB-Dashboard-menuActionsLink {
-  @include transition(all, 0.2s, ease-out);
-  display: block;
-  width: 24px;
-  height: 24px;
-  margin: 0 auto;
-  border: 2px solid #FFF;
-  border-radius: 50%;
-  color: #FFF;
-  font-size: $sFontSize-medium;
-  cursor: pointer;
-}
-.CDB-Dashboard-menuUpdate {
-  margin-bottom: 8px;
-  color: #FFF;
-  font-size: $sFontSize-small;
-  font-weight: $sFontWeight-lighter;
-  line-height: $sLineHeight-small;
-  text-transform: uppercase;
-}
+
 .CDB-Dashboard-menuTitle {
   margin-bottom: 20px;
-  color: #FFF;
-  font-size: $sFontSize-huge;
-  font-weight: $sFontWeight-lighter;
-  line-height: $sLineHeight-huge;
 }
-.CDB-Dashboard-menuDescription {
-  color: #FFF;
-  font-size: $sFontSize-medium;
-  font-weight: $sFontWeight-lighter;
-  line-height: $sLineHeight-medium;
-}
+
 .CDB-Dashboard-menuFooter {
   position: absolute;
   right: 18px;
@@ -115,13 +134,8 @@
   border-radius: 4px;
 }
 .CDB-Dashboard-menuFooterTxt {
-  display: inline-block;
-  color: #FFF;
-  font-size: $sFontSize-large;
-  font-weight: $sFontWeight-lighter;
-  line-height: $sLineHeight-large;
+  @include inline-block();
   opacity: 0;
-  vertical-align: middle;
 }
 .CDB-Dashboard-menuFooterItem {
   margin-top: 20px;
@@ -150,7 +164,7 @@
   margin-right: 8px;
   padding: 12px;
   border-radius: 4px;
-  background: #FFF;
+  background: $cWhite;
   box-sizing: border-box;
 }
 .CDB-Dashboard-menuSnapshotsListTitle {
@@ -177,7 +191,7 @@
   width: 100%;
   height: 48px;
   padding: 8px;
-  background: #3AA9E3;
+  background: $cBlue;
 
   .CDB-Dashboard-menuLogo {
     @include inline-block();
@@ -201,7 +215,7 @@
   width: 16px;
   height: 2px;
   border: 0;
-  background: #FFF;
+  background: $cWhite;
 
   &:before,
   &:after {
@@ -243,7 +257,7 @@
     .CDB-Dashboard-menuInner {
       width: auto;
       transform: translateX(0);
-      box-shadow: 300px 0 0 rgba(0, 0, 0, 0.45);
+      box-shadow: 300px 0 0 rgba($cMainBg, 0.45);
     }
     .CDB-Dashboard-menuHeaderMobile {
       .CDB-Dashboard-menuMedia {
@@ -251,7 +265,7 @@
       }
     }
   }
-  .CDB-Dashboard-menuActions {
+  .CDB-Dashboard-menuInfo {
     position: absolute;
     top: 32px;
     right: 24px;

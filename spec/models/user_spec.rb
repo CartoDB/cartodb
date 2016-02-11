@@ -1026,13 +1026,16 @@ describe User do
     table_id  = data_import.table_id
     uuid      = UserTable.where(id: table_id).first.table_visualization.id
 
-    CartoDB::Varnish.any_instance.expects(:purge)
-                    .with("#{doomed_user.database_name}.*")
-                    .returns(true)
-    CartoDB::Varnish.any_instance.expects(:purge)
+    CartoDB::Varnish
+      .any_instance.expects(:purge)
+      .with("#{doomed_user.database_name}.*")
+      .returns(true)
+    CartoDB::Varnish
+      .any_instance.expects(:purge)
       .with("(^|;;)#{doomed_user.database_name}:((?:(?!;;).)*public(\\\\\")?\\.clubbing.*)|(table)$")
       .returns(true)
-    CartoDB::Varnish.any_instance.expects(:purge)
+    CartoDB::Varnish
+      .any_instance.expects(:purge)
       .with(".*#{uuid}:vizjson")
       .times(2 + 5)
       .returns(true)

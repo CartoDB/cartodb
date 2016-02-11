@@ -86,9 +86,7 @@ module.exports = DataviewModelBase.extend({
         this.trigger('error', this);
       }
     }, this);
-    this._searchModel.bind('change:data', function () {
-      this.trigger('change:searchData', this);
-    }, this);
+    this._searchModel.bind('change:data', this._onSearchDataChange, this);
   },
 
   _shouldFetchOnBoundingBoxChange: function () {
@@ -159,6 +157,45 @@ module.exports = DataviewModelBase.extend({
 
   isOtherAvailable: function () {
     return this._data.isOtherAvailable();
+  },
+
+  numberOfAcceptedCategories: function () {
+    var acceptedCategories = this.filter.acceptedCategories;
+    var numberOfRejectedCategories = this.numberOfRejectedCategories();
+    var data = this.getData();
+    var totalCategories = data.size();
+    var numberOfAcceptedCategories = data.reduce(
+      function (memo, cat) {
+        var isCategoryInData = acceptedCategories.where({ name: cat.get('name') }).length > 0;
+        return memo + (isCategoryInData ? 1 : 0);
+      },
+      0
+    );
+    if (!numberOfRejectedCategories) {
+      return numberOfAcceptedCategories;
+    } else {
+      return totalCategories - numberOfRejectedCategories;
+    }
+  },
+
+  numberOfRejectedCategories: function () {
+    var rejectedCategories = this.filter.rejectedCategories;
+    var data = this.getData();
+    return data.reduce(
+      function (memo, cat) {
+        var isCategoryInData = rejectedCategories.where({ name: cat.get('name') }).length > 0;
+        return memo + (isCategoryInData ? 1 : 0);
+      },
+      0
+    );
+  },
+
+  _onSearchDataChange: function () {
+    this.getSearchResult().each(function (m) {
+      var selected = this.filter.isAccepted(m.get('name'));
+      m.set('selected', selected);
+    }, this);
+    this.trigger('change:searchData', this);
   },
 
   refresh: function () {

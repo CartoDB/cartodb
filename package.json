@@ -87,6 +87,7 @@
       "alert",
       "cartodb",
       "cdb",
+      "_t",
       "jasmine",
       "describe",
       "xdescribe",

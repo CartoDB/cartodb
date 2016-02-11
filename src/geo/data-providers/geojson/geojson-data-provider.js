@@ -88,13 +88,14 @@ GeoJSONDataProvider.prototype._dataGeneratorsForDataviews = {
       sortedGroups = filter.getColumnValues(columnName);
       count = filter.getCount(columnName);
     }
+    var nulls = filter.getValues(false, columnName).reduce(function(p, c) { return p + (c.properties[columnName] === null ? 1 : 0) }, 0);
     var data = {
       categories: [],
       categoriesCount: sortedGroups.length,
       count: count,
       max: sortedGroups[0].value,
       min: sortedGroups[sortedGroups.length - 1].value,
-      nulls: 0,
+      nulls: nulls,
       type: 'aggregation'
     };
 

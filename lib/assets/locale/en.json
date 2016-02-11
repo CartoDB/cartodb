@@ -21,7 +21,9 @@
       },
       "style": {
         "sync_on_data_change": "Unfiltered",
-        "sync_on_bbox_change": "Dynamic"
+        "sync_on_bbox_change": "Dynamic",
+        "yes": "Yes",
+        "no": "No"
       }
     }
   }

@@ -96,13 +96,11 @@ describe Carto::Api::VisualizationsController do
       ApplicationHelper.stubs(:maps_api_template)
                        .returns("http://#{@user_1.username}.localhost.lan:8181")
 
-      get api_v2_visualizations_static_map_url({
-          user_domain: @user_1.username,
-          id: table1.table_visualization.id,
-          width: width,
-          height: height
-        }),
-        @headers
+      get api_v2_visualizations_static_map_url({user_domain: @user_1.username,
+                                                id: table1.table_visualization.id,
+                                                width: width,
+                                                height: height}),
+          @headers
       last_response.status.should == 302
 
       tpl_id = CartoDB::NamedMapsWrapper::NamedMap.template_name(table1.table_visualization.id)

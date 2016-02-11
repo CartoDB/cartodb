@@ -9,16 +9,17 @@ describe Carto::Api::TablesController do
 
     before(:all) do
       CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
-
-      @user = FactoryGirl.create(:valid_user)
-
       host! "#{$user_1.username}.localhost.lan"
+    end
 
+    before(:each) do
       stub_named_maps_calls
+      delete_user_data $user_1
     end
 
     after(:all) do
-      @user.destroy
+      stub_named_maps_calls
+      delete_user_data $user_1
     end
 
     let(:params) { { :api_key => $user_1.api_key } }

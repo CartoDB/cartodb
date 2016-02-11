@@ -169,6 +169,9 @@ module.exports = DataviewModelBase.extend({
     }
   },
 
+  /**
+   * @public
+   */
   forceFetch: function () {
     this._fetch();
   },

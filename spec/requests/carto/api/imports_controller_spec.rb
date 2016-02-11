@@ -12,26 +12,24 @@ describe Carto::Api::ImportsController do
 
   before(:all) do
     @user = FactoryGirl.create(:valid_user)
+    host! "#{@user.username}.localhost.lan"
   end
 
   after(:all) do
-    delete_user_data @user
     @user.destroy
   end
 
   before(:each) do
     stub_named_maps_calls
     delete_user_data @user
-    host! "#{@user.username}.localhost.lan"
   end
 
-  let(:params) { { :api_key => @user.api_key } }
+  let(:params) { { api_key: @user.api_key } }
 
   it 'gets a list of all pending imports' do
     Resque.inline = false
     serve_file(Rails.root.join('spec/support/data/ESP_adm.zip')) do |url|
-      post api_v1_imports_create_url, params.merge(:url        => url,
-                                        :table_name => "wadus")
+      post api_v1_imports_create_url, params.merge(url: url, table_name: 'wadus')
     end
 
     get api_v1_imports_index_url, params
@@ -48,8 +46,7 @@ describe Carto::Api::ImportsController do
   it "doesn't return old pending imports" do
     Resque.inline = false
     serve_file(Rails.root.join('spec/support/data/ESP_adm.zip')) do |url|
-      post api_v1_imports_create_url, params.merge(:url        => url,
-                                        :table_name => "wadus")
+      post api_v1_imports_create_url, params.merge(url: url, table_name: 'wadus')
     end
 
     Delorean.jump(7.hours)
@@ -66,10 +63,8 @@ describe Carto::Api::ImportsController do
   end
 
   it 'gets the detail of an import' do
-    post api_v1_imports_create_url(:api_key => @user.api_key,
-                        :table_name => 'wadus',
-                        :filename   => File.basename('wadus.csv')),
-      upload_file('db/fake_data/column_number_to_boolean.csv', 'text/csv')
+    post api_v1_imports_create_url(api_key: @user.api_key, table_name: 'wadus', filename: File.basename('wadus.csv')),
+         upload_file('db/fake_data/column_number_to_boolean.csv', 'text/csv')
 
     item_queue_id = JSON.parse(response.body)['item_queue_id']
 
@@ -83,10 +78,8 @@ describe Carto::Api::ImportsController do
   end
 
   it 'gets the detail of an import stuck unpacking' do
-    post api_v1_imports_create_url(:api_key => @user.api_key,
-                        :table_name => 'wadus',
-                        :filename   => File.basename('wadus.csv')),
-      upload_file('db/fake_data/column_number_to_boolean.csv', 'text/csv')
+    post api_v1_imports_create_url(api_key: @user.api_key, table_name: 'wadus', filename: File.basename('wadus.csv')),
+         upload_file('db/fake_data/column_number_to_boolean.csv', 'text/csv')
 
     response_json = JSON.parse(response.body)
     last_import = DataImport[response_json['item_queue_id']]
@@ -105,7 +98,7 @@ describe Carto::Api::ImportsController do
   it 'tries to import a tgz' do
 
     post api_v1_imports_create_url,
-      params.merge(:filename => upload_file('spec/support/data/Weird Filename (2).tgz', 'application/octet-stream'))
+         params.merge(filename: upload_file('spec/support/data/Weird Filename (2).tgz', 'application/octet-stream'))
 
     item_queue_id = JSON.parse(response.body)['item_queue_id']
 
@@ -119,7 +112,7 @@ describe Carto::Api::ImportsController do
 
   it 'fails with password protected files' do
     post api_v1_imports_create_url,
-      params.merge(:filename => upload_file('spec/support/data/alldata-pass.zip', 'application/octet-stream'))
+         params.merge(filename: upload_file('spec/support/data/alldata-pass.zip', 'application/octet-stream'))
 
     item_queue_id = JSON.parse(response.body)['item_queue_id']
 
@@ -132,7 +125,7 @@ describe Carto::Api::ImportsController do
 
   it 'imports files with weird filenames' do
     post api_v1_imports_create_url,
-      params.merge(:filename => upload_file('spec/support/data/Weird Filename (2).csv', 'application/octet-stream'))
+         params.merge(filename: upload_file('spec/support/data/Weird Filename (2).csv', 'application/octet-stream'))
 
     item_queue_id = JSON.parse(response.body)['item_queue_id']
 
@@ -145,13 +138,13 @@ describe Carto::Api::ImportsController do
 
   it 'creates a table from a sql query' do
     post api_v1_imports_create_url,
-      params.merge(:filename => upload_file('spec/support/data/_penguins_below_80.zip', 'application/octet-stream'))
+         params.merge(filename: upload_file('spec/support/data/_penguins_below_80.zip', 'application/octet-stream'))
 
     response.code.should be == '200'
 
     @table_from_import = UserTable.all.last.service
     post api_v1_imports_create_url(:api_key    => @user.api_key,
-                        :table_name => 'wadus_2',
+                        table_name: 'wadus_2',
                         :sql        => "SELECT * FROM #{@table_from_import.name}")
 
 
@@ -170,10 +163,8 @@ describe Carto::Api::ImportsController do
   it 'returns derived visualization id if created with create_vis flag' do
     @user.update private_tables_enabled: false
     post api_v1_imports_create_url,
-         params.merge({
-                        filename: upload_file('spec/support/data/csv_with_lat_lon.csv', 'application/octet-stream'),
-                        create_vis: true
-                      })
+         params.merge({filename: upload_file('spec/support/data/csv_with_lat_lon.csv', 'application/octet-stream'),
+                       create_vis: true})
     response.code.should be == '200'
 
     item_queue_id = ::JSON.parse(response.body)['item_queue_id']
@@ -194,7 +185,6 @@ describe Carto::Api::ImportsController do
   end
 
   describe 'service_token_valid?' do
-
     it 'returns oauth_valid false for unknown service tokens' do
       get api_v1_imports_service_token_valid_url(id: 'kk'), params
       response.code.should == '200'

@@ -1,10 +1,6 @@
 module HttpAuthenticationHelper
-  def authenticated_header
-    'auth_header'
-  end
-
-  def authentication_headers(value = $user_1.email)
-    { "#{authenticated_header}" => value }
+  def authentication_headers(value = FactoryGirl.create(:valid_user))
+    "auth_header": value
   end
 
   def stub_http_header_authentication_configuration(field: 'email', autocreation: false, enabled: true)

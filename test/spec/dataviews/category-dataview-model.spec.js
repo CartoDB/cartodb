@@ -151,26 +151,30 @@ describe('dataviews/category-dataview-model', function () {
       this.model._data.reset([{ name: 'one' }, { name: 'buddy' }, { name: 'neno' }]);
     });
 
-    it('should count accepted categories over the current data', function () {
-      this.model.filter.accept('vamos');
-      expect(this.model.numberOfAcceptedCategories()).toBe(0);
-      this.model.filter.accept('buddy');
-      expect(this.model.numberOfAcceptedCategories()).toBe(1);
-      this.model.filter.reject('neno');
-      expect(this.model.numberOfAcceptedCategories()).toBe(2);
-      this.model._data.reset([]);
-      expect(this.model.numberOfAcceptedCategories()).toBe(0);
+    describe('.numberOfAcceptedCategories', function () {
+      it('should count accepted categories over the current data', function () {
+        this.model.filter.accept('vamos');
+        expect(this.model.numberOfAcceptedCategories()).toBe(0);
+        this.model.filter.accept('buddy');
+        expect(this.model.numberOfAcceptedCategories()).toBe(1);
+        this.model.filter.reject('neno');
+        expect(this.model.numberOfAcceptedCategories()).toBe(2);
+        this.model._data.reset([]);
+        expect(this.model.numberOfAcceptedCategories()).toBe(0);
+      });
     });
 
-    it('should count rejected categories over the current data', function () {
-      this.model.filter.reject('vamos');
-      expect(this.model.numberOfRejectedCategories()).toBe(0);
-      this.model.filter.reject('buddy');
-      expect(this.model.numberOfRejectedCategories()).toBe(1);
-      this.model.filter.accept('neno');
-      expect(this.model.numberOfRejectedCategories()).toBe(1);
-      this.model._data.reset([]);
-      expect(this.model.numberOfRejectedCategories()).toBe(0);
+    describe('.numberOfRejectedCategories', function () {
+      it('should count rejected categories over the current data', function () {
+        this.model.filter.reject('vamos');
+        expect(this.model.numberOfRejectedCategories()).toBe(0);
+        this.model.filter.reject('buddy');
+        expect(this.model.numberOfRejectedCategories()).toBe(1);
+        this.model.filter.accept('neno');
+        expect(this.model.numberOfRejectedCategories()).toBe(1);
+        this.model._data.reset([]);
+        expect(this.model.numberOfRejectedCategories()).toBe(0);
+      });
     });
   });
 

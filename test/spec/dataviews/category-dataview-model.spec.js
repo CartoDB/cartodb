@@ -84,8 +84,25 @@ describe('dataviews/category-dataview-model', function () {
         }, this);
       });
 
-      it('should trigger a change:searchData when search model is fetched', function () {
-        _.bind(eventDispatcher, this)(this.model._searchModel, 'change:data', 'change:searchData');
+      describe('on search data change', function () {
+        beforeEach(function () {
+          spyOn(this.model, 'trigger');
+          this.model.filter.accept(['hey']);
+          this.model._searchModel.setData([{ name: 'hey' }, { name: 'vamos' }, { name: 'neno' }]);
+        });
+
+        it('should check if search results are already selected or not', function () {
+          var data = this.model.getSearchResult();
+          expect(data.size()).toBe(3);
+          var selectedCategories = data.where({ selected: true });
+          var selectedCategory = selectedCategories[0];
+          expect(_.size(selectedCategories)).toBe(1);
+          expect(selectedCategory.get('name')).toBe('hey');
+        });
+
+        it('should trigger searchData event', function () {
+          expect(this.model.trigger).toHaveBeenCalledWith('change:searchData', this.model);
+        });
       });
     });
 
@@ -145,6 +162,7 @@ describe('dataviews/category-dataview-model', function () {
     expect(this.model._searchModel.fetch).toHaveBeenCalled();
     expect(this.model._fetch.calls.count()).toEqual(1);
   });
+
 
   describe('filters over data', function () {
     beforeEach(function () {

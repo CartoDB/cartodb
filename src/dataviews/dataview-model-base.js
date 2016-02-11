@@ -161,12 +161,12 @@ module.exports = Model.extend({
   fetch: function (opts) {
     opts = opts || {};
     this.trigger('loading', this);
-    return Model.prototype.fetch.call(this, {
+    return Model.prototype.fetch.call(this, _.extend(opts, {
       success: opts.success,
       error: function () {
         this.trigger('error');
       }.bind(this)
-    });
+    }));
   },
 
   toJSON: function () {

@@ -9,6 +9,7 @@ describe('create-dashboard', function () {
       var selector = '#' + this.$el.id;
 
       var vizJSON = {
+        bounds: [[24.206889622398023, -84.0234375], [76.9206135182968, 169.1015625]],
         user: {
         },
         widgets: [{

@@ -224,16 +224,16 @@ $chartMiniHighlight: rgba(#333, 1);
     stroke: $link;
   }
 
-  .CDB-Chart-bar--green {
+  .CDB-Chart-bar {
     fill: $highlighted;
   }
-  .CDB-Chart-bar--green.is-highlighted {
+  .CDB-Chart-bar.is-highlighted {
     fill: $darkHighlighted;
   }
-  .CDB-Chart-bar--orange {
+  .CDB-Chart-bar--timeSeries {
     fill: $highlightedAlternative;
   }
-  .CDB-Chart-bar--orange.is-highlighted {
+  .CDB-Chart-bar--timeSeries.is-highlighted {
     fill: $darkHighlightedAlternative;
   }
   .CDB-Chart-bar.is-selected {

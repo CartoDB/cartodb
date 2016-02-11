@@ -49,7 +49,7 @@ module.exports = cdb.core.View.extend({
       animationBarDelay: function (d, i) {
         return (i * 3);
       },
-      chartBarColorClass: 'CDB-Chart-bar--orange',
+      chartBarColorClass: 'CDB-Chart-bar--timeSeries',
       margin: {
         top: 4,
         right: 4,

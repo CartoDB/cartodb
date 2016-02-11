@@ -5,6 +5,12 @@
     "map_pluralize": "%{smart_count} map |||| %{smart_count} maps",
     "widgets": {
       "edit": "Edit",
+      "type": {
+        "category": "Category",
+        "formula": "Formula",
+        "histogram": "Histogram",
+        "time_series": "Time Series"
+      },
       "data": {
         "aggregation": "Aggregation",
         "aggregation_column": "Aggregation Column",

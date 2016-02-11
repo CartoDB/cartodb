@@ -24,7 +24,6 @@ module.exports = WidgetModel.extend({
     this.lockedCategories = new LockedCategoriesCollection();
 
     this.listenTo(this.dataviewModel, 'change:allCategoryNames', this._onDataviewAllCategoryNamesChange);
-    this.listenTo(this.dataviewModel, 'change:searchData', this._onDataviewChangeSearchData);
     this.on('change:locked', this._onLockedChange, this);
     this.on('change:collapsed', this._onCollapsedChange, this);
   },
@@ -118,14 +117,6 @@ module.exports = WidgetModel.extend({
     if (this.isColorApplied()) {
       this.applyColors();
     }
-  },
-
-  _onDataviewChangeSearchData: function () {
-    // Update selected state for each search result item based on locked categories
-    this.dataviewModel.getSearchResult().each(function (m) {
-      var selected = this.lockedCategories.isItemLocked(m.get('name'));
-      m.set('selected', selected);
-    }, this);
   },
 
   _onLockedChange: function (m, isLocked) {

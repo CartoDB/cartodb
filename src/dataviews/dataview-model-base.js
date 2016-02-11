@@ -162,7 +162,6 @@ module.exports = Model.extend({
     opts = opts || {};
     this.trigger('loading', this);
     return Model.prototype.fetch.call(this, _.extend(opts, {
-      success: opts.success,
       error: function () {
         this.trigger('error');
       }.bind(this)

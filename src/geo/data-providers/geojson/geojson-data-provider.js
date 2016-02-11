@@ -18,11 +18,12 @@ GeoJSONDataProvider.prototype._dataGeneratorsForDataviews = {
   histogram: function (features, options) {
     var filter = this._vectorLayerView.getFilter(this._layerIndex);
     var columnName = options.column;
-    var end, start, bins, width;
+    var end, start, bins, width, values;
     var numberOfBins = options.bins || options.data.length;
     if (options.own_filter === 1) {
       end = filter.getMax(columnName);
       start = filter.getMin(columnName);
+      values = filter.getValues()
       bins = d3.layout.histogram().bins(numberOfBins)(filter.getValues().map(function (f) {
         return f.properties[options.column];
       }));
@@ -31,6 +32,7 @@ GeoJSONDataProvider.prototype._dataGeneratorsForDataviews = {
       end = options.end || filter.getMax(columnName);
       start = options.start > -1 ? options.start : filter.getMin(columnName);
       width = (end - start) / options.bins;
+      values = filter.getValues(false, columnName)
       bins = d3.layout.histogram().bins(numberOfBins)(filter.getValues(false, columnName).map(function (f) {
         return f.properties[options.column];
       }));
@@ -44,6 +46,7 @@ GeoJSONDataProvider.prototype._dataGeneratorsForDataviews = {
         freq: bin.length
       };
     });
+    var nulls = values.reduce(function(p, c) { return p + (c.properties[columnName] === null ? 1 : 0) }, 0);
     var average = bins.reduce(function (p, c) {
       return p + c.avg;
     }, 0) / bins.reduce(function (p, c) {
@@ -53,7 +56,7 @@ GeoJSONDataProvider.prototype._dataGeneratorsForDataviews = {
       'bin_width': width,
       'bins_count': bins.length,
       'bins_start': start,
-      'nulls': 0,
+      'nulls': nulls,
       'avg': average,
       'bins': bins,
       'type': 'histogram'

@@ -21,6 +21,8 @@
 }
 .CDB-Widget--timeSeries {
   width: 100%; // override default width
+  margin-bottom: 0;
+  border-radius: 4px;
 }
 .CDB-Widget-title {
   @include display-flex();
@@ -43,7 +45,7 @@
 }
 .CDB-Widget-content {
   position: relative;
-  margin-top: $sMargin-element;
+  margin-top: 10px;
 }
 .CDB-Widget-content--noSidesMargin {
   margin-right: 0;

@@ -181,34 +181,6 @@ describe('widgets/category/category-widget-model', function () {
       });
     });
 
-    describe('filters over data', function () {
-      beforeEach(function () {
-        this.dataviewModel._data.reset([{ name: 'one' }, { name: 'buddy' }, { name: 'neno' }]);
-      });
-
-      it('should count accepted categories over the current data', function () {
-        this.dataviewModel.filter.accept('vamos');
-        expect(this.widgetModel.sizeAcceptedCatsInData()).toBe(0);
-        this.dataviewModel.filter.accept('buddy');
-        expect(this.widgetModel.sizeAcceptedCatsInData()).toBe(1);
-        this.dataviewModel.filter.reject('neno');
-        expect(this.widgetModel.sizeAcceptedCatsInData()).toBe(2);
-        this.dataviewModel._data.reset([]);
-        expect(this.widgetModel.sizeAcceptedCatsInData()).toBe(0);
-      });
-
-      it('should count rejected categories over the current data', function () {
-        this.dataviewModel.filter.reject('vamos');
-        expect(this.widgetModel.sizeRejectedCatsInData()).toBe(0);
-        this.dataviewModel.filter.reject('buddy');
-        expect(this.widgetModel.sizeRejectedCatsInData()).toBe(1);
-        this.dataviewModel.filter.accept('neno');
-        expect(this.widgetModel.sizeRejectedCatsInData()).toBe(1);
-        this.dataviewModel._data.reset([]);
-        expect(this.widgetModel.sizeRejectedCatsInData()).toBe(0);
-      });
-    });
-
     describe('when locked state changes', function () {
       beforeEach(function () {
         spyOn(this.dataviewModel, 'enableFilter');

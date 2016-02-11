@@ -5,11 +5,12 @@ var cdb = require('cartodb.js');
 var formatter = require('../../formatter');
 
 module.exports = cdb.core.View.extend({
-  defaults: {
+
+  options: {
     // render the chart once the width is set as default, provide false value for this prop to disable this behavior
     // e.g. for "mini" histogram behavior
     showOnWidthChange: true,
-
+    chartBarColorClass: 'CDB-Chart-bar--green',
     labelsMargin: 16, // px
     hasAxisTip: false,
     minimumBarHeight: 2,
@@ -26,8 +27,6 @@ module.exports = cdb.core.View.extend({
 
   initialize: function () {
     if (!_.isNumber(this.options.height)) throw new Error('height is required');
-
-    this.options = _.extend({}, this.defaults, this.options);
 
     _.bindAll(this, '_selectBars', '_adjustBrushHandles', '_onBrushMove', '_onBrushStart', '_onMouseMove', '_onMouseOut');
 
@@ -87,7 +86,7 @@ module.exports = cdb.core.View.extend({
   chartHeight: function () {
     var m = this.model.get('margin');
     var labelsMargin = this.model.get('showLabels')
-      ? this.defaults.labelsMargin
+      ? this.options.labelsMargin
       : 0;
     return this.model.get('height') - m.top - m.bottom - labelsMargin;
   },
@@ -879,7 +878,7 @@ module.exports = cdb.core.View.extend({
     bars
       .enter()
       .append('rect')
-      .attr('class', 'CDB-Chart-bar')
+      .attr('class', 'CDB-Chart-bar ' + this.options.chartBarColorClass)
       .attr('data', function (d) { return _.isEmpty(d) ? 0 : d.freq; })
       .attr('transform', function (d, i) {
         return 'translate(' + (i * self.barWidth) + ', 0 )';
@@ -944,7 +943,7 @@ module.exports = cdb.core.View.extend({
     bars
       .enter()
       .append('rect')
-      .attr('class', 'CDB-Chart-bar')
+      .attr('class', 'CDB-Chart-bar ' + this.options.chartBarColorClass)
       .attr('data', function (d) { return _.isEmpty(d) ? 0 : d.freq; })
       .attr('transform', function (d, i) {
         return 'translate(' + (i * self.barWidth) + ', 0 )';

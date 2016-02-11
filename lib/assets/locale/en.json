@@ -2,6 +2,18 @@
   "editor": {
     "map": "map",
     "map_name": "%{name} map",
-    "map_pluralize": "%{smart_count} map |||| %{smart_count} maps"
+    "map_pluralize": "%{smart_count} map |||| %{smart_count} maps",
+    "widgets": {
+      "edit": "Edit",
+      "data": {
+        "loading": "loading…",
+        "buckets": "Buckets",
+        "value": "Value"
+      },
+      "style": {
+        "unfiltered": "Unfiltered",
+        "dynamic": "Dynamic"
+      }
+    }
   }
 }

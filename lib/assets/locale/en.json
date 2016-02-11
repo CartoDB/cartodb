@@ -6,13 +6,22 @@
     "widgets": {
       "edit": "Edit",
       "data": {
+        "aggregation": "Aggregation",
+        "aggregation_column": "Aggregation Column",
+        "bins": "Buckets",
+        "column": "Column",
+        "end": "End",
         "loading": "loading…",
-        "buckets": "Buckets",
+        "operation": "Operation",
+        "prefix": "Prefix",
+        "start": "Start",
+        "suffix": "Suffix",
+        "title": "Title",
         "value": "Value"
       },
       "style": {
-        "unfiltered": "Unfiltered",
-        "dynamic": "Dynamic"
+        "sync_on_data_change": "Unfiltered",
+        "sync_on_bbox_change": "Dynamic"
       }
     }
   }

@@ -425,6 +425,11 @@ Editor
     RAILS_ENV=development bundle exec rake db:migrate
     RAILS_ENV=development bundle exec rake db:setup
 
+* Create an admin user
+
+  .. code-block:: bash
+
+    RAILS_ENV=development bundle exec rake db:setup_user
 
 * Start the redis-server that allows access to the SQL and Maps APIs:
 

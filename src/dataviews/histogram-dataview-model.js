@@ -24,7 +24,7 @@ module.exports = DataviewModelBase.extend({
     if (_.isNumber(this.get('end'))) {
       params.push('end=' + this.get('end'));
     }
-    if (_.isNumber(this.get('bins'))) {
+    if (_.isNumber(this.get('start'))) {
       params.push('bins=' + this.get('bins'));
     }
     if (_.isNumber(this.get('own_filter'))) {

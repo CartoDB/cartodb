@@ -54,7 +54,9 @@ module.exports = Model.extend({
     this.listenTo(this._windshaftMap, 'instanceCreated', this._onNewWindshaftMapInstance);
 
     this.listenToOnce(this, 'change:url', function () {
-      this._fetch(this._onChangeBinds.bind(this));
+      this.fetch({
+        success: this._onChangeBinds.bind(this)
+      });
     });
 
     // Retrigger an event when the filter changes
@@ -108,19 +110,19 @@ module.exports = Model.extend({
 
     this.on('change:url', function () {
       if (this._shouldFetchOnURLChange()) {
-        this._fetch();
+        this.fetch();
       }
     }, this);
     this.on('change:boundingBox', function () {
       if (this._shouldFetchOnBoundingBoxChange()) {
-        this._fetch();
+        this.fetch();
       }
     }, this);
 
     this.on('change:enabled', function (mdl, isEnabled) {
       if (isEnabled) {
         if (mdl.changedAttributes(this._previousAttrs)) {
-          this._fetch();
+          this.fetch();
         }
       } else {
         this._previousAttrs = {
@@ -139,18 +141,8 @@ module.exports = Model.extend({
     return this.get('enabled') && this.get('sync_on_bbox_change');
   },
 
-  _fetch: function (callback) {
-    var self = this;
-    this.fetch({
-      success: callback,
-      error: function () {
-        self.trigger('error');
-      }
-    });
-  },
-
   refresh: function () {
-    this._fetch();
+    this.fetch();
   },
 
   update: function (attrs) {
@@ -167,8 +159,14 @@ module.exports = Model.extend({
   },
 
   fetch: function (opts) {
+    opts = opts || {};
     this.trigger('loading', this);
-    return Model.prototype.fetch.call(this, opts);
+    return Model.prototype.fetch.call(this, {
+      success: opts.success,
+      error: function () {
+        this.trigger('error');
+      }.bind(this)
+    });
   },
 
   toJSON: function () {

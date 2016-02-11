@@ -69,10 +69,10 @@ describe('dataviews/category-dataview-model', function () {
       });
 
       it('should fetch itself if bounding box changes only when search is not applied', function () {
-        spyOn(this.model, '_fetch');
+        spyOn(this.model, 'fetch');
         spyOn(this.model, 'isSearchApplied').and.returnValue(true);
         this.model.set('boundingBox', 'comeon');
-        expect(this.model._fetch).not.toHaveBeenCalled();
+        expect(this.model.fetch).not.toHaveBeenCalled();
       });
     });
 
@@ -134,16 +134,16 @@ describe('dataviews/category-dataview-model', function () {
   });
 
   it('should refresh its own data only if the search is not applied', function () {
-    spyOn(this.model, '_fetch');
+    spyOn(this.model, 'fetch');
     spyOn(this.model._searchModel, 'fetch');
     this.model.refresh();
-    expect(this.model._fetch.calls.count()).toEqual(1);
-    expect(this.model._fetch).toHaveBeenCalled();
+    expect(this.model.fetch.calls.count()).toEqual(1);
+    expect(this.model.fetch).toHaveBeenCalled();
     expect(this.model._searchModel.fetch).not.toHaveBeenCalled();
     spyOn(this.model, 'isSearchApplied').and.returnValue(true);
     this.model.refresh();
     expect(this.model._searchModel.fetch).toHaveBeenCalled();
-    expect(this.model._fetch.calls.count()).toEqual(1);
+    expect(this.model.fetch.calls.count()).toEqual(1);
   });
 
   describe('.parse', function () {

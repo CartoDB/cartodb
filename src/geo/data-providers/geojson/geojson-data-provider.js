@@ -1,6 +1,6 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
-var d3 = require('d3')
+var d3 = require('d3');
 var CategoryFilter = require('../../../windshaft/filters/category');
 var RangeFilter = require('../../../windshaft/filters/range');
 
@@ -18,18 +18,22 @@ GeoJSONDataProvider.prototype._dataGeneratorsForDataviews = {
   histogram: function (features, options) {
     var filter = this._vectorLayerView.getFilter(this._layerIndex);
     var columnName = options.column;
-    var end, start, hist, width
+    var end, start, bins, width;
     var numberOfBins = options.bins || options.data.length;
     if (options.own_filter === 1) {
       end = filter.getMax(columnName);
       start = filter.getMin(columnName);
-      bins = d3.layout.histogram().bins(numberOfBins)(filter.getValues().map(function (f) { return f.properties[options.column] }));
+      bins = d3.layout.histogram().bins(numberOfBins)(filter.getValues().map(function (f) {
+        return f.properties[options.column];
+      }));
       width = (end - start) / options.data.length;
     } else {
       end = options.end || filter.getMax(columnName);
       start = options.start > -1 ? options.start : filter.getMin(columnName);
       width = (end - start) / options.bins;
-      bins = d3.layout.histogram().bins(numberOfBins)(filter.getValues(false, columnName).map(function (f) { return f.properties[options.column] }));
+      bins = d3.layout.histogram().bins(numberOfBins)(filter.getValues(false, columnName).map(function (f) {
+        return f.properties[options.column];
+      }));
     }
     bins = bins.map(function (bin, index) {
       return {
@@ -38,10 +42,22 @@ GeoJSONDataProvider.prototype._dataGeneratorsForDataviews = {
         min: d3.min(bin),
         avg: d3.mean(bin),
         freq: bin.length
-      }
+      };
     });
-    var average = bins.reduce(function(p,c){return p+c.avg}, 0)/bins.reduce(function(p,c){return p+c.freq}, 0);
-    var histogram = {"bin_width": width,"bins_count":bins.length, "bins_start": start, "nulls":0,"avg": average, "bins": bins, "type":"histogram"}
+    var average = bins.reduce(function (p, c) {
+      return p + c.avg;
+    }, 0) / bins.reduce(function (p, c) {
+      return p + c.freq;
+    }, 0);
+    var histogram = {
+      'bin_width': width,
+      'bins_count': bins.length,
+      'bins_start': start,
+      'nulls': 0,
+      'avg': average,
+      'bins': bins,
+      'type': 'histogram'
+    };
     return histogram;
   },
   category: function (features, options) {

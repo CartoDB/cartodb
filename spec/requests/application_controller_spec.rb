@@ -25,7 +25,7 @@ describe ApplicationController do
       it 'enabled if http_header_authentication is configured and header is sent' do
         stub_http_header_authentication_configuration
         ApplicationController.any_instance.expects(:http_header_authentication)
-        get dashboard_url, {}, authentication_headers
+        get dashboard_url, {}, authentication_headers(@user.email)
       end
 
       it 'disabled if http_header_authentication is configured and header is not set' do
@@ -37,7 +37,7 @@ describe ApplicationController do
       it 'disabled if http_header_authentication is not configured' do
         ApplicationController.any_instance.expects(:http_header_authentication).never
         get dashboard_url, {}, {}
-        get dashboard_url, {}, authentication_headers
+        get dashboard_url, {}, authentication_headers(@user.email)
       end
     end
 

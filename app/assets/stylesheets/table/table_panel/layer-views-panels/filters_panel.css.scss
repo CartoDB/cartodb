@@ -228,6 +228,20 @@
 
           &:hover {@include common-sprite(close_grey, $offset-y:-13px);}
         }
+
+        .remove-inline {
+          float: right;
+          margin-top: 4px;
+          margin-right: 5px;
+
+          @include opacity(1);
+
+          @include size(13px);
+          @include simple-transition(opacity, 150ms);
+          @include common-sprite(close_grey);
+
+          &:hover {@include common-sprite(close_grey, $offset-y:-13px);}
+        }
       }
     }
 
@@ -450,6 +464,34 @@
             background: #f1f1f1 image-url('sprites/table/filters_scroll_down.png') no-repeat 50% 9px;
             &:active { background-position: 50% 10px;  }
           }
+        }
+      }
+
+      .operations {
+        margin: 0 0 0 30px;
+        padding: 0;
+        width: 325px;
+
+        li {
+          clear:both;
+          overflow:hidden;
+
+          position:relative;
+          padding: 10px 0 10px 5px;
+          margin: 0;
+          color: #666666;
+          font-size:13px;
+          border-top: 1px solid rgba(#999, .25);
+
+          input {
+            width: 145px;
+          }
+
+          .invisible {
+            visibility: hidden;
+          }
+
+          &:last-child { margin-bottom: 0; }
         }
       }
 

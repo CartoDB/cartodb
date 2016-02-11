@@ -4,6 +4,15 @@ var CategoryFilter = require('../../../../../src/windshaft/filters/category');
 var RangeFilter = require('../../../../../src/windshaft/filters/range');
 
 describe('src/geo/data-providers/geojson/geojson-data-provider.js', function () {
+  it('implements the data provider interface', function () {
+    var vectorLayerView = jasmine.createSpyObj('vectorLayerView', ['_on']);
+    var dataProvider = new GeoJSONDataProvider(vectorLayerView, 0);
+
+    _.each(['generateDataForDataview', 'applyFilter', 'getData', 'bind', 'trigger'], function (method) {
+      expect(typeof dataProvider[method] === 'function').toBeTruthy();
+    });
+  });
+
   it('should trigger a FeaturesChanged event when the features on the layerView have changed', function () {
     var vectorLayerView = jasmine.createSpyObj('vectorLayerView', ['_on']);
 

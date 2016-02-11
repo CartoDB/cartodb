@@ -48,6 +48,12 @@ module CartoDB
       end
     end
 
+    class SchemaModifiedError < BaseImportError
+      def initialize(message="Schema of the dataset has changed (a least one column has been removed).")
+        super(message, 1022)
+      end
+    end
+
     class InstallError                          < StandardError; end
     class EmptyFileError                        < StandardError; end
     class ExtractionError                       < StandardError; end
@@ -115,6 +121,7 @@ module CartoDB
       PasswordNeededForExtractionError      => 1018,
       TooManyLayersError                    => 1019,
       DownloadTimeoutError                  => 1020,
+      SchemaModifiedError                   => 1022,
       LoadError                             => 2001,
       EncodingDetectionError                => 2002,
       MalformedCSVException                 => 2003,

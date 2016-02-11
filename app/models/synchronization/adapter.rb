@@ -8,11 +8,14 @@ module CartoDB
       attr_accessor :table
 
       def initialize(table_name, runner, database, user)
-        @table_name   = table_name
-        @runner       = runner
-        @database     = database
-        @user         = user
-        @failed       = false
+        @table_name    = table_name
+        @runner        = runner
+        @database      = database
+        @user          = user
+        @failed        = false
+        @modified      = false
+        @error_code    = nil
+        @error_message = nil
       end
 
       def run(&tracker)
@@ -25,6 +28,18 @@ module CartoDB
             data_for_exception << "1st result:#{runner.results.first.inspect}"
             raise data_for_exception
           end
+
+          # Checks change of schema. Fails if a previous column is droppend in the new schema
+          schema_old = get_schema_for(user.database_schema, table_name)
+          schema_new = get_schema_for(result.schema, result.table_name)
+          if (schema_old - schema_new).length > 0
+            @modified      = true
+            exception      = CartoDB::Importer2::SchemaModifiedError.new
+            @error_code    = exception.error_code
+            @error_message = exception.message
+            raise exception
+          end
+
           copy_privileges(user.database_schema, table_name, result.schema, result.table_name)
           index_statements = generate_index_statements(user.database_schema, table_name)
           overwrite(table_name, result)
@@ -65,6 +80,14 @@ module CartoDB
         drop(result.table_name) if exists?(result.table_name)
       end
 
+      def get_schema_for(schema, table)
+        # OPTIMIZE remove the hardcoded list of columns to ignore 
+        ignore_columns = [:cartodb_id, :oid, :the_geom, :the_geom_webmercator, :ogc_fid]
+        database.schema(table, schema: schema).map { |column| column[0] }
+          .delete_if {|column| ignore_columns.include?(column) }
+          .map{|column| column.to_s.gsub(" ","_").to_sym}
+      end
+
       def fix_oid(table_name)
         actual_oid_from_user_database = database.fetch(%Q{SELECT '#{table_name}'::regclass::oid}).first[:oid]
         table = ::Table.new(:user_table => ::UserTable.where(name: table_name, user_id: user.id).first)
@@ -102,6 +125,10 @@ module CartoDB
 
       def success?
         (!@failed  && runner.success?)
+      end
+
+      def modified?
+        (@failed  && @modified)
       end
 
       def etag
@@ -146,7 +173,7 @@ module CartoDB
       end
 
       def error_code
-        runner.results.map(&:error_code).compact.first
+        @error_code.nil? ? runner.results.map(&:error_code).compact.first : @error_code
       end
 
       def runner_log_trace
@@ -154,7 +181,7 @@ module CartoDB
       end
 
       def error_message
-        ''
+        @error_message.nil? ? '' : @error_message
       end
 
       def temporary_name_for(table_name)

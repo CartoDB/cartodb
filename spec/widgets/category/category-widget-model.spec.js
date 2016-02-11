@@ -1,6 +1,5 @@
 var CategoryWidgetModel = require('../../../src/widgets/category/category-widget-model');
 var specHelper = require('../../spec-helper');
-var _ = require('underscore');
 
 describe('widgets/category/category-widget-model', function () {
   beforeEach(function () {

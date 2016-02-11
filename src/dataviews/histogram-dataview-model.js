@@ -46,7 +46,9 @@ module.exports = DataviewModelBase.extend({
     this._data = new Backbone.Collection(this.get('data'));
 
     // BBox should only be included until after the first fetch, since we want to get the range of the full dataset
-    this.once('change:data', this.set.bind(this, 'submitBBox', true));
+    this.once('change:data', function () {
+      this.set('submitBBox', true);
+    }, this);
     this.listenTo(this.layer, 'change:meta', this._onChangeLayerMeta);
     this.on('change:column change:bins', this._reloadMap, this);
   },

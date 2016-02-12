@@ -3,7 +3,7 @@
     <div class="CDB-Shape u-iBlock">
       <span class="CDB-Shape-magnify is-small is-blue"></span>
     </div>
-    <span class="u-iBlock ">
+    <span class="u-iBlock u-actionTextColor">
       search in <%- categoriesCount %> categor<%- categoriesCount === 1 ? 'y' : 'ies' %>
     </span>
   </button>

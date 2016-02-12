@@ -730,7 +730,7 @@ module.exports = cdb.core.View.extend({
       .attr('width', 10);
 
     this.textLabel = axisTip.append('text')
-      .attr('class', 'CDB-Chart-axisTipText CDB-Chart-axisTip-' + className)
+      .attr('class', 'CDB-Text CDB-Size-small CDB-Chart-axisTipText CDB-Chart-axisTip-' + className)
       .attr('dy', '11')
       .attr('dx', '0')
       .text(function (d) { return d; });

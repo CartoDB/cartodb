@@ -13,11 +13,11 @@
 </div>
 <div class="CDB-Widget-content js-content">
   <div class="CDB-Widget-tooltip CDB-Widget-tooltip--light CDB-Text CDB-Size-small js-tooltip"></div>
-  <div class="CDB-Widget-filter CDB-Widget-contentSpaced js-filter is-hidden">
+  <div class="CDB-Widget-filter CDB-Widget-contentSpaced js-filter is-hidden ">
     <p class="CDB-Text is-semibold CDB-Size-small js-val"></p>
     <div class="CDB-Widget-filterButtons">
-      <button class="CDB-Widget-link CDB-Widget-filterButton js-zoom">zoom</button>
-      <button class="CDB-Widget-link CDB-Widget-filterButton js-clear">clear</button>
+      <button class=" CDB-Text CDB-Size-small is-upper CDB-Widget-filterButton js-zoom u-actionTextColor">zoom</button>
+      <button class=" CDB-Text CDB-Size-small is-upper CDB-Widget-filterButton js-clear u-actionTextColor">clear</button>
     </div>
   </div>
 </div>

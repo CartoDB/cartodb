@@ -151,7 +151,7 @@ module.exports = DataviewModelBase.extend({
   },
 
   getCount: function () {
-    return this.get('allCategoryNames').length;
+    return this.get('categoriesCount');
   },
 
   isOtherAvailable: function () {

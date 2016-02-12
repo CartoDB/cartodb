@@ -278,6 +278,14 @@ describe('dataviews/category-dataview-model', function () {
       expect(this.model.get('foo')).toBeUndefined();
     });
   });
+
+  describe('.getCount', function () {
+    it('returns the total number of categories', function () {
+      this.model.set('categoriesCount', 99999);
+
+      expect(this.model.getCount()).toEqual(99999);
+    });
+  });
 });
 
 function _generateData (n) {

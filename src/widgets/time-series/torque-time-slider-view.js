@@ -20,6 +20,7 @@ module.exports = cdb.core.View.extend({
     this._chartView = this.options.chartView;
     this._torqueLayerModel = this.options.torqueLayerModel;
 
+    this._torqueLayerModel.bind('change:start change:end', this._onChangeTimeRange, this);
     this._torqueLayerModel.bind('change:step', this._onChangeStep, this);
     this._torqueLayerModel.bind('change:steps', this._onChangeSteps, this);
     this._torqueLayerModel.bind('change:stepsRange', this._onStepsRange, this);
@@ -101,6 +102,10 @@ module.exports = cdb.core.View.extend({
     return x >= 0 && x <= this._width();
   },
 
+  _onChangeTimeRange: function () {
+    this._updateXScale();
+  },
+
   _onChangeStep: function () {
     // Time slider might not be created when this method is first called
     if (this.timeSlider && !this.model.get('isDragging')) {
@@ -148,9 +153,15 @@ module.exports = cdb.core.View.extend({
   },
 
   _updateXScale: function () {
+    // calculate range based on the torque layer bounds (that are not the same than the histogram ones)
+    var range = 1000 * (this._dataviewModel.get('end') - this._dataviewModel.get('start'));
+    // get normalized start and end
+    var start = (this._torqueLayerModel.get('start') - 1000 * this._dataviewModel.get('start')) / range;
+    var end = (this._torqueLayerModel.get('end') - 1000 * this._dataviewModel.get('start')) / range;
+
     this._xScale = d3.scale.linear()
       .domain([0, this._torqueLayerModel.get('steps')])
-      .range([0, this._width()]);
+      .range([start * this._width(), end * this._width()]);
   },
 
   _width: function () {

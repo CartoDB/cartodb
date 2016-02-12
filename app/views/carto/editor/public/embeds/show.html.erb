@@ -4,26 +4,29 @@
     <meta charset="utf-8">
     <%= javascript_include_tag 'editor3.js' %>
     <%= stylesheet_link_tag 'deep_insights.css', media: 'all' %>
-    <script>
-      window.onload = function() {
-        var vizJSON = <%= safe_js_object @vizjson.to_hash.to_json %>;
-
-        var dashboard = cartodb.deepInsights.createDashboard('#dashboard', vizJSON, {
-          no_cdn: false,
-          cartodb_logo: false
-        });
-
-        dashboard.vis.done(function() {
-          window.dashboard = dashboard
-        })
-        .error(function(err) {
-          console.error(err);
-        });
-      }
-    </script>
     <title><%= @visualization_data[:name].nil? ? 'Untitled map' : @visualization_data[:name] %></title>
   </head>
   <body>
     <div id="dashboard"></div>
+    <script>
+    window.onload = function() {
+      var frontendConfig = <%= safe_js_object frontend_config %>;
+      var visualizationData = <%= safe_js_object @visualization_data.to_json %>
+      var vizJSON = <%= safe_js_object @vizjson.to_hash.to_json %>;
+      var userData = <%= safe_js_object current_user.data({ show_api_calls: false }).to_json %>;
+
+      var dashboard = cartodb.deepInsights.createDashboard('#dashboard', vizJSON, {
+        no_cdn: false,
+        cartodb_logo: false
+      });
+
+      dashboard.vis.done(function() {
+        window.dashboard = dashboard
+      })
+      .error(function(err) {
+        console.error(err);
+      });
+    }
+    </script>
   </body>
 </html>

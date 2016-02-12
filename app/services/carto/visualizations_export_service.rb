@@ -230,7 +230,7 @@ module Carto
     end
 
     def create_map(user, base_layer)
-      map = CartoDB::Factories::MapFactory.get_map(base_layer, user.id)
+      map = ::Factories::MapFactory.get_map(base_layer, user.id)
       map.add_layer(base_layer)
       map
     end

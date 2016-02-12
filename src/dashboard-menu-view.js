@@ -6,7 +6,7 @@ var DashboardMenuView = cdb.core.View.extend({
   className: 'CDB-Dashboard-menu',
 
   events: {
-    'click .js-toggle-view-link': '_toggleView'
+    'click .js-toggle-view': '_toogleView'
   },
 
   render: function () {
@@ -23,7 +23,7 @@ var DashboardMenuView = cdb.core.View.extend({
     return this;
   },
 
-  _toggleView: function () {
+  _toogleView: function () {
     this.$el.toggleClass('is-active');
   }
 });

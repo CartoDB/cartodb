@@ -9,13 +9,13 @@ module Factories
 
     def self.get_default_base_layer(user)
       basemap = user.default_basemap
-      if basemap['className'] === 'googlemaps'
-        options = {
+      options = if basemap['className'] === 'googlemaps'
+        {
           kind: 'gmapsbase',
           options: basemap
         }
       else
-        options = {
+        {
           kind: 'tiled',
           options: basemap.merge('urlTemplate' => basemap['url'])
         }

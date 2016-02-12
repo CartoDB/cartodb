@@ -157,7 +157,7 @@ GeoJSONDataProvider.prototype._dataGeneratorsForDataviews = {
         'nulls': nulls,
         'type': 'formula'
       }
-    } else if (operation === 'min') {
+    } else if (operation === 'max') {
       data = {
         'operation': 'max',
         'result': features.reduce(function(p,c){return Math.max(p,c.properties[columnName])}, 0),

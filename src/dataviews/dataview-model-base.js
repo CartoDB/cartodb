@@ -48,6 +48,7 @@ module.exports = Model.extend({
     }
 
     this._initBinds();
+    this._updateBoundingBox();
   },
 
   _initBinds: function () {

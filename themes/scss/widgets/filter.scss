@@ -5,17 +5,15 @@
   display: block;
   max-height: 200px;
   margin: 5px 0 $baseSize;
-  transition: max-height 200ms ease-in;
-}
-.CDB-Widget-filter.is-hidden {
-  max-height: 0;
-  transition: max-height 100ms ease-out;
-  overflow: hidden;
 }
 .CDB-Widget-filterButtons {
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center);
+  transition: opacity 100ms ease-out;
+}
+.CDB-Widget-filterButtons.is-hidden {
+  opacity: 0;
 }
 .CDB-Widget-filterButton {
   margin-right: $baseSize;
@@ -26,3 +24,4 @@
 .CDB-Widget-filterButton.is-hidden {
   display: none;
 }
+

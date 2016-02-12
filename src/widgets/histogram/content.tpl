@@ -13,9 +13,9 @@
 </div>
 <div class="CDB-Widget-content js-content">
   <div class="CDB-Widget-tooltip CDB-Widget-tooltip--light js-tooltip"></div>
-  <div class="CDB-Widget-filter CDB-Widget-contentSpaced js-filter is-hidden">
+  <div class="CDB-Widget-filter CDB-Widget-contentSpaced">
     <p class="CDB-Widget-textSmaller CDB-Widget-textSmaller--bold CDB-Widget-textSmaller--upper js-val"></p>
-    <div class="CDB-Widget-filterButtons">
+    <div class="CDB-Widget-filterButtons js-filter is-hidden">
       <button class="CDB-Widget-link CDB-Widget-filterButton js-zoom">zoom</button>
       <button class="CDB-Widget-link CDB-Widget-filterButton js-clear">clear</button>
     </div>

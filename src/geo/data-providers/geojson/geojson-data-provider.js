@@ -125,33 +125,20 @@ GeoJSONDataProvider.prototype._dataGeneratorsForDataviews = {
     var columnName = options.column;
     var formulaTypes = ['avg', 'sum', 'min', 'max', 'count'];
     var nulls = features.reduce(function(p, c) { return p + (c.properties[columnName] === null ? 1 : 0) }, 0);
+    var result;
     if (formulaTypes.indexOf(operation) === -1) {
       throw new Error("Coudn't generate data for formula dataview and '" + operation + "' operation.");
     }
-
     if (operation === 'count') {
-      data = {
-        'operation': 'count',
-        'result': features.length,
-        'nulls': nulls,
-        'type': 'formula'
-      };
+      result = features.length;
     } else if (operation === 'avg') {
-      var total = 0;
-      _.each(features, function (feature) {
-        total += parseInt(feature.properties[columnName], 10);
-      });
-      result = +(total / features.length).toFixed(2)
-      };
+      result = features.reduce(function (p,c) { return p+c.properties[columnName] }, 0) / features.length;
     } else if (operation === 'sum') {
-      result = features.reduce(function(p,c){return p+c.properties[columnName]},0)
-      }
+      result = features.reduce(function(p,c){return p+c.properties[columnName]},0);
     } else if (operation === 'min') {
-      result = features.reduce(function(p,c){return Math.min(p,c.properties[columnName])}, Infinity)
-      }
+      result = features.reduce(function(p,c){return Math.min(p,c.properties[columnName])}, Infinity);
     } else if (operation === 'max') {
-      result = features.reduce(function(p,c){return Math.max(p,c.properties[columnName])}, 0)
-      }
+      result = features.reduce(function(p,c){return Math.max(p,c.properties[columnName])}, 0);
     } 
     var data = {
       'operation': operation,

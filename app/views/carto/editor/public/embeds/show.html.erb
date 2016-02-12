@@ -1,11 +1,12 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <title>embed</title>
-  </head>
-  <body>
-    take that
-    <textarea><%= @visjson %></textarea>
-  </body>
-</html>
+<script>
+  var frontendConfig = <%= safe_js_object frontend_config %>;
+  var visualizationData = <%= safe_js_object @visualization_data.to_json %>
+  var vizJSON = <%= safe_js_object @vizjson.to_hash.to_json %>;
+  var userData = <%= safe_js_object current_user.data({ show_api_calls: false }).to_json %>;
+</script>
+
+<%= javascript_include_tag 'editor3.js' %>
+
+<%= stylesheet_link_tag 'deep_insights.css', media: 'all' %>
+
+<div id="dashboard"></div>

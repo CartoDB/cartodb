@@ -14,8 +14,9 @@ module Carto
       layout 'application_editor3'
 
       def show
-        @visualization_data = load_visualization_data(@visualization)
-        @vizjson = load_vizjson(@visualization)
+        @visualization_data = Carto::Api::VisualizationPresenter.new(@visualization, current_viewer, self).to_poro
+        @vizjson = Carto::Api::VizJSON3Presenter.new(@visualization, $tables_metadata)
+                                                .to_vizjson(https_request: is_https?)
       end
 
       private

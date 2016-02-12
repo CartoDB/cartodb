@@ -7,10 +7,17 @@ module Carto
         include VisualizationsControllerHelper
 
         before_filter :load_visualization, only: [:show]
-        before_filter :load_visualization_data, only: [:show]
-        before_filter :load_vizjson, only: [:show]
 
         def show
+          @visualization_data = load_visualization_data(@visualization)
+          byebug
+          @vizjson = load_vizjson(@visualization)
+        end
+
+        private
+
+        def load_visualization
+          @visualization = load_visualization_from_id(params[:id])
         end
       end
     end

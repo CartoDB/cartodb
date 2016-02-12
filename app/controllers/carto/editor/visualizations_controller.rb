@@ -8,14 +8,20 @@ module Carto
       ssl_required :show
 
       before_filter :load_visualization, only: [:show]
-      before_filter :load_visualization_data, only: [:show]
-      before_filter :load_vizjson, only: [:show]
 
       after_filter :update_user_last_activity, only: [:show]
 
       layout 'application_editor3'
 
       def show
+        @visualization_data = load_visualization_data(@visualization)
+        @vizjson = load_vizjson(@visualization)
+      end
+
+      private
+
+      def load_visualization
+        @visualization = load_visualization_from_id(params[:id])
       end
     end
   end

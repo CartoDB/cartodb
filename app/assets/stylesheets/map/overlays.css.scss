@@ -644,6 +644,19 @@ div.cartodb-zoom .info {
 
 }
 
+.leaflet-control-minimap {
+  background: #333 url('/assets/3.22.9/images/layout/noise.png?1455192268') repeat 0 0;
+}
+
+.leaflet-control-minimap .inset-map-grabber {
+  width: 20px;
+  height: 20px;
+  background-color: grey;
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
 div.rule {
   position:absolute;
   height: 100%;

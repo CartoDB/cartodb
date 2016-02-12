@@ -90,6 +90,15 @@ var TorqueLayer = MapLayer.extend({
   },
 
   fetchAttributes: function(layer, featureID, callback) {
+  },
+
+  // given a timestamp returns a step (float)
+  timeToStep: function(timestamp) {
+    var steps = this.get('steps');
+    var start = this.get('start');
+    var end = this.get('end');
+    var step = (steps * (1000*timestamp - start)) / (end - start);
+    return step;
   }
 });
 

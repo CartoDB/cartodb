@@ -19,6 +19,10 @@ describe('dataviews/dataview-model-base', function () {
     this.model.toJSON = jasmine.createSpy('toJSON').and.returnValue({});
   });
 
+  it('should get a boundingBox attribute initially', function () {
+    expect(this.model.get('boundingBox')).toEqual('2,1,4,3');
+  });
+
   describe('when url changes', function () {
     beforeEach(function () {
       spyOn(this.model, 'fetch');

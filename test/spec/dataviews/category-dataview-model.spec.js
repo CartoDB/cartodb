@@ -84,8 +84,25 @@ describe('dataviews/category-dataview-model', function () {
         }, this);
       });
 
-      it('should trigger a change:searchData when search model is fetched', function () {
-        _.bind(eventDispatcher, this)(this.model._searchModel, 'change:data', 'change:searchData');
+      describe('on search data change', function () {
+        beforeEach(function () {
+          spyOn(this.model, 'trigger');
+          this.model.filter.accept(['hey']);
+          this.model._searchModel.setData([{ name: 'hey' }, { name: 'vamos' }, { name: 'neno' }]);
+        });
+
+        it('should check if search results are already selected or not', function () {
+          var data = this.model.getSearchResult();
+          expect(data.size()).toBe(3);
+          var selectedCategories = data.where({ selected: true });
+          var selectedCategory = selectedCategories[0];
+          expect(_.size(selectedCategories)).toBe(1);
+          expect(selectedCategory.get('name')).toBe('hey');
+        });
+
+        it('should trigger searchData event', function () {
+          expect(this.model.trigger).toHaveBeenCalledWith('change:searchData', this.model);
+        });
       });
     });
 
@@ -144,6 +161,38 @@ describe('dataviews/category-dataview-model', function () {
     this.model.refresh();
     expect(this.model._searchModel.fetch).toHaveBeenCalled();
     expect(this.model.fetch.calls.count()).toEqual(1);
+  });
+
+  describe('filters over data', function () {
+    beforeEach(function () {
+      this.model._data.reset([{ name: 'one' }, { name: 'buddy' }, { name: 'neno' }]);
+    });
+
+    describe('.numberOfAcceptedCategories', function () {
+      it('should count accepted categories over the current data', function () {
+        this.model.filter.accept('vamos');
+        expect(this.model.numberOfAcceptedCategories()).toBe(0);
+        this.model.filter.accept('buddy');
+        expect(this.model.numberOfAcceptedCategories()).toBe(1);
+        this.model.filter.reject('neno');
+        expect(this.model.numberOfAcceptedCategories()).toBe(2);
+        this.model._data.reset([]);
+        expect(this.model.numberOfAcceptedCategories()).toBe(0);
+      });
+    });
+
+    describe('.numberOfRejectedCategories', function () {
+      it('should count rejected categories over the current data', function () {
+        this.model.filter.reject('vamos');
+        expect(this.model.numberOfRejectedCategories()).toBe(0);
+        this.model.filter.reject('buddy');
+        expect(this.model.numberOfRejectedCategories()).toBe(1);
+        this.model.filter.accept('neno');
+        expect(this.model.numberOfRejectedCategories()).toBe(1);
+        this.model._data.reset([]);
+        expect(this.model.numberOfRejectedCategories()).toBe(0);
+      });
+    });
   });
 
   describe('.parse', function () {

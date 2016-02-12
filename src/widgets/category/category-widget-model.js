@@ -104,7 +104,7 @@ module.exports = WidgetModel.extend({
 
   lockCategories: function () {
     this.set('locked', true);
-    this.dataviewModel.forceFetch();
+    this.dataviewModel.fetch();
   },
 
   unlockCategories: function () {

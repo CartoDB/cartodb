@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <%= javascript_include_tag 'editor3.js' %>
-    <%= stylesheet_link_tag 'deep_insights.css', :media => 'all' %>
+    <%= stylesheet_link_tag 'deep_insights.css', media: 'all' %>
     <script>
       window.onload = function() {
         var vizJSON = <%= safe_js_object @vizjson.to_json %>;

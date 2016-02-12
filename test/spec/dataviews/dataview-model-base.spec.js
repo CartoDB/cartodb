@@ -25,19 +25,19 @@ describe('dataviews/dataview-model-base', function () {
 
   describe('when url changes', function () {
     beforeEach(function () {
-      spyOn(this.model, '_fetch');
+      spyOn(this.model, 'fetch');
       spyOn(this.model, 'listenTo');
       spyOn(this.model, 'on');
       this.model.set('url', 'new-url');
     });
 
     it('should fetch', function () {
-      expect(this.model._fetch).toHaveBeenCalled();
+      expect(this.model.fetch).toHaveBeenCalled();
     });
 
     describe('when fetch succeeds', function () {
       beforeEach(function () {
-        this.model._fetch.calls.argsFor(0)[0]();
+        this.model.fetch.calls.argsFor(0)[0].success();
       });
 
       it('should change bounds', function () {
@@ -89,17 +89,17 @@ describe('dataviews/dataview-model-base', function () {
 
   describe('when disabled', function () {
     it('should fetch again when disabled is disabled and url or boundingBox has changed', function () {
-      spyOn(this.model, '_fetch');
+      spyOn(this.model, 'fetch');
       this.model.set('enabled', false);
       this.model.set('url', 'hello');
       this.model.set('enabled', true);
-      expect(this.model._fetch).toHaveBeenCalled();
+      expect(this.model.fetch).toHaveBeenCalled();
     });
 
     it('should not fetch when disabled is enabled', function () {
-      spyOn(this.model, '_fetch');
+      spyOn(this.model, 'fetch');
       this.model.set('enabled', false);
-      expect(this.model._fetch).not.toHaveBeenCalled();
+      expect(this.model.fetch).not.toHaveBeenCalled();
     });
   });
 

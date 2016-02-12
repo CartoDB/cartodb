@@ -124,11 +124,12 @@ GeoJSONDataProvider.prototype._dataGeneratorsForDataviews = {
     var operation = options.operation;
     var columnName = options.column;
     var data;
+    var nulls = features.reduce(function(p, c) { return p + (c.properties[columnName] === null ? 1 : 0) }, 0);
     if (operation === 'count') {
       data = {
         'operation': 'count',
         'result': features.length,
-        'nulls': 0,
+        'nulls': nulls,
         'type': 'formula'
       };
     } else if (operation === 'avg') {
@@ -139,7 +140,7 @@ GeoJSONDataProvider.prototype._dataGeneratorsForDataviews = {
       data = {
         'operation': 'avg',
         'result': +(total / features.length).toFixed(2),
-        'nulls': 0,
+        'nulls': nulls,
         'type': 'formula'
       };
     } else {

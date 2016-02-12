@@ -3,6 +3,9 @@ var _ = require('underscore');
 var cdb = require('cartodb.js');
 var CategoryItemView = require('./item/item-view');
 var placeholder = require('./items-placeholder-template.tpl');
+// It is the minimum number of items in order to change select
+// behaviour within the category list.
+var MIN_CATEGORIES = 2;
 
 /**
  * Category list view
@@ -84,28 +87,31 @@ module.exports = cdb.core.View.extend({
   _setFilters: function (mdl) {
     var isSelected = mdl.get('selected');
     var filter = this.dataviewModel.filter;
+    var clickedName = mdl.get('name');
 
     if (isSelected) {
+      // If there isn't any filter applied and there are several categories
+      // (> MIN_CATEGORIES), clicking over one will turn rest into as "unselected"
       if (filter.rejectedCategories.size() === 0 &&
           filter.acceptedCategories.size() === 0 &&
-          this.dataviewModel.getCount() > 1
+          this.dataviewModel.getSize() > MIN_CATEGORIES
       ) {
         var data = this.dataviewModel.getData();
         // Make elements "unselected"
         data.each(function (m) {
           var name = m.get('name');
-          if (name !== mdl.get('name')) {
+          if (name !== clickedName) {
             m.set('selected', false);
           }
         });
         filter.accept(mdl.get('name'));
       } else {
         mdl.set('selected', false);
-        filter.reject(mdl.get('name'));
+        filter.reject(clickedName);
       }
     } else {
       mdl.set('selected', true);
-      filter.accept(mdl.get('name'));
+      filter.accept(clickedName);
     }
   },
 

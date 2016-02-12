@@ -122,7 +122,7 @@ GeoJSONDataProvider.prototype._dataGeneratorsForDataviews = {
     var data;
     if (operation === 'count') {
       data = {
-        'operation': 'count',
+        'operation': operation,
         'result': features.length,
         'nulls': 0,
         'type': 'formula'
@@ -133,13 +133,38 @@ GeoJSONDataProvider.prototype._dataGeneratorsForDataviews = {
         total += parseInt(feature.properties[columnName], 10);
       });
       data = {
-        'operation': 'avg',
-        'result': +(total / features.length).toFixed(2),
+        'operation': operation,
+        'result': features.length,
+        'nulls': 0,
+        'type': 'formula'
+      };
+    } else if (operation === 'max') {
+      // TODO: Calculate the max value
+      data = {
+        'operation': operation,
+        'result': 99999999,
+        'nulls': 0,
+        'type': 'formula'
+      };
+    } else if (operation === 'min') {
+      // TODO: Calculate the min value
+      data = {
+        'operation': 'count',
+        'result': 99999999,
+        'nulls': 0,
+        'type': 'formula'
+      };
+    } else if (operation === 'sum') {
+      // TODO: Calculate the min value
+      data = {
+        'operation': 'count',
+        'result': 99999999,
         'nulls': 0,
         'type': 'formula'
       };
     } else {
-      throw new Error("Coudn't generate data for formula dataview and '" + operation + "' operation.");
+      console.log("Coudn't generate data for formula dataview and '" + operation + "' operation.")
+      // throw new Error("Coudn't generate data for formula dataview and '" + operation + "' operation.");
     }
     return data;
   }

@@ -143,6 +143,27 @@ GeoJSONDataProvider.prototype._dataGeneratorsForDataviews = {
         'nulls': nulls,
         'type': 'formula'
       };
+    } else if (operation === 'sum') {
+      data = {
+        'operation': 'sum',
+        'result': features.reduce(function(p,c){return p+c.properties[columnName]},0),
+        'nulls': nulls,
+        'type': 'formula'
+      }
+    } else if (operation === 'min') {
+      data = {
+        'operation': 'min',
+        'result': features.reduce(function(p,c){return Math.min(p,c.properties[columnName])}, Infinity),
+        'nulls': nulls,
+        'type': 'formula'
+      }
+    } else if (operation === 'min') {
+      data = {
+        'operation': 'max',
+        'result': features.reduce(function(p,c){return Math.max(p,c.properties[columnName])}, 0),
+        'nulls': nulls,
+        'type': 'formula'
+      }
     } else {
       throw new Error("Coudn't generate data for formula dataview and '" + operation + "' operation.");
     }

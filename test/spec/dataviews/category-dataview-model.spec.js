@@ -40,8 +40,6 @@ describe('dataviews/category-dataview-model', function () {
       this.model.set({
         url: 'http://heytest.io'
       });
-      // Simulating first interaction with client.js
-      this.model._onChangeBinds();
     });
 
     describe('url', function () {
@@ -77,12 +75,17 @@ describe('dataviews/category-dataview-model', function () {
     });
 
     describe('search events dispatcher', function () {
-      it('should trigger search related events', function () {
-        var eventNames = ['loading', 'sync', 'error'];
-        _.each(eventNames, function (eventName) {
-          _.bind(eventDispatcher, this)(this.model._searchModel, eventName);
-        }, this);
-      });
+      var eventNames = ['loading', 'sync', 'error'];
+      _.each(eventNames, function (eventName) {
+        it("should re-trigger the '" + eventName + "' event", function () {
+          var spyObj = jasmine.createSpy(eventName);
+          this.model.bind(eventName, spyObj);
+
+          this.model._searchModel.trigger(eventName);
+
+          expect(spyObj).toHaveBeenCalled();
+        });
+      }, this);
 
       describe('on search data change', function () {
         beforeEach(function () {
@@ -276,13 +279,6 @@ describe('dataviews/category-dataview-model', function () {
     });
   });
 });
-
-function eventDispatcher (originModel, eventName, triggerName) {
-  var spyObj = jasmine.createSpy(eventName);
-  this.model.bind(triggerName || eventName, spyObj);
-  originModel.trigger(eventName);
-  expect(spyObj).toHaveBeenCalled();
-}
 
 function _generateData (n) {
   return _.times(n, function (i) {

@@ -163,8 +163,7 @@ GeoJSONDataProvider.prototype._dataGeneratorsForDataviews = {
         'type': 'formula'
       };
     } else {
-      console.log("Coudn't generate data for formula dataview and '" + operation + "' operation.")
-      // throw new Error("Coudn't generate data for formula dataview and '" + operation + "' operation.");
+      throw new Error("Coudn't generate data for formula dataview and '" + operation + "' operation.");
     }
     return data;
   }

@@ -49,7 +49,11 @@ CartoDB::Application.routes.draw do
   scope module: 'carto', path: '(/user/:user_domain)(/u/:user_domain)' do
     namespace :editor do
       # Visualizations
-      resources :visualizations, only: :show, path: '/', constraints: { id: /[0-z\.\-]+/ }
+      resources :visualizations, only: :show, path: '/', constraints: { id: /[0-z\.\-]+/ } do
+        namespace :public, path: '/' do
+          match 'embed', to: 'embeds#show', via: :get
+        end
+      end
     end
   end
 

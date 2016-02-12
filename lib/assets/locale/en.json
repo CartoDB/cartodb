@@ -4,6 +4,10 @@
     "map_name": "%{name} map",
     "map_pluralize": "%{smart_count} map |||| %{smart_count} maps",
     "widgets": {
+      "widgets-form": {
+        "data": "Data",
+        "style": "Style"
+      },
       "edit": "Edit",
       "type": {
         "category": "Category",

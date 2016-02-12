@@ -25,7 +25,7 @@ describe Visualization::Collection do
     Visualization::Migrator.new(@db).migrate(@relation)
     Visualization.repository = @repository
 
-    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true)
 
     # For relator->permission
     user_id = UUIDTools::UUID.timestamp_create.to_s
@@ -34,8 +34,8 @@ describe Visualization::Collection do
     @user_1_mock = create_mocked_user
     CartoDB::Visualization::Relator.any_instance.stubs(:user).returns(@user_1_mock)
 
-    @user_1 = FactoryGirl.create(:valid_user)
-    @user_2 = FactoryGirl.create(:valid_user)
+    @user_1 = FactoryGirl.create(:valid_user, quota_in_bytes: 524288000, table_quota: 500, private_tables_enabled: true)
+    @user_2 = FactoryGirl.create(:valid_user, private_tables_enabled: true)
   end
 
   after(:each) do

@@ -12,6 +12,8 @@ $linkHover: rgba(#227DBD, 1);
 $lightHighlight: rgba(#000, 0.06);
 $highlighted: rgba(#9DE0AD, 1);
 $darkHighlighted: rgba(#5BA45E, 1);
+$highlightedAlternative: rgba(#F2CC8F, 1);
+$darkHighlightedAlternative: rgba(#EFE0C8, 1);
 $positive: rgba(#8FB83F, 1);
 $negative: rgba(#F15743, 1);
 $loadingBkg: rgba(#F9F9F9, 1);
@@ -194,7 +196,6 @@ $chartMiniHighlight: rgba(#333, 1);
     }
   }
 
-
   //Charts
   .extent {
     stroke: $link;
@@ -203,33 +204,32 @@ $chartMiniHighlight: rgba(#333, 1);
   .CDB-Chart-bar {
     fill: $highlighted;
   }
-
   .CDB-Chart-bar.is-highlighted {
     fill: $darkHighlighted;
   }
-
+  .CDB-Chart-bar--timeSeries {
+    fill: $highlightedAlternative;
+  }
+  .CDB-Chart-bar--timeSeries.is-highlighted {
+    fill: $darkHighlightedAlternative;
+  }
   .CDB-Chart-bar.is-selected {
     fill: $lightHighlight;
   }
-
   .CDB-Chart-shadowBar {
     fill: $lightHighlight;
   }
-
   .CDB-Chart-handleRect {
     stroke: $link;
     stroke-width: 2;
     fill: $commonBkg;
   }
-
   .CDB-Chart-axisTipText {
     fill: $link;
   }
-
   .CDB-Chart-handleLine {
     stroke: $link;
   }
-
   .CDB-Chart.CDB-Chart--mini {
     .CDB-Chart-bar {
       fill: $chartMiniHighlight;
@@ -241,27 +241,21 @@ $chartMiniHighlight: rgba(#333, 1);
       fill: $chartMini;
     }
   }
-
   .CDB-Chart-line {
     stroke: $chartLine;
   }
-
   .CDB-Chart-line.CDB-Chart-line--bottom {
     stroke: $blackBkg;
   }
-
   .CDB-Chart-handleGrip {
     stroke: $chartHandleGrip;
   }
-
   .CDB-Chart-axis {
     fill: $chartAxis;
   }
-
   .CDB-Chart-axis line {
     stroke: $chartLine;
   }
-
   .CDB-Chart-axisTipRect {
     fill: $commonBkg;
   }

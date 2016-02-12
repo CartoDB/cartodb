@@ -144,20 +144,20 @@ describe('widgets/category/category-widget-model', function () {
 
       describe('locked/unlocked', function () {
         beforeEach(function () {
-          spyOn(this.dataviewModel, 'forceFetch');
+          spyOn(this.dataviewModel, 'fetch');
           spyOn(this.dataviewModel.filter, 'acceptAll');
         });
 
         it('should lock dataview', function () {
           this.widgetModel.lockCategories();
           expect(this.widgetModel.get('locked')).toBeTruthy();
-          expect(this.dataviewModel.forceFetch).toHaveBeenCalled();
+          expect(this.dataviewModel.fetch).toHaveBeenCalled();
         });
 
         it('should unlock dataview', function () {
           this.widgetModel.unlockCategories();
           expect(this.widgetModel.get('locked')).toBeFalsy();
-          expect(this.dataviewModel.forceFetch).not.toHaveBeenCalled();
+          expect(this.dataviewModel.fetch).not.toHaveBeenCalled();
           expect(this.dataviewModel.filter.acceptAll).toHaveBeenCalled();
         });
       });

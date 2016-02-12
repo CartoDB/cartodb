@@ -44,7 +44,7 @@ module.exports = cdb.core.View.extend({
   _onFirstLoad: function () {
     this._storeBounds();
     this._dataviewModel.once('change:data', this.render, this);
-    this._dataviewModel._fetch();
+    this._dataviewModel.fetch();
     if (!this._isDataEmpty()) {
       this.render();
     }

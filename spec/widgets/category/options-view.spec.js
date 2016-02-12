@@ -1,4 +1,5 @@
 var specHelper = require('../../spec-helper');
+var Backbone = require('backbone');
 var CategoryWidgetModel = require('../../../src/widgets/category/category-widget-model');
 var OptionsView = require('../../../src/widgets/category/options/options-view');
 
@@ -65,6 +66,10 @@ describe('widgets/category/options-view', function () {
   });
 
   describe('render', function () {
+    beforeEach(function () {
+      this.dataviewModel._data.reset([{ category: 'test' }, { category: 'hey' }, { category: 'meh' }]);
+    });
+
     it('should render selected all from the beginning', function () {
       this.view.render();
       expect(this.view.$('.CDB-Widget-textSmaller').length).toBe(1);
@@ -83,22 +88,14 @@ describe('widgets/category/options-view', function () {
       spyOn(this.widgetModel, 'isLocked').and.returnValue(true);
       this.view.render();
       expect(this.view.$('.CDB-Widget-textSmaller').length).toBe(1);
-      expect(this.view.$('.CDB-Widget-textSmaller').text()).toContain('0 blocked');
+      expect(this.view.$('.CDB-Widget-textSmaller').text()).toContain('3 blocked');
       expect(this.view.$('.CDB-Widget-filterButtons').length).toBe(0);
       expect(this.view.$('.js-unlock').length).toBe(1);
     });
 
     it('should render number of selected items and lock button if widget is still not locked', function () {
       spyOn(this.widgetModel, 'isLocked').and.returnValue(false);
-      this.dataviewModel.sync = function (method, model, options) {
-        options.success({
-          'categories': [
-            {category: 'test'},
-            {category: 'one'}
-          ]
-        });
-      };
-      this.dataviewModel.fetch();
+      this.dataviewModel._data.reset([{ name: 'test' }, { name: 'one' }, { name: 'two' }]);
       this.dataviewModel.filter.accept('one');
       expect(this.view.$('.CDB-Widget-textSmaller').length).toBe(1);
       expect(this.view.$('.CDB-Widget-textSmaller').text()).toContain('1 selected');
@@ -109,17 +106,8 @@ describe('widgets/category/options-view', function () {
     it('should render filter buttons if widget is neither locked nor search enabled', function () {
       spyOn(this.widgetModel, 'isLocked').and.returnValue(false);
       spyOn(this.widgetModel, 'isSearchEnabled').and.returnValue(false);
-      this.dataviewModel.filter.accept('Hey');
-      this.dataviewModel.sync = function (method, model, options) {
-        options.success({
-          'categories': [
-            {category: 'Hey'},
-            {category: 'Buddy'}
-          ]
-        });
-      };
-      this.dataviewModel.fetch();
-      this.view.render();
+      spyOn(this.dataviewModel, 'getData').and.returnValue(new Backbone.Collection([{ name: 'hey' }, { name: 'buddy' }, { name: 'neno' }]));
+      this.dataviewModel.filter.accept('hey');
       expect(this.view.$('.CDB-Widget-textSmaller').length).toBe(1);
       expect(this.view.$('.CDB-Widget-textSmaller').text()).toContain('1 selected');
       expect(this.view.$('.CDB-Widget-filterButtons').length).toBe(1);
@@ -132,26 +120,28 @@ describe('widgets/category/options-view', function () {
       expect(this.view.$('.js-all').length).toBe(1);
       expect(this.view.$('p.CDB-Widget-textSmaller').text()).toContain('None selected');
     });
+
+    it('should not render all button when there are less than 2 categories', function () {
+      spyOn(this.dataviewModel, 'getData').and.returnValue(new Backbone.Collection([{ name: 'hey' }, { name: 'buddy' }]));
+      this.view.render();
+      expect(this.view.$('.js-all').length).toBe(0);
+    });
   });
 
   it('should accept all when all button is clicked', function () {
     spyOn(this.dataviewModel.filter, 'acceptAll');
-    this.dataviewModel.sync = function (method, model, options) {
-      options.success({
-        'categories': [
-          {category: 'Hey'},
-          {category: 'Buddy'}
-        ]
-      });
-    };
-    this.dataviewModel.fetch();
-    this.dataviewModel.filter.accept('Hey');
+    spyOn(this.dataviewModel, 'getData').and.returnValue(new Backbone.Collection([{ name: 'hey' }, { name: 'buddy' }, { name: 'neno' }]));
+    this.dataviewModel.filter.accept('hey');
     this.view.render();
     this.view.$('.js-all').click();
     expect(this.dataviewModel.filter.acceptAll).toHaveBeenCalled();
   });
 
   describe('lock', function () {
+    beforeEach(function () {
+      this.dataviewModel._data.reset([{ name: 'one' }, { name: 'buddy' }, { name: 'neno' }]);
+    });
+
     it('should render "locked" button and apply them when is clicked', function () {
       this.dataviewModel.filter.accept('one');
       expect(this.view.$('.js-lock').length).toBe(1);

@@ -24,7 +24,7 @@ Installations assume you use UTF8. You can set the locale by doing this:
 Build essentials
 ~~~~~~~~~~~~~~~~
 
-Althoug we try to maintain packaged versions of almost every part of the stack, there are some parts like gems or npm packages that need some development tools in the system in order to compile. You can install all the needed build tools by doing this:
+Although we try to maintain packaged versions of almost every part of the stack, there are some parts like gems or npm packages that need some development tools in the system in order to compile. You can install all the needed build tools by doing this:
 
 .. code-block:: bash
  

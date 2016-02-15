@@ -9,7 +9,7 @@
       </div>
     </button>
   </div>
-  <dl class="CDB-Widget-info CDB-Text CDB-Size-small u-secondaryTextColor is-upper">
+  <dl class="CDB-Widget-info CDB-Text CDB-Size-small u-secondaryTextColor u-upperCase">
     <dt class="CDB-Widget-infoCount"><%- nulls %></dt><dd class="CDB-Widget-infoDescription">null rows</dd>
   </dl>
 </div>

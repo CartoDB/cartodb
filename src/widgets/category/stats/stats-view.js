@@ -11,7 +11,7 @@ var AnimateValues = require('../../animate-values');
  */
 
 module.exports = cdb.core.View.extend({
-  className: 'CDB-Widget-info CDB-Text CDB-Size-small u-secondaryTextColor is-upper',
+  className: 'CDB-Widget-info CDB-Text CDB-Size-small u-secondaryTextColor u-upperCase',
   tagName: 'dl',
 
   initialize: function () {

@@ -9,6 +9,9 @@ module Carto
         ssl_required :show
 
         before_filter :load_visualization, only: [:show]
+        before_filter :ensure_viewable, only: [:show]
+
+        skip_before_filter :editor_users_only, only: [:show] # This is supposed to be public
 
         layout false
 
@@ -22,6 +25,11 @@ module Carto
 
         def load_visualization
           @visualization = load_visualization_from_id(params[:visualization_id])
+        end
+
+        def ensure_viewable
+          return(render 'admin/visualizations/embed_map_error') if @visualization.is_private?
+          # return(render 'embed_map_password', layout: 'application_password_layout') if @visualization.password_protected?
         end
       end
     end

@@ -46,6 +46,7 @@ var LeafletTorqueLayer = L.TorqueLayer.extend({
       this.provider.templateUrl = this.model.get('urls').tiles[0];
       // set meta
       _.extend(this.provider.options, this.model.get('meta'));
+      this.model.set(this.model.get('meta'));
       // this needs to be deferred in order to break the infinite loop
       // of setReady changing keys and keys updating the model
       // If we do this in the next iteration 'urls' will not be in changedAttributes

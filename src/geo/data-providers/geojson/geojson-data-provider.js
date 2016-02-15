@@ -123,12 +123,8 @@ GeoJSONDataProvider.prototype._dataGeneratorsForDataviews = {
   formula: function (features, options) {
     var operation = options.operation;
     var columnName = options.column;
-    var formulaTypes = ['avg', 'sum', 'min', 'max', 'count'];
     var nulls = features.reduce(function(p, c) { return p + (c.properties[columnName] === null ? 1 : 0) }, 0);
     var result;
-    if (formulaTypes.indexOf(operation) === -1) {
-      throw new Error("Coudn't generate data for formula dataview and '" + operation + "' operation.");
-    }
     if (operation === 'count') {
       result = features.length;
     } else if (operation === 'avg') {
@@ -139,7 +135,9 @@ GeoJSONDataProvider.prototype._dataGeneratorsForDataviews = {
       result = features.reduce(function(p,c){return Math.min(p,c.properties[columnName])}, Infinity);
     } else if (operation === 'max') {
       result = features.reduce(function(p,c){return Math.max(p,c.properties[columnName])}, 0);
-    } 
+    } else {
+      throw new Error("Coudn't generate data for formula dataview and '" + operation + "' operation.");
+    }
     var data = {
       'operation': operation,
       'result': result,

@@ -115,8 +115,12 @@ class Asset < Sequel::Model
     local_path = file_upload_helper.get_uploads_path.join(target_asset_path)
     FileUtils.mkdir_p local_path
     FileUtils.cp @file.path, local_path.join(filename)
+
+    mode = chmod_mode
+    FileUtils.chmod(mode, local_path.join(filename)) if mode
+
     p = File.join('/', 'uploads', target_asset_path, filename)
-    "http://#{CartoDB.account_host}#{p}"
+    "#{asset_protocol}//#{CartoDB.account_host}#{p}"
   end
 
   def use_s3?
@@ -144,6 +148,20 @@ class Asset < Sequel::Model
     s3 = AWS::S3.new
     bucket_name = Cartodb.config[:assets]["s3_bucket_name"]
     @s3_bucket ||= s3.buckets[bucket_name]
+  end
+
+  private
+
+  def chmod_mode
+    # Example in case asset kind should change mode
+    # kind == KIND_ORG_AVATAR ? 0644 : nil
+    0644
+  end
+
+  def asset_protocol
+    # Avatars without protocol to allow the browser pick http/https.
+    # Other assets with http, because, for example, tiler needs access to landmark images.
+    kind == KIND_ORG_AVATAR ? '' : 'http:'
   end
 
 end

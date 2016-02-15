@@ -23,7 +23,7 @@ describe('widgets/formula/content-view', function () {
 
   it('should render the formula', function () {
     this.dataviewModel.set('data', 100);
-    expect(this.view.$('.js-title').text().trim()).toBe('Max population');
+    expect(this.view.$('.js-title').text()).toContain('Max population');
   });
 
   it('should render the collapsed formula', function () {
@@ -37,13 +37,5 @@ describe('widgets/formula/content-view', function () {
     expect(this.dataviewModel.get('enabled')).toBeTruthy();
     this.dataviewModel.set('data', 67);
     expect(this.view.$('.js-value').text()).toBe('67');
-  });
-
-  it('should render a little badge with the operation', function () {
-    this.dataviewModel.set('operation', 'avg');
-
-    this.view.render();
-
-    expect(this.view.$('.CDB-Widget-tag.CDB-Widget-tag--avg').text().trim()).toEqual('avg');
   });
 });

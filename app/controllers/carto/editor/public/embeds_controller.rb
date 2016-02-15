@@ -6,9 +6,11 @@ module Carto
       class EmbedsController < PublicController
         include VisualizationsControllerHelper
 
-        layout false
+        ssl_required :show
 
         before_filter :load_visualization, only: [:show]
+
+        layout false
 
         def show
           @visualization_data = Carto::Api::VisualizationPresenter.new(@visualization, current_viewer, self).to_poro
@@ -19,7 +21,7 @@ module Carto
         private
 
         def load_visualization
-          @visualization = load_visualization_from_id(params[:id])
+          @visualization = load_visualization_from_id(params[:visualization_id])
         end
       end
     end

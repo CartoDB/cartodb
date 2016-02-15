@@ -200,14 +200,14 @@ module Carto
       # Basemap/base layer is always the first layer
       layer_data = exported_data["layers"].select { |layer| ::Layer::BASE_LAYER_KINDS.include?(layer["type"]) }.first
       if layer_data.nil?
-        ::Factories::LayerFactory.get_default_base_layer(user)
+        LayerFactory.get_default_base_layer(user)
       else
-        ::Factories::LayerFactory.get_new(prepare_layer_data(layer_data))
+        LayerFactory.get_new(prepare_layer_data(layer_data))
       end
     end
 
     def add_data_layer(map, layer_data)
-      data_layer = ::Factories::LayerFactory.get_new(prepare_layer_data(layer_data))
+      data_layer = LayerFactory.get_new(prepare_layer_data(layer_data))
       map.add_layer(data_layer)
       data_layer
     end
@@ -223,14 +223,14 @@ module Carto
         add_default_labels_layer(map, base_layer)
       else
         # ...And labels layer is always last one
-        labels_layer = ::Factories::LayerFactory.get_new(prepare_layer_data(base_layers.last))
+        labels_layer = LayerFactory.get_new(prepare_layer_data(base_layers.last))
         map.add_layer(labels_layer)
         labels_layer
       end
     end
 
     def create_map(user, base_layer)
-      map = ::Factories::MapFactory.get_map(base_layer, user.id)
+      map = MapFactory.get_map(base_layer, user.id)
       map.add_layer(base_layer)
       map
     end
@@ -252,7 +252,7 @@ module Carto
     end
 
     def add_default_labels_layer(map, base_layer)
-      labels_layer = ::Factories::LayerFactory.get_default_labels_layer(base_layer)
+      labels_layer = LayerFactory.get_default_labels_layer(base_layer)
       map.add_layer(labels_layer)
       labels_layer
     end

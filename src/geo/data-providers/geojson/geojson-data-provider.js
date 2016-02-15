@@ -23,7 +23,7 @@ GeoJSONDataProvider.prototype._dataGeneratorsForDataviews = {
     if (options.own_filter === 1) {
       end = filter.getMax(columnName);
       start = filter.getMin(columnName);
-      values = filter.getValues()
+      values = filter.getValues();
       bins = d3.layout.histogram().bins(numberOfBins)(filter.getValues().map(function (f) {
         return f.properties[options.column];
       }));
@@ -32,7 +32,7 @@ GeoJSONDataProvider.prototype._dataGeneratorsForDataviews = {
       end = options.end || filter.getMax(columnName);
       start = options.start > -1 ? options.start : filter.getMin(columnName);
       width = (end - start) / options.bins;
-      values = filter.getValues(false, columnName)
+      values = filter.getValues(false, columnName);
       bins = d3.layout.histogram().bins(numberOfBins)(filter.getValues(false, columnName).map(function (f) {
         return f.properties[options.column];
       }));
@@ -46,7 +46,7 @@ GeoJSONDataProvider.prototype._dataGeneratorsForDataviews = {
         freq: bin.length
       };
     });
-    var nulls = values.reduce(function(p, c) { return p + (c.properties[columnName] === null ? 1 : 0) }, 0);
+    var nulls = values.reduce(function (p, c) { return p + (c.properties[columnName] === null ? 1 : 0); }, 0);
     var average = bins.reduce(function (p, c) {
       return p + c.avg;
     }, 0) / bins.reduce(function (p, c) {
@@ -88,7 +88,7 @@ GeoJSONDataProvider.prototype._dataGeneratorsForDataviews = {
       sortedGroups = filter.getColumnValues(columnName);
       count = filter.getCount(columnName);
     }
-    var nulls = filter.getValues(false, columnName).reduce(function(p, c) { return p + (c.properties[columnName] === null ? 1 : 0) }, 0);
+    var nulls = filter.getValues(false, columnName).reduce(function (p, c) { return p + (c.properties[columnName] === null ? 1 : 0); }, 0);
     var data = {
       categories: [],
       categoriesCount: sortedGroups.length,
@@ -124,7 +124,7 @@ GeoJSONDataProvider.prototype._dataGeneratorsForDataviews = {
     var operation = options.operation;
     var columnName = options.column;
     var data;
-    var nulls = features.reduce(function(p, c) { return p + (c.properties[columnName] === null ? 1 : 0) }, 0);
+    var nulls = features.reduce(function (p, c) { return p + (c.properties[columnName] === null ? 1 : 0); }, 0);
     if (operation === 'count') {
       data = {
         'operation': operation,

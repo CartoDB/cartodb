@@ -22,7 +22,7 @@ describe Runner do
     @filepath = File.open(@filepath, 'w+')
     @filepath.write('...')
     @filepath.close
-    @pg_options      = Factories::PGConnection.new.pg_options
+    @pg_options      = CartoDB::Importer2::Factories::PGConnection.new.pg_options
 
     @fake_log = CartoDB::Importer2::Doubles::Log.new
     @downloader = Downloader.new(@filepath)

@@ -32,7 +32,7 @@ module Carto
       end
 
       def only_editable_visualizations
-        render_403 unless @visualization.is_editable?
+        render_403 unless @visualization.editable?
       end
     end
   end

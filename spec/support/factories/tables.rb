@@ -1,3 +1,8 @@
+# encoding: UTF-8
+
+# Avoids uninitialized constant CartoDB::Factories::LayerFactory resolution error
+require_relative '../../../app/factories/layer_factory'
+
 module CartoDB
   module Factories
     def new_table(attributes = {})

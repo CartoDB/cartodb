@@ -48,6 +48,7 @@ module.exports = Model.extend({
     }
 
     this._initBinds();
+    this._updateBoundingBox();
   },
 
   _initBinds: function () {
@@ -58,7 +59,9 @@ module.exports = Model.extend({
       dataProvider.bind('featuresChanged', this._onDataProviderChanged, this);
     } else {
       this.listenToOnce(this, 'change:url', function () {
-        this._fetch(this._onChangeBinds.bind(this));
+        this.fetch({
+          success: this._onChangeBinds.bind(this)
+        });
       });
     }
     if (this.filter) {
@@ -118,19 +121,19 @@ module.exports = Model.extend({
 
     this.on('change:url', function () {
       if (this._shouldFetchOnURLChange()) {
-        this._fetch();
+        this.fetch();
       }
     }, this);
     this.on('change:boundingBox', function () {
       if (this._shouldFetchOnBoundingBoxChange()) {
-        this._fetch();
+        this.fetch();
       }
     }, this);
 
     this.on('change:enabled', function (mdl, isEnabled) {
       if (isEnabled) {
         if (mdl.changedAttributes(this._previousAttrs)) {
-          this._fetch();
+          this.fetch();
         }
       } else {
         this._previousAttrs = {
@@ -158,26 +161,8 @@ module.exports = Model.extend({
     return this.get('enabled') && this.get('sync_on_bbox_change');
   },
 
-  _fetch: function (callback) {
-    var self = this;
-    this.fetch({
-      success: callback,
-      error: function () {
-        self.trigger('error');
-      }
-    });
-  },
-
-  fetch: function (opts) {
-    var dataProvider = this.layer.getDataProvider();
-    if (dataProvider) {
-      var data = dataProvider.generateDataForDataview(this, dataProvider.getData());
-      this.set(this.parse(data));
-      this.trigger('sync');
-    } else {
-      this.trigger('loading', this);
-      return Model.prototype.fetch.call(this, opts);
-    }
+  refresh: function () {
+    this.fetch();
   },
 
   update: function (attrs) {
@@ -191,6 +176,23 @@ module.exports = Model.extend({
 
   getPreviousData: function () {
     return this.previous('data');
+  },
+
+  fetch: function (opts) {
+    opts = opts || {};
+    var dataProvider = this.layer.getDataProvider();
+    if (dataProvider) {
+      var data = dataProvider.generateDataForDataview(this, dataProvider.getData());
+      this.set(this.parse(data));
+      this.trigger('sync');
+    } else {
+      this.trigger('loading', this);
+      return Model.prototype.fetch.call(this, _.extend(opts, {
+        error: function () {
+          this.trigger('error');
+        }.bind(this)
+      }));
+    }
   },
 
   toJSON: function () {

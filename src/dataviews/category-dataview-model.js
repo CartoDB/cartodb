@@ -202,15 +202,8 @@ module.exports = DataviewModelBase.extend({
     if (this.isSearchApplied()) {
       this._searchModel.fetch();
     } else {
-      this._fetch();
+      this.fetch();
     }
-  },
-
-  /**
-   * @public
-   */
-  forceFetch: function () {
-    this._fetch();
   },
 
   parse: function (d) {

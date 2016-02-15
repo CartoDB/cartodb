@@ -127,7 +127,7 @@ GeoJSONDataProvider.prototype._dataGeneratorsForDataviews = {
     var nulls = features.reduce(function(p, c) { return p + (c.properties[columnName] === null ? 1 : 0) }, 0);
     if (operation === 'count') {
       data = {
-        'operation': 'count',
+        'operation': operation,
         'result': features.length,
         'nulls': nulls,
         'type': 'formula'
@@ -138,8 +138,32 @@ GeoJSONDataProvider.prototype._dataGeneratorsForDataviews = {
         total += parseInt(feature.properties[columnName], 10);
       });
       data = {
-        'operation': 'avg',
-        'result': +(total / features.length).toFixed(2),
+        'operation': operation,
+        'result': features.length,
+        'nulls': nulls,
+        'type': 'formula'
+      };
+    } else if (operation === 'max') {
+      // TODO: Calculate the max value
+      data = {
+        'operation': operation,
+        'result': 99999999,
+        'nulls': nulls,
+        'type': 'formula'
+      };
+    } else if (operation === 'min') {
+      // TODO: Calculate the min value
+      data = {
+        'operation': 'count',
+        'result': 99999999,
+        'nulls': nulls,
+        'type': 'formula'
+      };
+    } else if (operation === 'sum') {
+      // TODO: Calculate the min value
+      data = {
+        'operation': 'count',
+        'result': 99999999,
         'nulls': nulls,
         'type': 'formula'
       };

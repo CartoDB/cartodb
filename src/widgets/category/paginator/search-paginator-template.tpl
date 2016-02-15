@@ -1,5 +1,5 @@
 <div class="CDB-Widget-contentFlex u-tSpace--m">
-  <button class="CDB-Text is-semibold is-upper CDB-Size-small u-rSpace--m js-searchToggle u-actionTextColor">cancel</button>
+  <button class="CDB-Text is-semibold u-upperCase CDB-Size-small u-rSpace--m js-searchToggle u-actionTextColor">cancel</button>
 </div>
 <% if (showPaginator) { %>
   <div class="CDB-Widget-navDots js-dots u-tSpace--m">

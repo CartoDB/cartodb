@@ -29,7 +29,7 @@ describe('widgets/category/options-view', function () {
     this.dataviewModel.fetch();
     this.view.render();
     var $el = this.view.$el;
-    expect($el.find('.CDB-Widget-textSmaller').length).toBe(1);
+    expect($el.find('.js-textInfo').length).toBe(1);
     expect($el.find('.CDB-Widget-link').length).toBe(0);
   });
 
@@ -72,23 +72,23 @@ describe('widgets/category/options-view', function () {
 
     it('should render selected all from the beginning', function () {
       this.view.render();
-      expect(this.view.$('.CDB-Widget-textSmaller').length).toBe(1);
-      expect(this.view.$('.CDB-Widget-textSmaller').text()).toContain('All selected');
+      expect(this.view.$('.js-textInfo').length).toBe(1);
+      expect(this.view.$('.js-textInfo').text()).toContain('All selected');
     });
 
     it('should render only a text with locked/selected items when search is enabled', function () {
       spyOn(this.widgetModel, 'isSearchEnabled').and.returnValue(true);
       this.view.render();
-      expect(this.view.$('.CDB-Widget-textSmaller').length).toBe(1);
-      expect(this.view.$('.CDB-Widget-textSmaller').text()).toContain('0 selected');
+      expect(this.view.$('.js-lockCategories').length).toBe(1);
+      expect(this.view.$('.js-lockCategories').text()).toContain('0 selected');
       expect(this.view.$('.CDB-Widget-filterButtons').length).toBe(0);
     });
 
     it('should render number of locked items and unlock button if widget is locked', function () {
       spyOn(this.widgetModel, 'isLocked').and.returnValue(true);
       this.view.render();
-      expect(this.view.$('.CDB-Widget-textSmaller').length).toBe(1);
-      expect(this.view.$('.CDB-Widget-textSmaller').text()).toContain('3 blocked');
+      expect(this.view.$('.js-textInfo').length).toBe(1);
+      expect(this.view.$('.js-textInfo').text()).toContain('3 blocked');
       expect(this.view.$('.CDB-Widget-filterButtons').length).toBe(0);
       expect(this.view.$('.js-unlock').length).toBe(1);
     });
@@ -97,10 +97,10 @@ describe('widgets/category/options-view', function () {
       spyOn(this.widgetModel, 'isLocked').and.returnValue(false);
       this.dataviewModel._data.reset([{ name: 'test' }, { name: 'one' }, { name: 'two' }]);
       this.dataviewModel.filter.accept('one');
-      expect(this.view.$('.CDB-Widget-textSmaller').length).toBe(1);
-      expect(this.view.$('.CDB-Widget-textSmaller').text()).toContain('1 selected');
+      expect(this.view.$('.js-textInfo').length).toBe(1);
+      expect(this.view.$('.js-textInfo').text()).toContain('1 selected');
       expect(this.view.$('.CDB-Widget-filterButtons').length).toBe(1);
-      expect(this.view.$('.js-lock').length).toBe(1);
+      expect(this.view.$('.js-textInfo').length).toBe(1);
     });
 
     it('should render filter buttons if widget is neither locked nor search enabled', function () {
@@ -108,8 +108,8 @@ describe('widgets/category/options-view', function () {
       spyOn(this.widgetModel, 'isSearchEnabled').and.returnValue(false);
       spyOn(this.dataviewModel, 'getData').and.returnValue(new Backbone.Collection([{ name: 'hey' }, { name: 'buddy' }, { name: 'neno' }]));
       this.dataviewModel.filter.accept('hey');
-      expect(this.view.$('.CDB-Widget-textSmaller').length).toBe(1);
-      expect(this.view.$('.CDB-Widget-textSmaller').text()).toContain('1 selected');
+      expect(this.view.$('.js-textInfo').length).toBe(1);
+      expect(this.view.$('.js-textInfo').text()).toContain('1 selected');
       expect(this.view.$('.CDB-Widget-filterButtons').length).toBe(1);
       expect(this.view.$('.js-all').length).toBe(1);
     });
@@ -118,7 +118,7 @@ describe('widgets/category/options-view', function () {
       spyOn(this.dataviewModel.filter, 'areAllRejected').and.returnValue(true);
       this.view.render();
       expect(this.view.$('.js-all').length).toBe(1);
-      expect(this.view.$('p.CDB-Widget-textSmaller').text()).toContain('None selected');
+      expect(this.view.$('.js-textInfo').text()).toContain('None selected');
     });
 
     it('should not render all button when there are less than 2 categories', function () {

@@ -77,7 +77,6 @@
 
 .CDB-Chart-axis {
   @include css3-prefix(user-select, none);
-  font: $sFontSize-small sans-serif;
   shape-rendering: crispEdges;
 }
 

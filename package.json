@@ -36,7 +36,7 @@
     "leaflet": "0.7.3",
     "mustache": "1.1.0",
     "perfect-scrollbar": "0.6.7",
-    "torque.js": "2.15.0",
+    "torque.js": "2.15.1",
     "underscore": "1.8.3",
     "cartoassets": "CartoDB/CartoAssets#master"
   },

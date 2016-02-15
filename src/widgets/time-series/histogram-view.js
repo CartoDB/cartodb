@@ -19,7 +19,7 @@ module.exports = cdb.core.View.extend({
   },
 
   initialize: function () {
-    this.filter = this.options.filter;
+    this._rangeFilter = this.options.rangeFilter;
 
     this.model.bind('change:data', this._onChangeData, this);
   },
@@ -64,7 +64,7 @@ module.exports = cdb.core.View.extend({
 
   _onBrushEnd: function (loBarIndex, hiBarIndex) {
     var data = this.model.getData();
-    this.filter.setRange(
+    this._rangeFilter.setRange(
       data[loBarIndex].start,
       data[hiBarIndex - 1].end
     );

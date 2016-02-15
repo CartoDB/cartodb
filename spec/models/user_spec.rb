@@ -4,6 +4,7 @@ require 'ostruct'
 require_relative '../spec_helper'
 require_relative 'user_shared_examples'
 require 'factories/organizations_contexts'
+require_relative '../../app/factories/layer_factory'
 
 describe 'refactored behaviour' do
 

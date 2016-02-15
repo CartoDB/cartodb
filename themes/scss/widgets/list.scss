@@ -78,7 +78,7 @@
 }
 .CDB-Widget-listItemInner {
   margin: 0 $sMargin-section;
-  padding: ($sMargin-element / 2) - 1 0;
+  padding: 4px 0;
 }
 .CDB-Widget-listItemInner--withBorders {
   padding: ($sMargin-element / 2) + 1 0;
@@ -129,7 +129,7 @@
   position: relative;
   width: 100%;
   margin: 0;
-  padding: 5px $sMargin-section;
+  padding: 4px $sMargin-section;
   font-family: 'Open Sans';
   font-weight: $sFontWeight-normal;
 

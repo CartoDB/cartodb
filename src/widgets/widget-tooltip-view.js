@@ -6,7 +6,7 @@ var _ = require('underscore');
  *
  */
 module.exports = cdb.core.View.extend({
-  className: 'CDB-Widget-tooltip CDB-Widget-tooltip--light',
+  className: 'CDB-Widget-tooltip CDB-Widget-tooltip--light CDB-Text CDB-Size-small',
 
   options: {
     attribute: 'data-tooltip',

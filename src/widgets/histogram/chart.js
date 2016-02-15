@@ -730,7 +730,7 @@ module.exports = cdb.core.View.extend({
       .attr('width', 10);
 
     this.textLabel = axisTip.append('text')
-      .attr('class', 'CDB-Chart-axisTipText CDB-Chart-axisTip-' + className)
+      .attr('class', 'CDB-Text CDB-Size-small CDB-Chart-axisTipText CDB-Chart-axisTip-' + className)
       .attr('dy', '11')
       .attr('dx', '0')
       .text(function (d) { return d; });
@@ -830,7 +830,7 @@ module.exports = cdb.core.View.extend({
     var adjustTextAnchor = this._generateAdjustAnchorMethod(this.verticalRange);
 
     var axis = this.chart.append('g')
-      .attr('class', 'CDB-Chart-axis');
+      .attr('class', 'CDB-Chart-axis CDB-Text CDB-Size-small');
 
     axis
       .append('g')
@@ -858,7 +858,7 @@ module.exports = cdb.core.View.extend({
       .orient('bottom');
 
     var axis = this.canvas.append('g')
-      .attr('class', 'CDB-Chart-axis')
+      .attr('class', 'CDB-Chart-axis CDB-Text CDB-Size-small')
       .attr('transform', 'translate(0,' + (this.chartHeight() + 5) + ')')
       .call(xAxis);
 

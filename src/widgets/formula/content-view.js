@@ -40,7 +40,7 @@ module.exports = cdb.core.View.extend({
     this.$el.html(
       template({
         title: this.model.get('title'),
-        operation: this.model.get('operation'),
+        operation: this._dataviewModel.get('operation'),
         value: value,
         formatedValue: format(value),
         nulls: nulls,

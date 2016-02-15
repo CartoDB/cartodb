@@ -5,6 +5,7 @@
 @import 'cdb-variables/sizes';
 @import 'cdb-variables/colors';
 @import 'cdb-utilities/mixins';
+@import 'cdb-variables/colors';
 // Deep-insights styles
 @import 'map/canvas';
 @import 'map/dashboard-info';
@@ -26,7 +27,6 @@
 @import 'widgets/progress-bar';
 @import 'widgets/search';
 @import 'widgets/tags';
-@import 'widgets/text-elements';
 @import 'widgets/time-series';
 @import 'widgets/time-slider';
 @import 'widgets/tooltip';

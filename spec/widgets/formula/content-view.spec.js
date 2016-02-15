@@ -23,7 +23,7 @@ describe('widgets/formula/content-view', function () {
 
   it('should render the formula', function () {
     this.dataviewModel.set('data', 100);
-    expect(this.view.$('.js-title').text().trim()).toBe('Max population');
+    expect(this.view.$('.js-title').text()).toContain('Max population');
   });
 
   it('should render the collapsed formula', function () {

@@ -612,7 +612,7 @@ class User < Sequel::Model
       # If the user doesn't have gravatar try to get a cartodb avatar
       if self.avatar_url.nil? || self.avatar_url == "//#{default_avatar}"
         # Only update the avatar if the user avatar is nil or the default image
-        self.avatar_url = "//#{cartodb_avatar}"
+        self.avatar_url = "#{cartodb_avatar}"
         self.this.update avatar_url: self.avatar_url
       end
     end
@@ -638,7 +638,7 @@ class User < Sequel::Model
   end
 
   def default_avatar
-    return "cartodb.s3.amazonaws.com/static/public_dashboard_default_avatar.png"
+    "/assets/unversioned/images/avatars/public_dashboard_default_avatar.png"
   end
 
   def gravatar(protocol = "http://", size = 128, default_image = default_avatar)

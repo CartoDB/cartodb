@@ -7,12 +7,16 @@ describe('widgets/time-series/torque-time-slider-view', function () {
     var vis = specHelper.createDefaultVis();
     this.dataviewModel = vis.dataviews.createHistogramModel(vis.map.layers.first(), {
       column: 'dates',
-      bins: 256
+      bins: 256,
+      start: 0,
+      end: 1
     });
     this.torqueLayerModel = new cdb.geo.TorqueLayer({
       isRunning: false,
       step: 0,
-      steps: 256
+      steps: 256,
+      start: 0,
+      end: 1000
     });
 
     this.histogramChartMargins = {

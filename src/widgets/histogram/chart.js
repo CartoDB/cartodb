@@ -349,6 +349,7 @@ module.exports = cdb.core.View.extend({
 
   _removeLines: function () {
     this.chart.select('.CDB-Chart-lines').remove();
+    this.chart.select('.CDB-Chart-line--bottom').remove();
   },
 
   _removeChartContent: function () {
@@ -366,6 +367,7 @@ module.exports = cdb.core.View.extend({
     this._generateBars();
     this._generateHandles();
     this._setupBrush();
+    this._generateBottomLine();
   },
 
   _generateLines: function () {
@@ -397,21 +399,22 @@ module.exports = cdb.core.View.extend({
     lines.append('g')
       .attr('class', 'y')
       .selectAll('.CDB-Chart-line')
-      .data(this.horizontalRange)
+      .data(this.horizontalRange.slice(0, this.horizontalRange.length - 1))
       .enter().append('svg:line')
       .attr('class', 'CDB-Chart-line')
       .attr('x1', 0)
       .attr('y1', function (d) { return d; })
       .attr('x2', this.chartWidth())
       .attr('y2', function (d) { return d; });
+  },
 
-    this.bottomLine = lines
-      .append('line')
+  _generateBottomLine: function () {
+    this.chart.append('line')
       .attr('class', 'CDB-Chart-line CDB-Chart-line--bottom')
       .attr('x1', 0)
-      .attr('y1', this.chartHeight())
+      .attr('y1', this.chartHeight() - 1)
       .attr('x2', this.chartWidth() - 1)
-      .attr('y2', this.chartHeight());
+      .attr('y2', this.chartHeight() - 1 );
   },
 
   _setupD3Bindings: function () { // TODO: move to a helper

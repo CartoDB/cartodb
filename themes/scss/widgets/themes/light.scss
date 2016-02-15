@@ -30,37 +30,19 @@ $chartMiniHighlight: rgba(#333, 1);
   border-color: $canvasBkg;
   background: $commonBkg;
 
-  .CDB-Widget-textBig,
-  .CDB-Widget-textNormal,
-  .CDB-Widget-textSmall {
-    color: $primary;
-  }
-  .CDB-Widget-textBigger {
-    color: $primary;
-  }
-  .CDB-Widget-textSmaller {
-    color: $secondary;
-  }
-  .CDB-Widget-textBig.is-collapsed {
-    color: $secondary;
-  }
-  .CDB-Widget-textSmaller--dark {
-    color: $primary;
-  }
-  .CDB-Widget-text--secondary {
-    color: $secondary;
-  }
   .CDB-Widget-textInput {
     color: $primary;
   }
   .CDB-Widget-link,
   .CDB-Widget-buttonIcon {
     border-color: $link;
-    color: $link;
     &:hover {
       border-color: $linkHover;
       color: $linkHover;
     }
+  }
+  .CDB-Widget-buttonIcon--circle {
+    color: $cBlue;
   }
   .CDB-Widget-buttonIcon--circle.is-selected {
     background-color: $link;
@@ -88,9 +70,6 @@ $chartMiniHighlight: rgba(#333, 1);
     }
   }
 
-  .CDB-Widget-searchLens {
-    color: $link;
-  }
   .CDB-Widget-progressBar {
     background: $elementBkg;
   }
@@ -303,7 +282,7 @@ $chartMiniHighlight: rgba(#333, 1);
   .CDB-Dropdown-link {
     color: $link;
     &:hover {
-      background: $loadingBkg;
+      background: $cSecondaryLine;
     }
     &.is-delete {
       color: $negative;

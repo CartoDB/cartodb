@@ -17,10 +17,11 @@
   // Due to line-heights, better to substract some pixels in the top
   padding: ($sMargin-section - 4) 0;
   box-sizing: border-box;
-  font-family: 'Open Sans';
 }
 .CDB-Widget--timeSeries {
   width: 100%; // override default width
+  margin-bottom: 0;
+  border-radius: $baseSize / 2;
 }
 .CDB-Widget-title {
   @include display-flex();
@@ -43,7 +44,7 @@
 }
 .CDB-Widget-content {
   position: relative;
-  margin-top: $sMargin-element;
+  margin-top: 10px;
 }
 .CDB-Widget-content--noSidesMargin {
   margin-right: 0;

@@ -20,9 +20,9 @@ describe('widgets/category/search-title-view', function () {
   it('should render properly', function () {
     this.view.render();
     var $el = this.view.$el;
-    expect($el.find('.CDB-Widget-title').length).toBe(1);
+    expect($el.find('.js-title').length).toBe(1);
     expect($el.find('.CDB-Widget-options').length).toBe(1);
-    expect($el.find('.CDB-Widget-textBig').length).toBe(1);
+    expect($el.find('.js-titleText').length).toBe(1);
   });
 
   describe('search', function () {
@@ -32,7 +32,7 @@ describe('widgets/category/search-title-view', function () {
 
     it('should render search form properly', function () {
       expect(this.view.$('.CDB-Widget-search').length).toBe(1);
-      expect(this.view.$('.CDB-Widget-searchLens').length).toBe(1);
+      expect(this.view.$('.js-searchIcon').length).toBe(1);
       expect(this.view.$('.CDB-Widget-textInput').length).toBe(1);
       expect(this.view.$('.CDB-Widget-searchApply').length).toBe(0);
     });

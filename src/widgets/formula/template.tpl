@@ -1,6 +1,6 @@
 <div class="CDB-Widget-header js-header">
   <div class="CDB-Widget-title CDB-Widget-contentSpaced">
-    <h3 class="CDB-Text CDB-Size-large is-ellipsis <%- isCollapsed ? 'js-value is-collapsed' : 'js-title' %>"><% if (isCollapsed) { %><%- formatedValue %><% } else { %> <%- title %><% } %></h3>
+    <h3 class="CDB-Text CDB-Size-large u-ellipsis <%- isCollapsed ? 'js-value is-collapsed' : 'js-title' %>"><% if (isCollapsed) { %><%- formatedValue %><% } else { %> <%- title %><% } %></h3>
     <button class="CDB-Shape js-actions">
       <div class="CDB-Shape-threePoints is-blue is-small">
         <div class="CDB-Shape-threePointsItem"></div>

@@ -4,16 +4,17 @@ require 'active_record'
 require_relative 'user_service'
 require_relative 'user_db_service'
 require_relative 'synchronization_oauth'
-require_relative '../../helpers/geocoder_metrics_helper'
+require_relative '../../helpers/data_services_metrics_helper'
 
 # TODO: This probably has to be moved as the service of the proper User Model
 class Carto::User < ActiveRecord::Base
   extend Forwardable
-  include GeocoderMetricsHelper
+  include DataServicesMetricsHelper
 
   MIN_PASSWORD_LENGTH = 6
   MAX_PASSWORD_LENGTH = 64
   GEOCODING_BLOCK_SIZE = 1000
+  HERE_ISOLINES_BLOCK_SIZE = 1000
 
   # INFO: select filter is done for security and performance reasons. Add new columns if needed.
   DEFAULT_SELECT = "users.email, users.username, users.admin, users.organization_id, users.id, users.avatar_url," +
@@ -232,9 +233,18 @@ class Carto::User < ActiveRecord::Base
 
   def remaining_geocoding_quota(options = {})
     if organization.present?
-      remaining = organization.geocoding_quota.to_i - organization.get_geocoding_calls(options)
+      remaining = organization.remaining_geocoding_quota(options)
     else
       remaining = geocoding_quota - get_geocoding_calls(options)
+    end
+    (remaining > 0 ? remaining : 0)
+  end
+
+  def remaining_here_isolines_quota(options = {})
+    if organization.present?
+      remaining = organization.remaining_here_isolines_quota(options)
+    else
+      remaining = here_isolines_quota - get_here_isolines_calls(options)
     end
     (remaining > 0 ? remaining : 0)
   end
@@ -290,6 +300,12 @@ class Carto::User < ActiveRecord::Base
     get_user_geocoding_data(self, date_from, date_to)
   end
 
+  def get_here_isolines_calls(options = {})
+    date_to = (options[:to] ? options[:to].to_date : Date.today)
+    date_from = (options[:from] ? options[:from].to_date : last_billing_cycle)
+    get_user_here_isolines_data(self, date_from, date_to)
+  end
+
   #TODO: Remove unused param `use_total`
   def remaining_quota(use_total = false, db_size = service.db_size_in_bytes)
     self.quota_in_bytes - db_size
@@ -316,6 +332,16 @@ class Carto::User < ActiveRecord::Base
     !self.soft_geocoding_limit?
   end
   alias_method :hard_geocoding_limit, :hard_geocoding_limit?
+
+  def soft_here_isolines_limit?
+    Carto::AccountType.new.soft_here_isolines_limit?(self)
+  end
+  alias_method :soft_here_isolines_limit, :soft_here_isolines_limit?
+
+  def hard_here_isolines_limit?
+    !self.soft_here_isolines_limit?
+  end
+  alias_method :hard_here_isolines_limit, :hard_here_isolines_limit?
 
   def soft_twitter_datasource_limit?
     self.soft_twitter_datasource_limit  == true

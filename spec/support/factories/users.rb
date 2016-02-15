@@ -58,6 +58,8 @@ module CartoDB
       user.database_timeout      = attributes[:database_timeout] || 300000
       user.geocoding_quota       = attributes[:geocoding_quota] || 1000
       user.geocoding_block_price = attributes[:geocoding_block_price] || 1500
+      user.here_isolines_quota   = attributes[:here_isolines_quota] || 1000
+      user.here_isolines_block_price = attributes[:here_isolines_block_price] || 1500
       user.sync_tables_enabled   = attributes[:sync_tables_enabled] || false
       user.organization          = attributes[:organization] || nil
       if attributes[:organization_id]

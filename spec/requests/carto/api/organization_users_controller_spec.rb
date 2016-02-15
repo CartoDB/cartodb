@@ -195,6 +195,7 @@ describe Carto::Api::OrganizationUsersController do
       put api_v1_organization_users_update_url(name: @organization.name, u_username: user_to_update.username), params
 
       @organization.reload
+      @organization.users[0].reload
 
       last_response.status.should == 200
 

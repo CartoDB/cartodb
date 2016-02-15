@@ -5,23 +5,9 @@ require 'active_support/time'
 module CartoDB
   # The purpose of this class is to encapsulate storage of usage metrics.
   # This shall be used for billing, quota checking and metrics.
-  class GeocoderUsageMetrics
+  class ServiceUsageMetrics
 
-    VALID_METRICS = [
-      :total_requests,
-      :failed_responses,
-      :success_responses,
-      :empty_responses,
-    ]
-
-    VALID_SERVICES = [
-      :geocoder_internal,
-      :geocoder_here,
-      :geocoder_google,
-      :geocoder_cache
-    ]
-
-    def initialize(redis, username, orgname = nil)
+    def initialize(username, orgname = nil, redis=$geocoder_metrics)
       @username = username
       @orgname = orgname
       @redis = redis
@@ -49,13 +35,13 @@ module CartoDB
       end
     end
 
-    private
+    protected
 
     def check_valid_data(service, metric, amount = 0)
-      raise ArgumentError.new('Invalid service') unless VALID_SERVICES.include?(service)
-      raise ArgumentError.new('Invalid metric') unless VALID_METRICS.include?(metric)
-      raise ArgumentError.new('Invalid geocoder metric amount') if !amount.nil? and amount < 0
+      raise NotImplementedError.new("You must implement check_valid_data in your metrics class.")
     end
+
+    private
 
     def user_key_prefix(service, metric, date)
       "user:#{@username}:#{service}:#{metric}:#{date_year_month(date)}"
@@ -73,11 +59,5 @@ module CartoDB
       date.strftime('%Y%m')
     end
 
-  end
-
-  class RedisStub
-    def incrby(key, increment)
-      CartoDB.notify_debug("redis.incr(#{key}, #{increment})")
-    end
   end
 end

@@ -80,6 +80,7 @@ class Admin::OrganizationUsersController < Admin::AdminController
     @user.password = attributes[:password] if attributes[:password].present?
     @user.password_confirmation = attributes[:password_confirmation] if attributes[:password_confirmation].present?
     @user.soft_geocoding_limit = attributes[:soft_geocoding_limit] if attributes[:soft_geocoding_limit].present?
+    @user.soft_here_isolines_limit = attributes[:soft_here_isolines_limit] if attributes[:soft_here_isolines_limit].present?
     @user.twitter_datasource_enabled = attributes[:twitter_datasource_enabled] if attributes[:twitter_datasource_enabled].present?
     @user.soft_twitter_datasource_limit = attributes[:soft_twitter_datasource_limit] if attributes[:soft_twitter_datasource_limit].present?
     @user.update_in_central
@@ -131,11 +132,15 @@ class Admin::OrganizationUsersController < Admin::AdminController
   private
 
   def extras_enabled?
-    extra_geocodings_enabled? || extra_tweets_enabled?
+    extra_geocodings_enabled? || extra_here_isolines_enabled? || extra_tweets_enabled?
   end
 
   def extra_geocodings_enabled?
     !Cartodb.get_config(:geocoder, 'app_id').blank?
+  end
+
+  def extra_here_isolines_enabled?
+    true
   end
 
   def extra_tweets_enabled?

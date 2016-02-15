@@ -15,16 +15,16 @@ describe Carto::Api::LayersController do
     include Warden::Test::Helpers
 
     before(:all) do
-      @headers = {'CONTENT_TYPE'  => 'application/json'}
-    end
-
-    before(:each) do
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true, delete: true)
       CartoDB::Visualization::Member.any_instance.stubs(:invalidate_cache).returns(nil)
+
+      @headers = {'CONTENT_TYPE'  => 'application/json'}
+
+      @user = FactoryGirl.create(:valid_user)
     end
 
     after(:each) do
-      delete_user_data($user_1)
+      @user.destroy
     end
 
     it 'attribution chanes in a visualization propagate to associated layers' do
@@ -32,8 +32,8 @@ describe Carto::Api::LayersController do
         table_2_attribution = 'attribution 2'
         modified_table_2_attribution = 'modified attribution 2'
 
-        table1 = create_table(privacy: UserTable::PRIVACY_PUBLIC, name: "table#{rand(9999)}_1", user_id: $user_1.id)
-        table2 = create_table(privacy: UserTable::PRIVACY_PUBLIC, name: "table#{rand(9999)}_2", user_id: $user_1.id)
+        table1 = create_table(privacy: UserTable::PRIVACY_PUBLIC, name: "table#{rand(9999)}_1", user_id: @user.id)
+        table2 = create_table(privacy: UserTable::PRIVACY_PUBLIC, name: "table#{rand(9999)}_2", user_id: @user.id)
 
         payload = {
           name: 'new visualization',
@@ -44,8 +44,8 @@ describe Carto::Api::LayersController do
           privacy: 'public'
         }
 
-        login_as($user_1, scope: $user_1.username)
-        host! "#{$user_1.username}.localhost.lan"
+        login_as(@user, scope: @user.username)
+        host! "#{@user.username}.localhost.lan"
         post api_v1_visualizations_create_url(api_key: @api_key), payload.to_json, @headers do |response|
           response.status.should == 200
           @visualization_data = JSON.parse(response.body)

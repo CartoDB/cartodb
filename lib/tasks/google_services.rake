@@ -23,7 +23,7 @@ namespace :cartodb do
              [:google_maps_key, :google_maps_private_key, :org_name] => [:environment] do |task, args|
           organization = Carto::Organization.where(name: args[:org_name]).first
 
-          raise "No organization with username '#{args[:org_name]}'" if organization.nil?
+          raise "No organization with name '#{args[:org_name]}'" if organization.nil?
 
           puts "Enabling google services for organization '#{organization.name}'..."
 
@@ -79,7 +79,7 @@ namespace :cartodb do
         task :disable_for_organization, [:org_name] => [:environment] do |task, args|
           organization = Carto::Organization.where(name: args[:org_name]).first
 
-          raise "No organization with username '#{args[:org_name]}'" if organization.nil?
+          raise "No organization with name '#{args[:org_name]}'" if organization.nil?
 
           puts "Disabling google services for organization '#{organization.name}'..."
 
@@ -90,8 +90,8 @@ namespace :cartodb do
         end
 
         desc 'Disable Google Services for all users'
-        task :disable_for_all do |task|
-          Carto::Organization.each do |organization|
+        task :disable_for_all => [:environment] do |task|
+          Carto::Organization.all.each do |organization|
             puts "Disabling google services for organization '#{organization.name}'..."
 
             organization.google_maps_key = nil

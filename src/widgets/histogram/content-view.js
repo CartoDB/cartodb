@@ -413,7 +413,7 @@ module.exports = cdb.core.View.extend({
 
   _onZoomIn: function () {
     this._showMiniRange();
-    this.histogramChartView.expand(20);
+    this.histogramChartView.expand(4);
 
     this.histogramChartView.removeShadowBars();
 

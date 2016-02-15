@@ -37,6 +37,15 @@
   margin-right: $sMargin-section;
   margin-left: $sMargin-section;
 }
+.CDB-Widget-content--histogram {
+  margin-right: $sMargin-section - 4;
+  margin-left: $sMargin-section - 4;
+  .CDB-Widget-filter {
+    margin-right: 4px;
+    margin-left: 4px;
+  }
+}
+
 .CDB-Widget-header--timeSeries {
   @include display-flex();
   @include justify-content(flex-start, start);
@@ -54,10 +63,7 @@
     margin-left: $sMargin-section;
   }
 }
-.CDB-Widget-content--histogram {
-  margin-top: 0;
-  margin-left: 20px;
-}
+
 .CDB-Widget-body.is-collapsed {
   height: 22px;
 }

@@ -414,7 +414,7 @@ module.exports = cdb.core.View.extend({
       .attr('x1', 0)
       .attr('y1', this.chartHeight() - 1)
       .attr('x2', this.chartWidth() - 1)
-      .attr('y2', this.chartHeight() - 1 );
+      .attr('y2', this.chartHeight() - 1);
   },
 
   _setupD3Bindings: function () { // TODO: move to a helper

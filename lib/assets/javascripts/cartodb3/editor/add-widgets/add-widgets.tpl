@@ -11,7 +11,7 @@
 </div>
 
 <div class="Dialog-body Dialog-body--expanded Dialog-body--create Dialog-body--noPaddingTop Dialog-body--withoutBorder">
-  <p class="DefaultParagraph">**content TBD** <%- Math.random() %></p>
+  
 </div>
 
 <div class="Dialog-footer Dialog-footer--expanded CreateDialog-footer">

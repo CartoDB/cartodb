@@ -17,8 +17,10 @@ describe Admin::VisualizationsController do
   include CacheHelper
 
   before(:all) do
-    @api_key = $user_1.api_key
-    $user_1.stubs(:should_load_common_data?).returns(false)
+    @user = FactoryGirl.create(:valid_user, private_tables_enabled: true)
+
+    @api_key = @user.api_key
+    @user.stubs(:should_load_common_data?).returns(false)
 
     @db = Rails::Sequel.connection
     Sequel.extension(:pagination)
@@ -30,15 +32,19 @@ describe Admin::VisualizationsController do
     }
   end
 
+  after(:all) do
+    @user.destroy
+  end
+
   before(:each) do
     CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
-    delete_user_data $user_1
-    host! "#{$user_1.username}.localhost.lan"
+    delete_user_data @user
+    host! "#{@user.username}.localhost.lan"
   end
 
   describe 'GET /viz' do
     it 'returns a list of visualizations' do
-      login_as($user_1, scope: $user_1.username)
+      login_as(@user, scope: @user.username)
 
       get "/viz", {}, @headers
       last_response.status.should == 200
@@ -53,7 +59,7 @@ describe Admin::VisualizationsController do
   describe 'GET /viz:id' do
     it 'returns a visualization' do
       id = factory.fetch('id')
-      login_as($user_1, scope: $user_1.username)
+      login_as(@user, scope: @user.username)
 
       get "/viz/#{id}", {}, @headers
       last_response.status.should == 200
@@ -167,7 +173,7 @@ describe Admin::VisualizationsController do
 
       id = table_factory(privacy: ::UserTable::PRIVACY_PUBLIC).table_visualization.id
 
-      login_as($user_1, scope: $user_1.username)
+      login_as(@user, scope: @user.username)
       get public_visualizations_show_map_url(id: id), {}, @headers
       last_response.status.should == 200
     end
@@ -239,7 +245,7 @@ describe Admin::VisualizationsController do
       name = table.table_visualization.name
       name = URI::encode(name)
 
-      login_as($user_1, scope: $user_1.username)
+      login_as(@user, scope: @user.username)
 
       get "/viz/#{name}/embed_map", {}, @headers
       last_response.status.should == 403
@@ -247,7 +253,7 @@ describe Admin::VisualizationsController do
     end
 
     it 'renders embed map error when an exception is raised' do
-      login_as($user_1, scope: $user_1.username)
+      login_as(@user, scope: @user.username)
 
       get "/viz/220d2f46-b371-11e4-93f7-080027880ca6/embed_map", {}, @headers
       last_response.status.should == 404
@@ -300,14 +306,14 @@ describe Admin::VisualizationsController do
 
   describe 'GET /viz/:name/track_embed' do
     it 'renders the view by passing a visualization name' do
-      login_as($user_1, scope: $user_1.username)
+      login_as(@user, scope: @user.username)
 
       get "/viz/track_embed", {}, @headers
       last_response.status.should == 200
     end
 
     it 'doesnt serve X-Frame-Options: DENY for track_embed' do
-      login_as($user_1, scope: $user_1.username)
+      login_as(@user, scope: @user.username)
 
       get "/viz/track_embed", {}, @headers
       last_response.status.should == 200
@@ -317,7 +323,7 @@ describe Admin::VisualizationsController do
 
   describe 'non existent visualization' do
     it 'returns 404' do
-      login_as($user_1, scope: $user_1.username)
+      login_as(@user, scope: @user.username)
 
       get "/viz/220d2f46-b371-11e4-93f7-080027880ca6?api_key=#{@api_key}", {}, @headers
       last_response.status.should == 404
@@ -534,12 +540,12 @@ describe Admin::VisualizationsController do
 
   describe '#index' do
     before(:each) do
-      $user_1.stubs(:should_load_common_data?).returns(false)
+      @user.stubs(:should_load_common_data?).returns(false)
     end
 
     it 'invokes user metadata redis caching' do
-      Carto::UserDbSizeCache.any_instance.expects(:update_if_old).with($user_1).once
-      login_as($user_1, scope: $user_1.username)
+      Carto::UserDbSizeCache.any_instance.expects(:update_if_old).with(@user).once
+      login_as(@user, scope: @user.username)
       get dashboard_path, {}, @headers
     end
   end
@@ -556,7 +562,7 @@ describe Admin::VisualizationsController do
   end
 
   def factory(owner=nil)
-    owner = $user_1 if owner.nil?
+    owner = @user if owner.nil?
     map     = Map.create(user_id: owner.id)
     payload = {
       name:         "visualization #{rand(9999)}",
@@ -575,7 +581,7 @@ describe Admin::VisualizationsController do
   end
 
   def table_factory(attrs = {})
-    new_table(attrs.merge(user_id: $user_1.id)).save.reload
+    new_table(attrs.merge(user_id: @user.id)).save.reload
   end
 
 end # Admin::VisualizationsController

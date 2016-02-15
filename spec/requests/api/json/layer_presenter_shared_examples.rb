@@ -1,35 +1,7 @@
 # encoding: utf-8
 
 shared_examples_for "layer presenters" do |tested_klass, model_klass|
-
   describe '#show legacy tests' do
-
-    before(:each) do
-      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
-    end
-
-    before(:all) do
-      set_tested_classes(tested_klass, model_klass)
-      puts "Testing class #{tested_klass.to_s} with model #{model_klass.to_s}"
-
-      $user_1 = create_user(
-        username: 'test',
-        email:    'client@example.com',
-        password: 'clientex'
-      )
-      $user_2 = create_user(
-        username: 'test2',
-        email:    'client2@example.com',
-        password: 'clientex'
-      )
-    end
-
-    before(:each) do
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
-      delete_user_data $user_1
-      delete_user_data $user_2
-    end
-
     def set_tested_classes(tested_class, model_class)
       @tested_class = tested_class
       @model_class = model_class
@@ -42,6 +14,29 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
     # Always uses old models to created data, then battery set one for instantiation
     def instance_of_tested_model(creation_model)
       @model_class.where(id: creation_model.id).first
+    end
+
+    before(:all) do
+      set_tested_classes(tested_klass, model_klass)
+      puts "Testing class #{tested_klass.to_s} with model #{model_klass.to_s}"
+
+      @user_1 = FactoryGirl.create(:valid_user)
+      @user_2 = FactoryGirl.create(:valid_user)
+    end
+
+    after(:all) do
+      @user_1.destroy
+      @user_2.destroy
+    end
+
+    before(:each) do
+      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+    end
+
+    before(:each) do
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+      delete_user_data @user_1
+      delete_user_data @user_2
     end
 
     it "Tests to_json()" do
@@ -71,8 +66,8 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
       json_data['tooltip'].should == layer_2.tooltip
 
       presenter_options =  {
-          viewer_user: $user_2,
-          user: $user_1
+          viewer_user: @user_2,
+          user: @user_1
         }
 
       #no changes to layer_2
@@ -121,12 +116,12 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
       poro.should == expected_poro
 
       # Now add presenter options to change table_name (new way)
-      expected_poro['options']['table_name'] = "#{$user_1.database_schema}.#{table_name}"
+      expected_poro['options']['table_name'] = "#{@user_1.database_schema}.#{table_name}"
 
       presenter_options =  {
-          viewer_user: $user_2,
+          viewer_user: @user_2,
           # New presenter way of sending a viewer that's different from the owner
-          user: $user_1
+          user: @user_1
         }
 
       poro = instance_of_tested_class(layer_2, presenter_options).to_poro
@@ -140,7 +135,7 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
             'fake' => 'value',
             'table_name' => table_name,
             # Old presenter way of sending a viewer
-            'user_name' => $user_1.username
+            'user_name' => @user_1.username
             }
       layer_2.save
       layer_2 = instance_of_tested_model(layer_2)
@@ -151,8 +146,8 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
         'order' => 13,
         'options' => {
             'fake' => 'value',
-            'table_name' => "#{$user_1.username}.#{table_name}",
-            'user_name' => "#{$user_1.username}"
+            'table_name' => "#{@user_1.username}.#{table_name}",
+            'user_name' => "#{@user_1.username}"
           },
         'infowindow' => {
             'fake2' => 'val2'
@@ -163,7 +158,7 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
       }
 
       presenter_options =  {
-          viewer_user: $user_2
+          viewer_user: @user_2
         }
 
       poro = instance_of_tested_class(layer_2, presenter_options).to_poro
@@ -177,7 +172,7 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
             'fake' => 'value',
             'table_name' => "fake.#{table_name}",
             # Old presenter way of sending a viewer
-            'user_name' => $user_1.username
+            'user_name' => @user_1.username
             }
       layer_2.save
       layer_2 = instance_of_tested_model(layer_2)
@@ -328,7 +323,7 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
           options: {
             'table_name' => 'my_test_table',
             # This is only for compatibility with old LayerModule::Presenter, new one checkes in the presenter options
-            'user_name' => $user_1.database_schema
+            'user_name' => @user_1.database_schema
             },
         })
       layer = instance_of_tested_model(layer)
@@ -336,13 +331,13 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
       expected_vizjson[:id] = layer.id
       # No special quoting
       expected_vizjson[:options]['query'] = "select * from public.#{layer.options['table_name']}"
-      expected_vizjson[:options]['user_name'] = $user_1.database_schema
+      expected_vizjson[:options]['user_name'] = @user_1.database_schema
 
       presenter_options =  {
           visualization_id: stat_tag,
-          viewer_user: $user_2,
+          viewer_user: @user_2,
           # New presenter way of sending a viewer that's different from the owner
-          user: $user_1
+          user: @user_1
         }
 
       vizjson = instance_of_tested_class(layer, presenter_options).to_vizjson_v2

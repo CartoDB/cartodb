@@ -13,15 +13,12 @@ module VisualizationsControllerHelper
   end
 
   def load_visualization_from_id(id)
-    visualization = get_priority_visualization(id, current_user.id)
+    user_id = current_user.nil? ? nil : current_user.id
+
+    visualization = get_priority_visualization(id, user_id)
 
     render_404 && return if visualization.nil?
-    render_403 && return unless allowed?(visualization)
 
     visualization
-  end
-
-  def allowed?(visualization)
-    !(visualization.type_slide? || visualization.kind_raster? || !visualization.is_writable_by_user(current_user))
   end
 end

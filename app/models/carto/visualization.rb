@@ -224,6 +224,10 @@ class Carto::Visualization < ActiveRecord::Base
     self.privacy == PRIVACY_LINK
   end
 
+  def is_editable?
+    !(kind_raster? || type_slide?)
+  end
+
   # INFO: discouraged, since it forces using internal constants
   # Use explicit methods instead.
   # Needed for backwards compatibility

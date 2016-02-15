@@ -11,7 +11,7 @@
     <dt class="CDB-Widget-infoCount js-max">0</dt><dd class="CDB-Widget-infoDescription">MAX</dd>
   </dl>
 </div>
-<div class="CDB-Widget-content js-content">
+<div class="CDB-Widget-content CDB-Widget-content--histogram js-content">
   <div class="CDB-Widget-tooltip CDB-Widget-tooltip--light CDB-Text CDB-Size-small js-tooltip"></div>
   <div class="CDB-Widget-filter CDB-Widget-contentSpaced js-filter is-hidden ">
     <p class="CDB-Text is-semibold CDB-Size-small js-val"></p>

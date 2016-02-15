@@ -39,7 +39,7 @@ module.exports = cdb.core.View.extend({
 
     // using tagName: 'svg' doesn't work,
     // and w/o class="" d3 won't instantiate properly
-    this.setElement($('<svg class=""></svg>')[0]);
+    this.setElement($('<svg class="CDB-Histogram-Space"></svg>')[0]);
 
     this.canvas = d3.select(this.el)
       .attr('width', 0)

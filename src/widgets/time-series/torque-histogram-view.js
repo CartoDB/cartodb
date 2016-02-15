@@ -29,6 +29,7 @@ module.exports = cdb.core.View.extend({
     this._rangeFilter = this.options.rangeFilter;
     this._torqueLayerModel = this.options.torqueLayerModel;
     this._torqueLayerModel.bind('change:renderRange', this._onRenderRangeChanged, this);
+    this._torqueLayerModel.bind('change:steps change:start change:end', this._reSelectRange, this);
     this.add_related_model(this._torqueLayerModel);
 
     this._dataviewModel = this.options.dataviewModel;
@@ -82,31 +83,46 @@ module.exports = cdb.core.View.extend({
   _onChangeData: function () {
     if (this._chartView) {
       this._chartView.replaceData(this._dataviewModel.getData());
+      this._reSelectRange();
     }
   },
 
   _onRenderRangeChanged: function (m, r) {
-    var prev = m.previous('renderRange');
-    if (!r || (r.start === r.end && prev.start !== prev.end)) {
+    if (r.start === undefined && r.end === undefined) {
       this._chartView.removeSelection();
+      this._rangeFilter.unsetRange();
     }
   },
 
   _onBrushEnd: function (loBarIndex, hiBarIndex) {
     // TODO setting range filter causes selected-range to be reset, how to fix?
-    // var data = this._dataviewModel.getData();
-    // this._rangeFilter.setRange(
-    //   data[loBarIndex].start,
-    //   data[hiBarIndex - 1].end
-    // );
+    var data = this._dataviewModel.getData();
+    this._rangeFilter.setRange(
+       data[loBarIndex].start,
+       data[hiBarIndex - 1].end
+    );
+    this._reSelectRange();
+  },
 
-    // transform histogram bins to torque steps
-    var bins = this._dataviewModel.get('bins');
+  timeToStep: function (timestamp) {
     var steps = this._torqueLayerModel.get('steps');
-    var loStep = Math.round(steps * loBarIndex / bins);
-    var hiStep = Math.round(steps * hiBarIndex / bins);
+    var start = this._torqueLayerModel.get('start');
+    var end = this._torqueLayerModel.get('end');
+    var step = (steps * (1000 * timestamp - start)) / (end - start);
+    return step;
+  },
 
-    this._torqueLayerModel.renderRange(loStep, hiStep);
+  _reSelectRange: function () {
+    function clamp (a, b, t) {
+      return Math.max(a, Math.min(b, t));
+    }
+    var loStep = this.timeToStep(this._rangeFilter.get('min'));
+    var hiStep = this.timeToStep(this._rangeFilter.get('max'));
+    // clamp values since the range can be outside of the current torque thing
+    this._torqueLayerModel.renderRange(
+      clamp(0, this._torqueLayerModel.get('steps'), loStep),
+      clamp(0, this._torqueLayerModel.get('steps'), hiStep)
+    );
   },
 
   _onChangeChartWidth: function () {

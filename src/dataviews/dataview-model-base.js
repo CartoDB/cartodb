@@ -186,7 +186,6 @@ module.exports = Model.extend({
   {
     ATTRS_NAMES: [
       'type',
-      'column',
       'sync_on_data_change',
       'sync_on_bbox_change',
       'enabled'

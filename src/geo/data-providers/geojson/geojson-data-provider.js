@@ -123,53 +123,27 @@ GeoJSONDataProvider.prototype._dataGeneratorsForDataviews = {
   formula: function (features, options) {
     var operation = options.operation;
     var columnName = options.column;
-    var data;
     var nulls = features.reduce(function (p, c) { return p + (c.properties[columnName] === null ? 1 : 0); }, 0);
+    var result;
     if (operation === 'count') {
-      data = {
-        'operation': operation,
-        'result': features.length,
-        'nulls': nulls,
-        'type': 'formula'
-      };
+      result = features.length;
     } else if (operation === 'avg') {
-      var total = 0;
-      _.each(features, function (feature) {
-        total += parseInt(feature.properties[columnName], 10);
-      });
-      data = {
-        'operation': operation,
-        'result': features.length,
-        'nulls': nulls,
-        'type': 'formula'
-      };
-    } else if (operation === 'max') {
-      // TODO: Calculate the max value
-      data = {
-        'operation': operation,
-        'result': 99999999,
-        'nulls': nulls,
-        'type': 'formula'
-      };
-    } else if (operation === 'min') {
-      // TODO: Calculate the min value
-      data = {
-        'operation': 'count',
-        'result': 99999999,
-        'nulls': nulls,
-        'type': 'formula'
-      };
+      result = features.reduce(function (p, c) { return p + c.properties[columnName]; }, 0) / features.length;
     } else if (operation === 'sum') {
-      // TODO: Calculate the min value
-      data = {
-        'operation': 'count',
-        'result': 99999999,
-        'nulls': nulls,
-        'type': 'formula'
-      };
+      result = features.reduce(function (p, c) { return p + c.properties[columnName]; }, 0);
+    } else if (operation === 'min') {
+      result = features.reduce(function (p, c) { return Math.min(p, c.properties[columnName]); }, Infinity);
+    } else if (operation === 'max') {
+      result = features.reduce(function (p, c) { return Math.max(p, c.properties[columnName]); }, 0);
     } else {
       throw new Error("Coudn't generate data for formula dataview and '" + operation + "' operation.");
     }
+    var data = {
+      'operation': operation,
+      'result': result,
+      'nulls': nulls,
+      'type': 'formula'
+    };
     return data;
   }
 };

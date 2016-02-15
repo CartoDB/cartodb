@@ -1,4 +1,7 @@
+# encoding: utf-8
+
 require 'carto/api/vizjson3_presenter'
+require 'carto/api/layer_presenter'
 
 module Carto
   module Editor
@@ -15,6 +18,7 @@ module Carto
 
       def show
         @visualization_data = Carto::Api::VisualizationPresenter.new(@visualization, current_viewer, self).to_poro
+        @layers_data = @visualization.layers.map { |l| Carto::Api::LayerPresenter.new(l).to_poro }
         @vizjson = Carto::Api::VizJSON3Presenter.new(@visualization, $tables_metadata)
                                                .to_vizjson(https_request: is_https?)
       end

@@ -9,7 +9,7 @@
 .CDB-Widget-filterButtons {
   @include display-flex();
   @include justify-content(space-between, justify);
-  @include align-items(center);
+  @include align-items(center); 
   transition: opacity 100ms ease-out;
 }
 .CDB-Widget-filterButtons.is-hidden {
@@ -24,4 +24,3 @@
 .CDB-Widget-filterButton.is-hidden {
   display: none;
 }
-

@@ -41,6 +41,9 @@ $chartMiniHighlight: rgba(#333, 1);
       color: $linkHover;
     }
   }
+  .CDB-Widget-buttonIcon--circle {
+    color: $cBlue;
+  }
   .CDB-Widget-buttonIcon--circle.is-selected {
     background-color: $link;
     color: #FFF;

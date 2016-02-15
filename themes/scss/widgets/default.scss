@@ -21,7 +21,7 @@
 .CDB-Widget--timeSeries {
   width: 100%; // override default width
   margin-bottom: 0;
-  border-radius: 4px;
+  border-radius: $baseSize / 2;
 }
 .CDB-Widget-title {
   @include display-flex();

@@ -65,8 +65,8 @@ module.exports = cdb.core.View.extend({
   _onBrushEnd: function (loBarIndex, hiBarIndex) {
     var data = this.model.getData();
     this._rangeFilter.setRange(
-       data[loBarIndex].start,
-       data[hiBarIndex - 1].end
+      data[loBarIndex].start,
+      data[hiBarIndex - 1].end
     );
   },
 

@@ -14,16 +14,22 @@ describe('dataviews/histogram-dataview-model', function () {
       layer: this.layer,
       filter: this.filter
     });
+    this.model.reload
   });
 
   it('should reload map on changing attrs', function () {
     this.map.reload.calls.reset();
     this.model.set('column', 'random_col');
-    expect(this.map.reload).toHaveBeenCalled();
+    spyOn(this.model, 'fetch');
+    expect(this.map.reload).not.toHaveBeenCalled();
+    expect(this.model.fetch).toHaveBeenCalled();
 
+  });
+
+  it ("should refresh data on bins change", function() {
     this.map.reload.calls.reset();
     this.model.set('bins', 123);
-    expect(this.map.reload).toHaveBeenCalled();
+    expect(this.map.reload).not.toHaveBeenCalled();
   });
 
   it('should include the bbox after the first fetch', function () {

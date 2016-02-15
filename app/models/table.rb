@@ -502,18 +502,18 @@ class Table
   end
 
   def create_default_map_and_layers
-    base_layer = LayerFactory.get_default_base_layer(owner)
+    base_layer = ::Factories::LayerFactory.get_default_base_layer(owner)
 
-    map = MapFactory.get_map(base_layer, user_id, id)
+    map = ::Factories::MapFactory.get_map(base_layer, user_id, id)
     @user_table.map_id = map.id
 
     map.add_layer(base_layer)
 
-    data_layer = LayerFactory.get_default_data_layer(name, owner, the_geom_type)
+    data_layer = ::Factories::LayerFactory.get_default_data_layer(name, owner, the_geom_type)
     map.add_layer(data_layer)
 
     if base_layer.supports_labels_layer?
-      labels_layer = LayerFactory.get_default_labels_layer(base_layer)
+      labels_layer = ::Factories::LayerFactory.get_default_labels_layer(base_layer)
       map.add_layer(labels_layer)
     end
   end

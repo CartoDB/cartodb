@@ -1,4 +1,5 @@
 var createDashboard = require('../src/create-dashboard');
+var cdb = require('cartodb.js');
 
 describe('create-dashboard', function () {
   describe('given a valid input', function () {
@@ -8,7 +9,7 @@ describe('create-dashboard', function () {
       document.body.appendChild(this.$el);
       var selector = '#' + this.$el.id;
 
-      var vizJSON = {
+      this.vizJSON = {
         bounds: [[24.206889622398023, -84.0234375], [76.9206135182968, 169.1015625]],
         user: {
         },
@@ -31,7 +32,7 @@ describe('create-dashboard', function () {
           type: 'torque' // to be identified as an 'interactive' layer
         }]
       };
-      this.results = createDashboard(selector, vizJSON, {});
+      this.results = createDashboard(selector, this.vizJSON, {});
     });
 
     afterEach(function () {
@@ -53,6 +54,14 @@ describe('create-dashboard', function () {
     it('should expose a public API to interact with widgets', function () {
       expect(this.results.widgets).toBeDefined();
       expect(this.results.widgets.get).toBeDefined();
+    });
+
+    it('should skip map instantiation', function () {
+      spyOn(cdb, 'createVis').and.callThrough();
+      createDashboard('#' + this.$el.id, this.vizJSON, {});
+      expect(cdb.createVis).toHaveBeenCalledWith(jasmine.any(Object), jasmine.any(Object), jasmine.objectContaining({
+        skipMapInstantiation: true
+      }));
     });
   });
 });

@@ -371,6 +371,28 @@ describe('vis/vis', function () {
     expect(this.vis.map.layers.at(0).get('type')).toEqual('GMapsBase');
   });
 
+  describe('.instantiateMap', function () {
+    it('should instantiate map when skip is false', function () {
+      spyOn(this.vis, '_instantiateMap');
+      this.vis.load(this.mapConfig, {});
+      expect(this.vis._instantiateMap).toHaveBeenCalled();
+    });
+
+    it('should not instantiate map when skip is true', function () {
+      spyOn(this.vis, '_instantiateMap');
+      this.vis.load(this.mapConfig, {
+        skipMapInstantiation: true
+      });
+      expect(this.vis._instantiateMap).not.toHaveBeenCalled();
+    });
+
+    it('should not invalidate map size if uses the public method', function () {
+      spyOn(this.vis.mapView, 'invalidateSize');
+      this.vis.instantiateMap();
+      expect(this.vis.mapView.invalidateSize).toHaveBeenCalled();
+    });
+  });
+
   describe('dragging option', function () {
     beforeEach(function () {
       this.mapConfig = {

@@ -34,7 +34,7 @@ module.exports = Model.extend({
     }
 
     if (!attrs.id) {
-      this.set('id', attrs.type + '-' + this.cid);
+      this.set('id', this.defaults.type + '-' + this.cid);
     }
 
     this.layer = opts.layer;
@@ -185,6 +185,7 @@ module.exports = Model.extend({
   // Class props
   {
     ATTRS_NAMES: [
+      'id',
       'sync_on_data_change',
       'sync_on_bbox_change',
       'enabled'

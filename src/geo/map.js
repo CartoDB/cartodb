@@ -28,8 +28,6 @@ var Map = Model.extend({
 
     this._windshaftMap = options.windshaftMap;
     this._dataviewsCollection = options.dataviewsCollection;
-
-    this._initBinds();
   },
 
   _initBinds: function () {
@@ -47,10 +45,14 @@ var Map = Model.extend({
     this.layers.bind('change:attribution', this._updateAttributions, this);
 
     if (this._dataviewsCollection) {
-
       // When new dataviews are defined, a new instance of the map needs to be created
       this.listenTo(this._dataviewsCollection, 'add', _.debounce(this._onDataviewAdded.bind(this), 10));
     }
+  },
+
+  instantiateMap: function () {
+    this._initBinds();
+    this.reload();
   },
 
   _onLayersResetted: function () {

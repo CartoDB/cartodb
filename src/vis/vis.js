@@ -262,7 +262,6 @@ var Vis = View.extend({
     this._applyOptionsToVizJSON(data, options);
 
     this._dataviewsCollection = new DataviewCollection();
-    this._dataviewsCollection.on('add reset remove', _.debounce(this._invalidateSizeOnDataviewsChanges, 10), this);
 
     // Create the WindhaftClient
 
@@ -424,12 +423,24 @@ var Vis = View.extend({
     });
 
     // Trigger 'done' event
-
     _.defer(function () {
       self.trigger('done', self, self.map.layers);
     });
 
+    if (!options.skipMapInstantiation) {
+      this.instantiateMap();
+    }
+
     return this;
+  },
+
+  instantiateMap: function () {
+    this._dataviewsCollection.on('add reset remove', _.debounce(this._invalidateSizeOnDataviewsChanges, 10), this);
+    this.map.instantiateMap();
+    var self = this;
+    setTimeout(function () {
+      self.mapView.invalidateSize();
+    }, 10);
   },
 
   _newLayerModels: function (vizjson, map) {

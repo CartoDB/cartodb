@@ -34,6 +34,9 @@ module.exports = cdb.core.View.extend({
 
     this._appendView(this.options.contentView);
 
+    // Show or hide the widget depending on the layer visibility
+    this._setVisible(this.model.dataviewModel.layer.get('visible'));
+
     return this;
   },
 
@@ -42,8 +45,12 @@ module.exports = cdb.core.View.extend({
     this.addView(view);
   },
 
+  _setVisible: function (visible) {
+    this.$el.toggle(visible);
+  },
+
   _onChangeLayerVisible: function (layer) {
     // !! to force a boolean value, so only a true value actually shows the view
-    this.$el.toggle(!!layer.get('visible'));
+    this._setVisible(!!layer.get('visible'));
   }
 });

@@ -3,7 +3,7 @@ require 'carto/api/vizjson3_presenter'
 module Carto
   module Editor
     module Public
-      class EmbedsController < PublicController
+      class EmbedsController < EditorController
         include VisualizationsControllerHelper
 
         ssl_required :show, :show_protected

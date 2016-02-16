@@ -3,6 +3,14 @@
 require_relative '../../spec_helper'
 
 describe Carto::VisualizationsExportService do
+  before(:all) do
+    @user = FactoryGirl.create(:valid_user, private_tables_enabled: true)
+  end
+
+  after(:all) do
+    @user.destroy
+  end
+
   before(:each) do
     bypass_named_maps
     ::User.any_instance
@@ -19,7 +27,7 @@ describe Carto::VisualizationsExportService do
   end
 
   it "Calls data export upon visualization deletion" do
-    visualization = create_vis($user_1)
+    visualization = create_vis(@user)
 
     Carto::VisualizationsExportService.any_instance
                                       .expects(:export)
@@ -30,7 +38,7 @@ describe Carto::VisualizationsExportService do
   end
 
   it "Exports data to DB" do
-    visualization = create_vis($user_1)
+    visualization = create_vis(@user)
 
     visualization_clone = visualization.dup
 
@@ -45,11 +53,11 @@ describe Carto::VisualizationsExportService do
   end
 
   it "Purges old backup entries when told to do so" do
-    visualization = create_vis($user_1)
+    visualization = create_vis(@user)
     visualization.delete
-    visualization = create_vis($user_1)
+    visualization = create_vis(@user)
     visualization.delete
-    visualization = create_vis($user_1)
+    visualization = create_vis(@user)
     visualization.delete
 
     old_date = Date.today - (Carto::VisualizationsExportService::DAYS_TO_KEEP_BACKUP * 2).days
@@ -58,11 +66,11 @@ describe Carto::VisualizationsExportService do
     purged_items = Carto::VisualizationsExportService.new.purge_old
 
     purged_items.should eq 3
-    Carto::VisualizationBackup.where(username: $user_1.username).count.should eq 0
+    Carto::VisualizationBackup.where(username: @user.username).count.should eq 0
   end
 
   it "Deletes backup after successfully restoring" do
-    visualization = create_vis($user_1)
+    visualization = create_vis(@user)
 
     visualization_clone = visualization.dup
 
@@ -79,13 +87,13 @@ describe Carto::VisualizationsExportService do
   end
 
   it "Imports data from DB" do
-    table_1 = create_table(user_id: $user_1.id)
-    table_2 = create_table(user_id: $user_1.id)
+    table_1 = create_table(user_id: @user.id)
+    table_2 = create_table(user_id: @user.id)
 
-    blender = Visualization::TableBlender.new($user_1, [table_1, table_2])
+    blender = Visualization::TableBlender.new(@user, [table_1, table_2])
     map = blender.blend
 
-    visualization = create_vis($user_1, map_id: map.id, description: 'description <strong>with tags</strong>')
+    visualization = create_vis(@user, map_id: map.id, description: 'description <strong>with tags</strong>')
 
     # Keep data for later comparisons
     base_layer = visualization.layers(:base).first
@@ -150,7 +158,7 @@ describe Carto::VisualizationsExportService do
     stubbed_version = -1
     Carto::VisualizationsExportService.any_instance.stubs(:export_version).returns(stubbed_version)
 
-    visualization = create_vis($user_1)
+    visualization = create_vis(@user)
     visualization_id = visualization.id
     visualization.delete
 

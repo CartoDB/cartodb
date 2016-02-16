@@ -8,25 +8,26 @@ describe Carto::Api::TablesController do
   describe '#show legacy tests' do
 
     before(:all) do
+      @user = FactoryGirl.create(:valid_user, private_tables_enabled: true)
+
       CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
-      host! "#{$user_1.username}.localhost.lan"
+      host! "#{@user.username}.localhost.lan"
     end
 
     before(:each) do
       stub_named_maps_calls
-      delete_user_data $user_1
+      delete_user_data @user
     end
 
     after(:all) do
-      stub_named_maps_calls
-      delete_user_data $user_1
+      @user.destroy
     end
 
-    let(:params) { { :api_key => $user_1.api_key } }
+    let(:params) {{ api_key: @user.api_key }}
 
     it 'returns table attributes' do
       table = create_table(
-        user_id:      $user_1.id,
+        user_id:      @user.id,
         name:         'My table #1',
         privacy:      UserTable::PRIVACY_PRIVATE,
         tags:         "tag 1, tag 2,tag 3, tag 3",
@@ -42,7 +43,7 @@ describe Carto::Api::TablesController do
 
     it "check imported table metadata" do
       data_import = DataImport.create(
-                                      user_id: $user_1.id,
+                                      user_id: @user.id,
                                       data_source: '/../spec/support/data/TM_WORLD_BORDERS_SIMPL-0.3.zip'
                                       ).run_import!
 
@@ -67,14 +68,14 @@ describe Carto::Api::TablesController do
     end
 
     it "creates a new table without schema when a table of the same name exists on the database" do
-      create_table(name: 'untitled_table', user_id: $user_1.id)
+      create_table(name: 'untitled_table', user_id: @user.id)
       post_json api_v1_tables_create_url(params) do |response|
         response.status.should be_success
         response.body[:name].should match(/^untitled_table/)
         response.body[:name].should_not == 'untitled_table'
         filter_timestamps(response.body[:schema]).should =~ default_schema
       end
-      $user_1.tables.count.should == 2
+      @user.tables.count.should == 2
     end
 
     it "creates a new table specifing a name, description and a schema" do
@@ -94,7 +95,7 @@ describe Carto::Api::TablesController do
     end
 
     it "updates the metadata of an existing table" do
-      table = create_table :user_id => $user_1.id, :name => 'My table #1',  :tags => "tag 1, tag 2,tag 3, tag 3", :description => ""
+      table = create_table :user_id => @user.id, :name => 'My table #1',  :tags => "tag 1, tag 2,tag 3, tag 3", :description => ""
 
        put_json api_v1_tables_update_url(params.merge(
           id: table.id,
@@ -112,7 +113,7 @@ describe Carto::Api::TablesController do
     end
 
     it "updates with bad values the metadata of an existing table" do
-      table1 = create_table :user_id => $user_1.id, :name => 'My table #1', :tags => "tag 1, tag 2,tag 3, tag 3"
+      table1 = create_table :user_id => @user.id, :name => 'My table #1', :tags => "tag 1, tag 2,tag 3, tag 3"
       put_json api_v1_tables_update_url(params.merge(id: table1.id, privacy: "bad privacy value")) do |response|
         response.status.should == 400
         table1.reload.privacy.should == ::UserTable::PRIVACY_PRIVATE
@@ -127,7 +128,7 @@ describe Carto::Api::TablesController do
     it "updates a table and sets the lat and long columns" do
       table = Table.new :privacy => UserTable::PRIVACY_PRIVATE, :name => 'Madrid Bars',
                         :tags => 'movies, personal'
-      table.user_id = $user_1.id
+      table.user_id = @user.id
       table.force_schema = "name varchar, address varchar, latitude float, longitude float"
       table.save
       pk = table.insert_row!({:name => "Hawai", :address => "Calle de Pérez Galdós 9, Madrid, Spain", :latitude => 40.423012, :longitude => -3.699732})

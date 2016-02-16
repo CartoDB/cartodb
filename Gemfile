@@ -100,7 +100,14 @@ group :test do
   gem 'mock_redis'
 end
 
+group :development, :staging do
+  gem 'rbtrace',               '0.4.8'
+end
+
 group :development, :test do
+  gem 'rbtrace',               '0.4.8'
+  gem 'pry-rails',             '0.3.4'
+  gem 'pry-doc',               '0.8.0'
   gem 'rspec-rails',           '2.12.0'
   gem 'rb-readline'
   gem 'byebug'

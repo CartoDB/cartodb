@@ -195,7 +195,7 @@ class Carto::Visualization < ActiveRecord::Base
     map.layers
   end
 
-  def is_password_valid?(password)
+  def password_valid?(password)
     has_password? && ( password_digest(password, password_salt) == encrypted_password )
   end
 
@@ -207,7 +207,7 @@ class Carto::Visualization < ActiveRecord::Base
     privacy == PRIVACY_PROTECTED
   end
 
-  def is_private?
+  def private?
     # This organization? check is kept for backwards compatibility
     is_privacy_private? and not organization?
   end

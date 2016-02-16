@@ -52,6 +52,7 @@ CartoDB::Application.routes.draw do
       resources :visualizations, only: :show, path: '/', constraints: { id: /[0-z\.\-]+/ } do
         namespace :public, path: '/' do
           match 'embed', to: 'embeds#show', via: :get
+          match 'embed_protected', to: 'embeds#show_protected', via: :post
         end
       end
     end

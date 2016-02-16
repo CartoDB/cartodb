@@ -53,6 +53,7 @@ module.exports = Model.extend({
 
   _initBinds: function () {
     this.listenTo(this._windshaftMap, 'instanceCreated', this._onNewWindshaftMapInstance);
+    this.listenTo(this.layer, 'change:visible', this._onLayerVisibilityChanged);
 
     this.listenToOnce(this, 'change:url', function () {
       this.fetch({
@@ -94,6 +95,17 @@ module.exports = Model.extend({
       // TODO: Instead of setting the url here, we could invoke fetch directly
       this.set('url', url, { silent: silent });
     }
+  },
+
+  /**
+   * Enable/disable the dataview depending on the layer visibility.
+   * @private
+   * @param  {LayerModel} model the layer model which visible property has changed.
+   * @param  {Boolean} value New value for visible.
+   * @returns {void}
+   */
+  _onLayerVisibilityChanged: function (model, value) {
+    this.set({enabled: value});
   },
 
   _onMapBoundsChanged: function () {

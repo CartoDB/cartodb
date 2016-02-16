@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-module Factories
+module ModelFactories
   class LayerFactory
 
     def self.get_new(options)

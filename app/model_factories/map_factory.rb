@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-module Factories
+module ModelFactories
   class MapFactory
 
     def self.get_map(base_layer, user_id, table_id = nil)

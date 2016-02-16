@@ -1,6 +1,7 @@
 var _ = require('underscore');
 var Model = require('../core/model');
 var WindshaftFiltersBoundingBoxFilter = require('../windshaft/filters/bounding-box');
+var BOUNDING_BOX_FILTER_WAIT = 500;
 
 /**
  * Default dataview model
@@ -118,7 +119,6 @@ module.exports = Model.extend({
   },
 
   _onChangeBinds: function () {
-    var BOUNDING_BOX_FILTER_WAIT = 500;
     this.listenTo(this._map, 'change:center change:zoom', _.debounce(this._onMapBoundsChanged.bind(this), BOUNDING_BOX_FILTER_WAIT));
 
     this.on('change:url', function () {

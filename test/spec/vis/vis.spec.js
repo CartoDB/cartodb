@@ -373,24 +373,22 @@ describe('vis/vis', function () {
 
   describe('.instantiateMap', function () {
     it('should instantiate map when skip is false', function () {
-      spyOn(this.vis, 'instantiateMap');
+      spyOn(this.vis, '_instantiateMap');
       this.vis.load(this.mapConfig, {});
-      expect(this.vis.instantiateMap).toHaveBeenCalled();
+      expect(this.vis._instantiateMap).toHaveBeenCalled();
     });
 
     it('should not instantiate map when skip is true', function () {
-      spyOn(this.vis, 'instantiateMap');
+      spyOn(this.vis, '_instantiateMap');
       this.vis.load(this.mapConfig, {
         skipMapInstantiation: true
       });
-      expect(this.vis.instantiateMap).not.toHaveBeenCalled();
+      expect(this.vis._instantiateMap).not.toHaveBeenCalled();
     });
 
-    it('should not invalidate map size if option is not added', function () {
+    it('should not invalidate map size if uses the public method', function () {
       spyOn(this.vis.mapView, 'invalidateSize');
       this.vis.instantiateMap();
-      expect(this.vis.mapView.invalidateSize).not.toHaveBeenCalled();
-      this.vis.instantiateMap(true);
       expect(this.vis.mapView.invalidateSize).toHaveBeenCalled();
     });
   });

@@ -391,7 +391,7 @@ describe('vis/vis', function () {
       this.vis.instantiateMap();
       expect(this.vis.mapView.invalidateSize).not.toHaveBeenCalled();
       this.vis.instantiateMap(true);
-      expect(this.vis.mapView.invalidateSize).not.toHaveBeenCalled();
+      expect(this.vis.mapView.invalidateSize).toHaveBeenCalled();
     });
   });
 

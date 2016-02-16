@@ -443,7 +443,7 @@ var Vis = View.extend({
     this.mapView.invalidateSize();
   },
 
-  _instantiateMap: function (invalidateMapSize) {
+  _instantiateMap: function () {
     this._dataviewsCollection.on('add reset remove', _.debounce(this._invalidateSizeOnDataviewsChanges, 10), this);
     this.map.instantiateMap();
   },

@@ -523,8 +523,15 @@ describe User do
   end
 
   describe "avatar checks" do
+    let(:user1) do
+      create_user(email: 'ewdewfref34r43r43d32f45g5@example.com', username: 'u1', password: 'foobar')
+    end
+
+    after(:each) do
+      user1.destroy
+    end
+
     it "should load a cartodb avatar url" do
-      user1 = create_user(email: 'ewdewfref34r43r43d32f45g5@example.com', username: 'u1', password: 'foobar')
       avatar_kind = Cartodb.config[:avatars]['kinds'][0]
       avatar_color = Cartodb.config[:avatars]['colors'][0]
       avatar_base_url = Cartodb.config[:avatars]['base_url']
@@ -534,16 +541,14 @@ describe User do
       user1.avatar_url = nil
       user1.save
       user1.reload_avatar
-      user1.avatar_url.should == "//#{avatar_base_url}/avatar_#{avatar_kind}_#{avatar_color}.png"
-      user1.destroy
+      user1.avatar_url.should == "#{avatar_base_url}/avatar_#{avatar_kind}_#{avatar_color}.png"
     end
+
     it "should load a the user gravatar url" do
-      user1 = create_user(email: 'ewdewfref34r43r43d32f45g5@example.com', username: 'u1', password: 'foobar')
       gravatar_url = %r{gravatar.com}
       Typhoeus.stub(gravatar_url, { method: :get }).and_return(Typhoeus::Response.new(code: 200))
       user1.reload_avatar
       user1.avatar_url.should == "//#{user1.gravatar_user_url}"
-      user1.destroy
     end
   end
 

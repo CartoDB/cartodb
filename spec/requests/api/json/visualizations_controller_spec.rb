@@ -121,6 +121,6 @@ describe Api::Json::VisualizationsController do
   end
 
   def table_factory(attrs = {})
-    new_table(attrs.merge(user_id: $user_1.id)).save.reload
+    new_table(attrs.merge(user_id: @user_1.id)).save.reload
   end
 end

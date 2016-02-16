@@ -14,30 +14,37 @@ describe Admin::TablesController do
 
   before(:all) do
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
-    @api_key = $user_1.api_key
-    $user_1.stubs(:should_load_common_data?).returns(false)
+
+    @user = FactoryGirl.create(:valid_user)
+
+    @api_key = @user.api_key
+    @user.stubs(:should_load_common_data?).returns(false)
+  end
+
+  after(:all) do
+    @user.destroy
   end
 
   before(:each) do
     stub_named_maps_calls
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
     @db = Rails::Sequel.connection
-    delete_user_data $user_1
+    delete_user_data @user
     @headers = {
       'CONTENT_TYPE'  => 'application/json',
     }
-    host! "#{$user_1.username}.localhost.lan"
+    host! "#{@user.username}.localhost.lan"
   end
 
   after(:all) do
     stub_named_maps_calls
-    delete_user_data($user_1)
-    $user_1.destroy
+    delete_user_data(@user)
+    @user.destroy
   end
 
   describe 'GET /dashboard' do
     it 'returns a list of tables' do
-      login_as($user_1, scope: $user_1.username)
+      login_as(@user, scope: @user.username)
 
       get "/dashboard", {}, @headers
       last_response.status.should == 200
@@ -47,7 +54,7 @@ describe Admin::TablesController do
   describe 'GET /tables/:id' do
     it 'returns a table' do
       id = factory.id
-      login_as($user_1, scope: $user_1.username)
+      login_as(@user, scope: @user.username)
 
       get "/tables/#{id}", {}, @headers
       last_response.status.should == 200
@@ -55,8 +62,7 @@ describe Admin::TablesController do
   end # GET /tables/:id
 
   def factory
-    new_table(user_id: $user_1.id).save.reload
+    new_table(user_id: @user.id).save.reload
   end #table_attributes
 
 end # Admin::TablesController
-

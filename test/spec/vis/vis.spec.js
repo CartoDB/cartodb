@@ -385,6 +385,14 @@ describe('vis/vis', function () {
       });
       expect(this.vis.instantiateMap).not.toHaveBeenCalled();
     });
+
+    it('should not invalidate map size if option is not added', function () {
+      spyOn(this.vis.mapView, 'invalidateSize');
+      this.vis.instantiateMap();
+      expect(this.vis.mapView.invalidateSize).not.toHaveBeenCalled();
+      this.vis.instantiateMap(true);
+      expect(this.vis.mapView.invalidateSize).not.toHaveBeenCalled();
+    });
   });
 
   describe('dragging option', function () {

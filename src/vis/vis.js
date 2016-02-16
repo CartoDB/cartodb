@@ -434,13 +434,13 @@ var Vis = View.extend({
     return this;
   },
 
-  instantiateMap: function () {
+  instantiateMap: function (invalidateMapSize) {
     this._dataviewsCollection.on('add reset remove', _.debounce(this._invalidateSizeOnDataviewsChanges, 10), this);
     this.map.instantiateMap();
-    var self = this;
-    setTimeout(function () {
-      self.mapView.invalidateSize();
-    }, 10);
+
+    if (invalidateMapSize) {
+      this.mapView.invalidateSize();
+    }
   },
 
   _newLayerModels: function (vizjson, map) {

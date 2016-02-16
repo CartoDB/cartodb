@@ -40,7 +40,9 @@ module.exports = function (selector, vizJSON, opts) {
     widgets: widgets,
     model: model
   });
-  var vis = cdb.createVis(dashboardView.$('#map'), vizJSON, opts);
+  var vis = cdb.createVis(dashboardView.$('#map'), vizJSON, _.extend(opts, {
+    skipMapInstantiation: true
+  }));
 
   // Create widgets
   var widgetsService = new WidgetsService(widgets, vis.dataviews);
@@ -74,6 +76,10 @@ module.exports = function (selector, vizJSON, opts) {
   });
 
   dashboardView.render();
+
+  vis.instantiateMap({
+    invalidateMapSize: true
+  });
 
   return {
     dashboardView: dashboardView,

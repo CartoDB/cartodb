@@ -184,7 +184,7 @@ module.exports = cdb.core.View.extend({
   _renderMiniChart: function () {
     this.miniHistogramChartView = new HistogramChartView(({
       className: 'CDB-Chart--mini',
-      margin: { top: 0, right: 0, bottom: 4, left: 4 },
+      margin: { top: 0, right: 4, bottom: 4, left: 4 },
       height: 40,
       showOnWidthChange: false,
       data: this._dataviewModel.getData()

@@ -428,19 +428,24 @@ var Vis = View.extend({
     });
 
     if (!options.skipMapInstantiation) {
-      this.instantiateMap();
+      this._instantiateMap();
     }
 
     return this;
   },
 
-  instantiateMap: function (invalidateMapSize) {
+  /**
+   * Force a map instantiation.
+   * Only expected to be called if {skipMapInstantiation} flag is set to true when vis is created.
+   */
+  instantiateMap: function () {
+    this._instantiateMap();
+    this.mapView.invalidateSize();
+  },
+
+  _instantiateMap: function () {
     this._dataviewsCollection.on('add reset remove', _.debounce(this._invalidateSizeOnDataviewsChanges, 10), this);
     this.map.instantiateMap();
-
-    if (invalidateMapSize) {
-      this.mapView.invalidateSize();
-    }
   },
 
   _newLayerModels: function (vizjson, map) {

@@ -185,7 +185,7 @@ module.exports = Model.extend({
   // Class props
   {
     ATTRS_NAMES: [
-      'type',
+      'id',
       'sync_on_data_change',
       'sync_on_bbox_change',
       'enabled'

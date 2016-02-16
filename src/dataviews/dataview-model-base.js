@@ -34,7 +34,7 @@ module.exports = Model.extend({
     }
 
     if (!attrs.id) {
-      this.set('id', attrs.type + '-' + this.cid);
+      this.set('id', this.defaults.type + '-' + this.cid);
     }
 
     this.layer = opts.layer;

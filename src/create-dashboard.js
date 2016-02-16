@@ -77,9 +77,7 @@ module.exports = function (selector, vizJSON, opts) {
 
   dashboardView.render();
 
-  vis.instantiateMap({
-    invalidateMapSize: true
-  });
+  vis.instantiateMap();
 
   return {
     dashboardView: dashboardView,

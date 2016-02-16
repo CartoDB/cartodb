@@ -16,7 +16,7 @@ module CartoDB
 
       # There can be at most one of this types per visualization
       UNIQUE_TYPES = [
-          'header', 'search', 'layer_selector', 'share', 'zoom', 'logo', 'loader', 'fullscreen'
+          'search', 'layer_selector', 'share', 'zoom', 'logo', 'loader', 'fullscreen'
       ]
 
       def initialize(attributes={}, repository=Overlay.repository)
@@ -113,4 +113,3 @@ module CartoDB
     class DuplicateOverlayError < StandardError; end
   end
 end
-

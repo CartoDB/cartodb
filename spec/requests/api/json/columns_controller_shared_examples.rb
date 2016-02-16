@@ -1,8 +1,4 @@
 # encoding: utf-8
-#
-# Avoids uninitialized constant CartoDB::Factories::LayerFactory resolution error
-
-require_relative '../../../../app/factories/layer_factory'
 
 shared_examples_for "columns controllers" do
 

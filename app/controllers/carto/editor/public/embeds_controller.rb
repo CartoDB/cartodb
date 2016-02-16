@@ -6,7 +6,7 @@ module Carto
       class EmbedsController < PublicController
         include VisualizationsControllerHelper
 
-        ssl_required :show
+        ssl_required :show, :show_protected
 
         before_filter :load_visualization, only: [:show, :show_protected]
         before_filter :ensure_viewable, only: [:show]

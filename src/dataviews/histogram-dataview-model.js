@@ -50,7 +50,8 @@ module.exports = DataviewModelBase.extend({
       this.set('submitBBox', true);
     }, this);
     this.listenTo(this.layer, 'change:meta', this._onChangeLayerMeta);
-    this.on('change:column change:bins', this._reloadMap, this);
+    this.on('change:column', this._reloadMap, this);
+    this.on('change:bins', this.refresh, this);
   },
 
   getData: function () {

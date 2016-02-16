@@ -5,7 +5,7 @@
     </div>
     <input type="text" class="CDB-Text CDB-Size-large CDB-Widget-textInput CDB-Widget-searchTextInput js-textInput" value="<%- q %>" placeholder="Search by <%- columnName %>"/>
     <% if (canShowApply) { %>
-      <button type="button" class="CDB-Widget-link CDB-Widget-searchApply js-applyLocked">apply</button>
+      <button type="button" class="CDB-Text is-semibold u-upperCase CDB-Size-small CDB-Widget-searchApply js-applyLocked u-actionTextColor">apply</button>
     <% } %>
   </form>
 <% } else { %>

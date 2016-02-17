@@ -1,6 +1,7 @@
 var _ = require('underscore');
 var Model = require('../core/model');
 var WindshaftFiltersBoundingBoxFilter = require('../windshaft/filters/bounding-box');
+var BOUNDING_BOX_FILTER_WAIT = 500;
 
 /**
  * Default dataview model
@@ -34,7 +35,7 @@ module.exports = Model.extend({
     }
 
     if (!attrs.id) {
-      this.set('id', attrs.type + '-' + this.cid);
+      this.set('id', this.defaults.type + '-' + this.cid);
     }
 
     this.layer = opts.layer;
@@ -58,6 +59,7 @@ module.exports = Model.extend({
     if (dataProvider) {
       dataProvider.bind('featuresChanged', this._onDataProviderChanged, this);
     } else {
+      this.listenTo(this.layer, 'change:visible', this._onLayerVisibilityChanged);
       this.listenToOnce(this, 'change:url', function () {
         this.fetch({
           success: this._onChangeBinds.bind(this)
@@ -115,8 +117,27 @@ module.exports = Model.extend({
     }
   },
 
+  /**
+   * Enable/disable the dataview depending on the layer visibility.
+   * @private
+   * @param  {LayerModel} model the layer model which visible property has changed.
+   * @param  {Boolean} value New value for visible.
+   * @returns {void}
+   */
+  _onLayerVisibilityChanged: function (model, value) {
+    this.set({enabled: value});
+  },
+
+  _onMapBoundsChanged: function () {
+    this._updateBoundingBox();
+  },
+
+  _updateBoundingBox: function () {
+    var boundingBoxFilter = new WindshaftFiltersBoundingBoxFilter(this._map.getViewBounds());
+    this.set('boundingBox', boundingBoxFilter.toString());
+  },
+
   _onChangeBinds: function () {
-    var BOUNDING_BOX_FILTER_WAIT = 500;
     this.listenTo(this._map, 'change:center change:zoom', _.debounce(this._onMapBoundsChanged.bind(this), BOUNDING_BOX_FILTER_WAIT));
 
     this.on('change:url', function () {
@@ -142,15 +163,6 @@ module.exports = Model.extend({
         };
       }
     }, this);
-  },
-
-  _onMapBoundsChanged: function () {
-    this._updateBoundingBox();
-  },
-
-  _updateBoundingBox: function () {
-    var boundingBoxFilter = new WindshaftFiltersBoundingBoxFilter(this._map.getViewBounds());
-    this.set('boundingBox', boundingBoxFilter.toString());
   },
 
   _shouldFetchOnURLChange: function () {
@@ -211,6 +223,7 @@ module.exports = Model.extend({
   // Class props
   {
     ATTRS_NAMES: [
+      'id',
       'sync_on_data_change',
       'sync_on_bbox_change',
       'enabled'

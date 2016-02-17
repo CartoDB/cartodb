@@ -36,12 +36,14 @@
     "leaflet": "0.7.3",
     "mustache": "1.1.0",
     "perfect-scrollbar": "0.6.7",
-    "torque.js": "2.15.0",
+    "torque.js": "2.15.1",
     "underscore": "1.8.3",
     "cartoassets": "CartoDB/CartoAssets#master"
   },
   "devDependencies": {
     "browserify": "11.2.0",
+    "d3": "^3.5.15",
+    "d3.cartodb": "git://github.com/CartoDB/d3.cartodb.git#41beae29f4ea7939e6f9e38fbd79f7e54fe2cf85",
     "findup-sync": "0.1.3",
     "grunt": "0.4.5",
     "grunt-aws": "^0.4.0",
@@ -56,7 +58,6 @@
     "grunt-contrib-jshint": "~0.8.0",
     "grunt-contrib-uglify": "0.10.0",
     "grunt-contrib-watch": "git://github.com/gruntjs/grunt-contrib-watch.git#b884948805940c663b1cbb91a3c28ba8afdebf78",
-    "d3.cartodb": "git://github.com/CartoDB/d3.cartodb.git#41beae29f4ea7939e6f9e38fbd79f7e54fe2cf85",
     "grunt-exorcise": "2.1.0",
     "grunt-fastly": "~0.1.3",
     "grunt-gitinfo": "~0.1.7",

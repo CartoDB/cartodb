@@ -33,6 +33,7 @@ describe('geo/leaflet/leaflet-map-view', function () {
     map = new Map(null, {
       windshaftMap: fakeWindshaftMap
     });
+    map.instantiateMap();
 
     mapView = new LeafletMapView({
       el: container,

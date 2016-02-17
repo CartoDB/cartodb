@@ -8,6 +8,7 @@ describe('core/geo/map', function() {
 
   beforeEach(function() {
     map = new Map();
+    map.instantiateMap();
   });
 
   it("should raise only one change event on setBounds", function() {
@@ -59,6 +60,7 @@ describe('core/geo/map', function() {
 
   it('should update the attributions of the map when layers are reset/added/removed', function() {
     map = new Map();
+    map.instantiateMap();
 
     // Map has the default CartoDB attribution
     expect(map.get('attribution')).toEqual([

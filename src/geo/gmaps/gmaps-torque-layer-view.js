@@ -21,12 +21,25 @@ _.extend(
     _update: function () {
       var changed = this.model.changedAttributes();
       if (changed === false) return;
-      changed.tile_style && this.setCartoCSS(this.model.get('tile_style'));
-      if ('query' in changed || 'query_wrapper' in changed) {
-        this.setSQL(this._getQuery(this.model));
-      }
+
       if ('visible' in changed) {
         this.model.get('visible') ? this.show() : this.hide();
+      }
+
+      if ('urls' in changed) {
+        // REAL HACK
+        this.provider.templateUrl = this.model.get('urls').tiles[0];
+        // set meta
+        _.extend(this.provider.options, this.model.get('meta'));
+        this.model.set(this.model.get('meta'));
+        // this needs to be deferred in order to break the infinite loop
+        // of setReady changing keys and keys updating the model
+        // If we do this in the next iteration 'urls' will not be in changedAttributes
+        // so this will not pass through this code
+        setTimeout(function () {
+          this.provider._setReady(true);
+          this._reloadTiles();
+        }.bind(this), 0);
       }
     },
 

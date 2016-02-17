@@ -18,11 +18,12 @@ GeoJSONDataProvider.prototype._dataGeneratorsForDataviews = {
   histogram: function (features, options) {
     var filter = this._vectorLayerView.getFilter(this._layerIndex);
     var columnName = options.column;
-    var end, start, bins, width;
+    var end, start, bins, width, values;
     var numberOfBins = options.bins || options.data.length;
     if (options.own_filter === 1) {
       end = filter.getMax(columnName);
       start = filter.getMin(columnName);
+      values = filter.getValues();
       bins = d3.layout.histogram().bins(numberOfBins)(filter.getValues().map(function (f) {
         return f.properties[options.column];
       }));
@@ -31,6 +32,7 @@ GeoJSONDataProvider.prototype._dataGeneratorsForDataviews = {
       end = options.end || filter.getMax(columnName);
       start = options.start > -1 ? options.start : filter.getMin(columnName);
       width = (end - start) / options.bins;
+      values = filter.getValues(false, columnName);
       bins = d3.layout.histogram().bins(numberOfBins)(filter.getValues(false, columnName).map(function (f) {
         return f.properties[options.column];
       }));
@@ -44,6 +46,7 @@ GeoJSONDataProvider.prototype._dataGeneratorsForDataviews = {
         freq: bin.length
       };
     });
+    var nulls = values.reduce(function (p, c) { return p + (c.properties[columnName] === null ? 1 : 0); }, 0);
     var average = bins.reduce(function (p, c) {
       return p + c.avg;
     }, 0) / bins.reduce(function (p, c) {
@@ -53,7 +56,7 @@ GeoJSONDataProvider.prototype._dataGeneratorsForDataviews = {
       'bin_width': width,
       'bins_count': bins.length,
       'bins_start': start,
-      'nulls': 0,
+      'nulls': nulls,
       'avg': average,
       'bins': bins,
       'type': 'histogram'
@@ -85,13 +88,14 @@ GeoJSONDataProvider.prototype._dataGeneratorsForDataviews = {
       sortedGroups = filter.getColumnValues(columnName);
       count = filter.getCount(columnName);
     }
+    var nulls = filter.getValues(false, columnName).reduce(function (p, c) { return p + (c.properties[columnName] === null ? 1 : 0); }, 0);
     var data = {
       categories: [],
       categoriesCount: sortedGroups.length,
       count: count,
       max: sortedGroups[0].value,
       min: sortedGroups[sortedGroups.length - 1].value,
-      nulls: 0,
+      nulls: nulls,
       type: 'aggregation'
     };
 
@@ -119,52 +123,27 @@ GeoJSONDataProvider.prototype._dataGeneratorsForDataviews = {
   formula: function (features, options) {
     var operation = options.operation;
     var columnName = options.column;
-    var data;
+    var nulls = features.reduce(function (p, c) { return p + (c.properties[columnName] === null ? 1 : 0); }, 0);
+    var result;
     if (operation === 'count') {
-      data = {
-        'operation': operation,
-        'result': features.length,
-        'nulls': 0,
-        'type': 'formula'
-      };
+      result = features.length;
     } else if (operation === 'avg') {
-      var total = 0;
-      _.each(features, function (feature) {
-        total += parseInt(feature.properties[columnName], 10);
-      });
-      data = {
-        'operation': operation,
-        'result': features.length,
-        'nulls': 0,
-        'type': 'formula'
-      };
-    } else if (operation === 'max') {
-      // TODO: Calculate the max value
-      data = {
-        'operation': operation,
-        'result': 99999999,
-        'nulls': 0,
-        'type': 'formula'
-      };
-    } else if (operation === 'min') {
-      // TODO: Calculate the min value
-      data = {
-        'operation': 'count',
-        'result': 99999999,
-        'nulls': 0,
-        'type': 'formula'
-      };
+      result = features.reduce(function (p, c) { return p + c.properties[columnName]; }, 0) / features.length;
     } else if (operation === 'sum') {
-      // TODO: Calculate the min value
-      data = {
-        'operation': 'count',
-        'result': 99999999,
-        'nulls': 0,
-        'type': 'formula'
-      };
+      result = features.reduce(function (p, c) { return p + c.properties[columnName]; }, 0);
+    } else if (operation === 'min') {
+      result = features.reduce(function (p, c) { return Math.min(p, c.properties[columnName]); }, Infinity);
+    } else if (operation === 'max') {
+      result = features.reduce(function (p, c) { return Math.max(p, c.properties[columnName]); }, 0);
     } else {
       throw new Error("Coudn't generate data for formula dataview and '" + operation + "' operation.");
     }
+    var data = {
+      'operation': operation,
+      'result': result,
+      'nulls': nulls,
+      'type': 'formula'
+    };
     return data;
   }
 };

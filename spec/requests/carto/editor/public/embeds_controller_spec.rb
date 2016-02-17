@@ -35,7 +35,7 @@ describe Carto::Editor::Public::EmbedsController do
       get editor_visualization_public_embed_url(visualization_id: @visualization.id)
 
       response.body.include?('Embed error | CartoDB').should be true
-      response.status.should = 403
+      response.status.should == 403
     end
 
     it 'does not embed password protected viz' do
@@ -45,7 +45,7 @@ describe Carto::Editor::Public::EmbedsController do
       get editor_visualization_public_embed_url(visualization_id: @visualization.id)
 
       response.body.include?('Protected map').should be true
-      response.status.should = 403
+      response.status.should == 403
     end
 
     it 'returns 404 for inexistent visualizations' do
@@ -61,12 +61,12 @@ describe Carto::Editor::Public::EmbedsController do
       @visualization.save
 
       Carto::Visualization.any_instance.stubs(:has_password?).returns(true)
-      Carto::Visualization.any_instance.stubs(:password_valid?).with('manolo').returns false
+      Carto::Visualization.any_instance.stubs(:password_valid?).with('manolo').returns(false)
 
       post editor_visualization_public_embed_protected_url(visualization_id: @visualization.id, password: 'manolo')
 
       response.body.include?('The password is not ok').should be true
-      response.status.should = 403
+      response.status.should == 403
     end
 
     it 'accepts correct passwords' do
@@ -74,12 +74,13 @@ describe Carto::Editor::Public::EmbedsController do
       @visualization.save
 
       Carto::Visualization.any_instance.stubs(:has_password?).returns(true)
-      Carto::Visualization.any_instance.stubs(:password_valid?).with('manolo').returns true
+      Carto::Visualization.any_instance.stubs(:password_valid?).with('manolo').returns(true)
 
       post editor_visualization_public_embed_protected_url(visualization_id: @visualization.id, password: 'manolo')
 
+      response.body.include?('The password is not ok').should_not be true
       response.body.include?(@visualization.name).should be true
-      response.status.should = 200
+      response.status.should == 200
     end
   end
 end

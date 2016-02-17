@@ -371,7 +371,7 @@ describe('vis/vis', function () {
 
       it('should trigger done callback if skip is true', function () {
         jasmine.clock().tick(100);
-        expect(this.doneCallback).toHaveBeenCalled();//With('done', jasmine.any(Object), jasmine.any(Object));
+        expect(this.doneCallback).toHaveBeenCalled();
       });
     });
 

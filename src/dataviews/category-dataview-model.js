@@ -43,29 +43,16 @@ module.exports = DataviewModelBase.extend({
     this._searchModel = new SearchModel();
 
     this.on('change:column change:aggregation change:aggregation_column', this._reloadMap, this);
-  },
-
-  // Set any needed parameter when they have changed in this model
-  _setInternalModels: function () {
-    var url = this.get('url');
-
-    this._searchModel.set({
-      url: url,
-      boundingBox: this.get('boundingBox')
-    });
-
-    this._rangeModel.setUrl(url);
-  },
-
-  _onChangeBinds: function () {
-    DataviewModelBase.prototype._onChangeBinds.call(this);
-    this._setInternalModels();
 
     this.bind('change:url change:boundingBox', function () {
       this._searchModel.set({
         url: this.get('url'),
         boundingBox: this.get('boundingBox')
       });
+    }, this);
+
+    this.once('change:url', function () {
+      this._rangeModel.setUrl(this.get('url'));
     }, this);
 
     this._rangeModel.bind('change:totalCount change:categoriesCount', function () {
@@ -75,6 +62,10 @@ module.exports = DataviewModelBase.extend({
       });
     }, this);
 
+    this._bindSearchModelEvents();
+  },
+
+  _bindSearchModelEvents: function () {
     this._searchModel.bind('loading', function () {
       this.trigger('loading', this);
     }, this);
@@ -87,6 +78,14 @@ module.exports = DataviewModelBase.extend({
       }
     }, this);
     this._searchModel.bind('change:data', this._onSearchDataChange, this);
+  },
+
+  _onSearchDataChange: function () {
+    this.getSearchResult().each(function (m) {
+      var selected = this.filter.isAccepted(m.get('name'));
+      m.set('selected', selected);
+    }, this);
+    this.trigger('change:searchData', this);
   },
 
   _shouldFetchOnBoundingBoxChange: function () {
@@ -152,7 +151,7 @@ module.exports = DataviewModelBase.extend({
   },
 
   getCount: function () {
-    return this.get('allCategoryNames').length;
+    return this.get('categoriesCount');
   },
 
   isOtherAvailable: function () {
@@ -188,14 +187,6 @@ module.exports = DataviewModelBase.extend({
       },
       0
     );
-  },
-
-  _onSearchDataChange: function () {
-    this.getSearchResult().each(function (m) {
-      var selected = this.filter.isAccepted(m.get('name'));
-      m.set('selected', selected);
-    }, this);
-    this.trigger('change:searchData', this);
   },
 
   refresh: function () {

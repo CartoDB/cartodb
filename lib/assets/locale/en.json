@@ -9,7 +9,14 @@
       "continue-btn": "Continue",
       "fetching-tables-title": "Loading tables"
     },
+    "layers": {
+      "title": "LAYERS",
+    },
+    "elements": {
+      "title": "ELEMENTS",
+    },
     "widgets": {
+      "title": "WIDGETS",
       "widgets-form": {
         "type": {
           "title": "Type",

@@ -317,12 +317,6 @@ var Vis = View.extend({
       provider: data.map_provider
     };
 
-    // if the boundaries are defined, we add them to the map
-    if (data.bounding_box_sw && data.bounding_box_ne) {
-      this.mapConfig.bounding_box_sw = data.bounding_box_sw;
-      this.mapConfig.bounding_box_ne = data.bounding_box_ne;
-    }
-
     if (data.bounds) {
       this.mapConfig.view_bounds_sw = data.bounds[0];
       this.mapConfig.view_bounds_ne = data.bounds[1];
@@ -438,22 +432,25 @@ var Vis = View.extend({
    */
   instantiateMap: function () {
     this.mapView.invalidateSize();
-    if (this.mapConfig.view_bounds_ne && this.mapConfig.view_bounds_sw) {
-      this.mapView.showBounds(
-        [
-          this.mapConfig.view_bounds_ne,
-          this.mapConfig.view_bounds_sw
-        ]
-      );
-    } else {
-      this.map.setCenter(this.mapConfig.center, this.mapConfig.zoom);
-    }
+    this._centerMapFromConfig();
     this._instantiateMap();
   },
 
   _instantiateMap: function () {
     this._dataviewsCollection.on('add reset remove', _.debounce(this._invalidateSizeOnDataviewsChanges, 10), this);
     this.map.instantiateMap();
+  },
+
+  _centerMapFromConfig: function () {
+    var c = this.mapConfig;
+    if (c.view_bounds_sw && c.view_bounds_ne) {
+      this.map.setBounds([
+        c.view_bounds_sw,
+        c.view_bounds_ne
+      ]);
+    } else {
+      this.map.setCenter(c.center);
+    }
   },
 
   _newLayerModels: function (vizjson, map) {
@@ -1048,21 +1045,7 @@ var Vis = View.extend({
     // This timeout is necessary due to GMaps needs time
     // to load tiles and recalculate its bounds :S
     setTimeout(function () {
-      var c = self.mapConfig;
-
-      if (c.view_bounds_sw) {
-        self.mapView.map.setBounds([
-          c.view_bounds_sw,
-          c.view_bounds_ne
-        ]);
-
-      } else {
-        self.mapView.map.set({
-          center: c.center,
-          zoom: c.zoom
-        });
-
-      }
+      self._centerMapFromConfig();
     }, 150);
   },
 

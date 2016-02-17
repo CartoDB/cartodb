@@ -23,8 +23,6 @@ describe('vis/vis', function () {
       description: 'not so irrelevant',
       url: 'http://cartodb.com',
       center: [40.044, -101.95],
-      bounding_box_sw: [20, -140],
-      bounding_box_ne: [ 55, -50],
       zoom: 4,
       bounds: [
         [1, 2],
@@ -70,16 +68,6 @@ describe('vis/vis', function () {
 
     expect(this.vis.mapView._leafletMap.options.maxZoom).toEqual(10);
     expect(this.vis.mapView._leafletMap.options.minZoom).toEqual(5);
-  });
-
-  it('should insert the max boundaries when provided', function () {
-    this.container = $('<div>').css('height', '200px');
-    this.mapConfig.bounding_box_sw = [1, 2];
-    this.mapConfig.bounding_box_ne = [3, 5];
-    this.vis.load(this.mapConfig);
-
-    expect(this.vis.map.get('bounding_box_sw')).toEqual([1, 2]);
-    expect(this.vis.map.get('bounding_box_ne')).toEqual([3, 5]);
   });
 
   it('should parse center if values are correct', function () {
@@ -371,7 +359,7 @@ describe('vis/vis', function () {
     expect(this.vis.map.layers.at(0).get('type')).toEqual('GMapsBase');
   });
 
-  describe('.instantiateMap', function () {
+  describe('._instantiateMap', function () {
     it('should instantiate map when skip is false', function () {
       spyOn(this.vis, '_instantiateMap');
       this.vis.load(this.mapConfig, {});
@@ -385,11 +373,33 @@ describe('vis/vis', function () {
       });
       expect(this.vis._instantiateMap).not.toHaveBeenCalled();
     });
+  });
 
-    it('should not invalidate map size if uses the public method', function () {
+  describe('.instantiateMap', function() {
+    it('should invalidate map size', function () {
       spyOn(this.vis.mapView, 'invalidateSize');
       this.vis.instantiateMap();
       expect(this.vis.mapView.invalidateSize).toHaveBeenCalled();
+    });
+
+    it('should re-center map', function () {
+      spyOn(this.vis, '_centerMapFromConfig');
+      this.vis.instantiateMap();
+      expect(this.vis._centerMapFromConfig).toHaveBeenCalled();
+    });
+
+    it('should set map bounds again', function () {
+      spyOn(this.vis.mapView, 'showBounds');
+      this.vis.instantiateMap();
+      expect(this.vis.mapView.showBounds).toHaveBeenCalled();
+    });
+
+    it('should set center if bounds are undefined', function () {
+      delete this.vis.mapConfig.view_bounds_ne;
+      delete this.vis.mapConfig.view_bounds_sw;
+      spyOn(this.vis.map, 'setCenter');
+      this.vis.instantiateMap();
+      expect(this.vis.map.setCenter).toHaveBeenCalled();
     });
   });
 
@@ -401,8 +411,6 @@ describe('vis/vis', function () {
         description: 'not so irrelevant',
         url: 'http://cartodb.com',
         center: [40.044, -101.95],
-        bounding_box_sw: [20, -140],
-        bounding_box_ne: [ 55, -50],
         zoom: 4,
         bounds: [[1, 2], [3, 4]],
         scrollwheel: true,

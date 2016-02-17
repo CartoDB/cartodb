@@ -275,6 +275,9 @@ Overlay.register('fullscreen', function (data, vis) {
   return fullscreen.render();
 });
 
+// share content
+Overlay.register('share', function (data, vis) {});
+
 // search content
 Overlay.register('search', function (data, vis) {
   var opts = _.extend(data, {

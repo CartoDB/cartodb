@@ -11,8 +11,8 @@ module Carto
       ssl_required :show
 
       before_filter :load_visualization, only: [:show]
-      before_filter :only_authors, only: [:show]
-      before_filter :only_editable_visualizations, only: [:show]
+      before_filter :authors_only
+      before_filter :editable_visualizations_only, only: [:show]
 
       after_filter :update_user_last_activity, only: [:show]
 

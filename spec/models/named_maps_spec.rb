@@ -945,7 +945,6 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       vizjson
   end #get_vizjson
 
-
   # Does all the work and stubbing required to create a private table with an associated visualization
   # NOTE: Leaves stubbed calls to GET the template so they return the correct template data
   def create_private_table_with_public_visualization(template_data,

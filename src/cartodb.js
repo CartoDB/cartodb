@@ -43,7 +43,6 @@ cdb.core.Model = require('./core/model');
 cdb.core.View = require('./core/view');
 
 cdb.ui.common.Dialog = require('./ui/common/dialog');
-cdb.ui.common.ShareDialog = require('./ui/common/share');
 cdb.ui.common.Dropdown = require('./ui/common/dropdown');
 cdb.ui.common.FullScreen = require('./ui/common/fullscreen/fullscreen-view');
 cdb.ui.common.Notification = require('./ui/common/notification');
@@ -76,7 +75,6 @@ cdb.Promise = require('./api/promise');
 cdb.geo.ui.Text = require('./geo/ui/text');
 cdb.geo.ui.Annotation = require('./geo/ui/annotation');
 cdb.geo.ui.Image = require('./geo/ui/image');
-cdb.geo.ui.Share = require('./geo/ui/share');
 cdb.geo.ui.Zoom = require('./geo/ui/zoom/zoom-view');
 
 // setup expected object structure here, to avoid circular references

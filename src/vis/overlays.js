@@ -8,7 +8,6 @@ var InfoBox = require('../geo/ui/infobox');
 var Infowindow = require('../geo/ui/infowindow');
 var InfowindowModel = require('../geo/ui/infowindow-model');
 var LayerSelector = require('../geo/ui/layer-selector');
-var Share = require('../geo/ui/share');
 var Search = require('../geo/ui/search/search');
 var Text = require('../geo/ui/text');
 var TilesLoader = require('../geo/ui/tiles-loader');
@@ -105,13 +104,8 @@ Overlay.register('zoom', function (data, vis) {
     model: data.map
   };
 
-  if (data.template) {
-    opts.template = Template.compile(data.template);
-  }
-
   var zoom = new Zoom(opts);
   return zoom.render();
-
 });
 
 // Tiles loader
@@ -282,26 +276,7 @@ Overlay.register('fullscreen', function (data, vis) {
 });
 
 // share content
-Overlay.register('share', function (data, vis) {
-  var options = data.options;
-
-  var template = Template.compile(
-    data.template || '<a href="#"></a>',
-    data.templateType || 'mustache'
-  );
-
-  var widget = new Share({
-    model: new Model(options),
-    vis: vis,
-    map: vis.map,
-    template: template
-  });
-
-  widget.createDialog();
-
-  return widget.render();
-
-});
+Overlay.register('share', function (data, vis) {});
 
 // search content
 Overlay.register('search', function (data, vis) {

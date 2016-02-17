@@ -354,17 +354,17 @@ describe('vis/vis', function () {
 
   describe('.instantiateMap', function () {
     it('should instantiate map when skip is false', function () {
-      spyOn(this.vis, '_instantiateMap');
+      spyOn(this.vis, 'instantiateMap');
       this.vis.load(this.mapConfig, {});
-      expect(this.vis._instantiateMap).toHaveBeenCalled();
+      expect(this.vis.instantiateMap).toHaveBeenCalled();
     });
 
     it('should not instantiate map when skip is true', function () {
-      spyOn(this.vis, '_instantiateMap');
+      spyOn(this.vis, 'instantiateMap');
       this.vis.load(this.mapConfig, {
         skipMapInstantiation: true
       });
-      expect(this.vis._instantiateMap).not.toHaveBeenCalled();
+      expect(this.vis.instantiateMap).not.toHaveBeenCalled();
     });
   });
 
@@ -378,7 +378,7 @@ describe('vis/vis', function () {
     it('should set map bounds again', function () {
       spyOn(this.vis.map, 'setBounds');
       this.vis.invalidateMapSize();
-      expect(this.vis.mapView.setBounds).toHaveBeenCalled();
+      expect(this.vis.map.setBounds).toHaveBeenCalled();
     });
 
     it('should set center if bounds are undefined', function () {

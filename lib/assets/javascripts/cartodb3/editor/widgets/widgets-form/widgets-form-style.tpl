@@ -5,13 +5,9 @@
     <div class="CDB-HeaderInfo-Title u-bSpace--m">
       <h2 class="CDB-Text CDB-HeaderInfo-TitleText CDB-Size-large"><%- title %></h2>
     </div>
-
     <p class="CDB-Text u-upperCase CDB-FontSize-small u-altTextColor u-bSpace--m"><%- description %></p>
 
-    <select>
-      <% _.each(types, function(type) { %>
-      <option value="<%- type.value %>"><%- type.label %></option>
-      <% }); %>
-    </select>
+    <div class="js-content"></div>
+
   </div>
 </div>

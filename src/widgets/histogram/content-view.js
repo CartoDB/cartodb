@@ -413,8 +413,8 @@ module.exports = cdb.core.View.extend({
 
   _onZoomIn: function () {
     this._showMiniRange();
+    this.histogramChartView.updateYScale();
     this.histogramChartView.expand(4);
-
     this.histogramChartView.removeShadowBars();
 
     this._dataviewModel.set({ start: null, end: null, bins: null, own_filter: 1 });
@@ -439,6 +439,7 @@ module.exports = cdb.core.View.extend({
 
     this.filter.unsetRange();
 
+    this.histogramChartView.resetYScale();
     this.histogramChartView.contract(this.defaults.chartHeight);
     this.histogramChartView.resetIndexes();
 

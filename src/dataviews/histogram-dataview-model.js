@@ -82,6 +82,12 @@ module.exports = DataviewModelBase.extend({
       }, buckets[i]);
     }
 
+    // FIXME - Update the end of last bin due https://github.com/CartoDB/cartodb.js/issues/926
+    var lastBucket = buckets[numberOfBins - 1];
+    if (lastBucket && lastBucket.end < lastBucket.max) {
+      lastBucket.end = lastBucket.max;
+    }
+
     this._data.reset(buckets);
 
     return {

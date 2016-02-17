@@ -302,7 +302,7 @@ var Vis = View.extend({
 
     var allowDragging = this.isMobileDevice() || hasZoomOverlay || scrollwheel;
 
-    var mapConfig = {
+    this.mapConfig = {
       title: data.title,
       description: data.description,
       maxZoom: data.maxZoom || this.DEFAULT_MAX_ZOOM,
@@ -313,15 +313,9 @@ var Vis = View.extend({
       provider: data.map_provider
     };
 
-    // if the boundaries are defined, we add them to the map
-    if (data.bounding_box_sw && data.bounding_box_ne) {
-      mapConfig.bounding_box_sw = data.bounding_box_sw;
-      mapConfig.bounding_box_ne = data.bounding_box_ne;
-    }
-
     if (data.bounds) {
-      mapConfig.view_bounds_sw = data.bounds[0];
-      mapConfig.view_bounds_ne = data.bounds[1];
+      this.mapConfig.view_bounds_sw = data.bounds[0];
+      this.mapConfig.view_bounds_ne = data.bounds[1];
     } else {
       var center = data.center;
 
@@ -329,11 +323,11 @@ var Vis = View.extend({
         center = $.parseJSON(center);
       }
 
-      mapConfig.center = center || [0, 0];
-      mapConfig.zoom = data.zoom === undefined ? 4 : data.zoom;
+      this.mapConfig.center = center || [0, 0];
+      this.mapConfig.zoom = data.zoom === undefined ? 4 : data.zoom;
     }
 
-    this.map = new Map(mapConfig, {
+    this.map = new Map(this.mapConfig, {
       windshaftMap: windshaftMap,
       dataviewsCollection: this._dataviewsCollection
     });
@@ -347,7 +341,6 @@ var Vis = View.extend({
     var map_h = this.$el.outerHeight();
 
     if (map_h === 0) {
-      this.mapConfig = mapConfig;
       $(window).bind('resize', this._onResize);
     }
 
@@ -397,9 +390,8 @@ var Vis = View.extend({
     }
 
     // Create the Layer Models and set them on hte map
-
-    var layers = this._newLayerModels(data, this.map);
-    this.map.layers.reset(layers);
+    var layerModels = this._newLayerModels(data, this.map);
+    this.map.layers.reset(layerModels);
 
     // Create the collection of Overlays
 
@@ -424,7 +416,7 @@ var Vis = View.extend({
     });
 
     if (!options.skipMapInstantiation) {
-      this._instantiateMap();
+      this.instantiateMap();
     }
 
     return this;
@@ -435,13 +427,21 @@ var Vis = View.extend({
    * Only expected to be called if {skipMapInstantiation} flag is set to true when vis is created.
    */
   instantiateMap: function () {
-    this._instantiateMap();
-    this.mapView.invalidateSize();
-  },
-
-  _instantiateMap: function () {
     this._dataviewsCollection.on('add reset remove', _.debounce(this._invalidateSizeOnDataviewsChanges, 10), this);
     this.map.instantiateMap();
+  },
+
+  centerMapToOrigin: function () {
+    this.mapView.invalidateSize();
+    var c = this.mapConfig;
+    if (c.view_bounds_sw && c.view_bounds_ne) {
+      this.map.setBounds([
+        c.view_bounds_sw,
+        c.view_bounds_ne
+      ]);
+    } else {
+      this.map.setCenter(c.center);
+    }
   },
 
   _newLayerModels: function (vizjson, map) {
@@ -1020,27 +1020,10 @@ var Vis = View.extend({
     $(window).unbind('resize', this._onResize);
 
     var self = this;
-
-    self.mapView.invalidateSize();
-
     // This timeout is necessary due to GMaps needs time
     // to load tiles and recalculate its bounds :S
     setTimeout(function () {
-      var c = self.mapConfig;
-
-      if (c.view_bounds_sw) {
-        self.mapView.map.setBounds([
-          c.view_bounds_sw,
-          c.view_bounds_ne
-        ]);
-
-      } else {
-        self.mapView.map.set({
-          center: c.center,
-          zoom: c.zoom
-        });
-
-      }
+      self.centerMapToOrigin();
     }, 150);
   },
 

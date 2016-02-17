@@ -70,6 +70,52 @@ describe('dataviews/histogram-dataview-model', function () {
     expect(JSON.stringify(parsedData)).toBe('[{"bin":0,"start":55611,"end":70101.25,"freq":2,"max":70151,"min":55611},{"bin":1,"start":70101.25,"end":84591.5,"freq":2,"max":79017,"min":78448},{"bin":2,"start":84591.5,"end":99081.75,"freq":0},{"bin":3,"start":99081.75,"end":113572,"freq":1,"max":113572,"min":113572}]');
   });
 
+  it('parser do not fails when there are no bins', function () {
+    var data = {
+      bin_width: 0,
+      bins: [],
+      bins_count: 0,
+      bins_start: 0,
+      nulls: 0,
+      type: 'histogram'
+    };
+
+    this.model.parse(data);
+
+    var parsedData = this.model.getData();
+
+    expect(data.nulls).toBe(0);
+    expect(parsedData.length).toBe(0);
+  });
+
+  it('should parse the bins and fix end bucket issues', function () {
+    var data = {
+      'bin_width': 1041.66645833333,
+      'bins_count': 48,
+      'bins_start': 0.01,
+      'nulls': 0,
+      'avg': 55.5007561961441,
+      'bins': [{
+        'bin': 47,
+        'min': 50000,
+        'max': 50000,
+        'avg': 50000,
+        'freq': 6
+        // NOTE - The end of this bucket is 48 * 1041.66645833333 = 49999.98999999984
+        // but it must be corrected to 50.000.
+      }],
+      'type': 'histogram'
+    };
+
+    this.model.parse(data);
+
+    var parsedData = this.model.getData();
+
+    expect(data.nulls).toBe(0);
+    expect(parsedData.length).toBe(48);
+    expect(parsedData[47].end).not.toBeLessThan(parsedData[47].max);
+  });
+
   describe('when layer changes meta', function () {
     beforeEach(function () {
       expect(this.model.filter.get('column_type')).not.toEqual('date');

@@ -8,7 +8,6 @@ var InfoBox = require('../geo/ui/infobox');
 var Infowindow = require('../geo/ui/infowindow');
 var InfowindowModel = require('../geo/ui/infowindow-model');
 var LayerSelector = require('../geo/ui/layer-selector');
-var Share = require('../geo/ui/share');
 var Search = require('../geo/ui/search/search');
 var Text = require('../geo/ui/text');
 var TilesLoader = require('../geo/ui/tiles-loader');
@@ -279,28 +278,6 @@ Overlay.register('fullscreen', function (data, vis) {
 
   var fullscreen = new FullScreen(options);
   return fullscreen.render();
-});
-
-// share content
-Overlay.register('share', function (data, vis) {
-  var options = data.options;
-
-  var template = Template.compile(
-    data.template || '<a href="#"></a>',
-    data.templateType || 'mustache'
-  );
-
-  var widget = new Share({
-    model: new Model(options),
-    vis: vis,
-    map: vis.map,
-    template: template
-  });
-
-  widget.createDialog();
-
-  return widget.render();
-
 });
 
 // search content

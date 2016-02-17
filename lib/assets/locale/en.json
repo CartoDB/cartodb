@@ -5,8 +5,18 @@
     "map_pluralize": "%{smart_count} map |||| %{smart_count} maps",
     "widgets": {
       "widgets-form": {
-        "data": "Data",
-        "style": "Style"
+        "type": {
+          "title": "Type",
+          "description": "Choose the widget type"
+        },
+        "data": {
+          "title": "Data",
+          "description": "Configure your values"
+        },
+        "style": {
+          "title": "Style",
+          "description": "Apply style to your visualization"
+        },
       },
       "edit": "Edit",
       "type": {

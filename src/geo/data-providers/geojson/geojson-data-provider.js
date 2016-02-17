@@ -106,11 +106,11 @@ GeoJSONDataProvider.prototype._dataGeneratorsForDataviews = {
         agg: false
       });
     });
-
-    if (!filterEnabled) {
+    var remainingCategories = sortedGroups.slice(numberOfCategories);
+    if (!filterEnabled && remainingCategories.length > 0) {
       var lastCat = {
         category: 'Other',
-        value: sortedGroups.slice(numberOfCategories).reduce(function (p, c) {
+        value: remainingCategories.reduce(function (p, c) {
           return p + c.value;
         }, 0),
         agg: true

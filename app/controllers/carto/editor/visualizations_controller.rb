@@ -11,7 +11,7 @@ module Carto
       ssl_required :show
 
       before_filter :load_visualization, only: [:show]
-      before_filter :only_edit_users, only: [:show]
+      before_filter :only_authors, only: [:show]
       before_filter :only_editable_visualizations, only: [:show]
 
       after_filter :update_user_last_activity, only: [:show]
@@ -31,7 +31,7 @@ module Carto
         @visualization = load_visualization_from_id(params[:id])
       end
 
-      def only_edit_users
+      def only_authors
         render_403 unless !current_user.nil? && @visualization.is_writable_by_user(current_user)
       end
 

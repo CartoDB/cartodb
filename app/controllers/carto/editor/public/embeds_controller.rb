@@ -37,7 +37,7 @@ module Carto
 
         def ensure_viewable
           return(render 'admin/visualizations/embed_map_error') if @visualization.private?
-          return(render 'show_protected') if @visualization.password_protected?
+          return(render 'show_protected', status: 403) if @visualization.password_protected?
         end
       end
     end

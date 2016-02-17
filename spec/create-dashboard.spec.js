@@ -1,4 +1,5 @@
 var createDashboard = require('../src/create-dashboard');
+var WidgetsCollection = require('../src/widgets/widgets-collection');
 var cdb = require('cartodb.js');
 
 describe('create-dashboard', function () {

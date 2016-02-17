@@ -77,6 +77,10 @@ module.exports = function (selector, vizJSON, opts) {
 
   dashboardView.render();
 
+  if (widgets.size() > 0) {
+    vis.invalidateMapSize();
+  }
+
   vis.instantiateMap();
 
   return {

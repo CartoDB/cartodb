@@ -38,4 +38,11 @@ describe('widgets/formula/content-view', function () {
     this.dataviewModel.set('data', 67);
     expect(this.view.$('.js-value').text()).toBe('67');
   });
+
+  it('should render formula stats if show_stats is enabled', function () {
+    expect(this.view.$('.CDB-Widget-info').length).toBe(0);
+    this.model.set('show_stats', true);
+    this.view.render();
+    expect(this.view.$('.CDB-Widget-info').length).toBe(1);
+  });
 });

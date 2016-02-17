@@ -1,4 +1,5 @@
 var specHelper = require('../../spec-helper');
+var _ = require('underscore');
 var CategoryWidgetModel = require('../../../src/widgets/category/category-widget-model');
 var CategoryContentView = require('../../../src/widgets/category/content-view');
 

@@ -122,7 +122,7 @@ div.map {
       div.cartodb-zoom,
       div.cartodb-legend-stack,
       div.cartodb-zoom-info,
-      div.cartodb-inset-map-box {
+      .leaflet-control-minimap {
         display:none!important;
       }
 

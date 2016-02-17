@@ -368,16 +368,16 @@ describe('vis/vis', function () {
     });
   });
 
-  describe('.invalidateMapSize', function() {
+  describe('.centerMapToOrigin', function() {
     it('should invalidate map size', function () {
       spyOn(this.vis.mapView, 'invalidateSize');
-      this.vis.invalidateMapSize();
+      this.vis.centerMapToOrigin();
       expect(this.vis.mapView.invalidateSize).toHaveBeenCalled();
     });
 
     it('should set map bounds again', function () {
       spyOn(this.vis.map, 'setBounds');
-      this.vis.invalidateMapSize();
+      this.vis.centerMapToOrigin();
       expect(this.vis.map.setBounds).toHaveBeenCalled();
     });
 
@@ -385,7 +385,7 @@ describe('vis/vis', function () {
       delete this.vis.mapConfig.view_bounds_ne;
       delete this.vis.mapConfig.view_bounds_sw;
       spyOn(this.vis.map, 'setCenter');
-      this.vis.invalidateMapSize();
+      this.vis.centerMapToOrigin();
       expect(this.vis.map.setCenter).toHaveBeenCalled();
     });
   });

@@ -431,7 +431,7 @@ var Vis = View.extend({
     this.map.instantiateMap();
   },
 
-  invalidateMapSize: function () {
+  centerMapToOrigin: function () {
     this.mapView.invalidateSize();
     var c = this.mapConfig;
     if (c.view_bounds_sw && c.view_bounds_ne) {
@@ -1023,7 +1023,7 @@ var Vis = View.extend({
     // This timeout is necessary due to GMaps needs time
     // to load tiles and recalculate its bounds :S
     setTimeout(function () {
-      self.invalidateMapSize();
+      self.centerMapToOrigin();
     }, 150);
   },
 

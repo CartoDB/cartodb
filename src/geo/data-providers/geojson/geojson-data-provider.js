@@ -30,7 +30,7 @@ GeoJSONDataProvider.prototype._dataGeneratorsForDataviews = {
       width = (end - start) / options.data.length;
     } else {
       end = options.end || filter.getMax(columnName);
-      start = options.start > -1 ? options.start : filter.getMin(columnName);
+      start = typeof options.start === 'number' ? options.start : filter.getMin(columnName);
       width = (end - start) / options.bins;
       values = filter.getValues(false, columnName);
       bins = d3.layout.histogram().bins(numberOfBins)(filter.getValues(false, columnName).map(function (f) {

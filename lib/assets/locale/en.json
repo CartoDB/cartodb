@@ -3,6 +3,12 @@
     "map": "map",
     "map_name": "%{name} map",
     "map_pluralize": "%{smart_count} map |||| %{smart_count} maps",
+    "add-widgets": {
+      "modal-title": "Add new widgets",
+      "modal-desc": "Select the widgets you want to add",
+      "continue-btn": "Continue",
+      "fetching-tables-title": "Loading tables"
+    },
     "widgets": {
       "widgets-form": {
         "type": {

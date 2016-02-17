@@ -392,12 +392,12 @@ describe('vis/vis', function () {
       });
     });
 
-    afterEach(function() {
+    afterEach(function () {
       jasmine.clock().uninstall();
     });
   });
 
-  describe('.centerMapToOrigin', function() {
+  describe('.centerMapToOrigin', function () {
     it('should invalidate map size', function () {
       spyOn(this.vis.mapView, 'invalidateSize');
       this.vis.centerMapToOrigin();
@@ -563,7 +563,7 @@ describe('vis/vis', function () {
   it('should retrieve the overlays of a given type', function () {
     Overlay.register('wadus', function (data, vis) {
       return new View();
-      });
+    });
 
     var tooltip1 = this.vis.addOverlay({
       type: 'wadus'

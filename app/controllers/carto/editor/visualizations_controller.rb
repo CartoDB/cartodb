@@ -31,11 +31,11 @@ module Carto
         @visualization = load_visualization_from_id(params[:id])
       end
 
-      def only_authors
+      def authors_only
         render_403 unless !current_user.nil? && @visualization.is_writable_by_user(current_user)
       end
 
-      def only_editable_visualizations
+      def editable_visualizations_only
         render_403 unless @visualization.editable?
       end
     end

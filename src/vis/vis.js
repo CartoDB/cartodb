@@ -306,7 +306,7 @@ var Vis = View.extend({
 
     var allowDragging = this.isMobileDevice() || hasZoomOverlay || scrollwheel;
 
-    var mapConfig = {
+    this.mapConfig = {
       title: data.title,
       description: data.description,
       maxZoom: data.maxZoom || this.DEFAULT_MAX_ZOOM,
@@ -319,13 +319,13 @@ var Vis = View.extend({
 
     // if the boundaries are defined, we add them to the map
     if (data.bounding_box_sw && data.bounding_box_ne) {
-      mapConfig.bounding_box_sw = data.bounding_box_sw;
-      mapConfig.bounding_box_ne = data.bounding_box_ne;
+      this.mapConfig.bounding_box_sw = data.bounding_box_sw;
+      this.mapConfig.bounding_box_ne = data.bounding_box_ne;
     }
 
     if (data.bounds) {
-      mapConfig.view_bounds_sw = data.bounds[0];
-      mapConfig.view_bounds_ne = data.bounds[1];
+      this.mapConfig.view_bounds_sw = data.bounds[0];
+      this.mapConfig.view_bounds_ne = data.bounds[1];
     } else {
       var center = data.center;
 
@@ -333,11 +333,11 @@ var Vis = View.extend({
         center = $.parseJSON(center);
       }
 
-      mapConfig.center = center || [0, 0];
-      mapConfig.zoom = data.zoom === undefined ? 4 : data.zoom;
+      this.mapConfig.center = center || [0, 0];
+      this.mapConfig.zoom = data.zoom === undefined ? 4 : data.zoom;
     }
 
-    this.map = new Map(mapConfig, {
+    this.map = new Map(this.mapConfig, {
       windshaftMap: windshaftMap,
       dataviewsCollection: this._dataviewsCollection
     });
@@ -351,7 +351,6 @@ var Vis = View.extend({
     var map_h = this.$el.outerHeight();
 
     if (map_h === 0) {
-      this.mapConfig = mapConfig;
       $(window).bind('resize', this._onResize);
     }
 
@@ -401,9 +400,8 @@ var Vis = View.extend({
     }
 
     // Create the Layer Models and set them on hte map
-
-    var layers = this._newLayerModels(data, this.map);
-    this.map.layers.reset(layers);
+    var layerModels = this._newLayerModels(data, this.map);
+    this.map.layers.reset(layerModels);
 
     // Create the collection of Overlays
 
@@ -439,8 +437,18 @@ var Vis = View.extend({
    * Only expected to be called if {skipMapInstantiation} flag is set to true when vis is created.
    */
   instantiateMap: function () {
-    this._instantiateMap();
     this.mapView.invalidateSize();
+    if (this.mapConfig.view_bounds_ne && this.mapConfig.view_bounds_sw) {
+      this.mapView.showBounds(
+        [
+          this.mapConfig.view_bounds_ne,
+          this.mapConfig.view_bounds_sw
+        ]
+      );
+    } else {
+      this.map.setCenter(this.mapConfig.center, this.mapConfig.zoom);
+    }
+    this._instantiateMap();
   },
 
   _instantiateMap: function () {

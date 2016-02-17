@@ -35,6 +35,7 @@ describe Carto::Editor::Public::EmbedsController do
       get editor_visualization_public_embed_url(visualization_id: @visualization.id)
 
       response.body.include?('Embed error | CartoDB').should be true
+      response.status.should = 403
     end
 
     it 'does not embed password protected viz' do
@@ -44,6 +45,7 @@ describe Carto::Editor::Public::EmbedsController do
       get editor_visualization_public_embed_url(visualization_id: @visualization.id)
 
       response.body.include?('Protected map').should be true
+      response.status.should = 403
     end
 
     it 'returns 404 for inexistent visualizations' do
@@ -64,6 +66,7 @@ describe Carto::Editor::Public::EmbedsController do
       post editor_visualization_public_embed_protected_url(visualization_id: @visualization.id, password: 'manolo')
 
       response.body.include?('The password is not ok').should be true
+      response.status.should = 403
     end
 
     it 'accepts correct passwords' do
@@ -76,6 +79,7 @@ describe Carto::Editor::Public::EmbedsController do
       post editor_visualization_public_embed_protected_url(visualization_id: @visualization.id, password: 'manolo')
 
       response.body.include?(@visualization.name).should be true
+      response.status.should = 200
     end
   end
 end

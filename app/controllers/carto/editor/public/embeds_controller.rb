@@ -24,9 +24,10 @@ module Carto
         end
 
         def show_protected
-          show if @visualization.password_valid?(params[:password])
+          show and return if @visualization.password_valid?(params[:password])
 
           flash[:error] = 'Invalid password'
+          response.status = 403
         end
 
         private

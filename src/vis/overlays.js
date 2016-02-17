@@ -104,13 +104,8 @@ Overlay.register('zoom', function (data, vis) {
     model: data.map
   };
 
-  if (data.template) {
-    opts.template = Template.compile(data.template);
-  }
-
   var zoom = new Zoom(opts);
   return zoom.render();
-
 });
 
 // Tiles loader

@@ -69,6 +69,24 @@ describe('dataviews/histogram-dataview-model', function () {
     expect(JSON.stringify(parsedData)).toBe('[{"bin":0,"start":55611,"end":70101.25,"freq":2,"max":70151,"min":55611},{"bin":1,"start":70101.25,"end":84591.5,"freq":2,"max":79017,"min":78448},{"bin":2,"start":84591.5,"end":99081.75,"freq":0},{"bin":3,"start":99081.75,"end":113572,"freq":1,"max":113572,"min":113572}]');
   });
 
+  it('parser do not fails when there are no bins', function () {
+    var data = {
+      bin_width: 0,
+      bins: [],
+      bins_count: 0,
+      bins_start: 0,
+      nulls: 0,
+      type: 'histogram'
+    };
+
+    this.model.parse(data);
+
+    var parsedData = this.model.getData();
+
+    expect(data.nulls).toBe(0);
+    expect(parsedData.length).toBe(0);
+  });
+
   it('should parse the bins and fix end bucket issues', function () {
     var data = {
       'bin_width': 1041.66645833333,

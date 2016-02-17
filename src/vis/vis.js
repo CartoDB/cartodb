@@ -262,7 +262,6 @@ var Vis = View.extend({
     this._applyOptionsToVizJSON(data, options);
 
     this._dataviewsCollection = new DataviewCollection();
-    this._dataviewsCollection.on('add reset remove', _.debounce(this._invalidateSizeOnDataviewsChanges, 10), this);
 
     // Create the WindhaftClient
 
@@ -424,12 +423,29 @@ var Vis = View.extend({
     });
 
     // Trigger 'done' event
-
     _.defer(function () {
       self.trigger('done', self, self.map.layers);
     });
 
+    if (!options.skipMapInstantiation) {
+      this._instantiateMap();
+    }
+
     return this;
+  },
+
+  /**
+   * Force a map instantiation.
+   * Only expected to be called if {skipMapInstantiation} flag is set to true when vis is created.
+   */
+  instantiateMap: function () {
+    this._instantiateMap();
+    this.mapView.invalidateSize();
+  },
+
+  _instantiateMap: function () {
+    this._dataviewsCollection.on('add reset remove', _.debounce(this._invalidateSizeOnDataviewsChanges, 10), this);
+    this.map.instantiateMap();
   },
 
   _newLayerModels: function (vizjson, map) {

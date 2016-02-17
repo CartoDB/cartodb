@@ -21,10 +21,14 @@ describe('dataviews/histogram-dataview-model', function () {
     this.map.reload.calls.reset();
     this.model.set('column', 'random_col');
     expect(this.map.reload).toHaveBeenCalled();
+  });
 
+  it('should refresh data on bins change', function () {
     this.map.reload.calls.reset();
+    spyOn(this.model, 'fetch');
     this.model.set('bins', 123);
-    expect(this.map.reload).toHaveBeenCalled();
+    expect(this.map.reload).not.toHaveBeenCalled();
+    expect(this.model.fetch).toHaveBeenCalled();
   });
 
   it('should include the bbox after the first fetch', function () {

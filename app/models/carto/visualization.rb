@@ -87,7 +87,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def transition_options
-    @transition_options ||= JSON.parse(self.slide_transition_options).symbolize_keys
+    @transition_options ||= (slide_transition_options.nil? ? {} : JSON.parse(slide_transition_options).symbolize_keys)
   end
 
   def children

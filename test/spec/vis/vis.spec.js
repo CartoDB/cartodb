@@ -352,7 +352,7 @@ describe('vis/vis', function () {
     expect(this.vis.map.layers.at(0).get('type')).toEqual('GMapsBase');
   });
 
-  describe('._instantiateMap', function () {
+  describe('.instantiateMap', function () {
     it('should instantiate map when skip is false', function () {
       spyOn(this.vis, '_instantiateMap');
       this.vis.load(this.mapConfig, {});
@@ -368,30 +368,24 @@ describe('vis/vis', function () {
     });
   });
 
-  describe('.instantiateMap', function() {
+  describe('.invalidateMapSize', function() {
     it('should invalidate map size', function () {
       spyOn(this.vis.mapView, 'invalidateSize');
-      this.vis.instantiateMap();
+      this.vis.invalidateMapSize();
       expect(this.vis.mapView.invalidateSize).toHaveBeenCalled();
     });
 
-    it('should re-center map', function () {
-      spyOn(this.vis, '_centerMapFromConfig');
-      this.vis.instantiateMap();
-      expect(this.vis._centerMapFromConfig).toHaveBeenCalled();
-    });
-
     it('should set map bounds again', function () {
-      spyOn(this.vis.mapView, 'showBounds');
-      this.vis.instantiateMap();
-      expect(this.vis.mapView.showBounds).toHaveBeenCalled();
+      spyOn(this.vis.map, 'setBounds');
+      this.vis.invalidateMapSize();
+      expect(this.vis.mapView.setBounds).toHaveBeenCalled();
     });
 
     it('should set center if bounds are undefined', function () {
       delete this.vis.mapConfig.view_bounds_ne;
       delete this.vis.mapConfig.view_bounds_sw;
       spyOn(this.vis.map, 'setCenter');
-      this.vis.instantiateMap();
+      this.vis.invalidateMapSize();
       expect(this.vis.map.setCenter).toHaveBeenCalled();
     });
   });

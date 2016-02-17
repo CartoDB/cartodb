@@ -416,7 +416,7 @@ var Vis = View.extend({
     });
 
     if (!options.skipMapInstantiation) {
-      this._instantiateMap();
+      this.instantiateMap();
     }
 
     return this;
@@ -427,17 +427,12 @@ var Vis = View.extend({
    * Only expected to be called if {skipMapInstantiation} flag is set to true when vis is created.
    */
   instantiateMap: function () {
-    this.mapView.invalidateSize();
-    this._centerMapFromConfig();
-    this._instantiateMap();
-  },
-
-  _instantiateMap: function () {
     this._dataviewsCollection.on('add reset remove', _.debounce(this._invalidateSizeOnDataviewsChanges, 10), this);
     this.map.instantiateMap();
   },
 
-  _centerMapFromConfig: function () {
+  invalidateMapSize: function () {
+    this.mapView.invalidateSize();
     var c = this.mapConfig;
     if (c.view_bounds_sw && c.view_bounds_ne) {
       this.map.setBounds([
@@ -1025,13 +1020,10 @@ var Vis = View.extend({
     $(window).unbind('resize', this._onResize);
 
     var self = this;
-
-    self.mapView.invalidateSize();
-
     // This timeout is necessary due to GMaps needs time
     // to load tiles and recalculate its bounds :S
     setTimeout(function () {
-      self._centerMapFromConfig();
+      self.invalidateMapSize();
     }, 150);
   },
 

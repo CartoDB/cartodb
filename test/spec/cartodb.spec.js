@@ -107,7 +107,6 @@ describe('cartodb.js bundle', function() {
 
     it('should have a cdb.ui.common object', function() {
       expect(cdb.ui.common.Dialog).toEqual(jasmine.any(Function));
-      expect(cdb.ui.common.ShareDialog).toEqual(jasmine.any(Function));
       expect(cdb.ui.common.Dropdown).toEqual(jasmine.any(Function));
       expect(cdb.ui.common.FullScreen).toEqual(jasmine.any(Function));
       expect(cdb.ui.common.Notification).toEqual(jasmine.any(Function));
@@ -142,7 +141,6 @@ describe('cartodb.js bundle', function() {
       expect(cdb.geo.ui.Text).toEqual(jasmine.any(Function));
       expect(cdb.geo.ui.Annotation).toEqual(jasmine.any(Function));
       expect(cdb.geo.ui.Image).toEqual(jasmine.any(Function));
-      expect(cdb.geo.ui.Share).toEqual(jasmine.any(Function));
       expect(cdb.geo.ui.Zoom).toEqual(jasmine.any(Function));
 
       expect(cdb.geo.ui.InfowindowModel).toEqual(jasmine.any(Function));

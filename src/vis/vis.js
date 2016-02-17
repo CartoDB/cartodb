@@ -162,10 +162,6 @@ var Vis = View.extend({
 
       var opt = data.options;
 
-      if (type == 'share' && options['shareable'] || type == 'share' && overlay.model.get('display') && options['shareable'] == undefined) {
-        overlay.show();
-      }
-
       if (type == 'layer_selector' && options[type] || type == 'layer_selector' && overlay.model.get('display') && options[type] == undefined) {
         overlay.show();
       }
@@ -644,7 +640,7 @@ var Vis = View.extend({
         vizjson.overlays.unshift({
           type: 'header',
           order: 1,
-          shareable: opt.shareable ? true : false,
+          shareable: opt.shareable,
           url: vizjson.url,
           options: {
             extra: {
@@ -662,16 +658,6 @@ var Vis = View.extend({
       if (!search_overlay('layer_selector')) {
         vizjson.overlays.push({
           type: 'layer_selector'
-        });
-      }
-    }
-
-    if (opt.shareable) {
-      if (!search_overlay('share')) {
-        vizjson.overlays.push({
-          type: 'share',
-          order: 2,
-          url: vizjson.url
         });
       }
     }

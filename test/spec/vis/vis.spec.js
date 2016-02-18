@@ -356,22 +356,51 @@ describe('vis/vis', function () {
   });
 
   describe('.instantiateMap', function () {
-    it('should instantiate map when skip is false', function () {
-      spyOn(this.vis, 'instantiateMap');
-      this.vis.load(this.mapConfig, {});
-      expect(this.vis.instantiateMap).toHaveBeenCalled();
+    beforeEach(function () {
+      spyOn(this.vis, 'instantiateMap').and.callThrough();
+      this.doneCallback = jasmine.createSpy('done trigger');
+      this.vis.bind('done', this.doneCallback, this);
+      jasmine.clock().install();
     });
 
-    it('should not instantiate map when skip is true', function () {
-      spyOn(this.vis, 'instantiateMap');
-      this.vis.load(this.mapConfig, {
-        skipMapInstantiation: true
+    describe('do not skip instantiation', function () {
+      beforeEach(function () {
+        this.vis.load(this.mapConfig);
       });
-      expect(this.vis.instantiateMap).not.toHaveBeenCalled();
+
+      it('should instantiate map', function () {
+        expect(this.vis.instantiateMap).toHaveBeenCalled();
+      });
+
+      it('should trigger done callback if skip is true', function () {
+        jasmine.clock().tick(100);
+        expect(this.doneCallback).toHaveBeenCalled();
+      });
+    });
+
+    describe('skip instantiation', function () {
+      beforeEach(function () {
+        this.vis.load(this.mapConfig, {
+          skipMapInstantiation: true
+        });
+      });
+
+      it('should not instantiate map', function () {
+        expect(this.vis.instantiateMap).not.toHaveBeenCalled();
+      });
+
+      it('should not trigger done callback if skip is true', function () {
+        jasmine.clock().tick(100);
+        expect(this.doneCallback).not.toHaveBeenCalled();
+      });
+    });
+
+    afterEach(function () {
+      jasmine.clock().uninstall();
     });
   });
 
-  describe('.centerMapToOrigin', function() {
+  describe('.centerMapToOrigin', function () {
     it('should invalidate map size', function () {
       spyOn(this.vis.mapView, 'invalidateSize');
       this.vis.centerMapToOrigin();
@@ -537,7 +566,7 @@ describe('vis/vis', function () {
   it('should retrieve the overlays of a given type', function () {
     Overlay.register('wadus', function (data, vis) {
       return new View();
-      });
+    });
 
     var tooltip1 = this.vis.addOverlay({
       type: 'wadus'

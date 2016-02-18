@@ -410,11 +410,6 @@ var Vis = View.extend({
       windshaftMap: windshaftMap
     });
 
-    // Trigger 'done' event
-    _.defer(function () {
-      self.trigger('done', self, self.map.layers);
-    });
-
     if (!options.skipMapInstantiation) {
       this.instantiateMap();
     }
@@ -427,8 +422,14 @@ var Vis = View.extend({
    * Only expected to be called if {skipMapInstantiation} flag is set to true when vis is created.
    */
   instantiateMap: function () {
+    var self = this;
     this._dataviewsCollection.on('add reset remove', _.debounce(this._invalidateSizeOnDataviewsChanges, 10), this);
     this.map.instantiateMap();
+
+    // Trigger 'done' event
+    _.defer(function () {
+      self.trigger('done', self, self.map.layers);
+    });
   },
 
   centerMapToOrigin: function () {

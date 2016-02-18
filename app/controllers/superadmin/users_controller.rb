@@ -1,6 +1,9 @@
 require_relative '../../../lib/carto/http/client'
+require_dependency 'carto/uuidhelper'
 
 class Superadmin::UsersController < Superadmin::SuperadminController
+  include Carto::UUIDHelper
+
   respond_to :json
 
   ssl_required :show, :create, :update, :destroy, :index
@@ -134,7 +137,14 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   private
 
   def get_user
-    @user = ::User[params[:id]]
+    id = params[:id]
+
+    @user = if is_uuid?(id)
+              ::User[params[:id]]
+            else
+              ::User.where(username: id).first
+            end
+
     render json: { error: 'User not found' }, status: 404 unless @user
   end
 

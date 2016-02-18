@@ -66,7 +66,7 @@ module.exports = cdb.core.View.extend({
     this.render();
     this._storeBounds();
 
-    this._dataviewModel.bind('change', this._onChangeModel, this);
+    this._dataviewModel.bind('change:data', this._onHistogramDataChanged, this);
     this.add_related_model(this._dataviewModel);
     this._dataviewModel.fetch();
   },
@@ -85,7 +85,7 @@ module.exports = cdb.core.View.extend({
     return this.model.get('zoomed');
   },
 
-  _onChangeModel: function () {
+  _onHistogramDataChanged: function () {
     // When the histogram is zoomed, we don't need to rely
     // on the change url to update the histogram
     // TODO the widget should not know about the URL… could this state be got from the dataview model somehow?
@@ -413,6 +413,7 @@ module.exports = cdb.core.View.extend({
   },
 
   _onZoomIn: function () {
+    this.lockedByUser = false;
     this._showMiniRange();
     this.histogramChartView.updateYScale();
     this.histogramChartView.expand(4);
@@ -420,11 +421,9 @@ module.exports = cdb.core.View.extend({
 
     this._dataviewModel.set({ start: null, end: null, bins: null, own_filter: 1 }, { silent: true });
     this._dataviewModel.fetch();
-    this.lockedByUser = false;
   },
 
   _zoom: function () {
-    this.lockedByUser = true;
     this.model.set({ zoomed: true, zoom_enabled: false });
     this.histogramChartView.removeSelection();
   },
@@ -458,6 +457,5 @@ module.exports = cdb.core.View.extend({
   _clear: function () {
     this.histogramChartView.removeSelection();
     this.model.set({ zoomed: false, zoom_enabled: false });
-    this.model.trigger('change:zoomed');
   }
 });

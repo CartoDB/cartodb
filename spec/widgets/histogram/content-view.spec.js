@@ -97,11 +97,11 @@ describe('widgets/histogram/content-view', function () {
     };
 
     spyOn(this.view, '_updateStats').and.callThrough();
-    spyOn(this.view, '_onChangeModel').and.callThrough();
+    spyOn(this.view, '_onHistogramDataChanged').and.callThrough();
     this.dataviewModel.fetch();
     this.dataviewModel._data.reset(genHistogramData(20));
     this.dataviewModel.trigger('change:data');
-    expect(this.view._onChangeModel).toHaveBeenCalled();
+    expect(this.view._onHistogramDataChanged).toHaveBeenCalled();
     expect(this.view._updateStats).toHaveBeenCalled();
   });
 
@@ -143,6 +143,28 @@ describe('widgets/histogram/content-view', function () {
     expect(this.dataviewModel.get('own_filter')).toBeNull();
 
     expect(callback).not.toHaveBeenCalled();
+  });
+
+  it('should replace the data of the histogramChartView when user zooms in', function () {
+    var i = 0;
+    this.dataviewModel.sync = function (method, model, options) {
+      options.success({
+        'bin_width': 10,
+        'bins_count': 2,
+        'bins_start': i++,
+        'nulls': 0,
+        'bins': []
+      });
+    };
+
+    this.dataviewModel.fetch();
+
+    spyOn(this.view.histogramChartView, 'replaceData');
+
+    // Click ZOOM
+    this.view.$el.find('.js-zoom').click();
+
+    expect(this.view.histogramChartView.replaceData).toHaveBeenCalled();
   });
 
   it('should update the stats values', function () {

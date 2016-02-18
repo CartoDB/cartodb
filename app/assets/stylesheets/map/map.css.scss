@@ -500,9 +500,8 @@ div.map {
   }
 
   // Inset Map
-  div.cartodb-inset-map-box {
-    position: absolute;
-    margin: 0;
+  .leaflet-control-minimap {
+    display: none;
   }
 
   // Fullscreen

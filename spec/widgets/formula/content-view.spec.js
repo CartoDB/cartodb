@@ -19,6 +19,7 @@ describe('widgets/formula/content-view', function () {
     this.view = new FormulaWidgetContent({
       model: this.model
     });
+    this.view.render();
   });
 
   it('should render the formula', function () {
@@ -30,6 +31,15 @@ describe('widgets/formula/content-view', function () {
     this.dataviewModel.set('data', 123);
     this.model.set('collapsed', true);
     expect(this.view.$('.js-value').text()).toBe('123');
+  });
+
+  it('should render description if available', function () {
+    this.dataviewModel.set('data', 123);
+    expect(this.view.$('.js-description').length).toBe(0);
+    this.model.set('description', 'hello');
+    this.view.render();
+    expect(this.view.$('.js-description').length).toBe(1);
+    expect(this.view.$('.js-description').text()).toBe('hello');
   });
 
   it('should not disable dataviewModel when it is collapsed', function () {

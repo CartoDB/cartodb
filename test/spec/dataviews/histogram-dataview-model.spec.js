@@ -46,6 +46,28 @@ describe('dataviews/histogram-dataview-model', function () {
     expect(this.model.url()).toEqual('http://example.com?bins=10&bbox=fakeBoundingBox');
   });
 
+  it('should calculate start, end and bins after the first fetch', function () {
+    var histogramData = {
+      'bin_width': 10,
+      'bins_count': 3,
+      'bins_start': 1,
+      'nulls': 0
+    };
+
+    spyOn(this.model, 'sync').and.callFake(function (method, model, options) {
+      options.success(histogramData);
+    });
+
+    expect(this.model.get('start')).toBeUndefined();
+    expect(this.model.get('end')).toBeUndefined();
+
+    this.model.fetch();
+
+    expect(this.model.get('start')).toEqual(1);
+    expect(this.model.get('end')).toEqual(31);
+    expect(this.model.get('bins')).toEqual(3);
+  });
+
   it('should parse the bins', function () {
     var data = {
       bin_width: 14490.25,

@@ -458,6 +458,5 @@ module.exports = cdb.core.View.extend({
   _clear: function () {
     this.histogramChartView.removeSelection();
     this.model.set({ zoomed: false, zoom_enabled: false });
-    this.model.trigger('change:zoomed');
   }
 });

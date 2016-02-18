@@ -60,7 +60,7 @@ module.exports = cdb.core.View.extend({
       hasHandles: true,
       height: this.defaults.histogramChartHeight,
       data: this._dataviewModel.getData(),
-      shadowData: this._dataviewModel.getData()
+      displayShadowBars: true
     });
 
     this.addView(this._chartView);

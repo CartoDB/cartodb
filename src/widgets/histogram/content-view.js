@@ -127,7 +127,7 @@ module.exports = cdb.core.View.extend({
 
     this.$el.html(
       template({
-        title: this._dataviewModel.get('title'),
+        title: this.model.get('title'),
         itemsCount: !isDataEmpty ? data.length : '-'
       })
     );

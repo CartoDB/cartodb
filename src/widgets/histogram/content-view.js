@@ -419,8 +419,8 @@ module.exports = cdb.core.View.extend({
     this.histogramChartView.removeShadowBars();
 
     this._dataviewModel.set({ start: null, end: null, bins: null, own_filter: 1 }, { silent: true });
-    this._dataviewModel.fetch();
     this.lockedByUser = false;
+    this._dataviewModel.fetch();
   },
 
   _zoom: function () {

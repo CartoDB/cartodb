@@ -160,6 +160,13 @@ describe('widgets/histogram/content-view', function () {
     expect(this.widgetModel.get('total')).not.toBe(0);
   });
 
+  it('should show stats when show_stats is true', function () {
+    expect(this.view.$('.CDB-Widget-info').length).toBe(0);
+    this.widgetModel.set('show_stats', true);
+    this.view.render();
+    expect(this.view.$('.CDB-Widget-info').length).toBe(1);
+  });
+
   afterEach(function () {
     this.view.clean();
   });

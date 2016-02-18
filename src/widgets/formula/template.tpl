@@ -11,9 +11,11 @@
       </button>
     </div>
   </div>
-  <dl class="CDB-Widget-info CDB-Text CDB-Size-small u-secondaryTextColor u-upperCase">
-    <dt class="CDB-Widget-infoCount"><%- nulls %></dt><dd class="CDB-Widget-infoDescription">null rows</dd>
-  </dl>
+  <% if (showStats) { %>
+    <dl class="CDB-Widget-info CDB-Text CDB-Size-small u-secondaryTextColor u-upperCase">
+      <dt class="CDB-Widget-infoCount"><%- nulls %></dt><dd class="CDB-Widget-infoDescription">null rows</dd>
+    </dl>
+  <% } %>
 </div>
 <div class="CDB-Widget-content">
   <% if (_.isNumber(value)) { %>

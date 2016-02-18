@@ -82,7 +82,7 @@ WidgetsService.prototype.createFormulaModel = function (attrs, layer) {
 
   var dataviewModel = this._dataviews.createFormulaModel(layer, attrs);
 
-  var attrsNames = ['id', 'title', 'collapsed', 'prefix', 'suffix', 'show_stats'];
+  var attrsNames = ['id', 'title', 'collapsed', 'prefix', 'suffix', 'show_stats', 'description'];
   var widgetAttrs = _.pick(attrs, attrsNames);
   widgetAttrs.type = 'formula';
   widgetAttrs.attrsNames = attrsNames;

@@ -129,4 +129,44 @@ describe('dataviews/histogram-dataview-model', function () {
       expect(this.model.filter.get('column_type')).toEqual('date');
     });
   });
+
+  describe('.url', function () {
+    it('should generate a URL by default', function () {
+      this.model.set('url', 'http://example.com');
+      expect(this.model.url()).toEqual('http://example.com?bins=10');
+    });
+
+    it('should include start, end and bins when own_filter is enabled', function () {
+      this.model.set({
+        'url': 'http://example.com',
+        'start': 0,
+        'end': 10,
+        'bins': 25
+      });
+      expect(this.model.url()).toEqual('http://example.com?start=0&end=10&bins=25');
+
+      this.model.enableFilter();
+
+      expect(this.model.url()).toEqual('http://example.com?own_filter=1');
+    });
+  });
+
+  describe('.enableFilter', function () {
+    it('should set the own_filter attribute', function () {
+      expect(this.model.get('own_filter')).toBeUndefined();
+
+      this.model.enableFilter();
+
+      expect(this.model.get('own_filter')).toEqual(1);
+    });
+  });
+
+  describe('.disabeFilter', function () {
+    it('should unset the own_filter attribute', function () {
+      this.model.enableFilter();
+      this.model.disableFilter();
+
+      expect(this.model.get('own_filter')).toBeUndefined();
+    });
+  });
 });

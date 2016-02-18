@@ -1,30 +1,30 @@
 // Chart styles
 // ----------------------------------------------
 
-.CDB-Widget-chart.Widget-chart--fake {
+.CDB-Widget-chart--fake {
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(flex-end);
   width: 100%;
-  height: $baseSize * 9; // value (72) to match real widget content height, to avoid "jumpy" behavior
+  height: $baseSize * 7; // value (56) to match real widget content height, to avoid "jumpy" behavior
 }
 
-.CDB-Widget-chartItem.CDB-Widget-chartItem--fake {
+.CDB-Widget-chartItem--fake {
   @include flex-grow(1);
   display: inline-block;
   margin-right: 2px;
 }
 
-.CDB-Widget-chartItem--fake.CDB-Widget-chartItem--small {
-  height: 20px;
+.CDB-Widget-chartItem--small {
+  height: 16px;
 }
 
-.CDB-Widget-chartItem--fake.CDB-Widget-chartItem--medium {
-  height: 40px;
+.CDB-Widget-chartItem--medium {
+  height: 32px;
 }
 
-.CDB-Widget-chartItem--fake.CDB-Widget-chartItem--big {
-  height: 60px;
+.CDB-Widget-chartItem--big {
+  height: 48px;
 }
 
 .CDB-Chart.is-selectable .CDB-Chart-handle,

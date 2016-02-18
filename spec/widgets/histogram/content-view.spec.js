@@ -105,6 +105,46 @@ describe('widgets/histogram/content-view', function () {
     expect(this.view._updateStats).toHaveBeenCalled();
   });
 
+  it('should silently set some attributes on the dataviewModel so widget gets the right data when zooming in and out', function () {
+    var callback = jasmine.createSpy('callback');
+
+    var histogramData = {
+      'bin_width': 10,
+      'bins_count': 2,
+      'bins_start': 1,
+      'nulls': 0,
+      'bins': []
+    };
+
+    this.dataviewModel.bind('change:start change:end change:bins change:own_filter', callback);
+
+    this.dataviewModel.sync = function (method, model, options) {
+      options.success(histogramData);
+    };
+
+    this.dataviewModel.fetch();
+
+    expect(this.dataviewModel.get('start')).toEqual(1);
+    expect(this.dataviewModel.get('end')).toEqual(21);
+    expect(this.dataviewModel.get('bins')).toEqual(2);
+
+    this.widgetModel.set('zoomed', true);
+
+    expect(this.dataviewModel.get('start')).toBeNull();
+    expect(this.dataviewModel.get('end')).toBeNull();
+    expect(this.dataviewModel.get('bins')).toBeNull();
+    expect(this.dataviewModel.get('own_filter')).toEqual(1);
+
+    this.widgetModel.set('zoomed', false);
+
+    expect(this.dataviewModel.get('start')).toEqual(1);
+    expect(this.dataviewModel.get('end')).toEqual(21);
+    expect(this.dataviewModel.get('bins')).toEqual(2);
+    expect(this.dataviewModel.get('own_filter')).toBeNull();
+
+    expect(callback).not.toHaveBeenCalled();
+  });
+
   it('should update the stats values', function () {
     expect(this.widgetModel.get('min')).toBe(undefined);
     expect(this.widgetModel.get('max')).toBe(undefined);

@@ -77,7 +77,7 @@ module.exports = cdb.core.View.extend({
       this.start = data[0].start;
       this.end = data[data.length - 1].end;
       this.binsCount = data.length;
-      this._dataviewModel.set({ start: this.start, end: this.end, bins: this.binsCount });
+      this._dataviewModel.set({ start: this.start, end: this.end, bins: this.binsCount }, { silent: true });
     }
   },
 
@@ -127,7 +127,7 @@ module.exports = cdb.core.View.extend({
 
     this.$el.html(
       template({
-        title: this._dataviewModel.get('title'),
+        title: this.model.get('title'),
         showStats: this.model.get('show_stats'),
         itemsCount: !isDataEmpty ? data.length : '-'
       })
@@ -418,7 +418,7 @@ module.exports = cdb.core.View.extend({
     this.histogramChartView.expand(4);
     this.histogramChartView.removeShadowBars();
 
-    this._dataviewModel.set({ start: null, end: null, bins: null, own_filter: 1 });
+    this._dataviewModel.set({ start: null, end: null, bins: null, own_filter: 1 }, { silent: true });
     this._dataviewModel.fetch();
     this.lockedByUser = false;
   },
@@ -434,7 +434,7 @@ module.exports = cdb.core.View.extend({
     this.lockZoomedData = false;
     this.unsettingRange = true;
 
-    this._dataviewModel.set({ start: this.start, end: this.end, bins: this.binsCount, own_filter: null });
+    this._dataviewModel.set({ start: this.start, end: this.end, bins: this.binsCount, own_filter: null }, { silent: true });
 
     this.model.set({ zoom_enabled: false, filter_enabled: false, lo_index: null, hi_index: null });
 

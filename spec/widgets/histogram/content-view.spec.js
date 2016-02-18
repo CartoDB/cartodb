@@ -97,11 +97,11 @@ describe('widgets/histogram/content-view', function () {
     };
 
     spyOn(this.view, '_updateStats').and.callThrough();
-    spyOn(this.view, '_onChangeModel').and.callThrough();
+    spyOn(this.view, '_onHistogramDataChanged').and.callThrough();
     this.dataviewModel.fetch();
     this.dataviewModel._data.reset(genHistogramData(20));
     this.dataviewModel.trigger('change:data');
-    expect(this.view._onChangeModel).toHaveBeenCalled();
+    expect(this.view._onHistogramDataChanged).toHaveBeenCalled();
     expect(this.view._updateStats).toHaveBeenCalled();
   });
 

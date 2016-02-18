@@ -93,6 +93,10 @@ module.exports = cdb.core.View.extend({
       return;
     }
 
+    if (this._dataviewModel.changed.bins) {
+      this.binsCount = this._dataviewModel.get('bins');
+    }
+
     // if the action was initiated by the user
     // don't replace the stored data
     if (this.lockedByUser) {
@@ -103,6 +107,7 @@ module.exports = cdb.core.View.extend({
       } else {
         this.histogramChartView.showShadowBars();
         this.originalData = this._dataviewModel.getData();
+        this.miniHistogramChartView.replaceData(this.originalData);
       }
       this.histogramChartView.replaceData(this._dataviewModel.getData());
     }
@@ -168,7 +173,7 @@ module.exports = cdb.core.View.extend({
       width: this.canvasWidth,
       height: this.defaults.chartHeight,
       data: this._dataviewModel.getData(),
-      shadowData: this._dataviewModel.getData()
+      displayShadowBars: true
     }));
 
     this.$('.js-content').append(this.histogramChartView.el);
@@ -418,7 +423,12 @@ module.exports = cdb.core.View.extend({
     this.histogramChartView.expand(4);
     this.histogramChartView.removeShadowBars();
 
-    this._dataviewModel.set({ start: null, end: null, bins: null, own_filter: 1 }, { silent: true });
+    this._dataviewModel.set({
+      start: null,
+      end: null,
+      bins: null,
+      own_filter: 1
+    }, { silent: true });
     this._dataviewModel.fetch();
     this.lockedByUser = false;
   },
@@ -434,9 +444,19 @@ module.exports = cdb.core.View.extend({
     this.lockZoomedData = false;
     this.unsettingRange = true;
 
-    this._dataviewModel.set({ start: this.start, end: this.end, bins: this.binsCount, own_filter: null }, { silent: true });
+    this._dataviewModel.set({
+      start: this.start,
+      end: this.end,
+      bins: this.binsCount,
+      own_filter: null
+    }, { silent: true });
 
-    this.model.set({ zoom_enabled: false, filter_enabled: false, lo_index: null, hi_index: null });
+    this.model.set({
+      zoom_enabled: false,
+      filter_enabled: false,
+      lo_index: null,
+      hi_index: null
+    });
 
     this.filter.unsetRange();
 

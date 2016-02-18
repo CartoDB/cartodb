@@ -8,17 +8,15 @@ module.exports = Backbone.Collection.extend({
     if (activeFilters.length) {
       json.layers = [];
       _.each(activeFilters, function (filter) {
-        if (!filter.isEmpty()) {
-          var index = filter.get('layerIndex');
-          if (index >= 0) {
-            if (json.layers[index]) {
-              _.extend(json.layers[index], filter.toJSON());
-            } else {
-              json.layers[index] = filter.toJSON();
-            }
+        var index = filter.get('layerIndex');
+        if (index >= 0) {
+          if (json.layers[index]) {
+            _.extend(json.layers[index], filter.toJSON());
           } else {
-            throw new Error('layerIndex missing for filter ' + JSON.stringify(filter.toJSON()));
+            json.layers[index] = filter.toJSON();
           }
+        } else {
+          throw new Error('layerIndex missing for filter ' + JSON.stringify(filter.toJSON()));
         }
       });
       // fill the holes

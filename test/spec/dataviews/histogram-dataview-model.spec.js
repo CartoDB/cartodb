@@ -46,6 +46,28 @@ describe('dataviews/histogram-dataview-model', function () {
     expect(this.model.url()).toEqual('http://example.com?bins=10&bbox=fakeBoundingBox');
   });
 
+  it('should calculate start, end and bins after the first fetch', function () {
+    var histogramData = {
+      'bin_width': 10,
+      'bins_count': 3,
+      'bins_start': 1,
+      'nulls': 0
+    };
+
+    spyOn(this.model, 'sync').and.callFake(function (method, model, options) {
+      options.success(histogramData);
+    });
+
+    expect(this.model.get('start')).toBeUndefined();
+    expect(this.model.get('end')).toBeUndefined();
+
+    this.model.fetch();
+
+    expect(this.model.get('start')).toEqual(1);
+    expect(this.model.get('end')).toEqual(31);
+    expect(this.model.get('bins')).toEqual(3);
+  });
+
   it('should parse the bins', function () {
     var data = {
       bin_width: 14490.25,
@@ -127,6 +149,46 @@ describe('dataviews/histogram-dataview-model', function () {
 
     it('should change the filter column_type', function () {
       expect(this.model.filter.get('column_type')).toEqual('date');
+    });
+  });
+
+  describe('.url', function () {
+    it('should generate a URL by default', function () {
+      this.model.set('url', 'http://example.com');
+      expect(this.model.url()).toEqual('http://example.com?bins=10');
+    });
+
+    it('should include start, end and bins when own_filter is enabled', function () {
+      this.model.set({
+        'url': 'http://example.com',
+        'start': 0,
+        'end': 10,
+        'bins': 25
+      });
+      expect(this.model.url()).toEqual('http://example.com?start=0&end=10&bins=25');
+
+      this.model.enableFilter();
+
+      expect(this.model.url()).toEqual('http://example.com?own_filter=1');
+    });
+  });
+
+  describe('.enableFilter', function () {
+    it('should set the own_filter attribute', function () {
+      expect(this.model.get('own_filter')).toBeUndefined();
+
+      this.model.enableFilter();
+
+      expect(this.model.get('own_filter')).toEqual(1);
+    });
+  });
+
+  describe('.disabeFilter', function () {
+    it('should unset the own_filter attribute', function () {
+      this.model.enableFilter();
+      this.model.disableFilter();
+
+      expect(this.model.get('own_filter')).toBeUndefined();
     });
   });
 });

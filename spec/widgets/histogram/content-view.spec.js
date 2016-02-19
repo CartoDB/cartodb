@@ -200,7 +200,7 @@ describe('widgets/histogram/content-view', function () {
     spyOn(this.view, '_isZoomed').and.returnValue(false);
     spyOn(this.view.miniHistogramChartView, 'replaceData');
     // Change data
-    this.dataviewModel.update({ bins: 10});
+    this.dataviewModel.update({bins: 10});
     expect(this.view.miniHistogramChartView.replaceData).toHaveBeenCalled();
   });
 

@@ -12,7 +12,8 @@ describe('widgets/histogram/content-view', function () {
     });
 
     this.widgetModel = new HistogramWidgetModel({
-      title: 'Howdy'
+      title: 'Howdy',
+      attrsNames: ['title']
     }, {
       dataviewModel: this.dataviewModel
     });
@@ -103,6 +104,14 @@ describe('widgets/histogram/content-view', function () {
     this.dataviewModel.trigger('change:data');
     expect(this.view._onHistogramDataChanged).toHaveBeenCalled();
     expect(this.view._updateStats).toHaveBeenCalled();
+  });
+
+  it('should update the title when the model is updated', function () {
+    this.view.render();
+    expect(this.view.$el.html().indexOf('Howdy') !== -1).toBe(true);
+    this.widgetModel.update({title: 'Cloudy'});
+    this.view.render();
+    expect(this.view.$el.html().indexOf('Cloudy') !== -1).toBe(true);
   });
 
   it('should enable and disable filters on the dataviewModel when zooming in and out', function () {

@@ -32,13 +32,7 @@ module.exports = cdb.core.View.extend({
   },
 
   _initViews: function () {
-    var titleView = new HistogramTitleView({
-      widgetModel: this.model,
-      dataviewModel: this._dataviewModel
-    });
-
-    this.$('.js-title').html(titleView.render().el);
-    this.addView(titleView);
+    this._initTitleView();
 
     var dropdown = new DropdownView({
       target: this.$('.js-actions'),
@@ -55,6 +49,16 @@ module.exports = cdb.core.View.extend({
 
     this._renderMiniChart();
     this._renderMainChart();
+  },
+
+  _initTitleView: function () {
+    var titleView = new HistogramTitleView({
+      widgetModel: this.model,
+      dataviewModel: this._dataviewModel
+    });
+
+    this.$('.js-title').append(titleView.render().el);
+    this.addView(titleView);
   },
 
   _initBinds: function () {
@@ -125,6 +129,7 @@ module.exports = cdb.core.View.extend({
 
     if (isDataEmpty) {
       this._addPlaceholder();
+      this._initTitleView();
     } else {
       this.originalData = this._dataviewModel.getData();
       this._setupBindings();

@@ -9,7 +9,7 @@
 }
 .CDB-Widget-searchLens {
   @include flex-grow(1);
-  min-width: $baseSize / 2;
+  min-width: $baseSize * 2;
   margin-right: $baseSize / 2;
 }
 .CDB-Widget-searchTextInput {

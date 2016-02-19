@@ -66,7 +66,7 @@ module.exports = cdb.core.View.extend({
     this.render();
     this._storeBounds();
 
-    this._dataviewModel.bind('change', this._onChangeModel, this);
+    this._dataviewModel.bind('change:data', this._onHistogramDataChanged, this);
     this.add_related_model(this._dataviewModel);
     this._dataviewModel.fetch();
   },
@@ -76,8 +76,6 @@ module.exports = cdb.core.View.extend({
     if (data && data.length > 0) {
       this.start = data[0].start;
       this.end = data[data.length - 1].end;
-      this.binsCount = data.length;
-      this._dataviewModel.set({ start: this.start, end: this.end, bins: this.binsCount }, { silent: true });
     }
   },
 
@@ -85,16 +83,12 @@ module.exports = cdb.core.View.extend({
     return this.model.get('zoomed');
   },
 
-  _onChangeModel: function () {
+  _onHistogramDataChanged: function () {
     // When the histogram is zoomed, we don't need to rely
     // on the change url to update the histogram
     // TODO the widget should not know about the URL… could this state be got from the dataview model somehow?
     if (this._dataviewModel.changed.url && this._isZoomed()) {
       return;
-    }
-
-    if (this._dataviewModel.changed.bins) {
-      this.binsCount = this._dataviewModel.get('bins');
     }
 
     // if the action was initiated by the user
@@ -418,23 +412,16 @@ module.exports = cdb.core.View.extend({
   },
 
   _onZoomIn: function () {
+    this.lockedByUser = false;
     this._showMiniRange();
     this.histogramChartView.updateYScale();
     this.histogramChartView.expand(4);
     this.histogramChartView.removeShadowBars();
-
-    this._dataviewModel.set({
-      start: null,
-      end: null,
-      bins: null,
-      own_filter: 1
-    }, { silent: true });
+    this._dataviewModel.enableFilter();
     this._dataviewModel.fetch();
-    this.lockedByUser = false;
   },
 
   _zoom: function () {
-    this.lockedByUser = true;
     this.model.set({ zoomed: true, zoom_enabled: false });
     this.histogramChartView.removeSelection();
   },
@@ -443,20 +430,13 @@ module.exports = cdb.core.View.extend({
     this.lockedByUser = true;
     this.lockZoomedData = false;
     this.unsettingRange = true;
-
-    this._dataviewModel.set({
-      start: this.start,
-      end: this.end,
-      bins: this.binsCount,
-      own_filter: null
-    }, { silent: true });
-
     this.model.set({
       zoom_enabled: false,
       filter_enabled: false,
       lo_index: null,
       hi_index: null
     });
+    this._dataviewModel.disableFilter();
 
     this.filter.unsetRange();
 
@@ -478,6 +458,5 @@ module.exports = cdb.core.View.extend({
   _clear: function () {
     this.histogramChartView.removeSelection();
     this.model.set({ zoomed: false, zoom_enabled: false });
-    this.model.trigger('change:zoomed');
   }
 });

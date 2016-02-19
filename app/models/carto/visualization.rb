@@ -283,6 +283,10 @@ class Carto::Visualization < ActiveRecord::Base
     !is_privacy_private?
   end
 
+  def likes_count
+    @likes_count ||= Carto::Like.where(subject: id).count
+  end
+
   private
 
   def get_named_map

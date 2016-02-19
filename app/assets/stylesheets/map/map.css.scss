@@ -121,7 +121,8 @@ div.map {
       div.cartodb-logo,
       div.cartodb-zoom,
       div.cartodb-legend-stack,
-      div.cartodb-zoom-info {
+      div.cartodb-zoom-info,
+      .leaflet-control-minimap {
         display:none!important;
       }
 
@@ -450,6 +451,7 @@ div.map {
   div.cartodb-legend-stack,
   div.cartodb-share,
   div.cartodb-layer-selector-box,
+  div.cartodb-inset-map-box,
   div.cartodb-searchbox {
     @include transform-style("linear");
     @include transition-property("margin");
@@ -495,6 +497,11 @@ div.map {
       left: 0;
       margin:0;
     }
+  }
+
+  // Inset Map
+  .leaflet-control-minimap {
+    display: none;
   }
 
   // Fullscreen

@@ -16,7 +16,7 @@ module CartoDB
 
       # There can be at most one of this types per visualization
       UNIQUE_TYPES = [
-          'search', 'layer_selector', 'share', 'zoom', 'logo', 'loader', 'fullscreen'
+          'search', 'layer_selector', 'share', 'zoom', 'logo', 'loader', 'fullscreen', 'inset_map'
       ]
 
       def initialize(attributes={}, repository=Overlay.repository)

@@ -318,7 +318,27 @@ feature "Superadmin's users API" do
       response.body[:id].should == user.id
     end
 
+    get_json superadmin_user_path(user.id), {}, superadmin_headers do |response|
+      response.status.should == 200
+      response.body[:id].should == user.id
+    end
+
+    get_json superadmin_user_path(user.username), {}, superadmin_headers do |response|
+      response.status.should == 200
+      response.body[:id].should == user.id
+    end
+
     user.destroy
+  end
+
+  scenario "user get info fail" do
+    get_json superadmin_user_path('7b77546f-79cb-4662-9439-9ebafd9627cb'), {}, superadmin_headers do |response|
+      response.status.should == 404
+    end
+
+    get_json superadmin_user_path('nonexistinguser'), {}, superadmin_headers do |response|
+      response.status.should == 404
+    end
   end
 
   describe "GET /superadmin/users" do

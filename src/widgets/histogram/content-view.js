@@ -64,19 +64,10 @@ module.exports = cdb.core.View.extend({
 
   _onFirstLoad: function () {
     this.render();
-    this._storeBounds();
 
     this._dataviewModel.bind('change:data', this._onHistogramDataChanged, this);
     this.add_related_model(this._dataviewModel);
     this._dataviewModel.fetch();
-  },
-
-  _storeBounds: function () {
-    var data = this._dataviewModel.getData();
-    if (data && data.length > 0) {
-      this.start = data[0].start;
-      this.end = data[data.length - 1].end;
-    }
   },
 
   _isZoomed: function () {

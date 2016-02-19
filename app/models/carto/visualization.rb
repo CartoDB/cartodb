@@ -284,7 +284,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def likes_count
-    @likes_count ||= Carto::Like.where(subject: id).count
+    @likes_count ||= likes.count
   end
 
   private

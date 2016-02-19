@@ -5,7 +5,7 @@ require_relative './user/oauths'
 require_relative './synchronization/synchronization_oauth'
 require_relative './visualization/member'
 require_relative '../helpers/redis_vizjson_cache'
-require_relative '../helpers/geocoder_metrics_helper'
+require_relative '../helpers/data_services_metrics_helper'
 require_relative './visualization/collection'
 require_relative './user/user_organization'
 require_relative './synchronization/collection.rb'
@@ -23,7 +23,7 @@ class User < Sequel::Model
   include CartoDB::UserDecorator
   include Concerns::CartodbCentralSynchronizable
   include CartoDB::ConfigUtils
-  include GeocoderMetricsHelper
+  include DataServicesMetricsHelper
 
   self.strict_param_setting = false
 
@@ -77,10 +77,12 @@ class User < Sequel::Model
   MAX_PASSWORD_LENGTH = 64
 
   GEOCODING_BLOCK_SIZE = 1000
+  HERE_ISOLINES_BLOCK_SIZE = 1000
 
   TRIAL_DURATION_DAYS = 15
 
   DEFAULT_GEOCODING_QUOTA = 0
+  DEFAULT_HERE_ISOLINES_QUOTA = 0
 
   COMMON_DATA_ACTIVE_DAYS = 31
 
@@ -103,9 +105,9 @@ class User < Sequel::Model
     super
     validates_presence :username
     validates_unique   :username
-    validates_format /\A[a-z0-9\-]+\z/, :username, :message => "must only contain lowercase letters, numbers and the dash (-) symbol"
-    validates_format /\A[a-z0-9]{1}/, :username, :message => "must start with alfanumeric chars"
-    validates_format /[a-z0-9]{1}\z/, :username, :message => "must end with alfanumeric chars"
+    validates_format (/\A[a-z0-9\-]+\z/), :username, :message => "must only contain lowercase letters, numbers and the dash (-) symbol"
+    validates_format (/\A[a-z0-9]{1}/), :username, :message => "must start with alfanumeric chars"
+    validates_format (/[a-z0-9]{1}\z/), :username, :message => "must end with alfanumeric chars"
     errors.add(:name, 'is taken') if name_exists_in_organizations?
 
     validates_presence :email
@@ -122,6 +124,7 @@ class User < Sequel::Model
     organization_validation if organization.present?
 
     errors.add(:geocoding_quota, "cannot be nil") if geocoding_quota.nil?
+    errors.add(:here_isolines_quota, "cannot be nil") if here_isolines_quota.nil?
   end
 
   def organization_validation
@@ -170,6 +173,7 @@ class User < Sequel::Model
   def before_validation
     self.email = self.email.to_s.strip.downcase
     self.geocoding_quota ||= DEFAULT_GEOCODING_QUOTA
+    self.here_isolines_quota ||= DEFAULT_HERE_ISOLINES_QUOTA
   end
 
   def before_create
@@ -455,7 +459,10 @@ class User < Sequel::Model
         limit =  u.twitter_datasource_quota.to_i - (u.twitter_datasource_quota.to_i * delta)
         over_twitter_imports = u.get_twitter_imports_count > limit
 
-        over_map_views || over_geocodings || over_twitter_imports
+        limit = u.here_isolines_quota.to_i - (u.here_isolines_quota.to_i * delta)
+        over_here_isolines = u.get_here_isolines_calls > limit
+
+        over_map_views || over_geocodings || over_twitter_imports || over_here_isolines
     end
   end
 
@@ -698,6 +705,20 @@ class User < Sequel::Model
     self[:soft_geocoding_limit] = !val
   end
 
+  def soft_here_isolines_limit?
+    Carto::AccountType.new.soft_here_isolines_limit?(self)
+  end
+  alias_method :soft_here_isolines_limit, :soft_here_isolines_limit?
+
+  def hard_here_isolines_limit?
+    !self.soft_here_isolines_limit?
+  end
+  alias_method :hard_here_isolines_limit, :hard_here_isolines_limit?
+
+  def hard_here_isolines_limit=(val)
+    self[:soft_here_isolines_limit] = !val
+  end
+
   def arcgis_datasource_enabled?
     self.arcgis_datasource_enabled == true
   end
@@ -758,6 +779,8 @@ class User < Sequel::Model
       'geocoder_type', geocoder_type,
       'geocoding_quota', geocoding_quota,
       'soft_geocoding_limit', soft_geocoding_limit,
+      'here_isolines_quota', here_isolines_quota,
+      'soft_here_isolines_limit', soft_here_isolines_limit,
       'google_maps_client_id', google_maps_key,
       'google_maps_api_key', google_maps_private_key,
       'period_end_date', period_end_date
@@ -810,6 +833,11 @@ class User < Sequel::Model
     Geocoding.get_not_aggregated_user_geocoding_calls(geocodings_dataset.db, self.id, date_from, date_to)
   end
 
+  def get_here_isolines_calls(options = {})
+    date_from, date_to = quota_dates(options)
+    get_user_here_isolines_data(self, date_from, date_to)
+  end
+
   def effective_twitter_block_price
     organization.present? ? organization.twitter_datasource_block_price : self.twitter_datasource_block_price
   end
@@ -828,16 +856,25 @@ class User < Sequel::Model
 
   def remaining_geocoding_quota
     if organization.present?
-      remaining = organization.geocoding_quota - organization.get_geocoding_calls
+      remaining = organization.remaining_geocoding_quota
     else
       remaining = geocoding_quota - get_geocoding_calls
     end
     (remaining > 0 ? remaining : 0)
   end
 
+  def remaining_here_isolines_quota
+    if organization.present?
+      remaining = organization.remaining_here_isolines_quota
+    else
+      remaining = here_isolines_quota - get_here_isolines_calls
+    end
+    (remaining > 0 ? remaining : 0)
+  end
+
   def remaining_twitter_quota
     if organization.present?
-      remaining = organization.twitter_datasource_quota - organization.get_twitter_imports_count
+      remaining = organization.remaining_twitter_quota
     else
       remaining = self.twitter_datasource_quota - get_twitter_imports_count
     end
@@ -1476,7 +1513,8 @@ class User < Sequel::Model
       :database_timeout, :geocoding_quota, :map_view_quota, :table_quota, :database_host,
       :period_end_date, :map_view_block_price, :geocoding_block_price, :account_type,
       :twitter_datasource_enabled, :soft_twitter_datasource_limit, :twitter_datasource_quota,
-      :twitter_datasource_block_price, :twitter_datasource_block_size
+      :twitter_datasource_block_price, :twitter_datasource_block_size, :here_isolines_quota,
+      :here_isolines_block_price, :soft_here_isolines_limit
     ])
     to.invite_token = ::User.make_token
   end

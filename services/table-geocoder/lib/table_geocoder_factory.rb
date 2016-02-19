@@ -4,7 +4,6 @@ require_relative 'table_geocoder'
 require_relative 'internal_geocoder'
 require_relative 'gme/table_geocoder'
 require_relative 'exceptions'
-require_relative 'geocoder_usage_metrics'
 
 module Carto
   class TableGeocoderFactory
@@ -64,7 +63,7 @@ module Carto
 
     def self.get_geocoder_metrics_instance(user)
       orgname = user.organization.nil? ? nil : user.organization.name
-      CartoDB::GeocoderUsageMetrics.new($geocoder_metrics, user.username, orgname)
+      CartoDB::GeocoderUsageMetrics.new(user.username, orgname)
     end
   end
 end

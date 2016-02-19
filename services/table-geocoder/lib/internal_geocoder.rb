@@ -3,7 +3,6 @@ require_relative '../../sql-api/sql_api'
 require_relative '../../importer/lib/importer/query_batcher'
 require_relative 'internal-geocoder/query_generator_factory'
 require_relative 'abstract_table_geocoder'
-require_relative 'geocoder_usage_metrics'
 
 module CartoDB
   module InternalGeocoder

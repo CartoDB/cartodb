@@ -38,6 +38,12 @@ module CartoDB
           monthly_use: self.organization_user? ? self.organization.get_geocoding_calls : self.get_geocoding_calls,
           hard_limit:  self.hard_geocoding_limit?
         },
+        here_isolines: {
+          quota:       self.organization_user? ? self.organization.here_isolines_quota : self.here_isolines_quota,
+          block_price: self.organization_user? ? self.organization.here_isolines_block_price : self.here_isolines_block_price,
+          monthly_use: self.organization_user? ? self.organization.get_here_isolines_calls : self.get_here_isolines_calls,
+          hard_limit:  self.hard_here_isolines_limit?
+        },
         twitter: {
           enabled:     self.organization_user? ? self.organization.twitter_datasource_enabled         : self.twitter_datasource_enabled,
           quota:       self.organization_user? ? self.organization.twitter_datasource_quota           :  self.twitter_datasource_quota,

@@ -1,9 +1,5 @@
 <div class="CDB-Widget-header js-header">
-  <div class="js-title">
-    <div class="CDB-Widget-title CDB-Widget-contentSpaced">
-      <h3 class="CDB-Text CDB-Size-large u-ellipsis js-title"><%- title %></h3>
-    </div>
-  </div>
+  <div class="js-title"></div>
   <% if (showStats) { %>
     <dl class="CDB-Widget-info CDB-Text CDB-Size-small u-secondaryTextColor u-upperCase">
       <dt class="CDB-Widget-infoCount js-nulls">0</dt><dd class="CDB-Widget-infoDescription">NULL ROWS</dd>

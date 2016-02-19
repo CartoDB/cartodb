@@ -37,7 +37,7 @@ module.exports = cdb.core.View.extend({
       dataviewModel: this._dataviewModel
     });
 
-    this.$('.js-title').html(titleView.render().el);
+    this.$('.js-title').append(titleView.render().el);
     this.addView(titleView);
 
     var dropdown = new DropdownView({

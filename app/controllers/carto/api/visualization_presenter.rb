@@ -80,7 +80,7 @@ module Carto
           title:            @visualization.title,
           kind:             @visualization.kind,
           privacy:          @visualization.privacy.upcase,
-          likes:            @visualization.likes.count
+          likes:            @visualization.likes_count
         }
       end
 

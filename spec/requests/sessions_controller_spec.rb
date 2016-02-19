@@ -54,6 +54,7 @@ describe SessionsController do
     end
 
     it "doesn't allows to login until admin does first" do
+      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
       normal_user_username = "ldap-user"
       normal_user_password = "foobar"
       normal_user_email = "ldap-user@test.com"
@@ -80,6 +81,7 @@ describe SessionsController do
     end
 
     it "Allows to login and triggers creation if using the org admin account" do
+      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
       # @See lib/user_account_creator.rb -> promote_to_organization_owner?
       admin_user_username = "#{@organization.name}-admin"
       admin_user_password = "foobar"
@@ -103,6 +105,7 @@ describe SessionsController do
     end
 
     it "Allows to login and triggers creation of normal users if admin already present" do
+      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
       admin_user_username = "#{@organization.name}-admin"
       admin_user_password = "foobar"
       admin_user_email = "#{@organization.name}-admin@test.com"
@@ -143,6 +146,7 @@ describe SessionsController do
     end
 
     it "Just logs in if finds a cartodb username that matches with LDAP credentials " do
+      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
       admin_user_username = "#{@organization.name}-admin"
       admin_user_password = "foobar"
       admin_user_email = "#{@organization.name}-admin@test.com"

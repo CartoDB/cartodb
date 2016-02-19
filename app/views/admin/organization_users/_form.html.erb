@@ -124,6 +124,21 @@
     </div>
   </div>
 
+  <div class="FormAccount-row">
+    <div class="FormAccount-rowLabel">
+      <label class="FormAccount-label">Extra Here Isolines</label>
+    </div>
+    <div class="FormAccount-rowData">
+      <div class="Toggler">
+        <%= f.check_box :soft_here_isolines_limit, :id => "soft_here_isolines_limit" %>
+        <%= label_tag(:soft_here_isolines_limit, '') %>
+      </div>
+      <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
+        <p class="FormAccount-rowInfoText">User has permission to exceed organization's isolines quota from Here provider</p>
+      </div>
+    </div>
+  </div>
+
   <% if current_user && current_user.organization && current_user.organization.twitter_datasource_enabled %>
     <div class="FormAccount-row">
       <div class="FormAccount-rowLabel">

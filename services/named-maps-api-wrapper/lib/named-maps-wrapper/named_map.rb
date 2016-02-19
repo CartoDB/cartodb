@@ -281,7 +281,7 @@ module CartoDB
         # TODO: if this structure becomes standard, remove the count check,
         # and always return a `widgets` attribute
         if layer_widgets.count > 0
-          widget_names_and_options = layer_widgets.map { |w| [w.title, layer_widget_options(w)] }
+          widget_names_and_options = layer_widgets.map { |w| [w.id, layer_widget_options(w)] }
           layer_options[:layer_options][:widgets] = Hash[*widget_names_and_options.flatten]
         end
 

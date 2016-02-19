@@ -260,7 +260,7 @@ describe Carto::Api::WidgetsController do
         widget_options.should_not be_nil
         widget_options.length.should == 1
         widget_options.each do |k, v|
-          k.should == @widget.title
+          k.should == @widget.id
           v[:type].should == @widget.type
           v[:options].should == @widget.options_json
         end

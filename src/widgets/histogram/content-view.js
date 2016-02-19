@@ -163,6 +163,7 @@ module.exports = cdb.core.View.extend({
       width: this.canvasWidth,
       height: this.defaults.chartHeight,
       data: this._dataviewModel.getData(),
+      originalData: this.originalData,
       displayShadowBars: true
     }));
 

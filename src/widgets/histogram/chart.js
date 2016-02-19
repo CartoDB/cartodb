@@ -1014,7 +1014,7 @@ module.exports = cdb.core.View.extend({
   },
 
   _generateShadowBars: function () {
-    var data = this.model.get('data');
+    var data = this.options.originalData;
 
     if (!data || !data.length || !this.model.get('show_shadow_bars')) {
       this._removeShadowBars();

@@ -43,6 +43,10 @@
   margin-right: $baseSize / 4;
 }
 
+.CDB-Widget-header--timeSeries {
+  margin-bottom: $baseSize + 4;
+}
+
 @include media-query() {
   .CDB-Widget-timeSeriesFakeChart {
     height: $baseSize * 2;

@@ -1,6 +1,7 @@
 var _ = require('underscore');
 var cdb = require('cartodb.js');
 var formatter = require('../../formatter');
+var HistogramTitleView = require('./histogram-title-view');
 var HistogramChartView = require('./chart');
 var placeholder = require('./placeholder.tpl');
 var template = require('./content.tpl');
@@ -20,9 +21,7 @@ module.exports = cdb.core.View.extend({
 
   events: {
     'click .js-clear': '_clear',
-    'click .js-zoom': '_zoom',
-    'click .js-applySizes': '_applySizes',
-    'click .js-cancelSizes': '_cancelSizes'
+    'click .js-zoom': '_zoom'
   },
 
   initialize: function () {
@@ -33,6 +32,8 @@ module.exports = cdb.core.View.extend({
   },
 
   _initViews: function () {
+    this._initTitleView();
+
     var dropdown = new DropdownView({
       target: this.$('.js-actions'),
       container: this.$('.js-header')
@@ -50,10 +51,19 @@ module.exports = cdb.core.View.extend({
     this._renderMainChart();
   },
 
+  _initTitleView: function () {
+    var titleView = new HistogramTitleView({
+      widgetModel: this.model,
+      dataviewModel: this._dataviewModel
+    });
+
+    this.$('.js-title').append(titleView.render().el);
+    this.addView(titleView);
+  },
+
   _initBinds: function () {
     this._dataviewModel.once('change:data', this._onFirstLoad, this);
-    this._dataviewModel.bind('change:histogram_sizes', this.render, this);
-    this.model.bind('change:title change:collapsed', this.render, this);
+    this.model.bind('change:collapsed', this.render, this);
   },
 
   _onFirstLoad: function () {
@@ -122,14 +132,13 @@ module.exports = cdb.core.View.extend({
       template({
         title: this.model.get('title'),
         showStats: this.model.get('show_stats'),
-        itemsCount: !isDataEmpty ? data.length : '-',
-        isSizesApplied: this._dataviewModel.get('histogram_sizes'),
-        isCollapsed: this.model.get('collapsed')
+        itemsCount: !isDataEmpty ? data.length : '-'
       })
     );
 
     if (isDataEmpty) {
       this._addPlaceholder();
+      this._initTitleView();
     } else {
       this.originalData = this._dataviewModel.getData();
       this._setupBindings();
@@ -452,13 +461,5 @@ module.exports = cdb.core.View.extend({
   _clear: function () {
     this.histogramChartView.removeSelection();
     this.model.set({ zoomed: false, zoom_enabled: false });
-  },
-
-  _applySizes: function () {
-    this._dataviewModel.set('histogram_sizes', true);
-  },
-
-  _cancelSizes: function () {
-    this._dataviewModel.set('histogram_sizes', false);
   }
 });

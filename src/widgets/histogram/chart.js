@@ -26,6 +26,15 @@ module.exports = cdb.core.View.extend({
   },
 
   initialize: function () {
+    this._originalData = this.options.originalData;
+
+    if (this._originalData) {
+      this._originalData.bind('reset', function () {
+        this._removeShadowBars();
+        this._generateShadowBars();
+      }, this);
+    }
+
     if (!_.isNumber(this.options.height)) throw new Error('height is required');
 
     _.bindAll(this, '_selectBars', '_adjustBrushHandles', '_onBrushMove', '_onBrushStart', '_onMouseMove', '_onMouseOut');
@@ -1014,7 +1023,7 @@ module.exports = cdb.core.View.extend({
   },
 
   _generateShadowBars: function () {
-    var data = this.options.originalData;
+    var data = this._originalData && this._originalData.toJSON();
 
     if (!data || !data.length || !this.model.get('show_shadow_bars')) {
       this._removeShadowBars();

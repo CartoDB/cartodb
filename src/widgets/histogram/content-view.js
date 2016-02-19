@@ -64,20 +64,10 @@ module.exports = cdb.core.View.extend({
 
   _onFirstLoad: function () {
     this.render();
-    this._storeBounds();
 
     this._dataviewModel.bind('change:data', this._onHistogramDataChanged, this);
     this.add_related_model(this._dataviewModel);
     this._dataviewModel.fetch();
-  },
-
-  _storeBounds: function () {
-    var data = this._dataviewModel.getData();
-    if (data && data.length > 0) {
-      this.start = data[0].start;
-      this.end = data[data.length - 1].end;
-      this.binsCount = data.length;
-    }
   },
 
   _isZoomed: function () {
@@ -102,6 +92,7 @@ module.exports = cdb.core.View.extend({
       } else {
         this.histogramChartView.showShadowBars();
         this.originalData = this._dataviewModel.getData();
+        this.miniHistogramChartView.replaceData(this.originalData);
       }
       this.histogramChartView.replaceData(this._dataviewModel.getData());
     }
@@ -167,7 +158,7 @@ module.exports = cdb.core.View.extend({
       width: this.canvasWidth,
       height: this.defaults.chartHeight,
       data: this._dataviewModel.getData(),
-      shadowData: this._dataviewModel.getData()
+      displayShadowBars: true
     }));
 
     this.$('.js-content').append(this.histogramChartView.el);
@@ -417,7 +408,6 @@ module.exports = cdb.core.View.extend({
     this.histogramChartView.updateYScale();
     this.histogramChartView.expand(4);
     this.histogramChartView.removeShadowBars();
-
     this._dataviewModel.enableFilter();
     this._dataviewModel.fetch();
   },
@@ -431,9 +421,12 @@ module.exports = cdb.core.View.extend({
     this.lockedByUser = true;
     this.lockZoomedData = false;
     this.unsettingRange = true;
-
-    this.model.set({ zoom_enabled: false, filter_enabled: false, lo_index: null, hi_index: null });
-
+    this.model.set({
+      zoom_enabled: false,
+      filter_enabled: false,
+      lo_index: null,
+      hi_index: null
+    });
     this._dataviewModel.disableFilter();
 
     this.filter.unsetRange();

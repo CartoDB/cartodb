@@ -44,7 +44,7 @@ describe('widgets/histogram/chart', function () {
       hasHandles: true,
       height: 100,
       data: this.data,
-      shadowData: this.data,
+      displayShadowBars: true,
       xAxisTickFormat: function (d, i) {
         return d;
       }

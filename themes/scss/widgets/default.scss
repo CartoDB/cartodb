@@ -29,7 +29,6 @@
   @include align-items(center);
   position: relative;
   width: 100%;
-  margin: 0 0 $baseSize - 2;
 }
 .CDB-Widget-header,
 .CDB-Widget-footer,
@@ -53,7 +52,6 @@
 }
 .CDB-Widget-content {
   position: relative;
-  margin-top: 10px;
 }
 .CDB-Widget-content--noSidesMargin {
   margin-right: 0;

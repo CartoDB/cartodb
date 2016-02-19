@@ -49,6 +49,7 @@
   @include display-flex();
   @include justify-content(flex-start, start);
   @include align-items(center);
+  margin-bottom: $baseSize + 4;
 }
 .CDB-Widget-content {
   position: relative;

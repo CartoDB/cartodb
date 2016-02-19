@@ -54,12 +54,20 @@ module.exports = Model.extend({
 
   _initBinds: function () {
     this.listenTo(this._windshaftMap, 'instanceCreated', this._onNewWindshaftMapInstance);
-    var dataProvider = this.layer.getDataProvider();
+    this.listenTo(this.layer, 'change:visible', this._onLayerVisibilityChanged);
 
+    var dataProvider = this.layer.getDataProvider();
     if (dataProvider) {
-      dataProvider.bind('featuresChanged', this._onDataProviderChanged, this);
+      this.listenToOnce(dataProvider, 'featuresChanged', function () {
+        this.listenTo(this._map, 'change:center change:zoom', _.debounce(this._onMapBoundsChanged.bind(this), BOUNDING_BOX_FILTER_WAIT));
+        this.on('change:boundingBox', function () {
+          if (this._shouldFetchOnBoundingBoxChange()) {
+            this.fetch();
+          }
+        }, this);
+      });
+      this.listenTo(dataProvider, 'featuresChanged', this._onDataProviderChanged);
     } else {
-      this.listenTo(this.layer, 'change:visible', this._onLayerVisibilityChanged);
       this.listenToOnce(this, 'change:url', function () {
         this.fetch({
           success: this._onChangeBinds.bind(this)

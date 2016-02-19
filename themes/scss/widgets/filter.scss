@@ -4,7 +4,7 @@
 .CDB-Widget-filter {
   display: block;
   max-height: 200px;
-  margin: 10px 0 8px;
+  margin: $baseSize + 2 0 $baseSize;
 }
 .CDB-Widget-filterButtons {
   @include display-flex();

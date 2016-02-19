@@ -183,6 +183,27 @@ describe('widgets/histogram/content-view', function () {
     expect(this.view.$('.CDB-Widget-info').length).toBe(1);
   });
 
+  it('should update data of the mini histogram if there is a bins change and it is not zoomed', function () {
+    var i = 0;
+    this.dataviewModel.sync = function (method, model, options) {
+      options.success({
+        'bin_width': 10,
+        'bins_count': 2,
+        'bins_start': i++,
+        'nulls': 0,
+        'bins': []
+      });
+    };
+
+    this.dataviewModel.fetch();
+
+    spyOn(this.view, '_isZoomed').and.returnValue(false);
+    spyOn(this.view.miniHistogramChartView, 'replaceData');
+    // Change data
+    this.dataviewModel.update({ bins: 10});
+    expect(this.view.miniHistogramChartView.replaceData).toHaveBeenCalled();
+  });
+
   afterEach(function () {
     this.view.clean();
   });

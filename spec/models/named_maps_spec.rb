@@ -133,8 +133,8 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
 
       derived_vis.privacy.should eq CartoDB::Visualization::Member::PRIVACY_PROTECTED
       derived_vis.has_password?.should eq true
-      derived_vis.is_password_valid?(password).should eq true
-      derived_vis.is_password_valid?('some invalid passsword').should eq false
+      derived_vis.password_valid?(password).should eq true
+      derived_vis.password_valid?('some invalid passsword').should eq false
 
       derived_vis.get_auth_tokens().should eq [auth_token]
     end

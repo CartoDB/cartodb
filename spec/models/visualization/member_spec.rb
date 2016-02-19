@@ -408,27 +408,27 @@ describe Visualization::Member do
 
       visualization.password = password_value
       visualization.has_password?.should be_true
-      visualization.is_password_valid?(password_value).should be_true
+      visualization.password_valid?(password_value).should be_true
 
       # Shouldn't remove the password, and be equal
       visualization.password = ''
       visualization.has_password?.should be_true
-      visualization.is_password_valid?(password_value).should be_true
+      visualization.password_valid?(password_value).should be_true
       visualization.password = nil
       visualization.has_password?.should be_true
-      visualization.is_password_valid?(password_value).should be_true
+      visualization.password_valid?(password_value).should be_true
 
       # Modify the password
       visualization.password = password_second_value
       visualization.has_password?.should be_true
-      visualization.is_password_valid?(password_second_value).should be_true
-      visualization.is_password_valid?(password_value).should be_false
+      visualization.password_valid?(password_second_value).should be_true
+      visualization.password_valid?(password_value).should be_false
 
       # Test removing the password, should work
       visualization.remove_password
       visualization.has_password?.should be_false
       lambda {
-        visualization.is_password_valid?(password_value)
+        visualization.password_valid?(password_value)
       }.should raise_error CartoDB::InvalidMember
     end
   end #password

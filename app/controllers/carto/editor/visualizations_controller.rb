@@ -11,6 +11,8 @@ module Carto
       ssl_required :show
 
       before_filter :load_visualization, only: [:show]
+      before_filter :authors_only
+      before_filter :editable_visualizations_only, only: [:show]
 
       after_filter :update_user_last_activity, only: [:show]
 
@@ -20,20 +22,21 @@ module Carto
         @visualization_data = Carto::Api::VisualizationPresenter.new(@visualization, current_viewer, self).to_poro
         @layers_data = @visualization.layers.map { |l| Carto::Api::LayerPresenter.new(l).to_poro }
         @vizjson = Carto::Api::VizJSON3Presenter.new(@visualization, $tables_metadata)
-                                               .to_vizjson(https_request: is_https?)
+                                                .to_vizjson(https_request: is_https?)
       end
 
       private
 
       def load_visualization
-        @visualization = get_priority_visualization(params[:id], current_user.id)
-
-        render_404 && return if @visualization.nil?
-        render_403 && return unless allowed?(@visualization)
+        @visualization = load_visualization_from_id(params[:id])
       end
 
-      def allowed?(visualization)
-        !(visualization.type_slide? || visualization.kind_raster? || !visualization.is_writable_by_user(current_user))
+      def authors_only
+        render_403 unless !current_user.nil? && @visualization.is_writable_by_user(current_user)
+      end
+
+      def editable_visualizations_only
+        render_403 unless @visualization.editable?
       end
     end
   end

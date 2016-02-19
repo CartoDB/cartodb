@@ -322,7 +322,7 @@ class Admin::VisualizationsController < Admin::AdminController
     submitted_password = params.fetch(:password, nil)
     return(render_pretty_404) unless @visualization.password_protected? and @visualization.has_password?
 
-    unless @visualization.is_password_valid?(submitted_password)
+    unless @visualization.password_valid?(submitted_password)
       flash[:placeholder] = '*' * (submitted_password ? submitted_password.size : DEFAULT_PLACEHOLDER_CHARS)
       flash[:error] = "Invalid password"
       return(embed_protected)
@@ -361,7 +361,7 @@ class Admin::VisualizationsController < Admin::AdminController
     submitted_password = params.fetch(:password, nil)
     return(render_pretty_404) unless @visualization.password_protected? and @visualization.has_password?
 
-    unless @visualization.is_password_valid?(submitted_password)
+    unless @visualization.password_valid?(submitted_password)
       flash[:placeholder] = '*' * (submitted_password ? submitted_password.size : DEFAULT_PLACEHOLDER_CHARS)
       flash[:error] = "Invalid password"
       return(embed_protected)

@@ -21,6 +21,8 @@ var Map = Model.extend({
     provider: 'leaflet'
   },
 
+  RELOAD_DEBOUNCE_TIME: 10,
+
   initialize: function (attrs, options) {
     options = options || {};
     this.layers = new Layers();
@@ -76,7 +78,7 @@ var Map = Model.extend({
     this.reload();
   },
 
-  reload: function (options) {
+  reload: _.debounce(function (options) {
     if (this._windshaftMap) {
       var instanceOptions = {
         layers: this.layers.models,
@@ -88,7 +90,7 @@ var Map = Model.extend({
       }
       this._windshaftMap.createInstance(instanceOptions);
     }
-  },
+  }, this.RELOAD_DEBOUNCE_TIME),
 
   _updateAttributions: function () {
     var defaultCartoDBAttribution = this.defaults.attribution[0];

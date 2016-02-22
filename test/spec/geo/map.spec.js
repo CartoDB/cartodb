@@ -1,4 +1,4 @@
-var config = require('cdb.config');
+var _ = require('underscore');
 var PlainLayer = require('../../../src/geo/map/plain-layer');
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
 var Map = require('../../../src/geo/map');
@@ -123,4 +123,26 @@ describe('core/geo/map', function() {
       "CartoDB <a href=\"http://cartodb.com/attributions\" target=\"_blank\">attribution</a>",
     ]);
   })
+
+  describe('reload', function () {
+    it ('should be debounced', function (done) {
+      var windshaftMap = jasmine.createSpyObj('windshaftMap', ['createInstance']);
+      var map = new Map({}, {
+        windshaftMap: windshaftMap
+      });
+
+      // Reload the map 1000 times in a row
+      for (var i = 0; i < 1000; i++) {
+        map.reload();
+      }
+
+      _.defer(function () {
+        expect(windshaftMap.createInstance).toHaveBeenCalled();
+
+        // windshaftMap.createInstance is debounced and has only been called once
+        expect(windshaftMap.createInstance.calls.count()).toEqual(1);
+        done();
+      });
+    });
+  });
 });

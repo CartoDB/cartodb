@@ -14,24 +14,32 @@ module.exports = Backbone.Collection.extend({
   },
 
   toJSON: function () {
-    var json = {
-      layers: []
-    };
-    var l, f, filters, filtersJson;
-    for (l = 0; l < this.layers.length; l++) {
-      var layer = this.layers[l];
-      if (layer.isVisible()) {
-        filters = this.getActiveFiltersForLayer(layer);
-        filtersJson = {};
-        if (filters.length) {
-          for (f = 0; f < filters.length; f++) {
-            _.extend(filtersJson, filters[f].toJSON());
+    var json = {};
+    var activeFilters = this.getActiveFilters();
+    if (activeFilters.length) {
+      json.layers = [];
+      var l, f, filters, filtersJson;
+      for (l = 0; l < this.layers.length; l++) {
+        var layer = this.layers[l];
+        if (layer.isVisible()) {
+          filters = this.getActiveFiltersForLayer(layer);
+          filtersJson = {};
+          if (filters.length) {
+            for (f = 0; f < filters.length; f++) {
+              _.extend(filtersJson, filters[f].toJSON());
+            }
           }
+          json.layers.push(filtersJson);
         }
-        json.layers.push(filtersJson);
       }
     }
     return json;
+  },
+
+  getActiveFilters: function () {
+    return this.filter(function (filter) {
+      return !filter.isEmpty();
+    });
   },
 
   getActiveFiltersForLayer: function (layer) {

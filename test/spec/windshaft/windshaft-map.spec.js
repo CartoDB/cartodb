@@ -120,7 +120,7 @@ describe('windshaft/map', function () {
       });
 
       var args = this.client.instantiateMap.calls.mostRecent().args[0];
-      expect(args.filters).toEqual({ layers: [{}, {}] });
+      expect(args.filters).toEqual({ });
     });
 
     it('should trigger an event when the instance is created', function () {

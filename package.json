@@ -70,7 +70,7 @@
   "browserify": {
     "transform": [
       "browserify-shim",
-      "jstify"
+      ["jstify", { "minifierOpts": false }]
     ]
   },
   "browserify-shim": {

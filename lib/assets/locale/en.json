@@ -7,13 +7,19 @@
       "modal-title": "Add new widgets",
       "modal-desc": "Select the widgets you want to add",
       "continue-btn": "Continue",
-      "fetching-tables-title": "Loading tables"
+      "fetching-title": "Loading columns",
+      "tab-pane": {
+        "histogram-label": "Histogram",
+        "category-label": "Category",
+        "formula-label": "Formula",
+        "time-series-label": "Time-series"
+      }
     },
     "layers": {
-      "title": "LAYERS",
+      "title": "LAYERS"
     },
     "elements": {
-      "title": "ELEMENTS",
+      "title": "ELEMENTS"
     },
     "widgets": {
       "title": "WIDGETS",
@@ -29,7 +35,7 @@
         "style": {
           "title": "Style",
           "description": "Apply style to your visualization"
-        },
+        }
       },
       "edit": "Edit",
       "type": {

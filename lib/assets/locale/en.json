@@ -13,7 +13,9 @@
         "category-label": "Category",
         "formula-label": "Formula",
         "time-series-label": "Time-series"
-      }
+      },
+      "time-series-no-option-title": "None",
+      "time-series-no-option-desc": "This option won't show your time-series widget"
     },
     "layers": {
       "title": "LAYERS"

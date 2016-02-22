@@ -7,32 +7,30 @@ var CategoryGeoJSONDataProvider = function (vectorLayerView, layerIndex) {
 
 _.extend(CategoryGeoJSONDataProvider.prototype, GeoJSONDataProviderBase.prototype);
 
-CategoryGeoJSONDataProvider.prototype.getData = function (features) {
+CategoryGeoJSONDataProvider.prototype.getData = function () {
   var options = this._dataview.attributes;
   var columnName = options.column;
   var filterEnabled = options.filterEnabled;
   var numberOfCategories = 5;
-  var sortedGroups;
-  var count;
-  if (filterEnabled) {
-    // TODO: There's probably a more efficient way of doing this
-    var groups = _.groupBy(features, function (feature) { return feature.properties[columnName]; });
-    var groupCounts = _.map(Object.keys(groups), function (key) {
-      return {
-        key: key,
-        value: groups[key].length
-      };
-    });
-    sortedGroups = _.sortBy(groupCounts, function (group) {
-      return group.value;
-    }).reverse();
-    count = features.length;
-  } else {
-    var filter = this._vectorLayerView.getFilter(this._layerIndex);
-    sortedGroups = filter.getColumnValues(columnName);
-    count = filter.getCount(columnName);
+  var filter = this._vectorLayerView.getFilter(this._layerIndex);
+  var features = this._getFeatures();
+  if (!filterEnabled) {
+    features = filter.getValues(false, columnName);
   }
-  // TODO: Filter is undefined here when filterEnabled === true
+
+  // TODO: There's probably a more efficient way of doing this
+  var groups = _.groupBy(features, function (feature) { return feature.properties[columnName]; });
+  var groupCounts = _.map(Object.keys(groups), function (key) {
+    return {
+      key: key,
+      value: groups[key].length
+    };
+  });
+  var sortedGroups = _.sortBy(groupCounts, function (group) {
+    return group.value;
+  }).reverse();
+  var count = features.length;
+
   var nulls = filter.getValues(false, columnName).reduce(function (p, c) { return p + (c.properties[columnName] === null ? 1 : 0); }, 0);
   var data = {
     categories: [],

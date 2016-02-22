@@ -87,7 +87,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def transition_options
-    @transition_options ||= JSON.parse(self.slide_transition_options).symbolize_keys
+    @transition_options ||= (slide_transition_options.nil? ? {} : JSON.parse(slide_transition_options).symbolize_keys)
   end
 
   def children
@@ -195,7 +195,7 @@ class Carto::Visualization < ActiveRecord::Base
     map.layers
   end
 
-  def is_password_valid?(password)
+  def password_valid?(password)
     has_password? && ( password_digest(password, password_salt) == encrypted_password )
   end
 
@@ -207,7 +207,7 @@ class Carto::Visualization < ActiveRecord::Base
     privacy == PRIVACY_PROTECTED
   end
 
-  def is_private?
+  def private?
     # This organization? check is kept for backwards compatibility
     is_privacy_private? and not organization?
   end
@@ -222,6 +222,10 @@ class Carto::Visualization < ActiveRecord::Base
 
   def is_link_privacy?
     self.privacy == PRIVACY_LINK
+  end
+
+  def editable?
+    !(kind_raster? || type_slide?)
   end
 
   # INFO: discouraged, since it forces using internal constants
@@ -277,6 +281,10 @@ class Carto::Visualization < ActiveRecord::Base
 
   def can_be_cached?
     !is_privacy_private?
+  end
+
+  def likes_count
+    likes.count
   end
 
   private

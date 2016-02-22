@@ -232,27 +232,42 @@ describe('dataviews/dataview-model-base', function () {
       this.model.fetch();
       expect(this.model.trigger).toHaveBeenCalledWith('loading', this.model);
     });
+  });
 
-    it('should get data from a data provider if present', function () {
+  describe('when the layer has a data provider', function () {
+    var MyDataviewDataProvider = function () {};
+    _.extend(MyDataviewDataProvider.prototype, Backbone.Events);
+    MyDataviewDataProvider.prototype.getData = function () {
+      return { a: 1 };
+    };
+    MyDataviewDataProvider.prototype.applyFilter = jasmine.createSpy('applyFilter');
+
+    beforeEach(function () {
+      this.geoJSONDataProvider = jasmine.createSpyObj('dataProvider', ['createDataProviderForDataview']);
       this.layer = new Backbone.Model({
         id: 'layerId'
       });
+      this.layer.getDataProvider = function () {
+        return this.geoJSONDataProvider;
+      }.bind(this);
 
-      // Set up a new data provider
-      var dataProvider = new Backbone.Model();
-      dataProvider.getData = jasmine.createSpy('getData').and.callFake(function () {
-        return [{ a: 'b' }, { b: 'c' }];
+      this.dataviewDataProvider = new MyDataviewDataProvider();
+      this.geoJSONDataProvider.createDataProviderForDataview.and.returnValue(this.dataviewDataProvider);
+    });
+
+    it('should set a dataProvider for the dataview', function () {
+      var dataview = new DataviewModelBase({ // eslint-disable-line
+        column: 'columnName'
+      }, {
+        map: this.map,
+        windshaftMap: this.windshaftMap,
+        layer: this.layer
       });
 
-      dataProvider.generateDataForDataview = jasmine.createSpy('generateDataForDataview').and.callFake(function (dataview, data) {
-        return {
-          something: 'else'
-        };
-      });
+      expect(this.geoJSONDataProvider.createDataProviderForDataview).toHaveBeenCalledWith(dataview);
+    });
 
-      // Layer has a dataProvider
-      this.layer.getDataProvider = jasmine.createSpy('getDataProvider').and.returnValue(dataProvider);
-
+    it('should get data from a data provider if present', function () {
       var dataview = new DataviewModelBase({ // eslint-disable-line
         column: 'columnName'
       }, {
@@ -263,7 +278,7 @@ describe('dataviews/dataview-model-base', function () {
 
       spyOn(dataview, 'parse').and.callFake(function () {
         return {
-          else: 'something'
+          b: 2
         };
       });
 
@@ -272,87 +287,36 @@ describe('dataviews/dataview-model-base', function () {
 
       dataview.fetch();
 
-      expect(dataProvider.generateDataForDataview).toHaveBeenCalledWith(dataview, [{ a: 'b' }, { b: 'c' }]);
-      expect(dataview.parse).toHaveBeenCalledWith({ something: 'else' });
-      expect(dataview.get('else')).toEqual('something');
+      expect(dataview.parse).toHaveBeenCalledWith({ a: 1 });
       expect(syncCallback).toHaveBeenCalled();
-    });
-  });
-
-  describe('when the layer has a data provider', function () {
-    beforeEach(function () {
-      this.layer = new Backbone.Model({
-        id: 'layerId'
-      });
-      this.layer.getDataProvider = jasmine.createSpy('getDataProvider').and.returnValue(undefined);
+      expect(dataview.get('b')).toEqual(2);
     });
 
     it('should be bound to changes on the changes on the map bounds', function () {
-      spyOn(_, 'debounce').and.callFake(function (func) { return function () { func.apply(this, arguments); }; });
-
-      var dataProvider = new Backbone.Model();
-      dataProvider.generateDataForDataview = function (dataview, data) {
-        return data[0];
-      };
-      dataProvider.getData = function () {};
-
-      this.layer.getDataProvider.and.returnValue(dataProvider);
-
       var dataview = new DataviewModelBase(null, {
         map: this.map,
         windshaftMap: this.windshaftMap,
         layer: this.layer
       });
-      spyOn(dataview, 'fetch');
+      spyOn(dataview, 'parse').and.callFake(function () {
+        return {
+          b: 2
+        };
+      });
 
-      // The dataProvider triggers a featuresChanged event with some features
-      dataProvider.trigger('featuresChanged', [{ a: 'b' }]);
+      // New data is available
+      this.dataviewDataProvider.trigger('dataChanged');
 
       // Map bounds change
       this.map.getViewBounds.and.returnValue([100, 200], [300, 400]);
       this.map.trigger('change:center');
 
-      expect(dataview.fetch).toHaveBeenCalled();
-    });
-
-    it('it should get data from that provider when features changed', function () {
-      var dataProvider = new Backbone.Model();
-      dataProvider.generateDataForDataview = function (dataview, data) {
-        return data[0];
-      };
-      this.layer.getDataProvider.and.returnValue(dataProvider);
-
-      var dataview = new DataviewModelBase(null, {
-        map: this.map,
-        windshaftMap: this.windshaftMap,
-        layer: this.layer
-      });
-
-      // The dataProvider triggers a featuresChanged event with some features
-      dataProvider.trigger('featuresChanged', [{ a: 'b' }]);
-
-      // The dataview has been updated and events have been triggered
-      expect(dataview.get('a')).toEqual('b');
-
-      // The dataProvider triggers a featuresChanged event with some features
-      dataProvider.trigger('featuresChanged', [{ c: 'd' }]);
-
-      // The dataview has been updated and events have been triggered
-      expect(dataview.get('c')).toEqual('d');
+      expect(dataview.parse).toHaveBeenCalledWith({ a: 1 });
+      expect(dataview.get('b')).toEqual(2);
     });
 
     it('should apply the filter to the data provider when the filter changes', function () {
       spyOn(this.map, 'reload');
-
-      // Set up a new data provider
-      var dataProvider = new Backbone.Model();
-      dataProvider.generateDataForDataview = function (dataview, data) {
-        return data[0];
-      };
-      dataProvider.applyFilter = jasmine.createSpy('applyFilter');
-
-      // Layer has a dataProvider
-      this.layer.getDataProvider.and.returnValue(dataProvider);
 
       var filter = new Backbone.Model();
       var dataview = new DataviewModelBase({ // eslint-disable-line
@@ -368,7 +332,7 @@ describe('dataviews/dataview-model-base', function () {
       filter.trigger('change', filter);
 
       expect(this.map.reload).not.toHaveBeenCalled();
-      expect(dataProvider.applyFilter).toHaveBeenCalledWith('columnName', filter);
+      expect(this.dataviewDataProvider.applyFilter).toHaveBeenCalledWith(filter);
     });
   });
 });

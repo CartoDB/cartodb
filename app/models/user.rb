@@ -106,8 +106,8 @@ class User < Sequel::Model
     validates_presence :username
     validates_unique   :username
     validates_format (/\A[a-z0-9\-]+\z/), :username, :message => "must only contain lowercase letters, numbers and the dash (-) symbol"
-    validates_format (/\A[a-z0-9]{1}/), :username, :message => "must start with alfanumeric chars"
-    validates_format (/[a-z0-9]{1}\z/), :username, :message => "must end with alfanumeric chars"
+    validates_format (/\A[a-z0-9]{1}/), :username, :message => "must start with alphanumeric chars"
+    validates_format (/[a-z0-9]{1}\z/), :username, :message => "must end with alphanumeric chars"
     errors.add(:name, 'is taken') if name_exists_in_organizations?
 
     validates_presence :email

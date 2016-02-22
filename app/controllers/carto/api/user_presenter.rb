@@ -95,6 +95,12 @@ module Carto
             monthly_use: @user.organization_user? ? @user.organization.get_geocoding_calls : @user.get_geocoding_calls,
             hard_limit:  @user.hard_geocoding_limit?
           },
+          here_isolines: {
+            quota:       @user.organization_user? ? @user.organization.here_isolines_quota : @user.here_isolines_quota,
+            block_price: @user.organization_user? ? @user.organization.here_isolines_block_price : @user.here_isolines_block_price,
+            monthly_use: @user.organization_user? ? @user.organization.get_here_isolines_calls : @user.get_here_isolines_calls,
+            hard_limit:  @user.hard_here_isolines_limit?
+          },
           twitter: {
             enabled:     @user.organization_user? ? @user.organization.twitter_datasource_enabled         : @user.twitter_datasource_enabled,
             quota:       @user.organization_user? ? @user.organization.twitter_datasource_quota           :  @user.twitter_datasource_quota,

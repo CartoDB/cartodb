@@ -1,5 +1,5 @@
 require_relative 'thread_pool'
-require_relative '../../services/table-geocoder/lib/table_geocoder_factory'
+require_relative '../../services/dataservices-metrics/lib/geocoder_usage_metrics'
 require 'timeout'
 require 'date'
 
@@ -1276,7 +1276,8 @@ namespace :cartodb do
         begin
           # We are working on the v2 which is only Nokia
           next if user.google_maps_geocoder_enabled?
-          usage_metrics = Carto::TableGeocoderFactory.get_geocoder_metrics_instance(user)
+          orgname = user.organization.nil? ? nil : user.organization.name
+          usage_metrics = CartoDB::GeocoderUsageMetrics.new(user.username, orgname)
           geocoding_calls = user.get_not_aggregated_geocoding_calls({from: date_from, to: date_to})
           geocoding_calls.each do |metric|
             usage_metrics.incr(:geocoder_here, :success_responses, metric[:processed_rows], metric[:date])

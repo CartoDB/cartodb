@@ -75,6 +75,7 @@ module CartoDB
       public_map_deps.js
       editor.js
       editor3.js
+      public_editor3.js
       account_templates.js
       account_deps.js
       account.js
@@ -124,6 +125,7 @@ module CartoDB
       front.css
       editor.css
       editor3.css
+      public_editor3.css
       table.css
       leaflet.css
       map.css

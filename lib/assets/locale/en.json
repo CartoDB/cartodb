@@ -3,7 +3,34 @@
     "map": "map",
     "map_name": "%{name} map",
     "map_pluralize": "%{smart_count} map |||| %{smart_count} maps",
+    "add-widgets": {
+      "modal-title": "Add new widgets",
+      "modal-desc": "Select the widgets you want to add",
+      "continue-btn": "Continue",
+      "fetching-tables-title": "Loading tables"
+    },
+    "layers": {
+      "title": "LAYERS",
+    },
+    "elements": {
+      "title": "ELEMENTS",
+    },
     "widgets": {
+      "title": "WIDGETS",
+      "widgets-form": {
+        "type": {
+          "title": "Type",
+          "description": "Choose the widget type"
+        },
+        "data": {
+          "title": "Data",
+          "description": "Configure your values"
+        },
+        "style": {
+          "title": "Style",
+          "description": "Apply style to your visualization"
+        },
+      },
       "edit": "Edit",
       "type": {
         "category": "Category",

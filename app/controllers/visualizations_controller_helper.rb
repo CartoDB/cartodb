@@ -11,4 +11,14 @@ module VisualizationsControllerHelper
                                     end
                                     .first
   end
+
+  def load_visualization_from_id(id)
+    user_id = current_user.nil? ? nil : current_user.id
+
+    visualization = get_priority_visualization(id, user_id)
+
+    render_404 && return if visualization.nil?
+
+    visualization
+  end
 end

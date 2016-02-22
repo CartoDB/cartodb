@@ -24,6 +24,10 @@ module CartoDB
           quota:       self.geocoding_quota,
           monthly_use: self.get_geocoding_calls
         },
+        here_isolines: {
+          quota:       self.here_isolines_quota,
+          monthly_use: self.get_here_isolines_calls
+        },
         twitter: {
           enabled:     self.twitter_datasource_enabled,
           quota:       self.twitter_datasource_quota,

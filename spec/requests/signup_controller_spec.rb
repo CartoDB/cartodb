@@ -113,6 +113,7 @@ describe SignupController do
     end
 
     it 'triggers a NewUser job with form parameters and default quota and requiring validation email' do
+      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
       ::Resque.expects(:enqueue).with(::Resque::UserJobs::Signup::NewUser,
                                       instance_of(String), anything, instance_of(FalseClass)).returns(true)
 
@@ -184,6 +185,7 @@ describe SignupController do
       invitation = Carto::Invitation.create_new(Carto::User.find(@org_user_owner.id), [invited_email], 'Welcome!')
       invitation.save
 
+      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
       ::Resque.expects(:enqueue).
         with(::Resque::UserJobs::Signup::NewUser, instance_of(String), anything, instance_of(FalseClass)).
         returns(true)
@@ -264,6 +266,7 @@ describe SignupController do
           end
 
           it 'triggers user creation without organization' do
+            Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
             email = 'authenticated@whatever.com'
 
             ::Resque.expects(:enqueue).
@@ -278,6 +281,7 @@ describe SignupController do
           end
 
           it 'triggers user creation with organization' do
+            Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
             username = "authenticated"
             email = "#{username}@#{@organization.whitelisted_email_domains.first}"
 

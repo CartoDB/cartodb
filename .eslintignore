@@ -140,7 +140,6 @@
 **/test/spec/geo/gmaps_cartodb_layer/interaction.js
 **/test/spec/geo/gmaps_cartodb_layer/opacity.js
 **/test/spec/geo/gmaps_cartodb_layer/show.js
-**/test/spec/geo/map/cartodb-layer.spec.js
 **/test/spec/geo/map/gmaps-base-layer.spec.js
 **/test/spec/geo/map/layers.spec.js
 **/test/spec/geo/map/tile-layer.spec.js

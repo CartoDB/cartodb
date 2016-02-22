@@ -294,7 +294,7 @@ describe('dataviews/dataview-model-base', function () {
       dataProvider.generateDataForDataview = function (dataview, data) {
         return data[0];
       };
-      dataProvider.getData = function () {}
+      dataProvider.getData = function () {};
 
       this.layer.getDataProvider.and.returnValue(dataProvider);
 

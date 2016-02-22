@@ -48,7 +48,7 @@ class UserTable < Sequel::Model
     values
   }
 
-  RESERVED_TABLE_NAMES = %W{ layergroup all }
+  RESERVED_TABLE_NAMES = %W{ layergroup all public }
 
   PRIVACY_PRIVATE = 0
   PRIVACY_PUBLIC = 1

@@ -21,7 +21,7 @@ var Map = Model.extend({
     provider: 'leaflet'
   },
 
-  RELOAD_DEBOUNCE_TIME: 500,
+  RELOAD_DEBOUNCE_TIME: 100,
 
   initialize: function (attrs, options) {
     options = options || {};

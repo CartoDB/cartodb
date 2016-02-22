@@ -28,8 +28,7 @@ module.exports = Model.extend({
   createCategoryModel: function (layerModel, attrs) {
     _checkProperties(attrs, ['column']);
     var categoryFilter = new CategoryFilter({
-      // TODO Setting layer-index on filters here is not good, if order change the filters won't work on the expected layer anymore!
-      layerIndex: this._indexOf(layerModel)
+      layer: layerModel
     });
 
     attrs = _.pick(attrs, CategorDataviewModel.ATTRS_NAMES);
@@ -63,8 +62,7 @@ module.exports = Model.extend({
     _checkProperties(attrs, ['column']);
 
     var rangeFilter = new RangeFilter({
-      // TODO Setting layer-index on filters here is not good, if order change the filters won't work on the expected layer anymore!
-      layerIndex: this._indexOf(layerModel)
+      layer: layerModel
     });
 
     attrs = _.pick(attrs, HistogramDataviewModel.ATTRS_NAMES);

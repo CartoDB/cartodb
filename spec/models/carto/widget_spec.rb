@@ -74,6 +74,7 @@ describe Carto::Widget do
     end
 
     it 'retrieves all visualization widgets' do
+      Map.any_instance.expects(:update_related_named_maps).returns(true)
       layer = @visualization.data_layers.first
       widget = FactoryGirl.create(:widget, layer: layer)
       widget2 = FactoryGirl.create(:widget_with_layer)

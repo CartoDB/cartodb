@@ -32,6 +32,13 @@ describe('widgets/histogram/content-view', function () {
     expect(this.view.$('h3').text()).toBe('Howdy');
   });
 
+  it('should reset original data when render the histogram and there is data', function () {
+    spyOn(this.view._originalData, 'reset');
+    this.dataviewModel._data.reset(genHistogramData(20));
+    this.dataviewModel.trigger('change:data');
+    expect(this.view._originalData.reset).toHaveBeenCalled();
+  });
+
   it('should revert the lockedByUser state when the model is changed', function () {
     spyOn(this.view, '_unsetRange').and.callThrough();
 

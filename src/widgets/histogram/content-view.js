@@ -135,6 +135,7 @@ module.exports = cdb.core.View.extend({
       this._addPlaceholder();
       this._initTitleView();
     } else {
+      this._originalData.reset(this._dataviewModel.getData());
       this._setupBindings();
       this.$el.toggleClass('is-collapsed', !!this.model.get('collapsed'));
       this._initViews();

@@ -23,8 +23,10 @@ module.exports = Backbone.Collection.extend({
       if (layer.isVisible()) {
         filters = this.getActiveFiltersForLayer(layer);
         filtersJson = {};
-        for (f = 0; f < filters.length; f++) {
-          _.extend(filtersJson, filters[f].toJSON());
+        if (filters.length) {
+          for (f = 0; f < filters.length; f++) {
+            _.extend(filtersJson, filters[f].toJSON());
+          }
         }
         json.layers.push(filtersJson);
       }

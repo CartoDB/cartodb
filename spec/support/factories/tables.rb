@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 module CartoDB
   module Factories
     def new_table(attributes = {})

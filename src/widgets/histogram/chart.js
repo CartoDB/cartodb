@@ -28,13 +28,6 @@ module.exports = cdb.core.View.extend({
   initialize: function () {
     this._originalData = this.options.originalData;
 
-    if (this._originalData) {
-      this._originalData.bind('reset', function () {
-        this._removeShadowBars();
-        this._generateShadowBars();
-      }, this);
-    }
-
     if (!_.isNumber(this.options.height)) throw new Error('height is required');
 
     _.bindAll(this, '_selectBars', '_adjustBrushHandles', '_onBrushMove', '_onBrushStart', '_onMouseMove', '_onMouseOut');
@@ -469,6 +462,14 @@ module.exports = cdb.core.View.extend({
     this.model.bind('change:showLabels', this._onChangShowLabels, this);
     this.model.bind('change:show_shadow_bars', this._onChangeShowShadowBars, this);
     this.model.bind('change:width', this._onChangeWidth, this);
+
+    if (this._originalData) {
+      this._originalData.bind('reset', function () {
+        this._removeShadowBars();
+        this._generateShadowBars();
+      }, this);
+      this.add_related_model(this._originalData);
+    }
   },
 
   _setupDimensions: function () {
@@ -1023,7 +1024,7 @@ module.exports = cdb.core.View.extend({
   },
 
   _generateShadowBars: function () {
-    var data = this._originalData && this._originalData.toJSON();
+    var data = this._originalData && this._originalData.toJSON() || this.model.get('data');
 
     if (!data || !data.length || !this.model.get('show_shadow_bars')) {
       this._removeShadowBars();

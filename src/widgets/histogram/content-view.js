@@ -97,7 +97,7 @@ module.exports = cdb.core.View.extend({
         this.zoomedData = this._dataviewModel.getData();
       } else {
         this.histogramChartView.showShadowBars();
-        if (this._originalData.size() === 0) {
+        if (this._originalData.isEmpty()) {
           this._originalData.reset(this._dataviewModel.getData());
         }
         this.miniHistogramChartView.replaceData(this._dataviewModel.getData());
@@ -135,7 +135,6 @@ module.exports = cdb.core.View.extend({
       this._addPlaceholder();
       this._initTitleView();
     } else {
-      // this._originalData.reset(this._dataviewModel.getData());
       this._setupBindings();
       this.$el.toggleClass('is-collapsed', !!this.model.get('collapsed'));
       this._initViews();
@@ -146,7 +145,7 @@ module.exports = cdb.core.View.extend({
 
   _unsetRange: function () {
     this.unsettingRange = false;
-    this.histogramChartView.replaceData(this._originalData.toJSON());
+    this.histogramChartView.replaceData(this._dataviewModel.getData());
     this.model.set({ lo_index: null, hi_index: null });
 
     if (!this._isZoomed()) {
@@ -159,6 +158,7 @@ module.exports = cdb.core.View.extend({
   },
 
   _renderMainChart: function () {
+    console.log("hello?");
     this.histogramChartView = new HistogramChartView(({
       margin: { top: 4, right: 4, bottom: 4, left: 4 },
       hasShadowBards: true,

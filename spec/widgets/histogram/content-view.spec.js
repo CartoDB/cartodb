@@ -32,6 +32,13 @@ describe('widgets/histogram/content-view', function () {
     expect(this.view.$('h3').text()).toBe('Howdy');
   });
 
+  it('should reset original data when render the histogram and there is data', function () {
+    spyOn(this.view._originalData, 'reset');
+    this.dataviewModel._data.reset(genHistogramData(20));
+    this.dataviewModel.trigger('change:data');
+    expect(this.view._originalData.reset).toHaveBeenCalled();
+  });
+
   it('should revert the lockedByUser state when the model is changed', function () {
     spyOn(this.view, '_unsetRange').and.callThrough();
 
@@ -148,6 +155,17 @@ describe('widgets/histogram/content-view', function () {
     expect(this.dataviewModel.disableFilter).toHaveBeenCalled();
   });
 
+  it('should replace histogram chart data with dataview model data when unsets range', function () {
+    spyOn(this.dataviewModel, 'getData').and.returnValue(['0', '1']);
+    this.view.render();
+    spyOn(this.view._originalData, 'toJSON');
+    spyOn(this.view.histogramChartView, 'replaceData');
+    this.view._unsetRange();
+    expect(this.view.histogramChartView.replaceData).toHaveBeenCalled();
+    expect(this.dataviewModel.getData).toHaveBeenCalled();
+    expect(this.view._originalData.toJSON).not.toHaveBeenCalled();
+  });
+
   it('should replace the data of the histogramChartView when user zooms in', function () {
     var i = 0;
     this.dataviewModel.sync = function (method, model, options) {
@@ -192,7 +210,7 @@ describe('widgets/histogram/content-view', function () {
     expect(this.view.$('.CDB-Widget-info').length).toBe(1);
   });
 
-  it('should update data of the mini histogram if there is a bins change and it is not zoomed', function () {
+  it('should update data and original data of the mini histogram if there is a bins change and it is not zoomed', function () {
     var i = 0;
     this.dataviewModel.sync = function (method, model, options) {
       options.success({
@@ -206,11 +224,13 @@ describe('widgets/histogram/content-view', function () {
 
     this.dataviewModel.fetch();
 
+    spyOn(this.view._originalData, 'reset');
     spyOn(this.view, '_isZoomed').and.returnValue(false);
     spyOn(this.view.miniHistogramChartView, 'replaceData');
     // Change data
     this.dataviewModel.update({bins: 10});
     expect(this.view.miniHistogramChartView.replaceData).toHaveBeenCalled();
+    expect(this.view._originalData.reset).toHaveBeenCalled();
   });
 
   afterEach(function () {

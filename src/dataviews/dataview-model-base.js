@@ -1,5 +1,6 @@
 var _ = require('underscore');
 var Model = require('../core/model');
+var BackboneCancelSync = require('../util/backbone-abort-sync');
 var WindshaftFiltersBoundingBoxFilter = require('../windshaft/filters/bounding-box');
 var BOUNDING_BOX_FILTER_WAIT = 500;
 
@@ -41,6 +42,8 @@ module.exports = Model.extend({
     this.layer = opts.layer;
     this._map = opts.map;
     this._windshaftMap = opts.windshaftMap;
+
+    this.sync = BackboneCancelSync.bind(this);
 
     // filter is optional, so have to guard before using it
     this.filter = opts.filter;
@@ -173,10 +176,22 @@ module.exports = Model.extend({
 
   fetch: function (opts) {
     opts = opts || {};
+
     this.trigger('loading', this);
+
+    if (opts.success) {
+      var successCallback = opts && opts.success;
+    }
+
     return Model.prototype.fetch.call(this, _.extend(opts, {
-      error: function () {
-        this.trigger('error');
+      success: function () {
+        successCallback && successCallback(arguments);
+        this.trigger('loaded', this);
+      }.bind(this),
+      error: function (mdl, err) {
+        if (!err || (err && err.statusText !== 'abort')) {
+          this.trigger('error', mdl, err);
+        }
       }.bind(this)
     }));
   },

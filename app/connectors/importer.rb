@@ -214,7 +214,6 @@ module CartoDB
         @table = table_registrar.table
         @imported_table_visualization_ids << @table.table_visualization.id
         BoundingBoxHelper.update_visualizations_bbox(table)
-        # clean?
         self
       end
 

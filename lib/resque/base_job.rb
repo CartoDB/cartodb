@@ -37,7 +37,7 @@ module Resque
           raise e
         end
       rescue => e
-        CartoDB.notify_error("Job error", error: e.inspect, error_info: stacktrace)
+        CartoDB.notify_exception(e)
       end
     end #self.perform
 

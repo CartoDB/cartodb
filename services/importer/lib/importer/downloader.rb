@@ -25,6 +25,7 @@ module CartoDB
       # in seconds
       HTTP_CONNECT_TIMEOUT = 60
       DEFAULT_HTTP_REQUEST_TIMEOUT = 600
+      MAX_REDIRECTS = 5
       URL_ESCAPED_CHARACTERS = 'áéíóúÁÉÍÓÚñÑçÇàèìòùÀÈÌÒÙ'
 
       DEFAULT_FILENAME        = 'importer'
@@ -230,7 +231,8 @@ module CartoDB
           ssl_verifyhost:   (verify_ssl ? 2 : 0),
           forbid_reuse:     true,
           connecttimeout:   HTTP_CONNECT_TIMEOUT,
-          timeout:          http_options.fetch(:http_timeout, DEFAULT_HTTP_REQUEST_TIMEOUT)
+          timeout:          http_options.fetch(:http_timeout, DEFAULT_HTTP_REQUEST_TIMEOUT),
+          maxredirs:        MAX_REDIRECTS
         }
       end
 

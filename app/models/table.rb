@@ -1295,6 +1295,12 @@ class Table
     name.tr('_', ' ').split.map(&:capitalize).join(' ')
   end
 
+  def update_cdb_tablemetadata
+    owner.in_database(as: :superuser).run(%Q{
+      SELECT CDB_TableMetadataTouch('#{qualified_table_name}')
+      })
+    end
+
   private
 
   def previous_privacy
@@ -1331,12 +1337,6 @@ class Table
 
   def cache
     @cache ||= $tables_metadata
-  end
-
-  def update_cdb_tablemetadata
-    owner.in_database(as: :superuser).run(%Q{
-      SELECT CDB_TableMetadataTouch('#{qualified_table_name}')
-    })
   end
 
   def get_valid_name(name, options={})

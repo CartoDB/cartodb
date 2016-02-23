@@ -1,0 +1,63 @@
+@import 'cdb-utilities/mixins';
+@import 'cdb-variables/colors';
+@import 'cdb-variables/sizes';
+
+.EditorMenu {
+  position: relative;
+  width: 72px;
+  min-height: 450px;
+  box-sizing: border-box;
+  padding: $baseSize * 2 0;
+  background: $cBlue;
+  box-shadow: 4px 0 $baseSize * 2 rgba(0, 0, 0, 0.05);
+}
+
+.EditorMenu-navigationItem {
+  padding: 12px $baseSize * 2 12px $baseSize + 6;
+  border-left: 2px solid transparent;
+  text-align: center;
+}
+.EditorMenu-navigationItem.is-selected {
+  border-left: 2px solid #FFF;
+}
+.EditorMenu-navigationItem.is-selected .EditorMenu-navigationIcon {
+  opacity: 1;
+}
+
+.EditorMenu-navigationLink {
+  display: block;
+  width: 100%;
+}
+.EditorMenu-navigationIcon {
+  color: #FFF;
+  font-size: 24px;
+  line-height: 24px;
+  opacity: 0.32;
+}
+.EditorMenu-navigationLink:hover .EditorMenu-navigationIcon {
+  opacity: 1;
+}
+
+.EditorMenu-logo {
+  width: 40px;
+  height: 40px;
+  margin: 0 auto $baseSize * 2;
+  padding: $baseSize - 2 0;
+  border-radius: $baseSize / 2;
+  background: #FFF;
+  box-sizing: border-box;
+  font-size: $baseSize * 3;
+  text-align: center;
+}
+
+.EditorMenu-avatar {
+  position: absolute;
+  bottom: $baseSize * 2;
+  left: $baseSize * 2;
+  width: 40px;
+  height: 40px;
+}
+.EditorMenu-avatarImage {
+  width: 100%;
+  border-radius: $baseSize / 2;
+}

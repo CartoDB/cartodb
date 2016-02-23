@@ -305,6 +305,14 @@ module.exports = cdb.core.View.extend({
 
   _onChangeBins: function () {
     this._originalData.reset([]); // Clean originalData
+    this.model.set({
+      zoom_enabled: false,
+      filter_enabled: false,
+      lo_index: null,
+      hi_index: null
+    });
+    this._dataviewModel.disableFilter();
+    this.filter.unsetRange();
   },
 
   _onChangeZoomEnabled: function () {
@@ -358,7 +366,7 @@ module.exports = cdb.core.View.extend({
   },
 
   _updateStats: function () {
-    var data = this._originalData.toJSON();
+    var data = this._dataviewModel.getData();
 
     if (this._isZoomed()) {
       data = this.zoomedData;

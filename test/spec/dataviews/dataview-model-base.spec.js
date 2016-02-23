@@ -206,13 +206,4 @@ describe('dataviews/dataview-model-base', function () {
       });
     });
   });
-
-  describe('.sync', function () {
-    it('should abort old ongoing request', function () {
-      var oldXHR = jasmine.createSpyObj('XHR', ['abort', 'always']);
-      this.model._xhr = oldXHR;
-      this.model.fetch();
-      expect(oldXHR.abort).toHaveBeenCalled();
-    });
-  });
 });

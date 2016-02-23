@@ -1,5 +1,4 @@
 var cdb = require('cartodb.js');
-var WidgetModel = require('../../src/widgets/widget-model');
 var WidgetErrorView = require('../../src/widgets/widget-error-view');
 
 describe('widgets/widget-error-view', function () {
@@ -8,16 +7,8 @@ describe('widgets/widget-error-view', function () {
 
     this.dataviewModel = new cdb.core.Model();
     this.dataviewModel.refresh = jasmine.createSpy('refresh');
-    var widgetModel = new WidgetModel({
-      id: 'widget_98334',
-      title: 'Helloooo',
-      columns: ['cartodb_id', 'title']
-    }, {
-      dataviewModel: this.dataviewModel
-    });
-
     this.view = new WidgetErrorView({
-      model: widgetModel
+      model: this.dataviewModel
     });
     this.renderResult = this.view.render();
   });
@@ -31,7 +22,7 @@ describe('widgets/widget-error-view', function () {
   describe('when click refresh', function () {
     beforeEach(function () {
       this.view.show();
-      jasmine.clock().tick(400);
+      jasmine.clock().tick(800);
       this.view.$('.js-refresh').click();
     });
 
@@ -41,22 +32,24 @@ describe('widgets/widget-error-view', function () {
   });
 
   describe('when error is triggered', function () {
-    beforeEach(function () {
-      this.dataviewModel.trigger('error');
-    });
-
     it('should show view', function () {
+      this.dataviewModel.trigger('error');
       expect(this.view.$el.hasClass('is-hidden')).toBe(false);
     });
 
-    describe('when loading is triggered', function () {
-      beforeEach(function () {
-        this.dataviewModel.trigger('loading');
-      });
+    it('should not show view if errors come from a cancelled request', function () {
+      this.dataviewModel.trigger('error', this.datavieModel, { statusText: 'abort' });
+      expect(this.view.$el.hasClass('is-hidden')).toBe(true);
+    });
+  });
 
-      it('should hide view', function () {
-        expect(this.view.$el.hasClass('is-hidden')).toBe(true);
-      });
+  describe('when loading is triggered', function () {
+    beforeEach(function () {
+      this.dataviewModel.trigger('loading');
+    });
+
+    it('should hide view', function () {
+      expect(this.view.$el.hasClass('is-hidden')).toBe(true);
     });
   });
 

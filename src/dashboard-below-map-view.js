@@ -44,14 +44,17 @@ module.exports = cdb.core.View.extend({
     this._widgets = options.widgets;
     this._widgets.bind('add', this._maybeRenderWidgetView, this);
     this._widgets.bind('reset', this.render, this);
+    this._widgets.bind('add reset remove', this._onWidgetsChange, this);
     this.add_related_model(this._widgets);
   },
 
   render: function () {
     this.clearSubViews();
     this.$el.empty();
+
     this._widgets.each(this._maybeRenderWidgetView, this);
-    this.$el.toggle(!_.isEmpty(this._subviews));
+    this._toggleVisiblity();
+
     return this;
   },
 
@@ -61,6 +64,14 @@ module.exports = cdb.core.View.extend({
       this.addView(view);
       this.$el.append(view.render().el);
     }
+  },
+
+  _toggleVisiblity: function () {
+    this.$el.toggle(!_.isEmpty(this._subviews));
+  },
+
+  _onWidgetsChange: function () {
+    this._toggleVisiblity();
   }
 
 });

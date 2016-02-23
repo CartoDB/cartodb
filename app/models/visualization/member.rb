@@ -848,7 +848,7 @@ module CartoDB
         if type == TYPE_CANONICAL
           CartoDB::TablePrivacyManager.new(table)
                                       .set_from_visualization(self)
-                                      .propagate_to_varnish
+                                      .update_cdb_tablemetadata
         end
         self
       end

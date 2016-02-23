@@ -500,4 +500,3 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end
 
 end
-

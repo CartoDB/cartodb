@@ -171,12 +171,36 @@ module.exports = Model.extend({
     return this.previous('data');
   },
 
+  sync: function (method, model, options) {
+    var self = arguments[1];
+    if (this._xhr) {
+      this._xhr.abort();
+    }
+    this._xhr = Model.prototype.sync.apply(this, arguments);
+    this._xhr.always(function () {
+      self._xhr = null;
+    });
+    return this._xhr;
+  },
+
   fetch: function (opts) {
     opts = opts || {};
-    this.trigger('loading', this);
+
+    this.trigger('loading');
+
+    if (opts.success) {
+      var successCallback = opts && opts.success;
+    }
+
     return Model.prototype.fetch.call(this, _.extend(opts, {
-      error: function () {
-        this.trigger('error');
+      success: function () {
+        successCallback && successCallback(arguments);
+        this.trigger('loaded');
+      }.bind(this),
+      error: function (mdl, err) {
+        if (!err || (err && err.statusText !== 'abort')) {
+          this.trigger('error');
+        }
       }.bind(this)
     }));
   },

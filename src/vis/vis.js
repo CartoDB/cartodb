@@ -213,9 +213,6 @@ var Vis = View.extend({
   },
 
   load: function (data, options) {
-    if (!data.datasource) {
-      throw new Error('viz.json needs to include a "datasource" attribute.');
-    }
 
     var self = this;
     this.https = (window && window.location.protocol && window.location.protocol === 'https:') || !!data.https;
@@ -233,6 +230,10 @@ var Vis = View.extend({
       });
 
       return this;
+    }
+
+    if (!data.datasource) {
+      throw new Error('viz.json needs to include a "datasource" attribute.');
     }
 
     // Load the modules (torque) for layers in the viz.json

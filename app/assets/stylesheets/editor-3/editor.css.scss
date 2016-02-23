@@ -24,6 +24,8 @@
   @include transition(width, 300ms, ease-in-out);
   width: 344px;
   height: 100vh;
+  padding: 25px;
+  box-sizing: border-box;
 }
 .Editor-panel.is-larger {
   width: 488px;

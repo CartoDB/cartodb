@@ -103,14 +103,17 @@ describe('widgets/histogram/content-view', function () {
     this.dataviewModel.sync = function (method, model, options) {
       options.success({ 'response': true });
     };
-
+    spyOn(this.dataviewModel, 'getData').and.callThrough();
+    spyOn(this.view._originalData, 'toJSON');
     spyOn(this.view, '_updateStats').and.callThrough();
-    spyOn(this.view, '_onHistogramDataChanged').and.callThrough();
+    spyOn(this.view, '_onHistogramDataChanged');
     this.dataviewModel.fetch();
     this.dataviewModel._data.reset(genHistogramData(20));
     this.dataviewModel.trigger('change:data');
     expect(this.view._onHistogramDataChanged).toHaveBeenCalled();
     expect(this.view._updateStats).toHaveBeenCalled();
+    expect(this.dataviewModel.getData).toHaveBeenCalled();
+    expect(this.view._originalData.toJSON).not.toHaveBeenCalled();
   });
 
   it('should update the title when the model is updated', function () {
@@ -231,6 +234,31 @@ describe('widgets/histogram/content-view', function () {
     this.dataviewModel.update({bins: 10});
     expect(this.view.miniHistogramChartView.replaceData).toHaveBeenCalled();
     expect(this.view._originalData.reset).toHaveBeenCalled();
+  });
+
+  it('should remove previous filter if there is a bins change', function () {
+    var i = 0;
+    this.dataviewModel.sync = function (method, model, options) {
+      options.success({
+        'bin_width': 10,
+        'bins_count': 2,
+        'bins_start': i++,
+        'nulls': 0,
+        'bins': []
+      });
+    };
+
+    this.dataviewModel.fetch();
+
+    spyOn(this.dataviewModel, 'disableFilter');
+    spyOn(this.view.filter, 'unsetRange');
+    // Change data
+    this.dataviewModel.update({bins: 10});
+    expect(this.dataviewModel.disableFilter).toHaveBeenCalled();
+    expect(this.view.filter.unsetRange).toHaveBeenCalled();
+    expect(this.view.model.get('filter_enabled')).toBeFalsy();
+    expect(this.view.model.get('lo_index')).toBeFalsy();
+    expect(this.view.model.get('hi_index')).toBeFalsy();
   });
 
   afterEach(function () {

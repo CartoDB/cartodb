@@ -117,7 +117,7 @@ module CartoDB
       def drop(table_name)
         database.execute(%Q(DROP TABLE #{table_name}))
       rescue
-        runner.log.append("Couldn't drop table #{table_name}: #{exception}. Backtrace: #{exception.backtrace.to_s}. ")
+        runner.log.append("Couldn't drop table #{table_name}: #{exception}. Backtrace: #{exception.backtrace} ")
         self
       end
 

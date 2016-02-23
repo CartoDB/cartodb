@@ -17,13 +17,10 @@
       "type": "BSD"
     }
   ],
-  "dependencies": {
-    "backbone": "1.2.3",
-    "perfect-scrollbar": "0.6.7"
-  },
   "devDependencies": {
     "autoprefixer-core": "5.2.1",
     "aws-sdk": "2.0.0-rc11",
+    "backbone": "1.2.3",
     "backbone-forms": "^0.14.0",
     "browserify": "11.0.1",
     "browserify-resolutions": "1.0.6",
@@ -60,6 +57,7 @@
     "moment": "2.10.6",
     "node-polyglot": "1.0.0",
     "open": "0.0.5",
+    "perfect-scrollbar": "0.6.7",
     "queue-async": "^1.0.7",
     "semistandard": "7.0.4",
     "source-map-support": "0.3.2",

@@ -173,6 +173,7 @@ module.exports = Model.extend({
 
   sync: function (method, model, options) {
     var self = arguments[1];
+
     if (this._xhr) {
       this._xhr.abort();
     }
@@ -186,7 +187,7 @@ module.exports = Model.extend({
   fetch: function (opts) {
     opts = opts || {};
 
-    this.trigger('loading');
+    this.trigger('loading', this);
 
     if (opts.success) {
       var successCallback = opts && opts.success;
@@ -195,11 +196,11 @@ module.exports = Model.extend({
     return Model.prototype.fetch.call(this, _.extend(opts, {
       success: function () {
         successCallback && successCallback(arguments);
-        this.trigger('loaded');
+        this.trigger('loaded', this);
       }.bind(this),
       error: function (mdl, err) {
         if (!err || (err && err.statusText !== 'abort')) {
-          this.trigger('error');
+          this.trigger('error', mdl, err);
         }
       }.bind(this)
     }));

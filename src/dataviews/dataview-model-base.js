@@ -90,7 +90,7 @@ module.exports = Model.extend({
   _onNewWindshaftMapInstance: function (windshaftMapInstance, sourceLayerId) {
     var url = windshaftMapInstance.getDataviewURL({
       dataviewId: this.get('id'),
-      protocol: 'http'
+      protocol: window.location.protocol === 'https:' ? 'https' : 'http'
     });
 
     if (url) {

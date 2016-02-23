@@ -30,7 +30,7 @@ describe('widgets/widget-loader-view', function () {
 
     describe('when syncing', function () {
       beforeEach(function () {
-        this.dataviewModel.trigger('sync');
+        this.dataviewModel.trigger('loaded');
       });
 
       it('should hide the view', function () {
@@ -41,14 +41,17 @@ describe('widgets/widget-loader-view', function () {
     });
 
     describe('when datavieModel throws an error', function () {
-      beforeEach(function () {
-        this.dataviewModel.trigger('error');
-      });
-
       it('should hide the view', function () {
+        this.dataviewModel.trigger('error');
         expect(this.view.$el.hasClass('is-visible')).toBe(true);
         jasmine.clock().tick(2000);
         expect(this.view.$el.hasClass('is-visible')).toBe(false);
+      });
+
+      it('should not hide the view if it is due to an abort', function () {
+        this.dataviewModel.trigger('error', this.datavieModel, { statusText: 'abort' });
+        jasmine.clock().tick(2000);
+        expect(this.view.$el.hasClass('is-visible')).toBe(true);
       });
     });
   });

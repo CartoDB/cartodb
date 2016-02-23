@@ -15,7 +15,12 @@ module.exports = cdb.core.View.extend({
 
   _initBinds: function () {
     this.model.bind('loading', this.show, this);
-    this.model.bind('sync error', this.hide, this);
+    this.model.bind('error', function (mdl, err) {
+      if (!err || (err && err.statusText !== 'abort')) {
+        this.hide();
+      }
+    }, this);
+    this.model.bind('loaded', this.hide, this);
   },
 
   show: function () {

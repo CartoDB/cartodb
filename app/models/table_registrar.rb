@@ -52,6 +52,7 @@ module CartoDB
       end
     rescue => e
       Rollbar.report_exception(e)
+      raise e
     end
   end # TableRegistrar
 end # CartoDB

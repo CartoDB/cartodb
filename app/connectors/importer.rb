@@ -76,6 +76,7 @@ module CartoDB
         runner.log.append("Table '#{name}' registered")
       rescue => exception
         if exception.message =~ /canceling statement due to statement timeout/i
+          drop("#{ORIGIN_SCHEMA}.#{current_name}")
           raise CartoDB::Importer2::StatementTimeoutError.new(
             exception.message,
             CartoDB::Importer2::ERRORS_MAP[CartoDB::Importer2::StatementTimeoutError]
@@ -116,6 +117,7 @@ module CartoDB
       def drop(table_name)
         database.execute(%Q(DROP TABLE #{table_name}))
       rescue
+        runner.log.append("Couldn't drop table #{table_name}: #{exception}. Backtrace: #{exception.backtrace.to_s}. ")
         self
       end
 
@@ -131,6 +133,9 @@ module CartoDB
           { schema: origin_schema, name: table }
         }
         @support_tables_helper.change_schema(destination_schema, table_name)
+      rescue => e
+        drop("#{origin_schema}.#{table_name}")
+        raise e
       end
 
       def rename(result, current_name, new_name, rename_attempts=0)
@@ -188,8 +193,10 @@ module CartoDB
         if rename_attempts <= MAX_RENAME_RETRIES
           rename(result, current_name, target_new_name, rename_attempts)
         else
+          drop("#{ORIGIN_SCHEMA}.#{current_name}")
           raise CartoDB::Importer2::InvalidNameError.new("#{message} #{rename_attempts} attempts. Data import: #{data_import_id}. ERROR: #{exception}")
         end
+        raise exception
       end
 
       def rename_the_geom_index_if_exists(current_name, new_name)
@@ -199,6 +206,7 @@ module CartoDB
         })
       rescue => exception
         runner.log.append("Silently failed rename_the_geom_index_if_exists from #{current_name} to #{new_name} with exception #{exception}. Backtrace: #{exception.backtrace.to_s}. ")
+        raise exception
       end
 
       def persist_metadata(result, name, data_import_id)
@@ -206,6 +214,7 @@ module CartoDB
         @table = table_registrar.table
         @imported_table_visualization_ids << @table.table_visualization.id
         BoundingBoxHelper.update_visualizations_bbox(table)
+        # clean?
         self
       end
 

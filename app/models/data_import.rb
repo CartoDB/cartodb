@@ -208,6 +208,7 @@ class DataImport < Sequel::Model
     stacktrace = exception.to_s + exception.backtrace.join
     Rollbar.report_message('Import error', 'error', error_info: stacktrace)
     handle_failure(exception)
+    raise exception
     self
   end
 
@@ -378,7 +379,7 @@ class DataImport < Sequel::Model
     new_importer
   rescue => exception
     puts exception.to_s + exception.backtrace.join("\n")
-    raise
+    raise exception
   end
 
   def running_import_ids

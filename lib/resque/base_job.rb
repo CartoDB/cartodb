@@ -32,10 +32,12 @@ module Resque
             retry
           else
             raise e
-          end  
+          end
         else
           raise e
         end
+      rescue => e
+        CartoDB.notify_error("Job error", error: e.inspect, error_info: stacktrace)
       end
     end #self.perform
 

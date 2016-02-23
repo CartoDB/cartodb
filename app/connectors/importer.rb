@@ -116,7 +116,7 @@ module CartoDB
 
       def drop(table_name)
         database.execute(%Q(DROP TABLE #{table_name}))
-      rescue
+      rescue => exception
         runner.log.append("Couldn't drop table #{table_name}: #{exception}. Backtrace: #{exception.backtrace} ")
         self
       end
@@ -205,8 +205,7 @@ module CartoDB
           RENAME TO "the_geom_#{UUIDTools::UUID.timestamp_create.to_s.gsub('-', '_')}"
         })
       rescue => exception
-        runner.log.append("Silently failed rename_the_geom_index_if_exists from #{current_name} to #{new_name} with exception #{exception}. Backtrace: #{exception.backtrace} ")
-        raise exception
+        runner.log.append("Silently failed rename_the_geom_index_if_exists from #{current_name} to #{new_name} with exception #{exception}. Backtrace: #{exception.backtrace}. ")
       end
 
       def persist_metadata(result, name, data_import_id)

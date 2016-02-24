@@ -26,18 +26,19 @@ module Carto
 
       private
 
-      def layer_vizjson2_to_3(layer)
-        layer_options = layer[:options]
+      def layer_vizjson2_to_3(layer_data)
+        return layer_data unless layer_data[:type] == 'torque'
+        layer_options = layer_data[:options]
 
         layer_options[:cartocss] = layer_options[:tile_style]
         layer_options.delete(:tile_style)
 
-        layer_options[:sql] = layer_options[:query]
-        layer_options.delete(:query)
-
-        layer = @visualization.layers.select { |l| l.id == layer_options[:id] }.first
-        layer_options[:cartocss_version] = layer['options']['style_version'] if layer
+        layer = @visualization.layers.select { |l| l.id == layer_data[:id] }.first
+        layer_options[:cartocss_version] = layer.options['style_version'] if layer
         layer_options.delete(:style_version)
+
+        layer_options[:sql] = layer_options[:query].present? || layer.nil? ? layer_options[:query] : layer.options['query']
+        layer_options.delete(:query)
       end
 
       def datasource(options)

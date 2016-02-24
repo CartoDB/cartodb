@@ -112,6 +112,8 @@ describe Table do
 
     it 'propagates name changes to table visualization' do
       table = create_table(name: 'bogus_name', user_id: @user.id)
+      table.stubs(:update_cdb_tablemetadata)
+
       table.table_visualization.name.should == table.name
 
       table.name = 'bogus_name_1'
@@ -138,6 +140,8 @@ describe Table do
 
     it 'receives a name change if table visualization name changed' do
       table = create_table(name: 'bogus_name', user_id: @user.id)
+      table.stubs(:update_cdb_tablemetadata)
+
       table.table_visualization.name.should == table.name
 
       table.table_visualization.name = 'bogus_name_2'
@@ -165,6 +169,8 @@ describe Table do
 
     it 'propagates name changes to affected layers' do
       table = create_table(name: 'bogus_name', user_id: @user.id)
+      table.stubs(:update_cdb_tablemetadata)
+
       layer = table.layers.first
 
       table.name = 'bogus_name_1'
@@ -470,7 +476,9 @@ describe Table do
       @user.private_tables_enabled = true
       @user.save
 
-      table = create_table(:user_id => @user.id)
+      table = create_table(user_id: @user.id)
+      table.stubs(:update_cdb_tablemetadata)
+
       table.privacy.should == UserTable::PRIVACY_PRIVATE
 
       @user.private_tables_enabled = false
@@ -579,7 +587,8 @@ describe Table do
       @user.private_tables_enabled = false
       @user.save
 
-      table = create_table({:name => 'Wadus table', :user_id => @user.id})
+      table = create_table(name: 'Wadus table', user_id: @user.id)
+      table.stubs(:update_cdb_tablemetadata)
 
       Rails::Sequel.connection.table_exists?(table.name.to_sym).should be_false
       @user.in_database do |user_database|
@@ -621,20 +630,24 @@ describe Table do
       table.name.should == 'wadus_table'
     end
 
-    it "should remove varnish cache when the table is renamed" do
+    it "should invoke update_cdb_tablemetadata when the table is renamed" do
       delete_user_data @user
       @user.private_tables_enabled = false
       @user.save
 
-      table = create_table({:name => 'Wadus table', :user_id => @user.id})
+      table = create_table(name: 'Wadus table', user_id: @user.id)
+      table.stubs(:update_cdb_tablemetadata)
       CartoDB::TablePrivacyManager.any_instance
-      table.expects(:invalidate_varnish_cache)
+
+      table.expects(:update_cdb_tablemetadata)
       table.name = 'Wadus table #23'
       table.save
     end
 
     it "should rename the pk sequence when renaming the table" do
-      table1 = new_table :name => 'table 1', :user_id => @user.id
+      table1 = new_table(name: 'table 1', user_id: @user.id)
+      table1.stubs(:update_cdb_tablemetadata)
+
       table1.save.reload
       table1.name.should == 'table_1'
 
@@ -642,7 +655,9 @@ describe Table do
       table1.save.reload
       table1.name.should == 'table_2'
 
-      table2 = new_table :name => 'table 1', :user_id => @user.id
+      table2 = new_table(name: 'table 1', user_id: @user.id)
+      table2.stubs(:update_cdb_tablemetadata)
+
       table2.save.reload
       table2.name.should == 'table_1'
 
@@ -656,7 +671,8 @@ describe Table do
       @user.private_tables_enabled = false
       @user.save
 
-      table = create_table({:name => 'as', :user_id => @user.id})
+      table = create_table(name: 'as', user_id: @user.id)
+      table.stubs(:update_cdb_tablemetadata)
 
       @user.in_database do |user_database|
         user_database.table_exists?(table.name.to_sym).should be_true
@@ -700,7 +716,7 @@ describe Table do
                                  .with(".*#{id}:vizjson")
                                  .returns(true)
 
-    CartoDB::TablePrivacyManager.any_instance.expects(:propagate_to_varnish)
+    CartoDB::TablePrivacyManager.any_instance.expects(:update_cdb_tablemetadata)
     table.privacy = UserTable::PRIVACY_PUBLIC
     table.save
   end
@@ -740,12 +756,6 @@ describe Table do
       @user.reload
       Tag.count.should == 0
       UserTable.count == 0
-    end
-
-    it "should remove varnish cache" do
-      table = create_table(user_id: @user.id)
-      table.expects(:invalidate_varnish_cache)
-      table.destroy
     end
 
     it "should remove the metadata table even when the physical table does not exist" do
@@ -842,10 +852,12 @@ describe Table do
       resp.should == {:name => "_1", :type => "text", :cartodb_type => "string"}
     end
 
-    it "should invalidate varnish cache after modifying a column" do
-      table = create_table(:user_id => @user.id)
-      table.expects(:invalidate_varnish_cache)
-      table.modify_column!(:name => "name", :type => "number")
+    it "should invoke update_cdb_tablemetadata after modifying a column" do
+      table = create_table(user_id: @user.id)
+      table.stubs(:update_cdb_tablemetadata)
+
+      table.expects(:update_cdb_tablemetadata)
+      table.modify_column!(name: 'name', type: 'number')
     end
 
     it "should update public.cdb_tablemetadata after modifying a column" do

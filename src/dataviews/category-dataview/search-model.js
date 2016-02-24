@@ -1,5 +1,6 @@
 var _ = require('underscore');
 var Model = require('../../core/model');
+var BackboneAbortSync = require('../../util/backbone-abort-sync');
 var CategoriesCollection = require('./categories-collection');
 
 /**
@@ -18,6 +19,7 @@ module.exports = Model.extend({
 
   initialize: function (attrs, opts) {
     this._data = new CategoriesCollection();
+    this.sync = BackboneAbortSync.bind(this);
     this._initBinds();
   },
 
@@ -91,19 +93,6 @@ module.exports = Model.extend({
 
   fetch: function (opts) {
     this.trigger('loading', this);
-    return cdb.core.Model.prototype.fetch.call(this, opts);
-  },
-
-  sync: function () {
-    var self = arguments[1];
-    if (this._xhr) {
-      this._xhr.abort();
-    }
-    this._xhr = cdb.core.Model.prototype.sync.apply(this, arguments);
-    this._xhr.always(function () {
-      self._xhr = null;
-    });
-    return this._xhr;
+    return Model.prototype.fetch.call(this, opts);
   }
-
 });

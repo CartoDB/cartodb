@@ -79,7 +79,7 @@ module.exports = DataviewModelBase.extend({
       this.trigger('loading', this);
     }, this);
     this._searchModel.bind('sync', function () {
-      this.trigger('sync', this);
+      this.trigger('loaded', this);
     }, this);
     this._searchModel.bind('error', function (e) {
       if (!e || (e && e.statusText !== 'abort')) {

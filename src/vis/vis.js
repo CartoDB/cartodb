@@ -371,7 +371,9 @@ var Vis = View.extend({
 
     this.$el.append(div);
 
-    var mapViewFactory = new MapViewFactory();
+    var mapViewFactory = new MapViewFactory({
+      vector: data.vector
+    });
     this.mapView = mapViewFactory.createMapView(this.map.get('provider'), this.map, div_hack);
 
     // Bindings

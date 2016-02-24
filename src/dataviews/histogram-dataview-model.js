@@ -61,7 +61,7 @@ module.exports = DataviewModelBase.extend({
     }, this);
     this.listenTo(this.layer, 'change:meta', this._onChangeLayerMeta);
     this.on('change:column', this._reloadMap, this);
-    this.on('change:bins', this.refresh, this);
+    this.on('change:bins change:start change:end', this._refreshAndResetFilter, this);
   },
 
   enableFilter: function () {
@@ -135,6 +135,12 @@ module.exports = DataviewModelBase.extend({
         this.trigger('histogram_sizes', this);
       }
     }, this);
+  },
+
+  _refreshAndResetFilter: function () {
+    this.refresh();
+    this.disableFilter();
+    this.filter.unsetRange();
   }
 },
 

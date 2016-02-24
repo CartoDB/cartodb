@@ -386,23 +386,14 @@ var Vis = View.extend({
 
     // Create the Layer Models and set them on hte map
     var layerModels = this._newLayerModels(data, this.map);
-    
-    new InfowindowManager({
-      vis: this,
-      map: this.map,
-      mapView: this.mapView
-    });
 
-    new TooltipManager({
-      vis: this,
-      map: this.map,
-      mapView: this.mapView
-    });
+    var infowindowManager = new InfowindowManager(this);
+    infowindowManager.manage(this.mapView, this.map);
 
-    this.map.layers.reset(layerModels);
+    var tooltipManager = new TooltipManager(this);
+    tooltipManager.manage(this.mapView, this.map);
 
     // Create the collection of Overlays
-
     var overlaysCollection = new Backbone.Collection();
     overlaysCollection.bind('reset', function (overlays) {
       this._addOverlays(overlays, data, options);
@@ -410,7 +401,6 @@ var Vis = View.extend({
     overlaysCollection.reset(data.overlays);
 
     // Create the public Dataview Factory
-
     this.dataviews = new DataviewsFactory(null, {
       dataviewsCollection: this._dataviewsCollection,
       layersCollection: this.map.layers,
@@ -421,6 +411,9 @@ var Vis = View.extend({
     if (!options.skipMapInstantiation) {
       this.instantiateMap();
     }
+
+    // Lastly: reset the layer models on the map
+    this.map.layers.reset(layerModels);
 
     return this;
   },

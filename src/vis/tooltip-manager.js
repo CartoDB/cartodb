@@ -1,9 +1,17 @@
 var Tooltip = require('../geo/ui/tooltip');
 
-var TooltipManager = function (options) {
-  this._vis = options.vis;
-  this._map = options.map;
-  this._mapView = options.mapView;
+/**
+ * Manages the tooltips for a map. It listens to changes on the collection
+ * of layers and binds a new tooltip view/model to CartoDB.js whenever the
+ * collection of layers changes
+ */
+var TooltipManager = function (vis) {
+  this._vis = vis;
+};
+
+TooltipManager.prototype.manage = function (mapView, map) {
+  this._mapView = mapView;
+  this._map = map;
 
   this._map.layers.bind('reset', function (layers) {
     layers.each(this._addTooltipForLayer, this);

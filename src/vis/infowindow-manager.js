@@ -7,10 +7,13 @@ var InfowindowModel = require('../geo/ui/infowindow-model');
  * of layers and binds a new infowindow view/model to CartoDB.js whenever the
  * collection of layers changes
  */
-var InfowindowManager = function (options) {
-  this._vis = options.vis;
-  this._map = options.map;
-  this._mapView = options.mapView;
+var InfowindowManager = function (vis) {
+  this._vis = vis;
+};
+
+InfowindowManager.prototype.manage = function (mapView, map) {
+  this._mapView = mapView;
+  this._map = map;
 
   this._map.layers.bind('reset', function (layers) {
     layers.each(this._addInfowindowForLayer, this);
@@ -52,7 +55,9 @@ InfowindowManager.prototype._bindFeatureClickEvent = function (layerView, layerM
     }
     var cartoDBId = data.cartodb_id;
 
+debugger;
     layerView.model.fetchAttributes(layerIndex, cartoDBId, function (attributes) {
+debugger;
       // Old viz.json doesn't contain width and maxHeight properties
       // and we have to get the default values if there are not defined.
       var extra = _.defaults(

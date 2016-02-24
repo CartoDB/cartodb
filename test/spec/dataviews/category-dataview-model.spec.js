@@ -75,7 +75,7 @@ describe('dataviews/category-dataview-model', function () {
     });
 
     describe('search events dispatcher', function () {
-      var eventNames = ['loading', 'sync', 'error'];
+      var eventNames = ['loading', 'loaded', 'error'];
       _.each(eventNames, function (eventName) {
         it("should re-trigger the '" + eventName + "' event", function () {
           var spyObj = jasmine.createSpy(eventName);

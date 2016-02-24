@@ -12,7 +12,7 @@ module.exports = function (LayerModel) {
     'setDataProvider',
     'getDataProvider'
   ];
-  _.each(METHODS, function (method) {  
+  _.each(METHODS, function (method) {
     it('should respond to .' + method, function () {
       var layer = new LayerModel();
 

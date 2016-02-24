@@ -311,7 +311,8 @@ var Vis = View.extend({
       legends: data.legends,
       scrollwheel: scrollwheel,
       drag: allowDragging,
-      provider: data.map_provider
+      provider: data.map_provider,
+      vector: data.vector,
     };
 
     if (data.bounds) {

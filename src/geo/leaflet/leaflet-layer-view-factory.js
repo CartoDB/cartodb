@@ -5,13 +5,9 @@ var LeafletPlainLayerView = require('./leaflet-plain-layer-view');
 var LeafletGmapsTiledLayerView = require('./leaflet-gmaps-tiled-layer-view');
 var LeafletCartoDBLayerGroupView = require('./leaflet-cartodb-layer-group-view');
 var LeafletCartoDBVectorLayerGroupView = require('./leaflet-cartodb-vector-layer-group-view');
-var config = require('cdb.config');
 
-var LayerGroupViewConstructor = function (layerGroupModel, mapModel) {
-  // TODO: We will need to determine this dinamically.
-  // Setting it to `true` for now for testing purposes.
-  var vectorRendering = config.FORCE_CLIENT_SIDE_RENDERING;
-  if (vectorRendering) {
+var LayerGroupViewConstructor = function (layerGroupModel, mapModel, options) {
+  if (options.vector) {
     var layerView = new LeafletCartoDBVectorLayerGroupView(layerGroupModel, mapModel);
 
     return layerView;
@@ -19,7 +15,10 @@ var LayerGroupViewConstructor = function (layerGroupModel, mapModel) {
   return new LeafletCartoDBLayerGroupView(layerGroupModel, mapModel);
 };
 
-var LeafletLayerViewFactory = function () {};
+var LeafletLayerViewFactory = function (options) {
+  options = options || {};
+  this._vector = options.vector;
+};
 
 LeafletLayerViewFactory.prototype._constructors = {
   'tiled': LeafletTiledLayerView,
@@ -44,7 +43,9 @@ LeafletLayerViewFactory.prototype.createLayerView = function (layerModel, mapMod
 
   if (LayerViewClass) {
     try {
-      return new LayerViewClass(layerModel, mapModel);
+      return new LayerViewClass(layerModel, mapModel, {
+        vector: this._vector
+      });
     } catch (e) {
       log.error("Error creating an instance of layer view for '" + layerType + "' layer -> " + e.message);
       throw e;

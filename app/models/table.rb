@@ -546,14 +546,12 @@ class Table
     end
     @dependent_visualizations_cache     = dependent_visualizations.to_a
     @non_dependent_visualizations_cache = non_dependent_visualizations.to_a
-
-    update_cdb_tablemetadata
   end
 
   def after_destroy
     # Delete visualization BEFORE deleting metadata, or named map won't be destroyed properly
     @table_visualization.delete(from_table_deletion=true) if @table_visualization
-    Tag.filter(:user_id => user_id, :table_id => id).delete
+    Tag.filter(user_id: user_id, table_id: id).delete
     remove_table_from_stats
 
     cache.del geometry_types_key

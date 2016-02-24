@@ -37,7 +37,11 @@ module Carto
         layer_options[:cartocss_version] = layer.options['style_version'] if layer
         layer_options.delete(:style_version)
 
-        layer_options[:sql] = layer_options[:query].present? || layer.nil? ? layer_options[:query] : layer.options['query']
+        layer_options[:sql] = if layer_options[:query].present? || layer.nil?
+                                layer_options[:query]
+                              else
+                                layer.options['query']
+                              end
         layer_options.delete(:query)
       end
 

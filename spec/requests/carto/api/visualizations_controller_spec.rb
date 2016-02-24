@@ -1507,8 +1507,8 @@ describe Carto::Api::VisualizationsController do
             vizjson = request.body
             layers = vizjson[:layers]
             layers.should_not be_empty
-            layers.each do |layer|
-              options = layer['options']
+            layers.each do |l|
+              options = l['options']
 
               tile_style_value = options['tile_style']
               tile_style_value.should_not be_nil
@@ -1526,8 +1526,8 @@ describe Carto::Api::VisualizationsController do
             vizjson = request.body
             layers = vizjson[:layers]
             layers.should_not be_empty
-            layers.each do |layer|
-              options = layer['options']
+            layers.each do |l|
+              options = l['options']
 
               cartocss = options['cartocss']
               cartocss.should == tile_style_value

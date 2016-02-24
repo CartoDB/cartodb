@@ -546,6 +546,8 @@ class Table
     end
     @dependent_visualizations_cache     = dependent_visualizations.to_a
     @non_dependent_visualizations_cache = non_dependent_visualizations.to_a
+
+    update_cdb_tablemetadata
   end
 
   def after_destroy
@@ -553,8 +555,6 @@ class Table
     @table_visualization.delete(from_table_deletion=true) if @table_visualization
     Tag.filter(:user_id => user_id, :table_id => id).delete
     remove_table_from_stats
-
-    update_cdb_tablemetadata
 
     cache.del geometry_types_key
     @dependent_visualizations_cache.each(&:delete)

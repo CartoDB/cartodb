@@ -92,7 +92,24 @@ module.exports = Model.extend({
   },
 
   fetch: function (opts) {
+    opts = opts || {};
+
     this.trigger('loading', this);
-    return Model.prototype.fetch.call(this, opts);
+
+    if (opts.success) {
+      var successCallback = opts && opts.success;
+    }
+
+    return Model.prototype.fetch.call(this, _.extend(opts, {
+      success: function () {
+        successCallback && successCallback(arguments);
+        this.trigger('loaded', this);
+      }.bind(this),
+      error: function (mdl, err) {
+        if (!err || (err && err.statusText !== 'abort')) {
+          this.trigger('error', mdl, err);
+        }
+      }.bind(this)
+    }));
   }
 });

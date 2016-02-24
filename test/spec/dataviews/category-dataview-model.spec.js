@@ -78,7 +78,7 @@ describe('dataviews/category-dataview-model', function () {
 
     describe('search events dispatcher', function () {
       it('should trigger search related events', function () {
-        var eventNames = ['loading', 'sync', 'error'];
+        var eventNames = ['loading', 'loaded', 'error'];
         _.each(eventNames, function (eventName) {
           _.bind(eventDispatcher, this)(this.model._searchModel, eventName);
         }, this);

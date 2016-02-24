@@ -154,7 +154,7 @@ describe Visualization::Member do
       member.privacy = Visualization::Member::PRIVACY_PRIVATE
       member.store
     end
-2
+
     it 'invalidates vizjson cache in varnish if description changed' do
       member      = Visualization::Member.new(random_attributes_for_vis_member(user_id: @user_mock.id))
       member.store

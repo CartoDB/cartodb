@@ -55,9 +55,7 @@ InfowindowManager.prototype._bindFeatureClickEvent = function (layerView, layerM
     }
     var cartoDBId = data.cartodb_id;
 
-debugger;
     layerView.model.fetchAttributes(layerIndex, cartoDBId, function (attributes) {
-debugger;
       // Old viz.json doesn't contain width and maxHeight properties
       // and we have to get the default values if there are not defined.
       var extra = _.defaults(

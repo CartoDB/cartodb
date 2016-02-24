@@ -45,17 +45,17 @@ module CartoDB
 
       # Total visualizations
       def visualizations
-        Carto::Visualization.where("lower(type) = 'derived'").count
+        Carto::Visualization.where("type = 'derived'").count
       end
 
       # Total maps
       def maps
-        return Carto::Visualization.where("lower(type) != 'remote'").count
+        Carto::Visualization.where("type != 'remote'").count
       end
 
       # Total active users
       def active_users
-        active_users = "SELECT COUNT(DISTINCT(user_id)) FROM visualizations WHERE lower(type)!='remote'"
+        active_users = "SELECT COUNT(DISTINCT(user_id)) FROM visualizations WHERE type != 'remote'"
         db = ::Rails::Sequel.configuration.environment_for(Rails.env)
         conn = Sequel.connect(db)
         au_count = conn.fetch(active_users).first[:count]

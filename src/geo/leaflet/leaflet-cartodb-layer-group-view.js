@@ -70,7 +70,6 @@ var LeafletCartoDBLayerGroupView = L.TileLayer.extend({
         self.trigger('layermouseover', e, latlon, pxPos, data, layer);
       }, 0);
       previousEvent = e.timeStamp;
-
     };
 
     opts.featureOut = function (m, layer) {
@@ -96,7 +95,7 @@ var LeafletCartoDBLayerGroupView = L.TileLayer.extend({
     this.fire = this.trigger;
 
     // Bind changes to the urls of the model
-    layerModel.bind('change:urls', this.__update, this);
+    layerModel.bind('change:urls', this._onTileJSONChange, this);
 
     this.addProfiling();
 
@@ -203,11 +202,11 @@ var LeafletCartoDBLayerGroupView = L.TileLayer.extend({
   },
 
   /**
-   * Update CartoDB layer
-   * generates a new url for tiles and refresh leaflet layer
+   * On tileJSON change,
+   * it generates a new url for tiles and refresh leaflet layer
    * do not collide with leaflet _update
    */
-  __update: function () {
+  _onTileJSONChange: function () {
     var tilejson = this.model.get('urls');
     if (tilejson) {
       this.tilejson = tilejson;

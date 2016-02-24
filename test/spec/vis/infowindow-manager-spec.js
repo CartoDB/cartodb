@@ -227,5 +227,4 @@ describe('src/vis/infowindow-manager.js', function () {
     expect(filterFunction({ cartodb_id: 10 })).toBeFalsy();
     expect(filterFunction({ cartodb_id: 0 })).toBeTruthy();
   });
-
 });

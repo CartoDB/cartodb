@@ -44,7 +44,7 @@ module.exports = cdb.core.View.extend({
     this.widgetModel.bind('change:isColorsApplied', this.render, this);
     this.add_related_model(this.widgetModel);
 
-    this.dataviewModel.bind('change:data change:searchData', this.render, this);
+    this.dataviewModel.bind('change:data', this.render, this);
     this.add_related_model(this.dataviewModel);
   },
 

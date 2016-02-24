@@ -9,14 +9,6 @@ var placeholder = require('./search-items-no-results-template.tpl');
 module.exports = CategoryItemsView.extend({
   className: 'CDB-Widget-list is-hidden CDB-Widget-list--wrapped js-list',
 
-  initialize: function () {
-    CategoryItemsView.prototype.initialize.apply(this, arguments);
-
-    this._searchResultsCollection = this.dataviewModel.getSearchResult();
-    this._searchResultsCollection.on('change:selected', this._onSelectedItemChange, this);
-    this.add_related_model(this._searchResultsCollection);
-  },
-
   render: function () {
     this.clearSubViews();
     this.$el.empty();
@@ -29,6 +21,14 @@ module.exports = CategoryItemsView.extend({
       this._renderList();
     }
     return this;
+  },
+
+  _initBinds: function () {
+    CategoryItemsView.prototype._initBinds.apply(this, arguments);
+    this._searchResultsCollection = this.dataviewModel.getSearchResult();
+    this._searchResultsCollection.on('change:selected', this._onSelectedItemChange, this);
+    this._searchResultsCollection.on('reset', this.render, this);
+    this.add_related_model(this._searchResultsCollection);
   },
 
   _renderList: function () {

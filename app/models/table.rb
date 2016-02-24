@@ -1214,7 +1214,6 @@ class Table
 
       begin
         propagate_namechange_to_table_vis
-        raise nil
         if @user_table.layers.blank?
           exception_to_raise = CartoDB::TableError.new("Attempt to rename table without layers #{qualified_table_name}")
           CartoDB::notify_exception(exception_to_raise, user: owner)
@@ -1223,8 +1222,10 @@ class Table
             layer.rename_table(@name_changed_from, name).save
           end
         end
-      rescue Exception => exception
-        CartoDB::report_exception(exception, "Failed while renaming visualization #{@name_changed_from} to #{name}", user: owner)
+      rescue StandardError => exception
+        CartoDB::report_exception(exception,
+                                  "Failed while renaming visualization #{@name_changed_from} to #{name}",
+                                  user: owner)
         raise exception
       end
     end

@@ -78,7 +78,7 @@ class Layer < Sequel::Model
     maps.each(&:invalidate_vizjson_varnish_cache)
 
     if data_layer?
-      affected_tables.each(&:update_cdb_tablemetadata)
+      update_affected_tables_table_metadata
       register_table_dependencies
     end
   end
@@ -93,6 +93,10 @@ class Layer < Sequel::Model
   def affected_tables
     return [] unless maps.first.present? && options.present?
     (tables_from_query_option + tables_from_table_name_option).compact.uniq
+  end
+
+  def update_affected_tables_table_metadata
+    affected_tables.each(&:update_cdb_tablemetadata)
   end
 
   def key

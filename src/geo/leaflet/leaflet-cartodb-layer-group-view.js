@@ -211,10 +211,10 @@ var LeafletCartoDBLayerGroupView = L.TileLayer.extend({
     if (tilejson) {
       this.tilejson = tilejson;
       this.setUrl(this.tilejson.tiles[0]);
-      // TODO: Is this necessary?
-      this.ok && this.ok();
       // manage interaction
       this._reloadInteraction();
+      // TODO: Is this necessary?
+      this.ok && this.ok();
     } else {
       this.error && this.error('URLs have not been fetched yet');
     }

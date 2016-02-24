@@ -656,7 +656,7 @@ class Table
 
     @user_table[:name] = new_name
 
-    update_cdb_tablemetadata
+    update_cdb_tablemetadata unless new? # No need to update if table doesn't exist in metadata yet
   end
 
   def set_default_table_privacy

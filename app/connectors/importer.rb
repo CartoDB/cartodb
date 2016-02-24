@@ -76,7 +76,7 @@ module CartoDB
         runner.log.append("Table '#{name}' registered")
       rescue => exception
         if exception.message =~ /canceling statement due to statement timeout/i
-          drop("#{ORIGIN_SCHEMA}.#{current_name}")
+          drop("#{ORIGIN_SCHEMA}.#{result.table_name}")
           raise CartoDB::Importer2::StatementTimeoutError.new(
             exception.message,
             CartoDB::Importer2::ERRORS_MAP[CartoDB::Importer2::StatementTimeoutError]

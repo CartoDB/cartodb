@@ -67,7 +67,7 @@ module Carto
           "CDB_UserDataSize()" :
           "CDB_UserDataSize('#{@user.database_schema}')"
         in_database(as: :superuser).execute("SELECT cartodb.#{user_data_size_function}")
-          .first['cdb_userdatasize'].to_i
+                                   .first['cdb_userdatasize'].to_i
       rescue => e
         attempts += 1
         begin

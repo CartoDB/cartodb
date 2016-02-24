@@ -1481,7 +1481,7 @@ describe Carto::Api::VisualizationsController do
 
     end
 
-    # Initialli vizjson3 is a vizjson2 extension, so tests covering vizjson2 also cover vizjson3
+    # Initially, vizjson3 is a vizjson2 extension, so tests covering vizjson2 also cover vizjson3
     describe '#vizjson3' do
       include_context 'visualization creation helpers'
 
@@ -1491,6 +1491,57 @@ describe Carto::Api::VisualizationsController do
 
       after(:each) do
         @visualization.delete
+      end
+
+      describe 'torque layers' do
+        it 'contains cartocss and sql instead of tile_style and query, and includes cartocss_version' do
+          layer = create_layer('table_1', @user_1.username, 1, 'torque').save
+          @visualization.map.add_layer(layer)
+
+          tile_style_value = nil
+          query_value = nil
+
+          # vizjson v2 doesn't change
+          get_json api_v2_visualizations_vizjson_url(user_domain: @user_1.username, id: @visualization.id, api_key: @user_1.api_key), @headers do |request|
+            request.status.should == 200
+            vizjson = request.body
+            layers = vizjson[:layers]
+            layers.should_not be_empty
+            layers.each do |l|
+              options = l['options']
+
+              tile_style_value = options['tile_style']
+              tile_style_value.should_not be_nil
+
+              query_value = options['query']
+              query_value.should_not be_nil
+
+              options['cartocss'].should be_nil
+              options['sql'].should be_nil
+            end
+          end
+
+          get_json api_v3_visualizations_vizjson_url(user_domain: @user_1.username, id: @visualization.id, api_key: @user_1.api_key), @headers do |request|
+            request.status.should == 200
+            vizjson = request.body
+            layers = vizjson[:layers]
+            layers.should_not be_empty
+            layers.each do |l|
+              options = l['options']
+
+              cartocss = options['cartocss']
+              cartocss.should == tile_style_value
+
+              sql = options['sql']
+              sql.should == query_value
+
+              options['tile_style'].should be_nil
+              options['query'].should be_nil
+            end
+          end
+
+          layer.destroy
+        end
       end
 
       it 'returns a vizjson with empty widgets array for visualizations without widgets' do

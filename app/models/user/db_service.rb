@@ -13,12 +13,12 @@ module CartoDB
       include CartoDB::MiniSequel
 
       # Also default schema for new users
-      SCHEMA_PUBLIC = 'public'
-      SCHEMA_CARTODB = 'cartodb'
-      SCHEMA_IMPORTER = 'cdb_importer'
-      SCHEMA_GEOCODING = 'cdb'
-      SCHEMA_CDB_DATASERVICES_API = 'cdb_dataservices_client'
-      CDB_DATASERVICES_CLIENT_VERSION = '0.1.0'
+      SCHEMA_PUBLIC = 'public'.freeze
+      SCHEMA_CARTODB = 'cartodb'.freeze
+      SCHEMA_IMPORTER = 'cdb_importer'.freeze
+      SCHEMA_GEOCODING = 'cdb'.freeze
+      SCHEMA_CDB_DATASERVICES_API = 'cdb_dataservices_client'.freeze
+      CDB_DATASERVICES_CLIENT_VERSION = '0.2.0'.freeze
 
       def initialize(user)
         raise "User nil" unless user

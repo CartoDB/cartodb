@@ -311,7 +311,8 @@ var Vis = View.extend({
       legends: data.legends,
       scrollwheel: scrollwheel,
       drag: allowDragging,
-      provider: data.map_provider
+      provider: data.map_provider,
+      vector: data.vector,
     };
 
     if (data.bounds) {
@@ -371,9 +372,7 @@ var Vis = View.extend({
 
     this.$el.append(div);
 
-    var mapViewFactory = new MapViewFactory({
-      vector: data.vector
-    });
+    var mapViewFactory = new MapViewFactory();
     this.mapView = mapViewFactory.createMapView(this.map.get('provider'), this.map, div_hack);
 
     // Bindings

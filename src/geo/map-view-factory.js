@@ -3,10 +3,7 @@ var cdb = require('cdb');
 var LeafletLayerViewFactory = require('./leaflet/leaflet-layer-view-factory');
 var GMapsLayerViewFactory = require('./gmaps/gmaps-layer-view-factory');
 
-var MapViewFactory = function (options) {
-  options = options || {};
-  this._vector = options.vector;
-};
+var MapViewFactory = function () {};
 
 MapViewFactory.prototype.createMapView = function (provider, mapModel, el) {
   var MapViewClass;
@@ -30,7 +27,7 @@ MapViewFactory.prototype.createMapView = function (provider, mapModel, el) {
     el: el,
     map: mapModel,
     layerViewFactory: new LayerViewFactoryClass({
-      vector: this._vector
+      vector: mapModel.get('vector')
     })
   });
 };

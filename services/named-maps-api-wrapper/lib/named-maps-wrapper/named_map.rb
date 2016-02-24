@@ -270,11 +270,28 @@ module CartoDB
           }
         end
 
-        {
+        layer_options = {
           layer_name: 'cartodb',
           layer_options: layer_options,
           layer_num: layer_num,
           template_data: template_data
+        }
+
+        layer_widgets = Carto::Widget.where(layer_id: layer[:id]).all
+        # TODO: if this structure becomes standard, remove the count check,
+        # and always return a `widgets` attribute
+        if layer_widgets.count > 0
+          widget_names_and_options = layer_widgets.map { |w| [w.id, layer_widget_options(w)] }
+          layer_options[:layer_options][:widgets] = Hash[*widget_names_and_options.flatten]
+        end
+
+        layer_options
+      end
+
+      def self.layer_widget_options(widget)
+        {
+          type: widget.type,
+          options: widget.options_json
         }
       end
 

@@ -4,7 +4,7 @@ module Carto
   module Api
     class VizJSON3Presenter
 
-      def initialize(visualization, redis_cache)
+      def initialize(visualization, redis_cache = $tables_metadata)
         @visualization = visualization
         @redis_cache = redis_cache
         @redis_vizjson_cache = CartoDB::Visualization::RedisVizjsonCache.new(redis_cache)

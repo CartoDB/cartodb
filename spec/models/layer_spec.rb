@@ -101,7 +101,7 @@ describe Layer do
         end
 
         vizjson_key = @layer.affected_tables.first.table_visualization.varnish_vizjson_key
-        CartoDB::Varnish.any_instance.expects(:purge).at_least(1).with("#{vizjson_key}").returns(true)
+        CartoDB::Varnish.any_instance.expects(:purge).at_least(1).with(vizjson_key.to_s).returns(true)
 
         @layer.expects(:update_affected_tables_table_metadata).once
 

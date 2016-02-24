@@ -12,15 +12,33 @@ module Carto
 
       def to_vizjson(options = {})
         vizjson = Carto::Api::VizJSONPresenter.new(@visualization, @redis_cache).to_vizjson(options)
+
         vizjson[:widgets] = Carto::Widget.from_visualization_id(@visualization.id).map do |w|
           Carto::Api::WidgetPresenter.new(w).to_poro
         end
+
+        vizjson[:layers].each { |l| layer_vizjson2_to_3(l) }
+
         vizjson[:datasource] = datasource(options)
         vizjson[:user] = user
         vizjson
       end
 
       private
+
+      def layer_vizjson2_to_3(layer)
+        layer_options = layer[:options]
+
+        layer_options[:cartocss] = layer_options[:tile_style]
+        layer_options.delete(:tile_style)
+
+        layer_options[:sql] = layer_options[:query]
+        layer_options.delete(:query)
+
+        layer = @visualization.layers.select { |l| l.id == layer_options[:id] }.first
+        layer_options[:cartocss_version] = layer['options']['style_version'] if layer
+        layer_options.delete(:style_version)
+      end
 
       def datasource(options)
         api_templates_type = options.fetch(:https_request, false) ? 'private' : 'public'

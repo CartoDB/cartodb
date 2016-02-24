@@ -13,7 +13,6 @@ var MapViewFactory = require('../geo/map-view-factory');
 var LegendModel = require('../geo/ui/legend-model');
 var Legend = require('../geo/ui/legend');
 var SQL = require('../api/sql');
-var Tooltip = require('../geo/ui/tooltip');
 var InfowindowModel = require('../geo/ui/infowindow-model');
 var Infowindow = require('../geo/ui/infowindow');
 var Template = require('../core/template');
@@ -27,6 +26,9 @@ var WindshaftClient = require('../windshaft/client');
 var WindshaftLayerGroupConfig = require('../windshaft/layergroup-config');
 var WindshaftNamedMapConfig = require('../windshaft/namedmap-config');
 var WindshaftMap = require('../windshaft/windshaft-map');
+
+var InfowindowManager = require('./infowindow-manager');
+var TooltipManager = require('./tooltip-manager');
 
 /**
  * Visualization creation
@@ -382,20 +384,16 @@ var Vis = View.extend({
 
     this.mapView.bind('newLayerView', this._addLoading, this);
 
-    if (this.infowindow) {
-      this.mapView.bind('newLayerView', this.addInfowindow, this);
-    }
-
-    if (this.tooltip) {
-      this.mapView.bind('newLayerView', this.addTooltip, this);
-    }
-
     // Create the Layer Models and set them on hte map
     var layerModels = this._newLayerModels(data, this.map);
-    this.map.layers.reset(layerModels);
+
+    var infowindowManager = new InfowindowManager(this);
+    infowindowManager.manage(this.mapView, this.map);
+
+    var tooltipManager = new TooltipManager(this);
+    tooltipManager.manage(this.mapView, this.map);
 
     // Create the collection of Overlays
-
     var overlaysCollection = new Backbone.Collection();
     overlaysCollection.bind('reset', function (overlays) {
       this._addOverlays(overlays, data, options);
@@ -403,7 +401,6 @@ var Vis = View.extend({
     overlaysCollection.reset(data.overlays);
 
     // Create the public Dataview Factory
-
     this.dataviews = new DataviewsFactory(null, {
       dataviewsCollection: this._dataviewsCollection,
       layersCollection: this.map.layers,
@@ -414,6 +411,9 @@ var Vis = View.extend({
     if (!options.skipMapInstantiation) {
       this.instantiateMap();
     }
+
+    // Lastly: reset the layer models on the map
+    this.map.layers.reset(layerModels);
 
     return this;
   },
@@ -775,158 +775,6 @@ var Vis = View.extend({
     });
 
     return sql;
-  },
-
-  addTooltip: function (layerView) {
-    var layers = layerView.model && layerView.model.layers || [];
-
-    for (var i = 0; i < layers.length; ++i) {
-      var layerModel = layers.at(i);
-      var t = layerModel.getTooltipData();
-      if (t) {
-        if (!layerView.tooltip) {
-          var tooltip = new Tooltip({
-            mapView: this.mapView,
-            layer: layerView,
-            template: t.template,
-            position: 'bottom|right',
-            vertical_offset: 10,
-            horizontal_offset: 4,
-            fields: t.fields,
-            omit_columns: ['cartodb_id']
-          });
-          layerView.tooltip = tooltip;
-          this.mapView.addOverlay(tooltip);
-          layerView.bind('remove', function () {
-            this.tooltip.clean();
-          });
-        }
-      }
-    }
-
-    if (layerView.tooltip) {
-      layerView.bind('featureOver', function (e, latlng, pos, data, layer) {
-        var t = layers.at(layer).getTooltipData();
-        if (t) {
-          layerView.tooltip.setTemplate(t.template);
-          layerView.tooltip.setFields(t.fields);
-          layerView.tooltip.setAlternativeNames(t.alternative_names);
-          layerView.tooltip.enable();
-        } else {
-          layerView.tooltip.disable();
-        }
-      });
-    }
-  },
-
-  addInfowindow: function (layerView) {
-    var mapView = this.mapView;
-    var infowindow = null;
-    var layers = [];
-    // TODO: this should be managed at a different level so each layer knows if
-    // the infowindow needs to be added
-    if (layerView.model) {
-      if (layerView.model.layers) {
-        layers = layerView.model.layers;
-      } else {
-        if (layerView.model.getInfowindowData) {
-          layers = new Backbone.Collection([layerView.model]);
-        }
-      }
-    }
-
-    for (var i = 0; i < layers.length; ++i) {
-      var layerModel = layers.at(i);
-      if (layerModel.getInfowindowData()) {
-        if (!infowindow) {
-          infowindow = Overlay.create('infowindow', this, layerModel.getInfowindowData(), true);
-          mapView.addInfowindow(infowindow);
-        }
-      }
-    }
-
-    if (!infowindow) {
-      return;
-    }
-
-    infowindow.bind('close', function () {
-      // TODO: create a test checking this behaviour.
-      // when infowindow is closed remove all the filters
-      // for tooltips
-      layers.each(function(layerView) {
-        var layerTooltip = layerView.tooltip;
-        if (layerTooltip) {
-          layerTooltip.setFilter(null);
-        }
-      });
-    });
-
-    infowindow.model.bind('domready', function () {
-      layerView.trigger('infowindow_ready', infowindow, this);
-    }, this);
-
-    // if the layer has no infowindow just pass the interaction
-    // data to the infowindow
-    layerView.bind('featureClick', function (e, latlng, pos, data, layer) {
-      var infowindowFields = layers.at(layer).getInfowindowData();
-      if (!infowindowFields) return;
-      var cartodb_id = data.cartodb_id;
-
-      layerView.model.fetchAttributes(layer, cartodb_id, function (attributes) {
-        // Old viz.json doesn't contain width and maxHeight properties
-        // and we have to get the default values if there are not defined.
-        var extra = _.defaults(
-          {
-            offset: infowindowFields.offset,
-            width: infowindowFields.width,
-            maxHeight: infowindowFields.maxHeight
-          },
-          InfowindowModel.prototype.defaults
-        );
-
-        infowindow.model.set({
-          'fields': infowindowFields.fields,
-          'template': infowindowFields.template,
-          'template_type': infowindowFields.template_type,
-          'alternative_names': infowindowFields.alternative_names,
-          'sanitizeTemplate': infowindowFields.sanitizeTemplate,
-          'offset': extra.offset,
-          'width': extra.width,
-          'maxHeight': extra.maxHeight
-        });
-
-        if (attributes) {
-          infowindow.model.updateContent(attributes);
-          infowindow.adjustPan();
-        } else {
-          infowindow.setError();
-        }
-      });
-
-      // Show infowindow with loading state
-      infowindow
-        .setLatLng(latlng)
-        .setLoading()
-        .showInfowindow();
-
-      if (layerView.tooltip) {
-        layerView.tooltip.setFilter(function (feature) {
-          return feature.cartodb_id !== cartodb_id;
-        }).hide();
-      }
-    });
-
-    var hovers = [];
-
-    layerView.bind('mouseover', function () {
-      mapView.setCursor('pointer');
-    });
-
-    layerView.bind('mouseout', function (m, layer) {
-      mapView.setCursor('auto');
-    });
-
-    layerView.infowindow = infowindow.model;
   },
 
   _addLoading: function (layerView) {

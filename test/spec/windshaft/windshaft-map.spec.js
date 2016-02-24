@@ -75,7 +75,9 @@ describe('windshaft/map', function () {
         statTag: 'stat_tag'
       });
 
-      var filter = new CategoryFilter({ layerIndex: 0 });
+      var filter = new CategoryFilter({
+        layer: this.cartoDBLayer1
+      });
       spyOn(filter, 'isEmpty').and.returnValue(false);
       spyOn(filter, 'toJSON').and.returnValue({ accept: 'category' });
 
@@ -104,7 +106,7 @@ describe('windshaft/map', function () {
       var args = this.client.instantiateMap.calls.mostRecent().args[0];
       expect(args.mapDefinition).toEqual({ foo: 'bar' });
       expect(args.statTag).toEqual('stat_tag');
-      expect(args.filters).toEqual({ layers: [{ accept: 'category' }] });
+      expect(args.filters).toEqual({ layers: [{ accept: 'category' }, {}, {}] });
     });
 
     it('should not send filters linked to hidden layers', function () {

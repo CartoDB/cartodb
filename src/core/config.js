@@ -16,10 +16,7 @@ var Config = Backbone.Model.extend({
 
   //error track
   REPORT_ERROR_URL: '/api/v0/error',
-  ERROR_TRACK_ENABLED: false,
-
-  // Forces rendering in the client
-  FORCE_CLIENT_SIDE_RENDERING: true
+  ERROR_TRACK_ENABLED: false
 });
 
 module.exports = Config;

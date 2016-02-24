@@ -192,8 +192,7 @@ module.exports = Model.extend({
   fetch: function (opts) {
     opts = opts || {};
     if (this._dataProvider) {
-      this.set(this.parse(this._dataProvider.getData()));
-      this.trigger('sync');
+      this.set(this.parse(this._dataProvider.getData()));      
     } else {
       this.trigger('loading', this);
 

@@ -1222,7 +1222,7 @@ class Table
             layer.rename_table(@name_changed_from, name).save
           end
         end
-      rescue StandardError => exception
+      rescue exception
         CartoDB::report_exception(exception,
                                   "Failed while renaming visualization #{@name_changed_from} to #{name}",
                                   user: owner)

@@ -231,12 +231,12 @@ class Carto::VisualizationQueryBuilder
       # TODO: sql strings are suboptimal and compromise compositability, but
       # I haven't found a better way to do this OR in Rails
       shared_with_viz_ids = ::Carto::VisualizationQueryBuilder.new.with_shared_with_user_id(
-                              @owned_by_or_shared_with_user_id).build.uniq.pluck('visualizations.id')
+        @owned_by_or_shared_with_user_id).build.uniq.pluck('visualizations.id')
       if shared_with_viz_ids.empty?
         query = query.where(' "visualizations"."user_id" = (?)', @owned_by_or_shared_with_user_id)
       else
         query = query.where(' ("visualizations"."user_id" = (?) or "visualizations"."id" in (?))',
-                              @owned_by_or_shared_with_user_id, shared_with_viz_ids)
+                            @owned_by_or_shared_with_user_id, shared_with_viz_ids)
       end
     end
 

@@ -16,6 +16,7 @@ var LayerGroupViewConstructor = function (layerGroupModel, mapModel, options) {
 };
 
 var LeafletLayerViewFactory = function (options) {
+  options = options || {};
   this._vector = options.vector;
 };
 

@@ -4,6 +4,7 @@ var LeafletLayerViewFactory = require('./leaflet/leaflet-layer-view-factory');
 var GMapsLayerViewFactory = require('./gmaps/gmaps-layer-view-factory');
 
 var MapViewFactory = function (options) {
+  options = options || {};
   this._vector = options.vector;
 };
 

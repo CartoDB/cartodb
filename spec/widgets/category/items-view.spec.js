@@ -57,7 +57,7 @@ describe('widgets/category/items-view', function () {
 
     it('should render when any data has changed (origin or search data)', function () {
       var bind = this.dataviewModel.bind.calls.argsFor(0);
-      expect(bind[0]).toEqual('change:data change:searchData');
+      expect(bind[0]).toEqual('change:data');
       expect(bind[1]).toEqual(this.view.render);
     });
 

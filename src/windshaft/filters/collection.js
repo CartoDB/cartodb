@@ -2,6 +2,12 @@ var _ = require('underscore');
 var Backbone = require('backbone');
 
 module.exports = Backbone.Collection.extend({
+
+  /**
+   * @param  {Array.<Filter>} filters Array with the filters to add to the collection.
+   * @param  {Array.<LayerModel>} layers  Array of LayerModel in the same order passed to the WindshaftMap.
+   * @returns {WindshaftFilterCollection}
+   */
   initialize: function (filters, layers) {
     this.layers = layers;
     Backbone.Collection.prototype.initialize.apply(this, filters);
@@ -12,34 +18,33 @@ module.exports = Backbone.Collection.extend({
     var activeFilters = this.getActiveFilters();
     if (activeFilters.length) {
       json.layers = [];
-      _.each(activeFilters, function (filter) {
-        var index = filter.get('layerIndex');
-        if (index >= 0) {
-          if (json.layers[index]) {
-            _.extend(json.layers[index], filter.toJSON());
-          } else {
-            json.layers[index] = filter.toJSON();
+      var l, f, filters, filtersJson;
+      for (l = 0; l < this.layers.length; l++) {
+        var layer = this.layers[l];
+        if (layer.isVisible()) {
+          filters = this.getActiveFiltersForLayer(layer);
+          filtersJson = {};
+          if (filters.length) {
+            for (f = 0; f < filters.length; f++) {
+              _.extend(filtersJson, filters[f].toJSON());
+            }
           }
-        } else {
-          throw new Error('layerIndex missing for filter ' + JSON.stringify(filter.toJSON()));
-        }
-      });
-      // fill the holes only if layer is visible, otherwise remove the hole.
-      for (var i = 0; i < json.layers.length; ++i) {
-        if (this.layers[i].isVisible()) {
-          json.layers[i] = json.layers[i] || {};
-        } else {
-          json.layers.splice(i, 1);
+          json.layers.push(filtersJson);
         }
       }
     }
-
     return json;
   },
 
   getActiveFilters: function () {
     return this.filter(function (filter) {
       return !filter.isEmpty();
+    });
+  },
+
+  getActiveFiltersForLayer: function (layer) {
+    return this.filter(function (filter) {
+      return !filter.isEmpty() && filter.get('layer') === layer;
     });
   }
 });

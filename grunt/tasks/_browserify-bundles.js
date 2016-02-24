@@ -22,6 +22,7 @@ module.exports = {
       'test/spec/api/**/*',
       'test/spec/core/**/*',
       'test/spec/dataviews/**/*',
+      'test/spec/util/**/*',
       'test/spec/geo/**/*',
       'test/spec/ui/**/*',
       'test/spec/vis/**/*',

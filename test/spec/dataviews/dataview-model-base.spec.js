@@ -282,13 +282,9 @@ describe('dataviews/dataview-model-base', function () {
         };
       });
 
-      var syncCallback = jasmine.createSpy('syncCallback');
-      dataview.bind('sync', syncCallback);
-
       dataview.fetch();
 
       expect(dataview.parse).toHaveBeenCalledWith({ a: 1 });
-      expect(syncCallback).toHaveBeenCalled();
       expect(dataview.get('b')).toEqual(2);
     });
 

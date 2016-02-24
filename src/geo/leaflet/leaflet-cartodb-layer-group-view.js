@@ -70,7 +70,6 @@ var LeafletCartoDBLayerGroupView = L.TileLayer.extend({
         self.trigger('layermouseover', e, latlon, pxPos, data, layer);
       }, 0);
       previousEvent = e.timeStamp;
-
     };
 
     opts.featureOut = function (m, layer) {
@@ -96,20 +95,7 @@ var LeafletCartoDBLayerGroupView = L.TileLayer.extend({
     this.fire = this.trigger;
 
     // Bind changes to the urls of the model
-    layerModel.bind('change:urls', function () {
-      self.__update(function () {
-        // if while the layer was processed in the server is removed
-        // it should not be added to the map
-        var id = L.stamp(self);
-        if (!leafletMap._layers[id]) {
-          return;
-        }
-
-        L.TileLayer.prototype.onAdd.call(self, leafletMap);
-        self.fire('added');
-        self.options.added = true;
-      });
-    });
+    layerModel.bind('change:urls', this._onTileJSONChange, this);
 
     this.addProfiling();
 
@@ -200,8 +186,9 @@ var LeafletCartoDBLayerGroupView = L.TileLayer.extend({
    * @params {map}
    */
   onAdd: function (map) {
-    var self = this;
     this.options.map = map;
+    this.options.added = true;
+    return L.TileLayer.prototype.onAdd.call(this, map);
   },
 
   /**
@@ -215,27 +202,21 @@ var LeafletCartoDBLayerGroupView = L.TileLayer.extend({
   },
 
   /**
-   * Update CartoDB layer
-   * generates a new url for tiles and refresh leaflet layer
+   * On tileJSON change,
+   * it generates a new url for tiles and refresh leaflet layer
    * do not collide with leaflet _update
    */
-  __update: function (done) {
-    var self = this;
-    this.fire('updated');
-    this.fire('loading');
-    var map = this.options.map;
-
-    var tilejson = self.model.get('urls');
+  _onTileJSONChange: function () {
+    var tilejson = this.model.get('urls');
     if (tilejson) {
-      self.tilejson = tilejson;
-      self.setUrl(self.tilejson.tiles[0]);
+      this.tilejson = tilejson;
+      this.setUrl(this.tilejson.tiles[0]);
       // manage interaction
-      self._reloadInteraction();
-      self.ok && self.ok();
-      done && done();
+      this._reloadInteraction();
+      // TODO: Is this necessary?
+      this.ok && this.ok();
     } else {
-      self.error && self.error('URLs have not been fetched yet');
-      done && done();
+      this.error && this.error('URLs have not been fetched yet');
     }
   },
 

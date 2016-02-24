@@ -235,7 +235,7 @@ describe Unp do
 
   describe '#unp_failure?'  do
     it 'returns true if unp cannot read the file' do
-      Unp.new.unp_failure?('Cannot read', 0).should eq true
+      Unp.new.unp_failure?('Cannot read', -1).should eq true
     end
 
     it 'returns true if returned an error exit code' do

@@ -39,6 +39,7 @@ module CartoDB
 
       def run(path)
         return without_unpacking(path) unless compressed?(path)
+        raise EncodingError unless filename_valid_encoding?(path)
         extract(path)
         crawl(temporary_directory).each { |dir_path| process(dir_path) }
         @source_files = split(source_files)
@@ -132,8 +133,12 @@ module CartoDB
         command
       end
 
-     def supported?(filename)
+      def supported?(filename)
         SUPPORTED_FORMATS.include?(File.extname(filename).downcase)
+      end
+
+      def filename_valid_encoding?(filename)
+        return filename.valid_encoding?
       end
 
       def normalize(filename)
@@ -179,7 +184,7 @@ module CartoDB
       end
 
       def unp_failure?(output, exit_code)
-        !!(output =~ UNP_READ_ERROR_REGEX) || (exit_code != 0)
+        (exit_code != 0)
       end
 
       # Return a new temporary file contained inside a tmp subfolder

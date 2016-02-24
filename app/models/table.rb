@@ -1294,10 +1294,10 @@ class Table
   end
 
   def update_cdb_tablemetadata
-    owner.in_database(as: :superuser).run(%Q{
+    owner.in_database(as: :superuser).run(%{
       SELECT CDB_TableMetadataTouch('#{qualified_table_name}')
       })
-    end
+  end
 
   private
 

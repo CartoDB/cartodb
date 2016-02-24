@@ -127,7 +127,8 @@ describe('src/vis/infowindow-manager.js', function () {
           'name': 'name',
           'title': true,
           'position': 1
-        }]
+        }],
+        alternative_names: 'alternative_names'
       }
     });
 
@@ -153,7 +154,7 @@ describe('src/vis/infowindow-manager.js', function () {
     expect(infowindowModel.attributes).toEqual({
       'template': 'template',
       'template_type': 'underscore',
-      'alternative_names': {},
+      'alternative_names': 'alternative_names',
       'fields': [
         {
           'name': 'name',

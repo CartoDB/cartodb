@@ -185,4 +185,47 @@ describe('src/vis/infowindow-manager.js', function () {
       'visibility': true
     });
   });
+
+  it('should set a filter on the tooltipView if the layer has tooltip too', function () {
+    // Simulate that the layerView has been added a tooltipView
+    var tooltipView = jasmine.createSpyObj('tooltipView', ['setFilter', 'hide']);
+    tooltipView.setFilter.and.returnValue(tooltipView);
+    this.layerView.tooltipView = tooltipView;
+
+    spyOn(this.mapView, 'addInfowindow');
+
+    var layer = new CartoDBLayer({
+      infowindow: {
+        template: 'template',
+        template_type: 'underscore',
+        fields: [{
+          'name': 'name',
+          'title': true,
+          'position': 1
+        }],
+        alternative_names: 'alternative_names'
+      }
+    });
+
+    var infowindowManager = new InfowindowManager(this.vis);
+    infowindowManager.manage(this.mapView, this.map);
+
+    this.map.layers.reset([ layer ]);
+    var infowindowView = this.mapView.addInfowindow.calls.mostRecent().args[0];
+
+    this.layerView.model = {
+      fetchAttributes: jasmine.createSpy('fetchAttributes').and.returnValue({ name: 'Juan' })
+    };
+    spyOn(infowindowView, 'adjustPan');
+
+    // Simulate the featureClick event
+    this.layerView.trigger('featureClick', {}, [100, 200], undefined, { cartodb_id: 10 }, 1);
+
+    expect(this.layerView.tooltipView.setFilter).toHaveBeenCalled();
+    var filterFunction = this.layerView.tooltipView.setFilter.calls.mostRecent().args[0];
+
+    expect(filterFunction({ cartodb_id: 10 })).toBeFalsy();
+    expect(filterFunction({ cartodb_id: 0 })).toBeTruthy();
+  });
+
 });

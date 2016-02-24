@@ -92,8 +92,8 @@ InfowindowManager.prototype._bindFeatureClickEvent = function (layerView, layerM
       .setLoading()
       .showInfowindow();
 
-    if (layerView.tooltip) {
-      layerView.tooltip.setFilter(function (feature) {
+    if (layerView.tooltipView) {
+      layerView.tooltipView.setFilter(function (feature) {
         return feature.cartodb_id !== cartoDBId;
       }).hide();
     }

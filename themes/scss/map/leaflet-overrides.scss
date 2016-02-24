@@ -1,0 +1,4 @@
+// Disable pointer events on the layer with labels
+.leaflet-layer:nth-child(3) {
+  pointer-events: none;
+}

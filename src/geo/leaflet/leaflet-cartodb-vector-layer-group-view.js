@@ -33,14 +33,12 @@ var LeafletCartoDBVectorLayerGroupView = CartoDBd3Layer.extend({
 
     layerModel.layers.bind('add', this._onLayerAdded, this);
 
-    this._on('featureClick', function () {
-      debugger;
-      this.trigger('featureClick', arguments);
+    this._on('featureClick', function (event, latlng, pos, data, layerIndex) {
+      this.trigger('featureClick', event, latlng, pos, data, layerIndex);
     }.bind(this));
 
-    this._on('featureOver', function () {
-      debugger;
-      this.trigger('featureOver', arguments);
+    this._on('featureOver', function (event, latlng, pos, data, layerIndex) {
+      this.trigger('featureOver', event, latlng, pos, data, layerIndex);
     }.bind(this));
   },
 

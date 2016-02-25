@@ -348,7 +348,7 @@
           }
         };
 
-        cartodb.deepInsights.createDashboard('#dashboard', vizJSON, {
+        window.dashboard = cartodb.deepInsights.createDashboard('#dashboard', vizJSON, {
           no_cdn: false,
           layer_selector: true,
         });

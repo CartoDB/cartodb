@@ -23,8 +23,7 @@ module.exports = cdb.core.View.extend({
     this._torqueLayerModel.bind('change:start change:end', this._updateChartandTimeslider, this);
     this._torqueLayerModel.bind('change:step', this._onChangeStep, this);
     this._torqueLayerModel.bind('change:steps', this._updateChartandTimeslider, this);
-    this._torqueLayerModel.bind('change:stepsRange', this._onStepsRange, this);
-    this._torqueLayerModel.bind('change:renderRange', this._onRenderRangeChanged, this);
+
     this.add_related_model(this._torqueLayerModel);
 
     this._chartView.model.bind('change:width', this._updateChartandTimeslider, this);
@@ -33,6 +32,9 @@ module.exports = cdb.core.View.extend({
 
     this._dataviewModel.on('change:bins', this._updateChartandTimeslider, this);
     this.add_related_model(this._dataviewModel);
+
+    this._dataviewModel.filter.on('change:min change:max', this._onFilterMinMaxChange, this);
+    this.add_related_model(this._dataviewModel.filter);
 
     this._updateXScale();
   },
@@ -121,17 +123,8 @@ module.exports = cdb.core.View.extend({
     }
   },
 
-  _onStepsRange: function () {
-    var r = this._torqueLayerModel.get('stepsRange');
-    if (r.start === 0 && r.end === this._dataviewModel.get('bins')) {
-      this._chartView.removeSelection();
-    } else {
-      this._chartView.selectRange(r.start, r.end);
-    }
-  },
-
-  _onRenderRangeChanged: function (m, renderRange) {
-    this.$el.toggle(renderRange.start === renderRange.end);
+  _onFilterMinMaxChange: function (m, isFiltering) {
+    this.$el.toggle(!isFiltering);
   },
 
   _onChangeChartHeight: function () {

@@ -77,54 +77,18 @@ describe('widgets/time-series/torque-time-slider-view', function () {
     });
   });
 
-  describe('when stepsRange changes', function () {
+  describe('when apply filter', function () {
     beforeEach(function () {
-      spyOn(this.chartView, 'removeSelection');
-      spyOn(this.chartView, 'selectRange');
-    });
-
-    describe('when range matches data bins', function () {
-      beforeEach(function () {
-        this.torqueLayerModel.set('stepsRange', {
-          start: 0,
-          end: this.dataviewModel.get('bins')
-        });
-      });
-
-      it('should remove selection if stepsRange matches the data bins', function () {
-        expect(this.chartView.removeSelection).toHaveBeenCalled();
-        expect(this.chartView.selectRange).not.toHaveBeenCalled();
-      });
-    });
-
-    describe('when range is custom', function () {
-      beforeEach(function () {
-        this.torqueLayerModel.set('stepsRange', {
-          start: 12,
-          end: 21
-        });
-      });
-
-      it('should set custom selection range', function () {
-        expect(this.chartView.selectRange).toHaveBeenCalled();
-        expect(this.chartView.selectRange.calls.argsFor(0)).toEqual([12, 21]);
-        expect(this.chartView.removeSelection).not.toHaveBeenCalled();
-      });
-    });
-  });
-
-  describe('when change render range on torque layer model', function () {
-    beforeEach(function () {
-      this.torqueLayerModel.renderRange(1, 2);
+      this.dataviewModel.filter.setRange(1, 2);
     });
 
     it('should hide view', function () {
       expect(this.view.el.style.display).toEqual('none');
     });
 
-    describe('when removed', function () {
+    describe('when filter is cleared', function () {
       beforeEach(function () {
-        this.torqueLayerModel.resetRenderRange();
+        this.dataviewModel.filter.unsetRange();
       });
 
       it('should show view', function () {

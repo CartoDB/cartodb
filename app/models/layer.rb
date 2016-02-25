@@ -95,7 +95,7 @@ class Layer < Sequel::Model
     (tables_from_query_option + tables_from_table_name_option).compact.uniq
   end
 
-  def update_affected_tables_table_metadata
+  def notify_table_change
     affected_tables.each(&:update_cdb_tablemetadata)
   end
 

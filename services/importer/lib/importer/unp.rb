@@ -39,7 +39,6 @@ module CartoDB
 
       def run(path)
         return without_unpacking(path) unless compressed?(path)
-        raise EncodingError unless filename_valid_encoding?(path)
         extract(path)
         crawl(temporary_directory).each { |dir_path| process(dir_path) }
         @source_files = split(source_files)
@@ -66,6 +65,7 @@ module CartoDB
 
       def crawl(path, files=[])
         Dir.foreach(path) do |subpath|
+          raise EncodingError unless filename_valid_encoding?(subpath)
           next if hidden?(subpath)
           next if subpath =~ /.*readme.*\.txt/i
           next if subpath =~ /\.version\.txt/i

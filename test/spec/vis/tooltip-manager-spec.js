@@ -120,23 +120,36 @@ describe('src/vis/tooltip-manager.js', function () {
   it('should correctly bind the featureOver event to the corresponding layerView', function () {
     spyOn(this.mapView, 'addOverlay');
 
-    var layer = new CartoDBLayer({
+    var layer1 = new CartoDBLayer({
       tooltip: {
-        template: 'template',
+        template: 'template1',
         template_type: 'underscore',
         fields: [{
           'name': 'name',
           'title': true,
           'position': 1
         }],
-        alternative_names: 'alternative_names'
+        alternative_names: 'alternative_names1'
       }
     });
+    var layer2 = new CartoDBLayer({
+      tooltip: {
+        template: 'template2',
+        template_type: 'underscore',
+        fields: [{
+          'name': 'description',
+          'title': true,
+          'position': 1
+        }],
+        alternative_names: 'alternative_names2'
+      }
+    });
+
 
     var tooltipManager = new TooltipManager(this.vis);
     tooltipManager.manage(this.mapView, this.map);
 
-    this.map.layers.reset([ layer ]);
+    this.map.layers.reset([ layer1, layer2 ]);
 
     expect(this.mapView.addOverlay).toHaveBeenCalled();
     var tooltipView = this.mapView.addOverlay.calls.mostRecent().args[0];
@@ -144,18 +157,31 @@ describe('src/vis/tooltip-manager.js', function () {
     spyOn(tooltipView, 'setTemplate');
     spyOn(tooltipView, 'setFields');
     spyOn(tooltipView, 'setAlternativeNames');
-    spyOn(tooltipView, 'enable');
 
-    // Simulate the featureOver event
-    this.layerView.trigger('featureOver', {}, [100, 200], undefined, { cartodb_id: 10 }, 1);
+    this.layerView.model = {
+      layers: new Backbone.Collection([ layer1, layer2 ])
+    };
 
-    expect(tooltipView.setTemplate).toHaveBeenCalledWith('template');
+    // Simulate the featureOver event on layer #0
+    this.layerView.trigger('featureOver', {}, [100, 200], undefined, { cartodb_id: 10 }, 0);
+
+    expect(tooltipView.setTemplate).toHaveBeenCalledWith('template1');
     expect(tooltipView.setFields).toHaveBeenCalledWith([{
       'name': 'name',
       'title': true,
       'position': 1
     }]);
-    expect(tooltipView.setAlternativeNames).toHaveBeenCalledWith('alternative_names');
-    expect(tooltipView.enable).toHaveBeenCalled();
+    expect(tooltipView.setAlternativeNames).toHaveBeenCalledWith('alternative_names1');
+
+    // Simulate the featureOver event on layer #1
+    this.layerView.trigger('featureOver', {}, [100, 200], undefined, { cartodb_id: 10 }, 1);
+
+    expect(tooltipView.setTemplate).toHaveBeenCalledWith('template2');
+    expect(tooltipView.setFields).toHaveBeenCalledWith([{
+      'name': 'description',
+      'title': true,
+      'position': 1
+    }]);
+    expect(tooltipView.setAlternativeNames).toHaveBeenCalledWith('alternative_names2');
   });
 });

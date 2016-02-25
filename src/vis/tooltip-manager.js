@@ -24,7 +24,7 @@ TooltipManager.prototype._addTooltipForLayer = function (layerModel) {
     var layerView = this._mapView.getLayerViewByLayerCid(layerModel.cid);
 
     this._addTooltipOverlay(layerView, layerModel);
-    this._bindFeatureOverEvent(layerView, layerModel);
+    this._bindFeatureOverEvent(layerView);
   }
 };
 
@@ -51,15 +51,24 @@ TooltipManager.prototype._addTooltipOverlay = function (layerView, layerModel) {
   }
 };
 
-TooltipManager.prototype._bindFeatureOverEvent = function (layerView, layerModel) {
+TooltipManager.prototype._bindFeatureOverEvent = function (layerView) {
   var tooltipView = layerView.tooltipView;
-  layerView.bind('featureOver', function (e, latlng, pos, data, layer) {
+  layerView.unbind('featureOver');
+  layerView.bind('featureOver', function (e, latlng, pos, data, layerIndex) {
+    var layerModel = layerView.model;
+    if (layerModel.layers) {
+      layerModel = layerModel.layers.at(layerIndex);
+    }
+    if (!layerModel) {
+      throw new Error('featureOver event for layer ' + layerIndex + ' was captured but layerModel coudn\'t be retrieved');
+    }
+
     var tooltipData = layerModel.getTooltipData();
     if (tooltipData) {
       tooltipView.setTemplate(tooltipData.template);
       tooltipView.setFields(tooltipData.fields);
       tooltipView.setAlternativeNames(tooltipData.alternative_names);
-      tooltipView.enable();
+      // tooltipView.enable();
     } else {
       tooltipView.disable();
     }

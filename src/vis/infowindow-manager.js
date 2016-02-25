@@ -26,7 +26,7 @@ InfowindowManager.prototype._addInfowindowForLayer = function (layerModel) {
     var layerView = this._mapView.getLayerViewByLayerCid(layerModel.cid);
 
     this._addInfowindowOverlay(layerView, layerModel);
-    this._bindFeatureClickEvent(layerView, layerModel);
+    this._bindFeatureClickEvent(layerView);
 
     layerView.bind('mouseover', function () {
       this._mapView.setCursor('pointer');
@@ -46,9 +46,18 @@ InfowindowManager.prototype._addInfowindowOverlay = function (layerView, layerMo
   }
 };
 
-InfowindowManager.prototype._bindFeatureClickEvent = function (layerView, layerModel) {
+InfowindowManager.prototype._bindFeatureClickEvent = function (layerView) {
   var infowindowView = layerView.infowindowView;
+  layerView.unbind('featureClick');
   layerView.bind('featureClick', function (e, latlng, pos, data, layerIndex) {
+    var layerModel = layerView.model;
+    if (layerModel.layers) {
+      layerModel = layerModel.layers.at(layerIndex);
+    }
+    if (!layerModel) {
+      throw new Error('featureClick event for layer ' + layerIndex + ' was captured but layerModel coudn\'t be retrieved');
+    }
+
     var infowindowFields = layerModel.getInfowindowData();
     if (!infowindowFields) {
       return;

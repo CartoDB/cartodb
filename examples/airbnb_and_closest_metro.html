@@ -172,9 +172,9 @@
                   "visible": true,
                   "options": {
                     "sql": [
-                      "SELECT *, GREATEST(4, POWER(LOG(price), 3)) price_width",
+                      "SELECT cartodb_id, the_geom, the_geom_webmercator, price, review_scores_value, room_type, neighbourhood_cleansed, GREATEST(4, POWER(LOG(price), 3)) price_width",
                       "FROM airbnb_madrid_oct_2015_listings",
-                      "ORDER BY price_width DESC"
+                      "ORDER BY price DESC"
                     ].join(' '),
                     "cartocss": ['#airbnb_madrid_oct_2015_listings {',
                       'marker-fill-opacity: 0.25;',
@@ -341,9 +341,9 @@
                   "maps_api_template": "https://{user}.cartodb-staging.com:443",
                   "options": {
                     "sql": [
-                      "SELECT *, GREATEST(4, POWER(LOG(price), 3)) price_width",
+                      "SELECT the_geom_webmercator, cartodb_id, accommodates, the_geom, price, closest_metro_distance, bathrooms, neighbourhood,bedrooms, name, review_scores_value, closest_metro_line, room_type, neighbourhood_cleansed, GREATEST(4, POWER(LOG(price), 3)) price_width",
                       "FROM airbnb_madrid_oct_2015_listings_with_closest_metro",
-                      "ORDER BY price_width DESC"
+                      "ORDER BY price DESC"
                     ].join(' '),
                     "layer_name": "Airbnb",
                      "cartocss": ['#airbnb_madrid_oct_2015_listings_with_closest_metro {',

@@ -126,13 +126,9 @@ WidgetsService.prototype.createListModel = function (attrs, layer) {
  * @param {String} attrs.column Name of column that contains
  * @param {Object} layer Instance of a layer model (cartodb.js)
  * @param {Number} bins
- * @param {Number} attrs.start
- * @param {Number} attrs.end
  * @return {WidgetModel}
  */
 WidgetsService.prototype.createTimeSeriesModel = function (attrs, layer) {
-  _checkProperties(attrs, ['start', 'end']);
-
   // TODO will other kind really work for a time-series?
   attrs.column_type = attrs.column_type || 'date';
   var dataviewModel = this._dataviews.createHistogramModel(layer, attrs);

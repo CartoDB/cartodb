@@ -20,16 +20,19 @@ module.exports = cdb.core.View.extend({
     this._chartView = this.options.chartView;
     this._torqueLayerModel = this.options.torqueLayerModel;
 
-    this._torqueLayerModel.bind('change:start change:end', this._onChangeTimeRange, this);
+    this._torqueLayerModel.bind('change:start change:end', this._updateChartandTimeslider, this);
     this._torqueLayerModel.bind('change:step', this._onChangeStep, this);
-    this._torqueLayerModel.bind('change:steps', this._onChangeSteps, this);
+    this._torqueLayerModel.bind('change:steps', this._updateChartandTimeslider, this);
     this._torqueLayerModel.bind('change:stepsRange', this._onStepsRange, this);
     this._torqueLayerModel.bind('change:renderRange', this._onRenderRangeChanged, this);
     this.add_related_model(this._torqueLayerModel);
 
-    this._chartView.model.bind('change:width', this._onChangeChartWidth, this);
+    this._chartView.model.bind('change:width', this._updateChartandTimeslider, this);
     this._chartView.model.bind('change:height', this._onChangeChartHeight, this);
     this.add_related_model(this._chartView.model);
+
+    this._dataviewModel.on('change:bins', this._updateChartandTimeslider, this);
+    this.add_related_model(this._dataviewModel);
 
     this._updateXScale();
   },
@@ -102,10 +105,6 @@ module.exports = cdb.core.View.extend({
     return x >= 0 && x <= this._width();
   },
 
-  _onChangeTimeRange: function () {
-    this._updateXScale();
-  },
-
   _onChangeStep: function () {
     // Time slider might not be created when this method is first called
     if (this.timeSlider && !this.model.get('isDragging')) {
@@ -122,10 +121,6 @@ module.exports = cdb.core.View.extend({
     }
   },
 
-  _onChangeSteps: function () {
-    this._updateXScale();
-  },
-
   _onStepsRange: function () {
     var r = this._torqueLayerModel.get('stepsRange');
     if (r.start === 0 && r.end === this._dataviewModel.get('bins')) {
@@ -139,13 +134,13 @@ module.exports = cdb.core.View.extend({
     this.$el.toggle(renderRange.start === renderRange.end);
   },
 
-  _onChangeChartWidth: function () {
-    this._updateXScale();
-    this._onChangeStep();
-  },
-
   _onChangeChartHeight: function () {
     this.timeSlider.attr('height', this._calcHeight());
+  },
+
+  _updateChartandTimeslider: function () {
+    this._updateXScale();
+    this._onChangeStep();
   },
 
   _calcHeight: function () {

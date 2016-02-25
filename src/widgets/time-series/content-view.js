@@ -42,20 +42,10 @@ module.exports = cdb.core.View.extend({
   },
 
   _onFirstLoad: function () {
-    this._storeBounds();
     this._dataviewModel.once('change:data', this.render, this);
     this._dataviewModel.fetch();
     if (!this._isDataEmpty()) {
       this.render();
-    }
-  },
-
-  _storeBounds: function () {
-    var data = this._dataviewModel.getData();
-    if (data && data.length > 0) {
-      var start = data[0].start;
-      var end = data[data.length - 1].end;
-      this._dataviewModel.set({ start: start, end: end, bins: data.length });
     }
   },
 

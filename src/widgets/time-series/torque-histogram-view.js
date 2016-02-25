@@ -83,6 +83,8 @@ module.exports = cdb.core.View.extend({
   _onChangeData: function () {
     if (this._chartView) {
       this._chartView.replaceData(this._dataviewModel.getData());
+      this._chartView.updateXScale();
+      this._chartView.updateYScale();
       this._reSelectRange();
     }
   },

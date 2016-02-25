@@ -18,7 +18,8 @@ module Carto
         def show
           @visualization_data = Carto::Api::VisualizationPresenter.new(@visualization, current_viewer, self).to_poro
           @vizjson = Carto::Api::VizJSON3Presenter.new(@visualization, $tables_metadata)
-                                                  .to_vizjson(https_request: is_https?)
+                                                  .to_vizjson(https_request: is_https?,
+                                                              vector: params[:vector])
 
           render 'show'
         end

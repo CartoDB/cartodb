@@ -22,7 +22,8 @@ module Carto
         @visualization_data = Carto::Api::VisualizationPresenter.new(@visualization, current_viewer, self).to_poro
         @layers_data = @visualization.layers.map { |l| Carto::Api::LayerPresenter.new(l).to_poro }
         @vizjson = Carto::Api::VizJSON3Presenter.new(@visualization, $tables_metadata)
-                                                .to_vizjson(https_request: is_https?)
+                                                .to_vizjson(https_request: is_https?,
+                                                            vector: params[:vector])
       end
 
       private

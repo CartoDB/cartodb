@@ -21,6 +21,9 @@ module Carto
 
         vizjson[:datasource] = datasource(options)
         vizjson[:user] = user
+
+        vizjson[:vector] = vector?(options)
+
         vizjson
       end
 
@@ -63,6 +66,10 @@ module Carto
           fullname: @visualization.user.name.present? ? @visualization.user.name : @visualization.user.username,
           avatar_url: @visualization.user.avatar_url
         }
+      end
+
+      def vector?(params)
+        params[:vector].present? && ['true', true].include?(params[:vector])
       end
     end
   end

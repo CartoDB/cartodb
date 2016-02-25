@@ -17,6 +17,7 @@ WORKING_SPECS_INTEGRATIONS = \
 WORKING_SPECS_1 = \
   spec/rspec_configuration.rb \
   spec/models/table_spec.rb \
+	spec/models/table_privacy_manager_spec.rb \
   spec/models/table/relator_spec.rb \
   spec/models/table/column_typecaster_spec.rb \
   spec/models/user_spec.rb \
@@ -29,7 +30,7 @@ WORKING_SPECS_1 = \
   spec/requests/api/json/layer_presenter_spec.rb \
   spec/requests/carto/admin/bi_visualizations_controller_spec.rb \
 	spec/requests/carto/api/bi_visualizations_controller_spec.rb \
-    spec/requests/carto/api/layer_presenter_spec.rb \
+  spec/requests/carto/api/layer_presenter_spec.rb \
 	spec/requests/carto/api/data_import_presenter_spec.rb \
 	spec/requests/carto/api/database_groups_controller_spec.rb \
   spec/requests/carto/api/layer_presenter_spec.rb \
@@ -214,7 +215,6 @@ WORKING_SPECS_9 = \
 	spec/models/carto/user_service_spec.rb \
 	spec/models/carto/user_spec.rb \
 	spec/models/carto/user_table_spec.rb \
-	spec/models/table_privacy_manager_spec.rb \ 
 	spec/models/carto/organization_spec.rb \
 	services/table-geocoder/spec/lib/abstract_table_geocoder_spec.rb \
 	services/geocoder/spec/hires_batch_geocoder_spec.rb \

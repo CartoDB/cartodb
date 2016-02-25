@@ -1,6 +1,6 @@
 <div class="WidgetList-option">
-  <input class="CDB-Checkbox js-checkbox" type="checkbox" <% if (isSelected) { %>checked="checked"<% } %> />
-  <span class="u-iBlock CDB-Checkbox-face"></span>
+  <input class="CDB-Radio u-iBlock js-radio" type="radio" <% if (isSelected) { %>checked="checked"<% } %> />
+  <span class="u-iBlock CDB-Radio-face"></span>
 </div>
 
 <div class="WidgetList-inner js-inner">

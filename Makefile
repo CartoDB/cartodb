@@ -214,6 +214,7 @@ WORKING_SPECS_9 = \
 	spec/models/carto/user_service_spec.rb \
 	spec/models/carto/user_spec.rb \
 	spec/models/carto/user_table_spec.rb \
+	spec/models/table_privacy_manager_spec.rb \ 
 	spec/models/carto/organization_spec.rb \
 	services/table-geocoder/spec/lib/abstract_table_geocoder_spec.rb \
 	services/geocoder/spec/hires_batch_geocoder_spec.rb \

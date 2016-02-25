@@ -63,6 +63,7 @@
       "style": {
         "sync_on_data_change": "Unfiltered",
         "sync_on_bbox_change": "Dynamic",
+        "description": "Description",
         "yes": "Yes",
         "no": "No"
       }

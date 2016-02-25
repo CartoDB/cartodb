@@ -137,7 +137,7 @@ module CartoDB
       end
 
       def filename_valid_encoding?(filename)
-        return filename.force_encoding("UTF-8").valid_encoding?
+        filename.force_encoding("UTF-8").valid_encoding?
       end
 
       def normalize(filename)

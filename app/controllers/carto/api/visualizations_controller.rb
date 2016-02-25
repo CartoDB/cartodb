@@ -94,7 +94,7 @@ module Carto
       end
 
       def vizjson3
-        render_vizjson(generate_vizjson3)
+        render_vizjson(generate_vizjson3(vector: params[:vector]))
       end
 
       def list_watching
@@ -126,8 +126,9 @@ module Carto
         Carto::Api::VizJSONPresenter.new(@visualization, $tables_metadata).to_vizjson(https_request: is_https?)
       end
 
-      def generate_vizjson3
-        Carto::Api::VizJSON3Presenter.new(@visualization, $tables_metadata).to_vizjson(https_request: is_https?)
+      def generate_vizjson3(options = {})
+        Carto::Api::VizJSON3Presenter.new(@visualization, $tables_metadata).to_vizjson(https_request: is_https?,
+                                                                                       vector: options[:vector])
       end
 
       def render_vizjson(vizjson)

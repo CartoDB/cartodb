@@ -12,7 +12,6 @@ module CartoDB
   module Importer2
     class Unp
       HIDDEN_FILE_REGEX     = /^(\.|\_{2})/
-      UNP_READ_ERROR_REGEX  = /.*Cannot read.*/
       COMPRESSED_EXTENSIONS = %w{ .zip .gz .tgz .tar.gz .bz2 .tar .kmz .rar }
       SUPPORTED_FORMATS     = %w{
         .csv .shp .ods .xls .xlsx .tif .tiff .kml .kmz
@@ -65,9 +64,10 @@ module CartoDB
 
       def crawl(path, files=[])
         Dir.foreach(path) do |subpath|
-          next if hidden?(subpath)
-          next if subpath =~ /.*readme.*\.txt/i
-          next if subpath =~ /\.version\.txt/i
+          normalized_subpath = underscore(subpath)
+          next if hidden?(normalized_subpath)
+          next if normalized_subpath =~ /.*readme.*\.txt/i
+          next if normalized_subpath =~ /\.version\.txt/i
 
           fullpath = normalize("#{path}/#{subpath}")
           (crawl(fullpath, files) and next) if File.directory?(fullpath)
@@ -143,7 +143,7 @@ module CartoDB
       end
 
       def underscore(filename)
-        filename.encode('UTF-8')
+        filename.encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '')
           .gsub(' ', '_')
           .gsub(/\(/, '')
           .gsub(/\)/, '')
@@ -179,7 +179,7 @@ module CartoDB
       end
 
       def unp_failure?(output, exit_code)
-        !!(output =~ UNP_READ_ERROR_REGEX) || (exit_code != 0)
+        (exit_code != 0)
       end
 
       # Return a new temporary file contained inside a tmp subfolder

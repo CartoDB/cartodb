@@ -150,7 +150,7 @@ module.exports = Model.extend({
   },
 
   _shouldFetchOnURLChange: function () {
-    return this.get('sync_on_data_change') && this.get('enabled');
+    return (this.get('sync_on_data_change') && this.get('enabled')) || (this._wasUpdated && this.get('enabled'));
   },
 
   _shouldFetchOnBoundingBoxChange: function () {
@@ -163,6 +163,7 @@ module.exports = Model.extend({
 
   update: function (attrs) {
     attrs = _.pick(attrs, this.constructor.ATTRS_NAMES);
+    this._wasUpdated = true;
     this.set(attrs);
   },
 
@@ -187,9 +188,11 @@ module.exports = Model.extend({
       success: function () {
         successCallback && successCallback(arguments);
         this.trigger('loaded', this);
+        this._wasUpdated = false;
       }.bind(this),
       error: function (mdl, err) {
         if (!err || (err && err.statusText !== 'abort')) {
+          this._wasUpdated = false;
           this.trigger('error', mdl, err);
         }
       }.bind(this)

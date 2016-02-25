@@ -2315,24 +2315,7 @@ describe Table do
 
       # Scenario 2: Fail setting user table privacy (unlikely, but just in case)
 
-      @stub_calls = 0
-      CartoDB::TablePrivacyManager.any_instance.stubs(:set_from_table_privacy) do
-        @stub_calls += 1
-        if @stub_calls > 1
-          true
-        else
-          raise StandardError
-        end
-      end
-
-      table.privacy = UserTable::PRIVACY_PRIVATE
-      expect do
-        table.save
-      end.to raise_exception StandardError
-
-      table.reload.privacy.should eq UserTable::PRIVACY_PUBLIC
-
-      CartoDB::TablePrivacyManager.any_instance.unstub(:set_from_table_privacy)
+      # Moved to table_privacy_manager_spec
 
       # Scenario 3: Fail saving canonical visualization named map
 

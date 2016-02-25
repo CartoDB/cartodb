@@ -145,7 +145,6 @@ describe('src/vis/tooltip-manager.js', function () {
       }
     });
 
-
     var tooltipManager = new TooltipManager(this.vis);
     tooltipManager.manage(this.mapView, this.map);
 

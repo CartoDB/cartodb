@@ -16,6 +16,7 @@ describe Visualization::NameChecker do
     Visualization.repository = DataRepository::Backend::Sequel.new(@db, :visualizations)
 
     @user = OpenStruct.new(
+      id:   'b21ff32c-45c2-4300-a49b-786d35524d52',
       maps: [OpenStruct.new(id: 'c21ff32c-45c2-4300-a49b-786d35524d52'),
              OpenStruct.new(id: 'c21ff32c-45c2-4300-a49b-786d35524d57')]
     )
@@ -26,7 +27,8 @@ describe Visualization::NameChecker do
       privacy:    'public',
       created_at: Time.now,
       updated_at: Time.now,
-      map_id:     'c21ff32c-45c2-4300-a49b-786d35524d52'
+      map_id:     'c21ff32c-45c2-4300-a49b-786d35524d52',
+      user_id:    'b21ff32c-45c2-4300-a49b-786d35524d52'
     )
 
     @db[:visualizations].insert(
@@ -35,7 +37,8 @@ describe Visualization::NameChecker do
       privacy:    'public',
       created_at: Time.now,
       updated_at: Time.now,
-      map_id:     'c21ff32c-45c2-4300-a49b-786d35524d57'
+      map_id:     'c21ff32c-45c2-4300-a49b-786d35524d57',
+      user_id:    'b21ff32c-45c2-4300-a49b-786d35524d52'
     )
   end
 

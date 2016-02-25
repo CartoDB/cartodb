@@ -14,8 +14,17 @@ var LeafletTiledLayerView = L.TileLayer.extend({
       opacity:      layerModel.get('opacity')
     });
     LeafletLayerView.call(this, layerModel, this, leafletMap);
-  }
+  },
 
+  onAdd: function (map) {
+    L.TileLayer.prototype.onAdd.call(this, map);
+
+    var container = this.getContainer();
+    // Disable mouse events for the container of this layer so that
+    // events are not captured and other layers below can respond to mouse
+    // events
+    container.style.pointerEvents = 'none';
+  }
 });
 
 _.extend(LeafletTiledLayerView.prototype, LeafletLayerView.prototype, {

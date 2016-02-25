@@ -32,6 +32,22 @@ var LeafletCartoDBVectorLayerGroupView = CartoDBd3Layer.extend({
     }, this);
 
     layerModel.layers.bind('add', this._onLayerAdded, this);
+
+    this._on('featureClick', function (event, latlng, pos, data, layerIndex) {
+      this.trigger('featureClick', event, latlng, pos, data, layerIndex);
+    }.bind(this));
+
+    this._on('featureOver', function (event, latlng, pos, data, layerIndex) {
+      this.trigger('featureOver', event, latlng, pos, data, layerIndex);
+
+      // CartoDB.js tooltips depend on the mouseover event so we trigger it here
+      this.trigger('mouseover', event, latlng, pos, data);
+    }.bind(this));
+
+    this._on('featureOut', function (event, latlng, pos, data, layerIndex) {
+      // CartoDB.js tooltips depend on the mouseout event so we trigger it here
+      this.trigger('mouseout');
+    }.bind(this));
   },
 
   _onLayerAdded: function (layerModel, layersCollection) {

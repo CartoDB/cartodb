@@ -139,8 +139,9 @@ describe Table do
     end
 
     it 'receives a name change if table visualization name changed' do
+      Table.any_instance.stubs(:update_cdb_tablemetadata)
+
       table = create_table(name: 'bogus_name', user_id: @user.id)
-      table.stubs(:update_cdb_tablemetadata)
 
       table.table_visualization.name.should == table.name
 

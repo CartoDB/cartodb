@@ -531,11 +531,17 @@ class User < Sequel::Model
     configuration = db_service.db_configuration_for(options[:as])
     configuration['database'] = options['database'] unless options['database'].nil?
 
-    connection = $pool.fetch(configuration) do
-      db = get_database(options, configuration)
-      db.extension(:connection_validator)
-      db.pool.connection_validation_timeout = configuration.fetch('conn_validator_timeout', -1)
-      db
+    begin
+      connection = $pool.fetch(configuration) do
+        db = get_database(options, configuration)
+        db.extension(:connection_validator)
+        db.pool.connection_validation_timeout = configuration.fetch('conn_validator_timeout', -1)
+        db
+      end
+    rescue => exception
+      CartoDB::report_exception(exception, "Cannot connect to user database",
+                                user: self, database: configuration['database'])
+      raise exception
     end
 
     if block_given?

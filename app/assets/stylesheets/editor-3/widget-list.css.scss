@@ -7,10 +7,15 @@
   flex-wrap: wrap;
 }
 
-.WidgetList-fakeInner {
+.WidgetList-fakeInner { // TODO: REMOVE ME
   width: 940px;
   margin: auto;
+  .CDB-NavMenu-Inner {
+    text-align: center;
+    padding-top: 10px;
+  }
 }
+
 .WidgetList-option {
   margin-right: 16px;
 }

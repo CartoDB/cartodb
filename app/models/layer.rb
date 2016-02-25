@@ -78,7 +78,7 @@ class Layer < Sequel::Model
     maps.each(&:invalidate_vizjson_varnish_cache)
 
     if data_layer?
-      update_affected_tables_table_metadata
+      notify_table_change
       register_table_dependencies
     end
   end

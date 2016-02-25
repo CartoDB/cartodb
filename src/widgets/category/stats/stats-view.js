@@ -42,12 +42,15 @@ module.exports = cdb.core.View.extend({
       animationTemplate, { defaultValue: '-', animationSpeed: 700, formatter: formatter.formatValue }
     );
 
+    this._checkVisibility();
+
     return this;
   },
 
   _initBinds: function () {
     this.dataviewModel.bind('change:data change:totalCount', this.render, this);
     this.widgetModel.bind('change:search change:locked', this.render, this);
+    this.widgetModel.bind('change:show_stats', this._checkVisibility, this);
     this.add_related_model(this.dataviewModel);
     this.add_related_model(this.widgetModel);
   },
@@ -91,5 +94,9 @@ module.exports = cdb.core.View.extend({
       this.dataviewModel.getData().reject(function (mdl) {
         return mdl.get('agg');
       }), 'name').length;
+  },
+
+  _checkVisibility: function () {
+    this.$el.toggle(!!this.widgetModel.get('show_stats'));
   }
 });

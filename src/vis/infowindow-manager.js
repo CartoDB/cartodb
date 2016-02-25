@@ -48,8 +48,8 @@ InfowindowManager.prototype._addInfowindowOverlay = function (layerView, layerMo
 
 InfowindowManager.prototype._bindFeatureClickEvent = function (layerView) {
   var infowindowView = layerView.infowindowView;
-  layerView.unbind('featureClick');
-  layerView.bind('featureClick', function (e, latlng, pos, data, layerIndex) {
+
+  var onFeatureClick = function (e, latlng, pos, data, layerIndex) {
     var layerModel = layerView.model;
     if (layerModel.layers) {
       layerModel = layerModel.layers.at(layerIndex);
@@ -106,7 +106,9 @@ InfowindowManager.prototype._bindFeatureClickEvent = function (layerView) {
         return feature.cartodb_id !== cartoDBId;
       }).hide();
     }
-  });
+  };
+  layerView.unbind('featureClick', onFeatureClick);
+  layerView.bind('featureClick', onFeatureClick);
 };
 
 module.exports = InfowindowManager;

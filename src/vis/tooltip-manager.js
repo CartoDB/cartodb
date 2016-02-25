@@ -53,8 +53,8 @@ TooltipManager.prototype._addTooltipOverlay = function (layerView, layerModel) {
 
 TooltipManager.prototype._bindFeatureOverEvent = function (layerView) {
   var tooltipView = layerView.tooltipView;
-  layerView.unbind('featureOver');
-  layerView.bind('featureOver', function (e, latlng, pos, data, layerIndex) {
+
+  var onFeatureOver = function (e, latlng, pos, data, layerIndex) {
     var layerModel = layerView.model;
     if (layerModel.layers) {
       layerModel = layerModel.layers.at(layerIndex);
@@ -72,7 +72,9 @@ TooltipManager.prototype._bindFeatureOverEvent = function (layerView) {
     } else {
       tooltipView.disable();
     }
-  });
+  };
+  layerView.unbind('featureOver', onFeatureOver);
+  layerView.bind('featureOver', onFeatureOver);
 };
 
 module.exports = TooltipManager;

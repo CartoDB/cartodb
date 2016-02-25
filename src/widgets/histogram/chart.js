@@ -487,6 +487,10 @@ module.exports = cdb.core.View.extend({
     return d3.scale.linear().domain([0, d3.max(data, function (d) { return _.isEmpty(d) ? 0 : d.freq; })]).range([this.chartHeight(), 0]);
   },
 
+  updateXScale: function () {
+    this.xScale = this._getXScale();
+  },
+
   updateYScale: function () {
     this.yScale = this._getYScale();
   },
@@ -496,7 +500,7 @@ module.exports = cdb.core.View.extend({
   },
 
   _setupScales: function () {
-    this.xScale = this._getXScale();
+    this.updateXScale();
 
     if (!this._originalYScale) {
       this._originalYScale = this.yScale = this._getYScale();

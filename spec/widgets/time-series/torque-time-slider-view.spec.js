@@ -7,7 +7,10 @@ describe('widgets/time-series/torque-time-slider-view', function () {
     var vis = specHelper.createDefaultVis();
     this.dataviewModel = vis.dataviews.createHistogramModel(vis.map.layers.first(), {
       column: 'dates',
-      bins: 256,
+      bins: 256
+    });
+    // Assume start/end are set for the test env
+    this.dataviewModel.set({
       start: 0,
       end: 1
     });

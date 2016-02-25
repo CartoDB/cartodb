@@ -311,8 +311,6 @@ module.exports = cdb.core.View.extend({
       lo_index: null,
       hi_index: null
     });
-    this._dataviewModel.disableFilter();
-    this.filter.unsetRange();
   },
 
   _onChangeZoomEnabled: function () {

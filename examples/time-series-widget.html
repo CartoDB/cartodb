@@ -66,9 +66,7 @@
               "layer_id": "101e17db-1466-4842-8eef-f81da32f48db",
               "options": {
                 "column": "end_at",
-                "bins": 256,
-                "start": "2013-02-25T00:00:00Z",
-                "end": "2013-02-28T01:00:00Z"
+                "bins": 256
               }
             }
           ],
@@ -348,7 +346,7 @@
           }
         };
 
-        cartodb.deepInsights.createDashboard('#dashboard', vizJSON, {
+        window.dashboard = cartodb.deepInsights.createDashboard('#dashboard', vizJSON, {
           no_cdn: false,
           layer_selector: true,
         });

@@ -247,7 +247,7 @@ describe CartoDB::Connector::Importer do
     data_import.values[:data_source] = filepath
 
     # It raises #<RuntimeError: Error: User doesn't have private tables enabled>
-    expect{data_import.run_import!}.to raise_error(RuntimeError)
+    expect { data_import.run_import! }.to raise_error(RuntimeError)
 
     data_import.success.should_not eq true
   end

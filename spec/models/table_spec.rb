@@ -631,20 +631,6 @@ describe Table do
       table.name.should == 'wadus_table'
     end
 
-    it "should invoke update_cdb_tablemetadata when the table is renamed" do
-      delete_user_data @user
-      @user.private_tables_enabled = false
-      @user.save
-
-      table = create_table(name: 'Wadus table', user_id: @user.id)
-      table.stubs(:update_cdb_tablemetadata)
-      CartoDB::TablePrivacyManager.any_instance
-
-      table.expects(:update_cdb_tablemetadata)
-      table.name = 'Wadus table #23'
-      table.save
-    end
-
     it "should rename the pk sequence when renaming the table" do
       table1 = new_table(name: 'table 1', user_id: @user.id)
       table1.stubs(:update_cdb_tablemetadata)

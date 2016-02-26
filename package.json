@@ -43,7 +43,7 @@
   "devDependencies": {
     "browserify": "11.2.0",
     "d3": "^3.5.15",
-    "d3.cartodb": "git://github.com/CartoDB/d3.cartodb.git#41beae29f4ea7939e6f9e38fbd79f7e54fe2cf85",
+    "d3.cartodb": "git://github.com/CartoDB/d3.cartodb.git#85d576f902b2a7f89a116b82c389ccaf9d64bd76",
     "findup-sync": "0.1.3",
     "grunt": "0.4.5",
     "grunt-aws": "^0.4.0",

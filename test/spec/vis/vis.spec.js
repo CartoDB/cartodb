@@ -2,14 +2,12 @@ var $ = require('jquery');
 var _ = require('underscore');
 var Backbone = require('backbone');
 var View = require('../../../src/core/view');
-var config = require('cdb.config');
 
 // required due to implicit dependency in vis --> map-view
 var cdb = require('cdb');
 _.extend(cdb.geo, require('../../../src/geo/leaflet'));
 _.extend(cdb.geo, require('../../../src/geo/gmaps'));
 
-var createVis = require('../../../src/api/create-vis');
 var Overlay = require('../../../src/vis/vis/overlay');
 var Vis = require('../../../src/vis/vis');
 require('../../../src/vis/overlays'); // Overlay.register calls
@@ -17,8 +15,6 @@ require('../../../src/vis/layers'); // Layers.register calls
 
 describe('vis/vis', function () {
   beforeEach(function () {
-    config.FORCE_CLIENT_SIDE_RENDERING = false;
-
     this.container = $('<div>').css('height', '200px');
     this.mapConfig = {
       updated_at: 'cachebuster',

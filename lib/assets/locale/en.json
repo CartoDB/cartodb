@@ -1,4 +1,10 @@
 {
+  "components": {
+    "error": {
+      "default-title": "Oops, there was a problem",
+      "default-desc": "Reload the page again. If the problem persists contact us at <a href='mailto:support@cartodb.com'>support@cartodb.com</a>"
+    }
+  },
   "editor": {
     "map": "map",
     "map_name": "%{name} map",

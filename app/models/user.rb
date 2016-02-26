@@ -246,7 +246,7 @@ class User < Sequel::Model
   def delete_common_data
     CartoDB::Visualization::CommonDataService.new.delete_common_data_for_user(self)
   rescue => e
-    CartoDB.notify_error("Error deleting common data for user", user: inspect, error: e.inspect)
+    CartoDB.notify_error("Error deleting common data for user", user: self, error: e.inspect)
   end
 
   def after_save
@@ -365,13 +365,13 @@ class User < Sequel::Model
     external_data_imports = ExternalDataImport.by_user_id(self.id)
     external_data_imports.each { |edi| edi.destroy }
   rescue => e
-    CartoDB.notify_error('Error deleting external data imports at user deletion', { user: self.inspect, error: e.inspect })
+    CartoDB.notify_error('Error deleting external data imports at user deletion', user: self, error: e.inspect)
   end
 
   def delete_external_sources
     delete_common_data
   rescue => e
-    CartoDB.notify_error('Error deleting external data imports at user deletion', { user: self.inspect, error: e.inspect })
+    CartoDB.notify_error('Error deleting external data imports at user deletion', user: self, error: e.inspect)
   end
 
   def after_destroy
@@ -531,11 +531,17 @@ class User < Sequel::Model
     configuration = db_service.db_configuration_for(options[:as])
     configuration['database'] = options['database'] unless options['database'].nil?
 
-    connection = $pool.fetch(configuration) do
-      db = get_database(options, configuration)
-      db.extension(:connection_validator)
-      db.pool.connection_validation_timeout = configuration.fetch('conn_validator_timeout', -1)
-      db
+    begin
+      connection = $pool.fetch(configuration) do
+        db = get_database(options, configuration)
+        db.extension(:connection_validator)
+        db.pool.connection_validation_timeout = configuration.fetch('conn_validator_timeout', -1)
+        db
+      end
+    rescue => exception
+      CartoDB::report_exception(exception, "Cannot connect to user database",
+                                user: self, database: configuration['database'])
+      raise exception
     end
 
     if block_given?

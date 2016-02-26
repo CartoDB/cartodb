@@ -139,7 +139,7 @@ module.exports = Model.extend({
     this.listenTo(this._map, 'change:center change:zoom', _.debounce(this._onMapBoundsChanged.bind(this), BOUNDING_BOX_FILTER_WAIT));
 
     this.on('change:url', function (mdl, attrs, opts) {
-      if (opts.forceFetch || this._shouldFetchOnURLChange()) {
+      if ((opts && opts.forceFetch) || this._shouldFetchOnURLChange()) {
         this.fetch();
       }
     }, this);

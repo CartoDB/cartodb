@@ -8,6 +8,7 @@ class Carto::Widget < ActiveRecord::Base
   validate :options_must_be_json
 
   after_save :notify_maps_change
+  after_destroy :notify_maps_change
 
   def self.from_visualization_id(visualization_id)
     Carto::Visualization.find(visualization_id).layers.map(&:widgets).flatten

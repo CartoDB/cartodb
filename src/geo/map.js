@@ -18,7 +18,9 @@ var Map = Model.extend({
     scrollwheel: true,
     drag: true,
     keyboard: true,
-    provider: 'leaflet'
+    provider: 'leaflet',
+    // enforce client-side rendering using GeoJSON vector tiles
+    vector: false
   },
 
   RELOAD_DEBOUNCE_TIME: 10,

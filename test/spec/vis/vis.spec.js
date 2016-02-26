@@ -8,7 +8,6 @@ var cdb = require('cdb');
 _.extend(cdb.geo, require('../../../src/geo/leaflet'));
 _.extend(cdb.geo, require('../../../src/geo/gmaps'));
 
-var createVis = require('../../../src/api/create-vis');
 var Overlay = require('../../../src/vis/vis/overlay');
 var Vis = require('../../../src/vis/vis');
 require('../../../src/vis/overlays'); // Overlay.register calls
@@ -611,7 +610,7 @@ describe('vis/vis', function () {
       expect(tooltip.options.layer).toEqual(layer);
     });
 
-    it('should add an overlay to the first layer and enable interaction', function (done) {
+    it('should add an overlay to the first layer and enable interaction', function () {
       var vizjson = {
         layers: [
           {
@@ -645,18 +644,16 @@ describe('vis/vis', function () {
           force_cors: true // This is sometimes set in the editor
         }
       };
-      createVis('map', vizjson, {})
-        .done(function (vis, layers) {
-          var tooltip = vis.addOverlay({
-            type: 'tooltip',
-            template: 'test'
-          });
-          var layerView = vis.getLayers()[1];
 
-          expect(tooltip.options.layer).toEqual(layerView);
-          done();
-        });
+      this.vis.load(vizjson);
+      var tooltip = this.vis.addOverlay({
+        type: 'tooltip',
+        template: 'test'
+      });
+
+      var layerView = this.vis.getLayers()[1];
+
+      expect(tooltip.options.layer).toEqual(layerView);
     });
   });
-
 });

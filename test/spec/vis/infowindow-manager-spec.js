@@ -1,3 +1,4 @@
+var _ = require('underscore');
 var Backbone = require('backbone');
 var MapView = require('../../../src/geo/map-view');
 var Map = require('../../../src/geo/map');
@@ -324,6 +325,48 @@ describe('src/vis/infowindow-manager.js', function () {
       'sanitizeTemplate': undefined,
       'width': undefined
     });
+  });
+
+  it('should bind the featureClick event to the corresponding layerView only once', function () {
+    spyOn(this.mapView, 'addInfowindow');
+
+    var layer1 = new CartoDBLayer({
+      infowindow: {
+        template: 'template1',
+        template_type: 'underscore',
+        fields: [{
+          'name': 'name',
+          'title': true,
+          'position': 1
+        }],
+        alternative_names: 'alternative_names1'
+      }
+    });
+
+    var layer2 = new CartoDBLayer({
+      infowindow: {
+        template: 'template2',
+        template_type: 'underscore',
+        fields: [{
+          'name': 'description',
+          'title': true,
+          'position': 1
+        }],
+        alternative_names: 'alternative_names2'
+      }
+    });
+
+    var infowindowManager = new InfowindowManager(this.vis);
+    infowindowManager.manage(this.mapView, this.map);
+
+    spyOn(this.layerView, 'bind');
+
+    this.map.layers.reset([ layer1, layer2 ]);
+
+    var featureClickBinds = _.select(this.layerView.bind.calls.all(), function (call) {
+      return call.args[0] === 'featureClick';
+    });
+    expect(featureClickBinds.length).toEqual(1);
   });
 
   it('should set a filter on the tooltipView if the layer has tooltip too', function () {

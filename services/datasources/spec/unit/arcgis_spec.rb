@@ -9,6 +9,7 @@ describe Url::ArcGIS do
 
   before(:all) do
     @url = 'http://myserver/arcgis/rest/services/MyFakeService/featurename'
+    @invalid_url = 'http://myserver/mysite/rest/myfakefolder/MyFakeService/featurename'
     @user = CartoDB::Datasources::Doubles::User.new
   end
 
@@ -144,6 +145,11 @@ describe Url::ArcGIS do
       expect {
         arcgis.send(:get_subresource_metadata, @url, sub_id)
       }.to raise_error InvalidServiceError
+
+      # Invalid ArcGIS URL
+      expect {
+        arcgis.send(:get_resource_metadata, @invalid_url)
+      }.to raise_error InvalidInputDataError
 
     end
 

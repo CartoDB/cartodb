@@ -1,6 +1,5 @@
 <div class="WidgetList-option">
   <input class="CDB-Radio u-iBlock js-radio" type="radio" <% if (isSelected) { %>checked="checked"<% } %> />
-
   <span class="u-iBlock CDB-Radio-face"></span>
 </div>
 

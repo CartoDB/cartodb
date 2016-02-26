@@ -11,6 +11,7 @@ class SignupController < ApplicationController
 
   skip_before_filter :http_header_authentication, only: [:create_http_authentication]
 
+  before_filter :verify_authenticity_token, only: [:signup, :create]
   before_filter :load_organization, only: [:create_http_authentication]
   before_filter :load_mandatory_organization, only: [:signup, :create]
   before_filter :disable_if_ldap_configured

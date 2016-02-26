@@ -33,6 +33,18 @@ describe('widgets/category/stats-view', function () {
       expect(this.view.$('.CDB-Widget-infoDescription:eq(1)').text()).toContain('of total');
     });
 
+    it('should check visibility after rendering', function () {
+      this.dataviewModel._data.reset([
+        { name: 'ES', agg: false, value: 2 },
+        { name: 'FR', agg: false, value: 2 },
+        { name: 'Other', agg: true, value: 1 }
+      ]);
+      spyOn(this.view, '_checkVisibility').and.callThrough();
+      this.view.render();
+      expect(this.view.$('.CDB-Widget-infoDescription:eq(1)').text()).toContain('of total');
+      expect(this.view._checkVisibility).toHaveBeenCalled();
+    });
+
     describe('search', function () {
       it('should show number of results when a search is applied', function () {
         spyOn(this.widgetModel, 'isSearchEnabled').and.returnValue(true);
@@ -72,6 +84,27 @@ describe('widgets/category/stats-view', function () {
       expect(bind[0]).toContain('change:search');
       expect(bind[0]).toContain('change:locked');
       expect(bind[1]).toEqual(this.view.render);
+    });
+  });
+
+  describe('._checkVisibility', function () {
+    beforeEach(function () {
+      this.dataviewModel._data.reset([
+        { name: 'FR', agg: false, value: 2 },
+        { name: 'US', agg: false, value: 2 },
+        { name: 'Other', agg: true, value: 1 }
+      ]);
+      this.view.render();
+    });
+
+    it('should show stats if show_stats attribute is enabled', function () {
+      this.widgetModel.set('show_stats', true);
+      expect(this.view.$el.css('display')).not.toBe('none');
+    });
+
+    it('should hide stats if show_stats attribute is enabled', function () {
+      this.widgetModel.set('show_stats', false);
+      expect(this.view.$el.css('display')).toBe('none');
     });
   });
 });

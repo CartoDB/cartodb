@@ -42,14 +42,12 @@ module.exports = cdb.core.View.extend({
     this.$('.js-header').append(searchTitle.render().el);
     this.addView(searchTitle);
 
-    if (this.model.get('show_stats')) {
-      var stats = new CategoryStatsView({
-        widgetModel: this.model,
-        dataviewModel: this._dataviewModel
-      });
-      this.$('.js-header').append(stats.render().el);
-      this.addView(stats);
-    }
+    var stats = new CategoryStatsView({
+      widgetModel: this.model,
+      dataviewModel: this._dataviewModel
+    });
+    this.$('.js-header').append(stats.render().el);
+    this.addView(stats);
 
     var options = new CategoryOptionsView({
       widgetModel: this.model,

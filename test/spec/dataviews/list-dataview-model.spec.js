@@ -9,7 +9,7 @@ describe('dataviews/list-dataview-model', function () {
     }, {
       map: this.map,
       windshaftMap: windshaftMap,
-      layer: jasmine.createSpyObj('layer', ['get'])
+      layer: jasmine.createSpyObj('layer', ['get', 'getDataProvider'])
     });
   });
 

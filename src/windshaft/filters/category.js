@@ -132,5 +132,13 @@ module.exports = WindshaftFilterBase.extend({
     json[this.get('dataviewId')] = filter;
 
     return json;
+  },
+
+  getAcceptedCategoryNames: function () {
+    return this.acceptedCategories.map(function (category) { return category.get('name'); });
+  },
+
+  getRejectedCategoryNames: function () {
+    return this.rejectedCategories.map(function (category) { return category.get('name'); });
   }
 });

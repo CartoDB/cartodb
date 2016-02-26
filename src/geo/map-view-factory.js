@@ -26,7 +26,9 @@ MapViewFactory.prototype.createMapView = function (provider, mapModel, el) {
   return new MapViewClass({
     el: el,
     map: mapModel,
-    layerViewFactory: new LayerViewFactoryClass()
+    layerViewFactory: new LayerViewFactoryClass({
+      vector: mapModel.get('vector')
+    })
   });
 };
 

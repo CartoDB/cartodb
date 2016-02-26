@@ -51,6 +51,10 @@ module.exports = Model.extend({
       this.filter.set('dataviewId', this.id);
     }
 
+    var dataProvider = this.layer.getDataProvider();
+    if (dataProvider) {
+      this._dataProvider = dataProvider.createDataProviderForDataview(this);
+    }
     this._initBinds();
     this._updateBoundingBox();
   },
@@ -59,23 +63,34 @@ module.exports = Model.extend({
     this.listenTo(this._windshaftMap, 'instanceCreated', this._onNewWindshaftMapInstance);
     this.listenTo(this.layer, 'change:visible', this._onLayerVisibilityChanged);
 
-    this.listenToOnce(this, 'change:url', function () {
-      this.fetch({
-        success: this._onChangeBinds.bind(this)
+    if (this._dataProvider) {
+      this.listenToOnce(this._dataProvider, 'dataChanged', this._onChangeBinds, this);
+      this.listenTo(this._dataProvider, 'dataChanged', this._onDataProviderChanged);
+    } else {
+      this.listenToOnce(this, 'change:url', function () {
+        this.fetch({
+          success: this._onChangeBinds.bind(this)
+        });
       });
-    });
-
-    // Retrigger an event when the filter changes
+    }
     if (this.filter) {
       this.listenTo(this.filter, 'change', this._onFilterChanged);
     }
   },
 
+  _onDataProviderChanged: function () {
+    this.set(this.parse(this._dataProvider.getData()));
+  },
+
   /**
    * @private
    */
-  _onFilterChanged: function () {
-    this._reloadMap();
+  _onFilterChanged: function (filter) {
+    if (this._dataProvider) {
+      this._dataProvider.applyFilter(filter);
+    } else {
+      this._reloadMap();
+    }
   },
 
   /**
@@ -190,24 +205,27 @@ module.exports = Model.extend({
 
   fetch: function (opts) {
     opts = opts || {};
+    if (this._dataProvider) {
+      this.set(this.parse(this._dataProvider.getData()));
+    } else {
+      this.trigger('loading', this);
 
-    this.trigger('loading', this);
+      if (opts.success) {
+        var successCallback = opts && opts.success;
+      }
 
-    if (opts.success) {
-      var successCallback = opts && opts.success;
+      return Model.prototype.fetch.call(this, _.extend(opts, {
+        success: function () {
+          successCallback && successCallback(arguments);
+          this.trigger('loaded', this);
+        }.bind(this),
+        error: function (mdl, err) {
+          if (!err || (err && err.statusText !== 'abort')) {
+            this.trigger('error', mdl, err);
+          }
+        }.bind(this)
+      }));
     }
-
-    return Model.prototype.fetch.call(this, _.extend(opts, {
-      success: function () {
-        successCallback && successCallback(arguments);
-        this.trigger('loaded', this);
-      }.bind(this),
-      error: function (mdl, err) {
-        if (!err || (err && err.statusText !== 'abort')) {
-          this.trigger('error', mdl, err);
-        }
-      }.bind(this)
-    }));
   },
 
   toJSON: function () {

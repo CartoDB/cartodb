@@ -150,7 +150,6 @@ describe Url::ArcGIS do
       expect {
         arcgis.send(:get_resource_metadata, @invalid_url)
       }.to raise_error InvalidInputDataError
-
     end
 
     it 'tests metadata retrieval' do

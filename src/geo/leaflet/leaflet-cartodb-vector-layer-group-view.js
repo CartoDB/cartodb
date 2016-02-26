@@ -38,6 +38,8 @@ var LeafletCartoDBVectorLayerGroupView = CartoDBd3Layer.extend({
     }.bind(this));
 
     this._on('featureOver', function (event, latlng, pos, data, layerIndex) {
+
+      console.log('featureOver');
       this.trigger('featureOver', event, latlng, pos, data, layerIndex);
 
       // CartoDB.js tooltips depend on the mouseover event so we trigger it here

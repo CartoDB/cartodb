@@ -156,6 +156,7 @@ describe('src/vis/tooltip-manager.js', function () {
     spyOn(tooltipView, 'setTemplate');
     spyOn(tooltipView, 'setFields');
     spyOn(tooltipView, 'setAlternativeNames');
+    spyOn(tooltipView, 'enable');
 
     this.layerView.model = {
       layers: new Backbone.Collection([ layer1, layer2 ])
@@ -171,6 +172,8 @@ describe('src/vis/tooltip-manager.js', function () {
       'position': 1
     }]);
     expect(tooltipView.setAlternativeNames).toHaveBeenCalledWith('alternative_names1');
+    expect(tooltipView.enable).toHaveBeenCalled();
+    tooltipView.enable.calls.reset();
 
     // Simulate the featureOver event on layer #1
     this.layerView.trigger('featureOver', {}, [100, 200], undefined, { cartodb_id: 10 }, 1);
@@ -182,5 +185,43 @@ describe('src/vis/tooltip-manager.js', function () {
       'position': 1
     }]);
     expect(tooltipView.setAlternativeNames).toHaveBeenCalledWith('alternative_names2');
+    expect(tooltipView.enable).toHaveBeenCalled();
+  });
+
+  it('should disable the tooltipView if the layerModel doesn\'t have tooltip data', function () {
+    spyOn(this.mapView, 'addOverlay');
+
+    var layer1 = new CartoDBLayer({});
+    var layer2 = new CartoDBLayer({
+      tooltip: {
+        template: 'template2',
+        template_type: 'underscore',
+        fields: [{
+          'name': 'description',
+          'title': true,
+          'position': 1
+        }],
+        alternative_names: 'alternative_names2'
+      }
+    });
+
+    var tooltipManager = new TooltipManager(this.vis);
+    tooltipManager.manage(this.mapView, this.map);
+
+    this.map.layers.reset([ layer1, layer2 ]);
+
+    expect(this.mapView.addOverlay).toHaveBeenCalled();
+    var tooltipView = this.mapView.addOverlay.calls.mostRecent().args[0];
+
+    spyOn(tooltipView, 'disable');
+
+    this.layerView.model = {
+      layers: new Backbone.Collection([ layer1, layer2 ])
+    };
+
+    // Simulate the featureOver event on layer #0
+    this.layerView.trigger('featureOver', {}, [100, 200], undefined, { cartodb_id: 10 }, 0);
+
+    expect(tooltipView.disable).toHaveBeenCalled();
   });
 });

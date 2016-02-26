@@ -68,7 +68,7 @@ TooltipManager.prototype._bindFeatureOverEvent = function (layerView) {
       tooltipView.setTemplate(tooltipData.template);
       tooltipView.setFields(tooltipData.fields);
       tooltipView.setAlternativeNames(tooltipData.alternative_names);
-      // tooltipView.enable();
+      tooltipView.enable();
     } else {
       tooltipView.disable();
     }

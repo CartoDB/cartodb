@@ -1,4 +1,5 @@
 var Model = require('../../../src/core/model');
+var RangeFilter = require('../../../src/windshaft/filters/range');
 var HistogramDataviewModel = require('../../../src/dataviews/histogram-dataview-model');
 
 describe('dataviews/histogram-dataview-model', function () {
@@ -6,7 +7,7 @@ describe('dataviews/histogram-dataview-model', function () {
     this.map = jasmine.createSpyObj('map', ['getViewBounds', 'bind', 'reload']);
     this.map.getViewBounds.and.returnValue([[1, 2], [3, 4]]);
     var windshaftMap = jasmine.createSpyObj('windhsaftMap', ['bind']);
-    this.filter = new Model();
+    this.filter = new RangeFilter();
     this.layer = new Model();
     this.model = new HistogramDataviewModel({}, {
       map: this.map,
@@ -22,12 +23,73 @@ describe('dataviews/histogram-dataview-model', function () {
     expect(this.map.reload).toHaveBeenCalled();
   });
 
-  it('should refresh data on bins change', function () {
-    this.map.reload.calls.reset();
-    spyOn(this.model, 'fetch');
-    this.model.set('bins', 123);
-    expect(this.map.reload).not.toHaveBeenCalled();
-    expect(this.model.fetch).toHaveBeenCalled();
+  describe('when bins change', function () {
+    beforeEach(function () {
+      this.map.reload.calls.reset();
+      spyOn(this.model, 'fetch');
+      spyOn(this.model.filter, 'unsetRange');
+
+      this.model.set('bins', 123);
+    });
+
+    it('should refresh data on bins change', function () {
+      expect(this.map.reload).not.toHaveBeenCalled();
+      expect(this.model.fetch).toHaveBeenCalled();
+    });
+
+    it('should disable filter', function () {
+      expect(this.model.get('own_filter')).toBeUndefined();
+    });
+
+    it('should unset range filter', function () {
+      expect(this.model.filter.unsetRange).toHaveBeenCalled();
+    });
+  });
+
+  describe('when start change', function () {
+    beforeEach(function () {
+      this.map.reload.calls.reset();
+      spyOn(this.model, 'fetch');
+      spyOn(this.model.filter, 'unsetRange');
+
+      this.model.set('start', 0);
+    });
+
+    it('should refresh data on bins change', function () {
+      expect(this.map.reload).not.toHaveBeenCalled();
+      expect(this.model.fetch).toHaveBeenCalled();
+    });
+
+    it('should disable filter', function () {
+      expect(this.model.get('own_filter')).toBeUndefined();
+    });
+
+    it('should unset range filter', function () {
+      expect(this.model.filter.unsetRange).toHaveBeenCalled();
+    });
+  });
+
+  describe('when end change', function () {
+    beforeEach(function () {
+      this.map.reload.calls.reset();
+      spyOn(this.model, 'fetch');
+      spyOn(this.model.filter, 'unsetRange');
+
+      this.model.set('end', 0);
+    });
+
+    it('should refresh data on bins change', function () {
+      expect(this.map.reload).not.toHaveBeenCalled();
+      expect(this.model.fetch).toHaveBeenCalled();
+    });
+
+    it('should disable filter', function () {
+      expect(this.model.get('own_filter')).toBeUndefined();
+    });
+
+    it('should unset range filter', function () {
+      expect(this.model.filter.unsetRange).toHaveBeenCalled();
+    });
   });
 
   it('should include the bbox after the first fetch', function () {

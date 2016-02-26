@@ -25,8 +25,10 @@ InfowindowManager.prototype._addInfowindowForLayer = function (layerModel) {
   if (layerModel.getInfowindowData && layerModel.getInfowindowData()) {
     var layerView = this._mapView.getLayerViewByLayerCid(layerModel.cid);
 
-    this._addInfowindowOverlay(layerView, layerModel);
-    this._bindFeatureClickEvent(layerView);
+    if (!layerView.infowindowView) {
+      this._addInfowindowOverlay(layerView, layerModel);
+      this._bindFeatureClickEvent(layerView);
+    }
 
     layerView.bind('mouseover', function () {
       this._mapView.setCursor('pointer');
@@ -49,7 +51,7 @@ InfowindowManager.prototype._addInfowindowOverlay = function (layerView, layerMo
 InfowindowManager.prototype._bindFeatureClickEvent = function (layerView) {
   var infowindowView = layerView.infowindowView;
 
-  var onFeatureClick = function (e, latlng, pos, data, layerIndex) {
+  layerView.bind('featureClick', function (e, latlng, pos, data, layerIndex) {
     var layerModel = layerView.model;
     if (layerModel.layers) {
       layerModel = layerModel.layers.at(layerIndex);
@@ -106,9 +108,7 @@ InfowindowManager.prototype._bindFeatureClickEvent = function (layerView) {
         return feature.cartodb_id !== cartoDBId;
       }).hide();
     }
-  };
-  layerView.unbind('featureClick', onFeatureClick);
-  layerView.bind('featureClick', onFeatureClick);
+  });
 };
 
 module.exports = InfowindowManager;

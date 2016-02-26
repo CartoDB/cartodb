@@ -23,8 +23,10 @@ TooltipManager.prototype._addTooltipForLayer = function (layerModel) {
   if (layerModel.getTooltipData && layerModel.getTooltipData()) {
     var layerView = this._mapView.getLayerViewByLayerCid(layerModel.cid);
 
-    this._addTooltipOverlay(layerView, layerModel);
-    this._bindFeatureOverEvent(layerView);
+    if (!layerView.tooltipView) {
+      this._addTooltipOverlay(layerView, layerModel);
+      this._bindFeatureOverEvent(layerView);
+    }
   }
 };
 
@@ -54,7 +56,7 @@ TooltipManager.prototype._addTooltipOverlay = function (layerView, layerModel) {
 TooltipManager.prototype._bindFeatureOverEvent = function (layerView) {
   var tooltipView = layerView.tooltipView;
 
-  var onFeatureOver = function (e, latlng, pos, data, layerIndex) {
+  layerView.bind('featureOver', function (e, latlng, pos, data, layerIndex) {
     var layerModel = layerView.model;
     if (layerModel.layers) {
       layerModel = layerModel.layers.at(layerIndex);
@@ -72,9 +74,7 @@ TooltipManager.prototype._bindFeatureOverEvent = function (layerView) {
     } else {
       tooltipView.disable();
     }
-  };
-  layerView.unbind('featureOver', onFeatureOver);
-  layerView.bind('featureOver', onFeatureOver);
+  });
 };
 
 module.exports = TooltipManager;

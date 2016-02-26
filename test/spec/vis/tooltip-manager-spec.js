@@ -1,3 +1,4 @@
+var _ = require('underscore');
 var Backbone = require('backbone');
 var MapView = require('../../../src/geo/map-view');
 var Map = require('../../../src/geo/map');
@@ -173,6 +174,7 @@ describe('src/vis/tooltip-manager.js', function () {
     }]);
     expect(tooltipView.setAlternativeNames).toHaveBeenCalledWith('alternative_names1');
     expect(tooltipView.enable).toHaveBeenCalled();
+    expect(tooltipView.enable.calls.count()).toEqual(1);
     tooltipView.enable.calls.reset();
 
     // Simulate the featureOver event on layer #1
@@ -186,6 +188,47 @@ describe('src/vis/tooltip-manager.js', function () {
     }]);
     expect(tooltipView.setAlternativeNames).toHaveBeenCalledWith('alternative_names2');
     expect(tooltipView.enable).toHaveBeenCalled();
+  });
+
+  it('should bind the featureOver event to the corresponding layerView only once', function () {
+    spyOn(this.mapView, 'addOverlay');
+
+    var layer1 = new CartoDBLayer({
+      tooltip: {
+        template: 'template1',
+        template_type: 'underscore',
+        fields: [{
+          'name': 'name',
+          'title': true,
+          'position': 1
+        }],
+        alternative_names: 'alternative_names1'
+      }
+    });
+    var layer2 = new CartoDBLayer({
+      tooltip: {
+        template: 'template2',
+        template_type: 'underscore',
+        fields: [{
+          'name': 'description',
+          'title': true,
+          'position': 1
+        }],
+        alternative_names: 'alternative_names2'
+      }
+    });
+
+    var tooltipManager = new TooltipManager(this.vis);
+    tooltipManager.manage(this.mapView, this.map);
+
+    spyOn(this.layerView, 'bind');
+
+    this.map.layers.reset([ layer1, layer2 ]);
+
+    var featureOverBinds = _.select(this.layerView.bind.calls.all(), function (call) {
+      return call.args[0] === 'featureOver';
+    });
+    expect(featureOverBinds.length).toEqual(1);
   });
 
   it('should disable the tooltipView if the layerModel doesn\'t have tooltip data', function () {

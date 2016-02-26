@@ -309,7 +309,7 @@ module CartoDB
         'histogram' => 'histogram',
         'list' => 'list',
         'time-series' => 'histogram'
-      }
+      }.freeze
 
       def self.layer_widget_options(widget)
         options = widget.options_json

@@ -589,6 +589,12 @@ class DataImport < Sequel::Model
         error_code: 1013,
         log_info: ex.to_s
       }
+    rescue InvalidInputDataError => ex
+      had_errors = true
+      manual_fields = {
+        error_code: 1012,
+        log_info: ex.to_s
+      }
     rescue CartoDB::Importer2::FileTooBigError => ex
       had_errors = true
       manual_fields = {

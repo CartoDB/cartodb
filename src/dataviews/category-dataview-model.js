@@ -42,7 +42,7 @@ module.exports = DataviewModelBase.extend({
     this._data = new CategoriesCollection();
     this._searchModel = new SearchModel();
 
-    this.on('change:column change:aggregation change:aggregation_column', this._reloadMap, this);
+    this.on('change:column change:aggregation change:aggregation_column', this._reloadMapAndForceFetch, this);
   },
 
   // Set any needed parameter when they have changed in this model

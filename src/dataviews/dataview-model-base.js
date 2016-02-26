@@ -81,13 +81,24 @@ module.exports = Model.extend({
   /**
    * @protected
    */
-  _reloadMap: function () {
-    this._map.reload({
-      sourceLayerId: this.layer.get('id')
+  _reloadMap: function (opts) {
+    opts = opts || {};
+    this._map.reload(
+      _.extend(
+        opts, {
+          sourceLayerId: this.layer.get('id')
+        }
+      )
+    );
+  },
+
+  _reloadMapAndForceFetch: function () {
+    this._reloadMap({
+      forceFetch: true
     });
   },
 
-  _onNewWindshaftMapInstance: function (windshaftMapInstance, sourceLayerId) {
+  _onNewWindshaftMapInstance: function (windshaftMapInstance, sourceLayerId, forceFetch) {
     var url = windshaftMapInstance.getDataviewURL({
       dataviewId: this.get('id'),
       protocol: window.location.protocol === 'https:' ? 'https' : 'http'
@@ -97,7 +108,10 @@ module.exports = Model.extend({
       var silent = (sourceLayerId && sourceLayerId !== this.layer.get('id'));
 
       // TODO: Instead of setting the url here, we could invoke fetch directly
-      this.set('url', url, { silent: silent });
+      this.set('url', url, {
+        silent: silent,
+        forceFetch: forceFetch
+      });
     }
   },
 
@@ -124,8 +138,8 @@ module.exports = Model.extend({
   _onChangeBinds: function () {
     this.listenTo(this._map, 'change:center change:zoom', _.debounce(this._onMapBoundsChanged.bind(this), BOUNDING_BOX_FILTER_WAIT));
 
-    this.on('change:url', function () {
-      if (this._shouldFetchOnURLChange()) {
+    this.on('change:url', function (mdl, attrs, opts) {
+      if (opts.forceFetch || this._shouldFetchOnURLChange()) {
         this.fetch();
       }
     }, this);
@@ -150,7 +164,7 @@ module.exports = Model.extend({
   },
 
   _shouldFetchOnURLChange: function () {
-    return (this.get('sync_on_data_change') && this.get('enabled')) || (this._wasUpdated && this.get('enabled'));
+    return (this.get('sync_on_data_change') && this.get('enabled'));
   },
 
   _shouldFetchOnBoundingBoxChange: function () {
@@ -163,7 +177,6 @@ module.exports = Model.extend({
 
   update: function (attrs) {
     attrs = _.pick(attrs, this.constructor.ATTRS_NAMES);
-    this._wasUpdated = true;
     this.set(attrs);
   },
 
@@ -188,11 +201,9 @@ module.exports = Model.extend({
       success: function () {
         successCallback && successCallback(arguments);
         this.trigger('loaded', this);
-        this._wasUpdated = false;
       }.bind(this),
       error: function (mdl, err) {
         if (!err || (err && err.statusText !== 'abort')) {
-          this._wasUpdated = false;
           this.trigger('error', mdl, err);
         }
       }.bind(this)

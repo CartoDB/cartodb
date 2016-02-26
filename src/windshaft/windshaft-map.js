@@ -39,6 +39,7 @@ var WindshaftMap = Backbone.Model.extend({
     });
     var dataviews = options.dataviews;
     var sourceLayerId = options.sourceLayerId;
+    var forceFetch = options.forceFetch;
 
     var mapConfig = this.configGenerator.generate({
       layers: layers,
@@ -66,7 +67,7 @@ var WindshaftMap = Backbone.Model.extend({
       filters: filters.toJSON(),
       success: function (mapInstance) {
         this.set(mapInstance);
-        this.trigger('instanceCreated', this, sourceLayerId);
+        this.trigger('instanceCreated', this, sourceLayerId, forceFetch);
 
         // TODO: Revisit this (will layerIndex work for NamedMaps??)
         // Should we move it somewhere else?

@@ -1586,6 +1586,22 @@ describe Carto::Api::VisualizationsController do
         end
       end
 
+      it 'includes vector flag (default false)' do
+        get_json api_v3_visualizations_vizjson_url(user_domain: @user_1.username, id: @visualization.id, api_key: @user_1.api_key), @headers do |request|
+          request.status.should == 200
+          vizjson3 = request.body
+          vizjson3[:vector].should == false
+        end
+      end
+
+      it 'includes vector flag (true if requested)' do
+        get_json api_v3_visualizations_vizjson_url(user_domain: @user_1.username, id: @visualization.id, api_key: @user_1.api_key, vector: true), @headers do |request|
+          request.status.should == 200
+          vizjson3 = request.body
+          vizjson3[:vector].should == true
+        end
+      end
+
       it 'returns datasource.template_name for visualizations with retrieve_named_map? true' do
         Carto::Visualization.any_instance.stubs(:retrieve_named_map?).returns(true)
         get_json api_v3_visualizations_vizjson_url(user_domain: @user_1.username, id: @visualization.id, api_key: @user_1.api_key), @headers do |request|

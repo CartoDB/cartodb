@@ -31,7 +31,11 @@ module CartoDB
     if Rails.env.development? || Rails.env.test?
       ::Logger.new(STDOUT).error "error: " + message + "\n" + additional_data.inspect + "\n"
     end
-    Rollbar.report_message(message, 'error', additional_data)
+
+    # Sanity check: Rollbar complains if user is not an object
+    user = additional_data[:user].respond_to?(:id) ? additional_data[:user] : nil
+
+    Rollbar.report_message_with_request(message, 'error', additional_data[:request], user, additional_data)
   end
 
   # Add `:request` and `:user` to additional_data if you want request content

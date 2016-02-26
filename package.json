@@ -40,7 +40,7 @@
     "underscore": "1.8.3",
     "cartoassets": "CartoDB/CartoAssets#master",
     "d3": "3.5.8",
-    "d3.cartodb": "git://github.com/CartoDB/d3.cartodb.git#85d576f902b2a7f89a116b82c389ccaf9d64bd76"
+    "d3.cartodb": "git://github.com/CartoDB/d3.cartodb.git#09fb950"
   },
   "devDependencies": {
     "browserify": "11.2.0",

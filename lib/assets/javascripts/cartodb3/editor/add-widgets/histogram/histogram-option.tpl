@@ -18,8 +18,8 @@
           </g>
 
           <% for (var i = 0; i < 9; i++) { %>
-          <% y = Math.random() * 14 + 6; %>
-          <rect id="Bar-Copy-7" fill="#9DE0AD" sketch:type="MSShapeGroup" x="<%- 29 * i %>" y="<%- y %>" width="27" height="<%- 16 - y %>"></rect>
+          <% y = Math.round(Math.random() * 12); %>
+          <rect id="Bar-Copy-7" fill="#9DE0AD" sketch:type="MSShapeGroup" x="<%- 29 * i %>" y="<%- y %>" width="27" height="<%- (16 - y) %>"></rect>
           <% } %>
           <rect id="xAxis" fill="#AAAAAA" sketch:type="MSShapeGroup" x="0" y="15" width="239" height="1"></rect>
         </g>

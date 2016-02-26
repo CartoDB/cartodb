@@ -653,8 +653,6 @@ class Table
     @name_changed_from = @user_table.name if !new? && @user_table.name.present?
 
     @user_table[:name] = new_name
-
-    update_cdb_tablemetadata unless new? # No need to update table in metadata if table doesn't exist yet
   end
 
   def set_default_table_privacy

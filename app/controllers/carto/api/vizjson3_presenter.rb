@@ -10,7 +10,7 @@ module Carto
         @redis_vizjson_cache = CartoDB::Visualization::RedisVizjsonCache.new(redis_cache)
       end
 
-      def to_vizjson(options = {})
+      def to_vizjson(vector: false, **options)
         vizjson = Carto::Api::VizJSONPresenter.new(@visualization, @redis_cache).to_vizjson(options)
 
         vizjson[:widgets] = Carto::Widget.from_visualization_id(@visualization.id).map do |w|
@@ -22,7 +22,7 @@ module Carto
         vizjson[:datasource] = datasource(options)
         vizjson[:user] = user
 
-        vizjson[:vector] = vector?(options)
+        vizjson[:vector] = vector
 
         vizjson
       end
@@ -66,10 +66,6 @@ module Carto
           fullname: @visualization.user.name.present? ? @visualization.user.name : @visualization.user.username,
           avatar_url: @visualization.user.avatar_url
         }
-      end
-
-      def vector?(params)
-        params[:vector].present? && ['true', true].include?(params[:vector])
       end
     end
   end

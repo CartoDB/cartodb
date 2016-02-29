@@ -28,7 +28,7 @@ CategoryGeoJSONDataProvider.prototype.getData = function () {
     type: 'aggregation'
   };
 
-  if (!features.length) return data
+  if (!features.length) return data;
 
   // TODO: There's probably a more efficient way of doing this
   var groups = _.groupBy(features, function (feature) { return feature.properties[columnName]; });

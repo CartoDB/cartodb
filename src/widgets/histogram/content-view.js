@@ -161,7 +161,6 @@ module.exports = cdb.core.View.extend({
   _renderMainChart: function () {
     this.histogramChartView = new HistogramChartView(({
       margin: { top: 4, right: 4, bottom: 4, left: 4 },
-      hasShadowBards: true,
       hasHandles: true,
       hasAxisTip: true,
       width: this.canvasWidth,

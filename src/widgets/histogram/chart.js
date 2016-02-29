@@ -314,7 +314,6 @@ module.exports = cdb.core.View.extend({
     this._setupDimensions();
     this._calcBarWidth();
     this._generateChartContent();
-    this._removeShadowBars();
     this._generateShadowBars();
   },
 
@@ -324,7 +323,6 @@ module.exports = cdb.core.View.extend({
     this._generateAxis();
     this._updateChart();
 
-    this._generateShadowBars();
     this.chart.select('.CDB-Chart-handles').moveToFront();
     this.chart.select('.Brush').moveToFront();
   },

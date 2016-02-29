@@ -115,16 +115,21 @@ module.exports = cdb.core.View.extend({
   },
 
   _reSelectRange: function () {
-    function clamp (a, b, t) {
-      return Math.max(a, Math.min(b, t));
+    if (!this._rangeFilter.isEmpty()) {
+      var loStep = this.timeToStep(this._rangeFilter.get('min'));
+      var hiStep = this.timeToStep(this._rangeFilter.get('max'));
+
+      // clamp values since the range can be outside of the current torque thing
+      var steps = this._torqueLayerModel.get('steps');
+      this._torqueLayerModel.renderRange(
+        this._clampRangeVal(0, steps, loStep), // start
+        this._clampRangeVal(0, steps, hiStep) // end
+      );
     }
-    var loStep = this.timeToStep(this._rangeFilter.get('min'));
-    var hiStep = this.timeToStep(this._rangeFilter.get('max'));
-    // clamp values since the range can be outside of the current torque thing
-    this._torqueLayerModel.renderRange(
-      clamp(0, this._torqueLayerModel.get('steps'), loStep),
-      clamp(0, this._torqueLayerModel.get('steps'), hiStep)
-    );
+  },
+
+  _clampRangeVal: function (a, b, t) {
+    return Math.max(a, Math.min(b, t));
   },
 
   _onChangeChartWidth: function () {

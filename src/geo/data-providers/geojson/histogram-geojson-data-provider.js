@@ -18,7 +18,7 @@ HistogramGeoJSONDataProvider.prototype.getData = function () {
     end = filter.getMax(columnName);
     start = filter.getMin(columnName);
     values = filter.getValues();
-    bins = d3.layout.histogram().bins(numberOfBins)(filter.getValues().map(function (f) {
+    bins = d3.layout.histogram().bins(numberOfBins)(values.map(function (f) {
       return f.properties[options.column];
     }));
     width = (end - start) / options.data.length;
@@ -27,7 +27,7 @@ HistogramGeoJSONDataProvider.prototype.getData = function () {
     start = typeof options.start === 'number' ? options.start : filter.getMin(columnName);
     width = (end - start) / options.bins;
     values = filter.getValues(false, columnName);
-    bins = d3.layout.histogram().bins(numberOfBins)(filter.getValues(false, columnName).map(function (f) {
+    bins = d3.layout.histogram().bins(numberOfBins)(values.map(function (f) {
       return f.properties[options.column];
     }));
   }

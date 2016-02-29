@@ -17,10 +17,6 @@ GeoJSONDataProviderBase.prototype.getData = function () {
 
 GeoJSONDataProviderBase.prototype.applyFilter = function () {};
 
-GeoJSONDataProviderBase.prototype._getFeatures = function () {
-  return this._vectorLayerView.getFeatures()[this._layerIndex];
-};
-
 _.extend(GeoJSONDataProviderBase.prototype, Backbone.Events);
 
 module.exports = GeoJSONDataProviderBase;

@@ -97,7 +97,9 @@ module CartoDB
       end
 
       def data_for_carto_layer(layer_vizjson)
+        # TODO: this id will probably be removed from named maps
         data = {
+            id: layer_vizjson[:id],
             layer_name: layer_vizjson[:options][:layer_name],
             interactivity: layer_vizjson[:options][:interactivity],
             visible: layer_vizjson[:visible]

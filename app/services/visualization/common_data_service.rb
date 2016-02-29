@@ -40,7 +40,7 @@ module CartoDB
         else
           CartoDB.notify_error(
             'cant create common-data url. User doesn\'t exist and base_url is nil',
-            user: common_data_username
+            username: common_data_username
           )
         end
       end

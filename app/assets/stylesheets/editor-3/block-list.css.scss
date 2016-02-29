@@ -1,0 +1,43 @@
+@import 'cdb-utilities/mixins';
+@import 'cdb-variables/colors';
+@import 'cdb-variables/sizes';
+
+.BlockList {
+  margin-bottom: $baseSize;
+}
+
+.BlockList-item {
+  @include display-flex();
+  margin-bottom: $baseSize;
+  padding: $baseSize * 2;
+  border: 1px solid $cSecondaryLine;
+  border-radius: $baseSize / 2;
+  cursor: pointer;
+}
+
+.BlockList-item:last-child {
+  margin-bottom: 0;
+}
+
+.BlockList-inner {
+  @include flex(1);
+}
+
+.BlockList-Title {
+  @include display-flex();
+  @include align-items(center);
+}
+
+.BlockList-TitleText {
+  @include flex(1);
+  width: 0;
+  padding-right: $baseSize * 2;
+}
+
+.BlockList-media {
+  width: 40px;
+  height: 40px;
+  border: 1px solid $cSecondaryLine;
+  border-radius: $baseSize / 2;
+  background: $cThirdBackground;
+}

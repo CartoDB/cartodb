@@ -13,9 +13,9 @@ describe('dataviews/list-dataview-model', function () {
     });
   });
 
-  it('should reload map on columns change', function () {
+  it('should reload map and force fetch on columns change', function () {
     this.map.reload.calls.reset();
     this.model.set('columns', ['asd']);
-    expect(this.map.reload).toHaveBeenCalled();
+    expect(this.map.reload).toHaveBeenCalledWith({ forceFetch: true, sourceLayerId: undefined });
   });
 });

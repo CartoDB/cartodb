@@ -96,13 +96,24 @@ module.exports = Model.extend({
   /**
    * @protected
    */
-  _reloadMap: function () {
-    this._map.reload({
-      sourceLayerId: this.layer.get('id')
+  _reloadMap: function (opts) {
+    opts = opts || {};
+    this._map.reload(
+      _.extend(
+        opts, {
+          sourceLayerId: this.layer.get('id')
+        }
+      )
+    );
+  },
+
+  _reloadMapAndForceFetch: function () {
+    this._reloadMap({
+      forceFetch: true
     });
   },
 
-  _onNewWindshaftMapInstance: function (windshaftMapInstance, sourceLayerId) {
+  _onNewWindshaftMapInstance: function (windshaftMapInstance, sourceLayerId, forceFetch) {
     var url = windshaftMapInstance.getDataviewURL({
       dataviewId: this.get('id'),
       protocol: window.location.protocol === 'https:' ? 'https' : 'http'
@@ -112,7 +123,10 @@ module.exports = Model.extend({
       var silent = (sourceLayerId && sourceLayerId !== this.layer.get('id'));
 
       // TODO: Instead of setting the url here, we could invoke fetch directly
-      this.set('url', url, { silent: silent });
+      this.set('url', url, {
+        silent: silent,
+        forceFetch: forceFetch
+      });
     }
   },
 
@@ -139,8 +153,8 @@ module.exports = Model.extend({
   _onChangeBinds: function () {
     this.listenTo(this._map, 'change:center change:zoom', _.debounce(this._onMapBoundsChanged.bind(this), BOUNDING_BOX_FILTER_WAIT));
 
-    this.on('change:url', function () {
-      if (this._shouldFetchOnURLChange()) {
+    this.on('change:url', function (mdl, attrs, opts) {
+      if ((opts && opts.forceFetch) || this._shouldFetchOnURLChange()) {
         this.fetch();
       }
     }, this);

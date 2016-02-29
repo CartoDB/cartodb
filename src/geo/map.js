@@ -84,7 +84,8 @@ var Map = Model.extend({
     if (this._windshaftMap) {
       var instanceOptions = {
         layers: this.layers.models,
-        sourceLayerId: options && options.sourceLayerId
+        sourceLayerId: options && options.sourceLayerId,
+        forceFetch: options && options.forceFetch
       };
 
       if (this._dataviewsCollection) {
@@ -97,8 +98,8 @@ var Map = Model.extend({
   _updateAttributions: function () {
     var defaultCartoDBAttribution = this.defaults.attribution[0];
     var attributions = _.chain(this.layers.models)
-      .map(function(layer) { return sanitize.html(layer.get('attribution')); })
-      .reject(function(attribution) { return attribution == defaultCartoDBAttribution})
+      .map(function (layer) { return sanitize.html(layer.get('attribution')); })
+      .reject(function (attribution) { return attribution === defaultCartoDBAttribution; })
       .compact()
       .uniq()
       .value();

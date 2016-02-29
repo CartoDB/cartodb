@@ -234,7 +234,7 @@ describe Carto::Api::WidgetsController do
   end
 
   describe 'named maps' do
-    describe '#options_for_cartodb_layer' do
+    describe '#options_for_layer' do
       include_context 'users helper'
       include_context 'visualization creation helpers'
 
@@ -255,13 +255,18 @@ describe Carto::Api::WidgetsController do
       it 'contains widget data' do
         vizjson3 = get_vizjson3(@visualization)
         layer = vizjson3[:layers][0][:options][:layer_definition][:layers][0]
-        options = CartoDB::NamedMapsWrapper::NamedMap.options_for_cartodb_layer(layer, 1, { placeholders: {} })
+        options = CartoDB::NamedMapsWrapper::NamedMap.options_for_layer(layer, 1, { placeholders: {} })
         widget_options = options[:layer_options][:widgets]
         widget_options.should_not be_nil
         widget_options.length.should == 1
         widget_options.each do |k, v|
           k.should == @widget.id
           v[:type].should == @widget.type
+
+          # aggregation_column is renamed aggregationColumn for the tiler
+          aggregation_column = v[:options].delete(:aggregationColumn)
+          aggregation_column.should == @widget.options_json[:aggregation_column]
+
           v[:options].should == @widget.options_json
         end
       end

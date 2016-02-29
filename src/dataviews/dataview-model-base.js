@@ -179,7 +179,7 @@ module.exports = Model.extend({
   },
 
   _shouldFetchOnURLChange: function () {
-    return (this.get('sync_on_data_change') && this.get('enabled'));
+    return this.get('sync_on_data_change') && this.get('enabled');
   },
 
   _shouldFetchOnBoundingBoxChange: function () {

@@ -18,10 +18,13 @@ describe('dataviews/histogram-dataview-model', function () {
     });
   });
 
-  it('should reload map on changing attrs', function () {
-    this.map.reload.calls.reset();
-    this.model.set('column', 'random_col');
-    expect(this.map.reload).toHaveBeenCalled();
+
+  describe('when column changes', function () {
+    it('should reload map and force fetch', function () {
+      this.map.reload.calls.reset();
+      this.model.set('column', 'random_col');
+      expect(this.map.reload).toHaveBeenCalledWith({ forceFetch: true, sourceLayerId: undefined });
+    });
   });
 
   describe('when bins change', function () {

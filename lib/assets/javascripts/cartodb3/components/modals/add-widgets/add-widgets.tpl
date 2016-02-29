@@ -4,8 +4,8 @@
       <div class="Dialog-headerIcon Dialog-headerIcon--neutral">
         <i class="CDB-IconFont CDB-IconFont-map"></i>
       </div>
-      <p class="Dialog-headerTitle"><%- _t('editor.add-widgets.modal-title') %></p>
-      <p class="Dialog-headerText"><%- _t('editor.add-widgets.modal-desc') %></p>
+      <p class="Dialog-headerTitle"><%- _t('components.modals.add-widgets.modal-title') %></p>
+      <p class="Dialog-headerText"><%- _t('components.modals.add-widgets.modal-desc') %></p>
     </li>
   </ul>
 </div>
@@ -21,7 +21,7 @@
       <div class="CreateDialog-footerActions js-footerActions">
         <div></div>
         <button class="Button Button--main is-disabled js-continue">
-          <span><%- _t('editor.add-widgets.continue-btn') %></span>
+          <span><%- _t('components.modals.add-widgets.continue-btn') %></span>
         </button>
       </div>
     </div>

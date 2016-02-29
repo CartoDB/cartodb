@@ -13,9 +13,11 @@ CategoryGeoJSONDataProvider.prototype.getData = function () {
   var filterEnabled = options.filterEnabled;
   var numberOfCategories = 5;
   var filter = this._vectorLayerView.getFilter(this._layerIndex);
-  var features = this._getFeatures();
   if (!filterEnabled) {
     features = filter.getValues(false, columnName);
+  }
+  else {
+    features = filter.getValues();
   }
 
   // TODO: There's probably a more efficient way of doing this
@@ -31,7 +33,7 @@ CategoryGeoJSONDataProvider.prototype.getData = function () {
   }).reverse();
   var count = features.length;
 
-  var nulls = filter.getValues(false, columnName).reduce(function (p, c) { return p + (c.properties[columnName] === null ? 1 : 0); }, 0);
+  var nulls = features.reduce(function (p, c) { return p + (c.properties[columnName] === null ? 1 : 0); }, 0);
   var data = {
     categories: [],
     categoriesCount: sortedGroups.length,

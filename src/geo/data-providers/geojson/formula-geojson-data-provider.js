@@ -8,8 +8,9 @@ var FormulaGeoJSONDataProvider = function (vectorLayerView, layerIndex) {
 _.extend(FormulaGeoJSONDataProvider.prototype, GeoJSONDataProviderBase.prototype);
 
 FormulaGeoJSONDataProvider.prototype.getData = function () {
+  var filter = this._vectorLayerView.getFilter(this._layerIndex);
   var options = this._dataview.attributes;
-  var features = this._getFeatures();
+  var features = filter.getValues();
   var operation = options.operation;
   var columnName = options.column;
   var nulls = features.reduce(function (p, c) { return p + (c.properties[columnName] === null ? 1 : 0); }, 0);

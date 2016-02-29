@@ -37,9 +37,6 @@ class Analyzer
   end
 end
 
-#Analyzer.new(ARGV[0]).analyze
-
-require 'json'
 class Analyzer2
   def initialize(filename)
     @filename = filename
@@ -47,7 +44,7 @@ class Analyzer2
 
   def analyze
     (1..10).each do |i|
-      bottom = 1 + (i-1)*10
+      bottom = 1 + (i - 1) * 10
       top = i * 10
       puts "-------- #{bottom}-#{top}"
       data = []
@@ -58,9 +55,9 @@ class Analyzer2
           data << parsed if range.include?(parsed["generation"].to_i)
         end
       end
-      data.group_by { |row| "#{row["file"]}:#{row["line"]}" }
-          .sort { |a,b| b[1].count <=> a[1].count }
-          .each do |k,v|
+      data.group_by { |row| "#{row['file']}:#{row['line']}" }
+          .sort { |a, b| b[1].count <=> a[1].count }
+          .each do |k, v|
             puts "#{k} * #{v.count}"
           end
     end

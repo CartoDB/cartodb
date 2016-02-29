@@ -4,7 +4,7 @@ require_dependency 'carto/http_header_authentication'
 
 class ApplicationController < ActionController::Base
   include ::SslRequirement
-  protect_from_forgery with: :exception
+  protect_from_forgery
 
   helper :all
 
@@ -36,6 +36,10 @@ class ApplicationController < ActionController::Base
   end
 
   protected
+
+  def handle_unverified_request
+    render_403
+  end
 
   # @see Warden::Manager.after_set_user
   def update_session_security_token(user)
@@ -147,8 +151,8 @@ class ApplicationController < ActionController::Base
 
   def render_403
     respond_to do |format|
-      format.html { render :file => 'public/403.html', :status => 403, :layout => false }
-      format.all  { head :forbidden }
+      format.html { render(file: 'public/403.html', status: 403, layout: false) }
+      format.all  { head(:forbidden) }
     end
   end
 

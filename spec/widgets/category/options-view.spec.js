@@ -76,6 +76,13 @@ describe('widgets/category/options-view', function () {
       expect(this.view.$('.js-textInfo').text()).toContain('All selected');
     });
 
+    it('should render none selected if there is any accepted category but it is not in the current data', function () {
+      this.dataviewModel.filter.accept('paco');
+      this.view.render();
+      expect(this.view.$('.js-textInfo').length).toBe(1);
+      expect(this.view.$('.js-textInfo').text()).toContain('None selected');
+    });
+
     it('should render only a text with locked/selected items when search is enabled', function () {
       spyOn(this.widgetModel, 'isSearchEnabled').and.returnValue(true);
       this.view.render();

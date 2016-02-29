@@ -13,10 +13,10 @@ CategoryGeoJSONDataProvider.prototype.getData = function () {
   var filterEnabled = options.filterEnabled;
   var numberOfCategories = 5;
   var filter = this._vectorLayerView.getFilter(this._layerIndex);
+  var features;
   if (!filterEnabled) {
     features = filter.getValues(false, columnName);
-  }
-  else {
+  } else {
     features = filter.getValues();
   }
 

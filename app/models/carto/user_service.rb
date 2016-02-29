@@ -66,19 +66,18 @@ module Carto
         user_data_size_function = cartodb_extension_version_pre_mu? ?
           "CDB_UserDataSize()" :
           "CDB_UserDataSize('#{@user.database_schema}')"
-        in_database(:as => :superuser).execute("SELECT cartodb.#{user_data_size_function}")
-                                      .first['cdb_userdatasize'].to_i
-
+        in_database(as: :superuser).execute("SELECT cartodb.#{user_data_size_function}")
+                                   .first['cdb_userdatasize'].to_i
       rescue => e
         attempts += 1
         begin
-          in_database(:as => :superuser).execute("ANALYZE")
+          in_database(as: :superuser).execute("ANALYZE")
         rescue => ee
-          Rollbar.report_exception(ee)
+          CartoDB.report_exception(ee, "Failed to get user db size, retrying...", user: @user)
           raise ee
         end
         retry unless attempts > 1
-        CartoDB.notify_exception(e, { user: @user })
+        CartoDB.notify_exception(e, user: @user)
         # INFO: we need to return something to avoid 'disabled' return value
         nil
       end

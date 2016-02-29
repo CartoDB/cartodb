@@ -18,7 +18,6 @@ describe('dataviews/histogram-dataview-model', function () {
     });
   });
 
-
   describe('when column changes', function () {
     it('should reload map and force fetch', function () {
       this.map.reload.calls.reset();

@@ -172,7 +172,11 @@ module CartoDB
       request_subdomain = request_host.sub(session_domain, '')
       request_subdomain += '.' if request_subdomain.length > 0 && !request_subdomain.end_with?('.')
 
-      "#{protocol}://#{request_subdomain}#{session_domain}#{port}/user/#{subdomain}"
+      if !subdomain.nil? && subdomain != ''
+        "#{protocol}://#{request_subdomain}#{session_domain}#{port}/user/#{subdomain}"
+      else
+        "#{protocol}://#{request_subdomain}#{session_domain}#{port}"
+      end
     end
   end
 

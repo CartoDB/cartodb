@@ -21,7 +21,7 @@ module.exports = cdb.core.View.extend({
   },
 
   events: {
-    'click .js-clear': '_clear',
+    'click .js-clear': '_resetWidget',
     'click .js-zoom': '_zoom'
   },
 
@@ -418,8 +418,21 @@ module.exports = cdb.core.View.extend({
     if (this.model.get('zoomed')) {
       this._onZoomIn();
     } else {
-      this._onZoomOut();
+      this._resetWidget();
     }
+  },
+
+  _showMiniRange: function () {
+    var loBarIndex = this.model.get('lo_index');
+    var hiBarIndex = this.model.get('hi_index');
+
+    this.miniHistogramChartView.selectRange(loBarIndex, hiBarIndex);
+    this.miniHistogramChartView.show();
+  },
+
+  _zoom: function () {
+    this.model.set({ zoomed: true, zoom_enabled: false });
+    this.histogramChartView.removeSelection();
   },
 
   _onZoomIn: function () {
@@ -432,16 +445,12 @@ module.exports = cdb.core.View.extend({
     this._dataviewModel.fetch();
   },
 
-  _zoom: function () {
-    this.model.set({ zoomed: true, zoom_enabled: false });
-    this.histogramChartView.removeSelection();
-  },
-
-  _onZoomOut: function () {
+  _resetWidget: function () {
     this.lockedByUser = true;
     this.lockZoomedData = false;
     this.unsettingRange = true;
     this.model.set({
+      zoomed: false,
       zoom_enabled: false,
       filter_enabled: false,
       lo_index: null,
@@ -454,20 +463,7 @@ module.exports = cdb.core.View.extend({
     this.histogramChartView.resetYScale();
     this.histogramChartView.contract(this.defaults.chartHeight);
     this.histogramChartView.resetIndexes();
-
-    this.miniHistogramChartView.hide();
-  },
-
-  _showMiniRange: function () {
-    var loBarIndex = this.model.get('lo_index');
-    var hiBarIndex = this.model.get('hi_index');
-
-    this.miniHistogramChartView.selectRange(loBarIndex, hiBarIndex);
-    this.miniHistogramChartView.show();
-  },
-
-  _clear: function () {
     this.histogramChartView.removeSelection();
-    this.model.set({ zoomed: false, zoom_enabled: false });
+    this.miniHistogramChartView.hide();
   }
 });

@@ -133,7 +133,7 @@ describe('windshaft/map', function () {
         sourceLayerId: 'sourceLayerId'
       });
 
-      expect(onWindshaftInstanceCreated).toHaveBeenCalledWith(this.windshaftMap, 'sourceLayerId');
+      expect(onWindshaftInstanceCreated).toHaveBeenCalledWith(this.windshaftMap, 'sourceLayerId', undefined);
     });
 
     it('should set the attributes of the new instance', function () {

@@ -20,6 +20,18 @@ CategoryGeoJSONDataProvider.prototype.getData = function () {
     features = filter.getValues();
   }
 
+  var data = {
+    categories: [],
+    categoriesCount: 0,
+    count: 0,
+    max: 0,
+    min: 0,
+    nulls: 0,
+    type: 'aggregation'
+  };
+
+  if (!features.length) return data;
+
   // TODO: There's probably a more efficient way of doing this
   var groups = _.groupBy(features, function (feature) { return feature.properties[columnName]; });
   var groupCounts = _.map(Object.keys(groups), function (key) {
@@ -31,18 +43,12 @@ CategoryGeoJSONDataProvider.prototype.getData = function () {
   var sortedGroups = _.sortBy(groupCounts, function (group) {
     return group.value;
   }).reverse();
-  var count = features.length;
 
-  var nulls = features.reduce(function (p, c) { return p + (c.properties[columnName] === null ? 1 : 0); }, 0);
-  var data = {
-    categories: [],
-    categoriesCount: sortedGroups.length,
-    count: count,
-    max: sortedGroups[0].value,
-    min: sortedGroups[sortedGroups.length - 1].value,
-    nulls: nulls,
-    type: 'aggregation'
-  };
+  data.count = features.length;
+  data.categoriesCount = sortedGroups.length;
+  data.max = sortedGroups[0].value;
+  data.min = sortedGroups[sortedGroups.length - 1].value;
+  data.nulls = filter.getValues(false, columnName).reduce(function (p, c) { return p + (c.properties[columnName] === null ? 1 : 0); }, 0);
 
   _.each(sortedGroups.slice(0, numberOfCategories), function (category) {
     data.categories.push({

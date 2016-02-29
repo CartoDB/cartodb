@@ -15,18 +15,18 @@ describe('dataviews/category-dataview-model', function () {
     });
   });
 
-  it('should reload map on changing attrs', function () {
+  it('should reload map and force fetch on changing attrs', function () {
     this.map.reload.calls.reset();
     this.model.set('column', 'random_col');
-    expect(this.map.reload).toHaveBeenCalled();
+    expect(this.map.reload).toHaveBeenCalledWith({ forceFetch: true, sourceLayerId: undefined });
 
     this.map.reload.calls.reset();
     this.model.set('aggregation', 'count');
-    expect(this.map.reload).toHaveBeenCalled();
+    expect(this.map.reload).toHaveBeenCalledWith({ forceFetch: true, sourceLayerId: undefined });
 
     this.map.reload.calls.reset();
     this.model.set('aggregation_column', 'other');
-    expect(this.map.reload).toHaveBeenCalled();
+    expect(this.map.reload).toHaveBeenCalledWith({ forceFetch: true, sourceLayerId: undefined });
   });
 
   it('should define several internal models/collections', function () {

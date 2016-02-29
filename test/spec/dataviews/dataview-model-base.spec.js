@@ -72,6 +72,17 @@ describe('dataviews/dataview-model-base', function () {
       expect(this.model.fetch).not.toHaveBeenCalled();
     });
 
+    it('should fetch if url changes and forceFetch option is true, no matter rest of variables', function () {
+      this.model.set('enabled', false);
+      this.model.set('sync_on_data_change', false);
+      spyOn(this.model, 'fetch');
+      this.model.trigger('change:url', this.model, {}, { forceFetch: true });
+      expect(this.model.fetch).toHaveBeenCalled();
+      this.model.fetch.calls.reset();
+      this.model.trigger('change:url', this.model, {}, { forceFetch: false });
+      expect(this.model.fetch).not.toHaveBeenCalled();
+    });
+
     it('should not fetch new data when bbox changes and bbox is disabled', function () {
       this.model.set('sync_on_bbox_change', false);
       spyOn(this.model, 'fetch');

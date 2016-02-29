@@ -453,7 +453,7 @@ class Table
 
     CartoDB::TablePrivacyManager.new(@user_table).apply_privacy_change(self, previous_privacy, privacy_changed?)
 
-    update_cdb_tablemetadata if privacy_changed?
+    update_cdb_tablemetadata if privacy_changed? || !@name_changed_from.nil?
   end
 
   def propagate_namechange_to_table_vis
@@ -559,6 +559,8 @@ class Table
     @non_dependent_visualizations_cache.each do |visualization|
       visualization.unlink_from(self)
     end
+
+    update_cdb_tablemetadata
     remove_table_from_user_database unless keep_user_database_table
     synchronization.delete if synchronization
 

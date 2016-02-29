@@ -310,6 +310,106 @@ describe 'csv regression tests' do
     end
   end
 
+  it 'imports csv lines with blank fields' do
+    filepath    = path_to('blank_lines.csv')
+    downloader  = Downloader.new(filepath)
+    runner      = Runner.new({
+                               pg: @pg_options,
+                               downloader: downloader,
+                               log: CartoDB::Importer2::Doubles::Log.new,
+                               user: CartoDB::Importer2::Doubles::User.new
+                             })
+    runner.run
+
+    result = runner.results.first
+    @db[%Q{
+      SELECT count(*)
+      FROM #{result.schema}.#{result.table_name}
+      AS count
+    }].first.fetch(:count).should eq 7
+
+    @db[%Q{
+      SELECT count(*)
+      FROM #{result.schema}.#{result.table_name} AS count
+      WHERE (a IS NOT NULL AND a <> '') OR
+            (b IS NOT NULL AND b <> '') OR
+            (c IS NOT NULL AND c <> '')
+    }].first.fetch(:count).should eq 5
+  end
+
+  it 'ignores empty lines in csv files' do
+    filepath    = path_to('empty_lines.csv')
+    downloader  = Downloader.new(filepath)
+    runner      = Runner.new({
+                               pg: @pg_options,
+                               downloader: downloader,
+                               log: CartoDB::Importer2::Doubles::Log.new,
+                               user: CartoDB::Importer2::Doubles::User.new
+                             })
+    runner.run
+
+    result = runner.results.first
+    @db[%Q{
+      SELECT count(*)
+      FROM #{result.schema}.#{result.table_name}
+      AS count
+    }].first.fetch(:count).should eq 7
+
+    @db[%Q{
+      SELECT count(*)
+      FROM #{result.schema}.#{result.table_name} AS count
+      WHERE (a IS NOT NULL AND a <> '') OR
+            (b IS NOT NULL AND b <> '') OR
+            (c IS NOT NULL AND c <> '')
+    }].first.fetch(:count).should eq 5
+  end
+
+  it 'fails to import empty csv files' do
+    filepath    = path_to('all_empty_lines.csv')
+    downloader  = Downloader.new(filepath)
+    runner      = Runner.new({
+                               pg: @pg_options,
+                               downloader: downloader,
+                               log: CartoDB::Importer2::Doubles::Log.new,
+                               user: CartoDB::Importer2::Doubles::User.new
+                             })
+    runner.run
+
+    result = runner.results.first
+    runner.results.first.error_code.should eq CartoDB::Importer2::ERRORS_MAP[EmptyFileError]
+  end
+
+  it 'fails to import empty single-line csv files' do
+    filepath    = path_to('empty_line.csv')
+    downloader  = Downloader.new(filepath)
+    runner      = Runner.new({
+                               pg: @pg_options,
+                               downloader: downloader,
+                               log: CartoDB::Importer2::Doubles::Log.new,
+                               user: CartoDB::Importer2::Doubles::User.new
+                             })
+    runner.run
+
+    result = runner.results.first
+    runner.results.first.error_code.should eq CartoDB::Importer2::ERRORS_MAP[EmptyFileError]
+  end
+
+
+  it 'fails to import csv files with malformed lines' do
+    filepath    = path_to('malformed_lines.csv')
+    downloader  = Downloader.new(filepath)
+    runner      = Runner.new({
+                               pg: @pg_options,
+                               downloader: downloader,
+                               log: CartoDB::Importer2::Doubles::Log.new,
+                               user: CartoDB::Importer2::Doubles::User.new
+                             })
+    runner.run
+
+    result = runner.results.first
+    runner.results.first.error_code.should eq CartoDB::Importer2::ERRORS_MAP[UnsupportedFormatError]
+  end
+
   it 'refuses to import csv with broken encoding' do
     filepath    = path_to('broken_encoding.csv')
     downloader  = Downloader.new(filepath)

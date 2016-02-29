@@ -62,5 +62,19 @@ describe Carto::Editor::VisualizationsController do
 
       response.status.should == 403
     end
+
+    it 'defaults to generate vizjson with vector=false' do
+      get editor_visualization_url(id: @visualization.id)
+
+      response.status.should == 200
+      response.body.should include('\"vector\":false')
+    end
+
+    it 'generates vizjson with vector=true with flag' do
+      get editor_visualization_url(id: @visualization.id, vector: true)
+
+      response.status.should == 200
+      response.body.should include('\"vector\":true')
+    end
   end
 end

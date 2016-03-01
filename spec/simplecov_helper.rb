@@ -19,6 +19,7 @@ unless ENV['PARALLEL']
       puts ENV['TEST_ENV_NUMBER']
       command_name "specs_#{Process.pid}"
       add_filter "/spec/"
+      add_filter "/lib/assets/"
       add_filter "/tmp/"
       add_filter "/db/"
     end

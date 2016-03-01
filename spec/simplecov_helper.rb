@@ -3,6 +3,9 @@
 unless ENV['PARALLEL']
   if ENV['RAILS_ENV'] =~ /^test(.*)?/
     require 'simplecov'
+    require 'simplecov-json'
+    require 'simplecov-rcov'
+
     SimpleCov.start 'rails' do
       # Default is just 10 mins, else will drop "old" coverage data
       merge_timeout 3600

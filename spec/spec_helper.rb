@@ -1,4 +1,4 @@
-require_relative './simplespec_helper'
+require_relative './simplecov_helper'
 require 'uuidtools'
 require_relative './rspec_configuration'
 

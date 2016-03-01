@@ -1,5 +1,5 @@
 # encoding: utf-8
-require_relative '../../simplespec_helper'
+require_relative '../../simplecov_helper'
 require_relative '../../../app/models/overlay/collection'
 
 include CartoDB

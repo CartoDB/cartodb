@@ -93,21 +93,6 @@ module.exports = Model.extend({
   _newModel: function (m) {
     this._dataviewsCollection.add(m);
     return m;
-  },
-
-  _indexOf: function (layerModel) {
-    // We need to filter the layers to only select those that Windshaft knows about
-    // and be able to calculate the right index.
-    var interactiveLayers = this._layersCollection.select(function (layer) {
-      return layer.get('type') === 'CartoDB' || layer.get('type') === 'torque';
-    });
-
-    var index = interactiveLayers.indexOf(layerModel);
-    if (index >= 0) {
-      return index;
-    } else {
-      throw new Error('layer must be located in layers collection to work');
-    }
   }
 });
 

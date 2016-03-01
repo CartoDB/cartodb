@@ -9,10 +9,6 @@ require_relative '../../../app/models/synchronization/member'
 include CartoDB
 
 describe Synchronization::Member do
-  before do
-    Synchronization.repository = DataRepository.new
-  end
-
   describe 'Basic actions' do
     it 'assigns an id by default' do
       member = Synchronization::Member.new

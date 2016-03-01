@@ -1,3 +1,4 @@
+require_relative '../simplespec_helper'
 require 'rails'
 require 'ostruct'
 require_relative '../rspec_configuration'

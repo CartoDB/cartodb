@@ -1,5 +1,5 @@
 # encoding: utf-8
-
+require_relative '../../../simplespec_helper'
 require 'rspec/core'
 require 'rspec/expectations'
 require 'rspec/mocks'
@@ -27,44 +27,44 @@ module CartoDB
       describe '#timing' do
         it "sends key with importer prefix" do
           expected_send("#{EXPECTED_PREFIX}.#{TIMING_TEST_KEY}")
-          CartoDB::Stats::Importer.instance({ 
-              'host' => TEST_HOST, 
-              'port' => TEST_PORT 
+          CartoDB::Stats::Importer.instance({
+              'host' => TEST_HOST,
+              'port' => TEST_PORT
             }, HOST_INFO).timing(TIMING_TEST_KEY) do foo end
         end
 
         it "doesn't send anything if host or port are not met" do
           expected_send_nothing
-          CartoDB::Stats::Importer.instance({ 
-              'host' => nil, 
+          CartoDB::Stats::Importer.instance({
+              'host' => nil,
               'port' => nil
             }).timing(TIMING_TEST_KEY) do foo end
-          CartoDB::Stats::Importer.instance({ 
-              'host' => TEST_HOST, 
+          CartoDB::Stats::Importer.instance({
+              'host' => TEST_HOST,
               'port' => nil
             }).timing(TIMING_TEST_KEY) do foo end
-          CartoDB::Stats::Importer.instance({ 
-              'host' => nil, 
+          CartoDB::Stats::Importer.instance({
+              'host' => nil,
               'port' => TEST_PORT
             }).timing(TIMING_TEST_KEY) do foo end
         end
 
         it "runs block even without host or port" do
           count = 0
-          CartoDB::Stats::Importer.instance({ 
-                'host' => nil, 
+          CartoDB::Stats::Importer.instance({
+                'host' => nil,
                 'port' => nil
               }).timing(TIMING_TEST_KEY) do
             count += 1
           end
-          CartoDB::Stats::Importer.instance({ 
-                'host' => TEST_HOST, 
+          CartoDB::Stats::Importer.instance({
+                'host' => TEST_HOST,
                 'port' => nil
               }).timing(TIMING_TEST_KEY) do
             count += 1
           end
-          CartoDB::Stats::Importer.instance({ 
-                'host' => nil, 
+          CartoDB::Stats::Importer.instance({
+                'host' => nil,
                 'port' => TEST_PORT
               }).timing(TIMING_TEST_KEY) do
             count += 1
@@ -75,8 +75,8 @@ module CartoDB
         it "registers nested timing" do
           expected_send("#{EXPECTED_PREFIX}.#{TIMING_TEST_KEY_A}")
           expected_send("#{EXPECTED_PREFIX}.#{TIMING_TEST_KEY}")
-          importer_stats = CartoDB::Stats::Importer.instance({ 
-              'host' => TEST_HOST, 
+          importer_stats = CartoDB::Stats::Importer.instance({
+              'host' => TEST_HOST,
               'port' => TEST_PORT
             }, HOST_INFO)
           importer_stats.timing(TIMING_TEST_KEY_A) do
@@ -88,8 +88,8 @@ module CartoDB
 
         it 'sends nothing and discards key fragment if block fails' do
           expected_send("#{EXPECTED_PREFIX}.#{TIMING_TEST_KEY_B}")
-          importer_stats = CartoDB::Stats::Importer.instance({ 
-              'host' => TEST_HOST, 
+          importer_stats = CartoDB::Stats::Importer.instance({
+              'host' => TEST_HOST,
               'port' => TEST_PORT
             }, HOST_INFO)
           begin
@@ -109,24 +109,24 @@ module CartoDB
 
         it 'sends key with importer prefix' do
           expected_send("#{EXPECTED_PREFIX}.#{GAUGE_TEST_KEY}")
-          CartoDB::Stats::Importer.instance({ 
-              'host' => TEST_HOST, 
+          CartoDB::Stats::Importer.instance({
+              'host' => TEST_HOST,
               'port' => TEST_PORT
             }, HOST_INFO).gauge(GAUGE_TEST_KEY, GAUGE_TEST_VALUE)
         end
 
         it "doesn't send anything if host or port are not met" do
           expected_send_nothing
-          CartoDB::Stats::Importer.instance({ 
-              'host' => nil, 
+          CartoDB::Stats::Importer.instance({
+              'host' => nil,
               'port' => nil
             }).gauge(GAUGE_TEST_KEY, GAUGE_TEST_VALUE)
-          CartoDB::Stats::Importer.instance({ 
-              'host' => nil, 
+          CartoDB::Stats::Importer.instance({
+              'host' => nil,
               'port' => TEST_PORT
             }).gauge(GAUGE_TEST_KEY, GAUGE_TEST_VALUE)
-          CartoDB::Stats::Importer.instance({ 
-              'host' => TEST_HOST, 
+          CartoDB::Stats::Importer.instance({
+              'host' => TEST_HOST,
               'port' => nil
             }).gauge(GAUGE_TEST_KEY, GAUGE_TEST_VALUE)
         end

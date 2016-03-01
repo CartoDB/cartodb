@@ -6,6 +6,12 @@ unless ENV['PARALLEL']
     require 'simplecov-json'
     require 'simplecov-rcov'
 
+    SimpleCov.formatters = [
+      SimpleCov::Formatter::HTMLFormatter,
+      SimpleCov::Formatter::JSONFormatter,
+      SimpleCov::Formatter::RcovFormatter
+    ]
+    SimpleCov.track_files = "{app,lib,services}/**/*.rb"
     SimpleCov.start 'rails' do
       # Default is just 10 mins, else will drop "old" coverage data
       merge_timeout 3600

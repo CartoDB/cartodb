@@ -84,6 +84,8 @@ gem 'test-unit'
 
 group :test do
   gem 'simplecov',                       require: false
+  gem 'simplecov-json'
+  gem 'simplecov-rcov'
   gem 'db-query-matchers',     '0.4.0'
   gem 'rack-test',             '0.6.2',  require: 'rack/test'
   gem 'factory_girl_rails',    '~> 4.0.0'

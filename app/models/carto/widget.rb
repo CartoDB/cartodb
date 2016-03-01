@@ -7,6 +7,9 @@ class Carto::Widget < ActiveRecord::Base
 
   validate :options_must_be_json
 
+  after_save :notify_maps_change
+  after_destroy :notify_maps_change
+
   def self.from_visualization_id(visualization_id)
     Carto::Visualization.find(visualization_id).layers.map(&:widgets).flatten
   end
@@ -35,5 +38,12 @@ class Carto::Widget < ActiveRecord::Base
     options_json
   rescue JSON::ParserError
     errors.add(:options, 'is wrongly formatted (invalid JSON)')
+  end
+
+  def notify_maps_change
+    layer.maps.each do |m|
+      map = Map.where(id: m.id).first
+      map.notify_map_change if map
+    end
   end
 end

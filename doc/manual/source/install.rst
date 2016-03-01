@@ -423,7 +423,6 @@ Editor
   .. code-block:: bash
 
     RAILS_ENV=development bundle exec rake db:migrate
-    RAILS_ENV=development bundle exec rake db:setup
 
 * Create an admin user
 

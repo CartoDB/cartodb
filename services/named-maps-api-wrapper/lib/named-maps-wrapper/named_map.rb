@@ -166,13 +166,7 @@ module CartoDB
           layer_group = vizjson.named_map_layer_group_for(visualization)
           unless layer_group.nil?
             layer_group[:options][:layer_definition][:layers].each { |layer|
-              layer_type = layer[:type].downcase
-
-              if layer_type == 'cartodb'
-                data = options_for_cartodb_layer(layer, layer_num, template_data)
-              else
-                data = options_for_basemap_layer(layer, layer_num, template_data)
-              end
+              data = options_for_layer(layer, layer_num, template_data)
 
               unless data.nil?
                 layer_num = data[:layer_num]
@@ -189,14 +183,19 @@ module CartoDB
           other_layers = vizjson.other_layers_for(visualization)
           unless other_layers.nil?
             other_layers.compact.each { |layer|
-              layers_data.push( {
+              layer_data = {
                 type:     layer[:type].downcase,
                 options:  {
                             cartocss_version: '2.0.1',
                             cartocss:         self.css_from(layer[:options]),
                             sql:              layer[:options].fetch( 'query' )
                           }
-              } )
+              }
+
+              widgets_data = widgets_data_for_layer(layer)
+              layer_data[:options][:widgets] = widgets_data if widgets_data
+
+              layers_data.push(layer_data)
             }
           end
 
@@ -207,6 +206,36 @@ module CartoDB
 
           template_data
         end
+      end
+
+      def self.options_for_layer(layer, layer_num, template_data)
+        # Gentle reminder: layer groups don't contain torque layers
+        layer_type = layer[:type].downcase
+
+        if layer_type == 'cartodb'
+          data = options_for_cartodb_layer(layer, layer_num, template_data)
+        else
+          data = options_for_basemap_layer(layer, layer_num, template_data)
+        end
+
+        widgets_data = widgets_data_for_layer(layer)
+        data[:layer_options][:widgets] = widgets_data if widgets_data
+
+        data
+      end
+
+      def self.widgets_data_for_layer(layer)
+        widgets_data = nil
+
+        layer_widgets = Carto::Widget.where(layer_id: layer[:id]).all
+        # TODO: if this structure becomes standard, remove the count check,
+        # and always return a `widgets` attribute
+        if layer_widgets.count > 0
+          widget_names_and_options = layer_widgets.map { |w| [w.id, layer_widget_options(w)] }
+          widgets_data = Hash[*widget_names_and_options.flatten]
+        end
+
+        widgets_data
       end
 
       def self.css_from(options)
@@ -270,11 +299,32 @@ module CartoDB
           }
         end
 
-        {
+        layer_options = {
           layer_name: 'cartodb',
           layer_options: layer_options,
           layer_num: layer_num,
           template_data: template_data
+        }
+
+        layer_options
+      end
+
+      TILER_WIDGET_TYPES = {
+        'category' => 'aggregation',
+        'formula' => 'formula',
+        'histogram' => 'histogram',
+        'list' => 'list',
+        'time-series' => 'histogram'
+      }.freeze
+
+      def self.layer_widget_options(widget)
+        options = widget.options_json
+        options[:aggregationColumn] = options[:aggregation_column]
+        options.delete(:aggregation_column)
+
+        {
+          type: TILER_WIDGET_TYPES[widget.type],
+          options: options
         }
       end
 

@@ -83,7 +83,7 @@ module Carto
         query = %{
           SELECT n.nspname,
             p.proname,
-            pg_catalog.pg_get_function_arguments(p.oid) as argument_data_types
+            pg_catalog.pg_get_function_identity_arguments(p.oid) as argument_data_types
           FROM pg_catalog.pg_proc p
                LEFT JOIN pg_catalog.pg_namespace n ON n.oid = p.pronamespace
                JOIN pg_roles

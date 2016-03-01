@@ -20,6 +20,28 @@ describe Carto::Widget do
       widget.layer.destroy
       Carto::Widget.where(id: widget.id).first.should be_nil
     end
+
+    describe '#save' do
+      before(:each) do
+        @map = FactoryGirl.create(:carto_map_with_layers)
+        @widget = FactoryGirl.create(:widget, layer: @map.data_layers.first)
+      end
+
+      after(:each) do
+        @widget.destroy
+        @map.destroy
+      end
+
+      it 'triggers notify_map_change on related map(s)' do
+        map = mock()
+        map.stubs(:id).returns(@map.id)
+        map.expects(:notify_map_change).twice
+        Map.stubs(:where).with(id: map.id).returns([map])
+
+        @widget.title = "xxx#{@widget.title}"
+        @widget.save
+      end
+    end
   end
 
   describe 'Format and validation' do
@@ -52,6 +74,8 @@ describe Carto::Widget do
     end
 
     it 'retrieves all visualization widgets' do
+      # Twice expectation: creation + destroy
+      Map.any_instance.expects(:update_related_named_maps).times(2).returns(true)
       layer = @visualization.data_layers.first
       widget = FactoryGirl.create(:widget, layer: layer)
       widget2 = FactoryGirl.create(:widget_with_layer)

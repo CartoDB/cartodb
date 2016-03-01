@@ -543,6 +543,24 @@ class User < Sequel::Model
     end
   end
 
+  # Execute DB code inside a transaction with an optional statement timeout.
+  # This is the only way to have the SQL in the block executed with
+  # the desired statement_timeout when the connection goes trhough
+  # pgbouncer configured with pool mode as 'transaction'.
+  def transaction_with_timeout(options, &block)
+    statement_timeout = options.delete(:statement_timeout)
+    in_databsase(options) do |db|
+      db.transaction do
+        begin
+          db.run("SET statement_timeout TO #{statement_timeout}") if statement_timeout
+          block.call db
+        ensure
+          db..run('SET statement_timeout TO DEFAULT')
+        end
+      end
+    end
+  end
+
   def connection(options = {})
     configuration = db_service.db_configuration_for(options[:as])
 

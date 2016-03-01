@@ -127,8 +127,8 @@ describe('dataviews/dataview-model-base', function () {
       expect(this.model.fetch).not.toHaveBeenCalled();
     });
 
-    it('should NOT fetch if the bounding box have changed while the dataview was disabled and sync_on_data_change is disabled', function () {
-      this.model.set('sync_on_data_change', false);
+    it('should NOT fetch if the bounding box have changed while the dataview was disabled and sync_on_bbox_change is disabled', function () {
+      this.model.set('sync_on_bbox_change', false);
 
       // Map bounds have changed
       this.map.getViewBounds.and.returnValue([102, 200], [300, 400]);
@@ -154,6 +154,20 @@ describe('dataviews/dataview-model-base', function () {
 
       // Disable and enable again
       this.model.set('enabled', false);
+      this.model.set('enabled', true);
+
+      expect(this.model.fetch).not.toHaveBeenCalled();
+    });
+
+    it('should NOT fetch if a new instance of the windshaft map has been created while the dataview was disabled and sync_on_data_change is false', function () {
+      this.windshaftMap.getDataviewURL = function () {};
+      spyOn(this.windshaftMap, 'getDataviewURL').and.returnValue('http://wadus.com');
+
+      this.model.set('sync_on_data_change', false);
+
+      // A new instance of the windhsaft map has been created
+      this.windshaftMap.trigger('instanceCreated', this.windshaftMap, {});
+
       this.model.set('enabled', true);
 
       expect(this.model.fetch).not.toHaveBeenCalled();

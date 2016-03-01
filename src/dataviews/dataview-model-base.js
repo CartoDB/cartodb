@@ -131,7 +131,9 @@ module.exports = Model.extend({
         forceFetch: forceFetch
       });
 
-      this._newDataAvailable = true;
+      if (this.get('sync_on_data_change')) {
+        this._newDataAvailable = true;
+      }
     }
   },
 
@@ -168,7 +170,7 @@ module.exports = Model.extend({
       this.fetch();
     }
 
-    if (this.get('sync_on_data_change')) {
+    if (this.get('sync_on_bbox_change')) {
       this._newDataAvailable = true;
     }
   },

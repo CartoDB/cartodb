@@ -11,9 +11,10 @@ unless ENV['PARALLEL']
       SimpleCov::Formatter::JSONFormatter,
       SimpleCov::Formatter::RcovFormatter
     ]
-    SimpleCov.track_files = "{app,lib,services}/**/*.rb"
+
     SimpleCov.start 'rails' do
       # Default is just 10 mins, else will drop "old" coverage data
+      track_files "{app,lib,services}/**/*.rb"
       merge_timeout 3600
       puts ENV['TEST_ENV_NUMBER']
       command_name "specs_#{Process.pid}"

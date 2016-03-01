@@ -17,10 +17,18 @@ describe('dataviews/dataview-model-base', function () {
       layer: jasmine.createSpyObj('layer', ['get', 'getDataProvider'])
     });
     this.model.toJSON = jasmine.createSpy('toJSON').and.returnValue({});
+
+    // Disable debounce
+    spyOn(_, 'debounce').and.callFake(function (func) { return function () { func.apply(this, arguments); }; });
   });
 
-  it('should get a boundingBox attribute initially', function () {
-    expect(this.model.get('boundingBox')).toEqual('2,1,4,3');
+  describe('url', function () {
+    it('should include the bbox param', function () {
+      this.map.getViewBounds.and.returnValue([['south', 'west'], ['north', 'east']]);
+
+      this.model.set('url', 'http://example.com');
+      expect(this.model.url()).toEqual('http://example.com?bbox=west,south,east,north');
+    });
   });
 
   describe('when url changes', function () {
@@ -44,8 +52,7 @@ describe('dataviews/dataview-model-base', function () {
         expect(this.model.listenTo.calls.argsFor(0)[0]).toEqual(this.model._map);
         expect(this.model.listenTo.calls.argsFor(0)[1]).toEqual('change:center change:zoom');
         expect(this.model.on.calls.argsFor(0)[0]).toEqual('change:url');
-        expect(this.model.on.calls.argsFor(1)[0]).toEqual('change:boundingBox');
-        expect(this.model.on.calls.argsFor(2)[0]).toEqual('change:enabled');
+        expect(this.model.on.calls.argsFor(1)[0]).toEqual('change:enabled');
       });
     });
   });
@@ -82,34 +89,73 @@ describe('dataviews/dataview-model-base', function () {
       this.model.trigger('change:url', this.model, {}, { forceFetch: false });
       expect(this.model.fetch).not.toHaveBeenCalled();
     });
-
-    it('should not fetch new data when bbox changes and bbox is disabled', function () {
-      this.model.set('sync_on_bbox_change', false);
-      spyOn(this.model, 'fetch');
-      this.model.trigger('change:boundingBox', this.model);
-      expect(this.model.fetch).not.toHaveBeenCalled();
-    });
-
-    it('should not fetch new data when bbox changes and dataview is disabled', function () {
-      this.model.set('enabled', false);
-      spyOn(this.model, 'fetch');
-      this.model.trigger('change:boundingBox', this.model);
-      expect(this.model.fetch).not.toHaveBeenCalled();
-    });
   });
 
-  describe('when disabled', function () {
-    it('should fetch again when disabled is disabled and url or boundingBox has changed', function () {
-      spyOn(this.model, 'fetch');
+  describe('when enabled is changed to true from false', function () {
+    beforeEach(function () {
+      this.model.fetch = function (opts) {
+        opts.success();
+      };
+      this.model.set('url', 'http://example.com');
+
       this.model.set('enabled', false);
-      this.model.set('url', 'hello');
-      this.model.set('enabled', true);
-      expect(this.model.fetch).toHaveBeenCalled();
+
+      spyOn(this.model, 'fetch');
     });
 
-    it('should not fetch when disabled is enabled', function () {
-      spyOn(this.model, 'fetch');
+    it('should NOT fetch if nothing has changed', function () {
+      this.model.set('enabled', true);
+
+      expect(this.model.fetch).not.toHaveBeenCalled();
+    });
+
+    it('should fetch if the bounding box have changed while the dataview was disabled', function () {
+      // Map bounds have changed
+      this.map.getViewBounds.and.returnValue([102, 200], [300, 400]);
+      this.map.trigger('change:center');
+
+      this.model.set('enabled', true);
+
+      expect(this.model.fetch).toHaveBeenCalled();
+
+      this.model.fetch.calls.reset();
+
+      // Disable and enable again
       this.model.set('enabled', false);
+      this.model.set('enabled', true);
+
+      expect(this.model.fetch).not.toHaveBeenCalled();
+    });
+
+    it('should NOT fetch if the bounding box have changed while the dataview was disabled and sync_on_data_change is disabled', function () {
+      this.model.set('sync_on_data_change', false);
+
+      // Map bounds have changed
+      this.map.getViewBounds.and.returnValue([102, 200], [300, 400]);
+      this.map.trigger('change:center');
+
+      this.model.set('enabled', true);
+
+      expect(this.model.fetch).not.toHaveBeenCalled();
+    });
+
+    it('should fetch if a new instance of the windshaft map has been created while the dataview was disabled', function () {
+      this.windshaftMap.getDataviewURL = function () {};
+      spyOn(this.windshaftMap, 'getDataviewURL').and.returnValue('http://wadus.com');
+
+      // A new instance of the windhsaft map has been created
+      this.windshaftMap.trigger('instanceCreated', this.windshaftMap, {});
+
+      this.model.set('enabled', true);
+
+      expect(this.model.fetch).toHaveBeenCalled();
+
+      this.model.fetch.calls.reset();
+
+      // Disable and enable again
+      this.model.set('enabled', false);
+      this.model.set('enabled', true);
+
       expect(this.model.fetch).not.toHaveBeenCalled();
     });
   });
@@ -147,30 +193,39 @@ describe('dataviews/dataview-model-base', function () {
     });
   });
 
-  describe('bindings to map', function () {
+  describe('bindings to map bounds', function () {
     beforeEach(function () {
-      spyOn(_, 'debounce').and.callFake(function (func) { return function () { func.apply(this, arguments); }; });
+      this.model.fetch = function (opts) {
+        opts.success();
+      };
+      this.model.set('url', 'http://example.com');
+
+      spyOn(this.model, 'fetch');
     });
 
-    it("should NOT update the bounding box when map bounds change and URL hasn't been set yet", function () {
-      var previousBoundingBox = this.model.get('boundingBox');
-
-      this.map.getViewBounds.and.returnValue([100, 200], [300, 400]);
+    it('should fetch when the bounding box has changed', function () {
+      this.map.getViewBounds.and.returnValue([102, 200], [300, 400]);
       this.map.trigger('change:center');
 
-      expect(this.model.get('boundingBox')).toEqual(previousBoundingBox);
+      expect(this.model.fetch).toHaveBeenCalled();
     });
 
-    it('should update the bounding box when map bounds change and URL has been set', function () {
-      var previousBoundingBox = this.model.get('boundingBox');
+    it('should NOT fetch when the bounding box has changed and the dataview is not enabled', function () {
+      this.model.set('enabled', false);
 
-      this.model._onChangeBinds();
-
-      this.map.getViewBounds.and.returnValue([[100, 200], [300, 400]]);
+      this.map.getViewBounds.and.returnValue([102, 200], [300, 400]);
       this.map.trigger('change:center');
 
-      expect(this.model.get('boundingBox')).not.toEqual(previousBoundingBox);
-      expect(this.model.get('boundingBox')).toEqual('200,100,400,300');
+      expect(this.model.fetch).not.toHaveBeenCalled();
+    });
+
+    it('should NOT fetch when the bounding box has changed and the dataview has sync_on_bbox_change disabled', function () {
+      this.model.set('sync_on_bbox_change', false);
+
+      this.map.getViewBounds.and.returnValue([102, 200], [300, 400]);
+      this.map.trigger('change:center');
+
+      expect(this.model.fetch).not.toHaveBeenCalled();
     });
   });
 
@@ -238,9 +293,11 @@ describe('dataviews/dataview-model-base', function () {
   });
 
   describe('.fetch', function () {
-    it('should fetch from the url by default', function () {
+    it('should trigger a loading event', function () {
       spyOn(this.model, 'trigger');
+
       this.model.fetch();
+
       expect(this.model.trigger).toHaveBeenCalledWith('loading', this.model);
     });
   });

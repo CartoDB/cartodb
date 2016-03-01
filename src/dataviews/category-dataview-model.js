@@ -23,13 +23,10 @@ module.exports = DataviewModelBase.extend({
   ),
 
   url: function () {
-    var params = [];
-    if (this.get('boundingBox')) {
-      params.push('bbox=' + this.get('boundingBox'));
-    }
-
-    params.push('own_filter=' + (this.get('filterEnabled') ? 1 : 0));
-
+    var params = [
+      'bbox=' + this._getBoundingBoxFilterParam(),
+      'own_filter=' + (this.get('filterEnabled') ? 1 : 0)
+    ];
     return this.get('url') + '?' + params.join('&');
   },
 
@@ -44,10 +41,9 @@ module.exports = DataviewModelBase.extend({
 
     this.on('change:column change:aggregation change:aggregation_column', this._reloadMapAndForceFetch, this);
 
-    this.bind('change:url change:boundingBox', function () {
+    this.bind('change:url', function () {
       this._searchModel.set({
-        url: this.get('url'),
-        boundingBox: this.get('boundingBox')
+        url: this.get('url')
       });
     }, this);
 
@@ -63,6 +59,11 @@ module.exports = DataviewModelBase.extend({
     }, this);
 
     this._bindSearchModelEvents();
+  },
+
+  _onMapBoundsChanged: function () {
+    DataviewModelBase.prototype._onMapBoundsChanged.apply(this, arguments);
+    this._searchModel.fetchIfSearchIsApplied();
   },
 
   _bindSearchModelEvents: function () {

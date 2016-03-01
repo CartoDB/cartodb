@@ -17,11 +17,15 @@ module.exports = Model.extend({
   },
 
   url: function () {
-    var params = [];
-    if (this.get('boundingBox')) {
-      params.push('bbox=' + this.get('boundingBox'));
-    }
+    var params = [
+      'bbox=' + this._getBoundingBoxFilterParam()
+    ];
     return this.get('url') + '?' + params.join('&');
+  },
+
+  _getBoundingBoxFilterParam: function () {
+    var boundingBoxFilter = new WindshaftFiltersBoundingBoxFilter(this._map.getViewBounds());
+    return boundingBoxFilter.toString();
   },
 
   initialize: function (attrs, opts) {
@@ -56,7 +60,6 @@ module.exports = Model.extend({
       this._dataProvider = dataProvider.createDataProviderForDataview(this);
     }
     this._initBinds();
-    this._updateBoundingBox();
   },
 
   _initBinds: function () {
@@ -127,6 +130,8 @@ module.exports = Model.extend({
         silent: silent,
         forceFetch: forceFetch
       });
+
+      this._newDataAvailable = true;
     }
   },
 
@@ -141,15 +146,6 @@ module.exports = Model.extend({
     this.set({enabled: value});
   },
 
-  _onMapBoundsChanged: function () {
-    this._updateBoundingBox();
-  },
-
-  _updateBoundingBox: function () {
-    var boundingBoxFilter = new WindshaftFiltersBoundingBoxFilter(this._map.getViewBounds());
-    this.set('boundingBox', boundingBoxFilter.toString());
-  },
-
   _onChangeBinds: function () {
     this.listenTo(this._map, 'change:center change:zoom', _.debounce(this._onMapBoundsChanged.bind(this), BOUNDING_BOX_FILTER_WAIT));
 
@@ -158,24 +154,23 @@ module.exports = Model.extend({
         this.fetch();
       }
     }, this);
-    this.on('change:boundingBox', function () {
-      if (this._shouldFetchOnBoundingBoxChange()) {
-        this.fetch();
-      }
-    }, this);
 
     this.on('change:enabled', function (mdl, isEnabled) {
-      if (isEnabled) {
-        if (mdl.changedAttributes(this._previousAttrs)) {
-          this.fetch();
-        }
-      } else {
-        this._previousAttrs = {
-          url: this.get('url'),
-          boundingBox: this.get('boundingBox')
-        };
+      if (isEnabled && this._newDataAvailable) {
+        this.fetch();
+        this._newDataAvailable = false;
       }
     }, this);
+  },
+
+  _onMapBoundsChanged: function () {
+    if (this._shouldFetchOnBoundingBoxChange()) {
+      this.fetch();
+    }
+
+    if (this.get('sync_on_data_change')) {
+      this._newDataAvailable = true;
+    }
   },
 
   _shouldFetchOnURLChange: function () {

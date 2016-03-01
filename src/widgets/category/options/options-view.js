@@ -21,18 +21,26 @@ module.exports = cdb.core.View.extend({
   },
 
   render: function () {
+    var acceptedCats = this.dataviewModel.filter.acceptedCategories.size();
+    var rejectedCats = this.dataviewModel.filter.rejectedCategories.size();
+    var acceptedCatsInData = this.dataviewModel.numberOfAcceptedCategories();
+    var rejectedCatsInData = this.dataviewModel.numberOfRejectedCategories();
+    var areAllRejected = this.dataviewModel.filter.areAllRejected();
+    var totalCats = this.dataviewModel.getData().size();
+    var isLocked = this.widgetModel.isLocked();
+
     this.$el.html(
       template({
-        acceptedCats: this.dataviewModel.filter.acceptedCategories.size(),
-        acceptedCatsInData: this.dataviewModel.numberOfAcceptedCategories(),
-        rejectedCatsInData: this.dataviewModel.numberOfRejectedCategories(),
-        areAllRejected: this.dataviewModel.filter.areAllRejected(),
-        isLocked: this.widgetModel.isLocked(),
-        canBeLocked: this.widgetModel.canBeLocked(),
-        totalLocked: this.widgetModel.lockedCategories.size(),
         isSearchEnabled: this.widgetModel.isSearchEnabled(),
         isSearchApplied: this.dataviewModel.isSearchApplied(),
-        totalCats: this.dataviewModel.getData().size()
+        isLocked: isLocked,
+        canBeLocked: this.widgetModel.canBeLocked(),
+        allSelected: (rejectedCatsInData === 0 && acceptedCatsInData === 0) || acceptedCatsInData >= totalCats,
+        canSelectAll: !isLocked && (rejectedCats > 0 || acceptedCats > 0 || areAllRejected) && totalCats > 2,
+        noneSelected: areAllRejected || (rejectedCatsInData === totalCats) || (acceptedCatsInData === 0 && acceptedCats > 0),
+        acceptedCatsInData: acceptedCatsInData,
+        totalLocked: this.widgetModel.lockedCategories.size(),
+        totalCats: totalCats
       })
     );
     return this;

@@ -9,15 +9,18 @@ module CartoDB
     class Overviews
 
       DEFAULT_MIN_ROWS = 1000000
+      DEFAULT_STATEMENT_TIMEOUT = 10 * 60 * 1000 # ms
 
       def initialize(runner, user, options = {})
-        @runner = runner
-        @user = user
-        @schema = user.database_schema
-        @database = user.in_database
-        @min_rows = options[:min_rows] ||
-                    Cartodb.get_config(:overviews, 'min_rows') ||
-                    DEFAULT_MIN_ROWS
+        @runner            = runner
+        @user              = user
+        @schema            = user.database_schema
+        @min_rows          = options[:min_rows] ||
+                             Cartodb.get_config(:overviews, 'min_rows') ||
+                             DEFAULT_MIN_ROWS
+        @statement_timeout = options[:statement_timeout] ||
+                             Cartodb.get_config(:overviews, 'statement_timeout') ||
+                             DEFAULT_STATEMENT_TIMEOUT
       end
 
       attr_reader :user, :min_rows, :schema
@@ -37,9 +40,11 @@ module CartoDB
 
       def run_in_database(sql)
         # TODO: timing, exception handling, ...
-        log("Will create overviews for #{@table_name}")
-        @database.run sql
-        log("Overviews created for #{@table_name}")
+        @user.transaction_with_timeout statement_timeout: @statement_timeout do |db|
+          log("Will create overviews for #{@table_name}")
+          db.run sql
+          log("Overviews created for #{@table_name}")
+        end
       end
 
       def can_create_overviews?

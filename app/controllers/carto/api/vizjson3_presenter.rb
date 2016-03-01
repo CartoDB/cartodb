@@ -11,7 +11,7 @@ module Carto
       end
 
       def to_vizjson(vector: false, **options)
-        vizjson = Carto::Api::VizJSONPresenter.new(@visualization, @redis_cache).to_vizjson(options)
+        vizjson = symbolize_vizjson(Carto::Api::VizJSONPresenter.new(@visualization, @redis_cache).to_vizjson(options))
 
         vizjson[:widgets] = Carto::Widget.from_visualization_id(@visualization.id).map do |w|
           Carto::Api::WidgetPresenter.new(w).to_poro
@@ -21,13 +21,18 @@ module Carto
 
         vizjson[:datasource] = datasource(options)
         vizjson[:user] = user
-
         vizjson[:vector] = vector
 
         vizjson
       end
 
       private
+
+      def symbolize_vizjson(vizjson)
+        vizjson = vizjson.deep_symbolize_keys
+        vizjson[:layers] = vizjson[:layers].map(&:deep_symbolize_keys)
+        vizjson
+      end
 
       def layer_vizjson2_to_3(layer_data)
         return layer_data unless layer_data[:type] == 'torque'

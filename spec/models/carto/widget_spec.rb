@@ -35,7 +35,7 @@ describe Carto::Widget do
       it 'triggers notify_map_change on related map(s)' do
         map = mock()
         map.stubs(:id).returns(@map.id)
-        map.expects(:notify_map_change).once
+        map.expects(:notify_map_change).twice
         Map.stubs(:where).with(id: map.id).returns([map])
 
         @widget.title = "xxx#{@widget.title}"
@@ -74,7 +74,8 @@ describe Carto::Widget do
     end
 
     it 'retrieves all visualization widgets' do
-      Map.any_instance.expects(:update_related_named_maps).returns(true)
+      # Twice expectation: creation + destroy
+      Map.any_instance.expects(:update_related_named_maps).times(2).returns(true)
       layer = @visualization.data_layers.first
       widget = FactoryGirl.create(:widget, layer: layer)
       widget2 = FactoryGirl.create(:widget_with_layer)

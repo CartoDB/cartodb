@@ -36,7 +36,7 @@ module.exports = cdb.core.View.extend({
         isLocked: isLocked,
         canBeLocked: this.widgetModel.canBeLocked(),
         allSelected: (rejectedCatsInData === 0 && acceptedCatsInData === 0) || acceptedCatsInData >= totalCats,
-        canSelectAll: !isLocked && (rejectedCats > 0 || acceptedCats > 0 || areAllRejected) && totalCats > 2,
+        canSelectAll: !isLocked && (rejectedCats > 0 || acceptedCats > 0 || areAllRejected) && totalCats > 2,
         noneSelected: areAllRejected || (rejectedCatsInData === totalCats) || (acceptedCatsInData === 0 && acceptedCats > 0),
         acceptedCatsInData: acceptedCatsInData,
         totalLocked: this.widgetModel.lockedCategories.size(),

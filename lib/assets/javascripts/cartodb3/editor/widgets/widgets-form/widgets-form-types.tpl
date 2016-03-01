@@ -8,7 +8,7 @@
 
     <p class="CDB-Text u-upperCase CDB-FontSize-small u-altTextColor u-bSpace--m"><%- _t('editor.widgets.widgets-form.type.description') %></p>
 
-    <select class="js-select">
+    <select class="CDB-SelectFake js-select">
       <% _.each(types, function(type) { %>
         <option value="<%- type.value %>" <% if (type.value === selectedType) { %>selected="selected"<% } %>>
           <%- type.label %>

@@ -144,8 +144,27 @@ describe Carto::VisualizationsExportService do
     restored_vizjson['zoom'].should eq original_vizjson['zoom']
     restored_vizjson['overlays'].should eq original_vizjson['overlays']
 
-    (restored_vizjson["layers"][1]["options"]["named_map"]["layers"] -
-     original_vizjson["layers"][1]["options"]["named_map"]["layers"]).should eq []
+    restored_layer_ids = restored_vizjson["layers"].map { |l| l['id'] }
+    original_layer_ids = original_vizjson["layers"].map { |l| l['id'] }
+
+    # Restoring doesn't keep layer ids (restored layers are stored in the same table)
+    restored_layer_ids.count.should == original_layer_ids.count
+    restored_layer_ids.compact.sort.should_not == original_layer_ids.compact.sort
+
+    restored_named_map = restored_vizjson["layers"][1]["options"]["named_map"]
+    original_named_map = original_vizjson["layers"][1]["options"]["named_map"]
+    restored_named_map_layer_ids = restored_named_map['layers'].map { |l| l['id'] }
+    original_named_map_layer_ids = original_named_map['layers'].map { |l| l['id'] }
+    # Restoring doesn't keep layer ids (restored layers are stored in the same table)
+    restored_named_map_layer_ids.count.should == original_named_map_layer_ids.count
+    restored_named_map_layer_ids.compact.sort.should_not == original_named_map_layer_ids.compact.sort
+
+
+    # Clear layer named map layers ids
+    restored_named_map["layers"].each { |l| l['id'] = nil }
+    original_named_map["layers"].map { |l| l['id'] = nil }
+    (restored_named_map["layers"] -
+     original_named_map["layers"]).should eq []
 
     # Layer checks
     (restored_visualization.layers(:base).count > 0).should eq true

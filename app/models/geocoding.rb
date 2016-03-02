@@ -171,6 +171,10 @@ class Geocoding < Sequel::Model
     handle_geocoding_success(rows_geocoded_before)
   rescue => e
     handle_geocoding_failure(e, rows_geocoded_before)
+  ensure
+    if table_geocoder && table_geocoder.remote_id
+      self.update remote_id: table_geocoder.remote_id
+    end
   end
 
   def report(error = nil)

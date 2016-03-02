@@ -39,15 +39,11 @@ module CartoDB
       cache.run unless cache_disabled?
       @csv_file = generate_csv()
       geocoder.run
-      self.remote_id = geocoder.request_id
       process_results if geocoder.status == 'completed'
       cache.store unless cache_disabled?
     ensure
-      total_requests = geocoder.successful_processed_rows + geocoder.empty_processed_rows + geocoder.failed_processed_rows
-      @usage_metrics.incr(:geocoder_here, :success_responses, geocoder.successful_processed_rows)
-      @usage_metrics.incr(:geocoder_here, :empty_responses, geocoder.empty_processed_rows)
-      @usage_metrics.incr(:geocoder_here, :failed_responses, geocoder.failed_processed_rows)
-      @usage_metrics.incr(:geocoder_here, :total_requests, total_requests)
+      self.remote_id = geocoder.request_id
+      update_metrics()
     end
 
     # TODO: make the geocoders update status directly in the model
@@ -179,5 +175,13 @@ module CartoDB
       Dir[File.join(working_dir, '*_out.txt')][0]
     end
 
-  end # Geocoder
-end # CartoDB
+    def update_metrics
+      total_requests = geocoder.successful_processed_rows + geocoder.empty_processed_rows + geocoder.failed_processed_rows
+      @usage_metrics.incr(:geocoder_here, :success_responses, geocoder.successful_processed_rows)
+      @usage_metrics.incr(:geocoder_here, :empty_responses, geocoder.empty_processed_rows)
+      @usage_metrics.incr(:geocoder_here, :failed_responses, geocoder.failed_processed_rows)
+      @usage_metrics.incr(:geocoder_here, :total_requests, total_requests)
+    end
+
+  end
+end

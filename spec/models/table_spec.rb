@@ -44,6 +44,7 @@ describe Table do
     CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
     CartoDB::Overlay::Member.any_instance.stubs(:can_store).returns(true)
+    Table.any_instance.stubs(:update_cdb_tablemetadata)
 
     stub_named_maps_calls
   end
@@ -112,7 +113,6 @@ describe Table do
 
     it 'propagates name changes to table visualization' do
       table = create_table(name: 'bogus_name', user_id: @user.id)
-      table.stubs(:update_cdb_tablemetadata)
 
       table.table_visualization.name.should == table.name
 
@@ -170,7 +170,6 @@ describe Table do
 
     it 'propagates name changes to affected layers' do
       table = create_table(name: 'bogus_name', user_id: @user.id)
-      table.stubs(:update_cdb_tablemetadata)
 
       layer = table.layers.first
 
@@ -478,7 +477,6 @@ describe Table do
       @user.save
 
       table = create_table(user_id: @user.id)
-      table.stubs(:update_cdb_tablemetadata)
 
       table.privacy.should == UserTable::PRIVACY_PRIVATE
 
@@ -589,7 +587,6 @@ describe Table do
       @user.save
 
       table = create_table(name: 'Wadus table', user_id: @user.id)
-      table.stubs(:update_cdb_tablemetadata)
 
       Rails::Sequel.connection.table_exists?(table.name.to_sym).should be_false
       @user.in_database do |user_database|
@@ -637,7 +634,6 @@ describe Table do
       @user.save
 
       table = create_table(name: 'Wadus table', user_id: @user.id)
-      table.stubs(:update_cdb_tablemetadata)
       CartoDB::TablePrivacyManager.any_instance
 
       table.expects(:update_cdb_tablemetadata)
@@ -673,7 +669,6 @@ describe Table do
       @user.save
 
       table = create_table(name: 'as', user_id: @user.id)
-      table.stubs(:update_cdb_tablemetadata)
 
       @user.in_database do |user_database|
         user_database.table_exists?(table.name.to_sym).should be_true
@@ -855,7 +850,6 @@ describe Table do
 
     it "should invoke update_cdb_tablemetadata after modifying a column" do
       table = create_table(user_id: @user.id)
-      table.stubs(:update_cdb_tablemetadata)
 
       table.expects(:update_cdb_tablemetadata)
       table.modify_column!(name: 'name', type: 'number')

@@ -23,8 +23,6 @@ module.exports = cdb.core.View.extend({
   render: function () {
     var acceptedCats = this.dataviewModel.filter.acceptedCategories.size();
     var rejectedCats = this.dataviewModel.filter.rejectedCategories.size();
-    var acceptedCatsInData = this.dataviewModel.numberOfAcceptedCategories();
-    var rejectedCatsInData = this.dataviewModel.numberOfRejectedCategories();
     var areAllRejected = this.dataviewModel.filter.areAllRejected();
     var totalCats = this.dataviewModel.getData().size();
     var isLocked = this.widgetModel.isLocked();
@@ -35,10 +33,10 @@ module.exports = cdb.core.View.extend({
         isSearchApplied: this.dataviewModel.isSearchApplied(),
         isLocked: isLocked,
         canBeLocked: this.widgetModel.canBeLocked(),
-        allSelected: (rejectedCatsInData === 0 && acceptedCatsInData === 0) || acceptedCatsInData >= totalCats,
+        allSelected: (rejectedCats === 0 && acceptedCats === 0) || acceptedCats >= totalCats,
         canSelectAll: !isLocked && (rejectedCats > 0 || acceptedCats > 0 || areAllRejected) && totalCats > 2,
-        noneSelected: areAllRejected || (rejectedCatsInData === totalCats) || (acceptedCatsInData === 0 && acceptedCats > 0),
-        acceptedCatsInData: acceptedCatsInData,
+        noneSelected: areAllRejected || (rejectedCats === totalCats),
+        acceptedCats: acceptedCats,
         totalLocked: this.widgetModel.lockedCategories.size(),
         totalCats: totalCats
       })

@@ -20,15 +20,12 @@ module.exports = Model.extend({
   initialize: function (attrs, opts) {
     this._data = new CategoriesCollection();
     this.sync = BackboneAbortSync.bind(this);
-    this._initBinds();
   },
 
-  _initBinds: function () {
-    this.bind('change:boundingBox', function () {
-      if (this.isSearchApplied()) {
-        this.fetch();
-      }
-    }, this);
+  fetchIfSearchIsApplied: function () {
+    if (this.isSearchApplied()) {
+      this.fetch();
+    }
   },
 
   setData: function (data) {

@@ -95,22 +95,6 @@ describe('dataviews/histogram-dataview-model', function () {
     });
   });
 
-  it('should include the bbox after the first fetch', function () {
-    this.model.set('url', 'http://example.com', { silent: true });
-    this.model.set('boundingBox', 'fakeBoundingBox');
-    spyOn(this.model, 'sync').and.callFake(function (args) {
-      this.model.set('data', 'something');
-    }.bind(this));
-
-    // url doesn't include bbox the first time
-    expect(this.model.url()).toEqual('http://example.com?bins=10');
-
-    this.model.fetch();
-
-    // url now has the bbox
-    expect(this.model.url()).toEqual('http://example.com?bins=10&bbox=fakeBoundingBox');
-  });
-
   it('should calculate start, end and bins after the first fetch', function () {
     var histogramData = {
       'bin_width': 10,
@@ -218,9 +202,9 @@ describe('dataviews/histogram-dataview-model', function () {
   });
 
   describe('.url', function () {
-    it('should generate a URL by default', function () {
+    it('should include bounding box and initial bins', function () {
       this.model.set('url', 'http://example.com');
-      expect(this.model.url()).toEqual('http://example.com?bins=10');
+      expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&bins=10');
     });
 
     it('should include start, end and bins when own_filter is enabled', function () {
@@ -230,11 +214,11 @@ describe('dataviews/histogram-dataview-model', function () {
         'end': 10,
         'bins': 25
       });
-      expect(this.model.url()).toEqual('http://example.com?start=0&end=10&bins=25');
+      expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&start=0&end=10&bins=25');
 
       this.model.enableFilter();
 
-      expect(this.model.url()).toEqual('http://example.com?own_filter=1');
+      expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&own_filter=1');
     });
   });
 

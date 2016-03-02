@@ -15,6 +15,7 @@ module.exports = DataviewModelBase.extend({
   url: function () {
     var params = [];
 
+    params.push('bbox=' + this._getBoundingBoxFilterParam());
     if (this.get('column_type')) {
       params.push('column_type=' + this.get('column_type'));
     }
@@ -31,10 +32,6 @@ module.exports = DataviewModelBase.extend({
         params.push('bins=' + this.get('bins'));
       }
     }
-    if (this.get('boundingBox') && this.get('submitBBox')) {
-      params.push('bbox=' + this.get('boundingBox'));
-    }
-
     var url = this.get('url');
     if (params.length > 0) {
       url += '?' + params.join('&');

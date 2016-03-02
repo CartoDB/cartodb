@@ -1,10 +1,13 @@
+var Backbone = require('backbone');
 var _ = require('underscore');
 var CategoryDataviewModel = require('../../../src/dataviews/category-dataview-model.js');
 var WindshaftFiltersCategory = require('../../../src/windshaft/filters/category');
 
 describe('dataviews/category-dataview-model', function () {
   beforeEach(function () {
-    this.map = jasmine.createSpyObj('map', ['getViewBounds', 'bind', 'reload']);
+    this.map = new Backbone.Model();
+    this.map.getViewBounds = jasmine.createSpy();
+    this.map.reload = jasmine.createSpy();
     this.map.getViewBounds.and.returnValue([[1, 2], [3, 4]]);
     var windshaftMap = jasmine.createSpyObj('windhsaftMap', ['bind']);
     this.model = new CategoryDataviewModel(null, {
@@ -35,6 +38,21 @@ describe('dataviews/category-dataview-model', function () {
     expect(this.model.filter).toBeDefined();
   });
 
+  describe('.url', function () {
+    it('should include the bbox and own_filter parameters', function () {
+      expect(this.model.set('url', 'http://example.com'));
+      expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&own_filter=0');
+
+      this.model.set('filterEnabled', true);
+
+      expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&own_filter=1');
+
+      this.model.set('filterEnabled', false);
+
+      expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&own_filter=0');
+    });
+  });
+
   describe('binds', function () {
     beforeEach(function () {
       this.model.set({
@@ -57,20 +75,6 @@ describe('dataviews/category-dataview-model', function () {
       it('should set rangeModel url when it changes', function () {
         expect(this.model._rangeModel.get('url')).toBe('http://heytest.io');
         expect(this.model._rangeModel.url()).toBe('http://heytest.io');
-      });
-    });
-
-    describe('boundingBox', function () {
-      it('should set search boundingBox when it changes', function () {
-        this.model.set('boundingBox', 'hey');
-        expect(this.model._searchModel.get('boundingBox')).toBe('hey');
-      });
-
-      it('should fetch itself if bounding box changes only when search is not applied', function () {
-        spyOn(this.model, 'fetch');
-        spyOn(this.model, 'isSearchApplied').and.returnValue(true);
-        this.model.set('boundingBox', 'comeon');
-        expect(this.model.fetch).not.toHaveBeenCalled();
       });
     });
 
@@ -121,6 +125,27 @@ describe('dataviews/category-dataview-model', function () {
         this.model._rangeModel.set({ categoriesCount: 123 });
         expect(this.model.get('categoriesCount')).toBe(123);
       });
+    });
+  });
+
+  describe('bindings to map bounds', function () {
+    beforeEach(function () {
+      // Disable debounce
+      spyOn(_, 'debounce').and.callFake(function (func) { return function () { func.apply(this, arguments); }; });
+
+      this.model.fetch = function (opts) {
+        opts && opts.success();
+      };
+      this.model.set('url', 'http://example.com');
+    });
+
+    it('should fetch when the bounding box has changed', function () {
+      spyOn(this.model._searchModel, 'fetchIfSearchIsApplied');
+
+      this.map.getViewBounds.and.returnValue([200, 200], [300, 400]);
+      this.map.trigger('change:center');
+
+      expect(this.model._searchModel.fetchIfSearchIsApplied).toHaveBeenCalled();
     });
   });
 

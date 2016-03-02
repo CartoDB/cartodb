@@ -81,13 +81,21 @@ describe Table do
       table.valid?.should == true
     end
 
-    it 'can use underscore prefixed names for tables' do
+    it 'renames "public" to "public_t"' do
+      table         = Table.new
+      table.user_id = @user.id
+      table.name    = 'public'
+      table.name.should eq 'public_t'
+      table.valid?.should == true
+    end
+
+    it 'renames table when its name is prefixed by an underscore' do
       table = Table.new
       table.user_id = @user.id
-      table.name = '_name'
+      table.name = '_coffee'
       table.save
 
-      table.name.should eq '_name'
+      table.name.should eq 'table_coffee'
       table.valid?.should == true
     end
 

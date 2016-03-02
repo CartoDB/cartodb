@@ -164,9 +164,9 @@ module Helpers
   end
 
   def create_tables(user)
-    create_table(user_id: user.id, name: "with_link", privacy: UserTable::PRIVACY_LINK)
-    create_table(user_id: user.id, name: "public",    privacy: UserTable::PRIVACY_PUBLIC)
-    create_table(user_id: user.id, name: "private",   privacy: UserTable::PRIVACY_PRIVATE)
+    create_table(user_id: user.id, name: "with_link_table", privacy: UserTable::PRIVACY_LINK)
+    create_table(user_id: user.id, name: "public_table",    privacy: UserTable::PRIVACY_PUBLIC)
+    create_table(user_id: user.id, name: "private_table",   privacy: UserTable::PRIVACY_PRIVATE)
   end
 
   def share_tables(user1, user2)
@@ -186,9 +186,9 @@ module Helpers
   end
 
   def check_tables(moved_user)
-    Table.new(user_table: moved_user.tables.where(name: "private").first).privacy.should eq UserTable::PRIVACY_PRIVATE
-    Table.new(user_table: moved_user.tables.where(name: "public").first).privacy.should eq UserTable::PRIVACY_PUBLIC
-    Table.new(user_table: moved_user.tables.where(name: "with_link").first).privacy.should eq UserTable::PRIVACY_LINK
+    Table.new(user_table: moved_user.tables.where(name: "private_table").first).privacy.should eq UserTable::PRIVACY_PRIVATE
+    Table.new(user_table: moved_user.tables.where(name: "public_table").first).privacy.should eq UserTable::PRIVACY_PUBLIC
+    Table.new(user_table: moved_user.tables.where(name: "with_link_table").first).privacy.should eq UserTable::PRIVACY_LINK
   end
 
   def create_user_mover_test_organization

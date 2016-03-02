@@ -1196,9 +1196,8 @@ class Table
       unless register_table_only
         begin
           #  Underscore prefixes have a special meaning in PostgreSQL, hence the ugly hack
-          #  see http://stackoverflow.com/questions/26631976/how-to-rename-a-postgresql-table-by-prefixing-an-underscore
           if name.start_with?('_')
-            temp_name = "#{10.times.map { rand(9) }.join}_" + name
+            temp_name = "t" + "#{9.times.map { rand(9) }.join}" + name
             owner.in_database.rename_table(@name_changed_from, temp_name)
             owner.in_database.rename_table(temp_name, name)
           else
@@ -1384,8 +1383,11 @@ class Table
     name = name.to_s.squish #.downcase
     name = 'untitled_table' if name.blank?
 
-    # Valid names start with a letter or an underscore
-    name = "table_#{name}" unless name[/^[a-z_]{1}/]
+    # Valid names start with a letter. Table names which start
+    # with an underscore are unsupported
+    # see http://stackoverflow.com/questions/26631976/how-to-rename-a-postgresql-table-by-prefixing-an-underscore
+
+    name = "table_#{name}" unless name[/^[a-z]{1}/]
 
     # Subsequent characters can be letters, underscores or digits
     name = name.gsub(/[^a-z0-9]/,'_').gsub(/_{2,}/, '_')

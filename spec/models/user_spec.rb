@@ -45,7 +45,7 @@ describe User do
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
     CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
     Table.any_instance.stubs(:update_cdb_tablemetadata)
-end
+  end
 
   after(:all) do
     stub_named_maps_calls

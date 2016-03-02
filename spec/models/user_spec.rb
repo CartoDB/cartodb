@@ -5,6 +5,7 @@ require_relative '../spec_helper'
 require_relative 'user_shared_examples'
 require_relative '../../services/dataservices-metrics/lib/here_isolines_usage_metrics'
 require 'factories/organizations_contexts'
+require_relative '../../app/model_factories/layer_factory'
 
 describe 'refactored behaviour' do
 
@@ -43,7 +44,8 @@ describe User do
     stub_named_maps_calls
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
     CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
-  end
+    Table.any_instance.stubs(:update_cdb_tablemetadata)
+end
 
   after(:all) do
     stub_named_maps_calls
@@ -1074,6 +1076,9 @@ describe User do
 
     CartoDB::Varnish.any_instance.expects(:purge)
       .with("#{doomed_user.database_name}.*")
+      .returns(true)
+    CartoDB::Varnish.any_instance.expects(:purge)
+      .with("^#{doomed_user.database_name}:(.*public(\\\\\")?\\.clubbing.*)|(table)$")
       .returns(true)
     CartoDB::Varnish.any_instance.expects(:purge)
       .with(".*#{uuid}:vizjson")

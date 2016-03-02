@@ -207,12 +207,11 @@ describe CartoDB::Importer2::Overviews do
       )
       data_import.values[:data_source] = filepath
 
-      # shameless monkey-patching to avoid noisy error messages
-      def data_import.puts(*_)
-      end
+      # avoid noisy error messages
+      data_import.stubs(:puts)
+      CartoDB.stubs(:notify_error)
 
-      # Note that timeout exceptions are catched at Runner#import
-      data_import.run_import!
+      expect { data_import.run_import! }.to raise_error(Sequel::DatabaseError)
       data_import.success.should eq false
       data_import.log.entries.should match(/canceling statement due to statement timeout/)
     end

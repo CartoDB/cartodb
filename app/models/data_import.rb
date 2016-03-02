@@ -208,8 +208,9 @@ class DataImport < Sequel::Model
     log.append "Exception: #{exception.to_s}"
     log.append exception.backtrace, truncate = false
     stacktrace = exception.to_s + exception.backtrace.join
-    Rollbar.report_message('Import error', 'error', error_info: stacktrace)
+    CartoDB.report_exception(exception, 'Import error', error_info: stacktrace)
     handle_failure(exception)
+    raise exception
     self
   end
 
@@ -380,7 +381,7 @@ class DataImport < Sequel::Model
     new_importer
   rescue => exception
     puts exception.to_s + exception.backtrace.join("\n")
-    raise
+    raise exception
   end
 
   def running_import_ids
@@ -888,7 +889,7 @@ class DataImport < Sequel::Model
     rescue => ex
       log.append "Exception: #{ex.message}"
       log.append ex.backtrace, truncate = false
-      Rollbar.report_message('Import error: ', 'error', error_info: ex.message + ex.backtrace.join)
+      CartoDB.report_exception(ex, 'Import error: ', error_info: ex.message + ex.backtrace.join)
       raise CartoDB::DataSourceError.new("Datasource #{datasource_name} could not be instantiated")
     end
     if service_item_id.nil?

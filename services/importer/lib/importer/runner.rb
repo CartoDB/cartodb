@@ -97,6 +97,9 @@ module CartoDB
         @downloader.multi_resource_import_supported? ? multi_resource_import : single_resource_import
         self
       rescue => exception
+        # Delete job temporary table from cdb_importer schema
+        delete_job_table
+
         log.append "Errored importing data:"
         log.append "#{exception.class.to_s}: #{exception.to_s}", truncate=false
         log.append '----------------------------------------------------'
@@ -199,7 +202,7 @@ module CartoDB
         end
 
         # Delete job temporary table from cdb_importer schema
-        @job.delete_job_table
+        delete_job_table
 
         @job.log "Errored importing data from #{source_file.fullpath}:"
         @job.log "#{exception.class.to_s}: #{exception.to_s}", truncate=false
@@ -395,6 +398,10 @@ module CartoDB
 
       def add_warning(warning)
         @warnings.merge!(warning)
+      end
+
+      def delete_job_table
+        @job.delete_job_table
       end
 
       def raise_if_over_storage_quota(source_file)

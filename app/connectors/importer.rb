@@ -81,6 +81,7 @@ module CartoDB
         runner.log.append("Table '#{name}' registered")
       rescue => exception
         if exception.message =~ /canceling statement due to statement timeout/i
+          drop("#{ORIGIN_SCHEMA}.#{result.table_name}")
           raise CartoDB::Importer2::StatementTimeoutError.new(
             exception.message,
             CartoDB::Importer2::ERRORS_MAP[CartoDB::Importer2::StatementTimeoutError]
@@ -128,7 +129,8 @@ module CartoDB
       def drop(table_name)
         database.execute(%(SELECT CDB_DropOverviews('#{table_name}'::regclass)))
         database.execute(%(DROP TABLE #{table_name}))
-      rescue
+      rescue => exception
+        runner.log.append("Couldn't drop table #{table_name}: #{exception}. Backtrace: #{exception.backtrace} ")
         self
       end
 
@@ -144,6 +146,9 @@ module CartoDB
           { schema: origin_schema, name: table }
         }
         @support_tables_helper.change_schema(destination_schema, table_name)
+      rescue => e
+        drop("#{origin_schema}.#{table_name}")
+        raise e
       end
 
       def rename(result, current_name, new_name, rename_attempts=0)
@@ -201,8 +206,10 @@ module CartoDB
         if rename_attempts <= MAX_RENAME_RETRIES
           rename(result, current_name, target_new_name, rename_attempts)
         else
+          drop("#{ORIGIN_SCHEMA}.#{current_name}")
           raise CartoDB::Importer2::InvalidNameError.new("#{message} #{rename_attempts} attempts. Data import: #{data_import_id}. ERROR: #{exception}")
         end
+        raise exception
       end
 
       def rename_the_geom_index_if_exists(current_name, new_name)

@@ -652,7 +652,10 @@ class Table
     new_name = get_valid_name(value, current_name: self.name)
 
     # Do not keep track of name changes until table has been saved
-    @name_changed_from = @user_table.name if !new? && @user_table.name.present?
+    unless new?
+      @name_changed_from = @user_table.name if @user_table.name.present?
+      update_cdb_tablemetadata
+    end
 
     @user_table[:name] = new_name
   end

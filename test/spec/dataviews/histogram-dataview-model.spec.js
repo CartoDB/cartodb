@@ -202,23 +202,38 @@ describe('dataviews/histogram-dataview-model', function () {
   });
 
   describe('.url', function () {
-    it('should include bounding box and initial bins', function () {
-      this.model.set('url', 'http://example.com');
-      expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&bins=10');
+
+    describe('not including bbox', function () {
+      beforeEach(function () {
+        this.model.set('submitBBox', false);
+      });
+      it('should include only the initial bins', function () {
+        this.model.set('url', 'http://example.com');
+        expect(this.model.url()).toEqual('http://example.com?bins=10');
+      });
     });
 
-    it('should include start, end and bins when own_filter is enabled', function () {
-      this.model.set({
-        'url': 'http://example.com',
-        'start': 0,
-        'end': 10,
-        'bins': 25
+    describe('including bbox', function () {
+      beforeEach(function () {
+        this.model.set('submitBBox', true);
       });
-      expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&start=0&end=10&bins=25');
+      it('should include bbox and initial bins', function () {
+        this.model.set('url', 'http://example.com');
+        expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&bins=10');
+      });
+      it('should include start, end and bins when own_filter is enabled', function () {
+        this.model.set({
+          'url': 'http://example.com',
+          'start': 0,
+          'end': 10,
+          'bins': 25
+        });
+        expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&start=0&end=10&bins=25');
 
-      this.model.enableFilter();
+        this.model.enableFilter();
 
-      expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&own_filter=1');
+        expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&own_filter=1');
+      });
     });
   });
 

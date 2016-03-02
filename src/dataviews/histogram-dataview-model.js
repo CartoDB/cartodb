@@ -15,7 +15,9 @@ module.exports = DataviewModelBase.extend({
   url: function () {
     var params = [];
 
-    params.push('bbox=' + this._getBoundingBoxFilterParam());
+    if (this.get('submitBBox')) {
+      params.push('bbox=' + this._getBoundingBoxFilterParam());
+    }
     if (this.get('column_type')) {
       params.push('column_type=' + this.get('column_type'));
     }

@@ -24,6 +24,7 @@ module CartoDB
       @batch_size = arguments[:batch_size] || DEFAULT_BATCH_SIZE
       @cache_results = File.join(working_dir, "#{temp_table_name}_results.csv")
       @usage_metrics = arguments.fetch(:usage_metrics)
+      @log = arguments.fetch(:log)
       init_rows_count
     end
 

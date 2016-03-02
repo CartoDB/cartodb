@@ -12,13 +12,17 @@ describe Carto::Gme::TableGeocoder do
     connection_stub = mock
     connection_stub.stubs(:run)
     @usage_metrics_stub = stub
+    @log = mock
+    @log.stubs(:append)
+    @log.stubs(:append_and_store)
 
     @mandatory_args = {
       connection: connection_stub,
       original_formatter: '{mock}',
       client_id: 'my_client_id',
       private_key: 'my_private_key',
-      usage_metrics: @usage_metrics_stub
+      usage_metrics: @usage_metrics_stub,
+      log: @log
     }
   end
 
@@ -196,7 +200,8 @@ describe Carto::Gme::TableGeocoder do
         client_id: 'my_client_id',
         private_key: 'my_private_key',
         max_block_size: 4,
-        usage_metrics: @usage_metrics_stub
+        usage_metrics: @usage_metrics_stub,
+        log: @log
       }
 
       @table_geocoder = Carto::Gme::TableGeocoder.new(params)

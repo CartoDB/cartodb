@@ -53,7 +53,8 @@ module Carto
         geocoder_class = CartoDB::InternalGeocoder::Geocoder
       end
 
-      instance_config.merge!(usage_metrics: get_geocoder_metrics_instance(user))
+      instance_config[:usage_metrics] = get_geocoder_metrics_instance(user)
+      instance_config[:log] = log
 
       log.append "geocoder_class = #{geocoder_class.to_s}"
       instance = geocoder_class.new(instance_config)

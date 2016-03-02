@@ -22,6 +22,7 @@ module CartoDB
       @remote_id   = arguments[:remote_id]
       @max_rows    = arguments.fetch(:max_rows)
       @usage_metrics = arguments.fetch(:usage_metrics)
+      @log = arguments.fetch(:log)
       @cache       = CartoDB::GeocoderCache.new(
         connection:  connection,
         formatter:   clean_formatter,
@@ -30,7 +31,8 @@ module CartoDB
         table_name:  table_name,
         qualified_table_name: @qualified_table_name,
         max_rows:    @max_rows,
-        usage_metrics: @usage_metrics
+        usage_metrics: @usage_metrics,
+        log: @log
       )
     end # initialize
 
@@ -43,7 +45,7 @@ module CartoDB
       cache.store unless cache_disabled?
     ensure
       self.remote_id = geocoder.request_id
-      update_metrics()
+      update_metrics
     end
 
     # TODO: make the geocoders update status directly in the model
@@ -87,7 +89,7 @@ module CartoDB
     private
 
     def geocoder
-      @geocoder ||= CartoDB::HiresGeocoderFactory.get(csv_file, working_dir)
+      @geocoder ||= CartoDB::HiresGeocoderFactory.get(csv_file, working_dir, @log)
     end
 
     def cache_disabled?

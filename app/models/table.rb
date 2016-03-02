@@ -546,6 +546,8 @@ class Table
     end
     @dependent_visualizations_cache     = dependent_visualizations.to_a
     @non_dependent_visualizations_cache = non_dependent_visualizations.to_a
+
+    update_cdb_tablemetadata
   end
 
   def after_destroy
@@ -560,7 +562,6 @@ class Table
       visualization.unlink_from(self)
     end
 
-    update_cdb_tablemetadata
     remove_table_from_user_database unless keep_user_database_table
     synchronization.delete if synchronization
 

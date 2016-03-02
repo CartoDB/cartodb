@@ -567,7 +567,6 @@ class User < Sequel::Model
         begin
           db.run("SET statement_timeout TO #{statement_timeout}") if statement_timeout
           block.call db
-        ensure
           db.run('SET statement_timeout TO DEFAULT')
         end
       end

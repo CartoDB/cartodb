@@ -38,6 +38,7 @@ module Resque
         end
       rescue => e
         CartoDB.notify_exception(e)
+        raise e
       end
     end #self.perform
 

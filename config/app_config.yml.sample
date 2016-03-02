@@ -459,7 +459,8 @@ defaults: &defaults
         className: 'watercolor_stamen'
         attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.'
   overviews:
-    min_rows: 1000000
+    min_rows: 2000000
+    statement_timeout: 1800000
 
 development:
   <<: *defaults

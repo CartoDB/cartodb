@@ -47,7 +47,7 @@ describe CartoDB::Importer2::Overviews do
   end
 
   def has_overviews?(user, table)
-    overview_tables(user, table).size > 0
+    !overview_tables(user, table).empty?
   end
 
   def remove_overviews(user, table)

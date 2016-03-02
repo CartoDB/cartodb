@@ -560,13 +560,13 @@ class User < Sequel::Model
   # This is the only way to have the SQL in the block executed with
   # the desired statement_timeout when the connection goes trhough
   # pgbouncer configured with pool mode as 'transaction'.
-  def transaction_with_timeout(options, &block)
+  def transaction_with_timeout(options)
     statement_timeout = options.delete(:statement_timeout)
     in_database(options) do |db|
       db.transaction do
         begin
           db.run("SET statement_timeout TO #{statement_timeout}") if statement_timeout
-          block.call db
+          yield db
           db.run('SET statement_timeout TO DEFAULT')
         end
       end

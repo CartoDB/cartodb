@@ -21,6 +21,7 @@ module CartoDB
         @statement_timeout = options[:statement_timeout] ||
                              Cartodb.get_config(:overviews, 'statement_timeout') ||
                              DEFAULT_STATEMENT_TIMEOUT
+        @importer_stats = CartoDB::Stats::Importer.instance # TODO: delegate to @runner?
       end
 
       attr_reader :user, :min_rows, :schema
@@ -42,7 +43,9 @@ module CartoDB
         # TODO: timing, exception handling, ...
         @user.transaction_with_timeout statement_timeout: @statement_timeout do |db|
           log("Will create overviews for #{@table_name}")
-          db.run sql
+          @importer_stats.timing('create-overviews') do
+            db.run sql
+          end
           log("Overviews created for #{@table_name}")
         end
       end

@@ -291,7 +291,7 @@ describe 'legacy behaviour tests' do
                   "kind" => "high-resolution", "country_code" => nil, "region_code" => nil, "formatter" => nil,
                   "geocoder_type" => nil, "geometry_type" => nil, "error" => {"title" => "Geocoding error",
                   "description" => ""}, "processed_rows" => 1, "cache_hits" => 0, "processable_rows" => nil,
-                  "real_rows" => nil, "price" => 0, "used_credits" => nil, "remaining_quota" => 999,
+                  "real_rows" => nil, "price" => 0, "used_credits" => nil, "remaining_quota" => 0,
                   "country_column" => nil, "region_column" => nil, "data_import_id" => nil, "error_code" => nil}
       received_without_dates = remove_dates(JSON.parse(last_response.body))
       received_without_dates.should == expected

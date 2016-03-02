@@ -8,6 +8,13 @@ describe Carto::Api::OrganizationUsersController do
   include Rack::Test::Methods
   include Warden::Test::Helpers
 
+  before (:each) do
+    ::User.any_instance.stubs(:validate_credentials_not_taken_in_central).returns(true)
+    ::User.any_instance.stubs(:create_in_central).returns(true)
+    ::User.any_instance.stubs(:update_in_central).returns(true)
+    ::User.any_instance.stubs(:delete_in_central).returns(true)
+  end
+
   describe 'user creation' do
     it 'returns 401 for non authorized calls' do
       post api_v1_organization_users_create_url(name: @organization.name)
@@ -195,6 +202,7 @@ describe Carto::Api::OrganizationUsersController do
       put api_v1_organization_users_update_url(name: @organization.name, u_username: user_to_update.username), params
 
       @organization.reload
+      @organization.users[0].reload
 
       last_response.status.should == 200
 

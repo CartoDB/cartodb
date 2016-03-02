@@ -6,13 +6,20 @@ require_relative '../../../services/named-maps-api-wrapper/lib/named_maps_wrappe
 include CartoDB
 
 describe CartoDB::PlatformLimits::Importer::UserConcurrentSyncsAmount do
-
   describe '#importer-limits' do
+    before(:all) do
+      @user = FactoryGirl.create(:valid_user)
+    end
+
+    after(:all) do
+      @user.destroy
+    end
+
     it 'checks concurrent sync rate limit' do
       syncs_limit = CartoDB::PlatformLimits::Importer::UserConcurrentSyncsAmount::MAX_SYNCS_PER_USER
 
       limit = CartoDB::PlatformLimits::Importer::UserConcurrentSyncsAmount.new({
-                                                                           user: $user_1,
+                                                                           user: @user,
                                                                            redis: {
                                                                              db: $users_metadata
                                                                            }

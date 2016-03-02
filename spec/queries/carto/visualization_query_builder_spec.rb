@@ -323,4 +323,8 @@ describe Carto::VisualizationQueryBuilder do
     visualizations.map(&:id).should include table_visualization.id
     visualizations.map(&:id).should_not include raster_table_visualization.id
   end
+
+  it 'will not accept nil id or name' do
+    expect { @vqb.with_id_or_name(nil) }.to raise_error
+  end
 end

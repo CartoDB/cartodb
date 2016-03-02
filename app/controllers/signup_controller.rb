@@ -12,6 +12,7 @@ class SignupController < ApplicationController
   skip_before_filter :http_header_authentication, only: [:create_http_authentication]
 
   before_filter :load_organization, only: [:create_http_authentication]
+  before_filter :check_organization_quotas, only: [:create_http_authentication]
   before_filter :load_mandatory_organization, only: [:signup, :create]
   before_filter :disable_if_ldap_configured
   before_filter :initialize_google_plus_config
@@ -130,8 +131,11 @@ class SignupController < ApplicationController
   end
 
   def load_organization
-    subdomain = CartoDB.subdomain_from_request(request)
+    subdomain = CartoDB.subdomainless_urls? ? request.host.to_s.gsub(".#{CartoDB.session_domain}", '') : CartoDB.subdomain_from_request(request)
     @organization = ::Organization.where(name: subdomain).first if subdomain
+  end
+
+  def check_organization_quotas
     if @organization
       check_signup_errors = Sequel::Model::Errors.new
       @organization.validate_for_signup(check_signup_errors, ::User.new_with_organization(@organization).quota_in_bytes)
@@ -143,6 +147,7 @@ class SignupController < ApplicationController
   def load_mandatory_organization
     load_organization
     render_404 and return false unless @organization && @organization.signup_page_enabled
+    check_organization_quotas
   end
 
   def disable_if_ldap_configured

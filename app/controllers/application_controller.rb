@@ -37,6 +37,10 @@ class ApplicationController < ActionController::Base
 
   protected
 
+  def handle_unverified_request
+    render_403
+  end
+
   # @see Warden::Manager.after_set_user
   def update_session_security_token(user)
     warden.session(user.username)[:sec_token] = Digest::SHA1.hexdigest(user.crypted_password)
@@ -147,8 +151,8 @@ class ApplicationController < ActionController::Base
 
   def render_403
     respond_to do |format|
-      format.html { render :file => 'public/403.html', :status => 403, :layout => false }
-      format.all  { head :forbidden }
+      format.html { render(file: 'public/403.html', status: 403, layout: false) }
+      format.all  { head(:forbidden) }
     end
   end
 

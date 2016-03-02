@@ -9,10 +9,6 @@ require_relative '../../../app/models/synchronization/member'
 include CartoDB
 
 describe Synchronization::Member do
-  before do
-    Synchronization.repository = DataRepository.new
-  end
-
   describe 'Basic actions' do
     it 'assigns an id by default' do
       member = Synchronization::Member.new
@@ -54,23 +50,33 @@ describe Synchronization::Member do
   end
 
   describe "External sources" do
+    before(:each) do
+      @user_1 = FactoryGirl.create(:valid_user)
+      @user_2 = FactoryGirl.create(:valid_user)
+    end
+
+    after(:each) do
+      @user_1.destroy
+      @user_2.destroy
+    end
+
     it "Authorizes to sync always if from an external source" do
-      member  = Synchronization::Member.new(random_attributes({user_id: $user_1.id})).store
+      member  = Synchronization::Member.new(random_attributes({user_id: @user_1.id})).store
       member.fetch
 
       member.expects(:from_external_source?)
             .returns(true)
 
-      $user_1.sync_tables_enabled = true
-      $user_2.sync_tables_enabled = true
+      @user_1.sync_tables_enabled = true
+      @user_2.sync_tables_enabled = true
 
-      member.authorize?($user_1).should eq true
-      member.authorize?($user_2).should eq false
+      member.authorize?(@user_1).should eq true
+      member.authorize?(@user_2).should eq false
 
-      $user_1.sync_tables_enabled = false
-      $user_2.sync_tables_enabled = false
+      @user_1.sync_tables_enabled = false
+      @user_2.sync_tables_enabled = false
 
-      member.authorize?($user_1).should eq true
+      member.authorize?(@user_1).should eq true
     end
   end
 
@@ -86,4 +92,3 @@ describe Synchronization::Member do
     }
   end
 end
-

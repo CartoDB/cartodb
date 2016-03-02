@@ -112,6 +112,32 @@ describe UserOrganization do
       @owner.db_service.functions('public').map(&:name).should_not include(name)
     end
 
+    # See #6642
+    it 'moves functions with default parameters to the new schema' do
+      name = 'test_function'
+      function_creation = %{
+        create function #{name}(integer default 1) returns integer as $test_function$
+        begin
+          return 1;
+        end;
+      $test_function$ language plpgsql;
+      }
+
+      @owner.in_database.run(function_creation)
+
+      functions_before = @owner.db_service.functions
+      functions_before.map(&:name).should include(name)
+
+      owner_org = CartoDB::UserOrganization.new(@organization.id, @owner.id)
+      owner_org.promote_user_to_admin
+      @owner.reload
+
+      functions_after = @owner.db_service.functions
+      functions_after.map(&:name).should include(name)
+
+      @owner.db_service.functions('public').map(&:name).should_not include(name)
+    end
+
     # See #6295: Moving user to its own schema (i.e on org creation) leaves triggers on public schema
     it 'moves views to the new schema' do
       table = create_random_table(@owner, "table-#{rand(999)}")

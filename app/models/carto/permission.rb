@@ -1,5 +1,4 @@
 require 'active_record'
-require_relative './user'
 
 class Carto::Permission < ActiveRecord::Base
   DEFAULT_ACL_VALUE = []

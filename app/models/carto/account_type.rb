@@ -35,5 +35,9 @@ module Carto
         user[:soft_geocoding_limit]
       end
     end
+
+    def soft_here_isolines_limit?(user)
+      !!user[:soft_here_isolines_limit]
+    end
   end
 end

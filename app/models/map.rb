@@ -75,6 +75,10 @@ class Map < Sequel::Model
   def after_save
     super
     update_map_on_associated_entities
+    notify_map_change
+  end
+
+  def notify_map_change
     update_related_named_maps
     invalidate_vizjson_varnish_cache
   end

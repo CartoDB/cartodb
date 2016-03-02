@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "3.23.31",
+  "version": "3.23.39",
   "description": "CartoDB UI frontend",
   "repository": {
     "type": "git",
@@ -17,22 +17,19 @@
       "type": "BSD"
     }
   ],
-  "dependencies": {
-    "backbone": "1.2.3",
-    "perfect-scrollbar": "0.6.7"
-  },
   "devDependencies": {
     "autoprefixer-core": "5.2.1",
     "aws-sdk": "2.0.0-rc11",
+    "backbone": "1.2.3",
     "backbone-forms": "^0.14.0",
     "browserify": "11.0.1",
     "browserify-resolutions": "1.0.6",
     "browserify-shim": "3.8.10",
-    "cartoassets": "CartoDB/CartoAssets#master",
+    "cartoassets": "cartodb/CartoAssets#master",
+    "cartodb-deep-insights.js": "cartodb/deep-insights.js#7ba9487",
     "cartodb-pecan": "0.2.x",
+    "cartodb.js": "cartodb/cartodb.js#1b0b381",
     "csswring": "^3.0.5",
-    "cartodb-deep-insights.js": "CartoDB/deep-insights.js#179783e",
-    "cartodb.js": "CartoDB/cartodb.js#94bb6f3",
     "git-rev": "0.2.1",
     "grunt": "0.4.5",
     "grunt-available-tasks": "0.5.4",
@@ -54,23 +51,29 @@
     "grunt-mustache": "0.1.7",
     "grunt-postcss": "0.5.5",
     "grunt-timer": "0.3.3",
-    "jstify": "0.13.0",
     "jquery": "2.1.4",
+    "jstify": "0.13.0",
     "load-grunt-tasks": "3.2.0",
     "moment": "2.10.6",
+    "node-polyglot": "1.0.0",
     "open": "0.0.5",
+    "perfect-scrollbar": "0.6.7",
     "queue-async": "^1.0.7",
     "semistandard": "7.0.4",
     "source-map-support": "0.3.2",
     "uglify-js": "2.4.x",
     "underscore": "1.8.3",
-    "node-polyglot": "1.0.0",
     "watchify": "3.1.1"
   },
   "browserify": {
     "transform": [
       "browserify-shim",
-      "jstify"
+      [
+        "jstify",
+        {
+          "minifierOpts": false
+        }
+      ]
     ]
   },
   "browserify-shim": {
@@ -87,6 +90,7 @@
       "alert",
       "cartodb",
       "cdb",
+      "_t",
       "jasmine",
       "describe",
       "xdescribe",

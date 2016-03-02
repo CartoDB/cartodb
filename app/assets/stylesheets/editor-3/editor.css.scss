@@ -19,19 +19,19 @@
   position: relative;
   height: 100%;
 }
-.Editor-menu {
-  width: 72px;
-  height: 100vh;
-  background: $cBlue;
-}
 .Editor-panel {
   @include block-shadow();
   @include transition(width, 300ms, ease-in-out);
   width: 344px;
   height: 100vh;
+  padding: 25px;
+  box-sizing: border-box;
 }
 .Editor-panel.is-larger {
   width: 488px;
+}
+.Editor-content .CDB-HeaderInfo {
+  margin: 0 0 32px;
 }
 .CDB-Dashboard-canvas {
   @include block-shadow();

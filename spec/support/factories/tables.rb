@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 module CartoDB
   module Factories
     def new_table(attributes = {})
@@ -28,9 +30,10 @@ module CartoDB
     def create_visualization(user, attributes = {})
       headers = {'CONTENT_TYPE'  => 'application/json'}
       CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
-      post api_v1_visualizations_create_url(user_domain: user.username, api_key: user.api_key), visualization_template(user, attributes).to_json, headers
-      id = JSON.parse(last_response.body).fetch('id')
-      CartoDB::Visualization::Member.new(id: id).fetch
+      post_json api_v1_visualizations_create_url(user_domain: user.username, api_key: user.api_key), visualization_template(user, attributes) do |response|
+        id = response.body[:id]
+        CartoDB::Visualization::Member.new(id: id).fetch
+      end
     end
 
     def visualization_template(user, attributes = {})

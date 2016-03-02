@@ -31,7 +31,6 @@ gem 'addressable',             '2.3.2', require: 'addressable/uri'
 
 gem 'ejs',                     '~> 1.1.1'
 gem 'execjs',                  '~> 0.4' # Required by ejs
-gem 'therubyracer',            '0.12.1' # Required by ejs
 
 gem 'net-ldap',                '0.11'
 
@@ -63,12 +62,12 @@ gem 'eventmachine',            '1.0.4'
 gem 'em-pg-client',            '0.2.1'
 
 # Service components (/services)
-gem 'virtus',                   '1.0.0.beta3' #, git: 'https://github.com/solnic/virtus.git'
+gem 'virtus',                   '1.0.5'
 gem 'aequitas',                 '0.0.2'
 gem 'uuidtools',                '2.1.5'
 
 # Markdown
-gem 'redcarpet', '3.3.2'
+gem 'redcarpet', '3.3.3'
 
 # TODO we should be able to remove this using the new
 #      Rails routes DSL
@@ -98,6 +97,12 @@ group :test do
   # Need to use specific branch from this fork as original gem is broken and outdated
   gem 'fake_net_ldap', git: 'https://github.com/kuldeepaggarwal/fake_net_ldap.git', :branch => 'fix-responder'
   gem 'mock_redis'
+end
+
+group :test, :development do
+  gem 'rbtrace',               '0.4.8'
+  gem 'gc_tracer',             '1.5.1'
+  gem 'memory_profiler'
 end
 
 group :development, :test do

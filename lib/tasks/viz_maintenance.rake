@@ -1,5 +1,5 @@
-require_relative "../../app/factories/layer_factory"
-require_relative "../../app/factories/map_factory"
+require_relative "../../app/model_factories/layer_factory"
+require_relative "../../app/model_factories/map_factory"
 
 namespace :cartodb do
   namespace :vizs do

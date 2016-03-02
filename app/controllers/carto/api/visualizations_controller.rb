@@ -14,6 +14,7 @@ module Carto
       include PagedSearcher
       include Carto::UUIDHelper
       include Carto::ControllerHelper
+      include VisualizationsControllerHelper
 
       ssl_required :index, :show
       ssl_allowed  :vizjson2, :vizjson3, :likes_count, :likes_list, :is_liked, :list_watching, :static_map
@@ -63,7 +64,7 @@ module Carto
       rescue CartoDB::BoundingBoxError => e
         render_jsonp({ error: e.message }, 400)
       rescue => e
-        CartoDB.notify_exception(e, { request: request })
+        CartoDB.notify_exception(e, request: request, user: current_user)
         render_jsonp({ error: e.message }, 500)
       end
 
@@ -94,7 +95,7 @@ module Carto
       end
 
       def vizjson3
-        render_vizjson(generate_vizjson3)
+        render_vizjson(generate_vizjson3(@visualization, params))
       end
 
       def list_watching
@@ -124,10 +125,6 @@ module Carto
 
       def generate_vizjson2
         Carto::Api::VizJSONPresenter.new(@visualization, $tables_metadata).to_vizjson(https_request: is_https?)
-      end
-
-      def generate_vizjson3
-        Carto::Api::VizJSON3Presenter.new(@visualization, $tables_metadata).to_vizjson(https_request: is_https?)
       end
 
       def render_vizjson(vizjson)

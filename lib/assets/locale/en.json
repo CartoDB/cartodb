@@ -1,7 +1,80 @@
 {
+  "components": {
+    "modals": {
+      "add-widgets": {
+        "modal-title": "Add new widgets",
+        "modal-desc": "Select the widgets you want to add",
+        "continue-btn": "Continue",
+        "fetching-title": "Loading columns",
+        "tab-pane": {
+          "histogram-label": "Histogram",
+          "category-label": "Category",
+          "formula-label": "Formula",
+          "time-series-label": "Time-series"
+        },
+        "time-series-no-option-title": "None",
+        "time-series-no-option-desc": "This option won't show your time-series widget"
+      }
+    },
+    "error": {
+      "default-title": "Oops, there was a problem",
+      "default-desc": "Reload the page again. If the problem persists contact us at <a href='mailto:support@cartodb.com'>support@cartodb.com</a>"
+    }
+  },
   "editor": {
     "map": "map",
     "map_name": "%{name} map",
-    "map_pluralize": "%{smart_count} map |||| %{smart_count} maps"
+    "map_pluralize": "%{smart_count} map |||| %{smart_count} maps",
+    "layers": {
+      "title": "LAYERS"
+    },
+    "elements": {
+      "title": "ELEMENTS"
+    },
+    "widgets": {
+      "title": "WIDGETS",
+      "widgets-form": {
+        "type": {
+          "title": "Type",
+          "description": "Choose the widget type"
+        },
+        "data": {
+          "title": "Data",
+          "description": "Configure your values"
+        },
+        "style": {
+          "title": "Style",
+          "description": "Apply style to your visualization"
+        }
+      },
+      "edit": "Edit",
+      "type": {
+        "category": "Category",
+        "formula": "Formula",
+        "histogram": "Histogram",
+        "time_series": "Time Series"
+      },
+      "data": {
+        "aggregation": "Aggregation",
+        "aggregation_column": "Aggregation Column",
+        "bins": "Buckets",
+        "column": "Column",
+        "end": "End",
+        "loading": "loading…",
+        "operation": "Operation",
+        "prefix": "Prefix",
+        "start": "Start",
+        "suffix": "Suffix",
+        "title": "Title",
+        "value": "Value"
+      },
+      "style": {
+        "sync_on_data_change": "Unfiltered",
+        "sync_on_bbox_change": "Dynamic",
+        "description": "Description",
+        "yes": "Yes",
+        "no": "No"
+      }
+    }
   }
 }

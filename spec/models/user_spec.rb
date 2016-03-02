@@ -3,7 +3,9 @@
 require 'ostruct'
 require_relative '../spec_helper'
 require_relative 'user_shared_examples'
+require_relative '../../services/dataservices-metrics/lib/here_isolines_usage_metrics'
 require 'factories/organizations_contexts'
+require_relative '../../app/model_factories/layer_factory'
 
 describe 'refactored behaviour' do
 
@@ -169,9 +171,6 @@ describe User do
       organization.save
       organization.reload
       user1.reload
-
-      # Don't remove this line or the spec will fail (magic):
-      puts "Organization users: #{organization.users.count}"
 
       user2 = new_user
       user2.organization = organization
@@ -523,8 +522,15 @@ describe User do
   end
 
   describe "avatar checks" do
+    let(:user1) do
+      create_user(email: 'ewdewfref34r43r43d32f45g5@example.com', username: 'u1', password: 'foobar')
+    end
+
+    after(:each) do
+      user1.destroy
+    end
+
     it "should load a cartodb avatar url" do
-      user1 = create_user(email: 'ewdewfref34r43r43d32f45g5@example.com', username: 'u1', password: 'foobar')
       avatar_kind = Cartodb.config[:avatars]['kinds'][0]
       avatar_color = Cartodb.config[:avatars]['colors'][0]
       avatar_base_url = Cartodb.config[:avatars]['base_url']
@@ -534,16 +540,14 @@ describe User do
       user1.avatar_url = nil
       user1.save
       user1.reload_avatar
-      user1.avatar_url.should == "//#{avatar_base_url}/avatar_#{avatar_kind}_#{avatar_color}.png"
-      user1.destroy
+      user1.avatar_url.should == "#{avatar_base_url}/avatar_#{avatar_kind}_#{avatar_color}.png"
     end
+
     it "should load a the user gravatar url" do
-      user1 = create_user(email: 'ewdewfref34r43r43d32f45g5@example.com', username: 'u1', password: 'foobar')
       gravatar_url = %r{gravatar.com}
       Typhoeus.stub(gravatar_url, { method: :get }).and_return(Typhoeus::Response.new(code: 200))
       user1.reload_avatar
       user1.avatar_url.should == "//#{user1.gravatar_user_url}"
-      user1.destroy
     end
   end
 
@@ -570,6 +574,19 @@ describe User do
       ::User.any_instance.stubs(:map_view_quota).returns(120)
       ::User.any_instance.stubs(:get_geocoding_calls).returns(81)
       ::User.any_instance.stubs(:geocoding_quota).returns(100)
+      ::User.overquota.should be_empty
+      ::User.overquota(0.20).map(&:id).should include(@user.id)
+      ::User.overquota(0.20).size.should == ::User.reject{|u| u.organization_id.present? }.count
+      ::User.overquota(0.10).should be_empty
+    end
+
+    it "should return users near their here isolines quota" do
+      ::User.any_instance.stubs(:get_api_calls).returns([0])
+      ::User.any_instance.stubs(:map_view_quota).returns(120)
+      ::User.any_instance.stubs(:get_geocoding_calls).returns(0)
+      ::User.any_instance.stubs(:geocoding_quota).returns(100)
+      ::User.any_instance.stubs(:get_here_isolines_calls).returns(81)
+      ::User.any_instance.stubs(:here_isolines_quota).returns(100)
       ::User.overquota.should be_empty
       ::User.overquota(0.20).map(&:id).should include(@user.id)
       ::User.overquota(0.20).size.should == ::User.reject{|u| u.organization_id.present? }.count
@@ -650,6 +667,36 @@ describe User do
 
     it "should return 0 when no geocodings" do
       @user.get_geocoding_calls(from: Time.now - 15.days, to: Time.now - 10.days).should eq 0
+    end
+  end
+
+  describe '#get_here_isolines_calls' do
+    before do
+      delete_user_data @user
+      @mock_redis = MockRedis.new
+      @usage_metrics = CartoDB::HereIsolinesUsageMetrics.new(@user.username, nil, @mock_redis)
+      CartoDB::HereIsolinesUsageMetrics.stubs(:new).returns(@usage_metrics)
+      @user.stubs(:last_billing_cycle).returns(Date.today)
+      @user.period_end_date = (DateTime.current + 1) << 1
+      @user.save.reload
+    end
+
+    it "should return the sum of here isolines rows for the current billing period" do
+      @usage_metrics.incr(:here_isolines, :isolines_generated, 10, DateTime.current)
+      @usage_metrics.incr(:here_isolines, :isolines_generated, 100, (DateTime.current - 2))
+      @user.get_here_isolines_calls.should eq 10
+    end
+
+    it "should return the sum of here isolines rows for the specified period" do
+      @usage_metrics.incr(:here_isolines, :isolines_generated, 10, DateTime.current)
+      @usage_metrics.incr(:here_isolines, :isolines_generated, 100, (DateTime.current - 2))
+      @usage_metrics.incr(:here_isolines, :isolines_generated, 100, (DateTime.current - 7))
+      @user.get_here_isolines_calls(from: Time.now-5.days).should eq 110
+      @user.get_here_isolines_calls(from: Time.now-5.days, to: Time.now - 2.days).should eq 100
+    end
+
+    it "should return 0 when no here isolines actions" do
+      @user.get_here_isolines_calls(from: Time.now - 15.days, to: Time.now - 10.days).should eq 0
     end
   end
 
@@ -1127,6 +1174,44 @@ describe User do
     end
   end
 
+  describe '#hard_here_isolines_limit?' do
+
+    before(:each) do
+      @user_account = create_user
+    end
+
+    it 'returns true with every plan unless it has been manually set to false' do
+      @user_account[:soft_here_isolines_limit].should be_nil
+      @user_account.stubs(:account_type).returns('AMBASSADOR')
+      @user_account.soft_here_isolines_limit?.should be_false
+      @user_account.soft_here_isolines_limit.should be_false
+      @user_account.hard_here_isolines_limit?.should be_true
+      @user_account.hard_here_isolines_limit.should be_true
+
+      @user_account.stubs(:account_type).returns('FREE')
+      @user_account.soft_here_isolines_limit?.should be_false
+      @user_account.soft_here_isolines_limit.should be_false
+      @user_account.hard_here_isolines_limit?.should be_true
+      @user_account.hard_here_isolines_limit.should be_true
+
+      @user_account.hard_here_isolines_limit = false
+      @user_account[:soft_here_isolines_limit].should_not be_nil
+
+      @user_account.stubs(:account_type).returns('AMBASSADOR')
+      @user_account.soft_here_isolines_limit?.should be_true
+      @user_account.soft_here_isolines_limit.should be_true
+      @user_account.hard_here_isolines_limit?.should be_false
+      @user_account.hard_here_isolines_limit.should be_false
+
+      @user_account.stubs(:account_type).returns('FREE')
+      @user_account.soft_here_isolines_limit?.should be_true
+      @user_account.soft_here_isolines_limit.should be_true
+      @user_account.hard_here_isolines_limit?.should be_false
+      @user_account.hard_here_isolines_limit.should be_false
+    end
+
+  end
+
   describe '#link_ghost_tables' do
     before(:each) do
       @user.in_database.run('drop table if exists ghost_table')
@@ -1385,7 +1470,7 @@ describe User do
         role = @org_user_1.database_username
         db = @org_user_1.in_database
         db_service = @org_user_1.db_service
-        
+
         db_service.role_exists?(db, role).should == true
 
         @org_user_1.destroy

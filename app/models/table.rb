@@ -17,7 +17,8 @@ require_relative '../../services/importer/lib/importer/query_batcher'
 require_relative '../../services/importer/lib/importer/cartodbfy_time'
 require_relative '../../services/datasources/lib/datasources/decorators/factory'
 require_relative '../../services/table-geocoder/lib/internal-geocoder/latitude_longitude'
-require_relative '../factories/layer_factory'
+require_relative '../model_factories/layer_factory'
+require_relative '../model_factories/map_factory'
 
 require_relative '../../lib/cartodb/stats/user_tables'
 require_relative '../../lib/cartodb/stats/importer'
@@ -501,18 +502,18 @@ class Table
   end
 
   def create_default_map_and_layers
-    base_layer = CartoDB::Factories::LayerFactory.get_default_base_layer(owner)
+    base_layer = ::ModelFactories::LayerFactory.get_default_base_layer(owner)
 
-    map = CartoDB::Factories::MapFactory.get_map(base_layer, user_id, id)
+    map = ::ModelFactories::MapFactory.get_map(base_layer, user_id, id)
     @user_table.map_id = map.id
 
     map.add_layer(base_layer)
 
-    data_layer = CartoDB::Factories::LayerFactory.get_default_data_layer(name, owner, the_geom_type)
+    data_layer = ::ModelFactories::LayerFactory.get_default_data_layer(name, owner, the_geom_type)
     map.add_layer(data_layer)
 
     if base_layer.supports_labels_layer?
-      labels_layer = CartoDB::Factories::LayerFactory.get_default_labels_layer(base_layer)
+      labels_layer = ::ModelFactories::LayerFactory.get_default_labels_layer(base_layer)
       map.add_layer(labels_layer)
     end
   end
@@ -1218,9 +1219,8 @@ class Table
         end
       end
 
-      propagate_namechange_to_table_vis
-
-
+      begin
+        propagate_namechange_to_table_vis
         if @user_table.layers.blank?
           exception_to_raise = CartoDB::TableError.new("Attempt to rename table without layers #{qualified_table_name}")
           CartoDB::notify_exception(exception_to_raise, user: owner)
@@ -1229,7 +1229,12 @@ class Table
             layer.rename_table(@name_changed_from, name).save
           end
         end
-
+      rescue exception
+        CartoDB::report_exception(exception,
+                                  "Failed while renaming visualization #{@name_changed_from} to #{name}",
+                                  user: owner)
+        raise exception
+      end
     end
     @name_changed_from = nil
   end

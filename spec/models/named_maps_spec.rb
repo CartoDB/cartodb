@@ -35,7 +35,14 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
     user_id = UUIDTools::UUID.timestamp_create.to_s
     user_name = 'whatever'
     user_apikey = '123'
-    CartoDB::Visualization::Relator.any_instance.stubs(:user).returns($user_1)
+
+    @user = FactoryGirl.create(:valid_user)
+
+    CartoDB::Visualization::Relator.any_instance.stubs(:user).returns(@user)
+  end
+
+  after(:each) do
+    @user.destroy
   end
 
   describe '#template_name' do
@@ -91,16 +98,16 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       }
 
       # Post: to create (as now all tables/viz create named maps)
-      Typhoeus.stub( named_maps_url($user_1.api_key),
+      Typhoeus.stub( named_maps_url(@user.api_key),
         { method: :post } )
               .and_return(
                 Typhoeus::Response.new( code: 200, body: JSON::dump( { template_id: 'tpl_fakeid' } ) )
               )
 
-      table = create_table( user_id: $user_1.id )
+      table = create_table(user_id: @user.id)
       table.privacy = UserTable::PRIVACY_PUBLIC
       table.save()
-      derived_vis = CartoDB::Visualization::Copier.new($user_1, table.table_visualization).copy()
+      derived_vis = CartoDB::Visualization::Copier.new(@user, table.table_visualization).copy()
 
       password = 's4mpl3_:Password!!!'
 
@@ -108,7 +115,7 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       derived_vis.password = password
 
       # Post: to create
-      Typhoeus.stub( named_maps_url($user_1.api_key),
+      Typhoeus.stub( named_maps_url(@user.api_key),
         { method: :post } )
               .and_return(
                 Typhoeus::Response.new( code: 200, body: JSON::dump( { template_id: 'tpl_fakeid' } ) )
@@ -118,7 +125,7 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
 
       Typhoeus::Expectation.clear()
       # Retrieval
-      Typhoeus.stub( named_map_url(template_id, $user_1.api_key),
+      Typhoeus.stub( named_map_url(template_id, @user.api_key),
       { method: :get} )
             .and_return(
               Typhoeus::Response.new( code: 200, body: JSON::dump( template_data ) )
@@ -126,8 +133,8 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
 
       derived_vis.privacy.should eq CartoDB::Visualization::Member::PRIVACY_PROTECTED
       derived_vis.has_password?.should eq true
-      derived_vis.is_password_valid?(password).should eq true
-      derived_vis.is_password_valid?('some invalid passsword').should eq false
+      derived_vis.password_valid?(password).should eq true
+      derived_vis.password_valid?('some invalid passsword').should eq false
 
       derived_vis.get_auth_tokens().should eq [auth_token]
     end
@@ -138,18 +145,18 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       #Post to create
       new_template_body = { template_id: 'tpl_fakeid' }
 
-      Typhoeus.stub( named_maps_url($user_1.api_key) )
+      Typhoeus.stub( named_maps_url(@user.api_key) )
               .and_return(
                 Typhoeus::Response.new( code: 200, body: JSON::dump( new_template_body ) )
               )
 
-      table = create_table( user_id: $user_1.id )
+      table = create_table( user_id: @user.id )
       table.privacy = UserTable::PRIVACY_PUBLIC
       table.save()
       table.should be_public
       table.table_visualization.privacy.should eq CartoDB::Visualization::Member::PRIVACY_PUBLIC
 
-      derived_vis = CartoDB::Visualization::Copier.new($user_1, table.table_visualization).copy()
+      derived_vis = CartoDB::Visualization::Copier.new(@user, table.table_visualization).copy()
 
       # Only this method should be called
       CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:delete => true)
@@ -171,14 +178,14 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       #Post to create
       new_template_body = { template_id: 'tpl_fakeid' }
 
-      Typhoeus.stub( named_maps_url($user_1.api_key) )
+      Typhoeus.stub( named_maps_url(@user.api_key) )
               .and_return(
                 Typhoeus::Response.new( code: 200, body: JSON::dump( new_template_body ) )
               )
 
-      table = create_table( user_id: $user_1.id )
+      table = create_table( user_id: @user.id )
 
-      derived_vis = CartoDB::Visualization::Copier.new($user_1, table.table_visualization).copy()
+      derived_vis = CartoDB::Visualization::Copier.new(@user, table.table_visualization).copy()
       derived_vis.privacy = CartoDB::Visualization::Member::PRIVACY_PUBLIC
 
       # Get
@@ -202,7 +209,7 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       Typhoeus::Expectation.clear()
 
       # Now check that named_map_template_data[:template_id] is the template asked for
-      Typhoeus.stub( named_map_url(template_id,$user_1.api_key) )
+      Typhoeus.stub( named_map_url(template_id,@user.api_key) )
               .and_return(
                 Typhoeus::Response.new( code: 200, body: JSON::dump( named_map_template_data ) )
               )
@@ -294,19 +301,19 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       Typhoeus::Expectation.clear()
 
       # Return having a named map...
-      Typhoeus.stub( named_map_url(template_id,$user_1.api_key),
+      Typhoeus.stub( named_map_url(template_id,@user.api_key),
         { method: :get} )
             .and_return(
               Typhoeus::Response.new( code: 200, body: JSON::dump( template_data ) )
             )
       # Before deleting a put is performed too
-      Typhoeus.stub( named_map_url(template_id,$user_1.api_key),
+      Typhoeus.stub( named_map_url(template_id,@user.api_key),
         { method: :put} )
             .and_return(
               Typhoeus::Response.new( code: 200, body: JSON::dump( template_data ) )
             )
       # And return a 204 correctly on deletion
-      Typhoeus.stub( named_map_url(template_id,$user_1.api_key),
+      Typhoeus.stub( named_map_url(template_id,@user.api_key),
         { method: :delete } )
               .and_return(
                 Typhoeus::Response.new( code: 204, body: "" )
@@ -938,7 +945,6 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       vizjson
   end #get_vizjson
 
-
   # Does all the work and stubbing required to create a private table with an associated visualization
   # NOTE: Leaves stubbed calls to GET the template so they return the correct template data
   def create_private_table_with_public_visualization(template_data,
@@ -946,13 +952,13 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
 
     #Tables/canonical vis also nave named maps
     new_template_body = { template_id: 'tpl_fakeid' }
-    Typhoeus.stub( named_maps_url($user_1.api_key) )
+    Typhoeus.stub( named_maps_url(@user.api_key) )
             .and_return(
               Typhoeus::Response.new( code: 200, body: JSON::dump( new_template_body ) )
             )
 
-    table = create_table( user_id: $user_1.id )
-    derived_vis = CartoDB::Visualization::Copier.new($user_1, table.table_visualization).copy
+    table = create_table( user_id: @user.id )
+    derived_vis = CartoDB::Visualization::Copier.new(@user, table.table_visualization).copy
     derived_vis.privacy = visualization_privacy
     template_id = CartoDB::NamedMapsWrapper::NamedMap.template_name(derived_vis.id)
 
@@ -961,7 +967,7 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
               Typhoeus::Response.new(code: 404, body: '')
             )
     # Stub all petitions, not just GET
-    Typhoeus.stub( named_maps_url($user_1.api_key) )
+    Typhoeus.stub( named_maps_url(@user.api_key) )
             .and_return(
               Typhoeus::Response.new( code: 200, body: JSON::dump( template_id: template_id ) )
             )
@@ -975,21 +981,21 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
 
     Typhoeus::Expectation.clear
     # Retrievals
-    Typhoeus.stub( named_map_url(template_id, $user_1.api_key),
+    Typhoeus.stub( named_map_url(template_id, @user.api_key),
       { method: :get} )
             .and_return(
               Typhoeus::Response.new( code: 200, body: JSON::dump( template_data ) )
             )
 
     # Updates
-    Typhoeus.stub( named_map_url(template_id, $user_1.api_key),
+    Typhoeus.stub( named_map_url(template_id, @user.api_key),
         { method: :put} )
               .and_return(
                 Typhoeus::Response.new( code: 200, body: JSON::dump( template_data ) )
               )
 
     # Vizjson uses the public endpoint, so stub it too
-    Typhoeus.stub( "http://#{$user_1.username}.localhost.lan:#{public_tiler_port}/tiles/template/#{template_id}?api_key=#{$user_1.api_key}",
+    Typhoeus.stub( "http://#{@user.username}.localhost.lan:#{public_tiler_port}/tiles/template/#{template_id}?api_key=#{@user.api_key}",
       { method: :get} )
             .and_return(
               Typhoeus::Response.new( code: 200, body: JSON::dump( template_data ) )

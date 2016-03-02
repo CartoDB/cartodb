@@ -5,6 +5,7 @@ FactoryGirl.define do
     seats 10
     quota_in_bytes 100.megabytes
     geocoding_quota 1000
+    here_isolines_quota 1000
     map_view_quota 100000
     website 'cartodb.com'
     description 'Lorem ipsum dolor sit amet'

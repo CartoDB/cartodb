@@ -3,7 +3,6 @@ require_relative '../../sql-api/sql_api'
 require_relative '../../importer/lib/importer/query_batcher'
 require_relative 'internal-geocoder/query_generator_factory'
 require_relative 'abstract_table_geocoder'
-require_relative 'geocoder_usage_metrics'
 
 module CartoDB
   module InternalGeocoder
@@ -81,7 +80,7 @@ module CartoDB
             # Count empty and successfully geocoded responses
             empty_responses = 0
             success_responses = 0
-            CSV.parse(response) do |row|
+            CSV.parse(response.chomp) do |row|
               empty_responses += 1 if row[4] == "false"
               success_responses += 1 if row[4] == "true"
             end
@@ -89,7 +88,7 @@ module CartoDB
             @usage_metrics.incr(:geocoder_internal, :empty_responses, empty_responses)
 
             log.append "Saving results to #{geocoding_results}"
-            File.open(geocoding_results, 'a') { |f| f.write(response.force_encoding("UTF-8")) } unless response == "\n"
+            File.open(geocoding_results, 'a') { |f| f.write(response.force_encoding("UTF-8")) } unless response.blank?
           end
         end while search_terms.size >= @batch_size
         @processed_rows = `wc -l '#{geocoding_results}' 2>&1`.to_i

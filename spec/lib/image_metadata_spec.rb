@@ -1,4 +1,5 @@
 # coding: UTF-8
+require_relative '../simplecov_helper'
 require_relative '../../lib/cartodb/image_metadata.rb'
 require_relative '../../spec/rspec_configuration.rb'
 

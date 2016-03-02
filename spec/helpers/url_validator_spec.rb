@@ -1,3 +1,4 @@
+require_relative '../simplecov_helper'
 require_relative '../rspec_configuration'
 require_relative '../../lib/carto/url_validator'
 

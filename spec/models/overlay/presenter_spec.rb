@@ -1,4 +1,5 @@
 # encoding: utf-8
+require_relative '../../simplecov_helper'
 require 'ostruct'
 require_relative '../../../app/models/overlay/presenter'
 
@@ -23,4 +24,3 @@ describe Overlay::Presenter do
     end
   end
 end
-

@@ -1,4 +1,5 @@
 # encoding: utf-8
+require_relative '../../simplecov_helper'
 require_relative '../../../app/models/overlay/collection'
 
 include CartoDB
@@ -20,4 +21,3 @@ describe Overlay::Collection do
     end #visualization_id
   end # validations
 end # Overlay::Collection
-

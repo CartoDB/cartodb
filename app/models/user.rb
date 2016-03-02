@@ -549,13 +549,13 @@ class User < Sequel::Model
   # pgbouncer configured with pool mode as 'transaction'.
   def transaction_with_timeout(options, &block)
     statement_timeout = options.delete(:statement_timeout)
-    in_databsase(options) do |db|
+    in_database(options) do |db|
       db.transaction do
         begin
           db.run("SET statement_timeout TO #{statement_timeout}") if statement_timeout
           block.call db
         ensure
-          db..run('SET statement_timeout TO DEFAULT')
+          db.run('SET statement_timeout TO DEFAULT')
         end
       end
     end

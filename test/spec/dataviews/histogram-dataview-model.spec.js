@@ -202,7 +202,6 @@ describe('dataviews/histogram-dataview-model', function () {
   });
 
   describe('.url', function () {
-
     describe('not including bbox', function () {
       beforeEach(function () {
         this.model.set('submitBBox', false);

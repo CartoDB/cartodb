@@ -1,6 +1,5 @@
 # See http://www.be9.io/2015/09/21/memory-leak/
 # This enables memory logging in order to check memory consumption (reproducing memory leaks)
-require 'objspace'
 if ENV['MEMORY_REPORTING']
   Thread.new do
     while true
@@ -15,6 +14,7 @@ if ENV['MEMORY_REPORTING']
   require 'rack/gc_tracer'
   Rails.configuration.middleware.use Rack::GCTracerMiddleware, view_page_path: '/gc_tracer', filename: 'log/gc.log'
 
+  require 'objspace'
   ObjectSpace.trace_object_allocations_start
 
   require 'rbtrace'
@@ -23,6 +23,7 @@ end
 
 module CartoDB
   def self.memory_dump(filename)
+    require 'objspace'
     # Dump classes (id -> name)
     cls = ObjectSpace.each_object.inject(Hash.new(0)) { |h, o| h[o.class.object_id] = o.class.name; h }
     File.open(filename + '.classes', 'w') do |f|

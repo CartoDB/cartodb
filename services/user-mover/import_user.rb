@@ -406,7 +406,7 @@ module CartoDB
       end
 
       def setup_db(_dbname)
-        ['plpythonu', 'postgis', 'schema_triggers'].each do |extension|
+        ['plpythonu', 'postgis'].each do |extension|
           superuser_user_pg_conn.query("CREATE EXTENSION IF NOT EXISTS #{extension}")
         end
         cartodb_schema = superuser_user_pg_conn.query("SELECT nspname FROM pg_catalog.pg_namespace where nspname = 'cartodb'")

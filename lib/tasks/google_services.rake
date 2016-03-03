@@ -5,10 +5,16 @@ namespace :cartodb do
     namespace :external do
       namespace :google do
         def add_feature_flag_if_not_exists(name, restricted=true)
-          return if Carto::FeatureFlag.where(name: name).exists?
+          ff = Carto::FeatureFlag.where(name: name).first
 
-          ff = Carto::FeatureFlag.new(name: name, restricted: restricted)
-          ff.id = Carto::FeatureFlag.order(:id).last.id + 1
+          if ff.nil?
+            ff = Carto::FeatureFlag.new(name: name, restricted: restricted)
+
+            ff.id = Carto::FeatureFlag.order(:id).last.id + 1
+            ff.restricted = restricted
+          else
+            ff.restricted = restricted if ff.restricted != restricted
+          end
 
           ff.save
         end

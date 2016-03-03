@@ -27,6 +27,13 @@ var LeafletCartoDBVectorLayerGroupView = CartoDBd3Layer.extend({
       this.setCartoCSS(index, style);
     }, this);
 
+    layerModel.layers.bind('change:meta', function (child, meta) {
+      var index
+      child.collection.models.filter(function (c, i) { if(child.cid === c.cid) index = i })
+      this.options.styles[index - 1] = meta.cartocss
+      this.setUrl(this.model.get('urls').tiles[0])
+    }, this);
+
     layerModel.layers.each(function (layer) {
       this._onLayerAdded(layer, layerModel.layers);
     }, this);

@@ -23,6 +23,8 @@ require_relative '../../services/importer/lib/importer/post_import_handler'
 require_relative '../../services/importer/lib/importer/mail_notifier'
 require_relative '../../services/importer/lib/importer/cartodbfy_time'
 require_relative '../../services/platform-limits/platform_limits'
+require_relative '../../services/importer/lib/importer/overviews'
+
 require_relative '../../lib/cartodb/event_tracker'
 
 include CartoDB::Datasources
@@ -470,10 +472,10 @@ class DataImport < Sequel::Model
         connection: current_user.in_database,
         database_schema: current_user.database_schema
     })
-    current_user.in_database.run(%Q{CREATE TABLE #{table_name} AS #{query}})
+    current_user.in_database.run(%{CREATE TABLE #{table_name} AS #{query}})
     if current_user.over_disk_quota?
       log.append "Over storage quota. Dropping table #{table_name}"
-      current_user.in_database.run(%Q{DROP TABLE #{table_name}})
+      current_user.in_database.run(%{DROP TABLE #{table_name}})
       self.error_code = 8001
       self.state      = STATE_FAILURE
       save
@@ -645,7 +647,9 @@ class DataImport < Sequel::Model
       database      = current_user.in_database
       destination_schema = current_user.database_schema
       public_user_roles = current_user.db_service.public_user_roles
+      overviews_creator = CartoDB::Importer2::Overviews.new(runner, current_user)
       importer      = CartoDB::Connector::Importer.new(runner, registrar, quota_checker, database, id,
+                                                       overviews_creator,
                                                        destination_schema, public_user_roles)
       log.append 'Before importer run'
       importer.run(tracker)

@@ -22,6 +22,7 @@ module CartoDB
       # @param destination_schema String|nil
       # @param public_user_roles Array|nil
       def initialize(runner, table_registrar, quota_checker, database, data_import_id,
+                     overviews_creator,
                      destination_schema = DESTINATION_SCHEMA, public_user_roles=[CartoDB::PUBLIC_DB_USER])
         @aborted                = false
         @runner                 = runner
@@ -29,6 +30,7 @@ module CartoDB
         @quota_checker          = quota_checker
         @database               = database
         @data_import_id         = data_import_id
+        @overviews_creator      = overviews_creator
         @destination_schema     = destination_schema
         @support_tables_helper  = CartoDB::Visualization::SupportTables.new(database,
                                                                             {public_user_roles: public_user_roles})
@@ -50,6 +52,9 @@ module CartoDB
           runner.log.append('Proceeding to register')
           results.select(&:success?).each { |result|
             register(result)
+          }
+          results.select(&:success?).each { |result|
+            create_overviews(result)
           }
 
           if data_import.create_visualization
@@ -86,6 +91,13 @@ module CartoDB
         end
       end
 
+      def create_overviews(result)
+        dataset = @overviews_creator.dataset(result.name)
+        if dataset.should_create_overviews?
+          dataset.create_overviews!
+        end
+      end
+
       def create_visualization
         tables = get_imported_tables
         if tables.length > 0
@@ -115,7 +127,8 @@ module CartoDB
       end
 
       def drop(table_name)
-        database.execute(%Q(DROP TABLE #{table_name}))
+        database.execute(%(SELECT CDB_DropOverviews('#{table_name}'::regclass)))
+        database.execute(%(DROP TABLE #{table_name}))
       rescue => exception
         runner.log.append("Couldn't drop table #{table_name}: #{exception}. Backtrace: #{exception.backtrace} ")
         self
@@ -244,4 +257,3 @@ module CartoDB
     end
   end
 end
-

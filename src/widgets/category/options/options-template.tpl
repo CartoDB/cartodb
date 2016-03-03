@@ -8,7 +8,7 @@
       <% if (noneSelected) { %>
         None selected
       <% } else { %>
-        <%- allSelected ? "All selected" : acceptedCatsInData + " selected" %>
+        <%- allSelected ? "All selected" : acceptedCats + " selected" %>
         <% if (canBeLocked) { %>
           <button class="CDB-Text CDB-Size-small u-upperCase u-actionTextColor CDB-Widget-link u-lSpace js-lock">lock</button>
         <% }%>

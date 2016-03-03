@@ -1133,26 +1133,24 @@ class Table
   end
 
   def cartodbfy
-    begin
-      start = Time.now
-      schema_name = owner.database_schema
-      table_name = "#{owner.database_schema}.#{self.name}"
+    start = Time.now
+    schema_name = owner.database_schema
+    table_name = "#{owner.database_schema}.#{self.name}"
 
-      importer_stats.timing('cartodbfy') do
-        owner.in_database do |user_database|
-          user_database.run(%Q{
-            SELECT cartodb.CDB_CartodbfyTable('#{schema_name}'::TEXT,'#{table_name}'::REGCLASS);
-          })
-        end
+    importer_stats.timing('cartodbfy') do
+      owner.in_database do |user_database|
+        user_database.run(%Q{
+          SELECT cartodb.CDB_CartodbfyTable('#{schema_name}'::TEXT,'#{table_name}'::REGCLASS);
+        })
       end
-
-      elapsed = Time.now - start
-      if @data_import
-        CartoDB::Importer2::CartodbfyTime::instance(@data_import.id).add(elapsed)
-      end
-    rescue
-      raise CartoDB::CartoDBfyError
     end
+
+    elapsed = Time.now - start
+    if @data_import
+      CartoDB::Importer2::CartodbfyTime::instance(@data_import.id).add(elapsed)
+    end
+  rescue
+    raise CartoDB::CartoDBfyError
   end
 
   def update_table_pg_stats

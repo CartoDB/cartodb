@@ -51,6 +51,7 @@ module Carto
         end
 
         if @options[:current_user] && @options[:current_user].organization_owner?
+          poro[:email] = @user.email
           poro[:table_count] = @user.table_count
           poro[:all_visualization_count] = @user.all_visualization_count
         end

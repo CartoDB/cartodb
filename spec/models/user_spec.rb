@@ -533,7 +533,7 @@ describe User do
       user1.avatar_url = nil
       user1.save
       user1.reload_avatar
-      user1.avatar_url.should == "//#{avatar_base_url}/avatar_#{avatar_kind}_#{avatar_color}.png"
+      user1.avatar_url.should == "#{avatar_base_url}/avatar_#{avatar_kind}_#{avatar_color}.png"
       user1.destroy
     end
     it "should load a the user gravatar url" do

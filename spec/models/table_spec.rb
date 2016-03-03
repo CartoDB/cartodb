@@ -1751,6 +1751,17 @@ describe Table do
       table.rows_counted.should == 2
     end
 
+    it "should raise an error if cartodbfy fails" do
+      table = new_table :name => nil, :user_id => @user.id
+      table.migrate_existing_table = "cdbfytable"
+
+      @user.db_service.run_pg_query("CREATE TABLE cdbfytable (cartodb_id VARCHAR)")
+      @user.db_service.run_pg_query("INSERT INTO cdbfytable (cartodb_id) VALUES ('nan')")
+      expect {
+        table.cartodbfy
+      }.to raise_error (CartoDB::CartoDBfyError)
+    end
+
     it "create and migrate a table containing a the_geom and cartodb_id" do
       delete_user_data @user
       table = new_table :name => nil, :user_id => @user.id

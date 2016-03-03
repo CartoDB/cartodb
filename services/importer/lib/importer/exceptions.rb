@@ -48,6 +48,12 @@ module CartoDB
       end
     end
 
+    class CartoDBfyError < BaseImportError
+      def initialize(message="Error CartoDBFying table.")
+        super(message, 2010)
+      end
+    end
+
     class InstallError                          < StandardError; end
     class EmptyFileError                        < StandardError; end
     class ExtractionError                       < StandardError; end
@@ -125,6 +131,7 @@ module CartoDB
       RowsEncodingColumnError               => 2007,
       MalformedXLSException                 => 2008,
       KmlWithoutStyleIdError                => 2009,
+      CartoDBfyError                        => 2010,
       InvalidGeoJSONError                   => 3007,
       UnknownSridError                      => 3008,
       ShpNormalizationError                 => 3009,

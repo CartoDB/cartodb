@@ -179,6 +179,11 @@ module CartoDB
       what_about: "The KML file you tried to import failed because a style element doesn't have an ID attribute. To fix this error, please open the file and add an ID to all the style tags.",
       source: ERROR_SOURCE_USER
     },
+    2010 => {
+      title: 'Malformed CartoDB table',
+      what_about: "The CartoDBfication process failed when converting your table into a CartoDB table.",
+      source: ERROR_SOURCE_USER
+    },
     3007 => {
       title: 'JSON may not be valid GeoJSON',
       what_about: "We can only import GeoJSON formated JSON files. See if the source of this data supports GeoJSON or another file format for download.",

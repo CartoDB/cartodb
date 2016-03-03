@@ -67,25 +67,27 @@ end
 
 class AnalyzerClasses
   def initialize(filename)
-    @filename = filename
+    load(filename)
+  end
+
+  def load(filename)
+    @classes = {}
+    File.open(filename + '.classes') do |f|
+      @classes = JSON.load(f)
+    end
+
+    @data = []
+    File.open(filename + '.dump') do |f|
+      f.each_line do |line|
+        @data << JSON.parse(line)
+      end
+    end
   end
 
   def analyze
-    classes = {}
-    File.open(@filename + '.classes') do |f|
-      classes = JSON.load(f)
-    end
-
-    data = []
-    File.open(@filename + '.dump') do |f|
-      f.each_line do |line|
-        data << JSON.parse(line)
-      end
-    end
-
-    data.group_by { |row| "#{row['type']}:#{row['class']}" }.each do |k, v|
+    @data.group_by { |row| "#{row['type']}:#{row['class']}" }.each do |_, v|
       memsize = v.inject(0) { |s, x| s + x['memsize'].to_i }
-      class_name = v[0]['class'].nil? ? '' : classes[(v[0]['class'].hex / 2).to_s]
+      class_name = v[0]['class'].nil? ? '' : @classes[(v[0]['class'].hex / 2).to_s]
       puts "#{v[0]['type']},#{v[0]['class']},#{class_name},#{v.count},#{memsize}"
     end
   end

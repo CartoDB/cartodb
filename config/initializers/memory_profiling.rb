@@ -24,7 +24,7 @@ end
 module CartoDB
   def self.memory_dump(filename)
     # Dump classes (id -> name)
-    cls = ObjectSpace.each_object.inject(Hash.new 0) { |h, o| h[o.class.object_id] = o.class.name; h }
+    cls = ObjectSpace.each_object.inject(Hash.new(0)) { |h, o| h[o.class.object_id] = o.class.name; h }
     File.open(filename + '.classes', 'w') do |f|
       JSON.dump(cls, f)
     end

@@ -8,6 +8,7 @@ var torqueSpecs = [
 var sharedModules = [
   'backbone',
   'cdb',
+  'cdb.config',
   'cdb.core.util',
   'cdb.log',
   'jquery',
@@ -56,7 +57,7 @@ module.exports = {
 
   'cartodb.mod.torque': {
     src: 'src/cartodb.mod.torque.js',
-    dest: '<%= config.dist %>/cartodb.mod.torque.uncompressed.js',
+    dest: '<%= config.dist %>/cartodb.mod.torque.js',
     options: {
       external: sharedModules
     }

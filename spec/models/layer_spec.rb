@@ -102,7 +102,7 @@ describe Layer do
 
         vizjson_key = @layer.affected_tables.first.table_visualization.varnish_vizjson_key
         CartoDB::Varnish.any_instance.expects(:purge).at_least(1).with(vizjson_key.to_s).returns(true)
-        
+
         @layer.save
       end
     end

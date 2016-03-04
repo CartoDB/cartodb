@@ -21,6 +21,14 @@ FactoryGirl.define do
     type 'derived'
     name 'factory visualization'
     privacy 'public'
+
+    after(:create) do |visualization|
+      permission = FactoryGirl.create :carto_permission, entity: visualization, owner: visualization.user, entity_type: 'vis'
+      visualization.permission_id = permission.id
+      visualization.save
+      visualization.reload
+    end
+
   end
 
 end

@@ -21,6 +21,31 @@ var MapLayer = Model.extend({
     });
   },
 
+  // PUBLIC API METHODS
+  remove: function () {
+    this.trigger('destroy', this);
+  },
+
+  update: function (attrs) {
+    // TODO: Pick the attributes for the specific type of layer
+    // Eg: this.set(_.pick(attrs, this.ATTR_NAMES))
+    this.set(attrs);
+  },
+
+  show: function () {
+    this.set('visible', true);
+  },
+
+  hide: function () {
+    this.set('visible', false);
+  },
+
+  toggle: function () {
+    this.set('visible', !this.get('visible'));
+  },
+
+  // INTERNAL CartoDB.js METHODS
+
   /***
   * Compare the layer with the received one
   * @method isEqual

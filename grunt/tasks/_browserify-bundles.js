@@ -31,13 +31,13 @@ module.exports = {
 
       // not actually used anywhere in cartodb.js, only for editor?
       // TODO can be (re)moved?
-      '!test/spec/ui/common/tabpane.spec.js',
+      '!test/spec/ui/common/tabpane.spec.js'
     ]
       // Exclude torque specs
       .concat(torqueSpecs.map(function (uri) {
         return '!' + uri;
       })),
-    dest: '<%= config.tmp %>/src-specs.js',
+    dest: '<%= config.tmp %>/src-specs.js'
   },
 
   cartodb: {
@@ -50,11 +50,13 @@ module.exports = {
   'cartodb-specs': {
     src: [
       'test/fail-tests-if-have-errors-in-src.js',
-      'test/spec/cartodb.spec.js',
+      'test/spec/cartodb.spec.js'
     ],
     dest: '<%= config.tmp %>/cartodb-specs.js',
+    options: {
+      require: sharedModules
+    }
   },
-
   'cartodb.mod.torque': {
     src: 'src/cartodb.mod.torque.js',
     dest: '<%= config.dist %>/cartodb.mod.torque.js',

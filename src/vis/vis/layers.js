@@ -21,22 +21,7 @@ var Layers = {
     layerAttributes.type = type;
     _.extend(layerAttributes, data, data.options);
     return new LayerClass(layerAttributes, options);
-  },
-
-  moduleForLayer: function (type) {
-    if (type.toLowerCase() === 'torque') {
-      return 'torque';
-    }
-    return null;
-  },
-
-  modulesForLayers: function (layers) {
-    var modules = _(layers).map(function (layer) {
-      return Layers.moduleForLayer(layer.type || layer.kind);
-    });
-    return _.compact(_.uniq(modules));
   }
-
 };
 
 module.exports = Layers;

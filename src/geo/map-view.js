@@ -4,6 +4,7 @@ var View = require('../core/view');
 
 var CartoDBLayerGroupNamedMap = require('./cartodb-layer-group-named-map');
 var CartoDBLayerGroupAnonymousMap = require('./cartodb-layer-group-anonymous-map');
+var ModuleLoader = require('../geo/module-loader');
 
 var MapView = View.extend({
 
@@ -127,20 +128,22 @@ var MapView = View.extend({
 
   _addLayer: function(layerModel, layerCollection, options) {
     var layerView;
+    var moduleLoader = new ModuleLoader();
+    moduleLoader.loadModuleForLayer(layerModel, function () {
+      if (layerModel.get('type') === 'CartoDB') {
+        layerView = this._addGroupedLayer(layerModel);
+      } else {
+        layerView = this._addIndividualLayer(layerModel);
+      }
 
-    if (layerModel.get('type') === 'CartoDB') {
-      layerView = this._addGroupedLayer(layerModel);
-    } else {
-      layerView = this._addIndividualLayer(layerModel);
-    }
-
-    if (!layerView) {
-      return;
-    }
-    this._addLayerToMap(layerView, layerModel, {
-      silent: options.silent,
-      index: options.index
-    });
+      if (!layerView) {
+        return;
+      }
+      this._addLayerToMap(layerView, layerModel, {
+        silent: options.silent,
+        index: options.index
+      });
+    }.bind(this));
   },
 
   _addGroupedLayer: function (layerModel) {
@@ -175,6 +178,7 @@ var MapView = View.extend({
   },
 
   _addIndividualLayer: function (layerModel) {
+    debugger;
     var layerView = this.createLayer(layerModel);
     if (layerView) {
       this._layerViews[layerModel.cid] = layerView;

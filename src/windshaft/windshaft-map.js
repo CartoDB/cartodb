@@ -72,10 +72,10 @@ var WindshaftMap = Backbone.Model.extend({
         // TODO: Revisit this (will layerIndex work for NamedMaps??)
         // Should we move it somewhere else?
         _.each(options.layers, function (layer, layerIndex) {
-          if (layer.get("type") === 'torque') {
+          if (layer.get('type') === 'torque') {
             layer.set('meta', this.getLayerMeta(layerIndex));
             layer.set('urls', this.getTiles('torque'));
-          } else if (layer.get("type") === 'CartoDB' || layer.get("type") === 'mapnik') {
+          } else if (layer.get('type') === 'CartoDB' || layer.get('type') === 'mapnik') {
             layer.set('meta', this.getLayerMeta(layerIndex));
           }
         }, this);

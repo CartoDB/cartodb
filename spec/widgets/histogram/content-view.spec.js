@@ -104,7 +104,6 @@ describe('widgets/histogram/content-view', function () {
       options.success({ 'response': true });
     };
     spyOn(this.dataviewModel, 'getData').and.callThrough();
-    spyOn(this.view._originalData, 'toJSON');
     spyOn(this.view, '_updateStats').and.callThrough();
     spyOn(this.view, '_onHistogramDataChanged');
     this.dataviewModel.fetch();
@@ -113,7 +112,6 @@ describe('widgets/histogram/content-view', function () {
     expect(this.view._onHistogramDataChanged).toHaveBeenCalled();
     expect(this.view._updateStats).toHaveBeenCalled();
     expect(this.dataviewModel.getData).toHaveBeenCalled();
-    expect(this.view._originalData.toJSON).not.toHaveBeenCalled();
   });
 
   it('should update the title when the model is updated', function () {

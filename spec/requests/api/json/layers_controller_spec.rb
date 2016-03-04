@@ -5,6 +5,8 @@ require_relative '../../../../app/controllers/api/json/layers_controller'
 require_relative 'layers_controller_shared_examples'
 
 describe Api::Json::LayersController do
+  include Carto::Factories::Visualizations
+
   it_behaves_like 'layers controllers' do
   end
 
@@ -46,18 +48,6 @@ describe Api::Json::LayersController do
       api_v1_maps_layers_destroy_url(user_domain: @user1.username, map_id: map_id, id: layer_id, api_key: @user1.api_key)
     end
 
-    def create_full_visualization(map: FactoryGirl.create(:carto_map, user_id: @user1.id))
-      @map = map
-      @table = FactoryGirl.create(:carto_user_table, user_id: @user1.id, map_id: @map.id)
-      @table_visualization = FactoryGirl.create(
-        :carto_visualization,
-        user: @carto_user1, type: 'table', name: @table.name, map_id: @table.map_id)
-      @visualization = FactoryGirl.create(:carto_visualization, user_id: @user1.id, map: @map)
-      # Need to mock the nonexistant table because factories use Carto::* models
-      CartoDB::Visualization::Member.any_instance.stubs(:propagate_name_to).returns(true)
-      CartoDB::Visualization::Member.any_instance.stubs(:propagate_privacy_to).returns(true)
-    end
-
     let(:layer_json) do
       { kind: kind, options: { 'table_name' => nil, 'user_name' => nil }, order: 1, infowindow: {}, tooltip: {} }
     end
@@ -73,7 +63,7 @@ describe Api::Json::LayersController do
     end
 
     it 'creates layers on maps' do
-      create_full_visualization
+      @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_user1)
 
       post_json create_map_layer_url(@map.id), layer_json.merge(options: { table_name: @table.name }) do |response|
         response.status.should eq 200
@@ -94,7 +84,7 @@ describe Api::Json::LayersController do
 
     it 'updates one layer' do
       map = FactoryGirl.create(:carto_map_with_layers, user_id: @user1.id)
-      create_full_visualization(map: map)
+      @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_user1, map: map)
       @layer = map.layers.first
 
       new_order = 2
@@ -114,7 +104,7 @@ describe Api::Json::LayersController do
 
     it 'updates several layers at once' do
       map = FactoryGirl.create(:carto_map_with_layers, user_id: @user1.id)
-      create_full_visualization(map: map)
+      @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_user1, map: map)
       @layer = map.layers.first
       @layer2 = FactoryGirl.create(:carto_layer, maps: [map])
 
@@ -143,7 +133,7 @@ describe Api::Json::LayersController do
 
     it 'does not update table_name or users_name options' do
       map = FactoryGirl.create(:carto_map_with_layers, user_id: @user1.id)
-      create_full_visualization(map: map)
+      @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_user1, map: map)
       @layer = map.layers.first
 
       new_layer_json = layer_json.merge(
@@ -159,7 +149,7 @@ describe Api::Json::LayersController do
 
     it 'destroys layers' do
       map = FactoryGirl.create(:carto_map_with_layers, user_id: @user1.id)
-      create_full_visualization(map: map)
+      @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_user1, map: map)
       @layer = map.layers.first
 
       delete_json delete_map_layer_url(map.id, @layer.id), {} do |response|

@@ -481,7 +481,7 @@ module.exports = cdb.core.View.extend({
   },
 
   _getYScale: function () {
-    var data = this.model.get('data');
+    var data = (this._originalData && this._originalData.toJSON()) || this.model.get('data');
     return d3.scale.linear().domain([0, d3.max(data, function (d) { return _.isEmpty(d) ? 0 : d.freq; })]).range([this.chartHeight(), 0]);
   },
 

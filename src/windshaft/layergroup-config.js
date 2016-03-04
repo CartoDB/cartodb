@@ -1,6 +1,8 @@
 var _ = require('underscore');
 var LayerGroupConfig = {};
 
+var DEFAULT_CARTOCSS_VERSION = '2.1.0';
+
 LayerGroupConfig.generate = function (options) {
   var layers = options.layers;
   var dataviews = options.dataviews;
@@ -12,7 +14,7 @@ LayerGroupConfig.generate = function (options) {
         options: {
           sql: layer.get('sql'),
           cartocss: layer.get('cartocss'),
-          cartocss_version: layer.get('cartocss_version'),
+          cartocss_version: layer.get('cartocss_version') || DEFAULT_CARTOCSS_VERSION,
           interactivity: layer.getInteractiveColumnNames(),
           // TODO widgets should be renamed to dataviews, requires Windshaft to be changed first though
           widgets: {}

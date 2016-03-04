@@ -33,9 +33,9 @@ module.exports = cdb.core.View.extend({
         isSearchApplied: this.dataviewModel.isSearchApplied(),
         isLocked: isLocked,
         canBeLocked: this.widgetModel.canBeLocked(),
-        allSelected: (rejectedCats === 0 && acceptedCats === 0) || acceptedCats >= totalCats,
-        canSelectAll: !isLocked && (rejectedCats > 0 || acceptedCats > 0 || areAllRejected) && totalCats > 2,
-        noneSelected: areAllRejected || (rejectedCats === totalCats),
+        allSelected: (rejectedCats === 0 && acceptedCats === 0 && !areAllRejected),
+        canSelectAll: !isLocked && (rejectedCats > 0 || acceptedCats > 0 || areAllRejected),
+        noneSelected: areAllRejected || (!totalCats && !acceptedCats),
         acceptedCats: acceptedCats,
         totalLocked: this.widgetModel.lockedCategories.size(),
         totalCats: totalCats
@@ -54,8 +54,8 @@ module.exports = cdb.core.View.extend({
     this.add_related_model(this.dataviewModel);
 
     var f = this.dataviewModel.filter;
-    f.acceptedCategories.bind('change add remove', this.render, this);
-    f.rejectedCategories.bind('change add remove', this.render, this);
+    f.acceptedCategories.bind('add remove reset', this.render, this);
+    f.rejectedCategories.bind('add remove reset', this.render, this);
     this.add_related_model(f.rejectedCategories);
     this.add_related_model(f.acceptedCategories);
   },

@@ -45,13 +45,13 @@ module CartoDB
     if Rails.env.development? || Rails.env.test?
       error_msg = "#{level}: #{message}\n"
       unless exception.nil?
-        error_msg += exception.inspect + '\n'
-        error_msg += exception.backtrace.inspect + '\n'
+        error_msg += exception.inspect + "\n"
+        error_msg += exception.backtrace.inspect + "\n"
       end
       unless user.nil?
-        error_msg += user.inspect + '\n'
+        error_msg += user.inspect + "\n"
       end
-      error_msg += additional_data.inspect + '\n'
+      error_msg += additional_data.inspect + "\n"
 
       ::Logger.new(STDOUT).error(error_msg)
     end

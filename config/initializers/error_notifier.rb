@@ -15,44 +15,47 @@ end
 
 module CartoDB
   # Extra can contain `:request` and `:user`
-  # Deprecated because of that `extra` content limitation. Use `report_exception` instead.
-  def self.notify_exception(e, extra={})
-    if Rails.env.development? || Rails.env.test?
-      backtrace = e.backtrace ? e.backtrace : ['']
-      ::Logger.new(STDOUT).error "exception: #{extra.delete(:message)} #{e.message}\n#{backtrace.join("\n ")}\nExtra: #{extra}"
-    end
-    Rollbar.report_exception(e, extra.delete(:request), extra.delete(:user))
-  rescue
-    # If Rollbar fails, bubble up the exception
-    raise e
+  # Deprecated because of that `extra` content limitation. Use `log` instead.
+  def self.notify_exception(e, extra = {})
+    log('error', exception: e, **extra)
   end
 
-  def self.notify_error(message, additional_data={})
-    if Rails.env.development? || Rails.env.test?
-      ::Logger.new(STDOUT).error "error: " + message + "\n" + additional_data.inspect + "\n"
-    end
-
-    # Sanity check: Rollbar complains if user is not an object
-    user = additional_data[:user].respond_to?(:id) ? additional_data[:user] : nil
-
-    Rollbar.report_message_with_request(message, 'error', additional_data[:request], user, additional_data)
+  # Deprecated, use `log`
+  def self.notify_error(message, additional_data = {})
+    log('error', message: message, **additional_data)
   end
 
   # Add `:request` and `:user` to additional_data if you want request content
+  # Deprecated, use `log`
   def self.report_exception(e, message = nil, additional_data = {})
-    backtrace = e.backtrace ? e.backtrace.join('\n') : ''
-    notify_error(message, additional_data.merge(error: e.inspect, backtrace: backtrace))
+    log('error', exception: e, message: message, **additional_data)
   end
 
-  def self.notify_debug(message, additional_data={})
-    if Rails.env.development? || Rails.env.test?
-      ::Logger.new(STDOUT).error "debug: " + message + "\n" + additional_data.inspect + "\n"
-    end
-    Rollbar.report_message(message, 'debug', additional_data)
+  # Deprecated, use `log`
+  def self.notify_debug(message, additional_data = {})
+    log('debug', message: message, **additional_data)
   end
 
+  # Deprecated, use `log`
   def self.notify_warning_exception(exception)
-    Rollbar.report_exception(exception, nil, nil, 'warning')
+    log('warning', exception: exception)
   end
 
+  def self.log(level, exception: nil, message: nil, user: nil, **additional_data)
+    if Rails.env.development? || Rails.env.test?
+      ::Logger.new(STDOUT).error "#{level}: #{message}\n" + exception.inspect + "\n" + additional_data.inspect + "\n"
+    end
+    rollbar_scope(user).log(level, exception, message, additional_data)
+  end
+
+  private
+
+  # Creates a Rollbar scope that replaces the auto-detected person with the user passed as parameter
+  def self.rollbar_scope(user)
+    scope = {}
+    if user.respond_to?(:id)
+      scope['person'] = { 'id': user.id, 'username': user.username, 'email': user.email }
+    end
+    Rollbar.scope(scope)
+  end
 end

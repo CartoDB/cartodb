@@ -1,10 +1,10 @@
 var _ = require('underscore');
-var MapLayer = require('./map-layer');
+var LayerModelBase = require('./layer-model-base');
 
 /**
  * Model for a Torque Layer
  */
-var TorqueLayer = MapLayer.extend({
+var TorqueLayer = LayerModelBase.extend({
   defaults: {
     type: 'torque',
     visible: true,
@@ -19,8 +19,8 @@ var TorqueLayer = MapLayer.extend({
   },
 
   initialize: function(attrs, options) {
+    LayerModelBase.prototype.initialize.apply(this, arguments);
     options = options || {};
-    MapLayer.prototype.initialize.apply(this, arguments);
 
     this._map = options.map;
   },

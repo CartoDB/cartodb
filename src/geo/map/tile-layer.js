@@ -1,6 +1,6 @@
-var MapLayer = require('./map-layer');
+var LayerModelBase = require('./layer-model-base');
 
-var TileLayer = MapLayer.extend({
+var TileLayer = LayerModelBase.extend({
   getTileLayer: function() {
   }
 });

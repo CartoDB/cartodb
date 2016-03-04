@@ -22,6 +22,7 @@ var MapLayer = Model.extend({
   },
 
   // PUBLIC API METHODS
+
   remove: function () {
     this.trigger('destroy', this);
   },

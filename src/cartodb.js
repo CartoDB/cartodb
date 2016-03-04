@@ -56,7 +56,6 @@ cdb.geo.geocoder.NOKIA = require('./geo/geocoder/nokia-geocoder');
 cdb.geo.geocoder.YAHOO = require('./geo/geocoder/yahoo-geocoder');
 cdb.geo.Geometry = require('./geo/geometry');
 
-cdb.geo.MapLayer = require('./geo/map/map-layer');
 cdb.geo.TileLayer = require('./geo/map/tile-layer');
 cdb.geo.GMapsBaseLayer = require('./geo/map/gmaps-base-layer');
 cdb.geo.WMSLayer = require('./geo/map/wms-layer');

@@ -1,15 +1,13 @@
 var $ = require('jquery');
 var Backbone = require('backbone');
-var MapLayer = require('./map/map-layer');
 var util = require('cdb.core.util');
 
-var CartoDBLayerGroupBase = MapLayer.extend({
+var CartoDBLayerGroupBase = Backbone.Model.extend({
   defaults: {
     visible: true
   },
 
   initialize: function (attributes, options) {
-    MapLayer.prototype.initialize.apply(this, arguments);
     options = options || {};
 
     if (!options.windshaftMap) {

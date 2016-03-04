@@ -1,8 +1,8 @@
 var _ = require('underscore');
 var config = require('cdb.config');
-var MapLayer = require('./map-layer');
+var LayerModelBase = require('./layer-model-base');
 
-var CartoDBLayer = MapLayer.extend({
+var CartoDBLayer = LayerModelBase.extend({
 
   defaults: {
     attribution: config.get('cartodb_attributions'),
@@ -11,11 +11,9 @@ var CartoDBLayer = MapLayer.extend({
   },
 
   initialize: function(attrs, options) {
+    LayerModelBase.prototype.initialize.apply(this, arguments);
     options = options || {};
-    MapLayer.prototype.initialize.apply(this, arguments);
-
     this._map = options.map;
-
     this.bind('change:visible change:sql change:cartocss', this._onAttributeChanged, this);
   },
 

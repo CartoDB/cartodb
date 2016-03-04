@@ -23,7 +23,8 @@ FactoryGirl.define do
     privacy 'public'
 
     after(:create) do |visualization|
-      permission = FactoryGirl.create :carto_permission, entity: visualization, owner: visualization.user, entity_type: 'vis'
+      permission = FactoryGirl.create :carto_permission,
+                                      entity: visualization, owner: visualization.user, entity_type: 'vis'
       visualization.permission_id = permission.id
       visualization.save
       visualization.reload

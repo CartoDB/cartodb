@@ -45,7 +45,11 @@ describe Api::Json::LayersController do
     end
 
     def delete_map_layer_url(map_id, layer_id)
-      api_v1_maps_layers_destroy_url(user_domain: @user1.username, map_id: map_id, id: layer_id, api_key: @user1.api_key)
+      api_v1_maps_layers_destroy_url(
+        user_domain: @user1.username,
+        map_id: map_id,
+        id: layer_id,
+        api_key: @user1.api_key)
     end
 
     let(:layer_json) do
@@ -75,7 +79,7 @@ describe Api::Json::LayersController do
         layer_options = layer_response.delete(:options)
         layer_options.should eq ({ "table_name" => @table.name })
 
-        layer_response.should eq (layer_json.except(:options))
+        layer_response.should eq layer_json.except(:options)
 
         @layer = Carto::Layer.find(layer_id)
         @layer.maps.map(&:id).first.should eq @map.id

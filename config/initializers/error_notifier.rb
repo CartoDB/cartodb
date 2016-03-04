@@ -43,8 +43,17 @@ module CartoDB
 
   def self.log(level, exception: nil, message: nil, user: nil, **additional_data)
     if Rails.env.development? || Rails.env.test?
-      ::Logger.new(STDOUT).error("#{level}: #{message}\n" + exception.inspect + "\n" +
-                                 exception.backtrace.inspect + "\n" + additional_data.inspect + "\n" + user + "\n")
+      error_msg = "#{level}: #{message}\n"
+      unless exception.nil?
+        error_msg += exception.inspect + '\n'
+        error_msg += exception.backtrace.inspect + '\n'
+      end
+      unless user.nil?
+        error_msg += user.inspect + '\n'
+      end
+      error_msg += additional_data.inspect + '\n'
+
+      ::Logger.new(STDOUT).error(error_msg)
     end
     rollbar_scope(user).log(level, exception, message, additional_data)
   end

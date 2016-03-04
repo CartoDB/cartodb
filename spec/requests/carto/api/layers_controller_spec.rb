@@ -265,7 +265,7 @@ describe Carto::Api::LayersController do
         response_body['total_entries'].should eq 2 + existing_layers_count
         body['layers'].count { |l| l['kind'] != 'tiled' }.should eq 2 + existing_layers_count
         new_layers_ids = response_body['layers'].map { |l| l['id'] }
-        (new_layers_ids - existing_layers_ids - expected_layers_ids).should == []
+        (new_layers_ids - existing_layers_ids).should == expected_layers_ids
       end
 
       get api_v1_maps_layers_show_url(

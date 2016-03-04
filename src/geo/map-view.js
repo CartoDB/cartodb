@@ -22,7 +22,7 @@ var MapView = View.extend({
     this.add_related_model(this.map);
 
     this._layerViewFactory = this.options.layerViewFactory;
-
+    this._ModuleLoaderClass = this.options.moduleLoader || ModuleLoader;
     this.autoSaveBounds = false;
 
     // A map of the LayerViews that is linked to each of the Layer models.
@@ -128,7 +128,7 @@ var MapView = View.extend({
 
   _addLayer: function(layerModel, layerCollection, options) {
     var layerView;
-    var moduleLoader = new ModuleLoader();
+    var moduleLoader = new this._ModuleLoaderClass();
     moduleLoader.loadModuleForLayer(layerModel, function () {
       if (layerModel.get('type') === 'CartoDB') {
         layerView = this._addGroupedLayer(layerModel);
@@ -178,7 +178,6 @@ var MapView = View.extend({
   },
 
   _addIndividualLayer: function (layerModel) {
-    debugger;
     var layerView = this.createLayer(layerModel);
     if (layerView) {
       this._layerViews[layerModel.cid] = layerView;

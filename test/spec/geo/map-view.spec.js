@@ -111,8 +111,21 @@ describe('core/geo/map-view', function () {
         expect(this.mapView.getLayerViewByLayerCid(tileLayer.cid)).not.toEqual(this.mapView.getLayerViewByLayerCid(cartoDBLayer1.cid));
       });
 
-      // TODO: Get this test working. For some reason vendor/cartodb.mod.torque.js is beind requested and it's not present
-      xit('should load the torque module for a torque layer model before adding the layerView to the mapView', function (done) {
+      it('should load the torque module for a torque layer model before adding the layerView to the mapView', function () {
+        var FakeModuleLoaderClass = function () {};
+        FakeModuleLoaderClass.prototype.loadModuleForLayer = jasmine.createSpy('loadModuleForLayer');
+        FakeModuleLoaderClass.prototype.loadModuleForLayer.and.callFake(function (moduleName, callback) {
+          callback();
+        });
+        this.mapView = new MapView({
+          el: this.container,
+          map: this.map,
+          layerViewFactory: this.layerViewFactory,
+          moduleLoader: FakeModuleLoaderClass
+        });
+        this.mapView.getNativeMap = jasmine.createSpy('getNativeMap');
+        this.mapView._addLayerToMap = jasmine.createSpy('_addLayerToMap');
+
         this.layerViewFactory.createLayerView.and.callFake(function (done) {
           return jasmine.createSpyObj('layerView', ['something']);
         });
@@ -120,14 +133,10 @@ describe('core/geo/map-view', function () {
 
         this.map.addLayer(torqueLayer);
 
-        _.defer(function () {
-          expect(this.mapView._addLayerToMap).toHaveBeenCalled();
+        expect(this.mapView._addLayerToMap).toHaveBeenCalled();
 
-          var torqueLayerView = this.mapView.getLayerViewByLayerCid(torqueLayer.cid);
-          expect(torqueLayerView).toBeDefined();
-
-          done();
-        }.bind(this));
+        var torqueLayerView = this.mapView.getLayerViewByLayerCid(torqueLayer.cid);
+        expect(torqueLayerView).toBeDefined();
       });
     });
 

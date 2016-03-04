@@ -1,6 +1,11 @@
 var _ = require('underscore');
 var PlainLayer = require('../../../src/geo/map/plain-layer');
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
+var TorqueLayer = require('../../../src/geo/map/torque-layer');
+var TileLayer = require('../../../src/geo/map/tile-layer');
+var WMSLayer = require('../../../src/geo/map/wms-layer');
+var GMapsBaseLayer = require('../../../src/geo/map/gmaps-base-layer');
+
 var Map = require('../../../src/geo/map');
 
 describe('core/geo/map', function() {
@@ -142,6 +147,173 @@ describe('core/geo/map', function() {
         // windshaftMap.createInstance is debounced and has only been called once
         expect(windshaftMap.createInstance.calls.count()).toEqual(1);
         done();
+      });
+    });
+  });
+
+  describe('API methods', function () {
+    beforeEach(function () {
+      var windshaftMap = jasmine.createSpyObj('windshaftMap', ['createInstance']);
+      this.map = new Map({}, {
+        windshaftMap: windshaftMap
+      });
+    });
+
+    describe('.createCartoDBLayer', function () {
+      it('should throw an error if no properties are given', function () {
+        expect(function () {
+          this.map.createCartoDBLayer({});
+        }.bind(this)).toThrowError('The following attributes are missing: sql,cartocss');
+      });
+
+      it('should return a layer of the corresponding type', function () {
+        var layer = this.map.createCartoDBLayer({
+          sql: 'something',
+          cartocss: 'else'
+        });
+        expect(layer instanceof CartoDBLayer).toBeTruthy();
+      });
+
+      it('should add the layer model to the collection of layers', function () {
+        var layer = this.map.createCartoDBLayer({
+          sql: 'something',
+          cartocss: 'else'
+        });
+        expect(this.map.layers.at(0)).toEqual(layer);
+      });
+    });
+
+    describe('.createTorqueLayer', function () {
+      it('should throw an error if no properties are given', function () {
+        expect(function () {
+          this.map.createTorqueLayer({});
+        }.bind(this)).toThrowError('The following attributes are missing: sql,cartocss');
+      });
+
+      it('should return a layer of the corresponding type', function () {
+        var layer = this.map.createTorqueLayer({
+          sql: 'something',
+          cartocss: 'else'
+        });
+        expect(layer instanceof TorqueLayer).toBeTruthy();
+      });
+
+      it('should add the layer model to the collection of layers', function () {
+        var layer = this.map.createTorqueLayer({
+          sql: 'something',
+          cartocss: 'else'
+        });
+        expect(this.map.layers.at(0)).toEqual(layer);
+      });
+    });
+
+    describe('.createTileLayer', function () {
+      it('should throw an error if no properties are given', function () {
+        expect(function () {
+          this.map.createTileLayer({});
+        }.bind(this)).toThrowError('The following attributes are missing: urlTemplate');
+      });
+
+      it('should return a layer of the corresponding type', function () {
+        var layer = this.map.createTileLayer({
+          urlTemplate: 'http://example.com'
+        });
+        expect(layer instanceof TileLayer).toBeTruthy();
+      });
+
+      it('should add the layer model to the collection of layers', function () {
+        var layer = this.map.createTileLayer({
+          urlTemplate: 'http://example.com'
+        });
+        expect(this.map.layers.at(0)).toEqual(layer);
+      });
+    });
+
+    describe('.createWMSLayer', function () {
+      it('should throw an error if no properties are given', function () {
+        expect(function () {
+          this.map.createWMSLayer({});
+        }.bind(this)).toThrowError('The following attributes are missing: urlTemplate');
+      });
+
+      it('should return a layer of the corresponding type', function () {
+        var layer = this.map.createWMSLayer({
+          urlTemplate: 'http://example.com'
+        });
+        expect(layer instanceof WMSLayer).toBeTruthy();
+      });
+
+      it('should add the layer model to the collection of layers', function () {
+        var layer = this.map.createWMSLayer({
+          urlTemplate: 'http://example.com'
+        });
+        expect(this.map.layers.at(0)).toEqual(layer);
+      });
+    });
+
+    describe('.createGMapsBaseLayer', function () {
+      it('should throw an error if no properties are given', function () {
+        expect(function () {
+          this.map.createGMapsBaseLayer({});
+        }.bind(this)).toThrowError('The following attributes are missing: base_type');
+      });
+
+      it('should return a layer of the corresponding type', function () {
+        var layer = this.map.createGMapsBaseLayer({
+          base_type: 'http://example.com'
+        });
+        expect(layer instanceof GMapsBaseLayer).toBeTruthy();
+      });
+
+      it('should add the layer model to the collection of layers', function () {
+        var layer = this.map.createGMapsBaseLayer({
+          base_type: 'http://example.com'
+        });
+        expect(this.map.layers.at(0)).toEqual(layer);
+      });
+    });
+
+    describe('.createPlainLayer', function () {
+      it('should throw an error if no properties are given', function () {
+        expect(function () {
+          this.map.createPlainLayer({});
+        }.bind(this)).toThrowError('The following attributes are missing: color');
+      });
+
+      it('should return a layer of the corresponding type', function () {
+        var layer = this.map.createPlainLayer({
+          color: '#FABADA'
+        });
+        expect(layer instanceof PlainLayer).toBeTruthy();
+      });
+
+      it('should add the layer model to the collection of layers', function () {
+        var layer = this.map.createPlainLayer({
+          color: '#FABADA'
+        });
+        expect(this.map.layers.at(0)).toEqual(layer);
+      });
+    });
+
+    describe('.createBackgroundLayer', function () {
+      it('should throw an error if no properties are given', function () {
+        expect(function () {
+          this.map.createBackgroundLayer({});
+        }.bind(this)).toThrowError('The following attributes are missing: image');
+      });
+
+      it('should return a layer of the corresponding type', function () {
+        var layer = this.map.createBackgroundLayer({
+          image: 'http://example.com/image.png'
+        });
+        expect(layer instanceof PlainLayer).toBeTruthy();
+      });
+
+      it('should add the layer model to the collection of layers', function () {
+        var layer = this.map.createBackgroundLayer({
+          image: 'http://example.com/image.png'
+        });
+        expect(this.map.layers.at(0)).toEqual(layer);
       });
     });
   });

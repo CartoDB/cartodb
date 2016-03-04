@@ -43,8 +43,7 @@ var Map = Model.extend({
   },
 
   createTorqueLayer: function (attrs, options) {
-    // TODO: Load torque module
-    this._checkProperties(attrs, []);
+    this._checkProperties(attrs, ['sql', 'cartocss']);
     return this._addNewLayerModel('torque', attrs, options);
   },
 
@@ -73,12 +72,13 @@ var Map = Model.extend({
     return this._addNewLayerModel('plain', attrs, options);
   },
 
-  _checkProperties: function (obj, propertiesArray) {
-    _.each(propertiesArray, function (prop) {
-      if (obj[prop] === undefined) {
-        throw new Error(prop + ' is required');
-      }
+  _checkProperties: function (obj, requiredProperties) {
+    var missingProperties = _.select(requiredProperties, function (property) {
+      return obj[property] === undefined;
     });
+    if (missingProperties.length) {
+      throw new Error('The following attributes are missing: ' + missingProperties.join(','));
+    }
   },
 
   _addNewLayerModel: function (type, attrs, options) {
@@ -91,6 +91,8 @@ var Map = Model.extend({
     this.layers.add(layerModel, {
       silent: silent
     });
+
+    return layerModel;
   },
 
   _removeLayerModelFromCollection: function (layerModel) {

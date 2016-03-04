@@ -42,6 +42,10 @@ describe Api::Json::LayersController do
         api_key: @user1.api_key)
     end
 
+    def delete_map_layer_url(map_id, layer_id)
+      api_v1_maps_layers_destroy_url(user_domain: @user1.username, map_id: map_id, id: layer_id, api_key: @user1.api_key)
+    end
+
     def create_full_visualization(map: FactoryGirl.create(:carto_map, user_id: @user1.id))
       @map = map
       @table = FactoryGirl.create(:carto_user_table, user_id: @user1.id, map_id: @map.id)
@@ -137,7 +141,6 @@ describe Api::Json::LayersController do
       end
     end
 
-
     it 'does not update table_name or users_name options' do
       map = FactoryGirl.create(:carto_map_with_layers, user_id: @user1.id)
       create_full_visualization(map: map)
@@ -151,6 +154,17 @@ describe Api::Json::LayersController do
         layer_response = response.body
 
         layer_response.delete(:options).should eq layer_json[:options]
+      end
+    end
+
+    it 'destroys layers' do
+      map = FactoryGirl.create(:carto_map_with_layers, user_id: @user1.id)
+      create_full_visualization(map: map)
+      @layer = map.layers.first
+
+      delete_json delete_map_layer_url(map.id, @layer.id), {} do |response|
+        response.status.should eq 204
+        Carto::Layer.exists?(@layer.id).should be_false
       end
     end
   end

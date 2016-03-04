@@ -54,8 +54,8 @@ module.exports = cdb.core.View.extend({
     this.add_related_model(this.dataviewModel);
 
     var f = this.dataviewModel.filter;
-    f.acceptedCategories.bind('change add remove', this.render, this);
-    f.rejectedCategories.bind('change add remove', this.render, this);
+    f.acceptedCategories.bind('add remove reset', this.render, this);
+    f.rejectedCategories.bind('add remove reset', this.render, this);
     this.add_related_model(f.rejectedCategories);
     this.add_related_model(f.acceptedCategories);
   },

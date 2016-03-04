@@ -601,9 +601,9 @@ class Table
 
   def varnish_key
     if owner.db_service.cartodb_extension_version_pre_mu?
-      "^#{self.owner.database_name}:(.*#{self.name}.*)|(table)$"
+      "(^|;;)#{owner.database_name}:((?:(?!;;).)*#{name}.*)|(table)$"
     else
-      "^#{self.owner.database_name}:(.*#{owner.database_schema}(\\\\\")?\\.#{self.name}.*)|(table)$"
+      "(^|;;)#{owner.database_name}:((?:(?!;;).)*#{owner.database_schema}(\\\\\")?\\.#{name}.*)|(table)$"
     end
   end
 

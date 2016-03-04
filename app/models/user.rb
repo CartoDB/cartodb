@@ -1411,9 +1411,9 @@ class User < Sequel::Model
     end
   end
 
-  # return quoated database_schema when needed
+  # return quoted database_schema only when quotes are needed (i.e: hyphens)
   def sql_safe_database_schema
-    if self.database_schema.include?('-')
+    unless self.database_schema =~ /^[a-z_][a-z0-9_$]*$/
       return "\"#{self.database_schema}\""
     end
     self.database_schema

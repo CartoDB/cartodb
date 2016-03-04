@@ -93,7 +93,7 @@ describe Layer do
         @map.add_layer(@layer)
       end
 
-      it "should invalidate its maps and invokes notify_table_change" do
+      it "should invalidate its maps" do
         CartoDB::Varnish.any_instance.stubs(:purge).returns(true)
 
         @layer.maps.each do |map|
@@ -102,9 +102,7 @@ describe Layer do
 
         vizjson_key = @layer.affected_tables.first.table_visualization.varnish_vizjson_key
         CartoDB::Varnish.any_instance.expects(:purge).at_least(1).with(vizjson_key.to_s).returns(true)
-
-        @layer.expects(:notify_table_change).once
-
+        
         @layer.save
       end
     end

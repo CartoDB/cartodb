@@ -97,6 +97,7 @@ CartoDBLayerCommon.prototype = {
     return this;
   },
 
+  // TODO: This can be removed
   _getLayerDefinition: function() {
     // set params
     var params = {};

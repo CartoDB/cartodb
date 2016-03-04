@@ -43,19 +43,21 @@ module CartoDB
 
   def self.log(level, exception: nil, message: nil, user: nil, **additional_data)
     if Rails.env.development? || Rails.env.test?
-      ::Logger.new(STDOUT).error "#{level}: #{message}\n" + exception.inspect + "\n" + additional_data.inspect + "\n"
+      ::Logger.new(STDOUT).error("#{level}: #{message}\n" + exception.inspect + "\n" +
+                                 exception.backtrace.inspect + "\n" + additional_data.inspect + "\n" + user + "\n")
     end
     rollbar_scope(user).log(level, exception, message, additional_data)
   end
 
-  private
-
+  # Private
   # Creates a Rollbar scope that replaces the auto-detected person with the user passed as parameter
   def self.rollbar_scope(user)
     scope = {}
-    if user.respond_to?(:id)
-      scope['person'] = { 'id': user.id, 'username': user.username, 'email': user.email }
+    scope['person'] = user.respond_to?(:id)
+    if !user.nil? && user.respond_to?(:id)
+      scope['person'] = user
     end
     Rollbar.scope(scope)
   end
+  private_class_method :rollbar_scope
 end

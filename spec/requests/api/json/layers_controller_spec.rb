@@ -19,6 +19,7 @@ describe Api::Json::LayersController do
       @table_visualization.destroy if @table_visualization
       @table.destroy if @table
       @layer.destroy if @layer
+      @layer2.destroy if @layer2
       @visualization.destroy if @visualization
       @map.destroy if @map
     end
@@ -33,7 +34,7 @@ describe Api::Json::LayersController do
       api_v1_maps_layers_create_url(user_domain: @user1.username, map_id: map_id, api_key: @user1.api_key)
     end
 
-    def update_map_layer_url(map_id, layer_id)
+    def update_map_layer_url(map_id, layer_id = nil)
       api_v1_maps_layers_update_url(
         user_domain: @user1.username,
         map_id: map_id,
@@ -87,7 +88,7 @@ describe Api::Json::LayersController do
       end
     end
 
-    it 'updates layers' do
+    it 'updates one layer' do
       map = FactoryGirl.create(:carto_map_with_layers, user_id: @user1.id)
       create_full_visualization(map: map)
       @layer = map.layers.first
@@ -106,6 +107,36 @@ describe Api::Json::LayersController do
         layer_response.delete(:order).should eq new_order
       end
     end
+
+    it 'updates several layers at once' do
+      map = FactoryGirl.create(:carto_map_with_layers, user_id: @user1.id)
+      create_full_visualization(map: map)
+      @layer = map.layers.first
+      @layer2 = FactoryGirl.create(:carto_layer, maps: [map])
+
+      new_order = 2
+      new_layer_json = layer_json.merge(
+        options: { 'random' => '1' },
+        order: new_order
+      )
+      new_layers_json = {
+        layers: [
+          new_layer_json.merge(id: @layer.id),
+          new_layer_json.merge(id: @layer2.id)
+        ]
+      }
+      put_json update_map_layer_url(map.id), new_layers_json do |response|
+        response.status.should eq 200
+        layer_response = response.body
+
+        layer_response[:layers].map { |l| l['id'] }.should eq [@layer.id, @layer2.id]
+        layer_response[:layers].each do |layer|
+          layer.delete('options').should eq new_layer_json[:options]
+          layer.delete('order').should eq new_order
+        end
+      end
+    end
+
 
     it 'does not update table_name or users_name options' do
       map = FactoryGirl.create(:carto_map_with_layers, user_id: @user1.id)

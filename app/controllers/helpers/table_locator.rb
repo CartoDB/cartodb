@@ -3,7 +3,7 @@
 module Helpers
   class TableLocator
 
-    UUID_RX = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/.freeze
+    UUID_RX = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/
 
     # Getter by table uuid or table name using canonical visualizations
     # @param id_or_name String If is a name, can become qualified as "schema.tablename"

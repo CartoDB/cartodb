@@ -76,8 +76,7 @@ describe Api::Json::LayersController do
         layer_id = layer_response.delete(:id)
         layer_id.should_not be_nil
 
-        layer_options = layer_response.delete(:options)
-        layer_options.should eq ({ "table_name" => @table.name })
+        layer_response.delete(:options).should eq ({ "table_name" => @table.name })
 
         layer_response.should eq layer_json.except(:options)
 
@@ -100,9 +99,9 @@ describe Api::Json::LayersController do
         response.status.should eq 200
         layer_response = response.body
 
-        layer_response.delete(:id).should eq @layer.id
-        layer_response.delete(:options).should eq new_layer_json[:options]
-        layer_response.delete(:order).should eq new_order
+        layer_response[:id].should eq @layer.id
+        layer_response[:options].should eq new_layer_json[:options]
+        layer_response[:order].should eq new_order
       end
     end
 
@@ -129,8 +128,8 @@ describe Api::Json::LayersController do
 
         layer_response[:layers].map { |l| l['id'] }.should eq [@layer.id, @layer2.id]
         layer_response[:layers].each do |layer|
-          layer.delete('options').should eq new_layer_json[:options]
-          layer.delete('order').should eq new_order
+          layer['options'].should eq new_layer_json[:options]
+          layer['order'].should eq new_order
         end
       end
     end
@@ -147,7 +146,7 @@ describe Api::Json::LayersController do
         response.status.should eq 200
         layer_response = response.body
 
-        layer_response.delete(:options).should eq layer_json[:options]
+        layer_response[:options].should eq layer_json[:options]
       end
     end
 

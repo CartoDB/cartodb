@@ -33,9 +33,9 @@ module.exports = cdb.core.View.extend({
         isSearchApplied: this.dataviewModel.isSearchApplied(),
         isLocked: isLocked,
         canBeLocked: this.widgetModel.canBeLocked(),
-        allSelected: (rejectedCats === 0 && acceptedCats === 0) || acceptedCats >= totalCats,
-        canSelectAll: !isLocked && (rejectedCats > 0 || acceptedCats > 0 || areAllRejected) && totalCats > 2,
-        noneSelected: areAllRejected || (rejectedCats === totalCats),
+        allSelected: (rejectedCats === 0 && acceptedCats === 0 && !areAllRejected),
+        canSelectAll: !isLocked && (rejectedCats > 0 || acceptedCats > 0 || areAllRejected),
+        noneSelected: areAllRejected || (!totalCats && !acceptedCats),
         acceptedCats: acceptedCats,
         totalLocked: this.widgetModel.lockedCategories.size(),
         totalCats: totalCats

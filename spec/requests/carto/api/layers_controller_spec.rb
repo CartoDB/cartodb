@@ -159,7 +159,6 @@ describe Carto::Api::LayersController do
       default_url_options[:host] = "#{user_2.subdomain}.localhost.lan"
 
       table = create_table(privacy: UserTable::PRIVACY_PRIVATE, name: "table#{rand(9999)}_1", user_id: user_1.id)
-      table.table_visualization.id
       u1_t_1_perm_id = table.table_visualization.permission.id
 
       put api_v1_permissions_update_url(user_domain: user_1.username, api_key: user_1.api_key, id: u1_t_1_perm_id),

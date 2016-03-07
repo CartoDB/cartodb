@@ -1,6 +1,6 @@
 // cartodb.js version: 3.15.9
 // uncompressed version: cartodb.uncompressed.js
-// sha: 21219fe3264df48228ca4bff993316d8f3e8253c
+// sha: 1415ea7d7f66d9aff6a573d98c16b4c1e13358bc
 (function() {
   var define;  // Undefine define (require.js), see https://github.com/CartoDB/cartodb.js/issues/543
   var root = this;
@@ -25837,7 +25837,7 @@ if (typeof window !== 'undefined') {
 
 })(cdb.core, window);
 /**
-* Decorators to extend funcionality of cdb related objects
+* Decorators to extend functionality of cdb related objects
 */
 
 /**
@@ -34728,7 +34728,7 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
     sql_api_domain:     "cartodb.com",
     sql_api_port:       "80",
     sql_api_protocol:   "http",
-    maxZoom: 30, // default leaflet zoom level for a layers is 18, raise it 
+    maxZoom: 30, // default leaflet zoom level for a layers is 18, raise it
     extra_params:   {
     },
     cdn_url:        null,
@@ -34824,7 +34824,7 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
   onAdd: function(map) {
     var self = this;
     this.options.map = map;
-    
+
     // Add cartodb logo
     if (this.options.cartodb_logo != false)
       cdb.geo.common.CartoDBLogo.addWadus({ left:8, bottom:8 }, 0, map._container);
@@ -34833,8 +34833,8 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
       // if while the layer was processed in the server is removed
       // it should not be added to the map
       var id = L.stamp(self);
-      if (!map._layers[id]) { 
-        return; 
+      if (!map._layers[id]) {
+        return;
       }
 
       L.TileLayer.prototype.onAdd.call(self, map);
@@ -34843,6 +34843,9 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
     });
   },
 
+  getAttribution: function() {
+    return cdb.core.sanitize.html(this.options.attribution);
+  },
 
   /**
    * When removes the layer, destroy interactivity if exist
@@ -34893,18 +34896,17 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
    */
   setAttribution: function(attribution) {
     this._checkLayer();
-
     // Remove old one
-    this.map.attributionControl.removeAttribution(this.options.attribution);
-
+    this.map.attributionControl.removeAttribution(
+      cdb.core.sanitize.html(this.options.attribution)
+    );
+    // Change text
+    this.map.attributionControl.addAttribution(
+      cdb.core.sanitize.html(attribution)
+    );
     // Set new attribution in the options
     this.options.attribution = attribution;
-
-    // Change text
-    this.map.attributionControl.addAttribution(this.options.attribution);
-
     // Change in the layer
-    this.options.attribution = this.options.attribution;
     this.tilejson.attribution = this.options.attribution;
 
     this.fire('updated');
@@ -35778,7 +35780,7 @@ cdb.geo.leaflet.PathView = PathView;
       attributionControl._attributions = {};
       var newAttributions = this._originalAttributions.concat(this.map.get('attribution'));
       _.each(newAttributions, function(attribution) {
-        attributionControl.addAttribution(attribution);
+        attributionControl.addAttribution(cdb.core.sanitize.html(attribution));
       });
     },
 
@@ -37257,7 +37259,7 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
   setAttribution: function() {
     // Remove old one
     var old = document.getElementById("cartodb-gmaps-attribution")
-      , attribution = this.map.get("attribution").join(", ");
+      , attribution = cdb.core.sanitize.html(this.map.get("attribution").join(", "));
 
       // If div already exists, remove it
       if (old) {

@@ -30,8 +30,8 @@ var LeafletCartoDBVectorLayerGroupView = CartoDBd3Layer.extend({
     layerModel.layers.bind('change:meta', function (child, meta) {
       if (this.model.get('type') === 'namedmap') {
         var index = child.collection.indexOf(child);
-        if (child.collection.at(0).get("type") === 'tiled') {
-          index ++
+        if (child.collection.at(0).get('type') === 'tiled') {
+          index++;
         }
         this.options.styles[index] = meta.cartocss;
         if (this.options.styles.indexOf(undefined) === -1) {

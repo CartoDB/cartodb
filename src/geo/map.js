@@ -6,6 +6,7 @@ var log = require('cdb.log');
 var Model = require('../core/model');
 var Layers = require('./map/layers');
 var sanitize = require('../core/sanitize');
+var LayersFactory = require('../vis/layers');
 
 var Map = Model.extend({
 
@@ -33,6 +34,72 @@ var Map = Model.extend({
     this._windshaftMap = options.windshaftMap;
     this._dataviewsCollection = options.dataviewsCollection;
   },
+
+  // PUBLIC API METHODS
+
+  createCartoDBLayer: function (attrs, options) {
+    this._checkProperties(attrs, ['sql', 'cartocss']);
+    return this._addNewLayerModel('cartodb', attrs, options);
+  },
+
+  createTorqueLayer: function (attrs, options) {
+    this._checkProperties(attrs, ['sql', 'cartocss']);
+    return this._addNewLayerModel('torque', attrs, options);
+  },
+
+  createTileLayer: function (attrs, options) {
+    this._checkProperties(attrs, ['urlTemplate']);
+    return this._addNewLayerModel('tiled', attrs, options);
+  },
+
+  createWMSLayer: function (attrs, options) {
+    this._checkProperties(attrs, ['urlTemplate']);
+    return this._addNewLayerModel('wms', attrs, options);
+  },
+
+  createGMapsBaseLayer: function (attrs, options) {
+    this._checkProperties(attrs, ['base_type']);
+    return this._addNewLayerModel('gmapsbase', attrs, options);
+  },
+
+  createPlainLayer: function (attrs, options) {
+    this._checkProperties(attrs, ['color']);
+    return this._addNewLayerModel('plain', attrs, options);
+  },
+
+  createBackgroundLayer: function (attrs, options) {
+    this._checkProperties(attrs, ['image']);
+    return this._addNewLayerModel('plain', attrs, options);
+  },
+
+  _checkProperties: function (obj, requiredProperties) {
+    var missingProperties = _.select(requiredProperties, function (property) {
+      return obj[property] === undefined;
+    });
+    if (missingProperties.length) {
+      throw new Error('The following attributes are missing: ' + missingProperties.join(','));
+    }
+  },
+
+  _addNewLayerModel: function (type, attrs, options) {
+    options = options || {};
+    var silent = options.silent;
+    var layerModel = LayersFactory.create(type, attrs, {
+      map: this
+    });
+    this.listenTo(layerModel, 'destroy', this._removeLayerModelFromCollection);
+    this.layers.add(layerModel, {
+      silent: silent
+    });
+
+    return layerModel;
+  },
+
+  _removeLayerModelFromCollection: function (layerModel) {
+    return this.layers.remove(layerModel);
+  },
+
+  // INTERNAL CartoDB.js METHODS
 
   _initBinds: function () {
     this.layers.bind('reset', function () {
@@ -324,16 +391,18 @@ var Map = Model.extend({
   //   or null if given mapSize has no size.
   getBoundsZoom: function(boundsSWNE, mapSize) {
     // sometimes the map reports size = 0 so return null
-    if(mapSize.x === 0 || mapSize.y === 0) return null;
-    var size = [mapSize.x, mapSize.y],
-    zoom = this.get('minZoom') || 0,
-    maxZoom = this.get('maxZoom') || 24,
-    ne = boundsSWNE[1],
-    sw = boundsSWNE[0],
-    boundsSize = [],
-    nePoint,
-    swPoint,
-    zoomNotFound = true;
+    if (mapSize.x === 0 || mapSize.y === 0) {
+      return null;
+    }
+    var size = [mapSize.x, mapSize.y];
+    var zoom = this.get('minZoom') || 0;
+    var maxZoom = this.get('maxZoom') || 24;
+    var ne = boundsSWNE[1];
+    var sw = boundsSWNE[0];
+    var boundsSize = [];
+    var nePoint;
+    var swPoint;
+    var zoomNotFound = true;
 
     do {
       zoom++;

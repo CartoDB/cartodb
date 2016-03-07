@@ -1,9 +1,9 @@
-var MapLayer = require('./map-layer');
+var LayerModelBase = require('./layer-model-base');
 
 /**
  * WMS layer support
  */
-var WMSLayer = MapLayer.extend({
+var WMSLayer = LayerModelBase.extend({
   defaults: {
     service: 'WMS',
     request: 'GetMap',

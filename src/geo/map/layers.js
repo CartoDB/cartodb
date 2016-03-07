@@ -1,5 +1,5 @@
 var Backbone = require('backbone');
-var MapLayer = require('./map-layer');
+var LayerModelBase = require('./layer-model-base');
 
 var TILED_LAYER_TYPE = 'Tiled';
 var CARTODB_LAYER_TYPE = 'CartoDB';
@@ -7,11 +7,10 @@ var TORQUE_LAYER_TYPE = 'torque';
 
 var Layers = Backbone.Collection.extend({
 
-  model: MapLayer,
+  model: LayerModelBase,
 
   initialize: function() {
-    MapLayer.prototype.initialize.apply(this, arguments);
-    this.comparator = function(m) {
+    this.comparator = function (m) {
       return parseInt(m.get('order'), 10);
     };
     this.bind('add', this._assignIndexes);

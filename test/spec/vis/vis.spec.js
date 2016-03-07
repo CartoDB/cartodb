@@ -305,33 +305,6 @@ describe('vis/vis', function () {
     expect(this.vis.map.getZoom()).toEqual(10);
   });
 
-  it('should load modules', function (done) {
-    // Ensure the torque module is not loaded (might have been loaded in other tests)
-    delete cdb.torque;
-
-    jasmine.clock().install();
-
-    this.mapConfig.layers = [
-      {type: 'torque', options: { tile_style: 'test', user_name: 'test', table_name: 'test'}}
-    ];
-
-    this.vis.load(this.mapConfig);
-
-    setTimeout(function () {
-      var scripts = document.getElementsByTagName('script'),
-        torqueRe = /\/cartodb\.mod\.torque\.js/;
-      var found = false;
-      for (i = 0, len = scripts.length; i < len && !found; i++) {
-        src = scripts[i].src;
-        found = !!src.match(torqueRe);
-      }
-      expect(found).toEqual(true);
-      done();
-    }, 200);
-
-    jasmine.clock().tick(1000);
-  });
-
   it('should force GMaps', function () {
     this.mapConfig.map_provider = 'leaflet';
     this.mapConfig.layers = [{

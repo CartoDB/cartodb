@@ -95,7 +95,7 @@ CartoDBLayerCommon.prototype = {
       }
     }
     return this;
-  }
+  },
 
   error: function(e) {
     //console.log(e.error);

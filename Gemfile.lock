@@ -252,7 +252,7 @@ GEM
     resque-metrics (0.1.1)
       resque (~> 1.19)
     retriable (1.4.1)
-    rollbar (2.8.0)
+    rollbar (2.8.2)
       multi_json
     roo (1.13.2)
       nokogiri

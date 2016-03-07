@@ -31,7 +31,7 @@ var LeafletCartoDBVectorLayerGroupView = CartoDBd3Layer.extend({
       if (this.model.get('type') === 'namedmap') {
         var index = child.collection.indexOf(child);
         this.options.styles[index - 1] = meta.cartocss;
-        if (this.options.styles.filter(function (p) { return typeof p === 'undefined'; }).length === 0) {
+        if (this.options.styles.indexOf(undefined) === -1) {
           this.setUrl(this.model.get('urls').tiles[0]);
         }
       }

@@ -110,34 +110,6 @@ describe('core/geo/map-view', function () {
         // Tile Layer has a different layer view
         expect(this.mapView.getLayerViewByLayerCid(tileLayer.cid)).not.toEqual(this.mapView.getLayerViewByLayerCid(cartoDBLayer1.cid));
       });
-
-      it('should load the torque module for a torque layer model before adding the layerView to the mapView', function () {
-        var FakeModuleLoaderClass = function () {};
-        FakeModuleLoaderClass.prototype.loadModuleForLayer = jasmine.createSpy('loadModuleForLayer');
-        FakeModuleLoaderClass.prototype.loadModuleForLayer.and.callFake(function (moduleName, callback) {
-          callback();
-        });
-        this.mapView = new MapView({
-          el: this.container,
-          map: this.map,
-          layerViewFactory: this.layerViewFactory,
-          moduleLoader: FakeModuleLoaderClass
-        });
-        this.mapView.getNativeMap = jasmine.createSpy('getNativeMap');
-        this.mapView._addLayerToMap = jasmine.createSpy('_addLayerToMap');
-
-        this.layerViewFactory.createLayerView.and.callFake(function (done) {
-          return jasmine.createSpyObj('layerView', ['something']);
-        });
-        var torqueLayer = new TorqueLayer();
-
-        this.map.addLayer(torqueLayer);
-
-        expect(this.mapView._addLayerToMap).toHaveBeenCalled();
-
-        var torqueLayerView = this.mapView.getLayerViewByLayerCid(torqueLayer.cid);
-        expect(torqueLayerView).toBeDefined();
-      });
     });
 
     describe('when layerModels are removed from map.layers', function () {

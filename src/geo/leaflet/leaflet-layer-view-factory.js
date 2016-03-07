@@ -4,6 +4,7 @@ var LeafletWMSLayerView = require('./leaflet-wms-layer-view');
 var LeafletPlainLayerView = require('./leaflet-plain-layer-view');
 var LeafletGmapsTiledLayerView = require('./leaflet-gmaps-tiled-layer-view');
 var LeafletCartoDBLayerGroupView = require('./leaflet-cartodb-layer-group-view');
+var LeafletTorqueLayer = require('./leaflet-torque-layer');
 var LeafletCartoDBVectorLayerGroupView = require('./leaflet-cartodb-vector-layer-group-view');
 
 var LayerGroupViewConstructor = function (layerGroupModel, mapModel, options) {
@@ -27,14 +28,7 @@ LeafletLayerViewFactory.prototype._constructors = {
   'gmapsbase': LeafletGmapsTiledLayerView,
   'layergroup': LayerGroupViewConstructor,
   'namedmap': LayerGroupViewConstructor,
-  'torque': function (layer, map) {
-    // TODO for now adding this error to be thrown if object is not present, since it's dependency
-    // is not included in the standard bundle
-    if (!cdb.geo.LeafletTorqueLayer) {
-      throw new Error('torque library must have been loaded for a torque layer to work');
-    }
-    return new cdb.geo.LeafletTorqueLayer(layer, map);
-  }
+  'torque': LeafletTorqueLayer
 };
 
 LeafletLayerViewFactory.prototype.createLayerView = function (layerModel, mapModel) {

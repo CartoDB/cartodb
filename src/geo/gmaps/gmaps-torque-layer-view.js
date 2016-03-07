@@ -1,3 +1,4 @@
+require('torque.js');
 var _ = require('underscore');
 var torque = require('torque.js');
 var Backbone = require('backbone');

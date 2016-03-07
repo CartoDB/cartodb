@@ -1,5 +1,5 @@
 /* global L */
-require('torque.js'); // required to setup the "L" object
+require('torque.js');
 var _ = require('underscore');
 var util = require('cdb.core.util');
 var LeafletLayerView = require('./leaflet-layer-view');

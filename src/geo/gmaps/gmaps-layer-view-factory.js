@@ -13,6 +13,7 @@ if (typeof (google) !== 'undefined' && typeof (google.maps) !== 'undefined') {
   var LeafletWMSLayerView = require('../leaflet/leaflet-wms-layer-view');
   var GMapsPlainLayerView = require('./gmaps-plain-layer-view');
   var GMapsCartoDBLayerGroupView = require('./gmaps-cartodb-layer-group-view');
+  var GMapsTorqueLayerView = require('./gmaps-torque-layer-view');
 
   constructors = {
     'tiled': GMapsTiledLayerView,
@@ -21,14 +22,7 @@ if (typeof (google) !== 'undefined' && typeof (google.maps) !== 'undefined') {
     'gmapsbase': GMapsBaseLayerView,
     'layergroup': GMapsCartoDBLayerGroupView,
     'namedmap': GMapsCartoDBLayerGroupView,
-    'torque': function (layer, map) {
-      // TODO for now adding this error to be thrown if object is not present, since it's dependency
-      // is not included in the standard bundle
-      if (!cdb.geo.GMapsTorqueLayerView) {
-        throw new Error('torque library must have been loaded for a torque layer to work');
-      }
-      return new cdb.geo.GMapsTorqueLayerView(layer, map);
-    }
+    'torque': GMapsTorqueLayerView
   };
 }
 

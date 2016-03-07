@@ -1,4 +1,3 @@
-
 /**
  * Shared behavior for all torque layer view.
  *

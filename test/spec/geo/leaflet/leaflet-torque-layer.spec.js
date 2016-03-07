@@ -1,6 +1,9 @@
 /* global L */
 var $ = require('jquery');
+var Map = require('../../../../src/geo/map');
+var LeafletMapView = require('../../../../src/geo/leaflet/leaflet-map-view');
 var LeafletLayerViewFactory = require('../../../../src/geo/leaflet/leaflet-layer-view-factory');
+var TorqueLayer = require('../../../../src/geo/map/torque-layer');
 var SharedTestsForTorqueLayer = require('../shared-tests-for-torque-layer');
 
 describe('geo/leaflet/leaflet-torque-layer', function () {
@@ -9,8 +12,8 @@ describe('geo/leaflet/leaflet-torque-layer', function () {
       'height': '200px',
       'width': '200px'
     });
-    this.map = new cdb.geo.Map();
-    this.mapView = new cdb.geo.LeafletMapView({
+    this.map = new Map();
+    this.mapView = new LeafletMapView({
       el: container,
       map: this.map,
       layerViewFactory: new LeafletLayerViewFactory()
@@ -18,7 +21,7 @@ describe('geo/leaflet/leaflet-torque-layer', function () {
 
     spyOn(L.TorqueLayer.prototype, 'initialize').and.callThrough();
 
-    var model = new cdb.geo.TorqueLayer({
+    var model = new TorqueLayer({
       type: 'torque',
       sql: 'select * from table',
       cartocss: '#test {}',

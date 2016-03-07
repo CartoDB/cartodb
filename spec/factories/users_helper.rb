@@ -1,5 +1,3 @@
-require_relative '../spec_helper'
-
 shared_context 'users helper' do
   include_context 'database configuration'
 

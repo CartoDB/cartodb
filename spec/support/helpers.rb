@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 require_relative '../../app/models/visualization/member'
 require 'json'
 
@@ -5,7 +7,6 @@ class Fixnum
   def success?; self == 200; end
 end
 
-#encoding: UTF-8
 module HelperMethods
 
   def prepare_oauth_request(consumer, url, options={})

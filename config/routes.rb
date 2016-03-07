@@ -463,6 +463,10 @@ CartoDB::Application.routes.draw do
       scope '/viz/:id', constraints: { id: /[^\/]+/ } do
         match 'viz' => 'visualizations#vizjson3', as: :api_v3_visualizations_vizjson
       end
+
+      scope '/viz/:visualization_id', constraints: { id: /[^\/]+/ } do
+        resources :analyses, only: [:show], constraints: { id: /[^\/]+/ }
+      end
     end
   end
 

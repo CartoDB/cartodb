@@ -1143,6 +1143,7 @@ module CartoDB
                 trigger_verbose = #{varnish_trigger_verbose}
 
                 client = GD.get('varnish', None)
+                import hashlib, base64
 
                 while True:
 
@@ -1157,14 +1158,9 @@ module CartoDB
                         break
 
                   try:
-                    # NOTE: every table change also changed CDB_TableMetadata, so
-                    #       we purge those entries too
-                    #
-                    # TODO: do not invalidate responses with surrogate key
-                    #       "not_this_one" when table "this" changes :/
-                    #       --strk-20131203;
-                    #
-                    client.fetch('#{purge_command} obj.http.X-Cache-Channel ~ "^#{@user.database_name}:(.*%s.*)|(cdb_tablemetadata)|(table)$"' % table_name.replace('"',''))
+                    cache_key = "t:" + base64.b64encode(hashlib.sha256('#{@user.database_name}:%s' % table_name).digest())[0:6]
+                    # We want to say \b here, but the Varnish telnet interface expects \\b, we have to escape that on Python to \\\\b and double that for SQL
+                    client.fetch('#{purge_command} obj.http.Surrogate-Key ~ "\\\\\\\\b%s\\\\\\\\b"' % cache_key)
                     break
                   except Exception as err:
                     if trigger_verbose:
@@ -1203,20 +1199,14 @@ module CartoDB
                 retry = #{varnish_retry}
                 trigger_verbose = #{varnish_trigger_verbose}
 
-                import httplib
+                import httplib, base64, hashlib
 
                 while True:
 
                   try:
-                    # NOTE: every table change also changed CDB_TableMetadata, so
-                    #       we purge those entries too
-                    #
-                    # TODO: do not invalidate responses with surrogate key
-                    #       "not_this_one" when table "this" changes :/
-                    #       --strk-20131203;
-                    #
                     client = httplib.HTTPConnection('#{varnish_host}', #{varnish_port}, False, timeout)
-                    client.request('PURGE', '/batch', '', {"Invalidation-Match": ('^#{@user.database_name}:(.*%s.*)|(cdb_tablemetadata)|(table)$' % table_name.replace('"',''))  })
+                    cache_key = "t:" + base64.b64encode(hashlib.sha256('#{@user.database_name}:%s' % table_name).digest())[0:6]
+                    client.request('PURGE', '/key', '', {"Invalidation-Match": ('\\\\b%s\\\\b' % cache_key) })
                     response = client.getresponse()
                     assert response.status == 204
                     break

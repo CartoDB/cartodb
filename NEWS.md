@@ -1,3 +1,18 @@
+3.13.0 (2016-XX-XX)
+-------------------
+### NOTICE
+Instead of using the X-Cache-Channel header, this version introduces a different header for tagging called Surrogate-Keys - see [CartoDB Surrogate Keys](https://github.com/CartoDB/cartodb/wiki/CartoDB-Surrogate-Keys) on the wiki. 
+This release requires the following versions of the APIs:
+  * Windshaft-cartodb > 2.XX.XX
+  * CartoDB-SQL-API > 1.XX.XX
+
+After ensuring those applications are updated, you should restart Varnish (or purge all its objects) to wipe all untagged objects, and then reload the invalidation trigger installed on the user databases to be upgraded with the Rake task: `rake cartodb:db:load_varnish_trigger`.
+
+For retrocompatibility with unupgraded trigger versions, those API versions still emit X-Cache-Channel headers. However, this will be deprecated in the future.
+
+### Changes
+* Change the way Varnish invalidations and tagging for caching objects are done.
+
 3.12.3 (2016-03-01)
 -------------------
 * Fixes in HTTP Header authentication.

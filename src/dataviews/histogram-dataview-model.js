@@ -1,6 +1,7 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
 var DataviewModelBase = require('./dataview-model-base');
+var HistogramModelRange = require('./histogram-range-model');
 
 module.exports = DataviewModelBase.extend({
 
@@ -13,11 +14,8 @@ module.exports = DataviewModelBase.extend({
   ),
 
   url: function () {
-    var params = [];
+    var params = ['bbox=' + this._getBoundingBoxFilterParam()];
 
-    if (this.get('submitBBox')) {
-      params.push('bbox=' + this._getBoundingBoxFilterParam());
-    }
     if (this.get('column_type')) {
       params.push('column_type=' + this.get('column_type'));
     }
@@ -45,18 +43,12 @@ module.exports = DataviewModelBase.extend({
     DataviewModelBase.prototype.initialize.apply(this, arguments);
     this._data = new Backbone.Collection(this.get('data'));
 
-    // BBox should only be included until after the first fetch, since we want to get the range of the full dataset
-    this.once('change:data', function () {
-      this.set('submitBBox', true);
-
-      var data = this.getData();
-      if (data && data.length > 0) {
-        this.set({
-          start: data[0].start,
-          end: data[data.length - 1].end,
-          bins: data.length
-        }, { silent: true });
-      }
+    // Internal model for calculating total amount of values in the histogram
+    this._rangeModel = new HistogramModelRange({
+      bins: this.get('bins')
+    });
+    this.once('change:url', function () {
+      this._rangeModel.setUrl(this.get('url'));
     }, this);
     this.listenTo(this.layer, 'change:meta', this._onChangeLayerMeta);
     this.on('change:column', this._reloadMapAndForceFetch, this);

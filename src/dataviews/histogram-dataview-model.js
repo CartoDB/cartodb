@@ -116,6 +116,7 @@ module.exports = DataviewModelBase.extend({
   toJSON: function (d) {
     return {
       type: 'histogram',
+      source: { id: this._getSourceId() },
       options: {
         column: this.get('column'),
         bins: this.get('bins')

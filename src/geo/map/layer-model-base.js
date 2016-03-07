@@ -27,10 +27,14 @@ var MapLayer = Model.extend({
     this.trigger('destroy', this);
   },
 
-  update: function (attrs) {
+  update: function (attrs, options) {
+    options = options || {};
+
     // TODO: Pick the attributes for the specific type of layer
     // Eg: this.set(_.pick(attrs, this.ATTR_NAMES))
-    this.set(attrs);
+    this.set(attrs, {
+      silent: options.silent
+    });
   },
 
   show: function () {

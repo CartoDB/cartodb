@@ -25,6 +25,7 @@ module.exports = DataviewModelBase.extend({
   toJSON: function () {
     return {
       type: 'formula',
+      source: { id: this._getSourceId() },
       options: {
         column: this.get('column'),
         operation: this.get('operation')

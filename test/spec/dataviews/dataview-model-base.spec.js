@@ -413,4 +413,37 @@ describe('dataviews/dataview-model-base', function () {
       expect(this.dataviewDataProvider.applyFilter).toHaveBeenCalledWith(filter);
     });
   });
+
+  describe('_getSourceId', function () {
+    it('should return the layer ID', function () {
+      var layer = new Backbone.Model({
+        id: 'layerId'
+      });
+      layer.getDataProvider = jasmine.createSpy('getDataProvider').and.returnValue(undefined);
+
+      var dataview = new DataviewModelBase(null, { // eslint-disable-line
+        map: this.map,
+        windshaftMap: this.windshaftMap,
+        layer: layer
+      });
+
+      expect(dataview._getSourceId()).toEqual('layerId');
+    });
+
+    it("should return the ID of the layer's source", function () {
+      var layer = new Backbone.Model({
+        id: 'layerId',
+        source: new Backbone.Model({ id: 'someOtherId' })
+      });
+      layer.getDataProvider = jasmine.createSpy('getDataProvider').and.returnValue(undefined);
+
+      var dataview = new DataviewModelBase(null, { // eslint-disable-line
+        map: this.map,
+        windshaftMap: this.windshaftMap,
+        layer: layer
+      });
+
+      expect(dataview._getSourceId()).toEqual('someOtherId');
+    });
+  });
 });

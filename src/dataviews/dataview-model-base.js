@@ -229,6 +229,15 @@ module.exports = Model.extend({
     throw new Error('toJSON should be defined for each dataview');
   },
 
+  _getSourceId: function () {
+    var source = this.layer.get('source');
+    if (source) {
+      return source.get('id');
+    }
+
+    return this.layer.get('id');
+  },
+
   remove: function () {
     if (this.filter) {
       this.filter.remove();

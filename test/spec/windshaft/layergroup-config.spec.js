@@ -1,7 +1,9 @@
+var _ = require('underscore');
 var Backbone = require('backbone');
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
 var LayerGroupConfig = require('../../../src/windshaft/layergroup-config');
 var HistogramDataviewModel = require('../../../src/dataviews/histogram-dataview-model');
+var AnalysisFactory = require('../../../src/analysis/analysis-factory.js');
 
 describe('windshaft/layergroup-config', function () {
   beforeEach(function () {
@@ -46,7 +48,7 @@ describe('windshaft/layergroup-config', function () {
   });
 
   describe('.generate', function () {
-    it('should generate the config', function () {
+    it('should include visible layers, analyses and dataviews', function () {
       var config = LayerGroupConfig.generate({
         dataviews: this.dataviews,
         layers: [ this.cartoDBLayer1, this.cartoDBLayer2 ]
@@ -57,37 +59,65 @@ describe('windshaft/layergroup-config', function () {
           {
             type: 'cartodb',
             options: {
-              sql: 'sql1',
+              source: {
+                id: 'layer1'
+              },
               cartocss: 'cartoCSS1',
               cartocss_version: '2.0',
-              interactivity: [ 'cartodb_id' ],
-              widgets: {
-                dataviewId: {
-                  type: 'histogram',
-                  options: {
-                    column: 'column1',
-                    bins: 10
-                  }
-                }
-              }
+              interactivity: [
+                'cartodb_id'
+              ]
             }
           },
           {
             type: 'cartodb',
             options: {
-              sql: 'sql2',
+              source: {
+                id: 'layer2'
+              },
               cartocss: 'cartoCSS2',
               cartocss_version: '2.0',
-              interactivity: [ 'cartodb_id' ],
-              widgets: {
-                dataviewId2: {
-                  type: 'histogram',
-                  options: {
-                    column: 'column2',
-                    bins: 5
-                  }
-                }
-              }
+              interactivity: [
+                'cartodb_id'
+              ]
+            }
+          }
+        ],
+        dataviews: {
+          dataviewId: {
+            type: 'histogram',
+            source: {
+              id: 'layer1'
+            },
+            options: {
+              column: 'column1',
+              bins: 10
+            }
+          },
+          dataviewId2: {
+            type: 'histogram',
+            source: {
+              id: 'layer2'
+            },
+            options: {
+              column: 'column2',
+              bins: 5
+            }
+          }
+        },
+        analyses: [
+          {
+            id: 'layer1',
+            type: 'source',
+            params: {
+              query: 'sql1'
+            }
+          },
+          {
+            id: 'layer2',
+            type: 'source',
+            params: {
+              query: 'sql2'
             }
           }
         ]
@@ -107,16 +137,227 @@ describe('windshaft/layergroup-config', function () {
           {
             type: 'cartodb',
             options: {
-              sql: 'sql2',
+              source: {
+                id: 'layer2'
+              },
               cartocss: 'cartoCSS2',
               cartocss_version: '2.0',
-              interactivity: [ 'cartodb_id' ],
-              widgets: {
-                dataviewId2: {
-                  type: 'histogram',
-                  options: {
-                    column: 'column2',
-                    bins: 5
+              interactivity: [
+                'cartodb_id'
+              ]
+            }
+          }
+        ],
+        dataviews: {
+          dataviewId: {
+            type: 'histogram',
+            source: {
+              id: 'layer1'
+            },
+            options: {
+              column: 'column1',
+              bins: 10
+            }
+          },
+          dataviewId2: {
+            type: 'histogram',
+            source: {
+              id: 'layer2'
+            },
+            options: {
+              column: 'column2',
+              bins: 5
+            }
+          }
+        },
+        analyses: [
+          {
+            id: 'layer1',
+            type: 'source',
+            params: {
+              query: 'sql1'
+            }
+          },
+          {
+            id: 'layer2',
+            type: 'source',
+            params: {
+              query: 'sql2'
+            }
+          }
+        ]
+      });
+    });
+
+    it('should generate the right analyses for the different states of layers and analysis', function () {
+      var analysisFactory = new AnalysisFactory();
+      var dataviewsCollection = new Backbone.Collection();
+      var layers = [];
+
+      // t0 - create a new layer A with the subway stops dataset
+
+      var layerModel = new CartoDBLayer({
+        id: '11111',
+        cartocss: '#subway_stops { ... }',
+        sql: 'SELECT * FROM subway_stops'
+      });
+      layers.push(layerModel);
+
+      var mapConfig = LayerGroupConfig.generate({
+        layers: layers,
+        dataviews: dataviewsCollection
+      });
+
+      expect(mapConfig).toEqual({
+        layers: [
+          {
+            type: 'cartodb',
+            options: {
+              'source': { id: '11111' },
+              'cartocss': '#subway_stops { ... }',
+              'cartocss_version': '2.1.0',
+              interactivity: [ 'cartodb_id' ]
+            }
+          }
+        ],
+        dataviews: {},
+        analyses: [
+          {
+            'id': '11111',
+            'type': 'source',
+            'params': {
+              query: 'SELECT * FROM subway_stops'
+            }
+          }
+        ]
+      });
+
+      // t1 - add a trade area analysis to the layer A
+
+      var analysis = analysisFactory.analyse({
+        id: 'a1',
+        type: 'trade-area',
+        params: {
+          source: {
+            id: 'a0',
+            type: 'source',
+            params: {
+              query: 'select * from subway_stops'
+            }
+          },
+          kind: 'walk',
+          time: 300
+        }
+      });
+      var analysisNodeA0 = analysis.findAnalysisById('a0');
+
+      layerModel.update({
+        source: analysis,
+        cartocss: '#trade_area { ... }'
+      }, { silent: true });
+
+      mapConfig = LayerGroupConfig.generate({
+        layers: layers,
+        dataviews: dataviewsCollection
+      });
+
+      expect(mapConfig).toEqual({
+        layers: [
+          {
+            type: 'cartodb',
+            options: {
+              'source': { id: 'a1' },
+              'cartocss': '#trade_area { ... }',
+              'cartocss_version': '2.1.0',
+              interactivity: [ 'cartodb_id' ]
+            }
+          }
+        ],
+        dataviews: {},
+        analyses: [
+          {
+            id: 'a1',
+            type: 'trade-area',
+            params: {
+              source: {
+                id: 'a0',
+                type: 'source',
+                params: {
+                  query: 'select * from subway_stops'
+                }
+              },
+              kind: 'walk',
+              time: 300
+            }
+          }
+        ]
+      });
+
+      // t2 - add an estimated population analysis to the layer A
+
+      analysis = analysisFactory.analyse({
+        id: 'a2',
+        type: 'estimated-population',
+        params: {
+          columnName: 'estimated_people',
+          source: {
+            id: 'a1',
+            type: 'trade-area',
+            params: {
+              kind: 'walk',
+              time: 300,
+              source: {
+                id: 'a0',
+                type: 'source',
+                params: {
+                  query: 'select * from subway_stops'
+                }
+              }
+            }
+          }
+        }
+      });
+      layerModel.update({
+        source: analysis,
+        cartocss: '#estimated_population { ... }'
+      }, { silent: true });
+
+      mapConfig = LayerGroupConfig.generate({
+        layers: layers,
+        dataviews: dataviewsCollection
+      });
+
+      expect(mapConfig).toEqual({
+        layers: [
+          {
+            type: 'cartodb',
+            options: {
+              'source': { id: 'a2' },
+              'cartocss': '#estimated_population { ... }',
+              'cartocss_version': '2.1.0',
+              interactivity: [ 'cartodb_id' ]
+            }
+          }
+        ],
+        dataviews: {},
+        analyses: [
+          {
+            id: 'a2',
+            type: 'estimated-population',
+            params: {
+              columnName: 'estimated_people',
+              source: {
+                id: 'a1',
+                type: 'trade-area',
+                params: {
+                  kind: 'walk',
+                  time: 300,
+                  source: {
+                    id: 'a0',
+                    type: 'source',
+                    params: {
+                      query: 'select * from subway_stops'
+                    }
                   }
                 }
               }
@@ -124,6 +365,204 @@ describe('windshaft/layergroup-config', function () {
           }
         ]
       });
+
+      expect(analysisNodeA0).toEqual(analysis.findAnalysisById('a0'));
+
+      // t3 - create a new layer B from the layer A source (subway stops)
+
+      var analysisNode = analysis.findAnalysisById('a0');
+      analysisNode.set({
+        id: 'b0'  // previously a0
+      });
+
+      var layerB = new CartoDBLayer({
+        id: '22222',
+        source: analysisNode,
+        cartocss: '#subway_stops { ... }'
+      });
+      layers.push(layerB);
+
+      mapConfig = LayerGroupConfig.generate({
+        layers: layers,
+        dataviews: dataviewsCollection
+      });
+
+      expect(mapConfig).toEqual({
+        layers: [
+          {
+            type: 'cartodb',
+            options: {
+              source: {
+                id: 'a2'
+              },
+              cartocss: '#estimated_population { ... }',
+              cartocss_version: '2.1.0',
+              interactivity: [
+                'cartodb_id'
+              ]
+            }
+          },
+          {
+            type: 'cartodb',
+            options: {
+              source: {
+                id: 'b0'
+              },
+              cartocss: '#subway_stops { ... }',
+              cartocss_version: '2.1.0',
+              interactivity: [
+                'cartodb_id'
+              ]
+            }
+          }
+        ],
+        dataviews: {},
+        analyses: [
+          {
+            id: 'a2',
+            type: 'estimated-population',
+            params: {
+              columnName: 'estimated_people',
+              source: {
+                id: 'a1',
+                type: 'trade-area',
+                params: {
+                  kind: 'walk',
+                  time: 300,
+                  source: {
+                    id: 'b0',
+                    type: 'source',
+                    params: {
+                      query: 'select * from subway_stops'
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      });
+
+      // t4 - create a new layer C and add a total population analysis (C1) using the estimated population analysis (A2) from layer A
+
+      analysis = analysisFactory.analyse({
+        id: 'c1',
+        type: 'union',
+        params: {
+          join_on: 'cartodb_id',
+          source: {
+            id: 'a2',
+            type: 'estimated-population',
+            params: {
+              columnName: 'estimated_people',
+              source: {
+                id: 'a1',
+                type: 'trade-area',
+                params: {
+                  kind: 'walk',
+                  time: 300,
+                  source: {
+                    id: 'b0',
+                    type: 'source',
+                    params: {
+                      query: 'select * from subway_stops'
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      });
+      var layerC = new CartoDBLayer({
+        id: '33333',
+        source: analysis,
+        cartocss: '#total_population { ... }'
+      });
+      layers.push(layerC);
+
+      mapConfig = LayerGroupConfig.generate({
+        layers: layers,
+        dataviews: dataviewsCollection
+      });
+
+      expect(mapConfig).toEqual({
+        layers: [
+          {
+            type: 'cartodb',
+            options: {
+              source: {
+                id: 'a2'
+              },
+              cartocss: '#estimated_population { ... }',
+              cartocss_version: '2.1.0',
+              interactivity: [
+                'cartodb_id'
+              ]
+            }
+          },
+          {
+            type: 'cartodb',
+            options: {
+              source: {
+                id: 'b0'
+              },
+              cartocss: '#subway_stops { ... }',
+              cartocss_version: '2.1.0',
+              interactivity: [
+                'cartodb_id'
+              ]
+            }
+          },
+          {
+            type: 'cartodb',
+            options: {
+              source: {
+                id: 'c1'
+              },
+              cartocss: '#total_population { ... }',
+              cartocss_version: '2.1.0',
+              interactivity: [
+                'cartodb_id'
+              ]
+            }
+          }
+        ],
+        dataviews: {},
+        analyses: [
+          {
+            id: 'c1',
+            type: 'union',
+            params: {
+              join_on: 'cartodb_id',
+              source: {
+                id: 'a2',
+                type: 'estimated-population',
+                params: {
+                  columnName: 'estimated_people',
+                  source: {
+                    id: 'a1',
+                    type: 'trade-area',
+                    params: {
+                      kind: 'walk',
+                      time: 300,
+                      source: {
+                        id: 'b0',
+                        type: 'source',
+                        params: {
+                          query: 'select * from subway_stops'
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      });
+
+      // t5 - wadus
     });
   });
 });

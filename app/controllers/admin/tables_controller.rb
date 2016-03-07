@@ -36,7 +36,7 @@ class Admin::TablesController < Admin::AdminController
     if @table.blank? || @table.private? || ((current_user && current_user.id != @table.user_id) && @table.private?)
       render_403
     else
-      @vizzjson = CartoDB::Map::Presenter.new(
+      @vizjson = CartoDB::Map::Presenter.new(
         @table.map,
         { full: true },
         Cartodb.config

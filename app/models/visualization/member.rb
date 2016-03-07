@@ -444,7 +444,7 @@ module CartoDB
         get_surrogate_key(CartoDB::SURROGATE_NAMESPACE_VISUALIZATION, self.id)
       end
 
-      def varnish_vizzjson_key
+      def varnish_vizjson_key
         ".*#{id}:vizjson"
       end
 
@@ -472,7 +472,7 @@ module CartoDB
 
       def invalidate_cache
         invalidate_redis_cache
-        invalidate_varnish_cache
+        invalidate_varnish_vizjson_cache
 
         parent.invalidate_cache unless parent_id.nil?
       end
@@ -700,8 +700,8 @@ module CartoDB
         VizJSON.new(self, vizjson_options, configuration).to_poro
       end
 
-      def invalidate_varnish_cache
-        CartoDB::Varnish.new.purge(varnish_vizzjson_key)
+      def invalidate_varnish_vizjson_cache
+        CartoDB::Varnish.new.purge(varnish_vizjson_key)
       end
 
       def close_list_gap(other_vis)
@@ -848,7 +848,7 @@ module CartoDB
         if type == TYPE_CANONICAL
           CartoDB::TablePrivacyManager.new(table)
                                       .set_from_visualization(self)
-                                      .propagate_to_varnish
+                                      .update_cdb_tablemetadata
         end
         self
       end

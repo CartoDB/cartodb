@@ -17,6 +17,7 @@ WORKING_SPECS_INTEGRATIONS = \
 WORKING_SPECS_1 = \
   spec/rspec_configuration.rb \
   spec/models/table_spec.rb \
+	spec/models/table_privacy_manager_spec.rb \
   spec/models/table/relator_spec.rb \
   spec/models/table/column_typecaster_spec.rb \
   spec/models/user_spec.rb \
@@ -29,7 +30,7 @@ WORKING_SPECS_1 = \
   spec/requests/api/json/layer_presenter_spec.rb \
   spec/requests/carto/admin/bi_visualizations_controller_spec.rb \
 	spec/requests/carto/api/bi_visualizations_controller_spec.rb \
-    spec/requests/carto/api/layer_presenter_spec.rb \
+  spec/requests/carto/api/layer_presenter_spec.rb \
 	spec/requests/carto/api/data_import_presenter_spec.rb \
 	spec/requests/carto/api/database_groups_controller_spec.rb \
   spec/requests/carto/api/layer_presenter_spec.rb \

@@ -47,11 +47,8 @@ module CartoDB
       self
     end
 
-    def propagate_to_varnish
-      raise 'table privacy cannot be nil' unless privacy
-      # TODO: Improve this, hack because tiler checks it
-      invalidate_varnish_cache
-      self
+    def update_cdb_tablemetadata
+      table.update_cdb_tablemetadata
     end
 
     private
@@ -121,10 +118,6 @@ module CartoDB
       }
     end
 
-    def invalidate_varnish_cache
-      table.invalidate_varnish_cache(false)
-    end
-
     def revertable_privacy_change(metadata_table, old_privacy = nil, entities = [])
       yield
     rescue => exception
@@ -156,9 +149,8 @@ module CartoDB
     end
 
     def notify_privacy_affected_entities(metadata_table)
-      propagate_to_varnish
       propagate_to(metadata_table.affected_visualizations, true)
+      update_cdb_tablemetadata
     end
-
   end
 end

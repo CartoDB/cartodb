@@ -454,7 +454,7 @@ class Table
 
     CartoDB::TablePrivacyManager.new(@user_table).apply_privacy_change(self, previous_privacy, privacy_changed?)
 
-    update_cdb_tablemetadata if privacy_changed?
+    update_cdb_tablemetadata if privacy_changed? || !@name_changed_from.nil?
   end
 
   def propagate_namechange_to_table_vis
@@ -552,14 +552,16 @@ class Table
   def after_destroy
     # Delete visualization BEFORE deleting metadata, or named map won't be destroyed properly
     @table_visualization.delete(from_table_deletion=true) if @table_visualization
-    Tag.filter(:user_id => user_id, :table_id => id).delete
+    Tag.filter(user_id: user_id, table_id: id).delete
     remove_table_from_stats
-    invalidate_varnish_cache
+
     cache.del geometry_types_key
     @dependent_visualizations_cache.each(&:delete)
     @non_dependent_visualizations_cache.each do |visualization|
       visualization.unlink_from(self)
     end
+
+    update_cdb_tablemetadata
     remove_table_from_user_database unless keep_user_database_table
     synchronization.delete if synchronization
 
@@ -581,29 +583,6 @@ class Table
         raise unless e.to_s.match /relation .+ does not exist/
       end
       user_database.run(%{DROP TABLE IF EXISTS #{qualified_table_name}})
-    end
-  end
-  ## End of Callbacks
-
-  # This method removes all the vanish cached objects for the table,
-  # tiles included. Use with care O:-)
-  def invalidate_varnish_cache(propagate_to_visualizations=true)
-    CartoDB::Varnish.new.purge("#{varnish_key}")
-    invalidate_cache_for(affected_visualizations) if id && table_visualization && propagate_to_visualizations
-    self
-  end
-
-  def invalidate_cache_for(visualizations)
-    visualizations.each do |visualization|
-      visualization.invalidate_cache
-    end
-  end
-
-  def varnish_key
-    if owner.db_service.cartodb_extension_version_pre_mu?
-      "^#{self.owner.database_name}:(.*#{self.name}.*)|(table)$"
-    else
-      "^#{self.owner.database_name}:(.*#{owner.database_schema}(\\\\\")?\\.#{self.name}.*)|(table)$"
     end
   end
 
@@ -681,9 +660,11 @@ class Table
     new_name = get_valid_name(value, current_name: self.name)
 
     # Do not keep track of name changes until table has been saved
-    @name_changed_from = @user_table.name if !new? && @user_table.name.present?
+    unless new?
+      @name_changed_from = @user_table.name if @user_table.name.present?
+      update_cdb_tablemetadata
+    end
 
-    self.invalidate_varnish_cache if !owner.nil? && owner.database_name
     @user_table[:name] = new_name
   end
 
@@ -879,7 +860,7 @@ class Table
     cartodb_type = options[:type].convert_to_cartodb_type
     column_name = options[:name].to_s.sanitize_column_name
     owner.in_database.add_column name, column_name, type
-    invalidate_varnish_cache
+
     update_cdb_tablemetadata
     return {:name => column_name, :type => type, :cartodb_type => cartodb_type}
   rescue => e
@@ -893,7 +874,7 @@ class Table
   def drop_column!(options)
     raise if CARTODB_COLUMNS.include?(options[:name].to_s)
     owner.in_database.drop_column name, options[:name].to_s
-    invalidate_varnish_cache
+
     update_cdb_tablemetadata
   end
 
@@ -910,7 +891,7 @@ class Table
     column_name = (new_name.present? ? new_name : old_name)
     convert_column_datatype(owner.in_database, name, column_name, options[:type])
     column_type = column_type_for(column_name)
-    invalidate_varnish_cache
+
     update_cdb_tablemetadata
     { name: column_name, type: column_type, cartodb_type: column_type.convert_to_cartodb_type }
   end #modify_column!
@@ -1326,6 +1307,12 @@ class Table
     name.tr('_', ' ').split.map(&:capitalize).join(' ')
   end
 
+  def update_cdb_tablemetadata
+    owner.in_database(as: :superuser).run(%{
+      SELECT CDB_TableMetadataTouch('#{qualified_table_name}')
+      })
+  end
+
   private
 
   def previous_privacy
@@ -1362,12 +1349,6 @@ class Table
 
   def cache
     @cache ||= $tables_metadata
-  end
-
-  def update_cdb_tablemetadata
-    owner.in_database(as: :superuser).run(%Q{
-      SELECT CDB_TableMetadataTouch('#{qualified_table_name}')
-    })
   end
 
   def get_valid_name(name, options={})

@@ -137,7 +137,7 @@ describe Visualization::Member do
       CartoDB::Visualization::NameChecker.any_instance.stubs(:available?).returns(true)
 
       member = Visualization::Member.new(id: member.id).fetch
-      CartoDB::Varnish.any_instance.expects(:purge).with(member.varnish_vizzjson_key)
+      CartoDB::Varnish.any_instance.expects(:purge).with(member.varnish_vizjson_key)
       member.name = 'changed'
       member.store
     end
@@ -150,7 +150,7 @@ describe Visualization::Member do
       member.store
 
       member = Visualization::Member.new(id: member.id).fetch
-      CartoDB::Varnish.any_instance.expects(:purge).with(member.varnish_vizzjson_key)
+      CartoDB::Varnish.any_instance.expects(:purge).with(member.varnish_vizjson_key)
       member.privacy = Visualization::Member::PRIVACY_PRIVATE
       member.store
     end
@@ -160,7 +160,7 @@ describe Visualization::Member do
       member.store
 
       member = Visualization::Member.new(id: member.id).fetch
-      CartoDB::Varnish.any_instance.expects(:purge).with(member.varnish_vizzjson_key)
+      CartoDB::Varnish.any_instance.expects(:purge).with(member.varnish_vizjson_key)
       member.description = 'changed description'
       member.store
     end
@@ -1124,7 +1124,7 @@ describe Visualization::Member do
   describe '#invalidate_cache' do
     it "Invalidates the varnish and redis caches" do
       member = Visualization::Member.new(random_attributes_for_vis_member(user_id: @user_mock.id))
-      member.expects(:invalidate_varnish_cache).once
+      member.expects(:invalidate_varnish_vizjson_cache).once
       member.expects(:invalidate_redis_cache).once
 
       member.invalidate_cache

@@ -93,18 +93,15 @@ describe Layer do
         @map.add_layer(@layer)
       end
 
-      it "should invalidate its maps and related tables varnish cache" do
+      it "should invalidate its maps" do
+        CartoDB::Varnish.any_instance.stubs(:purge).returns(true)
+
         @layer.maps.each do |map|
           map.expects(:invalidate_vizjson_varnish_cache).times(1)
         end
 
-        CartoDB::Varnish.any_instance.stubs(:purge).returns(true)
-
-        key = @layer.affected_tables.first.service.varnish_key
-        CartoDB::Varnish.any_instance.expects(:purge).at_least(1).with("#{key}").returns(true)
-
-        vizzjson_key = @layer.affected_tables.first.table_visualization.varnish_vizzjson_key
-        CartoDB::Varnish.any_instance.expects(:purge).at_least(1).with("#{vizzjson_key}").returns(true)
+        vizjson_key = @layer.affected_tables.first.table_visualization.varnish_vizjson_key
+        CartoDB::Varnish.any_instance.expects(:purge).at_least(1).with(vizjson_key.to_s).returns(true)
 
         @layer.save
       end
@@ -123,7 +120,7 @@ describe Layer do
         end
 
         @layer.affected_tables.each do |table|
-          table.expects(:invalidate_varnish_cache).times(0)
+          table.expects(:update_cdb_tablemetadata).times(0)
         end
 
         @layer.save

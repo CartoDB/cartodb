@@ -255,6 +255,9 @@ $chartMiniHighlight: rgba(#333, 1);
   .CDB-Chart-axis {
     fill: $chartAxis;
   }
+  .CDB-Chart-axis.is-disabled {
+    fill: rgba($chartAxis, 0.4);
+  }
   .CDB-Chart-axis line {
     stroke: $chartLine;
   }

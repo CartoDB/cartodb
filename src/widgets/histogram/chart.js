@@ -211,6 +211,7 @@ module.exports = cdb.core.View.extend({
 
   _onBrushStart: function () {
     this.chart.classed('is-selectable', true);
+    this._axis.classed('is-disabled', true);
   },
 
   _onChangeDragging: function () {
@@ -246,8 +247,6 @@ module.exports = cdb.core.View.extend({
   _updateAxisTipOpacity: function (className) {
     if (this.model.get('dragging')) {
       this._showAxisTip(className);
-    } else {
-      this._hideAxisTip(className);
     }
   },
 
@@ -346,6 +345,7 @@ module.exports = cdb.core.View.extend({
   _removeBrush: function () {
     this.chart.selectAll('.Brush').remove();
     this.chart.classed('is-selectable', false);
+    this._axis.classed('is-disabled', false);
   },
 
   _removeLines: function () {

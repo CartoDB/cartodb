@@ -53,7 +53,7 @@ module CartoDB
         end
       end
       @status = 'completed'
-      update_stats_log
+      update_log_stats
       @log.append_and_store "Non-batch Here geocoding job finished"
     end
 

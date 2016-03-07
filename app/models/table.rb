@@ -561,7 +561,7 @@ class Table
       visualization.unlink_from(self)
     end
 
-    update_cdb_tablemetadata
+    update_cdb_tablemetadata if real_table_exists?
     remove_table_from_user_database unless keep_user_database_table
     synchronization.delete if synchronization
 
@@ -584,6 +584,10 @@ class Table
       end
       user_database.run(%{DROP TABLE IF EXISTS #{qualified_table_name}})
     end
+  end
+
+  def real_table_exists?
+    !get_table_id.nil?
   end
 
   # adds the column if not exists or cast it to timestamp field
@@ -1645,5 +1649,4 @@ class Table
       user_database.run("SELECT cartodb.#{cartodb_pg_func}('#{query_args}');")
     end
   end
-
 end

@@ -1,5 +1,4 @@
 /* global google */
-var cdb = require('cdb');
 var log = require('cdb.log');
 
 var GMapsLayerViewFactory = function () {};

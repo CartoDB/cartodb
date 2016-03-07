@@ -586,6 +586,10 @@ class Table
     end
   end
 
+  def real_table_exists?
+    !get_table_id.nil?
+  end
+
   # adds the column if not exists or cast it to timestamp field
   def normalize_timestamp(database, column)
     schema = self.schema(reload: true)
@@ -1644,11 +1648,5 @@ class Table
       query_args = args.join("','")
       user_database.run("SELECT cartodb.#{cartodb_pg_func}('#{query_args}');")
     end
-  end
-
-  private
-
-  def real_table_exists?
-    !get_table_id.nil?
   end
 end

@@ -10,5 +10,5 @@
       </button>
     </div>
   </div>
-  <p class="CDB-Text CDB-Size-medium u-secondaryTextColor js-analysis"</p>
+  <p class="CDB-Text CDB-Size-medium u-secondaryTextColor js-analysis"></p>
 </div>

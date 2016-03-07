@@ -74,8 +74,7 @@ gem 'redcarpet', '3.3.3'
 gem 'bartt-ssl_requirement',   '~>1.4.0', require: 'ssl_requirement'
 
 # TODO Production gems, put them in :production group
-gem 'rollbar',               '~> 2.8.0'
-gem 'oj',                    '~> 2.12.14' # Required for Rollbar serialization
+gem 'rollbar',               '0.12.14'
 gem 'resque',                '1.25.2'
 gem 'resque-metrics',        '0.1.1'
 

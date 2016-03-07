@@ -364,7 +364,6 @@ var Vis = View.extend({
 
     // Global variable for easier console debugging / testing
     window.vis = this;
-    window.map = map;
 
     return this;
   },

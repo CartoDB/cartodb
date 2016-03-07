@@ -113,7 +113,6 @@ Style/CollectionMethods:
   PreferredMethods:
     collect: map
     collect!: map!
-    find: detect
     find_all: select
     reduce: inject
 Style/CommentAnnotation:
@@ -142,7 +141,7 @@ Style/EmptyLineBetweenDefs:
   AllowAdjacentOneLineDefs: false
 Style/EmptyLinesAroundBlockBody:
   Description: Keeps track of empty lines around block bodies.
-  Enabled: true
+  Enabled: false
   EnforcedStyle: no_empty_lines
   SupportedStyles:
   - empty_lines

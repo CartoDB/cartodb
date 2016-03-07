@@ -4,9 +4,7 @@ require_relative '../../../spec_helper'
 require_relative '../../../../app/controllers/carto/api/layers_controller'
 require_relative '../../../../spec/requests/api/json/layers_controller_shared_examples'
 
-
 describe Carto::Api::LayersController do
-
   it_behaves_like 'layers controllers' do
   end
 
@@ -18,7 +16,7 @@ describe Carto::Api::LayersController do
       CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true, delete: true)
       CartoDB::Visualization::Member.any_instance.stubs(:invalidate_cache).returns(nil)
 
-      @headers = {'CONTENT_TYPE'  => 'application/json'}
+      @headers = { 'CONTENT_TYPE' => 'application/json' }
 
       @user = FactoryGirl.create(:valid_user)
     end
@@ -27,67 +25,65 @@ describe Carto::Api::LayersController do
       @user.destroy
     end
 
-    it 'attribution chanes in a visualization propagate to associated layers' do
-        table_1_attribution = 'attribution 1'
-        table_2_attribution = 'attribution 2'
-        modified_table_2_attribution = 'modified attribution 2'
+    it 'attribution changes in a visualization propagate to associated layers' do
+      table_1_attribution = 'attribution 1'
+      table_2_attribution = 'attribution 2'
+      modified_table_2_attribution = 'modified attribution 2'
 
-        table1 = create_table(privacy: UserTable::PRIVACY_PUBLIC, name: "table#{rand(9999)}_1", user_id: @user.id)
-        table2 = create_table(privacy: UserTable::PRIVACY_PUBLIC, name: "table#{rand(9999)}_2", user_id: @user.id)
+      table1 = create_table(privacy: UserTable::PRIVACY_PUBLIC, name: "table#{rand(9999)}_1", user_id: @user.id)
+      table2 = create_table(privacy: UserTable::PRIVACY_PUBLIC, name: "table#{rand(9999)}_2", user_id: @user.id)
 
-        payload = {
-          name: 'new visualization',
-          tables: [
-            table1.name,
-            table2.name
-          ],
-          privacy: 'public'
-        }
+      payload = {
+        name: 'new visualization',
+        tables: [
+          table1.name,
+          table2.name
+        ],
+        privacy: 'public'
+      }
 
-        login_as(@user, scope: @user.username)
-        host! "#{@user.username}.localhost.lan"
-        post api_v1_visualizations_create_url(api_key: @api_key), payload.to_json, @headers do |response|
-          response.status.should == 200
-          @visualization_data = JSON.parse(response.body)
-        end
+      login_as(@user, scope: @user.username)
+      host! "#{@user.username}.localhost.lan"
+      post api_v1_visualizations_create_url(api_key: @api_key), payload.to_json, @headers do |response|
+        response.status.should eq 200
+        @visualization_data = JSON.parse(response.body)
+      end
 
-        visualization = Carto::Visualization.find(@visualization_data.fetch('id'))
-        table1_visualization = CartoDB::Visualization::Member.new(id: table1.table_visualization.id).fetch
-        table1_visualization.attributions = table_1_attribution
-        table1_visualization.store
-        table2_visualization = CartoDB::Visualization::Member.new(id: table2.table_visualization.id).fetch
-        table2_visualization.attributions = table_2_attribution
-        table2_visualization.store
+      visualization = Carto::Visualization.find(@visualization_data.fetch('id'))
+      table1_visualization = CartoDB::Visualization::Member.new(id: table1.table_visualization.id).fetch
+      table1_visualization.attributions = table_1_attribution
+      table1_visualization.store
+      table2_visualization = CartoDB::Visualization::Member.new(id: table2.table_visualization.id).fetch
+      table2_visualization.attributions = table_2_attribution
+      table2_visualization.store
 
-        get api_v1_maps_layers_index_url(map_id: visualization.map.id, api_key: @api_key) do |response|
-          response.status.should be_success
-          @layers_data = JSON.parse(response.body)
-        end
-        # Done this way to preserve the order
-        data_layers = @layers_data['layers']
-        data_layers.delete_if { |layer| layer['kind'] != 'carto' }
-        data_layers.count.should eq 2
+      get api_v1_maps_layers_index_url(map_id: visualization.map.id, api_key: @api_key) do |response|
+        response.status.should be_success
+        @layers_data = JSON.parse(response.body)
+      end
+      # Done this way to preserve the order
+      data_layers = @layers_data['layers']
+      data_layers.delete_if { |layer| layer['kind'] != 'carto' }
+      data_layers.count.should eq 2
 
-        # Rembember, layers by default added at top
-        data_layers[0]['options']['attribution'].should eq table_2_attribution
-        data_layers[1]['options']['attribution'].should eq table_1_attribution
+      # Rembember, layers by default added at top
+      data_layers[0]['options']['attribution'].should eq table_2_attribution
+      data_layers[1]['options']['attribution'].should eq table_1_attribution
 
+      table2_visualization.attributions = modified_table_2_attribution
+      table2_visualization.store
 
-        table2_visualization.attributions = modified_table_2_attribution
-        table2_visualization.store
+      get api_v1_maps_layers_index_url(map_id: visualization.map.id, api_key: @api_key) do |response|
+        response.status.should be_success
+        @layers_data = JSON.parse(response.body)
+      end
+      data_layers = @layers_data['layers'].select { |layer| layer['kind'] == 'carto' }
+      data_layers.count.should eq 2
 
-        get api_v1_maps_layers_index_url(map_id: visualization.map.id, api_key: @api_key) do |response|
-          response.status.should be_success
-          @layers_data = JSON.parse(response.body)
-        end
-        data_layers = @layers_data['layers'].select { |layer| layer['kind'] == 'carto' }
-        data_layers.count.should eq 2
-
-        # Rembember, layers by default added at top
-        data_layers[0]['options']['attribution'].should eq modified_table_2_attribution
-        data_layers[1]['options']['attribution'].should eq table_1_attribution
+      # Rembember, layers by default added at top
+      data_layers[0]['options']['attribution'].should eq modified_table_2_attribution
+      data_layers[1]['options']['attribution'].should eq table_1_attribution
     end
-
   end
 
   describe 'index' do
@@ -99,11 +95,11 @@ describe Carto::Api::LayersController do
 
     it 'fetches layers from shared visualizations' do
       # TODO: refactor this with helpers (pending to merge)
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true, delete: true)
       CartoDB::Visualization::Member.any_instance.stubs(:invalidate_cache).returns(nil)
-      @headers = {'CONTENT_TYPE'  => 'application/json'}
+      @headers = { 'CONTENT_TYPE' => 'application/json' }
 
-      def factory(user, attributes={})
+      def factory(user, attributes = {})
         {
           name:                     attributes.fetch(:name, "visualization #{rand(9999)}"),
           tags:                     attributes.fetch(:tags, ['foo', 'bar']),
@@ -163,24 +159,23 @@ describe Carto::Api::LayersController do
       default_url_options[:host] = "#{user_2.subdomain}.localhost.lan"
 
       table = create_table(privacy: UserTable::PRIVACY_PRIVATE, name: "table#{rand(9999)}_1", user_id: user_1.id)
-      u1_t_1_id = table.table_visualization.id
       u1_t_1_perm_id = table.table_visualization.permission.id
 
-      put api_v1_permissions_update_url(user_domain:user_1.username, api_key: user_1.api_key, id: u1_t_1_perm_id),
-          {acl: [{
+      put api_v1_permissions_update_url(user_domain: user_1.username, api_key: user_1.api_key, id: u1_t_1_perm_id),
+          { acl: [{
             type: CartoDB::Permission::TYPE_USER,
             entity: {
-              id:   user_2.id,
+              id:   user_2.id
             },
             access: CartoDB::Permission::ACCESS_READONLY
-          }]}.to_json, @headers
+          }] }.to_json, @headers
 
-      layer = Layer.create({
-          kind: 'carto',
-          tooltip: {},
-          options: {},
-          infowindow: {}
-        })
+      layer = Layer.create(
+        kind: 'carto',
+        tooltip: {},
+        options: {},
+        infowindow: {}
+      )
 
       table.map.add_layer layer
 
@@ -197,13 +192,10 @@ describe Carto::Api::LayersController do
       get api_v1_maps_layers_index_url(user_domain: user_3.username, map_id: table.map.id) do |response|
         response.status.should == 404
       end
-
     end
-
   end
 
   describe '#show legacy tests' do
-
     before(:all) do
       @user = create_user(
         username: 'test',
@@ -217,7 +209,7 @@ describe Carto::Api::LayersController do
     before(:each) do
       stub_named_maps_calls
       delete_user_data @user
-      @table = create_table :user_id => @user.id
+      @table = create_table user_id: @user.id
     end
 
     after(:all) do
@@ -225,8 +217,7 @@ describe Carto::Api::LayersController do
       @user.destroy
     end
 
-
-    let(:params) { { :api_key => @user.api_key } }
+    let(:params) { { api_key: @user.api_key } }
 
     it "Get all user layers" do
       layer = Layer.create kind: 'carto'
@@ -235,7 +226,7 @@ describe Carto::Api::LayersController do
       @user.add_layer layer2
 
       default_url_options[:host] = "#{@user.subdomain}.localhost.lan"
-      get api_v1_users_layers_index_url(params.merge(user_id: @user.id)) do |response|
+      get api_v1_users_layers_index_url(params.merge(user_id: @user.id)) do |_|
         last_response.status.should be_success
         response_body = JSON.parse(last_response.body)
         response_body['total_entries'].should   eq 2
@@ -246,51 +237,47 @@ describe Carto::Api::LayersController do
     end
 
     it "Gets layers by map id" do
-      layer = Layer.create({
-          kind: 'carto',
-          tooltip: {},
-          options: {},
-          infowindow: {}
-        })
-      layer2 = Layer.create({
-          kind: 'tiled',
-          tooltip: {},
-          options: {},
-          infowindow: {}
-        })
+      layer = Layer.create(
+        kind: 'carto',
+        tooltip: {},
+        options: {},
+        infowindow: {}
+      )
+      layer2 = Layer.create(
+        kind: 'tiled',
+        tooltip: {},
+        options: {},
+        infowindow: {}
+      )
 
       expected_layers_ids = [layer.id, layer2.id]
 
-      existing_layers_ids = @table.map.layers.collect(&:id)
+      existing_layers_ids = @table.map.layers.map(&:id)
       existing_layers_count = @table.map.layers.count
 
       @table.map.add_layer layer
       @table.map.add_layer layer2
 
       default_url_options[:host] = "#{@user.subdomain}.localhost.lan"
-      get api_v1_maps_layers_index_url(params.merge(map_id: @table.map.id)) do |response|
+      get api_v1_maps_layers_index_url(params.merge(map_id: @table.map.id)) do |_|
         last_response.status.should be_success
         response_body = JSON.parse(last_response.body)
-        response_body['total_entries'].should == 2 + existing_layers_count
-        body['layers'].count { |l| l['kind'] != 'tiled' }.should == 2 + existing_layers_count
-        new_layers_ids = response_body['layers'].collect { |layer| layer['id'] }
-        (new_layers_ids - existing_layers_ids - expected_layers_ids).should == []
+        response_body['total_entries'].should eq 2 + existing_layers_count
+        body['layers'].count { |l| l['kind'] != 'tiled' }.should eq 2 + existing_layers_count
+        new_layers_ids = response_body['layers'].map { |l| l['id'] }
+        (new_layers_ids - existing_layers_ids).should == expected_layers_ids
       end
 
-      get api_v1_maps_layers_show_url(params.merge({
-            map_id: @table.map.id,
-            id: layer.id
-          })) do |response|
+      get api_v1_maps_layers_show_url(
+        params.merge(
+          map_id: @table.map.id,
+          id: layer.id
+        )) do |_|
         last_response.status.should be_success
         response_body = JSON.parse(last_response.body)
-        response_body['id'].should == layer.id
-        response_body['kind'].should == layer.kind
+        response_body['id'].should eq layer.id
+        response_body['kind'].should eq layer.kind
       end
-
-
     end
-
   end
-
-
 end

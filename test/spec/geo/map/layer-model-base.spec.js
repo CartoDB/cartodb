@@ -2,7 +2,7 @@ var LayerModelBase = require('../../../../src/geo/map/layer-model-base');
 
 var MyLayer = LayerModelBase.extend({});
 
-fdescribe('geo/map/layer-model-base.js', function () {
+describe('geo/map/layer-model-base.js', function () {
   beforeEach(function () {
     this.layer = new MyLayer();
   });

@@ -75,7 +75,7 @@ var WindshaftMap = Backbone.Model.extend({
           if (layer.get('type') === 'torque') {
             layer.set('meta', this.getLayerMeta(layerIndex));
             layer.set('urls', this.getTiles('torque'));
-          } else if (layer.get('type') === 'CartoDB' || layer.get('type') === 'mapnik') {
+          } else if (layer.get('type') === 'CartoDB') {
             layer.set('meta', this.getLayerMeta(layerIndex));
           }
         }, this);

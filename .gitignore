@@ -62,3 +62,4 @@ public/test_guess_country.csv
 doc/manual/build
 .gem/
 .byebug_history
+/tags

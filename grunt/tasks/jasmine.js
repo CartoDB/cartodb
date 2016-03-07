@@ -56,7 +56,7 @@ module.exports = {
         .concat([
           'http://maps.googleapis.com/maps/api/js?sensor=false&v=3.12',
           'dist/cartodb.uncompressed.js',
-          'dist/cartodb.mod.torque.uncompressed.js'
+          'dist/cartodb.mod.torque.js'
         ])
         .concat(requiredVendorForModuleLoad)
     }, defaultOptions)
@@ -70,9 +70,9 @@ module.exports = {
         .concat([
           'http://maps.googleapis.com/maps/api/js?sensor=false&v=3.12',
           'dist/cartodb.uncompressed.js',
-          'dist/cartodb.mod.torque.uncompressed.js'
+          'dist/cartodb.mod.torque.js'
         ])
         .concat(requiredVendorForModuleLoad)
     }, defaultOptions)
   }
-}
+};

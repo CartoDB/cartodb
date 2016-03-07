@@ -8,12 +8,15 @@ describe('src/geo/module-loader', function () {
   beforeEach(function () {
     this.fakeLoader = new Backbone.Model();
 
+    // Unbind any possible previous bindings from other tests and remove the shared cdb.torque
+    // to start the test from an empty state
+    config.unbind('moduleLoaded');
+    delete cdb.torque;
+
     this.fakeLoader.loadModule = jasmine.createSpy('loadModule').and.callFake(function (moduleName) {
       cdb[moduleName] = 'something';
       config.trigger('moduleLoaded');
     });
-
-    delete cdb.torque;
   });
 
   it('should load the module for a torque layer and invoke the callback', function (done) {

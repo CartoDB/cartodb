@@ -573,13 +573,7 @@ class Table
       rescue => e
         CartoDB::Logger.info 'Table#after_destroy error', "maybe table #{qualified_table_name} doesn't exist: #{e.inspect}"
       end
-      begin
-        # TODO: this is not very elegant, we could detect the existence of the
-        # table some otherway or hava a CDB_DropOverviews(text)  function...
-        user_database.run(%{SELECT CDB_DropOverviews('#{qualified_table_name}'::regclass)})
-      rescue Sequel::DatabaseError => e
-        raise unless e.to_s.match /relation .+ does not exist/
-      end
+      Carto::OverviewsService.new(user_database).delete_overviews qualified_table_name
       user_database.run(%{DROP TABLE IF EXISTS #{qualified_table_name}})
     end
   end
@@ -1203,6 +1197,7 @@ class Table
       unless register_table_only
         begin
           #  Underscore prefixes have a special meaning in PostgreSQL, hence the ugly hack
+          Carto::OverviewsService.new(owner.in_database).rename_overviews @name_changed_from, name
           if name.start_with?('_')
             temp_name = "t" + "#{9.times.map { rand(9) }.join}" + name
             owner.in_database.rename_table(@name_changed_from, temp_name)

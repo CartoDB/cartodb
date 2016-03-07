@@ -561,7 +561,7 @@ class Table
       visualization.unlink_from(self)
     end
 
-    update_cdb_tablemetadata
+    update_cdb_tablemetadata if real_table_exists?
     remove_table_from_user_database unless keep_user_database_table
     synchronization.delete if synchronization
 
@@ -1646,4 +1646,9 @@ class Table
     end
   end
 
+  private
+
+  def real_table_exists?
+    !get_table_id.nil?
+  end
 end

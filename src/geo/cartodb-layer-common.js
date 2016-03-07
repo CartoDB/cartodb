@@ -95,40 +95,7 @@ CartoDBLayerCommon.prototype = {
       }
     }
     return this;
-  },
-
-  // TODO: This can be removed
-  _getLayerDefinition: function() {
-    // set params
-    var params = {};
-    var opts = this.options;
-    var sql, cartocss, cartocss_version;
-    sql = opts.query || "select * from " + opts.table_name;
-
-    if(opts.query_wrapper) {
-      sql = _.template(opts.query_wrapper)({ sql: sql });
-    }
-
-    cartocss = opts.tile_style;
-    cartocss_version = opts.cartocss_version || '2.1.0';
-
-    // extra_params?
-    for (var _param in opts.extra_params) {
-      var v = opts.extra_params[_param]
-      params[_param] = v.replace ? v.replace(/\{\{table_name\}\}/g, opts.table_name): v;
-    }
-    sql = sql.replace(/\{\{table_name\}\}/g, opts.table_name);
-    cartocss = cartocss.replace(/\{\{table_name\}\}/g, opts.table_name);
-    cartocss = cartocss.replace(new RegExp( opts.table_name, "g"), "layer0");
-
-    return {
-      sql: sql,
-      cartocss: cartocss,
-      cartocss_version: cartocss_version,
-      params: params,
-      interactivity: opts.interactivity
-    }
-  },
+  }
 
   error: function(e) {
     //console.log(e.error);

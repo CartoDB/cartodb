@@ -26,8 +26,8 @@ module.exports = cdb.core.View.extend({
   },
 
   initialize: function () {
-    this._originalData = new Backbone.Collection();
     this._dataviewModel = this.model.dataviewModel;
+    this._originalData = this.model.dataviewModel._rangeModel;
     this.filter = this._dataviewModel.filter;
     this.lockedByUser = false;
     this._initBinds();
@@ -64,13 +64,12 @@ module.exports = cdb.core.View.extend({
   },
 
   _initBinds: function () {
-    this._dataviewModel.once('change:data', this._onFirstLoad, this);
+    this._originalData.once('change:data', this._onFirstLoad, this);
     this.model.bind('change:collapsed', this.render, this);
   },
 
   _onFirstLoad: function () {
     this.render();
-
     this._dataviewModel.bind('change:data', this._onHistogramDataChanged, this);
     this.add_related_model(this._dataviewModel);
     this._dataviewModel.fetch();
@@ -97,9 +96,9 @@ module.exports = cdb.core.View.extend({
         this.zoomedData = this._dataviewModel.getData();
       } else {
         this.histogramChartView.showShadowBars();
-        if (this._originalData.isEmpty()) {
-          this._originalData.reset(this._dataviewModel.getData());
-        }
+        // if (this._originalData.isEmpty()) {
+        //   this._originalData.reset(this._dataviewModel.getData());
+        // }
         this.miniHistogramChartView.replaceData(this._dataviewModel.getData());
       }
       this.histogramChartView.replaceData(this._dataviewModel.getData());
@@ -119,9 +118,9 @@ module.exports = cdb.core.View.extend({
 
   render: function () {
     this.clearSubViews();
-
     var data = this._dataviewModel.getData();
-    var isDataEmpty = _.isEmpty(data) || _.size(data) === 0;
+    var originData = this._originalData.getData();
+    var isDataEmpty = (_.isEmpty(data) || _.size(data) === 0) && (_.isEmpty(originData) || _.size(originData) === 0);
 
     this.$el.html(
       template({
@@ -135,7 +134,6 @@ module.exports = cdb.core.View.extend({
       this._addPlaceholder();
       this._initTitleView();
     } else {
-      this._originalData.reset(this._dataviewModel.getData());
       this._setupBindings();
       this.$el.toggleClass('is-collapsed', !!this.model.get('collapsed'));
       this._initViews();
@@ -303,7 +301,8 @@ module.exports = cdb.core.View.extend({
   },
 
   _onChangeBins: function () {
-    this._originalData.reset([]); // Clean originalData
+    debugger;
+    this._originalData.setBins(10); // Clean originalData
     this.model.set({
       zoom_enabled: false,
       filter_enabled: false,
@@ -363,13 +362,13 @@ module.exports = cdb.core.View.extend({
   },
 
   _updateStats: function () {
-    var data = this._dataviewModel.getData();
+    var data = this._originalData.getData();
 
     if (this._isZoomed()) {
       data = this.zoomedData;
     }
 
-    var nulls = this._dataviewModel.get('nulls');
+    var nulls = this._originalData.get('nulls');
 
     var min, max;
 

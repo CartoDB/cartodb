@@ -462,7 +462,7 @@ module.exports = cdb.core.View.extend({
     this.model.bind('change:width', this._onChangeWidth, this);
 
     if (this._originalData) {
-      this._originalData.bind('reset', function () {
+      this._originalData.on('change:data', function () {
         this._removeShadowBars();
         this._generateShadowBars();
       }, this);
@@ -481,7 +481,7 @@ module.exports = cdb.core.View.extend({
   },
 
   _getYScale: function () {
-    var data = (this._originalData && this._originalData.toJSON()) || this.model.get('data');
+    var data = (this._originalData && this._originalData.getData()) || this.model.get('data');
     return d3.scale.linear().domain([0, d3.max(data, function (d) { return _.isEmpty(d) ? 0 : d.freq; })]).range([this.chartHeight(), 0]);
   },
 
@@ -504,7 +504,7 @@ module.exports = cdb.core.View.extend({
       this._originalYScale = this.yScale = this._getYScale();
     }
 
-    var data = this.model.get('data');
+    var data = (this._originalData && this._originalData.getData()) || this.model.get('data');
 
     if (!data || !data.length) {
       return;
@@ -1026,7 +1026,7 @@ module.exports = cdb.core.View.extend({
   },
 
   _generateShadowBars: function () {
-    var data = this._originalData && this._originalData.toJSON() || this.model.get('data');
+    var data = this._originalData && this._originalData.getData() || this.model.get('data');
 
     if (!data || !data.length || !this.model.get('show_shadow_bars')) {
       this._removeShadowBars();

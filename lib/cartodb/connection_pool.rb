@@ -2,10 +2,10 @@ require 'fiber'
 
 module CartoDB
   class ConnectionPool
-    
+
     # Until migration to AR is done
     MAX_POOL_SIZE = 600
-    
+
     def initialize
       @pool = {}
     end
@@ -42,7 +42,7 @@ module CartoDB
       Rails.logger.debug "[pool] Creating a new connection for #{connection_id(configuration)} (#{@pool.keys.size})"
       connection
     end
-    
+
     def close_connections!(db=nil)
       newpool = {}
       @pool.each do |id, conn|
@@ -56,7 +56,7 @@ module CartoDB
       end
       @pool = newpool
     end
-    
+
     def close_oldest_connection!
       older = nil
       oldest_access = nil
@@ -69,12 +69,16 @@ module CartoDB
       close_connection(@pool[older][:connection], older)
       @pool.delete(older)
     end
-    
+
     private
-    
+
     def close_connection(connection, id)
       if id.end_with?('sequel')
         connection.disconnect
+        # Sequel keeps a list of all databases it has connected to that is never deleted
+        # We must manually delete the connection or it is never garbage collected, leaking memory
+        # See https://github.com/jeremyevans/sequel/blob/3.42.0/lib/sequel/database.rb#L10
+        Sequel::DATABASES.delete(connection)
       else
         connection.disconnect!
       end

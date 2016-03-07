@@ -54,7 +54,7 @@ describe('src/geo/module-loader', function () {
     moduleLoader.loadModuleForLayer(layerModel, callback);
     expect(function () {
       moduleLoader.loadModuleForLayer(layerModel, callback);
-    }).toThrowError("Module for layer of type torque couldn't be loaded");
+    }).toThrowError("'torque' module couldn't be loaded");
 
     _.defer(function () {
       expect(callback).not.toHaveBeenCalled();

@@ -15,15 +15,14 @@ ModuleLoader.prototype.LAYER_TYPE_TO_MODULE_NAME_MAP = {
 
 ModuleLoader.prototype.loadModuleForLayer = function (layerModel, callback) {
   var moduleName = this._getModuleNameForLayer(layerModel);
-  if (this._isModuleLoaded(moduleName)) {
-    callback();
-  } else {
-    if (this._moduleChecked) {
-      throw new Error('Module for layer of type ' + layerModel.get('type') + " couldn't be loaded");
+  if (moduleName) {
+    if (this._isModuleLoaded(moduleName)) {
+      callback();
+    } else {
+      this._loadModule(moduleName, callback);
     }
-    this._moduleChecked = true;
-    this._loadModule(moduleName, callback);
-    return this;
+  } else {
+    callback();
   }
 };
 
@@ -32,14 +31,17 @@ ModuleLoader.prototype._getModuleNameForLayer = function (layerModel) {
 };
 
 ModuleLoader.prototype._isModuleLoaded = function (moduleName) {
-  return !moduleName || moduleName && cdb[moduleName] !== undefined;
+  return cdb[moduleName] !== undefined;
 };
 
 ModuleLoader.prototype._loadModule = function (moduleName, callback) {
   var self = this;
-  if (moduleName) {
-    this._loader.loadModule(moduleName);
+
+  if (this._moduleChecked) {
+    throw new Error("'" + moduleName + "' module couldn't be loaded");
   }
+  this._loader.loadModule(moduleName);
+  this._moduleChecked = true;
   var onModuleLoaded = function () {
     if (self._isModuleLoaded(moduleName)) {
       config.unbind('moduleLoaded', this);

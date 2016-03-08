@@ -10,11 +10,54 @@ describe('dataviews/histogram-dataview-model', function () {
     this.filter = new RangeFilter();
     this.layer = new Model();
     this.layer.getDataProvider = function () {};
+    spyOn(HistogramDataviewModel.prototype, 'listenTo').and.callThrough();
+    spyOn(HistogramDataviewModel.prototype, 'stopListening').and.callThrough();
     this.model = new HistogramDataviewModel({}, {
       map: this.map,
       windshaftMap: windshaftMap,
       layer: this.layer,
       filter: this.filter
+    });
+  });
+
+  it('should not listen any url change from the beginning', function () {
+    expect(this.model.listenTo.calls.count()).toBe(5);
+    expect(this.model.stopListening).toHaveBeenCalledWith(this.model, 'change:url', null);
+  });
+
+  it('should set unfiltered model url when model has changed it', function () {
+    spyOn(this.model._unfilteredData, 'setUrl');
+    this.model.set('url', 'hey!');
+    expect(this.model._unfilteredData.setUrl).toHaveBeenCalled();
+  });
+
+  describe('on unfiltered data model fetch', function () {
+    beforeEach(function () {
+      var histogramData = {
+        'bin_width': 10,
+        'bins_count': 3,
+        'bins_start': 1,
+        'nulls': 0
+      };
+
+      spyOn(this.model._unfilteredData, 'sync').and.callFake(function (method, model, options) {
+        options.success(histogramData);
+      });
+    });
+
+    it('should calculate start, end and bins', function () {
+      expect(this.model.get('start')).toBeUndefined();
+      expect(this.model.get('end')).toBeUndefined();
+      this.model._unfilteredData.fetch();
+      expect(this.model.get('start')).toEqual(1);
+      expect(this.model.get('end')).toEqual(31);
+      expect(this.model.get('bins')).toEqual(3);
+    });
+
+    it('should run _onChangeBins', function () {
+      spyOn(this.model, '_onChangeBinds');
+      this.model._unfilteredData.fetch();
+      expect(this.model._onChangeBinds).toHaveBeenCalled();
     });
   });
 
@@ -93,28 +136,6 @@ describe('dataviews/histogram-dataview-model', function () {
     it('should unset range filter', function () {
       expect(this.model.filter.unsetRange).toHaveBeenCalled();
     });
-  });
-
-  it('should calculate start, end and bins after the first fetch', function () {
-    var histogramData = {
-      'bin_width': 10,
-      'bins_count': 3,
-      'bins_start': 1,
-      'nulls': 0
-    };
-
-    spyOn(this.model, 'sync').and.callFake(function (method, model, options) {
-      options.success(histogramData);
-    });
-
-    expect(this.model.get('start')).toBeUndefined();
-    expect(this.model.get('end')).toBeUndefined();
-
-    this.model.fetch();
-
-    expect(this.model.get('start')).toEqual(1);
-    expect(this.model.get('end')).toEqual(31);
-    expect(this.model.get('bins')).toEqual(3);
   });
 
   it('should parse the bins', function () {
@@ -202,37 +223,20 @@ describe('dataviews/histogram-dataview-model', function () {
   });
 
   describe('.url', function () {
-    describe('not including bbox', function () {
-      beforeEach(function () {
-        this.model.set('submitBBox', false);
-      });
-      it('should include only the initial bins', function () {
-        this.model.set('url', 'http://example.com');
-        expect(this.model.url()).toEqual('http://example.com?bins=10');
-      });
+    it('should include bbox and initial bins', function () {
+      this.model.set('url', 'http://example.com');
+      expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&bins=10');
     });
-
-    describe('including bbox', function () {
-      beforeEach(function () {
-        this.model.set('submitBBox', true);
+    it('should include start, end and bins when own_filter is enabled', function () {
+      this.model.set({
+        'url': 'http://example.com',
+        'start': 0,
+        'end': 10,
+        'bins': 25
       });
-      it('should include bbox and initial bins', function () {
-        this.model.set('url', 'http://example.com');
-        expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&bins=10');
-      });
-      it('should include start, end and bins when own_filter is enabled', function () {
-        this.model.set({
-          'url': 'http://example.com',
-          'start': 0,
-          'end': 10,
-          'bins': 25
-        });
-        expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&start=0&end=10&bins=25');
-
-        this.model.enableFilter();
-
-        expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&own_filter=1');
-      });
+      expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&start=0&end=10&bins=25');
+      this.model.enableFilter();
+      expect(this.model.url()).toEqual('http://example.com?bbox=2,1,4,3&own_filter=1');
     });
   });
 

@@ -1,7 +1,7 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
 var DataviewModelBase = require('./dataview-model-base');
-var HistogramModelRange = require('./histogram-range-model');
+var HistogramDataModel = require('./histogram-dataview/histogram-data-model');
 
 module.exports = DataviewModelBase.extend({
 
@@ -43,16 +43,34 @@ module.exports = DataviewModelBase.extend({
     DataviewModelBase.prototype.initialize.apply(this, arguments);
     this._data = new Backbone.Collection(this.get('data'));
 
-    // Internal model for calculating total amount of values in the histogram
-    this._rangeModel = new HistogramModelRange({
+    // Internal model for calculating all the data in the histogram (without filters)
+    this._unfilteredData = new HistogramDataModel({
       bins: this.get('bins')
     });
-    this.once('change:url', function () {
-      this._rangeModel.setUrl(this.get('url'));
+
+    this._unfilteredData.bind('change:data', function (mdl, data) {
+      this.set({
+        start: mdl.get('start'),
+        end: mdl.get('end'),
+        bins: mdl.get('bins')
+      }, { silent: true });
+      this._onChangeBinds();
     }, this);
+
+    this.once('change:url', function () {
+      this._unfilteredData.setUrl(this.get('url'));
+    }, this);
+
     this.listenTo(this.layer, 'change:meta', this._onChangeLayerMeta);
     this.on('change:column', this._reloadMapAndForceFetch, this);
     this.on('change:bins change:start change:end', this._fetchAndResetFilter, this);
+  },
+
+  _initBinds: function () {
+    DataviewModelBase.prototype._initBinds.apply(this);
+    // We shouldn't listen url change for fetching the data (with filter) because
+    // we have to wait until we know all the data available (without any filter).
+    this.stopListening(this, 'change:url', null);
   },
 
   enableFilter: function () {
@@ -65,6 +83,10 @@ module.exports = DataviewModelBase.extend({
 
   getData: function () {
     return this._data.toJSON();
+  },
+
+  getUnfilteredDataModel: function () {
+    return this._unfilteredData;
   },
 
   getSize: function () {

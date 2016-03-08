@@ -1,10 +1,9 @@
 var _ = require('underscore');
-var Model = require('../core/model');
+var Model = require('../../core/model');
 
 /**
  *  This model is used for getting the total amount of data
- *  from the histogram widget.
- *
+ *  from the histogram widget (without any filter).
  */
 
 module.exports = Model.extend({
@@ -14,12 +13,7 @@ module.exports = Model.extend({
   },
 
   url: function () {
-    var params = ['bins=' + this.get('bins')];
-    var url = this.get('url');
-    if (params.length > 0) {
-      url += '?' + params.join('&');
-    }
-    return url;
+    return this.get('url') + '?' + 'bins=' + this.get('bins');
   },
 
   initialize: function () {
@@ -66,16 +60,11 @@ module.exports = Model.extend({
       }, buckets[i]);
     }
 
-    // FIXME - Update the end of last bin due https://github.com/CartoDB/cartodb.js/issues/926
-    var lastBucket = buckets[numberOfBins - 1];
-    if (lastBucket && lastBucket.end < lastBucket.max) {
-      lastBucket.end = lastBucket.max;
-    }
-
     return {
       data: buckets,
       start: buckets[0].start,
-      end: buckets[buckets.length - 1].end
+      end: buckets[buckets.length - 1].end,
+      bins: numberOfBins
     };
   }
 });

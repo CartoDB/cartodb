@@ -63,3 +63,4 @@ doc/manual/build
 .gem/
 .byebug_history
 /tags
+/.tags_swap

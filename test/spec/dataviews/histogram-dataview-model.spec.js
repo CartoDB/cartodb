@@ -11,7 +11,7 @@ describe('dataviews/histogram-dataview-model', function () {
     this.layer = new Model();
     this.layer.getDataProvider = function () {};
     spyOn(HistogramDataviewModel.prototype, 'listenTo').and.callThrough();
-    spyOn(HistogramDataviewModel.prototype, 'stopListening').and.callThrough();
+    spyOn(HistogramDataviewModel.prototype, 'fetch').and.callThrough();
     this.model = new HistogramDataviewModel({}, {
       map: this.map,
       windshaftMap: windshaftMap,
@@ -21,8 +21,8 @@ describe('dataviews/histogram-dataview-model', function () {
   });
 
   it('should not listen any url change from the beginning', function () {
-    expect(this.model.listenTo.calls.count()).toBe(5);
-    expect(this.model.stopListening).toHaveBeenCalledWith(this.model, 'change:url', null);
+    this.model.set('url', 'http://cartodb.com');
+    expect(this.model.fetch).not.toHaveBeenCalled();
   });
 
   it('should set unfiltered model url when model has changed it', function () {
@@ -72,9 +72,7 @@ describe('dataviews/histogram-dataview-model', function () {
   describe('when bins change', function () {
     beforeEach(function () {
       this.map.reload.calls.reset();
-      spyOn(this.model, 'fetch');
       spyOn(this.model.filter, 'unsetRange');
-
       this.model.set('bins', 123);
     });
 
@@ -95,7 +93,6 @@ describe('dataviews/histogram-dataview-model', function () {
   describe('when start change', function () {
     beforeEach(function () {
       this.map.reload.calls.reset();
-      spyOn(this.model, 'fetch');
       spyOn(this.model.filter, 'unsetRange');
 
       this.model.set('start', 0);
@@ -118,9 +115,7 @@ describe('dataviews/histogram-dataview-model', function () {
   describe('when end change', function () {
     beforeEach(function () {
       this.map.reload.calls.reset();
-      spyOn(this.model, 'fetch');
       spyOn(this.model.filter, 'unsetRange');
-
       this.model.set('end', 0);
     });
 

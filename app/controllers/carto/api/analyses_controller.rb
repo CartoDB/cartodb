@@ -9,12 +9,12 @@ module Carto
       include Carto::UUIDHelper
       include Carto::Editor::EditorUsersModule
 
-      ssl_required :show
+      ssl_required :show, :create, :update, :destroy
 
       before_filter :editor_users_only
       before_filter :load_visualization
-      before_filter :check_visualization_write_permission, only: [:create, :update]
-      before_filter :load_analysis, only: [:show, :update]
+      before_filter :check_visualization_write_permission, only: [:create, :update, :destroy]
+      before_filter :load_analysis, only: [:show, :update, :destroy]
 
       rescue_from Carto::LoadError, with: :rescue_from_carto_error
       rescue_from Carto::UnauthorizedError, with: :rescue_from_carto_error
@@ -39,6 +39,11 @@ module Carto
       def update
         @analysis.params = params_from_request
         @analysis.save!
+        render_jsonp(AnalysisPresenter.new(@analysis).to_poro, 200)
+      end
+
+      def destroy
+        @analysis.destroy
         render_jsonp(AnalysisPresenter.new(@analysis).to_poro, 200)
       end
 

@@ -76,7 +76,7 @@ describe('src/geo/leaflet/leaflet-cartodb-vector-layer-group-view.js', function 
       done();
     });
   });
-  it('should call setUrl when all named map styles have been added', function (done) {
+  it('should call setUrl when all named map styles have been added', function () {
     var cartoDBLayer1 = new CartoDBLayer();
     var cartoDBLayer2 = new CartoDBLayer();
     L.CartoDBd3Layer.prototype.setUrl = jasmine.createSpy();
@@ -91,13 +91,7 @@ describe('src/geo/leaflet/leaflet-cartodb-vector-layer-group-view.js', function 
     this.layerGroupModel.set('type', 'namedmap');
     this.layerGroupModel.set('urls', {tiles: []});
     cartoDBLayer1.set('meta', {cartocss: 'whatever'});
-    _.defer(function () {
-      expect(L.CartoDBd3Layer.prototype.setUrl).not.toHaveBeenCalled();
-      cartoDBLayer2.set('meta', {cartocss: 'whatever2'});
-      _.defer(function () {
-        expect(L.CartoDBd3Layer.prototype.setUrl).toHaveBeenCalled();
-        done();
-      });
-    });
+    cartoDBLayer2.set('meta', {cartocss: 'whatever2'});
+    expect(view.options.styles.indexOf(undefined)).toEqual(-1);
   });
 });

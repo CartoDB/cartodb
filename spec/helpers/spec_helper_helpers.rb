@@ -24,21 +24,25 @@ module SpecHelperHelpers
   end
 
   def drop_leaked_test_user_databases
-    Rails::Sequel.connection[
+    user_database_names = Rails::Sequel.connection[
       "SELECT datname FROM pg_database WHERE datistemplate IS FALSE AND datallowconn IS TRUE AND datname like 'cartodb_test_user_%'"
-    ].map(:datname).each { |user_database_name|
+    ]
+
+    user_database_names.map(:datname).each do |user_database_name|
       puts "Dropping leaked test database #{user_database_name}"
       CartoDB::UserModule::DBService.terminate_database_connections(
         user_database_name, ::Rails::Sequel.configuration.environment_for(Rails.env)['host']
       )
       Rails::Sequel.connection.run("drop database \"#{user_database_name}\"")
-    }
+    end
   end
 
   def delete_database_test_users
-    Rails::Sequel.connection['SELECT u.usename FROM pg_catalog.pg_user u'].map { |r|
+    usernames = Rails::Sequel.connection['SELECT u.usename FROM pg_catalog.pg_user u'].map do |r|
       r.values.first
-    }.each do |username|
+    end
+
+    usernames.each do |username|
       Rails::Sequel.connection.run("drop user \"#{username}\"") if username =~ /^test_cartodb_user_/
     end
   end

@@ -17,6 +17,6 @@ Sequel.migration do
   end
 
   down do
-    drop_table :analysis
+    drop_table :analyses
   end
 end

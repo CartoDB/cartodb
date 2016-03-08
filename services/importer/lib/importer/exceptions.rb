@@ -49,8 +49,14 @@ module CartoDB
     end
 
     class CartoDBfyError < BaseImportError
-      def initialize(message="Error CartoDBFying table.")
+      def initialize(message="Error CartoDBFying table")
         super(message, 2010)
+      end
+    end
+
+    class CartoDBfyInvalidID < BaseImportError
+      def initialize(message="Invalid cartodb_id")
+        super(message, 2011)
       end
     end
 

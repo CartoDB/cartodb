@@ -1751,7 +1751,7 @@ describe Table do
       table.rows_counted.should == 2
     end
 
-    it "should raise an error if cartodbfy fails" do
+    it "should raise an error if cartodb_id is not valid" do
       table = new_table :name => nil, :user_id => @user.id
       table.migrate_existing_table = "cdbfytable"
 
@@ -1759,7 +1759,7 @@ describe Table do
       @user.db_service.run_pg_query("INSERT INTO cdbfytable (cartodb_id) VALUES ('nan')")
       expect {
         table.cartodbfy
-      }.to raise_error (CartoDB::CartoDBfyError)
+      }.to raise_error (CartoDB::CartoDBfyInvalidID)
     end
 
     it "create and migrate a table containing a the_geom and cartodb_id" do

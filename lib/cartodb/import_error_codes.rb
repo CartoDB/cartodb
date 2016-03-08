@@ -180,8 +180,13 @@ module CartoDB
       source: ERROR_SOURCE_USER
     },
     2010 => {
-      title: 'Malformed CartoDB table',
-      what_about: "The CartoDBfication process failed when converting your table into a CartoDB table.",
+      title: 'Incompatible CartoDB table',
+      what_about: "There was an error when converting your table into a CartoDB table. Please <a href='mailto:support@cartodb.com?subject=CartoDBfy error'>contact us</a> and we will help you to load your data.",
+      source: ERROR_SOURCE_USER
+    },
+    2011 => {
+      title: 'Invalid cartodb_id column',
+      what_about: "The import failed because your table contains an invalid cartodb_id column. If you want to use it as a primary key, its values must be integer, non-null and unique. Otherwise, try renaming your current cartodb_id column.",
       source: ERROR_SOURCE_USER
     },
     3007 => {

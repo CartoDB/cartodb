@@ -7,6 +7,14 @@ describe Carto::Api::AnalysesController do
   include Carto::Factories::Visualizations
   include HelperMethods
 
+  before(:all) do
+    FactoryGirl.create(:carto_feature_flag, name: 'editor-3', restricted: false)
+  end
+
+  after(:all) do
+    Carto::FeatureFlag.destroy_all
+  end
+
   let(:user) do
     FactoryGirl.create(:carto_user)
   end
@@ -96,6 +104,30 @@ describe Carto::Api::AnalysesController do
         a.user_id.should eq user.id
         a.visualization_id.should eq @visualization.id
         a.params_json.should eq payload
+      end
+    end
+
+    it 'returns 422 if payload is not valid json' do
+      post_json create_analysis_url(user, @visualization), nil do |response|
+        response.status.should eq 422
+      end
+      post_json create_analysis_url(user, @visualization), "" do |response|
+        response.status.should eq 422
+      end
+      post_json create_analysis_url(user, @visualization), "wadus" do |response|
+        response.status.should eq 422
+      end
+      post_json create_analysis_url(user, @visualization), "wadus: 1" do |response|
+        response.status.should eq 422
+      end
+    end
+
+    it 'returns 422 if payload is empty json' do
+      post_json create_analysis_url(user, @visualization), {} do |response|
+        response.status.should eq 422
+      end
+      post_json create_analysis_url(user, @visualization), [] do |response|
+        response.status.should eq 422
       end
     end
   end

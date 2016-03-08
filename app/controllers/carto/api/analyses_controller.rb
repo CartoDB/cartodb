@@ -1,14 +1,17 @@
 # encoding: utf-8
 require_dependency 'carto/uuidhelper'
+require_relative '../editor/editor_users_module'
 
 module Carto
   module Api
     class AnalysesController < ::Api::ApplicationController
       include Carto::ControllerHelper
       include Carto::UUIDHelper
+      include Carto::Editor::EditorUsersModule
 
       ssl_required :show
 
+      before_filter :editor_users_only
       before_filter :load_visualization
       before_filter :load_analysis, only: [:show]
 
@@ -22,6 +25,14 @@ module Carto
 
       def create
         analysis_params = request.raw_post
+        raise Carto::UnprocesableEntityError.new("Params not present") unless analysis_params.present?
+        params_json = begin
+          JSON.parse(analysis_params)
+        rescue => e
+          raise Carto::UnprocesableEntityError.new("Error parsing params: #{e.message}")
+        end
+        raise Carto::UnprocesableEntityError.new("Empty params") if params_json.empty?
+
         analysis = Carto::Analysis.new(
           visualization_id: @visualization.id,
           user_id: current_user.id,

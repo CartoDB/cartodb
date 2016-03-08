@@ -1,6 +1,4 @@
 # encoding: utf-8
-
-require_relative './database_configuration_contexts'
 require_relative '../support/factories/users'
 
 class TestUserFactory

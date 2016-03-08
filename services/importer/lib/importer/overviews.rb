@@ -39,20 +39,20 @@ module CartoDB
         UserTable.find_by_identifier(@user.id, table_name).service
       end
 
-      def run_in_database(sql)
-        # TODO: timing, exception handling, ...
-        @user.transaction_with_timeout statement_timeout: @statement_timeout do |db|
-          log("Will create overviews for #{@table_name}")
-          @importer_stats.timing('create-overviews') do
-            db.run sql
-          end
-          log("Overviews created for #{@table_name}")
-        end
-      end
-
       def can_create_overviews?
         @user.reload
         @user.has_feature_flag?('create_overviews')
+      end
+
+      def create_overviews!(table_name)
+        # TODO: timing, exception handling, ...
+        @user.transaction_with_timeout statement_timeout: @statement_timeout do |db|
+          log("Will create overviews for #{table_name}")
+          @importer_stats.timing('createviews') do
+            Carto::OverviewsService.new(db).create_overviews table_name
+          end
+          log("Overviews created for #{table_name}")
+        end
       end
 
       # Dataset overview creation
@@ -72,10 +72,7 @@ module CartoDB
         end
 
         def create_overviews!
-          # TODO: metrics...
-          @service.run_in_database %{
-            SELECT cartodb.CDB_CreateOverviews('#{@table_name}'::REGCLASS);
-          }
+          @service.create_overviews! @table_name
         end
 
         private

@@ -1,17 +1,23 @@
 3.13.0 (2016-XX-XX)
 -------------------
 ### NOTICE
-Instead of using the X-Cache-Channel header, this version introduces a different header for tagging called Surrogate-Keys - see [CartoDB Surrogate Keys](https://github.com/CartoDB/cartodb/wiki/CartoDB-Surrogate-Keys) on the wiki. 
-This release requires the following versions of the APIs:
-  * Windshaft-cartodb > 2.XX.XX
-  * CartoDB-SQL-API > 1.XX.XX
+This release introduces a different method of doing cache invalidations, using Surrogate Keys instead of the older X-Cache-Channel header.
+See [CartoDB Surrogate Keys](https://github.com/CartoDB/cartodb/wiki/CartoDB-Surrogate-Keys) on the wiki for more information about this change.
 
-After ensuring those applications are updated, you should restart Varnish (or purge all its objects) to wipe all untagged objects, and then reload the invalidation trigger installed on the user databases to be upgraded with the Rake task: `rake cartodb:db:load_varnish_trigger`.
+All invalidations done from newly created CartoDB accounts/databases from this release will invalidate using the new method.
+Due to this, if you use Varnish or any alternate caching methods, you need to update to a version of the APIs which provides a Surrogate-Keys header on all the cacheable responses:
+  * Windshaft-cartodb >= 2.27.0
+  * CartoDB-SQL-API >= 1.26.0
+  
+After ensuring those applications are updated, you should restart Varnish (or purge all its objects) to ensure all new objects will contain 
+the Surrogate-Keys header, and then reload the invalidation trigger installed on the user databases to be upgraded with the Rake task: `rake cartodb:db:load_varnish_trigger`.
 
-For retrocompatibility with unupgraded trigger versions, those API versions still emit X-Cache-Channel headers. However, this will be deprecated in the future.
+For retrocompatibility with unupgraded trigger versions, those API versions still emit both X-Cache-Channel and Surrogate-Key headers. 
+However, this will be deprecated on a future release.
 
 ### Changes
-* Change the way Varnish invalidations and tagging for caching objects are done.
+* Change Varnish table-related invalidations and tagging to use [Surrogate Keys](https://github.com/CartoDB/cartodb/wiki/CartoDB-Surrogate-Keys)
+* Remove Varnish table invalidations from Rails and replaced them with CDB_TableMetadataTouch calls (delegating invalidation reponsibility to the database)
 
 3.12.3 (2016-03-01)
 -------------------

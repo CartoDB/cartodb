@@ -30,9 +30,6 @@ var LeafletCartoDBVectorLayerGroupView = CartoDBd3Layer.extend({
     layerModel.layers.bind('change:meta', function (child, meta) {
       var index = layerModel.layers.indexOf(child);
       this.options.styles[index] = meta.cartocss;
-      if (this.options.styles.indexOf(undefined) === -1) {
-        this.setUrl(this.model.get('urls').tiles[0]);
-      }
     }, this);
 
     layerModel.layers.each(function (layer) {
@@ -66,6 +63,7 @@ var LeafletCartoDBVectorLayerGroupView = CartoDBd3Layer.extend({
   _onTileJSONChanged: function () {
     var tilejson = this.model.get('urls');
     this.options.styles = this.model.layers.pluck('cartocss');
+    this.setUrl(this.model.get('urls').tiles[0]);
   },
 
   onAdd: function (map) {

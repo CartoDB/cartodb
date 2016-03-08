@@ -5,6 +5,7 @@ require_relative '../../../services/datasources/lib/datasources'
 
 class Admin::UsersController < Admin::AdminController
   include LoginHelper
+  include ProfileHelper
 
   SERVICE_TITLES = {
     'gdrive' => 'Google Drive',
@@ -80,7 +81,7 @@ class Admin::UsersController < Admin::AdminController
   def profile_update
     attributes = params[:user]
 
-    if attributes[:avatar_url].present?
+    if attributes[:avatar_url].present? && valid_avatar_extension(attributes[:avatar_url])
       @user.avatar_url = attributes.fetch(:avatar_url, nil)
     end
 

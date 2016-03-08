@@ -1,5 +1,7 @@
 # coding: utf-8
 class Admin::OrganizationsController < Admin::AdminController
+  include ProfileHelper
+
   ssl_required :show, :settings, :settings_update, :regenerate_all_api_keys, :groups, :auth, :auth_update
   before_filter :login_required, :load_organization_and_members, :load_ldap_configuration
   helper_method :show_billing
@@ -27,7 +29,7 @@ class Admin::OrganizationsController < Admin::AdminController
   def settings_update
     attributes = params[:organization]
 
-    if attributes.include?(:avatar_url)
+    if attributes.include?(:avatar_url) && valid_avatar_extension(attributes[:avatar_url])
       @organization.avatar_url = attributes[:avatar_url]
     end
 

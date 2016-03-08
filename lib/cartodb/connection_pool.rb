@@ -61,7 +61,7 @@ module CartoDB
       older = nil
       oldest_access = nil
       @pool.each do |connection_id, conn|
-        if oldest_access.nil? || oldest_access < conn[:last_accessed]
+        if oldest_access.nil? || conn[:last_accessed] < oldest_access
           oldest_access = conn[:last_accessed]
           older = connection_id
         end

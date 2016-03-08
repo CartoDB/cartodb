@@ -323,6 +323,10 @@ class Carto::User < ActiveRecord::Base
     self.organization.present?
   end
 
+  def belongs_to_organization?(organization)
+    self.organization_user? && organization != nil && self.organization_id == organization.id
+  end
+
   def soft_geocoding_limit?
     Carto::AccountType.new.soft_geocoding_limit?(self)
   end

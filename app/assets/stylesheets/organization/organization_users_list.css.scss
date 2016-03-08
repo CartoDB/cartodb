@@ -87,9 +87,9 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
 }
 .OrganizationList-userInfoSubtitle {
   max-width: 350px;
-  font-size: 14px;
+  color: $cTypography-secondary;
+  font-size: 13px;
   font-weight: 300;
-  color: $cTypography-paragraphs;
 }
 .OrganizationList-userInfoLabel {
   display: inline-block;

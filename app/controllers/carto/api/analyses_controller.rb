@@ -77,14 +77,14 @@ module Carto
       end
 
       def load_analysis
-        if !params[:id].nil? && is_uuid?(params[:id])
-          @analysis = Carto::Analysis.where(id: params[:id]).first
+        unless params[:id].nil?
+          @analysis = Carto::Analysis.where(id: params[:id]).first if is_uuid?(params[:id])
+
+          if @analysis.nil?
+            @analysis = Carto::Analysis.find_by_natural_id(@visualization.id, params[:id])
+          end
         end
 
-        if @analysis.nil? && !params[:id].nil? && !@visualization.id.nil?
-          # If it's an UUID it can be a natural id as well
-          @analysis = Carto::Analysis.find_by_natural_id(@visualization.id, params[:id])
-        end
         raise Carto::LoadError.new("Analysis not found: #{params[:id]}") unless @analysis
       end
     end

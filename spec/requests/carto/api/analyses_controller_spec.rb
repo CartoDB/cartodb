@@ -33,39 +33,39 @@ describe Carto::Api::AnalysesController do
     user2.destroy
   end
 
-  describe '#show' do
+  def viz_analysis_url(user, visualization, analysis_id)
+    analysis_url(
+      user_domain: user.username,
+      api_key: user.api_key,
+      visualization_id: visualization.id,
+      id: analysis_id)
+  end
 
-    let(:analysis) do
-      FactoryGirl.create(:source_analysis, visualization_id: @visualization.id, user_id: user.id)
-    end
+  let(:analysis) do
+    FactoryGirl.create(:source_analysis, visualization_id: @visualization.id, user_id: user.id)
+  end
+
+  describe '#show' do
 
     after(:each) do
       analysis.destroy
     end
 
-    def show_analysis_url(user, visualization, analysis_id)
-      analysis_url(
-        user_domain: user.username,
-        api_key: user.api_key,
-        visualization_id: visualization.id,
-        id: analysis_id)
-    end
-
     it 'returns existing analysis by uuid' do
-      get_json show_analysis_url(user, @visualization, analysis.id) do |response|
+      get_json viz_analysis_url(user, @visualization, analysis.id) do |response|
         response.status.should eq 200
         response[:body].should eq analysis.params_json
       end
     end
 
     it 'returns 404 for nonexisting analysis' do
-      get_json show_analysis_url(user, @visualization, 'wadus') do |response|
+      get_json viz_analysis_url(user, @visualization, 'wadus') do |response|
         response.status.should eq 404
       end
     end
 
     it 'returns existing analysis by json first id' do
-      get_json show_analysis_url(user, @visualization, analysis.natural_id) do |response|
+      get_json viz_analysis_url(user, @visualization, analysis.natural_id) do |response|
         response.status.should eq 200
         response[:body].should eq analysis.params_json
         response[:body][:id].should_not be_nil
@@ -81,7 +81,7 @@ describe Carto::Api::AnalysesController do
         params: %({"id": "#{UUIDTools::UUID.random_create}"})
       )
 
-      get_json show_analysis_url(user, @visualization, analysis2.natural_id) do |response|
+      get_json viz_analysis_url(user, @visualization, analysis2.natural_id) do |response|
         response.status.should eq 200
         response[:body].should eq analysis2.params_json
         response[:body][:id].should_not be_nil
@@ -90,6 +90,10 @@ describe Carto::Api::AnalysesController do
     end
   end
 
+  let(:natural_id) { 'a1' }
+
+  let(:payload) { { id: natural_id } }
+
   describe '#create' do
     def create_analysis_url(user, visualization)
       analyses_url(
@@ -97,10 +101,6 @@ describe Carto::Api::AnalysesController do
         api_key: user.api_key,
         visualization_id: visualization.id)
     end
-
-    let(:natural_id) { 'a1' }
-
-    let(:payload) { { id: natural_id } }
 
     it 'creates new analysis' do
       post_json create_analysis_url(user, @visualization), payload do |response|
@@ -145,4 +145,23 @@ describe Carto::Api::AnalysesController do
     end
   end
 
+  describe '#update' do
+    let(:new_natural_id) { "#{natural_id}_2" }
+
+    let(:new_payload) { payload.merge(whatever: 'really?') }
+
+    after(:all) do
+      analysis.destroy
+    end
+
+    it 'updates existing analysis' do
+      put_json viz_analysis_url(user, @visualization, analysis), new_payload do |response|
+        response.status.should eq 200
+        response.body.should eq new_payload
+        a = Carto::Analysis.find(analysis.id)
+        a.params_json.should eq new_payload
+      end
+    end
+
+  end
 end

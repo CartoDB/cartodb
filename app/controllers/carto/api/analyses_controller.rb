@@ -13,8 +13,8 @@ module Carto
 
       before_filter :editor_users_only
       before_filter :load_visualization
-      before_filter :check_visualization_write_permission, only: [:create]
-      before_filter :load_analysis, only: [:show]
+      before_filter :check_visualization_write_permission, only: [:create, :update]
+      before_filter :load_analysis, only: [:show, :update]
 
       rescue_from Carto::LoadError, with: :rescue_from_carto_error
       rescue_from Carto::UnauthorizedError, with: :rescue_from_carto_error
@@ -25,14 +25,7 @@ module Carto
       end
 
       def create
-        analysis_params = request.raw_post
-        raise Carto::UnprocesableEntityError.new("Params not present") unless analysis_params.present?
-        params_json = begin
-          JSON.parse(analysis_params)
-        rescue => e
-          raise Carto::UnprocesableEntityError.new("Error parsing params: #{e.message}")
-        end
-        raise Carto::UnprocesableEntityError.new("Empty params") if params_json.empty?
+        analysis_params = params_from_request
 
         analysis = Carto::Analysis.new(
           visualization_id: @visualization.id,
@@ -43,7 +36,26 @@ module Carto
         render_jsonp(AnalysisPresenter.new(analysis).to_poro, 201)
       end
 
+      def update
+        @analysis.params = params_from_request
+        @analysis.save!
+        render_jsonp(AnalysisPresenter.new(@analysis).to_poro, 200)
+      end
+
       private
+
+      def params_from_request
+        analysis_params = request.raw_post
+        raise Carto::UnprocesableEntityError.new("Params not present") unless analysis_params.present?
+        params_json = begin
+          JSON.parse(analysis_params)
+        rescue => e
+          raise Carto::UnprocesableEntityError.new("Error parsing params: #{e.message}")
+        end
+        raise Carto::UnprocesableEntityError.new("Empty params") if params_json.empty?
+
+        analysis_params
+      end
 
       def load_visualization
         visualization_id = params[:visualization_id]

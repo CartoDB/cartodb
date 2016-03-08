@@ -63,7 +63,7 @@ var LeafletCartoDBVectorLayerGroupView = CartoDBd3Layer.extend({
   _onTileJSONChanged: function () {
     var tilejson = this.model.get('urls');
     this.options.styles = this.model.layers.pluck('cartocss');
-    this.setUrl(this.model.get('urls').tiles[0]);
+    this.setUrl(tilejson.tiles[0]);
   },
 
   onAdd: function (map) {

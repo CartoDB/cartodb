@@ -13,7 +13,7 @@ module Carto
 
       before_filter :editor_users_only
       before_filter :load_visualization
-      before_filter :check_visualization_write_permission, only: [:show, :create, :update, :destroy]
+      before_filter :check_user_can_add_analysis, only: [:show, :create, :update, :destroy]
       before_filter :load_analysis, only: [:show, :update, :destroy]
 
       rescue_from StandardError, with: :rescue_from_standard_error
@@ -70,7 +70,7 @@ module Carto
         raise LoadError.new("Visualization not found: #{visualization_id}") unless @visualization
       end
 
-      def check_visualization_write_permission
+      def check_user_can_add_analysis
         if @visualization.user_id != current_user.id
           raise Carto::UnauthorizedError.new("#{current_user.id} doesn't own visualization #{@visualization.id}")
         end

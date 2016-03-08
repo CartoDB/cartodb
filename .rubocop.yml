@@ -665,7 +665,7 @@ Style/BlockEndNewline:
   Description: Put end statement of multiline block on its own line.
   Enabled: true
 Style/BlockDelimiters:
-  EnforcedStyle: semantic
+  EnforcedStyle: braces_for_chaining
   SupportedStyles:
     # The `line_count_based` style enforces braces around single line blocks and
     # do..end around multi-line blocks.

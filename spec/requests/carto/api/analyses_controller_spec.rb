@@ -33,6 +33,12 @@ describe Carto::Api::AnalysesController do
   end
 
   describe '#show' do
+    it 'returns 403 if user does not own the visualization' do
+      get_json viz_analysis_url(@user2, @visualization, @analysis.id) do |response|
+        response.status.should eq 403
+      end
+    end
+
     it 'returns existing analysis by uuid' do
       get_json viz_analysis_url(@user, @visualization, @analysis.id) do |response|
         response.status.should eq 200
@@ -122,7 +128,7 @@ describe Carto::Api::AnalysesController do
       end
     end
 
-    it 'returns UnauthorizedError if user does not own the visualization' do
+    it 'returns 403 if user does not own the visualization' do
       post_json create_analysis_url(@user2, @visualization), payload do |response|
         response.status.should eq 403
       end

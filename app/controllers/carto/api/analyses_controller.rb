@@ -13,7 +13,7 @@ module Carto
 
       before_filter :editor_users_only
       before_filter :load_visualization
-      before_filter :check_visualization_write_permission, only: [:create, :update, :destroy]
+      before_filter :check_visualization_write_permission, only: [:show, :create, :update, :destroy]
       before_filter :load_analysis, only: [:show, :update, :destroy]
 
       rescue_from StandardError, with: :rescue_from_standard_error

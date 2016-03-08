@@ -189,7 +189,7 @@ class Geocoding < Sequel::Model
   end # self.processable_rows
 
   def calculate_used_credits
-    return 0 unless kind == 'high-resolution'
+    return 0 unless kind == 'high-resolution' && geocoder_type == 'heremaps'
     total_rows       = processed_rows.to_i + cache_hits.to_i
     geocoding_quota  = user.organization.present? ? user.organization.geocoding_quota.to_i : user.geocoding_quota
     used_geocoding_calls = user.organization_user? ? user.organization.get_geocoding_calls : user.get_geocoding_calls

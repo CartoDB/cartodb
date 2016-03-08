@@ -1,3 +1,15 @@
+3.12.* (2016-XX-XX)
+-------------------
+* Updating CartoDB.js submodule with last changes sanitizing attribution.
+* Fixes a problem with select2 arrow icon.
+
+3.12.3 (2016-03-01)
+-------------------
+* Fixes in HTTP Header authentication.
+* Fixes in avatar urls
+* Fixes in organization sigup
+* Fixes in high resolution geocoder when using google provider
+
 3.12.2 (2016-05-15)
 -------------------
 * Support for HTTP Header authentication.

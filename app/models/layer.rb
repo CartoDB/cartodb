@@ -76,8 +76,8 @@ class Layer < Sequel::Model
     super
     maps.each(&:update_related_named_maps)
     maps.each(&:invalidate_vizjson_varnish_cache)
-    affected_tables.each(&:invalidate_varnish_cache)    if data_layer?
-    register_table_dependencies                         if data_layer?
+
+    register_table_dependencies if data_layer?
   end
 
   def before_destroy

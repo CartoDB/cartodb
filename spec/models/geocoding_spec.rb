@@ -276,13 +276,13 @@ describe Geocoding do
     end
 
     it 'returns the used credits when the user is over geocoding quota' do
-      geocoding = FactoryGirl.create(:geocoding, user: @user, processed_rows: 0, cache_hits: 100, kind: 'high-resolution', formatter: 'foo')
+      geocoding = FactoryGirl.create(:geocoding, user: @user, processed_rows: 0, cache_hits: 100, kind: 'high-resolution', geocoder_type: 'heremaps', formatter: 'foo')
       # 100 total (user has 200) => 0 used credits
       geocoding.calculate_used_credits.should eq 0
-      geocoding = FactoryGirl.create(:geocoding, user: @user, processed_rows: 0, cache_hits: 150, kind: 'high-resolution', formatter: 'foo')
+      geocoding = FactoryGirl.create(:geocoding, user: @user, processed_rows: 0, cache_hits: 150, kind: 'high-resolution', geocoder_type: 'heremaps', formatter: 'foo')
       # 250 total => 50 used credits
       geocoding.calculate_used_credits.should eq 50
-      geocoding = FactoryGirl.create(:geocoding, user: @user, processed_rows: 100, cache_hits: 0, kind: 'high-resolution', formatter: 'foo')
+      geocoding = FactoryGirl.create(:geocoding, user: @user, processed_rows: 100, cache_hits: 0, kind: 'high-resolution', geocoder_type: 'heremaps', formatter: 'foo')
       # 350 total => 100 used credits
       geocoding.calculate_used_credits.should eq 100
     end

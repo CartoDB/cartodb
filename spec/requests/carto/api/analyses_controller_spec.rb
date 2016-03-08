@@ -19,6 +19,10 @@ describe Carto::Api::AnalysesController do
     FactoryGirl.create(:carto_user)
   end
 
+  let(:user2) do
+    FactoryGirl.create(:carto_user)
+  end
+
   before(:each) do
     @map, @table, @table_visualization, @visualization = create_full_visualization(user)
   end
@@ -26,6 +30,7 @@ describe Carto::Api::AnalysesController do
   after(:each) do
     destroy_full_visualization(@map, @table, @table_visualization, @visualization)
     user.destroy
+    user2.destroy
   end
 
   describe '#show' do
@@ -93,9 +98,11 @@ describe Carto::Api::AnalysesController do
         visualization_id: visualization.id)
     end
 
+    let(:natural_id) { 'a1' }
+
+    let(:payload) { { id: natural_id } }
+
     it 'creates new analysis' do
-      natural_id = 'a1'
-      payload = { id: natural_id }
       post_json create_analysis_url(user, @visualization), payload do |response|
         response.status.should eq 201
         response.body[:id].should eq natural_id
@@ -128,6 +135,12 @@ describe Carto::Api::AnalysesController do
       end
       post_json create_analysis_url(user, @visualization), [] do |response|
         response.status.should eq 422
+      end
+    end
+
+    it 'returns UnauthorizedError if user does not own the visualization' do
+      post_json create_analysis_url(user2, @visualization), payload do |response|
+        response.status.should eq 403
       end
     end
   end

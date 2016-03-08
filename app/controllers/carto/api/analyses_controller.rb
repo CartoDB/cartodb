@@ -13,6 +13,7 @@ module Carto
 
       before_filter :editor_users_only
       before_filter :load_visualization
+      before_filter :check_visualization_write_permission, only: [:create]
       before_filter :load_analysis, only: [:show]
 
       rescue_from Carto::LoadError, with: :rescue_from_carto_error
@@ -49,6 +50,12 @@ module Carto
 
         @visualization = Carto::Visualization.where(id: visualization_id).first if visualization_id
         raise LoadError.new("Visualization not found: #{visualization_id}") unless @visualization
+      end
+
+      def check_visualization_write_permission
+        if @visualization.user_id != current_user.id
+          raise Carto::UnauthorizedError.new("#{current_user.id} doesn't own visualization #{@visualization.id}")
+        end
       end
 
       def load_analysis

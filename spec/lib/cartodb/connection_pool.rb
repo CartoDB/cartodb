@@ -4,6 +4,9 @@ describe CartoDB::ConnectionPool do
   before(:all) do
     @max_pool_size = ConnectionPool::MAX_POOL_SIZE
     ConnectionPool::MAX_POOL_SIZE = 2
+
+    # Need to close the connections because there might be more than the new maximum already in the pool
+    $pool.close_connections!
   end
 
   after(:all) do

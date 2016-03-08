@@ -16,6 +16,7 @@ module Carto
       before_filter :check_visualization_write_permission, only: [:create, :update, :destroy]
       before_filter :load_analysis, only: [:show, :update, :destroy]
 
+      rescue_from StandardError, with: :rescue_from_standard_error
       rescue_from Carto::LoadError, with: :rescue_from_carto_error
       rescue_from Carto::UnauthorizedError, with: :rescue_from_carto_error
       rescue_from Carto::UnprocesableEntityError, with: :rescue_from_carto_error
@@ -90,7 +91,6 @@ module Carto
           # If it's an UUID it can be a natural id as well
           @analysis = Carto::Analysis.find_by_natural_id(@visualization.id, params[:id])
         end
-
         raise Carto::LoadError.new("Analysis not found: #{@analysis_id}") unless @analysis
       end
     end

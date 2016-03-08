@@ -148,6 +148,12 @@ describe Carto::Api::AnalysesController do
         a.params_json.should eq new_payload
       end
     end
+
+    it 'returns 403 if user does not own the visualization' do
+      put_json viz_analysis_url(@user2, @visualization, @analysis), new_payload do |response|
+        response.status.should eq 403
+      end
+    end
   end
 
   describe '#destroy' do
@@ -155,6 +161,12 @@ describe Carto::Api::AnalysesController do
       delete_json viz_analysis_url(@user, @visualization, @analysis) do |response|
         response.status.should eq 200
         Carto::Analysis.where(id: @analysis.id).first.should be_nil
+      end
+    end
+
+    it 'returns 403 if user does not own the visualization' do
+      delete_json viz_analysis_url(@user2, @visualization, @analysis) do |response|
+        response.status.should eq 403
       end
     end
   end

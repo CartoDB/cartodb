@@ -28,15 +28,10 @@ var LeafletCartoDBVectorLayerGroupView = CartoDBd3Layer.extend({
     }, this);
 
     layerModel.layers.bind('change:meta', function (child, meta) {
-      if (this.model.get('type') === 'namedmap') {
-        var index = child.collection.indexOf(child);
-        if (child.collection.at(0).get('type') === 'tiled') {
-          index++;
-        }
-        this.options.styles[index] = meta.cartocss;
-        if (this.options.styles.indexOf(undefined) === -1) {
-          this.setUrl(this.model.get('urls').tiles[0]);
-        }
+      var index = layerModel.layers.indexOf(child);
+      this.options.styles[index] = meta.cartocss;
+      if (this.options.styles.indexOf(undefined) === -1) {
+        this.setUrl(this.model.get('urls').tiles[0]);
       }
     }, this);
 
@@ -71,7 +66,6 @@ var LeafletCartoDBVectorLayerGroupView = CartoDBd3Layer.extend({
   _onTileJSONChanged: function () {
     var tilejson = this.model.get('urls');
     this.options.styles = this.model.layers.pluck('cartocss');
-    this.setUrl(tilejson.tiles[0]);
   },
 
   onAdd: function (map) {

@@ -32,7 +32,5 @@ describe('geo/map/cartodb-layer', function () {
       this.layer.getTooltipFieldNames.and.returnValue([]);
       expect(_.contains(this.layer.getInteractiveColumnNames(), 'cartodb_id')).toBeFalsy();
     });
-
   });
-
 });

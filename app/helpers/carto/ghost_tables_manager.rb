@@ -39,16 +39,16 @@ module Carto
       metadata_tables_ids = user.tables.select(:table_id).map(&:table_id)
       metadata_table_names = user.tables.select(:name).map(&:name)
       renamed_tables = user.real_tables.reject{ |t| metadata_table_names.include?(t[:relname]) }.select{|t| metadata_tables_ids.include?(t[:oid])}
-      renamed_tables.each do |table|
-        table = Table.new(user_table: ::UserTable.find(table_id: table[:oid], user_id: user.id))
+      renamed_tables.each do |t|
+        table = Table.new(user_table: ::UserTable.find(table_id: t[:oid], user_id: user.id))
         begin
           Rollbar.report_message('ghost tables', 'debug', {
             action: 'rename',
-            new_table: table[:relname]
+            new_table: t[:relname]
           })
-          vis = table.table_visualization
+          vis = t.table_visualization
           vis.register_table_only = true
-          vis.name = table[:relname]
+          vis.name = t[:relname]
           vis.store
         rescue Sequel::DatabaseError => e
           raise unless e.message =~ /must be owner of relation/

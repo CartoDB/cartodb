@@ -14,10 +14,10 @@ var CartoDBLayer = LayerModelBase.extend({
     LayerModelBase.prototype.initialize.apply(this, arguments);
     options = options || {};
     this._map = options.map;
-    this.bind('change:visible change:sql change:cartocss', this._onAttributeChanged, this);
+    this.bind('change:visible change:sql change:cartocss change:source', this._reloadMap, this);
   },
 
-  _onAttributeChanged: function () {
+  _reloadMap: function () {
     this._map.reload({
       sourceLayerId: this.get('id')
     });

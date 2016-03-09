@@ -34,6 +34,9 @@
     },
     "widgets": {
       "title": "Widgets",
+      "widgets-view": {
+        "add_widget": "Add widget"
+      },
       "widgets-form": {
         "type": {
           "title": "Type",

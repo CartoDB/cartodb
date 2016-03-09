@@ -60,7 +60,7 @@ describe('windshaft/layergroup-config', function () {
               sql: 'sql1',
               cartocss: 'cartoCSS1',
               cartocss_version: '2.0',
-              interactivity: [ 'cartodb_id' ],
+              interactivity: [],
               widgets: {
                 dataviewId: {
                   type: 'histogram',
@@ -78,7 +78,7 @@ describe('windshaft/layergroup-config', function () {
               sql: 'sql2',
               cartocss: 'cartoCSS2',
               cartocss_version: '2.0',
-              interactivity: [ 'cartodb_id' ],
+              interactivity: [],
               widgets: {
                 dataviewId2: {
                   type: 'histogram',
@@ -110,7 +110,7 @@ describe('windshaft/layergroup-config', function () {
               sql: 'sql2',
               cartocss: 'cartoCSS2',
               cartocss_version: '2.0',
-              interactivity: [ 'cartodb_id' ],
+              interactivity: [],
               widgets: {
                 dataviewId2: {
                   type: 'histogram',

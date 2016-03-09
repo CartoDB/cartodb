@@ -4,7 +4,7 @@ var LayerGroupConfig = require('../../../src/windshaft/layergroup-config');
 var HistogramDataviewModel = require('../../../src/dataviews/histogram-dataview-model');
 var AnalysisFactory = require('../../../src/analysis/analysis-factory.js');
 
-describe('windshaft/layergroup-config', function () {
+fdescribe('windshaft/layergroup-config', function () {
   beforeEach(function () {
     this.dataviews = new Backbone.Collection();
     var map = jasmine.createSpyObj('map', ['getViewBounds', 'bind', 'reload']);
@@ -63,9 +63,7 @@ describe('windshaft/layergroup-config', function () {
               },
               cartocss: 'cartoCSS1',
               cartocss_version: '2.0',
-              interactivity: [
-                'cartodb_id'
-              ]
+              interactivity: []
             }
           },
           {
@@ -76,9 +74,7 @@ describe('windshaft/layergroup-config', function () {
               },
               cartocss: 'cartoCSS2',
               cartocss_version: '2.0',
-              interactivity: [
-                'cartodb_id'
-              ]
+              interactivity: []
             }
           }
         ],
@@ -141,9 +137,7 @@ describe('windshaft/layergroup-config', function () {
               },
               cartocss: 'cartoCSS2',
               cartocss_version: '2.0',
-              interactivity: [
-                'cartodb_id'
-              ]
+              interactivity: []
             }
           }
         ],
@@ -215,7 +209,7 @@ describe('windshaft/layergroup-config', function () {
               'source': { id: '11111' },
               'cartocss': '#subway_stops { ... }',
               'cartocss_version': '2.1.0',
-              interactivity: [ 'cartodb_id' ]
+              interactivity: []
             }
           }
         ],
@@ -268,7 +262,7 @@ describe('windshaft/layergroup-config', function () {
               'source': { id: 'a1' },
               'cartocss': '#trade_area { ... }',
               'cartocss_version': '2.1.0',
-              interactivity: [ 'cartodb_id' ]
+              interactivity: []
             }
           }
         ],
@@ -334,7 +328,7 @@ describe('windshaft/layergroup-config', function () {
               'source': { id: 'a2' },
               'cartocss': '#estimated_population { ... }',
               'cartocss_version': '2.1.0',
-              interactivity: [ 'cartodb_id' ]
+              interactivity: []
             }
           }
         ],
@@ -396,9 +390,7 @@ describe('windshaft/layergroup-config', function () {
               },
               cartocss: '#estimated_population { ... }',
               cartocss_version: '2.1.0',
-              interactivity: [
-                'cartodb_id'
-              ]
+              interactivity: []
             }
           },
           {
@@ -409,9 +401,7 @@ describe('windshaft/layergroup-config', function () {
               },
               cartocss: '#subway_stops { ... }',
               cartocss_version: '2.1.0',
-              interactivity: [
-                'cartodb_id'
-              ]
+              interactivity: []
             }
           }
         ],
@@ -495,9 +485,7 @@ describe('windshaft/layergroup-config', function () {
               },
               cartocss: '#estimated_population { ... }',
               cartocss_version: '2.1.0',
-              interactivity: [
-                'cartodb_id'
-              ]
+              interactivity: []
             }
           },
           {
@@ -508,9 +496,7 @@ describe('windshaft/layergroup-config', function () {
               },
               cartocss: '#subway_stops { ... }',
               cartocss_version: '2.1.0',
-              interactivity: [
-                'cartodb_id'
-              ]
+              interactivity: []
             }
           },
           {
@@ -521,9 +507,7 @@ describe('windshaft/layergroup-config', function () {
               },
               cartocss: '#total_population { ... }',
               cartocss_version: '2.1.0',
-              interactivity: [
-                'cartodb_id'
-              ]
+              interactivity: []
             }
           }
         ],

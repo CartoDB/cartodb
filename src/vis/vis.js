@@ -26,6 +26,7 @@ var WindshaftClient = require('../windshaft/client');
 var WindshaftLayerGroupConfig = require('../windshaft/layergroup-config');
 var WindshaftNamedMapConfig = require('../windshaft/namedmap-config');
 var WindshaftMap = require('../windshaft/windshaft-map');
+var AnalysisFactory = require('../analysis/analysis-factory');
 
 /**
  * Visualization creation
@@ -354,6 +355,9 @@ var Vis = View.extend({
       map: this.map,
       windshaftMap: windshaftMap
     });
+
+    // Public Analysis Factory
+    this.analysis = new AnalysisFactory();
 
     if (!options.skipMapInstantiation) {
       this.instantiateMap();

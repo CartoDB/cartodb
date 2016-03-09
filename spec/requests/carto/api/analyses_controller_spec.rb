@@ -42,7 +42,7 @@ describe Carto::Api::AnalysesController do
     it 'returns existing analysis by uuid' do
       get_json viz_analysis_url(@user, @visualization, @analysis.id) do |response|
         response.status.should eq 200
-        response[:body].should eq @analysis.params_json
+        response[:body].should eq @analysis.analysis_definition_json
       end
     end
 
@@ -55,7 +55,7 @@ describe Carto::Api::AnalysesController do
     it 'returns existing analysis by json first id' do
       get_json viz_analysis_url(@user, @visualization, @analysis.natural_id) do |response|
         response.status.should eq 200
-        response[:body].should eq @analysis.params_json
+        response[:body].should eq @analysis.analysis_definition_json
         response[:body][:id].should_not be_nil
         response[:body][:id].should eq @analysis.natural_id
       end
@@ -66,12 +66,12 @@ describe Carto::Api::AnalysesController do
         :source_analysis,
         visualization_id: @visualization.id,
         user_id: @user.id,
-        params: %({"id": "#{UUIDTools::UUID.random_create}"})
+        analysis_definition: %({"id": "#{UUIDTools::UUID.random_create}"})
       )
 
       get_json viz_analysis_url(@user, @visualization, analysis2.natural_id) do |response|
         response.status.should eq 200
-        response[:body].should eq analysis2.params_json
+        response[:body].should eq analysis2.analysis_definition_json
         response[:body][:id].should_not be_nil
         response[:body][:id].should eq analysis2.natural_id
       end
@@ -100,7 +100,7 @@ describe Carto::Api::AnalysesController do
         a.should_not eq nil
         a.user_id.should eq @user.id
         a.visualization_id.should eq @visualization.id
-        a.params_json.should eq payload
+        a.analysis_definition_json.should eq payload
       end
     end
 
@@ -145,7 +145,7 @@ describe Carto::Api::AnalysesController do
         response.status.should eq 200
         response.body.should eq new_payload
         a = Carto::Analysis.find(@analysis.id)
-        a.params_json.should eq new_payload
+        a.analysis_definition_json.should eq new_payload
       end
     end
 

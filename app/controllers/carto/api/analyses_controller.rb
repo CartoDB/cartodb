@@ -26,19 +26,19 @@ module Carto
       end
 
       def create
-        analysis_params = params_from_request
+        analysis_definition = analysis_definition_from_request
 
         analysis = Carto::Analysis.new(
           visualization_id: @visualization.id,
           user_id: current_user.id,
-          params: analysis_params
+          analysis_definition: analysis_definition
         )
         analysis.save!
         render_jsonp(AnalysisPresenter.new(analysis).to_poro, 201)
       end
 
       def update
-        @analysis.params = params_from_request
+        @analysis.analysis_definition = analysis_definition_from_request
         @analysis.save!
         render_jsonp(AnalysisPresenter.new(@analysis).to_poro, 200)
       end
@@ -50,17 +50,17 @@ module Carto
 
       private
 
-      def params_from_request
-        analysis_params = request.raw_post
-        raise Carto::UnprocesableEntityError.new("Params not present") unless analysis_params.present?
-        params_json = begin
-          JSON.parse(analysis_params)
+      def analysis_definition_from_request
+        analysis_definition = request.raw_post
+        raise Carto::UnprocesableEntityError.new("Analysis definition not present") unless analysis_definition.present?
+        analysis_definition_json = begin
+          JSON.parse(analysis_definition)
         rescue => e
-          raise Carto::UnprocesableEntityError.new("Error parsing params: #{e.message}")
+          raise Carto::UnprocesableEntityError.new("Error parsing analysis definition: #{e.message}")
         end
-        raise Carto::UnprocesableEntityError.new("Empty params") if params_json.empty?
+        raise Carto::UnprocesableEntityError.new("Empty analysis definition") if analysis_definition_json.empty?
 
-        analysis_params
+        analysis_definition
       end
 
       def load_visualization

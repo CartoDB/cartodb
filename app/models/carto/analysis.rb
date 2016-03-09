@@ -9,7 +9,7 @@ class Carto::Analysis < ActiveRecord::Base
   def self.find_by_natural_id(visualization_id, natural_id)
     analysis = find_by_sql(
       [
-        "select id from analyses where visualization_id = :visualization_id and params ->> 'id' = :natural_id",
+        "select id from analyses where visualization_id = :visualization_id and analysis_definition ->> 'id' = :natural_id",
         { visualization_id: visualization_id, natural_id: natural_id }
       ]
     ).first
@@ -18,13 +18,13 @@ class Carto::Analysis < ActiveRecord::Base
     analysis
   end
 
-  def params_json
-    return nil unless params
-    JSON.parse(params).symbolize_keys
+  def analysis_definition_json
+    return nil unless analysis_definition
+    JSON.parse(analysis_definition).symbolize_keys
   end
 
   def natural_id
-    pj = params_json
+    pj = analysis_definition_json
     return nil unless pj
     pj[:id]
   end

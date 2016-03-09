@@ -136,25 +136,25 @@ describe Carto::Api::AnalysesController do
     end
 
     it 'returns 422 if analysis definition is not valid json' do
-      post_json create_analysis_url(@user, @visualization), { analysis_definition: nil } do |response|
+      post_json create_analysis_url(@user, @visualization), analysis_definition: nil do |response|
         response.status.should eq 422
       end
-      post_json create_analysis_url(@user, @visualization), { analysis_definition: "" } do |response|
+      post_json create_analysis_url(@user, @visualization), analysis_definition: "" do |response|
         response.status.should eq 422
       end
-      post_json create_analysis_url(@user, @visualization), { analysis_definition: "wadus" } do |response|
+      post_json create_analysis_url(@user, @visualization), analysis_definition: "wadus" do |response|
         response.status.should eq 422
       end
-      post_json create_analysis_url(@user, @visualization), { analysis_definition: "wadus: 1" } do |response|
+      post_json create_analysis_url(@user, @visualization), analysis_definition: "wadus: 1" do |response|
         response.status.should eq 422
       end
     end
 
     it 'returns 422 if analysis_definition is empty json' do
-      post_json create_analysis_url(@user, @visualization), { analysis_definition: {} } do |response|
+      post_json create_analysis_url(@user, @visualization), analysis_definition: {} do |response|
         response.status.should eq 422
       end
-      post_json create_analysis_url(@user, @visualization), { analysis_definition: [] } do |response|
+      post_json create_analysis_url(@user, @visualization), analysis_definition: [] do |response|
         response.status.should eq 422
       end
     end
@@ -171,11 +171,11 @@ describe Carto::Api::AnalysesController do
 
     let(:new_key) { :whatever }
 
-    let(:new_payload) {
+    let(:new_payload) do
       payload[:analysis_definition][:id] = new_natural_id
       payload[:analysis_definition][new_key] = 'really'
       payload
-    }
+    end
 
     it 'updates existing analysis' do
       @analysis.reload

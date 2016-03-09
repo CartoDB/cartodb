@@ -1,9 +1,10 @@
-3.12.3 (2016-03-01)
+3.12.3 (2016-03-09)
 -------------------
 * Fixes in HTTP Header authentication.
 * Fixes in avatar urls
 * Fixes in organization sigup
 * Fixes in high resolution geocoder when using google provider
+* Fixed rake to setup google maps
 
 3.12.2 (2016-05-15)
 -------------------

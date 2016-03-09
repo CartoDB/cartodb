@@ -6,9 +6,9 @@ module Carto
     MUTEX_TTL = 2000
 
     def link(user)
-      locker = Redlock::Client.new(["redis://#{Cartodb.config[:redis]['host']}:#{Cartodb.config[:redis]['port']}"])
+      bolt = Redlock::Client.new(["redis://#{Cartodb.config[:redis]['host']}:#{Cartodb.config[:redis]['port']}"])
 
-      locker.lock(mutex_redis_key(user), MUTEX_TTL) do |locked|
+      bolt.lock(mutex_redis_key(user), MUTEX_TTL) do |locked|
         next unless locked
 
         # Lock aquired, inside the critical zone
@@ -17,7 +17,7 @@ module Carto
         link_renamed_tables(user) unless no_tables
         link_deleted_tables(user)
         link_created_tables(user) unless no_tables
-        #Leaving the critical zone, unlocked automatically
+        # Leaving the critical zone, bolt unlocked automatically
       end
     end
 

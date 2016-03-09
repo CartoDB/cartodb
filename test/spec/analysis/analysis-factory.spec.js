@@ -1,7 +1,7 @@
 var AnalysisFactory = require('../../../src/analysis/analysis-factory');
 
 describe('src/analysis/analysis-factory.js', function () {
-  describe('analyse', function () {
+  describe('.analyse', function () {
     it('should generate and return a new analysis', function () {
       var analysisFactory = new AnalysisFactory();
 
@@ -100,6 +100,72 @@ describe('src/analysis/analysis-factory.js', function () {
       });
 
       expect(subwayStops1.cid).not.toEqual(subwayStops2.cid);
+    });
+  });
+
+  describe('.findNodeById', function () {
+    it('should traverse the analysis and return an existing node', function () {
+      var analysisFactory = new AnalysisFactory();
+      analysisFactory.analyse(
+        {
+          id: 'a2',
+          type: 'estimated-population',
+          params: {
+            columnName: 'estimated_people',
+            source: {
+              id: 'a1',
+              type: 'trade-area',
+              params: {
+                kind: 'walk',
+                time: 300,
+                source: {
+                  id: 'a0',
+                  type: 'source',
+                  params: {
+                    query: 'SELECT * FROM subway_stops'
+                  }
+                }
+              }
+            }
+          }
+        }
+      );
+
+      expect(analysisFactory.findNodeById('a2').get('id')).toEqual('a2');
+      expect(analysisFactory.findNodeById('a1').get('id')).toEqual('a1');
+      expect(analysisFactory.findNodeById('a0').get('id')).toEqual('a0');
+    });
+
+    it('should return undefined if node is not found', function () {
+      var analysisFactory = new AnalysisFactory();
+      expect(analysisFactory.findNodeById('something')).toBeUndefined();
+
+      analysisFactory.analyse(
+        {
+          id: 'a2',
+          type: 'estimated-population',
+          params: {
+            columnName: 'estimated_people',
+            source: {
+              id: 'a1',
+              type: 'trade-area',
+              params: {
+                kind: 'walk',
+                time: 300,
+                source: {
+                  id: 'a0',
+                  type: 'source',
+                  params: {
+                    query: 'SELECT * FROM subway_stops'
+                  }
+                }
+              }
+            }
+          }
+        }
+      );
+
+      expect(analysisFactory.findNodeById('something')).toBeUndefined();
     });
   });
 });

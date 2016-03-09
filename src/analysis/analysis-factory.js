@@ -45,6 +45,10 @@ module.exports = Model.extend({
     analysis.unbind('destroy', this._onAnalysisRemoved);
   },
 
+  findNodeById: function (analysisId) {
+    return this._getAnalysisFromIndex(analysisId);
+  },
+
   _getAnalysisFromIndex: function (analysisId) {
     return this._analysisMap[analysisId];
   },

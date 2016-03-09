@@ -114,3 +114,5 @@ function normalizeOptions (data, options) {
     }
   }
 }
+
+module.exports = Layers;

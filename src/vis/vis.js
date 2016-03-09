@@ -1,8 +1,6 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
 var $ = require('jquery');
-var cdb = require('cdb');
-var config = require('cdb.config');
 var log = require('cdb.log');
 var util = require('cdb.core.util');
 var Loader = require('../core/loader');
@@ -21,14 +19,13 @@ var Overlay = require('./vis/overlay');
 var INFOWINDOW_TEMPLATE = require('./vis/infowindow-template');
 var DataviewsFactory = require('../dataviews/dataviews-factory');
 var DataviewCollection = require('../dataviews/dataviews-collection');
+var InfowindowManager = require('./infowindow-manager');
+var TooltipManager = require('./tooltip-manager');
 var WindshaftConfig = require('../windshaft/config');
 var WindshaftClient = require('../windshaft/client');
 var WindshaftLayerGroupConfig = require('../windshaft/layergroup-config');
 var WindshaftNamedMapConfig = require('../windshaft/namedmap-config');
 var WindshaftMap = require('../windshaft/windshaft-map');
-
-var InfowindowManager = require('./infowindow-manager');
-var TooltipManager = require('./tooltip-manager');
 
 /**
  * Visualization creation
@@ -47,31 +44,6 @@ var Vis = View.extend({
       this.mapView = this.options.mapView;
       this.map = this.mapView.map;
     }
-  },
-
-  /**
-   * check if all the modules needed to create layers are loaded
-   */
-  checkModules: function (layers) {
-    var mods = Layers.modulesForLayers(layers);
-    return _.every(_.map(mods, function (m) { return cdb[m] !== undefined; }));
-  },
-
-  loadModules: function (layers, done) {
-    var self = this;
-    var mods = Layers.modulesForLayers(layers);
-    for (var i = 0; i < mods.length; ++i) {
-      Loader.loadModule(mods[i]);
-    }
-    function loaded () {
-      if (self.checkModules(layers)) {
-        config.unbind('moduleLoaded', loaded);
-        done();
-      }
-    }
-
-    config.bind('moduleLoaded', loaded);
-    _.defer(loaded);
   },
 
   _addLegends: function (legends) {
@@ -215,46 +187,20 @@ var Vis = View.extend({
   },
 
   load: function (data, options) {
-
-    var self = this;
-    this.https = (window && window.location.protocol && window.location.protocol === 'https:') || !!data.https;
-
-    // Load the viz.json in case we receive a url instead of a JSON object
     if (typeof (data) === 'string') {
       var url = data;
-
       Loader.get(url, function (data) {
         if (data) {
-          self.load(data, options);
+          this.load(data, options);
         } else {
-          self.throwError('error fetching viz.json file');
+          this.throwError('error fetching viz.json file');
         }
-      });
+      }.bind(this));
 
-      return this;
+      return;
     }
 
-    if (!data.datasource) {
-      throw new Error('viz.json needs to include a "datasource" attribute.');
-    }
-
-    // Load the modules (torque) for layers in the viz.json
-    var layers = data.layers;
-
-    if (!this.checkModules(layers)) {
-      if (this.moduleChecked) {
-        self.throwError("modules couldn't be loaded");
-        return this;
-      }
-
-      this.moduleChecked = true;
-
-      this.loadModules(layers, function () {
-        self.load(data, options);
-      });
-
-      return this;
-    }
+    this.https = (window && window.location.protocol && window.location.protocol === 'https:') || !!data.https;
 
     options = options || {};
 
@@ -415,6 +361,9 @@ var Vis = View.extend({
 
     // Lastly: reset the layer models on the map
     this.map.layers.reset(layerModels);
+
+    // Global variable for easier console debugging / testing
+    window.vis = this;
 
     return this;
   },

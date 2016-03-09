@@ -3,6 +3,7 @@ var Backbone = require('backbone');
 var CartoDBLayer = require('../../../../src/geo/map/cartodb-layer');
 var GeoJSONDataProvider = require('../../../../src/geo/data-providers/geojson/geojson-data-provider-factory');
 var LeafletCartoDBVectorLayerGroupView = require('../../../../src/geo/leaflet/leaflet-cartodb-vector-layer-group-view');
+var L = window.L;
 
 describe('src/geo/leaflet/leaflet-cartodb-vector-layer-group-view.js', function () {
   beforeEach(function () {
@@ -74,5 +75,23 @@ describe('src/geo/leaflet/leaflet-cartodb-vector-layer-group-view.js', function 
 
       done();
     });
+  });
+  it('should call setUrl when all named map styles have been added', function () {
+    var cartoDBLayer1 = new CartoDBLayer();
+    var cartoDBLayer2 = new CartoDBLayer();
+    L.CartoDBd3Layer.prototype.setUrl = jasmine.createSpy();
+    LeafletCartoDBVectorLayerGroupView.prototype._onTileJSONChanged = function () {
+      this.options.styles = [undefined, undefined];
+    };
+    this.layerGroupModel.layers = new Backbone.Collection([
+      cartoDBLayer1,
+      cartoDBLayer2
+    ]);
+    var view = new LeafletCartoDBVectorLayerGroupView(this.layerGroupModel, this.leafletMap); // eslint-disable-line
+    this.layerGroupModel.set('type', 'namedmap');
+    this.layerGroupModel.set('urls', {tiles: []});
+    cartoDBLayer1.set('meta', {cartocss: 'whatever'});
+    cartoDBLayer2.set('meta', {cartocss: 'whatever2'});
+    expect(view.options.styles.indexOf(undefined)).toEqual(-1);
   });
 });

@@ -1,9 +1,11 @@
+var _ = require('underscore');
 var $ = require('jquery');
 var Backbone = require('backbone');
 var Map = require('../../../src/geo/map');
 var MapView = require('../../../src/geo/map-view');
 var TileLayer = require('../../../src/geo/map/tile-layer');
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
+var TorqueLayer = require('../../../src/geo/map/torque-layer');
 var Infowindow = require('../../../src/geo/ui/infowindow');
 
 describe('core/geo/map-view', function () {
@@ -38,9 +40,8 @@ describe('core/geo/map-view', function () {
   });
 
   describe('bindings to map.layers', function () {
-
     describe('when layers of map.layers are resetted', function () {
-      it ('should group CartoDB layers into a single layerView and add one layerView for each non-CartoDB layer', function () {
+      it('should group CartoDB layers into a single layerView and add one layerView for each non-CartoDB layer', function () {
         this.layerViewFactory.createLayerView.and.callFake(function () {
           return jasmine.createSpyObj('layerView', ['something']);
         });
@@ -64,7 +65,7 @@ describe('core/geo/map-view', function () {
     });
 
     describe('when new layerModels are added to map.layers', function () {
-      it ('should add a new layer view to the map', function () {
+      it('should add a new layer view to the map', function () {
         this.layerViewFactory.createLayerView.and.callFake(function () {
           return jasmine.createSpyObj('layerView', ['something']);
         });
@@ -78,7 +79,7 @@ describe('core/geo/map-view', function () {
         expect(this.mapView._addLayerToMap).toHaveBeenCalled();
       });
 
-      it ('should group CartoDB layers into a single layerView', function () {
+      it('should group CartoDB layers into a single layerView', function () {
         this.layerViewFactory.createLayerView.and.callFake(function () {
           return jasmine.createSpyObj('layerView', ['something']);
         });
@@ -112,7 +113,7 @@ describe('core/geo/map-view', function () {
     });
 
     describe('when layerModels are removed from map.layers', function () {
-      it ('should should remove the corresponding layerView for layers that are rendered individually (not grouped)', function () {
+      it('should should remove the corresponding layerView for layers that are rendered individually (not grouped)', function () {
         this.layerViewFactory.createLayerView.and.callFake(function () {
           return jasmine.createSpyObj('layerView', ['remove']);
         });
@@ -130,7 +131,7 @@ describe('core/geo/map-view', function () {
         expect(this.mapView.getLayerViewByLayerCid(tileLayer.cid)).not.toBeDefined();
       });
 
-      it ('should should onley remove a group layerView when all grouped layerModels have been removed', function () {
+      it('should should only remove a group layerView when all grouped layerModels have been removed', function () {
         this.layerViewFactory.createLayerView.and.callFake(function () {
           return jasmine.createSpyObj('layerView', ['remove']);
         });

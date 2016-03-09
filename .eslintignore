@@ -54,7 +54,6 @@
 **/src/geo/map/cartodb-layer.js
 **/src/geo/map/gmaps-base-layer.js
 **/src/geo/map/layers.js
-**/src/geo/map/map-layer.js
 **/src/geo/map/plain-layer.js
 **/src/geo/map/tile-layer.js
 **/src/geo/map/torque-layer.js

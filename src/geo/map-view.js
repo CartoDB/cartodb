@@ -21,7 +21,6 @@ var MapView = View.extend({
     this.add_related_model(this.map);
 
     this._layerViewFactory = this.options.layerViewFactory;
-
     this.autoSaveBounds = false;
 
     // A map of the LayerViews that is linked to each of the Layer models.
@@ -127,7 +126,6 @@ var MapView = View.extend({
 
   _addLayer: function(layerModel, layerCollection, options) {
     var layerView;
-
     if (layerModel.get('type') === 'CartoDB') {
       layerView = this._addGroupedLayer(layerModel);
     } else {

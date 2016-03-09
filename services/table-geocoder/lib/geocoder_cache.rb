@@ -7,6 +7,8 @@ module CartoDB
 
     DEFAULT_BATCH_SIZE = 5000
     DEFAULT_MAX_ROWS   = 1000000
+    HTTP_CONNECT_TIMEOUT = 60
+    HTTP_DEFAULT_TIMEOUT = 600
 
     attr_reader :connection, :working_dir, :table_name, :hits, :misses,
                 :max_rows, :sql_api, :formatter, :cache_results
@@ -24,6 +26,7 @@ module CartoDB
       @batch_size = arguments[:batch_size] || DEFAULT_BATCH_SIZE
       @cache_results = File.join(working_dir, "#{temp_table_name}_results.csv")
       @usage_metrics = arguments.fetch(:usage_metrics)
+      @log = arguments.fetch(:log)
       init_rows_count
     end
 
@@ -133,11 +136,12 @@ module CartoDB
 
     def run_query(query, format = '')
       params = { q: query, api_key: sql_api[:api_key], format: format }
-      http_client = Carto::Http::Client.get('geocoder_cache')
-      response = http_client.post(
-        sql_api[:base_url],
-        body: URI.encode_www_form(params)
-      )
+      http_client = Carto::Http::Client.get('geocoder_cache',
+                                            log_requests: true,
+                                            connecttimeout: HTTP_CONNECT_TIMEOUT,
+                                            timeout: HTTP_DEFAULT_TIMEOUT)
+      response = http_client.post(sql_api[:base_url],
+                                  body: URI.encode_www_form(params))
       response.body
     end
 

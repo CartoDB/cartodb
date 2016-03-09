@@ -8,6 +8,9 @@ require_relative '../lib/hires_batch_geocoder'
 describe CartoDB::HiresBatchGeocoder do
 
   before(:each) do
+    @log = mock
+    @log.stubs(:append)
+    @log.stubs(:append_and_store)
     CartoDB::HiresBatchGeocoder.any_instance.stubs(:config).returns({
         'base_url' => 'http://wadus.nokia.com',
         'app_id' => '',
@@ -25,7 +28,7 @@ describe CartoDB::HiresBatchGeocoder do
     it 'returns rec_id on success' do
       stub_api_request 200, 'response_example.xml'
       filepath = path_to 'without_country.csv'
-      rec_id = CartoDB::HiresBatchGeocoder.new(filepath, @working_dir).upload
+      rec_id = CartoDB::HiresBatchGeocoder.new(filepath, @working_dir, @log).upload
       rec_id.should eq "K8DmCWzsZGh4gbawxOuMv2BUcZsIkt7v"
     end
 
@@ -33,7 +36,7 @@ describe CartoDB::HiresBatchGeocoder do
       stub_api_request 400, 'response_failure.xml'
       filepath = path_to 'without_country.csv'
       expect {
-        CartoDB::HiresBatchGeocoder.new(filepath, @working_dir).upload
+        CartoDB::HiresBatchGeocoder.new(filepath, @working_dir, @log).upload
       }.to raise_error('Geocoding API communication failure: Input parameter validation failed. JobId: 9rFyj7kbGMmpF50ZUFAkRnroEiOpDOEZ Email Address is missing!')
     end
   end
@@ -43,7 +46,7 @@ describe CartoDB::HiresBatchGeocoder do
       stub_api_request(200, 'response_status.xml')
       CartoDB::HiresBatchGeocoder.any_instance.stubs(:request_id).returns('wadus')
     }
-    let(:geocoder) { CartoDB::HiresBatchGeocoder.new('/tmp/dummy_input_file.csv', @working_dir) }
+    let(:geocoder) { CartoDB::HiresBatchGeocoder.new('/tmp/dummy_input_file.csv', @working_dir, @log) }
 
     it "updates status" do
       expect { geocoder.update_status }.to change(geocoder, :status).from(nil).to('completed')
@@ -72,7 +75,7 @@ describe CartoDB::HiresBatchGeocoder do
 
   describe '#cancel' do
     before { stub_api_request(200, 'response_cancel.xml') }
-    let(:geocoder) { CartoDB::HiresBatchGeocoder.new('dummy_input_file.csv', @working_dir) }
+    let(:geocoder) { CartoDB::HiresBatchGeocoder.new('dummy_input_file.csv', @working_dir, @log) }
 
     it "updates the status" do
       expect { geocoder.cancel }.to change(geocoder, :status).from(nil).to('cancelled')
@@ -80,7 +83,7 @@ describe CartoDB::HiresBatchGeocoder do
   end
 
   describe '#extract_response_field' do
-    let(:geocoder) { CartoDB::HiresBatchGeocoder.new('dummy_input.csv', @working_dir) }
+    let(:geocoder) { CartoDB::HiresBatchGeocoder.new('dummy_input.csv', @working_dir, @log) }
     let(:response) { File.open(path_to('response_example.xml')).read }
 
     it 'returns specified element value' do
@@ -102,7 +105,7 @@ describe CartoDB::HiresBatchGeocoder do
         'token' => 'b',
         'mailto' => 'c'
         })
-      @geocoder =  CartoDB::HiresBatchGeocoder.new('dummy_input.csv', @working_dir)
+      @geocoder =  CartoDB::HiresBatchGeocoder.new('dummy_input.csv', @working_dir, @log)
     }
 
     it 'returns base url by default' do

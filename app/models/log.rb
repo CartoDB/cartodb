@@ -112,6 +112,11 @@ module CartoDB
       add_to_entries(ENTRY_FORMAT % [ timestamp, content ])
     end
 
+    def append_and_store(content, truncate = true, timestamp = Time.now.utc)
+      append(content, truncate, timestamp)
+      store
+    end
+
     private
 
     def add_to_entries(content)

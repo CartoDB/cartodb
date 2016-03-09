@@ -74,11 +74,14 @@ var CartoDBLayer = LayerModelBase.extend({
   },
 
   getInteractiveColumnNames: function() {
-    return _.uniq(
-      ['cartodb_id']
-        .concat(this.getInfowindowFieldNames())
-         .concat(this.getTooltipFieldNames())
+    var fieldNames = _.union(
+      this.getInfowindowFieldNames(),
+      this.getTooltipFieldNames()
     );
+    if (fieldNames.length) {
+      fieldNames.unshift('cartodb_id');
+    }
+    return _.uniq(fieldNames);
   },
 
   // Layers inside a "layergroup" layer have the layer_name defined in options.layer_name

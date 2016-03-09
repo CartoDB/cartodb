@@ -1,4 +1,3 @@
-var _ = require('underscore');
 var Backbone = require('backbone');
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
 var LayerGroupConfig = require('../../../src/windshaft/layergroup-config');

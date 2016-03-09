@@ -127,7 +127,39 @@ describe('core/geo/map', function() {
       "wadus",
       "CartoDB <a href=\"http://cartodb.com/attributions\" target=\"_blank\">attribution</a>",
     ]);
-  })
+  });
+
+  describe('bindings to collection of layers', function () {
+    it('should reload the map when layers are resetted', function () {
+      spyOn(map, 'reload');
+
+      map.layers.reset([{ id: 'layer1' }]);
+
+      expect(map.reload).toHaveBeenCalled();
+    });
+
+    it('should reload the map when a new layer is added', function () {
+      spyOn(map, 'reload');
+
+      map.layers.add({ id: 'layer1' });
+
+      expect(map.reload).toHaveBeenCalledWith({
+        sourceLayerId: 'layer1'
+      });
+    });
+
+    it('should reload the map when a layer is removed', function () {
+      var layer = map.layers.add({ id: 'layer1' });
+
+      spyOn(map, 'reload');
+
+      map.layers.remove(layer);
+
+      expect(map.reload).toHaveBeenCalledWith({
+        sourceLayerId: 'layer1'
+      });
+    });
+  });
 
   describe('reload', function () {
     it ('should be debounced', function (done) {

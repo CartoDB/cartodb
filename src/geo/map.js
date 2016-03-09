@@ -138,8 +138,10 @@ var Map = Model.extend({
     this._updateAttributions();
   },
 
-  _onLayerRemoved: function () {
-    this.reload();
+  _onLayerRemoved: function (layerModel) {
+    this.reload({
+      sourceLayerId: layerModel.get('id')
+    });
     this._updateAttributions();
   },
 

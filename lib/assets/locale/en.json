@@ -26,7 +26,8 @@
     "map_name": "%{name} map",
     "map_pluralize": "%{smart_count} map |||| %{smart_count} maps",
     "layers": {
-      "title": "LAYERS"
+      "title": "LAYERS",
+      "basemap": "basemap"
     },
     "elements": {
       "title": "ELEMENTS"

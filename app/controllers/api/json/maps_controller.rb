@@ -3,7 +3,8 @@
 require_relative '../../../models/visualization/collection'
 
 class Api::Json::MapsController < Api::ApplicationController
-
+  include Carto::UUIDHelper
+  
   ssl_required :update
 
   before_filter :load_map
@@ -42,6 +43,8 @@ class Api::Json::MapsController < Api::ApplicationController
   protected
 
   def load_map
+    raise RecordNotFound unless is_uuid?(params[:id])
+
     # User must be owner or have permissions for the map's visualization
     vis = CartoDB::Visualization::Collection.new.fetch(
         user_id:        current_user.id,

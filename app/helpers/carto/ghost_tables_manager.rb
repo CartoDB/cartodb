@@ -11,6 +11,8 @@ module Carto
       bolt.lock(mutex_redis_key(user), MUTEX_TTL) do |locked|
         next unless locked
 
+        byebug
+
         # Lock aquired, inside the critical zone
         no_tables = user.real_tables.blank?
 
@@ -92,15 +94,15 @@ module Carto
       table_names = search_for_cartodbfied_tables(user)
       created_tables = user.real_tables.select { |table| table_names.include?(table[:relname]) }
 
-      created_tables.each do |table|
+      created_tables.each do |t|
         begin
-          Rollbar.report_message('ghost tables', 'debug', { action: 'registering table', new_table: table[:relname] })
+          Rollbar.report_message('ghost tables', 'debug', { action: 'registering table', new_table: t[:relname] })
 
           table = Table.new
 
-          table.user_id  = user.id
-          table.name     = table[:relname]
-          table.table_id = table[:oid]
+          table.user_id = user.id
+          table.name = t[:relname]
+          table.table_id = t[:oid]
           table.register_table_only = true
           table.keep_user_database_table = true
 

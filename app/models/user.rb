@@ -1225,7 +1225,7 @@ class User < Sequel::Model
   end
 
   def importing_jobs
-    imports = DataImport.where(state: ['complete', 'failure']).invert
+    imports = DataImport.where(state: ['complete', 'failure', 'cancelled']).invert
       .where(user_id: self.id)
       .where { created_at > Time.now - 24.hours }.all
     running_import_ids = Resque::Worker.all.map { |worker| worker.job["payload"]["args"].first["job_id"] rescue nil }.compact

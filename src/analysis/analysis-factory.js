@@ -5,8 +5,6 @@ var Model = require('../core/model');
 module.exports = Model.extend({
 
   initialize: function (attrs, opts) {
-    // An index of existing analysis. When a new analysis is created it's indexed here by
-    // it's id
     this._analysisMap = {};
   },
 

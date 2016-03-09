@@ -82,7 +82,7 @@ WORKING_SPECS_1 = \
 WORKING_SPECS_2 = \
   spec/lib/cartodb/stats/importer_spec.rb \
 	spec/lib/cartodb/stats/platform_spec.rb \
-	spec/lib/cartodb/connection_pool.rb \
+	spec/lib/cartodb/connection_pool_spec.rb \
   services/importer/spec/acceptance/geojson_spec.rb \
   services/importer/spec/acceptance/gpx_spec.rb \
   services/importer/spec/acceptance/kml_spec.rb \

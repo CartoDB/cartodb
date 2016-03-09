@@ -65,11 +65,6 @@ module.exports = cdb.core.View.extend({
     return this;
   },
 
-  clean: function () {
-    $(window).unbind('resize', this._onWindowResize);
-    cdb.core.View.prototype.clean.call(this);
-  },
-
   replaceData: function (data) {
     this.model.set({ data: data });
   },
@@ -437,6 +432,7 @@ module.exports = cdb.core.View.extend({
 
   _setupModel: function () {
     this.model = new cdb.core.Model({
+      zoom: false,
       showLabels: true,
       data: this.options.data,
       height: this.options.height,
@@ -498,13 +494,18 @@ module.exports = cdb.core.View.extend({
   },
 
   _setupScales: function () {
+    var data;
     this.updateXScale();
 
     if (!this._originalYScale) {
       this._originalYScale = this.yScale = this._getYScale();
     }
 
-    var data = (this._originalData && this._originalData.getData()) || this.model.get('data');
+    if (this.model.get('zoom')) {
+      data = this.model.get('data');
+    } else {
+      data = this._originalData && this._originalData.getData();
+    }
 
     if (!data || !data.length) {
       return;
@@ -877,7 +878,9 @@ module.exports = cdb.core.View.extend({
       .attr('y', function (d) { return self.chartHeight() + 15; })
       .attr('text-anchor', adjustTextAnchor)
       .text(function (d) {
-        return formatter.formatNumber(self.xAxisScale(d));
+        if (self.xAxisScale) {
+          return formatter.formatNumber(self.xAxisScale(d));
+        }
       });
 
     return axis;
@@ -1083,5 +1086,25 @@ module.exports = cdb.core.View.extend({
     // We need to explicitly move the lines of the grid behind the shadow bars
     this.chart.selectAll('.CDB-Chart-shadowBars').moveToBack();
     this.chart.selectAll('.CDB-Chart-lines').moveToBack();
+  },
+
+  unsetBounds: function () {
+    this.model.set('zoom', false);
+    this.resetYScale();
+    this.contract(this.options.height);
+    this.resetIndexes();
+    this.removeSelection();
+  },
+
+  setBounds: function () {
+    this.model.set('zoom', true);
+    this.updateYScale();
+    this.expand(4);
+    this.removeShadowBars();
+  },
+
+  clean: function () {
+    $(window).unbind('resize', this._onWindowResize);
+    cdb.core.View.prototype.clean.call(this);
   }
 });

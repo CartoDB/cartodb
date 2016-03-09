@@ -1,4 +1,5 @@
 var CartoDBLayer = require('../../../../src/geo/map/cartodb-layer');
+var _ = require('underscore');
 var sharedTestsForInteractiveLayers = require('./shared-for-interactive-layers');
 
 describe('geo/map/cartodb-layer', function () {
@@ -9,7 +10,7 @@ describe('geo/map/cartodb-layer', function () {
     expect(layer.get('type')).toEqual('CartoDB');
   });
 
-  describe('.getInteractiveColumnNames', function() {
+  describe('.getInteractiveColumnNames', function () {
     beforeEach(function () {
       this.layer = new CartoDBLayer();
       spyOn(this.layer, 'getInfowindowFieldNames');
@@ -26,7 +27,7 @@ describe('geo/map/cartodb-layer', function () {
       expect(_.contains(this.layer.getInteractiveColumnNames(), 'cartodb_id')).toBeTruthy();
     });
 
-    it('should not include cartodb_id if there isn\'t any field required', function () {
+    it("should not include cartodb_id if there isn't any field required", function () {
       this.layer.getInfowindowFieldNames.and.returnValue([]);
       this.layer.getTooltipFieldNames.and.returnValue([]);
       expect(_.contains(this.layer.getInteractiveColumnNames(), 'cartodb_id')).toBeFalsy();

@@ -4,7 +4,7 @@ var LayerGroupConfig = require('../../../src/windshaft/layergroup-config');
 var HistogramDataviewModel = require('../../../src/dataviews/histogram-dataview-model');
 var AnalysisFactory = require('../../../src/analysis/analysis-factory.js');
 
-fdescribe('windshaft/layergroup-config', function () {
+describe('windshaft/layergroup-config', function () {
   beforeEach(function () {
     this.dataviews = new Backbone.Collection();
     var map = jasmine.createSpyObj('map', ['getViewBounds', 'bind', 'reload']);

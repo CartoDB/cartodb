@@ -46,9 +46,9 @@ module Carto
             action: 'rename',
             new_table: t[:relname]
           })
-          vis = t.table_visualization
+          vis = table.table_visualization
           vis.register_table_only = true
-          vis.name = t[:relname]
+          vis.name = table[:relname]
           vis.store
         rescue Sequel::DatabaseError => e
           raise unless e.message =~ /must be owner of relation/

@@ -26,14 +26,14 @@
     "map_name": "%{name} map",
     "map_pluralize": "%{smart_count} map |||| %{smart_count} maps",
     "layers": {
-      "title": "LAYERS",
+      "title": "Layers",
       "basemap": "basemap"
     },
     "elements": {
-      "title": "ELEMENTS"
+      "title": "Elements"
     },
     "widgets": {
-      "title": "WIDGETS",
+      "title": "Widgets",
       "widgets-view": {
         "add_widget": "Add widget"
       },

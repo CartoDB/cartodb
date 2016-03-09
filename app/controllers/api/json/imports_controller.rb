@@ -94,12 +94,6 @@ class Api::Json::ImportsController < Api::ApplicationController
 
     begin
       # first verify that this job exists and user owns this job
-      running_import_ids = Resque::Worker.all.map { |worker| worker.job["payload"]["args"].first["job_id"] rescue nil }.compact
-
-      if !running_import_ids.include?(queue_id)
-        render_jsonp({ errors: { imports: "Failed to cancel import. Job with ID #{queue_id} does not exist."} }, 400) and return
-      end
-
       import = DataImport.where(id: queue_id).first()
 
       if import.nil?

@@ -30,7 +30,7 @@ describe CartoDB::ConnectionPool do
   end
 
   def pool_contains?(connection)
-    $pool.all.values.map{ |a| a[:connection]}.include?(connection)
+    $pool.all.values.map { |a| a[:connection] }.include?(connection)
   end
 
   describe '#eviction_policy' do

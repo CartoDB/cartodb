@@ -4,6 +4,8 @@ class Carto::Analysis < ActiveRecord::Base
   # INFO: disable ActiveRecord inheritance column
   self.inheritance_column = :_type
 
+  belongs_to :visualization, class_name: Carto::Visualization
+
   def self.find_by_natural_id(visualization_id, natural_id)
     analysis = find_by_sql(
       [

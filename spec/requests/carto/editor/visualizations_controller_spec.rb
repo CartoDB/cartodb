@@ -76,5 +76,14 @@ describe Carto::Editor::VisualizationsController do
       response.status.should == 200
       response.body.should include('\"vector\":true')
     end
+
+    it 'displays analysesData' do
+      analysis = FactoryGirl.create(:source_analysis, visualization_id: @visualization.id, user_id: @user1.id)
+
+      get editor_visualization_url(id: @visualization.id, vector: true)
+
+      response.status.should == 200
+      response.body.should include(analysis.natural_id)
+    end
   end
 end

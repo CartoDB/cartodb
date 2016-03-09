@@ -48,6 +48,8 @@ class Carto::Visualization < ActiveRecord::Base
   has_one :synchronization, class_name: Carto::Synchronization
   has_many :external_sources, class_name: Carto::ExternalSource
 
+  has_many :analyses, class_name: Carto::Analysis
+
   def ==(other_visualization)
     self.id == other_visualization.id
   end

@@ -1,7 +1,9 @@
 require 'fiber'
+require 'cartodb/sequel_connection_helper'
 
 module CartoDB
   class ConnectionPool
+    include CartoDB::SequelConnectionHelper
 
     # Until migration to AR is done
     MAX_POOL_SIZE = 600
@@ -74,11 +76,7 @@ module CartoDB
 
     def close_connection(connection, id)
       if id.end_with?('sequel')
-        connection.disconnect
-        # Sequel keeps a list of all databases it has connected to that is never deleted
-        # We must manually delete the connection or it is never garbage collected, leaking memory
-        # See https://github.com/jeremyevans/sequel/blob/3.42.0/lib/sequel/database.rb#L10
-        Sequel.synchronize { Sequel::DATABASES.delete(connection) }
+        close_sequel_connection(connection)
       else
         connection.disconnect!
       end

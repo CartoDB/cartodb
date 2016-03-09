@@ -48,7 +48,7 @@ describe DataImport do
       user_id: @user.id,
       data_source: '/../db/fake_data/clubbing.csv',
       updated_at: Time.now
-     )
+    )
 
     data_import.run_import!
     data_import.error_code.should == 2011

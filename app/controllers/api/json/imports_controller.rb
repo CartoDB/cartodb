@@ -10,7 +10,7 @@ require_dependency 'carto/uuidhelper'
 class Api::Json::ImportsController < Api::ApplicationController
   include Carto::UUIDHelper
 
-  ssl_required :create
+  ssl_required :create, :update
   ssl_allowed :invalidate_service_token
 
   # NOTE: When/If OAuth tokens management is built into the UI, remove this to send and check CSRF
@@ -80,6 +80,50 @@ class Api::Json::ImportsController < Api::ApplicationController
         render_jsonp({ errors: { imports: ex.message } }, 400)
       end
 
+    end
+  end
+
+  # -------- Cancel a running import (using update PUT request) -------
+
+  def update
+    if !params[:item_queue_id].present?
+      render_jsonp({ errors: { imports: 'Missing queue ID in import cancellation request'} }, 400) and return
+    end
+
+    queue_id = params[:item_queue_id]
+
+    begin
+      # first verify that this job exists and user owns this job
+      running_import_ids = Resque::Worker.all.map { |worker| worker.job["payload"]["args"].first["job_id"] rescue nil }.compact
+
+      if !running_import_ids.include?(queue_id)
+        render_jsonp({ errors: { imports: "Failed to cancel import. Job with ID #{queue_id} does not exist."} }, 400) and return
+      end
+
+      import = DataImport.where(id: queue_id).first()
+
+      if import.nil?
+        render_jsonp({ errors: { imports: "Failed to cancel import. Job with ID #{queue_id} not found."} }, 400) and return
+      end
+
+      if import.user_id != current_user.id
+        render_jsonp({ errors: { imports: "Failed to cancel import. Job with ID #{queue_id} does not belong to current user."} }, 400) and return
+      end
+
+      if import.state == Carto::DataImport::STATE_COMPLETE or import.state == Carto::DataImport::STATE_FAILURE
+        render_jsonp({ errors: { imports: "Failed to cancel import. Job with ID #{queue_id} not currently running."} }, 400) and return
+      end
+
+      # found a running job for the user with the given ID; stop it
+      Resque::Job.destroy(Resque::ImporterJobs, job_id: queue_id)
+      # clean up and set state
+      import.cancel_import
+
+      print("\nCancelled import job #{queue_id}\n")
+      render_jsonp({ item_queue_id: queue_id, success: true })
+
+    rescue => ex
+      render_jsonp({ errors: { imports: "Failed to cancel import #{queue_id}: #{ex.message}"} }, 500)
     end
   end
 

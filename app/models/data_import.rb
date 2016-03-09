@@ -88,12 +88,16 @@ class DataImport < Sequel::Model
   STATE_UPLOADING = 'uploading'
   STATE_FAILURE   = 'failure'
   STATE_STUCK     = 'stuck'
+  STATE_CANCELLED = 'cancelled'
 
   TYPE_EXTERNAL_TABLE = 'external_table'
   TYPE_FILE           = 'file'
   TYPE_URL            = 'url'
   TYPE_QUERY          = 'query'
   TYPE_DATASOURCE     = 'datasource'
+
+  @downloader = nil
+  @unpacker = nil
 
   def after_initialize
     instantiate_log
@@ -153,7 +157,7 @@ class DataImport < Sequel::Model
   def public_values
     values = Hash[PUBLIC_ATTRIBUTES.map{ |attribute| [attribute, send(attribute)] }]
     values.merge!('queue_id' => id)
-    values.merge!(success: success) if (state == STATE_COMPLETE || state == STATE_FAILURE || state == STATE_STUCK)
+    values.merge!(success: success) if (state == STATE_COMPLETE || state == STATE_FAILURE || state == STATE_STUCK || state == STATE_CANCELLED)
     values
   end
 
@@ -355,6 +359,25 @@ class DataImport < Sequel::Model
     (user.quota_in_bytes / assumed_kb_sec).round
   end
 
+  def cancel_import
+    log.append "Import job cancelled. Id:#{self.id} State:#{self.state} Created at:#{self.created_at}"
+    self.success = false
+    self.state   = STATE_CANCELLED
+    save
+
+    # clean out uploaded/extracted files
+    self.remove_uploaded_resources
+
+    if !@downloader.nil?
+      @downloader.clean_up
+      @downloader = nil
+    end
+
+    if !@unpacker.nil?
+      @unpacker.clean_up
+      @unpacker = nil
+    end
+  end
 
   private
 
@@ -557,7 +580,7 @@ class DataImport < Sequel::Model
 
     # If retrieving metadata we get an error, fail early
     begin
-      downloader = get_downloader(datasource_provider)
+      @downloader = get_downloader(datasource_provider)
     rescue DataDownloadError => ex
       had_errors = true
       manual_fields = {
@@ -609,12 +632,14 @@ class DataImport < Sequel::Model
       database_options = pg_options
       self.host = database_options[:host]
 
+      @unpacker = CartoDB::Importer2::Unp.new(Cartodb.config[:importer])
+
       runner = CartoDB::Importer2::Runner.new({
                                                 pg: database_options,
-                                                downloader: downloader,
+                                                downloader: @downloader,
                                                 log: log,
                                                 user: current_user,
-                                                unpacker: CartoDB::Importer2::Unp.new(Cartodb.config[:importer]),
+                                                unpacker: @unpacker,
                                                 post_import_handler: post_import_handler,
                                                 importer_config: Cartodb.config[:importer]
                                               })
@@ -633,6 +658,9 @@ class DataImport < Sequel::Model
     end
 
     store_results(importer, runner, datasource_provider, manual_fields)
+
+    @downloader = nil
+    @unpacker = nil
 
     importer.nil? ? false : importer.success?
   end

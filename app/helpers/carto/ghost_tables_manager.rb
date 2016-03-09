@@ -11,8 +11,6 @@ module Carto
       bolt.lock(mutex_redis_key(user), MUTEX_TTL) do |locked|
         next unless locked
 
-        byebug
-
         # Lock aquired, inside the critical zone
         no_tables = user.real_tables.blank?
 

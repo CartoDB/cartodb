@@ -11,7 +11,10 @@ module Carto
       def to_poro
         return {} unless @analysis
 
-        @analysis.analysis_definition
+        {
+          id: @analysis.id,
+          analysis_definition: @analysis.analysis_definition_json
+        }
       end
 
     end

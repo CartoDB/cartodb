@@ -28,17 +28,22 @@ module Carto
       def create
         analysis_definition = analysis_definition_from_request
 
+        # Rails adds `to_json` to String, but we want json objects
+        if analysis_definition.class == String || !analysis_definition.respond_to?(:to_json)
+          raise Carto::UnprocesableEntityError.new("Analysis definition should be json: #{analysis_definition}")
+        end
+
         analysis = Carto::Analysis.new(
           visualization_id: @visualization.id,
           user_id: current_user.id,
-          analysis_definition: analysis_definition
+          analysis_definition: analysis_definition.to_json
         )
         analysis.save!
         render_jsonp(AnalysisPresenter.new(analysis).to_poro, 201)
       end
 
       def update
-        @analysis.analysis_definition = analysis_definition_from_request
+        @analysis.analysis_definition = analysis_definition_from_request.to_json
         @analysis.save!
         render_jsonp(AnalysisPresenter.new(@analysis).to_poro, 200)
       end
@@ -51,14 +56,9 @@ module Carto
       private
 
       def analysis_definition_from_request
-        analysis_definition = request.raw_post
+        analysis_definition = params[:analysis_definition]
         raise Carto::UnprocesableEntityError.new("Analysis definition not present") unless analysis_definition.present?
-        analysis_definition_json = begin
-          JSON.parse(analysis_definition)
-        rescue => e
-          raise Carto::UnprocesableEntityError.new("Error parsing analysis definition: #{e.message}")
-        end
-        raise Carto::UnprocesableEntityError.new("Empty analysis definition") if analysis_definition_json.empty?
+        raise Carto::UnprocesableEntityError.new("Empty analysis definition") if analysis_definition.empty?
 
         analysis_definition
       end

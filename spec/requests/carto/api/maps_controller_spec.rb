@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-require_relative '../../../spec_helper'
+require_relative '../../../spec_helper_min'
 require_relative '../../../../app/controllers/carto/api/maps_controller'
 require_relative '../../../../spec/requests/api/json/maps_controller_shared_examples'
 
@@ -10,53 +10,56 @@ describe Carto::Api::MapsController do
   it_behaves_like 'maps controllers' do
   end
 
+  include Carto::Factories::Visualizations
+  include HelperMethods
 
-  describe '#show legacy tests' do
+  before(:all) do
+    @user = FactoryGirl.create(:carto_user)
+    @user2 = FactoryGirl.create(:carto_user)
+    @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
+  end
 
-    before(:all) do
-      @user = create_user(
-        username: 'test',
-        email:    'client@example.com',
-        password: 'clientex'
-      )
+  after(:all) do
+    destroy_full_visualization(@map, @table, @table_visualization, @visualization)
+    # This avoids connection leaking.
+    ::User[@user.id].destroy
+    ::User[@user2.id].destroy
+  end
 
-      host! 'test.localhost.lan'
-    end
-
-    before(:each) do
-      stub_named_maps_calls
-      delete_user_data @user
-      @table = create_table :user_id => @user.id
-    end
-
-    after(:all) do
-      stub_named_maps_calls
-      @user.destroy
-    end
-
-
-    let(:params) { { :api_key => @user.api_key } }
-
-
-    it "Get map information" do
-      map = create_map({ user_id: @user.id, table_id: @table.id })
-
-      get_json api_v1_maps_show_url(params.merge({ id: map.id })) do |response|
+  describe '#show' do
+    it 'returns existing map by id' do
+      get_json api_v1_maps_show_url(user_domain: @user.username, api_key: @user.api_key, id: @map.id) do |response|
         response.status.should be_success
-        response.body[:id].should == map.id
-        response.body[:user_id].should == map.user_id
-        response.body[:provider].should == map.provider
-        response.body[:bounding_box_sw].should == map.bounding_box_sw
-        response.body[:bounding_box_ne].should == map.bounding_box_ne
-        response.body[:center].should == map.center
-        response.body[:zoom].should == map.zoom
-        response.body[:view_bounds_sw].should == map.view_bounds_sw
-        response.body[:view_bounds_ne].should == map.view_bounds_ne
-        response.body[:legends].should == map.legends
-        response.body[:scrollwheel].should == map.scrollwheel
+        response.body[:id].should eq @map.id
+        response.body[:user_id].should eq @map.user_id
+        response.body[:provider].should eq @map.provider
+        response.body[:bounding_box_sw].should eq @map.bounding_box_sw
+        response.body[:bounding_box_ne].should eq @map.bounding_box_ne
+        response.body[:center].should eq @map.center
+        response.body[:zoom].should eq @map.zoom
+        response.body[:view_bounds_sw].should eq @map.view_bounds_sw
+        response.body[:view_bounds_ne].should eq @map.view_bounds_ne
+        response.body[:legends].should eq @map.legends
+        response.body[:scrollwheel].should eq @map.scrollwheel
       end
     end
 
-  end
+    it 'returns 401 for unathorized user' do
+      get_json api_v1_maps_show_url(user_domain: @user2.username, api_key: 'wadus', id: @map.id) do |response|
+        response.status.should eq 401
+      end
+    end
 
+    it 'returns 404 for maps not owned by the user' do
+      get_json api_v1_maps_show_url(user_domain: @user2.username, api_key: @user2.api_key, id: @map.id) do |response|
+        response.status.should eq 404
+      end
+    end
+
+    it 'returns 404 for unexisting map' do
+      get_json api_v1_maps_show_url(user_domain: @user.username, api_key: @user.api_key, id: 'wadus') do |response|
+        response.status.should eq 404
+      end
+    end
+  end
 end

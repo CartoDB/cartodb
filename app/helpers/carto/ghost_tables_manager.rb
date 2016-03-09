@@ -11,7 +11,7 @@ module Carto
     end
 
     def run
-      lock_info = @lock.lock(mutex_redis_key, MUTEX_TTL) do |locked|
+      @lock.lock(mutex_redis_key, MUTEX_TTL) do |locked|
         next unless locked
 
         # Lock aquired, inside the critical zone

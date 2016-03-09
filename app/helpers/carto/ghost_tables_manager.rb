@@ -15,7 +15,7 @@ module Carto
         next unless locked
 
         # Lock aquired, inside the critical zone
-        no_tables = real_tables.blank?
+        no_tables = @user.real_tables.blank?
 
         link_renamed_tables unless no_tables
         link_deleted_tables
@@ -30,20 +30,10 @@ module Carto
       "rails:users:#{@user.username}:#{MUTEX_REDIS_KEY}"
     end
 
-    def real_tables(in_schema=@user.database_schema)
-      @user.in_database(as: :superuser)
-           .select(:pg_class__oid, :pg_class__relname)
-           .from(:pg_class)
-           .join_table(:inner, :pg_namespace, oid: :relnamespace)
-           .where(relkind: 'r', nspname: in_schema)
-           .exclude(relname: ::Table::SYSTEM_TABLE_NAMES)
-           .all
-    end
-
     def link_renamed_tables
       metadata_tables_ids = @user.tables.select(:table_id).map(&:table_id)
       metadata_table_names = @user.tables.select(:name).map(&:name)
-      renamed_tables = real_tables.reject{ |t| metadata_table_names.include?(t[:relname]) }.select{|t| metadata_tables_ids.include?(t[:oid])}
+      renamed_tables = @user.real_tables.reject{ |t| metadata_table_names.include?(t[:relname]) }.select{|t| metadata_tables_ids.include?(t[:oid])}
       renamed_tables.each do |t|
         table = Table.new(user_table: ::UserTable.find(table_id: t[:oid], user_id: @user.id))
         begin
@@ -71,7 +61,7 @@ module Carto
       metadata_tables_ids = metadata_tables.select{ |table| !syncs.include?(table[:name]) }
                                            .map{ |table| table[:table_id] }
 
-      dropped_tables = metadata_tables_ids - real_tables.map{|t| t[:oid]} - [nil]
+      dropped_tables = metadata_tables_ids - @user.real_tables.map{|t| t[:oid]} - [nil]
 
       # Remove tables with oids that don't exist on the db
       @user.tables.where(table_id: dropped_tables).all.each do |user_table|
@@ -93,7 +83,7 @@ module Carto
     end
 
     def link_created_tables(table_names)
-      created_tables = real_tables.select { |t| table_names.include?(t[:relname]) }
+      created_tables = @user.real_tables.select { |t| table_names.include?(t[:relname]) }
       created_tables.each do |t|
         begin
           Rollbar.report_message('ghost tables', 'debug', {
@@ -118,7 +108,7 @@ module Carto
     def search_for_modified_table_names
       metadata_table_names = @user.tables.select(:name).map(&:name)
       # TODO: filter real tables by ownership
-      real_names = real_tables.map { |t| t[:relname] }
+      real_names = @user.real_tables.map { |t| t[:relname] }
       return metadata_table_names.to_set != real_names.to_set
     end
 

@@ -5,7 +5,6 @@ var Map = require('../../../src/geo/map');
 var MapView = require('../../../src/geo/map-view');
 var TileLayer = require('../../../src/geo/map/tile-layer');
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
-var TorqueLayer = require('../../../src/geo/map/torque-layer');
 var Infowindow = require('../../../src/geo/ui/infowindow');
 
 describe('core/geo/map-view', function () {

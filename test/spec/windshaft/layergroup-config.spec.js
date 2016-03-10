@@ -7,6 +7,7 @@ var AnalysisFactory = require('../../../src/analysis/analysis-factory.js');
 describe('windshaft/layergroup-config', function () {
   beforeEach(function () {
     this.dataviews = new Backbone.Collection();
+    this.analysisCollection = new Backbone.Collection();
     var map = jasmine.createSpyObj('map', ['getViewBounds', 'bind', 'reload']);
     map.getViewBounds.and.returnValue([[1, 2], [3, 4]]);
     var windshaftMap = jasmine.createSpyObj('windhsaftMap', ['bind']);
@@ -182,8 +183,10 @@ describe('windshaft/layergroup-config', function () {
       });
     });
 
-    it('should generate the right analyses for the different states of layers and analysis', function () {
-      var analysisFactory = new AnalysisFactory();
+    it('should generate the right analyses for the different types of layers and analysis', function () {
+      var analysisFactory = new AnalysisFactory({
+        analysisCollection: this.analysisCollection
+      });
       var dataviewsCollection = new Backbone.Collection();
       var layers = [];
 
@@ -549,7 +552,9 @@ describe('windshaft/layergroup-config', function () {
     });
 
     it('should work with other types of analyses (eg: point-in-polygon)', function () {
-      var analysisFactory = new AnalysisFactory();
+      var analysisFactory = new AnalysisFactory({
+        analysisCollection: this.analysisCollection
+      });
       var dataviewsCollection = new Backbone.Collection();
       var layers = [];
 

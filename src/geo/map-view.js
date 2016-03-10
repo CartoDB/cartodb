@@ -126,7 +126,7 @@ var MapView = View.extend({
 
   _addLayer: function(layerModel, layerCollection, options) {
     var layerView;
-    if (layerModel.get('type') === 'CartoDB') {
+    if (layerModel.get('type').toLowerCase() === 'cartodb') {
       layerView = this._addGroupedLayer(layerModel);
     } else {
       layerView = this._addIndividualLayer(layerModel);

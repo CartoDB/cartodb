@@ -1,11 +1,19 @@
+var Backbone = require('backbone');
 var AnalysisFactory = require('../../../src/analysis/analysis-factory');
+var ANALYSIS_TYPE_TO_SOURCE_PARAM_NAMES_MAP = require('../../../src/analysis/source-names-map');
 
 describe('src/analysis/analysis-factory.js', function () {
+  beforeEach(function () {
+    this.analysisCollection = new Backbone.Collection();
+    this.analysisFactory = new AnalysisFactory({
+      sourceNamesMap: ANALYSIS_TYPE_TO_SOURCE_PARAM_NAMES_MAP,
+      analysisCollection: this.analysisCollection
+    });
+  });
+
   describe('.analyse', function () {
     it('should generate and return a new analysis', function () {
-      var analysisFactory = new AnalysisFactory();
-
-      var subwayStops = analysisFactory.analyse({
+      var subwayStops = this.analysisFactory.analyse({
         id: 'a0',
         type: 'source',
         params: {
@@ -23,9 +31,7 @@ describe('src/analysis/analysis-factory.js', function () {
     });
 
     it('should not create a new analysis if an analysis with the same id was created already', function () {
-      var analysisFactory = new AnalysisFactory();
-
-      var subwayStops1 = analysisFactory.analyse({
+      var subwayStops1 = this.analysisFactory.analyse({
         id: 'a0',
         type: 'source',
         params: {
@@ -33,7 +39,7 @@ describe('src/analysis/analysis-factory.js', function () {
         }
       });
 
-      var subwayStops2 = analysisFactory.analyse({
+      var subwayStops2 = this.analysisFactory.analyse({
         id: 'a0',
         type: 'source',
         params: {
@@ -45,9 +51,7 @@ describe('src/analysis/analysis-factory.js', function () {
     });
 
     it('should recursively build the anlysis graph', function () {
-      var analysisFactory = new AnalysisFactory();
-
-      var estimatedPopulation = analysisFactory.analyse(
+      var estimatedPopulation = this.analysisFactory.analyse(
         {
           id: 'a2',
           type: 'estimated-population',
@@ -71,17 +75,14 @@ describe('src/analysis/analysis-factory.js', function () {
           }
         }
       );
-
-      var tradeArea = estimatedPopulation.findAnalysisById('a1');
-      var subwayStops = tradeArea.findAnalysisById('a0');
-      expect(estimatedPopulation.get('params').source).toEqual(tradeArea);
-      expect(tradeArea.get('params').source).toEqual(subwayStops);
+      var tradeArea = estimatedPopulation.get('params').source;
+      var subwayStops = tradeArea.get('params').source;
+      expect(tradeArea.get('id')).toEqual('a1');
+      expect(subwayStops.get('id')).toEqual('a0');
     });
 
     it('analysis should be re-created if after it has been removed', function () {
-      var analysisFactory = new AnalysisFactory();
-
-      var subwayStops1 = analysisFactory.analyse({
+      var subwayStops1 = this.analysisFactory.analyse({
         id: 'a0',
         type: 'source',
         params: {
@@ -91,7 +92,7 @@ describe('src/analysis/analysis-factory.js', function () {
 
       subwayStops1.remove();
 
-      var subwayStops2 = analysisFactory.analyse({
+      var subwayStops2 = this.analysisFactory.analyse({
         id: 'a0',
         type: 'source',
         params: {
@@ -105,8 +106,7 @@ describe('src/analysis/analysis-factory.js', function () {
 
   describe('.findNodeById', function () {
     it('should traverse the analysis and return an existing node', function () {
-      var analysisFactory = new AnalysisFactory();
-      analysisFactory.analyse(
+      this.analysisFactory.analyse(
         {
           id: 'a2',
           type: 'estimated-population',
@@ -131,16 +131,15 @@ describe('src/analysis/analysis-factory.js', function () {
         }
       );
 
-      expect(analysisFactory.findNodeById('a2').get('id')).toEqual('a2');
-      expect(analysisFactory.findNodeById('a1').get('id')).toEqual('a1');
-      expect(analysisFactory.findNodeById('a0').get('id')).toEqual('a0');
+      expect(this.analysisFactory.findNodeById('a2').get('id')).toEqual('a2');
+      expect(this.analysisFactory.findNodeById('a1').get('id')).toEqual('a1');
+      expect(this.analysisFactory.findNodeById('a0').get('id')).toEqual('a0');
     });
 
     it('should return undefined if node is not found', function () {
-      var analysisFactory = new AnalysisFactory();
-      expect(analysisFactory.findNodeById('something')).toBeUndefined();
+      expect(this.analysisFactory.findNodeById('something')).toBeUndefined();
 
-      analysisFactory.analyse(
+      this.analysisFactory.analyse(
         {
           id: 'a2',
           type: 'estimated-population',
@@ -165,7 +164,7 @@ describe('src/analysis/analysis-factory.js', function () {
         }
       );
 
-      expect(analysisFactory.findNodeById('something')).toBeUndefined();
+      expect(this.analysisFactory.findNodeById('something')).toBeUndefined();
     });
   });
 });

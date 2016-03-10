@@ -356,8 +356,12 @@ var Vis = View.extend({
       windshaftMap: windshaftMap
     });
 
+    this._analysisCollection = new Backbone.Collection();
+
     // Public Analysis Factory
-    this.analysis = new AnalysisFactory();
+    this.analysis = new AnalysisFactory({
+      analysisCollection: this._analysisCollection
+    });
 
     if (!options.skipMapInstantiation) {
       this.instantiateMap();

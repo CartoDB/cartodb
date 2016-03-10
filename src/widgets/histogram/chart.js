@@ -501,7 +501,7 @@ module.exports = cdb.core.View.extend({
       this._originalYScale = this.yScale = this._getYScale();
     }
 
-    if (this.model.get('zoom')) {
+    if (this.model.get('bounded')) {
       data = this.model.get('data');
     } else {
       data = this._originalData && this._originalData.getData();
@@ -1089,7 +1089,7 @@ module.exports = cdb.core.View.extend({
   },
 
   unsetBounds: function () {
-    this.model.set('zoom', false);
+    this.model.set('bounded', false);
     this.resetYScale();
     this.contract(this.options.height);
     this.resetIndexes();
@@ -1097,7 +1097,7 @@ module.exports = cdb.core.View.extend({
   },
 
   setBounds: function () {
-    this.model.set('zoom', true);
+    this.model.set('bounded', true);
     this.updateYScale();
     this.expand(4);
     this.removeShadowBars();

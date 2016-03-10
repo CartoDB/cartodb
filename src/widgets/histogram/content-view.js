@@ -101,10 +101,6 @@ module.exports = cdb.core.View.extend({
 
     if (this.unsettingRange) {
       this._unsetRange();
-    } else {
-      if (this._isZoomed() && !this.lockZoomedData) {
-        this.lockZoomedData = true;
-      }
     }
 
     this._updateStats();
@@ -222,7 +218,6 @@ module.exports = cdb.core.View.extend({
 
   _onMiniRangeUpdated: function (loBarIndex, hiBarIndex) {
     this.lockedByUser = false;
-    this.lockZoomedData = false;
 
     this._clearTooltip();
     this.histogramChartView.removeSelection();
@@ -423,7 +418,6 @@ module.exports = cdb.core.View.extend({
 
   _resetWidget: function () {
     this.lockedByUser = true;
-    this.lockZoomedData = false;
     this.unsettingRange = true;
     this.model.set({
       zoomed: false,

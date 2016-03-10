@@ -11,15 +11,8 @@ module.exports = cdb.core.View.extend({
 
   initialize: function () {
     this._dataviewModel = this.model.dataviewModel;
+    this._originalData = this.model.dataviewModel.getUnfilteredDataModel();
     this._initBinds();
-  },
-
-  _initBinds: function () {
-    this._dataviewModel.once('change:data', this._onFirstLoad, this);
-    this._dataviewModel.once('error', function () {
-      alert('the tiler does not support non-torque layers just yet…');
-    });
-    this.add_related_model(this._dataviewModel);
   },
 
   render: function () {
@@ -41,6 +34,16 @@ module.exports = cdb.core.View.extend({
     return this;
   },
 
+  _initBinds: function () {
+    this._originalData.once('change:data', this._onOriginalDataChange, this);
+    this._dataviewModel.once('error', function () {
+      console.log('the tiler does not support non-torque layers just yet…');
+    });
+    this._dataviewModel.once('change:data', this.render, this);
+    this.add_related_model(this._dataviewModel);
+    this.add_related_model(this._originalData);
+  },
+
   _appendView: function (view) {
     this.addView(view);
     this.$el.append(view.render().el);
@@ -51,8 +54,9 @@ module.exports = cdb.core.View.extend({
     return _.isEmpty(data) || _.size(data) === 0;
   },
 
-  _onFirstLoad: function () {
-    this.render();
-    this._dataviewModel.fetch(); // do an explicit fetch again, to get actual data with the filters applied (e.g. bbox)
+  _onOriginalDataChange: function () {
+    // do an explicit fetch in order to get actual data
+    // with the filters applied (e.g. bbox)
+    this._dataviewModel.fetch();
   }
 });

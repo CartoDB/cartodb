@@ -205,8 +205,6 @@ WORKING_SPECS_9 = \
   spec/requests/superadmin/users_spec.rb \
   spec/requests/superadmin/organizations_spec.rb \
   spec/requests/api/visualizations_spec.rb \
-  spec/requests/api/json/maps_controller_spec.rb \
-  spec/requests/carto/api/maps_controller_spec.rb \
   spec/requests/api/json/overlays_controller_spec.rb \
   spec/requests/carto/api/overlays_controller_spec.rb \
 	spec/models/carto/user_creation_spec.rb \
@@ -228,6 +226,8 @@ WORKING_SPECS_9 = \
 SPEC_HELPER_MIN_SPECS = \
   spec/requests/carto/api/analyses_controller_spec.rb \
 	spec/models/carto/analysis_spec.rb \
+	spec/requests/api/json/maps_controller_spec.rb \
+	spec/requests/carto/api/maps_controller_spec.rb \
 	$(NULL)
 
 # This class must be tested isolated as pollutes namespace

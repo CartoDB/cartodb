@@ -40,7 +40,11 @@
       "widgets-form": {
         "type": {
           "title-label": "Type",
-          "description": "Choose the widget type"
+          "description": "Choose the widget type",
+          "category": "Category",
+          "formula": "Formula",
+          "histogram": "Histogram",
+          "time_series": "Time Series"
         },
         "data": {
           "aggregation": "Aggregation",
@@ -69,12 +73,6 @@
         }
       },
       "edit": "Edit",
-      "type": {
-        "category": "Category",
-        "formula": "Formula",
-        "histogram": "Histogram",
-        "time_series": "Time Series"
-      },
     }
   }
 }

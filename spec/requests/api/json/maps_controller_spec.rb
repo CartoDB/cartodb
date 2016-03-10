@@ -99,7 +99,7 @@ describe Api::Json::MapsController do
     end
 
     it 'returns 404 for maps not owned by the user' do
-      put_json create_update_map_url(@user2, @map.id), center: [1,1] do |response|
+      put_json create_update_map_url(@user2, @map.id), center: [1, 1] do |response|
         response.status.should eq 404
       end
     end

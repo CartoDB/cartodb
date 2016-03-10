@@ -30,6 +30,10 @@ describe Api::Json::MapsController do
     bypass_named_maps
   end
 
+  def create_update_map_url(user, map_id)
+    api_v1_maps_update_url(user_domain: user.username, api_key: user.api_key, id: map_id)
+  end
+
   describe '#update' do
     it 'updates existing map by id' do
       # Intentionally uses long decimal numbers to test against JSON serialization problems
@@ -45,7 +49,7 @@ describe Api::Json::MapsController do
         scrollwheel: true
       }
 
-      put_json api_v1_maps_update_url(user_domain: @user.username, api_key: @user.api_key, id: @map.id), payload do |response|
+      put_json create_update_map_url(@user, @map.id), payload do |response|
         response.status.should be_success
         response.body[:provider].should eq payload[:provider]
         JSON.parse(response.body[:bounding_box_sw]).should eq payload[:bounding_box_sw]
@@ -76,7 +80,7 @@ describe Api::Json::MapsController do
         user_id: 'wadus'
       }
 
-      put_json api_v1_maps_update_url(user_domain: @user.username, api_key: @user.api_key, id: @map.id), payload do |response|
+      put_json create_update_map_url(@user, @map.id), payload do |response|
         response.status.should be_success
         response.body[:id].should eq @map.id
         response.body[:user_id].should eq @user.id
@@ -95,13 +99,13 @@ describe Api::Json::MapsController do
     end
 
     it 'returns 404 for maps not owned by the user' do
-      put_json api_v1_maps_update_url(user_domain: @user2.username, api_key: @user2.api_key, id: @map.id), {center: [1,1]} do |response|
+      put_json create_update_map_url(@user2, @map.id), {center: [1,1]} do |response|
         response.status.should eq 404
       end
     end
 
     it 'returns 404 for unexisting map' do
-      put_json api_v1_maps_update_url(user_domain: @user.username, api_key: @user.api_key, id: 'wadus'), {} do |response|
+      put_json create_update_map_url(@user, 'wadus'), {} do |response|
         response.status.should eq 404
       end
     end

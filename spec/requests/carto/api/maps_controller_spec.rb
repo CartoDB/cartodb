@@ -27,9 +27,13 @@ describe Carto::Api::MapsController do
     ::User[@user2.id].destroy
   end
 
+  def create_show_map_url(user, map_id)
+    api_v1_maps_show_url(user_domain: user.username, api_key: user.api_key, id: map_id)
+  end
+
   describe '#show' do
     it 'returns existing map by id' do
-      get_json api_v1_maps_show_url(user_domain: @user.username, api_key: @user.api_key, id: @map.id) do |response|
+      get_json create_show_map_url(@user, @map.id) do |response|
         response.status.should be_success
         response.body[:id].should eq @map.id
         response.body[:user_id].should eq @map.user_id
@@ -52,13 +56,13 @@ describe Carto::Api::MapsController do
     end
 
     it 'returns 404 for maps not owned by the user' do
-      get_json api_v1_maps_show_url(user_domain: @user2.username, api_key: @user2.api_key, id: @map.id) do |response|
+      get_json create_show_map_url(@user2, @map.id) do |response|
         response.status.should eq 404
       end
     end
 
     it 'returns 404 for unexisting map' do
-      get_json api_v1_maps_show_url(user_domain: @user.username, api_key: @user.api_key, id: 'wadus') do |response|
+      get_json create_show_map_url(@user, 'wadus') do |response|
         response.status.should eq 404
       end
     end

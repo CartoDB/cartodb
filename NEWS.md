@@ -2,6 +2,7 @@
 -------------------
 * Updating CartoDB.js submodule with last changes sanitizing attribution.
 * Fixes a problem with select2 arrow icon.
+* Fixes a memory leak in the connection pool
 
 3.12.3 (2016-03-01)
 -------------------

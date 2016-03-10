@@ -55,7 +55,7 @@ describe CartoDB::ConnectionPool do
       # The maximum number of connections allowed in memory before the test is considered to be leaking (failure).
       # Although the pool will only keep 2 connections open (MAX_POOL_SIZE set at the beginning of the test),
       # there are some other connections that are not tracked by the pool (tracked by Rails instead).
-      # Typical # of connections is 0 for correct tests and 45 for leaky tests but vary depending on execution order.
+      # Typical # of connections is 2 for correct tests and 45 for leaky tests but vary depending on execution order.
       MAX_ALLOWABLE_CONNECTIONS = 10
 
       initial_user_count = user_object_count

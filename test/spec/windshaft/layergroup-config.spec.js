@@ -547,5 +547,82 @@ describe('windshaft/layergroup-config', function () {
 
       // t5 - wadus
     });
+
+    fit('should wadus', function () {
+      var analysisFactory = new AnalysisFactory();
+      var dataviewsCollection = new Backbone.Collection();
+      var layers = [];
+
+debugger;
+      var analysis = analysisFactory.analyse({
+        id: 'a1',
+        type: 'point-in-polygon',
+        params: {
+          points_source: {
+            id: 'a0',
+            type: 'source',
+            params: {
+              query: 'SELECT * FROM cities'
+            }
+          },
+          polygons_source: {
+            id: 'a2',
+            type: 'source',
+            params: {
+              query: 'SELECT * FROM states'
+            }
+          }
+        }
+      });
+
+      var layerModel = new CartoDBLayer({
+        id: '11111',
+        cartocss: '#point-in-polygon { ... }',
+        source: analysis
+      });
+      layers.push(layerModel);
+
+      var mapConfig = LayerGroupConfig.generate({
+        layers: layers,
+        dataviews: dataviewsCollection
+      });
+
+      expect(mapConfig).toEqual({
+        layers: [
+          {
+            type: 'cartodb',
+            options: {
+              'source': { id: 'a1' },
+              'cartocss': '#point-in-polygon { ... }',
+              'cartocss_version': '2.1.0',
+              interactivity: []
+            }
+          }
+        ],
+        dataviews: {},
+        analyses: [
+          {
+            id: 'a1',
+            type: 'point-in-polygon',
+            params: {
+              points_source: {
+                id: 'a0',
+                type: 'source',
+                params: {
+                  query: 'SELECT * FROM cities'
+                }
+              },
+              polygons_source: {
+                id: 'a0',
+                type: 'source',
+                params: {
+                  query: 'SELECT * FROM states'
+                }
+              }
+            }
+          }
+        ]
+      });
+    });
   });
 });

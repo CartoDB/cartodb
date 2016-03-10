@@ -11,6 +11,7 @@ module.exports = Model.extend({
   analyse: function (analysisDefinition) {
     analysisDefinition = _.clone(analysisDefinition);
 
+debugger;
     var analysis = this._getAnalysisFromIndex(analysisDefinition.id);
     var analysisAttrs = this._getAnalysisAttributesFromAnalysisDefinition(analysisDefinition);
     if (analysis) {
@@ -25,15 +26,22 @@ module.exports = Model.extend({
 
   _getAnalysisAttributesFromAnalysisDefinition: function (analysisDefinition) {
     var attributes;
+    var params;
     if (analysisDefinition.type === 'source') {
       attributes = analysisDefinition;
-    } else if (analysisDefinition.params.source) {
-      // TODO: Unless there's a convention, we might need to check the type of
-      // analyis and do this on a one to one basis. Eg: some analysis might
-      // have references to multiple nodes
+    } else if (['trade-area', 'estimated-population', 'union'].indexOf(analysisDefinition.type) >= 0) {
       var sourceAnalysis = this.analyse(analysisDefinition.params.source);
-      var params = _.extend(analysisDefinition.params, {
+      params = _.extend(analysisDefinition.params, {
         source: sourceAnalysis
+      });
+      attributes = _.extend(analysisDefinition, { params: params });
+    } else if (analysisDefinition.type === 'point-in-polygon') {
+      var pointsSource = this.analyse(analysisDefinition.params.points_source);
+      var polygonsSource = this.analyse(analysisDefinition.params.polygons_source);
+      debugger;
+      params = _.extend(analysisDefinition.params, {
+        points_source: pointsSource,
+        polygons_source: polygonsSource
       });
       attributes = _.extend(analysisDefinition, { params: params });
     }

@@ -15,9 +15,8 @@ LayerGroupConfig.generate = function (options) {
   _.each(layers, function (layer) {
     // Layer has some SQL that needs to be converted into a "source" analysis
     var sourceId;
-    var sourceAnalysis;
-    if (layer.get('source')) {
-      sourceAnalysis = layer.get('source');
+    var sourceAnalysis = layer.get('source');
+    if (sourceAnalysis) {
       sourceId = sourceAnalysis.get('id');
     } else if (layer.get('sql')) {
       sourceId = layer.get('id');
@@ -31,6 +30,8 @@ LayerGroupConfig.generate = function (options) {
     }
 
     var sourceAnalysisIsPartOfOtherAnalysis = _.any(layers, function (otherLayer) {
+      // TODO: otherLayer might have references under other names. Eg: point-in-polygon analysis has points_source
+      // and polygons_source
       return layer !== otherLayer && otherLayer.get('source') && otherLayer.get('source').findAnalysisById(sourceId);
     });
 

@@ -18,15 +18,26 @@ module.exports = Model.extend({
 
   toJSON: function () {
     var json;
+    var params;
     if (this.get('type') === 'source') {
       json = this.attributes;
-    } else if (this.get('params').source) {
-      var params = _.clone(this.get('params'));
+    } else if (['trade-area', 'estimated-population', 'union'].indexOf(this.get('type')) >= 0) {
+      params = _.clone(this.get('params'));
       json = {
         id: this.get('id'),
         type: this.get('type'),
         params: _.extend(params, {
           source: this.get('params').source.toJSON()
+        })
+      };
+    } else if (this.get('type') === 'point-in-polygon') {
+      params = _.clone(this.get('params'));
+      json = {
+        id: this.get('id'),
+        type: this.get('type'),
+        params: _.extend(params, {
+          points_source: this.get('params').points_source.toJSON(),
+          polygons_source: this.get('params').polygons_source.toJSON()
         })
       };
     }

@@ -199,7 +199,6 @@ describe Carto::Api::OrganizationUsersController do
       last_user_created.destroy
     end
 
-
     it 'cannot enable soft geocoding_limit, twitter_datasource_limit or here_isolines_limit if owner has not them' do
       replace_soft_limits(@organization.owner, [false, false, false])
 
@@ -340,6 +339,21 @@ describe Carto::Api::OrganizationUsersController do
 
       user_to_update.reload
       verify_soft_limits(user_to_update, true)
+    end
+
+    it 'can disable soft geocoding_limit, twitter_datasource_limit and here_isolines_limit if owner has them' do
+      replace_soft_limits(@organization.owner, [true, true, true])
+
+      login(@organization.owner)
+      user_to_update = @organization.users[0]
+      params = user_params_soft_limits(nil, false)
+
+      put api_v1_organization_users_update_url(name: @organization.name, u_username: user_to_update.username), params
+
+      last_response.status.should eq 200
+
+      user_to_update.reload
+      verify_soft_limits(user_to_update, false)
     end
 
   end

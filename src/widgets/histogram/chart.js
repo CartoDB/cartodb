@@ -493,18 +493,20 @@ module.exports = cdb.core.View.extend({
     this.yScale = this._originalYScale;
   },
 
+  _getDataForScales: function () {
+    if (this.model.get('bounded')) {
+      return this.model.get('data');
+    } else {
+      return this._originalData && this._originalData.getData();
+    }
+  },
+
   _setupScales: function () {
-    var data;
+    var data = this._getDataForScales();
     this.updateXScale();
 
     if (!this._originalYScale) {
       this._originalYScale = this.yScale = this._getYScale();
-    }
-
-    if (this.model.get('bounded')) {
-      data = this.model.get('data');
-    } else {
-      data = this._originalData && this._originalData.getData();
     }
 
     if (!data || !data.length) {

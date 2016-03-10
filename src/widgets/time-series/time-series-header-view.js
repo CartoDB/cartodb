@@ -38,7 +38,7 @@ module.exports = cdb.core.View.extend({
     this._scale = d3.time.scale()
       .domain([data[0].start * 1000, data[data.length - 1].end * 1000])
       .nice()
-      .range([0, this._dataviewModel.get('bins')]);
+      .range([this._dataviewModel.get('start'), this._dataviewModel.get('end')]);
 
     // for format rules see https://github.com/mbostock/d3/wiki/Time-Formatting
     this._timeFormatter = d3.time.format('%H:%M');

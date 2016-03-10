@@ -146,6 +146,142 @@ describe('windshaft/map', function () {
       expect(this.windshaftMap.get('layergroupid')).toEqual('layergroupid');
       expect(this.windshaftMap.get('metadata')).toEqual(this.windshaftMapInstance.metadata);
     });
+
+    describe('metadata', function () {
+      beforeEach(function () {
+        this.dataviews = new Backbone.Collection();
+
+        this.client = new WindshaftClient({
+          endpoint: 'v1',
+          urlTemplate: 'http://{user}.wadus.com',
+          userName: 'rambo'
+        });
+        spyOn(this.client, 'instantiateMap').and.callFake(function (options) {
+          options.success(this.windshaftMapInstance);
+        }.bind(this));
+      });
+
+      describe("when there's a tiled layer as the first layer of the Windshaft response (Named Map)", function () {
+        beforeEach(function () {
+          this.windshaftMapInstance = {
+            layergroupid: 'layergroupid',
+            metadata: {
+              layers: [
+                {
+                  'type': 'tiled'
+                },
+                {
+                  'type': 'mapnik',
+                  'meta': 'cartodb-metadata',
+                  'widgets': {
+                    'dataviewId': {
+                      'url': {
+                        'http': 'http://example.com',
+                        'https': 'https://example.com'
+                      }
+                    }
+                  }
+                },
+                {
+                  'type': 'torque',
+                  'meta': 'torque-metadata'
+                }
+              ]
+            }
+          };
+        });
+
+        it('should set the meta attribute of CartoDB layers from the Windshaft response', function () {
+          this.windshaftMap.createInstance({
+            layers: [ this.cartoDBLayer1, this.torqueLayer ],
+            dataviews: this.dataviews,
+            sourceLayerId: 'sourceLayerId'
+          });
+
+          // 'meta' attribute of the CartoDB layer has been set
+          expect(this.cartoDBLayer1.get('meta')).toEqual('cartodb-metadata');
+        });
+
+        it('should set the meta and url attributes of Torque layers from the Windshaft response', function () {
+          this.windshaftMap.createInstance({
+            layers: [ this.cartoDBLayer1, this.torqueLayer ],
+            dataviews: this.dataviews,
+            sourceLayerId: 'sourceLayerId'
+          });
+
+          // 'meta' and 'urls' of the Torque layer has been set
+          expect(this.torqueLayer.get('meta')).toEqual('torque-metadata');
+          expect(this.torqueLayer.get('urls')).toEqual({
+            tiles: [
+              'http://rambo.wadus.com/api/v1/map/layergroupid/2/{z}/{x}/{y}.json.torque',
+              'http://rambo.wadus.com/api/v1/map/layergroupid/2/{z}/{x}/{y}.json.torque',
+              'http://rambo.wadus.com/api/v1/map/layergroupid/2/{z}/{x}/{y}.json.torque',
+              'http://rambo.wadus.com/api/v1/map/layergroupid/2/{z}/{x}/{y}.json.torque'
+            ],
+            grids: []
+          });
+        });
+      });
+
+      describe("when there isn't a tiled layer as the first layer of the Windshaft response (Named Map)", function () {
+        beforeEach(function () {
+          this.windshaftMapInstance = {
+            layergroupid: 'layergroupid',
+            metadata: {
+              layers: [
+                {
+                  'type': 'mapnik',
+                  'meta': 'cartodb-metadata',
+                  'widgets': {
+                    'dataviewId': {
+                      'url': {
+                        'http': 'http://example.com',
+                        'https': 'https://example.com'
+                      }
+                    }
+                  }
+                },
+                {
+                  'type': 'torque',
+                  'meta': 'torque-metadata'
+                }
+              ]
+            }
+          };
+        });
+
+        it('should set the meta attribute of CartoDB layers from the Windshaft response', function () {
+          this.windshaftMap.createInstance({
+            layers: [ this.cartoDBLayer1, this.torqueLayer ],
+            dataviews: this.dataviews,
+            sourceLayerId: 'sourceLayerId'
+          });
+
+          // 'meta' attribute of the CartoDB layer has been set
+          expect(this.cartoDBLayer1.get('meta')).toEqual('cartodb-metadata');
+        });
+
+        it('should set the meta and url attributes of Torque layers from the Windshaft response', function () {
+          this.windshaftMap.createInstance({
+            layers: [ this.cartoDBLayer1, this.torqueLayer ],
+            dataviews: this.dataviews,
+            sourceLayerId: 'sourceLayerId'
+          });
+
+          // 'meta' and 'urls' of the Torque layer has been set
+          expect(this.torqueLayer.get('meta')).toEqual('torque-metadata');
+          expect(this.torqueLayer.get('urls')).toEqual({
+            tiles: [
+              'http://rambo.wadus.com/api/v1/map/layergroupid/1/{z}/{x}/{y}.json.torque',
+              'http://rambo.wadus.com/api/v1/map/layergroupid/1/{z}/{x}/{y}.json.torque',
+              'http://rambo.wadus.com/api/v1/map/layergroupid/1/{z}/{x}/{y}.json.torque',
+              'http://rambo.wadus.com/api/v1/map/layergroupid/1/{z}/{x}/{y}.json.torque'
+            ],
+            grids: []
+          });
+        });
+      });
+    });
   });
 
   describe('#getBaseURL', function () {

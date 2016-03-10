@@ -653,7 +653,6 @@ class Table
   end
 
   def name=(value)
-    byebug
     value = value.downcase if value
     return if value == @user_table[:name] || value.blank?
     new_name = get_valid_name(value, current_name: self.name)

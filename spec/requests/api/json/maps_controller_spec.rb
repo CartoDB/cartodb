@@ -36,15 +36,16 @@ describe Api::Json::MapsController do
   end
 
   describe '#update' do
-    it 'returns existing map by id' do
+    it 'updates existing map by id' do
+      # Intentionally uses long decimal numbers to test against JSON serialization problems
       payload = {
         provider: 'not_leaflet',
-        bounding_box_sw: [5.123456789, 5.123456789],
-        bounding_box_ne: [10.123456789, 20.123456789],
-        center: [7.123456789, 7.123456789],
+        bounding_box_sw: [5.123456789123456789, 5.123456789123456789],
+        bounding_box_ne: [10.123456789123456789, 20.123456789123456789],
+        center: [7.123456789123456789, 7.123456789123456789],
         zoom: 42,
-        view_bounds_sw: [-15.123456789, -15.123456789],
-        view_bounds_ne: [-35.123456789, -55.123456789],
+        view_bounds_sw: [-15.123456789123456789, -15.123456789123456789],
+        view_bounds_ne: [-35.123456789123456789, -55.123456789123456789],
         legends: false,
         scrollwheel: true
       }
@@ -72,6 +73,24 @@ describe Api::Json::MapsController do
       JSON.parse(@map.view_bounds_ne).should eq payload[:view_bounds_ne]
       @map.legends.should eq payload[:legends]
       @map.scrollwheel.should eq payload[:scrollwheel]
+    end
+
+    it 'does not update map_id nor user_id' do
+      payload = {
+        id: 'wadus',
+        user_id: 'wadus'
+      }
+
+      put_json api_v1_maps_update_url(user_domain: @user.username, api_key: @user.api_key, id: @map.id), payload do |response|
+        response.status.should be_success
+        response.body[:id].should eq @map.id
+        response.body[:user_id].should eq @user.id
+      end
+
+      old_map_id = @map.id
+      @map.reload
+      @map.id.should eq old_map_id
+      @map.user_id.should eq @user.id
     end
 
     it 'returns 401 for unathorized user' do

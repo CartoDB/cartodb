@@ -112,6 +112,8 @@ class Api::Json::ImportsController < Api::ApplicationController
       Resque::Job.destroy(Resque::ImporterJobs, job_id: queue_id)
       # clean up and set state
       import.cancel_import
+      import.delete
+      decrement_concurrent_imports_rate_limit
 
       print("\nCancelled import job #{queue_id}\n")
       render_jsonp({ item_queue_id: queue_id, success: true })

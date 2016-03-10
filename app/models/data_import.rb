@@ -365,7 +365,23 @@ class DataImport < Sequel::Model
     self.state   = STATE_CANCELLED
     save
 
-    # clean out uploaded/extracted files
+    # clean out uploaded/extracted files and/or database objects
+    imported_table = ::Table.get_by_table_id(self.table_id)
+    if !imported_table.nil? && imported_table.table_visualization
+      imported_table.table_visualization.delete
+    end
+
+    if !imported_table.nil? && !imported_table.map_id.nil?
+      map = Map.get(id: map_id)
+      if !map.nil?
+        map.delete
+      end
+    end
+
+    if !imported_table.nil?
+      imported_table.delete
+    end
+
     self.remove_uploaded_resources
 
     if !@downloader.nil?

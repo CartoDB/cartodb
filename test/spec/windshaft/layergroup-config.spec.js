@@ -548,12 +548,11 @@ describe('windshaft/layergroup-config', function () {
       // t5 - wadus
     });
 
-    fit('should wadus', function () {
+    it('should work with other types of analyses (eg: point-in-polygon)', function () {
       var analysisFactory = new AnalysisFactory();
       var dataviewsCollection = new Backbone.Collection();
       var layers = [];
 
-debugger;
       var analysis = analysisFactory.analyse({
         id: 'a1',
         type: 'point-in-polygon',
@@ -613,7 +612,7 @@ debugger;
                 }
               },
               polygons_source: {
-                id: 'a0',
+                id: 'a2',
                 type: 'source',
                 params: {
                   query: 'SELECT * FROM states'

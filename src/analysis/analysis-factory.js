@@ -10,8 +10,6 @@ module.exports = Model.extend({
 
   analyse: function (analysisDefinition) {
     analysisDefinition = _.clone(analysisDefinition);
-
-debugger;
     var analysis = this._getAnalysisFromIndex(analysisDefinition.id);
     var analysisAttrs = this._getAnalysisAttributesFromAnalysisDefinition(analysisDefinition);
     if (analysis) {
@@ -38,7 +36,6 @@ debugger;
     } else if (analysisDefinition.type === 'point-in-polygon') {
       var pointsSource = this.analyse(analysisDefinition.params.points_source);
       var polygonsSource = this.analyse(analysisDefinition.params.polygons_source);
-      debugger;
       params = _.extend(analysisDefinition.params, {
         points_source: pointsSource,
         polygons_source: polygonsSource

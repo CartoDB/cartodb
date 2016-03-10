@@ -8,12 +8,13 @@ require 'json'
 #     Edit `config/initializers/carto_db.rb` making `use_https?` return `false`.
 # 1.- Start server in production mode enabling memory profiling:
 #       `MEMORY_REPORTING=true RAILS_ENV=production bundle exec rails s -p 3000`
+#     DO NOT run with MEMORY_REPORTING=true in production environments
 # 2.- Use the features that you want to profile as much as possible.
 # 3.- Memory dump. Find server PID and request the dump:
 #       `ps xah | grep ruby`, for example
-#       `bundle exec rbtrace -p <PID> -e 'Thread.new{GC.start;require "objspace";io=File.open("/tmp/ruby-heap.dump", "w"); ObjectSpace.dump_all(output: io); io.close}'`
+#       `bundle exec rbtrace -p <PID> -e 'Thread.new{CartoDB::memory_dump("/tmp/dump")}'`
 # 4.- Run the Analyzer to get some insights about objects:
-#       `ruby lib/cartodb/analyzer.rb /tmp/ruby-heap.dump > /tmp/ruby-heap.dump.analysis`
+#       `ruby lib/cartodb/analyzer.rb /tmp/dump > /tmp/dump.analysis.csv`
 
 require 'json'
 class Analyzer
@@ -64,4 +65,32 @@ class Analyzer2
   end
 end
 
-Analyzer2.new(ARGV[0]).analyze
+class AnalyzerClasses
+  def initialize(filename)
+    load(filename)
+  end
+
+  def load(filename)
+    @classes = {}
+    File.open(filename + '.classes') do |f|
+      @classes = JSON.load(f)
+    end
+
+    @data = []
+    File.open(filename + '.dump') do |f|
+      f.each_line do |line|
+        @data << JSON.parse(line)
+      end
+    end
+  end
+
+  def analyze
+    @data.group_by { |row| "#{row['type']}:#{row['class']}" }.each do |_, v|
+      memsize = v.inject(0) { |s, x| s + x['memsize'].to_i }
+      class_name = v[0]['class'].nil? ? '' : @classes[(v[0]['class'].hex / 2).to_s]
+      puts "#{v[0]['type']},#{v[0]['class']},#{class_name},#{v.count},#{memsize}"
+    end
+  end
+end
+
+AnalyzerClasses.new(ARGV[0]).analyze

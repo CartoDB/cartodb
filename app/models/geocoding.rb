@@ -95,7 +95,7 @@ class Geocoding < Sequel::Model
                                                           max_rows: max_geocodable_rows,
                                                           country_column: country_column,
                                                           region_column: region_column,
-                                                          log: self.log)
+                                                          log: log)
       rescue => e
         @table_geocoder = nil
         raise e
@@ -171,6 +171,10 @@ class Geocoding < Sequel::Model
     handle_geocoding_success(rows_geocoded_before)
   rescue => e
     handle_geocoding_failure(e, rows_geocoded_before)
+  ensure
+    if table_geocoder && table_geocoder.remote_id
+      self.update remote_id: table_geocoder.remote_id
+    end
   end
 
   def report(error = nil)
@@ -189,7 +193,7 @@ class Geocoding < Sequel::Model
   end # self.processable_rows
 
   def calculate_used_credits
-    return 0 unless kind == 'high-resolution'
+    return 0 unless kind == 'high-resolution' && geocoder_type == 'heremaps'
     total_rows       = processed_rows.to_i + cache_hits.to_i
     geocoding_quota  = user.organization.present? ? user.organization.geocoding_quota.to_i : user.geocoding_quota
     used_geocoding_calls = user.organization_user? ? user.organization.get_geocoding_calls : user.get_geocoding_calls

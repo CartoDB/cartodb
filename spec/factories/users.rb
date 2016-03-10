@@ -47,12 +47,22 @@ FactoryGirl.define do
 
   factory :carto_user, :class => Carto::User do
 
-    username               { String.random(5).downcase }
-    email                  { String.random(5).downcase + '@' + String.random(5).downcase + '.com' }
-    password               { email.split('@').first }
-    table_quota            5
-    quota_in_bytes         5000000
-    id                     { UUIDTools::UUID.timestamp_create.to_s }
+    username { String.random(5).downcase }
+    email { String.random(5).downcase + '@' + String.random(5).downcase + '.com' }
+
+    password { email.split('@').first }
+    password_confirmation { email.split('@').first }
+    salt 'kkkkkkkkk'
+    crypted_password 'kkkkkkkkk'
+
+    api_key '21ee521b8a107ea55d61fd7b485dd93d54c0b9d2'
+    table_quota 5
+    quota_in_bytes 5000000
+    id { UUIDTools::UUID.timestamp_create.to_s }
+
+    after(:create) do |carto_user|
+      ::User.where(id: carto_user.id).first.after_create
+    end
 
   end
 

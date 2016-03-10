@@ -48,7 +48,7 @@ module CartoDB
         "#{OSM_INDEXING_OPTION} #{PG_COPY_OPTION} #{client_encoding_option} #{shape_encoding_option} " +
         "#{executable_path} #{OUTPUT_FORMAT_OPTION} #{overwrite_option} #{guessing_option} " +
         "#{postgres_options} #{projection_option} #{layer_creation_options} #{filepath} #{layer} " +
-        "#{layer_name_option} #{NEW_LAYER_TYPE_OPTION} #{shape_coordinate_option} "
+        "#{layer_name_option} #{new_layer_type_option} #{shape_coordinate_option} "
       end
 
       def command_for_append
@@ -155,6 +155,16 @@ module CartoDB
 
       def x_y_possible_names_option
         "-oo X_POSSIBLE_NAMES=#{LONGITUDE_POSSIBLE_NAMES.join(',')} -oo Y_POSSIBLE_NAMES=#{LATITUDE_POSSIBLE_NAMES.join(',')}"
+      end
+
+      def new_layer_type_option
+        # We don't want lat/long columns to generate multipoints in the wkb_geometry column that
+        # can be afterwards choosen by the cartodbfication
+        if csv_guessing && is_csv?
+          ''
+        else
+          NEW_LAYER_TYPE_OPTION
+        end
       end
 
       def overwrite_option

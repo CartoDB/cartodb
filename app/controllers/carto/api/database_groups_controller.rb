@@ -14,6 +14,9 @@ module Carto
 
       ssl_required :create, :update, :destroy, :add_users, :remove_users, :update_permission, :destroy_permission
 
+      # TODO: Make this controller inherit from ::Api::ApplicationController and remove skip_before_filter bellow
+      skip_before_filter :verify_authenticity_token
+
       # Allow HTTPS on local/test as the calls from the groups API are done sending a https X-Forwarded-Proto,
       #  like simulating they come from https:
       # @see https://github.com/CartoDB/cartodb-postgresql/blob/bce61c1e4359653134134097d269edae581e5660/scripts-available/CDB_Groups_API.sql#L170

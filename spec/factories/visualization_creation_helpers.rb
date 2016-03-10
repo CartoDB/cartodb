@@ -1,10 +1,6 @@
 # encoding: utf-8
 
-require_relative '../spec_helper'
-require_relative './users_helper'
 require_relative '../support/factories/tables'
-require_relative './database_configuration_contexts'
-require_relative './organizations_contexts'
 
 include CartoDB
 

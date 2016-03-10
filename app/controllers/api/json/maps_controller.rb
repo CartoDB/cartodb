@@ -47,7 +47,7 @@ class Api::Json::MapsController < Api::ApplicationController
         user_id:        current_user.id,
         map_id:         params[:id],
         exclude_raster: true
-    )
+    ).first
     raise RecordNotFound if vis.nil?
 
     @map = ::Map.filter(id: params[:id]).first

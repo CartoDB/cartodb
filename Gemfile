@@ -101,8 +101,9 @@ group :test do
   gem 'mock_redis'
 end
 
+# Profiling
+gem 'rbtrace',                 '0.4.8'
 group :test, :development do
-  gem 'rbtrace',               '0.4.8'
   gem 'gc_tracer',             '1.5.1'
   gem 'memory_profiler'
 end

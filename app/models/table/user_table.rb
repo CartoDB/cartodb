@@ -162,7 +162,7 @@ class UserTable < Sequel::Model
 
     errors.add(
       :name, 'is a reserved keyword, please choose a different one'
-    ) if RESERVED_TABLE_NAMES.include?(self.name) 
+    ) if RESERVED_TABLE_NAMES.include?(name)
 
     # TODO this kind of check should be moved to the DB
     # privacy setting must be a sane value
@@ -221,11 +221,8 @@ class UserTable < Sequel::Model
 
   # --------------------------------------------------------------------------------
 
-
-  # TODO This is called from other models but should probably never be done outside this class
-  # it depends on the table relator
-  def invalidate_varnish_cache(propagate_to_visualizations=true)
-    service.invalidate_varnish_cache(propagate_to_visualizations)
+  def update_cdb_tablemetadata
+    service.update_cdb_tablemetadata
   end
 
   def table_visualization

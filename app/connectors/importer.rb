@@ -127,7 +127,7 @@ module CartoDB
       end
 
       def drop(table_name)
-        database.execute(%(SELECT CDB_DropOverviews('#{table_name}'::regclass)))
+        Carto::OverviewsService.new(database).delete_overviews table_name
         database.execute(%(DROP TABLE #{table_name}))
       rescue => exception
         runner.log.append("Couldn't drop table #{table_name}: #{exception}. Backtrace: #{exception.backtrace} ")

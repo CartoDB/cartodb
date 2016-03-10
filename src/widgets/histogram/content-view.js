@@ -93,12 +93,7 @@ module.exports = cdb.core.View.extend({
       this.lockedByUser = false;
     } else {
       if (!this._isZoomed()) {
-      //   this.zoomedData = this._dataviewModel.getData();
-      // } else {
         this.histogramChartView.showShadowBars();
-        // if (this._originalData.isEmpty()) {
-        //   this._originalData.reset(this._dataviewModel.getData());
-        // }
         this.miniHistogramChartView.replaceData(this._dataviewModel.getData());
       }
       this.histogramChartView.replaceData(this._dataviewModel.getData());
@@ -109,7 +104,6 @@ module.exports = cdb.core.View.extend({
     } else {
       if (this._isZoomed() && !this.lockZoomedData) {
         this.lockZoomedData = true;
-        // this.zoomedData = this._dataviewModel.getData();
       }
     }
 
@@ -120,7 +114,7 @@ module.exports = cdb.core.View.extend({
     this.clearSubViews();
     var data = this._dataviewModel.getData();
     var originData = this._originalData.getData();
-    var isDataEmpty = (_.isEmpty(data) || _.size(data) === 0) && (_.isEmpty(originData) || _.size(originData) === 0);
+    var isDataEmpty = !_.size(data) && !_.size(originData);
 
     this.$el.html(
       template({

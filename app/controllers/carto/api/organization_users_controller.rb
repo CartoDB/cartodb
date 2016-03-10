@@ -26,6 +26,7 @@ module Carto
         account_creator.with_quota_in_bytes(create_params[:quota_in_bytes]) if create_params[:quota_in_bytes].present?
         account_creator.with_soft_geocoding_limit(create_params[:soft_geocoding_limit]) if create_params[:soft_geocoding_limit].present?
         account_creator.with_soft_here_isolines_limit(create_params[:soft_here_isolines_limit]) if create_params[:soft_here_isolines_limit].present?
+        account_creator.with_soft_twitter_datasource_limit(create_params[:soft_twitter_datasource_limit]) if create_params[:soft_twitter_datasource_limit].present?
 
         render_jsonp(account_creator.validation_errors.full_messages, 410) && return unless account_creator.valid?
 
@@ -85,12 +86,12 @@ module Carto
 
       # TODO: Use native strong params when in Rails 4+
       def create_params
-        permit(:email, :username, :password, :quota_in_bytes, :soft_geocoding_limit, :soft_here_isolines_limit)
+        permit(:email, :username, :password, :quota_in_bytes, :soft_geocoding_limit, :soft_here_isolines_limit, :soft_twitter_datasource_limit)
       end
 
       # TODO: Use native strong params when in Rails 4+
       def update_params
-        permit(:email, :password, :quota_in_bytes, :soft_geocoding_limit, :soft_here_isolines_limit)
+        permit(:email, :password, :quota_in_bytes, :soft_geocoding_limit, :soft_here_isolines_limit, :soft_twitter_datasource_limit)
       end
     end
   end

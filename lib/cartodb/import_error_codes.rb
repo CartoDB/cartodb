@@ -186,7 +186,7 @@ module CartoDB
     },
     2011 => {
       title: 'Invalid cartodb_id column',
-      what_about: "The import failed because your table contains an invalid cartodb_id column. If you want to use it as a primary key, its values must be integer, non-null and unique. Otherwise, try renaming your current cartodb_id column.",
+      what_about: "The import failed because your table contains an invalid cartodb_id column. If you want to use it as a primary key, its values must be integers, non-null, and unique. Otherwise, try renaming your current cartodb_id column.",
       source: ERROR_SOURCE_USER
     },
     3007 => {

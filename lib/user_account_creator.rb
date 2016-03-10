@@ -88,11 +88,30 @@ module CartoDB
     def valid?
       build
 
-      if @organization && @organization.owner.nil? && !promote_to_organization_owner?
-        @custom_errors[:organization] = ["owner is not set. In order to activate this organization the administrator must login first"]
+      if @organization
+        if @organization.owner.nil?
+          if !promote_to_organization_owner?
+            @custom_errors[:organization] = ["owner is not set. In order to activate this organization the administrator must login first"]
+          end
+        else
+          validate_organization_soft_limits
+        end
       end
 
       @user.valid? && @user.validate_credentials_not_taken_in_central && @custom_errors.keys.length == 0
+    end
+
+    def validate_organization_soft_limits
+      owner = @organization.owner
+      if @user_params[PARAM_SOFT_GEOCODING_LIMIT] == 'true' && !owner.soft_geocoding_limit
+        @custom_errors[:soft_geocoding_limit] = ["Owner can't assign soft geocoding limit"]
+      end
+      if @user_params[PARAM_SOFT_HERE_ISOLINES_LIMIT] == 'true' && !owner.soft_here_isolines_limit
+        @custom_errors[:soft_here_isolines_limit] = ["Owner can't assign soft here isolines limit"]
+      end
+      if @user_params[PARAM_SOFT_TWITTER_DATASOURCE_LIMIT] == 'true' && !owner.soft_twitter_datasource_limit
+        @custom_errors[:soft_twitter_datasource_limit] = ["Owner can't assign soft twitter datasource limit"]
+      end
     end
 
     def validation_errors

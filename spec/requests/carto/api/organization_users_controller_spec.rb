@@ -13,6 +13,7 @@ describe Carto::Api::OrganizationUsersController do
     ::User.any_instance.stubs(:create_in_central).returns(true)
     ::User.any_instance.stubs(:update_in_central).returns(true)
     ::User.any_instance.stubs(:delete_in_central).returns(true)
+    ::User.any_instance.stubs(:load_common_data).returns(true)
   end
 
   describe 'user creation' do
@@ -83,6 +84,7 @@ describe Carto::Api::OrganizationUsersController do
       last_user_created.email.should == "#{username}@cartodb.com"
       last_user_created.soft_geocoding_limit.should == false
       last_user_created.quota_in_bytes.should == 1024
+      last_user_created.destroy
     end
 
     it 'assigns soft_geocoding_limit to false by default' do
@@ -99,18 +101,27 @@ describe Carto::Api::OrganizationUsersController do
       @organization.reload
       last_user_created = @organization.users.find { |user| user.username == username }
       last_user_created.soft_geocoding_limit.should == false
+      last_user_created.destroy
     end
 
-    it 'can assign soft_geocoding_limit, soft_twitter_datasource_limit and soft_here_isolines_limit to true if owner has them' do
-      old_soft_limits = [
-        @organization.owner.soft_geocoding_limit,
-        @organization.owner.soft_twitter_datasource_limit,
-        @organization.owner.soft_here_isolines_limit
+    def soft_limits(user)
+      [
+        user.soft_geocoding_limit,
+        user.soft_twitter_datasource_limit,
+        user.soft_here_isolines_limit
       ]
-      @organization.owner.soft_geocoding_limit = true
-      @organization.owner.soft_twitter_datasource_limit = true
-      @organization.owner.soft_here_isolines_limit = true
+    end
 
+    def set_soft_limits(user, soft_limits)
+      user.soft_geocoding_limit = soft_limits[0]
+      user.soft_twitter_datasource_limit = soft_limits[1]
+      user.soft_here_isolines_limit = soft_limits[2]
+    end
+
+    it 'can enable soft geocoding_limit, twitter_datasource_limit and here_isolines_limit if owner has them' do
+      old_soft_limits = soft_limits(@organization.owner)
+      set_soft_limits(@organization.owner, [true, true, true])
+      @organization.owner.save
 
       login(@organization.owner)
       username = 'soft-limits-true-user'
@@ -132,9 +143,37 @@ describe Carto::Api::OrganizationUsersController do
       last_user_created.soft_twitter_datasource_limit.should eq true
       last_user_created.soft_geocoding_limit.should eq true
 
-      @organization.owner.soft_geocoding_limit = old_soft_limits[0]
-      @organization.owner.soft_twitter_datasource_limit = old_soft_limits[1]
-      @organization.owner.soft_here_isolines_limit = old_soft_limits[2]
+      last_user_created.destroy
+
+      set_soft_limits(@organization.owner, old_soft_limits)
+      @organization.owner.save
+    end
+
+    it 'cannot enable soft geocoding_limit, twitter_datasource_limit or here_isolines_limit if owner has not them' do
+      old_soft_limits = soft_limits(@organization.owner)
+      set_soft_limits(@organization.owner, [false, false, false])
+      @organization.owner.save
+
+      login(@organization.owner)
+      username = 'soft-limits-true-invalid-user'
+      params = { username: "#{username}",
+                 email: "#{username}@cartodb.com",
+                 password: 'patata',
+                 soft_geocoding_limit: true,
+                 soft_twitter_datasource_limit: true,
+                 soft_here_isolines_limit: true
+               }
+      post api_v1_organization_users_create_url(name: @organization.name), params
+
+      last_response.status.should == 410
+      errors = JSON.parse(last_response.body)
+      errors.count.should eq 3
+
+      @organization.reload
+      @organization.users.find { |user| user.username == username }.should be_nil
+
+      set_soft_limits(@organization.owner, old_soft_limits)
+      @organization.owner.save
     end
 
   end

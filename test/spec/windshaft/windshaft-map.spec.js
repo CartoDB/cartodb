@@ -223,7 +223,7 @@ describe('windshaft/map', function () {
         });
       });
 
-      describe("when there isn't a tiled layer as the first layer of the Windshaft response (Named Map)", function () {
+      describe("when there isn't a tiled layer as the first layer of the Windshaft response (Anonymous Map)", function () {
         beforeEach(function () {
           this.windshaftMapInstance = {
             layergroupid: 'layergroupid',

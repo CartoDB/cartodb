@@ -17,8 +17,9 @@ module Carto
         link_renamed_tables(user) unless no_tables
         link_deleted_tables(user)
         link_created_tables(user) unless no_tables
-        # Leaving the critical zone, bolt unlocked automatically
       end
+
+      # Left the critical zone, bolt unlocked automatically
     end
 
     # search in the user database for tables that are not in the metadata database
@@ -57,46 +58,34 @@ module Carto
     end
 
     def link_deleted_tables(user)
-      # Sync tables replace contents without touching metadata DB, so if method triggers meanwhile sync will fail
       syncs = CartoDB::Synchronization::Collection.new.fetch(user_id: user.id).map(&:name).compact
 
-      # Avoid fetching full models
-      metadata_tables = user.tables.select(:table_id, :name).map do |table|
-        { table_id: table.table_id, name: table.name }
-      end
-
-      metadata_tables_ids = metadata_tables.select{ |table| !syncs.include?(table[:name]) }.map do |table|
-        table[:table_id]
-      end
-
-      dropped_tables = metadata_tables_ids - user.real_tables.map{ |table| table[:oid] }.compact
-
       # Remove tables with oids that don't exist on the db
-      user.tables.where(table_id: dropped_tables).all.each do |user_table|
-        Rollbar.report_message('ghost tables', 'debug', { action: 'dropping table', new_table: user_table.name })
+      stale_tables(user).each do |user_table|
+        # Sync tables replace contents without touching metadata DB, so if method triggers meanwhile sync will fail
+        next if syncs.include?(user_table[:name])
 
-        table = Table.new(user_table: user_table)
+        Rollbar.report_message('ghost tables', 'debug', { action: 'dropping table', new_table: user_table[:name] })
+
+        table = Table.new(user_table_id: user_table[:id])
+
         table.keep_user_database_table = true
         table.destroy
-      end if dropped_tables.present?
+      end
 
-      # Remove tables with null oids unless the table name exists on the db
-      clean_null_oids(user) if dropped_tables.present? && dropped_tables.include?(nil)
+      clean_user_tables_with_null_table_id(user)
     end
 
     def link_created_tables(user)
-      table_names = search_for_cartodbfied_tables(user)
-      created_tables = user.real_tables.select { |table| table_names.include?(table[:relname]) }
-
-      created_tables.each do |t|
+      non_linked_tables(user).each do |t|
         begin
-          Rollbar.report_message('ghost tables', 'debug', { action: 'registering table', new_table: t[:relname] })
+          Rollbar.report_message('ghost tables', 'debug', { action: 'registering table', new_table: t[:name] })
 
           table = Table.new
 
           table.user_id = user.id
-          table.name = t[:relname]
-          table.table_id = t[:oid]
+          table.name = t[:name]
+          table.table_id = t[:id]
           table.register_table_only = true
           table.keep_user_database_table = true
 
@@ -111,12 +100,6 @@ module Carto
     # it does not check column types, and only the latest cartodbfication trigger attached (test_quota_per_row)
     # returns the list of tables in the database with those columns but not in metadata database
     def search_for_cartodbfied_tables(user)
-      metadata_table_names = user.tables.select(:name).map(&:name).map { |table| "'#{table}'" }.join(',')
-
-      db = user.in_database(as: :superuser)
-
-      required_columns = Table::CARTODB_REQUIRED_COLUMNS + [Table::THE_GEOM_WEBMERCATOR]
-      cartodb_columns = (required_columns).map { |t| "'#{t.to_s}'" }.join(',')
       sql = %Q{
         WITH a as (
           SELECT table_name, count(column_name::text) cdb_columns_count
@@ -128,11 +111,16 @@ module Carto
             t.tableowner = '#{user.database_username}' AND
       }
 
-      if metadata_table_names.length != 0
+      unless linked_tables(user).empty?
+        linked_table_names = linked_tables(user).map { |linked_table| "'#{linked_table[:name]}'" }.join(',')
+
         sql += %Q{
-          c.table_name NOT IN (#{metadata_table_names}) AND
+          c.table_name NOT IN (#{linked_table_names}) AND
         }
       end
+
+      required_columns = Table::CARTODB_REQUIRED_COLUMNS + [Table::THE_GEOM_WEBMERCATOR]
+      cartodb_columns = (required_columns).map { |t| "'#{t.to_s}'" }.join(',')
 
       sql += %Q{
             column_name IN (#{cartodb_columns}) AND
@@ -145,15 +133,39 @@ module Carto
         SELECT table_name FROM a WHERE cdb_columns_count = #{required_columns.length}
       }
 
-      db[sql].all.map { |table| table[:table_name] }
+      user.in_database(as: :superuser)[sql].all.map { |table| table[:table_name] }
     end
 
-    def clean_null_oids
-      user.tables.filter(table_id: nil).all.each do |user_table|
-        t = Table.new(user_table: user_table)
-        t.keep_user_database_table = true
-        t.destroy unless user.real_tables.map { |table| table[:relname] }.include?(t.name)
-      end
+    # Tables viewable in the editor; in users user_tables
+    def linked_tables(user)
+      user.tables.select(:name, :table_id).map { |table| { id: table.table_id, name: table.name }}
+    end
+
+    # May not be viewed in the editor; searching in pg_class
+    def all_tables(user)
+      user.real_tables.map { |table| { id: table[:oid], name: table[:relname] }}.compact
+    end
+
+    # Not viewable in the editor
+    def non_linked_tables(user)
+      all_tables(user) - linked_tables(user)
+    end
+
+    # Tables that have been dropped via API but still exist as UserTable
+    def stale_tables(user)
+      linked_tables(user) - all_tables(user)
+    end
+
+    # Remove tables with null oids unless the table name exists on the db
+    def clean_user_tables_with_null_table_id
+      # null_table_id_user_tables = linked_tables.select{ |linked_table| linked_table.table_id.nil? &&  }
+      #
+      # null_table_id_user_tables.each do |user_table|
+      #   t = Table.new(table_id: user_table[:id])
+      #
+      #   t.keep_user_database_table = true
+      #   t.destroy
+      # end
     end
   end
 end

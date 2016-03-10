@@ -113,8 +113,8 @@ module.exports = cdb.core.View.extend({
   render: function () {
     this.clearSubViews();
     var data = this._dataviewModel.getData();
-    var originData = this._originalData.getData();
-    var isDataEmpty = !_.size(data) && !_.size(originData);
+    var originalData = this._originalData.getData();
+    var isDataEmpty = !_.size(data) && !_.size(originalData);
 
     this.$el.html(
       template({

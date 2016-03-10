@@ -198,6 +198,54 @@ describe Carto::Api::AnalysesController do
         response.status.should eq 403
       end
     end
+
+    it 'returns 422 if payload is not valid json' do
+      put_json viz_analysis_url(@user, @visualization, @analysis), nil do |response|
+        response.status.should eq 422
+      end
+      put_json viz_analysis_url(@user, @visualization, @analysis), "" do |response|
+        response.status.should eq 422
+      end
+      put_json viz_analysis_url(@user, @visualization, @analysis), "wadus" do |response|
+        response.status.should eq 422
+      end
+      put_json viz_analysis_url(@user, @visualization, @analysis), "wadus: 1" do |response|
+        response.status.should eq 422
+      end
+    end
+
+    it 'returns 422 if payload is empty json' do
+      put_json viz_analysis_url(@user, @visualization, @analysis), {} do |response|
+        response.status.should eq 422
+      end
+      put_json viz_analysis_url(@user, @visualization, @analysis), [] do |response|
+        response.status.should eq 422
+      end
+    end
+
+    it 'returns 422 if analysis definition is not valid json' do
+      put_json viz_analysis_url(@user, @visualization, @analysis), analysis_definition: nil do |response|
+        response.status.should eq 422
+      end
+      put_json viz_analysis_url(@user, @visualization, @analysis), analysis_definition: "" do |response|
+        response.status.should eq 422
+      end
+      put_json viz_analysis_url(@user, @visualization, @analysis), analysis_definition: "wadus" do |response|
+        response.status.should eq 422
+      end
+      put_json viz_analysis_url(@user, @visualization, @analysis), analysis_definition: "wadus: 1" do |response|
+        response.status.should eq 422
+      end
+    end
+
+    it 'returns 422 if analysis_definition is empty json' do
+      put_json viz_analysis_url(@user, @visualization, @analysis), analysis_definition: {} do |response|
+        response.status.should eq 422
+      end
+      put_json viz_analysis_url(@user, @visualization, @analysis), analysis_definition: [] do |response|
+        response.status.should eq 422
+      end
+    end
   end
 
   describe '#destroy' do

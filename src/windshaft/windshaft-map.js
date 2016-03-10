@@ -67,11 +67,7 @@ var WindshaftMap = Backbone.Model.extend({
       filters: filters.toJSON(),
       success: function (mapInstance) {
         this.set(mapInstance);
-        this.trigger('instanceCreated', this, sourceLayerId, forceFetch);
-
-        // TODO: Revisit this (will layerIndex work for NamedMaps??)
-        // Should we move it somewhere else?
-        _.each(options.layers, function (layer, layerIndex) {
+        _.each(layers, function (layer, layerIndex) {
           if (layer.get('type') === 'torque') {
             layer.set('meta', this.getLayerMeta(layerIndex));
             layer.set('urls', this.getTiles('torque'));
@@ -79,6 +75,7 @@ var WindshaftMap = Backbone.Model.extend({
             layer.set('meta', this.getLayerMeta(layerIndex));
           }
         }, this);
+        this.trigger('instanceCreated', this, sourceLayerId, forceFetch);
       }.bind(this),
       error: function (error) {
         console.log('Error creating the map instance on Windshaft: ' + error);
@@ -202,11 +199,18 @@ var WindshaftMap = Backbone.Model.extend({
 
   getLayerMeta: function (layerIndex) {
     var layerMeta = {};
+    var metadataLayerIndex = this._localLayerIndexToWindshaftLayerIndex(layerIndex);
     var layers = this.get('metadata') && this.get('metadata').layers;
-    if (layers && layers[layerIndex]) {
-      layerMeta = layers[layerIndex].meta || {};
+    if (layers && layers[metadataLayerIndex]) {
+      layerMeta = layers[metadataLayerIndex].meta || {};
     }
     return layerMeta;
+  },
+
+  _localLayerIndexToWindshaftLayerIndex: function (layerIndex) {
+    var layers = this.get('metadata') && this.get('metadata').layers;
+    var hasTiledLayer = layers.length > 0 && layers[0].type === 'tiled';
+    return hasTiledLayer ? ++layerIndex : layerIndex;
   },
 
   _encodeParams: function (params, included) {

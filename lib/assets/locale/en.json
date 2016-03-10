@@ -25,15 +25,19 @@
     "map": "map",
     "map_name": "%{name} map",
     "map_pluralize": "%{smart_count} map |||| %{smart_count} maps",
-    "layers": {
-      "title": "Layers",
-      "basemap": "basemap"
-    },
-    "elements": {
-      "title": "Elements"
+    "tab-pane": {
+      "layers": {
+        "title-label": "Layers",
+        "basemap": "basemap"
+      },
+      "elements": {
+        "title-label": "Elements"
+      },
+      "widgets": {
+        "title-label": "Widgets",
+      }
     },
     "widgets": {
-      "title": "Widgets",
       "widgets-view": {
         "add_widget": "Add widget"
       },
@@ -71,8 +75,7 @@
           "yes": "Yes",
           "no": "No"
         }
-      },
-      "edit": "Edit",
+      }
     }
   }
 }

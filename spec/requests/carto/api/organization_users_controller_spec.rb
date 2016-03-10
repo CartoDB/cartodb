@@ -161,6 +161,36 @@ describe Carto::Api::OrganizationUsersController do
       @organization.owner.save
     end
 
+    it 'can disable soft geocoding_limit, twitter_datasource_limit and here_isolines_limit if owner has them' do
+      old_soft_limits = soft_limits(@organization.owner)
+      set_soft_limits(@organization.owner, [true, true, true])
+      @organization.owner.save
+
+      login(@organization.owner)
+      username = 'soft-limits-false-user'
+      params = user_params(username,
+                           soft_geocoding_limit: false,
+                           soft_twitter_datasource_limit: false,
+                           soft_here_isolines_limit: false)
+
+      post api_v1_organization_users_create_url(name: @organization.name), params
+
+      last_response.status.should eq 200
+
+      @organization.reload
+      last_user_created = @organization.users.find { |user| user.username == username }
+
+      last_user_created.soft_geocoding_limit.should eq false
+      last_user_created.soft_twitter_datasource_limit.should eq false
+      last_user_created.soft_geocoding_limit.should eq false
+
+      last_user_created.destroy
+
+      set_soft_limits(@organization.owner, old_soft_limits)
+      @organization.owner.save
+    end
+
+
     it 'cannot enable soft geocoding_limit, twitter_datasource_limit or here_isolines_limit if owner has not them' do
       old_soft_limits = soft_limits(@organization.owner)
       set_soft_limits(@organization.owner, [false, false, false])

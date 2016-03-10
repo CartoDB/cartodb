@@ -1,10 +1,44 @@
-3.12.3 (2016-03-09)
+3.12.4 (2016-03-09)
 -------------------
+
+## Bug Fixes
 * Fixes in HTTP Header authentication.
 * Fixes in avatar urls
 * Fixes in organization sigup
 * Fixes in high resolution geocoder when using google provider
 * Fixed rake to setup google maps
+
+3.12.3 (2016-02-11)
+-------------------
+
+## Features
+* Group support for organizations.
+* User quota slider in organizations management.
+* Update navigation in public pages.
+* Support for HTTP Header authentication.
+* New visualization backups.
+* GPX multilayer file creates a multilayer map
+* Allow to create sync tables with a map if setting up onw from "connect dataset" from the Maps view
+
+## Bug Fixes
+* Now the owner of the dataset is going to receive an email when the synchronization fails hits the max allowed number [#3501](https://github.com/CartoDB/cartodb/issues/3501)
+* If the dataset don't have an associated map we avoid to use the zoom property [#5447](https://github.com/CartoDB/cartodb/issues/5447)
+* Display custom attribution of layers in the editor and embeds
+  [#5388](https://github.com/CartoDB/cartodb/pull/5388)
+* Fix for #5477 bug moving users with non-cartodbfied tables
+* Added a rake task to notify trendy maps to the map owner when reach a certain mapviews
+amount (500, 1000, 2000 and so on). This task takes into account the day before so it should
+be exectuded daily
+* Fixed negative geocoding quota in georeference modal
+[#5622](https://github.com/CartoDB/cartodb/pull/5622)
+* Fully removed Layer parent_id from backend and frontend as wasn't used.
+* Added [#5975 Box integration](https://github.com/CartoDB/cartodb/issues/5975).
+* Fixed geocoding in onpremise versions
+
+## Security fixes
+* Removing Bitly shortener.
+* Several XSS fixes in organization accounts
+* API fixes that allows 
 
 3.12.2 (2016-05-15)
 -------------------

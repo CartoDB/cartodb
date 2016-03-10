@@ -8,12 +8,13 @@ describe Carto::Api::OrganizationUsersController do
   include Rack::Test::Methods
   include Warden::Test::Helpers
 
-  before (:each) do
+  before(:each) do
     ::User.any_instance.stubs(:validate_credentials_not_taken_in_central).returns(true)
     ::User.any_instance.stubs(:create_in_central).returns(true)
     ::User.any_instance.stubs(:update_in_central).returns(true)
     ::User.any_instance.stubs(:delete_in_central).returns(true)
     ::User.any_instance.stubs(:load_common_data).returns(true)
+    ::User.any_instance.stubs(:reload_avatar).returns(true)
   end
 
   describe 'user creation' do
@@ -39,7 +40,7 @@ describe Carto::Api::OrganizationUsersController do
     it 'returns 410 if email is not present' do
       login(@organization.owner)
 
-      params = { username: "#{random_username}", password: 'patata' }
+      params = { username: random_username, password: 'patata' }
       post api_v1_organization_users_create_url(name: @organization.name), params
 
       last_response.body.include?('email is not present').should be true
@@ -60,47 +61,58 @@ describe Carto::Api::OrganizationUsersController do
       login(@organization.owner)
 
       username = 'manolo'
-      params = { username: "#{username}", email: "#{username}@cartodb.com" }
+      params = { username: username, email: "#{username}@cartodb.com" }
       post api_v1_organization_users_create_url(name: @organization.name), params
 
-      last_response.status.should == 410
+      last_response.status.should eq 410
       last_response.body.include?('password is not present').should be true
+    end
+
+    def user_params(username,
+                    soft_geocoding_limit: false,
+                    soft_twitter_datasource_limit: nil,
+                    soft_here_isolines_limit: nil)
+
+      params = {
+        username: username,
+        email: "#{username}@cartodb.com",
+        password: 'patata',
+        quota_in_bytes: 1024
+      }
+      params[:soft_geocoding_limit] = soft_geocoding_limit unless soft_geocoding_limit.nil?
+      params[:soft_twitter_datasource_limit] = soft_twitter_datasource_limit unless soft_twitter_datasource_limit.nil?
+      params[:soft_here_isolines_limit] = soft_here_isolines_limit unless soft_here_isolines_limit.nil?
+
+      params
     end
 
     it 'correctly creates a user' do
       login(@organization.owner)
       username = 'manolo-escobar'
-      params = { username: "#{username}",
-                 email: "#{username}@cartodb.com",
-                 password: 'patata',
-                 soft_geocoding_limit: false,
-                 quota_in_bytes: 1024 }
+      params = user_params(username)
       post api_v1_organization_users_create_url(name: @organization.name), params
 
-      last_response.status.should == 200
+      last_response.status.should eq 200
 
       last_user_created = @organization.users.find { |user| user.username == username }
-      last_user_created.username.should == username
-      last_user_created.email.should == "#{username}@cartodb.com"
-      last_user_created.soft_geocoding_limit.should == false
-      last_user_created.quota_in_bytes.should == 1024
+      last_user_created.username.should eq username
+      last_user_created.email.should eq "#{username}@cartodb.com"
+      last_user_created.soft_geocoding_limit.should eq false
+      last_user_created.quota_in_bytes.should eq 1024
       last_user_created.destroy
     end
 
     it 'assigns soft_geocoding_limit to false by default' do
       login(@organization.owner)
       username = 'soft-geocoding-limit-false-user'
-      params = { username: "#{username}",
-                 email: "#{username}@cartodb.com",
-                 password: 'patata',
-                 quota_in_bytes: 1024 }
+      params = user_params(username, soft_geocoding_limit: nil)
       post api_v1_organization_users_create_url(name: @organization.name), params
 
-      last_response.status.should == 200
+      last_response.status.should eq 200
 
       @organization.reload
       last_user_created = @organization.users.find { |user| user.username == username }
-      last_user_created.soft_geocoding_limit.should == false
+      last_user_created.soft_geocoding_limit.should eq false
       last_user_created.destroy
     end
 
@@ -125,16 +137,14 @@ describe Carto::Api::OrganizationUsersController do
 
       login(@organization.owner)
       username = 'soft-limits-true-user'
-      params = { username: "#{username}",
-                 email: "#{username}@cartodb.com",
-                 password: 'patata',
-                 soft_geocoding_limit: true,
-                 soft_twitter_datasource_limit: true,
-                 soft_here_isolines_limit: true
-               }
+      params = user_params(username,
+                           soft_geocoding_limit: true,
+                           soft_twitter_datasource_limit: true,
+                           soft_here_isolines_limit: true)
+
       post api_v1_organization_users_create_url(name: @organization.name), params
 
-      last_response.status.should == 200
+      last_response.status.should eq 200
 
       @organization.reload
       last_user_created = @organization.users.find { |user| user.username == username }
@@ -156,16 +166,13 @@ describe Carto::Api::OrganizationUsersController do
 
       login(@organization.owner)
       username = 'soft-limits-true-invalid-user'
-      params = { username: "#{username}",
-                 email: "#{username}@cartodb.com",
-                 password: 'patata',
-                 soft_geocoding_limit: true,
-                 soft_twitter_datasource_limit: true,
-                 soft_here_isolines_limit: true
-               }
+      params = user_params(username,
+                           soft_geocoding_limit: true,
+                           soft_twitter_datasource_limit: true,
+                           soft_here_isolines_limit: true)
       post api_v1_organization_users_create_url(name: @organization.name), params
 
-      last_response.status.should == 410
+      last_response.status.should eq 410
       errors = JSON.parse(last_response.body)
       errors.count.should eq 3
 
@@ -204,7 +211,7 @@ describe Carto::Api::OrganizationUsersController do
       user_to_update = @organization.users[0]
       put api_v1_organization_users_update_url(name: @organization.name, u_username: user_to_update.username)
 
-      last_response.status.should == 410
+      last_response.status.should eq 410
       last_response.body.include?('No update params provided').should be true
     end
 
@@ -228,7 +235,7 @@ describe Carto::Api::OrganizationUsersController do
 
       @organization.reload
 
-      last_response.status.should == 200
+      last_response.status.should eq 200
       @organization.users[0].email.should == new_email
     end
 
@@ -241,7 +248,7 @@ describe Carto::Api::OrganizationUsersController do
 
       @organization.reload
 
-      last_response.status.should == 200
+      last_response.status.should eq 200
       @organization.users[0].quota_in_bytes.should == 2048
     end
 
@@ -254,7 +261,7 @@ describe Carto::Api::OrganizationUsersController do
 
       @organization.reload
 
-      last_response.status.should == 200
+      last_response.status.should eq 200
       @organization.users[0].soft_geocoding_limit.should be true
 
       params = { soft_geocoding_limit: false }
@@ -262,7 +269,7 @@ describe Carto::Api::OrganizationUsersController do
 
       @organization.reload
 
-      last_response.status.should == 200
+      last_response.status.should eq 200
       @organization.users[0].soft_geocoding_limit.should be false
     end
 
@@ -280,9 +287,9 @@ describe Carto::Api::OrganizationUsersController do
       @organization.reload
       @organization.users[0].reload
 
-      last_response.status.should == 200
+      last_response.status.should eq 200
 
-      @organization.users[0].email.should == new_email
+      @organization.users[0].email.should eq new_email
       @organization.users[0].soft_geocoding_limit.should be true
       @organization.users[0].quota_in_bytes.should == 2048
     end
@@ -307,7 +314,7 @@ describe Carto::Api::OrganizationUsersController do
       user_to_be_deleted = @organization.users[0].dup
       delete api_v1_organization_users_delete_url(name: @organization.name, u_username: user_to_be_deleted.username)
 
-      last_response.status.should == 200
+      last_response.status.should eq 200
 
       @organization.reload
       @organization.users.map(&:id).include?(user_to_be_deleted.id).should eq false
@@ -350,7 +357,7 @@ describe Carto::Api::OrganizationUsersController do
       user_to_be_shown = @organization.users[0].dup
       get api_v1_organization_users_show_url(name: @organization.name, u_username: user_to_be_shown.username)
 
-      last_response.status.should == 200
+      last_response.status.should eq 200
       last_response.body == Carto::Api::UserPresenter.new(user_to_be_shown, current_viewer: @organization.owner).to_poro
     end
   end

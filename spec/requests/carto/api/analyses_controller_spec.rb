@@ -101,7 +101,6 @@ describe Carto::Api::AnalysesController do
         response.body[:id].should_not be_nil
         analysis_definition_json = response.body[:analysis_definition].symbolize_keys
         analysis_definition_json.should eq payload[:analysis_definition]
-        analysis_definition_json[:id].should eq natural_id
 
         a = Carto::Analysis.find_by_natural_id(@visualization.id, natural_id)
         a.should_not eq nil

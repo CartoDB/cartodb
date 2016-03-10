@@ -60,15 +60,14 @@ FactoryGirl.define do
     quota_in_bytes 5000000
     id { UUIDTools::UUID.timestamp_create.to_s }
 
-    after(:create) do |carto_user|
-      ::User.where(id: carto_user.id).first.after_create
-      CartoDB::UserModule::DBService.any_instance.unstub
-    end
-
     before(:create) do
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
     end
 
+    after(:create) do |carto_user|
+      ::User.where(id: carto_user.id).first.after_create
+      CartoDB::UserModule::DBService.any_instance.unstub
+    end
   end
 
 end

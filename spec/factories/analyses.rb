@@ -4,7 +4,7 @@ require_dependency 'carto/uuidhelper'
 FactoryGirl.define do
   factory :source_analysis, class: Carto::Analysis do
 
-    params do
+    analysis_definition do
       %(
         {
           "id": "#{String.random(5)}",

@@ -8,6 +8,40 @@ describe Carto::Api::OrganizationUsersController do
   include Rack::Test::Methods
   include Warden::Test::Helpers
 
+  def soft_limits(user)
+    [
+      user.soft_geocoding_limit,
+      user.soft_twitter_datasource_limit,
+      user.soft_here_isolines_limit
+    ]
+  end
+
+  def set_soft_limits(user, soft_limits)
+    user.soft_geocoding_limit = soft_limits[0]
+    user.soft_twitter_datasource_limit = soft_limits[1]
+    user.soft_here_isolines_limit = soft_limits[2]
+  end
+
+  def user_params(username = nil,
+                  soft_geocoding_limit: false,
+                  soft_twitter_datasource_limit: nil,
+                  soft_here_isolines_limit: nil)
+
+    params = {
+      password: 'patata',
+      quota_in_bytes: 1024
+    }
+    unless username.nil?
+      params[:username] = username
+      params[:email] = "#{username}@cartodb.com"
+    end
+    params[:soft_geocoding_limit] = soft_geocoding_limit unless soft_geocoding_limit.nil?
+    params[:soft_twitter_datasource_limit] = soft_twitter_datasource_limit unless soft_twitter_datasource_limit.nil?
+    params[:soft_here_isolines_limit] = soft_here_isolines_limit unless soft_here_isolines_limit.nil?
+
+    params
+  end
+
   before(:each) do
     ::User.any_instance.stubs(:validate_credentials_not_taken_in_central).returns(true)
     ::User.any_instance.stubs(:create_in_central).returns(true)
@@ -68,24 +102,6 @@ describe Carto::Api::OrganizationUsersController do
       last_response.body.include?('password is not present').should be true
     end
 
-    def user_params(username,
-                    soft_geocoding_limit: false,
-                    soft_twitter_datasource_limit: nil,
-                    soft_here_isolines_limit: nil)
-
-      params = {
-        username: username,
-        email: "#{username}@cartodb.com",
-        password: 'patata',
-        quota_in_bytes: 1024
-      }
-      params[:soft_geocoding_limit] = soft_geocoding_limit unless soft_geocoding_limit.nil?
-      params[:soft_twitter_datasource_limit] = soft_twitter_datasource_limit unless soft_twitter_datasource_limit.nil?
-      params[:soft_here_isolines_limit] = soft_here_isolines_limit unless soft_here_isolines_limit.nil?
-
-      params
-    end
-
     it 'correctly creates a user' do
       login(@organization.owner)
       username = 'manolo-escobar'
@@ -114,20 +130,6 @@ describe Carto::Api::OrganizationUsersController do
       last_user_created = @organization.users.find { |user| user.username == username }
       last_user_created.soft_geocoding_limit.should eq false
       last_user_created.destroy
-    end
-
-    def soft_limits(user)
-      [
-        user.soft_geocoding_limit,
-        user.soft_twitter_datasource_limit,
-        user.soft_here_isolines_limit
-      ]
-    end
-
-    def set_soft_limits(user, soft_limits)
-      user.soft_geocoding_limit = soft_limits[0]
-      user.soft_twitter_datasource_limit = soft_limits[1]
-      user.soft_here_isolines_limit = soft_limits[2]
     end
 
     it 'can enable soft geocoding_limit, twitter_datasource_limit and here_isolines_limit if owner has them' do
@@ -293,6 +295,31 @@ describe Carto::Api::OrganizationUsersController do
       @organization.users[0].soft_geocoding_limit.should be true
       @organization.users[0].quota_in_bytes.should == 2048
     end
+
+    it 'can enable soft geocoding_limit, twitter_datasource_limit and here_isolines_limit if owner has them' do
+      old_soft_limits = soft_limits(@organization.owner)
+      set_soft_limits(@organization.owner, [true, true, true])
+      @organization.owner.save
+
+      login(@organization.owner)
+      user_to_update = @organization.users[0]
+      params = user_params(soft_geocoding_limit: true,
+                           soft_twitter_datasource_limit: true,
+                           soft_here_isolines_limit: true)
+
+      put api_v1_organization_users_update_url(name: @organization.name, u_username: user_to_update.username), params
+
+      last_response.status.should eq 200
+
+      user_to_update.reload
+      user_to_update.soft_geocoding_limit.should eq true
+      user_to_update.soft_twitter_datasource_limit.should eq true
+      user_to_update.soft_geocoding_limit.should eq true
+
+      set_soft_limits(@organization.owner, old_soft_limits)
+      @organization.owner.save
+    end
+
   end
 
   describe 'user deletion' do

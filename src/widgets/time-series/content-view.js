@@ -17,7 +17,7 @@ module.exports = cdb.core.View.extend({
 
   render: function () {
     this.clearSubViews();
-    this.$el.html(''); // to remove placeholder if there is any
+    this.$el.empty();
 
     if (this._isDataEmpty()) {
       this.$el.append(placeholderTemplate({

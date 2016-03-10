@@ -427,9 +427,7 @@ module.exports = cdb.core.View.extend({
       hi_index: null
     });
     this._dataviewModel.disableFilter();
-
     this.filter.unsetRange();
-
     this.histogramChartView.unsetBounds();
     this.miniHistogramChartView.hide();
   }

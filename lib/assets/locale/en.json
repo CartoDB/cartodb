@@ -25,59 +25,56 @@
     "map": "map",
     "map_name": "%{name} map",
     "map_pluralize": "%{smart_count} map |||| %{smart_count} maps",
-    "layers": {
-      "title": "Layers",
-      "basemap": "basemap"
-    },
-    "elements": {
-      "title": "Elements"
+    "tab-pane": {
+      "layers": {
+        "title-label": "Layers",
+        "basemap": "basemap"
+      },
+      "elements": {
+        "title-label": "Elements"
+      },
+      "widgets": {
+        "title-label": "Widgets",
+      }
     },
     "widgets": {
-      "title": "Widgets",
       "widgets-view": {
         "add_widget": "Add widget"
       },
       "widgets-form": {
         "type": {
-          "title": "Type",
-          "description": "Choose the widget type"
+          "title-label": "Type",
+          "description": "Choose the widget type",
+          "category": "Category",
+          "formula": "Formula",
+          "histogram": "Histogram",
+          "time_series": "Time Series"
         },
         "data": {
-          "title": "Data",
-          "description": "Configure your values"
+          "aggregation": "Aggregation",
+          "aggregation_column": "Aggregation Column",
+          "bins": "Buckets",
+          "column": "Column",
+          "description": "Configure your values",
+          "end": "End",
+          "loading": "loading…",
+          "operation": "Operation",
+          "prefix": "Prefix",
+          "start": "Start",
+          "suffix": "Suffix",
+          "title": "Title",
+          "title-label": "Data",
+          "value": "Value"
         },
         "style": {
-          "title": "Style",
-          "description": "Apply style to your visualization"
+          "title-label": "Style",
+          "description": "Apply style to your visualization",
+          "sync_on_data_change": "Unfiltered",
+          "sync_on_bbox_change": "Dynamic",
+          "description": "Description",
+          "yes": "Yes",
+          "no": "No"
         }
-      },
-      "edit": "Edit",
-      "type": {
-        "category": "Category",
-        "formula": "Formula",
-        "histogram": "Histogram",
-        "time_series": "Time Series"
-      },
-      "data": {
-        "aggregation": "Aggregation",
-        "aggregation_column": "Aggregation Column",
-        "bins": "Buckets",
-        "column": "Column",
-        "end": "End",
-        "loading": "loading…",
-        "operation": "Operation",
-        "prefix": "Prefix",
-        "start": "Start",
-        "suffix": "Suffix",
-        "title": "Title",
-        "value": "Value"
-      },
-      "style": {
-        "sync_on_data_change": "Unfiltered",
-        "sync_on_bbox_change": "Dynamic",
-        "description": "Description",
-        "yes": "Yes",
-        "no": "No"
       }
     }
   }

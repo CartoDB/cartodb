@@ -48,7 +48,7 @@ module Carto
           })
           vis = table.table_visualization
           vis.register_table_only = true
-          vis.name = table[:relname]
+          vis.name = t[:relname]
           vis.store
         rescue Sequel::DatabaseError => e
           raise unless e.message =~ /must be owner of relation/
@@ -81,11 +81,7 @@ module Carto
       end if dropped_tables.present?
 
       # Remove tables with null oids unless the table name exists on the db
-      user.tables.filter(table_id: nil).all.each do |user_table|
-        t = Table.new(user_table: user_table)
-        t.keep_user_database_table = true
-        t.destroy unless user.real_tables.map { |table| table[:relname] }.include?(t.name)
-      end if dropped_tables.present? && dropped_tables.include?(nil)
+      clean_null_oids(user) if dropped_tables.present? && dropped_tables.include?(nil)
     end
 
     def link_created_tables(user)
@@ -150,6 +146,14 @@ module Carto
       }
 
       db[sql].all.map { |table| table[:table_name] }
+    end
+
+    def clean_null_oids
+      user.tables.filter(table_id: nil).all.each do |user_table|
+        t = Table.new(user_table: user_table)
+        t.keep_user_database_table = true
+        t.destroy unless user.real_tables.map { |table| table[:relname] }.include?(t.name)
+      end
     end
   end
 end

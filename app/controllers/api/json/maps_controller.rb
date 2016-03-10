@@ -4,7 +4,7 @@ require_relative '../../../models/visualization/collection'
 
 class Api::Json::MapsController < Api::ApplicationController
   include Carto::UUIDHelper
-  
+
   ssl_required :update
 
   before_filter :load_map

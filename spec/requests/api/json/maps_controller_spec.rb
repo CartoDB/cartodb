@@ -12,11 +12,6 @@ describe Api::Json::MapsController do
   include Carto::Factories::Visualizations
   include HelperMethods
 
-  def bypass_named_maps
-    CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
-    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true, delete: true)
-  end
-
   before(:all) do
     @user = FactoryGirl.create(:carto_user)
     @user2 = FactoryGirl.create(:carto_user)

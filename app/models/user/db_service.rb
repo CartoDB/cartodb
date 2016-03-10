@@ -1096,7 +1096,7 @@ module CartoDB
           END
           $$
         ")
-        self.close_sequel_connection(conn)
+        close_sequel_connection(conn)
       end
 
       def triggers(schema = @user.database_schema)

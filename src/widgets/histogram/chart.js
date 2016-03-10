@@ -432,7 +432,7 @@ module.exports = cdb.core.View.extend({
 
   _setupModel: function () {
     this.model = new cdb.core.Model({
-      zoom: false,
+      bounded: false,
       showLabels: true,
       data: this.options.data,
       height: this.options.height,

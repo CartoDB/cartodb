@@ -1157,6 +1157,26 @@ describe User do
       @user.hard_geocoding_limit.should be_false
     end
 
+    it 'returns true when for enterprise accounts unless it has been manually set to false' do
+      ['ENTERPRISE', 'ENTERPRISE LUMP-SUM', 'Enterprise Medium Lumpsum AWS'].each do |account_type|
+        @user.stubs(:account_type).returns(account_type)
+
+        @user.soft_geocoding_limit = nil
+
+        @user.soft_geocoding_limit?.should be_false
+        @user.soft_geocoding_limit.should be_false
+        @user.hard_geocoding_limit?.should be_true
+        @user.hard_geocoding_limit.should be_true
+
+        @user.soft_geocoding_limit = true
+
+        @user.soft_geocoding_limit?.should be_true
+        @user.soft_geocoding_limit.should be_true
+        @user.hard_geocoding_limit?.should be_false
+        @user.hard_geocoding_limit.should be_false
+      end
+    end
+
     it 'returns false when the plan is CORONELLI or MERCATOR unless it has been manually set to true' do
       @user.stubs(:account_type).returns('CORONELLI')
       @user.hard_geocoding_limit?.should be_false

@@ -11,21 +11,20 @@ module.exports = cdb.core.View.extend({
   initialize: function () {
     this._dataviewModel = this.options.dataviewModel;
     this._torqueLayerModel = this.options.torqueLayerModel;
-    this._torqueLayerModel.bind('change:renderRange', this._onRenderRangeChange, this);
-    this.add_related_model(this._torqueLayerModel);
+    this._rangeFilter = this._dataviewModel.filter;
 
-    this._setHasSelectedRange();
+    this._rangeFilter.bind('change', this.render, this);
+    this.add_related_model(this._rangeFilter);
   },
 
   render: function () {
     this.clearSubViews();
 
-    if (this._hasRenderRange) {
+    if (!this._rangeFilter.isEmpty()) {
       this.el.classList.add('CDB-Widget-contentSpaced');
       this._appendView(
         new TorqueRenderRangeInfoView({
-          dataviewModel: this._dataviewModel,
-          torqueLayerModel: this._torqueLayerModel
+          dataviewModel: this._dataviewModel
         })
       );
       this._appendView(
@@ -48,19 +47,6 @@ module.exports = cdb.core.View.extend({
     }
 
     return this;
-  },
-
-  _onRenderRangeChange: function () {
-    var prev = this._hasRenderRange;
-    this._setHasSelectedRange();
-    if (prev !== this._hasRenderRange) {
-      this.render();
-    }
-  },
-
-  _setHasSelectedRange: function () {
-    var r = this._torqueLayerModel.get('renderRange');
-    this._hasRenderRange = r && r.start !== r.end;
   },
 
   _appendView: function (view) {

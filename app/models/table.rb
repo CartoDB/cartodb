@@ -1128,6 +1128,12 @@ class Table
     if @data_import
       CartoDB::Importer2::CartodbfyTime::instance(@data_import.id).add(elapsed)
     end
+  rescue => exception
+    if !!(exception.message =~ /Error: invalid cartodb_id/)
+      raise CartoDB::CartoDBfyInvalidID
+    else
+      raise CartoDB::CartoDBfyError
+    end
   end
 
   def update_table_pg_stats

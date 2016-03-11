@@ -38,6 +38,18 @@ describe('src/analysis/analysis-factory.js', function () {
       });
     });
 
+    it('should add new analysis to the collection of analysis', function () {
+      var subwayStops = this.analysisFactory.analyse({
+        id: 'a0',
+        type: 'source',
+        params: {
+          query: 'SELECT * FROM subway_stops'
+        }
+      });
+
+      expect(this.analysisCollection.at(0)).toEqual(subwayStops);
+    });
+
     it('should not create a new analysis if an analysis with the same id was created already', function () {
       var subwayStops1 = this.analysisFactory.analyse({
         id: 'a0',
@@ -89,7 +101,7 @@ describe('src/analysis/analysis-factory.js', function () {
       expect(subwayStops.get('id')).toEqual('a0');
     });
 
-    it('analysis should be re-created if after it has been removed', function () {
+    it('analysis should be re-created after it has been removed', function () {
       var subwayStops1 = this.analysisFactory.analyse({
         id: 'a0',
         type: 'source',
@@ -109,6 +121,22 @@ describe('src/analysis/analysis-factory.js', function () {
       });
 
       expect(subwayStops1.cid).not.toEqual(subwayStops2.cid);
+    });
+
+    it('should remove the analysis from the collection when analysis is removed', function () {
+      var subwayStops1 = this.analysisFactory.analyse({
+        id: 'a0',
+        type: 'source',
+        params: {
+          query: 'SELECT * FROM subway_stops'
+        }
+      });
+
+      expect(this.analysisCollection.size()).toEqual(1);
+
+      subwayStops1.remove();
+
+      expect(this.analysisCollection.size()).toEqual(0);
     });
   });
 

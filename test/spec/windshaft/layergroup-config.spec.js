@@ -7,7 +7,6 @@ var AnalysisFactory = require('../../../src/analysis/analysis-factory.js');
 describe('windshaft/layergroup-config', function () {
   beforeEach(function () {
     this.dataviews = new Backbone.Collection();
-    this.analysisCollection = new Backbone.Collection();
     var map = jasmine.createSpyObj('map', ['getViewBounds', 'bind', 'reload']);
     map.getViewBounds.and.returnValue([[1, 2], [3, 4]]);
     var windshaftMap = jasmine.createSpyObj('windhsaftMap', ['bind']);
@@ -45,6 +44,28 @@ describe('windshaft/layergroup-config', function () {
       layer: this.cartoDBLayer2
     });
     this.dataviews.add(dataview2);
+
+    var fakeCamshaftReference = {
+      getSourceNamesForAnalysisType: function (analysisType) {
+        var map = {
+          'source': [],
+          'trade-area': ['source'],
+          'estimated-population': ['source'],
+          'point-in-polygon': ['points_source', 'polygons_source'],
+          'union': ['source']
+        };
+        if (!map[analysisType]) {
+          throw new Error('analysis type ' + analysisType + ' not supported');
+        }
+        return map[analysisType];
+      }
+    };
+
+    this.analysisCollection = new Backbone.Collection();
+    this.analysisFactory = new AnalysisFactory({
+      analysisCollection: this.analysisCollection,
+      camshaftReference: fakeCamshaftReference
+    });
   });
 
   describe('.generate', function () {
@@ -184,9 +205,6 @@ describe('windshaft/layergroup-config', function () {
     });
 
     it('should generate the right analyses for the different types of layers and analysis', function () {
-      var analysisFactory = new AnalysisFactory({
-        analysisCollection: this.analysisCollection
-      });
       var dataviewsCollection = new Backbone.Collection();
       var layers = [];
 
@@ -230,7 +248,7 @@ describe('windshaft/layergroup-config', function () {
 
       // t1 - add a trade area analysis to the layer A
 
-      var analysis = analysisFactory.analyse({
+      var analysis = this.analysisFactory.analyse({
         id: 'a1',
         type: 'trade-area',
         params: {
@@ -291,7 +309,7 @@ describe('windshaft/layergroup-config', function () {
 
       // t2 - add an estimated population analysis to the layer A
 
-      analysis = analysisFactory.analyse({
+      analysis = this.analysisFactory.analyse({
         id: 'a2',
         type: 'estimated-population',
         params: {
@@ -362,7 +380,6 @@ describe('windshaft/layergroup-config', function () {
         ]
       });
 
-      expect(analysisNodeA0).toEqual(analysis.findAnalysisById('a0'));
 
       // t3 - create a new layer B from the layer A source (subway stops)
 
@@ -437,7 +454,7 @@ describe('windshaft/layergroup-config', function () {
 
       // t4 - create a new layer C and add a total population analysis (C1) using the estimated population analysis (A2) from layer A
 
-      analysis = analysisFactory.analyse({
+      analysis = this.analysisFactory.analyse({
         id: 'c1',
         type: 'union',
         params: {
@@ -552,13 +569,10 @@ describe('windshaft/layergroup-config', function () {
     });
 
     it('should work with other types of analyses (eg: point-in-polygon)', function () {
-      var analysisFactory = new AnalysisFactory({
-        analysisCollection: this.analysisCollection
-      });
       var dataviewsCollection = new Backbone.Collection();
       var layers = [];
 
-      var analysis = analysisFactory.analyse({
+      var analysis = this.analysisFactory.analyse({
         id: 'a1',
         type: 'point-in-polygon',
         params: {

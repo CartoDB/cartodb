@@ -1,12 +1,20 @@
 var Backbone = require('backbone');
 var AnalysisFactory = require('../../../src/analysis/analysis-factory');
-var ANALYSIS_TYPE_TO_SOURCE_PARAM_NAMES_MAP = require('../../../src/analysis/source-names-map');
 
 describe('src/analysis/analysis-factory.js', function () {
   beforeEach(function () {
+    var fakeCamshaftReference = {
+      getSourceNamesForAnalysisType: function (analysisType) {
+        var map = {
+          'trade-area': ['source'],
+          'estimated-population': ['source']
+        };
+        return map[analysisType];
+      }
+    };
     this.analysisCollection = new Backbone.Collection();
     this.analysisFactory = new AnalysisFactory({
-      sourceNamesMap: ANALYSIS_TYPE_TO_SOURCE_PARAM_NAMES_MAP,
+      camshaftReference: fakeCamshaftReference,
       analysisCollection: this.analysisCollection
     });
   });

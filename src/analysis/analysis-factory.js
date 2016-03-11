@@ -1,6 +1,6 @@
 var _ = require('underscore');
 var Analysis = require('./analysis-model');
-var ANALYSIS_TYPE_TO_SOURCE_PARAM_NAMES_MAP = require('./source-names-map');
+var camshaftReference = require('./camshaft-reference');
 
 var AnalysisFactory = function (opts) {
   opts = opts || {};
@@ -8,7 +8,7 @@ var AnalysisFactory = function (opts) {
     throw new Error('analysisCollection option is required');
   }
 
-  this._sourceNamesMap = opts.sourceNamesMap || ANALYSIS_TYPE_TO_SOURCE_PARAM_NAMES_MAP;
+  this._camshaftReference = opts.camshaftReference || camshaftReference;
   this._analysisCollection = opts.analysisCollection;
 };
 
@@ -26,7 +26,7 @@ AnalysisFactory.prototype.analyse = function (analysisDefinition) {
     analysis.set(analysisAttrs);
   } else {
     analysis = new Analysis(analysisAttrs, {
-      sourceNamesMap: this._sourceNamesMap
+      camshaftReference: this._camshaftReference
     });
     this._addAnalysisToCollection(analysis);
     analysis.bind('destroy', this._onAnalysisRemoved, this);
@@ -36,10 +36,7 @@ AnalysisFactory.prototype.analyse = function (analysisDefinition) {
 
 AnalysisFactory.prototype._getAnalysisAttributesFromAnalysisDefinition = function (analysisDefinition) {
   var analysisType = analysisDefinition.type;
-  if (analysisType === 'source') {
-    return analysisDefinition;
-  }
-  var sourceNamesForAnalysisType = this._getSourceNamesForAnalysisType(analysisType);
+  var sourceNamesForAnalysisType = this._camshaftReference.getSourceNamesForAnalysisType(analysisType);
   var sourceNodes = {};
   _.each(sourceNamesForAnalysisType, function (sourceName) {
     sourceNodes[sourceName] = this.analyse(analysisDefinition.params[sourceName]);
@@ -47,14 +44,6 @@ AnalysisFactory.prototype._getAnalysisAttributesFromAnalysisDefinition = functio
   return _.extend(analysisDefinition, {
     params: _.extend(analysisDefinition.params, sourceNodes)
   });
-};
-
-AnalysisFactory.prototype._getSourceNamesForAnalysisType = function (analysisType) {
-  var sourceNames = this._sourceNamesMap[analysisType];
-  if (!sourceNames) {
-    throw new Error('source names for analysis of type ' + analysisType + ' are not defined');
-  }
-  return sourceNames;
 };
 
 AnalysisFactory.prototype._onAnalysisRemoved = function (analysis) {

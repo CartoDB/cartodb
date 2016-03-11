@@ -4,14 +4,20 @@ var AnalysisFactory = require('../../../src/analysis/analysis-factory.js');
 describe('src/analysis/analysis-model.js', function () {
   describe('.findAnalysisById', function () {
     it('should find a node in the graph', function () {
+      var fakeCamshaftReference = {
+        getSourceNamesForAnalysisType: function (analysType) {
+          var map = {
+            'analysis-type-1': ['source1', 'source2'],
+            'analysis-type-2': [],
+            'analysis-type-3': ['source3'],
+            'analysis-type-4': []
+          };
+          return map[analysType];
+        }
+      };
       var analysisFactory = new AnalysisFactory({
         analysisCollection: new Backbone.Collection(),
-        sourceNamesMap: {
-          'analysis-type-1': ['source1', 'source2'],
-          'analysis-type-2': [],
-          'analysis-type-3': ['source3'],
-          'analysis-type-4': []
-        }
+        camshaftReference: fakeCamshaftReference
       });
       var analysisModel = analysisFactory.analyse({
         id: 'a1',
@@ -45,6 +51,12 @@ describe('src/analysis/analysis-model.js', function () {
       expect(analysisModel.findAnalysisById('a2').get('id')).toEqual('a2');
       expect(analysisModel.findAnalysisById('a3').get('id')).toEqual('a3');
       expect(analysisModel.findAnalysisById('b9')).toBeUndefined();
+    });
+  });
+
+  describe('.toJSON', function () {
+    xit('should serialize the graph', function () {
+
     });
   });
 });

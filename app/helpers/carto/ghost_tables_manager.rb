@@ -26,11 +26,13 @@ module Carto
     end
 
     # search in the user database for tables that are not in the metadata database
-    def self.has_renamed_tables?(user)
-      metadata_table_names = user.tables.select(:name).map(&:name)
-      real_names = user.real_tables.map { |table| table[:relname] }
+    def has_non_linked_tables?(user)
+      !non_linked_tables(user).empty?
+    end
 
-      metadata_table_names.to_set != real_names.to_set
+    # checks if bad tables are linked (deleted or renamed)
+    def has_stale_linked_tables?(user)
+      !stale_tables(user).empty?
     end
 
     protected

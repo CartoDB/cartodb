@@ -149,6 +149,25 @@ describe('widgets/histogram/content-view', function () {
       expect(this.dataviewModel.disableFilter).toHaveBeenCalled();
     });
 
+    it('should set and unset bounds for the histogram view when chart is zoomed in and zoomed out', function () {
+      this.dataviewModel.sync = function (method, model, options) {
+        options.success({
+          'bin_width': 10,
+          'bins_count': 2,
+          'bins_start': 1,
+          'nulls': 0,
+          'bins': []
+        });
+      };
+      this.dataviewModel.fetch();
+      spyOn(this.view.histogramChartView, 'setBounds');
+      spyOn(this.view.histogramChartView, 'unsetBounds');
+      this.view.$('.js-zoom').click();
+      expect(this.view.histogramChartView.setBounds).toHaveBeenCalled();
+      this.view.$('.js-clear').click();
+      expect(this.view.histogramChartView.unsetBounds).toHaveBeenCalled();
+    });
+
     it('should replace histogram chart data with dataview model data when unsets range', function () {
       spyOn(this.dataviewModel, 'getData').and.returnValue(['0', '1']);
       this.view.render();

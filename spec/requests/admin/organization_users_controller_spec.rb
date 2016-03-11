@@ -100,55 +100,89 @@ describe Admin::OrganizationUsersController do
         User.any_instance.stubs(:load_common_data).returns(true)
       end
 
-      def soft_limit_values(value)
-        value.respond_to?(:[]) ? value : [value, value, value]
+      def soft_limit_values(value = nil,
+                            soft_geocoding_limit: nil,
+                            soft_here_isolines_limit: nil,
+                            soft_twitter_datasource_limit: nil)
+        values = Hash.new(value)
+        values[:soft_geocoding_limit] = soft_geocoding_limit unless soft_geocoding_limit.nil?
+        values[:soft_here_isolines_limit] = soft_here_isolines_limit unless soft_here_isolines_limit.nil?
+        values[:soft_twitter_datasource_limit] = soft_twitter_datasource_limit unless soft_twitter_datasource_limit.nil?
+        values
       end
 
-      def update_soft_limits(user, value)
-        values = soft_limit_values(value)
-        old_limits = [user.soft_geocoding_limit, user.soft_here_isolines_limit, user.soft_twitter_datasource_limit]
-        user.soft_geocoding_limit = values[0]
-        user.soft_here_isolines_limit = values[1]
-        user.soft_twitter_datasource_limit = values[2]
+      def update_soft_limits(user, value,
+                             soft_geocoding_limit: nil,
+                             soft_here_isolines_limit: nil,
+                             soft_twitter_datasource_limit: nil)
+
+        values = soft_limit_values(value,
+                                   soft_geocoding_limit: soft_geocoding_limit,
+                                   soft_here_isolines_limit: soft_here_isolines_limit,
+                                   soft_twitter_datasource_limit: soft_twitter_datasource_limit)
+
+        old_limits = {
+          soft_geocoding_limit: user.soft_geocoding_limit,
+          soft_here_isolines_limit: user.soft_here_isolines_limit,
+          soft_twitter_datasource_limit: user.soft_twitter_datasource_limit
+        }
+
+        user.soft_geocoding_limit = values[:soft_geocoding_limit]
+        user.soft_here_isolines_limit = values[:soft_here_isolines_limit]
+        user.soft_twitter_datasource_limit = values[:soft_twitter_datasource_limit]
         user.save
         user.reload
+
         old_limits
       end
 
       def check_soft_limits(user, value)
         values = soft_limit_values(value)
-        user.soft_geocoding_limit.should eq values[0]
-        user.soft_here_isolines_limit.should eq values[1]
-        user.soft_twitter_datasource_limit.should eq values[2]
+
+        user.soft_geocoding_limit.should eq values[:soft_geocoding_limit]
+        user.soft_here_isolines_limit.should eq values[:soft_here_isolines_limit]
+        user.soft_twitter_datasource_limit.should eq values[:soft_twitter_datasource_limit]
       end
 
       def soft_limits_params(value)
         values = soft_limit_values(value)
         {
-          soft_geocoding_limit: values[0],
-          soft_here_isolines_limit: values[1],
-          soft_twitter_datasource_limit: values[2]
+          soft_geocoding_limit: values[:soft_geocoding_limit],
+          soft_here_isolines_limit: values[:soft_here_isolines_limit],
+          soft_twitter_datasource_limit: values[:soft_twitter_datasource_limit]
         }
       end
 
       describe '#create' do
         it 'owner cannot enable soft limits if he has not' do
-          old_limits = update_soft_limits(@carto_org_user_owner, false)
+          old_limits = update_soft_limits(@org_user_owner, false)
 
           post create_organization_user_url(user_domain: @org_user_owner.username),
-               user: user_params.merge(soft_limits_params(true))
+               user: user_params.merge(soft_limits_params("1"))
           last_response.status.should eq 422
 
           Carto::User.exists?(username: user_params[:username]).should be_false
 
-          update_soft_limits(@carto_org_user_owner, old_limits)
+          update_soft_limits(@org_user_owner, old_limits)
+        end
+
+        it 'owner cannot enable geocoding limit if he has not' do
+          old_limits = update_soft_limits(@org_user_owner, false)
+
+          post create_organization_user_url(user_domain: @org_user_owner.username),
+               user: user_params.merge(soft_geocoding_limit: "1")
+          last_response.status.should eq 422
+
+          Carto::User.exists?(username: user_params[:username]).should be_false
+
+          update_soft_limits(@org_user_owner, old_limits)
         end
 
         it 'owner can enable soft limits if he has' do
           old_limits = update_soft_limits(@org_user_owner, true)
 
           post create_organization_user_url(user_domain: @org_user_owner.username),
-               user: user_params.merge(soft_limits_params(true))
+               user: user_params.merge(soft_limits_params("1"))
           last_response.status.should eq 302
 
           user = User.where(username: user_params[:username]).first
@@ -160,21 +194,18 @@ describe Admin::OrganizationUsersController do
       end
 
       describe 'update' do
-        before(:each) do
-
-        end
-
         after(:each) do
-          ::User[@existing_user.id].destroy
+          ::User[@existing_user.id].destroy if @existing_user
         end
 
         it 'owner cannot enable soft limits if he has not' do
-          old_limits = update_soft_limits(@carto_org_user_owner, false)
+          old_limits = update_soft_limits(@org_user_owner, false)
+          check_soft_limits(@carto_org_user_owner, false)
           @existing_user = FactoryGirl.create(:carto_user,
                                               soft_limits_params(false).merge(organization: @carto_organization))
 
           put update_organization_user_url(user_domain: @org_user_owner.username, id: @existing_user.username),
-              user: soft_limits_params(true)
+              user: soft_limits_params("1")
           last_response.status.should eq 422
 
           @existing_user.reload
@@ -183,16 +214,29 @@ describe Admin::OrganizationUsersController do
         end
 
         it 'owner can enable soft limits if he has' do
-          old_limits = update_soft_limits(@carto_org_user_owner, true)
+          old_limits = update_soft_limits(@org_user_owner, true)
           @existing_user = FactoryGirl.create(:carto_user,
                                               soft_limits_params(false).merge(organization: @carto_organization))
 
           put update_organization_user_url(user_domain: @org_user_owner.username, id: @existing_user.username),
-              user: soft_limits_params(true)
+              user: soft_limits_params("1")
           last_response.status.should eq 302
 
           @existing_user.reload
           check_soft_limits(@existing_user, true)
+          update_soft_limits(@org_user_owner, old_limits)
+        end
+
+        it 'owner can disable soft limits if he has' do
+          old_limits = update_soft_limits(@org_user_owner, true)
+          @existing_user = FactoryGirl.create(:carto_user,
+                                              soft_limits_params(true).merge(organization: @carto_organization))
+          put update_organization_user_url(user_domain: @org_user_owner.username, id: @existing_user.username),
+              user: soft_limits_params("0")
+          last_response.status.should eq 302
+
+          @existing_user.reload
+          check_soft_limits(@existing_user, false)
           update_soft_limits(@org_user_owner, old_limits)
         end
       end

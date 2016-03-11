@@ -1,6 +1,7 @@
 # coding: utf-8
 require_dependency 'google_plus_api'
 require_dependency 'google_plus_config'
+require_dependency 'carto/controller_helper'
 
 class Admin::OrganizationUsersController < Admin::AdminController
   include OrganizationUsersHelper
@@ -36,16 +37,21 @@ class Admin::OrganizationUsersController < Admin::AdminController
 
   def create
     @user = ::User.new
+
+    # Validation is done on params to allow checking the change of the value.
+    # The error is deferred to display values in the form in the error scenario.
+    validation_failure = !soft_limits_validation(@user, params[:user], current_user.organization.owner)
+
     @user.set_fields(
       params[:user],
-      [:username, :email, :password, :quota_in_bytes, :password_confirmation, :twitter_datasource_enabled])
+      [
+        :username, :email, :password, :quota_in_bytes, :password_confirmation,
+        :twitter_datasource_enabled, :soft_geocoding_limit, :soft_here_isolines_limit])
     @user.organization = current_user.organization
     @user.username = @user.username
     current_user.copy_account_features(@user)
 
-    unless soft_limits_validation(@user, params[:user])
-      raise Carto::UnprocesableEntityError.new("Soft limits validation error")
-    end
+    raise Carto::UnprocesableEntityError.new("Soft limits validation error") if validation_failure
 
     @user.save(raise_on_failure: true)
     @user.create_in_central
@@ -79,9 +85,9 @@ class Admin::OrganizationUsersController < Admin::AdminController
     session[:show_dashboard_details_flash] = params[:show_dashboard_details_flash].present?
     session[:show_account_settings_flash] = params[:show_account_settings_flash].present?
 
-    unless soft_limits_validation(@user, params[:user])
-      raise Carto::UnprocesableEntityError.new("Soft limits validation error")
-    end
+    # Validation is done on params to allow checking the change of the value.
+    # The error is deferred to display values in the form in the error scenario.
+    validation_failure = !soft_limits_validation(@user, params[:user])
 
     attributes = params[:user]
     @user.set_fields(attributes, [:email]) if attributes[:email].present? && !@user.google_sign_in
@@ -101,6 +107,8 @@ class Admin::OrganizationUsersController < Admin::AdminController
     @user.soft_here_isolines_limit = attributes[:soft_here_isolines_limit] if attributes[:soft_here_isolines_limit].present?
     @user.twitter_datasource_enabled = attributes[:twitter_datasource_enabled] if attributes[:twitter_datasource_enabled].present?
     @user.soft_twitter_datasource_limit = attributes[:soft_twitter_datasource_limit] if attributes[:soft_twitter_datasource_limit].present?
+
+    raise Carto::UnprocesableEntityError.new("Soft limits validation error") if validation_failure
 
     @user.update_in_central
 

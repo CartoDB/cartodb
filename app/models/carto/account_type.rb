@@ -10,6 +10,7 @@ module Carto
     # Old plans
     MAGELLAN = 'MAGELLAN'
 
+    # TODO: probably remove ENTERPRISE HERE (see cp1419)
     NO_SOFT_GEOCODING_PLANS = "ACADEMIC|Academy|Academic|INTERNAL|FREE|AMBASSADOR|ACADEMIC MAGELLAN|PARTNER|FREE|Magellan|Academy|ACADEMIC|AMBASSADOR"
     NO_SOFT_GEOCODING_PLANS_REGEXP = /(#{NO_SOFT_GEOCODING_PLANS})/
 
@@ -30,7 +31,7 @@ module Carto
 
     def soft_geocoding_limit?(user)
       if user[:soft_geocoding_limit].nil?
-        (user.account_type =~ NO_SOFT_GEOCODING_PLANS_REGEXP ? false : true)
+        !(user.account_type.nil? || user.account_type =~ NO_SOFT_GEOCODING_PLANS_REGEXP)
       else
         user[:soft_geocoding_limit]
       end

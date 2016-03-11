@@ -9,7 +9,6 @@ describe Carto::Api::AnalysesController do
 
   before(:all) do
     FactoryGirl.create(:carto_feature_flag, name: 'editor-3', restricted: false)
-    CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
     @user = FactoryGirl.create(:carto_user)
     @user2 = FactoryGirl.create(:carto_user)
     @map, @table, @table_visualization, @visualization = create_full_visualization(@user)

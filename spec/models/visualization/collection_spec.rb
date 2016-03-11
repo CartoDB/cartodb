@@ -32,7 +32,7 @@ describe Visualization::Collection do
 
   after(:each) do
     Visualization::Migrator.new(@db).drop(@relation)
-    restore_vis_backend_to_normal_table_so_relator_works
+    restore_backend_to_normal_table
   end
 
   after(:all) do
@@ -40,7 +40,7 @@ describe Visualization::Collection do
     @user_2.destroy
   end
 
-  def restore_vis_backend_to_normal_table_so_relator_works
+  def restore_backend_to_normal_table
     Visualization.repository = DataRepository::Backend::Sequel.new(@db, :visualizations)
   end
 
@@ -251,7 +251,7 @@ describe Visualization::Collection do
       # TODO: Add mapviews test. As it uses redis requires more work
 
       # Restore Vis backend to normal table so Relator works
-      restore_vis_backend_to_normal_table_so_relator_works
+      restore_backend_to_normal_table
 
       CartoDB::Visualization::Relator.any_instance.stubs(:user).returns(@user_1)
 
@@ -375,7 +375,7 @@ describe Visualization::Collection do
     end
 
     it 'counts total liked' do
-      restore_vis_backend_to_normal_table_so_relator_works
+      restore_backend_to_normal_table
 
       @user_1.stubs(:organization).returns(nil)
       @user_2.stubs(:organization).returns(nil)
@@ -480,7 +480,7 @@ describe Visualization::Collection do
     end
 
     it "checks filtering by 'liked' " do
-      restore_vis_backend_to_normal_table_so_relator_works
+      restore_backend_to_normal_table
 
       user3 = create_user(:quota_in_bytes => 524288000, :table_quota => 500, :private_tables_enabled => true)
       CartoDB::Visualization::Relator.any_instance.stubs(:user).returns(@user_1)

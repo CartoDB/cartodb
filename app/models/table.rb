@@ -1313,9 +1313,7 @@ class Table
   end
 
   def update_cdb_tablemetadata
-    owner.in_database(as: :superuser).run(%{
-      SELECT CDB_TableMetadataTouch('#{qualified_table_name}')
-      })
+    owner.in_database(as: :superuser).run(%{ SELECT CDB_TableMetadataTouch(#{table_id}::oid::regclass) })
   end
 
   private

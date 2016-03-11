@@ -660,7 +660,9 @@ class Table
     # Do not keep track of name changes until table has been saved
     unless new?
       @name_changed_from = @user_table.name if @user_table.name.present?
-      update_cdb_tablemetadata
+      # TODO: Deactivated due to extension hotfix in progress. Should be reactivated after extension release.
+      # NOTE: Old renamed through the SQL API will remain cached for for some time.
+      # update_cdb_tablemetadata
     end
 
     @user_table[:name] = new_name
@@ -1313,7 +1315,7 @@ class Table
   end
 
   def update_cdb_tablemetadata
-    owner.in_database(as: :superuser).run(%{ SELECT CDB_TableMetadataTouch(#{table_id}::oid::regclass) })
+    owner.in_database(as: :superuser).run(%{ SELECT CDB_TableMetadataTouch('#{qualified_table_name}') })
   end
 
   private

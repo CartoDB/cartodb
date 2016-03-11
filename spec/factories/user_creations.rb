@@ -9,6 +9,7 @@ FactoryGirl.define do
     salt "ewefgrjwopjgow"
     google_sign_in false
     quota_in_bytes 10000000
+    soft_twitter_datasource_limit false
 
     factory :autologin_user_creation do
       state 'success'
@@ -23,4 +24,3 @@ FactoryGirl.define do
   end
 
 end
-

@@ -11,6 +11,19 @@ describe Admin::OrganizationUsersController do
     host! "#{@organization.name}.localhost.lan"
   end
 
+  let(:username) { 'user-1' }
+
+  let(:user_params) {
+    {
+      username: username,
+      email: 'user-1@org.com',
+      password: 'user-1',
+      password_confirmation: 'user-1',
+      quota_in_bytes: 1000,
+      twitter_datasource_enabled: false
+    }
+  }
+
   describe 'security' do
     describe '#show' do
       it 'returns 404 for non authorized users' do
@@ -38,19 +51,11 @@ describe Admin::OrganizationUsersController do
     describe '#create' do
       it 'creates users' do
         User.any_instance.expects(:load_common_data).once.returns(true)
-        username = 'user-1'
-        user_params = {
-          username: username,
-          email: 'user-1@org.com',
-          password: 'user-1',
-          password_confirmation: 'user-1',
-          quota_in_bytes: 1000,
-          twitter_datasource_enabled: false
-        }
+
         post create_organization_user_url(user_domain: @org_user_owner.username), user: user_params
         last_response.status.should eq 302
 
-        user = Carto::User.find_by_username(username)
+        user = Carto::User.find_by_username(user_params[:username])
         user.email.should eq user_params[:email]
         user.quota_in_bytes.should eq user_params[:quota_in_bytes]
         user.twitter_datasource_enabled.should be_nil
@@ -86,6 +91,57 @@ describe Admin::OrganizationUsersController do
           last_response.status.should eq 302
 
           ::User[@existing_user.id].should be_nil
+        end
+      end
+    end
+
+    describe 'soft limits' do
+      before(:each) do
+        User.any_instance.stubs(:load_common_data).returns(true)
+      end
+
+      def soft_limit_values(value)
+        value.respond_to?(:[]) ? value : [value, value, value]
+      end
+
+      def update_soft_limits(user, value)
+        values = soft_limit_values(value)
+        old_limits = [user.soft_geocoding_limit, user.soft_here_isolines_limit, user.soft_twitter_datasource_limit]
+        user.soft_geocoding_limit = values[0]
+        user.soft_here_isolines_limit = values[1]
+        user.soft_twitter_datasource_limit = values[2]
+        user.save
+
+        old_limits
+      end
+
+      def check_soft_limits(user, value)
+        values = soft_limit_values(value)
+        user.soft_geocoding_limit.should eq values[0]
+        user.soft_here_isolines_limit.should eq values[1]
+        user.soft_twitter_datasource_limit.should eq values[2]
+      end
+
+      def soft_limits_params(value)
+        values = soft_limit_values(value)
+        {
+          soft_geocoding_limit: values[0],
+          soft_here_isolines_limit: values[1],
+          soft_twitter_datasource_limit: values[2]
+        }
+      end
+
+      describe '#create' do
+        it 'owner cannot enable soft limits if he has not' do
+          old_limits = update_soft_limits(@carto_org_user_owner, false)
+
+          post create_organization_user_url(user_domain: @org_user_owner.username),
+               user: user_params.merge(soft_limits_params(true))
+          last_response.status.should eq 422
+
+          Carto::User.exists?(username: user_params[:username]).should be_false
+
+          update_soft_limits(@carto_org_user_owner, old_limits)
         end
       end
     end

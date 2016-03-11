@@ -3,6 +3,8 @@ require_dependency 'google_plus_api'
 require_dependency 'google_plus_config'
 
 class Admin::OrganizationUsersController < Admin::AdminController
+  include OrganizationUsersHelper
+
   # Organization actions
   ssl_required  :new, :create, :edit, :update, :destroy
   # Data of single users
@@ -34,10 +36,17 @@ class Admin::OrganizationUsersController < Admin::AdminController
 
   def create
     @user = ::User.new
-    @user.set_fields(params[:user], [:username, :email, :password, :quota_in_bytes, :password_confirmation, :twitter_datasource_enabled])
+    @user.set_fields(
+      params[:user],
+      [:username, :email, :password, :quota_in_bytes, :password_confirmation, :twitter_datasource_enabled])
     @user.organization = current_user.organization
     @user.username = @user.username
     current_user.copy_account_features(@user)
+
+    unless soft_limits_validation(@user, params[:user])
+      raise Carto::UnprocesableEntityError.new("Soft limits validation error")
+    end
+
     @user.save(raise_on_failure: true)
     @user.create_in_central
     common_data_url = CartoDB::Visualization::CommonDataService.build_url(self)
@@ -45,16 +54,22 @@ class Admin::OrganizationUsersController < Admin::AdminController
     @user.notify_new_organization_user
     @user.organization.notify_if_seat_limit_reached
     redirect_to CartoDB.url(self, 'organization', {}, current_user), flash: { success: "New user created successfully" }
+  rescue Carto::UnprocesableEntityError => e
+    CartoDB.report_exception(e, "Validation error", request: request, user: current_user)
+    set_flash_flags
+    flash.now[:error] = e.user_message
+    @user = default_user
+    render 'new', status: 422
   rescue CartoDB::CentralCommunicationFailure => e
-    Rollbar.report_exception(e)
+    CartoDB.report_exception(e)
     begin
       @user.destroy
     rescue => ee
-      Rollbar.report_exception(ee)
+      CartoDB.report_exception(ee)
     end
     set_flash_flags
     flash.now[:error] = e.user_message
-    @user = ::User.new(username: @user.username, email: @user.email, quota_in_bytes: @user.quota_in_bytes, twitter_datasource_enabled: @user.twitter_datasource_enabled)
+    @user = default_user
     render 'new'
   rescue Sequel::ValidationFailed => e
     flash.now[:error] = e.message
@@ -104,7 +119,7 @@ class Admin::OrganizationUsersController < Admin::AdminController
     flash[:success] = "User was successfully deleted."
     redirect_to CartoDB.url(self, 'organization', {}, current_user)
   rescue CartoDB::CentralCommunicationFailure => e
-    Rollbar.report_exception(e)
+    CartoDB.report_exception(e)
     if e.user_message =~ /No organization user found with username/
       @user.destroy
       flash[:success] = "#{e.user_message}. User was deleted from the organization server."
@@ -130,6 +145,10 @@ class Admin::OrganizationUsersController < Admin::AdminController
   end
 
   private
+
+  def default_user
+    ::User.new(username: @user.username, email: @user.email, quota_in_bytes: @user.quota_in_bytes, twitter_datasource_enabled: @user.twitter_datasource_enabled)
+  end
 
   def extras_enabled?
     extra_geocodings_enabled? || extra_here_isolines_enabled? || extra_tweets_enabled?

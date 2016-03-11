@@ -37,4 +37,24 @@ module OrganizationUsersHelper
 
     hardened_params.symbolize_keys
   end
+
+  # This is not run at model validation flow because we might want to override this rules.
+  def soft_limits_validation(user, params_to_update)
+    errors = user.errors
+    owner = user.organization.owner
+    soft_geocoding_limit = !!params_to_update[:soft_geocoding_limit]
+    if user.soft_geocoding_limit != soft_geocoding_limit && soft_geocoding_limit && !owner.soft_geocoding_limit
+      errors.add(:soft_geocoding_limit, "Organization owner hasn't this soft limit")
+    end
+    soft_here_isolines_limit = !!params_to_update[:soft_here_isolines_limit]
+    if user.soft_here_isolines_limit != soft_here_isolines_limit && soft_here_isolines_limit && !owner.soft_here_isolines_limit
+      errors.add(:soft_here_isolines_limit, "Organization owner hasn't this soft limit")
+    end
+    soft_twitter_datasource_limit = !!params_to_update[:soft_twitter_datasource_limit]
+    if user.soft_twitter_datasource_limit != soft_twitter_datasource_limit && soft_twitter_datasource_limit && !owner.soft_twitter_datasource_limit
+      errors.add(:soft_twitter_datasource_limit, "Organization owner hasn't this soft limit")
+    end
+
+    errors.empty?
+  end
 end

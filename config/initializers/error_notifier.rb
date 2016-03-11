@@ -17,7 +17,7 @@ module CartoDB
   # Extra can contain `:request` and `:user`
   # Deprecated because of that `extra` content limitation. Use `report_exception` instead.
   def self.notify_exception(e, extra={})
-    if Rails.env.development? || Rails.env.test?
+    if Rails.env.development?
       backtrace = e.backtrace ? e.backtrace : ['']
       ::Logger.new(STDOUT).error "exception: #{extra.delete(:message)} #{e.message}\n#{backtrace.join("\n ")}\nExtra: #{extra}"
     end

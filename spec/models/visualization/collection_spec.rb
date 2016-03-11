@@ -10,7 +10,7 @@ include CartoDB
 
 describe Visualization::Collection do
   before(:each) do
-    @db = Rail::Sequel::connection
+    @db = Rails::Sequel::connection
     # Careful, uses another DB table (and deletes it at after:(each) )
     @relation   = "visualizations_#{Time.now.to_i}".to_sym
     @repository = DataRepository::Backend::Sequel.new(@db, @relation)

@@ -35,8 +35,8 @@ FactoryGirl.define do
     factory :admin, traits: [:admin]
 
     factory :valid_user do
-      username { "user#{rand(10000)}" }
-      email { "email" + rand(10000).to_s + "@nonono.com" }
+      username { String.random(5).downcase }
+      email { String.random(5).downcase + '@' + String.random(5).downcase + '.com' }
       password 'kkkkkkkkk'
       password_confirmation 'kkkkkkkkk'
       salt 'kkkkkkkkk'
@@ -45,7 +45,7 @@ FactoryGirl.define do
 
   end
 
-  factory :carto_user, :class => Carto::User do
+  factory :carto_user, class: Carto::User do
 
     username { String.random(5).downcase }
     email { String.random(5).downcase + '@' + String.random(5).downcase + '.com' }

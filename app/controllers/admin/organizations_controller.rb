@@ -17,6 +17,8 @@ class Admin::OrganizationsController < Admin::AdminController
   end
 
   def settings
+    @avatar_valid_extensions = AVATAR_VALID_EXTENSIONS
+    
     respond_to do |format|
       format.html { render 'settings' }
     end
@@ -31,7 +33,7 @@ class Admin::OrganizationsController < Admin::AdminController
   def settings_update
     attributes = params[:organization]
 
-    if attributes.include?(:avatar_url) && AvatarHelper.valid_avatar_file?(attributes[:avatar_url])
+    if attributes.include?(:avatar_url) && valid_avatar_file?(attributes[:avatar_url])
       @organization.avatar_url = attributes[:avatar_url]
     end
 

@@ -34,6 +34,8 @@ class Admin::UsersController < Admin::AdminController
   PASSWORD_DOES_NOT_MATCH_MESSAGE = 'Password does not match'
 
   def profile
+    @avatar_valid_extensions = AVATAR_VALID_EXTENSIONS
+    
     respond_to do |format|
       format.html { render 'profile' }
     end
@@ -82,7 +84,7 @@ class Admin::UsersController < Admin::AdminController
   def profile_update
     attributes = params[:user]
 
-    if attributes[:avatar_url].present? && AvatarHelper.valid_avatar_file?(attributes[:avatar_url])
+    if attributes[:avatar_url].present? && valid_avatar_file?(attributes[:avatar_url])
       @user.avatar_url = attributes.fetch(:avatar_url, nil)
     end
 

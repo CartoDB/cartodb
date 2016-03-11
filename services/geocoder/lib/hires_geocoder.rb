@@ -28,29 +28,33 @@ module CartoDB
 
     attr_accessor :input_file
 
-    def initialize(input_csv_file, working_dir)
-      @input_file         = input_csv_file
-      @dir                = working_dir
-
+    def initialize(input_csv_file, working_dir, log)
+      @input_file = input_csv_file
+      @dir = working_dir
+      @log = log
       @non_batch_base_url = config.fetch('non_batch_base_url')
-      @app_id             = config.fetch('app_id')
-      @token              = config.fetch('token')
-      @mailto             = config.fetch('mailto')
+      @app_id = config.fetch('app_id')
+      @token = config.fetch('token')
+      @mailto = config.fetch('mailto')
 
       init_rows_count
     end
 
     def run
       init_rows_count
+      @log.append_and_store "Initialized non batch Here geocoding job"
       @result = File.join(dir, 'generated_csv_out.txt')
       @status = 'running'
       @total_rows = input_rows
+      @log.append_and_store "Total rows to be processed: #{@total_rows}"
       ::CSV.open(@result, "wb") do |output_csv_file|
         ::CSV.foreach(input_file, headers: true) do |input_row|
           process_row(input_row, output_csv_file)
         end
       end
       @status = 'completed'
+      update_log_stats
+      @log.append_and_store "Non-batch Here geocoding job finished"
     end
 
     def used_batch_request?
@@ -104,6 +108,7 @@ module CartoDB
         @empty_processed_rows += 1
       end
     rescue => e
+      @log.append_and_store "Error processing row with search text #{input_row['searchtext']}: #{e.message}"
       CartoDB.notify_debug("Hires geocoding process row error",
                            error: e.backtrace.join('\n'), 
                            searchtext: input_row["searchtext"],
@@ -152,5 +157,11 @@ module CartoDB
       @empty_processed_rows = 0
     end
 
+    def update_log_stats
+      @log.append_and_store "Geocoding non-batch Here job status update. "\
+        "Status: #{@status} --- Processed rows: #{@processed_rows} "\
+        "--- Success: #{@successful_processed_rows} --- Empty: #{@empty_processed_rows} "\
+        "--- Failed: #{@failed_processed_rows}"
+    end
   end
 end

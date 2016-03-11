@@ -18,12 +18,9 @@ describe Api::Json::LayersController do
 
   describe '#create' do
     after(:each) do
-      @table_visualization.destroy if @table_visualization
-      @table.destroy if @table
+      destroy_full_visualization(@map, @table, @table_visualization, @visualization)
       @layer.destroy if @layer
       @layer2.destroy if @layer2
-      @visualization.destroy if @visualization
-      @map.destroy if @map
     end
 
     let(:kind) { 'carto' }

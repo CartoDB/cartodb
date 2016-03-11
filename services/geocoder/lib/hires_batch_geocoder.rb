@@ -11,11 +11,11 @@ module CartoDB
 
     DEFAULT_TIMEOUT = 5.hours
     POLLING_SLEEP_TIME = 5.seconds
+    LOGGING_TIME = 5.minutes
 
     # Generous timeouts, overriden for big files upload/download
     HTTP_CONNECTION_TIMEOUT = 60
     HTTP_REQUEST_TIMEOUT = 600
-
 
     # Options for the csv upload endpoint of the Batch Geocoder API
     UPLOAD_OPTIONS = {
@@ -36,17 +36,15 @@ module CartoDB
     class ServiceDisabled < StandardError; end
 
 
-    def initialize(input_csv_file, working_dir)
-      @input_file         = input_csv_file
-      @dir                = working_dir
-
-      @base_url           = config.fetch('base_url')
-      @app_id             = config.fetch('app_id')
-      @token              = config.fetch('token')
-      @mailto             = config.fetch('mailto')
-
+    def initialize(input_csv_file, working_dir, log)
+      @input_file = input_csv_file
+      @dir = working_dir
+      @log = log
+      @base_url = config.fetch('base_url')
+      @app_id = config.fetch('app_id')
+      @token = config.fetch('token')
+      @mailto = config.fetch('mailto')
       @used_batch_request = false
-
       begin
         @batch_api_disabled = config['batch_api_disabled'] == true
       rescue
@@ -55,17 +53,19 @@ module CartoDB
     end
 
     def run
-      started_at = Time.now
+      @log.append_and_store "Started batched Here geocoding job"
+      @started_at = Time.now
       upload
 
       # INFO: this loop polls for the state of the table_geocoder batch process
       update_status
       until ['completed', 'cancelled'].include? status do
-        if (Time.now - started_at) > default_timeout
+        if timeout?
           begin
             cancel
           ensure
             @status = 'timeout'
+            @log.append_and_store "Proceding to cancel job due timeout"
           end
         end
 
@@ -73,10 +73,12 @@ module CartoDB
 
         sleep polling_sleep_time
         update_status
+        update_log_stats
       end
-
-      # TODO: do here all the process_results stuff
-
+      @log.append_and_store "Geocoding Hires job has finished"
+    ensure
+      # Processed data at the end of the job
+      update_log_stats(false)
     end
 
     def upload
@@ -92,6 +94,7 @@ module CartoDB
       @request_id = extract_response_field(response.body, '//Response/MetaInfo/RequestId')
       # TODO: this is a critical error, deal with it appropriately
       raise 'Could not get the request ID' unless @request_id
+      @log.append_and_store "Job sent to HERE, job id: #{@request_id}"
 
       @request_id
     end
@@ -105,6 +108,7 @@ module CartoDB
       response = http_client.put api_url(action: 'cancel')
       handle_api_error(response)
       update_stats(response)
+      @log.append_and_store "Job sent to HERE has been cancelled"
     end
 
     def update_status
@@ -222,6 +226,23 @@ module CartoDB
       # invalid input that could not be processed
       @failed_processed_rows = extract_numeric_response_field(response.body, '//Response/InvalidCount')
       @total_rows = extract_numeric_response_field(response.body, '//Response/TotalCount')
+    end
+
+    def update_log_stats(spaced_by_time=true)
+      @last_logging_time ||= Time.now
+      # We don't want to log every few seconds because this kind
+      # of jobs could last for hours
+      if (not spaced_by_time) || (Time.now - @last_logging_time) > LOGGING_TIME
+        @log.append_and_store "Geocoding job status update. "\
+          "Status: #{@status} --- Processed rows: #{@processed_rows} "\
+          "--- Success: #{@successful_processed_rows} --- Empty: #{@empty_processed_rows} "\
+          "--- Failed: #{@failed_processed_rows}"
+        @last_logging_time = Time.now
+      end
+    end
+
+    def timeout?
+      (Time.now - @started_at) > default_timeout
     end
   end
 end

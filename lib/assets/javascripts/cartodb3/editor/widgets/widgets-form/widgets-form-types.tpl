@@ -3,7 +3,7 @@
 
   <div class="CDB-HeaderInfo-Inner CDB-Text">
     <div class="CDB-HeaderInfo-Title u-bSpace--m">
-      <h2 class="CDB-Text CDB-HeaderInfo-TitleText CDB-Size-large"><%- _t('editor.widgets.widgets-form.type.title') %></h2>
+      <h2 class="CDB-Text CDB-HeaderInfo-TitleText CDB-Size-large"><%- _t('editor.widgets.widgets-form.type.title-label') %></h2>
     </div>
 
     <p class="CDB-Text u-upperCase CDB-FontSize-small u-altTextColor u-bSpace--m"><%- _t('editor.widgets.widgets-form.type.description') %></p>

@@ -40,11 +40,16 @@ describe Visualization::Collection do
 
   after(:each) do
     Visualization::Migrator.new(@db).drop(@relation)
+    restore_vis_backend_to_normal_table_so_relator_works
   end
 
   after(:all) do
     @user_1.destroy
     @user_2.destroy
+  end
+
+  def restore_vis_backend_to_normal_table_so_relator_works
+    Visualization.repository = DataRepository::Backend::Sequel.new(@db, :visualizations)
   end
 
   describe '#fetch' do
@@ -254,19 +259,7 @@ describe Visualization::Collection do
       # TODO: Add mapviews test. As it uses redis requires more work
 
       # Restore Vis backend to normal table so Relator works
-      Visualization.repository = DataRepository::Backend::Sequel.new(@db, :visualizations)
-      begin
-        @db.run(%Q{alter table external_sources drop constraint external_sources_visualization_id_fkey})
-      rescue
-        # Do nothing
-      end
-      begin
-        Visualization::Migrator.new(@db).drop(:visualizations)
-      rescue
-        # Do nothing, visualizations table not existed before
-      end
-      Visualization::Migrator.new(@db).migrate(:visualizations)
-
+      restore_vis_backend_to_normal_table_so_relator_works
 
       CartoDB::Visualization::Relator.any_instance.stubs(:user).returns(@user_1)
 
@@ -387,16 +380,6 @@ describe Visualization::Collection do
 
     def liked_count(user, type = Visualization::Member::TYPE_CANONICAL)
       liked(user,type).total_liked_entries(type)
-    end
-
-    def restore_vis_backend_to_normal_table_so_relator_works
-      Visualization.repository = DataRepository::Backend::Sequel.new(@db, :visualizations)
-      begin
-        Visualization::Migrator.new(@db).drop(:visualizations)
-      rescue
-        # Do nothing, visualizations table not existed before
-      end
-      Visualization::Migrator.new(@db).migrate(:visualizations)
     end
 
     it 'counts total liked' do

@@ -28,6 +28,8 @@ module CartoDB
   class InvalidMember < StandardError; end
 
   class TableError < StandardError; end
+  class CartoDBfyInvalidID < StandardError; end
+  class CartoDBfyError < StandardError; end
 
   class InvalidInterval < StandardError
     def detail

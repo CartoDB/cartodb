@@ -41,14 +41,12 @@ module Carto
 
     def relink_renamed_tables(user)
       non_linked_tables(user).each do |t|
-        user_table = ::UserTable.find(table_id: t[:id], user_id: user.id)
+        table = fetch_table_for_user_table(t[:id], user.id)
 
-        next if user_table.nil? # UserTable hasn't been created yet
-
-        table = Table.new(user_table: user_table)
+        next if table.nil? # UserTable hasn't been created yet
 
         begin
-          Rollbar.report_message('ghost tables', 'debug', action: 'link renamed', renamed_table: t[:relname])
+          CartoDB.notify_debug('ghost tables', action: 'link renamed', renamed_table: t[:relname])
 
           vis = table.table_visualization
           vis.register_table_only = true
@@ -64,7 +62,7 @@ module Carto
     def link_created_tables(user)
       non_linked_tables(user).each do |t|
         begin
-          Rollbar.report_message('ghost tables', 'debug', action: 'registering table', new_table: t[:name])
+          CartoDB.notify_debug('ghost tables', action: 'registering table', new_table: t[:name])
 
           table = Table.new
 
@@ -89,9 +87,11 @@ module Carto
         # Sync tables replace contents without touching metadata DB, so if method triggers meanwhile sync will fail
         next if syncs.include?(user_table[:name])
 
-        Rollbar.report_message('ghost tables', 'debug', action: 'dropping table', dropped_table: user_table[:name])
+        table = fetch_table_for_user_table(user_table[:id], user.id)
 
-        table = Table.new(user_table_id: user_table[:id])
+        next if table.nil? # TODO: Report this if buggy.
+
+        CartoDB.notify_debug('ghost tables', action: 'dropping table', dropped_table: user_table[:name])
 
         table.keep_user_database_table = true
         table.destroy
@@ -168,6 +168,17 @@ module Carto
         t.keep_user_database_table = true
         t.destroy
       end
+    end
+
+    # Grabs the Table associated with a UserTable identified by it's table_id. Also reports duplicate UserTables.
+    def fetch_table_for_user_table(table_id, user_id)
+      user_tables = ::UserTable.where(table_id: table_id, user_id: user_id)
+
+      if user_tables.count > 1
+        CartoDB.notify_error("#{user.username} has duplicate UserTables", duplicated_table_id: table_id)
+      end
+
+      user_tables.first ? Table.new(user_table: user_tables.first) : nil
     end
   end
 end

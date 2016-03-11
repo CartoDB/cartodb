@@ -439,6 +439,7 @@ class Admin::VisualizationsController < Admin::AdminController
   private
 
   def link_ghost_tables
+    return unless current_user.has_feature_flag?('ghost_tables')
     return unless Carto::GhostTablesManager.has_renamed_tables?(current_user)
 
     ::Resque.enqueue(::Resque::UserJobs::SyncTables::LinkGhostTables, current_user.id)

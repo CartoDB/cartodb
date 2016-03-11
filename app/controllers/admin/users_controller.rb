@@ -35,7 +35,7 @@ class Admin::UsersController < Admin::AdminController
 
   def profile
     @avatar_valid_extensions = AVATAR_VALID_EXTENSIONS
-    
+
     respond_to do |format|
       format.html { render 'profile' }
     end

@@ -18,7 +18,7 @@ class Admin::OrganizationsController < Admin::AdminController
 
   def settings
     @avatar_valid_extensions = AVATAR_VALID_EXTENSIONS
-    
+
     respond_to do |format|
       format.html { render 'settings' }
     end

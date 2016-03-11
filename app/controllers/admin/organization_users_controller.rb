@@ -36,7 +36,7 @@ class Admin::OrganizationUsersController < Admin::AdminController
     @user = ::User.new
     @user.set_fields(params[:user], [:username, :email, :password, :quota_in_bytes, :password_confirmation, :twitter_datasource_enabled])
     @user.organization = current_user.organization
-    @user.username = "#{@user.username}"
+    @user.username = @user.username
     current_user.copy_account_features(@user)
     @user.save(raise_on_failure: true)
     @user.create_in_central

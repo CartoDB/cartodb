@@ -224,9 +224,10 @@ WORKING_SPECS_9 = \
 
 # Tests using spec_helper_min instead of spec_helper
 SPEC_HELPER_MIN_SPECS = \
-  spec/requests/carto/api/analyses_controller_spec.rb \
 	spec/models/carto/analysis_spec.rb \
+	spec/requests/admin/organization_users_controller_spec.rb \
 	spec/requests/api/json/maps_controller_spec.rb \
+	spec/requests/carto/api/analyses_controller_spec.rb \
 	spec/requests/carto/api/maps_controller_spec.rb \
 	$(NULL)
 

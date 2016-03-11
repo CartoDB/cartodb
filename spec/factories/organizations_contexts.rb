@@ -8,6 +8,7 @@ end
 
 shared_context 'organization with users helper' do
   include CacheHelper
+  include CartoDB::Factories
   include_context 'database configuration'
 
   before(:each) do

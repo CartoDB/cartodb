@@ -10,15 +10,7 @@ include CartoDB
 
 describe Visualization::Collection do
   before(:each) do
-    db_config   = Rails.configuration.database_configuration[Rails.env]
-    # Why not passing db_config directly to Sequel.postgres here ?
-    # See https://github.com/CartoDB/cartodb/issues/421
-    @db         = Sequel.postgres(
-                    host:     db_config.fetch('host'),
-                    port:     db_config.fetch('port'),
-                    database: db_config.fetch('database'),
-                    username: db_config.fetch('username')
-                  )
+    @db = Rail::Sequel::connection
     # Careful, uses another DB table (and deletes it at after:(each) )
     @relation   = "visualizations_#{Time.now.to_i}".to_sym
     @repository = DataRepository::Backend::Sequel.new(@db, @relation)

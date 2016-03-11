@@ -263,7 +263,6 @@ describe('windshaft/layergroup-config', function () {
           time: 300
         }
       });
-      var analysisNodeA0 = analysis.findAnalysisById('a0');
 
       layerModel.update({
         source: analysis,
@@ -379,7 +378,6 @@ describe('windshaft/layergroup-config', function () {
           }
         ]
       });
-
 
       // t3 - create a new layer B from the layer A source (subway stops)
 

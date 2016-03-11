@@ -22,6 +22,10 @@ class Admin::OrganizationUsersController < Admin::AdminController
     @user = ::User.new
     @user.quota_in_bytes = (current_user.organization.unassigned_quota < 100.megabytes ? current_user.organization.unassigned_quota : 100.megabytes)
 
+    @user.soft_geocoding_limit = current_user.soft_geocoding_limit
+    @user.soft_here_isolines_limit = current_user.soft_here_isolines_limit
+    @user.soft_twitter_datasource_limit = current_user.soft_twitter_datasource_limit
+
     respond_to do |format|
       format.html { render 'new' }
     end

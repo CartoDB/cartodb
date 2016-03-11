@@ -58,7 +58,6 @@ class Admin::OrganizationUsersController < Admin::AdminController
     CartoDB.report_exception(e, "Validation error", request: request, user: current_user)
     set_flash_flags
     flash.now[:error] = e.user_message
-    @user = default_user
     render 'new', status: 422
   rescue CartoDB::CentralCommunicationFailure => e
     CartoDB.report_exception(e)
@@ -80,9 +79,13 @@ class Admin::OrganizationUsersController < Admin::AdminController
     session[:show_dashboard_details_flash] = params[:show_dashboard_details_flash].present?
     session[:show_account_settings_flash] = params[:show_account_settings_flash].present?
 
+    unless soft_limits_validation(@user, params[:user])
+      raise Carto::UnprocesableEntityError.new("Soft limits validation error")
+    end
+
     attributes = params[:user]
     @user.set_fields(attributes, [:email]) if attributes[:email].present? && !@user.google_sign_in
-    @user.set_fields(attributes, [:quota_in_bytes]) if current_user.organization_owner?
+    @user.set_fields(attributes, [:quota_in_bytes]) if attributes[:quota_in_bytes].present? && current_user.organization_owner?
 
     @user.set_fields(attributes, [:disqus_shortname]) if attributes[:disqus_shortname].present?
     @user.set_fields(attributes, [:available_for_hire]) if attributes[:available_for_hire].present?
@@ -98,11 +101,17 @@ class Admin::OrganizationUsersController < Admin::AdminController
     @user.soft_here_isolines_limit = attributes[:soft_here_isolines_limit] if attributes[:soft_here_isolines_limit].present?
     @user.twitter_datasource_enabled = attributes[:twitter_datasource_enabled] if attributes[:twitter_datasource_enabled].present?
     @user.soft_twitter_datasource_limit = attributes[:soft_twitter_datasource_limit] if attributes[:soft_twitter_datasource_limit].present?
+
     @user.update_in_central
 
     @user.save(raise_on_failure: true)
 
     redirect_to CartoDB.url(self, 'edit_organization_user', { id: @user.username }, current_user), flash: { success: "Your changes have been saved correctly." }
+  rescue Carto::UnprocesableEntityError => e
+    CartoDB.report_exception(e, "Validation error", request: request, user: current_user)
+    set_flash_flags
+    flash.now[:error] = e.user_message
+    render 'edit', status: 422
   rescue CartoDB::CentralCommunicationFailure => e
     set_flash_flags
     flash.now[:error] = "There was a problem while updating this user. Please, try again and contact us if the problem persists. #{e.user_message}"

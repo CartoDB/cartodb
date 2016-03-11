@@ -111,7 +111,7 @@ describe Admin::OrganizationUsersController do
         user.soft_here_isolines_limit = values[1]
         user.soft_twitter_datasource_limit = values[2]
         user.save
-
+        user.reload
         old_limits
       end
 
@@ -143,7 +143,60 @@ describe Admin::OrganizationUsersController do
 
           update_soft_limits(@carto_org_user_owner, old_limits)
         end
+
+        it 'owner can enable soft limits if he has' do
+          old_limits = update_soft_limits(@org_user_owner, true)
+
+          post create_organization_user_url(user_domain: @org_user_owner.username),
+               user: user_params.merge(soft_limits_params(true))
+          last_response.status.should eq 302
+
+          user = User.where(username: user_params[:username]).first
+          check_soft_limits(user, true)
+          user.destroy
+
+          update_soft_limits(@org_user_owner, old_limits)
+        end
       end
+
+      describe 'update' do
+        before(:each) do
+
+        end
+
+        after(:each) do
+          ::User[@existing_user.id].destroy
+        end
+
+        it 'owner cannot enable soft limits if he has not' do
+          old_limits = update_soft_limits(@carto_org_user_owner, false)
+          @existing_user = FactoryGirl.create(:carto_user,
+                                              soft_limits_params(false).merge(organization: @carto_organization))
+
+          put update_organization_user_url(user_domain: @org_user_owner.username, id: @existing_user.username),
+              user: soft_limits_params(true)
+          last_response.status.should eq 422
+
+          @existing_user.reload
+          check_soft_limits(@existing_user, false)
+          update_soft_limits(@org_user_owner, old_limits)
+        end
+
+        it 'owner can enable soft limits if he has' do
+          old_limits = update_soft_limits(@carto_org_user_owner, true)
+          @existing_user = FactoryGirl.create(:carto_user,
+                                              soft_limits_params(false).merge(organization: @carto_organization))
+
+          put update_organization_user_url(user_domain: @org_user_owner.username, id: @existing_user.username),
+              user: soft_limits_params(true)
+          last_response.status.should eq 302
+
+          @existing_user.reload
+          check_soft_limits(@existing_user, true)
+          update_soft_limits(@org_user_owner, old_limits)
+        end
+      end
+
     end
   end
 end

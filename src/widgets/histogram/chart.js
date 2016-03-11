@@ -494,10 +494,10 @@ module.exports = cdb.core.View.extend({
   },
 
   _getDataForScales: function () {
-    if (this.model.get('bounded')) {
-      return this.model.get('data');
+    if (!this.model.get('bounded') && this._originalData) {
+      return this._originalData.getData();
     } else {
-      return this._originalData && this._originalData.getData();
+      return this.model.get('data');
     }
   },
 

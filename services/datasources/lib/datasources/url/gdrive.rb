@@ -182,7 +182,7 @@ module CartoDB
           end
 
           @client.execute(batch_request)
-          all_results
+          all_results.compact
         rescue Google::APIClient::InvalidIDTokenError => ex
           raise TokenExpiredOrInvalidError.new("Invalid token: #{ex.message}", DATASOURCE_NAME)
         rescue Google::APIClient::BatchError, Google::APIClient::TransmissionError, Google::APIClient::ClientError, \
@@ -332,11 +332,14 @@ module CartoDB
             data[:url] = data[:url][0..data[:url].rindex('=')] + 'csv'
             data[:filename] = clean_filename(item_data.fetch('title')) + '.csv'
             data[:size] = NO_CONTENT_SIZE_PROVIDED
-          else
+          elsif item_data.include?('downloadUrl')
             data[:url] = item_data.fetch('downloadUrl')
             # For Drive files, title == filename + extension
             data[:filename] = item_data.fetch('title')
             data[:size] = item_data.fetch('fileSize').to_i
+          else
+            CartoDB.notify_debug('downloadURl key not found @gdrive', item: item_data.to_s, user: @user)
+            return nil
           end
           data
         end

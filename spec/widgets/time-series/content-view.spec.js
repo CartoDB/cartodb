@@ -27,7 +27,6 @@ describe('widgets/time-series/content-view', function () {
     this.view = new TimeSeriesContentView({
       model: widgetModel
     });
-
   });
 
   it('should not fetch new data until unfilteredData is loaded', function () {

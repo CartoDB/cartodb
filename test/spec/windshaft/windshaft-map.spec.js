@@ -161,14 +161,14 @@ describe('windshaft/map', function () {
         }.bind(this));
       });
 
-      describe("when there's a tiled layer as the first layer of the Windshaft response (Named Map)", function () {
+      describe("when there's an http layer as the first layer of the Windshaft response (Named Map)", function () {
         beforeEach(function () {
           this.windshaftMapInstance = {
             layergroupid: 'layergroupid',
             metadata: {
               layers: [
                 {
-                  'type': 'tiled'
+                  'type': 'http'
                 },
                 {
                   'type': 'mapnik',
@@ -223,7 +223,7 @@ describe('windshaft/map', function () {
         });
       });
 
-      describe("when there isn't a tiled layer as the first layer of the Windshaft response (Named Map)", function () {
+      describe("when there isn't a tiled layer as the first layer of the Windshaft response (Anonymous Map)", function () {
         beforeEach(function () {
           this.windshaftMapInstance = {
             layergroupid: 'layergroupid',

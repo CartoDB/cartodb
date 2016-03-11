@@ -240,7 +240,7 @@ describe Carto::Api::OrganizationUsersController do
     it 'should do nothing if no update params are provided' do
       login(@organization.owner)
 
-      user_to_update = @organization.users[0]
+      user_to_update = @organization.non_owner_users[0]
       put api_v1_organization_users_update_url(name: @organization.name, u_username: user_to_update.username)
 
       last_response.status.should eq 410
@@ -250,7 +250,7 @@ describe Carto::Api::OrganizationUsersController do
     it 'should update password' do
       login(@organization.owner)
 
-      user_to_update = @organization.users[0]
+      user_to_update = @organization.non_owner_users[0]
       params = { password: 'limonero' }
       put api_v1_organization_users_update_url(name: @organization.name, u_username: user_to_update.username), params
 
@@ -260,28 +260,26 @@ describe Carto::Api::OrganizationUsersController do
     it 'should update email' do
       login(@organization.owner)
 
-      user_to_update = @organization.users[0]
-      new_email = "#{user_to_update.email}.es"
+      user_to_update = @organization.non_owner_users[0]
+      new_email = "new-#{user_to_update.email}"
       params = { email: new_email }
       put api_v1_organization_users_update_url(name: @organization.name, u_username: user_to_update.username), params
-
-      @organization.reload
-
       last_response.status.should eq 200
-      @organization.users[0].email.should == new_email
+
+      user_to_update.reload.email.should == new_email
     end
 
     it 'should update quota_in_bytes' do
       login(@organization.owner)
 
-      user_to_update = @organization.users[0]
+      user_to_update = @organization.non_owner_users[0]
       params = { quota_in_bytes: 2048 }
       put api_v1_organization_users_update_url(name: @organization.name, u_username: user_to_update.username), params
 
-      @organization.reload
-
       last_response.status.should eq 200
-      @organization.users[0].quota_in_bytes.should == 2048
+
+      user_to_update.reload
+      user_to_update.quota_in_bytes.should == 2048
     end
 
     it 'should update soft_geocoding_limit' do
@@ -291,21 +289,22 @@ describe Carto::Api::OrganizationUsersController do
       params = { soft_geocoding_limit: true }
       put api_v1_organization_users_update_url(name: @organization.name, u_username: user_to_update.username), params
 
-      @organization.reload
-
       last_response.status.should eq 200
-      @organization.users[0].soft_geocoding_limit.should be true
+      user_to_update.reload.soft_geocoding_limit.should be true
 
       params = { soft_geocoding_limit: false }
       put api_v1_organization_users_update_url(name: @organization.name, u_username: user_to_update.username), params
 
-      @organization.reload
-
       last_response.status.should eq 200
-      @organization.users[0].soft_geocoding_limit.should be false
+
+      user_to_update.reload
+      user_to_update.soft_geocoding_limit.should be false
     end
 
     it 'should do full update' do
+      @organization.owner.soft_geocoding_limit = true
+      @organization.owner.save
+
       login(@organization.owner)
 
       user_to_update = @organization.users[0]
@@ -316,14 +315,13 @@ describe Carto::Api::OrganizationUsersController do
                  quota_in_bytes: 2048 }
       put api_v1_organization_users_update_url(name: @organization.name, u_username: user_to_update.username), params
 
-      @organization.reload
-      @organization.users[0].reload
-
       last_response.status.should eq 200
 
-      @organization.users[0].email.should eq new_email
-      @organization.users[0].soft_geocoding_limit.should be true
-      @organization.users[0].quota_in_bytes.should == 2048
+      user_to_update.reload
+
+      user_to_update.email.should eq new_email
+      user_to_update.soft_geocoding_limit.should be true
+      user_to_update.quota_in_bytes.should == 2048
     end
 
     it 'can enable soft geocoding_limit, twitter_datasource_limit and here_isolines_limit if owner has them' do
@@ -361,11 +359,14 @@ describe Carto::Api::OrganizationUsersController do
 
       login(@organization.owner)
       user_to_update = @organization.users[0]
-      params = user_params_soft_limits(nil, false)
+      replace_soft_limits(user_to_update, [false, false, false])
+      params = user_params_soft_limits(nil, true)
 
       put api_v1_organization_users_update_url(name: @organization.name, u_username: user_to_update.username), params
 
-      last_response.status.should eq 200
+      last_response.status.should eq 410
+      errors = JSON.parse(last_response.body)
+      errors.count.should eq 3
 
       user_to_update.reload
       verify_soft_limits(user_to_update, false)
@@ -389,13 +390,12 @@ describe Carto::Api::OrganizationUsersController do
     it 'should delete users' do
       login(@organization.owner)
 
-      user_to_be_deleted = @organization.users[0].dup
+      user_to_be_deleted = @organization.non_owner_users[0]
       delete api_v1_organization_users_delete_url(name: @organization.name, u_username: user_to_be_deleted.username)
 
       last_response.status.should eq 200
 
-      @organization.reload
-      @organization.users.map(&:id).include?(user_to_be_deleted.id).should eq false
+      User[user_to_be_deleted.id].should be_nil
     end
 
     it 'should not allow to delete the org owner' do
@@ -432,7 +432,8 @@ describe Carto::Api::OrganizationUsersController do
     it 'should show existing users' do
       login(@organization.owner)
 
-      user_to_be_shown = @organization.users[0].dup
+      @organization.reload
+      user_to_be_shown = @organization.non_owner_users[0]
       get api_v1_organization_users_show_url(name: @organization.name, u_username: user_to_be_shown.username)
 
       last_response.status.should eq 200

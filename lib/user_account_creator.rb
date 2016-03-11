@@ -91,27 +91,14 @@ module CartoDB
       if @organization
         if @organization.owner.nil?
           if !promote_to_organization_owner?
-            @custom_errors[:organization] = ["owner is not set. In order to activate this organization the administrator must login first"]
+            @custom_errors[:organization] = ["Organization owner is not set. Administrator must login first"]
           end
         else
           validate_organization_soft_limits
         end
       end
 
-      @user.valid? && @user.validate_credentials_not_taken_in_central && @custom_errors.keys.length == 0
-    end
-
-    def validate_organization_soft_limits
-      owner = @organization.owner
-      if @user_params[PARAM_SOFT_GEOCODING_LIMIT] == 'true' && !owner.soft_geocoding_limit
-        @custom_errors[:soft_geocoding_limit] = ["Owner can't assign soft geocoding limit"]
-      end
-      if @user_params[PARAM_SOFT_HERE_ISOLINES_LIMIT] == 'true' && !owner.soft_here_isolines_limit
-        @custom_errors[:soft_here_isolines_limit] = ["Owner can't assign soft here isolines limit"]
-      end
-      if @user_params[PARAM_SOFT_TWITTER_DATASOURCE_LIMIT] == 'true' && !owner.soft_twitter_datasource_limit
-        @custom_errors[:soft_twitter_datasource_limit] = ["Owner can't assign soft twitter datasource limit"]
-      end
+      @user.valid? && @user.validate_credentials_not_taken_in_central && @custom_errors.empty?
     end
 
     def validation_errors
@@ -124,8 +111,10 @@ module CartoDB
       user_creation.save
 
       common_data_url = CartoDB::Visualization::CommonDataService.build_url(current_controller)
-      ::Resque.enqueue(::Resque::UserJobs::Signup::NewUser, user_creation.id, common_data_url,
-        promote_to_organization_owner?)
+      ::Resque.enqueue(::Resque::UserJobs::Signup::NewUser,
+                       user_creation.id,
+                       common_data_url,
+                       promote_to_organization_owner?)
 
       { id: user_creation.id, username: user_creation.username }
     end
@@ -160,6 +149,20 @@ module CartoDB
     end
 
     private
+
+    # This is coupled to OrganizationUserController soft limits validations.
+    def validate_organization_soft_limits
+      owner = @organization.owner
+      if @user_params[PARAM_SOFT_GEOCODING_LIMIT] == 'true' && !owner.soft_geocoding_limit
+        @custom_errors[:soft_geocoding_limit] = ["Owner can't assign soft geocoding limit"]
+      end
+      if @user_params[PARAM_SOFT_HERE_ISOLINES_LIMIT] == 'true' && !owner.soft_here_isolines_limit
+        @custom_errors[:soft_here_isolines_limit] = ["Owner can't assign soft here isolines limit"]
+      end
+      if @user_params[PARAM_SOFT_TWITTER_DATASOURCE_LIMIT] == 'true' && !owner.soft_twitter_datasource_limit
+        @custom_errors[:soft_twitter_datasource_limit] = ["Owner can't assign soft twitter datasource limit"]
+      end
+    end
 
     def with_param(key, value)
       @built = false

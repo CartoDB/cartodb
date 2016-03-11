@@ -47,7 +47,7 @@ module Carto
         # ::User validation requires confirmation
         params_to_update[:password_confirmation] = params_to_update[:password]
 
-        unless @user.update_fields(params_to_update, params_to_update.keys)
+        if !(soft_limits_validation(@user, params_to_update) && @user.update_fields(params_to_update, params_to_update.keys))
           render_jsonp(@user.errors.full_messages, 410)
           return
         end
@@ -83,6 +83,26 @@ module Carto
       end
 
       private
+
+      # This is not run at model validation flow because we might want to override this rules.
+      def soft_limits_validation(user, params_to_update)
+        errors = user.errors
+        owner = user.organization.owner
+        soft_geocoding_limit = !!params_to_update[:soft_geocoding_limit]
+        if user.soft_geocoding_limit != soft_geocoding_limit && soft_geocoding_limit && !owner.soft_geocoding_limit
+          errors.add(:soft_geocoding_limit, "Organization owner hasn't this soft limit")
+        end
+        soft_here_isolines_limit = !!params_to_update[:soft_here_isolines_limit]
+        if user.soft_here_isolines_limit != soft_here_isolines_limit && soft_here_isolines_limit && !owner.soft_here_isolines_limit
+          errors.add(:soft_here_isolines_limit, "Organization owner hasn't this soft limit")
+        end
+        soft_twitter_datasource_limit = !!params_to_update[:soft_twitter_datasource_limit]
+        if user.soft_twitter_datasource_limit != soft_twitter_datasource_limit && soft_twitter_datasource_limit && !owner.soft_twitter_datasource_limit
+          errors.add(:soft_twitter_datasource_limit, "Organization owner hasn't this soft limit")
+        end
+
+        errors.empty?
+      end
 
       # TODO: Use native strong params when in Rails 4+
       def create_params

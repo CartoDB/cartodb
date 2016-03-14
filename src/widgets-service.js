@@ -56,7 +56,7 @@ WidgetsService.prototype.createHistogramModel = function (attrs, layer) {
 
   var dataviewModel = this._dataviews.createHistogramModel(layer, attrs);
 
-  var attrsNames = ['id', 'title', 'collapsed', 'bins', 'show_stats'];
+  var attrsNames = ['id', 'title', 'collapsed', 'bins', 'show_stats', 'normalized'];
   var widgetAttrs = _.pick(attrs, attrsNames);
   widgetAttrs.type = 'histogram';
   widgetAttrs.attrsNames = attrsNames;

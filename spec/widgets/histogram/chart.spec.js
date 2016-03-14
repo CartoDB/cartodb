@@ -77,12 +77,24 @@ describe('widgets/histogram/chart', function () {
     expect(this.view.$el.attr('style')).toMatch('none');
   });
 
-  it('should remove and generate shadow bars when original data chagnes', function () {
-    spyOn(this.view, '_removeShadowBars');
-    spyOn(this.view, '_generateShadowBars');
-    this.originalModel.trigger('change:data');
-    expect(this.view._removeShadowBars).toHaveBeenCalled();
-    expect(this.view._generateShadowBars).toHaveBeenCalled();
+  describe('shadow bars', function () {
+    it('should not show shadow bars', function () {
+      this.view.options.displayShadowBars = false;
+      this.view.model.set('show_shadow_bars', false);
+      expect(this.view.$('.CDB-Chart-shadowBars').length).toBe(0);
+      this.originalModel.trigger('change:data');
+      expect(this.view.$('.CDB-Chart-shadowBars').length).toBe(0);
+      this.view.showShadowBars();
+      expect(this.view.$('.CDB-Chart-shadowBars').length).toBe(0);
+    });
+
+    it('should remove and generate shadow bars when original data chagnes', function () {
+      spyOn(this.view, '_removeShadowBars');
+      spyOn(this.view, '_generateShadowBars');
+      this.originalModel.trigger('change:data');
+      expect(this.view._removeShadowBars).toHaveBeenCalled();
+      expect(this.view._generateShadowBars).toHaveBeenCalled();
+    });
   });
 
   describe('when view is resized but set to not be shown just yet', function () {

@@ -75,11 +75,11 @@ module Carto
       end
 
       def payload_visualization_id
-         json_post.present? ? json_post['visualization_id'] : nil
+        json_post.present? ? json_post['visualization_id'] : nil
       end
 
       def payload_analysis_id
-         json_post.present? ? json_post['id'] : nil
+       json_post.present? ? json_post['id'] : nil
       end
 
       def json_post

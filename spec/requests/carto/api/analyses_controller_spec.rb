@@ -144,10 +144,10 @@ describe Carto::Api::AnalysesController do
   describe '#update' do
     let(:new_natural_id) { "#{natural_id}_2" }
 
-    let(:new_payload) {
+    let(:new_payload) do
       payload.delete(:id)
       payload.merge(whatever: 'really?')
-    }
+    end
 
     it 'updates existing analysis' do
       put_json viz_analysis_url(@user, @visualization, @analysis), new_payload do |response|

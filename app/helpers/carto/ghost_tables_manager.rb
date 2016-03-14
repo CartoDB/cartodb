@@ -49,7 +49,7 @@ module Carto
       non_linked_tables.each do |t|
         table = fetch_table_for_user_table(t[:id])
 
-        next if table.nil? # UserTable hasn't been created yet
+        next if table.nil? # UserTable hasn't been created yet; take care of it in link_new_tables
 
         begin
           CartoDB.notify_debug('ghost tables', action: 'link renamed', renamed_table: t[:relname])

@@ -78,7 +78,7 @@ describe Visualization::Overlays do
       Visualization::Overlays.new(@visualization).create_overlays_from_url_options(url_options)
 
       @visualization.overlays.count.should eq 5
-      @visualization.overlays.select { |o| o.options['display'] }.count.should  eq 5
+      @visualization.overlays.count { |o| o.options['display'] }.should eq 3
 
     end
 
@@ -95,6 +95,3 @@ describe Visualization::Overlays do
 
   end
 end
-
-
-

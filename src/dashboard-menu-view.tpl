@@ -46,7 +46,7 @@
       </ul>
       <div class="CDB-Dashboard-menuTexts CDB-Dashboard-hideMobile">
         <p class="CDB-Text CDB-Size-small u-upperCase u-altTextColor u-bSpace--m js-timeAgo">UPDATED <%- updatedAt %></p>
-        <h1 class="CDB-Dashboard-menuTitle CDB-Text CDB-Size-huge js-title"><%- title %></h1>
+        <h1 class="CDB-Dashboard-menuTitle CDB-Text CDB-Size-huge u-ellipsis js-title"><%- title %></h1>
         <h2 class="CDB-Text CDB-Size-large is-light u-secondaryTextColor js-description"><%= cdb.core.sanitize.html(description) %></h2>
       </div>
     </div>

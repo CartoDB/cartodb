@@ -144,7 +144,10 @@ describe Carto::Api::AnalysesController do
   describe '#update' do
     let(:new_natural_id) { "#{natural_id}_2" }
 
-    let(:new_payload) { payload.merge(whatever: 'really?') }
+    let(:new_payload) {
+      payload.delete(:id)
+      payload.merge(whatever: 'really?')
+    }
 
     it 'updates existing analysis' do
       put_json viz_analysis_url(@user, @visualization, @analysis), new_payload do |response|
@@ -152,6 +155,16 @@ describe Carto::Api::AnalysesController do
         response.body.should eq new_payload
         a = Carto::Analysis.find(@analysis.id)
         a.params_json.should eq new_payload
+      end
+    end
+
+    it 'returns 422 if payload visualization_id or id do not match' do
+      put_json viz_analysis_url(@user, @visualization, @analysis),
+               new_payload.merge(visualization_id: 'x') do |response|
+        response.status.should eq 422
+      end
+      put_json viz_analysis_url(@user, @visualization, @analysis), new_payload.merge(id: 'x') do |response|
+        response.status.should eq 422
       end
     end
 

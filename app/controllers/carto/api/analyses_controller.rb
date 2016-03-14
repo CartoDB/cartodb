@@ -64,7 +64,6 @@ module Carto
       end
 
       def load_visualization
-        payload_visualization_id = visualization_id_from_payload
         visualization_id = params[:visualization_id]
 
         if payload_visualization_id.present? && payload_visualization_id != visualization_id
@@ -75,8 +74,16 @@ module Carto
         raise LoadError.new("Visualization not found: #{visualization_id}") unless @visualization
       end
 
-      def visualization_id_from_payload
-        request.raw_post.present? ? JSON.parse(request.raw_post)['visualization_id'] : nil
+      def payload_visualization_id
+         json_post.present? ? json_post['visualization_id'] : nil
+      end
+
+      def payload_analysis_id
+         json_post.present? ? json_post['id'] : nil
+      end
+
+      def json_post
+        @json_post ||= (request.raw_post.present? ? JSON.parse(request.raw_post) : nil)
       rescue => e
         # Malformed JSON is not our business
         CartoDB.notify_warning_exception(e)
@@ -90,6 +97,10 @@ module Carto
       end
 
       def load_analysis
+        if payload_analysis_id.present? && payload_analysis_id != params[:id]
+          raise UnprocesableEntityError.new("url analysis (#{params[:id]}) != payload (#{payload_analysis_id})")
+        end
+
         unless params[:id].nil?
           @analysis = Carto::Analysis.where(id: params[:id]).first if is_uuid?(params[:id])
 

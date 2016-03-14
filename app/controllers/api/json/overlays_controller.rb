@@ -30,6 +30,10 @@ class Api::Json::OverlaysController < Api::ApplicationController
       end
 
     end
+  rescue CartoDB::Overlay::DuplicateOverlayError
+    render_jsonp({ errors: {
+                   overlay: "Duplicate overlay of type #{params[:type]}"
+                 } }, 400)
   end
 
   def update
@@ -106,4 +110,3 @@ class Api::Json::OverlaysController < Api::ApplicationController
   end
 
 end
-

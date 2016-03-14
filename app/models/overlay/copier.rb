@@ -9,11 +9,11 @@ module CartoDB
       end
 
       def copy_from(overlay)
-        Member.new(
+        Carto::Overlay.new(
           order: overlay.order,
           type: overlay.type,
           template: overlay.template,
-          options: ::JSON.parse(overlay.options),
+          options: overlay.options,
           visualization_id: @visualization_id
         )
       end
@@ -21,4 +21,3 @@ module CartoDB
     end
   end
 end
-

@@ -72,7 +72,7 @@ module CartoDB
       end
 
       def overlays
-        @overlays ||= Overlay::Collection.new(visualization_id: id).fetch
+        @overlays ||= Carto::Overlay.where(visualization_id: id).all
       end
 
       def map
@@ -177,4 +177,3 @@ module CartoDB
     end
   end
 end
-

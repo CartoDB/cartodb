@@ -45,7 +45,7 @@ module CartoDB
         copier = CartoDB::Overlay::Copier.new(new_visualization.id)
         visualization.overlays.each.map { |overlay|
           new_overlay = copier.copy_from(overlay)
-          new_overlay.store
+          new_overlay.save
         }
       end
 
@@ -59,4 +59,3 @@ module CartoDB
     end
   end
 end
-

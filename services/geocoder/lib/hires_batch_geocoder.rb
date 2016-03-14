@@ -104,8 +104,11 @@ module CartoDB
     end
 
     def cancel
+      @log.append_and_store "Trying to cancel a batch job sent to HERE"
       assert_batch_api_enabled
-      response = http_client.put api_url(action: 'cancel')
+      response = http_client.put(api_url(action: 'cancel'),
+                                 connecttimeout: HTTP_CONNECTION_TIMEOUT,
+                                 timeout: HTTP_REQUEST_TIMEOUT)
       handle_api_error(response)
       update_stats(response)
       @log.append_and_store "Job sent to HERE has been cancelled"
@@ -113,7 +116,10 @@ module CartoDB
 
     def update_status
       assert_batch_api_enabled
-      response = http_client.get api_url(action: 'status')
+      response = http_client.get(api_url(action: 'status'),
+                                 connecttimeout: HTTP_CONNECTION_TIMEOUT,
+                                 timeout: HTTP_REQUEST_TIMEOUT)
+
       handle_api_error(response)
       update_stats(response)
     end
@@ -168,9 +174,7 @@ module CartoDB
 
     def http_client
       @http_client ||= Carto::Http::Client.get('hires_batch_geocoder',
-                                               log_requests: true,
-                                               connecttimeout: HTTP_CONNECTION_TIMEOUT,
-                                               timeout: HTTP_REQUEST_TIMEOUT)
+                                               log_requests: true)
     end
 
     def api_url(arguments, extra_components = nil)

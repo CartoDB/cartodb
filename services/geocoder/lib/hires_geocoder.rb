@@ -86,9 +86,7 @@ module CartoDB
 
     def http_client
       @http_client ||= Carto::Http::Client.get('hires_geocoder',
-                                               log_requests: true,
-                                               connecttimeout: HTTP_CONNECTION_TIMEOUT,
-                                               timeout: HTTP_REQUEST_TIMEOUT)
+                                               log_requests: true)
     end
 
     def input_rows
@@ -119,7 +117,9 @@ module CartoDB
     def geocode_text(text)
       options = GEOCODER_OPTIONS.merge(searchtext: text, app_id: app_id, app_code: token)
       url = "#{non_batch_base_url}?#{URI.encode_www_form(options)}"
-      http_response = http_client.get(url)
+      http_response = http_client.get(url,
+                                      connecttimeout: HTTP_CONNECTION_TIMEOUT,
+                                      timeout: HTTP_REQUEST_TIMEOUT)
       if http_response.success?
         response = ::JSON.parse(http_response.body)["response"]
         if response['view'].empty?

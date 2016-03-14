@@ -89,7 +89,7 @@ module CartoDB
     private
 
     def geocoder
-      @geocoder ||= CartoDB::HiresGeocoderFactory.get(csv_file, working_dir, @log)
+      @geocoder ||= CartoDB::HiresGeocoderFactory.get(@csv_file, @working_dir, @log)
     end
 
     def cache_disabled?

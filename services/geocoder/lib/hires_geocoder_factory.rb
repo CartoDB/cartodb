@@ -33,7 +33,7 @@ module CartoDB
     end
 
     def self.input_rows(input_csv_file)
-      stdout, stderr, status  = Open3.capture3('wc', '-l', input_csv_file)
+      stdout, _stderr, _status = Open3.capture3('wc', '-l', input_csv_file)
       stdout.to_i
     rescue => e
       CartoDB.notify_exception(e)

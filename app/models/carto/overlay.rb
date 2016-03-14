@@ -48,10 +48,14 @@ module Carto
           end
         end
       end
+    rescue KeyError
+      # Scenario of not yet having stored the vis
     end
 
     def invalidate_cache
       visualization.invalidate_cache
+    rescue KeyError
+      # Scenario of not yet having stored the vis
     end
   end
 end

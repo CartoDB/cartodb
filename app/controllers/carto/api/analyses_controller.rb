@@ -52,15 +52,18 @@ module Carto
 
       def params_from_request
         analysis_params = request.raw_post
-        raise Carto::UnprocesableEntityError.new("Params not present") unless analysis_params.present?
-        params_json = begin
-          JSON.parse(analysis_params)
-        rescue => e
-          raise Carto::UnprocesableEntityError.new("Error parsing params: #{e.message}")
-        end
+        params_json = json_post(analysis_params)
         raise Carto::UnprocesableEntityError.new("Empty params") if params_json.empty?
 
         analysis_params
+      end
+
+      def json_post(raw_post = request.raw_post)
+        @json_post ||= (raw_post.present? ? JSON.parse(raw_post) : nil)
+      rescue => e
+        # Malformed JSON is not our business
+        CartoDB.notify_warning_exception(e)
+        raise UnprocesableEntityError.new("Malformed JSON: #{raw_post}")
       end
 
       def load_visualization
@@ -80,14 +83,6 @@ module Carto
 
       def payload_analysis_id
         json_post.present? ? json_post['id'] : nil
-      end
-
-      def json_post
-        @json_post ||= (request.raw_post.present? ? JSON.parse(request.raw_post) : nil)
-      rescue => e
-        # Malformed JSON is not our business
-        CartoDB.notify_warning_exception(e)
-        raise UnprocesableEntityError.new("Malformed JSON: #{request.raw_post}")
       end
 
       def check_user_can_add_analysis

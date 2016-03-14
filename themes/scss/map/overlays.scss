@@ -180,17 +180,24 @@ $buttonColor: #636D72;
     content: '';
     opacity: 0.2;
   }
-
+  .CDB-Shape-Arrow.is-down {
+    top: 5px;
+    left: 45px;
+  }
+  .CDB-Shape-Arrow.is-up {
+    top: 6px;
+    left: 52px;
+  }
   &:hover {
-    .CDB-Shape-Arrow--top {
+    .CDB-Shape-Arrow.is-up {
       @include transition(all, 100ms);
-      top: 4px;
-      right: 7px;
+      top: 3px;
+      left: 55px;
     }
-    .CDB-Shape-Arrow--bottom {
+    .CDB-Shape-Arrow.is-down {
       @include transition(all, 100ms);
-      top: 15px;
-      left: 44px;
+      top: 7px;
+      left: 43px;
     }
   }
 }

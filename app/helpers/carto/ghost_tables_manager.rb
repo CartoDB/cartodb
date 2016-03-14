@@ -5,45 +5,49 @@ module Carto
     MUTEX_REDIS_KEY = 'ghost_tables_working'.freeze
     MUTEX_TTL = 2000
 
-    def link(user)
+    def initialize(user)
+      @user = user
+    end
+
+    def link
       bolt = Redlock::Client.new(["redis://#{Cartodb.config[:redis]['host']}:#{Cartodb.config[:redis]['port']}"])
 
-      bolt.lock(mutex_redis_key(user), MUTEX_TTL) do |locked|
+      bolt.lock(mutex_redis_key, MUTEX_TTL) do |locked|
         next unless locked
 
         # Lock aquired, inside the critical zone
 
         # NOTE: Order DOES matter, first renamed, then created and deleted last
-        unless all_tables(user).blank?
-          relink_renamed_tables(user)
-          link_created_tables(user)
+        unless all_tables.blank?
+          relink_renamed_tables
+          link_created_tables
         end
 
-        unlink_deleted_tables(user)
+        unlink_deleted_tables
       end
 
       # Left the critical zone, bolt automatically unlocked
     end
 
     # search in the user database for tables that are not in the metadata database
-    def has_non_linked_tables?(user)
-      !non_linked_tables(user).empty?
+    def has_non_linked_tables?
+      !non_linked_tables.empty?
     end
 
     # checks if bad tables are linked (deleted or renamed)
-    def has_stale_linked_tables?(user)
-      !stale_tables(user).empty?
+    def has_stale_linked_tables?
+      !stale_tables.empty?
     end
 
     protected
 
-    def mutex_redis_key(user)
-      "rails:users:#{user.username}:#{MUTEX_REDIS_KEY}"
+    def mutex_redis_key
+      "rails:users:#{@user.username}:#{MUTEX_REDIS_KEY}"
     end
 
-    def relink_renamed_tables(user)
-      non_linked_tables(user).each do |t|
-        table = fetch_table_for_user_table(t[:id], user.id)
+    def relink_renamed_tables
+      non_linked_tables.each do |t|
+        table = fetch_table_for_user_table(t[:id])
 
         next if table.nil? # UserTable hasn't been created yet
 
@@ -61,14 +65,14 @@ module Carto
       end
     end
 
-    def link_created_tables(user)
-      non_linked_tables(user).each do |t|
+    def link_created_tables
+      non_linked_tables.each do |t|
         begin
           CartoDB.notify_debug('ghost tables', action: 'registering table', new_table: t[:name])
 
           table = Table.new
 
-          table.user_id = user.id
+          table.user_id = @user.id
           table.name = t[:name]
           table.table_id = t[:id]
           table.register_table_only = true
@@ -81,15 +85,15 @@ module Carto
       end
     end
 
-    def unlink_deleted_tables(user)
-      syncs = CartoDB::Synchronization::Collection.new.fetch(user_id: user.id).map(&:name).compact
+    def unlink_deleted_tables
+      syncs = CartoDB::Synchronization::Collection.new.fetch(user_id: @user.id).map(&:name).compact
 
       # Remove tables with oids that don't exist on the db
-      stale_tables(user).each do |user_table|
+      stale_tables.each do |user_table|
         # Sync tables replace contents without touching metadata DB, so if method triggers meanwhile sync will fail
         next if syncs.include?(user_table[:name])
 
-        table = fetch_table_for_user_table(user_table[:id], user.id)
+        table = fetch_table_for_user_table(user_table[:id])
 
         next if table.nil? # TODO: Report this if buggy.
 
@@ -99,13 +103,13 @@ module Carto
         table.destroy
       end
 
-      clean_user_tables_with_null_table_id(user)
+      clean_user_tables_with_null_table_id
     end
 
     # this method searchs for tables with all the columns needed in a cartodb table.
     # it does not check column types, and only the latest cartodbfication trigger attached (test_quota_per_row)
     # returns the list of tables in the database with those columns but not in metadata database
-    def search_for_cartodbfied_tables(user)
+    def search_for_cartodbfied_tables
       sql = %{
         WITH a as (
           SELECT table_name, count(column_name::text) cdb_columns_count
@@ -113,17 +117,9 @@ module Carto
           WHERE
             t.tablename = c.table_name AND
             t.schemaname = c.table_schema AND
-            c.table_schema = '#{user.database_schema}' AND
-            t.tableowner = '#{user.database_username}' AND
+            c.table_schema = '#{@user.database_schema}' AND
+            t.tableowner = '#{@user.database_username}' AND
       }
-
-      unless linked_tables(user).empty?
-        linked_table_names = linked_tables(user).map { |linked_table| "'#{linked_table[:name]}'" }.join(',')
-
-        sql += %{
-            c.table_name NOT IN (#{linked_table_names}) AND
-          }
-      end
 
       required_columns = Table::CARTODB_REQUIRED_COLUMNS + [Table::THE_GEOM_WEBMERCATOR]
       cartodb_columns = required_columns.map { |t| "'#{t}'" }.join(',')
@@ -136,35 +132,41 @@ module Carto
         SELECT table_name FROM a WHERE cdb_columns_count = #{required_columns.length}
       }
 
-      user.in_database(as: :superuser)[sql].all.map { |table| table[:table_name] }
+      @user.in_database(as: :superuser)[sql].all.map { |table| table[:table_name] }
     end
 
     # Tables viewable in the editor; in users user_tables
-    def linked_tables(user)
-      user.tables.select(:name, :table_id).map { |table| { id: table.table_id, name: table.name } }
+    def linked_tables
+      @user.tables.select(:name, :table_id).map { |table| { id: table.table_id, name: table.name } }
     end
 
     # May not be viewed in the editor; searching in pg_class
-    def all_tables(user)
-      user.real_tables.map { |table| { id: table[:oid], name: table[:relname] } }.compact
+    def all_tables(only_cartodbfied = true)
+      if only_cartodbfied
+        real_tables = @user.real_tables.select { |table| search_for_cartodbfied_tables.include?(table[:relname]) }
+      else
+        real_tables = @user.real_tables
+      end
+
+      real_tables.map { |table| { id: table[:oid], name: table[:relname] } }.compact
     end
 
     # Not viewable in the editor
-    def non_linked_tables(user)
-      all_tables(user) - linked_tables(user)
+    def non_linked_tables
+      all_tables - linked_tables
     end
 
     # Tables that have been dropped via API but still exist as UserTable
-    def stale_tables(user)
-      linked_tables(user) - all_tables(user)
+    def stale_tables
+      linked_tables - all_tables
     end
 
     # Remove tables with null oids unless the table name exists on the db
-    def clean_user_tables_with_null_table_id(user)
-      null_table_id_user_tables = linked_tables(user).select { |linked_table| linked_table[:id].nil? }
+    def clean_user_tables_with_null_table_id
+      null_table_id_user_tables = linked_tables.select { |linked_table| linked_table[:id].nil? }
 
       # Discard tables physically in database
-      (null_table_id_user_tables - all_tables(user)).each do |user_table|
+      (null_table_id_user_tables - all_tables).each do |user_table|
         t = Table.new(table_id: user_table[:id])
 
         t.keep_user_database_table = true
@@ -173,11 +175,11 @@ module Carto
     end
 
     # Grabs the Table associated with a UserTable identified by it's table_id. Also reports duplicate UserTables.
-    def fetch_table_for_user_table(table_id, user_id)
-      user_tables = ::UserTable.where(table_id: table_id, user_id: user_id)
+    def fetch_table_for_user_table(table_id)
+      user_tables = ::UserTable.where(table_id: table_id, user_id: @user.id)
 
       if user_tables.count > 1
-        CartoDB.notify_error("#{user.username} has duplicate UserTables", duplicated_table_id: table_id)
+        CartoDB.notify_error("#{@user.username} has duplicate UserTables", duplicated_table_id: table_id)
       end
 
       user_tables.first ? Table.new(user_table: user_tables.first) : nil

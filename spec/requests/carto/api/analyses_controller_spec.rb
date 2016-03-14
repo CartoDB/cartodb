@@ -104,6 +104,12 @@ describe Carto::Api::AnalysesController do
       end
     end
 
+    it 'returns 422 if payload visualization or user id do not match with url' do
+      post_json create_analysis_url(@user, @visualization), payload.merge(visualization_id: 'x') do |response|
+        response.status.should eq 422
+      end
+    end
+
     it 'returns 422 if payload is not valid json' do
       post_json create_analysis_url(@user, @visualization), nil do |response|
         response.status.should eq 422

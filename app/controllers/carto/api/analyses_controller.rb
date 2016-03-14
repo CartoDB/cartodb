@@ -64,10 +64,23 @@ module Carto
       end
 
       def load_visualization
+        payload_visualization_id = visualization_id_from_payload
         visualization_id = params[:visualization_id]
+
+        if payload_visualization_id.present? && payload_visualization_id != visualization_id
+          raise UnprocesableEntityError.new("url vis (#{visualization_id}) != payload (#{payload_visualization_id})")
+        end
 
         @visualization = Carto::Visualization.where(id: visualization_id).first if visualization_id
         raise LoadError.new("Visualization not found: #{visualization_id}") unless @visualization
+      end
+
+      def visualization_id_from_payload
+        request.raw_post.present? ? JSON.parse(request.raw_post)['visualization_id'] : nil
+      rescue => e
+        # Malformed JSON is not our business
+        CartoDB.notify_warning_exception(e)
+        raise UnprocesableEntityError.new("Malformed JSON: #{request.raw_post}")
       end
 
       def check_user_can_add_analysis

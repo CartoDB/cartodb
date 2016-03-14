@@ -1,11 +1,13 @@
 require 'fiber'
+require 'cartodb/sequel_connection_helper'
 
 module CartoDB
   class ConnectionPool
-    
+    include CartoDB::SequelConnectionHelper
+
     # Until migration to AR is done
     MAX_POOL_SIZE = 600
-    
+
     def initialize
       @pool = {}
     end
@@ -42,7 +44,7 @@ module CartoDB
       Rails.logger.debug "[pool] Creating a new connection for #{connection_id(configuration)} (#{@pool.keys.size})"
       connection
     end
-    
+
     def close_connections!(db=nil)
       newpool = {}
       @pool.each do |id, conn|
@@ -56,12 +58,12 @@ module CartoDB
       end
       @pool = newpool
     end
-    
+
     def close_oldest_connection!
       older = nil
       oldest_access = nil
       @pool.each do |connection_id, conn|
-        if oldest_access.nil? || oldest_access < conn[:last_accessed]
+        if oldest_access.nil? || conn[:last_accessed] < oldest_access
           oldest_access = conn[:last_accessed]
           older = connection_id
         end
@@ -69,12 +71,12 @@ module CartoDB
       close_connection(@pool[older][:connection], older)
       @pool.delete(older)
     end
-    
+
     private
-    
+
     def close_connection(connection, id)
       if id.end_with?('sequel')
-        connection.disconnect
+        close_sequel_connection(connection)
       else
         connection.disconnect!
       end

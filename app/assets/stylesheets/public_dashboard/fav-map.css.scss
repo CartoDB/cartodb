@@ -76,11 +76,6 @@ $heightTall: 450px;
   text-decoration: none;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
 }
-.FavMapTitle-mapTitle:hover {
-  color: #FFFFFF;
-  text-decoration: none;
-}
-
 .FavMapTitle-sectionTitle {
   margin: 0 0 10px;
   font-size: 16px;
@@ -88,10 +83,18 @@ $heightTall: 450px;
   text-transform: uppercase;
 }
 .FavMapTitle-mapTitle {
+  margin: 0;
   font-size: 48px;
   font-weight: normal;
 }
+.FavMapTitle-mapTitleLink {
+  color: #FFF;
 
+  &:hover {
+    color: #FFF;
+    text-decoration: none;
+  }
+}
 @media (min-width: $sMedia-tablet) {
   .FavMap {
     height: $height;

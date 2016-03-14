@@ -95,7 +95,7 @@ class Geocoding < Sequel::Model
                                                           max_rows: max_geocodable_rows,
                                                           country_column: country_column,
                                                           region_column: region_column,
-                                                          log: self.log)
+                                                          log: log)
       rescue => e
         @table_geocoder = nil
         raise e
@@ -171,6 +171,10 @@ class Geocoding < Sequel::Model
     handle_geocoding_success(rows_geocoded_before)
   rescue => e
     handle_geocoding_failure(e, rows_geocoded_before)
+  ensure
+    if table_geocoder && table_geocoder.remote_id
+      self.update remote_id: table_geocoder.remote_id
+    end
   end
 
   def report(error = nil)

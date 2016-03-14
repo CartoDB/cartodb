@@ -10,7 +10,7 @@ module CartoDB
 
     BATCH_FILES_OVER = 1100 # Use Here Batch Geocoder API with tables over x rows
 
-    def self.get(input_csv_file, working_dir)
+    def self.get(input_csv_file, working_dir, log)
       geocoder_class = nil
       if use_batch_process? input_csv_file
         geocoder_class = HiresBatchGeocoder
@@ -18,7 +18,7 @@ module CartoDB
         geocoder_class = HiresGeocoder
       end
 
-      geocoder_class.new(input_csv_file, working_dir)
+      geocoder_class.new(input_csv_file, working_dir, log)
     end
 
 

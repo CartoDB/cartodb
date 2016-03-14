@@ -55,5 +55,14 @@ module Carto
         format.json { render json: { errors: message }, status: status }
       end
     end
+
+    def rescue_from_standard_error(error)
+      CartoDB.report_exception(error, "Error", request: request, user: current_user)
+      message = error.message
+      respond_to do |format|
+        format.html { render text: message, status: 500 }
+        format.json { render json: { errors: message }, status: 500 }
+      end
+    end
   end
 end

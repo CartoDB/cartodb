@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 require_relative '../../app/models/visualization/member'
 require 'json'
 
@@ -5,7 +7,6 @@ class Fixnum
   def success?; self == 200; end
 end
 
-#encoding: UTF-8
 module HelperMethods
 
   def prepare_oauth_request(consumer, url, options={})
@@ -69,14 +70,18 @@ module HelperMethods
     raise "No ports available on machine."
   end
 
-  def get_json(path, params = {}, headers ={}, &block)
+  def http_json_headers
+    { "CONTENT_TYPE" => "application/json", :format => "json" }
+  end
+
+  def get_json(path, params = {}, headers = http_json_headers)
     get path, params, headers
     the_response = response || get_last_response
     response_parsed = the_response.body.blank? ? {} : ::JSON.parse(the_response.body)
     yield OpenStruct.new(:body => (response_parsed.is_a?(Hash) ? response_parsed.symbolize_keys : response_parsed), :status => the_response.status, :headers => the_response.headers) if block_given?
   end
 
-  def put_json(path, params = {}, headers ={}, &block)
+  def put_json(path, params = {}, headers = http_json_headers)
     headers = headers.merge("CONTENT_TYPE" => "application/json")
     put path, JSON.dump(params), headers
     the_response = response || get_last_response
@@ -84,7 +89,7 @@ module HelperMethods
     yield OpenStruct.new(:body => (response_parsed.is_a?(Hash) ? response_parsed.symbolize_keys : response_parsed), :status => the_response.status, :headers => the_response.headers) if block_given?
   end
 
-  def post_json(path, params = {}, headers ={}, &block)
+  def post_json(path, params = {}, headers = http_json_headers)
     headers = headers.merge("CONTENT_TYPE" => "application/json")
     post path, JSON.dump(params), headers
     the_response = response || get_last_response
@@ -92,7 +97,7 @@ module HelperMethods
     yield OpenStruct.new(:body => (response_parsed.is_a?(Hash) ? response_parsed.symbolize_keys : response_parsed), :status => the_response.status, :headers => the_response.headers) if block_given?
   end
 
-  def delete_json(path, params = {}, headers ={}, &block)
+  def delete_json(path, params = {}, headers = http_json_headers)
     headers = headers.merge("CONTENT_TYPE" => "application/json")
     delete path, JSON.dump(params), headers
     the_response = response || get_last_response

@@ -35,8 +35,8 @@ FactoryGirl.define do
     factory :admin, traits: [:admin]
 
     factory :valid_user do
-      username { "user#{rand(10000)}" }
-      email { "email" + rand(10000).to_s + "@nonono.com" }
+      username { String.random(5).downcase }
+      email { String.random(5).downcase + '@' + String.random(5).downcase + '.com' }
       password 'kkkkkkkkk'
       password_confirmation 'kkkkkkkkk'
       salt 'kkkkkkkkk'
@@ -45,15 +45,29 @@ FactoryGirl.define do
 
   end
 
-  factory :carto_user, :class => Carto::User do
+  factory :carto_user, class: Carto::User do
 
-    username               { String.random(5).downcase }
-    email                  { String.random(5).downcase + '@' + String.random(5).downcase + '.com' }
-    password               { email.split('@').first }
-    table_quota            5
-    quota_in_bytes         5000000
-    id                     { UUIDTools::UUID.timestamp_create.to_s }
+    username { String.random(5).downcase }
+    email { String.random(5).downcase + '@' + String.random(5).downcase + '.com' }
 
+    password { email.split('@').first }
+    password_confirmation { email.split('@').first }
+    salt 'kkkkkkkkk'
+    crypted_password 'kkkkkkkkk'
+
+    api_key '21ee521b8a107ea55d61fd7b485dd93d54c0b9d2'
+    table_quota 5
+    quota_in_bytes 5000000
+    id { UUIDTools::UUID.timestamp_create.to_s }
+
+    before(:create) do
+      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+    end
+
+    after(:create) do |carto_user|
+      ::User.where(id: carto_user.id).first.after_create
+      CartoDB::UserModule::DBService.any_instance.unstub
+    end
   end
 
 end

@@ -1,6 +1,7 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
 var DataviewModelBase = require('./dataview-model-base');
+var HistogramDataModel = require('./histogram-dataview/histogram-data-model');
 
 module.exports = DataviewModelBase.extend({
 
@@ -13,11 +14,8 @@ module.exports = DataviewModelBase.extend({
   ),
 
   url: function () {
-    var params = [];
+    var params = ['bbox=' + this._getBoundingBoxFilterParam()];
 
-    if (this.get('submitBBox')) {
-      params.push('bbox=' + this._getBoundingBoxFilterParam());
-    }
     if (this.get('column_type')) {
       params.push('column_type=' + this.get('column_type'));
     }
@@ -45,22 +43,34 @@ module.exports = DataviewModelBase.extend({
     DataviewModelBase.prototype.initialize.apply(this, arguments);
     this._data = new Backbone.Collection(this.get('data'));
 
-    // BBox should only be included until after the first fetch, since we want to get the range of the full dataset
-    this.once('change:data', function () {
-      this.set('submitBBox', true);
+    // Internal model for calculating all the data in the histogram (without filters)
+    this._unfilteredData = new HistogramDataModel({
+      bins: this.get('bins')
+    });
 
-      var data = this.getData();
-      if (data && data.length > 0) {
-        this.set({
-          start: data[0].start,
-          end: data[data.length - 1].end,
-          bins: data.length
-        }, { silent: true });
-      }
+    this._unfilteredData.bind('change:data', function (mdl, data) {
+      this.set({
+        start: mdl.get('start'),
+        end: mdl.get('end'),
+        bins: mdl.get('bins')
+      }, { silent: true });
+      this._onChangeBinds();
     }, this);
+
+    this.once('change:url', function () {
+      this._unfilteredData.setUrl(this.get('url'));
+    }, this);
+
     this.listenTo(this.layer, 'change:meta', this._onChangeLayerMeta);
     this.on('change:column', this._reloadMapAndForceFetch, this);
     this.on('change:bins change:start change:end', this._fetchAndResetFilter, this);
+  },
+
+  _initBinds: function () {
+    DataviewModelBase.prototype._initBinds.apply(this);
+    // We shouldn't listen url change for fetching the data (with filter) because
+    // we have to wait until we know all the data available (without any filter).
+    this.stopListening(this, 'change:url', null);
   },
 
   enableFilter: function () {
@@ -73,6 +83,10 @@ module.exports = DataviewModelBase.extend({
 
   getData: function () {
     return this._data.toJSON();
+  },
+
+  getUnfilteredDataModel: function () {
+    return this._unfilteredData;
   },
 
   getSize: function () {

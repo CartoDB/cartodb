@@ -30,8 +30,6 @@ describe Visualization::Overlays do
     @visualization = member
 
     Visualization.repository = DataRepository::Backend::Sequel.new(@db, :visualizations)
-
-    CartoDB::Overlay::Member.any_instance.stubs(:can_store).returns(true)
   end
 
   describe 'default' do

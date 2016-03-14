@@ -51,7 +51,6 @@ class Admin::OrganizationUsersController < Admin::AdminController
         :username, :email, :password, :quota_in_bytes, :password_confirmation,
         :twitter_datasource_enabled, :soft_geocoding_limit, :soft_here_isolines_limit])
     @user.organization = current_user.organization
-    @user.username = @user.username
     current_user.copy_account_features(@user)
 
     raise Carto::UnprocesableEntityError.new("Soft limits validation error") if validation_failure

@@ -63,7 +63,6 @@ gem 'em-pg-client',            '0.2.1'
 
 # Service components (/services)
 gem 'virtus',                   '1.0.5'
-gem 'aequitas',                 '0.0.2'
 gem 'uuidtools',                '2.1.5'
 
 # Markdown

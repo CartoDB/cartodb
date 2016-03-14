@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name=viewport content="width=device-width initial-scale=1">
     <title><%= @visualization_data[:name].nil? ? 'Untitled map' : @visualization_data[:name] %></title>
+    <%= favicon_link_tag "/favicons/favicon.ico" -%>
     <%= stylesheet_link_tag 'public_editor3', 'deep_insights', media: 'all' %>
     <style type="text/css">
       html, body {

@@ -154,6 +154,10 @@ describe Admin::OrganizationUsersController do
       end
 
       describe '#create' do
+        after(:each) do
+          @user.destroy if @user
+        end
+
         it 'owner cannot enable soft limits if he has not' do
           old_limits = update_soft_limits(@org_user_owner, false)
 
@@ -178,6 +182,19 @@ describe Admin::OrganizationUsersController do
           update_soft_limits(@org_user_owner, old_limits)
         end
 
+        # This test is needed now that soft limits toggles become disabled if owner can't assign
+        it 'by default soft limits are disabled' do
+          old_limits = update_soft_limits(@org_user_owner, false)
+
+          post create_organization_user_url(user_domain: @org_user_owner.username), user: user_params
+          last_response.status.should eq 302
+
+          @user = Carto::User.where(username: user_params[:username]).first
+          check_soft_limits(@user, false)
+
+          update_soft_limits(@org_user_owner, old_limits)
+        end
+
         it 'owner can enable soft limits if he has' do
           old_limits = update_soft_limits(@org_user_owner, true)
 
@@ -185,9 +202,8 @@ describe Admin::OrganizationUsersController do
                user: user_params.merge(soft_limits_params("1"))
           last_response.status.should eq 302
 
-          user = User.where(username: user_params[:username]).first
-          check_soft_limits(user, true)
-          user.destroy
+          @user = User.where(username: user_params[:username]).first
+          check_soft_limits(@user, true)
 
           update_soft_limits(@org_user_owner, old_limits)
         end

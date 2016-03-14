@@ -441,7 +441,7 @@ class Admin::VisualizationsController < Admin::AdminController
   def link_ghost_tables
     return unless current_user.has_feature_flag?('ghost_tables')
 
-    ghost_tables_manager = Carto::GhostTablesManager.new(current_user)
+    ghost_tables_manager = Carto::GhostTablesManager.new(current_user.id)
 
     # Check if any tables need to be linked, relinked or unlinked
     return if ghost_tables_manager.consistent?

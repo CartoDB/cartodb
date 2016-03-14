@@ -29,9 +29,9 @@ module Carto
       # Left the critical zone, bolt automatically unlocked
     end
 
-    # search in the user database for tables that are not in the metadata database
-    def has_non_linked_tables?
-      !non_linked_tables.empty?
+    # determine linked tables vs cartodbfied tables consistency
+    def needs_to_run?
+      !(non_linked_tables.empty? && stale_tables.empty?)
     end
 
     # checks if bad tables are linked (deleted or renamed)

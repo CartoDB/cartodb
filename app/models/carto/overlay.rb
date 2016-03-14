@@ -11,6 +11,8 @@ module Carto
     validates :type, presence: true
     validate :unique_overlay_not_duplicated
 
+    after_save :invalidate_cache
+
     # There can be at most one of this types per visualization
     UNIQUE_TYPES = [
       'header', 'search', 'layer_selector', 'share', 'zoom', 'logo', 'loader', 'fullscreen'
@@ -29,6 +31,10 @@ module Carto
           end
         end
       end
+    end
+
+    def invalidate_cache
+      visualization.invalidate_cache
     end
   end
 end

@@ -4,7 +4,7 @@
     <%= favicon_link_tag "/favicons/favicon.ico" %>
     <title><%= yield :title %></title>
     <meta name="description" content="<%= yield :description %>">
-    <meta name="keywords" content="<%= @name %>, datasets, maps, data visualization, spatial data, geospatial, cartodb">
+    <meta name="keywords" content="cartodb, maps, data visualization tools, big data, location intelligence, deep insights, datasets">
     <meta name="author" content="<%= @name %>">
     <meta charset='utf-8' />
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
@@ -22,7 +22,7 @@
       <div class="FavMapTitle is-hidden js-favMapTitle">
         <div class="FavMapTitle-inner">
           <h3 class="FavMapTitle-sectionTitle js-sectionTitle">Map of the moment</h3>
-          <a href="#" class="FavMapTitle-mapTitle js-mapTitle"></a>
+          <h1 class="FavMapTitle-mapTitle"><a href="#" class="FavMapTitle-mapTitleLink js-mapTitle"></a></h1>
         </div>
       </div>
       <div class="Spinner FavMap-spinner js-spinner"></div>

@@ -36,7 +36,7 @@ FactoryGirl.define do
 
     factory :valid_user do
       username { "user#{rand(10000)}" }
-      email { "email" + rand(10000).to_s + "@nonono.com" }
+      email { "email" + rand(10000).to_s + "@#{String.random(5).downcase}.com" }
       password 'kkkkkkkkk'
       password_confirmation 'kkkkkkkkk'
       salt 'kkkkkkkkk'
@@ -60,10 +60,14 @@ FactoryGirl.define do
     quota_in_bytes 5000000
     id { UUIDTools::UUID.timestamp_create.to_s }
 
-    after(:create) do |carto_user|
-      ::User.where(id: carto_user.id).first.after_create
+    before(:create) do
+      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
     end
 
+    after(:create) do |carto_user|
+      ::User.where(id: carto_user.id).first.after_create
+      CartoDB::UserModule::DBService.any_instance.unstub
+    end
   end
 
 end

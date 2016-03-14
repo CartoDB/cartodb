@@ -42,6 +42,18 @@ describe DataImport do
     data_import.error_code.should == 8004
   end
 
+  it 'raises a meaningful error if cartodb_id is not valid' do
+    Table.any_instance.stubs(:cartodbfy).raises(CartoDB::CartoDBfyInvalidID)
+    data_import = DataImport.create(
+      user_id: @user.id,
+      data_source: '/../db/fake_data/clubbing.csv',
+      updated_at: Time.now
+    )
+
+    data_import.run_import!
+    data_import.error_code.should == 2011
+  end
+
   it 'raises a meaningful error if over storage quota' do
     previous_quota_in_bytes = @user.quota_in_bytes
     @user.quota_in_bytes = 0

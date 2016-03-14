@@ -443,7 +443,8 @@ class Admin::VisualizationsController < Admin::AdminController
 
     ghost_tables_manager = Carto::GhostTablesManager.new(current_user)
 
-    return unless ghost_tables_manager.has_non_linked_tables?
+    # Check if any tables need to be linked, relinked or unlinked
+    return if ghost_tables_manager.consistent?
 
     if ghost_tables_manager.has_stale_linked_tables?
       # You might see phantom tables that generate erros upon clicking them; needs relink now

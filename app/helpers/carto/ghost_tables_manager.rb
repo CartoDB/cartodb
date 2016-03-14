@@ -5,8 +5,8 @@ module Carto
     MUTEX_REDIS_KEY = 'ghost_tables_working'.freeze
     MUTEX_TTL = 2000
 
-    def initialize(user)
-      @user = user
+    def initialize(user_id)
+      @user = ::User.where(id: user_id)
     end
 
     def link
@@ -17,7 +17,7 @@ module Carto
 
         # Lock aquired, inside the critical zone
 
-        # NOTE: Order DOES matter, first renamed, then created and deleted last
+        # NOTE: Order DOES matter, FIRST renamed, THEN created and deleted LAST
         unless all_tables.blank?
           relink_renamed_tables
           link_created_tables
@@ -110,6 +110,9 @@ module Carto
     # it does not check column types, and only the latest cartodbfication trigger attached (test_quota_per_row)
     # returns the list of tables in the database with those columns but not in metadata database
     def search_for_cartodbfied_tables
+      required_columns = Table::CARTODB_REQUIRED_COLUMNS + [Table::THE_GEOM_WEBMERCATOR]
+      cartodb_columns = required_columns.map { |t| "'#{t}'" }.join(',')
+
       sql = %{
         WITH a as (
           SELECT table_name, count(column_name::text) cdb_columns_count
@@ -119,12 +122,6 @@ module Carto
             t.schemaname = c.table_schema AND
             c.table_schema = '#{@user.database_schema}' AND
             t.tableowner = '#{@user.database_username}' AND
-      }
-
-      required_columns = Table::CARTODB_REQUIRED_COLUMNS + [Table::THE_GEOM_WEBMERCATOR]
-      cartodb_columns = required_columns.map { |t| "'#{t}'" }.join(',')
-
-      sql += %{
             column_name IN (#{cartodb_columns}) AND
             tg.tgrelid = (quote_ident(t.schemaname) || '.' || quote_ident(t.tablename))::regclass::oid AND
             tg.tgname = 'test_quota_per_row'
@@ -140,15 +137,12 @@ module Carto
       @user.tables.select(:name, :table_id).map { |table| { id: table.table_id, name: table.name } }
     end
 
-    # May not be viewed in the editor; searching in pg_class
-    def all_tables(only_cartodbfied = true)
-      if only_cartodbfied
-        real_tables = @user.real_tables.select { |table| search_for_cartodbfied_tables.include?(table[:relname]) }
-      else
-        real_tables = @user.real_tables
-      end
-
-      real_tables.map { |table| { id: table[:oid], name: table[:relname] } }.compact
+    # May not be viewed in the editor; carotdbyfied_only
+    def all_tables
+      @user.real_tables
+           .select { |table| search_for_cartodbfied_tables.include?(table[:relname]) }
+           .map    { |table| { id: table[:oid], name: table[:relname] } }
+           .compact
     end
 
     # Not viewable in the editor
@@ -183,6 +177,17 @@ module Carto
       end
 
       user_tables.first ? Table.new(user_table: user_tables.first) : nil
+    end
+
+    # Returns tables in pg_class for user
+    def real_tables
+      @user.in_database(as: :superuser)
+           .select(:pg_class__oid, :pg_class__relname)
+           .from(:pg_class)
+           .join_table(:inner, :pg_namespace, oid: :relnamespace)
+           .where(relkind: 'r', nspname: @user.database_schema)
+           .exclude(relname: ::Table::SYSTEM_TABLE_NAMES)
+           .all
     end
   end
 end

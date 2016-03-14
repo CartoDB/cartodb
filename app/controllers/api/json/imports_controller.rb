@@ -96,12 +96,8 @@ class Api::Json::ImportsController < Api::ApplicationController
       # first verify that this job exists and user owns this job
       import = DataImport.where(id: queue_id).first()
 
-      if import.nil?
+      if import.nil? or import.user_id != current_user.id
         render_jsonp({ errors: { imports: "Failed to cancel import. Job with ID #{queue_id} not found."} }, 400) and return
-      end
-
-      if import.user_id != current_user.id
-        render_jsonp({ errors: { imports: "Failed to cancel import. Job with ID #{queue_id} does not belong to current user."} }, 400) and return
       end
 
       if import.state == Carto::DataImport::STATE_COMPLETE or import.state == Carto::DataImport::STATE_FAILURE

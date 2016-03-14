@@ -282,7 +282,20 @@ describe Carto::Api::OrganizationUsersController do
       user_to_update.quota_in_bytes.should == 2048
     end
 
+    it 'should not update soft_geocoding_limit if owner has not it' do
+      replace_soft_limits(@organization.owner, [false, false, false])
+      login(@organization.owner)
+
+      user_to_update = @organization.users[0]
+      params = { soft_geocoding_limit: true }
+      put api_v1_organization_users_update_url(name: @organization.name, u_username: user_to_update.username), params
+
+      last_response.status.should eq 410
+      user_to_update.reload.soft_geocoding_limit.should be false
+    end
+
     it 'should update soft_geocoding_limit' do
+      replace_soft_limits(@organization.owner, [true, true, true])
       login(@organization.owner)
 
       user_to_update = @organization.users[0]

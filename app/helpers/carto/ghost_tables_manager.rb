@@ -17,10 +17,10 @@ module Carto
 
         # Lock aquired, inside the critical zone
 
-        # NOTE: Order DOES matter, FIRST renamed, THEN created and deleted LAST
+        # NOTE: Order DOES matter, FIRST renamed, THEN new and deleted LAST
         unless all_tables.blank?
           relink_renamed_tables
-          link_created_tables
+          link_new_tables
         end
 
         unlink_deleted_tables
@@ -65,7 +65,7 @@ module Carto
       end
     end
 
-    def link_created_tables
+    def link_new_tables
       non_linked_tables.each do |t|
         begin
           CartoDB.notify_debug('ghost tables', action: 'registering table', new_table: t[:name])

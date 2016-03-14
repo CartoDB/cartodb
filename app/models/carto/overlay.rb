@@ -19,6 +19,22 @@ module Carto
       'header', 'search', 'layer_selector', 'share', 'zoom', 'logo', 'loader', 'fullscreen'
     ].freeze
 
+    def hide
+      options['display'] = false
+      self
+    end
+
+    def show
+      options['display'] = true
+      self
+    end
+
+    def is_hidden
+      !options['display']
+    end
+
+    private
+
     def visualization
       CartoDB::Visualization::Member.new(id: visualization_id).fetch
     end

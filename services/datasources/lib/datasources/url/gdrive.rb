@@ -338,7 +338,8 @@ module CartoDB
             data[:filename] = item_data.fetch('title')
             data[:size] = item_data.fetch('fileSize').to_i
           else
-            CartoDB.notify_debug('downloadURl key not found @gdrive', item: item_data.inspect, user: @user)
+            # Downloads from files shared by other people can be disabled, ignore them
+            CartoDB.notify_debug('Non downloadable file @gdrive', item: item_data.inspect, user: @user)
             return nil
           end
           data

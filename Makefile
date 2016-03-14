@@ -168,8 +168,6 @@ WORKING_SPECS_5 = \
 	spec/models/user_organization_spec.rb \
   spec/models/synchronization/synchronization_oauth_spec.rb \
   spec/models/permission_spec.rb \
-	spec/models/overlay/member_spec.rb \
-	spec/models/overlay/collection_spec.rb \
   $(NULL)
 
 # TODO: This block also breaks if run alongside other specs, needs checking why
@@ -206,7 +204,6 @@ WORKING_SPECS_9 = \
   spec/requests/superadmin/users_spec.rb \
   spec/requests/superadmin/organizations_spec.rb \
   spec/requests/api/visualizations_spec.rb \
-  spec/requests/api/json/overlays_controller_spec.rb \
   spec/requests/carto/api/overlays_controller_spec.rb \
 	spec/models/carto/user_creation_spec.rb \
 	spec/requests/carto/api/invitations_controller_spec.rb \

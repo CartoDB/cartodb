@@ -6,7 +6,6 @@ require_relative '../../spec_helper'
 require_relative '../../../services/data-repository/backend/sequel'
 require_relative '../../../app/models/visualization/member'
 require_relative '../../../app/models/visualization/overlays'
-require_relative '../../../app/models/overlay/member'
 require_relative '../../../services/data-repository/repository'
 
 include CartoDB

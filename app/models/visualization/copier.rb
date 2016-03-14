@@ -2,7 +2,6 @@
 require 'ostruct'
 require_relative './name_generator'
 require_relative '../map/copier'
-require_relative '../overlay/member'
 require_relative '../overlay/copier'
 
 module CartoDB

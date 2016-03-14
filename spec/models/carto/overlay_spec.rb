@@ -44,6 +44,17 @@ describe Carto::Overlay do
       overlay2 = Carto::Overlay.new(visualization_id: @visualization.id, type: 'text')
       overlay2.save.should be_true
     end
+
+    it 'allows deletion and re-creation of unique types' do
+      overlay = Carto::Overlay.new(visualization_id: @visualization.id, type: 'fullscreen')
+      overlay.save.should be_true
+
+      overlay2 = Carto::Overlay.new(visualization_id: @visualization.id, type: 'fullscreen')
+      overlay2.save.should be_false
+
+      overlay.destroy.should be_true
+      overlay2.save.should be_true
+    end
   end
 
   describe '#update' do
@@ -83,6 +94,21 @@ describe Carto::Overlay do
       Visualization::Member.any_instance.stubs(:invalidate_cache).once
       overlay.destroy.should be_true
       overlay.persisted?.should be_false
+    end
+  end
+
+  describe '#hide/show' do
+    it 'should change options to visible = false/true' do
+      overlay = Carto::Overlay.new(visualization_id: @visualization.id, type: 't', options: { 'display' => true })
+      overlay.is_hidden.should be_false
+
+      overlay.hide
+      overlay.options['display'].should be_false
+      overlay.is_hidden.should be_true
+
+      overlay.show
+      overlay.is_hidden.should be_false
+      overlay.options['display'].should be_true
     end
   end
 end

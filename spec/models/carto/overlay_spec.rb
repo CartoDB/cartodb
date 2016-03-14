@@ -75,4 +75,14 @@ describe Carto::Overlay do
     end
   end
 
+  describe '#delete' do
+    it 'deletes overlays' do
+      overlay = Carto::Overlay.new(visualization_id: @visualization.id, type: 'text', template: 'wadus', order: 0)
+      overlay.save.should be_true
+
+      Visualization::Member.any_instance.stubs(:invalidate_cache).once
+      overlay.destroy.should be_true
+      overlay.persisted?.should be_false
+    end
+  end
 end

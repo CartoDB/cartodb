@@ -12,6 +12,7 @@ module Carto
     validate :unique_overlay_not_duplicated
 
     after_save :invalidate_cache
+    after_destroy :invalidate_cache
 
     # There can be at most one of this types per visualization
     UNIQUE_TYPES = [

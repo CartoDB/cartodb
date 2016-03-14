@@ -78,7 +78,6 @@ describe('widgets/histogram/chart', function () {
   });
 
   describe('shadow bars', function () {
-
     it('should not show shadow bars', function () {
       this.view.options.displayShadowBars = false;
       this.view.model.set('show_shadow_bars', false);

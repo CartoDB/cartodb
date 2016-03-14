@@ -83,14 +83,14 @@ class Api::Json::ImportsController < Api::ApplicationController
     end
   end
 
-  # -------- Cancel a running import (using update PUT request) -------
+  # -------- Cancel a running import -------
 
-  def update
-    if !params[:item_queue_id].present?
+  def destroy
+    if !params[:id].present?
       render_jsonp({ errors: { imports: 'Missing queue ID in import cancellation request'} }, 400) and return
     end
 
-    queue_id = params[:item_queue_id]
+    queue_id = params[:id]
 
     begin
       # first verify that this job exists and user owns this job

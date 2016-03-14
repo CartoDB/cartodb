@@ -6,7 +6,7 @@ module Carto
     MUTEX_TTL = 2000
 
     def initialize(user_id)
-      @user = ::User.where(id: user_id)
+      @user = ::User.where(id: user_id).first
     end
 
     def link

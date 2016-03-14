@@ -229,6 +229,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/models/carto/analysis_spec.rb \
 	spec/requests/api/json/maps_controller_spec.rb \
 	spec/requests/carto/api/maps_controller_spec.rb \
+	spec/models/carto/overlay_spec.rb \
 	$(NULL)
 
 # This class must be tested isolated as pollutes namespace

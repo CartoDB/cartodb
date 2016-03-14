@@ -100,14 +100,14 @@ describe Carto::Overlay do
   describe '#hide/show' do
     it 'should change options to visible = false/true' do
       overlay = Carto::Overlay.new(visualization_id: @visualization.id, type: 't', options: { 'display' => true })
-      overlay.is_hidden.should be_false
+      overlay.hidden?.should be_false
 
       overlay.hide
       overlay.options['display'].should be_false
-      overlay.is_hidden.should be_true
+      overlay.hidden?.should be_true
 
       overlay.show
-      overlay.is_hidden.should be_false
+      overlay.hidden?.should be_false
       overlay.options['display'].should be_true
     end
   end

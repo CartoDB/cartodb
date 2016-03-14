@@ -29,7 +29,7 @@ module Carto
       self
     end
 
-    def is_hidden
+    def hidden?
       !options['display']
     end
 

@@ -91,7 +91,7 @@ module CartoDB
       if @organization
         if @organization.owner.nil?
           if !promote_to_organization_owner?
-            @custom_errors[:organization] = ["Organization owner is not set. Administrator must login first"]
+            @custom_errors[:organization] = ["Organization owner is not set. Administrator must login first."]
           end
         else
           validate_organization_soft_limits

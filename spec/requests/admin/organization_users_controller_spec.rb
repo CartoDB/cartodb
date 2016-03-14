@@ -13,7 +13,7 @@ describe Admin::OrganizationUsersController do
 
   let(:username) { 'user-1' }
 
-  let(:user_params) {
+  let(:user_params) do
     {
       username: username,
       email: 'user-1@org.com',
@@ -22,7 +22,7 @@ describe Admin::OrganizationUsersController do
       quota_in_bytes: 1000,
       twitter_datasource_enabled: false
     }
-  }
+  end
 
   describe 'security' do
     describe '#show' do

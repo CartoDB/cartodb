@@ -2,6 +2,7 @@ require_relative './simplecov_helper'
 require 'uuidtools'
 require_relative './rspec_configuration'
 require 'helpers/spec_helper_helpers'
+require 'helpers/named_maps_helper'
 
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 ENV['RAILS_ENV'] ||= 'test'
@@ -21,11 +22,6 @@ def random_uuid
   UUIDTools::UUID.timestamp_create.to_s
 end
 
-def bypass_named_maps
-  CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
-  CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true, delete: true)
-end
-
 # Inline Resque for queue handling
 Resque.inline = true
 
@@ -33,6 +29,7 @@ RSpec.configure do |config|
   config.include SpecHelperHelpers
   config.include CartoDB::Factories
   config.include HelperMethods
+  config.include NamedMapsHelper
 
   unless ENV['PARALLEL']
     config.before(:suite) do

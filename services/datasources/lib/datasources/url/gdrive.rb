@@ -338,7 +338,7 @@ module CartoDB
             data[:filename] = item_data.fetch('title')
             data[:size] = item_data.fetch('fileSize').to_i
           else
-            CartoDB.notify_debug('downloadURl key not found @gdrive', item: item_data.to_s, user: @user)
+            CartoDB.notify_debug('downloadURl key not found @gdrive', item: item_data.inspect, user: @user)
             return nil
           end
           data

@@ -1,5 +1,6 @@
 var _ = require('underscore');
 var $ = require('jquery');
+var cdb = require('cartodb.js');
 var d3 = require('d3');
 var WidgetHistogramChart = require('../../../src/widgets/histogram/chart');
 
@@ -31,6 +32,17 @@ describe('widgets/histogram/chart', function () {
       left: 4
     };
 
+    this.originalData = genHistogramData(20);
+    this.originalModel = new cdb.core.Model({
+      data: this.originalData,
+      start: this.originalData[0].start,
+      end: this.originalData[this.originalData.length - 1].end,
+      bins: 20
+    });
+    this.originalModel.getData = function () {
+      return this.originalData;
+    }.bind(this);
+
     // override default behavior of debounce, to be able to control callback
     onWindowResizeSpy = jasmine.createSpy('_onWindowResize');
     spyOn(_, 'debounce').and.callFake(function (cb) {
@@ -44,6 +56,7 @@ describe('widgets/histogram/chart', function () {
       hasHandles: true,
       height: 100,
       data: this.data,
+      originalData: this.originalModel,
       displayShadowBars: true,
       xAxisTickFormat: function (d, i) {
         return d;
@@ -62,6 +75,14 @@ describe('widgets/histogram/chart', function () {
 
   it('should be hidden initially', function () {
     expect(this.view.$el.attr('style')).toMatch('none');
+  });
+
+  it('should remove and generate shadow bars when original data chagnes', function () {
+    spyOn(this.view, '_removeShadowBars');
+    spyOn(this.view, '_generateShadowBars');
+    this.originalModel.trigger('change:data');
+    expect(this.view._removeShadowBars).toHaveBeenCalled();
+    expect(this.view._generateShadowBars).toHaveBeenCalled();
   });
 
   describe('when view is resized but set to not be shown just yet', function () {
@@ -146,15 +167,11 @@ describe('widgets/histogram/chart', function () {
     });
 
     it('should calculate the scales', function () {
-      var max = _.max(this.view.model.get('data'), function (d) { return d.freq; });
-
       expect(this.view.xScale(0)).toBe(0);
       expect(this.view.xScale(100)).toMatch(/\d+/);
       expect(this.view.xScale(100)).toEqual(this.view.chartWidth());
-
       expect(this.view.yScale(0)).toMatch(/\d+/);
       expect(this.view.yScale(0)).toEqual(this.view.chartHeight());
-      expect(this.view.yScale(max.freq)).toBe(0);
     });
 
     it('should refresh the data', function () {
@@ -180,6 +197,28 @@ describe('widgets/histogram/chart', function () {
         this.view.resetYScale();
         expect(this.view.yScale).toEqual(this.originalScale);
       });
+    });
+  });
+
+  describe('._getDataForScales', function () {
+    it('should calculate (x|y)Scale depending originalData if it is provided and view is not bounded', function () {
+      var data = this.view._getDataForScales();
+      expect(data).toBe(this.originalData);
+      expect(data).not.toBe(this.data);
+    });
+
+    it('should calculate (x|y)Scale depending current data if view is bounded', function () {
+      this.view.model.set('bounded', true);
+      var data = this.view._getDataForScales();
+      expect(data).not.toBe(this.originalData);
+      expect(data).toBe(this.data);
+    });
+
+    it('should calculate (x|y)Scale depending current data if originalData is not defined', function () {
+      delete this.view._originalData;
+      var data = this.view._getDataForScales();
+      expect(data).not.toBe(this.originalData);
+      expect(data).toBe(this.data);
     });
   });
 });

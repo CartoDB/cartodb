@@ -135,16 +135,30 @@ describe('windshaft/layergroup-config', function () {
             type: 'source',
             params: {
               query: 'sql2'
-              interactivity: [],
-              widgets: {
-                dataviewId2: {
-                  type: 'histogram',
-                  options: {
-                    column: 'column2',
-                    bins: 5
-                  }
-                }
-              }
+            }
+          }
+        ]
+      });
+    });
+
+    it('should not include hidden layers', function () {
+      this.cartoDBLayer1.set('visible', false, { silent: true });
+
+      var config = LayerGroupConfig.generate({
+        dataviews: this.dataviews,
+        layers: [ this.cartoDBLayer1, this.cartoDBLayer2 ]
+      });
+
+      expect(config).toEqual({
+        layers: [
+          {
+            type: 'cartodb',
+            options: {
+              source: {
+                id: 'layer2'
+              },
+              cartocss: 'cartoCSS2',
+              cartocss_version: '2.0',
               interactivity: []
             }
           }

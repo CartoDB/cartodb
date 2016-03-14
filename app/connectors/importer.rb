@@ -166,7 +166,7 @@ module CartoDB
             # this is likely caused by a table deletion, so we run ghost tables to cleanup and retry
             if rename_attempts == 1
               runner.log.append("Triggering ghost tables for #{user_id} because collision on #{new_name}")
-              Carto::GhostTablesManager.new.link(::User.where(id: user_id).first)
+              Carto::GhostTablesManager.new(::User.where(id: user_id).first).link
 
               if exists_user_table_for_user_id(new_name, user_id)
                 runner.log.append("Ghost tables didn't fix the collision.")

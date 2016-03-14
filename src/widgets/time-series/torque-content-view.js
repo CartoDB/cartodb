@@ -13,8 +13,8 @@ module.exports = cdb.core.View.extend({
 
   initialize: function () {
     this._dataviewModel = this.model.dataviewModel;
-    this._dataviewModel.once('change:data', this._onFirstDataChange, this);
-    this.add_related_model(this._dataviewModel);
+    this._originalData = this._dataviewModel.getUnfilteredDataModel();
+    this._initBinds();
   },
 
   render: function () {
@@ -49,6 +49,13 @@ module.exports = cdb.core.View.extend({
     return this;
   },
 
+  _initBinds: function () {
+    this._originalData.once('change:data', this._onOriginalDataChange, this);
+    this.add_related_model(this._originalData);
+    this._dataviewModel.once('change:data', this.render, this);
+    this.add_related_model(this._dataviewModel);
+  },
+
   _appendView: function (view) {
     this.addView(view);
     view.render();
@@ -59,8 +66,9 @@ module.exports = cdb.core.View.extend({
     return _.isEmpty(data) || _.size(data) === 0;
   },
 
-  _onFirstDataChange: function () {
-    this.render();
-    this._dataviewModel.fetch(); // do an explicit fetch again, to get actual data with the filters applied (e.g. bbox)
+  _onOriginalDataChange: function () {
+    // do an explicit fetch in order to get actual data
+    // with the filters applied (e.g. bbox)
+    this._dataviewModel.fetch();
   }
 });

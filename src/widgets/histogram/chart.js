@@ -65,11 +65,6 @@ module.exports = cdb.core.View.extend({
     return this;
   },
 
-  clean: function () {
-    $(window).unbind('resize', this._onWindowResize);
-    cdb.core.View.prototype.clean.call(this);
-  },
-
   replaceData: function (data) {
     this.model.set({ data: data });
   },
@@ -211,6 +206,7 @@ module.exports = cdb.core.View.extend({
 
   _onBrushStart: function () {
     this.chart.classed('is-selectable', true);
+    this._axis.classed('is-disabled', true);
   },
 
   _onChangeDragging: function () {
@@ -246,8 +242,6 @@ module.exports = cdb.core.View.extend({
   _updateAxisTipOpacity: function (className) {
     if (this.model.get('dragging')) {
       this._showAxisTip(className);
-    } else {
-      this._hideAxisTip(className);
     }
   },
 
@@ -346,6 +340,7 @@ module.exports = cdb.core.View.extend({
   _removeBrush: function () {
     this.chart.selectAll('.Brush').remove();
     this.chart.classed('is-selectable', false);
+    this._axis.classed('is-disabled', false);
   },
 
   _removeLines: function () {
@@ -437,6 +432,7 @@ module.exports = cdb.core.View.extend({
 
   _setupModel: function () {
     this.model = new cdb.core.Model({
+      bounded: false,
       showLabels: true,
       data: this.options.data,
       height: this.options.height,
@@ -462,7 +458,7 @@ module.exports = cdb.core.View.extend({
     this.model.bind('change:width', this._onChangeWidth, this);
 
     if (this._originalData) {
-      this._originalData.bind('reset', function () {
+      this._originalData.on('change:data', function () {
         this._removeShadowBars();
         this._generateShadowBars();
       }, this);
@@ -481,7 +477,7 @@ module.exports = cdb.core.View.extend({
   },
 
   _getYScale: function () {
-    var data = (this._originalData && this._originalData.toJSON()) || this.model.get('data');
+    var data = (this._originalData && this._originalData.getData()) || this.model.get('data');
     if (this.options.normalized) {
       data = this.model.get('data');
     }
@@ -500,14 +496,21 @@ module.exports = cdb.core.View.extend({
     this.yScale = this._originalYScale;
   },
 
+  _getDataForScales: function () {
+    if (!this.model.get('bounded') && this._originalData) {
+      return this._originalData.getData();
+    } else {
+      return this.model.get('data');
+    }
+  },
+
   _setupScales: function () {
+    var data = this._getDataForScales();
     this.updateXScale();
 
     if (!this._originalYScale || this.options.normalized) {
       this._originalYScale = this.yScale = this._getYScale();
     }
-
-    var data = this.model.get('data');
 
     if (!data || !data.length) {
       return;
@@ -880,7 +883,9 @@ module.exports = cdb.core.View.extend({
       .attr('y', function (d) { return self.chartHeight() + 15; })
       .attr('text-anchor', adjustTextAnchor)
       .text(function (d) {
-        return formatter.formatNumber(self.xAxisScale(d));
+        if (self.xAxisScale) {
+          return formatter.formatNumber(self.xAxisScale(d));
+        }
       });
 
     return axis;
@@ -1025,11 +1030,13 @@ module.exports = cdb.core.View.extend({
   },
 
   showShadowBars: function () {
-    this.model.set('show_shadow_bars', true);
+    if (this.options.displayShadowBars) {
+      this.model.set('show_shadow_bars', true);
+    }
   },
 
   _generateShadowBars: function () {
-    var data = this._originalData && this._originalData.toJSON() || this.model.get('data');
+    var data = this._originalData && this._originalData.getData() || this.model.get('data');
 
     if (!data || !data.length || !this.model.get('show_shadow_bars')) {
       this._removeShadowBars();
@@ -1086,5 +1093,25 @@ module.exports = cdb.core.View.extend({
     // We need to explicitly move the lines of the grid behind the shadow bars
     this.chart.selectAll('.CDB-Chart-shadowBars').moveToBack();
     this.chart.selectAll('.CDB-Chart-lines').moveToBack();
+  },
+
+  unsetBounds: function () {
+    this.model.set('bounded', false);
+    this.resetYScale();
+    this.contract(this.options.height);
+    this.resetIndexes();
+    this.removeSelection();
+  },
+
+  setBounds: function () {
+    this.model.set('bounded', true);
+    this.updateYScale();
+    this.expand(4);
+    this.removeShadowBars();
+  },
+
+  clean: function () {
+    $(window).unbind('resize', this._onWindowResize);
+    cdb.core.View.prototype.clean.call(this);
   }
 });

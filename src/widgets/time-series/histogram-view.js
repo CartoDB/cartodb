@@ -1,6 +1,7 @@
 var $ = require('jquery');
 var cdb = require('cartodb.js');
 var HistogramChartView = require('../histogram/chart');
+var TimeSeriesHeaderView = require('./time-series-header-view');
 
 /**
  * Time-series histogram view.
@@ -20,19 +21,31 @@ module.exports = cdb.core.View.extend({
 
   initialize: function () {
     this._rangeFilter = this.options.rangeFilter;
-
+    this._originalData = this.model.getUnfilteredDataModel();
     this.model.bind('change:data', this._onChangeData, this);
   },
 
   render: function () {
     this.clearSubViews();
+    this._createHeaderView();
     this._createHistogramView();
     return this;
+  },
+
+  _createHeaderView: function () {
+    var headerView = new TimeSeriesHeaderView({
+      dataviewModel: this.model,
+      rangeFilter: this._rangeFilter
+    });
+    headerView.bind('resetFilter', this._onResetFilter, this);
+    this.addView(headerView);
+    this.$el.append(headerView.render().el);
   },
 
   _createHistogramView: function () {
     this._chartView = new HistogramChartView({
       type: 'time',
+      chartBarColorClass: 'CDB-Chart-bar--timeSeries',
       animationSpeed: 100,
       margin: {
         top: 4,
@@ -46,6 +59,7 @@ module.exports = cdb.core.View.extend({
       },
       height: this.defaults.histogramChartHeight,
       data: this.model.getData(),
+      originalData: this._originalData,
       displayShadowBars: true
     });
     this.addView(this._chartView);
@@ -63,6 +77,11 @@ module.exports = cdb.core.View.extend({
       this._chartView.updateXScale();
       this._chartView.updateYScale();
     }
+  },
+
+  _onResetFilter: function () {
+    this._rangeFilter.unsetRange();
+    this._chartView.removeSelection();
   },
 
   _onBrushEnd: function (loBarIndex, hiBarIndex) {

@@ -21,6 +21,9 @@ describe('dashboard-below-map-view', function () {
         type: 'time-series'
       });
       timeSeriesWidgetModelFake.dataviewModel = new cdb.core.Model();
+      timeSeriesWidgetModelFake.dataviewModel.getUnfilteredDataModel = function () {
+        return new cdb.core.Model();
+      };
       timeSeriesWidgetModelFake.dataviewModel.getData = function () {
         return {};
       };

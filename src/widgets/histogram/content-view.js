@@ -1,6 +1,5 @@
 var _ = require('underscore');
 var cdb = require('cartodb.js');
-var Backbone = require('backbone');
 var formatter = require('../../formatter');
 var HistogramTitleView = require('./histogram-title-view');
 var HistogramChartView = require('./chart');
@@ -26,8 +25,8 @@ module.exports = cdb.core.View.extend({
   },
 
   initialize: function () {
-    this._originalData = new Backbone.Collection();
     this._dataviewModel = this.model.dataviewModel;
+    this._originalData = this._dataviewModel.getUnfilteredDataModel();
     this.filter = this._dataviewModel.filter;
     this.lockedByUser = false;
     this._initBinds();
@@ -64,13 +63,12 @@ module.exports = cdb.core.View.extend({
   },
 
   _initBinds: function () {
-    this._dataviewModel.once('change:data', this._onFirstLoad, this);
+    this._originalData.once('change:data', this._onFirstLoad, this);
     this.model.bind('change:collapsed', this.render, this);
   },
 
   _onFirstLoad: function () {
     this.render();
-
     this._dataviewModel.bind('change:data', this._onHistogramDataChanged, this);
     this.add_related_model(this._dataviewModel);
     this._dataviewModel.fetch();
@@ -93,13 +91,8 @@ module.exports = cdb.core.View.extend({
     if (this.lockedByUser) {
       this.lockedByUser = false;
     } else {
-      if (this._isZoomed()) {
-        this.zoomedData = this._dataviewModel.getData();
-      } else {
+      if (!this._isZoomed()) {
         this.histogramChartView.showShadowBars();
-        if (this._originalData.isEmpty()) {
-          this._originalData.reset(this._dataviewModel.getData());
-        }
         this.miniHistogramChartView.replaceData(this._dataviewModel.getData());
       }
       this.histogramChartView.replaceData(this._dataviewModel.getData());
@@ -107,11 +100,6 @@ module.exports = cdb.core.View.extend({
 
     if (this.unsettingRange) {
       this._unsetRange();
-    } else {
-      if (this._isZoomed() && !this.lockZoomedData) {
-        this.lockZoomedData = true;
-        this.zoomedData = this._dataviewModel.getData();
-      }
     }
 
     this._updateStats();
@@ -119,9 +107,9 @@ module.exports = cdb.core.View.extend({
 
   render: function () {
     this.clearSubViews();
-
     var data = this._dataviewModel.getData();
-    var isDataEmpty = _.isEmpty(data) || _.size(data) === 0;
+    var originalData = this._originalData.getData();
+    var isDataEmpty = !_.size(data) && !_.size(originalData);
 
     this.$el.html(
       template({
@@ -135,7 +123,6 @@ module.exports = cdb.core.View.extend({
       this._addPlaceholder();
       this._initTitleView();
     } else {
-      this._originalData.reset(this._dataviewModel.getData());
       this._setupBindings();
       this.$el.toggleClass('is-collapsed', !!this.model.get('collapsed'));
       this._initViews();
@@ -167,7 +154,7 @@ module.exports = cdb.core.View.extend({
       height: this.defaults.chartHeight,
       data: this._dataviewModel.getData(),
       originalData: this._originalData,
-      displayShadowBars: true,
+      displayShadowBars: !this.model.get('normalized'),
       normalized: this.model.get('normalized')
     }));
 
@@ -189,7 +176,8 @@ module.exports = cdb.core.View.extend({
       height: 40,
       showOnWidthChange: false,
       data: this._dataviewModel.getData(),
-      normalized: this.model.get('normalized')
+      normalized: this.model.get('normalized'),
+      originalData: this._originalData
     }));
 
     this.addView(this.miniHistogramChartView);
@@ -231,12 +219,11 @@ module.exports = cdb.core.View.extend({
 
   _onMiniRangeUpdated: function (loBarIndex, hiBarIndex) {
     this.lockedByUser = false;
-    this.lockZoomedData = false;
 
     this._clearTooltip();
     this.histogramChartView.removeSelection();
 
-    var data = this._originalData.toJSON();
+    var data = this._originalData.getData();
 
     if (loBarIndex >= 0 && loBarIndex < data.length && (hiBarIndex - 1) >= 0 && (hiBarIndex - 1) < data.length) {
       this.filter.setRange(
@@ -250,7 +237,7 @@ module.exports = cdb.core.View.extend({
   },
 
   _onBrushEnd: function (loBarIndex, hiBarIndex) {
-    var data = this._getData();
+    var data = this._dataviewModel.getData();
 
     if (!data || !data.length) {
       return;
@@ -291,21 +278,12 @@ module.exports = cdb.core.View.extend({
     updateStats();
   },
 
-  _getData: function () {
-    var data = this._dataviewModel.getData();
-
-    if (this._isZoomed()) {
-      data = this.zoomedData;
-    }
-    return data;
-  },
-
   _onChangeFilterEnabled: function () {
     this.$('.js-filter').toggleClass('is-hidden', !this.model.get('filter_enabled'));
   },
 
-  _onChangeBins: function () {
-    this._originalData.reset([]); // Clean originalData
+  _onChangeBins: function (mdl, bins) {
+    this._originalData.setBins(bins);
     this.model.set({
       zoom_enabled: false,
       filter_enabled: false,
@@ -366,13 +344,7 @@ module.exports = cdb.core.View.extend({
 
   _updateStats: function () {
     var data = this._dataviewModel.getData();
-
-    if (this._isZoomed()) {
-      data = this.zoomedData;
-    }
-
     var nulls = this._dataviewModel.get('nulls');
-
     var min, max;
 
     if (data && data.length) {
@@ -440,16 +412,13 @@ module.exports = cdb.core.View.extend({
   _onZoomIn: function () {
     this.lockedByUser = false;
     this._showMiniRange();
-    this.histogramChartView.updateYScale();
-    this.histogramChartView.expand(4);
-    this.histogramChartView.removeShadowBars();
+    this.histogramChartView.setBounds();
     this._dataviewModel.enableFilter();
     this._dataviewModel.fetch();
   },
 
   _resetWidget: function () {
     this.lockedByUser = true;
-    this.lockZoomedData = false;
     this.unsettingRange = true;
     this.model.set({
       zoomed: false,
@@ -459,13 +428,8 @@ module.exports = cdb.core.View.extend({
       hi_index: null
     });
     this._dataviewModel.disableFilter();
-
     this.filter.unsetRange();
-
-    this.histogramChartView.resetYScale();
-    this.histogramChartView.contract(this.defaults.chartHeight);
-    this.histogramChartView.resetIndexes();
-    this.histogramChartView.removeSelection();
+    this.histogramChartView.unsetBounds();
     this.miniHistogramChartView.hide();
   }
 });

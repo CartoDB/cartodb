@@ -26,21 +26,25 @@ module.exports = cdb.core.View.extend({
     if (!this.options.torqueLayerModel) throw new Error('torqeLayerModel is required');
     if (!this.options.rangeFilter) throw new Error('rangeFilter is required');
 
-    this._rangeFilter = this.options.rangeFilter;
-    this._torqueLayerModel = this.options.torqueLayerModel;
-    this._torqueLayerModel.bind('change:renderRange', this._onRenderRangeChanged, this);
-    this._torqueLayerModel.bind('change:steps change:start change:end', this._reSelectRange, this);
-    this.add_related_model(this._torqueLayerModel);
-
     this._dataviewModel = this.options.dataviewModel;
-    this._dataviewModel.bind('change:data', this._onChangeData, this);
-    this.add_related_model(this._dataviewModel);
+    this._rangeFilter = this.options.rangeFilter;
+    this._originalData = this._dataviewModel.getUnfilteredDataModel();
+    this._torqueLayerModel = this.options.torqueLayerModel;
+    this._initBinds();
   },
 
   render: function () {
     this.clearSubViews();
     this._createHistogramView();
     return this;
+  },
+
+  _initBinds: function () {
+    this._torqueLayerModel.bind('change:renderRange', this._onRenderRangeChanged, this);
+    this._torqueLayerModel.bind('change:steps change:start change:end', this._reSelectRange, this);
+    this.add_related_model(this._torqueLayerModel);
+    this._dataviewModel.bind('change:data', this._onChangeData, this);
+    this.add_related_model(this._dataviewModel);
   },
 
   _createHistogramView: function () {
@@ -60,6 +64,7 @@ module.exports = cdb.core.View.extend({
       hasHandles: true,
       height: this.defaults.histogramChartHeight,
       data: this._dataviewModel.getData(),
+      originalData: this._originalData,
       displayShadowBars: true
     });
 

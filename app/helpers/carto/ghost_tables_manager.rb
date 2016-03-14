@@ -29,9 +29,9 @@ module Carto
       # Left the critical zone, bolt automatically unlocked
     end
 
-    # determine linked tables vs cartodbfied tables consistency
-    def needs_to_run?
-      !(non_linked_tables.empty? && stale_tables.empty?)
+    # determine linked tables vs cartodbfied tables consistency; i.e.: if it needs to run link
+    def consistent?
+      non_linked_tables.empty? && stale_tables.empty?
     end
 
     # checks if bad tables are linked (deleted or renamed)

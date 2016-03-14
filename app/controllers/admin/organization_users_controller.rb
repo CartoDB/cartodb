@@ -33,7 +33,6 @@ class Admin::OrganizationUsersController < Admin::AdminController
 
   def edit
     set_flash_flags
-
     respond_to do |format|
       format.html { render 'edit' }
     end

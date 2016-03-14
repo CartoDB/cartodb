@@ -1051,14 +1051,13 @@ class User < Sequel::Model
     end
   end
 
-  def real_tables(in_schema=self.database_schema)
-    self.in_database(as: :superuser)
-        .select(:pg_class__oid, :pg_class__relname)
-        .from(:pg_class)
-        .join_table(:inner, :pg_namespace, :oid => :relnamespace)
-        .where(relkind: 'r', nspname: in_schema)
-        .exclude(relname: ::Table::SYSTEM_TABLE_NAMES)
-        .all
+  def real_tables(in_schema = database_schema)
+    in_database(as: :superuser).select(:pg_class__oid, :pg_class__relname)
+                               .from(:pg_class)
+                               .join_table(:inner, :pg_namespace, oid: :relnamespace)
+                               .where(relkind: 'r', nspname: in_schema)
+                               .exclude(relname: ::Table::SYSTEM_TABLE_NAMES)
+                               .all
   end
 
   def exceeded_quota?

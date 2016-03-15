@@ -115,11 +115,15 @@
     </div>
     <div class="FormAccount-rowData">
       <div class="Toggler">
-        <%= f.check_box :soft_geocoding_limit, :id => "soft_geocoding_limit" %>
+        <%= f.check_box :soft_geocoding_limit, id: "soft_geocoding_limit", disabled: !current_user.soft_geocoding_limit %>
         <%= label_tag(:soft_geocoding_limit, '') %>
       </div>
       <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
-        <p class="FormAccount-rowInfoText">User has permission to exceed organization's geocoding quota</p>
+        <% if current_user.soft_geocoding_limit %>
+          <p class="FormAccount-rowInfoText">User has permission to exceed organization's geocoding quota</p>
+        <% else %>
+          <p class="FormAccount-rowInfoText">You can't enable extra quota. Contact support for more information.</p>
+        <% end %>
       </div>
     </div>
   </div>
@@ -130,11 +134,15 @@
     </div>
     <div class="FormAccount-rowData">
       <div class="Toggler">
-        <%= f.check_box :soft_here_isolines_limit, :id => "soft_here_isolines_limit" %>
+        <%= f.check_box :soft_here_isolines_limit, id: "soft_here_isolines_limit", disabled: !current_user.soft_here_isolines_limit %>
         <%= label_tag(:soft_here_isolines_limit, '') %>
       </div>
       <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
-        <p class="FormAccount-rowInfoText">User has permission to exceed organization's isolines quota from Here provider</p>
+        <% if current_user.soft_here_isolines_limit %>
+          <p class="FormAccount-rowInfoText">User has permission to exceed organization's isolines quota from Here provider</p>
+        <% else %>
+          <p class="FormAccount-rowInfoText">You can't enable extra quota. Contact support for more information.</p>
+        <% end %>
       </div>
     </div>
   </div>
@@ -146,11 +154,15 @@
       </div>
       <div class="FormAccount-rowData">
         <div class="Toggler">
-          <%= f.check_box :soft_twitter_datasource_limit, :id => "soft_twitter_datasource_limit" %>
+          <%= f.check_box :soft_twitter_datasource_limit, id: "soft_twitter_datasource_limit", disabled: !current_user.soft_twitter_datasource_limit %>
           <%= label_tag(:soft_twitter_datasource_limit, '') %>
         </div>
         <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
-          <p class="FormAccount-rowInfoText">User has permission to exceed organization's Twitter credits</p>
+          <% if current_user.soft_twitter_datasource_limit %>
+            <p class="FormAccount-rowInfoText">User has permission to exceed organization's Twitter credits</p>
+          <% else %>
+            <p class="FormAccount-rowInfoText">You can't enable extra quota. Contact support for more information.</p>
+          <% end %>
         </div>
       </div>
     </div>

@@ -50,7 +50,7 @@ module CartoDB
 
       # Total maps
       def maps
-        Carto::Visualization.where("type != 'remote'").count
+        Carto::Visualization.where("type in ('derived', 'table', 'slide')").count
       end
 
       # Total active users

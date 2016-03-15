@@ -28,7 +28,7 @@ module CartoDB
   end
 
   def self.notify_error(message, additional_data={})
-    if Rails.env.development? || Rails.env.test?
+    if Rails.env.development?
       ::Logger.new(STDOUT).error "error: " + message + "\n" + additional_data.inspect + "\n"
     end
 
@@ -45,7 +45,7 @@ module CartoDB
   end
 
   def self.notify_debug(message, additional_data={})
-    if Rails.env.development? || Rails.env.test?
+    if Rails.env.development?
       ::Logger.new(STDOUT).error "debug: " + message + "\n" + additional_data.inspect + "\n"
     end
     Rollbar.report_message(message, 'debug', additional_data)

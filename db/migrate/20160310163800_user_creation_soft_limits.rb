@@ -1,8 +1,8 @@
 Sequel.migration do
   up do
     add_column :user_creations, :soft_twitter_datasource_limit, :boolean, null: false, default: false
-    Rails::Sequel.connection.run('ALTER TABLE user_creations ALTER COLUMN soft_geocoding_limit set not null;')
     Rails::Sequel.connection.run('ALTER TABLE user_creations ALTER COLUMN soft_geocoding_limit set default false;')
+    Rails::Sequel.connection.run('ALTER TABLE user_creations ALTER COLUMN soft_geocoding_limit set not null;')
   end
 
   down do

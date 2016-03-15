@@ -46,6 +46,34 @@ describe('windshaft/client', function () {
       expect(this.ajaxParams.cache).toEqual(true);
     });
 
+    it('should include the api_key in the URL if present', function () {
+      this.client.instantiateMap({
+        mapDefinition: { some: 'json that must be encoded' },
+        statTag: 'stat_tag',
+        apiKey: 'api_key',
+        filters: { some: 'filters that will be applied' }
+      });
+
+      var params = this.ajaxParams.url.split('?')[1].split('&');
+
+      expect(params.indexOf('api_key=api_key')).toBeTruthy();
+    });
+
+    it('should throw an error if api_key is provide but https is not being used', function () {
+      this.client = new WindshaftClient({
+        urlTemplate: 'http://{user}.example.com',
+        userName: 'rambo',
+        endpoint: 'api/v1'
+      });
+
+      expect(function () {
+        this.client.instantiateMap({
+          mapDefinition: { some: 'json that must be encoded' },
+          apiKey: 'api_key'
+        });
+      }.bind(this)).toThrowError('Authenticated requests can only be made via https');
+    });
+
     it('should invoke the success callback', function () {
       var successCallback = jasmine.createSpy('successCallback');
 

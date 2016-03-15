@@ -12,11 +12,7 @@ var WindshaftMap = Backbone.Model.extend({
     this.client = options.client;
     this.statTag = options.statTag;
     this.configGenerator = options.configGenerator;
-
-    // TODO: What params are really used?
-    this.pngParams = ['map_key', 'api_key', 'cache_policy', 'updated_at'];
-    this.gridParams = ['map_key', 'api_key', 'cache_policy', 'updated_at'];
-
+    this.apiKey = options.apiKey;
     this.set({
       urlTemplate: this.client.urlTemplate,
       userName: this.client.userName
@@ -33,6 +29,9 @@ var WindshaftMap = Backbone.Model.extend({
 
   createInstance: function (options) {
     options = options || {};
+
+    // TODO: If map is anonymous and has layers with analyses -> apiKey is required
+
     // WindshaftMap knows what types of layers should be sent to Windshaft:
     var layers = _.select(options.layers, function (layer) {
       return layer.get('type') === 'CartoDB' || layer.get('type') === 'torque';
@@ -63,6 +62,7 @@ var WindshaftMap = Backbone.Model.extend({
 
     this.client.instantiateMap({
       mapDefinition: mapConfig,
+      apiKey: this.apiKey,
       statTag: this.statTag,
       filters: filters.toJSON(),
       success: function (mapInstance) {
@@ -83,6 +83,10 @@ var WindshaftMap = Backbone.Model.extend({
     });
 
     return this;
+  },
+
+  setAPIKey: function (apiKey) {
+    this.apiKey = apiKey;
   },
 
   TILE_EXTENSIONS_BY_LAYER_TYPE: {
@@ -135,12 +139,10 @@ var WindshaftMap = Backbone.Model.extend({
     return url;
   },
 
-  getTiles: function (layerType, params) {
+  getTiles: function (layerType) {
     var grids = [];
     var tiles = [];
 
-    var pngParams = this._encodeParams(params, this.pngParams);
-    var gridParams = this._encodeParams(params, this.gridParams);
     var subdomains = ['0', '1', '2', '3'];
 
     if (this._useHTTPS()) {
@@ -161,7 +163,7 @@ var WindshaftMap = Backbone.Model.extend({
           layerIndexes.join(','),
           '/{z}/{x}/{y}',
           this.TILE_EXTENSIONS_BY_LAYER_TYPE[layerType],
-          (pngParams ? '?' + pngParams : '')
+          this.apiKey ? '?api_key=' + this.apiKey : ''
         ].join('');
 
         tiles.push(tileURLTemplate);
@@ -177,7 +179,7 @@ var WindshaftMap = Backbone.Model.extend({
                 index,
                 gridTemplate,
                 '.grid.json',
-                (gridParams ? '?' + gridParams : '')
+                this.apiKey ? '?api_key=' + this.apiKey : ''
               ].join('');
               grids[layer] = grids[layer] || [];
               grids[layer].push(gridURLTemplate);
@@ -211,28 +213,6 @@ var WindshaftMap = Backbone.Model.extend({
     var layers = this.get('metadata') && this.get('metadata').layers;
     var hasTiledLayer = layers.length > 0 && layers[0].type === 'http';
     return hasTiledLayer ? ++layerIndex : layerIndex;
-  },
-
-  _encodeParams: function (params, included) {
-    if (!params) return '';
-    var url_params = [];
-    included = included || _.keys(params);
-    for (var i in included) {
-      var k = included[i];
-      var p = params[k];
-      if (p) {
-        if (_.isArray(p)) {
-          for (var j = 0, len = p.length; j < len; j++) {
-            url_params.push(k + '[]=' + encodeURIComponent(p[j]));
-          }
-        } else {
-          var q = encodeURIComponent(p);
-          q = q.replace(/%7Bx%7D/g, '{x}').replace(/%7By%7D/g, '{y}').replace(/%7Bz%7D/g, '{z}');
-          url_params.push(k + '=' + q);
-        }
-      }
-    }
-    return url_params.join('&');
   },
 
   /**

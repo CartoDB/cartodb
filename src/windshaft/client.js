@@ -32,8 +32,18 @@ WindshaftClient.DEFAULT_COMPRESSION_LEVEL = 3;
 WindshaftClient.MAX_GET_SIZE = 2033;
 
 WindshaftClient.prototype.instantiateMap = function (options) {
+  if (!options.mapDefinition) {
+    throw new Error('mapDefinition option is required');
+  }
+
+  // TODO: This restriction needs to be disabled in development mode
+  if (options.apiKey && this.urlTemplate.indexOf('https') !== 0) {
+    throw new Error('Authenticated requests can only be made via https');
+  }
+
   var mapDefinition = options.mapDefinition;
   var statTag = options.statTag;
+  var apiKey = options.apiKey;
   var filters = options.filters || {};
   var successCallback = options.success;
   var errorCallback = options.error;
@@ -63,6 +73,10 @@ WindshaftClient.prototype.instantiateMap = function (options) {
 
   if (Object.keys(filters).length) {
     params.push(['filters', encodeURIComponent(JSON.stringify(filters))].join('='));
+  }
+
+  if (apiKey) {
+    params.push(['api_key', apiKey].join('='));
   }
 
   if (this._usePOST(payload, params)) {

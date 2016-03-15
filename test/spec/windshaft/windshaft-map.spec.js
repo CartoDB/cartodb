@@ -109,6 +109,28 @@ describe('windshaft/map', function () {
       expect(args.filters).toEqual({ layers: [{ accept: 'category' }, {}, {}] });
     });
 
+    it('should use the given API key when creating a new instance of the windshaft map', function () {
+      spyOn(this.configGenerator, 'generate').and.returnValue({ foo: 'bar' });
+
+      this.windshaftMap = new WindshaftMap(null, { // eslint-disable-line
+        client: this.client,
+        configGenerator: this.configGenerator,
+        apiKey: 'API_KEY',
+        statTag: 'stat_tag'
+      });
+
+      this.windshaftMap.createInstance({
+        layers: [ this.cartoDBLayer1, this.cartoDBLayer2, this.torqueLayer ],
+        dataviews: this.dataviews,
+        sourceLayerId: 'sourceLayerId'
+      });
+
+      var args = this.client.instantiateMap.calls.mostRecent().args[0];
+      expect(args.mapDefinition).toEqual({ foo: 'bar' });
+      expect(args.apiKey).toEqual('API_KEY');
+      expect(args.statTag).toEqual('stat_tag');
+      expect(args.filters).toEqual({ layers: [{ accept: 'category' }, {}, {}] });
+    });
     it('should not send filters linked to hidden layers', function () {
       // Hide this.cartoDBLayer1 -> Filters of that layer should be ignored
       this.cartoDBLayer1.set('visible', false, { silent: true });
@@ -450,6 +472,39 @@ describe('windshaft/map', function () {
       expect(windshaftMapInstance.getTiles('torque')).toEqual({
         tiles: [ 'https://rambo.example.com:443/api/v1/map/0123456789/1,3/{z}/{x}/{y}.json.torque' ],
         grids: []
+      });
+    });
+
+    it('should encode and include the API key in the URLs if apiKey is set', function () {
+      var windshaftMapInstance = new WindshaftMap({
+        'layergroupid': '0123456789',
+        'metadata': {
+          'layers': [
+            {
+              'type': 'mapnik',
+              'meta': {}
+            },
+            {
+              'type': 'torque',
+              'meta': {}
+            }
+          ]
+        }
+      }, {
+        client: new WindshaftClient({
+          urlTemplate: 'https://{user}.example.com:443',
+          userName: 'rambo',
+          endpoint: 'v2'
+        })
+      });
+
+      windshaftMapInstance.setAPIKey('API_KEY');
+
+      expect(windshaftMapInstance.getTiles()).toEqual({
+        tiles: [ 'https://rambo.example.com:443/api/v1/map/0123456789/0/{z}/{x}/{y}.png?api_key=API_KEY' ],
+        grids: [
+          [ 'https://rambo.example.com:443/api/v1/map/0123456789/0/{z}/{x}/{y}.grid.json?api_key=API_KEY' ]
+        ]
       });
     });
 

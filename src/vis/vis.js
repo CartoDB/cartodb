@@ -233,9 +233,11 @@ var Vis = View.extend({
 
     // Create the WindshaftMap
 
-    var windshaftMap = new WindshaftMap(null, { // eslint-disable-line
+    var apiKey = options.apiKey;
+    this._windshaftMap = new WindshaftMap(null, { // eslint-disable-line
       client: windshaftClient,
       configGenerator: configGenerator,
+      apiKey: apiKey,
       statTag: datasource.stat_tag
     });
 
@@ -279,7 +281,7 @@ var Vis = View.extend({
     }
 
     this.map = new Map(this.mapConfig, {
-      windshaftMap: windshaftMap,
+      windshaftMap: this._windshaftMap,
       dataviewsCollection: this._dataviewsCollection
     });
 
@@ -353,7 +355,7 @@ var Vis = View.extend({
       dataviewsCollection: this._dataviewsCollection,
       layersCollection: this.map.layers,
       map: this.map,
-      windshaftMap: windshaftMap
+      windshaftMap: this._windshaftMap
     });
 
     this._analysisCollection = new Backbone.Collection();
@@ -389,6 +391,13 @@ var Vis = View.extend({
     _.defer(function () {
       self.trigger('done', self, self.map.layers);
     });
+  },
+
+  /**
+   * Sets the API Key that is required to make authenticated requests to Windshaft (a.k.a the Tiler)
+   */
+  setAPIKey: function (apiKey) {
+    this._windshaftMap.setAPIKey(apiKey);
   },
 
   centerMapToOrigin: function () {

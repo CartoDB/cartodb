@@ -2,20 +2,19 @@
 require 'ostruct'
 require_relative './name_generator'
 require_relative '../map/copier'
-require_relative '../overlay/copier'
 
 module CartoDB
   module Visualization
     # Creates a new visualization using another as source.
     # Do NOT use this to create derived visualizations as creates a new map.
     class Copier
-      def initialize(user, visualization, name=nil)
+      def initialize(user, visualization, name = nil)
         @user           = user
         @visualization  = visualization
         @name           = name
       end
 
-      def copy(overlays=true, layers=true, additional_fields = {})
+      def copy(overlays = true, layers = true, additional_fields = {})
         member = Member.new(
           name:         new_name,
           tags:         visualization.tags,
@@ -41,11 +40,11 @@ module CartoDB
       end
 
       def overlays_copy(new_visualization)
-        copier = CartoDB::Overlay::Copier.new(new_visualization.id)
-        visualization.overlays.each.map { |overlay|
-          new_overlay = copier.copy_from(overlay)
+        visualization.overlays.each.map do |overlay|
+          new_overlay = overlay.dup
+          new_overlay.visualization_id = new_visualization.id
           new_overlay.save
-        }
+        end
       end
 
       def map_copy(layers)

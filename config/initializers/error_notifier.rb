@@ -42,7 +42,7 @@ module CartoDB
   end
 
   def self.log(level, exception: nil, message: nil, user: nil, **additional_data)
-    if Rails.env.development? || Rails.env.test?
+    if Rails.env.development?
       error_msg = "#{level}: #{message}\n"
       unless exception.nil?
         error_msg += exception.inspect + "\n"

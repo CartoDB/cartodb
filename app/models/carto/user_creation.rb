@@ -34,6 +34,7 @@ class Carto::UserCreation < ActiveRecord::Base
     user_creation.quota_in_bytes = user.quota_in_bytes
     user_creation.soft_geocoding_limit = user.soft_geocoding_limit
     user_creation.soft_here_isolines_limit = user.soft_here_isolines_limit
+    user_creation.soft_twitter_datasource_limit = user.soft_twitter_datasource_limit.nil? ? false : user.soft_twitter_datasource_limit
     user_creation.google_sign_in = user.google_sign_in
     user_creation.log = Carto::Log.new_user_creation
     user_creation.created_via = created_via
@@ -188,18 +189,21 @@ class Carto::UserCreation < ActiveRecord::Base
     @cartodb_user.email = email
     @cartodb_user.crypted_password = crypted_password
     @cartodb_user.salt = salt
-    @cartodb_user.quota_in_bytes = quota_in_bytes unless quota_in_bytes.nil?
-    @cartodb_user.soft_geocoding_limit = soft_geocoding_limit unless soft_geocoding_limit.nil?
-    @cartodb_user.soft_here_isolines_limit = soft_here_isolines_limit unless soft_here_isolines_limit.nil?
     @cartodb_user.google_sign_in = google_sign_in
     @cartodb_user.invitation_token = invitation_token
     @cartodb_user.enable_account_token = ::User.make_token if requires_validation_email?
+
     unless organization_id.nil? || @promote_to_organization_owner
       organization = ::Organization.where(id: organization_id).first
       raise "Trying to copy organization settings from one without owner" if organization.owner.nil?
       @cartodb_user.organization = organization
       @cartodb_user.organization.owner.copy_account_features(@cartodb_user)
     end
+
+    @cartodb_user.quota_in_bytes = quota_in_bytes unless quota_in_bytes.nil?
+    @cartodb_user.soft_geocoding_limit = soft_geocoding_limit unless soft_geocoding_limit.nil?
+    @cartodb_user.soft_here_isolines_limit = soft_here_isolines_limit unless soft_here_isolines_limit.nil?
+    @cartodb_user.soft_twitter_datasource_limit = soft_twitter_datasource_limit unless soft_twitter_datasource_limit.nil?
 
     @cartodb_user
   rescue => e

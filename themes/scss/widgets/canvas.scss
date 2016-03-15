@@ -67,17 +67,24 @@
 // Widget media query
 @include media-query() {
   .CDB-Widget-canvas {
-    $w: calc(100% - #{$baseSize} * 9);
-    width: $w;
-    min-width: $w;
-    max-width: $w;
+    width: 100%;
+    min-width: 100%;
+    max-width: 100%;
     height: auto;
     margin-top: $baseSize;
+    margin-left: 0;
     border-radius: 0;
     overflow: hidden;
     box-sizing: border-box;
   }
-  .CDB-Widget-canvas--withMenu {
+  .CDB-Widget-canvas.CDB-Widget-canvas--withMenu {
+    $w: calc(100% - #{$baseSize} * 9);
+    width: $w;
+    min-width: $w;
+    max-width: $w;
+    margin-left: 0;
+  }
+  .CDB-Widget-canvas.CDB-Widget-canvas--withMenu {
     margin-left: $baseSize * 9;
   }
   .CDB-Map-canvas {

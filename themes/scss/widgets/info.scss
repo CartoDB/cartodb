@@ -17,10 +17,7 @@
 
 // Widget sizes
 @include media-query() {
-  .CDB-Widget-info {
-    @include justify-content(space-between, justify);
-  }
   .CDB-Widget-infoDescription {
-    margin-right: 0;
+    margin-right: 8px;
   }
 }

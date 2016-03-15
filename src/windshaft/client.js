@@ -36,11 +36,6 @@ WindshaftClient.prototype.instantiateMap = function (options) {
     throw new Error('mapDefinition option is required');
   }
 
-  // TODO: This restriction needs to be disabled in development mode
-  if (options.apiKey && this.urlTemplate.indexOf('https') !== 0) {
-    throw new Error('Authenticated requests can only be made via https');
-  }
-
   var mapDefinition = options.mapDefinition;
   var statTag = options.statTag;
   var apiKey = options.apiKey;

@@ -59,21 +59,6 @@ describe('windshaft/client', function () {
       expect(params.indexOf('api_key=api_key')).toBeTruthy();
     });
 
-    it('should throw an error if api_key is provide but https is not being used', function () {
-      this.client = new WindshaftClient({
-        urlTemplate: 'http://{user}.example.com',
-        userName: 'rambo',
-        endpoint: 'api/v1'
-      });
-
-      expect(function () {
-        this.client.instantiateMap({
-          mapDefinition: { some: 'json that must be encoded' },
-          apiKey: 'api_key'
-        });
-      }.bind(this)).toThrowError('Authenticated requests can only be made via https');
-    });
-
     it('should invoke the success callback', function () {
       var successCallback = jasmine.createSpy('successCallback');
 

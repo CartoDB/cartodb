@@ -12,7 +12,6 @@ include CartoDB
 describe Visualization::Copier do
   before do
     @db = Rails::Sequel.connection
-    CartoDB::Overlay.repository = DataRepository::Backend::Sequel.new(@db, :overlays)
     Visualization.repository = DataRepository::Backend::Sequel.new(@db, :visualizations)
 
     @user = create_user
@@ -81,4 +80,3 @@ describe Visualization::Copier do
     @user.destroy
   end
 end # Visualization::Copier
-

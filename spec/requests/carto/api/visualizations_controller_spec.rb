@@ -306,7 +306,6 @@ describe Carto::Api::VisualizationsController do
       Sequel.extension(:pagination)
 
       CartoDB::Visualization.repository = DataRepository::Backend::Sequel.new(@db, :visualizations)
-      CartoDB::Overlay.repository       = DataRepository::Backend::Sequel.new(@db, :overlays)
 
       @user_1 = FactoryGirl.create(:valid_user)
       @user_2 = FactoryGirl.create(:valid_user, private_maps_enabled: true)

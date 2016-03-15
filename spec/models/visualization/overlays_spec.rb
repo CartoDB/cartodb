@@ -16,7 +16,6 @@ describe Visualization::Overlays do
     @db = Rails::Sequel.connection
     Visualization.repository = DataRepository::Backend::Sequel.new(@db, :visualizations)
 
-    CartoDB::Overlay.repository = DataRepository::Backend::Sequel.new(@db, :overlays)
     member = Visualization::Member.new
     map_mock = mock
     map_mock.stubs(:scrollwheel=)

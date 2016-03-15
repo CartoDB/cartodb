@@ -372,7 +372,7 @@ class DataImport < Sequel::Model
     end
 
     if !imported_table.nil? && !imported_table.map_id.nil?
-      map = Map.get(id: map_id)
+      map = Map.get(id: imported_table.map_id)
       if !map.nil?
         map.delete
       end

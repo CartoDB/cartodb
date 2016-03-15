@@ -88,6 +88,7 @@ class Carto::VisualizationQueryBuilder
   end
 
   def with_user_id(user_id)
+    CartoDB.notify_debug("with_user_id with nil user_id", caller: caller.take(25)) unless user_id
     @user_id = user_id
     self
   end

@@ -204,7 +204,7 @@ module CartoDB
 
       def overlays_for(visualization)
         ordered_overlays_for(visualization).map do |overlay|
-          Overlay::Presenter.new(overlay).to_poro
+          Carto::Api::OverlayPresenter.new(overlay).to_vizjson_poro
         end
       end
 

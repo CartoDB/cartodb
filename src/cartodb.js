@@ -30,9 +30,6 @@ cdb.createVis = require('./api/create-vis');
 cdb.createLayer = require('./api/create-layer');
 cdb.LZMA = require('lzma');
 
-// used in libs like torque to add themselves here (or so it seems)
-cdb.moduleLoad = require('./api/module-load');
-
 cdb.core.Profiler = require('cdb.core.Profiler');
 cdb.core.util = require('cdb.core.util');
 cdb.core.Loader = cdb.vis.Loader = require('./core/loader');

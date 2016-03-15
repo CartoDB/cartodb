@@ -29,16 +29,16 @@ module Carto
 
       @ghost_tables_manager.consistent?.should be false
     end
-    #
-    # it 'should relink renamed tables' do
-    #   @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
-    #
-    #   byebug
-    #
-    #   ::Visualization::Member.any_instance.expects(:name=).with('manolo').once
-    #
-    #   @ghost_tables_manager.link
-    # end
+
+    it 'should relink renamed tables' do
+      @ghost_tables_manager.stubs(:all_tables).returns [{ id: 1, name: 'manolo' }]
+      @ghost_tables_manager.stubs(:non_linked_tables).returns [{ id: 1, name: 'manolo' }]
+      @ghost_tables_manager.stubs(:fetch_table_for_user_table).returns { 'bastardi' }
+
+      ::Visualization::Member.any_instance.expects(:name=).with('manolo').once
+
+      @ghost_tables_manager.link
+    end
 
     it 'should link new tables' do
       @ghost_tables_manager.stubs(:all_tables).returns [{ id: 1, name: 'manolo' }, { id: 2, name: 'escobar' }]

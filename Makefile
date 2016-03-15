@@ -17,6 +17,7 @@ WORKING_SPECS_INTEGRATIONS = \
 WORKING_SPECS_1 = \
   spec/rspec_configuration.rb \
   spec/models/table_spec.rb \
+	spec/models/table_privacy_manager_spec.rb \
   spec/models/table/relator_spec.rb \
   spec/models/table/column_typecaster_spec.rb \
   spec/models/user_spec.rb \
@@ -29,7 +30,7 @@ WORKING_SPECS_1 = \
   spec/requests/api/json/layer_presenter_spec.rb \
   spec/requests/carto/admin/bi_visualizations_controller_spec.rb \
 	spec/requests/carto/api/bi_visualizations_controller_spec.rb \
-    spec/requests/carto/api/layer_presenter_spec.rb \
+  spec/requests/carto/api/layer_presenter_spec.rb \
 	spec/requests/carto/api/data_import_presenter_spec.rb \
 	spec/requests/carto/api/database_groups_controller_spec.rb \
   spec/requests/carto/api/layer_presenter_spec.rb \
@@ -81,6 +82,7 @@ WORKING_SPECS_1 = \
 WORKING_SPECS_2 = \
   spec/lib/cartodb/stats/importer_spec.rb \
 	spec/lib/cartodb/stats/platform_spec.rb \
+	spec/lib/cartodb/connection_pool_spec.rb \
   services/importer/spec/acceptance/geojson_spec.rb \
   services/importer/spec/acceptance/gpx_spec.rb \
   services/importer/spec/acceptance/kml_spec.rb \
@@ -204,8 +206,6 @@ WORKING_SPECS_9 = \
   spec/requests/superadmin/users_spec.rb \
   spec/requests/superadmin/organizations_spec.rb \
   spec/requests/api/visualizations_spec.rb \
-  spec/requests/api/json/maps_controller_spec.rb \
-  spec/requests/carto/api/maps_controller_spec.rb \
   spec/requests/api/json/overlays_controller_spec.rb \
   spec/requests/carto/api/overlays_controller_spec.rb \
 	spec/models/carto/user_creation_spec.rb \
@@ -222,6 +222,14 @@ WORKING_SPECS_9 = \
 	services/table-geocoder/spec/geocoder_cache_spec.rb \
   $(NULL)
   # spec/models/synchronization/collection_spec.rb not working right now \
+
+# Tests using spec_helper_min instead of spec_helper
+SPEC_HELPER_MIN_SPECS = \
+  spec/requests/carto/api/analyses_controller_spec.rb \
+	spec/models/carto/analysis_spec.rb \
+	spec/requests/api/json/maps_controller_spec.rb \
+	spec/requests/carto/api/maps_controller_spec.rb \
+	$(NULL)
 
 # This class must be tested isolated as pollutes namespace
 WORKING_SPECS_carto_db_class = \
@@ -254,6 +262,8 @@ check-7:
 	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_7)
 check-9:
 	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_9)
+check-spec-helper-min:
+	RAILS_ENV=test bundle exec rspec $(SPEC_HELPER_MIN_SPECS)
 check-carto-db-class:
 	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_carto_db_class)
 check-integrations:
@@ -261,7 +271,7 @@ check-integrations:
 
 check-external: prepare-test-db check-integrations
 
-check-prepared: check-1 check-2 check-4 check-5 check-7 check-9 check-carto-db-class
+check-prepared: check-1 check-2 check-4 check-5 check-7 check-9 check-spec-helper-min check-carto-db-class
 
 check: prepare-test-db check-prepared
 check-frontend:

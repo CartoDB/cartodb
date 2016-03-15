@@ -84,13 +84,14 @@ module CartoDB
         table.reload
         table.send :update_table_pg_stats
         table.save
-        table.send(:invalidate_varnish_cache)
+
         update_cdb_tablemetadata(table.name)
       rescue => exception
         puts "Sync cartodbfy ERROR: #{exception.message}: #{exception.backtrace.join}"
         CartoDB.notify_error('Error in sync cartodbfy',
                              error: exception.backtrace.join('\n'), user_id: user.id, table: table_name)
-        table.send(:invalidate_varnish_cache)
+
+        update_cdb_tablemetadata(table.name)
       end
 
       def update_cdb_tablemetadata(name)
@@ -237,4 +238,3 @@ module CartoDB
     end
   end
 end
-

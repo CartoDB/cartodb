@@ -44,6 +44,7 @@ describe User do
     stub_named_maps_calls
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
     CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+    Table.any_instance.stubs(:update_cdb_tablemetadata)
   end
 
   after(:all) do
@@ -235,14 +236,14 @@ describe User do
       it 'user email is not valid if organization has whitelisted domains and email is not under that domain' do
         @organization.whitelisted_email_domains = [ 'organization.org' ]
         user = FactoryGirl.build(:valid_user, organization: @organization)
-        user.valid?.should == false
+        user.valid?.should eq false
         user.errors[:email].should_not be_nil
       end
 
       it 'user email is valid if organization has whitelisted domains and email is under that domain' do
         user = FactoryGirl.build(:valid_user, organization: @organization)
         @organization.whitelisted_email_domains = [ user.email.split('@')[1] ]
-        user.valid?.should == true
+        user.valid?.should eq true
         user.errors[:email].should == []
       end
     end
@@ -1075,9 +1076,6 @@ describe User do
 
     CartoDB::Varnish.any_instance.expects(:purge)
       .with("#{doomed_user.database_name}.*")
-      .returns(true)
-    CartoDB::Varnish.any_instance.expects(:purge)
-      .with("^#{doomed_user.database_name}:(.*public(\\\\\")?\\.clubbing.*)|(table)$")
       .returns(true)
     CartoDB::Varnish.any_instance.expects(:purge)
       .with(".*#{uuid}:vizjson")

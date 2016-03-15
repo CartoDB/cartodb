@@ -15,6 +15,9 @@ describe CartoDB::HiresBatchGeocoder do
   end
 
   before(:each) do
+    @log = mock
+    @log.stubs(:append)
+    @log.stubs(:append_and_store)
     @working_dir = Dir.mktmpdir
     @input_csv_file = path_to '../../table-geocoder/spec/fixtures/nokia_input.csv'
     CartoDB::HiresBatchGeocoder.any_instance.stubs(:config).returns({
@@ -23,7 +26,7 @@ describe CartoDB::HiresBatchGeocoder do
         'token' => '',
         'mailto' => ''
       })
-    @batch_geocoder = CartoDB::HiresBatchGeocoder.new(@input_csv_file, @working_dir)
+    @batch_geocoder = CartoDB::HiresBatchGeocoder.new(@input_csv_file, @working_dir, @log)
   end
 
   after(:each) do

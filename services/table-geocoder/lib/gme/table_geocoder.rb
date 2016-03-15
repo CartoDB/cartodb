@@ -25,6 +25,7 @@ module Carto
         gme_client = Client.new(client_id, private_key)
         @geocoder_client = GeocoderClient.new(gme_client)
         @usage_metrics = arguments.fetch(:usage_metrics)
+        @log = arguments.fetch(:log)
       end
 
       def cancel
@@ -53,6 +54,7 @@ module Carto
         @usage_metrics.incr(:geocoder_google, :empty_responses, @empty_processed_rows)
         @usage_metrics.incr(:geocoder_google, :failed_responses, @failed_processed_rows)
         @usage_metrics.incr(:geocoder_google, :total_requests, total_requests)
+        update_log_stats
       end
 
       # Empty methods, needed because they're triggered from geocoding.rb
@@ -167,6 +169,7 @@ module Carto
       def fetch_from_gme(search_text)
         @geocoder_client.geocode(search_text)
       rescue => e
+        @log.append_and_store "Error geocoding using GME for text #{search_text}: #{e.message}"
         CartoDB.notify_error('Error geocoding using GME', error: e.backtrace.join('\n'), search_text: search_text)
         @failed_processed_rows += 1
         nil
@@ -177,6 +180,13 @@ module Carto
           when Client::ZERO_RESULTS_STATUS then @empty_processed_rows += 1
           else @failed_processed_rows += 1
         end
+      end
+
+      def update_log_stats
+        @log.append_and_store "Geocoding using Google maps, job status update. "\
+          "Status: #{@status} --- Processed rows: #{@processed_rows} "\
+          "--- Success: #{@successful_processed_rows} --- Empty: #{@empty_processed_rows} "\
+          "--- Failed: #{@failed_processed_rows}"
       end
     end
   end

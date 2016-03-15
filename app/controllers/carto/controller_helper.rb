@@ -2,11 +2,12 @@ require_dependency 'carto/uuidhelper'
 
 module Carto
   class CartoError < StandardError
-    attr_reader :message, :status
+    attr_reader :message, :status, :user_message
 
-    def initialize(message, status)
+    def initialize(message, status, user_message = message)
       @message = message
       @status = status
+      @user_message = user_message
     end
   end
 

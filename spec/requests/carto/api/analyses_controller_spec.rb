@@ -110,6 +110,12 @@ describe Carto::Api::AnalysesController do
       end
     end
 
+    it 'returns 422 if payload visualization or user id do not match with url' do
+      post_json create_analysis_url(@user, @visualization), payload.merge(visualization_id: 'x') do |response|
+        response.status.should eq 422
+      end
+    end
+
     it 'returns 422 if payload is not valid json' do
       post_json create_analysis_url(@user, @visualization), nil do |response|
         response.status.should eq 422
@@ -171,6 +177,8 @@ describe Carto::Api::AnalysesController do
     let(:new_key) { :whatever }
 
     let(:new_payload) do
+      payload.delete(:id)
+      payload.merge(whatever: 'really?')
       payload[:analysis_definition][:id] = new_natural_id
       payload[:analysis_definition][new_key] = 'really'
       payload
@@ -189,6 +197,16 @@ describe Carto::Api::AnalysesController do
         a.analysis_definition_json[new_key].should eq new_payload[:analysis_definition][new_key]
 
         a.analysis_definition_json.should eq new_payload[:analysis_definition]
+      end
+    end
+
+    it 'returns 422 if payload visualization_id or id do not match' do
+      put_json viz_analysis_url(@user, @visualization, @analysis),
+               new_payload.merge(visualization_id: 'x') do |response|
+        response.status.should eq 422
+      end
+      put_json viz_analysis_url(@user, @visualization, @analysis), new_payload.merge(id: 'x') do |response|
+        response.status.should eq 422
       end
     end
 

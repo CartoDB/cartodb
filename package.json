@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "3.23.50",
+  "version": "3.23.51",
   "description": "CartoDB UI frontend",
   "repository": {
     "type": "git",
@@ -26,7 +26,7 @@
     "browserify-resolutions": "1.0.6",
     "browserify-shim": "3.8.10",
     "cartoassets": "cartodb/CartoAssets#master",
-    "cartodb-deep-insights.js": "cartodb/deep-insights.js#5460a98",
+    "cartodb-deep-insights.js": "cartodb/deep-insights.js#26d09c0",
     "cartodb-pecan": "0.2.x",
     "cartodb.js": "cartodb/CartoDB.js#a01a3ac",
     "csswring": "^3.0.5",

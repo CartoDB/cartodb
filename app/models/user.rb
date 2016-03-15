@@ -131,10 +131,10 @@ class User < Sequel::Model
     if new?
       organization.validate_for_signup(errors, quota_in_bytes)
       organization.validate_new_user(self, errors)
-    else
+    elsif quota_in_bytes.to_i + organization.assigned_quota - initial_value(:quota_in_bytes) > organization.quota_in_bytes
       # Organization#assigned_quota includes the OLD quota for this user,
       # so we have to ammend that in the calculation:
-      errors.add(:quota_in_bytes, "not enough disk quota") if quota_in_bytes.to_i + organization.assigned_quota - initial_value(:quota_in_bytes) > organization.quota_in_bytes
+      errors.add(:quota_in_bytes, "not enough disk quota")
     end
   end
 

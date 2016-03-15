@@ -13,6 +13,7 @@ describe Carto::Api::OrganizationUsersController do
     ::User.any_instance.stubs(:create_in_central).returns(true)
     ::User.any_instance.stubs(:update_in_central).returns(true)
     ::User.any_instance.stubs(:delete_in_central).returns(true)
+    ::User.any_instance.stubs(:load_common_data).returns(true)
   end
 
   describe 'user creation' do
@@ -83,6 +84,7 @@ describe Carto::Api::OrganizationUsersController do
       last_user_created.email.should == "#{username}@cartodb.com"
       last_user_created.soft_geocoding_limit.should == false
       last_user_created.quota_in_bytes.should == 1024
+      last_user_created.destroy
     end
 
     it 'assigns soft_geocoding_limit to false by default' do
@@ -99,6 +101,7 @@ describe Carto::Api::OrganizationUsersController do
       @organization.reload
       last_user_created = @organization.users.find { |user| user.username == username }
       last_user_created.soft_geocoding_limit.should == false
+      last_user_created.destroy
     end
   end
 

@@ -33,7 +33,9 @@ module Carto
     it 'should relink renamed tables' do
       @ghost_tables_manager.stubs(:all_tables).returns [{ id: 1, name: 'manolo' }]
       @ghost_tables_manager.stubs(:non_linked_tables).returns [{ id: 1, name: 'manolo' }]
-      @ghost_tables_manager.stubs(:fetch_table_for_user_table).returns { 'bastardi' }
+      @ghost_tables_manager.stubs(:fetch_table_for_user_table).returns Table.new
+
+      Table.any_instance.stubs(:table_visualization).returns { ::Visualization::Member.new }
 
       ::Visualization::Member.any_instance.expects(:name=).with('manolo').once
 

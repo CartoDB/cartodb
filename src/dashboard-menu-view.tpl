@@ -68,7 +68,7 @@
     <div class="CDB-Dashboard-menuLogo">
       <i class="CDB-IconFont CDB-IconFont-cartoFante"></i>
     </div>
-    <button class="js-toggle-view-link">
+    <button class="js-toggle-view">
       <span class="CDB-Shape CDB-Shape--hamburguer"></span>
     </button>
     <div class="CDB-Dashboard-menuMedia CDB-Dashboard-menuAvatar">

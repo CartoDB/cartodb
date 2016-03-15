@@ -47,6 +47,11 @@ describe CommonData do
     @common_data.datasets.first['display_name'] = @common_data.datasets.first['name']
   end
 
+  it 'reads the attributions' do
+    stub_valid_api_response
+    @common_data.datasets.first['attributions'].should eq 'CartoDB Inc.'
+  end
+
   it 'categories should be an array' do
     stub_valid_api_response
     CartoDB.expects(:notify_error).times(0)
@@ -154,7 +159,7 @@ describe CommonData do
             "title": null,
             "parent_id": null,
             "license": "apache",
-            "attributions": null,
+            "attributions": "CartoDB Inc.",
             "kind": "geom",
             "likes": 0,
             "prev_id": null,

@@ -7,7 +7,7 @@ module Carto
     class OverlaysController < ::Api::ApplicationController
       include Carto::UUIDHelper
 
-      ssl_required :index, :show
+      ssl_required :index, :show, :create, :update, :destroy
       before_filter :check_current_user_has_permissions_on_vis, only: [:index, :create]
       before_filter :check_current_user_owns_overlay, only: [:show, :update, :destroy]
 

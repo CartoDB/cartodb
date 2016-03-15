@@ -16,14 +16,10 @@ module Carto
           Carto::Api::OverlayPresenter.new(overlay).to_poro
         end
         render_jsonp(collection)
-      rescue KeyError
-        head :not_found
       end
 
       def show
         render_jsonp(Carto::Api::OverlayPresenter.new(@overlay).to_poro)
-      rescue KeyError
-        head :not_found
       end
 
       def create
@@ -35,9 +31,8 @@ module Carto
                                          order:            params[:order],
                                          visualization_id: @visualization.id)
 
-            saved = false
-            @stats_aggregator.timing('save') do
-              saved = overlay.save
+            saved = @stats_aggregator.timing('save') do
+              overlay.save
             end
             if saved
               render_jsonp(Carto::Api::OverlayPresenter.new(overlay).to_poro)
@@ -56,17 +51,14 @@ module Carto
             @overlay.template = params[:template] if params[:template]
             @overlay.order =    params[:order]    if params[:order]
 
-            saved = false
-            @stats_aggregator.timing('save') do
-              saved = @overlay.save
+            saved = @stats_aggregator.timing('save') do
+              @overlay.save
             end
             if saved
               render_jsonp(Carto::Api::OverlayPresenter.new(@overlay).to_poro)
             else
               render_jsonp({ errors: @overlay.errors }, 400)
             end
-          rescue KeyError
-            head :not_found
           end
         end
       end

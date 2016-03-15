@@ -1,7 +1,6 @@
 # encoding: utf-8
 require 'json'
 require 'ostruct'
-require_relative '../overlay/presenter'
 require_relative '../layer/presenter'
 require_relative '../layer_group/presenter'
 require_relative '../named_map/presenter'

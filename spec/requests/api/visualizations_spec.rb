@@ -7,7 +7,6 @@ require_relative '../../spec_helper'
 require_relative '../../../app/controllers/api/json/visualizations_controller'
 require_relative '../../../services/data-repository/backend/sequel'
 require_relative '../../../app/models/visualization/migrator'
-require_relative '../../../app/models/overlay/migrator'
 
 
 def app

@@ -10,22 +10,33 @@ module CartoDB
 
     BATCH_FILES_OVER = 1100 # Use Here Batch Geocoder API with tables over x rows
 
-    def self.get(input_csv_file, working_dir, log)
+    def self.get(input_csv_file, working_dir, log, geocoding_model, number_of_rows = 0)
       geocoder_class = nil
-      if use_batch_process? input_csv_file
+      if use_batch_process?(input_csv_file, geocoding_model, number_of_rows)
         geocoder_class = HiresBatchGeocoder
       else
         geocoder_class = HiresGeocoder
       end
 
-      geocoder_class.new(input_csv_file, working_dir, log)
+      geocoder_class.new(input_csv_file, working_dir, log, geocoding_model)
     end
 
 
     private
 
-    def self.use_batch_process? input_csv_file
-      force_batch? || input_rows(input_csv_file) > BATCH_FILES_OVER
+    def self.use_batch_process?(input_csv_file, geocoding_model, number_of_rows)
+      # Due we could check this condition to create the geocoder class and we don't
+      # have finished yet the csv file generation, and could be nil, we have to check
+      # multiples conditions. It's sorted by priority
+      if force_batch? || geocoding_model.batched
+        true
+      elsif (not input_csv_file.nil?) && (input_rows(input_csv_file) > BATCH_FILES_OVER)
+        true
+      elsif (not number_of_rows.nil?) && (number_of_rows > BATCH_FILES_OVER)
+        true
+      else
+        false
+      end
     end
 
     def self.force_batch?

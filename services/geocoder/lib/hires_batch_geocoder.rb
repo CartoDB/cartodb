@@ -36,15 +36,16 @@ module CartoDB
     class ServiceDisabled < StandardError; end
 
 
-    def initialize(input_csv_file, working_dir, log)
+    def initialize(input_csv_file, working_dir, log, geocoding_model)
       @input_file = input_csv_file
       @dir = working_dir
       @log = log
+      @geocoding_model = geocoding_model
       @base_url = config.fetch('base_url')
       @app_id = config.fetch('app_id')
       @token = config.fetch('token')
       @mailto = config.fetch('mailto')
-      @used_batch_request = false
+      @used_batch_request = true
       begin
         @batch_api_disabled = config['batch_api_disabled'] == true
       rescue
@@ -53,27 +54,31 @@ module CartoDB
     end
 
     def run
+      init_rows_count
       @log.append_and_store "Started batched Here geocoding job"
       @started_at = Time.now
+      change_status('running')
       upload
 
       # INFO: this loop polls for the state of the table_geocoder batch process
       update_status
-      until ['completed', 'cancelled'].include? status do
+      until ['completed', 'cancelled'].include? @geocoding_model.state do
         if timeout?
           begin
+            change_status('timeout')
             cancel
           ensure
-            @status = 'timeout'
             @log.append_and_store "Proceding to cancel job due timeout"
           end
         end
 
-        break if ['failed', 'timeout'].include? status
+        break if ['failed', 'timeout'].include? @geocoding_model.state
 
         sleep polling_sleep_time
+        # We don't want to change the status if the job has been cancelled by the user
         update_status
         update_log_stats
+        change_status('completed')
       end
       @log.append_and_store "Geocoding Hires job has finished"
     ensure
@@ -94,6 +99,10 @@ module CartoDB
       @request_id = extract_response_field(response.body, '//Response/MetaInfo/RequestId')
       # TODO: this is a critical error, deal with it appropriately
       raise 'Could not get the request ID' unless @request_id
+      # Update geocodings model with needed data
+      @geocoding_model.remote_id = @request_id
+      @geocoding_model.batched = true
+      @geocoding_model.save
       @log.append_and_store "Job sent to HERE, job id: #{@request_id}"
 
       @request_id
@@ -104,14 +113,23 @@ module CartoDB
     end
 
     def cancel
-      @log.append_and_store "Trying to cancel a batch job sent to HERE"
-      assert_batch_api_enabled
-      response = http_client.put(api_url(action: 'cancel'),
-                                 connecttimeout: HTTP_CONNECTION_TIMEOUT,
-                                 timeout: HTTP_REQUEST_TIMEOUT)
-      handle_api_error(response)
-      update_stats(response)
-      @log.append_and_store "Job sent to HERE has been cancelled"
+      if @geocoding_model.remote_id.nil?
+        @log.append_and_store "Can't cancel a HERE geocoder job without the request id"
+      else
+        @log.append_and_store "Trying to cancel a batch job sent to HERE"
+        assert_batch_api_enabled
+        response = http_client.put(api_url(action: 'cancel'),
+                                   connecttimeout: HTTP_CONNECTION_TIMEOUT,
+                                   timeout: HTTP_REQUEST_TIMEOUT)
+        if response.response_code == 400 && message =~ /CANNOT CANCEL THE COMPLETED, DELETED, FAILED OR ALREADY CANCELLED JOB/
+          @log.append_and_store "Job was already cancelled"
+        else
+          handle_api_error(response)
+          update_stats(response)
+          @log.append_and_store "Job sent to HERE has been cancelled"
+        end
+        change_status('cancelled')
+      end
     end
 
     def update_status
@@ -180,7 +198,9 @@ module CartoDB
     def api_url(arguments, extra_components = nil)
       arguments.merge!(app_id: app_id, token: token, mailto: mailto)
       components = [base_url]
-      components << request_id unless request_id.nil?
+      # We use the persisted remote_id because we don't have request_id
+      # in the cancel case due is an instance variable
+      components << @geocoding_model.remote_id unless @geocoding_model.remote_id.nil?
       components << extra_components unless extra_components.nil?
       components << '?' + URI.encode_www_form(arguments)
       components.join('/')
@@ -204,8 +224,10 @@ module CartoDB
 
     def handle_api_error(response)
       if response.success? == false
-        @failed_processed_rows = number_of_input_file_rows
-        raise "Geocoding API communication failure: #{extract_response_field(response.body, '//Details')}"
+        message = extract_response_field(response.body, '//Details')
+        @failed_processed_rows = number_of_input_file_rows if not input_file.nil?
+        change_status('failed')
+        raise "Geocoding API communication failure: #{message}"
       end
     end
 
@@ -223,6 +245,7 @@ module CartoDB
 
     def update_stats(response)
       @status = extract_response_field(response.body, '//Response/Status')
+      change_status(@status)
       @processed_rows = extract_numeric_response_field(response.body, '//Response/ProcessedCount')
       @successful_processed_rows = extract_numeric_response_field(response.body, '//Response/SuccessCount')
       # addresses that could not be matched
@@ -232,13 +255,21 @@ module CartoDB
       @total_rows = extract_numeric_response_field(response.body, '//Response/TotalCount')
     end
 
+    def init_rows_count
+      @processed_rows = 0
+      @successful_processed_rows = 0
+      @empty_processed_rows = 0
+      @failed_processed_rows = 0
+      @total_rows = 0
+    end
+
     def update_log_stats(spaced_by_time=true)
       @last_logging_time ||= Time.now
       # We don't want to log every few seconds because this kind
       # of jobs could last for hours
       if (not spaced_by_time) || (Time.now - @last_logging_time) > LOGGING_TIME
         @log.append_and_store "Geocoding job status update. "\
-          "Status: #{@status} --- Processed rows: #{@processed_rows} "\
+          "Status: #{@geocoding_model.state} --- Processed rows: #{@processed_rows} "\
           "--- Success: #{@successful_processed_rows} --- Empty: #{@empty_processed_rows} "\
           "--- Failed: #{@failed_processed_rows}"
         @last_logging_time = Time.now
@@ -247,6 +278,16 @@ module CartoDB
 
     def timeout?
       (Time.now - @started_at) > default_timeout
+    end
+
+    def change_status(status)
+      @status = status
+      # The cancelled status should prevail to abort the job
+      @geocoding_model.refresh
+      if status != @geocoding_model.state && (not (@geocoding_model.cancelled? || @geocoding_model.timeout?))
+        @geocoding_model.state = status
+        @geocoding_model.save
+      end
     end
   end
 end

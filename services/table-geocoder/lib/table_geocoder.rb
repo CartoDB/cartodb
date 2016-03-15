@@ -23,6 +23,7 @@ module CartoDB
       @max_rows    = arguments.fetch(:max_rows)
       @usage_metrics = arguments.fetch(:usage_metrics)
       @log = arguments.fetch(:log)
+      @geocoding_model = arguments.fetch(:geocoding_model)
       @cache       = CartoDB::GeocoderCache.new(
         connection:  connection,
         formatter:   clean_formatter,
@@ -34,18 +35,23 @@ module CartoDB
         usage_metrics: @usage_metrics,
         log: @log
       )
-    end # initialize
+    end
 
     def run
       ensure_georef_status_colummn_valid
+      @number_of_rows_pre_cache = calculate_number_of_rows
       cache.run unless cache_disabled?
       @csv_file = generate_csv()
       geocoder.run
-      process_results if geocoder.status == 'completed'
-      cache.store unless cache_disabled?
+      # Sync state because cancel is made synchronous
+      @geocoding_model.refresh
+      if not @geocoding_model.cancelled?
+        process_results if geocoder.status == 'completed'
+        cache.store unless cache_disabled?
+      end
     ensure
-      self.remote_id = geocoder.request_id
-      update_metrics
+      self.remote_id = @geocoding_model.remote_id
+      update_metrics unless @geocoding_model.cancelled?
     end
 
     # TODO: make the geocoders update status directly in the model
@@ -55,6 +61,9 @@ module CartoDB
     end
 
     def cancel
+      # We have to be sure the cartodb_georef_status column exists
+      ensure_georef_status_colummn_valid
+      @number_of_rows_pre_cache = calculate_number_of_rows
       geocoder.cancel
     end
 
@@ -89,11 +98,22 @@ module CartoDB
     private
 
     def geocoder
-      @geocoder ||= CartoDB::HiresGeocoderFactory.get(@csv_file, @working_dir, @log)
+      @geocoder ||= CartoDB::HiresGeocoderFactory.get(@csv_file, @working_dir, @log, @geocoding_model,
+                                                      @number_of_rows_pre_cache)
     end
 
     def cache_disabled?
       GeocoderConfig.instance.get['disable_cache'] || false
+    end
+
+    def calculate_number_of_rows
+      rows = connection.fetch(%Q{
+        SELECT count(DISTINCT(#{clean_formatter}))
+        FROM #{@qualified_table_name}
+        WHERE cartodb_georef_status IS NULL OR cartodb_georef_status IS FALSE
+        LIMIT #{@max_rows}
+      }).first
+      rows[:count]
     end
 
     # Generate a csv input file from the geocodable rows
@@ -184,6 +204,5 @@ module CartoDB
       @usage_metrics.incr(:geocoder_here, :failed_responses, geocoder.failed_processed_rows)
       @usage_metrics.incr(:geocoder_here, :total_requests, total_requests)
     end
-
   end
 end

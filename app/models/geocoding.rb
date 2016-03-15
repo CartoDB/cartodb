@@ -61,7 +61,7 @@ class Geocoding < Sequel::Model
   def before_save
     super
     self.updated_at = Time.now
-    cancel if state == 'cancelled'
+    # cancel if state == 'cancelled'
   end
 
   def geocoding_logger
@@ -83,6 +83,7 @@ class Geocoding < Sequel::Model
     if !defined?(@table_geocoder)
       begin
         @table_geocoder = Carto::TableGeocoderFactory.get(user,
+                                                          self,
                                                           CartoDB::GeocoderConfig.instance.get,
                                                           table_service,
                                                           original_formatter: formatter,
@@ -162,14 +163,15 @@ class Geocoding < Sequel::Model
 
     # INFO: this is where the real stuff is done
     table_geocoder.run
+    # Sync state to avoid overwrites for state and log
+    refresh
+    return false if cancelled?
 
     self.update(table_geocoder.update_geocoding_status)
-    self.update remote_id: table_geocoder.remote_id
 
     # TODO better exception handling here
     raise 'Geocoding failed'  if state == 'failed'
     raise 'Geocoding timed out'  if state == 'timeout'
-    return false if state == 'cancelled'
 
     handle_geocoding_success(rows_geocoded_before)
   rescue => e
@@ -308,6 +310,13 @@ class Geocoding < Sequel::Model
     @log ||= instantiate_log
   end
 
+  def cancelled?
+    state == 'cancelled'
+  end
+
+  def timeout?
+    state == 'timeout'
+  end
 
   private
 
@@ -390,5 +399,4 @@ class Geocoding < Sequel::Model
     end
     self.save
   end
-
 end

@@ -38,20 +38,12 @@
       }
     },
     "layers": {
-      "data": {
-        "title-label": "Data"
-      },
-      "analyses": {
-        "title-label": "Analyses"
-      },
-      "style": {
-        "title-label": "Style"
-      },
-      "popup": {
-        "title-label": "Pop-up"
-      },
-      "legends": {
-        "title-label": "Legend"
+      "menu-tab-pane-labels": {
+        "data": "Data",
+        "analyses": "Analyses",
+        "style": "Style",
+        "popup": "Pop-up",
+        "legends": "Legend"
       }
     },
     "widgets": {

@@ -202,10 +202,5 @@ describe('cartodb.js bundle', function() {
       expect(cdb.vis.Vis).toEqual(jasmine.any(Function));
       expect(cdb.vis.INFOWINDOW_TEMPLATE).toEqual(jasmine.any(Object));
     });
-
-    it('should have a moduleLoad function', function() {
-      // Extracted from vis/vis.js, not used for vis but for external libs to register to non-core libs
-      expect(cdb.moduleLoad).toEqual(jasmine.any(Function));
-    });
   });
 });

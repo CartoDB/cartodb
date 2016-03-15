@@ -39,7 +39,6 @@ var Vis = View.extend({
     _.bindAll(this, 'loadingTiles', 'loadTiles', '_onResize');
 
     this.overlays = [];
-    this.moduleChecked = false;
 
     if (this.options.mapView) {
       this.mapView = this.options.mapView;

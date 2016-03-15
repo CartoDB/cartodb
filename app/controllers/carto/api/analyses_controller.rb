@@ -26,19 +26,17 @@ module Carto
       end
 
       def create
-        analysis_params = params_from_request
-
         analysis = Carto::Analysis.new(
           visualization_id: @visualization.id,
           user_id: current_user.id,
-          params: analysis_params
+          analysis_definition: analysis_definition_from_request.to_json
         )
         analysis.save!
         render_jsonp(AnalysisPresenter.new(analysis).to_poro, 201)
       end
 
       def update
-        @analysis.params = params_from_request
+        @analysis.analysis_definition = analysis_definition_from_request.to_json
         @analysis.save!
         render_jsonp(AnalysisPresenter.new(@analysis).to_poro, 200)
       end
@@ -50,12 +48,19 @@ module Carto
 
       private
 
-      def params_from_request
-        analysis_params = request.raw_post
-        params_json = json_post(analysis_params)
-        raise Carto::UnprocesableEntityError.new("Empty params") if params_json.empty?
+      def analysis_definition_from_request
+        analysis_json = json_post(request.raw_post)
 
-        analysis_params
+        if analysis_json.nil? || analysis_json.empty?
+          raise Carto::UnprocesableEntityError.new("Empty analysis")
+        end
+
+        analysis_definition = analysis_json['analysis_definition']
+        if analysis_definition.nil? || analysis_definition.empty? || analysis_definition.class == String
+          raise Carto::UnprocesableEntityError.new("Invalid analysis definition")
+        end
+
+        analysis_definition
       end
 
       def json_post(raw_post = request.raw_post)

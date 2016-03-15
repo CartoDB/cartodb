@@ -1,1 +1,1 @@
-<%- id %> <%- title %>
+<%- letter %> <%- title %>

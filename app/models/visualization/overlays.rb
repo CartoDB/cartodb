@@ -30,7 +30,7 @@ module CartoDB
       end
 
       def get_overlay_by_type(t)
-        @visualization.overlays.find { |oo| oo.type == t }
+        @visualization.overlays.detect { |oo| oo.type == t }
       end
 
       def create_overlays_from_url_options(url_options)

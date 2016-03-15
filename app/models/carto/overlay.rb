@@ -43,8 +43,8 @@ module Carto
       vis = visualization
       if vis && UNIQUE_TYPES.include?(type)
         vis.overlays.each do |overlay|
-          if new_record? || overlay.id != id
-            errors.add(:base, "Unique overlay of type #{type} already exists") if overlay.type == type
+          if (new_record? || overlay.id != id) && overlay.type == type
+            errors.add(:base, "Unique overlay of type #{type} already exists")
           end
         end
       end

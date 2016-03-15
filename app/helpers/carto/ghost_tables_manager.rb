@@ -47,14 +47,14 @@ module Carto
 
     def relink_renamed_tables
       non_linked_tables.each do |t|
-        user_table = fetch_table_for_user_table(t[:id])
+        table = fetch_table_for_user_table(t[:id])
 
-        next if user_table.nil? # UserTable hasn't been created yet; take care of it in link_new_tables
+        next if table.nil? # UserTable hasn't been created yet; take care of it in link_new_tables
 
         begin
           CartoDB.notify_debug('ghost tables', action: 'link renamed', renamed_table: t[:relname])
 
-          vis = user_table.table_visualization
+          vis = table.table_visualization
           vis.register_table_only = true
           vis.name = t[:name]
 

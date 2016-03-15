@@ -10,7 +10,6 @@ var Map = require('../geo/map');
 var MapViewFactory = require('../geo/map-view-factory');
 var LegendModel = require('../geo/ui/legend-model');
 var Legend = require('../geo/ui/legend');
-var SQL = require('../api/sql');
 var InfowindowModel = require('../geo/ui/infowindow-model');
 var Infowindow = require('../geo/ui/infowindow');
 var Template = require('../core/template');
@@ -702,28 +701,6 @@ var Vis = View.extend({
   createLayer: function (layerData) {
     var layerModel = Layers.create(layerData.type || layerData.kind, this, layerData);
     return this.mapView.createLayer(layerModel);
-  },
-
-  _getSqlApi: function (attrs) {
-    attrs = attrs || {};
-    var port = attrs.sql_api_port;
-    var domain = attrs.sql_api_domain + (port ? ':' + port : '');
-    var protocol = attrs.sql_api_protocol;
-    var version = 'v1';
-    if (domain.indexOf('cartodb.com') !== -1) {
-      protocol = 'http';
-      domain = 'cartodb.com';
-      version = 'v2';
-    }
-
-    var sql = new SQL({
-      user: attrs.user_name,
-      protocol: protocol,
-      host: domain,
-      version: version
-    });
-
-    return sql;
   },
 
   _addLoading: function (layerView) {

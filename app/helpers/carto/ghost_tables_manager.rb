@@ -90,7 +90,8 @@ module Carto
 
       # Remove tables with oids that don't exist on the db
       stale_tables.each do |user_table|
-        # Sync tables replace contents without touching metadata DB, so if method triggers meanwhile sync will fail
+        # Sync tables replace contents without touching metadata DB, so if method triggers meanwhile sync it will fail
+        # TODO: Flag running syncs to distinguish between deleted table syncs and running syncs
         next if syncs.include?(user_table[:name])
 
         table = fetch_table_for_user_table(user_table[:id])

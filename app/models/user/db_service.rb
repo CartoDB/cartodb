@@ -3,14 +3,15 @@
 require_relative 'db_queries'
 require_dependency 'carto/db/database'
 require_dependency 'carto/db/user_schema_mover'
+require 'cartodb/sequel_connection_helper'
 
 # To avoid collisions with User model
 module CartoDB
   # To avoid collisions with User class
   module UserModule
     class DBService
-
       include CartoDB::MiniSequel
+      extend CartoDB::SequelConnectionHelper
 
       # Also default schema for new users
       SCHEMA_PUBLIC = 'public'.freeze
@@ -1095,7 +1096,7 @@ module CartoDB
           END
           $$
         ")
-        conn.disconnect
+        close_sequel_connection(conn)
       end
 
       def triggers(schema = @user.database_schema)

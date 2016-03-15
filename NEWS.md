@@ -5,6 +5,8 @@
 * Updating CartoDB.js submodule with last changes sanitizing attribution.
 * Fixes a problem with select2 arrow icon.
 * Disable `PROMOTE_TO_MULTI` ogr2ogr option for CSV imports with guessing enabled to avoid MultiPoint imports. (https://github.com/CartoDB/cartodb/pull/6793)
+* Fixes a memory leak when connecting to user databases
+* Fixed error when accessing an SQL API renamed table through the editor.
 
 ## Security fixes
 

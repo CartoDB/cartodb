@@ -44,7 +44,7 @@ describe CommonData do
     stub_valid_api_response
     CartoDB.expects(:notify_error).times(0)
 
-    @common_data.datasets.first['display_name'] = @common_data.datasets.first['name']
+    @common_data.datasets.first['display_name'].should eq @common_data.datasets.first['name']
   end
 
   it 'reads the attributions' do

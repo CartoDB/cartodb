@@ -110,7 +110,8 @@
 }
 
 @include media-query-mobile() {
-  .CDB-Widget-canvas {
+  .CDB-Widget-canvas,
+  .CDB-Widget-canvas.CDB-Widget-canvas--withMenu {
     width: 100%;
     min-width: 100%;
     max-width: 100%;

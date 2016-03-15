@@ -37,6 +37,15 @@
         "title-label": "Widgets",
       }
     },
+    "layers": {
+      "menu-tab-pane-labels": {
+        "data": "Data",
+        "analyses": "Analyses",
+        "style": "Style",
+        "popup": "Pop-up",
+        "legends": "Legend"
+      }
+    },
     "widgets": {
       "widgets-view": {
         "add_widget": "Add widget"

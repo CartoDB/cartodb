@@ -68,7 +68,7 @@ describe SessionsController do
 
       errors = {
         errors: {
-          organization: ["owner is not set. In order to activate this organization the administrator must login first"]
+          organization: ["Organization owner is not set. Administrator must login first."]
         }
       }
       ::CartoDB.expects(:notify_debug).with('User not valid at signup', errors).returns(nil)

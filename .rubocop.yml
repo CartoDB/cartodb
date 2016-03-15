@@ -114,6 +114,7 @@ Style/CollectionMethods:
     collect: map
     collect!: map!
     find_all: select
+    detect: find
     reduce: inject
 Style/CommentAnnotation:
   Description: Checks formatting of special comments (TODO, FIXME, OPTIMIZE, HACK,

@@ -184,7 +184,6 @@ var Vis = View.extend({
   },
 
   load: function (data, options) {
-
     if (typeof (data) === 'string') {
       var url = data;
       Loader.get(url, function (data) {

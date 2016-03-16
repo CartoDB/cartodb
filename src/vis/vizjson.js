@@ -117,7 +117,7 @@ VizJSON.prototype.enforceGMapsBaseLayer = function (gmapsBaseType, gmapsStyle) {
         this.layers[0].options.style = typeof gmapsStyle === 'string' ? JSON.parse(gmapsStyle) : gmapsStyle;
       }
 
-      this.map_provider = VizJSON.GMAPS_BASE_LAYER_TYPES.GMAPS;
+      this.map_provider = VizJSON.MAP_PROVIDER_TYPES.GMAPS;
       this.layers[0].options.attribution = ''; // GMaps has its own attribution
     } else {
       log.error('No base map loaded. Using Leaflet.');

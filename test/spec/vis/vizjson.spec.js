@@ -223,12 +223,12 @@ describe('src/vis/vizjson', function () {
           style: {color: 'blue'}
         }
       });
-      expect(vizjson.map_provider).toEqual(VizJSON.MAP_PROVIDER_TYPES.GMAPS)
+      expect(vizjson.map_provider).toEqual(VizJSON.MAP_PROVIDER_TYPES.GMAPS);
     });
 
     it('should NOT replace the existing base layer by a GMaps one if map_provider is not leaflet', function () {
       var vizjson = new VizJSON({
-        map_provider: 'something'
+        map_provider: 'something',
         layers: [{
           options: {
             type: 'Tiled',

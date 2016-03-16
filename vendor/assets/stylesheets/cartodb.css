@@ -2478,10 +2478,6 @@ div.cartodb-legend.choropleth li.graph {
   -o-border-radius: 3px;
   border-radius: 3px;
 
-  -moz-background-clip: padding;
-  -webkit-background-clip: padding;
-  background-clip: padding;
-
   /*box-shadow: inset 0px 0px 0px 1px rgba(0, 0, 0, 0.2);*/
   border: 1px solid #b3b3b3;
 }
@@ -2533,10 +2529,6 @@ div.cartodb-legend.density li.graph {
   -o-border-radius: 3px;
   border-radius: 3px;
 
-  -moz-background-clip: padding;
-  -webkit-background-clip: padding;
-  background-clip: padding;
-
   /*box-shadow: inset 0px 0px 0px 1px rgba(0, 0, 0, 0.2);*/
   border: 1px solid #b3b3b3;
 }
@@ -2573,10 +2565,6 @@ div.cartodb-legend.intensity li.graph {
   -ms-border-radius: 3px;
   -o-border-radius: 3px;
   border-radius: 3px;
-
-  -moz-background-clip: padding;
-  -webkit-background-clip: padding;
-  background-clip: padding;
 
   /*border: 1px solid #b3b3b3;*/
   -webkit-box-shadow: inset 0px 0px 0px 1px rgba(0, 0, 0, 0.2);
@@ -3582,7 +3570,7 @@ div.cartodb-timeslider p {
   padding: 10px;
 }
 
-.cartodb-slides-controller .slides-controller-content .prev, 
+.cartodb-slides-controller .slides-controller-content .prev,
 .cartodb-slides-controller .slides-controller-content .next { position:relative; }
 .cartodb-slides-controller .slides-controller-content .prev {
   display:inline-block; *display:inline; vertical-align:middle;
@@ -3603,10 +3591,10 @@ div.cartodb-timeslider p {
   opacity: .5;
 }
 
-.cartodb-slides-controller .slides-controller-content .prev:hover, 
+.cartodb-slides-controller .slides-controller-content .prev:hover,
 .cartodb-slides-controller .slides-controller-content .next:hover { opacity: .8; }
 
-.cartodb-slides-controller .slides-controller-content .prev:hover, 
+.cartodb-slides-controller .slides-controller-content .prev:hover,
 .cartodb-slides-controller .slides-controller-content .next:hover { opacity: .8; }
 
 .cartodb-slides-controller .slides-controller-content .prev:after { content: ''; position: absolute; top: -5px; left: 31px; height: 25px; width: 2px; background:#fff; opacity: .5; }

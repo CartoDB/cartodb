@@ -42,5 +42,4 @@ describe('widgets/widgets-collection', function () {
     expect(this.collection.sort).toHaveBeenCalled();
     expect(orderChangedSpy).toHaveBeenCalled();
   });
-
 });

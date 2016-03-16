@@ -35,7 +35,7 @@ module Carto
     end
 
     # checks if sql-api deleted/renamed tables that are still linked
-    def has_stale_linked_tables?
+    def stale_tables_linked?
       !stale_tables.empty?
     end
 

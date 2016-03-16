@@ -446,7 +446,7 @@ class Admin::VisualizationsController < Admin::AdminController
     # Check if any tables need to be linked, relinked or unlinked
     return if ghost_tables_manager.consistent?
 
-    if ghost_tables_manager.has_stale_linked_tables?
+    if ghost_tables_manager.stale_tables_linked?
       # You might see phantom tables that generate erros upon clicking them; needs relink now
       ghost_tables_manager.link
     else

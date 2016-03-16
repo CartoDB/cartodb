@@ -177,7 +177,8 @@ module.exports = cdb.core.View.extend({
   },
 
   _onChangeNormalized: function () {
-    this.model.set('show_shadow_bars', !this.model.get('normalized'));
+    // do not show shadow bars if they are not enabled
+    this._generateShadowBars();
     this.updateYScale();
     this.refresh();
   },
@@ -1051,7 +1052,7 @@ module.exports = cdb.core.View.extend({
   _generateShadowBars: function () {
     var data = this._originalData && this._originalData.getData() || this.model.get('data');
 
-    if (!data || !data.length || !this.model.get('show_shadow_bars')) {
+    if (!data || !data.length || !this.model.get('show_shadow_bars') || this.model.get('normalized')) {
       this._removeShadowBars();
       return;
     }
@@ -1110,7 +1111,7 @@ module.exports = cdb.core.View.extend({
 
   unsetBounds: function () {
     this.model.set('bounded', false);
-    this.resetYScale();
+    this.updateYScale();
     this.contract(this.options.height);
     this.resetIndexes();
     this.removeSelection();

@@ -81,7 +81,6 @@ describe('widgets/histogram/chart', function () {
     it('should normalize', function () {
       spyOn(this.view, 'updateYScale');
       this.view.setNormalized(true);
-      expect(this.view.model.get('show_shadow_bars')).toEqual(false);
       expect(this.view.model.get('normalized')).toEqual(true);
       expect(this.view.updateYScale).toHaveBeenCalled();
       expect(this.view.refresh).toHaveBeenCalled();
@@ -89,7 +88,6 @@ describe('widgets/histogram/chart', function () {
     it('should denormalize', function () {
       spyOn(this.view, 'updateYScale');
       this.view.setNormalized(false);
-      expect(this.view.model.get('show_shadow_bars')).toEqual(true);
       expect(this.view.model.get('normalized')).toEqual(false);
       expect(this.view.updateYScale).toHaveBeenCalled();
       expect(this.view.refresh).toHaveBeenCalled();

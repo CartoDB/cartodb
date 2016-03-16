@@ -12,8 +12,9 @@ module VisualizationsControllerHelper
                                     .first
   end
 
-  def load_visualization_from_id(id)
-    user_id = current_user.nil? ? nil : current_user.id
+  def load_visualization_from_id_or_name(id)
+    user = Carto::User.where(username: extract_subdomain(request)).first
+    user_id = user.nil? ? nil : user.id
 
     visualization = get_priority_visualization(id, user_id)
 

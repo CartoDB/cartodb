@@ -369,11 +369,9 @@ CartoDB::Application.routes.draw do
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1/maps/:id'                          => 'maps#show',    as: :api_v1_maps_show
 
     # Overlays
-    get     '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:visualization_id/overlays'     => 'overlays#index',   as: :api_v1_visualizations_overlays_index,  constraints: { visualization_id: /[^\/]+/ }
-    get     '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:visualization_id/overlays/:id' => 'overlays#show',    as: :api_v1_visualizations_overlays_show,   constraints: { visualization_id: /[^\/]+/ }
-    post    '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:visualization_id/overlays'     => 'overlays#create',  as: :api_v1_visualizations_overlays_create, constraints: { visualization_id: /[^\/]+/ }
-    put     '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:visualization_id/overlays/:id' => 'overlays#update',  as: :api_v1_visualizations_overlays_update, constraints: { visualization_id: /[^\/]+/ }
-    delete  '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:visualization_id/overlays/:id' => 'overlays#destroy', as: :api_v1_visualizations_overlays_destroy, constraints: { visualization_id: /[^\/]+/ }
+    scope '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:visualization_id/', constraints: { visualization_id: /[0-z\-]+/ } do
+      resources :overlays, only: [:index, :show, :create, :update, :destroy], constraints: { id: /[0-z\-]+/ }
+    end
 
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1/synchronizations'                => 'synchronizations#index',     as: :api_v1_synchronizations_index
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1/synchronizations/:id'            => 'synchronizations#show',     as: :api_v1_synchronizations_show

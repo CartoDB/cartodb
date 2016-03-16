@@ -40,7 +40,7 @@ describe Carto::Api::OverlaysController do
   describe '#index' do
     it 'lists all overlays' do
       existing_overlay_ids = []
-      get_json api_v1_visualizations_overlays_index_url(params) do |response|
+      get_json overlays_url(params) do |response|
         response.status.should be_success
         response.body.count.should eq 5 # Newly created overlays have this amount of layers
         existing_overlay_ids = response.body.map { |overlay| overlay['id'] }
@@ -54,7 +54,7 @@ describe Carto::Api::OverlaysController do
 
       new_overlay_ids = [header_overlay.id, text_overlay.id]
 
-      get_json api_v1_visualizations_overlays_index_url(params) do |response|
+      get_json overlays_url(params) do |response|
         response.status.should be_success
         current_overlay_ids = response.body.map { |overlay| overlay['id'] }
         response.body.count.should == new_overlay_ids.count + existing_overlay_ids.count
@@ -64,14 +64,14 @@ describe Carto::Api::OverlaysController do
     end
 
     it 'returns 401 when accessing other users overlays' do
-      get_json api_v1_visualizations_overlays_index_url(params.merge(api_key: @user2.api_key)) do |response|
+      get_json overlays_url(params.merge(api_key: @user2.api_key)) do |response|
         response.status.should eq 401
         response.body.should be_empty
       end
     end
 
     it 'returns 401 when accessing non-existing visualization' do
-      get_json api_v1_visualizations_overlays_index_url(params.merge(visualization_id: FAKE_UUID)) do |response|
+      get_json overlays_url(params.merge(visualization_id: FAKE_UUID)) do |response|
         response.status.should eq 401
         response.body.should be_empty
       end
@@ -83,7 +83,7 @@ describe Carto::Api::OverlaysController do
       header_overlay = Carto::Overlay.new(type: 'header', visualization_id: params[:visualization_id])
       header_overlay.save
 
-      get_json api_v1_visualizations_overlays_show_url(params.merge(id: header_overlay.id)) do |response|
+      get_json overlay_url(params.merge(id: header_overlay.id)) do |response|
         response.status.should be_success
         response.body[:id].should == header_overlay.id
         response.body[:visualization_id].should == params[:visualization_id]
@@ -94,14 +94,14 @@ describe Carto::Api::OverlaysController do
       overlay = Carto::Overlay.new(type: 'text', visualization_id: params[:visualization_id])
       overlay.save
 
-      get_json api_v1_visualizations_overlays_show_url(params.merge(id: overlay.id, api_key: @user2.api_key)) do |response|
+      get_json overlay_url(params.merge(id: overlay.id, api_key: @user2.api_key)) do |response|
         response.status.should eq 401
         response.body.should be_empty
       end
     end
 
     it 'returns 401 when accessing non-existing overlay' do
-      get_json api_v1_visualizations_overlays_show_url(params.merge(id: FAKE_UUID)) do |response|
+      get_json overlay_url(params.merge(id: FAKE_UUID)) do |response|
         response.status.should eq 401
         response.body.should be_empty
       end
@@ -117,7 +117,7 @@ describe Carto::Api::OverlaysController do
         options: { "display" => true }
       }
 
-      post_json api_v1_visualizations_overlays_create_url(params), payload do |response|
+      post_json overlays_url(params), payload do |response|
         response.status.should be_success
         response.body[:id].should be
         response.body[:type].should eq payload[:type]
@@ -142,7 +142,7 @@ describe Carto::Api::OverlaysController do
         type: 'header'
       }
 
-      post_json api_v1_visualizations_overlays_create_url(params), payload do |response|
+      post_json overlays_url(params), payload do |response|
         response.status.should eq 400
         response.body[:errors].should be
       end
@@ -155,7 +155,7 @@ describe Carto::Api::OverlaysController do
         type: 'text'
       }
 
-      post_json api_v1_visualizations_overlays_create_url(params.merge(api_key: @user2.api_key)), payload do |response|
+      post_json overlays_url(params.merge(api_key: @user2.api_key)), payload do |response|
         response.status.should eq 401
         response.body.should be_empty
       end
@@ -164,7 +164,7 @@ describe Carto::Api::OverlaysController do
     end
 
     it 'returns 401 when creating overlays in non-existent viz' do
-      post_json api_v1_visualizations_overlays_create_url(params.merge(visualization_id: FAKE_UUID)) do |response|
+      post_json overlays_url(params.merge(visualization_id: FAKE_UUID)) do |response|
         response.status.should eq 401
         response.body.should be_empty
       end
@@ -183,7 +183,7 @@ describe Carto::Api::OverlaysController do
         options: { "display" => true }
       }
 
-      put_json api_v1_visualizations_overlays_update_url(params.merge(id: overlay.id)), payload do |response|
+      put_json overlay_url(params.merge(id: overlay.id)), payload do |response|
         response.status.should be_success
         response.body[:id].should be
         response.body[:type].should eq payload[:type]
@@ -210,7 +210,7 @@ describe Carto::Api::OverlaysController do
         type: 'header'
       }
 
-      put_json api_v1_visualizations_overlays_update_url(params.merge(id: overlay.id)), payload do |response|
+      put_json overlay_url(params.merge(id: overlay.id)), payload do |response|
         response.status.should eq 400
         response.body[:errors].should be
       end
@@ -227,7 +227,7 @@ describe Carto::Api::OverlaysController do
         type: 'text'
       }
 
-      put_json api_v1_visualizations_overlays_update_url(params.merge(api_key: @user2.api_key, id: overlay.id)), payload do |response|
+      put_json overlay_url(params.merge(api_key: @user2.api_key, id: overlay.id)), payload do |response|
         response.status.should eq 401
         response.body.should be_empty
       end
@@ -237,7 +237,7 @@ describe Carto::Api::OverlaysController do
     end
 
     it 'returns 401 when updating non-existing overlay' do
-      put_json api_v1_visualizations_overlays_update_url(params.merge(id: FAKE_UUID)) do |response|
+      put_json overlay_url(params.merge(id: FAKE_UUID)) do |response|
         response.status.should eq 401
         response.body.should be_empty
       end
@@ -249,7 +249,7 @@ describe Carto::Api::OverlaysController do
       overlay = Carto::Overlay.new(type: 'text', visualization_id: params[:visualization_id])
       overlay.save
 
-      delete api_v1_visualizations_overlays_destroy_url(params.merge(id: overlay.id)) do |response|
+      delete overlay_url(params.merge(id: overlay.id)) do |response|
         response.status.should be_success
       end
 
@@ -260,7 +260,7 @@ describe Carto::Api::OverlaysController do
       overlay = Carto::Overlay.new(type: 'text', visualization_id: params[:visualization_id])
       overlay.save
 
-      delete api_v1_visualizations_overlays_destroy_url(params.merge(api_key: @user2.api_key, id: overlay.id)) do |response|
+      delete overlay_url(params.merge(api_key: @user2.api_key, id: overlay.id)) do |response|
         response.status.should eq 401
         response.body.should be_empty
       end
@@ -269,7 +269,7 @@ describe Carto::Api::OverlaysController do
     end
 
     it 'returns 401 when deleting non-existent overlays' do
-      delete api_v1_visualizations_overlays_destroy_url(params.merge(id: FAKE_UUID)) do |response|
+      delete overlay_url(params.merge(id: FAKE_UUID)) do |response|
         response.status.should eq 401
         response.body.should be_empty
       end

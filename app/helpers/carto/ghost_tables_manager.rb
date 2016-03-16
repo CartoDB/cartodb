@@ -80,7 +80,7 @@ module Carto
 
           table.save
         rescue => e
-          puts e
+          CartoDB.report_exception(e, 'Error linking new table', table_name: t[:name], table_id: t[:id])
         end
       end
     end

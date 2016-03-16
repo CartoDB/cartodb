@@ -94,8 +94,8 @@ module CartoDB
           end
         end
       rescue => e
-        CartoDB::Logger.info "Problem sending notification mail"
-        CartoDB::Logger.info e
+        CartoDB::StdoutLogger.info "Problem sending notification mail"
+        CartoDB::StdoutLogger.info e
       end
     end
 

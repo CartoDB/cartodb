@@ -11,7 +11,7 @@ module Carto
     end
 
     after(:all) do
-      @user.destroy
+      ::User[@user.id].destroy
     end
 
     it 'should be consistent when no new/renamed/dropped tables' do

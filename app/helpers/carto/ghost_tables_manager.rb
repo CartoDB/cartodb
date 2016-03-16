@@ -89,16 +89,14 @@ module Carto
       syncs = CartoDB::Synchronization::Collection.new.fetch(user_id: @user.id).map(&:name).compact
 
       # Remove tables with oids that don't exist on the db
-      stale_tables.each do |user_table|
-        # Sync tables replace contents without touching metadata DB, so if method triggers meanwhile sync it will fail
-        # TODO: Flag running syncs to distinguish between deleted table syncs and running syncs
-        next if syncs.include?(user_table[:name])
-
-        table = fetch_table_for_user_table(user_table[:id])
+      # Sync tables replace contents without touching metadata DB, so if method triggers meanwhile sync it will fail
+      # TODO: Flag running syncs to distinguish between deleted table syncs and running syncs
+      stale_tables.select { |table| !syncs.include?(table[:name]) }.each do |linked_table|
+        table = fetch_table_for_user_table(linked_table[:id])
 
         next if table.nil? # TODO: Report this if buggy.
 
-        CartoDB.notify_debug('ghost tables', action: 'unlinking dropped table', dropped_table: user_table[:name])
+        CartoDB.notify_debug('ghost tables', action: 'unlinking dropped table', dropped_table: linked_table[:name])
 
         table.keep_user_database_table = true
         table.destroy

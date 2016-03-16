@@ -139,10 +139,9 @@ module Carto
 
     # May not be viewed in the editor; carotdbyfied_only
     def all_tables
-      @user.real_tables
-           .select { |table| search_for_cartodbfied_tables.include?(table[:relname]) }
-           .map    { |table| { id: table[:oid], name: table[:relname] } }
-           .compact
+      real_tables.select { |table| search_for_cartodbfied_tables.include?(table[:relname]) }
+                 .map    { |table| { id: table[:oid], name: table[:relname] } }
+                 .compact
     end
 
     # Not viewable in the editor

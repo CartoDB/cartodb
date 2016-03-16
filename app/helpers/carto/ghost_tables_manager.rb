@@ -52,7 +52,7 @@ module Carto
         next if table.nil? # UserTable hasn't been created yet; take care of it in link_new_tables
 
         begin
-          CartoDB.notify_debug('ghost tables', action: 'link renamed', renamed_table: t[:relname])
+          CartoDB.notify_debug('ghost tables', action: 'relinking renamed table', renamed_table: t[:relname])
 
           vis = table.table_visualization
           vis.register_table_only = true
@@ -68,7 +68,7 @@ module Carto
     def link_new_tables
       non_linked_tables.each do |t|
         begin
-          CartoDB.notify_debug('ghost tables', action: 'registering table', new_table: t[:name])
+          CartoDB.notify_debug('ghost tables', action: 'linking new table', new_table: t[:name])
 
           table = Table.new
 
@@ -98,7 +98,7 @@ module Carto
 
         next if table.nil? # TODO: Report this if buggy.
 
-        CartoDB.notify_debug('ghost tables', action: 'dropping table', dropped_table: user_table[:name])
+        CartoDB.notify_debug('ghost tables', action: 'unlinking dropped table', dropped_table: user_table[:name])
 
         table.keep_user_database_table = true
         table.destroy

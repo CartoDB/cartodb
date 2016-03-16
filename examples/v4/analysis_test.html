@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Easy example | CartoDB.js</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
+    <link rel="stylesheet" href="../../dist/themes/css/cartodb.css" />
+    <style>
+      html, body, #map {
+        height: 100%;
+        padding: 0;
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+
+    <!-- include cartodb.js library -->
+    <script src="../../dist/cartodb.uncompressed.js"></script>
+
+    <script>
+      function main() {
+      	var vizjson = {
+          "id":"2b13c956-e7c1-11e2-806b-5404a6a683d5",
+          "version":"0.1.0",
+          "title":"european_countries_e 0",
+          "likes":0,
+          "description":null,
+          "scrollwheel":true,
+          "legends":true,
+          "url":null,
+          "map_provider":"leaflet",
+          "bounds":[
+            [
+              -18.979025953255253,
+              -155.7421875
+            ],
+            [
+              80.58972691308571,
+              261.2109375
+            ]
+          ],
+          "center":"[52.5897007687178, 52.734375]",
+          "zoom":2,
+          "updated_at":"2015-03-13T11:24:37+00:00",
+          "datasource": {
+            "user_name": "documentation",
+            "maps_api_template": "http://{user}.cartodb.com:80",
+            "force_cors": true, // This is sometimes set in the editor,
+            "stat_tag": "84ec6844-4b4b-11e5-9c1d-080027880ca6"
+          },
+          "layers":[
+            {
+              "options":{
+                "id":"0a3d9104-99c6-482b-9f8c-7c6134bddcdc",
+                "order":0,
+                "visible":true,
+                "type":"Tiled",
+                "name":"Positron",
+                "className":"default positron_rainbow",
+                "base_type":"positron_rainbow",
+                "urlTemplate":"http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
+                "read_only":true,
+                "minZoom":"0",
+                "maxZoom":"18",
+                "attribution":"\u00a9 <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors \u00a9 <a href= \"http://cartodb.com/attributions#basemaps\">CartoDB</a>",
+                "subdomains":"abcd",
+                "category":"CartoDB"
+              },
+              "infowindow":null,
+              "tooltip":null,
+              "id":"0a3d9104-99c6-482b-9f8c-7c6134bddcdc",
+              "order":0,
+              "type":"tiled"
+            },
+            {
+              "type":"layergroup",
+              "options":{
+                "layer_definition":{
+                  "layers":[
+                    {
+                      "id":"923b7812-2d56-41c6-ac15-3ce430db090f",
+                      "type":"CartoDB",
+                      "infowindow":{
+                        "fields":[
+                          {
+                            "name":"area",
+                            "title":true,
+                            "position":0
+                          },
+                          {
+                            "name":"gmi_cntry",
+                            "title":true,
+                            "position":1
+                          },
+                          {
+                            "name":"iso_2_code",
+                            "title":true,
+                            "position":2
+                          },
+                          {
+                            "name":"iso_3_code",
+                            "title":true,
+                            "position":3
+                          },
+                          {
+                            "name":"name",
+                            "title":true,
+                            "position":4
+                          },
+                          {
+                            "name":"name_1",
+                            "title":true,
+                            "position":5
+                          },
+                          {
+                            "name":"name_12",
+                            "title":true,
+                            "position":6
+                          },
+                          {
+                            "name":"pop2005",
+                            "title":true,
+                            "position":7
+                          },
+                          {
+                            "name":"region",
+                            "title":true,
+                            "position":8
+                          }
+                        ],
+                        "template_name":"table/views/infowindow_light",
+                        "template": " " +
+                          '<div class="CDB-infowindow CDB-infowindow--custom js-infowindow" style="max-width: 200px;">' +
+                            '<div class="CDB-infowindow-container">' +
+                              '<div class="CDB-infowindow-header CDB-infowindow-headerBg CDB-infowindow-headerBg--dark" style="background: #98E0A8;">' +
+                                '<div class="CDB-infowindow-list">' +
+                                  '<div class="CDB-infowindow-listItem">' +
+                                    '<h4 class="CDB-infowindow-title">{{ name }}</h4>' +
+                                  '</div>' +
+                                '</div>' +
+                              '</div>' +
+                              '<div class="CDB-hook CDB-hook--green">' +
+                                '<div class="CDB-hook-inner" style="background: #98E0A8;">' +
+                                '</div>' +
+                              '</div>' +
+                            '</div>' +
+                          '</div>',
+                        "alternative_names":{},
+                        "width":226,
+                        "maxHeight":180
+                      },
+                      "tooltip":{
+                        "fields": [
+                          {
+                            "name": "iso_2_code",
+                            "title": true,
+                            "position": 1
+                          }
+                        ],
+                        "template_name":"tooltip_light",
+                        "template": ' '+
+                            '<div class="CDB-Tooltip CDB-Tooltip--isDark js-content">'+
+                              '<ul class="CDB-Tooltip-list">'+
+                                '{{#fields}}'+
+                                '<li class="CDB-Tooltip-listItem">'+
+                                  '<h3 class="CDB-Tooltip-listTitle">ISO CODE</h3>'+
+                                  '<h4 class="CDB-Tooltip-listText">{{value}}</h4>'+
+                                '</li>'+
+                                '{{/fields}}'+
+                              '</ul>'+
+                            '</div>',
+                        "alternative_names":{},
+                        "maxHeight":180
+                      },
+                      "legend":{
+                        "type":"choropleth",
+                        "show_title":false,
+                        "title":"",
+                        "template":"",
+                        "items":[
+                          {
+                            "name":"Left label",
+                            "visible":true,
+                            "value":"5592.00",
+                            "type":"text"
+                          },
+                          {
+                            "name":"Right label",
+                            "visible":true,
+                            "value":"1638094.00",
+                            "type":"text"
+                          },
+                          {
+                            "name":"Color",
+                            "visible":true,
+                            "value":"#FFFFB2",
+                            "type":"color"
+                          },
+                          {
+                            "name":"Color",
+                            "visible":true,
+                            "value":"#FED976",
+                            "type":"color"
+                          },
+                          {
+                            "name":"Color",
+                            "visible":true,
+                            "value":"#FEB24C",
+                            "type":"color"
+                          },
+                          {
+                            "name":"Color",
+                            "visible":true,
+                            "value":"#FD8D3C",
+                            "type":"color"
+                          },
+                          {
+                            "name":"Color",
+                            "visible":true,
+                            "value":"#FC4E2A",
+                            "type":"color"
+                          },
+                          {
+                            "name":"Color",
+                            "visible":true,
+                            "value":"#E31A1C",
+                            "type":"color"
+                          },
+                          {
+                            "name":"Color",
+                            "visible":true,
+                            "value":"#B10026",
+                            "type":"color"
+                          }
+                        ]
+                      },
+                      "order":1,
+                      "visible":true,
+                      "options":{
+                        "sql":"select * from european_countries_e",
+                        "layer_name":"european_countries_e",
+                        "cartocss":"/** choropleth visualization */\n\n#european_countries_e{\n  polygon-fill: #FFFFB2;\n  polygon-opacity: 0.8;\n  line-color: #FFF;\n  line-width: 1;\n  line-opacity: 0.5;\n}\n#european_countries_e [ area <= 1638094] {\n   polygon-fill: #B10026;\n}\n#european_countries_e [ area <= 55010] {\n   polygon-fill: #E31A1C;\n}\n#european_countries_e [ area <= 34895] {\n   polygon-fill: #FC4E2A;\n}\n#european_countries_e [ area <= 12890] {\n   polygon-fill: #FD8D3C;\n}\n#european_countries_e [ area <= 10025] {\n   polygon-fill: #FEB24C;\n}\n#european_countries_e [ area <= 9150] {\n   polygon-fill: #FED976;\n}\n#european_countries_e [ area <= 5592] {\n   polygon-fill: #FFFFB2;\n}",
+                        "cartocss_version":"2.1.1",
+                        "interactivity":"cartodb_id",
+                        "table_name":"\"\"."
+                      }
+                    }
+                  ]
+                },
+                "attribution":""
+              }
+            },
+            {
+              "options": {
+                "visible": true,
+                "type": "Tiled",
+                "default": "true",
+                "url": "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png",
+                "subdomains": "abcd",
+                "minZoom": "0",
+                "maxZoom": "18",
+                "attribution": "&copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors &copy; <a href= \"http://cartodb.com/attributions\">CartoDB</a>",
+                "urlTemplate": "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png",
+                "name": "Positron Labels",
+                "id": "bc054932-1ae8-4d4a-96d6-d49ce4247a59",
+                "className": "httpsbasemapscartocdncomlight_only_labelszxypng",
+                "order": 3
+              },
+              "infowindow": null,
+              "tooltip": null,
+              "id": "bc054932-1ae8-4d4a-96d6-d49ce4247a59",
+              "order": 3,
+              "type": "tiled"
+            }
+          ],
+          "overlays":[
+            {
+              "type":"loader",
+              "options":{
+                "display":true,
+                "x":20,
+                "y":150
+              }
+            },
+            {
+              "type":"fullscreen",
+              "options":{
+                "x":20,
+                "y":140,
+                "display":true
+              }
+            },
+            {
+              "type":"search",
+              "options":{
+                "display":true
+              }
+            },
+            {
+              "type":"zoom",
+              "options":{
+                "x":20,
+                "y":20,
+                "display":true
+              }
+            }
+          ],
+          "prev":null,
+          "next":null,
+          "transition_options":{}
+        };
+        vizjson = 'http://cdb.localhost.lan:3000/api/v3/viz/1c067608-7c8d-11e5-8366-080027880ca6/viz.json';
+        cartodb.createVis('map', vizjson, {
+          apiKey: '5379c33c4aa784f37edca9c6f3c29cebd0004088'
+        })
+        .done(function(vis, layers) {
+
+
+var tableName = 'arboles'
+
+var analysis = vis.analysis.analyse({
+  id: 'a1',
+  type: 'trade-area',
+  params: {
+    source: {
+      id: 'a0',
+      type: 'source',
+      params: {
+        query: 'select * from ' + tableName
+      }
+    },
+    kind: 'walk',
+    time: 600
+  }
+});
+
+var cartocss = [
+    "#points['mapnik::geometry_type'=1] {",
+    "  marker-fill-opacity: 1;",
+    "  marker-line-color: #FFF;",
+    "  marker-line-width: 0.5;",
+    "  marker-line-opacity: 1;",
+    "  marker-placement: point;",
+    "  marker-type: ellipse;",
+    "  marker-width: 8;",
+    "  marker-fill: #FABADA;",
+    "  marker-allow-overlap: true;",
+    "}",
+    "#lines['mapnik::geometry_type'=2] {",
+    "  line-color: #000000;",
+    "  line-width: 2;",
+    "  line-opacity: 1;",
+    "}",
+    "#polygons['mapnik::geometry_type'=3] {",
+    "  polygon-fill: #FABADA;",
+    "  polygon-opacity: 1;",
+    "  line-color: #FFF;",
+    "  line-width: 0.5;",
+    "  line-opacity: 1;",
+    "}"
+].join('\n')
+
+var cartodblayer = vis.map.layers.at(1);
+
+cartodblayer.set({
+  source: analysis,  
+  cartocss: cartocss
+});
+
+// var attrs = cartodblayer.attributes;
+// attrs.id = 'wadus';
+
+// vis.map.createCartoDBLayer(attrs, {
+//   silent: true
+// });
+
+
+          
+        })
+        .error(function(err) {
+          console.log(err);
+        });
+      }
+
+      window.onload = main;
+
+    </script>
+  </body>
+</html>

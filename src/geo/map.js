@@ -1,4 +1,4 @@
-var $ = require('jQuery');
+var $ = require('jquery');
 var _ = require('underscore');
 var L = require('leaflet');
 var Backbone = require('backbone');

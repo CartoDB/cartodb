@@ -34,7 +34,7 @@ module Carto
       non_linked_tables.empty? && stale_tables.empty?
     end
 
-    # checks if bad tables are linked (deleted or renamed)
+    # checks if sql-api deleted/renamed tables that are still linked
     def has_stale_linked_tables?
       !stale_tables.empty?
     end
@@ -109,7 +109,6 @@ module Carto
 
     # this method searchs for tables with all the columns needed in a cartodb table.
     # it does not check column types, and only the latest cartodbfication trigger attached (test_quota_per_row)
-    # returns the list of tables in the database with those columns but not in metadata database
     def search_for_cartodbfied_tables
       required_columns = Table::CARTODB_REQUIRED_COLUMNS + [Table::THE_GEOM_WEBMERCATOR]
       cartodb_columns = required_columns.map { |t| "'#{t}'" }.join(',')

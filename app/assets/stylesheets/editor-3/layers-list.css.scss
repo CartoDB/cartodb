@@ -1,0 +1,137 @@
+// Styles for Layer List
+// --------------------------------------------------
+
+@import 'cdb-utilities/mixins';
+@import 'cdb-variables/sizes';
+@import 'cdb-variables/colors';
+
+.Editor-ListLayer-item {
+  width: auto;
+  margin-bottom: $baseSize;
+  padding: $baseSize * 2;
+  border: 1px solid $cSecondaryLine;
+  border-radius: $halfBaseSize;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.Editor-ListLayer-media {
+  @include display-flex();
+  @include align-items(center);
+  @include justify-content(center);
+  width: 40px;
+  height: 40px;
+  border-radius: $baseSize / 2;
+}
+.Editor-ListLayer-media--basemap {
+  border: 1px solid $cMainLine;
+}
+
+.Editor-ListLayer-media.is-hide {
+  opacity: 0.24;
+}
+
+.Editor-ListLayer-Title {
+  @include display-flex();
+  @include align-items(center);
+}
+
+.Editor-ListLayer-TitleText {
+  @include flex(1);
+  width: 0;
+  padding-right: $baseSize * 2;
+}
+
+.Editor-ListAnalysis {
+  position: relative;
+  margin-top: 16px;
+}
+
+.Editor-ListAnalysis::before {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 20px;
+  width: 1px;
+  background: $cMainLine;
+  content: '';
+  z-index: -1;
+}
+
+.Editor-ListAnalysis-item {
+  @include display-flex();
+  @include align-items(center);
+  margin-bottom: 8px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  &.is-analysis {
+    display: block;
+    margin-right: 0;
+  }
+}
+
+.Editor-ListAnalysis-inner {
+  @include display-flex();
+  margin: 0 -4px;
+}
+
+.Editor-ListAnalysis-innerItem {
+  @include display-flex();
+  @include flex(1);
+  @include align-items(center);
+  margin: 0 $halfBaseSize;
+  background: $cWhite;
+  overflow: hidden;
+}
+
+.Editor-ListAnalysis-layer {
+  padding-right: 12px;
+  border: 1px solid $cSecondaryLine;
+  border-radius: $halfBaseSize;
+
+  &.is-base {
+    background: $cThirdBackground;
+  }
+}
+
+.Editor-ListAnalysis-itemInfo {
+  @include display-flex();
+  @include justify-content(center);
+  @include align-items(center);
+  width: 40px;
+  min-width: 40px;
+  height: 32px;
+  margin-top: -1px;
+  margin-bottom: -1px;
+  margin-left: -1px;
+  border-top-left-radius: $halfBaseSize;
+  border-bottom-left-radius: $halfBaseSize;
+}
+
+.Editor-ListAnalysis-title {
+  width: 100%;
+  padding-right: 12px;
+}
+
+.Editor-ListAnalysis-error {
+  width: 6px;
+  min-width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: $cError;
+}
+
+.Editor-ListLayer-itemHeader {
+  @include display-flex();
+  @include flex(1);
+  @include align-items(center);
+}
+
+.Editor-ListLayer-Inner {
+  @include flex(1);
+}

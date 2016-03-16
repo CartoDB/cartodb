@@ -1,14 +1,26 @@
-<div class="BlockList-media u-rSpace--xl">
-  <%- letter %>
-</div>
-<div class="BlockList-inner">
-  <div class="BlockList-Title u-bSpace">
-    <h2 class="BlockList-TitleText CDB-Text CDB-Size-large u-ellipsis"><%- title %></h2>
-    <div class="CDB-HeaderInfo-Actions">
-      <button class="CDB-Shape js-remove">
-        <div class="CDB-Shape-close is-blue is-large"></div>
-      </button>
-    </div>
+<div class="Editor-ListLayer-itemHeader">
+  <div class="Editor-ListLayer-media u-rSpace--m" style="background: #E27D61; color: #fff">
+    <p class="CDB-Text CDB-Size-large is-semibold"><%- letter %></p>
   </div>
-  <p class="CDB-Text CDB-Size-medium u-secondaryTextColor js-analysis"></p>
+  <div class="Editor-ListLayer-Inner">
+    <div class="Editor-ListLayer-Title">
+      <h2 class="Editor-ListLayer-TitleText CDB-Text CDB-Size-large u-ellipsis"><%- title %></h2>
+      <ul class="Editor-HeaderInfo-Actions">
+        <li class="Editor-HeaderInfo-ActionsItem CDB-Shape">
+          <div class="CDB-ArrowToogle is-blue is-small"></div>
+        </li>
+        <li class="Editor-HeaderInfo-ActionsItem CDB-Shape">
+          <button class="CDB-Shape-threePoints is-blue is-small">
+            <div class="CDB-Shape-threePointsItem"></div>
+            <div class="CDB-Shape-threePointsItem"></div>
+            <div class="CDB-Shape-threePointsItem"></div>
+          </button>
+        </li>
+      </ul>
+    </div>
+    <button class="CDB-Text CDB-Size-small u-actionTextColor ">
+      ADD ANALYSIS
+    </button>
+  </div>
 </div>
+<ul class="Editor-ListAnalysis js-analysis"></ul>

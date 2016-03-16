@@ -20,7 +20,8 @@ describe CartoDB::TableRegistrar do
     before(:each) do
       @data_import = FactoryGirl.create(:data_import, user_id: @user.id)
 
-      @external_data_import = FactoryGirl.create(:external_data_import_with_external_source, data_import_id: @data_import.id)
+      @external_data_import = FactoryGirl.create(:external_data_import_with_external_source,
+                                                 data_import_id: @data_import.id)
       @external_data_import.external_source.visualization.description = description
       @external_data_import.external_source.visualization.source = source
       @external_data_import.external_source.visualization.attributions = attributions

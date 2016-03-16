@@ -30,7 +30,7 @@ module CartoDB
       end
 
       def get_overlay_by_type(t)
-        @visualization.overlays.detect { |oo| oo.type == t }
+        @visualization.overlays.find { |o| o.type == t }
       end
 
       def create_overlays_from_url_options(url_options)
@@ -94,13 +94,6 @@ module CartoDB
               end
               map_updated = true
             end
-
-            # when :zoom
-            # when :center_lat
-            # when :center_lon
-            #
-            # not parsed, already stored in layers visible option
-            # when :sublayer_options
           end
         end
       end
@@ -108,15 +101,13 @@ module CartoDB
       def create_logo_overlay(member, order)
         options = { display: true, x: 10, y: 40 }
 
-        member = Carto::Overlay.new(
+        Carto::Overlay.new(
           order: order,
           type: "logo",
           template: '',
           options: options,
           visualization_id: member.id
-        )
-
-        member.save
+        ).save
       end
 
       def generate_overlay(id, options, type, order)
@@ -132,67 +123,62 @@ module CartoDB
       def create_loader_overlay(member, order)
         options = { display: true, x: 20, y: 150 }
 
-        member = Carto::Overlay.new(
+        Carto::Overlay.new(
           order: order,
           type: "loader",
           template: '<div class="loader" original-title=""></div>',
           options: options,
           visualization_id: member.id
-        )
-
-        member.save
+        ).save
       end
 
       def create_zoom_overlay(member, order)
         options = { display: true, x: 20, y: 20 }
 
-        member = Carto::Overlay.new(
+        Carto::Overlay.new(
           order: order,
           type: "zoom",
           template: '<a href="#zoom_in" class="zoom_in">+</a> <a href="#zoom_out" class="zoom_out">-</a>',
           options: options,
           visualization_id: member.id
-        )
-
-        member.save
+        ).save
       end
 
       def create_fullscreen_overlay(member, order)
         options = { display: false, x: 20, y: 172 }
 
-        member = generate_overlay(member.id, options, "fullscreen", order)
-        member.save
+        generate_overlay(member.id, options, "fullscreen", order).save
       end
 
       def create_share_overlay(member, order)
         options = { display: true, x: 20, y: 20 }
 
-        member = generate_overlay(member.id, options, "share", order)
-        member.save
+        generate_overlay(member.id, options, "share", order).save
       end
 
       def create_search_overlay(member, order)
         options = { display: true, x: 60, y: 20 }
 
-        member = generate_overlay(member.id, options, "search", order)
-        member.save
+        generate_overlay(member.id, options, "search", order).save
       end
 
       def create_layer_selector_overlay(member, order)
         options = { display: false, x: 212, y: 20 }
 
-        member = generate_overlay(member.id, options, "layer_selector", order)
-        member.save
+        generate_overlay(member.id, options, "layer_selector", order).save
       end
 
       def create_header_overlay(member, order, show_title = false, show_description = false)
         options = {
           display: false,
-          extra: { title: member.name, description: member.description, show_title: show_title, show_description: show_description }
+          extra: { title:            member.name,
+                   description:      member.description,
+                   show_title:       show_title,
+                   show_description: show_description
+                }
         }
 
-        member = generate_overlay(member.id, options, "header", order)
-        member.save
+        generate_overlay(member.id, options, "header", order).save
       end
     end
   end

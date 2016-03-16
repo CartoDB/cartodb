@@ -196,6 +196,7 @@ describe('src/vis/vizjson', function () {
   describe('.enforceGMapsBaseLayer', function () {
     it('should replace the existing base layer by a GMaps one', function () {
       var vizjson = new VizJSON({
+        map_provider: VizJSON.MAP_PROVIDER_TYPES.LEAFLET,
         layers: [{
           options: {
             type: 'Tiled',
@@ -222,10 +223,43 @@ describe('src/vis/vizjson', function () {
           style: {color: 'blue'}
         }
       });
+      expect(vizjson.map_provider).toEqual(VizJSON.MAP_PROVIDER_TYPES.GMAPS)
+    });
+
+    it('should NOT replace the existing base layer by a GMaps one if map_provider is not leaflet', function () {
+      var vizjson = new VizJSON({
+        map_provider: 'something'
+        layers: [{
+          options: {
+            type: 'Tiled',
+            url: 'http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png',
+            name: 'Positron',
+            className: 'httpsbasemapscartocdncomlight_nolabelszxypng',
+            attribution: '&copy; <a href=\'http://www.openstreetmap.org/copyright\'>OpenStreetMap</a> contributors &copy; <a href= \'http://cartodb.com/attributions\'>CartoDB</a>',
+            urlTemplate: 'http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png'
+          }
+        }]
+      });
+
+      vizjson.enforceGMapsBaseLayer('roadmap', { color: 'blue' });
+
+      expect(vizjson.layers[0]).toEqual({
+        options: {
+          type: 'Tiled',
+          url: 'http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png',
+          name: 'Positron',
+          className: 'httpsbasemapscartocdncomlight_nolabelszxypng',
+          attribution: '&copy; <a href=\'http://www.openstreetmap.org/copyright\'>OpenStreetMap</a> contributors &copy; <a href= \'http://cartodb.com/attributions\'>CartoDB</a>',
+          urlTemplate: 'http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png'
+        }
+      });
+
+      expect(vizjson.map_provider).toEqual('something');
     });
 
     it('should NOT replace the existing base layer by a GMaps one if the given type is not valid', function () {
       var vizjson = new VizJSON({
+        map_provider: VizJSON.MAP_PROVIDER_TYPES.LEAFLET,
         layers: [{
           options: {
             type: 'Tiled',
@@ -250,6 +284,8 @@ describe('src/vis/vizjson', function () {
           urlTemplate: 'http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png'
         }
       });
+
+      expect(vizjson.map_provider).toEqual(VizJSON.MAP_PROVIDER_TYPES.LEAFLET);
     });
   });
 

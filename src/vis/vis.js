@@ -413,7 +413,7 @@ var Vis = View.extend({
       ]);
     }
 
-    if (vizjson.map_provider === 'leaflet' && options.gmaps_base_type) {
+    if (options.gmaps_base_type) {
       vizjson.enforceGMapsBaseLayer(options.gmaps_base_type, options.gmaps_style);
     }
   },

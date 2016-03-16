@@ -23,6 +23,11 @@ VizJSON.OVERLAY_TYPES = {
   LAYER_SELECTOR: 'layer_selector'
 };
 
+VizJSON.MAP_PROVIDER_TYPES = {
+  GMAPS: 'googlemaps',
+  LEAFLET: 'leaflet'
+}
+
 VizJSON.prototype.hasZoomOverlay = function () {
   return this.hasOverlay(VizJSON.OVERLAY_TYPES.ZOOM);
 };
@@ -101,7 +106,8 @@ VizJSON.prototype._addAttributionOverlay = function () {
 };
 
 VizJSON.prototype.enforceGMapsBaseLayer = function (gmapsBaseType, gmapsStyle) {
-  if (_.contains(GMAPS_BASE_LAYER_TYPES, gmapsBaseType)) {
+  var isGmapsBaseTypeValid = _.contains(GMAPS_BASE_LAYER_TYPES, gmapsBaseType);
+  if (this.map_provider === VizJSON.MAP_PROVIDER_TYPES.LEAFLET && isGmapsBaseTypeValid) {
     if (this.layers) {
       this.layers[0].options.type = 'GMapsBase';
       this.layers[0].options.base_type = gmapsBaseType;
@@ -111,7 +117,7 @@ VizJSON.prototype.enforceGMapsBaseLayer = function (gmapsBaseType, gmapsStyle) {
         this.layers[0].options.style = typeof gmapsStyle === 'string' ? JSON.parse(gmapsStyle) : gmapsStyle;
       }
 
-      this.map_provider = 'googlemaps';
+      this.map_provider = VizJSON.GMAPS_BASE_LAYER_TYPES.GMAPS;
       this.layers[0].options.attribution = ''; // GMaps has its own attribution
     } else {
       log.error('No base map loaded. Using Leaflet.');

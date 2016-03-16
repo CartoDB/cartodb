@@ -10,66 +10,77 @@ module Carto
       @ghost_tables_manager = Carto::GhostTablesManager.new(@user.id)
     end
 
+    before(:each) do
+      bypass_named_maps
+    end
+
     after(:all) do
       ::User[@user.id].destroy
     end
 
+    def run_in_user_database(query)
+      ::User[@user.id].in_database.run(query)
+    end
+
     it 'should be consistent when no new/renamed/dropped tables' do
-      @ghost_tables_manager.consistent?.should be true
+      @ghost_tables_manager.consistent?.should be_true
     end
 
-    it 'should be inconsistent when renamed/dropped tables' do
-      @ghost_tables_manager.stubs(:stale_tables).returns [id: 3, name: 'ManoloEscobar']
+    it 'should link sql created table, relink sql renamed tables and unlink sql dropped tables' do
+      run_in_user_database(%{
+        CREATE TABLE manoloescobar ("description" text);
+        SELECT * FROM CDB_CartodbfyTable('manoloescobar');
+      })
 
-      @ghost_tables_manager.consistent?.should be false
-    end
-
-    it 'should be inconsistent when new tables' do
-      @ghost_tables_manager.stubs(:non_linked_tables).returns [id: 5, name: 'ManoloEscobar']
-
-      @ghost_tables_manager.consistent?.should be false
-    end
-
-    it 'should relink renamed tables' do
-      @ghost_tables_manager.stubs(:all_tables).returns [{ id: 1, name: 'ManoloEscobar' }]
-      @ghost_tables_manager.stubs(:non_linked_tables).returns [{ id: 1, name: 'ManoloEscobar' }]
-
-      table = Table.new
-
-      vis = ::Visualization::Member.new(privacy: 'private',
-                                        name: '_escobar',
-                                        user_id: UUIDTools::UUID.timestamp_create.to_s,
-                                        type: 'carto')
-
-      vis.stubs(:store)
-      @ghost_tables_manager.stubs(:fetch_table_for_user_table).returns table
-      table.stubs(:table_visualization).returns vis
-
-      vis.expects(:name=).with('ManoloEscobar').once
+      @user.tables.count.should eq 0
+      @ghost_tables_manager.consistent?.should be_false
 
       @ghost_tables_manager.link
-    end
+      @ghost_tables_manager.consistent?.should be_true
 
-    it 'should link new tables' do
-      @ghost_tables_manager.stubs(:all_tables).returns [{ id: 1, name: 'ManoloEscobar' }, { id: 2, name: '_escobar' }]
-      @ghost_tables_manager.stubs(:non_linked_tables)
-                           .returns [{ id: 1, name: 'ManoloEscobar' }, { id: 2, name: '_escobar' }]
+      @user.tables.count.should eq 1
+      @user.tables.first.name.should == 'manoloescobar'
 
-      Table.any_instance.expects(:name=).with('ManoloEscobar').once
-      Table.any_instance.expects(:name=).with('_escobar').once
-      ::Visualization::Member.any_instance.expects(:name=).never
+      run_in_user_database(%{
+        ALTER TABLE manoloescobar RENAME TO escobar;
+      })
 
-      @ghost_tables_manager.link
-    end
-
-    it 'should unlink dropped tables' do
-      @ghost_tables_manager.stubs(:stale_tables).returns [{ id: 1, name: 'ManoloEscobar' }, { id: 2, name: '_escobar' }]
-      @ghost_tables_manager.stubs(:fetch_table_for_user_table).with(1).returns Table.new
-      @ghost_tables_manager.stubs(:fetch_table_for_user_table).with(2).returns Table.new
-
-      Table.any_instance.expects(:destroy).twice
+      @user.tables.count.should eq 1
+      @ghost_tables_manager.consistent?.should be_false
 
       @ghost_tables_manager.link
+      @ghost_tables_manager.consistent?.should be_true
+
+      @user.tables.count.should eq 1
+      @user.tables.first.name.should == 'escobar'
+
+      run_in_user_database(%{
+        DROP TABLE escobar;
+      })
+
+      @user.tables.count.should eq 1
+      @ghost_tables_manager.consistent?.should be_false
+
+      @ghost_tables_manager.link
+      @ghost_tables_manager.consistent?.should be_true
+
+      @user.tables.count.should eq 0
+    end
+
+    it 'should not link non cartodbyfied tables' do
+      run_in_user_database(%{
+        CREATE TABLE manoloescobar ("description" text);
+      })
+
+      @user.tables.count.should eq 0
+      @ghost_tables_manager.consistent?.should be_true
+
+      run_in_user_database(%{
+        DROP TABLE manoloescobar;
+      })
+
+      @user.tables.count.should eq 0
+      @ghost_tables_manager.consistent?.should be_true
     end
   end
 end

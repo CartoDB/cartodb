@@ -1326,7 +1326,7 @@ class Table
     @user_table.
       try(:data_import).
       try(:external_data_imports).
-      first.
+      try(:first).
       try(:external_source).
       try(:visualization)
   end

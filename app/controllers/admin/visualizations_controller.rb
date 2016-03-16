@@ -619,9 +619,13 @@ class Admin::VisualizationsController < Admin::AdminController
   def get_visualization_and_table(table_id, schema, filter)
     user = Carto::User.where(username: schema).first
     # INFO: organization public visualizations
-    user_id = user ? user.id : nil
-
-    visualization = get_priority_visualization(table_id, user_id)
+    if user
+      visualization = get_priority_visualization(table_id, user_id: user.id)
+    else
+      organization = Carto::Organization.where(name: schema).first
+      organization_id = organization.id unless organization.nil?
+      visualization = get_priority_visualization(table_id, organization_id: organization_id)
+    end
 
     return get_visualization_and_table_from_table_id(table_id) if visualization.nil?
     render_pretty_404 if visualization.kind == CartoDB::Visualization::Member::KIND_RASTER

@@ -88,7 +88,6 @@ class Carto::VisualizationQueryBuilder
   end
 
   def with_user_id(user_id)
-    CartoDB.notify_debug("with_user_id with nil user_id", caller: caller.take(25)) unless user_id
     @user_id = user_id
     self
   end
@@ -191,6 +190,10 @@ class Carto::VisualizationQueryBuilder
 
   def build
     query = Carto::Visualization.scoped
+
+    unless @id || @user_id
+      CartoDB.notify_debug("VQB query without viz_id nor user_id", stack: caller.take(25))
+    end
 
     if @id
       query = query.where(id: @id)

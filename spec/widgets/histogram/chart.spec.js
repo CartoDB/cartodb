@@ -77,6 +77,25 @@ describe('widgets/histogram/chart', function () {
     expect(this.view.$el.attr('style')).toMatch('none');
   });
 
+  describe('normalize', function () {
+    it('should normalize', function () {
+      spyOn(this.view, 'updateYScale');
+      this.view.setNormalized(true);
+      expect(this.view.model.get('show_shadow_bars')).toEqual(false);
+      expect(this.view.model.get('normalized')).toEqual(true);
+      expect(this.view.updateYScale).toHaveBeenCalled();
+      expect(this.view.refresh).toHaveBeenCalled();
+    });
+    it('should denormalize', function () {
+      spyOn(this.view, 'updateYScale');
+      this.view.setNormalized(false);
+      expect(this.view.model.get('show_shadow_bars')).toEqual(true);
+      expect(this.view.model.get('normalized')).toEqual(false);
+      expect(this.view.updateYScale).toHaveBeenCalled();
+      expect(this.view.refresh).toHaveBeenCalled();
+    });
+  });
+
   describe('shadow bars', function () {
     it('should not show shadow bars', function () {
       this.view.options.displayShadowBars = false;

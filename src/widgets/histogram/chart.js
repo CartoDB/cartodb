@@ -176,6 +176,12 @@ module.exports = cdb.core.View.extend({
     this.selectRange(loBarIndex, hiBarIndex);
   },
 
+  _onChangeNormalized: function () {
+    this.model.set('show_shadow_bars', !this.model.get('normalized'));
+    this.updateYScale();
+    this.refresh();
+  },
+
   _onChangeHeight: function () {
     var height = this.model.get('height');
 
@@ -440,7 +446,8 @@ module.exports = cdb.core.View.extend({
       show_shadow_bars: this.options.displayShadowBars,
       margin: _.clone(this.options.margin),
       width: 0, // will be set on resize listener
-      pos: { x: 0, y: 0 }
+      pos: { x: 0, y: 0 },
+      normalized: this.options.normalized
     });
   },
 
@@ -456,6 +463,7 @@ module.exports = cdb.core.View.extend({
     this.model.bind('change:showLabels', this._onChangShowLabels, this);
     this.model.bind('change:show_shadow_bars', this._onChangeShowShadowBars, this);
     this.model.bind('change:width', this._onChangeWidth, this);
+    this.model.bind('change:normalized', this._onChangeNormalized, this);
 
     if (this._originalData) {
       this._originalData.on('change:data', function () {
@@ -478,7 +486,7 @@ module.exports = cdb.core.View.extend({
 
   _getYScale: function () {
     var data = (this._originalData && this._originalData.getData()) || this.model.get('data');
-    if (this.options.normalized) {
+    if (this.model.get('normalized')) {
       data = this.model.get('data');
     }
     return d3.scale.linear().domain([0, d3.max(data, function (d) { return _.isEmpty(d) ? 0 : d.freq; })]).range([this.chartHeight(), 0]);
@@ -508,7 +516,7 @@ module.exports = cdb.core.View.extend({
     var data = this._getDataForScales();
     this.updateXScale();
 
-    if (!this._originalYScale || this.options.normalized) {
+    if (!this._originalYScale || this.model.get('normalized')) {
       this._originalYScale = this.yScale = this._getYScale();
     }
 
@@ -619,6 +627,11 @@ module.exports = cdb.core.View.extend({
 
   resizeHeight: function (height) {
     this.model.set('height', height);
+  },
+
+  setNormalized: function (normalized) {
+    this.model.set('normalized', !!normalized);
+    return this;
   },
 
   removeSelection: function () {

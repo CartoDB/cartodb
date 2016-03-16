@@ -168,7 +168,7 @@ module Carto
       end
     end
 
-    # Grabs the Table associated with a UserTable identified by it's table_id. Also reports duplicate UserTables.
+    # Grabs the Table associated with a UserTable identified by its table_id. Also reports duplicate UserTables.
     def fetch_table_for_user_table(table_id)
       user_tables = ::UserTable.where(table_id: table_id, user_id: @user.id)
 

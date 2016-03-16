@@ -3,7 +3,7 @@
 </div>
 <div class="BlockList-inner">
   <div class="BlockList-Title u-bSpace">
-    <h2 class="BlockList-TitleText CDB-Text CDB-Size-large u-ellipsis"><%- title %></h2>
+    <h2 class="BlockList-TitleText CDB-Text CDB-Size-large u-ellipsis js-title"><%- title %></h2>
     <div class="CDB-HeaderInfo-Actions">
       <button class="CDB-Shape js-remove">
         <div class="CDB-Shape-close is-blue is-large"></div>

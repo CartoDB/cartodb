@@ -18,7 +18,7 @@ module Carto
         # Lock aquired, inside the critical zone
 
         # NOTE: Order DOES matter, FIRST renamed, THEN new and deleted LAST
-        unless all_tables.blank?
+        unless non_linked_tables.empty?
           relink_renamed_tables
           link_new_tables
         end

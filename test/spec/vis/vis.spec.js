@@ -77,8 +77,7 @@ describe('vis/vis', function () {
     };
     this.vis.load(this.mapConfig, opts);
 
-    expect(this.mapConfig.center[0]).toEqual(43.3);
-    expect(this.mapConfig.center[1]).toEqual(89.0);
+    expect(this.vis.map.get('center')).toEqual([43.3, 89.0]);
   });
 
   it('should not parse center if values are not correct', function () {
@@ -89,8 +88,7 @@ describe('vis/vis', function () {
     };
     this.vis.load(this.mapConfig, opts);
 
-    expect(this.mapConfig.center[0]).not.toEqual(43.3);
-    expect(this.mapConfig.center[1]).not.toEqual('ham');
+    expect(this.vis.map.get('center')).toEqual([40.044, -101.95]);
   });
 
   it('should parse bounds values if they are correct', function () {
@@ -103,10 +101,8 @@ describe('vis/vis', function () {
     };
     this.vis.load(this.mapConfig, opts);
 
-    expect(this.mapConfig.bounds[0][0]).toEqual(43.3);
-    expect(this.mapConfig.bounds[0][1]).toEqual(12);
-    expect(this.mapConfig.bounds[1][0]).toEqual(12);
-    expect(this.mapConfig.bounds[1][1]).toEqual(0);
+    expect(this.vis.map.get('view_bounds_sw')).toEqual([43.3, 12]);
+    expect(this.vis.map.get('view_bounds_ne')).toEqual([12, 0]);
   });
 
   it('should not parse bounds values if they are not correct', function () {
@@ -119,10 +115,8 @@ describe('vis/vis', function () {
     };
     this.vis.load(this.mapConfig, opts);
 
-    expect(this.mapConfig.bounds[0][0]).not.toEqual(43.3);
-    expect(this.mapConfig.bounds[0][1]).not.toEqual(12);
-    expect(this.mapConfig.bounds[1][0]).not.toEqual(12);
-    expect(this.mapConfig.bounds[1][1]).not.toEqual(0);
+    expect(this.vis.map.get('view_bounds_sw')).toEqual([1, 2]);
+    expect(this.vis.map.get('view_bounds_ne')).toEqual([3, 4]);
   });
 
   it('should create a google maps map when provider is google maps', function () {
@@ -157,7 +151,6 @@ describe('vis/vis', function () {
     vis.load(this.mapConfig);
     $(window).trigger('resize');
     expect(vis._onResize).toHaveBeenCalled();
-    expect(vis.mapConfig).toBeDefined();
   });
 
   it("shouldn't bind resize changes when map height is greater than 0", function () {
@@ -376,18 +369,10 @@ describe('vis/vis', function () {
       expect(this.vis.mapView.invalidateSize).toHaveBeenCalled();
     });
 
-    it('should set map bounds again', function () {
-      spyOn(this.vis.map, 'setBounds');
+    it('should re-center the map', function () {
+      spyOn(this.vis.map, 'reCenter');
       this.vis.centerMapToOrigin();
-      expect(this.vis.map.setBounds).toHaveBeenCalled();
-    });
-
-    it('should set center if bounds are undefined', function () {
-      delete this.vis.mapConfig.view_bounds_ne;
-      delete this.vis.mapConfig.view_bounds_sw;
-      spyOn(this.vis.map, 'setCenter');
-      this.vis.centerMapToOrigin();
-      expect(this.vis.map.setCenter).toHaveBeenCalled();
+      expect(this.vis.map.reCenter).toHaveBeenCalled();
     });
   });
 

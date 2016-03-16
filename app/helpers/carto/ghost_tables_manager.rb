@@ -3,7 +3,7 @@
 module Carto
   class GhostTablesManager
     MUTEX_REDIS_KEY = 'ghost_tables_working'.freeze
-    MUTEX_TTL = 2000
+    MUTEX_TTL_MS = 2000
 
     def initialize(user_id)
       @user = ::User.where(id: user_id).first
@@ -12,7 +12,7 @@ module Carto
     def link
       bolt = Redlock::Client.new(["redis://#{Cartodb.config[:redis]['host']}:#{Cartodb.config[:redis]['port']}"])
 
-      bolt.lock(mutex_redis_key, MUTEX_TTL) do |locked|
+      bolt.lock(mutex_redis_key, MUTEX_TTL_MS) do |locked|
         next unless locked
 
         # Lock aquired, inside the critical zone

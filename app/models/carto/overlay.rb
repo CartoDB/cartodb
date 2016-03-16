@@ -42,10 +42,11 @@ module Carto
     def unique_overlay_not_duplicated
       vis = visualization
       if vis && UNIQUE_TYPES.include?(type)
-        vis.overlays.each do |overlay|
-          if (new_record? || overlay.id != id) && overlay.type == type
-            errors.add(:base, "Unique overlay of type #{type} already exists")
-          end
+        other_overlay = Carto::Overlay.where(visualization_id: visualization_id, type: type)
+        other_overlay = other_overlay.where('id != ?', id) unless new_record?
+
+        unless other_overlay.first.nil?
+          errors.add(:base, "Unique overlay of type #{type} already exists")
         end
       end
     rescue KeyError

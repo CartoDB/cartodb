@@ -491,7 +491,7 @@ class Admin::VisualizationsController < Admin::AdminController
   def resolve_visualization_and_table
     filters = { exclude_raster: true }
     @visualization, @table =
-      get_visualization_and_table(@table_id, @schema || CartoDB.extract_subdomain(request), filters)
+      get_visualization_and_table(@table_id, username_from_schema || CartoDB.extract_subdomain(request), filters)
     if @visualization && @visualization.user
       @more_visualizations = more_visualizations(@visualization.user, @visualization)
     end
@@ -539,6 +539,10 @@ class Admin::VisualizationsController < Admin::AdminController
       end
     end
     url
+  end
+
+  def username_from_schema
+    (@schema && @schema != 'public') ? @schema : nil
   end
 
   def table_and_schema_from_params

@@ -49,13 +49,14 @@ module.exports = cdb.core.View.extend({
 
     this._widgets.bind('add', this._maybeRenderWidgetView, this);
     this._widgets.bind('reset', this.render, this);
+    this._widgets.bind('orderChanged', this.render, this);
     this._widgets.bind('change:collapsed', this._onWidgetCollapsed, this);
     this._widgets.bind('add remove reset', this._onUpdate, this); // have to be called _after_ any other add/remove/reset
     this.add_related_model(this._widgets);
   },
 
   render: function () {
-    this._cleanScrollEvent();
+    this._cleanScroll();
     this.clearSubViews();
 
     this.$el.html(template());
@@ -130,9 +131,10 @@ module.exports = cdb.core.View.extend({
     this.$shadowBottom.removeClass('is-visible');
   },
 
-  _cleanScrollEvent: function () {
-    if (this._$container()) {
+  _cleanScroll: function () {
+    if (this._container()) {
       this._$container().off('ps-scroll-y');
+      Ps.destroy(this._container());
     }
   },
 
@@ -141,7 +143,7 @@ module.exports = cdb.core.View.extend({
   },
 
   clean: function () {
-    this._cleanScrollEvent();
+    this._cleanScroll();
     cdb.core.View.prototype.clean.call(this);
   }
 

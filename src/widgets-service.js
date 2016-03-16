@@ -31,7 +31,7 @@ WidgetsService.prototype.createCategoryModel = function (attrs, layer) {
 
   var dataviewModel = this._dataviews.createCategoryModel(layer, attrs);
 
-  var attrsNames = ['id', 'title', 'collapsed', 'prefix', 'suffix', 'show_stats'];
+  var attrsNames = ['id', 'title', 'order', 'collapsed', 'prefix', 'suffix', 'show_stats'];
   var widgetAttrs = _.pick(attrs, attrsNames);
   widgetAttrs.attrsNames = attrsNames;
 
@@ -56,7 +56,7 @@ WidgetsService.prototype.createHistogramModel = function (attrs, layer) {
 
   var dataviewModel = this._dataviews.createHistogramModel(layer, attrs);
 
-  var attrsNames = ['id', 'title', 'collapsed', 'bins', 'show_stats', 'normalized'];
+  var attrsNames = ['id', 'title', 'order', 'collapsed', 'bins', 'show_stats', 'normalized'];
   var widgetAttrs = _.pick(attrs, attrsNames);
   widgetAttrs.type = 'histogram';
   widgetAttrs.attrsNames = attrsNames;
@@ -82,7 +82,7 @@ WidgetsService.prototype.createFormulaModel = function (attrs, layer) {
 
   var dataviewModel = this._dataviews.createFormulaModel(layer, attrs);
 
-  var attrsNames = ['id', 'title', 'collapsed', 'prefix', 'suffix', 'show_stats', 'description'];
+  var attrsNames = ['id', 'title', 'order', 'collapsed', 'prefix', 'suffix', 'show_stats', 'description'];
   var widgetAttrs = _.pick(attrs, attrsNames);
   widgetAttrs.type = 'formula';
   widgetAttrs.attrsNames = attrsNames;
@@ -108,7 +108,7 @@ WidgetsService.prototype.createListModel = function (attrs, layer) {
 
   var dataviewModel = this._dataviews.createListModel(layer, attrs);
 
-  var attrsNames = ['id', 'title', 'columns_title', 'show_stats'];
+  var attrsNames = ['id', 'title', 'order', 'columns_title', 'show_stats'];
   var widgetAttrs = _.pick(attrs, attrsNames);
   widgetAttrs.type = 'list';
   widgetAttrs.attrsNames = attrsNames;

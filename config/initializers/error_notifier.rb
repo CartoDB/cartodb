@@ -42,11 +42,19 @@ module CartoDB
   end
 
   def self.log(level, exception: nil, message: nil, user: nil, **additional_data)
+    # Include the call stack if not already present
+    if exception.nil? && additional_data[:stack].nil?
+      additional_data[:stack] = caller
+    end
+
     if Rails.env.development?
       report_error_to_console(level, exception: exception, message: message, user: user, **additional_data)
     end
 
-    rollbar_scope(user).log(level, exception, message, additional_data)
+    if rollbar_scope(user).log(level, exception, message, additional_data) == 'error'
+      # Error reporting to Rollbar, usually caused by unserializable data in payload
+      Rollbar.log('warning', nil, 'Could not report to Rollbar', stack: caller)
+    end
   end
 
   # Private

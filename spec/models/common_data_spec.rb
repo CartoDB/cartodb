@@ -47,8 +47,9 @@ describe CommonData do
     @common_data.datasets.first['display_name'].should eq @common_data.datasets.first['name']
   end
 
-  it 'reads the attributions' do
+  it 'reads the source and attributions' do
     stub_valid_api_response
+    @common_data.datasets.first['source'].should eq '[Los Angeles opendata](http://datos.losangeles.com/)'
     @common_data.datasets.first['attributions'].should eq 'CartoDB Inc.'
   end
 

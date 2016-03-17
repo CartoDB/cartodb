@@ -28,6 +28,7 @@ var WindshaftMap = require('../windshaft/windshaft-map');
 var AnalysisFactory = require('../analysis/analysis-factory');
 var VizJSON = require('./vizjson');
 var util = require('cdb.core.util');
+var LayersCollection = require('../geo/map/layers');
 
 /**
  * Visualization creation
@@ -236,12 +237,16 @@ var Vis = View.extend({
 
     // Create the WindshaftMap
 
+    this._layersCollection = new LayersCollection();
+
     var apiKey = options.apiKey;
     this._windshaftMap = new WindshaftMap(null, { // eslint-disable-line
       client: windshaftClient,
       configGenerator: configGenerator,
       apiKey: apiKey,
-      statTag: datasource.stat_tag
+      statTag: datasource.stat_tag,
+      dataviewsCollection: this._dataviewsCollection,
+      layersCollection: this._layersCollection
     });
 
     // Create the Map
@@ -268,6 +273,7 @@ var Vis = View.extend({
     };
 
     this.map = new Map(mapConfig, {
+      layersCollection: this._layersCollection,
       windshaftMap: this._windshaftMap,
       dataviewsCollection: this._dataviewsCollection
     });
@@ -354,12 +360,13 @@ var Vis = View.extend({
       map: this.map
     });
 
+    // Lastly: reset the layer models on the map
+    this.map.layers.reset(layerModels);
+
     if (!options.skipMapInstantiation) {
       this.instantiateMap();
     }
 
-    // Lastly: reset the layer models on the map
-    this.map.layers.reset(layerModels);
 
     // Global variable for easier console debugging / testing
     window.vis = this;

@@ -28,7 +28,7 @@ var Map = Model.extend({
 
   initialize: function (attrs, options) {
     options = options || {};
-    this.layers = new Layers();
+    this.layers = options.layersCollection || new Layers();
     this.geometries = new Backbone.Collection();
 
     this._windshaftMap = options.windshaftMap;

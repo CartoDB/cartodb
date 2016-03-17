@@ -6,6 +6,16 @@ var WindshaftNamedMapConfig = require('./namedmap-config');
 var WindshaftConfig = require('./config');
 var EMPTY_GIF = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 
+var TILE_EXTENSIONS_BY_LAYER_TYPE = {
+  'mapnik': '.png',
+  'torque': '.json.torque'
+};
+
+var LAYER_TYPES = [
+  'CartoDB',
+  'torque'
+];
+
 var WindshaftMap = Backbone.Model.extend({
 
   initialize: function (attrs, options) {
@@ -17,6 +27,19 @@ var WindshaftMap = Backbone.Model.extend({
       urlTemplate: this.client.urlTemplate,
       userName: this.client.userName
     });
+
+    if (!options.client) {
+      throw new Error('client option is required');
+    }
+    if (!options.dataviewsCollection) {
+      throw new Error('dataviewsCollection option is required');
+    }
+    if (!options.layersCollection) {
+      throw new Error('layersCollection option is required');
+    }
+
+    this._dataviewsCollection = options.dataviewsCollection;
+    this._layersCollection = options.layersCollection;
   },
 
   isNamedMap: function () {
@@ -30,51 +53,21 @@ var WindshaftMap = Backbone.Model.extend({
   createInstance: function (options) {
     options = options || {};
 
-    // TODO: If map is anonymous and has layers with analyses -> apiKey is required
-
-    // WindshaftMap knows what types of layers should be sent to Windshaft:
-    var layers = _.select(options.layers, function (layer) {
-      return layer.get('type') === 'CartoDB' || layer.get('type') === 'torque';
-    });
-    var dataviews = options.dataviews;
     var sourceLayerId = options.sourceLayerId;
     var forceFetch = options.forceFetch;
 
-    var mapConfig = this.configGenerator.generate({
-      layers: layers,
-      dataviews: dataviews
-    });
-
-    var filtersFromVisibleLayers = [];
-    if (dataviews) {
-      filtersFromVisibleLayers = dataviews.chain()
-        .filter(function (dataview) {
-          return dataview.layer.isVisible();
-        })
-        .map(function (dataview) {
-          return dataview.filter;
-        })
-        .compact() // not all dataviews have filters
-        .value();
-    }
-
-    var filters = new WindshaftFiltersCollection(filtersFromVisibleLayers, layers);
-
+    var filters = this._getFiltersFromVisibleLayers();
     this.client.instantiateMap({
-      mapDefinition: mapConfig,
+      mapDefinition: this.toMapConfig(),
       apiKey: this.apiKey,
       statTag: this.statTag,
       filters: filters.toJSON(),
       success: function (mapInstance) {
         this.set(mapInstance);
-        _.each(layers, function (layer, layerIndex) {
-          if (layer.get('type') === 'torque') {
-            layer.set('meta', this.getLayerMeta(layerIndex));
-            layer.set('urls', this.getTiles('torque'));
-          } else if (layer.get('type') === 'CartoDB') {
-            layer.set('meta', this.getLayerMeta(layerIndex));
-          }
-        }, this);
+
+        // TODO: This responsibility should be extracted from this class
+        this._updateLayersFromWindshaftInstance();
+
         this.trigger('instanceCreated', this, sourceLayerId, forceFetch);
       }.bind(this),
       error: function (error) {
@@ -85,13 +78,49 @@ var WindshaftMap = Backbone.Model.extend({
     return this;
   },
 
-  setAPIKey: function (apiKey) {
-    this.apiKey = apiKey;
+  toMapConfig: function () {
+    return this.configGenerator.generate({
+      layers: this._getLayers(),
+      dataviews: this._dataviewsCollection
+    });
   },
 
-  TILE_EXTENSIONS_BY_LAYER_TYPE: {
-    'mapnik': '.png',
-    'torque': '.json.torque'
+  _getLayers: function () {
+    return this._layersCollection.select(function (layer) {
+      return LAYER_TYPES.indexOf(layer.get('type')) >= 0;
+    });
+  },
+
+  _getFiltersFromVisibleLayers: function () {
+    var filtersFromVisibleLayers = this._dataviewsCollection
+      .chain()
+      .filter(function (dataview) {
+        return dataview.layer.isVisible();
+      })
+      .map(function (dataview) {
+        return dataview.filter;
+      })
+      .compact() // not all dataviews have filters
+      .value();
+
+    var layers = this._getLayers();
+    return new WindshaftFiltersCollection(filtersFromVisibleLayers, layers);
+  },
+
+  _updateLayersFromWindshaftInstance: function () {
+    var layers = this._getLayers();
+    _.each(layers, function (layer, layerIndex) {
+      if (layer.get('type') === 'torque') {
+        layer.set('meta', this.getLayerMeta(layerIndex));
+        layer.set('urls', this.getTiles('torque'));
+      } else if (layer.get('type') === 'CartoDB') {
+        layer.set('meta', this.getLayerMeta(layerIndex));
+      }
+    }, this);
+  },
+
+  setAPIKey: function (apiKey) {
+    this.apiKey = apiKey;
   },
 
   getBaseURL: function (subhost) {
@@ -162,7 +191,7 @@ var WindshaftMap = Backbone.Model.extend({
           '/',
           layerIndexes.join(','),
           '/{z}/{x}/{y}',
-          this.TILE_EXTENSIONS_BY_LAYER_TYPE[layerType],
+          TILE_EXTENSIONS_BY_LAYER_TYPE[layerType],
           this.apiKey ? '?api_key=' + this.apiKey : ''
         ].join('');
 

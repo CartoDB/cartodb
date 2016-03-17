@@ -363,21 +363,23 @@
 
           var cartodblayer = vis.map.layers.at(1);
 
-          cartodblayer.set({
-            source: analysis,  
-            cartocss: cartocss
-          });
-
-
           setTimeout(function () {
-            var a0 = vis.analysis.findNodeById('a0');
-            var a1 = vis.analysis.findNodeById('a1');
-            a1.set('params', {
-              source: a0,
-              kind: "walk",
-              time: 300
+            cartodblayer.set({
+              source: analysis,  
+              cartocss: cartocss
             });
-          }, 1000);
+
+
+            setTimeout(function () {
+              var a0 = vis.analysis.findNodeById('a0');
+              var a1 = vis.analysis.findNodeById('a1');
+              a1.set('params', {
+                source: a0,
+                kind: "walk",
+                time: 300
+              });
+            }, 3000);
+          }, 3000);
         })
         .error(function(err) {
           console.log(err);

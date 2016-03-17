@@ -37,7 +37,7 @@ module Carto
       !(dropped_tables.empty? && renamed_tables.empty?)
     end
 
-    protected
+    private
 
     def mutex_redis_key
       "rails:users:#{@user.username}:#{MUTEX_REDIS_KEY}"

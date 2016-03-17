@@ -5,6 +5,7 @@ require_relative './visualization/external_source'
 
 class ExternalDataImport < Sequel::Model
   many_to_one :data_import
+  many_to_one :external_source, class: CartoDB::Visualization::ExternalSource
 
   def initialize(data_import_id, external_source_id, synchronization_id=nil)
     super({

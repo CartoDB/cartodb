@@ -9,7 +9,19 @@ module.exports = Model.extend({
       throw new Error('chamshaftReference is required');
     }
 
+    if (!opts.map) {
+      throw new Error('map is required');
+    }
+
     this._camshaftReference = opts.camshaftReference;
+    this._map = opts.map;
+
+    this.bind('change:params', this._reloadMap, this);
+  },
+
+  _reloadMap: function (opts) {
+    opts = opts || {};
+    this._map.reload(opts);
   },
 
   findAnalysisById: function (analysisId) {

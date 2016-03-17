@@ -15,7 +15,8 @@ describe('src/analysis/analysis-factory.js', function () {
     this.analysisCollection = new Backbone.Collection();
     this.analysisFactory = new AnalysisFactory({
       camshaftReference: fakeCamshaftReference,
-      analysisCollection: this.analysisCollection
+      analysisCollection: this.analysisCollection,
+      map: jasmine.createSpyObj('map', ['reload'])
     });
   });
 

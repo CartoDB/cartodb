@@ -7,9 +7,13 @@ var AnalysisFactory = function (opts) {
   if (!opts.analysisCollection) {
     throw new Error('analysisCollection option is required');
   }
+  if (!opts.map) {
+    throw new Error('map option is required');
+  }
 
   this._camshaftReference = opts.camshaftReference || camshaftReference;
   this._analysisCollection = opts.analysisCollection;
+  this._map = opts.map;
 };
 
 /**
@@ -22,11 +26,13 @@ AnalysisFactory.prototype.analyse = function (analysisDefinition) {
   analysisDefinition = _.clone(analysisDefinition);
   var analysis = this._getAnalysisFromIndex(analysisDefinition.id);
   var analysisAttrs = this._getAnalysisAttributesFromAnalysisDefinition(analysisDefinition);
+
   if (analysis) {
     analysis.set(analysisAttrs);
   } else {
     analysis = new Analysis(analysisAttrs, {
-      camshaftReference: this._camshaftReference
+      camshaftReference: this._camshaftReference,
+      map: this._map
     });
     this._addAnalysisToCollection(analysis);
     analysis.bind('destroy', this._onAnalysisRemoved, this);

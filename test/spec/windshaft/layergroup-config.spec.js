@@ -64,7 +64,8 @@ describe('windshaft/layergroup-config', function () {
     this.analysisCollection = new Backbone.Collection();
     this.analysisFactory = new AnalysisFactory({
       analysisCollection: this.analysisCollection,
-      camshaftReference: fakeCamshaftReference
+      camshaftReference: fakeCamshaftReference,
+      map: jasmine.createSpyObj('map', ['reload'])
     });
   });
 

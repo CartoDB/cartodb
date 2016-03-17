@@ -317,68 +317,67 @@
           apiKey: '5379c33c4aa784f37edca9c6f3c29cebd0004088'
         })
         .done(function(vis, layers) {
+          var tableName = 'arboles'
+
+          var analysis = vis.analysis.analyse({
+            id: 'a1',
+            type: 'trade-area',
+            params: {
+              source: {
+                id: 'a0',
+                type: 'source',
+                params: {
+                  query: 'select * from ' + tableName
+                }
+              },
+              kind: 'walk',
+              time: 600
+            }
+          });
+
+          var cartocss = [
+              "#points['mapnik::geometry_type'=1] {",
+              "  marker-fill-opacity: 1;",
+              "  marker-line-color: #FFF;",
+              "  marker-line-width: 0.5;",
+              "  marker-line-opacity: 1;",
+              "  marker-placement: point;",
+              "  marker-type: ellipse;",
+              "  marker-width: 8;",
+              "  marker-fill: #FABADA;",
+              "  marker-allow-overlap: true;",
+              "}",
+              "#lines['mapnik::geometry_type'=2] {",
+              "  line-color: #000000;",
+              "  line-width: 2;",
+              "  line-opacity: 1;",
+              "}",
+              "#polygons['mapnik::geometry_type'=3] {",
+              "  polygon-fill: #FABADA;",
+              "  polygon-opacity: 1;",
+              "  line-color: #FFF;",
+              "  line-width: 0.5;",
+              "  line-opacity: 1;",
+              "}"
+          ].join('\n')
+
+          var cartodblayer = vis.map.layers.at(1);
+
+          cartodblayer.set({
+            source: analysis,  
+            cartocss: cartocss
+          });
 
 
-var tableName = 'arboles'
-
-var analysis = vis.analysis.analyse({
-  id: 'a1',
-  type: 'trade-area',
-  params: {
-    source: {
-      id: 'a0',
-      type: 'source',
-      params: {
-        query: 'select * from ' + tableName
-      }
-    },
-    kind: 'walk',
-    time: 600
-  }
-});
-
-var cartocss = [
-    "#points['mapnik::geometry_type'=1] {",
-    "  marker-fill-opacity: 1;",
-    "  marker-line-color: #FFF;",
-    "  marker-line-width: 0.5;",
-    "  marker-line-opacity: 1;",
-    "  marker-placement: point;",
-    "  marker-type: ellipse;",
-    "  marker-width: 8;",
-    "  marker-fill: #FABADA;",
-    "  marker-allow-overlap: true;",
-    "}",
-    "#lines['mapnik::geometry_type'=2] {",
-    "  line-color: #000000;",
-    "  line-width: 2;",
-    "  line-opacity: 1;",
-    "}",
-    "#polygons['mapnik::geometry_type'=3] {",
-    "  polygon-fill: #FABADA;",
-    "  polygon-opacity: 1;",
-    "  line-color: #FFF;",
-    "  line-width: 0.5;",
-    "  line-opacity: 1;",
-    "}"
-].join('\n')
-
-var cartodblayer = vis.map.layers.at(1);
-
-cartodblayer.set({
-  source: analysis,  
-  cartocss: cartocss
-});
-
-// var attrs = cartodblayer.attributes;
-// attrs.id = 'wadus';
-
-// vis.map.createCartoDBLayer(attrs, {
-//   silent: true
-// });
-
-
-          
+          setTimeout(function () {
+            var a0 = vis.analysis.findNodeById('a0');
+            var a1 = vis.analysis.findNodeById('a1');
+            a1.set('params', {
+              source: a0,
+              kind: "walk",
+              time: 300
+            });
+          }, 1000);
         })
         .error(function(err) {
           console.log(err);

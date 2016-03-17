@@ -350,7 +350,8 @@ var Vis = View.extend({
 
     // Public Analysis Factory
     this.analysis = new AnalysisFactory({
-      analysisCollection: this._analysisCollection
+      analysisCollection: this._analysisCollection,
+      map: this.map
     });
 
     if (!options.skipMapInstantiation) {

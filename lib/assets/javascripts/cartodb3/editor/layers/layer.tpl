@@ -18,8 +18,8 @@
         </li>
       </ul>
     </div>
-    <button class="CDB-Text CDB-Size-small u-actionTextColor ">
-      ADD ANALYSIS
+    <button class="CDB-Text CDB-Size-small u-actionTextColor u-upperCase">
+      <%- _t('editor.layers.layer.add-analysis') %>
     </button>
   </div>
 </div>

@@ -1507,7 +1507,7 @@ describe Carto::Api::VisualizationsController do
           "TBD\n"
         end
 
-        # TODO: named map test and "don't overwrite custom template" test. Technical debt: #6912
+        # TODO: tooltips, named map test and "don't overwrite custom template" test. Technical debt: #6912
         it 'uses v3 infowindows templates' do
           layer = create_layer('table_1', @user_1.username, 1, 'carto', infowindow).save
           @visualization.map.add_layer(layer)

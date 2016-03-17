@@ -26,7 +26,7 @@ VizJSON.OVERLAY_TYPES = {
 VizJSON.MAP_PROVIDER_TYPES = {
   GMAPS: 'googlemaps',
   LEAFLET: 'leaflet'
-}
+};
 
 VizJSON.prototype.hasZoomOverlay = function () {
   return this.hasOverlay(VizJSON.OVERLAY_TYPES.ZOOM);

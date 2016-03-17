@@ -4,7 +4,7 @@
   </div>
   <div class="Editor-ListLayer-Inner">
     <div class="Editor-ListLayer-Title">
-      <h2 class="Editor-ListLayer-TitleText CDB-Text CDB-Size-large u-ellipsis"><%- title %></h2>
+      <h2 class="Editor-ListLayer-TitleText CDB-Text CDB-Size-large u-ellipsis js-title"><%- title %></h2>
       <ul class="Editor-HeaderInfo-Actions">
         <li class="Editor-HeaderInfo-ActionsItem CDB-Shape">
           <div class="CDB-ArrowToogle is-blue is-small"></div>

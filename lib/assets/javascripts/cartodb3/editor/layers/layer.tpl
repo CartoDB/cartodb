@@ -1,6 +1,6 @@
 <div class="Editor-ListLayer-itemHeader">
   <div class="Editor-ListLayer-media u-rSpace--m" style="background: #E27D61; color: #fff">
-    <p class="CDB-Text CDB-Size-large is-semibold"><%- letter %></p>
+    <p class="CDB-Text CDB-Size-large is-semibold u-upperCase"><%- letter %></p>
   </div>
   <div class="Editor-ListLayer-Inner">
     <div class="Editor-ListLayer-Title">

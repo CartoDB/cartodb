@@ -6,6 +6,7 @@
 # 1235 # Table merging two+ tables should import and then export file SHP1.zip
 # 1256 # Table merging two+ tables should import and then export file SHP1.zip as kml
 # 1275 # Table merging two+ tables should import and then export file SHP1.zip as sql
+
 require_relative '../spec_helper'
 
 def check_schema(table, expected_schema, options={})

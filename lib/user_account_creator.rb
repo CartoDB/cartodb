@@ -99,7 +99,7 @@ module CartoDB
 
         password_validator = Carto::StrongPasswordValidator.new(@user.password)
 
-        @custom_errors[:password] = password_validator.message unless password_validator.valid?
+        @custom_errors[:password] = [password_validator.message] unless password_validator.valid?
       end
 
       @user.valid? && @user.validate_credentials_not_taken_in_central && @custom_errors.empty?

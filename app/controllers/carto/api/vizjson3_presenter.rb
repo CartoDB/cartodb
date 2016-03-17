@@ -71,7 +71,7 @@ module Carto
       def v3_infowindow_template(template_name, fallback_template)
         template_name = Carto::Api::LayerVizJSONAdapter::TEMPLATES_MAP.fetch(template_name, template_name)
         if template_name.present?
-          path = Rails.root.join("lib/assets/javascripts/cartodb/table/views/infowindow/templates_v3/#{template_name}.jst.mustache")
+          path = Rails.root.join("lib/assets/javascripts/cartodb3/mustache-templates/infowindows/#{template_name}.jst.mustache")
           File.read(path)
         else
           fallback_template
@@ -81,7 +81,7 @@ module Carto
       def v3_tooltip_template(template_name, fallback_template)
         template_name = Carto::Api::LayerVizJSONAdapter::TEMPLATES_MAP.fetch(template_name, template_name)
         if template_name.present?
-          path = Rails.root.join("lib/assets/javascripts/cartodb/table/views/tooltip/templates_v3/#{template_name}.jst.mustache")
+          path = Rails.root.join("lib/assets/javascripts/cartodb3/mustache-templates/tooltips/#{template_name}.jst.mustache")
           File.read(path)
         else
           fallback_template

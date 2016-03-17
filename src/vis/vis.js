@@ -10,7 +10,6 @@ var Map = require('../geo/map');
 var MapViewFactory = require('../geo/map-view-factory');
 var LegendModel = require('../geo/ui/legend-model');
 var Legend = require('../geo/ui/legend');
-var SQL = require('../api/sql');
 var InfowindowModel = require('../geo/ui/infowindow-model');
 var Infowindow = require('../geo/ui/infowindow');
 var Template = require('../core/template');
@@ -27,14 +26,13 @@ var WindshaftLayerGroupConfig = require('../windshaft/layergroup-config');
 var WindshaftNamedMapConfig = require('../windshaft/namedmap-config');
 var WindshaftMap = require('../windshaft/windshaft-map');
 var AnalysisFactory = require('../analysis/analysis-factory');
+var VizJSON = require('./vizjson');
+var util = require('cdb.core.util');
 
 /**
  * Visualization creation
  */
 var Vis = View.extend({
-  DEFAULT_MAX_ZOOM: 20,
-  DEFAULT_MIN_ZOOM: 0,
-
   initialize: function () {
     _.bindAll(this, 'loadingTiles', 'loadTiles', '_onResize');
 
@@ -200,11 +198,17 @@ var Vis = View.extend({
       return;
     }
 
-    this.https = (window && window.location.protocol && window.location.protocol === 'https:') || !!data.https;
+    var DEFAULT_OPTIONS = {
+      tiles_loader: true,
+      loaderControl: true,
+      infowindow: true,
+      tooltip: true,
+      time_slider: true
+    };
 
-    options = options || {};
-
-    this._applyOptionsToVizJSON(data, options);
+    options = _.defaults(options || {}, DEFAULT_OPTIONS);
+    var vizjson = new VizJSON(data);
+    this._applyOptionsToVizJSON(vizjson, options);
 
     this._dataviewsCollection = new DataviewCollection();
 
@@ -212,7 +216,7 @@ var Vis = View.extend({
 
     var endpoint;
     var configGenerator;
-    var datasource = data.datasource;
+    var datasource = vizjson.datasource;
 
     // TODO: We can use something else to differentiate types of "datasource"s
     if (datasource.template_name) {
@@ -242,44 +246,28 @@ var Vis = View.extend({
 
     // Create the Map
 
-    var scrollwheel = (options.scrollwheel === undefined) ? data.scrollwheel : options.scrollwheel;
-
-    // Do not allow pan map if zoom overlay and scrollwheel are disabled unless
-    // mobile view is enabled
-    // Check if zoom overlay is present.
-    var hasZoomOverlay = _.isObject(_.find(data.overlays, function (overlay) {
-      return overlay.type == 'zoom';
-    }));
-
-    var allowDragging = this.isMobileDevice() || hasZoomOverlay || scrollwheel;
-
-    this.mapConfig = {
-      title: data.title,
-      description: data.description,
-      maxZoom: data.maxZoom || this.DEFAULT_MAX_ZOOM,
-      minZoom: data.minZoom || this.DEFAULT_MIN_ZOOM,
-      legends: data.legends,
-      scrollwheel: scrollwheel,
-      drag: allowDragging,
-      provider: data.map_provider,
-      vector: data.vector,
-    };
-
-    if (data.bounds) {
-      this.mapConfig.view_bounds_sw = data.bounds[0];
-      this.mapConfig.view_bounds_ne = data.bounds[1];
-    } else {
-      var center = data.center;
-
-      if (typeof (center) === 'string') {
-        center = $.parseJSON(center);
-      }
-
-      this.mapConfig.center = center || [0, 0];
-      this.mapConfig.zoom = data.zoom === undefined ? 4 : data.zoom;
+    var allowDragging = util.isMobileDevice() || vizjson.hasZoomOverlay() || vizjson.scrollwheel;
+    var center = vizjson.center;
+    if (typeof (center) === 'string') {
+      center = $.parseJSON(center);
     }
 
-    this.map = new Map(this.mapConfig, {
+    var mapConfig = {
+      title: vizjson.title,
+      description: vizjson.description,
+      maxZoom: vizjson.maxZoom,
+      minZoom: vizjson.minZoom,
+      legends: vizjson.legends,
+      bounds: vizjson.bounds,
+      center: center,
+      zoom: vizjson.zoom,
+      scrollwheel: !!this.scrollwheel,
+      drag: allowDragging,
+      provider: vizjson.map_provider,
+      vector: vizjson.vector
+    };
+
+    this.map = new Map(mapConfig, {
       windshaftMap: this._windshaftMap,
       dataviewsCollection: this._dataviewsCollection
     });
@@ -334,6 +322,7 @@ var Vis = View.extend({
     this.mapView.bind('newLayerView', this._addLoading, this);
 
     // Create the Layer Models and set them on hte map
+    this.https = (window && window.location.protocol && window.location.protocol === 'https:') || !!vizjson.https || !!options.https;
     var layerModels = this._newLayerModels(data, this.map);
 
     var infowindowManager = new InfowindowManager(this);
@@ -347,7 +336,7 @@ var Vis = View.extend({
     overlaysCollection.bind('reset', function (overlays) {
       this._addOverlays(overlays, data, options);
     }, this);
-    overlaysCollection.reset(data.overlays);
+    overlaysCollection.reset(vizjson.overlays);
 
     // Create the public Dataview Factory
     this.dataviews = new DataviewsFactory(null, {
@@ -377,6 +366,67 @@ var Vis = View.extend({
     return this;
   },
 
+  _applyOptionsToVizJSON: function (vizjson, options) {
+    vizjson.scrollwheel = options.scrollwheel || vizjson.scrollwheel;
+
+    if (!options.tiles_loader || !options.loaderControl) {
+      vizjson.removeLoaderOverlay();
+    }
+
+    if (options.searchControl === true) {
+      vizjson.addSearchOverlay();
+    } else if (options.searchControl === false) {
+      vizjson.removeSearchOverlay();
+    }
+
+    if ((options.title && vizjson.title) || (options.description && vizjson.description)) {
+      vizjson.addHeaderOverlay(options.title, options.description, options.shareable);
+    }
+
+    if (options.layer_selector) {
+      vizjson.addLayerSelectorOverlay();
+    }
+
+    if (options.zoomControl !== undefined && !options.zoomControl) {
+      vizjson.removeZoomOverlay();
+    }
+
+    // if bounds are present zoom and center will not taken into account
+    var zoom = parseInt(options.zoom, 10);
+    if (!isNaN(zoom)) {
+      vizjson.setZoom(zoom);
+    }
+
+    // Center coordinates?
+    var center_lat = parseFloat(options.center_lat);
+    var center_lon = parseFloat(options.center_lon);
+    if (!isNaN(center_lat) && !isNaN(center_lon)) {
+      vizjson.setCenter([center_lat, center_lon]);
+    }
+
+    // Center object
+    if (options.center !== undefined) {
+      vizjson.setCenter(options.center);
+    }
+
+    // Bounds?
+    var sw_lat = parseFloat(options.sw_lat);
+    var sw_lon = parseFloat(options.sw_lon);
+    var ne_lat = parseFloat(options.ne_lat);
+    var ne_lon = parseFloat(options.ne_lon);
+
+    if (!isNaN(sw_lat) && !isNaN(sw_lon) && !isNaN(ne_lat) && !isNaN(ne_lon)) {
+      vizjson.setBounds([
+        [ sw_lat, sw_lon ],
+        [ ne_lat, ne_lon ]
+      ]);
+    }
+
+    if (options.gmaps_base_type) {
+      vizjson.enforceGMapsBaseLayer(options.gmaps_base_type, options.gmaps_style);
+    }
+  },
+
   /**
    * Force a map instantiation.
    * Only expected to be called if {skipMapInstantiation} flag is set to true when vis is created.
@@ -401,15 +451,7 @@ var Vis = View.extend({
 
   centerMapToOrigin: function () {
     this.mapView.invalidateSize();
-    var c = this.mapConfig;
-    if (c.view_bounds_sw && c.view_bounds_ne) {
-      this.map.setBounds([
-        c.view_bounds_sw,
-        c.view_bounds_ne
-      ]);
-    } else {
-      this.map.setCenter(c.center);
-    }
+    this.map.reCenter();
   },
 
   _newLayerModels: function (vizjson, map) {
@@ -535,212 +577,9 @@ var Vis = View.extend({
     return v;
   },
 
-  // change vizjson based on options
-  _applyOptionsToVizJSON: function (vizjson, opt) {
-    opt = opt || {};
-    opt = _.defaults(opt, {
-      tiles_loader: true,
-      loaderControl: true,
-      infowindow: true,
-      tooltip: true,
-      time_slider: true
-    });
-    vizjson.overlays = vizjson.overlays || [];
-    vizjson.layers = vizjson.layers || [];
-
-    function search_overlay (name) {
-      if (!vizjson.overlays) return null;
-      for (var i = 0; i < vizjson.overlays.length; ++i) {
-        if (vizjson.overlays[i].type === name) {
-          return vizjson.overlays[i];
-        }
-      }
-    }
-
-    function remove_overlay (name) {
-      if (!vizjson.overlays) return;
-      for (var i = 0; i < vizjson.overlays.length; ++i) {
-        if (vizjson.overlays[i].type === name) {
-          vizjson.overlays.splice(i, 1);
-          return;
-        }
-      }
-    }
-
-    this.infowindow = opt.infowindow;
-    this.tooltip = opt.tooltip;
-
-    if (opt.https) {
-      this.https = true;
-    }
-
-    if (opt.gmaps_base_type) {
-      this.gmaps_base_type = opt.gmaps_base_type;
-    }
-
-    if (opt.gmaps_style) {
-      this.gmaps_style = opt.gmaps_style;
-    }
-
-    this.mobile = this.isMobileDevice();
-
-    if (!opt.tiles_loader) {
-      remove_overlay('loader');
-    }
-
-    if (!opt.loaderControl) {
-      remove_overlay('loader');
-    }
-
-    if (opt.searchControl !== undefined) {
-      opt.search = opt.searchControl;
-    }
-
-    if (!search_overlay('search') && opt.search) {
-      vizjson.overlays.push({
-        type: 'search',
-        order: 3
-      });
-    }
-
-    if ((opt.title && vizjson.title) || (opt.description && vizjson.description)) {
-      if (!search_overlay('header')) {
-        vizjson.overlays.unshift({
-          type: 'header',
-          order: 1,
-          shareable: opt.shareable,
-          url: vizjson.url,
-          options: {
-            extra: {
-              title: vizjson.title,
-              description: vizjson.description,
-              show_title: opt.title,
-              show_description: opt.description
-            }
-          }
-        });
-      }
-    }
-
-    if (opt.layer_selector) {
-      if (!search_overlay('layer_selector')) {
-        vizjson.overlays.push({
-          type: 'layer_selector'
-        });
-      }
-    }
-
-    vizjson.overlays.push({
-      type: 'attribution'
-    });
-
-    if (opt.zoomControl !== undefined && !opt.zoomControl) {
-      remove_overlay('zoom');
-    }
-
-    if (opt.search !== undefined && !opt.search) {
-      remove_overlay('search');
-    }
-
-    // if bounds are present zoom and center will not taken into account
-    var zoom = parseInt(opt.zoom);
-    if (!isNaN(zoom)) {
-      vizjson.zoom = zoom;
-      vizjson.bounds = null;
-    }
-
-    // Center coordinates?
-    var center_lat = parseFloat(opt.center_lat);
-    var center_lon = parseFloat(opt.center_lon);
-    if ( !isNaN(center_lat) && !isNaN(center_lon)) {
-      vizjson.center = [center_lat, center_lon];
-      vizjson.bounds = null;
-    }
-
-    // Center object
-    if (opt.center !== undefined) {
-      vizjson.center = opt.center;
-      vizjson.bounds = null;
-    }
-
-    // Bounds?
-    var sw_lat = parseFloat(opt.sw_lat);
-    var sw_lon = parseFloat(opt.sw_lon);
-    var ne_lat = parseFloat(opt.ne_lat);
-    var ne_lon = parseFloat(opt.ne_lon);
-
-    if ( !isNaN(sw_lat) && !isNaN(sw_lon) && !isNaN(ne_lat) && !isNaN(ne_lon)) {
-      vizjson.bounds = [
-        [ sw_lat, sw_lon ],
-        [ ne_lat, ne_lon ]
-      ];
-    }
-
-    if (vizjson.layers.length > 1) {
-      var token = opt.auth_token;
-      function _applyLayerOptions (layers) {
-        for (var i = 1; i < layers.length; ++i) {
-          var o = layers[i].options;
-          o.no_cdn = opt.no_cdn;
-          o.force_cors = opt.force_cors;
-          if (token) {
-            o.auth_token = token;
-          }
-        }
-      }
-      _applyLayerOptions(vizjson.layers);
-    }
-
-    // Force using GMaps ?
-    if ((this.gmaps_base_type) && (vizjson.map_provider === 'leaflet')) {
-      // Check if base_type is correct
-      var typesAllowed = ['roadmap', 'gray_roadmap', 'dark_roadmap', 'hybrid', 'satellite', 'terrain'];
-      if (_.contains(typesAllowed, this.gmaps_base_type)) {
-        if (vizjson.layers) {
-          vizjson.layers[0].options.type = 'GMapsBase';
-          vizjson.layers[0].options.base_type = this.gmaps_base_type;
-          vizjson.layers[0].options.name = this.gmaps_base_type;
-
-          if (this.gmaps_style) {
-            vizjson.layers[0].options.style = typeof this.gmaps_style === 'string' ? JSON.parse(this.gmaps_style) : this.gmaps_style;
-          }
-
-          vizjson.map_provider = 'googlemaps';
-          vizjson.layers[0].options.attribution = ''; // GMaps has its own attribution
-        } else {
-          log.error('No base map loaded. Using Leaflet.');
-        }
-      } else {
-        log.error('GMaps base_type "' + this.gmaps_base_type + ' is not supported. Using leaflet.');
-      }
-    }
-  },
-
   createLayer: function (layerData) {
     var layerModel = Layers.create(layerData.type || layerData.kind, this, layerData);
     return this.mapView.createLayer(layerModel);
-  },
-
-  _getSqlApi: function (attrs) {
-    attrs = attrs || {};
-    var port = attrs.sql_api_port;
-    var domain = attrs.sql_api_domain + (port ? ':' + port : '');
-    var protocol = attrs.sql_api_protocol;
-    var version = 'v1';
-    if (domain.indexOf('cartodb.com') !== -1) {
-      protocol = 'http';
-      domain = 'cartodb.com';
-      version = 'v2';
-    }
-
-    var sql = new SQL({
-      user: attrs.user_name,
-      protocol: protocol,
-      host: domain,
-      version: version
-    });
-
-    return sql;
   },
 
   _addLoading: function (layerView) {
@@ -841,10 +680,6 @@ var Vis = View.extend({
     setTimeout(function () {
       self.centerMapToOrigin();
     }, 150);
-  },
-
-  isMobileDevice: function () {
-    return /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
   }
 }, {
   /**

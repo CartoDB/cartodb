@@ -34,7 +34,7 @@
     "camshaft-reference": "^0.1.0",
     "cartoassets": "CartoDB/CartoAssets#master",
     "d3": "3.5.8",
-    "d3.cartodb": "git://github.com/CartoDB/d3.cartodb.git#c3f420a",
+    "d3.cartodb": "CartoDB/d3.cartodb#gh-pages",
     "jquery": "2.1.4",
     "jstify": "0.12.0",
     "leaflet": "0.7.3",

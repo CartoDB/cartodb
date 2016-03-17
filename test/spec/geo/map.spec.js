@@ -16,6 +16,39 @@ describe('core/geo/map', function() {
     map.instantiateMap();
   });
 
+  describe('.initialize', function () {
+    it('should parse bounds and set attributes', function () {
+      var map = new Map({
+        bounds: [[0, 1], [2, 3]]
+      });
+
+      expect(map.get('view_bounds_sw')).toEqual([0, 1]);
+      expect(map.get('view_bounds_ne')).toEqual([2, 3]);
+      expect(map.get('original_view_bounds_sw')).toEqual([0, 1]);
+      expect(map.get('original_view_bounds_ne')).toEqual([2, 3]);
+      expect(map.get('bounds')).toBeUndefined();
+    });
+
+    it('should set the center and zoom if no bounds are given', function () {
+      var map = new Map({
+        center: [41.40282319070747, 2.3435211181640625],
+        zoom: 10
+      });
+
+      expect(map.get('center')).toEqual([41.40282319070747, 2.3435211181640625]);
+      expect(map.get('original_center')).toEqual([41.40282319070747, 2.3435211181640625]);
+      expect(map.get('zoom')).toEqual(10);
+    });
+
+    it('should set the default center and zoom if no center and bounds are given', function () {
+      var map = new Map({});
+
+      expect(map.get('center')).toEqual(map.defaults.center);
+      expect(map.get('original_center')).toEqual(map.defaults.center);
+      expect(map.get('zoom')).toEqual(map.defaults.zoom);
+    });
+  });
+
   it("should raise only one change event on setBounds", function() {
     var c = 0;
     map.bind('change:view_bounds_ne', function() {
@@ -42,16 +75,18 @@ describe('core/geo/map', function() {
   });
 
   it("should adjust zoom to layer", function() {
-    expect(map.get('maxZoom')).toEqual(40);
-    expect(map.get('minZoom')).toEqual(0);
+    expect(map.get('maxZoom')).toEqual(map.defaults.maxZoom);
+    expect(map.get('minZoom')).toEqual(map.defaults.minZoom);
 
-    var layer = new PlainLayer({ minZoom: 5, maxZoom: 20 });
+    var layer = new PlainLayer({ minZoom: 5, maxZoom: 25 });
     map.layers.reset(layer);
-    expect(map.get('maxZoom')).toEqual(20);
+
+    expect(map.get('maxZoom')).toEqual(25);
     expect(map.get('minZoom')).toEqual(5);
 
     var layer = new PlainLayer({ minZoom: "7", maxZoom: "31" });
     map.layers.reset(layer);
+
     expect(map.get('maxZoom')).toEqual(31);
     expect(map.get('minZoom')).toEqual(7);
   });
@@ -59,8 +94,9 @@ describe('core/geo/map', function() {
   it("shouldn't set a NaN zoom", function() {
     var layer = new PlainLayer({ minZoom: NaN, maxZoom: NaN });
     map.layers.reset(layer);
-    expect(map.get('maxZoom')).toEqual(40);
-    expect(map.get('minZoom')).toEqual(0);
+
+    expect(map.get('maxZoom')).toEqual(map.defaults.maxZoom);
+    expect(map.get('minZoom')).toEqual(map.defaults.minZoom);
   });
 
   it('should update the attributions of the map when layers are reset/added/removed', function() {
@@ -346,6 +382,41 @@ describe('core/geo/map', function() {
           image: 'http://example.com/image.png'
         });
         expect(this.map.layers.at(0)).toEqual(layer);
+      });
+    });
+
+    describe('.reCenter', function () {
+      it('should set the original bounds if present', function () {
+        var map = new Map({
+          bounds: [[1, 2], [3, 4]],
+          center: '[41.40282319070747, 2.3435211181640625]'
+        });
+
+        // Change internal attributes
+        map.set({
+          view_bounds_sw: 'something',
+          view_bounds_ne: 'else',
+          center: 'different'
+        });
+
+        map.reCenter();
+
+        expect(map.get('view_bounds_sw')).toEqual([1, 2]);
+        expect(map.get('view_bounds_ne')).toEqual([3, 4]);
+      });
+
+      it('should set the original center if bounds are not present', function () {
+        var map = new Map({
+          center: [41.40282319070747, 2.3435211181640625]
+        });
+
+        map.set({
+          center: 'different'
+        });
+
+        map.reCenter();
+
+        expect(map.get('center')).toEqual([ 41.40282319070747, 2.3435211181640625 ]);
       });
     });
   });

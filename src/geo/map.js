@@ -1,3 +1,4 @@
+var $ = require('jquery');
 var _ = require('underscore');
 var L = require('leaflet');
 var Backbone = require('backbone');
@@ -13,9 +14,9 @@ var Map = Model.extend({
   defaults: {
     attribution: [config.get('cartodb_attributions')],
     center: [0, 0],
-    zoom: 3,
+    zoom: 4,
     minZoom: 0,
-    maxZoom: 40,
+    maxZoom: 20,
     scrollwheel: true,
     drag: true,
     keyboard: true,
@@ -33,6 +34,23 @@ var Map = Model.extend({
 
     this._windshaftMap = options.windshaftMap;
     this._dataviewsCollection = options.dataviewsCollection;
+
+    attrs = attrs || {};
+    if (attrs.bounds) {
+      this.set({
+        view_bounds_sw: attrs.bounds[0],
+        view_bounds_ne: attrs.bounds[1],
+        original_view_bounds_sw: attrs.bounds[0],
+        original_view_bounds_ne: attrs.bounds[1]
+      });
+      this.unset('bounds');
+    } else {
+      this.set({
+        center: attrs.center || this.defaults.center,
+        original_center: attrs.center || this.defaults.center,
+        zoom: attrs.zoom || this.defaults.zoom
+      });
+    }
   },
 
   // PUBLIC API METHODS
@@ -351,6 +369,20 @@ var Map = Model.extend({
 
   removeGeometry: function(geom) {
     this.geometries.remove(geom);
+  },
+
+  reCenter: function () {
+    var originalViewBoundsSW = this.get('original_view_bounds_sw');
+    var originalViewBoundsNE = this.get('original_view_bounds_ne');
+    var originalCenter = this.get('original_center');
+    if (originalViewBoundsSW && originalViewBoundsNE) {
+      this.setBounds([
+        originalViewBoundsSW,
+        originalViewBoundsNE
+      ]);
+    } else {
+      this.setCenter(originalCenter);
+    }
   },
 
   setBounds: function(b) {

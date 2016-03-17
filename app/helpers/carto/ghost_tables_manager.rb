@@ -75,7 +75,8 @@ module Carto
 
           table.save
         rescue => e
-          CartoDB.report_exception(e, 'Error linking new table', table_name: metadata_table.name, table_id: metadata_table.id)
+          CartoDB.report_exception(e, 'Error linking new table', table_name: metadata_table.name,
+                                                                 table_id: metadata_table.id)
         end
       end
     end

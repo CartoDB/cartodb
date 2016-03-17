@@ -68,7 +68,9 @@ describe SessionsController do
 
       errors = {
         errors: {
-          organization: ["Organization owner is not set. Administrator must login first."]
+          organization: ["Organization owner is not set. Administrator must login first."],
+          password: ['must be at least 8 characters long, must contain at least 1 letter and must contain at ' +
+            'least 1 symbol or 1 number']
         }
       }
       ::CartoDB.expects(:notify_debug).with('User not valid at signup', errors).returns(nil)
@@ -84,7 +86,7 @@ describe SessionsController do
       Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
       # @See lib/user_account_creator.rb -> promote_to_organization_owner?
       admin_user_username = "#{@organization.name}-admin"
-      admin_user_password = "foobar"
+      admin_user_password = '2{Patrañas}'
       admin_user_email = "#{@organization.name}-admin@test.com"
       admin_user_cn = "cn=#{admin_user_username},#{@domain_bases.first}"
       ldap_entry_data = {
@@ -107,7 +109,7 @@ describe SessionsController do
     it "Allows to login and triggers creation of normal users if admin already present" do
       Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
       admin_user_username = "#{@organization.name}-admin"
-      admin_user_password = "foobar"
+      admin_user_password = '2{Patrañas}'
       admin_user_email = "#{@organization.name}-admin@test.com"
       @admin_user = create_user(
         username: admin_user_username,
@@ -148,7 +150,7 @@ describe SessionsController do
     it "Just logs in if finds a cartodb username that matches with LDAP credentials " do
       Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
       admin_user_username = "#{@organization.name}-admin"
-      admin_user_password = "foobar"
+      admin_user_password = '2{Patrañas}'
       admin_user_email = "#{@organization.name}-admin@test.com"
       admin_user_cn = "cn=#{admin_user_username},#{@domain_bases.first}"
       ldap_entry_data = {

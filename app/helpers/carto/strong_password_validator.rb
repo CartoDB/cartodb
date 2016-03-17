@@ -23,7 +23,7 @@ module Carto
       @min_symbols = min_symbols.nil? ? DEFAULT_MIN_SYMBOLS : min_symbols
       @min_numbers = min_numbers.nil? ? DEFAULT_MIN_LETTERS : min_numbers
 
-      @password = password
+      @password = password.nil? ? '' : password
 
       valid?
     end
@@ -44,7 +44,8 @@ module Carto
       end
 
       unless @password =~ /[#{SYMBOLS.join('|')}]{#{@min_symbols},}/ || @password =~ /\d{#{@min_numbers},}/
-        @errors << "must contain at least #{@min_symbols} #{'symbol'.pluralize(@min_symbols)} or #{@min_numbers} #{'number'.pluralize(@min_numbers)}"
+        @errors << "must contain at least #{@min_symbols} #{'symbol'.pluralize(@min_symbols)} or " +
+                   "#{@min_numbers} #{'number'.pluralize(@min_numbers)}"
       end
 
       @errors.empty?

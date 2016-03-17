@@ -40,15 +40,15 @@ module Carto
         end
 
         layer_definitions_from_layer_data(layer_data).each do |layer_definition|
-            infowindow = layer_definition[:infowindow]
-            if infowindow
-              infowindow[:template] = v3_infowindow_template(infowindow[:template_name], infowindow[:template])
-            end
+          infowindow = layer_definition[:infowindow]
+          if infowindow
+            infowindow[:template] = v3_infowindow_template(infowindow[:template_name], infowindow[:template])
+          end
 
-            tooltip = layer_definition[:tooltip]
-            if tooltip
-              tooltip[:template] = v3_tooltip_template(tooltip[:template_name], tooltip[:template])
-            end
+          tooltip = layer_definition[:tooltip]
+          if tooltip
+            tooltip[:template] = v3_tooltip_template(tooltip[:template_name], tooltip[:template])
+          end
         end
       end
 

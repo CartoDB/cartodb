@@ -444,12 +444,10 @@ class Admin::VisualizationsController < Admin::AdminController
     ghost_tables_manager = Carto::GhostTablesManager.new(current_user.id)
 
     # Check if any tables need to be linked, relinked or unlinked
-    return if ghost_tables_manager.consistent?
-
     if ghost_tables_manager.stale_tables_linked?
       # You might see phantom tables that generate erros upon clicking them; needs relink now
       ghost_tables_manager.sync_user_schema_and_tables_metadata
-    else
+    elsif !ghost_tables_manager.consistent?
       # Worst case you'll refresh for an SQL API genearted table to appear
       ::Resque.enqueue(::Resque::UserJobs::SyncTables::LinkGhostTables, current_user.id)
     end

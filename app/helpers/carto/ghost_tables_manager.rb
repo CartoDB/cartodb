@@ -9,7 +9,7 @@ module Carto
       @user = ::User.where(id: user_id).first
     end
 
-    def link
+    def sync_user_schema_and_tables_metadata
       bolt = Carto::Bolt.new("#{@user.id}:#{MUTEX_REDIS_KEY}", ttl_ms: MUTEX_TTL_MS)
 
       bolt.lock do |locked|
@@ -27,7 +27,7 @@ module Carto
       # Left the critical zone, bolt automatically unlocked
     end
 
-    # determine linked tables vs cartodbfied tables consistency; i.e.: needs to run link
+    # determine linked tables vs cartodbfied tables consistency; i.e.: needs to run sync
     def consistent?
       non_linked_tables.empty? && dropped_tables.empty?
     end

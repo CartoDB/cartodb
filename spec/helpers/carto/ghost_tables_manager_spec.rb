@@ -35,7 +35,7 @@ module Carto
       @user.tables.count.should eq 0
       @ghost_tables_manager.consistent?.should be_false
 
-      @ghost_tables_manager.link
+      @ghost_tables_manager.sync_user_schema_and_tables_metadata
       @ghost_tables_manager.consistent?.should be_true
 
       @user.tables.count.should eq 1
@@ -48,7 +48,7 @@ module Carto
       @user.tables.count.should eq 1
       @ghost_tables_manager.consistent?.should be_false
 
-      @ghost_tables_manager.link
+      @ghost_tables_manager.sync_user_schema_and_tables_metadata
       @ghost_tables_manager.consistent?.should be_true
 
       @user.tables.count.should eq 1
@@ -61,7 +61,7 @@ module Carto
       @user.tables.count.should eq 1
       @ghost_tables_manager.consistent?.should be_false
 
-      @ghost_tables_manager.link
+      @ghost_tables_manager.sync_user_schema_and_tables_metadata
       @ghost_tables_manager.consistent?.should be_true
 
       @user.tables.count.should eq 0

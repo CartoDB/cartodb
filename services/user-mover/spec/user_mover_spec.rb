@@ -63,7 +63,7 @@ describe CartoDB::DataMover::ExportJob do
         file: @tmp_path + "user_#{first_user.id}.json", mode: :import, host: '127.0.0.2', target_org: @org.name).run!
 
       moved_user = ::User.find(username: first_user.username)
-      Carto::GhostTablesManager.new(moved_user.id).link
+      Carto::GhostTablesManager.new(moved_user.id).sync_user_schema_and_tables_metadata
       moved_user
     end
 
@@ -101,7 +101,7 @@ describe CartoDB::DataMover::ExportJob do
     CartoDB::DataMover::ImportJob.new(file: @tmp_path + "user_#{user.id}.json", mode: :import).run!
 
     moved_user = ::User.find(username: user.username)
-    Carto::GhostTablesManager.new(moved_user.id).link
+    Carto::GhostTablesManager.new(moved_user.id).sync_user_schema_and_tables_metadata
     check_tables(moved_user)
     moved_user.organization_id.should eq nil
   end
@@ -143,7 +143,7 @@ describe CartoDB::DataMover::ExportJob do
 
     moved_user = ::User.find(username: user.username)
     moved_user.database_host.should eq '127.0.0.2'
-    Carto::GhostTablesManager.new(moved_user.id).link
+    Carto::GhostTablesManager.new(moved_user.id).sync_user_schema_and_tables_metadata
     check_tables(moved_user)
     moved_user.in_database['SELECT * FROM cdb_tablemetadata']
     moved_user.organization_id.should_not eq nil

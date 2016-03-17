@@ -448,7 +448,7 @@ class Admin::VisualizationsController < Admin::AdminController
 
     if ghost_tables_manager.stale_tables_linked?
       # You might see phantom tables that generate erros upon clicking them; needs relink now
-      ghost_tables_manager.link
+      ghost_tables_manager.sync_user_schema_and_tables_metadata
     else
       # Worst case you'll refresh for an SQL API genearted table to appear
       ::Resque.enqueue(::Resque::UserJobs::SyncTables::LinkGhostTables, current_user.id)

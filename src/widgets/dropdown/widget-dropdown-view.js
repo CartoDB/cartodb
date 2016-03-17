@@ -15,7 +15,8 @@ module.exports = cdb.core.View.extend({
 
   events: {
     'click .js-pin': '_pin',
-    'click .js-toggle': '_toggle'
+    'click .js-toggle': '_toggle',
+    'click .js-normalize': '_normalize'
   },
 
   initialize: function (opts) {
@@ -27,14 +28,15 @@ module.exports = cdb.core.View.extend({
 
     this._$target = this.options.target;
     this._$container = this.options.container;
+    this.options.flags = this.options.flags || {};
+    _.defaults(this.options.flags, {
+      normalizeHistogram: false
+    });
     this._initBinds();
   },
 
   render: function () {
-    this.$el.html(
-      template()
-    );
-
+    this.$el.html(template(this.options.flags));
     return this;
   },
 
@@ -93,6 +95,11 @@ module.exports = cdb.core.View.extend({
   _toggle: function () {
     this.model.set('open', false);
     this.trigger('click', 'toggle');
+  },
+
+  _normalize: function () {
+    this.model.set('normalize', !this.model.get('normalize'));
+    this.trigger('click', 'normalize', this.model.get('normalize'));
   },
 
   _open: function () {

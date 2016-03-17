@@ -37,12 +37,18 @@ module.exports = cdb.core.View.extend({
 
     var dropdown = new DropdownView({
       target: this.$('.js-actions'),
-      container: this.$('.js-header')
+      container: this.$('.js-header'),
+      flags: {
+        normalizeHistogram: true
+      }
     });
 
-    dropdown.bind('click', function (action) {
+    dropdown.bind('click', function (action, value) {
       if (action === 'toggle') {
         this.model.set('collapsed', !this.model.get('collapsed'));
+      } else if (action === 'normalize') {
+        this.histogramChartView.setNormalized(value);
+        this.miniHistogramChartView.setNormalized(value);
       }
     }, this);
 

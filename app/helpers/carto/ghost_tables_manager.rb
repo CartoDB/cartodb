@@ -10,13 +10,12 @@ module Carto
     end
 
     def link
-      bolt = Redlock::Client.new(["redis://#{Cartodb.config[:redis]['host']}:#{Cartodb.config[:redis]['port']}"])
+      bolt = Carto::Bolt.new("#{@user.id}:#{MUTEX_REDIS_KEY}", ttl_ms: MUTEX_TTL_MS)
 
-      bolt.lock(mutex_redis_key, MUTEX_TTL_MS) do |locked|
+      bolt.lock do |locked|
         next unless locked
 
         # Lock aquired, inside the critical zone
-        # NOTE: Order DOES matter, FIRST renamed, THEN new and deleted LAST
         unless non_linked_tables.empty?
           relink_renamed_tables
           link_new_tables

@@ -36,7 +36,7 @@ module Carto
       end
 
       if @password.length > @max_length
-        @errors << "must be at most  #{@max_length} #{'character'.pluralize(@max_length)} long"
+        @errors << "must be at most #{@max_length} #{'character'.pluralize(@max_length)} long"
       end
 
       unless @password =~ /[a-zA-Z]{#{@min_letters},}/

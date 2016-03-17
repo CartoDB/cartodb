@@ -132,6 +132,6 @@
     ]
   },
   "scripts": {
-    "update-internal-deps": "npm update cartodb.js cartodb-deep-insights.js && npm shrinkwrap --dev"
+    "update-internal-deps": "npm update camshaft-reference cartoassets cartodb-deep-insights.js cartodb.js && npm shrinkwrap --dev"
   }
 }

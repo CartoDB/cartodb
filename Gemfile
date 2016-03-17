@@ -18,7 +18,6 @@ gem 'oauth',                   '0.4.5'
 gem 'oauth-plugin',            '0.4.0.pre4'
 
 gem 'redis',                   '3.2.1'
-gem 'redlock',                 '0.1.5'
 gem 'hiredis',                 '0.6.0'
 gem 'nokogiri',                '~> 1.6.6.2'
 gem 'statsd-client',           '0.0.7', require: 'statsd'

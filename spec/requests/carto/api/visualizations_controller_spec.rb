@@ -1504,7 +1504,7 @@ describe Carto::Api::VisualizationsController do
           "<div class=\"cartodb-popup v2\">\n  <a href=\"#close\" class=\"cartodb-popup-close-button close\">x</a>\n  <div class=\"cartodb-popup-content-wrapper\">\n    <div class=\"cartodb-popup-content\">\n      {{#content.fields}}\n        {{#title}}<h4>{{title}}</h4>{{/title}}\n        {{#value}}\n          <p {{#type}}class=\"{{ type }}\"{{/type}}>{{{ value }}}</p>\n        {{/value}}\n        {{^value}}\n          <p class=\"empty\">null</p>\n        {{/value}}\n      {{/content.fields}}\n    </div>\n  </div>\n  <div class=\"cartodb-popup-tip-container\"></div>\n</div>\n"
         end
         let(:v3_infowindow_light_template) do
-          "TBD\n"
+          '{{#title}}<h5 class="CDB-infowindow-subtitle">{{title}}</h5>{{/title}}'
         end
 
         # TODO: tooltips, named map test and "don't overwrite custom template" test. Technical debt: #6912
@@ -1529,7 +1529,7 @@ describe Carto::Api::VisualizationsController do
             vizjson = request.body
             infowindow = request.body[:layers][0]['options']['layer_definition']['layers'][0]['infowindow']
             infowindow['template_name'].should eq infowindow['template_name']
-            infowindow['template'].should eq v3_infowindow_light_template
+            infowindow['template'].should include(v3_infowindow_light_template)
           end
         end
       end

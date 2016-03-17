@@ -24,7 +24,9 @@ module Carto
       @min_numbers = min_numbers.nil? ? DEFAULT_MIN_LETTERS : min_numbers
 
       @password = password.nil? ? '' : password
+    end
 
+    def after_initialize
       valid?
     end
 
@@ -39,7 +41,7 @@ module Carto
         @errors << "must be at most #{@max_length} #{'character'.pluralize(@max_length)} long"
       end
 
-      unless @password =~ /[a-zA-Z]{#{@min_letters},}/
+      unless @password.scan(/[[:alpha:]]/).size > @min_letters
         @errors << "must contain at least #{@min_letters} #{'letter'.pluralize(@min_letters)}"
       end
 

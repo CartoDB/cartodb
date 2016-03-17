@@ -46,6 +46,8 @@ module Carto
       validator = Carto::StrongPasswordValidator.new(nil)
 
       validator.valid?.should be_false
+      validator.message.should == 'must be at least 8 characters long, must contain at least 1 letter and must ' +
+                                  'contain at least 1 symbol or 1 number'
     end
 
     it 'should return an error array' do
@@ -54,10 +56,20 @@ module Carto
       validator.valid?.should be_false
 
       message = validator.message
+      message.should == 'must be at least 8 characters long, must contain at least 1 letter and must ' +
+                        'contain at least 1 symbol or 1 number'
 
       validator.errors.each do |error|
         message.should include(error)
       end
+    end
+
+    it 'should validate a good password' do
+      validator = Carto::StrongPasswordValidator.new(PASSWORD)
+
+      validator.valid?.should be_true
+      validator.errors.empty?.should be_true
+      validator.message.should be_nil
     end
   end
 end

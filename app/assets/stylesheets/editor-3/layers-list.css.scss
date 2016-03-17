@@ -64,15 +64,19 @@
   @include display-flex();
   @include align-items(center);
   margin-bottom: 8px;
+}
 
-  &:last-child {
-    margin-bottom: 0;
-  }
-
-  &.is-analysis {
-    display: block;
-    margin-right: 0;
-  }
+.Editor-ListAnalysis-item:last-child {
+  margin-bottom: 0;
+}
+.Editor-ListAnalysis-item.is-analysis {
+  display: block;
+  margin-right: 0;
+}
+.Editor-ListAnalysis-item.ui-draggable-dragging {
+  width: 100%;
+  cursor: move;
+  z-index: 1000;
 }
 
 .Editor-ListAnalysis-inner {
@@ -134,4 +138,18 @@
 
 .Editor-ListLayer-Inner {
   @include flex(1);
+}
+
+.Editor-dropArea {
+  opacity: 0;
+  width: 100%;
+  height: 100px;
+  margin: 10px 0 0;
+  transition: opacity 200ms ease;
+}
+
+.Editor-dropArea.is-active {
+  opacity: 1;
+  border-radius: $halfBaseSize;
+  background: RGB(243, 246, 249);
 }

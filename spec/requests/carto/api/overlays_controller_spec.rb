@@ -139,7 +139,7 @@ describe Carto::Api::OverlaysController do
       }
 
       post_json overlays_url(params), payload do |response|
-        response.status.should eq 400
+        response.status.should eq 422
         response.body[:errors].should be
       end
 
@@ -205,7 +205,7 @@ describe Carto::Api::OverlaysController do
       }
 
       put_json overlay_url(params.merge(id: overlay.id)), payload do |response|
-        response.status.should eq 400
+        response.status.should eq 422
         response.body[:errors].should be
       end
 

@@ -19,7 +19,7 @@ module Carto
       rescue_from Carto::CartoError, with: :rescue_from_carto_error
 
       def index
-        collection = Carto::Overlay.where(visualization_id: @visualization.id).map do |overlay|
+        collection = @visualization.overlays.map do |overlay|
           Carto::Api::OverlayPresenter.new(overlay).to_poro
         end
         render_jsonp(collection)
@@ -44,7 +44,7 @@ module Carto
             if saved
               render_jsonp(Carto::Api::OverlayPresenter.new(overlay).to_poro)
             else
-              render_jsonp({ errors: overlay.errors }, 400)
+              render_jsonp({ errors: overlay.errors }, :unprocessable_entity)
             end
           end
         end
@@ -64,7 +64,7 @@ module Carto
             if saved
               render_jsonp(Carto::Api::OverlayPresenter.new(@overlay).to_poro)
             else
-              render_jsonp({ errors: @overlay.errors }, 400)
+              render_jsonp({ errors: @overlay.errors }, :unprocessable_entity)
             end
           end
         end
@@ -75,7 +75,7 @@ module Carto
           @stats_aggregator.timing('delete') do
             @overlay.destroy
           end
-          head 204
+          head :no_content
         end
       end
 

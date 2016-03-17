@@ -56,7 +56,7 @@ describe SessionsController do
     it "doesn't allows to login until admin does first" do
       Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
       normal_user_username = "ldap-user"
-      normal_user_password = "foobar"
+      normal_user_password = "2{Patrañas}"
       normal_user_email = "ldap-user@test.com"
       normal_user_cn = "cn=#{normal_user_username},#{@domain_bases.first}"
       ldap_entry_data = {
@@ -68,9 +68,7 @@ describe SessionsController do
 
       errors = {
         errors: {
-          organization: ["Organization owner is not set. Administrator must login first."],
-          password: ['must be at least 8 characters long, must contain at least 1 letter and must contain at ' +
-            'least 1 symbol or 1 number']
+          organization: ["Organization owner is not set. Administrator must login first."]
         }
       }
       ::CartoDB.expects(:notify_debug).with('User not valid at signup', errors).returns(nil)

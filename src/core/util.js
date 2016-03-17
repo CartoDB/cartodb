@@ -119,8 +119,12 @@ util._inferBrowser = function(ua){
   else if(ua.indexOf("Opera") > -1) browser.opera = ua;
   else if(ua.indexOf("Safari") > -1) browser.safari = ua;
   return browser;
-}
+};
 
 util.browser = util._inferBrowser();
+
+util.isMobileDevice = function () {
+  return /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+};
 
 module.exports = util;

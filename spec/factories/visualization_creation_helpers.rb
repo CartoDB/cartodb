@@ -56,11 +56,11 @@ shared_context 'visualization creation helpers' do
                   '"tile_style":"#districtes_barcelona {\n  polygon-fill:#FF6600;\n  polygon-opacity: 0.7;\n  ' \
                   'line-opacity:1;\n  line-color: #FFFFFF;\n}"}'.freeze
 
-  def create_layer(table_name, user_name, order = 1, kind = 'carto')
+  def create_layer(table_name, user_name, order = 1, kind = 'carto', infowindow = nil)
     options = JSON.parse(CARTO_OPTIONS)
     options["table_name"] = table_name
     options["user_name"] = user_name
-    FactoryGirl.build(:layer, kind: kind, options: options, order: order)
+    FactoryGirl.build(:layer, kind: kind, options: options, order: order, infowindow: infowindow)
   end
 
   before(:each) do

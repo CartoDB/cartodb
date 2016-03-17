@@ -309,7 +309,7 @@ class Carto::VisualizationQueryBuilder
     end
 
     if @organization_id
-      query = query.joins(user: :organization).where(organizations: { id: @organization_id })
+      query = query.joins(:user).where(users: { organization_id: @organization_id })
     end
 
     @include_associations.each { |association|

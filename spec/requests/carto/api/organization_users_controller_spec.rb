@@ -42,7 +42,7 @@ describe Carto::Api::OrganizationUsersController do
                   soft_here_isolines_limit: nil)
 
     params = {
-      password: 'patata',
+      password: '2{Patrañas}',
       quota_in_bytes: 1024
     }
     unless username.nil?
@@ -103,7 +103,7 @@ describe Carto::Api::OrganizationUsersController do
     it 'returns 410 if email is not present' do
       login(@organization.owner)
 
-      params = { username: random_username, password: 'patata' }
+      params = { username: random_username, password: '2{Patrañas}' }
       post api_v1_organization_users_create_url(name: @organization.name), params
 
       last_response.body.include?('email is not present').should be true
@@ -113,7 +113,7 @@ describe Carto::Api::OrganizationUsersController do
     it 'returns 410 if username is not present' do
       login(@organization.owner)
 
-      params = { email: "#{random_username}@cartodb.com", password: 'patata' }
+      params = { email: "#{random_username}@cartodb.com", password: '2{Patrañas}' }
       post api_v1_organization_users_create_url(name: @organization.name), params
 
       last_response.body.include?('username is not present').should be true
@@ -128,7 +128,8 @@ describe Carto::Api::OrganizationUsersController do
       post api_v1_organization_users_create_url(name: @organization.name), params
 
       last_response.status.should eq 410
-      last_response.body.include?('password is not present').should be true
+      last_response.body.include?('must be at least 8 characters long, must contain at least 1 letter and must ' +
+                                  'contain at least 1 symbol or 1 number').should be true
     end
 
     it 'correctly creates a user' do

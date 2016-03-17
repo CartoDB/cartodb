@@ -89,7 +89,6 @@ module Carto
       end
 
       def torque_layer_vizjson2_to_3(layer_data)
-        return layer_data unless
         layer_options = layer_data[:options]
 
         layer_options[:cartocss] = layer_options[:tile_style]

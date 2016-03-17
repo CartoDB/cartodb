@@ -24,7 +24,9 @@ module Carto
       @min_numbers = min_numbers
 
       @password = password.nil? ? '' : password
+    end
 
+    def after_initialize
       valid?
     end
 

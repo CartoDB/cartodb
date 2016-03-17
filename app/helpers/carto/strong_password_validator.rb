@@ -11,17 +11,17 @@ module Carto
     SYMBOLS = %w({ } [ ] , . < > ; : ‘ “ \? \/ \| \ ` ~ ! @ # $ % ^ & \* ( ) _ - \+ =).freeze
 
     def initialize(password,
-                   min_length = DEFAULT_MIN_LENGTH,
-                   max_length = DEFAULT_MAX_LENGTH,
-                   min_letters = DEFAULT_MIN_NUMBERS,
-                   min_symbols = DEFAULT_MIN_SYMBOLS,
-                   min_numbers = DEFAULT_MIN_LETTERS)
+                   min_length: DEFAULT_MIN_LENGTH,
+                   max_length: DEFAULT_MAX_LENGTH,
+                   min_letters: DEFAULT_MIN_NUMBERS,
+                   min_symbols: DEFAULT_MIN_SYMBOLS,
+                   min_numbers: DEFAULT_MIN_LETTERS)
 
-      @min_length  = min_length.nil?  ? DEFAULT_MIN_LENGTH  : min_length
-      @max_length  = max_length.nil?  ? DEFAULT_MAX_LENGTH  : max_length
-      @min_letters = min_letters.nil? ? DEFAULT_MIN_NUMBERS : min_letters
-      @min_symbols = min_symbols.nil? ? DEFAULT_MIN_SYMBOLS : min_symbols
-      @min_numbers = min_numbers.nil? ? DEFAULT_MIN_LETTERS : min_numbers
+      @min_length  = min_length
+      @max_length  = max_length
+      @min_letters = min_letters
+      @min_symbols = min_symbols
+      @min_numbers = min_numbers
 
       @password = password.nil? ? '' : password
     end

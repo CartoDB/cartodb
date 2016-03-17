@@ -7,36 +7,21 @@ module Carto
     PASSWORD = '2{Patrañas}'.freeze
 
     it 'should be invalid when password too short' do
-      validator = Carto::StrongPasswordValidator.new(PASSWORD,
-                                                     PASSWORD.length + 1,
-                                                     nil,
-                                                     nil,
-                                                     nil,
-                                                     nil)
+      validator = Carto::StrongPasswordValidator.new(PASSWORD, min_length: PASSWORD.length + 1)
 
       validator.valid?.should be_false
       validator.message.should == "must be at least #{PASSWORD.length + 1} characters long"
     end
 
     it 'should be invalid when password too long' do
-      validator = Carto::StrongPasswordValidator.new(PASSWORD,
-                                                     nil,
-                                                     PASSWORD.length - 1,
-                                                     nil,
-                                                     nil,
-                                                     nil)
+      validator = Carto::StrongPasswordValidator.new(PASSWORD, max_length: PASSWORD.length - 1)
 
       validator.valid?.should be_false
       validator.message.should == "must be at most #{PASSWORD.length - 1} characters long"
     end
 
     it 'should be invalid when password not enough numbers or symbols' do
-      validator = Carto::StrongPasswordValidator.new(PASSWORD,
-                                                     nil,
-                                                     nil,
-                                                     nil,
-                                                     3,
-                                                     2)
+      validator = Carto::StrongPasswordValidator.new(PASSWORD, min_symbols: 3, min_numbers: 2)
 
       validator.valid?.should be_false
       validator.message.should == "must contain at least 3 symbols or 2 numbers"

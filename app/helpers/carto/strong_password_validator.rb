@@ -41,11 +41,11 @@ module Carto
         @errors << "must be at most #{@max_length} #{'character'.pluralize(@max_length)} long"
       end
 
-      unless @password.scan(/[[:alpha:]]/).size > @min_letters
+      if @password.scan(/[[:alpha:]]/).size < @min_letters
         @errors << "must contain at least #{@min_letters} #{'letter'.pluralize(@min_letters)}"
       end
 
-      unless @password =~ /[#{SYMBOLS.join('|')}]{#{@min_symbols},}/ || @password =~ /\d{#{@min_numbers},}/
+      if @password.scan(/[#{SYMBOLS.join('|')}]/).size < @min_symbols && @password.scan(/\d/).size < @min_numbers
         @errors << "must contain at least #{@min_symbols} #{'symbol'.pluralize(@min_symbols)} or " +
                    "#{@min_numbers} #{'number'.pluralize(@min_numbers)}"
       end

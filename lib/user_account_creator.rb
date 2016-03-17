@@ -97,7 +97,7 @@ module CartoDB
           validate_organization_soft_limits
         end
 
-        unless Carto::Ldap::Manager.new.configuration_present?
+        unless @created_via == Carto::UserCreation::CREATED_VIA_LDAP
           password_validator = Carto::StrongPasswordValidator.new(@user.password)
 
           @custom_errors[:password] = [password_validator.message] unless password_validator.valid?

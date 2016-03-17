@@ -443,13 +443,6 @@ var Vis = View.extend({
     });
   },
 
-  /**
-   * Sets the API Key that is required to make authenticated requests to Windshaft (a.k.a the Tiler)
-   */
-  setAPIKey: function (apiKey) {
-    this._windshaftMap.setAPIKey(apiKey);
-  },
-
   centerMapToOrigin: function () {
     this.mapView.invalidateSize();
     this.map.reCenter();

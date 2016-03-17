@@ -41,7 +41,9 @@ module Carto
 
         layer_definitions_from_layer_data(layer_data).each do |layer_definition|
             infowindow = layer_definition[:infowindow]
-            infowindow[:template] = v3_infowindow_template(infowindow[:template_name], infowindow[:template])
+            if infowindow
+              infowindow[:template] = v3_infowindow_template(infowindow[:template_name], infowindow[:template])
+            end
         end
       end
 

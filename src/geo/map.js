@@ -81,18 +81,16 @@ var Map = Model.extend({
   },
 
   createPlainLayer: function (attrs, options) {
-    this._checkProperties(attrs, ['color']);
-    return this._addNewLayerModel('plain', attrs, options);
-  },
-
-  createBackgroundLayer: function (attrs, options) {
-    this._checkProperties(attrs, ['image']);
+    this._checkProperties(attrs, ['image|color']);
     return this._addNewLayerModel('plain', attrs, options);
   },
 
   _checkProperties: function (obj, requiredProperties) {
     var missingProperties = _.select(requiredProperties, function (property) {
-      return obj[property] === undefined;
+      var properties = property.split('|');
+      return _.all(properties, function (property) {
+        return obj[property] === undefined;
+      });
     });
     if (missingProperties.length) {
       throw new Error('The following attributes are missing: ' + missingProperties.join(','));

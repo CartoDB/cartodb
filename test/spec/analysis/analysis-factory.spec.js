@@ -10,6 +10,13 @@ describe('src/analysis/analysis-factory.js', function () {
           'estimated-population': ['source']
         };
         return map[analysisType];
+      },
+      getParamNamesForAnalysisType: function (analysisType) {
+        var map = {
+          'trade-area': ['kind', 'time'],
+          'estimated-population': ['columnName']
+        };
+        return map[analysisType];
       }
     };
     this.analysisCollection = new Backbone.Collection();
@@ -25,17 +32,13 @@ describe('src/analysis/analysis-factory.js', function () {
       var subwayStops = this.analysisFactory.analyse({
         id: 'a0',
         type: 'source',
-        params: {
-          query: 'SELECT * FROM subway_stops'
-        }
+        query: 'SELECT * FROM subway_stops'
       });
 
       expect(subwayStops.attributes).toEqual({
         id: 'a0',
         type: 'source',
-        params: {
-          query: 'SELECT * FROM subway_stops'
-        }
+        query: 'SELECT * FROM subway_stops'
       });
     });
 
@@ -43,9 +46,7 @@ describe('src/analysis/analysis-factory.js', function () {
       var subwayStops = this.analysisFactory.analyse({
         id: 'a0',
         type: 'source',
-        params: {
-          query: 'SELECT * FROM subway_stops'
-        }
+        query: 'SELECT * FROM subway_stops'
       });
 
       expect(this.analysisCollection.at(0)).toEqual(subwayStops);
@@ -96,8 +97,8 @@ describe('src/analysis/analysis-factory.js', function () {
           }
         }
       );
-      var tradeArea = estimatedPopulation.get('params').source;
-      var subwayStops = tradeArea.get('params').source;
+      var tradeArea = estimatedPopulation.get('source');
+      var subwayStops = tradeArea.get('source');
       expect(tradeArea.get('id')).toEqual('a1');
       expect(subwayStops.get('id')).toEqual('a0');
     });

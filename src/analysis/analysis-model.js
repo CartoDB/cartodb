@@ -16,12 +16,32 @@ module.exports = Model.extend({
     this._camshaftReference = opts.camshaftReference;
     this._map = opts.map;
 
-    this.bind('change:params', this._reloadMap, this);
+    _.each(this._getParamNames(), function (paramName) {
+      this.bind('change:' + paramName, this._reloadMap, this);
+    }, this);
   },
 
   _reloadMap: function (opts) {
     opts = opts || {};
     this._map.reload(opts);
+  },
+
+  update: function (attrs, options) {
+    options = options || {};
+
+    _.each(attrs, function (value, name) {
+      if (this._getParamNames().indexOf(name) < 0) {
+        throw new Error("Only '" + this._getParamNames().join("', '") + "' attribute(s) can be changed");
+      }
+    }, this);
+
+    this.set(attrs, {
+      silent: options.silent
+    });
+  },
+
+  remove: function () {
+    this.trigger('destroy', this);
   },
 
   findAnalysisById: function (analysisId) {
@@ -30,7 +50,7 @@ module.exports = Model.extend({
     }
     var sources = _.chain(this._getSourceNames())
       .map(function (sourceName) {
-        var source = this.get('params')[sourceName];
+        var source = this.get(sourceName);
         return source.findAnalysisById(analysisId);
       }, this)
       .compact()
@@ -40,27 +60,22 @@ module.exports = Model.extend({
   },
 
   _getSourceNames: function () {
-    return this._camshaftReference.getSourceNamesForAnalysisType([this.get('type')]);
-  },
-
-  remove: function () {
-    this.trigger('destroy', this);
+    return this._camshaftReference.getSourceNamesForAnalysisType(this.get('type'));
   },
 
   toJSON: function () {
-    var params = _.clone(this.get('params'));
-    // TODO: Instead of serializing all attributes, we could use the camshaft-reference
-    // to pick the attributes that should be serialized
-    var attributes = _.clone(this.attributes);
-    var sources = {};
-    var sourceNames = this._getSourceNames();
-    for (var i in sourceNames) {
-      var sourceName = sourceNames[i];
-      sources[sourceName] = this.get('params')[sourceName].toJSON();
-    }
+    var json = _.pick(this.attributes, 'id', 'type');
+    json.params = _.pick(this.attributes, this._getParamNames());
+    _.each(this._getSourceNames(), function (sourceName) {
+      var source = {};
+      source[sourceName] = this.get(sourceName).toJSON();
+      _.extend(json.params, source);
+    }, this);
 
-    return _.extend(attributes, {
-      params: _.extend(params, sources)
-    });
+    return json;
+  },
+
+  _getParamNames: function () {
+    return this._camshaftReference.getParamNamesForAnalysisType(this.get('type'));
   }
 });

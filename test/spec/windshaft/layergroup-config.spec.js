@@ -58,6 +58,20 @@ describe('windshaft/layergroup-config', function () {
           throw new Error('analysis type ' + analysisType + ' not supported');
         }
         return map[analysisType];
+      },
+
+      getParamNamesForAnalysisType: function (analysisType) {
+        var map = {
+          'source': ['query'],
+          'trade-area': ['kind', 'time'],
+          'estimated-population': ['columnName'],
+          'point-in-polygon': [],
+          'union': ['join_on']
+        };
+        if (!map[analysisType]) {
+          throw new Error('analysis type ' + analysisType + ' not supported');
+        }
+        return map[analysisType];
       }
     };
 

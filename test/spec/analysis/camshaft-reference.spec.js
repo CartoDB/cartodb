@@ -8,4 +8,12 @@ describe('src/analysis/camshaft-reference', function () {
       expect(camshaftReference.getSourceNamesForAnalysisType('trade-area')).toEqual(['source']);
     });
   });
+
+  describe('.getParamNamesForAnalysisType', function () {
+    it('should return the params names for a given analyses type', function () {
+      expect(camshaftReference.getParamNamesForAnalysisType('source')).toEqual(['query']);
+      expect(camshaftReference.getParamNamesForAnalysisType('point-in-polygon')).toEqual([]);
+      expect(camshaftReference.getParamNamesForAnalysisType('trade-area')).toEqual(['kind', 'time']);
+    });
+  });
 });

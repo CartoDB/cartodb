@@ -47,9 +47,8 @@ AnalysisFactory.prototype._getAnalysisAttributesFromAnalysisDefinition = functio
   _.each(sourceNamesForAnalysisType, function (sourceName) {
     sourceNodes[sourceName] = this.analyse(analysisDefinition.params[sourceName]);
   }, this);
-  return _.extend(analysisDefinition, {
-    params: _.extend(analysisDefinition.params, sourceNodes)
-  });
+
+  return _.omit(_.extend(analysisDefinition, analysisDefinition.params, sourceNodes), 'params');
 };
 
 AnalysisFactory.prototype._onAnalysisRemoved = function (analysis) {

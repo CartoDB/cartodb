@@ -1,21 +1,32 @@
 var camshaftReference = require('camshaft-reference').getVersion('latest');
-var NODE_TYPE = 'node';
+var PARAM_TYPES = {
+  NODE: 'node',
+  NUMBER: 'number',
+  STRING: 'string',
+  ENUM: 'enum'
+};
+
 var SOURCE_ANALYSIS_TYPE = 'source';
 var ANALYSIS_TYPE_TO_SOURCE_PARAM_NAMES_MAP = {};
 ANALYSIS_TYPE_TO_SOURCE_PARAM_NAMES_MAP[SOURCE_ANALYSIS_TYPE] = [];
+var ANALYSIS_TYPE_TO_PARAM_NAMES_MAP = {};
 
 var analysesReference = camshaftReference.analyses;
 if (!analysesReference) {
   throw new Error('Error loading the reference for Camshaft analyses');
 }
 
-// Populate the Map of analyses
+// Populate the analysis source and param names maps.
 for (var analysisType in analysesReference) {
   var analysisParams = analysesReference[analysisType].params;
   for (var paramName in analysisParams) {
-    if (analysisParams[paramName].type === NODE_TYPE) {
-      ANALYSIS_TYPE_TO_SOURCE_PARAM_NAMES_MAP[analysisType] = ANALYSIS_TYPE_TO_SOURCE_PARAM_NAMES_MAP[analysisType] || [];
+    ANALYSIS_TYPE_TO_PARAM_NAMES_MAP[analysisType] = ANALYSIS_TYPE_TO_PARAM_NAMES_MAP[analysisType] || [];
+    ANALYSIS_TYPE_TO_SOURCE_PARAM_NAMES_MAP[analysisType] = ANALYSIS_TYPE_TO_SOURCE_PARAM_NAMES_MAP[analysisType] || [];
+    var paramType = analysisParams[paramName].type;
+    if (paramType === PARAM_TYPES.NODE) {
       ANALYSIS_TYPE_TO_SOURCE_PARAM_NAMES_MAP[analysisType].push(paramName);
+    } else if ([PARAM_TYPES.STRING, PARAM_TYPES.NUMBER, PARAM_TYPES.ENUM].indexOf(paramType) >= 0) {
+      ANALYSIS_TYPE_TO_PARAM_NAMES_MAP[analysisType].push(paramName);
     }
   }
 }
@@ -28,5 +39,14 @@ module.exports = {
     }
 
     return sourceNames;
+  },
+
+  getParamNamesForAnalysisType: function (analysisType) {
+    var paramNames = ANALYSIS_TYPE_TO_PARAM_NAMES_MAP[analysisType];
+    if (!paramNames) {
+      throw new Error('param names for analysis of type ' + analysisType + " couldn't be found");
+    }
+
+    return paramNames;
   }
 };

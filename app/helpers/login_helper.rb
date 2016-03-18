@@ -24,7 +24,12 @@ module LoginHelper
   end
 
   def login_org_avatar
-    @organization && @organization.name != "team" && !@organization.avatar_url.blank?
+    if @organization && @organization.name != "team" && !@organization.avatar_url.blank?
+      @organization.avatar_url = @organization.avatar_url.sub(/^https?\:/, '')
+      return true
+    else
+      return false
+    end
   end
 
   def forget_password_url

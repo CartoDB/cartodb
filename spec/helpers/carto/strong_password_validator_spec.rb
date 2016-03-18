@@ -46,7 +46,15 @@ module Carto
       validator.valid?.should be_true
     end
 
-    it 'should be invalidate a nil password' do
+    it 'should invalidate a nil password' do
+      validator = Carto::StrongPasswordValidator.new(nil)
+
+      validator.valid?.should be_false
+      validator.message.should == 'must be at least 8 characters long, must contain at least 1 letter and must ' +
+                                  'contain at least 1 symbol or 1 number'
+    end
+
+    it 'should invalidate an empty password' do
       validator = Carto::StrongPasswordValidator.new(nil)
 
       validator.valid?.should be_false

@@ -15,7 +15,11 @@ module CartoDB
         Rollbar.log('warning', nil, 'Could not report to Rollbar', stack: caller)
       end
     rescue
-      # Do not bubble errors generated during exception reporting
+      # Last chance to report error
+      begin
+        Rollbar.error(e)
+      rescue
+      end
     end
 
     def self.critical(exception: nil, message: nil, user: nil, **additional_data)

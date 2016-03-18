@@ -11,12 +11,20 @@
   padding: $baseSize * 2;
   border: 1px solid $cSecondaryLine;
   border-radius: $halfBaseSize;
-
-  &:last-child {
-    margin-bottom: 0;
-  }
+  background: #FFF;
 }
-
+.Editor-ListLayer-item.last-child {
+  margin-bottom: 0;
+}
+.Editor-ListLayer-item.is-active {
+  border: 1px solid rgb(106, 181, 227);
+}
+.Editor-ListLayer-item.ui-draggable-dragging {
+  cursor: move;
+  box-shadow: rgba(0, 0, 0, 0.1) 3px 3px 1px;
+  opacity: 0.8;
+  z-index: 1000;
+}
 .Editor-ListLayer-media {
   @include display-flex();
   @include align-items(center);
@@ -64,6 +72,7 @@
   @include display-flex();
   @include align-items(center);
   margin-bottom: 8px;
+  background: #FFF;
 }
 
 .Editor-ListAnalysis-item:last-child {

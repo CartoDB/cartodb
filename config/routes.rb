@@ -9,6 +9,10 @@
 # Can be also done at controller source files by using -> skip_before_filter :ensure_org_url_if_org_user
 
 CartoDB::Application.routes.draw do
+
+  # SAML authentication
+  post '/(user/:user_domain)(u/:user_domain)/:saml_idp/acs' => 'saml#acs'
+
   # Double use: for user public dashboard AND org dashboard
   get   '/[(user/:user_domain)(u/:user_domain)]'                 => 'admin/pages#public', as: :root
   root :to => 'admin/pages#index'

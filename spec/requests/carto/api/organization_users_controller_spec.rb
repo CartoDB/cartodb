@@ -128,8 +128,7 @@ describe Carto::Api::OrganizationUsersController do
       post api_v1_organization_users_create_url(name: @organization.name), params
 
       last_response.status.should eq 410
-      last_response.body.include?('must be at least 8 characters long, must contain at least 1 letter and must ' +
-                                  'contain at least 1 symbol or 1 number').should be true
+      last_response.body.include?('password is not present').should be true
     end
 
     it 'correctly creates a user' do

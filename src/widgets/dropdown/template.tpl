@@ -1,4 +1,4 @@
-<ul class="CDB-Text CDB-Size-medium">
+<ul class="CDB-Dropdown-list CDB-Text CDB-Size-medium">
   <li class="CDB-Dropdown-item">
     <button class="CDB-Dropdown-link js-toggle">Toggle widget</button>
   </li>

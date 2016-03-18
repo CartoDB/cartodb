@@ -1,5 +1,5 @@
 <div class="CDB-Widget-title CDB-Widget-contentSpaced">
-  <h3 class="CDB-Text CDB-Size-large is-overflow" title="<%- title %>"><%- title %></h3>
+  <h3 class="CDB-Text CDB-Size-large u-ellipsis" title="<%- title %>"><%- title %></h3>
   <div class="CDB-Widget-options CDB-Widget-contentSpaced">
     <button class="CDB-Widget-buttonIcon CDB-Widget-buttonIcon--circle js-sizes
       <%- isSizesApplied ? 'is-selected' : '' %>

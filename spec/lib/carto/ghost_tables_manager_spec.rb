@@ -1,9 +1,10 @@
 # encoding utf-8
 
 require_relative '../../spec_helper_min.rb'
+require_relative '../../../lib/carto/ghost_tables_manager'
 
 module Carto
-  describe 'GhostTablesManager' do
+  describe GhostTablesManager do
     before(:all) do
       @user = FactoryGirl.create(:carto_user)
 

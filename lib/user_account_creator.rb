@@ -99,7 +99,6 @@ module CartoDB
 
         unless @created_via == Carto::UserCreation::CREATED_VIA_LDAP
           password_validator = Carto::StrongPasswordValidator.new
-
           password_errors = password_validator.validate(@user.password)
 
           unless password_errors.empty?

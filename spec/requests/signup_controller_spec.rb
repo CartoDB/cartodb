@@ -62,6 +62,7 @@ describe SignupController do
     before(:each) do
       @organization.auth_username_password_enabled = true
       @organization.auth_google_enabled = true
+      @organization.strong_passwords_enabled = true
       @organization.save
     end
 

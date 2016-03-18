@@ -14,6 +14,7 @@ require_relative './overlay/member'
 require_relative './overlay/collection'
 require_relative './overlay/presenter'
 require_relative '../../services/importer/lib/importer/query_batcher'
+require_relative '../../services/importer/lib/importer/batch_api_query'
 require_relative '../../services/importer/lib/importer/cartodbfy_time'
 require_relative '../../services/datasources/lib/datasources/decorators/factory'
 require_relative '../../services/table-geocoder/lib/internal-geocoder/latitude_longitude'
@@ -467,7 +468,9 @@ class Table
   end
 
   def optimize
-    owner.in_database({as: :superuser, statement_timeout: 3600000}).run("VACUUM FULL #{qualified_table_name}")
+    CartoDB::Importer2::BatchApiQuery.new(owner.username, owner.api_key).execute(
+      %Q{"VACUUM FULL #{qualified_table_name}"}
+    )
   rescue => e
     CartoDB::notify_exception(e, { user: owner })
     false
@@ -1122,9 +1125,11 @@ class Table
 
     importer_stats.timing('cartodbfy') do
       owner.in_database do |user_database|
-        user_database.run(%Q{
-          SELECT cartodb.CDB_CartodbfyTable('#{schema_name}'::TEXT,'#{table_name}'::REGCLASS);
-        })
+        CartoDB::Importer2::BatchApiQuery.new(owner.username, owner.api_key).execute(
+          %Q{
+            SELECT cartodb.CDB_CartodbfyTable('#{schema_name}'::TEXT,'#{table_name}'::REGCLASS);
+          }
+        )
       end
     end
 

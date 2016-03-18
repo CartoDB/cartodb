@@ -222,10 +222,14 @@ module CartoDB
       end
 
       def persist_metadata(result, name, data_import_id)
+        runner.log.append("Persist metadata: Before register the table name")
         table_registrar.register(name, data_import_id)
+        runner.log.append("Persist metadata: After register the table name")
         @table = table_registrar.table
         @imported_table_visualization_ids << @table.table_visualization.id
+        runner.log.append("Persist metadata: Before calculate the bounding box")
         BoundingBoxHelper.update_visualizations_bbox(table)
+        runner.log.append("Persist metadata: After calculate the bounding box")
         self
       end
 

@@ -12,17 +12,15 @@ module Carto
     end
 
     def lock
+      raise 'no block given' unless block_given?
+
       is_locked = @redis_object.set(@bolt_key, true, px: @ttl_ms, nx: true)
 
-      if block_given?
-        begin
-          yield is_locked
-          !!is_locked
-        ensure
-          unlock if is_locked
-        end
-      else
-        is_locked
+      begin
+        yield if is_locked
+        !!is_locked
+      ensure
+        unlock if is_locked
       end
     end
 

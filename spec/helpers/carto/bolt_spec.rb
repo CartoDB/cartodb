@@ -12,44 +12,32 @@ module Carto
       Carto::Bolt.new('manolo', ttl_ms: 1234).info.should include(ttl_ms: 1234)
     end
 
-    it 'should not allow to lock bolt twice' do
-      @bolt.lock.should be_true
-      @bolt.lock.should be_false
-    end
-
     it 'should return false on unlock if already unlocked' do
-      @bolt.unlock.should be_true
+      @bolt.unlock.should be_false
     end
 
-    it 'should perform lock and unlock without block' do
-      @bolt.lock.should be_true
-      @bolt.unlock.should be_true
+    it 'should expect block' do
+      expect { @bolt.lock.should_raise }.to raise_error('no block given')
     end
 
     it 'should allow access in block if locked and unlocked automatically' do
-      @bolt.lock do |locked|
-        locked.should be_true
-      end
+      @bolt.lock {}.should be_true
 
       @bolt.unlock.should be_false
     end
 
-    it 'should not allow access in block if locked' do
-      @bolt.lock.should be_true
+    it 'should not allow access if locked' do
+      @bolt.lock { @bolt.lock {}.should be_false }.should be_true
 
-      @bolt.lock do |locked|
-        locked.should be_false
-      end
-
-      @bolt.unlock.should be_true
+      @bolt.unlock.should be_false
     end
 
     it 'should handle unlock in lock block' do
-      @bolt.lock do |locked|
-        locked.should be_true
-
+      got_locked = @bolt.lock do
         @bolt.unlock.should be_true
       end
+
+      got_locked.should be_true
 
       @bolt.unlock.should be_false
     end
@@ -57,11 +45,13 @@ module Carto
     it 'should expire a lock after ttl_ms' do
       bolt = Carto::Bolt.new('manolo', ttl_ms: 200)
 
-      bolt.lock.should be_true
+      got_locked = bolt.lock do
+        sleep(0.5.second)
 
-      sleep(0.5.second)
+        bolt.unlock.should be_false
+      end
 
-      bolt.unlock.should be_false
+      got_locked.should be_true
     end
   end
 end

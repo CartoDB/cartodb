@@ -170,7 +170,7 @@ WORKING_SPECS_5 = \
 	spec/models/overlay/member_spec.rb \
 	spec/models/overlay/collection_spec.rb \
 	spec/lib/carto/ghost_tables_manager_spec.rb \
-	spec/helpers/carto/bolt_spec.rb \
+	spec/lib/carto/bolt_spec.rb \
   $(NULL)
 
 # TODO: This block also breaks if run alongside other specs, needs checking why

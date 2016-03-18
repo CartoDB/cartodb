@@ -175,26 +175,31 @@ var WindshaftMap = Backbone.Model.extend({
     };
   },
 
+  /**
+   * Generates the URL template for a given tile.
+   *
+   * EG: http://example.com:8181/api/v1/map/LAYERGROUP_ID/1,2/{z}/{x}/{y}.png?
+   */
   _getTileURLTemplate: function (subdomain, layerIndexes, layerType, params) {
-    return [
-      this.getBaseURL(subdomain),
-      '/',
-      layerIndexes.join(','),
-      '/{z}/{x}/{y}',
-      this.TILE_EXTENSIONS_BY_LAYER_TYPE[layerType],
-      (params ? '?' + params : '')
-    ].join('');
+    var baseURL = this.getBaseURL(subdomain);
+    var tileSchema = '{z}/{x}/{y}';
+    var tileExtension = this.TILE_EXTENSIONS_BY_LAYER_TYPE[layerType];
+    var urlParams = params ? '?' + params : '';
+
+    return baseURL + '/' + layerIndexes.join(',') + '/' + tileSchema + tileExtension + urlParams;
   },
 
+  /**
+   * Generates the URL template for the UTF-8 grid of a given tile and layer.
+   *
+   * EG: http://example.com:8181/api/v1/map/LAYERGROUP_ID/1/{z}/{x}/{y}.grid.json
+   */
   _getGridURLTemplate: function (subdomain, layerIndex, params) {
-    return [
-      this.getBaseURL(subdomain),
-      '/',
-      layerIndex,
-      '/{z}/{x}/{y}',
-      '.grid.json',
-      (params ? '?' + params : '')
-    ].join('');
+    var baseURL = this.getBaseURL(subdomain);
+    var tileSchema = '{z}/{x}/{y}';
+    var urlParams = params ? '?' + params : '';
+
+    return baseURL + '/' + layerIndex + '/' + tileSchema + '.grid.json' + urlParams;
   },
 
   getLayerMeta: function (layerIndex) {

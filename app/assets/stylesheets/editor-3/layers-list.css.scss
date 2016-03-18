@@ -150,15 +150,15 @@
 }
 
 .Editor-dropArea {
-  opacity: 0;
   width: 100%;
   height: 100px;
   margin: 10px 0 0;
   transition: opacity 200ms ease;
+  border-radius: $halfBaseSize;
+  opacity: 0;
 }
 
 .Editor-dropArea.is-active {
+  background: $cSecondaryBackground;
   opacity: 1;
-  border-radius: $halfBaseSize;
-  background: RGB(243, 246, 249);
 }

@@ -18,7 +18,7 @@ describe Carto::Overlay do
 
   describe '#create' do
     it 'creates a new overlay' do
-      overlay = Carto::Overlay.new(visualization_id: @visualization.id, type: 'header', template: 'wadus', order: 0)
+      overlay = @visualization.overlays.new(type: 'header', template: 'wadus', order: 0)
       Visualization::Member.any_instance.stubs(:invalidate_cache).once
       overlay.save.should be_true
 
@@ -30,26 +30,26 @@ describe Carto::Overlay do
     end
 
     it 'validates unique overlays constraints' do
-      overlay = Carto::Overlay.new(visualization_id: @visualization.id, type: 'search')
+      overlay = @visualization.overlays.new(type: 'search')
       overlay.save.should be_true
 
-      overlay2 = Carto::Overlay.new(visualization_id: @visualization.id, type: 'search')
+      overlay2 = @visualization.overlays.new(type: 'search')
       overlay2.save.should be_false
     end
 
     it 'allows multiple overlays for non-unique types' do
-      overlay = Carto::Overlay.new(visualization_id: @visualization.id, type: 'text')
+      overlay = @visualization.overlays.new(type: 'text')
       overlay.save.should be_true
 
-      overlay2 = Carto::Overlay.new(visualization_id: @visualization.id, type: 'text')
+      overlay2 = @visualization.overlays.new(type: 'text')
       overlay2.save.should be_true
     end
 
     it 'allows deletion and re-creation of unique types' do
-      overlay = Carto::Overlay.new(visualization_id: @visualization.id, type: 'fullscreen')
+      overlay = @visualization.overlays.new(type: 'fullscreen')
       overlay.save.should be_true
 
-      overlay2 = Carto::Overlay.new(visualization_id: @visualization.id, type: 'fullscreen')
+      overlay2 = @visualization.overlays.new(type: 'fullscreen')
       overlay2.save.should be_false
 
       overlay.destroy.should be_true
@@ -59,7 +59,7 @@ describe Carto::Overlay do
 
   describe '#update' do
     it 'updates overlays' do
-      overlay = Carto::Overlay.new(visualization_id: @visualization.id, type: 'text', template: 'wadus', order: 0)
+      overlay = @visualization.overlays.new(type: 'text', template: 'wadus', order: 0)
       overlay.save.should be_true
 
       overlay.template = 'image'
@@ -75,10 +75,10 @@ describe Carto::Overlay do
     end
 
     it 'validates unique overlays constraints' do
-      overlay = Carto::Overlay.new(visualization_id: @visualization.id, type: 'zoom')
+      overlay = @visualization.overlays.new(type: 'zoom')
       overlay.save.should be_true
 
-      overlay2 = Carto::Overlay.new(visualization_id: @visualization.id, type: 'text')
+      overlay2 = @visualization.overlays.new(type: 'text')
       overlay2.save.should be_true
 
       overlay2.type = 'zoom'
@@ -88,7 +88,7 @@ describe Carto::Overlay do
 
   describe '#delete' do
     it 'deletes overlays' do
-      overlay = Carto::Overlay.new(visualization_id: @visualization.id, type: 'text', template: 'wadus', order: 0)
+      overlay = @visualization.overlays.new(type: 'text', template: 'wadus', order: 0)
       overlay.save.should be_true
 
       Visualization::Member.any_instance.stubs(:invalidate_cache).once
@@ -99,7 +99,7 @@ describe Carto::Overlay do
 
   describe '#hide/show' do
     it 'should change options to visible = false/true' do
-      overlay = Carto::Overlay.new(visualization_id: @visualization.id, type: 't', options: { 'display' => true })
+      overlay = @visualization.overlays.new(type: 'text', options: { 'display' => true })
       overlay.hidden?.should be_false
 
       overlay.hide

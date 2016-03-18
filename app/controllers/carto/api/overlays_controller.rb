@@ -13,7 +13,6 @@ module Carto
       before_filter :load_visualization
       before_filter :check_current_user_has_permissions_on_vis
       before_filter :load_overlay, only: [:show, :update, :destroy]
-      before_filter :check_overlay_is_in_visualization, only: [:show, :update, :destroy]
 
       rescue_from StandardError, with: :rescue_from_standard_error
       rescue_from Carto::CartoError, with: :rescue_from_carto_error
@@ -99,14 +98,8 @@ module Carto
 
       def load_overlay
         overlay_id = uuid_parameter('id')
-        @overlay = Carto::Overlay.where(id: overlay_id).first
+        @overlay = @visualization.overlays.where(id: overlay_id).first
         raise Carto::LoadError.new("Overlay not found: #{overlay_id}") unless @overlay
-      end
-
-      def check_overlay_is_in_visualization
-        unless @overlay.visualization_id == @visualization.id
-          raise Carto::LoadError.new("Overlay not in visualization: #{overlay_id} in viz #{@visualization.id}")
-        end
       end
     end
   end

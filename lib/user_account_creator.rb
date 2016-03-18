@@ -98,9 +98,13 @@ module CartoDB
         end
 
         unless @created_via == Carto::UserCreation::CREATED_VIA_LDAP
-          password_validator = Carto::StrongPasswordValidator.new(@user.password)
+          password_validator = Carto::StrongPasswordValidator.new
 
-          @custom_errors[:password] = [password_validator.message] unless password_validator.valid?
+          password_errors = password_validator.validate(@user.password)
+
+          unless password_errors.empty?
+            @custom_errors[:password] = [password_validator.formatted_error_message(password_errors)]
+          end
         end
       end
 

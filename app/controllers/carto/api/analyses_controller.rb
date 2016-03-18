@@ -26,19 +26,17 @@ module Carto
       end
 
       def create
-        analysis_params = params_from_request
-
         analysis = Carto::Analysis.new(
           visualization_id: @visualization.id,
           user_id: current_user.id,
-          params: analysis_params
+          analysis_definition: analysis_definition_from_request.to_json
         )
         analysis.save!
         render_jsonp(AnalysisPresenter.new(analysis).to_poro, 201)
       end
 
       def update
-        @analysis.params = params_from_request
+        @analysis.analysis_definition = analysis_definition_from_request.to_json
         @analysis.save!
         render_jsonp(AnalysisPresenter.new(@analysis).to_poro, 200)
       end
@@ -50,24 +48,46 @@ module Carto
 
       private
 
-      def params_from_request
-        analysis_params = request.raw_post
-        raise Carto::UnprocesableEntityError.new("Params not present") unless analysis_params.present?
-        params_json = begin
-          JSON.parse(analysis_params)
-        rescue => e
-          raise Carto::UnprocesableEntityError.new("Error parsing params: #{e.message}")
-        end
-        raise Carto::UnprocesableEntityError.new("Empty params") if params_json.empty?
+      def analysis_definition_from_request
+        analysis_json = json_post(request.raw_post)
 
-        analysis_params
+        if analysis_json.nil? || analysis_json.empty?
+          raise Carto::UnprocesableEntityError.new("Empty analysis")
+        end
+
+        analysis_definition = analysis_json['analysis_definition']
+        if analysis_definition.nil? || analysis_definition.empty? || analysis_definition.class == String
+          raise Carto::UnprocesableEntityError.new("Invalid analysis definition")
+        end
+
+        analysis_definition
+      end
+
+      def json_post(raw_post = request.raw_post)
+        @json_post ||= (raw_post.present? ? JSON.parse(raw_post) : nil)
+      rescue => e
+        # Malformed JSON is not our business
+        CartoDB.notify_warning_exception(e)
+        raise UnprocesableEntityError.new("Malformed JSON: #{raw_post}")
       end
 
       def load_visualization
         visualization_id = params[:visualization_id]
 
+        if payload_visualization_id.present? && payload_visualization_id != visualization_id
+          raise UnprocesableEntityError.new("url vis (#{visualization_id}) != payload (#{payload_visualization_id})")
+        end
+
         @visualization = Carto::Visualization.where(id: visualization_id).first if visualization_id
         raise LoadError.new("Visualization not found: #{visualization_id}") unless @visualization
+      end
+
+      def payload_visualization_id
+        json_post.present? ? json_post['visualization_id'] : nil
+      end
+
+      def payload_analysis_id
+        json_post.present? ? json_post['id'] : nil
       end
 
       def check_user_can_add_analysis
@@ -77,6 +97,10 @@ module Carto
       end
 
       def load_analysis
+        if payload_analysis_id.present? && payload_analysis_id != params[:id]
+          raise UnprocesableEntityError.new("url analysis (#{params[:id]}) != payload (#{payload_analysis_id})")
+        end
+
         unless params[:id].nil?
           @analysis = Carto::Analysis.where(id: params[:id]).first if is_uuid?(params[:id])
 

@@ -1492,6 +1492,47 @@ describe Carto::Api::VisualizationsController do
         @visualization.delete
       end
 
+      describe 'layer templates' do
+        let(:infowindow) do
+          # TODO: simplify. Technical debt: #6912
+          {"fields": [{"name": "country","title": true,"position":1}],"template_name":"table/views/infowindow_light","template":"","alternative_names":{},"width":226,"maxHeight":180}
+        end
+
+        # TODO: uncouple this from the implementation. Technical debt: #6912
+        let(:v2_infowindow_light_template) do
+          "<div class=\"cartodb-popup v2\">\n  <a href=\"#close\" class=\"cartodb-popup-close-button close\">x</a>\n  <div class=\"cartodb-popup-content-wrapper\">\n    <div class=\"cartodb-popup-content\">\n      {{#content.fields}}\n        {{#title}}<h4>{{title}}</h4>{{/title}}\n        {{#value}}\n          <p {{#type}}class=\"{{ type }}\"{{/type}}>{{{ value }}}</p>\n        {{/value}}\n        {{^value}}\n          <p class=\"empty\">null</p>\n        {{/value}}\n      {{/content.fields}}\n    </div>\n  </div>\n  <div class=\"cartodb-popup-tip-container\"></div>\n</div>\n"
+        end
+        let(:v3_infowindow_light_template) do
+          '{{#title}}<h5 class="CDB-infowindow-subtitle">{{title}}</h5>{{/title}}'
+        end
+
+        # TODO: tooltips, named map test and "don't overwrite custom template" test. Technical debt: #6912
+        it 'uses v3 infowindows templates' do
+          layer = create_layer('table_1', @user_1.username, 1, 'carto', infowindow).save
+          @visualization.map.add_layer(layer)
+
+          # vizjson v2 doesn't change
+          get_json api_v2_visualizations_vizjson_url(user_domain: @user_1.username,
+                                                     id: @visualization.id,
+                                                     api_key: @user_1.api_key), @headers do |request|
+            request.status.should eq 200
+            vizjson = request.body
+            infowindow = request.body[:layers][0]['options']['layer_definition']['layers'][0]['infowindow']
+            infowindow['template_name'].should eq infowindow['template_name']
+            infowindow['template'].should eq v2_infowindow_light_template
+          end
+          get_json api_v3_visualizations_vizjson_url(user_domain: @user_1.username,
+                                                     id: @visualization.id,
+                                                     api_key: @user_1.api_key), @headers do |request|
+            request.status.should eq 200
+            vizjson = request.body
+            infowindow = request.body[:layers][0]['options']['layer_definition']['layers'][0]['infowindow']
+            infowindow['template_name'].should eq infowindow['template_name']
+            infowindow['template'].should include(v3_infowindow_light_template)
+          end
+        end
+      end
+
       describe 'torque layers' do
         it 'contains cartocss and sql instead of tile_style and query, and includes cartocss_version' do
           layer = create_layer('table_1', @user_1.username, 1, 'torque').save

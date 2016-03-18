@@ -9,6 +9,7 @@
     var upgrade_url = "<%= current_user.upgrade_url(request.protocol) %>";
     var can_change_email = <%= @user.can_change_email? %>;
     var iframe_src = '';
+    var avatar_valid_extensions = <%= raw @avatar_valid_extensions %>;
   </script>
   <%= javascript_include_tag 'cdb.js', 'models.js', 'account_templates.js', 'account_deps.js', 'account.js' -%>
 <% end %>

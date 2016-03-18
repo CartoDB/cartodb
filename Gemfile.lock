@@ -250,8 +250,8 @@ GEM
     resque-metrics (0.1.1)
       resque (~> 1.19)
     retriable (1.4.1)
-    rollbar (0.12.14)
-      multi_json (~> 1.3)
+    rollbar (2.8.3)
+      multi_json
     roo (1.13.2)
       nokogiri
       rubyzip
@@ -401,7 +401,7 @@ DEPENDENCIES
   resque (= 1.25.2)
   resque-metrics (= 0.1.1)
   retriable (= 1.4.1)
-  rollbar (= 0.12.14)
+  rollbar (~> 2.8.3)
   roo (= 1.13.2)
   rspec-rails (= 2.12.0)
   ruby-prof (= 0.15.1)

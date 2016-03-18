@@ -12,9 +12,7 @@ module Carto
     def sync_user_schema_and_tables_metadata
       bolt = Carto::Bolt.new("#{@user.id}:#{MUTEX_REDIS_KEY}", ttl_ms: MUTEX_TTL_MS)
 
-      bolt.lock do |locked|
-        next unless locked
-
+      got_locked = bolt.lock do
         # Lock aquired, inside the critical zone
         unless non_linked_tables.empty?
           relink_renamed_tables
@@ -23,8 +21,11 @@ module Carto
 
         unlink_deleted_tables
       end
-
       # Left the critical zone, bolt automatically unlocked
+
+      unless got_locked
+        # TODO: Handle requests that failed to run due to bolt being locked
+      end
     end
 
     # determine linked tables vs cartodbfied tables consistency; i.e.: needs to run sync

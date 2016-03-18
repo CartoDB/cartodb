@@ -4,19 +4,15 @@
       <div class="Navbar-header">
         <div class="Navbar-title">
           <picture class="Navbar-brand">
-            <% if @organization && @organization.name != "team" %>
-              <% if present_organization_avatar? %>
-                <img src="<%= @organization.avatar_url.sub(/^https?\:/, '') %>" alt="<%= @organization.name %>" height="48" />
-              <% end %>
+            <% if show_organization_avatar? %>
+              <img src="<%= @organization.avatar_url.sub(/^https?\:/, '') %>" alt="<%= @organization.name %>" height="48" />
             <% else %>
               <source type="image/svg+xml" srcset="<%= image_path "layout/sessions/brand.svg" %>">
               <img src="<%= image_path "layout/sessions/brand.png" %>" alt="CartoDB" height="48" width="48" />
             <% end %>
           </picture>
-          <% if @organization && @organization.name != "team" %>
-            <% if present_organization_avatar? %>
-              <sup><img src="<%= image_path "layout/sessions/brand.png" %>" alt="CartoDB" height="26" width="26"></sup>
-            <% end %>
+          <% if show_organization_avatar? %>
+            <sup><img src="<%= image_path "layout/sessions/brand.png" %>" alt="CartoDB" height="26" width="26"></sup>
           <% end %>
         </div>
         <% if !Cartodb.config[:cartodb_com_hosted].present? && @organization.present? %>

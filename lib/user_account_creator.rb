@@ -2,6 +2,7 @@
 
 require 'securerandom'
 require_dependency 'google_plus_api'
+require_dependency 'carto/strong_password_validator'
 
 # This class is quite coupled to UserCreation.
 module CartoDB

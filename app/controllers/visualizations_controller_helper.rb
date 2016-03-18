@@ -1,11 +1,11 @@
-require 'carto/uuidhelper'
+require_dependency 'carto/uuidhelper'
 
 module VisualizationsControllerHelper
   class VisualizationLocator
-    extend Carto::UUIDHelper
+    include Carto::UUIDHelper
 
-    def self.parse_table_locator(table_locator)
-      table_id_or_name, @schema = table_locator.split('.').reverse
+    def initialize(visualization_locator)
+      table_id_or_name, @schema = visualization_locator.split('.').reverse
 
       if is_uuid?(table_id_or_name)
         @id = table_id_or_name
@@ -14,40 +14,50 @@ module VisualizationsControllerHelper
       end
     end
 
-    def self.load_user_or_organization(user_or_org_name)
-      user = Carto::User.where(username: user_or_org_name).first
-      if user
-        @user = user
-      else
-        @organization = Carto::organization.where(username: user_or_org_name).first
-      end
+    def id?
+      !@id.nil?
     end
 
-    def self.find(table_locator, user_or_org_name)
-      parse_table_locator(table_locator)
-      load_user_or_organization(user_or_org_name)
-
-      if @id
-        visualization = Carto::VisualizationQueryBuilder.new.with_id(@id).build.first
-      elsif @name && @user
-        visualization = get_priority_visualization(@name, user_id: @user.id)
-      elsif @name && @organization && @schema
-        user_from_schema = @organization.users.where(username: @schema).first
-        if user_from_schema
-          visualization = get_priority_visualization(@name, user_id: user_from_schema.id)
-        end
-      end
-
-      visualization if visualization && validate_result(visualization)
+    def id
+      @id
     end
 
-    def self.validate_result(visualization)
-      return false if @id && @id != visualization.id
-      return false if @name && @name != visualization.name
-      return false if @schema && @schema != visualization.user.database_schema
-      return false if @user && @user != visualization.user
-      return false if @organization && @organization != visualization.user.organization
+    def name?
+      !@name.nil?
+    end
+
+    def name
+      @name
+    end
+
+    def schema?
+      !@schema.nil?
+    end
+
+    def schema
+      @schema
+    end
+
+    def matches_visualization?(visualization)
+      return false unless visualization
+      return false if id? && id != visualization.id
+      return false if name? && name != visualization.name
+      return false if schema? && schema != visualization.user.database_schema
       true
+    end
+  end
+
+  def extract_user_from_request_and_viz_locator(viz_locator)
+    # 1. Handles any url with "/u/username", or "username.cartodb.com"
+    user_or_org_name = CartoDB.extract_subdomain(request)
+    user = Carto::User.where(username: user_or_org_name).first
+    return user unless user.nil?
+
+    # 2. Handles org.cartodb.com with "schema.table" visualizations
+    if viz_locator.schema?
+      organization = Carto::Organization.where(name: user_or_org_name).first
+      return nil unless organization
+      organization.users.where(username: viz_locator.schema).first
     end
   end
 
@@ -66,8 +76,15 @@ module VisualizationsControllerHelper
   end
 
   def load_visualization_from_id_or_name(id_or_name)
-    visualization = VisualizationLocator.find(id_or_name, CartoDB.extract_subdomain(request))
-    render_404 && return if visualization.nil?
+    viz_locator = VisualizationLocator.new(id_or_name)
+    if viz_locator.id?
+      visualization = get_priority_visualization(viz_locator.id)
+    else
+      user = extract_user_from_request_and_viz_locator(viz_locator)
+      visualization = user.nil? ? nil : get_priority_visualization(viz_locator.name, user_id: user.id)
+    end
+
+    render_404 && return unless viz_locator.matches_visualization?(visualization)
     visualization
   end
 

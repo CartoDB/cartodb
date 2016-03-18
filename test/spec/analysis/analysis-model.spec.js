@@ -30,6 +30,8 @@ describe('src/analysis/analysis-model.js', function () {
 
   describe('.findAnalysisById', function () {
     it('should find a node in the graph', function () {
+      var map = jasmine.createSpyObj('map', ['reload']);
+
       var fakeCamshaftReference = {
         getSourceNamesForAnalysisType: function (analysType) {
           var map = {
@@ -42,6 +44,7 @@ describe('src/analysis/analysis-model.js', function () {
         }
       };
       var analysisFactory = new AnalysisFactory({
+        map: map,
         analysisCollection: new Backbone.Collection(),
         camshaftReference: fakeCamshaftReference
       });

@@ -5,12 +5,12 @@ var CartoDBLayerGroupNamedMap = CartoDBLayerGroupBase.extend({
     type: 'namedmap'
   },
 
-  // Returns the index of the CartoDB layer in relation to all layers when the map is
-  // an "Named Map". In this case Windshaft knows about all layers (even the not visible ones)
-  // and the windshaft map template includes the basemap so we just need to return the given
-  // index increased by one.
-  _getIndexOfVisibleLayer: function (layerIndex) {
+  _convertToWindshaftLayerIndex: function (layerIndex) {
     return ++layerIndex;
+  },
+
+  _convertToMapnikLayerIndex: function (layerIndex) {
+    return layerIndex;
   }
 });
 

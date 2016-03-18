@@ -169,63 +169,66 @@ var WindshaftMap = Backbone.Model.extend({
   },
 
   getTiles: function (layerType) {
+    layerType = layerType || 'mapnik';
     var grids = [];
     var tiles = [];
-
     var subdomains = ['0', '1', '2', '3'];
-
     if (this._useHTTPS()) {
       subdomains = [''];
     }
 
-    layerType = layerType || 'mapnik';
-
     var layerIndexes = this._getLayerIndexesByType(layerType);
     if (layerIndexes.length) {
-      var gridTemplate = '/{z}/{x}/{y}';
-
       for (var i = 0; i < subdomains.length; ++i) {
         var subdomain = subdomains[i];
-        var tileURLTemplate = [
-          this.getBaseURL(subdomain),
-          '/',
-          layerIndexes.join(','),
-          '/{z}/{x}/{y}',
-          TILE_EXTENSIONS_BY_LAYER_TYPE[layerType],
-          this.apiKey ? '?api_key=' + this.apiKey : ''
-        ].join('');
-
-        tiles.push(tileURLTemplate);
+        tiles.push(this._getTileURLTemplate(subdomain, layerIndexes, layerType));
 
         // for mapnik layers add grid json too
         if (layerType === 'mapnik') {
-          for (var layer = 0; layer < this.get('metadata').layers.length; ++layer) {
-            var index = this._getLayerIndexByType(layer, 'mapnik');
-            if (index >= 0) {
-              var gridURLTemplate = [
-                this.getBaseURL(subdomain),
-                '/',
-                index,
-                gridTemplate,
-                '.grid.json',
-                this.apiKey ? '?api_key=' + this.apiKey : ''
-              ].join('');
-              grids[layer] = grids[layer] || [];
-              grids[layer].push(gridURLTemplate);
+          for (var layerIndex = 0; layerIndex < this.get('metadata').layers.length; ++layerIndex) {
+            var mapnikLayerIndex = this._getLayerIndexByType(layerIndex, 'mapnik');
+            if (mapnikLayerIndex >= 0) {
+              grids[layerIndex] = grids[layerIndex] || [];
+              grids[layerIndex].push(this._getGridURLTemplate(subdomain, mapnikLayerIndex));
             }
           }
         }
       }
     } else {
-      // TODO: Clients of this method should decide what to render if no layers are present
       tiles = [EMPTY_GIF];
     }
 
-    this.urls = {
+    return {
       tiles: tiles,
       grids: grids
     };
-    return this.urls;
+  },
+
+  /**
+   * Generates the URL template for a given tile.
+   *
+   * EG: http://example.com:8181/api/v1/map/LAYERGROUP_ID/1,2/{z}/{x}/{y}.png?
+   */
+  _getTileURLTemplate: function (subdomain, layerIndexes, layerType, params) {
+    var baseURL = this.getBaseURL(subdomain);
+    var tileSchema = '{z}/{x}/{y}';
+    var tileExtension = TILE_EXTENSIONS_BY_LAYER_TYPE[layerType];
+    var urlParams = this.apiKey ? '?api_key=' + this.apiKey : '';
+
+    return baseURL + '/' + layerIndexes.join(',') + '/' + tileSchema + tileExtension + urlParams;
+  },
+
+  /**
+   * Generates the URL template for the UTF-8 grid of a given tile and layer.
+   *
+   * EG: http://example.com:8181/api/v1/map/LAYERGROUP_ID/1/{z}/{x}/{y}.grid.json
+   */
+  _getGridURLTemplate: function (subdomain, layerIndex, params) {
+    var baseURL = this.getBaseURL(subdomain);
+    var tileSchema = '{z}/{x}/{y}';
+    var urlParams = this.apiKey ? '?api_key=' + this.apiKey : '';
+
+    return baseURL + '/' + layerIndex + '/' + tileSchema + '.grid.json' + urlParams;
   },
 
   getLayerMeta: function (layerIndex) {
@@ -245,7 +248,7 @@ var WindshaftMap = Backbone.Model.extend({
   },
 
   /**
-   * Returns the index of a layer of a given type, as the tiler kwows it.
+   * Returns the indexes of the layer of a given type, as the tiler kwows it.
    *
    * @param {string|array} types - Type or types of layers
    */

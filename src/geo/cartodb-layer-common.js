@@ -46,55 +46,55 @@ CartoDBLayerCommon.prototype = {
    * @params enable {Number} layer number
    * @params layer {Boolean} Choose if wants interaction or not
    */
-  setInteraction: function(layer, b) {
+  setInteraction: function(layerIndexInLayerGroup, enableInteraction) {
     // shift arguments to maintain compatibility
-    if (b == undefined) {
-      b = layer;
-      layer = 0;
+    if (enableInteraction === undefined) {
+      enableInteraction = layerIndexInLayerGroup;
+      layerIndexInLayerGroup = 0;
     }
-    var layerInteraction;
-    this.interactionEnabled[layer] = b;
-    if (!b) {
-      layerInteraction = this.interaction[layer];
-      if(layerInteraction) {
-        layerInteraction.remove();
-        this.interaction[layer] = null;
-      }
+
+    this.interactionEnabled[layerIndexInLayerGroup] = enableInteraction;
+    if (enableInteraction) {
+      this._enableInteraction(layerIndexInLayerGroup);
     } else {
-      // if urls is null it means that setInteraction will be called
-      // when the layergroup token was recieved, then the real interaction
-      // layer will be created
-      if (this.model.get('urls')) {
-        // generate the tilejson from the urls. wax needs it
-        // var layer_index = this.getLayerIndexByNumber(+layer);
-        var layer_index = +layer;
-        var tilejson = this.model.getTileJSONFromTiles(layer_index);
-
-        // remove previous
-        layerInteraction = this.interaction[layer];
-        if(layerInteraction) {
-          layerInteraction.remove();
-        }
-        var self = this;
-
-        // add the new one
-        this.interaction[layer] = this.interactionClass()
-          .map(this.options.map)
-          .tilejson(tilejson)
-          .on('on', function(o) {
-            if (self._interactionDisabled) return;
-            o.layer = +layer;
-            self._manageOnEvents(self.options.map, o);
-          })
-          .on('off', function(o) {
-            if (self._interactionDisabled) return;
-            o = o || {}
-            o.layer = +layer;
-            self._manageOffEvents(self.options.map, o);
-          });
-      }
+      this._disableInteraction(layerIndexInLayerGroup);
     }
+
     return this;
+  },
+
+  _enableInteraction: function (layerIndexInLayerGroup) {
+    var self = this;
+    var tilejson = this.model.getTileJSONFromTiles(layerIndexInLayerGroup);
+    if (tilejson) {
+      var previousLayerInteraction = this.interaction[layerIndexInLayerGroup];
+      if (previousLayerInteraction) {
+        previousLayerInteraction.remove();
+      }
+
+      this.interaction[layerIndexInLayerGroup] = this.interactionClass()
+        .map(this.options.map)
+        .tilejson(tilejson)
+        .on('on', function (o) {
+          if (self._interactionDisabled) return;
+          o.layer = layerIndexInLayerGroup;
+          self._manageOnEvents(self.options.map, o);
+        })
+        .on('off', function (o) {
+          if (self._interactionDisabled) return;
+          o = o || {};
+          o.layer = layerIndexInLayerGroup;
+          self._manageOffEvents(self.options.map, o);
+        });
+    }
+  },
+
+  _disableInteraction: function (layerIndexInLayerGroup) {
+    var layerInteraction = this.interaction[layerIndexInLayerGroup];
+    if (layerInteraction) {
+      layerInteraction.remove();
+      this.interaction[layerIndexInLayerGroup] = null;
+    }
   },
 
   error: function(e) {

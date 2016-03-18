@@ -406,7 +406,46 @@ describe('windshaft/map', function () {
       });
     });
 
-    it('should return the URLs for tiles and grids for "torque" layers', function () {
+    it('should only include grids for "mapnik" layers', function () {
+      var windshaftMap = new WindshaftMap({
+        'layergroupid': '0123456789',
+        'metadata': {
+          'layers': [
+            {
+              'type': 'http',
+              'meta': {}
+            },
+            {
+              'type': 'mapnik',
+              'meta': {}
+            },
+            {
+              'type': 'mapnik',
+              'meta': {}
+            }
+          ]
+        }
+      }, {
+        client: new WindshaftClient({
+          urlTemplate: 'https://{user}.example.com:443',
+          userName: 'rambo',
+          endpoint: 'v2'
+        }),
+        dataviewsCollection: this.dataviewsCollection,
+        layersCollection: this.layersCollection
+      });
+
+      // Request tiles for "mapnik" layers specifically
+      expect(windshaftMap.getTiles('mapnik')).toEqual({
+        tiles: [ 'https://rambo.example.com:443/api/v1/map/0123456789/1,2/{z}/{x}/{y}.png' ],
+        grids: [
+          [ 'https://rambo.example.com:443/api/v1/map/0123456789/1/{z}/{x}/{y}.grid.json' ],
+          [ 'https://rambo.example.com:443/api/v1/map/0123456789/2/{z}/{x}/{y}.grid.json' ]
+        ]
+      });
+    });
+
+    it('should return the URLs for "torque" layers and no grids', function () {
       var windshaftMap = new WindshaftMap({
         'layergroupid': '0123456789',
         'metadata': {

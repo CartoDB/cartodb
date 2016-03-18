@@ -345,41 +345,26 @@ describe('core/geo/map', function() {
       it('should throw an error if no properties are given', function () {
         expect(function () {
           this.map.createPlainLayer({});
-        }.bind(this)).toThrowError('The following attributes are missing: color');
+        }.bind(this)).toThrowError('The following attributes are missing: image|color');
       });
 
-      it('should return a layer of the corresponding type', function () {
+      it('should return a layer of the corresponding type if color attribute is present', function () {
         var layer = this.map.createPlainLayer({
           color: '#FABADA'
         });
         expect(layer instanceof PlainLayer).toBeTruthy();
       });
 
-      it('should add the layer model to the collection of layers', function () {
+      it('should return a layer of the corresponding type if image attribute is present', function () {
         var layer = this.map.createPlainLayer({
-          color: '#FABADA'
-        });
-        expect(this.map.layers.at(0)).toEqual(layer);
-      });
-    });
-
-    describe('.createBackgroundLayer', function () {
-      it('should throw an error if no properties are given', function () {
-        expect(function () {
-          this.map.createBackgroundLayer({});
-        }.bind(this)).toThrowError('The following attributes are missing: image');
-      });
-
-      it('should return a layer of the corresponding type', function () {
-        var layer = this.map.createBackgroundLayer({
           image: 'http://example.com/image.png'
         });
         expect(layer instanceof PlainLayer).toBeTruthy();
       });
 
       it('should add the layer model to the collection of layers', function () {
-        var layer = this.map.createBackgroundLayer({
-          image: 'http://example.com/image.png'
+        var layer = this.map.createPlainLayer({
+          color: '#FABADA'
         });
         expect(this.map.layers.at(0)).toEqual(layer);
       });
@@ -418,6 +403,19 @@ describe('core/geo/map', function() {
 
         expect(map.get('center')).toEqual([ 41.40282319070747, 2.3435211181640625 ]);
       });
+    });
+  });
+
+  describe('.getLayerById', function () {
+    beforeEach(function () {
+      var layer1 = new CartoDBLayer({ id: 'xyz-123', attribution: 'attribution1' });
+
+      map.layers.reset(layer1);
+    });
+
+    it('should return the corresponding model for given id', function () {
+      expect(map.getLayerById('xyz-123')).toBeDefined();
+      expect(map.getLayerById('meh')).toBeUndefined();
     });
   });
 });

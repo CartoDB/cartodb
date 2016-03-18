@@ -5,6 +5,8 @@ module Carto
     # INFO: disable ActiveRecord inheritance column
     self.inheritance_column = :_type
 
+    belongs_to :visualization
+
     serialize :options, JSON
 
     validates :visualization_id, presence: true
@@ -35,28 +37,21 @@ module Carto
 
     private
 
-    def visualization
-      CartoDB::Visualization::Member.new(id: visualization_id).fetch
-    end
-
     def unique_overlay_not_duplicated
-      vis = visualization
-      if vis && UNIQUE_TYPES.include?(type)
-        other_overlay = Carto::Overlay.where(visualization_id: visualization_id, type: type)
+      if visualization && UNIQUE_TYPES.include?(type)
+        other_overlay = visualization.overlays.where(type: type)
         other_overlay = other_overlay.where('id != ?', id) unless new_record?
 
         unless other_overlay.first.nil?
           errors.add(:base, "Unique overlay of type #{type} already exists")
         end
       end
-    rescue KeyError
-      # Scenario of not yet having stored the vis
     end
 
     def invalidate_cache
-      visualization.invalidate_cache
+      CartoDB::Visualization::Member.new(id: visualization_id).fetch.invalidate_cache
     rescue KeyError
-      # Scenario of not yet having stored the vis
+      # This happens during creation, as the overlays are created before the visualization
     end
   end
 end

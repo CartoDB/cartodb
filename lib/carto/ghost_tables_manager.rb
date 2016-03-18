@@ -1,5 +1,7 @@
 # encoding utf-8
 
+require_relative 'bolt.rb'
+
 module Carto
   class GhostTablesManager
     MUTEX_REDIS_KEY = 'ghost_tables_working'.freeze

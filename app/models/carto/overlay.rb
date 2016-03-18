@@ -38,8 +38,9 @@ module Carto
     private
 
     def unique_overlay_not_duplicated
-      if visualization && UNIQUE_TYPES.include?(type)
-        other_overlay = visualization.overlays.where(type: type)
+      # This check probably belongs in visualization. See #6919
+      if UNIQUE_TYPES.include?(type)
+        other_overlay = Carto::Overlay.where(visualization_id: visualization_id, type: type)
         other_overlay = other_overlay.where('id != ?', id) unless new_record?
 
         unless other_overlay.first.nil?

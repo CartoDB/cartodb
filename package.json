@@ -27,9 +27,9 @@
     "browserify-shim": "3.8.10",
     "camshaft-reference": "^0.1.0",
     "cartoassets": "cartodb/CartoAssets#master",
-    "cartodb-deep-insights.js": "cartodb/deep-insights.js#5a8d314",
+    "cartodb-deep-insights.js": "cartodb/deep-insights.js#master",
     "cartodb-pecan": "0.2.x",
-    "cartodb.js": "cartodb/cartodb.js#3079e6d",
+    "cartodb.js": "cartodb/cartodb.js#v4",
     "csswring": "^3.0.5",
     "git-rev": "0.2.1",
     "grunt": "0.4.5",
@@ -130,5 +130,8 @@
       "/tmp",
       "/vendor"
     ]
+  },
+  "scripts": {
+    "update-internal-deps": "npm update camshaft-reference cartoassets cartodb-deep-insights.js cartodb.js && npm shrinkwrap --dev"
   }
 }

@@ -76,6 +76,21 @@
           </div>
         </div>
 
+        <div class="FormAccount-row">
+          <div class="FormAccount-rowLabel">
+            <label class="FormAccount-label">Strong Passwords</label>
+          </div>
+          <div class="FormAccount-rowData">
+            <div class="Toggler">
+              <%= f.check_box :strong_passwords_enabled, :id => "strong_passwords_enabled" %>
+              <%= label_tag(:strong_passwords_enabled, '') %>
+            </div>
+            <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
+              <p class="FormAccount-rowInfoText">Require users to use strong passwords</p>
+            </div>
+          </div>
+        </div>
+
         <div class="FormAccount-footer">
           <p class="FormAccount-footerText"></p>
           <%= button_tag(type: 'submit', class: 'Button Button--main') do %>

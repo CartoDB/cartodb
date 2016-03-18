@@ -23,13 +23,8 @@ module LoginHelper
     !organization.nil? ? darken_color(organization.color, 0.7) : "#292E33"
   end
 
-  def login_org_avatar
-    if @organization && @organization.name != "team" && !@organization.avatar_url.blank?
-      @organization.avatar_url = @organization.avatar_url.sub(/^https?\:/, '')
-      return true
-    else
-      return false
-    end
+  def present_organization_avatar?
+    @organization.avatar_url.present?
   end
 
   def forget_password_url

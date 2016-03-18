@@ -166,17 +166,13 @@ var WindshaftMap = Backbone.Model.extend({
         }
       }
     } else {
-      // TODO: Clients of this method should decide what to render if no layers are present
       tiles = [EMPTY_GIF];
     }
 
-    this.urls = {
+    return {
       tiles: tiles,
       grids: grids
     };
-
-    console.log(this.urls);
-    return this.urls;
   },
 
   _getTileURLTemplate: function (subdomain, layerIndexes, layerType, params) {

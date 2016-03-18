@@ -388,4 +388,17 @@ describe('core/geo/map', function() {
       });
     });
   });
+
+  describe('.getLayerById', function () {
+    beforeEach(function () {
+      var layer1 = new CartoDBLayer({ id: 'xyz-123', attribution: 'attribution1' });
+
+      map.layers.reset(layer1);
+    });
+
+    it('should return the corresponding model for given id', function () {
+      expect(map.getLayerById('xyz-123')).toBeDefined();
+      expect(map.getLayerById('meh')).toBeUndefined();
+    });
+  });
 });

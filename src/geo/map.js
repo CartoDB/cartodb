@@ -282,6 +282,10 @@ var Map = Model.extend({
     return this.layers.at(i);
   },
 
+  getLayerById: function (id) {
+    return this.layers.get(id);
+  },
+
   getLayerViewByLayerCid: function(cid) {
     return this.layers.get(cid);
   },

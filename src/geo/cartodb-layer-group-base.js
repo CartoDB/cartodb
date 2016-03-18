@@ -31,36 +31,51 @@ var CartoDBLayerGroupBase = Backbone.Model.extend({
     return false;
   },
 
+  /**
+   * Returns a TileJSON format object for the given layerIndex
+   * @param  {number} layerIndex The index of one of the CartoDB layers grouped by this class.
+   */
   getTileJSONFromTiles: function (layerIndex) {
     var urls = this.get('urls');
-    if (!urls) {
-      throw new Error('tileJSON for the layer cannot be calculated until urls are set');
+    if (urls) {
+      return {
+        tilejson: '2.0.0',
+        scheme: 'xyz',
+        grids: urls.grids[this._convertToMapnikLayerIndex(layerIndex)],
+        tiles: urls.tiles,
+        formatter: function (options, data) { return data; }
+      };
     }
-
-    return {
-      tilejson: '2.0.0',
-      scheme: 'xyz',
-      grids: urls.grids[this._getIndexOfVisibleLayer(layerIndex)],
-      tiles: urls.tiles,
-      formatter: function (options, data) { return data; }
-    };
   },
 
-  _getIndexOfVisibleLayer: function (layerIndex) {
-    throw new Error('_getIndexOfVisibleLayer must be implemented');
+  /**
+   * Converts an index of a layer in relation to the layerGroup to
+   * the corresponding index of that layer in the Windshaft Map Instance.
+   */
+  _convertToWindshaftLayerIndex: function (layerIndex) {
+    throw new Error('_convertToWindshaftLayerIndex must be implemented');
   },
 
-  fetchAttributes: function (layer, featureID, callback) {
+  /**
+   * Converts the index of a 'CartoDB' layer in this layerGroup to
+   * the corresponding index of that same layer in the Windshaft Map Instance,
+   * only considering 'mapnik' layers (eg: ignoring possible `http` below the
+   * `mapnik` layers ).
+   */
+  _convertToMapnikLayerIndex: function (layerIndex) {
+    throw new Error('_convertToMapnikLayerIndex must be implemented');
+  },
+
+  fetchAttributes: function (layerIndex, featureID, callback) {
     if (!this.get('baseURL')) {
       throw new Error('Attributes cannot be fetched until baseURL is set');
     }
 
-    // TODO: We need to improve this
-    var index = this._getIndexOfVisibleLayer(layer);
-    if (index >= 0) {
+    var windhaftLayerIndex = this._convertToWindshaftLayerIndex(layerIndex);
+    if (windhaftLayerIndex >= 0) {
       var url = [
         this.get('baseURL'),
-        index,
+        windhaftLayerIndex,
         'attributes',
         featureID
       ].join('/');

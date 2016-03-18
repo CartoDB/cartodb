@@ -4,7 +4,7 @@ var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
 var CartoDBLayerGroupBase = require('../../../src/geo/cartodb-layer-group-base');
 
 var MyCartoDBLayerGroup = CartoDBLayerGroupBase.extend({
-  _getIndexOfVisibleLayer: function () {}
+  _convertToWindshaftLayerIndex: function () {}
 });
 
 describe('geo/cartodb-layer-group-base', function () {
@@ -46,7 +46,7 @@ describe('geo/cartodb-layer-group-base', function () {
         layers: [ cartoDBLayer1 ]
       });
 
-      spyOn(layer, '_getIndexOfVisibleLayer').and.returnValue(0);
+      spyOn(layer, '_convertToWindshaftLayerIndex').and.returnValue(0);
       spyOn($, 'ajax').and.callFake(function (options) {
         options.success('attributes!');
       });
@@ -68,7 +68,7 @@ describe('geo/cartodb-layer-group-base', function () {
         layers: [ cartoDBLayer1 ]
       });
 
-      spyOn(layer, '_getIndexOfVisibleLayer').and.returnValue(-1);
+      spyOn(layer, '_convertToWindshaftLayerIndex').and.returnValue(-1);
       spyOn($, 'ajax').and.callFake(function (options) {
         options.success('attributes!');
       });
@@ -90,7 +90,7 @@ describe('geo/cartodb-layer-group-base', function () {
         layers: [ cartoDBLayer1 ]
       });
 
-      spyOn(layer, '_getIndexOfVisibleLayer').and.returnValue(-1);
+      spyOn(layer, '_convertToWindshaftLayerIndex').and.returnValue(-1);
       spyOn($, 'ajax').and.callFake(function (options) {
         options.error('error!');
       });

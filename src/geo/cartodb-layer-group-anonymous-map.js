@@ -5,10 +5,7 @@ var CartoDBLayerGroupAnonymousMap = CartoDBLayerGroupBase.extend({
     type: 'layergroup'
   },
 
-  // Returns the index of the CartoDB layer in relation to all layers when the map is
-  // an "Anonymous Map". For example, if there are two CartoDB layers and layer #0 is
-  // hidden, this method would return -1 for #0 and 0 for layer #1.
-  _getIndexOfVisibleLayer: function (layerIndex) {
+  _convertToWindshaftLayerIndex: function (layerIndex) {
     var layers = {};
     var i = 0;
     this.layers.each(function (layer, index) {
@@ -23,6 +20,10 @@ var CartoDBLayerGroupAnonymousMap = CartoDBLayerGroupBase.extend({
     }
 
     return index;
+  },
+
+  _convertToMapnikLayerIndex: function (layerIndex) {
+    return this._convertToWindshaftLayerIndex(layerIndex);
   }
 });
 

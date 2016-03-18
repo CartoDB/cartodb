@@ -14,24 +14,12 @@ module VisualizationsControllerHelper
       end
     end
 
-    def id?
-      !@id.nil?
-    end
-
     def id
       @id
     end
 
-    def name?
-      !@name.nil?
-    end
-
     def name
       @name
-    end
-
-    def schema?
-      !@schema.nil?
     end
 
     def schema
@@ -40,9 +28,9 @@ module VisualizationsControllerHelper
 
     def matches_visualization?(visualization)
       return false unless visualization
-      return false if id? && id != visualization.id
-      return false if name? && name != visualization.name
-      return false if schema? && schema != visualization.user.database_schema
+      return false if id && id != visualization.id
+      return false if name && name != visualization.name
+      return false if schema && schema != visualization.user.database_schema
       true
     end
   end
@@ -54,7 +42,7 @@ module VisualizationsControllerHelper
     return user unless user.nil?
 
     # 2. Handles org.cartodb.com with "schema.table" visualizations
-    if viz_locator.schema?
+    if viz_locator.schema
       organization = Carto::Organization.where(name: user_or_org_name).first
       return nil unless organization
       organization.users.where(username: viz_locator.schema).first
@@ -77,7 +65,7 @@ module VisualizationsControllerHelper
 
   def load_visualization_from_id_or_name(id_or_name)
     viz_locator = VisualizationLocator.new(id_or_name)
-    if viz_locator.id?
+    if viz_locator.id
       visualization = get_priority_visualization(viz_locator.id)
     else
       user = extract_user_from_request_and_viz_locator(viz_locator)

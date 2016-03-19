@@ -469,7 +469,7 @@ class Table
 
   def optimize
     CartoDB::Importer2::BatchApiQuery.new(owner.username, owner.api_key).execute(
-      %Q{"VACUUM FULL #{qualified_table_name}"}
+      %Q{VACUUM ANALYZE #{qualified_table_name}}
     )
   rescue => e
     CartoDB::notify_exception(e, { user: owner })

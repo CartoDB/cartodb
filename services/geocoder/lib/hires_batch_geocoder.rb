@@ -12,6 +12,8 @@ module CartoDB
     DEFAULT_TIMEOUT = 5.hours
     POLLING_SLEEP_TIME = 5.seconds
     LOGGING_TIME = 5.minutes
+    DOWNLOAD_RETRIES = 5
+    DOWLOAD_RETRY_SLEEP = 5.seconds
 
     # Generous timeouts, overriden for big files upload/download
     HTTP_CONNECTION_TIMEOUT = 60
@@ -121,7 +123,7 @@ module CartoDB
         response = http_client.put(api_url(action: 'cancel'),
                                    connecttimeout: HTTP_CONNECTION_TIMEOUT,
                                    timeout: HTTP_REQUEST_TIMEOUT)
-        if response.response_code == 400 && message =~ /CANNOT CANCEL THE COMPLETED, DELETED, FAILED OR ALREADY CANCELLED JOB/
+        if is_cancellable?(response)
           @log.append_and_store "Job was already cancelled"
         else
           handle_api_error(response)
@@ -149,42 +151,58 @@ module CartoDB
     def result
       return @result unless @result.nil?
 
-      raise 'No request_id provided' unless request_id
-      results_filename = File.join(dir, "#{request_id}.zip")
+      raise 'No request_id provided' unless @geocoding_model.remote_id
+      results_filename = File.join(dir, "#{@geocoding_model.remote_id}.zip")
       download_url = api_url({}, 'result')
-      # generous timeout for download of results
-      request = http_client.request(download_url,
-                                    method: :get,
-                                    timeout: 5.hours)
-
-      File.open(results_filename, 'wb') do |download_file|
-
-        request.on_headers do |response|
-          if response.success? == false
-            # TODO: better error handling
-            raise 'Download request failed'
-          end
+      download_status_code = nil
+      retries = 0
+      while true
+        if(!download_status_code.nil? && download_status_code == 200)
+          break
+        elsif !download_status_code.nil? && download_status_code == 404
+          # 404 means that the results file is not ready yet
+          sleep DOWLOAD_RETRY_SLEEP
+          retries += 1
+        elsif retries >= DOWNLOAD_RETRIES
+          raise 'Download request failed: Too many retries, should be a problem with HERE servers'
+        elsif !download_status_code.nil? && download_status_code > 200 && download_status_code != 404
+          raise "Download request failed: Http status code #{download_status_code}"
         end
-
-        request.on_body do |chunk|
-          download_file.write(chunk)
-        end
-
-        request.on_complete do |response|
-          if response.success? == false
-            # TODO: better error handling
-            raise 'Download request failed'
-          end
-        end
-
-        request.run
+        download_status_code = execute_results_request(download_url, results_filename)
       end
-
       @result = results_filename
     end
 
 
     private
+
+    def execute_results_request(download_url, results_filename)
+        download_status_code = nil
+        # generous timeout for download of results
+        request = http_client.request(download_url,
+                                    method: :get,
+                                    timeout: 5.hours)
+
+        File.open(results_filename, 'wb') do |download_file|
+          request.on_headers do |response|
+            download_status_code = response.response_code
+          end
+
+          request.on_body do |chunk|
+            if download_status_code == 200
+              download_file.write(chunk)
+            end
+          end
+
+          request.on_complete do |response|
+            download_status_code = response.response_code
+          end
+
+          request.run
+        end
+
+        return download_status_code
+    end
 
     def config
       GeocoderConfig.instance.get
@@ -289,5 +307,11 @@ module CartoDB
         @geocoding_model.save
       end
     end
+
+    def is_cancellable?(response)
+      message = extract_response_field(response.body, '//Details')
+      response.response_code == 400 && message =~ /CANNOT CANCEL THE COMPLETED, DELETED, FAILED OR ALREADY CANCELLED JOB/
+    end
+
   end
 end

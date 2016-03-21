@@ -173,6 +173,8 @@ END_XML
 
     it 'downloads the result file from the remote server' do
       request_id = 'dummy_request_id'
+      @geocoding_model.remote_id = request_id
+      @geocoding_model.save
       @batch_geocoder.stubs(:request_id).returns(request_id)
       expected_response_body = 'dummy result file contents'
       url = @batch_geocoder.send(:api_url, {}, 'result')
@@ -189,6 +191,8 @@ END_XML
 
     it 'raises an exception if cannot get a result file' do
       request_id = 'dummy_request_id'
+      @geocoding_model.remote_id = request_id
+      @geocoding_model.save
       @batch_geocoder.stubs(:request_id).returns(request_id)
       expected_response_body = 'dummy result file contents'
       url = @batch_geocoder.send(:api_url, {}, 'result')

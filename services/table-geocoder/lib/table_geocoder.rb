@@ -28,7 +28,7 @@ module CartoDB
         connection:  connection,
         formatter:   clean_formatter,
         sql_api:     arguments[:cache],
-        working_dir: working_dir,
+        working_dir: @working_dir,
         table_name:  table_name,
         qualified_table_name: @qualified_table_name,
         max_rows:    @max_rows,
@@ -46,7 +46,7 @@ module CartoDB
       # Sync state because cancel is made synchronous
       @geocoding_model.refresh
       if not @geocoding_model.cancelled?
-        process_results if geocoder.status == 'completed'
+        process_results if @geocoding_model.state == 'completed'
         cache.store unless cache_disabled?
       end
     ensure
@@ -118,7 +118,7 @@ module CartoDB
 
     # Generate a csv input file from the geocodable rows
     def generate_csv
-      csv_file = File.join(working_dir, "wadus.csv")
+      csv_file = File.join(@working_dir, "wadus.csv")
       # INFO: we exclude inputs too short and "just digits" inputs, which will remain as georef_status = false
       query = %Q{
         WITH geocodable AS (
@@ -145,9 +145,9 @@ module CartoDB
 
     def deflate_results
       current_directory = Dir.pwd
-      Dir.chdir(working_dir)
+      Dir.chdir(@working_dir)
       out = `unp *.zip 2>&1`
-      out = `unp #{working_dir}/*_out.zip 2>&1`
+      out = `unp #{@working_dir}/*_out.zip 2>&1`
     ensure
       Dir.chdir(current_directory)
     end
@@ -194,7 +194,7 @@ module CartoDB
     end
 
     def deflated_results_path
-      Dir[File.join(working_dir, '*_out.txt')][0]
+      Dir[File.join(@working_dir, '*_out.txt')][0]
     end
 
     def update_metrics

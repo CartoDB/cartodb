@@ -153,7 +153,7 @@ module Carto
            .map { |table| Carto::MetadataTable.new(table.table_id, table.name, @user.id) }
     end
 
-    # May not be viewed in the editor; carotdbyfied_only
+    # May not be viewed in the editor; only cartodbyfied
     def all_cartodbyfied_tables
       cartodbyfied_tables = search_for_cartodbfied_tables
 

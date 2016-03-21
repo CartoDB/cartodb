@@ -196,8 +196,8 @@ class Carto::VisualizationQueryBuilder
   def build
     query = Carto::Visualization.scoped
 
-    unless @id || @user_id || @organization_id
-      CartoDB.notify_debug("VQB query without viz_id, user_id nor org_id", stack: caller.take(25))
+    if @name && !(@id || @user_id || @organization_id)
+      CartoDB.notify_debug("VQB query by name without user_id nor org_id", stack: caller.take(25))
     end
 
     if @id

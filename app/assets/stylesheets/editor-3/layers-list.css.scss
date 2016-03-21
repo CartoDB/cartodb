@@ -65,12 +65,12 @@
   width: 1px;
   background: $cMainLine;
   content: '';
-  z-index: -1;
 }
 
 .Editor-ListAnalysis-item {
   @include display-flex();
   @include align-items(center);
+  position: relative;
   margin-bottom: 8px;
   background: #FFF;
 }

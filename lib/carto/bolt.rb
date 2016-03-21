@@ -11,8 +11,8 @@ module Carto
       @ttl_ms = ttl_ms
     end
 
-    def lock
-      raise 'no block given' unless block_given?
+    def run_locked
+      raise 'no code block given' unless block_given?
 
       is_locked = @redis_object.set(@bolt_key, true, px: @ttl_ms, nx: true)
 
@@ -24,6 +24,8 @@ module Carto
       end
     end
 
+    private
+
     def unlock
       removed_keys = @redis_object.del(@bolt_key)
 
@@ -33,12 +35,6 @@ module Carto
 
       removed_keys > 0 ? true : false
     end
-
-    def info
-      { ttl_ms: @ttl_ms, bolt_key: @bolt_key }
-    end
-
-    protected
 
     def add_namespace_to_key(key)
       "rails:bolt:#{key}"

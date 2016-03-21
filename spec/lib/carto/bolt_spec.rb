@@ -6,53 +6,36 @@ require_relative '../../../lib/carto/bolt.rb'
 module Carto
   describe Bolt do
     before(:each) do
-      @bolt = Carto::Bolt.new('manolo')
-    end
-
-    it 'should allow for custom ttl_ms' do
-      Carto::Bolt.new('manolo', ttl_ms: 1234).info.should include(ttl_ms: 1234)
-    end
-
-    it 'should return false on unlock if already unlocked' do
-      @bolt.unlock.should be_false
+      @bolt = Carto::Bolt.new('manolo_bolt_locked')
     end
 
     it 'should expect block' do
-      expect { @bolt.lock.should_raise }.to raise_error('no block given')
+      expect { @bolt.run_locked.should_raise }.to raise_error('no code block given')
     end
 
     it 'should allow access in block if locked and unlocked automatically' do
-      @bolt.lock {}.should be_true
+      bolt = Carto::Bolt.new('manolo_bolt_locked', ttl_ms: 60000)
 
-      @bolt.unlock.should be_false
+      bolt.run_locked {}.should be_true
+      bolt.run_locked {}.should be_true
     end
 
     it 'should not allow access if locked' do
-      @bolt.lock { @bolt.lock {}.should be_false }.should be_true
+      other_bolt = Carto::Bolt.new('manolo_bolt_locked')
 
-      @bolt.unlock.should be_false
-    end
-
-    it 'should handle unlock in lock block' do
-      got_locked = @bolt.lock do
-        @bolt.unlock.should be_true
-      end
-
-      got_locked.should be_true
-
-      @bolt.unlock.should be_false
+      @bolt.run_locked { other_bolt.run_locked {}.should be_false }.should be_true
     end
 
     it 'should expire a lock after ttl_ms' do
-      bolt = Carto::Bolt.new('manolo', ttl_ms: 200)
+      ttl_ms = 200
 
-      got_locked = bolt.lock do
-        sleep(0.5.second)
+      bolt = Carto::Bolt.new('manolo_bolt_locked', ttl_ms: ttl_ms)
 
-        bolt.unlock.should be_false
+      bolt.run_locked do
+        sleep((ttl_ms * 2 / 1000.0).second)
+
+        Carto::Bolt.new('manolo_bolt_locked').run_locked {}.should be_true
       end
-
-      got_locked.should be_true
     end
   end
 end

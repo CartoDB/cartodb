@@ -11,10 +11,10 @@ module Carto
       @user = ::User.where(id: user_id).first
     end
 
-    def link_ghost_tables(async = true)
+    def link_ghost_tables(force_sync = false)
       return if consistent?
 
-      if stale_tables_linked? || !async
+      if stale_tables_linked? || force_sync
         sync_user_schema_and_tables_metadata
       else
         ::Resque.enqueue(::Resque::UserJobs::SyncTables::LinkGhostTables, @user.id)

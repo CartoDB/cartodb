@@ -444,7 +444,7 @@ class Admin::VisualizationsController < Admin::AdminController
 
     # This call will trigger ghost tables synchronously if there's risk of displaying a stale table
     # or asynchronously otherwise.
-    Carto::GhostTablesManager.new(current_user.id).link_ghost_tables(async: true)
+    Carto::GhostTablesManager.new(current_user.id).link_ghost_tables
   end
 
   def user_metadata_propagation

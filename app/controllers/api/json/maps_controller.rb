@@ -21,12 +21,12 @@ class Api::Json::MapsController < Api::ApplicationController
         unless updated == false
           render_jsonp(@map.public_values)
         else
-          CartoDB::Logger.info "Error on maps#update", @map.errors.full_messages
+          CartoDB::StdoutLogger.info "Error on maps#update", @map.errors.full_messages
           render_jsonp({ :description => @map.errors.full_messages,
             :stack => @map.errors.full_messages}, 400)
         end
       rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
-        CartoDB::Logger.info("Communication error with tiler API. HTTP Code: #{exception.message}",
+        CartoDB::StdoutLogger.info("Communication error with tiler API. HTTP Code: #{exception.message}",
           exception.template_data)
         render_jsonp({ errors: {
             named_maps_api: "Communication error with tiler API. HTTP Code: #{exception.message}"

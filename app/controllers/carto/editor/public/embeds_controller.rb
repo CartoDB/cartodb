@@ -1,4 +1,4 @@
-require 'carto/api/vizjson3_presenter'
+require_dependency 'carto/api/vizjson3_presenter'
 
 module Carto
   module Editor

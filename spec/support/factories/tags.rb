@@ -1,8 +1,11 @@
+require 'helpers/random_names_helper'
+
 module CartoDB
   module Factories
+    include RandomNamesHelper
     def new_tag(attributes = {})
       attributes = attributes.dup
-      attributes[:name] ||= String.random(5)
+      attributes[:name] ||= random_name('tag')
       user_id = if attributes[:user_id].nil?
         UUIDTools::UUID.timestamp_create.to_s
         #user = create_user

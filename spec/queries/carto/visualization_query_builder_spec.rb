@@ -1,8 +1,10 @@
 # encoding: utf-8
 
 require_relative '../../spec_helper'
+require 'helpers/random_names_helper'
 
 describe Carto::VisualizationQueryBuilder do
+  include RandomNamesHelper
   include Rack::Test::Methods
   include Warden::Test::Helpers
   include_context 'visualization creation helpers'
@@ -194,7 +196,7 @@ describe Carto::VisualizationQueryBuilder do
 
     remote_vis_1 = CartoDB::Visualization::Member.new({
           user_id: @user1.id,
-          name:    "remote vis #{rand(9999)}",
+          name:    "remote vis #{random_name('viz')}",
           map_id:  ::Map.create(user_id: @user1.id).id,
           type:    CartoDB::Visualization::Member::TYPE_REMOTE,
           privacy: CartoDB::Visualization::Member::PRIVACY_PRIVATE
@@ -202,7 +204,7 @@ describe Carto::VisualizationQueryBuilder do
 
     remote_vis_2 = CartoDB::Visualization::Member.new({
           user_id: @user1.id,
-          name:    "remote vis #{rand(9999)}",
+          name:    "remote vis #{random_name('viz')}",
           map_id:  ::Map.create(user_id: @user1.id).id,
           type:    CartoDB::Visualization::Member::TYPE_REMOTE,
           privacy: CartoDB::Visualization::Member::PRIVACY_PRIVATE
@@ -210,7 +212,7 @@ describe Carto::VisualizationQueryBuilder do
 
     remote_vis_3 = CartoDB::Visualization::Member.new({
           user_id: @user1.id,
-          name:    "remote vis #{rand(9999)}",
+          name:    "remote vis #{random_name('viz')}",
           map_id:  ::Map.create(user_id: @user1.id).id,
           type:    CartoDB::Visualization::Member::TYPE_REMOTE,
           privacy: CartoDB::Visualization::Member::PRIVACY_PRIVATE

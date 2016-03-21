@@ -3,6 +3,7 @@ require 'uuidtools'
 require_relative './rspec_configuration'
 require 'helpers/spec_helper_helpers'
 require 'helpers/named_maps_helper'
+require 'helpers/random_names_helper'
 
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 ENV['RAILS_ENV'] ||= 'test'

@@ -5,7 +5,9 @@ require_relative '../../spec_helper'
 require_relative '../../../services/data-repository/backend/sequel'
 require_relative '../../../services/data-repository/repository'
 require_relative '../../../app/models/synchronization/member'
+require 'helpers/random_names_helper'
 
+include RandomNamesHelper
 include CartoDB
 
 describe Synchronization::Member do
@@ -83,7 +85,7 @@ describe Synchronization::Member do
   private
 
   def random_attributes(attributes={})
-    random = rand(999)
+    random = random_integer
     {
       name:       attributes.fetch(:name, "name #{random}"),
       interval:   attributes.fetch(:interval, 15 * 60 + random),

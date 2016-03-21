@@ -3,7 +3,9 @@ require_relative '../spec_helper'
 require_relative '../../app/models/visualization/collection'
 require_relative '../../app/models/organization.rb'
 require_relative 'organization_shared_examples'
+require 'helpers/random_names_helper'
 
+include RandomNamesHelper
 include CartoDB
 
 describe 'refactored behaviour' do
@@ -90,7 +92,7 @@ describe Organization do
   describe '#add_user_to_org' do
     it 'Tests adding a user to an organization (but no owner)' do
       org_quota = 1234567890
-      org_name = "wadus#{rand(10000)}"
+      org_name = random_name('org')
       org_seats = 5
 
       username = @user.username
@@ -124,7 +126,7 @@ describe Organization do
     end
 
     it 'Tests setting a user as the organization owner' do
-      org_name = "wadus#{rand(10000)}"
+      org_name = random_name('org')
       organization = Organization.new(quota_in_bytes: 1234567890, name: org_name, seats: 5).save
 
       user = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
@@ -156,7 +158,7 @@ describe Organization do
       ::User.any_instance.stubs(:create_in_central).returns(true)
       ::User.any_instance.stubs(:update_in_central).returns(true)
 
-      org_name = "wadus#{rand(10000)}"
+      org_name = random_name('org')
       organization = Organization.new(quota_in_bytes: 1234567890, name: org_name, seats: 5).save
 
       owner = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
@@ -246,7 +248,7 @@ describe Organization do
 
   describe '#unique_name' do
     it 'Tests uniqueness of name' do
-      org_name = "wadus#{rand(1000)}"
+      org_name = random_name('org')
 
       organization = Organization.new
       organization.name = org_name
@@ -462,10 +464,10 @@ describe Organization do
     end
   end
 
-  def random_attributes(attributes={})
-    random = rand(999)
+  def random_attributes(attributes = {})
+    random = random_name('viz')
     {
-        name:         attributes.fetch(:name, "name #{random}"),
+        name:         attributes.fetch(:name, "#{random}"),
         description:  attributes.fetch(:description, "description #{random}"),
         privacy:      attributes.fetch(:privacy, Visualization::Member::PRIVACY_PUBLIC),
         tags:         attributes.fetch(:tags, ['tag 1']),

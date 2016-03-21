@@ -1,15 +1,13 @@
 # encoding: utf-8
 
 require_relative '../support/factories/tables'
+require 'helpers/random_names_helper'
 
+include RandomNamesHelper
 include CartoDB
 
 def app
   CartoDB::Application.new
-end
-
-def random_username
-  "user#{rand(10000)}"
 end
 
 # requires include Warden::Test::Helpers
@@ -18,7 +16,7 @@ def login(user)
   host! "#{user.username}.localhost.lan"
 end
 
-def create_random_table(user, name = "viz#{rand(999)}", privacy = nil)
+def create_random_table(user, name = random_name('viz'), privacy = nil)
   options = { user_id: user.id, name: name }
   options.merge!(privacy: privacy) if privacy
   create_table(options)
@@ -27,10 +25,10 @@ end
 def create_table_with_options(user, headers = { 'CONTENT_TYPE'  => 'application/json' }, options = {})
   privacy = options.fetch(:privacy, UserTable::PRIVACY_PUBLIC)
 
-  seed    = rand(9999)
+  name    = random_name('table')
   payload = {
-    name:         "table #{seed}",
-    description:  "table #{seed} description"
+    name:         name,
+    description:  "#{name} description"
   }
 
   table_attributes = nil

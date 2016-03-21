@@ -1,8 +1,10 @@
 # encoding: utf-8
 
 require_relative '../../spec_helper'
+require 'helpers/random_names_helper'
 
 describe Carto::VisualizationsExportService do
+  include RandomNamesHelper
   before(:all) do
     @user = FactoryGirl.create(:valid_user, private_tables_enabled: true)
   end
@@ -201,7 +203,7 @@ describe Carto::VisualizationsExportService do
   def create_vis(user, attributes = {})
     attrs = {
       user_id:                  user.id,
-      name:                     attributes.fetch(:name, "visualization #{rand(9999)}"),
+      name:                     attributes.fetch(:name, random_name('viz')),
       map_id:                   attributes.fetch(:map_id, ::Map.create(user_id: user.id).id),
       description:              attributes.fetch(:description, 'bogus'),
       type:                     attributes.fetch(:type, 'derived'),

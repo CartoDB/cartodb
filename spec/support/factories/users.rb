@@ -1,6 +1,9 @@
+require 'helpers/random_names_helper'
+
 module CartoDB
   @default_test_user = nil
   module Factories
+    include RandomNamesHelper
     def default_user(attributes = {})
       user = nil
       unless @default_test_username.nil?
@@ -40,8 +43,8 @@ module CartoDB
 
       attributes = attributes.dup
       user = user_class.new
-      user.username              = attributes[:username] || String.random(5).downcase
-      user.email                 = attributes[:email]    || String.random(5).downcase + '@' + String.random(5).downcase + '.com'
+      user.username              = attributes[:username] || random_name('user')
+      user.email                 = attributes[:email]    || random_email
       user.password              = attributes[:password] || user.email.split('@').first
       user.password_confirmation = user.password
       user.admin                 = attributes[:admin] == false ? false : true
@@ -90,7 +93,7 @@ module CartoDB
     end
 
     def create_owner(organization)
-      org_user_owner = create_test_user("o#{random_username}")
+      org_user_owner = create_test_user("o#{random_name('user')}")
       user_org = CartoDB::UserOrganization.new(organization.id, org_user_owner.id)
       user_org.promote_user_to_admin
       organization.reload
@@ -99,7 +102,7 @@ module CartoDB
     end
 
     def create_test_user(username = nil, organization = nil)
-      username ||= "test#{rand(999999)}-1"
+      username ||= "#{random_name('user')}-1"
       user = create_user(
         username: username,
         email: "#{username}@example.com",

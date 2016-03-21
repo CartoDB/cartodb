@@ -1,7 +1,10 @@
 # encoding: UTF-8
+require 'helpers/random_names_helper'
 
 module CartoDB
   module Factories
+    include RandomNamesHelper
+
     def new_table(attributes = {})
       attributes = attributes.dup
       table = ::Table.new(attributes)
@@ -15,9 +18,9 @@ module CartoDB
         attributes.delete(:name)
         nil
       else
-        attributes[:name] || String.random(10)
+        attributes[:name] || random_name('table')
       end
-      
+
       table
     end
 
@@ -38,7 +41,7 @@ module CartoDB
 
     def visualization_template(user, attributes = {})
       {
-        name:                     attributes.fetch(:name, "visualization #{rand(9999)}"),
+        name:                     attributes.fetch(:name, random_name('viz')),
         display_name:             attributes.fetch(:display_name, nil),
         tags:                     attributes.fetch(:tags, ['foo', 'bar']),
         map_id:                   attributes.fetch(:map_id, ::Map.create(user_id: user.id).id),

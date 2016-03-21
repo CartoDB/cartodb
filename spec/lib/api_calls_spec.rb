@@ -1,11 +1,14 @@
 require 'spec_helper'
 require_relative '../../lib/cartodb/stats/api_calls'
+require 'helpers/random_names_helper'
 
 describe CartoDB::Stats::APICalls do
+  include RandomNamesHelper
+
   describe "Stats API Calls" do
     before(:all) do
       @api_calls = CartoDB::Stats::APICalls.new
-        
+
       @default_date_to = Date.today
       @default_date_from = @default_date_to - 29.days
       @dates = @default_date_to.downto(@default_date_from).map {|d| d.strftime("%Y%m%d")}
@@ -23,16 +26,16 @@ describe CartoDB::Stats::APICalls do
       @api_calls.get_api_calls_without_dates('wadus', {old_api_calls: true}).should == expected_total_calls
 
     end
-    
+
     it "should sum correctly api calls from all redis sources and return hash with dates" do
       @api_calls.stubs(:get_api_calls_from_redis_source).returns(@dates_example_values)
       expected_total_calls = {}
-      @dates_example_values.each do |d, value| 
+      @dates_example_values.each do |d, value|
         expected_total_calls[d] = value * @redis_sources_count
       end
       @api_calls.get_api_calls_with_dates('wadus').should == expected_total_calls
     end
-    
+
     it "should sum correctly api calls from all redis sources and return absolute value" do
       api_calls_value = 3
       @api_calls.stubs(:get_total_api_calls_from_redis_source).returns(api_calls_value)
@@ -45,7 +48,7 @@ describe CartoDB::Stats::APICalls do
 
       @api_calls.stubs(:get_api_calls_from_redis_source).returns(@dates_example_values)
       expected_total_calls = {}
-      @dates_example_values.each do |d, value| 
+      @dates_example_values.each do |d, value|
         expected_total_calls[d] = value * @redis_sources_count
       end
       @api_calls.get_api_calls_with_dates(
@@ -53,7 +56,7 @@ describe CartoDB::Stats::APICalls do
         {
           from: (Date.today - 6.days),
           to: Date.today
-        }  
+        }
       ).should == expected_total_calls.to_a[0..6].to_h
     end
   end
@@ -62,8 +65,8 @@ describe CartoDB::Stats::APICalls do
 
     before(:each) do
       @api_calls = CartoDB::Stats::APICalls.new
-      @username = "test_user#{rand(10000)}"
-      @type = "test_type#{rand(1000)}"
+      @username = random_name('user')
+      @type = random_name('type')
       @options = { stat_tag: '000d1206-1fed-11e5-9964-080027880ca6' }
     end
 

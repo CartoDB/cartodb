@@ -1,5 +1,8 @@
 # encoding: utf-8
 require_relative '../support/factories/users'
+require 'helpers/random_names_helper'
+
+include RandomNamesHelper
 
 class TestUserFactory
   include CartoDB::Factories
@@ -17,7 +20,7 @@ shared_context 'organization with users helper' do
 
   def test_organization
     organization = Organization.new
-    organization.name = org_name = "org#{rand(9999)}"
+    organization.name = random_name('org')
     organization.quota_in_bytes = 1234567890
     organization.seats = 15
     organization
@@ -32,8 +35,8 @@ shared_context 'organization with users helper' do
 
     @org_user_owner = @helper.create_owner(@organization)
 
-    @org_user_1 = @helper.create_test_user("a#{random_username}", @organization)
-    @org_user_2 = @helper.create_test_user("b#{random_username}", @organization)
+    @org_user_1 = @helper.create_test_user("a#{random_name('user')}", @organization)
+    @org_user_2 = @helper.create_test_user("b#{random_name('user')}", @organization)
 
     @organization.reload
 

@@ -4,7 +4,9 @@ require_relative '../../../services/data-repository/backend/sequel'
 require_relative '../../../services/data-repository/repository'
 require_relative '../../../app/models/visualization/tags'
 require_relative '../../../app/models/visualization/collection'
+require 'helpers/random_names_helper'
 
+include RandomNamesHelper
 include CartoDB
 
 describe Visualization::Tags do
@@ -63,19 +65,19 @@ describe Visualization::Tags do
       v3 = Visualization::Member.new(random_attributes(user_id: @user_mock.id, name: 'v3', locked:false, tags: [manolo_escobar_tag, manoloescobar_tag])).store
 
       vqb1 = Carto::VisualizationQueryBuilder.new.with_tags([manolo_tag.upcase]).build.map(&:id)
-      
+
       vqb1.should include v1.id
       vqb1.should include v2.id # Searching for 'manolo' should bring up 'manoloescobar' as well
       vqb1.should include v3.id
 
       vqb2 = Carto::VisualizationQueryBuilder.new.with_tags([manoloescobar_tag.upcase]).build.map(&:id)
-      
+
       vqb2.should include v1.id
       vqb2.should_not include v2.id # 'manoloescobar' is not a substring of 'manolo'
       vqb2.should include v3.id
 
       vqb3 = Carto::VisualizationQueryBuilder.new.with_tags([manolo_escobar_tag.upcase]).build.map(&:id)
-      
+
       vqb3.should include v1.id
       vqb3.should_not include v2.id
       vqb3.should include v3.id
@@ -83,9 +85,9 @@ describe Visualization::Tags do
   end
 
   def random_attributes(attributes={})
-    random = rand(999)
+    random = random_name('viz')
     {
-      name:         attributes.fetch(:name, "name #{random}"),
+      name:         attributes.fetch(:name, random),
       description:  attributes.fetch(:description, "description #{random}"),
       privacy:      attributes.fetch(:privacy, 'public'),
       tags:         attributes.fetch(:tags, ['tag 1']),

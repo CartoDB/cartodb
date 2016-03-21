@@ -106,8 +106,9 @@ describe('windshaft/map', function () {
 
       var args = this.client.instantiateMap.calls.mostRecent().args[0];
       expect(args.mapDefinition).toEqual({ foo: 'bar' });
-      expect(args.statTag).toEqual('stat_tag');
-      expect(args.filters).toEqual({});
+      expect(args.params).toEqual({
+        stat_tag: 'stat_tag'
+      });
     });
 
     it('should serialize the active filters of dataviews in the URL', function () {
@@ -120,7 +121,9 @@ describe('windshaft/map', function () {
       var args = this.client.instantiateMap.calls.mostRecent().args[0];
 
       // Filters are empty because no filter is active yet
-      expect(args.filters).toEqual({});
+      expect(args.params).toEqual({
+        stat_tag: 'stat_tag'
+      });
 
       this.filter.accept('category');
 
@@ -130,10 +133,13 @@ describe('windshaft/map', function () {
       });
       args = this.client.instantiateMap.calls.mostRecent().args[0];
 
-      expect(args.filters).toEqual({
-        dataviews: {
-          dataviewId: {
-            accept: [ 'category' ]
+      expect(args.params).toEqual({
+        stat_tag: 'stat_tag',
+        filters: {
+          dataviews: {
+            dataviewId: {
+              accept: [ 'category' ]
+            }
           }
         }
       });
@@ -157,7 +163,10 @@ describe('windshaft/map', function () {
       });
 
       var args = this.client.instantiateMap.calls.mostRecent().args[0];
-      expect(args.apiKey).toEqual('API_KEY');
+      expect(args.params).toEqual({
+        stat_tag: 'stat_tag',
+        api_key: 'API_KEY'
+      });
     });
 
     it('should trigger an event when the instance is created', function () {

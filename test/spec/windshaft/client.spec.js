@@ -28,9 +28,25 @@ describe('windshaft/client', function () {
 
     it('should trigger a GET request to instantiate a map', function () {
       this.client.instantiateMap({
+        mapDefinition: { some: 'json that must be encoded' }
+      });
+
+      var url = this.ajaxParams.url.split('?')[0];
+
+      expect(url).toEqual('https://rambo.example.com:443/api/v1');
+      expect(this.ajaxParams.method).toEqual('GET');
+      expect(this.ajaxParams.dataType).toEqual('jsonp');
+      expect(this.ajaxParams.jsonpCallback).toMatch('_cdbc_callbackName');
+      expect(this.ajaxParams.cache).toEqual(true);
+    });
+
+    it('should include the given params and handle JSON objects correctly', function () {
+      this.client.instantiateMap({
         mapDefinition: { some: 'json that must be encoded' },
-        statTag: 'stat_tag',
-        filters: { some: 'filters that will be applied' }
+        params: {
+          stat_tag: 'stat_tag',
+          filters: { some: 'filters that will be applied' }
+        }
       });
 
       var url = this.ajaxParams.url.split('?')[0];
@@ -44,19 +60,6 @@ describe('windshaft/client', function () {
       expect(this.ajaxParams.dataType).toEqual('jsonp');
       expect(this.ajaxParams.jsonpCallback).toMatch('_cdbc_callbackName');
       expect(this.ajaxParams.cache).toEqual(true);
-    });
-
-    it('should include the api_key in the URL if present', function () {
-      this.client.instantiateMap({
-        mapDefinition: { some: 'json that must be encoded' },
-        statTag: 'stat_tag',
-        apiKey: 'api_key',
-        filters: { some: 'filters that will be applied' }
-      });
-
-      var params = this.ajaxParams.url.split('?')[1].split('&');
-
-      expect(params.indexOf('api_key=api_key')).toBeTruthy();
     });
 
     it('should invoke the success callback', function () {
@@ -118,16 +121,16 @@ describe('windshaft/client', function () {
 
       this.client.instantiateMap({
         mapDefinition: { some: 'json that must be encoded' },
-        statTag: 'stat_tag',
-        filters: { some: 'filters that will be applied' }
+        params: {
+          a: 'b'
+        }
       });
 
       var url = this.ajaxParams.url.split('?')[0];
       var params = this.ajaxParams.url.split('?')[1].split('&');
 
       expect(url).toEqual('https://rambo.example.com:443/api/v1');
-      expect(params[0]).toEqual('stat_tag=stat_tag');
-      expect(params[1]).toEqual('filters=%7B%22some%22%3A%22filters%20that%20will%20be%20applied%22%7D');
+      expect(params[0]).toEqual('a=b');
       expect(this.ajaxParams.crossOrigin).toEqual(true);
       expect(this.ajaxParams.method).toEqual('POST');
       expect(this.ajaxParams.dataType).toEqual('json');
@@ -151,16 +154,16 @@ describe('windshaft/client', function () {
 
       this.client.instantiateMap({
         mapDefinition: mapDefinition,
-        statTag: 'stat_tag',
-        filters: { some: 'filters that will be applied' }
+        params: {
+          a: 'b'
+        }
       });
 
       var url = this.ajaxParams.url.split('?')[0];
       var params = this.ajaxParams.url.split('?')[1].split('&');
 
       expect(url).toEqual('https://rambo.example.com:443/api/v1');
-      expect(params[0]).toEqual('stat_tag=stat_tag');
-      expect(params[1]).toEqual('filters=%7B%22some%22%3A%22filters%20that%20will%20be%20applied%22%7D');
+      expect(params[0]).toEqual('a=b');
       expect(this.ajaxParams.crossOrigin).toEqual(true);
       expect(this.ajaxParams.method).toEqual('POST');
       expect(this.ajaxParams.dataType).toEqual('json');
@@ -178,8 +181,7 @@ describe('windshaft/client', function () {
       });
 
       this.client.instantiateMap({
-        mapDefinition: { some: 'json that must be encoded' },
-        filters: { some: 'filters that will be applied' }
+        mapDefinition: { some: 'json that must be encoded' }
       });
 
       expect(this.ajaxParams.method).toEqual('GET');

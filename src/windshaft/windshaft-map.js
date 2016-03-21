@@ -55,14 +55,23 @@ var WindshaftMap = Backbone.Model.extend({
     var sourceLayerId = options.sourceLayerId;
     var forceFetch = options.forceFetch;
 
-    var filters = this._getFiltersFromVisibleLayers();
+    var params = {
+      stat_tag: this.statTag
+    };
+
+    if (this.apiKey) {
+      params.api_key = this.apiKey;
+    }
+
+    var filters = this._getFilterParamFromDataviews();
+    if (!_.isEmpty(filters)) {
+      params.filters = filters;
+    }
 
     // TODO: Pass an array of params instead of passing apiKey, statTag, and filters
     this.client.instantiateMap({
       mapDefinition: this.toMapConfig(),
-      apiKey: this.apiKey,
-      statTag: this.statTag,
-      filters: filters,
+      params: params,
       success: function (mapInstance) {
         this.set(mapInstance);
 
@@ -86,13 +95,7 @@ var WindshaftMap = Backbone.Model.extend({
     });
   },
 
-  _getLayers: function () {
-    return this._layersCollection.select(function (layer) {
-      return LAYER_TYPES.indexOf(layer.get('type')) >= 0;
-    });
-  },
-
-  _getFiltersFromVisibleLayers: function () {
+  _getFilterParamFromDataviews: function () {
     return this._dataviewsCollection.reduce(function (filters, dataview) {
       var filter = dataview.filter;
       if (filter && !filter.isEmpty()) {
@@ -101,6 +104,12 @@ var WindshaftMap = Backbone.Model.extend({
       }
       return filters;
     }, {});
+  },
+
+  _getLayers: function () {
+    return this._layersCollection.select(function (layer) {
+      return LAYER_TYPES.indexOf(layer.get('type')) >= 0;
+    });
   },
 
   _updateLayersFromWindshaftInstance: function () {

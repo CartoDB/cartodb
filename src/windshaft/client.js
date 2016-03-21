@@ -37,9 +37,7 @@ WindshaftClient.prototype.instantiateMap = function (options) {
   }
 
   var mapDefinition = options.mapDefinition;
-  var statTag = options.statTag;
-  var apiKey = options.apiKey;
-  var filters = options.filters || {};
+  var params = options.params || {};
   var successCallback = options.success;
   var errorCallback = options.error;
   var payload = JSON.stringify(mapDefinition);
@@ -60,19 +58,6 @@ WindshaftClient.prototype.instantiateMap = function (options) {
       errorCallback(err.errors[0]);
     }
   };
-
-  // TODO: Move this
-  var params = [
-    ['stat_tag', statTag].join('=')
-  ];
-
-  if (Object.keys(filters).length) {
-    params.push(['filters', encodeURIComponent(JSON.stringify(filters))].join('='));
-  }
-
-  if (apiKey) {
-    params.push(['api_key', apiKey].join('='));
-  }
 
   if (this._usePOST(payload, params)) {
     this._post(payload, params, ajaxOptions);
@@ -103,8 +88,8 @@ WindshaftClient.prototype._post = function (payload, params, options) {
 
 WindshaftClient.prototype._get = function (payload, params, options) {
   var compressFunction = this._getCompressor(payload);
-  compressFunction(payload, this.constructor.DEFAULT_COMPRESSION_LEVEL, function (dataParameter) {
-    params.push(dataParameter);
+  compressFunction(payload, this.constructor.DEFAULT_COMPRESSION_LEVEL, function (dataParam) {
+    _.extend(params, dataParam);
     $.ajax({
       url: this._getURL(params),
       method: 'GET',
@@ -120,20 +105,27 @@ WindshaftClient.prototype._get = function (payload, params, options) {
 WindshaftClient.prototype._getCompressor = function (payload) {
   if (payload.length < this.constructor.MAX_GET_SIZE) {
     return function (data, level, callback) {
-      callback('config=' + encodeURIComponent(data));
+      callback({ config: encodeURIComponent(data) });
     };
   }
 
   return function (data, level, callback) {
     data = JSON.stringify({ config: data });
     LZMA.compress(data, level, function (encoded) {
-      callback('lzma=' + encodeURIComponent(util.array2hex(encoded)));
+      callback({ lzma: encodeURIComponent(util.array2hex(encoded)) });
     });
   };
 };
 
 WindshaftClient.prototype._getURL = function (params) {
-  return [this.url, this.endpoint].join('/') + '?' + params.join('&');
+  var queryString = _.map(params, function (value, name) {
+    if (value instanceof Object) {
+      value = encodeURIComponent(JSON.stringify(value));
+    }
+    return [ name + '=' + value ];
+  });
+
+  return [this.url, this.endpoint].join('/') + (queryString ? '?' + queryString.join('&') : '');
 };
 
 WindshaftClient.prototype._jsonpCallbackName = function (payload) {

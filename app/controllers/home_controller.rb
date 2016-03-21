@@ -38,7 +38,7 @@ class HomeController < ApplicationController
     api_ok   = true
     head (db_ok && redis_ok && api_ok) ? 200 : 500
   rescue => e
-    CartoDB::Logger.info 'status method failed', e.inspect
+    CartoDB::StdoutLogger.info 'status method failed', e.inspect
     head 500
   end
 

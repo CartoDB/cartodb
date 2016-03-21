@@ -18,9 +18,9 @@
           "resolved": "https://registry.npmjs.org/num2fraction/-/num2fraction-1.2.2.tgz"
         },
         "caniuse-db": {
-          "version": "1.0.30000430",
-          "from": "https://registry.npmjs.org/caniuse-db/-/caniuse-db-1.0.30000430.tgz",
-          "resolved": "https://registry.npmjs.org/caniuse-db/-/caniuse-db-1.0.30000430.tgz"
+          "version": "1.0.30000431",
+          "from": "https://registry.npmjs.org/caniuse-db/-/caniuse-db-1.0.30000431.tgz",
+          "resolved": "https://registry.npmjs.org/caniuse-db/-/caniuse-db-1.0.30000431.tgz"
         },
         "postcss": {
           "version": "4.1.16",
@@ -1453,7 +1453,7 @@
     },
     "camshaft-reference": {
       "version": "0.1.0",
-      "from": "camshaft-reference@0.1.0",
+      "from": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.1.0.tgz",
       "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.1.0.tgz"
     },
     "cartoassets": {
@@ -1463,13 +1463,13 @@
     },
     "cartodb-deep-insights.js": {
       "version": "0.0.1",
-      "from": "cartodb-deep-insights.js@git://github.com/cartodb/deep-insights.js.git#bcbf7c26617c24efc98cbd0c86803468a55f070b",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#bcbf7c26617c24efc98cbd0c86803468a55f070b",
+      "from": "cartodb-deep-insights.js@git://github.com/cartodb/deep-insights.js.git#d82a1c4382ac5a038a480145e8cbb30a7723332b",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#d82a1c4382ac5a038a480145e8cbb30a7723332b",
       "dependencies": {
         "cartodb.js": {
           "version": "4.0.0-alpha.1",
-          "from": "cartodb.js@git://github.com/cartodb/cartodb.js.git#11437811119b7f06c73ecf4a7f7e21cc3ab5cf9c",
-          "resolved": "git://github.com/cartodb/cartodb.js.git#11437811119b7f06c73ecf4a7f7e21cc3ab5cf9c",
+          "from": "cartodb.js@git://github.com/cartodb/cartodb.js.git#3a4dd78fdf95c06dae5f6a31544817395cf9838d",
+          "resolved": "git://github.com/cartodb/cartodb.js.git#3a4dd78fdf95c06dae5f6a31544817395cf9838d",
           "dependencies": {
             "leaflet": {
               "version": "0.7.3",
@@ -2231,8 +2231,8 @@
     },
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
-      "from": "cartodb.js@git://github.com/cartodb/cartodb.js.git#11437811119b7f06c73ecf4a7f7e21cc3ab5cf9c",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#11437811119b7f06c73ecf4a7f7e21cc3ab5cf9c",
+      "from": "cartodb.js@git://github.com/cartodb/cartodb.js.git#3a4dd78fdf95c06dae5f6a31544817395cf9838d",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#3a4dd78fdf95c06dae5f6a31544817395cf9838d",
       "dependencies": {
         "jstify": {
           "version": "0.12.0",
@@ -4428,9 +4428,9 @@
                   }
                 },
                 "shell-quote": {
-                  "version": "1.4.3",
-                  "from": "https://registry.npmjs.org/shell-quote/-/shell-quote-1.4.3.tgz",
-                  "resolved": "https://registry.npmjs.org/shell-quote/-/shell-quote-1.4.3.tgz",
+                  "version": "1.5.0",
+                  "from": "https://registry.npmjs.org/shell-quote/-/shell-quote-1.5.0.tgz",
+                  "resolved": "https://registry.npmjs.org/shell-quote/-/shell-quote-1.5.0.tgz",
                   "dependencies": {
                     "jsonify": {
                       "version": "0.0.0",
@@ -4664,9 +4664,9 @@
               "resolved": "https://registry.npmjs.org/outpipe/-/outpipe-1.1.1.tgz",
               "dependencies": {
                 "shell-quote": {
-                  "version": "1.4.3",
-                  "from": "https://registry.npmjs.org/shell-quote/-/shell-quote-1.4.3.tgz",
-                  "resolved": "https://registry.npmjs.org/shell-quote/-/shell-quote-1.4.3.tgz",
+                  "version": "1.5.0",
+                  "from": "https://registry.npmjs.org/shell-quote/-/shell-quote-1.5.0.tgz",
+                  "resolved": "https://registry.npmjs.org/shell-quote/-/shell-quote-1.5.0.tgz",
                   "dependencies": {
                     "jsonify": {
                       "version": "0.0.0",
@@ -7328,9 +7328,9 @@
       "resolved": "https://registry.npmjs.org/jstify/-/jstify-0.13.0.tgz",
       "dependencies": {
         "html-minifier": {
-          "version": "1.2.0",
-          "from": "https://registry.npmjs.org/html-minifier/-/html-minifier-1.2.0.tgz",
-          "resolved": "https://registry.npmjs.org/html-minifier/-/html-minifier-1.2.0.tgz",
+          "version": "1.3.0",
+          "from": "https://registry.npmjs.org/html-minifier/-/html-minifier-1.3.0.tgz",
+          "resolved": "https://registry.npmjs.org/html-minifier/-/html-minifier-1.3.0.tgz",
           "dependencies": {
             "change-case": {
               "version": "2.3.1",
@@ -7573,6 +7573,18 @@
                       "resolved": "https://registry.npmjs.org/util-deprecate/-/util-deprecate-1.0.2.tgz"
                     }
                   }
+                }
+              }
+            },
+            "ncname": {
+              "version": "1.0.0",
+              "from": "https://registry.npmjs.org/ncname/-/ncname-1.0.0.tgz",
+              "resolved": "https://registry.npmjs.org/ncname/-/ncname-1.0.0.tgz",
+              "dependencies": {
+                "xml-char-classes": {
+                  "version": "1.0.0",
+                  "from": "https://registry.npmjs.org/xml-char-classes/-/xml-char-classes-1.0.0.tgz",
+                  "resolved": "https://registry.npmjs.org/xml-char-classes/-/xml-char-classes-1.0.0.tgz"
                 }
               }
             },
@@ -10199,9 +10211,9 @@
                                   "resolved": "https://registry.npmjs.org/window-size/-/window-size-0.1.4.tgz"
                                 },
                                 "y18n": {
-                                  "version": "3.2.0",
-                                  "from": "https://registry.npmjs.org/y18n/-/y18n-3.2.0.tgz",
-                                  "resolved": "https://registry.npmjs.org/y18n/-/y18n-3.2.0.tgz"
+                                  "version": "3.2.1",
+                                  "from": "https://registry.npmjs.org/y18n/-/y18n-3.2.1.tgz",
+                                  "resolved": "https://registry.npmjs.org/y18n/-/y18n-3.2.1.tgz"
                                 }
                               }
                             }
@@ -13345,9 +13357,9 @@
           "resolved": "https://registry.npmjs.org/outpipe/-/outpipe-1.1.1.tgz",
           "dependencies": {
             "shell-quote": {
-              "version": "1.4.3",
-              "from": "https://registry.npmjs.org/shell-quote/-/shell-quote-1.4.3.tgz",
-              "resolved": "https://registry.npmjs.org/shell-quote/-/shell-quote-1.4.3.tgz",
+              "version": "1.5.0",
+              "from": "https://registry.npmjs.org/shell-quote/-/shell-quote-1.5.0.tgz",
+              "resolved": "https://registry.npmjs.org/shell-quote/-/shell-quote-1.5.0.tgz",
               "dependencies": {
                 "jsonify": {
                   "version": "0.0.0",

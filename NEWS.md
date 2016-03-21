@@ -9,6 +9,8 @@
 * Fixes a memory leak when connecting to user databases
 * Fixed error when accessing an SQL API renamed table through the editor.
 * Ignore non-downloadable GDrive files that made file listing fail (https://github.com/CartoDB/cartodb/pull/6871)
+* Fix slow search of visualizations by name
+* Update and improve logging system
 
 ## Security fixes
 

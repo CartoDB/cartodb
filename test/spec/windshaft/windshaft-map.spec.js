@@ -735,7 +735,7 @@ describe('windshaft/map', function () {
   });
 
   describe('#getDataviewURL', function () {
-    it('should return undefined if dataview is not found', function () {
+    it('should return undefined if dataviews key is not present in the metadata', function () {
       var windshaftMap = new WindshaftMap({
         'layergroupid': '0123456789',
         'metadata': {
@@ -806,21 +806,27 @@ describe('windshaft/map', function () {
           'layers': [
             {
               'type': 'mapnik',
-              'meta': {},
-              'widgets': {
-                'dataviewId': {
-                  'url': {
-                    'http': 'http://example.com',
-                    'https': 'https://example.com'
-                  }
-                }
-              }
+              'meta': {}
             },
             {
               'type': 'torque',
               'meta': {}
             }
-          ]
+          ],
+          dataviews: {
+            'dataviewId': {
+              'url': {
+                'http': 'http://example.com',
+                'https': 'https://example.com'
+              }
+            },
+            'dataviewId2': {
+              'url': {
+                'http': 'http://example2.com',
+                'https': 'https://example2.com'
+              }
+            }
+          }
         }
       }, {
         client: new WindshaftClient({
@@ -837,6 +843,9 @@ describe('windshaft/map', function () {
 
       dataviewURL = windshaftMap.getDataviewURL({ dataviewId: 'dataviewId', protocol: 'https' });
       expect(dataviewURL).toEqual('https://example.com');
+
+      dataviewURL = windshaftMap.getDataviewURL({ dataviewId: 'dataviewId2', protocol: 'http' });
+      expect(dataviewURL).toEqual('http://example2.com');
     });
   });
 });

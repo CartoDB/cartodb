@@ -17,7 +17,7 @@ module Carto
       if stale_tables_linked? || !async
         sync_user_schema_and_tables_metadata
       else
-        ::Resque.enqueue(::Resque::UserJobs::SyncTables::LinkGhostTables, current_user.id)
+        ::Resque.enqueue(::Resque::UserJobs::SyncTables::LinkGhostTables, @user.id)
       end
     end
 

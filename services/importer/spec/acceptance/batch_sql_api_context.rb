@@ -10,6 +10,10 @@ shared_context "batch_sql_api" do
     })
     @log = CartoDB::Importer2::Doubles::Log.new(@user)
     mock = CartoDB::Importer2::Doubles::BatchSQLApi.new(@user, @db)
-    CartoDB::BatchSQLApi.stubs(:new).returns(mock)
+    CartoDB::Importer2::BatchApiQuery.stubs(:new).returns(mock)
+  end
+
+  after(:each) do
+    @user.destroy
   end
 end

@@ -29,6 +29,7 @@ module Carto
     def unlock
       removed_keys = @redis_object.del(@bolt_key)
 
+      # This may happen due to Redis failure. Highly unlikely, still nice to know.
       if removed_keys > 1
         CartoDB.notify_error('Removed bolt key was duplicated', bolt_key: @bolt_key, amount: removed_keys)
       end

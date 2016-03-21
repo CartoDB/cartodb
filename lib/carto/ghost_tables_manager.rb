@@ -215,6 +215,10 @@ module Carto
       @id.eql?(other.id) && @name.eql?(other.name)
     end
 
+    def ==(other)
+      eql?(other)
+    end
+
     def hash
       [@id, @name, @user_id].hash
     end

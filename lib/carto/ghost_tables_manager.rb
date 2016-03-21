@@ -212,7 +212,7 @@ module Carto
     end
 
     def eql?(other)
-      @id.eql?(other.id) && @name.eql?(other.name)
+      @id.eql?(other.id) && @name.eql?(other.name) && @user_id.eql?(other.user_id)
     end
 
     def ==(other)

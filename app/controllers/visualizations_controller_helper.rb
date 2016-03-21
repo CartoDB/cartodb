@@ -73,7 +73,7 @@ module VisualizationsControllerHelper
       visualization = user.nil? ? nil : get_priority_visualization(viz_locator.name, user_id: user.id)
     end
 
-    render_404 && return unless viz_locator.matches_visualization?(visualization)
+    return nil unless viz_locator.matches_visualization?(visualization)
     visualization
   end
 

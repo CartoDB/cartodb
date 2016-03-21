@@ -15,6 +15,7 @@ describe Admin::VisualizationsController do
   include Rack::Test::Methods
   include Warden::Test::Helpers
   include CacheHelper
+  include Carto::Factories::Visualizations
 
   before(:all) do
     @user = FactoryGirl.create(:valid_user, private_tables_enabled: true)
@@ -547,6 +548,54 @@ describe Admin::VisualizationsController do
       Carto::UserDbSizeCache.any_instance.expects(:update_if_old).with(@user).once
       login_as(@user, scope: @user.username)
       get dashboard_path, {}, @headers
+    end
+  end
+
+  describe 'find visualizations by name' do
+    before(:all) do
+      @organization = create_organization_with_users(name: 'vizzuality')
+      @org_user = @organization.users.first
+      bypass_named_maps
+      @table = new_table(user_id: @org_user.id, privacy: ::UserTable::PRIVACY_PUBLIC).save.reload
+      @faketable = new_table(user_id: @user.id, privacy: ::UserTable::PRIVACY_PUBLIC).save.reload
+    end
+
+    it 'finds visualization by org and name' do
+      url = CartoDB.url(self, 'public_table', { id: @table.table_visualization.name }, @org_user)
+      url = url.sub("/u/#{@org_user.username}", '')
+
+      get url
+      last_response.status.should == 200
+    end
+
+    it 'does not find visualizations outside org' do
+      url = CartoDB.url(self, 'public_table', { id: @faketable.table_visualization.name }, @org_user)
+      url = url.sub("/u/#{@org_user.username}", '')
+
+      get url
+      last_response.status.should == 404
+    end
+
+    it 'finds visualization by user and public.name' do
+      url = CartoDB.url(self, 'public_table', { id: "public.#{@table.table_visualization.name}" }, @org_user)
+
+      get url
+      last_response.status.should == 200
+    end
+
+    it 'finds visualization by user and public.id' do
+      url = CartoDB.url(self, 'public_table', { id: "public.#{@table.table_visualization.id}" }, @org_user)
+
+      get url
+      last_response.status.should == 200
+    end
+
+    it 'does not find visualizations outside user with public schema' do
+      url = CartoDB.url(self, 'public_table', { id: "public.#{@faketable.table_visualization.name}" }, @org_user)
+      url = url.sub("/u/#{@org_user.username}", '')
+
+      get url
+      last_response.status.should == 404
     end
   end
 

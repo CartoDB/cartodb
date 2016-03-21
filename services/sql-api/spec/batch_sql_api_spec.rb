@@ -1,5 +1,5 @@
 # encoding: utf-8
-require_relative '../sql_api.rb'
+require_relative '../batch_sql_api.rb'
 require_relative '../../../spec/rspec_configuration.rb'
 
 module Cartodb; end

@@ -441,16 +441,9 @@ class Admin::VisualizationsController < Admin::AdminController
   def link_ghost_tables
     return unless current_user.has_feature_flag?('ghost_tables')
 
-    ghost_tables_manager = Carto::GhostTablesManager.new(current_user.id)
-
-    # Check if any tables need to be linked, relinked or unlinked
-    if ghost_tables_manager.stale_tables_linked?
-      # You might see phantom tables that generate erros upon clicking them; needs relink now
-      ghost_tables_manager.sync_user_schema_and_tables_metadata
-    elsif !ghost_tables_manager.consistent?
-      # Worst case you'll refresh for an SQL API genearted table to appear
-      ::Resque.enqueue(::Resque::UserJobs::SyncTables::LinkGhostTables, current_user.id)
-    end
+    # This call will trigger ghost tables synchronously if there's risk of displaying a stale table
+    # or asynchronously otherwise.
+    Carto::GhostTablesManager.new(current_user.id).link_ghost_tables(async: true)
   end
 
   def user_metadata_propagation

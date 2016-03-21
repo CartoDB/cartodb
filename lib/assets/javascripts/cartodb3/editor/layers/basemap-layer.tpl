@@ -3,5 +3,5 @@
   <div class="BlockList-title u-bSpace">
     <h2 class="BlockList-titleText CDB-Text CDB-Size-large u-ellipsis"><%- title %></h2>
   </div>
-  <p class="CDB-Text CDB-Size-medium u-secondaryTextColor"><%- _t('editor.layers.basemap') %></p>
+  <p class="CDB-Text CDB-Size-medium u-secondaryTextColor"><%- desc %></p>
 </div>

@@ -1,0 +1,91 @@
+@import 'cdb-utilities/mixins';
+@import 'cdb-variables/colors';
+@import 'cdb-variables/sizes';
+
+.WidgetShape-histogram {
+  position: relative;
+  width: 20px;
+  height: 11px;
+}
+.WidgetShape-histogram-bar {
+  position: absolute;
+  bottom: 0;
+  width: 2px;
+  background: $cHighlight;
+}
+.WidgetShape-histogram-bar.is-01 {
+  top: 7px;
+  left: 0;
+}
+.WidgetShape-histogram-bar.is-02 {
+  top: 4px;
+  left: 3px;
+}
+.WidgetShape-histogram-bar.is-03 {
+  top: 2px;
+  left: 6px;
+}
+.WidgetShape-histogram-bar.is-04 {
+  top: 0;
+  left: 9px;
+}
+.WidgetShape-histogram-bar.is-05 {
+  top: 2px;
+  left: 12px;
+}
+.WidgetShape-histogram-bar.is-06 {
+  top: 5px;
+  left: 15px;
+}
+.WidgetShape-histogram-bar.is-07 {
+  top: 8px;
+  right: 0;
+}
+
+.WidgetShape-category {
+  width: 18px;
+  height: 16px;
+}
+.WidgetShape-category-item {
+  margin-bottom: 2px;
+}
+.WidgetShape-category-item:last-child {
+  margin-bottom: 0;
+}
+.WidgetShape-category-title {
+  width: 5px;
+  height: 1px;
+  margin-bottom: 1px;
+  background: $cHintText;
+}
+.WidgetShape-category-bar {
+  height: 2px;
+  background: $cWhite;
+}
+.WidgetShape-category-percent {
+  display: block;
+  height: 2px;
+  background: $cHighlight;
+}
+
+.WidgetShape-formula {
+  width: 18px;
+  height: 14px;
+}
+.WidgetShape-formula-title {
+  height: 2px;
+  margin-bottom: 1px;
+  background: #CBCED0;
+}
+.WidgetShape-formula-info {
+  width: 11px;
+  height: 1px;
+  margin-bottom: 3px;
+  background: $cMainLine;
+}
+.WidgetShape-formula-number {
+  width: 12px;
+  height: 7px;
+  background: $cMainLine;
+}
+

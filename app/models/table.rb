@@ -521,11 +521,15 @@ class Table
   def create_default_visualization
     kind = is_raster? ? CartoDB::Visualization::Member::KIND_RASTER : CartoDB::Visualization::Member::KIND_GEOM
 
+    esv = external_source_visualization
+
     member = CartoDB::Visualization::Member.new(
       name:         self.name,
       map_id:       self.map_id,
       type:         CartoDB::Visualization::Member::TYPE_CANONICAL,
       description:  @user_table.description,
+      attributions: esv.nil? ? nil : esv.attributions,
+      source:       esv.nil? ? nil : esv.source,
       tags:         (@user_table.tags.split(',') if @user_table.tags),
       privacy:      UserTable::PRIVACY_VALUES_TO_TEXTS[default_privacy_value],
       user_id:      self.owner.id,
@@ -1317,6 +1321,15 @@ class Table
   end
 
   private
+
+  def external_source_visualization
+    @user_table.
+      try(:data_import).
+      try(:external_data_imports).
+      try(:first).
+      try(:external_source).
+      try(:visualization)
+  end
 
   def previous_privacy
     # INFO: @user_table.initial_value(:privacy) weirdly returns incorrect value so using changes index instead

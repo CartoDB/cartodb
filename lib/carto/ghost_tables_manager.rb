@@ -26,7 +26,7 @@ module Carto
     def sync_user_schema_and_tables_metadata
       bolt = Carto::Bolt.new("#{@user.id}:#{MUTEX_REDIS_KEY}", ttl_ms: MUTEX_TTL_MS)
 
-      got_locked = bolt.lock do
+      got_locked = bolt.run_locked do
         # Lock aquired, inside the critical zone
         unless non_linked_tables.empty?
           relink_renamed_tables
@@ -38,7 +38,7 @@ module Carto
       # Left the critical zone, bolt automatically unlocked
 
       unless got_locked
-        # TODO: Handle requests that failed to run due to bolt being locked
+        # TODO: Queue non processed requests to be retried later.
       end
     end
 

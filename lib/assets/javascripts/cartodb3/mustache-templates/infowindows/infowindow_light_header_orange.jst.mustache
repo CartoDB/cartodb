@@ -1,0 +1,43 @@
+<div class="CDB-infowindow CDB-infowindow--light js-infowindow">
+  <div class="CDB-infowindow-container">
+    <div class="CDB-infowindow-header CDB-infowindow-headerBg CDB-infowindow-headerBg--light js-header" style="background: #E68165;">
+      <ul class="CDB-infowindow-list">
+        {{#loading}}…{{/loading}}
+        {{#content.fields}}
+          {{^index}}
+            <li class="CDB-infowindow-listItem">
+              {{#title}}<h5 class="CDB-infowindow-subtitle">{{title}}</h5>{{/title}}
+              {{#value}}<h4 class="CDB-infowindow-title {{#type}}{{ type }}{{/type}}">{{{ value }}}</h1>{{/value}}
+            </li>
+            {{^value}}{{/value}}
+          {{/index}}
+        {{/content.fields}}
+      </ul>
+    </div>
+    <div class="CDB-infowindow-inner js-inner">
+      {{#loading}}
+        <div class="CDB-Loader js-loader is-visible"></div>
+      {{/loading}}
+      <ul class="CDB-infowindow-list js-content">
+        {{#content.fields}}
+          {{#index}}
+            <li class="CDB-infowindow-listItem">
+              {{#title}}
+                <h5 class="CDB-infowindow-subtitle">{{title}}</h5>
+              {{/title}}
+              {{#value}}
+                <h4 class="CDB-infowindow-title">{{{ value }}}</h4>
+              {{/value}}
+              {{^value}}
+                <h4 class="CDB-infowindow-title">NULL</h4>
+              {{/value}}
+            </li>
+          {{/index}}
+        {{/content.fields}}
+      </ul>
+    </div>
+    <div class="CDB-hook">
+      <div class="CDB-hook-inner"></div>
+    </div>
+  </div>
+</div>

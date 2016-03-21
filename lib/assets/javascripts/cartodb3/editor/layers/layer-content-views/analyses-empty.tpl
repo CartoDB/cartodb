@@ -1,9 +1,9 @@
-<p class="CDB-Text CDB-Size-medium u-iBlock">You have not added any analysis yet. Add new analysis to discover new things.</p>
+<p class="CDB-Text CDB-Size-medium u-iBlock"><%- _t('editor.layers.analysis-form.placeholder-text') %></p>
 <div class="BlockList-item is-dashed u-tSpace-xl">
   <ul class="">
     <li class="BlockList-media"></li>
     <li class="BlockList-media"></li>
     <li class="BlockList-media"></li>
   </ul>
-  <button class="js-newAnalysis">Add Analysis</button>
+  <button class="js-newAnalysis"><%- _t('editor.layers.layer.add-analysis') %></button>
 </div>

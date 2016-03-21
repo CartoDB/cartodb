@@ -39,7 +39,9 @@
     },
     "layers": {
       "layer": {
-        'add-analysis': 'Add analysis'
+        "analysis": "Analysis",
+        "add-analysis": "Add analysis",
+        "delete": "Delete"
       },
       "menu-tab-pane-labels": {
         "data": "Data",
@@ -47,6 +49,19 @@
         "style": "Style",
         "popup": "Pop-up",
         "legends": "Legend"
+      },
+      "analysis-form": {
+        "placeholder-text": "You have not added any analysis yet. Add new analysis to discover new things.",
+        "workflow": "Workflow",
+        "reference-layer": "Define your reference layer",
+        "parameters": "Parameters",
+        "parameters-description": "Tune your analysis",
+        "trade-area": "Trade area",
+        "buffer": "Buffer",
+        "input": "Input",
+        "radio": "Radio",
+        "type": "Type",
+        "time": "Time"
       }
     },
     "widgets": {

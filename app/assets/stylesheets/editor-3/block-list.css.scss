@@ -17,6 +17,9 @@
   background: $cWhite;
   cursor: pointer;
 }
+.BlockList-item.is-space {
+  @include justify-content(space-between);
+}
 .BlockList-item.is-dashed {
   border-style: dashed;
 }
@@ -54,4 +57,43 @@
   border-radius: $baseSize / 2;
   background: $cThirdBackground;
   box-sizing: border-box;
+}
+
+
+.HorizontalBlockList {
+  @include display-flex();
+}
+.HorizontalBlockList-item {
+  @include display-flex();
+  @include align-items(center);
+  @include justify-content(center);
+  position: relative;
+  box-sizing: border-box;
+  width: 40px;
+  height: 40px;
+  margin-right: 8px;
+  border: 1px solid $cSecondaryLine;
+  border-radius: 4px;
+  background: $cThirdBackground;
+  color: $cAltText;
+}
+.HorizontalBlockList-item:last-child {
+  margin-right: 0;
+} 
+.HorizontalBlockList-item::before {
+  position: absolute;
+  top: 50%;
+  left: -9px;
+  width: 8px;
+  height: 1px;
+  background: $cMainLine;
+  content: '';
+}
+.HorizontalBlockList-item:first-child::before {
+  display: none;
+  background: rd;
+}
+.HorizontalBlockList-item.is-add {
+  border: 1px dashed $cMainLine;
+  background: $cWhite;
 }

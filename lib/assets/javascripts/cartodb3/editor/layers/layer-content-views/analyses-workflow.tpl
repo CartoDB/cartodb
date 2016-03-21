@@ -6,11 +6,15 @@
     </div>
     <p class="CDB-Text u-upperCase CDB-FontSize-small u-altTextColor u-bSpace--m">
       <%- _t('editor.layers.layer.analysis') %> <%- selectedNodeId %>
-      <button class="js-delete"><%- _t('editor.layers.layer.delete') %></button>
+      <button class="js-delete u-actionTextColor u-upperCase"><%- _t('editor.layers.layer.delete') %></button>
     </p>
-    <ul class="js-list">
-      <li>
-        <button class="js-newAnalysis">+</button>
+    <ul class="js-list HorizontalBlockList">
+      <li class="HorizontalBlockList-item is-add">
+        <button class="js-newAnalysis">
+          <div class="CDB-Shape">
+            <div class="CDB-Shape-add is-blue is-small"></div>
+          </div>
+        </button>
       </li>
     </ul>
   </div>

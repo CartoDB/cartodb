@@ -100,6 +100,19 @@ module Carto
       clean_user_tables_with_null_table_id
     end
 
+    # Remove tables with null oids unless the table name exists on the db
+    def clean_user_tables_with_null_table_id
+      null_table_id_user_tables = linked_tables.select { |linked_table| linked_table.id.nil? }
+
+      # Discard tables physically in database
+      (null_table_id_user_tables - all_cartodbyfied_tables).each do |linked_table|
+        t = Table.new(table_id: linked_table.id)
+
+        t.keep_user_database_table = true
+        t.destroy
+      end
+    end
+
     # this method searchs for tables with all the columns needed in a cartodb table.
     # it does not check column types, and only the latest cartodbfication trigger attached (test_quota_per_row)
     def search_for_cartodbfied_tables
@@ -155,19 +168,6 @@ module Carto
     # Tables that have been created trhought the SQL API
     def new_tables
       non_linked_tables.select { |metadata_table| metadata_table.table.nil? }
-    end
-
-    # Remove tables with null oids unless the table name exists on the db
-    def clean_user_tables_with_null_table_id
-      null_table_id_user_tables = linked_tables.select { |linked_table| linked_table.id.nil? }
-
-      # Discard tables physically in database
-      (null_table_id_user_tables - all_cartodbyfied_tables).each do |linked_table|
-        t = Table.new(table_id: linked_table.id)
-
-        t.keep_user_database_table = true
-        t.destroy
-      end
     end
 
     # Returns tables in pg_class for user

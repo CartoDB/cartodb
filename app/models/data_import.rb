@@ -34,6 +34,8 @@ class DataImport < Sequel::Model
 
   attr_accessor   :log, :results
 
+  one_to_many :external_data_imports
+
   # @see store_results() method also when adding new fields
   PUBLIC_ATTRIBUTES = [
     'id',

@@ -68,6 +68,7 @@ class UserTable < Sequel::Model
                         reciprocal: :user_tables
   one_to_one   :automatic_geocoding, key: :table_id
   one_to_many  :geocodings, key: :table_id
+  many_to_one  :data_import, key: :data_import_id
 
   plugin :association_dependencies, map:                  :destroy,
                                     layers:               :nullify,

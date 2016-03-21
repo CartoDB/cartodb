@@ -10,6 +10,7 @@ require_relative 'acceptance_helpers'
 require_relative '../../spec/doubles/importer_stats'
 require_relative 'cdb_importer_context'
 require_relative 'no_stats_context'
+require_relative 'batch_sql_api_context'
 
 include CartoDB::Importer2
 
@@ -17,6 +18,7 @@ describe 'csv regression tests' do
   include AcceptanceHelpers
   include_context "cdb_importer schema"
   include_context "no stats"
+  include_context "batch_sql_api"
 
   it 'georeferences files with lat / lon columns' do
     filepath    = path_to('../../../../spec/support/data/csv_with_lat_lon.csv')
@@ -24,8 +26,8 @@ describe 'csv regression tests' do
     runner      = Runner.new({
                                pg: @pg_options,
                                downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new,
-                               user: CartoDB::Importer2::Doubles::User.new
+                               log: @log,
+                               user: @user
                              })
     runner.loader_options = ogr2ogr2_options
     runner.run
@@ -41,8 +43,8 @@ describe 'csv regression tests' do
     runner      = Runner.new({
                                pg: @pg_options,
                                downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new,
-                               user: CartoDB::Importer2::Doubles::User.new
+                               log: @log,
+                               user: @user
                              })
     runner.run
 
@@ -77,8 +79,8 @@ describe 'csv regression tests' do
     runner      = Runner.new({
                                pg: @pg_options,
                                downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new,
-                               user: CartoDB::Importer2::Doubles::User.new
+                               log: @log,
+                               user: @user
                              })
     runner.run
 
@@ -93,8 +95,8 @@ describe 'csv regression tests' do
     runner      = Runner.new({
                                pg: @pg_options,
                                downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new,
-                               user: CartoDB::Importer2::Doubles::User.new
+                               log: @log,
+                               user: @user
                              })
     runner.run
 
@@ -109,8 +111,8 @@ describe 'csv regression tests' do
     runner      = Runner.new({
                                pg: @pg_options,
                                downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new,
-                               user: CartoDB::Importer2::Doubles::User.new
+                               log: @log,
+                               user: @user
                              })
     runner.run
 
@@ -127,8 +129,8 @@ describe 'csv regression tests' do
     runner      = Runner.new({
                                pg: @pg_options,
                                downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new,
-                               user: CartoDB::Importer2::Doubles::User.new
+                               log: @log,
+                               user: @user
                              })
     runner.run
 
@@ -164,8 +166,8 @@ describe 'csv regression tests' do
     runner      = Runner.new({
                                pg: @pg_options,
                                downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new,
-                               user: CartoDB::Importer2::Doubles::User.new
+                               log: @log,
+                               user: @user
                              })
     runner.run
 
@@ -183,8 +185,8 @@ describe 'csv regression tests' do
     runner      = Runner.new({
                                pg: @pg_options,
                                downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new,
-                               user: CartoDB::Importer2::Doubles::User.new
+                               log: @log,
+                               user: @user
                              })
     runner.run
 
@@ -202,8 +204,8 @@ describe 'csv regression tests' do
     runner      = Runner.new({
                                pg: @pg_options,
                                downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new,
-                               user: CartoDB::Importer2::Doubles::User.new
+                               log: @log,
+                               user: @user
                              })
     runner.run
 
@@ -221,8 +223,8 @@ describe 'csv regression tests' do
     runner      = Runner.new({
                                pg: @pg_options,
                                downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new,
-                               user: CartoDB::Importer2::Doubles::User.new
+                               log: @log,
+                               user: @user
                              })
     runner.run
 
@@ -246,8 +248,8 @@ describe 'csv regression tests' do
     runner      = Runner.new({
                                pg: @pg_options,
                                downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new,
-                               user: CartoDB::Importer2::Doubles::User.new
+                               log: @log,
+                               user: @user
                              })
     runner.run
 
@@ -278,8 +280,8 @@ describe 'csv regression tests' do
       runner      = Runner.new({
                                  pg: @pg_options,
                                  downloader: downloader,
-                                 log: CartoDB::Importer2::Doubles::Log.new,
-                                 user: CartoDB::Importer2::Doubles::User.new
+                                 log: @log,
+                                 user: @user
                                })
       runner.run
 
@@ -316,8 +318,8 @@ describe 'csv regression tests' do
     runner      = Runner.new({
                                pg: @pg_options,
                                downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new,
-                               user: CartoDB::Importer2::Doubles::User.new
+                               log: @log,
+                               user: @user
                              })
     runner.run
 
@@ -381,8 +383,8 @@ describe 'csv regression tests' do
     runner = Runner.new({
                  pg: @pg_options,
                  downloader: downloader,
-                 log: CartoDB::Importer2::Doubles::Log.new,
-                 user: CartoDB::Importer2::Doubles::User.new,
+                 log: @log,
+                 user: @user,
                  job: job
                })
     if add_ogr2ogr2_options

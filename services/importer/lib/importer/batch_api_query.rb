@@ -5,9 +5,8 @@ module CartoDB
     class BatchApiException; end
     class BatchApiQuery
 
-      # TODO Check the number of rows to reduce the number
-      POLLING_TIME = 5.seconds
       DEFAULT_TIMEOUT = 5.hours
+      MAX_POLLING_DELAY_SECONDS = 30
 
       def initialize(username, api_key)
         @sql_api_client = CartoDB::BatchSQLApi.new({
@@ -20,12 +19,14 @@ module CartoDB
       def execute(query)
         @response = @sql_api_client.execute(query)
         @started_at = Time.now
+        retry_counter = 0
         until ['done', 'failed', 'cancelled'].include? status
           if timeout?
             raise BatchApiException("Timeout executing the job #{status}")
           end
-          sleep POLLING_TIME
+          sleep polling_time(retry_counter)
           @response = check_status(job_id)
+          retry_counter += 1
         end
       end
 
@@ -42,12 +43,17 @@ module CartoDB
       def check_status(job_id)
         response = @sql_api_client.status(job_id)
         status = response["status"]
-        raise BatchApiException(response["failed_reason"]) if status == 'failed'
+        raise BatchApiException.new(response["failed_reason"]) if status == 'failed'
         response
       end
 
       def timeout?
-        (Time.now - @started_at) > default_timeout
+        (Time.now - @started_at) > DEFAULT_TIMEOUT
+      end
+
+      def polling_time(retry_counter)
+        sleep_time = 0.25 * 1.5 ** (retry_counter - 1)
+        sleep_time > MAX_POLLING_DELAY_SECONDS ? 30 : sleep_time
       end
     end
   end

@@ -11,6 +11,18 @@ module Carto
       @user = ::User.where(id: user_id).first
     end
 
+    def link_ghost_tables(async = true)
+      return if consistent?
+
+      if stale_tables_linked? || !async
+        sync_user_schema_and_tables_metadata
+      else
+        ::Resque.enqueue(::Resque::UserJobs::SyncTables::LinkGhostTables, current_user.id)
+      end
+    end
+
+    private
+
     def sync_user_schema_and_tables_metadata
       bolt = Carto::Bolt.new("#{@user.id}:#{MUTEX_REDIS_KEY}", ttl_ms: MUTEX_TTL_MS)
 
@@ -39,8 +51,6 @@ module Carto
     def stale_tables_linked?
       !(dropped_tables.empty? && renamed_tables.empty?)
     end
-
-    private
 
     def mutex_redis_key
       "rails:users:#{@user.username}:#{MUTEX_REDIS_KEY}"

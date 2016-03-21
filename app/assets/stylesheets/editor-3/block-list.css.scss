@@ -8,11 +8,24 @@
 
 .BlockList-item {
   @include display-flex();
+  @include transition(border, 200ms, ease-in);
+  @include transition(box-shadow, 300ms, ease-in);
   margin-bottom: $baseSize;
   padding: $baseSize * 2;
   border: 1px solid $cSecondaryLine;
   border-radius: $baseSize / 2;
+  background: $cWhite;
   cursor: pointer;
+}
+.BlockList-item:hover {
+  border: 1px solid $cBlue;
+}
+
+.BlockList-item.ui-sortable-helper {
+  box-shadow: 0 8px 16px  rgba(#000, 0.16);
+}
+.BlockList-item.ui-sortable-helper:hover {
+  border: 1px solid $cSecondaryLine;
 }
 
 .BlockList-item:last-child {
@@ -35,9 +48,13 @@
 }
 
 .BlockList-media {
+  @include display-flex();
+  @include align-items(center);
+  @include justify-content(center);
   width: 40px;
   height: 40px;
   border: 1px solid $cSecondaryLine;
   border-radius: $baseSize / 2;
   background: $cThirdBackground;
+  box-sizing: border-box;
 }

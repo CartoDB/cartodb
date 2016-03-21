@@ -79,23 +79,21 @@ describe('windshaft/map', function () {
         layersCollection: this.layersCollection
       });
 
-      var filter = new CategoryFilter({
-        layer: this.cartoDBLayer1
+      this.filter = new CategoryFilter({
+        dataviewId: 'dataviewId'
       });
-      spyOn(filter, 'isEmpty').and.returnValue(false);
-      spyOn(filter, 'toJSON').and.returnValue({ accept: 'category' });
 
-      var dataview = new HistogramDataviewModel({
+      this.dataview = new HistogramDataviewModel({
         id: 'dataviewId',
         type: 'list'
       }, {
         map: this.map,
         windshaftMap: this.windshaftMap,
         layer: this.cartoDBLayer1,
-        filter: filter
+        filter: this.filter
       });
 
-      this.dataviewsCollection.add(dataview);
+      this.dataviewsCollection.add(this.dataview);
     });
 
     it('should create an instance of the windshaft map', function () {
@@ -109,7 +107,36 @@ describe('windshaft/map', function () {
       var args = this.client.instantiateMap.calls.mostRecent().args[0];
       expect(args.mapDefinition).toEqual({ foo: 'bar' });
       expect(args.statTag).toEqual('stat_tag');
-      expect(args.filters).toEqual({ layers: [{ accept: 'category' }, {}, {}] });
+      expect(args.filters).toEqual({});
+    });
+
+    it('should serialize the active filters of dataviews in the URL', function () {
+      this.layersCollection.reset([ this.cartoDBLayer1, this.cartoDBLayer2, this.torqueLayer ]);
+      spyOn(this.configGenerator, 'generate').and.returnValue({ foo: 'bar' });
+
+      this.windshaftMap.createInstance({
+        sourceLayerId: 'sourceLayerId'
+      });
+      var args = this.client.instantiateMap.calls.mostRecent().args[0];
+
+      // Filters are empty because no filter is active yet
+      expect(args.filters).toEqual({});
+
+      this.filter.accept('category');
+
+      // Recreate the instance again
+      this.windshaftMap.createInstance({
+        sourceLayerId: 'sourceLayerId'
+      });
+      args = this.client.instantiateMap.calls.mostRecent().args[0];
+
+      expect(args.filters).toEqual({
+        dataviews: {
+          dataviewId: {
+            accept: [ 'category' ]
+          }
+        }
+      });
     });
 
     it('should use the given API key when creating a new instance of the windshaft map', function () {
@@ -130,24 +157,7 @@ describe('windshaft/map', function () {
       });
 
       var args = this.client.instantiateMap.calls.mostRecent().args[0];
-      expect(args.mapDefinition).toEqual({ foo: 'bar' });
       expect(args.apiKey).toEqual('API_KEY');
-      expect(args.statTag).toEqual('stat_tag');
-      expect(args.filters).toEqual({ layers: [{ accept: 'category' }, {}, {}] });
-    });
-
-    it('should not send filters linked to hidden layers', function () {
-      this.layersCollection.reset([ this.cartoDBLayer1, this.cartoDBLayer2, this.torqueLayer ]);
-
-      // Hide this.cartoDBLayer1 -> Filters of that layer should be ignored
-      this.cartoDBLayer1.set('visible', false, { silent: true });
-
-      this.windshaftMap.createInstance({
-        sourceLayerId: 'sourceLayerId'
-      });
-
-      var args = this.client.instantiateMap.calls.mostRecent().args[0];
-      expect(args.filters).toEqual({ });
     });
 
     it('should trigger an event when the instance is created', function () {

@@ -1,6 +1,5 @@
 var Backbone = require('backbone');
 var _ = require('underscore');
-var WindshaftFiltersCollection = require('./filters/collection');
 var WindshaftLayerGroupConfig = require('./layergroup-config');
 var WindshaftNamedMapConfig = require('./namedmap-config');
 var WindshaftConfig = require('./config');
@@ -57,11 +56,13 @@ var WindshaftMap = Backbone.Model.extend({
     var forceFetch = options.forceFetch;
 
     var filters = this._getFiltersFromVisibleLayers();
+
+    // TODO: Pass an array of params instead of passing apiKey, statTag, and filters
     this.client.instantiateMap({
       mapDefinition: this.toMapConfig(),
       apiKey: this.apiKey,
       statTag: this.statTag,
-      filters: filters.toJSON(),
+      filters: filters,
       success: function (mapInstance) {
         this.set(mapInstance);
 
@@ -92,19 +93,14 @@ var WindshaftMap = Backbone.Model.extend({
   },
 
   _getFiltersFromVisibleLayers: function () {
-    var filtersFromVisibleLayers = this._dataviewsCollection
-      .chain()
-      .filter(function (dataview) {
-        return dataview.layer.isVisible();
-      })
-      .map(function (dataview) {
-        return dataview.filter;
-      })
-      .compact() // not all dataviews have filters
-      .value();
-
-    var layers = this._getLayers();
-    return new WindshaftFiltersCollection(filtersFromVisibleLayers, layers);
+    return this._dataviewsCollection.reduce(function (filters, dataview) {
+      var filter = dataview.filter;
+      if (filter && !filter.isEmpty()) {
+        filters['dataviews'] = filters['dataviews'] || {};
+        _.extend(filters['dataviews'], filter.toJSON());
+      }
+      return filters;
+    }, {});
   },
 
   _updateLayersFromWindshaftInstance: function () {

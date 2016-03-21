@@ -38,6 +38,9 @@
       }
     },
     "layers": {
+      "layer": {
+        'add-analysis': 'Add analysis'
+      },
       "menu-tab-pane-labels": {
         "data": "Data",
         "analyses": "Analyses",

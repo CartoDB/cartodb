@@ -155,7 +155,9 @@ module Carto
 
     # May not be viewed in the editor; carotdbyfied_only
     def all_cartodbyfied_tables
-      real_tables.select { |table| search_for_cartodbfied_tables.include?(table[:relname]) }.compact
+      cartodbyfied_tables = search_for_cartodbfied_tables
+
+      real_tables.select { |table| cartodbyfied_tables.include?(table[:relname]) }.compact
                  .map    { |table| Carto::MetadataTable.new(table[:oid], table[:relname], @user.id) }
     end
 

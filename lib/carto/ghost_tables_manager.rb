@@ -47,7 +47,7 @@ module Carto
       non_linked_tables.empty? && dropped_tables.empty?
     end
 
-    # checks if sql-api deleted/renamed tables that are still linked
+    # checks if there're sql-api deleted/renamed tables still linked
     def stale_tables_linked?
       !(dropped_tables.empty? && renamed_tables.empty?)
     end
@@ -57,7 +57,6 @@ module Carto
     end
 
     def relink_renamed_tables
-      # exlude nil table because if UserTable hasn't been created yet we take care of it in link_new_tables
       renamed_tables.each do |metadata_table|
         begin
           CartoDB.notify_debug('ghost tables', action: 'relinking renamed table', renamed_table: metadata_table.name)
@@ -170,7 +169,7 @@ module Carto
       (linked_tables - all_cartodbyfied_tables).select { |t| !renamed_tables.map(&:id).include?(t.id) }
     end
 
-    # Tables that have been renamed throught the SQL API
+    # Tables that have been renamed through the SQL API
     def renamed_tables
       non_linked_tables.select { |metadata_table| !metadata_table.table.nil? }
     end

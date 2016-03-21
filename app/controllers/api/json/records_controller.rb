@@ -49,7 +49,7 @@ class Api::Json::RecordsController < Api::ApplicationController
             render_jsonp({ :errors => ["row identified with #{params[:id]} not found"] }, 404) and return
           end
         rescue => e
-          CartoDB::Logger.info e.backtrace.join('\n')
+          CartoDB::StdoutLogger.info e.backtrace.join('\n')
           render_jsonp({ :errors => [translate_error(e.message.split("\n").first)] }, 400) and return
         end
       else

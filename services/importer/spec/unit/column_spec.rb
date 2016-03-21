@@ -3,9 +3,15 @@ require_relative '../../lib/importer/column'
 require_relative '../factories/pg_connection'
 require_relative '../doubles/log'
 require_relative '../../../../spec/rspec_configuration.rb'
+require_relative '../../../../spec/spec_helper'
+require_relative '../../spec/acceptance/cdb_importer_context'
+require_relative '../../spec/acceptance/batch_sql_api_context'
+
 include CartoDB::Importer2
 
 describe Column do
+  include_context "batch_sql_api"
+
   before(:all) do
     @db           = Factories::PGConnection.new.connection
     @db.execute('CREATE SCHEMA IF NOT EXISTS cdb_importer')
@@ -17,7 +23,7 @@ describe Column do
   before(:each) do
     @table_name   = create_table(@db)
     @column_name  = 'the_geom'
-    @column       = Column.new(@db, @table_name, @column_name, Column::DEFAULT_SCHEMA, nil, CartoDB::Importer2::Doubles::Log.new, capture_exceptions = false)
+    @column       = Column.new(@db, @table_name, @column_name, @user, Column::DEFAULT_SCHEMA, nil, @log, capture_exceptions = false)
     @dataset      = @db[@table_name.to_sym]
   end
 
@@ -227,12 +233,12 @@ describe Column do
 
   describe '#sanitized_name' do
     it 'returns a sanitized version of the column name' do
-      Column.new(@db, @table_name, '+++sanitized+++', Column::DEFAULT_SCHEMA, nil, CartoDB::Importer2::Doubles::Log.new).sanitized_name
+      Column.new(@db, @table_name, '+++sanitized+++', @user, Column::DEFAULT_SCHEMA, nil, @log).sanitized_name
         .should eq 'sanitized'
     end
 
     it 'returns the same name if no sanitization needed' do
-      Column.new(@db, @table_name, 'sanitized', Column::DEFAULT_SCHEMA, nil, CartoDB::Importer2::Doubles::Log.new).sanitized_name
+      Column.new(@db, @table_name, 'sanitized', @user, Column::DEFAULT_SCHEMA, nil, @log).sanitized_name
         .should eq 'sanitized'
     end
   end #sanitized_name

@@ -61,7 +61,10 @@
         "input": "Input",
         "radio": "Radio",
         "type": "Type",
-        "time": "Time"
+        "time": "Time",
+        "by-walk": "walk",
+        "by-bike": "bike",
+        "by-car": "drive",
       }
     },
     "widgets": {

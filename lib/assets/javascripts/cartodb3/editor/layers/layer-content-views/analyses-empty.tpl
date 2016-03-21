@@ -5,5 +5,5 @@
     <li class="BlockList-media"></li>
     <li class="BlockList-media"></li>
   </ul>
-  <button class="js-newAnalysis"><%- _t('editor.layers.layer.add-analysis') %></button>
+  <button class="js-addAnalysis"><%- _t('editor.layers.layer.add-analysis') %></button>
 </div>

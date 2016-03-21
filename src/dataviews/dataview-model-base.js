@@ -17,15 +17,29 @@ module.exports = Model.extend({
   },
 
   url: function () {
-    var params = [
-      'bbox=' + this._getBoundingBoxFilterParam()
-    ];
+    var params = _.union(
+      [ this._getBoundingBoxFilterParam() ],
+      this._getDataviewSpecificURLParams()
+    );
+
+    if (this.get('apiKey')) {
+      params.push('api_key=' + this.get('apiKey'));
+    }
     return this.get('url') + '?' + params.join('&');
   },
 
   _getBoundingBoxFilterParam: function () {
     var boundingBoxFilter = new WindshaftFiltersBoundingBoxFilter(this._map.getViewBounds());
-    return boundingBoxFilter.toString();
+    return 'bbox=' + boundingBoxFilter.toString();
+  },
+
+  /**
+   * Subclasses might override this method to define extra params that will be appended
+   * to the dataview's URL.
+   * @return {[Array]} An array of strings in the form of "key=value".
+   */
+  _getDataviewSpecificURLParams: function () {
+    return [];
   },
 
   initialize: function (attrs, opts) {

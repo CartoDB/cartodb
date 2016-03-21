@@ -54,6 +54,28 @@ describe('vis/vis', function () {
     jasmine.clock().uninstall();
   });
 
+  describe('public API', function () {
+    describe('dataviews factory', function () {
+      it('should be defined', function () {
+        expect(this.vis.dataviews).toBeDefined();
+      });
+
+      it('should have an api_key when using an api_key option', function () {
+        this.vis.load(this.mapConfig, {
+          apiKey: 'API_KEY'
+        });
+
+        expect(this.vis.dataviews.get('apiKey')).toEqual('API_KEY');
+      });
+    });
+
+    describe('analyses factory', function () {
+      it('should be defined', function () {
+        expect(this.vis.analysis).toBeDefined();
+      });
+    });
+  });
+
   it('should insert default max and minZoom values when not provided', function () {
     expect(this.vis.mapView._leafletMap.options.maxZoom).toEqual(20);
     expect(this.vis.mapView._leafletMap.options.minZoom).toEqual(0);

@@ -345,7 +345,9 @@ var Vis = View.extend({
     overlaysCollection.reset(vizjson.overlays);
 
     // Create the public Dataview Factory
-    this.dataviews = new DataviewsFactory(null, {
+    this.dataviews = new DataviewsFactory({
+      apiKey: apiKey
+    }, {
       dataviewsCollection: this._dataviewsCollection,
       layersCollection: this.map.layers,
       map: this.map,
@@ -366,7 +368,6 @@ var Vis = View.extend({
     if (!options.skipMapInstantiation) {
       this.instantiateMap();
     }
-
 
     // Global variable for easier console debugging / testing
     window.vis = this;

@@ -22,12 +22,11 @@ module.exports = DataviewModelBase.extend({
     DataviewModelBase.prototype.defaults
   ),
 
-  url: function () {
+  _getDataviewSpecificURLParams: function () {
     var params = [
-      'bbox=' + this._getBoundingBoxFilterParam(),
       'own_filter=' + (this.get('filterEnabled') ? 1 : 0)
     ];
-    return this.get('url') + '?' + params.join('&');
+    return params;
   },
 
   initialize: function (attrs, opts) {

@@ -29,6 +29,29 @@ describe('dataviews/dataview-model-base', function () {
       this.model.set('url', 'http://example.com');
       expect(this.model.url()).toEqual('http://example.com?bbox=west,south,east,north');
     });
+
+    it('should allow subclasses to define specific URL params', function () {
+      this.map.getViewBounds.and.returnValue([['south', 'west'], ['north', 'east']]);
+
+      this.model.set('url', 'http://example.com');
+
+      spyOn(this.model, '_getDataviewSpecificURLParams').and.returnValue([ 'a=b', 'c=d' ]);
+
+      expect(this.model.url()).toEqual('http://example.com?bbox=west,south,east,north&a=b&c=d');
+    });
+
+    it('should append an api_key param', function () {
+      this.map.getViewBounds.and.returnValue([['south', 'west'], ['north', 'east']]);
+
+      this.model.set({
+        url: 'http://example.com',
+        apiKey: 'THE_API_KEY'
+      });
+
+      spyOn(this.model, '_getDataviewSpecificURLParams').and.returnValue([ 'a=b', 'c=d' ]);
+
+      expect(this.model.url()).toEqual('http://example.com?bbox=west,south,east,north&a=b&c=d&api_key=THE_API_KEY');
+    });
   });
 
   describe('when url changes', function () {

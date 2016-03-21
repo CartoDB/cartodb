@@ -13,8 +13,8 @@ module.exports = DataviewModelBase.extend({
     DataviewModelBase.prototype.defaults
   ),
 
-  url: function () {
-    var params = ['bbox=' + this._getBoundingBoxFilterParam()];
+  _getDataviewSpecificURLParams: function () {
+    var params = [];
 
     if (this.get('column_type')) {
       params.push('column_type=' + this.get('column_type'));
@@ -32,11 +32,7 @@ module.exports = DataviewModelBase.extend({
         params.push('bins=' + this.get('bins'));
       }
     }
-    var url = this.get('url');
-    if (params.length > 0) {
-      url += '?' + params.join('&');
-    }
-    return url;
+    return params;
   },
 
   initialize: function (attrs, opts) {

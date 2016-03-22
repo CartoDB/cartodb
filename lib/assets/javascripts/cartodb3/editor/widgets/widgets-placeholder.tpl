@@ -1,4 +1,4 @@
-<h2 class="CDB-Text CDB-Size-huge is-light">You have not added any  widgets yet. Add new widgets to discover new things.</h2>
+<h2 class="CDB-Text CDB-Size-huge is-light"><%- _t('editor.widgets.widgets-form.placeholder-text') %></h2>
 <div class="BlockList-item is-dashed no-hover is-space u-tSpace-xl">
   <div class="WidgetPlaceHolder">
     <div class="WidgetPlaceHolder-media"></div>

@@ -13,7 +13,8 @@ FactoryGirl.define do
         interactivity: '',
         style_version: '2.1.1',
         table_name: '',
-        query: ''
+        query: nil,
+        tile_style: '#something {}'
       }
     end
 

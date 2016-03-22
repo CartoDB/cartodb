@@ -1,7 +1,5 @@
 var Backbone = require('backbone');
 var _ = require('underscore');
-var WindshaftLayerGroupConfig = require('./layergroup-config');
-var WindshaftNamedMapConfig = require('./namedmap-config');
 var WindshaftConfig = require('./config');
 var EMPTY_GIF = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 
@@ -16,17 +14,7 @@ var LAYER_TYPES = [
 ];
 
 var WindshaftMap = Backbone.Model.extend({
-
   initialize: function (attrs, options) {
-    this.client = options.client;
-    this.statTag = options.statTag;
-    this.configGenerator = options.configGenerator;
-    this.apiKey = options.apiKey;
-    this.set({
-      urlTemplate: this.client.urlTemplate,
-      userName: this.client.userName
-    });
-
     if (!options.client) {
       throw new Error('client option is required');
     }
@@ -37,16 +25,30 @@ var WindshaftMap = Backbone.Model.extend({
       throw new Error('layersCollection option is required');
     }
 
+    this.client = options.client;
+    this.statTag = options.statTag;
+    this.apiKey = options.apiKey;
+    this.set({
+      urlTemplate: this.client.urlTemplate,
+      userName: this.client.userName
+    });
+
     this._dataviewsCollection = options.dataviewsCollection;
     this._layersCollection = options.layersCollection;
   },
 
+  toJSON: function () {
+    throw new Error('Subclasses of windshaft/map-base must implement .toJSON');
+  },
+
   isNamedMap: function () {
-    return this.configGenerator === WindshaftNamedMapConfig;
+    var NamedMap = require('./named-map');
+    return this instanceof NamedMap;
   },
 
   isAnonymousMap: function () {
-    return this.configGenerator === WindshaftLayerGroupConfig;
+    var AnonymousMap = require('./anonymous-map');
+    return this instanceof AnonymousMap;
   },
 
   createInstance: function (options) {
@@ -69,7 +71,7 @@ var WindshaftMap = Backbone.Model.extend({
     }
 
     this.client.instantiateMap({
-      mapDefinition: this.toMapConfig(),
+      mapDefinition: this.toJSON(),
       params: params,
       success: function (mapInstance) {
         this.set(mapInstance);
@@ -85,13 +87,6 @@ var WindshaftMap = Backbone.Model.extend({
     });
 
     return this;
-  },
-
-  toMapConfig: function () {
-    return this.configGenerator.generate({
-      layers: this._getLayers(),
-      dataviews: this._dataviewsCollection
-    });
   },
 
   _getFilterParamFromDataviews: function () {

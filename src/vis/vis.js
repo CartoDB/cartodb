@@ -22,12 +22,10 @@ var InfowindowManager = require('./infowindow-manager');
 var TooltipManager = require('./tooltip-manager');
 var WindshaftConfig = require('../windshaft/config');
 var WindshaftClient = require('../windshaft/client');
-var WindshaftLayerGroupConfig = require('../windshaft/layergroup-config');
-var WindshaftNamedMapConfig = require('../windshaft/namedmap-config');
-var WindshaftMap = require('../windshaft/windshaft-map');
+var WindshaftNamedMap = require('../windshaft/named-map');
+var WindshaftAnonymousMap = require('../windshaft/anonymous-map');
 var AnalysisFactory = require('../analysis/analysis-factory');
 var VizJSON = require('./vizjson');
-var util = require('cdb.core.util');
 var LayersCollection = require('../geo/map/layers');
 
 /**
@@ -216,16 +214,16 @@ var Vis = View.extend({
     // Create the WindhaftClient
 
     var endpoint;
-    var configGenerator;
+    var WindshaftMapClass;
     var datasource = vizjson.datasource;
 
     // TODO: We can use something else to differentiate types of "datasource"s
     if (datasource.template_name) {
       endpoint = [WindshaftConfig.MAPS_API_BASE_URL, 'named', datasource.template_name].join('/');
-      configGenerator = WindshaftNamedMapConfig;
+      WindshaftMapClass = WindshaftNamedMap;
     } else {
       endpoint = WindshaftConfig.MAPS_API_BASE_URL;
-      configGenerator = WindshaftLayerGroupConfig;
+      WindshaftMapClass = WindshaftAnonymousMap;
     }
 
     var windshaftClient = new WindshaftClient({
@@ -240,9 +238,8 @@ var Vis = View.extend({
     this._layersCollection = new LayersCollection();
 
     var apiKey = options.apiKey;
-    this._windshaftMap = new WindshaftMap(null, { // eslint-disable-line
+    this._windshaftMap = new WindshaftMapClass(null, { // eslint-disable-line
       client: windshaftClient,
-      configGenerator: configGenerator,
       apiKey: apiKey,
       statTag: datasource.stat_tag,
       dataviewsCollection: this._dataviewsCollection,

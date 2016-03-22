@@ -6,11 +6,17 @@ var Map = require('../../../src/geo/map');
 var TorqueLayer = require('../../../src/geo/map/torque-layer');
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
 var HistogramDataviewModel = require('../../../src/dataviews/histogram-dataview-model');
-var WindshaftMap = require('../../../src/windshaft/windshaft-map');
+var WindshaftMapBase = require('../../../src/windshaft/map-base');
 var WindshaftClient = require('../../../src/windshaft/client');
 var CategoryFilter = require('../../../src/windshaft/filters/category');
 
-describe('windshaft/map', function () {
+var WindshaftMap = WindshaftMapBase.extend({
+  toJSON: function () {
+    return {};
+  }
+});
+
+describe('windshaft/map-base', function () {
   beforeEach(function () {
     jasmine.clock().install();
 
@@ -50,10 +56,6 @@ describe('windshaft/map', function () {
       options.success(this.windshaftMapInstance);
     }.bind(this));
 
-    this.configGenerator = {
-      generate: function () {}
-    };
-
     this.map = new Map({
       view_bounds_sw: [],
       view_bounds_ne: []
@@ -73,7 +75,6 @@ describe('windshaft/map', function () {
     beforeEach(function () {
       this.windshaftMap = new WindshaftMap(null, { // eslint-disable-line
         client: this.client,
-        configGenerator: this.configGenerator,
         statTag: 'stat_tag',
         dataviewsCollection: this.dataviewsCollection,
         layersCollection: this.layersCollection
@@ -98,7 +99,7 @@ describe('windshaft/map', function () {
 
     it('should create an instance of the windshaft map', function () {
       this.layersCollection.reset([ this.cartoDBLayer1, this.cartoDBLayer2, this.torqueLayer ]);
-      spyOn(this.configGenerator, 'generate').and.returnValue({ foo: 'bar' });
+      spyOn(this.windshaftMap, 'toJSON').and.returnValue({ foo: 'bar' });
 
       this.windshaftMap.createInstance({
         sourceLayerId: 'sourceLayerId'
@@ -113,7 +114,7 @@ describe('windshaft/map', function () {
 
     it('should serialize the active filters of dataviews in the URL', function () {
       this.layersCollection.reset([ this.cartoDBLayer1, this.cartoDBLayer2, this.torqueLayer ]);
-      spyOn(this.configGenerator, 'generate').and.returnValue({ foo: 'bar' });
+      spyOn(this.windshaftMap, 'toJSON').and.returnValue({ foo: 'bar' });
 
       this.windshaftMap.createInstance({
         sourceLayerId: 'sourceLayerId'
@@ -147,11 +148,10 @@ describe('windshaft/map', function () {
 
     it('should use the given API key when creating a new instance of the windshaft map', function () {
       this.layersCollection.reset([ this.cartoDBLayer1, this.cartoDBLayer2, this.torqueLayer ]);
-      spyOn(this.configGenerator, 'generate').and.returnValue({ foo: 'bar' });
+      spyOn(this.windshaftMap, 'toJSON').and.returnValue({ foo: 'bar' });
 
       this.windshaftMap = new WindshaftMap(null, { // eslint-disable-line
         client: this.client,
-        configGenerator: this.configGenerator,
         apiKey: 'API_KEY',
         statTag: 'stat_tag',
         dataviewsCollection: this.dataviewsCollection,

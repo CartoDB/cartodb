@@ -1,4 +1,5 @@
-require_relative 'vizjson_presenter'
+require_dependency 'carto/api/vizjson_presenter'
+require_dependency 'carto/api/layer_vizjson_adapter'
 
 module Carto
   module Api
@@ -42,12 +43,14 @@ module Carto
         layer_definitions_from_layer_data(layer_data).each do |layer_definition|
           infowindow = layer_definition[:infowindow]
           if infowindow
-            infowindow[:template] = v3_infowindow_template(infowindow[:template_name], infowindow[:template])
+            infowindow_sym = infowindow.deep_symbolize_keys
+            infowindow[:template] = v3_infowindow_template(infowindow_sym[:template_name], infowindow_sym[:template])
           end
 
           tooltip = layer_definition[:tooltip]
           if tooltip
-            tooltip[:template] = v3_tooltip_template(tooltip[:template_name], tooltip[:template])
+            tooltip_sym = tooltip.deep_symbolize_keys
+            tooltip[:template] = v3_tooltip_template(tooltip_sym[:template_name], tooltip_sym[:template])
           end
         end
       end

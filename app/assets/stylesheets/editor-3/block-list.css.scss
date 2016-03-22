@@ -18,6 +18,7 @@
 }
 .BlockList-item.is-space {
   @include justify-content(space-between);
+  @include align-items(center);
 }
 .BlockList-item.is-dashed {
   border-style: dashed;

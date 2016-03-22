@@ -3,9 +3,9 @@
   <ul class="HorizontalBlockList">
     <li class="HorizontalBlockList-item"></li>
     <li class="HorizontalBlockList-item"></li>
-    <li class="HorizontalBlockList-item"></li>
   </ul>
-  <button class="CDB-Button CDB-Button--primary CDB-Button--small js-addAnalysis">
-    <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase"><%- _t('editor.layers.layer.add-analysis') %></span>
+
+  <button class="CDB-Button CDB-Button--primary js-addAnalysis">
+    <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-upperCase"><%- _t('editor.layers.layer.add-analysis') %></span>
   </button>
 </div>

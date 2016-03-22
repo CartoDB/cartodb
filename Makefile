@@ -37,6 +37,7 @@ WORKING_SPECS_1 = \
   spec/requests/carto/api/presenter_cache_spec.rb \
   spec/requests/carto/api/widgets_controller_spec.rb \
   spec/requests/carto/editor/visualizations_controller_spec.rb \
+	spec/requests/visualizations_controller_helper_spec.rb \
   spec/models/map_spec.rb \
   spec/models/map/copier_spec.rb \
 	spec/models/visualization/collection_spec.rb \

@@ -1,11 +1,13 @@
 # encoding: utf-8
 
 require_relative '../../spec_helper_min'
+require_relative '../../../app/controllers/visualizations_controller_helper'
 
 describe Admin::OrganizationUsersController do
   include_context 'organization with users helper'
   include Rack::Test::Methods
   include Warden::Test::Helpers
+  include VisualizationsControllerHelper
 
   before(:each) do
     host! "#{@organization.name}.localhost.lan"
@@ -27,7 +29,12 @@ describe Admin::OrganizationUsersController do
   describe 'security' do
     describe '#show' do
       it 'returns 404 for non authorized users' do
-
+        x = mock
+        x.stubs(:params).returns({user_domain:'a'})
+        byebug
+        Admin::OrganizationUsersController.any_instance.stubs(:request).returns(x)
+        extract_user_from_request_and_viz_locator('')
+        byebug
         login_as(@org_user_1, scope: @org_user_1.username)
 
         get organization_users_url(user_domain: @org_user_1.username)

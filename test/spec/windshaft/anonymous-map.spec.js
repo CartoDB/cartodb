@@ -1,7 +1,5 @@
 var Backbone = require('backbone');
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
-var TorqueLayer = require('../../../src/geo/map/torque-layer');
-var TileLayer = require('../../../src/geo/map/tile-layer');
 var WindshaftClient = require('../../../src/windshaft/client');
 var AnonymousMap = require('../../../src/windshaft/anonymous-map');
 var HistogramDataviewModel = require('../../../src/dataviews/histogram-dataview-model');

@@ -27,6 +27,15 @@
     div.progress-bar { margin-top:10px }
   }
 
+  // Disable animations
+  .notransition {
+    -webkit-transition: none !important;
+    -moz-transition: none !important;
+    -o-transition: none !important;
+    -ms-transition: none !important;
+    transition: none !important;
+  }
+
 div.panes {
   position:absolute;
   top:78px;

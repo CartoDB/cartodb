@@ -46,13 +46,19 @@ module VisualizationsControllerHelper
     # 1. Handles any url with "/u/username", or "username.cartodb.com"
     user_or_org_name = CartoDB.extract_subdomain(request)
     user = Carto::User.where(username: user_or_org_name).first
-    return user unless user.nil?
 
-    # 2. Handles org.cartodb.com with "schema.table" visualizations
-    if viz_locator.schema
+    if user.nil?
+      # 2a. User not found: handles org.cartodb.com with "schema.table" visualizations
       organization = Carto::Organization.where(name: user_or_org_name).first
       return nil unless organization
       organization.users.where(username: viz_locator.schema).first
+    elsif user.organization.present?
+      # 2b. User found in org: handles visualizations shared in the org
+      org_user = user.organization.users.where(username: viz_locator.schema).first
+      org_user.nil? ? user : org_user
+    else
+      # Found user not in organization
+      user
     end
   end
 

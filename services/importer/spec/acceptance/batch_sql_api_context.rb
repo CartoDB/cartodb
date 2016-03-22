@@ -1,5 +1,6 @@
 require_relative '../../spec/doubles/batch_sql_api'
 require_relative '../../spec/doubles/user'
+require_relative 'cdb_importer_context'
 
 shared_context "batch_sql_api" do
   include_context "cdb_importer schema"

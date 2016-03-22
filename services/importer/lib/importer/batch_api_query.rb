@@ -1,4 +1,5 @@
 require_relative '../../../sql-api/batch_sql_api'
+require 'active_support/time'
 
 module CartoDB
   module Importer2

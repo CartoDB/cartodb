@@ -16,7 +16,7 @@ module.exports = Model.extend({
   url: function () {
     var url = this.get('url') + '/search?q=' + encodeURIComponent(this.get('q'));
     if (this.get('apiKey')) {
-      url += '?api_key=' + this.get('apiKey');
+      url += '&api_key=' + this.get('apiKey');
     }
     return url;
   },

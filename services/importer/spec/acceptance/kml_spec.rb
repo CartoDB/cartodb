@@ -9,12 +9,13 @@ require_relative '../doubles/user'
 require_relative 'acceptance_helpers'
 require_relative 'cdb_importer_context'
 require_relative 'no_stats_context'
-
+require_relative 'batch_sql_api_context'
 
 describe 'KML regression tests' do
   include AcceptanceHelpers
   include_context "cdb_importer schema"
   include_context "no stats"
+  include_context "batch_sql_api"
 
   it 'imports KML files' do
     filepath    = path_to('counties_ny_export.kml')
@@ -22,8 +23,8 @@ describe 'KML regression tests' do
     runner      = CartoDB::Importer2::Runner.new({
                                pg: @pg_options,
                                downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new,
-                               user: CartoDB::Importer2::Doubles::User.new
+                               log: @log,
+                               user: @user
                              })
     runner.run
 
@@ -36,8 +37,8 @@ describe 'KML regression tests' do
     runner      = CartoDB::Importer2::Runner.new({
                                pg: @pg_options,
                                downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new,
-                               user: CartoDB::Importer2::Doubles::User.new
+                               log: @log,
+                               user: @user
                              })
     runner.run
 
@@ -50,8 +51,8 @@ describe 'KML regression tests' do
     runner      = CartoDB::Importer2::Runner.new({
                                pg: @pg_options,
                                downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new,
-                               user: CartoDB::Importer2::Doubles::User.new
+                               log: @log,
+                               user: @user
                              })
     runner.run
 
@@ -64,8 +65,8 @@ describe 'KML regression tests' do
     runner      = CartoDB::Importer2::Runner.new({
                                pg: @pg_options,
                                downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new,
-                               user: CartoDB::Importer2::Doubles::User.new
+                               log: @log,
+                               user: @user
                              })
     runner.run
 
@@ -78,8 +79,8 @@ describe 'KML regression tests' do
     runner      = CartoDB::Importer2::Runner.new({
                                pg: @pg_options,
                                downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new,
-                               user: CartoDB::Importer2::Doubles::User.new
+                               log: @log,
+                               user: @user
                              })
     runner.run
 
@@ -93,8 +94,8 @@ describe 'KML regression tests' do
     runner      = CartoDB::Importer2::Runner.new({
                                pg: @pg_options,
                                downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new,
-                               user: CartoDB::Importer2::Doubles::User.new
+                               log: @log,
+                               user: @user
                              })
     runner.run
 
@@ -112,8 +113,8 @@ describe 'KML regression tests' do
     runner      = CartoDB::Importer2::Runner.new({
                                pg: @pg_options,
                                downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new,
-                               user: CartoDB::Importer2::Doubles::User.new
+                               log: @log,
+                               user: @user
                              })
     runner.run
 

@@ -56,6 +56,9 @@
   position: relative;
   margin-top: 16px;
 }
+.Editor-ListAnalysis:empty {
+  display: none;
+}
 
 .Editor-ListAnalysis::before {
   position: absolute;
@@ -106,9 +109,14 @@
   padding-right: 12px;
   border: 1px solid $cSecondaryLine;
   border-radius: $halfBaseSize;
-
-  &.is-base {
-    background: $cThirdBackground;
+  &:hover {
+    cursor: pointer;
+  }
+}
+.Editor-ListAnalysis-layer.is-base {
+  background: $cThirdBackground;
+  &:hover {
+    cursor: default;
   }
 }
 

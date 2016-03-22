@@ -1,3 +1,5 @@
+require_dependency 'carto/api/vizjson3_presenter'
+
 module VisualizationsControllerHelper
   # Implicit order due to legacy code: 1st return canonical/table/Dataset if present, else derived/visualization/Map
   def get_priority_visualization(visualization_id, user_id: nil, organization_id: nil)

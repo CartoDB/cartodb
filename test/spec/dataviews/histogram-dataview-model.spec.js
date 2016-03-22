@@ -31,6 +31,20 @@ describe('dataviews/histogram-dataview-model', function () {
     expect(this.model._unfilteredData.setUrl).toHaveBeenCalled();
   });
 
+  it('should set the api_key attribute on the internal models', function () {
+    var windshaftMap = jasmine.createSpyObj('windhsaftMap', ['bind']);
+    this.model = new HistogramDataviewModel({
+      apiKey: 'API_KEY'
+    }, {
+      map: this.map,
+      windshaftMap: windshaftMap,
+      layer: jasmine.createSpyObj('layer', ['get', 'getDataProvider']),
+      filter: this.filter
+    });
+
+    expect(this.model._unfilteredData.get('apiKey')).toEqual('API_KEY');
+  });
+
   describe('on unfiltered data model fetch', function () {
     beforeEach(function () {
       var histogramData = {

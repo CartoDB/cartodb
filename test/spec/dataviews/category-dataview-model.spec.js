@@ -38,6 +38,21 @@ describe('dataviews/category-dataview-model', function () {
     expect(this.model.filter).toBeDefined();
   });
 
+  it('should set the api_key attribute on the internal models', function () {
+    var windshaftMap = jasmine.createSpyObj('windhsaftMap', ['bind']);
+    this.model = new CategoryDataviewModel({
+      apiKey: 'API_KEY'
+    }, {
+      map: this.map,
+      windshaftMap: windshaftMap,
+      layer: jasmine.createSpyObj('layer', ['get', 'getDataProvider']),
+      filter: new WindshaftFiltersCategory()
+    });
+
+    expect(this.model._searchModel.get('apiKey')).toEqual('API_KEY');
+    expect(this.model._rangeModel.get('apiKey')).toEqual('API_KEY');
+  });
+
   describe('.url', function () {
     it('should include the bbox and own_filter parameters', function () {
       expect(this.model.set('url', 'http://example.com'));

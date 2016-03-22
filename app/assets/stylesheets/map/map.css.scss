@@ -454,6 +454,13 @@ div.map {
         display: block;
         width: 100% !important;
       }
+
+      &.bubble {
+        padding-left: 0;
+        .legend-title {
+          text-align: center;
+        }
+      }
     }
   }
 

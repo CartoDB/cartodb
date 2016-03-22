@@ -1,6 +1,8 @@
 3.12.* (2016-XX-XX)
 -------------------
 ## Features
+* Adds optional strong passwords for organization signups
+
 ## Bug Fixes
 * Updating CartoDB.js submodule with last changes sanitizing attribution.
 * Fixes a problem with select2 arrow icon.

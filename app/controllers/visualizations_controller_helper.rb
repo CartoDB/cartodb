@@ -2,11 +2,17 @@ require_dependency 'carto/uuidhelper'
 require_dependency 'carto/api/vizjson3_presenter'
 
 module VisualizationsControllerHelper
+  # This class represents a "visualization locator", as string in one of the following formats:
+  # <viz_uuid>, <viz_name>, <schema>.<viz_uuid>, <schema.viz_name>
+  # It parses it provides methods to access the different fields, and allows to validate if a
+  # visualization matches the "visualization locator" string.
+  # This allows flexible specification of visualization names in URL's, accepting canonical
+  # visualizations (usually by name) and derived visualizations (by uuid).
   class VisualizationLocator
     include Carto::UUIDHelper
 
-    def initialize(visualization_locator)
-      table_id_or_name, @schema = visualization_locator.split('.').reverse
+    def initialize(visualization_locator_string)
+      table_id_or_name, @schema = visualization_locator_string.split('.').reverse
 
       if is_uuid?(table_id_or_name)
         @id = table_id_or_name

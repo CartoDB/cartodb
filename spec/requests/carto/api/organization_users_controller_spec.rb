@@ -385,6 +385,18 @@ describe Carto::Api::OrganizationUsersController do
       verify_soft_limits(user_to_update, false)
     end
 
+    it 'should not update if it cannot update in central' do
+      ::User.any_instance.stubs(:update_in_central).raises(CartoDB::CentralCommunicationFailure.new('Failed'))
+      login(@organization.owner)
+
+      user_to_update = @organization.non_owner_users[0]
+      params = { email: 'fail-' + user_to_update.email }
+      put api_v1_organization_users_update_url(name: @organization.name, u_username: user_to_update.username), params
+
+      last_response.status.should == 500
+      user_to_update.reload
+      user_to_update.email.should_not start_with('fail-')
+    end
   end
 
   describe 'user deletion' do

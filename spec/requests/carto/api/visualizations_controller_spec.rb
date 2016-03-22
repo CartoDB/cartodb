@@ -1484,6 +1484,7 @@ describe Carto::Api::VisualizationsController do
     # Initially, vizjson3 is a vizjson2 extension, so tests covering vizjson2 also cover vizjson3
     describe '#vizjson3' do
       include Fixtures::Layers::Infowindows
+      include Fixtures::Layers::Tooltips
       include Carto::Factories::Visualizations
 
       include_context 'visualization creation helpers'
@@ -1492,12 +1493,17 @@ describe Carto::Api::VisualizationsController do
         JSON.parse(FactoryGirl.build_stubbed(:carto_layer_with_infowindow).infowindow)
       end
 
+      let(:tooltip) do
+        JSON.parse(FactoryGirl.build_stubbed(:carto_layer_with_tooltip).tooltip)
+      end
+
       before(:each) do
         @map, @table, @table_visualization, @visualization = create_full_visualization(Carto::User.find(@user_1.id))
         @table.privacy = UserTable::PRIVACY_PUBLIC
         @table.save
         layer = @visualization.data_layers.first
         layer.infowindow = infowindow
+        layer.tooltip = tooltip
         layer.options[:table_name] = @table.name
         layer.options[:query] = "select * from #{@table.name}"
         layer.save
@@ -1514,27 +1520,39 @@ describe Carto::Api::VisualizationsController do
             @table.save
           end
 
-          # TODO: tooltips and "don't overwrite custom template" test. Technical debt: #6912
-          it 'uses v3 infowindows templates' do
+          # TODO: "don't overwrite custom template" test. Technical debt: #6912
+          it 'uses v3 infowindows and tooltips templates' do
             # vizjson v2 doesn't change
             get_json api_v2_visualizations_vizjson_url(user_domain: @user_1.username,
                                                        id: @visualization.id,
-                                                       api_key: @user_1.api_key), @headers do |request|
-              request.status.should eq 200
-              response_infowindow = request.body[:layers][0]['options']['layer_definition']['layers'][0]['infowindow']
+                                                       api_key: @user_1.api_key), @headers do |response|
+              response.status.should eq 200
+
+              response_infowindow = response.body[:layers][0]['options']['layer_definition']['layers'][0]['infowindow']
               response_infowindow['template_name'].should eq infowindow['template_name']
               response_infowindow['template'].should include(v2_infowindow_light_template_fragment)
               response_infowindow['template'].should_not include(v3_infowindow_light_template_fragment)
+
+              response_tooltip = response.body[:layers][0]['options']['layer_definition']['layers'][0]['tooltip']
+              response_tooltip['template_name'].should eq tooltip['template_name']
+              response_tooltip['template'].should include(v2_tooltip_light_template_fragment)
+              response_tooltip['template'].should_not include(v3_tooltip_light_template_fragment)
+
             end
 
             get_json api_v3_visualizations_vizjson_url(user_domain: @user_1.username,
                                                        id: @visualization.id,
-                                                       api_key: @user_1.api_key), @headers do |request|
-              request.status.should eq 200
-              response_infowindow = request.body[:layers][0]['options']['layer_definition']['layers'][0]['infowindow']
+                                                       api_key: @user_1.api_key), @headers do |response|
+              response.status.should eq 200
+              response_infowindow = response.body[:layers][0]['options']['layer_definition']['layers'][0]['infowindow']
               response_infowindow['template_name'].should eq infowindow['template_name']
               response_infowindow['template'].should include(v3_infowindow_light_template_fragment)
               response_infowindow['template'].should_not include(v2_infowindow_light_template_fragment)
+
+              response_tooltip = response.body[:layers][0]['options']['layer_definition']['layers'][0]['tooltip']
+              response_tooltip['template_name'].should eq tooltip['template_name']
+              response_tooltip['template'].should include(v3_tooltip_light_template_fragment)
+              response_tooltip['template'].should_not include(v2_tooltip_light_template_fragment)
             end
           end
         end
@@ -1551,22 +1569,31 @@ describe Carto::Api::VisualizationsController do
             # vizjson v2 doesn't change
             get_json api_v2_visualizations_vizjson_url(user_domain: @user_1.username,
                                                        id: @visualization.id,
-                                                       api_key: @user_1.api_key), @headers do |request|
-              request.status.should eq 200
-              response_infowindow = request.body[:layers][0]['options']['named_map']['layers'][0]['infowindow']
+                                                       api_key: @user_1.api_key), @headers do |response|
+              response.status.should eq 200
+              response_infowindow = response.body[:layers][0]['options']['named_map']['layers'][0]['infowindow']
               response_infowindow['template_name'].should eq infowindow['template_name']
               response_infowindow['template'].should include(v2_infowindow_light_template_fragment)
               response_infowindow['template'].should_not include(v3_infowindow_light_template_fragment)
+              response_tooltip = response.body[:layers][0]['options']['named_map']['layers'][0]['tooltip']
+              response_tooltip['template_name'].should eq tooltip['template_name']
+              response_tooltip['template'].should include(v2_tooltip_light_template_fragment)
+              response_tooltip['template'].should_not include(v3_tooltip_light_template_fragment)
             end
 
             get_json api_v3_visualizations_vizjson_url(user_domain: @user_1.username,
                                                        id: @visualization.id,
-                                                       api_key: @user_1.api_key), @headers do |request|
-              request.status.should eq 200
-              response_infowindow = request.body[:layers][0]['options']['named_map']['layers'][0]['infowindow']
+                                                       api_key: @user_1.api_key), @headers do |response|
+              response.status.should eq 200
+              response_infowindow = response.body[:layers][0]['options']['named_map']['layers'][0]['infowindow']
               response_infowindow['template_name'].should eq infowindow['template_name']
               response_infowindow['template'].should include(v3_infowindow_light_template_fragment)
               response_infowindow['template'].should_not include(v2_infowindow_light_template_fragment)
+
+              response_tooltip = response.body[:layers][0]['options']['named_map']['layers'][0]['tooltip']
+              response_tooltip['template_name'].should eq tooltip['template_name']
+              response_tooltip['template'].should include(v3_tooltip_light_template_fragment)
+              response_tooltip['template'].should_not include(v2_tooltip_light_template_fragment)
             end
           end
         end
@@ -1582,9 +1609,9 @@ describe Carto::Api::VisualizationsController do
           query_value = nil
 
           # vizjson v2 doesn't change
-          get_json api_v2_visualizations_vizjson_url(user_domain: @user_1.username, id: @visualization.id, api_key: @user_1.api_key), @headers do |request|
-            request.status.should == 200
-            vizjson = request.body
+          get_json api_v2_visualizations_vizjson_url(user_domain: @user_1.username, id: @visualization.id, api_key: @user_1.api_key), @headers do |response|
+            response.status.should == 200
+            vizjson = response.body
             layers = vizjson[:layers]
             layers.should_not be_empty
             torque_layers = layers.select { |l| l['type'] == 'torque' }
@@ -1603,9 +1630,9 @@ describe Carto::Api::VisualizationsController do
             end
           end
 
-          get_json api_v3_visualizations_vizjson_url(user_domain: @user_1.username, id: @visualization.id, api_key: @user_1.api_key), @headers do |request|
-            request.status.should == 200
-            vizjson = request.body
+          get_json api_v3_visualizations_vizjson_url(user_domain: @user_1.username, id: @visualization.id, api_key: @user_1.api_key), @headers do |response|
+            response.status.should == 200
+            vizjson = response.body
             layers = vizjson[:layers]
             layers.should_not be_empty
             torque_layers = layers.select { |l| l['type'] == 'torque' }
@@ -1629,9 +1656,9 @@ describe Carto::Api::VisualizationsController do
       end
 
       it 'returns a vizjson with empty widgets array for visualizations without widgets' do
-        get_json api_v3_visualizations_vizjson_url(user_domain: @user_1.username, id: @visualization.id, api_key: @user_1.api_key), @headers do |request|
-          request.status.should == 200
-          vizjson3 = request.body
+        get_json api_v3_visualizations_vizjson_url(user_domain: @user_1.username, id: @visualization.id, api_key: @user_1.api_key), @headers do |response|
+          response.status.should == 200
+          vizjson3 = response.body
           vizjson3.keys.should include(:widgets)
           vizjson3[:widgets].should == []
         end
@@ -1643,9 +1670,9 @@ describe Carto::Api::VisualizationsController do
 
         widget2 = FactoryGirl.create(:widget_with_layer, type: 'fake')
 
-        get_json api_v3_visualizations_vizjson_url(user_domain: @user_1.username, id: @visualization.id, api_key: @user_1.api_key), @headers do |request|
-          request.status.should == 200
-          vizjson3 = request.body
+        get_json api_v3_visualizations_vizjson_url(user_domain: @user_1.username, id: @visualization.id, api_key: @user_1.api_key), @headers do |response|
+          response.status.should == 200
+          vizjson3 = response.body
           vizjson3[:widgets].length.should == 1
 
           vizjson3[:widgets].map { |w| w['type'] }.should include(widget.type)
@@ -1657,9 +1684,9 @@ describe Carto::Api::VisualizationsController do
       end
 
       it 'returns datasource' do
-        get_json api_v3_visualizations_vizjson_url(user_domain: @user_1.username, id: @visualization.id, api_key: @user_1.api_key), @headers do |request|
-          request.status.should == 200
-          vizjson3 = request.body
+        get_json api_v3_visualizations_vizjson_url(user_domain: @user_1.username, id: @visualization.id, api_key: @user_1.api_key), @headers do |response|
+          response.status.should == 200
+          vizjson3 = response.body
           vizjson3[:datasource]['user_name'].should == @user_1.username
           vizjson3[:datasource]['maps_api_template'].should_not be_nil
           vizjson3[:datasource]['stat_tag'].should_not be_nil
@@ -1670,35 +1697,35 @@ describe Carto::Api::VisualizationsController do
       end
 
       it 'includes vector flag (default false)' do
-        get_json api_v3_visualizations_vizjson_url(user_domain: @user_1.username, id: @visualization.id, api_key: @user_1.api_key), @headers do |request|
-          request.status.should == 200
-          vizjson3 = request.body
+        get_json api_v3_visualizations_vizjson_url(user_domain: @user_1.username, id: @visualization.id, api_key: @user_1.api_key), @headers do |response|
+          response.status.should == 200
+          vizjson3 = response.body
           vizjson3[:vector].should == false
         end
       end
 
       it 'includes vector flag (true if requested)' do
-        get_json api_v3_visualizations_vizjson_url(user_domain: @user_1.username, id: @visualization.id, api_key: @user_1.api_key, vector: true), @headers do |request|
-          request.status.should == 200
-          vizjson3 = request.body
+        get_json api_v3_visualizations_vizjson_url(user_domain: @user_1.username, id: @visualization.id, api_key: @user_1.api_key, vector: true), @headers do |response|
+          response.status.should == 200
+          vizjson3 = response.body
           vizjson3[:vector].should == true
         end
       end
 
       it 'returns datasource.template_name for visualizations with retrieve_named_map? true' do
         Carto::Visualization.any_instance.stubs(:retrieve_named_map?).returns(true)
-        get_json api_v3_visualizations_vizjson_url(user_domain: @user_1.username, id: @visualization.id, api_key: @user_1.api_key), @headers do |request|
-          request.status.should == 200
-          vizjson3 = request.body
+        get_json api_v3_visualizations_vizjson_url(user_domain: @user_1.username, id: @visualization.id, api_key: @user_1.api_key), @headers do |response|
+          response.status.should == 200
+          vizjson3 = response.body
           vizjson3[:datasource]['template_name'].should_not be_nil
         end
       end
 
       it 'returns nil datasource.template_name for visualizations with retrieve_named_map? false' do
         Carto::Visualization.any_instance.stubs(:retrieve_named_map?).returns(false)
-        get_json api_v3_visualizations_vizjson_url(user_domain: @user_1.username, id: @visualization.id, api_key: @user_1.api_key), @headers do |request|
-          request.status.should == 200
-          vizjson3 = request.body
+        get_json api_v3_visualizations_vizjson_url(user_domain: @user_1.username, id: @visualization.id, api_key: @user_1.api_key), @headers do |response|
+          response.status.should == 200
+          vizjson3 = response.body
           vizjson3[:datasource].has_key?('template_name').should be_false
         end
       end

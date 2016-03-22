@@ -30,12 +30,37 @@ FactoryGirl.define do
 
       infowindow infowindow_light
     end
+
+    factory :carto_layer_with_tooltip do
+      tooltip_light = {
+        "fields": [{ "name": "amount", "title": true, "position": 0 }],
+        "template_name": "tooltip_light",
+        "template": "",
+        "alternative_names": {},
+        "maxHeight": 180
+      }.to_json
+
+      tooltip tooltip_light
+    end
   end
 
 end
 
 module Fixtures
   module Layers
+    module Tooltips
+      # These depend on tooltip_light.jst.mustache at the following paths:
+      # - /lib/assets/javascripts/cartodb/table/views/tooltip/templates/tooltip_light.jst.mustache
+      # - /lib/assets/javascripts/cartodb3/mustache-templates/tooltips/tooltip_light.jst.mustache
+      def v2_tooltip_light_template_fragment
+        '<div class="cartodb-tooltip-content-wrapper">'
+      end
+
+      def v3_tooltip_light_template_fragment
+        '<div class="CDB-Tooltip CDB-Tooltip--isLight">'
+      end
+    end
+
     # These depend on infowindow_light.jst.mustache at the following paths:
     # - /lib/assets/javascripts/cartodb/table/views/infowindow/templates/infowindow_light.jst.mustache
     # - /lib/assets/javascripts/cartodb3/mustache-templates/infowindows/infowindow_light.jst.mustache

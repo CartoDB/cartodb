@@ -4,9 +4,9 @@ require_relative '../../../services/data-repository/backend/sequel'
 require_relative '../../../services/data-repository/repository'
 require_relative '../../../app/models/visualization/tags'
 require_relative '../../../app/models/visualization/collection'
-require 'helpers/random_names_helper'
+require 'helpers/unique_names_helper'
 
-include RandomNamesHelper
+include UniqueNamesHelper
 include CartoDB
 
 describe Visualization::Tags do
@@ -85,7 +85,7 @@ describe Visualization::Tags do
   end
 
   def random_attributes(attributes={})
-    random = random_name('viz')
+    random = unique_name('viz')
     {
       name:         attributes.fetch(:name, random),
       description:  attributes.fetch(:description, "description #{random}"),

@@ -3,10 +3,10 @@
 require_relative '../../../spec_helper'
 require_relative '../../../../app/controllers/carto/api/layers_controller'
 require_relative '../../../../spec/requests/api/json/layers_controller_shared_examples'
-require 'helpers/random_names_helper'
+require 'helpers/unique_names_helper'
 
 describe Carto::Api::LayersController do
-  include RandomNamesHelper
+  include UniqueNamesHelper
   it_behaves_like 'layers controllers' do
   end
 
@@ -32,8 +32,8 @@ describe Carto::Api::LayersController do
       table_2_attribution = 'attribution 2'
       modified_table_2_attribution = 'modified attribution 2'
 
-      table1 = create_table(privacy: UserTable::PRIVACY_PUBLIC, name: "#{random_name('table')}_1", user_id: @user.id)
-      table2 = create_table(privacy: UserTable::PRIVACY_PUBLIC, name: "#{random_name('table')}_2", user_id: @user.id)
+      table1 = create_table(privacy: UserTable::PRIVACY_PUBLIC, name: unique_name('table'), user_id: @user.id)
+      table2 = create_table(privacy: UserTable::PRIVACY_PUBLIC, name: unique_name('table'), user_id: @user.id)
 
       payload = {
         name: 'new visualization',
@@ -103,7 +103,7 @@ describe Carto::Api::LayersController do
 
       def factory(user, attributes = {})
         {
-          name:                     attributes.fetch(:name, random_name('viz')),
+          name:                     attributes.fetch(:name, unique_name('viz')),
           tags:                     attributes.fetch(:tags, ['foo', 'bar']),
           map_id:                   attributes.fetch(:map_id, ::Map.create(user_id: user.id).id),
           description:              attributes.fetch(:description, 'bogus'),
@@ -118,28 +118,28 @@ describe Carto::Api::LayersController do
       end
 
       user_1 = create_user(
-        username: "#{random_name('user')}-1",
-        email: random_email,
+        username: unique_name('user'),
+        email: unique_email,
         password: 'clientex',
         private_tables_enabled: false
       )
 
       user_2 = create_user(
-        username: "#{random_name('user')}-2",
-        email: random_email,
+        username: unique_name('user'),
+        email: unique_email,
         password: 'clientex',
         private_tables_enabled: false
       )
 
       user_3 = create_user(
-        username: "#{random_name('user')}-3",
-        email: random_email,
+        username: unique_name('user'),
+        email: unique_email,
         password: 'clientex',
         private_tables_enabled: false
       )
 
       organization = Organization.new
-      organization.name = random_name('org')
+      organization.name = unique_name('org')
       organization.quota_in_bytes = 1234567890
       organization.seats = 5
       organization.save
@@ -160,7 +160,7 @@ describe Carto::Api::LayersController do
 
       default_url_options[:host] = "#{user_2.subdomain}.localhost.lan"
 
-      table = create_table(privacy: UserTable::PRIVACY_PRIVATE, name: random_name('table'), user_id: user_1.id)
+      table = create_table(privacy: UserTable::PRIVACY_PRIVATE, name: unique_name('table'), user_id: user_1.id)
       u1_t_1_perm_id = table.table_visualization.permission.id
 
       put api_v1_permissions_update_url(user_domain: user_1.username, api_key: user_1.api_key, id: u1_t_1_perm_id),

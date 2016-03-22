@@ -3,10 +3,10 @@ require 'rspec/core'
 require 'rspec/expectations'
 require 'rspec/mocks'
 require_relative '../../spec_helper'
-require 'helpers/random_names_helper'
+require 'helpers/unique_names_helper'
 
 describe CartoDB::TableRelator do
-  include RandomNamesHelper
+  include UniqueNamesHelper
   describe '.rows_and_size' do
     before(:all) do
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
@@ -25,7 +25,7 @@ describe CartoDB::TableRelator do
     it 'checks row_count_and_size relator method' do
       @user.in_database { |database| @db = database }
 
-      table_name = random_name('table')
+      table_name = unique_name('table')
 
       table = create_table({
                                user_id: @user.id,

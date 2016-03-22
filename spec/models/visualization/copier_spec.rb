@@ -6,9 +6,9 @@ require_relative '../../../services/data-repository/repository'
 require_relative '../../../app/models/visualization/member'
 require_relative '../../../app/models/visualization/copier'
 require_relative '../../../app/models/visualization/migrator'
-require 'helpers/random_names_helper'
+require 'helpers/unique_names_helper'
 
-include RandomNamesHelper
+include UniqueNamesHelper
 include CartoDB
 
 describe Visualization::Copier do
@@ -68,7 +68,7 @@ describe Visualization::Copier do
     OpenStruct.new(
       name:         'Visualization 0',
       description:  'bogus',
-      map_id:       random_integer,
+      map_id:       unique_integer,
       type:         'table',
       overlays:     [],
       map:          OpenStruct.new(

@@ -2,11 +2,11 @@
 
 require_relative '../../../spec_helper'
 require_relative '../../../../app/controllers/carto/api/organizations_controller'
-require 'helpers/random_names_helper'
+require 'helpers/unique_names_helper'
 
 describe Carto::Api::OrganizationUsersController do
   include_context 'organization with users helper'
-  include RandomNamesHelper
+  include UniqueNamesHelper
   include Rack::Test::Methods
   include Warden::Test::Helpers
 
@@ -105,7 +105,7 @@ describe Carto::Api::OrganizationUsersController do
     it 'returns 410 if email is not present' do
       login(@organization.owner)
 
-      params = { username: random_name('user'), password: 'patata' }
+      params = { username: unique_name('user'), password: 'patata' }
       post api_v1_organization_users_create_url(name: @organization.name), params
 
       last_response.body.include?('email is not present').should be true
@@ -115,7 +115,7 @@ describe Carto::Api::OrganizationUsersController do
     it 'returns 410 if username is not present' do
       login(@organization.owner)
 
-      params = { email: random_email, password: 'patata' }
+      params = { email: unique_email, password: 'patata' }
       post api_v1_organization_users_create_url(name: @organization.name), params
 
       last_response.body.include?('username is not present').should be true

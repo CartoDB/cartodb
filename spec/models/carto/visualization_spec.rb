@@ -1,10 +1,10 @@
 # coding: UTF-8
 require_relative '../../spec_helper'
 require_relative '../../../app/models/visualization/member'
-require 'helpers/random_names_helper'
+require 'helpers/unique_names_helper'
 
 describe Carto::Visualization do
-  include RandomNamesHelper
+  include UniqueNamesHelper
 
   before(:all) do
     @user = create_user(
@@ -52,7 +52,7 @@ describe Carto::Visualization do
 
       parent = CartoDB::Visualization::Member.new(
         user_id: @user.id,
-        name:    random_name('viz'),
+        name:    unique_name('viz'),
         map_id:  map.id,
         type:    CartoDB::Visualization::Member::TYPE_DERIVED,
         privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC
@@ -60,7 +60,7 @@ describe Carto::Visualization do
 
       child = CartoDB::Visualization::Member.new(
         user_id:   @user.id,
-        name:      random_name('viz'),
+        name:      unique_name('viz'),
         map_id:    ::Map.create(user_id: @user.id).id,
         type:      Visualization::Member::TYPE_SLIDE,
         privacy:   CartoDB::Visualization::Member::PRIVACY_PUBLIC,
@@ -72,7 +72,7 @@ describe Carto::Visualization do
 
       child2 = CartoDB::Visualization::Member.new(
         user_id:   @user.id,
-        name:      random_name('viz'),
+        name:      unique_name('viz'),
         map_id:    ::Map.create(user_id: @user.id).id,
         type:      Visualization::Member::TYPE_SLIDE,
         privacy:   CartoDB::Visualization::Member::PRIVACY_PUBLIC,

@@ -1,9 +1,9 @@
 require 'spec_helper'
 require_relative '../../lib/cartodb/stats/api_calls'
-require 'helpers/random_names_helper'
+require 'helpers/unique_names_helper'
 
 describe CartoDB::Stats::APICalls do
-  include RandomNamesHelper
+  include UniqueNamesHelper
 
   describe "Stats API Calls" do
     before(:all) do
@@ -65,8 +65,8 @@ describe CartoDB::Stats::APICalls do
 
     before(:each) do
       @api_calls = CartoDB::Stats::APICalls.new
-      @username = random_name('user')
-      @type = random_name('type')
+      @username = unique_name('user')
+      @type = unique_name('type')
       @options = { stat_tag: '000d1206-1fed-11e5-9964-080027880ca6' }
     end
 

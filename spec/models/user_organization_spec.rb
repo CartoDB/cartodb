@@ -1,8 +1,8 @@
 require_relative '../spec_helper'
-require 'helpers/random_names_helper'
+require 'helpers/unique_names_helper'
 
 describe UserOrganization do
-  include RandomNamesHelper
+  include UniqueNamesHelper
 
   shared_examples 'promoting a user to owner' do
     include_context 'visualization creation helpers'
@@ -24,7 +24,7 @@ describe UserOrganization do
 
     # See #3534: Quota trigger re-creation not done correctly when promoting user to org
     it 'moves tables with geometries' do
-      table = create_random_table(@owner, random_name('table'))
+      table = create_random_table(@owner, unique_name('table'))
       id = table.id
       table.insert_row!(the_geom: %{{"type":"Point","coordinates":[40.392949,-3.69084]}})
       table.rows_counted.should == 1
@@ -40,7 +40,7 @@ describe UserOrganization do
 
     # See #3534: Quota trigger re-creation not done correctly when promoting user to org
     it 'recreates existing tables triggers' do
-      table = create_random_table(@owner, random_name('table'))
+      table = create_random_table(@owner, unique_name('table'))
       id = table.id
       table.insert_row!({})
       table.rows_counted.should == 1
@@ -56,7 +56,7 @@ describe UserOrganization do
 
     # See #6295: Moving user to its own schema (i.e on org creation) leaves triggers on public schema
     it 'moves triggers to the new schema' do
-      table = create_random_table(@owner, random_name('table'))
+      table = create_random_table(@owner, unique_name('table'))
 
       truncate_table_function_creation = %{
         create function truncate_table() returns trigger as $truncate_table$
@@ -142,7 +142,7 @@ describe UserOrganization do
 
     # See #6295: Moving user to its own schema (i.e on org creation) leaves triggers on public schema
     it 'moves views to the new schema' do
-      table = create_random_table(@owner, random_name('table'))
+      table = create_random_table(@owner, unique_name('table'))
 
       view_name = 'mv_test'
       create_view_query = %{
@@ -164,7 +164,7 @@ describe UserOrganization do
 
     # See #6295: Moving user to its own schema (i.e on org creation) leaves triggers on public schema
     it 'moves materialized views to the new schema' do
-      table = create_random_table(@owner, random_name('table'))
+      table = create_random_table(@owner, unique_name('table'))
 
       materialized_view_name = 'mv_test'
       create_materialized_view_query = %{

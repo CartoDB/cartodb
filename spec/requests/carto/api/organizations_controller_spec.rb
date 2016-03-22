@@ -2,11 +2,11 @@
 
 require_relative '../../../spec_helper'
 require_relative '../../../../app/controllers/carto/api/organizations_controller'
-require 'helpers/random_names_helper'
+require 'helpers/unique_names_helper'
 
 describe Carto::Api::OrganizationsController do
   include_context 'organization with users helper'
-  include RandomNamesHelper
+  include UniqueNamesHelper
   include Rack::Test::Methods
   include Warden::Test::Helpers
 
@@ -21,7 +21,7 @@ describe Carto::Api::OrganizationsController do
   describe 'users' do
 
     before(:all) do
-      @org_user_3 = create_test_user("c#{random_name('user')}", @organization)
+      @org_user_3 = create_test_user(unique_name('user'), @organization)
       @group_1 = FactoryGirl.create(:random_group, display_name: 'g_1', organization: @carto_organization)
       @group_1.add_user(@org_user_1.username)
     end

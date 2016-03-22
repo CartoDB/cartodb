@@ -1,9 +1,9 @@
-require 'helpers/random_names_helper'
+require 'helpers/unique_names_helper'
 
-include RandomNamesHelper
+include UniqueNamesHelper
 
 FactoryGirl.define do
   factory :feature_flags_user do
-    id { random_integer }
+    id { unique_integer }
   end
 end

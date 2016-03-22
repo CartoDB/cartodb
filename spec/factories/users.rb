@@ -1,15 +1,15 @@
 # Read about factories at https://github.com/thoughtbot/factory_girl
 
-require 'helpers/random_names_helper'
+require 'helpers/unique_names_helper'
 
-include RandomNamesHelper
+include UniqueNamesHelper
 
 FactoryGirl.define do
 
   factory :user do
 
-    username               { random_name('user') }
-    email                  { random_email }
+    username               { unique_name('user') }
+    email                  { unique_email }
     password               { email.split('@').first }
     table_quota            5
     quota_in_bytes         5000000
@@ -39,8 +39,8 @@ FactoryGirl.define do
     factory :admin, traits: [:admin]
 
     factory :valid_user do
-      username { random_name('user') }
-      email { random_email }
+      username { unique_name('user') }
+      email { unique_email }
       password 'kkkkkkkkk'
       password_confirmation 'kkkkkkkkk'
       salt 'kkkkkkkkk'
@@ -51,8 +51,8 @@ FactoryGirl.define do
 
   factory :carto_user, class: Carto::User do
 
-    username { random_name('user') }
-    email { random_email }
+    username { unique_name('user') }
+    email { unique_email }
 
     password { email.split('@').first }
     password_confirmation { email.split('@').first }

@@ -6,9 +6,9 @@ require_relative 'user_shared_examples'
 require_relative '../../services/dataservices-metrics/lib/here_isolines_usage_metrics'
 require 'factories/organizations_contexts'
 require_relative '../../app/model_factories/layer_factory'
-require 'helpers/random_names_helper'
+require 'helpers/unique_names_helper'
 
-include RandomNamesHelper
+include UniqueNamesHelper
 
 describe 'refactored behaviour' do
 
@@ -1861,8 +1861,8 @@ describe User do
       user_timeout_secs = 666
 
       user = ::User.new
-      user.username = random_name('user')
-      user.email = random_email
+      user.username = unique_name('user')
+      user.email = unique_email
       user.password = user.email.split('@').first
       user.password_confirmation = user.password
       user.admin = false
@@ -2082,8 +2082,8 @@ describe User do
       user1.reload
 
       user = ::User.new
-      user.username = random_name('user')
-      user.email = random_email
+      user.username = unique_name('user')
+      user.email = unique_email
       user.password = user.email.split('@').first
       user.password_confirmation = user.password
       user.admin = false

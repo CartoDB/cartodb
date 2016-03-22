@@ -1,8 +1,8 @@
 require_relative '../../app/models/carto/analysis'
 require_dependency 'carto/uuidhelper'
-require 'helpers/random_names_helper'
+require 'helpers/unique_names_helper'
 
-include RandomNamesHelper
+include UniqueNamesHelper
 
 FactoryGirl.define do
   factory :source_analysis, class: Carto::Analysis do
@@ -10,7 +10,7 @@ FactoryGirl.define do
     analysis_definition do
       %(
         {
-          "id": "#{random_string}",
+          "id": "#{unique_string}",
           "type": "source",
           "query": "select * from subway_stops"
         }

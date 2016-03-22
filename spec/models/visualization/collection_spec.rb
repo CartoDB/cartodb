@@ -5,9 +5,9 @@ require_relative '../../../services/data-repository/repository'
 require_relative '../../../app/models/visualization/collection'
 require_relative '../../../app/models/visualization/member'
 require_relative '../../doubles/support_tables.rb'
-require 'helpers/random_names_helper'
+require 'helpers/unique_names_helper'
 
-include RandomNamesHelper
+include UniqueNamesHelper
 include CartoDB
 
 describe Visualization::Collection do
@@ -259,15 +259,15 @@ describe Visualization::Collection do
 
       table1 = Table.new
       table1.user_id = @user_1.id
-      table1.name = random_name('table')
+      table1.name = unique_name('table')
       table1.save
       table2 = Table.new
       table2.user_id = @user_1.id
-      table2.name = random_name('table')
+      table2.name = unique_name('table')
       table2.save
       table3 = Table.new
       table3.user_id = @user_1.id
-      table3.name = random_name('table')
+      table3.name = unique_name('table')
       table3.save
 
       vis1 = table1.table_visualization
@@ -361,7 +361,7 @@ describe Visualization::Collection do
       vis3.delete
     end
 
-    def create_table(user, name = random_name('table'))
+    def create_table(user, name = unique_name('table'))
       table = Table.new
       table.user_id = user.id
       table.name = name
@@ -489,23 +489,23 @@ describe Visualization::Collection do
 
       table1 = Table.new
       table1.user_id = @user_1.id
-      table1.name = "#{random_name('table')}_1"
+      table1.name = unique_name('table')
       table1.save
       table2 = Table.new
       table2.user_id = @user_1.id
-      table2.name = "#{random_name('table')}_2"
+      table2.name = unique_name('table')
       table2.save
       table3 = Table.new
       table3.user_id = @user_1.id
-      table3.name = "#{random_name('table')}_3"
+      table3.name = unique_name('table')
       table3.save
       table4 = Table.new
       table4.user_id = @user_1.id
-      table4.name = "#{random_name('table')}_4"
+      table4.name = unique_name('table')
       table4.save
 
-      table5 = create_table(@user_1, "#{random_name('table')}_4")
-      table6 = create_table(@user_1, "#{random_name('table')}_4")
+      table5 = create_table(@user_1, unique_name('table'))
+      table6 = create_table(@user_1, unique_name('table'))
 
       vis2 = table2.table_visualization
       vis2.privacy = Visualization::Member::PRIVACY_PUBLIC
@@ -743,7 +743,7 @@ describe Visualization::Collection do
   end
 
   def random_attributes(attributes={})
-    random = random_name('viz')
+    random = unique_name('viz')
     {
       name:           attributes.fetch(:name, random),
       description:    attributes.fetch(:description, "description #{random}"),

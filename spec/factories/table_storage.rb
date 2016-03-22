@@ -1,6 +1,6 @@
-require 'helpers/random_names_helper'
+require 'helpers/unique_names_helper'
 
-include RandomNamesHelper
+include UniqueNamesHelper
 
 FactoryGirl.define do
 
@@ -8,11 +8,11 @@ FactoryGirl.define do
   end
 
   factory :user_table, class: UserTable do
-    name { random_name('user_table') }
+    name { unique_name('user_table') }
   end
 
   factory :carto_user_table, class: Carto::UserTable do
-    name { random_name('user_table') }
+    name { unique_name('user_table') }
   end
 
 end

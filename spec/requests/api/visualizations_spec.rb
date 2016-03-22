@@ -8,7 +8,7 @@ require_relative '../../../app/controllers/api/json/visualizations_controller'
 require_relative '../../../services/data-repository/backend/sequel'
 require_relative '../../../app/models/visualization/migrator'
 require_relative '../../../app/models/overlay/migrator'
-require 'helpers/random_names_helper'
+require 'helpers/unique_names_helper'
 
 
 def app
@@ -20,7 +20,7 @@ end
 # You can then run it with ./spec/requests/api/json/visualizations_controller_specs.rb and
 # ./spec/requests/carto/api/visualizations_controller_specs.rb.
 describe Api::Json::VisualizationsController do
-  include RandomNamesHelper
+  include UniqueNamesHelper
   include Rack::Test::Methods
   include DataRepository
 
@@ -626,7 +626,7 @@ describe Api::Json::VisualizationsController do
   # Visualizations are always created with default_privacy
   def factory(attributes={})
     {
-      name:                     attributes.fetch(:name, random_name('viz')),
+      name:                     attributes.fetch(:name, unique_name('viz')),
       tags:                     attributes.fetch(:tags, ['foo', 'bar']),
       map_id:                   attributes.fetch(:map_id, ::Map.create(user_id: @user.id).id),
       description:              attributes.fetch(:description, 'bogus'),
@@ -643,7 +643,7 @@ describe Api::Json::VisualizationsController do
   def table_factory(options={})
     privacy = options.fetch(:privacy, 1)
 
-    name    = random_name('table')
+    name    = unique_name('table')
     payload = {
       name:         name,
       description:  "#{name} description"

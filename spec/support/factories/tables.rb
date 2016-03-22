@@ -1,9 +1,9 @@
 # encoding: UTF-8
-require 'helpers/random_names_helper'
+require 'helpers/unique_names_helper'
 
 module CartoDB
   module Factories
-    include RandomNamesHelper
+    include UniqueNamesHelper
 
     def new_table(attributes = {})
       attributes = attributes.dup
@@ -18,7 +18,7 @@ module CartoDB
         attributes.delete(:name)
         nil
       else
-        attributes[:name] || random_name('table')
+        attributes[:name] || unique_name('table')
       end
 
       table
@@ -41,7 +41,7 @@ module CartoDB
 
     def visualization_template(user, attributes = {})
       {
-        name:                     attributes.fetch(:name, random_name('viz')),
+        name:                     attributes.fetch(:name, unique_name('viz')),
         display_name:             attributes.fetch(:display_name, nil),
         tags:                     attributes.fetch(:tags, ['foo', 'bar']),
         map_id:                   attributes.fetch(:map_id, ::Map.create(user_id: user.id).id),

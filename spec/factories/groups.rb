@@ -1,7 +1,7 @@
 # encoding: utf-8
-require 'helpers/random_names_helper'
+require 'helpers/unique_names_helper'
 
-include RandomNamesHelper
+include UniqueNamesHelper
 
 FactoryGirl.define do
   factory :carto_group, class: Carto::Group do
@@ -11,7 +11,7 @@ FactoryGirl.define do
   end
 
   factory :new_random_group, class: Carto::Group do |_g|
-    name { random_name('group') }
+    name { unique_name('group') }
     display_name { "Group #{name}" }
 
     factory :random_group do

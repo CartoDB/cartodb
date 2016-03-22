@@ -1520,7 +1520,6 @@ describe Carto::Api::VisualizationsController do
             @table.save
           end
 
-          # TODO: "don't overwrite custom template" test. Technical debt: #6912
           it 'uses v3 infowindows and tooltips templates' do
             # vizjson v2 doesn't change
             get_json api_v2_visualizations_vizjson_url(user_domain: @user_1.username,
@@ -1544,6 +1543,7 @@ describe Carto::Api::VisualizationsController do
                                                        id: @visualization.id,
                                                        api_key: @user_1.api_key), @headers do |response|
               response.status.should eq 200
+
               response_infowindow = response.body[:layers][0]['options']['layer_definition']['layers'][0]['infowindow']
               response_infowindow['template_name'].should eq infowindow['template_name']
               response_infowindow['template'].should include(v3_infowindow_light_template_fragment)
@@ -1571,10 +1571,12 @@ describe Carto::Api::VisualizationsController do
                                                        id: @visualization.id,
                                                        api_key: @user_1.api_key), @headers do |response|
               response.status.should eq 200
+
               response_infowindow = response.body[:layers][0]['options']['named_map']['layers'][0]['infowindow']
               response_infowindow['template_name'].should eq infowindow['template_name']
               response_infowindow['template'].should include(v2_infowindow_light_template_fragment)
               response_infowindow['template'].should_not include(v3_infowindow_light_template_fragment)
+
               response_tooltip = response.body[:layers][0]['options']['named_map']['layers'][0]['tooltip']
               response_tooltip['template_name'].should eq tooltip['template_name']
               response_tooltip['template'].should include(v2_tooltip_light_template_fragment)
@@ -1585,6 +1587,7 @@ describe Carto::Api::VisualizationsController do
                                                        id: @visualization.id,
                                                        api_key: @user_1.api_key), @headers do |response|
               response.status.should eq 200
+
               response_infowindow = response.body[:layers][0]['options']['named_map']['layers'][0]['infowindow']
               response_infowindow['template_name'].should eq infowindow['template_name']
               response_infowindow['template'].should include(v3_infowindow_light_template_fragment)
@@ -1594,6 +1597,90 @@ describe Carto::Api::VisualizationsController do
               response_tooltip['template_name'].should eq tooltip['template_name']
               response_tooltip['template'].should include(v3_tooltip_light_template_fragment)
               response_tooltip['template'].should_not include(v2_tooltip_light_template_fragment)
+            end
+          end
+        end
+      end
+
+      describe 'layer custom infowindows and tooltips' do
+        before(:each) do
+          layer = @visualization.data_layers.first
+          layer.infowindow = custom_infowindow
+          layer.tooltip = custom_tooltip
+          layer.save
+        end
+
+        describe 'anonymous maps' do
+          before(:each) do
+            @table.privacy = UserTable::PRIVACY_PUBLIC
+            @table.save
+          end
+
+          it 'uses v3 infowindows and tooltips templates' do
+            # vizjson v2 doesn't change
+            get_json api_v2_visualizations_vizjson_url(user_domain: @user_1.username,
+                                                       id: @visualization.id,
+                                                       api_key: @user_1.api_key), @headers do |response|
+              response.status.should eq 200
+
+              response_infowindow = response.body[:layers][0]['options']['layer_definition']['layers'][0]['infowindow']
+              response_infowindow['template_name'].should eq ''
+              response_infowindow['template'].should eq custom_infowindow[:template]
+
+              response_tooltip = response.body[:layers][0]['options']['layer_definition']['layers'][0]['tooltip']
+              response_tooltip['template_name'].should eq ''
+              response_tooltip['template'].should eq custom_tooltip[:template]
+            end
+
+            get_json api_v3_visualizations_vizjson_url(user_domain: @user_1.username,
+                                                       id: @visualization.id,
+                                                       api_key: @user_1.api_key), @headers do |response|
+              response.status.should eq 200
+              response_infowindow = response.body[:layers][0]['options']['layer_definition']['layers'][0]['infowindow']
+              response_infowindow['template_name'].should eq ''
+              response_infowindow['template'].should eq custom_infowindow[:template]
+
+              response_tooltip = response.body[:layers][0]['options']['layer_definition']['layers'][0]['tooltip']
+              response_tooltip['template_name'].should eq ''
+              response_tooltip['template'].should eq custom_tooltip[:template]
+            end
+          end
+        end
+
+        describe 'named maps' do
+          before(:each) do
+            @user_1.private_tables_enabled = true
+            @user_1.save
+            @table.privacy = UserTable::PRIVACY_PRIVATE
+            @table.save
+          end
+
+          it 'uses v3 infowindows templates at named maps' do
+            # vizjson v2 doesn't change
+            get_json api_v2_visualizations_vizjson_url(user_domain: @user_1.username,
+                                                       id: @visualization.id,
+                                                       api_key: @user_1.api_key), @headers do |response|
+              response.status.should eq 200
+              response_infowindow = response.body[:layers][0]['options']['named_map']['layers'][0]['infowindow']
+              response_infowindow['template_name'].should eq ''
+              response_infowindow['template'].should eq custom_infowindow[:template]
+
+              response_tooltip = response.body[:layers][0]['options']['named_map']['layers'][0]['tooltip']
+              response_tooltip['template_name'].should eq ''
+              response_tooltip['template'].should eq custom_tooltip[:template]
+            end
+
+            get_json api_v3_visualizations_vizjson_url(user_domain: @user_1.username,
+                                                       id: @visualization.id,
+                                                       api_key: @user_1.api_key), @headers do |response|
+              response.status.should eq 200
+              response_infowindow = response.body[:layers][0]['options']['named_map']['layers'][0]['infowindow']
+              response_infowindow['template_name'].should eq ''
+              response_infowindow['template'].should eq custom_infowindow[:template]
+
+              response_tooltip = response.body[:layers][0]['options']['named_map']['layers'][0]['tooltip']
+              response_tooltip['template_name'].should eq ''
+              response_tooltip['template'].should eq custom_tooltip[:template]
             end
           end
         end

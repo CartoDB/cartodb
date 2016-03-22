@@ -49,6 +49,16 @@ end
 module Fixtures
   module Layers
     module Tooltips
+      def custom_tooltip(template = 'wadus tooltip')
+        {
+          "fields": [{ "name": "amount", "title": true, "position": 0 }],
+          "template_name": "",
+          "template": template,
+          "alternative_names": {},
+          "maxHeight": 180
+        }
+      end
+
       # These depend on tooltip_light.jst.mustache at the following paths:
       # - /lib/assets/javascripts/cartodb/table/views/tooltip/templates/tooltip_light.jst.mustache
       # - /lib/assets/javascripts/cartodb3/mustache-templates/tooltips/tooltip_light.jst.mustache
@@ -65,6 +75,17 @@ module Fixtures
     # - /lib/assets/javascripts/cartodb/table/views/infowindow/templates/infowindow_light.jst.mustache
     # - /lib/assets/javascripts/cartodb3/mustache-templates/infowindows/infowindow_light.jst.mustache
     module Infowindows
+      def custom_infowindow(template = 'wadus infowindow')
+        {
+          "fields": [{ "name": "country", "title": true, "position": 1 }],
+          "template_name": "",
+          "template": template,
+          "alternative_names": {},
+          "width": 226,
+          "maxHeight": 180
+        }
+      end
+
       def v2_infowindow_light_template_fragment
         "<div class=\"cartodb-popup v2\">\n  <a href=\"#close\" class=\"cartodb-popup-close-button close\">x</a>\n  "\
         "<div class=\"cartodb-popup-content-wrapper\">\n    <div class=\"cartodb-popup-content\">\n      "\

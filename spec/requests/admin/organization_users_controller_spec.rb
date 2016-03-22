@@ -92,7 +92,7 @@ describe Admin::OrganizationUsersController do
           last_response.body.should include('There was a problem while updating this user.')
 
           @existing_user.reload
-          @existing_user.quota_in_bytes.should != new_quota
+          @existing_user.quota_in_bytes.should_not eq new_quota
         end
       end
 

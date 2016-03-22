@@ -52,7 +52,8 @@ describe Admin::OrganizationUsersController do
         @user.email.should end_with('.ok')
       end
 
-      it 'does not update if communication with Central fails' do
+      it 'does not update account if communication with Central fails' do
+        ::User.any_instance.stubs(:update_in_central).raises(CartoDB::CentralCommunicationFailure.new('Failed'))
         params = {
           email: 'fail-' + @user.email
         }
@@ -92,6 +93,7 @@ describe Admin::OrganizationUsersController do
       end
 
       it 'does not update profile if communication with Central fails' do
+        ::User.any_instance.stubs(:update_in_central).raises(CartoDB::CentralCommunicationFailure.new('Failed'))
         params = {
           name: 'fail-' + @user.name
         }

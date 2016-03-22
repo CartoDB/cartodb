@@ -452,6 +452,9 @@ div.map {
 
       &.custom, &.cluster, &.bubble, &.color, &.intensity, &.density {
         display: block;
+      }
+
+      &.cluster, &.bubble, &.color, &.intensity, &.density {
         width: 100% !important;
       }
 

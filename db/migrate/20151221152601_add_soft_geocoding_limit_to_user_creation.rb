@@ -1,5 +1,7 @@
 Sequel.migration do
   up do
+    Rails::Sequel.connection.run(%{ UPDATE layers SET kind = 'carto' WHERE kind IS NULL; })
+
     alter_table :user_creations do
       add_column :soft_geocoding_limit, :boolean, default: true
     end

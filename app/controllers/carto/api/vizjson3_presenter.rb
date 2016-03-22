@@ -1,4 +1,5 @@
-require_relative 'vizjson_presenter'
+require_dependency 'carto/api/vizjson_presenter'
+require_dependency 'carto/api/layer_vizjson_adapter'
 
 module Carto
   module Api
@@ -35,7 +36,62 @@ module Carto
       end
 
       def layer_vizjson2_to_3(layer_data)
-        return layer_data unless layer_data[:type] == 'torque'
+        if layer_data[:type] == 'torque'
+          torque_layer_vizjson2_to_3(layer_data)
+        end
+
+        layer_definitions_from_layer_data(layer_data).each do |layer_definition|
+          infowindow = layer_definition[:infowindow]
+          if infowindow
+            infowindow_sym = infowindow.deep_symbolize_keys
+            infowindow[:template] = v3_infowindow_template(infowindow_sym[:template_name], infowindow_sym[:template])
+          end
+
+          tooltip = layer_definition[:tooltip]
+          if tooltip
+            tooltip_sym = tooltip.deep_symbolize_keys
+            tooltip[:template] = v3_tooltip_template(tooltip_sym[:template_name], tooltip_sym[:template])
+          end
+        end
+      end
+
+      # TODO: refactor, ugly as hell. Technical debt: #6912
+      def layer_definitions_from_layer_data(layer_data)
+        if layer_data[:options] &&
+           layer_data[:options][:layer_definition] &&
+           layer_data[:options][:layer_definition][:layers]
+          layer_data[:options][:layer_definition][:layers]
+        elsif layer_data[:options] &&
+              layer_data[:options][:named_map] &&
+              layer_data[:options][:named_map][:layers]
+          layer_data[:options][:named_map][:layers]
+        else
+          []
+        end
+      end
+
+      # TODO: refactor, maybe this can be done straight away in the LayerVizJSONAdapter. Technical debt: #6912
+      def v3_infowindow_template(template_name, fallback_template)
+        template_name = Carto::Api::LayerVizJSONAdapter::TEMPLATES_MAP.fetch(template_name, template_name)
+        if template_name.present?
+          path = Rails.root.join("lib/assets/javascripts/cartodb3/mustache-templates/infowindows/#{template_name}.jst.mustache")
+          File.read(path)
+        else
+          fallback_template
+        end
+      end
+
+      def v3_tooltip_template(template_name, fallback_template)
+        template_name = Carto::Api::LayerVizJSONAdapter::TEMPLATES_MAP.fetch(template_name, template_name)
+        if template_name.present?
+          path = Rails.root.join("lib/assets/javascripts/cartodb3/mustache-templates/tooltips/#{template_name}.jst.mustache")
+          File.read(path)
+        else
+          fallback_template
+        end
+      end
+
+      def torque_layer_vizjson2_to_3(layer_data)
         layer_options = layer_data[:options]
 
         layer_options[:cartocss] = layer_options[:tile_style]

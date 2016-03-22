@@ -131,10 +131,10 @@ class User < Sequel::Model
     if new?
       organization.validate_for_signup(errors, quota_in_bytes)
       organization.validate_new_user(self, errors)
-    else
+    elsif quota_in_bytes.to_i + organization.assigned_quota - initial_value(:quota_in_bytes) > organization.quota_in_bytes
       # Organization#assigned_quota includes the OLD quota for this user,
       # so we have to ammend that in the calculation:
-      errors.add(:quota_in_bytes, "not enough disk quota") if quota_in_bytes.to_i + organization.assigned_quota - initial_value(:quota_in_bytes) > organization.quota_in_bytes
+      errors.add(:quota_in_bytes, "not enough disk quota")
     end
   end
 
@@ -292,7 +292,7 @@ class User < Sequel::Model
         @org_id_for_org_wipe = self.organization.id  # after_destroy will wipe the organization too
         if self.organization.users.count > 1
           msg = 'Attempted to delete owner from organization with other users'
-          CartoDB::Logger.info msg
+          CartoDB::StdoutLogger.info msg
           raise CartoDB::BaseCartoDBError.new(msg)
         end
       end
@@ -331,7 +331,7 @@ class User < Sequel::Model
       assign_search_tweets_to_organization_owner
     rescue StandardError => exception
       error_happened = true
-      CartoDB::Logger.info "Error destroying user #{username}. #{exception.message}\n#{exception.backtrace}"
+      CartoDB::StdoutLogger.info "Error destroying user #{username}. #{exception.message}\n#{exception.backtrace}"
     end
 
     # Remove metadata from redis
@@ -658,7 +658,7 @@ class User < Sequel::Model
       avatar_color = Cartodb.config[:avatars]['colors'][Random.new.rand(0..Cartodb.config[:avatars]['colors'].length - 1)]
       return "#{avatar_base_url}/avatar_#{avatar_kind}_#{avatar_color}.png"
     else
-      CartoDB::Logger.info "Attribute avatars_base_url not found in config. Using default avatar"
+      CartoDB::StdoutLogger.info "Attribute avatars_base_url not found in config. Using default avatar"
       return default_avatar
     end
   end

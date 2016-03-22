@@ -82,6 +82,7 @@ WORKING_SPECS_1 = \
 WORKING_SPECS_2 = \
   spec/lib/cartodb/stats/importer_spec.rb \
 	spec/lib/cartodb/stats/platform_spec.rb \
+	spec/lib/cartodb/connection_pool_spec.rb \
   services/importer/spec/acceptance/geojson_spec.rb \
   services/importer/spec/acceptance/gpx_spec.rb \
   services/importer/spec/acceptance/kml_spec.rb \
@@ -226,10 +227,14 @@ WORKING_SPECS_9 = \
 
 # Tests using spec_helper_min instead of spec_helper
 SPEC_HELPER_MIN_SPECS = \
-  spec/requests/carto/api/analyses_controller_spec.rb \
 	spec/models/carto/analysis_spec.rb \
+	spec/models/table_registrar_spec.rb \
+	spec/requests/admin/organization_users_controller_spec.rb \
 	spec/requests/api/json/maps_controller_spec.rb \
+	spec/requests/carto/api/analyses_controller_spec.rb \
 	spec/requests/carto/api/maps_controller_spec.rb \
+	spec/requests/admin/users_controller_spec.rb \
+	spec/lib/carto/strong_password_validator_spec.rb \
 	$(NULL)
 
 # This class must be tested isolated as pollutes namespace

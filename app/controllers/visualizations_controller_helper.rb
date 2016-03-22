@@ -1,9 +1,12 @@
+require_dependency 'carto/api/vizjson3_presenter'
+
 module VisualizationsControllerHelper
   # Implicit order due to legacy code: 1st return canonical/table/Dataset if present, else derived/visualization/Map
-  def get_priority_visualization(visualization_id, user_id)
+  def get_priority_visualization(visualization_id, user_id: nil, organization_id: nil)
     Carto::VisualizationQueryBuilder.new
                                     .with_id_or_name(visualization_id)
                                     .with_user_id(user_id)
+                                    .with_organization_id(organization_id)
                                     .build
                                     .all
                                     .sort do |vis_a, _vis_b|
@@ -12,10 +15,11 @@ module VisualizationsControllerHelper
                                     .first
   end
 
-  def load_visualization_from_id(id)
-    user_id = current_user.nil? ? nil : current_user.id
+  def load_visualization_from_id_or_name(id_or_name)
+    user = Carto::User.where(username: CartoDB.extract_subdomain(request)).first
+    user_id = user.nil? ? nil : user.id
 
-    visualization = get_priority_visualization(id, user_id)
+    visualization = get_priority_visualization(id_or_name, user_id: user_id)
 
     render_404 && return if visualization.nil?
 

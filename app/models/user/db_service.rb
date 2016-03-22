@@ -3,14 +3,15 @@
 require_relative 'db_queries'
 require_dependency 'carto/db/database'
 require_dependency 'carto/db/user_schema_mover'
+require 'cartodb/sequel_connection_helper'
 
 # To avoid collisions with User model
 module CartoDB
   # To avoid collisions with User class
   module UserModule
     class DBService
-
       include CartoDB::MiniSequel
+      extend CartoDB::SequelConnectionHelper
 
       # Also default schema for new users
       SCHEMA_PUBLIC = 'public'.freeze
@@ -436,7 +437,7 @@ module CartoDB
       # Upgrade the cartodb postgresql extension
       def upgrade_cartodb_postgres_extension(statement_timeout = nil, cdb_extension_target_version = nil)
         if cdb_extension_target_version.nil?
-          cdb_extension_target_version = '0.14.1'
+          cdb_extension_target_version = '0.14.3'
         end
 
         @user.in_database(as: :superuser, no_cartodb_in_schema: true) do |db|
@@ -1095,7 +1096,7 @@ module CartoDB
           END
           $$
         ")
-        conn.disconnect
+        close_sequel_connection(conn)
       end
 
       def triggers(schema = @user.database_schema)

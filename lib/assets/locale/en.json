@@ -28,13 +28,25 @@
     "tab-pane": {
       "layers": {
         "title-label": "Layers",
-        "basemap": "basemap"
+        "basemap": "Basemap"
       },
       "elements": {
         "title-label": "Elements"
       },
       "widgets": {
-        "title-label": "Widgets",
+        "title-label": "Widgets"
+      }
+    },
+    "layers": {
+      "layer": {
+        'add-analysis': 'Add analysis'
+      },
+      "menu-tab-pane-labels": {
+        "data": "Data",
+        "analyses": "Analyses",
+        "style": "Style",
+        "popup": "Pop-up",
+        "legends": "Legend"
       }
     },
     "widgets": {

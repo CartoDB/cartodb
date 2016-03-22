@@ -1,4 +1,5 @@
 require 'rollbar/rails'
+require 'cartodb/logger'
 Rollbar.configure do |config|
   config.access_token = Cartodb.config[:rollbar_api_key]
   config.enabled = Rails.env.production? || Rails.env.staging?
@@ -14,45 +15,29 @@ Rollbar.configure do |config|
 end
 
 module CartoDB
+  # Old, deprecated, logging functions
+  # Use the new logging module in lib/cartodb/logger.rb
+
   # Extra can contain `:request` and `:user`
   # Deprecated because of that `extra` content limitation. Use `report_exception` instead.
-  def self.notify_exception(e, extra={})
-    if Rails.env.development? || Rails.env.test?
-      backtrace = e.backtrace ? e.backtrace : ['']
-      ::Logger.new(STDOUT).error "exception: #{extra.delete(:message)} #{e.message}\n#{backtrace.join("\n ")}\nExtra: #{extra}"
-    end
-    Rollbar.report_exception(e, extra.delete(:request), extra.delete(:user))
-  rescue
-    # If Rollbar fails, bubble up the exception
-    raise e
+  def self.notify_exception(e, extra = {})
+    CartoDB::Logger.log('error', exception: e, **extra)
   end
 
-  def self.notify_error(message, additional_data={})
-    if Rails.env.development? || Rails.env.test?
-      ::Logger.new(STDOUT).error "error: " + message + "\n" + additional_data.inspect + "\n"
-    end
-
-    # Sanity check: Rollbar complains if user is not an object
-    user = additional_data[:user].respond_to?(:id) ? additional_data[:user] : nil
-
-    Rollbar.report_message_with_request(message, 'error', additional_data[:request], user, additional_data)
+  def self.notify_error(message, additional_data = {})
+    CartoDB::Logger.log('error', message: message, **additional_data)
   end
 
   # Add `:request` and `:user` to additional_data if you want request content
   def self.report_exception(e, message = nil, additional_data = {})
-    backtrace = e.backtrace ? e.backtrace.join('\n') : ''
-    notify_error(message, additional_data.merge(error: e.inspect, backtrace: backtrace))
+    CartoDB::Logger.log('error', exception: e, message: message, **additional_data)
   end
 
-  def self.notify_debug(message, additional_data={})
-    if Rails.env.development? || Rails.env.test?
-      ::Logger.new(STDOUT).error "debug: " + message + "\n" + additional_data.inspect + "\n"
-    end
-    Rollbar.report_message(message, 'debug', additional_data)
+  def self.notify_debug(message, additional_data = {})
+    CartoDB::Logger.log('debug', message: message, **additional_data)
   end
 
   def self.notify_warning_exception(exception)
-    Rollbar.report_exception(exception, nil, nil, 'warning')
+    CartoDB::Logger.log('warning', exception: exception)
   end
-
 end

@@ -474,7 +474,7 @@ class Table
   end
 
   def handle_creation_error(e)
-    CartoDB::Logger.info 'table#create error', "#{e.inspect}"
+    CartoDB::StdoutLogger.info 'table#create error', "#{e.inspect}"
     # Remove the table, except if it already exists
     unless self.name.blank? || e.message =~ /relation .* already exists/
       @data_import.log.append ("Import ERROR: Dropping table #{qualified_table_name}") if @data_import
@@ -521,11 +521,15 @@ class Table
   def create_default_visualization
     kind = is_raster? ? CartoDB::Visualization::Member::KIND_RASTER : CartoDB::Visualization::Member::KIND_GEOM
 
+    esv = external_source_visualization
+
     member = CartoDB::Visualization::Member.new(
       name:         self.name,
       map_id:       self.map_id,
       type:         CartoDB::Visualization::Member::TYPE_CANONICAL,
       description:  @user_table.description,
+      attributions: esv.nil? ? nil : esv.attributions,
+      source:       esv.nil? ? nil : esv.source,
       tags:         (@user_table.tags.split(',') if @user_table.tags),
       privacy:      UserTable::PRIVACY_VALUES_TO_TEXTS[default_privacy_value],
       user_id:      self.owner.id,
@@ -573,7 +577,7 @@ class Table
       begin
         user_database.run("DROP SEQUENCE IF EXISTS cartodb_id_#{oid}_seq")
       rescue => e
-        CartoDB::Logger.info 'Table#after_destroy error', "maybe table #{qualified_table_name} doesn't exist: #{e.inspect}"
+        CartoDB::StdoutLogger.info 'Table#after_destroy error', "maybe table #{qualified_table_name} doesn't exist: #{e.inspect}"
       end
       Carto::OverviewsService.new(user_database).delete_overviews qualified_table_name
       user_database.run(%{DROP TABLE IF EXISTS #{qualified_table_name}})
@@ -648,7 +652,7 @@ class Table
     begin
       owner.in_database({statement_timeout: 600000}).run(%Q{UPDATE #{qualified_table_name} SET the_geom = ST_MakeValid(the_geom);})
     rescue => e
-      CartoDB::Logger.info 'Table#make_geom_valid error', "table #{qualified_table_name} make valid failed: #{e.inspect}"
+      CartoDB::StdoutLogger.info 'Table#make_geom_valid error', "table #{qualified_table_name} make valid failed: #{e.inspect}"
     end
   end
 
@@ -985,7 +989,7 @@ class Table
       rows = user_database[%Q{
         SELECT #{select_columns} FROM #{qualified_table_name} #{where} ORDER BY "#{order_by_column}" #{mode} LIMIT #{per_page}+1 OFFSET #{page}
       }].all
-      CartoDB::Logger.info 'Query', "fetch: #{rows.length}"
+      CartoDB::StdoutLogger.info 'Query', "fetch: #{rows.length}"
 
       # Tweak estimation if needed
       fetched = rows.length
@@ -1132,7 +1136,7 @@ class Table
     if !!(exception.message =~ /Error: invalid cartodb_id/)
       raise CartoDB::CartoDBfyInvalidID
     else
-      raise CartoDB::CartoDBfyError
+      raise exception
     end
   end
 
@@ -1317,6 +1321,15 @@ class Table
   end
 
   private
+
+  def external_source_visualization
+    @user_table.
+      try(:data_import).
+      try(:external_data_imports).
+      try(:first).
+      try(:external_source).
+      try(:visualization)
+  end
 
   def previous_privacy
     # INFO: @user_table.initial_value(:privacy) weirdly returns incorrect value so using changes index instead

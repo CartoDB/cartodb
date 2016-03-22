@@ -10,7 +10,7 @@ module CartoDB
         @db = db
       end
 
-      def migrate(relation=:visualizations)
+      def migrate(relation = :visualizations)
         @db.create_table(relation.to_sym) do
           UUID      :id, primary_key: true
           String    :name
@@ -27,30 +27,29 @@ module CartoDB
           String    :url_options
           UUID      :user_id
           UUID      :permission_id
-          Boolean   :locked
+          Boolean   :locked, null: false, default: false
           String    :license
           String    :source
           String    :attributions
           String    :title
           String    :parent_id
-          String    :kind
+          String    :kind, null: false, default: 'geom'
           String    :prev_id
           String    :next_id
-          String    :slide_transition_options
+          String    :slide_transition_options, null: false, default: '{}'
           String    :active_child
         end
 
-        @db.run(%Q{
+        @db.run(%{
           ALTER TABLE "#{relation}"
           ADD COLUMN tags text[],
           ADD COLUMN bbox geometry
         })
       end
 
-      def drop(relation=:visualizations)
-        @db.drop_table(relation.to_sym, :cascade=>true)
+      def drop(relation = :visualizations)
+        @db.drop_table(relation.to_sym, cascade: true)
       end
     end
   end
 end
-

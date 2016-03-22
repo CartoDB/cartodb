@@ -188,8 +188,17 @@ class Carto::VisualizationQueryBuilder
     self
   end
 
+  def with_organization_id(organization_id)
+    @organization_id = organization_id
+    self
+  end
+
   def build
     query = Carto::Visualization.scoped
+
+    if @name && !(@id || @user_id || @organization_id)
+      CartoDB.notify_debug("VQB query by name without user_id nor org_id", stack: caller.take(25))
+    end
 
     if @id
       query = query.where(id: @id)
@@ -297,6 +306,10 @@ class Carto::VisualizationQueryBuilder
 
     if @only_with_display_name
       query = query.where("display_name is not null")
+    end
+
+    if @organization_id
+      query = query.joins(:user).where(users: { organization_id: @organization_id })
     end
 
     @include_associations.each { |association|

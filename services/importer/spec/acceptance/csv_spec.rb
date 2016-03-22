@@ -336,8 +336,7 @@ describe 'csv regression tests' do
   end
 
   it 'errors after created temporary table should clean the table' do
-    log         = CartoDB::Importer2::Doubles::Log.new
-    job         = Job.new({ logger: log, pg_options: @pg_options })
+    job         = Job.new({ logger: @log, pg_options: @pg_options })
     runner = runner_with_fixture('too_many_columns.csv', job)
     runner.run
 

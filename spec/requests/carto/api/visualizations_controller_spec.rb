@@ -2243,7 +2243,7 @@ describe Carto::Api::VisualizationsController do
 
   def test_organization
     organization = Organization.new
-    organization.name = org_name = random_name('org')
+    organization.name = random_name('org')
     organization.quota_in_bytes = 1234567890
     organization.seats = 5
     organization

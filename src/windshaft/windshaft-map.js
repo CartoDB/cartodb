@@ -68,7 +68,6 @@ var WindshaftMap = Backbone.Model.extend({
       params.filters = filters;
     }
 
-    // TODO: Pass an array of params instead of passing apiKey, statTag, and filters
     this.client.instantiateMap({
       mapDefinition: this.toMapConfig(),
       params: params,

@@ -13,12 +13,11 @@ LayerGroupConfig.generate = function (options) {
   };
 
   _.each(layers, function (layer) {
-    // Layer has some SQL that needs to be converted into a "source" analysis
     var sourceId;
     var sourceAnalysis = layer.get('source');
     if (sourceAnalysis) {
       sourceId = sourceAnalysis.get('id');
-    } else if (layer.get('sql')) {
+    } else if (layer.get('sql')) { // Layer has some SQL that needs to be converted into a "source" analysis
       sourceId = layer.get('id');
       sourceAnalysis = {
         id: sourceId,
@@ -30,8 +29,6 @@ LayerGroupConfig.generate = function (options) {
     }
 
     var sourceAnalysisIsPartOfOtherAnalysis = _.any(layers, function (otherLayer) {
-      // TODO: otherLayer might have references under other names. Eg: point-in-polygon analysis has points_source
-      // and polygons_source
       return layer !== otherLayer && otherLayer.get('source') && otherLayer.get('source').findAnalysisById(sourceId);
     });
 
@@ -44,13 +41,10 @@ LayerGroupConfig.generate = function (options) {
       var layerConfig = {
         type: layer.get('type').toLowerCase(),
         options: {
-          // sql: layer.get('sql'),
           source: { id: sourceId },
           cartocss: layer.get('cartocss'),
           cartocss_version: layer.get('cartocss_version') || DEFAULT_CARTOCSS_VERSION,
           interactivity: layer.getInteractiveColumnNames()
-          // TODO widgets should be renamed to dataviews, requires Windshaft to be changed first though
-          // widgets: {}
         }
       };
 

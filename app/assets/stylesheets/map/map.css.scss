@@ -41,14 +41,6 @@ div.map.animated .cartodb-map {
   transition: none !important;
 }
 
-// draggable legends
-.ui-draggable {
-  &:hover { cursor: grab; }
-  &.ui-dragging {
-    cursor: grabbing;
-  }
-}
-
 div.map {
 
   &.mobile #cartodb-gmaps-attribution {
@@ -457,9 +449,11 @@ div.map {
       @include position(false, 0, 0, false);
       position:relative;
       margin: 0;
-      width: 100% !important;
 
-      &.custom, &.cluster, &.bubble, &.color, &.intensity, &.density { display: block; }
+      &.custom, &.cluster, &.bubble, &.color, &.intensity, &.density {
+        display: block;
+        width: 100% !important;
+      }
     }
   }
 

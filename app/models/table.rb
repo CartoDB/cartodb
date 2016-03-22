@@ -1136,7 +1136,7 @@ class Table
     if !!(exception.message =~ /Error: invalid cartodb_id/)
       raise CartoDB::CartoDBfyInvalidID
     else
-      raise CartoDB::CartoDBfyError
+      raise exception
     end
   end
 

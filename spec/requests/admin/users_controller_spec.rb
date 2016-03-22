@@ -3,7 +3,7 @@
 require_relative '../../spec_helper_min'
 require_relative '../../support/factories/users'
 
-describe Admin::OrganizationUsersController do
+describe Admin::UsersController do
   include Rack::Test::Methods
   include Warden::Test::Helpers
   include CartoDB::Factories

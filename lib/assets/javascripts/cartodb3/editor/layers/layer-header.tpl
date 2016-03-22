@@ -6,7 +6,7 @@
     <div class="Editor-HeaderInfo-Title u-bSpace">
       <h2 class="Editor-HeaderInfo-TitleText CDB-Text CDB-Size-huge is-light" title="<%- alias %>"><%- alias %></h2>
     </div>
-    <div class="CDB-Shape u-iBlock">
+    <div class="CDB-Shape u-iBlock CDB-Size-medium">
       <ul class="CDB-Shape-Dataset is-small is-grey">
         <li class="CDB-Shape-DatasetItem"></li>
         <li class="CDB-Shape-DatasetItem"></li>

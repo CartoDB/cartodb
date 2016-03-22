@@ -9,6 +9,10 @@
           "sub-titles": {
             "area-of-influence": "Area of influence"
           },
+          "buffer": {
+            "title": "Buffer",
+            "desc": "Calculate the area of influence of a layer determined by distance."
+          },
           "trade-area": {
             "title": "Trade Areas",
             "desc": "Calculate the area of a layer determined by walking, driving, or biking time, or just by distance"

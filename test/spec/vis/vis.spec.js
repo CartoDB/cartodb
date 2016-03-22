@@ -195,25 +195,23 @@ describe('vis/vis', function () {
     expect(this.vis.getNativeMap()).toEqual(this.vis.mapView._leafletMap);
   });
 
-  it('load should call done', function (done) {
-    jasmine.clock().install();
-
+  it('load should trigger a done event', function (done) {
     this.mapConfig.layers = [{
       type: 'tiled',
       options: {
         urlTemplate: 'https://dnv9my2eseobd.cloudfront.net/v3/{z}/{x}/{y}.png'
       }
     }];
-    layers = null;
 
-    this.vis.load(this.mapConfig, { }).done(function (vis, lys) {  layers = lys;});
+    var doneCallback = jasmine.createSpy('doneCallback');
+    this.vis.bind('done', doneCallback);
 
-    setTimeout(function () {
-      expect(layers.length).toEqual(1);
+    this.vis.load(this.mapConfig, {});
+
+    _.defer(function () {
+      expect(doneCallback).toHaveBeenCalled();
       done();
-    }, 100);
-
-    jasmine.clock().tick(1000);
+    });
   });
 
   it('should add header', function () {

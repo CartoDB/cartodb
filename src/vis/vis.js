@@ -3,7 +3,6 @@ var Backbone = require('backbone');
 var $ = require('jquery');
 var log = require('cdb.log');
 var util = require('cdb.core.util');
-var Loader = require('../core/loader');
 var View = require('../core/view');
 var StackedLegend = require('../geo/ui/legend/stacked-legend');
 var Map = require('../geo/map');
@@ -26,7 +25,6 @@ var WindshaftLayerGroupConfig = require('../windshaft/layergroup-config');
 var WindshaftNamedMapConfig = require('../windshaft/namedmap-config');
 var WindshaftMap = require('../windshaft/windshaft-map');
 var VizJSON = require('./vizjson');
-var util = require('cdb.core.util');
 
 /**
  * Visualization creation
@@ -183,20 +181,7 @@ var Vis = View.extend({
     });
   },
 
-  load: function (data, options) {
-    if (typeof (data) === 'string') {
-      var url = data;
-      Loader.get(url, function (data) {
-        if (data) {
-          this.load(data, options);
-        } else {
-          this.throwError('error fetching viz.json file');
-        }
-      }.bind(this));
-
-      return;
-    }
-
+  load: function (vizjsonData, options) {
     var DEFAULT_OPTIONS = {
       tiles_loader: true,
       loaderControl: true,
@@ -206,7 +191,7 @@ var Vis = View.extend({
     };
 
     options = _.defaults(options || {}, DEFAULT_OPTIONS);
-    var vizjson = new VizJSON(data);
+    var vizjson = new VizJSON(vizjsonData);
     this._applyOptionsToVizJSON(vizjson, options);
 
     this._dataviewsCollection = new DataviewCollection();
@@ -320,7 +305,7 @@ var Vis = View.extend({
 
     // Create the Layer Models and set them on hte map
     this.https = (window && window.location.protocol && window.location.protocol === 'https:') || !!vizjson.https || !!options.https;
-    var layerModels = this._newLayerModels(data, this.map);
+    var layerModels = this._newLayerModels(vizjsonData, this.map);
 
     var infowindowManager = new InfowindowManager(this);
     infowindowManager.manage(this.mapView, this.map);
@@ -331,7 +316,7 @@ var Vis = View.extend({
     // Create the collection of Overlays
     var overlaysCollection = new Backbone.Collection();
     overlaysCollection.bind('reset', function (overlays) {
-      this._addOverlays(overlays, data, options);
+      this._addOverlays(overlays, vizjsonData, options);
     }, this);
     overlaysCollection.reset(vizjson.overlays);
 
@@ -613,16 +598,7 @@ var Vis = View.extend({
     });
   },
 
-  error: function (fn) {
-    return this.bind('error', fn);
-  },
-
-  done: function (fn) {
-    return this.bind('done', fn);
-  },
-
   // public methods
-  //
 
   // get the native map used behind the scenes
   getNativeMap: function () {

@@ -103,12 +103,21 @@ module CartoDB
         pg_conn.exec("SELECT * FROM groups WHERE organization_id = '#{organization_id}'")
       end
 
-      def dump_user_data(redis_keys)
+      def dump_user_metadata
         data = dump_related_data(Carto::User, @user_id)
         data[Carto::User] = [@user_data]
         data.reject! { |key, _value| [Carto::Organization, Carto::Group, Carto::FeatureFlag].include?(key) }
-        dump_sql_data(data, "user_#{@user_id}")
+        data
+      end
+      
+      def dump_user_data(user_metadata, redis_keys)
+        dump_sql_data(user_metadata, "user_#{@user_id}")
         dump_redis_keys(redis_keys)
+      end
+
+      def dump_user(redis_keys)
+        user_metadata = dump_user_metadata
+        dump_user_data(user_metadata, redis_keys)
       end
 
       def dump_role_grants(role)
@@ -116,6 +125,8 @@ module CartoDB
         roles.map { |q| q['rolname'] }.reject { |r| r == role }
       end
 
+      # TODO: This should be named "dump_org_metadata" or something like that
+      # It extracts only org metadata into a hash
       def dump_org_data
         data = dump_related_data(Carto::Organization, @org_id)
         data[Carto::Organization] = [@org_metadata]
@@ -156,6 +167,12 @@ module CartoDB
         "DELETE FROM #{table_name} WHERE id = '#{rows['id']}';\n"
       end
 
+      # This could be more solid by avoiding to generate SQL queries manually. There are
+      # two things here besides the generation itself. The need for setting the NULL word
+      # and escaping stuff, quoting marks, etc..
+      # A safer way would be selecting the affected rows in a new table and dump the table.
+      # That would require creating and removing extra tables
+      # Another approach would be using COPY with SQL query into a CSV and restore it later
       def generate_pg_insert_query(table_name, keys, rows)
         "INSERT INTO #{table_name}(#{keys.map { |i| "\"#{i}\"" }.join(',')}) VALUES(#{keys.map { |i| rows[i] == nil ? 'NULL' : "'" + pg_conn.escape_string(rows[i]) + "'" }.join(',')});\n"
       end
@@ -163,6 +180,7 @@ module CartoDB
       def dump_related_data(model, id, exclude = [])
         data = {}
         id = [id] if id.is_a? Integer or id.is_a? String
+
 
         # first dump this model
         query = "SELECT * FROM #{model.table_name} WHERE id IN (#{id.map { |i| "'#{i}'" }.join(', ')});"
@@ -203,6 +221,8 @@ module CartoDB
         (x + y).uniq { |s| s['id'] }
       end
 
+      # This is not very solid since we are definining the protocol
+      # It would be nice using dump/restore
       def gen_redis_proto(*cmd)
         proto = ""
         proto << "*" + cmd.length.to_s + "\r\n"
@@ -425,7 +445,7 @@ module CartoDB
           @user_data = get_user_metadata(options[:id])
           @username = @user_data["username"]
           @user_id = @user_data["id"]
-          dump_user_data(redis_keys) unless options[:database_only] == true
+          dump_user(redis_keys) unless options[:database_only] == true
           redis_conn.quit
           DumpJob.new(
             @user_data['database_host'] || '127.0.0.1',
@@ -433,7 +453,9 @@ module CartoDB
             @options[:path],
             "#{@options[:path]}user_#{@user_id}.dump",
             options[:schema_mode] ? @user_data['database_schema'] : nil
-          ) unless options[:metadata_only] == true
+          ) unless options[:metadata_only] == true 
+          # metadata_only can be used if the user database copy has been made manually
+          # in a different way
 
           File.open("#{@options[:path]}user_#{@user_id}.json", "w") do |f|
             f.write(user_info.to_json)

@@ -5,7 +5,6 @@
 .BlockList {
   margin-bottom: $baseSize;
 }
-
 .BlockList-item {
   @include display-flex();
   @include transition(border, 200ms, ease-in);
@@ -79,7 +78,7 @@
 }
 .HorizontalBlockList-item:last-child {
   margin-right: 0;
-} 
+}
 .HorizontalBlockList-item::before {
   position: absolute;
   top: 50%;
@@ -102,4 +101,3 @@
   background: #E27D61;
   color: $cWhite;
 }
-

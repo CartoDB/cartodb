@@ -18,7 +18,7 @@ def login(user)
   host! "#{user.username}.localhost.lan"
 end
 
-def create_random_table(user, name = "viz#{rand(999)}", privacy = nil)
+def create_random_table(user, name: "viz#{rand(999)}", privacy: nil)
   options = { user_id: user.id, name: name }
   options.merge!(privacy: privacy) if privacy
   create_table(options)

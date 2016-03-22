@@ -8,6 +8,14 @@ FactoryGirl.define do
   factory :carto_layer, class: Carto::Layer do
     order 1
     kind 'carto'
+    options do
+      {
+        interactivity: '',
+        style_version: '2.1.1',
+        table_name: '',
+        query: ''
+      }
+    end
 
     factory :carto_layer_with_infowindow do
       infowindow_light = {

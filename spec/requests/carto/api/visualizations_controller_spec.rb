@@ -1486,24 +1486,30 @@ describe Carto::Api::VisualizationsController do
       include_context 'visualization creation helpers'
 
       before(:each) do
-        @visualization = create_visualization(@user_1)
+        @map, @table, @table_visualization, @visualization = create_full_visualization(Carto::User.find(@user_1.id))
+        layer = @visualization.data_layers.first
+        layer.infowindow = infowindow
+        layer.options[:table_name] = @table.name
+        layer.options[:query] = "select * from #{@table.name}"
+        layer.save
       end
 
       after(:each) do
-        @visualization.delete
+        destroy_full_visualization(@map, @table, @table_visualization, @visualization)
       end
 
       describe 'layer templates' do
         include Fixtures::Layers::Infowindows
+        include Carto::Factories::Visualizations
 
         let(:infowindow) do
           JSON.parse(FactoryGirl.build_stubbed(:carto_layer_with_infowindow).infowindow)
         end
 
-        # TODO: tooltips, named map test and "don't overwrite custom template" test. Technical debt: #6912
+        # TODO: tooltips and "don't overwrite custom template" test. Technical debt: #6912
         it 'uses v3 infowindows templates' do
-          layer = create_layer('table_1', @user_1.username, 1, 'carto', infowindow).save
-          @visualization.map.add_layer(layer)
+          @table.privacy = UserTable::PRIVACY_PUBLIC
+          @table.save
 
           # vizjson v2 doesn't change
           get_json api_v2_visualizations_vizjson_url(user_domain: @user_1.username,
@@ -1520,6 +1526,33 @@ describe Carto::Api::VisualizationsController do
                                                      api_key: @user_1.api_key), @headers do |request|
             request.status.should eq 200
             infowindow = request.body[:layers][0]['options']['layer_definition']['layers'][0]['infowindow']
+            infowindow['template_name'].should eq infowindow['template_name']
+            infowindow['template'].should include(v3_infowindow_light_template_fragment)
+            infowindow['template'].should_not include(v2_infowindow_light_template_fragment)
+          end
+        end
+
+        it 'uses v3 infowindows templates at named maps' do
+          @user_1.private_tables_enabled = true
+          @user_1.save
+          @table.privacy = UserTable::PRIVACY_PRIVATE
+          @table.save
+
+          # vizjson v2 doesn't change
+          get_json api_v2_visualizations_vizjson_url(user_domain: @user_1.username,
+                                                     id: @visualization.id,
+                                                     api_key: @user_1.api_key), @headers do |request|
+            request.status.should eq 200
+            infowindow = request.body[:layers][0]['options']['named_map']['layers'][0]['infowindow']
+            infowindow['template_name'].should eq infowindow['template_name']
+            infowindow['template'].should include(v2_infowindow_light_template_fragment)
+            infowindow['template'].should_not include(v3_infowindow_light_template_fragment)
+          end
+          get_json api_v3_visualizations_vizjson_url(user_domain: @user_1.username,
+                                                     id: @visualization.id,
+                                                     api_key: @user_1.api_key), @headers do |request|
+            request.status.should eq 200
+            infowindow = request.body[:layers][0]['options']['named_map']['layers'][0]['infowindow']
             infowindow['template_name'].should eq infowindow['template_name']
             infowindow['template'].should include(v3_infowindow_light_template_fragment)
             infowindow['template'].should_not include(v2_infowindow_light_template_fragment)

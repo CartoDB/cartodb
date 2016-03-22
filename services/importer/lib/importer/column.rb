@@ -74,10 +74,7 @@ module CartoDB
         #TODO: @capture_exceptions
         job.log 'Converting geometry from WKT to WKB'
         BatchApiQuery.new(@user.username, @user.api_key).execute(
-          %Q{
-            UPDATE #{qualified_table_name}
-            SET #{column_name} = ST_GeomFromText(#{column_name}, #{DEFAULT_SRID})
-          }
+          %Q{UPDATE #{qualified_table_name} SET #{column_name} = ST_GeomFromText(#{column_name}, #{DEFAULT_SRID})}
         )
 
         self
@@ -95,10 +92,7 @@ module CartoDB
         #TODO: @capture_exceptions
         job.log 'Converting geometry from GeoJSON with transform to WKB'
         BatchApiQuery.new(@user.username, @user.api_key).execute(
-          %Q{
-            UPDATE #{qualified_table_name}
-            SET #{column_name} = public.ST_SetSRID(public.ST_GeomFromGeoJSON(#{column_name}), #{DEFAULT_SRID})
-          }
+          %Q{UPDATE #{qualified_table_name} SET #{column_name} = public.ST_SetSRID(public.ST_GeomFromGeoJSON(#{column_name}), #{DEFAULT_SRID})}
         )
         self
       end
@@ -107,10 +101,7 @@ module CartoDB
         #TODO: @capture_exceptions
         job.log 'Converting geometry from GeoJSON to WKB'
         BatchApiQuery.new(@user.username, @user.api_key).execute(
-          %Q{
-            UPDATE #{qualified_table_name}
-            SET #{column_name} = public.ST_SetSRID(public.ST_GeomFromGeoJSON(#{column_name}), #{DEFAULT_SRID})
-          }
+          %Q{UPDATE #{qualified_table_name} SET #{column_name} = public.ST_SetSRID(public.ST_GeomFromGeoJSON(#{column_name}), #{DEFAULT_SRID})}
         )
         self
       end
@@ -119,10 +110,7 @@ module CartoDB
         #TODO: @capture_exceptions
         job.log 'Converting geometry from KML point to WKB'
         BatchApiQuery.new(@user.username, @user.api_key).execute(
-          %Q{
-            UPDATE #{qualified_table_name}
-            SET #{column_name} = public.ST_SetSRID(public.ST_GeomFromKML(#{column_name}),#{DEFAULT_SRID})
-          }
+          %Q{UPDATE #{qualified_table_name} SET #{column_name} = public.ST_SetSRID(public.ST_GeomFromKML(#{column_name}),#{DEFAULT_SRID})}
         )
       end
 
@@ -130,10 +118,7 @@ module CartoDB
         #TODO: @capture_exceptions
         job.log 'Converting geometry from KML multi to WKB'
         BatchApiQuery.new(@user.username, @user.api_key).execute(
-          %Q{
-            UPDATE #{qualified_table_name}
-            SET #{column_name} = public.ST_SetSRID(public.ST_Multi(public.ST_GeomFromKML(#{column_name})),#{DEFAULT_SRID})
-          }
+          %Q{UPDATE #{qualified_table_name} SET #{column_name} = public.ST_SetSRID(public.ST_Multi(public.ST_GeomFromKML(#{column_name})),#{DEFAULT_SRID})}
         )
       end
 
@@ -141,10 +126,7 @@ module CartoDB
         #TODO: @capture_exceptions
         job.log 'Converting to 2D point'
         BatchApiQuery.new(@user.username, @user.api_key).execute(
-          %Q{
-            UPDATE #{qualified_table_name}
-            SET #{column_name} = public.ST_Force_2D(#{column_name})
-          }
+          %Q{UPDATE #{qualified_table_name} SET #{column_name} = public.ST_Force_2D(#{column_name})}
         )
       end
 
@@ -241,11 +223,7 @@ module CartoDB
           #TODO: @capture_exceptions
           job.log 'string column found, replacing'
           BatchApiQuery.new(@user.username, @user.api_key).execute(
-            %Q{
-              UPDATE #{qualified_table_name}
-              SET #{column_name}=NULL
-              WHERE #{column_name}=''
-            }
+            %Q{UPDATE #{qualified_table_name} SET #{column_name}=NULL WHERE #{column_name}=''}
           )
         else
           job.log 'no string column found, nothing replaced'

@@ -11,11 +11,13 @@ require_relative 'acceptance_helpers'
 require_relative 'cdb_importer_context'
 require_relative '../../../../spec/rspec_configuration'
 require_relative 'no_stats_context'
+require_relative 'batch_sql_api_context'
 
 describe 'gz and tgz regression tests' do
   include AcceptanceHelpers
   include_context "cdb_importer schema"
   include_context "no stats"
+  include_context "batch_sql_api"
 
   before do
     @pg_options  = ::CartoDB::Importer2::Factories::PGConnection.new.pg_options
@@ -27,8 +29,8 @@ describe 'gz and tgz regression tests' do
     runner      = ::CartoDB::Importer2::Runner.new({
                                pg: @pg_options,
                                downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new,
-                               user: CartoDB::Importer2::Doubles::User.new
+                               log: @log,
+                               user: @user
                              })
     runner.run
     runner.results.first.success?.should eq true
@@ -40,8 +42,8 @@ describe 'gz and tgz regression tests' do
     runner      = ::CartoDB::Importer2::Runner.new({
                                pg: @pg_options,
                                downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new,
-                               user: CartoDB::Importer2::Doubles::User.new
+                               log: @log,
+                               user: @user
                              })
     runner.run
     runner.results.first.success?.should eq true
@@ -53,8 +55,8 @@ describe 'gz and tgz regression tests' do
     runner      = ::CartoDB::Importer2::Runner.new({
                                pg: @pg_options,
                                downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new,
-                               user: CartoDB::Importer2::Doubles::User.new
+                               log: @log,
+                               user: @user
                              })
     runner.run
     first_import = runner.results.first.success?
@@ -68,8 +70,8 @@ describe 'gz and tgz regression tests' do
     runner      = ::CartoDB::Importer2::Runner.new({
                                pg: @pg_options,
                                downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new,
-                               user: CartoDB::Importer2::Doubles::User.new
+                               log: @log,
+                               user: @user
                              })
     runner.run
     runner.results.first.success?.should eq false

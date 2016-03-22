@@ -3,12 +3,15 @@ require_relative '../../lib/importer/georeferencer'
 require_relative '../factories/pg_connection'
 require_relative '../../../../services/importer/spec/doubles/log'
 require_relative '../../../../spec/rspec_configuration'
+require_relative '../../spec/acceptance/batch_sql_api_context'
 
 include CartoDB
 
 include CartoDB::Importer2
 
 describe Importer2::Georeferencer do
+    include_context "batch_sql_api"
+
   before(:all) do
     @db = Importer2::Factories::PGConnection.new(
       :create_db => 'georeferencer_spec'
@@ -125,7 +128,7 @@ describe Importer2::Georeferencer do
 
   def georeferencer_instance(db = @db, table_name = @table_name)
     options = { guessing: {enabled: false} }
-    Importer2::Georeferencer.new(@db, table_name, options, Importer2::Georeferencer::DEFAULT_SCHEMA, job=nil, geometry_columns=nil, logger=CartoDB::Importer2::Doubles::Log.new)
+    Importer2::Georeferencer.new(@db, table_name, options, Importer2::Georeferencer::DEFAULT_SCHEMA, job=nil, geometry_columns=nil, logger=@log)
   end
 
   # Attempts to create a new database schema

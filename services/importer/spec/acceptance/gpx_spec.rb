@@ -9,19 +9,21 @@ require_relative '../doubles/user'
 require_relative 'cdb_importer_context'
 require_relative 'acceptance_helpers'
 require_relative 'no_stats_context'
+require_relative 'batch_sql_api_context'
 
 describe 'GPX regression tests' do
   include AcceptanceHelpers
   include_context "cdb_importer schema"
   include_context "no stats"
+  include_context "batch_sql_api"
 
   it 'imports GPX files' do
     filepath    = path_to('route2.gpx')
     downloader  = CartoDB::Importer2::Downloader.new(filepath)
     runner      = CartoDB::Importer2::Runner.new(pg: @pg_options,
                                                  downloader: downloader,
-                                                 log: CartoDB::Importer2::Doubles::Log.new,
-                                                 user: CartoDB::Importer2::Doubles::User.new)
+                                                 log: @log,
+                                                 user: @user)
     runner.run
 
     geometry_type_for(runner).should be
@@ -32,8 +34,8 @@ describe 'GPX regression tests' do
     downloader  = CartoDB::Importer2::Downloader.new(filepath)
     runner      = CartoDB::Importer2::Runner.new(pg: @pg_options,
                                                  downloader: downloader,
-                                                 log: CartoDB::Importer2::Doubles::Log.new,
-                                                 user: CartoDB::Importer2::Doubles::User.new)
+                                                 log: @log,
+                                                 user: @user)
     runner.run
 
     runner.results.each { |result| result.success.should eq true }
@@ -45,8 +47,8 @@ describe 'GPX regression tests' do
     downloader  = CartoDB::Importer2::Downloader.new(filepath)
     runner      = CartoDB::Importer2::Runner.new(pg: @pg_options,
                                                  downloader: downloader,
-                                                 log: CartoDB::Importer2::Doubles::Log.new,
-                                                 user: CartoDB::Importer2::Doubles::User.new)
+                                                 log: @log,
+                                                 user: @user)
     runner.run
 
     runner.results.each { |result| result.success.should eq true }

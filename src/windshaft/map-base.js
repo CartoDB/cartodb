@@ -26,8 +26,6 @@ var WindshaftMap = Backbone.Model.extend({
     }
 
     this.client = options.client;
-    this.statTag = options.statTag;
-    this.apiKey = options.apiKey;
     this.set({
       urlTemplate: this.client.urlTemplate,
       userName: this.client.userName
@@ -58,11 +56,11 @@ var WindshaftMap = Backbone.Model.extend({
     var forceFetch = options.forceFetch;
 
     var params = {
-      stat_tag: this.statTag
+      stat_tag: this.get('statTag')
     };
 
-    if (this.apiKey) {
-      params.api_key = this.apiKey;
+    if (this.get('apiKey')) {
+      params.api_key = this.get('apiKey');
     }
 
     var filters = this._getFilterParamFromDataviews();
@@ -116,10 +114,6 @@ var WindshaftMap = Backbone.Model.extend({
         layer.set('meta', this.getLayerMeta(layerIndex));
       }
     }, this);
-  },
-
-  setAPIKey: function (apiKey) {
-    this.apiKey = apiKey;
   },
 
   getBaseURL: function (subhost) {
@@ -201,7 +195,7 @@ var WindshaftMap = Backbone.Model.extend({
     var baseURL = this.getBaseURL(subdomain);
     var tileSchema = '{z}/{x}/{y}';
     var tileExtension = TILE_EXTENSIONS_BY_LAYER_TYPE[layerType];
-    var urlParams = this.apiKey ? '?api_key=' + this.apiKey : '';
+    var urlParams = this.get('apiKey') ? '?api_key=' + this.get('apiKey') : '';
 
     return baseURL + '/' + layerIndexes.join(',') + '/' + tileSchema + tileExtension + urlParams;
   },
@@ -214,7 +208,7 @@ var WindshaftMap = Backbone.Model.extend({
   _getGridURLTemplate: function (subdomain, layerIndex, params) {
     var baseURL = this.getBaseURL(subdomain);
     var tileSchema = '{z}/{x}/{y}';
-    var urlParams = this.apiKey ? '?api_key=' + this.apiKey : '';
+    var urlParams = this.get('apiKey') ? '?api_key=' + this.get('apiKey') : '';
 
     return baseURL + '/' + layerIndex + '/' + tileSchema + '.grid.json' + urlParams;
   },

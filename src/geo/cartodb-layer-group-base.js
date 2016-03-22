@@ -73,12 +73,11 @@ var CartoDBLayerGroupBase = Backbone.Model.extend({
 
     var windhaftLayerIndex = this._convertToWindshaftLayerIndex(layerIndex);
     if (windhaftLayerIndex >= 0) {
-      var url = [
-        this.get('baseURL'),
-        windhaftLayerIndex,
-        'attributes',
-        featureID
-      ].join('/');
+      var url = this.get('baseURL') + '/' + windhaftLayerIndex + '/attributes/' + featureID;
+      var apiKey = this._windshaftMap.get('apiKey');
+      if (apiKey) {
+        url += '?api_key=' + apiKey;
+      }
 
       $.ajax({
         dataType: 'jsonp',

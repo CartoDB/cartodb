@@ -238,7 +238,10 @@ var Vis = View.extend({
     this._layersCollection = new LayersCollection();
 
     var apiKey = options.apiKey;
-    this._windshaftMap = new WindshaftMapClass(null, { // eslint-disable-line
+    this._windshaftMap = new WindshaftMapClass({
+      apiKey: apiKey,
+      statTag: datasource.stat_tag
+    }, {
       client: windshaftClient,
       apiKey: apiKey,
       statTag: datasource.stat_tag,

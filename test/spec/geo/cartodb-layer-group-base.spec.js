@@ -100,5 +100,29 @@ describe('geo/cartodb-layer-group-base', function () {
       expect(callback).toHaveBeenCalledWith(null);
       expect($.ajax).not.toHaveBeenCalled();
     });
+
+    it('should use an api_key if WindhsaftMap has one', function () {
+      var callback = jasmine.createSpy('callback');
+      var cartoDBLayer1 = new CartoDBLayer();
+
+      this.windshaftMap.set('apiKey', 'THE_API_KEY');
+
+      var layer = new MyCartoDBLayerGroup({
+        baseURL: 'http://wadus.com'
+      }, {
+        windshaftMap: this.windshaftMap,
+        layers: [ cartoDBLayer1 ]
+      });
+
+      spyOn(layer, '_convertToWindshaftLayerIndex').and.returnValue(0);
+      spyOn($, 'ajax').and.callFake(function (options) {
+        options.success('attributes!');
+      });
+
+      layer.fetchAttributes(0, 1000, callback);
+
+      expect(callback).toHaveBeenCalledWith('attributes!');
+      expect($.ajax.calls.mostRecent().args[0].url).toEqual('http://wadus.com/0/attributes/1000?api_key=THE_API_KEY');
+    });
   });
 });

@@ -73,9 +73,10 @@ describe('windshaft/map-base', function () {
 
   describe('createInstance', function () {
     beforeEach(function () {
-      this.windshaftMap = new WindshaftMap(null, { // eslint-disable-line
+      this.windshaftMap = new WindshaftMap({
+        statTag: 'stat_tag'
+      }, {
         client: this.client,
-        statTag: 'stat_tag',
         dataviewsCollection: this.dataviewsCollection,
         layersCollection: this.layersCollection
       });
@@ -150,10 +151,11 @@ describe('windshaft/map-base', function () {
       this.layersCollection.reset([ this.cartoDBLayer1, this.cartoDBLayer2, this.torqueLayer ]);
       spyOn(this.windshaftMap, 'toJSON').and.returnValue({ foo: 'bar' });
 
-      this.windshaftMap = new WindshaftMap(null, { // eslint-disable-line
-        client: this.client,
+      this.windshaftMap = new WindshaftMap({
         apiKey: 'API_KEY',
-        statTag: 'stat_tag',
+        statTag: 'stat_tag'
+      }, { // eslint-disable-line
+        client: this.client,
         dataviewsCollection: this.dataviewsCollection,
         layersCollection: this.layersCollection
       });
@@ -547,6 +549,7 @@ describe('windshaft/map-base', function () {
 
     it('should encode and include the API key in the URLs if apiKey is set', function () {
       var windshaftMap = new WindshaftMap({
+        'apiKey': 'API_KEY',
         'layergroupid': '0123456789',
         'metadata': {
           'layers': [
@@ -569,8 +572,6 @@ describe('windshaft/map-base', function () {
         dataviewsCollection: this.dataviewsCollection,
         layersCollection: this.layersCollection
       });
-
-      windshaftMap.setAPIKey('API_KEY');
 
       expect(windshaftMap.getTiles()).toEqual({
         tiles: [ 'https://rambo.example.com:443/api/v1/map/0123456789/0/{z}/{x}/{y}.png?api_key=API_KEY' ],

@@ -29,6 +29,7 @@ module Carto
 
       def load_visualization
         @visualization = load_visualization_from_id_or_name(params[:id])
+        render_404 unless @visualization
       end
 
       def authors_only

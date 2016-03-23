@@ -460,8 +460,13 @@ div.map {
 
       &.bubble {
         padding-left: 0;
+        padding-right: 0;
         .legend-title {
-          text-align: center;
+          padding-left: 10px;
+        }
+        & > ul {
+          padding-left: 10px;
+          padding-right: 10px;
         }
       }
     }

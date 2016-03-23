@@ -3,6 +3,7 @@ require_relative './job'
 require_relative './string_sanitizer'
 require_relative './exceptions'
 require_relative './query_batcher'
+require_relative './batch_api_query'
 
 module CartoDB
   module Importer2
@@ -31,13 +32,14 @@ module CartoDB
                             FORMAT CONTROLLER ACTION
                           }
 
-      def initialize(db, table_name, column_name, schema = DEFAULT_SCHEMA, job = nil, logger = nil, capture_exceptions = true)
+      def initialize(db, table_name, column_name, user, schema = DEFAULT_SCHEMA, job = nil, logger = nil, capture_exceptions = true)
         @job          = job || Job.new({logger: logger})
         @db           = db
         @table_name   = table_name.to_sym
         @column_name  = column_name.to_sym
         @schema       = schema
         @capture_exceptions = capture_exceptions
+        @user = user
 
         @from_geojson_with_transform = false
       end
@@ -71,17 +73,9 @@ module CartoDB
       def convert_from_wkt
         #TODO: @capture_exceptions
         job.log 'Converting geometry from WKT to WKB'
-        QueryBatcher.new(
-            db, 
-            job, 
-            create_seq_field = true
-          ).execute_update(
-              %Q{
-                UPDATE #{qualified_table_name}
-                SET #{column_name} = ST_GeomFromText(#{column_name}, #{DEFAULT_SRID})
-              },
-              schema, table_name
-          )
+        BatchApiQuery.new(@user.username, @user.api_key).execute(
+          %Q{UPDATE #{qualified_table_name} SET #{column_name} = ST_GeomFromText(#{column_name}, #{DEFAULT_SRID})}
+        )
 
         self
       end
@@ -97,85 +91,43 @@ module CartoDB
         # 2) Normal geojson behavior
         #TODO: @capture_exceptions
         job.log 'Converting geometry from GeoJSON with transform to WKB'
-        QueryBatcher.new(
-            db, 
-            job, 
-            create_seq_field = true
-          ).execute_update(
-              %Q{
-                UPDATE #{qualified_table_name}
-                SET #{column_name} = public.ST_SetSRID(public.ST_GeomFromGeoJSON(#{column_name}), #{DEFAULT_SRID})
-              },
-              schema, table_name
-          )
-
+        BatchApiQuery.new(@user.username, @user.api_key).execute(
+          %Q{UPDATE #{qualified_table_name} SET #{column_name} = public.ST_SetSRID(public.ST_GeomFromGeoJSON(#{column_name}), #{DEFAULT_SRID})}
+        )
         self
       end
 
       def convert_from_geojson
         #TODO: @capture_exceptions
         job.log 'Converting geometry from GeoJSON to WKB'
-        QueryBatcher.new(
-            db, 
-            job, 
-            create_seq_field = true
-          ).execute_update(
-              %Q{
-                UPDATE #{qualified_table_name}
-                SET #{column_name} = public.ST_SetSRID(public.ST_GeomFromGeoJSON(#{column_name}), #{DEFAULT_SRID})
-              },
-              schema, table_name
-          )
-
+        BatchApiQuery.new(@user.username, @user.api_key).execute(
+          %Q{UPDATE #{qualified_table_name} SET #{column_name} = public.ST_SetSRID(public.ST_GeomFromGeoJSON(#{column_name}), #{DEFAULT_SRID})}
+        )
         self
       end
 
       def convert_from_kml_point
         #TODO: @capture_exceptions
         job.log 'Converting geometry from KML point to WKB'
-        QueryBatcher.new(
-            db, 
-            job, 
-            create_seq_field = true
-          ).execute_update(
-              %Q{
-                UPDATE #{qualified_table_name}
-                SET #{column_name} = public.ST_SetSRID(public.ST_GeomFromKML(#{column_name}),#{DEFAULT_SRID})
-              },
-              schema, table_name
-          )
+        BatchApiQuery.new(@user.username, @user.api_key).execute(
+          %Q{UPDATE #{qualified_table_name} SET #{column_name} = public.ST_SetSRID(public.ST_GeomFromKML(#{column_name}),#{DEFAULT_SRID})}
+        )
       end
 
       def convert_from_kml_multi
         #TODO: @capture_exceptions
         job.log 'Converting geometry from KML multi to WKB'
-        QueryBatcher.new(
-            db, 
-            job, 
-            create_seq_field = true
-          ).execute_update(
-              %Q{
-                UPDATE #{qualified_table_name}
-                SET #{column_name} = public.ST_SetSRID(public.ST_Multi(public.ST_GeomFromKML(#{column_name})),#{DEFAULT_SRID})
-              },
-              schema, table_name
-          )
+        BatchApiQuery.new(@user.username, @user.api_key).execute(
+          %Q{UPDATE #{qualified_table_name} SET #{column_name} = public.ST_SetSRID(public.ST_Multi(public.ST_GeomFromKML(#{column_name})),#{DEFAULT_SRID})}
+        )
       end
 
       def convert_to_2d
         #TODO: @capture_exceptions
         job.log 'Converting to 2D point'
-        QueryBatcher.new(
-            db, 
-            job, 
-            create_seq_field = true
-          ).execute_update(
-              %Q{
-                UPDATE #{qualified_table_name}
-                SET #{column_name} = public.ST_Force_2D(#{column_name})
-              },
-              schema, table_name
-          )
+        BatchApiQuery.new(@user.username, @user.api_key).execute(
+          %Q{UPDATE #{qualified_table_name} SET #{column_name} = public.ST_Force_2D(#{column_name})}
+        )
       end
 
       def wkb?
@@ -270,18 +222,9 @@ module CartoDB
         if column_type != nil && column_type == :string
           #TODO: @capture_exceptions
           job.log 'string column found, replacing'
-          QueryBatcher.new(
-              db, 
-              job, 
-              create_seq_field = true
-            ).execute_update(
-                %Q{
-                  UPDATE #{qualified_table_name}
-                  SET #{column_name}=NULL
-                  WHERE #{column_name}=''
-                },
-                schema, table_name
-            )
+          BatchApiQuery.new(@user.username, @user.api_key).execute(
+            %Q{UPDATE #{qualified_table_name} SET #{column_name}=NULL WHERE #{column_name}=''}
+          )
         else
           job.log 'no string column found, nothing replaced'
         end

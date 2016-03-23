@@ -72,7 +72,7 @@ module CartoDB
         geometry_column_name = geometry_column_in
         return false unless geometry_column_name
         job.log "Creating the_geom from #{geometry_column_name} column"
-        column = Column.new(db, table_name, geometry_column_name, schema, job)
+        column = Column.new(db, table_name, geometry_column_name, user, schema, job)
         column.mark_as_from_geojson_with_transform if @from_geojson_with_transform
         column.empty_lines_to_nulls
         column.geometrify
@@ -294,12 +294,12 @@ module CartoDB
         return self unless column_exists_in?(table_name, THE_GEOM_WEBMERCATOR)
 
         job.log 'Dropping the_geom_webmercator column'
-        column = Column.new(db, table_name, THE_GEOM_WEBMERCATOR, schema, job)
+        column = Column.new(db, table_name, THE_GEOM_WEBMERCATOR, user, schema, job)
         column.drop
       end
 
       def get_column(column = :the_geom)
-        Column.new(db, table_name, column, schema, job)
+        Column.new(db, table_name, column, user, schema, job)
       end
 
       def get_geometry_type(column = :the_geom)

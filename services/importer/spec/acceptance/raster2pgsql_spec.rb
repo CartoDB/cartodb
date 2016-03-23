@@ -1,5 +1,6 @@
 # encoding: utf-8
 require_relative '../../../../spec/rspec_configuration'
+require_relative '../../../../spec/spec_helper'
 require_relative '../../lib/importer/raster2pgsql'
 require_relative '../../lib/importer/downloader'
 require_relative '../../lib/importer/runner'
@@ -9,6 +10,7 @@ require_relative '../doubles/user'
 require_relative 'cdb_importer_context'
 require_relative 'acceptance_helpers'
 require_relative 'no_stats_context'
+require_relative 'batch_sql_api_context'
 
 include CartoDB::Importer2
 
@@ -16,6 +18,7 @@ describe 'raster2pgsql acceptance tests' do
   include AcceptanceHelpers
   include_context "cdb_importer schema"
   include_context "no stats"
+  include_context "batch_sql_api"
 
   before(:all) do
     @table_name = 'raster_test'
@@ -77,13 +80,13 @@ describe 'raster2pgsql acceptance tests' do
   it 'if there are some problem while importing should clean the temporary tables' do
       filepath    = path_to('raster_simple.tif')
       downloader  = CartoDB::Importer2::Downloader.new(filepath)
-      log         = CartoDB::Importer2::Doubles::Log.new
-      job         = Job.new({ logger: log, pg_options: @pg_options })
+      log         = @log
+      job         = Job.new({ logger: @log, pg_options: @pg_options })
       runner      = CartoDB::Importer2::Runner.new({
                        pg: @pg_options,
                        downloader: downloader,
-                       log: CartoDB::Importer2::Doubles::Log.new,
-                       user: CartoDB::Importer2::Doubles::User.new,
+                       log: log,
+                       user: @user,
                        job: job
                      })
       CartoDB::Importer2::Raster2Pgsql.any_instance.stubs(:exit_code).returns(256)

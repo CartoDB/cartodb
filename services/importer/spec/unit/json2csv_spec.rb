@@ -2,17 +2,22 @@
 require 'fileutils'
 require 'json'
 require_relative '../../lib/importer/json2csv'
+require_relative '../../../../spec/spec_helper'
 require_relative '../../../../services/importer/spec/doubles/log'
+require_relative '../../spec/acceptance/cdb_importer_context'
+require_relative '../../spec/acceptance/batch_sql_api_context'
 
 include CartoDB::Importer2
 
 describe Json2Csv do
+  include_context "cdb_importer schema"
+  include_context "batch_sql_api"
   before do
     @data = [{ name: 'bogus name', description: 'bogus description' }]
   end
 
   def json2csv_instance(filepath)
-    Json2Csv.new(filepath, nil, CartoDB::Importer2::Doubles::Log.new)
+    Json2Csv.new(filepath, nil, @log)
   end
 
   describe '#run' do

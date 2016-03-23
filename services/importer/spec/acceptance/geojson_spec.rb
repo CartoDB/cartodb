@@ -31,7 +31,7 @@ describe 'geojson regression tests' do
     runner      = ::CartoDB::Importer2::Runner.new({
                                pg: @pg_options,
                                downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new,
+                               log: CartoDB::Importer2::Doubles::Log.new(@user),
                                user: CartoDB::Importer2::Doubles::User.new
                              })
     runner.run
@@ -44,7 +44,7 @@ describe 'geojson regression tests' do
     runner      = ::CartoDB::Importer2::Runner.new({
                                pg: @pg_options,
                                downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new,
+                               log: CartoDB::Importer2::Doubles::Log.new(@user),
                                user: CartoDB::Importer2::Doubles::User.new
                              })
     runner.run
@@ -56,7 +56,7 @@ describe 'geojson regression tests' do
     runner      = ::CartoDB::Importer2::Runner.new({
                                pg: @pg_options,
                                downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new,
+                               log: CartoDB::Importer2::Doubles::Log.new(@user),
                                user: CartoDB::Importer2::Doubles::User.new
                              })
     runner.run

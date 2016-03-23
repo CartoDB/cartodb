@@ -9,6 +9,7 @@ require_relative 'acceptance_helpers'
 require_relative 'cdb_importer_context'
 require_relative '../../../../spec/rspec_configuration.rb'
 require_relative 'no_stats_context'
+require_relative 'batch_sql_api_context'
 
 include CartoDB::Importer2
 
@@ -16,6 +17,7 @@ describe 'SHP regression tests' do
   include AcceptanceHelpers
   include_context 'cdb_importer schema'
   include_context "no stats"
+  include_context "batch_sql_api"
 
   it 'imports SHP files' do
     filepath    = path_to('TM_WORLD_BORDERS_SIMPL-0.3.zip')
@@ -23,8 +25,8 @@ describe 'SHP regression tests' do
     runner      = Runner.new({
                                pg: @pg_options,
                                downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new,
-                               user:CartoDB::Importer2::Doubles::User.new
+                               log: @log,
+                               user: @user
                              })
     runner.run
 
@@ -35,13 +37,12 @@ describe 'SHP regression tests' do
 
   it 'imports shp files without .prj' do
     filepath    = path_to('shp_no_prj.zip')
-
     downloader  = Downloader.new(filepath)
     runner      = Runner.new({
                                pg: @pg_options,
                                downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new,
-                               user:CartoDB::Importer2::Doubles::User.new
+                               log: @log,
+                               user: @user
                              })
     runner.run
 

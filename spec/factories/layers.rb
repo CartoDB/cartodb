@@ -5,14 +5,32 @@ FactoryGirl.define do
     kind 'carto'
   end
 
-  factory :carto_layer, class: Carto::Layer do
+  factory :carto_tiled_layer, class: Carto::Layer do
     order 1
+    kind 'tiled'
+    options do
+      {
+        "default": true,
+        "url": "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png",
+        "subdomains": "abcd",
+        "minZoom": "0",
+        "maxZoom": "18",
+        "attribution": "\u00a9 <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors \u00a9 <a href=\"http://cartodb.com/attributions#basemaps\">CartoDB</a>",
+        "urlTemplate": "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png",
+        "type": "Tiled",
+        "name": "Positron Labels"
+      }
+    end
+  end
+
+  factory :carto_layer, class: Carto::Layer do
+    order 2
     kind 'carto'
     options do
       {
         interactivity: '',
         style_version: '2.1.1',
-        table_name: '',
+        table_name: nil,
         query: nil,
         tile_style: '#something {}'
       }

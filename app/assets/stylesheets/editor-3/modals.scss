@@ -53,3 +53,14 @@
 .ModalBlockList-item.is-selected {
   border: 1px solid rgba($cBlue, 0.48);
 }
+
+.ModalBlockList-item-body {
+  @include display-flex();
+}
+.ModalBlockList-item-media {
+  width: 40px;
+  min-width: 40px;
+  height: 40px;
+  border-radius: 2px;
+  background: rgba($cBlue, 0.08);
+}

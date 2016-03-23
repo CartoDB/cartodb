@@ -21,7 +21,7 @@
 .ModalBlockList-item-header {
   @include display-flex();
   @include justify-content(space-between);
-  @include align-items(center); 
+  @include align-items(center);
 }
 
 .ModalBlockList-item-headerTitle {

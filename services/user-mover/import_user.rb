@@ -22,6 +22,7 @@ module CartoDB
         @target_dbhost = @options[:host] || @config[:dbhost]
 
         throw "File #{@options[:file]} does not exist!" unless File.exists?(@options[:file])
+        # User(s) metadata json
         @pack_config = JSON::parse File.read(@options[:file])
 
         @path = File.expand_path(File.dirname(@options[:file])) + "/"
@@ -40,6 +41,7 @@ module CartoDB
                 create_role(group['database_role'])
               end
               @pack_config['users'].each do |user|
+                # Password should be passed here too
                 create_user(database_username(user['id']))
                 create_public_db_user(user['id'], user['database_schema'])
                 grant_user_org_role(database_username(user['id']), user['database_name'])
@@ -136,6 +138,7 @@ module CartoDB
               exit 1
             end
 
+            # Password should be passed here too
             create_user(@target_dbuser)
             create_org_role(@target_dbname) # Create org role for the original org
             create_org_owner_role(@target_dbname)
@@ -321,17 +324,22 @@ module CartoDB
         run_file_metadata_postgres(file)
       end
 
+      # It would be a good idea to "disable" the invalidation trigger during the load
+      # This way, the restore will be much faster and won't also cause a big overhead 
+      # in the old database while the process is ongoing
+      # Disabling it may be hard. Maybe it's easier to just exclude it in the export.
       def import_pgdump(dump)
         @logger.info("Importing dump from #{dump} using pg_restore..")
         run_file_restore_postgres(dump)
       end
 
-      def create_user(username)
+      def create_user(username, password = nil)
         @logger.info "Creating user #{username} on target db.."
         begin
           superuser_pg_conn.query("CREATE ROLE \"#{username}\";
               ALTER ROLE \"#{username}\" WITH NOSUPERUSER INHERIT NOCREATEROLE NOCREATEDB LOGIN NOREPLICATION;
               GRANT publicuser TO \"#{username}\";")
+          superuser_pg_conn.query("ALTER ROLE #{username} WITH PASSWORD '#{password}'") unless password.nil?
         rescue PG::Error => e
           @logger.info "Target Postgres role already exists: #{e.inspect}"
         end
@@ -393,6 +401,8 @@ module CartoDB
           else
             superuser_pg_conn.query("CREATE DATABASE \"#{dbname}\" WITH TEMPLATE template_postgis")
           end
+        # This rescue can be improved a little bit. The way it is it assumes that the error
+        # will always be that the db already exists
         rescue PG::Error => e
           if blank
             @logger.error "Error: Database already exists"

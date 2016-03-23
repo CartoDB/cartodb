@@ -195,7 +195,14 @@ describe('vis/vis', function () {
     expect(this.vis.getNativeMap()).toEqual(this.vis.mapView._leafletMap);
   });
 
-  it('load should trigger a done event', function (done) {
+  it('load should trigger a done event', function () {
+    // vis.load is using _.defer internally and that's causing this test
+    // to randomly fail so we override it with a "proxy" function.
+    var originDefer = _.defer;
+    _.defer = function (callback) {
+      callback();
+    };
+
     this.mapConfig.layers = [{
       type: 'tiled',
       options: {
@@ -208,10 +215,10 @@ describe('vis/vis', function () {
 
     this.vis.load(this.mapConfig, {});
 
-    _.defer(function () {
-      expect(doneCallback).toHaveBeenCalled();
-      done();
-    });
+    expect(doneCallback).toHaveBeenCalled();
+
+    // Revert _.defer to the original defer just in case.
+    _.defer = originDefer;
   });
 
   it('should add header', function () {

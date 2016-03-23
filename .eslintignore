@@ -5,7 +5,6 @@
 #**/src/cartodb.js
 
 **/src/api/create-layer.js
-**/src/api/create-vis.js
 **/src/api/promise.js
 **/src/api/sql.js
 

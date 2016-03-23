@@ -182,15 +182,8 @@ var Vis = View.extend({
   },
 
   load: function (vizjsonData, options) {
-    var DEFAULT_OPTIONS = {
-      tiles_loader: true,
-      loaderControl: true,
-      infowindow: true,
-      tooltip: true,
-      time_slider: true
-    };
+    options = options || {};
 
-    options = _.defaults(options || {}, DEFAULT_OPTIONS);
     var vizjson = new VizJSON(vizjsonData);
     this._applyOptionsToVizJSON(vizjson, options);
 

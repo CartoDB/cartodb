@@ -11,30 +11,8 @@ var createVis = function (el, vizjson, options, callback) {
     throw new TypeError('a vizjson URL or object must be provided');
   }
 
-  var promise = new Promise();
-
   if (typeof vizjson === 'string') {
-    var url = vizjson;
-    Loader.get(url, function (vizjson) {
-      if (vizjson) {
-        var promise2 = createVis(el, vizjson, options);
-
-        promise2.done(function () {
-          promise.trigger('done', arguments[0], arguments[1]);
-          if (callback) {
-            callback();
-          }
-        });
-
-        promise2.error(function () {
-          promise.trigger('error', arguments[0]);
-        });
-      } else {
-        throw new Error('error fetching viz.json file');
-      }
-    });
-
-    return promise;
+    return loadVizJSONAndCreateVis(el, vizjson, options, callback);
   }
 
   var args = arguments;
@@ -47,24 +25,55 @@ var createVis = function (el, vizjson, options, callback) {
     el = document.getElementById(el);
   }
 
+  var DEFAULT_OPTIONS = {
+    tiles_loader: true,
+    loaderControl: true,
+    infowindow: true,
+    tooltip: true,
+    time_slider: true
+  };
+
+  options = _.defaults(options || {}, DEFAULT_OPTIONS);
+
   var vis = new Vis({
     el: el
   });
 
-  vis.bind('done', function () {
-    promise.trigger('done', arguments[0], arguments[1]);
-    if (callback) {
-      callback();
-    }
-  });
+  var promise = new Promise();
+  if (callback) {
+    promise.done(callback);
+  }
 
-  vis.bind('error', function () {
-    promise.trigger('error', arguments[0]);
-  });
+  bindObjectEventsToPromise(vis, promise, callback);
 
   vis.load(vizjson, options);
 
   return promise;
+};
+
+var loadVizJSONAndCreateVis = function (el, vizjson, options) {
+  var promise = new Promise();
+  var url = vizjson;
+  Loader.get(url, function (vizjson) {
+    if (vizjson) {
+      var createVisPromise = createVis(el, vizjson, options);
+      bindObjectEventsToPromise(createVisPromise, promise);
+    } else {
+      throw new Error('error fetching viz.json file');
+    }
+  });
+
+  return promise;
+};
+
+var bindObjectEventsToPromise = function (object, promise) {
+  object.bind('done', function () {
+    promise.trigger('done', arguments[0], arguments[1]);
+  });
+
+  object.bind('error', function () {
+    promise.trigger('error', arguments[0]);
+  });
 };
 
 module.exports = createVis;

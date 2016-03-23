@@ -217,8 +217,13 @@ describe('vis/vis', function () {
     expect(this.vis.getNativeMap()).toEqual(this.vis.mapView._leafletMap);
   });
 
-  it('load should call done', function (done) {
-    jasmine.clock().install();
+  it('load should trigger a done event', function () {
+    // vis.load is using _.defer internally and that's causing this test
+    // to randomly fail so we override it with a "proxy" function.
+    var originDefer = _.defer;
+    _.defer = function (callback) {
+      callback();
+    };
 
     this.mapConfig.layers = [{
       type: 'tiled',
@@ -226,16 +231,16 @@ describe('vis/vis', function () {
         urlTemplate: 'https://dnv9my2eseobd.cloudfront.net/v3/{z}/{x}/{y}.png'
       }
     }];
-    layers = null;
 
-    this.vis.load(this.mapConfig, { }).done(function (vis, lys) {  layers = lys;});
+    var doneCallback = jasmine.createSpy('doneCallback');
+    this.vis.bind('done', doneCallback);
 
-    setTimeout(function () {
-      expect(layers.length).toEqual(1);
-      done();
-    }, 100);
+    this.vis.load(this.mapConfig, {});
 
-    jasmine.clock().tick(1000);
+    expect(doneCallback).toHaveBeenCalled();
+
+    // Revert _.defer to the original defer just in case.
+    _.defer = originDefer;
   });
 
   it('should add header', function () {

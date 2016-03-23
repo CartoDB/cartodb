@@ -66,8 +66,8 @@ class Admin::UsersController < Admin::AdminController
       @user.set_fields(attributes, [:email])
     end
 
-    @user.save(raise_on_failure: true)
     @user.update_in_central
+    @user.save(raise_on_failure: true)
 
     update_session_security_token(@user) if password_change
 

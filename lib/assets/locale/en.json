@@ -57,7 +57,9 @@
     },
     "layers": {
       "layer": {
-        'add-analysis': 'Add analysis'
+        "analysis": "Analysis",
+        "add-analysis": "Add analysis",
+        "delete": "Delete"
       },
       "menu-tab-pane-labels": {
         "data": "Data",
@@ -65,6 +67,25 @@
         "style": "Style",
         "popup": "Pop-up",
         "legends": "Legend"
+      },
+      "analysis-form": {
+        "placeholder-text": "You have not added any analysis yet. Add new analysis to discover new things.",
+        "workflow": "Workflow",
+        "reference-layer": "Define your reference layer",
+        "parameters": "Parameters",
+        "parameters-description": "Tune your analysis",
+        "trade-area": "Trade area",
+        "point-in-polygon": "Point in polygon",
+        "polygons_source": "Polygon source",
+        "points_source": "Point source",
+        "buffer": "Buffer",
+        "input": "Input",
+        "radio": "Radio",
+        "type": "Type",
+        "time": "Time",
+        "by-walk": "walk",
+        "by-bike": "bike",
+        "by-car": "drive",
       }
     },
     "widgets": {
@@ -72,6 +93,7 @@
         "add_widget": "Add widget"
       },
       "widgets-form": {
+        "placeholder-text": "You have not added any widgets yet. Add new widgets to discover new things.",
         "type": {
           "title-label": "Type",
           "description": "Choose the widget type",

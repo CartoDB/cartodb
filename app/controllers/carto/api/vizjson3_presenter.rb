@@ -55,7 +55,7 @@ module Carto
         end
       end
 
-      # TODO: refactor, ugly as hell. Technical debt: #6912
+      # TODO: refactor, ugly as hell. Technical debt: #6953
       def layer_definitions_from_layer_data(layer_data)
         if layer_data[:options] &&
            layer_data[:options][:layer_definition] &&
@@ -70,7 +70,7 @@ module Carto
         end
       end
 
-      # TODO: refactor, maybe this can be done straight away in the LayerVizJSONAdapter. Technical debt: #6912
+      # TODO: refactor, maybe this can be done straight away in the LayerVizJSONAdapter. Technical debt: #6953
       def v3_infowindow_template(template_name, fallback_template)
         template_name = Carto::Api::LayerVizJSONAdapter::TEMPLATES_MAP.fetch(template_name, template_name)
         if template_name.present?

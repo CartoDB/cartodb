@@ -1483,72 +1483,246 @@ describe Carto::Api::VisualizationsController do
 
     # Initially, vizjson3 is a vizjson2 extension, so tests covering vizjson2 also cover vizjson3
     describe '#vizjson3' do
+      include Fixtures::Layers::Infowindows
+      include Fixtures::Layers::Tooltips
+      include Carto::Factories::Visualizations
+
       include_context 'visualization creation helpers'
 
+      def get_vizjson3_url(user, visualization, vector: nil)
+        args = { user_domain: user.username, id: visualization.id, api_key: user.api_key }
+        args[:vector] = vector if vector
+        api_v3_visualizations_vizjson_url(args)
+      end
+
+      def first_layer_definition_from_response(response)
+        index = response.body[:layers].index { |l| l['options'] && l['options']['layer_definition'] }
+        response.body[:layers][index]['options']['layer_definition']
+      end
+
+      def first_layer_named_map_from_response(response)
+        index = response.body[:layers].index { |l| l['options'] && l['options']['named_map'] }
+        response.body[:layers][index]['options']['named_map']
+      end
+
+      let(:infowindow) do
+        JSON.parse(FactoryGirl.build_stubbed(:carto_layer_with_infowindow).infowindow)
+      end
+
+      let(:tooltip) do
+        JSON.parse(FactoryGirl.build_stubbed(:carto_layer_with_tooltip).tooltip)
+      end
+
       before(:each) do
-        @visualization = create_visualization(@user_1)
+        @map, @table, @table_visualization, @visualization = create_full_visualization(Carto::User.find(@user_1.id))
+        @table.privacy = UserTable::PRIVACY_PUBLIC
+        @table.save
+        layer = @visualization.data_layers.first
+        layer.infowindow = infowindow
+        layer.tooltip = tooltip
+        layer.options[:table_name] = @table.name
+        layer.options[:query] = "select * from #{@table.name}"
+        layer.save
       end
 
       after(:each) do
-        @visualization.delete
+        destroy_full_visualization(@map, @table, @table_visualization, @visualization)
       end
 
       describe 'layer templates' do
-        let(:infowindow) do
-          # TODO: simplify. Technical debt: #6912
-          {"fields": [{"name": "country","title": true,"position":1}],"template_name":"table/views/infowindow_light","template":"","alternative_names":{},"width":226,"maxHeight":180}
-        end
-
-        # TODO: uncouple this from the implementation. Technical debt: #6912
-        let(:v2_infowindow_light_template) do
-          "<div class=\"cartodb-popup v2\">\n  <a href=\"#close\" class=\"cartodb-popup-close-button close\">x</a>\n  <div class=\"cartodb-popup-content-wrapper\">\n    <div class=\"cartodb-popup-content\">\n      {{#content.fields}}\n        {{#title}}<h4>{{title}}</h4>{{/title}}\n        {{#value}}\n          <p {{#type}}class=\"{{ type }}\"{{/type}}>{{{ value }}}</p>\n        {{/value}}\n        {{^value}}\n          <p class=\"empty\">null</p>\n        {{/value}}\n      {{/content.fields}}\n    </div>\n  </div>\n  <div class=\"cartodb-popup-tip-container\"></div>\n</div>\n"
-        end
-        let(:v3_infowindow_light_template) do
-          '{{#title}}<h5 class="CDB-infowindow-subtitle">{{title}}</h5>{{/title}}'
-        end
-
-        # TODO: tooltips, named map test and "don't overwrite custom template" test. Technical debt: #6912
-        it 'uses v3 infowindows templates' do
-          layer = create_layer('table_1', @user_1.username, 1, 'carto', infowindow).save
-          @visualization.map.add_layer(layer)
-
-          # vizjson v2 doesn't change
-          get_json api_v2_visualizations_vizjson_url(user_domain: @user_1.username,
-                                                     id: @visualization.id,
-                                                     api_key: @user_1.api_key), @headers do |request|
-            request.status.should eq 200
-            vizjson = request.body
-            infowindow = request.body[:layers][0]['options']['layer_definition']['layers'][0]['infowindow']
-            infowindow['template_name'].should eq infowindow['template_name']
-            infowindow['template'].should eq v2_infowindow_light_template
+        describe 'anonymous maps' do
+          before(:each) do
+            @table.privacy = UserTable::PRIVACY_PUBLIC
+            @table.save
           end
-          get_json api_v3_visualizations_vizjson_url(user_domain: @user_1.username,
-                                                     id: @visualization.id,
-                                                     api_key: @user_1.api_key), @headers do |request|
-            request.status.should eq 200
-            vizjson = request.body
-            infowindow = request.body[:layers][0]['options']['layer_definition']['layers'][0]['infowindow']
-            infowindow['template_name'].should eq infowindow['template_name']
-            infowindow['template'].should include(v3_infowindow_light_template)
+
+          it 'uses v3 infowindows and tooltips templates' do
+            # vizjson v2 doesn't change
+            get_json api_v2_visualizations_vizjson_url(user_domain: @user_1.username,
+                                                       id: @visualization.id,
+                                                       api_key: @user_1.api_key), @headers do |response|
+              response.status.should eq 200
+
+              layer_definition = first_layer_definition_from_response(response)
+              response_infowindow = layer_definition['layers'][0]['infowindow']
+              response_infowindow['template_name'].should eq infowindow['template_name']
+              response_infowindow['template'].should include(v2_infowindow_light_template_fragment)
+              response_infowindow['template'].should_not include(v3_infowindow_light_template_fragment)
+
+              response_tooltip = layer_definition['layers'][0]['tooltip']
+              response_tooltip['template_name'].should eq tooltip['template_name']
+              response_tooltip['template'].should include(v2_tooltip_light_template_fragment)
+              response_tooltip['template'].should_not include(v3_tooltip_light_template_fragment)
+
+            end
+
+            get_json get_vizjson3_url(@user_1, @visualization), @headers do |response|
+              response.status.should eq 200
+
+              layer_definition = first_layer_definition_from_response(response)
+              response_infowindow = layer_definition['layers'][0]['infowindow']
+              response_infowindow['template_name'].should eq infowindow['template_name']
+              response_infowindow['template'].should include(v3_infowindow_light_template_fragment)
+              response_infowindow['template'].should_not include(v2_infowindow_light_template_fragment)
+
+              response_tooltip = layer_definition['layers'][0]['tooltip']
+              response_tooltip['template_name'].should eq tooltip['template_name']
+              response_tooltip['template'].should include(v3_tooltip_light_template_fragment)
+              response_tooltip['template'].should_not include(v2_tooltip_light_template_fragment)
+            end
+          end
+        end
+
+        describe 'named maps' do
+          before(:each) do
+            @user_1.private_tables_enabled = true
+            @user_1.save
+            @table.privacy = UserTable::PRIVACY_PRIVATE
+            @table.save
+          end
+
+          it 'uses v3 infowindows templates at named maps' do
+            # vizjson v2 doesn't change
+            get_json api_v2_visualizations_vizjson_url(user_domain: @user_1.username,
+                                                       id: @visualization.id,
+                                                       api_key: @user_1.api_key), @headers do |response|
+              response.status.should eq 200
+
+              layer_named_map = first_layer_named_map_from_response(response)
+              response_infowindow = layer_named_map['layers'][0]['infowindow']
+              response_infowindow['template_name'].should eq infowindow['template_name']
+              response_infowindow['template'].should include(v2_infowindow_light_template_fragment)
+              response_infowindow['template'].should_not include(v3_infowindow_light_template_fragment)
+
+              response_tooltip = layer_named_map['layers'][0]['tooltip']
+              response_tooltip['template_name'].should eq tooltip['template_name']
+              response_tooltip['template'].should include(v2_tooltip_light_template_fragment)
+              response_tooltip['template'].should_not include(v3_tooltip_light_template_fragment)
+            end
+
+            get_json get_vizjson3_url(@user_1, @visualization), @headers do |response|
+              response.status.should eq 200
+
+              layer_named_map = first_layer_named_map_from_response(response)
+              response_infowindow = layer_named_map['layers'][0]['infowindow']
+              response_infowindow['template_name'].should eq infowindow['template_name']
+              response_infowindow['template'].should include(v3_infowindow_light_template_fragment)
+              response_infowindow['template'].should_not include(v2_infowindow_light_template_fragment)
+
+              response_tooltip = layer_named_map['layers'][0]['tooltip']
+              response_tooltip['template_name'].should eq tooltip['template_name']
+              response_tooltip['template'].should include(v3_tooltip_light_template_fragment)
+              response_tooltip['template'].should_not include(v2_tooltip_light_template_fragment)
+            end
+          end
+        end
+      end
+
+      describe 'layer custom infowindows and tooltips' do
+        before(:each) do
+          layer = @visualization.data_layers.first
+          layer.infowindow = custom_infowindow
+          layer.tooltip = custom_tooltip
+          layer.save
+        end
+
+        describe 'anonymous maps' do
+          before(:each) do
+            @table.privacy = UserTable::PRIVACY_PUBLIC
+            @table.save
+          end
+
+          it 'uses v3 infowindows and tooltips templates' do
+            # vizjson v2 doesn't change
+            get_json api_v2_visualizations_vizjson_url(user_domain: @user_1.username,
+                                                       id: @visualization.id,
+                                                       api_key: @user_1.api_key), @headers do |response|
+              response.status.should eq 200
+
+              layer_definition = first_layer_definition_from_response(response)
+              response_infowindow = layer_definition['layers'][0]['infowindow']
+              response_infowindow['template_name'].should eq ''
+              response_infowindow['template'].should eq custom_infowindow[:template]
+
+              response_tooltip = layer_definition['layers'][0]['tooltip']
+              response_tooltip['template_name'].should eq ''
+              response_tooltip['template'].should eq custom_tooltip[:template]
+            end
+
+            get_json get_vizjson3_url(@user_1, @visualization), @headers do |response|
+              response.status.should eq 200
+
+              layer_definition = first_layer_definition_from_response(response)
+              response_infowindow = layer_definition['layers'][0]['infowindow']
+              response_infowindow['template_name'].should eq ''
+              response_infowindow['template'].should eq custom_infowindow[:template]
+
+              response_tooltip = layer_definition['layers'][0]['tooltip']
+              response_tooltip['template_name'].should eq ''
+              response_tooltip['template'].should eq custom_tooltip[:template]
+            end
+          end
+        end
+
+        describe 'named maps' do
+          before(:each) do
+            @user_1.private_tables_enabled = true
+            @user_1.save
+            @table.privacy = UserTable::PRIVACY_PRIVATE
+            @table.save
+          end
+
+          it 'uses v3 infowindows templates at named maps' do
+            # vizjson v2 doesn't change
+            get_json api_v2_visualizations_vizjson_url(user_domain: @user_1.username,
+                                                       id: @visualization.id,
+                                                       api_key: @user_1.api_key), @headers do |response|
+              response.status.should eq 200
+
+              layer_named_map = first_layer_named_map_from_response(response)
+              response_infowindow = layer_named_map['layers'][0]['infowindow']
+              response_infowindow['template_name'].should eq ''
+              response_infowindow['template'].should eq custom_infowindow[:template]
+
+              response_tooltip = layer_named_map['layers'][0]['tooltip']
+              response_tooltip['template_name'].should eq ''
+              response_tooltip['template'].should eq custom_tooltip[:template]
+            end
+
+            get_json get_vizjson3_url(@user_1, @visualization), @headers do |response|
+              response.status.should eq 200
+
+              layer_named_map = first_layer_named_map_from_response(response)
+              response_infowindow = layer_named_map['layers'][0]['infowindow']
+              response_infowindow['template_name'].should eq ''
+              response_infowindow['template'].should eq custom_infowindow[:template]
+
+              response_tooltip = layer_named_map['layers'][0]['tooltip']
+              response_tooltip['template_name'].should eq ''
+              response_tooltip['template'].should eq custom_tooltip[:template]
+            end
           end
         end
       end
 
       describe 'torque layers' do
         it 'contains cartocss and sql instead of tile_style and query, and includes cartocss_version' do
-          layer = create_layer('table_1', @user_1.username, 1, 'torque').save
-          @visualization.map.add_layer(layer)
+          layer = @visualization.data_layers.first
+          layer.kind = 'torque'
+          layer.save
 
           tile_style_value = nil
           query_value = nil
 
           # vizjson v2 doesn't change
-          get_json api_v2_visualizations_vizjson_url(user_domain: @user_1.username, id: @visualization.id, api_key: @user_1.api_key), @headers do |request|
-            request.status.should == 200
-            vizjson = request.body
+          get_json api_v2_visualizations_vizjson_url(user_domain: @user_1.username, id: @visualization.id, api_key: @user_1.api_key), @headers do |response|
+            response.status.should == 200
+            vizjson = response.body
             layers = vizjson[:layers]
             layers.should_not be_empty
-            layers.each do |l|
+            torque_layers = layers.select { |l| l['type'] == 'torque' }
+            torque_layers.count.should eq 1
+            torque_layers.each do |l|
               options = l['options']
 
               tile_style_value = options['tile_style']
@@ -1562,12 +1736,14 @@ describe Carto::Api::VisualizationsController do
             end
           end
 
-          get_json api_v3_visualizations_vizjson_url(user_domain: @user_1.username, id: @visualization.id, api_key: @user_1.api_key), @headers do |request|
-            request.status.should == 200
-            vizjson = request.body
+          get_json get_vizjson3_url(@user_1, @visualization), @headers do |response|
+            response.status.should == 200
+            vizjson = response.body
             layers = vizjson[:layers]
             layers.should_not be_empty
-            layers.each do |l|
+            torque_layers = layers.select { |l| l['type'] == 'torque' }
+            torque_layers.count.should eq 1
+            torque_layers.each do |l|
               options = l['options']
 
               cartocss = options['cartocss']
@@ -1586,24 +1762,23 @@ describe Carto::Api::VisualizationsController do
       end
 
       it 'returns a vizjson with empty widgets array for visualizations without widgets' do
-        get_json api_v3_visualizations_vizjson_url(user_domain: @user_1.username, id: @visualization.id, api_key: @user_1.api_key), @headers do |request|
-          request.status.should == 200
-          vizjson3 = request.body
+        get_json get_vizjson3_url(@user_1, @visualization), @headers do |response|
+          response.status.should == 200
+          vizjson3 = response.body
           vizjson3.keys.should include(:widgets)
           vizjson3[:widgets].should == []
         end
       end
 
       it 'returns visualization widgets' do
-        layer = create_layer('table_1', @user_1.username, 1).save
-        @visualization.map.add_layer(layer)
-        widget = FactoryGirl.create(:widget, layer: Carto::Layer.find(layer.id))
+        layer = @visualization.layers.first
+        widget = FactoryGirl.create(:widget, layer: layer)
 
         widget2 = FactoryGirl.create(:widget_with_layer, type: 'fake')
 
-        get_json api_v3_visualizations_vizjson_url(user_domain: @user_1.username, id: @visualization.id, api_key: @user_1.api_key), @headers do |request|
-          request.status.should == 200
-          vizjson3 = request.body
+        get_json get_vizjson3_url(@user_1, @visualization), @headers do |response|
+          response.status.should == 200
+          vizjson3 = response.body
           vizjson3[:widgets].length.should == 1
 
           vizjson3[:widgets].map { |w| w['type'] }.should include(widget.type)
@@ -1615,9 +1790,9 @@ describe Carto::Api::VisualizationsController do
       end
 
       it 'returns datasource' do
-        get_json api_v3_visualizations_vizjson_url(user_domain: @user_1.username, id: @visualization.id, api_key: @user_1.api_key), @headers do |request|
-          request.status.should == 200
-          vizjson3 = request.body
+        get_json get_vizjson3_url(@user_1, @visualization), @headers do |response|
+          response.status.should == 200
+          vizjson3 = response.body
           vizjson3[:datasource]['user_name'].should == @user_1.username
           vizjson3[:datasource]['maps_api_template'].should_not be_nil
           vizjson3[:datasource]['stat_tag'].should_not be_nil
@@ -1628,35 +1803,35 @@ describe Carto::Api::VisualizationsController do
       end
 
       it 'includes vector flag (default false)' do
-        get_json api_v3_visualizations_vizjson_url(user_domain: @user_1.username, id: @visualization.id, api_key: @user_1.api_key), @headers do |request|
-          request.status.should == 200
-          vizjson3 = request.body
+        get_json get_vizjson3_url(@user_1, @visualization), @headers do |response|
+          response.status.should == 200
+          vizjson3 = response.body
           vizjson3[:vector].should == false
         end
       end
 
       it 'includes vector flag (true if requested)' do
-        get_json api_v3_visualizations_vizjson_url(user_domain: @user_1.username, id: @visualization.id, api_key: @user_1.api_key, vector: true), @headers do |request|
-          request.status.should == 200
-          vizjson3 = request.body
+        get_json get_vizjson3_url(@user_1, @visualization, vector: true), @headers do |response|
+          response.status.should == 200
+          vizjson3 = response.body
           vizjson3[:vector].should == true
         end
       end
 
       it 'returns datasource.template_name for visualizations with retrieve_named_map? true' do
         Carto::Visualization.any_instance.stubs(:retrieve_named_map?).returns(true)
-        get_json api_v3_visualizations_vizjson_url(user_domain: @user_1.username, id: @visualization.id, api_key: @user_1.api_key), @headers do |request|
-          request.status.should == 200
-          vizjson3 = request.body
+        get_json get_vizjson3_url(@user_1, @visualization), @headers do |response|
+          response.status.should == 200
+          vizjson3 = response.body
           vizjson3[:datasource]['template_name'].should_not be_nil
         end
       end
 
       it 'returns nil datasource.template_name for visualizations with retrieve_named_map? false' do
         Carto::Visualization.any_instance.stubs(:retrieve_named_map?).returns(false)
-        get_json api_v3_visualizations_vizjson_url(user_domain: @user_1.username, id: @visualization.id, api_key: @user_1.api_key), @headers do |request|
-          request.status.should == 200
-          vizjson3 = request.body
+        get_json get_vizjson3_url(@user_1, @visualization), @headers do |response|
+          response.status.should == 200
+          vizjson3 = response.body
           vizjson3[:datasource].has_key?('template_name').should be_false
         end
       end

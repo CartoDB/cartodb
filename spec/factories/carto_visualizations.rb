@@ -2,7 +2,7 @@ module Carto
   module Factories
     module Visualizations
       # "Full visualization": with map, table... Metadata only (not actual user table).
-      def create_full_visualization(carto_user, map: FactoryGirl.create(:carto_map, user_id: carto_user.id))
+      def create_full_visualization(carto_user, map: FactoryGirl.create(:carto_map_with_layers, user_id: carto_user.id))
         table = FactoryGirl.create(:carto_user_table, user_id: carto_user.id, map_id: map.id)
         table_visualization = FactoryGirl.create(
           :carto_visualization,

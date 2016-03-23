@@ -1,5 +1,5 @@
 <div class="u-rSpace--xl">
-  <input class="CDB-Radio" type="radio" name="gender" value="01" checked>
+  <input class="CDB-Radio" type="radio" value="true"<% if (selected) { %>checked<% } %>>
   <span class="u-iBlock CDB-Radio-face"></span>
 </div>
 <div>
@@ -11,4 +11,5 @@
     <div class="ModalBlockList-item-media u-rSpace--m"></div>
     <p class="CDB-Text CDB-Size-small u-altTextColor"><%- desc %></p>
   </div>
+
 </div>

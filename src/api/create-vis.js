@@ -3,6 +3,14 @@ var Vis = require('../vis/vis');
 var Loader = require('../core/loader');
 var Promise = require('./promise');
 
+var DEFAULT_OPTIONS = {
+  tiles_loader: true,
+  loaderControl: true,
+  infowindow: true,
+  tooltip: true,
+  time_slider: true
+};
+
 var createVis = function (el, vizjson, options, callback) {
   if (!el) {
     throw new TypeError('a DOM element must be provided');
@@ -24,14 +32,6 @@ var createVis = function (el, vizjson, options, callback) {
   if (typeof el === 'string') {
     el = document.getElementById(el);
   }
-
-  var DEFAULT_OPTIONS = {
-    tiles_loader: true,
-    loaderControl: true,
-    infowindow: true,
-    tooltip: true,
-    time_slider: true
-  };
 
   options = _.defaults(options || {}, DEFAULT_OPTIONS);
 

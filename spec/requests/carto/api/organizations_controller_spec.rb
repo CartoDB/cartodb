@@ -48,9 +48,10 @@ describe Carto::Api::OrganizationsController do
       last_response.status.should == 200
       json_body = JSON.parse(last_response.body)
       ids = json_body['users'].map { |u| u['id'] }
-      ids[0].should == @org_user_1.id
-      ids[1].should == @org_user_2.id
-      ids[2].should == @org_user_3.id
+      ids[0].should == @org_user_owner.id
+      ids[1].should == @org_user_1.id
+      ids[2].should == @org_user_2.id
+      ids[3].should == @org_user_3.id
     end
 
     it 'returns organization users paged with totals' do

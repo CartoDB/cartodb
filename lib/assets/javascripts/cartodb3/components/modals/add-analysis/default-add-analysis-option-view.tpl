@@ -11,8 +11,4 @@
     <div class="ModalBlockList-item-media u-rSpace--m"></div>
     <p class="CDB-Text CDB-Size-small u-altTextColor"><%- desc %></p>
   </div>
-
-  <% if (selected) { %>
-    &lt;-- SELECTED
-  <% } %>
 </div>

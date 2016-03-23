@@ -1,6 +1,24 @@
 {
   "components": {
     "modals": {
+      "add-analysis": {
+        "modal-title": "Add a new analysis",
+        "modal-desc": "Select the analysis you want to add",
+        "add-btn": "Add analysis",
+        "options": {
+          "sub-titles": {
+            "area-of-influence": "Area of influence"
+          },
+          "buffer": {
+            "title": "Buffer",
+            "desc": "Calculate the area of influence of a layer determined by distance."
+          },
+          "trade-area": {
+            "title": "Trade Areas",
+            "desc": "Calculate the area of a layer determined by walking, driving, or biking time, or just by distance"
+          }
+        }
+      },
       "add-widgets": {
         "modal-title": "Add new widgets",
         "modal-desc": "Select the widgets you want to add",

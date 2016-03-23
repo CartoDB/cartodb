@@ -18,7 +18,7 @@
         </li>
       </ul>
     </div>
-    <button class="CDB-Text CDB-Size-small u-actionTextColor u-upperCase">
+    <button class="CDB-Text CDB-Size-small u-actionTextColor u-upperCase js-add-analysis">
       <%- _t('editor.layers.layer.add-analysis') %>
     </button>
   </div>

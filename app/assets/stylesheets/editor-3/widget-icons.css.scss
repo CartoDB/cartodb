@@ -89,3 +89,68 @@
   background: $cMainLine;
 }
 
+
+.WidgetShape-TimeSeries-inner {
+  position: relative;
+  width: 20px;
+  height: 11px;
+}
+.WidgetShape-TimeSeries-play {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  border: 2px solid transparent;
+  border-left: 3px solid #979EA1;
+  content: '';
+  vertical-align: top;
+}
+.WidgetShape-TimeSeries-header {
+  height: 5px;
+  margin-bottom: 2px;
+}
+.WidgetShape-TimeSeries-title {
+  display: inline-block;
+  width: 13px;
+  height: 2px;
+  margin-top: 1px;
+  background: $cSecondaryLine;
+  vertical-align: top;
+}
+.WidgetShape-TimeSeries-bar {
+  position: absolute;
+  bottom: 0;
+  width: 2px;
+  background: $cSecondaryLine;
+}
+.WidgetShape-TimeSeries-bar.is-played {
+  background: #F2CC8F;
+}
+.WidgetShape-TimeSeries-bar.is-01 {
+  top: 7px;
+  left: 0;
+}
+.WidgetShape-TimeSeries-bar.is-02 {
+  top: 4px;
+  left: 3px;
+}
+.WidgetShape-TimeSeries-bar.is-03 {
+  top: 2px;
+  left: 6px;
+}
+.WidgetShape-TimeSeries-bar.is-04 {
+  top: 0;
+  left: 9px;
+}
+.WidgetShape-TimeSeries-bar.is-05 {
+  top: 2px;
+  left: 12px;
+}
+.WidgetShape-TimeSeries-bar.is-06 {
+  top: 5px;
+  left: 15px;
+}
+.WidgetShape-TimeSeries-bar.is-07 {
+  top: 8px;
+  right: 0;
+}
+

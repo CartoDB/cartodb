@@ -20,7 +20,6 @@
   height: 100%;
 }
 .Editor-panel {
-  @include block-shadow();
   @include transition(width, 300ms, ease-in-out);
   width: 344px;
   height: 100vh;

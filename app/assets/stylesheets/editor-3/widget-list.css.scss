@@ -43,3 +43,31 @@
 .WidgetList-title {
   @include display-flex;
 }
+
+.WidgetPlaceHolder {
+  @include display-flex();
+  @include flex(1);
+  margin-right: 24px;
+}
+.WidgetPlaceHolder-media {
+  width: 32px;
+  height: 32px;
+  margin-right: 8px;
+  border-radius: 2px;
+  background: $cThirdBackground;
+}
+.WidgetPlaceHolder-txt {
+  @include flex(1);
+}
+.WidgetPlaceHolder-title {
+  height: 16px;
+  margin-bottom: 8px;
+  border-radius: 2px;
+  background: $cThirdBackground;
+}
+.WidgetPlaceHolder-text {
+  height: 8px;
+  border-radius: 2px;
+  background: $cThirdBackground;
+}
+

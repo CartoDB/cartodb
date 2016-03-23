@@ -230,6 +230,8 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/requests/carto/api/analyses_controller_spec.rb \
 	spec/requests/carto/api/maps_controller_spec.rb \
 	spec/models/carto/overlay_spec.rb \
+	spec/requests/admin/users_controller_spec.rb \
+	spec/lib/carto/strong_password_validator_spec.rb \
 	$(NULL)
 
 # This class must be tested isolated as pollutes namespace

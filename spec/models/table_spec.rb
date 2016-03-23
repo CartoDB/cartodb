@@ -1452,26 +1452,29 @@ describe Table do
       cartodb_id_schema[:allow_null].should == false
     end
 
-    it "should add a 'cartodb_id_' column when importing a file with invalid data on the cartodb_id column" do
-      data_import = DataImport.create( :user_id       => @user.id,
-                                       :data_source   =>  '/../db/fake_data/duplicated_cartodb_id.zip')
+    # Legacy test commented: Invalid data on cartodb_id will provoke an import failure and this behavior
+    # is tested in the data_import specs.
+    #
+    # it "should add a 'cartodb_id_' column when importing a file with invalid data on the cartodb_id column" do
+    #   data_import = DataImport.create( :user_id       => @user.id,
+    #                                    :data_source   =>  '/../db/fake_data/duplicated_cartodb_id.zip')
 
-      data_import.run_import!
-      table = Table.new(user_table: UserTable[data_import.table_id])
-      table.should_not be_nil, "Import failure: #{data_import.log}"
+    #   data_import.run_import!
+    #   table = Table.new(user_table: UserTable[data_import.table_id])
+    #   table.should_not be_nil, "Import failure: #{data_import.log}"
 
-      table_schema = @user.in_database.schema(table.name)
+    #   table_schema = @user.in_database.schema(table.name)
 
-      cartodb_id_schema = table_schema.detect {|s| s[0].to_s == 'cartodb_id'}
-      cartodb_id_schema.should be_present
-      cartodb_id_schema = cartodb_id_schema[1]
-      cartodb_id_schema[:db_type].should == 'bigint'
-      cartodb_id_schema[:default].should == "nextval('#{table.name}_cartodb_id_seq'::regclass)"
-      cartodb_id_schema[:primary_key].should == true
-      cartodb_id_schema[:allow_null].should == false
-      invalid_cartodb_id_schema = table_schema.detect {|s| s[0].to_s == 'cartodb_id_0'}
-      invalid_cartodb_id_schema.should be_present
-    end
+    #   cartodb_id_schema = table_schema.detect {|s| s[0].to_s == 'cartodb_id'}
+    #   cartodb_id_schema.should be_present
+    #   cartodb_id_schema = cartodb_id_schema[1]
+    #   cartodb_id_schema[:db_type].should == 'bigint'
+    #   cartodb_id_schema[:default].should == "nextval('#{table.name}_cartodb_id_seq'::regclass)"
+    #   cartodb_id_schema[:primary_key].should == true
+    #   cartodb_id_schema[:allow_null].should == false
+    #   invalid_cartodb_id_schema = table_schema.detect {|s| s[0].to_s == 'cartodb_id_0'}
+    #   invalid_cartodb_id_schema.should be_present
+    # end
 
     it "should return geometry types when guessing is enabled" do
       data_import = DataImport.create( :user_id       => @user.id,

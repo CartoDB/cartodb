@@ -27,7 +27,6 @@ describe Admin::OrganizationUsersController do
   describe 'security' do
     describe '#show' do
       it 'returns 404 for non authorized users' do
-
         login_as(@org_user_1, scope: @org_user_1.username)
 
         get organization_users_url(user_domain: @org_user_1.username)
@@ -82,6 +81,17 @@ describe Admin::OrganizationUsersController do
 
           @existing_user.reload
           @existing_user.quota_in_bytes.should eq new_quota
+        end
+
+        it 'does not update users in case of Central failure' do
+          ::User.any_instance.stubs(:update_in_central).raises(CartoDB::CentralCommunicationFailure.new('Failed'))
+          new_quota = @existing_user.quota_in_bytes * 2
+          put update_organization_user_url(user_domain: @org_user_owner.username, id: @existing_user.username),
+              user: { quota_in_bytes: new_quota }
+          last_response.body.should include('There was a problem while updating this user.')
+
+          @existing_user.reload
+          @existing_user.quota_in_bytes.should_not eq new_quota
         end
       end
 

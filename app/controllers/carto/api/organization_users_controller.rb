@@ -47,12 +47,16 @@ module Carto
         # ::User validation requires confirmation
         params_to_update[:password_confirmation] = params_to_update[:password]
 
-        if !(soft_limits_validation(@user, params_to_update) && @user.update_fields(params_to_update, params_to_update.keys))
+        # NOTE: Verify soft limits BEFORE updating the user
+        unless soft_limits_validation(@user, params_to_update) &&
+               @user.set_fields(params_to_update, params_to_update.keys) &&
+               @user.valid?
           render_jsonp(@user.errors.full_messages, 410)
           return
         end
 
         @user.update_in_central
+        @user.save
 
         render_jsonp Carto::Api::UserPresenter.new(@user, current_viewer: current_viewer).to_poro, 200
       rescue CartoDB::CentralCommunicationFailure => e

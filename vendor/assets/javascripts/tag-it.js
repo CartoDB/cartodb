@@ -103,10 +103,7 @@
             onTagAdded  : null,
             onTagRemoved: null,
             // `autocomplete.source` is the replacement for tagSource.
-            tagSource: null,
-            onSubmitTags: null,
-            onFocus: null,
-            onBlur: null
+            tagSource: null
             // Do not use the above deprecated options.
         },
 
@@ -237,8 +234,6 @@
                         }
                     } else if (that.options.removeConfirmation) {
                         that._lastTag().removeClass('remove ui-state-highlight');
-                    } else if (event.which == $.ui.keyCode.ENTER && that.tagInput.val() === "") {
-                        that._trigger('onSubmitTags', null, that.tagList);
                     }
 
                     // Comma/Space/Enter are all valid delimiters for new tags,
@@ -277,15 +272,12 @@
                         }
                     }
                 }).blur(function(e){
-                    that._trigger('onBlur', null, null);
                     // Create a tag when the element loses focus.
                     // If autocomplete is enabled and suggestion was clicked, don't add it.
                     if (!that.tagInput.data('autocomplete-open')) {
                         that.createTag(that._cleanedInput());
                     }
-                }).focus(function(e) {
-                    that._trigger('onFocus', null, null);
-                })
+                });
 
             // Autocomplete.
             if (this.options.availableTags || this.options.tagSource || this.options.autocomplete.source) {

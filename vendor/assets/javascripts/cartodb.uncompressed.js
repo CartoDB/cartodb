@@ -1,6 +1,6 @@
-// cartodb.js version: 3.15.8
+// cartodb.js version: 3.15.9
 // uncompressed version: cartodb.uncompressed.js
-// sha: 60285edb65f6575c8a34799fde55308751251c5f
+// sha: 674bb81219b2410fa6b7d54e9e56b1b27160eb74
 (function() {
   var define;  // Undefine define (require.js), see https://github.com/CartoDB/cartodb.js/issues/543
   var root = this;
@@ -16881,7 +16881,7 @@ $.event.special.mwheelIntent = {
         minDif = 3;
       }, 1500);
       e = $.extend({}, e, {type: 'mwheelIntent'});
-            return $.event.handle.apply(this, arguments);
+            return ($.event.dispatch || $.event.handle).apply(this, arguments);
     }
     }
 };
@@ -16900,7 +16900,8 @@ $(function(){
   //assume that document is always scrollable, doesn't hurt if not
   $(doc).bind('mwheelIntent.mwheelIntentDefault', $.noop);
 });
-})(jQuery);//fgnass.github.com/spin.js#v1.2.5
+})(jQuery);
+//fgnass.github.com/spin.js#v1.2.5
 (function(a,b,c){function g(a,c){var d=b.createElement(a||"div"),e;for(e in c)d[e]=c[e];return d}function h(a){for(var b=1,c=arguments.length;b<c;b++)a.appendChild(arguments[b]);return a}function j(a,b,c,d){var g=["opacity",b,~~(a*100),c,d].join("-"),h=.01+c/d*100,j=Math.max(1-(1-a)/b*(100-h),a),k=f.substring(0,f.indexOf("Animation")).toLowerCase(),l=k&&"-"+k+"-"||"";return e[g]||(i.insertRule("@"+l+"keyframes "+g+"{"+"0%{opacity:"+j+"}"+h+"%{opacity:"+a+"}"+(h+.01)+"%{opacity:1}"+(h+b)%100+"%{opacity:"+a+"}"+"100%{opacity:"+j+"}"+"}",0),e[g]=1),g}function k(a,b){var e=a.style,f,g;if(e[b]!==c)return b;b=b.charAt(0).toUpperCase()+b.slice(1);for(g=0;g<d.length;g++){f=d[g]+b;if(e[f]!==c)return f}}function l(a,b){for(var c in b)a.style[k(a,c)||c]=b[c];return a}function m(a){for(var b=1;b<arguments.length;b++){var d=arguments[b];for(var e in d)a[e]===c&&(a[e]=d[e])}return a}function n(a){var b={x:a.offsetLeft,y:a.offsetTop};while(a=a.offsetParent)b.x+=a.offsetLeft,b.y+=a.offsetTop;return b}var d=["webkit","Moz","ms","O"],e={},f,i=function(){var a=g("style");return h(b.getElementsByTagName("head")[0],a),a.sheet||a.styleSheet}(),o={lines:12,length:7,width:5,radius:10,rotate:0,color:"#000",speed:1,trail:100,opacity:.25,fps:20,zIndex:2e9,className:"spinner",top:"auto",left:"auto"},p=function q(a){if(!this.spin)return new q(a);this.opts=m(a||{},q.defaults,o)};p.defaults={},m(p.prototype,{spin:function(a){this.stop();var b=this,c=b.opts,d=b.el=l(g(0,{className:c.className}),{position:"relative",zIndex:c.zIndex}),e=c.radius+c.length+c.width,h,i;a&&(a.insertBefore(d,a.firstChild||null),i=n(a),h=n(d),l(d,{left:(c.left=="auto"?i.x-h.x+(a.offsetWidth>>1):c.left+e)+"px",top:(c.top=="auto"?i.y-h.y+(a.offsetHeight>>1):c.top+e)+"px"})),d.setAttribute("aria-role","progressbar"),b.lines(d,b.opts);if(!f){var j=0,k=c.fps,m=k/c.speed,o=(1-c.opacity)/(m*c.trail/100),p=m/c.lines;!function q(){j++;for(var a=c.lines;a;a--){var e=Math.max(1-(j+a*p)%m*o,c.opacity);b.opacity(d,c.lines-a,e,c)}b.timeout=b.el&&setTimeout(q,~~(1e3/k))}()}return b},stop:function(){var a=this.el;return a&&(clearTimeout(this.timeout),a.parentNode&&a.parentNode.removeChild(a),this.el=c),this},lines:function(a,b){function e(a,d){return l(g(),{position:"absolute",width:b.length+b.width+"px",height:b.width+"px",background:a,boxShadow:d,transformOrigin:"left",transform:"rotate("+~~(360/b.lines*c+b.rotate)+"deg) translate("+b.radius+"px"+",0)",borderRadius:(b.width>>1)+"px"})}var c=0,d;for(;c<b.lines;c++)d=l(g(),{position:"absolute",top:1+~(b.width/2)+"px",transform:b.hwaccel?"translate3d(0,0,0)":"",opacity:b.opacity,animation:f&&j(b.opacity,b.trail,c,b.lines)+" "+1/b.speed+"s linear infinite"}),b.shadow&&h(d,l(e("#000","0 0 4px #000"),{top:"2px"})),h(a,h(d,e(b.color,"0 0 1px rgba(0,0,0,.1)")));return a},opacity:function(a,b,c){b<a.childNodes.length&&(a.childNodes[b].style.opacity=c)}}),!function(){function a(a,b){return g("<"+a+' xmlns="urn:schemas-microsoft.com:vml" class="spin-vml">',b)}var b=l(g("group"),{behavior:"url(#default#VML)"});!k(b,"transform")&&b.adj?(i.addRule(".spin-vml","behavior:url(#default#VML)"),p.prototype.lines=function(b,c){function f(){return l(a("group",{coordsize:e+" "+e,coordorigin:-d+" "+ -d}),{width:e,height:e})}function k(b,e,g){h(i,h(l(f(),{rotation:360/c.lines*b+"deg",left:~~e}),h(l(a("roundrect",{arcsize:1}),{width:d,height:c.width,left:c.radius,top:-c.width>>1,filter:g}),a("fill",{color:c.color,opacity:c.opacity}),a("stroke",{opacity:0}))))}var d=c.length+c.width,e=2*d,g=-(c.width+c.length)*2+"px",i=l(f(),{position:"absolute",top:g,left:g}),j;if(c.shadow)for(j=1;j<=c.lines;j++)k(j,-2,"progid:DXImageTransform.Microsoft.Blur(pixelradius=2,makeshadow=1,shadowopacity=.3)");for(j=1;j<=c.lines;j++)k(j);return h(b,i)},p.prototype.opacity=function(a,b,c,d){var e=a.firstChild;d=d.shadow&&d.lines||0,e&&b+d<e.childNodes.length&&(e=e.childNodes[b+d],e=e&&e.firstChild,e=e&&e.firstChild,e&&(e.opacity=c))}):f=k(b,"animation")}(),a.Spinner=p})(window,document);
 var LZMA = (function () {
 	var action_compress   = 1,
@@ -20789,20 +20790,22 @@ this.LZMA = LZMA;
 // https://code.google.com/p/google-caja/wiki/JsHtmlSanitizer
 //
 // Steps to rebuild this file:
-// $ svn checkout http://google-caja.googlecode.com/svn/trunk/ google-caja
+// $ git clone https://github.com/google/caja.git google-caja
 // $ cd google-caja
 // $ ant
 // $ cp ant-lib/com/google/caja/plugin/html-css-sanitizer-bundle.js /path/to/cartodb.js/vendor/
 //
 // Additional changes after the built file above:
 // - Added: This header
-// - Modified: `sanitizeAttribs` at end, to allow "data-*"" attributes (lines ~4750-4760)
-// - changed policy for a::target attribute to be allowed (html4.ATTRIBS: { 'a::target': ... changed value from 10 to 0)
+// - Modified: `iframe` element. Mark it as unsafe changing code from 4 to 16. (line: 3543)
+// - Modified: `sanitizeAttribs` at end, to allow "data-*"" attributes (lines ~4755-4761)
+// - changed policy for a::target attribute to be allowed (html4.ATTRIBS: { 'a::target': ... changed value from 10 to 0) (line 3211)
 // -------------------------------------------------------------------------------------------------------------------
+
 
 /* Copyright Google Inc.
  * Licensed under the Apache Licence Version 2.0
- * Autogenerated at Mon Mar 23 15:26:16 CET 2015
+ * Autogenerated at Wed Nov 25 17:35:12 CET 2015
  * \@overrides window
  * \@provides cssSchema, CSS_PROP_BIT_QUANTITY, CSS_PROP_BIT_HASH_VALUE, CSS_PROP_BIT_NEGATIVE_QUANTITY, CSS_PROP_BIT_QSTRING, CSS_PROP_BIT_URL, CSS_PROP_BIT_UNRESERVED_WORD, CSS_PROP_BIT_UNICODE_RANGE, CSS_PROP_BIT_GLOBAL_NAME, CSS_PROP_BIT_PROPERTY_NAME */
 /**
@@ -23921,7 +23924,7 @@ if (typeof window !== 'undefined') {
 ;
 // Copyright Google Inc.
 // Licensed under the Apache Licence Version 2.0
-// Autogenerated at Mon Mar 23 15:26:17 CET 2015
+// Autogenerated at Wed Nov 25 17:35:12 CET 2015
 // @overrides window
 // @provides html4
 var html4 = {};
@@ -24136,6 +24139,7 @@ html4.ATTRIBS = {
   'meter::low': 0,
   'meter::max': 0,
   'meter::min': 0,
+  'meter::optimum': 0,
   'meter::value': 0,
   'ol::compact': 0,
   'ol::reversed': 0,
@@ -24323,7 +24327,7 @@ html4.ELEMENTS = {
   'hr': 2,
   'html': 305,
   'i': 0,
-  'iframe': 4,
+  'iframe': 16,
   'img': 2,
   'input': 2,
   'ins': 0,
@@ -25655,7 +25659,7 @@ if (typeof window !== 'undefined') {
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = "3.15.8";
+    cdb.VERSION = "3.15.9";
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -25833,7 +25837,7 @@ if (typeof window !== 'undefined') {
 
 })(cdb.core, window);
 /**
-* Decorators to extend funcionality of cdb related objects
+* Decorators to extend functionality of cdb related objects
 */
 
 /**
@@ -25993,7 +25997,7 @@ if(!window.JSON) {
 
     cdb.config = new Config();
     cdb.config.set({
-      cartodb_attributions: "CartoDB <a href='http://cartodb.com/attributions' target='_blank'>attribution</a>",
+      cartodb_attributions: "CartoDB <a href=\"http://cartodb.com/attributions\" target=\"_blank\">attribution</a>",
       cartodb_logo_link: "http://www.cartodb.com"
     });
 
@@ -27276,6 +27280,7 @@ cdb.geo.Map = cdb.core.Model.extend({
     minZoom: 0,
     maxZoom: 40,
     scrollwheel: true,
+    drag: true,
     keyboard: true,
     provider: 'leaflet'
   },
@@ -27298,9 +27303,9 @@ cdb.geo.Map = cdb.core.Model.extend({
   },
 
   _updateAttributions: function() {
-    var defaultCartoDBAttribution = this.defaults.attribution[0];
+    var defaultCartoDBAttribution = cdb.core.sanitize.html(this.defaults.attribution[0]);
     var attributions = _.chain(this.layers.models)
-      .map(function(layer) { return layer.get('attribution'); })
+      .map(function(layer) { return cdb.core.sanitize.html( layer.get('attribution') ); })
       .reject(function(attribution) { return attribution == defaultCartoDBAttribution})
       .compact()
       .uniq()
@@ -28719,18 +28724,6 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
 
   className: "cartodb-legend",
 
-  events: {
-    "dragstart":            "_stopPropagation",
-    "mousedown":            "_stopPropagation",
-    "touchstart":           "_stopPropagation",
-    "MSPointerDown":        "_stopPropagation",
-    "dblclick":             "_stopPropagation",
-    "mousewheel":           "_stopPropagation",
-    "DOMMouseScroll":       "_stopPropagation",
-    "dbclick":              "_stopPropagation",
-    "click":                "_stopPropagation"
-  },
-
   initialize: function() {
     _.bindAll(this, "render", "show", "hide");
 
@@ -28742,10 +28735,6 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
     this._setupItems();
 
     this._updateLegendType();
-  },
-
-  _stopPropagation: function(ev) {
-    ev.stopPropagation();
   },
 
   _setupModel: function() {
@@ -29437,26 +29426,10 @@ cdb.geo.ui.Legend.Color = cdb.geo.ui.Legend.Category.extend({ });
  * */
 cdb.geo.ui.StackedLegend = cdb.core.View.extend({
 
-  events: {
-    "dragstart":            "_stopPropagation",
-    "mousedown":            "_stopPropagation",
-    "touchstart":           "_stopPropagation",
-    "MSPointerDown":        "_stopPropagation",
-    "dblclick":             "_stopPropagation",
-    "mousewheel":           "_stopPropagation",
-    "DOMMouseScroll":       "_stopPropagation",
-    "dbclick":              "_stopPropagation",
-    "click":                "_stopPropagation"
-  },
-
   className: "cartodb-legend-stack",
 
   initialize: function() {
     _.each(this.options.legends, this._setupBinding, this);
-  },
-
-  _stopPropagation: function(ev) {
-    ev.stopPropagation();
   },
 
   getLegendByIndex: function(index) {
@@ -29701,7 +29674,8 @@ cdb.geo.ui.Legend.Custom = cdb.geo.ui.CustomLegend.extend({
       type: this.type,
       title: this.options.title,
       show_title: this.options.title ? true : false,
-      items: this.items.models
+      items: this.items.models,
+      template: this.options.template
     });
 
     this._bindModel();
@@ -30811,7 +30785,8 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     if (!cdb.core.util.ie || (cdb.core.util.browser.ie && cdb.core.util.browser.ie.version > 8)) {
       this.$el.css({
         'marginBottom':'-10px',
-        'display':'block',
+        'display': 'block',
+        'visibility':'visible',
         opacity:0
       });
 
@@ -30837,7 +30812,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
         opacity:      "0",
         display:      "block"
       }, 180, function() {
-        self.$el.css({display: "none"});
+        self.$el.css({visibility: "hidden"});
       });
     } else {
       this.$el.hide();
@@ -30851,7 +30826,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     if(this.isHidden()) return;
 
     var
-    offset          = this.model.get("offset")
+    offset          = this.model.get("offset"),
     pos             = this.mapView.latLonToPixel(this.model.get("latlng")),
     x               = this.$el.position().left,
     y               = this.$el.position().top,
@@ -30867,7 +30842,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   /**
    *  Adjust pan to show correctly the infowindow
    */
-  adjustPan: function (callback) {
+  adjustPan: function () {
     var offset = this.model.get("offset");
 
     if (!this.model.get("autoPan") || this.isHidden()) { return; }
@@ -34555,12 +34530,13 @@ cdb.geo.LeafLetPlainLayerView = LeafLetPlainLayerView;
 
 (function() {
 
-if(typeof(L) == "undefined") 
+if(typeof(L) == "undefined")
   return;
 
 var LeafLetTiledLayerView = L.TileLayer.extend({
   initialize: function(layerModel, leafletMap) {
-    L.TileLayer.prototype.initialize.call(this, layerModel.get('urlTemplate'), {
+
+    var tmpLayer = {
       tms:          layerModel.get('tms'),
       attribution:  layerModel.get('attribution'),
       minZoom:      layerModel.get('minZoom'),
@@ -34568,7 +34544,17 @@ var LeafLetTiledLayerView = L.TileLayer.extend({
       subdomains:   layerModel.get('subdomains') || 'abc',
       errorTileUrl: layerModel.get('errorTileUrl'),
       opacity:      layerModel.get('opacity')
-    });
+    };
+
+    if ( layerModel.get('tileSize') ) {
+      tmpLayer.tileSize = layerModel.get('tileSize');
+    }
+
+    if ( layerModel.get('zoomOffset') ) {
+      tmpLayer.zoomOffset = layerModel.get('zoomOffset');
+    }
+
+    L.TileLayer.prototype.initialize.call(this, layerModel.get('urlTemplate'), tmpLayer);
     cdb.geo.LeafLetLayerView.call(this, layerModel, this, leafletMap);
   }
 
@@ -34663,7 +34649,7 @@ if(typeof(L) == "undefined")
 var LeafLetWMSLayerView = L.TileLayer.WMS.extend({
   initialize: function(layerModel, leafletMap) {
 
-    L.TileLayer.WMS.prototype.initialize.call(this, layerModel.get('urlTemplate'), {
+    var tmpLayer = {
       attribution:  layerModel.get('attribution'),
       layers:       layerModel.get('layers'),
       format:       layerModel.get('format'),
@@ -34673,7 +34659,17 @@ var LeafLetWMSLayerView = L.TileLayer.WMS.extend({
       subdomains:   layerModel.get('subdomains') || 'abc',
       errorTileUrl: layerModel.get('errorTileUrl'),
       opacity:      layerModel.get('opacity')
-    });
+    };
+
+    if ( layerModel.get('tileSize') ) {
+      tmpLayer.tileSize = layerModel.get('tileSize');
+    }
+
+    if ( layerModel.get('zoomOffset') ) {
+      tmpLayer.zoomOffset = layerModel.get('zoomOffset');
+    }
+
+    L.TileLayer.WMS.prototype.initialize.call(this, layerModel.get('urlTemplate'), tmpLayer);
 
     cdb.geo.LeafLetLayerView.call(this, layerModel, this, leafletMap);
   }
@@ -34721,7 +34717,7 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
     sql_api_domain:     "cartodb.com",
     sql_api_port:       "80",
     sql_api_protocol:   "http",
-    maxZoom: 30, // default leaflet zoom level for a layers is 18, raise it 
+    maxZoom: 30, // default leaflet zoom level for a layers is 18, raise it
     extra_params:   {
     },
     cdn_url:        null,
@@ -34817,7 +34813,7 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
   onAdd: function(map) {
     var self = this;
     this.options.map = map;
-    
+
     // Add cartodb logo
     if (this.options.cartodb_logo != false)
       cdb.geo.common.CartoDBLogo.addWadus({ left:8, bottom:8 }, 0, map._container);
@@ -34826,8 +34822,8 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
       // if while the layer was processed in the server is removed
       // it should not be added to the map
       var id = L.stamp(self);
-      if (!map._layers[id]) { 
-        return; 
+      if (!map._layers[id]) {
+        return;
       }
 
       L.TileLayer.prototype.onAdd.call(self, map);
@@ -34836,6 +34832,9 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
     });
   },
 
+  getAttribution: function() {
+    return cdb.core.sanitize.html(this.options.attribution);
+  },
 
   /**
    * When removes the layer, destroy interactivity if exist
@@ -34886,18 +34885,17 @@ L.CartoDBGroupLayerBase = L.TileLayer.extend({
    */
   setAttribution: function(attribution) {
     this._checkLayer();
-
     // Remove old one
-    this.map.attributionControl.removeAttribution(this.options.attribution);
-
+    this.map.attributionControl.removeAttribution(
+      cdb.core.sanitize.html(this.options.attribution)
+    );
+    // Change text
+    this.map.attributionControl.addAttribution(
+      cdb.core.sanitize.html(attribution)
+    );
     // Set new attribution in the options
     this.options.attribution = attribution;
-
-    // Change text
-    this.map.attributionControl.addAttribution(this.options.attribution);
-
     // Change in the layer
-    this.options.attribution = this.options.attribution;
     this.tilejson.attribution = this.options.attribution;
 
     this.fire('updated');
@@ -35511,8 +35509,15 @@ cdb.geo.leaflet.PathView = PathView;
         // remove the "powered by leaflet"
         this.map_leaflet.attributionControl.setPrefix('');
 
+        // Disable scrollwheel
         if (this.map.get("scrollwheel") == false) this.map_leaflet.scrollWheelZoom.disable();
+        // Disable keyboard
         if (this.map.get("keyboard") == false) this.map_leaflet.keyboard.disable();
+        // Disable dragging (also doubleClickZoom)
+        if (this.map.get("drag") == false) {
+          this.map_leaflet.dragging.disable();
+          this.map_leaflet.doubleClickZoom.disable();
+        }
 
       } else {
 
@@ -35764,7 +35769,7 @@ cdb.geo.leaflet.PathView = PathView;
       attributionControl._attributions = {};
       var newAttributions = this._originalAttributions.concat(this.map.get('attribution'));
       _.each(newAttributions, function(attribution) {
-        attributionControl.addAttribution(attribution);
+        attributionControl.addAttribution(cdb.core.sanitize.html(attribution));
       });
     },
 
@@ -37029,7 +37034,11 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
           minZoom: this.map.get('minZoom'),
           maxZoom: this.map.get('maxZoom'),
           disableDefaultUI: true,
+          // Set scrollwheel options
           scrollwheel: this.map.get("scrollwheel"),
+          // Allow dragging (and double click zoom)
+          draggable: this.map.get("drag"),
+          disableDoubleClickZoom: !this.map.get("drag"),
           mapTypeControl:false,
           mapTypeId: google.maps.MapTypeId.ROADMAP,
           backgroundColor: 'white',
@@ -37239,7 +37248,7 @@ if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
   setAttribution: function() {
     // Remove old one
     var old = document.getElementById("cartodb-gmaps-attribution")
-      , attribution = this.map.get("attribution").join(", ");
+      , attribution = cdb.core.sanitize.html(this.map.get("attribution").join(", "));
 
       // If div already exists, remove it
       if (old) {
@@ -38504,7 +38513,7 @@ var Vis = cdb.core.View.extend({
       legends: legends
     });
 
-    if (!this.mobile_enabled) {
+    if (!this.isMobileEnabled) {
       this.mapView.addOverlay(this.legends);
     }
   },
@@ -38682,6 +38691,16 @@ var Vis = cdb.core.View.extend({
     var scrollwheel       = (options.scrollwheel === undefined)  ? data.scrollwheel : options.scrollwheel;
     var slides_controller = (options.slides_controller === undefined)  ? data.slides_controller : options.slides_controller;
 
+    // Do not allow pan map if zoom overlay and scrollwheel are disabled unless
+    // mobile view is enabled
+    var isMobileDevice = this.isMobileDevice();
+    // Check if zoom overlay is present.
+    var hasZoomOverlay = _.isObject(_.find(data.overlays, function(overlay) {
+      return overlay.type == "zoom"
+    }));
+
+    var allowDragging = isMobileDevice || hasZoomOverlay || scrollwheel;
+
     // map
     data.maxZoom || (data.maxZoom = 20);
     data.minZoom || (data.minZoom = 0);
@@ -38718,6 +38737,7 @@ var Vis = cdb.core.View.extend({
       minZoom: data.minZoom,
       legends: data.legends,
       scrollwheel: scrollwheel,
+      drag: allowDragging,
       provider: data.map_provider
     };
 
@@ -38865,7 +38885,7 @@ var Vis = cdb.core.View.extend({
       this.torqueLayer.bind('change:time', function(s) {
         this.trigger('change:step', this.torqueLayer, this.torqueLayer.getStep());
       }, this);
-      if (!this.mobile_enabled && this.torqueLayer) {
+      if (!this.isMobileEnabled && this.torqueLayer) {
         this.addTimeSlider(this.torqueLayer);
       }
     }
@@ -39028,7 +39048,7 @@ var Vis = cdb.core.View.extend({
   _createOverlays: function(overlays, vis_data, options) {
 
     // if there's no header overlay, we need to explicitly create the slide controller
-    if ((options["slides_controller"] || options["slides_controller"] === undefined) && !this.mobile_enabled && !_.find(overlays, function(o) { return o.type === 'header' && o.options.display; })) {
+    if ((options["slides_controller"] || options["slides_controller"] === undefined) && !this.isMobileEnabled && !_.find(overlays, function(o) { return o.type === 'header' && o.options.display; })) {
       this._addSlideController(vis_data);
     }
 
@@ -39036,7 +39056,7 @@ var Vis = cdb.core.View.extend({
       var type = data.type;
 
       // We don't render certain overlays if we are in mobile
-      if (this.mobile_enabled && (type === "zoom" || type === "header" || type === "loader")) return;
+      if (this.isMobileEnabled && (type === "zoom" || type === "header" || type === "loader")) return;
 
       // IE<10 doesn't support the Fullscreen API
       if (type === 'fullscreen' && cdb.core.util.browser.ie && cdb.core.util.browser.ie.version <= 10) return;
@@ -39062,7 +39082,7 @@ var Vis = cdb.core.View.extend({
 
       var opt = data.options;
 
-      if (!this.mobile_enabled) {
+      if (!this.isMobileEnabled) {
 
         if (type == 'share' && options["shareable"]  || type == 'share' && overlay.model.get("display") && options["shareable"] == undefined) overlay.show();
         if (type == 'layer_selector' && options[type] || type == 'layer_selector' && overlay.model.get("display") && options[type] == undefined) overlay.show();
@@ -39125,7 +39145,7 @@ var Vis = cdb.core.View.extend({
     var layers;
     var layer = data.layers[1];
 
-    if (this.mobile_enabled) {
+    if (this.isMobileEnabled) {
 
       if (options && options.legends === undefined) {
         options.legends = this.legends ? true : false;
@@ -39284,10 +39304,12 @@ var Vis = cdb.core.View.extend({
       this.gmaps_style = opt.gmaps_style;
     }
 
-    this.mobile = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    this.mobile_enabled = (opt.mobile_layout && this.mobile) || opt.force_mobile;
+    this.mobile = this.isMobileDevice();
+    this.isMobileEnabled = (opt.mobile_layout && this.mobile) || opt.force_mobile;
 
-    if (opt.force_mobile === false || opt.force_mobile === "false") this.mobile_enabled = false;
+    if (opt.force_mobile === false || opt.force_mobile === "false") {
+      this.isMobileEnabled = false;
+    }
 
     if (!opt.title) {
       vizjson.title = null;
@@ -39309,7 +39331,7 @@ var Vis = cdb.core.View.extend({
       opt.search = opt.searchControl;
     }
 
-    if (!this.mobile_enabled && opt.search) {
+    if (!this.isMobileEnabled && opt.search) {
       if (!search_overlay('search')) {
         vizjson.overlays.push({
            type: "search",
@@ -39347,7 +39369,7 @@ var Vis = cdb.core.View.extend({
       }
     }
 
-    if (opt.shareable && !this.mobile_enabled) {
+    if (opt.shareable && !this.isMobileEnabled) {
       if (!search_overlay('share')) {
         vizjson.overlays.push({
           type: "share",
@@ -39358,7 +39380,7 @@ var Vis = cdb.core.View.extend({
     }
 
     // We remove certain overlays in mobile devices
-    if (this.mobile_enabled) {
+    if (this.isMobileEnabled) {
       remove_overlay('logo');
       remove_overlay('share');
     }
@@ -39733,6 +39755,10 @@ var Vis = cdb.core.View.extend({
 
       }
     }, 150);
+  },
+
+  isMobileDevice: function() {
+    return /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
   }
 
 }, {

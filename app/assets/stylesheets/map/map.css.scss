@@ -32,6 +32,15 @@ div.map.animated .cartodb-map {
   transition: all 200ms ease;
 }
 
+// Disable animations
+.notransition {
+  -webkit-transition: none !important;
+  -moz-transition: none !important;
+  -o-transition: none !important;
+  -ms-transition: none !important;
+  transition: none !important;
+}
+
 div.map {
 
   &.mobile #cartodb-gmaps-attribution {
@@ -441,7 +450,25 @@ div.map {
       position:relative;
       margin: 0;
 
-      &.custom, &.cluster, &.bubble, &.color, &.intensity, &.density { display: block; }
+      &.custom, &.cluster, &.bubble, &.color, &.intensity, &.density {
+        display: block;
+      }
+
+      &.cluster, &.bubble, &.color, &.intensity, &.density {
+        width: 100% !important;
+      }
+
+      &.bubble {
+        padding-left: 0;
+        padding-right: 0;
+        .legend-title {
+          padding-left: 10px;
+        }
+        & > ul {
+          padding-left: 10px;
+          padding-right: 10px;
+        }
+      }
     }
   }
 

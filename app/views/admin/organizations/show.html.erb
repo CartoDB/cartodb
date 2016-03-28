@@ -11,7 +11,8 @@
       id: "<%= current_user.organization.id %>",
       quota_in_bytes: <%= current_user.organization.quota_in_bytes %>,
       seats: <%= current_user.organization.seats %>,
-      owner: { id: "<%= current_user.id %>" }
+      owner: { id: "<%= current_user.id %>" },
+      whitelisted_domains: <%= raw current_user.organization.whitelisted_email_domains %>
     };
     var user_data = <%= safe_js_object current_user.data.to_json.html_safe %>;
     var upgrade_url = "<%= current_user.upgrade_url(request.protocol) %>";

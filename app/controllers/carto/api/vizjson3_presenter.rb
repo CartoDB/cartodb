@@ -1,4 +1,3 @@
-require_dependency 'carto/api/vizjson_presenter'
 require_dependency 'carto/api/layer_vizjson_adapter'
 
 module Carto
@@ -12,7 +11,9 @@ module Carto
       end
 
       def to_vizjson(vector: false, **options)
-        vizjson = symbolize_vizjson(Carto::Api::VizJSONPresenter.new(@visualization, @redis_cache).to_vizjson(options))
+        vizjson = @redis_vizjson_cache.cached(@visualization.id, options.fetch(:https_request, false)) do
+          calculate_vizjson(options)
+        end
 
         vizjson[:widgets] = Carto::Widget.from_visualization_id(@visualization.id).map do |w|
           Carto::Api::WidgetPresenter.new(w).to_poro
@@ -21,13 +22,28 @@ module Carto
         vizjson[:layers].each { |l| layer_vizjson2_to_3(l) }
 
         vizjson[:datasource] = datasource(options)
-        vizjson[:user] = user
+        vizjson[:user] = user_vizjson_info
         vizjson[:vector] = vector
 
         vizjson
       end
 
       private
+
+      def calculate_vizjson(options={})
+        vizjson_options = {
+          full: false,
+          user_name: user.username,
+          user_api_key: user.api_key,
+          user: user,
+          viewer_user: user
+        }.merge(options)
+        CartoDB::Visualization::VizJSON.new(Carto::Api::VisualizationVizJSONAdapter.new(@visualization, @redis_cache), vizjson_options, Cartodb.config).to_poro
+      end
+
+      def user
+        @user ||= @visualization.user
+      end
 
       def symbolize_vizjson(vizjson)
         vizjson = vizjson.deep_symbolize_keys
@@ -122,10 +138,10 @@ module Carto
         ds
       end
 
-      def user
+      def user_vizjson_info
         {
-          fullname: @visualization.user.name.present? ? @visualization.user.name : @visualization.user.username,
-          avatar_url: @visualization.user.avatar_url
+          fullname: user.name.present? ? user.name : user.username,
+          avatar_url: user.avatar_url
         }
       end
     end

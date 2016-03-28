@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "3.23.54",
+  "version": "3.23.56",
   "description": "CartoDB UI frontend",
   "repository": {
     "type": "git",
@@ -27,9 +27,9 @@
     "browserify-shim": "3.8.10",
     "camshaft-reference": "^0.1.0",
     "cartoassets": "cartodb/CartoAssets#master",
-    "cartodb-deep-insights.js": "cartodb/deep-insights.js#5a8d314",
+    "cartodb-deep-insights.js": "cartodb/deep-insights.js#master",
     "cartodb-pecan": "0.2.x",
-    "cartodb.js": "cartodb/cartodb.js#3079e6d",
+    "cartodb.js": "cartodb/cartodb.js#v4",
     "csswring": "^3.0.5",
     "git-rev": "0.2.1",
     "grunt": "0.4.5",
@@ -53,7 +53,7 @@
     "grunt-postcss": "0.5.5",
     "grunt-timer": "0.3.3",
     "jquery": "2.1.4",
-    "jquery-ui": "^1.10.5",
+    "jquery-ui":"^1.10.5",
     "jstify": "0.13.0",
     "load-grunt-tasks": "3.2.0",
     "moment": "2.10.6",
@@ -62,7 +62,7 @@
     "perfect-scrollbar": "0.6.7",
     "queue-async": "^1.0.7",
     "semistandard": "7.0.4",
-    "source-map-support": "0.3.2",
+    "source-map-support": "0.4.0",
     "uglify-js": "2.4.x",
     "underscore": "1.8.3",
     "watchify": "3.1.1"
@@ -130,5 +130,8 @@
       "/tmp",
       "/vendor"
     ]
+  },
+  "scripts": {
+    "update-internal-deps": "npm update camshaft-reference cartoassets cartodb-deep-insights.js cartodb.js && npm shrinkwrap --dev"
   }
 }

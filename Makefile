@@ -37,6 +37,7 @@ WORKING_SPECS_1 = \
   spec/requests/carto/api/presenter_cache_spec.rb \
   spec/requests/carto/api/widgets_controller_spec.rb \
   spec/requests/carto/editor/visualizations_controller_spec.rb \
+	spec/requests/visualizations_controller_helper_spec.rb \
   spec/models/map_spec.rb \
   spec/models/map/copier_spec.rb \
 	spec/models/visualization/collection_spec.rb \
@@ -231,6 +232,8 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/requests/api/json/maps_controller_spec.rb \
 	spec/requests/carto/api/analyses_controller_spec.rb \
 	spec/requests/carto/api/maps_controller_spec.rb \
+	spec/requests/admin/users_controller_spec.rb \
+	spec/lib/carto/strong_password_validator_spec.rb \
 	$(NULL)
 
 # This class must be tested isolated as pollutes namespace

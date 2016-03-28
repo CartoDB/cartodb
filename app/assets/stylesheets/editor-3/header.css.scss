@@ -1,0 +1,65 @@
+// Styles for Header Editor
+// --------------------------------------------------
+
+@import 'cdb-utilities/mixins';
+@import 'cdb-variables/sizes';
+@import 'cdb-variables/colors';
+
+.Editor-HeaderInfo {
+  @include display-flex();
+  @include align-items(flex-start);
+  margin-bottom: 28px;
+
+  &.is-block {
+    display: block;
+  }
+}
+.Editor-HeaderInfo-ListItem {
+  display: inline-block;
+  margin-right: 8px;
+  vertical-align: middle;
+
+  &:last-child {
+    margin-right: 0;
+  }
+}
+
+.Editor-HeaderInfo-Inner {
+  @include flex(1);
+}
+.Editor-HeaderInfo-Back {
+  margin-top: 7px;
+}
+.Editor-HeaderInfo-Title {
+  @include display-flex();
+  @include align-items(center);
+}
+.Editor-HeaderInfo-TitleText {
+  @include flex(1);
+  width: 0;
+  padding-right: 16px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.Editor-HeaderInfo-ActionsItem {
+  display: inline-block;
+  margin-left: 4px;
+  vertical-align: middle;
+}
+.Editor-HeaderInfo-ActionsItem:first-child {
+  margin-left: 0;
+}
+
+.Editor-HeaderNumeration {
+  width: $baseSize * 3;
+  height: $baseSize * 3;
+  border: 1px solid $cMainLine;
+  border-radius: 4px;
+  background-color: $cWhite;
+  color: $cAltText;
+  font-size: $sFontSize-small;
+  line-height: 23px;
+  text-align: center;
+  box-sizing: border-box;
+}

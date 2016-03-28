@@ -1,4 +1,4 @@
-require 'carto/api/vizjson3_presenter'
+require_dependency 'carto/api/vizjson3_presenter'
 
 module Carto
   module Editor
@@ -32,7 +32,8 @@ module Carto
         private
 
         def load_visualization
-          @visualization = load_visualization_from_id(params[:visualization_id])
+          @visualization = load_visualization_from_id_or_name(params[:visualization_id])
+          render_404 unless @visualization
         end
 
         def ensure_viewable

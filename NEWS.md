@@ -2,6 +2,9 @@
 -------------------
 ## Features
 * Adds optional strong passwords for organization signups
+* Add new function User#direct_db_connection which uses the direct_port specified in database.yml to connect to the database. Usage instructions:
+  * Use `port` in database.yml to specify the port through which the db is accessed for regular queries (such as pgbouncer connections)
+  * Use `direct_port` in database.yml to specify the port through which the db can be directly accessed (i.e. the port in which Postgres is running)
 
 ## Bug Fixes
 * Updating CartoDB.js submodule with last changes sanitizing attribution.

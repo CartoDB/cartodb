@@ -1,6 +1,6 @@
 // cartodb.js version: 3.15.9
 // uncompressed version: cartodb.uncompressed.js
-// sha: 674bb81219b2410fa6b7d54e9e56b1b27160eb74
+// sha: 5bee7c8c6c6b2a62ec29c598f9c4331a9cb831fb
 (function() {
   var define;  // Undefine define (require.js), see https://github.com/CartoDB/cartodb.js/issues/543
   var root = this;
@@ -28605,6 +28605,30 @@ cdb.geo.ui.ZoomInfo = cdb.core.View.extend({
     return this;
   }
 });
+// HELPERS
+
+cdb.geo.utils = cdb.geo.utils || {};
+
+cdb.geo.utils.cssStringToObject = function (str) {
+  if (!str) { return {}; }
+  var css = {};
+  var properties = str.split(';');
+  _.each(properties, function (p) {
+    var keyValue = p.trim().split(':');
+    if (keyValue.length === 2) {
+      css[keyValue[0].trim()] = keyValue[1].trim();
+    }
+  });
+  return css;
+}
+
+cdb.geo.utils.objectToCssString = function (obj) {
+  if (!(_.isObject(obj) && _.size(obj))) { return null; }
+
+  return _.map(obj, function (v, k) {
+    return k + ': ' + v;
+  }).join('; ');
+}
 
 // MODELS & COLLECTIONS
 
@@ -29428,8 +29452,40 @@ cdb.geo.ui.StackedLegend = cdb.core.View.extend({
 
   className: "cartodb-legend-stack",
 
+  events: {
+    'click .reset': 'resetStyle'
+  },
+
+  template: _.template('<div class="reset">&bigotimes;</div>'),
+
   initialize: function() {
     _.each(this.options.legends, this._setupBinding, this);
+
+    this.vis = this.options.vis;
+
+    this._setupModels();
+  },
+
+  _setupModels: function () {
+    this.model = new cdb.core.Model({});
+
+    if (this.vis) {
+        var style = this.vis.get('legend_style');
+        var css = cdb.geo.utils.cssStringToObject(style);
+        if (style) {
+            this.model.set('style', css);
+        }
+        this.model.bind('change:style', this._setStyle, this);
+    }
+    this.model.bind('change', this.render, this);
+
+    this.add_related_model(this.model);
+  },
+
+  _setStyle: function () {
+    var style = this.model.get('style') || {};
+    this.vis.set("legend_style", cdb.geo.utils.objectToCssString(style));
+    this.vis.save()
   },
 
   getLegendByIndex: function(index) {
@@ -29449,9 +29505,26 @@ cdb.geo.ui.StackedLegend = cdb.core.View.extend({
     this.add_related_model(legend.model);
   },
 
+  resetStyle: function (event) {
+    if (this.vis) {
+      this.model.set('style', null);
+      if (event && event.stopPropagation) {
+        event.stopPropagation();
+      }
+    }
+  },
+
   render: function() {
+
+    if (this.vis) {
+      this.$el.html(this.template());
+    }
+
     this._renderItems();
     this._checkVisibility();
+
+    var style = this.model.get('style');
+    this._renderLegendStyles(style);
 
     return this;
   },
@@ -29481,6 +29554,30 @@ cdb.geo.ui.StackedLegend = cdb.core.View.extend({
         item.show();
       }
     }, this);
+  },
+
+  _renderLegendStyles: function (style) {
+    if (!style) {
+        this.$el.attr('style', '');
+        return;
+    }
+    var formattedStyle = getFormattedStyle(style);
+    var textStyle = _.pick(formattedStyle, ['color', 'font-size', 'font-family']);
+    this.$el.css(formattedStyle);
+    this.$el.find('li').css(textStyle);
+    this.$el.find('.legend-title').css(textStyle);
+
+    function getFormattedStyle(style) {
+        var formattedStyle = _.extend({}, style);
+        // font-size already has px applied in the style model
+        var needsPx = ['font-size', 'width', 'height', 'border-radius', 'border-width'];
+        _.forEach(formattedStyle, function (v, k) {
+            if (needsPx.indexOf(k) !== -1) {
+                formattedStyle[k] = parseInt(v, 10) + 'px';
+            }
+        });
+        return formattedStyle;
+    }
   },
 
   show: function() {

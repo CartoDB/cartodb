@@ -14,6 +14,7 @@ module CartoDB
       KML_MULTI_RE    = /<Line|<Polygon/
       KML_POINT_RE    = /<Point>/
       DEFAULT_SCHEMA  = 'cdb_importer'
+      DIRECT_STATEMENT_TIMEOUT = 1.hour*1000
       # @see config/initializers/carto_db.rb -> POSTGRESQL_RESERVED_WORDS
       RESERVED_WORDS  = %w{ ALL ANALYSE ANALYZE AND ANY ARRAY AS ASC ASYMMETRIC
                             AUTHORIZATION BETWEEN BINARY BOTH CASE CAST CHECK
@@ -31,13 +32,14 @@ module CartoDB
                             FORMAT CONTROLLER ACTION
                           }
 
-      def initialize(db, table_name, column_name, schema = DEFAULT_SCHEMA, job = nil, logger = nil, capture_exceptions = true)
+      def initialize(db, table_name, column_name, user, schema = DEFAULT_SCHEMA, job = nil, logger = nil, capture_exceptions = true)
         @job          = job || Job.new({logger: logger})
         @db           = db
         @table_name   = table_name.to_sym
         @column_name  = column_name.to_sym
         @schema       = schema
         @capture_exceptions = capture_exceptions
+        @user = user
 
         @from_geojson_with_transform = false
       end
@@ -71,17 +73,23 @@ module CartoDB
       def convert_from_wkt
         #TODO: @capture_exceptions
         job.log 'Converting geometry from WKT to WKB'
-        QueryBatcher.new(
-            db, 
-            job, 
-            create_seq_field = true
-          ).execute_update(
-              %Q{
-                UPDATE #{qualified_table_name}
-                SET #{column_name} = ST_GeomFromText(#{column_name}, #{DEFAULT_SRID})
-              },
-              schema, table_name
-          )
+        @user.direct_db_connection(statement_timeout: DIRECT_STATEMENT_TIMEOUT) do |user_direct_conn|
+          user_direct_conn.run(%Q{
+                                 UPDATE #{qualified_table_name}
+                                 SET #{column_name} = ST_GeomFromText(#{column_name}, #{DEFAULT_SRID})
+                                 })
+          end
+        # QueryBatcher.new(
+        #     db, 
+        #     job, 
+        #     create_seq_field = true
+        #   ).execute_update(
+        #       %Q{
+        #         UPDATE #{qualified_table_name}
+        #         SET #{column_name} = ST_GeomFromText(#{column_name}, #{DEFAULT_SRID})
+        #       },
+        #       schema, table_name
+        #   )
 
         self
       end
@@ -97,17 +105,23 @@ module CartoDB
         # 2) Normal geojson behavior
         #TODO: @capture_exceptions
         job.log 'Converting geometry from GeoJSON with transform to WKB'
-        QueryBatcher.new(
-            db, 
-            job, 
-            create_seq_field = true
-          ).execute_update(
-              %Q{
-                UPDATE #{qualified_table_name}
-                SET #{column_name} = public.ST_SetSRID(public.ST_GeomFromGeoJSON(#{column_name}), #{DEFAULT_SRID})
-              },
-              schema, table_name
-          )
+        @user.direct_db_connection(statement_timeout: DIRECT_STATEMENT_TIMEOUT) do |user_direct_conn|
+          user_direct_conn.run(%Q{
+                                 UPDATE #{qualified_table_name}
+                                 SET #{column_name} = public.ST_SetSRID(public.ST_GeomFromGeoJSON(#{column_name}), #{DEFAULT_SRID})
+                                 })
+        end
+        # QueryBatcher.new(
+        #     db, 
+        #     job, 
+        #     create_seq_field = true
+        #   ).execute_update(
+        #       %Q{
+        #         UPDATE #{qualified_table_name}
+        #         SET #{column_name} = public.ST_SetSRID(public.ST_GeomFromGeoJSON(#{column_name}), #{DEFAULT_SRID})
+        #       },
+        #       schema, table_name
+        #   )
 
         self
       end
@@ -115,17 +129,23 @@ module CartoDB
       def convert_from_geojson
         #TODO: @capture_exceptions
         job.log 'Converting geometry from GeoJSON to WKB'
-        QueryBatcher.new(
-            db, 
-            job, 
-            create_seq_field = true
-          ).execute_update(
-              %Q{
-                UPDATE #{qualified_table_name}
-                SET #{column_name} = public.ST_SetSRID(public.ST_GeomFromGeoJSON(#{column_name}), #{DEFAULT_SRID})
-              },
-              schema, table_name
-          )
+        @user.direct_db_connection(statement_timeout: DIRECT_STATEMENT_TIMEOUT) do |user_direct_conn|
+          user_direct_conn.run(%Q{
+                                 UPDATE #{qualified_table_name}
+                                 SET #{column_name} = public.ST_SetSRID(public.ST_GeomFromGeoJSON(#{column_name}), #{DEFAULT_SRID})
+                                 })
+        end
+        # QueryBatcher.new(
+        #     db, 
+        #     job, 
+        #     create_seq_field = true
+        #   ).execute_update(
+        #       %Q{
+        #         UPDATE #{qualified_table_name}
+        #         SET #{column_name} = public.ST_SetSRID(public.ST_GeomFromGeoJSON(#{column_name}), #{DEFAULT_SRID})
+        #       },
+        #       schema, table_name
+        #   )
 
         self
       end
@@ -133,49 +153,67 @@ module CartoDB
       def convert_from_kml_point
         #TODO: @capture_exceptions
         job.log 'Converting geometry from KML point to WKB'
-        QueryBatcher.new(
-            db, 
-            job, 
-            create_seq_field = true
-          ).execute_update(
-              %Q{
-                UPDATE #{qualified_table_name}
-                SET #{column_name} = public.ST_SetSRID(public.ST_GeomFromKML(#{column_name}),#{DEFAULT_SRID})
-              },
-              schema, table_name
-          )
+        @user.direct_db_connection(statement_timeout: DIRECT_STATEMENT_TIMEOUT) do |user_direct_conn|
+          user_direct_conn.run(%Q{
+                                 UPDATE #{qualified_table_name}
+                                 SET #{column_name} = public.ST_SetSRID(public.ST_GeomFromKML(#{column_name}),#{DEFAULT_SRID})
+                                 })
+        end
+        # QueryBatcher.new(
+        #     db, 
+        #     job, 
+        #     create_seq_field = true
+        #   ).execute_update(
+        #       %Q{
+        #         UPDATE #{qualified_table_name}
+        #         SET #{column_name} = public.ST_SetSRID(public.ST_GeomFromKML(#{column_name}),#{DEFAULT_SRID})
+        #       },
+        #       schema, table_name
+        #   )
       end
 
       def convert_from_kml_multi
         #TODO: @capture_exceptions
         job.log 'Converting geometry from KML multi to WKB'
-        QueryBatcher.new(
-            db, 
-            job, 
-            create_seq_field = true
-          ).execute_update(
-              %Q{
-                UPDATE #{qualified_table_name}
-                SET #{column_name} = public.ST_SetSRID(public.ST_Multi(public.ST_GeomFromKML(#{column_name})),#{DEFAULT_SRID})
-              },
-              schema, table_name
-          )
+        @user.direct_db_connection(statement_timeout: DIRECT_STATEMENT_TIMEOUT) do |user_direct_conn|
+          user_direct_conn.run(%Q{
+                                 UPDATE #{qualified_table_name}
+                                 SET #{column_name} = public.ST_SetSRID(public.ST_Multi(public.ST_GeomFromKML(#{column_name})),#{DEFAULT_SRID})
+                                 })
+        end
+        # QueryBatcher.new(
+        #     db, 
+        #     job, 
+        #     create_seq_field = true
+        #   ).execute_update(
+        #       %Q{
+        #         UPDATE #{qualified_table_name}
+        #         SET #{column_name} = public.ST_SetSRID(public.ST_Multi(public.ST_GeomFromKML(#{column_name})),#{DEFAULT_SRID})
+        #       },
+        #       schema, table_name
+        #   )
       end
 
       def convert_to_2d
         #TODO: @capture_exceptions
         job.log 'Converting to 2D point'
-        QueryBatcher.new(
-            db, 
-            job, 
-            create_seq_field = true
-          ).execute_update(
-              %Q{
-                UPDATE #{qualified_table_name}
-                SET #{column_name} = public.ST_Force_2D(#{column_name})
-              },
-              schema, table_name
-          )
+         @user.direct_db_connection(statement_timeout: DIRECT_STATEMENT_TIMEOUT) do |user_direct_conn|
+          user_direct_conn.run(%Q{
+                                 UPDATE #{qualified_table_name}
+                                 SET #{column_name} = public.ST_Force_2D(#{column_name})
+                                 })
+        end
+        # QueryBatcher.new(
+        #     db, 
+        #     job, 
+        #     create_seq_field = true
+        #   ).execute_update(
+        #       %Q{
+        #         UPDATE #{qualified_table_name}
+        #         SET #{column_name} = public.ST_Force_2D(#{column_name})
+        #       },
+        #       schema, table_name
+        #   )
       end
 
       def wkb?
@@ -200,12 +238,15 @@ module CartoDB
 
       def cast_to(type)
         job.log "casting #{column_name} to #{type}"
-        db.run(%Q{
-          ALTER TABLE #{qualified_table_name}
-          ALTER #{column_name}
-          TYPE #{type}
-          USING #{column_name}::#{type}
+
+         @user.direct_db_connection(statement_timeout: DIRECT_STATEMENT_TIMEOUT) do |user_direct_conn|
+            user_direct_conn.run(%Q{
+                                    ALTER TABLE #{qualified_table_name}
+                                    ALTER #{column_name}
+                                    TYPE #{type}
+                                    USING #{column_name}::#{type}
         })
+          end
         self
       end
 
@@ -241,7 +282,7 @@ module CartoDB
 
       def geometry_type
         sample = db[%Q{
-          SELECT public.GeometryType(ST_Force_2D(#{column_name}))
+          SELECT public.GeometryType(ST_Force_2D(#{column_name}::geometry))
           AS type
           FROM #{schema}.#{table_name}
           WHERE #{column_name} IS NOT NULL
@@ -259,6 +300,7 @@ module CartoDB
 
       # Replace empty strings by nulls to avoid cast errors
       def empty_lines_to_nulls
+        # first timeout crash
         job.log 'replace empty strings by nulls?'
         column_id = column_name.to_sym
         column_type = nil
@@ -270,18 +312,25 @@ module CartoDB
         if column_type != nil && column_type == :string
           #TODO: @capture_exceptions
           job.log 'string column found, replacing'
-          QueryBatcher.new(
-              db, 
-              job, 
-              create_seq_field = true
-            ).execute_update(
-                %Q{
-                  UPDATE #{qualified_table_name}
-                  SET #{column_name}=NULL
-                  WHERE #{column_name}=''
-                },
-                schema, table_name
-            )
+          @user.direct_db_connection(statement_timeout: DIRECT_STATEMENT_TIMEOUT) do |user_direct_conn|
+            user_direct_conn.run(%Q{
+                   UPDATE #{qualified_table_name}
+                   SET #{column_name}=NULL
+                   WHERE #{column_name}=''
+                 })
+          end
+          # QueryBatcher.new(
+          #     db, 
+          #     job, 
+          #     create_seq_field = true
+          #   ).execute_update(
+          #       %Q{
+          #         UPDATE #{qualified_table_name}
+          #         SET #{column_name}=NULL
+          #         WHERE #{column_name}=''
+          #       },
+          #       schema, table_name
+          #   )
         else
           job.log 'no string column found, nothing replaced'
         end

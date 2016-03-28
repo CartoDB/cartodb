@@ -38,6 +38,7 @@ class Table
 
   NO_GEOMETRY_TYPES_CACHING_TIMEOUT = 5.minutes
   GEOMETRY_TYPES_PRESENT_CACHING_TIMEOUT = 24.hours
+  DIRECT_STATEMENT_TIMEOUT = 1.hour*1000
 
   # See http://www.postgresql.org/docs/9.3/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS
   PG_IDENTIFIER_MAX_LENGTH = 63
@@ -1121,8 +1122,8 @@ class Table
     table_name = "#{owner.database_schema}.#{self.name}"
 
     importer_stats.timing('cartodbfy') do
-      owner.in_database do |user_database|
-        user_database.run(%Q{
+      owner.direct_db_connection(statement_timeout: DIRECT_STATEMENT_TIMEOUT) do |user_direct_conn|
+        user_direct_conn.run(%Q{
           SELECT cartodb.CDB_CartodbfyTable('#{schema_name}'::TEXT,'#{table_name}'::REGCLASS);
         })
       end

@@ -14,12 +14,14 @@ module CartoDB
       OSM_INDEXING_OPTION   = 'OSM_USE_CUSTOM_INDEXING=NO'
       APPEND_MODE_OPTION    = '-append'
 
-      DEFAULT_BINARY = 'which ogr2ogr2'
+      DEFAULT_BINARY = 'which ogr2ogr2.1'
 
       LATITUDE_POSSIBLE_NAMES   = %w{ latitude lat latitudedecimal
         latitud lati decimallatitude decimallat point_latitude }
       LONGITUDE_POSSIBLE_NAMES  = %w{ longitude lon lng
         longitudedecimal longitud long decimallongitude decimallong point_longitude }
+
+      DEFAULT_TIMEOUT = '1h'
 
 
       def initialize(table_name, filepath, pg_options, layer=nil, options={})
@@ -48,13 +50,14 @@ module CartoDB
         "#{OSM_INDEXING_OPTION} #{PG_COPY_OPTION} #{client_encoding_option} #{shape_encoding_option} " +
         "#{executable_path} #{OUTPUT_FORMAT_OPTION} #{overwrite_option} #{guessing_option} " +
         "#{postgres_options} #{projection_option} #{layer_creation_options} #{filepath} #{layer} " +
-        "#{layer_name_option} #{new_layer_type_option} #{shape_coordinate_option} "
+        "#{layer_name_option} #{new_layer_type_option} #{shape_coordinate_option} #{timeout_options}"
       end
 
       def command_for_append
         "#{OSM_INDEXING_OPTION} #{PG_COPY_OPTION} #{client_encoding_option} " +
         "#{executable_path} #{APPEND_MODE_OPTION} #{OUTPUT_FORMAT_OPTION} #{postgres_options} " +
-        "#{projection_option} #{filepath} #{layer} #{layer_name_option} #{NEW_LAYER_TYPE_OPTION}"
+        "#{projection_option} #{filepath} #{layer} #{layer_name_option} #{NEW_LAYER_TYPE_OPTION} " +
+        "#{timeout_options}"
       end
 
       def executable_path
@@ -191,7 +194,7 @@ module CartoDB
       # @see http://www.gdal.org/drv_pg_advanced.html
       def postgres_options
         %Q{PG:"host=#{pg_options.fetch(:host)} }      +
-        %Q{port=#{pg_options.fetch(:port)} }          +
+        %Q{port=#{pg_options.fetch(:direct_port)} }          +
         %Q{user=#{pg_options.fetch(:user)} }          +
         %Q{dbname=#{pg_options.fetch(:database)} }    +
         %Q{password=#{pg_options.fetch(:password)}"}
@@ -205,6 +208,14 @@ module CartoDB
 
       def projection_option
         is_csv? || filepath =~ /\.ods/ ? nil : '-t_srs EPSG:4326 '
+      end
+
+      def timeout_options
+        # see http://www.gdal.org/ogr2ogr.html
+        # see http://www.gdal.org/drv_pg.html
+        %Q{-doo PRELUDE_STATEMENTS="SET statement_timeout TO \'#{DEFAULT_TIMEOUT}\'" } +
+        %Q{-doo CLOSING_STATEMENTS='SET statement_timeout TO DEFAULT' } +
+        %Q{-update}
       end
     end
   end

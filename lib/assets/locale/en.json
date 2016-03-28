@@ -32,6 +32,10 @@
         },
         "time-series-no-option-title": "None",
         "time-series-no-option-desc": "This option won't show your time-series widget"
+      },
+      "add-layer": {
+        "modal-title": "Add a new layer",
+        "modal-desc": "Select an existing dataset or connect a new one"
       }
     },
     "error": {
@@ -59,6 +63,7 @@
       "layer": {
         "analysis": "Analysis",
         "add-analysis": "Add analysis",
+        "add-layer": "Add layer",
         "delete": "Delete"
       },
       "menu-tab-pane-labels": {

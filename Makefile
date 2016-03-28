@@ -232,6 +232,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/requests/api/json/maps_controller_spec.rb \
 	spec/requests/carto/api/analyses_controller_spec.rb \
 	spec/requests/carto/api/maps_controller_spec.rb \
+	spec/requests/carto/api/vizjson3_presenter_spec.rb \
 	spec/requests/admin/users_controller_spec.rb \
 	spec/lib/carto/strong_password_validator_spec.rb \
 	$(NULL)

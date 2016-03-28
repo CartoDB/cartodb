@@ -1105,7 +1105,7 @@ describe Carto::Api::VisualizationsController do
       end
     end
 
-    # Initially, vizjson3 is a vizjson2 extension, so tests covering vizjson2 also cover vizjson3
+    # Specific tests for vizjson 3. Common are at `vizjson_shared_examples`
     describe '#vizjson3' do
       include Fixtures::Layers::Infowindows
       include Fixtures::Layers::Tooltips

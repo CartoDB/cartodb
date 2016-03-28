@@ -3,11 +3,28 @@ require_dependency 'carto/api/layer_vizjson_adapter'
 module Carto
   module Api
     class VizJSON3Presenter
+      # Forwarding as a development transient tool
+      extend Forwardable
 
-      def initialize(visualization, redis_cache = $tables_metadata)
+      delegate [:layer_group_for, :named_map_layer_group_for, :other_layers_for,
+        :visualization, :map, :layers_for, :configuration,
+        :clean_description, :bounds_from, :all_layers_for,
+        :layers_for, :layer_group_for_named_map, :basemap_layer_for,
+        :non_basemap_base_layers_for, :overlays_for, :children_for,
+        :ordered_overlays_for, :default_options, :auth_tokens_for] => :old_vizjson
+
+      def old_vizjson
+        @old_vizjson
+      end
+
+      def create_old_vizjson(options = {})
+        CartoDB::Visualization::VizJSON.new(Carto::Api::VisualizationVizJSONAdapter.new(@visualization, @redis_cache), options, Cartodb.config)
+      end
+
+      def initialize(visualization, redis_cache = $tables_metadata, redis_vizjson_cache = CartoDB::Visualization::RedisVizjsonCache.new(redis_cache, '3'))
         @visualization = visualization
         @redis_cache = redis_cache
-        @redis_vizjson_cache = CartoDB::Visualization::RedisVizjsonCache.new(redis_cache)
+        @redis_vizjson_cache = redis_vizjson_cache
       end
 
       def to_vizjson(vector: false, **options)
@@ -30,6 +47,8 @@ module Carto
 
       private
 
+      VIZJSON_3_VERSION = '3.0.0'.freeze
+
       def calculate_vizjson(options={})
         vizjson_options = {
           full: false,
@@ -38,7 +57,45 @@ module Carto
           user: user,
           viewer_user: user
         }.merge(options)
-        CartoDB::Visualization::VizJSON.new(Carto::Api::VisualizationVizJSONAdapter.new(@visualization, @redis_cache), vizjson_options, Cartodb.config).to_poro
+
+        @old_vizjson = create_old_vizjson(vizjson_options)
+
+        to_poro(vizjson_options)
+      end
+
+      def to_poro(options)
+        poro_data = {
+          id:             visualization.id,
+          version:        VIZJSON_3_VERSION,
+          title:          visualization.qualified_name(@user),
+          likes:          visualization.likes.count,
+          description:    visualization.description_html_safe,
+          scrollwheel:    map.scrollwheel,
+          legends:        map.legends,
+          url:            options.delete(:url),
+          map_provider:   map.provider,
+          bounds:         bounds_from(map),
+          center:         map.center,
+          zoom:           map.zoom,
+          updated_at:     map.viz_updated_at,
+          layers:         layers_for(visualization),
+          overlays:       overlays_for(visualization),
+          prev:           visualization.prev_id,
+          next:           visualization.next_id,
+          transition_options: visualization.transition_options
+        }
+
+        auth_tokens = auth_tokens_for(visualization)
+        poro_data.merge!(auth_tokens: auth_tokens) if auth_tokens.length > 0
+
+        children = children_for(visualization)
+        poro_data.merge!(slides: children) if children.length > 0
+        unless visualization.parent_id.nil?
+          poro_data[:title] = visualization.parent.qualified_name(@user)
+          poro_data[:description] = visualization.parent.description_html_safe
+        end
+
+        poro_data
       end
 
       def user

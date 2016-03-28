@@ -330,17 +330,6 @@ module CartoDB
                                     SET the_geom = ST_GeometryN(the_geom, 1)
                                     })
         end
-        # QueryBatcher.new(
-        #     db,
-        #     job,
-        #     create_seq_field = true
-        #   ).execute_update(
-        #       %Q{
-        #         UPDATE #{qualified_table_name}
-        #         SET the_geom = ST_GeometryN(the_geom, 1)
-        #       },
-        #       schema, table_name
-        #   )
       end
 
       def multipoint?

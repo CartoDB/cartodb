@@ -90,12 +90,12 @@
 }
 
 
-.WidgetShape-TimeSeries-inner {
+.WidgetShape-timeSeriesInner {
   position: relative;
   width: 20px;
   height: 11px;
 }
-.WidgetShape-TimeSeries-play {
+.WidgetShape-timeSeries-play {
   display: inline-block;
   width: 0;
   height: 0;
@@ -104,11 +104,11 @@
   content: '';
   vertical-align: top;
 }
-.WidgetShape-TimeSeries-header {
+.WidgetShape-timeSeries-header {
   height: 5px;
   margin-bottom: 2px;
 }
-.WidgetShape-TimeSeries-title {
+.WidgetShape-timeSeries-title {
   display: inline-block;
   width: 13px;
   height: 2px;
@@ -116,40 +116,40 @@
   background: $cSecondaryLine;
   vertical-align: top;
 }
-.WidgetShape-TimeSeries-bar {
+.WidgetShape-timeSeries-bar {
   position: absolute;
   bottom: 0;
   width: 2px;
   background: $cSecondaryLine;
 }
-.WidgetShape-TimeSeries-bar.is-played {
+.WidgetShape-timeSeries-bar.is-played {
   background: #F2CC8F;
 }
-.WidgetShape-TimeSeries-bar.is-01 {
+.WidgetShape-timeSeries-bar.is-01 {
   top: 7px;
   left: 0;
 }
-.WidgetShape-TimeSeries-bar.is-02 {
+.WidgetShape-timeSeries-bar.is-02 {
   top: 4px;
   left: 3px;
 }
-.WidgetShape-TimeSeries-bar.is-03 {
+.WidgetShape-timeSeries-bar.is-03 {
   top: 2px;
   left: 6px;
 }
-.WidgetShape-TimeSeries-bar.is-04 {
+.WidgetShape-timeSeries-bar.is-04 {
   top: 0;
   left: 9px;
 }
-.WidgetShape-TimeSeries-bar.is-05 {
+.WidgetShape-timeSeries-bar.is-05 {
   top: 2px;
   left: 12px;
 }
-.WidgetShape-TimeSeries-bar.is-06 {
+.WidgetShape-timeSeries-bar.is-06 {
   top: 5px;
   left: 15px;
 }
-.WidgetShape-TimeSeries-bar.is-07 {
+.WidgetShape-timeSeries-bar.is-07 {
   top: 8px;
   right: 0;
 }

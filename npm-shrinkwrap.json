@@ -1468,8 +1468,8 @@
       "dependencies": {
         "cartodb.js": {
           "version": "4.0.0-alpha.1",
-          "from": "cartodb/cartodb.js#analysis",
-          "resolved": "git://github.com/cartodb/cartodb.js.git#25583120aaad00673fd2ad2de490c01f7b52e6f6",
+          "from": "cartodb/cartodb.js#analysis-sql-api-node-callbacks",
+          "resolved": "git://github.com/cartodb/cartodb.js.git#b54220ac2de26e6850e9c2ce09ea5565d913f50a",
           "dependencies": {
             "cartoassets": {
               "version": "0.1.30",
@@ -2231,8 +2231,8 @@
     },
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
-      "from": "cartodb/cartodb.js#analysis",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#25583120aaad00673fd2ad2de490c01f7b52e6f6",
+      "from": "cartodb/cartodb.js#analysis-sql-api-node-callbacks",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#b54220ac2de26e6850e9c2ce09ea5565d913f50a",
       "dependencies": {
         "cartoassets": {
           "version": "0.1.30",

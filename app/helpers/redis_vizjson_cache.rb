@@ -12,22 +12,20 @@ module CartoDB
       end
 
       def cached(visualization_id, https_flag = false)
-        key = key(visualization_id, https_flag)
+        key = key(visualization_id, https_flag, @vizjson_version)
         value = redis.get(key)
         if value.present?
-          return JSON.parse(value, symbolize_names: true)
+          JSON.parse(value, symbolize_names: true)
         else
           result = yield
           serialized = JSON.generate(result)
           redis.setex(key, 24.hours.to_i, serialized)
-          return result
+          result
         end
       end
 
       def invalidate(visualization_id)
-        VIZJSON_VERSION_KEY.values.each do |vizjson_version_key|
-          redis.del [key(visualization_id, false, vizjson_version_key), key(visualization_id, true, vizjson_version_key)]
-        end
+        purge_ids([visualization_id])
       end
 
       def key(visualization_id, https_flag = false, vizjson_version = @vizjson_version)
@@ -35,12 +33,18 @@ module CartoDB
       end
 
       def purge(vizs)
-        return unless vizs.count > 0
-        keys = vizs.map { |v| [key(v.id, false), key(v.id, true)] }.flatten
-        redis.del keys
+        purge_ids(vizs.map(&:id))
       end
 
       private
+
+      def purge_ids(ids)
+        return unless ids.count > 0
+        keys = VIZJSON_VERSION_KEY.keys.map { |vizjson_version|
+          ids.map { |id| [key(id, false, vizjson_version), key(id, true, vizjson_version)] }.flatten
+        }.flatten
+        redis.del keys
+      end
 
       VIZJSON_VERSION_KEY = {
         2 => '',

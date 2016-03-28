@@ -556,6 +556,36 @@ class User < Sequel::Model
     end
   end
 
+  # TODO set options[:statement_timeout] as mandatory in params
+  def direct_db_connection(options = {}, &block)
+    # TODO add specific configuration for direct connection
+    configuration = db_service.db_configuration_for(options[:as])
+    configuration["port"] = 5432
+
+    # Get a connection
+    # TODO abstract in one method
+    begin
+      connection = $pool.fetch(configuration) do
+        db = get_database(options, configuration)
+        db.extension(:connection_validator)
+        db.pool.connection_validation_timeout = configuration.fetch('conn_validator_timeout', -1)
+        db
+      end
+    rescue => exception
+      CartoDB::report_exception(exception, "Cannot connect to user database",
+                                user: self, database: configuration['database'])
+      raise exception
+    end
+
+    begin
+      # TODO check :statement_timeout and deal with exceptions
+      connection.run("SET statement_timeout TO #{options.fetch(:statement_timeout)}")
+      yield(connection)
+    ensure
+      connection.run("SET statement_timeout TO DEFAULT")
+    end
+  end
+
   # Execute DB code inside a transaction with an optional statement timeout.
   # This is the only way to have the SQL in the block executed with
   # the desired statement_timeout when the connection goes trhough

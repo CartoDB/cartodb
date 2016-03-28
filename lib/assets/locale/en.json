@@ -43,6 +43,7 @@
     "map": "map",
     "map_name": "%{name} map",
     "map_pluralize": "%{smart_count} map |||| %{smart_count} maps",
+    "button_add": "Add",
     "tab-pane": {
       "layers": {
         "title-label": "Layers",

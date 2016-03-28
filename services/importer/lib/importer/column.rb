@@ -79,17 +79,6 @@ module CartoDB
                                  SET #{column_name} = ST_GeomFromText(#{column_name}, #{DEFAULT_SRID})
                                  })
           end
-        # QueryBatcher.new(
-        #     db, 
-        #     job, 
-        #     create_seq_field = true
-        #   ).execute_update(
-        #       %Q{
-        #         UPDATE #{qualified_table_name}
-        #         SET #{column_name} = ST_GeomFromText(#{column_name}, #{DEFAULT_SRID})
-        #       },
-        #       schema, table_name
-        #   )
 
         self
       end
@@ -111,17 +100,6 @@ module CartoDB
                                  SET #{column_name} = public.ST_SetSRID(public.ST_GeomFromGeoJSON(#{column_name}), #{DEFAULT_SRID})
                                  })
         end
-        # QueryBatcher.new(
-        #     db, 
-        #     job, 
-        #     create_seq_field = true
-        #   ).execute_update(
-        #       %Q{
-        #         UPDATE #{qualified_table_name}
-        #         SET #{column_name} = public.ST_SetSRID(public.ST_GeomFromGeoJSON(#{column_name}), #{DEFAULT_SRID})
-        #       },
-        #       schema, table_name
-        #   )
 
         self
       end
@@ -135,17 +113,6 @@ module CartoDB
                                  SET #{column_name} = public.ST_SetSRID(public.ST_GeomFromGeoJSON(#{column_name}), #{DEFAULT_SRID})
                                  })
         end
-        # QueryBatcher.new(
-        #     db, 
-        #     job, 
-        #     create_seq_field = true
-        #   ).execute_update(
-        #       %Q{
-        #         UPDATE #{qualified_table_name}
-        #         SET #{column_name} = public.ST_SetSRID(public.ST_GeomFromGeoJSON(#{column_name}), #{DEFAULT_SRID})
-        #       },
-        #       schema, table_name
-        #   )
 
         self
       end
@@ -159,17 +126,6 @@ module CartoDB
                                  SET #{column_name} = public.ST_SetSRID(public.ST_GeomFromKML(#{column_name}),#{DEFAULT_SRID})
                                  })
         end
-        # QueryBatcher.new(
-        #     db, 
-        #     job, 
-        #     create_seq_field = true
-        #   ).execute_update(
-        #       %Q{
-        #         UPDATE #{qualified_table_name}
-        #         SET #{column_name} = public.ST_SetSRID(public.ST_GeomFromKML(#{column_name}),#{DEFAULT_SRID})
-        #       },
-        #       schema, table_name
-        #   )
       end
 
       def convert_from_kml_multi
@@ -181,17 +137,6 @@ module CartoDB
                                  SET #{column_name} = public.ST_SetSRID(public.ST_Multi(public.ST_GeomFromKML(#{column_name})),#{DEFAULT_SRID})
                                  })
         end
-        # QueryBatcher.new(
-        #     db, 
-        #     job, 
-        #     create_seq_field = true
-        #   ).execute_update(
-        #       %Q{
-        #         UPDATE #{qualified_table_name}
-        #         SET #{column_name} = public.ST_SetSRID(public.ST_Multi(public.ST_GeomFromKML(#{column_name})),#{DEFAULT_SRID})
-        #       },
-        #       schema, table_name
-        #   )
       end
 
       def convert_to_2d
@@ -203,17 +148,6 @@ module CartoDB
                                  SET #{column_name} = public.ST_Force_2D(#{column_name})
                                  })
         end
-        # QueryBatcher.new(
-        #     db, 
-        #     job, 
-        #     create_seq_field = true
-        #   ).execute_update(
-        #       %Q{
-        #         UPDATE #{qualified_table_name}
-        #         SET #{column_name} = public.ST_Force_2D(#{column_name})
-        #       },
-        #       schema, table_name
-        #   )
       end
 
       def wkb?
@@ -319,18 +253,6 @@ module CartoDB
                    WHERE #{column_name}=''
                  })
           end
-          # QueryBatcher.new(
-          #     db, 
-          #     job, 
-          #     create_seq_field = true
-          #   ).execute_update(
-          #       %Q{
-          #         UPDATE #{qualified_table_name}
-          #         SET #{column_name}=NULL
-          #         WHERE #{column_name}=''
-          #       },
-          #       schema, table_name
-          #   )
         else
           job.log 'no string column found, nothing replaced'
         end

@@ -4,6 +4,7 @@
       "add-analysis": {
         "modal-title": "Add a new analysis",
         "modal-desc": "Select the analysis you want to add",
+        "loading-title": "Loading options",
         "add-btn": "Add analysis",
         "options": {
           "sub-titles": {
@@ -23,7 +24,7 @@
         "modal-title": "Add new widgets",
         "modal-desc": "Select the widgets you want to add",
         "continue-btn": "Continue",
-        "fetching-title": "Loading columns",
+        "loading-title": "Loading columns",
         "tab-pane": {
           "histogram-label": "Histogram",
           "category-label": "Category",

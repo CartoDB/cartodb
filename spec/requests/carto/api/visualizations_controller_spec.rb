@@ -4,7 +4,6 @@ require_relative '../../../spec_helper'
 require_relative '../../../factories/users_helper'
 require_relative '../../api/json/visualizations_controller_shared_examples'
 require_relative '../../../../app/controllers/carto/api/visualizations_controller'
-require_relative '../../../factories/visualization_creation_helpers'
 
 # TODO: Remove once Carto::Visualization is complete enough
 require_relative '../../../../app/models/visualization/member'

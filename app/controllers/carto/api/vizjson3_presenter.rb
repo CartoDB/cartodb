@@ -11,17 +11,21 @@ module Carto
         :clean_description, :bounds_from, :all_layers_for,
         :layers_for, :layer_group_for_named_map, :basemap_layer_for,
         :non_basemap_base_layers_for, :overlays_for, :children_for,
-        :ordered_overlays_for, :default_options, :auth_tokens_for] => :old_vizjson
+        :ordered_overlays_for, :default_options, :auth_tokens_for] => :@old_vizjson
 
-      def old_vizjson
-        @old_vizjson
-      end
+      def create_old_vizjson(source_options = {})
+        options = {
+          full: false,
+          user_name: user.username,
+          user_api_key: user.api_key,
+          user: user,
+          viewer_user: user
+        }.merge(source_options)
 
-      def create_old_vizjson(options = {})
         CartoDB::Visualization::VizJSON.new(Carto::Api::VisualizationVizJSONAdapter.new(@visualization, @redis_cache), options, Cartodb.config)
       end
 
-      def initialize(visualization, redis_cache = $tables_metadata, redis_vizjson_cache = CartoDB::Visualization::RedisVizjsonCache.new(redis_cache, '3'))
+      def initialize(visualization, redis_cache = $tables_metadata, redis_vizjson_cache = CartoDB::Visualization::RedisVizjsonCache.new(redis_cache, 3))
         @visualization = visualization
         @redis_cache = redis_cache
         @redis_vizjson_cache = redis_vizjson_cache
@@ -47,26 +51,15 @@ module Carto
 
       private
 
-      VIZJSON_3_VERSION = '3.0.0'.freeze
+      VIZJSON_VERSION = '3.0.0'.freeze
 
-      def calculate_vizjson(options={})
-        vizjson_options = {
-          full: false,
-          user_name: user.username,
-          user_api_key: user.api_key,
-          user: user,
-          viewer_user: user
-        }.merge(options)
+      def calculate_vizjson(options = {})
+        # Used by forwards
+        @old_vizjson = create_old_vizjson(options)
 
-        @old_vizjson = create_old_vizjson(vizjson_options)
-
-        to_poro(vizjson_options)
-      end
-
-      def to_poro(options)
         poro_data = {
           id:             visualization.id,
-          version:        VIZJSON_3_VERSION,
+          version:        VIZJSON_VERSION,
           title:          visualization.qualified_name(@user),
           likes:          visualization.likes.count,
           description:    visualization.description_html_safe,
@@ -101,6 +94,28 @@ module Carto
       def user
         @user ||= @visualization.user
       end
+
+      def datasource(options)
+        api_templates_type = options.fetch(:https_request, false) ? 'private' : 'public'
+        ds = {
+          user_name: @visualization.user.username,
+          maps_api_template: ApplicationHelper.maps_api_template(api_templates_type),
+          stat_tag: @visualization.id
+        }
+
+        ds[:template_name] = CartoDB::NamedMapsWrapper::NamedMap.template_name(@visualization.id) if @visualization.retrieve_named_map?
+
+        ds
+      end
+
+      def user_vizjson_info
+        {
+          fullname: user.name.present? ? user.name : user.username,
+          avatar_url: user.avatar_url
+        }
+      end
+
+      # TODO: remove next methods patch v2 vizjson #####################################
 
       def symbolize_vizjson(vizjson)
         vizjson = vizjson.deep_symbolize_keys
@@ -143,7 +158,6 @@ module Carto
         end
       end
 
-      # TODO: refactor, maybe this can be done straight away in the LayerVizJSONAdapter. Technical debt: #6953
       def v3_infowindow_template(template_name, fallback_template)
         template_name = Carto::Api::LayerVizJSONAdapter::TEMPLATES_MAP.fetch(template_name, template_name)
         if template_name.present?
@@ -180,26 +194,6 @@ module Carto
                                 layer.options['query']
                               end
         layer_options.delete(:query)
-      end
-
-      def datasource(options)
-        api_templates_type = options.fetch(:https_request, false) ? 'private' : 'public'
-        ds = {
-          user_name: @visualization.user.username,
-          maps_api_template: ApplicationHelper.maps_api_template(api_templates_type),
-          stat_tag: @visualization.id
-        }
-
-        ds[:template_name] = CartoDB::NamedMapsWrapper::NamedMap.template_name(@visualization.id) if @visualization.retrieve_named_map?
-
-        ds
-      end
-
-      def user_vizjson_info
-        {
-          fullname: user.name.present? ? user.name : user.username,
-          avatar_url: user.avatar_url
-        }
       end
     end
   end

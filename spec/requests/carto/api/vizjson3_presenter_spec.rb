@@ -39,9 +39,9 @@ describe Carto::Api::VizJSON3Presenter do
 
     it 'is not overriden by v2 caching' do
       v2_presenter = Carto::Api::VizJSONPresenter.new(@visualization, $tables_metadata)
-      v2_vizjson = v2_presenter.to_vizjson
-
       v3_presenter = Carto::Api::VizJSON3Presenter.new(@visualization, $tables_metadata)
+
+      v2_vizjson = v2_presenter.to_vizjson
       v3_vizjson = v3_presenter.to_vizjson
 
       v3_vizjson.should_not eq v2_vizjson
@@ -50,10 +50,10 @@ describe Carto::Api::VizJSON3Presenter do
     end
 
     it 'does not override v2 caching' do
-      v3_presenter = Carto::Api::VizJSON3Presenter.new(@visualization, $tables_metadata)
-      v3_vizjson = v3_presenter.to_vizjson
-
       v2_presenter = Carto::Api::VizJSONPresenter.new(@visualization, $tables_metadata)
+      v3_presenter = Carto::Api::VizJSON3Presenter.new(@visualization, $tables_metadata)
+
+      v3_vizjson = v3_presenter.to_vizjson
       v2_vizjson = v2_presenter.to_vizjson
 
       v2_vizjson.should_not eq v3_vizjson

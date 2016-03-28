@@ -556,11 +556,9 @@ class User < Sequel::Model
     end
   end
 
-  # TODO set options[:statement_timeout] as mandatory in params
-  def direct_db_connection(options = {}, &block)
-    # TODO add specific configuration for direct connection
-    configuration = db_service.db_configuration_for(options[:as])
-    configuration["port"] = 5432
+  def direct_db_connection(statement_timeout:, &block)
+    configuration = db_service.db_configuration_for
+    configuration[:port] = configuration.fetch(:direct_port, configuration["direct_port"])
 
     # Get a connection
     # TODO abstract in one method
@@ -578,8 +576,7 @@ class User < Sequel::Model
     end
 
     begin
-      # TODO check :statement_timeout and deal with exceptions
-      connection.run("SET statement_timeout TO #{options.fetch(:statement_timeout)}")
+      connection.run("SET statement_timeout TO #{statement_timeout}")
       yield(connection)
     ensure
       connection.run("SET statement_timeout TO DEFAULT")

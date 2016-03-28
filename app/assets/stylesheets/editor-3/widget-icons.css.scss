@@ -2,100 +2,100 @@
 @import 'cdb-variables/colors';
 @import 'cdb-variables/sizes';
 
-.WidgetShape-histogram {
+.HistogramShape {
   position: relative;
   width: 20px;
   height: 11px;
 }
-.WidgetShape-histogram-bar {
+.HistogramShape-bar {
   position: absolute;
   bottom: 0;
   width: 2px;
   background: $cHighlight;
 }
-.WidgetShape-histogram-bar.is-01 {
+.HistogramShape-bar.is-01 {
   top: 7px;
   left: 0;
 }
-.WidgetShape-histogram-bar.is-02 {
+.HistogramShape-bar.is-02 {
   top: 4px;
   left: 3px;
 }
-.WidgetShape-histogram-bar.is-03 {
+.HistogramShape-bar.is-03 {
   top: 2px;
   left: 6px;
 }
-.WidgetShape-histogram-bar.is-04 {
+.HistogramShape-bar.is-04 {
   top: 0;
   left: 9px;
 }
-.WidgetShape-histogram-bar.is-05 {
+.HistogramShape-bar.is-05 {
   top: 2px;
   left: 12px;
 }
-.WidgetShape-histogram-bar.is-06 {
+.HistogramShape-bar.is-06 {
   top: 5px;
   left: 15px;
 }
-.WidgetShape-histogram-bar.is-07 {
+.HistogramShape-bar.is-07 {
   top: 8px;
   right: 0;
 }
 
-.WidgetShape-category {
+.CategoryShape {
   width: 18px;
   height: 16px;
 }
-.WidgetShape-category-item {
+.CategoryShape-item {
   margin-bottom: 2px;
 }
-.WidgetShape-category-item:last-child {
+.CategoryShape-item:last-child {
   margin-bottom: 0;
 }
-.WidgetShape-category-title {
+.CategoryShape-title {
   width: 5px;
   height: 1px;
   margin-bottom: 1px;
   background: $cHintText;
 }
-.WidgetShape-category-bar {
+.CategoryShape-bar {
   height: 2px;
   background: $cWhite;
 }
-.WidgetShape-category-percent {
+.CategoryShape-percent {
   display: block;
   height: 2px;
   background: $cHighlight;
 }
 
-.WidgetShape-formula {
+.FormulaShape {
   width: 18px;
   height: 14px;
 }
-.WidgetShape-formula-title {
+.FormulaShape-title {
   height: 2px;
   margin-bottom: 1px;
   background: #CBCED0;
 }
-.WidgetShape-formula-info {
+.FormulaShape-info {
   width: 11px;
   height: 1px;
   margin-bottom: 3px;
   background: $cMainLine;
 }
-.WidgetShape-formula-number {
+.FormulaShape-number {
   width: 12px;
   height: 7px;
   background: $cMainLine;
 }
 
 
-.WidgetShape-timeSeriesInner {
+.TimeSeriesShape-inner {
   position: relative;
   width: 20px;
   height: 11px;
 }
-.WidgetShape-timeSeries-play {
+.TimeSeriesShape-play {
   display: inline-block;
   width: 0;
   height: 0;
@@ -104,11 +104,11 @@
   content: '';
   vertical-align: top;
 }
-.WidgetShape-timeSeries-header {
+.TimeSeriesShape-header {
   height: 5px;
   margin-bottom: 2px;
 }
-.WidgetShape-timeSeries-title {
+.TimeSeriesShape-title {
   display: inline-block;
   width: 13px;
   height: 2px;
@@ -116,40 +116,40 @@
   background: $cSecondaryLine;
   vertical-align: top;
 }
-.WidgetShape-timeSeries-bar {
+.TimeSeriesShape-bar {
   position: absolute;
   bottom: 0;
   width: 2px;
   background: $cSecondaryLine;
 }
-.WidgetShape-timeSeries-bar.is-played {
+.TimeSeriesShape-bar.is-played {
   background: #F2CC8F;
 }
-.WidgetShape-timeSeries-bar.is-01 {
+.TimeSeriesShape-bar.is-01 {
   top: 7px;
   left: 0;
 }
-.WidgetShape-timeSeries-bar.is-02 {
+.TimeSeriesShape-bar.is-02 {
   top: 4px;
   left: 3px;
 }
-.WidgetShape-timeSeries-bar.is-03 {
+.TimeSeriesShape-bar.is-03 {
   top: 2px;
   left: 6px;
 }
-.WidgetShape-timeSeries-bar.is-04 {
+.TimeSeriesShape-bar.is-04 {
   top: 0;
   left: 9px;
 }
-.WidgetShape-timeSeries-bar.is-05 {
+.TimeSeriesShape-bar.is-05 {
   top: 2px;
   left: 12px;
 }
-.WidgetShape-timeSeries-bar.is-06 {
+.TimeSeriesShape-bar.is-06 {
   top: 5px;
   left: 15px;
 }
-.WidgetShape-timeSeries-bar.is-07 {
+.TimeSeriesShape-bar.is-07 {
   top: 8px;
   right: 0;
 }

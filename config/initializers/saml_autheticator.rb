@@ -1,65 +1,15 @@
 class SamlAuthenticator
-  def self.get_user_info(params)
-
-     response = OneLogin::RubySaml::Response.new(params[:SAMLResponse])
-
-     saml_settings = get_saml_settings(params[:saml_idp])
-
-     if (!saml_settings)
-        return nil
-     end
-
-     response.settings = get_saml_settings(params[:saml_idp])
-
-     if response.is_valid?
-       user_data = SamlUser.where(saml_name_id: response.nameid).first
-       return user_data
-     else
-       cartoDB.notify_error "Response Invalid. Errors: #{response.errors}"
-     end
-
-     return nil
-  end
-
-  def self.get_saml_settings(idp_name)
-    settings = OneLogin::RubySaml::Settings.new
-
-    settings.soft = true
-
-    saml_idp = SamlIdentityProvider.where(idp_name: idp_name).first
-
-    if (saml_idp == nil)
-       cartoDB.notify_error "Could not find the idp record in DB for #{idp_name}"
-       return nil
-    end
-
-    settings.idp_cert = saml_idp.idp_cert
-
-    settings
-  end
-
-
-  def self.check_user(user_data)
-    if (user_data != nil)
-       existing_user = ::User.where(username: user_data.cartodb_username).first
-    end
-
-    if (existing_user != nil)
-       return existing_user
-    end
-  end
-
-end
-
-class SamlAuthenticator
 
   def self.get_user_info(params)
+    
+     puts "getting the user info"
 
      response = OneLogin::RubySaml::Response.new(params[:SAMLResponse])
 
      response.settings = get_saml_settings
 
-     if response.is_valid?
+     if response.is_valid? 
+      puts "this is a valid user"
 
        user_data = UserInfo.where(uuid: response.nameid).first
        return user_data
@@ -75,6 +25,8 @@ class SamlAuthenticator
   end
 
   def self.get_saml_settings
+    puts "get_saml_settings"
+    
     settings = OneLogin::RubySaml::Settings.new
 
     settings.soft = true

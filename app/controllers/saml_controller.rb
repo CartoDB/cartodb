@@ -2,17 +2,18 @@ require 'yaml'
 
 class SamlController < ApplicationController
  layout 'frontend'
+ skip_before_filter :verify_authenticity_token 
 
  before_filter :load_organization
  # acs method
  def initialize
+   logger.info "initialized the saml"
    @signup_source = 'SAML Sign-On'
    @signup_errors = {}
  end
 
  def acs
     logger.info "inside smal acs"
-
     user_info = SamlAuthenticator.get_user_info(params)
     if user_info == nil
        @organization = BBOrganization.new
@@ -33,9 +34,9 @@ class SamlController < ApplicationController
       @signup_errors[:saml_error] = ["Single sing on athentication failed."]
       logger.error @signup_errors[:saml_error].first
       render 'shared/signup_issue'
+    else
+      redirect_to CartoDB.url(self, 'dashboard', {trailing_slash: true}, user)
     end
-
-    redirect_to CartoDB.url(self, 'dashboard', {trailing_slash: true}, user)
 
  end
 
@@ -62,7 +63,7 @@ class BBOrganization
   end
 
   def name
-     "PWHO BMAP"
+     "PWHO MAPS"
   end
   def color
      "#FF5522"

@@ -4,7 +4,9 @@
       "add-analysis": {
         "modal-title": "Add a new analysis",
         "modal-desc": "Select the analysis you want to add",
+        "loading-title": "Loading options",
         "add-btn": "Add analysis",
+        "disabled-option-desc": "Your layer geometry is %{inputGeometryType} and this analysis needs %{requiredInputGeometries}",
         "options": {
           "sub-titles": {
             "area-of-influence": "Area of influence"
@@ -23,7 +25,7 @@
         "modal-title": "Add new widgets",
         "modal-desc": "Select the widgets you want to add",
         "continue-btn": "Continue",
-        "fetching-title": "Loading columns",
+        "loading-title": "Loading columns",
         "tab-pane": {
           "histogram-label": "Histogram",
           "category-label": "Category",
@@ -85,7 +87,7 @@
         "time": "Time",
         "by-walk": "walk",
         "by-bike": "bike",
-        "by-car": "drive",
+        "by-car": "drive"
       }
     },
     "widgets": {

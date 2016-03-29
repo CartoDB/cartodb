@@ -54,6 +54,12 @@
 .ModalBlockList-item.is-selected {
   border: 1px solid rgba($cBlue, 0.48);
 }
+.ModalBlockList-item.is-disabled {
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: auto;
+  opacity: 0.5;
+}
 
 .ModalBlockList-item-body {
   @include display-flex();

@@ -1,5 +1,8 @@
 <div class="u-rSpace--xl">
-  <input class="CDB-Radio" type="radio" value="true"<% if (selected) { %>checked<% } %>>
+  <input class="CDB-Radio" type="radio" value="true"
+      <% if (selected) { %>checked="checked"<% } %>
+      <% if (!enabled) { %>disabled="disabled"<% } %>
+    >
   <span class="u-iBlock CDB-Radio-face"></span>
 </div>
 <div>

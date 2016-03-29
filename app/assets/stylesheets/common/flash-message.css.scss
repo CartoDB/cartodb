@@ -37,3 +37,26 @@
   color: $cTypography-headers;
   font-size: $sFontSize-large;
 }
+.FlashMessage--button {
+  @include display-flex();
+  @include align-items(center, center);
+  color: #FFF;
+  height: 28px;
+  padding: 0 20px;
+  border: $sButton-border solid $cStructure-mainBkg;
+  border-radius: $sButton-borderRadius;
+  outline: none;
+  text-align: center;
+  text-decoration: none;
+  font-size: $sFontSize-smallUpperCase;
+  font-weight: $sFontWeight-normal;
+  line-height: $sLineHeight-button;
+  text-transform: uppercase;
+  white-space: nowrap;
+  box-sizing: border-box;
+  border-color: $cHighlight-main;
+  background-color: $cHighlight-main;
+  &:hover {
+    background-color: rgba(#007FBD, 1);
+  }
+}

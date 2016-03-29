@@ -322,7 +322,6 @@ describe Carto::Api::VisualizationsController do
       Sequel.extension(:pagination)
 
       CartoDB::Visualization.repository = DataRepository::Backend::Sequel.new(@db, :visualizations)
-      CartoDB::Overlay.repository       = DataRepository::Backend::Sequel.new(@db, :overlays)
 
       @user_1 = FactoryGirl.create(:valid_user)
       @user_2 = FactoryGirl.create(:valid_user, private_maps_enabled: true)
@@ -1069,7 +1068,7 @@ describe Carto::Api::VisualizationsController do
 
         # include overlays
 
-        get api_v1_visualizations_overlays_index_url(visualization_id: visualization.fetch('id'), api_key: @api_key),
+        get overlays_url(visualization_id: visualization.fetch('id'), api_key: @api_key),
           {}, @headers
         last_response.status.should == 200
         overlays = JSON.parse(last_response.body)

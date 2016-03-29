@@ -34,6 +34,7 @@ WORKING_SPECS_1 = \
 	spec/requests/carto/api/data_import_presenter_spec.rb \
 	spec/requests/carto/api/database_groups_controller_spec.rb \
   spec/requests/carto/api/layer_presenter_spec.rb \
+	spec/requests/carto/api/overlay_presenter_spec.rb \
   spec/requests/carto/api/presenter_cache_spec.rb \
   spec/requests/carto/api/widgets_controller_spec.rb \
   spec/requests/carto/editor/visualizations_controller_spec.rb \
@@ -169,8 +170,6 @@ WORKING_SPECS_5 = \
 	spec/models/user_organization_spec.rb \
   spec/models/synchronization/synchronization_oauth_spec.rb \
   spec/models/permission_spec.rb \
-	spec/models/overlay/member_spec.rb \
-	spec/models/overlay/collection_spec.rb \
   $(NULL)
 
 # TODO: This block also breaks if run alongside other specs, needs checking why
@@ -207,7 +206,6 @@ WORKING_SPECS_9 = \
   spec/requests/superadmin/users_spec.rb \
   spec/requests/superadmin/organizations_spec.rb \
   spec/requests/api/visualizations_spec.rb \
-  spec/requests/api/json/overlays_controller_spec.rb \
   spec/requests/carto/api/overlays_controller_spec.rb \
 	spec/models/carto/user_creation_spec.rb \
 	spec/requests/carto/api/invitations_controller_spec.rb \
@@ -227,6 +225,7 @@ WORKING_SPECS_9 = \
 # Tests using spec_helper_min instead of spec_helper
 SPEC_HELPER_MIN_SPECS = \
 	spec/models/carto/analysis_spec.rb \
+	spec/models/carto/overlay_spec.rb \
 	spec/models/table_registrar_spec.rb \
 	spec/requests/admin/organization_users_controller_spec.rb \
 	spec/requests/api/json/maps_controller_spec.rb \

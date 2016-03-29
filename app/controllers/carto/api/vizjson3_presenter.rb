@@ -3,7 +3,7 @@ require_dependency 'carto/api/layer_vizjson_adapter'
 module Carto
   module Api
     class VizJSON3Presenter
-      # Forwarding as a development transient tool
+      # WIP #6953: forwarding to old vizjson implementation is a development transient tool
       extend Forwardable
 
       delegate [:layer_group_for, :named_map_layer_group_for, :other_layers_for,
@@ -25,6 +25,7 @@ module Carto
         CartoDB::Visualization::VizJSON.new(Carto::Api::VisualizationVizJSONAdapter.new(@visualization, @redis_cache), options, Cartodb.config)
       end
 
+      # WIP #6953: redis_cache will be removed, injecting redis_vizjson_cache instead
       def initialize(visualization, redis_cache = $tables_metadata, redis_vizjson_cache = CartoDB::Visualization::RedisVizjsonCache.new(redis_cache, 3))
         @visualization = visualization
         @redis_cache = redis_cache
@@ -32,27 +33,27 @@ module Carto
       end
 
       def to_vizjson(vector: false, **options)
-        vizjson = @redis_vizjson_cache.cached(@visualization.id, options.fetch(:https_request, false)) do
-          calculate_vizjson(options)
+        @redis_vizjson_cache.cached(@visualization.id, options.fetch(:https_request, false)) do
+          vizjson = calculate_vizjson(options)
+          vizjson[:widgets] = Carto::Widget.from_visualization_id(@visualization.id).map do |w|
+            Carto::Api::WidgetPresenter.new(w).to_poro
+          end
+
+          vizjson[:layers].each { |l| layer_vizjson2_to_3(l) }
+
+          vizjson[:datasource] = datasource(options)
+          vizjson[:user] = user_vizjson_info
+          vizjson[:vector] = vector
+
+          vizjson
         end
-
-        vizjson[:widgets] = Carto::Widget.from_visualization_id(@visualization.id).map do |w|
-          Carto::Api::WidgetPresenter.new(w).to_poro
-        end
-
-        vizjson[:layers].each { |l| layer_vizjson2_to_3(l) }
-
-        vizjson[:datasource] = datasource(options)
-        vizjson[:user] = user_vizjson_info
-        vizjson[:vector] = vector
-
-        vizjson
       end
 
       private
 
       VIZJSON_VERSION = '3.0.0'.freeze
 
+      # WIP #6953: old vizjson delegation
       def calculate_vizjson(options = {})
         # Used by forwards
         @old_vizjson = create_old_vizjson(options)
@@ -115,7 +116,7 @@ module Carto
         }
       end
 
-      # TODO: remove next methods patch v2 vizjson #####################################
+      # WIP #6953: remove next methods patch v2 vizjson #####################################
 
       def symbolize_vizjson(vizjson)
         vizjson = vizjson.deep_symbolize_keys
@@ -143,7 +144,7 @@ module Carto
         end
       end
 
-      # TODO: refactor, ugly as hell. Technical debt: #6953
+      # WIP #6953: refactor, ugly as hell. Technical debt: #6953
       def layer_definitions_from_layer_data(layer_data)
         if layer_data[:options] &&
            layer_data[:options][:layer_definition] &&

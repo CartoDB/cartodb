@@ -1,0 +1,8 @@
+<% if (importState !== "twitter") { %>
+  <div class="js-toggle Checkbox">
+    <button class="Checkbox-input <%- isGuessingEnabled ? 'is-checked' : '' %>"></button>
+    <label class="Checkbox-label">Let CartoDB automatically guess data types and content on import.</label>
+  </div>
+<% } else if (!customHosted) { %>
+    To get access to historical data (older than 30 days) you need to <a href="mailto:support@cartodb.com">contact our team</a>
+<% } %>

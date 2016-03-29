@@ -61,7 +61,7 @@ describe Visualization::Member do
         :update_cdb_tablemetadata => nil,
         :update_table_pg_stats => nil,
         :create_table_in_database! => nil,
-        :get_table_id => 1,
+        :fetch_table_id => 1,
         :grant_select_to_tiler_user => nil,
         :cartodbfy => nil,
         :set_the_geom_column! => nil,

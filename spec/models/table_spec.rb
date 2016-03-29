@@ -107,10 +107,10 @@ describe Table do
       table.table_id.should == oid
     end
 
-    it "should return nil on get_table_id when the physical table doesn't exist" do
+    it "should return nil on fetch_table_id when the physical table doesn't exist" do
       table = create_table(name: 'this_is_a_table', user_id: @user.id)
       @user.in_database.drop_table table.name
-      table.get_table_id.should be_nil
+      table.fetch_table_id.should be_nil
     end
 
     it "should not allow to create tables using system names" do

@@ -11,7 +11,7 @@ shared_examples_for 'vizjson generator' do
     include_context 'visualization creation helpers'
     include_context 'users helper'
 
-    TEST_UUID = '00000000-0000-0000-0000-000000000000'
+    TEST_UUID = '00000000-0000-0000-0000-000000000000'.freeze
 
     before(:all) do
       CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
@@ -20,7 +20,7 @@ shared_examples_for 'vizjson generator' do
       @api_key = @user_1.api_key
       @user_2 = FactoryGirl.create(:valid_user)
 
-      @headers = {'CONTENT_TYPE'  => 'application/json'}
+      @headers = { 'CONTENT_TYPE'  => 'application/json' }
       host! "#{@user_1.subdomain}.localhost.lan"
     end
 
@@ -78,13 +78,11 @@ shared_examples_for 'vizjson generator' do
 
       # Share vis with user_2 in readonly (vis can never be shared in readwrite)
       put api_v1_permissions_update_url(user_domain: user_1.username, api_key: user_1.api_key, id: u1_vis_1_perm_id),
-          {acl: [{
+          { acl: [{
                    type: CartoDB::Permission::TYPE_USER,
-                   entity: {
-                     id:   user_2.id,
-                   },
+                   entity: { id:   user_2.id },
                    access: CartoDB::Permission::ACCESS_READONLY
-                 }]}.to_json, http_json_headers
+                  }] }.to_json, http_json_headers
       last_response.status.should == 200
 
       # privacy private checks
@@ -177,7 +175,7 @@ shared_examples_for 'vizjson generator' do
       valid_callback2 = 'a'
       invalid_callback1 = 'alert(1);'
       invalid_callback2 = '%3B'
-      invalid_callback3 = '123func'    # JS names cannot start by number
+      invalid_callback3 = '123func' # JS names cannot start by number
 
       table_attributes  = table_factory
       table_id          = table_attributes.fetch('id')
@@ -214,7 +212,7 @@ shared_examples_for 'vizjson generator' do
       end
 
       it 'renders vizjson vx' do
-        table_id          = table_factory.fetch('id')
+        table_id = table_factory.fetch('id')
         get api_vx_visualizations_vizjson_url(id: table_id, api_key: @api_key),
           {}, @headers
         last_response.status.should == 200
@@ -254,10 +252,9 @@ shared_examples_for 'vizjson generator' do
       end
 
       it "comes with proper surrogate-key" do
-        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true)
         table                 = table_factory(privacy: 1)
         source_visualization  = table.fetch('table_visualization')
-
 
         payload = { source_visualization_id: source_visualization.fetch('id'), privacy: 'PUBLIC' }
 
@@ -297,8 +294,7 @@ shared_examples_for 'vizjson generator' do
           privacy: 'public'
         }
 
-        post api_v1_visualizations_create_url(api_key: @api_key),
-              payload.to_json, @headers
+        post api_v1_visualizations_create_url(api_key: @api_key), payload.to_json, @headers
         last_response.status.should == 200
 
         # Set the attributions of the tables to check that they are included in the viz.json
@@ -311,7 +307,7 @@ shared_examples_for 'vizjson generator' do
 
         visualization = JSON.parse(last_response.body)
 
-        get api_vx_visualizations_vizjson_url(id: visualization.fetch('id'), api_key: @api_key),{}, @headers
+        get api_vx_visualizations_vizjson_url(id: visualization.fetch('id'), api_key: @api_key), {}, @headers
 
         visualization = JSON.parse(last_response.body)
 
@@ -341,9 +337,8 @@ shared_examples_for 'vizjson generator' do
           privacy: 'private'
         }
 
-        post api_v1_visualizations_create_url(api_key: @api_key),
-              payload.to_json, @headers
-        last_response.status.should == 200
+        post api_v1_visualizations_create_url(api_key: @api_key), payload.to_json, @headers
+        last_response.status.should eq 200
 
         # Set the attributions of the tables to check that they are included in the viz.json
         table1_visualization = Carto::Visualization.find(table1["table_visualization"]["id"])
@@ -358,7 +353,7 @@ shared_examples_for 'vizjson generator' do
         # Update the privacy of the visualization so that the viz_json generates a named_map
         Carto::Api::VisualizationVizJSONAdapter.any_instance.stubs('retrieve_named_map?' => true)
 
-        get api_vx_visualizations_vizjson_url(id: visualization.fetch('id'), api_key: @api_key),{}, @headers
+        get api_vx_visualizations_vizjson_url(id: visualization.fetch('id'), api_key: @api_key), {}, @headers
 
         visualization = JSON.parse(last_response.body)
 

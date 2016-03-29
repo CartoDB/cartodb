@@ -10,7 +10,7 @@
     </p>
     <ul class="js-list HorizontalBlockList">
       <li class="HorizontalBlockList-item is-add">
-        <button class="js-newAnalysis">
+        <button class="js-add-analysis">
           <div class="CDB-Shape">
             <div class="CDB-Shape-add is-blue is-small"></div>
           </div>

@@ -12,7 +12,7 @@ module Carto
         :clean_description, :bounds_from, :all_layers_for,
         :layers_for, :layer_group_for_named_map, :basemap_layer_for,
         :non_basemap_base_layers_for, :overlays_for, :children_for,
-        :ordered_overlays_for, :default_options, :auth_tokens_for] => :@old_vizjson
+        :ordered_overlays_for, :default_options] => :@old_vizjson
 
       def create_old_vizjson(source_options = {})
         options = {
@@ -80,7 +80,7 @@ module Carto
           transition_options: visualization.transition_options
         }
 
-        auth_tokens = auth_tokens_for(visualization)
+        auth_tokens = @visualization.needed_auth_tokens
         poro_data.merge!(auth_tokens: auth_tokens) if auth_tokens.length > 0
 
         children = children_for(visualization)

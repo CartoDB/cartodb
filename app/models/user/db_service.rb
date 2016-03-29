@@ -429,6 +429,23 @@ module CartoDB
         configure_extension_org_metadata_api_endpoint
       end
 
+      # Obtain a direct connection to the db throughout the direct port specified
+      # in the database configuration and set up its statement timeout value. This
+      # allows to overpass the statement_timeout limit if a connection pooler is used.
+      def in_database_direct_connection(statement_timeout:, &block)
+        configuration = db_configuration_for
+        configuration[:port] = configuration.fetch(:direct_port, configuration["direct_port"])
+
+        connection = @user.get_connection(_opts = {}, configuration)
+
+        begin
+          connection.run("SET statement_timeout TO #{statement_timeout}")
+          yield(connection)
+        ensure
+          connection.run("SET statement_timeout TO DEFAULT")
+        end
+      end
+
       def reset_pooled_connections
         # Only close connections to this users' database
         $pool.close_connections!(@user.database_name)

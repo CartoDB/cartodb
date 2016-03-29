@@ -14,7 +14,7 @@ module CartoDB
       GEOMETRY_POSSIBLE_NAMES   = %w{ geometry the_geom wkb_geometry geom geojson wkt }
       DEFAULT_SCHEMA            = 'cdb_importer'
       THE_GEOM_WEBMERCATOR      = 'the_geom_webmercator'
-      DIRECT_STATEMENT_TIMEOUT = 1.hour*1000
+      DIRECT_STATEMENT_TIMEOUT  = 1.hour * 1000
 
       def initialize(db, table_name, options, schema=DEFAULT_SCHEMA, job=nil, geometry_columns=nil, logger=nil)
         @db         = db
@@ -324,7 +324,7 @@ module CartoDB
         # TODO: capture_exceptions=true
         job.log 'Converting detected multipoint to point'
 
-        user.direct_db_connection(statement_timeout: DIRECT_STATEMENT_TIMEOUT) do |user_direct_conn|
+        user.db_service.in_database_direct_connection(statement_timeout: DIRECT_STATEMENT_TIMEOUT) do |user_direct_conn|
             user_direct_conn.run(%Q{
                                     UPDATE #{qualified_table_name}
                                     SET the_geom = ST_GeometryN(the_geom, 1)

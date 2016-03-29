@@ -89,8 +89,9 @@ module CartoDB
       username = configuration.fetch(:username, configuration['username'])
       orm = configuration.fetch(:orm, 'sequel')
       port = configuration.fetch(:port, configuration['port'])
-      # don't prepend new fragments at the beggining, see close_connections! logic
-      "#{host}:#{database}:#{username}:#{orm}:#{port}"
+      # Be aware of close_connections! and close_connection logic when prepending or appending new
+      # parameters to the id.
+      "#{host}:#{database}:#{port}:#{username}:#{orm}"
     end
   end
 end

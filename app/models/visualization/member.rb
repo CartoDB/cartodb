@@ -278,7 +278,7 @@ module CartoDB
         support_tables.delete_all
 
         invalidate_cache
-        overlays.destroy
+        overlays.map(&:destroy)
         layers(:base).map(&:destroy)
         layers(:cartodb).map(&:destroy)
         safe_sequel_delete {

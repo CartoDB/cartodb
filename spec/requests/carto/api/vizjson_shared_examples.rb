@@ -245,10 +245,14 @@ shared_examples_for 'vizjson generator' do
 
         get api_vx_visualizations_vizjson_url(id: parent.id, api_key: @api_key), {}, @headers
 
-        last_response.status.should == 200
+        last_response.status.should eq 200
         response = JSON.parse(last_response.body)
         slides = response.fetch('slides')
-        slides.count.should == 1
+        slides.count.should eq 1
+        slide = slides[0]
+        slide['id'].should eq child.id
+        slide['title'].should eq child.name
+        slide['version'].should eq '0.1.0'
       end
 
       it "comes with proper surrogate-key" do

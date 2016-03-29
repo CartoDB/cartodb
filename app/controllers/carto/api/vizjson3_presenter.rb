@@ -11,8 +11,8 @@ module Carto
         :visualization, :map, :layers_for, :configuration,
         :clean_description, :bounds_from, :all_layers_for,
         :layers_for, :layer_group_for_named_map, :basemap_layer_for,
-        :non_basemap_base_layers_for, :overlays_for,
-        :ordered_overlays_for, :default_options] => :@old_vizjson
+        :non_basemap_base_layers_for,
+        :default_options] => :@old_vizjson
 
       def create_old_vizjson(source_options = {})
         options = {
@@ -99,6 +99,12 @@ module Carto
         visualization.children.map do |child|
           # WIP #6953: options were not propagated at v2 either, but they probably should
           VizJSON3Presenter.new(child, @redis_cache, @redis_vizjson_cache).to_vizjson
+        end
+      end
+
+      def overlays_for(visualization)
+        visualization.overlays.to_a.map do |overlay|
+          Carto::Api::OverlayPresenter.new(overlay).to_vizjson_poro
         end
       end
 

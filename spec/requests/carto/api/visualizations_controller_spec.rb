@@ -1145,6 +1145,7 @@ describe Carto::Api::VisualizationsController do
 
       before(:each) do
         @map, @table, @table_visualization, @visualization = create_full_visualization(Carto::User.find(@user_1.id))
+
         @table.privacy = UserTable::PRIVACY_PUBLIC
         @table.save
         layer = @visualization.data_layers.first

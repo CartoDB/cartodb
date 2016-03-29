@@ -43,7 +43,6 @@ describe Table do
   before(:each) do
     CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
-    CartoDB::Overlay::Member.any_instance.stubs(:can_store).returns(true)
     Table.any_instance.stubs(:update_cdb_tablemetadata)
 
     stub_named_maps_calls

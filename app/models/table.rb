@@ -1181,10 +1181,10 @@ class Table
 
   def relator
     @relator ||= CartoDB::TableRelator.new(Rails::Sequel.connection, self)
-  end #relator
+  end
 
   def set_table_id
-    @user_table.table_id = self.fetch_table_id
+    @user_table.table_id = fetch_table_id
   end
 
   def fetch_table_id

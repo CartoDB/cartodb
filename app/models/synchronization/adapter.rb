@@ -66,9 +66,10 @@ module CartoDB
       end
 
       def fix_oid(table_name)
-        actual_oid_from_user_database = database.fetch(%Q{SELECT '#{table_name}'::regclass::oid}).first[:oid]
-        table = ::Table.new(:user_table => ::UserTable.where(name: table_name, user_id: user.id).first)
-        table.table_id = actual_oid_from_user_database.to_i
+        user_table = user.tables.where(name: table_name).first
+
+        table = ::Table.new(user_table: user_table)
+        table.set_table_id
         table.save
       end
 

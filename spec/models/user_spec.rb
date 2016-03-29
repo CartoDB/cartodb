@@ -6,6 +6,7 @@ require_relative 'user_shared_examples'
 require_relative '../../services/dataservices-metrics/lib/here_isolines_usage_metrics'
 require 'factories/organizations_contexts'
 require_relative '../../app/model_factories/layer_factory'
+require_dependency 'cartodb/redis_vizjson_cache'
 
 describe 'refactored behaviour' do
 

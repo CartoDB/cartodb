@@ -242,7 +242,7 @@ WORKING_SPECS_carto_db_class = \
   $(NULL)
 
 SPECS_WITHOUT_RAILS = \
-	spec/helpers/redis_vizjson_cache_spec.rb \
+	spec/lib/cartodb/redis_vizjson_cache_spec.rb \
   $(NULL)
 
 CDB_PATH=lib/assets/javascripts/cdb

@@ -1,8 +1,8 @@
-require_relative '../../app/helpers/redis_vizjson_cache'
+require_relative '../../../lib/cartodb/redis_vizjson_cache'
 require 'mock_redis'
 require 'ostruct'
-require_relative '../support/redis_test_doubles'
-require_relative '../../lib/carto/uuidhelper'
+require_relative '../../support/redis_test_doubles'
+require_relative '../../../lib/carto/uuidhelper'
 
 describe CartoDB::Visualization::RedisVizjsonCache do
   include Carto::UUIDHelper

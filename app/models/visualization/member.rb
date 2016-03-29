@@ -12,7 +12,7 @@ require_relative '../table/privacy_manager'
 require_relative '../../../services/minimal-validation/validator'
 require_relative '../../../services/named-maps-api-wrapper/lib/named_maps_wrapper'
 require_relative '../../helpers/embed_redis_cache'
-require_relative '../../helpers/redis_vizjson_cache'
+require_dependency 'cartodb/redis_vizjson_cache'
 
 # Every table has always at least one visualization (the "canonical visualization"), of type 'table',
 # which shares the same privacy options as the table and gets synced.

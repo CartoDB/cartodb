@@ -13,6 +13,9 @@
   border-radius: $halfBaseSize;
   background: #FFF;
 }
+.Editor-ListLayer-item:hover {
+  border: 1px solid $cBlue;
+}
 .Editor-ListLayer-item.last-child {
   margin-bottom: 0;
 }
@@ -20,11 +23,23 @@
   border: 1px solid rgb(106, 181, 227);
 }
 .Editor-ListLayer-item.ui-draggable-dragging {
-  box-shadow: $cBlue;
+  border: 1px solid $cSecondaryLine;
+  box-shadow: 0 8px 16px rgba(#000, 0.16);
   cursor: move;
   opacity: 0.8;
   z-index: 1000;
 }
+.Editor-ListLayer-dragIcon {
+  @include transition(opacity, 200ms, ease-in);
+  position: absolute;
+  top: 16px;
+  left: -21px;
+  opacity: 0;
+}
+.Editor-ListLayer-item:hover .Editor-ListLayer-dragIcon {
+  opacity: 1;
+}
+
 .Editor-ListLayer-media {
   @include display-flex();
   @include align-items(center);
@@ -93,7 +108,7 @@
 
 .Editor-ListAnalysis-inner {
   @include display-flex();
-  @include flex(1);
+  width: calc(100% + 8px);
   margin: 0 -4px;
 }
 .Editor-ListAnalysis-inner .Editor-ListAnalysis-item {

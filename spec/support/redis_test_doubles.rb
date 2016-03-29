@@ -9,7 +9,7 @@ module RedisDoubles
 
     def del(keys)
       @deleted.concat(keys)
-      del_invokes = @invokes[:del] << keys
+      @invokes[:del] << keys
     end
 
     def invokes(method_name)

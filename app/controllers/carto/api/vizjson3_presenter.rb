@@ -90,7 +90,7 @@ module Carto
           poro_data[:description] = visualization.parent.description_html_safe
         end
 
-        poro_data
+        symbolize_vizjson(poro_data)
       end
 
       def user

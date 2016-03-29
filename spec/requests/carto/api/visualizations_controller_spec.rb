@@ -1338,7 +1338,7 @@ describe Carto::Api::VisualizationsController do
 
           # vizjson v2 doesn't change
           get_json api_v2_visualizations_vizjson_url(user_domain: @user_1.username, id: @visualization.id, api_key: @user_1.api_key), @headers do |response|
-            response.status.should == 200
+            response.status.should eq 200
             vizjson = response.body
             layers = vizjson[:layers]
             layers.should_not be_empty
@@ -1347,19 +1347,18 @@ describe Carto::Api::VisualizationsController do
             torque_layers.each do |l|
               options = l['options']
 
+              options['cartocss'].should be_nil
               tile_style_value = options['tile_style']
               tile_style_value.should_not be_nil
 
+              options['sql'].should be_nil
               query_value = options['query']
               query_value.should_not be_nil
-
-              options['cartocss'].should be_nil
-              options['sql'].should be_nil
             end
           end
 
           get_json get_vizjson3_url(@user_1, @visualization), @headers do |response|
-            response.status.should == 200
+            response.status.should eq 200
             vizjson = response.body
             layers = vizjson[:layers]
             layers.should_not be_empty
@@ -1368,14 +1367,13 @@ describe Carto::Api::VisualizationsController do
             torque_layers.each do |l|
               options = l['options']
 
-              cartocss = options['cartocss']
-              cartocss.should == tile_style_value
-
-              sql = options['sql']
-              sql.should == query_value
-
               options['tile_style'].should be_nil
+              cartocss = options['cartocss']
+              cartocss.should eq tile_style_value
+
               options['query'].should be_nil
+              sql = options['sql']
+              sql.should eq query_value
             end
           end
 

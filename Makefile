@@ -68,7 +68,6 @@ WORKING_SPECS_1 = \
   spec/lib/carto/http_header_authentication_spec.rb \
 	spec/lib/carto/users_metadata_redis_cache_spec.rb \
   spec/lib/carto/http/client_spec.rb \
-	spec/helpers/redis_vizjson_cache_spec.rb \
 	spec/helpers/uuidhelper_spec.rb \
 	spec/helpers/url_validator_spec.rb \
 	spec/models/carto/bi_dataset_spec.rb \
@@ -243,6 +242,10 @@ WORKING_SPECS_carto_db_class = \
 	spec/helpers/carto_db_spec.rb \
   $(NULL)
 
+SPECS_WITHOUT_RAILS = \
+	spec/helpers/redis_vizjson_cache_spec.rb \
+  $(NULL)
+
 CDB_PATH=lib/assets/javascripts/cdb
 
 prepare-test-db:
@@ -275,10 +278,12 @@ check-carto-db-class:
 	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_carto_db_class)
 check-integrations:
 	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_INTEGRATIONS)
+check-specs-without-rails:
+	RAILS_ENV=test bundle exec rspec $(SPECS_WITHOUT_RAILS)
 
 check-external: prepare-test-db check-integrations
 
-check-prepared: check-1 check-2 check-4 check-5 check-7 check-9 check-spec-helper-min check-carto-db-class
+check-prepared: check-1 check-2 check-4 check-5 check-7 check-9 check-spec-helper-min check-carto-db-class check-specs-without-rails
 
 check: prepare-test-db check-prepared
 check-frontend:

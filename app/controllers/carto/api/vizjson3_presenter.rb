@@ -11,7 +11,7 @@ module Carto
         :visualization, :map, :layers_for, :configuration,
         :clean_description, :bounds_from, :all_layers_for,
         :layers_for, :layer_group_for_named_map, :basemap_layer_for,
-        :non_basemap_base_layers_for, :overlays_for, :children_for,
+        :non_basemap_base_layers_for, :overlays_for,
         :ordered_overlays_for, :default_options] => :@old_vizjson
 
       def create_old_vizjson(source_options = {})
@@ -33,6 +33,7 @@ module Carto
         @redis_vizjson_cache = redis_vizjson_cache
       end
 
+      # WIP #6953: remove vector and/or expand options
       def to_vizjson(vector: false, **options)
         @redis_vizjson_cache.cached(@visualization.id, options.fetch(:https_request, false)) do
           vizjson = calculate_vizjson(options)
@@ -83,7 +84,8 @@ module Carto
         auth_tokens = @visualization.needed_auth_tokens
         poro_data.merge!(auth_tokens: auth_tokens) if auth_tokens.length > 0
 
-        children = children_for(visualization)
+        # WIP: #6953 rename to `children_vizjson`, kept for the moment for better trazability
+        children = children_for(@visualization)
         poro_data.merge!(slides: children) if children.length > 0
         unless visualization.parent_id.nil?
           poro_data[:title] = visualization.parent.qualified_name(user)
@@ -91,6 +93,13 @@ module Carto
         end
 
         symbolize_vizjson(poro_data)
+      end
+
+      def children_for(visualization)
+        visualization.children.map do |child|
+          # WIP #6953: options were not propagated at v2 either, but they probably should
+          VizJSON3Presenter.new(child, @redis_cache, @redis_vizjson_cache).to_vizjson
+        end
       end
 
       def user

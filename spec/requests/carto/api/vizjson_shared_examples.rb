@@ -1,9 +1,15 @@
 # Contains specs that both vizjson2 and 3 must verify.
-# Specs including this should define api_vx_visualizations_vizjson_url as an alias for the desired URL generator.
+# Specs including this should define:
+# - api_vx_visualizations_vizjson_url: an alias for the desired URL generator.
+# - vizjson_vx_version: vizjson version.
 # Example:
 #  it_behaves_like 'vizjson generator' do
 #    def api_vx_visualizations_vizjson_url(options)
 #      api_v2_visualizations_vizjson_url(options)
+#    end
+#
+#    def vizjson_vx_version
+#      '0.1.0'
 #    end
 #  end
 shared_examples_for 'vizjson generator' do
@@ -205,7 +211,7 @@ shared_examples_for 'vizjson generator' do
       (last_response.body =~ /^\{/i).should eq 0
     end
 
-    describe 'GET /api/vx/viz/:id/viz' do
+    describe 'get vizjson' do
       before(:each) do
         CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
         delete_user_data(@user_1)
@@ -252,7 +258,7 @@ shared_examples_for 'vizjson generator' do
         slide = slides[0]
         slide['id'].should eq child.id
         slide['title'].should eq child.name
-        slide['version'].should eq '0.1.0'
+        slide['version'].should eq vizjson_vx_version
       end
 
       it "comes with proper surrogate-key" do

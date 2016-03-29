@@ -19,6 +19,10 @@ describe Carto::Api::VisualizationsController do
       def api_vx_visualizations_vizjson_url(options)
         api_v2_visualizations_vizjson_url(options)
       end
+
+      def vizjson_vx_version
+       '0.1.0'
+      end
     end
   end
 
@@ -26,6 +30,10 @@ describe Carto::Api::VisualizationsController do
     it_behaves_like 'vizjson generator' do
       def api_vx_visualizations_vizjson_url(options)
         api_v3_visualizations_vizjson_url(options)
+      end
+
+      def vizjson_vx_version
+       '3.0.0'
       end
     end
   end

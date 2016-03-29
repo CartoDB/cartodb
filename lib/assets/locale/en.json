@@ -1,4 +1,7 @@
 {
+  "user": {
+    "you": "You"
+  },
   "components": {
     "modals": {
       "add-analysis": {

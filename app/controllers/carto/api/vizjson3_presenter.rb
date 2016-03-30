@@ -8,8 +8,8 @@ module Carto
       extend Forwardable
 
       delegate [:layer_group_for, :named_map_layer_group_for, :other_layers_for,
-        :visualization, :map, :layers_for, :configuration,
-        :clean_description, :bounds_from, :all_layers_for,
+        :visualization, :map, :configuration,
+        :clean_description, :all_layers_for,
         :layers_for, :layer_group_for_named_map, :basemap_layer_for,
         :non_basemap_base_layers_for,
         :default_options] => :@old_vizjson
@@ -106,6 +106,14 @@ module Carto
         visualization.overlays.to_a.map do |overlay|
           Carto::Api::OverlayPresenter.new(overlay).to_vizjson_poro
         end
+      end
+
+      def bounds_from(map)
+        ::JSON.parse("[#{map.view_bounds_sw}, #{map.view_bounds_ne}]")
+      rescue => e
+        CartoDB::Logger.debug(
+          message: "Error parsing map bounds: #{map.id}, #{map.view_bounds_sw}, #{map.view_bounds_ne}",
+          exception: e)
       end
 
       def user

@@ -109,6 +109,10 @@ class UserTable < Sequel::Model
     @service ||= ::Table.new(user_table: self)
   end
 
+  def sync_table_id
+    self.table_id = service.fetch_table_id
+  end
+
   # Helper methods encapsulating queries. Move to query object?
   # note this one spams multiple tables
   def self.find_all_by_user_id_and_tag(user_id, tag_name)
@@ -289,7 +293,4 @@ class UserTable < Sequel::Model
   def actual_row_count
     service.actual_row_count
   end
-
-  private
-
 end

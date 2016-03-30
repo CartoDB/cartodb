@@ -33,6 +33,7 @@ module Carto
 
         def load_visualization
           @visualization = load_visualization_from_id_or_name(params[:visualization_id])
+          render_404 unless @visualization
         end
 
         def ensure_viewable

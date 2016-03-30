@@ -6,8 +6,6 @@ require 'uri'
 require_relative '../../spec_helper'
 require_relative '../../../app/controllers/api/json/visualizations_controller'
 require_relative '../../../services/data-repository/backend/sequel'
-require_relative '../../../app/models/visualization/migrator'
-require_relative '../../../app/models/overlay/migrator'
 require 'helpers/unique_names_helper'
 
 
@@ -42,7 +40,6 @@ describe Api::Json::VisualizationsController do
     Sequel.extension(:pagination)
 
     CartoDB::Visualization.repository = DataRepository::Backend::Sequel.new(@db, :visualizations)
-    CartoDB::Overlay.repository       = DataRepository::Backend::Sequel.new(@db, :overlays)
 
     begin
       delete_user_data @user
@@ -642,7 +639,7 @@ describe Api::Json::VisualizationsController do
 
   def table_factory(options={})
     privacy = options.fetch(:privacy, 1)
-
+    
     name    = unique_name('table')
     payload = {
       name:         name,

@@ -8,9 +8,9 @@ module Carto
       extend Forwardable
 
       delegate [:layer_group_for, :named_map_layer_group_for, :other_layers_for,
-        :visualization, :map, :configuration,
+        :visualization, :map,
         :clean_description, :all_layers_for,
-        :layer_group_for_named_map, :basemap_layer_for,
+        :basemap_layer_for,
         :non_basemap_base_layers_for,
         :default_options, :options] => :@old_vizjson
 
@@ -145,6 +145,28 @@ module Carto
         layers_data += non_basemap_base_layers_for(visualization)
 
         layers_data.compact.flatten
+      end
+
+      def layer_group_for_named_map(visualization)
+        layer_group_poro = layer_group_for(visualization)
+        # If there is *only* a torque layer, there is no layergroup
+        return {} if layer_group_poro.nil?
+
+        layers_data = Array.new
+        layer_num = 0
+        layer_group_poro[:options][:layer_definition][:layers].each do |layer|
+          layers_data.push(type:       layer[:type],
+                           options:    layer[:options],
+                           visible:    layer[:visible],
+                           index:      layer_num
+                          )
+          layer_num += 1
+        end
+        layers_data
+      end
+
+      def configuration
+        Cartodb.config
       end
 
       def user

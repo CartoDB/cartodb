@@ -11,8 +11,7 @@ module Carto
         @redis_vizjson_cache = redis_vizjson_cache
       end
 
-      # WIP #6953: remove vector and/or expand options
-      def to_vizjson(vector: false, **options)
+      def to_vizjson(**options)
         @redis_vizjson_cache.cached(@visualization.id, options.fetch(:https_request, false)) do
           vizjson = calculate_vizjson(options)
           vizjson[:widgets] = Carto::Widget.from_visualization_id(@visualization.id).map do |w|
@@ -23,7 +22,7 @@ module Carto
 
           vizjson[:datasource] = datasource(options)
           vizjson[:user] = user_vizjson_info
-          vizjson[:vector] = vector
+          vizjson[:vector] = options.fetch(:vector, false)
 
           vizjson
         end

@@ -73,25 +73,34 @@ module CartoDB
       end
 
       def cartodbfy(table_name)
-        table = ::Table.new(:user_table => ::UserTable.where(name: table_name, user_id: user.id).first)
+        table = user.tables.where(name: table_name).first.service
+
         table.force_schema = true
+
         table.import_to_cartodb(table_name)
         table.schema(reload: true)
+
         table.send :set_the_geom_column!
         table.import_cleanup
+
         table.send :cartodbfy
         table.schema(reload: true)
         table.reload
+
         table.send :update_table_pg_stats
         table.save
-
-        update_cdb_tablemetadata(table.name)
       rescue => exception
-        puts "Sync cartodbfy ERROR: #{exception.message}: #{exception.backtrace.join}"
-        CartoDB.notify_error('Error in sync cartodbfy',
-                             error: exception.backtrace.join('\n'), user_id: user.id, table: table_name)
+        message = exception.message
+        backtrace = exception.backtrace.join('\n')
 
-        update_cdb_tablemetadata(table.name)
+        puts "Sync cartodbfy ERROR: #{message}: #{backtrace}"
+        CartoDB.notify_error('Error in sync cartodbfy',
+                             error: backtrace,
+                             user_id: user.id,
+                             table: table_name)
+      ensure
+        fix_oid(table_name)
+        update_cdb_tablemetadata(table_name)
       end
 
       def update_cdb_tablemetadata(name)

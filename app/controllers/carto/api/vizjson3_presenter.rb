@@ -9,7 +9,6 @@ module Carto
       extend Forwardable
 
       delegate [
-        :map,
         :clean_description,
         :default_options, :options] => :@old_vizjson
 
@@ -30,6 +29,7 @@ module Carto
       # WIP #6953: redis_cache will be removed, injecting redis_vizjson_cache instead
       def initialize(visualization, redis_cache = $tables_metadata, redis_vizjson_cache = CartoDB::Visualization::RedisVizjsonCache.new(redis_cache, 3))
         @visualization = visualization
+        @map = visualization.map
         @redis_cache = redis_cache
         @redis_vizjson_cache = redis_vizjson_cache
       end
@@ -54,7 +54,7 @@ module Carto
 
       private
 
-      attr_reader :visualization
+      attr_reader :visualization, :map
 
       VIZJSON_VERSION = '3.0.0'.freeze
 

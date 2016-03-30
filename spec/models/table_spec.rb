@@ -2421,7 +2421,7 @@ describe Table do
       ::Table.any_instance.stubs(:estimated_row_count).returns(999)
       ::Table.any_instance.stubs(:actual_row_count).returns(1000)
 
-      table = new_table(:user_id => @user.id)
+      table = new_table(user_id: @user.id)
       table.save
 
       table.estimated_row_count.should == 999

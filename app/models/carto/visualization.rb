@@ -303,6 +303,10 @@ class Carto::Visualization < ActiveRecord::Base
     likes.count
   end
 
+  def attributions_from_derived_visualizations
+    related_canonical_visualizations.map(&:attributions).reject { |attribution| attribution.blank? }
+  end
+
   private
 
   def get_named_map

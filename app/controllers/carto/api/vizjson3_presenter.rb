@@ -5,27 +5,6 @@ module Carto
   module Api
     class VizJSON3Presenter
       # WIP #6953: remove adapters
-      # WIP #6953: forwarding to old vizjson implementation is a development transient tool
-      extend Forwardable
-
-      delegate [
-        :clean_description,
-        :default_options, :options] => :@old_vizjson
-
-      def create_old_vizjson(source_options = {})
-        options = {
-          full: false,
-          user_name: user.username,
-          user_api_key: user.api_key,
-          # TODO: legacy inconsistency, why is user viewer_user as well?
-          # Comes from 906b697cd05eb0222f1a080e5d4b31dd52f87af1
-          user: user,
-          viewer_user: user
-        }.merge(source_options)
-
-        @old_vizjson = CartoDB::Visualization::VizJSON.new(Carto::Api::VisualizationVizJSONAdapter.new(@visualization, @redis_cache), options, Cartodb.config)
-      end
-
       # WIP #6953: redis_cache will be removed, injecting redis_vizjson_cache instead
       def initialize(visualization, redis_cache = $tables_metadata, redis_vizjson_cache = CartoDB::Visualization::RedisVizjsonCache.new(redis_cache, 3))
         @visualization = visualization
@@ -54,14 +33,35 @@ module Carto
 
       private
 
-      attr_reader :visualization, :map
+      attr_reader :visualization, :map, :options
 
       VIZJSON_VERSION = '3.0.0'.freeze
+
+      def default_options
+        {
+          full: true,
+          visualization_id: visualization.id,
+          https_request: false,
+          attributions: visualization.attributions_from_derived_visualizations
+        }
+      end
+
+      def set_options(source_options = {})
+        @options = default_options.merge(
+          full: false,
+          user_name: user.username,
+          user_api_key: user.api_key,
+          # TODO: legacy inconsistency, why is user viewer_user as well?
+          # Comes from 906b697cd05eb0222f1a080e5d4b31dd52f87af1
+          user: user,
+          viewer_user: user
+        ).merge(source_options)
+      end
 
       # WIP #6953: old vizjson delegation
       def calculate_vizjson(options = {})
         # Used by forwards
-        create_old_vizjson(options)
+        set_options(options)
 
         poro_data = {
           id:             visualization.id,

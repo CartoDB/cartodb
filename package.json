@@ -22,6 +22,7 @@
     "aws-sdk": "2.0.0-rc11",
     "backbone": "1.2.3",
     "backbone-forms": "^0.14.0",
+    "backbone-model-file-upload": "^1.0.0",
     "browserify": "11.0.1",
     "browserify-resolutions": "1.0.6",
     "browserify-shim": "3.8.10",

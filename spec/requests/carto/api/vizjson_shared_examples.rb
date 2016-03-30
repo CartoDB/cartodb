@@ -360,8 +360,8 @@ shared_examples_for 'vizjson generator' do
 
         visualization = JSON.parse(last_response.body)
 
-        # Update the privacy of the visualization so that the viz_json generates a named_map
-        Carto::Api::VisualizationVizJSONAdapter.any_instance.stubs('retrieve_named_map?' => true)
+        # Stubs privacy of the visualization so that the viz_json generates a named_map
+        Carto::Visualization.any_instance.stubs('retrieve_named_map?' => true)
 
         get api_vx_visualizations_vizjson_url(id: visualization.fetch('id'), api_key: @api_key), {}, @headers
 

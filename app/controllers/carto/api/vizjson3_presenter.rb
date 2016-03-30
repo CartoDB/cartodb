@@ -4,14 +4,13 @@ require_dependency 'cartodb/redis_vizjson_cache'
 module Carto
   module Api
     class VizJSON3Presenter
+      # WIP #6953: remove adapters
       # WIP #6953: forwarding to old vizjson implementation is a development transient tool
       extend Forwardable
 
-      delegate [:layer_group_for, :named_map_layer_group_for, :other_layers_for,
-        :visualization, :map,
-        :clean_description, :all_layers_for,
-        :basemap_layer_for,
-        :non_basemap_base_layers_for,
+      delegate [
+        :map,
+        :clean_description,
         :default_options, :options] => :@old_vizjson
 
       def create_old_vizjson(source_options = {})
@@ -55,6 +54,8 @@ module Carto
 
       private
 
+      attr_reader :visualization
+
       VIZJSON_VERSION = '3.0.0'.freeze
 
       # WIP #6953: old vizjson delegation
@@ -67,7 +68,7 @@ module Carto
           version:        VIZJSON_VERSION,
           title:          visualization.qualified_name(user),
           likes:          visualization.likes.count,
-          description:    visualization.description_html_safe,
+          description:    html_safe(visualization.description),
           scrollwheel:    map.scrollwheel,
           legends:        map.legends,
           url:            options.delete(:url),
@@ -91,7 +92,7 @@ module Carto
         poro_data.merge!(slides: children) if children.length > 0
         unless visualization.parent_id.nil?
           poro_data[:title] = visualization.parent.qualified_name(user)
-          poro_data[:description] = visualization.parent.description_html_safe
+          poro_data[:description] = html_safe(visualization.parent.description)
         end
 
         symbolize_vizjson(poro_data)
@@ -133,7 +134,7 @@ module Carto
             owner: visualization.user
           }
           named_maps_presenter = CartoDB::NamedMapsWrapper::Presenter.new(
-            visualization, layer_group_for_named_map(visualization), presenter_options, configuration
+            Carto::Api::VisualizationVizJSONAdapter.new(visualization), layer_group_for_named_map(visualization), presenter_options, configuration
           )
           layers_data.push(named_maps_presenter.to_poro)
         else
@@ -165,6 +166,78 @@ module Carto
         layers_data
       end
 
+      def layer_group_for(visualization)
+        LayerGroup::Presenter.new(
+          visualization.data_layers.map { |l| Carto::Api::LayerVizJSONAdapter.new(l) },
+          options, configuration).to_poro
+      end
+
+      def named_map_layer_group_for(visualization)
+        LayerGroup::Presenter.new(
+          visualization.named_map_layers.map { |l| Carto::Api::LayerVizJSONAdapter.new(l) },
+          options, configuration).to_poro
+      end
+
+      def other_layers_for(visualization, named_maps_presenter = nil)
+        layer_index = visualization.data_layers.size
+
+        visualization.other_layers.map do |layer|
+          decoration_data_to_apply = if named_maps_presenter.nil?
+                                       {}
+                                     else
+                                       named_maps_presenter.get_decoration_for_layer(layer.kind, layer_index)
+                                     end
+          layer_index += 1
+          CartoDB::LayerModule::Presenter.new(
+            Carto::Api::LayerVizJSONAdapter.new(layer),
+            options, configuration, decoration_data_to_apply).to_vizjson_v2
+        end
+      end
+
+      def all_layers_for(visualization)
+        layers_data = []
+
+        basemap_layer = basemap_layer_for(visualization)
+        layers_data.push(basemap_layer) if basemap_layer
+
+        data_layers = visualization.data_layers.map do |layer|
+          CartoDB::LayerModule::Presenter.new(
+            Carto::Api::LayerVizJSONAdapter.new(layer),
+            options, configuration).to_vizjson_v2
+        end
+        layers_data.push(data_layers)
+
+        layers_data.push(other_layers_for(visualization))
+
+        layers_data += non_basemap_base_layers_for(visualization)
+
+        layers_data.compact.flatten
+      end
+
+      # INFO: Assumes layers come always ordered by order (they do)
+      def basemap_layer_for(visualization)
+        layer = visualization.user_layers.first
+        CartoDB::LayerModule::Presenter.new(
+          Carto::Api::LayerVizJSONAdapter.new(layer),
+          options, configuration).to_vizjson_v2 unless layer.nil?
+      end
+
+      # INFO: Assumes layers come always ordered by order (they do)
+      def non_basemap_base_layers_for(visualization)
+        base_layers = visualization.user_layers
+        unless base_layers.empty?
+          # Remove the basemap, which is always first
+          base_layers.slice(1, visualization.user_layers.length)
+                     .map do |layer|
+            CartoDB::LayerModule::Presenter.new(
+              Carto::Api::LayerVizJSONAdapter.new(layer),
+              options, configuration).to_vizjson_v2
+          end
+        else
+          []
+        end
+      end
+
       def configuration
         Cartodb.config
       end
@@ -191,6 +264,14 @@ module Carto
           fullname: user.name.present? ? user.name : user.username,
           avatar_url: user.avatar_url
         }
+      end
+
+      def html_safe(string)
+        if string.present?
+          renderer = Redcarpet::Render::Safe
+          markdown = Redcarpet::Markdown.new(renderer, extensions = {})
+          markdown.render string
+        end
       end
 
       # WIP #6953: remove next methods patch v2 vizjson #####################################

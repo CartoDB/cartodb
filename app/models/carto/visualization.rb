@@ -188,13 +188,23 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def data_layers
-    return [] if map.nil?
-    map.data_layers
+    map.nil? ? [] : map.data_layers
+  end
+
+  def named_map_layers
+    map.nil? ? [] : map.named_map_layers
+  end
+
+  def user_layers
+    map.nil? ? [] : map.user_layers
+  end
+
+  def other_layers
+    map.nil? ? [] : map.other_layers
   end
 
   def layers
-    return [] if map.nil?
-    map.layers
+    map.nil? ? [] : map.layers
   end
 
   def password_valid?(password)

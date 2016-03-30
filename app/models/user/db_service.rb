@@ -347,7 +347,7 @@ module CartoDB
                 [@user.database_username, @user.database_public_username, CartoDB::PUBLIC_DB_USER])
               database.run(%{ DROP FUNCTION IF EXISTS "#{@user.database_schema}"._CDB_UserQuotaInBytes()})
               drop_all_functions_from_schema(@user.database_schema)
-              database.run(%{ DROP SCHEMA IF EXISTS "#{@user.database_schema}" })
+              database.run(%{ DROP SCHEMA IF EXISTS "#{@user.database_schema}" CASCADE })
             end
           end
 

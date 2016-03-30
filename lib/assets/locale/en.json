@@ -41,6 +41,10 @@
           "trade-area": {
             "title": "Trade Areas",
             "desc": "Calculate the area of a layer determined by walking, driving, or biking time, or just by distance"
+          },
+          "point-in-polygon": {
+            "title": "Point in polygon",
+            "desc": "Analyse points in polygon (or vice versa)"
           }
         }
       },

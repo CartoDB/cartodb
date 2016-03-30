@@ -62,7 +62,7 @@ module Carto
         poro_data = {
           id:             visualization.id,
           version:        VIZJSON_VERSION,
-          title:          visualization.qualified_name(@user),
+          title:          visualization.qualified_name(user),
           likes:          visualization.likes.count,
           description:    visualization.description_html_safe,
           scrollwheel:    map.scrollwheel,
@@ -86,7 +86,7 @@ module Carto
         children = children_for(visualization)
         poro_data.merge!(slides: children) if children.length > 0
         unless visualization.parent_id.nil?
-          poro_data[:title] = visualization.parent.qualified_name(@user)
+          poro_data[:title] = visualization.parent.qualified_name(user)
           poro_data[:description] = visualization.parent.description_html_safe
         end
 

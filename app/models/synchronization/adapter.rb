@@ -68,9 +68,8 @@ module CartoDB
       def fix_oid(table_name)
         user_table = user.tables.where(name: table_name).first
 
-        table = ::Table.new(user_table: user_table)
-        table.set_table_id
-        table.save
+        user_table.sync_table_id
+        user_table.save
       end
 
       def cartodbfy(table_name)
@@ -96,10 +95,7 @@ module CartoDB
       end
 
       def update_cdb_tablemetadata(name)
-        qualified_name = "\"#{user.database_schema}\".\"#{name}\""
-        user.in_database(as: :superuser).run(%Q{
-          SELECT CDB_TableMetadataTouch('#{qualified_name}')
-        })
+        user.tables.where(name: name).first.update_cdb_tablemetadata
       end
 
       def success?

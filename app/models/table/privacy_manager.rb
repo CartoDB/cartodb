@@ -82,18 +82,31 @@ module CartoDB
     def set_public
       self.privacy = ::UserTable::PRIVACY_PUBLIC
       set_database_permissions(grant_query)
+      overviews_service = Carto::OverviewsService.new(owner.in_database)
+      overviews_service.overview_tables(table.name).each do |overview_table|
+        set_database_permissions(grant_query(overview_table))
+      end
       self
     end
 
     def set_private
       self.privacy = ::UserTable::PRIVACY_PRIVATE
       set_database_permissions(revoke_query)
+      overviews_service = Carto::OverviewsService.new(owner.in_database)
+      overviews_service.overview_tables(table.name).each do |overview_table|
+        set_database_permissions(revoke_query(overview_table))
+      end
       self
     end
 
     def set_public_with_link_only
       self.privacy = ::UserTable::PRIVACY_LINK
       set_database_permissions(grant_query)
+      overviews_service = Carto::OverviewsService.new(owner.in_database)
+      overviews_service.overview_tables(table.name).each do |overview_table|
+        set_database_permissions(grant_query(overview_table))
+      end
+      self
     end
 
     def owner
@@ -104,16 +117,18 @@ module CartoDB
       owner.in_database(as: :superuser).run(query)
     end
 
-    def revoke_query
-      %Q{
-        REVOKE SELECT ON "#{owner.database_schema}"."#{table.name}"
+    def revoke_query(table_name = nil)
+      table_name ||= table.name
+      %{
+        REVOKE SELECT ON "#{owner.database_schema}"."#{table_name}"
         FROM #{CartoDB::PUBLIC_DB_USER}
       }
     end
 
-    def grant_query
-      %Q{
-        GRANT SELECT ON "#{owner.database_schema}"."#{table.name}"
+    def grant_query(table_name = nil)
+      table_name ||= table.name
+      %{
+        GRANT SELECT ON "#{owner.database_schema}"."#{table_name}"
         TO #{CartoDB::PUBLIC_DB_USER};
       }
     end

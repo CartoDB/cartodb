@@ -26,7 +26,7 @@ module CartoDB
 
       def initialize(table_name, filepath, pg_options, layer=nil, options={})
         self.filepath   = filepath
-        self.pg_options = pg_options
+        self.pg_options = pg_options.with_indifferent_access
         self.table_name = table_name
         self.layer      = layer
         self.options    = options

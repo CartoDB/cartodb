@@ -1,14 +1,15 @@
 <% if (canUpgrade) { %>
-  <a href="<%- upgradeUrl %>" class="PrivacyToggler js-toggler PrivacyToggler--<%- privacy %> is-disabled" data-title="You cannot change the privacy of your new datasets. Click here to upgrade your account.">
+  <a href="<%- upgradeUrl %>" class="PrivacyToggler js-toggler PrivacyToggler--<%- privacy %> is-disabled"
+    data-title="<%- _t('components.modals.add-layer.footer.privacy-change-not-allowed') %>">
     <i class="CDB-IconFont CDB-IconFont-<%- icon %>"></i>
   </a>
 <% } else {%>
   <button type="button" class="PrivacyToggler js-toggler PrivacyToggler--<%- privacy %> <%- isDisabled ? 'is-disabled' : '' %>"
     data-title="
       <% if (!isDisabled) { %>
-      Your new dataset will be <%- privacy.toLowerCase() %>.<br />Click to change it to <%- nextPrivacy.toLowerCase() %>
+        <%- _t('components.modals.add-layer.footer.privacy-change', { privacy: privacy.toLowerCase() }) %>.<br /><%- _t('components.modals.add-layer.footer.privacy-click', { nextPrivacy: nextPrivacy.toLowerCase() }) %>.
       <% } else { %>
-        You cannot change the privacy of your new datasets.
+        <%- _t('components.modals.add-layer.footer.privacy-change-banned') %>
       <% } %>
     ">
     <i class="CDB-IconFont CDB-IconFont-<%- icon %>"></i>

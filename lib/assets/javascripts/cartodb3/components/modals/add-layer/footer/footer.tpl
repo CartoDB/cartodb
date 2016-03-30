@@ -4,8 +4,8 @@
   <div class="js-footer-info CreateDialog-footerInfo">
   </div>
   <div class="CreateDialog-footerActions js-footerActions">
-    <button class="js-ok Button Button--positive <%- canFinish ? '' : 'is-disabled' %>">
-      <span>Add layer</span>
+    <button class="js-ok CDB-Button CDB-Button--primary <%- canFinish ? '' : 'is-disabled' %>">
+      <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-upperCase"><%- _t('components.modals.add-layer.footer.add-layer') %></span>
     </button>
   </div>
 </div>

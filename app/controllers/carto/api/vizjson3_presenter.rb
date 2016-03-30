@@ -10,20 +10,22 @@ module Carto
       delegate [:layer_group_for, :named_map_layer_group_for, :other_layers_for,
         :visualization, :map, :configuration,
         :clean_description, :all_layers_for,
-        :layers_for, :layer_group_for_named_map, :basemap_layer_for,
+        :layer_group_for_named_map, :basemap_layer_for,
         :non_basemap_base_layers_for,
-        :default_options] => :@old_vizjson
+        :default_options, :options] => :@old_vizjson
 
       def create_old_vizjson(source_options = {})
         options = {
           full: false,
           user_name: user.username,
           user_api_key: user.api_key,
+          # TODO: legacy inconsistency, why is user viewer_user as well?
+          # Comes from 906b697cd05eb0222f1a080e5d4b31dd52f87af1
           user: user,
           viewer_user: user
         }.merge(source_options)
 
-        CartoDB::Visualization::VizJSON.new(Carto::Api::VisualizationVizJSONAdapter.new(@visualization, @redis_cache), options, Cartodb.config)
+        @old_vizjson = CartoDB::Visualization::VizJSON.new(Carto::Api::VisualizationVizJSONAdapter.new(@visualization, @redis_cache), options, Cartodb.config)
       end
 
       # WIP #6953: redis_cache will be removed, injecting redis_vizjson_cache instead
@@ -58,7 +60,7 @@ module Carto
       # WIP #6953: old vizjson delegation
       def calculate_vizjson(options = {})
         # Used by forwards
-        @old_vizjson = create_old_vizjson(options)
+        create_old_vizjson(options)
 
         poro_data = {
           id:             visualization.id,
@@ -114,6 +116,35 @@ module Carto
         CartoDB::Logger.debug(
           message: "Error parsing map bounds: #{map.id}, #{map.view_bounds_sw}, #{map.view_bounds_ne}",
           exception: e)
+      end
+
+      def layers_for(visualization)
+        basemap_layer = basemap_layer_for(visualization)
+        layers_data = []
+        layers_data.push(basemap_layer) if basemap_layer
+
+        if visualization.retrieve_named_map?
+          presenter_options = {
+            user_name: options.fetch(:user_name),
+            api_key: options.delete(:user_api_key),
+            https_request: options.fetch(:https_request, false),
+            # WIP #6953: separated viewer user?
+            viewer_user: user,
+            owner: visualization.user
+          }
+          named_maps_presenter = CartoDB::NamedMapsWrapper::Presenter.new(
+            visualization, layer_group_for_named_map(visualization), presenter_options, configuration
+          )
+          layers_data.push(named_maps_presenter.to_poro)
+        else
+          named_maps_presenter = nil
+          layers_data.push(layer_group_for(visualization))
+        end
+        layers_data.push(other_layers_for(visualization, named_maps_presenter))
+
+        layers_data += non_basemap_base_layers_for(visualization)
+
+        layers_data.compact.flatten
       end
 
       def user

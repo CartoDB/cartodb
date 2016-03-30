@@ -39,6 +39,7 @@ module CartoDB
           overlays:       overlays_for(visualization),
           # Fields specific for this export
           export_version: version,
+          # TODO: bug? @user is _viewer_user_, who might not be the owner
           owner:          { id: @user.id }
         }
       end

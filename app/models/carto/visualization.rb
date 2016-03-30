@@ -140,7 +140,7 @@ class Carto::Visualization < ActiveRecord::Base
     get_surrogate_key(CartoDB::SURROGATE_NAMESPACE_VISUALIZATION, id)
   end
 
-  def qualified_name(viewer_user=nil)
+  def qualified_name(viewer_user = nil)
     if viewer_user.nil? || is_owner_user?(viewer_user)
       name
     else

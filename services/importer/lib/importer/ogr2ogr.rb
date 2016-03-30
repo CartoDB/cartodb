@@ -195,7 +195,7 @@ module CartoDB
       def postgres_options
         %Q{PG:"host=#{pg_options.fetch(:host)} }      +
         %Q{port=#{pg_options.fetch(:direct_port)} }          +
-        %Q{user=#{pg_options.fetch(:user, pg_options.fetch(:username))} }          +
+        %Q{user=#{pg_options.fetch(:username)} }          +
         %Q{dbname=#{pg_options.fetch(:database)} }    +
         %Q{password=#{pg_options.fetch(:password)}"}
         # 'schemas=#{SCHEMA},cartodb' param is no longer needed, let the DB build the proper one

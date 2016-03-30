@@ -2416,6 +2416,17 @@ describe Table do
       table.actual_row_count.should == 1
       [0, 1].should include(table.estimated_row_count)
     end
+
+    it 'should query Table estimated an actual row count methods' do
+      ::Table.any_instance.stubs(:estimated_row_count).returns(999)
+      ::Table.any_instance.stubs(:actual_row_count).returns(1000)
+
+      table = new_table(:user_id => @user.id)
+      table.save
+
+      table.estimated_row_count.should == 999
+      table.actual_row_count.should == 1000
+    end
   end
 
 end

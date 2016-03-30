@@ -1,5 +1,5 @@
 # encoding: UTF-8
-require 'helpers/unique_names_helper'
+require_relative '../../helpers/unique_names_helper'
 
 module CartoDB
   module Factories

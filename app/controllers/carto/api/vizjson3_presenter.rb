@@ -5,8 +5,9 @@ module Carto
   module Api
     class VizJSON3Presenter
       # WIP #6953: remove adapters
-      def initialize(visualization, redis_vizjson_cache = CartoDB::Visualization::RedisVizjsonCache.new($tables_metadata, 3))
+      def initialize(visualization, viewer_user, redis_vizjson_cache = CartoDB::Visualization::RedisVizjsonCache.new($tables_metadata, 3))
         @visualization = visualization
+        @viewer_user = viewer_user
         @map = visualization.map
         @redis_vizjson_cache = redis_vizjson_cache
       end
@@ -48,10 +49,8 @@ module Carto
           full: false,
           user_name: user.username,
           user_api_key: user.api_key,
-          # TODO: legacy inconsistency, why is user viewer_user as well?
-          # Comes from 906b697cd05eb0222f1a080e5d4b31dd52f87af1
           user: user,
-          viewer_user: user
+          viewer_user: @viewer_user
         ).merge(options)
       end
 
@@ -94,7 +93,7 @@ module Carto
 
       def children_for(visualization, options)
         visualization.children.map do |child|
-          VizJSON3Presenter.new(child, @redis_vizjson_cache).to_vizjson(options)
+          VizJSON3Presenter.new(child, @viewer_user, @redis_vizjson_cache).to_vizjson(options)
         end
       end
 
@@ -122,8 +121,7 @@ module Carto
             user_name: options.fetch(:user_name),
             api_key: options.delete(:user_api_key),
             https_request: options.fetch(:https_request, false),
-            # WIP #6953: separated viewer user?
-            viewer_user: user,
+            viewer_user: @viewer_user,
             owner: visualization.user
           }
           named_maps_presenter = CartoDB::NamedMapsWrapper::Presenter.new(

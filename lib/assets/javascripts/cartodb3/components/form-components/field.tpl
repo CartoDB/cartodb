@@ -1,4 +1,4 @@
-<div class="u-tSpace-xl CDB-Text">
+<div class="u-tSpace--m CDB-Text">
   <p class="CDB-Legend u-upperCase u-iBlock CDB-Text is-semibold CDB-Size-small u-rSpace--m" for="<%= editorId %>">
     <%- title %>
   </p>

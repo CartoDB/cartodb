@@ -273,19 +273,19 @@ describe CartoDB::Importer2::Overviews do
       has_overviews?(user, table.name).should eq true
       ov_tables = overview_tables(user, table.name)
       # Check overviews are private
-      ov_tables.any?{ |ov_table| public_table?(user, ov_table) }.should eq false
+      ov_tables.any? { |ov_table| public_table?(user, ov_table) }.should eq false
 
       set_table_privacy table, public_privacy
       # Check overviews are public
-      ov_tables.all?{ |ov_table| public_table?(user, ov_table) }.should eq true
+      ov_tables.all? { |ov_table| public_table?(user, ov_table) }.should eq true
 
       set_table_privacy table, private_privacy
       # Check overviews are private
-      ov_tables.any?{ |ov_table| public_table?(user, ov_table) }.should eq false
+      ov_tables.any? { |ov_table| public_table?(user, ov_table) }.should eq false
 
       set_table_privacy table, link_privacy
       # Check overviews are public
-      ov_tables.all?{ |ov_table| public_table?(user, ov_table) }.should eq true
+      ov_tables.all? { |ov_table| public_table?(user, ov_table) }.should eq true
     end
   end
 

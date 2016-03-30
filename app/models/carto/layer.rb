@@ -27,6 +27,17 @@ module Carto
       'table/views/infowindow_header_with_image' =>   'infowindow_header_with_image'
     }
 
+    def public_values
+      {
+        options: options,
+        kind: kind,
+        infowindow: infowindow,
+        tooltip: tooltip,
+        id: id,
+        order: order
+      }
+    end
+
     def affected_tables
       (tables_from_query_option + tables_from_table_name_option).compact.uniq
     end
@@ -59,6 +70,14 @@ module Carto
 
     def basemap?
       ["gmapsbase", "tiled"].include?(kind)
+    end
+
+    def base?
+      ['tiled', 'background', 'gmapsbase', 'wms'].include?(kind)
+    end
+
+    def torque?
+      kind == 'torque'
     end
 
     def supports_labels_layer?

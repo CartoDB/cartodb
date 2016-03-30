@@ -1,4 +1,7 @@
 # encoding: utf-8
+
+require 'active_support/time'
+
 require_relative './job'
 require_relative './string_sanitizer'
 require_relative './exceptions'

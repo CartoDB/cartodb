@@ -78,6 +78,9 @@
       ]
     ]
   },
+  "browser": {
+    "tipsy": "./vendor/assets/javascripts/jquery.tipsy.js"
+  },
   "browserify-shim": {
     "jquery-cdb-v3": "global:$",
     "underscore-cdb-v3": "global:_",

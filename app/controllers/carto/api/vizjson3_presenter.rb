@@ -5,11 +5,9 @@ module Carto
   module Api
     class VizJSON3Presenter
       # WIP #6953: remove adapters
-      # WIP #6953: redis_cache will be removed, injecting redis_vizjson_cache instead
-      def initialize(visualization, redis_cache = $tables_metadata, redis_vizjson_cache = CartoDB::Visualization::RedisVizjsonCache.new(redis_cache, 3))
+      def initialize(visualization, redis_vizjson_cache = CartoDB::Visualization::RedisVizjsonCache.new($tables_metadata, 3))
         @visualization = visualization
         @map = visualization.map
-        @redis_cache = redis_cache
         @redis_vizjson_cache = redis_vizjson_cache
       end
 
@@ -101,7 +99,7 @@ module Carto
       def children_for(visualization)
         visualization.children.map do |child|
           # WIP #6953: options were not propagated at v2 either, but they probably should
-          VizJSON3Presenter.new(child, @redis_cache, @redis_vizjson_cache).to_vizjson
+          VizJSON3Presenter.new(child, @redis_vizjson_cache).to_vizjson
         end
       end
 

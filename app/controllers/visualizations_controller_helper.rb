@@ -90,7 +90,7 @@ module VisualizationsControllerHelper
   end
 
   def generate_vizjson3(visualization, params)
-    Carto::Api::VizJSON3Presenter.new(visualization, $tables_metadata).to_vizjson(https_request: is_https?,
+    Carto::Api::VizJSON3Presenter.new(visualization).to_vizjson(https_request: is_https?,
                                                                                   vector: params[:vector] == 'true')
   end
 end

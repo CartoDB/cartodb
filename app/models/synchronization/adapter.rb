@@ -90,14 +90,11 @@ module CartoDB
         table.send :update_table_pg_stats
         table.save
       rescue => exception
-        message = exception.message
-        backtrace = exception.backtrace.join('\n')
-
-        puts "Sync cartodbfy ERROR: #{message}: #{backtrace}"
-        CartoDB.notify_error('Error in sync cartodbfy',
-                             error: backtrace,
-                             user_id: user.id,
-                             table: table_name)
+        CartoDB::Logger.log('error',
+                            message: "Sync cartodbfy ERROR: #{exception.message}",
+                            trace: exception.backtrace,
+                            user: user,
+                            table_name: table_name)
       ensure
         fix_oid(table_name)
         update_cdb_tablemetadata(table_name)

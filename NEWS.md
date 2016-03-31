@@ -1,6 +1,8 @@
 3.12.* (2016-XX-XX)
 -------------------
 ## Features
+* Adds optional strong passwords for organization signups
+
 ## Bug Fixes
 * Updating CartoDB.js submodule with last changes sanitizing attribution.
 * Fixes a problem with select2 arrow icon.
@@ -8,7 +10,14 @@
 * Source and attributions copied to visualizations when you import a dataset from the Data Library (https://github.com/CartoDB/cartodb/issues/5970).
 * Fixes a memory leak when connecting to user databases
 * Fixed error when accessing an SQL API renamed table through the editor.
+* Refactored and fixed error handling for visualization overlays.
 * Ignore non-downloadable GDrive files that made file listing fail (https://github.com/CartoDB/cartodb/pull/6871)
+* Update CartoDB PostgreSQL extension to 0.14.3 to support `cartodb_id` text columns in the CartoDBfy process.
+  * See instructions to upgrade to the latest extension version [here](https://github.com/CartoDB/cartodb-postgresql#update-cartodb-extension)
+* Fix slow search of visualizations by name
+* Update and improve logging system
+* Fix broken syncs after setting sync options to "Never"
+* Make `layers.kind` not null. Run `bundle exec rake db:migrate` to update your database.
 
 ## Security fixes
 

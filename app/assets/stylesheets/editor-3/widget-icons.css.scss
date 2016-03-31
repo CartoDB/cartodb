@@ -1,0 +1,156 @@
+@import 'cdb-utilities/mixins';
+@import 'cdb-variables/colors';
+@import 'cdb-variables/sizes';
+
+.HistogramShape {
+  position: relative;
+  width: 20px;
+  height: 11px;
+}
+.HistogramShape-bar {
+  position: absolute;
+  bottom: 0;
+  width: 2px;
+  background: $cHighlight;
+}
+.HistogramShape-bar.is-01 {
+  top: 7px;
+  left: 0;
+}
+.HistogramShape-bar.is-02 {
+  top: 4px;
+  left: 3px;
+}
+.HistogramShape-bar.is-03 {
+  top: 2px;
+  left: 6px;
+}
+.HistogramShape-bar.is-04 {
+  top: 0;
+  left: 9px;
+}
+.HistogramShape-bar.is-05 {
+  top: 2px;
+  left: 12px;
+}
+.HistogramShape-bar.is-06 {
+  top: 5px;
+  left: 15px;
+}
+.HistogramShape-bar.is-07 {
+  top: 8px;
+  right: 0;
+}
+
+.CategoryShape {
+  width: 18px;
+  height: 16px;
+}
+.CategoryShape-item {
+  margin-bottom: 2px;
+}
+.CategoryShape-item:last-child {
+  margin-bottom: 0;
+}
+.CategoryShape-title {
+  width: 5px;
+  height: 1px;
+  margin-bottom: 1px;
+  background: $cHintText;
+}
+.CategoryShape-bar {
+  height: 2px;
+  background: $cWhite;
+}
+.CategoryShape-percent {
+  display: block;
+  height: 2px;
+  background: $cHighlight;
+}
+
+.FormulaShape {
+  width: 18px;
+  height: 14px;
+}
+.FormulaShape-title {
+  height: 2px;
+  margin-bottom: 1px;
+  background: #CBCED0;
+}
+.FormulaShape-info {
+  width: 11px;
+  height: 1px;
+  margin-bottom: 3px;
+  background: $cMainLine;
+}
+.FormulaShape-number {
+  width: 12px;
+  height: 7px;
+  background: $cMainLine;
+}
+
+
+.TimeSeriesShape-inner {
+  position: relative;
+  width: 20px;
+  height: 11px;
+}
+.TimeSeriesShape-play {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  border: 2px solid transparent;
+  border-left: 3px solid #979EA1;
+  content: '';
+  vertical-align: top;
+}
+.TimeSeriesShape-header {
+  height: 5px;
+  margin-bottom: 2px;
+}
+.TimeSeriesShape-title {
+  display: inline-block;
+  width: 13px;
+  height: 2px;
+  margin-top: 1px;
+  background: $cSecondaryLine;
+  vertical-align: top;
+}
+.TimeSeriesShape-bar {
+  position: absolute;
+  bottom: 0;
+  width: 2px;
+  background: $cSecondaryLine;
+}
+.TimeSeriesShape-bar.is-played {
+  background: #F2CC8F;
+}
+.TimeSeriesShape-bar.is-01 {
+  top: 7px;
+  left: 0;
+}
+.TimeSeriesShape-bar.is-02 {
+  top: 4px;
+  left: 3px;
+}
+.TimeSeriesShape-bar.is-03 {
+  top: 2px;
+  left: 6px;
+}
+.TimeSeriesShape-bar.is-04 {
+  top: 0;
+  left: 9px;
+}
+.TimeSeriesShape-bar.is-05 {
+  top: 2px;
+  left: 12px;
+}
+.TimeSeriesShape-bar.is-06 {
+  top: 5px;
+  left: 15px;
+}
+.TimeSeriesShape-bar.is-07 {
+  top: 8px;
+  right: 0;
+}
+

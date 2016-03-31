@@ -1,6 +1,6 @@
-require_relative '../../../models/visualization/vizjson'
-require_relative '../../../helpers/redis_vizjson_cache'
-require_relative 'visualization_vizjson_adapter'
+require_dependency 'visualization/vizjson'
+require_dependency 'carto/api/visualization_vizjson_adapter'
+require_dependency 'cartodb/redis_vizjson_cache'
 
 module Carto
   module Api

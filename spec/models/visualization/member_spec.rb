@@ -6,6 +6,7 @@ require_relative '../../../app/models/visualization/collection'
 require_relative '../../../app/models/visualization/migrator'
 require_relative '../../../services/data-repository/repository'
 require_relative '../../doubles/support_tables.rb'
+require_dependency 'cartodb/redis_vizjson_cache'
 
 include CartoDB
 
@@ -15,7 +16,6 @@ describe Visualization::Member do
     Sequel.extension(:pagination)
 
     Visualization.repository  = DataRepository::Backend::Sequel.new(@db, :visualizations)
-    Overlay.repository        = DataRepository.new # In-memory storage
 
     @user = FactoryGirl.create(:valid_user)
   end

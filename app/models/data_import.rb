@@ -212,12 +212,6 @@ class DataImport < Sequel::Model
     CartoDB::notify_warning_exception(invalid_cartodb_id_exception)
     handle_failure(invalid_cartodb_id_exception)
     self
-  rescue CartoDB::CartoDBfyError
-    cartodbfy_exception = CartoDB::Importer2::CartoDBfyError.new
-    log.append "Exception: #{cartodbfy_exception}"
-    CartoDB::notify_warning_exception(cartodbfy_exception)
-    handle_failure(cartodbfy_exception)
-    self
   rescue => exception
     log.append "Exception: #{exception.to_s}"
     log.append exception.backtrace, truncate = false
@@ -315,7 +309,7 @@ class DataImport < Sequel::Model
                                                                          })
                                                                     .decrement!
     rescue => exception
-      CartoDB::Logger.info('Error decreasing concurrent import limit',
+      CartoDB::StdoutLogger.info('Error decreasing concurrent import limit',
                            "#{exception.message} #{exception.backtrace.inspect}")
     end
     notify(results)
@@ -347,7 +341,7 @@ class DataImport < Sequel::Model
                                                                          })
       .decrement!
     rescue => exception
-      CartoDB::Logger.info('Error decreasing concurrent import limit',
+      CartoDB::StdoutLogger.info('Error decreasing concurrent import limit',
                            "#{exception.message} #{exception.backtrace.inspect}")
     end
     notify(results)

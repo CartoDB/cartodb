@@ -10,9 +10,6 @@ require_relative './visualization/member'
 require_relative './visualization/collection'
 require_relative './visualization/overlays'
 require_relative './visualization/table_blender'
-require_relative './overlay/member'
-require_relative './overlay/collection'
-require_relative './overlay/presenter'
 require_relative '../../services/importer/lib/importer/query_batcher'
 require_relative '../../services/importer/lib/importer/cartodbfy_time'
 require_relative '../../services/datasources/lib/datasources/decorators/factory'
@@ -474,7 +471,7 @@ class Table
   end
 
   def handle_creation_error(e)
-    CartoDB::Logger.info 'table#create error', "#{e.inspect}"
+    CartoDB::StdoutLogger.info 'table#create error', "#{e.inspect}"
     # Remove the table, except if it already exists
     unless self.name.blank? || e.message =~ /relation .* already exists/
       @data_import.log.append ("Import ERROR: Dropping table #{qualified_table_name}") if @data_import
@@ -577,7 +574,7 @@ class Table
       begin
         user_database.run("DROP SEQUENCE IF EXISTS cartodb_id_#{oid}_seq")
       rescue => e
-        CartoDB::Logger.info 'Table#after_destroy error', "maybe table #{qualified_table_name} doesn't exist: #{e.inspect}"
+        CartoDB::StdoutLogger.info 'Table#after_destroy error', "maybe table #{qualified_table_name} doesn't exist: #{e.inspect}"
       end
       Carto::OverviewsService.new(user_database).delete_overviews qualified_table_name
       user_database.run(%{DROP TABLE IF EXISTS #{qualified_table_name}})
@@ -585,7 +582,21 @@ class Table
   end
 
   def real_table_exists?
-    !get_table_id.nil?
+    real_table_oid = fetch_table_id
+
+    # TODO: Remove this when table_id is guaranteed to be updated
+    unless real_table_oid == table_id
+      CartoDB.notify_debug('Metadata/Physical table oid mismatch',
+                           trace: caller,
+                           oid: real_table_oid,
+                           table_id: table_id,
+                           name: name,
+                           user: owner)
+
+      self.table_id = real_table_oid
+    end
+
+    !real_table_oid.nil?
   end
 
   # adds the column if not exists or cast it to timestamp field
@@ -652,7 +663,7 @@ class Table
     begin
       owner.in_database({statement_timeout: 600000}).run(%Q{UPDATE #{qualified_table_name} SET the_geom = ST_MakeValid(the_geom);})
     rescue => e
-      CartoDB::Logger.info 'Table#make_geom_valid error', "table #{qualified_table_name} make valid failed: #{e.inspect}"
+      CartoDB::StdoutLogger.info 'Table#make_geom_valid error', "table #{qualified_table_name} make valid failed: #{e.inspect}"
     end
   end
 
@@ -989,7 +1000,7 @@ class Table
       rows = user_database[%Q{
         SELECT #{select_columns} FROM #{qualified_table_name} #{where} ORDER BY "#{order_by_column}" #{mode} LIMIT #{per_page}+1 OFFSET #{page}
       }].all
-      CartoDB::Logger.info 'Query', "fetch: #{rows.length}"
+      CartoDB::StdoutLogger.info 'Query', "fetch: #{rows.length}"
 
       # Tweak estimation if needed
       fetched = rows.length
@@ -1136,7 +1147,7 @@ class Table
     if !!(exception.message =~ /Error: invalid cartodb_id/)
       raise CartoDB::CartoDBfyInvalidID
     else
-      raise CartoDB::CartoDBfyError
+      raise exception
     end
   end
 
@@ -1171,19 +1182,22 @@ class Table
 
   def relator
     @relator ||= CartoDB::TableRelator.new(Rails::Sequel.connection, self)
-  end #relator
-
-  def set_table_id
-    @user_table.table_id = self.get_table_id
   end
 
-  def get_table_id
-    record = owner.in_database.select(:pg_class__oid)
-      .from(:pg_class)
-      .join_table(:inner, :pg_namespace, :oid => :relnamespace)
-      .where(:relkind => 'r', :nspname => owner.database_schema, :relname => name).first
+  def set_table_id
+    @user_table.table_id = fetch_table_id
+  end
+
+  def fetch_table_id
+    record = owner.in_database
+                  .select(:pg_class__oid)
+                  .from(:pg_class)
+                  .join_table(:inner, :pg_namespace, oid: :relnamespace)
+                  .where(relkind: 'r', nspname: owner.database_schema, relname: name)
+                  .first
+
     record.nil? ? nil : record[:oid]
-  end # get_table_id
+  end
 
   def update_name_changes
     if @name_changed_from.present? && @name_changed_from != name

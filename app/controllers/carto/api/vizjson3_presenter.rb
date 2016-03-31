@@ -1,32 +1,123 @@
-require_relative 'vizjson_presenter'
+require_dependency 'carto/api/layer_vizjson_adapter'
+require_dependency 'cartodb/redis_vizjson_cache'
 
 module Carto
   module Api
     class VizJSON3Presenter
+      # WIP #6953: forwarding to old vizjson implementation is a development transient tool
+      extend Forwardable
 
-      def initialize(visualization, redis_cache = $tables_metadata)
+      delegate [:layer_group_for, :named_map_layer_group_for, :other_layers_for,
+        :visualization, :map, :layers_for, :configuration,
+        :clean_description, :bounds_from, :all_layers_for,
+        :layers_for, :layer_group_for_named_map, :basemap_layer_for,
+        :non_basemap_base_layers_for, :overlays_for, :children_for,
+        :ordered_overlays_for, :default_options, :auth_tokens_for] => :@old_vizjson
+
+      def create_old_vizjson(source_options = {})
+        options = {
+          full: false,
+          user_name: user.username,
+          user_api_key: user.api_key,
+          user: user,
+          viewer_user: user
+        }.merge(source_options)
+
+        CartoDB::Visualization::VizJSON.new(Carto::Api::VisualizationVizJSONAdapter.new(@visualization, @redis_cache), options, Cartodb.config)
+      end
+
+      # WIP #6953: redis_cache will be removed, injecting redis_vizjson_cache instead
+      def initialize(visualization, redis_cache = $tables_metadata, redis_vizjson_cache = CartoDB::Visualization::RedisVizjsonCache.new(redis_cache, 3))
         @visualization = visualization
         @redis_cache = redis_cache
-        @redis_vizjson_cache = CartoDB::Visualization::RedisVizjsonCache.new(redis_cache)
+        @redis_vizjson_cache = redis_vizjson_cache
       end
 
       def to_vizjson(vector: false, **options)
-        vizjson = symbolize_vizjson(Carto::Api::VizJSONPresenter.new(@visualization, @redis_cache).to_vizjson(options))
+        @redis_vizjson_cache.cached(@visualization.id, options.fetch(:https_request, false)) do
+          vizjson = calculate_vizjson(options)
+          vizjson[:widgets] = Carto::Widget.from_visualization_id(@visualization.id).map do |w|
+            Carto::Api::WidgetPresenter.new(w).to_poro
+          end
 
-        vizjson[:widgets] = Carto::Widget.from_visualization_id(@visualization.id).map do |w|
-          Carto::Api::WidgetPresenter.new(w).to_poro
+          vizjson[:layers].each { |l| layer_vizjson2_to_3(l) }
+
+          vizjson[:datasource] = datasource(options)
+          vizjson[:user] = user_vizjson_info
+          vizjson[:vector] = vector
+
+          vizjson
         end
-
-        vizjson[:layers].each { |l| layer_vizjson2_to_3(l) }
-
-        vizjson[:datasource] = datasource(options)
-        vizjson[:user] = user
-        vizjson[:vector] = vector
-
-        vizjson
       end
 
       private
+
+      VIZJSON_VERSION = '3.0.0'.freeze
+
+      # WIP #6953: old vizjson delegation
+      def calculate_vizjson(options = {})
+        # Used by forwards
+        @old_vizjson = create_old_vizjson(options)
+
+        poro_data = {
+          id:             visualization.id,
+          version:        VIZJSON_VERSION,
+          title:          visualization.qualified_name(user),
+          likes:          visualization.likes.count,
+          description:    visualization.description_html_safe,
+          scrollwheel:    map.scrollwheel,
+          legends:        map.legends,
+          url:            options.delete(:url),
+          map_provider:   map.provider,
+          bounds:         bounds_from(map),
+          center:         map.center,
+          zoom:           map.zoom,
+          updated_at:     map.viz_updated_at,
+          layers:         layers_for(visualization),
+          overlays:       overlays_for(visualization),
+          prev:           visualization.prev_id,
+          next:           visualization.next_id,
+          transition_options: visualization.transition_options
+        }
+
+        auth_tokens = auth_tokens_for(visualization)
+        poro_data.merge!(auth_tokens: auth_tokens) if auth_tokens.length > 0
+
+        children = children_for(visualization)
+        poro_data.merge!(slides: children) if children.length > 0
+        unless visualization.parent_id.nil?
+          poro_data[:title] = visualization.parent.qualified_name(user)
+          poro_data[:description] = visualization.parent.description_html_safe
+        end
+
+        symbolize_vizjson(poro_data)
+      end
+
+      def user
+        @user ||= @visualization.user
+      end
+
+      def datasource(options)
+        api_templates_type = options.fetch(:https_request, false) ? 'private' : 'public'
+        ds = {
+          user_name: @visualization.user.username,
+          maps_api_template: ApplicationHelper.maps_api_template(api_templates_type),
+          stat_tag: @visualization.id
+        }
+
+        ds[:template_name] = CartoDB::NamedMapsWrapper::NamedMap.template_name(@visualization.id) if @visualization.retrieve_named_map?
+
+        ds
+      end
+
+      def user_vizjson_info
+        {
+          fullname: user.name.present? ? user.name : user.username,
+          avatar_url: user.avatar_url
+        }
+      end
+
+      # WIP #6953: remove next methods patch v2 vizjson #####################################
 
       def symbolize_vizjson(vizjson)
         vizjson = vizjson.deep_symbolize_keys
@@ -42,17 +133,19 @@ module Carto
         layer_definitions_from_layer_data(layer_data).each do |layer_definition|
           infowindow = layer_definition[:infowindow]
           if infowindow
-            infowindow[:template] = v3_infowindow_template(infowindow[:template_name], infowindow[:template])
+            infowindow_sym = infowindow.deep_symbolize_keys
+            infowindow[:template] = v3_infowindow_template(infowindow_sym[:template_name], infowindow_sym[:template])
           end
 
           tooltip = layer_definition[:tooltip]
           if tooltip
-            tooltip[:template] = v3_tooltip_template(tooltip[:template_name], tooltip[:template])
+            tooltip_sym = tooltip.deep_symbolize_keys
+            tooltip[:template] = v3_tooltip_template(tooltip_sym[:template_name], tooltip_sym[:template])
           end
         end
       end
 
-      # TODO: refactor, ugly as hell. Technical debt: #6912
+      # WIP #6953: refactor, ugly as hell. Technical debt: #6953
       def layer_definitions_from_layer_data(layer_data)
         if layer_data[:options] &&
            layer_data[:options][:layer_definition] &&
@@ -67,7 +160,6 @@ module Carto
         end
       end
 
-      # TODO: refactor, maybe this can be done straight away in the LayerVizJSONAdapter. Technical debt: #6912
       def v3_infowindow_template(template_name, fallback_template)
         template_name = Carto::Api::LayerVizJSONAdapter::TEMPLATES_MAP.fetch(template_name, template_name)
         if template_name.present?
@@ -104,26 +196,6 @@ module Carto
                                 layer.options['query']
                               end
         layer_options.delete(:query)
-      end
-
-      def datasource(options)
-        api_templates_type = options.fetch(:https_request, false) ? 'private' : 'public'
-        ds = {
-          user_name: @visualization.user.username,
-          maps_api_template: ApplicationHelper.maps_api_template(api_templates_type),
-          stat_tag: @visualization.id
-        }
-
-        ds[:template_name] = CartoDB::NamedMapsWrapper::NamedMap.template_name(@visualization.id) if @visualization.retrieve_named_map?
-
-        ds
-      end
-
-      def user
-        {
-          fullname: @visualization.user.name.present? ? @visualization.user.name : @visualization.user.username,
-          avatar_url: @visualization.user.avatar_url
-        }
       end
     end
   end

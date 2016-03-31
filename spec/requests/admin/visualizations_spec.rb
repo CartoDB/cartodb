@@ -6,15 +6,18 @@ require_relative '../../spec_helper'
 require_relative '../../support/factories/organizations'
 require_relative '../../../app/models/visualization/migrator'
 require_relative '../../../app/controllers/admin/visualizations_controller'
+require 'helpers/unique_names_helper'
 
 def app
   CartoDB::Application.new
 end #app
 
 describe Admin::VisualizationsController do
+  include UniqueNamesHelper
   include Rack::Test::Methods
   include Warden::Test::Helpers
   include CacheHelper
+  include Carto::Factories::Visualizations
 
   before(:all) do
     @user = FactoryGirl.create(:valid_user, private_tables_enabled: true)
@@ -377,17 +380,16 @@ describe Admin::VisualizationsController do
         enable_remote_db_user: nil
       )
 
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
-      Table.any_instance.stubs(
-          :perform_cartodb_function => nil,
-          :update_cdb_tablemetadata => nil,
-          :update_table_pg_stats => nil,
-          :create_table_in_database! => nil,
-          :get_table_id => 1,
-          :grant_select_to_tiler_user => nil,
-          :cartodbfy => nil,
-          :set_the_geom_column! => nil
-      )
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true)
+
+      Table.any_instance.stubs(perform_cartodb_function: nil,
+                               update_cdb_tablemetadata: nil,
+                               update_table_pg_stats: nil,
+                               create_table_in_database!: nil,
+                               fetch_table_id: 1,
+                               grant_select_to_tiler_user: nil,
+                               cartodbfy: nil,
+                               set_the_geom_column!: nil)
 
       # --------TEST ITSELF-----------
 
@@ -492,7 +494,7 @@ describe Admin::VisualizationsController do
         update_cdb_tablemetadata: nil,
         update_table_pg_stats: nil,
         create_table_in_database!: nil,
-        get_table_id: 1,
+        fetch_table_id: 1,
         grant_select_to_tiler_user: nil,
         cartodbfy: nil,
         set_the_geom_column!: nil
@@ -550,6 +552,54 @@ describe Admin::VisualizationsController do
     end
   end
 
+  describe 'find visualizations by name' do
+    before(:all) do
+      @organization = create_organization_with_users(name: 'vizzuality')
+      @org_user = @organization.users.first
+      bypass_named_maps
+      @table = new_table(user_id: @org_user.id, privacy: ::UserTable::PRIVACY_PUBLIC).save.reload
+      @faketable = new_table(user_id: @user.id, privacy: ::UserTable::PRIVACY_PUBLIC).save.reload
+    end
+
+    it 'finds visualization by org and name' do
+      url = CartoDB.url(self, 'public_table', { id: @table.table_visualization.name }, @org_user)
+      url = url.sub("/u/#{@org_user.username}", '')
+
+      get url
+      last_response.status.should == 200
+    end
+
+    it 'does not find visualizations outside org' do
+      url = CartoDB.url(self, 'public_table', { id: @faketable.table_visualization.name }, @org_user)
+      url = url.sub("/u/#{@org_user.username}", '')
+
+      get url
+      last_response.status.should == 404
+    end
+
+    it 'finds visualization by user and public.name' do
+      url = CartoDB.url(self, 'public_table', { id: "public.#{@table.table_visualization.name}" }, @org_user)
+
+      get url
+      last_response.status.should == 200
+    end
+
+    it 'finds visualization by user and public.id' do
+      url = CartoDB.url(self, 'public_table', { id: "public.#{@table.table_visualization.id}" }, @org_user)
+
+      get url
+      last_response.status.should == 200
+    end
+
+    it 'does not find visualizations outside user with public schema' do
+      url = CartoDB.url(self, 'public_table', { id: "public.#{@faketable.table_visualization.name}" }, @org_user)
+      url = url.sub("/u/#{@org_user.username}", '')
+
+      get url
+      last_response.status.should == 404
+    end
+  end
+
   def login_host(user, org = nil)
     login_as(user, scope: user.username)
     host! "#{org.nil? ? user.username : org.name}.localhost.lan"
@@ -565,7 +615,7 @@ describe Admin::VisualizationsController do
     owner = @user if owner.nil?
     map     = Map.create(user_id: owner.id)
     payload = {
-      name:         "visualization #{rand(9999)}",
+      name:         unique_name('viz'),
       tags:         ['foo', 'bar'],
       map_id:       map.id,
       description:  'bogus',

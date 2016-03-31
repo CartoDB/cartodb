@@ -6,12 +6,14 @@ require_relative '../../spec_helper'
 require_relative '../../support/factories/organizations'
 require_relative '../../../app/models/visualization/migrator'
 require_relative '../../../app/controllers/admin/visualizations_controller'
+require 'helpers/unique_names_helper'
 
 def app
   CartoDB::Application.new
 end #app
 
 describe Admin::VisualizationsController do
+  include UniqueNamesHelper
   include Rack::Test::Methods
   include Warden::Test::Helpers
   include CacheHelper
@@ -613,7 +615,7 @@ describe Admin::VisualizationsController do
     owner = @user if owner.nil?
     map     = Map.create(user_id: owner.id)
     payload = {
-      name:         "visualization #{rand(9999)}",
+      name:         unique_name('viz'),
       tags:         ['foo', 'bar'],
       map_id:       map.id,
       description:  'bogus',

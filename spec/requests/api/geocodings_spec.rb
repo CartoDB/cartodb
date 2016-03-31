@@ -150,17 +150,6 @@ describe "Geocodings API" do
   end
 
   describe 'PUT /api/v1/geocodings/:id' do
-    it 'cancels a geocoding job' do
-      geocoding = FactoryGirl.create(:geocoding, table_id: UUIDTools::UUID.timestamp_create.to_s, formatter: 'b', user: @user)
-      Geocoding.any_instance.stubs(:cancel).returns(true)
-
-      put_json api_v1_geocodings_update_url(params.merge(id: geocoding.id)), { state: 'cancelled' } do |response|
-        response.status.should be_success
-        geocoding.reload.state.should eq 'cancelled'
-        response.body[:state].should eq 'cancelled'
-      end
-    end
-
     it 'fails gracefully on job cancel failure' do
       geocoding = FactoryGirl.create(:geocoding, table_id: UUIDTools::UUID.timestamp_create.to_s, formatter: 'b', user: @user)
       Geocoding.any_instance.stubs(:cancel).raises('wadus')

@@ -30,6 +30,6 @@ describe Carto::UserTable do
 
     @user_table.table_id.should be_nil
 
-    @user_table.sync_table_id.should eq @user_table.service.fetch_table_id
+    @user_table.sync_table_id.should eq @user_table.service.get_table_id
   end
 end

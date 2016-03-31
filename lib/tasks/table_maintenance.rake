@@ -52,9 +52,9 @@ namespace :cartodb do
           end
         end
 
-        puts "\n#{user_tables_count} #{'table'.pluralize(user_tables_count)} tables processed"
-        puts "\t#{synced_tables} #{'table'.pluralize(synced_tables)} tables synced"
-        puts "\t#{errored_tables} #{'table'.pluralize(errored_tables)} tables errored"
+        puts "\n#{user_tables_count} #{'table'.pluralize(user_tables_count)} processed"
+        puts "\t#{synced_tables} #{'table'.pluralize(synced_tables)} synced"
+        puts "\t#{errored_tables} #{'table'.pluralize(errored_tables)} errored"
       end
     end
   end

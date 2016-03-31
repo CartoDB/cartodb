@@ -5,7 +5,9 @@ require_relative '../../../services/data-repository/backend/sequel'
 require_relative '../../../services/data-repository/repository'
 require_relative '../../../app/models/synchronization/collection'
 require_relative '../../../app/models/synchronization/member'
+require 'helpers/unique_names_helper'
 
+include UniqueNamesHelper
 include CartoDB
 
 describe Synchronization::Collection do
@@ -56,7 +58,7 @@ describe Synchronization::Collection do
 
 
   def random_attributes(attributes={})
-    random = rand(999)
+    random = unique_integer
     {
       name:       attributes.fetch(:name, "name #{random}"),
       interval:   attributes.fetch(:interval, random),
@@ -64,4 +66,3 @@ describe Synchronization::Collection do
     }
   end
 end # Synchronization::Collection
-

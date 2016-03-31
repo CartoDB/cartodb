@@ -4,7 +4,6 @@ require_relative './user/user_decorator'
 require_relative './user/oauths'
 require_relative './synchronization/synchronization_oauth'
 require_relative './visualization/member'
-require_relative '../helpers/redis_vizjson_cache'
 require_relative '../helpers/data_services_metrics_helper'
 require_relative './visualization/collection'
 require_relative './user/user_organization'
@@ -17,6 +16,7 @@ require_relative '../../lib/carto/http/client'
 require_dependency 'cartodb_config_utils'
 require_relative './user/db_service'
 require_dependency 'carto/user_db_size_cache'
+require_dependency 'cartodb/redis_vizjson_cache'
 
 class User < Sequel::Model
   include CartoDB::MiniSequel

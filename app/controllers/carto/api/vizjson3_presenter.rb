@@ -78,16 +78,16 @@ module Carto
         }
 
         auth_tokens = @visualization.needed_auth_tokens
-        poro_data.merge!(auth_tokens: auth_tokens) if auth_tokens.length > 0
+        poro_data.merge!(auth_tokens: auth_tokens) unless auth_tokens.empty?
 
         children_vizjson = children_for(@visualization, options)
-        poro_data.merge!(slides: children_vizjson) if children_vizjson.length > 0
+        poro_data[:slides] = children_vizjson unless children_vizjson.empty?
         unless visualization.parent_id.nil?
           poro_data[:title] = visualization.parent.qualified_name(user)
           poro_data[:description] = html_safe(visualization.parent.description)
         end
 
-        symbolize_vizjson(poro_data)
+        poro_data
       end
 
       def children_for(visualization, options)
@@ -255,12 +255,6 @@ module Carto
 
       # WIP #6953: remove next methods patch v2 vizjson #####################################
 
-      def symbolize_vizjson(vizjson)
-        vizjson = vizjson.deep_symbolize_keys
-        vizjson[:layers] = vizjson[:layers].map(&:deep_symbolize_keys)
-        vizjson
-      end
-
       def layer_vizjson2_to_3(layer_data)
         if layer_data[:type] == 'torque'
           torque_layer_vizjson2_to_3(layer_data)
@@ -322,7 +316,7 @@ module Carto
         layer_options[:cartocss] = layer_options[:tile_style]
         layer_options.delete(:tile_style)
 
-        layer = @visualization.layers.select { |l| l.id == layer_data[:id] }.first
+        layer = @visualization.layers.find(layer_data[:id])
         layer_options[:cartocss_version] = layer.options['style_version'] if layer
         layer_options.delete(:style_version)
 
@@ -536,7 +530,7 @@ module Carto
     class VizJSON3LayerPresenter
       EMPTY_CSS = '#dummy{}'.freeze
 
-      TORQUE_ATTRS = %w(
+      TORQUE_ATTRS = %i(
         table_name
         user_name
         property
@@ -631,7 +625,7 @@ module Carto
         api_templates_type = options.fetch(:https_request, false) ? 'private' : 'public'
         layer_options = decorate_with_data(
           # Make torque always have a SQL query too (as vizjson v2)
-          layer.options.merge({ 'query' => wrap(sql_from(layer.options), layer.options) }),
+          layer.options.deep_symbolize_keys.merge({ query: wrap(sql_from(layer.options), layer.options) }),
           @decoration_data
         )
 
@@ -654,8 +648,7 @@ module Carto
             sql_api_endpoint:   (configuration[:sql_api]["public"]["endpoint"] rescue nil),
             sql_api_port:       (configuration[:sql_api]["public"]["port"] rescue nil),
             layer_name:         name_for(layer),
-          }.merge(
-            layer_options.select { |k| TORQUE_ATTRS.include? k })
+          }.merge(layer_options.select { |k| TORQUE_ATTRS.include? k })
         }
       end
 

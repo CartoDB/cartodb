@@ -4,7 +4,9 @@ require_dependency 'cartodb/redis_vizjson_cache'
 module Carto
   module Api
     class VizJSON3Presenter
-      def initialize(visualization, viewer_user, redis_vizjson_cache = CartoDB::Visualization::RedisVizjsonCache.new($tables_metadata, 3))
+      def initialize(visualization,
+                     viewer_user,
+                     redis_vizjson_cache = CartoDB::Visualization::RedisVizjsonCache.new($tables_metadata, 3))
         @visualization = visualization
         @viewer_user = viewer_user
         @map = visualization.map
@@ -13,16 +15,7 @@ module Carto
 
       def to_vizjson(**options)
         @redis_vizjson_cache.cached(@visualization.id, options.fetch(:https_request, false)) do
-          vizjson = calculate_vizjson(options)
-          vizjson[:widgets] = Carto::Widget.from_visualization_id(@visualization.id).map do |w|
-            Carto::Api::WidgetPresenter.new(w).to_poro
-          end
-
-          vizjson[:datasource] = datasource(options)
-          vizjson[:user] = user_vizjson_info
-          vizjson[:vector] = options.fetch(:vector, false)
-
-          vizjson
+          calculate_vizjson(options)
         end
       end
 
@@ -54,7 +47,7 @@ module Carto
       def calculate_vizjson(options = {})
         options = add_default_options(options)
 
-        poro_data = {
+        vizjson = {
           id:             visualization.id,
           version:        VIZJSON_VERSION,
           title:          visualization.qualified_name(user),
@@ -72,20 +65,25 @@ module Carto
           overlays:       overlays_for(visualization),
           prev:           visualization.prev_id,
           next:           visualization.next_id,
-          transition_options: visualization.transition_options
+          transition_options: visualization.transition_options,
+          widgets:        widgets,
+          datasource:     datasource(options),
+          user:           user_vizjson_info,
+          vector:         options.fetch(:vector, false)
         }
 
         auth_tokens = @visualization.needed_auth_tokens
-        poro_data.merge!(auth_tokens: auth_tokens) unless auth_tokens.empty?
+        vizjson[:auth_tokens] = auth_tokens unless auth_tokens.empty?
 
         children_vizjson = children_for(@visualization, options)
-        poro_data[:slides] = children_vizjson unless children_vizjson.empty?
+        vizjson[:slides] = children_vizjson unless children_vizjson.empty?
+
         unless visualization.parent_id.nil?
-          poro_data[:title] = visualization.parent.qualified_name(user)
-          poro_data[:description] = html_safe(visualization.parent.description)
+          vizjson[:title] = visualization.parent.qualified_name(user)
+          vizjson[:description] = html_safe(visualization.parent.description)
         end
 
-        poro_data
+        vizjson
       end
 
       def children_for(visualization, options)
@@ -241,6 +239,12 @@ module Carto
           fullname: user.name.present? ? user.name : user.username,
           avatar_url: user.avatar_url
         }
+      end
+
+      def widgets
+        Carto::Widget.from_visualization_id(@visualization.id).map do |w|
+          Carto::Api::WidgetPresenter.new(w).to_poro
+        end
       end
 
       def html_safe(string)

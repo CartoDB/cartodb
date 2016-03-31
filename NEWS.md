@@ -17,6 +17,7 @@
 * Fix slow search of visualizations by name
 * Update and improve logging system
 * Fix broken syncs after setting sync options to "Never"
+* Make `layers.kind` not null. Run `bundle exec rake db:migrate` to update your database.
 
 ## Security fixes
 

@@ -64,7 +64,7 @@ module Carto
       rescue CartoDB::BoundingBoxError => e
         render_jsonp({ error: e.message }, 400)
       rescue => e
-        CartoDB.notify_exception(e, request: request, user: current_user)
+        CartoDB::Logger.error(exception: e)
         render_jsonp({ error: e.message }, 500)
       end
 

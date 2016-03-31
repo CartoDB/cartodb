@@ -1,6 +1,12 @@
 namespace :cartodb do
   namespace :tables do
     namespace :maintenance do
+      def ask_for_confirmation(key = 'continue')
+        puts "type '#{key}' to proceed, anything else to abort:"
+
+        raise 'user aborted' if gets != key
+      end
+
       desc "Sync user's UserTable(s)' table_id(s) with their corresponding physical table's oid"
       task :sync_user_table_oids, [:username] => :environment do |_, args|
         raise 'A username must be provided' unless args[:username].present?
@@ -9,10 +15,18 @@ namespace :cartodb do
 
         raise "No user with username '#{args[:username]}' found" if user.nil?
 
-        unsynced_user_tables = user.tables.select { |ut| ut.table_id != ut.service.fetch_table_id }
+        unsynced_user_tables = user.tables.select do |user_table|
+          user_table.table_id != user_table.service.fetch_table_id
+        end
 
         user_tables_count = unsynced_user_tables.count
-        puts "#{user_tables_count} #{'table'.pluralize(user_tables_count)} will be processed"
+        puts "#{user_tables_count} #{'table'.pluralize(user_tables_count)} will be processed, see a list below:"
+
+        unsynced_user_tables.each do |user_table|
+          puts "\t'#{user_table.name}'"
+        end
+
+        ask_for_confirmation
 
         synced_tables = 0
         errored_tables = 0
@@ -31,9 +45,8 @@ namespace :cartodb do
 
             puts "ATENTION: errored save for table '#{user_table.name}':"
             puts user_table.errors.full_messages
-            puts "type 'continue' to proceed, anything else to abort:"
 
-            raise 'sync aborted' if gets != 'continue'
+            ask_for_confirmation
           end
         end
 

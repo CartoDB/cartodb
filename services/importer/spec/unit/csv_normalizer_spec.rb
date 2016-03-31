@@ -78,12 +78,11 @@ describe CartoDB::Importer2::CsvNormalizer do
   end
 
   describe '#encoding_fuzzy' do
-	  it 'guesses the encoding of an ISO-8859-1 with a problematic character' do
-		  csv = CartoDB::Importer2::CsvNormalizer.new(File.join(File.dirname(__FILE__), '../fixtures/charlock_holmes_utf_8_instead_of_iso.csv'), Log.new(@user))
-		  csv.encoding.should eq 'ISO-8859-1'
+    it 'guesses the encoding of an ISO-8859-1 with a problematic character' do
+      csv = CartoDB::Importer2::CsvNormalizer.new(File.join(File.dirname(__FILE__), '../fixtures/charlock_holmes_utf_8_instead_of_iso.csv'), Log.new(@user))
+      csv.encoding.should eq 'ISO-8859-1'
     end
   end
-  
 
   describe '#encoding_utf8' do
     it 'guesses UTF-8 encoding' do

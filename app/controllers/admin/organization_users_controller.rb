@@ -145,6 +145,7 @@ class Admin::OrganizationUsersController < Admin::AdminController
         flash[:success] = "#{e.user_message}. User was deleted from the organization server."
         redirect_to CartoDB.url(self, 'organization', {}, current_user)
       rescue => e
+        CartoDB::Logger.warning(exception: e, message: 'Error deleting organizational user', target_user: @user.username)
         flash[:error] = "User was not deleted. #{e.message}"
         redirect_to organization_path(user_domain: params[:user_domain])
       end
@@ -154,6 +155,7 @@ class Admin::OrganizationUsersController < Admin::AdminController
       redirect_to CartoDB.url(self, 'organization', {}, current_user)
     end
   rescue => e
+    CartoDB::Logger.warning(exception: e, message: 'Error deleting organizational user', target_user: @user.username)
     flash[:error] = "User was not deleted. #{e.message}"
     redirect_to organization_path(user_domain: params[:user_domain])
   end

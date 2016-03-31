@@ -88,7 +88,7 @@ module Carto
     end
 
     def sync_table_id
-      self.table_id = service.fetch_table_id
+      self.table_id = service.get_table_id
     end
 
     private

@@ -146,7 +146,7 @@ describe Ogr2ogr do
         .write(header, data_1)
 
       csv_2 = Factories::CSV.new(name=nil, how_many_duplicates=0)
-      .write(header, data_2)
+        .write(header, data_2)
 
       ogr2ogr = CartoDB::Importer2::Ogr2ogr.new(@table_name, csv_1.filepath, @pg_options)
       ogr2ogr.run

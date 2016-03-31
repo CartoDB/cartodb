@@ -1,4 +1,27 @@
 {
+  "user": {
+    "you": "You"
+  },
+  "data": {
+    "upload-model": {
+      "invalid-import": "Invalid import",
+      "one-file": "Unfortunately only one file is allowed per upload",
+      "file-defined": "File name should be defined",
+      "file-extension": "Unfortunately this file extension is not allowed",
+      "file-size": "Unfortunately the size of the file is bigger than your remaining quota",
+      "visualization-id": "The remote visualization id was not specified",
+      "remote-file-size": "Unfortunately the size of the remote dataset is bigger than your remaining quota",
+      "url-invalid": "Unfortunately the URL provided is not valid",
+      "error-happened": "There was an error",
+      "connection-error": "Unfortunately there was a connection error",
+      "twitter-dates-invalid": "Twitter dates are not valid",
+      "twitter-dates-empty": "Twitter dates are empty",
+      "twitter-categories-invalid": "Twitter categories are not valid",
+      "twitter-data": "Twitter data is empty",
+      "dataset-copy-undefined": "Dataset copy is not defined",
+      "query-undefined": "Query is not provided"
+    }
+  },
   "components": {
     "modals": {
       "add-analysis": {
@@ -34,6 +57,31 @@
         },
         "time-series-no-option-title": "None",
         "time-series-no-option-desc": "This option won't show your time-series widget"
+      },
+      "add-layer": {
+        "modal-title": "Add a new layer",
+        "modal-desc": "Select an existing dataset or connect a new one",
+        "navigation": {
+          "search": "Search",
+          "search-placeholder": "by name, description or :tag",
+          "connect-dataset": "Connect dataset",
+          "shared-with-you": "Shared with you",
+          "data-library": "Data library",
+          "create-empty-map": "Create empty map",
+          "create-empty-dataset": "Create empty dataset",
+          "create-empty-addLayer": "Add an empty layer",
+          "dataset-pluralize": "Dataset |||| Datasets"
+        },
+        "footer": {
+          "add-layer": "Add layer",
+          "guessing-desc": "Let CartoDB automatically guess data types and content on import.",
+          "twitter-desc": "To get access to historical data (older than 30 days) you need to",
+          "contact-team": "contact our team",
+          "privacy-upgrade": "You cannot change the privacy of your new datasets. Click here to upgrade your account.",
+          "privacy-change": "Your new dataset will be %{privacy}",
+          "privacy-click": "Click to change it to %{nextPrivacy}",
+          "privacy-change-banned": "You cannot change the privacy of your new datasets."
+        }
       }
     },
     "error": {
@@ -61,6 +109,7 @@
       "layer": {
         "analysis": "Analysis",
         "add-analysis": "Add analysis",
+        "add-layer": "Add layer",
         "delete": "Delete"
       },
       "menu-tab-pane-labels": {

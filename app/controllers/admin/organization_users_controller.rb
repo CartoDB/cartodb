@@ -140,9 +140,14 @@ class Admin::OrganizationUsersController < Admin::AdminController
   rescue CartoDB::CentralCommunicationFailure => e
     CartoDB.report_exception(e)
     if e.user_message =~ /No organization user found with username/
-      @user.destroy
-      flash[:success] = "#{e.user_message}. User was deleted from the organization server."
-      redirect_to CartoDB.url(self, 'organization', {}, current_user)
+      begin
+        @user.destroy
+        flash[:success] = "#{e.user_message}. User was deleted from the organization server."
+        redirect_to CartoDB.url(self, 'organization', {}, current_user)
+      rescue => e
+        flash[:error] = "User was not deleted. #{e.message}"
+        redirect_to organization_path(user_domain: params[:user_domain])
+      end
     else
       set_flash_flags(nil, true)
       flash[:error] = "User was not deleted. #{e.user_message}"

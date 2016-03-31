@@ -2,9 +2,9 @@ namespace :cartodb do
   namespace :tables do
     namespace :maintenance do
       def ask_for_confirmation(key = 'continue')
-        puts "type '#{key}' to proceed, anything else to abort:"
+        puts "\nType '#{key}' to proceed or anything else to abort:"
 
-        raise 'user aborted' if gets != key
+        raise 'user aborted' unless STDIN.gets.strip == key
       end
 
       desc "Sync user's UserTable(s)' table_id(s) with their corresponding physical table's oid"
@@ -15,7 +15,9 @@ namespace :cartodb do
 
         raise "No user with username '#{args[:username]}' found" if user.nil?
 
-        unsynced_user_tables = user.tables.select do |user_table|
+        user_tables = user.tables.all
+
+        unsynced_user_tables = user_tables.reject do |user_table|
           user_table.table_id != user_table.service.fetch_table_id
         end
 
@@ -26,7 +28,7 @@ namespace :cartodb do
           puts "\t'#{user_table.name}'"
         end
 
-        ask_for_confirmation
+        ask_for_confirmation('c')
 
         synced_tables = 0
         errored_tables = 0

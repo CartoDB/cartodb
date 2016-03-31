@@ -256,10 +256,6 @@ module Carto
       # WIP #6953: remove next methods patch v2 vizjson #####################################
 
       def layer_vizjson2_to_3(layer_data)
-        if layer_data[:type] == 'torque'
-          torque_layer_vizjson2_to_3(layer_data)
-        end
-
         layer_definitions_from_layer_data(layer_data).each do |layer_definition|
           infowindow = layer_definition[:infowindow]
           if infowindow
@@ -308,24 +304,6 @@ module Carto
         else
           fallback_template
         end
-      end
-
-      def torque_layer_vizjson2_to_3(layer_data)
-        layer_options = layer_data[:options]
-
-        layer_options[:cartocss] = layer_options[:tile_style]
-        layer_options.delete(:tile_style)
-
-        layer = @visualization.layers.find(layer_data[:id])
-        layer_options[:cartocss_version] = layer.options['style_version'] if layer
-        layer_options.delete(:style_version)
-
-        layer_options[:sql] = if layer_options[:query].present? || layer.nil?
-                                layer_options[:query]
-                              else
-                                layer.options['query']
-                              end
-        layer_options.delete(:query)
       end
     end
 
@@ -629,7 +607,7 @@ module Carto
           @decoration_data
         )
 
-        {
+        torque = {
           id:         layer.id,
           type:       'torque',
           order:      layer.order,
@@ -650,6 +628,23 @@ module Carto
             layer_name:         name_for(layer),
           }.merge(layer_options.select { |k| TORQUE_ATTRS.include? k })
         }
+
+        layer_options = torque[:options]
+
+        layer_options[:cartocss] = layer_options[:tile_style]
+        layer_options.delete(:tile_style)
+
+        layer_options[:cartocss_version] = layer.options['style_version'] if layer
+        layer_options.delete(:style_version)
+
+        layer_options[:sql] = if layer_options[:query].present? || layer.nil?
+                                layer_options[:query]
+                              else
+                                layer.options['query']
+                              end
+        layer_options.delete(:query)
+
+        torque
       end
 
       def infowindow_data_v3

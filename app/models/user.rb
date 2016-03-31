@@ -334,31 +334,29 @@ class User < Sequel::Model
       CartoDB::StdoutLogger.info "Error destroying user #{username}. #{exception.message}\n#{exception.backtrace}"
     end
 
-    # Remove metadata from redis
-    $users_metadata.DEL(self.key) unless error_happened
-
     # Invalidate user cache
     invalidate_varnish_cache
 
     # Delete the DB or the schema
     if has_organization
-      db_service.drop_organization_user(org_id, is_owner = !@org_id_for_org_wipe.nil?) unless error_happened
+      db_service.drop_organization_user(org_id, !@org_id_for_org_wipe.nil?) unless error_happened
     else
-      if ::User.where(:database_name => self.database_name).count > 1
+      if ::User.where(database_name: database_name).count > 1
         raise CartoDB::BaseCartoDBError.new('The user is not supposed to be in a organization but another user has the same database_name. Not dropping it')
-      else
-        if !error_happened
-          Thread.new do
-            conn = self.in_database(as: :cluster_admin)
-            db_service.drop_database_and_user(conn)
-            db_service.drop_user(conn)
-          end.join
-          db_service.monitor_user_notification
-        end
+      elsif !error_happened
+        Thread.new {
+          conn = in_database(as: :cluster_admin)
+          db_service.drop_database_and_user(conn)
+          db_service.drop_user(conn)
+        }.join
+        db_service.monitor_user_notification
       end
     end
 
-    self.feature_flags_user.each { |ffu| ffu.delete }
+    # Remove metadata from redis last (to avoid cutting off access to SQL API if db deletion fails)
+    $users_metadata.DEL(key) unless error_happened
+
+    feature_flags_user.each(&:delete)
   end
 
   def delete_external_data_imports

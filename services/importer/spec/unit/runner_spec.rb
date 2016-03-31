@@ -20,9 +20,11 @@ describe CartoDB::Importer2::Runner do
     @filepath = File.open(@filepath, 'w+')
     @filepath.write('...')
     @filepath.close
-    @pg_options = ::CartoDB::Importer2::Factories::PGConnection.new.pg_options
+    @user = create_user
+    @user.save
+    @pg_options = @user.db_service.db_configuration_for
 
-    @fake_log = CartoDB::Importer2::Doubles::Log.new
+    @fake_log = CartoDB::Importer2::Doubles::Log.new(@user)
     @downloader = CartoDB::Importer2::Downloader.new(@filepath)
     @fake_multiple_downloader_2 = CartoDB::Importer2::Doubles::MultipleDownloaderFake.instance(2)
   end
@@ -53,7 +55,7 @@ describe CartoDB::Importer2::Runner do
                             pg: @pg_options,
                             downloader: @downloader,
                             log: @fake_log,
-                            user: CartoDB::Importer2::Doubles::User.new,
+                            user: @user,
                             unpacker: fake_loader
                           })
 
@@ -69,7 +71,7 @@ describe CartoDB::Importer2::Runner do
                            pg: @pg_options,
                            downloader: @downloader,
                            log: @fake_log,
-                           user: CartoDB::Importer2::Doubles::User.new,
+                           user: @user,
                            unpacker: fake_unpacker
                          })
       runner.run
@@ -84,7 +86,7 @@ describe CartoDB::Importer2::Runner do
                             pg: @pg_options,
                             downloader: @downloader,
                             log: @fake_log,
-                            user: CartoDB::Importer2::Doubles::User.new,
+                            user: @user,
                             unpacker: fake_unpacker
                           })
 
@@ -106,7 +108,7 @@ describe CartoDB::Importer2::Runner do
                             pg: @pg_options,
                             downloader: Object.new,
                             log: @fake_log,
-                            user: CartoDB::Importer2::Doubles::User.new,
+                            user: @user,
                             job: job
                           })
       fake_loader = self.fake_loader_for(job, source_file)
@@ -125,7 +127,7 @@ describe CartoDB::Importer2::Runner do
                                  pg: @pg_options,
                                  downloader: Object.new,
                                  log: @fake_log,
-                                 user: CartoDB::Importer2::Doubles::User.new,
+                                 user: @user,
                                  job: job
                                })
 
@@ -155,7 +157,7 @@ describe CartoDB::Importer2::Runner do
                                                      pg: @pg_options,
                                                      downloader: Object.new,
                                                      log: @fake_log,
-                                                     user: CartoDB::Importer2::Doubles::User.new,
+                                                     user: @user,
                                                      limits: {
                                                        import_file_size_instance: input_file_size_limit_checker,
                                                        table_row_count_limit_instance: table_row_count_limit_checker
@@ -173,7 +175,7 @@ describe CartoDB::Importer2::Runner do
                                                      pg: @pg_options,
                                                      downloader: Object.new,
                                                      log: @fake_log,
-                                                     user: CartoDB::Importer2::Doubles::User.new,
+                                                     user: @user,
                                                      limits: {
                                                        import_file_size_instance: input_file_size_limit_checker,
                                                        table_row_count_limit_instance: table_row_count_limit_checker
@@ -202,7 +204,7 @@ describe CartoDB::Importer2::Runner do
                              pg: @pg_options,
                              downloader: @downloader,
                              log: @fake_log,
-                             user: CartoDB::Importer2::Doubles::User.new,
+                             user: @user,
                              unpacker: fake_unpacker
                           })
 
@@ -221,7 +223,7 @@ describe CartoDB::Importer2::Runner do
                                  pg: @pg_options,
                                  downloader: Object.new,
                                  log: @fake_log,
-                                 user: CartoDB::Importer2::Doubles::User.new,
+                                 user: @user,
                                  job: job,
                                  limits: {
                                    table_row_count_limit_instance: table_row_count_limit_checker
@@ -239,7 +241,7 @@ describe CartoDB::Importer2::Runner do
                             pg: @pg_options,
                             downloader: @downloader,
                             log: @fake_log,
-                            user: CartoDB::Importer2::Doubles::User.new,
+                            user: @user,
                             unpacker: fake_unpacker
                           })
 

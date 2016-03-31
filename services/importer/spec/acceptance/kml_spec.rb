@@ -1,5 +1,6 @@
 # encoding: utf-8
 require_relative '../../../../spec/rspec_configuration'
+require_relative '../../../../spec/spec_helper'
 require_relative '../../lib/importer/runner'
 require_relative '../../lib/importer/job'
 require_relative '../../lib/importer/downloader'
@@ -113,7 +114,7 @@ describe 'KML regression tests' do
     runner.results.select(&:success?).length.should eq CartoDB::Importer2::Runner::MAX_TABLES_PER_IMPORT
     runner.results.length.should eq CartoDB::Importer2::Runner::MAX_TABLES_PER_IMPORT
     runner.results.each { |result|
-      name = @db[%Q{ SELECT * FROM pg_class WHERE relname='#{result.table_name}' }].first[:relname]
+      name = user.in_database[%Q{ SELECT * FROM pg_class WHERE relname='#{result.table_name}' }].first[:relname]
       name.should eq result.table_name
     }
   end

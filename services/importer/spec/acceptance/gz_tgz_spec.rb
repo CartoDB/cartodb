@@ -17,18 +17,16 @@ describe 'gz and tgz regression tests' do
   include_context "cdb_importer schema"
   include_context "no stats"
 
-  before do
-    @pg_options  = ::CartoDB::Importer2::Factories::PGConnection.new.pg_options
-  end
-
   it 'returns ok with supported gzip file' do
     filepath    = path_to('ok_data.csv.gz')
     downloader  = ::CartoDB::Importer2::Downloader.new(filepath)
+    user        = create_user
+    user.save
     runner      = ::CartoDB::Importer2::Runner.new({
-                               pg: @pg_options,
+                               pg: user.db_service.db_configuration_for,
                                downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new,
-                               user: CartoDB::Importer2::Doubles::User.new
+                               log: CartoDB::Importer2::Doubles::Log.new(user),
+                               user: user
                              })
     runner.run
     runner.results.first.success?.should eq true
@@ -37,11 +35,13 @@ describe 'gz and tgz regression tests' do
   it 'returns ok with supported tgz file' do
     filepath    = path_to('ok_data.tgz')
     downloader  = ::CartoDB::Importer2::Downloader.new(filepath)
+    user        = create_user
+    user.save
     runner      = ::CartoDB::Importer2::Runner.new({
-                               pg: @pg_options,
+                               pg: user.db_service.db_configuration_for,
                                downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new,
-                               user: CartoDB::Importer2::Doubles::User.new
+                               log: CartoDB::Importer2::Doubles::Log.new(user),
+                               user: user
                              })
     runner.run
     runner.results.first.success?.should eq true
@@ -50,11 +50,13 @@ describe 'gz and tgz regression tests' do
   it 'process one of the two files inside TGZ' do
     filepath    = path_to('ok_and_wrong_data.tgz')
     downloader  = ::CartoDB::Importer2::Downloader.new(filepath)
+    user        = create_user
+    user.save
     runner      = ::CartoDB::Importer2::Runner.new({
-                               pg: @pg_options,
+                               pg: user.db_service.db_configuration_for,
                                downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new,
-                               user: CartoDB::Importer2::Doubles::User.new
+                               log: CartoDB::Importer2::Doubles::Log.new(user),
+                               user: user
                              })
     runner.run
     first_import = runner.results.first.success?
@@ -65,11 +67,13 @@ describe 'gz and tgz regression tests' do
   it 'returns error if csv is invalid with supported gzip file' do
     filepath    = path_to('wrong_data.csv.gz')
     downloader  = ::CartoDB::Importer2::Downloader.new(filepath)
+    user        = create_user
+    user.save
     runner      = ::CartoDB::Importer2::Runner.new({
-                               pg: @pg_options,
+                               pg: user.db_service.db_configuration_for,
                                downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new,
-                               user: CartoDB::Importer2::Doubles::User.new
+                               log: CartoDB::Importer2::Doubles::Log.new(user),
+                               user: user
                              })
     runner.run
     runner.results.first.success?.should eq false

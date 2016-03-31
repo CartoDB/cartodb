@@ -1,6 +1,7 @@
 # encoding: utf-8
 require_relative '../../lib/importer/runner'
 require_relative '../../lib/importer/job'
+require_relative '../../../../spec/spec_helper'
 require_relative '../../lib/importer/downloader'
 require_relative '../factories/pg_connection'
 require_relative '../doubles/log'
@@ -20,32 +21,35 @@ describe 'SHP regression tests' do
   it 'imports SHP files' do
     filepath    = path_to('TM_WORLD_BORDERS_SIMPL-0.3.zip')
     downloader  = Downloader.new(filepath)
+    user        = create_user
+    user.save
     runner      = Runner.new({
-                               pg: @pg_options,
+                               pg: user.db_service.db_configuration_for,
                                downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new,
-                               user:CartoDB::Importer2::Doubles::User.new
+                               log: CartoDB::Importer2::Doubles::Log.new(user),
+                               user: user
                              })
     runner.run
 
-    geometry_type_for(runner).should eq "MULTIPOLYGON"
+    geometry_type_for(runner, user).should eq "MULTIPOLYGON"
     job = runner.send(:job)
     job.db.fetch(%Q{SELECT * FROM #{job.schema}.#{job.table_name}}).count
   end
 
   it 'imports shp files without .prj' do
     filepath    = path_to('shp_no_prj.zip')
-
     downloader  = Downloader.new(filepath)
+    user        = create_user
+    user.save
     runner      = Runner.new({
-                               pg: @pg_options,
+                               pg: user.db_service.db_configuration_for,
                                downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new,
-                               user:CartoDB::Importer2::Doubles::User.new
+                               log: CartoDB::Importer2::Doubles::Log.new(user),
+                               user: user
                              })
     runner.run
 
-    geometry_type_for(runner).should eq "MULTIPOLYGON"
+    geometry_type_for(runner, user).should eq "MULTIPOLYGON"
     job = runner.send(:job)
     job.db.fetch(%Q{SELECT * FROM #{job.schema}.#{job.table_name}}).count
   end

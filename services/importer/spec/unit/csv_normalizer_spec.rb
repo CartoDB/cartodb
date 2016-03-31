@@ -1,8 +1,10 @@
 # encoding: utf-8
 
 require 'fileutils'
+require_relative '../../../../spec/spec_helper'
 require_relative '../../lib/importer/csv_normalizer'
 require_relative '../doubles/log'
+require_relative '../doubles/user'
 
 include CartoDB::Importer2::Doubles
 
@@ -10,10 +12,13 @@ describe CartoDB::Importer2::CsvNormalizer do
 
   BUG_COLUMNS_WRONG_SPLIT_FIXTURE_FILE = "#{File.dirname(__FILE__)}/bug_columns_wrong_split.csv"
 
+  before(:all) do
+    @user = FactoryGirl.create(:user)
+  end
   describe '#run' do
     it 'transforms the file using a proper comma delimiter' do
       fixture = tab_delimiter_factory
-      csv     = CartoDB::Importer2::CsvNormalizer.new(fixture, Log.new)
+      csv     = CartoDB::Importer2::CsvNormalizer.new(fixture, Log.new(@user))
 
       csv.detect_delimiter
 
@@ -24,7 +29,7 @@ describe CartoDB::Importer2::CsvNormalizer do
     it 'raise if detects an empty file' do
       fixture = empty_file_factory
 
-      csv     = CartoDB::Importer2::CsvNormalizer.new(fixture, Log.new)
+      csv     = CartoDB::Importer2::CsvNormalizer.new(fixture, Log.new(@user))
       expect {
         csv.run
       }.to raise_exception CartoDB::Importer2::EmptyFileError
@@ -36,7 +41,7 @@ describe CartoDB::Importer2::CsvNormalizer do
   describe '#detect_delimiter' do
     it 'detects the delimiter' do
       fixture = tab_delimiter_factory
-      csv     = CartoDB::Importer2::CsvNormalizer.new(fixture, Log.new)
+      csv     = CartoDB::Importer2::CsvNormalizer.new(fixture, Log.new(@user))
       csv.detect_delimiter.should eq "\t"
 
       FileUtils.rm(fixture)
@@ -44,19 +49,19 @@ describe CartoDB::Importer2::CsvNormalizer do
 
     it 'detects it correctly even with quoted strings containing delimiters' do
       fixture = quoted_string_with_delimiter_factory
-      csv = CartoDB::Importer2::CsvNormalizer.new(fixture, Log.new)
+      csv = CartoDB::Importer2::CsvNormalizer.new(fixture, Log.new(@user))
       csv.detect_delimiter.should eq ','
     end
 
     it 'detects it correctly with escaped quotes' do
       fixture = string_with_escaped_quote_factory
-      csv = CartoDB::Importer2::CsvNormalizer.new(fixture, Log.new)
+      csv = CartoDB::Importer2::CsvNormalizer.new(fixture, Log.new(@user))
       csv.detect_delimiter.should eq ','
     end
 
     it 'detects it correctly with triple quotes, quoted strings and all' do
       fixture = bug_columns_wrong_split_factory
-      csv = CartoDB::Importer2::CsvNormalizer.new(fixture, Log.new)
+      csv = CartoDB::Importer2::CsvNormalizer.new(fixture, Log.new(@user))
       csv.detect_delimiter.should eq ','
     end
 
@@ -65,7 +70,7 @@ describe CartoDB::Importer2::CsvNormalizer do
   describe '#encoding' do
     it 'guesses the encoding' do
       fixture = utf16le_factory
-      csv     = CartoDB::Importer2::CsvNormalizer.new(fixture, Log.new)
+      csv     = CartoDB::Importer2::CsvNormalizer.new(fixture, Log.new(@user))
       csv.encoding.should eq 'ISO-8859-1'
 
       FileUtils.rm(fixture)
@@ -74,7 +79,7 @@ describe CartoDB::Importer2::CsvNormalizer do
 
   describe '#encoding_fuzzy' do
 	  it 'guesses the encoding of an ISO-8859-1 with a problematic character' do
-		  csv = CartoDB::Importer2::CsvNormalizer.new(File.join(File.dirname(__FILE__), '../fixtures/charlock_holmes_utf_8_instead_of_iso.csv'), Log.new)
+		  csv = CartoDB::Importer2::CsvNormalizer.new(File.join(File.dirname(__FILE__), '../fixtures/charlock_holmes_utf_8_instead_of_iso.csv'), Log.new(@user))
 		  csv.encoding.should eq 'ISO-8859-1'
     end
   end
@@ -83,7 +88,7 @@ describe CartoDB::Importer2::CsvNormalizer do
   describe '#encoding_utf8' do
     it 'guesses UTF-8 encoding' do
       fixture = utf8_factory
-      csv     = CartoDB::Importer2::CsvNormalizer.new(fixture, Log.new)
+      csv     = CartoDB::Importer2::CsvNormalizer.new(fixture, Log.new(@user))
       csv.encoding.should eq 'UTF-8'
 
       FileUtils.rm(fixture)
@@ -93,13 +98,13 @@ describe CartoDB::Importer2::CsvNormalizer do
   describe '#single_column?' do
     it 'returns true if CSV header has only one column' do
       fixture = single_column_factory
-      csv     = CartoDB::Importer2::CsvNormalizer.new(fixture, Log.new)
+      csv     = CartoDB::Importer2::CsvNormalizer.new(fixture, Log.new(@user))
       csv.detect_delimiter
 
       csv.single_column?.should eq true
 
       fixture = tab_delimiter_factory
-      csv     = CartoDB::Importer2::CsvNormalizer.new(fixture, Log.new)
+      csv     = CartoDB::Importer2::CsvNormalizer.new(fixture, Log.new(@user))
       csv.detect_delimiter
 
       csv.single_column?.should eq false
@@ -110,14 +115,14 @@ describe CartoDB::Importer2::CsvNormalizer do
     it 'returns the passed row if it has more than one cell' do
       fixture = tab_delimiter_factory
       row     = ['bogus', 'wadus']
-      csv     = CartoDB::Importer2::CsvNormalizer.new(fixture, Log.new)
+      csv     = CartoDB::Importer2::CsvNormalizer.new(fixture, Log.new(@user))
       csv.multiple_column(row).should eq row
     end
 
     it 'adds an empty cell to the row if it has a single cell' do
       fixture = tab_delimiter_factory
       row     = ['bogus', 'wadus']
-      csv     = CartoDB::Importer2::CsvNormalizer.new(fixture, Log.new)
+      csv     = CartoDB::Importer2::CsvNormalizer.new(fixture, Log.new(@user))
       csv.multiple_column(row).should eq (row << nil)
     end
   end
@@ -126,7 +131,7 @@ describe CartoDB::Importer2::CsvNormalizer do
     it 'properly detects delimiter on a CSV containing many spaces and commas' do
       # Also tests that detector is able to load a file with less rows than CartoDB::Importer2::CsvNormalizer::LINES_FOR_DETECTION
       fixture = spaces_and_commas_factory
-      csv     = CartoDB::Importer2::CsvNormalizer.new(fixture, Log.new)
+      csv     = CartoDB::Importer2::CsvNormalizer.new(fixture, Log.new(@user))
 
       csv.detect_delimiter.should eq ","
 
@@ -138,7 +143,7 @@ describe CartoDB::Importer2::CsvNormalizer do
     it 'tests the cleaning of non row-separating newlines inside CSVs' do
       fixture_filepath = newlines_factory
 
-      csv = CartoDB::Importer2::CsvNormalizer.new(fixture_filepath, Log.new)
+      csv = CartoDB::Importer2::CsvNormalizer.new(fixture_filepath, Log.new(@user))
 
       expect {
         csv.run

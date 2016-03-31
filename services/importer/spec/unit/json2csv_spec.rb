@@ -1,6 +1,7 @@
 # encoding: utf-8
 require 'fileutils'
 require 'json'
+require_relative '../../../../spec/spec_helper'
 require_relative '../../lib/importer/json2csv'
 require_relative '../../../../services/importer/spec/doubles/log'
 
@@ -9,10 +10,11 @@ include CartoDB::Importer2
 describe Json2Csv do
   before do
     @data = [{ name: 'bogus name', description: 'bogus description' }]
+    @user = create_user
   end
 
   def json2csv_instance(filepath)
-    Json2Csv.new(filepath, nil, CartoDB::Importer2::Doubles::Log.new)
+    Json2Csv.new(filepath, nil, CartoDB::Importer2::Doubles::Log.new(@user))
   end
 
   describe '#run' do

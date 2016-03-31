@@ -590,7 +590,8 @@ class Table
                            trace: caller,
                            oid: real_table_oid,
                            table_id: table_id,
-                           name: name)
+                           name: name,
+                           user: owner)
 
       self.table_id = real_table_oid
     end

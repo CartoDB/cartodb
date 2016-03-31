@@ -93,6 +93,14 @@
       "default-desc": "Reload the page again. If the problem persists contact us at <a href='mailto:support@cartodb.com'>support@cartodb.com</a>"
     }
   },
+  "data": {
+    "analysis-definition-node-model": {
+      "validation": {
+        "invalid-source": "invalid source",
+        "required-param": "required"
+      }
+    }
+  },
   "editor": {
     "map": "map",
     "map_name": "%{name} map",

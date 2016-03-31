@@ -342,12 +342,9 @@ module CartoDB
 
             # If user is in an organization should never have public schema, but to be safe (& tests which stub stuff)
             unless @user.database_schema == SCHEMA_PUBLIC
-              drop_users_privileges_in_schema(
-                @user.database_schema,
-                [@user.database_username, @user.database_public_username, CartoDB::PUBLIC_DB_USER])
               database.run(%{ DROP FUNCTION IF EXISTS "#{@user.database_schema}"._CDB_UserQuotaInBytes()})
               drop_all_functions_from_schema(@user.database_schema)
-              database.run(%{ DROP SCHEMA IF EXISTS "#{@user.database_schema}" CASCADE })
+              database.run(%{ DROP SCHEMA IF EXISTS "#{@user.database_schema}" })
             end
           end
 

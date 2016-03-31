@@ -18,8 +18,6 @@ module Carto
             Carto::Api::WidgetPresenter.new(w).to_poro
           end
 
-          vizjson[:layers].each { |l| layer_vizjson2_to_3(l) }
-
           vizjson[:datasource] = datasource(options)
           vizjson[:user] = user_vizjson_info
           vizjson[:vector] = options.fetch(:vector, false)
@@ -252,59 +250,6 @@ module Carto
           markdown.render string
         end
       end
-
-      # WIP #6953: remove next methods patch v2 vizjson #####################################
-
-      def layer_vizjson2_to_3(layer_data)
-        layer_definitions_from_layer_data(layer_data).each do |layer_definition|
-          infowindow = layer_definition[:infowindow]
-          if infowindow
-            infowindow_sym = infowindow.deep_symbolize_keys
-            infowindow[:template] = v3_infowindow_template(infowindow_sym[:template_name], infowindow_sym[:template])
-          end
-
-          tooltip = layer_definition[:tooltip]
-          if tooltip
-            tooltip_sym = tooltip.deep_symbolize_keys
-            tooltip[:template] = v3_tooltip_template(tooltip_sym[:template_name], tooltip_sym[:template])
-          end
-        end
-      end
-
-      # WIP #6953: refactor, ugly as hell. Technical debt: #6953
-      def layer_definitions_from_layer_data(layer_data)
-        if layer_data[:options] &&
-           layer_data[:options][:layer_definition] &&
-           layer_data[:options][:layer_definition][:layers]
-          layer_data[:options][:layer_definition][:layers]
-        elsif layer_data[:options] &&
-              layer_data[:options][:named_map] &&
-              layer_data[:options][:named_map][:layers]
-          layer_data[:options][:named_map][:layers]
-        else
-          []
-        end
-      end
-
-      def v3_infowindow_template(template_name, fallback_template)
-        template_name = Carto::Layer::TEMPLATES_MAP.fetch(template_name, template_name)
-        if template_name.present?
-          path = Rails.root.join("lib/assets/javascripts/cartodb3/mustache-templates/infowindows/#{template_name}.jst.mustache")
-          File.read(path)
-        else
-          fallback_template
-        end
-      end
-
-      def v3_tooltip_template(template_name, fallback_template)
-        template_name = Carto::Layer::TEMPLATES_MAP.fetch(template_name, template_name)
-        if template_name.present?
-          path = Rails.root.join("lib/assets/javascripts/cartodb3/mustache-templates/tooltips/#{template_name}.jst.mustache")
-          File.read(path)
-        else
-          fallback_template
-        end
-      end
     end
 
     class VizJSON3NamedMapPresenter
@@ -534,22 +479,24 @@ module Carto
       end
 
       def to_vizjson_v3
-        if layer.base?
-          with_kind_as_type(layer.public_values)
-        elsif layer.torque?
-          as_torque
-        else
-          {
-            id:         layer.id,
-            type:       'CartoDB',
-            infowindow: infowindow_data_v3,
-            tooltip:    tooltip_data_v3,
-            legend:     layer.legend,
-            order:      layer.order,
-            visible:    layer.public_values[:options]['visible'],
-            options:    options_data_v3
-          }
-        end
+        layer_data = if layer.base?
+                       with_kind_as_type(layer.public_values)
+                     elsif layer.torque?
+                       as_torque
+                     else
+                       {
+                         id:         layer.id,
+                         type:       'CartoDB',
+                         infowindow: infowindow_data_v3,
+                         tooltip:    tooltip_data_v3,
+                         legend:     layer.legend,
+                         order:      layer.order,
+                         visible:    layer.public_values[:options]['visible'],
+                         options:    options_data_v3
+                       }
+                     end
+
+        layer_data
       end
 
       def to_poro
@@ -655,7 +602,7 @@ module Carto
       end
 
       def tooltip_data_v3
-        whitelisted_infowindow(with_template(layer.tooltip, layer.tooltip_template_path))
+        whitelisted_infowindow(with_tooltip_template(layer.tooltip, layer.tooltip_template_path))
       rescue => e
         CartoDB::Logger.error(exception: e, layer_id: @layer.id)
         throw e
@@ -670,8 +617,43 @@ module Carto
         template = infowindow['template']
         return infowindow if (!template.nil? && !template.empty?) || path.nil?
 
-        infowindow[:template] = File.read(path)
+        infowindow_sym = infowindow.deep_symbolize_keys
+        infowindow[:template] = v3_infowindow_template(infowindow_sym[:template_name], infowindow_sym[:template])
         infowindow
+      end
+
+      def with_tooltip_template(tooltip, path)
+        # Careful with this logic:
+        # - nil means absolutely no infowindow (e.g. a torque)
+        # - path = nil or template filled: either pre-filled or custom infowindow, nothing to do here
+        # - template and path not nil but template not filled: stay and fill
+        return nil if tooltip.nil?
+        template = tooltip['template']
+        return tooltip if (!template.nil? && !template.empty?) || path.nil?
+
+        tooltip_sym = tooltip.deep_symbolize_keys
+        tooltip[:template] = v3_tooltip_template(tooltip_sym[:template_name], tooltip_sym[:template])
+        tooltip
+      end
+
+      def v3_infowindow_template(template_name, fallback_template)
+        template_name = Carto::Layer::TEMPLATES_MAP.fetch(template_name, template_name)
+        if template_name.present?
+          path = Rails.root.join("lib/assets/javascripts/cartodb3/mustache-templates/infowindows/#{template_name}.jst.mustache")
+          File.read(path)
+        else
+          fallback_template
+        end
+      end
+
+      def v3_tooltip_template(template_name, fallback_template)
+        template_name = Carto::Layer::TEMPLATES_MAP.fetch(template_name, template_name)
+        if template_name.present?
+          path = Rails.root.join("lib/assets/javascripts/cartodb3/mustache-templates/tooltips/#{template_name}.jst.mustache")
+          File.read(path)
+        else
+          fallback_template
+        end
       end
 
       def options_data_v3

@@ -135,6 +135,7 @@
         "placeholder-text": "You have not added any analysis yet. Add new analysis to discover new things.",
         "workflow": "Workflow",
         "reference-layer": "Define your reference layer",
+        "reference-layers": "Define your reference layers",
         "parameters": "Parameters",
         "parameters-description": "Tune your analysis",
         "trade-area": "Trade area",

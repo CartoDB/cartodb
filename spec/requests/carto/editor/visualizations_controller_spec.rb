@@ -35,7 +35,7 @@ describe Carto::Editor::VisualizationsController do
 
       get editor_visualization_url(id: @other_visualization.id)
 
-      response.status.should == 404
+      response.status.should == 403
     end
 
     it 'returns visualization' do

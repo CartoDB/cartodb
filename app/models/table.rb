@@ -10,9 +10,6 @@ require_relative './visualization/member'
 require_relative './visualization/collection'
 require_relative './visualization/overlays'
 require_relative './visualization/table_blender'
-require_relative './overlay/member'
-require_relative './overlay/collection'
-require_relative './overlay/presenter'
 require_relative '../../services/importer/lib/importer/query_batcher'
 require_relative '../../services/importer/lib/importer/cartodbfy_time'
 require_relative '../../services/datasources/lib/datasources/decorators/factory'
@@ -585,7 +582,20 @@ class Table
   end
 
   def real_table_exists?
-    !get_table_id.nil?
+    real_table_oid = fetch_table_id
+
+    # TODO: Remove this when table_id is guaranteed to be updated
+    unless real_table_oid == table_id
+      CartoDB.notify_debug('Metadata/Physical table oid mismatch',
+                           trace: caller,
+                           oid: real_table_oid,
+                           table_id: table_id,
+                           name: name)
+
+      self.table_id = real_table_oid
+    end
+
+    !real_table_oid.nil?
   end
 
   # adds the column if not exists or cast it to timestamp field
@@ -1171,19 +1181,22 @@ class Table
 
   def relator
     @relator ||= CartoDB::TableRelator.new(Rails::Sequel.connection, self)
-  end #relator
-
-  def set_table_id
-    @user_table.table_id = self.get_table_id
   end
 
-  def get_table_id
-    record = owner.in_database.select(:pg_class__oid)
-      .from(:pg_class)
-      .join_table(:inner, :pg_namespace, :oid => :relnamespace)
-      .where(:relkind => 'r', :nspname => owner.database_schema, :relname => name).first
+  def set_table_id
+    @user_table.table_id = fetch_table_id
+  end
+
+  def fetch_table_id
+    record = owner.in_database
+                  .select(:pg_class__oid)
+                  .from(:pg_class)
+                  .join_table(:inner, :pg_namespace, oid: :relnamespace)
+                  .where(relkind: 'r', nspname: owner.database_schema, relname: name)
+                  .first
+
     record.nil? ? nil : record[:oid]
-  end # get_table_id
+  end
 
   def update_name_changes
     if @name_changed_from.present? && @name_changed_from != name

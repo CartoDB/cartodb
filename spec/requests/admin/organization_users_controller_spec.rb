@@ -27,7 +27,6 @@ describe Admin::OrganizationUsersController do
   describe 'security' do
     describe '#show' do
       it 'returns 404 for non authorized users' do
-
         login_as(@org_user_1, scope: @org_user_1.username)
 
         get organization_users_url(user_domain: @org_user_1.username)

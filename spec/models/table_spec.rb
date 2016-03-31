@@ -43,7 +43,6 @@ describe Table do
   before(:each) do
     CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
-    CartoDB::Overlay::Member.any_instance.stubs(:can_store).returns(true)
     Table.any_instance.stubs(:update_cdb_tablemetadata)
 
     stub_named_maps_calls
@@ -108,10 +107,10 @@ describe Table do
       table.table_id.should == oid
     end
 
-    it "should return nil on get_table_id when the physical table doesn't exist" do
+    it "should return nil on fetch_table_id when the physical table doesn't exist" do
       table = create_table(name: 'this_is_a_table', user_id: @user.id)
       @user.in_database.drop_table table.name
-      table.get_table_id.should be_nil
+      table.fetch_table_id.should be_nil
     end
 
     it "should not allow to create tables using system names" do
@@ -2418,5 +2417,4 @@ describe Table do
       [0, 1].should include(table.estimated_row_count)
     end
   end
-
 end

@@ -26,7 +26,7 @@ module Carto
         widget.save!
         render_jsonp(WidgetPresenter.new(widget).to_poro, 201)
       rescue => e
-        CartoDB.report_exception(e, "Error creating widget", { widget: (widget ? widget : 'not created'), request: request, user: current_user })
+        CartoDB::Logger.error(exception: e, message: "Error creating widget", widget: (widget ? widget : 'not created'))
         render json: { errors: e.message }, status: 500
       end
 
@@ -37,7 +37,7 @@ module Carto
 
         render_jsonp(WidgetPresenter.new(@widget).to_poro)
       rescue => e
-        CartoDB.report_exception(e, "Error updating widget", { widget: @widget, request: request, user: current_user })
+        CartoDB::Logger.error(exception: e, message: "Error updating widget", widget: @widget)
         render json: { errors: e.message }, status: 500
       end
 
@@ -45,7 +45,7 @@ module Carto
         @widget.destroy
         render_jsonp(WidgetPresenter.new(@widget).to_poro)
       rescue => e
-        CartoDB.report_exception(e, "Error destroying widget", { widget: @widget, request: request, user: current_user })
+        CartoDB::Logger.error(exception: e, message: "Error destroying widget", widget: @widget)
         render json: { errors: e.message }, status: 500
       end
 

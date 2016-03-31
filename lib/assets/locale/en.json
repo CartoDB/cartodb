@@ -72,6 +72,9 @@
           "create-empty-addLayer": "Add an empty layer",
           "dataset-pluralize": "Dataset |||| Datasets"
         },
+        "create-loading-title": "Creating empty dataset…",
+        "adding-new-layer": "Adding new layer…",
+        "add-layer-error": "Could not add layer",
         "footer": {
           "add-layer": "Add layer",
           "guessing-desc": "Let CartoDB automatically guess data types and content on import.",

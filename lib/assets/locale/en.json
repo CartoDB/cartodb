@@ -2,6 +2,26 @@
   "user": {
     "you": "You"
   },
+  "data": {
+    "upload-model": {
+      "invalid-import": "Invalid import",
+      "one-file": "Unfortunately only one file is allowed per upload",
+      "file-defined": "File name should be defined",
+      "file-extension": "Unfortunately this file extension is not allowed",
+      "file-size": "Unfortunately the size of the file is bigger than your remaining quota",
+      "visualization-id": "The remote visualization id was not specified",
+      "remote-file-size": "Unfortunately the size of the remote dataset is bigger than your remaining quota",
+      "url-invalid": "Unfortunately the URL provided is not valid",
+      "error-happened": "There was an error",
+      "connection-error": "Unfortunately there was a connection error",
+      "twitter-dates-invalid": "Twitter dates are not valid",
+      "twitter-dates-empty": "Twitter dates are empty",
+      "twitter-categories-invalid": "Twitter categories are not valid",
+      "twitter-data": "Twitter data is empty",
+      "dataset-copy-undefined": "Dataset copy is not defined",
+      "query-undefined": "Query is not provided"
+    }
+  },
   "components": {
     "modals": {
       "add-analysis": {

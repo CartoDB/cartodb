@@ -193,7 +193,7 @@ module CartoDB
       # @see http://www.gdal.org/drv_pg_advanced.html
       def postgres_options
         %Q{PG:"host=#{pg_options.fetch(:host)} }      +
-        %Q{port=#{pg_options.fetch(:direct_port)} }          +
+        %Q{port=#{pg_options.fetch(:direct_port, pg_options.fetch(:port))} }          +
         %Q{user=#{pg_options.fetch(:username)} }          +
         %Q{dbname=#{pg_options.fetch(:database)} }    +
         %Q{password=#{pg_options.fetch(:password)}"}

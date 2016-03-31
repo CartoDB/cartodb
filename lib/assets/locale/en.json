@@ -73,7 +73,6 @@
           "dataset-pluralize": "Dataset |||| Datasets"
         },
         "footer": {
-          "add-layer": "Add layer",
           "guessing-desc": "Let CartoDB automatically guess data types and content on import.",
           "twitter-desc": "To get access to historical data (older than 30 days) you need to",
           "contact-team": "contact our team",

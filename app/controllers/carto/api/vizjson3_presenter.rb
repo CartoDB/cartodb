@@ -52,7 +52,7 @@ module Carto
           description:    html_safe(@visualization.description),
           scrollwheel:    map.scrollwheel,
           legends:        map.legends,
-          url:            options.delete(:url),
+          url:            options[:url],
           map_provider:   map.provider,
           bounds:         bounds_from(map),
           center:         map.center,
@@ -63,9 +63,9 @@ module Carto
           prev:           @visualization.prev_id,
           next:           @visualization.next_id,
           transition_options: @visualization.transition_options,
-          widgets:        widgets,
-          datasource:     datasource(options),
-          user:           user_vizjson_info(user),
+          widgets:        widgets_vizjson,
+          datasource:     datasource_vizjson(options),
+          user:           user_info_vizjson(user),
           vector:         options[:vector]
         }
 
@@ -101,7 +101,7 @@ module Carto
         if @visualization.retrieve_named_map?
           presenter_options = {
             user_name: options.fetch(:user_name),
-            api_key: options.delete(:user_api_key),
+            api_key: options[:user_api_key],
             https_request: options.fetch(:https_request, false),
             viewer_user: @viewer_user,
             owner: @visualization.user
@@ -178,7 +178,7 @@ module Carto
         Cartodb.config
       end
 
-      def datasource(options)
+      def datasource_vizjson(options)
         api_templates_type = options.fetch(:https_request, false) ? 'private' : 'public'
         ds = {
           user_name: @visualization.user.username,
@@ -193,14 +193,14 @@ module Carto
         ds
       end
 
-      def user_vizjson_info(user)
+      def user_info_vizjson(user)
         {
           fullname: user.name.present? ? user.name : user.username,
           avatar_url: user.avatar_url
         }
       end
 
-      def widgets
+      def widgets_vizjson
         Carto::Widget.from_visualization_id(@visualization.id).map do |widgets|
           Carto::Api::WidgetPresenter.new(widgets).to_poro
         end

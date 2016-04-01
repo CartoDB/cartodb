@@ -4,7 +4,7 @@
   </label>
   <div class="CDB-Text CDB-Size-medium Editor-FormInput">
     <span data-editor></span>
-    <div data-error></div>
+    <div class="CDB-Text CDB-Text Color-Error" data-error></div>
     <div><%= help %></div>
   </div>
 </div>

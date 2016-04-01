@@ -11,9 +11,10 @@ This is a beta version so the API interface might change. We will do our best ef
 As this is a WIP library the library will be updated daily with bugfixes, for that reason it's
 encouraged to use the CDN version of the library so as we update library your application gets the latests fixes.
 
-```
-<link rel="stylesheet" href="http://libs.cartocdn.com/di.js/v1/themes/css/deep-insights.css" />
-<script src="http://libs.cartocdn.com/di.js/v1-beta/di.js"></script>
+```html
+<link rel="stylesheet" href="http://libs.cartocdn.com/di.js/v0/themes/css/deep-insights.css" />
+<script src=" http://libs.cartocdn.com/di.js/v0/deep-insights.uncompressed.js"></script>
+http://libs.cartocdn.com/di.js/v0/deep-insights.uncompressed.js
 ```
 
 
@@ -21,12 +22,12 @@ encouraged to use the CDN version of the library so as we update library your ap
 
 First, create dashboard
 
-```
+```js
 cartodb.deepInsights.createDashboard('#dashboard', vizJSONurl, function(err, dashboard) {
 });
 ```
 
-## Found a bug
+## Found a bug?
 
 Please report it in [deep insights repo](https://github.com/CartoDB/deep-insights.js/issues)
 
@@ -50,7 +51,7 @@ this object contains a cartodb dashboard, map + widgets
 id, title, order, collapsed, prefix, suffix, show_stats
 
 ** example **
-```
+```js
 var map = dashboard.getMap();
 var params = {
   "type": "category",
@@ -67,17 +68,17 @@ dashboard.createCategory(params, map.getLayer(2))
 ##### update(opts) -> Boolean
 returns true if the attribute was modified
 
-** example **
+**example**
 
-```
+```js
 var cat = dashboard.createCategory(params, map.getLayer(2))
 cat.update({ title: 'testing title' })
 ```
 
 ##### remove()
-** example **
+**example**
 
-```
+```js
 var cat = dashboard.createCategory(params, map.getLayer(2));
 cat.remove();
 ```
@@ -87,7 +88,6 @@ id, title, order, collapsed, bins, show_stats, normalized
 
 #### createFormula-> FormulaWidget
 id, title, order, collapsed, prefix, suffix, show_stats, description
-
 
 #### createTimeSeries-> TimeSeriesWidget
 id, title, order, collapsed, bins, show_stats, normalized

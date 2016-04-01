@@ -16,6 +16,7 @@ class SignupController < ApplicationController
   before_filter :load_mandatory_organization, only: [:signup, :create]
   before_filter :disable_if_ldap_configured
   before_filter :initialize_google_plus_config
+  before_filter :valid_email_invitation_token?, only: [:signup]
 
   def signup
     email = params[:email].present? ? params[:email] : nil
@@ -152,6 +153,15 @@ class SignupController < ApplicationController
 
   def disable_if_ldap_configured
     render_404 and return false if Carto::Ldap::Manager.new.configuration_present?
+  end
+
+  def valid_email_invitation_token?
+    if params && params[:email] && params[:invitation_token]
+      invitation = Carto::Invitation.find_by_seed(params[:invitation_token])
+
+      render_500 and return false unless invitation.present?
+      render_404 and return false unless invitation.users_emails.include?(params[:email])
+    end
   end
 
 end

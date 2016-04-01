@@ -1,5 +1,5 @@
 require_relative 'visualization_presenter'
-require_relative 'vizjson_presenter'
+require_dependency 'carto/api/vizjson_presenter'
 require_relative '../../../models/visualization/stats'
 require_relative 'paged_searcher'
 require_relative '../controller_helper'

@@ -1337,7 +1337,8 @@ describe Carto::Api::VisualizationsController do
       end
 
       describe 'torque layers' do
-        it 'contains cartocss and sql instead of tile_style and query, and includes cartocss_version' do
+        # INFO: this was required during v3 development, but currently makes Torque stop working
+        xit 'contains cartocss and sql instead of tile_style and query, and includes cartocss_version' do
           layer = @visualization.data_layers.first
           layer.kind = 'torque'
           layer.save

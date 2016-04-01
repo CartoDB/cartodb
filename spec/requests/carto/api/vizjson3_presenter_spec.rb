@@ -62,7 +62,6 @@ describe Carto::Api::VizJSON3Presenter do
       v2_vizjson[:version].should eq '0.1.0'
       v3_vizjson[:version].should eq '3.0.0'
     end
-
   end
 
 end

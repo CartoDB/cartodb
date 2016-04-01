@@ -50,7 +50,7 @@ this object contains a cartodb dashboard, map + widgets
 #### createCategory-> CategoryWidget
 id, title, order, collapsed, prefix, suffix, show_stats
 
-** example **
+*example*
 ```js
 var map = dashboard.getMap();
 var params = {
@@ -68,7 +68,7 @@ dashboard.createCategory(params, map.getLayer(2))
 ##### update(opts) -> Boolean
 returns true if the attribute was modified
 
-**example**
+*example*
 
 ```js
 var cat = dashboard.createCategory(params, map.getLayer(2))
@@ -76,7 +76,7 @@ cat.update({ title: 'testing title' })
 ```
 
 ##### remove()
-**example**
+*example*
 
 ```js
 var cat = dashboard.createCategory(params, map.getLayer(2));

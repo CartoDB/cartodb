@@ -45,14 +45,10 @@ module CartoDB
     end
 
     def real_entity_type
-      if self.entity_type == ENTITY_TYPE_VISUALIZATION
-        if self.entity.type == CartoDB::Visualization::Member::TYPE_CANONICAL
-          return CartoDB::Visualization::Member::TYPE_CANONICAL
-        else
-          return CartoDB::Visualization::Member::TYPE_DERIVED
-        end
+      if entity.type == CartoDB::Visualization::Member::TYPE_CANONICAL
+        CartoDB::Visualization::Member::TYPE_CANONICAL
       else
-        return self.entity_type
+        CartoDB::Visualization::Member::TYPE_DERIVED
       end
     end
 
@@ -297,31 +293,14 @@ module CartoDB
 
     # @return Mixed|nil
     def entity
-      case self.entity_type
-        when ENTITY_TYPE_VISUALIZATION
-          CartoDB::Visualization::Member.new(id:self.entity_id).fetch
-        else
-          nil
-      end
-    end
-
-    # @param value Mixed
-    def entity=(value)
-      if value.kind_of? CartoDB::Visualization::Member
-        self.entity_type = ENTITY_TYPE_VISUALIZATION
-        self.entity_id = value.id
-      else
-        raise PermissionError.new('Unsupported entity type')
-      end
+      viz_id = Carto::Visualization.where(permission_id: id).first.id
+      @visualization ||= CartoDB::Visualization::Member.new(id: viz_id).fetch unless viz_id.nil?
     end
 
     def validate
       super
       errors.add(:owner_id, 'cannot be nil') if (self.owner_id.nil? || self.owner_id.empty?)
       errors.add(:owner_username, 'cannot be nil') if (self.owner_username.nil? || self.owner_username.empty?)
-      errors.add(:entity_id, 'cannot be nil') if (self.entity_id.nil? || self.entity_id.empty?)
-      errors.add(:entity_type, 'cannot be nil') if (self.entity_type.nil? || self.entity_type.empty?)
-      errors.add(:entity_type, 'invalid type') unless self.entity_type == ENTITY_TYPE_VISUALIZATION
       unless new?
         validates_presence [:id]
       end
@@ -419,7 +398,7 @@ module CartoDB
     end
 
     def destroy_shared_entities
-      CartoDB::SharedEntity.where(entity_id: self.entity_id).delete
+      CartoDB::SharedEntity.where(entity_id: entity.id).delete
     end
 
     def clear
@@ -441,8 +420,8 @@ module CartoDB
         shared_entity = CartoDB::SharedEntity.new(
             recipient_id:   user[:id],
             recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_USER,
-            entity_id:      self.entity_id,
-            entity_type:    type_for_shared_entity(self.entity_type)
+            entity_id:      entity.id,
+            entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
         ).save
 
         if e.table?
@@ -455,8 +434,8 @@ module CartoDB
         shared_entity = CartoDB::SharedEntity.new(
             recipient_id:   org[:id],
             recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_ORGANIZATION,
-            entity_id:      self.entity_id,
-            entity_type:    type_for_shared_entity(self.entity_type)
+            entity_id:      entity.id,
+            entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
         ).save
 
         if e.table?
@@ -469,8 +448,8 @@ module CartoDB
         CartoDB::SharedEntity.new(
             recipient_id:   group[:id],
             recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_GROUP,
-            entity_id:      entity_id,
-            entity_type:    type_for_shared_entity(entity_type)
+            entity_id:      entity.id,
+            entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
         ).save
 
         # You only want to switch it off when request is a permission request coming from database
@@ -494,6 +473,14 @@ module CartoDB
       ::User.where(id: user_ids).all
     end
 
+    def entity_type
+      ENTITY_TYPE_VISUALIZATION
+    end
+
+    def entity_id
+      entity.id
+    end
+
     private
 
     def granted_access_for_entry_type(type, entity)
@@ -506,15 +493,6 @@ module CartoDB
       end
       permission = ACCESS_NONE if permission.nil?
       permission
-    end
-
-    # @param permission_type ENTITY_TYPE_xxxx
-    # @throws PermissionError
-    def type_for_shared_entity(permission_type)
-      if permission_type == ENTITY_TYPE_VISUALIZATION
-        return CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
-      end
-      PermissionError.new('Invalid permission type for shared entity')
     end
 
     # when removing permission form a table related visualizations should

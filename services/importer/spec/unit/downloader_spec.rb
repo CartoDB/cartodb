@@ -1,6 +1,7 @@
 # encoding: utf-8
 require_relative '../../lib/importer/downloader'
 require_relative '../../../../lib/carto/url_validator'
+require_relative '../../../../spec/rspec_configuration.rb'
 
 include CartoDB::Importer2
 

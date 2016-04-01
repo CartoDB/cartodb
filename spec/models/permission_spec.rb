@@ -46,7 +46,7 @@ describe CartoDB::Permission do
       vis_entity_mock.stubs(:privacy=)
       vis_entity_mock.stubs(:store)
       vis_entity_mock.stubs(:type).returns(CartoDB::Visualization::Member::TYPE_DERIVED)
-      vis_entity_mock.stubs(:id).returns(UUIDTools::UUID.timestamp_create.to_s)
+      vis_entity_mock.stubs(:id).returns(entity_id)
       vis_entity_mock.stubs(:name).returns("foobar_visualization")
       Permission.any_instance.stubs(:entity).returns(vis_entity_mock)
 
@@ -105,26 +105,6 @@ describe CartoDB::Permission do
         permission2.save
       }.to raise_exception
 
-      # Missing entity_type
-      permission2 = Permission.new(
-          owner_id:       @user.id,
-          owner_username: @user.username,
-          entity_id:      entity_id,
-      )
-      expect {
-        permission2.save
-      }.to raise_exception
-
-      # Missing entity_id
-      permission2 = Permission.new(
-          owner_id:       @user.id,
-          owner_username: @user.username,
-          entity_type:      entity_type,
-      )
-      expect {
-        permission2.save
-      }.to raise_exception
-
       # Owner helper methods
       permission2 = Permission.new
       permission2.owner = @user
@@ -145,7 +125,6 @@ describe CartoDB::Permission do
       Visualization::Member.any_instance.stubs(:new).returns vis_mock
       permission2 = Permission.new
       permission2.owner = @user
-      permission2.entity = vis_mock
       permission2.save
 
       # invalid ACL formats
@@ -230,7 +209,7 @@ describe CartoDB::Permission do
       vis_entity_mock.stubs(:privacy=)
       vis_entity_mock.stubs(:store)
       vis_entity_mock.stubs(:type).returns(CartoDB::Visualization::Member::TYPE_DERIVED)
-      vis_entity_mock.stubs(:id).returns(UUIDTools::UUID.timestamp_create.to_s)
+      vis_entity_mock.stubs(:id).returns(entity_id)
       vis_entity_mock.stubs(:name).returns("foobar_visualization")
       Permission.any_instance.stubs(:entity).returns(vis_entity_mock)
 
@@ -514,7 +493,7 @@ describe CartoDB::Permission do
       Permission.any_instance.stubs(:revoke_previous_permissions).returns(nil)
       Permission.any_instance.stubs(:grant_db_permission).returns(nil)
       # No need to check for real DB visualizations
-      prepare_vis_mock_in_permission
+      prepare_vis_mock_in_permission(entity_id)
 
       permission = Permission.new(
           owner_id:       @user.id,
@@ -733,17 +712,16 @@ describe CartoDB::Permission do
 
   end
 
-  def prepare_vis_mock_in_permission
+  def prepare_vis_mock_in_permission(viz_id = UUIDTools::UUID.timestamp_create.to_s)
     vis_entity_mock = mock
     vis_entity_mock.stubs(:table).returns(nil)
     vis_entity_mock.stubs(:related_tables).returns([])
     vis_entity_mock.stubs(:table?).returns(true)
     vis_entity_mock.stubs(:invalidate_cache).returns(nil)
     vis_entity_mock.stubs(:type).returns(CartoDB::Visualization::Member::TYPE_DERIVED)
-    vis_entity_mock.stubs(:id).returns(UUIDTools::UUID.timestamp_create.to_s)
+    vis_entity_mock.stubs(:id).returns(viz_id)
     vis_entity_mock.stubs(:name).returns("foobar_visualization")
     Permission.any_instance.stubs(:entity).returns(vis_entity_mock)
   end
 
 end
-

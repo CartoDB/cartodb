@@ -58,19 +58,13 @@ describe CartoDB::Importer2::Overviews do
     end
   end
 
-  def table_privileges(user, table)
-    privileges = user.in_database do |db|
+  def public_table?(user, table)
+    has_privilege = user.in_database do |db|
       db.fetch %{
-        SELECT relacl
-        FROM pg_class
-        WHERE oid = '#{table}'::regclass;
+        SELECT has_table_privilege('publicuser', '#{table}'::regclass, 'SELECT');
       }
     end
-    privileges.map(:relacl).first
-  end
-
-  def public_table?(user, table)
-    !!(table_privileges(user, table) =~ /publicuser/)
+    has_privilege.first[:has_table_privilege]
   end
 
   def set_table_privacy(table, privacy)

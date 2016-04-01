@@ -546,7 +546,7 @@ module Carto
           sql = sql_from(@layer.options)
           data = {
             sql:                wrap(sql, @layer.options),
-            layer_name:         layer_name
+            layer_name:         layer_name,
             cartocss:           css_from(@layer.options),
             cartocss_version:   @layer.options.fetch('style_version'),
             interactivity:      @layer.options.fetch('interactivity')

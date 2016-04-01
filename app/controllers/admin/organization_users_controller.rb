@@ -63,7 +63,7 @@ class Admin::OrganizationUsersController < Admin::AdminController
     @user.organization.notify_if_seat_limit_reached
     redirect_to CartoDB.url(self, 'organization', {}, current_user), flash: { success: "New user created successfully" }
   rescue Carto::UnprocesableEntityError => e
-    CartoDB.report_exception(e, "Validation error", request: request, user: current_user)
+    CartoDB::Logger.error(exception: e, message: "Validation error")
     set_flash_flags
     flash.now[:error] = e.user_message
     render 'new', status: 422
@@ -118,7 +118,7 @@ class Admin::OrganizationUsersController < Admin::AdminController
 
     redirect_to CartoDB.url(self, 'edit_organization_user', { id: @user.username }, current_user), flash: { success: "Your changes have been saved correctly." }
   rescue Carto::UnprocesableEntityError => e
-    CartoDB.report_exception(e, "Validation error", request: request, user: current_user)
+    CartoDB::Logger.error(exception: e, message: "Validation error")
     set_flash_flags
     flash.now[:error] = e.user_message
     render 'edit', status: 422

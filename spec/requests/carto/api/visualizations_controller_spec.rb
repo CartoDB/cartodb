@@ -9,8 +9,10 @@ require_relative '../../../../app/controllers/carto/api/visualizations_controlle
 require_relative '../../../../app/models/visualization/member'
 require_relative '../../../../app/helpers/bounding_box_helper'
 require_relative './vizjson_shared_examples'
+require 'helpers/unique_names_helper'
 
 describe Carto::Api::VisualizationsController do
+  include UniqueNamesHelper
   it_behaves_like 'visualization controllers' do
   end
 
@@ -350,15 +352,15 @@ describe Carto::Api::VisualizationsController do
       CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
 
       user_1 = create_user(
-        username: "test#{rand(9999)}-1",
-        email: "client#{rand(9999)}@cartodb.com",
+        username: unique_name('user'),
+        email: unique_email,
         password: 'clientex',
         private_tables_enabled: false
       )
 
       user_2 = create_user(
-        username: "test#{rand(9999)}-2",
-        email: "client#{rand(9999)}@cartodb.com",
+        username: unique_name('user'),
+        email: unique_email,
         password: 'clientex',
         private_tables_enabled: false
       )
@@ -374,11 +376,11 @@ describe Carto::Api::VisualizationsController do
       user_2.save.reload
       organization.reload
 
-      table = create_table(privacy: UserTable::PRIVACY_PUBLIC, name: "table#{rand(9999)}_1", user_id: user_1.id)
+      table = create_table(privacy: UserTable::PRIVACY_PUBLIC, name: unique_name('table'), user_id: user_1.id)
       u1_t_1_id = table.table_visualization.id
       u1_t_1_perm_id = table.table_visualization.permission.id
 
-      table = create_table(privacy: UserTable::PRIVACY_PUBLIC, name: "table#{rand(9999)}_2", user_id: user_2.id)
+      table = create_table(privacy: UserTable::PRIVACY_PUBLIC, name: unique_name('table'), user_id: user_2.id)
       u2_t_1_id = table.table_visualization.id
 
       post api_v1_visualizations_create_url(user_domain: user_1.username, api_key: user_1.api_key),
@@ -643,14 +645,14 @@ describe Carto::Api::VisualizationsController do
         # user 2 will share 1 table and 1 vis with the org
         # user 2 will share the other table and other vis with user 1
 
-        table = create_table(privacy: UserTable::PRIVACY_PUBLIC, name: "table_#{rand(9999)}_1_1", user_id: @org_user_1.id)
+        table = create_table(privacy: UserTable::PRIVACY_PUBLIC, name: unique_name('table'), user_id: @org_user_1.id)
         u1_t_1_id = table.table_visualization.id
 
-        table = create_table(privacy: UserTable::PRIVACY_PUBLIC, name: "table_#{rand(9999)}_2_2", user_id: @org_user_2.id)
+        table = create_table(privacy: UserTable::PRIVACY_PUBLIC, name: unique_name('table'), user_id: @org_user_2.id)
         u2_t_1_id = table.table_visualization.id
         u2_t_1_perm_id = table.table_visualization.permission.id
 
-        table = create_table(privacy: UserTable::PRIVACY_PUBLIC, name: "table_#{rand(9999)}_2_2", user_id: @org_user_2.id)
+        table = create_table(privacy: UserTable::PRIVACY_PUBLIC, name: unique_name('table'), user_id: @org_user_2.id)
         u2_t_2 = table
         u2_t_2_id = table.table_visualization.id
         u2_t_2_perm_id = table.table_visualization.permission.id
@@ -859,8 +861,8 @@ describe Carto::Api::VisualizationsController do
         organization = test_organization.save
 
         user_2 = create_user(
-          username: "test#{rand(9999)}",
-          email:    "client#{rand(9999)}@cartodb.com",
+          username: unique_name('user'),
+          email:    unique_email,
           password: 'clientex'
         )
 
@@ -1647,7 +1649,7 @@ describe Carto::Api::VisualizationsController do
     include_context 'visualization creation helpers'
 
     it 'should not display nor count the shared visualizations you own' do
-      table = create_table(privacy: UserTable::PRIVACY_PUBLIC, name: "table#{rand(9999)}_1", user_id: @org_user_1.id)
+      table = create_table(privacy: UserTable::PRIVACY_PUBLIC, name: unique_name('table'), user_id: @org_user_1.id)
       u1_t_1_id = table.table_visualization.id
       u1_t_1_perm_id = table.table_visualization.permission.id
 
@@ -1677,7 +1679,7 @@ describe Carto::Api::VisualizationsController do
     end
 
     it 'generates a user table visualization url' do
-      table = create_table(privacy: UserTable::PRIVACY_PUBLIC, name: "table_#{rand(9999)}_1_1", user_id: @user.id)
+      table = create_table(privacy: UserTable::PRIVACY_PUBLIC, name: unique_name('table'), user_id: @user.id)
       vis_id = table.table_visualization.id
 
       get_json api_v1_visualizations_show_url(user_domain: @user.username, id: vis_id, api_key: @user.api_key), {}, http_json_headers do |response|
@@ -1697,7 +1699,7 @@ describe Carto::Api::VisualizationsController do
     end
 
     it 'generates a org user table visualization url' do
-      table = create_table(privacy: UserTable::PRIVACY_PUBLIC, name: "table_#{rand(9999)}_1_1", user_id: @org_user_1.id)
+      table = create_table(privacy: UserTable::PRIVACY_PUBLIC, name: unique_name('table'), user_id: @org_user_1.id)
       vis_id = table.table_visualization.id
 
       get_json api_v1_visualizations_show_url(user_domain: @org_user_1.username, id: vis_id, api_key: @org_user_1.api_key), {}, http_json_headers do |response|
@@ -1785,7 +1787,7 @@ describe Carto::Api::VisualizationsController do
         @vis_owner.private_tables_enabled = true
         @vis_owner.save
         @other_user = @user2
-        @table = create_random_table(@vis_owner, "viz#{rand(999)}", UserTable::PRIVACY_PRIVATE)
+        @table = create_random_table(@vis_owner, unique_name('viz'), UserTable::PRIVACY_PRIVATE)
         @vis = @table.table_visualization
         @vis.private?.should == true
 
@@ -1865,7 +1867,7 @@ describe Carto::Api::VisualizationsController do
         stub_named_maps_calls
 
         @vis_owner = @org_user_1
-        @table = create_random_table(@vis_owner, "viz#{rand(999)}", UserTable::PRIVACY_PRIVATE)
+        @table = create_random_table(@vis_owner, unique_name('viz'), UserTable::PRIVACY_PRIVATE)
         @shared_vis = @table.table_visualization
         @shared_user = @org_user_2
         @not_shared_user = @org_user_owner
@@ -2033,7 +2035,7 @@ describe Carto::Api::VisualizationsController do
 
   def test_organization
     organization = Organization.new
-    organization.name = org_name = "org#{rand(9999)}"
+    organization.name = unique_name('org')
     organization.quota_in_bytes = 1234567890
     organization.seats = 5
     organization

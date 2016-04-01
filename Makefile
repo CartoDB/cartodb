@@ -260,25 +260,25 @@ endif
 
 # TODO: Ongoing removal of groups, that's the reason of holes in numbering
 check-1:
-	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_1)
+	CHECK_SPEC=1 RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_1)
 check-2:
-	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_2)
+	CHECK_SPEC=2 RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_2)
 check-4:
-	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_4)
+	CHECK_SPEC=4 RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_4)
 check-5:
-	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_5)
+	CHECK_SPEC=5 RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_5)
 check-7:
-	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_7)
+	CHECK_SPEC=7 RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_7)
 check-9:
-	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_9)
+	CHECK_SPEC=9 RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_9)
 check-spec-helper-min:
-	RAILS_ENV=test bundle exec rspec $(SPEC_HELPER_MIN_SPECS)
+	CHECK_SPEC=50 RAILS_ENV=test bundle exec rspec $(SPEC_HELPER_MIN_SPECS)
 check-carto-db-class:
-	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_carto_db_class)
+	CHECK_SPEC=51 RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_carto_db_class)
 check-integrations:
-	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_INTEGRATIONS)
+	CHECK_SPEC=52 RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_INTEGRATIONS)
 check-specs-without-rails:
-	RAILS_ENV=test bundle exec rspec $(SPECS_WITHOUT_RAILS)
+	CHECK_SPEC=53 RAILS_ENV=test bundle exec rspec $(SPECS_WITHOUT_RAILS)
 
 check-external: prepare-test-db check-integrations
 

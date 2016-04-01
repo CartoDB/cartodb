@@ -50,6 +50,7 @@ module Carto
       "#{viewer_user.sql_safe_database_schema}.#{options['table_name']}"
     end
 
+    # INFO: for vizjson v3 this is not used, see VizJSON3LayerPresenter#to_vizjson_v3
     def infowindow_template_path
       if self.infowindow.present? && self.infowindow['template_name'].present?
         template_name = TEMPLATES_MAP.fetch(self.infowindow['template_name'], self.infowindow['template_name'])
@@ -59,6 +60,7 @@ module Carto
       end
     end
 
+    # INFO: for vizjson v3 this is not used, see VizJSON3LayerPresenter#to_vizjson_v3
     def tooltip_template_path
       if self.tooltip.present? && self.tooltip['template_name'].present?
         template_name = TEMPLATES_MAP.fetch(self.tooltip['template_name'], self.tooltip['template_name'])

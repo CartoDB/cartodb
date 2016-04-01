@@ -33,7 +33,8 @@ module Carto
           user_name: user.username,
           user_api_key: user.api_key,
           user: user,
-          viewer_user: @viewer_user
+          viewer_user: @viewer_user,
+          vector: false
         }
       end
 
@@ -64,8 +65,8 @@ module Carto
           transition_options: @visualization.transition_options,
           widgets:        widgets,
           datasource:     datasource(options),
-          user:           user_vizjson_info(@visualization.user),
-          vector:         options.fetch(:vector, false)
+          user:           user_vizjson_info(user),
+          vector:         options[:vector]
         }
 
         auth_tokens = @visualization.needed_auth_tokens
@@ -112,6 +113,7 @@ module Carto
           named_maps_presenter = nil
           layers_data.push(layer_group_for(options))
         end
+
         layers_data.push(other_layers_vizjson(options, named_maps_presenter))
 
         layers_data += non_basemap_base_layers_for(options)
@@ -145,50 +147,28 @@ module Carto
         layer_index = @visualization.data_layers.size
 
         @visualization.other_layers.map do |layer|
-          decoration_data_to_apply = unless named_maps_presenter
-                                       {}
-                                     else
+          decoration_data_to_apply = if named_maps_presenter
                                        named_maps_presenter.get_decoration_for_layer(layer.kind, layer_index)
+                                     else
+                                       {}
                                      end
           layer_index += 1
           VizJSON3LayerPresenter.new(layer, options, configuration, decoration_data_to_apply).to_vizjson_v3
         end
       end
 
-      # TODO: remove? This method is the equivalent to CartoDB::Visualization::VizJSON, needed by `to_export_poro`.
-      # Delete if it's not needed for #6365, which will probably replace the old exporting method.
-      def all_layers_for(options)
-        layers_data = []
-
-        basemap_layer = basemap_layer_vizjson(options)
-        layers_data.push(basemap_layer) if basemap_layer
-
-        data_layers = @visualization.data_layers.map do |layer|
-          VizJSON3LayerPresenter.new(layer, options, configuration).to_vizjson_v3
-        end
-        layers_data.push(data_layers)
-
-        layers_data.push(other_layers_vizjson)
-
-        layers_data += non_basemap_base_layers_for(options)
-
-        layers_data.compact.flatten
-      end
-
-      # INFO: Assumes layers come always ordered by order (they do)
       def basemap_layer_vizjson(options)
         layer = @visualization.user_layers.first
         VizJSON3LayerPresenter.new(layer, options, configuration).to_vizjson_v3 if layer
       end
 
-      # INFO: Assumes layers come always ordered by order (they do)
       def non_basemap_base_layers_for(options)
         base_layers = @visualization.user_layers
         if base_layers.empty?
           []
         else
           # Remove the basemap, which is always first
-          base_layers.slice(1, @visualization.user_layers.length).map do |layer|
+          base_layers.slice(1, base_layers.length).map do |layer|
             VizJSON3LayerPresenter.new(layer, options, configuration).to_vizjson_v3
           end
         end
@@ -249,22 +229,6 @@ module Carto
         @named_map_name   = CartoDB::NamedMapsWrapper::NamedMap.template_name(@visualization.id)
       end
 
-      # Prepares additional data to decorate layers in the LAYER_TYPES_TO_DECORATE list
-      # - Parameters set inside as nil will remove the field itself from the layer data
-      # @throws NamedMapsPresenterError
-      def get_decoration_for_layer(layer_type, layer_index)
-        return {} unless LAYER_TYPES_TO_DECORATE.include? layer_type
-
-        {
-          named_map: {
-            name:         @named_map_name,
-            layer_index:  layer_index,
-            params:       placeholders_data
-          },
-          query: nil # do not expose SQL query on Torque layers with named maps
-        }
-      end
-
       # Prepare a PORO (Hash object) for easy JSONification
       # @see https://github.com/CartoDB/cartodb.js/blob/privacy-maps/doc/vizjson_format.md
       # @throws NamedMapsPresenterError
@@ -307,10 +271,26 @@ module Carto
 
       private
 
+      # Prepares additional data to decorate layers in the LAYER_TYPES_TO_DECORATE list
+      # - Parameters set inside as nil will remove the field itself from the layer data
+      # @throws NamedMapsPresenterError
+      def get_decoration_for_layer(layer_type, layer_index)
+        return {} unless LAYER_TYPES_TO_DECORATE.include? layer_type
+
+        {
+          named_map: {
+            name:         @named_map_name,
+            layer_index:  layer_index,
+            params:       placeholders_data
+          },
+          query: nil # do not expose SQL query on Torque layers with named maps
+        }
+      end
+
       def placeholders_data
         data = {}
         @layergroup_data.each do |layer|
-          data["layer#{layer[:index].to_s}".to_sym] = layer[:visible] ? 1 : 0
+          data["layer#{layer[:index]}".to_sym] = layer[:visible] ? 1 : 0
         end
         data
       end
@@ -328,28 +308,28 @@ module Carto
       end
 
       def data_for_carto_layer(layer_vizjson)
-        # TODO: this id will probably be removed from named maps
         data = {
-            id: layer_vizjson[:id],
-            layer_name: layer_vizjson[:options][:layer_name],
-            interactivity: layer_vizjson[:options][:interactivity],
-            visible: layer_vizjson[:visible]
-          }
+          id: layer_vizjson[:id],
+          layer_name: layer_vizjson[:options][:layer_name],
+          interactivity: layer_vizjson[:options][:interactivity],
+          visible: layer_vizjson[:visible]
+        }
 
-        if layer_vizjson.include?(:infowindow) && !layer_vizjson[:infowindow].nil? &&
-             !layer_vizjson[:infowindow].fetch('fields').nil? && layer_vizjson[:infowindow].fetch('fields').size > 0
-          data[:infowindow] = layer_vizjson[:infowindow]
+        infowindow = layer_vizjson[:infowindow]
+        if infowindow && infowindow['fields'] && !infowindow['fields'].empty?
+          data[:infowindow] = infowindow
         end
 
-        if layer_vizjson.include?(:tooltip) && !layer_vizjson[:tooltip].nil? &&
-             !layer_vizjson[:tooltip].fetch('fields').nil? && layer_vizjson[:tooltip].fetch('fields').size > 0
-          data[:tooltip] = layer_vizjson[:tooltip]
+        tooltip = layer_vizjson[:tooltip]
+        if tooltip && tooltip['fields'] && !tooltip['fields'].empty?
+          data[:tooltip] = tooltip
         end
 
-        if layer_vizjson.include?(:legend) && !layer_vizjson[:legend].nil? &&
-             layer_vizjson[:legend].fetch('type') != 'none'
-          data[:legend] = layer_vizjson[:legend]
+        legend = layer_vizjson[:legend]
+        if legend && legend['type'] != 'none'
+          data[:legend] = legend
         end
+
         data
       end
     end
@@ -435,24 +415,22 @@ module Carto
       end
 
       def to_vizjson_v3
-        layer_data = if @layer.base?
-                       with_kind_as_type(@layer.public_values)
-                     elsif @layer.torque?
-                       as_torque
-                     else
-                       {
-                         id:         @layer.id,
-                         type:       'CartoDB',
-                         infowindow: whitelisted_attrs(with_template(@layer.infowindow, @layer.infowindow_template_path)),
-                         tooltip:    whitelisted_attrs(with_tooltip_template(@layer.tooltip, @layer.tooltip_template_path)),
-                         legend:     @layer.legend,
-                         order:      @layer.order,
-                         visible:    @layer.public_values[:options]['visible'],
-                         options:    options_data_v3
-                       }
-                     end
-
-        layer_data
+        if @layer.base?
+          with_kind_as_type(@layer.public_values)
+        elsif @layer.torque?
+          as_torque
+        else
+          {
+            id:         @layer.id,
+            type:       'CartoDB',
+            infowindow: whitelisted_attrs(with_template(@layer.infowindow, 'infowindows')),
+            tooltip:    whitelisted_attrs(with_template(@layer.tooltip, 'tooltips')),
+            legend:     @layer.legend,
+            order:      @layer.order,
+            visible:    @layer.public_values[:options]['visible'],
+            options:    options_data_v3
+          }
+        end
       end
 
       def to_poro
@@ -511,7 +489,7 @@ module Carto
         tiler_configuration = @configuration[:tiler]["public"]
         sql_api_configuration = @configuration[:sql_api]["public"]
 
-        torque = {
+        {
           id:         @layer.id,
           type:       'torque',
           order:      @layer.order,
@@ -530,69 +508,31 @@ module Carto
             layer_name:         name_for(@layer)
           }.merge(layer_options.select { |k| TORQUE_ATTRS.include? k })
         }
-
-        # INFO: this was required during v3 development, but currently makes Torque stop working
-
-        layer_options = torque[:options]
-
-        #layer_options[:cartocss] = layer_options[:tile_style]
-        #layer_options.delete(:tile_style)
-
-        #layer_options[:cartocss_version] = @layer.options['style_version']
-        #layer_options.delete(:style_version)
-
-        #layer_options[:sql] = if layer_options[:query].present? || @layer.nil?
-        #                         layer_options[:query]
-        #                       else
-        #                         layer.options['query']
-        #                       end
-        # layer_options.delete(:query)
-
-        torque
       end
 
-      def with_template(infowindow, path)
-        # Careful with this logic:
-        # - nil means absolutely no infowindow (e.g. a torque)
-        # - path = nil or template filled: either pre-filled or custom infowindow, nothing to do here
-        # - template and path not nil but template not filled: stay and fill
-        return nil if infowindow.nil?
-        template = infowindow['template']
-        return infowindow if (!template.nil? && !template.empty?) || path.nil?
+      MUSTACHE_ROOT_PATH = 'lib/assets/javascripts/cartodb3/mustache-templates'
 
-        infowindow_sym = infowindow.deep_symbolize_keys
-        infowindow[:template] = v3_infowindow_template(infowindow_sym[:template_name], infowindow_sym[:template])
-        infowindow
+      def with_template(templated_element, mustache_dir)
+        return nil if templated_element.nil?
+
+        template = templated_element['template']
+        return templated_element if !template.nil? && !template.empty?
+
+        templated_sym = templated_element.deep_symbolize_keys
+        templated_element[:template] = get_template(
+          templated_sym[:template_name],
+          templated_sym[:template],
+          "#{MUSTACHE_ROOT_PATH}/#{mustache_dir}/#{get_template_name(templated_sym[:template_name])}.jst.mustache")
+        templated_element
       end
 
-      def with_tooltip_template(tooltip, path)
-        # Careful with this logic:
-        # - nil means absolutely no infowindow (e.g. a torque)
-        # - path = nil or template filled: either pre-filled or custom infowindow, nothing to do here
-        # - template and path not nil but template not filled: stay and fill
-        return nil if tooltip.nil?
-        template = tooltip['template']
-        return tooltip if (!template.nil? && !template.empty?) || path.nil?
-
-        tooltip_sym = tooltip.deep_symbolize_keys
-        tooltip[:template] = v3_tooltip_template(tooltip_sym[:template_name], tooltip_sym[:template])
-        tooltip
+      def get_template_name(name)
+        Carto::Layer::TEMPLATES_MAP.fetch(name, name)
       end
 
-      def v3_infowindow_template(template_name, fallback_template)
-        template_name = Carto::Layer::TEMPLATES_MAP.fetch(template_name, template_name)
+      def get_template(template_name, fallback_template, template_path)
         if template_name.present?
-          path = Rails.root.join("lib/assets/javascripts/cartodb3/mustache-templates/infowindows/#{template_name}.jst.mustache")
-          File.read(path)
-        else
-          fallback_template
-        end
-      end
-
-      def v3_tooltip_template(template_name, fallback_template)
-        template_name = Carto::Layer::TEMPLATES_MAP.fetch(template_name, template_name)
-        if template_name.present?
-          path = Rails.root.join("lib/assets/javascripts/cartodb3/mustache-templates/tooltips/#{template_name}.jst.mustache")
+          path = Rails.root.join(template_path)
           File.read(path)
         else
           fallback_template

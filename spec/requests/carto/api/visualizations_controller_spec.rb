@@ -1336,61 +1336,6 @@ describe Carto::Api::VisualizationsController do
         end
       end
 
-      describe 'torque layers' do
-        # INFO: this was required during v3 development, but currently makes Torque stop working
-        xit 'contains cartocss and sql instead of tile_style and query, and includes cartocss_version' do
-          layer = @visualization.data_layers.first
-          layer.kind = 'torque'
-          layer.save
-
-          tile_style_value = nil
-          query_value = nil
-
-          # vizjson v2 doesn't change
-          get_json api_v2_visualizations_vizjson_url(user_domain: @user_1.username, id: @visualization.id, api_key: @user_1.api_key), @headers do |response|
-            response.status.should eq 200
-            vizjson = response.body
-            layers = vizjson[:layers]
-            layers.should_not be_empty
-            torque_layers = layers.select { |l| l['type'] == 'torque' }
-            torque_layers.count.should eq 1
-            torque_layers.each do |l|
-              options = l['options']
-
-              options['cartocss'].should be_nil
-              tile_style_value = options['tile_style']
-              tile_style_value.should_not be_nil
-
-              options['sql'].should be_nil
-              query_value = options['query']
-              query_value.should_not be_nil
-            end
-          end
-
-          get_json get_vizjson3_url(@user_1, @visualization), @headers do |response|
-            response.status.should eq 200
-            vizjson = response.body
-            layers = vizjson[:layers]
-            layers.should_not be_empty
-            torque_layers = layers.select { |l| l['type'] == 'torque' }
-            torque_layers.count.should eq 1
-            torque_layers.each do |l|
-              options = l['options']
-
-              options['tile_style'].should be_nil
-              cartocss = options['cartocss']
-              cartocss.should eq tile_style_value
-
-              options['query'].should be_nil
-              sql = options['sql']
-              sql.should eq query_value
-            end
-          end
-
-          layer.destroy
-        end
-      end
-
       it 'returns a vizjson with empty widgets array for visualizations without widgets' do
         get_json get_vizjson3_url(@user_1, @visualization), @headers do |response|
           response.status.should == 200

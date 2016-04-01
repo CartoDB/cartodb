@@ -48,7 +48,6 @@ this object contains a cartodb dashboard, map + widgets
 #### getMap() -> returns a Map object
 
 #### createCategory-> CategoryWidget
-id, title, order, collapsed, prefix, suffix, show_stats
 
 *example*
 ```js
@@ -65,7 +64,21 @@ var params = {
 dashboard.createCategory(params, map.getLayer(2))
 ```
 
+
+#### createHistogram-> HistogramWidget
+id, title, order, collapsed, bins, show_stats, normalized
+
+#### createFormula-> FormulaWidget
+id, title, order, collapsed, prefix, suffix, show_stats, description
+
+#### createTimeSeries-> TimeSeriesWidget
+id, title, order, collapsed, bins, show_stats, normalized
+
+
+
+### cartodb.DI.CategoryWidget
 ##### update(opts) -> Boolean
+available attributes: id, title, order, collapsed, prefix, suffix, show_stats
 returns true if the attribute was modified
 
 *example*
@@ -82,15 +95,3 @@ cat.update({ title: 'testing title' })
 var cat = dashboard.createCategory(params, map.getLayer(2));
 cat.remove();
 ```
-
-#### createHistogram-> HistogramWidget
-id, title, order, collapsed, bins, show_stats, normalized
-
-#### createFormula-> FormulaWidget
-id, title, order, collapsed, prefix, suffix, show_stats, description
-
-#### createTimeSeries-> TimeSeriesWidget
-id, title, order, collapsed, bins, show_stats, normalized
-
-
-

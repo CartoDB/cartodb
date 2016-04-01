@@ -59,7 +59,7 @@ module Carto
           zoom:           map.zoom,
           updated_at:     map.viz_updated_at,
           layers:         layers_vizjson(options),
-          overlays:       @visualization.overlays.map { |o| Carto::Api::OverlayPresenter.new(o).to_vizjson_poro },
+          overlays:       @visualization.overlays.map { |o| Carto::Api::OverlayPresenter.new(o).to_vizjson },
           prev:           @visualization.prev_id,
           next:           @visualization.next_id,
           transition_options: @visualization.transition_options,
@@ -108,7 +108,7 @@ module Carto
           }
           named_maps_presenter = VizJSON3NamedMapPresenter.new(
             @visualization, layer_group_for_named_map(options), presenter_options, configuration)
-          layers_data.push(named_maps_presenter.to_poro)
+          layers_data.push(named_maps_presenter.to_vizjson)
         else
           named_maps_presenter = nil
           layers_data.push(layer_group_for(options))
@@ -140,7 +140,7 @@ module Carto
       end
 
       def layer_group_for(options)
-        VizJSON3LayerGroupPresenter.new(@visualization.data_layers, options, configuration).to_poro
+        VizJSON3LayerGroupPresenter.new(@visualization.data_layers, options, configuration).to_vizjson
       end
 
       def other_layers_vizjson(options, named_maps_presenter = nil)
@@ -153,13 +153,13 @@ module Carto
                                        {}
                                      end
           layer_index += 1
-          VizJSON3LayerPresenter.new(layer, options, configuration, decoration_data_to_apply).to_vizjson_v3
+          VizJSON3LayerPresenter.new(layer, options, configuration, decoration_data_to_apply).to_vizjson
         end
       end
 
       def basemap_layer_vizjson(options)
         layer = @visualization.user_layers.first
-        VizJSON3LayerPresenter.new(layer, options, configuration).to_vizjson_v3 if layer
+        VizJSON3LayerPresenter.new(layer, options, configuration).to_vizjson if layer
       end
 
       def non_basemap_base_layers_for(options)
@@ -169,7 +169,7 @@ module Carto
         else
           # Remove the basemap, which is always first
           base_layers.slice(1, base_layers.length).map do |layer|
-            VizJSON3LayerPresenter.new(layer, options, configuration).to_vizjson_v3
+            VizJSON3LayerPresenter.new(layer, options, configuration).to_vizjson
           end
         end
       end
@@ -202,7 +202,7 @@ module Carto
 
       def widgets_vizjson
         Carto::Widget.from_visualization_id(@visualization.id).map do |widgets|
-          Carto::Api::WidgetPresenter.new(widgets).to_poro
+          Carto::Api::WidgetPresenter.new(widgets).to_vizjson
         end
       end
 
@@ -232,7 +232,7 @@ module Carto
       # Prepare a PORO (Hash object) for easy JSONification
       # @see https://github.com/CartoDB/cartodb.js/blob/privacy-maps/doc/vizjson_format.md
       # @throws NamedMapsPresenterError
-      def to_poro
+      def to_vizjson
         if @visualization.data_layers.empty?
           nil # When there are no layers don't return named map data
         else
@@ -292,7 +292,7 @@ module Carto
         layers = @visualization.data_layers
         layers_data = Array.new
         layers.each do |layer|
-          layer_vizjson = VizJSON3LayerPresenter.new(layer, @options, @configuration).to_vizjson_v3
+          layer_vizjson = VizJSON3LayerPresenter.new(layer, @options, @configuration).to_vizjson
           layers_data.push(data_for_carto_layer(layer_vizjson))
         end
         layers_data
@@ -335,7 +335,7 @@ module Carto
         @configuration  = configuration
       end
 
-      def to_poro
+      def to_vizjson
         return nil if cartodb_layers.empty?
 
         api_templates_type = @options.fetch(:https_request, false) ? 'private' : 'public'
@@ -361,7 +361,7 @@ module Carto
 
       def cartodb_layers
         @cartodb_layers ||= @layers.map do |layer|
-          VizJSON3LayerPresenter.new(layer, @options, @configuration).to_vizjson_v3
+          VizJSON3LayerPresenter.new(layer, @options, @configuration).to_vizjson
         end
       end
     end
@@ -394,7 +394,7 @@ module Carto
         @decoration_data  = decoration_data
       end
 
-      def to_vizjson_v3
+      def to_vizjson
         if @layer.base?
           with_kind_as_type(@layer.public_values)
         elsif @layer.torque?
@@ -408,36 +408,9 @@ module Carto
             legend:     @layer.legend,
             order:      @layer.order,
             visible:    @layer.public_values[:options]['visible'],
-            options:    options_data_v3
+            options:    options_data
           }
         end
-      end
-
-      def to_poro
-        poro = @layer.public_values
-
-        return poro unless poro[:options]
-
-        if @options[:user] && !poro[:options]['user_name']
-          user_name = @options[:user].username
-          schema_name = @options[:user].sql_safe_database_schema
-        elsif poro[:options]['user_name']
-          user_name = poro[:options]['user_name']
-          schema_name = poro[:options]['user_name']
-        end
-
-        if options[:viewer_user] && user_name && poro[:options]['table_name']
-          # if the table_name already have a schema don't add another one
-          # this case happens when you share a layer already shared with you
-          if user_name != options[:viewer_user].username && !poro[:options]['table_name'].include?('.')
-            poro[:options]['table_name'] = if schema_name.include?('-')
-                                             "\"#{schema_name}\".#{poro[:options]['table_name']}"
-                                           else
-                                             "#{schema_name}.#{poro[:options]['table_name']}"
-                                           end
-          end
-        end
-        poro
       end
 
       private
@@ -507,7 +480,7 @@ module Carto
         end
       end
 
-      def options_data_v3
+      def options_data
         if @options[:full]
           decorate_with_data(@layer.options, @decoration_data)
         else

@@ -19,7 +19,7 @@ def stub_named_maps_calls
 end
 
 def random_uuid
-  UUIDTools::UUID.timestamp_create.to_s
+  UUIDTools::UUID.random_create.to_s
 end
 
 # Inline Resque for queue handling

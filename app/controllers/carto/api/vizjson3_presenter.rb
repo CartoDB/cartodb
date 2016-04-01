@@ -23,28 +23,22 @@ module Carto
       VIZJSON_VERSION = '3.0.0'.freeze
 
       def default_options
-        {
-          full: true,
-          visualization_id: @visualization.id,
-          https_request: false,
-          attributions: @visualization.attributions_from_derived_visualizations
-        }
-      end
-
-      def add_default_options(options = {})
         user = @visualization.user
 
-        default_options.merge(
+        {
           full: false,
+          visualization_id: @visualization.id,
+          https_request: false,
+          attributions: @visualization.attributions_from_derived_visualizations,
           user_name: user.username,
           user_api_key: user.api_key,
           user: user,
           viewer_user: @viewer_user
-        ).merge(options)
+        }
       end
 
       def calculate_vizjson(options = {})
-        options = add_default_options(options)
+        options = default_options.merge(options)
 
         user = @visualization.user
         map = @visualization.map

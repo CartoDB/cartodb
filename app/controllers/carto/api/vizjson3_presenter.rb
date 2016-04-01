@@ -505,12 +505,12 @@ module Carto
             sql_api_domain:     sql_api_configuration["domain"],
             sql_api_endpoint:   sql_api_configuration["endpoint"],
             sql_api_port:       sql_api_configuration["port"],
-            layer_name:         name_for(@layer)
+            layer_name:         layer_name
           }.merge(layer_options.select { |k| TORQUE_ATTRS.include? k })
         }
       end
 
-      MUSTACHE_ROOT_PATH = 'lib/assets/javascripts/cartodb3/mustache-templates'
+      MUSTACHE_ROOT_PATH = 'lib/assets/javascripts/cartodb3/mustache-templates'.freeze
 
       def with_template(templated_element, mustache_dir)
         return nil if templated_element.nil?
@@ -546,7 +546,7 @@ module Carto
           sql = sql_from(@layer.options)
           data = {
             sql:                wrap(sql, @layer.options),
-            layer_name:         name_for(@layer),
+            layer_name:         layer_name
             cartocss:           css_from(@layer.options),
             cartocss_version:   @layer.options.fetch('style_version'),
             interactivity:      @layer.options.fetch('interactivity')
@@ -563,7 +563,7 @@ module Carto
         end
       end
 
-      def name_for(layer)
+      def layer_name
         layer_alias = @layer.options.fetch('table_name_alias', nil)
         table_name  = @layer.options.fetch('table_name')
 

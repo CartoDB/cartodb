@@ -23,7 +23,7 @@ describe Carto::Api::VisualizationsController do
       end
 
       def vizjson_vx_version
-       '0.1.0'
+        '0.1.0'
       end
     end
   end
@@ -35,7 +35,7 @@ describe Carto::Api::VisualizationsController do
       end
 
       def vizjson_vx_version
-       '3.0.0'
+        '3.0.0'
       end
     end
   end

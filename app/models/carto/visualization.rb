@@ -304,7 +304,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def attributions_from_derived_visualizations
-    related_canonical_visualizations.map(&:attributions).reject { |attribution| attribution.blank? }
+    related_canonical_visualizations.map(&:attributions).reject(&:blank?)
   end
 
   private

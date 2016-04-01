@@ -624,18 +624,34 @@ var Vis = View.extend({
   // public methods
   //
 
-  // get the native map used behind the scenes
+  /**
+   * @return the native map used behind the scenes {L.Map} or {google.maps.Map}
+   */
   getNativeMap: function () {
     return this.mapView.getNativeMap();
   },
 
   // returns an array of layers
-  // TODO: Rename to getLayerViews
-  getLayers: function () {
+  getLayerViews: function () {
     var self = this;
     return _.compact(this.map.layers.map(function (layer) {
       return self.mapView.getLayerViewByLayerCid(layer.cid);
     }));
+  },
+
+  /**
+   * @return Array of {LayerModel}
+   */
+  getLayers: function() {
+    return _.clone(this.map.layers.models);
+  },
+  
+  /**
+   * @param {Integer} index Layer index (including base layer if present)
+   * @return {LayerModel}
+   */
+  getLayer: function(index) {
+    return this.map.layers.at(index);
   },
 
   getOverlays: function () {

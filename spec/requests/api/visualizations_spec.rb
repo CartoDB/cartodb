@@ -6,6 +6,8 @@ require 'uri'
 require_relative '../../spec_helper'
 require_relative '../../../app/controllers/api/json/visualizations_controller'
 require_relative '../../../services/data-repository/backend/sequel'
+require 'helpers/unique_names_helper'
+
 
 def app
   CartoDB::Application.new
@@ -16,6 +18,7 @@ end
 # You can then run it with ./spec/requests/api/json/visualizations_controller_specs.rb and
 # ./spec/requests/carto/api/visualizations_controller_specs.rb.
 describe Api::Json::VisualizationsController do
+  include UniqueNamesHelper
   include Rack::Test::Methods
   include DataRepository
 
@@ -620,7 +623,7 @@ describe Api::Json::VisualizationsController do
   # Visualizations are always created with default_privacy
   def factory(attributes={})
     {
-      name:                     attributes.fetch(:name, "visualization #{rand(9999)}"),
+      name:                     attributes.fetch(:name, unique_name('viz')),
       tags:                     attributes.fetch(:tags, ['foo', 'bar']),
       map_id:                   attributes.fetch(:map_id, ::Map.create(user_id: @user.id).id),
       description:              attributes.fetch(:description, 'bogus'),
@@ -636,11 +639,11 @@ describe Api::Json::VisualizationsController do
 
   def table_factory(options={})
     privacy = options.fetch(:privacy, 1)
-
-    seed    = rand(9999)
+    
+    name    = unique_name('table')
     payload = {
-      name:         "table #{seed}",
-      description:  "table #{seed} description"
+      name:         name,
+      description:  "#{name} description"
     }
     post "/api/v1/tables?api_key=#{@api_key}",
       payload.to_json, @headers

@@ -2417,5 +2417,4 @@ describe Table do
       [0, 1].should include(table.estimated_row_count)
     end
   end
-
 end

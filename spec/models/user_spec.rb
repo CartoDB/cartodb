@@ -7,6 +7,9 @@ require_relative '../../services/dataservices-metrics/lib/here_isolines_usage_me
 require 'factories/organizations_contexts'
 require_relative '../../app/model_factories/layer_factory'
 require_dependency 'cartodb/redis_vizjson_cache'
+require 'helpers/unique_names_helper'
+
+include UniqueNamesHelper
 
 describe 'refactored behaviour' do
 
@@ -1869,8 +1872,8 @@ describe User do
       user_timeout_secs = 666
 
       user = ::User.new
-      user.username = String.random(8).downcase
-      user.email = String.random(8).downcase + '@' + String.random(5).downcase + '.com'
+      user.username = unique_name('user')
+      user.email = unique_email
       user.password = user.email.split('@').first
       user.password_confirmation = user.password
       user.admin = false
@@ -2090,8 +2093,8 @@ describe User do
       user1.reload
 
       user = ::User.new
-      user.username = String.random(8).downcase
-      user.email = String.random(8).downcase + '@' + String.random(5).downcase + '.com'
+      user.username = unique_name('user')
+      user.email = unique_email
       user.password = user.email.split('@').first
       user.password_confirmation = user.password
       user.admin = false

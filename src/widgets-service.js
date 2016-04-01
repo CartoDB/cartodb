@@ -15,6 +15,11 @@ WidgetsService.prototype.get = function (id) {
   return this._widgetsCollection.get(id);
 };
 
+WidgetsService.prototype.getList = function () {
+  return this._widgetsCollection.models;
+};
+
+
 /**
  * @param {Object} attrs
  * @param {String} attrs.title Title rendered on the widget view

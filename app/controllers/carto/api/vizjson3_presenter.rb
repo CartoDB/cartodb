@@ -93,7 +93,7 @@ module Carto
       end
 
       def layers_vizjson(options)
-        basemap_layer = basemap_layer_for(options)
+        basemap_layer = basemap_layer_vizjson(options)
         layers_data = []
         layers_data.push(basemap_layer) if basemap_layer
 
@@ -112,7 +112,7 @@ module Carto
           named_maps_presenter = nil
           layers_data.push(layer_group_for(options))
         end
-        layers_data.push(other_layers_for(options, named_maps_presenter))
+        layers_data.push(other_layers_vizjson(options, named_maps_presenter))
 
         layers_data += non_basemap_base_layers_for(options)
 
@@ -141,11 +141,7 @@ module Carto
         VizJSON3LayerGroupPresenter.new(@visualization.data_layers, options, configuration).to_poro
       end
 
-      def named_map_layer_group_for(options)
-        VizJSON3LayerGroupPresenter.new(@visualization.named_map_layers, options, configuration).to_poro
-      end
-
-      def other_layers_for(options, named_maps_presenter = nil)
+      def other_layers_vizjson(options, named_maps_presenter = nil)
         layer_index = @visualization.data_layers.size
 
         @visualization.other_layers.map do |layer|
@@ -164,7 +160,7 @@ module Carto
       def all_layers_for(options)
         layers_data = []
 
-        basemap_layer = basemap_layer_for(options)
+        basemap_layer = basemap_layer_vizjson(options)
         layers_data.push(basemap_layer) if basemap_layer
 
         data_layers = @visualization.data_layers.map do |layer|
@@ -172,7 +168,7 @@ module Carto
         end
         layers_data.push(data_layers)
 
-        layers_data.push(other_layers_for)
+        layers_data.push(other_layers_vizjson)
 
         layers_data += non_basemap_base_layers_for(options)
 
@@ -180,7 +176,7 @@ module Carto
       end
 
       # INFO: Assumes layers come always ordered by order (they do)
-      def basemap_layer_for(options)
+      def basemap_layer_vizjson(options)
         layer = @visualization.user_layers.first
         VizJSON3LayerPresenter.new(layer, options, configuration).to_vizjson_v3 if layer
       end

@@ -133,26 +133,18 @@ class Admin::OrganizationUsersController < Admin::AdminController
   def destroy
     raise "Can't delete user. #{'Has shared entities' if @user.has_shared_entities?}" unless @user.can_delete
 
-    @user.delete_in_central
     @user.destroy
+    @user.delete_in_central
     flash[:success] = "User was successfully deleted."
     redirect_to CartoDB.url(self, 'organization', {}, current_user)
   rescue CartoDB::CentralCommunicationFailure => e
-    CartoDB.report_exception(e)
     if e.user_message =~ /No organization user found with username/
-      begin
-        @user.destroy
-        flash[:success] = "#{e.user_message}. User was deleted from the organization server."
-        redirect_to CartoDB.url(self, 'organization', {}, current_user)
-      rescue => e
-        CartoDB::Logger.warning(exception: e, message: 'Error deleting organizational user', target_user: @user.username)
-        flash[:error] = "User was not deleted. #{e.message}"
-        redirect_to organization_path(user_domain: params[:user_domain])
-      end
-    else
-      set_flash_flags(nil, true)
-      flash[:error] = "User was not deleted. #{e.user_message}"
+      flash[:success] = "User was successfully deleted."
       redirect_to CartoDB.url(self, 'organization', {}, current_user)
+    else
+      CartoDB::Logger.warning(exception: e, message: 'Error deleting organizational user from central', target_user: @user.username)
+      flash[:success] = "#{e.user_message}. User was deleted from the organization server."
+      redirect_to organization_path(user_domain: params[:user_domain])
     end
   rescue => e
     CartoDB::Logger.warning(exception: e, message: 'Error deleting organizational user', target_user: @user.username)

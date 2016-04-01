@@ -159,7 +159,7 @@ class SignupController < ApplicationController
     if params && params[:email] && params[:invitation_token]
       invitation = Carto::Invitation.find_by_seed(params[:invitation_token])
 
-      render_500 and return false unless invitation.present?
+      render_404 and return false unless invitation.present?
       render_404 and return false unless invitation.users_emails.include?(params[:email])
     end
   end

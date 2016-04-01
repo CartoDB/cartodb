@@ -269,8 +269,6 @@ module Carto
         end
       end
 
-      private
-
       # Prepares additional data to decorate layers in the LAYER_TYPES_TO_DECORATE list
       # - Parameters set inside as nil will remove the field itself from the layer data
       # @throws NamedMapsPresenterError
@@ -286,6 +284,8 @@ module Carto
           query: nil # do not expose SQL query on Torque layers with named maps
         }
       end
+
+      private
 
       def placeholders_data
         data = {}

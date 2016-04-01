@@ -293,8 +293,8 @@ module CartoDB
 
     # @return Mixed|nil
     def entity
-      viz_id = Carto::Visualization.where(permission_id: id).first.id
-      @visualization ||= CartoDB::Visualization::Member.new(id: viz_id).fetch unless viz_id.nil?
+      viz = Carto::Visualization.where(permission_id: id).first
+      @visualization ||= CartoDB::Visualization::Member.new(id: viz.id).fetch unless viz.nil?
     end
 
     def validate
@@ -315,10 +315,7 @@ module CartoDB
       if !@old_acl.nil?
         self.notify_permissions_change(CartoDB::Permission.compare_new_acl(@old_acl, self.acl))
       end
-    end
-
-    def after_save
-      update_shared_entities unless new?
+      update_shared_entities
     end
 
     def after_destroy

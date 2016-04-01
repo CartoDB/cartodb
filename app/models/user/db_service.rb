@@ -359,9 +359,8 @@ module CartoDB
             conn.run("DROP DATABASE \"#{@user.database_name}\"")
           end
           drop_user(conn)
+          CartoDB::UserModule::DBService.terminate_database_connections(@user.database_name, @user.database_host)
         end.join
-
-        CartoDB::UserModule::DBService.terminate_database_connections(@user.database_name, @user.database_host)
 
         monitor_user_notification
       end

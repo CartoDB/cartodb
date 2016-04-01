@@ -349,6 +349,7 @@ module CartoDB
           end
 
           conn = @user.in_database(as: :cluster_admin)
+          CartoDB::UserModule::DBService.terminate_database_connections(@user.database_name, @user.database_host)
 
           # If user is in an organization should never have public schema, but to be safe (& tests which stub stuff)
           unless @user.database_schema == SCHEMA_PUBLIC
@@ -359,7 +360,6 @@ module CartoDB
             conn.run("DROP DATABASE \"#{@user.database_name}\"")
           end
           drop_user(conn)
-          CartoDB::UserModule::DBService.terminate_database_connections(@user.database_name, @user.database_host)
         end.join
 
         monitor_user_notification

@@ -1429,12 +1429,7 @@ describe User do
 
       # Grant permission
       user2_vis  = CartoDB::Visualization::Collection.new.fetch(user_id: @user2.id, name: table3.name).first
-      permission = CartoDB::Permission.new(
-        owner_id:       @user2.id,
-        owner_username: @user2.username,
-        entity_id:      user2_vis.id,
-        entity_type:    CartoDB::Permission::ENTITY_TYPE_VISUALIZATION
-      )
+      permission = user2_vis.permission
       permission.acl = [
         {
           type: CartoDB::Permission::TYPE_USER,

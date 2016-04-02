@@ -1571,10 +1571,10 @@ class User < Sequel::Model
 
   def destroy_shared_with
     CartoDB::SharedEntity.where(recipient_id: id).each do |se|
-      CartoDB::Permission.where(entity_id: se.entity_id).each do |p|
-        p.remove_user_permission(self)
-        p.save
-      end
+      viz = CartoDB::Visualization::Member.new(id: se.entity_id).fetch
+      permission = viz.permission
+      permission.remove_user_permission(self)
+      permission.save
     end
   end
 

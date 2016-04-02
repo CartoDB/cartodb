@@ -500,9 +500,9 @@ describe CartoDB::Permission do
           owner_username: @user.username,
           entity_id:      entity_id,
           entity_type:    Permission::ENTITY_TYPE_VISUALIZATION
-      )
+      ).save
 
-      # Before saving, create old entries
+      # Create old entries
       CartoDB::SharedEntity.new(
           recipient_id:   @user.id,
           recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_USER,

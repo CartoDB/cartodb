@@ -75,6 +75,38 @@
         "create-loading-title": "Creating empty dataset…",
         "adding-new-layer": "Adding new layer…",
         "add-layer-error": "Could not add layer",
+        "datasets": {
+          "item": {
+            "sync-failed": "Sync failed, last attempt was",
+            "syncing": "Syncing",
+            "synced": "Synced",
+            "read": "read",
+            "from": "from",
+            "by": "by",
+            "no-description": "No description",
+            "rows-pluralize": "row |||| rows",
+            "tags-more": "and %{tagsCount} more",
+            "no-tags": "No tags",
+          },
+          "loading": "Loading",
+          "searching": "Searching",
+          "error": {
+            "title": "Oouch! There has been an error loading your datasets",
+            "desc": "If the problem persists contact us at"
+          },
+          "no-datasets": {
+            "title": "You have not connected any datasets yet",
+            "desc": "You can %{connectDataset} or %{search} in all our data library",
+            "connect-datasets": "connect datasets",
+            "search": "search"
+          },
+          "no-results": {
+            "desc": "There are no results in this page",
+            "found": "found",
+            "there-are-no": "There are no",
+            "no-fun": "No %{type}, no fun"
+          }
+        },
         "footer": {
           "add-layer": "Add layer",
           "guessing-desc": "Let CartoDB automatically guess data types and content on import.",

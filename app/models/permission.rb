@@ -45,11 +45,7 @@ module CartoDB
     end
 
     def real_entity_type
-      if entity.type == CartoDB::Visualization::Member::TYPE_CANONICAL
-        CartoDB::Visualization::Member::TYPE_CANONICAL
-      else
-        CartoDB::Visualization::Member::TYPE_DERIVED
-      end
+      entity.type
     end
 
     def notify_permissions_change(permissions_changes)

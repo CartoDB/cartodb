@@ -27,6 +27,7 @@
       </ul>
     </div>
     <div class="Header-settings">
+      <% if current_user.has_feature_flag?('bbg_profile_menu') %>
       <ul class="Header-settingsList">
         <% unless cartodb_com_hosted? %>
         <li class="Header-settingsItem">
@@ -47,6 +48,7 @@
           </button>
         </li>
       </ul>
+      <% end %>
     </div>
   </div>
 </div>

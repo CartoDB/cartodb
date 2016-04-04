@@ -380,17 +380,16 @@ describe Admin::VisualizationsController do
         enable_remote_db_user: nil
       )
 
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
-      Table.any_instance.stubs(
-          :perform_cartodb_function => nil,
-          :update_cdb_tablemetadata => nil,
-          :update_table_pg_stats => nil,
-          :create_table_in_database! => nil,
-          :get_table_id => 1,
-          :grant_select_to_tiler_user => nil,
-          :cartodbfy => nil,
-          :set_the_geom_column! => nil
-      )
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true)
+
+      Table.any_instance.stubs(perform_cartodb_function: nil,
+                               update_cdb_tablemetadata: nil,
+                               update_table_pg_stats: nil,
+                               create_table_in_database!: nil,
+                               get_table_id: 1,
+                               grant_select_to_tiler_user: nil,
+                               cartodbfy: nil,
+                               set_the_geom_column!: nil)
 
       # --------TEST ITSELF-----------
 

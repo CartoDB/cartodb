@@ -140,7 +140,7 @@ class Carto::Visualization < ActiveRecord::Base
     get_surrogate_key(CartoDB::SURROGATE_NAMESPACE_VISUALIZATION, id)
   end
 
-  def qualified_name(viewer_user=nil)
+  def qualified_name(viewer_user = nil)
     if viewer_user.nil? || is_owner_user?(viewer_user)
       name
     else
@@ -188,13 +188,23 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def data_layers
-    return [] if map.nil?
-    map.data_layers
+    map.nil? ? [] : map.data_layers
+  end
+
+  def named_map_layers
+    map.nil? ? [] : map.named_map_layers
+  end
+
+  def user_layers
+    map.nil? ? [] : map.user_layers
+  end
+
+  def other_layers
+    map.nil? ? [] : map.other_layers
   end
 
   def layers
-    return [] if map.nil?
-    map.layers
+    map.nil? ? [] : map.layers
   end
 
   def password_valid?(password)
@@ -247,6 +257,10 @@ class Carto::Visualization < ActiveRecord::Base
     tokens
   end
 
+  def needed_auth_tokens
+    has_password? ? get_auth_tokens : []
+  end
+
   def mapviews
     @mapviews ||= CartoDB::Visualization::Stats.mapviews(stats)
   end
@@ -287,6 +301,10 @@ class Carto::Visualization < ActiveRecord::Base
 
   def likes_count
     likes.count
+  end
+
+  def attributions_from_derived_visualizations
+    related_canonical_visualizations.map(&:attributions).reject(&:blank?)
   end
 
   private

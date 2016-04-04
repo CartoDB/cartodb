@@ -1,9 +1,15 @@
 # Contains specs that both vizjson2 and 3 must verify.
-# Specs including this should define api_vx_visualizations_vizjson_url as an alias for the desired URL generator.
+# Specs including this should define:
+# - api_vx_visualizations_vizjson_url: an alias for the desired URL generator.
+# - vizjson_vx_version: vizjson version.
 # Example:
 #  it_behaves_like 'vizjson generator' do
 #    def api_vx_visualizations_vizjson_url(options)
 #      api_v2_visualizations_vizjson_url(options)
+#    end
+#
+#    def vizjson_vx_version
+#      '0.1.0'
 #    end
 #  end
 shared_examples_for 'vizjson generator' do
@@ -205,7 +211,7 @@ shared_examples_for 'vizjson generator' do
       (last_response.body =~ /^\{/i).should eq 0
     end
 
-    describe 'GET /api/vx/viz/:id/viz' do
+    describe 'get vizjson' do
       before(:each) do
         CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
         delete_user_data(@user_1)
@@ -245,10 +251,14 @@ shared_examples_for 'vizjson generator' do
 
         get api_vx_visualizations_vizjson_url(id: parent.id, api_key: @api_key), {}, @headers
 
-        last_response.status.should == 200
+        last_response.status.should eq 200
         response = JSON.parse(last_response.body)
         slides = response.fetch('slides')
-        slides.count.should == 1
+        slides.count.should eq 1
+        slide = slides[0]
+        slide['id'].should eq child.id
+        slide['title'].should eq child.name
+        slide['version'].should eq vizjson_vx_version
       end
 
       it "comes with proper surrogate-key" do
@@ -350,8 +360,8 @@ shared_examples_for 'vizjson generator' do
 
         visualization = JSON.parse(last_response.body)
 
-        # Update the privacy of the visualization so that the viz_json generates a named_map
-        Carto::Api::VisualizationVizJSONAdapter.any_instance.stubs('retrieve_named_map?' => true)
+        # Stubs privacy of the visualization so that the viz_json generates a named_map
+        Carto::Visualization.any_instance.stubs('retrieve_named_map?' => true)
 
         get api_vx_visualizations_vizjson_url(id: visualization.fetch('id'), api_key: @api_key), {}, @headers
 
@@ -417,7 +427,33 @@ shared_examples_for 'vizjson generator' do
         layer_group_attributions.should include(table_1_attribution)
         layer_group_attributions.should include(modified_table_2_attribution)
       end
+    end
+  end
 
+  describe 'attributes' do
+    include Carto::Factories::Visualizations
+    include_context 'visualization creation helpers'
+
+    before(:all) do
+      @user_1 = FactoryGirl.create(:valid_user, private_tables_enabled: false)
+      host! "#{@user_1.subdomain}.localhost.lan"
+      @map, @table, @table_visualization, @visualization = create_full_visualization(Carto::User.find(@user_1.id))
+    end
+
+    after(:all) do
+      destroy_full_visualization(@map, @table, @table_visualization, @visualization)
+      @user_1.destroy
+    end
+
+    let(:viewer_user) { @visualization.user }
+
+    it 'contain type, not kind, for basemaps' do
+      get api_vx_visualizations_vizjson_url(id: @visualization.id, api_key: @api_key), {}, http_json_headers
+      last_response.status.should eq 200
+      visualization = JSON.parse(last_response.body)
+      basemap_layer = visualization["layers"][0]
+      basemap_layer['type'].should eq @visualization.map.base_layers.first.kind
+      basemap_layer['kind'].should be_nil
     end
   end
 end

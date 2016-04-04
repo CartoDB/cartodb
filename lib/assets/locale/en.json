@@ -115,7 +115,8 @@
           "privacy-upgrade": "You cannot change the privacy of your new datasets. Click here to upgrade your account.",
           "privacy-change": "Your new dataset will be %{privacy}",
           "privacy-click": "Click to change it to %{nextPrivacy}",
-          "privacy-change-banned": "You cannot change the privacy of your new datasets."
+          "privacy-change-banned": "You cannot change the privacy of your new datasets.",
+          "add-layer": "Add layer" 
         }
       }
     },

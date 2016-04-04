@@ -582,21 +582,7 @@ class Table
   end
 
   def real_table_exists?
-    real_table_oid = fetch_table_id
-
-    # TODO: Remove this when table_id is guaranteed to be updated
-    unless real_table_oid == table_id
-      CartoDB.notify_debug('Metadata/Physical table oid mismatch',
-                           trace: caller,
-                           oid: real_table_oid,
-                           table_id: table_id,
-                           name: name,
-                           user: owner)
-
-      self.table_id = real_table_oid
-    end
-
-    !real_table_oid.nil?
+    !get_table_id.nil?
   end
 
   # adds the column if not exists or cast it to timestamp field
@@ -1185,19 +1171,16 @@ class Table
   end
 
   def set_table_id
-    @user_table.table_id = fetch_table_id
+    @user_table.table_id = self.get_table_id
   end
 
-  def fetch_table_id
-    record = owner.in_database
-                  .select(:pg_class__oid)
-                  .from(:pg_class)
-                  .join_table(:inner, :pg_namespace, oid: :relnamespace)
-                  .where(relkind: 'r', nspname: owner.database_schema, relname: name)
-                  .first
-
+  def get_table_id
+    record = owner.in_database.select(:pg_class__oid)
+      .from(:pg_class)
+      .join_table(:inner, :pg_namespace, :oid => :relnamespace)
+      .where(:relkind => 'r', :nspname => owner.database_schema, :relname => name).first
     record.nil? ? nil : record[:oid]
-  end
+  end # get_table_id
 
   def update_name_changes
     if @name_changed_from.present? && @name_changed_from != name

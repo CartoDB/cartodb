@@ -1,14 +1,13 @@
-## deep insights
+## Deep Insights
 
-This document is a quick start to use cartodb DI, it shows how to create a dashboards and modify widgets from a javascript application
+This document is a quick start to use CartoDB Deep Insights (DI). It shows how to create dashboards and modify widgets from a JavaScript application.
 
 **Important notice**
-This is a beta version so the API interface might change. We will do our best effort to keep all the changes backwards compatible.
-
+This is a beta version, so the API interface might change. We will do our best effort to keep all the changes backwards compatible.
 
 ### Using Deep insights library in your application
 
-As this is a WIP library the library will be updated daily with bugfixes, for that reason it's
+As this is a WIP library, it will be updated daily with bug fixes, for that reason it is
 encouraged to use the CDN version of the library so as we update library your application gets the latests fixes.
 
 ```html
@@ -18,9 +17,9 @@ http://libs.cartocdn.com/di.js/v0/deep-insights.uncompressed.js
 ```
 
 
-### create the dashboard
+### Create a dashboard
 
-First, create dashboard
+Here's how to create a dashboard:
 
 ```js
 cartodb.deepInsights.createDashboard('#dashboard', vizJSONurl, function(err, dashboard) {
@@ -31,17 +30,15 @@ cartodb.deepInsights.createDashboard('#dashboard', vizJSONurl, function(err, das
 
 Please report it in [deep insights repo](https://github.com/CartoDB/deep-insights.js/issues)
 
-
 ## API
 
 ### cartodb.DI.createDashboard(domObject, vizJson, callback(err, obj))
 
-Creates a new dashboard inside domObject based on vizJson
-
+Creates a new dashboard inside `domObject` based on `vizJson`.
 
 ### cartodb.DI.Dashborbard
 
-this object contains a cartodb dashboard, map + widgets
+This object contains a CartoDB dashboard, a map, and some widgets:
 
 #### getWidgets() -> Array of widgets
 #### getWidget(id) -> get widget
@@ -64,7 +61,6 @@ var params = {
 dashboard.createCategory(params, map.getLayer(2))
 ```
 
-
 #### createHistogram-> HistogramWidget
 id, title, order, collapsed, bins, show_stats, normalized
 
@@ -75,11 +71,10 @@ id, title, order, collapsed, prefix, suffix, show_stats, description
 id, title, order, collapsed, bins, show_stats, normalized
 
 
-
 ### cartodb.DI.CategoryWidget
 ##### update(opts) -> Boolean
-available attributes: id, title, order, collapsed, prefix, suffix, show_stats
-returns true if the attribute was modified
+available attributes: `id`, `title`, `order`, `collapsed`, `prefix`, `suffix`, `show_stats`
+returns `true` if the attribute was modified
 
 *example*
 

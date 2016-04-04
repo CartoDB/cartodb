@@ -299,12 +299,15 @@ module CartoDB
 
     def validate
       super
-      errors.add(:owner_id, 'cannot be nil') if (self.owner_id.nil? || self.owner_id.empty?)
-      errors.add(:owner_username, 'cannot be nil') if (self.owner_username.nil? || self.owner_username.empty?)
-      unless new?
+      errors.add(:owner_id, 'cannot be nil') if owner_id.nil? || owner_id.empty?
+      errors.add(:owner_username, 'cannot be nil') if owner_username.nil? || owner_username.empty?
+
+      if new?
+        errors.add(:acl, 'must be empty on initial creation') if acl.present?
+      else
         validates_presence [:id]
       end
-    end #validate
+    end
 
     def before_save
       super

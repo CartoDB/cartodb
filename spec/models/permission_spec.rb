@@ -288,7 +288,7 @@ describe CartoDB::Permission do
         owner_username: @user.username,
         entity_id: UUIDTools::UUID.timestamp_create.to_s,
         entity_type: Permission::ENTITY_TYPE_VISUALIZATION
-      )
+      ).save
       permission.acl = [
         {
           type: Permission::TYPE_USER,
@@ -340,7 +340,7 @@ describe CartoDB::Permission do
         owner_username: @user.username,
         entity_id: UUIDTools::UUID.timestamp_create.to_s,
         entity_type: Permission::ENTITY_TYPE_VISUALIZATION
-      )
+      ).save
       permission.acl = [
         {
           type: Permission::TYPE_USER,
@@ -391,7 +391,7 @@ describe CartoDB::Permission do
           owner_username: @user.username,
           entity_id: UUIDTools::UUID.timestamp_create.to_s,
           entity_type: Permission::ENTITY_TYPE_VISUALIZATION
-      )
+      ).save
       # User has more access than org
       permission.acl = [
           {
@@ -647,7 +647,7 @@ describe CartoDB::Permission do
         owner_id:       @user.id,
         owner_username: @user.username,
         entity_type: Permission::ENTITY_TYPE_VISUALIZATION
-      )
+      ).save
       permission.entity_id = permission.entity.id
 
       Resque.stubs(:enqueue).returns(nil)

@@ -6,6 +6,7 @@ require_relative '../../../app/models/visualization/collection'
 require_relative '../../../app/models/visualization/migrator'
 require_relative '../../../services/data-repository/repository'
 require_relative '../../doubles/support_tables.rb'
+require_dependency 'cartodb/redis_vizjson_cache'
 
 include CartoDB
 

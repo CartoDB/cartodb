@@ -66,39 +66,42 @@ module CartoDB
       end
 
       def fix_oid(table_name)
-        actual_oid_from_user_database = database.fetch(%Q{SELECT '#{table_name}'::regclass::oid}).first[:oid]
-        table = ::Table.new(:user_table => ::UserTable.where(name: table_name, user_id: user.id).first)
-        table.table_id = actual_oid_from_user_database.to_i
-        table.save
+        user_table = user.tables.where(name: table_name).first
+
+        user_table.sync_table_id
+        user_table.save
       end
 
       def cartodbfy(table_name)
-        table = ::Table.new(:user_table => ::UserTable.where(name: table_name, user_id: user.id).first)
+        table = user.tables.where(name: table_name).first.service
+
         table.force_schema = true
+
         table.import_to_cartodb(table_name)
         table.schema(reload: true)
+
         table.send :set_the_geom_column!
         table.import_cleanup
+
         table.send :cartodbfy
         table.schema(reload: true)
         table.reload
+
         table.send :update_table_pg_stats
         table.save
-
-        update_cdb_tablemetadata(table.name)
       rescue => exception
-        puts "Sync cartodbfy ERROR: #{exception.message}: #{exception.backtrace.join}"
-        CartoDB.notify_error('Error in sync cartodbfy',
-                             error: exception.backtrace.join('\n'), user_id: user.id, table: table_name)
-
-        update_cdb_tablemetadata(table.name)
+        CartoDB::Logger.log('error',
+                            message: "Sync cartodbfy ERROR: #{exception.message}",
+                            trace: exception.backtrace,
+                            user: user,
+                            table_name: table_name)
+      ensure
+        fix_oid(table_name)
+        update_cdb_tablemetadata(table_name)
       end
 
       def update_cdb_tablemetadata(name)
-        qualified_name = "\"#{user.database_schema}\".\"#{name}\""
-        user.in_database(as: :superuser).run(%Q{
-          SELECT CDB_TableMetadataTouch('#{qualified_name}')
-        })
+        user.tables.where(name: name).first.update_cdb_tablemetadata
       end
 
       def success?

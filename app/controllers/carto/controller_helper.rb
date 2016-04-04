@@ -58,7 +58,7 @@ module Carto
     end
 
     def rescue_from_standard_error(error)
-      CartoDB.report_exception(error, "Error", request: request, user: current_user)
+      CartoDB::Logger.error(exception: error)
       message = error.message
       respond_to do |format|
         format.html { render text: message, status: 500 }

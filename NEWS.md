@@ -2,9 +2,10 @@
 -------------------
 ## Features
 * Adds optional strong passwords for organization signups
-* Add new function User#direct_db_connection which uses the direct_port specified in database.yml to connect to the database. Usage instructions:
+* Add new function User#direct_db_connection which uses a new direct_port paramerer to be specified in database.yml to connect to the database. Usage instructions:
   * Use `port` in database.yml to specify the port through which the db is accessed for regular queries (such as pgbouncer connections)
   * Use `direct_port` in database.yml to specify the port through which the db can be directly accessed (i.e. the port in which Postgres is running)
+  * This change is backwards compatible and will fallback to `port` whenever `direct_port` is not specified in the database configuration file.
 * Update ogr2ogr version to 2.1, configurable in `app_config.yml`. To install it in the system, run:
   * `sudo apt-get install gdal2.1-static-bin`
 

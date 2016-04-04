@@ -1,8 +1,8 @@
-
+var _ = require('underscore');
 var createDashboard = require('./create-dashboard');
 var cdb = require('cartodb.js');
 
-function Dashboard(dashboard) {
+function Dashboard (dashboard) {
   this.dashboard = dashboard;
 
   // bind widget related methods
@@ -16,28 +16,27 @@ function Dashboard(dashboard) {
 }
 
 Dashboard.prototype = {
-  getMap: function() {
+  getMap: function () {
     return this.dashboard.vis;
   }
 };
 
 module.exports = function (selector, vizJSON, opts, callback) {
-
-  var args = arguments,
-      fn   = args[args.length -1];
+  var args = arguments;
+  var fn = args[args.length - 1];
 
   if (_.isFunction(fn)) {
     callback = fn;
   }
 
-  function _load(vizJSON) {
+  function _load (vizJSON) {
     var dashboard = createDashboard(selector, vizJSON, opts);
-    dashboard.vis.done(function() {
+    dashboard.vis.done(function () {
       callback(null, new Dashboard(dashboard));
     });
   }
 
-  if (typeof (vizJSON) === 'string') {
+  if (typeof vizJSON === 'string') {
     cdb.core.Loader.get(vizJSON, function (data) {
       if (data) {
         _load(data, opts);
@@ -45,7 +44,6 @@ module.exports = function (selector, vizJSON, opts, callback) {
         callback(new Error('error fetching viz.json file'));
       }
     });
-   }
-
-}
+  }
+};
 

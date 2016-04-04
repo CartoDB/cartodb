@@ -80,7 +80,8 @@
     ]
   },
   "browser": {
-    "tipsy": "./vendor/assets/javascripts/jquery.tipsy.js"
+    "tipsy": "./vendor/assets/javascripts/jquery.tipsy.js",
+    "markdown": "./vendor/assets/javascripts/markdown.js"
   },
   "browserify-shim": {
     "jquery-cdb-v3": "global:$",

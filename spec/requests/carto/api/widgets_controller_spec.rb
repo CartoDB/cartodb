@@ -253,7 +253,7 @@ describe Carto::Api::WidgetsController do
       end
 
       it 'contains widget data' do
-        vizjson3 = get_vizjson3(@visualization)
+        vizjson3 = get_vizjson3(Carto::Visualization.find(@visualization.id), @visualization.user)
         layer = vizjson3[:layers][0][:options][:layer_definition][:layers][0]
         options = CartoDB::NamedMapsWrapper::NamedMap.options_for_layer(layer, 1, { placeholders: {} })
         widget_options = options[:layer_options][:widgets]
@@ -272,8 +272,8 @@ describe Carto::Api::WidgetsController do
       end
     end
 
-    def get_vizjson3(carto_visualization)
-      Carto::Api::VizJSON3Presenter.new(carto_visualization).to_vizjson
+    def get_vizjson3(carto_visualization, viewer_user)
+      Carto::Api::VizJSON3Presenter.new(carto_visualization, viewer_user).to_vizjson
     end
   end
 end

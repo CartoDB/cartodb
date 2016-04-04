@@ -18,10 +18,6 @@ However, this will be deprecated on a future release.
 ### Features
 * Change Varnish table-related invalidations and tagging to use [Surrogate Keys](https://github.com/CartoDB/cartodb/wiki/CartoDB-Surrogate-Keys)
 * Remove Varnish table invalidations from Rails and replaced them with CDB_TableMetadataTouch calls (delegating invalidation reponsibility to the database)
-
-3.12.3 (2016-03-01)
-=======
-## Features
 * Adds optional strong passwords for organization signups
 
 ## Bug Fixes

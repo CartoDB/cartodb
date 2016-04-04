@@ -6,7 +6,7 @@
   @include justify-content(space-between, justify);
   @include align-items(flex-end);
   width: 100%;
-  height: $baseSize * 7; // value (56) to match real widget content height, to avoid "jumpy" behavior
+  height: 75px; // value (56) to match real widget content height, to avoid "jumpy" behavior
 }
 
 .CDB-Widget-chartItem--fake {

@@ -23,6 +23,7 @@
     }
   },
   "components": {
+    "likes-pluralize": "like |||| likes",
     "modals": {
       "add-analysis": {
         "modal-title": "Add a new analysis",

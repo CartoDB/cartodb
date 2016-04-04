@@ -394,15 +394,6 @@ describe Organization do
     after(:all) do
       @organization.destroy
     end
-    it "should return organizations over their map view quota" do
-      Organization.any_instance.stubs(:owner).returns(@owner)
-      Organization.overquota.should be_empty
-      Organization.any_instance.stubs(:get_api_calls).returns(30)
-      Organization.any_instance.stubs(:map_view_quota).returns(10)
-      Organization.overquota.map(&:id).should include(@organization.id)
-      Organization.overquota.size.should == Organization.count
-    end
-
     it "should return organizations over their geocoding quota" do
       Organization.any_instance.stubs(:owner).returns(@owner)
       Organization.overquota.should be_empty
@@ -425,16 +416,6 @@ describe Organization do
       Organization.any_instance.stubs(:here_isolines_quota).returns 10
       Organization.overquota.map(&:id).should include(@organization.id)
       Organization.overquota.size.should == Organization.count
-    end
-
-    it "should return organizations near their map view quota" do
-      Organization.any_instance.stubs(:owner).returns(@owner)
-      Organization.any_instance.stubs(:get_api_calls).returns(81)
-      Organization.any_instance.stubs(:map_view_quota).returns(100)
-      Organization.overquota.should be_empty
-      Organization.overquota(0.20).map(&:id).should include(@organization.id)
-      Organization.overquota(0.20).size.should == Organization.count
-      Organization.overquota(0.10).should be_empty
     end
 
     it "should return organizations near their geocoding quota" do

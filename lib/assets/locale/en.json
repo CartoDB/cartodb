@@ -77,7 +77,6 @@
           "dataset-pluralize": "Dataset |||| Datasets"
         },
         "footer": {
-          "add-layer": "Add layer",
           "guessing-desc": "Let CartoDB automatically guess data types and content on import.",
           "twitter-desc": "To get access to historical data (older than 30 days) you need to",
           "contact-team": "contact our team",
@@ -105,6 +104,7 @@
     "map": "map",
     "map_name": "%{name} map",
     "map_pluralize": "%{smart_count} map |||| %{smart_count} maps",
+    "button_add": "Add",
     "tab-pane": {
       "layers": {
         "title-label": "Layers",

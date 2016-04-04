@@ -444,15 +444,12 @@ class User < Sequel::Model
   end
 
   ##
-  # SLOW! Checks map views for every user
+  # SLOW! Checks redis data (geocodings and isolines) for every user
   # delta: get users who are also this percentage below their limit.
   #        example: 0.20 will get all users at 80% of their map view limit
   #
   def self.overquota(delta = 0)
     ::User.where(enabled: true).all.reject{ |u| u.organization_id.present? }.select do |u|
-        limit = u.map_view_quota.to_i - (u.map_view_quota.to_i * delta)
-        over_map_views = u.get_api_calls(from: u.last_billing_cycle, to: Date.today).sum > limit
-
         limit = u.geocoding_quota.to_i - (u.geocoding_quota.to_i * delta)
         over_geocodings = u.get_geocoding_calls > limit
 
@@ -462,7 +459,7 @@ class User < Sequel::Model
         limit = u.here_isolines_quota.to_i - (u.here_isolines_quota.to_i * delta)
         over_here_isolines = u.get_here_isolines_calls > limit
 
-        over_map_views || over_geocodings || over_twitter_imports || over_here_isolines
+        over_geocodings || over_twitter_imports || over_here_isolines
     end
   end
 

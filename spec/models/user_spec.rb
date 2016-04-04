@@ -6,6 +6,10 @@ require_relative 'user_shared_examples'
 require_relative '../../services/dataservices-metrics/lib/here_isolines_usage_metrics'
 require 'factories/organizations_contexts'
 require_relative '../../app/model_factories/layer_factory'
+require_dependency 'cartodb/redis_vizjson_cache'
+require 'helpers/unique_names_helper'
+
+include UniqueNamesHelper
 
 describe 'refactored behaviour' do
 
@@ -236,14 +240,14 @@ describe User do
       it 'user email is not valid if organization has whitelisted domains and email is not under that domain' do
         @organization.whitelisted_email_domains = [ 'organization.org' ]
         user = FactoryGirl.build(:valid_user, organization: @organization)
-        user.valid?.should == false
+        user.valid?.should eq false
         user.errors[:email].should_not be_nil
       end
 
       it 'user email is valid if organization has whitelisted domains and email is under that domain' do
         user = FactoryGirl.build(:valid_user, organization: @organization)
         @organization.whitelisted_email_domains = [ user.email.split('@')[1] ]
-        user.valid?.should == true
+        user.valid?.should eq true
         user.errors[:email].should == []
       end
     end
@@ -1157,6 +1161,26 @@ describe User do
       @user.hard_geocoding_limit.should be_false
     end
 
+    it 'returns true when for enterprise accounts unless it has been manually set to false' do
+      ['ENTERPRISE', 'ENTERPRISE LUMP-SUM', 'Enterprise Medium Lumpsum AWS'].each do |account_type|
+        @user.stubs(:account_type).returns(account_type)
+
+        @user.soft_geocoding_limit = nil
+
+        @user.soft_geocoding_limit?.should be_false
+        @user.soft_geocoding_limit.should be_false
+        @user.hard_geocoding_limit?.should be_true
+        @user.hard_geocoding_limit.should be_true
+
+        @user.soft_geocoding_limit = true
+
+        @user.soft_geocoding_limit?.should be_true
+        @user.soft_geocoding_limit.should be_true
+        @user.hard_geocoding_limit?.should be_false
+        @user.hard_geocoding_limit.should be_false
+      end
+    end
+
     it 'returns false when the plan is CORONELLI or MERCATOR unless it has been manually set to true' do
       @user.stubs(:account_type).returns('CORONELLI')
       @user.hard_geocoding_limit?.should be_false
@@ -1723,24 +1747,34 @@ describe User do
       end
 
       collection = CartoDB::Visualization::Collection.new.fetch({user_id: @user.id})
-      redis_mock = mock
+      redis_spy = RedisDoubles::RedisSpy.new
       redis_vizjson_cache = CartoDB::Visualization::RedisVizjsonCache.new()
       redis_embed_cache = EmbedRedisCache.new()
-      CartoDB::Visualization::RedisVizjsonCache.any_instance.stubs(:redis).returns(redis_mock)
-      EmbedRedisCache.any_instance.stubs(:redis).returns(redis_mock)
+      CartoDB::Visualization::RedisVizjsonCache.any_instance.stubs(:redis).returns(redis_spy)
+      EmbedRedisCache.any_instance.stubs(:redis).returns(redis_spy)
 
 
-      redis_vizjson_keys = collection.map {|v| [redis_vizjson_cache.key(v.id, false), redis_vizjson_cache.key(v.id, true)] }.flatten
+      redis_vizjson_keys = collection.map { |v|
+        [
+          redis_vizjson_cache.key(v.id, false), redis_vizjson_cache.key(v.id, true),
+          redis_vizjson_cache.key(v.id, false, 3), redis_vizjson_cache.key(v.id, true, 3)
+        ]
+      }.flatten
       redis_vizjson_keys.should_not be_empty
 
-      redis_embed_keys = collection.map {|v| [redis_embed_cache.key(v.id, false), redis_embed_cache.key(v.id, true)] }.flatten
+      redis_embed_keys = collection.map { |v|
+        [redis_embed_cache.key(v.id, false), redis_embed_cache.key(v.id, true)]
+      }.flatten
       redis_embed_keys.should_not be_empty
 
-
-      redis_mock.expects(:del).once.with(redis_vizjson_keys)
-      redis_mock.expects(:del).once.with(redis_embed_keys)
-
       @user.purge_redis_vizjson_cache
+
+      redis_spy.deleted.should include(*redis_vizjson_keys)
+      redis_spy.deleted.should include(*redis_embed_keys)
+      redis_spy.deleted.count.should eq redis_vizjson_keys.count + redis_embed_keys.count
+      redis_spy.invokes(:del).count.should eq 2
+      redis_spy.invokes(:del).map(&:sort).should include(redis_vizjson_keys.sort)
+      redis_spy.invokes(:del).map(&:sort).should include(redis_embed_keys.sort)
     end
 
     it "shall not fail if the user does not have visualizations" do
@@ -1838,8 +1872,8 @@ describe User do
       user_timeout_secs = 666
 
       user = ::User.new
-      user.username = String.random(8).downcase
-      user.email = String.random(8).downcase + '@' + String.random(5).downcase + '.com'
+      user.username = unique_name('user')
+      user.email = unique_email
       user.password = user.email.split('@').first
       user.password_confirmation = user.password
       user.admin = false
@@ -2059,8 +2093,8 @@ describe User do
       user1.reload
 
       user = ::User.new
-      user.username = String.random(8).downcase
-      user.email = String.random(8).downcase + '@' + String.random(5).downcase + '.com'
+      user.username = unique_name('user')
+      user.email = unique_email
       user.password = user.email.split('@').first
       user.password_confirmation = user.password
       user.admin = false

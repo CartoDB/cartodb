@@ -103,16 +103,17 @@ module CartoDB
       end
     end
 
-    # INFO: Does not store log, only appens in-memory
+    # INFO: Does not store log, only appends in-memory
     def append(content, truncate = true, timestamp = Time.now.utc)
       @dirty = true
-
       content.slice!(MAX_ENTRY_LENGTH..-1) if truncate
-
       add_to_entries(ENTRY_FORMAT % [ timestamp, content ])
     end
 
     def append_and_store(content, truncate = true, timestamp = Time.now.utc)
+      refresh
+      # Sync content from other processes. Ie. geocoding cancel
+      rehydrate_entries_from_string(entries)
       append(content, truncate, timestamp)
       store
     end

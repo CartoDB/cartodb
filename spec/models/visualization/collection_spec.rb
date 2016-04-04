@@ -5,20 +5,14 @@ require_relative '../../../services/data-repository/repository'
 require_relative '../../../app/models/visualization/collection'
 require_relative '../../../app/models/visualization/member'
 require_relative '../../doubles/support_tables.rb'
+require 'helpers/unique_names_helper'
 
+include UniqueNamesHelper
 include CartoDB
 
 describe Visualization::Collection do
   before(:each) do
-    db_config   = Rails.configuration.database_configuration[Rails.env]
-    # Why not passing db_config directly to Sequel.postgres here ?
-    # See https://github.com/CartoDB/cartodb/issues/421
-    @db         = Sequel.postgres(
-                    host:     db_config.fetch('host'),
-                    port:     db_config.fetch('port'),
-                    database: db_config.fetch('database'),
-                    username: db_config.fetch('username')
-                  )
+    @db = Rails::Sequel::connection
     # Careful, uses another DB table (and deletes it at after:(each) )
     @relation   = "visualizations_#{Time.now.to_i}".to_sym
     @repository = DataRepository::Backend::Sequel.new(@db, @relation)
@@ -40,11 +34,16 @@ describe Visualization::Collection do
 
   after(:each) do
     Visualization::Migrator.new(@db).drop(@relation)
+    restore_backend_to_normal_table
   end
 
   after(:all) do
     @user_1.destroy
     @user_2.destroy
+  end
+
+  def restore_backend_to_normal_table
+    Visualization.repository = DataRepository::Backend::Sequel.new(@db, :visualizations)
   end
 
   describe '#fetch' do
@@ -254,33 +253,21 @@ describe Visualization::Collection do
       # TODO: Add mapviews test. As it uses redis requires more work
 
       # Restore Vis backend to normal table so Relator works
-      Visualization.repository = DataRepository::Backend::Sequel.new(@db, :visualizations)
-      begin
-        @db.run(%Q{alter table external_sources drop constraint external_sources_visualization_id_fkey})
-      rescue
-        # Do nothing
-      end
-      begin
-        Visualization::Migrator.new(@db).drop(:visualizations)
-      rescue
-        # Do nothing, visualizations table not existed before
-      end
-      Visualization::Migrator.new(@db).migrate(:visualizations)
-
+      restore_backend_to_normal_table
 
       CartoDB::Visualization::Relator.any_instance.stubs(:user).returns(@user_1)
 
       table1 = Table.new
       table1.user_id = @user_1.id
-      table1.name = "viz#{rand(999)}_1"
+      table1.name = unique_name('table')
       table1.save
       table2 = Table.new
       table2.user_id = @user_1.id
-      table2.name = "viz#{rand(999)}_2"
+      table2.name = unique_name('table')
       table2.save
       table3 = Table.new
       table3.user_id = @user_1.id
-      table3.name = "viz#{rand(999)}_3"
+      table3.name = unique_name('table')
       table3.save
 
       vis1 = table1.table_visualization
@@ -374,7 +361,7 @@ describe Visualization::Collection do
       vis3.delete
     end
 
-    def create_table(user, name = "viz#{rand(999)}")
+    def create_table(user, name = unique_name('table'))
       table = Table.new
       table.user_id = user.id
       table.name = name
@@ -389,18 +376,8 @@ describe Visualization::Collection do
       liked(user,type).total_liked_entries(type)
     end
 
-    def restore_vis_backend_to_normal_table_so_relator_works
-      Visualization.repository = DataRepository::Backend::Sequel.new(@db, :visualizations)
-      begin
-        Visualization::Migrator.new(@db).drop(:visualizations)
-      rescue
-        # Do nothing, visualizations table not existed before
-      end
-      Visualization::Migrator.new(@db).migrate(:visualizations)
-    end
-
     it 'counts total liked' do
-      restore_vis_backend_to_normal_table_so_relator_works
+      restore_backend_to_normal_table
 
       @user_1.stubs(:organization).returns(nil)
       @user_2.stubs(:organization).returns(nil)
@@ -505,30 +482,30 @@ describe Visualization::Collection do
     end
 
     it "checks filtering by 'liked' " do
-      restore_vis_backend_to_normal_table_so_relator_works
+      restore_backend_to_normal_table
 
       user3 = create_user(:quota_in_bytes => 524288000, :table_quota => 500, :private_tables_enabled => true)
       CartoDB::Visualization::Relator.any_instance.stubs(:user).returns(@user_1)
 
       table1 = Table.new
       table1.user_id = @user_1.id
-      table1.name = "viz#{rand(999)}_1"
+      table1.name = unique_name('table')
       table1.save
       table2 = Table.new
       table2.user_id = @user_1.id
-      table2.name = "viz#{rand(999)}_2"
+      table2.name = unique_name('table')
       table2.save
       table3 = Table.new
       table3.user_id = @user_1.id
-      table3.name = "viz#{rand(999)}_3"
+      table3.name = unique_name('table')
       table3.save
       table4 = Table.new
       table4.user_id = @user_1.id
-      table4.name = "viz#{rand(999)}_4"
+      table4.name = unique_name('table')
       table4.save
 
-      table5 = create_table(@user_1, "viz#{rand(999)}_4")
-      table6 = create_table(@user_1, "viz#{rand(999)}_4")
+      table5 = create_table(@user_1, unique_name('table'))
+      table6 = create_table(@user_1, unique_name('table'))
 
       vis2 = table2.table_visualization
       vis2.privacy = Visualization::Member::PRIVACY_PUBLIC
@@ -766,9 +743,9 @@ describe Visualization::Collection do
   end
 
   def random_attributes(attributes={})
-    random = rand(999)
+    random = unique_name('viz')
     {
-      name:           attributes.fetch(:name, "name #{random}"),
+      name:           attributes.fetch(:name, random),
       description:    attributes.fetch(:description, "description #{random}"),
       privacy:        attributes.fetch(:privacy, 'public'),
       tags:           attributes.fetch(:tags, ['tag 1']),

@@ -22,12 +22,14 @@ module Carto
         @visualization_data = Carto::Api::VisualizationPresenter.new(@visualization, current_viewer, self).to_poro
         @layers_data = @visualization.layers.map { |l| Carto::Api::LayerPresenter.new(l).to_poro }
         @vizjson = generate_vizjson3(@visualization, params)
+        @analyses_data = @visualization.analyses.map { |a| Carto::Api::AnalysisPresenter.new(a).to_poro }
       end
 
       private
 
       def load_visualization
-        @visualization = load_visualization_from_id(params[:id])
+        @visualization = load_visualization_from_id_or_name(params[:id])
+        render_404 unless @visualization
       end
 
       def authors_only

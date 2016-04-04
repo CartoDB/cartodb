@@ -1,1 +1,0 @@
-<%- id %> <%- table_name %>

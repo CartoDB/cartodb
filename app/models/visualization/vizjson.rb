@@ -1,7 +1,6 @@
 # encoding: utf-8
 require 'json'
 require 'ostruct'
-require_relative '../overlay/presenter'
 require_relative '../layer/presenter'
 require_relative '../layer_group/presenter'
 require_relative '../named_map/presenter'
@@ -204,7 +203,7 @@ module CartoDB
 
       def overlays_for(visualization)
         ordered_overlays_for(visualization).map do |overlay|
-          Overlay::Presenter.new(overlay).to_poro
+          Carto::Api::OverlayPresenter.new(overlay).to_vizjson_poro
         end
       end
 

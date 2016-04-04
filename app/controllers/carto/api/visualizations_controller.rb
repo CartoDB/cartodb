@@ -64,7 +64,7 @@ module Carto
       rescue CartoDB::BoundingBoxError => e
         render_jsonp({ error: e.message }, 400)
       rescue => e
-        CartoDB.notify_exception(e, request: request, user: current_user)
+        CartoDB::Logger.error(exception: e)
         render_jsonp({ error: e.message }, 500)
       end
 
@@ -159,15 +159,7 @@ module Carto
       end
 
       def load_visualization
-        # Implicit order due to legacy code: 1st return canonical/table/Dataset if present, else derived/visualization/Map
-        @visualization = Carto::VisualizationQueryBuilder.new
-                                                         .with_id_or_name(@id)
-                                                         .build
-                                                         .all
-                                                         .sort { |vis_a, vis_b|
-                                                              vis_a.type == Carto::Visualization::TYPE_CANONICAL ? -1 : 1
-                                                            }
-                                                         .first
+        @visualization = load_visualization_from_id_or_name(params[:id])
 
         if @visualization.nil?
           raise Carto::LoadError.new('Visualization does not exist', 404)

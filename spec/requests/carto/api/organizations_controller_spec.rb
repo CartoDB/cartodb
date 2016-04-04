@@ -2,9 +2,11 @@
 
 require_relative '../../../spec_helper'
 require_relative '../../../../app/controllers/carto/api/organizations_controller'
+require 'helpers/unique_names_helper'
 
 describe Carto::Api::OrganizationsController do
   include_context 'organization with users helper'
+  include UniqueNamesHelper
   include Rack::Test::Methods
   include Warden::Test::Helpers
 
@@ -19,7 +21,7 @@ describe Carto::Api::OrganizationsController do
   describe 'users' do
 
     before(:all) do
-      @org_user_3 = create_test_user("c#{random_username}", @organization)
+      @org_user_3 = create_test_user(unique_name('user'), @organization)
       @group_1 = FactoryGirl.create(:random_group, display_name: 'g_1', organization: @carto_organization)
       @group_1.add_user(@org_user_1.username)
     end
@@ -46,9 +48,10 @@ describe Carto::Api::OrganizationsController do
       last_response.status.should == 200
       json_body = JSON.parse(last_response.body)
       ids = json_body['users'].map { |u| u['id'] }
-      ids[0].should == @org_user_1.id
-      ids[1].should == @org_user_2.id
-      ids[2].should == @org_user_3.id
+      ids[0].should == @org_user_owner.id
+      ids[1].should == @org_user_1.id
+      ids[2].should == @org_user_2.id
+      ids[3].should == @org_user_3.id
     end
 
     it 'returns organization users paged with totals' do

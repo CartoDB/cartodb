@@ -56,7 +56,7 @@ describe SessionsController do
     it "doesn't allows to login until admin does first" do
       Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
       normal_user_username = "ldap-user"
-      normal_user_password = "foobar"
+      normal_user_password = "2{Patrañas}"
       normal_user_email = "ldap-user@test.com"
       normal_user_cn = "cn=#{normal_user_username},#{@domain_bases.first}"
       ldap_entry_data = {
@@ -68,7 +68,7 @@ describe SessionsController do
 
       errors = {
         errors: {
-          organization: ["owner is not set. In order to activate this organization the administrator must login first"]
+          organization: ["Organization owner is not set. Administrator must login first."]
         }
       }
       ::CartoDB.expects(:notify_debug).with('User not valid at signup', errors).returns(nil)
@@ -84,7 +84,7 @@ describe SessionsController do
       Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
       # @See lib/user_account_creator.rb -> promote_to_organization_owner?
       admin_user_username = "#{@organization.name}-admin"
-      admin_user_password = "foobar"
+      admin_user_password = '2{Patrañas}'
       admin_user_email = "#{@organization.name}-admin@test.com"
       admin_user_cn = "cn=#{admin_user_username},#{@domain_bases.first}"
       ldap_entry_data = {
@@ -107,7 +107,7 @@ describe SessionsController do
     it "Allows to login and triggers creation of normal users if admin already present" do
       Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
       admin_user_username = "#{@organization.name}-admin"
-      admin_user_password = "foobar"
+      admin_user_password = '2{Patrañas}'
       admin_user_email = "#{@organization.name}-admin@test.com"
       @admin_user = create_user(
         username: admin_user_username,
@@ -148,7 +148,7 @@ describe SessionsController do
     it "Just logs in if finds a cartodb username that matches with LDAP credentials " do
       Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
       admin_user_username = "#{@organization.name}-admin"
-      admin_user_password = "foobar"
+      admin_user_password = '2{Patrañas}'
       admin_user_email = "#{@organization.name}-admin@test.com"
       admin_user_cn = "cn=#{admin_user_username},#{@domain_bases.first}"
       ldap_entry_data = {

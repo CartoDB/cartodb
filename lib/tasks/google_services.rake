@@ -47,6 +47,10 @@ namespace :cartodb do
           ff.destroy unless ff.nil?
         end
 
+        def prepend_client_equal_if_needed(key)
+          key.downcase.start_with?('client=') ? key : "client=#{key}"
+        end
+
         desc 'Enable Google Services for a given user'
         task :enable_for_user, [:google_maps_key, :google_maps_private_key, :username] => [:environment] do |task, args|
           add_feature_flag_if_not_exists('google_maps')
@@ -58,7 +62,7 @@ namespace :cartodb do
           add_feature_flag_to_user('google_maps', user)
 
           puts "Enabling google services for user '#{user.username}'..."
-          user.google_maps_key = "client=#{args[:google_maps_key]}"
+          user.google_maps_key = prepend_client_equal_if_needed(args[:google_maps_key])
           user.google_maps_private_key = args[:google_maps_private_key] unless args[:google_maps_private_key].blank?
 
           puts user.errors.full_messages unless user.save
@@ -80,7 +84,7 @@ namespace :cartodb do
           end
 
           puts "Enabling google services for organization '#{organization.name}'..."
-          organization.google_maps_key = "client=#{args[:google_maps_key]}"
+          organization.google_maps_key = prepend_client_equal_if_needed(args[:google_maps_key])
 
           unless args[:google_maps_private_key].blank?
             organization.google_maps_private_key = args[:google_maps_private_key]
@@ -101,7 +105,7 @@ namespace :cartodb do
             end
 
             puts "Enabling google services for organization '#{organization.name}'..."
-            organization.google_maps_key = "client=#{args[:google_maps_key]}"
+            organization.google_maps_key = prepend_client_equal_if_needed(args[:google_maps_key])
 
             unless args[:google_maps_private_key].blank?
               organization.google_maps_private_key = args[:google_maps_private_key]
@@ -116,7 +120,7 @@ namespace :cartodb do
             add_feature_flag_to_user('google_maps', user)
 
             puts "Enabling google services for non-organization user '#{user.username}'..."
-            user.google_maps_key = "client=#{args[:google_maps_key]}"
+            user.google_maps_key = prepend_client_equal_if_needed(args[:google_maps_key])
             user.google_maps_private_key = args[:google_maps_private_key] unless args[:google_maps_private_key].blank?
 
             puts user.errors.full_messages unless user.save

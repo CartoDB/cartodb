@@ -1,8 +1,11 @@
 # coding: utf-8
 require_dependency 'google_plus_api'
 require_dependency 'google_plus_config'
+require_dependency 'carto/controller_helper'
 
 class Admin::OrganizationUsersController < Admin::AdminController
+  include OrganizationUsersHelper
+
   # Organization actions
   ssl_required  :new, :create, :edit, :update, :destroy
   # Data of single users
@@ -19,6 +22,10 @@ class Admin::OrganizationUsersController < Admin::AdminController
     @user = ::User.new
     @user.quota_in_bytes = (current_user.organization.unassigned_quota < 100.megabytes ? current_user.organization.unassigned_quota : 100.megabytes)
 
+    @user.soft_geocoding_limit = current_user.soft_geocoding_limit
+    @user.soft_here_isolines_limit = current_user.soft_here_isolines_limit
+    @user.soft_twitter_datasource_limit = current_user.soft_twitter_datasource_limit
+
     respond_to do |format|
       format.html { render 'new' }
     end
@@ -26,7 +33,6 @@ class Admin::OrganizationUsersController < Admin::AdminController
 
   def edit
     set_flash_flags
-
     respond_to do |format|
       format.html { render 'edit' }
     end
@@ -34,10 +40,21 @@ class Admin::OrganizationUsersController < Admin::AdminController
 
   def create
     @user = ::User.new
-    @user.set_fields(params[:user], [:username, :email, :password, :quota_in_bytes, :password_confirmation, :twitter_datasource_enabled])
+
+    # Validation is done on params to allow checking the change of the value.
+    # The error is deferred to display values in the form in the error scenario.
+    validation_failure = !soft_limits_validation(@user, params[:user], current_user.organization.owner)
+
+    @user.set_fields(
+      params[:user],
+      [
+        :username, :email, :password, :quota_in_bytes, :password_confirmation,
+        :twitter_datasource_enabled, :soft_geocoding_limit, :soft_here_isolines_limit])
     @user.organization = current_user.organization
-    @user.username = "#{@user.username}"
     current_user.copy_account_features(@user)
+
+    raise Carto::UnprocesableEntityError.new("Soft limits validation error") if validation_failure
+
     @user.save(raise_on_failure: true)
     @user.create_in_central
     common_data_url = CartoDB::Visualization::CommonDataService.build_url(self)
@@ -45,16 +62,21 @@ class Admin::OrganizationUsersController < Admin::AdminController
     @user.notify_new_organization_user
     @user.organization.notify_if_seat_limit_reached
     redirect_to CartoDB.url(self, 'organization', {}, current_user), flash: { success: "New user created successfully" }
+  rescue Carto::UnprocesableEntityError => e
+    CartoDB::Logger.error(exception: e, message: "Validation error")
+    set_flash_flags
+    flash.now[:error] = e.user_message
+    render 'new', status: 422
   rescue CartoDB::CentralCommunicationFailure => e
-    Rollbar.report_exception(e)
+    CartoDB.report_exception(e)
     begin
       @user.destroy
     rescue => ee
-      Rollbar.report_exception(ee)
+      CartoDB.report_exception(ee)
     end
     set_flash_flags
     flash.now[:error] = e.user_message
-    @user = ::User.new(username: @user.username, email: @user.email, quota_in_bytes: @user.quota_in_bytes, twitter_datasource_enabled: @user.twitter_datasource_enabled)
+    @user = default_user
     render 'new'
   rescue Sequel::ValidationFailed => e
     flash.now[:error] = e.message
@@ -65,9 +87,13 @@ class Admin::OrganizationUsersController < Admin::AdminController
     session[:show_dashboard_details_flash] = params[:show_dashboard_details_flash].present?
     session[:show_account_settings_flash] = params[:show_account_settings_flash].present?
 
+    # Validation is done on params to allow checking the change of the value.
+    # The error is deferred to display values in the form in the error scenario.
+    validation_failure = !soft_limits_validation(@user, params[:user])
+
     attributes = params[:user]
     @user.set_fields(attributes, [:email]) if attributes[:email].present? && !@user.google_sign_in
-    @user.set_fields(attributes, [:quota_in_bytes]) if current_user.organization_owner?
+    @user.set_fields(attributes, [:quota_in_bytes]) if attributes[:quota_in_bytes].present? && current_user.organization_owner?
 
     @user.set_fields(attributes, [:disqus_shortname]) if attributes[:disqus_shortname].present?
     @user.set_fields(attributes, [:available_for_hire]) if attributes[:available_for_hire].present?
@@ -83,11 +109,19 @@ class Admin::OrganizationUsersController < Admin::AdminController
     @user.soft_here_isolines_limit = attributes[:soft_here_isolines_limit] if attributes[:soft_here_isolines_limit].present?
     @user.twitter_datasource_enabled = attributes[:twitter_datasource_enabled] if attributes[:twitter_datasource_enabled].present?
     @user.soft_twitter_datasource_limit = attributes[:soft_twitter_datasource_limit] if attributes[:soft_twitter_datasource_limit].present?
+
+    raise Carto::UnprocesableEntityError.new("Soft limits validation error") if validation_failure
+
     @user.update_in_central
 
     @user.save(raise_on_failure: true)
 
     redirect_to CartoDB.url(self, 'edit_organization_user', { id: @user.username }, current_user), flash: { success: "Your changes have been saved correctly." }
+  rescue Carto::UnprocesableEntityError => e
+    CartoDB::Logger.error(exception: e, message: "Validation error")
+    set_flash_flags
+    flash.now[:error] = e.user_message
+    render 'edit', status: 422
   rescue CartoDB::CentralCommunicationFailure => e
     set_flash_flags
     flash.now[:error] = "There was a problem while updating this user. Please, try again and contact us if the problem persists. #{e.user_message}"
@@ -104,7 +138,7 @@ class Admin::OrganizationUsersController < Admin::AdminController
     flash[:success] = "User was successfully deleted."
     redirect_to CartoDB.url(self, 'organization', {}, current_user)
   rescue CartoDB::CentralCommunicationFailure => e
-    Rollbar.report_exception(e)
+    CartoDB.report_exception(e)
     if e.user_message =~ /No organization user found with username/
       @user.destroy
       flash[:success] = "#{e.user_message}. User was deleted from the organization server."
@@ -130,6 +164,10 @@ class Admin::OrganizationUsersController < Admin::AdminController
   end
 
   private
+
+  def default_user
+    ::User.new(username: @user.username, email: @user.email, quota_in_bytes: @user.quota_in_bytes, twitter_datasource_enabled: @user.twitter_datasource_enabled)
+  end
 
   def extras_enabled?
     extra_geocodings_enabled? || extra_here_isolines_enabled? || extra_tweets_enabled?

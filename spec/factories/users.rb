@@ -1,11 +1,15 @@
 # Read about factories at https://github.com/thoughtbot/factory_girl
 
+require 'helpers/unique_names_helper'
+
+include UniqueNamesHelper
+
 FactoryGirl.define do
 
   factory :user do
 
-    username               { String.random(5).downcase }
-    email                  { String.random(5).downcase + '@' + String.random(5).downcase + '.com' }
+    username               { unique_name('user') }
+    email                  { unique_email }
     password               { email.split('@').first }
     table_quota            5
     quota_in_bytes         5000000
@@ -35,8 +39,8 @@ FactoryGirl.define do
     factory :admin, traits: [:admin]
 
     factory :valid_user do
-      username { "user#{rand(10000)}" }
-      email { "email" + rand(10000).to_s + "@nonono.com" }
+      username { unique_name('user') }
+      email { unique_email }
       password 'kkkkkkkkk'
       password_confirmation 'kkkkkkkkk'
       salt 'kkkkkkkkk'
@@ -45,10 +49,10 @@ FactoryGirl.define do
 
   end
 
-  factory :carto_user, :class => Carto::User do
+  factory :carto_user, class: Carto::User do
 
-    username { String.random(5).downcase }
-    email { String.random(5).downcase + '@' + String.random(5).downcase + '.com' }
+    username { unique_name('user') }
+    email { unique_email }
 
     password { email.split('@').first }
     password_confirmation { email.split('@').first }
@@ -60,10 +64,14 @@ FactoryGirl.define do
     quota_in_bytes 5000000
     id { UUIDTools::UUID.timestamp_create.to_s }
 
-    after(:create) do |carto_user|
-      ::User.where(id: carto_user.id).first.after_create
+    before(:create) do
+      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
     end
 
+    after(:create) do |carto_user|
+      ::User.where(id: carto_user.id).first.after_create
+      CartoDB::UserModule::DBService.any_instance.unstub
+    end
   end
 
 end

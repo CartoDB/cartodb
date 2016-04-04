@@ -77,7 +77,7 @@ class Api::Json::ImportsController < Api::ApplicationController
                      }, 429)
       rescue => ex
         decrement_concurrent_imports_rate_limit
-        CartoDB::Logger.info('Error: create', "#{ex.message} #{ex.backtrace.inspect}")
+        CartoDB::StdoutLogger.info('Error: create', "#{ex.message} #{ex.backtrace.inspect}")
         render_jsonp({ errors: { imports: ex.message } }, 400)
       end
 
@@ -111,7 +111,7 @@ class Api::Json::ImportsController < Api::ApplicationController
 
         render_jsonp({ success: true })
       rescue => ex
-        CartoDB::Logger.info('Error: invalidate_service_token', "#{ex.message} #{ex.backtrace.inspect}")
+        CartoDB::StdoutLogger.info('Error: invalidate_service_token', "#{ex.message} #{ex.backtrace.inspect}")
         render_jsonp({ errors: { imports: ex.message } }, 400)
       end
 
@@ -191,7 +191,7 @@ class Api::Json::ImportsController < Api::ApplicationController
       concurrent_import_limit.decrement!
       concurrent_import_limit.peek  # return limit value
     rescue => sub_exception
-      CartoDB::Logger.info('Error decreasing concurrent import limit',
+      CartoDB::StdoutLogger.info('Error decreasing concurrent import limit',
                            "#{sub_exception.message} #{sub_exception.backtrace.inspect}")
       nil
     end

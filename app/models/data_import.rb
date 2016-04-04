@@ -34,6 +34,8 @@ class DataImport < Sequel::Model
 
   attr_accessor   :log, :results
 
+  one_to_many :external_data_imports
+
   # @see store_results() method also when adding new fields
   PUBLIC_ATTRIBUTES = [
     'id',
@@ -204,6 +206,12 @@ class DataImport < Sequel::Model
     CartoDB::notify_warning_exception(templates_exception)
     handle_failure(templates_exception)
     self
+  rescue CartoDB::CartoDBfyInvalidID
+    invalid_cartodb_id_exception = CartoDB::Importer2::CartoDBfyInvalidID.new
+    log.append "Exception: #{invalid_cartodb_id_exception}"
+    CartoDB::notify_warning_exception(invalid_cartodb_id_exception)
+    handle_failure(invalid_cartodb_id_exception)
+    self
   rescue => exception
     log.append "Exception: #{exception.to_s}"
     log.append exception.backtrace, truncate = false
@@ -301,7 +309,7 @@ class DataImport < Sequel::Model
                                                                          })
                                                                     .decrement!
     rescue => exception
-      CartoDB::Logger.info('Error decreasing concurrent import limit',
+      CartoDB::StdoutLogger.info('Error decreasing concurrent import limit',
                            "#{exception.message} #{exception.backtrace.inspect}")
     end
     notify(results)
@@ -333,7 +341,7 @@ class DataImport < Sequel::Model
                                                                          })
       .decrement!
     rescue => exception
-      CartoDB::Logger.info('Error decreasing concurrent import limit',
+      CartoDB::StdoutLogger.info('Error decreasing concurrent import limit',
                            "#{exception.message} #{exception.backtrace.inspect}")
     end
     notify(results)

@@ -28,6 +28,8 @@ module CartoDB
   class InvalidMember < StandardError; end
 
   class TableError < StandardError; end
+  class CartoDBfyInvalidID < StandardError; end
+  class CartoDBfyError < StandardError; end
 
   class InvalidInterval < StandardError
     def detail
@@ -104,7 +106,7 @@ module CartoDB
     def initialize(message)
       @db_message = message.split("\n")[0]
       @syntax_message = message.split("\n")[1..-1].join("\n")
-      CartoDB::Logger.info 'InvalidType', message
+      CartoDB::StdoutLogger.info 'InvalidType', message
     end
   end
 
@@ -119,7 +121,7 @@ module CartoDB
     attr_accessor :error_message
     def initialize(message)
       @error_message = message
-      CartoDB::Logger.info 'EmptyAttributes', message
+      CartoDB::StdoutLogger.info 'EmptyAttributes', message
     end
   end
 
@@ -127,7 +129,7 @@ module CartoDB
     attr_accessor :error_message
     def initialize(message)
       @error_message = message
-      CartoDB::Logger.info 'InvalidAttributes', message
+      CartoDB::StdoutLogger.info 'InvalidAttributes', message
     end
   end
 

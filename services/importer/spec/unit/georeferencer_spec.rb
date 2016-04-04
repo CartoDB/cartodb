@@ -10,6 +10,7 @@ include CartoDB
 include CartoDB::Importer2
 
 describe Importer2::Georeferencer do
+
   before(:all) do
     @db = Importer2::Factories::PGConnection.new(
       :create_db => 'georeferencer_spec'
@@ -32,6 +33,8 @@ describe Importer2::Georeferencer do
     #TODO Drop schema
 
     @db.disconnect
+
+    @user.destroy
   end
 
   before(:each) do

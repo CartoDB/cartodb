@@ -21,16 +21,23 @@ describe 'geojson regression tests' do
   include AcceptanceHelpers
   include_context "no stats"
 
+  before(:all) do
+    @user = create_user
+    @user.save
+  end
+
+  after(:all) do
+    @user.destroy
+  end
+
   it 'imports a file exported from CartoDB' do
     filepath    = path_to('tm_world_borders_simpl_0_8.geojson')
     downloader  = ::CartoDB::Importer2::Downloader.new(filepath)
-    user        = create_user
-    user.save
     runner      = ::CartoDB::Importer2::Runner.new({
-                               pg: user.db_service.db_configuration_for,
+                               pg: @user.db_service.db_configuration_for,
                                downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new(user),
-                               user: user
+                               log: CartoDB::Importer2::Doubles::Log.new(@user),
+                               user: @user
                              })
     runner.run
   end
@@ -39,13 +46,11 @@ describe 'geojson regression tests' do
     filepath    = 'https://raw.github.com/benbalter/dc-wifi-social/master' +
                   '/bars.geojson?foo=bar'
     downloader  = ::CartoDB::Importer2::Downloader.new(filepath)
-    user        = create_user
-    user.save
     runner      = ::CartoDB::Importer2::Runner.new({
-                               pg: user.db_service.db_configuration_for,
+                               pg: @user.db_service.db_configuration_for,
                                downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new(user),
-                               user: user
+                               log: CartoDB::Importer2::Doubles::Log.new(@user),
+                               user: @user
                              })
     runner.run
   end
@@ -53,13 +58,11 @@ describe 'geojson regression tests' do
   it "raises if GeoJSON isn't valid" do
     filepath    = path_to('invalid.geojson')
     downloader  = ::CartoDB::Importer2::Downloader.new(filepath)
-    user        = create_user
-    user.save
     runner      = ::CartoDB::Importer2::Runner.new({
-                               pg: user.db_service.db_configuration_for,
+                               pg: @user.db_service.db_configuration_for,
                                downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new(user),
-                               user: user
+                               log: CartoDB::Importer2::Doubles::Log.new(@user),
+                               user: @user
                              })
     runner.run
 

@@ -36,6 +36,7 @@ describe Ogr2ogr do
   after(:all) do
     @db.execute('DROP SCHEMA cdb_importer cascade')
     @db.disconnect
+    @user.destroy
   end
 
   describe '#initialize' do

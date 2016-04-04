@@ -33,6 +33,10 @@ describe CartoDB::Importer2::Runner do
     CartoDB::Stats::Aggregator.stubs(:read_config).returns({})
   end
 
+  after(:all) do
+    @user.destroy
+  end
+
   describe '#initialize' do
     it 'requires postgres options and a downloader object' do
       expect {

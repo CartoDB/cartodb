@@ -43,11 +43,9 @@ describe DataImport do
   end
 
   it 'raises a meaningful error if cartodb_id is not valid' do
-    user = create_user
-    user.save
     Table.any_instance.stubs(:cartodbfy).raises(CartoDB::CartoDBfyInvalidID)
     data_import = DataImport.create(
-      user_id: user.id,
+      user_id: @user.id,
       data_source: '/../db/fake_data/clubbing.csv',
       updated_at: Time.now
     )
@@ -73,20 +71,18 @@ describe DataImport do
   end
 
   it 'raises a meaningful error if over table quota' do
-    user = create_user
-    user.save
     previous_table_quota = @user.table_quota
-    user.table_quota = 0
-    user.save
+    @user.table_quota = 0
+    @user.save
 
     data_import = DataImport.create(
-      user_id: user.id,
+      user_id: @user.id,
       data_source: '/../db/fake_data/clubbing.csv',
       updated_at: Time.now
     ).run_import!
 
-    user.table_quota = previous_table_quota
-    user.save
+    @user.table_quota = previous_table_quota
+    @user.save
 
     data_import.error_code.should == 8002
   end
@@ -103,16 +99,14 @@ describe DataImport do
   end
 
   it 'should allow to create a table from a query' do
-    user = create_user
-    user.save
     data_import_1 = DataImport.create(
-      user_id: user.id,
+      user_id: @user.id,
       data_source: '/../db/fake_data/clubbing.csv',
       updated_at: Time.now).run_import!
     data_import_1.state.should be == 'complete'
 
     data_import_2 = DataImport.create(
-      user_id: user.id,
+      user_id: @user.id,
       table_name: 'from_query',
       updated_at: Time.now,
       from_query: "SELECT * FROM #{data_import_1.table_name} LIMIT 5").run_import!
@@ -125,10 +119,8 @@ describe DataImport do
   end
 
   it 'imports a simple file' do
-    user = create_user
-    user.save
     data_import = DataImport.create(
-      user_id: user.id,
+      user_id: @user.id,
       data_source: '/../db/fake_data/clubbing.csv',
       updated_at: Time.now
     ).run_import!
@@ -140,10 +132,8 @@ describe DataImport do
   end
 
   it 'imports a simple file with latlon' do
-    user = create_user
-    user.save
     data_import = DataImport.create(
-      user_id: user.id,
+      user_id: @user.id,
       data_source: '/../services/importer/spec/fixtures/csv_with_geojson.csv',
       updated_at: Time.now
     ).run_import!
@@ -153,12 +143,10 @@ describe DataImport do
   end
 
   it 'should allow to create a table from a url' do
-    user = create_user
-    user.save
     data_import = nil
     serve_file Rails.root.join('db/fake_data/clubbing.csv') do |url|
       data_import = DataImport.create(
-        user_id: user.id,
+        user_id: @user.id,
         data_source: url,
         updated_at: Time.now).run_import!
     end
@@ -170,13 +158,11 @@ describe DataImport do
   end
 
   it 'should allow to create a table from a url with params' do
-    user = create_user
-    user.save
     data_import = nil
     serve_file Rails.root.join('db/fake_data/clubbing.csv?param=wadus'),
                headers: { "content-type" => "text/plain" } do |url|
       data_import = DataImport.create(
-        user_id: user.id,
+        user_id: @user.id,
         data_source: url,
         updated_at: Time.now).run_import!
     end
@@ -188,16 +174,14 @@ describe DataImport do
   end
 
   it "can create a table from a query selecting only the cartodb_id" do
-    user = create_user
-    user.save
     data_import_1 = DataImport.create(
-      user_id: user.id,
+      user_id: @user.id,
       data_source: '/../db/fake_data/clubbing.csv',
       updated_at: Time.now).run_import!
     data_import_1.state.should be == 'complete'
 
     data_import_2 = DataImport.create(
-      user_id: user.id,
+      user_id: @user.id,
       table_name: 'from_query',
       updated_at: Time.now,
       from_query: "SELECT cartodb_id FROM #{data_import_1.table_name} LIMIT 5").run_import!

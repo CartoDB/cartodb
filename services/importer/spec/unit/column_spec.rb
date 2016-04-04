@@ -32,6 +32,7 @@ describe Column do
   after(:all) do
     @db.execute('DROP SCHEMA cdb_importer CASCADE')
     @db.disconnect
+    @user.destroy
   end
 
   describe '#type' do

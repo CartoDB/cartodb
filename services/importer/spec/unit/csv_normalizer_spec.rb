@@ -15,6 +15,11 @@ describe CartoDB::Importer2::CsvNormalizer do
   before(:all) do
     @user = FactoryGirl.create(:user)
   end
+
+  after(:all) do
+    @user.destroy
+  end
+
   describe '#run' do
     it 'transforms the file using a proper comma delimiter' do
       fixture = tab_delimiter_factory

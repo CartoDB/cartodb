@@ -11,6 +11,11 @@ describe Json2Csv do
   before do
     @data = [{ name: 'bogus name', description: 'bogus description' }]
     @user = create_user
+    @user.save
+  end
+
+  after(:all) do
+    @user.destroy
   end
 
   def json2csv_instance(filepath)

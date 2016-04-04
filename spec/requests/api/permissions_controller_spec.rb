@@ -97,9 +97,7 @@ describe Api::Json::PermissionsController do
 
       permission = CartoDB::Permission.new(
           owner_id: @user.id,
-          owner_username: @user.username,
-          entity_id:      @entity_id,
-          entity_type:    entity_type
+          owner_username: @user.username
       )
       permission.acl = acl_initial
       permission.save
@@ -135,9 +133,7 @@ describe Api::Json::PermissionsController do
     it "makes sure we don't expose unwanted call types" do
       permission = CartoDB::Permission.new(
           owner_id: @user.id,
-          owner_username: @user.username,
-          entity_id:      UUIDTools::UUID.timestamp_create.to_s,
-          entity_type:    Permission::ENTITY_TYPE_VISUALIZATION
+          owner_username: @user.username
       )
       permission.save
 
@@ -205,9 +201,7 @@ describe 'group permission support' do
 
     permission = CartoDB::Permission.new(
         owner_id: @org_user_1.id,
-        owner_username: @org_user_1.username,
-        entity_id:      entity_id,
-        entity_type:    entity_type
+        owner_username: @org_user_1.username
     )
     permission.acl = acl_initial
     permission.save
@@ -240,9 +234,7 @@ describe 'group permission support' do
 
     permission = CartoDB::Permission.new(
         owner_id: @org_user_1.id,
-        owner_username: @org_user_1.username,
-        entity_id:      entity_id,
-        entity_type:    entity_type
+        owner_username: @org_user_1.username
     )
     permission.acl = acl_initial
     permission.save

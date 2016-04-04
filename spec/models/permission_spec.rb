@@ -72,9 +72,7 @@ describe CartoDB::Permission do
 
       permission = Permission.new(
         owner_id:       @user.id,
-        owner_username: @user.username,
-        entity_id:      entity_id,
-        entity_type:    entity_type
+        owner_username: @user.username
         #check default acl is correct
       )
       permission.save
@@ -108,8 +106,6 @@ describe CartoDB::Permission do
       # Owner helper methods
       permission2 = Permission.new
       permission2.owner = @user
-      permission2.entity_id = entity_id
-      permission2.entity_type = entity_type
       permission2.save
       permission2.owner.should eq @user
       permission2.owner_id.should eq @user.id
@@ -237,9 +233,7 @@ describe CartoDB::Permission do
 
       permission = Permission.new(
         owner_id:       @user.id,
-        owner_username: @user.username,
-        entity_id:      entity_id,
-        entity_type:    entity_type
+        owner_username: @user.username
         #check default acl is correct
       )
       permission.save
@@ -285,9 +279,7 @@ describe CartoDB::Permission do
 
       permission = Permission.new(
         owner_id:       @user.id,
-        owner_username: @user.username,
-        entity_id: UUIDTools::UUID.timestamp_create.to_s,
-        entity_type: Permission::ENTITY_TYPE_VISUALIZATION
+        owner_username: @user.username
       ).save
       permission.acl = [
         {
@@ -337,9 +329,7 @@ describe CartoDB::Permission do
 
       permission = Permission.new(
         owner_id:       @user.id,
-        owner_username: @user.username,
-        entity_id: UUIDTools::UUID.timestamp_create.to_s,
-        entity_type: Permission::ENTITY_TYPE_VISUALIZATION
+        owner_username: @user.username
       ).save
       permission.acl = [
         {
@@ -388,9 +378,7 @@ describe CartoDB::Permission do
 
       permission = Permission.new(
           owner_id:       @user.id,
-          owner_username: @user.username,
-          entity_id: UUIDTools::UUID.timestamp_create.to_s,
-          entity_type: Permission::ENTITY_TYPE_VISUALIZATION
+          owner_username: @user.username
       ).save
       # User has more access than org
       permission.acl = [
@@ -497,23 +485,21 @@ describe CartoDB::Permission do
 
       permission = Permission.new(
           owner_id:       @user.id,
-          owner_username: @user.username,
-          entity_id:      entity_id,
-          entity_type:    Permission::ENTITY_TYPE_VISUALIZATION
+          owner_username: @user.username
       ).save
 
       # Create old entries
       CartoDB::SharedEntity.new(
-          recipient_id:   @user.id,
-          recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_USER,
-          entity_id:      entity_id,
-          entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
+        recipient_id:   @user.id,
+        recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_USER,
+        entity_id:      entity_id,
+        entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
       ).save
       CartoDB::SharedEntity.new(
-          recipient_id:   user2_mock.id,
-          recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_USER,
-          entity_id:      entity_id,
-          entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
+        recipient_id:   user2_mock.id,
+        recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_USER,
+        entity_id:      entity_id,
+        entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
       ).save
 
       CartoDB::SharedEntity.all.count.should eq 2
@@ -602,10 +588,8 @@ describe CartoDB::Permission do
 
       permission = Permission.new(
         owner_id:       @user.id,
-        owner_username: @user.username,
-        entity_type: Permission::ENTITY_TYPE_VISUALIZATION
+        owner_username: @user.username
       )
-      permission.entity_id = permission.entity.id
 
       permission.save
 
@@ -645,10 +629,8 @@ describe CartoDB::Permission do
 
       permission = Permission.new(
         owner_id:       @user.id,
-        owner_username: @user.username,
-        entity_type: Permission::ENTITY_TYPE_VISUALIZATION
+        owner_username: @user.username
       ).save
-      permission.entity_id = permission.entity.id
 
       Resque.stubs(:enqueue).returns(nil)
 

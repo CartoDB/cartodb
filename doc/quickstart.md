@@ -10,7 +10,7 @@ This is a beta version, so the API interface might change. We will do our best e
 As this is a WIP library, it will be updated daily with bug fixes, for that reason it is
 encouraged to use the CDN version of the library so as we update library your application gets the latests fixes.
 
-```html
+```htmlc
 <link rel="stylesheet" href="http://libs.cartocdn.com/di.js/v0/themes/css/deep-insights.css" />
 <script src=" http://libs.cartocdn.com/di.js/v0/deep-insights.uncompressed.js"></script>
 http://libs.cartocdn.com/di.js/v0/deep-insights.uncompressed.js
@@ -57,7 +57,7 @@ var params = {
   "aggregationColumn": "closest_metro_line",
   "aggregation": "count",
 };
-// adds a categoty using column `test` from the second layer
+// adds a category widget using column `test` from the second layer
 dashboard.createCategory(params, map.getLayer(2))
 ```
 

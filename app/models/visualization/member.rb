@@ -293,8 +293,8 @@ module CartoDB
                                             child.fetch.delete
                                           }
         }
-        safe_sequel_delete { permission.destroy } if permission
         safe_sequel_delete { repository.delete(id) }
+        safe_sequel_delete { permission.destroy }
         self.attributes.keys.each { |key| self.send("#{key}=", nil) }
 
         self
@@ -747,9 +747,7 @@ module CartoDB
 
         set_timestamps
 
-        repository.store(id, attributes.to_hash)
-
-        # Careful to not call Permission.save until after persisted the vis
+        # Ensure a permission is set before saving the visualization
         if permission.nil?
           perm = CartoDB::Permission.new
           perm.owner = user
@@ -759,6 +757,7 @@ module CartoDB
           # Need to save again
           repository.store(id, attributes.to_hash)
         end
+        repository.store(id, attributes.to_hash)
 
         begin
           save_named_map

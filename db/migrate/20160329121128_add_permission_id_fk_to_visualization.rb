@@ -1,8 +1,12 @@
 Sequel.migration do
   up do
-    alter_table :visualizations do
-      set_column_allow_null :permission_id, false
-      add_foreign_key [:permission_id], :permissions, null: false
+    Rails::Sequel.connection.transaction do
+      load File.join(Rails.root, 'Rakefile')
+      Rake::Task['cartodb:permissions:fill_missing_permissions'].invoke(true)
+      alter_table :visualizations do
+        set_column_allow_null :permission_id, false
+        add_foreign_key [:permission_id], :permissions, null: false
+      end
     end
   end
 

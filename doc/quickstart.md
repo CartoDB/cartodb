@@ -62,13 +62,13 @@ dashboard.createCategory(params, map.getLayer(2))
 ```
 
 #### createHistogram-> HistogramWidget
-id, title, order, collapsed, bins, show_stats, normalized
+`id`, `title`, `order`, `collapsed`, `bins`, `show_stats`, `normalized`
 
 #### createFormula-> FormulaWidget
-id, title, order, collapsed, prefix, suffix, show_stats, description
+`id`, `title`, `order`, `collapsed`, `prefix`, `suffix`, `show_stats`, `description`
 
 #### createTimeSeries-> TimeSeriesWidget
-id, title, order, collapsed, bins, show_stats, normalized
+`id`, `title`, `order`, `collapsed`, `bins`, `show_stats`, `normalized`
 
 
 ### cartodb.DI.CategoryWidget

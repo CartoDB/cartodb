@@ -293,8 +293,7 @@ module CartoDB
 
     # @return Mixed|nil
     def entity
-      viz = Carto::Visualization.where(permission_id: id).first
-      @visualization ||= CartoDB::Visualization::Member.new(id: viz.id).fetch unless viz.nil?
+      @visualization ||= CartoDB::Visualization::Collection.new.fetch(permission_id: id).first
     end
 
     def validate

@@ -342,9 +342,6 @@ module CartoDB
 
             # If user is in an organization should never have public schema, but to be safe (& tests which stub stuff)
             unless @user.database_schema == SCHEMA_PUBLIC
-              drop_users_privileges_in_schema(
-                @user.database_schema,
-                [@user.database_username, @user.database_public_username, CartoDB::PUBLIC_DB_USER])
               database.run(%{ DROP FUNCTION IF EXISTS "#{@user.database_schema}"._CDB_UserQuotaInBytes()})
               drop_all_functions_from_schema(@user.database_schema)
               database.run(%{ DROP SCHEMA IF EXISTS "#{@user.database_schema}" })
@@ -965,6 +962,7 @@ module CartoDB
         conn ||= @user.in_database(as: :cluster_admin)
 
         if !@user.database_name.nil? && !@user.database_name.empty?
+          @user.in_database(as: :superuser).run("DROP SCHEMA \"#{@user.database_schema}\" CASCADE")
           conn.run("UPDATE pg_database SET datallowconn = 'false' WHERE datname = '#{@user.database_name}'")
           CartoDB::UserModule::DBService.terminate_database_connections(@user.database_name, @user.database_host)
           conn.run("DROP DATABASE \"#{@user.database_name}\"")

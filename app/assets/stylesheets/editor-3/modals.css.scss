@@ -5,6 +5,13 @@
 
 /* WIP*/
 
+.Filters-typeItem {
+  @include display-flex(); /* todo when create new layout */
+}
+.DatasetsList-itemMeta {
+  @include align-items(baseline); /* todo when create new layout */
+}
+
 .Modal-body {
   padding-top: 24px;
 }

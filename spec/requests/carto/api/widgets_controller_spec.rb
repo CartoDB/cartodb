@@ -253,10 +253,12 @@ describe Carto::Api::WidgetsController do
       end
 
       it 'contains widget data' do
-        vizjson3 = get_vizjson3(Carto::Visualization.find(@visualization.id), @visualization.user)
-        layer = vizjson3[:layers][0][:options][:layer_definition][:layers][0]
-        options = CartoDB::NamedMapsWrapper::NamedMap.options_for_layer(layer, 1, { placeholders: {} })
-        widget_options = options[:layer_options][:widgets]
+        parent_mock = mock
+        parent_mock.stubs(:vizjson_config).returns({ tiler: { filter: '' } })
+        parent_mock.stubs(:username).returns(@user1.username)
+
+        template = CartoDB::NamedMapsWrapper::NamedMap.get_template_data(@visualization, parent_mock)
+        widget_options = template[:layergroup][:dataviews]
         widget_options.should_not be_nil
         widget_options.length.should == 1
         widget_options.each do |k, v|
@@ -270,10 +272,6 @@ describe Carto::Api::WidgetsController do
           v[:options].should == @widget.options_json
         end
       end
-    end
-
-    def get_vizjson3(carto_visualization, viewer_user)
-      Carto::Api::VizJSON3Presenter.new(carto_visualization, viewer_user).to_vizjson
     end
   end
 end

@@ -25,6 +25,7 @@ describe DataRepository::Backend::Sequel do
       String    :url_options
       UUID      :permission_id
       Boolean   :locked
+      String    :legend_style
       String    :parent_id
       String    :kind
       String    :prev_id

@@ -61,6 +61,35 @@ div.map {
     }
   }
 
+  div.cartodb-legend-stack {
+    &:hover {
+      .reset {
+        display: block;
+      }
+    }
+
+    .reset {
+      position: absolute;
+      display: none;
+      background-color: white;
+      cursor: pointer;
+      top: -24px;
+      right: 5px;
+      width: 22px;
+      height: 22px;
+      font-size: 22px;
+      line-height: 22px;
+      text-align: center;
+      // Matches font-family of the legend text. Without this the default font is different,
+      //    which makes the rendering 'jump' when we click to switch to custom styles
+      font-family: Helvetica, Arial;
+      color: #666;
+      @include box-shadow(rgba(black,0.2) 0 0 4px 2px);
+      @include border-radius(5);
+      border: solid 1px #666;
+    }
+  }
+
   &.table { // TABLE'S MAP
 
     div.cartodb-legend-stack {

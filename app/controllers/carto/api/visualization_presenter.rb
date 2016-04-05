@@ -50,6 +50,7 @@ module Carto
           synchronization: Carto::Api::SynchronizationPresenter.new(@visualization.synchronization).to_poro,
           children: @visualization.children.map { |v| children_poro(v) },
           liked: @current_viewer ? @visualization.is_liked_by_user_id?(@current_viewer.id) : false,
+          legend_style: @visualization.legend_style,
           url: url
         }
         poro.merge!( { related_tables: related_tables } ) if @options.fetch(:related, true)
@@ -75,8 +76,8 @@ module Carto
       private
 
       def related_tables
-        related = @visualization.table ? 
-          @visualization.related_tables.select { |table| table.id != @visualization.table.id } : 
+        related = @visualization.table ?
+          @visualization.related_tables.select { |table| table.id != @visualization.table.id } :
           @visualization.related_tables
 
         related.map { |table| Carto::Api::UserTablePresenter.new(table, @visualization.permission, @current_viewer).to_poro }

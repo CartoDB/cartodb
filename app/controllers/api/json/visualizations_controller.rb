@@ -154,7 +154,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
             # Remove dependent visualizations as well, if any
             track_event(dependent_vis, 'Deleted')
           }
-        end 
+        end
 
         @stats_aggregator.timing('delete') do
           vis.delete

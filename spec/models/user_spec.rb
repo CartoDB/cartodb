@@ -8,6 +8,8 @@ require 'factories/organizations_contexts'
 require_relative '../../app/model_factories/layer_factory'
 require_dependency 'cartodb/redis_vizjson_cache'
 require 'helpers/unique_names_helper'
+require 'factories/users_helper'
+require 'factories/database_configuration_contexts'
 
 include UniqueNamesHelper
 
@@ -557,23 +559,6 @@ describe User do
   end
 
   describe '#overquota' do
-    it "should return users over their map view quota, excluding organization users" do
-      ::User.overquota.should be_empty
-      ::User.any_instance.stubs(:get_api_calls).returns (0..30).to_a
-      ::User.any_instance.stubs(:map_view_quota).returns 10
-      ::User.overquota.map(&:id).should include(@user.id)
-      ::User.overquota.size.should == ::User.reject{|u| u.organization_id.present? }.count
-    end
-
-    it "should return users near their map view quota" do
-      ::User.any_instance.stubs(:get_api_calls).returns([81])
-      ::User.any_instance.stubs(:map_view_quota).returns(100)
-      ::User.overquota.should be_empty
-      ::User.overquota(0.20).map(&:id).should include(@user.id)
-      ::User.overquota(0.20).size.should == ::User.reject{|u| u.organization_id.present? }.count
-      ::User.overquota(0.10).should be_empty
-    end
-
     it "should return users near their geocoding quota" do
       ::User.any_instance.stubs(:get_api_calls).returns([0])
       ::User.any_instance.stubs(:map_view_quota).returns(120)

@@ -8,7 +8,7 @@
 .Editor-HeaderInfo {
   @include display-flex();
   @include align-items(flex-start);
-  margin-bottom: 28px;
+  margin-bottom: 32px;
 
   &.is-block {
     display: block;

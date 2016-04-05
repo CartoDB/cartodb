@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "3.23.57",
+  "version": "3.23.58",
   "description": "CartoDB UI frontend",
   "repository": {
     "type": "git",
@@ -22,14 +22,15 @@
     "aws-sdk": "2.0.0-rc11",
     "backbone": "1.2.3",
     "backbone-forms": "^0.14.0",
+    "backbone-model-file-upload": "^1.0.0",
     "browserify": "11.0.1",
     "browserify-resolutions": "1.0.6",
     "browserify-shim": "3.8.10",
     "camshaft-reference": "^0.1.0",
     "cartoassets": "cartodb/CartoAssets#master",
-    "cartodb-deep-insights.js": "cartodb/deep-insights.js#master",
+    "cartodb-deep-insights.js": "cartodb/deep-insights.js#analysis",
     "cartodb-pecan": "0.2.x",
-    "cartodb.js": "cartodb/cartodb.js#v4",
+    "cartodb.js": "cartodb/cartodb.js#analysis",
     "csswring": "^3.0.5",
     "git-rev": "0.2.1",
     "grunt": "0.4.5",
@@ -77,6 +78,9 @@
         }
       ]
     ]
+  },
+  "browser": {
+    "tipsy": "./vendor/assets/javascripts/jquery.tipsy.js"
   },
   "browserify-shim": {
     "jquery-cdb-v3": "global:$",

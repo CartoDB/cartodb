@@ -3,9 +3,6 @@
   <% if (geocodings > 0) { %>
     Geocoding
   <% } %>
-  <% if (analysis > 0) { %>
-    Analyzing
-  <% } %>
   dataset...
 <% } else { %>
   Working...

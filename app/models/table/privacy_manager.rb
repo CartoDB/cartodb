@@ -83,7 +83,7 @@ module CartoDB
       self.privacy = ::UserTable::PRIVACY_PUBLIC
       set_database_permissions(grant_query)
       overviews_service = Carto::OverviewsService.new(owner.in_database)
-      overviews_service.overview_tables(table.name).each do |overview_table|
+      overviews_service.overview_tables(fully_qualified_table_name(table.name)).each do |overview_table|
         set_database_permissions(grant_query(overview_table))
       end
       self
@@ -93,7 +93,7 @@ module CartoDB
       self.privacy = ::UserTable::PRIVACY_PRIVATE
       set_database_permissions(revoke_query)
       overviews_service = Carto::OverviewsService.new(owner.in_database)
-      overviews_service.overview_tables(table.name).each do |overview_table|
+      overviews_service.overview_tables(fully_qualified_table_name(table.name)).each do |overview_table|
         set_database_permissions(revoke_query(overview_table))
       end
       self
@@ -103,7 +103,7 @@ module CartoDB
       self.privacy = ::UserTable::PRIVACY_LINK
       set_database_permissions(grant_query)
       overviews_service = Carto::OverviewsService.new(owner.in_database)
-      overviews_service.overview_tables(table.name).each do |overview_table|
+      overviews_service.overview_tables(fully_qualified_table_name(table.name)).each do |overview_table|
         set_database_permissions(grant_query(overview_table))
       end
       self
@@ -120,7 +120,7 @@ module CartoDB
     def revoke_query(table_name = nil)
       table_name ||= table.name
       %{
-        REVOKE SELECT ON "#{owner.database_schema}"."#{table_name}"
+        REVOKE SELECT ON #{fully_qualified_table_name(table_name)}
         FROM #{CartoDB::PUBLIC_DB_USER}
       }
     end
@@ -128,7 +128,7 @@ module CartoDB
     def grant_query(table_name = nil)
       table_name ||= table.name
       %{
-        GRANT SELECT ON "#{owner.database_schema}"."#{table_name}"
+        GRANT SELECT ON #{fully_qualified_table_name(table_name)}
         TO #{CartoDB::PUBLIC_DB_USER};
       }
     end
@@ -166,6 +166,10 @@ module CartoDB
     def notify_privacy_affected_entities(metadata_table)
       propagate_to(metadata_table.affected_visualizations, true)
       update_cdb_tablemetadata
+    end
+
+    def fully_qualified_table_name(table_name)
+      %{"#{owner.database_schema}"."#{table_name}"}
     end
   end
 end

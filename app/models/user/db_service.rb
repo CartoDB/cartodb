@@ -435,7 +435,7 @@ module CartoDB
         raise 'need block' unless block_given?
 
         configuration = db_configuration_for
-        configuration[:port] = configuration.fetch(:direct_port, configuration["direct_port"])
+        configuration[:port] = configuration.fetch(:direct_port, configuration["direct_port"]) || configuration[:port]
 
         connection = @user.get_connection(_opts = {}, configuration)
 

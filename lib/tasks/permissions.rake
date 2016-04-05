@@ -18,7 +18,7 @@ namespace :cartodb do
             puts '*** Updating permissions for visualization ' + v.id
             # Tries to find existing permission
             perms = Carto::Permission.where(entity_id: v.id).all
-            if perms.count == 0
+            if perms.empty?
               puts '  - Creating new default permission'
               perm = Carto::Permission.create(
                 owner_id:       v.user.id,
@@ -27,13 +27,11 @@ namespace :cartodb do
                 entity_type:    'vis'
               )
               log_file.puts "Visualization #{v.id}, permission changed from '#{v.permission_id}' to '#{perm.id}' (default)"
-              v.permission_id = perm.id
-              v.save
+              v.update_column(:permission_id, perm.id)
             elsif perms.count == 1 || auto_fix
               puts '  - Reusing existing permission'
               log_file.puts "Visualization #{v.id}, permission changed from '#{v.permission_id}' to '#{perms.first.id}'"
-              v.permission_id = perms.first.id
-              v.save
+              v.update_column(:permission_id, perms.first.id)
             else
               puts '  - Multiple permissions, skipping'
               failed_ids << v.id

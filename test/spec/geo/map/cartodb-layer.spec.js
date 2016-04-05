@@ -1,8 +1,6 @@
-var Backbone = require('backbone');
 var CartoDBLayer = require('../../../../src/geo/map/cartodb-layer');
 var _ = require('underscore');
 var sharedTestsForInteractiveLayers = require('./shared-for-interactive-layers');
-var AnalysisFactory = require('../../../../src/analysis/analysis-factory.js');
 
 describe('geo/map/cartodb-layer', function () {
   sharedTestsForInteractiveLayers(CartoDBLayer);

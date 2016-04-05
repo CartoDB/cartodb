@@ -1,5 +1,5 @@
 require_relative '../../../helpers/carto/html_safe'
-require_relative '../api/vizjson_presenter'
+require_dependency 'carto/api/vizjson_presenter'
 
 module Carto
   module Admin

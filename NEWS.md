@@ -8,8 +8,8 @@ All invalidations done from newly created CartoDB accounts/databases from this r
 Due to this, if you use Varnish or any alternate caching methods, you need to update to a version of the APIs which provides a Surrogate-Keys header on all the cacheable responses:
   * Windshaft-cartodb >= 2.27.0
   * CartoDB-SQL-API >= 1.26.0
-  
-After ensuring those applications are updated, you should restart Varnish (or purge all its objects) to ensure all new objects will contain 
+
+After ensuring those applications are updated, you should restart Varnish (or purge all its objects) to ensure all new objects will contain
 the Surrogate-Keys header, and then reload the invalidation trigger installed on the user databases to be upgraded with the Rake task: `rake cartodb:db:load_varnish_trigger`.
 
 For backwards compatibility with unupgraded trigger versions, those API versions still emit both X-Cache-Channel and Surrogate-Key headers.
@@ -17,8 +17,9 @@ However, this will be deprecated on a future release.
 
 ### Features
 * Change Varnish table-related invalidations and tagging to use [Surrogate Keys](https://github.com/CartoDB/cartodb/wiki/CartoDB-Surrogate-Keys)
-* Remove Varnish table invalidations from Rails and replaced them with CDB_TableMetadataTouch calls (delegating invalidation reponsibility to the database)
+* Remove Varnish table invalidations from Rails and replaced them with CDB_TableMetadataTouch calls (delegating invalidation responsibility to the database)
 * Adds optional strong passwords for organization signups
+* Ghost table linking is now concurrent per user (avoids race conditions)
 
 ## Bug Fixes
 * Updating CartoDB.js submodule with last changes sanitizing attribution.

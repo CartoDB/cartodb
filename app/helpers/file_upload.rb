@@ -87,8 +87,12 @@ module CartoDB
         access_key_id: s3_config['access_key_id'],
         secret_access_key: s3_config['secret_access_key'],
         proxy_uri: (s3_config['proxy_uri'].present? ?  s3_config['proxy_uri'] : nil),
-        use_ssl: s3_config['use_ssl']
+        use_ssl: s3_config['use_ssl'],
+        s3_endpoint: s3_config['s3_endpoint'],
+        s3_port:  s3_config['s3_port'],
+        s3_force_path_style: s3_config['s3_force_path_style']
       )
+      
       s3_bucket = AWS::S3.new.buckets[s3_config['bucket_name']]
 
       path = "#{token}/#{File.basename(filename)}"
@@ -96,7 +100,7 @@ module CartoDB
 
       o.write(Pathname.new(filepath), { acl: :authenticated_read })
 
-      o.url_for(:get, expires: s3_config['url_ttl']).to_s
+      o.url_for(:get, expires: s3_config['url_ttl'], ).to_s
     end
 
     private

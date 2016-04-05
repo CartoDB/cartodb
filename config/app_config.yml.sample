@@ -185,6 +185,9 @@ defaults: &defaults
       url_ttl:
       async_long_uploads: false
       proxy_uri:
+      s3_endpoint: "s3.amazonaws.com"
+      s3_port:
+      s3_force_path_style: false
       use_ssl: True
 
     unp_temporal_folder: '/tmp/imports/'

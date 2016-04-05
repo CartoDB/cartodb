@@ -87,7 +87,7 @@ describe Carto::Api::DatabaseGroupsController do
       put api_v1_databases_group_update_permission_url(database_name: group.database_name, name: group.name, username: @org_user_2.username, table_name: @table_user_2['name']), permission.to_json, org_metadata_api_headers
       response.status.should == 200
 
-      permission = ::Permission.where(entity_id: @table_user_2['table_visualization']['id']).first
+      permission = ::Visualization::Member.new(id: @table_user_2['table_visualization']['id']).fetch.permission
       permission.should_not be_nil
 
       expected_acl = [
@@ -133,7 +133,7 @@ describe Carto::Api::DatabaseGroupsController do
       put api_v1_databases_group_update_permission_url(database_name: group.database_name, name: group.name, username: @org_user_1.username, table_name: @table_user_1['name']), permission.to_json, org_metadata_api_headers
       response.status.should == 200
 
-      permission = ::Permission.where(entity_id: @table_user_1['table_visualization']['id']).first
+      permission = ::Visualization::Member.new(id: @table_user_1['table_visualization']['id']).fetch.permission
       permission.should_not be_nil
 
       expected_acl = [
@@ -162,7 +162,7 @@ describe Carto::Api::DatabaseGroupsController do
 
       delete api_v1_databases_group_destroy_permission_url(database_name: group.database_name, name: group.name, username: @org_user_1.username, table_name: @table_user_1['name']), '', org_metadata_api_headers
       response.status.should == 200
-      permission = ::Permission.where(entity_id: @table_user_1['table_visualization']['id']).first
+      permission = ::Visualization::Member.new(id: @table_user_1['table_visualization']['id']).fetch.permission
       permission.to_poro[:acl].should == expected_acl
 
       # Check it doesn't duplicate

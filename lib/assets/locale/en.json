@@ -76,6 +76,16 @@
         "create-loading-title": "Creating empty dataset…",
         "adding-new-layer": "Adding new layer…",
         "add-layer-error": "Could not add layer",
+        "imports": {
+          "tab-options-error": {
+            "no-key": "%{name} key is not specified and panel can't be enabled",
+            "not-allowed": "%{name} data source is not available in your plan. Please upgrade",
+            "limits-reached": "You've reached the limits for your account. Please upgrade",
+            "no-credits": "You've reached the available %{name} credits for your account this month"
+          },
+          "member-pluralize": "member |||| members",
+          "item-pluralize": "item |||| items"
+        },
         "datasets": {
           "item": {
             "sync-failed": "Sync failed, last attempt was",
@@ -116,7 +126,7 @@
           "privacy-change": "Your new dataset will be %{privacy}",
           "privacy-click": "Click to change it to %{nextPrivacy}",
           "privacy-change-banned": "You cannot change the privacy of your new datasets.",
-          "add-layer": "Add layer" 
+          "add-layer": "Add layer"
         }
       }
     },

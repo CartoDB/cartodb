@@ -1,0 +1,66 @@
+<div class="DatasetSelected-item">
+  <div class="DatasetSelected-itemExt u-ellipsLongText">
+    <%- ext || '?' %>
+  </div>
+  <div class="DatasetSelected-itemInfo u-ellipsLongText">
+    <h6 class="DatasetSelected-itemTitle u-ellipsLongText" title="<%- title %>"><%- title %></h6>
+    <p class="DatasetSelected-itemDescription u-ellipsLongText"><%- description %></p>
+  </div>
+</div>
+<% if (importCanSync) { %>
+  <div class="DatasetSelected-sync">
+    <div class="DatasetSelected-syncOptions">
+      <label class="DatasetSelected-syncLabel">Sync my data</label>
+      <ul class="DatasetSelected-syncOptionsList">
+        <li class="DatasetSelected-syncOptionsItem">
+          <div class="RadioButton">
+            <button class="RadioButton-input js-interval-0 <%- interval === 0 ? 'is-checked' : '' %>"></button>
+            <label class="RadioButton-label">Never</label>
+          </div>
+        </li>
+        <li class="DatasetSelected-syncOptionsItem">
+          <div class="RadioButton <%- !userCanSync ? 'is-disabled' : '' %>">
+            <button class="RadioButton-input js-interval-1 <%- interval === 3600 ? 'is-checked' : '' %>"></button>
+            <label class="RadioButton-label">Every hour</label>
+          </div>
+        </li>
+        <li class="DatasetSelected-syncOptionsItem">
+          <div class="RadioButton <%- !userCanSync ? 'is-disabled' : '' %>">
+            <button class="RadioButton-input js-interval-2 <%- interval === 86400 ? 'is-checked' : '' %>"></button>
+            <label class="RadioButton-label">Every day</label>
+          </div>
+        </li>
+        <li class="DatasetSelected-syncOptionsItem">
+          <div class="RadioButton <%- !userCanSync ? 'is-disabled' : '' %>">
+            <button class="RadioButton-input js-interval-3 <%- interval === 604800 ? 'is-checked' : '' %>"></button>
+            <label class="RadioButton-label">Every week</label>
+          </div>
+        </li>
+        <li class="DatasetSelected-syncOptionsItem">
+          <div class="RadioButton <%- !userCanSync ? 'is-disabled' : '' %>">
+            <button class="RadioButton-input js-interval-4 <%- interval === 2592000 ? 'is-checked' : '' %>"></button>
+            <label class="RadioButton-label">Every month</label>
+          </div>
+        </li>
+      </ul>
+    </div>
+    <% if (showUpgrade) { %>
+      <div class="UpgradeElement DatasetSelected-upgrade">
+        <div class="UpgradeElement-info">
+          <p class="UpgradeElement-infoText u-ellipsLongText">Upgrade your account to get sync options and <a href="http://cartodb.com/pricing">more features</a></p>
+        </div>
+        <div class="UpgradeElement-actions">
+          <% if (showTrial) { %>
+            <div class="UpgradeElement-trial">
+              <i class="CDB-IconFont CDB-IconFont-gift UpgradeElement-trialIcon"></i>
+              <p class="UpgradeElement-trialText u-ellipsLongText">14 days Free trial</p>
+            </div>
+          <% } %>
+          <a href="<%- upgradeUrl %>" class="Button Button--secondary UpgradeElement-button DatasetSelected-upgradeButton">
+            <span>upgrade</span>
+          </a>
+        </div>
+      </div>
+    <% } %>
+  </div>
+<% } %>

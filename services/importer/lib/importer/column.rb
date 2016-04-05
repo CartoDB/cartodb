@@ -172,7 +172,7 @@ module CartoDB
           ).execute_update(
               %Q{
                 UPDATE #{qualified_table_name}
-                SET #{column_name} = public.ST_Force_2D(#{column_name})
+                SET #{column_name} = public.ST_Force2D(#{column_name})
               },
               schema, table_name
           )
@@ -241,7 +241,7 @@ module CartoDB
 
       def geometry_type
         sample = db[%Q{
-          SELECT public.GeometryType(ST_Force_2D(#{column_name}))
+          SELECT public.GeometryType(ST_Force2D(#{column_name}))
           AS type
           FROM #{schema}.#{table_name}
           WHERE #{column_name} IS NOT NULL

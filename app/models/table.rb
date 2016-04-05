@@ -1320,7 +1320,8 @@ class Table
                           exception: exception,
                           user: owner,
                           table_id: table_id,
-                          oid: get_table_id)
+                          oid: get_table_id,
+                          table_name: name)
   end
 
   private

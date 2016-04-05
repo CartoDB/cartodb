@@ -1,3 +1,4 @@
+var d3 = require('d3');
 var $ = require('jquery');
 var cdb = require('cartodb.js');
 var TooltipView = require('../widget-tooltip-view');
@@ -51,10 +52,26 @@ module.exports = cdb.core.View.extend({
   },
 
   _applySizes: function () {
+    var index = this.dataviewModel._dataProvider._layerIndex;
+    var sublayer = this.dataviewModel._dataProvider._vectorLayerView;
+    var style = sublayer.styles[index];
+    this.originalStyle = style;
+    var scale = d3.scale.linear().domain([this.dataviewModel.get('start'), this.dataviewModel.get('end')]).range([4,24]);
+    var sizes = '\n' + this.dataviewModel.get('data').map(function (bin) {
+      return '#' + this.dataviewModel.layer.get('layer_name') + 
+      '['+this.dataviewModel.get('column')+'>=' + bin.start + 
+      ']{\nmarker-width: ' + 
+      scale(bin.start) + ';\n}'
+    }.bind(this)).join('\n');
+    style = style.replace('clientes', 'clientes_2')
+    sublayer.setCartoCSS(index, style + sizes, true);
     this.dataviewModel.set('histogram_sizes', true);
   },
 
   _cancelSizes: function () {
+    var index = this.dataviewModel._dataProvider._layerIndex;
+    var sublayer = this.dataviewModel._dataProvider._vectorLayerView;
+    sublayer.setCartoCSS(index, this.originalStyle);
     this.dataviewModel.set('histogram_sizes', false);
   }
 

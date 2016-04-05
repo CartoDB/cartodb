@@ -20,12 +20,16 @@ namespace :cartodb do
             perms = Carto::Permission.where(entity_id: v.id).all
             if perms.empty?
               puts '  - Creating new default permission'
+
+              user_id = v.user_id
+              username = v.user ? v.user.username : 'cdb_unknown' # Workaround for invalid users
               perm = Carto::Permission.create(
-                owner_id:       v.user.id,
-                owner_username: v.user.username,
+                owner_id:       user_id,
+                owner_username: username,
                 entity_id:      v.id,
                 entity_type:    'vis'
               )
+
               log_file.puts "Visualization #{v.id}, permission changed from '#{v.permission_id}' to '#{perm.id}' (default)"
               v.update_column(:permission_id, perm.id)
             elsif perms.count == 1 || auto_fix

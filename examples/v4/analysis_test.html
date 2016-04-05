@@ -371,11 +371,20 @@
 
 
             setTimeout(function () {
-              var a0 = vis.analysis.findNodeById('a0');
-              var a1 = vis.analysis.findNodeById('a1');
-              a1.update({
-                kind: "walk",
-                time: 300
+              vis.analysis.analyse({
+                id: 'a1',
+                type: 'trade-area',
+                params: {
+                  source: {
+                    id: 'a0',
+                    type: 'source',
+                    params: {
+                      query: 'select * from ' + tableName + ' limit 10'
+                    }
+                  },
+                  kind: 'walk',
+                  time: 600
+                }
               });
             }, 3000);
           }, 3000);

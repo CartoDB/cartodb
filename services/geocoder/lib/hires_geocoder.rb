@@ -28,10 +28,11 @@ module CartoDB
 
     attr_accessor :input_file
 
-    def initialize(input_csv_file, working_dir, log)
+    def initialize(input_csv_file, working_dir, log, geocoding_model)
       @input_file = input_csv_file
       @dir = working_dir
       @log = log
+      @geocoding_model = geocoding_model
       @non_batch_base_url = config.fetch('non_batch_base_url')
       @app_id = config.fetch('app_id')
       @token = config.fetch('token')
@@ -44,7 +45,7 @@ module CartoDB
       init_rows_count
       @log.append_and_store "Initialized non batch Here geocoding job"
       @result = File.join(dir, 'generated_csv_out.txt')
-      @status = 'running'
+      change_status('running')
       @total_rows = input_rows
       @log.append_and_store "Total rows to be processed: #{@total_rows}"
       ::CSV.open(@result, "wb") do |output_csv_file|
@@ -52,7 +53,7 @@ module CartoDB
           process_row(input_row, output_csv_file)
         end
       end
-      @status = 'completed'
+      change_status('completed')
       update_log_stats
       @log.append_and_store "Non-batch Here geocoding job finished"
     end
@@ -61,13 +62,8 @@ module CartoDB
       false
     end
 
-    def cancel
-      # TODO implement. This needs peeking into model state
-    end
-
-    def update_status
-      # TODO remove
-    end
+    def cancel; end
+    def update_status; end
 
     def result
       @result
@@ -86,9 +82,7 @@ module CartoDB
 
     def http_client
       @http_client ||= Carto::Http::Client.get('hires_geocoder',
-                                               log_requests: true,
-                                               connecttimeout: HTTP_CONNECTION_TIMEOUT,
-                                               timeout: HTTP_REQUEST_TIMEOUT)
+                                               log_requests: true)
     end
 
     def input_rows
@@ -119,7 +113,9 @@ module CartoDB
     def geocode_text(text)
       options = GEOCODER_OPTIONS.merge(searchtext: text, app_id: app_id, app_code: token)
       url = "#{non_batch_base_url}?#{URI.encode_www_form(options)}"
-      http_response = http_client.get(url)
+      http_response = http_client.get(url,
+                                      connecttimeout: HTTP_CONNECTION_TIMEOUT,
+                                      timeout: HTTP_REQUEST_TIMEOUT)
       if http_response.success?
         response = ::JSON.parse(http_response.body)["response"]
         if response['view'].empty?
@@ -163,5 +159,12 @@ module CartoDB
         "--- Success: #{@successful_processed_rows} --- Empty: #{@empty_processed_rows} "\
         "--- Failed: #{@failed_processed_rows}"
     end
+
+    def change_status(status)
+      @status = status
+      @geocoding_model.state = status
+      @geocoding_model.save
+    end
+
   end
 end

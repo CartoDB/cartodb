@@ -18,8 +18,6 @@ describe Layer do
     CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
     stub_named_maps_calls
 
-    CartoDB::Overlay::Member.any_instance.stubs(:can_store).returns(true)
-
     @table = Table.new
     @table.user_id = @user.id
     @table.save

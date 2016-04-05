@@ -3,6 +3,7 @@ require 'uuidtools'
 require_relative './rspec_configuration'
 require 'helpers/spec_helper_helpers'
 require 'helpers/named_maps_helper'
+require 'helpers/unique_names_helper'
 
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 ENV['RAILS_ENV'] ||= 'test'
@@ -19,7 +20,7 @@ def stub_named_maps_calls
 end
 
 def random_uuid
-  UUIDTools::UUID.timestamp_create.to_s
+  UUIDTools::UUID.random_create.to_s
 end
 
 # Inline Resque for queue handling

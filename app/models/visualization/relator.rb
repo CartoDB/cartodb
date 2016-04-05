@@ -1,7 +1,6 @@
 # encoding: utf-8
 require_relative './stats'
 require_relative '../visualization/collection'
-require_relative '../overlay/collection'
 require_relative './support_tables'
 require_relative '../map'
 require_relative '../layer'
@@ -72,7 +71,7 @@ module CartoDB
       end
 
       def overlays
-        @overlays ||= Overlay::Collection.new(visualization_id: id).fetch
+        @overlays ||= Carto::Overlay.where(visualization_id: id).all
       end
 
       def map
@@ -177,4 +176,3 @@ module CartoDB
     end
   end
 end
-

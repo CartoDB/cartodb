@@ -202,11 +202,15 @@ module CartoDB
           layergroup[:stat_tag] = visualization.id
 
           widgets = Carto::Widget.from_visualization_id(visualization.id)
-          widget_names_and_options = widgets.map { |widget| [widget.id, dataview_data(widget)] }
-          layergroup[:dataviews] = Hash[*widget_names_and_options.flatten]
+          if widgets.present?
+            widget_names_and_options = widgets.map { |widget| [widget.id, dataview_data(widget)] }
+            layergroup[:dataviews] = Hash[*widget_names_and_options.flatten]
+          end
 
-          layergroup[:analyses] = Carto::Analysis.where(visualization_id: visualization.id)
-                                                 .map(&:analysis_definition_json)
+          analyses = Carto::Analysis.where(visualization_id: visualization.id)
+          if analyses.present?
+            layergroup[:analyses] = analyses.map(&:analysis_definition_json)
+          end
 
           template_data[:view] = view_data_from(visualization)
 

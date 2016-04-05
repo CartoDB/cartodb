@@ -205,8 +205,8 @@ module Carto
       end
 
       def widgets_vizjson
-        @visualization.widgets.map do |widgets|
-          Carto::Api::WidgetPresenter.new(widgets).to_vizjson
+        @visualization.widgets.map do |widget|
+          Carto::Api::WidgetPresenter.new(widget).to_vizjson
         end
       end
 

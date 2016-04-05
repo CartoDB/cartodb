@@ -3,7 +3,6 @@ production:
   encoding: unicode
   host: localhost
   port: 5432
-  direct_port: 5432
   database: carto_db_production
   username: postgres
   password:
@@ -14,7 +13,6 @@ staging:
   encoding: unicode
   host: localhost
   port: 5432
-  direct_port: 5432
   database: carto_db_staging
   username: postgres
   password:
@@ -25,7 +23,6 @@ development:
   encoding: unicode
   host: localhost
   port: 5432
-  direct_port: 5432
   database: carto_db_development
   username: postgres
   password:
@@ -37,8 +34,7 @@ test:
   encoding: unicode
   database: carto_db_test
   host: localhost
-  port: 5432
-  direct_port: 5432
+  port: 5432  
   username: postgres
   password:
   conn_validator_timeout: -1

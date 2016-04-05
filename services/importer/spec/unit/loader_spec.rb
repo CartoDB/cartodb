@@ -1,6 +1,5 @@
 # encoding: utf-8
 require 'ostruct'
-require_relative '../../../../spec/spec_helper_min'
 require_relative '../../lib/importer/loader'
 require_relative '../../lib/importer/source_file'
 require_relative '../../lib/importer/exceptions'
@@ -8,6 +7,7 @@ require_relative '../doubles/job'
 require_relative '../doubles/ogr2ogr'
 require_relative '../doubles/georeferencer'
 require_relative '../../spec/doubles/importer_stats'
+require_relative '../../../../spec/rspec_configuration.rb'
 
 describe CartoDB::Importer2::Loader do
   before do

@@ -1,7 +1,6 @@
 # encoding: utf-8
 require 'pg'
 require 'sequel'
-require_relative '../../../../spec/spec_helper'
 require_relative '../../lib/importer/ogr2ogr'
 require_relative '../doubles/job'
 require_relative '../factories/csv'
@@ -11,10 +10,8 @@ include CartoDB::Importer2
 
 describe Ogr2ogr do
   before(:all) do
-    @user             = create_user
-    @user.save
-    @pg_options       = @user.db_service.db_configuration_for.with_indifferent_access
-    @db               = @user.in_database
+    @pg_options       = Factories::PGConnection.new.pg_options
+    @db               = Factories::PGConnection.new.connection
     @db.execute('CREATE SCHEMA IF NOT EXISTS cdb_importer')
     @db.execute('SET search_path TO cdb_importer,public')
   end
@@ -36,7 +33,6 @@ describe Ogr2ogr do
   after(:all) do
     @db.execute('DROP SCHEMA cdb_importer cascade')
     @db.disconnect
-    @user.destroy
   end
 
   describe '#initialize' do
@@ -58,7 +54,7 @@ describe Ogr2ogr do
     it 'includes the postgres options passed at initialization time' do
       (@wrapper.command =~ /#{@pg_options.fetch(:host)}/).should_not be nil
       (@wrapper.command =~ /#{@pg_options.fetch(:port)}/).should_not be nil
-      (@wrapper.command =~ /#{@pg_options.fetch(:username)}/).should_not be nil
+      (@wrapper.command =~ /#{@pg_options.fetch(:user)}/).should_not be nil
       (@wrapper.command =~ /#{@pg_options.fetch(:database)}/).should_not be nil
     end
 
@@ -147,7 +143,7 @@ describe Ogr2ogr do
         .write(header, data_1)
 
       csv_2 = Factories::CSV.new(name=nil, how_many_duplicates=0)
-        .write(header, data_2)
+      .write(header, data_2)
 
       ogr2ogr = CartoDB::Importer2::Ogr2ogr.new(@table_name, csv_1.filepath, @pg_options)
       ogr2ogr.run

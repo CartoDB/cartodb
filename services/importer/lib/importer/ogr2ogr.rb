@@ -14,19 +14,17 @@ module CartoDB
       OSM_INDEXING_OPTION   = 'OSM_USE_CUSTOM_INDEXING=NO'
       APPEND_MODE_OPTION    = '-append'
 
-      DEFAULT_BINARY = 'which ogr2ogr2.1'
+      DEFAULT_BINARY = 'which ogr2ogr2'
 
       LATITUDE_POSSIBLE_NAMES   = %w{ latitude lat latitudedecimal
         latitud lati decimallatitude decimallat point_latitude }
       LONGITUDE_POSSIBLE_NAMES  = %w{ longitude lon lng
         longitudedecimal longitud long decimallongitude decimallong point_longitude }
 
-      DEFAULT_TIMEOUT = '1h'
-
 
       def initialize(table_name, filepath, pg_options, layer=nil, options={})
         self.filepath   = filepath
-        self.pg_options = pg_options.with_indifferent_access
+        self.pg_options = pg_options
         self.table_name = table_name
         self.layer      = layer
         self.options    = options
@@ -50,13 +48,13 @@ module CartoDB
         "#{OSM_INDEXING_OPTION} #{PG_COPY_OPTION} #{client_encoding_option} #{shape_encoding_option} " +
         "#{executable_path} #{OUTPUT_FORMAT_OPTION} #{overwrite_option} #{guessing_option} " +
         "#{postgres_options} #{projection_option} #{layer_creation_options} #{filepath} #{layer} " +
-        "#{layer_name_option} #{new_layer_type_option} #{shape_coordinate_option} #{timeout_options}"
+        "#{layer_name_option} #{new_layer_type_option} #{shape_coordinate_option} "
       end
 
       def command_for_append
         "#{OSM_INDEXING_OPTION} #{PG_COPY_OPTION} #{client_encoding_option} " +
         "#{executable_path} #{APPEND_MODE_OPTION} #{OUTPUT_FORMAT_OPTION} #{postgres_options} " +
-        "#{projection_option} #{filepath} #{layer} #{layer_name_option} #{NEW_LAYER_TYPE_OPTION} "
+        "#{projection_option} #{filepath} #{layer} #{layer_name_option} #{NEW_LAYER_TYPE_OPTION}"
       end
 
       def executable_path
@@ -76,36 +74,36 @@ module CartoDB
       end
 
       def generic_error?
-        command_output =~ /ERROR 1:/i || command_output =~ /ERROR:/i
+        command_output =~ /ERROR 1:/ || command_output =~ /ERROR:/
       end
 
       def encoding_error?
-        command_output =~ /has no equivalent in encoding/i || command_output =~ /invalid byte sequence for encoding/i
+        command_output =~ /has no equivalent in encoding/ || command_output =~ /invalid byte sequence for encoding/
       end
 
       def invalid_dates?
-        command_output =~ /date\/time field value out of range/i
+        command_output =~ /date\/time field value out of range/
       end
 
       def duplicate_column?
-        command_output =~ /column (.*) of relation (.*) already exists/i || command_output =~ /specified more than once/i
+        command_output =~ /column (.*) of relation (.*) already exists/ || command_output =~ /specified more than once/
       end
 
       def invalid_geojson?
-        command_output =~ /nrecognized GeoJSON/i
+        command_output =~ /nrecognized GeoJSON/
       end
 
       def too_many_columns?
-        command_output =~ /tables can have at most 1600 columns/i
+        command_output =~ /tables can have at most 1600 columns/
       end
 
       def unsupported_format?
-        exit_code == 256 && command_output =~ /Unable to open(.*)with the following drivers/i
+        exit_code == 256 && command_output =~ /Unable to open(.*)with the following drivers/
       end
 
       def file_too_big?
-        (exit_code == 256 && command_output =~ /calloc failed/i) ||
-        (exit_code == 35072 && command_output =~ /Killed/i)
+        (exit_code == 256 && command_output =~ /calloc failed/) ||
+        (exit_code == 35072 && command_output =~ /Killed/)
       end
 
       def statement_timeout?
@@ -113,11 +111,11 @@ module CartoDB
       end
 
       def segfault_error?
-        exit_code == 35584 && command_output =~ /Segmentation fault/i
+        exit_code == 35584 && command_output =~ /Segmentation fault/
       end
 
       def kml_style_missing?
-        is_kml? && command_output =~/kml Style: No id/i
+        is_kml? && command_output =~/Parseing kml Style: No id/
       end
 
       attr_accessor :append_mode, :filepath, :csv_guessing, :overwrite, :encoding, :shape_encoding,
@@ -193,8 +191,8 @@ module CartoDB
       # @see http://www.gdal.org/drv_pg_advanced.html
       def postgres_options
         %Q{PG:"host=#{pg_options.fetch(:host)} }      +
-        %Q{port=#{pg_options.fetch(:direct_port, pg_options.fetch(:port))} }          +
-        %Q{user=#{pg_options.fetch(:username)} }          +
+        %Q{port=#{pg_options.fetch(:port)} }          +
+        %Q{user=#{pg_options.fetch(:user)} }          +
         %Q{dbname=#{pg_options.fetch(:database)} }    +
         %Q{password=#{pg_options.fetch(:password)}"}
         # 'schemas=#{SCHEMA},cartodb' param is no longer needed, let the DB build the proper one
@@ -207,14 +205,6 @@ module CartoDB
 
       def projection_option
         is_csv? || filepath =~ /\.ods/ ? nil : '-t_srs EPSG:4326 '
-      end
-
-      def timeout_options
-        # see http://www.gdal.org/ogr2ogr.html
-        # see http://www.gdal.org/drv_pg.html
-        %Q{-doo PRELUDE_STATEMENTS="SET statement_timeout TO \'#{DEFAULT_TIMEOUT}\'" } +
-        %Q{-doo CLOSING_STATEMENTS='SET statement_timeout TO DEFAULT' } +
-        %Q{-update}
       end
     end
   end

@@ -984,7 +984,7 @@ describe Table do
       pk_row1 = table.insert_row!(:name => 'Fernando Blat', :age => "29")
       table.rows_counted.should == 1
 
-      pk_row2 = table.insert_row!(:name => 'Javi Jam', :age => "30.3")
+      pk_row2 = table.insert_row!(:name => 'Javi Jam', :age => "25.4")
       table.rows_counted.should == 2
 
       table.schema(:cartodb_types => false).should include([:age, "double precision"])
@@ -999,7 +999,7 @@ describe Table do
       pk_row1 = table.insert_row!(:name => 'Fernando Blat', :age => "29")
       table.rows_counted.should == 1
 
-      pk_row2 = table.insert_row!(:name => 'Javi Jam', :age => "30.0")
+      pk_row2 = table.insert_row!(:name => 'Javi Jam', :age => "25.0")
       table.rows_counted.should == 2
 
       table.schema(:cartodb_types => false).should include([:age, "double precision"])
@@ -1263,7 +1263,7 @@ describe Table do
                                        :data_source   => '/../spec/support/data/elecciones2008.csv')
       data_import.run_import!
 
-      table = create_table(user_table: UserTable[data_import.table_id], user_id: @user.id)
+      table = Table.new(user_table: UserTable[data_import.table_id])
       table.should_not be_nil, "Import failure: #{data_import.log}"
       update_data = {:upo___nombre_partido=>"PSOEE"}
       id = 5
@@ -1281,7 +1281,7 @@ describe Table do
                                        :data_source   => '/../spec/support/data/elecciones2008.csv')
       data_import.run_import!
 
-      table = create_table(user_table: UserTable[data_import.table_id], user_id: @user.id)
+      table = Table.new(user_table: UserTable[data_import.table_id])
       table.should_not be_nil, "Import failure: #{data_import.log}"
 
       pk = nil
@@ -1794,6 +1794,8 @@ describe Table do
 
   context "imports" do
     it "file twitters.csv" do
+      delete_user_data @user
+
       fixture     =  "#{Rails.root}/db/fake_data/twitters.csv"
       data_import = create_import(@user, fixture)
 
@@ -1802,6 +1804,8 @@ describe Table do
     end
 
     it "file SHP1.zip" do
+      delete_user_data @user
+
       fixture     = "#{Rails.root}/db/fake_data/SHP1.zip"
       data_import = create_import(@user, fixture)
 

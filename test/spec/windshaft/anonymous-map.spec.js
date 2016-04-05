@@ -7,23 +7,30 @@ var AnalysisFactory = require('../../../src/analysis/analysis-factory.js');
 
 describe('windshaft/anonymous-map', function () {
   beforeEach(function () {
+    this.analysisCollection = new Backbone.Collection();
     this.cartoDBLayer1 = new CartoDBLayer({
       id: 'layer1',
       sql: 'sql1',
       cartocss: 'cartoCSS1',
       cartocss_version: '2.0'
+    }, {
+      analysisCollection: this.analysisCollection
     });
     this.cartoDBLayer2 = new CartoDBLayer({
       id: 'layer2',
       sql: 'sql2',
       cartocss: 'cartoCSS2',
       cartocss_version: '2.0'
+    }, {
+      analysisCollection: this.analysisCollection
     });
     this.cartoDBLayer3 = new CartoDBLayer({
       id: 'layer3',
       sql: 'sql3',
       cartocss: 'cartoCSS3',
       cartocss_version: '2.0'
+    }, {
+      analysisCollection: this.analysisCollection
     });
 
     this.client = new WindshaftClient({
@@ -33,11 +40,13 @@ describe('windshaft/anonymous-map', function () {
     });
 
     this.dataviewsCollection = new Backbone.Collection();
+
     this.map = new AnonymousMap({}, {
       client: this.client,
       statTag: 'stat_tag',
       dataviewsCollection: this.dataviewsCollection,
-      layersCollection: new Backbone.Collection([this.cartoDBLayer1, this.cartoDBLayer2, this.cartoDBLayer3])
+      layersCollection: new Backbone.Collection([this.cartoDBLayer1, this.cartoDBLayer2, this.cartoDBLayer3]),
+      analysisCollection: this.analysisCollection
     });
   });
 
@@ -232,16 +241,15 @@ describe('windshaft/anonymous-map', function () {
           }
         };
 
-        var analysisCollection = new Backbone.Collection();
         this.analysisFactory = new AnalysisFactory({
-          analysisCollection: analysisCollection,
+          analysisCollection: this.analysisCollection,
           camshaftReference: fakeCamshaftReference,
           map: jasmine.createSpyObj('map', ['reload'])
         });
       });
 
       it('should include analyses', function () {
-        var analysis = this.analysisFactory.analyse({
+        this.analysisFactory.analyse({
           id: 'c1',
           type: 'union',
           params: {
@@ -271,7 +279,7 @@ describe('windshaft/anonymous-map', function () {
           }
         });
         this.cartoDBLayer1.update({
-          source: analysis,
+          source: 'c1',
           cartocss: '#trade_area { ... }'
         }, { silent: true });
 
@@ -376,12 +384,12 @@ describe('windshaft/anonymous-map', function () {
         });
 
         this.cartoDBLayer1.update({
-          source: analysis1,
+          source: analysis1.get('id'),
           cartocss: '#union { ... }'
         }, { silent: true });
 
         this.cartoDBLayer2.update({
-          source: analysis2,
+          source: analysis2.get('id'),
           cartocss: '#union { ... }'
         }, { silent: true });
 

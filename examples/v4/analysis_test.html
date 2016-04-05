@@ -365,7 +365,7 @@
 
           setTimeout(function () {
             cartodblayer.set({
-              source: analysis,  
+              source: 'a1',  
               cartocss: cartocss
             });
 
@@ -373,8 +373,7 @@
             setTimeout(function () {
               var a0 = vis.analysis.findNodeById('a0');
               var a1 = vis.analysis.findNodeById('a1');
-              a1.set('params', {
-                source: a0,
+              a1.update({
                 kind: "walk",
                 time: 300
               });

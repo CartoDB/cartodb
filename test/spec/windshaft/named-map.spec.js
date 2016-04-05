@@ -5,23 +5,30 @@ var NamedMap = require('../../../src/windshaft/named-map');
 
 describe('windshaft/named-map', function () {
   beforeEach(function () {
+    this.analysisCollection = new Backbone.Collection();
     this.cartoDBLayer1 = new CartoDBLayer({
       id: 'layer1',
       sql: 'sql1',
       cartocss: 'cartoCSS1',
       cartocss_version: '2.0'
+    }, {
+      analysisCollection: this.analysisCollection
     });
     this.cartoDBLayer2 = new CartoDBLayer({
       id: 'layer2',
       sql: 'sql2',
       cartocss: 'cartoCSS2',
       cartocss_version: '2.0'
+    }, {
+      analysisCollection: this.analysisCollection
     });
     this.cartoDBLayer3 = new CartoDBLayer({
       id: 'layer3',
       sql: 'sql2',
       cartocss: 'cartoCSS2',
       cartocss_version: '2.0'
+    }, {
+      analysisCollection: this.analysisCollection
     });
 
     this.client = new WindshaftClient({
@@ -34,7 +41,8 @@ describe('windshaft/named-map', function () {
       client: this.client,
       statTag: 'stat_tag',
       dataviewsCollection: new Backbone.Collection(),
-      layersCollection: new Backbone.Collection([this.cartoDBLayer1, this.cartoDBLayer2, this.cartoDBLayer3])
+      layersCollection: new Backbone.Collection([this.cartoDBLayer1, this.cartoDBLayer2, this.cartoDBLayer3]),
+      analysisCollection: this.analysisCollection
     });
   });
 

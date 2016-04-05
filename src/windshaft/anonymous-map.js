@@ -12,10 +12,10 @@ var AnonymousMap = MapBase.extend({
     };
 
     _.each(this._getLayers(), function (layerModel) {
-      var sourceId;
-      var sourceAnalysis = layerModel.get('source');
-      if (sourceAnalysis) {
-        sourceId = sourceAnalysis.get('id');
+      var sourceAnalysis;
+      var sourceId = layerModel.get('source');
+      if (sourceId) {
+        sourceAnalysis = this._analysisCollection.findWhere({ id: sourceId });
       } else if (layerModel.get('sql')) { // Layer has some SQL that needs to be converted into a "source" analysis
         sourceId = layerModel.get('id');
         sourceAnalysis = {
@@ -25,11 +25,18 @@ var AnonymousMap = MapBase.extend({
             query: layerModel.get('sql')
           }
         };
+      } else {
+        throw new Error('sourceAnalysis does\'t exist');
       }
 
       var sourceAnalysisIsPartOfOtherAnalysis = this._layersCollection.any(function (otherLayerModel) {
-        return layerModel !== otherLayerModel && otherLayerModel.get('source') && otherLayerModel.get('source').findAnalysisById(sourceId);
-      });
+        if (layerModel !== otherLayerModel && otherLayerModel.get('source')) {
+          var othersLayerSourceId = otherLayerModel.get('source');
+          var otherLayersSource = this._analysisCollection.findWhere({ id: othersLayerSourceId });
+          return otherLayersSource.findAnalysisById(sourceId);
+        }
+        return false;
+      }, this);
 
       if (!sourceAnalysisIsPartOfOtherAnalysis) {
         var analysisJSON = sourceAnalysis.toJSON ? sourceAnalysis.toJSON() : sourceAnalysis;

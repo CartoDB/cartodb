@@ -210,6 +210,8 @@ var Vis = View.extend({
     this._applyOptionsToVizJSON(vizjson, options);
 
     this._dataviewsCollection = new DataviewCollection();
+    this._layersCollection = new LayersCollection();
+    this._analysisCollection = new Backbone.Collection();
 
     // Create the WindhaftClient
 
@@ -235,8 +237,6 @@ var Vis = View.extend({
 
     // Create the WindshaftMap
 
-    this._layersCollection = new LayersCollection();
-
     var apiKey = options.apiKey;
     this._windshaftMap = new WindshaftMapClass({
       apiKey: apiKey,
@@ -246,7 +246,8 @@ var Vis = View.extend({
       apiKey: apiKey,
       statTag: datasource.stat_tag,
       dataviewsCollection: this._dataviewsCollection,
-      layersCollection: this._layersCollection
+      layersCollection: this._layersCollection,
+      analysisCollection: this._analysisCollection
     });
 
     // Create the Map
@@ -353,8 +354,6 @@ var Vis = View.extend({
       map: this.map,
       windshaftMap: this._windshaftMap
     });
-
-    this._analysisCollection = new Backbone.Collection();
 
     // Public Analysis Factory
     this.analysis = new AnalysisFactory({

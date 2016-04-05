@@ -17,6 +17,7 @@ require_dependency 'cartodb_config_utils'
 require_relative './user/db_service'
 require_dependency 'carto/user_db_size_cache'
 require_dependency 'cartodb/redis_vizjson_cache'
+require_dependency 'carto/bolt'
 
 class User < Sequel::Model
   include CartoDB::MiniSequel
@@ -1073,10 +1074,15 @@ class User < Sequel::Model
   # Looks for tables created on the user database with
   # the columns needed
   def link_ghost_tables
-    no_tables = self.real_tables.blank?
-    link_renamed_tables unless no_tables
-    link_deleted_tables
-    link_created_tables(search_for_cartodbfied_tables) unless no_tables
+    lock_acquired = Carto::Bolt.new(username, ttl_ms: 60000).run_locked do
+      no_tables = real_tables.blank?
+
+      link_renamed_tables unless no_tables
+      link_deleted_tables
+      link_created_tables(search_for_cartodbfied_tables) unless no_tables
+    end
+
+    CartoDB::Logger.info(message: 'Ghost table race condition avoided', user: self) unless lock_acquired
   end
 
   # this method search for tables with all the columns needed in a cartodb table.

@@ -20,12 +20,12 @@ describe Carto::VisualizationsExportService2 do
       display_name: 'the display_name',
       map: {
         provider: 'leaflet',
-        bounding_box_sw: [-85.0511, -179],
-        bounding_box_ne: [85.0511, 179],
-        center: [34.672410587, 67.90919030050006],
+        bounding_box_sw: '[-85.0511, -179]',
+        bounding_box_ne: '[85.0511, 179]',
+        center: '[34.672410587, 67.90919030050006]',
         zoom: 1,
-        view_bounds_sw: [15.775376695, -18.1672257149999],
-        view_bounds_ne: [53.569444479, 153.985606316],
+        view_bounds_sw: '[15.775376695, -18.1672257149999]',
+        view_bounds_ne: '[53.569444479, 153.985606316]',
         scrollwheel: false,
         legends: true
       },
@@ -110,6 +110,14 @@ describe Carto::VisualizationsExportService2 do
     }
   end
 
+  before(:all) do
+    @user = FactoryGirl.create(:carto_user)
+  end
+
+  after(:all) do
+    ::User[@user.id].destroy
+  end
+
   describe 'importing' do
     describe '#build_visualization_from_json_export' do
       it 'fails if version is not 2' do
@@ -118,10 +126,7 @@ describe Carto::VisualizationsExportService2 do
         }.to raise_error("Wrong export version")
       end
 
-      it 'builds base visualization' do
-        visualization = Carto::VisualizationsExportService2.new.build_visualization_from_json_export(export.to_json)
-
-        visualization_export = export[:visualization]
+      def verify_visualization_vs_export(visualization, visualization_export)
         visualization.name.should eq visualization_export[:name]
         visualization.description.should eq visualization_export[:description]
         visualization.type.should eq visualization_export[:type]
@@ -136,10 +141,6 @@ describe Carto::VisualizationsExportService2 do
         visualization.bbox.should eq visualization_export[:bbox]
         visualization.display_name.should eq visualization_export[:display_name]
 
-        visualization.id.should be_nil # Not set until persistence
-        visualization.user_id.should be_nil # Import build step is "user-agnostic"
-        visualization.created_at.should be_nil # Not set until persistence
-        visualization.updated_at.should be_nil # Not set until persistence
         visualization.encrypted_password.should be_nil
         visualization.password_salt.should be_nil
         visualization.locked.should be_false
@@ -156,10 +157,6 @@ describe Carto::VisualizationsExportService2 do
         map.scrollwheel.should eq map_export[:scrollwheel]
         map.legends.should eq map_export[:legends]
 
-        map.id.should be_nil # Not set until persistence
-        map.updated_at.should be_nil # Not set until persistence
-        map.user_id.should be_nil # Import build step is "user-agnostic"
-
         layers_export = base_visualization_export[:layers]
         layers = visualization.layers
         layers.length.should eq layers_export.length
@@ -172,8 +169,60 @@ describe Carto::VisualizationsExportService2 do
           layer.kind.should eq layer_export[:kind]
           layer.infowindow.should eq layer_export[:infowindow]
           layer.tooltip.should eq layer_export[:tooltip]
+        end
+      end
+
+      it 'builds base visualization' do
+        visualization = Carto::VisualizationsExportService2.new.build_visualization_from_json_export(export.to_json)
+
+        base_visualization_export = export[:visualization]
+        verify_visualization_vs_export(visualization, base_visualization_export)
+
+        visualization.id.should be_nil # Not set until persistence
+        visualization.user_id.should be_nil # Import build step is "user-agnostic"
+        visualization.created_at.should be_nil # Not set until persistence
+        visualization.updated_at.should be_nil # Not set until persistence
+
+        map_export = base_visualization_export[:map]
+        map = visualization.map
+        map.id.should be_nil # Not set until persistence
+        map.updated_at.should be_nil # Not set until persistence
+        map.user_id.should be_nil # Import build step is "user-agnostic"
+
+        layers = visualization.layers
+        for i in 0..2 do
+          layer = layers[i]
           layer.updated_at.should be_nil
           layer.id.should be_nil
+        end
+      end
+
+      it 'builds base visualization that can be persisted by VisualizationsExportPersistenceService' do
+        json_export = export.to_json
+        exported_visualization = Carto::VisualizationsExportService2.new.build_visualization_from_json_export(json_export)
+        visualization = Carto::VisualizationsExportPersistenceService.new.save_import(@user, exported_visualization)
+        # Let's make sure everything is stored
+        visualization = Carto::Visualization.find(visualization.id)
+
+        base_visualization_export = export[:visualization]
+        verify_visualization_vs_export(visualization, base_visualization_export)
+
+        visualization.id.should_not be_nil
+        visualization.user_id.should eq @user.id
+        visualization.created_at.should_not be_nil
+        visualization.updated_at.should_not be_nil
+
+        map_export = base_visualization_export[:map]
+        map = visualization.map
+        map.id.should_not be_nil
+        map.updated_at.should_not be_nil
+        map.user_id.should eq @user.id
+
+        layers = visualization.layers
+        for i in 0..2 do
+          layer = layers[i]
+          layer.updated_at.should_not be_nil
+          layer.id.should_not be_nil
         end
       end
     end

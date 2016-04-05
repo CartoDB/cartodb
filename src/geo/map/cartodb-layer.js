@@ -13,14 +13,7 @@ var CartoDBLayer = LayerModelBase.extend({
     LayerModelBase.prototype.initialize.apply(this, arguments);
     options = options || {};
 
-    // if (!options.map) {
-    //   throw new Error('map option is required');
-    // }
-    // if (!options.analysisCollection) {
-    //   throw new Error('analysisCollection option is required');
-    // }
     this._map = options.map;
-    this._analysisCollection = options.analysisCollection;
     this.bind('change:visible change:sql change:cartocss change:source', this._reloadMap, this);
   },
 
@@ -103,16 +96,6 @@ var CartoDBLayer = LayerModelBase.extend({
 
   getDataProvider: function () {
     return this._dataProvider;
-  },
-
-  update: function (attrs) {
-    if (attrs && attrs.source) {
-      if (!this._analysisCollection.findWhere({ id: attrs.source })) {
-        throw new Error("No analysis with the id '" + attrs.source + "' was found");
-      }
-    }
-
-    LayerModelBase.prototype.update.apply(this, arguments);
   }
 });
 

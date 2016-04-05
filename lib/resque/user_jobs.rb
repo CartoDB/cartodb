@@ -76,7 +76,6 @@ module Resque
 
     end
 
-
     module CommonData
       module LoadCommonData
         @queue = :users
@@ -87,7 +86,6 @@ module Resque
       end
 
     end
-
 
     module Mail
 

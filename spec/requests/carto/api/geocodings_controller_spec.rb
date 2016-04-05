@@ -258,7 +258,7 @@ describe 'legacy behaviour tests' do
                                   "geometry_type" => nil, "processable_rows" => nil, "real_rows" => nil,
                                   "used_credits" => nil, "country_column" => nil, "data_import_id" => nil,
                                   "region_code" => nil, "region_column" => nil, "batched" => nil, "error_code" => nil,
-                                  "force_all_rows" => false, "log_id" => nil}]}
+                                  "force_all_rows" => false, "log_id" => nil, "pid" => nil}]}
       received_without_dates = {
         'geocodings' => JSON.parse(last_response.body)['geocodings'].map { |g| remove_dates(g) }
       }

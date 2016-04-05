@@ -14,8 +14,12 @@ module Carto
       def to_vizjson(vector: false, **options)
         vizjson = symbolize_vizjson(Carto::Api::VizJSONPresenter.new(@visualization, @redis_cache).to_vizjson(options))
 
-        vizjson[:widgets] = Carto::Widget.from_visualization_id(@visualization.id).map do |w|
-          Carto::Api::WidgetPresenter.new(w).to_poro
+        vizjson[:widgets] = @visualization.widgets.map do |widget|
+          Carto::Api::WidgetPresenter.new(widget).to_poro
+        end
+
+        unless @visualization.retrieve_named_map?
+          vizjson[:analyses] = @visualization.analyses.map(&:analysis_definition_json)
         end
 
         vizjson[:layers].each { |l| layer_vizjson2_to_3(l) }

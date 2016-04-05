@@ -289,6 +289,10 @@ class Carto::Visualization < ActiveRecord::Base
     likes.count
   end
 
+  def widgets
+    layers.map(&:widgets).flatten
+  end
+
   private
 
   def get_named_map

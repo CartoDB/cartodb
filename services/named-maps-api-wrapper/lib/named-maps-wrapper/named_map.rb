@@ -192,15 +192,21 @@ module CartoDB
                           }
               }
 
-              widgets_data = widgets_data_for_layer(layer)
-              layer_data[:options][:widgets] = widgets_data if widgets_data
-
               layers_data.push(layer_data)
             }
           end
 
-          template_data[:layergroup][:layers] = layers_data.compact.flatten
-          template_data[:layergroup][:stat_tag] = visualization.id
+          layergroup = template_data[:layergroup]
+
+          layergroup[:layers] = layers_data.compact.flatten
+          layergroup[:stat_tag] = visualization.id
+
+          widgets = Carto::Widget.from_visualization_id(visualization.id)
+          widget_names_and_options = widgets.map { |widget| [widget.id, dataview_data(widget)] }
+          layergroup[:dataviews] = Hash[*widget_names_and_options.flatten]
+
+          layergroup[:analyses] = Carto::Analysis.where(visualization_id: visualization.id)
+                                                 .map(&:analysis_definition_json)
 
           template_data[:view] = view_data_from(visualization)
 
@@ -218,24 +224,7 @@ module CartoDB
           data = options_for_basemap_layer(layer, layer_num, template_data)
         end
 
-        widgets_data = widgets_data_for_layer(layer)
-        data[:layer_options][:widgets] = widgets_data if widgets_data
-
         data
-      end
-
-      def self.widgets_data_for_layer(layer)
-        widgets_data = nil
-
-        layer_widgets = Carto::Widget.where(layer_id: layer[:id]).all
-        # TODO: if this structure becomes standard, remove the count check,
-        # and always return a `widgets` attribute
-        if layer_widgets.count > 0
-          widget_names_and_options = layer_widgets.map { |w| [w.id, layer_widget_options(w)] }
-          widgets_data = Hash[*widget_names_and_options.flatten]
-        end
-
-        widgets_data
       end
 
       def self.css_from(options)
@@ -317,7 +306,7 @@ module CartoDB
         'time-series' => 'histogram'
       }.freeze
 
-      def self.layer_widget_options(widget)
+      def self.dataview_data(widget)
         options = widget.options_json
         options[:aggregationColumn] = options[:aggregation_column]
         options.delete(:aggregation_column)

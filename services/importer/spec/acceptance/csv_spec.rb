@@ -18,40 +18,31 @@ describe 'csv regression tests' do
   include_context "cdb_importer schema"
   include_context "no stats"
 
-  before(:all) do
-    @user = create_user
-    @user.save
-  end
-
-  after(:all) do
-    @user.destroy
-  end
-
   it 'georeferences files with lat / lon columns' do
     filepath    = path_to('../../../../spec/support/data/csv_with_lat_lon.csv')
     downloader  = Downloader.new(filepath)
     runner      = Runner.new({
-                               pg: @user.db_service.db_configuration_for,
+                               pg: @pg_options,
                                downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new(@user),
-                               user: @user
+                               log: CartoDB::Importer2::Doubles::Log.new,
+                               user: CartoDB::Importer2::Doubles::User.new
                              })
     runner.loader_options = ogr2ogr2_options
     runner.run
 
     result = runner.results.first
     result.success?.should be_true, "error code: #{result.error_code}, trace: #{result.log_trace}"
-    geometry_type_for(runner, @user).should eq 'POINT'
+    geometry_type_for(runner).should eq 'POINT'
   end
 
   it 'imports XLS files' do
     filepath    = path_to('../../../../spec/support/data/ngos.xlsx')
     downloader  = Downloader.new(filepath)
     runner      = Runner.new({
-                               pg: @user.db_service.db_configuration_for,
+                               pg: @pg_options,
                                downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new(@user),
-                               user: @user
+                               log: CartoDB::Importer2::Doubles::Log.new,
+                               user: CartoDB::Importer2::Doubles::User.new
                              })
     runner.run
 
@@ -60,20 +51,13 @@ describe 'csv regression tests' do
   end
 
   it 'imports files with duplicated column names' do
-    filepath    = path_to('../fixtures/duplicated_column_name.csv')
-    downloader  = Downloader.new(filepath)
-    runner      = Runner.new({
-                               pg: @user.db_service.db_configuration_for,
-                               downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new(@user),
-                               user: @user
-                             })
+    runner = runner_with_fixture('../fixtures/duplicated_column_name.csv')
     runner.run
 
     result = runner.results.first
     result.success?.should be_true, "error code: #{result.error_code}, trace: #{result.log_trace}"
     table = result.tables.first
-    columns = @user.in_database[%Q{ SELECT * FROM information_schema.columns WHERE table_schema = 'cdb_importer' AND table_name   = '#{table}' }].map { |c| c[:column_name] }
+    columns = @db[%Q{ SELECT * FROM information_schema.columns WHERE table_schema = 'cdb_importer' AND table_name   = '#{table}' }].map { |c| c[:column_name] }
     columns.should include('column')
     columns.should include('column2')
   end
@@ -91,14 +75,14 @@ describe 'csv regression tests' do
     filepath    = path_to('ne_10m_populated_places_simple.csv')
     downloader  = Downloader.new(filepath)
     runner      = Runner.new({
-                               pg: @user.db_service.db_configuration_for,
+                               pg: @pg_options,
                                downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new(@user),
-                               user: @user
+                               log: CartoDB::Importer2::Doubles::Log.new,
+                               user: CartoDB::Importer2::Doubles::User.new
                              })
     runner.run
 
-    geometry_type_for(runner, @user).should eq 'POINT'
+    geometry_type_for(runner).should eq 'POINT'
   end
 
   it 'imports files from Google Fusion Tables' do
@@ -107,30 +91,30 @@ describe 'csv regression tests' do
           "?query=select+*+from+1dimNIKKwROG1yTvJ6JlMm4-B4LxMs2YbncM4p9g"
     downloader  = Downloader.new(url)
     runner      = Runner.new({
-                               pg: @user.db_service.db_configuration_for,
+                               pg: @pg_options,
                                downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new(@user),
-                               user: @user
+                               log: CartoDB::Importer2::Doubles::Log.new,
+                               user: CartoDB::Importer2::Doubles::User.new
                              })
     runner.run
 
     result = runner.results.first
     result.success?.should be_true, "error code: #{result.error_code}, trace: #{result.log_trace}"
-    geometry_type_for(runner, @user).should eq 'POINT'
+    geometry_type_for(runner).should eq 'POINT'
   end
 
   it 'imports files with a the_geom column in GeoJSON' do
     filepath    = path_to('csv_with_geojson.csv')
     downloader  = Downloader.new(filepath)
     runner      = Runner.new({
-                               pg: @user.db_service.db_configuration_for,
+                               pg: @pg_options,
                                downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new(@user),
-                               user: @user
+                               log: CartoDB::Importer2::Doubles::Log.new,
+                               user: CartoDB::Importer2::Doubles::User.new
                              })
     runner.run
 
-    geometry_type_for(runner, @user).should eq 'MULTIPOLYGON'
+    geometry_type_for(runner).should eq 'MULTIPOLYGON'
   end
 
   it 'imports files with spaces as delimiters' do
@@ -141,14 +125,14 @@ describe 'csv regression tests' do
     filepath    = path_to('ne_10m_populated_places_&simple.csv')
     downloader  = Downloader.new(filepath)
     runner      = Runner.new({
-                               pg: @user.db_service.db_configuration_for,
+                               pg: @pg_options,
                                downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new(@user),
-                               user: @user
+                               log: CartoDB::Importer2::Doubles::Log.new,
+                               user: CartoDB::Importer2::Doubles::User.new
                              })
     runner.run
 
-    geometry_type_for(runner, @user).should eq 'POINT'
+    geometry_type_for(runner).should eq 'POINT'
   end
 
   it 'import files named "all"' do
@@ -178,15 +162,15 @@ describe 'csv regression tests' do
     filepath    = path_to('in_cell_line_breaks.csv')
     downloader  = Downloader.new(filepath)
     runner      = Runner.new({
-                               pg: @user.db_service.db_configuration_for,
+                               pg: @pg_options,
                                downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new(@user),
-                               user: @user
+                               log: CartoDB::Importer2::Doubles::Log.new,
+                               user: CartoDB::Importer2::Doubles::User.new
                              })
     runner.run
 
     result = runner.results.first
-    @user.in_database[%Q{
+    @db[%Q{
       SELECT count(*)
       FROM #{result.schema}.#{result.table_name}
       AS count
@@ -197,15 +181,15 @@ describe 'csv regression tests' do
     filepath    = path_to('in_cell_line_breaks_needs_norm.csv')
     downloader  = Downloader.new(filepath)
     runner      = Runner.new({
-                               pg: @user.db_service.db_configuration_for,
+                               pg: @pg_options,
                                downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new(@user),
-                               user: @user
+                               log: CartoDB::Importer2::Doubles::Log.new,
+                               user: CartoDB::Importer2::Doubles::User.new
                              })
     runner.run
 
     result = runner.results.first
-    @user.in_database[%Q{
+    @db[%Q{
       SELECT count(*)
       FROM #{result.schema}.#{result.table_name}
       AS count
@@ -216,15 +200,15 @@ describe 'csv regression tests' do
     filepath    = path_to('cp1252_with_crlf.csv')
     downloader  = Downloader.new(filepath)
     runner      = Runner.new({
-                               pg: @user.db_service.db_configuration_for,
+                               pg: @pg_options,
                                downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new(@user),
-                               user: @user
+                               log: CartoDB::Importer2::Doubles::Log.new,
+                               user: CartoDB::Importer2::Doubles::User.new
                              })
     runner.run
 
     result = runner.results.first
-    @user.in_database[%Q{
+    @db[%Q{
       SELECT count(*)
       FROM #{result.schema}.#{result.table_name}
       AS count
@@ -235,21 +219,21 @@ describe 'csv regression tests' do
     filepath    = path_to('cp1252_with_rev_lf.csv')
     downloader  = Downloader.new(filepath)
     runner      = Runner.new({
-                               pg: @user.db_service.db_configuration_for,
+                               pg: @pg_options,
                                downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new(@user),
-                               user: @user
+                               log: CartoDB::Importer2::Doubles::Log.new,
+                               user: CartoDB::Importer2::Doubles::User.new
                              })
     runner.run
 
     result = runner.results.first
-    @user.in_database[%Q{
+    @db[%Q{
       SELECT count(*)
       FROM #{result.schema}.#{result.table_name}
       AS count
     }].first.fetch(:count).should eq 2
 
-    @user.in_database[%Q{
+    @db[%Q{
       SELECT c
       FROM #{result.schema}.#{result.table_name}
       WHERE a='200'
@@ -260,27 +244,27 @@ describe 'csv regression tests' do
     filepath    = path_to('utf8_with_rev_lf.csv')
     downloader  = Downloader.new(filepath)
     runner      = Runner.new({
-                               pg: @user.db_service.db_configuration_for,
+                               pg: @pg_options,
                                downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new(@user),
-                               user: @user
+                               log: CartoDB::Importer2::Doubles::Log.new,
+                               user: CartoDB::Importer2::Doubles::User.new
                              })
     runner.run
 
     result = runner.results.first
-    @user.in_database[%Q{
+    @db[%Q{
       SELECT count(*)
       FROM #{result.schema}.#{result.table_name}
       AS count
     }].first.fetch(:count).should eq 2
 
-   chk = @user.in_database[%Q{
+   chk = @db[%Q{
      SELECT c
      FROM #{result.schema}.#{result.table_name}
      WHERE a='200'
    }].first.fetch(:c)
 
-    @user.in_database[%Q{
+    @db[%Q{
       SELECT c
       FROM #{result.schema}.#{result.table_name}
       WHERE a='200'
@@ -292,33 +276,33 @@ describe 'csv regression tests' do
       filepath    = path_to(csv_file)
       downloader  = Downloader.new(filepath)
       runner      = Runner.new({
-                                 pg: @user.db_service.db_configuration_for,
+                                 pg: @pg_options,
                                  downloader: downloader,
-                                 log: CartoDB::Importer2::Doubles::Log.new(@user),
-                                 user: @user
+                                 log: CartoDB::Importer2::Doubles::Log.new,
+                                 user: CartoDB::Importer2::Doubles::User.new
                                })
       runner.run
 
       result = runner.results.first
-      @user.in_database[%Q{
+      @db[%Q{
         SELECT count(*)
         FROM #{result.schema}.#{result.table_name}
         AS count
       }].first.fetch(:count).should eq 2
 
-      @user.in_database[%Q{
+      @db[%Q{
         SELECT b
         FROM #{result.schema}.#{result.table_name}
         WHERE a='100'
       }].first.fetch(:b).should eq "--\"--"
 
-      @user.in_database[%Q{
+      @db[%Q{
         SELECT c
         FROM #{result.schema}.#{result.table_name}
         WHERE a='100'
       }].first.fetch(:c).should eq "\"XYZ\""
 
-      @user.in_database[%Q{
+      @db[%Q{
         SELECT c
         FROM #{result.schema}.#{result.table_name}
         WHERE a='200'
@@ -330,10 +314,10 @@ describe 'csv regression tests' do
     filepath    = path_to('broken_encoding.csv')
     downloader  = Downloader.new(filepath)
     runner      = Runner.new({
-                               pg: @user.db_service.db_configuration_for,
+                               pg: @pg_options,
                                downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new(@user),
-                               user: @user
+                               log: CartoDB::Importer2::Doubles::Log.new,
+                               user: CartoDB::Importer2::Doubles::User.new
                              })
     runner.run
 
@@ -350,16 +334,15 @@ describe 'csv regression tests' do
   end
 
   it 'errors after created temporary table should clean the table' do
-    user        = create_user
-    log         = CartoDB::Importer2::Doubles::Log.new(@user)
-    job         = Job.new({ logger: log, pg_options: user.db_service.db_configuration_for })
+    log         = CartoDB::Importer2::Doubles::Log.new
+    job         = Job.new({ logger: log, pg_options: @pg_options })
     runner = runner_with_fixture('too_many_columns.csv', job)
     runner.run
 
-    table_exists = @user.in_database[%Q{SELECT 1
+    table_exists = @db.execute(%Q{SELECT 1
                     FROM   information_schema.tables
                     WHERE  table_schema = '#{job.schema}'
-                    AND    table_name = '#{job.table_name}'}].first.to_i
+                    AND    table_name = '#{job.table_name}'})
     table_exists.should be 0
   end
 
@@ -382,7 +365,7 @@ describe 'csv regression tests' do
       SELECT *
       FROM #{job.qualified_table_name}
     }].first
-  end
+  end #sample_for
 
   # Using the version 2.x of ogr2ogr to check features like auto-guessing for example
   def ogr2ogr2_options
@@ -396,10 +379,10 @@ describe 'csv regression tests' do
     filepath = path_to(file)
     downloader = Downloader.new(filepath)
     runner = Runner.new({
-                 pg: @user.db_service.db_configuration_for,
+                 pg: @pg_options,
                  downloader: downloader,
-                 log: CartoDB::Importer2::Doubles::Log.new(@user),
-                 user: @user,
+                 log: CartoDB::Importer2::Doubles::Log.new,
+                 user: CartoDB::Importer2::Doubles::User.new,
                  job: job
                })
     if add_ogr2ogr2_options
@@ -408,4 +391,4 @@ describe 'csv regression tests' do
     runner
   end
 
-end
+end # csv regression tests

@@ -1,6 +1,5 @@
 # encoding: utf-8
 require_relative '../../../../spec/rspec_configuration'
-require_relative '../../../../spec/spec_helper'
 require_relative '../../lib/importer/runner'
 require_relative '../../lib/importer/job'
 require_relative '../../lib/importer/downloader'
@@ -18,27 +17,18 @@ describe 'OSM regression tests' do
   include_context 'cdb_importer schema'
   include_context "no stats"
 
-  before(:all) do
-    @user = create_user
-    @user.save
-  end
-
-  after(:all) do
-    @user.destroy
-  end
-
   it 'imports OSM files' do
     filepath    = path_to('map2.osm')
     downloader  = Downloader.new(filepath)
     runner      = Runner.new({
-                               pg: @user.db_service.db_configuration_for,
+                               pg: @pg_options,
                                downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new(@user),
-                               user: @user
+                               log: CartoDB::Importer2::Doubles::Log.new,
+                               user: CartoDB::Importer2::Doubles::User.new
                              })
     runner.run
 
-    geometry_type_for(runner, @user).should be
+    geometry_type_for(runner).should be
   end
 
   it 'displays a specific error message for too many nodes requested' do
@@ -46,10 +36,10 @@ describe 'OSM regression tests' do
     filepath = 'http://api.openstreetmap.org/api/0.6/map?bbox=-73.996,40.7642,-73.8624,40.8202'
     downloader = Downloader.new(filepath)
     runner = Runner.new({
-                          pg: @user.db_service.db_configuration_for,
+                          pg: @pg_options,
                           downloader: downloader,
-                          log: CartoDB::Importer2::Doubles::Log.new(@user),
-                          user: @user
+                          log: CartoDB::Importer2::Doubles::Log.new,
+                          user: CartoDB::Importer2::Doubles::User.new
                         })
     runner.run
 
@@ -58,4 +48,4 @@ describe 'OSM regression tests' do
   end
 
 
-end
+end # OSM regression tests

@@ -753,7 +753,6 @@ module CartoDB
         if permission.nil?
           perm = CartoDB::Permission.new
           perm.owner = user
-          perm.entity = self
           perm.save
           @permission_id = perm.id
           # Need to save again

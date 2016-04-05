@@ -12,8 +12,8 @@ describe('src/analysis/camshaft-reference', function () {
   describe('.getParamNamesForAnalysisType', function () {
     it('should return the params names for a given analyses type', function () {
       expect(camshaftReference.getParamNamesForAnalysisType('source')).toEqual(['query']);
-      expect(camshaftReference.getParamNamesForAnalysisType('point-in-polygon')).toEqual([]);
-      expect(camshaftReference.getParamNamesForAnalysisType('trade-area')).toEqual(['kind', 'time']);
+      expect(camshaftReference.getParamNamesForAnalysisType('point-in-polygon')).toEqual(['points_source', 'polygons_source']);
+      expect(camshaftReference.getParamNamesForAnalysisType('trade-area')).toEqual(['source', 'kind', 'time']);
     });
   });
 });

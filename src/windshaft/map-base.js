@@ -24,6 +24,9 @@ var WindshaftMap = Backbone.Model.extend({
     if (!options.layersCollection) {
       throw new Error('layersCollection option is required');
     }
+    if (!options.analysisCollection) {
+      throw new Error('analysisCollection option is required');
+    }
 
     this.client = options.client;
     this.set({
@@ -33,6 +36,7 @@ var WindshaftMap = Backbone.Model.extend({
 
     this._dataviewsCollection = options.dataviewsCollection;
     this._layersCollection = options.layersCollection;
+    this._analysisCollection = options.analysisCollection;
   },
 
   toJSON: function () {

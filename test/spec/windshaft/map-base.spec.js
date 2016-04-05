@@ -46,6 +46,7 @@ describe('windshaft/map-base', function () {
 
     this.dataviewsCollection = new Backbone.Collection();
     this.layersCollection = new Backbone.Collection();
+    this.analysisCollection = new Backbone.Collection();
 
     this.client = new WindshaftClient({
       endpoint: 'v1',
@@ -78,7 +79,8 @@ describe('windshaft/map-base', function () {
       }, {
         client: this.client,
         dataviewsCollection: this.dataviewsCollection,
-        layersCollection: this.layersCollection
+        layersCollection: this.layersCollection,
+        analysisCollection: this.analysisCollection
       });
 
       this.filter = new CategoryFilter({
@@ -157,7 +159,8 @@ describe('windshaft/map-base', function () {
       }, { // eslint-disable-line
         client: this.client,
         dataviewsCollection: this.dataviewsCollection,
-        layersCollection: this.layersCollection
+        layersCollection: this.layersCollection,
+        analysisCollection: this.analysisCollection
       });
 
       this.windshaftMap.createInstance({
@@ -338,7 +341,8 @@ describe('windshaft/map-base', function () {
       }, {
         client: windshaftClient,
         dataviewsCollection: this.dataviewsCollection,
-        layersCollection: this.layersCollection
+        layersCollection: this.layersCollection,
+        analysisCollection: this.analysisCollection
       });
       expect(windshaftMap.getBaseURL()).toEqual('https://rambo.example.com:443/api/v1/map/0123456789');
     });
@@ -357,7 +361,8 @@ describe('windshaft/map-base', function () {
           endpoint: 'v2'
         }),
         dataviewsCollection: this.dataviewsCollection,
-        layersCollection: this.layersCollection
+        layersCollection: this.layersCollection,
+        analysisCollection: this.analysisCollection
       });
 
       expect(windshaftMap.getBaseURL()).toEqual('http://cdn.http.example.com/rambo/api/v1/map/0123456789');
@@ -377,7 +382,8 @@ describe('windshaft/map-base', function () {
           endpoint: 'v2'
         }),
         dataviewsCollection: this.dataviewsCollection,
-        layersCollection: this.layersCollection
+        layersCollection: this.layersCollection,
+        analysisCollection: this.analysisCollection
       });
 
       expect(windshaftMap.getBaseURL()).toEqual('https://cdn.https.example.com/rambo/api/v1/map/0123456789');
@@ -407,7 +413,8 @@ describe('windshaft/map-base', function () {
           endpoint: 'v2'
         }),
         dataviewsCollection: this.dataviewsCollection,
-        layersCollection: this.layersCollection
+        layersCollection: this.layersCollection,
+        analysisCollection: this.analysisCollection
       });
 
       // No type specified
@@ -453,7 +460,8 @@ describe('windshaft/map-base', function () {
           endpoint: 'v2'
         }),
         dataviewsCollection: this.dataviewsCollection,
-        layersCollection: this.layersCollection
+        layersCollection: this.layersCollection,
+        analysisCollection: this.analysisCollection
       });
 
       // Request tiles for "mapnik" layers specifically
@@ -488,7 +496,8 @@ describe('windshaft/map-base', function () {
           endpoint: 'v2'
         }),
         dataviewsCollection: this.dataviewsCollection,
-        layersCollection: this.layersCollection
+        layersCollection: this.layersCollection,
+        analysisCollection: this.analysisCollection
       });
 
       // Request tiles for "torque" layers specifically
@@ -528,7 +537,8 @@ describe('windshaft/map-base', function () {
           endpoint: 'v2'
         }),
         dataviewsCollection: this.dataviewsCollection,
-        layersCollection: this.layersCollection
+        layersCollection: this.layersCollection,
+        analysisCollection: this.analysisCollection
       });
 
       // Request tiles for "mapnik" layers specifically (#0 and #2)
@@ -570,7 +580,8 @@ describe('windshaft/map-base', function () {
           endpoint: 'v2'
         }),
         dataviewsCollection: this.dataviewsCollection,
-        layersCollection: this.layersCollection
+        layersCollection: this.layersCollection,
+        analysisCollection: this.analysisCollection
       });
 
       expect(windshaftMap.getTiles()).toEqual({
@@ -604,7 +615,8 @@ describe('windshaft/map-base', function () {
             endpoint: 'v2'
           }),
           dataviewsCollection: this.dataviewsCollection,
-          layersCollection: this.layersCollection
+          layersCollection: this.layersCollection,
+          analysisCollection: this.analysisCollection
         });
         expect(windshaftMap.getTiles()).toEqual({
           tiles: [ 'https://rambo.example.com:443/api/v1/map/0123456789/0,1/{z}/{x}/{y}.png' ],
@@ -637,7 +649,8 @@ describe('windshaft/map-base', function () {
             endpoint: 'v2'
           }),
           dataviewsCollection: this.dataviewsCollection,
-          layersCollection: this.layersCollection
+          layersCollection: this.layersCollection,
+          analysisCollection: this.analysisCollection
         });
         expect(windshaftMap.getTiles()).toEqual({
           'tiles': [
@@ -690,7 +703,8 @@ describe('windshaft/map-base', function () {
             endpoint: 'v2'
           }),
           dataviewsCollection: this.dataviewsCollection,
-          layersCollection: this.layersCollection
+          layersCollection: this.layersCollection,
+          analysisCollection: this.analysisCollection
         });
         expect(windshaftMap.getTiles()).toEqual({
           'tiles': [ 'https://cdn.https.example.com/rambo/api/v1/map/0123456789/0,1/{z}/{x}/{y}.png' ],
@@ -727,7 +741,8 @@ describe('windshaft/map-base', function () {
             endpoint: 'v2'
           }),
           dataviewsCollection: this.dataviewsCollection,
-          layersCollection: this.layersCollection
+          layersCollection: this.layersCollection,
+          analysisCollection: this.analysisCollection
         });
         expect(windshaftMap.getTiles()).toEqual({
           'tiles': [
@@ -777,7 +792,8 @@ describe('windshaft/map-base', function () {
           endpoint: 'v2'
         }),
         dataviewsCollection: this.dataviewsCollection,
-        layersCollection: this.layersCollection
+        layersCollection: this.layersCollection,
+        analysisCollection: this.analysisCollection
       });
 
       var dataviewURL = windshaftMap.getDataviewURL({ dataviewId: 'whatever', protocol: 'http' });
@@ -812,7 +828,8 @@ describe('windshaft/map-base', function () {
           endpoint: 'v2'
         }),
         dataviewsCollection: this.dataviewsCollection,
-        layersCollection: this.layersCollection
+        layersCollection: this.layersCollection,
+        analysisCollection: this.analysisCollection
       });
 
       dataviewURL = windshaftMap.getDataviewURL({ dataviewId: 'whatever', protocol: 'http' });
@@ -855,7 +872,8 @@ describe('windshaft/map-base', function () {
           endpoint: 'v2'
         }),
         dataviewsCollection: this.dataviewsCollection,
-        layersCollection: this.layersCollection
+        layersCollection: this.layersCollection,
+        analysisCollection: this.analysisCollection
       });
 
       var dataviewURL = windshaftMap.getDataviewURL({ dataviewId: 'dataviewId', protocol: 'http' });

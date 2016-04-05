@@ -21,12 +21,11 @@ for (var analysisType in analysesReference) {
   var analysisParams = analysesReference[analysisType].params;
   for (var paramName in analysisParams) {
     ANALYSIS_TYPE_TO_PARAM_NAMES_MAP[analysisType] = ANALYSIS_TYPE_TO_PARAM_NAMES_MAP[analysisType] || [];
+    ANALYSIS_TYPE_TO_PARAM_NAMES_MAP[analysisType].push(paramName);
     ANALYSIS_TYPE_TO_SOURCE_PARAM_NAMES_MAP[analysisType] = ANALYSIS_TYPE_TO_SOURCE_PARAM_NAMES_MAP[analysisType] || [];
     var paramType = analysisParams[paramName].type;
     if (paramType === PARAM_TYPES.NODE) {
       ANALYSIS_TYPE_TO_SOURCE_PARAM_NAMES_MAP[analysisType].push(paramName);
-    } else if ([PARAM_TYPES.STRING, PARAM_TYPES.NUMBER, PARAM_TYPES.ENUM].indexOf(paramType) >= 0) {
-      ANALYSIS_TYPE_TO_PARAM_NAMES_MAP[analysisType].push(paramName);
     }
   }
 }

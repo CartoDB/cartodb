@@ -26,20 +26,6 @@ module.exports = Model.extend({
     this._map.reload(opts);
   },
 
-  update: function (attrs, options) {
-    options = options || {};
-
-    _.each(attrs, function (value, name) {
-      if (this._getParamNames().indexOf(name) < 0) {
-        throw new Error("Only '" + this._getParamNames().join("', '") + "' attribute(s) can be changed");
-      }
-    }, this);
-
-    this.set(attrs, {
-      silent: options.silent
-    });
-  },
-
   remove: function () {
     this.trigger('destroy', this);
   },

@@ -159,7 +159,7 @@ module Carto
 
     def add_overlays(visualization, exported_data)
       exported_data["overlays"].each do |exported_overlay|
-        CartoDB::Overlay::Member.new(exported_overlay.merge('visualization_id' => visualization.id)).store
+        Carto::Overlay.new(exported_overlay.merge('visualization_id' => visualization.id)).save
       end
 
       true

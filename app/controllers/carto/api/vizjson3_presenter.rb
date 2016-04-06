@@ -435,7 +435,7 @@ module Carto
           @decoration_data
         )
 
-        {
+        torque = {
           id:         @layer.id,
           type:       'torque',
           order:      @layer.order,
@@ -446,6 +446,18 @@ module Carto
             sql_api_template: ApplicationHelper.sql_api_template(api_templates_type)
           }.merge(layer_options.select { |k| TORQUE_ATTRS.include? k })
         }
+
+        torque[:cartocss] = layer_options[:tile_style]
+
+        torque[:cartocss_version] = @layer.options['style_version'] if @layer
+
+        torque[:sql] = if layer_options[:query].present? || @layer.nil?
+                                layer_options[:query]
+                              else
+                                @layer.options['query']
+                              end
+
+        torque
       end
 
       MUSTACHE_ROOT_PATH = 'lib/assets/javascripts/cartodb3/mustache-templates'.freeze

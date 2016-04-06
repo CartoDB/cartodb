@@ -83,7 +83,8 @@
     "tipsy": "./vendor/assets/javascripts/jquery.tipsy.js",
     "markdown": "./vendor/assets/javascripts/markdown.js",
     "dragster": "./vendor/assets/javascripts/dragster.js",
-    "dropzone": "./vendor/assets/javascripts/dropzone.js"
+    "dropzone": "./vendor/assets/javascripts/dropzone.js",
+    "datepicker": "./vendor/assets/javascripts/datepicker.js"
   },
   "browserify-shim": {
     "jquery-cdb-v3": "global:$",

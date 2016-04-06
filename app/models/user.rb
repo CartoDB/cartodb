@@ -550,6 +550,9 @@ class User < Sequel::Model
     self.database_host
   end
 
+  # Obtain a db connection through the default port. Allows to set a statement_timeout
+  # which is only effective in case the connection does not use PGBouncer or any other
+  # PostgreSQL transaction-level connection pool which might not persist connection variables.
   def in_database(options = {}, &block)
     if options[:statement_timeout]
       in_database.run("SET statement_timeout TO #{options[:statement_timeout]}")
@@ -558,18 +561,7 @@ class User < Sequel::Model
     configuration = db_service.db_configuration_for(options[:as])
     configuration['database'] = options['database'] unless options['database'].nil?
 
-    begin
-      connection = $pool.fetch(configuration) do
-        db = get_database(options, configuration)
-        db.extension(:connection_validator)
-        db.pool.connection_validation_timeout = configuration.fetch('conn_validator_timeout', -1)
-        db
-      end
-    rescue => exception
-      CartoDB::report_exception(exception, "Cannot connect to user database",
-                                user: self, database: configuration['database'])
-      raise exception
-    end
+    connection = get_connection(options, configuration)
 
     if block_given?
       yield(connection)
@@ -598,6 +590,19 @@ class User < Sequel::Model
         end
       end
     end
+  end
+
+  def get_connection(options = {}, configuration)
+  connection = $pool.fetch(configuration) do
+      db = get_database(_opts = {}, configuration)
+      db.extension(:connection_validator)
+      db.pool.connection_validation_timeout = configuration.fetch('conn_validator_timeout', -1)
+      db
+    end
+  rescue => exception
+    CartoDB::report_exception(exception, "Cannot connect to user database",
+                              user: self, database: configuration['database'])
+    raise exception
   end
 
   def connection(options = {})

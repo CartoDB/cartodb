@@ -1,4 +1,5 @@
 # encoding: utf-8
+require_relative '../../../../spec/spec_helper_min'
 require_relative '../../lib/importer/downloader'
 require_relative '../../../../lib/carto/url_validator'
 

@@ -187,10 +187,16 @@ module CartoDB
                 type:     layer[:type].downcase,
                 options:  {
                             cartocss_version: '2.0.1',
-                            cartocss:         self.css_from(layer[:options]),
-                            sql:              layer[:options].fetch( 'query' )
+                            cartocss:         self.css_from(layer[:options])
                           }
               }
+              source = layer[:options]['source']
+              if source
+                layer[:options].delete('query')
+                layer_data[:options][:source] = layer[:options].fetch('source')
+              else
+                layer_data[:options][:sql] = layer[:options].fetch('query')
+              end
 
               layers_data.push(layer_data)
             }
@@ -275,7 +281,10 @@ module CartoDB
 
         layer_placeholder = "layer#{layer_num}"
         layer_num += 1
-        layer_options[:sql] = "SELECT * FROM (#{layer[:options][:sql]}) AS wrapped_query WHERE <%= #{layer_placeholder} %>=1"
+
+        unless layer_options[:source]
+          layer_options[:sql] = "SELECT * FROM (#{layer[:options][:sql]}) AS wrapped_query WHERE <%= #{layer_placeholder} %>=1"
+        end
 
         template_data[:placeholders][layer_placeholder.to_sym] = {
           type:     'number',

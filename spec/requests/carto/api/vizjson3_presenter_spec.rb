@@ -17,16 +17,20 @@ describe Carto::Api::VizJSON3Presenter do
     MockRedis.new
   end
 
+  shared_context 'full visualization' do
+      before(:all) do
+        @map, @table, @table_visualization, @visualization = create_full_visualization(Carto::User.find(@user_1.id))
+      end
+
+      after(:all) do
+        destroy_full_visualization(@map, @table, @table_visualization, @visualization)
+      end
+
+      let(:viewer_user) { @visualization.user }
+  end
+
   describe 'caching' do
-    before(:all) do
-      @map, @table, @table_visualization, @visualization = create_full_visualization(Carto::User.find(@user_1.id))
-    end
-
-    after(:all) do
-      destroy_full_visualization(@map, @table, @table_visualization, @visualization)
-    end
-
-    let(:viewer_user) { @visualization.user }
+    include_context 'full visualization'
 
     it 'uses the redis vizjson cache' do
       fake_vizjson = { fake: 'sure!', layers: [] }
@@ -61,6 +65,41 @@ describe Carto::Api::VizJSON3Presenter do
       v2_vizjson.should_not eq v3_vizjson
       v2_vizjson[:version].should eq '0.1.0'
       v3_vizjson[:version].should eq '3.0.0'
+    end
+  end
+
+  describe 'analyses' do
+    include_context 'full visualization'
+
+    it 'sends `source` at layer options instead of sql if source is set for named maps' do
+      query = "select * from #{@table.name}"
+
+      layer = @visualization.data_layers.first
+      layer.options['source'].should eq nil
+      layer.options['query'] = query
+      layer.save
+
+      # INFO: send :calculate_vizjson won't use cache
+      v2_vizjson = Carto::Api::VizJSONPresenter.new(@visualization, $tables_metadata).send :calculate_vizjson
+      v3_vizjson = Carto::Api::VizJSON3Presenter.new(@visualization, viewer_user).send :calculate_vizjson
+
+      v2_vizjson[:layers][1][:options][:layer_definition][:layers][0][:options][:sql].should eq query
+      v2_vizjson[:layers][1][:options][:layer_definition][:layers][0][:options][:source].should be_nil
+      v3_vizjson[:layers][1][:options][:layer_definition][:layers][0][:options][:sql].should eq query
+      v3_vizjson[:layers][1][:options][:layer_definition][:layers][0][:options][:source].should be_nil
+
+      source = 'a1'
+      layer.options['source'] = source
+      layer.save
+      @visualization.reload
+
+      v2_vizjson = Carto::Api::VizJSONPresenter.new(@visualization, $tables_metadata).send :calculate_vizjson
+      v3_vizjson = Carto::Api::VizJSON3Presenter.new(@visualization, viewer_user).send :calculate_vizjson
+
+      v2_vizjson[:layers][1][:options][:layer_definition][:layers][0][:options][:sql].should eq query
+      v2_vizjson[:layers][1][:options][:layer_definition][:layers][0][:options][:source].should be_nil
+      v3_vizjson[:layers][1][:options][:layer_definition][:layers][0][:options][:sql].should be_nil
+      v3_vizjson[:layers][1][:options][:layer_definition][:layers][0][:options][:source].should eq source
     end
   end
 

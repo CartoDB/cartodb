@@ -294,10 +294,10 @@ module CartoDB
                                           }
         }
 
+        safe_sequel_delete { permission.destroy_shared_entities } if permission
         safe_sequel_delete { repository.delete(id) }
-        safe_sequel_delete { CartoDB::SharedEntity.where(entity_id: id).delete }
         safe_sequel_delete { permission.destroy } if permission
-        self.attributes.keys.each { |key| self.send("#{key}=", nil) }
+        attributes.keys.each { |key| send("#{key}=", nil) }
 
         self
       end

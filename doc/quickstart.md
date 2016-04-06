@@ -40,7 +40,7 @@ cartodb.deepInsights.createDashboard('#dashboard', vizJSONurl, function(err, das
       "aggregation": "count",
     };
     // adds a categoty using column `test` from the second layer
-    dashboard.createCategory(params, map.getLayer(2))
+    dashboard.createCategoryWidget(params, map.getLayer(2))
 });
 ```
 

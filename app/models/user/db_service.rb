@@ -342,9 +342,6 @@ module CartoDB
 
             # If user is in an organization should never have public schema, but to be safe (& tests which stub stuff)
             unless @user.database_schema == SCHEMA_PUBLIC
-              drop_users_privileges_in_schema(
-                @user.database_schema,
-                [@user.database_username, @user.database_public_username, CartoDB::PUBLIC_DB_USER])
               database.run(%{ DROP FUNCTION IF EXISTS "#{@user.database_schema}"._CDB_UserQuotaInBytes()})
               drop_all_functions_from_schema(@user.database_schema)
               database.run(%{ DROP SCHEMA IF EXISTS "#{@user.database_schema}" })
@@ -429,6 +426,27 @@ module CartoDB
         configure_extension_org_metadata_api_endpoint
       end
 
+      # Use a direct connection to the db through the direct port specified
+      # in the database configuration and set up its statement timeout value. This
+      # allows to overpass the statement_timeout limit if a connection pooler is used.
+      # This method is supposed to receive a block that will be run with the created
+      # connection.
+      def in_database_direct_connection(statement_timeout:)
+        raise 'need block' unless block_given?
+
+        configuration = db_configuration_for
+        configuration[:port] = configuration.fetch(:direct_port, configuration["direct_port"]) || configuration[:port] || configuration["port"]
+
+        connection = @user.get_connection(_opts = {}, configuration)
+
+        begin
+          connection.run("SET statement_timeout TO #{statement_timeout}")
+          yield(connection)
+        ensure
+          connection.run("SET statement_timeout TO DEFAULT")
+        end
+      end
+
       def reset_pooled_connections
         # Only close connections to this users' database
         $pool.close_connections!(@user.database_name)
@@ -437,7 +455,7 @@ module CartoDB
       # Upgrade the cartodb postgresql extension
       def upgrade_cartodb_postgres_extension(statement_timeout = nil, cdb_extension_target_version = nil)
         if cdb_extension_target_version.nil?
-          cdb_extension_target_version = '0.14.3'
+          cdb_extension_target_version = '0.15.0'
         end
 
         @user.in_database(as: :superuser, no_cartodb_in_schema: true) do |db|
@@ -965,6 +983,7 @@ module CartoDB
         conn ||= @user.in_database(as: :cluster_admin)
 
         if !@user.database_name.nil? && !@user.database_name.empty?
+          @user.in_database(as: :superuser).run("DROP SCHEMA \"#{@user.database_schema}\" CASCADE")
           conn.run("UPDATE pg_database SET datallowconn = 'false' WHERE datname = '#{@user.database_name}'")
           CartoDB::UserModule::DBService.terminate_database_connections(@user.database_name, @user.database_host)
           conn.run("DROP DATABASE \"#{@user.database_name}\"")
@@ -1144,6 +1163,9 @@ module CartoDB
                 trigger_verbose = #{varnish_trigger_verbose}
 
                 client = GD.get('varnish', None)
+                for i in ('base64', 'hashlib'):
+                  if not i in GD:
+                    GD[i] = __import__(i)
 
                 while True:
 
@@ -1158,14 +1180,9 @@ module CartoDB
                         break
 
                   try:
-                    # NOTE: every table change also changed CDB_TableMetadata, so
-                    #       we purge those entries too
-                    #
-                    # TODO: do not invalidate responses with surrogate key
-                    #       "not_this_one" when table "this" changes :/
-                    #       --strk-20131203;
-                    #
-                    client.fetch('#{purge_command} obj.http.X-Cache-Channel ~ "^#{@user.database_name}:(.*%s.*)|(cdb_tablemetadata)|(table)$"' % table_name.replace('"',''))
+                    cache_key = "t:" + GD['base64'].b64encode(GD['hashlib'].sha256('#{@user.database_name}:%s' % table_name).digest())[0:6]
+                    # We want to say \b here, but the Varnish telnet interface expects \\b, we have to escape that on Python to \\\\b and double that for SQL
+                    client.fetch('#{purge_command} obj.http.Surrogate-Key ~ "\\\\\\\\b%s\\\\\\\\b"' % cache_key)
                     break
                   except Exception as err:
                     if trigger_verbose:
@@ -1203,21 +1220,16 @@ module CartoDB
                 timeout = #{varnish_timeout}
                 retry = #{varnish_retry}
                 trigger_verbose = #{varnish_trigger_verbose}
-
-                import httplib
+                for i in ('httplib', 'base64', 'hashlib'):
+                  if not i in GD:
+                    GD[i] = __import__(i)
 
                 while True:
 
                   try:
-                    # NOTE: every table change also changed CDB_TableMetadata, so
-                    #       we purge those entries too
-                    #
-                    # TODO: do not invalidate responses with surrogate key
-                    #       "not_this_one" when table "this" changes :/
-                    #       --strk-20131203;
-                    #
-                    client = httplib.HTTPConnection('#{varnish_host}', #{varnish_port}, False, timeout)
-                    client.request('PURGE', '/batch', '', {"Invalidation-Match": ('^#{@user.database_name}:(.*%s.*)|(cdb_tablemetadata)|(table)$' % table_name.replace('"',''))  })
+                    client = GD['httplib'].HTTPConnection('#{varnish_host}', #{varnish_port}, False, timeout)
+                    cache_key = "t:" + GD['base64'].b64encode(GD['hashlib'].sha256('#{@user.database_name}:%s' % table_name).digest())[0:6]
+                    client.request('PURGE', '/key', '', {"Invalidation-Match": ('\\\\b%s\\\\b' % cache_key) })
                     response = client.getresponse()
                     assert response.status == 204
                     break

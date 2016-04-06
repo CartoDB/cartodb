@@ -12,7 +12,7 @@ require_relative '../table/privacy_manager'
 require_relative '../../../services/minimal-validation/validator'
 require_relative '../../../services/named-maps-api-wrapper/lib/named_maps_wrapper'
 require_relative '../../helpers/embed_redis_cache'
-require_relative '../../helpers/redis_vizjson_cache'
+require_dependency 'cartodb/redis_vizjson_cache'
 
 # Every table has always at least one visualization (the "canonical visualization"), of type 'table',
 # which shares the same privacy options as the table and gets synced.
@@ -293,9 +293,11 @@ module CartoDB
                                             child.fetch.delete
                                           }
         }
-        safe_sequel_delete { permission.destroy } if permission
+
+        safe_sequel_delete { permission.destroy_shared_entities } if permission
         safe_sequel_delete { repository.delete(id) }
-        self.attributes.keys.each { |key| self.send("#{key}=", nil) }
+        safe_sequel_delete { permission.destroy } if permission
+        attributes.keys.each { |key| send("#{key}=", nil) }
 
         self
       end
@@ -747,18 +749,14 @@ module CartoDB
 
         set_timestamps
 
-        repository.store(id, attributes.to_hash)
-
-        # Careful to not call Permission.save until after persisted the vis
+        # Ensure a permission is set before saving the visualization
         if permission.nil?
           perm = CartoDB::Permission.new
           perm.owner = user
-          perm.entity = self
           perm.save
           @permission_id = perm.id
-          # Need to save again
-          repository.store(id, attributes.to_hash)
         end
+        repository.store(id, attributes.to_hash)
 
         begin
           save_named_map

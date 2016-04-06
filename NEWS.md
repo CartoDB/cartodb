@@ -1,7 +1,38 @@
-3.12.* (2016-XX-XX)
+3.13.0 (2016-XX-XX)
 -------------------
-## Features
+### NOTICE
+This release introduces a different method of doing cache invalidations, using Surrogate Keys instead of the older X-Cache-Channel header.
+See [CartoDB Surrogate Keys](https://github.com/CartoDB/cartodb/wiki/CartoDB-Surrogate-Keys) on the wiki for more information about this change.
+
+All invalidations done from newly created CartoDB accounts/databases from this release will invalidate using the new method.
+Due to this, if you use Varnish or any alternate caching methods, you need to update to a version of the APIs which provides a Surrogate-Keys header on all the cacheable responses:
+  * Windshaft-cartodb >= 2.27.0
+  * CartoDB-SQL-API >= 1.26.0
+
+After ensuring those applications are updated, you should restart Varnish (or purge all its objects) to ensure all new objects will contain
+the Surrogate-Keys header, and then reload the invalidation trigger installed on the user databases to be upgraded with the Rake task: `rake cartodb:db:load_varnish_trigger`.
+
+For backwards compatibility with unupgraded trigger versions, those API versions still emit both X-Cache-Channel and Surrogate-Key headers.
+However, this will be deprecated on a future release.
+
+### NOTICE
+This release changes how visualization permissions are stored in the database. To ensure that the database state is consistent,
+it is highly recommended to run the following rake task BEFORE MIGRATING the database schema: `rake cartodb:permissions:fill_missing_permissions`.
+
+The task will report visualization that could not be automatically fixed, where multiple permissions exists for a given visualization,
+which should be fixed manually.
+
+### Features
+* Change Varnish table-related invalidations and tagging to use [Surrogate Keys](https://github.com/CartoDB/cartodb/wiki/CartoDB-Surrogate-Keys)
+* Remove Varnish table invalidations from Rails and replaced them with CDB_TableMetadataTouch calls (delegating invalidation responsibility to the database)
 * Adds optional strong passwords for organization signups
+* Add new function User#direct_db_connection which uses a new direct_port paramerer to be specified in database.yml to connect to the database. Usage instructions:
+  * Use `port` in database.yml to specify the port through which the db is accessed for regular queries (such as pgbouncer connections)
+  * Use `direct_port` in database.yml to specify the port through which the db can be directly accessed (i.e. the port in which Postgres is running)
+  * This change is backwards compatible and will fallback to `port` whenever `direct_port` is not specified in the database configuration file.
+* Update ogr2ogr version to 2.1, configurable in `app_config.yml`. To install it in the system, run:
+  * `sudo apt-get install gdal2.1-static-bin`
+* Ghost table linking is now concurrent per user (avoids race conditions)
 
 ## Bug Fixes
 * Updating CartoDB.js submodule with last changes sanitizing attribution.
@@ -16,6 +47,11 @@
   * See instructions to upgrade to the latest extension version [here](https://github.com/CartoDB/cartodb-postgresql#update-cartodb-extension)
 * Fix slow search of visualizations by name
 * Update and improve logging system
+* Fix broken syncs after setting sync options to "Never"
+* Fix broken visualizations due to invalid permissions
+* Make `layers.kind` not null. Run `bundle exec rake db:migrate` to update your database.
+* Fix error when deleting organizational users that had created objects via SQL-API
+* Change deprecated PostGIS function `ST_Force_2D` for the new `ST_Force2D`
 
 ## Security fixes
 

@@ -19,6 +19,8 @@ module Carto
         values(@overlay, VIZJSON_VALUES)
       end
 
+      alias_method :to_vizjson, :to_vizjson_poro
+
       protected
 
       def values(overlay, attribute_list)

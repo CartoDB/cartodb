@@ -91,6 +91,9 @@ shared_examples_for "user models" do
     include_context 'organization with users helper'
 
     before(:each) do
+      Date.stubs(:today).returns(Date.new(2016,02,28))
+      Date.stubs(:current).returns(Date.new(2016,02,28))
+      DateTime.stubs(:current).returns(DateTime.new(2016,02,28))
       @mock_redis = MockRedis.new
       @user1.geocoding_quota = 500
       @user1.period_end_date = (DateTime.current + 1) << 1
@@ -172,6 +175,9 @@ shared_examples_for "user models" do
     include_context 'organization with users helper'
 
     before(:each) do
+      Date.stubs(:today).returns(Date.new(2016,02,28))
+      Date.stubs(:current).returns(Date.new(2016,02,28))
+      DateTime.stubs(:current).returns(DateTime.new(2016,02,28))
       @mock_redis = MockRedis.new
       @user1.here_isolines_quota = 500
       @user1.period_end_date = (DateTime.current + 1) << 1
@@ -209,6 +215,9 @@ shared_examples_for "user models" do
     include_context 'organization with users helper'
 
     before(:each) do
+      Date.stubs(:today).returns(Date.new(2016,02,28))
+      Date.stubs(:current).returns(Date.new(2016,02,28))
+      DateTime.stubs(:current).returns(DateTime.new(2016,02,28))
       @mock_redis = MockRedis.new
       @user1.here_isolines_quota = 500
       @user1.period_end_date = (DateTime.current + 1) << 1

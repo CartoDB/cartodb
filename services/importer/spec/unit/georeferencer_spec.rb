@@ -3,12 +3,14 @@ require_relative '../../lib/importer/georeferencer'
 require_relative '../factories/pg_connection'
 require_relative '../../../../services/importer/spec/doubles/log'
 require_relative '../../../../spec/rspec_configuration'
+require_relative '../../../../spec/spec_helper'
 
 include CartoDB
 
 include CartoDB::Importer2
 
 describe Importer2::Georeferencer do
+
   before(:all) do
     @db = Importer2::Factories::PGConnection.new(
       :create_db => 'georeferencer_spec'
@@ -19,6 +21,9 @@ describe Importer2::Georeferencer do
     @db.execute('SET search_path TO cdb_importer,public')
 
     @table_name = create_table(@db)
+
+    @user = create_user
+    @user.save
   end
 
   after(:all) do
@@ -28,6 +33,8 @@ describe Importer2::Georeferencer do
     #TODO Drop schema
 
     @db.disconnect
+
+    @user.destroy
   end
 
   before(:each) do
@@ -125,7 +132,7 @@ describe Importer2::Georeferencer do
 
   def georeferencer_instance(db = @db, table_name = @table_name)
     options = { guessing: {enabled: false} }
-    Importer2::Georeferencer.new(@db, table_name, options, Importer2::Georeferencer::DEFAULT_SCHEMA, job=nil, geometry_columns=nil, logger=CartoDB::Importer2::Doubles::Log.new)
+    Importer2::Georeferencer.new(@db, table_name, options, Importer2::Georeferencer::DEFAULT_SCHEMA, job=nil, geometry_columns=nil, logger=CartoDB::Importer2::Doubles::Log.new(@user))
   end
 
   # Attempts to create a new database schema

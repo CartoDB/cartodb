@@ -69,6 +69,7 @@ WORKING_SPECS_1 = \
   spec/lib/carto/http_header_authentication_spec.rb \
 	spec/lib/carto/users_metadata_redis_cache_spec.rb \
   spec/lib/carto/http/client_spec.rb \
+	spec/lib/carto/bolt_spec.rb \
 	spec/helpers/uuidhelper_spec.rb \
 	spec/helpers/url_validator_spec.rb \
 	spec/models/carto/bi_dataset_spec.rb \
@@ -225,12 +226,13 @@ WORKING_SPECS_9 = \
 # Tests using spec_helper_min instead of spec_helper
 SPEC_HELPER_MIN_SPECS = \
 	spec/models/carto/analysis_spec.rb \
+	spec/models/carto/overlay_spec.rb \
 	spec/models/table_registrar_spec.rb \
 	spec/requests/admin/organization_users_controller_spec.rb \
 	spec/requests/api/json/maps_controller_spec.rb \
 	spec/requests/carto/api/analyses_controller_spec.rb \
 	spec/requests/carto/api/maps_controller_spec.rb \
-	spec/models/carto/overlay_spec.rb \
+	spec/requests/carto/api/vizjson3_presenter_spec.rb \
 	spec/requests/admin/users_controller_spec.rb \
 	spec/lib/carto/strong_password_validator_spec.rb \
 	$(NULL)
@@ -238,6 +240,10 @@ SPEC_HELPER_MIN_SPECS = \
 # This class must be tested isolated as pollutes namespace
 WORKING_SPECS_carto_db_class = \
 	spec/helpers/carto_db_spec.rb \
+  $(NULL)
+
+SPECS_WITHOUT_RAILS = \
+	spec/lib/cartodb/redis_vizjson_cache_spec.rb \
   $(NULL)
 
 CDB_PATH=lib/assets/javascripts/cdb
@@ -255,27 +261,29 @@ endif
 
 # TODO: Ongoing removal of groups, that's the reason of holes in numbering
 check-1:
-	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_1)
+	CHECK_SPEC=1 RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_1)
 check-2:
-	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_2)
+	CHECK_SPEC=2 RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_2)
 check-4:
-	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_4)
+	CHECK_SPEC=4 RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_4)
 check-5:
-	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_5)
+	CHECK_SPEC=5 RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_5)
 check-7:
-	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_7)
+	CHECK_SPEC=7 RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_7)
 check-9:
-	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_9)
+	CHECK_SPEC=9 RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_9)
 check-spec-helper-min:
-	RAILS_ENV=test bundle exec rspec $(SPEC_HELPER_MIN_SPECS)
+	CHECK_SPEC=50 RAILS_ENV=test bundle exec rspec $(SPEC_HELPER_MIN_SPECS)
 check-carto-db-class:
-	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_carto_db_class)
+	CHECK_SPEC=51 RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_carto_db_class)
 check-integrations:
-	RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_INTEGRATIONS)
+	CHECK_SPEC=52 RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_INTEGRATIONS)
+check-specs-without-rails:
+	CHECK_SPEC=53 RAILS_ENV=test bundle exec rspec $(SPECS_WITHOUT_RAILS)
 
 check-external: prepare-test-db check-integrations
 
-check-prepared: check-1 check-2 check-4 check-5 check-7 check-9 check-spec-helper-min check-carto-db-class
+check-prepared: check-1 check-2 check-4 check-5 check-7 check-9 check-spec-helper-min check-carto-db-class check-specs-without-rails
 
 check: prepare-test-db check-prepared
 check-frontend:

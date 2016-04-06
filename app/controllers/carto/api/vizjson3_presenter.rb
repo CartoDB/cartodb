@@ -454,10 +454,10 @@ module Carto
         torque[:cartocss_version] = @layer.options['style_version'] if @layer
 
         torque[:sql] = if layer_options[:query].present? || @layer.nil?
-                                layer_options[:query]
-                              else
-                                @layer.options['query']
-                              end
+                         layer_options[:query]
+                       else
+                         @layer.options['query']
+                       end
 
         torque
       end

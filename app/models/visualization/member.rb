@@ -755,8 +755,6 @@ module CartoDB
           perm.owner = user
           perm.save
           @permission_id = perm.id
-          # Need to save again
-          repository.store(id, attributes.to_hash)
         end
         repository.store(id, attributes.to_hash)
 

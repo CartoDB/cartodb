@@ -25,7 +25,7 @@ describe('vis/vis', function () {
       zoom: 4,
       bounds: [
         [1, 2],
-        [3, 4],
+        [3, 4]
       ],
       user: {
         fullname: 'Chuck Norris',
@@ -562,6 +562,73 @@ describe('vis/vis', function () {
     tooltip2.clean();
     tooltip3.clean();
     expect(this.vis.getOverlaysByType('wadus').length).toEqual(0);
+  });
+
+  it('should initialize existing analyses', function () {
+    var vizjson = {
+      layers: [
+        {
+          type: 'tiled',
+          options: {
+            urlTemplate: ''
+          }
+        },
+        {
+          type: 'layergroup',
+          options: {
+            user_name: 'pablo',
+            maps_api_template: 'https://{user}.cartodb-staging.com:443',
+            layer_definition: {
+              stat_tag: 'ece6faac-7271-11e5-a85f-04013fc66a01',
+              layers: [{
+                type: 'CartoDB',
+                options: {
+                  source: 'a0'
+                }
+
+              }]
+            }
+          }
+        }
+      ],
+      user: {
+        fullname: 'Chuck Norris',
+        avatar_url: 'http://example.com/avatar.jpg'
+      },
+      datasource: {
+        user_name: 'wadus',
+        maps_api_template: 'https://{user}.example.com:443',
+        stat_tag: 'ece6faac-7271-11e5-a85f-04013fc66a01',
+        force_cors: true // This is sometimes set in the editor
+      },
+      analyses: [
+        {
+          id: 'a1',
+          type: 'buffer',
+          params: {
+            source: {
+              id: 'a0',
+              type: 'source',
+              params: {
+                'query': 'SELECT * FROM airbnb_listings'
+              }
+            },
+            radio: 300
+          }
+        }
+      ]
+    };
+
+    this.vis.load(vizjson);
+
+    // Analyses have been indexed
+    expect(this.vis._analysisCollection.size()).toEqual(2);
+
+    var a1 = this.vis.analysis.findNodeById('a1');
+    var a0 = this.vis.analysis.findNodeById('a0');
+
+    // Analysis graph has been created correctly
+    expect(a1.get('source')).toEqual(a0);
   });
 
   describe('addOverlay', function () {

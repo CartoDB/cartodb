@@ -361,6 +361,15 @@ var Vis = View.extend({
       map: this.map
     });
 
+    // "Load" existing analyses from the viz.json. This will generate
+    // the analyses graphs and index analysis nodes in the
+    // collection of analysis
+    if (data.analyses) {
+      _.each(data.analyses, function (analysis) {
+        this.analysis.analyse(analysis);
+      }, this);
+    }
+
     // Lastly: reset the layer models on the map
     this.map.layers.reset(layerModels);
 

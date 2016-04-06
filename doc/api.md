@@ -47,8 +47,8 @@ dashboard.createCategory(params, map.getLayer(2))
 ```
 
 
-##### createHistogramWidget(widgetAttrs) -> HistogramWidget
-widgetAttrs is an object with the following attributes: 
+##### createHistogramWidget(widgetAttrs, layer) -> HistogramWidget
+`widgetAttrs` is an object with the following attributes: 
 
 Mandatory attributes:
 - `title`: title shown in the widget
@@ -63,10 +63,10 @@ Optional:
 - `show_stats`: show histogram stats
 - `normalized`: normalize data seen in the map bounding box with the global dataset histogram 
 
-##### createFormulaWidget(widgetAttrs) -> FormulaWidget
+##### createFormulaWidget(widgetAttrs, layer) -> FormulaWidget
 widgetAttrs: `id`, `title`, `order`, `collapsed`, `prefix`, `suffix`, `show_stats`, `description`
 
-##### createTimeSeriesWidget(widgetAttrs) -> TimeSeriesWidget
+##### createTimeSeriesWidget(widgetAttrs, layer) -> TimeSeriesWidget
 widgetAttrs: `id`, `title`, `order`, `collapsed`, `bins`, `show_stats`, `normalized`
 
 ## cartodb.DI.CategoryWidget

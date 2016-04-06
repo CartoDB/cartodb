@@ -23,6 +23,45 @@
     }
   },
   "components": {
+    "background-importer": {
+      "twitter-import-details": {
+        "no-more-credits": "You have consumed all your credits during this billing cycle (price is $%{blockPriceFormatted}/%{blockSizeFormatted} extra credits).",
+        "view-type": "view %{type}",
+        "tweet-cost": {
+          "paid": "$%{tweetsCostFormatted} will be charged to your account",
+          "free": "No extra charges have been done"
+        },
+        "errors": {
+          "no-results": "Your search query was correct but returned no results, please try with a different set of parameters before running it again"
+        }
+      },
+      "background-geocoding-item": {
+        "show": "show",
+        "geocoded-by-lat-lng": "Geocoded by latitude and longitude",
+        "geocoding": "Geocoding %{tableName} dataset…",
+        "geocoded": "%{realRowsFormatted}/%{processableRowsFormatted} %{processableRowsPluralize} geocoded…",
+        "rows-geocoded": {
+          "without-dataset": "%{realRowsFormatted} %{realRowsPluralize} geocoded",
+          "in-dataset": "%{realRowsFormatted} %{realRowsPluralize} geocoded in %{tableName} dataset",
+        },
+        "errors": {
+          "no-rows-geocoded": {
+            "without-dataset": "No rows geocoded",
+            "in-dataset": "No rows geocoded in %{tableName} dataset",
+          },
+          "geocoding-layer": "Ouch! Error geocoding %{tableName} layer"
+        }
+      },
+      "background-import-limit": {
+        "hurry": "In a hurry? <a href='%{upgradeUrl}'>Upgrade your account</a> to import several files at a time",
+        "one-file": "Unfortunately you can only import up to %{importQuota} files at the same time"
+
+      },
+      "connecting": "Connecting",
+      "dataset": "dataset…",
+      "geocoding": "Geocoding",
+      "working": "Working…"
+    },
     "modals": {
       "add-analysis": {
         "modal-title": "Add a new analysis",

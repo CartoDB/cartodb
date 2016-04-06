@@ -1,9 +1,11 @@
 <% if (totalPollings === 1) { %>
-  <% if (imports > 0) { %> Connecting <% } %>
+  <% if (imports > 0) { %>
+  <%- _t('components.background-importer.connecting') %>
+ <% } %>
   <% if (geocodings > 0) { %>
-    Geocoding
+  <%- _t('components.background-importer.geocoding') %>
   <% } %>
-  dataset...
+<%- _t('components.background-importer.dataset') %>
 <% } else { %>
-  Working...
+<%- _t('components.background-importer.working') %>
 <% } %>

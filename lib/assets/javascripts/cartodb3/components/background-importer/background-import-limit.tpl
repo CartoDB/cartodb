@@ -1,7 +1,7 @@
 <div class="ImportItem-text is-long">
   <% if (isUpgradeable) { %>
-  In a hurry? <a href="<%- upgradeUrl %>">Upgrade your account</a> to import several files at a time
+  <%- _t('components.background-importer.background-import-limit.hurry', { upgradeUrl: upgradeUrl }) %>
   <% } else { %>
-  Unfortunately you can only import up to <%- importQuota %> files at the same time
+  <%- _t('components.background-importer.background-import-limit.one-file', { importQuota: importQuota }) %>
   <% } %>
 </div>

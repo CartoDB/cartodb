@@ -35,7 +35,6 @@ module Carto
           https_request: false,
           attributions: @visualization.attributions_from_derived_visualizations,
           user_name: user.username,
-          user_api_key: user.api_key,
           user: user,
           viewer_user: @viewer_user,
           vector: false
@@ -103,7 +102,6 @@ module Carto
         if @visualization.retrieve_named_map?
           presenter_options = {
             user_name: options.fetch(:user_name),
-            api_key: options[:user_api_key],
             https_request: options.fetch(:https_request, false),
             viewer_user: @viewer_user,
             owner: @visualization.user

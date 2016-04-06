@@ -3,7 +3,7 @@
 This document is a quick start to use CartoDB Deep Insights (DI). It shows how to create dashboards and modify widgets from a JavaScript application.
 
 **Important notice**
-This is a beta version, so the API interface might change. We will do our best effort to keep all the changes backwards compatible.
+This is a beta version, so the API interface might change. We will do our best effort to keep all the changes backwards compatible, please read NEWS.md to keep track of changes.
 
 ### Using Deep insights library in your application
 
@@ -49,71 +49,8 @@ cartodb.deepInsights.createDashboard('#dashboard', vizJSONurl, function(err, das
 Please report it in [deep insights repo](https://github.com/CartoDB/deep-insights.js/issues)
 
 
-# API
+## API
 
-## cartodb.DI.createDashboard(domObject, vizJson, callback(err, obj))
-Creates a new dashboard inside `domObject` based on `vizJson`.
-
-#### Arguments
-#### Returns
-#### Example
-```js
-cartodb.deepInsights.createDashboard('#dashboard', vizJSONurl, function(err, dashboard) {
-});
-```
-
-## cartodb.DI.Dashborbard
-
-This object contains a CartoDB dashboard, a map, and some widgets:
-
-### getWidgets() -> Array of widgets
-### getWidget(id) -> get widget
-### getMap() -> returns a Map object
-
-### createCategory() -> CategoryWidget
-
-*example*
-```js
-var map = dashboard.getMap();
-var params = {
-  "type": "category",
-  "title": "Metro line",
-  "type": "aggregation",
-  "column": "closest_metro_line",
-  "aggregationColumn": "closest_metro_line",
-  "aggregation": "count",
-};
-// adds a category widget using column `test` from the second layer
-dashboard.createCategory(params, map.getLayer(2))
-```
+read the [API](api.md)
 
 
-#### createHistogram() -> HistogramWidget
-`id`, `title`, `order`, `collapsed`, `bins`, `show_stats`, `normalized`
-
-#### createFormula() -> FormulaWidget
-`id`, `title`, `order`, `collapsed`, `prefix`, `suffix`, `show_stats`, `description`
-
-#### createTimeSeries() -> TimeSeriesWidget
-`id`, `title`, `order`, `collapsed`, `bins`, `show_stats`, `normalized`
-
-
-### cartodb.DI.CategoryWidget
-##### update(opts) -> Boolean
-available attributes: `id`, `title`, `order`, `collapsed`, `prefix`, `suffix`, `show_stats`
-returns `true` if the attribute was modified
-
-*example*
-
-```js
-var cat = dashboard.createCategory(params, map.getLayer(2))
-cat.update({ title: 'testing title' })
-```
-
-##### remove()
-*example*
-
-```js
-var cat = dashboard.createCategory(params, map.getLayer(2));
-cat.remove();
-```

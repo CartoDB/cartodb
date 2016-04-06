@@ -4,6 +4,7 @@ require_relative './user/user_decorator'
 require_relative './user/oauths'
 require_relative './synchronization/synchronization_oauth'
 require_relative './visualization/member'
+require_relative '../helpers/redis_vizjson_cache'
 require_relative '../helpers/data_services_metrics_helper'
 require_relative './visualization/collection'
 require_relative './user/user_organization'
@@ -16,8 +17,6 @@ require_relative '../../lib/carto/http/client'
 require_dependency 'cartodb_config_utils'
 require_relative './user/db_service'
 require_dependency 'carto/user_db_size_cache'
-require_dependency 'cartodb/redis_vizjson_cache'
-require_dependency 'carto/bolt'
 
 class User < Sequel::Model
   include CartoDB::MiniSequel
@@ -132,10 +131,10 @@ class User < Sequel::Model
     if new?
       organization.validate_for_signup(errors, quota_in_bytes)
       organization.validate_new_user(self, errors)
-    elsif quota_in_bytes.to_i + organization.assigned_quota - initial_value(:quota_in_bytes) > organization.quota_in_bytes
+    else
       # Organization#assigned_quota includes the OLD quota for this user,
       # so we have to ammend that in the calculation:
-      errors.add(:quota_in_bytes, "not enough disk quota")
+      errors.add(:quota_in_bytes, "not enough disk quota") if quota_in_bytes.to_i + organization.assigned_quota - initial_value(:quota_in_bytes) > organization.quota_in_bytes
     end
   end
 
@@ -293,7 +292,7 @@ class User < Sequel::Model
         @org_id_for_org_wipe = self.organization.id  # after_destroy will wipe the organization too
         if self.organization.users.count > 1
           msg = 'Attempted to delete owner from organization with other users'
-          CartoDB::StdoutLogger.info msg
+          CartoDB::Logger.info msg
           raise CartoDB::BaseCartoDBError.new(msg)
         end
       end
@@ -332,32 +331,34 @@ class User < Sequel::Model
       assign_search_tweets_to_organization_owner
     rescue StandardError => exception
       error_happened = true
-      CartoDB::StdoutLogger.info "Error destroying user #{username}. #{exception.message}\n#{exception.backtrace}"
+      CartoDB::Logger.info "Error destroying user #{username}. #{exception.message}\n#{exception.backtrace}"
     end
+
+    # Remove metadata from redis
+    $users_metadata.DEL(self.key) unless error_happened
 
     # Invalidate user cache
     invalidate_varnish_cache
 
     # Delete the DB or the schema
     if has_organization
-      db_service.drop_organization_user(org_id, !@org_id_for_org_wipe.nil?) unless error_happened
+      db_service.drop_organization_user(org_id, is_owner = !@org_id_for_org_wipe.nil?) unless error_happened
     else
-      if ::User.where(database_name: database_name).count > 1
+      if ::User.where(:database_name => self.database_name).count > 1
         raise CartoDB::BaseCartoDBError.new('The user is not supposed to be in a organization but another user has the same database_name. Not dropping it')
-      elsif !error_happened
-        Thread.new {
-          conn = in_database(as: :cluster_admin)
-          db_service.drop_database_and_user(conn)
-          db_service.drop_user(conn)
-        }.join
-        db_service.monitor_user_notification
+      else
+        if !error_happened
+          Thread.new do
+            conn = self.in_database(as: :cluster_admin)
+            db_service.drop_database_and_user(conn)
+            db_service.drop_user(conn)
+          end.join
+          db_service.monitor_user_notification
+        end
       end
     end
 
-    # Remove metadata from redis last (to avoid cutting off access to SQL API if db deletion fails)
-    $users_metadata.DEL(key) unless error_happened
-
-    feature_flags_user.each(&:delete)
+    self.feature_flags_user.each { |ffu| ffu.delete }
   end
 
   def delete_external_data_imports
@@ -443,13 +444,15 @@ class User < Sequel::Model
   end
 
   ##
-  # SLOW! Checks redis data (geocodings and isolines) for every user
+  # SLOW! Checks map views for every user
   # delta: get users who are also this percentage below their limit.
   #        example: 0.20 will get all users at 80% of their map view limit
   #
   def self.overquota(delta = 0)
-    users_overquota = []
-    ::User.where(enabled: true, organization_id: nil).each do |u|
+    ::User.where(enabled: true).all.reject{ |u| u.organization_id.present? }.select do |u|
+        limit = u.map_view_quota.to_i - (u.map_view_quota.to_i * delta)
+        over_map_views = u.get_api_calls(from: u.last_billing_cycle, to: Date.today).sum > limit
+
         limit = u.geocoding_quota.to_i - (u.geocoding_quota.to_i * delta)
         over_geocodings = u.get_geocoding_calls > limit
 
@@ -459,37 +462,7 @@ class User < Sequel::Model
         limit = u.here_isolines_quota.to_i - (u.here_isolines_quota.to_i * delta)
         over_here_isolines = u.get_here_isolines_calls > limit
 
-        if over_geocodings || over_twitter_imports || over_here_isolines
-          users_overquota.push(u)
-        end
-    end
-    users_overquota
-  end
-
-  def self.store_overquota_users(delta, date)
-    overquota_users = overquota(delta)
-    today = date.strftime('%Y%m%d')
-    key = "overquota:users:#{today}"
-    overquota_users.each do |user|
-      $users_metadata.hmset key, user.id, user.data.to_json
-    end
-    # Expire the cache after two months. Enough time to review data if needed
-    $users_metadata.expire key, 2.months
-  end
-
-  def self.get_stored_overquota_users(date)
-    formated_date = date.strftime('%Y%m%d')
-    key = "overquota:users:#{formated_date}"
-    if $users_metadata.exists key
-      users = []
-      users_json = $users_metadata.hgetall key
-      users_json.each do |_k, v|
-        users.push(JSON.parse(v))
-      end
-      users
-    else
-      CartoDB::Logger.warning(message: "There is no overquota cached users for date #{formated_date}")
-      []
+        over_map_views || over_geocodings || over_twitter_imports || over_here_isolines
     end
   end
 
@@ -685,7 +658,7 @@ class User < Sequel::Model
       avatar_color = Cartodb.config[:avatars]['colors'][Random.new.rand(0..Cartodb.config[:avatars]['colors'].length - 1)]
       return "#{avatar_base_url}/avatar_#{avatar_kind}_#{avatar_color}.png"
     else
-      CartoDB::StdoutLogger.info "Attribute avatars_base_url not found in config. Using default avatar"
+      CartoDB::Logger.info "Attribute avatars_base_url not found in config. Using default avatar"
       return default_avatar
     end
   end
@@ -1087,156 +1060,6 @@ class User < Sequel::Model
                                .all
   end
 
-  def ghost_tables_work(job)
-    job && job['payload'] && job['payload']['class'] === 'Resque::UserJobs::SyncTables::LinkGhostTables' && !job['args'].nil? && job['args'].length == 1 && job['args'][0] === self.id
-  end
-
-  def link_ghost_tables_working
-    # search in the first 100. This is random number
-    enqeued = Resque.peek(:users, 0, 100).select { |job|
-      job && job['class'] === 'Resque::UserJobs::SyncTables::LinkGhostTables' && !job['args'].nil? && job['args'].length == 1 && job['args'][0] === self.id
-    }.length
-    workers = Resque::Worker.all
-    working = workers.select { |w| ghost_tables_work(w.job) }.length
-    return (workers.length > 0 && working > 0) || enqeued > 0
-  end
-
-  # Looks for tables created on the user database with
-  # the columns needed
-  def link_ghost_tables
-    lock_acquired = Carto::Bolt.new(username, ttl_ms: 60000).run_locked do
-      no_tables = real_tables.blank?
-
-      link_renamed_tables unless no_tables
-      link_deleted_tables
-      link_created_tables(search_for_cartodbfied_tables) unless no_tables
-    end
-
-    CartoDB::Logger.info(message: 'Ghost table race condition avoided', user: self) unless lock_acquired
-  end
-
-  # this method search for tables with all the columns needed in a cartodb table.
-  # it does not check column types, and only the latest cartodbfication trigger attached (test_quota_per_row)
-  # returns the list of tables in the database with those columns but not in metadata database
-  def search_for_cartodbfied_tables
-    metadata_table_names = self.tables.select(:name).map(&:name).map { |t| "'" + t + "'" }.join(',')
-
-    db = self.in_database(:as => :superuser)
-    required_columns = Table::CARTODB_REQUIRED_COLUMNS + [Table::THE_GEOM_WEBMERCATOR]
-    cartodb_columns = (required_columns).map { |t| "'" + t.to_s + "'" }.join(',')
-    sql = %Q{
-      WITH a as (
-        SELECT table_name, count(column_name::text) cdb_columns_count
-        FROM information_schema.columns c, pg_tables t, pg_trigger tg
-        WHERE
-          t.tablename = c.table_name AND
-          t.schemaname = c.table_schema AND
-          c.table_schema = '#{database_schema}' AND
-          t.tableowner = '#{database_username}' AND
-    }
-
-    if metadata_table_names.length != 0
-      sql += %Q{
-        c.table_name NOT IN (#{metadata_table_names}) AND
-      }
-    end
-
-    sql += %Q{
-          column_name IN (#{cartodb_columns}) AND
-
-          tg.tgrelid = (quote_ident(t.schemaname) || '.' || quote_ident(t.tablename))::regclass::oid AND
-          tg.tgname = 'test_quota_per_row'
-
-          GROUP BY 1
-      )
-      SELECT table_name FROM a WHERE cdb_columns_count = #{required_columns.length}
-    }
-
-    db[sql].all.map { |t| t[:table_name] }
-  end
-
-  # search in the user database for tables that are not in the metadata database
-  def search_for_modified_table_names
-    metadata_table_names = self.tables.select(:name).map(&:name)
-    #TODO: filter real tables by ownership
-    real_names = real_tables.map { |t| t[:relname] }
-    return metadata_table_names.to_set != real_names.to_set
-  end
-
-
-  def link_renamed_tables
-    metadata_tables_ids = self.tables.select(:table_id).map(&:table_id)
-    metadata_table_names = self.tables.select(:name).map(&:name)
-    renamed_tables       = real_tables.reject{|t| metadata_table_names.include?(t[:relname])}.select{|t| metadata_tables_ids.include?(t[:oid])}
-    renamed_tables.each do |t|
-      table = Table.new(:user_table => ::UserTable.find(:table_id => t[:oid], :user_id => self.id))
-      begin
-        Rollbar.report_message('ghost tables', 'debug', {
-          :action => 'rename',
-          :new_table => t[:relname]
-        })
-        vis = table.table_visualization
-        vis.register_table_only = true
-        vis.name = t[:relname]
-        vis.store
-      rescue Sequel::DatabaseError => e
-        raise unless e.message =~ /must be owner of relation/
-      end
-    end
-  end
-
-  def link_created_tables(table_names)
-    created_tables = real_tables.select {|t| table_names.include?(t[:relname]) }
-    created_tables.each do |t|
-      begin
-        Rollbar.report_message('ghost tables', 'debug', {
-          :action => 'registering table',
-          :new_table => t[:relname]
-        })
-        table = Table.new
-        table.user_id  = self.id
-        table.name     = t[:relname]
-        table.table_id = t[:oid]
-        table.register_table_only = true
-        table.keep_user_database_table = true
-        table.save
-      rescue => e
-        puts e
-      end
-    end
-  end
-
-  def link_deleted_tables
-    # Sync tables replace contents without touching metadata DB, so if method triggers meanwhile sync will fail
-    syncs = CartoDB::Synchronization::Collection.new.fetch(user_id: self.id).map(&:name).compact
-
-    # Avoid fetching full models
-    metadata_tables = self.tables.select(:table_id, :name)
-                                 .map {|table| { table_id: table.table_id, name: table.name } }
-    metadata_tables_ids = metadata_tables.select{ |table| !syncs.include?(table[:name]) }
-                                         .map{ |table| table[:table_id] }
-
-    dropped_tables = metadata_tables_ids - real_tables.map{|t| t[:oid]} - [nil]
-
-    # Remove tables with oids that don't exist on the db
-    self.tables.where(table_id: dropped_tables).all.each do |user_table|
-      Rollbar.report_message('ghost tables', 'debug', {
-        :action => 'dropping table',
-        :new_table => user_table.name
-      })
-      table = Table.new(user_table: user_table)
-      table.keep_user_database_table = true
-      table.destroy
-    end if dropped_tables.present?
-
-    # Remove tables with null oids unless the table name exists on the db
-    self.tables.filter(table_id: nil).all.each do |user_table|
-      t = Table.new(user_table: user_table)
-      t.keep_user_database_table = true
-      t.destroy unless self.real_tables.map { |t| t[:relname] }.include?(t.name)
-    end if dropped_tables.present? && dropped_tables.include?(nil)
-  end
-
   def exceeded_quota?
     self.over_disk_quota? || self.over_table_quota?
   end
@@ -1602,10 +1425,10 @@ class User < Sequel::Model
 
   def destroy_shared_with
     CartoDB::SharedEntity.where(recipient_id: id).each do |se|
-      viz = CartoDB::Visualization::Member.new(id: se.entity_id).fetch
-      permission = viz.permission
-      permission.remove_user_permission(self)
-      permission.save
+      CartoDB::Permission.where(entity_id: se.entity_id).each do |p|
+        p.remove_user_permission(self)
+        p.save
+      end
     end
   end
 

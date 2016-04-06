@@ -4,10 +4,19 @@
 Creates a new dashboard inside `domObject` based on `vizJson`.
 
 #### Arguments
-#### Returns
+- domObject: dom object identifier where the dashboard will be inserted
+- vizJson: either a vizjson url or a vizjson object. See viz.json spec to see how to generate one
+- callback: it will be called when the dashboard is generated. First argument will be null if
+  everything was fine, an `Error` object otherwise.
+
 #### Example
 ```js
 cartodb.deepInsights.createDashboard('#dashboard', vizJSONurl, function(err, dashboard) {
+  if (err) {
+    console.log('there was an error generating the dashboard');
+    return;
+  }
+  var map = dashboard.getMap()
 });
 ```
 

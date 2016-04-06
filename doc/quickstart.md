@@ -46,7 +46,9 @@ cartodb.deepInsights.createDashboard('#dashboard', vizJSONurl, function(err, das
 
 ## Found a bug?
 
-Please report it in [deep insights repo](https://github.com/CartoDB/deep-insights.js/issues)
+Please report it in [deep insights repo](https://github.com/CartoDB/deep-insights.js/issues), make
+sure you report the version you are using. To check the version just open the developer tools and
+check `cartodb.deepInsights.VERSION`
 
 
 ## API

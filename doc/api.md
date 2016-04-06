@@ -24,11 +24,11 @@ cartodb.deepInsights.createDashboard('#dashboard', vizJSONurl, function(err, das
 
 This object contains a CartoDB dashboard, a map, and some widgets:
 
-#### getWidgets() -> Array of widgets
-#### getWidget(id) -> get widget
-#### getMap() -> returns a Map object
+##### getWidgets() -> Array of widgets
+##### getWidget(id) -> get widget
+##### getMap() -> returns a Map object
 
-#### createCategoryWidget(widgetAttrs) -> CategoryWidget
+##### createCategoryWidget(widgetAttrs) -> CategoryWidget
 
 *example*
 ```js
@@ -46,13 +46,13 @@ dashboard.createCategory(params, map.getLayer(2))
 ```
 
 
-#### createHistogramWidget(widgetAttrs) -> HistogramWidget
+##### createHistogramWidget(widgetAttrs) -> HistogramWidget
 widgetAttrs: `id`, `title`, `order`, `collapsed`, `bins`, `show_stats`, `normalized`
 
-#### createFormulaWidget(widgetAttrs) -> FormulaWidget
+##### createFormulaWidget(widgetAttrs) -> FormulaWidget
 widgetAttrs: `id`, `title`, `order`, `collapsed`, `prefix`, `suffix`, `show_stats`, `description`
 
-#### createTimeSeriesWidget(widgetAttrs) -> TimeSeriesWidget
+##### createTimeSeriesWidget(widgetAttrs) -> TimeSeriesWidget
 widgetAttrs: `id`, `title`, `order`, `collapsed`, `bins`, `show_stats`, `normalized`
 
 ## cartodb.DI.CategoryWidget

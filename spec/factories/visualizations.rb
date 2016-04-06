@@ -24,12 +24,10 @@ FactoryGirl.define do
 
     association :user, factory: :carto_user
 
-    after(:create) do |visualization|
+    before(:create) do |visualization|
       permission = FactoryGirl.create :carto_permission,
                                       entity: visualization, owner: visualization.user, entity_type: 'vis'
       visualization.permission_id = permission.id
-      visualization.save
-      visualization.reload
     end
 
   end

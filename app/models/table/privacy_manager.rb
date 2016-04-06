@@ -117,8 +117,7 @@ module CartoDB
       owner.in_database(as: :superuser).run(query)
     end
 
-    def revoke_query(table_name = nil)
-      table_name ||= table.name
+    def revoke_query(table_name = @table.name)
       %{
         REVOKE SELECT ON #{fully_qualified_table_name(table_name)}
         FROM #{CartoDB::PUBLIC_DB_USER}

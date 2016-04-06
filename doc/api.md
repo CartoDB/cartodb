@@ -24,11 +24,11 @@ cartodb.deepInsights.createDashboard('#dashboard', vizJSONurl, function(err, das
 
 This object contains a CartoDB dashboard, a map, and some widgets:
 
-### getWidgets() -> Array of widgets
-### getWidget(id) -> get widget
-### getMap() -> returns a Map object
+#### getWidgets() -> Array of widgets
+#### getWidget(id) -> get widget
+#### getMap() -> returns a Map object
 
-### createCategoryWidget(widgetAttrs) -> CategoryWidget
+#### createCategoryWidget(widgetAttrs) -> CategoryWidget
 
 *example*
 ```js
@@ -55,7 +55,7 @@ widgetAttrs: `id`, `title`, `order`, `collapsed`, `prefix`, `suffix`, `show_stat
 #### createTimeSeriesWidget(widgetAttrs) -> TimeSeriesWidget
 widgetAttrs: `id`, `title`, `order`, `collapsed`, `bins`, `show_stats`, `normalized`
 
-### cartodb.DI.CategoryWidget
+## cartodb.DI.CategoryWidget
 
 ##### update(widgetAttrs) -> Boolean
 available attributes: `id`, `title`, `order`, `collapsed`, `prefix`, `suffix`, `show_stats`
@@ -79,7 +79,7 @@ cat.remove();
 ```
 
 
-### cartodb.DI.HistogramWidget
+## cartodb.DI.HistogramWidget
 
 ##### update(widgetAttrs) -> Boolean
 available attributes: `id`, `title`, `order`, `collapsed`, `bins`, `show_stats`, `normalized`
@@ -88,7 +88,7 @@ available attributes: `id`, `title`, `order`, `collapsed`, `bins`, `show_stats`,
 returns `true` if the attribute was modified
 
 
-### cartodb.DI.FormulaWidget
+## cartodb.DI.FormulaWidget
 
 ##### update(widgetAttrs) -> Boolean
 widgetAttrs: `id`, `title`, `order`, `collapsed`, `prefix`, `suffix`, `show_stats`, `description`

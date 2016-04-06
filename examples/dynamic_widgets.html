@@ -495,9 +495,7 @@
       }, function(err, dashboard) {
          var map = dashboard.getMap();
          var params = {
-            "type": "category",
             "title": "Metro line",
-            "type": "aggregation",
             "column": "closest_metro_line",
             "aggregationColumn": "closest_metro_line",
             "aggregation": "count",
@@ -508,9 +506,7 @@
         setTimeout(function() {
           // add a histogram and a formula
           params = {
-              "type": "histogram",
               "title": "Price",
-              "normalized": true,
               "type": "histogram",
               "column": "price",
               "operation": "avg",
@@ -520,9 +516,7 @@
         }, 2000);
         setTimeout(function() {
           params = {
-              "type": "formula",
               "title": "Avg price",
-              "type": "formula",
               "column": "price",
               "operation": "avg",
               "prefix": "$",

@@ -7,7 +7,8 @@ Creates a new dashboard inside `domObject` based on `vizJson`.
 - domObject: dom object identifier where the dashboard will be inserted
 - vizJson: either a vizjson url or a vizjson object. See viz.json spec to see how to generate one
 - callback: it will be called when the dashboard is generated. First argument will be null if
-  everything was fine, an `Error` object otherwise.
+  everything was fine, an `Error` object otherwise. Second argument is a `Dashboard` object, see
+  below
 
 #### Example
 ```js
@@ -47,7 +48,20 @@ dashboard.createCategory(params, map.getLayer(2))
 
 
 ##### createHistogramWidget(widgetAttrs) -> HistogramWidget
-widgetAttrs: `id`, `title`, `order`, `collapsed`, `bins`, `show_stats`, `normalized`
+widgetAttrs is an object with the following attributes: 
+
+Mandatory attributes:
+- `title`: title shown in the widget
+- `bins`: number of histogram bins
+- `column`: column to generate the histogram
+- `operation`: `count` by default, it could be `avg`
+
+Optional:
+- `id`: identifier that will be used when calling `getWidget`
+- `order`: order inside the widget list
+- `collapsed`: show the wiget collapsed if true
+- `show_stats`: show histogram stats
+- `normalized`: normalize data seen in the map bounding box with the global dataset histogram 
 
 ##### createFormulaWidget(widgetAttrs) -> FormulaWidget
 widgetAttrs: `id`, `title`, `order`, `collapsed`, `prefix`, `suffix`, `show_stats`, `description`

@@ -505,26 +505,30 @@
         // adds a category using column `test` from the second layer
         dashboard.createCategoryWidget(params, map.getLayer(3));
         
-        // add a histogram and a formula
-        params = {
-            "type": "histogram",
-            "title": "Price",
-            "normalized": true,
-            "type": "histogram",
-            "column": "price",
-            "operation": "avg",
-            "bins": 10
-        }
-        dashboard.createHistogramWidget(params, map.getLayer(3));
-        params = {
-            "type": "formula",
-            "title": "Avg price",
-            "type": "formula",
-            "column": "price",
-            "operation": "avg",
-            "prefix": "$",
-        }
-        dashboard.createFormulaWidget(params, map.getLayer(3));
+        setTimeout(function() {
+          // add a histogram and a formula
+          params = {
+              "type": "histogram",
+              "title": "Price",
+              "normalized": true,
+              "type": "histogram",
+              "column": "price",
+              "operation": "avg",
+              "bins": 10
+          }
+          dashboard.createHistogramWidget(params, map.getLayer(3));
+        }, 2000);
+        setTimeout(function() {
+          params = {
+              "type": "formula",
+              "title": "Avg price",
+              "type": "formula",
+              "column": "price",
+              "operation": "avg",
+              "prefix": "$",
+          }
+          dashboard.createFormulaWidget(params, map.getLayer(3));
+        }, 5000);
       });
     }
   </script>

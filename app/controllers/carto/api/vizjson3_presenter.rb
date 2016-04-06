@@ -39,7 +39,7 @@ module Carto
       end
 
       def calculate_vizjson(https_request: false, vector: false)
-        options = default_options.merge(https_request: false, vector: false)
+        options = default_options.merge(https_request: https_request, vector: vector)
 
         user = @visualization.user
         map = @visualization.map

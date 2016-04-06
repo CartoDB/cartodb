@@ -45,6 +45,7 @@ which should be fixed manually.
 * Fix broken visualizations due to invalid permissions
 * Make `layers.kind` not null. Run `bundle exec rake db:migrate` to update your database.
 * Fix error when deleting organizational users that had created objects via SQL-API
+* Change deprecated PostGIS function `ST_Force_2D` for the new `ST_Force2D`
 
 ## Security fixes
 

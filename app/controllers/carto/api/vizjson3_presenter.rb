@@ -12,10 +12,13 @@ module Carto
         @redis_vizjson_cache = redis_vizjson_cache
       end
 
+      # TODO: replace options with named parameters
       def to_vizjson(**options)
-        @redis_vizjson_cache.cached(@visualization.id, options.fetch(:https_request, false)) do
+        vizjson = @redis_vizjson_cache.cached(@visualization.id, options.fetch(:https_request, false)) do
           calculate_vizjson(options)
         end
+
+        vizjson.merge(non_cacheable_options(options))
       end
 
       private
@@ -36,6 +39,10 @@ module Carto
           viewer_user: @viewer_user,
           vector: false
         }
+      end
+
+      def non_cacheable_options(options)
+        options.slice(:vector)
       end
 
       def calculate_vizjson(options = {})
@@ -65,8 +72,7 @@ module Carto
           transition_options: @visualization.transition_options,
           widgets:        widgets_vizjson,
           datasource:     datasource_vizjson(options),
-          user:           user_info_vizjson(user),
-          vector:         options[:vector]
+          user:           user_info_vizjson(user)
         }
 
         auth_tokens = @visualization.needed_auth_tokens

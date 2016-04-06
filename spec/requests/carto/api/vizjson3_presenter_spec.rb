@@ -62,6 +62,14 @@ describe Carto::Api::VizJSON3Presenter do
       v2_vizjson[:version].should eq '0.1.0'
       v3_vizjson[:version].should eq '3.0.0'
     end
+
+    it 'does not cache vector' do
+      v3_presenter = Carto::Api::VizJSON3Presenter.new(@visualization, viewer_user)
+      vizjson_a = v3_presenter.to_vizjson(vector: true)
+      vizjson_b = v3_presenter.to_vizjson(vector: false)
+      vizjson_a[:vector].should eq true
+      vizjson_b[:vector].should eq false
+    end
   end
 
 end

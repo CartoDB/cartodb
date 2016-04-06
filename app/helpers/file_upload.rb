@@ -100,7 +100,7 @@ module CartoDB
 
       o.write(Pathname.new(filepath), { acl: :authenticated_read })
 
-      o.url_for(:get, expires: s3_config['url_ttl'], ).to_s
+      o.url_for(:get, expires: s3_config['url_ttl']).to_s
     end
 
     private

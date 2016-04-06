@@ -1319,8 +1319,9 @@ class Table
     CartoDB::Logger.error(message: 'update_cdb_tablemetadata failed',
                           exception: exception,
                           user: owner,
-                          table_id: @user_table.table_id,
-                          oid: get_table_id)
+                          table_id: table_id,
+                          oid: get_table_id,
+                          table_name: name)
   end
 
   private

@@ -95,7 +95,7 @@ module.exports = function (selector, vizJSON, opts, callback) {
   function _load (vizJSON) {
     var dashboard = createDashboard(selector, vizJSON, opts);
     dashboard.vis.done(function () {
-      callback(null, new Dashboard(dashboard));
+      callback && callback(null, new Dashboard(dashboard));
     });
   }
 
@@ -104,7 +104,7 @@ module.exports = function (selector, vizJSON, opts, callback) {
       if (data) {
         _load(data, opts);
       } else {
-        callback(new Error('error fetching viz.json file'));
+        callback && callback(new Error('error fetching viz.json file'));
       }
     });
   } else {

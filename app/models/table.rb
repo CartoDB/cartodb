@@ -10,9 +10,6 @@ require_relative './visualization/member'
 require_relative './visualization/collection'
 require_relative './visualization/overlays'
 require_relative './visualization/table_blender'
-require_relative './overlay/member'
-require_relative './overlay/collection'
-require_relative './overlay/presenter'
 require_relative '../../services/importer/lib/importer/query_batcher'
 require_relative '../../services/importer/lib/importer/cartodbfy_time'
 require_relative '../../services/datasources/lib/datasources/decorators/factory'
@@ -1171,7 +1168,7 @@ class Table
 
   def relator
     @relator ||= CartoDB::TableRelator.new(Rails::Sequel.connection, self)
-  end #relator
+  end
 
   def set_table_id
     @user_table.table_id = self.get_table_id

@@ -11,6 +11,8 @@ module Carto
       end
 
       def to_vizjson(https_request: false, vector: false)
+        https_request ||= false
+        vector ||= false
         vizjson = @redis_vizjson_cache.cached(@visualization.id, https_request) do
           calculate_vizjson(https_request: https_request, vector: vector)
         end

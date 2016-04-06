@@ -11,6 +11,7 @@ require 'yaml'
 require 'optparse'
 require 'json'
 require 'tsort'
+require 'securerandom'
 
 require_relative 'config'
 require_relative 'utils'
@@ -51,7 +52,6 @@ module CartoDB
           @database_name,
         )} -f #{@path}#{@database_schema}.schema.sql -n #{@database_schema} --verbose --no-tablespaces -Z 0")
       end
-
     end
   end
 end
@@ -74,7 +74,7 @@ module CartoDB
         if q.count > 0
           user_data = q[0]
         else
-          throw "Can't find user #{@user_id}"
+          raise "Can't find user #{@user_id}"
         end
         user_data
       end
@@ -84,7 +84,7 @@ module CartoDB
         if q.count > 0
           org_data = q[0]
         else
-          throw "Can't find organization #{@organization_id}"
+          raise "Can't find organization #{@organization_id}"
         end
 
         org_data
@@ -95,7 +95,7 @@ module CartoDB
         if q.count > 0
           return q
         else
-          throw "Can't find organization #{@organization_id}"
+          raise "Can't find organization #{@organization_id}"
         end
       end
 
@@ -109,7 +109,7 @@ module CartoDB
         data.reject! { |key, _value| [Carto::Organization, Carto::Group, Carto::FeatureFlag].include?(key) }
         data
       end
-      
+
       def dump_user_data(user_metadata, redis_keys)
         dump_sql_data(user_metadata, "user_#{@user_id}")
         dump_redis_keys(redis_keys)
@@ -380,11 +380,25 @@ module CartoDB
         result
       end
 
+      def exportjob_logger
+        @@exportjob_logger ||= ::Logger.new("#{Rails.root}/log/datamover.log")
+      end
+
+      def get_db_size(database)
+        q = user_pg_conn.exec("SELECT pg_database_size('#{database}')")
+        if q.count > 0
+          size = q[0]['pg_database_size']
+        else
+          raise "Can't find db #{database}"
+        end
+        size
+      end
+
       def initialize(options)
         @options = options
         @options[:path] ||= ''
-
         @logs = []
+        @start = Time.now
 
         redis_keys = {
           mapviews: {
@@ -441,44 +455,81 @@ module CartoDB
           }
         }
 
-        if options[:id]
-          @user_data = get_user_metadata(options[:id])
-          @username = @user_data["username"]
-          @user_id = @user_data["id"]
-          dump_user(redis_keys) unless options[:database_only] == true
-          redis_conn.quit
-          DumpJob.new(
-            @user_data['database_host'] || '127.0.0.1',
-            @user_data['database_name'],
-            @options[:path],
-            "#{@options[:path]}user_#{@user_id}.dump",
-            options[:schema_mode] ? @user_data['database_schema'] : nil
-          ) unless options[:metadata_only] == true 
-          # metadata_only can be used if the user database copy has been made manually
-          # in a different way
+        job_uuid = @options[:job_uuid] || SecureRandom.uuid
+        export_log = {'job_uuid'               => job_uuid,
+                      'id'                     => @options[:id] || @options[:organization_name] || nil,
+                      'type'                   => 'export',
+                      'path'                   => @options[:path],
+                      'start'                  => @start,
+                      'end'                    => nil,
+                      'server'                 => `hostname`.strip,
+                      'pid'                    => Process.pid,
+                      'db_source'              => nil,
+                      'db_size'                => nil,
+                      'status'                 => nil,
+                      'trace'                  => nil
+                     }
 
-          File.open("#{@options[:path]}user_#{@user_id}.json", "w") do |f|
-            f.write(user_info.to_json)
-          end
-        elsif options[:organization_name]
-          @org_metadata = get_org_metadata(options[:organization_name])
-          @org_id = @org_metadata['id']
-          @org_users = get_org_users(@org_metadata['id'])
-          @org_groups = get_org_groups(@org_metadata['id'])
-          dump_org_data
-          data = { organization: @org_metadata, users: @org_users.to_a, groups: @org_groups }
-          File.open("#{@options[:path]}org_#{@org_metadata['id']}.json", "w") do |f|
-            f.write(data.to_json)
-          end
-          @org_users.each do |org_user|
-            CartoDB::DataMover::ExportJob.new({ id: org_user['username'], metadata_only: true, path: options[:path] })
+        begin
+          if options[:id]
+            @user_data = get_user_metadata(options[:id])
+            @username = @user_data["username"]
+            @user_id = @user_data["id"]
+            export_log[:db_source] = @user_data['database_host']
+            export_log[:db_size] = get_db_size(@user_data['database_name'])
+            dump_user(redis_keys) unless options[:database_only] == true
+            redis_conn.quit
             DumpJob.new(
-              org_user['database_host'] || '127.0.0.1',
-              org_user['database_name'],
-              options[:path],
+              @user_data['database_host'] || '127.0.0.1',
+              @user_data['database_name'],
+              @options[:path],
               "#{@options[:path]}user_#{@user_id}.dump",
-              org_user['username']) unless options[:metadata_only] == true
+              options[:schema_mode] ? @user_data['database_schema'] : nil
+            ) unless options[:metadata_only] == true 
+            # metadata_only can be used if the user database copy has been made manually
+            # in a different way
+
+            File.open("#{@options[:path]}user_#{@user_id}.json", "w") do |f|
+              f.write(user_info.to_json)
+            end
+            set_user_mover_banner(@user_id)
+          elsif options[:organization_name]
+            @org_metadata = get_org_metadata(options[:organization_name])
+            @org_id = @org_metadata['id']
+            @org_users = get_org_users(@org_metadata['id'])
+            @org_groups = get_org_groups(@org_metadata['id'])
+            dump_org_data
+            data = { organization: @org_metadata, users: @org_users.to_a, groups: @org_groups }
+            File.open("#{@options[:path]}org_#{@org_metadata['id']}.json", "w") do |f|
+              f.write(data.to_json)
+            end
+            @org_users.each do |org_user|
+              export_job = CartoDB::DataMover::ExportJob.new({ id: org_user['username'], metadata_only: true, path: options[:path], job_uuid: job_uuid, from_org: true })
+              export_log[:db_source] ||= org_user['database_host']
+              export_log[:db_size] ||= export_job.get_db_size(org_user['database_name'])
+              DumpJob.new(
+                org_user['database_host'] || '127.0.0.1',
+                org_user['database_name'],
+                options[:path],
+                "#{@options[:path]}user_#{@user_id}.dump",
+                org_user['username']) unless options[:metadata_only] == true
+            end
           end
+        rescue => e
+          export_log[:end] = Time.now
+          export_log[:status] = 'failure'
+          export_log[:trace] = e.to_s
+          if options[:organization_name]
+            @org_users.each do |org_user|
+              remove_user_mover_banner(org_user['id'])
+            end
+          end
+          raise
+        else
+          export_log[:end] = Time.now
+          export_log[:status] = 'success'
+        ensure
+          exportjob_logger.info(export_log.to_json) unless options[:from_org]
         end
         puts "#{@logs.length} errors"
         puts @logs.join("\n")

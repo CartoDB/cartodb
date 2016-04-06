@@ -5,6 +5,7 @@ require 'json'
 require 'logger'
 require 'optparse'
 require 'digest'
+require 'securerandom'
 
 require_relative 'config'
 require_relative 'utils'
@@ -18,20 +19,37 @@ module CartoDB
         @options = options
         @config = CartoDB::DataMover::Config.config
 
+        @start = Time.now
+
         @target_dbport = ENV['USER_DB_PORT'] || @config[:dbport]
         @target_dbhost = @options[:host] || @config[:dbhost]
 
-        throw "File #{@options[:file]} does not exist!" unless File.exists?(@options[:file])
+        raise "File #{@options[:file]} does not exist!" unless File.exists?(@options[:file])
         # User(s) metadata json
         @pack_config = JSON::parse File.read(@options[:file])
 
         @path = File.expand_path(File.dirname(@options[:file])) + "/"
         @logger = @options[:logger] || ::Logger.new(STDOUT)
+
+        job_uuid = @options[:job_uuid] || SecureRandom.uuid
+        @import_log =  {'job_uuid'               => job_uuid,
+                        'id'                     => nil,
+                        'type'                   => 'import',
+                        'path'                   => @path,
+                        'start'                  => @start,
+                        'end'                    => nil,
+                        'server'                 => `hostname`.strip,
+                        'pid'                    => Process.pid,
+                        'db_target'              => @target_dbhost,
+                        'status'                 => nil,
+                        'trace'                  => nil
+                       }
       end
 
       def run!
         if !@pack_config['organization'].nil?
           organization_id = @pack_config['organization']['id']
+          @import_log['id'] = organization_id
 
           if @options[:mode] == :import
             begin
@@ -71,8 +89,19 @@ module CartoDB
               end
             rescue => e
               rollback_metadata("org_#{organization_id}_metadata_undo.sql") unless @options[:data_only]
+              @import_log[:end] = Time.now
+              @import_log[:status] = 'failure'
+              @import_log[:trace] = e.to_s
               @logger.error e
               raise
+            else
+              @import_log[:end] = Time.now
+              @import_log[:status] = 'success'
+            ensure
+              @pack_config['users'].each do |user|
+                remove_user_mover_banner(user['id'])
+              end
+              importjob_logger.info(@import_log.to_json)
             end
           elsif @options[:mode] == :rollback
             db = @pack_config['users'][0]['database_name']
@@ -93,7 +122,7 @@ module CartoDB
             end
           end
         else
-
+          @import_log['id'] = @pack_config['user']['username']
           if @options[:target_org] == nil
 
             @target_userid = @pack_config['user']['id']
@@ -135,6 +164,11 @@ module CartoDB
               end
             rescue => e
               @logger.error "Error in sanity checks: #{e}"
+              @import_log[:end] = Time.now
+              @import_log[:status] = 'failure'
+              @import_log[:trace] = e.to_s
+              remove_user_mover_banner(@pack_config['user']['id'])
+              importjob_logger.info(@import_log.to_json)
               exit 1
             end
 
@@ -155,12 +189,21 @@ module CartoDB
               roles.each { |role| grant_user_role(user, role) }
             end
 
-            if File.exists? "#{@path}user_#{@target_userid}.dump"
-              create_db(@target_dbname, true)
-              import_pgdump("user_#{@target_userid}.dump")
-            elsif File.exists? "#{@path}#{@target_username}.schema.sql"
-              create_db(@target_dbname, false)
-              run_file_restore_schema("#{@target_username}.schema.sql")
+            begin
+              if File.exists? "#{@path}user_#{@target_userid}.dump"
+                create_db(@target_dbname, true)
+                import_pgdump("user_#{@target_userid}.dump")
+              elsif File.exists? "#{@path}#{@target_username}.schema.sql"
+                create_db(@target_dbname, false)
+                run_file_restore_schema("#{@target_username}.schema.sql")
+              end
+            rescue => e
+              @import_log[:end] = Time.now
+              @import_log[:status] = 'failure'
+              @import_log[:trace] = e.to_s
+              remove_user_mover_banner(@pack_config['user']['id'])
+              importjob_logger.info(@import_log.to_json)
+              exit 1
             end
 
             unless @options[:data_only]
@@ -171,6 +214,11 @@ module CartoDB
                 rollback_metadata("user_#{@target_userid}_metadata_undo.sql")
                 rollback_redis("user_#{@target_userid}_metadata_undo.redis")
                 @logger.error e
+                @import_log[:end] = Time.now
+                @import_log[:status] = 'failure'
+                @import_log[:trace] = e.to_s
+                remove_user_mover_banner(@pack_config['user']['id'])
+                importjob_logger.info(@import_log.to_json)
                 exit 1
               end
             end
@@ -187,6 +235,10 @@ module CartoDB
             user_model.db_service.monitor_user_notification
             sleep 5
             user_model.db_service.configure_database
+            @import_log[:end] = Time.now
+            @import_log[:status] = 'success'
+            remove_user_mover_banner(@pack_config['user']['id'])
+            importjob_logger.info(@import_log.to_json)
 
           elsif @options[:mode] == :rollback
             rollback_metadata("user_#{@target_userid}_metadata_undo.sql")
@@ -203,13 +255,13 @@ module CartoDB
 
       def get_org_info(orgname)
         result = metadata_pg_conn.query('SELECT * FROM organizations WHERE name = $1', [orgname])
-        throw "Organization #{orgname} not found" if result.cmd_tuples == 0
+        raise "Organization #{orgname} not found" if result.cmd_tuples == 0
         result[0]
       end
 
       def get_user_info(user_id)
         result = metadata_pg_conn.query('SELECT * FROM users WHERE id = $1', [user_id])
-        throw "User with ID #{user_id} not found" if result.cmd_tuples == 0
+        raise "User with ID #{user_id} not found" if result.cmd_tuples == 0
         result[0]
       end
 
@@ -263,13 +315,13 @@ module CartoDB
       def check_user_exists_postgres
         @logger.debug 'Checking if user does not exist on Postgres metadata...'
         result = metadata_pg_conn.query('SELECT * FROM USERS WHERE id = $1', [@target_userid])
-        throw "User already exists in PostgreSQL metadata" if result.cmd_tuples != 0
+        raise "User already exists in PostgreSQL metadata" if result.cmd_tuples != 0
       end
 
       def check_user_exists_redis
         @logger.debug 'Checking if user does not exist on Redis metadata...'
         result = metadata_redis_conn.hgetall("rails:users:#{@target_dbname}")
-        throw "User already exists in Redis metadata" if result != {}
+        raise "User already exists in Redis metadata" if result != {}
       end
 
       def conn_string(user, host, port, name)
@@ -406,7 +458,7 @@ module CartoDB
         rescue PG::Error => e
           if blank
             @logger.error "Error: Database already exists"
-            throw e
+            raise e
           else
             @logger.warn "Warning: Database already exists"
           end
@@ -428,7 +480,7 @@ module CartoDB
         superuser_user_pg_conn.query("CREATE EXTENSION IF NOT EXISTS cartodb WITH SCHEMA cartodb")
       rescue PG::Error => e
         @logger.error "Error: Cannot setup DB"
-        throw e
+        raise e
       end
 
       def update_database(userid, username, db_host, db_name)
@@ -462,6 +514,10 @@ module CartoDB
       def update_redis_database_name(user, db)
         @logger.info "Updating Redis database_name..."
         metadata_redis_conn.hset("rails:users:#{user}", 'database_name', db)
+        end
+
+      def importjob_logger
+        @@importjob_logger ||= ::Logger.new("#{Rails.root}/log/datamover.log")
       end
     end
   end

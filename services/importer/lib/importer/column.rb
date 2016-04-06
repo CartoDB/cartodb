@@ -220,11 +220,8 @@ module CartoDB
 
       def geometry_type
         sample = db[%Q{
-<<<<<<< HEAD
+
           SELECT public.GeometryType(ST_Force_2D(#{column_name}::geometry))
-=======
-          SELECT public.GeometryType(ST_Force2D(#{column_name}))
->>>>>>> master
           AS type
           FROM #{schema}.#{table_name}
           WHERE #{column_name} IS NOT NULL

@@ -1315,6 +1315,13 @@ class Table
 
   def update_cdb_tablemetadata
     owner.in_database(as: :superuser).run(%{ SELECT CDB_TableMetadataTouch(#{table_id}::oid::regclass) })
+  rescue => exception
+    CartoDB::Logger.error(message: 'update_cdb_tablemetadata failed',
+                          exception: exception,
+                          user: owner,
+                          table_id: table_id,
+                          oid: get_table_id,
+                          table_name: name)
   end
 
   private

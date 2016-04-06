@@ -108,7 +108,7 @@ module.exports = function (selector, vizJSON, opts, callback) {
       }
     });
   } else {
-     _load(vizJSON, opts);
+    _load(vizJSON, opts);
   }
 };
 

@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "3.23.58",
+  "version": "3.23.59",
   "description": "CartoDB UI frontend",
   "repository": {
     "type": "git",
@@ -105,7 +105,8 @@
       "spyOn",
       "it",
       "xit",
-      "expect"
+      "expect",
+      "localStorage"
     ],
     "ignore": [
       "/.grunt",

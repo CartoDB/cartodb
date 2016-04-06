@@ -366,7 +366,6 @@ var Vis = View.extend({
     // collection of analysis
     if (data.analyses) {
       _.each(data.analyses, function (analysis) {
-        debugger;
         this.analysis.analyse(analysis);
       }, this);
     }

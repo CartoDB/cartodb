@@ -5,6 +5,7 @@
 
 /* WIP*/
 
+
 .Filters-typeItem {
   @include display-flex(); /* todo when create new layout */
 }
@@ -57,6 +58,11 @@
   box-sizing: border-box;
   cursor: pointer;
 }
+.ModalBlockList-item--full {
+  width: 100%;
+  min-width: 100%;
+  margin: 16px 0 0;
+}
 
 .ModalBlockList-item.is-selected {
   border: 1px solid rgba($cBlue, 0.48);
@@ -78,3 +84,12 @@
   border-radius: 2px;
   background: rgba($cBlue, 0.08);
 }
+
+/* Add Layer Modal */
+.ModalDataset-itemInfo {
+  @include display-flex();
+  @include align-items(center);
+  @include flex(1);
+  @include justify-content(space-between);
+}
+

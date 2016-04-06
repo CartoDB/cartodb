@@ -11,9 +11,9 @@
     class="CDB-IconFont CDB-IconFont-wifi DatasetsList-itemStatus is-<%- syncStatus %>"></i>
   <% } %>
 </div>
-<div class="DatasetsList-itemInfo">
-  <div class="DatasetsList-itemPrimaryInfo">
-    <h3 class="DatasetsList-itemTitle DefaultTitle u-ellipsLongText CDB-Text CDB-Size-large">
+<div class="ModalDataset-itemInfo">
+  <div>
+    <h3 class="CDB-Text CDB-Size-large u-bSpace">
       <%- title %>
       <% if (showPermissionIndicator) { %>
         <span class="DatasetsList-itemTitlePermission PermissionIndicator u-upperCase">
@@ -22,12 +22,12 @@
       <% } %>
     </h3>
     <% if (description && description.length > 0) { %>
-      <p class="DefaultDescription DatasetsList-itemDescription u-ellipsLongText CDB-Text CDB-Size-medium" title="<%- description %>"><%- description %></p>
+      <p class="u-ellipsLongText CDB-Text CDB-Size-medium u-altTextColor" title="<%- description %>"><%- description %></p>
     <% } else { %>
-      <span class="NoResults DatasetsList-itemDescription CDB-Text CDB-Size-medium"><%- _t('components.modals.add-layer.datasets.item.no-description') %></span>
+      <span class="NoResults CDB-Text CDB-Size-medium"><%- _t('components.modals.add-layer.datasets.item.no-description') %></span>
     <% } %>
   </div>
-  <div class="DatasetsList-itemSecondaryInfo">
+  <div>
     <div class="DatasetsList-itemMeta">
 
       <span class="CDB-Tag is-<%- privacy %> CDB-Text is-semibold CDB-Size-small u-upperCase">

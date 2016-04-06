@@ -310,13 +310,9 @@
         var dashboard = cartodb.deepInsights.createDashboard('#dashboard', vizJSON, {
           no_cdn: false,
           cartodb_logo: false
-        });
-        dashboard.vis.done(function() {
+        }, function(err, dashboard) {
             window.dashboard = dashboard
-          })
-          .error(function(err) {
-            console.error(err);
-          });
+        })
 
         console.info('first widget is disabled on start, run the following the dev console to enable it:',
         'dashboard.widgets._widgetsCollection.at(0).update({sync_on_data_change: true, sync_on_bbox_change: true, title: "Min population"})')

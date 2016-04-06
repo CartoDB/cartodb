@@ -19,7 +19,7 @@ Dashboard.prototype = {
    * @return {Array} of widgets in the dashboard
    */
   getWidgets: function () {
-    return this.dashboard.widgets.getList.call(this.dashboard.widgets);
+    return this.dashboard.widgets.getList();
   },
 
   /**
@@ -27,7 +27,7 @@ Dashboard.prototype = {
    * @return a widget object
    */
   getWidget: function (id) {
-    return this.dashboard.widgets.get.call(this.dashboard.widgets, id);
+    return this.dashboard.widgets.get(id);
   },
 
   /**
@@ -40,7 +40,7 @@ Dashboard.prototype = {
    * @return {CategoryWidget} The new widget
    */
   createCategoryWidget: function (widgetAttrs) {
-    this.dashboard.widgets.createCategoryModel.call(this.dashboard.widgets, widgetAttrs);
+    return this.dashboard.widgets.createCategoryModel(widgetAttrs);
   },
 
   /**
@@ -53,7 +53,7 @@ Dashboard.prototype = {
    * @return {HistogramWidget} The new widget
    */
   createHistogramWidget: function (widgetAttrs) {
-    this.dashboard.widgets.createHistogramModel.call(this.dashboard.widgets, widgetAttrs);
+    return this.dashboard.widgets.createHistogramModel(widgetAttrs);
   },
 
   /**
@@ -66,7 +66,7 @@ Dashboard.prototype = {
    * @return {FormulaWidget} The new widget
    */
   createFormulaWidget: function (widgetAttrs) {
-    this.dashboard.widgets.createFormulaModel.call(this.dashboard.widgets, widgetAttrs);
+    return this.dashboard.widgets.createFormulaModel(widgetAttrs);
   },
 
   /**
@@ -79,7 +79,7 @@ Dashboard.prototype = {
    * @return {TimeSeriesWidget} The new widget
    */
   createTimeSeriesWidget: function (widgetAttrs) {
-    this.dashboard.widgets.createTimeSeriesModel.call(this.dashboard.widgets, widgetAttrs);
+    return this.dashboard.widgets.createTimeSeriesModel(widgetAttrs);
   }
 
 };

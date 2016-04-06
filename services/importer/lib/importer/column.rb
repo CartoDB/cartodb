@@ -144,12 +144,14 @@ module CartoDB
       def convert_to_2d
         #TODO: @capture_exceptions
         job.log 'Converting to 2D point'
+
         @user.db_service.in_database_direct_connection(statement_timeout: DIRECT_STATEMENT_TIMEOUT) do |user_direct_conn|
           user_direct_conn.run(%Q{
                                  UPDATE #{qualified_table_name}
-                                 SET #{column_name} = public.ST_Force_2D(#{column_name})
+                                 SET #{column_name} = public.ST_Force2D(#{column_name})
                                  })
         end
+
       end
 
       def wkb?
@@ -218,7 +220,11 @@ module CartoDB
 
       def geometry_type
         sample = db[%Q{
+<<<<<<< HEAD
           SELECT public.GeometryType(ST_Force_2D(#{column_name}::geometry))
+=======
+          SELECT public.GeometryType(ST_Force2D(#{column_name}))
+>>>>>>> master
           AS type
           FROM #{schema}.#{table_name}
           WHERE #{column_name} IS NOT NULL

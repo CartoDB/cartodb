@@ -89,8 +89,8 @@ module VisualizationsControllerHelper
     visualization
   end
 
-  def generate_vizjson3(visualization, viewer_user, params)
-    Carto::Api::VizJSON3Presenter.new(visualization, viewer_user)
+  def generate_vizjson3(visualization, params)
+    Carto::Api::VizJSON3Presenter.new(visualization)
                                  .to_vizjson(https_request: is_https?, vector: params[:vector] == 'true')
   end
 end

@@ -5,10 +5,8 @@ module Carto
   module Api
     class VizJSON3Presenter
       def initialize(visualization,
-                     viewer_user,
                      redis_vizjson_cache = CartoDB::Visualization::RedisVizjsonCache.new($tables_metadata, 3))
         @visualization = visualization
-        @viewer_user = viewer_user
         @redis_vizjson_cache = redis_vizjson_cache
       end
 
@@ -36,7 +34,6 @@ module Carto
           attributions: @visualization.attributions_from_derived_visualizations,
           user_name: user.username,
           user: user,
-          viewer_user: @viewer_user,
           vector: false
         }
       end
@@ -74,7 +71,8 @@ module Carto
         vizjson[:auth_tokens] = auth_tokens unless auth_tokens.empty?
 
         children_vizjson = @visualization.children.map do |child|
-          VizJSON3Presenter.new(child, @viewer_user, @redis_vizjson_cache).to_vizjson(options)
+          VizJSON3Presenter.new(child, @redis_vizjson_cache)
+                           .to_vizjson(https_request: options[:https_request], vector: options[:vector])
         end
         vizjson[:slides] = children_vizjson unless children_vizjson.empty?
 
@@ -103,7 +101,6 @@ module Carto
           presenter_options = {
             user_name: options.fetch(:user_name),
             https_request: options.fetch(:https_request, false),
-            viewer_user: @viewer_user,
             owner: @visualization.user
           }
           named_maps_presenter = VizJSON3NamedMapPresenter.new(
@@ -494,12 +491,6 @@ module Carto
           }
           data = decorate_with_data(data, @decoration_data)
 
-          viewer = @options[:viewer_user]
-          if viewer
-            unless data['user_name'] == viewer.username
-              data['table_name'] = "\"#{data['user_name']}\".#{data['table_name']}"
-            end
-          end
           data
         end
       end
@@ -530,17 +521,6 @@ module Carto
       end
 
       def default_query_for(layer_options)
-        if @options[:viewer_user]
-          unless layer_options['user_name'] == @options[:viewer_user].username
-            name = if layer_options['user_name'] && layer_options['user_name'].include?('-')
-                     "\"#{layer_options['user_name']}\""
-                   else
-                     layer_options['user_name']
-                   end
-
-            return "select * from #{name}.#{layer_options['table_name']}"
-          end
-        end
         "select * from #{layer_options.fetch('table_name')}"
       end
 

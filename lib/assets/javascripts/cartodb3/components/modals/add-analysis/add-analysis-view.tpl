@@ -26,8 +26,8 @@
       <div class="CreateDialog-footerInfo"></div>
       <div class="CreateDialog-footerActions">
         <div></div>
-        <button class="CDB-Button CDB-Button--primary is-disabled js-add u-upperCase">
-          <span><%- _t('components.modals.add-analysis.add-btn') %></span>
+        <button class="CDB-Button CDB-Button--primary is-disabled js-add">
+          <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-upperCase"><%- _t('components.modals.add-analysis.add-btn') %></span>
         </button>
       </div>
     </div>

@@ -81,7 +81,8 @@
     ]
   },
   "browser": {
-    "tipsy": "./vendor/assets/javascripts/jquery.tipsy.js"
+    "tipsy": "./vendor/assets/javascripts/jquery.tipsy.js",
+    "markdown": "./vendor/assets/javascripts/markdown.js"
   },
   "browserify-shim": {
     "jquery-cdb-v3": "global:$",
@@ -90,7 +91,7 @@
     "cdb.Utils": "global:cdb.Utils",
     "cartodb.js-v3": "global:cdb",
     "backbone-cdb-v3": "global:Backbone",
-    "moment": "global:moment"
+    "moment-v3": "global:moment"
   },
   "semistandard": {
     "globals": [

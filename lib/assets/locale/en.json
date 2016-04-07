@@ -23,6 +23,7 @@
     }
   },
   "components": {
+    "likes-pluralize": "like |||| likes",
     "modals": {
       "add-analysis": {
         "modal-title": "Add a new analysis",
@@ -76,6 +77,41 @@
           "create-empty-addLayer": "Add an empty layer",
           "dataset-pluralize": "Dataset |||| Datasets"
         },
+        "create-loading-title": "Creating empty dataset…",
+        "adding-new-layer": "Adding new layer…",
+        "add-layer-error": "Could not add layer",
+        "datasets": {
+          "item": {
+            "sync-failed": "Sync failed, last attempt was",
+            "syncing": "Syncing",
+            "synced": "Synced",
+            "read": "read",
+            "from": "from",
+            "by": "by",
+            "no-description": "No description",
+            "rows-pluralize": "row |||| rows",
+            "tags-more": "and %{tagsCount} more",
+            "no-tags": "No tags",
+          },
+          "loading": "Loading",
+          "searching": "Searching",
+          "error": {
+            "title": "Oouch! There has been an error loading your datasets",
+            "desc": "If the problem persists contact us at"
+          },
+          "no-datasets": {
+            "title": "You have not connected any datasets yet",
+            "desc": "You can %{connectDataset} or %{search} in all our data library",
+            "connect-datasets": "connect datasets",
+            "search": "search"
+          },
+          "no-results": {
+            "desc": "There are no results in this page",
+            "found": "found",
+            "there-are-no": "There are no",
+            "no-fun": "No %{type}, no fun"
+          }
+        },
         "footer": {
           "guessing-desc": "Let CartoDB automatically guess data types and content on import.",
           "twitter-desc": "To get access to historical data (older than 30 days) you need to",
@@ -83,7 +119,8 @@
           "privacy-upgrade": "You cannot change the privacy of your new datasets. Click here to upgrade your account.",
           "privacy-change": "Your new dataset will be %{privacy}",
           "privacy-click": "Click to change it to %{nextPrivacy}",
-          "privacy-change-banned": "You cannot change the privacy of your new datasets."
+          "privacy-change-banned": "You cannot change the privacy of your new datasets.",
+          "add-layer": "Add layer" 
         }
       }
     },

@@ -12,7 +12,7 @@
       quota_in_bytes: <%= current_user.organization.quota_in_bytes %>,
       seats: <%= current_user.organization.seats %>,
       owner: { id: "<%= current_user.id %>" },
-      auth_username_password_enabled: <%= current_user.organization.auth_username_password_enabled %>
+      signup_enabled: <%= current_user.organization.auth_username_password_enabled || current_user.organization.auth_google_enabled %>
     };
     var user_data = <%= safe_js_object current_user.data.to_json.html_safe %>;
     var upgrade_url = "<%= current_user.upgrade_url(request.protocol) %>";

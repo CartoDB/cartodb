@@ -1,5 +1,6 @@
-var wax = require('wax.cartodb.js');
 var L = require('leaflet');
+// NOTE: Leaflet needs to be required before wax because wax relies on global L internally
+var wax = require('wax.cartodb.js');
 var config = require('cdb.config');
 var Profiler = require('cdb.core.Profiler');
 var LeafletLayerView = require('./leaflet-layer-view');

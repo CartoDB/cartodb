@@ -294,10 +294,10 @@ Overlay.register('search', function (data, vis) {
 
 // tooltip
 Overlay.register('tooltip', function (data, vis) {
-  if (!data.layer && vis.getLayers().length <= 1) {
+  if (!data.layer && vis.getLayerViews().length <= 1) {
     throw new Error('layer is null');
   }
-  data.layer = data.layer || vis.getLayers()[1];
+  data.layer = data.layer || vis.getLayerViews()[1];
   data.layer.setInteraction(true);
   data.mapView = vis.mapView;
   return new Tooltip(data);
@@ -305,7 +305,7 @@ Overlay.register('tooltip', function (data, vis) {
 
 Overlay.register('infobox', function (data, vis) {
   var layer;
-  var layers = vis.getLayers();
+  var layers = vis.getLayerViews();
   if (!data.layer) {
     if (layers.length > 1) {
       layer = layers[1];

@@ -7,6 +7,6 @@
   </button>
 </div>
 <div class="ImportOptions-tabs">
-  <ul class="ImportOptions-tabsList js-menu"></ul>
+  <ul class="ImportOptions-tabsList js-menu CDB-Text CDB-Size-medium u-altTextColor"></ul>
 </div>
 <div class="ImportOptions-panes js-content"></div>

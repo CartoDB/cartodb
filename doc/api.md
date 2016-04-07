@@ -22,7 +22,7 @@ cartodb.deepInsights.createDashboard('#dashboard', vizJSONurl, [options], functi
 });
 ```
 
-## cartodb.DI.Dashborbard
+## cartodb.DI.Dashboard
 
 This object contains a CartoDB dashboard, a map, and some widgets:
 
@@ -54,7 +54,7 @@ var params = {
   "aggregation": "count"
 };
 // adds a category widget using column `test` from the second layer
-dashboard.createCategory(params, map.getLayer(2))
+dashboard.createCategoryWidget(params, map.getLayer(2))
 ```
 
 
@@ -89,8 +89,8 @@ returns `true` if the attribute was modified
 *example*
 
 ```js
-var cat = dashboard.createCategory(params, map.getLayer(2))
-cat.update({ title: 'testing title' })
+var categoryWidget = dashboard.createCategoryWidget(params, map.getLayer(2))
+categoryWidget.update({ title: 'testing title' })
 ```
 
 ##### remove()
@@ -99,8 +99,8 @@ removes the widget from the dashboard
 *example*
 
 ```js
-var cat = dashboard.createCategory(params, map.getLayer(2));
-cat.remove();
+var categoryWidget = dashboard.createCategoryWidget(params, map.getLayer(2));
+categoryWidget.remove();
 ```
 
 

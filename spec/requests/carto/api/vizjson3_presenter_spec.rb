@@ -18,15 +18,15 @@ describe Carto::Api::VizJSON3Presenter do
   end
 
   shared_context 'full visualization' do
-      before(:all) do
-        @map, @table, @table_visualization, @visualization = create_full_visualization(Carto::User.find(@user_1.id))
-      end
+    before(:all) do
+      @map, @table, @table_visualization, @visualization = create_full_visualization(Carto::User.find(@user_1.id))
+    end
 
-      after(:all) do
-        destroy_full_visualization(@map, @table, @table_visualization, @visualization)
-      end
+    after(:all) do
+      destroy_full_visualization(@map, @table, @table_visualization, @visualization)
+    end
 
-      let(:viewer_user) { @visualization.user }
+    let(:viewer_user) { @visualization.user }
   end
 
   describe 'caching' do

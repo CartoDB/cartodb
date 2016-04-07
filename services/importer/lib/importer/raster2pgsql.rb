@@ -175,7 +175,7 @@ module CartoDB
       def psql_base_command(extra_params=nil)
         host      = pg_options.fetch(:host)
         port      = pg_options.fetch(:port)
-        user      = pg_options.fetch(:user)
+        user      = pg_options.fetch(:username)
         database  = pg_options.fetch(:database)
 
         %Q(#{psql_path} -h #{host} -p #{port} -U #{user} -d #{database} #{extra_params})

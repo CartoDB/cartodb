@@ -45,6 +45,9 @@ cartodb.deepInsights.createDashboard('#dashboard', vizJSONurl, {}, function(err,
 
 See a [working example](examples/dynamic_widgets.html)
 
+**Note on named maps**. As you probably know there is a way in CartoDB to have a map with private
+tables, this is called [named maps](http://docs.cartodb.com/cartodb-platform/maps-api/named-maps/). If you are using a named map you will not be able to add any widget or modify anything related with the widgets source data.
+
 ## Found a bug?
 
 Please report it in [deep insights repo](https://github.com/CartoDB/deep-insights.js/issues), make

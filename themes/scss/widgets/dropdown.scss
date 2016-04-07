@@ -31,3 +31,7 @@
 .CDB-Dropdown-link:last-child:hover {
   border-radius: 0 0 $baseSize / 2 $baseSize / 2;
 }
+
+.CDB-Dropdown-list {
+  @include flex(1);
+}

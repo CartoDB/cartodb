@@ -67,7 +67,7 @@
   padding-bottom: 40px;
 }
 .Footer-column--mobile {
-  border-top: 1px solid #eee;
+  border-top: 1px solid #EEE;
 }
 .Footer-columnTitle {
   margin-bottom: 12px;
@@ -86,9 +86,6 @@
     color: #2E3C43;
     text-decoration: none;
   }
-}
-.Footer-column--mobile {
-  border-top: 1px solid #eee;
 }
 .Footer-logo,
 .Footer-credits {
@@ -141,9 +138,8 @@
   width: 100px;
   border: 0;
   font: 400 13px Lato, sans-serif;
-  text-transform: uppercase;
   background: #3AA9E3;
-  color: #fff;
+  color: #FFF;
   border-radius: 0 4px 4px 0;
   transition: all .15s;
   cursor: pointer;
@@ -152,7 +148,7 @@
 
   &:hover {
     background: darken(#3AA9E3, 5%);
-    color: #fff;
+    color: #FFF;
   }
 }
 @media only screen and (max-width: $sMedia-mobile) {

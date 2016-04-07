@@ -40,10 +40,11 @@
 .FlashMessage-info.max-width {
   max-width: 720px;
 }
-.FlashMessage .u-inner.is-flex {
+.FlashMessage-content {
   @include display-flex();
   @include justify-content(space-between);
   @include align-items(center);
+  width: 100%;
 }
 .FlashMessage--button {
   height: 28px;
@@ -62,6 +63,6 @@
   text-transform: uppercase;
   box-sizing: border-box;
   &:hover {
-    background-color: rgba(#007FBD, 1);
+    background-color: $cHighlight-mainHover;
   }
 }

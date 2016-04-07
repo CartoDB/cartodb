@@ -31,6 +31,10 @@
   padding: 25px;
   box-sizing: border-box;
 }
+.Editor-panelWrapper {
+  position: relative;
+  width: 344px;
+}
 .Editor-panel.is-larger {
   width: 488px;
 }
@@ -39,10 +43,6 @@
 }
 .CDB-Dashboard-canvas {
   @include block-shadow();
-}
-.Editor-panelWrapper {
-  position: relative;
-  width: 344px;
 }
 .Editor-panel .ps-scrollbar-y-rail {
   right: 0 !Important;
@@ -63,4 +63,3 @@
   height: 2px !Important; // Resets standard scroll bar color
   background: #AAA;
 }
-

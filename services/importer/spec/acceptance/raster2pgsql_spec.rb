@@ -75,9 +75,8 @@ describe 'raster2pgsql acceptance tests' do
     rasterizer = Raster2Pgsql.new(@table_name, @filepath, {})
 
     scale = rasterizer.send(:calculate_raster_scale, pixel_size)
-    # 4891.480651647949  but just in case decimals change
-    scale.should > 4891
-    scale.should < 4892
+    expected_scale = 2445.7403258239747
+    scale.should be_within(1e-6).of(expected_scale)
   end
 
   it 'if there are some problem while importing should clean the temporary tables' do

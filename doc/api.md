@@ -25,9 +25,9 @@ cartodb.deepInsights.createDashboard('#dashboard', vizJSONurl, function(err, das
 
 ##### getMap() -> returns a Map object
 
-##### widgets.get(widgetID) -> List of widgets
+##### widgets.get(widgetID) -> The widget with the given ID
 
-##### widgets.getList(widgetAttrs) -> List of widgets
+##### widgets.getList() -> List of widgets
 
 ##### widgets.createCategoryWidget(widgetAttrs) -> CategoryWidget
 

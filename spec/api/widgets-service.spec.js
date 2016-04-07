@@ -24,7 +24,7 @@ describe('widgets-service', function () {
     });
   });
 
-  describe('.createCategoryModel', function () {
+  describe('.createCategoryWidget', function () {
     describe('when given valid input', function () {
       beforeEach(function () {
         var attrs = {
@@ -35,7 +35,7 @@ describe('widgets-service', function () {
           prefix: '$',
           suffix: ' people'
         };
-        this.widgetModel = this.widgetsService.createCategoryModel(attrs, this.vis.map.layers.first());
+        this.widgetModel = this.widgetsService.createCategoryWidget(attrs, this.vis.map.layers.first());
       });
 
       it('should return a category widget model', function () {
@@ -85,7 +85,7 @@ describe('widgets-service', function () {
           sync_on_data_change: false,
           enabled: false
         };
-        this.widgetModel = this.widgetsService.createCategoryModel(attrs, this.vis.map.layers.first());
+        this.widgetModel = this.widgetsService.createCategoryWidget(attrs, this.vis.map.layers.first());
       });
 
       it('should take them into account', function () {
@@ -96,7 +96,7 @@ describe('widgets-service', function () {
     });
 
     it('when no aggregation specified should use the default operation', function () {
-      this.widgetModel = this.widgetsService.createCategoryModel({
+      this.widgetModel = this.widgetsService.createCategoryWidget({
         title: 'some_title',
         column: 'my_column'
       }, this.vis.map.layers.first());
@@ -106,7 +106,7 @@ describe('widgets-service', function () {
     describe('fails when the input has no', function () {
       it('title', function () {
         expect(function () {
-          this.widgetModel = this.widgetsService.createCategoryModel({
+          this.widgetModel = this.widgetsService.createCategoryWidget({
             column: 'my_column'
           }, this.vis.map.layers.first());
         }).toThrowError();
@@ -114,7 +114,7 @@ describe('widgets-service', function () {
 
       it('column', function () {
         expect(function () {
-          this.widgetModel = this.widgetsService.createCategoryModel({
+          this.widgetModel = this.widgetsService.createCategoryWidget({
             title: 'some_title'
           }, this.vis.map.layers.first());
         }).toThrowError();
@@ -122,7 +122,7 @@ describe('widgets-service', function () {
     });
   });
 
-  describe('.createHistogramModel', function () {
+  describe('.createHistogramWidget', function () {
     describe('when given valid input', function () {
       beforeEach(function () {
         var attrs = {
@@ -131,7 +131,7 @@ describe('widgets-service', function () {
           column: 'a_column',
           bins: 20
         };
-        this.widgetModel = this.widgetsService.createHistogramModel(attrs, this.vis.map.layers.first());
+        this.widgetModel = this.widgetsService.createHistogramWidget(attrs, this.vis.map.layers.first());
       });
 
       it('should return a widget model', function () {
@@ -162,7 +162,7 @@ describe('widgets-service', function () {
     });
 
     it('when no bins specified should use the default value', function () {
-      this.widgetModel = this.widgetsService.createHistogramModel({
+      this.widgetModel = this.widgetsService.createHistogramWidget({
         title: 'some_title',
         column: 'my_column'
       }, this.vis.map.layers.first());
@@ -172,7 +172,7 @@ describe('widgets-service', function () {
     describe('fails when the input has no', function () {
       it('title', function () {
         expect(function () {
-          this.widgetModel = this.widgetsService.createHistogramModel({
+          this.widgetModel = this.widgetsService.createHistogramWidget({
             column: 'my_column'
           }, this.vis.map.layers.first());
         }).toThrowError();
@@ -180,7 +180,7 @@ describe('widgets-service', function () {
 
       it('column', function () {
         expect(function () {
-          this.widgetModel = this.widgetsService.createHistogramModel({
+          this.widgetModel = this.widgetsService.createHistogramWidget({
             title: 'some_title'
           }, this.vis.map.layers.first());
         }).toThrowError();
@@ -188,7 +188,7 @@ describe('widgets-service', function () {
     });
   });
 
-  describe('.createFormulaModel', function () {
+  describe('.createFormulaWidget', function () {
     describe('when given valid input', function () {
       beforeEach(function () {
         var attrs = {
@@ -199,7 +199,7 @@ describe('widgets-service', function () {
           prefix: '$',
           suffix: '¢'
         };
-        this.widgetModel = this.widgetsService.createFormulaModel(attrs, this.vis.map.layers.first());
+        this.widgetModel = this.widgetsService.createFormulaWidget(attrs, this.vis.map.layers.first());
       });
 
       it('should return a widget model', function () {
@@ -240,7 +240,7 @@ describe('widgets-service', function () {
     describe('fails when the input has no', function () {
       it('title', function () {
         expect(function () {
-          this.widgetModel = this.widgetsService.createFormulaModel({
+          this.widgetModel = this.widgetsService.createFormulaWidget({
             id: 'abc-123',
             column: 'my_column',
             operation: 'sum'
@@ -250,7 +250,7 @@ describe('widgets-service', function () {
 
       it('column', function () {
         expect(function () {
-          this.widgetModel = this.widgetsService.createFormulaModel({
+          this.widgetModel = this.widgetsService.createFormulaWidget({
             title: 'some_title',
             operation: 'sum'
           }, this.vis.map.layers.first());
@@ -259,7 +259,7 @@ describe('widgets-service', function () {
 
       it('operation', function () {
         expect(function () {
-          this.widgetModel = this.widgetsService.createFormulaModel({
+          this.widgetModel = this.widgetsService.createFormulaWidget({
             title: 'some_title',
             column: 'my_column'
           }, this.vis.map.layers.first());
@@ -268,7 +268,7 @@ describe('widgets-service', function () {
     });
   });
 
-  describe('.createListModel', function () {
+  describe('.createListWidget', function () {
     describe('when given valid input', function () {
       beforeEach(function () {
         var attrs = {
@@ -277,7 +277,7 @@ describe('widgets-service', function () {
           columns: ['a', 'b'],
           columns_title: ['first', '2nd']
         };
-        this.widgetModel = this.widgetsService.createListModel(attrs, this.vis.map.layers.first());
+        this.widgetModel = this.widgetsService.createListWidget(attrs, this.vis.map.layers.first());
       });
 
       it('should return a widget model', function () {
@@ -310,7 +310,7 @@ describe('widgets-service', function () {
     describe('fails when the input has no', function () {
       it('title', function () {
         expect(function () {
-          this.widgetModel = this.widgetsService.createListModel({
+          this.widgetModel = this.widgetsService.createListWidget({
             columns: ['a', 'b'],
             columns_title: ['first', '2nd']
           }, this.vis.map.layers.first());
@@ -319,7 +319,7 @@ describe('widgets-service', function () {
 
       it('columns', function () {
         expect(function () {
-          this.widgetModel = this.widgetsService.createListModel({
+          this.widgetModel = this.widgetsService.createListWidget({
             title: 'my list',
             columns_title: ['first', '2nd']
           }, this.vis.map.layers.first());
@@ -328,7 +328,7 @@ describe('widgets-service', function () {
 
       it('columns_title', function () {
         expect(function () {
-          this.widgetModel = this.widgetsService.createListModel({
+          this.widgetModel = this.widgetsService.createListWidget({
             title: 'my list',
             columns: ['a', 'b']
           }, this.vis.map.layers.first());
@@ -337,7 +337,7 @@ describe('widgets-service', function () {
     });
   });
 
-  describe('.createTimeSeriesModel', function () {
+  describe('.createTimeSeriesWidget', function () {
     describe('when given valid input', function () {
       beforeEach(function () {
         var attrs = {
@@ -347,7 +347,7 @@ describe('widgets-service', function () {
           start: 0,
           end: 10
         };
-        this.widgetModel = this.widgetsService.createTimeSeriesModel(attrs, this.vis.map.layers.first());
+        this.widgetModel = this.widgetsService.createTimeSeriesWidget(attrs, this.vis.map.layers.first());
       });
 
       it('should return a widget model', function () {
@@ -377,7 +377,7 @@ describe('widgets-service', function () {
   describe('fails when the input has no', function () {
     it('column', function () {
       expect(function () {
-        this.widgetModel = this.widgetsService.createTimeSeriesModel({
+        this.widgetModel = this.widgetsService.createTimeSeriesWidget({
           title: 'some_title'
         }, this.vis.map.layers.first());
       }).toThrowError();

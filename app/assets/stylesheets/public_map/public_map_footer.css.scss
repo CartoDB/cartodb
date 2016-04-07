@@ -1,3 +1,6 @@
+@import '../variables/sizes';
+
+
 // PublicMap Footer
 // --------------------------------------------------
 
@@ -5,13 +8,106 @@
   color: #2E3C43;
 }
 .PublicTitle--feature {
-  margin-bottom: 10px;
-  font-size: 18px;
-  line-height: 26px;
+  font-size: 13px;
+  line-height: 20px;
+  letter-spacing: 2.3px;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: #979EA1;
+  margin-bottom: 8px;
 }
 .Feature-text {
   color: #636D72;
   font-size: 15px;
   line-height: 26px;
   transition: all 0.2s;
+}
+hr, .Sep {
+  display: block;
+  border: 0;
+  width: 100%;
+  height: 1px;
+  margin: 0;
+  background: #eee;
+}
+.Sep.u-vspace-l {
+  margin-bottom: 40px;
+}
+.Title--sectionMedium {
+  margin-bottom: 20px;
+  font-size: 24px;
+  line-height: 36px;
+  color: #2E3C43;
+}
+.Footer-arrow {
+  position: absolute;
+  right: 0;
+  top: 21px;
+  color: #ddd;
+}
+.Footer-social {
+  color: #636D72;
+  line-height: 40px;
+
+  @media (max-width: $sMedia-tablet) {
+    margin-top: 20px;
+  }
+}
+.FooterIcon--facebook,
+.FooterIcon--linkedin,
+.FooterIcon--twitter {
+  position: relative;
+  top: -2px;
+}
+.FooterIcon--s14 {
+  font-size: 14px;
+}
+.FooterIcon {
+  display: inline-block;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1;
+  -moz-osx-font-smoothing: grayscale;
+
+  path {
+    transition: all 0.2s ease;
+    fill: #3AA9E3;
+  }
+
+  &:hover {
+    path {
+      fill: #2E3C43;
+    }
+  }
+}
+.u-lspace--20 {
+  margin-left: 20px;
+}
+.Footer-link {
+  line-height: 28px;
+  transition: color 0.2s ease;
+}
+.Footer-item--mobile {
+  position: relative;
+  border-bottom: 1px solid #eee;
+  display: block;
+  padding: 13px 0;
+  margin-bottom: 0;
+
+  .Footer-link {
+    display: block;
+  }
+
+  .FooterIcon {
+    path {
+      transition: all 0.2s ease;
+      fill: #ddd;
+    }
+
+    &:hover {
+      path {
+        fill: #ddd;
+      }
+    }
+  }
 }

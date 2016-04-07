@@ -31,8 +31,6 @@ module Carto
       raise unless e.to_s.match /relation .+ does not exist/
     end
 
-    private
-
     def overview_tables(table_name)
       overviews_data = @database.fetch(%{SELECT * FROM cartodb.CDB_Overviews('#{table_name}'::REGCLASS)})
       if overviews_data

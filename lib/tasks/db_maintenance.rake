@@ -755,46 +755,6 @@ namespace :cartodb do
       puts "\n>Finished :create_default_vis_permissions"
     end
 
-    desc "Check all visualizations and populate their Permission object's entity_id and entity_type"
-    task :populate_permission_entity_id, [:page_size, :page] => :environment do |t, args|
-      page_size = args[:page_size].blank? ? 999999 : args[:page_size].to_i
-      page = args[:page].blank? ? 1 : args[:page].to_i
-
-      require_relative '../../app/models/visualization/collection'
-
-      progress_each =  (page_size > 10) ? (page_size / 10).ceil : 1
-      collection = CartoDB::Visualization::Collection.new
-
-
-      begin
-        items = collection.fetch(page: page, per_page: page_size)
-
-        count = items.count
-        puts "\n>Running :populate_permission_entity_id for page #{page} (#{count} vis)" if count > 0
-        items.each_with_index { |vis, i|
-          puts ">Processed: #{i}/#{count} - page #{page}" if i % progress_each == 0
-          unless vis.permission_id.nil?
-            begin
-              raise 'No owner' if vis.user.nil?
-              if vis.permission.entity_id.nil?
-                perm = vis.permission
-                perm.entity = vis
-                perm.save
-              end
-            rescue => e
-              owner_id = vis.user.nil? ? 'nil' : vis.user.id
-              message = "FAIL u:#{owner_id} v:#{vis.id}: #{e.message}"
-              puts message
-              log(message, :populate_permission_entity_id.to_s)
-            end
-          end
-        }
-        page += 1
-      end while count > 0
-
-      puts "\n>Finished :populate_permission_entity_id"
-    end
-
     # Executes a ruby code proc/block on all existing users, outputting some info
     # @param task_name string
     # @param block Proc

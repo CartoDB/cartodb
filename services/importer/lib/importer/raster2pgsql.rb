@@ -141,7 +141,7 @@ module CartoDB
         factor = z0 / pixel_size
 
         pw = Math::log(factor) / Math::log(2)
-        pow2 = (pw / 1).ceil
+        pow2 = pw.ceil
 
         out_scale = z0 / (2 ** pow2)
 

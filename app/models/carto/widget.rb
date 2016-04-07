@@ -12,7 +12,7 @@ class Carto::Widget < ActiveRecord::Base
 
   def self.from_visualization_id(visualization_id)
     visualization = Carto::Visualization.where(id: visualization_id).first
-    visualization.nil? ? [] : visualization.layers.map(&:widgets).flatten
+    visualization.nil? ? [] : visualization.widgets.flatten
   end
 
   # INFO: disable ActiveRecord inheritance column

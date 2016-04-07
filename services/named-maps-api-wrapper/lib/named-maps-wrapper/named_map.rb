@@ -210,7 +210,7 @@ module CartoDB
           widgets = Carto::Widget.from_visualization_id(visualization.id)
           if widgets.present?
             widget_names_and_options = widgets.map { |widget| [widget.id, dataview_data(widget)] }
-            layergroup[:dataviews] = Hash[*widget_names_and_options.flatten]
+            layergroup[:dataviews] = widget_names_and_options.to_h
           end
 
           analyses = Carto::Analysis.where(visualization_id: visualization.id)

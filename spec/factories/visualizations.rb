@@ -25,8 +25,7 @@ FactoryGirl.define do
     association :user, factory: :carto_user
 
     before(:create) do |visualization|
-      permission = FactoryGirl.create :carto_permission,
-                                      entity: visualization, owner: visualization.user, entity_type: 'vis'
+      permission = FactoryGirl.create :carto_permission, owner: visualization.user
       visualization.permission_id = permission.id
     end
 

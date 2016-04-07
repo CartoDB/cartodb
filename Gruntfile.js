@@ -5,11 +5,23 @@ module.exports = function (grunt) {
   require('load-grunt-tasks')(grunt);
   require('time-grunt')(grunt);
 
-  grunt.initConfig({
-    config: {
-      dist: 'dist',
-      tmp: '.tmp'
+  var pkg = grunt.file.readJSON('package.json');
+  var version = pkg.version.split('.');
+
+  var config = {
+    dist: 'dist',
+    tmp: '.tmp',
+    version: {
+      major:      version[0],
+      minor:      version[0] + '.' + version[1],
+      // set bugfix version to empty until we do the real release (aka 1.0)
+      bugfixing:  '', //pkg.version
     },
+    pkg: pkg
+  };
+
+  grunt.initConfig({
+    config: config,
     pkg: grunt.file.readJSON('package.json'),
     browserify: require('./grunt-tasks/browserify'),
     clean: require('./grunt-tasks/clean'),
@@ -23,7 +35,8 @@ module.exports = function (grunt) {
     sass: require('./grunt-tasks/scss'),
     uglify: require('./grunt-tasks/uglify'),
     watch: require('./grunt-tasks/watch'),
-    'gh-pages': require('./grunt-tasks/gh-pages')
+    'gh-pages': require('./grunt-tasks/gh-pages'),
+    s3: require('./grunt-tasks/s3').task(grunt, config),
   });
 
   // required for browserify to use watch files instead
@@ -87,4 +100,24 @@ module.exports = function (grunt) {
     'jasmine'
   ])));
   grunt.registerTask('publish', ['build', 'gh-pages']);
+  grunt.registerTask('release', function (target) {
+
+    if (!grunt.file.exists('secrets.json')) {
+      grunt.fail.fatal('secrets.json file does not exist, copy secrets.example.json and rename it' , 1);
+    }
+
+    // Read secrets
+    grunt.config.set('secrets', grunt.file.readJSON('secrets.json'));
+
+    if (
+        !grunt.config('secrets') ||
+        !grunt.config('secrets').S3_KEY ||
+        !grunt.config('secrets').S3_SECRET ||
+        !grunt.config('secrets').S3_BUCKET
+      ) {
+      grunt.fail.fatal('S3 keys not specified in secrets.json' , 1);
+    }
+
+    grunt.task.run(['s3']);
+  });
 };

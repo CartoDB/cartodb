@@ -375,7 +375,7 @@ module CartoDB
     # Note: Does not check ownership
     # @param subject ::User
     # @param access String Permission::ACCESS_xxx
-    def is_permitted?(subject, access)
+    def permitted?(subject, access)
       permission = permission_for_user(subject)
       Permission::PERMISSIONS_MATRIX[access].include? permission
     end
@@ -641,7 +641,7 @@ module CartoDB
     end
 
     def is_permitted(table, access)
-      table.permission.is_permitted?(@user, access)
+      table.permission.permitted?(@user, access)
     end
 
     def add_read_permission(table)

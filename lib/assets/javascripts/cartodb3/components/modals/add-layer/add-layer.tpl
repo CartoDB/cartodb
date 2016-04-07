@@ -1,13 +1,9 @@
 <div class="Dialog-header Dialog-header--expanded CreateDialog-header with-separator">
-  <ul class="CreateDialog-headerSteps">
-    <li class="CreateDialog-headerStep is-selected">
-      <div class="Dialog-headerIcon Dialog-headerIcon--neutral">
-        <i class="CDB-IconFont CDB-IconFont-add"></i>
-      </div>
-      <p class="Dialog-headerTitle"><%- _t('components.modals.add-layer.modal-title') %></p>
-      <p class="Dialog-headerText"><%- _t('components.modals.add-layer.modal-desc') %></p>
-    </li>
-  </ul>
+  <div class="Dialog-headerIcon Dialog-headerIcon--neutral">
+    <i class="CDB-IconFont CDB-IconFont-add"></i>
+  </div>
+  <h2 class="CDB-Text CDB-Size-large u-mainTextColor u-bSpace"><%- _t('components.modals.add-layer.modal-title') %></h2>
+  <h3 class="CDB-Text CDB-Size-medium u-altTextColor"><%- _t('components.modals.add-layer.modal-desc') %></h3>
 </div>
 <div class="Filters Filters--navListing Filters--static js-navigation"></div>
 <div class="js-content-container Dialog-body Dialog-body--expanded Dialog-body--create Dialog-body--noPaddingTop Dialog-body--withoutBorder"></div>

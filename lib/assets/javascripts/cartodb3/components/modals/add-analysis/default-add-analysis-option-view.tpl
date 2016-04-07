@@ -11,7 +11,6 @@
     <h3 class="ModalBlockList-item-headerSubTitle CDB-Text CDB-Size-small u-hintTextColor u-upperCase u-ellipsis"><%- sub_title %></h3>
   </div>
   <div class="ModalBlockList-item-body">
-    <div class="ModalBlockList-item-media u-rSpace--m"></div>
     <p class="CDB-Text CDB-Size-small u-altTextColor"><%- desc %></p>
   </div>
 

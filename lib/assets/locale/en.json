@@ -62,6 +62,7 @@
       "geocoding": "Geocoding",
       "working": "Working…"
     },
+    "likes-pluralize": "like |||| likes",
     "modals": {
       "add-analysis": {
         "modal-title": "Add a new analysis",
@@ -69,10 +70,10 @@
         "loading-title": "Loading options",
         "add-btn": "Add analysis",
         "disabled-option-desc": "Your layer geometry is %{inputGeometryType} and this analysis needs %{requiredInputGeometries}",
-        "options": {
-          "sub-titles": {
-            "area-of-influence": "Area of influence"
-          },
+        "option-sub-titles": {
+          "area-of-influence": "Area of influence"
+        },
+        "option-types": {
           "buffer": {
             "title": "Buffer",
             "desc": "Calculate the area of influence of a layer determined by distance."
@@ -80,6 +81,10 @@
           "trade-area": {
             "title": "Trade Areas",
             "desc": "Calculate the area of a layer determined by walking, driving, or biking time, or just by distance"
+          },
+          "point-in-polygon": {
+            "title": "Point in polygon",
+            "desc": "Analyse points in polygon (or vice versa)"
           }
         }
       },
@@ -111,6 +116,41 @@
           "create-empty-addLayer": "Add an empty layer",
           "dataset-pluralize": "Dataset |||| Datasets"
         },
+        "create-loading-title": "Creating empty dataset…",
+        "adding-new-layer": "Adding new layer…",
+        "add-layer-error": "Could not add layer",
+        "datasets": {
+          "item": {
+            "sync-failed": "Sync failed, last attempt was",
+            "syncing": "Syncing",
+            "synced": "Synced",
+            "read": "read",
+            "from": "from",
+            "by": "by",
+            "no-description": "No description",
+            "rows-pluralize": "row |||| rows",
+            "tags-more": "and %{tagsCount} more",
+            "no-tags": "No tags",
+          },
+          "loading": "Loading",
+          "searching": "Searching",
+          "error": {
+            "title": "Oouch! There has been an error loading your datasets",
+            "desc": "If the problem persists contact us at"
+          },
+          "no-datasets": {
+            "title": "You have not connected any datasets yet",
+            "desc": "You can %{connectDataset} or %{search} in all our data library",
+            "connect-datasets": "connect datasets",
+            "search": "search"
+          },
+          "no-results": {
+            "desc": "There are no results in this page",
+            "found": "found",
+            "there-are-no": "There are no",
+            "no-fun": "No %{type}, no fun"
+          }
+        },
         "footer": {
           "guessing-desc": "Let CartoDB automatically guess data types and content on import.",
           "twitter-desc": "To get access to historical data (older than 30 days) you need to",
@@ -118,13 +158,22 @@
           "privacy-upgrade": "You cannot change the privacy of your new datasets. Click here to upgrade your account.",
           "privacy-change": "Your new dataset will be %{privacy}",
           "privacy-click": "Click to change it to %{nextPrivacy}",
-          "privacy-change-banned": "You cannot change the privacy of your new datasets."
+          "privacy-change-banned": "You cannot change the privacy of your new datasets.",
+          "add-layer": "Add layer" 
         }
       }
     },
     "error": {
       "default-title": "Oops, there was a problem",
       "default-desc": "Reload the page again. If the problem persists contact us at <a href='mailto:support@cartodb.com'>support@cartodb.com</a>"
+    }
+  },
+  "data": {
+    "analysis-definition-node-model": {
+      "validation": {
+        "invalid-source": "invalid source",
+        "required-param": "required"
+      }
     }
   },
   "editor": {
@@ -162,6 +211,7 @@
         "placeholder-text": "You have not added any analysis yet. Add new analysis to discover new things.",
         "workflow": "Workflow",
         "reference-layer": "Define your reference layer",
+        "reference-layers": "Define your reference layers",
         "parameters": "Parameters",
         "parameters-description": "Tune your analysis",
         "trade-area": "Trade area",

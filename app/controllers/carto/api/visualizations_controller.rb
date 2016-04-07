@@ -95,7 +95,7 @@ module Carto
       end
 
       def vizjson3
-        render_vizjson(generate_vizjson3(@visualization, current_viewer, params))
+        render_vizjson(generate_vizjson3(@visualization, params))
       end
 
       def list_watching

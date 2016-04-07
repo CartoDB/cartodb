@@ -17,6 +17,7 @@ require_dependency 'cartodb_config_utils'
 require_relative './user/db_service'
 require_dependency 'carto/user_db_size_cache'
 require_dependency 'cartodb/redis_vizjson_cache'
+require_dependency 'carto/bolt'
 
 class User < Sequel::Model
   include CartoDB::MiniSequel
@@ -447,7 +448,8 @@ class User < Sequel::Model
   #        example: 0.20 will get all users at 80% of their map view limit
   #
   def self.overquota(delta = 0)
-    ::User.where(enabled: true).all.reject{ |u| u.organization_id.present? }.select do |u|
+    users_overquota = []
+    ::User.where(enabled: true, organization_id: nil).each do |u|
         limit = u.geocoding_quota.to_i - (u.geocoding_quota.to_i * delta)
         over_geocodings = u.get_geocoding_calls > limit
 
@@ -457,7 +459,37 @@ class User < Sequel::Model
         limit = u.here_isolines_quota.to_i - (u.here_isolines_quota.to_i * delta)
         over_here_isolines = u.get_here_isolines_calls > limit
 
-        over_geocodings || over_twitter_imports || over_here_isolines
+        if over_geocodings || over_twitter_imports || over_here_isolines
+          users_overquota.push(u)
+        end
+    end
+    users_overquota
+  end
+
+  def self.store_overquota_users(delta, date)
+    overquota_users = overquota(delta)
+    today = date.strftime('%Y%m%d')
+    key = "overquota:users:#{today}"
+    overquota_users.each do |user|
+      $users_metadata.hmset key, user.id, user.data.to_json
+    end
+    # Expire the cache after two months. Enough time to review data if needed
+    $users_metadata.expire key, 2.months
+  end
+
+  def self.get_stored_overquota_users(date)
+    formated_date = date.strftime('%Y%m%d')
+    key = "overquota:users:#{formated_date}"
+    if $users_metadata.exists key
+      users = []
+      users_json = $users_metadata.hgetall key
+      users_json.each do |_k, v|
+        users.push(JSON.parse(v))
+      end
+      users
+    else
+      CartoDB::Logger.warning(message: "There is no overquota cached users for date #{formated_date}")
+      []
     end
   end
 
@@ -518,6 +550,9 @@ class User < Sequel::Model
     self.database_host
   end
 
+  # Obtain a db connection through the default port. Allows to set a statement_timeout
+  # which is only effective in case the connection does not use PGBouncer or any other
+  # PostgreSQL transaction-level connection pool which might not persist connection variables.
   def in_database(options = {}, &block)
     if options[:statement_timeout]
       in_database.run("SET statement_timeout TO #{options[:statement_timeout]}")
@@ -526,18 +561,7 @@ class User < Sequel::Model
     configuration = db_service.db_configuration_for(options[:as])
     configuration['database'] = options['database'] unless options['database'].nil?
 
-    begin
-      connection = $pool.fetch(configuration) do
-        db = get_database(options, configuration)
-        db.extension(:connection_validator)
-        db.pool.connection_validation_timeout = configuration.fetch('conn_validator_timeout', -1)
-        db
-      end
-    rescue => exception
-      CartoDB::report_exception(exception, "Cannot connect to user database",
-                                user: self, database: configuration['database'])
-      raise exception
-    end
+    connection = get_connection(options, configuration)
 
     if block_given?
       yield(connection)
@@ -566,6 +590,19 @@ class User < Sequel::Model
         end
       end
     end
+  end
+
+  def get_connection(options = {}, configuration)
+  connection = $pool.fetch(configuration) do
+      db = get_database(_opts = {}, configuration)
+      db.extension(:connection_validator)
+      db.pool.connection_validation_timeout = configuration.fetch('conn_validator_timeout', -1)
+      db
+    end
+  rescue => exception
+    CartoDB::report_exception(exception, "Cannot connect to user database",
+                              user: self, database: configuration['database'])
+    raise exception
   end
 
   def connection(options = {})
@@ -1073,10 +1110,15 @@ class User < Sequel::Model
   # Looks for tables created on the user database with
   # the columns needed
   def link_ghost_tables
-    no_tables = self.real_tables.blank?
-    link_renamed_tables unless no_tables
-    link_deleted_tables
-    link_created_tables(search_for_cartodbfied_tables) unless no_tables
+    lock_acquired = Carto::Bolt.new(username, ttl_ms: 60000).run_locked do
+      no_tables = real_tables.blank?
+
+      link_renamed_tables unless no_tables
+      link_deleted_tables
+      link_created_tables(search_for_cartodbfied_tables) unless no_tables
+    end
+
+    CartoDB::Logger.info(message: 'Ghost table race condition avoided', user: self) unless lock_acquired
   end
 
   # this method search for tables with all the columns needed in a cartodb table.
@@ -1566,10 +1608,10 @@ class User < Sequel::Model
 
   def destroy_shared_with
     CartoDB::SharedEntity.where(recipient_id: id).each do |se|
-      CartoDB::Permission.where(entity_id: se.entity_id).each do |p|
-        p.remove_user_permission(self)
-        p.save
-      end
+      viz = CartoDB::Visualization::Member.new(id: se.entity_id).fetch
+      permission = viz.permission
+      permission.remove_user_permission(self)
+      permission.save
     end
   end
 

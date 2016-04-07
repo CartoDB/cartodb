@@ -39,6 +39,7 @@ which should be fixed manually.
 * Fixes a problem with select2 arrow icon.
 * Disable `PROMOTE_TO_MULTI` ogr2ogr option for CSV imports with guessing enabled to avoid MultiPoint imports. (https://github.com/CartoDB/cartodb/pull/6793)
 * Source and attributions copied to visualizations when you import a dataset from the Data Library (https://github.com/CartoDB/cartodb/issues/5970).
+* Improved performance of the check for multiple users editing the same visualization
 * Fixes a memory leak when connecting to user databases
 * Fixed error when accessing an SQL API renamed table through the editor.
 * Refactored and fixed error handling for visualization overlays.

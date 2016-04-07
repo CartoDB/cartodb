@@ -30,10 +30,6 @@ module.exports = cdb.core.View.extend({
     }
 
     this._appendView(this.options.contentView);
-
-    // Show or hide the widget depending on the layer visibility
-    this._setVisible(this.model.dataviewModel.layer.get('visible'));
-
     return this;
   },
 

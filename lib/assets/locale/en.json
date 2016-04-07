@@ -31,10 +31,10 @@
         "loading-title": "Loading options",
         "add-btn": "Add analysis",
         "disabled-option-desc": "Your layer geometry is %{inputGeometryType} and this analysis needs %{requiredInputGeometries}",
-        "options": {
-          "sub-titles": {
-            "area-of-influence": "Area of influence"
-          },
+        "option-sub-titles": {
+          "area-of-influence": "Area of influence"
+        },
+        "option-types": {
           "buffer": {
             "title": "Buffer",
             "desc": "Calculate the area of influence of a layer determined by distance."
@@ -42,6 +42,10 @@
           "trade-area": {
             "title": "Trade Areas",
             "desc": "Calculate the area of a layer determined by walking, driving, or biking time, or just by distance"
+          },
+          "point-in-polygon": {
+            "title": "Point in polygon",
+            "desc": "Analyse points in polygon (or vice versa)"
           }
         }
       },
@@ -135,6 +139,14 @@
       "default-desc": "Reload the page again. If the problem persists contact us at <a href='mailto:support@cartodb.com'>support@cartodb.com</a>"
     }
   },
+  "data": {
+    "analysis-definition-node-model": {
+      "validation": {
+        "invalid-source": "invalid source",
+        "required-param": "required"
+      }
+    }
+  },
   "editor": {
     "map": "map",
     "map_name": "%{name} map",
@@ -170,6 +182,7 @@
         "placeholder-text": "You have not added any analysis yet. Add new analysis to discover new things.",
         "workflow": "Workflow",
         "reference-layer": "Define your reference layer",
+        "reference-layers": "Define your reference layers",
         "parameters": "Parameters",
         "parameters-description": "Tune your analysis",
         "trade-area": "Trade area",

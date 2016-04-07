@@ -11,9 +11,9 @@
     class="CDB-IconFont CDB-IconFont-wifi DatasetsList-itemStatus is-<%- syncStatus %>"></i>
   <% } %>
 </div>
-<div class="DatasetsList-itemInfo">
-  <div class="DatasetsList-itemPrimaryInfo">
-    <h3 class="DatasetsList-itemTitle DefaultTitle u-ellipsLongText">
+<div class="ModalDataset-itemInfo">
+  <div>
+    <h3 class="CDB-Text CDB-Size-large u-bSpace">
       <%- title %>
       <% if (showPermissionIndicator) { %>
         <span class="DatasetsList-itemTitlePermission PermissionIndicator u-upperCase">
@@ -22,41 +22,40 @@
       <% } %>
     </h3>
     <% if (description && description.length > 0) { %>
-      <p class="DefaultDescription DatasetsList-itemDescription u-ellipsLongText" title="<%- description %>"><%- description %></p>
+      <p class="u-ellipsLongText CDB-Text CDB-Size-medium u-altTextColor" title="<%- description %>"><%- description %></p>
     <% } else { %>
-      <span class="NoResults DatasetsList-itemDescription"><%- _t('components.modals.add-layer.datasets.item.no-description') %></span>
+      <span class="NoResults CDB-Text CDB-Size-medium"><%- _t('components.modals.add-layer.datasets.item.no-description') %></span>
     <% } %>
   </div>
-  <div class="DatasetsList-itemSecondaryInfo">
+  <div>
     <div class="DatasetsList-itemMeta">
-      <span class="PrivacyIndicator is-<%- privacy %>"><%- privacy %></span>
-      <span class="js-likes-indicator" />
+
+      <span class="CDB-Tag is-<%- privacy %> CDB-Text is-semibold CDB-Size-small u-upperCase">
+        <%- privacy %>
+      </span>
       <% if (rowCount) { %>
         <span class="RowsIndicator">
-          <i class="CDB-IconFont CDB-IconFont-rows RowsIndicator-icon"></i>
-          <%- rowCountFormatted %> <%- _t('components.modals.add-layer.datasets.item.rows-pluralize', { smart_count: rowCount }) %>
+          <span class="CDB-Text CDB-Size-small u-altTextColor"><%- rowCountFormatted %> <%- _t('components.modals.add-layer.datasets.item.rows-pluralize', { smart_count: rowCount }) %></span>
         </span>
       <% } %>
       <% if (datasetSize) { %>
         <span class="SizeIndicator">
-          <i class="CDB-IconFont CDB-IconFont-floppy SizeIndicator-icon"></i>
-          <%- datasetSize %>
+          <span class="CDB-Text CDB-Size-small u-altTextColor"><%- datasetSize %></span>
         </span>
       <% } %>
       <span class="DatasetsList-itemTimeDiff DefaultTimeDiff">
-        <i class="CDB-IconFont CDB-IconFont-clock DefaultTimeDiff-icon"></i>
-          <%- timeDiff %>
-          <% if (!isOwner) { %>
-            <%- _t('components.modals.add-layer.datasets.item.by') %>
-            <span class="UserAvatar">
-              <img class="UserAvatar-img UserAvatar-img--smaller" src="<%- owner.avatar_url %>" alt="<%- owner.name || owner.username  %>" title="<%- owner.name || owner.username  %>" />
-            </span>
-          <% } %>
+        <span class="CDB-Text CDB-Size-small u-altTextColor"><%- timeDiff %></span>
+        <% if (!isOwner) { %>
+          <%- _t('components.modals.add-layer.datasets.item.by') %>
+          <span class="UserAvatar">
+            <img class="UserAvatar-img UserAvatar-img--smaller" src="<%- owner.avatar_url %>" alt="<%- owner.name || owner.username  %>" title="<%- owner.name || owner.username  %>" />
+          </span>
+        <% } %>
       </span>
     </div>
     <div class="DatasetsList-itemMeta DatasetsList-itemTags">
       <% if (tagsCount > 0) { %>
-        <div class="DefaultTags">
+        <div class="DefaultTags CDB-Text CDB-Size-small">
           <% for (var i = 0, l = Math.min(maxTagsToShow, tags.length); i < l; ++i) { %>
             <button class="DefaultTags-item js-tag-link" value="<%- tags[i] %>"><%- tags[i] %></button><% if (i !== (l-1)) { %>,<% } %>
           <% } %>
@@ -65,7 +64,7 @@
           <% } %>
         </div>
       <% } else { %>
-        <span class="NoResults"><%- _t('components.modals.add-layer.datasets.item.no-tags') %></span>
+        <span class="NoResults CDB-Text CDB-Size-small u-altTextColor"><%- _t('components.modals.add-layer.datasets.item.no-tags') %></span>
       <% } %>
     </div>
   </div>

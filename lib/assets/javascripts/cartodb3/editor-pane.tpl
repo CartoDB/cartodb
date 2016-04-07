@@ -7,4 +7,6 @@
     <img src="<%- avatar_url %>" class="EditorMenu-avatarImage">
   </a>
 </div>
-<div class="Editor-panel js-content"></div>
+<div class="Editor-panelWrapper">
+  <div class="Editor-panel js-content"></div>
+</div>

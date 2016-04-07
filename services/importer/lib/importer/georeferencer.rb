@@ -225,15 +225,14 @@ module CartoDB
             countries: country.present? ? "'#{country}'" : nil,
             usage_metrics: usage_metrics
           )
-          geocoder = CartoDB::InternalGeocoder::Geocoder.new(config)
-
+          geocoding = Geocoding.new config.slice(:kind, :geometry_type, :formatter, :table_name, :country_column, :country_code)
+          geocoding.user = user
+          geocoding.data_import_id = data_import.id unless data_import.nil?
+          geocoding.raise_on_save_failure = true
+          geocoder = CartoDB::InternalGeocoder::Geocoder.new(config.merge!(geocoding_model: geocoding))
+          geocoder.set_log(geocoding.log)
+          geocoding.force_geocoder(geocoder)
           begin
-            geocoding = Geocoding.new config.slice(:kind, :geometry_type, :formatter, :table_name, :country_column, :country_code)
-            geocoding.user = user
-            geocoder.set_log(geocoding.log)
-            geocoding.force_geocoder(geocoder)
-            geocoding.data_import_id = data_import.id unless data_import.nil?
-            geocoding.raise_on_save_failure = true
             geocoding.run_geocoding!(row_count)
             raise "Geocoding failed" if geocoding.state == 'failed'
           rescue => e

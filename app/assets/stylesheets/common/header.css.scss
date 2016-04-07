@@ -58,7 +58,7 @@ $cHeader-dark:  rgba(#3A91D7, 1);
 
   &:hover {
     text-decoration: none;
-    color: rgba(#fff, .6);
+    color: rgba(#FFF, 0.6);
   }
 }
 .Header-navigationBreadcrumbItem:first-child { padding-left: 0 }
@@ -98,8 +98,8 @@ $cHeader-dark:  rgba(#3A91D7, 1);
   text-transform: uppercase;
 }
 .Header-settingsLink--public {
-  font-weight: $sFontWeight-normal;
   font-size: $sFontSize-normal;
+  font-weight: $sFontWeight-normal;
   text-transform: none;
 }
 .Header-settingsItem--avatar {}

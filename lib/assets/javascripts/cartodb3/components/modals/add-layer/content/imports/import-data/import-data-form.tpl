@@ -7,7 +7,7 @@
           <label class="Form-fileLabel Form-fileLabel--error js-fileError"></label>
           <div class="Form-file">
             <input type="file" class="js-fileInput" />
-            <span class="Button Button--main Form-fileButton js-fileButton">browse</span>
+            <span class="CDB-Button CDB-Button--primary Form-fileButton CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase js-fileButton">browse</span>
           </div>
         </div>
       </div>
@@ -15,7 +15,7 @@
     <% } %>
     <div class="Form-rowData Form-rowData--noMargin Form-rowData--med">
       <input type="text" class="Form-input Form-input--med has-submit js-textInput CDB-Text CDB-Size-medium" value="" placeholder="http://www.cartodb.com/library" />
-      <button type="submit" class="Button Button--secondaryBlue Form-inputSubmit"><span>submit</span></button>
+      <button type="submit" class="CDB-Text CDB-Size-small Form-inputSubmit u-upperCase u-actionTextColor Form-inputSubmit"><span>submit</span></button>
       <div class="Form-inputError">Error. Your URL doesn’t look correct.</div>
     </div>
   </div>

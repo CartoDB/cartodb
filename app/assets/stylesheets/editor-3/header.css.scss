@@ -53,6 +53,7 @@
 
 .Editor-HeaderNumeration {
   width: $baseSize * 3;
+  min-width: $baseSize * 3;
   height: $baseSize * 3;
   border: 1px solid $cMainLine;
   border-radius: 4px;

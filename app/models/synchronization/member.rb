@@ -460,7 +460,7 @@ module CartoDB
       def pg_options
         Rails.configuration.database_configuration[Rails.env].symbolize_keys
           .merge(
-            user:     user.database_username,
+            username:     user.database_username,
             password: user.database_password,
             database: user.database_name,
 	          host:     user.user_database_host

@@ -273,5 +273,9 @@ describe Carto::Api::WidgetsController do
         end
       end
     end
+
+    def get_vizjson3(carto_visualization)
+      Carto::Api::VizJSON3Presenter.new(carto_visualization).to_vizjson
+    end
   end
 end

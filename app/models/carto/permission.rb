@@ -16,11 +16,11 @@ class Carto::Permission < ActiveRecord::Base
   has_one :entity, inverse_of: :permission, class_name: Carto::Visualization, foreign_key: :permission_id
 
   def acl
-    @acl ||= access_control_list.nil? ? DEFAULT_ACL_VALUE : JSON.parse(access_control_list, symbolize_names: true)
+    JSON.parse(access_control_list, symbolize_names: true)
   end
 
   def user_has_read_permission?(user)
-    owner_user?(user) || !acl_entries_for_user(user).empty?
+    owner_user?(user) || permitted?(user, ACCESS_READONLY)
   end
 
   def user_has_write_permission?(user)

@@ -1,3 +1,5 @@
+require:
+ - ./config/cops/deprecated_log.rb
 AllCops:
   TargetRubyVersion: 2.2
   Include:
@@ -343,7 +345,6 @@ Style/RegexpLiteral:
     '/' character.
   StyleGuide: https://github.com/bbatsov/ruby-style-guide#percent-r
   Enabled: false
-  MaxSlashes: 1
 Style/Semicolon:
   Description: Don't use semicolons to terminate expressions.
   StyleGuide: https://github.com/bbatsov/ruby-style-guide#no-semicolon
@@ -993,6 +994,9 @@ Lint/Debugger:
 Lint/DeprecatedClassMethods:
   Description: Check for deprecated class method calls.
   Enabled: false
+CartoDB/DeprecatedLogMethods:
+  Description: Wadus
+  Enabled: True
 Lint/DuplicateMethods:
   Description: Check for duplicate methods calls.
   Enabled: true

@@ -204,7 +204,7 @@ module CartoDB
           }
           source = layer.options['source']
           if source
-            data[:source] = source
+            data[:source] = { id: source }
             data.delete(:sql)
           else
             data[:sql] = wrap(sql_from(layer.options), layer.options)

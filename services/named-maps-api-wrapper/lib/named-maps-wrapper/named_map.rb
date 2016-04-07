@@ -193,7 +193,7 @@ module CartoDB
               source = layer[:options]['source']
               if source
                 layer[:options].delete('query')
-                layer_data[:options][:source] = layer[:options].fetch('source')
+                layer_data[:options][:source] = { id: layer[:options].fetch('source') }
               else
                 layer_data[:options][:sql] = layer[:options].fetch('query')
               end

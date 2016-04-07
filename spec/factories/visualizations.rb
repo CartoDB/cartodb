@@ -23,12 +23,7 @@ FactoryGirl.define do
     privacy 'public'
 
     association :user, factory: :carto_user
-
-    before(:create) do |visualization|
-      permission = FactoryGirl.create :carto_permission, owner: visualization.user
-      visualization.permission_id = permission.id
-    end
-
+    permission { FactoryGirl.create :carto_permission, owner: user }
   end
 
 end

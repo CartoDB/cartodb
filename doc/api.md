@@ -23,13 +23,13 @@ cartodb.deepInsights.createDashboard('#dashboard', vizJSONurl, function(err, das
 
 ## cartodb.DI.Dashboard
 
-This object contains a CartoDB dashboard, a map, and some widgets:
-
-##### getWidgets() -> Array of widgets
-##### getWidget(id) -> get widget
 ##### getMap() -> returns a Map object
 
-##### createCategoryWidget(widgetAttrs) -> CategoryWidget
+##### widgets.get(widgetID) -> List of widgets
+
+##### widgets.getList(widgetAttrs) -> List of widgets
+
+##### widgets.createCategoryWidget(widgetAttrs) -> CategoryWidget
 
 *example*
 ```js
@@ -43,11 +43,12 @@ var params = {
   "aggregation": "count",
 };
 // adds a category widget using column `test` from the second layer
-dashboard.createCategoryWidget(params, map.getLayer(2))
+dashboard.widgets.createCategoryWidget(params, map.getLayer(2))
 ```
 
 
-##### createHistogramWidget(widgetAttrs, layer) -> HistogramWidget
+##### widgets.createHistogramWidget(widgetAttrs, layer) -> HistogramWidget
+
 `widgetAttrs` is an object with the following attributes: 
 
 Mandatory attributes:
@@ -63,10 +64,12 @@ Optional:
 - `show_stats`: show histogram stats
 - `normalized`: normalize data seen in the map bounding box with the global dataset histogram 
 
-##### createFormulaWidget(widgetAttrs, layer) -> FormulaWidget
+##### widgets.createFormulaWidget(widgetAttrs, layer) -> FormulaWidget
+
 widgetAttrs: `id`, `title`, `order`, `collapsed`, `prefix`, `suffix`, `show_stats`, `description`
 
-##### createTimeSeriesWidget(widgetAttrs, layer) -> TimeSeriesWidget
+##### widgets.createTimeSeriesWidget(widgetAttrs, layer) -> TimeSeriesWidget
+
 widgetAttrs: `id`, `title`, `order`, `collapsed`, `bins`, `show_stats`, `normalized`
 
 ## cartodb.DI.CategoryWidget

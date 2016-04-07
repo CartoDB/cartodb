@@ -1,6 +1,6 @@
-var specHelper = require('./spec-helper');
-var WidgetsService = require('../src/widgets-service');
-var WidgetsCollection = require('../src/widgets/widgets-collection');
+var specHelper = require('../spec-helper');
+var WidgetsService = require('../../src/api/widgets-service');
+var WidgetsCollection = require('../../src/widgets/widgets-collection');
 
 describe('widgets-service', function () {
   beforeEach(function () {

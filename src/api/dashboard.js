@@ -1,9 +1,7 @@
-var _ = require('underscore');
-var createDashboard = require('./create-dashboard');
-var cdb = require('cartodb.js');
-
 function Dashboard (dashboard) {
-  this.dashboard = dashboard;
+  this._dashboard = dashboard;
+
+  this.widgets = this._dashboard.widgets;
 }
 
 Dashboard.prototype = {
@@ -12,14 +10,14 @@ Dashboard.prototype = {
    * @return {Map} the map used in the dashboard
    */
   getMap: function () {
-    return this.dashboard.vis;
+    return this._dashboard.vis;
   },
 
   /**
    * @return {Array} of widgets in the dashboard
    */
   getWidgets: function () {
-    return this.dashboard.widgets.getList();
+    return this._dashboard.widgets.getList();
   },
 
   /**
@@ -27,7 +25,7 @@ Dashboard.prototype = {
    * @return a widget object
    */
   getWidget: function (id) {
-    return this.dashboard.widgets.get(id);
+    return this._dashboard.widgets.get(id);
   },
 
   /**
@@ -40,7 +38,7 @@ Dashboard.prototype = {
    * @return {CategoryWidget} The new widget
    */
   createCategoryWidget: function (widgetAttrs, layer) {
-    return this.dashboard.widgets.createCategoryModel(widgetAttrs, layer);
+    return this._dashboard.widgets.createCategoryModel(widgetAttrs, layer);
   },
 
   /**
@@ -53,7 +51,7 @@ Dashboard.prototype = {
    * @return {HistogramWidget} The new widget
    */
   createHistogramWidget: function (widgetAttrs, layer) {
-    return this.dashboard.widgets.createHistogramModel(widgetAttrs, layer);
+    return this._dashboard.widgets.createHistogramModel(widgetAttrs, layer);
   },
 
   /**
@@ -66,7 +64,7 @@ Dashboard.prototype = {
    * @return {FormulaWidget} The new widget
    */
   createFormulaWidget: function (widgetAttrs, layer) {
-    return this.dashboard.widgets.createFormulaModel(widgetAttrs, layer);
+    return this._dashboard.widgets.createFormulaModel(widgetAttrs, layer);
   },
 
   /**
@@ -79,36 +77,9 @@ Dashboard.prototype = {
    * @return {TimeSeriesWidget} The new widget
    */
   createTimeSeriesWidget: function (widgetAttrs, layer) {
-    return this.dashboard.widgets.createTimeSeriesModel(widgetAttrs, layer);
+    return this._dashboard.widgets.createTimeSeriesModel(widgetAttrs, layer);
   }
 
 };
 
-module.exports = function (selector, vizJSON, opts, callback) {
-  var args = arguments;
-  var fn = args[args.length - 1];
-
-  if (_.isFunction(fn)) {
-    callback = fn;
-  }
-
-  function _load (vizJSON) {
-    var dashboard = createDashboard(selector, vizJSON, opts);
-    dashboard.vis.done(function () {
-      callback && callback(null, new Dashboard(dashboard));
-    });
-  }
-
-  if (typeof vizJSON === 'string') {
-    cdb.core.Loader.get(vizJSON, function (data) {
-      if (data) {
-        _load(data, opts);
-      } else {
-        callback && callback(new Error('error fetching viz.json file'));
-      }
-    });
-  } else {
-    _load(vizJSON, opts);
-  }
-};
-
+module.exports = Dashboard;

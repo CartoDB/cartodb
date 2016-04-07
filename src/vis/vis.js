@@ -63,7 +63,7 @@ var Vis = View.extend({
     var layers = [];
 
     // flatten layers (except baselayer)
-    var layers = _.map(this.getLayers().slice(1), function (layer) {
+    var layers = _.map(this.getLayerViews().slice(1), function (layer) {
       if (layer.getSubLayers) {
         return layer.getSubLayers();
       }

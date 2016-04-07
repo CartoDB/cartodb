@@ -609,7 +609,7 @@ describe('vis/vis', function () {
         template: 'test'
       });
 
-      var layerView = this.vis.getLayers()[1];
+      var layerView = this.vis.getLayerViews()[1];
 
       expect(tooltip.options.layer).toEqual(layerView);
     });

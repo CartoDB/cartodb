@@ -59,7 +59,7 @@ module CartoDB
       # attempt to transform the_geom to 4326
       if column_names.include? "the_geom"
         begin
-          if srid = @db_connection["select st_srid(the_geom) from #{@suggested_name} limit 1"].first
+          if srid = @db_connection["select st_srid(the_geom::geometry) from #{@suggested_name} limit 1"].first
             srid = srid[:st_srid] if srid.is_a?(Hash)
             begin
               if srid.to_s != "4326"

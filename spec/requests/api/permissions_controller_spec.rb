@@ -40,6 +40,7 @@ describe Api::Json::PermissionsController do
   end
 
   before(:each) do
+    @entity_id = UUIDTools::UUID.timestamp_create.to_s
     stub_named_maps_calls
     delete_user_data @user
     delete_user_data @user2
@@ -53,6 +54,7 @@ describe Api::Json::PermissionsController do
     Permission.any_instance.stubs(:notify_permissions_change).returns(nil)
     vis_entity_mock = mock
     vis_entity_mock.stubs(:table?).returns(false)
+    vis_entity_mock.stubs(:id).returns(@entity_id)
     Permission.any_instance.stubs(:entity).returns(vis_entity_mock)
   end
 
@@ -66,7 +68,6 @@ describe Api::Json::PermissionsController do
   describe 'PUT /api/v1/perm' do
 
     it 'modifies an existing permission' do
-      entity_id = UUIDTools::UUID.timestamp_create.to_s
       entity_type = Permission::ENTITY_TYPE_VISUALIZATION
 
       acl_initial = [ ]
@@ -96,9 +97,7 @@ describe Api::Json::PermissionsController do
 
       permission = CartoDB::Permission.new(
           owner_id: @user.id,
-          owner_username: @user.username,
-          entity_id:      entity_id,
-          entity_type:    entity_type
+          owner_username: @user.username
       )
       permission.acl = acl_initial
       permission.save
@@ -113,7 +112,7 @@ describe Api::Json::PermissionsController do
       owner_fragment[:id].should eq permission.owner_id
       owner_fragment[:username].should eq permission.owner_username
       entity_fragment = response.fetch(:entity)
-      entity_fragment[:id].should eq entity_id
+      entity_fragment[:id].should eq @entity_id
       entity_fragment[:type].should eq entity_type
       Time.parse(response.fetch(:created_at)).to_i.should eq permission.created_at.to_i
       Time.parse(response.fetch(:updated_at)).to_i.should_not eq permission.updated_at.to_i
@@ -134,9 +133,7 @@ describe Api::Json::PermissionsController do
     it "makes sure we don't expose unwanted call types" do
       permission = CartoDB::Permission.new(
           owner_id: @user.id,
-          owner_username: @user.username,
-          entity_id:      UUIDTools::UUID.timestamp_create.to_s,
-          entity_type:    Permission::ENTITY_TYPE_VISUALIZATION
+          owner_username: @user.username
       )
       permission.save
 
@@ -171,12 +168,14 @@ describe 'group permission support' do
   end
 
   it 'adds group read permission' do
+    entity_id = UUIDTools::UUID.timestamp_create.to_s
+
     vis_entity_mock = mock
     vis_entity_mock.stubs(:table?).returns(false)
+    vis_entity_mock.stubs(:id).returns(entity_id)
     Permission.any_instance.stubs(:entity).returns(vis_entity_mock)
     Permission.any_instance.stubs(:revoke_previous_permissions).returns(nil)
 
-    entity_id = UUIDTools::UUID.timestamp_create.to_s
     entity_type = Permission::ENTITY_TYPE_VISUALIZATION
 
     acl_initial = [ ]
@@ -202,9 +201,7 @@ describe 'group permission support' do
 
     permission = CartoDB::Permission.new(
         owner_id: @org_user_1.id,
-        owner_username: @org_user_1.username,
-        entity_id:      entity_id,
-        entity_type:    entity_type
+        owner_username: @org_user_1.username
     )
     permission.acl = acl_initial
     permission.save
@@ -224,21 +221,20 @@ describe 'group permission support' do
   end
 
   it 'creates a shared entity per shared group' do
+    entity_id = UUIDTools::UUID.timestamp_create.to_s
     vis_entity_mock = mock
     vis_entity_mock.stubs(:table?).returns(false)
+    vis_entity_mock.stubs(:id).returns(entity_id)
     Permission.any_instance.stubs(:entity).returns(vis_entity_mock)
     Permission.any_instance.stubs(:revoke_previous_permissions).returns(nil)
 
-    entity_id = UUIDTools::UUID.timestamp_create.to_s
     entity_type = Permission::ENTITY_TYPE_VISUALIZATION
 
     acl_initial = [ ]
 
     permission = CartoDB::Permission.new(
         owner_id: @org_user_1.id,
-        owner_username: @org_user_1.username,
-        entity_id:      entity_id,
-        entity_type:    entity_type
+        owner_username: @org_user_1.username
     )
     permission.acl = acl_initial
     permission.save
@@ -265,4 +261,3 @@ describe 'group permission support' do
   end
 
 end
-

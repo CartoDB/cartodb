@@ -14,6 +14,7 @@ module CartoDB
       GEOMETRY_POSSIBLE_NAMES   = %w{ geometry the_geom wkb_geometry geom geojson wkt }
       DEFAULT_SCHEMA            = 'cdb_importer'
       THE_GEOM_WEBMERCATOR      = 'the_geom_webmercator'
+      DIRECT_STATEMENT_TIMEOUT  = 1.hour * 1000
 
       def initialize(db, table_name, options, schema=DEFAULT_SCHEMA, job=nil, geometry_columns=nil, logger=nil)
         @db         = db
@@ -72,7 +73,7 @@ module CartoDB
         geometry_column_name = geometry_column_in
         return false unless geometry_column_name
         job.log "Creating the_geom from #{geometry_column_name} column"
-        column = Column.new(db, table_name, geometry_column_name, schema, job)
+        column = Column.new(db, table_name, geometry_column_name, user, schema, job)
         column.mark_as_from_geojson_with_transform if @from_geojson_with_transform
         column.empty_lines_to_nulls
         column.geometrify
@@ -293,12 +294,12 @@ module CartoDB
         return self unless column_exists_in?(table_name, THE_GEOM_WEBMERCATOR)
 
         job.log 'Dropping the_geom_webmercator column'
-        column = Column.new(db, table_name, THE_GEOM_WEBMERCATOR, schema, job)
+        column = Column.new(db, table_name, THE_GEOM_WEBMERCATOR, user, schema, job)
         column.drop
       end
 
       def get_column(column = :the_geom)
-        Column.new(db, table_name, column, schema, job)
+        Column.new(db, table_name, column, user, schema, job)
       end
 
       def get_geometry_type(column = :the_geom)
@@ -321,17 +322,13 @@ module CartoDB
       def handle_multipoint(qualified_table_name)
         # TODO: capture_exceptions=true
         job.log 'Converting detected multipoint to point'
-        QueryBatcher.new(
-            db,
-            job,
-            create_seq_field = true
-          ).execute_update(
-              %Q{
-                UPDATE #{qualified_table_name}
-                SET the_geom = ST_GeometryN(the_geom, 1)
-              },
-              schema, table_name
-          )
+
+        user.db_service.in_database_direct_connection(statement_timeout: DIRECT_STATEMENT_TIMEOUT) do |user_direct_conn|
+            user_direct_conn.run(%Q{
+                                    UPDATE #{qualified_table_name}
+                                    SET the_geom = ST_GeometryN(the_geom, 1)
+                                    })
+        end
       end
 
       def multipoint?

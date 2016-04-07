@@ -23,14 +23,14 @@
 
   <div class="SideMenu-type">
     <ul class="SideMenu-list">
-      <li class="SideMenu-typeItem"><a href="<%= CartoDB.url(self, 'profile_user') %>" class="SideMenu-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/users_profile" %>">Profile</a></li>
-      <li class="SideMenu-typeItem"><a href="<%= CartoDB.url(self, 'account_user') %>" class="SideMenu-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/users_account" %>">Account</a></li>
-      <li class="SideMenu-typeItem"><a href="<%= CartoDB.url(self, 'api_key_credentials') %>" class="SideMenu-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/client_applications_api_key" %>">API keys</a></li>
+      <li class="SideMenu-typeItem"><a href="<%= CartoDB.url(self, 'profile_user', {}, current_user) %>" class="SideMenu-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/users_profile" %>">Profile</a></li>
+      <li class="SideMenu-typeItem"><a href="<%= CartoDB.url(self, 'account_user', {}, current_user) %>" class="SideMenu-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/users_account" %>">Account</a></li>
+      <li class="SideMenu-typeItem"><a href="<%= CartoDB.url(self, 'api_key_credentials', {}, current_user) %>" class="SideMenu-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/client_applications_api_key" %>">API keys</a></li>
       <% if !Cartodb.config[:cartodb_com_hosted].present? && !current_user.organization.present? %>
         <li class="SideMenu-typeItem"><a href="<%= current_user.plan_url(request.protocol) %>" class="SideMenu-typeLink">Billing</a></li>
       <% end %>
       <% if current_user.organization_owner? %>
-        <li class="SideMenu-typeItem"><a href="<%= CartoDB.url(self, 'organization_settings') %>" class="SideMenu-typeLink <%= 'is-selected' if ["admin/organizations", "admin/organization", "admin/organization_users"].include?("#{params[:controller]}") %>" class="SideMenu-typeLink">Organization settings</a></li>
+        <li class="SideMenu-typeItem"><a href="<%= CartoDB.url(self, 'organization_settings', {}, current_user) %>" class="SideMenu-typeLink <%= 'is-selected' if ["admin/organizations", "admin/organization", "admin/organization_users"].include?("#{params[:controller]}") %>" class="SideMenu-typeLink">Organization settings</a></li>
       <% end %>
     </ul>
   </div>

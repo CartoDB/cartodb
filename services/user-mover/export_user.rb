@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# coding: utf-8
 
 # export-user.rb
 # This class can be used to generate an as-is backup of the metadata of an user.
@@ -395,8 +396,9 @@ module CartoDB
       end
 
       def initialize(options)
-        @options = options
-        @options[:path] ||= ''
+        default_options = { metadata: true, data: true, path: '' }
+        @options = default_options.merge(options)
+
         @logs = []
         @start = Time.now
 
@@ -471,30 +473,30 @@ module CartoDB
                      }
 
         begin
-          if options[:id]
-            @user_data = get_user_metadata(options[:id])
+          if @options[:id]
+            @user_data = get_user_metadata(@options[:id])
             @username = @user_data["username"]
             @user_id = @user_data["id"]
             export_log[:db_source] = @user_data['database_host']
             export_log[:db_size] = get_db_size(@user_data['database_name'])
-            dump_user(redis_keys) unless options[:database_only] == true
+            dump_user(redis_keys) if @options[:metadata]
             redis_conn.quit
-            DumpJob.new(
-              @user_data['database_host'] || '127.0.0.1',
-              @user_data['database_name'],
-              @options[:path],
-              "#{@options[:path]}user_#{@user_id}.dump",
-              options[:schema_mode] ? @user_data['database_schema'] : nil
-            ) unless options[:metadata_only] == true 
-            # metadata_only can be used if the user database copy has been made manually
-            # in a different way
+            if @options[:data]
+              DumpJob.new(
+                @user_data['database_host'] || '127.0.0.1',
+                @user_data['database_name'],
+                @options[:path],
+                "#{@options[:path]}user_#{@user_id}.dump",
+                @options[:schema_mode] ? @user_data['database_schema'] : nil
+              )
+            end
 
             File.open("#{@options[:path]}user_#{@user_id}.json", "w") do |f|
               f.write(user_info.to_json)
             end
             set_user_mover_banner(@user_id)
-          elsif options[:organization_name]
-            @org_metadata = get_org_metadata(options[:organization_name])
+          elsif @options[:organization_name]
+            @org_metadata = get_org_metadata(@options[:organization_name])
             @org_id = @org_metadata['id']
             @org_users = get_org_users(@org_metadata['id'])
             @org_groups = get_org_groups(@org_metadata['id'])
@@ -504,15 +506,17 @@ module CartoDB
               f.write(data.to_json)
             end
             @org_users.each do |org_user|
-              export_job = CartoDB::DataMover::ExportJob.new({ id: org_user['username'], metadata_only: true, path: options[:path], job_uuid: job_uuid, from_org: true })
+              export_job = CartoDB::DataMover::ExportJob.new({ id: org_user['username'], data: false, path: @options[:path], job_uuid: job_uuid, from_org: true })
               export_log[:db_source] ||= org_user['database_host']
               export_log[:db_size] ||= export_job.get_db_size(org_user['database_name'])
-              DumpJob.new(
-                org_user['database_host'] || '127.0.0.1',
-                org_user['database_name'],
-                options[:path],
-                "#{@options[:path]}user_#{@user_id}.dump",
-                org_user['username']) unless options[:metadata_only] == true
+              if @options[:data]
+                DumpJob.new(
+                  org_user['database_host'] || '127.0.0.1',
+                  org_user['database_name'],
+                  @options[:path],
+                  "#{@options[:path]}user_#{@user_id}.dump",
+                  org_user['username'])
+              end
             end
           end
         rescue => e

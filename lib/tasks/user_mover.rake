@@ -7,12 +7,28 @@ namespace :cartodb do
       desc 'Export an user'
       task :export_user, [:id, :path, :job_uuid, :schema_mode, :database_only, :metadata_only] => :environment do |_task, args|
         args.with_defaults(job_uuid: nil, schema_mode: false, database_only: false, metadata_only: false)
-        CartoDB::DataMover::ExportJob.new(args)
+        job_args = args.to_hash
+        if job_args[:database_only] == 'true'
+          job_args[:data] = true
+          job_args[:metadata] = false
+        elsif job_args[:metadata_only] == 'true'
+          job_args[:data] = false
+          job_args[:metadata] = true
+        end
+        CartoDB::DataMover::ExportJob.new(job_args)
       end
       desc 'Export an organization'
       task :export_org, [:organization_name, :path, :job_uuid, :database_only, :metadata_only] => :environment do |_task, args|
         args.with_defaults(job_uuid: nil, schema_mode: true, database_only: false, metadata_only: false)
-        CartoDB::DataMover::ExportJob.new(args)
+        job_args = args.to_hash
+        if job_args[:database_only] == 'true'
+          job_args[:data] = true
+          job_args[:metadata] = false
+        elsif job_args[:metadata_only] == 'true'
+          job_args[:data] = false
+          job_args[:metadata] = true
+        end
+        CartoDB::DataMover::ExportJob.new(job_args)
       end
     end
 

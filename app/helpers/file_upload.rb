@@ -92,7 +92,6 @@ module CartoDB
         s3_port:  s3_config['s3_port'],
         s3_force_path_style: s3_config['s3_force_path_style']
       )
-      
       s3_bucket = AWS::S3.new.buckets[s3_config['bucket_name']]
 
       path = "#{token}/#{File.basename(filename)}"

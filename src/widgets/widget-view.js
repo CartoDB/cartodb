@@ -14,10 +14,7 @@ module.exports = cdb.core.View.extend({
   },
 
   initialize: function () {
-    if (this.model.dataviewModel) {
-      this.model.dataviewModel.layer.bind('change:visible', this._onChangeLayerVisible, this);
-      this.listenTo(this.model, 'destroy', this.clean);
-    }
+    this.listenTo(this.model, 'destroy', this.clean);
   },
 
   render: function () {
@@ -43,14 +40,5 @@ module.exports = cdb.core.View.extend({
   _appendView: function (view) {
     this.$el.append(view.render().el);
     this.addView(view);
-  },
-
-  _setVisible: function (visible) {
-    this.$el.toggle(visible);
-  },
-
-  _onChangeLayerVisible: function (layer) {
-    // !! to force a boolean value, so only a true value actually shows the view
-    this._setVisible(!!layer.get('visible'));
   }
 });

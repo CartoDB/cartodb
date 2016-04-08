@@ -1,6 +1,13 @@
 require 'spec_helper_min'
 
 describe Carto::VisualizationsExportService2 do
+  let(:export) do
+    {
+      visualization: base_visualization_export,
+      version: 2
+    }
+  end
+
   let(:base_visualization_export) do
     {
       name: 'the name',
@@ -91,6 +98,9 @@ describe Carto::VisualizationsExportService2 do
           type: 'loader',
           template: '<div class="loader" original-title=""></div>'
         }
+      ],
+      analyses: [
+        { analysis_definition: { id: 'a1', type: 'source' } }
       ]
 
       # TODO:
@@ -98,15 +108,7 @@ describe Carto::VisualizationsExportService2 do
       # active_layer_id.
       # parent_id / prev_id / next_id / slide_transition_options / active_child
       # user_tables
-      # analyses
       # widgets
-    }
-  end
-
-  let(:export) do
-    {
-      visualization: base_visualization_export,
-      version: 2
     }
   end
 
@@ -160,7 +162,7 @@ describe Carto::VisualizationsExportService2 do
         layers_export = base_visualization_export[:layers]
         layers = visualization.layers
         layers.length.should eq layers_export.length
-        for i in 0..2 do
+        (0..(layers_export.count - 1)).each do |i|
           layer = layers[i]
           layer.order.should eq i
 
@@ -169,6 +171,16 @@ describe Carto::VisualizationsExportService2 do
           layer.kind.should eq layer_export[:kind]
           layer.infowindow.should eq layer_export[:infowindow]
           layer.tooltip.should eq layer_export[:tooltip]
+        end
+
+        analyses_export = base_visualization_export[:analyses]
+        analyses = visualization.analyses
+        analyses.length.should eq analyses_export.count
+        (0..(analyses_export.length - 1)).each do |i|
+          analysis = analyses[i]
+          analysis_export = analyses_export[i]
+
+          analysis.analysis_definition_json.should eq analysis_export[:analysis_definition]
         end
       end
 
@@ -183,17 +195,22 @@ describe Carto::VisualizationsExportService2 do
         visualization.created_at.should be_nil # Not set until persistence
         visualization.updated_at.should be_nil # Not set until persistence
 
-        map_export = base_visualization_export[:map]
         map = visualization.map
         map.id.should be_nil # Not set until persistence
         map.updated_at.should be_nil # Not set until persistence
         map.user_id.should be_nil # Import build step is "user-agnostic"
 
-        layers = visualization.layers
-        for i in 0..2 do
-          layer = layers[i]
+        visualization.layers.each do |layer|
           layer.updated_at.should be_nil
           layer.id.should be_nil
+        end
+
+        visualization.analyses.each do |analysis|
+          analysis.id.should be_nil
+          analysis.visualization_id.should eq visualization.id
+          analysis.user_id.should be_nil
+          analysis.created_at.should be_nil
+          analysis.updated_at.should be_nil
         end
       end
 
@@ -212,17 +229,21 @@ describe Carto::VisualizationsExportService2 do
         visualization.created_at.should_not be_nil
         visualization.updated_at.should_not be_nil
 
-        map_export = base_visualization_export[:map]
         map = visualization.map
         map.id.should_not be_nil
         map.updated_at.should_not be_nil
         map.user_id.should eq @user.id
 
-        layers = visualization.layers
-        for i in 0..2 do
-          layer = layers[i]
+        visualization.layers.each do |layer|
           layer.updated_at.should_not be_nil
           layer.id.should_not be_nil
+        end
+
+        visualization.analyses.each do |analysis|
+          analysis.id.should_not be_nil
+          analysis.user_id.should_not be_nil
+          analysis.created_at.should_not be_nil
+          analysis.updated_at.should_not be_nil
         end
       end
     end

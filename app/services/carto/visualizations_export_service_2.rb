@@ -5,6 +5,7 @@ module Carto
     def build_visualization_from_json_export(exported_json)
       exported_hash = JSON.parse(exported_json).deep_symbolize_keys
       raise "Wrong export version" unless compatible_version?(exported_hash[:version])
+
       build_visualization_from_hash(exported_hash[:visualization])
     end
 
@@ -31,7 +32,8 @@ module Carto
         display_name: exported_visualization[:display_name],
         map: build_map_from_hash(
           exported_visualization[:map],
-          layers: build_layers_from_hash(exported_visualization[:layers]))
+          layers: build_layers_from_hash(exported_visualization[:layers])),
+        analyses: exported_visualization[:analyses].map { |a| build_analysis_from_hash(a.deep_symbolize_keys) }
       )
     end
 
@@ -62,6 +64,10 @@ module Carto
         order: order,
         tooltip: exported_layer[:tooltip]
       )
+    end
+
+    def build_analysis_from_hash(exported_analysis)
+      Carto::Analysis.new(analysis_definition_json: exported_analysis[:analysis_definition])
     end
   end
 end

@@ -2,6 +2,9 @@
 
 require_relative '../../../spec_helper'
 require_relative '../../../factories/users_helper'
+require_dependency 'carto/uuidhelper'
+
+include Carto::UUIDHelper
 
 shared_context 'layer hierarchy' do
   before(:each) do
@@ -14,10 +17,6 @@ shared_context 'layer hierarchy' do
   after(:each) do
     Carto::Widget.destroy_all
     @visualization.destroy if @visualization
-  end
-
-  def random_uuid
-    UUIDTools::UUID.random_create.to_s
   end
 
   def response_widget_should_match_widget(response_widget, widget)

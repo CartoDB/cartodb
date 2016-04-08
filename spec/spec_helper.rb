@@ -1,5 +1,4 @@
 require_relative './simplecov_helper'
-require 'uuidtools'
 require_relative './rspec_configuration'
 require 'helpers/spec_helper_helpers'
 require 'helpers/named_maps_helper'
@@ -17,10 +16,6 @@ Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
 # TODO: deprecate and use bypass_named_maps (or viceversa)
 def stub_named_maps_calls
   CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true)
-end
-
-def random_uuid
-  UUIDTools::UUID.random_create.to_s
 end
 
 # Inline Resque for queue handling

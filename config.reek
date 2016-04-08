@@ -1,2 +1,4 @@
 IrresponsibleModule:
   enabled: false
+UncommunicativeMethodName:
+  enabled: false # Disabled to allow single character (frequent at loops and maps)

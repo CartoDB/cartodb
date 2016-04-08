@@ -1,12 +1,12 @@
 <% if (state !== 'list' ) { %>
-  <h3 class="ImportPanel-headerTitle">
+  <h3 class="CDB-Text CDB-Size-large u-mainTextColor u-secondaryTextColor u-bSpace--m">
     <% if (state === 'selected') { %>
       MailChimp campaign selected
     <% } else { %>
       Map your MailChimp Campaigns
     <% } %>
   </h3>
-  <p class="ImportPanel-headerDescription <% if (state === "error") { %>ImportPanel-headerDescription--negative<% } %>">
+  <p class="CDB-Text CDB-Size-medium u-altTextColor <% if (state === "error") { %>ImportPanel-headerDescription--negative<% } %>">
     <% if (state === "idle") { %>
       Connect your MailChimp account to select any of your campaigns.
     <% } %>

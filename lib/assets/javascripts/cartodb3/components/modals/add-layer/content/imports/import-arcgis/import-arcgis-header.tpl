@@ -1,11 +1,11 @@
-<h3 class="ImportPanel-headerTitle">
+<h3 class="CDB-Text CDB-Size-large u-mainTextColor u-secondaryTextColor u-bSpace--m">
   <% if (state === 'selected') { %>
     ArcGIS<sup>&trade;</sup> selected
   <% } else { %>
     ArcGIS<sup>&trade;</sup> import
   <% } %>
 </h3>
-<p class="ImportPanel-headerDescription">
+<p class="CDB-Text CDB-Size-medium u-altTextColor">
   <% if (state !== "selected") { %>
     Import your data from an ArcGIS Server<sup>&trade;</sup> instance
   <% } else { %>

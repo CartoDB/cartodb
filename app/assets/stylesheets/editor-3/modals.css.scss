@@ -85,6 +85,11 @@
   background: rgba($cBlue, 0.08);
 }
 
+
+.Form-row {
+  @include align-items(center);
+}
+
 /* Add Layer Modal */
 .ModalDataset-itemInfo {
   @include display-flex();

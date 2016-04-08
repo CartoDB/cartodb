@@ -1,11 +1,11 @@
-<h3 class="ImportPanel-headerTitle">
+<h3 class="CDB-Text CDB-Size-large u-mainTextColor u-secondaryTextColor u-bSpace--m">
   <% if (state === 'selected') { %>
     SalesForce selected
   <% } else { %>
     SalesForce import
   <% } %>
 </h3>
-<p class="ImportPanel-headerDescription">
+<p class="CDB-Text CDB-Size-medium u-altTextColor">
   <% if (state !== "selected") { %>
     Import your data from a Salesforce URL
   <% } else { %>

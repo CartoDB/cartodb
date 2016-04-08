@@ -45,7 +45,17 @@ describe Carto::VisualizationsExportService2 do
             '<a href=\"http://cartodb.com/attributions#basemaps\">CartoDB</a>",' +
             '"labels":{"url":"http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png"},' +
             '"urlTemplate":"http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png"}',
-          kind: 'tiled'
+          kind: 'tiled',
+          widgets: [
+            {
+              options: {
+                aggregation: "count",
+                aggregation_column: "category_t"
+              },
+              title: "Category category_t",
+              type: "category"
+            }
+          ]
         },
         {
           options: '{"attribution":"CartoDB <a href=\"http://cartodb.com/attributions\" ' +
@@ -108,7 +118,6 @@ describe Carto::VisualizationsExportService2 do
       # active_layer_id.
       # parent_id / prev_id / next_id / slide_transition_options / active_child
       # user_tables
-      # widgets
     }
   end
 
@@ -152,7 +161,7 @@ describe Carto::VisualizationsExportService2 do
         layers_export = base_visualization_export[:layers]
         layers = visualization.layers
         layers.length.should eq layers_export.length
-        (0..(layers_export.count - 1)).each do |i|
+        (0..(layers_export.length - 1)).each do |i|
           layer = layers[i]
           layer.order.should eq i
 
@@ -161,7 +170,7 @@ describe Carto::VisualizationsExportService2 do
 
         analyses_export = base_visualization_export[:analyses]
         analyses = visualization.analyses
-        analyses.length.should eq analyses_export.count
+        analyses.length.should eq analyses_export.length
         (0..(analyses_export.length - 1)).each do |i|
           verify_analysis_vs_export(analyses[i], analyses_export[i])
         end
@@ -184,6 +193,23 @@ describe Carto::VisualizationsExportService2 do
         layer.kind.should eq layer_export[:kind]
         layer.infowindow.should eq layer_export[:infowindow]
         layer.tooltip.should eq layer_export[:tooltip]
+
+        widgets_export = layer_export[:widgets]
+        widgets_export_length = widgets_export.nil? ? 0 : widgets_export.length
+        layer.widgets.length.should eq widgets_export_length
+        (0..(widgets_export_length - 1)).each do |i|
+          widget = layer.widgets[i]
+          widget.order.should eq i
+
+          verify_widget_vs_export(widget, widgets_export[i])
+        end
+      end
+
+      def verify_widget_vs_export(widget, widget_export)
+        widget.type.should eq widget_export[:type]
+        widget.title.should eq widget_export[:title]
+        widget.options_json.should eq widget_export[:options]
+        widget.layer.should_not be_nil
       end
 
       def verify_analysis_vs_export(analysis, analysis_export)
@@ -224,7 +250,7 @@ describe Carto::VisualizationsExportService2 do
         json_export = export.to_json
         exported_visualization = Carto::VisualizationsExportService2.new.build_visualization_from_json_export(json_export)
         visualization = Carto::VisualizationsExportPersistenceService.new.save_import(@user, exported_visualization)
-        # Let's make sure everything is stored
+        # Let's make sure everything is persisted
         visualization = Carto::Visualization.find(visualization.id)
 
         base_visualization_export = export[:visualization]

@@ -53,21 +53,45 @@ module Carto
     end
 
     def build_layers_from_hash(exported_layers)
+      return [] unless exported_layers
+
       exported_layers.map.with_index.map { |layer, i| build_layer_from_hash(layer.deep_symbolize_keys, order: i) }
     end
 
     def build_layer_from_hash(exported_layer, order:)
-      Carto::Layer.new(
+      layer = Carto::Layer.new(
         options: exported_layer[:options],
         kind: exported_layer[:kind],
         infowindow: exported_layer[:infowindow],
         order: order,
         tooltip: exported_layer[:tooltip]
       )
+      layer.widgets = build_widgets_from_hash(exported_layer[:widgets], layer: layer)
+      layer
     end
 
     def build_analysis_from_hash(exported_analysis)
+      return nil unless exported_analysis
+
       Carto::Analysis.new(analysis_definition_json: exported_analysis[:analysis_definition])
+    end
+
+    def build_widgets_from_hash(exported_widgets, layer:)
+      return [] unless exported_widgets
+
+      exported_widgets.map.with_index.map { |w, i| build_widget_from_hash(w.deep_symbolize_keys, order: i, layer: layer) }
+    end
+
+    def build_widget_from_hash(exported_widget, order:, layer:)
+      return nil unless exported_widget
+
+      Carto::Widget.new(
+        order: order,
+        layer: layer,
+        type: exported_widget[:type],
+        title: exported_widget[:title],
+        options_json: exported_widget[:options]
+      )
     end
   end
 end

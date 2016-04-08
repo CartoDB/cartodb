@@ -10,7 +10,9 @@ module Carto
 
         map = visualization.map
         map.user = user
-        map.save
+        unless map.save
+          raise "Errors saving imported map: #{map.errors.full_messages}"
+        end
 
         visualization.analyses.each do |analysis|
           analysis.user_id = user.id
@@ -19,7 +21,9 @@ module Carto
         # INFO: workaround for array saves not working
         tags = visualization.tags
         visualization.tags = nil
-        visualization.save
+        unless visualization.save
+          raise "Errors saving imported visualization: #{visualization.errors.full_messages}"
+        end
 
         visualization.update_attribute(:tags, tags)
       end

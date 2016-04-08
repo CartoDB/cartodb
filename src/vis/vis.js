@@ -226,10 +226,6 @@ var Vis = View.extend({
     // Create the Map
 
     var allowDragging = util.isMobileDevice() || vizjson.hasZoomOverlay() || vizjson.scrollwheel;
-    var center = vizjson.center;
-    if (typeof (center) === 'string') {
-      center = $.parseJSON(center);
-    }
 
     var mapConfig = {
       title: vizjson.title,
@@ -238,7 +234,7 @@ var Vis = View.extend({
       minZoom: vizjson.minZoom,
       legends: vizjson.legends,
       bounds: vizjson.bounds,
-      center: center,
+      center: vizjson.center,
       zoom: vizjson.zoom,
       scrollwheel: !!this.scrollwheel,
       drag: allowDragging,

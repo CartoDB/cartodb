@@ -10,6 +10,8 @@ _.extend(cdb.geo, require('../../../src/geo/gmaps'));
 
 var Overlay = require('../../../src/vis/vis/overlay');
 var Vis = require('../../../src/vis/vis');
+var VizJSON = require('../../../src/api/vizjson');
+
 require('../../../src/vis/overlays'); // Overlay.register calls
 require('../../../src/vis/layers'); // Layers.register calls
 
@@ -25,7 +27,7 @@ describe('vis/vis', function () {
       zoom: 4,
       bounds: [
         [1, 2],
-        [3, 4],
+        [3, 4]
       ],
       user: {
         fullname: 'Chuck Norris',
@@ -47,83 +49,11 @@ describe('vis/vis', function () {
     this.createNewVis({
       el: this.container
     });
-    this.vis.load(this.mapConfig);
+    this.vis.load(new VizJSON(this.mapConfig));
   });
 
   afterEach(function () {
     jasmine.clock().uninstall();
-  });
-
-  it('should insert default max and minZoom values when not provided', function () {
-    expect(this.vis.mapView._leafletMap.options.maxZoom).toEqual(20);
-    expect(this.vis.mapView._leafletMap.options.minZoom).toEqual(0);
-  });
-
-  it('should insert user max and minZoom values when provided', function () {
-    this.container = $('<div>').css('height', '200px');
-    this.mapConfig.maxZoom = 10;
-    this.mapConfig.minZoom = 5;
-    this.vis.load(this.mapConfig);
-
-    expect(this.vis.mapView._leafletMap.options.maxZoom).toEqual(10);
-    expect(this.vis.mapView._leafletMap.options.minZoom).toEqual(5);
-  });
-
-  it('should parse center if values are correct', function () {
-    this.container = $('<div>').css('height', '200px');
-    var opts = {
-      center_lat: 43.3,
-      center_lon: '89'
-    };
-    this.vis.load(this.mapConfig, opts);
-
-    expect(this.vis.map.get('center')).toEqual([43.3, 89.0]);
-  });
-
-  it('should not parse center if values are not correct', function () {
-    this.container = $('<div>').css('height', '200px');
-    var opts = {
-      center_lat: 43.3,
-      center_lon: 'ham'
-    };
-    this.vis.load(this.mapConfig, opts);
-
-    expect(this.vis.map.get('center')).toEqual([40.044, -101.95]);
-  });
-
-  it('should parse bounds values if they are correct', function () {
-    this.container = $('<div>').css('height', '200px');
-    var opts = {
-      sw_lat: 43.3,
-      sw_lon: 12,
-      ne_lat: 12,
-      ne_lon: '0'
-    };
-    this.vis.load(this.mapConfig, opts);
-
-    expect(this.vis.map.get('view_bounds_sw')).toEqual([43.3, 12]);
-    expect(this.vis.map.get('view_bounds_ne')).toEqual([12, 0]);
-  });
-
-  it('should not parse bounds values if they are not correct', function () {
-    this.container = $('<div>').css('height', '200px');
-    var opts = {
-      sw_lat: 43.3,
-      sw_lon: 12,
-      ne_lat: 'jamon',
-      ne_lon: '0'
-    };
-    this.vis.load(this.mapConfig, opts);
-
-    expect(this.vis.map.get('view_bounds_sw')).toEqual([1, 2]);
-    expect(this.vis.map.get('view_bounds_ne')).toEqual([3, 4]);
-  });
-
-  it('should create a google maps map when provider is google maps', function () {
-    this.container = $('<div>').css('height', '200px');
-    this.mapConfig.map_provider = 'googlemaps';
-    this.vis.load(this.mapConfig);
-    expect(this.vis.mapView._gmapsMap).not.toEqual(undefined);
   });
 
   it('should not invalidate map if map height is 0', function (done) {
@@ -132,7 +62,7 @@ describe('vis/vis', function () {
     var vis = this.createNewVis({el: container});
     this.mapConfig.map_provider = 'googlemaps';
 
-    vis.load(this.mapConfig);
+    vis.load(new VizJSON(this.mapConfig));
 
     setTimeout(function () {
       spyOn(vis.mapView, 'invalidateSize');
@@ -148,7 +78,7 @@ describe('vis/vis', function () {
     spyOn(vis, '_onResize');
 
     this.mapConfig.map_provider = 'googlemaps';
-    vis.load(this.mapConfig);
+    vis.load(new VizJSON(this.mapConfig));
     $(window).trigger('resize');
     expect(vis._onResize).toHaveBeenCalled();
   });
@@ -159,7 +89,7 @@ describe('vis/vis', function () {
     spyOn(vis, '_onResize');
 
     this.mapConfig.map_provider = 'googlemaps';
-    vis.load(this.mapConfig);
+    vis.load(new VizJSON(this.mapConfig));
     $(window).trigger('resize');
     expect(vis._onResize).not.toHaveBeenCalled();
     expect(vis.center).not.toBeDefined();
@@ -173,7 +103,7 @@ describe('vis/vis', function () {
     });
     var vis = this.createNewVis({el: this.container});
     this.mapConfig.overlays = [ {type: 'jaja'}];
-    vis.load(this.mapConfig);
+    vis.load(new VizJSON(this.mapConfig));
     expect(_map).not.toEqual(undefined);
   });
 
@@ -185,7 +115,7 @@ describe('vis/vis', function () {
         urlTemplate: 'https://dnv9my2eseobd.cloudfront.net/v3/{z}/{x}/{y}.png'
       }
     }];
-    this.vis.load(this.mapConfig);
+    this.vis.load(new VizJSON(this.mapConfig));
     expect(this.vis.map.layers.at(0).get('urlTemplate')).toEqual(
       'http://a.tiles.mapbox.com/v3/{z}/{x}/{y}.png'
     );
@@ -195,176 +125,10 @@ describe('vis/vis', function () {
     expect(this.vis.getNativeMap()).toEqual(this.vis.mapView._leafletMap);
   });
 
-  it('load should trigger a done event', function () {
-    // vis.load is using _.defer internally and that's causing this test
-    // to randomly fail so we override it with a "proxy" function.
-    var originDefer = _.defer;
-    _.defer = function (callback) {
-      callback();
-    };
-
-    this.mapConfig.layers = [{
-      type: 'tiled',
-      options: {
-        urlTemplate: 'https://dnv9my2eseobd.cloudfront.net/v3/{z}/{x}/{y}.png'
-      }
-    }];
-
-    var doneCallback = jasmine.createSpy('doneCallback');
-    this.vis.bind('done', doneCallback);
-
-    this.vis.load(this.mapConfig, {});
-
-    expect(doneCallback).toHaveBeenCalled();
-
-    // Revert _.defer to the original defer just in case.
-    _.defer = originDefer;
-  });
-
-  it('should add header', function () {
-    this.mapConfig.title = 'title';
-
-    this.vis.load(this.mapConfig, {
-      title: true
-    });
-    expect(this.vis.$('.cartodb-header').length).toEqual(1);
-  });
-
-  it('should add layer selector', function () {
-    this.vis.load(this.mapConfig, {
-      title: true,
-      layer_selector: true
-    });
-    expect(this.vis.$('.cartodb-layer-selector-box').length).toEqual(1);
-  });
-
-  it('should add header without link in the title', function () {
-    var mapConfig = _.clone(this.mapConfig);
-    mapConfig.title = 'title';
-    mapConfig.url = null;
-
-    this.vis.load(mapConfig, {
-      title: true
-    });
-
-    expect(this.vis.$('.cartodb-header').length).toEqual(1);
-    expect(this.vis.$('.cartodb-header h1 > a').length).toEqual(0);
-  });
-
-  it('should add zoom', function () {
-    this.mapConfig.overlays = [{ type: 'zoom', order: 7, options: { x: 20, y: 20 }, template: 'test' }];
-    this.vis.load(this.mapConfig);
-    expect(this.vis.$('.CDB-Zoom').length).toEqual(1);
-  });
-
-  it("should enable zoom if it's specified by zoomControl option", function () {
-    this.mapConfig.overlays = [{ type: 'zoom', order: 7, options: { x: 20, y: 20 }, template: 'test' }];
-    this.vis.load(this.mapConfig, {
-      zoomControl: true
-    });
-    expect(this.vis.$('.CDB-Zoom').length).toEqual(1);
-  });
-
-  it("should disable zoom if it's specified by zoomControl option", function () {
-    this.mapConfig.overlays = [{ type: 'zoom', order: 7, options: { x: 20, y: 20 }, template: 'test' }];
-    this.vis.load(this.mapConfig, {
-      zoomControl: false
-    });
-    expect(this.vis.$('.CDB-Zoom').length).toEqual(0);
-  });
-
-  it('should add search', function () {
-    this.mapConfig.overlays = [{ type: 'search' }];
-    this.vis.load(this.mapConfig);
-    expect(this.vis.$('.CDB-Search').length).toEqual(1);
-  });
-
-  it("should enable search if it's specified by searchControl", function () {
-    this.mapConfig.overlays = [{ type: 'search' }];
-    this.vis.load(this.mapConfig, {
-      searchControl: true
-    });
-    expect(this.vis.$('.CDB-Search').length).toEqual(1);
-  });
-
-  it("should disable search if it's specified by searchControl", function () {
-    this.mapConfig.overlays = [{ type: 'search' }];
-    this.vis.load(this.mapConfig, {
-      searchControl: false
-    });
-    expect(this.vis.$('.CDB-Search').length).toEqual(0);
-  });
-
-  it('should use zoom', function () {
-    this.vis.load(this.mapConfig, {
-      zoom: 10,
-      bounds: [[24.206889622398023, -84.0234375], [76.9206135182968, 169.1015625]]
-    });
-    expect(this.vis.map.getZoom()).toEqual(10);
-  });
-
-  it('should force GMaps', function () {
-    this.mapConfig.map_provider = 'leaflet';
-    this.mapConfig.layers = [{
-      type: 'tiled',
-      options: {
-        urlTemplate: 'https://dnv9my2eseobd.cloudfront.net/v3/{z}/{x}/{y}.png'
-      }
-    }];
-
-    var opts = {
-      gmaps_base_type: 'dark_roadmap'
-    };
-
-    layers = null;
-
-    this.vis.load(this.mapConfig, opts);
-    expect(this.vis.map.layers.at(0).get('type')).toEqual('GMapsBase');
-  });
-
-  describe('.instantiateMap', function () {
-    beforeEach(function () {
-      spyOn(this.vis, 'instantiateMap').and.callThrough();
-      this.doneCallback = jasmine.createSpy('done trigger');
-      this.vis.bind('done', this.doneCallback, this);
-      jasmine.clock().install();
-    });
-
-    describe('do not skip instantiation', function () {
-      beforeEach(function () {
-        this.vis.load(this.mapConfig);
-      });
-
-      it('should instantiate map', function () {
-        expect(this.vis.instantiateMap).toHaveBeenCalled();
-      });
-
-      it('should trigger done callback if skip is true', function () {
-        jasmine.clock().tick(100);
-        expect(this.doneCallback).toHaveBeenCalled();
-      });
-    });
-
-    describe('skip instantiation', function () {
-      beforeEach(function () {
-        this.vis.load(this.mapConfig, {
-          skipMapInstantiation: true
-        });
-      });
-
-      it('should not instantiate map', function () {
-        expect(this.vis.instantiateMap).not.toHaveBeenCalled();
-      });
-
-      it('should not trigger done callback if skip is true', function () {
-        jasmine.clock().tick(100);
-        expect(this.doneCallback).not.toHaveBeenCalled();
-      });
-    });
-
-    afterEach(function () {
-      jasmine.clock().uninstall();
-    });
+  it('should create a google maps map when provider is google maps', function () {
+    this.mapConfig.map_provider = 'googlemaps';
+    this.vis.load(new VizJSON(this.mapConfig));
+    expect(this.vis.mapView._gmapsMap).not.toEqual(undefined);
   });
 
   describe('.centerMapToOrigin', function () {
@@ -423,7 +187,7 @@ describe('vis/vis', function () {
         }
       ];
 
-      vis.load(this.mapConfig);
+      vis.load(new VizJSON(this.mapConfig));
       expect(vis.map.get('drag')).toBeTruthy();
     });
 
@@ -444,7 +208,7 @@ describe('vis/vis', function () {
         }
       ];
 
-      vis.load(this.mapConfig);
+      vis.load(new VizJSON(this.mapConfig));
       expect(vis.map.get('drag')).toBeTruthy();
     });
 
@@ -454,7 +218,7 @@ describe('vis/vis', function () {
 
       this.mapConfig.scrollwheel = true;
 
-      vis.load(this.mapConfig);
+      vis.load(new VizJSON(this.mapConfig));
       expect(vis.map.get('drag')).toBeTruthy();
     });
 
@@ -464,7 +228,7 @@ describe('vis/vis', function () {
 
       this.mapConfig.scrollwheel = false;
 
-      vis.load(this.mapConfig);
+      vis.load(new VizJSON(this.mapConfig));
       expect(vis.map.get('drag')).toBeFalsy();
     });
   });
@@ -514,7 +278,7 @@ describe('vis/vis', function () {
           }
         }
       ];
-      this.vis.load(this.mapConfig);
+      this.vis.load(new VizJSON(this.mapConfig));
 
       expect(this.vis.legends.$('.cartodb-legend').length).toEqual(1);
       expect(this.vis.legends.$el.html()).toContain('visible legend item');
@@ -608,7 +372,7 @@ describe('vis/vis', function () {
         }
       };
 
-      this.vis.load(vizjson);
+      this.vis.load(new VizJSON(vizjson));
       var tooltip = this.vis.addOverlay({
         type: 'tooltip',
         template: 'test'

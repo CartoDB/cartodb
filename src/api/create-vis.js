@@ -1,3 +1,4 @@
+var $ = require('jquery');
 var _ = require('underscore');
 var Vis = require('../vis/vis');
 var Loader = require('../core/loader');

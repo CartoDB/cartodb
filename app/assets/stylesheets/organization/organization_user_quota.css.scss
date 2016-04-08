@@ -12,22 +12,23 @@
   // width: 680px;
 }
 .OrganizationUser-quotaProgress {
-  @include progress-bar(10px, 20px, false, 3px);
   display: block;
   width: 300px;
+  margin: 0 20px 0 0;
+  @include progress-bar(12px, 20px, false, 6px);
 }
 .OrganizationUser-quotaBar {
   display:block;
   width: 300px;
-  overflow: visible;
 }
 .OrganizationUser-quotaLegend {
   @include display-flex();
+  @include justify-content(center, center);
   @include align-items(center, center);
   margin: 10px 0 0;
 }
 .OrganizationUser-quotaLegendItem {
-  margin: 0 12px 0 0;
+  margin: 0 6px;
   font-size: $sFontSize-normal;
   color: $cTypography-secondary;
 }
@@ -45,18 +46,10 @@
 .OrganizationUser-quotaLegendIcon--total {}
 
 .OrganizationUser-quotaInfo {
+  position: relative;
   display: inline-block;
-  color: $cTypography-secondary;
-  font-size: $sFontSize-normal;
-  font-weight: $sFontWeight-lighter;
-  line-height: 13px;
-}
-.OrganizationUser-quotaInfoInput {
-  width: 70px;
-  height: 32px;
-  padding: 0 5px;
-  text-align: right;
-  box-sizing: border-box;
+  color: $cTypography-help;
+  line-height: 14px;
 }
 .OrganizationUser-quotaInfoLink {
   color: $cTypography-link;
@@ -86,5 +79,5 @@
 }
 .UserQuotaDropdown-slider {
   width: 220px;
-  margin-top: 12px;
+  margin-top: 8px;
 }

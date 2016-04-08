@@ -9,6 +9,7 @@
   @import "../old_common/mixins";
   @import "../old_common/common-sprite";
   @import "../table/table-sprite";
+  @import "../variables/colors";
 
   .help-tip {
     position: absolute;
@@ -17,14 +18,12 @@
     top: 0;
     left: 0;
     padding: 10px;
-    background: #F5F8FF;
+    background: $Black;
     z-index:10;
 
     @include box-sizing(border-box);
     font-size: 13px;
     font-style: italic;
-    border-bottom: 1px solid rgba(#DDD, .5);
-    color: #999;
 
     p { padding: 0 25px 0 44px; }
 
@@ -49,6 +48,7 @@
       @include size(10px, 6px);
       @include position(-6px, 29px, false, false);
       @include background(sprite($table-sprites, infowindow_panel_purple_tip) no-repeat);
+      -webkit-filter: invert(100%);
       z-index: 11;
     }
   }

@@ -2,9 +2,9 @@
 // dialog content styles
 // ---------------------------------------------
 
-@import '../variables/mixins';
-@import '../variables/colors';
-@import '../variables/sizes';
+@import "../variables/mixins";
+@import "../variables/colors";
+@import "../variables/sizes";
 
 $width: 620px;
 
@@ -14,50 +14,43 @@ $width: 620px;
 
   &:before,
   &:after {
+    content: '';
     position: fixed;
     left: 50%;
     width: $width;
     height: 18px;
     margin-left: -310px;
-    content: '';
     z-index: 5;
   }
 
   &:before {
-    @include background-gradient(rgba(#F9F9F9, 1), rgba(#F9F9F9, 0));
     top: 157px;
     background-color: transparent!important;
+    @include background-gradient(rgba(#F9F9F9,1),rgba(#F9F9F9,0));
   }
 
   &:after {
-    @include background-gradient(rgba(#F9F9F9, 0), rgba(#F9F9F9, 1));
     bottom: 97px;
+    @include background-gradient(rgba(#F9F9F9,0),rgba(#F9F9F9,1));
   }
-}
-.EditVisMetadata-header {
-  @include flex-grow(1);
-  min-height: 100px;
-  max-height: 100px;
-  padding: 28px 0;
-  text-align: center;
 }
 .EditVisMetadata-markdown {
   position: absolute;
   right: 0;
   bottom: -25px;
-  color: $cTypography-help;
   font-size: $sFontSize-small;
+  color: $cTypography-help;
 }
 .EditVisMetadata-markdownIcon {
   margin-right: 10px;
   padding: 0 2px 2px 5px;
-  border-radius: 2px;
   background: #DCDCDC;
+  border-radius: 2px;
   color: #F9F9F9;
 }
 .EditVisMetadata-markdownIconText {
-  font-size: 8px;
   font-weight: $sFontWeight-small;
+  font-size: 8px
 }
 .EditVisMetadata-markdownIconChar {
   font-size: $sFontSize-small;
@@ -65,8 +58,8 @@ $width: 620px;
   line-height: normal;
 }
 .EditVisMetadata-privacyIndicator:hover {
-  color: #777;
   text-decoration: underline;
+  color: #777;
 }
 .EditVisMetadata-formContent,
 .EditVisMetadata-formFooter {
@@ -87,6 +80,4 @@ $width: 620px;
   left: 0;
   z-index: 10;
 }
-.EditVisMetadata-formFooter .Button {
-  margin: 0;
-}
+.EditVisMetadata-formFooter .Button { margin: 0 }

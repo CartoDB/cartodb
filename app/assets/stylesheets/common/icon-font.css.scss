@@ -1,0 +1,397 @@
+// New dashboard icon font :)
+// --------------------------------------------------
+
+@import 'compass/css3/font-face';
+@import "../variables/colors";
+@include font-face('CartoIcon', font-files('cartoIcon.woff', 'cartoIcon.ttf', 'cartoIcon.svg'), 'cartoIcon.eot', normal, normal);
+
+.iconFont {
+  display: inline-block;
+  font-family: 'CartoIcon';
+  font-style: normal;
+  font-weight: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1;
+}
+
+.iconFont-Clock:before {
+  content: '\E001';
+
+}
+
+.iconFont-Stats:before {
+  content: '\E002';
+}
+
+.iconFont-Heart--empty:before {
+  content: '\E003';
+}
+
+.iconFont-Heart--fill:before {
+  content: '\E004';
+}
+
+.iconFont-Alert:before {
+  content: '\E005';
+}
+
+.iconFont-Rows:before {
+  content: '\E006';
+}
+
+.iconFont-Check:before {
+  content: '\E007';
+}
+
+.iconFont-Dribbble:before {
+  content: '\E008';
+}
+
+.iconFont-Twitter:before {
+  content: '\E009';
+}
+
+.iconFont-Wizard:before {
+  content: '\E00A';
+}
+
+.iconFont-Info:before {
+  content: '\E00B';
+}
+
+.iconFont-Fork:before {
+  content: '\E00C';
+}
+
+.iconFont-Facebook:before {
+  content: '\E00D';
+}
+
+.iconFont-Folder:before {
+  content: '\E00E';
+}
+
+.iconFont-Dropbox:before {
+  content: '\E00F';
+}
+
+.iconFont-Cloud:before {
+  content: '\E010';
+}
+
+.iconFont-Step:before {
+  content: '\E011';
+}
+
+.iconFont-AddDocument:before {
+  content: '\E012';
+}
+
+.iconFont-ArrowNext:before {
+  content: '\E013';
+}
+
+.iconFont-ArrowPrev:before {
+  content: '\E014';
+}
+
+.iconFont-Close:before {
+  content: '\E015';
+}
+
+.iconFont-CartoFante:before {
+  content: '\E016';
+}
+
+.iconFont-Lock:before {
+  content: '\E017';
+}
+
+.iconFont-CartoDB:before {
+  content: '\E018';
+}
+
+.iconFont-Lens:before {
+  content: '\E019';
+}
+
+.iconFont-CloseLimits:before {
+  content: '\E01A';
+}
+
+.iconFont-DefaultUser:before {
+  content: '\E01B';
+}
+
+.iconFont-Cockroach:before {
+  content: '\E01C';
+}
+
+.iconFont-Floppy:before {
+  content: '\E01D';
+}
+
+.iconFont-Trash:before {
+  content: '\E01E';
+}
+
+.iconFont-Wifi:before {
+  content: '\E01F';
+}
+
+.iconFont-Unlock:before {
+  content: '\E020';
+}
+
+.iconFont-Unlock--withEllipsis:before {
+  content: '\E021';
+}
+
+.iconFont-Gift:before {
+  content: '\E022';
+}
+
+.iconFont-People:before {
+  content: '\E023';
+}
+
+.iconFont-Play:before {
+  content: '\E024';
+}
+
+.iconFont-Add:before {
+  content: '\E025';
+}
+
+.iconFont-Map:before {
+  content: '\E026';
+}
+
+.iconFont-Anchor:before {
+  content: '\E027';
+}
+
+.iconFont-Key:before {
+  content: '\E028';
+}
+
+.iconFont-Calendar:before {
+  content: '\E029';
+}
+
+.iconFont-Document:before {
+  content: '\E02A';
+}
+
+.iconFont-Eye:before {
+  content: '\E02B';
+}
+
+.iconFont-Marker:before {
+  content: '\E02C';
+}
+
+.iconFont-ProgressBar:before {
+  content: '\E02D';
+}
+
+.iconFont-Book:before {
+  content: '\E02E';
+}
+
+.iconFont-Notes:before {
+  content: '\E02F';
+}
+
+.iconFont-Rectangles:before {
+  content: '\E030';
+}
+
+.iconFont-Mountain:before {
+  content: '\E031';
+}
+
+.iconFont-Points:before {
+  content: '\E032';
+}
+
+.iconFont-Snake:before {
+  content: '\E033';
+}
+
+.iconFont-Boss:before {
+  content: '\E034';
+}
+
+.iconFont-Rocket:before {
+  content: '\E035';
+}
+
+.iconFont-Barometer:before {
+  content: '\E036';
+}
+
+.iconFont-Dollar:before {
+  content: '\E037';
+}
+
+.iconFont-Email:before {
+  content: '\E038';
+}
+
+.iconFont-Label:before {
+  content: '\E039';
+}
+
+.iconFont-Outside:before {
+  content: '\E03A';
+}
+
+.iconFont-Jigsaw:before {
+  content: '\E03B';
+}
+
+.iconFont-Tools:before {
+  content: '\E03C';
+}
+
+.iconFont-Question:before {
+  content: '\E03D';
+}
+
+.iconFont-LayerStack:before {
+  content: '\E03E';
+}
+
+.iconFont-Alarm:before {
+  content: '\E03F';
+}
+
+.iconFont-CloudDownArrow:before {
+  content: '\E040';
+}
+
+.iconFont-Pencil:before {
+  content: '\E041';
+}
+
+.iconFont-FountainPen:before {
+  content: '\E042';
+}
+
+.iconFont-EmptyDoc:before {
+  content: '\E043';
+}
+
+.iconFont-MergeArrow:before {
+  content: '\E044';
+}
+
+.iconFont-MergeColumns:before {
+  content: '\E045';
+}
+
+.iconFont-MergeSpatial:before {
+  content: '\E046';
+}
+
+.iconFont-Globe:before {
+  content: '\E047';
+}
+
+.iconFont-ChevronDown:before {
+  content: '\E048';
+}
+
+.iconFont-Streets:before {
+  content: '\E049';
+}
+
+.iconFont-Keys:before {
+  content: '\E04A';
+}
+
+.iconFont-FacebookSquare:before {
+  content: '\E04B';
+}
+
+.iconFont-Fullscreen:before {
+  content: '\E04C';
+}
+
+.iconFont-Rarrow:before {
+  content: '\E04D';
+}
+
+.iconFont-Share:before {
+  content: '\E04E';
+}
+
+.iconFont-Linkedin:before {
+  content: '\E04F';
+}
+
+.iconFont-CalendarBlank:before {
+  content: '\E050';
+}
+
+.iconFont-CreativeCommons:before {
+  content: '\E051';
+}
+
+.iconFont-Bubble:before {
+  content: '\E052';
+}
+
+.iconFont-Bars:before {
+  content: '\E053';
+}
+
+.iconFont-ArrowMenu:before {
+  content: '\E054';
+}
+
+.iconFont-TieFighter:before {
+  content: '\E055';
+}
+
+.iconFont-Ray:before {
+  content: '\E056';
+}
+
+.iconFont-Markup:before {
+  content: '\E057';
+}
+
+.iconFont-Table:before {
+  content: '\E058';
+}
+
+.iconFont-Airlock:before {
+  content: '\E059';
+}
+
+.iconFont-Pin:before {
+  content: '\E05A';
+}
+
+.iconFont-Attache:before {
+  content: '\E05B';
+}
+
+.iconFont-Download:before {
+  content: '\E05C';
+}
+
+.iconFont-Group:before {
+  content: '\E05D';
+}
+
+.iconFont-Dashboard:before {
+  content: '\E05E';
+}
+
+.iconFont-Spinner:before {
+  content: '\E05F';
+}

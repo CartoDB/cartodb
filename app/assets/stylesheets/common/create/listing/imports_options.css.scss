@@ -28,7 +28,6 @@ $w: 780px;
   display: block;
   width: $w;
   padding: 28px 0;
-  border-bottom: 1px solid $cStructure-mainLine;
   overflow-x: hidden;
 }
 .ImportOptions-tabsList {
@@ -38,5 +37,5 @@ $w: 780px;
 }
 .ImportOptions-tab {
   min-width: 140px;
-  margin: 0 $sMargin-formRow 0 0;
+  margin-right: -1px;
 }

@@ -13,7 +13,7 @@
   @import "compass/css3/images";
   @import "../../../table/table-sprite";
   @import "../../../old_common/mixins";
-
+  @import "../../../variables/colors";
   
   
   .layer-views {
@@ -31,7 +31,7 @@
       color:white;
       text-align:center;
       @include border-radius(20px);
-      background:#E5E5E5;
+      background:$Grey7;
       border:none;
       &:hover {
         text-decoration:none;

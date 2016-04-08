@@ -12,7 +12,7 @@
   @import "compass/css3/inline-block";
   @import "../../table/table-sprite";
   @import "../../old_common/mixins";
-
+  @import "../../variables/colors";
 
   // Layer actions sidebar
   .layer-sidebar {
@@ -101,7 +101,7 @@
         width:100%;
         height:60px;
         @include text-indent();
-        border-bottom:1px solid rgba(#999999,0.25);
+        border-bottom:1px solid $DarkGrey6;
         z-index:0;
         @include opacity(0.75);
 
@@ -150,7 +150,7 @@
             height:0;
             border-top:7px solid transparent;
             border-bottom:7px solid transparent;
-            border-right:7px solid white;
+            border-right:7px solid $DarkGrey6;
             z-index:1;
           }
           &:after {
@@ -163,7 +163,7 @@
             height:0;
             border-top:7px solid transparent;
             border-bottom:7px solid transparent;
-            border-right:7px solid #D0D0D0;
+            border-right:7px solid $Black;
             z-index:0;
           }
         }

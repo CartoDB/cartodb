@@ -18,6 +18,7 @@
   @import "../old_common/mixins";
   @import "../old_common/vars";
   @import "../old_elements/elements-sprite";
+  @import "../variables/colors";
 
   // HORIZONTAL SLIDER (SPINNER)
 
@@ -95,18 +96,18 @@
     width:44px;
     height:21px;
 
-    $rad: 3px;
+    $rad: 2px;
 
     a {
       position:absolute;
       top:0;
       bottom:0;
-      height:21px;
+      height:19px;
       width:21px;
 
       .handle {
         position:absolute;
-        top:6px; left:6px;
+        top:7px; left:6px;
         height:8px;
         width:8px;
 
@@ -120,9 +121,10 @@
       left:0;
       height:19px;
       width:22px;
-      border:1px solid #B2B2B2;
+      background-color: $Amber1;
+      border:1px solid $Black;
       border-right:0;
-      @include border-left-radius($rad);
+      @include border-left-radius(2px);
 
       span.handle {
         top:5px;
@@ -140,15 +142,16 @@
     // Color picker
     a.color-picker {
       right:0;
-      @include border-right-radius($rad);
+      border:1px solid $Black;
+      @include border-right-radius(2px);
       @include elements-sprite(image_color, $offset-x:2px, $offset-y:4px);
 
       span.handle {
-        top:7px;
+        top:6px;
         right:6px;
         left:auto;
         @include border-radius(2px);
-        background:rgba(black,0.3);
+        background:$spinner_bg;
 
         b {
           top:3px;
@@ -169,8 +172,7 @@
         right:0;
         bottom:0;
         background:none;
-        @include border-right-radius($rad);
-        border:1px solid rgba(0,0,0,0.3);
+        @include border-right-radius(2px);
       }
 
       // Color expanded
@@ -181,7 +183,6 @@
       }
 
       &:hover {
-        &:before { border-color: rgba(0,0,0,0.4) }
         span.handle { background:rgba(black,0.4) }
       }
     }
@@ -281,9 +282,10 @@
     padding:2px 19px 2px 4px;
     height:15px;
     margin:0;
-    border:1px solid #9E9E9E;
-    @include border-radius(3px);
-    @include background(linear-gradient(#FFF,#F2F2F2));
+    background-color: $Amber1;
+    border:1px solid $Black;
+    @include border-radius(2px);
+	
 
     &.with-label {
       margin: 0;
@@ -305,7 +307,7 @@
       }
 
       &:hover .input {
-        border: 1px solid #7E7E7E!important;
+        
       }
 
       .input {
@@ -329,11 +331,10 @@
     }
 
     &:hover, .input:hover {
-      border: 1px solid #7E7E7E;
+      
     }
 
     &:hover input.value {
-      color: #333;
     }
 
     input.value {
@@ -359,46 +360,39 @@
       right:0;
       width:14px;
       height:9px;
-      border-left:1px solid #A8A8A8;
-      background:white;
+      border-left:1px solid $Black;
+      background:$spinner_bg;
       @include text-indent();
 
       &:before {
         content:' ';
         position:absolute;
-        left:5px;
+        left:4px;
         width:0;
         height:0;
-        border-left:2px solid transparent;
-        border-right:2px solid transparent;
+        border-left:3px solid transparent;
+        border-right:3px solid transparent;
       }
 
       &.plus {
         top:0;
         border-bottom:1px solid #A8A8A8;
-        @include border-top-right-radius(3px);
-        &:before {top:3px; border-bottom:3px solid #666666;}
+        @include border-top-right-radius(1px);
+        &:before {top:4px; border-bottom:4px solid $Grey2;}
       }
       &.minus {
         bottom:0;
-        @include border-bottom-right-radius(3px);
-        &:before {bottom:3px; border-top:3px solid #666666;}
+        @include border-bottom-right-radius(1px);
+        &:before {bottom:3px; border-top:3px solid $Grey2;}
       }
 
       &:hover {
-        &.plus {
-          &:before {border-bottom:3px solid #000;}
-        }
-        &.minus {
-          bottom:0;
-          &:before {border-top:3px solid #000;}
-        }
+
       }
     }
 
     // Opacity type
     &.opacity {
-      @include background(image-url("layout/alpha_bkg.png") repeat 0 0);
     }
 
     // Disabled state
@@ -525,8 +519,8 @@
       width:10px;
       height:10px;
       margin: 0 0 1px 0;
-      @include border-radius(3px);
-      border:1px solid #999999;
+      @include border-radius(2px);
+      border:1px solid $Black;
       background:white;
 
       &:before {

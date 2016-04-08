@@ -17,18 +17,19 @@
 }
 
 body {
-  background: $cStructure-mainBkg;
-  font: normal #{$sFontSize-normal}/#{$sLineHeight-normal} 'Lato', sans-serif;
+  background: $DarkGrey6;
+  font: normal #{$sFontSize-normal}/#{$sLineHeight-normal} Bloomberg Prop Unicode K, Lato;
+  color: $Grey2;
 }
 
 ul { list-style: none }
 
 a {
   text-decoration: none;
-  color: $cTypography-link;
+  color: $Teal4;
   &:hover {
-    color: $cTypography-linkHover;
-    text-decoration: underline;
+    color: $Teal3;
+    text-decoration: none;
   }
 }
 

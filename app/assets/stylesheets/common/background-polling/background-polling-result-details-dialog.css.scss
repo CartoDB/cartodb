@@ -23,9 +23,7 @@ $w: 560px;
   font-size: 28px;
   margin-right: $sMargin-element;
 }
-.BackgroundPollingDetails-icon .CDB-IconFont-dollar {
-  margin-bottom: 8px; /* :( */
-}
+.BackgroundPollingDetails-icon .iconFont-Dollar { margin-bottom: 8px; /* :( */ }
 .BackgroundPollingDetails-icon.is-nonFree {
   color: #D4BD7F;
   border-color: #D4BD7F;

@@ -79,7 +79,7 @@ div.dropdown.basemap {
 
       &:first-child {
         width: 60px;
-        margin: 5px 4px 0 0;
+        margin: 2px 4px 0 0;
         color: #CCCCCC;
       }
 
@@ -233,7 +233,7 @@ div.dropdown.basemap {
       @mixin google-thumbnail($name) {
         &.#{$name} .thumb {
           @include background(image-url('layout/gmaps-basemaps/#{$name}.png') no-repeat center center);
-        }
+        }        
       }
 
       @include google-thumbnail(roadmap);
@@ -253,7 +253,7 @@ div.dropdown.basemap {
 
 
 
-      &.add .thumb          { @include map-sprite(plus); }
+      &.add .thumb          { @include map-sprite(plus); } 
       &.pattern .thumb      { @include elements-sprite(image_fill, $offset-x:5px, $offset-y:7px); }
 
       span.color {

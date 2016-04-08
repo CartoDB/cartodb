@@ -15,6 +15,8 @@
   @import "../../old_common/vars";
   @import "../../old_common/common-sprite";
   @import "../../table/table-sprite";
+  @import "../variables/colors";
+  @import "../variables/mixins";
 
   $text-shadow-color: rgba(black,0.25);
 
@@ -204,26 +206,12 @@
         margin:0;
 
         a.share {
+	  @include actionButton;
           line-height:20px;
-          padding: 0 20px;
-          text-shadow: none;
-          color: #fff;
-          @include box-shadow(none);
-          border-radius: 30px;
-          border: 2px solid #fff;
-          background:none;
-
-          span {
-            padding: 1px 0;
-            @include inline-block();
-            color: #fff;
+          span{
+            @include inline-block();          
             font-size: 12px;
           }
-
-          &:hover {
-            span { text-decoration: underline; }
-          }
-
         }
 
         &.dropdown { padding-right: 12px; }

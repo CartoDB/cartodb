@@ -9,6 +9,7 @@
   @import "compass/css3/border-radius";
   @import "../../old_common/mixins";
   @import "../../old_common/vars";
+  @import "../variables/colors";
 
   // Navigation block
   div.vis_navigation {
@@ -26,11 +27,12 @@
     nav {
       position:relative;
       @include inline-block();
-      padding: 1px;
       margin:0;
 
-      @include border-radius(30px);
-      border: 2px solid #fff;
+      @include border-radius(2px);
+      background: $DarkGrey1;
+      border: 1px solid $Black;
+      box-shadow: $button_shadow;
 
       z-index:1;
 
@@ -43,15 +45,20 @@
 
         text-transform: uppercase;
 
-        @include border-radius(30px);
+        @include border-radius(1px);
+	&:hover {
+		background: $btn_background_hover;
+ 		text-decoration: none;
+        }
 
-        &:hover, &:focus, &:active {}
+
+
+        &:focus, &:active {}
 
         &.selected {
-          margin:0;
-          color: #326A98;
-          background:#fff;
-
+          color: $White;
+          background:#0b3968;
+	  box-shadow: 0px 0px 0px 1px $Black;
           &:hover {text-decoration:none; cursor:default;}
           &:focus, &:active {}
         }

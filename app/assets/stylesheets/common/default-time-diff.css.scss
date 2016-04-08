@@ -9,11 +9,11 @@
   @include display-flex();
   @include align-items(center, center);
   font-size: $sFontSize-normal;  
-  color:$cTypography-secondary;
+  color:$Grey7;
 }
 .DefaultTimeDiff-icon {
   margin-right: 5px;
   font-size: $sFontSize-smallUpperCase;
-  color: $cTypography-help;
+  color: $Grey7;
 }
 .DefaultTimeDiff p { margin-left: 5px }

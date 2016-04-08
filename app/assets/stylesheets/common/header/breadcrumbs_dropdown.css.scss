@@ -15,8 +15,8 @@
   padding: $sMargin-element !important;
 }
 .BreadcrumbsDropdown-listItem.is-dark {
-  background: $cStructure-grayBkg;
-  border-radius: 0 0 2px 2px;
+  background: $DarkGrey8;
+  border-top: 1px solid $Black;
 }
 .BreadcrumbsDropdown-icon,
 .BreadcrumbsDropdown-options {
@@ -36,7 +36,7 @@
 }
 .BreadcrumbsDropdown-optionsItem.has-margin { margin-top: 10px }
 .BreadcrumbsDropdown-optionsItem.is-selected {
-  color: $cTypography-linkSelected;
+  color: $White;
   &:hover {
     text-decoration: none;
     cursor: default;

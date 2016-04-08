@@ -3,9 +3,6 @@
 // Public data dashboard content
 // --------------------------------------------------
 
-.PublicBody--commercial {
-  font-family: 'Open Sans', sans-serif;
-}
 .DataLibrary {
   margin: 0 auto;
   background: #F9F9F9;
@@ -19,9 +16,14 @@
   @include css3-prefix(box-sizing, border-box);
 }
 .DataLibrary-text {
+  color: #333;
+  font-size: 20px;
+  font-weight: 200;
+  line-height: 1.4;
+}
+.DataLibrary-text--column {
+  color: #797F8A;
   font-size: 18px;
-  line-height: 32px;
-  color: #636D72;
 }
 .Filters.Filters-datalibrary .Filters-orderItem:last-child {
   margin-right: 0;

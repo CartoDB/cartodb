@@ -14,7 +14,7 @@
   @import "../../../table/table-sprite";
   @import "../../../old_common/form-elements";
   @import "../../../old_common/mixins";
-
+  @import "../../../variables/colors";
 
   div.legends_panel {
     display:block;
@@ -29,7 +29,7 @@
 
     .panel_content .wrapper .content .fields {
       position:relative;
-      background:#fff;
+      background: $Black;
       z-index: 10;
     }
 
@@ -130,9 +130,9 @@
       top: 59px;
       width: 100%;
       padding: 9px 23px 3px 30px;
-      background:#F6F6F6;
-      border-top: 1px solid rgba(#DDDDDD, .5);
-      border-bottom: 1px solid rgba(#DDDDDD, .5);
+      background: $Grey9;
+      border-top: 1px solid $Black;
+      border-bottom: 1px solid $Black;
 
       z-index: 9;
 
@@ -140,6 +140,7 @@
         @include size(10px, 6px);
         @include position(false, false, -1px, 33px);
         @include background(sprite($table-sprites, infowindow_panel_white_tip) no-repeat);
+        -webkit-filter: invert(100%);
         z-index: 10;
       }
 
@@ -269,7 +270,6 @@
         display:block;
         width:100%;
         padding:13px 0;
-        border-bottom:1px solid rgba(#E5E5E5,0.5);
         height: 50px;
         @include box-sizing(border-box);
 
@@ -278,7 +278,6 @@
         & > span:first-child {
           float:left;
           margin-top:2px;
-          color:$cGray4;
         }
 
         & > span:last-child {
@@ -300,10 +299,7 @@
     .fields {
 
       li {
-        padding:13px 0;
-        font-size: 15px;
-        color: $cGray4;
-        border-bottom:1px solid rgba(#999999,0.25);
+        padding:10px;
         overflow:hidden;
 
         & > span {

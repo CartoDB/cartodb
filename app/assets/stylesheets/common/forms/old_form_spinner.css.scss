@@ -20,18 +20,19 @@
   padding:2px 19px 2px 4px;
   line-height: 20px;
   margin:0;
-  border:1px solid #9E9E9E;
-  border-radius: 3px;
-  background: white;
+  background: $Amber1;
+  border:1px solid $Black;
+  
 
 
   &:hover { cursor: pointer }
 
   &:hover, .input:hover {
-    border: 1px solid #7E7E7E;
   }
 
-  &:hover input.value { color: #333 }
+  &:hover input.value {
+
+ }
 
   input.value {
     float:none;
@@ -41,12 +42,12 @@
     text-align:left;
     line-height:15px;
     font-size:13px;
-    color:#666666;
+    color:$Black;
     background: none;
     border:none;
     &:focus {
       outline:none;
-      color:#333333;
+      color:$Black;
     }
   }
 
@@ -55,25 +56,22 @@
     right:0;
     width:14px;
     height:11px;
-    border-left:1px solid #A8A8A8;
-    text-indent: -9999px;
 
     &:before {
       content:' ';
       position:absolute;
-      left:5px;
+      left:4px;
       width:0;
       height:0;
-      border-left:2px solid transparent;
-      border-right:2px solid transparent;
+      border-left:3px solid transparent;
+      border-right:3px solid transparent;
     }
 
     &.plus {
       top:0;
-      border-bottom:1px solid #A8A8A8;
       &:before {
-        top: 4px;
-        border-bottom:3px solid #999;
+        top: 3px;
+        border-bottom:4px solid $Grey2;
       }
     }
     
@@ -82,18 +80,12 @@
       height: 12px;
       &:before {
         top: 5px;
-        border-top:3px solid #999;
+        border-top:4px solid $Grey2;
       }
     }
 
     &:hover {
-      &.plus {
-        &:before {border-bottom:3px solid #666;}
-      }
-      &.minus {
-        bottom:0;
-        &:before {border-top:3px solid #666;}
-      }
+	background-color: $DarkGrey1;
     }
   }
 

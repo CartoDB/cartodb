@@ -12,6 +12,7 @@
   @import "../../../table/table-sprite";
   @import "../../../old_common/vars";
   @import "../../../old_common/mixins";
+  @import "../../../variables/colors";
 
   // LOCAL VARS
   $corner_radius: 6px;
@@ -217,7 +218,7 @@
 
             &:before {
               bottom:-30px;
-              border-bottom:10px solid white;
+              border-bottom:10px solid $DarkGrey6;
               z-index:10;
             }
 
@@ -247,12 +248,12 @@
           display:block;
           width:100%;
           padding:13px 0;
-          border-bottom:1px solid rgba(#E5E5E5,0.5);
+          border-bottom:1px solid $DarkGrey9;
 
           & > span:first-child {
             float:left;
             margin-top:2px;
-            color:#AAA;
+            color:$Grey2;
           }
 
           & > span:last-child {
@@ -264,7 +265,7 @@
           }
 
           &.label_text { border:none; }
-          &.label_text.border { border-bottom: 1px solid rgba(#E5E5E5,0.5); }
+          &.label_text.border { border-bottom: 1px solid $DarkGrey9; }
           &:last-child {border:none;}
 
           span.field > div {

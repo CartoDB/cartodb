@@ -8,7 +8,7 @@
   font-weight: $sFontWeight-normal;
   font-size: $sFontSize-larger;
   line-height: 20px;
-  color: $cTypography-paragraphs;
+  color: $Grey1;;
 }
 .DefaultTitle.is-disabled {
   color: rgba($cTypography-paragraphs, 0.4);
@@ -16,9 +16,9 @@
 .DefaultTitle-link {
   font-weight: $sFontWeight-normal;
   font-size: $sFontSize-larger;
-  color: $cTypography-paragraphs;
+  color: $Grey1;
   &:hover {
-    color: $cTypography-headers;
+    color: $White;
     text-decoration: underline;
   }
 }

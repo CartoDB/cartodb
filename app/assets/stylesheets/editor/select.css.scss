@@ -1,3 +1,7 @@
+@import "../variables/mixins";
+@import "../variables/colors";
+@import "../variables/sizes";
+
 // Select combo represents the "enhanced" <select> dropdown combo selector
 // Expected to be typically used together with a cdb.admin.Combo view, e.g.
 //   new cdb.forms.Combo({
@@ -5,11 +9,6 @@
 //      …
 //
 // --------------------------------------------------
-
-@import '../variables/mixins';
-@import '../variables/colors';
-@import '../variables/sizes';
-
 .Select { width: 100% }
 .Select .select2-container { background: none }
 .Select .select2-container:hover .select2-choice { border-color: $cStructure-mainLine !important }
@@ -32,8 +31,8 @@
     padding-bottom: 8px;
 
     div b:before {
-      // since can't use CDB-IconFont here, we'll inline the CDB-IconFont styles here
-      font-family: 'CartoIcon';
+      // since can't use iconFont here, we'll inline the iconFont styles here
+      font-family:'CartoIcon';
       display: inline-block;
       font-style: normal;
       font-weight: normal;
@@ -41,11 +40,11 @@
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
 
-      // use the content of "CDB-IconFont-chevronDown" to achieve the "arrow down" artifact
+      // use the content of "iconFont-ChevronDown" to achieve the "arrow down" artifact
       position: absolute;
       top: 14px;
       right: 12px;
-      content: '\E00A'; // CDB-IconFont-caretDown
+      content: "\E048"; // ChevronDown
       font-size: 9px;
       color: $cTypography-paragraphs;
     }

@@ -13,6 +13,7 @@
   @import "../../table/table-sprite";
   @import "../../old_common/vars";
   @import "../../old_common/mixins";
+  @import "../../variables/colors";
 
 
   // LOCAL VARS
@@ -27,9 +28,9 @@
     left:65px;
     bottom:0;
     @include inline-block();
-    background:white;
+    background:$DarkGrey6;
     @include border-top-left-radius($corner_radius);
-    border:1px solid #D0D0D0;
+    border:1px solid $Black;
     border-right:0;
     border-bottom:0;
     @include box-shadow(rgba(black, 0.07) 2px -1px 8px 0);
@@ -39,10 +40,11 @@
 
     h3 {
       padding: 22px 0 21px 30px;
-      border-bottom:1px solid rgba(#999999,0.25);
-      font:normal 15px $text-fonts;
+      border-bottom:1px solid $DarkGrey9;
+      font-size: 14px;
+      font-weight: normal;
       line-height:normal;
-      color: #666666;
+      color: $Grey1;
     }
 
     // For any 
@@ -79,9 +81,7 @@
       div.no_content {
         margin:20px 0 0 0;
         padding:20px;
-        border:1px solid #E6E6E6;
         @include border-radius(4px);
-        color:#666666;
         text-align:center;
         line-height:18px;
       }

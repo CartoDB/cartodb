@@ -15,6 +15,7 @@
   @import "../../../table/table-sprite";
   @import "../../../old_common/vars";
   @import "../../../old_common/mixins";
+  @import "../../../variables/colors";
   @import "../../../old_common/form-elements";
 
 
@@ -48,11 +49,17 @@
           line-height:41px;
           text-align:center;
           @include border-top-radius(3px);
-          background:white;
-
+          background:$DarkGrey2;
+	  color: $Grey7;
+	  &:hover {
+		background: $tab_bg_hover;
+		text-decoration: none;
+	  }
+	
           &.selected {
+		background: $DarkGrey6;
             position:relative;
-            color:#666666;
+            color:$Grey1;
             text-decoration:none;
             cursor:default;
 
@@ -63,7 +70,7 @@
               bottom:0;
               width:100%;
               height:1px;
-              background:white;
+              background:$DarkGrey6;
               z-index:2;
             }
           }
@@ -127,9 +134,9 @@
       top: 112px;
       width: 100%;
       padding: 9px 23px 3px 30px;
-      background:#F6F6F6;
-      border-top: 1px solid rgba(#DDDDDD, .5);
-      border-bottom: 1px solid rgba(#DDDDDD, .5);
+      background:$Grey9;
+      border-top: 1px solid $Black;
+      border-bottom: 1px solid $Black;
 
       z-index: 9;
 
@@ -138,6 +145,7 @@
         @include position(false, false, -1px, 33px);
         @include background(sprite($table-sprites, infowindow_panel_white_tip) no-repeat);
         z-index: 10;
+       -webkit-filter:invert(100%);
       }
 
       ul {

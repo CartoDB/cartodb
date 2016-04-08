@@ -1,30 +1,31 @@
 // Service icons
 // --------------------------------------------------
 
-@import '../variables/mixins';
-@import '../variables/colors';
-@import '../variables/sizes';
+@import "../variables/mixins";
+@import "../variables/colors";
+@import "../variables/sizes";
 
 .ServiceIcon {
-  @include image-2x("layout/new_import_icons@2x.png", 223px, 40px, 0, 0);
   display: inline-block;
-  width: 20px;
-  height: 20px;
-  margin-right: 12px;
-  background: image-url('layout/new_import_icons.png') no-repeat 0 0;
   vertical-align: middle;
+  height: 20px;
+  width: 20px;
+  margin-right: 12px;
+  @include background(image-url('layout/new_import_icons.png') no-repeat 0 0);
 }
-
-@mixin serviceIcon($name, $width, $x: 0, $y: -20px, $height: 20px) {
-  .ServiceIcon--#{$name} {
-    width: $width;
-    height: $height;
-    background-position: $x $y;
-  }
+.ServiceIcon--gdrive {
+  width: 25px;
+  background-position: -40px -20px;
 }
-
-@include serviceIcon(dropbox, 22px, -18px);
-@include serviceIcon(gdrive, 25px, -40px);
-@include serviceIcon(mailchimp, 18px, -65px);
-@include serviceIcon(instagram, 20px, -145px);
-@include serviceIcon(box, 29px, -194px);
+.ServiceIcon--dropbox {
+  width: 22px;
+  background-position: -18px -20px;
+}
+.ServiceIcon--mailchimp {
+  width: 18px;
+  background-position: -65px -20px;
+}
+.ServiceIcon--instagram {
+  width: 18px;
+  background-position: -146px -20px;
+}

@@ -1,6 +1,6 @@
-@import '../variables/mixins';
-@import '../variables/colors';
-@import '../variables/sizes';
+@import "../variables/mixins";
+@import "../variables/colors";
+@import "../variables/sizes";
 
 /*-----------------------
 
@@ -13,7 +13,7 @@
  ---------
     ...
 -----------
-
+ 
 -------------------------*/
 
 $br: 4px;
@@ -22,110 +22,74 @@ $br: 4px;
   display: inline-block;
   width: 100%;
 }
-.PricePlans-options {
-  @include display-flex();
-  @include justify-content(space-between, justify);
-  @include align-items(center);
-  padding: 0 0 15px;
-}
-.PricePlans-yearly {
-  @include display-flex();
-}
-.PricePlans-yearlyText {
-  margin-left: 8px;
-  color: $cTypography-helpSecondary;
-  font-size: $sFontSize-large;
-}
-.PricePlans-yearlyText--highlight {
-  color: $cHighlight-positive;
-  font-style: normal;
-}
 .PricePlans-list {
   @include display-flex();
   @include justify-content(space-between, justify);
-  @include align-items(top);
-  padding: 0;
+  @include align-items(center);
   border: 1px solid $cStructure-mainLine;
+  border-bottom: 0;
+  border-top-left-radius: $br;
+  border-top-right-radius: $br;
+  background: white;
+}
+.PricePlans-list--round {
   border-radius: $br;
-  background: #FFF;
+  border: 1px solid $cStructure-mainLine;
 }
 .PricePlans-item {
   width: 100%;
-  padding: 20px 0 10px;
+  border-right: 1px solid $cStructure-mainLine;
 }
-.PricePlans-item:first-child {
-  border-top-left-radius: $br;
-  border-bottom-left-radius: $br;
-}
-.PricePlans-item:last-child {
-  border-top-right-radius: $br;
-  border-bottom-right-radius: $br;
-}
-.PricePlans-item.is-highlighted {
-  background: #F6FBFE;
-}
+.PricePlans-item:last-child { border-right: 0 }
 .PricePlans-itemHeader {
   @include display-flex();
-  @include justify-content(flex-start, start);
-  @include align-items(top);
+  @include justify-content(center);
+  @include align-items(center);
   @include flex-direction(column);
-  height: 85px;
+  height: 99px;
+  border-bottom: 1px solid $cStructure-mainLine;
   text-align: center;
 }
 .PricePlans-itemTitle {
-  color: $cTypography-linkSecondaryHover;
-  font-size: $sFontSize-normal;
-  text-transform: uppercase;
+  font-size: 26px;
+  color: $cTypography-headers;
+  text-transform: capitalize;
 }
 .PricePlans-itemPrice {
-  margin-top: 10px;
-  color: $cTypography-linkSecondaryHover;
-  font-size: 14px;
+  margin-top: 8px;
+  font-size: $sFontSize-larger;
+  color: $cTypography-headers;
 }
-.PricePlans-itemPriceFigure {
-  font-size: 32px;
-}
-.PricePlans-itemPriceRest {
-  color: $cTypography-linkSecondary;
-}
-.PricePlans-itemPriceException {
-  margin-top: 5px;
-  color: $cTypography-linkSecondary;
-  font-size: $sFontSize-smallUpperCase;
-}
-.PricePlans-button {
-  display: block;
-  line-height: 38px;
-  width: 140px;
-  margin: 0 auto;
-}
-.PricePlans-button--grey {
-  display: block;
-  background-color: $cTypography-help;
-  color: #FFF;
-}
-.PricePlans-itemContent {
-  padding: 0 30px;
-}
+.PricePlans-itemContent { padding: 0 20px }
 .PricePlans-itemContentAttr {
   display: block;
-  padding: 10px 0;
-  color: $cTypography-linkSecondaryHover;
-  font-size: $sFontSize-normal;
+  padding: 15px 0;
+  border-bottom: 1px solid $cStructure-mainLine;
   text-align: center;
+  font-size: $sFontSize-large;
+  color: $cTypography-paragraphs;
 }
-.PricePlans-itemContentAttr.is-disabled {
-  color: rgba($cTypography-paragraphs, 0.4);
-}
+.PricePlans-itemContentAttr.is-disabled { color: rgba($cTypography-paragraphs,.4) }
 .PricePlans-itemContentAttr.is-highlighted {
-  color: $cTypography-headers;
   font-weight: $sFontWeight-bold;
+  color: $cTypography-headers;
+}
+.PricePlans-itemContentAttr:last-child { border-bottom: 0 }
+.PricePlans-trial {
+  @include display-flex();
+  @include justify-content(center);
+  @include align-items(center);
+  height: 68px;
+  background: $cCard-hoverFill;
+  border: 1px solid $cCard-hoverBorder;
+  border-bottom-left-radius: $br;
+  border-bottom-right-radius: $br;
 }
 .PricePlans-trialText {
-  color: $cTypography-helpSecondary;
-  font-size: $sFontSize-large;
+  font-size: 14px;
+  color: $cTypography-paragraphs;
 }
 .PricePlans-trialIcon {
-  margin-left: 3px;
+  margin-right: 3px;
   color: #0090D7;
 }

@@ -1,24 +1,280 @@
+//Terminal colors
+
+$White: #fff;           // Strong Emphasis
+$Grey1: #f2f2f2;
+$Grey2: #d8d8d8;        // Slight Emphasis
+$Grey3: #bfbfbf;
+$Grey4: #aaa;           // DeEmphasized Subheads
+$Grey5: #9e9e9e;
+$Grey6: #909090;
+$Grey7: #7b7b7b;        // DeEmphasized
+$Grey8: #6e6e6e;
+$Grey9: #626262;        // BG Level 1
+$Grey10: #4d4d4d;
+$DarkGrey1: #424242;    // BG Level 2
+$DarkGrey2: #383838;    // Grid BG Hover State, BG Level 3
+$DarkGrey3: #292929;    // Grid BG Strong Highlight
+$DarkGrey4: #272727;    // BG of Popup Grid
+$DarkGrey5: #232323;
+$DarkGrey6: #202020;    // Grid BG Highlight, Navigator BG
+$DarkGrey7: #1d1d1d;
+$DarkGrey8: #181818;    // BG Grid
+$DarkGrey9: #131313;
+$Black: #000;
+
+$LightRed01:#ff7489;
+$LightRed0: #ff5972;
+$LightRed1: #ff415c;     // Red for Lightgrey BGs
+$LightRed2: #ff2c4a;
+$LightRed3: #fd5d5d;
+$Red1: #ff1e3e;          // Default, Market Down, Heatmap1
+$Red2: #e81b38;          // Heatmap2
+$Red3: #d11832;          // Heatmap3
+$Red4: #ba152d;          // Heatmap4
+$Red5: #a31227;          // Heatmap5
+$Red6: #8b1021;          // Heatmap6
+$Red7: #740d1b;          // Heatmap7
+$Red8: #5d0a16;          // Heatmap8
+$Red9: #460710;          // Heatmap9
+$Red10: #2f040a;         // Heatmap10
+$Red11: #d20000;
+
+$LightOrange1: #ff9c66;
+$LightOrange2: #ff772d;
+$Orange1: #ff5a00;
+$Orange2: #e65100;
+$Orange3: #cc4800;
+$Orange4: #b33f00;
+$Orange5: #993600;
+$Orange6: #8c3100;
+$Orange7: #802d00;
+$Orange8: #732900;
+$Orange9: #662400;
+$Orange10: #571f00;
+$Orange11: #4d1b00;
+$Orange12: #381400;
+
+
+$LightAmber1: #fdd172;
+$LightAmber2: #ffad45;
+$Amber1: #ff9e24;         // Default
+$Amber2: #e68f20;
+$Amber3: #cc7e1d;
+$Amber4: #b36f19;
+$Amber5: #995f16;
+$Amber6: #8c5714;
+$Amber7: #804f12;
+$Amber8: #734710;
+$Amber9: #663f0e;
+$Amber10: #59370d;
+$Amber11: #4d300b;
+$Amber12: #382308;
+$DarkAmber1: #b86e00;
+$DarkAmber2: #9c5d00;
+$DarkAmber3: #824e00;
+
+
+$LightYellow1: #fffaa0;   // Emphasis, Neutral
+$LightYellow2: #fbe360;
+$Yellow1: #ffde2b;
+$Yellow2: #e6c827;
+$Yellow3: #ccb222;
+$Yellow4: #b39c1e;
+$Yellow5: #99851a;
+$Yellow6: #8c7a18;
+$Yellow7: #806f16;
+$Yellow8: #736413;
+$Yellow9: #665911;
+$Yellow10: #594d0f;
+$Yellow11: #4d430d;
+$Yellow12: #383109;
+$BrightYellow1: #fff200;
+
+
+$LightGreen1: #78ff8f;    // Default for Lightgrey BG
+$Green1: #51ee6c;         // Default, Market Up
+$Green2: #49d761;         // Heatmap1
+$Green3: #41be56;         // Heatmap2
+$Green4: #39a74c;         // Heatmap3
+$Green5: #318f41;         // Heatmap4
+$Green6: #297736;         // Heatmap5
+$Green7: #205f2b;         // Heatmap6
+$Green8: #184821;         // Heatmap7
+$Green9: #143c1b;         // Heatmap8
+$Green10: #103016;        // Heatmap9
+$Green11: #0c2310;        // Heatmap10
+$Green12: #30c030;
+$Green13: #008616;
+$Green14: #27854f;
+$Green15: #35b56c;
+
+
+$LightTeal1: #a3e9f2;
+$Teal1: #67d8e5;          // Link
+$Teal2: #5dc3cf;
+$Teal3: #52adb7;
+$Teal4: #4898a1;
+$Teal5: #3e8289;
+$Teal6: #39777e;
+$Teal7: #346c73;
+$Teal8: #2e6167;
+$Teal9: #29565c;
+$Teal10: #244b50;
+$Teal11: #1f4145;
+$Teal12: #00d3d6;
+$Teal13: #007575;
+$Teal14: #172f32;
+
+
+$SelectionBlue1: #63b2ff; // FG Selected Object, Security
+$SelectionBlue2: #3c9fff; // BG Selection Level 1
+$SelectionBlue3: #1e6ab4; // BG Selection Level 2
+$SelectionBlue4: #113c66; // BG Selection Level 3
+$SelectionBlue5: #14518c;
+
+$LightBlue1: #a4c8eb;
+$LightBlue2: #80c0ff;
+$Blue1: #1b84ed;          // Market Depth 1
+$Blue2: #006ddc;          // Market Depth 2
+$Blue3: #0063c9;          // Market Depth 3
+$Blue4: #005ab5;          // Market Depth 4
+$Blue5: #0050a2;          // Market Depth 5
+$Blue6: #00478e;          // Market Depth 6
+$Blue7: #003d78;          // Market Depth 7
+$Blue8: #003367;          // Market Depth 8
+$Blue9: #002a54;          // Market Depth 9
+$Blue10: #002040;         // Market Depth 10
+$Blue11: #0055fe;
+$Blue12: #1a6ab4;
+$Blue13: #89a4c5;
+$Blue14: #00a5e3;
+
+$color_lightblue: #6bc9ff;  // cprincz: This color couldn't be replaced by the new set of colors. Will leave it for now.
+
+
+$LightMagenta1: #ff88da;
+$Magenta1: #ff4fc7;
+$Magenta2: #ff2abb;
+$Magenta3: #e626a9;
+$Magenta4: #cc2296;
+$Magenta5: #b31d83;
+$Magenta6: #991970;
+$Magenta7: #80155e;
+$Magenta8: #731354;
+$Magenta9: #66114b;
+$Magenta10: #590f41;
+$Magenta11: #4d0d38;
+$Magenta12: #ff1a93;
+$Magenta13: #9b016a;
+$Magenta14: #ce006d;
+$Magenta15: #380929;
+
+
+$LightPurple1: #dda3ff;
+$Purple1: #cf7dff;        // Default FG
+$Purple2: #bb71e6;
+$Purple3: #a664cc;
+$Purple4: #9158b3;
+$Purple5: #7c4b99;
+$Purple6: #72458c;
+$Purple7: #683f80;
+$Purple8: #5d3873;
+$Purple9: #533266;
+$Purple10: #482c59;
+$Purple11: #3f264d;
+$Purple12: #cb71ff;
+$Purple13: #ac1be8;
+$Purple14: #cd53ff;
+$Purple15: #2d1b38;
+
+//shadow
+$text_shadow: 0px 1px 0px rgba(0, 0, 0, 0.3);
+
+$button_shadow: inset 0px 1px 0px rgba(255, 255, 255, 0.12);
+$button_shadow_hover: inset 0px 1px 0px rgba(255, 255, 255, 0.18);
+$button_shadow_press: inset 0px 1px 0px rgba(0, 0, 0, 0.15);
+$button_shadow_disabled: inset 0px 1px 0px rgba(255, 255, 255, 0.04);
+$button_shadow_press_disabled: inset 0px 1px 0px rgba(0, 0, 0, 0.04);
+$toggle_button_shadow: inset 0px 1px 0px rgba(255, 255, 255, 0.07);
+$button_shadow_transparent_bg: inset 0px 1px 0px rgba(255, 255, 255, 0.05);
+$button_shadow_transparent_bg_press: inset 0px 1px 0px rgba(0, 0, 0, 0.05);
+// text
+$color_disabled_text : $Grey7;
+
+// buttons
+$btn_background_normal: rgba(98, 98, 98, 0.65);
+$btn_background_hover: rgba(134, 134, 134, 0.65);
+$btn_background_press: rgba(77, 77, 77, 0.65);
+$btn_background_disabled: rgba(66, 66, 66, 0.80);
+$btn_background_selected: $Blue4;
+$btn_background_selected_hover: $SelectionBlue3;
+$btn_background_selected_press: #144779;
+$btn_background_selected_disabled: #3f4e5d;
+$btn_transparent_background_normal: transparent;
+$btn_transparent_background_hover: rgba(255, 255, 255, 0.05);
+$btn_transparent_background_press: rgba(0, 0, 0, 0.1);
+
+$btn_border: 1px solid $Black;
+$btn_border_color_disabled: $Black;
+
+// checkbox / radio button
+$checkbox_bg_normal: $btn_background_normal;
+$checkbox_bg_hover: $btn_background_hover;
+$checkbox_bg_press: $btn_background_press;
+$checkbox_bg_active_normal: #1f8fff;
+$checkbox_bg_active_hover: $SelectionBlue1;
+$checkbox_bg_active_press: #0671ae;
+$checkbox_dirty_bg: #ebddbd;
+$checkbox_shadow: inset 0px 1px 0px rgba(255, 255, 255, 0.1),
+                  inset 0px 8px 4px 0px rgba(255, 255, 255, 0.1);
+
+// tabs
+$tab_bg_normal: $DarkGrey4;
+$tab_bg_hover: #434343;
+$tab_bg_selected: $Grey9;
+$tab_bg_pressed: -webkit-linear-gradient(top, #101111, #1b1b1b);
+
+//focus visual style
+$focus_visual_color: #0090ff;
+$focus_visual_style: 0px 0px 0px 1px $focus_visual_color;
+
+//Grid
+$gridRowBackgroundHover: $DarkGrey2;
+$gridRowBackgroundSelected: $SelectionBlue4;
+$gridRowBackgroundSelectedHover: $SelectionBlue5;
+
+$gridRowBackgroundSelectedDefocused: #0a293f;
+$gridRowBackgroundSelectedHoverDefocused: #023a64;
+
+//tab
+$tabBgSelected: #0b3968;
+$tabBgHover:  rgba(134, 134, 134, 0.65);
+
+//dropdown 
+$dropdownBorder: 1px solid #cfcfcf;
+
+//end terminal color
+
 // Paragraphs
 $cTypography-headers:             rgba(#333, 1);
-$cTypography-paragraphs:          rgba(#666, 1);
-$cTypography-secondary:           rgba(#999, 1);
+$cTypography-paragraphs:          $Grey2;
+$cTypography-secondary:           $Grey7;
 $cTypography-help:                rgba(#CCC, 1); // Help text & tips
 $cTypography-headersOverBlack:    rgba(#FFF, 1);
-$cTypography-helpSecondary:       rgba(#636D72, 1);
-$cTypography-link:                rgba(#3AA9E3, 1);
-$cTypography-linkHover:           rgba(#227DBD, 1);
+$cTypography-link:                $Teal4;
+$cTypography-linkHover:           $Teal3;
 $cTypography-linkSelected:        rgba(#333, 1);
 $cTypography-labels:              rgba(#424242, 1);
 $cTypography-linkSecondary:       rgba(#979EA1, 1);
 $cTypography-linkSecondaryHover:  rgba(#2E3C43, 1);
 
-// Structure
+// Structur
 $cStructure-mainBkg:        rgba(#FFF, 1);
 $cStructure-mainLine:       rgba(#DDD, 1);
 $cStructure-grayBkg:        rgba(#F9F9F9, 1);
 $cStructure-softLine:       rgba(#000, 0.06);
-$cStructure-darkGrey:       rgba(#000, 0.1);
-$cStructure-darkLine:       rgba(#000, 0.6);
+$cStructure-darkGrey:       rgba(#000000, 0.1);
+$cStructure-darkLine:       rgba(#000000, 0.6);
 // Cards/Rows
 $cCard-hoverFill:      rgba(#F5FAFE, 1);
 $cCard-hoverBorder:    rgba(#BCD8F1, 1);
@@ -30,7 +286,7 @@ $cHighlight-main:      rgba(#0090D7, 1);
 $cHighlight-positive:  rgba(#8FB83F, 1);
 $cHighlight-negative:  rgba(#C74B43, 1);
 $cHighlight-alert:     rgba(#C67B44, 1);
-$cHighlight-alert2:    rgba(#FFA500, 1);
+$cHighlight-alert2:    rgba(orange, 1);
 $cHighlight-alert3:    rgba(#EA703D, 1);
 $cHighlight-alert4:    rgba(#F5A623, 1);
 $cHighlight-caution:   rgba(#F8B85C, 1);
@@ -48,5 +304,10 @@ $cNavButton-default: rgba(#BBB, 1);
 $cNavButton-active: rgba(#888, 1);
 
 // Navmenu
-$cNavmenu-arrow: #AAA;
-$cNavmenu-sep: #DDD;
+$cNavmenu-arrow: #aaa;
+$cNavmenu-sep: #ddd;
+
+// Button 
+$spinner_bg: #404040;
+
+

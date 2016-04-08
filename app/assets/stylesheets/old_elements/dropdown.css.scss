@@ -8,14 +8,12 @@
   @import "compass/css3/border-radius";
   @import "compass/css3/opacity";
   @import "../old_common/vars";
-
+  @import "../variables/colors";
   div.dropdown {
     position:absolute;
     display:none;
-    background:white;
-    @include border-radius(3px);
-    border:none;
-    @include box-shadow(rgba(0,0,0,0.2) 0 0 4px 1px);
+    background: $DarkGrey7;
+    border: $dropdownBorder;
     z-index:50;
 
     &:before {
@@ -31,16 +29,16 @@
     &.tick_top, &.tick_middle, &.tick_bottom {
       &.horizontal_left {
         &:before {
-          left:-5px;
-          border-right:6px solid white;
+          left:-3px;
+          border-right:6px solid $Grey2;
           border-top:6px solid transparent;
           border-bottom:6px solid transparent;
         }
       }
       &.horizontal_right {
         &:before {
-          right:-5px;
-          border-left:6px solid white;
+          right:-4px;
+          border-left:6px solid $Grey2;
           border-top:6px solid transparent;
           border-bottom:6px solid transparent;
         }
@@ -55,7 +53,7 @@
     &.tick_left, &.tick_center, &.tick_right {
       &.vertical_top {
         &:before {
-          bottom:-5px;
+          bottom:-6px;
           border-top:6px solid white;
           border-left:6px solid transparent;
           border-right:6px solid transparent;
@@ -63,7 +61,7 @@
       }
       &.vertical_bottom {
         &:before {
-          top:-5px;
+          top:-6px;
           border-bottom:6px solid white;
           border-left:6px solid transparent;
           border-right:6px solid transparent;
@@ -71,16 +69,13 @@
       }
     }
 
-    &.tick_left:before {left:12px;}
+    &.tick_left:before {left:11px;}
     &.tick_center:before {left:50%; margin-left:-3px;}
-    &.tick_right:before {right:12px;}
-
-
+    &.tick_right:before {right:11px;}
 
     // With border
     &.border {
-      $after_color: rgba(0,0,0,0.35);
-      border:1px solid $after_color;
+      border:1px solid $Grey2;
 
       &:after {
         content:' ';
@@ -96,7 +91,7 @@
         &.horizontal_left {
           &:after {
             left:-6px;
-            border-right:6px solid $after_color;
+            border-right:6px solid $Grey2;
             border-top:6px solid transparent;
             border-bottom:6px solid transparent;
           }
@@ -104,7 +99,7 @@
         &.horizontal_right {
           &:after {
             right:-6px;
-            border-left:6px solid $after_color;
+            border-left:6px solid $Grey2;
             border-top:6px solid transparent;
             border-bottom:6px solid transparent;
           }
@@ -120,7 +115,7 @@
         &.vertical_top {
           &:after {
             bottom:-6px;
-            border-top:6px solid $after_color;
+            border-top:6px solid $Grey2;
             border-left:6px solid transparent;
             border-right:6px solid transparent;
           }
@@ -128,7 +123,7 @@
         &.vertical_bottom {
           &:after {
             top:-6px;
-            border-bottom:6px solid $after_color;
+            border-bottom:6px solid $Grey2;
             border-left:6px solid transparent;
             border-right:6px solid transparent;
           }
@@ -159,19 +154,20 @@
 
       li {
         display:block;
-        border-top:1px solid rgba(#CCCCCC,0.35);
+	border-top: 1px solid transparent;
+ 	border-bottom: 1px solid transparent;
 
         a {
+	  color: $Amber1;
           display:block;
           padding:13px 13px 15px 13px;
         }
 
-        &:first-child {@include border-top-radius(3px)}
-        &:last-child {@include border-bottom-radius(3px)}
 
         &:hover {
-          background:#F7F7F7;
-          a {color:#333333; text-decoration:none}
+          background:$DarkGrey2;
+	  border-color: $DarkGrey9;
+          a {text-decoration:none}
         }
 
         &.disabled {

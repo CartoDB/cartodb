@@ -12,6 +12,7 @@
   @import "../../table/table-sprite";
   @import "../../old_common/mixins";
   @import "../../old_common/form-elements";
+  @import "../../variables/colors";
 
 
   // LOCAL VARS
@@ -25,7 +26,7 @@
     line-height:62px;
     height:67px;
     @include border-top-left-radius($corner_radius);
-    border-bottom:1px solid rgba(#999999,0.25);
+    border-bottom:1px solid $DarkGrey6;
     z-index:0;
 
 
@@ -63,8 +64,8 @@
         @include text-overflow();
         overflow:hidden;
         margin-left:23px;
-        font:bold 17px $text-fonts;
-        color:#A9A9A9;
+        font:bold 17px;
+        color:$Grey1;
         line-height:20px;
 
         i.synced {
@@ -93,8 +94,8 @@
         overflow: hidden;
         max-width: 80%;
         width: auto;
-        font: normal 11px $text-fonts;
-        color: #AAA;
+        font: normal 11px;
+        color: $Grey2;
         @include text-overflow();
         line-height:15px;
 

@@ -2,7 +2,7 @@
 //
 // Example usage:
 //   <div class="LayoutIcon LayoutIcon--positive">
-//     <i class="CDB-IconFont CDB-IconFont-unlock"></i>
+//     <i class="iconFont iconFont-Unlock"></i>
 //   </div>
 // --------------------------------------------------
 
@@ -19,10 +19,8 @@
   width: $sIcon-layout;
   height: $sIcon-layout;
   box-sizing: border-box;
-  border: 1px solid $cIcons-default;
-  border-radius: $sIcon-borderRadius;
-  font-size: 22px;
-  color: $cIcons-default;
+  font-size: 32px;
+  color: $Grey2;
 }
 .LayoutIcon--positive {
   border-color: $cHighlight-positive;

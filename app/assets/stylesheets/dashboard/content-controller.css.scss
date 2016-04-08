@@ -1,3 +1,4 @@
+@import "../variables/colors";
 // Content controller
 // 
 // Main view for new dashboard, where maps or
@@ -5,6 +6,7 @@
 // --------------------------------------------------
 
 .ContentController {
+  background-color: $DarkGrey6;
   position: relative;
   display: block;
   min-height: 600px;

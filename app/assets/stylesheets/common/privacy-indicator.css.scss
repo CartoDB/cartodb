@@ -10,11 +10,11 @@ $cPrivacy-other:    rgba(#F5A623, 1);
 .PrivacyIndicator {
   display: inline-block;
   position: relative;
-  color: $cTypography-secondary;
+  color: $Grey7;
 }
 .PrivacyIndicator:hover {
   text-decoration: none;
-  color: $cTypography-secondary;
+  color: $Grey7;
 }
 .PrivacyIndicator:before {
   content: '';

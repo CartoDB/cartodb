@@ -1,6 +1,6 @@
-@import '../../../variables/mixins';
-@import '../../../variables/colors';
-@import '../../../variables/sizes';
+@import "../../../variables/mixins";
+@import "../../../variables/colors";
+@import "../../../variables/sizes";
 
 // Selected dataset styles
 
@@ -10,9 +10,9 @@ $br: 4px;
 .DatasetSelected {
   width: $w;
   margin: 0 0 0 -20px;
+  background: white;
   border: 1px solid #BBD7F2;
   border-radius: $br;
-  background: #FFF;
 }
 .DatasetSelected-item {
   @include display-flex();
@@ -22,53 +22,50 @@ $br: 4px;
 }
 .DatasetSelected-itemExt {
   width: 38px;
-  min-width: 38px;
   height: 38px;
   border: 1px solid #199BDB;
   border-radius: 4px;
-  color: #419CDB;
-  font-size: $sFontSize-smallUpperCase;
   line-height: 38px;
   text-align: center;
+  font-size: $sFontSize-smallUpperCase;
+  color: #419CDB;
   text-transform: uppercase;
 }
-.DatasetSelected-itemInfo {
-  margin-left: 20px;
-}
+.DatasetSelected-itemInfo { margin-left: 20px }
 .DatasetSelected-itemTitle {
   display: block;
-  color: $cTypography-headers;
   font-size: $sFontSize-larger;
   font-weight: $sFontWeight-normal;
+  color: $cTypography-headers;
 }
 .DatasetSelected-itemDescription {
   display: block;
   margin-top: 3px;
-  color: $cTypography-secondary;
   font-size: $sFontSize-normal;
+  color: $cTypography-secondary;
 }
 .DatasetSelected-sync {
   display: block;
-  border-bottom-left-radius: $br;
+  background: white;
   border-bottom-right-radius: $br;
-  background: #FFF;
+  border-bottom-left-radius: $br;
   overflow: hidden;
 }
 .DatasetSelected-syncOptions {
   @include display-flex();
   @include align-items(center, center);
-  margin: 0 20px;
   padding-top: 20px;
   padding-bottom: 20px;
+  margin: 0 20px;
   border-top: 1px solid $cStructure-mainLine;
 }
 .DatasetSelected-syncLabel {
   width: 100px;
-  border-right: 1px solid $cStructure-softLine;
-  color: $cTypography-paragraphs;
   font-size: 14px;
   font-weight: $sFontWeight-lighter;
+  color: $cTypography-paragraphs;
   line-height: 16px;
+  border-right: 1px solid $cStructure-softLine;
 }
 .DatasetSelected-syncOptionsList {
   @include display-flex();
@@ -77,21 +74,17 @@ $br: 4px;
 .DatasetSelected-syncOptionsList--syncView {
   margin-left: auto;
 }
-.DatasetSelected-syncOptionsItem {
-  margin-left: 24px;
-}
-.DatasetSelected-syncOptionsItem .RadioButton-label {
-  font-size: $sFontSize-normal;
-}
+.DatasetSelected-syncOptionsItem { margin-left: 24px }
+.DatasetSelected-syncOptionsItem .RadioButton-label { font-size: $sFontSize-normal }
 .UpgradeElement.DatasetSelected-upgrade {
-  padding: 20px;
-  border-top: 1px solid #BBD7F2 !important;
+  border-left: 0;
   border-right: 0;
   border-bottom: 0;
-  border-left: 0;
+  border-top: 1px solid #BBD7F2!important;
   border-radius: 0 0 4px 4px;
+  padding: 20px;
 }
 .DatasetSelected-upgradeButton {
-  padding-right: 40px;
   padding-left: 40px;
+  padding-right: 40px;
 }

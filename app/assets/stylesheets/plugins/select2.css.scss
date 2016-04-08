@@ -2,6 +2,7 @@
 @import "compass/css3/border-radius";
 @import "compass/css3/inline-block";
 @import "../old_common/mixins";
+@import "../variables/colors";
 
 /*
 Version: 3.1 Timestamp: Tue Aug 14 09:05:17 PDT 2012
@@ -42,21 +43,11 @@ Version: 3.1 Timestamp: Tue Aug 14 09:05:17 PDT 2012
 }
 
 .select2-container .select2-choice {
-    background-color: #fff;
-    background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0, #eeeeee), color-stop(0.5, white));
-    background-image: -webkit-linear-gradient(center bottom, #eeeeee 0%, white 50%);
-    background-image: -moz-linear-gradient(center bottom, #eeeeee 0%, white 50%);
-    background-image: -o-linear-gradient(bottom, #eeeeee 0%, #ffffff 50%);
-    background-image: -ms-linear-gradient(top, #eeeeee 0%, #ffffff 50%);
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#eeeeee', endColorstr = '#ffffff', GradientType = 0);
-    background-image: linear-gradient(top, #eeeeee 0%, #ffffff 50%);
-    -webkit-border-radius: 4px;
-    -moz-border-radius: 4px;
-    border-radius: 4px;
+    background-color: $btn_background_normal;
     -moz-background-clip: padding;
     -webkit-background-clip: padding-box;
     background-clip: padding-box;
-    border: 1px solid #9E9E9E;
+    border: $btn_border;
     display: block;
     overflow: hidden;
     white-space: nowrap;
@@ -64,20 +55,13 @@ Version: 3.1 Timestamp: Tue Aug 14 09:05:17 PDT 2012
     height: 19px;
     line-height: 19px;
     padding: 0 0 0 8px;
-    color: #666666;
+    color: $Grey2;
     text-decoration: none;
 }
 
 .select2-container.select2-drop-above .select2-choice {
-    border-bottom-color: #aaa;
-    @include border-radius(4px);
-    background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0, #eeeeee), color-stop(0.9, white));
-    background-image: -webkit-linear-gradient(center bottom, #eeeeee 0%, white 90%);
-    background-image: -moz-linear-gradient(center bottom, #eeeeee 0%, white 90%);
-    background-image: -o-linear-gradient(bottom, #eeeeee 0%, white 90%);
-    background-image: -ms-linear-gradient(top, #eeeeee 0%,#ffffff 90%);
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#eeeeee', endColorstr='#ffffff',GradientType=0 );
-    background-image: linear-gradient(top, #eeeeee 0%,#ffffff 90%);
+    background-color: $btn_background_press;
+    @include border-radius(2px);
 }
 
 .select2-container .select2-choice span {
@@ -105,6 +89,8 @@ Version: 3.1 Timestamp: Tue Aug 14 09:05:17 PDT 2012
   outline: 0;
 }
 .select2-container .select2-choice abbr:hover {
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#eeeeee', endColorstr = '#ffffff', GradientType = 0);
+    border-radius: 2px;
   background-position: right -11px;
   cursor: pointer;
 }
@@ -115,17 +101,13 @@ Version: 3.1 Timestamp: Tue Aug 14 09:05:17 PDT 2012
     z-index: 9999;
     width:100%;
     margin-top:5px;
-    background: #fff;
-    color: #000;
-    border: 1px solid #aaa;
-    @include border-radius(3px);
+    background: $DarkGrey7;
+    color: $Amber1;
+    border: 1px solid $White;
 }
 
 .select2-drop.select2-drop-above {
     margin-top:-5px;
-    border-top: 1px solid #aaa;
-    @include border-radius(4px);
-    @include box-shadow(rgba(0,0,0,0.2) 0 0 5px);
 }
 
 .select2-container .select2-choice div {
@@ -150,18 +132,18 @@ Version: 3.1 Timestamp: Tue Aug 14 09:05:17 PDT 2012
       right:6px;
       width:0;
       height:0;
-      border-left:2px solid transparent;
-      border-right:2px solid transparent;
+      border-left:3px solid transparent;
+      border-right:3px solid transparent;
     }
 
     &:after {
-      bottom:5px;
-      border-top:3px solid #535353;
+      bottom:4px;
+      border-top:4px solid $Grey2;
     }
 
     &:before {
-      top:5px;
-      border-bottom:3px solid #535353;
+      top:3px;
+      border-bottom:4px solid $Grey2;
     }
 }
 
@@ -231,28 +213,12 @@ Version: 3.1 Timestamp: Tue Aug 14 09:05:17 PDT 2012
 
 .select2-container-active .select2-choice,
 .select2-container-active .select2-choices {
-    -webkit-box-shadow: 0 0 5px rgba(0,0,0,.3);
-    -moz-box-shadow   : 0 0 5px rgba(0,0,0,.3);
-    -o-box-shadow     : 0 0 5px rgba(0,0,0,.3);
-    box-shadow        : 0 0 5px rgba(0,0,0,.3);
-    border: 1px solid #999999;
     outline: none;
 }
 
 .select2-dropdown-open .select2-choice {
-  border: 1px solid #aaa;
-  -webkit-box-shadow: 0 1px 0 #fff inset;
-  -moz-box-shadow   : 0 1px 0 #fff inset;
-  -o-box-shadow     : 0 1px 0 #fff inset;
-  box-shadow        : 0 1px 0 #fff inset;
-  background-color: #eee;
-  background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0, white), color-stop(0.5, #eeeeee));
-  background-image: -webkit-linear-gradient(center bottom, white 0%, #eeeeee 50%);
-  background-image: -moz-linear-gradient(center bottom, white 0%, #eeeeee 50%);
-  background-image: -o-linear-gradient(bottom, white 0%, #eeeeee 50%);
-  background-image: -ms-linear-gradient(top, #ffffff 0%,#eeeeee 50%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#eeeeee',GradientType=0 );
-  background-image: linear-gradient(top, #ffffff 0%,#eeeeee 50%);
+  border: 1px solid $Black;
+  background-color: $btn_background_normal;
 }
 
 .select2-dropdown-open .select2-choice div {
@@ -270,7 +236,7 @@ Version: 3.1 Timestamp: Tue Aug 14 09:05:17 PDT 2012
   overflow-x: hidden;
   overflow-y: auto;
   max-height: 200px;
-  padding:0;
+  padding:12px 0px;;
   margin:0;
 }
 
@@ -289,12 +255,11 @@ Version: 3.1 Timestamp: Tue Aug 14 09:05:17 PDT 2012
 .select2-results li {
   list-style: none;
   display: list-item;
-  padding:5px 0;
-  border-top:1px solid rgba(black,0.1);
-  border-bottom:1px solid rgba(black,0);
-  color:#666666;
-
-  &:first-child {border-top:none;}
+  line-height: 19px;
+  color:$Amber1;
+  border-top: 1px solid transparent;
+  border-bottom: 1px solid transparent;
+  padding: 0px 12px;
 }
 
 .select2-results li.select2-result-with-children > .select2-result-label {
@@ -302,7 +267,6 @@ Version: 3.1 Timestamp: Tue Aug 14 09:05:17 PDT 2012
 }
 
 .select2-results .select2-result-label {
-  padding: 3px 7px 4px;
   margin: 0;
   cursor: pointer;
   font-size:13px;
@@ -314,10 +278,9 @@ Version: 3.1 Timestamp: Tue Aug 14 09:05:17 PDT 2012
 }
 
 .select2-results .select2-highlighted {
-  background: #397DBA;
-  color: #fff;
-  border-bottom:1px solid rgba(black,0.1);
-  &:last-child {border-bottom:none;}
+  background: $SelectionBlue4;
+  border-bottom:1px solid $Black;
+  border-top: 1px solid $Black;
 }
 .select2-results li em {
   background: #feffde;

@@ -21,28 +21,27 @@ $bannedColor: #E1A7A5;
   position: relative;
   @include display-flex();
   padding: $sMargin-group 0;
-  border-bottom: 1px solid $cStructure-softLine;
+  border-bottom: 1px solid $DarkGrey8;
 }
 .DatasetsList-item--selectable:hover,
 .DatasetsList-item--selectable.is--selected {
   padding: $sMargin-group $selectedItemPaddingOnSides;
   margin: -1px -#{$sMargin-element} 0 -#{$sMargin-element};
-  border-radius: 4px;
 }
 .DatasetsList-item--selectable:hover {
-  background-color: $cCard-hoverFill;
-  border: 1px $cCard-hoverBorder solid;
+  background-color: $gridRowBackgroundHover;
+  border: 1px solid $DarkGrey8;
   cursor: pointer;
   .DatasetsList-itemDescription .DefaultDescription:after {
-    @include background-horizontal(rgba(255,255,255,0), $cCard-hoverFill);
+    @include background-horizontal(rgba(255,255,255,0), $gridRowBackgroundHover);
   }
 }
 .DatasetsList-item--selectable.is--selected {
-  background-color: $cCard-selectedFill;
-  border: 1px $cCard-selectedBorder solid;
+  background-color: $gridRowBackgroundSelected;
+  border: 1px solid $SelectionBlue2;
   &:hover { cursor: default }
   .DatasetsList-itemDescription .DefaultDescription:after {
-    @include background-horizontal(rgba(255,255,255,0), $cCard-selectedFill);
+    @include background-horizontal(rgba(255,255,255,0), $gridRowBackgroundSelected);
   }
 }
 .DatasetsList-fake {
@@ -125,9 +124,7 @@ $bannedColor: #E1A7A5;
   top: auto;
   bottom: -8px;
 }
-.DatasetsList-itemStatus.CDB-IconFont-book {
-  font-size: 12px;
-}
+.DatasetsList-itemStatus.iconFont-Book { font-size: 12px }
 .DatasetsList-itemStatus.is-public { color: $cHighlight-positive }
 .DatasetsList-itemStatus.is-banned { color: $bannedColor }
 .DatasetsList-itemStatus.is-failure { color: $cHighlight-negative }
@@ -154,10 +151,7 @@ $bannedColor: #E1A7A5;
   @include display-flex();
   @include align-items(center);
 }
-.DatasetsList-itemTitle.is-disabled {
-  color: $cTypography-help;
-  font-weight: normal;
-}
+.DatasetsList-itemTitle.is--disabled { color: $cTypography-help }
 .DatasetsList-itemTitlePermission {
   margin-left: $sMargin-elementInline;
   background: white;
@@ -209,9 +203,7 @@ $bannedColor: #E1A7A5;
   .DatasetsList-itemTitle,
   .DatasetsList-itemDescription,
   .SizeIndicator,
-  .SizeIndicator .CDB-IconFont {
-    color: $bannedColor;
-  }
+  .SizeIndicator .iconFont { color: $bannedColor }
 
   .DatasetsList-itemCategory { @include geometry-type-icon(-160px, -80px) }
   .DatasetsList-itemCategory.is--lineDataset { @include geometry-type-icon(-40px, -80px) }

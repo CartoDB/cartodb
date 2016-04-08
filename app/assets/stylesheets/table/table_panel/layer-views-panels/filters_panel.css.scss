@@ -16,7 +16,7 @@
   @import "../../../old_common/common-sprite";
   @import "../../../old_common/vars";
   @import "../../../old_common/mixins";
-  
+  @import "../../../variables/colors"; 
 
   div.filters_panel {
     width:100%;
@@ -81,8 +81,6 @@
           margin: 0 auto 0 auto;
           display:block;
           width: 200px;
-
-          background: #f2f2f2;
           padding: 10px;
           @include border-radius(5px);
 

@@ -40,7 +40,10 @@
 .ContextMenu-dropdownArrow {
   position: relative;
   top: -1px;
-  font-size: 6px;
+  margin-left: 6px;
+  font-size: 7px;
+  -webkit-font-smoothing: auto;
+  -moz-osx-font-smoothing: auto;
 }
 .ContextMenu-label {
   margin-right: 20px;

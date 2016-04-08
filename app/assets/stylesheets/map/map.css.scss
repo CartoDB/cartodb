@@ -12,6 +12,7 @@
 @import "../old_common/mixins";
 @import "../map/map-sprite";
 @import "../old_elements/elements-sprite";
+@import "../variables/colors";
 
 div.map {
   @include box-sizing(border-box);
@@ -157,9 +158,8 @@ div.map {
   div.map_toolbar {
     @include position(0, false, false, 0px);
     @include size(100%, 66px);
-    @include box-shadow(rgba(black,0.15) 0 3px 3px 0);
-    background: image-url('layout/thead_bkg.jpg') repeat 0 0;
-
+    background-color: $DarkGrey6;
+    border-bottom: 1px solid $Black;
     &.animated {
       overflow:hidden;
     }
@@ -222,24 +222,24 @@ div.map {
 
         &:before {
           content:' ';
-          @include position(-3px, -9px, false, false);
-          margin:8px 0 0 5px;
+          @include position(-3px, -20px, false, false);
+          margin:16px 0 0 5px;
 
-          border-left:3px solid transparent;
-          border-right:3px solid transparent;
-          border-top:3px solid #7C7C7C;
+          border-left:4px solid transparent;
+          border-right:4px solid transparent;
+          border-top:5px solid $Grey1;
 
           z-index:1;
         }
 
         &:after {
           content:' ';
-          @include position(-1px, -9px, false, false);
-          margin:9px 0 0 5px;
+          @include position(-1px, -20px, false, false);
+          margin:16px 0 0 5px;
 
-          border-left:3px solid transparent;
-          border-right:3px solid transparent;
-          border-top:3px solid transparent;
+          border-left:4px solid transparent;
+          border-right:4px solid transparent;
+          border-top:5px solid $Grey1;
 
           z-index:0;
         }
@@ -248,10 +248,10 @@ div.map {
 
       @include inline-block();
 
-      padding: 0 15px 0 0;
+      padding: 0 43px 0 0;
       margin: 0 5px 0 0;
 
-      border-right: 1px solid rgba(#D9D9D9, .8);
+      border-right: 1px solid $Black;
 
       cursor: pointer;
 
@@ -289,7 +289,7 @@ div.map {
 
         h5, .name {
           font-size: 13px;
-          color: #7A7A7A;
+          color: $Grey1;
         }
 
         h5 {
@@ -304,11 +304,11 @@ div.map {
             position:absolute;
             content:' ';
             top:-3px;
-            right:-9px;
-            margin:8px 0 0 5px;
-            border-left:3px solid transparent;
-            border-right:3px solid transparent;
-            border-top:3px solid #7C7C7C;
+            right:-20px;
+            margin:16px 0 0 5px;
+            border-left:4px solid transparent;
+            border-right:4px solid transparent;
+            border-top:5px solid $Grey1;
             z-index:1;
           }
 
@@ -316,11 +316,11 @@ div.map {
             position:absolute;
             content:' ';
             top:-1px;
-            right:-9px;
-            margin:9px 0 0 5px;
-            border-left:3px solid transparent;
-            border-right:3px solid transparent;
-            border-top:3px solid transparent;
+            right:-20px;
+            margin:16px 0 0 5px;
+            border-left:4px solid transparent;
+            border-right:4px solid transparent;
+            border-top:5px solid transparent;
             z-index:0;
           }
         }

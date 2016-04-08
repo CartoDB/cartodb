@@ -6,6 +6,7 @@
   @import "../old_common/form-elements";
   @import "../table/table-sprite";
   @import "../old_elements/progress-bar";
+  @import "../variables/colors";
 
   @-webkit-keyframes highlight-fade {
     0%   { background: none; }
@@ -93,7 +94,6 @@ div.table {
     position:relative;
     z-index:1;
     width:100%;
-    background:white;
 
     // Table head
     thead {
@@ -155,10 +155,11 @@ div.table {
               @include inline-block();
               width: inherit;
               height:41px;
-              margin:0;
+              margin-top:1px;
               padding:10px 0 15px;
-              background: image-url('layout/thead_bkg.jpg') repeat 0 0;
-              border-bottom:1px solid #CCCCCC;
+              background: #232323;
+              border-bottom:1px solid $Black;
+	      box-shadow: $button_shadow;
               z-index:1;
 
               &:after {
@@ -167,8 +168,7 @@ div.table {
                 left:0px;
                 z-index:0;
                 width:1px;
-                height:42px;
-                background:rgba(#D9D9D9,0.5);
+                height:42px;                
                 content:' ';
               }
             }
@@ -182,8 +182,7 @@ div.table {
 
                 span {
                   @include inline-block();
-                  margin:6px 0 5px 5px;
-                  color:#7C7C7C;
+                  margin:6px 0 5px 5px;                
 
                 }
               }
@@ -192,14 +191,13 @@ div.table {
                 div, a {
                   @include inline-block();
                   margin:6px 0 5px 5px;
-                  color:#7C7C7C;
-
+                  color:$Grey1;
 
                   &:after {
                     @include inline-block();
                     position:relative;
                     left:2px;
-                    border-top:3px solid #7C7C7C;
+                    border-top:3px solid $Grey1;
                     border-right:3px solid transparent;
                     border-left:3px solid transparent;
                     content:'';
@@ -217,7 +215,7 @@ div.table {
               a, div {
                 @include inline-block();
                 margin:6px 0 5px 5px;
-                color:#7C7C7C;
+                color:$Grey1;
 
                 &:hover { text-decoration:none; }
 
@@ -254,20 +252,20 @@ div.table {
                 color:#999999;
 
                 &.disabled {
-                  color: #666666;
+                  color: $Grey2;
                 }
 
                 &:hover {
                   position:relative;
                   padding:0 10px 0 0;
-                  color:#666666;
+                  color:$Grey2;
                   text-decoration:none;
 
                   &.own:after {
                     position:absolute;
                     right:0;
                     margin:10px 0 0 5px;
-                    border-top:3px solid #7C7C7C;
+                    border-top:3px solid $Grey1;
                     border-right:3px solid transparent;
                     border-left:3px solid transparent;
                     content:' ';
@@ -332,12 +330,11 @@ div.table {
       tr.empty_table {}
 
       tr.placeholder, tr.placeholder td {
-        border:1px solid #ECECEC;
         height: 40px;
         cursor:pointer;
 
         .addNewRow {
-          color: #e5e5e5;
+          color: $Grey2;
           vertical-align: middle;
           text-align: center;
           font-weight:bolder;
@@ -351,11 +348,11 @@ div.table {
         border-bottom:0px;
 
         &:hover {
-          border-color:#ECECEC;
+         
           background:inherit;
 
           & + tr {
-            border-top-color:#ECECEC;
+            
           }
         }
       }
@@ -378,8 +375,7 @@ div.table {
         position:relative;
         width:100%;
         // z-index:0;
-        background:white;
-        border-top:1px solid #ECECEC;
+        border-top:1px solid $DarkGrey8;
 
         td {
           &:not(.row_header) {
@@ -402,18 +398,17 @@ div.table {
             max-width:280px;
             min-height:13px;
             max-height:26px;
-            color:#666666;
+            color:$Amber1;
             text-overflow: ellipsis;
             white-space: nowrap;
             font-size:13px;
-            border-left:1px solid #ECECEC;
 
             &.disabled {
-              color: #AAA;
+              color: $Amber1;
             }
 
             &.isNull {
-              color: #AAA;
+              color: $Amber1;
               font-style: italic;
             }
           }
@@ -486,14 +481,11 @@ div.table {
         }
 
         &:last-child {
-          border-bottom:1px solid #ECECEC;
+          border-bottom:1px solid Transparent;
         }
 
         &:hover {
-          background:#E8F9EC;
-          border-color:#CCCCCC;
-
-          & + tr {border-top-color:#CCCCCC;}
+          background:$gridRowBackgroundHover;
 
           div.row_header:before, div.row_header:after {
             display: block !important;
@@ -693,18 +685,20 @@ div.order_selector {
     margin-top: 13px;
     padding:0;
     padding: (21px - 9px)/2 8px;
-    background-color: $button-bkg-color;
-    color: #397DB9;
+    background-color: $btn_background_normal;
+    box-shadow: $button_shadow;
+    color: $Grey1;
     text-transform: uppercase;
     font-weight: bold;
     font-size: 9px;
     &:hover {
-      background-color: #397DB9;
-      color: $button-bkg-color;
+    
+      background-color: $btn_background_hover;
+      box-shadow: $button_shadow_hover;
     }
     &.selected {
-      background-color: #397DB9;
-      color: $button-bkg-color;
+      background-color: $btn_background_selected;
+      box-shadow: $button_shadow;
       cursor: default;
     }
   }

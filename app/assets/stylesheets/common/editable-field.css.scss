@@ -12,11 +12,11 @@ $fieldBorderColor: #DFE8EC;
 
   .EditableField-button {
     font-style: italic;
-    color: $cTypography-link;
+    color: $Teal4;
     margin-right: 0;
 
     &:hover {
-      color: $cTypography-linkHover;
+      color: $Teal3;;
       text-decoration: underline;
     }
   }

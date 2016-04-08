@@ -51,16 +51,6 @@
   @include justify-content(space-between);
 }
 
-.Grid-inner--shortPadding {
-  margin-right: -10px;
-  margin-left: -10px;
-
-  > .Grid-cell {
-    padding-right: 10px;
-    padding-left: 10px;
-  }
-}
-
 .Grid-cell--col1 {
   @include flex(0 0 8.3334%);
   max-width: 8.3334%;

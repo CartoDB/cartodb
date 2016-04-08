@@ -88,27 +88,6 @@
 .PublicMap-metaItem {
   display: inline-block;
   margin-right: 30px;
-  max-width: 165px;
-
-  @media (max-width: $sMedia-desktop) {
-    max-width: 100%;
-  }
-}
-.PublicMap-metaItem,
-.PublicMap-metaItem p {
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
-}
-.PublicMap-metaItem p,
-.PublicMap-metaItem i {
-  display: inline-block;
-  max-width: 135px;
-  vertical-align: middle;
-
-  @media (max-width: $sMedia-desktop) {
-    max-width: 100%;
-  }
 }
 .PublicMap-metaItem:last-child {
   margin-right: 0;

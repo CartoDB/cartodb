@@ -10,19 +10,27 @@
   display: block;
   width: 100%;
   padding: $sMargin-section 0;
-  background: $cStructure-grayBkg;
-  box-shadow: inset 0 1px 0 0 rgba(black, 0.1);
+  background: $DarkGrey7;
+  border-top: 1px solid $DarkGrey8;
 }
 .Footer--light {
   background: white;
 }
 .Footer.Footer--public {
-  padding: 0;
+  padding: 0 0 40px;
   box-shadow: none;
   overflow: hidden;
 }
 .Footer-inner {
   margin-top: $sIcon-layout;
+}
+.Footer .Footer-inner.Footer-inner--public {
+  display: block;
+  box-shadow: inset 0 1px 0 0 rgba(black, 0.1);
+  margin-top: 0;
+}
+.Footer .Footer-inner.Footer-inner--noborder {
+  box-shadow: none;
 }
 .Footer-inner.Footer-inner--public * {
   -moz-box-sizing: border-box;
@@ -35,110 +43,117 @@
   left: 50%;
   margin-left: -$sIcon-layout / 2;
 }
-.Footer-inner--public .Footer-logo {
-  position: static;
-  top: auto;
-  left: auto;
-  margin: 0;
-}
 .Footer-listItem {
   display: block;
   margin-top: $sMargin-element;
   text-align: center;
 }
-.Footer-columns {
-  padding-bottom: 60px;
-  border-top: 1px solid #EEE;
-}
-.Footer-columns--noBorder {
-  border-top: 0;
-}
 .Footer-column {
   padding-top: 60px;
 }
-.Footer-columnTitle {
+.Footer-title {
   margin-bottom: 12px;
-  color: #2E3C43;
+  font-weight: 700;
   font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 1px;
   text-transform: uppercase;
+  color: #333;
+  letter-spacing: 1px;
 }
 .Footer-link {
+  color: #797F8A;
   line-height: 28px;
-  color: #979EA1;
-  transition: color 0.2s ease;
-
-  &:hover {
-    color: #2E3C43;
-    text-decoration: none;
-  }
+  transition: color .15s ease;
 }
-.Footer-logo,
-.Footer-credits {
-  display: inline-block;
-  vertical-align: middle;
+.Footer-link:hover {
+  color: #333;
+  text-decoration: none;
 }
+.Footer-colophon {
+  margin-top: 40px;
+  border-top: 1px solid #eee;
+  font-size: 14px;
+  line-height: 1.4;
+}
+.Footer-colophon .Footer-column {
+  padding-top: 40px;
+}
+.Footer-brand {
+  position: relative;
+  top: 2px;
+  margin-right: 16px;
+}
+.Footer-brand,
 .Footer-credits {
+  float: left;
+  vertical-align: top;
+}
+.Footer-credits,
+.Footer-credits .Footer-link {
   line-height: 18px;
-  text-align: left;
-  color: #979EA1;
 }
-.Footer-title {
-  color: #2E3C43;
-  font-weight: 600;
+.Footer-credits {
+  position: relative;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
-.Colophon {
-  padding-top: 13px;
-  text-align: right;
-
-  @media (max-width: 750px) {
-    padding-top: 0;
-    text-align: left;
-  }
-}
-.Colophon-item {
-  display: inline-block;
+.Footer-credits span {
+  color: #333;
+  font-weight: 700;
 }
 .Newsletter {
   position: relative;
-  width: 85%;
-
-  .hs-form {
-    margin-right: 0;
-    padding-left: 0;
-
-    .input {
-      margin-right: 0;
-      margin-bottom: 0;
-    }
-
-    .hs-input {
-      padding: 12px 80px 11px 16px;
-      border-radius: 23px;
-    }
-  }
+  width: 100%;
+}
+.Newsletter .hs-form {
+  margin-right:0;
+  padding-left: 0 !important;
+}
+.Newsletter .hs-form .input {
+  margin-right: 0 !important;
+  margin-bottom: 0 !important;
+}
+.Newsletter .hs-form .hs-input {
+  border-radius: 21px;
+  padding: 9px 34px 9px 14px !important;
 }
 .hs-newsletter {
   position: absolute;
   top: 3px;
   right: 3px;
   bottom: 3px;
-  width: 71px;
+  width: 60px;
   border: 0;
-  font: 400 12px Lato, sans-serif;
-  text-transform: uppercase;
-  background: #FFF;
-  color: #3AA9E3;
-  border-radius: 21px;
+  font: 700 12px Lato, sans-serif;
+  font-weight: 700;
+  color: #fff;
+  background: #3AA9E3;
+  border-radius: 17px;
   transition: all .15s;
   cursor: pointer;
   outline: none;
-
-  &:hover {
-    background: darken(#3AA9E3, 5%);
-    color: #FFF;
-  }
+}
+.hs-newsletter:hover {
+  background: darken(#3AA9E3, 5%);
+}
+.Social-links {
+  text-align: right;
+}
+.Social-item {
+  display: inline-block;
+  margin-left: 24px;
+}
+.Social-item:first-child {
+  margin-left: 0;
+}
+.Social-link {
+  color: #ddd;
+  transition: all .15s;
+}
+.Social-link:hover {
+  color: #ccc; 
+}
+.Social-link.Social-link--twitter .Navmenu-icon {
+  font-size: 22px;
 }
 
 @media only screen and (max-width: $sMedia-mobile) {
@@ -146,12 +161,6 @@
     position: absolute;
     left: 50%;
     margin-left: -$sIcon-layout / 2;
-  }
-  .Footer-inner--public .Footer-logo {
-    position: static;
-    top: auto;
-    left: auto;
-    margin: 0;
   }
   .Footer-logo.Logo.Logo--grey {
     top: 25px;
@@ -205,5 +214,28 @@
     top: auto;
     left: auto;
     margin-left: auto;
+  }
+}
+
+@media (max-width: $sMedia-tablet) {
+  .Footer-colophon,
+  .Social-links {
+    text-align: center;
+  }
+
+  .Footer-brand,
+  .Footer-credits {
+    float: none;
+  }
+}
+
+@media (max-width: $sMedia-mobile) {
+  .Footer-brand {
+    margin: 0 0 20px;
+  }
+
+  .Footer-credits {
+    width: 100%;
+    text-align: center;
   }
 }

@@ -13,39 +13,35 @@
  * The tick can be placed horizontally by .tick_left/center/right, or vertically by .tick_top/middle/bottom, in
  * combination with horizontal_left/right and vertical_top/bottom.
  */
-@import '../variables/mixins';
-@import '../variables/colors';
+@import "../variables/mixins";
+@import "../variables/colors";
 
 .Dropdown {
-  display: none;
   position: absolute;
-  border-radius: 4px;
-  background: $cStructure-mainBkg;
+  display: none;
+  background:$DarkGrey7;
+  border: 1px solid #cfcfcf;
   /* x-offset, y-offset, blur, size, color */
-  box-shadow: 0 0 5px 1px rgba(#000, 0.2), 0 0 1px 0 rgba(#000, 0.3);
   z-index: 100000000; // to be on top of avatar and attribution overlays on public dashboard
 
   &:before {
-    @include transform(rotate(45deg));
-    display: block !important;
+    content: ' ';
     position: absolute;
+    display: block !important;
     width: 10px;
     height: 10px;
-    background-color: $cStructure-mainBkg;
-    box-shadow: 0 0 5px 1px rgba(black, 0.2);
-    content: ' ';
+    background-color: #cfcfcf;
+    @include transform(rotate(45deg));
   }
   &:after {
-    display: block !important;
-    position: absolute;
-    background-color: $cStructure-mainBkg;
     content: ' ';
+    position: absolute;
+    display: block !important;
+    background-color: $DarkGrey7;
   }
 
   // Tick for 12 possibilities
-  &.tick_top,
-  &.tick_middle,
-  &.tick_bottom {
+  &.tick_top, &.tick_middle, &.tick_bottom {
     &.horizontal_left {
       &:before {
         left: -5px;
@@ -89,9 +85,7 @@
     bottom: 6px;
   }
 
-  &.tick_left,
-  &.tick_center,
-  &.tick_right {
+  &.tick_left, &.tick_center, &.tick_right {
     &.vertical_top {
       &:before {
         bottom: -5px;
@@ -145,8 +139,8 @@
 }
 
 .Dropdown > ul {
-  @include inline-block();
   position: relative;
+  @include inline-block();
   margin: 20px;
   padding: 0;
   list-style: none;
@@ -155,7 +149,6 @@
 
 .Dropdown > ul > li {
   display:block;
-  border-top:1px solid $cStructure-mainLine;
   margin-top: 10px;
   padding-top: 10px;
 
@@ -174,32 +167,5 @@
 
   &:first-child {
     margin-top: 0;
-  }
-}
-
-// New styles //
-// TODO: clean old styles and use this standard ones + remove
-// those !important things
-.DropdownList {
-  display: block !important;
-  margin: 2px 15px !important;
-}
-.DropdownList-item {
-  display: block !important;
-  padding: 10px 0 !important;
-  margin: 0!important;
-  border-bottom: 1px solid $cStructure-mainLine;
-  border-top: none;
-}
-.DropdownList-item:last-child {
-  border-bottom: none;
-  border-top: none;
-}
-.Dropdown--public {
-  width: 220px;
-  box-shadow: 0 1px 3px rgba(#000, 0.2);
-
-  .SettingsDropdown {
-    margin: 12px 20px;
   }
 }

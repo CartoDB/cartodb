@@ -10,6 +10,8 @@
   @import "../../table/table-sprite";
   @import "../../old_common/vars";
   @import "../../old_common/mixins";
+  @import "../variables/colors";
+
 
 
   .add_layer {
@@ -34,8 +36,8 @@
       margin:0 0 0 23px;
       line-height:16px;
       text-align:center;
-      color:#ECECEC;
-      background:#A9A9A9;
+      color:$Teal4;
+      background:$DarkGrey2;
       @include text-indent();
       @include border-radius(2px);
       @include background(sprite($table-sprites, add_layer, $offset-x:0, $offset-y:0) no-repeat);
@@ -44,8 +46,9 @@
     // (Add layer text)
     .action {
       @include inline-block();
+      color: $Teal4;
       margin:0 0 0 27px;
-      font:500 17px $text-fonts;
+      font:500 17px;
       line-height:20px;
       letter-spacing:0;
     }
@@ -55,6 +58,6 @@
       cursor:pointer;
 
       .add { @include background(sprite($table-sprites, add_layer, $offset-x:0, $offset-y:-16px) no-repeat); }
-      .action { color: #3A77A6; }
+      .action { color: $Teal3; }
     }
   }

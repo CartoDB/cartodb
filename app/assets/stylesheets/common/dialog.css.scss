@@ -15,14 +15,7 @@ body.is-inDialog {
   width: 100%;
   height: 100%;
   z-index: 50;
-  background: rgba(white,1);
-  background: -moz-linear-gradient(top, rgba(white,1) 0%, rgba(white,0.95) 50%, rgba(white,0.9) 100%);
-  background: -webkit-gradient(left top, left bottom, color-stop(0%, rgba(white,1)), color-stop(50%, rgba(white,0.95)), color-stop(100%, rgba(white,0.9)));
-  background: -webkit-linear-gradient(top, rgba(white,1) 0%, rgba(white,0.95) 50%, rgba(white,0.9) 100%);
-  background: -o-linear-gradient(top, rgba(white,1) 0%, rgba(white,0.95) 50%, rgba(white,0.9) 100%);
-  background: -ms-linear-gradient(top, rgba(white,1) 0%, rgba(white,0.95) 50%, rgba(white,0.9) 100%);
-  background: linear-gradient(to bottom, rgba(white,1) 0%, rgba(white,0.95) 50%, rgba(white,0.9) 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#ffffff', GradientType=1 );
+  background-color: $DarkGrey6;
 }
 .Dialog-contentWrapper { // this is necessary since the Dialog element might have `position: block` set by .hide/.show
   @include display-flex();
@@ -71,7 +64,7 @@ body.is-inDialog {
   // if not IE10 will not show
   // scrollbar in higher content
   -ms-flex: 100 0 80%;
-  background-color: $cStructure-grayBkg;
+  width: 100%;
 }
 .Dialog-footer--expanded {
   width: 100%;
@@ -88,7 +81,7 @@ body.is-inDialog {
 .Dialog-body {
   padding-top: $sMargin-group;
   padding-bottom: $sMargin-group;
-  border-top: 1px solid $cStructure-mainLine;
+  border-top: 1px solid $Black;
   width: $sLayout-width;
   margin: 0 auto;
 }
@@ -134,7 +127,7 @@ body.is-inDialog {
 .Dialog-footer {
   padding: $sMargin-group 0;
   text-align: center;
-  border-top: 1px solid $cStructure-mainLine;
+  border-top: 1px solid $Black;
 }
 .Dialog-footer--withoutBorder { border-top: none }
 .Dialog-footer--simple {
@@ -152,7 +145,7 @@ body.is-inDialog {
   position: fixed;
   bottom: 100px; // to be located on top of the .Dialog-footer
   left: 0;
-  background: $cStructure-grayBkg;
+  background: $Grey6;
   z-index: 3;
   // Make the item not go all the way to the edge, since that would cover the scrollbar…
   // Make margins on both sides to accomodate this
@@ -168,7 +161,6 @@ body.is-inDialog {
     display: block;
     width: 100%;
     height: 18px;
-    @include background-gradient(rgba(#F9F9F9, 0), rgba(#F9F9F9, 1));
     z-index: 2;
   }
 }
@@ -187,7 +179,7 @@ body.is-inDialog {
 .Dialog-headerIcon--neutral {
   // TODO: !important to not be overrided by .CreateDialog-headerIcon overriding stuff over here :(
   border-color: $cIcons-active !important;
-  .CDB-IconFont {
+  .iconFont {
     color: $cIcons-active !important;
   }
 }

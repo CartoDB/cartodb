@@ -1,22 +1,22 @@
 @import "../variables/mixins";
-// Make CDB-IconFont to behave like a superscript text, necessary for icons that are not square-sized to center vertically
+// Make iconFont to behave like a superscript text, necessary for icons that are not square-sized to center vertically
 // in a container
-.CDB-IconFont--super::before {
+.iconFont--super:before {
   vertical-align: super;
 }
-.CDB-IconFont-play::before {
+.iconFont-Play:before {
   vertical-align: 6px; // center it, super pushes it too high
 } 
-.CDB-IconFont.CDB-IconFont--withLabel {
+.iconFont.iconFont--with-label {
   margin-right: 5px;
 }
-.CDB-IconFont.CDB-IconFont--withLabel::before {
+.iconFont.iconFont--with-label:before {
   @include display-flex();
   @include align-items(center, center);
 }
-.CDB-IconFont.CDB-IconFont--small::before {
+.iconFont.iconFont--small:before {
   font-size: 9px;
 }
-.CDB-IconFont.CDB-IconFont--big::before {
+.iconFont.iconFont--big:before {
   font-size: 19px;
 }

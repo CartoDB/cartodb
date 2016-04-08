@@ -13,8 +13,8 @@ $cHeader-dark:  rgba(#3A91D7, 1);
   display: block;
   width: 100%;
   height: $height;
-  @include background-gradient($cHeader-light, $cHeader-dark);
-  @include css3-prefix(box-shadow, inset rgba(black, 0.2) 0 -1px 0 0);
+  background-color: $DarkGrey8;
+  border-bottom: 1px solid $Black;
 }
 .Header-inner {
   position:relative;
@@ -115,9 +115,12 @@ $cHeader-dark:  rgba(#3A91D7, 1);
   color: #fff;
 }
 .Header-darrow {
+  font-size: 7px;
+  margin-left: 6px;
   position: relative;
   top: -1px;
-  font-size: 6px;
+  -webkit-font-smoothing: auto;
+  -moz-osx-font-smoothing: auto;
 }
 
 @media (min-width: $sMedia-mobile) {

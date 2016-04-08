@@ -56,17 +56,6 @@
   line-height: $sLineHeight-large;
 }
 .SettingsDropdown-itemLink--public {
-  display: inline-block;
-  transition: color 0.2s ease;
-  color: #3AA9E3;
-  font-size: 13px;
-  font-weight: normal;
-  line-height: 26px;
-
-  &:hover {
-    color: #2E3C43;
-  }
-}
-.Dropdown > ul > li.SettingsDropdown-item--public > p {
-  margin-top: 0;
+  color: #797f8a;
+  font-size: 14px;
 }

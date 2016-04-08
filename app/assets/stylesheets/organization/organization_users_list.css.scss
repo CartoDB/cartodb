@@ -87,9 +87,9 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
 }
 .OrganizationList-userInfoSubtitle {
   max-width: 350px;
-  color: $cTypography-secondary;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 300;
+  color: $cTypography-paragraphs;
 }
 .OrganizationList-userInfoLabel {
   display: inline-block;
@@ -109,7 +109,7 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
   @include flex-direction(row);
 }
 
-.OrganizationList-userInfoData--paragraph {
+.OrganizationLisr-userInfoData--paragraph {
   color: $cTypography-linkSecondary;
   font-size: 14px;
   font-weight: 300;
@@ -117,7 +117,7 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
   &:not(:last-child) { margin-right: 20px; }
 }
 
-.OrganizationList-userInfoData--paragraph-icon {
+.OrganizationLisr-userInfoData--paragraph-icon {
   font-size: 10px;
   margin-right: 4px;
 }

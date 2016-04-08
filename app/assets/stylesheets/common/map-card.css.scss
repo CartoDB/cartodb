@@ -30,9 +30,7 @@ $sEditButtonSize: 50px;
   position: relative;
   width: $sCard-width - 10px - $sBorderCompensation;
   margin: 0 auto;
-  border: 1px solid #DBDBDB;
-  border-radius: $sCard-borderRadius;
-  background-color: $cStructure-mainBkg;
+  background-color: $DarkGrey8;
 }
 .MapCard.MapCard--borderless .MapCard-header:after {
   display: none;
@@ -103,6 +101,9 @@ $sEditButtonSize: 50px;
 
   .DefaultDescription {
     @include line-clamp(2);
+    &:after{
+	    @include background-horizontal(rgba(255, 255, 255, 0), $DarkGrey8);
+	}
   }
 }
 .MapCard-desc--fake {
@@ -115,14 +116,17 @@ $sEditButtonSize: 50px;
 .MapCard-tags {
   @include line-clamp(1);
   position: relative;
+  &:after {
+   @include background-horizontal(rgba(255, 255, 255, 0), $DarkGrey8);
+}
 }
 .MapCard--selectable {
   &:hover {
-    border-color: $cCard-hoverBorder;
-    background-color: $cCard-hoverFill;
+    background-color: $DarkGrey7;
     .MapCard-desc .DefaultDescription:after,
     .MapCard-tags:after {
-      @include background-horizontal(rgba(255, 255, 255, 0), $cCard-hoverFill);
+	 @include background-horizontal(rgba(255, 255, 255, 0), $DarkGrey7)
+    
     }
     .MapviewsGraph-bar {
       cursor: pointer;
@@ -130,14 +134,14 @@ $sEditButtonSize: 50px;
     }
   }
   &.is-selected {
-    background-color: $cCard-selectedFill;
-    border-color: $cCard-selectedBorder;
+    background-color: $DarkGrey2;
+    
     .MapCard-desc .DefaultDescription:after,
     .MapCard-tags:after {
-      @include background-horizontal(rgba(255, 255, 255, 0), $cCard-selectedFill);
+      @include background-horizontal(rgba(255, 255, 255, 0), $DarkGrey2);
     }
     .MapviewsGraph-bar {
-      cursor: pointer;
+     cursor: pointer;
       fill: rgba(#FFFFFF, 1);
     }
   }
@@ -150,7 +154,6 @@ $sEditButtonSize: 50px;
   position: relative;
   width: 100%;
   height: 170px;
-  border-radius: 2px 2px 0 0;
   overflow: hidden;
   z-index: 1;
 }
@@ -179,8 +182,7 @@ $sEditButtonSize: 50px;
   @include display-flex();
   @include justify-content(center);
   @include align-items(center);
-  border-radius: $sCard-borderRadius;
-  background: $cStructure-mainBkg;
+  background: $Grey10;
 }
 .MapCard-header--fake:after,
 .MapCard.MapCard--squared .MapCard-header.MapCard-header--fake:after {
@@ -200,28 +202,24 @@ $sEditButtonSize: 50px;
   border: 1px solid #EEEEEE;
 }
 
-.MapCard-headerFakeIcon.CDB-IconFont-people {
+.MapCard-headerFakeIcon.iconFont-People {
   line-height: 35px !important;
   font-size: 30px;
 }
-.MapCard-headerFakeIcon.CDB-IconFont-snake {
+.MapCard-headerFakeIcon.iconFont-Snake {
   line-height: 33px !important;
   font-size: 30px;
 }
-.MapCard-headerFakeIcon.CDB-IconFont-points {
+.MapCard-headerFakeIcon.iconFont-Points {
   line-height: 38px !important;
   font-size: 24px;
 }
-.MapCard-headerFakeIcon.CDB-IconFont-notes {
-  font-size: 26px;
-}
-.MapCard-headerFakeIcon.CDB-IconFont-mountain {
+.MapCard-headerFakeIcon.iconFont-Notes { font-size: 26px }
+.MapCard-headerFakeIcon.iconFont-Mountain {
   font-size: 28px;
   line-height: 40px !important
 }
-.MapCard-headerFakeIcon.CDB-IconFont-rectangles {
-  font-size: 22px;
-}
+.MapCard-headerFakeIcon.iconFont-Rectangles { font-size: 22px }
 .MapCard-header .MapCard-loader {
   display: none;
   position: absolute;
@@ -250,7 +248,6 @@ $sEditButtonSize: 50px;
   left: 0;
   width: 100%;
   height: 100%;
-  border-radius: $sCard-borderRadius $sCard-borderRadius 0 0;
 }
 .MapCard.has-error .MapCard-error {
   display: block;
@@ -331,7 +328,7 @@ $sEditButtonSize: 50px;
   @include align-items(center);
   width: 100%;
   padding-top: $sMargin-elementInline;
-  border-top: 1px solid $cStructure-softLine;
+  border-top: 1px solid $Black;
 }
 .MapCard.MapCard--borderless .MapCard-contentFooter {
   border-top: none;
@@ -343,7 +340,7 @@ $sEditButtonSize: 50px;
   margin-right: 20px;
 }
 
-.MapCard-contentFooter.MapCard-contentFooter--lefty .CDB-IconFont {
+.MapCard-contentFooter.MapCard-contentFooter--lefty .iconFont {
   margin-right: 3px;
 }
 .MapCard--squared .MapCard-contentFooterIcons {
@@ -353,7 +350,7 @@ $sEditButtonSize: 50px;
   @include flex-wrap(nowrap);
 }
 .MapCard-contentFooterIcon,
-.MapCard-contentFooterIcon .CDB-IconFont {
+.MapCard-contentFooterIcon .iconFont {
   color: #979EA1;
   &:before { color: #CBCED0; }
 }

@@ -147,8 +147,27 @@ describe Carto::VisualizationsExportService2 do
         visualization.password_salt.should be_nil
         visualization.locked.should be_false
 
-        map_export = base_visualization_export[:map]
-        map = visualization.map
+        verify_map_vs_export(visualization.map, base_visualization_export[:map])
+
+        layers_export = base_visualization_export[:layers]
+        layers = visualization.layers
+        layers.length.should eq layers_export.length
+        (0..(layers_export.count - 1)).each do |i|
+          layer = layers[i]
+          layer.order.should eq i
+
+          verify_layer_vs_export(layer, layers_export[i])
+        end
+
+        analyses_export = base_visualization_export[:analyses]
+        analyses = visualization.analyses
+        analyses.length.should eq analyses_export.count
+        (0..(analyses_export.length - 1)).each do |i|
+          verify_analysis_vs_export(analyses[i], analyses_export[i])
+        end
+      end
+
+      def verify_map_vs_export(map, map_export)
         map.provider.should eq map_export[:provider]
         map.bounding_box_sw.should eq map_export[:bounding_box_sw]
         map.bounding_box_ne.should eq map_export[:bounding_box_ne]
@@ -158,30 +177,17 @@ describe Carto::VisualizationsExportService2 do
         map.view_bounds_ne.should eq map_export[:view_bounds_ne]
         map.scrollwheel.should eq map_export[:scrollwheel]
         map.legends.should eq map_export[:legends]
+      end
 
-        layers_export = base_visualization_export[:layers]
-        layers = visualization.layers
-        layers.length.should eq layers_export.length
-        (0..(layers_export.count - 1)).each do |i|
-          layer = layers[i]
-          layer.order.should eq i
+      def verify_layer_vs_export(layer, layer_export)
+        layer.options.should eq layer_export[:options]
+        layer.kind.should eq layer_export[:kind]
+        layer.infowindow.should eq layer_export[:infowindow]
+        layer.tooltip.should eq layer_export[:tooltip]
+      end
 
-          layer_export = layers_export[i]
-          layer.options.should eq layer_export[:options]
-          layer.kind.should eq layer_export[:kind]
-          layer.infowindow.should eq layer_export[:infowindow]
-          layer.tooltip.should eq layer_export[:tooltip]
-        end
-
-        analyses_export = base_visualization_export[:analyses]
-        analyses = visualization.analyses
-        analyses.length.should eq analyses_export.count
-        (0..(analyses_export.length - 1)).each do |i|
-          analysis = analyses[i]
-          analysis_export = analyses_export[i]
-
-          analysis.analysis_definition_json.should eq analysis_export[:analysis_definition]
-        end
+      def verify_analysis_vs_export(analysis, analysis_export)
+        analysis.analysis_definition_json.should eq analysis_export[:analysis_definition]
       end
 
       it 'builds base visualization' do

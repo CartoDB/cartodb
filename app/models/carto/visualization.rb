@@ -41,6 +41,8 @@ class Carto::Visualization < ActiveRecord::Base
 
   belongs_to :parent, class_name: Carto::Visualization, primary_key: :parent_id
 
+  belongs_to :active_layer, class_name: Carto::Layer
+
   belongs_to :map
 
   has_many :related_templates, class_name: Carto::Template, foreign_key: :source_visualization_id

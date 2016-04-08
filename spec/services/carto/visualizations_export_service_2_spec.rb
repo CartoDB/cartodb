@@ -86,7 +86,8 @@ describe Carto::VisualizationsExportService2 do
           kind: 'carto',
           infowindow: '{"fields":[],"template_name":"table/views/infowindow_light","template":"",' +
             '"alternative_names":{},"width":226,"maxHeight":180}',
-          tooltip: '{"fields":[],"template_name":"tooltip_light","template":"","alternative_names":{},"maxHeight":180}}'
+          tooltip: '{"fields":[],"template_name":"tooltip_light","template":"","alternative_names":{},"maxHeight":180}}',
+          active_layer: true
         },
         {
           options: '{"default":true,"url":"http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png", ' +
@@ -115,7 +116,6 @@ describe Carto::VisualizationsExportService2 do
 
       # TODO:
       # permission? Probably not needed.
-      # active_layer_id.
       # parent_id / prev_id / next_id / slide_transition_options / active_child
       # user_tables
     }
@@ -166,6 +166,15 @@ describe Carto::VisualizationsExportService2 do
           layer.order.should eq i
 
           verify_layer_vs_export(layer, layers_export[i])
+        end
+
+        active_layer_order = layers_export.index { |l| l[:active_layer] }
+        if active_layer_order
+          visualization.active_layer.should_not be_nil
+          visualization.active_layer.order.should eq active_layer_order
+          visualization.active_layer.id.should eq visualization.layers.find { |l| l.order == active_layer_order }.id
+        else
+          visualization.active_layer.should be_nil
         end
 
         analyses_export = base_visualization_export[:analyses]

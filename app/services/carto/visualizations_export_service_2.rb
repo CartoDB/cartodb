@@ -16,7 +16,7 @@ module Carto
     end
 
     def build_visualization_from_hash(exported_visualization)
-      Carto::Visualization.new(
+      visualization = Carto::Visualization.new(
         name: exported_visualization[:name],
         description: exported_visualization[:description],
         type: exported_visualization[:type],
@@ -35,6 +35,13 @@ module Carto
           layers: build_layers_from_hash(exported_visualization[:layers])),
         analyses: exported_visualization[:analyses].map { |a| build_analysis_from_hash(a.deep_symbolize_keys) }
       )
+
+      active_layer_order = exported_visualization[:layers].index { |l| l['active_layer'] }
+      if active_layer_order
+        visualization.active_layer = visualization.layers.find { |l| l.order == active_layer_order }
+      end
+
+      visualization
     end
 
     def build_map_from_hash(exported_map, layers:)

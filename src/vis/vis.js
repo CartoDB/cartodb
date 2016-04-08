@@ -41,6 +41,14 @@ var Vis = View.extend({
     }
   },
 
+  error: function (fn) {
+    return this.bind('error', fn);
+  },
+
+  done: function (fn) {
+    return this.bind('done', fn);
+  },
+
   _addLegends: function (legends) {
     if (this.legends) {
       this.legends.remove();

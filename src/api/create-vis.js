@@ -1,7 +1,6 @@
 var _ = require('underscore');
 var Vis = require('../vis/vis');
 var Loader = require('../core/loader');
-var Promise = require('./promise');
 
 var DEFAULT_OPTIONS = {
   tiles_loader: true,
@@ -17,10 +16,6 @@ var createVis = function (el, vizjson, options, callback) {
   }
   if (!vizjson) {
     throw new TypeError('a vizjson URL or object must be provided');
-  }
-
-  if (typeof vizjson === 'string') {
-    return loadVizJSONAndCreateVis(el, vizjson, options, callback);
   }
 
   var args = arguments;
@@ -39,41 +34,24 @@ var createVis = function (el, vizjson, options, callback) {
     el: el
   });
 
-  var promise = new Promise();
   if (callback) {
-    promise.done(callback);
+    vis.done(callback);
   }
 
-  bindObjectEventsToPromise(vis, promise, callback);
+  if (typeof vizjson === 'string') {
+    var url = vizjson;
+    Loader.get(url, function (vizjson) {
+      if (vizjson) {
+        vis.load(vizjson, options);
+      } else {
+        throw new Error('error fetching viz.json file');
+      }
+    });
+  } else {
+    vis.load(vizjson, options);
+  }
 
-  vis.load(vizjson, options);
-
-  return promise;
-};
-
-var loadVizJSONAndCreateVis = function (el, vizjson, options) {
-  var promise = new Promise();
-  var url = vizjson;
-  Loader.get(url, function (vizjson) {
-    if (vizjson) {
-      var createVisPromise = createVis(el, vizjson, options);
-      bindObjectEventsToPromise(createVisPromise, promise);
-    } else {
-      throw new Error('error fetching viz.json file');
-    }
-  });
-
-  return promise;
-};
-
-var bindObjectEventsToPromise = function (object, promise) {
-  object.bind('done', function () {
-    promise.trigger('done', arguments[0], arguments[1]);
-  });
-
-  object.bind('error', function () {
-    promise.trigger('error', arguments[0]);
-  });
+  return vis;
 };
 
 module.exports = createVis;

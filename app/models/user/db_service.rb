@@ -437,6 +437,9 @@ module CartoDB
         configuration = db_configuration_for
         configuration[:port] = configuration.fetch(:direct_port, configuration["direct_port"]) || configuration[:port] || configuration["port"]
 
+        # Temporary trace to be removed once https://github.com/CartoDB/cartodb/issues/7047 is solved
+        CartoDB.notify_debug 'Direct connection not used from queue', {backtrace: Kernel.caller} unless Socket.gethostname =~ /^que/
+
         connection = @user.get_connection(_opts = {}, configuration)
 
         begin

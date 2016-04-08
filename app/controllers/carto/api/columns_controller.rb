@@ -25,17 +25,14 @@ module Carto
 
       def table
         if @table.nil?
-          @table = Carto::Helpers::TableLocator.new.get_by_id_or_name(params[:table_id], current_user)  
+          @table = Carto::Helpers::TableLocator.new.get_by_id_or_name(params[:table_id], current_user)
           raise RecordNotFound if @table.nil?
         end
         @table
       end
 
       def read_privileges?
-        head(401) unless current_user and table.table_visualization.has_permission?(
-            current_user, 
-            Carto::Permission::ACCESS_READONLY
-          )
+        head(401) unless current_user && table.table_visualization.has_read_permission?(current_user)
       end
 
     end

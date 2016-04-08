@@ -13,7 +13,7 @@ class Carto::Permission < ActiveRecord::Base
   TYPE_GROUP        = 'group'.freeze
 
   belongs_to :owner, class_name: Carto::User, select: Carto::User::SELECT_WITH_DATABASE
-  has_one :entity, inverse_of: :permission, class_name: Carto::Visualization, foreign_key: :permission_id
+  has_one :visualization, inverse_of: :permission, class_name: Carto::Visualization, foreign_key: :permission_id
 
   def acl
     JSON.parse(access_control_list, symbolize_names: true)

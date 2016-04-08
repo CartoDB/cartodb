@@ -240,14 +240,6 @@ class Carto::Visualization < ActiveRecord::Base
     !(kind_raster? || type_slide?)
   end
 
-  # INFO: discouraged, since it forces using internal constants
-  # Use explicit methods instead.
-  # Needed for backwards compatibility
-  def has_permission?(user, permission_type)
-    return owner_user?(user) if permission_id.nil?
-    owner_user?(user) || permission.permitted?(user, permission_type)
-  end
-
   def get_auth_tokens
     named_map = get_named_map
     raise CartoDB::InvalidMember unless named_map

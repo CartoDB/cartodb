@@ -36,7 +36,7 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
     user_name = 'whatever'
     user_apikey = '123'
 
-    @user = FactoryGirl.create(:valid_user)
+    @user = FactoryGirl.create(:valid_user, private_tables_enabled: true)
 
     CartoDB::Visualization::Relator.any_instance.stubs(:user).returns(@user)
   end
@@ -326,8 +326,6 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
   describe 'only_torque_layer' do
     it 'checks returned viz.json given a named map with only a torque layer' do
 
-      disable_if_config_has_maps_with_labels
-
       template_data = {
         template: {
           version: '0.0.1',
@@ -375,7 +373,9 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       vizjson.include?(:description).should eq true
       vizjson.include?(:layers).should eq true
 
-      vizjson[:layers].size.should eq 2
+      vizjson[:layers].select { |layer| layer[:type] == 'tiled' }.size.should >= 1
+      vizjson[:layers].select { |layer| layer[:type] == 'torque' }.size.should eq 1
+
       # First is always the base layer
       vizjson[:layers][0][:type].should eq 'tiled'
 
@@ -402,8 +402,6 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
 
   describe 'only_normal_layer' do
     it 'checks returned viz.json given a default named map which has only a normal layer' do
-
-      disable_if_config_has_maps_with_labels
 
       template_data = {
         template: {
@@ -445,8 +443,8 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       vizjson.include?(:description).should eq true
       vizjson.include?(:layers).should eq true
 
-      vizjson[:layers].size.should eq 2
-      vizjson[:layers][0][:type].should eq 'tiled'
+      vizjson[:layers].select { |layer| layer[:type] == 'tiled' }.size.should >= 1
+      vizjson[:layers].select { |layer| layer[:type] == 'namedmap' }.size.should eq 1
 
       vizjson[:layers][1][:type].should eq 'namedmap'
       vizjson[:layers][1].include?(:order).should eq true
@@ -470,8 +468,6 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
 
   describe 'torque_and_normal_layers' do
     it 'checks returned viz.json given a named map with a normal layer and a torque one' do
-
-      disable_if_config_has_maps_with_labels
 
       template_data = {
         template: {
@@ -531,11 +527,12 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       vizjson.include?(:description).should eq true
       vizjson.include?(:layers).should eq true
 
-      vizjson[:layers].size.should eq 3
+      vizjson[:layers].select { |layer| layer[:type] == 'tiled' }.size.should >= 1
+      vizjson[:layers].select { |layer| layer[:type] == 'namedmap' }.size.should eq 1
+      vizjson[:layers].select { |layer| layer[:type] == 'torque' }.size.should eq 1
+
       vizjson[:layers][0][:type].should eq 'tiled'
-
       vizjson[:layers][1][:type].should eq 'namedmap'
-
       vizjson[:layers][2][:type].should eq 'torque'
 
       vizjson[:layers][1].include?(:order).should eq true
@@ -576,8 +573,6 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
 
   describe 'two_normal_layers' do
     it 'checks returned viz.json given a named map with 2 normal ones' do
-
-      disable_if_config_has_maps_with_labels
 
       template_data = {
         template: {
@@ -648,7 +643,8 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       vizjson.include?(:description).should eq true
       vizjson.include?(:layers).should eq true
 
-      vizjson[:layers].size.should eq 2
+      vizjson[:layers].select { |layer| layer[:type] == 'tiled' }.size.should >= 1
+      vizjson[:layers].select { |layer| layer[:type] == 'namedmap' }.size.should eq 1
       vizjson[:layers][0][:type].should eq 'tiled'
       vizjson[:layers][1][:type].should eq 'namedmap'
 
@@ -678,8 +674,6 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
 
   describe 'http_layer' do
     it 'checks that a tiled layer appears as http layer on a named map but not on the viz.json' do
-
-      disable_if_config_has_maps_with_labels
 
       template_data = {
         template: {
@@ -724,7 +718,8 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
 
       vizjson = get_vizjson(derived_vis)
 
-      vizjson[:layers].size.should eq 2
+      vizjson[:layers].select { |layer| layer[:type] == 'tiled' }.size.should >= 1
+      vizjson[:layers].select { |layer| layer[:type] == 'namedmap' }.size.should eq 1
       vizjson[:layers][0][:type].should eq 'tiled'
       vizjson[:layers][1][:type].should eq 'namedmap'
 
@@ -747,7 +742,9 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       # Because basemap layers don't count for placeholders
       template[:placeholders][:layer0].nil?.should eq false
       template[:placeholders][:layer1].nil?.should eq true
-      template[:layergroup][:layers].size.should eq 2
+
+      vizjson[:layers].select { |layer| layer[:type] == 'tiled' }.size.should >= 1
+      vizjson[:layers].select { |layer| layer[:type] == 'namedmap' }.size.should eq 1
       template[:layergroup][:layers][0][:type].should eq 'http'
       template[:layergroup][:layers][1][:type].should eq 'cartodb'
 
@@ -818,8 +815,6 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
 
     it 'checks that the named map builds correctly the :view section' do
 
-      disable_if_config_has_maps_with_labels
-
       template_data = {
         template: {
           version: '0.0.1',
@@ -877,7 +872,8 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
 
       vizjson = get_vizjson(derived_vis)
 
-      vizjson[:layers].size.should eq 2
+      vizjson[:layers].select { |layer| layer[:type] == 'tiled' }.size.should >= 1
+      vizjson[:layers].select { |layer| layer[:type] == 'namedmap' }.size.should eq 1
       vizjson[:layers][0][:type].should eq 'tiled'
       vizjson[:layers][1][:type].should eq 'namedmap'
 
@@ -956,8 +952,7 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
             .and_return(
               Typhoeus::Response.new( code: 200, body: JSON::dump( new_template_body ) )
             )
-
-    table = create_table( user_id: @user.id )
+    table = create_table( user_id: @user.id, privacy: UserTable::PRIVACY_PRIVATE)
     derived_vis = CartoDB::Visualization::Copier.new(@user, table.table_visualization).copy
     derived_vis.privacy = visualization_privacy
     template_id = CartoDB::NamedMapsWrapper::NamedMap.template_name(derived_vis.id)
@@ -1003,13 +998,4 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
 
     return table, derived_vis, template_id
   end
-
-  # Basemaps with labels on top create an additional topmost layer. This causes issues if running the tests locally
-  # with such basemaps, so we warn and not run any tests performing layer counting checks
-  def disable_if_config_has_maps_with_labels
-    if Cartodb.config[:basemaps]['CartoDB'].select { |basemap| !basemap['labels'].nil? }.count > 0
-      pending "Your app_config.yml contains at least one CartoDB basemap with labels on top. Please use app_config.yml.testing configuration for running this spec"
-    end
-  end
-
 end

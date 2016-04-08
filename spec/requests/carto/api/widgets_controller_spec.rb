@@ -253,7 +253,7 @@ describe Carto::Api::WidgetsController do
 
       it 'contains widget data' do
         parent_mock = mock
-        parent_mock.stubs(:vizjson_config).returns({ tiler: { filter: '' } })
+        parent_mock.stubs(:vizjson_config).returns(tiler: { filter: '' })
         parent_mock.stubs(:username).returns(@user1.username)
 
         template = CartoDB::NamedMapsWrapper::NamedMap.get_template_data(@visualization, parent_mock)

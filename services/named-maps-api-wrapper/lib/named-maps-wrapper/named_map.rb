@@ -184,11 +184,11 @@ module CartoDB
           unless other_layers.nil?
             other_layers.compact.each { |layer|
               layer_data = {
-                type:     layer[:type].downcase,
-                options:  {
-                            cartocss_version: '2.0.1',
-                            cartocss:         self.css_from(layer[:options])
-                          }
+                type: layer[:type].downcase,
+                options: {
+                  cartocss_version: '2.0.1',
+                  cartocss: css_from(layer[:options])
+                }
               }
               source = layer[:options]['source']
               if source
@@ -229,12 +229,10 @@ module CartoDB
         layer_type = layer[:type].downcase
 
         if layer_type == 'cartodb'
-          data = options_for_cartodb_layer(layer, layer_num, template_data)
+          options_for_cartodb_layer(layer, layer_num, template_data)
         else
-          data = options_for_basemap_layer(layer, layer_num, template_data)
+          options_for_basemap_layer(layer, layer_num, template_data)
         end
-
-        data
       end
 
       def self.css_from(options)
@@ -246,8 +244,6 @@ module CartoDB
       end
 
       attr_reader :template
-
-      private
 
       def self.view_data_from(visualization)
         center = visualization.map.center_data
@@ -283,7 +279,8 @@ module CartoDB
         layer_num += 1
 
         unless layer_options[:source]
-          layer_options[:sql] = "SELECT * FROM (#{layer[:options][:sql]}) AS wrapped_query WHERE <%= #{layer_placeholder} %>=1"
+          layer_options[:sql] =
+            "SELECT * FROM (#{layer[:options][:sql]}) AS wrapped_query WHERE <%= #{layer_placeholder} %>=1"
         end
 
         template_data[:placeholders][layer_placeholder.to_sym] = {

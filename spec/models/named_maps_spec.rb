@@ -373,8 +373,8 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       vizjson.include?(:description).should eq true
       vizjson.include?(:layers).should eq true
 
-      vizjson[:layers].select { |layer| layer[:type] == 'tiled' }.size.should >= 1
-      vizjson[:layers].select { |layer| layer[:type] == 'torque' }.size.should eq 1
+      vizjson[:layers].count { |layer| layer[:type] == 'tiled' }.should >= 1
+      vizjson[:layers].count { |layer| layer[:type] == 'torque' }.should eq 1
 
       # First is always the base layer
       vizjson[:layers][0][:type].should eq 'tiled'
@@ -443,8 +443,8 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       vizjson.include?(:description).should eq true
       vizjson.include?(:layers).should eq true
 
-      vizjson[:layers].select { |layer| layer[:type] == 'tiled' }.size.should >= 1
-      vizjson[:layers].select { |layer| layer[:type] == 'namedmap' }.size.should eq 1
+      vizjson[:layers].count { |layer| layer[:type] == 'tiled' }.should >= 1
+      vizjson[:layers].count { |layer| layer[:type] == 'namedmap' }.should eq 1
 
       vizjson[:layers][1][:type].should eq 'namedmap'
       vizjson[:layers][1].include?(:order).should eq true
@@ -527,9 +527,9 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       vizjson.include?(:description).should eq true
       vizjson.include?(:layers).should eq true
 
-      vizjson[:layers].select { |layer| layer[:type] == 'tiled' }.size.should >= 1
-      vizjson[:layers].select { |layer| layer[:type] == 'namedmap' }.size.should eq 1
-      vizjson[:layers].select { |layer| layer[:type] == 'torque' }.size.should eq 1
+      vizjson[:layers].count { |layer| layer[:type] == 'tiled' }.should >= 1
+      vizjson[:layers].count { |layer| layer[:type] == 'namedmap' }.should eq 1
+      vizjson[:layers].count { |layer| layer[:type] == 'torque' }.should eq 1
 
       vizjson[:layers][0][:type].should eq 'tiled'
       vizjson[:layers][1][:type].should eq 'namedmap'
@@ -643,8 +643,8 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       vizjson.include?(:description).should eq true
       vizjson.include?(:layers).should eq true
 
-      vizjson[:layers].select { |layer| layer[:type] == 'tiled' }.size.should >= 1
-      vizjson[:layers].select { |layer| layer[:type] == 'namedmap' }.size.should eq 1
+      vizjson[:layers].count { |layer| layer[:type] == 'tiled' }.should >= 1
+      vizjson[:layers].count { |layer| layer[:type] == 'namedmap' }.should eq 1
       vizjson[:layers][0][:type].should eq 'tiled'
       vizjson[:layers][1][:type].should eq 'namedmap'
 
@@ -718,8 +718,8 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
 
       vizjson = get_vizjson(derived_vis)
 
-      vizjson[:layers].select { |layer| layer[:type] == 'tiled' }.size.should >= 1
-      vizjson[:layers].select { |layer| layer[:type] == 'namedmap' }.size.should eq 1
+      vizjson[:layers].count { |layer| layer[:type] == 'tiled' }.should >= 1
+      vizjson[:layers].count { |layer| layer[:type] == 'namedmap' }.should eq 1
       vizjson[:layers][0][:type].should eq 'tiled'
       vizjson[:layers][1][:type].should eq 'namedmap'
 
@@ -743,8 +743,8 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
       template[:placeholders][:layer0].nil?.should eq false
       template[:placeholders][:layer1].nil?.should eq true
 
-      vizjson[:layers].select { |layer| layer[:type] == 'tiled' }.size.should >= 1
-      vizjson[:layers].select { |layer| layer[:type] == 'namedmap' }.size.should eq 1
+      vizjson[:layers].count { |layer| layer[:type] == 'tiled' }.should >= 1
+      vizjson[:layers].count { |layer| layer[:type] == 'namedmap' }.should eq 1
       template[:layergroup][:layers][0][:type].should eq 'http'
       template[:layergroup][:layers][1][:type].should eq 'cartodb'
 
@@ -952,7 +952,7 @@ describe CartoDB::NamedMapsWrapper::NamedMaps do
             .and_return(
               Typhoeus::Response.new( code: 200, body: JSON::dump( new_template_body ) )
             )
-    table = create_table( user_id: @user.id, privacy: UserTable::PRIVACY_PRIVATE)
+    table = create_table(user_id: @user.id, privacy: UserTable::PRIVACY_PRIVATE)
     derived_vis = CartoDB::Visualization::Copier.new(@user, table.table_visualization).copy
     derived_vis.privacy = visualization_privacy
     template_id = CartoDB::NamedMapsWrapper::NamedMap.template_name(derived_vis.id)

@@ -80,11 +80,14 @@ module CartoDB
         # We don't want to change the status if the job has been cancelled by the user
         update_status
         update_log_stats
-        change_status('completed')
       end
+      update_status
+      update_log_stats
+      change_status('completed')
       @log.append_and_store "Geocoding Hires job has finished"
     ensure
       # Processed data at the end of the job
+      update_status
       update_log_stats(false)
     end
 
@@ -139,7 +142,6 @@ module CartoDB
       response = http_client.get(api_url(action: 'status'),
                                  connecttimeout: HTTP_CONNECTION_TIMEOUT,
                                  timeout: HTTP_REQUEST_TIMEOUT)
-
       handle_api_error(response)
       update_stats(response)
     end

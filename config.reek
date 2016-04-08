@@ -1,4 +1,11 @@
 IrresponsibleModule:
   enabled: false
-UncommunicativeMethodName:
-  enabled: false # Disabled to allow single character (frequent at loops and maps)
+UncommunicativeVariableName:
+  enabled: true
+  exclude: []
+  reject:
+  - !ruby/regexp /[0-9]$/
+  - !ruby/regexp /[A-Z]/
+  accept:
+  - _
+# Removed "  - !ruby/regexp /^.$/" to allow single character (frequent at loops and maps)

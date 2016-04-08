@@ -3,7 +3,18 @@ require_dependency 'cartodb/redis_vizjson_cache'
 
 module Carto
   module Api
+    module ApiTemplates
+      API_TEMPLATE_PUBLIC = 'public'.freeze
+      API_TEMPLATE_PRIVATE = 'private'.freeze
+
+      def api_templates_type(options)
+        options.fetch(:https_request, false) ? API_TEMPLATE_PRIVATE : API_TEMPLATE_PUBLIC
+      end
+    end
+
     class VizJSON3Presenter
+      include ApiTemplates
+
       def initialize(visualization,
                      redis_vizjson_cache = CartoDB::Visualization::RedisVizjsonCache.new($tables_metadata, 3))
         @visualization = visualization
@@ -182,10 +193,9 @@ module Carto
       end
 
       def datasource_vizjson(options)
-        api_templates_type = options.fetch(:https_request, false) ? 'private' : 'public'
         ds = {
           user_name: @visualization.user.username,
-          maps_api_template: ApplicationHelper.maps_api_template(api_templates_type),
+          maps_api_template: ApplicationHelper.maps_api_template(api_templates_type(options)),
           stat_tag: @visualization.id
         }
 
@@ -219,6 +229,8 @@ module Carto
     end
 
     class VizJSON3NamedMapPresenter
+      include ApiTemplates
+
       NAMED_MAP_TYPE = 'namedmap'.freeze
       LAYER_TYPES_TO_DECORATE = ['torque'].freeze
       DEFAULT_TILER_FILTER = 'mapnik'.freeze
@@ -239,8 +251,7 @@ module Carto
         if @visualization.data_layers.empty?
           nil # When there are no layers don't return named map data
         else
-          api_templates_type = @options.fetch(:https_request, false) ? 'private' : 'public'
-          privacy_type = @visualization.password_protected? ? 'private' : api_templates_type
+          privacy_type = @visualization.password_protected? ? API_TEMPLATE_PRIVATE : api_templates_type(@options)
 
           {
             type: NAMED_MAP_TYPE,
@@ -329,6 +340,8 @@ module Carto
     end
 
     class VizJSON3LayerGroupPresenter
+      include ApiTemplates
+
       LAYER_GROUP_VERSION = '3.0.0'.freeze
       DEFAULT_TILER_FILTER = 'mapnik'.freeze
 
@@ -341,14 +354,12 @@ module Carto
       def to_vizjson
         return nil if cartodb_layers.empty?
 
-        api_templates_type = @options.fetch(:https_request, false) ? 'private' : 'public'
-
         {
           type:               'layergroup',
           options:            {
             user_name:          @options.fetch(:user_name),
-            maps_api_template:  ApplicationHelper.maps_api_template(api_templates_type),
-            sql_api_template:   ApplicationHelper.sql_api_template(api_templates_type),
+            maps_api_template:  ApplicationHelper.maps_api_template(api_templates_type(@options)),
+            sql_api_template:   ApplicationHelper.sql_api_template(api_templates_type(@options)),
             filter:             @configuration[:tiler].fetch('filter', DEFAULT_TILER_FILTER),
             layer_definition:   {
               stat_tag:           @options.fetch(:visualization_id),
@@ -370,6 +381,8 @@ module Carto
     end
 
     class VizJSON3LayerPresenter
+      include ApiTemplates
+
       EMPTY_CSS = '#dummy{}'.freeze
 
       TORQUE_ATTRS = %i(
@@ -434,7 +447,6 @@ module Carto
       end
 
       def as_torque
-        api_templates_type = @options.fetch(:https_request, false) ? 'private' : 'public'
         layer_options = decorate_with_data(
           # Make torque always have a SQL query too (as vizjson v2)
           @layer.options.deep_symbolize_keys.merge(query: wrap(sql_from(@layer.options), @layer.options)),
@@ -448,8 +460,8 @@ module Carto
           legend:     @layer.legend,
           options:    {
             stat_tag:           @options.fetch(:visualization_id),
-            maps_api_template: ApplicationHelper.maps_api_template(api_templates_type),
-            sql_api_template: ApplicationHelper.sql_api_template(api_templates_type)
+            maps_api_template: ApplicationHelper.maps_api_template(api_templates_type(@options)),
+            sql_api_template: ApplicationHelper.sql_api_template(api_templates_type(@options))
           }.merge(layer_options.select { |k| TORQUE_ATTRS.include? k })
         }
 

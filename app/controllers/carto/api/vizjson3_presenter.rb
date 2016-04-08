@@ -395,8 +395,6 @@ module Carto
         torque-duration
         torque-steps
         torque-blend-mode
-        query
-        tile_style
         named_map
         visible
       ).freeze

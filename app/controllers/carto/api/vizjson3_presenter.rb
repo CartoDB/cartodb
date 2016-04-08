@@ -243,19 +243,19 @@ module Carto
           privacy_type = @visualization.password_protected? ? 'private' : api_templates_type
 
           {
-            type:     NAMED_MAP_TYPE,
-            order:    1,
-            options:  {
-              type:             NAMED_MAP_TYPE,
-              user_name:        @options.fetch(:user_name),
+            type: NAMED_MAP_TYPE,
+            order: 1,
+            options: {
+              type: NAMED_MAP_TYPE,
+              user_name: @options.fetch(:user_name),
               maps_api_template: ApplicationHelper.maps_api_template(privacy_type),
               sql_api_template: ApplicationHelper.sql_api_template(privacy_type),
-              filter:           @configuration[:tiler].fetch('filter', DEFAULT_TILER_FILTER),
-              named_map:        {
-                name:     @named_map_name,
+              filter: @configuration[:tiler].fetch('filter', DEFAULT_TILER_FILTER),
+              named_map: {
+                name: @named_map_name,
                 stat_tag: @visualization.id,
-                params:   placeholders_data,
-                layers:   configure_layers_data
+                params: placeholders_data,
+                layers: configure_layers_data
               },
               attribution: @visualization.attributions_from_derived_visualizations.join(', ')
             }

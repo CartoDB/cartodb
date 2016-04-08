@@ -1,4 +1,4 @@
-<h3 class="CDB-Text CDB-Size-large u-mainTextColor u-secondaryTextColor">
+<h3 class="CDB-Text CDB-Size-large u-mainTextColor u-secondaryTextColor u-bSpace--m">
   <% if (state === 'selected') { %>
     File selected
   <% } else { %>

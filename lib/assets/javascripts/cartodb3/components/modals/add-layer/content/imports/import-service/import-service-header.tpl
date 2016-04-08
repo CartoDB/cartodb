@@ -1,5 +1,5 @@
 <% if (state !== 'list' ) { %>
-  <h3 class="ImportPanel-headerTitle">
+  <h3 class="CDB-Text CDB-Size-large u-mainTextColor u-secondaryTextColor u-bSpace--m">
     <% if (state === 'selected') { %>
       <% if (service_name === 'instagram') { %>
         Account connected
@@ -10,7 +10,7 @@
       Connect with <%- title %>
     <% } %>
   </h3>
-  <p class="ImportPanel-headerDescription <% if (state === "error") { %>ImportPanel-headerDescription--negative<% } %>">
+  <p class="CDB-Text CDB-Size-medium u-altTextColor <% if (state === "error") { %>ImportPanel-headerDescription--negative<% } %>">
     <% if (state === "idle") { %>
       <% if (fileExtensions.length > 0) { %>
         <%- fileExtensions.join(', ') %><% if (showAvailableFormats) { %> and <a target="_blank" href="http://docs.cartodb.com/cartodb-editor/datasets/#supported-file-formats" class="ImportPanel-headerDescriptionLink">many more formats</a> <% } %> supported.

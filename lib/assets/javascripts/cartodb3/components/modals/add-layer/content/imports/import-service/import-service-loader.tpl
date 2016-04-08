@@ -1,8 +1,9 @@
 <div class="ImportPanel-actions">
   <% if (state === "idle") { %>
-    <button class="Button Button--main ImportPanel-actionsButton js-connect">Connect</button>
+
+    <button class="CDB-Button CDB-Button--primary js-connect"><span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Connect</span></button>
   <% } else if (state === "error") { %>
-    <button class="Button Button--main ImportPanel-actionsButton js-connect">Try again</button>
+    <button class="CDB-Button CDB-Button--primary js-connect"><span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Try again</span></button>
   <% } else { %>
     <div class="Spinner ImportPanel-actionsLoader"></div>
   <% } %>

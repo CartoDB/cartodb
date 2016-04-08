@@ -32,7 +32,10 @@ module Carto
       end
 
       def read_privileges?
-        head(401) unless current_user && table.table_visualization.has_read_permission?(current_user)
+        head(401) unless current_user && table.table_visualization.has_permission?(
+          current_user,
+          CartoDB::Permission::ACCESS_READONLY
+        )
       end
 
     end

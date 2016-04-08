@@ -105,7 +105,7 @@ describe Carto::Api::VizJSON3Presenter do
       v3_vizjson = Carto::Api::VizJSON3Presenter.new(@visualization, viewer_user).send :calculate_vizjson
 
       v2_vizjson[:layers][1][:options][:layer_definition][:layers][0][:options][:sql].should be_nil
-      v2_vizjson[:layers][1][:options][:layer_definition][:layers][0][:options][:source].should eq source
+      v2_vizjson[:layers][1][:options][:layer_definition][:layers][0][:options][:source].should eq({ id: source })
       v3_vizjson[:layers][1][:options][:layer_definition][:layers][0][:options][:sql].should be_nil
       v3_vizjson[:layers][1][:options][:layer_definition][:layers][0][:options][:source].should eq source
     end

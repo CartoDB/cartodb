@@ -443,7 +443,7 @@ module CartoDB
       end
 
       def initialize(options)
-        default_options = { metadata: true, data: true, path: '' }
+        default_options = { metadata: true, data: true, split_user_schemas: true, path: '' }
         @options = default_options.merge(options)
 
         @logs = []
@@ -507,7 +507,7 @@ module CartoDB
             @database_host = database_hosts[0]
 
             dump_org_metadata if @options[:metadata]
-            data = { organization: @org_metadata, users: @org_users.to_a, groups: @org_groups }
+            data = { organization: @org_metadata, users: @org_users.to_a, groups: @org_groups, split_user_schemas: @options[:split_user_schemas] }
             File.open("#{@options[:path]}org_#{@org_metadata['id']}.json", "w") do |f|
               f.write(data.to_json)
             end

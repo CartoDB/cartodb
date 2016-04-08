@@ -62,6 +62,7 @@ describe SignupController do
     before(:each) do
       @organization.auth_username_password_enabled = true
       @organization.auth_google_enabled = true
+      @organization.strong_passwords_enabled = true
       @organization.save
     end
 
@@ -70,7 +71,7 @@ describe SignupController do
 
       username = 'testusername'
       email = 'testemail@nonono.com'
-      password = 'testpassword'
+      password = '2{Patrañas}'
       host! "#{@organization.name}.localhost.lan"
       post signup_organization_user_url(user_domain: @organization.name, user: { username: username, email: email, password: password })
       response.status.should == 422
@@ -119,7 +120,7 @@ describe SignupController do
 
       username = 'testusername'
       email = "testemail@#{@organization.whitelisted_email_domains[0]}"
-      password = 'testpassword'
+      password = '2{Patrañas}'
       host! "#{@organization.name}.localhost.lan"
       post signup_organization_user_url(user_domain: @organization.name, user: { username: username, email: email, password: password })
       response.status.should == 200
@@ -139,7 +140,7 @@ describe SignupController do
 
       host! "#{@organization.name}.localhost.lan"
       post signup_organization_user_url(user_domain: @organization.name,
-                                        user: { username: 'evil', email: 'evil@whatever.com', password: 'xxxxxx' })
+                                        user: { username: 'evil', email: 'evil@whatever.com', password: '2{Patrañas}' })
       response.status.should == 422
     end
 
@@ -155,7 +156,7 @@ describe SignupController do
       host! "#{@organization.name}.localhost.lan"
       post signup_organization_user_url(
         user_domain: @organization.name,
-        user: { username: 'invited-user', email: invited_email, password: 'xxxxxx' },
+        user: { username: 'invited-user', email: invited_email, password: '2{Patrañas}' },
         invitation_token: 'wrong'
       )
       response.status.should == 400
@@ -173,7 +174,9 @@ describe SignupController do
         never
       host! "#{@organization.name}.localhost.lan"
       post signup_organization_user_url(user_domain: @organization.name,
-                                        user: { username: 'invited-user', email: invited_email, password: 'xxxxxx' },
+                                        user: { username: 'invited-user',
+                                                email: invited_email,
+                                                password: '2{Patrañas}' },
                                         invitation_token: invitation.token(invited_email))
       response.status.should == 400
       invitation.reload
@@ -191,7 +194,9 @@ describe SignupController do
         returns(true)
       host! "#{@organization.name}.localhost.lan"
       post signup_organization_user_url(user_domain: @organization.name,
-                                        user: { username: 'invited-user', email: invited_email, password: 'xxxxxx' },
+                                        user: { username: 'invited-user',
+                                                email: invited_email,
+                                                password: '2{Patrañas}' },
                                         invitation_token: invitation.token(invited_email))
       response.status.should == 200
       last_user_creation = Carto::UserCreation.order('created_at desc').limit(1).first

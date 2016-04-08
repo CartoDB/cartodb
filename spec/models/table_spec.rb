@@ -43,7 +43,6 @@ describe Table do
   before(:each) do
     CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
-    CartoDB::Overlay::Member.any_instance.stubs(:can_store).returns(true)
     Table.any_instance.stubs(:update_cdb_tablemetadata)
 
     stub_named_maps_calls
@@ -985,7 +984,7 @@ describe Table do
       pk_row1 = table.insert_row!(:name => 'Fernando Blat', :age => "29")
       table.rows_counted.should == 1
 
-      pk_row2 = table.insert_row!(:name => 'Javi Jam', :age => "25.4")
+      pk_row2 = table.insert_row!(:name => 'Javi Jam', :age => "30.3")
       table.rows_counted.should == 2
 
       table.schema(:cartodb_types => false).should include([:age, "double precision"])
@@ -1000,7 +999,7 @@ describe Table do
       pk_row1 = table.insert_row!(:name => 'Fernando Blat', :age => "29")
       table.rows_counted.should == 1
 
-      pk_row2 = table.insert_row!(:name => 'Javi Jam', :age => "25.0")
+      pk_row2 = table.insert_row!(:name => 'Javi Jam', :age => "30.0")
       table.rows_counted.should == 2
 
       table.schema(:cartodb_types => false).should include([:age, "double precision"])
@@ -1264,7 +1263,7 @@ describe Table do
                                        :data_source   => '/../spec/support/data/elecciones2008.csv')
       data_import.run_import!
 
-      table = Table.new(user_table: UserTable[data_import.table_id])
+      table = create_table(user_table: UserTable[data_import.table_id], user_id: @user.id)
       table.should_not be_nil, "Import failure: #{data_import.log}"
       update_data = {:upo___nombre_partido=>"PSOEE"}
       id = 5
@@ -1282,7 +1281,7 @@ describe Table do
                                        :data_source   => '/../spec/support/data/elecciones2008.csv')
       data_import.run_import!
 
-      table = Table.new(user_table: UserTable[data_import.table_id])
+      table = create_table(user_table: UserTable[data_import.table_id], user_id: @user.id)
       table.should_not be_nil, "Import failure: #{data_import.log}"
 
       pk = nil
@@ -1453,26 +1452,29 @@ describe Table do
       cartodb_id_schema[:allow_null].should == false
     end
 
-    it "should add a 'cartodb_id_' column when importing a file with invalid data on the cartodb_id column" do
-      data_import = DataImport.create( :user_id       => @user.id,
-                                       :data_source   =>  '/../db/fake_data/duplicated_cartodb_id.zip')
+    # Legacy test commented: Invalid data on cartodb_id will provoke an import failure and this behavior
+    # is tested in the data_import specs.
+    #
+    # it "should add a 'cartodb_id_' column when importing a file with invalid data on the cartodb_id column" do
+    #   data_import = DataImport.create( :user_id       => @user.id,
+    #                                    :data_source   =>  '/../db/fake_data/duplicated_cartodb_id.zip')
 
-      data_import.run_import!
-      table = Table.new(user_table: UserTable[data_import.table_id])
-      table.should_not be_nil, "Import failure: #{data_import.log}"
+    #   data_import.run_import!
+    #   table = Table.new(user_table: UserTable[data_import.table_id])
+    #   table.should_not be_nil, "Import failure: #{data_import.log}"
 
-      table_schema = @user.in_database.schema(table.name)
+    #   table_schema = @user.in_database.schema(table.name)
 
-      cartodb_id_schema = table_schema.detect {|s| s[0].to_s == 'cartodb_id'}
-      cartodb_id_schema.should be_present
-      cartodb_id_schema = cartodb_id_schema[1]
-      cartodb_id_schema[:db_type].should == 'bigint'
-      cartodb_id_schema[:default].should == "nextval('#{table.name}_cartodb_id_seq'::regclass)"
-      cartodb_id_schema[:primary_key].should == true
-      cartodb_id_schema[:allow_null].should == false
-      invalid_cartodb_id_schema = table_schema.detect {|s| s[0].to_s == 'cartodb_id_0'}
-      invalid_cartodb_id_schema.should be_present
-    end
+    #   cartodb_id_schema = table_schema.detect {|s| s[0].to_s == 'cartodb_id'}
+    #   cartodb_id_schema.should be_present
+    #   cartodb_id_schema = cartodb_id_schema[1]
+    #   cartodb_id_schema[:db_type].should == 'bigint'
+    #   cartodb_id_schema[:default].should == "nextval('#{table.name}_cartodb_id_seq'::regclass)"
+    #   cartodb_id_schema[:primary_key].should == true
+    #   cartodb_id_schema[:allow_null].should == false
+    #   invalid_cartodb_id_schema = table_schema.detect {|s| s[0].to_s == 'cartodb_id_0'}
+    #   invalid_cartodb_id_schema.should be_present
+    # end
 
     it "should return geometry types when guessing is enabled" do
       data_import = DataImport.create( :user_id       => @user.id,
@@ -1792,8 +1794,6 @@ describe Table do
 
   context "imports" do
     it "file twitters.csv" do
-      delete_user_data @user
-
       fixture     =  "#{Rails.root}/db/fake_data/twitters.csv"
       data_import = create_import(@user, fixture)
 
@@ -1802,8 +1802,6 @@ describe Table do
     end
 
     it "file SHP1.zip" do
-      delete_user_data @user
-
       fixture     = "#{Rails.root}/db/fake_data/SHP1.zip"
       data_import = create_import(@user, fixture)
 
@@ -2415,5 +2413,4 @@ describe Table do
       [0, 1].should include(table.estimated_row_count)
     end
   end
-
 end

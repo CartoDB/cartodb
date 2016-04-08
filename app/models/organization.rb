@@ -107,21 +107,12 @@ class Organization < Sequel::Model
   # organization destroy
   def destroy_cascade
     destroy_groups
-    destroy_permissions
     destroy_non_owner_users
     if self.owner
       self.owner.destroy
     else
       self.destroy
     end
-  end
-
-  def destroy_permissions
-    self.users.each { |user|
-      CartoDB::Permission.where(owner_id: user.id).each { |permission|
-        permission.destroy
-      }
-    }
   end
 
   def destroy_non_owner_users
@@ -135,16 +126,13 @@ class Organization < Sequel::Model
   end
 
   ##
-  # SLOW! Checks map views for every user in every organization
+  # SLOW! Checks redis data (geocoding and isolines) for every user in every organization
   # delta: get organizations who are also this percentage below their limit.
   #        example: 0.20 will get all organizations at 80% of their map view limit
   #
   def self.overquota(delta = 0)
 
     Organization.all.select do |o|
-        limit = o.map_view_quota.to_i - (o.map_view_quota.to_i * delta)
-        over_map_views = o.get_api_calls(from: o.owner.last_billing_cycle, to: Date.today) > limit
-
         limit = o.geocoding_quota.to_i - (o.geocoding_quota.to_i * delta)
         over_geocodings = o.get_geocoding_calls > limit
 
@@ -154,7 +142,7 @@ class Organization < Sequel::Model
         limit =  o.twitter_datasource_quota.to_i - (o.twitter_datasource_quota.to_i * delta)
         over_twitter_imports = o.get_twitter_imports_count > limit
 
-        over_map_views || over_geocodings || over_twitter_imports || over_here_isolines
+        over_geocodings || over_twitter_imports || over_here_isolines
     end
   end
 

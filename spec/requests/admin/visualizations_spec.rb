@@ -6,12 +6,14 @@ require_relative '../../spec_helper'
 require_relative '../../support/factories/organizations'
 require_relative '../../../app/models/visualization/migrator'
 require_relative '../../../app/controllers/admin/visualizations_controller'
+require 'helpers/unique_names_helper'
 
 def app
   CartoDB::Application.new
 end #app
 
 describe Admin::VisualizationsController do
+  include UniqueNamesHelper
   include Rack::Test::Methods
   include Warden::Test::Helpers
   include CacheHelper
@@ -22,11 +24,6 @@ describe Admin::VisualizationsController do
 
     @api_key = @user.api_key
     @user.stubs(:should_load_common_data?).returns(false)
-
-    @db = Rails::Sequel.connection
-    Sequel.extension(:pagination)
-
-    CartoDB::Visualization.repository  = DataRepository::Backend::Sequel.new(@db, :visualizations)
 
     @headers = {
       'CONTENT_TYPE'  => 'application/json',
@@ -339,17 +336,6 @@ describe Admin::VisualizationsController do
 
   describe 'org user visualization redirection' do
     it 'if A shares a (shared) vis link to B with A username, performs a redirect to B username' do
-      db_config   = Rails.configuration.database_configuration[Rails.env]
-      # Why not passing db_config directly to Sequel.postgres here ?
-      # See https://github.com/CartoDB/cartodb/issues/421
-      db = Sequel.postgres(
-          host:     db_config.fetch('host'),
-          port:     db_config.fetch('port'),
-          database: db_config.fetch('database'),
-          username: db_config.fetch('username')
-      )
-      CartoDB::Visualization.repository  = DataRepository::Backend::Sequel.new(db, :visualizations)
-
       CartoDB::UserModule::DBService.any_instance.stubs(:move_to_own_schema).returns(nil)
       CartoDB::TablePrivacyManager.any_instance.stubs(
           :set_from_table_privacy => nil,
@@ -378,17 +364,16 @@ describe Admin::VisualizationsController do
         enable_remote_db_user: nil
       )
 
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
-      Table.any_instance.stubs(
-          :perform_cartodb_function => nil,
-          :update_cdb_tablemetadata => nil,
-          :update_table_pg_stats => nil,
-          :create_table_in_database! => nil,
-          :get_table_id => 1,
-          :grant_select_to_tiler_user => nil,
-          :cartodbfy => nil,
-          :set_the_geom_column! => nil
-      )
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true)
+
+      Table.any_instance.stubs(perform_cartodb_function: nil,
+                               update_cdb_tablemetadata: nil,
+                               update_table_pg_stats: nil,
+                               create_table_in_database!: nil,
+                               get_table_id: 1,
+                               grant_select_to_tiler_user: nil,
+                               cartodbfy: nil,
+                               set_the_geom_column!: nil)
 
       # --------TEST ITSELF-----------
 
@@ -448,17 +433,6 @@ describe Admin::VisualizationsController do
 
     # @see https://github.com/CartoDB/cartodb/issues/6081
     it 'If logged user navigates to legacy url from org user without org name, gets redirected properly' do
-      db_config   = Rails.configuration.database_configuration[Rails.env]
-      # Why not passing db_config directly to Sequel.postgres here ?
-      # See https://github.com/CartoDB/cartodb/issues/421
-      db = Sequel.postgres(
-        host:     db_config.fetch('host'),
-        port:     db_config.fetch('port'),
-        database: db_config.fetch('database'),
-        username: db_config.fetch('username')
-      )
-      CartoDB::Visualization.repository = DataRepository::Backend::Sequel.new(db, :visualizations)
-
       CartoDB::UserModule::DBService.any_instance.stubs(:move_to_own_schema).returns(nil)
       CartoDB::TablePrivacyManager.any_instance.stubs(
         set_from_table_privacy: nil,
@@ -614,7 +588,7 @@ describe Admin::VisualizationsController do
     owner = @user if owner.nil?
     map     = Map.create(user_id: owner.id)
     payload = {
-      name:         "visualization #{rand(9999)}",
+      name:         unique_name('viz'),
       tags:         ['foo', 'bar'],
       map_id:       map.id,
       description:  'bogus',

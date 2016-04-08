@@ -18,7 +18,8 @@ class Superadmin::UsersController < Superadmin::SuperadminController
 
   def index
     if params[:overquota].present?
-      @users =  ::User.overquota(0.20)
+      users = ::User.get_stored_overquota_users(Date.today)
+      respond_with(:superadmin, users)
     elsif params[:db_size_in_bytes_change].present?
       # This use case is specific: we only return cached db_size_in_bytes, which is
       # much faster and doesn't add load to the database.
@@ -27,9 +28,9 @@ class Superadmin::UsersController < Superadmin::SuperadminController
         { 'username' => username, 'db_size_in_bytes' => db_size_in_bytes }
       end) and return
     else
-      @users = ::User.all
+      users = ::User.all
+      respond_with(:superadmin, users.map(&:data))
     end
-    respond_with(:superadmin, @users.map { |user| user.data })
   end
 
   def create

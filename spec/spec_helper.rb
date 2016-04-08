@@ -3,6 +3,7 @@ require 'uuidtools'
 require_relative './rspec_configuration'
 require 'helpers/spec_helper_helpers'
 require 'helpers/named_maps_helper'
+require 'helpers/unique_names_helper'
 
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 ENV['RAILS_ENV'] ||= 'test'
@@ -19,7 +20,7 @@ def stub_named_maps_calls
 end
 
 def random_uuid
-  UUIDTools::UUID.timestamp_create.to_s
+  UUIDTools::UUID.random_create.to_s
 end
 
 # Inline Resque for queue handling
@@ -44,30 +45,13 @@ RSpec.configure do |config|
       close_pool_connections
       drop_leaked_test_user_databases
     end
-
-    $user_1 = create_user(quota_in_bytes: 524288000, table_quota: 500, private_tables_enabled: true, name: 'User 1 Full Name')
-    $user_2 = create_user(quota_in_bytes: 524288000, table_quota: 500, private_tables_enabled: true)
   end
 
   config.after(:all) do
     unless ENV['PARALLEL']
-      begin
-        stub_named_maps_calls
-        delete_user_data($user_1)
-        delete_user_data($user_2)
-        $user_1.destroy
-        $user_2.destroy
-      ensure
-        close_pool_connections
-        drop_leaked_test_user_databases
-        delete_database_test_users
-      end
-    else
-      stub_named_maps_calls
-      delete_user_data($user_1)
-      delete_user_data($user_2)
-      $user_1.destroy
-      $user_2.destroy
+      close_pool_connections
+      drop_leaked_test_user_databases
+      delete_database_test_users
     end
   end
 

@@ -26,14 +26,13 @@ module Carto
         @geocoder_client = GeocoderClient.new(gme_client)
         @usage_metrics = arguments.fetch(:usage_metrics)
         @log = arguments.fetch(:log)
+        @geocoding_model = arguments.fetch(:geocoding_model)
       end
 
-      def cancel
-        #TODO: implement
-      end
+      def cancel; end
 
       def run
-        @state = 'processing'
+        change_status('running')
         init_rows_count
         ensure_georef_status_colummn_valid
 
@@ -44,9 +43,9 @@ module Carto
           @processed_rows += data_block.size
         end
 
-        @state = 'completed'
+        change_status('completed')
       rescue => e
-        @state = 'failed'
+        change_status('failed')
         raise e
       ensure
         total_requests = @successful_processed_rows + @empty_processed_rows + @failed_processed_rows
@@ -62,7 +61,7 @@ module Carto
       def process_results; end # TODO: can be removed from here and abstract class
 
       def update_geocoding_status
-        { processed_rows: processed_rows, state: state }
+        { processed_rows: processed_rows, state: @geocoding_model.state }
       end
 
       def name
@@ -187,6 +186,12 @@ module Carto
           "Status: #{@status} --- Processed rows: #{@processed_rows} "\
           "--- Success: #{@successful_processed_rows} --- Empty: #{@empty_processed_rows} "\
           "--- Failed: #{@failed_processed_rows}"
+      end
+
+      def change_status(status)
+        @status = status
+        @geocoding_model.state = status
+        @geocoding_model.save
       end
     end
   end

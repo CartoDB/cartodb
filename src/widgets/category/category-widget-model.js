@@ -60,9 +60,9 @@ module.exports = WidgetModel.extend({
     var index = this.dataviewModel._dataProvider._layerIndex;
     var sublayer = this.dataviewModel._dataProvider._vectorLayerView;
     var style = sublayer.styles[index];
-    var defColor = Object.keys(colors).filter(function(k){return colors[k] === 'Other'})[0]
-    style = style.replace(/marker-fill:.*\;/g, 'marker-fill: ' + defColor + ';');
-    delete colors['Other']
+    this.originalStyle = style
+    var defColor = Object.keys(colors).filter(function(k){return colors[k] === 'Other'})[0]f
+    delete colors[defColor]
     var ramp = Object.keys(colors).map(function (c) {
       return '#' + this.dataviewModel.layer.get('layer_name') + '['+this.dataviewModel.get('column')+'=\'' + colors[c] + '\']{\nmarker-fill: ' + c + ';\n}'
     }.bind(this)).join('\n');
@@ -72,6 +72,9 @@ module.exports = WidgetModel.extend({
   },
 
   cancelColors: function () {
+    var index = this.dataviewModel._dataProvider._layerIndex;
+    var sublayer = this.dataviewModel._dataProvider._vectorLayerView;
+    sublayer.renderers[index].restoreCartoCSS(true);
     this.set('isColorsApplied', false);
   },
 

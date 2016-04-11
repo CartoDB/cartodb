@@ -230,22 +230,24 @@ describe Carto::Api::VisualizationsController do
     include_context 'visualization creation helpers'
     include_context 'users helper'
 
-    before(:each) do
+    before(:all) do
       CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true)
 
       @user_1 = FactoryGirl.create(:valid_user)
-      @user_2 = FactoryGirl.create(:valid_user)
+    end
 
+    before(:each) do
       login(@user_1)
-
-      @headers = {'CONTENT_TYPE'  => 'application/json'}
+      @headers = { 'CONTENT_TYPE' => 'application/json' }
       host! "#{@user_1.subdomain}.localhost.lan"
-      delete_user_data @user_1
     end
 
     after(:each) do
+      delete_user_data @user_1
+    end
+
+    after(:all) do
       @user_1.destroy
-      @user_2.destroy
     end
 
     it 'returns success, empty response for empty user' do
@@ -279,25 +281,19 @@ describe Carto::Api::VisualizationsController do
     end
 
     it 'returns liked count' do
-      table1 = create_random_table(@user_1)
-      table1b = create_random_table(@user_1)
-      table2 = create_random_table(@user_2)
-      table2b = create_random_table(@user_2)
-      visualization2 = table2.table_visualization
-      visualization2.privacy = Visualization::Member::PRIVACY_PUBLIC
-      visualization2.store
-      visualization2.add_like_from(@user_1.id)
+      vis = FactoryGirl.build(:derived_visualization, user_id: @user_1.id).store
+      vis.add_like_from(@user_1.id)
 
-      response_body(type: CartoDB::Visualization::Member::TYPE_CANONICAL)['total_likes'].should == 1
+      response_body(type: CartoDB::Visualization::Member::TYPE_DERIVED)['total_likes'].should == 1
     end
 
     it 'does a partial match search' do
-      create_random_table(@user_1, "foo")
-      create_random_table(@user_1, "bar")
-      create_random_table(@user_1, "foo_patata_bar")
-      create_random_table(@user_1, "foo_patata_baz")
+      FactoryGirl.build(:derived_visualization, user_id: @user_1.id, name: 'foo').store
+      FactoryGirl.build(:derived_visualization, user_id: @user_1.id, name: 'bar').store
+      FactoryGirl.build(:derived_visualization, user_id: @user_1.id, name: 'foo_patata_bar').store
+      FactoryGirl.build(:derived_visualization, user_id: @user_1.id, name: 'foo_patata_baz').store
 
-      body = response_body(q: 'patata', type: CartoDB::Visualization::Member::TYPE_CANONICAL)
+      body = response_body(q: 'patata', type: CartoDB::Visualization::Member::TYPE_DERIVED)
       body['total_entries'].should == 2
       body['total_user_entries'].should == 4
     end

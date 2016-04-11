@@ -1708,15 +1708,11 @@ describe Carto::Api::VisualizationsController do
     end
 
     describe 'normal user urls' do
-      include_context 'users helper'
-
-      before(:each) do
+      before(:all) do
         stub_named_maps_calls
+        @vis_owner = FactoryGirl.create(:valid_user, private_tables_enabled: true)
+        @other_user = FactoryGirl.create(:valid_user, private_tables_enabled: true)
 
-        @vis_owner = @user1
-        @vis_owner.private_tables_enabled = true
-        @vis_owner.save
-        @other_user = @user2
         @table = create_random_table(@vis_owner, unique_name('viz'), UserTable::PRIVACY_PRIVATE)
         @vis = @table.table_visualization
         @vis.private?.should == true
@@ -1726,7 +1722,7 @@ describe Carto::Api::VisualizationsController do
         @headers = http_json_headers
       end
 
-      after(:each) do
+      after(:all) do
         @table.destroy
       end
 
@@ -1797,8 +1793,10 @@ describe Carto::Api::VisualizationsController do
         stub_named_maps_calls
 
         @vis_owner = @org_user_1
-        @table = create_random_table(@vis_owner, unique_name('viz'), UserTable::PRIVACY_PRIVATE)
-        @shared_vis = @table.table_visualization
+        @shared_vis = FactoryGirl.build(:derived_visualization,
+                                        user_id: @vis_owner.id,
+                                        name: unique_name('viz'),
+                                        privacy: CartoDB::Visualization::Member::PRIVACY_PRIVATE).store
         @shared_user = @org_user_2
         @not_shared_user = @org_user_owner
         share_visualization(@shared_vis, @shared_user)
@@ -1809,7 +1807,7 @@ describe Carto::Api::VisualizationsController do
       end
 
       after(:each) do
-        @table.destroy
+        @shared_vis.delete
       end
 
       it 'returns 200 with owner user_domain' do

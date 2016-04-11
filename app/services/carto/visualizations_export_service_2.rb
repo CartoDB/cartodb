@@ -4,9 +4,17 @@ require 'json'
 # 2: export full visualization. Limitations: doesn't support Odyssey, export will fail if
 #    any of parent_id / prev_id / next_id / slide_transition_options are set.
 module Carto
-  # Both String and Hash versions are provided because `deep_symbolize_keys` won't symbolize through arrays
-  # and having separated methods make handling and testing much easier.
-  class VisualizationsExportService2
+  module VisualizationsExportService2Configuration
+    CURRENT_VERSION = '2.0.0'.freeze
+
+    def compatible_version?(version)
+      version.to_i == CURRENT_VERSION.split('.')[0].to_i
+    end
+  end
+
+  module VisualizationsExportService2Importer
+    include VisualizationsExportService2Configuration
+
     def build_visualization_from_json_export(exported_json_string)
       build_visualization_from_hash_export(JSON.parse(exported_json_string).deep_symbolize_keys)
     end
@@ -17,24 +25,7 @@ module Carto
       build_visualization_from_hash(exported_hash[:visualization])
     end
 
-    def export_visualization_json_string(visualization_id)
-      export_visualization_json_hash(visualization_id).to_json
-    end
-
-    def export_visualization_json_hash(visualization_id)
-      {
-        version: CURRENT_VERSION,
-        visualization: export_visualization(Carto::Visualization.find(visualization_id))
-      }
-    end
-
     private
-
-    CURRENT_VERSION = '2.0.0'.freeze
-
-    def compatible_version?(version)
-      version.to_i == CURRENT_VERSION.split('.')[0].to_i
-    end
 
     def build_visualization_from_hash(exported_visualization)
       exported_layers = exported_visualization[:layers]
@@ -125,6 +116,23 @@ module Carto
         options_json: exported_widget[:options]
       )
     end
+  end
+
+  module VisualizationsExportService2Exporter
+    include VisualizationsExportService2Configuration
+
+    def export_visualization_json_string(visualization_id)
+      export_visualization_json_hash(visualization_id).to_json
+    end
+
+    def export_visualization_json_hash(visualization_id)
+      {
+        version: CURRENT_VERSION,
+        visualization: export_visualization(Carto::Visualization.find(visualization_id))
+      }
+    end
+
+    private
 
     def export_visualization(visualization)
       {
@@ -188,5 +196,12 @@ module Carto
         analysis_definition: analysis.analysis_definition_json
       }
     end
+  end
+
+  # Both String and Hash versions are provided because `deep_symbolize_keys` won't symbolize through arrays
+  # and having separated methods make handling and testing much easier.
+  class VisualizationsExportService2
+    include VisualizationsExportService2Importer
+    include VisualizationsExportService2Exporter
   end
 end

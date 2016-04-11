@@ -23,6 +23,8 @@ class SignupController < ApplicationController
   end
 
   def create
+    render_404 and return false unless valid_email_invitation_token? === true
+
     account_creator = CartoDB::UserAccountCreator.new(Carto::UserCreation::CREATED_VIA_ORG_SIGNUP).
                       with_organization(@organization).
                       with_invitation_token(params[:invitation_token])
@@ -30,12 +32,12 @@ class SignupController < ApplicationController
     raise "Organization doesn't allow user + password authentication" if user_password_signup? && !@organization.auth_username_password_enabled
 
     google_access_token = google_access_token_from_params
+
     # Merge both sources (signup and login) in a single param
     params[:google_access_token] = google_access_token
     if !user_password_signup? && google_signup? && !@google_plus_config.nil?
       raise "Organization doesn't allow Google authentication" if !@organization.auth_google_enabled
       account_creator.with_google_token(google_access_token)
-
     end
 
     if params[:user]
@@ -155,9 +157,9 @@ class SignupController < ApplicationController
   end
 
   def valid_email_invitation_token?
-    if params && params[:email] && params[:invitation_token]
+    if params && (params[:email] || params[:user][:email]) && params[:invitation_token]
       invitation = Carto::Invitation.find_by_seed(params[:invitation_token])
-      invitation.present? && invitation.users_emails.include?(params[:email]) ? true : false
+      invitation.present? && invitation.users_emails.include?(params[:email] || params[:user][:email]) ? true : false
     end
   end
 

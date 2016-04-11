@@ -116,6 +116,100 @@ describe Carto::VisualizationsExportService2 do
     }
   end
 
+  def verify_visualization_vs_export(visualization, visualization_export)
+    visualization.name.should eq visualization_export[:name]
+    visualization.description.should eq visualization_export[:description]
+    visualization.type.should eq visualization_export[:type]
+    visualization.tags.should eq visualization_export[:tags]
+    visualization.privacy.should eq visualization_export[:privacy]
+    visualization.url_options.should eq visualization_export[:url_options]
+    visualization.source.should eq visualization_export[:source]
+    visualization.license.should eq visualization_export[:license]
+    visualization.title.should eq visualization_export[:title]
+    visualization.kind.should eq visualization_export[:kind]
+    visualization.attributions.should eq visualization_export[:attributions]
+    visualization.bbox.should eq visualization_export[:bbox]
+    visualization.display_name.should eq visualization_export[:display_name]
+
+    visualization.encrypted_password.should be_nil
+    visualization.password_salt.should be_nil
+    visualization.locked.should be_false
+
+    verify_map_vs_export(visualization.map, visualization_export[:map])
+
+    layers_export = visualization_export[:layers]
+    layers = visualization.layers
+    layers.should_not be_nil
+    layers.length.should eq layers_export.length
+    (0..(layers_export.length - 1)).each do |i|
+      layer = layers[i]
+      layer.order.should eq i
+
+      verify_layer_vs_export(layer, layers_export[i])
+    end
+
+    active_layer_order = layers_export.index { |l| l[:active_layer] }
+    if active_layer_order
+      visualization.active_layer.should_not be_nil
+      visualization.active_layer.order.should eq active_layer_order
+      visualization.active_layer.id.should eq visualization.layers.find { |l| l.order == active_layer_order }.id
+    else
+      visualization.active_layer.should be_nil
+    end
+
+    analyses_export = visualization_export[:analyses]
+    analyses = visualization.analyses
+    if analyses_export.present?
+      analyses.should_not be_nil
+      analyses.length.should eq analyses_export.length
+      (0..(analyses_export.length - 1)).each do |i|
+        verify_analysis_vs_export(analyses[i], analyses_export[i])
+      end
+    else
+      analyses.should be_empty
+    end
+  end
+
+  def verify_map_vs_export(map, map_export)
+    map.provider.should eq map_export[:provider]
+    map.bounding_box_sw.should eq map_export[:bounding_box_sw]
+    map.bounding_box_ne.should eq map_export[:bounding_box_ne]
+    map.center.should eq map_export[:center]
+    map.zoom.should eq map_export[:zoom]
+    map.view_bounds_sw.should eq map_export[:view_bounds_sw]
+    map.view_bounds_ne.should eq map_export[:view_bounds_ne]
+    map.scrollwheel.should eq map_export[:scrollwheel]
+    map.legends.should eq map_export[:legends]
+  end
+
+  def verify_layer_vs_export(layer, layer_export)
+    layer.options.should eq layer_export[:options]
+    layer.kind.should eq layer_export[:kind]
+    layer.infowindow.should eq layer_export[:infowindow]
+    layer.tooltip.should eq layer_export[:tooltip]
+
+    widgets_export = layer_export[:widgets]
+    widgets_export_length = widgets_export.nil? ? 0 : widgets_export.length
+    layer.widgets.length.should eq widgets_export_length
+    (0..(widgets_export_length - 1)).each do |i|
+      widget = layer.widgets[i]
+      widget.order.should eq i
+
+      verify_widget_vs_export(widget, widgets_export[i])
+    end
+  end
+
+  def verify_widget_vs_export(widget, widget_export)
+    widget.type.should eq widget_export[:type]
+    widget.title.should eq widget_export[:title]
+    widget.options_json.should eq widget_export[:options]
+    widget.layer.should_not be_nil
+  end
+
+  def verify_analysis_vs_export(analysis, analysis_export)
+    analysis.analysis_definition_json.should eq analysis_export[:analysis_definition]
+  end
+
   before(:all) do
     @user = FactoryGirl.create(:carto_user)
   end
@@ -132,99 +226,11 @@ describe Carto::VisualizationsExportService2 do
         }.to raise_error("Wrong export version")
       end
 
-      def verify_visualization_vs_export(visualization, visualization_export)
-        visualization.name.should eq visualization_export[:name]
-        visualization.description.should eq visualization_export[:description]
-        visualization.type.should eq visualization_export[:type]
-        visualization.tags.should eq visualization_export[:tags]
-        visualization.privacy.should eq visualization_export[:privacy]
-        visualization.url_options.should eq visualization_export[:url_options]
-        visualization.source.should eq visualization_export[:source]
-        visualization.license.should eq visualization_export[:license]
-        visualization.title.should eq visualization_export[:title]
-        visualization.kind.should eq visualization_export[:kind]
-        visualization.attributions.should eq visualization_export[:attributions]
-        visualization.bbox.should eq visualization_export[:bbox]
-        visualization.display_name.should eq visualization_export[:display_name]
-
-        visualization.encrypted_password.should be_nil
-        visualization.password_salt.should be_nil
-        visualization.locked.should be_false
-
-        verify_map_vs_export(visualization.map, base_visualization_export[:map])
-
-        layers_export = base_visualization_export[:layers]
-        layers = visualization.layers
-        layers.length.should eq layers_export.length
-        (0..(layers_export.length - 1)).each do |i|
-          layer = layers[i]
-          layer.order.should eq i
-
-          verify_layer_vs_export(layer, layers_export[i])
-        end
-
-        active_layer_order = layers_export.index { |l| l[:active_layer] }
-        if active_layer_order
-          visualization.active_layer.should_not be_nil
-          visualization.active_layer.order.should eq active_layer_order
-          visualization.active_layer.id.should eq visualization.layers.find { |l| l.order == active_layer_order }.id
-        else
-          visualization.active_layer.should be_nil
-        end
-
-        analyses_export = base_visualization_export[:analyses]
-        analyses = visualization.analyses
-        analyses.length.should eq analyses_export.length
-        (0..(analyses_export.length - 1)).each do |i|
-          verify_analysis_vs_export(analyses[i], analyses_export[i])
-        end
-      end
-
-      def verify_map_vs_export(map, map_export)
-        map.provider.should eq map_export[:provider]
-        map.bounding_box_sw.should eq map_export[:bounding_box_sw]
-        map.bounding_box_ne.should eq map_export[:bounding_box_ne]
-        map.center.should eq map_export[:center]
-        map.zoom.should eq map_export[:zoom]
-        map.view_bounds_sw.should eq map_export[:view_bounds_sw]
-        map.view_bounds_ne.should eq map_export[:view_bounds_ne]
-        map.scrollwheel.should eq map_export[:scrollwheel]
-        map.legends.should eq map_export[:legends]
-      end
-
-      def verify_layer_vs_export(layer, layer_export)
-        layer.options.should eq layer_export[:options]
-        layer.kind.should eq layer_export[:kind]
-        layer.infowindow.should eq layer_export[:infowindow]
-        layer.tooltip.should eq layer_export[:tooltip]
-
-        widgets_export = layer_export[:widgets]
-        widgets_export_length = widgets_export.nil? ? 0 : widgets_export.length
-        layer.widgets.length.should eq widgets_export_length
-        (0..(widgets_export_length - 1)).each do |i|
-          widget = layer.widgets[i]
-          widget.order.should eq i
-
-          verify_widget_vs_export(widget, widgets_export[i])
-        end
-      end
-
-      def verify_widget_vs_export(widget, widget_export)
-        widget.type.should eq widget_export[:type]
-        widget.title.should eq widget_export[:title]
-        widget.options_json.should eq widget_export[:options]
-        widget.layer.should_not be_nil
-      end
-
-      def verify_analysis_vs_export(analysis, analysis_export)
-        analysis.analysis_definition_json.should eq analysis_export[:analysis_definition]
-      end
-
       it 'builds base visualization' do
         visualization = Carto::VisualizationsExportService2.new.build_visualization_from_json_export(export.to_json)
 
-        base_visualization_export = export[:visualization]
-        verify_visualization_vs_export(visualization, base_visualization_export)
+        visualization_export = export[:visualization]
+        verify_visualization_vs_export(visualization, visualization_export)
 
         visualization.id.should be_nil # Not set until persistence
         visualization.user_id.should be_nil # Import build step is "user-agnostic"
@@ -257,8 +263,8 @@ describe Carto::VisualizationsExportService2 do
         # Let's make sure everything is persisted
         visualization = Carto::Visualization.find(visualization.id)
 
-        base_visualization_export = export[:visualization]
-        verify_visualization_vs_export(visualization, base_visualization_export)
+        visualization_export = export[:visualization]
+        verify_visualization_vs_export(visualization, visualization_export)
 
         visualization.id.should_not be_nil
         visualization.user_id.should eq @user.id
@@ -301,10 +307,13 @@ describe Carto::VisualizationsExportService2 do
       end
 
       it 'exports visualization' do
-        exported_json_string = Carto::VisualizationsExportService2.new.export_visualization_json_string(@visualization.id)
-        exported_json = JSON.parse(exported_json_string).deep_symbolize_keys
+        exported_json = Carto::VisualizationsExportService2.new.export_visualization_json_hash(@visualization.id)
 
         exported_json[:version].split('.')[0].to_i.should eq 2
+
+        exported_visualization = exported_json[:visualization]
+
+        verify_visualization_vs_export(@visualization, exported_visualization)
       end
     end
   end

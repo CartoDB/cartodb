@@ -4,19 +4,28 @@ require 'json'
 # 2: export full visualization. Limitations: doesn't support Odyssey, export will fail if
 #    any of parent_id / prev_id / next_id / slide_transition_options are set.
 module Carto
+  # Both String and Hash versions are provided because `deep_symbolize_keys` won't symbolize through arrays
+  # and having separated methods make handling and testing much easier.
   class VisualizationsExportService2
     def build_visualization_from_json_export(exported_json_string)
-      exported_hash = JSON.parse(exported_json_string).deep_symbolize_keys
+      build_visualization_from_hash_export(JSON.parse(exported_json_string).deep_symbolize_keys)
+    end
+
+    def build_visualization_from_hash_export(exported_hash)
       raise "Wrong export version" unless compatible_version?(exported_hash[:version])
 
       build_visualization_from_hash(exported_hash[:visualization])
     end
 
     def export_visualization_json_string(visualization_id)
+      export_visualization_json_hash(visualization_id).to_json
+    end
+
+    def export_visualization_json_hash(visualization_id)
       {
         version: CURRENT_VERSION,
-        visualization: {}
-      }.to_json
+        visualization: export_visualization(Carto::Visualization.find(visualization_id))
+      }
     end
 
     private
@@ -111,6 +120,62 @@ module Carto
         title: exported_widget[:title],
         options_json: exported_widget[:options]
       )
+    end
+
+    def export_visualization(visualization)
+      {
+        name: visualization.name,
+        description: visualization.description,
+        type: visualization.type,
+        tags: visualization.tags,
+        privacy: visualization.privacy,
+        url_options: visualization.url_options,
+        source: visualization.source,
+        license: visualization.license,
+        title: visualization.title,
+        kind: visualization.kind,
+        attributions: visualization.attributions,
+        bbox: visualization.bbox,
+        display_name: visualization.display_name,
+        map: export_map(visualization.map),
+        layers: visualization.layers.map { |l| export_layer(l, active_layer: visualization.active_layer_id == l.id) }
+      }
+    end
+
+    def export_map(map)
+      {
+        provider: map.provider,
+        bounding_box_sw: map.bounding_box_sw,
+        bounding_box_ne: map.bounding_box_ne,
+        center: map.center,
+        zoom: map.zoom,
+        view_bounds_sw: map.view_bounds_sw,
+        view_bounds_ne: map.view_bounds_ne,
+        scrollwheel: map.scrollwheel,
+        legends: map.legends
+      }
+    end
+
+    def export_layer(layer, active_layer: false)
+      layer = {
+        options: layer.options,
+        kind: layer.kind,
+        infowindow: layer.infowindow,
+        tooltip: layer.tooltip,
+        widgets: layer.widgets.map { |w| export_widget(w) }
+      }
+
+      layer[:active_layer] = true if active_layer
+
+      layer
+    end
+
+    def export_widget(widget)
+      {
+        options: widget.options_json,
+        type: widget.type,
+        title: widget.title
+      }
     end
   end
 end

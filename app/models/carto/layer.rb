@@ -15,7 +15,7 @@ module Carto
     has_many :layers_user_table, foreign_key: :layer_id
     has_many :user_tables, through: :layers_user_table, class_name: Carto::UserTable
 
-    has_many :widgets, class_name: Carto::Widget
+    has_many :widgets, class_name: Carto::Widget, order: '"order"'
 
     TEMPLATES_MAP = {
       'table/views/infowindow_light' =>               'infowindow_light',

@@ -15,6 +15,9 @@ describe Visualization::NameChecker do
     @db = Rails::Sequel.connection
     Visualization.repository = DataRepository::Backend::Sequel.new(@db, :visualizations)
 
+    # Dummy permission
+    @permission = CartoDB::Permission.new(owner_id: 'b21ff32c-45c2-4300-a49b-786d35524d52', owner_username: 'user').save
+
     @user = OpenStruct.new(
       id:   'b21ff32c-45c2-4300-a49b-786d35524d52',
       maps: [OpenStruct.new(id: 'c21ff32c-45c2-4300-a49b-786d35524d52'),
@@ -22,33 +25,36 @@ describe Visualization::NameChecker do
     )
 
     @db[:visualizations].insert(
-      id:         'd21ff32c-45c2-4300-a49b-786d35524d52',
-      name:       'Visualization 1',
-      privacy:    'public',
-      created_at: Time.now,
-      updated_at: Time.now,
-      map_id:     'c21ff32c-45c2-4300-a49b-786d35524d52',
-      user_id:    'b21ff32c-45c2-4300-a49b-786d35524d52'
+      id:            'd21ff32c-45c2-4300-a49b-786d35524d52',
+      name:          'Visualization 1',
+      privacy:       'public',
+      created_at:    Time.now,
+      updated_at:    Time.now,
+      map_id:        'c21ff32c-45c2-4300-a49b-786d35524d52',
+      user_id:       'b21ff32c-45c2-4300-a49b-786d35524d52',
+      permission_id: @permission.id
     )
 
     @db[:visualizations].insert(
-      id:         'd21ff32c-45c2-4300-a49b-786d35524d57',
-      name:       'Visualization 2',
-      privacy:    'public',
-      created_at: Time.now,
-      updated_at: Time.now,
-      map_id:     'c21ff32c-45c2-4300-a49b-786d35524d57',
-      user_id:    'b21ff32c-45c2-4300-a49b-786d35524d52'
+      id:            'd21ff32c-45c2-4300-a49b-786d35524d57',
+      name:          'Visualization 2',
+      privacy:       'public',
+      created_at:    Time.now,
+      updated_at:    Time.now,
+      map_id:        'c21ff32c-45c2-4300-a49b-786d35524d57',
+      user_id:       'b21ff32c-45c2-4300-a49b-786d35524d52',
+      permission_id: @permission.id
     )
 
     @db[:visualizations].insert(
-      id:         'd21ff32c-45c2-4300-a49b-786d35524d59',
-      name:       'Visualization 4',
-      privacy:    'public',
-      created_at: Time.now,
-      updated_at: Time.now,
-      map_id:     'c21ff32c-45c2-4300-a49b-786d35524d57',
-      user_id:    'b21ff32c-45c2-4300-a49b-786d35524d46'
+      id:            'd21ff32c-45c2-4300-a49b-786d35524d59',
+      name:          'Visualization 4',
+      privacy:       'public',
+      created_at:    Time.now,
+      updated_at:    Time.now,
+      map_id:        'c21ff32c-45c2-4300-a49b-786d35524d57',
+      user_id:       'b21ff32c-45c2-4300-a49b-786d35524d46',
+      permission_id: @permission.id
     )
 
     @db[:shared_entities].insert(
@@ -60,6 +66,7 @@ describe Visualization::NameChecker do
   end
 
   after :all do
+    @permission.destroy
     @user.destroy
   end
 

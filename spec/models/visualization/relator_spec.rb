@@ -13,7 +13,6 @@ describe Visualization::Relator do
     Sequel.extension(:pagination)
 
     Visualization.repository  = DataRepository::Backend::Sequel.new(@db, :visualizations)
-    Overlay.repository        = DataRepository.new # In-memory storage
   end
 
   before(:all) do

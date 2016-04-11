@@ -1,2 +1,4 @@
-<div class="js-primary-source"></div>
-<div class="js-secondary-source"></div>
+<ul class="Editor-ListAnalysis-inner">
+  <li class="Editor-ListAnalysis-innerItem js-primary-source"></li>
+  <li class="Editor-ListAnalysis-innerItem js-secondary-source"></li>
+</ul>

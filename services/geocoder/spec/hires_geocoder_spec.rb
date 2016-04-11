@@ -3,6 +3,7 @@ require 'tmpdir'
 require 'fileutils'
 require 'csv'
 require_relative '../../../spec/rspec_configuration'
+require_relative '../../../spec/spec_helper'
 require_relative '../lib/hires_geocoder'
 
 
@@ -28,7 +29,8 @@ describe CartoDB::HiresGeocoder do
         'token' => '',
         'mailto' => ''
       })
-    @geocoder = CartoDB::HiresGeocoder.new(@input_csv_file, @working_dir, @log)
+    @geocoding_model = FactoryGirl.create(:geocoding, kind: 'high-resolution', formatter: '{street}')
+    @geocoder = CartoDB::HiresGeocoder.new(@input_csv_file, @working_dir, @log, @geocoding_model)
   end
 
   after(:each) do

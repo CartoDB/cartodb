@@ -3,17 +3,7 @@
     <nav class="Navbar <%= align %>">
       <div class="Navbar-header">
         <div class="Navbar-title">
-          <picture class="Navbar-brand">
-            <% if login_org_avatar %>
-              <img src="<%= @organization.avatar_url %>" alt="<%= @organization.name %>" height="48" />
-            <% else %>
-              <source type="image/svg+xml" srcset="<%= image_path "layout/sessions/brand.svg" %>">
-              <img src="<%= image_path "layout/sessions/brand.png" %>" alt="CartoDB" height="48" width="48" />
-            <% end %>
-          </picture>
-          <% if login_org_avatar %>
-            <sup><img src="<%= image_path "layout/sessions/brand.png" %>" alt="CartoDB" height="26" width="26"></sup>
-          <% end %>
+          <%= render_organization_avatar %>
         </div>
         <% if !Cartodb.config[:cartodb_com_hosted].present? && @organization.present? %>
           <div class="Navbar-text">Not part of <%= @organization.name %>? Go to <a class="Navbar-textLink" href="http://cartodb.com">cartodb.com</a></div>

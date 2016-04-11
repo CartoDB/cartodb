@@ -5,51 +5,50 @@ require_relative '../../helpers/bounding_box_helper'
 class Carto::Map < ActiveRecord::Base
 
   has_many :layers_maps
-  has_many :layers, class_name: 'Carto::Layer', order: '"order"', through: :layers_maps
+  has_many :layers, class_name: 'Carto::Layer',
+                    order: '"order"',
+                    through: :layers_maps
 
-  has_many :base_layers, class_name: 'Carto::Layer', order: '"order"', through: :layers_maps
+  has_many :base_layers, class_name: 'Carto::Layer',
+                         order: '"order"',
+                         through: :layers_maps,
+                         source: :layer
 
-  has_many :data_layers,
-                          class_name: 'Carto::Layer',
-                          conditions: { kind: 'carto' },
-                          order: '"order"',
-                          through: :layers_maps,
-                          source: :layer
+  has_many :data_layers, class_name: 'Carto::Layer',
+                         conditions: { kind: 'carto' },
+                         order: '"order"',
+                         through: :layers_maps,
+                         source: :layer
 
-  has_many :user_layers,
-                          class_name: 'Carto::Layer',
-                          conditions: { kind: ['tiled', 'background', 'gmapsbase', 'wms'] },
-                          order: '"order"',
-                          through: :layers_maps,
-                          source: :layer
+  has_many :user_layers, class_name: 'Carto::Layer',
+                         conditions: { kind: ['tiled', 'background', 'gmapsbase', 'wms'] },
+                         order: '"order"',
+                         through: :layers_maps,
+                         source: :layer
 
-  has_many :carto_and_torque_layers,
-                          class_name: 'Carto::Layer',
-                          conditions: { kind: ['carto', 'torque'] },
-                          order: '"order"',
-                          through: :layers_maps,
-                          source: :layer
+  has_many :carto_and_torque_layers, class_name: 'Carto::Layer',
+                                     conditions: { kind: ['carto', 'torque'] },
+                                     order: '"order"',
+                                     through: :layers_maps,
+                                     source: :layer
 
-  has_many :torque_layers,
-                          class_name: 'Carto::Layer',
-                          conditions: { kind: 'torque' },
-                          order: '"order"',
-                          through: :layers_maps,
-                          source: :layer
+  has_many :torque_layers, class_name: 'Carto::Layer',
+                           conditions: { kind: 'torque' },
+                           order: '"order"',
+                           through: :layers_maps,
+                           source: :layer
 
-  has_many :other_layers,
-                          class_name: 'Carto::Layer',
+  has_many :other_layers, class_name: 'Carto::Layer',
                           conditions: "kind not in ('carto', 'tiled', 'background', 'gmapsbase', 'wms')",
                           order: '"order"',
                           through: :layers_maps,
                           source: :layer
 
-  has_many :named_maps_layers,
-                          class_name: 'Carto::Layer',
-                          conditions: { kind: ['carto', 'tiled', 'background', 'gmapsbase', 'wms'] },
-                          order: '"order"',
-                          through: :layers_maps,
-                          source: :layer
+  has_many :named_maps_layers, class_name: 'Carto::Layer',
+                               conditions: { kind: ['carto', 'tiled', 'background', 'gmapsbase', 'wms'] },
+                               order: '"order"',
+                               through: :layers_maps,
+                               source: :layer
 
   has_many :user_tables, class_name: Carto::UserTable, inverse_of: :map
 
@@ -61,7 +60,7 @@ class Carto::Map < ActiveRecord::Base
     bounding_box_ne: [BoundingBoxHelper::DEFAULT_BOUNDS[:maxlat], BoundingBoxHelper::DEFAULT_BOUNDS[:maxlon]],
     provider:        'leaflet',
     center:          [30, 0]
-  }
+  }.freeze
 
   def viz_updated_at
     get_the_last_time_tiles_have_changed_to_render_it_in_vizjsons

@@ -212,12 +212,6 @@ class DataImport < Sequel::Model
     CartoDB::notify_warning_exception(invalid_cartodb_id_exception)
     handle_failure(invalid_cartodb_id_exception)
     self
-  rescue CartoDB::CartoDBfyError
-    cartodbfy_exception = CartoDB::Importer2::CartoDBfyError.new
-    log.append "Exception: #{cartodbfy_exception}"
-    CartoDB::notify_warning_exception(cartodbfy_exception)
-    handle_failure(cartodbfy_exception)
-    self
   rescue => exception
     log.append "Exception: #{exception.to_s}"
     log.append exception.backtrace, truncate = false
@@ -548,7 +542,7 @@ class DataImport < Sequel::Model
   def pg_options
     Rails.configuration.database_configuration[Rails.env].symbolize_keys
       .merge(
-        user:     current_user.database_username,
+        username: current_user.database_username,
         password: current_user.database_password,
         database: current_user.database_name,
         host:     current_user.database_host

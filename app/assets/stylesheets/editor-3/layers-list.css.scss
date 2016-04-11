@@ -56,6 +56,9 @@
   position: relative;
   margin-top: 16px;
 }
+.Editor-ListAnalysis:empty {
+  display: none;
+}
 
 .Editor-ListAnalysis::before {
   position: absolute;
@@ -65,12 +68,12 @@
   width: 1px;
   background: $cMainLine;
   content: '';
-  z-index: -1;
 }
 
 .Editor-ListAnalysis-item {
   @include display-flex();
   @include align-items(center);
+  position: relative;
   margin-bottom: 8px;
   background: #FFF;
 }
@@ -90,7 +93,12 @@
 
 .Editor-ListAnalysis-inner {
   @include display-flex();
+  width: calc(100% + 8px);
   margin: 0 -4px;
+}
+.Editor-ListAnalysis-inner .Editor-ListAnalysis-item {
+  @include flex(1);
+  max-width: calc(100% - 14px);
 }
 
 .Editor-ListAnalysis-innerItem {
@@ -106,9 +114,14 @@
   padding-right: 12px;
   border: 1px solid $cSecondaryLine;
   border-radius: $halfBaseSize;
-
-  &.is-base {
-    background: $cThirdBackground;
+  &:hover {
+    cursor: pointer;
+  }
+}
+.Editor-ListAnalysis-layer.is-base {
+  background: $cThirdBackground;
+  &:hover {
+    cursor: default;
   }
 }
 

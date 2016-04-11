@@ -248,30 +248,28 @@ module Carto
       # @see https://github.com/CartoDB/cartodb.js/blob/privacy-maps/doc/vizjson_format.md
       # @throws NamedMapsPresenterError
       def to_vizjson
-        if @visualization.data_layers.empty?
-          nil # When there are no layers don't return named map data
-        else
-          privacy_type = @visualization.password_protected? ? API_TEMPLATE_PRIVATE : api_templates_type(@options)
+        return nil if @visualization.data_layers.empty? # When there are no layers don't return named map data
 
-          {
+        privacy_type = @visualization.password_protected? ? API_TEMPLATE_PRIVATE : api_templates_type(@options)
+
+        {
+          type: NAMED_MAP_TYPE,
+          order: 1,
+          options: {
             type: NAMED_MAP_TYPE,
-            order: 1,
-            options: {
-              type: NAMED_MAP_TYPE,
-              user_name: @options.fetch(:user_name),
-              maps_api_template: ApplicationHelper.maps_api_template(privacy_type),
-              sql_api_template: ApplicationHelper.sql_api_template(privacy_type),
-              filter: @configuration[:tiler].fetch('filter', DEFAULT_TILER_FILTER),
-              named_map: {
-                name: @named_map_name,
-                stat_tag: @visualization.id,
-                params: placeholders_data,
-                layers: configure_layers_data
-              },
-              attribution: @visualization.attributions_from_derived_visualizations.join(', ')
-            }
+            user_name: @options.fetch(:user_name),
+            maps_api_template: ApplicationHelper.maps_api_template(privacy_type),
+            sql_api_template: ApplicationHelper.sql_api_template(privacy_type),
+            filter: @configuration[:tiler].fetch('filter', DEFAULT_TILER_FILTER),
+            named_map: {
+              name: @named_map_name,
+              stat_tag: @visualization.id,
+              params: placeholders_data,
+              layers: configure_layers_data
+            },
+            attribution: @visualization.attributions_from_derived_visualizations.join(', ')
           }
-        end
+        }
       end
 
       # Prepares additional data to decorate layers in the LAYER_TYPES_TO_DECORATE list

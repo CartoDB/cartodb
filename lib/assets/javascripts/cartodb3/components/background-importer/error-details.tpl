@@ -7,9 +7,9 @@
   </p>
   <p class="Dialog-headerText">
     <% if (itemQueueId) { %>
-      Don’t panic, here's some info that might help
+    <%- _t('components.background-importer.error-details.dont-panic') %>
     <% } else { %>
-      Check errors
+    <%- _t('components.background-importer.error-details.check-errors') %>
     <% } %>
   </p>
 </div>
@@ -25,7 +25,7 @@
       <li class="ErrorDetails-item">
         <div class="ErrorDetails-itemStep">2</div>
         <div class="ErrorDetails-itemText">
-          Check that the URL you provided is OK: <br/>
+          <%- _t('components.background-importer.error-details.check-url') %>:<br/>
           <span class="ErrorDetails-itemTextStrong"><a href="<%- originalUrl %>"><%- originalUrl %></a></span>
         </div>
       </li>
@@ -36,7 +36,7 @@
           <% if (text) { %>
           <%= cdb.core.sanitize.html(text) %>
           <% } else { %>
-          An unknown error has happened
+          <%- _t('components.background-importer.error-details.unknown-error') %>
           <% } %>
         </div>
       </li>
@@ -45,7 +45,7 @@
       <li class="ErrorDetails-item">
         <div class="ErrorDetails-itemStep">!</div>
         <div class="ErrorDetails-itemText">
-          Persisting error? Please <a href="mailto:support@cartodb.com">send us</a> the following code: <br/>
+          <%- _t('components.background-importer.error-details.send-us-the-error-code') %>:<br/>
           <span class="ErrorDetails-itemTextStrong"><%- itemQueueId %></span>
         </div>
       </li>
@@ -54,6 +54,6 @@
 </div>
 <div class="Dialog-footer ErrorDetails-footer">
   <button class="Button Button--secondary ErrorDetails-footerButton cancel">
-    <span>close</span>
+    <span><%- _t('components.background-importer.error-details.close') %></span>
   </button>
 </div>

@@ -24,9 +24,13 @@
   },
   "components": {
     "background-importer": {
-      "continue-btn": "Continue",
-      "find-connected-datasets": "You can find all the connected datasets under the Datasets section.",
-      "upgrade-your-account": "<a href='https://cartodb.com/pricing/'>Upgrade your account</a> to add more than %{userMaxLayers} layers to your maps.",
+      "partial-import-details": {
+        "continue-btn": "Continue",
+        "find-connected-datasets": "You can find all the connected datasets under the Datasets section.",
+        "too-many-datasets": "NOTE: The file you uploaded contained too many Datasets. No more than %{maxTablesPerImport} Datasets can be imported from a single file.",
+        "unable-to-import-as-layers": "Unable to add all imported Datasets as Layers",
+        "upgrade-your-account": "<a href='https://cartodb.com/pricing/'>Upgrade your account</a> to add more than %{userMaxLayers} layers to your maps.",
+      },
       "twitter-import-details": {
         "twitter-import-title": "Your Twitter %{type} is created",
         "credit-left": "You still have %{availableTweetsFormatted} credit left for this billing cycle.",
@@ -37,11 +41,24 @@
           "paid": "$%{tweetsCostFormatted} will be charged to your account",
           "free": "No extra charges have been done"
         },
+        "layers-error-details-upgrade": {
+          "free-trial-days": "14 days Free trial",
+          "keep-your-maps": "Keep your maps and get more layers quota by upgrading your plan",
+          "reached-limits": "You have reached your layers limit",
+          "remove-or-upgrade": "Remove any layer or upgrade your account",
+          "upgrade": "upgrade"
+        },
+        "error-details": {
+          "dont-panic": "Don’t panic, here's some info that might help",
+          "check-errors": "Check errors",
+          "unknown-error": "An unknown error has happened",
+          "close": "close",
+          "send-us-the-error-code": "Persisting error? Please <a href='mailto:support@cartodb.com'>send us</a> the following code",
+          "check-url": "Check that the URL you provided is OK"
+        },
         "errors": {
-"too-many-datasets": "NOTE: The file you uploaded contained too many Datasets. No more than %{maxTablesPerImport} Datasets can be imported from a single file.",
           "no-more-datasets": "No more than %{maxTablesPerImport} %> Datasets can be imported from a single file.",
           "unable-to-import-datasets": "Unable to import all Datasets in file",
-          "unable-to-import-as-layers": "Unable to add all imported Datasets as Layers",
           "no-results": "Your search query was correct but returned no results, please try with a different set of parameters before running it again"
         }
       },

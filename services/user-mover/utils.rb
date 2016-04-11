@@ -43,15 +43,13 @@ module CartoDB
 
       def set_user_mover_banner(user_id)
         migration_banner = 'WARNING: Your user is under a maintenance operation set in read-only mode. Account modifications during this time might be lost.'
-        u = ::User.where(id: user_id).first
-        u.notification = migration_banner
-        u.save
+        u = ::Carto::User.where(id: user_id).first
+        u.update_column(:notification, migration_banner)
       end
 
       def remove_user_mover_banner(user_id)
-        u = ::User.where(id: user_id).first
-        u.notification = nil
-        u.save
+        u = ::Carto::User.where(id: user_id).first
+        u.update_column(:notification, nil)
       end
 
       def run_command(cmd)

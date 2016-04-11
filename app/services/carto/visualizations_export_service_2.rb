@@ -5,17 +5,26 @@ require 'json'
 #    any of parent_id / prev_id / next_id / slide_transition_options are set.
 module Carto
   class VisualizationsExportService2
-    def build_visualization_from_json_export(exported_json)
-      exported_hash = JSON.parse(exported_json).deep_symbolize_keys
+    def build_visualization_from_json_export(exported_json_string)
+      exported_hash = JSON.parse(exported_json_string).deep_symbolize_keys
       raise "Wrong export version" unless compatible_version?(exported_hash[:version])
 
       build_visualization_from_hash(exported_hash[:visualization])
     end
 
+    def export_visualization_json_string(visualization_id)
+      {
+        version: CURRENT_VERSION,
+        visualization: {}
+      }.to_json
+    end
+
     private
 
+    CURRENT_VERSION = '2.0.0'
+
     def compatible_version?(version)
-      version == 2
+      version.to_i == 2
     end
 
     def build_visualization_from_hash(exported_visualization)

@@ -113,11 +113,6 @@ describe Carto::VisualizationsExportService2 do
       analyses: [
         { analysis_definition: { id: 'a1', type: 'source' } }
       ]
-
-      # TODO:
-      # permission? Probably not needed.
-      # parent_id / prev_id / next_id / slide_transition_options / active_child
-      # user_tables
     }
   end
 
@@ -286,6 +281,30 @@ describe Carto::VisualizationsExportService2 do
           analysis.created_at.should_not be_nil
           analysis.updated_at.should_not be_nil
         end
+      end
+    end
+  end
+
+  describe 'exporting' do
+    describe '#export_visualization_json_string' do
+      include Carto::Factories::Visualizations
+
+      before(:all) do
+        @user = FactoryGirl.create(:carto_user)
+        @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
+      end
+
+      after(:all) do
+        destroy_full_visualization(@map, @table, @table_visualization, @visualization)
+        # This avoids connection leaking.
+        ::User[@user.id].destroy
+      end
+
+      it 'exports visualization' do
+        exported_json_string = Carto::VisualizationsExportService2.new.export_visualization_json_string(@visualization.id)
+        exported_json = JSON.parse(exported_json_string).deep_symbolize_keys
+
+        exported_json[:version].split('.')[0].to_i.should eq 2
       end
     end
   end

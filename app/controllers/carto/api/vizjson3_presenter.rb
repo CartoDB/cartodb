@@ -3,7 +3,18 @@ require_dependency 'cartodb/redis_vizjson_cache'
 
 module Carto
   module Api
+    module ApiTemplates
+      API_TEMPLATE_PUBLIC = 'public'.freeze
+      API_TEMPLATE_PRIVATE = 'private'.freeze
+
+      def api_templates_type(options)
+        options.fetch(:https_request, false) ? API_TEMPLATE_PRIVATE : API_TEMPLATE_PUBLIC
+      end
+    end
+
     class VizJSON3Presenter
+      include ApiTemplates
+
       def initialize(visualization,
                      redis_vizjson_cache = CartoDB::Visualization::RedisVizjsonCache.new($tables_metadata, 3))
         @visualization = visualization
@@ -68,6 +79,10 @@ module Carto
           datasource:     datasource_vizjson(options),
           user:           user_info_vizjson(user)
         }
+
+        unless @visualization.retrieve_named_map?
+          vizjson[:analyses] = @visualization.analyses.map(&:analysis_definition_json)
+        end
 
         auth_tokens = @visualization.needed_auth_tokens
         vizjson[:auth_tokens] = auth_tokens unless auth_tokens.empty?
@@ -178,10 +193,9 @@ module Carto
       end
 
       def datasource_vizjson(options)
-        api_templates_type = options.fetch(:https_request, false) ? 'private' : 'public'
         ds = {
           user_name: @visualization.user.username,
-          maps_api_template: ApplicationHelper.maps_api_template(api_templates_type),
+          maps_api_template: ApplicationHelper.maps_api_template(api_templates_type(options)),
           stat_tag: @visualization.id
         }
 
@@ -200,8 +214,8 @@ module Carto
       end
 
       def widgets_vizjson
-        Carto::Widget.from_visualization_id(@visualization.id).map do |widgets|
-          Carto::Api::WidgetPresenter.new(widgets).to_vizjson
+        @visualization.widgets.map do |widget|
+          Carto::Api::WidgetPresenter.new(widget).to_vizjson
         end
       end
 
@@ -215,6 +229,8 @@ module Carto
     end
 
     class VizJSON3NamedMapPresenter
+      include ApiTemplates
+
       NAMED_MAP_TYPE = 'namedmap'.freeze
       LAYER_TYPES_TO_DECORATE = ['torque'].freeze
       DEFAULT_TILER_FILTER = 'mapnik'.freeze
@@ -232,31 +248,28 @@ module Carto
       # @see https://github.com/CartoDB/cartodb.js/blob/privacy-maps/doc/vizjson_format.md
       # @throws NamedMapsPresenterError
       def to_vizjson
-        if @visualization.data_layers.empty?
-          nil # When there are no layers don't return named map data
-        else
-          api_templates_type = @options.fetch(:https_request, false) ? 'private' : 'public'
-          privacy_type = @visualization.password_protected? ? 'private' : api_templates_type
+        return nil if @visualization.data_layers.empty? # When there are no layers don't return named map data
 
-          {
-            type:     NAMED_MAP_TYPE,
-            order:    1,
-            options:  {
-              type:             NAMED_MAP_TYPE,
-              user_name:        @options.fetch(:user_name),
-              maps_api_template: ApplicationHelper.maps_api_template(privacy_type),
-              sql_api_template: ApplicationHelper.sql_api_template(privacy_type),
-              filter:           @configuration[:tiler].fetch('filter', DEFAULT_TILER_FILTER),
-              named_map:        {
-                name:     @named_map_name,
-                stat_tag: @visualization.id,
-                params:   placeholders_data,
-                layers:   configure_layers_data
-              },
-              attribution: @visualization.attributions_from_derived_visualizations.join(', ')
-            }
+        privacy_type = @visualization.password_protected? ? API_TEMPLATE_PRIVATE : api_templates_type(@options)
+
+        {
+          type: NAMED_MAP_TYPE,
+          order: 1,
+          options: {
+            type: NAMED_MAP_TYPE,
+            user_name: @options.fetch(:user_name),
+            maps_api_template: ApplicationHelper.maps_api_template(privacy_type),
+            sql_api_template: ApplicationHelper.sql_api_template(privacy_type),
+            filter: @configuration[:tiler].fetch('filter', DEFAULT_TILER_FILTER),
+            named_map: {
+              name: @named_map_name,
+              stat_tag: @visualization.id,
+              params: placeholders_data,
+              layers: configure_layers_data
+            },
+            attribution: @visualization.attributions_from_derived_visualizations.join(', ')
           }
-        end
+        }
       end
 
       # Prepares additional data to decorate layers in the LAYER_TYPES_TO_DECORATE list
@@ -325,6 +338,8 @@ module Carto
     end
 
     class VizJSON3LayerGroupPresenter
+      include ApiTemplates
+
       LAYER_GROUP_VERSION = '3.0.0'.freeze
       DEFAULT_TILER_FILTER = 'mapnik'.freeze
 
@@ -337,14 +352,12 @@ module Carto
       def to_vizjson
         return nil if cartodb_layers.empty?
 
-        api_templates_type = @options.fetch(:https_request, false) ? 'private' : 'public'
-
         {
           type:               'layergroup',
           options:            {
             user_name:          @options.fetch(:user_name),
-            maps_api_template:  ApplicationHelper.maps_api_template(api_templates_type),
-            sql_api_template:   ApplicationHelper.sql_api_template(api_templates_type),
+            maps_api_template:  ApplicationHelper.maps_api_template(api_templates_type(@options)),
+            sql_api_template:   ApplicationHelper.sql_api_template(api_templates_type(@options)),
             filter:             @configuration[:tiler].fetch('filter', DEFAULT_TILER_FILTER),
             layer_definition:   {
               stat_tag:           @options.fetch(:visualization_id),
@@ -366,6 +379,8 @@ module Carto
     end
 
     class VizJSON3LayerPresenter
+      include ApiTemplates
+
       EMPTY_CSS = '#dummy{}'.freeze
 
       TORQUE_ATTRS = %i(
@@ -378,8 +393,6 @@ module Carto
         torque-duration
         torque-steps
         torque-blend-mode
-        query
-        tile_style
         named_map
         visible
       ).freeze
@@ -430,7 +443,6 @@ module Carto
       end
 
       def as_torque
-        api_templates_type = @options.fetch(:https_request, false) ? 'private' : 'public'
         layer_options = decorate_with_data(
           # Make torque always have a SQL query too (as vizjson v2)
           @layer.options.deep_symbolize_keys.merge(query: wrap(sql_from(@layer.options), @layer.options)),
@@ -444,8 +456,8 @@ module Carto
           legend:     @layer.legend,
           options:    {
             stat_tag:           @options.fetch(:visualization_id),
-            maps_api_template: ApplicationHelper.maps_api_template(api_templates_type),
-            sql_api_template: ApplicationHelper.sql_api_template(api_templates_type)
+            maps_api_template: ApplicationHelper.maps_api_template(api_templates_type(@options)),
+            sql_api_template: ApplicationHelper.sql_api_template(api_templates_type(@options))
           }.merge(layer_options.select { |k| TORQUE_ATTRS.include? k })
         }
 
@@ -495,14 +507,19 @@ module Carto
         if @options[:full]
           decorate_with_data(@layer.options, @decoration_data)
         else
-          sql = sql_from(@layer.options)
           data = {
-            sql:                wrap(sql, @layer.options),
             layer_name:         layer_name,
             cartocss:           css_from(@layer.options),
             cartocss_version:   @layer.options.fetch('style_version'),
             interactivity:      @layer.options.fetch('interactivity')
           }
+          source = @layer.options['source']
+          if source
+            data[:source] = source
+            data.delete(:sql)
+          else
+            data[:sql] = wrap(sql_from(@layer.options), @layer.options)
+          end
           data = decorate_with_data(data, @decoration_data)
 
           data

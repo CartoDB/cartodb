@@ -1135,7 +1135,7 @@ module CartoDB
       end
       
       def get_database_version
-        version_match = @user.in_database(:as => :superuser).fetch("SELECT version()").first[:version].match(/(PostgreSQL (([0-9]+\.?){2,3})).*/)
+        version_match = @user.in_database.fetch("SELECT version()").first[:version].match(/(PostgreSQL (([0-9]+\.?){2,3})).*/)
         if version_match.nil?
           return nil
         else

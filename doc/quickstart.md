@@ -22,7 +22,7 @@ Here's how to create a dashboard:
 ```js
 cartodb.deepInsights.createDashboard('#dashboard', vizJSONurl, {}, function(err, dashboard) {
     // update a dashboard widget
-    var formulaWidget = dashboard.widgets.get('whatever-id')
+    var formulaWidget = dashboard.getWidget('whatever-id')
     formulaWidget.update({ title: 'this is the title' });
 
     // update map layers
@@ -39,7 +39,7 @@ cartodb.deepInsights.createDashboard('#dashboard', vizJSONurl, {}, function(err,
       "aggregation": "count",
     };
     // adds a categoty using column `test` from the second layer
-    dashboard.widgets.createCategoryWidget(params, map.getLayer(2))
+    dashboard.createCategoryWidget(params, map.getLayer(2))
 });
 ```
 

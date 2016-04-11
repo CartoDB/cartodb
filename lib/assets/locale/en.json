@@ -24,7 +24,13 @@
   },
   "components": {
     "background-importer": {
+      "continue-btn": "Continue",
+      "find-connected-datasets": "You can find all the connected datasets under the Datasets section.",
+      "upgrade-your-account": "<a href='https://cartodb.com/pricing/'>Upgrade your account</a> to add more than %{userMaxLayers} layers to your maps.",
       "twitter-import-details": {
+        "twitter-import-title": "Your Twitter %{type} is created",
+        "credit-left": "You still have %{availableTweetsFormatted} credit left for this billing cycle.",
+        "credits-left": "You still have %{availableTweetsFormatted} credits left for this billing cycle.",
         "no-more-credits": "You have consumed all your credits during this billing cycle (price is $%{blockPriceFormatted}/%{blockSizeFormatted} extra credits).",
         "view-type": "view %{type}",
         "tweet-cost": {
@@ -32,6 +38,10 @@
           "free": "No extra charges have been done"
         },
         "errors": {
+"too-many-datasets": "NOTE: The file you uploaded contained too many Datasets. No more than %{maxTablesPerImport} Datasets can be imported from a single file.",
+          "no-more-datasets": "No more than %{maxTablesPerImport} %> Datasets can be imported from a single file.",
+          "unable-to-import-datasets": "Unable to import all Datasets in file",
+          "unable-to-import-as-layers": "Unable to add all imported Datasets as Layers",
           "no-results": "Your search query was correct but returned no results, please try with a different set of parameters before running it again"
         }
       },

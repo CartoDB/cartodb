@@ -5,7 +5,8 @@
       <i class="CDB-IconFont CDB-IconFont-check"></i>
     </span>
   </div>
-  <h3 class="Dialog-headerTitle">Your Twitter <%- type %> is created</h3>
+  <h3 class="Dialog-headerTitle">
+    <%- _t('components.background-importer.twitter-import-details.twitter-import-title', { type: type }) %>
   <p class="Dialog-headerText">
     <% if (datasetTotalRows === 0) { %>
     <%- _t('components.background-importer.twitter-import-details.errors.no-results') %>
@@ -30,7 +31,11 @@
       <% if (tweetsCost > 0 || availableTweets <= 0) { %>
       <%- _t('components.background-importer.twitter-import-details.no-more-credits', { blockPriceFormatted: blockPriceFormatted, blockSizeFormatted: blockSizeFormatted }) %>
       <% } else { %>
-        You still have <%- availableTweetsFormatted %> credit<%- availableTweets != 1 ? 's' : ''  %> left for this billing cycle.
+      <% if (availableTweets != 1) { %>
+        <%- _t('components.background-importer.twitter-import-details.credits-left', { availableTweetsFormatted: availableTweetsFormatted }) %>
+      <% } else { %>
+        <%- _t('components.background-importer.twitter-import-details.credit-left', { availableTweetsFormatted: availableTweetsFormatted }) %>
+      <% } %>
       <% } %>
     </p>
   </div>

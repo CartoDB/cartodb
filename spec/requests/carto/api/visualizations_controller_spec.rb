@@ -1597,14 +1597,13 @@ describe Carto::Api::VisualizationsController do
 
   describe 'visualization url generation' do
     include_context 'visualization creation helpers'
-    include_context 'users helper'
     include_context 'organization with users helper'
 
-    before(:each) do
+    before(:all) do
       @user = FactoryGirl.create(:valid_user)
     end
 
-    after(:each) do
+    after(:all) do
       @user.destroy
     end
 
@@ -1652,14 +1651,15 @@ describe Carto::Api::VisualizationsController do
   describe 'filter canonical viz by bounding box' do
     include_context 'visualization creation helpers'
 
-    before(:each) do
+    before(:all) do
+      bypass_named_maps
       @user = FactoryGirl.create(:valid_user)
 
       @table_inside_bbox = create_geometry_table(@user, BBOX_GEOM)
       @table_outside_bbox = create_geometry_table(@user, OUTSIDE_BBOX_GEOM)
     end
 
-    after(:each) do
+    after(:all) do
       @user.destroy
     end
 

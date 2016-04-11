@@ -7,23 +7,23 @@
   </p>
   <p class="Dialog-headerText">
     <%- _t('components.background-importer.partial-import-details.find-connected-datasets') %></br>
-    <%- _t('components.background-importer.partial-import-details.upgrade-your-account', { userMaxLayers: warnings.user_max_layers }) %></br>
+    <%- _t('components.background-importer.partial-import-details.upgrade-your-account', { userMaxLayers: userMaxLayers }) %></br>
   </p>
 </div>
-<% if(warnings.max_tables_per_import) { %>
+<% if (maxTablesPerImport) { %>
   <div class="Dialog-body ErrorDetails-body">
     <ul class="ErrorDetails-list">
       <li class="ErrorDetails-item">
         <div class="ErrorDetails-itemStep">!</div>
         <div class="ErrorDetails-itemText">
-          <%- _t('components.background-importer.partial-import-details.too-many-datasets', { maxTablesPerImport: warnings.max_tables_per_import }) %></br>
+          <%- _t('components.background-importer.partial-import-details.too-many-datasets', { maxTablesPerImport: maxTablesPerImport }) %></br>
         </div>
       </li>
     </ul>
   </div>
 <% } %>
 <div class="Dialog-footer ErrorDetails-footer">
-  <button class="Button Button--secondary ErrorDetails-footerButton cancel">
+  <button class="Button Button--secondary ErrorDetails-footerButton js-close">
     <span><%- _t('components.background-importer.partial-import-details.continue-btn') %></span>
   </button>
 </div>

@@ -53,7 +53,7 @@
   </ul>
 </div>
 <div class="Dialog-footer ErrorDetails-footer">
-  <button class="Button Button--secondary ErrorDetails-footerButton cancel">
+  <button class="Button Button--secondary ErrorDetails-footerButton js-close">
     <span><%- _t('components.background-importer.error-details.close') %></span>
   </button>
 </div>

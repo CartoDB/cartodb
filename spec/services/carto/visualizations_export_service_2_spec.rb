@@ -149,24 +149,16 @@ describe Carto::VisualizationsExportService2 do
     end
 
     active_layer_order = layers_export.index { |l| l[:active_layer] }
-    if active_layer_order
-      visualization.active_layer.should_not be_nil
-      visualization.active_layer.order.should eq active_layer_order
-      visualization.active_layer.id.should eq visualization.layers.find { |l| l.order == active_layer_order }.id
-    else
-      visualization.active_layer.should be_nil
-    end
+    visualization.active_layer.should_not be_nil
+    visualization.active_layer.order.should eq active_layer_order
+    visualization.active_layer.id.should eq visualization.layers.find { |l| l.order == active_layer_order }.id
 
     analyses_export = visualization_export[:analyses]
     analyses = visualization.analyses
-    if analyses_export.present?
-      analyses.should_not be_nil
-      analyses.length.should eq analyses_export.length
-      (0..(analyses_export.length - 1)).each do |i|
-        verify_analysis_vs_export(analyses[i], analyses_export[i])
-      end
-    else
-      analyses.should be_empty
+    analyses.should_not be_nil
+    analyses.length.should eq analyses_export.length
+    (0..(analyses_export.length - 1)).each do |i|
+      verify_analysis_vs_export(analyses[i], analyses_export[i])
     end
   end
 
@@ -298,9 +290,11 @@ describe Carto::VisualizationsExportService2 do
       before(:all) do
         @user = FactoryGirl.create(:carto_user)
         @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
+        @analysis = FactoryGirl.create(:source_analysis, visualization: @visualization, user: @user)
       end
 
       after(:all) do
+        @analysis.destroy
         destroy_full_visualization(@map, @table, @table_visualization, @visualization)
         # This avoids connection leaking.
         ::User[@user.id].destroy

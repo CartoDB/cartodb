@@ -30,13 +30,15 @@ module Carto
 
     private
 
-    CURRENT_VERSION = '2.0.0'
+    CURRENT_VERSION = '2.0.0'.freeze
 
     def compatible_version?(version)
-      version.to_i == 2
+      version.to_i == CURRENT_VERSION.split('.')[0].to_i
     end
 
     def build_visualization_from_hash(exported_visualization)
+      exported_layers = exported_visualization[:layers]
+
       visualization = Carto::Visualization.new(
         name: exported_visualization[:name],
         description: exported_visualization[:description],
@@ -53,11 +55,11 @@ module Carto
         display_name: exported_visualization[:display_name],
         map: build_map_from_hash(
           exported_visualization[:map],
-          layers: build_layers_from_hash(exported_visualization[:layers])),
+          layers: build_layers_from_hash(exported_layers)),
         analyses: exported_visualization[:analyses].map { |a| build_analysis_from_hash(a.deep_symbolize_keys) }
       )
 
-      active_layer_order = exported_visualization[:layers].index { |l| l['active_layer'] }
+      active_layer_order = exported_layers.index { |l| l['active_layer'] }
       if active_layer_order
         visualization.active_layer = visualization.layers.find { |l| l.order == active_layer_order }
       end
@@ -107,7 +109,9 @@ module Carto
     def build_widgets_from_hash(exported_widgets, layer:)
       return [] unless exported_widgets
 
-      exported_widgets.map.with_index.map { |w, i| build_widget_from_hash(w.deep_symbolize_keys, order: i, layer: layer) }
+      exported_widgets.map.with_index.map do |widget, index|
+        build_widget_from_hash(widget.deep_symbolize_keys, order: index, layer: layer)
+      end
     end
 
     def build_widget_from_hash(exported_widget, order:, layer:)
@@ -138,7 +142,8 @@ module Carto
         bbox: visualization.bbox,
         display_name: visualization.display_name,
         map: export_map(visualization.map),
-        layers: visualization.layers.map { |l| export_layer(l, active_layer: visualization.active_layer_id == l.id) }
+        layers: visualization.layers.map { |l| export_layer(l, active_layer: visualization.active_layer_id == l.id) },
+        analyses: visualization.analyses.map { |a| exported_analysis(a) }
       }
     end
 
@@ -175,6 +180,12 @@ module Carto
         options: widget.options_json,
         type: widget.type,
         title: widget.title
+      }
+    end
+
+    def exported_analysis(analysis)
+      {
+        analysis_definition: analysis.analysis_definition_json
       }
     end
   end

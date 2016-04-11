@@ -8,6 +8,8 @@ module Carto
           :carto_visualization,
           user: carto_user, type: 'table', name: table.name, map_id: table.map_id)
         visualization = FactoryGirl.create(:carto_visualization, user_id: carto_user.id, map: map)
+        visualization.update_column(:active_layer_id, visualization.layers.first.id)
+
         # Need to mock the nonexistant table because factories use Carto::* models
         CartoDB::Visualization::Member.any_instance.stubs(:propagate_name_to).returns(true)
         CartoDB::Visualization::Member.any_instance.stubs(:propagate_privacy_to).returns(true)

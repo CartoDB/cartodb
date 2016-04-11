@@ -5,10 +5,8 @@ var DataviewsFactory = require('../../../src/dataviews/dataviews-factory');
 describe('dataviews/dataviews-factory', function () {
   beforeEach(function () {
     this.dataviewsCollection = new Backbone.Collection();
-    this.layers = new Backbone.Collection();
     this.factory = new DataviewsFactory(null, {
       dataviewsCollection: this.dataviewsCollection,
-      layersCollection: this.layers,
       map: {},
       windshaftMap: {}
     });
@@ -46,7 +44,6 @@ describe('dataviews/dataviews-factory', function () {
         apiKey: 'THE_API_KEY'
       }, {
         dataviewsCollection: this.dataviewsCollection,
-        layersCollection: this.layers,
         map: {},
         windshaftMap: {}
       });

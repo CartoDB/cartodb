@@ -165,18 +165,12 @@ var Map = Model.extend({
   },
 
   reload: _.debounce(function (options) {
-    if (this._windshaftMap) {
-      var instanceOptions = {
-        layers: this.layers.models,
-        sourceLayerId: options && options.sourceLayerId,
-        forceFetch: options && options.forceFetch
-      };
+    var instanceOptions = {
+      sourceLayerId: options && options.sourceLayerId,
+      forceFetch: options && options.forceFetch
+    };
 
-      if (this._dataviewsCollection) {
-        instanceOptions.dataviews = this._dataviewsCollection;
-      }
-      this._windshaftMap.createInstance(instanceOptions);
-    }
+    this._windshaftMap.createInstance(instanceOptions);
   }, this.RELOAD_DEBOUNCE_TIME),
 
   _updateAttributions: function () {

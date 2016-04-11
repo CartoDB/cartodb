@@ -350,7 +350,6 @@ var Vis = View.extend({
       apiKey: apiKey
     }, {
       dataviewsCollection: this._dataviewsCollection,
-      layersCollection: this.map.layers,
       map: this.map,
       windshaftMap: this._windshaftMap
     });

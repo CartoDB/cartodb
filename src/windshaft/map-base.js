@@ -18,11 +18,11 @@ var WindshaftMap = Backbone.Model.extend({
     if (!options.client) {
       throw new Error('client option is required');
     }
-    if (!options.dataviewsCollection) {
-      throw new Error('dataviewsCollection option is required');
-    }
     if (!options.layersCollection) {
       throw new Error('layersCollection option is required');
+    }
+    if (!options.dataviewsCollection) {
+      throw new Error('dataviewsCollection option is required');
     }
     if (!options.analysisCollection) {
       throw new Error('analysisCollection option is required');
@@ -34,8 +34,8 @@ var WindshaftMap = Backbone.Model.extend({
       userName: this.client.userName
     });
 
-    this._dataviewsCollection = options.dataviewsCollection;
     this._layersCollection = options.layersCollection;
+    this._dataviewsCollection = options.dataviewsCollection;
     this._analysisCollection = options.analysisCollection;
   },
 
@@ -102,12 +102,6 @@ var WindshaftMap = Backbone.Model.extend({
     }, {});
   },
 
-  _getLayers: function () {
-    return this._layersCollection.select(function (layer) {
-      return LAYER_TYPES.indexOf(layer.get('type')) >= 0;
-    });
-  },
-
   _updateLayersFromWindshaftInstance: function () {
     var layers = this._getLayers();
     _.each(layers, function (layer, layerIndex) {
@@ -118,6 +112,12 @@ var WindshaftMap = Backbone.Model.extend({
         layer.set('meta', this.getLayerMeta(layerIndex));
       }
     }, this);
+  },
+
+  _getLayers: function () {
+    return this._layersCollection.select(function (layer) {
+      return LAYER_TYPES.indexOf(layer.get('type')) >= 0;
+    });
   },
 
   getBaseURL: function (subhost) {

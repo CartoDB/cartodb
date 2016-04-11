@@ -17,12 +17,10 @@ module.exports = Model.extend({
     if (!opts.map) throw new Error('map is required');
     if (!opts.windshaftMap) throw new Error('windshaftMap is required');
     if (!opts.dataviewsCollection) throw new Error('dataviewsCollection is required');
-    if (!opts.layersCollection) throw new Error('layersCollection is required');
 
     this._map = opts.map;
     this._windshaftMap = opts.windshaftMap;
     this._dataviewsCollection = opts.dataviewsCollection;
-    this._layersCollection = opts.layersCollection;
   },
 
   createCategoryModel: function (layerModel, attrs) {

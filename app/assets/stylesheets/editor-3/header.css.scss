@@ -16,17 +16,17 @@
 }
 .Editor-HeaderInfo.is-fixed {
   position: fixed;
-  box-sizing: border-box;
-  margin-left: -25px;
+  width: 344px;
   margin-right: -25px;
   margin-bottom: 24px;
+  margin-left: -25px;
   padding-left: 25px;
   padding-right: 25px;
-  box-shadow: 0 10px 10px rgba(0, 0, 0, .24);
-  z-index: 2;
-  background: #fff;
-  width: 344px;
+  background: $cWhite;
+  box-shadow: 0 10px 10px rgba(0, 0, 0, 0.24);
   padding-bottom: 24px;
+  box-sizing: border-box;
+  z-index: 2;
 }
 
 .Editor-HeaderInfo-ListItem {

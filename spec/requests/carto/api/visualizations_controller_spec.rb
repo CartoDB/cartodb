@@ -305,18 +305,15 @@ describe Carto::Api::VisualizationsController do
 
     before(:all) do
       CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
-    end
 
-    before(:each) do
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
-
-      CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true)
 
       @user_1 = FactoryGirl.create(:valid_user)
       @user_2 = FactoryGirl.create(:valid_user, private_maps_enabled: true)
-
       @api_key = @user_1.api_key
+    end
 
+    before(:each) do
       begin
         delete_user_data @user_1
       rescue => exception
@@ -325,18 +322,18 @@ describe Carto::Api::VisualizationsController do
       end
 
       @headers = {
-        'CONTENT_TYPE'  => 'application/json',
+        'CONTENT_TYPE' => 'application/json'
       }
       host! "#{@user_1.username}.localhost.lan"
     end
 
-    after(:each) do
+    after(:all) do
       @user_1.destroy
       @user_2.destroy
     end
 
     it 'tests exclude_shared and only_shared filters' do
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true)
 
       user_1 = create_user(
         username: unique_name('user'),
@@ -554,7 +551,6 @@ describe Carto::Api::VisualizationsController do
     end
 
     describe 'tests visualization likes endpoints' do
-      include_context 'users helper'
       # TODO: currently new endpoint doesn't match this endpoint
 
       it 'tests like endpoints' do

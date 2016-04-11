@@ -30,7 +30,7 @@ WidgetsService.prototype.getList = function () {
  * @param {Object} layer Instance of a layer model (cartodb.js)
  * @return {CategoryWidgetModel}
  */
-WidgetsService.prototype.createCategoryWidget = function (attrs, layer) {
+WidgetsService.prototype.createCategoryModel = function (attrs, layer) {
   _checkProperties(attrs, ['title']);
 
   var dataviewModel = this._dataviews.createCategoryModel(layer, attrs);
@@ -55,7 +55,7 @@ WidgetsService.prototype.createCategoryWidget = function (attrs, layer) {
  * @param {Object} layer Instance of a layer model (cartodb.js)
  * @return {WidgetModel}
  */
-WidgetsService.prototype.createHistogramWidget = function (attrs, layer) {
+WidgetsService.prototype.createHistogramModel = function (attrs, layer) {
   _checkProperties(attrs, ['title']);
 
   var dataviewModel = this._dataviews.createHistogramModel(layer, attrs);
@@ -81,7 +81,7 @@ WidgetsService.prototype.createHistogramWidget = function (attrs, layer) {
  * @param {Object} layer Instance of a layer model (cartodb.js)
  * @return {CategoryWidgetModel}
  */
-WidgetsService.prototype.createFormulaWidget = function (attrs, layer) {
+WidgetsService.prototype.createFormulaModel = function (attrs, layer) {
   _checkProperties(attrs, ['title']);
 
   var dataviewModel = this._dataviews.createFormulaModel(layer, attrs);
@@ -107,7 +107,7 @@ WidgetsService.prototype.createFormulaWidget = function (attrs, layer) {
  * @param {Object} layer Instance of a layer model (cartodb.js)
  * @return {WidgetModel}
  */
-WidgetsService.prototype.createListWidget = function (attrs, layer) {
+WidgetsService.prototype.createListModel = function (attrs, layer) {
   _checkProperties(attrs, ['title', 'columns_title']);
 
   var dataviewModel = this._dataviews.createListModel(layer, attrs);
@@ -132,7 +132,7 @@ WidgetsService.prototype.createListWidget = function (attrs, layer) {
  * @param {Number} bins
  * @return {WidgetModel}
  */
-WidgetsService.prototype.createTimeSeriesWidget = function (attrs, layer) {
+WidgetsService.prototype.createTimeSeriesModel = function (attrs, layer) {
   // TODO will other kind really work for a time-series?
   attrs.column_type = attrs.column_type || 'date';
   var dataviewModel = this._dataviews.createHistogramModel(layer, attrs);

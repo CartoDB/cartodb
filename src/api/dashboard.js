@@ -1,7 +1,5 @@
 function Dashboard (dashboard) {
   this._dashboard = dashboard;
-
-  this.widgets = this._dashboard.widgets;
 }
 
 Dashboard.prototype = {

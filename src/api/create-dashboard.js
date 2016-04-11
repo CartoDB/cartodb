@@ -48,11 +48,11 @@ var createDashboard = function (selector, vizJSON, opts, callback) {
   // Create widgets
   var widgetsService = new WidgetsService(widgets, vis.dataviews);
   var widgetModelsMap = {
-    list: widgetsService.createListWidget.bind(widgetsService),
-    formula: widgetsService.createFormulaWidget.bind(widgetsService),
-    histogram: widgetsService.createHistogramWidget.bind(widgetsService),
-    'time-series': widgetsService.createTimeSeriesWidget.bind(widgetsService),
-    category: widgetsService.createCategoryWidget.bind(widgetsService)
+    list: widgetsService.createListModel.bind(widgetsService),
+    formula: widgetsService.createFormulaModel.bind(widgetsService),
+    histogram: widgetsService.createHistogramModel.bind(widgetsService),
+    'time-series': widgetsService.createTimeSeriesModel.bind(widgetsService),
+    category: widgetsService.createCategoryModel.bind(widgetsService)
   };
   vizJSON.widgets.forEach(function (d) {
     // Flatten the data structure given in vizJSON, the widgetsService will use whatever it needs and ignore the rest

@@ -39,7 +39,9 @@ module.exports = cdb.core.View.extend({
 
   _initBinds: function () {
     this.widgetModel.bind('change:title change:collapsed', this.render, this);
-    this.dataviewModel.bind('change:histogram_sizes', this.render, this);
+    this.dataviewModel.bind('change:histogram_sizes', function () {
+      this.render();
+    }, this);
     this.add_related_model(this.dataviewModel);
   },
 
@@ -55,23 +57,46 @@ module.exports = cdb.core.View.extend({
     var index = this.dataviewModel._dataProvider._layerIndex;
     var sublayer = this.dataviewModel._dataProvider._vectorLayerView;
     var style = sublayer.styles[index];
-    this.originalStyle = style;
-    var scale = d3.scale.linear().domain([this.dataviewModel.get('start'), this.dataviewModel.get('end')]).range([4,24]);
-    var sizes = '\n' + this.dataviewModel.get('data').map(function (bin) {
-      return '#' + this.dataviewModel.layer.get('layer_name') + 
-      '['+this.dataviewModel.get('column')+'>=' + bin.start + 
-      ']{\nmarker-width: ' + 
-      scale(bin.start) + ';\n}'
-    }.bind(this)).join('\n');
-    style = style.replace('clientes', 'clientes_2')
-    sublayer.setCartoCSS(index, style + sizes, true);
+    var data = this.dataviewModel.get('data')
+    if (style.indexOf('polygon') > -1) {
+      var colors = ['YlGnBu', 'Greens', 'Reds', 'Blues'];
+      var color = colors[Math.floor(Math.random()*colors.length)];
+      style = ['#layer{',
+               '  polygon-fill: ramp([{{column}}], colorbrewer({{color}}, {{bins}}));'
+                  .replace('{{column}}', this.dataviewModel.get('column'))
+                  .replace('{{bins}}', this.dataviewModel.get('bins'))
+                  .replace('{{color}}', color),
+               '  polygon-opacity: 0.6;  ',
+               '  line-color: #FFF;',
+               '  line-width: 0.3;',
+               '  line-opacity: 0.3;',
+               '}'
+              ].join('\n')
+
+    } else {
+      style = ['#layer{',
+               '  marker-width: ramp([{{column}}], {{min}}, {{max}}), {{bins}};'
+                  .replace('{{column}}', this.dataviewModel.get('column'))
+                  .replace('{{bins}}', this.dataviewModel.get('bins'))
+                  .replace('{{min}}', 2)
+                  .replace('{{max}}', 30),
+               '  marker-fill-opacity: 0.4;  ',
+               '  marker-fill: #000;  ',
+               '  marker-line-color: #fff;',
+               '  marker-allow-overlap: true;',
+               '  marker-line-width: 0.3;',
+               '  marker-line-opacity: 0.8;',
+               '}'
+              ].join('\n')
+    }
+    sublayer.setCartoCSS(index, style, true);
     this.dataviewModel.set('histogram_sizes', true);
   },
 
   _cancelSizes: function () {
     var index = this.dataviewModel._dataProvider._layerIndex;
     var sublayer = this.dataviewModel._dataProvider._vectorLayerView;
-    sublayer.setCartoCSS(index, this.originalStyle);
+    sublayer.renderers[index].restoreCartoCSS(true);
     this.dataviewModel.set('histogram_sizes', false);
   }
 

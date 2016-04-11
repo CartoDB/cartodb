@@ -1136,6 +1136,15 @@ module CartoDB
       def materialized_views(schema = @user.database_schema)
         Carto::Db::Database.build_with_user(@user).materialized_views(schema, @user.database_username)
       end
+      
+      def get_database_version
+        version_match = @user.in_database.fetch("SELECT version()").first[:version].match(/(PostgreSQL (([0-9]+\.?){2,3})).*/)
+        if version_match.nil?
+          return nil
+        else
+          return version_match[2]
+        end
+      end
 
       private
 
@@ -1368,6 +1377,7 @@ module CartoDB
           );
         }
       end
+
     end
   end
 end

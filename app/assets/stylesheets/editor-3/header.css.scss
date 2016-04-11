@@ -16,13 +16,10 @@
 }
 .Editor-HeaderInfo.is-fixed {
   position: fixed;
+  top: 0;
   width: 344px;
-  margin-right: -25px;
-  margin-bottom: 24px;
-  margin-left: -25px;
-  padding-right: 25px;
-  padding-bottom: 24px;
-  padding-left: 25px;
+  margin: 0 -25px 24px;
+  padding: 24px 25px;
   background: $cWhite;
   box-shadow: 0 10px 10px rgba(0, 0, 0, 0.24);
   box-sizing: border-box;

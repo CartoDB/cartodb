@@ -1,16 +1,14 @@
 namespace :cartodb do
   namespace :user_overquota do
-
-      # e.g. bundle exec rake cartodb:user_overquota:calculate
-      #      bundle exec rake cartodb:user_overquota:calculate[0.20]
-      desc 'Calculate and store the daily users with overquota greater than some delta'
-      task :calculate, [:delta] => :environment do |_task, args|
-        args.with_defaults(delta: 0.20)
-        delta = args[:delta].to_f
-        puts 'Executing overquota calculation'
-        ::User.store_overquota_users(delta, Date.today)
-        puts "Ended getting the overquota users for delta #{delta}"
-      end
+    # e.g. bundle exec rake cartodb:user_overquota:calculate
+    #      bundle exec rake cartodb:user_overquota:calculate[0.20]
+    desc 'Calculate and store the daily users with overquota greater than some delta'
+    task :calculate, [:delta] => :environment do |_task, args|
+      args.with_defaults(delta: 0.20)
+      delta = args[:delta].to_f
+      puts 'Executing overquota calculation'
+      ::User.store_overquota_users(delta, Date.today)
+      puts "Ended getting the overquota users for delta #{delta}"
     end
 
     # e.g. bundle exec rake cartodb:generate_overquota_report[10]
@@ -43,7 +41,6 @@ namespace :cartodb do
         write_to_csv(filename, output)
       end
     end
-
     def write_to_csv(filename, lines)
       CSV.open(filename, "ab") do |csv|
         lines.each do |line|
@@ -51,4 +48,5 @@ namespace :cartodb do
         end
       end
     end
+  end
 end

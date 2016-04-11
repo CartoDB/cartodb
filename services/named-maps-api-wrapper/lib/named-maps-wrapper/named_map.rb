@@ -184,23 +184,39 @@ module CartoDB
           unless other_layers.nil?
             other_layers.compact.each { |layer|
               layer_data = {
-                type:     layer[:type].downcase,
-                options:  {
-                            cartocss_version: '2.0.1',
-                            cartocss:         self.css_from(layer[:options]),
-                            sql:              layer[:options].fetch( 'query' )
-                          }
+                type: layer[:type].downcase,
+                options: {
+                  cartocss_version: '2.0.1',
+                  cartocss: css_from(layer[:options])
+                }
               }
-
-              widgets_data = widgets_data_for_layer(layer)
-              layer_data[:options][:widgets] = widgets_data if widgets_data
+              source = layer[:options]['source']
+              if source
+                layer[:options].delete('query')
+                layer_data[:options][:source] = { id: layer[:options].fetch('source') }
+              else
+                layer_data[:options][:sql] = layer[:options].fetch('query')
+              end
 
               layers_data.push(layer_data)
             }
           end
 
-          template_data[:layergroup][:layers] = layers_data.compact.flatten
-          template_data[:layergroup][:stat_tag] = visualization.id
+          layergroup = template_data[:layergroup]
+
+          layergroup[:layers] = layers_data.compact.flatten
+          layergroup[:stat_tag] = visualization.id
+
+          widgets = Carto::Widget.from_visualization_id(visualization.id)
+          if widgets.present?
+            widget_names_and_options = widgets.map { |widget| [widget.id, dataview_data(widget)] }
+            layergroup[:dataviews] = widget_names_and_options.to_h
+          end
+
+          analyses = Carto::Analysis.where(visualization_id: visualization.id)
+          if analyses.present?
+            layergroup[:analyses] = analyses.map(&:analysis_definition_json)
+          end
 
           template_data[:view] = view_data_from(visualization)
 
@@ -213,29 +229,10 @@ module CartoDB
         layer_type = layer[:type].downcase
 
         if layer_type == 'cartodb'
-          data = options_for_cartodb_layer(layer, layer_num, template_data)
+          options_for_cartodb_layer(layer, layer_num, template_data)
         else
-          data = options_for_basemap_layer(layer, layer_num, template_data)
+          options_for_basemap_layer(layer, layer_num, template_data)
         end
-
-        widgets_data = widgets_data_for_layer(layer)
-        data[:layer_options][:widgets] = widgets_data if widgets_data
-
-        data
-      end
-
-      def self.widgets_data_for_layer(layer)
-        widgets_data = nil
-
-        layer_widgets = Carto::Widget.where(layer_id: layer[:id]).all
-        # TODO: if this structure becomes standard, remove the count check,
-        # and always return a `widgets` attribute
-        if layer_widgets.count > 0
-          widget_names_and_options = layer_widgets.map { |w| [w.id, layer_widget_options(w)] }
-          widgets_data = Hash[*widget_names_and_options.flatten]
-        end
-
-        widgets_data
       end
 
       def self.css_from(options)
@@ -247,8 +244,6 @@ module CartoDB
       end
 
       attr_reader :template
-
-      private
 
       def self.view_data_from(visualization)
         center = visualization.map.center_data
@@ -282,7 +277,11 @@ module CartoDB
 
         layer_placeholder = "layer#{layer_num}"
         layer_num += 1
-        layer_options[:sql] = "SELECT * FROM (#{layer[:options][:sql]}) AS wrapped_query WHERE <%= #{layer_placeholder} %>=1"
+
+        unless layer_options[:source]
+          layer_options[:sql] =
+            "SELECT * FROM (#{layer[:options][:sql]}) AS wrapped_query WHERE <%= #{layer_placeholder} %>=1"
+        end
 
         template_data[:placeholders][layer_placeholder.to_sym] = {
           type:     'number',
@@ -317,7 +316,7 @@ module CartoDB
         'time-series' => 'histogram'
       }.freeze
 
-      def self.layer_widget_options(widget)
+      def self.dataview_data(widget)
         options = widget.options_json
         options[:aggregationColumn] = options[:aggregation_column]
         options.delete(:aggregation_column)

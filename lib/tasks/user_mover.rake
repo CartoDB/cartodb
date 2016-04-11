@@ -37,16 +37,23 @@ namespace :cartodb do
       desc 'Import a JSON export (either username or organization)'
       task :import, [:file, :data_only, :into_org_name, :host, :job_uuid] => :environment do |_task, args|
         args.with_defaults(job_uuid: nil, data_only: false, host: nil, rollback: false, into_org_name: nil, mode: :import)
-        real_args = args.to_hash
-        real_args[:data_only] = (real_args[:data_only] == 'true' ? true : false)
-        real_args[:into_org_name] = (real_args[:into_org] != '' ? args[:into_org] : nil)
-        CartoDB::DataMover::ImportJob.new(real_args).run!
+        job_args = args.to_hash
+        if job_args[:data_only] == 'true'
+          job_args[:data] = true
+          job_args[:metadata] = false
+        end
+        job_args[:into_org_name] = (job_args[:into_org] != '' ? args[:into_org] : nil)
+        CartoDB::DataMover::ImportJob.new(job_args).run!
       end
       desc 'Rollback from a JSON export (either username or organization)'
       task :rollback, [:file, :data_only, :host] => :environment do |_task, args|
         args.with_defaults(data_only: false, host: nil, rollback: false, mode: :rollback)
-        args[:data_only] = args[:data_only] == 'true' ? true : false
-        CartoDB::DataMover::ImportJob.new(args).run!
+        job_args = args.to_hash
+        if job_args[:data_only] == 'true'
+          job_args[:data] = true
+          job_args[:metadata] = false
+        end
+        CartoDB::DataMover::ImportJob.new(job_args).run!
       end
     end
   end

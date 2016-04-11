@@ -16,7 +16,8 @@ module CartoDB
       include CartoDB::DataMover::Utils
 
       def initialize(options)
-        @options = options
+        default_options = {:data => true, :metadata => :true}
+        @options = default_options.merge(options)
         @config = CartoDB::DataMover::Config.config
 
         @start = Time.now
@@ -53,7 +54,7 @@ module CartoDB
 
           if @options[:mode] == :import
             begin
-              import_metadata("org_#{organization_id}_metadata.sql") unless @options[:data_only]
+              import_metadata("org_#{organization_id}_metadata.sql") if @options[:metadata]
               create_org_role(@pack_config['users'][0]['database_name']) # Create org role for the original org
               @pack_config['groups'].each do |group|
                 create_role(group['database_role'])
@@ -65,14 +66,14 @@ module CartoDB
                 grant_user_org_role(database_username(user['id']), user['database_name'])
               end
 
-              # We first import the owner
+              # We first import the owner. If schemas are not split, this will also import the whole org database
               owner_id = @pack_config['organization']['owner_id']
               @logger.info("Importing org owner #{owner_id}..")
               ImportJob.new(file: @path + "user_#{owner_id}.json",
                             mode: @options[:mode],
                             host: @target_dbhost,
                             target_org: @pack_config['organization']['name'],
-                            logger: @logger, data_only: @options[:data_only]).run!
+                            logger: @logger, data: @options[:data], metadata: @options[:metadata]).run!
 
               # Fix permissions and metadata settings for owner
               owner_user = ::User.find(id: owner_id)
@@ -85,7 +86,7 @@ module CartoDB
                               mode: @options[:mode],
                               host: @target_dbhost,
                               target_org: @pack_config['organization']['name'],
-                              logger: @logger, data_only: @options[:data_only]).run!
+                              logger: @logger, data: @options[:data], metadata: @options[:metadata]).run!
               end
             rescue => e
               rollback_metadata("org_#{organization_id}_metadata_undo.sql") unless @options[:data_only]
@@ -158,7 +159,7 @@ module CartoDB
 
           if @options[:mode] == :import
             begin
-              unless @options[:data_only]
+              if @options[:metadata]
                 check_user_exists_redis
                 check_user_exists_postgres
               end
@@ -190,7 +191,10 @@ module CartoDB
             end
 
             begin
-              if File.exists? "#{@path}user_#{@target_userid}.dump"
+              if @target_org_id && @target_is_owner && File.exists?("#{@path}org_#{@target_org_id}.dump")
+                create_db(@target_dbname, true)
+                import_pgdump("org_#{@target_org_id}.dump")
+              elsif File.exists? "#{@path}user_#{@target_userid}.dump"
                 create_db(@target_dbname, true)
                 import_pgdump("user_#{@target_userid}.dump")
               elsif File.exists? "#{@path}#{@target_username}.schema.sql"
@@ -206,7 +210,7 @@ module CartoDB
               exit 1
             end
 
-            unless @options[:data_only]
+            if @options[:metadata]
               begin
                 import_redis("user_#{@target_userid}_metadata.redis")
                 import_metadata("user_#{@target_userid}_metadata.sql")
@@ -233,7 +237,6 @@ module CartoDB
 
             user_model = ::User.find(username: @target_username)
             user_model.db_service.monitor_user_notification
-            sleep 5
             user_model.db_service.configure_database
             @import_log[:end] = Time.now
             @import_log[:status] = 'success'

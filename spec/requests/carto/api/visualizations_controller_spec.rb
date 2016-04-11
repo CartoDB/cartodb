@@ -328,10 +328,6 @@ describe Carto::Api::VisualizationsController do
       CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
 
       CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
-      @db = Rails::Sequel.connection
-      Sequel.extension(:pagination)
-
-      CartoDB::Visualization.repository = DataRepository::Backend::Sequel.new(@db, :visualizations)
 
       @user_1 = FactoryGirl.create(:valid_user)
       @user_2 = FactoryGirl.create(:valid_user, private_maps_enabled: true)

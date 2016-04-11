@@ -426,6 +426,30 @@ module CartoDB
         configure_extension_org_metadata_api_endpoint
       end
 
+      # Use a direct connection to the db through the direct port specified
+      # in the database configuration and set up its statement timeout value. This
+      # allows to overpass the statement_timeout limit if a connection pooler is used.
+      # This method is supposed to receive a block that will be run with the created
+      # connection.
+      def in_database_direct_connection(statement_timeout:)
+        raise 'need block' unless block_given?
+
+        configuration = db_configuration_for
+        configuration[:port] = configuration.fetch(:direct_port, configuration["direct_port"]) || configuration[:port] || configuration["port"]
+
+        # Temporary trace to be removed once https://github.com/CartoDB/cartodb/issues/7047 is solved
+        CartoDB::Logger.warning(message: 'Direct connection not used from queue') unless Socket.gethostname =~ /^que/
+
+        connection = @user.get_connection(_opts = {}, configuration)
+
+        begin
+          connection.run("SET statement_timeout TO #{statement_timeout}")
+          yield(connection)
+        ensure
+          connection.run("SET statement_timeout TO DEFAULT")
+        end
+      end
+
       def reset_pooled_connections
         # Only close connections to this users' database
         $pool.close_connections!(@user.database_name)
@@ -434,7 +458,7 @@ module CartoDB
       # Upgrade the cartodb postgresql extension
       def upgrade_cartodb_postgres_extension(statement_timeout = nil, cdb_extension_target_version = nil)
         if cdb_extension_target_version.nil?
-          cdb_extension_target_version = '0.14.4'
+          cdb_extension_target_version = '0.15.0'
         end
 
         @user.in_database(as: :superuser, no_cartodb_in_schema: true) do |db|
@@ -1112,6 +1136,15 @@ module CartoDB
       def materialized_views(schema = @user.database_schema)
         Carto::Db::Database.build_with_user(@user).materialized_views(schema, @user.database_username)
       end
+      
+      def get_database_version
+        version_match = @user.in_database.fetch("SELECT version()").first[:version].match(/(PostgreSQL (([0-9]+\.?){2,3})).*/)
+        if version_match.nil?
+          return nil
+        else
+          return version_match[2]
+        end
+      end
 
       private
 
@@ -1344,6 +1377,7 @@ module CartoDB
           );
         }
       end
+
     end
   end
 end

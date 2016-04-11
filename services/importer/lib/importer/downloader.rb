@@ -44,7 +44,7 @@ module CartoDB
       CONTENT_TYPES_MAPPING = [
         {
           content_types: ['text/plain'],
-          extensions: ['txt', 'kml']
+          extensions: ['txt', 'kml', 'geojson']
         },
         {
           content_types: ['text/csv'],

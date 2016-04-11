@@ -8,7 +8,7 @@ namespace :cartodb do
         # This uses the new models to avoid triggering side-effects
         viz = Carto::Visualization.select('visualizations.*')
                                   .joins('LEFT JOIN permissions ON visualizations.permission_id = permissions.id')
-                                  .where('permissions.id IS NULL OR permissions.entity_id != visualizations.id')
+                                  .where('permissions.id IS NULL OR permissions.entity_id != visualizations.id').all
         puts "*** Updating permissions for #{viz.count} visualization"
         puts "*** Automatically fixing conflicts" if auto_fix
         sleep 5
@@ -21,7 +21,7 @@ namespace :cartodb do
             if perms.empty?
               puts '  - Creating new default permission'
 
-              user_id = v.user_id
+              user_id = v.user_id ? v.user_id : '00000000-0000-0000-0000-000000000000'
               username = v.user ? v.user.username : 'cdb_unknown' # Workaround for invalid users
               perm = Carto::Permission.create(
                 owner_id:       user_id,

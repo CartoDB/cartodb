@@ -8,15 +8,7 @@ include CartoDB
 
 describe Visualization::Member do
   before do
-    db_config   = Rails.configuration.database_configuration[Rails.env]
-    # Why not passing db_config directly to Sequel.postgres here ?
-    # See https://github.com/CartoDB/cartodb/issues/421
-    db = Sequel.postgres(
-        host:     db_config.fetch('host'),
-        port:     db_config.fetch('port'),
-        database: db_config.fetch('database'),
-        username: db_config.fetch('username')
-    )
+    db = Rails::Sequel.connection
     Visualization.repository  = DataRepository::Backend::Sequel.new(db, :visualizations)
 
     CartoDB::UserModule::DBService.any_instance.stubs(:move_to_own_schema).returns(nil)

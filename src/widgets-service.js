@@ -1,7 +1,7 @@
 var _ = require('underscore');
-var WidgetModel = require('../widgets/widget-model');
-var CategoryWidgetModel = require('../widgets/category/category-widget-model');
-var HistogramWidgetModel = require('../widgets/histogram/histogram-widget-model');
+var WidgetModel = require('./widgets/widget-model');
+var CategoryWidgetModel = require('./widgets/category/category-widget-model');
+var HistogramWidgetModel = require('./widgets/histogram/histogram-widget-model');
 
 /**
  * Public API to interact with dashboard widgets.

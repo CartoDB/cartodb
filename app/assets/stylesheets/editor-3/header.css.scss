@@ -14,6 +14,21 @@
     display: block;
   }
 }
+.Editor-HeaderInfo.is-fixed {
+  position: fixed;
+  box-sizing: border-box;
+  margin-left: -25px;
+  margin-right: -25px;
+  margin-bottom: 24px;
+  padding-left: 25px;
+  padding-right: 25px;
+  box-shadow: 0 10px 10px rgba(0, 0, 0, .24);
+  z-index: 2;
+  background: #fff;
+  width: 344px;
+  padding-bottom: 24px;
+}
+
 .Editor-HeaderInfo-ListItem {
   display: inline-block;
   margin-right: 8px;

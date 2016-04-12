@@ -144,7 +144,9 @@ describe('api/sql', function() {
     )
   });
 
-  it("should call promise", function(done) {
+  it("should call promise", function () {
+    jasmine.clock().install();
+
     var data;
     var data_callback;
 
@@ -152,11 +154,12 @@ describe('api/sql', function() {
       data = d;
     });
 
-    setTimeout(function() {
-      expect(data).toEqual(TEST_DATA);
-      expect(data_callback).toEqual(TEST_DATA);
-      done()
-    }, 500); //Fix cartodb.js issue #336
+    jasmine.clock().tick(100);
+
+    expect(data).toEqual(TEST_DATA);
+    expect(data_callback).toEqual(TEST_DATA);
+
+    jasmine.clock().uninstall();
   });
 
   it("should call promise on error", function(done) {

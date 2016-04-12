@@ -44,7 +44,8 @@ describe Carto::VisualizationsExportService2 do
       },
       layers: [
         {
-          options: JSON.parse('{"default":true,"url":"http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png",' +
+          options: JSON.parse('{"default":true,' +
+            '"url":"http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png",' +
             '"subdomains":"abcd","minZoom":"0","maxZoom":"18","name":"Positron",' +
             '"className":"positron_rainbow_labels","attribution":"\u00a9 <a ' +
             'href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors \u00a9 ' +
@@ -92,11 +93,13 @@ describe Carto::VisualizationsExportService2 do
           kind: 'carto',
           infowindow: JSON.parse('{"fields":[],"template_name":"table/views/infowindow_light","template":"",' +
             '"alternative_names":{},"width":226,"maxHeight":180}').deep_symbolize_keys,
-          tooltip: JSON.parse('{"fields":[],"template_name":"tooltip_light","template":"","alternative_names":{},"maxHeight":180}').deep_symbolize_keys,
+          tooltip: JSON.parse('{"fields":[],"template_name":"tooltip_light","template":"","alternative_names":{},' +
+            '"maxHeight":180}').deep_symbolize_keys,
           active_layer: true
         },
         {
-          options: JSON.parse('{"default":true,"url":"http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png", ' +
+          options: JSON.parse('{"default":true,' +
+            '"url":"http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png", ' +
             '"subdomains":"abcd","minZoom":"0","maxZoom":"18","attribution":"\u00a9 <a ' +
             'href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors \u00a9 ' +
             '<a href=\"http://cartodb.com/attributions#basemaps\">CartoDB</a>",' +
@@ -122,7 +125,7 @@ describe Carto::VisualizationsExportService2 do
     }
   end
 
-  CHANGING_LAYER_OPTIONS_KEYS = [:user_name]
+  CHANGING_LAYER_OPTIONS_KEYS = [:user_name].freeze
 
   def verify_visualization_vs_export(visualization, visualization_export, importing_user: nil)
     visualization.name.should eq visualization_export[:name]
@@ -181,8 +184,8 @@ describe Carto::VisualizationsExportService2 do
   end
 
   def verify_layer_vs_export(layer, layer_export, importing_user: nil)
-    options_match = layer.options.reject { |k, _| CHANGING_LAYER_OPTIONS_KEYS.include?(k) }
-    export_options_match = layer_export[:options].reject { |k, _| CHANGING_LAYER_OPTIONS_KEYS.include?(k) }
+    options_match = layer.options.deep_symbolize_keys.reject { |k, _| CHANGING_LAYER_OPTIONS_KEYS.include?(k) }
+    export_options_match = layer_export[:options].deep_symbolize_keys.reject { |k, _| CHANGING_LAYER_OPTIONS_KEYS.include?(k) }
     options_match.should eq export_options_match
 
     options_user_name = layer.options[:user_name]
@@ -191,8 +194,17 @@ describe Carto::VisualizationsExportService2 do
     end
 
     layer.kind.should eq layer_export[:kind]
-    layer.infowindow.should eq layer_export[:infowindow]
-    layer.tooltip.should eq layer_export[:tooltip]
+    if layer.infowindow
+      layer.infowindow.deep_symbolize_keys.should eq layer_export[:infowindow].deep_symbolize_keys
+    else
+      layer.infowindow.should eq layer_export[:infowindow]
+    end
+
+    if layer.tooltip
+      layer.tooltip.deep_symbolize_keys.should eq layer_export[:tooltip].deep_symbolize_keys
+    else
+      layer.tooltip.should eq layer_export[:tooltip]
+    end
 
     verify_widgets_vs_export(layer.widgets, layer_export[:widgets])
   end
@@ -274,8 +286,8 @@ describe Carto::VisualizationsExportService2 do
 
       it 'builds base visualization that can be persisted by VisualizationsExportPersistenceService' do
         json_export = export.to_json
-        imported_visualization = Carto::VisualizationsExportService2.new.build_visualization_from_json_export(json_export)
-        visualization = Carto::VisualizationsExportPersistenceService.new.save_import(@user, imported_visualization)
+        imported_viz = Carto::VisualizationsExportService2.new.build_visualization_from_json_export(json_export)
+        visualization = Carto::VisualizationsExportPersistenceService.new.save_import(@user, imported_viz)
         # Let's make sure everything is persisted
         visualization = Carto::Visualization.find(visualization.id)
 
@@ -307,8 +319,8 @@ describe Carto::VisualizationsExportService2 do
 
       it 'is backwards compatible with old models' do
         json_export = export.to_json
-        imported_visualization = Carto::VisualizationsExportService2.new.build_visualization_from_json_export(json_export)
-        visualization = Carto::VisualizationsExportPersistenceService.new.save_import(@user, imported_visualization)
+        imported_viz = Carto::VisualizationsExportService2.new.build_visualization_from_json_export(json_export)
+        visualization = Carto::VisualizationsExportPersistenceService.new.save_import(@user, imported_viz)
         # Let's make sure everything is persisted
         visualization = CartoDB::Visualization::Member.new(id: visualization.id).fetch
 
@@ -352,7 +364,7 @@ describe Carto::VisualizationsExportService2 do
   describe 'exporting + importing' do
     include Carto::Factories::Visualizations
 
-    def verify_visualizations_match(imported_visualization, original_visualization, importing_user: importing_user)
+    def verify_visualizations_match(imported_visualization, original_visualization, importing_user: nil)
       imported_visualization.name.should eq original_visualization.name
       imported_visualization.description.should eq original_visualization.description
       imported_visualization.type.should eq original_visualization.type
@@ -395,7 +407,7 @@ describe Carto::VisualizationsExportService2 do
       imported_map.legends.should eq original_map.legends
     end
 
-    def verify_layers_match(imported_layers, original_layers, importing_user: importing_user)
+    def verify_layers_match(imported_layers, original_layers, importing_user: nil)
       imported_layers.should_not be_nil
       imported_layers.length.should eq original_layers.length
       (0..(original_layers.length - 1)).each do |i|
@@ -406,9 +418,9 @@ describe Carto::VisualizationsExportService2 do
       end
     end
 
-    def verify_layer_match(imported_layer, original_layer, importing_user: importing_user)
-      imported_options_match = imported_layer.options.reject { |k, _| CHANGING_LAYER_OPTIONS_KEYS.include?(k) }
-      original_options_match = original_layer.options.reject { |k, _| CHANGING_LAYER_OPTIONS_KEYS.include?(k) }
+    def verify_layer_match(imported_layer, original_layer, importing_user: nil)
+      imported_options_match = imported_layer.options.deep_symbolize_keys.reject { |k, _| CHANGING_LAYER_OPTIONS_KEYS.include?(k) }
+      original_options_match = original_layer.options.deep_symbolize_keys.reject { |k, _| CHANGING_LAYER_OPTIONS_KEYS.include?(k) }
       imported_options_match.should eq original_options_match
 
       user_name = imported_layer.options[:user_name]
@@ -478,16 +490,20 @@ describe Carto::VisualizationsExportService2 do
 
     it 'imports an exported visualization should create a new visualization with matching metadata' do
       exported_string = Carto::VisualizationsExportService2.new.export_visualization_json_string(@visualization.id)
-      imported_visualization = Carto::VisualizationsExportPersistenceService.new.
-        save_import(@user, Carto::VisualizationsExportService2.new.build_visualization_from_json_export(exported_string))
-      verify_visualizations_match(Carto::Visualization.find(imported_visualization.id), @visualization, importing_user: @user)
+      built_viz = Carto::VisualizationsExportService2.new.build_visualization_from_json_export(exported_string)
+      imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user, built_viz)
+
+      imported_viz = Carto::Visualization.find(imported_viz.id)
+      verify_visualizations_match(imported_viz, @visualization, importing_user: @user)
     end
 
     it 'imports an exported visualization into another account should change layer user_name option' do
       exported_string = Carto::VisualizationsExportService2.new.export_visualization_json_string(@visualization.id)
-      imported_visualization = Carto::VisualizationsExportPersistenceService.new.
-        save_import(@user2, Carto::VisualizationsExportService2.new.build_visualization_from_json_export(exported_string))
-      verify_visualizations_match(Carto::Visualization.find(imported_visualization.id), @visualization, importing_user: @user2)
+      built_viz = Carto::VisualizationsExportService2.new.build_visualization_from_json_export(exported_string)
+      imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user2, built_viz)
+
+      imported_viz = Carto::Visualization.find(imported_viz.id)
+      verify_visualizations_match(imported_viz, @visualization, importing_user: @user2)
     end
   end
 end

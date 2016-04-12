@@ -43,6 +43,13 @@
         "unable-to-import-as-layers": "Unable to add all imported datasets as Layers",
         "upgrade-your-account": "<a href='https://cartodb.com/pricing/'>Upgrade your account</a> to add more than %{userMaxLayers} layers to your maps.",
       },
+      "size-error-details-upgrade": {
+        "free-trial-duration": "14 days Free trial",
+        "keep-data": "Keep your data and get more quota by upgrading your plan",
+        "quota": "You have run out of quota",
+        "remove-or-upgrade": "Remove some of your datasets to gain available space or upgrade your account",
+        "upgrade": "upgrade"
+      },
       "error-details": {
         "check-errors": "Check errors",
         "check-url": "Check that the URL you provided is OK",

@@ -19,7 +19,7 @@
       <li class="ErrorDetails-item">
         <div class="ErrorDetails-itemStep">1</div>
         <div class="ErrorDetails-itemText">
-          <%- _t('components.background-importer.error-details.remote-server-code', { httpResponseCode: httpResponseCode })> <%- httpResponseCodeMessage %>
+          <%- _t('components.background-importer.error-details.remote-server-code', { httpResponseCode: httpResponseCode }) %> <%- httpResponseCodeMessage %>
         </div>
       </li>
       <li class="ErrorDetails-item">

@@ -1,4 +1,5 @@
 var $ = require('jquery');
+var Backbone = require('backbone');
 var Map = require('../../../../src/geo/map');
 var TorqueLayer = require('../../../../src/geo/map/torque-layer');
 var Layers = require('../../../../src/geo/map/layers');
@@ -12,8 +13,7 @@ describe('geo/ui/layer-selector (torque)', function() {
 
   beforeEach(function() {
     // Map needs a WindshaftMap so we're setting up a fake one
-    var windshaftMap = jasmine.createSpyObj('windshaftMap', ['bind', 'isNamedMap', 'isAnonymousMap', 'createInstance', 'reload']);
-    windshaftMap.isAnonymousMap.and.returnValue(true);
+    var windshaftMap = jasmine.createSpyObj('windshaftMap', ['bind', 'createInstance', 'reload']);
 
     var map = new Map(null, {
       windshaftMap: windshaftMap
@@ -28,7 +28,8 @@ describe('geo/ui/layer-selector (torque)', function() {
     var mapView = new LeafletMapView({
       el: $("<div>"),
       map: map,
-      layerViewFactory: jasmine.createSpyObj('layerViewFactory', ['createLayerView'])
+      layerViewFactory: jasmine.createSpyObj('layerViewFactory', ['createLayerView']),
+      layerGroupModel: new Backbone.Model()
     });
 
     layerSelector = new LayerSelector({

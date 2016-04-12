@@ -43,16 +43,6 @@ var WindshaftMap = Backbone.Model.extend({
     throw new Error('Subclasses of windshaft/map-base must implement .toJSON');
   },
 
-  isNamedMap: function () {
-    var NamedMap = require('./named-map');
-    return this instanceof NamedMap;
-  },
-
-  isAnonymousMap: function () {
-    var AnonymousMap = require('./anonymous-map');
-    return this instanceof AnonymousMap;
-  },
-
   createInstance: function (options) {
     options = options || {};
 

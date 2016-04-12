@@ -10,23 +10,44 @@ var CartoDBLayerGroupBase = Backbone.Model.extend({
   initialize: function (attributes, options) {
     options = options || {};
 
+    if (!options.layersCollection) {
+      throw new Error('layersCollection option is required');
+    }
     if (!options.windshaftMap) {
       throw new Error('windshaftMap option is required');
     }
 
-    this.layers = new Backbone.Collection(options.layers || []);
+    this._layersCollection = options.layersCollection;
     this._windshaftMap = options.windshaftMap;
+
+    this.layers = new Backbone.Collection(options.layers || []);
 
     // When a new instance of the map is created in Windshaft, we will need to use
     // new URLs for the tiles (`urls` attribute) and also for the attributes (`baseURL`)
     this._windshaftMap.bind('instanceCreated', function (mapInstance) {
-
       // TODO: We might need to get tiles of other type of layers too. For example, when we're generating
       // static images, we can't the layer with labels on top to be included.
       this.set({
         baseURL: mapInstance.getBaseURL(),
         urls: mapInstance.getTiles('mapnik')
       });
+    }, this);
+
+    this._layersCollection.bind('reset', function () {
+      var cartoDBLayers = this._layersCollection.select(function (layerModel) { return layerModel.get('type') === 'CartoDB'; });
+      this.layers.reset(cartoDBLayers);
+    }, this);
+
+    this._layersCollection.bind('add', function (layerModel) {
+      if (layerModel.get('type') === 'CartoDB') {
+        this.layers.add(layerModel);
+      }
+    }, this);
+
+    this._layersCollection.bind('remove', function (layerModel) {
+      if (layerModel.get('type') === 'CartoDB') {
+        this.layers.remove(layerModel);
+      }
     }, this);
   },
 

@@ -2,16 +2,16 @@ var _ = require('underscore');
 var log = require('cdb.log');
 var View = require('../core/view');
 
-var CartoDBLayerGroupNamedMap = require('./cartodb-layer-group-named-map');
-var CartoDBLayerGroupAnonymousMap = require('./cartodb-layer-group-anonymous-map');
-
 var MapView = View.extend({
-
   initialize: function () {
-
     if (this.options.map === undefined) {
       throw new Error('you should specify a map model');
     }
+
+    if (this.options.layerGroupModel === undefined) {
+      throw new Error('layerGroupModel is required');
+    }
+    this._cartoDBLayerGroup = this.options.layerGroupModel;
 
     if (this.options.layerViewFactory === undefined) {
       throw new Error('you should specify a layerViewFactory');
@@ -142,45 +142,27 @@ var MapView = View.extend({
   },
 
   _addGroupedLayer: function (layerModel) {
-    var layerView;
-    if (!this._cartoDBLayerGroup) {
-      this._cartoDBLayerGroup = this._newCartoDBLayerGroup(layerModel);
-      layerView = this.createLayer(this._cartoDBLayerGroup);
-      this._layerViews[layerModel.cid] = layerView;
-    } else {
-      // Add that layer to the group
-      // TODO: The only reason why the _cartoDBLayerGroup needs to access individual layers
-      // is to know if layers are visible of not, so that URLs for attributes can use the
-      // right indexes. There should be a better way to do this.
-      this._cartoDBLayerGroup.layers.add(layerModel);
-      this._layerViews[layerModel.cid] = this.getLayerViewByLayerCid(this._cartoDBLayerGroup.layers.at(0).cid);
+    // Layer group view already exists
+    if (this._cartoDBLayerGroupView) {
+      this._layerViews[layerModel.cid] = this._cartoDBLayerGroupView;
+      return;
     }
 
+    var layerView = this._createLayerView(this._cartoDBLayerGroup);
+    this._cartoDBLayerGroupView = layerView;
+    this._layerViews[layerModel.cid] = layerView;
     return layerView;
   },
 
-  _newCartoDBLayerGroup: function (layerModel) {
-    var LayerGroupClass = CartoDBLayerGroupAnonymousMap;
-    var windshaftMap = this.map.getWindshaftMap();
-    if (windshaftMap.isNamedMap()) {
-      LayerGroupClass = CartoDBLayerGroupNamedMap;
-    }
-
-    return new LayerGroupClass({}, {
-      windshaftMap: windshaftMap,
-      layers: [layerModel]
-    });
-  },
-
   _addIndividualLayer: function (layerModel) {
-    var layerView = this.createLayer(layerModel);
+    var layerView = this._createLayerView(layerModel);
     if (layerView) {
       this._layerViews[layerModel.cid] = layerView;
     }
     return layerView;
   },
 
-  createLayer: function (layerModel) {
+  _createLayerView: function (layerModel) {
     return this._layerViewFactory.createLayerView(layerModel, this.getNativeMap());
   },
 
@@ -195,9 +177,7 @@ var MapView = View.extend({
   _removeLayer: function (layerModel) {
     var layerView = this._layerViews[layerModel.cid];
     if (layerModel.get('type') === 'CartoDB') {
-      this._cartoDBLayerGroup.layers.remove(layerModel);
       if (this._cartoDBLayerGroup.layers.size() === 0) {
-        delete this._cartoDBLayerGroup;
         layerView.remove();
       }
     } else {

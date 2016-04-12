@@ -1,5 +1,6 @@
 /* global L */
 var $ = require('jquery');
+var Backbone = require('backbone');
 var Map = require('../../../../src/geo/map');
 var LeafletMapView = require('../../../../src/geo/leaflet/leaflet-map-view');
 var LeafletLayerViewFactory = require('../../../../src/geo/leaflet/leaflet-layer-view-factory');
@@ -16,7 +17,8 @@ describe('geo/leaflet/leaflet-torque-layer', function () {
     this.mapView = new LeafletMapView({
       el: container,
       map: this.map,
-      layerViewFactory: new LeafletLayerViewFactory()
+      layerViewFactory: new LeafletLayerViewFactory(),
+      layerGroupModel: new Backbone.Model()
     });
 
     spyOn(L.TorqueLayer.prototype, 'initialize').and.callThrough();

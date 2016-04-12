@@ -1,6 +1,6 @@
 var $ = require('jquery');
 var _ = require('underscore');
-
+var Backbone = require('backbone');
 var Map = require('../../../../src/geo/map');
 var Geometry = require('../../../../src/geo/geometry');
 var TileLayer = require('../../../../src/geo/map/tile-layer');
@@ -23,7 +23,8 @@ describe('geo/gmaps/gmaps-map-view', function () {
     mapView = new GoogleMapsMapView({
       el: container,
       map: map,
-      layerViewFactory: new GMapsLayerViewFactory()
+      layerViewFactory: new GMapsLayerViewFactory(),
+      layerGroupModel: new Backbone.Model()
     });
 
     var layerURL = 'http://localhost/{s}/light_nolabels/{z}/{x}/{y}.png';
@@ -197,7 +198,8 @@ describe('geo/gmaps/gmaps-map-view', function () {
     var mapView = new GoogleMapsMapView({
       el: container,
       map: map,
-      layerViewFactory: new GMapsLayerViewFactory()
+      layerViewFactory: new GMapsLayerViewFactory(),
+      layerGroupModel: new Backbone.Model()
     });
 
     expect(mapView._gmapsMap.get('draggable')).toBeFalsy();

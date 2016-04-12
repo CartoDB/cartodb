@@ -6,12 +6,14 @@ var CartoDBLayerGroupNamed = require('../../../src/geo/cartodb-layer-group-named
 describe('geo/cartodb-layer-group-named-map', function () {
   beforeEach(function () {
     this.windshaftMap = new Backbone.Model();
+    this.layersCollection = new Backbone.Collection();
   });
 
   // TODO: This test is a bit useless
   it('should be type namedmap', function () {
     var layerGroup = new CartoDBLayerGroupNamed(null, {
-      windshaftMap: this.windshaftMap
+      windshaftMap: this.windshaftMap,
+      layersCollection: this.layersCollection
     });
     expect(layerGroup.get('type')).toEqual('namedmap');
   });
@@ -29,8 +31,9 @@ describe('geo/cartodb-layer-group-named-map', function () {
         baseURL: 'http://wadus.com'
       }, {
         windshaftMap: this.windshaftMap,
-        layers: [cartoDBLayer1, cartoDBLayer2]
+        layersCollection: this.layersCollection
       });
+      this.layersCollection.reset([cartoDBLayer1, cartoDBLayer2]);
       var callback = jasmine.createSpy('callback');
 
       layerGroup.fetchAttributes(0, 1000, callback);
@@ -61,7 +64,8 @@ describe('geo/cartodb-layer-group-named-map', function () {
   describe('getTileJSONFromTiles', function () {
     it('should be undefined if urls are not present', function () {
       var layerGroup = new CartoDBLayerGroupNamed(null, {
-        windshaftMap: this.windshaftMap
+        windshaftMap: this.windshaftMap,
+        layersCollection: this.layersCollection
       });
 
       expect(layerGroup.getTileJSONFromTiles(0)).toBeUndefined();
@@ -75,8 +79,9 @@ describe('geo/cartodb-layer-group-named-map', function () {
         baseURL: 'http://wadus.com'
       }, {
         windshaftMap: this.windshaftMap,
-        layers: [cartoDBLayer1, cartoDBLayer2]
+        layersCollection: this.layersCollection
       });
+      this.layersCollection.reset([cartoDBLayer1, cartoDBLayer2]);
 
       layerGroup.set('urls', {
         tiles: [

@@ -27,6 +27,8 @@ var WindshaftAnonymousMap = require('../windshaft/anonymous-map');
 var AnalysisFactory = require('../analysis/analysis-factory');
 var VizJSON = require('./vizjson');
 var LayersCollection = require('../geo/map/layers');
+var CartoDBLayerGroupNamedMap = require('../geo/cartodb-layer-group-named-map');
+var CartoDBLayerGroupAnonymousMap = require('../geo/cartodb-layer-group-anonymous-map');
 
 /**
  * Visualization creation
@@ -318,7 +320,23 @@ var Vis = View.extend({
     this.$el.append(div);
 
     var mapViewFactory = new MapViewFactory();
-    this.mapView = mapViewFactory.createMapView(this.map.get('provider'), this.map, div_hack);
+
+    var layerGroupModel;
+
+    // Named map
+    if (datasource.template_name) {
+      layerGroupModel = new CartoDBLayerGroupNamedMap({}, {
+        layersCollection: this._layersCollection,
+        windshaftMap: this._windshaftMap
+      });
+    } else {
+      layerGroupModel = new CartoDBLayerGroupAnonymousMap({}, {
+        layersCollection: this._layersCollection,
+        windshaftMap: this._windshaftMap
+      });
+    }
+
+    this.mapView = mapViewFactory.createMapView(this.map.get('provider'), this.map, div_hack, layerGroupModel);
 
     // Bindings
 

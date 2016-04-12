@@ -10,11 +10,13 @@ var MyCartoDBLayerGroup = CartoDBLayerGroupBase.extend({
 describe('geo/cartodb-layer-group-base', function () {
   beforeEach(function () {
     this.windshaftMap = new Backbone.Model();
+    this.layersCollection = new Backbone.Collection();
   });
 
   it('should be bound to the WindshaftMap and respond to changes on the instance', function () {
     var layerGroup = new MyCartoDBLayerGroup(null, {
-      windshaftMap: this.windshaftMap
+      windshaftMap: this.windshaftMap,
+      layersCollection: this.layersCollection
     });
 
     expect(layerGroup.get('baseURL')).not.toBeDefined();
@@ -43,8 +45,9 @@ describe('geo/cartodb-layer-group-base', function () {
         baseURL: 'http://wadus.com'
       }, {
         windshaftMap: this.windshaftMap,
-        layers: [ cartoDBLayer1 ]
+        layersCollection: this.layersCollection
       });
+      this.layersCollection.reset([ cartoDBLayer1 ]);
 
       spyOn(layer, '_convertToWindshaftLayerIndex').and.returnValue(0);
       spyOn($, 'ajax').and.callFake(function (options) {
@@ -65,8 +68,9 @@ describe('geo/cartodb-layer-group-base', function () {
         baseURL: 'http://wadus.com'
       }, {
         windshaftMap: this.windshaftMap,
-        layers: [ cartoDBLayer1 ]
+        layersCollection: this.layersCollection
       });
+      this.layersCollection.reset([ cartoDBLayer1 ]);
 
       spyOn(layer, '_convertToWindshaftLayerIndex').and.returnValue(-1);
       spyOn($, 'ajax').and.callFake(function (options) {
@@ -87,8 +91,9 @@ describe('geo/cartodb-layer-group-base', function () {
         baseURL: 'http://wadus.com'
       }, {
         windshaftMap: this.windshaftMap,
-        layers: [ cartoDBLayer1 ]
+        layersCollection: this.layersCollection
       });
+      this.layersCollection.reset([ cartoDBLayer1 ]);
 
       spyOn(layer, '_convertToWindshaftLayerIndex').and.returnValue(-1);
       spyOn($, 'ajax').and.callFake(function (options) {
@@ -111,8 +116,9 @@ describe('geo/cartodb-layer-group-base', function () {
         baseURL: 'http://wadus.com'
       }, {
         windshaftMap: this.windshaftMap,
-        layers: [ cartoDBLayer1 ]
+        layersCollection: this.layersCollection
       });
+      this.layersCollection.reset([ cartoDBLayer1 ]);
 
       spyOn(layer, '_convertToWindshaftLayerIndex').and.returnValue(0);
       spyOn($, 'ajax').and.callFake(function (options) {

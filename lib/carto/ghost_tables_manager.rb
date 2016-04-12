@@ -57,6 +57,7 @@ module Carto
         begin
           CartoDB::Logger.debug(message: 'ghost tables',
                                 action: 'relinking renamed table',
+                                user: @user,
                                 renamed_table: metadata_table.name)
 
           vis = metadata_table.table.table_visualization
@@ -75,6 +76,7 @@ module Carto
         begin
           CartoDB::Logger.debug(message: 'ghost tables',
                                 action: 'linking new table',
+                                user: @user,
                                 new_table: metadata_table.name)
 
           table = Table.new
@@ -87,10 +89,11 @@ module Carto
 
           table.save
         rescue => exception
-          CartoDB.report_exception(message: 'Error linking new table',
-                                   exception: exception,
-                                   table_name: metadata_table.name,
-                                   table_id: metadata_table.id)
+          CartoDB::Logger.error(message: 'Error linking new table',
+                                exception: exception,
+                                user: @user,
+                                table_name: metadata_table.name,
+                                table_id: metadata_table.id)
         end
       end
     end
@@ -104,6 +107,7 @@ module Carto
       dropped_tables.select { |table| !syncs.include?(table.name) }.each do |linked_table|
         CartoDB::Logger.debug(message: 'ghost tables',
                               action: 'unlinking dropped table',
+                              user: @user,
                               dropped_table: linked_table.name)
 
         linked_table.table.keep_user_database_table = true

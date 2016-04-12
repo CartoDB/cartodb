@@ -120,7 +120,7 @@
           "privacy-change": "Your new dataset will be %{privacy}",
           "privacy-click": "Click to change it to %{nextPrivacy}",
           "privacy-change-banned": "You cannot change the privacy of your new datasets.",
-          "add-layer": "Add layer" 
+          "add-layer": "Add layer"
         }
       }
     },
@@ -179,11 +179,13 @@
         "point-in-polygon": "Point in polygon",
         "polygons_source": "Polygon source",
         "points_source": "Point source",
-        "buffer": "Buffer",
+        "area-of-influence": "Area of influence",
+        "buffer": "buffer",
         "input": "Input",
         "radio": "Radio",
         "type": "Type",
         "time": "Time",
+        "by": "By",
         "by-walk": "walk",
         "by-bike": "bike",
         "by-car": "drive"

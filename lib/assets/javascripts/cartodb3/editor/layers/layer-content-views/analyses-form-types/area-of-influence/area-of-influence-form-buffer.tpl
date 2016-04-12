@@ -14,7 +14,7 @@
   </div>
   <div class="Editor-HeaderInfo">
     <div class="Editor-HeaderNumeration CDB-Text is-semibold u-rSpace--m">3</div>
-    <div class="Editor-HeaderInfo-Inner CDB-Text" data-fields="radio">
+    <div class="Editor-HeaderInfo-Inner CDB-Text" data-fields="type,distance,radio">
       <div class="Editor-HeaderInfo-Title u-bSpace--s">
         <h2 class="CDB-Text CDB-HeaderInfo-TitleText CDB-Size-large"><%- _t('editor.layers.analysis-form.parameters') %></h2>
       </div>

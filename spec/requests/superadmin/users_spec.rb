@@ -31,6 +31,7 @@ feature "Superadmin's users API" do
     @user_atts.delete(:salt)
     @user_atts.merge!(password: "this_is_a_password")
 
+    CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
     post_json superadmin_users_path, { user: @user_atts }, superadmin_headers do |response|
       response.status.should == 201
       response.body[:email].should == @user_atts[:email]
@@ -48,6 +49,7 @@ feature "Superadmin's users API" do
   end
 
   scenario "user create with crypted_password and salt success" do
+    CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
     post_json superadmin_users_path, { user: @user_atts }, superadmin_headers do |response|
       response.status.should == 201
       response.body[:email].should == @user_atts[:email]
@@ -70,6 +72,8 @@ feature "Superadmin's users API" do
     @user_atts[:map_view_quota] = 80
     t = Time.now
     @user_atts[:upgraded_at] = t
+
+    CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
     post_json superadmin_users_path, { user: @user_atts }, superadmin_headers do |response|
       response.status.should == 201
       response.body[:quota_in_bytes].should == 104857600
@@ -103,6 +107,7 @@ feature "Superadmin's users API" do
     @user_atts[:here_isolines_block_price] = 5
     @user_atts[:notification] = 'Test'
 
+    CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
     post_json superadmin_users_path, { user: @user_atts }, superadmin_headers do |response|
       response.status.should == 201
       response.body[:quota_in_bytes].should == 2000

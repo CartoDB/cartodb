@@ -15,8 +15,9 @@ describe Visualization::NameChecker do
     @db = Rails::Sequel.connection
     Visualization.repository = DataRepository::Backend::Sequel.new(@db, :visualizations)
 
-    # Dummy permission
-    @permission = CartoDB::Permission.new(owner_id: 'b21ff32c-45c2-4300-a49b-786d35524d52', owner_username: 'user').save
+    @permission1 = CartoDB::Permission.new(owner_id: 'b21ff32c-45c2-4300-a49b-786d35524d52', owner_username: 'user').save
+    @permission2 = CartoDB::Permission.new(owner_id: 'b21ff32c-45c2-4300-a49b-786d35524d52', owner_username: 'user').save
+    @permission3 = CartoDB::Permission.new(owner_id: 'b21ff32c-45c2-4300-a49b-786d35524d52', owner_username: 'user').save
 
     @user = OpenStruct.new(
       id:   'b21ff32c-45c2-4300-a49b-786d35524d52',
@@ -32,7 +33,7 @@ describe Visualization::NameChecker do
       updated_at:    Time.now,
       map_id:        'c21ff32c-45c2-4300-a49b-786d35524d52',
       user_id:       'b21ff32c-45c2-4300-a49b-786d35524d52',
-      permission_id: @permission.id
+      permission_id: @permission1.id
     )
 
     @db[:visualizations].insert(
@@ -43,7 +44,7 @@ describe Visualization::NameChecker do
       updated_at:    Time.now,
       map_id:        'c21ff32c-45c2-4300-a49b-786d35524d57',
       user_id:       'b21ff32c-45c2-4300-a49b-786d35524d52',
-      permission_id: @permission.id
+      permission_id: @permission2.id
     )
 
     @db[:visualizations].insert(
@@ -54,7 +55,7 @@ describe Visualization::NameChecker do
       updated_at:    Time.now,
       map_id:        'c21ff32c-45c2-4300-a49b-786d35524d57',
       user_id:       'b21ff32c-45c2-4300-a49b-786d35524d46',
-      permission_id: @permission.id
+      permission_id: @permission3.id
     )
 
     @db[:shared_entities].insert(
@@ -66,7 +67,9 @@ describe Visualization::NameChecker do
   end
 
   after :all do
-    @permission.destroy
+    @permission1.destroy
+    @permission2.destroy
+    @permission3.destroy
     @user.destroy
   end
 

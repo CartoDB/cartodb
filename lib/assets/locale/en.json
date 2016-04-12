@@ -60,15 +60,15 @@
         "unknown-error": "An unknown error has happened"
       },
       "twitter-import-details": {
-      "new-type-created": "We've created a new %{type} containing a total of %{datasetTotalRowsFormatted}<br/>tweet%{ tweetPlural} with your search terms",
-        "twitter-import-title": "Your Twitter %{type} is created",
+      "new-type-created": "We've created a new %{type} containing a total of %{datasetTotalRowsFormatted}<br/>tweet%{tweetPlural} with your search terms",
         "credit-left": "You still have %{availableTweetsFormatted} credit left for this billing cycle.",
         "credits-left": "You still have %{availableTweetsFormatted} credits left for this billing cycle.",
         "no-more-credits": "You have consumed all your credits during this billing cycle (price is $%{blockPriceFormatted}/%{blockSizeFormatted} extra credits).",
+        "twitter-import-title": "Your Twitter %{type} is created",
         "view-type": "view %{type}",
         "tweet-cost": {
-          "paid": "$%{tweetsCostFormatted} will be charged to your account",
-          "free": "No extra charges have been done"
+          "free": "No extra charges have been done",
+          "paid": "$%{tweetsCostFormatted} will be charged to your account"
         },
         "layers-error-details-upgrade": {
           "free-trial-days": "14 days Free trial",
@@ -82,10 +82,10 @@
         }
       },
       "background-geocoding-item": {
-        "show": "show",
+        "geocoded": "%{realRowsFormatted}/%{processableRowsFormatted} %{processableRowsPluralize} geocoded…",
         "geocoded-by-lat-lng": "Geocoded by latitude and longitude",
         "geocoding": "Geocoding %{tableName} dataset…",
-        "geocoded": "%{realRowsFormatted}/%{processableRowsFormatted} %{processableRowsPluralize} geocoded…",
+        "show": "show",
         "rows-geocoded": {
           "without-dataset": "%{realRowsFormatted} %{realRowsPluralize} geocoded",
           "in-dataset": "%{realRowsFormatted} %{realRowsPluralize} geocoded in %{tableName} dataset",

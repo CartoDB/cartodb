@@ -96,6 +96,14 @@ module.exports = Model.extend({
     }
   },
 
+  _onStyleChanged: function (style) {
+    if (this._dataProvider) {
+      this._dataProvider.applyFilter(filter);
+    } else {
+      this._reloadMap();
+    }
+  },
+
   /**
    * @protected
    */

@@ -7,6 +7,9 @@ LayerGroupConfig.generate = function (options) {
   var layers = options.layers;
   var dataviews = options.dataviews;
   var config = { layers: [] };
+  if (Object.keys(options.styles).length > 0) {
+    config.styles = options.styles
+  }
   _.each(layers, function (layer) {
     if (layer.isVisible()) {
       var layerConfig = {

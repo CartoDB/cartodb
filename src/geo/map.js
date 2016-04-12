@@ -173,6 +173,7 @@ var Map = Model.extend({
 
       if (this._dataviewsCollection) {
         instanceOptions.dataviews = this._dataviewsCollection;
+        instanceOptions.styles = this._dataviewsCollection.getTemporaryStyles();
       }
       this._windshaftMap.createInstance(instanceOptions);
     }

@@ -18,8 +18,11 @@ var CartoDBLayer = LayerModelBase.extend({
   },
 
   _onAttributeChanged: function () {
+    var styles = {};
+    styles[this.get('order') + ''] = this.get('cartocss') 
     this._map.reload({
-      sourceLayerId: this.get('id')
+      sourceLayerId: this.get('id'),
+      styles: styles
     });
   },
 

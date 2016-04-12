@@ -40,10 +40,12 @@ var WindshaftMap = Backbone.Model.extend({
     var dataviews = options.dataviews;
     var sourceLayerId = options.sourceLayerId;
     var forceFetch = options.forceFetch;
+    var styles = options.styles;
 
     var mapConfig = this.configGenerator.generate({
       layers: layers,
-      dataviews: dataviews
+      dataviews: dataviews,
+      styles: styles
     });
 
     var filtersFromVisibleLayers = [];

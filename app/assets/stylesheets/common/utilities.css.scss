@@ -99,6 +99,9 @@
 .u-tspace--20 {
   margin-top: 20px;
 }
+.u-vspace--20 {
+  margin-bottom: 20px;
+}
 .u-tupper {
   text-transform: uppercase;
 }
@@ -122,5 +125,18 @@
   }
   .u-showOnTablet {
     display: inline-block !important;
+  }
+}
+@media (min-width: $sMedia-tablet + 1) {
+  .u-block--mobile {
+    display: none !important;
+  }
+}
+@media (max-width: $sMedia-tablet) {
+  .u-mobile-hide {
+    display: none !important;
+  }
+  .u-block--mobile {
+    display: block !important;
   }
 }

@@ -300,6 +300,7 @@ module CartoDB
           elsif error_response.code == 404
             raise NotFoundDownloadError.new(error_response.body)
           else
+            CartoDB::Logger.debug(message: "Generic download error", response: error_response.inspect)
             raise DownloadError.new("DOWNLOAD ERROR: Code:#{error_response.code} Body:#{error_response.body}")
           end
         end

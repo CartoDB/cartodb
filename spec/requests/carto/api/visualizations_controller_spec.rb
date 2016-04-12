@@ -40,9 +40,9 @@ describe Carto::Api::VisualizationsController do
     end
   end
 
-  TEST_UUID = '00000000-0000-0000-0000-000000000000'
+  TEST_UUID = '00000000-0000-0000-0000-000000000000'.freeze
 
-  DATE_ATTRIBUTES = %w{ created_at updated_at }
+  DATE_ATTRIBUTES = %w{ created_at updated_at }.freeze
   NORMALIZED_ASSOCIATION_ATTRIBUTES = {
     attributes: DATE_ATTRIBUTES,
     associations: {
@@ -55,7 +55,7 @@ describe Carto::Api::VisualizationsController do
         associations: {}
       }
     }
-  }
+  }.freeze
 
   NEW_ATTRIBUTES = {
     attributes: [],
@@ -67,8 +67,8 @@ describe Carto::Api::VisualizationsController do
             attributes: [],
             associations: {
               'owner' => {
-                attributes: [ 'email', 'quota_in_bytes', 'db_size_in_bytes', 'public_visualization_count',
-                'all_visualization_count', 'table_count' ],
+                attributes: ['email', 'quota_in_bytes', 'db_size_in_bytes', 'public_visualization_count',
+                             'all_visualization_count', 'table_count'],
                 associations: {}
               }
             }
@@ -79,42 +79,39 @@ describe Carto::Api::VisualizationsController do
         attributes: [],
         associations: {
           'owner' => {
-            attributes: [ 'email', 'quota_in_bytes', 'db_size_in_bytes', 'public_visualization_count',
-            'all_visualization_count', 'table_count' ],
+            attributes: ['email', 'quota_in_bytes', 'db_size_in_bytes', 'public_visualization_count',
+                         'all_visualization_count', 'table_count'],
             associations: {}
           }
         }
       }
     }
-  }
+  }.freeze
 
-  BBOX_GEOM = '{"type":"MultiPolygon","coordinates":[[[[-75.234375,54.57206166],[4.921875,54.36775852],[7.03125,-0.35156029],[-71.71875,1.75753681],[-75.234375,54.57206166]]]]}'
-  OUTSIDE_BBOX_GEOM = '{"type":"MultiPolygon","coordinates":[[[[-149.4140625,79.74993208],[-139.921875,79.74993208],[-136.0546875,78.13449318],[-148.7109375,78.06198919],[-149.4140625,79.74993208]]]]}'
+  BBOX_GEOM = '{"type":"MultiPolygon","coordinates":[[[[-75.234375,54.57206166],[4.921875,54.36775852],[7.03125,-0.35156029],[-71.71875,1.75753681],[-75.234375,54.57206166]]]]}'.freeze
+  OUTSIDE_BBOX_GEOM = '{"type":"MultiPolygon","coordinates":[[[[-149.4140625,79.74993208],[-139.921875,79.74993208],[-136.0546875,78.13449318],[-148.7109375,78.06198919],[-149.4140625,79.74993208]]]]}'.freeze
 
   describe 'static_map' do
     include_context 'visualization creation helpers'
     include_context 'users helper'
 
-    before(:each) do
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+    before(:all) do
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true)
 
       @user_1 = FactoryGirl.create(:valid_user, private_tables_enabled: false)
-      @user_2 = FactoryGirl.create(:valid_user)
+      @table1 = create_random_table(@user_1)
 
-      @headers = {'CONTENT_TYPE'  => 'application/json'}
+      @headers = { 'CONTENT_TYPE' => 'application/json' }
       host! "#{@user_1.subdomain}.localhost.lan"
     end
 
-    after(:each) do
+    after(:all) do
       @user_1.destroy
-      @user_2.destroy
     end
 
     it 'tests with non-existing cdn config, which uses maps_api_template url' do
       width = 123
       height = 456
-
-      table1 = create_random_table(@user_1)
 
       Carto::StaticMapsURLHelper.any_instance
                                 .stubs(:get_cdn_config)
@@ -122,16 +119,14 @@ describe Carto::Api::VisualizationsController do
       ApplicationHelper.stubs(:maps_api_template)
                        .returns("http://#{@user_1.username}.localhost.lan:8181")
 
-      get api_v2_visualizations_static_map_url({
-          user_domain: @user_1.username,
-          id: table1.table_visualization.id,
-          width: width,
-          height: height
-        }),
-        @headers
+      get api_v2_visualizations_static_map_url(
+        user_domain: @user_1.username,
+        id: @table1.table_visualization.id,
+        width: width,
+        height: height), @headers
       last_response.status.should == 302
 
-      tpl_id = CartoDB::NamedMapsWrapper::NamedMap.template_name(table1.table_visualization.id)
+      tpl_id = CartoDB::NamedMapsWrapper::NamedMap.template_name(@table1.table_visualization.id)
       last_response.location.should == "http://#{@user_1.username}.localhost.lan:8181/api/v1/map/static/named/#{tpl_id}/#{width}/#{height}.png"
     end
 
@@ -139,22 +134,19 @@ describe Carto::Api::VisualizationsController do
       width = 123
       height = 456
 
-      table1 = create_random_table(@user_1)
-
       Carto::StaticMapsURLHelper.any_instance
                                 .stubs(:get_cdn_config)
                                 .returns("http" => "cdn.local.lan")
 
       get api_v2_visualizations_static_map_url(
-          user_domain: @user_1.username,
-          id: table1.table_visualization.id,
-          width: width,
-          height: height
-        ),
-        @headers
+        user_domain: @user_1.username,
+        id: @table1.table_visualization.id,
+        width: width,
+        height: height
+      ), @headers
       last_response.status.should == 302
 
-      tpl_id = CartoDB::NamedMapsWrapper::NamedMap.template_name(table1.table_visualization.id)
+      tpl_id = CartoDB::NamedMapsWrapper::NamedMap.template_name(@table1.table_visualization.id)
       last_response.location.should == "http://cdn.local.lan/#{@user_1.username}/api/v1/map/static/named/#{tpl_id}/#{width}/#{height}.png"
     end
 
@@ -164,48 +156,46 @@ describe Carto::Api::VisualizationsController do
       width = 123
       height = 456
 
-      public_table = create_random_table(@user_1)
-
       # By default no private tables so all are created public
       @user_1.private_tables_enabled = true
       @user_1.save
 
       private_table = create_random_table(@user_1)
 
+      @user_1.private_tables_enabled = false
+      @user_1.save
+
       Carto::StaticMapsURLHelper.any_instance
-                                     .stubs(:get_cdn_config)
-                                     .returns(nil)
+                                .stubs(:get_cdn_config)
+                                .returns(nil)
       ApplicationHelper.stubs(:maps_api_template)
                        .returns("http://#{@user_1.username}.localhost.lan:8181")
 
-      get api_v2_visualizations_static_map_url({
-          user_domain: @user_1.username,
-          id: public_table.table_visualization.id,
-          width: width,
-          height: height
-        }),
-        @headers
+      get api_v2_visualizations_static_map_url(
+        user_domain: @user_1.username,
+        id: @table1.table_visualization.id,
+        width: width,
+        height: height
+      ), @headers
       last_response.status.should == 302
-      tpl_id = CartoDB::NamedMapsWrapper::NamedMap.template_name(public_table.table_visualization.id)
+      tpl_id = CartoDB::NamedMapsWrapper::NamedMap.template_name(@table1.table_visualization.id)
       last_response.location.should == "http://#{@user_1.username}.localhost.lan:8181/api/v1/map/static/named/#{tpl_id}/#{width}/#{height}.png"
 
-      get api_v2_visualizations_static_map_url({
-          user_domain: @user_1.username,
-          id: private_table.table_visualization.id,
-          width: width,
-          height: height
-        }),
-        @headers
+      get api_v2_visualizations_static_map_url(
+        user_domain: @user_1.username,
+        id: private_table.table_visualization.id,
+        width: width,
+        height: height
+      ), @headers
       last_response.status.should == 403
 
-      get api_v2_visualizations_static_map_url({
-          user_domain: @user_1.username,
-          api_key: @user_1.api_key,
-          id: private_table.table_visualization.id,
-          width: width,
-          height: height
-        }),
-        @headers
+      get api_v2_visualizations_static_map_url(
+        user_domain: @user_1.username,
+        api_key: @user_1.api_key,
+        id: private_table.table_visualization.id,
+        width: width,
+        height: height
+      ), @headers
       last_response.status.should == 302
       tpl_id = CartoDB::NamedMapsWrapper::NamedMap.template_name(private_table.table_visualization.id)
       last_response.location.should == "http://#{@user_1.username}.localhost.lan:8181/api/v1/map/static/named/#{tpl_id}/#{width}/#{height}.png"
@@ -215,26 +205,23 @@ describe Carto::Api::VisualizationsController do
       width = 123
       height = 456
 
-      table1 = create_random_table(@user_1)
-
       Carto::StaticMapsURLHelper.any_instance
-                                     .stubs(:get_cdn_config)
-                                     .returns("http" => "cdn.local.lan")
+                                .stubs(:get_cdn_config)
+                                .returns("http" => "cdn.local.lan")
 
-      get api_v2_visualizations_static_map_url({
-          user_domain: @user_1.username,
-          #api_key: @user_1.api_key,
-          id: table1.table_visualization.id,
-          width: width,
-          height: height
-        }),
-        @headers
+      get api_v2_visualizations_static_map_url(
+        user_domain: @user_1.username,
+        # api_key: @user_1.api_key,
+        id: @table1.table_visualization.id,
+        width: width,
+        height: height
+      ), @headers
       last_response.status.should == 302
-      last_response.headers["X-Cache-Channel"].should include(table1.name)
-      last_response.headers["X-Cache-Channel"].should include(table1.table_visualization.varnish_key)
+      last_response.headers["X-Cache-Channel"].should include(@table1.name)
+      last_response.headers["X-Cache-Channel"].should include(@table1.table_visualization.varnish_key)
       last_response.headers["Surrogate-Key"].should_not be_empty
       last_response.headers["Surrogate-Key"].should include(CartoDB::SURROGATE_NAMESPACE_VIZJSON)
-      last_response.headers["Surrogate-Key"].should include(table1.table_visualization.surrogate_key)
+      last_response.headers["Surrogate-Key"].should include(@table1.table_visualization.surrogate_key)
     end
 
   end
@@ -243,22 +230,24 @@ describe Carto::Api::VisualizationsController do
     include_context 'visualization creation helpers'
     include_context 'users helper'
 
-    before(:each) do
+    before(:all) do
       CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true)
 
       @user_1 = FactoryGirl.create(:valid_user)
-      @user_2 = FactoryGirl.create(:valid_user)
+    end
 
+    before(:each) do
       login(@user_1)
-
-      @headers = {'CONTENT_TYPE'  => 'application/json'}
+      @headers = { 'CONTENT_TYPE' => 'application/json' }
       host! "#{@user_1.subdomain}.localhost.lan"
-      delete_user_data @user_1
     end
 
     after(:each) do
+      delete_user_data @user_1
+    end
+
+    after(:all) do
       @user_1.destroy
-      @user_2.destroy
     end
 
     it 'returns success, empty response for empty user' do
@@ -292,25 +281,19 @@ describe Carto::Api::VisualizationsController do
     end
 
     it 'returns liked count' do
-      table1 = create_random_table(@user_1)
-      table1b = create_random_table(@user_1)
-      table2 = create_random_table(@user_2)
-      table2b = create_random_table(@user_2)
-      visualization2 = table2.table_visualization
-      visualization2.privacy = Visualization::Member::PRIVACY_PUBLIC
-      visualization2.store
-      visualization2.add_like_from(@user_1.id)
+      vis = FactoryGirl.build(:derived_visualization, user_id: @user_1.id).store
+      vis.add_like_from(@user_1.id)
 
-      response_body(type: CartoDB::Visualization::Member::TYPE_CANONICAL)['total_likes'].should == 1
+      response_body(type: CartoDB::Visualization::Member::TYPE_DERIVED)['total_likes'].should == 1
     end
 
     it 'does a partial match search' do
-      create_random_table(@user_1, "foo")
-      create_random_table(@user_1, "bar")
-      create_random_table(@user_1, "foo_patata_bar")
-      create_random_table(@user_1, "foo_patata_baz")
+      FactoryGirl.build(:derived_visualization, user_id: @user_1.id, name: 'foo').store
+      FactoryGirl.build(:derived_visualization, user_id: @user_1.id, name: 'bar').store
+      FactoryGirl.build(:derived_visualization, user_id: @user_1.id, name: 'foo_patata_bar').store
+      FactoryGirl.build(:derived_visualization, user_id: @user_1.id, name: 'foo_patata_baz').store
 
-      body = response_body(q: 'patata', type: CartoDB::Visualization::Member::TYPE_CANONICAL)
+      body = response_body(q: 'patata', type: CartoDB::Visualization::Member::TYPE_DERIVED)
       body['total_entries'].should == 2
       body['total_user_entries'].should == 4
     end
@@ -322,18 +305,15 @@ describe Carto::Api::VisualizationsController do
 
     before(:all) do
       CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
-    end
 
-    before(:each) do
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
-
-      CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true)
 
       @user_1 = FactoryGirl.create(:valid_user)
       @user_2 = FactoryGirl.create(:valid_user, private_maps_enabled: true)
-
       @api_key = @user_1.api_key
+    end
 
+    before(:each) do
       begin
         delete_user_data @user_1
       rescue => exception
@@ -342,18 +322,18 @@ describe Carto::Api::VisualizationsController do
       end
 
       @headers = {
-        'CONTENT_TYPE'  => 'application/json',
+        'CONTENT_TYPE' => 'application/json'
       }
       host! "#{@user_1.username}.localhost.lan"
     end
 
-    after(:each) do
+    after(:all) do
       @user_1.destroy
       @user_2.destroy
     end
 
     it 'tests exclude_shared and only_shared filters' do
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true)
 
       user_1 = create_user(
         username: unique_name('user'),
@@ -571,7 +551,6 @@ describe Carto::Api::VisualizationsController do
     end
 
     describe 'tests visualization likes endpoints' do
-      include_context 'users helper'
       # TODO: currently new endpoint doesn't match this endpoint
 
       it 'tests like endpoints' do
@@ -1618,14 +1597,13 @@ describe Carto::Api::VisualizationsController do
 
   describe 'visualization url generation' do
     include_context 'visualization creation helpers'
-    include_context 'users helper'
     include_context 'organization with users helper'
 
-    before(:each) do
+    before(:all) do
       @user = FactoryGirl.create(:valid_user)
     end
 
-    after(:each) do
+    after(:all) do
       @user.destroy
     end
 
@@ -1673,14 +1651,15 @@ describe Carto::Api::VisualizationsController do
   describe 'filter canonical viz by bounding box' do
     include_context 'visualization creation helpers'
 
-    before(:each) do
+    before(:all) do
+      bypass_named_maps
       @user = FactoryGirl.create(:valid_user)
 
       @table_inside_bbox = create_geometry_table(@user, BBOX_GEOM)
       @table_outside_bbox = create_geometry_table(@user, OUTSIDE_BBOX_GEOM)
     end
 
-    after(:each) do
+    after(:all) do
       @user.destroy
     end
 
@@ -1729,15 +1708,11 @@ describe Carto::Api::VisualizationsController do
     end
 
     describe 'normal user urls' do
-      include_context 'users helper'
-
-      before(:each) do
+      before(:all) do
         stub_named_maps_calls
+        @vis_owner = FactoryGirl.create(:valid_user, private_tables_enabled: true)
+        @other_user = FactoryGirl.create(:valid_user, private_tables_enabled: true)
 
-        @vis_owner = @user1
-        @vis_owner.private_tables_enabled = true
-        @vis_owner.save
-        @other_user = @user2
         @table = create_random_table(@vis_owner, unique_name('viz'), UserTable::PRIVACY_PRIVATE)
         @vis = @table.table_visualization
         @vis.private?.should == true
@@ -1747,7 +1722,7 @@ describe Carto::Api::VisualizationsController do
         @headers = http_json_headers
       end
 
-      after(:each) do
+      after(:all) do
         @table.destroy
       end
 
@@ -1818,8 +1793,10 @@ describe Carto::Api::VisualizationsController do
         stub_named_maps_calls
 
         @vis_owner = @org_user_1
-        @table = create_random_table(@vis_owner, unique_name('viz'), UserTable::PRIVACY_PRIVATE)
-        @shared_vis = @table.table_visualization
+        @shared_vis = FactoryGirl.build(:derived_visualization,
+                                        user_id: @vis_owner.id,
+                                        name: unique_name('viz'),
+                                        privacy: CartoDB::Visualization::Member::PRIVACY_PRIVATE).store
         @shared_user = @org_user_2
         @not_shared_user = @org_user_owner
         share_visualization(@shared_vis, @shared_user)
@@ -1830,7 +1807,7 @@ describe Carto::Api::VisualizationsController do
       end
 
       after(:each) do
-        @table.destroy
+        @shared_vis.delete
       end
 
       it 'returns 200 with owner user_domain' do

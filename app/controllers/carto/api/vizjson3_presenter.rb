@@ -33,6 +33,11 @@ module Carto
         vizjson
       end
 
+      def to_named_map_vizjson(https_request: false, vector: false)
+        # TODO: cache
+        calculate_vizjson(https_request: https_request, vector: vector, force_named_map: true)
+      end
+
       private
 
       VIZJSON_VERSION = '3.0.0'.freeze
@@ -51,7 +56,7 @@ module Carto
         }
       end
 
-      def calculate_vizjson(https_request: false, vector: false)
+      def calculate_vizjson(https_request: false, vector: false, force_named_map: false)
         options = default_options.merge(https_request: https_request, vector: vector)
 
         user = @visualization.user
@@ -70,17 +75,17 @@ module Carto
           center:         map.center,
           zoom:           map.zoom,
           updated_at:     map.viz_updated_at,
-          layers:         layers_vizjson(options),
+          layers:         layers_vizjson(options, force_named_map),
           overlays:       @visualization.overlays.map { |o| Carto::Api::OverlayPresenter.new(o).to_vizjson },
           prev:           @visualization.prev_id,
           next:           @visualization.next_id,
           transition_options: @visualization.transition_options,
           widgets:        widgets_vizjson,
-          datasource:     datasource_vizjson(options),
+          datasource:     datasource_vizjson(options, force_named_map),
           user:           user_info_vizjson(user)
         }
 
-        unless @visualization.retrieve_named_map?
+        unless @visualization.retrieve_named_map? || force_named_map
           vizjson[:analyses] = @visualization.analyses.map(&:analysis_definition_json)
         end
 
@@ -109,12 +114,12 @@ module Carto
           message: "Error parsing map bounds: #{map.id}, #{map.view_bounds_sw}, #{map.view_bounds_ne}", exception: e)
       end
 
-      def layers_vizjson(options)
+      def layers_vizjson(options, force_named_map)
         basemap_layer = basemap_layer_vizjson(options)
         layers_data = []
         layers_data.push(basemap_layer) if basemap_layer
 
-        if @visualization.retrieve_named_map?
+        if @visualization.retrieve_named_map? || force_named_map
           presenter_options = {
             user_name: options.fetch(:user_name),
             https_request: options.fetch(:https_request, false),
@@ -192,14 +197,14 @@ module Carto
         Cartodb.config
       end
 
-      def datasource_vizjson(options)
+      def datasource_vizjson(options, force_named_map)
         ds = {
           user_name: @visualization.user.username,
           maps_api_template: ApplicationHelper.maps_api_template(api_templates_type(options)),
           stat_tag: @visualization.id
         }
 
-        if @visualization.retrieve_named_map?
+        if @visualization.retrieve_named_map? || force_named_map
           ds[:template_name] = CartoDB::NamedMapsWrapper::NamedMap.template_name(@visualization.id)
         end
 

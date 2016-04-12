@@ -7,7 +7,7 @@ module Carto
     end
 
     def self.load(value)
-      value.nil? ? nil : JSON.parse(value).deep_symbolize_keys
+      value.nil? ? nil : JSON.parse(value).with_indifferent_access
     end
   end
 end

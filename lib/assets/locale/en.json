@@ -44,12 +44,13 @@
         "upgrade-your-account": "<a href='https://cartodb.com/pricing/'>Upgrade your account</a> to add more than %{userMaxLayers} layers to your maps.",
       },
       "error-details": {
-        "dont-panic": "Don’t panic, here's some info that might help",
         "check-errors": "Check errors",
-        "unknown-error": "An unknown error has happened",
+        "check-url": "Check that the URL you provided is OK",
         "close": "close",
+        "dont-panic": "Don’t panic, here's some info that might help",
+        "remote-server-code": "The remote server returned a <span class='ErrorDetails-itemTextStrong'>%{httpResponseCode}</span> code.",
         "send-us-the-error-code": "Persisting error? Please <a href='mailto:support@cartodb.com'>send us</a> the following code",
-        "check-url": "Check that the URL you provided is OK"
+        "unknown-error": "An unknown error has happened"
       },
       "twitter-import-details": {
         "twitter-import-title": "Your Twitter %{type} is created",

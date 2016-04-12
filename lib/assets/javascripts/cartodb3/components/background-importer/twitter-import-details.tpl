@@ -11,7 +11,7 @@
     <% if (datasetTotalRows === 0) { %>
     <%- _t('components.background-importer.twitter-import-details.errors.no-results') %>
     <% } else { %>
-      We've created a new <%- type %> containing a total of <%- datasetTotalRowsFormatted %> <br/>tweet<%- datasetTotalRows != 1 ? 's' : '' %> with your search terms
+    <%- _t('components.background-importer.twitter-import-details.new-type-created', { type: type, datasetTotalRowsFormatted: datasetTotalRowsFormatted, tweetPlural: datasetTotalRows != 1 ? 's' : '' }) %>
     <% } %>
   </p>
 </div>

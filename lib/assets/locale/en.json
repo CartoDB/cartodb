@@ -60,6 +60,7 @@
         "unknown-error": "An unknown error has happened"
       },
       "twitter-import-details": {
+      "new-type-created": "We've created a new %{type} containing a total of %{datasetTotalRowsFormatted}<br/>tweet%{ tweetPlural} with your search terms",
         "twitter-import-title": "Your Twitter %{type} is created",
         "credit-left": "You still have %{availableTweetsFormatted} credit left for this billing cycle.",
         "credits-left": "You still have %{availableTweetsFormatted} credits left for this billing cycle.",

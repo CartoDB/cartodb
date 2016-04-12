@@ -107,14 +107,14 @@ module Carto
 
     # Remove tables with null oids unless the table name exists on the db
     def clean_user_tables_with_null_table_id
-      null_table_id_user_tables = linked_tables.select { |linked_table| linked_table.id.nil? }
+      null_table_id_user_tables = linked_tables.select { |linked_table| !linked_table.id }
 
       # Discard tables physically in database
-      (null_table_id_user_tables - all_cartodbyfied_tables).each do |linked_table|
-        t = Table.new(table_id: linked_table.id)
+      (null_table_id_user_tables - all_cartodbyfied_tables).each do |null_table|
+        table = Table.new(table_id: null_table.id)
 
-        t.keep_user_database_table = true
-        t.destroy
+        table.keep_user_database_table = true
+        table.destroy
       end
     end
 

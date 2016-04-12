@@ -55,7 +55,9 @@ module Carto
     def relink_renamed_tables
       renamed_tables.each do |metadata_table|
         begin
-          CartoDB.notify_debug('ghost tables', action: 'relinking renamed table', renamed_table: metadata_table.name)
+          CartoDB::Logger.debug(message: 'ghost tables',
+                                action: 'relinking renamed table',
+                                renamed_table: metadata_table.name)
 
           vis = metadata_table.table.table_visualization
           vis.register_table_only = true
@@ -71,7 +73,9 @@ module Carto
     def link_new_tables
       new_tables.each do |metadata_table|
         begin
-          CartoDB.notify_debug('ghost tables', action: 'linking new table', new_table: metadata_table.name)
+          CartoDB::Logger.debug(message: 'ghost tables',
+                                action: 'linking new table',
+                                new_table: metadata_table.name)
 
           table = Table.new
 
@@ -96,7 +100,9 @@ module Carto
       # Sync tables replace contents without touching metadata DB, so if method triggers meanwhile sync it will fail
       # TODO: Flag running syncs to distinguish between deleted table syncs and running syncs
       dropped_tables.select { |table| !syncs.include?(table.name) }.each do |linked_table|
-        CartoDB.notify_debug('ghost tables', action: 'unlinking dropped table', dropped_table: linked_table.name)
+        CartoDB::Logger.debug(message: 'ghost tables',
+                              action: 'unlinking dropped table',
+                              dropped_table: linked_table.name)
 
         linked_table.table.keep_user_database_table = true
         linked_table.table.destroy

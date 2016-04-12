@@ -122,7 +122,7 @@ module Carto
     # it does not check column types, and only the latest cartodbfication trigger attached (test_quota_per_row)
     def search_for_cartodbfied_tables
       required_columns = Table::CARTODB_REQUIRED_COLUMNS + [Table::THE_GEOM_WEBMERCATOR]
-      cartodb_columns = required_columns.map { |t| "'#{t}'" }.join(',')
+      cartodb_columns = required_columns.map { |column| "'#{column}'" }.join(',')
 
       sql = %{
         WITH a as (

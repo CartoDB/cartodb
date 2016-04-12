@@ -184,8 +184,12 @@
         "input": "Input",
         "radio": "Radio",
         "type": "Type",
+        "distance": "Distance",
         "time": "Time",
         "by": "By",
+        "meters": "m",
+        "kilometers": "km",
+        "milles": "mi",
         "by-walk": "walk",
         "by-bike": "bike",
         "by-car": "drive"

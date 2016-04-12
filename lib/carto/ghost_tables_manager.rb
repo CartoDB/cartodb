@@ -35,7 +35,7 @@ module Carto
         unlink_deleted_tables
       end
 
-      CartoDB::Logger.info(message: 'Ghost table race condition avoided', user: self) unless got_locked
+      CartoDB::Logger.info(message: 'Ghost table race condition avoided', user: @user) unless got_locked
     end
 
     # determine linked tables vs cartodbfied tables consistency; i.e.: needs to run sync

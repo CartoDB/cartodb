@@ -39,6 +39,7 @@ which should be fixed manually.
 * Fixes a problem with select2 arrow icon.
 * Disable `PROMOTE_TO_MULTI` ogr2ogr option for CSV imports with guessing enabled to avoid MultiPoint imports. (https://github.com/CartoDB/cartodb/pull/6793)
 * Source and attributions copied to visualizations when you import a dataset from the Data Library (https://github.com/CartoDB/cartodb/issues/5970).
+* Improved performance of the check for multiple users editing the same visualization
 * Fixes a memory leak when connecting to user databases
 * Fixed error when accessing an SQL API renamed table through the editor.
 * Refactored and fixed error handling for visualization overlays.
@@ -49,6 +50,7 @@ which should be fixed manually.
 * Update and improve logging system
 * Fix broken syncs after setting sync options to "Never"
 * Fix broken visualizations due to invalid permissions
+* Fix URL generations in some views, to correctly include the subdomain
 * Make `layers.kind` not null. Run `bundle exec rake db:migrate` to update your database.
 * Fix error when deleting organizational users that had created objects via SQL-API
 * Change deprecated PostGIS function `ST_Force_2D` for the new `ST_Force2D`

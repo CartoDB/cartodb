@@ -36,10 +36,6 @@ describe Api::Json::VisualizationsController do
   before(:each) do
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
     stub_named_maps_calls
-    @db = Rails::Sequel.connection
-    Sequel.extension(:pagination)
-
-    CartoDB::Visualization.repository = DataRepository::Backend::Sequel.new(@db, :visualizations)
 
     begin
       delete_user_data @user
@@ -639,7 +635,7 @@ describe Api::Json::VisualizationsController do
 
   def table_factory(options={})
     privacy = options.fetch(:privacy, 1)
-    
+
     name    = unique_name('table')
     payload = {
       name:         name,

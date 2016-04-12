@@ -187,6 +187,7 @@ describe Carto::Template do
         })
     template.save.should eq true
 
+    template.destroy
     delete_user_data org2_user_owner
     org2.destroy_cascade
   end

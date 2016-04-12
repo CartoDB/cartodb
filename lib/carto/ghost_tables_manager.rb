@@ -27,7 +27,6 @@ module Carto
       bolt = Carto::Bolt.new("#{@user.id}:#{MUTEX_REDIS_KEY}", ttl_ms: MUTEX_TTL_MS)
 
       got_locked = bolt.run_locked do
-        # Lock aquired, inside the critical zone
         unless non_linked_tables.empty?
           relink_renamed_tables
           link_new_tables
@@ -35,11 +34,8 @@ module Carto
 
         unlink_deleted_tables
       end
-      # Left the critical zone, bolt automatically unlocked
 
-      unless got_locked
-        # TODO: Queue non processed requests to be retried later.
-      end
+      CartoDB::Logger.info(message: 'Ghost table race condition avoided', user: self) unless got_locked
     end
 
     # determine linked tables vs cartodbfied tables consistency; i.e.: needs to run sync

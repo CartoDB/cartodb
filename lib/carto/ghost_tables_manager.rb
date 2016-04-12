@@ -24,7 +24,7 @@ module Carto
     private
 
     def sync_user_schema_and_tables_metadata
-      bolt = Carto::Bolt.new("#{@user.id}:#{MUTEX_REDIS_KEY}", ttl_ms: MUTEX_TTL_MS)
+      bolt = Carto::Bolt.new("#{@user.username}:#{MUTEX_REDIS_KEY}", ttl_ms: MUTEX_TTL_MS)
 
       got_locked = bolt.run_locked do
         unless non_linked_tables.empty?
@@ -46,10 +46,6 @@ module Carto
     # checks if there're sql-api deleted/renamed tables still linked
     def stale_tables_linked?
       !(dropped_tables.empty? && renamed_tables.empty?)
-    end
-
-    def mutex_redis_key
-      "rails:users:#{@user.username}:#{MUTEX_REDIS_KEY}"
     end
 
     def relink_renamed_tables

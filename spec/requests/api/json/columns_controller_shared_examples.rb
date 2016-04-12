@@ -5,8 +5,7 @@ shared_examples_for "columns controllers" do
   describe '#show legacy tests' do
 
     before(:all) do
-      @user = create_user(:username => 'test', :email => "client@example.com", :password => "clientex")
-      host! 'test.localhost.lan'
+      @user = FactoryGirl.create(:valid_user)
     end
 
     before(:each) do
@@ -20,10 +19,10 @@ shared_examples_for "columns controllers" do
       @user.destroy
     end
 
-    let(:params) { { :api_key => @user.api_key, table_id: @table.name } }
+    let(:params) { { api_key: @user.api_key, table_id: @table.name, user_domain: @user.username } }
 
 
-    it "gets the columns from a table" do    
+    it "gets the columns from a table" do
       get_json api_v1_tables_columns_index_url(params) do |response|
         response.status.should be_success
         # Filter out timestamp columns for compatibility as they won't be added in new cartodbfy
@@ -94,8 +93,8 @@ shared_examples_for "columns controllers" do
 
     it "Drop a column" do
       delete_user_data @user
-      @table = create_table :user_id => @user.id    
-      
+      @table = create_table :user_id => @user.id
+
       delete_json api_v1_tables_columns_destroy_url(params.merge({id: "name"})) do |response|
         response.status.should eql(204)
       end

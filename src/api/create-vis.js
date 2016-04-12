@@ -58,7 +58,7 @@ var createVis = function (el, vizjson, options, callback) {
 var loadVizJSON = function (vis, vizjsonData, options) {
   var vizjson = new VizJSON(vizjsonData);
   applyOptionsToVizJSON(vizjson, options);
-  vis.load(vizjson);
+  vis.load(vizjson, options);
   if (!options.skipMapInstantiation) {
     vis.instantiateMap();
   }

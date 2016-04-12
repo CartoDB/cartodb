@@ -12,7 +12,7 @@
       <% end %>
     </ul>
     <% if cartodb_com_hosted? %>
-        <a class="Footer-logo Logo Logo--grey" href="<%= root_url %>">
+        <a class="Footer-logo Logo Logo--grey" href="<%= CartoDB.url(self, 'root') %>">
           <i class="CDB-IconFont CDB-IconFont-cartoFante"></i>
         </a>
     <% else %>

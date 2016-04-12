@@ -241,7 +241,7 @@ describe('vis/vis', function () {
           urlTemplate: 'https://dnv9my2eseobd.cloudfront.net/v3/{z}/{x}/{y}.png'
         }
       }];
-      this.vis.load(this.mapConfig);
+      this.vis.load(new VizJSON(this.mapConfig));
       expect(vis.getLayers().length).toBe(1);
     })
     it ('should respond to getLayerViews', function() {
@@ -251,7 +251,7 @@ describe('vis/vis', function () {
           urlTemplate: 'https://dnv9my2eseobd.cloudfront.net/v3/{z}/{x}/{y}.png'
         }
       }];
-      this.vis.load(this.mapConfig);
+      this.vis.load(new VizJSON(this.mapConfig));
       expect(vis.getLayerViews().length).toBe(1);
     })
   });

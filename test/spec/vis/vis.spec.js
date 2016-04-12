@@ -233,6 +233,29 @@ describe('vis/vis', function () {
     });
   });
 
+  describe('api', function () {
+    it ('should respond to getLayers', function() {
+      this.mapConfig.layers = [{
+        type: 'tiled',
+        options: {
+          urlTemplate: 'https://dnv9my2eseobd.cloudfront.net/v3/{z}/{x}/{y}.png'
+        }
+      }];
+      this.vis.load(this.mapConfig);
+      expect(vis.getLayers().length).toBe(1);
+    })
+    it ('should respond to getLayerViews', function() {
+      this.mapConfig.layers = [{
+        type: 'tiled',
+        options: {
+          urlTemplate: 'https://dnv9my2eseobd.cloudfront.net/v3/{z}/{x}/{y}.png'
+        }
+      }];
+      this.vis.load(this.mapConfig);
+      expect(vis.getLayerViews().length).toBe(1);
+    })
+  });
+
   describe('Legends', function () {
     it('should only display legends for visible layers', function () {
       this.mapConfig.layers = [
@@ -378,7 +401,7 @@ describe('vis/vis', function () {
         template: 'test'
       });
 
-      var layerView = this.vis.getLayers()[1];
+      var layerView = this.vis.getLayerViews()[1];
 
       expect(tooltip.options.layer).toEqual(layerView);
     });

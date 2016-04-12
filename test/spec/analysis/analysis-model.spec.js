@@ -51,6 +51,40 @@ describe('src/analysis/analysis-model.js', function () {
     expect(map.reload).not.toHaveBeenCalled();
   });
 
+  it('should reload the map when type of the analysis changes', function () {
+    var map = jasmine.createSpyObj('map', ['reload']);
+    var fakeCamshaftReference = {
+      getSourceNamesForAnalysisType: function (analysisType) {
+        var map = {
+          'analysis-type-1': ['source1', 'source2']
+        };
+        return map[analysisType];
+      },
+      getParamNamesForAnalysisType: function (analysisType) {
+        var map = {
+          'analysis-type-1': ['attribute1', 'attribute2']
+        };
+
+        return map[analysisType];
+      }
+    };
+
+    var analysisModel = new AnalysisModel({
+      type: 'analysis-type-1',
+      attribute1: 'value1',
+      attribute2: 'value2'
+    }, {
+      map: map,
+      camshaftReference: fakeCamshaftReference
+    });
+
+    analysisModel.set({
+      type: 'something'
+    });
+
+    expect(map.reload).toHaveBeenCalled();
+  });
+
   describe('.findAnalysisById', function () {
     it('should find a node in the graph', function () {
       var map = jasmine.createSpyObj('map', ['reload']);

@@ -69,12 +69,12 @@ module CartoDB
       TABLE_NULL_EXCEPTIONS = ['table_quota'] # those won't be discarded if set to NULL
       include CartoDB::DataMover::Utils
 
-      def get_user_metadata(user_id)
-        q = pg_conn.exec("SELECT * FROM users WHERE id = '#{user_id}'")
+      def get_user_metadata(username)
+        q = pg_conn.exec("SELECT * FROM users WHERE username = '#{username}'")
         if q.count > 0
           user_data = q[0]
         else
-          throw "Can't find user #{user_id}"
+          throw "Can't find user #{username}"
         end
         user_data
       end
@@ -421,8 +421,8 @@ module CartoDB
           }
         }
 
-        if options[:id]
-          @user_data = get_user_metadata(options[:id])
+        if options[:username]
+          @user_data = get_user_metadata(options[:username])
           @username = @user_data["username"]
           @user_id = @user_data["id"]
           dump_user_data(redis_keys) unless options[:database_only] == true

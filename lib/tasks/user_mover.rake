@@ -5,7 +5,7 @@ namespace :cartodb do
   namespace :user_mover do
     namespace :export do
       desc 'Export an user'
-      task :export_user, [:id, :path, :schema_mode, :database_only, :metadata_only] => :environment do |_task, args|
+      task :export_user, [:username, :path, :schema_mode, :database_only, :metadata_only] => :environment do |_task, args|
         args.with_defaults(schema_mode: false, database_only: false, metadata_only: false)
         CartoDB::DataMover::ExportJob.new(args)
       end

@@ -1,10 +1,11 @@
 require 'active_record'
+require_relative './carto_json_serializer'
 
 module Carto
   class Layer < ActiveRecord::Base
-    serialize :options, JSON
-    serialize :infowindow, JSON
-    serialize :tooltip, JSON
+    serialize :options, CartoJsonSerializer
+    serialize :infowindow, CartoJsonSerializer
+    serialize :tooltip, CartoJsonSerializer
 
     has_many :layers_maps
     has_many :maps, through: :layers_maps

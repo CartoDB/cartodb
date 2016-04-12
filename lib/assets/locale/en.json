@@ -24,6 +24,12 @@
   },
   "components": {
     "background-importer": {
+      "background-importer-item": {
+        "completed": "completed",
+        "error-connecting": "Ouch! Error connecting %{name}",
+        "from": "from",
+        "show": "show"
+      },
       "warnings-details": {
         "continue-btn": "Continue",
         "find-connected-datasets": "You can find all the connected datasets under the datasets section.",

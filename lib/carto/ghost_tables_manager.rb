@@ -64,8 +64,8 @@ module Carto
           vis.name = metadata_table.name
 
           vis.store
-        rescue Sequel::DatabaseError => e
-          raise unless e.message =~ /must be owner of relation/
+        rescue Sequel::DatabaseError => exeption
+          raise unless exeption.message =~ /must be owner of relation/
         end
       end
     end
@@ -86,9 +86,11 @@ module Carto
           table.keep_user_database_table = true
 
           table.save
-        rescue => e
-          CartoDB.report_exception(e, 'Error linking new table', table_name: metadata_table.name,
-                                                                 table_id: metadata_table.id)
+        rescue => exception
+          CartoDB.report_exception(message: 'Error linking new table',
+                                   exception: exception,
+                                   table_name: metadata_table.name,
+                                   table_id: metadata_table.id)
         end
       end
     end

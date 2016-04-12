@@ -1,18 +1,19 @@
 # API
 
-## cartodb.DI.createDashboard(domObject, vizJson, callback(err, obj))
+## cartodb.DI.createDashboard(domObject, vizJson, [options,] [callback(err, obj)])
 Creates a new dashboard inside `domObject` based on `vizJson`.
 
 #### Arguments
 - domObject: dom object identifier where the dashboard will be inserted
 - vizJson: either a vizjson url or a vizjson object. See viz.json spec to see how to generate one
+- options: object that gets the same options [createVis](https://github.com/CartoDB/cartodb.js/blob/v4/doc/api_methods.md#cartodbcreatevis) from cartodb.js accepts
 - callback: it will be called when the dashboard is generated. First argument will be null if
   everything was fine, an `Error` object otherwise. Second argument is a `Dashboard` object, see
   below
 
 #### Example
 ```js
-cartodb.deepInsights.createDashboard('#dashboard', vizJSONurl, function(err, dashboard) {
+cartodb.deepInsights.createDashboard('#dashboard', vizJSONurl, [options], function(err, dashboard) {
   if (err) {
     console.log('there was an error generating the dashboard');
     return;
@@ -29,27 +30,37 @@ cartodb.deepInsights.createDashboard('#dashboard', vizJSONurl, function(err, das
 
 ##### getWidgets() -> List of widgets
 
-##### createCategoryWidget(widgetAttrs) -> CategoryWidget
+##### createCategoryWidget(widgetAttrs, layer) -> CategoryWidget
+
+`widgetAttrs` is an object with the following attributes:
+
+Mandatory attributes:
+- `title`: title shown in the widget
+- `column`: column to generate the histogram
+- `aggregation`: `count` by default, it could be `avg`
+
+Optional:
+- `id`: identifier that will be used when calling `getWidget`
+- `order`: order inside the widget list
+- `collapsed`: show the wiget collapsed if true
+- `aggregationColumn`: use this column to aggregate, by default it uses `column`
+>>>>>>> origin/master
 
 *example*
 ```js
 var map = dashboard.getMap();
 var params = {
-  "type": "category",
   "title": "Metro line",
-  "type": "aggregation",
   "column": "closest_metro_line",
-  "aggregationColumn": "closest_metro_line",
-  "aggregation": "count",
+  "aggregation": "count"
 };
 // adds a category widget using column `test` from the second layer
 dashboard.createCategoryWidget(params, map.getLayer(2))
 ```
 
-
 ##### createHistogramWidget(widgetAttrs, layer) -> HistogramWidget
 
-`widgetAttrs` is an object with the following attributes: 
+`widgetAttrs` is an object with the following attributes:
 
 Mandatory attributes:
 - `title`: title shown in the widget
@@ -62,7 +73,7 @@ Optional:
 - `order`: order inside the widget list
 - `collapsed`: show the wiget collapsed if true
 - `show_stats`: show histogram stats
-- `normalized`: normalize data seen in the map bounding box with the global dataset histogram 
+- `normalized`: normalize data seen in the map bounding box with the global dataset histogram
 
 ##### createFormulaWidget(widgetAttrs, layer) -> FormulaWidget
 
@@ -94,7 +105,6 @@ removes the widget from the dashboard
 var categoryWidget = dashboard.createCategoryWidget(params, map.getLayer(2));
 categoryWidget.remove();
 ```
-
 
 ## cartodb.DI.HistogramWidget
 

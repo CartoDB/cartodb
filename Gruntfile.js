@@ -37,6 +37,7 @@ module.exports = function (grunt) {
     watch: require('./grunt-tasks/watch'),
     'gh-pages': require('./grunt-tasks/gh-pages'),
     s3: require('./grunt-tasks/s3').task(grunt, config),
+    fastly: require('./grunt-tasks/fastly').task(grunt, config)
   });
 
   // required for browserify to use watch files instead
@@ -118,6 +119,7 @@ module.exports = function (grunt) {
       grunt.fail.fatal('S3 keys not specified in secrets.json' , 1);
     }
 
-    grunt.task.run(['s3']);
+    grunt.task.run(['s3', 'fastly'])
+
   });
 };

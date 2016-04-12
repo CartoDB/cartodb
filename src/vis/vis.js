@@ -3,7 +3,6 @@ var Backbone = require('backbone');
 var $ = require('jquery');
 var log = require('cdb.log');
 var util = require('cdb.core.util');
-var Loader = require('../core/loader');
 var View = require('../core/view');
 var StackedLegend = require('../geo/ui/legend/stacked-legend');
 var Map = require('../geo/map');
@@ -25,7 +24,6 @@ var WindshaftClient = require('../windshaft/client');
 var WindshaftNamedMap = require('../windshaft/named-map');
 var WindshaftAnonymousMap = require('../windshaft/anonymous-map');
 var AnalysisFactory = require('../analysis/analysis-factory');
-var VizJSON = require('./vizjson');
 var LayersCollection = require('../geo/map/layers');
 var CartoDBLayerGroupNamedMap = require('../geo/cartodb-layer-group-named-map');
 var CartoDBLayerGroupAnonymousMap = require('../geo/cartodb-layer-group-anonymous-map');
@@ -43,6 +41,14 @@ var Vis = View.extend({
       this.mapView = this.options.mapView;
       this.map = this.mapView.map;
     }
+  },
+
+  error: function (fn) {
+    return this.bind('error', fn);
+  },
+
+  done: function (fn) {
+    return this.bind('done', fn);
   },
 
   _addLegends: function (legends) {
@@ -185,31 +191,8 @@ var Vis = View.extend({
     });
   },
 
-  load: function (data, options) {
-    if (typeof (data) === 'string') {
-      var url = data;
-      Loader.get(url, function (data) {
-        if (data) {
-          this.load(data, options);
-        } else {
-          this.throwError('error fetching viz.json file');
-        }
-      }.bind(this));
-
-      return;
-    }
-
-    var DEFAULT_OPTIONS = {
-      tiles_loader: true,
-      loaderControl: true,
-      infowindow: true,
-      tooltip: true,
-      time_slider: true
-    };
-
-    options = _.defaults(options || {}, DEFAULT_OPTIONS);
-    var vizjson = new VizJSON(data);
-    this._applyOptionsToVizJSON(vizjson, options);
+  load: function (vizjson, options) {
+    options = options || {};
 
     this._dataviewsCollection = new DataviewCollection();
     this._layersCollection = new LayersCollection();
@@ -245,8 +228,6 @@ var Vis = View.extend({
       statTag: datasource.stat_tag
     }, {
       client: windshaftClient,
-      apiKey: apiKey,
-      statTag: datasource.stat_tag,
       dataviewsCollection: this._dataviewsCollection,
       layersCollection: this._layersCollection,
       analysisCollection: this._analysisCollection
@@ -255,10 +236,6 @@ var Vis = View.extend({
     // Create the Map
 
     var allowDragging = util.isMobileDevice() || vizjson.hasZoomOverlay() || vizjson.scrollwheel;
-    var center = vizjson.center;
-    if (typeof (center) === 'string') {
-      center = $.parseJSON(center);
-    }
 
     var mapConfig = {
       title: vizjson.title,
@@ -267,7 +244,7 @@ var Vis = View.extend({
       minZoom: vizjson.minZoom,
       legends: vizjson.legends,
       bounds: vizjson.bounds,
-      center: center,
+      center: vizjson.center,
       zoom: vizjson.zoom,
       scrollwheel: !!this.scrollwheel,
       drag: allowDragging,
@@ -348,7 +325,7 @@ var Vis = View.extend({
 
     // Create the Layer Models and set them on hte map
     this.https = (window && window.location.protocol && window.location.protocol === 'https:') || !!vizjson.https || !!options.https;
-    var layerModels = this._newLayerModels(data, this.map);
+    var layerModels = this._newLayerModels(vizjson, this.map);
 
     var infowindowManager = new InfowindowManager(this);
     infowindowManager.manage(this.mapView, this.map);
@@ -359,7 +336,7 @@ var Vis = View.extend({
     // Create the collection of Overlays
     var overlaysCollection = new Backbone.Collection();
     overlaysCollection.bind('reset', function (overlays) {
-      this._addOverlays(overlays, data, options);
+      this._addOverlays(overlays, vizjson, options);
     }, this);
     overlaysCollection.reset(vizjson.overlays);
 
@@ -381,8 +358,8 @@ var Vis = View.extend({
     // "Load" existing analyses from the viz.json. This will generate
     // the analyses graphs and index analysis nodes in the
     // collection of analysis
-    if (data.analyses) {
-      _.each(data.analyses, function (analysis) {
+    if (vizjson.analyses) {
+      _.each(vizjson.analyses, function (analysis) {
         this.analysis.analyse(analysis);
       }, this);
     }
@@ -390,75 +367,10 @@ var Vis = View.extend({
     // Lastly: reset the layer models on the map
     this.map.layers.reset(layerModels);
 
-    if (!options.skipMapInstantiation) {
-      this.instantiateMap();
-    }
-
     // Global variable for easier console debugging / testing
     window.vis = this;
 
     return this;
-  },
-
-  _applyOptionsToVizJSON: function (vizjson, options) {
-    vizjson.scrollwheel = options.scrollwheel || vizjson.scrollwheel;
-
-    if (!options.tiles_loader || !options.loaderControl) {
-      vizjson.removeLoaderOverlay();
-    }
-
-    if (options.searchControl === true) {
-      vizjson.addSearchOverlay();
-    } else if (options.searchControl === false) {
-      vizjson.removeSearchOverlay();
-    }
-
-    if ((options.title && vizjson.title) || (options.description && vizjson.description)) {
-      vizjson.addHeaderOverlay(options.title, options.description, options.shareable);
-    }
-
-    if (options.layer_selector) {
-      vizjson.addLayerSelectorOverlay();
-    }
-
-    if (options.zoomControl !== undefined && !options.zoomControl) {
-      vizjson.removeZoomOverlay();
-    }
-
-    // if bounds are present zoom and center will not taken into account
-    var zoom = parseInt(options.zoom, 10);
-    if (!isNaN(zoom)) {
-      vizjson.setZoom(zoom);
-    }
-
-    // Center coordinates?
-    var center_lat = parseFloat(options.center_lat);
-    var center_lon = parseFloat(options.center_lon);
-    if (!isNaN(center_lat) && !isNaN(center_lon)) {
-      vizjson.setCenter([center_lat, center_lon]);
-    }
-
-    // Center object
-    if (options.center !== undefined) {
-      vizjson.setCenter(options.center);
-    }
-
-    // Bounds?
-    var sw_lat = parseFloat(options.sw_lat);
-    var sw_lon = parseFloat(options.sw_lon);
-    var ne_lat = parseFloat(options.ne_lat);
-    var ne_lon = parseFloat(options.ne_lon);
-
-    if (!isNaN(sw_lat) && !isNaN(sw_lon) && !isNaN(ne_lat) && !isNaN(ne_lon)) {
-      vizjson.setBounds([
-        [ sw_lat, sw_lon ],
-        [ ne_lat, ne_lon ]
-      ]);
-    }
-
-    if (options.gmaps_base_type) {
-      vizjson.enforceGMapsBaseLayer(options.gmaps_base_type, options.gmaps_style);
-    }
   },
 
   /**
@@ -657,16 +569,7 @@ var Vis = View.extend({
     });
   },
 
-  error: function (fn) {
-    return this.bind('error', fn);
-  },
-
-  done: function (fn) {
-    return this.bind('done', fn);
-  },
-
   // public methods
-  //
 
   /**
    * @return the native map used behind the scenes {L.Map} or {google.maps.Map}

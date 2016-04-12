@@ -35,6 +35,16 @@ var Map = Model.extend({
     this._dataviewsCollection = options.dataviewsCollection;
 
     attrs = attrs || {};
+
+    var center = attrs.center || this.defaults.center;
+    if (typeof center === 'string') {
+      center = JSON.parse(center);
+    }
+    this.set({
+      center: center,
+      original_center: center
+    });
+
     if (attrs.bounds) {
       this.set({
         view_bounds_sw: attrs.bounds[0],
@@ -45,8 +55,6 @@ var Map = Model.extend({
       this.unset('bounds');
     } else {
       this.set({
-        center: attrs.center || this.defaults.center,
-        original_center: attrs.center || this.defaults.center,
         zoom: attrs.zoom || this.defaults.zoom
       });
     }

@@ -143,16 +143,18 @@ describe('api/sql', function() {
     )
   });
 
-  it("should call promise", function() {
+  it("should call promise", function () {
+    jasmine.clock().install();
+
     var data;
     var data_callback;
-    jasmine.clock().install();
 
     sql.execute('select * from bla', function(err, data) { data_callback = data }).done(function(d) {
       data = d;
     });
 
-    jasmine.clock().tick(500);
+    jasmine.clock().tick(100);
+
     expect(data).toEqual(TEST_DATA);
     expect(data_callback).toEqual(TEST_DATA);
 

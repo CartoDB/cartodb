@@ -47,6 +47,14 @@ describe('core/geo/map', function() {
       expect(map.get('original_center')).toEqual(map.defaults.center);
       expect(map.get('zoom')).toEqual(map.defaults.zoom);
     });
+
+    it('should parse the center when given a string', function () {
+      var map = new Map({
+        center: '[41.40282319070747, 2.3435211181640625]'
+      });
+
+      expect(map.get('center')).toEqual([41.40282319070747, 2.3435211181640625]);
+    });
   });
 
   it("should raise only one change event on setBounds", function() {

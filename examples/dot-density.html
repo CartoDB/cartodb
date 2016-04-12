@@ -334,16 +334,12 @@
         }
 
 
-        var dashboard = cartodb.deepInsights.createDashboard('#dashboard', vizJSON, {
+        cartodb.deepInsights.createDashboard('#dashboard', vizJSON, {
           no_cdn: false,
           cartodb_logo: false
+        }, function (error, dashboard) {
+          window.dashboard = dashboard
         });
-        dashboard.vis.done(function() {
-            window.dashboard = dashboard
-          })
-          .error(function(err) {
-            console.error(err);
-          });
       }
     </script>
   </body>

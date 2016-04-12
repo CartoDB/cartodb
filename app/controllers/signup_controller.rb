@@ -23,8 +23,6 @@ class SignupController < ApplicationController
   end
 
   def create
-    render_404 and return false unless valid_email_invitation_token? === true
-
     account_creator = CartoDB::UserAccountCreator.new(Carto::UserCreation::CREATED_VIA_ORG_SIGNUP).
                       with_organization(@organization).
                       with_invitation_token(params[:invitation_token])
@@ -157,7 +155,7 @@ class SignupController < ApplicationController
   end
 
   def valid_email_invitation_token?
-    if params && (params[:email] || params[:user][:email]) && params[:invitation_token]
+    if (params[:user] && params[:user][:email]) || params[:email] && params[:invitation_token]
       invitation = Carto::Invitation.find_by_seed(params[:invitation_token])
       invitation.present? && invitation.users_emails.include?(params[:email] || params[:user][:email]) ? true : false
     end

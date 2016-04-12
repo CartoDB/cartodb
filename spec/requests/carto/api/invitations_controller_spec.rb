@@ -2,6 +2,9 @@
 
 require_relative '../../../spec_helper'
 require_relative '../../../../app/controllers/carto/api/user_creations_controller'
+require_dependency 'carto/uuidhelper'
+
+include Carto::UUIDHelper
 
 describe Carto::Api::InvitationsController do
   include_context 'organization with users helper'

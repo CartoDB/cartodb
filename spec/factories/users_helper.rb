@@ -19,8 +19,7 @@ shared_context 'users helper' do
 
   after(:all) do
     bypass_named_maps
-    delete_user_data @user1 if @user1
-    delete_user_data @user2 if @user2
-    # User destruction is handled at spec_helper
+    @user1.destroy if @user1
+    @user2.destroy if @user2
   end
 end

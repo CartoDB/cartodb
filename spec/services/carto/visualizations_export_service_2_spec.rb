@@ -44,13 +44,13 @@ describe Carto::VisualizationsExportService2 do
       },
       layers: [
         {
-          options: '{"default":true,"url":"http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png",' +
+          options: JSON.parse('{"default":true,"url":"http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png",' +
             '"subdomains":"abcd","minZoom":"0","maxZoom":"18","name":"Positron",' +
             '"className":"positron_rainbow_labels","attribution":"\u00a9 <a ' +
             'href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors \u00a9 ' +
             '<a href=\"http://cartodb.com/attributions#basemaps\">CartoDB</a>",' +
             '"labels":{"url":"http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png"},' +
-            '"urlTemplate":"http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png"}',
+            '"urlTemplate":"http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png"}').deep_symbolize_keys,
           kind: 'tiled',
           widgets: [
             {
@@ -64,7 +64,7 @@ describe Carto::VisualizationsExportService2 do
           ]
         },
         {
-          options: '{"attribution":"CartoDB <a href=\"http://cartodb.com/attributions\" ' +
+          options: JSON.parse('{"attribution":"CartoDB <a href=\"http://cartodb.com/attributions\" ' +
             'target=\"_blank\">attribution</a>","type":"CartoDB","active":true,"query":"","opacity":0.99,' +
             '"interactivity":"cartodb_id","interaction":true,"debug":false,"tiler_domain":"localhost.lan",' +
             '"tiler_port":"80","tiler_protocol":"http","sql_api_domain":"cartodb.com","sql_api_port":"80",' +
@@ -88,30 +88,30 @@ describe Carto::VisualizationsExportService2 do
             '"text-halo-fill":"#FFF","text-halo-radius":1,"text-dy":-10,"text-allow-overlap":true,' +
             '"text-placement-type":"dummy","text-label-position-tolerance":0,"text-placement":"point",' +
             '"geometry_type":"point"}},"legend":{"type":"none","show_title":false,"title":"","template":"",' +
-            '"visible":true}}',
+            '"visible":true}}').deep_symbolize_keys,
           kind: 'carto',
-          infowindow: '{"fields":[],"template_name":"table/views/infowindow_light","template":"",' +
-            '"alternative_names":{},"width":226,"maxHeight":180}',
-          tooltip: '{"fields":[],"template_name":"tooltip_light","template":"","alternative_names":{},"maxHeight":180}}',
+          infowindow: JSON.parse('{"fields":[],"template_name":"table/views/infowindow_light","template":"",' +
+            '"alternative_names":{},"width":226,"maxHeight":180}').deep_symbolize_keys,
+          tooltip: JSON.parse('{"fields":[],"template_name":"tooltip_light","template":"","alternative_names":{},"maxHeight":180}').deep_symbolize_keys,
           active_layer: true
         },
         {
-          options: '{"default":true,"url":"http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png", ' +
+          options: JSON.parse('{"default":true,"url":"http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png", ' +
             '"subdomains":"abcd","minZoom":"0","maxZoom":"18","attribution":"\u00a9 <a ' +
             'href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors \u00a9 ' +
             '<a href=\"http://cartodb.com/attributions#basemaps\">CartoDB</a>",' +
             '"urlTemplate":"http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png","type":"Tiled",' +
-            '"name":"Positron Labels"}',
+            '"name":"Positron Labels"}').deep_symbolize_keys,
           kind: 'tiled'
         }
       ],
       overlays: [
         {
-          options: '{"display":true,"x":20,"y":20}',
+          options: JSON.parse('{"display":true,"x":20,"y":20}').deep_symbolize_keys,
           type: 'share'
         },
         {
-          options: '{"display":true,"x":20,"y":150}',
+          options: JSON.parse('{"display":true,"x":20,"y":150}').deep_symbolize_keys,
           type: 'loader',
           template: '<div class="loader" original-title=""></div>'
         }
@@ -122,7 +122,9 @@ describe Carto::VisualizationsExportService2 do
     }
   end
 
-  def verify_visualization_vs_export(visualization, visualization_export)
+  CHANGING_LAYER_OPTIONS_KEYS = [:user_name]
+
+  def verify_visualization_vs_export(visualization, visualization_export, importing_user: nil)
     visualization.name.should eq visualization_export[:name]
     visualization.description.should eq visualization_export[:description]
     visualization.type.should eq visualization_export[:type]
@@ -145,7 +147,7 @@ describe Carto::VisualizationsExportService2 do
 
     layers_export = visualization_export[:layers]
 
-    verify_layers_vs_export(visualization.layers, layers_export)
+    verify_layers_vs_export(visualization.layers, layers_export, importing_user: importing_user)
 
     active_layer_order = layers_export.index { |l| l[:active_layer] }
     visualization.active_layer.should_not be_nil
@@ -167,23 +169,30 @@ describe Carto::VisualizationsExportService2 do
     map.legends.should eq map_export[:legends]
   end
 
-  def verify_layers_vs_export(layers, layers_export)
+  def verify_layers_vs_export(layers, layers_export, importing_user: nil)
     layers.should_not be_nil
     layers.length.should eq layers_export.length
     (0..(layers_export.length - 1)).each do |i|
       layer = layers[i]
       layer.order.should eq i
 
-      verify_layer_vs_export(layer, layers_export[i])
+      verify_layer_vs_export(layer, layers_export[i], importing_user: importing_user)
     end
   end
 
-  def verify_layer_vs_export(layer, layer_export)
-    layer.options.should eq layer_export[:options]
+  def verify_layer_vs_export(layer, layer_export, importing_user: nil)
+    options_match = layer.options.reject { |k, _| CHANGING_LAYER_OPTIONS_KEYS.include?(k) }
+    export_options_match = layer_export[:options].reject { |k, _| CHANGING_LAYER_OPTIONS_KEYS.include?(k) }
+    options_match.should eq export_options_match
+
+    options_user_name = layer.options[:user_name]
+    if options_user_name && importing_user
+      options_user_name.should eq importing_user.username
+    end
+
     layer.kind.should eq layer_export[:kind]
     layer.infowindow.should eq layer_export[:infowindow]
     layer.tooltip.should eq layer_export[:tooltip]
-
 
     verify_widgets_vs_export(layer.widgets, layer_export[:widgets])
   end
@@ -236,7 +245,6 @@ describe Carto::VisualizationsExportService2 do
 
       it 'builds base visualization' do
         visualization = Carto::VisualizationsExportService2.new.build_visualization_from_json_export(export.to_json)
-
         visualization_export = export[:visualization]
         verify_visualization_vs_export(visualization, visualization_export)
 
@@ -272,7 +280,7 @@ describe Carto::VisualizationsExportService2 do
         visualization = Carto::Visualization.find(visualization.id)
 
         visualization_export = export[:visualization]
-        verify_visualization_vs_export(visualization, visualization_export)
+        verify_visualization_vs_export(visualization, visualization_export, importing_user: @user)
 
         visualization.id.should_not be_nil
         visualization.user_id.should eq @user.id
@@ -294,6 +302,19 @@ describe Carto::VisualizationsExportService2 do
           analysis.user_id.should_not be_nil
           analysis.created_at.should_not be_nil
           analysis.updated_at.should_not be_nil
+        end
+      end
+
+      it 'is backwards compatible with old models' do
+        json_export = export.to_json
+        imported_visualization = Carto::VisualizationsExportService2.new.build_visualization_from_json_export(json_export)
+        visualization = Carto::VisualizationsExportPersistenceService.new.save_import(@user, imported_visualization)
+        # Let's make sure everything is persisted
+        visualization = CartoDB::Visualization::Member.new(id: visualization.id).fetch
+
+        # We've found some issues with json serialization that makes `public`
+        visualization.map.layers.map do |layer|
+          layer.public_values.should_not be_nil
         end
       end
     end
@@ -329,7 +350,9 @@ describe Carto::VisualizationsExportService2 do
   end
 
   describe 'exporting + importing' do
-    def verify_visualizations_match(imported_visualization, original_visualization)
+    include Carto::Factories::Visualizations
+
+    def verify_visualizations_match(imported_visualization, original_visualization, importing_user: importing_user)
       imported_visualization.name.should eq original_visualization.name
       imported_visualization.description.should eq original_visualization.description
       imported_visualization.type.should eq original_visualization.type
@@ -349,7 +372,7 @@ describe Carto::VisualizationsExportService2 do
       imported_layers = imported_visualization.layers
       original_layers = original_visualization.layers
 
-      verify_layers_match(imported_layers, original_layers)
+      verify_layers_match(imported_layers, original_layers, importing_user: importing_user)
 
       imported_active_layer = imported_visualization.active_layer
       imported_active_layer.should_not be_nil
@@ -372,19 +395,27 @@ describe Carto::VisualizationsExportService2 do
       imported_map.legends.should eq original_map.legends
     end
 
-    def verify_layers_match(imported_layers, original_layers)
+    def verify_layers_match(imported_layers, original_layers, importing_user: importing_user)
       imported_layers.should_not be_nil
       imported_layers.length.should eq original_layers.length
       (0..(original_layers.length - 1)).each do |i|
         layer = imported_layers[i]
         layer.order.should eq i
 
-        verify_layer_match(layer, original_layers[i])
+        verify_layer_match(layer, original_layers[i], importing_user: importing_user)
       end
     end
 
-    def verify_layer_match(imported_layer, original_layer)
-      imported_layer.options.should eq original_layer.options
+    def verify_layer_match(imported_layer, original_layer, importing_user: importing_user)
+      imported_options_match = imported_layer.options.reject { |k, _| CHANGING_LAYER_OPTIONS_KEYS.include?(k) }
+      original_options_match = original_layer.options.reject { |k, _| CHANGING_LAYER_OPTIONS_KEYS.include?(k) }
+      imported_options_match.should eq original_options_match
+
+      user_name = imported_layer.options[:user_name]
+      if user_name
+        user_name.should eq importing_user.username
+      end
+
       imported_layer.kind.should eq original_layer.kind
       imported_layer.infowindow.should eq original_layer.infowindow
       imported_layer.tooltip.should eq original_layer.tooltip
@@ -422,28 +453,41 @@ describe Carto::VisualizationsExportService2 do
       imported_analysis.analysis_definition_json.should eq original_analysis.analysis_definition_json
     end
 
-    describe 'exporting + importing within the same user should create a new visualization with matching metadata' do
-      include Carto::Factories::Visualizations
+    before(:all) do
+      @user = FactoryGirl.create(:carto_user)
+      @user2 = FactoryGirl.create(:carto_user)
+    end
 
-      before(:all) do
-        @user = FactoryGirl.create(:carto_user)
-        @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
-        @analysis = FactoryGirl.create(:source_analysis, visualization: @visualization, user: @user)
-      end
+    after(:all) do
+      # This avoids connection leaking.
+      ::User[@user.id].destroy
+      ::User[@user2.id].destroy
+    end
 
-      after(:all) do
-        @analysis.destroy
-        destroy_full_visualization(@map, @table, @table_visualization, @visualization)
-        # This avoids connection leaking.
-        ::User[@user.id].destroy
-      end
+    before(:each) do
+      @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
+      carto_layer = @visualization.layers.find { |l| l.kind == 'carto' }
+      carto_layer.options[:user_name] = @user.username
+      carto_layer.save
+      @analysis = FactoryGirl.create(:source_analysis, visualization: @visualization, user: @user)
+    end
 
-      it 'imports an exported visualization' do
-        exported_string = Carto::VisualizationsExportService2.new.export_visualization_json_string(@visualization.id)
-        imported_visualization = Carto::VisualizationsExportPersistenceService.new.
-          save_import(@user, Carto::VisualizationsExportService2.new.build_visualization_from_json_export(exported_string))
-        verify_visualizations_match(Carto::Visualization.find(imported_visualization.id), @visualization)
-      end
+    after(:each) do
+      destroy_full_visualization(@map, @table, @table_visualization, @visualization)
+    end
+
+    it 'imports an exported visualization should create a new visualization with matching metadata' do
+      exported_string = Carto::VisualizationsExportService2.new.export_visualization_json_string(@visualization.id)
+      imported_visualization = Carto::VisualizationsExportPersistenceService.new.
+        save_import(@user, Carto::VisualizationsExportService2.new.build_visualization_from_json_export(exported_string))
+      verify_visualizations_match(Carto::Visualization.find(imported_visualization.id), @visualization, importing_user: @user)
+    end
+
+    it 'imports an exported visualization into another account should change layer user_name option' do
+      exported_string = Carto::VisualizationsExportService2.new.export_visualization_json_string(@visualization.id)
+      imported_visualization = Carto::VisualizationsExportPersistenceService.new.
+        save_import(@user2, Carto::VisualizationsExportService2.new.build_visualization_from_json_export(exported_string))
+      verify_visualizations_match(Carto::Visualization.find(imported_visualization.id), @visualization, importing_user: @user2)
     end
   end
 end

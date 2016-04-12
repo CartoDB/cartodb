@@ -8,6 +8,16 @@ module Carto
         visualization.id = UUIDTools::UUID.timestamp_create.to_s
         visualization.user = user
 
+        visualization.layers.map do |layer|
+          options = layer.options
+          if options[:user_name]
+            options[:user_name] = user.username
+          end
+        end
+
+        permission = Carto::Permission.new(owner: user, owner_username: user.username)
+        visualization.permission = permission
+
         map = visualization.map
         map.user = user
         unless map.save

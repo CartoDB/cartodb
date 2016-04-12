@@ -1,4 +1,5 @@
 # encoding: utf-8
+require_relative '../../../../spec/spec_helper_min'
 require_relative '../../lib/importer/downloader'
 require_relative '../../../../lib/carto/url_validator'
 
@@ -122,6 +123,32 @@ describe Downloader do
       downloader = Downloader.new(url_tgz_without_extension)
       downloader.run
       downloader.source_file.filename.should eq 'ok_data.csv.gz'
+    end
+
+    it 'uses the geojson extension if the header is text/plain' do
+      url_geojson = "http://www.example.com/tm_world_borders_simpl_0_8.geojson"
+      filepath_geojson  = path_to('tm_world_borders_simpl_0_8.geojson')
+      stub_download(
+          url: url_geojson,
+          filepath: filepath_geojson,
+          headers: { 'Content-Type' => 'text/plain' }
+      )
+      downloader = Downloader.new(url_geojson)
+      downloader.run
+      downloader.source_file.filename.should eq 'tm_world_borders_simpl_0_8.geojson'
+    end
+
+    it 'uses the kml extension if the header is text/plain' do
+      url_kml = "http://www.example.com/abandoned.kml"
+      filepath_kml  = path_to('abandoned.kml')
+      stub_download(
+          url: url_kml,
+          filepath: filepath_kml,
+          headers: { 'Content-Type' => 'text/plain' }
+      )
+      downloader = Downloader.new(url_kml)
+      downloader.run
+      downloader.source_file.filename.should eq 'abandoned.kml'
     end
 
     it 'extracts the source_file name from Content-Disposition header' do

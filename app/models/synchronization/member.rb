@@ -360,7 +360,10 @@ module CartoDB
         self.run_at         = Time.now + interval
         self.modified_at    = importer.last_modified
         geocode_table
-      rescue
+      rescue => exception
+        CartoDB::Logger.error(exception: exception,
+                                message: 'Error updating state for sync table',
+                                sync_id: self.id)
         self
       end
 
@@ -460,7 +463,7 @@ module CartoDB
       def pg_options
         Rails.configuration.database_configuration[Rails.env].symbolize_keys
           .merge(
-            user:     user.database_username,
+            username:     user.database_username,
             password: user.database_password,
             database: user.database_name,
 	          host:     user.user_database_host
@@ -511,7 +514,6 @@ module CartoDB
         false
       end
 
-      # @return mixed|nil
       def get_datasource(datasource_name)
         begin
           datasource = DatasourcesFactory.get_datasource(datasource_name, user, {

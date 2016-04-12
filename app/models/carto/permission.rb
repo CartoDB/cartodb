@@ -40,12 +40,14 @@ class Carto::Permission < ActiveRecord::Base
     self.owner_id == user.id
   end
 
+  # TODO: Delete entity_* once the fields are dropped
+  # Meanwhile it is needed as a transitional method and are called by AR (as the fields still exists)
   def entity_type
     ENTITY_TYPE_VISUALIZATION
   end
 
   def entity_id
-    entity.id
+    entity.id if entity
   end
 
   private

@@ -26,6 +26,12 @@ which should be fixed manually.
 * Change Varnish table-related invalidations and tagging to use [Surrogate Keys](https://github.com/CartoDB/cartodb/wiki/CartoDB-Surrogate-Keys)
 * Remove Varnish table invalidations from Rails and replaced them with CDB_TableMetadataTouch calls (delegating invalidation responsibility to the database)
 * Adds optional strong passwords for organization signups
+* Add new function User#direct_db_connection which uses a new direct_port paramerer to be specified in database.yml to connect to the database. Usage instructions:
+  * Use `port` in database.yml to specify the port through which the db is accessed for regular queries (such as pgbouncer connections)
+  * Use `direct_port` in database.yml to specify the port through which the db can be directly accessed (i.e. the port in which Postgres is running)
+  * This change is backwards compatible and will fallback to `port` whenever `direct_port` is not specified in the database configuration file.
+* Update ogr2ogr version to 2.1, configurable in `app_config.yml`. To install it in the system, run:
+  * `sudo apt-get install gdal2.1-static-bin`
 * Ghost table linking is now concurrent per user (avoids race conditions)
 
 ## Bug Fixes
@@ -33,6 +39,7 @@ which should be fixed manually.
 * Fixes a problem with select2 arrow icon.
 * Disable `PROMOTE_TO_MULTI` ogr2ogr option for CSV imports with guessing enabled to avoid MultiPoint imports. (https://github.com/CartoDB/cartodb/pull/6793)
 * Source and attributions copied to visualizations when you import a dataset from the Data Library (https://github.com/CartoDB/cartodb/issues/5970).
+* Improved performance of the check for multiple users editing the same visualization
 * Fixes a memory leak when connecting to user databases
 * Fixed error when accessing an SQL API renamed table through the editor.
 * Refactored and fixed error handling for visualization overlays.
@@ -43,6 +50,7 @@ which should be fixed manually.
 * Update and improve logging system
 * Fix broken syncs after setting sync options to "Never"
 * Fix broken visualizations due to invalid permissions
+* Fix URL generations in some views, to correctly include the subdomain
 * Make `layers.kind` not null. Run `bundle exec rake db:migrate` to update your database.
 * Fix error when deleting organizational users that had created objects via SQL-API
 * Change deprecated PostGIS function `ST_Force_2D` for the new `ST_Force2D`

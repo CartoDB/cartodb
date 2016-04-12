@@ -324,10 +324,6 @@ module CartoDB
       self.notify_permissions_change(CartoDB::Permission.compare_new_acl(self.acl, []))
     end
 
-    def before_destroy
-      destroy_shared_entities
-    end
-
     # @param subject ::User
     # @return String Permission::ACCESS_xxx
     def permission_for_user(subject)

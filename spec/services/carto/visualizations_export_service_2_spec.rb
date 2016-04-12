@@ -1,6 +1,12 @@
 require 'spec_helper_min'
 
 describe Carto::VisualizationsExportService2 do
+  include NamedMapsHelper
+
+  before(:each) do
+    bypass_named_maps
+  end
+
   let(:export) do
     {
       visualization: base_visualization_export,

@@ -28,6 +28,10 @@ module Carto
         visualization.update_attribute(:tags, tags)
       end
 
+      # Propagate changes (named maps, default permissions and so on)
+      visualization_member = CartoDB::Visualization::Member.new(id: visualization.id).fetch
+      visualization_member.store
+
       visualization
     end
   end

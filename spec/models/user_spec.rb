@@ -561,7 +561,7 @@ describe User do
   describe '#overquota' do
     # Filter overquota users to only those created by this spec
     def overquota(delta = 0)
-      ::User.overquota(delta).select { |u| [@user, @user2].include?(u) }
+      ::User.overquota(delta).select { |u| [@user.id, @user2.id].include?(u.id) }
     end
 
     it "should return users near their geocoding quota" do

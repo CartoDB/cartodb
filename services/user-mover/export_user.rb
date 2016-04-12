@@ -70,11 +70,11 @@ module CartoDB
       include CartoDB::DataMover::Utils
 
       def get_user_metadata(user_id)
-        q = pg_conn.exec("SELECT * FROM users WHERE username = '#{user_id}'")
+        q = pg_conn.exec("SELECT * FROM users WHERE id = '#{user_id}'")
         if q.count > 0
           user_data = q[0]
         else
-          throw "Can't find user #{@user_id}"
+          throw "Can't find user #{user_id}"
         end
         user_data
       end

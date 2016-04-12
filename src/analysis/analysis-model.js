@@ -15,7 +15,15 @@ module.exports = Model.extend({
 
     this._camshaftReference = opts.camshaftReference;
     this._map = opts.map;
-    this.bind('change:type', this._reloadMap, this);
+    this.bind('change:type', function () {
+      this.unbind(null, null, this);
+      this._initBinds();
+      this._reloadMap();
+    }, this);
+    this._initBinds();
+  },
+
+  _initBinds: function () {
     _.each(this._getParamNames(), function (paramName) {
       this.bind('change:' + paramName, this._reloadMap, this);
     }, this);

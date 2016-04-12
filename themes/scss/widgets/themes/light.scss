@@ -283,9 +283,8 @@ $chartMiniHighlight: rgba(#333, 1);
   }
 
   .CDB-Dropdown-link {
-    color: $link;
     &:hover {
-      background: $cSecondaryLine;
+      background: rgba($cHighlight, 0.16);
     }
     &.is-delete {
       color: $negative;

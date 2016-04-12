@@ -14,8 +14,8 @@ module.exports = cdb.core.View.extend({
   className: 'CDB-Dropdown',
 
   events: {
-    'click .js-pin': '_pin',
-    'click .js-toggle': '_toggle',
+    'click .js-togglePinned': '_togglePinned',
+    'click .js-toggleCollapsed': '_toggleCollapsed',
     'click .js-normalize': '_normalize'
   },
 
@@ -24,7 +24,11 @@ module.exports = cdb.core.View.extend({
       throw new Error('target is not defined');
     }
 
-    this.model = new cdb.core.Model({ open: false });
+    this.model = new cdb.core.Model({
+      open: false,
+      collapsed: opts.collapsed || false,
+      pinned: opts.pinned || false
+    });
 
     this._$target = this.options.target;
     this._$container = this.options.container;
@@ -36,7 +40,12 @@ module.exports = cdb.core.View.extend({
   },
 
   render: function () {
-    this.$el.html(template(this.options.flags));
+    this.$el.html(template(
+      _.extend(this.options.flags, {
+        collapsed: this.model.get('collapsed'),
+        pinned: this.model.get('pinned')
+      })
+    ));
     return this;
   },
 
@@ -87,14 +96,16 @@ module.exports = cdb.core.View.extend({
     }
   },
 
-  _pin: function () {
-    this.model.set('open', false);
-    this.trigger('click', 'pin');
+  _togglePinned: function () {
+    var pinned = !this.model.get('pinned');
+    this.$('.js-inputPinned').attr('checked', pinned);
+    this.trigger('togglePinned', pinned);
   },
 
-  _toggle: function () {
-    this.model.set('open', false);
-    this.trigger('click', 'toggle');
+  _toggleCollapsed: function () {
+    var collapsed = !this.model.get('collapsed');
+    this.$('.js-inputCollapsed').attr('checked', collapsed);
+    this.trigger('toggleCollapsed', collapsed);
   },
 
   _normalize: function () {

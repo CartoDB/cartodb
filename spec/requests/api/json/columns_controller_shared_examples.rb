@@ -11,7 +11,7 @@ shared_examples_for "columns controllers" do
     before(:each) do
       stub_named_maps_calls
       delete_user_data @user
-      @table = create_table :user_id => @user.id
+      @table = create_table user_id: @user.id
     end
 
     after(:all) do
@@ -21,12 +21,11 @@ shared_examples_for "columns controllers" do
 
     let(:params) { { api_key: @user.api_key, table_id: @table.name, user_domain: @user.username } }
 
-
     it "gets the columns from a table" do
       get_json api_v1_tables_columns_index_url(params) do |response|
         response.status.should be_success
         # Filter out timestamp columns for compatibility as they won't be added in new cartodbfy
-        (response.body - default_schema - [["created_at", "date"],["updated_at", "date"]]).should be_empty
+        (response.body - default_schema - [["created_at", "date"], ["updated_at", "date"]]).should be_empty
       end
     end
 
@@ -93,9 +92,9 @@ shared_examples_for "columns controllers" do
 
     it "Drop a column" do
       delete_user_data @user
-      @table = create_table :user_id => @user.id
+      @table = create_table user_id: @user.id
 
-      delete_json api_v1_tables_columns_destroy_url(params.merge({id: "name"})) do |response|
+      delete_json api_v1_tables_columns_destroy_url(params.merge(id: "name")) do |response|
         response.status.should eql(204)
       end
     end

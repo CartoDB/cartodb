@@ -164,17 +164,19 @@ module Carto
 
     # Tables that have been dropped via API but have an old UserTable
     def dropped_tables
-      (linked_tables - all_cartodbyfied_tables).select { |t| !renamed_tables.map(&:id).include?(t.id) }
+      (linked_tables - all_cartodbyfied_tables).select do |metadata_table|
+        !renamed_tables.map(&:id).include?(metadata_table.id)
+      end
     end
 
     # Tables that have been renamed through the SQL API
     def renamed_tables
-      non_linked_tables.select { |metadata_table| !metadata_table.table.nil? }
+      non_linked_tables.select { |metadata_table| !metadata_table.table }
     end
 
     # Tables that have been created trhought the SQL API
     def new_tables
-      non_linked_tables.select { |metadata_table| metadata_table.table.nil? }
+      non_linked_tables.select { |metadata_table| !!metadata_table.table }
     end
 
     # Returns tables in pg_class for user

@@ -51,14 +51,16 @@ module Carto
     def relink_renamed_tables
       renamed_tables.each do |metadata_table|
         begin
+          new_vis_name = metadata_table.name
+
           CartoDB::Logger.debug(message: 'ghost tables',
                                 action: 'relinking renamed table',
                                 user: @user,
-                                renamed_table: metadata_table.name)
+                                renamed_table: new_vis_name)
 
           vis = metadata_table.table.table_visualization
           vis.register_table_only = true
-          vis.name = metadata_table.name
+          vis.name = new_vis_name
 
           vis.store
         rescue Sequel::DatabaseError => exeption

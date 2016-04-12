@@ -202,11 +202,13 @@ module Carto
     def table
       user_tables = ::UserTable.where(table_id: id, user_id: user_id)
 
+      first = user_tables.first
+
       if user_tables.count > 1
-        CartoDB.notify_error("#{@user.username} has duplicate UserTables", duplicated_table_id: table_id)
+        CartoDB::Logger.warning(message: 'Duplicate UserTables detected', user: @user, table_name: first.name)
       end
 
-      user_tables.first ? Table.new(user_table: user_tables.first) : nil
+      first ? Table.new(user_table: first) : nil
     end
 
     def eql?(other)

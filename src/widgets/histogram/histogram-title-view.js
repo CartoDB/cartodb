@@ -41,6 +41,7 @@ module.exports = cdb.core.View.extend({
     this.widgetModel.bind('change:title change:collapsed', this.render, this);
     this.dataviewModel.bind('change:histogram_sizes', function () {
       this.render();
+      this.dataviewModel._onStyleChanged();
     }, this);
     this.add_related_model(this.dataviewModel);
   },
@@ -54,49 +55,51 @@ module.exports = cdb.core.View.extend({
   },
 
   _applySizes: function () {
-    var index = this.dataviewModel._dataProvider._layerIndex;
-    var sublayer = this.dataviewModel._dataProvider._vectorLayerView;
-    var style = sublayer.styles[index];
-    var data = this.dataviewModel.get('data')
-    if (style.indexOf('polygon') > -1) {
-      var colors = ['YlGnBu', 'Greens', 'Reds', 'Blues'];
-      var color = colors[Math.floor(Math.random()*colors.length)];
-      style = ['#layer{',
-               '  polygon-fill: ramp([{{column}}], colorbrewer({{color}}, {{bins}}));'
-                  .replace('{{column}}', this.dataviewModel.get('column'))
-                  .replace('{{bins}}', this.dataviewModel.get('bins'))
-                  .replace('{{color}}', color),
-               '  polygon-opacity: 0.6;  ',
-               '  line-color: #FFF;',
-               '  line-width: 0.3;',
-               '  line-opacity: 0.3;',
-               '}'
-              ].join('\n')
-
+    var data = this.dataviewModel.get('data');
+    var style
+    var colors = ['YlGnBu', 'Greens', 'Reds', 'Blues'];
+    var color = colors[Math.floor(Math.random()*colors.length)];
+    style = ['#layer{',
+             '  polygon-fill: ramp([{{column}}], colorbrewer({{color}}, {{bins}}));'
+                .replace('{{column}}', this.dataviewModel.get('column'))
+                .replace('{{bins}}', this.dataviewModel.get('bins'))
+                .replace('{{color}}', color),
+             '  polygon-opacity: 0.6;  ',
+             '  line-color: #FFF;',
+             '  line-width: 0.3;',
+             '  line-opacity: 0.3;',
+             '  marker-width: ramp([{{column}}], {{min}}, {{max}}), {{bins}};'
+                .replace('{{column}}', this.dataviewModel.get('column'))
+                .replace('{{bins}}', this.dataviewModel.get('bins'))
+                .replace('{{min}}', 2)
+                .replace('{{max}}', 30),
+             '  marker-fill-opacity: 0.4;  ',
+             '  marker-fill: #000;  ',
+             '  marker-line-color: #fff;',
+             '  marker-allow-overlap: true;',
+             '  marker-line-width: 0.3;',
+             '  marker-line-opacity: 0.8;',
+             '}'
+            ].join('\n')
+    if (!this.dataviewModel._dataProvider) {
+      this.dataviewModel.tempStyle = style;
     } else {
-      style = ['#layer{',
-               '  marker-width: ramp([{{column}}], {{min}}, {{max}}), {{bins}};'
-                  .replace('{{column}}', this.dataviewModel.get('column'))
-                  .replace('{{bins}}', this.dataviewModel.get('bins'))
-                  .replace('{{min}}', 2)
-                  .replace('{{max}}', 30),
-               '  marker-fill-opacity: 0.4;  ',
-               '  marker-fill: #000;  ',
-               '  marker-line-color: #fff;',
-               '  marker-allow-overlap: true;',
-               '  marker-line-width: 0.3;',
-               '  marker-line-opacity: 0.8;',
-               '}'
-              ].join('\n')
+      var index = this.dataviewModel._dataProvider._layerIndex;
+      var sublayer = this.dataviewModel._dataProvider._vectorLayerView;
+      var data = this.dataviewModel.get('data')
+      sublayer.setCartoCSS(index, style, true);
     }
-    sublayer.setCartoCSS(index, style, true);
     this.dataviewModel.set('histogram_sizes', true);
   },
 
   _cancelSizes: function () {
-    var index = this.dataviewModel._dataProvider._layerIndex;
-    var sublayer = this.dataviewModel._dataProvider._vectorLayerView;
-    sublayer.renderers[index].restoreCartoCSS(true);
+    if (!this.dataviewModel._dataProvider) {
+      delete this.dataviewModel.tempStyle
+    } else {
+      var index = this.dataviewModel._dataProvider._layerIndex;
+      var sublayer = this.dataviewModel._dataProvider._vectorLayerView;
+      sublayer.renderers[index].restoreCartoCSS(true);
+    }
     this.dataviewModel.set('histogram_sizes', false);
   }
 

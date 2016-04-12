@@ -190,7 +190,7 @@ module Carto
   end
 
   class MetadataTable
-    attr_accessor :id, :name, :user_id
+    attr_reader :id, :name, :user_id
 
     def initialize(id, name, user_id)
       @id = id

@@ -3,52 +3,73 @@ var AnalysisModel = require('../../../src/analysis/analysis-model.js');
 var AnalysisFactory = require('../../../src/analysis/analysis-factory.js');
 
 describe('src/analysis/analysis-model.js', function () {
-  it('should reload the map when params change', function () {
-    var map = jasmine.createSpyObj('map', ['reload']);
-    var fakeCamshaftReference = {
-      getSourceNamesForAnalysisType: function (analysisType) {
-        var map = {
-          'analysis-type-1': ['source1', 'source2']
-        };
-        return map[analysisType];
-      },
-      getParamNamesForAnalysisType: function (analysisType) {
-        var map = {
-          'analysis-type-1': ['attribute1', 'attribute2']
-        };
+  describe('bindings', function () {
+    beforeEach(function () {
+      this.map = jasmine.createSpyObj('map', ['reload']);
+      var fakeCamshaftReference = {
+        getSourceNamesForAnalysisType: function (analysisType) {
+          var map = {
+            'analysis-type-1': ['source1', 'source2']
+          };
+          return map[analysisType];
+        },
+        getParamNamesForAnalysisType: function (analysisType) {
+          var map = {
+            'analysis-type-1': ['attribute1', 'attribute2']
+          };
 
-        return map[analysisType];
-      }
-    };
+          return map[analysisType];
+        }
+      };
 
-    var analysisModel = new AnalysisModel({
-      type: 'analysis-type-1',
-      attribute1: 'value1',
-      attribute2: 'value2'
-    }, {
-      map: map,
-      camshaftReference: fakeCamshaftReference
+      this.analysisModel = new AnalysisModel({
+        type: 'analysis-type-1',
+        attribute1: 'value1',
+        attribute2: 'value2'
+      }, {
+        map: this.map,
+        camshaftReference: fakeCamshaftReference
+      });
     });
 
-    analysisModel.set({
-      attribute1: 'newValue1'
+    describe('on params change', function () {
+      it('should reload the map', function () {
+        this.analysisModel.set({
+          attribute1: 'newValue1'
+        });
+
+        expect(this.map.reload).toHaveBeenCalled();
+        this.map.reload.calls.reset();
+
+        this.analysisModel.set({
+          attribute2: 'newValue2'
+        });
+
+        expect(this.map.reload).toHaveBeenCalled();
+        this.map.reload.calls.reset();
+
+        this.analysisModel.set({
+          attribute900: 'something'
+        });
+
+        expect(this.map.reload).not.toHaveBeenCalled();
+      });
     });
 
-    expect(map.reload).toHaveBeenCalled();
-    map.reload.calls.reset();
+    describe('on type change', function () {
+      it('should unbind old params and bind new params', function () {
+        spyOn(this.analysisModel, '_initBinds').and.callThrough();
+        spyOn(this.analysisModel, 'unbind').and.callThrough();
+        this.analysisModel.set('type', 'new!');
+        expect(this.analysisModel.unbind).toHaveBeenCalled();
+        expect(this.analysisModel._initBinds).toHaveBeenCalled();
+      });
 
-    analysisModel.set({
-      attribute2: 'newValue2'
+      it('should reload the map', function () {
+        this.analysisModel.set('type', 'something');
+        expect(this.map.reload).toHaveBeenCalled();
+      });
     });
-
-    expect(map.reload).toHaveBeenCalled();
-    map.reload.calls.reset();
-
-    analysisModel.set({
-      attribute900: 'something'
-    });
-
-    expect(map.reload).not.toHaveBeenCalled();
   });
 
   describe('.findAnalysisById', function () {

@@ -23,7 +23,8 @@ module.exports = Backbone.Collection.extend({
     var tempStyles = {};
     this.each(function (mdl) {
       if (mdl.tempStyle) {
-        tempStyles[mdl.layer.collection.indexOf(mdl.layer)] = mdl.tempStyle
+        var layers = mdl.layer.collection.filter(function(l){return l.get('type') === 'CartoDB'})
+        tempStyles[layers.indexOf(mdl.layer)] = mdl.tempStyle
       }
     });
     return tempStyles

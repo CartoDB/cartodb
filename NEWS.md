@@ -1,3 +1,10 @@
+3.13.* (2016-XX-XX)
+-------------------
+## Features
+* Experimental support for [visualization metadata export](https://github.com/CartoDB/cartodb/pull/7114).
+
+## Bug Fixes
+
 3.13.0 (2016-XX-XX)
 -------------------
 ### NOTICE

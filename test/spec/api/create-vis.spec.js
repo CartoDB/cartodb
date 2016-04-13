@@ -1,4 +1,4 @@
-var _ = require('underscore');
+// var _ = require('underscore');
 var $ = require('jquery');
 var Loader = require('../../../src/core/loader');
 var createVis = require('../../../src/api/create-vis');

@@ -28,7 +28,7 @@ module.exports = cdb.core.View.extend({
     this.$el.html(
       template({
         title: this.widgetModel.get('title'),
-        isSizesApplied: this.dataviewModel.get('histogram_sizes'),
+        isSizesApplied: this.dataviewModel.get('auto-style'),
         isCollapsed: this.widgetModel.get('collapsed')
       })
     );
@@ -39,7 +39,7 @@ module.exports = cdb.core.View.extend({
 
   _initBinds: function () {
     this.widgetModel.bind('change:title change:collapsed', this.render, this);
-    this.dataviewModel.bind('change:histogram_sizes', function () {
+    this.dataviewModel.bind('change:auto-style', function () {
       this.render();
       this.dataviewModel._onStyleChanged();
     }, this);
@@ -95,7 +95,7 @@ module.exports = cdb.core.View.extend({
       var data = this.dataviewModel.get('data')
       sublayer.setCartoCSS(index, style, true);
     }
-    this.dataviewModel.set('histogram_sizes', true);
+    this.dataviewModel.set('auto-style', true);
   },
 
   _cancelSizes: function () {
@@ -106,7 +106,7 @@ module.exports = cdb.core.View.extend({
       var sublayer = this.dataviewModel._dataProvider._vectorLayerView;
       sublayer.renderers[index].restoreCartoCSS(true);
     }
-    this.dataviewModel.set('histogram_sizes', false);
+    this.dataviewModel.set('auto-style', false);
   }
 
 });

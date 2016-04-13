@@ -14,7 +14,7 @@
     <div class="CDB-Widget-options CDB-Widget-contentSpaced">
       <button class="CDB-Widget-buttonIcon CDB-Widget-buttonIcon--circle js-colors
         <%- isColorApplied ? 'is-selected' : '' %>
-        <%- isColorApplied ? 'js-cancelColors' : 'js-applyColors' %>
+        <%- isColorApplied ? 'js-cancelAutoStyle' : 'js-autoStyle' %>
         " data-tooltip="
           <%- isColorApplied ? 'Remove colors' : 'Apply colors' %>
         ">

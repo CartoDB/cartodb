@@ -12,8 +12,7 @@ module.exports = WidgetModel.extend({
     {
       type: 'category',
       search: false,
-      locked: false,
-      isColorsApplied: false
+      locked: false
     },
     WidgetModel.prototype.defaults
   ),
@@ -55,7 +54,7 @@ module.exports = WidgetModel.extend({
     this.lockedCategories.reset([]);
   },
 
-  applyColors: function () {
+  autoStyle: function () {
     var colors = this.colors.colors;
     var defColor = Object.keys(colors).filter(function(k){return colors[k] === 'Other'})[0]
     delete colors[defColor]
@@ -70,18 +69,22 @@ module.exports = WidgetModel.extend({
     } else {
       sublayer.setCartoCSS(index, style, true)
     }
-    this.set('isColorsApplied', true);
+    this.dataviewModel.set('auto-style', true);
   },
 
   cancelColors: function () {
-    var index = this.dataviewModel._dataProvider._layerIndex;
-    var sublayer = this.dataviewModel._dataProvider._vectorLayerView;
-    sublayer.setCartoCSS(index, this.originalStyle, true);
-    this.set('isColorsApplied', false);
+    if (!this.dataviewModel._dataProvider) {
+      delete this.dataviewModel.tempStyle
+    } else {
+      var index = this.dataviewModel._dataProvider._layerIndex;
+      var sublayer = this.dataviewModel._dataProvider._vectorLayerView;
+      sublayer.setCartoCSS(index, this.originalStyle, true);
+    }
+    this.dataviewModel.set('auto-style', false);
   },
 
   isColorApplied: function () {
-    return this.get('isColorsApplied');
+    return this.dataviewModel.get('auto-style');
   },
 
   isLocked: function () {
@@ -132,7 +135,7 @@ module.exports = WidgetModel.extend({
   _onDataviewAllCategoryNamesChange: function (m, names) {
     this.colors.updateData(names);
     if (this.isColorApplied()) {
-      this.applyColors();
+      this.autoStyle();
     }
   },
 

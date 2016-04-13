@@ -17,8 +17,8 @@ module.exports = cdb.core.View.extend({
     'keyup .js-textInput': '_onKeyupInput',
     'submit .js-form': '_onSubmitForm',
     'click .js-applyLocked': '_applyLocked',
-    'click .js-applyColors': '_applyColors',
-    'click .js-cancelColors': '_cancelColors'
+    'click .js-autoStyle': '_autoStyle',
+    'click .js-cancelAutoStyle': '_cancelAutoStyle'
   },
 
   initialize: function () {
@@ -136,12 +136,12 @@ module.exports = cdb.core.View.extend({
     this.widgetModel.applyLocked();
   },
 
-  _applyColors: function () {
-    this.widgetModel.applyColors();
+  _autoStyle: function () {
+    this.widgetModel.autoStyle();
   },
 
-  _cancelColors: function () {
-    this.widgetModel.cancelColors();
+  _cancelAutoStyle: function () {
+    this.widgetModel.cancelAutoStyle();
   },
 
   _cancelSearch: function () {

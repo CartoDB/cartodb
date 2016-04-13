@@ -2,6 +2,7 @@ var $ = require('jquery');
 var _ = require('underscore');
 var cdb = require('cartodb.js');
 var template = require('./template.tpl');
+var WidgetDropdownModel = require('./widget-dropdown-model');
 
 /**
  * Standard widget dropdown view
@@ -14,9 +15,9 @@ module.exports = cdb.core.View.extend({
   className: 'CDB-Dropdown',
 
   events: {
-    'click .js-togglePinned': '_togglePinned',
+    'click .js-toggleNormalized': '_toggleNormalized',
     'click .js-toggleCollapsed': '_toggleCollapsed',
-    'click .js-normalize': '_normalize'
+    'click .js-togglePinned': '_togglePinned'
   },
 
   initialize: function (opts) {
@@ -24,28 +25,21 @@ module.exports = cdb.core.View.extend({
       throw new Error('target is not defined');
     }
 
-    this.model = new cdb.core.Model({
-      open: false,
-      collapsed: opts.collapsed || false,
-      pinned: opts.pinned || false
+    this.model = new WidgetDropdownModel({
+      collapsed: opts.collapsed,
+      flags: opts.flags,
+      normalized: opts.normalized,
+      pinned: opts.pinned
     });
 
     this._$target = this.options.target;
     this._$container = this.options.container;
-    this.options.flags = this.options.flags || {};
-    _.defaults(this.options.flags, {
-      normalizeHistogram: false
-    });
+
     this._initBinds();
   },
 
   render: function () {
-    this.$el.html(template(
-      _.extend(this.options.flags, {
-        collapsed: this.model.get('collapsed'),
-        pinned: this.model.get('pinned')
-      })
-    ));
+    this.$el.html(template(this.model.attributes));
     return this;
   },
 
@@ -108,9 +102,10 @@ module.exports = cdb.core.View.extend({
     this.trigger('toggleCollapsed', collapsed);
   },
 
-  _normalize: function () {
-    this.model.set('normalize', !this.model.get('normalize'));
-    this.trigger('click', 'normalize', this.model.get('normalize'));
+  _toggleNormalized: function () {
+    var normalized = !this.model.get('normalized');
+    this.$('.js-inputNormalized').attr('checked', normalized);
+    this.trigger('toggleNormalized', normalized);
   },
 
   _open: function () {

@@ -36,6 +36,7 @@ module.exports = cdb.core.View.extend({
     this._initTitleView();
 
     var dropdown = new DropdownView({
+      normalized: this.model.get('normalized'),
       collapsed: this.model.get('collapsed'),
       pinned: this.model.get('pinned'),
       target: this.$('.js-actions'),
@@ -45,13 +46,18 @@ module.exports = cdb.core.View.extend({
       }
     });
 
-    dropdown.bind('click', function (action, value) {
-      if (action === 'toggle') {
-        this.model.set('collapsed', !this.model.get('collapsed'));
-      } else if (action === 'normalize') {
-        this.histogramChartView.setNormalized(value);
-        this.miniHistogramChartView.setNormalized(value);
-      }
+    dropdown.bind('togglePinned', function (pinned) {
+      this.model.set('pinned', pinned);
+    }, this);
+
+    dropdown.bind('toggleCollapsed', function (collapsed) {
+      this.model.set('collapsed', collapsed);
+    }, this);
+
+    dropdown.bind('toggleNormalized', function (normalized) {
+      this.model.set('normalized', normalized);
+      this.histogramChartView.setNormalized(normalized);
+      this.miniHistogramChartView.setNormalized(normalized);
     }, this);
 
     this.addView(dropdown);
@@ -72,7 +78,7 @@ module.exports = cdb.core.View.extend({
 
   _initBinds: function () {
     this._originalData.once('change:data', this._onFirstLoad, this);
-    this.model.bind('change:collapsed', this.render, this);
+    this.model.bind('change:collapsed change:pinned change:normalized', this.render, this);
   },
 
   _onFirstLoad: function () {

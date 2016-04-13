@@ -1,11 +1,14 @@
 require 'uuidtools'
+require_dependency 'carto/uuidhelper'
 
 module Carto
   # Export/import is versioned, but importing should generate a model tree that can be persisted by this class
   class VisualizationsExportPersistenceService
+    include Carto::UUIDHelper
+
     def save_import(user, visualization)
       ActiveRecord::Base.transaction do
-        visualization.id = UUIDTools::UUID.timestamp_create.to_s
+        visualization.id = random_uuid
         visualization.user = user
 
         visualization.layers.map do |layer|

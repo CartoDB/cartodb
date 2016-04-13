@@ -1,8 +1,9 @@
 require 'json'
 
 # Version History
-# 2: export full visualization. Limitations: doesn't support Odyssey, export will fail if
-#    any of parent_id / prev_id / next_id / slide_transition_options are set.
+# 2: export full visualization. Limitations:
+#   - No Odyssey support: export fails if any of parent_id / prev_id / next_id / slide_transition_options are set.
+#   - Privacy is exported, but permissions are not.
 module Carto
   module VisualizationsExportService2Configuration
     CURRENT_VERSION = '2.0.0'.freeze

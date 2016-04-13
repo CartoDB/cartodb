@@ -14,7 +14,7 @@ LayerGroupConfig.generate = function (options) {
         type: layer.get('type').toLowerCase(),
         options: {
           sql: layer.get('sql'),
-          cartocss: provisionalCartoCSS || layer.get('cartocss'),
+          cartocss: provisionalCartoCSS || layer.get('initialStyle') || layer.get('cartocss'),
           cartocss_version: layer.get('cartocss_version') || DEFAULT_CARTOCSS_VERSION,
           interactivity: layer.getInteractiveColumnNames(),
           // TODO widgets should be renamed to dataviews, requires Windshaft to be changed first though

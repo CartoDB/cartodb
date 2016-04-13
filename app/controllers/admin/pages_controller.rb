@@ -231,7 +231,7 @@ class Admin::PagesController < Admin::AdminController
       redirect_to CartoDB.url(self, 'public_user_feed_home')
     else
       # We cannot get any user information from domain, path or session
-      redirect_to login_url
+      redirect_to CartoDB.url(self, 'login')
     end
   end
 

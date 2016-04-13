@@ -1045,8 +1045,8 @@ class Table
     if !options[:latitude_column].blank? && !options[:longitude_column].blank?
       set_the_geom_column!('point')
 
-      owner.db_service.in_database_direct_connection(statement_timeout: STATEMENT_TIMEOUT) do |user_database|
-        CartoDB::InternalGeocoder::LatitudeLongitude.new(user_database).geocode(owner.database_schema, self.name, options[:latitude_column], options[:longitude_column])
+      owner.transaction_with_timeout(statement_timeout: STATEMENT_TIMEOUT) do |user_conn|
+        CartoDB::InternalGeocoder::LatitudeLongitude.new(user_conn).geocode(owner.database_schema, self.name, options[:latitude_column], options[:longitude_column])
       end
       schema(reload: true)
     else

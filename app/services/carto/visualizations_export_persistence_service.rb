@@ -10,6 +10,7 @@ module Carto
       ActiveRecord::Base.transaction do
         visualization.id = random_uuid
         visualization.user = user
+        visualization.privacy = Carto::Visualization::PRIVACY_PUBLIC unless user.private_maps_enabled
 
         visualization.layers.map do |layer|
           options = layer.options

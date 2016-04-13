@@ -280,11 +280,13 @@ describe Carto::VisualizationsExportService2 do
   end
 
   before(:all) do
-    @user = FactoryGirl.create(:carto_user)
+    @user = FactoryGirl.create(:carto_user, private_maps_enabled: true)
+    @no_private_maps_user = FactoryGirl.create(:carto_user, private_maps_enabled: false)
   end
 
   after(:all) do
     ::User[@user.id].destroy
+    ::User[@no_private_maps_user.id].destroy
   end
 
   describe 'importing' do
@@ -369,6 +371,16 @@ describe Carto::VisualizationsExportService2 do
           layer.public_values.should_not be_nil
         end
       end
+
+      it 'imports private maps as public for users that have not private maps' do
+        imported = Carto::VisualizationsExportService2.new.build_visualization_from_json_export(export.to_json)
+        visualization = Carto::VisualizationsExportPersistenceService.new.save_import(@user, imported)
+        visualization.privacy.should eq Carto::Visualization::PRIVACY_PRIVATE
+
+        imported = Carto::VisualizationsExportService2.new.build_visualization_from_json_export(export.to_json)
+        visualization = Carto::VisualizationsExportPersistenceService.new.save_import(@no_private_maps_user, imported)
+        visualization.privacy.should eq Carto::Visualization::PRIVACY_PUBLIC
+      end
     end
   end
 
@@ -377,7 +389,7 @@ describe Carto::VisualizationsExportService2 do
       include Carto::Factories::Visualizations
 
       before(:all) do
-        @user = FactoryGirl.create(:carto_user)
+        @user = FactoryGirl.create(:carto_user, private_maps_enabled: true)
         @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
         @analysis = FactoryGirl.create(:source_analysis, visualization: @visualization, user: @user)
       end
@@ -569,8 +581,8 @@ describe Carto::VisualizationsExportService2 do
     end
 
     before(:all) do
-      @user = FactoryGirl.create(:carto_user)
-      @user2 = FactoryGirl.create(:carto_user)
+      @user = FactoryGirl.create(:carto_user, private_maps_enabled: true)
+      @user2 = FactoryGirl.create(:carto_user, private_maps_enabled: true)
     end
 
     after(:all) do

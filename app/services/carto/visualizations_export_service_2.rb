@@ -81,10 +81,14 @@ module Carto
       exported_layers.map.with_index.map { |layer, i| build_layer_from_hash(layer.deep_symbolize_keys, order: i) }
     end
 
+    LAYER_OPTIONS_REFERRING_ORIGINAL_DATA = [:id, :stat_tag, :user_name].freeze
+
     def build_layer_from_hash(exported_layer, order:)
       options = exported_layer[:options]
-      options[:id] = nil if options.has_key?(:id)
-      options[:stat_tag] = nil if options.has_key?(:stat_tag)
+      LAYER_OPTIONS_REFERRING_ORIGINAL_DATA.each do |option_key|
+        options[option_key] = nil if options.has_key?(option_key)
+      end
+
       layer = Carto::Layer.new(
         options: options,
         kind: exported_layer[:kind],

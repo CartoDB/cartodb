@@ -10,7 +10,7 @@ module Carto
 
         visualization.layers.map do |layer|
           options = layer.options
-          if options[:user_name]
+          if options.has_key?(:user_name)
             options[:user_name] = user.username
           end
         end

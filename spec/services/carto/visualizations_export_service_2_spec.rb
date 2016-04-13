@@ -192,9 +192,10 @@ describe Carto::VisualizationsExportService2 do
     export_options_match = layer_export_options.reject { |k, _| CHANGING_LAYER_OPTIONS_KEYS.include?(k) }
     options_match.should eq export_options_match
 
-    options_user_name = layer.options[:user_name]
-    if options_user_name && importing_user
-      options_user_name.should eq importing_user.username
+    if importing_user && layer_export_options.has_key?(:user_name)
+      layer_options[:user_name].should eq importing_user.username
+    else
+      layer_options[:user_name].should be_nil
     end
 
     if importing_user && layer_export_options.has_key?(:id)
@@ -463,9 +464,11 @@ describe Carto::VisualizationsExportService2 do
       original_options_match = original_layer_options.reject { |k, _| CHANGING_LAYER_OPTIONS_KEYS.include?(k) }
       imported_options_match.should eq original_options_match
 
-      user_name = imported_layer.options[:user_name]
-      if user_name
-        user_name.should eq importing_user.username
+      if importing_user && original_layer_options.has_key?(:user_name)
+        imported_layer.options[:user_name].should_not be_nil
+        imported_layer.options[:user_name].should eq importing_user.username
+      else
+        imported_layer.options[:user_name].should be_nil
       end
 
       if importing_user && original_layer_options.has_key?(:id)

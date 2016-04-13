@@ -28,7 +28,7 @@ module CartoDB
           CartoDB::DataMover::Config[:dbuser],
           @database_host,
           CartoDB::DataMover::Config[:user_dbport],
-          @database_name,
+          @database_name
         )} -Fc -f #{@filename} --serializable-deferrable -v")
       end
 
@@ -52,7 +52,7 @@ module CartoDB
           CartoDB::DataMover::Config[:dbuser],
           @database_host,
           CartoDB::DataMover::Config[:user_dbport],
-          @database_name,
+          @database_name
         )} -f #{@path}#{@database_schema}.schema.sql -n #{@database_schema} --verbose --no-tablespaces -Z 0")
       end
     end
@@ -69,63 +69,63 @@ module CartoDB
       end
     end
     class ExportJob
-        attr_reader :logger
+      attr_reader :logger
 
-        REDIS_KEYS = {
-          mapviews: {
-            template: "user:USERNAME:mapviews:*",
-            var_position: 1,
-            type: 'zset',
-            db: 5,
-            separator: ":"
-          },
-          map_style: {
-            template: "map_style|USERDB|*",
-            var_position: 1,
-            separator: '|',
-            db: 0,
-            type: 'string'
-          },
-          map_template: {
-            template: "map_tpl|USERNAME",
-            no_clone: true,
-            var_position: 1,
-            separator: '|',
-            db: 0,
-            type: 'hash'
-          },
-          table: {
-            template: "rails:USERDB:*",
-            var_position: 1,
-            separator: ':',
-            db: 0,
-            type: 'hash',
-            attributes: {
-              user_id: 'USERID'
-            }
-          },
-          limits_tiler: {
-            template: "limits:tiler:USERNAME",
-            no_clone: true,
-            var_position: 2,
-            separator: ':',
-            db: 5,
-            type: 'hash'
-          },
-          user: {
-            template: "rails:users:USERNAME",
-            no_clone: true,
-            var_position: 2,
-            separator: ':',
-            db: 5,
-            type: 'hash',
-            attributes: {
-              database_name: 'USERDB',
-              id: 'USERID'
-            }
+      REDIS_KEYS = {
+        mapviews: {
+          template: "user:USERNAME:mapviews:*",
+          var_position: 1,
+          type: 'zset',
+          db: 5,
+          separator: ":"
+        },
+        map_style: {
+          template: "map_style|USERDB|*",
+          var_position: 1,
+          separator: '|',
+          db: 0,
+          type: 'string'
+        },
+        map_template: {
+          template: "map_tpl|USERNAME",
+          no_clone: true,
+          var_position: 1,
+          separator: '|',
+          db: 0,
+          type: 'hash'
+        },
+        table: {
+          template: "rails:USERDB:*",
+          var_position: 1,
+          separator: ':',
+          db: 0,
+          type: 'hash',
+          attributes: {
+            user_id: 'USERID'
+          }
+        },
+        limits_tiler: {
+          template: "limits:tiler:USERNAME",
+          no_clone: true,
+          var_position: 2,
+          separator: ':',
+          db: 5,
+          type: 'hash'
+        },
+        user: {
+          template: "rails:users:USERNAME",
+          no_clone: true,
+          var_position: 2,
+          separator: ':',
+          db: 5,
+          type: 'hash',
+          attributes: {
+            database_name: 'USERDB',
+            id: 'USERID'
           }
         }
-      TABLE_NULL_EXCEPTIONS = ['table_quota'] # those won't be discarded if set to NULL
+      }.freeze
+      TABLE_NULL_EXCEPTIONS = ['table_quota'].freeze # those won't be discarded if set to NULL
       include CartoDB::DataMover::Utils
 
       def get_user_metadata(user_id)
@@ -193,14 +193,14 @@ module CartoDB
         model_dependencies = models.map do |m|
           [m,
            m.reflections.values.select(&:belongs_to?)
-           .reject { |r| !r.inverse_of.nil? && r.inverse_of.belongs_to? } # Remove mutual foreign_keys
-           .map(&:klass).select { |s| models.include?(s) }]
+            .reject { |r| !r.inverse_of.nil? && r.inverse_of.belongs_to? } # Remove mutual foreign_keys
+            .map(&:klass).select { |s| models.include?(s) }]
         end
         models_ordered = TsortableHash[model_dependencies].tsort
         File.open(@options[:path] + "#{prefix}_metadata.sql", "w") do |f|
           models_ordered.each do |model|
             data[model].each do |rows|
-              keys = rows.keys.select { |k| !TABLE_NULL_EXCEPTIONS.include?(k.to_s) == (!rows[k].nil?) }
+              keys = rows.keys.select { |k| !TABLE_NULL_EXCEPTIONS.include?(k.to_s) == !rows[k].nil? }
               f.write generate_pg_insert_query(model.table_name, keys, rows)
             end
           end
@@ -231,8 +231,7 @@ module CartoDB
 
       def dump_related_data(model, id, exclude = [])
         data = {}
-        id = [id] if id.is_a? Integer or id.is_a? String
-
+        id = [id] if id.is_a?(Integer) || id.is_a?(String)
 
         # first dump this model
         query = "SELECT * FROM #{model.table_name} WHERE id IN (#{id.map { |i| "'#{i}'" }.join(', ')});"
@@ -242,7 +241,7 @@ module CartoDB
         end
 
         model.reflections.each do |_name, reflection|
-          unless exclude.include? reflection.klass or !reflection.through_reflection.nil?
+          unless exclude.include?(reflection.klass) || !reflection.through_reflection.nil?
 
             if reflection.belongs_to?
               ids = data[model].map { |t| t[reflection.association_foreign_key.to_s] }.reject { |t| t == nil }
@@ -260,7 +259,7 @@ module CartoDB
             ids = data[reflection.klass].map do |data_for_related_key|
               data_for_related_key["id"]
             end
-            data.merge!(dump_related_data(reflection.klass, ids, exclude + [model])) { |_, x, y| merge_without_duplicated_ids(x, y) } if ids.length > 0
+            data.merge!(dump_related_data(reflection.klass, ids, exclude + [model])) { |_, x, y| merge_without_duplicated_ids(x, y) } if !ids.empty?
           end
         end
 
@@ -278,15 +277,15 @@ module CartoDB
       def gen_redis_proto(*cmd)
         proto = ""
         proto << "*" + cmd.length.to_s + "\r\n"
-        cmd.each { |arg|
+        cmd.each do |arg|
           proto << "$" + arg.to_s.bytesize.to_s + "\r\n"
           proto << arg.to_s + "\r\n"
-        }
+        end
         proto
       end
 
       def format_redis_dump(str)
-        str.gsub("'", %q(\\\'))
+        str.gsub("'", "\\\'")
       end
 
       def dump_redis_keys
@@ -400,11 +399,11 @@ module CartoDB
       end
 
       def user_roles
-        if @user_data['database_schema'] == 'public'
-          roles = ['publicuser', database_username(@user_id)]
-        else
-          roles = ["cartodb_publicuser_#{@user_id}", database_username(@user_id)]
-        end
+        roles = if @user_data['database_schema'] == 'public'
+                  ['publicuser', database_username(@user_id)]
+                else
+                  ["cartodb_publicuser_#{@user_id}", database_username(@user_id)]
+                end
 
         Hash[roles.map { |role| [role, dump_role_grants(role)] }]
       end
@@ -453,20 +452,19 @@ module CartoDB
         @start = Time.now
         @logger = options[:logger] || default_logger
 
-
         job_uuid = @options[:job_uuid] || SecureRandom.uuid
-        export_log = {'job_uuid'               => job_uuid,
-                      'id'                     => @options[:id] || @options[:organization_name] || nil,
-                      'type'                   => 'export',
-                      'path'                   => @options[:path],
-                      'start'                  => @start,
-                      'end'                    => nil,
-                      'server'                 => `hostname`.strip,
-                      'pid'                    => Process.pid,
-                      'db_source'              => nil,
-                      'db_size'                => nil,
-                      'status'                 => nil,
-                      'trace'                  => nil
+        export_log = { 'job_uuid' => job_uuid,
+                       'id'                     => @options[:id] || @options[:organization_name] || nil,
+                       'type'                   => 'export',
+                       'path'                   => @options[:path],
+                       'start'                  => @start,
+                       'end'                    => nil,
+                       'server'                 => `hostname`.strip,
+                       'pid'                    => Process.pid,
+                       'db_source'              => nil,
+                       'db_size'                => nil,
+                       'status'                 => nil,
+                       'trace'                  => nil
                      }
 
         begin
@@ -502,12 +500,12 @@ module CartoDB
             @org_groups = get_org_groups(@org_metadata['id'])
 
             # Ensure all users belong to the same database
-            database_names = @org_users.map{|u| u['database_name']}.uniq
+            database_names = @org_users.map { |u| u['database_name'] }.uniq
             raise "Organization users inconsistent - there are users belonging to multiple databases" if database_names.length > 1
             @database_name = database_names[0]
 
             # Ensure all users belong to the same database host
-            database_hosts = @org_users.map{|u| u['database_host']}.uniq
+            database_hosts = @org_users.map { |u| u['database_host'] }.uniq
             raise "Organization users inconsistent - there are users belonging to multiple database hosts" if database_hosts.length > 1
             @database_host = database_hosts[0]
 
@@ -531,14 +529,12 @@ module CartoDB
               )
             end
             @org_users.each do |org_user|
-              export_job = CartoDB::DataMover::ExportJob.new({
-                                                               id: org_user['username'],
-                                                               data: @options[:data] && @options[:split_user_schemas],
-                                                               path: @options[:path],
-                                                               job_uuid: job_uuid,
-                                                               from_org: true,
-                                                               schema_mode: true
-                                                             })
+              export_job = CartoDB::DataMover::ExportJob.new(id: org_user['username'],
+                                                             data: @options[:data] && @options[:split_user_schemas],
+                                                             path: @options[:path],
+                                                             job_uuid: job_uuid,
+                                                             from_org: true,
+                                                             schema_mode: true)
             end
           end
         rescue => e

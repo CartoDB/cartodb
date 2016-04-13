@@ -16,9 +16,8 @@ module CartoDB
       include CartoDB::DataMover::Utils
       attr_reader :logger
 
-
       def initialize(options)
-        default_options = {:data => true, :metadata => :true}
+        default_options = { data: true, metadata: true }
         @options = default_options.merge(options)
         @config = CartoDB::DataMover::Config.config
         @logger = @options[:logger] || default_logger
@@ -36,7 +35,7 @@ module CartoDB
         @path = File.expand_path(File.dirname(@options[:file])) + "/"
 
         job_uuid = @options[:job_uuid] || SecureRandom.uuid
-        @import_log =  {'job_uuid'               => job_uuid,
+        @import_log = { 'job_uuid'               => job_uuid,
                         'id'                     => nil,
                         'type'                   => 'import',
                         'path'                   => @path,
@@ -232,7 +231,7 @@ module CartoDB
           elsif @options[:mode] == :rollback
             rollback_metadata("user_#{@target_userid}_metadata_undo.sql")
             rollback_redis("user_#{@target_userid}_metadata_undo.redis")
-            drop_database(@target_dbname) if @options[:drop_database] and !@options[:schema_mode]
+            drop_database(@target_dbname) if @options[:drop_database] && !@options[:schema_mode]
             drop_role(@target_dbuser) if @options[:drop_roles]
           end
         end
@@ -366,7 +365,7 @@ module CartoDB
       end
 
       # It would be a good idea to "disable" the invalidation trigger during the load
-      # This way, the restore will be much faster and won't also cause a big overhead 
+      # This way, the restore will be much faster and won't also cause a big overhead
       # in the old database while the process is ongoing
       # Disabling it may be hard. Maybe it's easier to just exclude it in the export.
       def import_pgdump(dump)
@@ -508,7 +507,6 @@ module CartoDB
       def importjob_logger
         @@importjob_logger ||= ::Logger.new("#{Rails.root}/log/datamover.log")
       end
-
 
       def log_error(e)
         @logger.error e

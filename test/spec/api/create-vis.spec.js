@@ -1,4 +1,4 @@
-// var _ = require('underscore');
+var _ = require('underscore');
 var $ = require('jquery');
 var Loader = require('../../../src/core/loader');
 var createVis = require('../../../src/api/create-vis');
@@ -228,35 +228,35 @@ describe('src/api/create-vis', function () {
   });
 
   var mapInstantiationRequestDone = function () {
-    throw new Error($.ajax.calls.allArgs()[0][0].url);
+    return _.any($.ajax.calls.allArgs(), function (args) {
+      var expectedURLRegexp = /(http|https):\/\/cdb.localhost.lan:8181\/api\/v1\/map\/named\/tpl_6a31d394_7c8e_11e5_8e42_080027880ca6\?stat_tag=6a31d394-7c8e-11e5-8e42-080027880ca6/;
+      return args[0].url.match(expectedURLRegexp);
+    });
   };
 
   describe('map instantiation', function () {
     beforeEach(function () {
-      jasmine.clock().install();
       spyOn($, 'ajax');
     });
 
-    it('should instantiate map', function () {
+    it('should instantiate map', function (done) {
       this.vis = createVis('domId', fakeVizJSON, {});
 
-      jasmine.clock().tick(500);
-
-      expect(mapInstantiationRequestDone()).toEqual(true);
+      _.defer(function () {
+        expect(mapInstantiationRequestDone()).toEqual(true);
+        done();
+      });
     });
 
-    it('should NOT instantiate map if skipMapInstantiation options is set', function () {
+    it('should NOT instantiate map if skipMapInstantiation options is set', function (done) {
       this.vis = createVis('domId', fakeVizJSON, {
         skipMapInstantiation: true
       });
 
-      jasmine.clock().tick(500);
-
-      expect(mapInstantiationRequestDone()).toEqual(false);
-    });
-
-    afterEach(function () {
-      jasmine.clock().uninstall();
+      _.defer(function () {
+        expect(mapInstantiationRequestDone()).toEqual(false);
+        done();
+      });
     });
   });
 });

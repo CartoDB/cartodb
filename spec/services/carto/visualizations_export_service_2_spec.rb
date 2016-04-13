@@ -125,7 +125,7 @@ describe Carto::VisualizationsExportService2 do
     }
   end
 
-  CHANGING_LAYER_OPTIONS_KEYS = [:user_name].freeze
+  CHANGING_LAYER_OPTIONS_KEYS = [:user_name, :id, :stat_tag].freeze
 
   def verify_visualization_vs_export(visualization, visualization_export, importing_user: nil)
     visualization.name.should eq visualization_export[:name]
@@ -186,8 +186,10 @@ describe Carto::VisualizationsExportService2 do
   end
 
   def verify_layer_vs_export(layer, layer_export, importing_user: nil)
-    options_match = layer.options.deep_symbolize_keys.reject { |k, _| CHANGING_LAYER_OPTIONS_KEYS.include?(k) }
-    export_options_match = layer_export[:options].deep_symbolize_keys.reject { |k, _| CHANGING_LAYER_OPTIONS_KEYS.include?(k) }
+    layer_options = layer.options.deep_symbolize_keys
+    options_match = layer_options.reject { |k, _| CHANGING_LAYER_OPTIONS_KEYS.include?(k) }
+    layer_export_options = layer_export[:options].deep_symbolize_keys
+    export_options_match = layer_export_options.reject { |k, _| CHANGING_LAYER_OPTIONS_KEYS.include?(k) }
     options_match.should eq export_options_match
 
     options_user_name = layer.options[:user_name]
@@ -195,7 +197,24 @@ describe Carto::VisualizationsExportService2 do
       options_user_name.should eq importing_user.username
     end
 
+    if importing_user && layer_export_options.has_key?(:id)
+      # Persisted layer
+      layer_options[:id].should_not be_nil
+      layer_options[:id].should eq layer.id
+    else
+      layer_options[:id].should be_nil
+    end
+
+    if importing_user && layer_export_options.has_key?(:stat_tag)
+      # Persisted layer
+      layer_options[:stat_tag].should_not be_nil
+      layer_options[:stat_tag].should eq layer.maps.first.visualizations.first.id
+    else
+      layer_options[:stat_tag].should be_nil
+    end
+
     layer.kind.should eq layer_export[:kind]
+
     if layer.infowindow
       layer.infowindow.deep_symbolize_keys.should eq layer_export[:infowindow].deep_symbolize_keys
     else
@@ -438,13 +457,31 @@ describe Carto::VisualizationsExportService2 do
     end
 
     def verify_layer_match(imported_layer, original_layer, importing_user: nil)
-      imported_options_match = imported_layer.options.deep_symbolize_keys.reject { |k, _| CHANGING_LAYER_OPTIONS_KEYS.include?(k) }
-      original_options_match = original_layer.options.deep_symbolize_keys.reject { |k, _| CHANGING_LAYER_OPTIONS_KEYS.include?(k) }
+      imported_layer_options = imported_layer.options.deep_symbolize_keys
+      imported_options_match = imported_layer_options.reject { |k, _| CHANGING_LAYER_OPTIONS_KEYS.include?(k) }
+      original_layer_options = original_layer.options.deep_symbolize_keys
+      original_options_match = original_layer_options.reject { |k, _| CHANGING_LAYER_OPTIONS_KEYS.include?(k) }
       imported_options_match.should eq original_options_match
 
       user_name = imported_layer.options[:user_name]
       if user_name
         user_name.should eq importing_user.username
+      end
+
+      if importing_user && original_layer_options.has_key?(:id)
+        # Persisted layer
+        imported_layer.options[:id].should_not be_nil
+        imported_layer.options[:id].should eq imported_layer.id
+      else
+        imported_layer.options[:id].should be_nil
+      end
+
+      if importing_user && original_layer_options.has_key?(:stat_tag)
+        # Persisted layer
+        imported_layer.options[:stat_tag].should_not be_nil
+        imported_layer.options[:stat_tag].should eq imported_layer.maps.first.visualizations.first.id
+      else
+        imported_layer.options[:stat_tag].should be_nil
       end
 
       imported_layer.kind.should eq original_layer.kind

@@ -82,8 +82,11 @@ module Carto
     end
 
     def build_layer_from_hash(exported_layer, order:)
+      options = exported_layer[:options]
+      options[:id] = nil if options.has_key?(:id)
+      options[:stat_tag] = nil if options.has_key?(:stat_tag)
       layer = Carto::Layer.new(
-        options: exported_layer[:options],
+        options: options,
         kind: exported_layer[:kind],
         infowindow: exported_layer[:infowindow],
         order: order,

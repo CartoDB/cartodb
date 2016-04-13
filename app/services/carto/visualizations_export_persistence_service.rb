@@ -36,6 +36,20 @@ module Carto
         end
 
         visualization.update_attribute(:tags, tags)
+
+        visualization.layers.map do |layer|
+          # Flag needed because `.changed?` won't realize about options hash changes
+          changed = false
+          if layer.options.has_key?(:id)
+            layer.options[:id] = layer.id
+            changed = true
+          end
+          if layer.options.has_key?(:stat_tag)
+            layer.options[:stat_tag] = visualization.id
+            changed = true
+          end
+          layer.save if changed
+        end
       end
 
       # Propagate changes (named maps, default permissions and so on)

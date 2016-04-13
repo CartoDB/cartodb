@@ -10,10 +10,8 @@ module Carto
         visualization = FactoryGirl.create(:carto_visualization, user_id: carto_user.id, map: map)
         visualization.update_column(:active_layer_id, visualization.layers.first.id)
 
-        overlays = [
-          FactoryGirl.create(:carto_zoom_overlay, visualization: visualization),
-          FactoryGirl.create(:carto_search_overlay, visualization: visualization)
-        ]
+        FactoryGirl.create(:carto_zoom_overlay, visualization: visualization)
+        FactoryGirl.create(:carto_search_overlay, visualization: visualization)
 
         # Need to mock the nonexistant table because factories use Carto::* models
         CartoDB::Visualization::Member.any_instance.stubs(:propagate_name_to).returns(true)

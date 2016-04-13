@@ -54,6 +54,8 @@ class Carto::Map < ActiveRecord::Base
 
   belongs_to :user
 
+  has_many :visualizations, class_name: Carto::Visualization, inverse_of: :map
+
   DEFAULT_OPTIONS = {
     zoom:            3,
     bounding_box_sw: [BoundingBoxHelper::DEFAULT_BOUNDS[:minlat], BoundingBoxHelper::DEFAULT_BOUNDS[:minlon]],
@@ -100,7 +102,6 @@ class Carto::Map < ActiveRecord::Base
   end
 
   def writable_by_user?(user)
-    visualizations = Carto::Visualization.where(map_id: id).all
     !visualizations.select { |v| v.is_writable_by_user(user) }.empty?
   end
 

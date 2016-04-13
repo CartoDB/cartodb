@@ -38,8 +38,8 @@ describe Carto::UserDbSizeCache do
       umrc.update_if_old(updatable_user_mock)
 
       db_size_in_bytes_change_users = umrc.db_size_in_bytes_change_users
-      db_size_in_bytes_change_users.keys.should == [updatable_user_mock.username]
-      db_size_in_bytes_change_users.values.should == [updatable_user_mock.db_size_in_bytes]
+      db_size_in_bytes_change_users.keys.include?(updatable_user_mock.username).should be_true
+      db_size_in_bytes_change_users[updatable_user_mock.username].should == updatable_user_mock.db_size_in_bytes
     end
   end
 end

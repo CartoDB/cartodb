@@ -1,9 +1,11 @@
 <script charset="utf-8" type="text/javascript" src="//js.hsforms.net/forms/v2.js"></script>
 <script>
   hbspt.forms.create({ 
-    css: ".hs-form{margin-right:-20px}.hs-form fieldset{display:block;width:100%;max-width:none !important}.hs-form label{display:none}.hs-form .input{margin-right:20px;margin-bottom:20px}.hs-form .hs-input{width:100% !important;outline:none}.hs-form select{height:35px;border:1px solid #ccc;font-size:13px;color:#666}.hs-form input.hs-input,.hs-form textarea{border:1px solid #ddd;padding:8px;border-radius:4px;transition:all .3s;font:200 14px/17px Lato, sans-serif;color:#999;background:#fff}.hs-form input.hs-input:focus,.hs-form textarea:focus{border-color:#ccc}.hs-form textarea{height:80px}",
+    css: ".hs-form{margin-right:-20px}.hs-form fieldset{display:block;width:100%;max-width:none !important}.hs-form label{display:none}.hs-form .input{margin-right:20px !important;margin-bottom:20px}.hs-form .hs-input{width:100% !important;outline:none}.hs-form select{height:35px;border:1px solid #ccc;font-size:13px;color:#666}.hs-form input.hs-input,.hs-form textarea{border:1px solid #ddd;padding:8px 16px;transition:all .3s;font:300 14px/22px 'Open Sans','Helvetica Neue',Helvetica,Arial,sans-serif;color:#999;background:#fff;border-radius:4px;box-shadow:0 2px 0 rgba(0,0,0,0.05) inset}@media (max-width: 380px){.hs-form input.hs-input,.hs-form textarea{padding:12px 16px}}.hs-form input.hs-input:focus,.hs-form textarea:focus{border-color:#ccc}.hs-form textarea{height:80px}@media (max-width: 380px){.hs-form textarea{display:none}}",
     portalId: "<%= token %>",
     formId: "<%= form_id %>",
     submitButtonClass: 'hs-newsletter',
+    target: '.js-Hubspot--newsletter',
+    formInstanceId: '2'
   });
 </script>

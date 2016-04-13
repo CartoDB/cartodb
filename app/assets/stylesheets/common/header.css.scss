@@ -51,15 +51,14 @@ $cHeader-dark:  rgba(#3A91D7, 1);
 }
 .Header-navigationLink {
   font-weight: $sFontWeight-normal;
-  font-size: $sFontSize-smallUpperCase;
+  font-size: $sFontSize-normal;
   line-height: $sLineHeight-largest;
-  text-transform: uppercase;
   color: #fff;
   transition: all .15s;
 
   &:hover {
     text-decoration: none;
-    color: rgba(#fff, .6);;
+    color: rgba(#FFF, 0.6);
   }
 }
 .Header-navigationBreadcrumbItem:first-child { padding-left: 0 }
@@ -97,6 +96,11 @@ $cHeader-dark:  rgba(#3A91D7, 1);
   font-size: $sFontSize-smallUpperCase;
   line-height: $sLineHeight-larger;
   text-transform: uppercase;
+}
+.Header-settingsLink--public {
+  font-size: $sFontSize-normal;
+  font-weight: $sFontWeight-normal;
+  text-transform: none;
 }
 .Header-settingsItem--avatar {}
 .Header-settingsLink {

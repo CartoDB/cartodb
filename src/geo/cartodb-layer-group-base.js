@@ -20,7 +20,6 @@ var CartoDBLayerGroupBase = Backbone.Model.extend({
     // When a new instance of the map is created in Windshaft, we will need to use
     // new URLs for the tiles (`urls` attribute) and also for the attributes (`baseURL`)
     this._windshaftMap.bind('instanceCreated', function (mapInstance) {
-
       // TODO: We might need to get tiles of other type of layers too. For example, when we're generating
       // static images, we can't the layer with labels on top to be included.
       this.set({

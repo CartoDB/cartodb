@@ -389,6 +389,28 @@ describe Carto::VisualizationsExportService2 do
         ::User[@user.id].destroy
       end
 
+      describe 'visualization types' do
+        before(:all) do
+          @table_visualization = FactoryGirl.create(:carto_visualization, type: 'table')
+          @remote_visualization = FactoryGirl.create(:carto_visualization, type: 'remote')
+        end
+
+        after(:all) do
+          @table_visualization.destroy
+          @remote_visualization.destroy
+        end
+
+        it 'fails for visualizations that are not derived' do
+          exporter = Carto::VisualizationsExportService2.new
+          expect {
+            exporter.export_visualization_json_hash(@table_visualization.id)
+          }.to raise_error("Only derived visualizations can be exported")
+          expect {
+            exporter.export_visualization_json_hash(@remote_visualization.id)
+          }.to raise_error("Only derived visualizations can be exported")
+        end
+      end
+
       it 'exports visualization' do
         exported_json = Carto::VisualizationsExportService2.new.export_visualization_json_hash(@visualization.id)
 

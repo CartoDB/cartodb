@@ -155,11 +155,20 @@ module Carto
     def export_visualization_json_hash(visualization_id)
       {
         version: CURRENT_VERSION,
-        visualization: export_visualization(Carto::Visualization.find(visualization_id))
+        visualization: export(Carto::Visualization.find(visualization_id))
       }
     end
 
     private
+
+    def export(visualization)
+      check_valid_visualization(visualization)
+      export_visualization(visualization)
+    end
+
+    def check_valid_visualization(visualization)
+      raise "Only derived visualizations can be exported" unless visualization.derived?
+    end
 
     def export_visualization(visualization)
       {

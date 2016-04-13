@@ -27,6 +27,7 @@ var AnalysisFactory = require('../analysis/analysis-factory');
 var LayersCollection = require('../geo/map/layers');
 var CartoDBLayerGroupNamedMap = require('../geo/cartodb-layer-group-named-map');
 var CartoDBLayerGroupAnonymousMap = require('../geo/cartodb-layer-group-anonymous-map');
+var Something = require('./something');
 
 /**
  * Visualization creation
@@ -302,14 +303,16 @@ var Vis = View.extend({
 
     // Named map
     if (datasource.template_name) {
-      layerGroupModel = new CartoDBLayerGroupNamedMap({}, {
-        layersCollection: this._layersCollection,
-        windshaftMap: this._windshaftMap
+      layerGroupModel = new CartoDBLayerGroupNamedMap({
+        apiKey: apiKey
+      }, {
+        layersCollection: this._layersCollection
       });
     } else {
-      layerGroupModel = new CartoDBLayerGroupAnonymousMap({}, {
-        layersCollection: this._layersCollection,
-        windshaftMap: this._windshaftMap
+      layerGroupModel = new CartoDBLayerGroupAnonymousMap({
+        apiKey: apiKey
+      }, {
+        layersCollection: this._layersCollection
       });
     }
 
@@ -324,9 +327,11 @@ var Vis = View.extend({
     this.mapView.bind('newLayerView', this._addLoading, this);
 
     // Create the Layer Models and set them on hte map
+
     this.https = (window && window.location.protocol && window.location.protocol === 'https:') || !!vizjson.https || !!options.https;
     var layerModels = this._newLayerModels(vizjson, this.map);
 
+    // Infowindows && Tooltips
     var infowindowManager = new InfowindowManager(this);
     infowindowManager.manage(this.mapView, this.map);
 
@@ -363,6 +368,12 @@ var Vis = View.extend({
         this.analysis.analyse(analysis);
       }, this);
     }
+
+    Something.sync({
+      windshaftMap: this._windshaftMap,
+      layerGroupModel: layerGroupModel,
+      analysisCollection: this._analysisCollection
+    });
 
     // Lastly: reset the layer models on the map
     this.map.layers.reset(layerModels);

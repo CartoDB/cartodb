@@ -144,6 +144,18 @@ var WindshaftMap = Backbone.Model.extend({
     }
   },
 
+  getAnalysisNodeMetadata: function (analysisId) {
+    var metadata = {};
+    var nodes = _.map(this.get('metadata').analyses, function (analysis) {
+      return analysis.nodes;
+    });
+    _.each(nodes, function (node) {
+      _.extend(metadata, node);
+    });
+
+    return metadata[analysisId];
+  },
+
   getTiles: function (layerType) {
     layerType = layerType || 'mapnik';
     var grids = [];

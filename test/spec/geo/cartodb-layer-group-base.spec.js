@@ -9,31 +9,7 @@ var MyCartoDBLayerGroup = CartoDBLayerGroupBase.extend({
 
 describe('geo/cartodb-layer-group-base', function () {
   beforeEach(function () {
-    this.windshaftMap = new Backbone.Model();
     this.layersCollection = new Backbone.Collection();
-  });
-
-  it('should be bound to the WindshaftMap and respond to changes on the instance', function () {
-    var layerGroup = new MyCartoDBLayerGroup(null, {
-      windshaftMap: this.windshaftMap,
-      layersCollection: this.layersCollection
-    });
-
-    expect(layerGroup.get('baseURL')).not.toBeDefined();
-    expect(layerGroup.get('urls')).not.toBeDefined();
-
-    this.windshaftMap.getBaseURL = function () {};
-    this.windshaftMap.getTiles = function () {};
-
-    spyOn(this.windshaftMap, 'getBaseURL').and.returnValue('baseURL');
-    spyOn(this.windshaftMap, 'getTiles').and.returnValue('tileJSON');
-
-    // A new instance is created
-    this.windshaftMap.trigger('instanceCreated', this.windshaftMap, {});
-
-    // Assert that layerGroup has been updated
-    expect(layerGroup.get('baseURL')).toEqual('baseURL');
-    expect(layerGroup.get('urls')).toEqual('tileJSON');
   });
 
   describe('fetchAttributes', function () {
@@ -44,7 +20,6 @@ describe('geo/cartodb-layer-group-base', function () {
       var layer = new MyCartoDBLayerGroup({
         baseURL: 'http://wadus.com'
       }, {
-        windshaftMap: this.windshaftMap,
         layersCollection: this.layersCollection
       });
       this.layersCollection.reset([ cartoDBLayer1 ]);
@@ -67,7 +42,6 @@ describe('geo/cartodb-layer-group-base', function () {
       var layer = new MyCartoDBLayerGroup({
         baseURL: 'http://wadus.com'
       }, {
-        windshaftMap: this.windshaftMap,
         layersCollection: this.layersCollection
       });
       this.layersCollection.reset([ cartoDBLayer1 ]);
@@ -90,7 +64,6 @@ describe('geo/cartodb-layer-group-base', function () {
       var layer = new MyCartoDBLayerGroup({
         baseURL: 'http://wadus.com'
       }, {
-        windshaftMap: this.windshaftMap,
         layersCollection: this.layersCollection
       });
       this.layersCollection.reset([ cartoDBLayer1 ]);
@@ -110,12 +83,10 @@ describe('geo/cartodb-layer-group-base', function () {
       var callback = jasmine.createSpy('callback');
       var cartoDBLayer1 = new CartoDBLayer();
 
-      this.windshaftMap.set('apiKey', 'THE_API_KEY');
-
       var layer = new MyCartoDBLayerGroup({
+        apiKey: 'THE_API_KEY',
         baseURL: 'http://wadus.com'
       }, {
-        windshaftMap: this.windshaftMap,
         layersCollection: this.layersCollection
       });
       this.layersCollection.reset([ cartoDBLayer1 ]);

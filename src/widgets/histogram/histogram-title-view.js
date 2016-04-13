@@ -82,7 +82,7 @@ module.exports = cdb.core.View.extend({
                '  marker-line-opacity: 0.8;',
                '}',
                '#layer[mapnik-geometry-type=linestring]{',
-               '  line-color: #FFF;',
+               '  line-color: #000;',
                '  line-width: 0.3;',
                '  line-opacity: 0.3;',
                '}'

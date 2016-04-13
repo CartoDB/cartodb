@@ -57,16 +57,38 @@ module.exports = WidgetModel.extend({
   autoStyle: function () {
     var colors = this.colors.colors;
     var defColor = Object.keys(colors).filter(function(k){return colors[k] === 'Other'})[0]
+    style = ['#layer[mapnik-geometry-type=polygon]{',
+               '  polygon-fill: {{defaultColor}}',
+               '  polygon-opacity: 0.6;  ',
+               '  line-color: #FFF;',
+               '  line-width: 0.3;',
+               '  line-opacity: 0.3;',
+               '}',
+               '#layer[mapnik-geometry-type=point]{',
+               '  marker-width: 7;',
+               '  marker-fill-opacity: 0.4;  ',
+               '  marker-fill: {{defaultColor}};  ',
+               '  marker-line-color: #fff;',
+               '  marker-allow-overlap: true;',
+               '  marker-line-width: 0.3;',
+               '  marker-line-opacity: 0.8;',
+               '}',
+               '#layer[mapnik-geometry-type=linestring]{',
+               '  line-color: {{defaultColor}};',
+               '  line-width: 0.3;',
+               '  line-opacity: 0.3;',
+               '}'
+              ].join('\n').replace('{{defaultColor}}', colors[defColor])
     delete colors[defColor]
     var ramp = Object.keys(colors).map(function (c) {
-      return '#' + this.dataviewModel.layer.get('layer_name') + '['+this.dataviewModel.get('column')+'=\'' + colors[c] + '\']{\nmarker-fill: ' + c + ';\n}'
+      return '#layer' + '['+this.dataviewModel.get('column')+'=\'' + colors[c] + '\']{\nmarker-fill: ' + c + ';\n}'
     }.bind(this)).join('\n');
     style += '\n' + ramp;
     if (!this.dataviewModel._dataProvider) {
-      var index = this.dataviewModel._dataProvider._layerIndex;
-      var sublayer = this.dataviewModel._dataProvider._vectorLayerView;
       this.dataviewModel.tempStyle = style;
     } else {
+      var index = this.dataviewModel._dataProvider._layerIndex;
+      var sublayer = this.dataviewModel._dataProvider._vectorLayerView;
       sublayer.setCartoCSS(index, style, true)
     }
     this.dataviewModel.set('auto-style', true);

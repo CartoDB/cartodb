@@ -246,7 +246,7 @@ module.exports = Model.extend({
   _getSourceId: function () {
     var source = this.layer.get('source');
     if (source) {
-      return source.get('id');
+      return source;
     }
 
     return this.layer.get('id');

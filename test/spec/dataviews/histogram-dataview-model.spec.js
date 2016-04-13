@@ -6,7 +6,6 @@ describe('dataviews/histogram-dataview-model', function () {
   beforeEach(function () {
     this.map = jasmine.createSpyObj('map', ['getViewBounds', 'bind', 'reload']);
     this.map.getViewBounds.and.returnValue([[1, 2], [3, 4]]);
-    var windshaftMap = jasmine.createSpyObj('windhsaftMap', ['bind']);
     this.filter = new RangeFilter();
     this.layer = new Model();
     this.layer.getDataProvider = function () {};
@@ -14,7 +13,6 @@ describe('dataviews/histogram-dataview-model', function () {
     spyOn(HistogramDataviewModel.prototype, 'fetch').and.callThrough();
     this.model = new HistogramDataviewModel({}, {
       map: this.map,
-      windshaftMap: windshaftMap,
       layer: this.layer,
       filter: this.filter
     });
@@ -32,12 +30,10 @@ describe('dataviews/histogram-dataview-model', function () {
   });
 
   it('should set the api_key attribute on the internal models', function () {
-    var windshaftMap = jasmine.createSpyObj('windhsaftMap', ['bind']);
     this.model = new HistogramDataviewModel({
       apiKey: 'API_KEY'
     }, {
       map: this.map,
-      windshaftMap: windshaftMap,
       layer: jasmine.createSpyObj('layer', ['get', 'getDataProvider']),
       filter: this.filter
     });

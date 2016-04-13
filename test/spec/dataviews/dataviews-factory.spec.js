@@ -7,8 +7,7 @@ describe('dataviews/dataviews-factory', function () {
     this.dataviewsCollection = new Backbone.Collection();
     this.factory = new DataviewsFactory(null, {
       dataviewsCollection: this.dataviewsCollection,
-      map: {},
-      windshaftMap: {}
+      map: {}
     });
   });
 
@@ -44,8 +43,7 @@ describe('dataviews/dataviews-factory', function () {
         apiKey: 'THE_API_KEY'
       }, {
         dataviewsCollection: this.dataviewsCollection,
-        map: {},
-        windshaftMap: {}
+        map: {}
       });
 
       var layer = jasmine.createSpyObj('layer', ['getDataProvider']);

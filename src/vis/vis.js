@@ -350,8 +350,7 @@ var Vis = View.extend({
       apiKey: apiKey
     }, {
       dataviewsCollection: this._dataviewsCollection,
-      map: this.map,
-      windshaftMap: this._windshaftMap
+      map: this.map
     });
 
     // Public Analysis Factory
@@ -372,6 +371,8 @@ var Vis = View.extend({
     Something.sync({
       windshaftMap: this._windshaftMap,
       layerGroupModel: layerGroupModel,
+      layersCollection: this._layersCollection,
+      dataviewsCollection: this._dataviewsCollection,
       analysisCollection: this._analysisCollection
     });
 

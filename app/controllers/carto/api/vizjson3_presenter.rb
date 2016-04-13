@@ -34,8 +34,15 @@ module Carto
       end
 
       def to_named_map_vizjson(https_request: false, vector: false)
-        # TODO: cache
-        calculate_vizjson(https_request: https_request, vector: vector, force_named_map: true)
+        https_request ||= false
+        vector ||= false
+        vizjson = @redis_vizjson_cache.cached(@visualization.id, https_request, '3n') do
+          calculate_vizjson(https_request: https_request, vector: vector, force_named_map: true)
+        end
+
+        vizjson[:vector] = vector
+
+        vizjson
       end
 
       private

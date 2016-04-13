@@ -10,8 +10,8 @@ describe CartoDB::Visualization::RedisVizjsonCache do
   # http and https
   PROTOCOL_KEYS_COUNT = 2
 
-  # v2 and v3
-  VIZJSON_VERSION_COUNT = 2
+  # v2 and v3 and v3 forcing named maps
+  VIZJSON_VERSION_COUNT = 3
 
   KEYS_PER_VISUALIZATION = PROTOCOL_KEYS_COUNT * VIZJSON_VERSION_COUNT
 

@@ -11,8 +11,8 @@ module CartoDB
         @vizjson_version = vizjson_version
       end
 
-      def cached(visualization_id, https_flag = false)
-        key = key(visualization_id, https_flag, @vizjson_version)
+      def cached(visualization_id, https_flag = false, vizjson_version = @vizjson_version)
+        key = key(visualization_id, https_flag, vizjson_version)
         value = redis.get(key)
         if value.present?
           JSON.parse(value, symbolize_names: true)
@@ -46,9 +46,11 @@ module CartoDB
         redis.del keys
       end
 
+      # Needs to know every version because of invalidation
       VIZJSON_VERSION_KEY = {
-        2 => '',
-        3 => '3'
+        2 => '', # VizJSON v2
+        3 => '3', # VizJSON v3
+        '3n' => '3n' # VizJSON v3 forcing named maps (needed for embeds, see #7093)
       }.freeze
 
       def redis

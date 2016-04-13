@@ -100,7 +100,7 @@ module CartoDB
               log_success
             ensure
               @pack_config['users'].each do |user|
-                remove_user_mover_banner(user['id'])
+                remove_user_mover_banner(user['id']) if @options[:set_banner]
               end
             end
           elsif @options[:mode] == :rollback

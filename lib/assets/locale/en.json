@@ -2,6 +2,10 @@
   "user": {
     "you": "You"
   },
+  "analyses": {
+    "area-of-influence": "Area of influence",
+    "point-in-polygon": "Point in polygon"
+  },
   "data": {
     "upload-model": {
       "invalid-import": "Invalid import",
@@ -31,9 +35,6 @@
         "loading-title": "Loading options",
         "add-btn": "Add analysis",
         "disabled-option-desc": "Your layer geometry is %{inputGeometryType} and this analysis needs %{requiredInputGeometries}",
-        "option-sub-titles": {
-          "area-of-influence": "Area of influence"
-        },
         "option-types": {
           "buffer": {
             "title": "Buffer",
@@ -169,7 +170,6 @@
         "legends": "Legend"
       },
       "analysis-form": {
-        "area-of-influence": "Area of influence",
         "by": "By",
         "by-walk": "walk",
         "by-bike": "bike",
@@ -182,7 +182,6 @@
         "parameters": "Parameters",
         "parameters-description": "Tune your analysis",
         "placeholder-text": "You have not added any analysis yet. Add new analysis to discover new things.",
-        "point-in-polygon": "Point in polygon",
         "polygons_source": "Polygon source",
         "points_source": "Point source",
         "radio": "Radio",

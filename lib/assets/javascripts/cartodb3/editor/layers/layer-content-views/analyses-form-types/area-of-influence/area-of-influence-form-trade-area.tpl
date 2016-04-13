@@ -3,7 +3,7 @@
     <div class="Editor-HeaderNumeration CDB-Text is-semibold u-rSpace--m">2</div>
     <div class="Editor-HeaderInfo-Inner CDB-Text">
       <div class="Editor-HeaderInfo-Title u-bSpace--s">
-        <h2 class="CDB-Text CDB-HeaderInfo-TitleText CDB-Size-large"><%- _t('editor.layers.analysis-form.area-of-influence') %></h2>
+        <h2 class="CDB-Text CDB-HeaderInfo-TitleText CDB-Size-large"><%- _t('analyses.area-of-influence') %></h2>
       </div>
       <p class="CDB-Text u-upperCase CDB-FontSize-small u-altTextColor u-bSpace--m"><%- _t('editor.layers.analysis-form.reference-layer-pluralize', { smart_count: 1 }) %></p>
       <div class="u-tSpace-xl CDB-Text">

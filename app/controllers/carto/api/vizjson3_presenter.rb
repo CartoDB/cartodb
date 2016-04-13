@@ -22,38 +22,31 @@ module Carto
       end
 
       def to_vizjson(https_request: false, vector: false)
-        https_request ||= false
-        vector ||= false
-        vizjson = if @redis_vizjson_cache
-                    @redis_vizjson_cache.cached(@visualization.id, https_request) do
-                      calculate_vizjson(https_request: https_request, vector: vector)
-                    end
-                  else
-                    calculate_vizjson(https_request: https_request, vector: vector)
-                  end
-
-        vizjson[:vector] = vector
-
-        vizjson
+        generate_vizjson(https_request: https_request, vector: vector, force_named_map: false)
       end
 
       def to_named_map_vizjson(https_request: false, vector: false)
+        generate_vizjson(https_request: https_request, vector: vector, force_named_map: true)
+      end
+
+      private
+
+      def generate_vizjson(https_request:, vector:, force_named_map:)
         https_request ||= false
         vector ||= false
+        version = force_named_map ? '3n' : 3
         vizjson = if @redis_vizjson_cache
-                    @redis_vizjson_cache.cached(@visualization.id, https_request, '3n') do
-                      calculate_vizjson(https_request: https_request, vector: vector, force_named_map: true)
+                    @redis_vizjson_cache.cached(@visualization.id, https_request, version) do
+                      calculate_vizjson(https_request: https_request, vector: vector, force_named_map: force_named_map)
                     end
                   else
-                    calculate_vizjson(https_request: https_request, vector: vector, force_named_map: true)
+                    calculate_vizjson(https_request: https_request, vector: vector, force_named_map: force_named_map)
                   end
 
         vizjson[:vector] = vector
 
         vizjson
       end
-
-      private
 
       VIZJSON_VERSION = '3.0.0'.freeze
 

@@ -32,16 +32,23 @@ describe Carto::Api::VizJSON3Presenter do
   describe 'caching' do
     include_context 'full visualization'
 
-    it 'to_vizjson uses the redis vizjson cache' do
-      fake_vizjson = { fake: 'sure!', layers: [] }
+    let(:fake_vizjson) { { fake: 'sure!', layers: [] } }
 
+    it 'to_vizjson uses the redis vizjson cache' do
       cache_mock = mock
-      cache_mock.expects(:cached).with(@visualization.id, false).returns(fake_vizjson).twice
+      cache_mock.expects(:cached).with(@visualization.id, false, 3).twice.returns(fake_vizjson)
       presenter = Carto::Api::VizJSON3Presenter.new(@visualization, cache_mock)
       v1 = presenter.to_vizjson
       v2 = presenter.to_vizjson
       v1.should eq fake_vizjson
       v1.should eq v2
+    end
+
+    it 'every call to_vizjson uses calculate_vizjson if no cache is provided' do
+      presenter = Carto::Api::VizJSON3Presenter.new(@visualization, nil)
+      presenter.expects(:calculate_vizjson).twice.returns(fake_vizjson)
+      presenter.to_vizjson
+      presenter.to_vizjson
     end
 
     it 'to_vizjson is not overriden by v2 caching or to_named_map_vizjson' do

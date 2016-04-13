@@ -85,15 +85,7 @@ describe Visualization::Member do
 
       Permission.any_instance.stubs(:update_shared_entities).returns(nil)
 
-      db_config   = Rails.configuration.database_configuration[Rails.env]
-      # Why not passing db_config directly to Sequel.postgres here ?
-      # See https://github.com/CartoDB/cartodb/issues/421
-      db          = Sequel.postgres(
-                      host:     db_config.fetch('host'),
-                      port:     db_config.fetch('port'),
-                      database: db_config.fetch('database'),
-                      username: db_config.fetch('username')
-                    )
+      db = Rails::Sequel.connection
       relation    = "visualizations_#{relation_id}".to_sym
       repository  = DataRepository::Backend::Sequel.new(db, relation)
       Visualization::Migrator.new(db).migrate(relation)

@@ -107,21 +107,12 @@ class Organization < Sequel::Model
   # organization destroy
   def destroy_cascade
     destroy_groups
-    destroy_permissions
     destroy_non_owner_users
     if self.owner
       self.owner.destroy
     else
       self.destroy
     end
-  end
-
-  def destroy_permissions
-    self.users.each { |user|
-      CartoDB::Permission.where(owner_id: user.id).each { |permission|
-        permission.destroy
-      }
-    }
   end
 
   def destroy_non_owner_users

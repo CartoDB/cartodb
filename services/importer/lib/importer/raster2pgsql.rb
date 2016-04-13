@@ -141,7 +141,7 @@ module CartoDB
         factor = z0 / pixel_size
 
         pw = Math::log(factor) / Math::log(2)
-        pow2 = (pw / 1).truncate
+        pow2 = pw.ceil
 
         out_scale = z0 / (2 ** pow2)
 
@@ -175,7 +175,7 @@ module CartoDB
       def psql_base_command(extra_params=nil)
         host      = pg_options.fetch(:host)
         port      = pg_options.fetch(:port)
-        user      = pg_options.fetch(:user)
+        user      = pg_options.fetch(:username)
         database  = pg_options.fetch(:database)
 
         %Q(#{psql_path} -h #{host} -p #{port} -U #{user} -d #{database} #{extra_params})

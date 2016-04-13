@@ -437,6 +437,9 @@ module CartoDB
         configuration = db_configuration_for
         configuration[:port] = configuration.fetch(:direct_port, configuration["direct_port"]) || configuration[:port] || configuration["port"]
 
+        # Temporary trace to be removed once https://github.com/CartoDB/cartodb/issues/7047 is solved
+        CartoDB::Logger.warning(message: 'Direct connection not used from queue') unless Socket.gethostname =~ /^que/
+
         connection = @user.get_connection(_opts = {}, configuration)
 
         begin
@@ -1133,6 +1136,15 @@ module CartoDB
       def materialized_views(schema = @user.database_schema)
         Carto::Db::Database.build_with_user(@user).materialized_views(schema, @user.database_username)
       end
+      
+      def get_database_version
+        version_match = @user.in_database.fetch("SELECT version()").first[:version].match(/(PostgreSQL (([0-9]+\.?){2,3})).*/)
+        if version_match.nil?
+          return nil
+        else
+          return version_match[2]
+        end
+      end
 
       private
 
@@ -1365,6 +1377,7 @@ module CartoDB
           );
         }
       end
+
     end
   end
 end

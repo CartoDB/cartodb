@@ -14,15 +14,13 @@ var CartoDBLayer = LayerModelBase.extend({
     LayerModelBase.prototype.initialize.apply(this, arguments);
     options = options || {};
     this._map = options.map;
+    this.set('initialStyle', attrs.cartocss)
     this.bind('change:visible change:sql change:cartocss', this._onAttributeChanged, this);
   },
 
   _onAttributeChanged: function () {
-    var styles = {};
-    styles[this.get('order') + ''] = this.get('cartocss') 
     this._map.reload({
-      sourceLayerId: this.get('id'),
-      styles: styles
+      sourceLayerId: this.get('id')
     });
   },
 

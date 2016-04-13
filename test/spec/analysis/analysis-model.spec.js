@@ -69,6 +69,14 @@ describe('src/analysis/analysis-model.js', function () {
         this.analysisModel.set('type', 'something');
         expect(this.map.reload).toHaveBeenCalled();
       });
+
+      it('should keep listening type change again', function () {
+        this.analysisModel.set('type', 'something');
+        expect(this.map.reload).toHaveBeenCalled();
+        this.map.reload.calls.reset();
+        this.analysisModel.set('type', 'something else');
+        expect(this.map.reload).toHaveBeenCalled();
+      });
     });
   });
 

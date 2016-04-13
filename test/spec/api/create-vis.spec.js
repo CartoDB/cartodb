@@ -242,17 +242,17 @@ describe('src/api/create-vis', function () {
     it('should instantiate map', function () {
       this.vis = createVis('domId', fakeVizJSON, {});
 
-      jasmine.clock().tick(100);
+      jasmine.clock().tick(500);
 
       expect(mapInstantiationRequestDone()).toEqual(true);
     });
 
-    it('should instantiate map', function () {
+    it('should NOT instantiate map if skipMapInstantiation options is set', function () {
       this.vis = createVis('domId', fakeVizJSON, {
         skipMapInstantiation: true
       });
 
-      jasmine.clock().tick(100);
+      jasmine.clock().tick(500);
 
       expect(mapInstantiationRequestDone()).toEqual(false);
     });

@@ -56,31 +56,37 @@ module.exports = cdb.core.View.extend({
 
   _applySizes: function () {
     var data = this.dataviewModel.get('data');
-    var style
-    var colors = ['YlGnBu', 'Greens', 'Reds', 'Blues'];
-    var color = colors[Math.floor(Math.random()*colors.length)];
-    style = ['#layer{',
-             '  polygon-fill: ramp([{{column}}], colorbrewer({{color}}, {{bins}}));'
-                .replace('{{column}}', this.dataviewModel.get('column'))
-                .replace('{{bins}}', this.dataviewModel.get('bins'))
-                .replace('{{color}}', color),
-             '  polygon-opacity: 0.6;  ',
-             '  line-color: #FFF;',
-             '  line-width: 0.3;',
-             '  line-opacity: 0.3;',
-             '  marker-width: ramp([{{column}}], {{min}}, {{max}}), {{bins}};'
-                .replace('{{column}}', this.dataviewModel.get('column'))
-                .replace('{{bins}}', this.dataviewModel.get('bins'))
-                .replace('{{min}}', 2)
-                .replace('{{max}}', 30),
-             '  marker-fill-opacity: 0.4;  ',
-             '  marker-fill: #000;  ',
-             '  marker-line-color: #fff;',
-             '  marker-allow-overlap: true;',
-             '  marker-line-width: 0.3;',
-             '  marker-line-opacity: 0.8;',
-             '}'
-            ].join('\n')
+      var colors = ['YlGnBu', 'Greens', 'Reds', 'Blues'];
+      var color = colors[Math.floor(Math.random()*colors.length)];
+      style = ['#layer[mapnik-geometry-type=polygon]{',
+               '  polygon-fill: ramp([{{column}}], colorbrewer({{color}}, {{bins}}));'
+                  .replace('{{column}}', this.dataviewModel.get('column'))
+                  .replace('{{bins}}', this.dataviewModel.get('bins'))
+                  .replace('{{color}}', color),
+               '  polygon-opacity: 0.6;  ',
+               '  line-color: #FFF;',
+               '  line-width: 0.3;',
+               '  line-opacity: 0.3;',
+               '}',
+               '#layer[mapnik-geometry-type=point]{',
+               '  marker-width: ramp([{{column}}], {{min}}, {{max}}), {{bins}};'
+                  .replace('{{column}}', this.dataviewModel.get('column'))
+                  .replace('{{bins}}', this.dataviewModel.get('bins'))
+                  .replace('{{min}}', 1)
+                  .replace('{{max}}', 20),
+               '  marker-fill-opacity: 0.4;  ',
+               '  marker-fill: #000;  ',
+               '  marker-line-color: #fff;',
+               '  marker-allow-overlap: true;',
+               '  marker-line-width: 0.3;',
+               '  marker-line-opacity: 0.8;',
+               '}',
+               '#layer[mapnik-geometry-type=linestring]{',
+               '  line-color: #FFF;',
+               '  line-width: 0.3;',
+               '  line-opacity: 0.3;',
+               '}'
+              ].join('\n')
     if (!this.dataviewModel._dataProvider) {
       this.dataviewModel.tempStyle = style;
     } else {

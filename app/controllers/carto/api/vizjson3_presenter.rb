@@ -24,9 +24,13 @@ module Carto
       def to_vizjson(https_request: false, vector: false)
         https_request ||= false
         vector ||= false
-        vizjson = @redis_vizjson_cache.cached(@visualization.id, https_request) do
-          calculate_vizjson(https_request: https_request, vector: vector)
-        end
+        vizjson = if @redis_vizjson_cache
+                    @redis_vizjson_cache.cached(@visualization.id, https_request) do
+                      calculate_vizjson(https_request: https_request, vector: vector)
+                    end
+                  else
+                    calculate_vizjson(https_request: https_request, vector: vector)
+                  end
 
         vizjson[:vector] = vector
 
@@ -36,9 +40,13 @@ module Carto
       def to_named_map_vizjson(https_request: false, vector: false)
         https_request ||= false
         vector ||= false
-        vizjson = @redis_vizjson_cache.cached(@visualization.id, https_request, '3n') do
-          calculate_vizjson(https_request: https_request, vector: vector, force_named_map: true)
-        end
+        vizjson = if @redis_vizjson_cache
+                    @redis_vizjson_cache.cached(@visualization.id, https_request, '3n') do
+                      calculate_vizjson(https_request: https_request, vector: vector, force_named_map: true)
+                    end
+                  else
+                    calculate_vizjson(https_request: https_request, vector: vector, force_named_map: true)
+                  end
 
         vizjson[:vector] = vector
 

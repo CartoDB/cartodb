@@ -3,11 +3,16 @@ module Carto
     module Visualizations
       # "Full visualization": with map, table... Metadata only (not actual user table).
       def create_full_visualization(carto_user, map: FactoryGirl.create(:carto_map_with_layers, user_id: carto_user.id))
-        table = FactoryGirl.create(:carto_user_table, user_id: carto_user.id, map_id: map.id)
+        table = FactoryGirl.create(:carto_user_table, user_id: carto_user.id, map_id: map.id, privacy: Carto::UserTable::PRIVACY_PUBLIC)
         table_visualization = FactoryGirl.create(
           :carto_visualization,
           user: carto_user, type: 'table', name: table.name, map_id: table.map_id)
         visualization = FactoryGirl.create(:carto_visualization, user_id: carto_user.id, map: map)
+        carto_layer = visualization.map.data_layers.first
+        carto_layer.options[:table_name] = table.name
+        carto_layer.options[:query] = "select * from #{table.name}"
+        carto_layer.save
+
         # Need to mock the nonexistant table because factories use Carto::* models
         CartoDB::Visualization::Member.any_instance.stubs(:propagate_name_to).returns(true)
         CartoDB::Visualization::Member.any_instance.stubs(:propagate_privacy_to).returns(true)

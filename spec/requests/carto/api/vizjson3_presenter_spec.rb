@@ -102,6 +102,31 @@ describe Carto::Api::VizJSON3Presenter do
     end
   end
 
+  describe '#to_named_map_vizjson' do
+    include_context 'full visualization'
+
+    it 'generates the vizjson of visualizations that have not named map as if they had' do
+      @table.privacy = Carto::UserTable::PRIVACY_PUBLIC
+      @table.save
+      @visualization = Carto::Visualization.find(@visualization.id)
+      v3_presenter = Carto::Api::VizJSON3Presenter.new(@visualization, nil)
+
+      original_vizjson = v3_presenter.to_vizjson.reject { |k, _| k == :updated_at }
+      original_named_vizjson = v3_presenter.to_named_map_vizjson.reject { |k, _| k == :updated_at }
+      original_vizjson.should_not eq original_named_vizjson
+
+      @table.privacy = Carto::UserTable::PRIVACY_PRIVATE
+      @table.save
+      @visualization = Carto::Visualization.find(@visualization.id)
+      v3_presenter = Carto::Api::VizJSON3Presenter.new(@visualization, nil)
+
+      named_vizjson = v3_presenter.to_vizjson.reject { |k, _| k == :updated_at }
+      original_named_vizjson.should eq named_vizjson
+      named_named_vizjson = v3_presenter.to_vizjson.reject { |k, _| k == :updated_at }
+      named_named_vizjson.should eq named_vizjson
+    end
+  end
+
   describe 'analyses' do
     include_context 'full visualization'
 

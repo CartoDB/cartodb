@@ -36,7 +36,7 @@
       var config = <%= safe_js_object frontend_config_public({https_apis: request.protocol == 'https://' }) %>;
       var account_host = '<%= CartoDB.account_host %>';
       var base_url = '<%= @base_url %>';
-      var login_url = "<%= login_url %>";
+      var login_url = "<%= CartoDB.url(self, 'login') %>";
       var avatar_url= '<%= @avatar_url %>';
     </script>
 

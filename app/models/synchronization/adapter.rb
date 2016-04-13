@@ -59,9 +59,15 @@ module CartoDB
         fix_oid(table_name)
       rescue => exception
         puts "Sync overwrite ERROR: #{exception.message}: #{exception.backtrace.join}"
-        CartoDB.notify_error('Error in sync cartodbfy',
-                             error: exception.backtrace.join('\n'), user_id: user.id,
-                             table: table_name, result: result)
+
+        # Gets all attributes in the result except for 'log_trace', as it is too long for Rollbar
+        result_hash = CartoDB::Importer2::Result::ATTRIBUTES.map { |m| [m, result.send(m)] if m != 'log_trace' }
+                                                            .compact.to_h
+        CartoDB::Logger.error(message: 'Error in sync cartodbfy',
+                              exception: exception,
+                              user: user,
+                              table: table_name,
+                              result: result_hash)
         drop(result.table_name) if exists?(result.table_name)
       end
 
@@ -90,11 +96,10 @@ module CartoDB
         table.send :update_table_pg_stats
         table.save
       rescue => exception
-        CartoDB::Logger.log('error',
-                            message: "Sync cartodbfy ERROR: #{exception.message}",
-                            trace: exception.backtrace,
-                            user: user,
-                            table_name: table_name)
+        CartoDB::Logger.error(message: 'Error in sync cartodbfy',
+                              exception: exception,
+                              user: user,
+                              table: table_name)
       ensure
         fix_oid(table_name)
         update_cdb_tablemetadata(table_name)

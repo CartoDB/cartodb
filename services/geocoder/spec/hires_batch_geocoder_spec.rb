@@ -36,19 +36,19 @@ describe CartoDB::HiresBatchGeocoder do
 
   describe '#run' do
     it 'uploads a file to the batch server' do
+      mock_complete_response
       @batch_geocoder.expects(:upload).once
-      @batch_geocoder.expects(:update_status).twice
       @batch_geocoder.run
-      assert @geocoding_model.state == 'completed'
+      assert @geocoding_model.state.should == 'completed'
     end
 
     it 'times out if not finished before the DEFAULT_TIMEOUT' do
+      mock_complete_response('running')
       @batch_geocoder.expects(:upload).once
-      @batch_geocoder.expects(:update_status).once
       @batch_geocoder.expects(:cancel).once
       @batch_geocoder.stubs(:default_timeout).returns(-10) # make sure it times out
       @batch_geocoder.run
-      @batch_geocoder.status.should == 'timeout'
+      assert @geocoding_model.state.should == 'timeout'
     end
   end
 
@@ -210,6 +210,32 @@ END_XML
     File.expand_path(
       File.join(File.dirname(__FILE__), "../fixtures/#{filepath}")
       )
+  end
+
+  def mock_complete_response(state='completed')
+    @geocoding_model.remote_id = 'dummy_id'
+    @geocoding_model.save.reload
+    url = @batch_geocoder.send(:api_url, {action: 'status'})
+    xml_response_body = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+                          <ns2:SearchBatch xmlns:ns2="http://www.navteq.com/lbsp/Search-Batch/1">
+                            <Response>
+                              <MetaInfo>
+                                <RequestId>dummy_id</RequestId>
+                              </MetaInfo>
+                              <Status>'+state+'</Status>
+                              <JobStarted>2016-04-08T08:24:05.000Z</JobStarted>
+                              <JobFinished>2016-04-08T08:24:39.000Z</JobFinished>
+                              <TotalCount>1</TotalCount>
+                              <ValidCount>1</ValidCount>
+                              <InvalidCount>0</InvalidCount>
+                              <ProcessedCount>1</ProcessedCount>
+                              <PendingCount>0</PendingCount>
+                              <SuccessCount>1</SuccessCount>
+                              <ErrorCount>0</ErrorCount>
+                            </Response>
+                          </ns2:SearchBatch>'
+    response = Typhoeus::Response.new(code: 200, body: xml_response_body)
+    Typhoeus.stub(url, method: :get).and_return(response)
   end
 
 end

@@ -25,11 +25,6 @@ describe Admin::VisualizationsController do
     @api_key = @user.api_key
     @user.stubs(:should_load_common_data?).returns(false)
 
-    @db = Rails::Sequel.connection
-    Sequel.extension(:pagination)
-
-    CartoDB::Visualization.repository  = DataRepository::Backend::Sequel.new(@db, :visualizations)
-
     @headers = {
       'CONTENT_TYPE'  => 'application/json',
     }
@@ -341,17 +336,6 @@ describe Admin::VisualizationsController do
 
   describe 'org user visualization redirection' do
     it 'if A shares a (shared) vis link to B with A username, performs a redirect to B username' do
-      db_config   = Rails.configuration.database_configuration[Rails.env]
-      # Why not passing db_config directly to Sequel.postgres here ?
-      # See https://github.com/CartoDB/cartodb/issues/421
-      db = Sequel.postgres(
-          host:     db_config.fetch('host'),
-          port:     db_config.fetch('port'),
-          database: db_config.fetch('database'),
-          username: db_config.fetch('username')
-      )
-      CartoDB::Visualization.repository  = DataRepository::Backend::Sequel.new(db, :visualizations)
-
       CartoDB::UserModule::DBService.any_instance.stubs(:move_to_own_schema).returns(nil)
       CartoDB::TablePrivacyManager.any_instance.stubs(
           :set_from_table_privacy => nil,
@@ -449,17 +433,6 @@ describe Admin::VisualizationsController do
 
     # @see https://github.com/CartoDB/cartodb/issues/6081
     it 'If logged user navigates to legacy url from org user without org name, gets redirected properly' do
-      db_config   = Rails.configuration.database_configuration[Rails.env]
-      # Why not passing db_config directly to Sequel.postgres here ?
-      # See https://github.com/CartoDB/cartodb/issues/421
-      db = Sequel.postgres(
-        host:     db_config.fetch('host'),
-        port:     db_config.fetch('port'),
-        database: db_config.fetch('database'),
-        username: db_config.fetch('username')
-      )
-      CartoDB::Visualization.repository = DataRepository::Backend::Sequel.new(db, :visualizations)
-
       CartoDB::UserModule::DBService.any_instance.stubs(:move_to_own_schema).returns(nil)
       CartoDB::TablePrivacyManager.any_instance.stubs(
         set_from_table_privacy: nil,

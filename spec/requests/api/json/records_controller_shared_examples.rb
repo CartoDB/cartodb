@@ -5,14 +5,7 @@ shared_examples_for "records controllers" do
   describe '#show legacy tests' do
 
     before(:all) do
-      @user = create_user(
-        username: 'test',
-        email:    'client@example.com',
-        password: 'clientex'
-      )
-      @api_key = @user.api_key
-
-      host! 'test.localhost.lan'
+      @user = FactoryGirl.create(:valid_user)
     end
 
     before(:each) do
@@ -27,7 +20,7 @@ shared_examples_for "records controllers" do
     end
 
 
-    let(:params) { { :api_key => @user.api_key, table_id: @table.name } }
+    let(:params) { { api_key: @user.api_key, table_id: @table.name, user_domain: @user.username } }
 
 
     it "Insert a new row and get the record" do
@@ -163,18 +156,18 @@ shared_examples_for "records controllers" do
       # this test uses its own table
       custom_params = params.merge({table_id: table_name})
 
-      payload = { 
-        name: 'Fernando Blat', 
-        age: '29' 
+      payload = {
+        name: 'Fernando Blat',
+        age: '29'
       }
 
       post_json api_v1_tables_records_create_url(custom_params.merge(payload)) do |response|
         response.status.should be_success
       end
 
-      payload = { 
-        name: 'Beatriz', 
-        age: 30.2 
+      payload = {
+        name: 'Beatriz',
+        age: 30.2
       }
 
       row_id = post_json api_v1_tables_records_create_url(custom_params.merge(payload)) do |response|
@@ -209,11 +202,11 @@ shared_examples_for "records controllers" do
       end
     end
 
-    it "Update a row including the_geom field" do    
+    it "Update a row including the_geom field" do
       lat = Float.random_latitude
       lon = Float.random_longitude
       pk = nil
-      
+
 
       payload = {
         name:         "Fernando Blat",

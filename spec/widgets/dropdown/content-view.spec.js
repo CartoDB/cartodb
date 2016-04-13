@@ -27,20 +27,36 @@ describe('widgets/dropdown/widget-dropdown-view', function () {
     expect(this.view._toggleClick).toHaveBeenCalled();
   });
 
-  it('should trigger an event when clicking an option', function () {
+  it('should trigger an event when clicking the pinned option', function () {
     var called = false;
-    var name = null;
+    var pinned = null;
 
-    this.view.bind('click', function (action) {
+    this.view.bind('togglePinned', function (action) {
       called = true;
-      name = action;
+      pinned = true;
     });
 
     this.view.render();
-    this.view.$('button:nth(1)').click();
+    this.view.$('.js-togglePinned').click();
 
     expect(called).toBe(true);
-    expect(name).toBe('pin');
+    expect(pinned).toBe(true);
+  });
+
+  it('should trigger an event when clicking the collapsed option', function () {
+    var called = false;
+    var collapsed = null;
+
+    this.view.bind('toggleCollapsed', function (action) {
+      called = true;
+      collapsed = true;
+    });
+
+    this.view.render();
+    this.view.$('.js-toggleCollapsed').click();
+
+    expect(called).toBe(true);
+    expect(collapsed).toBe(true);
   });
 
   it('should close the dropdown when clicking an option', function () {

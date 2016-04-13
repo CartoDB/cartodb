@@ -20,6 +20,7 @@ require_relative 'utils'
 module CartoDB
   module DataMover
     class DumpJob
+      attr_reader :logger
       include CartoDB::DataMover::Utils
       def dump_db
         # find database host for user
@@ -31,12 +32,13 @@ module CartoDB
         )} -Fc -f #{@filename} --serializable-deferrable -v")
       end
 
-      def initialize(database_host, database_name, path, filename, database_schema = nil)
+      def initialize(database_host, database_name, path, filename, database_schema = nil, logger = default_logger)
         @database_host = database_host
         @database_name = database_name
         @filename = filename
         @database_schema = database_schema
         @path = path
+        @logger = logger
 
         if database_schema == nil
           dump_db
@@ -67,6 +69,8 @@ module CartoDB
       end
     end
     class ExportJob
+        attr_reader :logger
+
         REDIS_KEYS = {
           mapviews: {
             template: "user:USERNAME:mapviews:*",
@@ -446,8 +450,8 @@ module CartoDB
         default_options = { metadata: true, data: true, split_user_schemas: true, path: '' }
         @options = default_options.merge(options)
 
-        @logs = []
         @start = Time.now
+        @logger = options[:logger] || default_logger
 
 
         job_uuid = @options[:job_uuid] || SecureRandom.uuid
@@ -482,7 +486,8 @@ module CartoDB
                 @user_data['database_name'],
                 @options[:path],
                 "#{@options[:path]}user_#{@user_id}.dump",
-                @options[:schema_mode] ? @user_data['database_schema'] : nil
+                @options[:schema_mode] ? @user_data['database_schema'] : nil,
+                @logger
               )
             end
 
@@ -521,7 +526,8 @@ module CartoDB
                 @database_name,
                 @options[:path],
                 "#{@options[:path]}org_#{@org_id}.dump",
-                nil
+                nil,
+                @logger
               )
             end
             @org_users.each do |org_user|
@@ -551,8 +557,6 @@ module CartoDB
         ensure
           exportjob_logger.info(export_log.to_json) unless options[:from_org]
         end
-        puts "#{@logs.length} errors"
-        puts @logs.join("\n")
       end
     end
   end

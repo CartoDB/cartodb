@@ -14,13 +14,17 @@ module CartoDB
   module DataMover
     class ImportJob
       include CartoDB::DataMover::Utils
+      attr_reader :logger
+
 
       def initialize(options)
         default_options = {:data => true, :metadata => :true}
         @options = default_options.merge(options)
         @config = CartoDB::DataMover::Config.config
+        @logger = @options[:logger] || default_logger
 
         @start = Time.now
+        @logger.debug "Starting import job with options: #{@options}"
 
         @target_dbport = ENV['USER_DB_PORT'] || @config[:dbport]
         @target_dbhost = @options[:host] || @config[:dbhost]
@@ -30,7 +34,6 @@ module CartoDB
         @pack_config = JSON::parse File.read(@options[:file])
 
         @path = File.expand_path(File.dirname(@options[:file])) + "/"
-        @logger = @options[:logger] || ::Logger.new(STDOUT)
 
         job_uuid = @options[:job_uuid] || SecureRandom.uuid
         @import_log =  {'job_uuid'               => job_uuid,
@@ -90,19 +93,14 @@ module CartoDB
               end
             rescue => e
               rollback_metadata("org_#{organization_id}_metadata_undo.sql") unless @options[:data_only]
-              @import_log[:end] = Time.now
-              @import_log[:status] = 'failure'
-              @import_log[:trace] = e.to_s
-              @logger.error e
-              raise
+              log_error(e)
+              raise e
             else
-              @import_log[:end] = Time.now
-              @import_log[:status] = 'success'
+              log_success
             ensure
               @pack_config['users'].each do |user|
                 remove_user_mover_banner(user['id'])
               end
-              importjob_logger.info(@import_log.to_json)
             end
           elsif @options[:mode] == :rollback
             db = @pack_config['users'][0]['database_name']
@@ -165,12 +163,9 @@ module CartoDB
               end
             rescue => e
               @logger.error "Error in sanity checks: #{e}"
-              @import_log[:end] = Time.now
-              @import_log[:status] = 'failure'
-              @import_log[:trace] = e.to_s
+              log_error(e)
               remove_user_mover_banner(@pack_config['user']['id'])
-              importjob_logger.info(@import_log.to_json)
-              exit 1
+              throw e
             end
 
             # Password should be passed here too
@@ -202,12 +197,9 @@ module CartoDB
                 run_file_restore_schema("#{@target_username}.schema.sql")
               end
             rescue => e
-              @import_log[:end] = Time.now
-              @import_log[:status] = 'failure'
-              @import_log[:trace] = e.to_s
               remove_user_mover_banner(@pack_config['user']['id'])
-              importjob_logger.info(@import_log.to_json)
-              exit 1
+              log_error(e)
+              throw e
             end
 
             if @options[:metadata]
@@ -217,13 +209,9 @@ module CartoDB
               rescue => e
                 rollback_metadata("user_#{@target_userid}_metadata_undo.sql")
                 rollback_redis("user_#{@target_userid}_metadata_undo.redis")
-                @logger.error e
-                @import_log[:end] = Time.now
-                @import_log[:status] = 'failure'
-                @import_log[:trace] = e.to_s
+                log_error(e)
                 remove_user_mover_banner(@pack_config['user']['id'])
-                importjob_logger.info(@import_log.to_json)
-                exit 1
+                throw e
               end
             end
 
@@ -238,10 +226,8 @@ module CartoDB
             user_model = ::User.find(username: @target_username)
             user_model.db_service.monitor_user_notification
             user_model.db_service.configure_database
-            @import_log[:end] = Time.now
-            @import_log[:status] = 'success'
+            log_success
             remove_user_mover_banner(@pack_config['user']['id'])
-            importjob_logger.info(@import_log.to_json)
 
           elsif @options[:mode] == :rollback
             rollback_metadata("user_#{@target_userid}_metadata_undo.sql")
@@ -521,6 +507,21 @@ module CartoDB
 
       def importjob_logger
         @@importjob_logger ||= ::Logger.new("#{Rails.root}/log/datamover.log")
+      end
+
+
+      def log_error(e)
+        @logger.error e
+        @import_log[:end] = Time.now
+        @import_log[:status] = 'failure'
+        @import_log[:trace] = e.to_s
+        importjob_logger.info(@import_log.to_json)
+      end
+
+      def log_success
+        @import_log[:end] = Time.now
+        @import_log[:status] = 'success'
+        importjob_logger.info(@import_log.to_json)
       end
     end
   end

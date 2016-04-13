@@ -1,3 +1,6 @@
+# coding: utf-8
+require 'open3'
+
 module CartoDB
   module DataMover
     module Utils
@@ -53,11 +56,20 @@ module CartoDB
       end
 
       def run_command(cmd)
-        p cmd
-        IO.popen(cmd) do |io|
-          puts io.gets while !io.eof?
+        logger.debug "Running command: \"#{cmd}\""
+        return_code = nil
+        Open3.popen2e(cmd) do |_stdin, stdout_and_stderr, wait_thr|
+          stdout_and_stderr.each { |line| logger.debug line.strip }
+          return_code = wait_thr.value
         end
-        throw "Error running #{cmd}, output code: #{$?}" if $? != 0
+        throw "Error running #{cmd}, output code: #{return_code}" if return_code != 0
+      end
+
+      def default_logger
+        my_logger = ::Logger.new(STDOUT)
+        my_logger.level = ::Logger::DEBUG
+        my_logger.formatter = ::Logger::Formatter.new
+        my_logger
       end
     end
   end

@@ -57,17 +57,19 @@ module.exports = WidgetModel.extend({
 
   applyColors: function () {
     var colors = this.colors.colors;
-    var index = this.dataviewModel._dataProvider._layerIndex;
-    var sublayer = this.dataviewModel._dataProvider._vectorLayerView;
-    var style = sublayer.styles[index];
-    this.originalStyle = style
     var defColor = Object.keys(colors).filter(function(k){return colors[k] === 'Other'})[0]
     delete colors[defColor]
     var ramp = Object.keys(colors).map(function (c) {
       return '#' + this.dataviewModel.layer.get('layer_name') + '['+this.dataviewModel.get('column')+'=\'' + colors[c] + '\']{\nmarker-fill: ' + c + ';\n}'
     }.bind(this)).join('\n');
     style += '\n' + ramp;
-    sublayer.setCartoCSS(index, style, true)
+    if (!this.dataviewModel._dataProvider) {
+      var index = this.dataviewModel._dataProvider._layerIndex;
+      var sublayer = this.dataviewModel._dataProvider._vectorLayerView;
+      this.dataviewModel.tempStyle = style;
+    } else {
+      sublayer.setCartoCSS(index, style, true)
+    }
     this.set('isColorsApplied', true);
   },
 

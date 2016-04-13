@@ -1,3 +1,4 @@
+require 'spec_helper_min'
 require_relative '../../../lib/cartodb/redis_vizjson_cache'
 require 'mock_redis'
 require 'ostruct'
@@ -17,6 +18,21 @@ describe CartoDB::Visualization::RedisVizjsonCache do
 
   let(:redis_spy) { RedisDoubles::RedisSpy.new }
   let(:redis_mock) { MockRedis.new }
+
+  describe '#cached' do
+    let(:fake_vizjson) { { test: 1 } }
+
+    it 'caches by id' do
+      visualization_id = random_uuid
+      cache = CartoDB::Visualization::RedisVizjsonCache.new
+      # Not cached
+      returned = cache.cached(visualization_id) { fake_vizjson }
+      returned.should eq fake_vizjson
+      # Cached
+      cache.cached(visualization_id) { fake_vizjson2 }
+      returned.should eq fake_vizjson
+    end
+  end
 
   describe '#invalidate' do
     it 'deletes all keys from a visualization' do

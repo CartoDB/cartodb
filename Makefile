@@ -235,15 +235,12 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/requests/carto/api/vizjson3_presenter_spec.rb \
 	spec/requests/admin/users_controller_spec.rb \
 	spec/lib/carto/strong_password_validator_spec.rb \
+	spec/lib/cartodb/redis_vizjson_cache_spec.rb \
 	$(NULL)
 
 # This class must be tested isolated as pollutes namespace
 WORKING_SPECS_carto_db_class = \
 	spec/helpers/carto_db_spec.rb \
-  $(NULL)
-
-SPECS_WITHOUT_RAILS = \
-	spec/lib/cartodb/redis_vizjson_cache_spec.rb \
   $(NULL)
 
 CDB_PATH=lib/assets/javascripts/cdb
@@ -278,12 +275,10 @@ check-carto-db-class:
 	CHECK_SPEC=51 RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_carto_db_class)
 check-integrations:
 	CHECK_SPEC=52 RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_INTEGRATIONS)
-check-specs-without-rails:
-	CHECK_SPEC=53 RAILS_ENV=test bundle exec rspec $(SPECS_WITHOUT_RAILS)
 
 check-external: prepare-test-db check-integrations
 
-check-prepared: check-1 check-2 check-4 check-5 check-7 check-9 check-spec-helper-min check-carto-db-class check-specs-without-rails
+check-prepared: check-1 check-2 check-4 check-5 check-7 check-9 check-spec-helper-min check-carto-db-class
 
 check: prepare-test-db check-prepared
 check-frontend:

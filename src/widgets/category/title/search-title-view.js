@@ -22,7 +22,7 @@ module.exports = cdb.core.View.extend({
   },
 
   initialize: function () {
-    this.widgetModel = this.options.widgetModel;
+    this.model = this.options.widgetModel;
     this.dataviewModel = this.options.dataviewModel;
     this._initBinds();
   },
@@ -31,15 +31,15 @@ module.exports = cdb.core.View.extend({
     this.clearSubViews();
     this.$el.html(
       template({
-        isCollapsed: this.widgetModel.get('collapsed'),
-        isColorApplied: this.widgetModel.isColorApplied(),
-        title: this.widgetModel.get('title'),
+        isCollapsed: this.model.get('collapsed'),
+        isColorApplied: this.model.isColorApplied(),
+        title: this.model.get('title'),
         columnName: this.dataviewModel.get('column'),
         q: this.dataviewModel.getSearchQuery(),
-        isLocked: this.widgetModel.isLocked(),
-        canBeLocked: this.widgetModel.canBeLocked(),
-        isSearchEnabled: this.widgetModel.isSearchEnabled(),
-        canShowApply: this.widgetModel.canApplyLocked()
+        isLocked: this.model.isLocked(),
+        canBeLocked: this.model.canBeLocked(),
+        isSearchEnabled: this.model.isSearchEnabled(),
+        canShowApply: this.model.canApplyLocked()
       })
     );
     this._initViews();
@@ -47,11 +47,11 @@ module.exports = cdb.core.View.extend({
   },
 
   _initBinds: function () {
-    this.widgetModel.bind('change:search', this._onSearchToggled, this);
-    this.widgetModel.bind('change:title change:collapsed change:isColorsApplied', this.render, this);
-    this.widgetModel.lockedCategories.bind('change add remove', this.render, this);
-    this.add_related_model(this.widgetModel);
-    this.add_related_model(this.widgetModel.lockedCategories);
+    this.model.bind('change:search', this._onSearchToggled, this);
+    this.model.bind('change:title change:collapsed change:pinned change:isColorsApplied', this.render, this);
+    this.model.lockedCategories.bind('change add remove', this.render, this);
+    this.add_related_model(this.model);
+    this.add_related_model(this.model.lockedCategories);
 
     this.dataviewModel.filter.bind('change', this.render, this);
     this.add_related_model(this.dataviewModel.filter);
@@ -59,14 +59,18 @@ module.exports = cdb.core.View.extend({
 
   _initViews: function () {
     var dropdown = new DropdownView({
+      collapsed: this.model.get('collapsed'),
+      pinned: this.model.get('pinned'),
       target: this.$('.js-actions'),
       container: this.$el
     });
 
-    dropdown.bind('click', function (action) {
-      if (action === 'toggle') {
-        this.widgetModel.set('collapsed', !this.widgetModel.get('collapsed'));
-      }
+    dropdown.bind('toggleCollapsed', function (collapsed) {
+      this.model.set('collapsed', collapsed);
+    }, this);
+
+    dropdown.bind('togglePinned', function (pinned) {
+      this.model.set('pinned', pinned);
     }, this);
 
     this.addView(dropdown);
@@ -79,7 +83,7 @@ module.exports = cdb.core.View.extend({
   },
 
   _onSearchToggled: function () {
-    var isSearchEnabled = this.widgetModel.isSearchEnabled();
+    var isSearchEnabled = this.model.isSearchEnabled();
     this[isSearchEnabled ? '_bindESC' : '_unbindESC']();
     this.render();
     if (isSearchEnabled) {
@@ -132,21 +136,21 @@ module.exports = cdb.core.View.extend({
   },
 
   _applyLocked: function () {
-    this.widgetModel.toggleSearch();
-    this.widgetModel.applyLocked();
+    this.model.toggleSearch();
+    this.model.applyLocked();
   },
 
   _applyColors: function () {
-    this.widgetModel.applyColors();
+    this.model.applyColors();
   },
 
   _cancelColors: function () {
-    this.widgetModel.cancelColors();
+    this.model.cancelColors();
   },
 
   _cancelSearch: function () {
-    this.widgetModel.cleanSearch();
-    this.widgetModel.disableSearch();
+    this.model.cleanSearch();
+    this.model.disableSearch();
   },
 
   clean: function () {

@@ -29,6 +29,7 @@ module Carto
 
     def build_visualization_from_hash(exported_visualization)
       exported_layers = exported_visualization[:layers]
+      exported_overlays = exported_visualization[:overlays]
 
       visualization = Carto::Visualization.new(
         name: exported_visualization[:name],
@@ -47,6 +48,7 @@ module Carto
         map: build_map_from_hash(
           exported_visualization[:map],
           layers: build_layers_from_hash(exported_layers)),
+        overlays: build_overlays_from_hash(exported_overlays),
         analyses: exported_visualization[:analyses].map { |a| build_analysis_from_hash(a.deep_symbolize_keys) }
       )
 
@@ -89,6 +91,23 @@ module Carto
       )
       layer.widgets = build_widgets_from_hash(exported_layer[:widgets], layer: layer)
       layer
+    end
+
+    def build_overlays_from_hash(exported_overlays)
+      return [] unless exported_overlays
+
+      exported_overlays.map.with_index.map do |overlay, i|
+        build_overlay_from_hash(overlay.deep_symbolize_keys, order: (i + 1))
+      end
+    end
+
+    def build_overlay_from_hash(exported_overlay, order:)
+      Carto::Overlay.new(
+        order: order,
+        options: exported_overlay[:options],
+        type: exported_overlay[:type],
+        template: exported_overlay[:template]
+      )
     end
 
     def build_analysis_from_hash(exported_analysis)
@@ -151,6 +170,7 @@ module Carto
         display_name: visualization.display_name,
         map: export_map(visualization.map),
         layers: visualization.layers.map { |l| export_layer(l, active_layer: visualization.active_layer_id == l.id) },
+        overlays: visualization.overlays.map { |o| export_overlay(o) },
         analyses: visualization.analyses.map { |a| exported_analysis(a) }
       }
     end
@@ -181,6 +201,14 @@ module Carto
       layer[:active_layer] = true if active_layer
 
       layer
+    end
+
+    def export_overlay(overlay)
+      {
+        options: overlay.options,
+        type: overlay.type,
+        template: overlay.template
+      }
     end
 
     def export_widget(widget)

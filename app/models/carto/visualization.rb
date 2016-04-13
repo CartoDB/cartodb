@@ -37,7 +37,7 @@ class Carto::Visualization < ActiveRecord::Base
   has_one :external_source
   has_many :unordered_children, class_name: Carto::Visualization, foreign_key: :parent_id
 
-  has_many :overlays
+  has_many :overlays, order: '"order"'
 
   belongs_to :parent, class_name: Carto::Visualization, primary_key: :parent_id
 

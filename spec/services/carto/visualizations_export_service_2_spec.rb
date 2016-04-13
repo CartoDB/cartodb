@@ -157,6 +157,8 @@ describe Carto::VisualizationsExportService2 do
     visualization.active_layer.order.should eq active_layer_order
     visualization.active_layer.id.should eq visualization.layers.find { |l| l.order == active_layer_order }.id
 
+    verify_overlays_vs_export(visualization.overlays, visualization_export[:overlays])
+
     verify_analyses_vs_export(visualization.analyses, visualization_export[:analyses])
   end
 
@@ -237,6 +239,21 @@ describe Carto::VisualizationsExportService2 do
 
   def verify_analysis_vs_export(analysis, analysis_export)
     analysis.analysis_definition_json.should eq analysis_export[:analysis_definition]
+  end
+
+  def verify_overlays_vs_export(overlays, overlays_export)
+    overlays.should_not be_nil
+    overlays.length.should eq overlays_export.length
+    (0..(overlays_export.length - 1)).each do |i|
+      overlay = overlays[i]
+      verify_overlay_vs_export(overlay, overlays_export[i])
+    end
+  end
+
+  def verify_overlay_vs_export(overlay, overlay_export)
+    overlay.options.deep_symbolize_keys.should eq overlay_export[:options].deep_symbolize_keys
+    overlay.type.should eq overlay_export[:type]
+    overlay.template.should eq overlay_export[:template]
   end
 
   before(:all) do
@@ -392,6 +409,8 @@ describe Carto::VisualizationsExportService2 do
       imported_active_layer.order.should eq active_layer_order
       imported_active_layer.id.should eq imported_layers.find_by_order(active_layer_order).id
 
+      verify_overlays_match(imported_visualization.overlays, original_visualization.overlays)
+
       verify_analyses_match(imported_visualization.analyses, original_visualization.analyses)
     end
 
@@ -463,6 +482,22 @@ describe Carto::VisualizationsExportService2 do
 
     def verify_analysis_match(imported_analysis, original_analysis)
       imported_analysis.analysis_definition_json.should eq original_analysis.analysis_definition_json
+    end
+
+    def verify_overlays_match(imported_overlays, original_overlays)
+      imported_overlays.should_not be_nil
+      imported_overlays.length.should eq original_overlays.length
+      (0..(imported_overlays.length - 1)).each do |i|
+        imported_overlay = imported_overlays[i]
+        imported_overlay.order.should eq (i + 1)
+        verify_overlay_match(imported_overlay, original_overlays[i])
+      end
+    end
+
+    def verify_overlay_match(imported_overlay, original_overlay)
+      imported_overlay.options.should eq original_overlay.options
+      imported_overlay.type.should eq original_overlay.type
+      imported_overlay.template.should eq original_overlay.template
     end
 
     before(:all) do

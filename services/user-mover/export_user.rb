@@ -446,7 +446,7 @@ module CartoDB
       end
 
       def initialize(options)
-        default_options = { metadata: true, data: true, split_user_schemas: true, path: '' }
+        default_options = { metadata: true, data: true, split_user_schemas: true, path: '', set_banner: true }
         @options = default_options.merge(options)
 
         @start = Time.now
@@ -492,7 +492,7 @@ module CartoDB
             File.open("#{@options[:path]}user_#{@user_id}.json", "w") do |f|
               f.write(user_info.to_json)
             end
-            set_user_mover_banner(@user_id)
+            set_user_mover_banner(@user_id) if options[:set_banner]
           elsif @options[:organization_name]
             @org_metadata = get_org_metadata(@options[:organization_name])
             @org_id = @org_metadata['id']
@@ -543,7 +543,7 @@ module CartoDB
           export_log[:trace] = e.to_s
           if options[:organization_name]
             @org_users.each do |org_user|
-              remove_user_mover_banner(org_user['id'])
+              remove_user_mover_banner(org_user['id']) if options[:set_banner]
             end
           end
           raise

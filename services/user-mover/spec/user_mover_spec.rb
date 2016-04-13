@@ -16,7 +16,8 @@ describe CartoDB::DataMover::ExportJob do
       quota_in_bytes: 100.megabyte,
       private_tables_enabled: true,
       database_timeout: 123450,
-      user_timeout: 456780
+      user_timeout: 456780,
+      table_quota: nil
     )
   end
 
@@ -176,6 +177,29 @@ describe CartoDB::DataMover::ExportJob do
     moved_user.in_database['SELECT * FROM cdb_tablemetadata']
     moved_user.organization_id.should_not eq nil
 
+  end
+
+  it "should not touch an user metadata nor update its oids when update_metadata is not set" do
+    user = create_user(
+      quota_in_bytes: 100.megabyte, table_quota: 50, private_tables_enabled: true, sync_tables_enabled: true
+    )
+    create_tables(user)
+
+    old_user_data = user.as_json
+    old_user_tables = user.real_tables
+    old_user_oids = user.tables.map(&:table_id).sort
+    CartoDB::DataMover::ExportJob.new(id: user.username, path: @tmp_path)
+    CartoDB::UserModule::DBService.terminate_database_connections(user.database_name, user.database_host)
+    CartoDB::DataMover::ImportJob.new(
+      file: @tmp_path + "user_#{user.id}.json", mode: :rollback, host: '127.0.0.2',
+      drop_database: true, drop_roles: true).run!
+    CartoDB::DataMover::ImportJob.new(file: @tmp_path + "user_#{user.id}.json", mode: :import, update_metadata: false).run!
+
+    new_user = ::User.find(username: user.username)
+
+    new_user.as_json.should eq old_user_data
+    new_user.real_tables.should_not eq old_user_tables
+    new_user.tables.map(&:table_id).sort.should eq old_user_oids
   end
 end
 

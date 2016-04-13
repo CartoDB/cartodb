@@ -200,7 +200,7 @@ module CartoDB
         File.open(@options[:path] + "#{prefix}_metadata.sql", "w") do |f|
           models_ordered.each do |model|
             data[model].each do |rows|
-              keys = rows.keys.select { |k| !TABLE_NULL_EXCEPTIONS.include?(k.to_s) == !rows[k].nil? }
+              keys = rows.keys.select { |k| TABLE_NULL_EXCEPTIONS.include?(k.to_s) || !rows[k].nil? }
               f.write generate_pg_insert_query(model.table_name, keys, rows)
             end
           end

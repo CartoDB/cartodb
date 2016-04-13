@@ -195,6 +195,7 @@ describe Carto::VisualizationsExportService2 do
     if importing_user && layer_export_options.has_key?(:user_name)
       layer_options[:user_name].should eq importing_user.username
     else
+      layer_options.has_key?(:user_name).should eq layer_export_options.has_key?(:user_name)
       layer_options[:user_name].should be_nil
     end
 
@@ -203,6 +204,7 @@ describe Carto::VisualizationsExportService2 do
       layer_options[:id].should_not be_nil
       layer_options[:id].should eq layer.id
     else
+      layer_options.has_key?(:id).should eq layer_export_options.has_key?(:id)
       layer_options[:id].should be_nil
     end
 
@@ -211,6 +213,7 @@ describe Carto::VisualizationsExportService2 do
       layer_options[:stat_tag].should_not be_nil
       layer_options[:stat_tag].should eq layer.maps.first.visualizations.first.id
     else
+      layer_options.has_key?(:stat_tag).should eq layer_export_options.has_key?(:stat_tag)
       layer_options[:stat_tag].should be_nil
     end
 
@@ -465,26 +468,29 @@ describe Carto::VisualizationsExportService2 do
       imported_options_match.should eq original_options_match
 
       if importing_user && original_layer_options.has_key?(:user_name)
-        imported_layer.options[:user_name].should_not be_nil
-        imported_layer.options[:user_name].should eq importing_user.username
+        imported_layer_options[:user_name].should_not be_nil
+        imported_layer_options[:user_name].should eq importing_user.username
       else
-        imported_layer.options[:user_name].should be_nil
+        imported_layer_options.has_key?(:user_name).should eq original_layer_options.has_key?(:user_name)
+        imported_layer_options[:user_name].should be_nil
       end
 
       if importing_user && original_layer_options.has_key?(:id)
         # Persisted layer
-        imported_layer.options[:id].should_not be_nil
-        imported_layer.options[:id].should eq imported_layer.id
+        imported_layer_options[:id].should_not be_nil
+        imported_layer_options[:id].should eq imported_layer.id
       else
-        imported_layer.options[:id].should be_nil
+        imported_layer_options.has_key?(:id).should eq original_layer_options.has_key?(:id)
+        imported_layer_options[:id].should be_nil
       end
 
       if importing_user && original_layer_options.has_key?(:stat_tag)
         # Persisted layer
-        imported_layer.options[:stat_tag].should_not be_nil
-        imported_layer.options[:stat_tag].should eq imported_layer.maps.first.visualizations.first.id
+        imported_layer_options[:stat_tag].should_not be_nil
+        imported_layer_options[:stat_tag].should eq imported_layer.maps.first.visualizations.first.id
       else
-        imported_layer.options[:stat_tag].should be_nil
+        imported_layer_options.has_key?(:stat_tag).should eq original_layer_options.has_key?(:stat_tag)
+        imported_layer_options[:stat_tag].should be_nil
       end
 
       imported_layer.kind.should eq original_layer.kind

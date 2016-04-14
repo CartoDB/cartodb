@@ -1147,7 +1147,7 @@ describe Visualization::Member do
     end
 
     after(:all) do
-      @user.delete
+      @user.destroy
     end
 
     it 'should store correctly a visualization with its license' do
@@ -1161,7 +1161,7 @@ describe Visualization::Member do
     end
 
     it 'should return nil if the license is nil, empty or unkown' do
-      table = create_table({:name => 'table1', :user_id => @user.id})
+      table = create_table({:name => 'table2', :user_id => @user.id})
       vis = table.table_visualization
       vis.license = nil
       vis.store
@@ -1177,7 +1177,7 @@ describe Visualization::Member do
     end
 
     it 'should raise exception when try to store a unknown license, empty or nil' do
-      table = create_table({:name => 'table1', :user_id => @user.id})
+      table = create_table({:name => 'table3', :user_id => @user.id})
       vis = table.table_visualization
       vis.license = "wadus"
       expect {

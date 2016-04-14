@@ -115,14 +115,16 @@
             "submit": "submit"
           },
           "header-import": {
+            "import-url": "Import your data from a %{brand} URL",
+            "file-selected": "File selected",
             "paste-url": "Paste a URL %{fileEnabled} ",
             "select-a-file": "or select a file like CSV, XLS, ZIP, KML, GPX,",
             "see-all-formats": "see all formats",
+            "sync-enabled": "Keep it synchronized with the source",
+            "sync-disabled": "Sync options are not available",
             "type-selected": "%{brand} selected",
             "type-import": "%{brand} selected",
-            "import-url": "Import your data from a %{brand} URL",
-            "sync-enabled": "Keep it synchronized with the source",
-            "sync-disabled": "Sync options are not available"
+            "upload-file-url": "Upload a file or a URL |||| Upload a URL"
           },
           "service-import": {
             "and": "and",

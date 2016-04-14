@@ -2,7 +2,7 @@
   <div class="LayoutIcon ImportPanel-headerIcon">
     <i class="CDB-IconFont CDB-IconFont-gift"></i>
   </div>
-  <h3 class="ImportPanel-headerTitle"><%- _t('components.modals.add-layer.imports.instagram.fallback-title', { brand: 'Twitter' }) %></h3>
+  <h3 class="ImportPanel-headerTitle"><%- _t('components.modals.add-layer.imports.twitter.fallback-title', { brand: 'Twitter' }) %></h3>
   <p class="ImportPanel-headerDescription">
     <%- _t('components.modals.add-layer.imports.instagram.fallback-desc', { brand: 'Twitter' }) %>
   </p>

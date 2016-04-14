@@ -40,77 +40,23 @@ module Carto
       unlink_deleted_tables
     end
 
-
-    # checks if there're sql-api deleted/renamed tables still linked
+    # checks if there are sql-api deleted/renamed tables still linked
     def stale_tables_linked?
       !cartodbfied_tables.select(&:stale?).empty?
     end
 
     def link_new_tables
-      new_tables.each do |metadata_table|
-        begin
-          CartoDB::Logger.debug(message: 'ghost tables',
-                                action: 'linking new table',
-                                user: @user,
-                                new_table: metadata_table.name)
-
-          table = Table.new
-
-          table.user_id = @user.id
-          table.name = metadata_table.name
-          table.table_id = metadata_table.id
-          table.register_table_only = true
-          table.keep_user_database_table = true
-
-          table.save
-        rescue => exception
-          CartoDB::Logger.error(message: 'Error linking new table',
-                                exception: exception,
-                                user: @user,
-                                table_name: metadata_table.name,
-                                table_id: metadata_table.id)
-        end
-      end
+      cartodbfied_tables.select(&:new?).each(&:create_user_table)
     end
 
+    # Relink tables that have been renamed through the SQL API
     def relink_renamed_tables
-      renamed_tables.each do |cartodbfied_table|
-        begin
-          new_vis_name = cartodbfied_table.name
-
-          CartoDB::Logger.debug(message: 'ghost tables',
-                                action: 'relinking renamed table',
-                                user: @user,
-                                renamed_table: new_vis_name)
-
-          vis = cartodbfied_table.table.table_visualization
-          vis.register_table_only = true
-          vis.name = new_vis_name
-
-          vis.store
-        rescue Sequel::DatabaseError => exeption
-          raise unless exeption.message =~ /must be owner of relation/
-        end
-      end
+      cartodbfied_tables.select(&:renamed?).each(&:rename_user_table_vis)
     end
 
+    # Unlink tables that have been created trhought the SQL API
     def unlink_deleted_tables
-      syncs = CartoDB::Synchronization::Collection.new.fetch(user_id: @user.id).map(&:name).compact
-
-      # Remove tables with oids that don't exist on the db
-      # Sync tables replace contents without touching metadata DB, so if method triggers meanwhile sync it will fail
-      # TODO: Flag running syncs to distinguish between deleted table syncs and running syncs
-      dropped_tables.select { |table| !syncs.include?(table.name) }.each do |linked_table|
-        CartoDB::Logger.debug(message: 'ghost tables',
-                              action: 'unlinking dropped table',
-                              user: @user,
-                              dropped_table: linked_table.name)
-
-        linked_table.table.keep_user_database_table = true
-        linked_table.table.destroy
-      end
-
-      clean_user_tables_with_null_table_id
+      dropped_tables.each(&:drop_user_table)
     end
 
     def cartodbfied_tables
@@ -120,8 +66,8 @@ module Carto
     # this method searchs for tables with all the columns needed in a cartodb table.
     # it does not check column types, and only the latest cartodbfication trigger attached (test_quota_per_row)
     def fetch_cartobfied_tables
-      required_columns = Table::CARTODB_REQUIRED_COLUMNS + [Table::THE_GEOM_WEBMERCATOR]
-      cartodb_columns = required_columns.map { |column| "'#{column}'" }.join(',')
+      cartodb_columns = (Table::CARTODB_REQUIRED_COLUMNS + Table::THE_GEOM_WEBMERCATOR).map { |column| "'#{column}'" }
+                                                                                       .join(',')
 
       sql = %{
         WITH a as (
@@ -142,16 +88,6 @@ module Carto
       @user.in_database(as: :superuser)[sql].all.map do |record|
         Carto::TableRepresentation.new(record[:reloid], record[:table_name], @user)
       end
-    end
-
-    # Tables that have been renamed through the SQL API
-    def renamed_tables
-      cartodbfied_tables.select(&:renamed?)
-    end
-
-    # Tables that have been created trhought the SQL API
-    def new_tables
-      cartodbfied_tables.select(&:new?)
     end
 
     # Tables that have been dropped via API but have an old UserTable
@@ -212,6 +148,47 @@ module Carto
 
     def user_table
       user.tables.where(table_id: id, name: name).first
+    end
+
+    def create_user_table
+      CartoDB::Logger.debug(message: 'ghost tables',
+                            action: 'linking new table',
+                            user: @user,
+                            new_table: name,
+                            new_table_id: id)
+
+      ::UserTable.create(user_id: @user.id,
+                         name: name,
+                         table_id: id,
+                         register_table_only: true,
+                         keep_user_database_table: true)
+    end
+
+    def rename_user_table_vis
+      CartoDB::Logger.debug(message: 'ghost tables',
+                            action: 'relinking renamed table',
+                            user: @user,
+                            renamed_table: name,
+                            renamed_table_id: id)
+
+      user_table.table_visualization
+                .update_fields({ name: name, register_table_only: true }, [:name, :register_table_only])
+                .store
+
+    rescue Sequel::DatabaseError => exeption
+      raise unless exeption.message =~ /must be owner of relation/
+    end
+
+    def drop_user_table
+      CartoDB::Logger.debug(message: 'ghost tables',
+                            action: 'unlinking dropped table',
+                            user: @user,
+                            dropped_table: name,
+                            dropped_table_id: id)
+
+      user_table.update_fields({ keep_user_database_table: true }, [:keep_user_database_table])
+                .store
+                .destroy
     end
 
     def physical_table_exists?

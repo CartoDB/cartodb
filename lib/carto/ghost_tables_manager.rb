@@ -11,7 +11,7 @@ module Carto
       @user = ::User.where(id: user_id).first
     end
 
-    def link_ghost_tables_async
+    def link_ghost_tables
       return if consistent?
 
       if safe_async?

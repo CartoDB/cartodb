@@ -16,4 +16,42 @@ describe Carto::Analysis do
     end
   end
 
+  describe '#analysis_definition_json' do
+    let(:definition_with_options) do
+      {
+        id: "a1",
+        type: "buffer",
+        params: {
+          distance: 100
+        },
+        options: {
+          unit: "m"
+        }
+      }.to_json
+    end
+
+    let(:nested_definition_with_options) do
+      {
+        id: "a1",
+        type: "buffer",
+        params: {
+          source: JSON.parse(definition_with_options)
+        }
+      }.to_json
+    end
+
+    it 'removes options from analysis definition' do
+      analysis = Carto::Analysis.new(analysis_definition: definition_with_options)
+      analysis.analysis_definition_json.include?(:options).should be_true
+      analysis.analysis_definition_for_api.include?(:options).should be_false
+    end
+
+    it 'removes options from nested source analysis' do
+      analysis = Carto::Analysis.new(analysis_definition: nested_definition_with_options)
+
+      nested_analysis = analysis.analysis_definition_for_api[:params][:source]
+      nested_analysis.include?(:options).should be_false
+    end
+  end
+
 end

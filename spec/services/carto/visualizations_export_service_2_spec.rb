@@ -381,6 +381,24 @@ describe Carto::VisualizationsExportService2 do
         visualization = Carto::VisualizationsExportPersistenceService.new.save_import(@no_private_maps_user, imported)
         visualization.privacy.should eq Carto::Visualization::PRIVACY_PUBLIC
       end
+
+      it "Doesn't register layer tables dependencies if user table doesn't exist" do
+        imported = Carto::VisualizationsExportService2.new.build_visualization_from_json_export(export.to_json)
+        visualization = Carto::VisualizationsExportPersistenceService.new.save_import(@user, imported)
+        layer_with_table = visualization.layers.find { |l| l.options[:table_name].present? }
+        layer_with_table.should_not be_nil
+        layer_with_table.affected_tables.should be_empty
+      end
+
+      it "Register layer tables dependencies if user table exists" do
+        user_table = FactoryGirl.create(:carto_user_table, user_id: @user.id, name: "guess_ip_1")
+        imported = Carto::VisualizationsExportService2.new.build_visualization_from_json_export(export.to_json)
+        visualization = Carto::VisualizationsExportPersistenceService.new.save_import(@user, imported)
+        layer_with_table = visualization.layers.find { |l| l.options[:table_name].present? }
+        layer_with_table.should_not be_nil
+        layer_with_table.affected_tables.should_not be_empty
+        layer_with_table.affected_tables.first.id.should eq user_table.id
+      end
     end
   end
 

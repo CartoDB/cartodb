@@ -194,7 +194,12 @@ module Carto
                             dropped_table: name,
                             dropped_table_id: id)
 
-      user_table.destroy
+      # TODO: Use Carto::UserTable when it's ready and stop the Table <-> ::UserTable madness
+      table_to_drop = ::Table.new(user_table: user_table)
+
+      table_to_drop.keep_user_database_table = true
+
+      table_to_drop.destroy
     end
 
     def physical_table_exists?

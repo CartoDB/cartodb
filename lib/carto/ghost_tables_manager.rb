@@ -133,7 +133,7 @@ module Carto
     end
 
     def new?
-      !user_table_with_matching_id && !user_table_with_matching_name && physical_table_exists?
+      !user_table_with_matching_id && !user_table_with_matching_name
     end
 
     def renamed?
@@ -141,7 +141,7 @@ module Carto
     end
 
     def unaltered?
-      !!user_table && physical_table_exists?
+      !new? && !renamed?
     end
 
     def user_table_with_matching_id
@@ -150,10 +150,6 @@ module Carto
 
     def user_table_with_matching_name
       user.tables.where(name: name).first
-    end
-
-    def user_table
-      user.tables.where(table_id: id, name: name).first
     end
 
     def create_user_table
@@ -196,7 +192,7 @@ module Carto
                             dropped_table_id: id)
 
       # TODO: Use Carto::UserTable when it's ready and stop the Table <-> ::UserTable madness
-      table_to_drop = ::Table.new(user_table: user_table)
+      table_to_drop = ::Table.new(user_table: @user.tables.where(table_id: id, name: name).first)
 
       table_to_drop.keep_user_database_table = true
 

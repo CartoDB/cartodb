@@ -6,7 +6,7 @@ module CartoDB
         additional_data[:stack] = caller
       end
 
-      if Rails.env.development?
+      if !Rollbar.configuration.enabled || Rails.env.development?
         report_error_to_console(level, exception: exception, message: message, user: user, **additional_data)
       end
 
@@ -55,12 +55,14 @@ module CartoDB
       error_msg = "#{level}: #{message}\n"
       unless exception.nil?
         error_msg += exception.inspect + "\n"
-        error_msg += exception.backtrace.inspect + "\n"
+        error_msg += exception.backtrace.join("\n") + "\n"
       end
       unless user.nil?
-        error_msg += user.inspect + "\n"
+        error_msg += "user: #{user}\n"
       end
-      error_msg += additional_data.inspect + "\n"
+      additional_data.each do |k, v|
+        error_msg += "#{k}: #{v}\n"
+      end
 
       ::Logger.new(STDOUT).error(error_msg)
     end

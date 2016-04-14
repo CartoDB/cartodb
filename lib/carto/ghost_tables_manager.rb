@@ -63,8 +63,8 @@ module Carto
     # this method searchs for tables with all the columns needed in a cartodb table.
     # it does not check column types, and only the latest cartodbfication trigger attached (test_quota_per_row)
     def fetch_cartobfied_tables
-      required_columns = (Table::CARTODB_REQUIRED_COLUMNS + [Table::THE_GEOM_WEBMERCATOR]).map { |col| "'#{col}'" }
-      cartodb_columns = required_columns.join(',')
+      cartodb_columns = (Table::CARTODB_REQUIRED_COLUMNS + [Table::THE_GEOM_WEBMERCATOR]).map { |col| "'#{col}'" }
+                                                                                         .join(',')
 
       sql = %{
         WITH a as (
@@ -79,7 +79,7 @@ module Carto
             tg.tgrelid = (quote_ident(t.schemaname) || '.' || quote_ident(t.tablename))::regclass::oid AND
             tg.tgname = 'test_quota_per_row'
           GROUP BY 1)
-        SELECT table_name, reloid FROM a WHERE cdb_columns_count = #{required_columns.length}
+        SELECT table_name, reloid FROM a WHERE cdb_columns_count = #{cartodb_columns.split(',').length}
       }
 
       @user.in_database(as: :superuser)[sql].all.map do |record|

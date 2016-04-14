@@ -145,19 +145,6 @@ module Carto
       end
     end
 
-    # Tables that have been dropped via API but have an old UserTable
-    def dropped_tables
-      @dropped_tables |= find_dropped_tables
-    end
-
-    def find_dropped_tables
-      linked_tables = @user.tables.all.map do |user_table|
-        Carto::TableRepresentation.new(user_table.table_id, user_table.name, @user)
-      end
-
-      linked_tables - cartodbfied_tables
-    end
-
     # Tables that have been renamed through the SQL API
     def renamed_tables
       cartodbfied_tables.select(&:renamed?)
@@ -171,6 +158,19 @@ module Carto
     # Tables that haven't been atlered throught the SQL API
     def untouched_tables?
       cartodbfied_tables.select(&:unaltered?)
+    end
+
+    # Tables that have been dropped via API but have an old UserTable
+    def dropped_tables
+      @dropped_tables ||= find_dropped_tables
+    end
+
+    def find_dropped_tables
+      linked_tables = @user.tables.all.map do |user_table|
+        Carto::TableRepresentation.new(user_table.table_id, user_table.name, @user)
+      end
+
+      linked_tables - cartodbfied_tables
     end
   end
 

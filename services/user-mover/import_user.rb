@@ -197,52 +197,50 @@ module CartoDB
       end
 
       def import_org
-        begin
-          import_metadata("org_#{@organization_id}_metadata.sql") if @options[:metadata]
-          create_org_role(@pack_config['users'][0]['database_name']) # Create org role for the original org
-          @pack_config['groups'].each do |group|
-            create_role(group['database_role'])
-          end
-          @pack_config['users'].each do |user|
-            # Password should be passed here too
-            create_user(database_username(user['id']))
-            create_public_db_user(user['id'], user['database_schema'])
-            grant_user_org_role(database_username(user['id']), user['database_name'])
-          end
+        import_metadata("org_#{@organization_id}_metadata.sql") if @options[:metadata]
+        create_org_role(@pack_config['users'][0]['database_name']) # Create org role for the original org
+        @pack_config['groups'].each do |group|
+          create_role(group['database_role'])
+        end
+        @pack_config['users'].each do |user|
+          # Password should be passed here too
+          create_user(database_username(user['id']))
+          create_public_db_user(user['id'], user['database_schema'])
+          grant_user_org_role(database_username(user['id']), user['database_name'])
+        end
 
-          # We first import the owner. If schemas are not split, this will also import the whole org database
-          @logger.info("Importing org owner #{@owner_id}..")
-          ImportJob.new(file: @path + "user_#{@owner_id}.json",
+        # We first import the owner. If schemas are not split, this will also import the whole org database
+        @logger.info("Importing org owner #{@owner_id}..")
+        ImportJob.new(file: @path + "user_#{@owner_id}.json",
+                      mode: @options[:mode],
+                      host: @target_dbhost,
+                      target_org: @pack_config['organization']['name'],
+                      logger: @logger, data: @options[:data], metadata: @options[:metadata]).run!
+
+        # Fix permissions and metadata settings for owner
+        if @options[:update_metadata]
+          owner_user = ::User.find(id: @owner_id)
+          owner_user.database_host = @target_dbhost
+          owner_user.db_service.setup_organization_owner
+        end
+
+        @pack_config['users'].reject { |u| u['id'] == @owner_id }.each do |user|
+          @logger.info("Importing org user #{user['id']}..")
+          ImportJob.new(file: @path + "user_#{user['id']}.json",
                         mode: @options[:mode],
                         host: @target_dbhost,
                         target_org: @pack_config['organization']['name'],
                         logger: @logger, data: @options[:data], metadata: @options[:metadata]).run!
-
-          # Fix permissions and metadata settings for owner
-          if @options[:update_metadata]
-            owner_user = ::User.find(id: @owner_id)
-            owner_user.database_host = @target_dbhost
-            owner_user.db_service.setup_organization_owner
-          end
-
-          @pack_config['users'].reject { |u| u['id'] == @owner_id }.each do |user|
-            @logger.info("Importing org user #{user['id']}..")
-            ImportJob.new(file: @path + "user_#{user['id']}.json",
-                          mode: @options[:mode],
-                          host: @target_dbhost,
-                          target_org: @pack_config['organization']['name'],
-                          logger: @logger, data: @options[:data], metadata: @options[:metadata]).run!
-          end
-        rescue => e
-          rollback_metadata("org_#{@organization_id}_metadata_undo.sql") if @options[:metadata]
-          log_error(e)
-          raise e
-        else
-          log_success
-        ensure
-          @pack_config['users'].each do |user|
-            remove_user_mover_banner(user['id']) if @options[:set_banner]
-          end
+        end
+      rescue => e
+        rollback_metadata("org_#{@organization_id}_metadata_undo.sql") if @options[:metadata]
+        log_error(e)
+        raise e
+      else
+        log_success
+      ensure
+        @pack_config['users'].each do |user|
+          remove_user_mover_banner(user['id']) if @options[:set_banner]
         end
       end
 

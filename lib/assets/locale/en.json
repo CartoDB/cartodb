@@ -96,6 +96,8 @@
         "imports": {
           "ask-for-demo": "ask for demo",
           "connector": "connector",
+          "demo-email-title": "I am interested in the %{name} connector",
+          "demo-email-desc": "Hi, I am interested in testing the %{name} connector. Please, contact me to schedule a demo of this feature.",
           "tab-options-error": {
             "no-key": "%{name} key is not specified and panel can't be enabled",
             "not-allowed": "%{name} data source is not available in your plan. Please upgrade",
@@ -123,7 +125,7 @@
             "sync-enabled": "Keep it synchronized with the source",
             "sync-disabled": "Sync options are not available",
             "type-selected": "%{brand} selected",
-            "type-import": "%{brand} selected",
+            "type-import": "%{brand} import",
             "upload-file-url": "Upload a file or a URL |||| Upload a URL"
           },
           "service-import": {
@@ -161,6 +163,7 @@
             "upgrade": "upgrade"
           },
           "twitter": {
+            "category": "Category",
             "credits-consumed": "Twitter credits for this period consumed - %{extraTweets} will be charged",
             "credits-left": "%{per}% of your %{remainingFormatted} Twitter credits left",
             "credits-no-limit": "No limits - %{extraTweets} will be charged",
@@ -178,7 +181,9 @@
           "arcgis": {
             "fallback-desc": "Enable the %{brand} connector in your account to connect your %{brand} data to CartoDB and mantain it in sync with the source.",
             "input-placeholder": "Paste here your %{brand} table URL",
-            "url-desc": "To retrieve a particular layer, add the layer index at the end of the URL"
+            "url-desc": "To retrieve a particular layer, add the layer index at the end of the URL",
+            "import-data": "Import your data from an %{brand} instance",
+            "sync-options": "Sync options only available for a layer"
           },
           "instagram": {
             "fallback-desc": "Enable the %{brand} connector to map your photos or videos from your account in CartoDB."

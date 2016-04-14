@@ -6,7 +6,7 @@
   <p class="ImportPanel-headerDescription">
     <%- _t('components.modals.add-layer.imports.box.fallback-desc', { brand: 'Box' }) %>
   </p>
-  <a href="mailto:sales@cartodb.com?subject=I am interested in the Box connector&body=Hi, I am interested in testing the Box connector. Please, contact me to schedule a demo of this feature." class="Button Button--invert ImportPanel-headerLink">
+  <a href="mailto:sales@cartodb.com?subject=<%- _t('components.modals.add-layer.imports.demo-email-title', { name: 'Box' }) %>&body=<%- _t('components.modals.add-layer.imports.demo-email-desc', { name: 'Box' }) %>" class="Button Button--invert ImportPanel-headerLink">
     <span><%- _t('components.modals.add-layer.imports.ask-for-demo') %></span>
   </a>
 </div>

@@ -8,7 +8,7 @@
       brand: 'ArcGIS<sup>&trade;</sup>'
     }) %>
   </p>
-  <a href="mailto:sales@cartodb.com?subject=I am interested in the ArcGIS connector&body=Hi, I am interested in testing the ArcGIS connector. Please, contact me to schedule a demo of this feature." class="Button Button--invert ImportPanel-headerLink">
+  <a href="mailto:sales@cartodb.com?subject=<%- _t('components.modals.add-layer.imports.demo-email-title', { name: 'ArcGIS' }) %>&body=<%- _t('components.modals.add-layer.imports.demo-email-desc', { name: 'ArcGIS' }) %>" class="Button Button--invert ImportPanel-headerLink">
     <span><%- _t('components.modals.add-layer.imports.ask-for-demo') %></span>
   </a>
 </div>

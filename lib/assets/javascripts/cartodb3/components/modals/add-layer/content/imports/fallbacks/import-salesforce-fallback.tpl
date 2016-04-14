@@ -6,7 +6,7 @@
   <p class="ImportPanel-headerDescription">
     <%- _t('components.modals.add-layer.imports.salesforce.fallback-desc', { brand: 'SalesForce' }) %>
   </p>
-  <a href="mailto:sales@cartodb.com?subject=I am interested in the SalesForce connector&body=Hi, I am interested in testing the SalesForce connector. Please, contact me to schedule a demo of this feature." class="Button Button--invert ImportPanel-headerLink">
+  <a href="mailto:sales@cartodb.com?subject=<%- _t('components.modals.add-layer.imports.demo-email-title', { name: 'SalesForce' }) %>&body=<%- _t('components.modals.add-layer.imports.demo-email-desc', { name: 'SalesForce' }) %>" class="Button Button--invert ImportPanel-headerLink">
     <span><%- _t('components.modals.add-layer.imports.ask-for-demo') %></span>
   </a>
 </div>

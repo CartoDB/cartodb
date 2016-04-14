@@ -4,7 +4,7 @@
   </div>
   <h3 class="ImportPanel-headerTitle">Instagram <%- _t('components.modals.add-layer.imports.connector') %></h3>
   <p class="ImportPanel-headerDescription"><%- _t('components.modals.add-layer.imports.instagram.fallback-desc', { brand: 'Instagram' }) %></p>
-  <a href="mailto:sales@cartodb.com?subject=I am interested in the Instagram connector&body=Hi, I am interested in testing the Instagram connector. Please, contact me to schedule a demo of this feature." class="Button Button--invert ImportPanel-headerLink">
+  <a href="mailto:sales@cartodb.com?subject=<%- _t('components.modals.add-layer.imports.demo-email-title', { name: 'Instagram' }) %>&body=<%- _t('components.modals.add-layer.imports.demo-email-desc', { name: 'Instagram' }) %>" class="Button Button--invert ImportPanel-headerLink">
     <span><%- _t('components.modals.add-layer.imports.ask-for-demo') %></span>
   </a>
 </div>

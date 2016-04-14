@@ -6,7 +6,6 @@ require 'sequel'
 require 'ostruct'
 require_relative '../../spec_helper'
 require_relative '../../../app/models/visualization/name_checker'
-require_relative '../../../app/models/visualization/migrator'
 
 include CartoDB
 

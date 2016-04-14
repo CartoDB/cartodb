@@ -152,7 +152,7 @@ module Carto
       }
 
       @cartodbfied_tables = @user.in_database(as: :superuser)[sql].all.map do |record|
-        Carto::MetadataTable.new(record[:reloid], record[:table_name], @user)
+        Carto::CartodbfiedTable.new(record[:reloid], record[:table_name], @user)
       end
 
       @cartodbfied_tables
@@ -179,7 +179,7 @@ module Carto
     end
   end
 
-  class MetadataTable
+  class CartodbfiedTable
     attr_reader :id, :name, :user
 
     def initialize(id, name, user)

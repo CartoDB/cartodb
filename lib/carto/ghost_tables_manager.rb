@@ -39,7 +39,7 @@ module Carto
 
     # determine linked tables vs cartodbfied tables consistency; i.e.: needs to run sync
     def consistent?
-      cartodbfied_tables.select(&:altered?).empty?
+      cartodbfied_tables.reject(&:unaltered?).empty?
     end
 
     # checks if there're sql-api deleted/renamed tables still linked
@@ -75,16 +75,16 @@ module Carto
     end
 
     def relink_renamed_tables
-      renamed_tables.each do |metadata_table|
+      renamed_tables.each do |cartodbfied_table|
         begin
-          new_vis_name = metadata_table.name
+          new_vis_name = cartodbfied_table.name
 
           CartoDB::Logger.debug(message: 'ghost tables',
                                 action: 'relinking renamed table',
                                 user: @user,
                                 renamed_table: new_vis_name)
 
-          vis = metadata_table.table.table_visualization
+          vis = cartodbfied_table.table.table_visualization
           vis.register_table_only = true
           vis.name = new_vis_name
 
@@ -114,19 +114,6 @@ module Carto
       clean_user_tables_with_null_table_id
     end
 
-    # Remove tables with null oids unless the table name exists on the db
-    def clean_user_tables_with_null_table_id
-      null_table_id_user_tables = linked_tables.select { |linked_table| !linked_table.id }
-
-      # Discard tables physically in database
-      (null_table_id_user_tables - all_cartodbfied_tables).each do |null_table|
-        table = Table.new(table_id: null_table.id)
-
-        table.keep_user_database_table = true
-        table.destroy
-      end
-    end
-
     def cartodbfied_tables
       @cartodbfied_tables ||= fetch_cartobfied_tables
     end
@@ -154,13 +141,21 @@ module Carto
       }
 
       @user.in_database(as: :superuser)[sql].all.map do |record|
-        Carto::CartodbfiedTable.new(record[:reloid], record[:table_name], @user)
+        Carto::TableRepresentation.new(record[:reloid], record[:table_name], @user)
       end
     end
 
     # Tables that have been dropped via API but have an old UserTable
     def dropped_tables
-      cartodbfied_tables.select(&:dropped?)
+      @dropped_tables |= find_dropped_tables
+    end
+
+    def find_dropped_tables
+      linked_tables = @user.tables.all.map do |user_table|
+        Carto::TableRepresentation.new(user_table.table_id, user_table.name, @user)
+      end
+
+      linked_tables - cartodbfied_tables
     end
 
     # Tables that have been renamed through the SQL API
@@ -179,7 +174,7 @@ module Carto
     end
   end
 
-  class CartodbfiedTable
+  class TableRepresentation
     attr_reader :id, :name, :user
 
     def initialize(id, name, user)
@@ -202,23 +197,15 @@ module Carto
     end
 
     def new?
-      !user_table_with_matching_id && !user_table_with_matching_name && !!physical_table
+      !user_table_with_matching_id && !user_table_with_matching_name && physical_table_exists?
     end
 
     def renamed?
       !!user_table_with_matching_id && !user_table_with_matching_name
     end
 
-    def dropped?
-      !!user_table && !physical_table
-    end
-
     def unaltered?
-      !!user_table && !!physical_table
-    end
-
-    def altered?
-      !unaltered?
+      !!user_table && physical_table_exists?
     end
 
     def stale?
@@ -237,7 +224,11 @@ module Carto
       user.tables.where(table_id: id, name: name).first
     end
 
-    def physical_table
+    def physical_table_exists?
+      !!fetch_oid_relname
+    end
+
+    def fetch_oid_relname
       @user.in_database(as: :superuser)
            .select(:pg_class__oid, :pg_class__relname)
            .from(:pg_class)

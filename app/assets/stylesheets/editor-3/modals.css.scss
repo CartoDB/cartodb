@@ -98,3 +98,10 @@
   @include justify-content(space-between);
 }
 
+
+.Carousel-Navigation.is-disabled {
+  opacity: 0.24;
+}
+
+
+

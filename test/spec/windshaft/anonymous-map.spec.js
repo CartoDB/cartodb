@@ -429,6 +429,73 @@ describe('windshaft/anonymous-map', function () {
           ]
         });
       });
+
+      it('should include a source analysis if a dataview is linked to the layer', function () {
+        var dataview1 = new HistogramDataviewModel({
+          id: 'dataviewId1',
+          column: 'column1',
+          bins: 5
+        }, {
+          map: jasmine.createSpyObj('map', ['getViewBounds', 'bind', 'reload']),
+          windshaftMap: this.map,
+          layer: this.cartoDBLayer1
+        });
+
+        this.dataviewsCollection.reset([ dataview1 ]);
+
+        expect(this.map.toJSON()).toEqual({
+          'layers': [
+            {
+              'type': 'cartodb',
+              'options': {
+                'cartocss': 'cartoCSS1',
+                'cartocss_version': '2.0',
+                'interactivity': [],
+                'source': {
+                  'id': 'layer1'
+                }
+              }
+            },
+            {
+              'type': 'cartodb',
+              'options': {
+                'cartocss': 'cartoCSS2',
+                'cartocss_version': '2.0',
+                'interactivity': [],
+                'sql': 'sql2'
+              }
+            },
+            {
+              'type': 'cartodb',
+              'options': {
+                'cartocss': 'cartoCSS3',
+                'cartocss_version': '2.0',
+                'interactivity': [],
+                'sql': 'sql3'
+              }
+            }
+          ],
+          'dataviews': {
+            'dataviewId1': {
+              'type': 'histogram',
+              'source': {
+                'id': 'layer1'
+              },
+              'options': {
+                'column': 'column1',
+                'bins': 5
+              }
+            }
+          },
+          'analyses': [{
+            id: 'layer1',
+            type: 'source',
+            params: {
+              query: 'sql1'
+            }
+          }]
+        });
+      });
     });
   });
 });

@@ -12,12 +12,22 @@ var AnonymousMap = MapBase.extend({
     };
 
     _.each(this._getLayers(), function (layerModel) {
-      var sourceAnalysis;
-      var sourceId = layerModel.get('source');
-      if (sourceId) {
-        sourceAnalysis = this._analysisCollection.findWhere({ id: sourceId });
+      var layerSourceId = layerModel.get('source');
+      if (layerSourceId) {
+        var sourceAnalysis = this._analysisCollection.findWhere({ id: layerSourceId });
         if (!this._isAnalysisPartOfOtherAnalyses(sourceAnalysis)) {
           config.analyses.push(sourceAnalysis.toJSON());
+        }
+      } else {
+        if (this._isAnyDataviewLinkedTo(layerModel)) {
+          layerSourceId = layerModel.get('id');
+          config.analyses.push({
+            id: layerSourceId,
+            type: 'source',
+            params: {
+              query: layerModel.get('sql')
+            }
+          });
         }
       }
 
@@ -31,8 +41,8 @@ var AnonymousMap = MapBase.extend({
           }
         };
 
-        if (sourceId) {
-          layerConfig.options.source = { id: sourceId };
+        if (layerSourceId) {
+          layerConfig.options.source = { id: layerSourceId };
         } else if (layerModel.get('sql')) { // Layer has some SQL that needs to be converted into a "source" analysis
           layerConfig.options.sql = layerModel.get('sql');
         }
@@ -61,6 +71,12 @@ var AnonymousMap = MapBase.extend({
         return otherAnalysisModel.findAnalysisById(analysisModel.get('id'));
       }
       return false;
+    });
+  },
+
+  _isAnyDataviewLinkedTo: function (layerModel) {
+    return this._dataviewsCollection.any(function (dataviewModel) {
+      return dataviewModel.layer === layerModel;
     });
   }
 });

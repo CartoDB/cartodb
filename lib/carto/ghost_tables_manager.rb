@@ -163,10 +163,13 @@ module Carto
                             new_table: name,
                             new_table_id: id)
 
-      ::UserTable.create(user_id: @user.id,
-                         name: name,
-                         table_id: id,
-                         register_table_only: true)
+      # TODO: Use Carto::UserTable when it's ready and stop the Table <-> ::UserTable madness
+      new_table = ::Table.new(user_id: @user.id, table_id: id, name: name)
+
+      new_table.register_table_only = true
+      new_table.keep_user_database_table = true
+
+      new_table.save
     end
 
     def rename_user_table_vis
@@ -176,12 +179,12 @@ module Carto
                             renamed_table: name,
                             renamed_table_id: id)
 
-      user_table.table_visualization
-                .update_fields({ name: name, register_table_only: true }, [:name, :register_table_only])
-                .store
+      user_table_vis = user_table_with_matching_id.table_visualization
 
-    rescue Sequel::DatabaseError => exeption
-      raise unless exeption.message =~ /must be owner of relation/
+      user_table_vis.register_table_only = true
+      user_table_vis.name = name
+
+      user_table_vis.store
     end
 
     def drop_user_table

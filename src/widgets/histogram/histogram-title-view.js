@@ -13,8 +13,8 @@ module.exports = cdb.core.View.extend({
   className: 'CDB-Widget-title CDB-Widget-contentSpaced',
 
   events: {
-    'click .js-applySizes': '_applySizes',
-    'click .js-cancelSizes': '_cancelSizes'
+    'click .js-autoStyle': 'autoStyle',
+    'click .js-cancelAutoStyle': 'cancelAutoStyle'
   },
 
   initialize: function () {
@@ -54,7 +54,7 @@ module.exports = cdb.core.View.extend({
     this.addView(sizesTooltip);
   },
 
-  _applySizes: function () {
+  autoStyle: function () {
     var data = this.dataviewModel.get('data');
       var colors = ['YlGnBu', 'Greens', 'Reds', 'Blues'];
       var color = colors[Math.floor(Math.random()*colors.length)];
@@ -98,7 +98,7 @@ module.exports = cdb.core.View.extend({
     this.dataviewModel.set('auto-style', true);
   },
 
-  _cancelSizes: function () {
+  cancelAutoStyle: function () {
     if (!this.dataviewModel._dataProvider) {
       delete this.dataviewModel.tempStyle
     } else {

@@ -94,7 +94,7 @@ module.exports = WidgetModel.extend({
     this.dataviewModel.set('auto-style', true);
   },
 
-  cancelColors: function () {
+  cancelAutoStyle: function () {
     if (!this.dataviewModel._dataProvider) {
       delete this.dataviewModel.tempStyle
     } else {

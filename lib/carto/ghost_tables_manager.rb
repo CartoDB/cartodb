@@ -164,7 +164,9 @@ module Carto
                             new_table_id: id)
 
       # TODO: Use Carto::UserTable when it's ready and stop the Table <-> ::UserTable madness
-      new_table = ::Table.new(user_id: @user.id, table_id: id, name: name)
+      # TODO: Fix ::Table.new(args) since it won't work with our UserTable
+      new_table = ::Table.new(user_table: ::UserTable.new.set_fields({ user_id: @user.id, table_id: id, name: name },
+                                                                     [:user_id, :table_id, :name]))
 
       new_table.register_table_only = true
       new_table.keep_user_database_table = true

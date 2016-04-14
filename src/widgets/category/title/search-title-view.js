@@ -50,7 +50,6 @@ module.exports = cdb.core.View.extend({
     this.model.bind('change:search', this._onSearchToggled, this);
     this.model.bind('change:title change:collapsed change:pinned change:isColorsApplied', this.render, this);
     this.model.lockedCategories.bind('change add remove', this.render, this);
-    this.add_related_model(this.model);
     this.add_related_model(this.model.lockedCategories);
 
     this.dataviewModel.filter.bind('change', this.render, this);

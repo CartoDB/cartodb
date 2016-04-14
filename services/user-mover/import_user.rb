@@ -51,30 +51,25 @@ module CartoDB
 
       def run!
         if !@pack_config['organization'].nil?
-          import_organization
+          process_org
         else
-          import_user
+          process_user
         end
       end
 
-      def import_user
+      def process_user
+        @target_username = @pack_config['user']['username']
+        @target_userid = @pack_config['user']['id']
         @import_log['id'] = @pack_config['user']['username']
         @target_port = ENV['USER_DB_PORT'] || @config[:dbport]
 
         if @options[:target_org] == nil
-
-          @target_userid = @pack_config['user']['id']
-          @target_username = @pack_config['user']['username']
           @target_dbname = user_database(@target_userid)
           @target_dbuser = database_username(@target_userid)
           @target_schema = @pack_config['user']['database_schema']
           @target_org_id = nil
         else
-
           organization_data = get_org_info(@options[:target_org])
-
-          @target_userid = @pack_config['user']['id']
-          @target_username = @pack_config['user']['username']
           @target_dbuser = database_username(@target_userid)
           @target_schema = @pack_config['user']['database_schema']
           @target_org_id = organization_data['id']
@@ -93,166 +88,91 @@ module CartoDB
         end
 
         if @options[:mode] == :import
-          begin
-            if @options[:metadata]
-              check_user_exists_redis
-              check_user_exists_postgres
-            end
-          rescue => e
-            @logger.error "Error in sanity checks: #{e}"
-            log_error(e)
-            remove_user_mover_banner(@pack_config['user']['id']) if @options[:set_banner]
-            throw e
-          end
-
-          if @options[:data]
-            # Password should be passed here too
-            create_user(@target_dbuser)
-            create_org_role(@target_dbname) # Create org role for the original org
-            create_org_owner_role(@target_dbname)
-            if !@options[:target_org].nil?
-              grant_user_org_role(@target_dbuser, @target_dbname)
-            end
-
-            if @target_schema != 'public'
-              set_user_search_path(@target_dbuser, @pack_config['user']['database_schema'])
-              create_public_db_user(@target_userid, @pack_config['user']['database_schema'])
-            end
-
-            @pack_config['roles'].each do |user, roles|
-              roles.each { |role| grant_user_role(user, role) }
-            end
-
-            begin
-              if @target_org_id && @target_is_owner && File.exists?("#{@path}org_#{@target_org_id}.dump")
-                create_db(@target_dbname, true)
-                import_pgdump("org_#{@target_org_id}.dump")
-              elsif File.exists? "#{@path}user_#{@target_userid}.dump"
-                create_db(@target_dbname, true)
-                import_pgdump("user_#{@target_userid}.dump")
-              elsif File.exists? "#{@path}#{@target_username}.schema.sql"
-                create_db(@target_dbname, false)
-                run_file_restore_schema("#{@target_username}.schema.sql")
-              end
-            rescue => e
-              remove_user_mover_banner(@pack_config['user']['id'])
-              log_error(e)
-              throw e
-            end
-          end
-
-          if @options[:metadata]
-            begin
-              import_redis("user_#{@target_userid}_metadata.redis")
-              import_metadata("user_#{@target_userid}_metadata.sql")
-            rescue => e
-              rollback_metadata("user_#{@target_userid}_metadata_undo.sql")
-              rollback_redis("user_#{@target_userid}_metadata_undo.redis")
-              log_error(e)
-              remove_user_mover_banner(@pack_config['user']['id']) if @options[:set_banner]
-              throw e
-            end
-          end
-
-          if @options[:update_metadata]
-            clean_oids(@target_userid, @target_schema)
-            update_database(@target_userid, @target_username, @target_dbhost, @target_dbname)
-            if @target_org_id
-              update_postgres_organization(@target_userid, @target_org_id)
-            else
-              update_postgres_organization(@target_userid, nil)
-            end
-
-            user_model = ::User.find(username: @target_username)
-            user_model.db_service.monitor_user_notification
-            user_model.db_service.configure_database
-          end
-          log_success
-          remove_user_mover_banner(@pack_config['user']['id']) if @options[:set_banner]
-
+          import_user
         elsif @options[:mode] == :rollback
-          if @options[:metadata]
-            rollback_metadata("user_#{@target_userid}_metadata_undo.sql")
-            rollback_redis("user_#{@target_userid}_metadata_undo.redis")
-          end
-          if @options[:data]
-            drop_database(@target_dbname) if @options[:drop_database] && !@options[:schema_mode]
-            drop_role(@target_dbuser) if @options[:drop_roles]
-          end
+          rollback_user
         end
       end
 
-      def import_organization
-        organization_id = @pack_config['organization']['id']
-        @import_log['id'] = organization_id
+      def process_org
+        @organization_id = @pack_config['organization']['id']
+        @owner_id = @pack_config['organization']['owner_id']
+        @import_log['id'] = @organization_id
 
         if @options[:mode] == :import
-          begin
-            import_metadata("org_#{organization_id}_metadata.sql") if @options[:metadata]
-            create_org_role(@pack_config['users'][0]['database_name']) # Create org role for the original org
-            @pack_config['groups'].each do |group|
-              create_role(group['database_role'])
-            end
-            @pack_config['users'].each do |user|
-              # Password should be passed here too
-              create_user(database_username(user['id']))
-              create_public_db_user(user['id'], user['database_schema'])
-              grant_user_org_role(database_username(user['id']), user['database_name'])
-            end
+          import_org
+        elsif @options[:mode] == :rollback
+          rollback_org
+        end
+      end
 
-            # We first import the owner. If schemas are not split, this will also import the whole org database
-            owner_id = @pack_config['organization']['owner_id']
-            @logger.info("Importing org owner #{owner_id}..")
-            ImportJob.new(file: @path + "user_#{owner_id}.json",
+      def import_org
+        begin
+          import_metadata("org_#{@organization_id}_metadata.sql") if @options[:metadata]
+          create_org_role(@pack_config['users'][0]['database_name']) # Create org role for the original org
+          @pack_config['groups'].each do |group|
+            create_role(group['database_role'])
+          end
+          @pack_config['users'].each do |user|
+            # Password should be passed here too
+            create_user(database_username(user['id']))
+            create_public_db_user(user['id'], user['database_schema'])
+            grant_user_org_role(database_username(user['id']), user['database_name'])
+          end
+
+          # We first import the owner. If schemas are not split, this will also import the whole org database
+          @logger.info("Importing org owner #{@owner_id}..")
+          ImportJob.new(file: @path + "user_#{@owner_id}.json",
+                        mode: @options[:mode],
+                        host: @target_dbhost,
+                        target_org: @pack_config['organization']['name'],
+                        logger: @logger, data: @options[:data], metadata: @options[:metadata]).run!
+
+          # Fix permissions and metadata settings for owner
+          if @options[:update_metadata]
+            owner_user = ::User.find(id: @owner_id)
+            owner_user.database_host = @target_dbhost
+            owner_user.db_service.setup_organization_owner
+          end
+
+          @pack_config['users'].reject { |u| u['id'] == @owner_id }.each do |user|
+            @logger.info("Importing org user #{user['id']}..")
+            ImportJob.new(file: @path + "user_#{user['id']}.json",
                           mode: @options[:mode],
                           host: @target_dbhost,
                           target_org: @pack_config['organization']['name'],
                           logger: @logger, data: @options[:data], metadata: @options[:metadata]).run!
-
-            # Fix permissions and metadata settings for owner
-            if @options[:update_metadata]
-              owner_user = ::User.find(id: owner_id)
-              owner_user.database_host = @target_dbhost
-              owner_user.db_service.setup_organization_owner
-            end
-
-            @pack_config['users'].reject { |u| u['id'] == owner_id }.each do |user|
-              @logger.info("Importing org user #{user['id']}..")
-              ImportJob.new(file: @path + "user_#{user['id']}.json",
-                            mode: @options[:mode],
-                            host: @target_dbhost,
-                            target_org: @pack_config['organization']['name'],
-                            logger: @logger, data: @options[:data], metadata: @options[:metadata]).run!
-            end
-          rescue => e
-            rollback_metadata("org_#{organization_id}_metadata_undo.sql") if @options[:metadata]
-            log_error(e)
-            raise e
-          else
-            log_success
-          ensure
-            @pack_config['users'].each do |user|
-              remove_user_mover_banner(user['id']) if @options[:set_banner]
-            end
           end
-        elsif @options[:mode] == :rollback
-          db = @pack_config['users'][0]['database_name']
-          @pack_config['users'].reject { |u| u['id'] == owner_id }.each do |user|
-            @logger.info("Rolling back metadata for org user #{user['id']}..")
-            ImportJob.new(file: @path + "user_#{user['id']}.json",
-                          mode: :rollback,
-                          host: @target_dbhost,
-                          target_org: @pack_config['organization']['name'],
-                          logger: @logger, metadata: true, data: false).run!
+        rescue => e
+          rollback_metadata("org_#{@organization_id}_metadata_undo.sql") if @options[:metadata]
+          log_error(e)
+          raise e
+        else
+          log_success
+        ensure
+          @pack_config['users'].each do |user|
+            remove_user_mover_banner(user['id']) if @options[:set_banner]
           end
-          rollback_metadata("org_#{organization_id}_metadata_undo.sql") if @options[:metadata]
-          if @options[:data]
-            drop_database(db) if @options[:drop_database]
-            if @options[:drop_roles]
-              drop_role(org_role_name(db))
-              @pack_config['users'].each { |u| drop_role(database_username(u['id'])) }
-              @pack_config['groups'].each { |g| drop_role(g['database_role']) }
-            end
+        end
+      end
+
+      def rollback_org
+        db = @pack_config['users'][0]['database_name']
+        @pack_config['users'].reject { |u| u['id'] == @owner_id }.each do |user|
+          @logger.info("Rolling back metadata for org user #{user['id']}..")
+          ImportJob.new(file: @path + "user_#{user['id']}.json",
+                        mode: :rollback,
+                        host: @target_dbhost,
+                        target_org: @pack_config['organization']['name'],
+                        logger: @logger, metadata: true, data: false).run!
+        end
+        rollback_metadata("org_#{@organization_id}_metadata_undo.sql") if @options[:metadata]
+        if @options[:data]
+          drop_database(db) if @options[:drop_database]
+          if @options[:drop_roles]
+            drop_role(org_role_name(db))
+            @pack_config['users'].each { |u| drop_role(database_username(u['id'])) }
+            @pack_config['groups'].each { |g| drop_role(g['database_role']) }
           end
         end
       end
@@ -506,7 +426,7 @@ module CartoDB
 
       def update_postgres_organization(userid, org_id)
         @logger.info "Updating PostgreSQL organization..."
-        metadata_pg_conn.exec("UPDATE users SET organization_id = $1 WHERE id = $2", [org_id, userid])
+        metadata_pg_conn.exec("UPDATE users SET @organization_id = $1 WHERE id = $2", [org_id, userid])
       end
 
       def update_redis_database_host(user, db)
@@ -542,5 +462,95 @@ module CartoDB
         importjob_logger.info(@import_log.to_json)
       end
     end
-  end
+
+      def rollback_user
+        if @options[:metadata]
+          rollback_metadata("user_#{@target_userid}_metadata_undo.sql")
+          rollback_redis("user_#{@target_userid}_metadata_undo.redis")
+        end
+        if @options[:data]
+          drop_database(@target_dbname) if @options[:drop_database] && !@options[:schema_mode]
+          drop_role(@target_dbuser) if @options[:drop_roles]
+        end
+      end
+
+      def import_user
+        begin
+          if @options[:metadata]
+            check_user_exists_redis
+            check_user_exists_postgres
+          end
+        rescue => e
+          @logger.error "Error in sanity checks: #{e}"
+          log_error(e)
+          remove_user_mover_banner(@pack_config['user']['id']) if @options[:set_banner]
+          throw e
+        end
+
+        if @options[:data]
+          # Password should be passed here too
+          create_user(@target_dbuser)
+          create_org_role(@target_dbname) # Create org role for the original org
+          create_org_owner_role(@target_dbname)
+          if !@options[:target_org].nil?
+            grant_user_org_role(@target_dbuser, @target_dbname)
+          end
+
+          if @target_schema != 'public'
+            set_user_search_path(@target_dbuser, @pack_config['user']['database_schema'])
+            create_public_db_user(@target_userid, @pack_config['user']['database_schema'])
+          end
+
+          @pack_config['roles'].each do |user, roles|
+            roles.each { |role| grant_user_role(user, role) }
+          end
+
+          begin
+            if @target_org_id && @target_is_owner && File.exists?("#{@path}org_#{@target_org_id}.dump")
+              create_db(@target_dbname, true)
+              import_pgdump("org_#{@target_org_id}.dump")
+            elsif File.exists? "#{@path}user_#{@target_userid}.dump"
+              create_db(@target_dbname, true)
+              import_pgdump("user_#{@target_userid}.dump")
+            elsif File.exists? "#{@path}#{@target_username}.schema.sql"
+              create_db(@target_dbname, false)
+              run_file_restore_schema("#{@target_username}.schema.sql")
+            end
+          rescue => e
+            remove_user_mover_banner(@pack_config['user']['id'])
+            log_error(e)
+            throw e
+          end
+        end
+
+        if @options[:metadata]
+          begin
+            import_redis("user_#{@target_userid}_metadata.redis")
+            import_metadata("user_#{@target_userid}_metadata.sql")
+          rescue => e
+            rollback_metadata("user_#{@target_userid}_metadata_undo.sql")
+            rollback_redis("user_#{@target_userid}_metadata_undo.redis")
+            log_error(e)
+            remove_user_mover_banner(@pack_config['user']['id']) if @options[:set_banner]
+            throw e
+          end
+        end
+
+        if @options[:update_metadata]
+          clean_oids(@target_userid, @target_schema)
+          update_database(@target_userid, @target_username, @target_dbhost, @target_dbname)
+          if @target_org_id
+            update_postgres_organization(@target_userid, @target_org_id)
+          else
+            update_postgres_organization(@target_userid, nil)
+          end
+
+          user_model = ::User.find(username: @target_username)
+          user_model.db_service.monitor_user_notification
+          user_model.db_service.configure_database
+        end
+        log_success
+        remove_user_mover_banner(@pack_config['user']['id']) if @options[:set_banner]
+      end
+    end
 end

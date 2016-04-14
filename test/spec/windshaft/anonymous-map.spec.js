@@ -57,61 +57,33 @@ describe('windshaft/anonymous-map', function () {
           {
             'type': 'cartodb',
             'options': {
-              'source': {
-                'id': 'layer1'
-              },
               'cartocss': 'cartoCSS1',
               'cartocss_version': '2.0',
-              'interactivity': []
+              'interactivity': [],
+              'sql': 'sql1'
             }
           },
           {
             'type': 'cartodb',
             'options': {
-              'source': {
-                'id': 'layer2'
-              },
               'cartocss': 'cartoCSS2',
               'cartocss_version': '2.0',
-              'interactivity': []
+              'interactivity': [],
+              'sql': 'sql2'
             }
           },
           {
             'type': 'cartodb',
             'options': {
-              'source': {
-                'id': 'layer3'
-              },
               'cartocss': 'cartoCSS3',
               'cartocss_version': '2.0',
-              'interactivity': []
+              'interactivity': [],
+              'sql': 'sql3'
             }
           }
         ],
         'dataviews': {},
-        'analyses': [
-          {
-            'id': 'layer1',
-            'type': 'source',
-            'params': {
-              'query': 'sql1'
-            }
-          },
-          {
-            'id': 'layer2',
-            'type': 'source',
-            'params': {
-              'query': 'sql2'
-            }
-          },
-          {
-            'id': 'layer3',
-            'type': 'source',
-            'params': {
-              'query': 'sql3'
-            }
-          }
-        ]
+        'analyses': []
       });
     });
 
@@ -124,9 +96,7 @@ describe('windshaft/anonymous-map', function () {
           {
             'type': 'cartodb',
             'options': {
-              'source': {
-                'id': 'layer2'
-              },
+              'sql': 'sql2',
               'cartocss': 'cartoCSS2',
               'cartocss_version': '2.0',
               'interactivity': []
@@ -134,29 +104,7 @@ describe('windshaft/anonymous-map', function () {
           }
         ],
         'dataviews': {},
-        'analyses': [
-          {
-            'id': 'layer1',
-            'type': 'source',
-            'params': {
-              'query': 'sql1'
-            }
-          },
-          {
-            'id': 'layer2',
-            'type': 'source',
-            'params': {
-              'query': 'sql2'
-            }
-          },
-          {
-            'id': 'layer3',
-            'type': 'source',
-            'params': {
-              'query': 'sql3'
-            }
-          }
-        ]
+        'analyses': []
       });
     });
 
@@ -283,28 +231,62 @@ describe('windshaft/anonymous-map', function () {
           cartocss: '#trade_area { ... }'
         }, { silent: true });
 
-        expect(this.map.toJSON().analyses).toEqual([
-          {
-            'id': 'c1',
-            'type': 'union',
-            'params': {
-              'join_on': 'cartodb_id',
-              'source': {
-                'id': 'a2',
-                'type': 'estimated-population',
-                'params': {
-                  'columnName': 'estimated_people',
-                  'source': {
-                    'id': 'a1',
-                    'type': 'trade-area',
-                    'params': {
-                      'kind': 'walk',
-                      'time': 300,
-                      'source': {
-                        'id': 'b0',
-                        'type': 'source',
-                        'params': {
-                          'query': 'select * from subway_stops'
+        expect(this.map.toJSON()).toEqual({
+          'layers': [
+            {
+              'type': 'cartodb',
+              'options': {
+                'cartocss': '#trade_area { ... }',
+                'cartocss_version': '2.0',
+                'interactivity': [],
+                'source': {
+                  'id': 'c1'
+                }
+              }
+            },
+            {
+              'type': 'cartodb',
+              'options': {
+                'cartocss': 'cartoCSS2',
+                'cartocss_version': '2.0',
+                'interactivity': [],
+                'sql': 'sql2'
+              }
+            },
+            {
+              'type': 'cartodb',
+              'options': {
+                'cartocss': 'cartoCSS3',
+                'cartocss_version': '2.0',
+                'interactivity': [],
+                'sql': 'sql3'
+              }
+            }
+          ],
+          'dataviews': {},
+          'analyses': [
+            {
+              'id': 'c1',
+              'type': 'union',
+              'params': {
+                'join_on': 'cartodb_id',
+                'source': {
+                  'id': 'a2',
+                  'type': 'estimated-population',
+                  'params': {
+                    'columnName': 'estimated_people',
+                    'source': {
+                      'id': 'a1',
+                      'type': 'trade-area',
+                      'params': {
+                        'kind': 'walk',
+                        'time': 300,
+                        'source': {
+                          'id': 'b0',
+                          'type': 'source',
+                          'params': {
+                            'query': 'select * from subway_stops'
+                          }
                         }
                       }
                     }
@@ -312,22 +294,8 @@ describe('windshaft/anonymous-map', function () {
                 }
               }
             }
-          },
-          {
-            'id': 'layer2',
-            'type': 'source',
-            'params': {
-              'query': 'sql2'
-            }
-          },
-          {
-            'id': 'layer3',
-            'type': 'source',
-            'params': {
-              'query': 'sql3'
-            }
-          }
-        ]);
+          ]
+        });
       });
 
       it("should not include an analysis if it's part of the analysis of another layer", function () {
@@ -398,34 +366,32 @@ describe('windshaft/anonymous-map', function () {
             {
               'type': 'cartodb',
               'options': {
+                'cartocss': '#union { ... }',
+                'cartocss_version': '2.0',
+                'interactivity': [],
                 'source': {
                   'id': 'c1'
-                },
-                'cartocss': '#union { ... }',
-                'cartocss_version': '2.0',
-                'interactivity': []
+                }
               }
             },
             {
               'type': 'cartodb',
               'options': {
+                'cartocss': '#union { ... }',
+                'cartocss_version': '2.0',
+                'interactivity': [],
                 'source': {
                   'id': 'a2'
-                },
-                'cartocss': '#union { ... }',
-                'cartocss_version': '2.0',
-                'interactivity': []
+                }
               }
             },
             {
               'type': 'cartodb',
               'options': {
-                'source': {
-                  'id': 'layer3'
-                },
                 'cartocss': 'cartoCSS3',
                 'cartocss_version': '2.0',
-                'interactivity': []
+                'interactivity': [],
+                'sql': 'sql3'
               }
             }
           ],
@@ -458,13 +424,6 @@ describe('windshaft/anonymous-map', function () {
                     }
                   }
                 }
-              }
-            },
-            {
-              'id': 'layer3',
-              'type': 'source',
-              'params': {
-                'query': 'sql3'
               }
             }
           ]

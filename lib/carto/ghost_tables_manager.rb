@@ -23,6 +23,11 @@ module Carto
 
     private
 
+    # determine linked tables vs cartodbfied tables consistency; i.e.: needs to run sync
+    def consistent?
+      cartodbfied_tables.reject(&:unaltered?).empty?
+    end
+
     def sync_user_schema_and_tables_metadata
       bolt = Carto::Bolt.new("#{@user.username}:#{MUTEX_REDIS_KEY}", ttl_ms: MUTEX_TTL_MS)
 
@@ -37,10 +42,6 @@ module Carto
       unlink_deleted_tables
     end
 
-    # determine linked tables vs cartodbfied tables consistency; i.e.: needs to run sync
-    def consistent?
-      cartodbfied_tables.reject(&:unaltered?).empty?
-    end
 
     # checks if there're sql-api deleted/renamed tables still linked
     def stale_tables_linked?

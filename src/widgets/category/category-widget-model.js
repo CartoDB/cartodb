@@ -78,7 +78,7 @@ module.exports = WidgetModel.extend({
                '  line-width: 0.3;',
                '  line-opacity: 0.3;',
                '}'
-              ].join('\n').replace('{{defaultColor}}', colors[defColor])
+              ].join('\n').replace(/{{defaultColor}}/g, defColor)
     delete colors[defColor]
     var ramp = Object.keys(colors).map(function (c) {
       return '#layer' + '['+this.dataviewModel.get('column')+'=\'' + colors[c] + '\']{\nmarker-fill: ' + c + ';\n}'

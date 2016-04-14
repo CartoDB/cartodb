@@ -127,11 +127,13 @@ module Carto
       end
     end
 
+    def cartodbfied_tables
+      @cartodbfied_tables ||= fetch_cartobfied_tables
+    end
+
     # this method searchs for tables with all the columns needed in a cartodb table.
     # it does not check column types, and only the latest cartodbfication trigger attached (test_quota_per_row)
-    def cartodbfied_tables
-      return @cartodbfied_tables if @cartodbfied_tables
-
+    def fetch_cartobfied_tables
       required_columns = Table::CARTODB_REQUIRED_COLUMNS + [Table::THE_GEOM_WEBMERCATOR]
       cartodb_columns = required_columns.map { |column| "'#{column}'" }.join(',')
 
@@ -151,11 +153,9 @@ module Carto
         SELECT table_name, reloid FROM a WHERE cdb_columns_count = #{required_columns.length}
       }
 
-      @cartodbfied_tables = @user.in_database(as: :superuser)[sql].all.map do |record|
+      @user.in_database(as: :superuser)[sql].all.map do |record|
         Carto::CartodbfiedTable.new(record[:reloid], record[:table_name], @user)
       end
-
-      @cartodbfied_tables
     end
 
     # Tables that have been dropped via API but have an old UserTable

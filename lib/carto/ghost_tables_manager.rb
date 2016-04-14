@@ -12,7 +12,13 @@ module Carto
     end
 
     def link_ghost_tables_async
-      consistent? ? return : ::Resque.enqueue(::Resque::UserJobs::SyncTables::LinkGhostTables, @user.id)
+      return if consistent?
+
+      if safe_async?
+        ::Resque.enqueue(::Resque::UserJobs::SyncTables::LinkGhostTables, @user.id)
+      else
+        link_ghost_tables_sync
+      end
     end
 
     def link_ghost_tables_sync
@@ -40,9 +46,9 @@ module Carto
       unlink_deleted_tables
     end
 
-    # checks if there are sql-api deleted/renamed tables still linked
-    def stale_tables_linked?
-      !cartodbfied_tables.select(&:stale?).empty?
+    # Check if any unsafe stale (dropped or renamed) tables will be shown to the user
+    def safe_async?
+      dropped_tables.empty? && cartodbfied_tables.select(&:renamed?).empty?
     end
 
     def link_new_tables

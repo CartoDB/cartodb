@@ -29,7 +29,9 @@ module Carto
 
     # determine linked tables vs cartodbfied tables consistency; i.e.: needs to run sync
     def consistent?
-      cartodbfied_tables.reject(&:unaltered?).empty? && dropped_tables.empty?
+      cartodbfied_tables = fetch_cartobfied_tables
+
+      cartodbfied_tables.reject(&:unaltered?).empty? && find_dropped_tables(cartodbfied_tables).empty?
     end
 
     def sync_user_schema_and_tables_metadata
@@ -41,32 +43,21 @@ module Carto
     end
 
     def manage_ghost_tables
-      link_new_tables
-      relink_renamed_tables
-      unlink_deleted_tables
+      cartodbfied_tables = fetch_cartobfied_tables
+
+      # Create UserTables for non linked Tables
+      cartodbfied_tables.select(&:new?).each(&:create_user_table)
+
+      # Relink tables that have been renamed through the SQL API
+      cartodbfied_tables.select(&:renamed?).each(&:rename_user_table_vis)
+
+      # Unlink tables that have been created trhought the SQL API
+      find_dropped_tables(cartodbfied_tables).each(&:drop_user_table)
     end
 
     # Check if any unsafe stale (dropped or renamed) tables will be shown to the user
     def safe_async?
       dropped_tables.empty? && cartodbfied_tables.select(&:renamed?).empty?
-    end
-
-    def link_new_tables
-      cartodbfied_tables.select(&:new?).each(&:create_user_table)
-    end
-
-    # Relink tables that have been renamed through the SQL API
-    def relink_renamed_tables
-      cartodbfied_tables.select(&:renamed?).each(&:rename_user_table_vis)
-    end
-
-    # Unlink tables that have been created trhought the SQL API
-    def unlink_deleted_tables
-      dropped_tables.each(&:drop_user_table)
-    end
-
-    def cartodbfied_tables
-      @cartodbfied_tables ||= fetch_cartobfied_tables
     end
 
     # this method searchs for tables with all the columns needed in a cartodb table.
@@ -97,11 +88,7 @@ module Carto
     end
 
     # Tables that have been dropped via API but have an old UserTable
-    def dropped_tables
-      @dropped_tables ||= find_dropped_tables
-    end
-
-    def find_dropped_tables
+    def find_dropped_tables(cartodbfied_tables)
       linked_tables = @user.tables.all.map do |user_table|
         Carto::TableRepresentation.new(user_table.table_id, user_table.name, @user)
       end

@@ -16,43 +16,26 @@ var AnonymousMap = MapBase.extend({
       var sourceId = layerModel.get('source');
       if (sourceId) {
         sourceAnalysis = this._analysisCollection.findWhere({ id: sourceId });
-      } else if (layerModel.get('sql')) { // Layer has some SQL that needs to be converted into a "source" analysis
-        sourceId = layerModel.get('id');
-        sourceAnalysis = {
-          id: sourceId,
-          type: 'source',
-          params: {
-            query: layerModel.get('sql')
-          }
-        };
-      } else {
-        throw new Error('sourceAnalysis does\'t exist');
-      }
-
-      var sourceAnalysisIsPartOfOtherAnalysis = this._layersCollection.any(function (otherLayerModel) {
-        if (layerModel !== otherLayerModel && otherLayerModel.get('source')) {
-          var othersLayerSourceId = otherLayerModel.get('source');
-          var otherLayersSource = this._analysisCollection.findWhere({ id: othersLayerSourceId });
-          return otherLayersSource.findAnalysisById(sourceId);
+        if (!this._isAnalysisPartOfOtherAnalyses(sourceAnalysis)) {
+          config.analyses.push(sourceAnalysis.toJSON());
         }
-        return false;
-      }, this);
-
-      if (!sourceAnalysisIsPartOfOtherAnalysis) {
-        var analysisJSON = sourceAnalysis.toJSON ? sourceAnalysis.toJSON() : sourceAnalysis;
-        config.analyses.push(analysisJSON);
       }
 
       if (layerModel.isVisible()) {
         var layerConfig = {
           type: layerModel.get('type').toLowerCase(),
           options: {
-            source: { id: sourceId },
             cartocss: layerModel.get('cartocss'),
             cartocss_version: layerModel.get('cartocss_version') || DEFAULT_CARTOCSS_VERSION,
             interactivity: layerModel.getInteractiveColumnNames()
           }
         };
+
+        if (sourceId) {
+          layerConfig.options.source = { id: sourceId };
+        } else if (layerModel.get('sql')) { // Layer has some SQL that needs to be converted into a "source" analysis
+          layerConfig.options.sql = layerModel.get('sql');
+        }
 
         if (layerModel.getInfowindowFieldNames().length) {
           layerConfig.options.attributes = {
@@ -70,6 +53,15 @@ var AnonymousMap = MapBase.extend({
     });
 
     return config;
+  },
+
+  _isAnalysisPartOfOtherAnalyses: function (analysisModel) {
+    return this._analysisCollection.any(function (otherAnalysisModel) {
+      if (analysisModel !== otherAnalysisModel) {
+        return otherAnalysisModel.findAnalysisById(analysisModel.get('id'));
+      }
+      return false;
+    });
   }
 });
 

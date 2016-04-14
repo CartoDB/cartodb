@@ -434,7 +434,7 @@ describe('dataviews/dataview-model-base', function () {
     it("should return the ID of the layer's source", function () {
       var layer = new Backbone.Model({
         id: 'layerId',
-        source: new Backbone.Model({ id: 'someOtherId' })
+        source: 'a1'
       });
       layer.getDataProvider = jasmine.createSpy('getDataProvider').and.returnValue(undefined);
 
@@ -444,7 +444,7 @@ describe('dataviews/dataview-model-base', function () {
         layer: layer
       });
 
-      expect(dataview._getSourceId()).toEqual('someOtherId');
+      expect(dataview._getSourceId()).toEqual('a1');
     });
   });
 });

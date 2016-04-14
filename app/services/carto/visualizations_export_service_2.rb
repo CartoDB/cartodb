@@ -1,6 +1,7 @@
 require 'json'
 
 # Version History
+# TODO: documentation at http://cartodb.readthedocs.org/en/latest/operations/exporting_importing_visualizations.html
 # 2: export full visualization. Limitations:
 #   - No Odyssey support: export fails if any of parent_id / prev_id / next_id / slide_transition_options are set.
 #   - Privacy is exported, but permissions are not.

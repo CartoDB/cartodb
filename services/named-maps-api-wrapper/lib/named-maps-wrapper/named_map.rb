@@ -215,7 +215,7 @@ module CartoDB
 
           analyses = Carto::Analysis.where(visualization_id: visualization.id)
           if analyses.present?
-            layergroup[:analyses] = analyses.map(&:analysis_definition_json)
+            layergroup[:analyses] = analyses.map(&:analysis_definition_for_api)
           end
 
           template_data[:view] = view_data_from(visualization)

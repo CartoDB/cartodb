@@ -1,18 +1,18 @@
 <h3 class="CDB-Text CDB-Size-large u-mainTextColor u-secondaryTextColor u-bSpace--m">
   <% if (state === 'selected') { %>
-    SalesForce selected
+    <%- _t('components.modals.add-layer.imports.header-import.type-selected', { brand: 'SalesForce'}) %>
   <% } else { %>
-    SalesForce import
+    <%- _t('components.modals.add-layer.imports.header-import.type-import', { brand: 'SalesForce'}) %>
   <% } %>
 </h3>
 <p class="CDB-Text CDB-Size-medium u-altTextColor">
   <% if (state !== "selected") { %>
-    Import your data from a Salesforce URL
+    <%- _t('components.modals.add-layer.imports.header-import.import-url', { brand: 'SalesForce'}) %>
   <% } else { %>
     <% if (acceptSync) { %>
-      Keep it synchronized with the source
+      <%- _t('components.modals.add-layer.imports.header-import.sync-enabled', { brand: 'SalesForce'}) %>
     <% } else { %>
-      Sync options are not available
+      <%- _t('components.modals.add-layer.imports.header-import.sync-disabled', { brand: 'SalesForce'}) %>
     <% } %>
   <% } %>
 </p>

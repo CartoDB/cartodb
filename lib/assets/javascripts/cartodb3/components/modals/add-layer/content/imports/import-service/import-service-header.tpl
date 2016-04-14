@@ -2,42 +2,43 @@
   <h3 class="CDB-Text CDB-Size-large u-mainTextColor u-secondaryTextColor u-bSpace--m">
     <% if (state === 'selected') { %>
       <% if (service_name === 'instagram') { %>
-        Account connected
+        <%- _t('components.modals.add-layer.imports.service-import.account-connected') %>
         <% } else { %>
-        Item selected
+        <%- _t('components.modals.add-layer.imports.service-import.item-selected') %>
       <% } %>
     <% } else { %>
-      Connect with <%- title %>
+      <%- _t('components.modals.add-layer.imports.service-import.connect-with', { title: title }) %>
     <% } %>
   </h3>
   <p class="CDB-Text CDB-Size-medium u-altTextColor <% if (state === "error") { %>ImportPanel-headerDescription--negative<% } %>">
     <% if (state === "idle") { %>
       <% if (fileExtensions.length > 0) { %>
-        <%- fileExtensions.join(', ') %><% if (showAvailableFormats) { %> and <a target="_blank" href="http://docs.cartodb.com/cartodb-editor/datasets/#supported-file-formats" class="ImportPanel-headerDescriptionLink">many more formats</a> <% } %> supported.
+        <% formatsLink = _t('components.modals.add-layer.imports.service-import.and') + ' <a target="_blank" href="http://docs.cartodb.com/cartodb-editor/datasets/#supported-file-formats" class="ImportPanel-headerDescriptionLink">' + _t('components.modals.add-layer.imports.service-import.many-more-formats') + '</a>' %>
+        <%- fileExtensions.join(', ') %><% if (showAvailableFormats) { %> <%- formatsLink %> <% } %> <%- _t('components.modals.add-layer.imports.service-import.supported') %>.
       <% } else { %>
-        Log in with your account and select any item.
+        <%- _t('components.modals.add-layer.imports.service-import.state-idle-login') %>
       <% } %>
     <% } %>
     <% if (state === "error") { %>
-      We are sorry, can’t connect to your <%- title %> account. Just in case it helps, be sure you have the pop-up blocker deactivated for this website.
+      <%- _t('components.modals.add-layer.imports.service-import.state-error') %>
     <% } %>
     <% if (state === "token") { %>
-      Checking Token.
+      <%- _t('components.modals.add-layer.imports.service-import.state-token') %>
     <% } %>
     <% if (state === "oauth") { %>
-      Requesting oAuth.
+      <%- _t('components.modals.add-layer.imports.service-import.state-oauth') %>
     <% } %>
     <% if (state === "retrieving") { %>
-      A list of your <%- title %> files will be displayed in a moment.
+      <%- _t('components.modals.add-layer.imports.service-import.state-retrieving', { title: title }) %>
     <% } %>
     <% if (state === "selected") { %>
       <% if (acceptSync) { %>
-        You can also choose when to sync the file.
+        <%- _t('components.modals.add-layer.imports.service-import.state-selected-sync') %>
       <% } else { %>
-      <% if (service_name === 'instagram') { %>
-        A map containing all your georeferenced photos will be created
+        <% if (service_name === 'instagram') { %>
+          <%- _t('components.modals.add-layer.imports.service-import.state-selected-instagram') %>
         <% } else { %>
-        Sync options are not available.
+          <%- _t('components.modals.add-layer.imports.service-import.state-selected-no-sync') %>
         <% } %>
       <% } %>
     <% } %>

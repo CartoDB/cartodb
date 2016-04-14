@@ -7,13 +7,20 @@
 </h3>
 <p class="CDB-Text CDB-Size-medium u-altTextColor">
   <% if (state !== "selected") { %>
-    Paste a URL <% if (fileEnabled) { %>or select a file like CSV, XLS, ZIP, KML, GPX, <a href="http://docs.cartodb.com/cartodb-editor/datasets/#supported-file-formats">see all formats</a>.<% } %>
+    <% fileEnabledText = _t('components.modals.add-layer.imports.header-import.select-a-file') +
+      ' <a href="http://docs.cartodb.com/cartodb-editor/datasets/#supported-file-formats">' +
+      _t('components.modals.add-layer.imports.header-import.see-all-formats') +
+      '</a>'
+    %>
+    <%= _t('components.modals.add-layer.imports.header-import.paste-url', {
+      fileEnabled: fileEnabled ? fileEnabledText : ''
+    }) %>
   <% } %>
   <% if (state === "selected") { %>
     <% if (acceptSync) { %>
-      You can also choose when to sync the file.
+      <%- _t('components.modals.add-layer.imports.header-import.sync-enabled') %>
     <% } else { %>
-      Sync options are not available
+      <%- _t('components.modals.add-layer.imports.header-import.sync-disabled') %>
     <% } %>
   <% } %>
 </p>

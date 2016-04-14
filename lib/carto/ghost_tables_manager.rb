@@ -11,14 +11,12 @@ module Carto
       @user = ::User.where(id: user_id).first
     end
 
-    def link_ghost_tables(force_sync = false)
-      return if consistent?
+    def link_ghost_tables_async
+      consistent? ? return : ::Resque.enqueue(::Resque::UserJobs::SyncTables::LinkGhostTables, @user.id)
+    end
 
-      if stale_tables_linked? || force_sync
-        sync_user_schema_and_tables_metadata
-      else
-        ::Resque.enqueue(::Resque::UserJobs::SyncTables::LinkGhostTables, @user.id)
-      end
+    def link_ghost_tables_sync
+      consistent? ? return : sync_user_schema_and_tables_metadata
     end
 
     private
@@ -154,11 +152,6 @@ module Carto
     # Tables that have been created trhought the SQL API
     def new_tables
       cartodbfied_tables.select(&:new?)
-    end
-
-    # Tables that haven't been atlered throught the SQL API
-    def untouched_tables?
-      cartodbfied_tables.select(&:unaltered?)
     end
 
     # Tables that have been dropped via API but have an old UserTable

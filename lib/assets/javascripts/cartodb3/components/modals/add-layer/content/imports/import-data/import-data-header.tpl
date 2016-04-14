@@ -1,8 +1,8 @@
 <h3 class="CDB-Text CDB-Size-large u-mainTextColor u-secondaryTextColor u-bSpace--m">
   <% if (state === 'selected') { %>
-    File selected
+    <%- _t('components.modals.add-layer.imports.header-import.file-selected') %>
   <% } else { %>
-    Upload <%- fileEnabled ? 'a file or' : '' %> a URL
+    <%- _t('components.modals.add-layer.imports.header-import.upload-file-url', { smart_count: fileEnabled ? 1 : 0 }) %>
   <% } %>
 </h3>
 <p class="CDB-Text CDB-Size-medium u-altTextColor">

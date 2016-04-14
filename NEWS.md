@@ -1,10 +1,3 @@
-3.13.* (2016-XX-XX)
--------------------
-## Features
-* Experimental support for [visualization metadata export](https://github.com/CartoDB/cartodb/pull/7114).
-
-## Bug Fixes
-
 3.13.0 (2016-XX-XX)
 -------------------
 ### NOTICE
@@ -40,6 +33,7 @@ which should be fixed manually.
 * Update ogr2ogr version to 2.1, configurable in `app_config.yml`. To install it in the system, run:
   * `sudo apt-get install gdal2.1-static-bin`
 * Ghost table linking is now concurrent per user (avoids race conditions)
+* Experimental support for [visualization metadata export](https://github.com/CartoDB/cartodb/pull/7114).
 
 ## Bug Fixes
 * Updating CartoDB.js submodule with last changes sanitizing attribution.

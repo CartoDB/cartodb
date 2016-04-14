@@ -72,8 +72,8 @@ module Carto
     # this method searchs for tables with all the columns needed in a cartodb table.
     # it does not check column types, and only the latest cartodbfication trigger attached (test_quota_per_row)
     def fetch_cartobfied_tables
-      cartodb_columns = (Table::CARTODB_REQUIRED_COLUMNS + Table::THE_GEOM_WEBMERCATOR).map { |column| "'#{column}'" }
-                                                                                       .join(',')
+      required_columns = (Table::CARTODB_REQUIRED_COLUMNS + [Table::THE_GEOM_WEBMERCATOR]).map { |col| "'#{col}'" }
+      cartodb_columns = required_columns.join(',')
 
       sql = %{
         WITH a as (
@@ -166,8 +166,7 @@ module Carto
       ::UserTable.create(user_id: @user.id,
                          name: name,
                          table_id: id,
-                         register_table_only: true,
-                         keep_user_database_table: true)
+                         register_table_only: true)
     end
 
     def rename_user_table_vis
@@ -192,9 +191,7 @@ module Carto
                             dropped_table: name,
                             dropped_table_id: id)
 
-      user_table.update_fields({ keep_user_database_table: true }, [:keep_user_database_table])
-                .store
-                .destroy
+      user_table.destroy
     end
 
     def physical_table_exists?

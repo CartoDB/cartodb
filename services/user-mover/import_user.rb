@@ -241,7 +241,6 @@ module CartoDB
           log_success
         ensure
           @pack_config['users'].each do |user|
-            binding.pry
             remove_user_mover_banner(user['id']) if @options[:set_banner]
           end
         end

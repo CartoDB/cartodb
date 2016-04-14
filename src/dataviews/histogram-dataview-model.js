@@ -143,9 +143,9 @@ module.exports = DataviewModelBase.extend({
 
   _onChangeBinds: function () {
     DataviewModelBase.prototype._onChangeBinds.call(this);
-    this.bind('change:histogram_sizes', function (mdl, isSizesApplied, d) {
-      if (isSizesApplied) {
-        this.trigger('histogram_sizes', this);
+    this.bind('change:auto-style', function (mdl, isAutoStyle, d) {
+      if (isAutoStyle) {
+        this.trigger('auto-style', this);
       }
     }, this);
   },

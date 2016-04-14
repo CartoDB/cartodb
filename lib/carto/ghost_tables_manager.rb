@@ -17,11 +17,11 @@ module Carto
       if safe_async?
         ::Resque.enqueue(::Resque::UserJobs::SyncTables::LinkGhostTables, @user.id)
       else
-        link_ghost_tables_sync
+        link_ghost_tables_synchronously
       end
     end
 
-    def link_ghost_tables_sync
+    def link_ghost_tables_synchronously
       consistent? ? return : sync_user_schema_and_tables_metadata
     end
 

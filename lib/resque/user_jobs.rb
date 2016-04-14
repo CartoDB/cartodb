@@ -64,7 +64,7 @@ module Resque
         @queue = :users
 
         def self.perform(user_id)
-          Carto::GhostTablesManager.new(user_id).link_ghost_tables_sync
+          Carto::GhostTablesManager.new(user_id).link_ghost_tables_synchronously
         rescue => e
           CartoDB.notify_exception(e)
           raise e

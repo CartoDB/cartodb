@@ -36,7 +36,7 @@ module Carto
 
       ::Resque.expects(:enqueue).with(::Resque::UserJobs::SyncTables::LinkGhostTables, @user.id).never
 
-      Carto::GhostTablesManager.new(@user.id).link_ghost_tables_sync
+      Carto::GhostTablesManager.new(@user.id).link_ghost_tables_synchronously
       Carto::GhostTablesManager.new(@user.id).instance_eval { consistent? }.should be_true
 
       @user.tables.count.should eq 1
@@ -49,7 +49,7 @@ module Carto
       @user.tables.count.should eq 1
       Carto::GhostTablesManager.new(@user.id).instance_eval { consistent? }.should be_false
 
-      Carto::GhostTablesManager.new(@user.id).link_ghost_tables_sync
+      Carto::GhostTablesManager.new(@user.id).link_ghost_tables_synchronously
       Carto::GhostTablesManager.new(@user.id).instance_eval { consistent? }.should be_true
 
       @user.tables.count.should eq 1
@@ -62,7 +62,7 @@ module Carto
       @user.tables.count.should eq 1
       Carto::GhostTablesManager.new(@user.id).instance_eval { consistent? }.should be_false
 
-      Carto::GhostTablesManager.new(@user.id).link_ghost_tables_sync
+      Carto::GhostTablesManager.new(@user.id).link_ghost_tables_synchronously
       Carto::GhostTablesManager.new(@user.id).instance_eval { consistent? }.should be_true
 
       @user.tables.count.should eq 0

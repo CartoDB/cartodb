@@ -70,7 +70,7 @@ class Table
 
   def initialize(args = {})
     if args[:user_table].nil?
-      @user_table = UserTable.new(args)
+      @user_table = UserTable.new.set_fields(args, args.keys)
     else
       @user_table = args[:user_table]
     end

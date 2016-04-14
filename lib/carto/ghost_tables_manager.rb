@@ -25,7 +25,7 @@ module Carto
 
     # determine linked tables vs cartodbfied tables consistency; i.e.: needs to run sync
     def consistent?
-      cartodbfied_tables.reject(&:unaltered?).empty?
+      cartodbfied_tables.reject(&:unaltered?).empty? && dropped_tables.empty?
     end
 
     def sync_user_schema_and_tables_metadata
@@ -207,10 +207,6 @@ module Carto
 
     def unaltered?
       !!user_table && physical_table_exists?
-    end
-
-    def stale?
-      renamed? || dropped?
     end
 
     def user_table_with_matching_id

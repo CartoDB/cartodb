@@ -58,8 +58,7 @@ defaults: &defaults
     primary:          ''
     embeds:           ''
     domain:           ''
-  rollbar:
-    token: ''
+  rollbar_api_key: ''
   tumblr:
     api_key: ''
   trackjs:

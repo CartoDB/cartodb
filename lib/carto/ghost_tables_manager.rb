@@ -22,7 +22,7 @@ module Carto
     end
 
     def link_ghost_tables_synchronously
-      sync_user_tables_with_db unless user_tables_synced_with_db?(fetch_cartobfied_tables)
+      sync_user_tables_with_db unless user_tables_synced_with_db?
     end
 
     private

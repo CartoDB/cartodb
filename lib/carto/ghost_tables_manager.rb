@@ -100,7 +100,7 @@ module Carto
 
       non_linked = linked_tables - cartodbfied_tables
 
-      # Safety to not depend on regerate to run first
+      # Very defensive, just in case.
       non_linked.reject(&:regenerated?)
     end
   end
@@ -112,19 +112,6 @@ module Carto
       @id = id
       @name = name
       @user = user
-    end
-
-    # Grabs the Table associated with this LinkedTable.
-    def table
-      user_tables = ::UserTable.where(table_id: id, user_id: user.id)
-
-      first = user_tables.first
-
-      if user_tables.count > 1
-        CartoDB::Logger.warning(message: 'Duplicate UserTables detected', user: user, table_name: first.name)
-      end
-
-      first ? Table.new(user_table: first) : nil
     end
 
     def new?
@@ -240,16 +227,14 @@ module Carto
     end
 
     def physical_table_exists?
-      !!fetch_oid_and_relname
-    end
+      result = @user.in_database(as: :superuser)
+                    .select(:pg_class__oid, :pg_class__relname)
+                    .from(:pg_class)
+                    .join_table(:inner, :pg_namespace, oid: :relnamespace)
+                    .where(relkind: 'r', nspname: user.database_schema, pg_class__oid: id, pg_class__relname: name)
+                    .first
 
-    def fetch_oid_and_relname
-      @user.in_database(as: :superuser)
-           .select(:pg_class__oid, :pg_class__relname)
-           .from(:pg_class)
-           .join_table(:inner, :pg_namespace, oid: :relnamespace)
-           .where(relkind: 'r', nspname: user.database_schema, pg_class__oid: id, pg_class__relname: name)
-           .first
+      !!result
     end
 
     def eql?(other)

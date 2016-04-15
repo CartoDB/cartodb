@@ -134,6 +134,11 @@ module CartoDB
       what_about: "Provided URL can't be resolved to a known server. Maybe that URL is wrong or behind a private network. Please provide a valid, public URL and try again.",
       source: ERROR_SOURCE_USER
     },
+    1103 => {
+      title: '',
+      what_about: "The resource you are trying to reach is accessible but there was a problem downloading your file. Please, try again.",
+      source: ERROR_SOURCE_USER
+    },
     2001 => {
       title: 'Unable to load data',
       what_about: "We couldn't load data from your file into the database.  Please <a href='mailto:support@cartodb.com?subject=Import load error'>contact us</a> and we will help you to load your data.",

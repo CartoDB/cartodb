@@ -90,6 +90,7 @@ module CartoDB
     class NotFoundDownloadError                 < DownloadError; end
     class UnauthorizedDownloadError             < DownloadError; end
     class CouldntResolveDownloadError           < DownloadError; end
+    class IncompleteDownloadError               < DownloadError; end
 
     class TooManyNodesError                     < StandardError; end
     class NotAFileError                         < StandardError; end
@@ -115,6 +116,7 @@ module CartoDB
       NotFoundDownloadError                 => 1100,
       UnauthorizedDownloadError             => 1101,
       CouldntResolveDownloadError           => 1102,
+      IncompleteDownloadError               => 1103,
 
       UnsupportedFormatError                => 1002,
       ExtractionError                       => 1003,

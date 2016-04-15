@@ -2,7 +2,7 @@
   <div class="Editor-HeaderInfo">
     <div class="Editor-HeaderNumeration CDB-Text is-semibold u-rSpace--m">2</div>
     <div class="Editor-HeaderInfo-Inner CDB-Text">
-      <div class="Editor-HeaderInfo-Title u-bSpace--s">
+      <div class="Editor-HeaderInfo-Title u-bSpace--m">
         <h2 class="CDB-Text CDB-HeaderInfo-TitleText CDB-Size-large"><%- _t('analyses.area-of-influence') %></h2>
       </div>
       <p class="CDB-Text u-upperCase CDB-FontSize-small u-altTextColor u-bSpace--m"><%- _t('editor.layers.analysis-form.reference-layer-pluralize', { smart_count: 1 }) %></p>
@@ -15,10 +15,10 @@
   <div class="Editor-HeaderInfo">
     <div class="Editor-HeaderNumeration CDB-Text is-semibold u-rSpace--m">3</div>
     <div class="Editor-HeaderInfo-Inner CDB-Text" data-fields="type,distance,radio">
-      <div class="Editor-HeaderInfo-Title u-bSpace--s">
+      <div class="Editor-HeaderInfo-Title u-bSpace--m">
         <h2 class="CDB-Text CDB-HeaderInfo-TitleText CDB-Size-large"><%- _t('editor.layers.analysis-form.parameters') %></h2>
       </div>
-      <p class="CDB-Text u-upperCase CDB-FontSize-small u-altTextColor u-bSpace--m"><%- _t('editor.layers.analysis-form.parameters-description') %></p>
+      <p class="CDB-Text u-upperCase CDB-FontSize-small u-altTextColor u-bSpace--xl"><%- _t('editor.layers.analysis-form.parameters-description') %></p>
     </div>
   </div>
 </form>

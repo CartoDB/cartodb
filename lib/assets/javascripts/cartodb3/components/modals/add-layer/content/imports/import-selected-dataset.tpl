@@ -1,10 +1,10 @@
 <div class="DatasetSelected-item">
-  <div class="DatasetSelected-itemExt u-ellipsLongText">
+  <div class="DatasetSelected-itemExt CDB-Text u-ellipsis">
     <%- ext || '?' %>
   </div>
-  <div class="DatasetSelected-itemInfo u-ellipsLongText">
-    <h6 class="DatasetSelected-itemTitle u-ellipsLongText" title="<%- title %>"><%- title %></h6>
-    <p class="DatasetSelected-itemDescription u-ellipsLongText"><%- description %></p>
+  <div class="DatasetSelected-itemInfo u-ellipsis">
+    <h6 class="CDB-Text CDB-Size-medium u-ellipsis" title="<%- title %>"><%- title %></h6>
+    <p class="CDB-Text CDB-Size-small u-ellipsis u-altTextColor"><%- description %></p>
   </div>
 </div>
 <% if (importCanSync) { %>

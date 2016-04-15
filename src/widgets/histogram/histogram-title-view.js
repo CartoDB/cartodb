@@ -88,7 +88,7 @@ module.exports = cdb.core.View.extend({
                '}'
               ].join('\n')
     if (!this.dataviewModel._dataProvider) {
-      this.dataviewModel.tempStyle = style;
+      this.dataviewModel.layer.set('cartocss', style);
     } else {
       var index = this.dataviewModel._dataProvider._layerIndex;
       var sublayer = this.dataviewModel._dataProvider._vectorLayerView;
@@ -100,7 +100,7 @@ module.exports = cdb.core.View.extend({
 
   cancelAutoStyle: function () {
     if (!this.dataviewModel._dataProvider) {
-      delete this.dataviewModel.tempStyle
+      this.dataviewModel.layer.restoreCartoCSS()
     } else {
       var index = this.dataviewModel._dataProvider._layerIndex;
       var sublayer = this.dataviewModel._dataProvider._vectorLayerView;

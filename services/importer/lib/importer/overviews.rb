@@ -10,7 +10,7 @@ module CartoDB
 
       DEFAULT_MIN_ROWS = 1000000
       DEFAULT_STATEMENT_TIMEOUT = 10 * 60 * 1000 # ms
-      DEFAULT_TOLERANCE_PX = 1.0 #px
+      DEFAULT_TOLERANCE_PX = 1.0 # px
 
       def initialize(runner, user, options = {})
         @runner            = runner

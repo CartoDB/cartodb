@@ -9,6 +9,10 @@ FactoryGirl.define do
       after(:create) do |map, evaluator|
         create_list(:carto_tiled_layer, 1, maps: [map])
         create_list(:carto_layer, 1, maps: [map])
+        map.layers.map.with_index.map do |layer, index|
+          layer.order = index
+          layer.save
+        end
       end
     end
   end

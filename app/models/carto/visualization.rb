@@ -37,11 +37,13 @@ class Carto::Visualization < ActiveRecord::Base
   has_one :external_source
   has_many :unordered_children, class_name: Carto::Visualization, foreign_key: :parent_id
 
-  has_many :overlays
+  has_many :overlays, order: '"order"'
 
   belongs_to :parent, class_name: Carto::Visualization, primary_key: :parent_id
 
-  belongs_to :map
+  belongs_to :active_layer, class_name: Carto::Layer
+
+  belongs_to :map, class_name: Carto::Map
 
   has_many :related_templates, class_name: Carto::Template, foreign_key: :source_visualization_id
 

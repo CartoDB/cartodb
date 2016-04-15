@@ -27,6 +27,12 @@ class Carto::Permission < ActiveRecord::Base
     owner_user?(user) || permitted?(user, ACCESS_READWRITE)
   end
 
+  # Explicitly remove columns from AR schema
+  DELETED_COLUMNS = ['entity_id', 'entity_type'].freeze
+  def self.columns
+    super.reject { |c| DELETED_COLUMNS.include?(c.name) }
+  end
+
   private
 
   def permitted?(user, permission_type)

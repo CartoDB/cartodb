@@ -66,7 +66,7 @@
                     <% end %>
 
                     <div class="Sessions-field">
-                      <p class="Sessions-text Sessions-text--forgotButton u-left"><%= link_to "Already have account?", login_url %></p>
+                      <p class="Sessions-text Sessions-text--forgotButton u-left"><%= link_to "Already have account?", CartoDB.url(self, 'login') %></p>
                       <p>
                         <button type="submit" class="Btn Btn--green Btn--m is-highlight u-tupper Sessions-button js-Sessions-button js-Loading u-right">
                           <span class="js-Loading-text">Sign up</span>

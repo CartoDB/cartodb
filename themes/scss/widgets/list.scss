@@ -3,7 +3,6 @@
 
 .CDB-Widget-listWrapper {
   position: relative;
-  // height: 216px;
 }
 .CDB-Widget-listEdge {
   display: block;
@@ -91,7 +90,6 @@
 }
 .CDB-Widget-listItem--fake {
   position: relative;
-  height: 216px;
   margin-top: $baseSize;
   margin-bottom: $baseSize;
   border-bottom: 1px solid transparent;

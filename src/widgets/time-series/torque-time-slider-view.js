@@ -20,22 +20,7 @@ module.exports = cdb.core.View.extend({
     this._chartView = this.options.chartView;
     this._torqueLayerModel = this.options.torqueLayerModel;
 
-    this._torqueLayerModel.bind('change:start change:end', this._updateChartandTimeslider, this);
-    this._torqueLayerModel.bind('change:step', this._onChangeStep, this);
-    this._torqueLayerModel.bind('change:steps', this._updateChartandTimeslider, this);
-
-    this.add_related_model(this._torqueLayerModel);
-
-    this._chartView.model.bind('change:width', this._updateChartandTimeslider, this);
-    this._chartView.model.bind('change:height', this._onChangeChartHeight, this);
-    this.add_related_model(this._chartView.model);
-
-    this._dataviewModel.on('change:bins', this._updateChartandTimeslider, this);
-    this.add_related_model(this._dataviewModel);
-
-    this._dataviewModel.filter.on('change:min change:max', this._onFilterMinMaxChange, this);
-    this.add_related_model(this._dataviewModel.filter);
-
+    this._initBinds();
     this._updateXScale();
   },
 
@@ -61,6 +46,24 @@ module.exports = cdb.core.View.extend({
     this.setElement(d3el.node());
 
     return this;
+  },
+
+  _initBinds: function () {
+    this._torqueLayerModel.bind('change:start change:end', this._updateChartandTimeslider, this);
+    this._torqueLayerModel.bind('change:step', this._onChangeStep, this);
+    this._torqueLayerModel.bind('change:steps', this._updateChartandTimeslider, this);
+
+    this.add_related_model(this._torqueLayerModel);
+
+    this._chartView.model.bind('change:width', this._updateChartandTimeslider, this);
+    this._chartView.model.bind('change:height', this._onChangeChartHeight, this);
+    this.add_related_model(this._chartView.model);
+
+    this._dataviewModel.on('change:bins', this._updateChartandTimeslider, this);
+    this.add_related_model(this._dataviewModel);
+
+    this._dataviewModel.filter.on('change:min change:max', this._onFilterMinMaxChange, this);
+    this.add_related_model(this._dataviewModel.filter);
   },
 
   clean: function () {

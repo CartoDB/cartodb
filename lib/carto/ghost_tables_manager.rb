@@ -166,6 +166,12 @@ module Carto
       new_table.keep_user_database_table = true
 
       new_table.save
+    rescue => exception
+      CartoDB::Logger.error(message: 'Ghost tables: Error creating UserTable',
+                            exception: exception,
+                            user: @user,
+                            table_name: name,
+                            table_id: id)
     end
 
     def rename_user_table_vis
@@ -181,6 +187,12 @@ module Carto
       user_table_vis.name = name
 
       user_table_vis.store
+    rescue => exception
+      CartoDB::Logger.error(message: 'Ghost tables: Error renaming Visualization',
+                            exception: exception,
+                            user: @user,
+                            table_name: name,
+                            table_id: id)
     end
 
     def drop_user_table
@@ -196,6 +208,12 @@ module Carto
       table_to_drop.keep_user_database_table = true
 
       table_to_drop.destroy
+    rescue => exception
+      CartoDB::Logger.error(message: 'Ghost tables: Error dropping Table',
+                            exception: exception,
+                            user: @user,
+                            table_name: name,
+                            table_id: id)
     end
 
     def regenerate_user_table
@@ -205,10 +223,16 @@ module Carto
                             dropped_table: name,
                             dropped_table_id: id)
 
-      user_table = user_table_with_matching_name
+      user_table_to_regenerate = user_table_with_matching_name
 
-      user_table.table_id = id
-      user_table.save
+      user_table_to_regenerate.table_id = id
+      user_table_to_regenerate.save
+    rescue => exception
+      CartoDB::Logger.error(message: 'Ghost tables: Error syncing table_id for UserTable',
+                            exception: exception,
+                            user: @user,
+                            table_name: name,
+                            table_id: id)
     end
 
     def physical_table_exists?

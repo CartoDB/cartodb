@@ -12,11 +12,9 @@ module Carto
     end
 
     def link_ghost_tables
-      cartodbfied_tables = fetch_cartobfied_tables
+      return if user_tables_synced_with_db?
 
-      return if user_tables_synced_with_db?(cartodbfied_tables)
-
-      if safe_async?(cartodbfied_tables)
+      if safe_async?
         ::Resque.enqueue(::Resque::UserJobs::SyncTables::LinkGhostTables, @user.id)
       else
         link_ghost_tables_synchronously
@@ -30,14 +28,16 @@ module Carto
     private
 
     # determine linked tables vs cartodbfied tables consistency; i.e.: needs to run sync
-    def user_tables_synced_with_db?(cartodbfied_tables)
+    def user_tables_synced_with_db?
       cartodbfied_tables = fetch_cartobfied_tables
 
       cartodbfied_tables.reject(&:unaltered?).empty? && find_dropped_tables(cartodbfied_tables).empty?
     end
 
     # Check if any unsafe stale (dropped or renamed) tables will be shown to the user
-    def safe_async?(cartodbfied_tables)
+    def safe_async?
+      cartodbfied_tables = fetch_cartobfied_tables
+
       find_dropped_tables(cartodbfied_tables).empty? && cartodbfied_tables.select(&:stale?).empty?
     end
 

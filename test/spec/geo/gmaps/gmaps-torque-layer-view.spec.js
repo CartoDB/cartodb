@@ -1,4 +1,5 @@
 var $ = require('jquery');
+var Backbone = require('backbone');
 var Map = require('../../../../src/geo/map');
 var GoogleMapsMapView = require('../../../../src/geo/gmaps/gmaps-map-view');
 var GMapsLayerViewFactory = require('../../../../src/geo/gmaps/gmaps-layer-view-factory');
@@ -13,7 +14,8 @@ describe('geo/gmaps/gmaps-torque-layer-view', function () {
     var mapView = new GoogleMapsMapView({
       el: container,
       map: map,
-      layerViewFactory: new GMapsLayerViewFactory()
+      layerViewFactory: new GMapsLayerViewFactory(),
+      layerGroupModel: new Backbone.Model()
     });
 
     var model = new TorqueLayer({

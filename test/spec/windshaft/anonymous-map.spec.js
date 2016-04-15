@@ -39,10 +39,13 @@ describe('windshaft/anonymous-map', function () {
       userName: 'rambo'
     });
 
+    this.modelUpdater = jasmine.createSpyObj('modelUpdater', ['updateModels']);
+
     this.dataviewsCollection = new Backbone.Collection();
 
     this.map = new AnonymousMap({}, {
       client: this.client,
+      modelUpdater: this.modelUpdater,
       statTag: 'stat_tag',
       dataviewsCollection: this.dataviewsCollection,
       layersCollection: new Backbone.Collection([this.cartoDBLayer1, this.cartoDBLayer2, this.cartoDBLayer3]),

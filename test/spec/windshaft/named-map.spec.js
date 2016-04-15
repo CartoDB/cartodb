@@ -37,8 +37,11 @@ describe('windshaft/named-map', function () {
       userName: 'rambo'
     });
 
+    this.modelUpdater = jasmine.createSpyObj('modelUpdater', ['updateModels']);
+
     this.map = new NamedMap({}, {
       client: this.client,
+      modelUpdater: this.modelUpdater,
       statTag: 'stat_tag',
       dataviewsCollection: new Backbone.Collection(),
       layersCollection: new Backbone.Collection([this.cartoDBLayer1, this.cartoDBLayer2, this.cartoDBLayer3]),

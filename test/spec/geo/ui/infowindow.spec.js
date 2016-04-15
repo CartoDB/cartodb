@@ -1,7 +1,5 @@
 var $ = require('jquery');
-var templates = require('cdb.templates');
-var log = require('cdb.log');
-var config = require('cdb.config');
+var Backbone = require('backbone');
 var Map = require('../../../../src/geo/map');
 var MapView = require('../../../../src/geo/map-view');
 var InfowindowModel = require('../../../../src/geo/ui/infowindow-model');
@@ -18,7 +16,8 @@ describe('geo/ui/infowindow', function() {
     mapView = new MapView({
       el: container,
       map: map,
-      layerViewFactory: jasmine.createSpyObj('layerViewFactory', ['createLayerView'])
+      layerViewFactory: jasmine.createSpyObj('layerViewFactory', ['createLayerView']),
+      layerGroupModel: new Backbone.Model()
     });
 
     model = new InfowindowModel({
@@ -167,7 +166,8 @@ describe('geo/ui/infowindow', function() {
       mapView = new MapView({
         el: container,
         map: map,
-        layerViewFactory: jasmine.createSpyObj('layerViewFactory', ['createLayerView'])
+        layerViewFactory: jasmine.createSpyObj('layerViewFactory', ['createLayerView']),
+        layerGroupModel: new Backbone.Model()
       });
 
       model = new InfowindowModel({
@@ -274,7 +274,8 @@ describe('geo/ui/infowindow', function() {
       mapView = new MapView({
         el: container,
         map: map,
-        layerViewFactory: jasmine.createSpyObj('layerViewFactory', ['createLayerView'])
+        layerViewFactory: jasmine.createSpyObj('layerViewFactory', ['createLayerView']),
+        layerGroupModel: new Backbone.Model()
       });
 
       model = new InfowindowModel({

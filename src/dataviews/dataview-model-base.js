@@ -49,9 +49,6 @@ module.exports = Model.extend({
     if (!opts.map) {
       throw new Error('map is required');
     }
-    if (!opts.windshaftMap) {
-      throw new Error('windshaftMap is required');
-    }
 
     if (!attrs.id) {
       this.set('id', this.defaults.type + '-' + this.cid);
@@ -59,7 +56,6 @@ module.exports = Model.extend({
 
     this.layer = opts.layer;
     this._map = opts.map;
-    this._windshaftMap = opts.windshaftMap;
 
     this.sync = BackboneCancelSync.bind(this);
 
@@ -77,7 +73,6 @@ module.exports = Model.extend({
   },
 
   _initBinds: function () {
-    this.listenTo(this._windshaftMap, 'instanceCreated', this._onNewWindshaftMapInstance);
     this.listenTo(this.layer, 'change:visible', this._onLayerVisibilityChanged);
 
     if (this._dataProvider) {
@@ -130,27 +125,6 @@ module.exports = Model.extend({
     });
   },
 
-  _onNewWindshaftMapInstance: function (windshaftMapInstance, sourceLayerId, forceFetch) {
-    var url = windshaftMapInstance.getDataviewURL({
-      dataviewId: this.get('id'),
-      protocol: window.location.protocol === 'https:' ? 'https' : 'http'
-    });
-
-    if (url) {
-      var silent = (sourceLayerId && sourceLayerId !== this.layer.get('id'));
-
-      // TODO: Instead of setting the url here, we could invoke fetch directly
-      this.set('url', url, {
-        silent: silent,
-        forceFetch: forceFetch
-      });
-
-      if (this.get('sync_on_data_change')) {
-        this._newDataAvailable = true;
-      }
-    }
-  },
-
   /**
    * Enable/disable the dataview depending on the layer visibility.
    * @private
@@ -166,7 +140,10 @@ module.exports = Model.extend({
     this.listenTo(this._map, 'change:center change:zoom', _.debounce(this._onMapBoundsChanged.bind(this), BOUNDING_BOX_FILTER_WAIT));
 
     this.on('change:url', function (mdl, attrs, opts) {
-      if ((opts && opts.forceFetch) || this._shouldFetchOnURLChange()) {
+      if (this.get('sync_on_data_change')) {
+        this._newDataAvailable = true;
+      }
+      if ((opts && opts.forceFetch) || this._shouldFetchOnURLChange(opts && opts.sourceLayerId)) {
         this.fetch();
       }
     }, this);
@@ -189,8 +166,9 @@ module.exports = Model.extend({
     }
   },
 
-  _shouldFetchOnURLChange: function () {
-    return this.get('sync_on_data_change') && this.get('enabled');
+  _shouldFetchOnURLChange: function (sourceLayerId) {
+    var urlChangeTriggeredBySameLayer = sourceLayerId && sourceLayerId === this.layer.get('id');
+    return this.get('sync_on_data_change') && this.get('enabled') && urlChangeTriggeredBySameLayer;
   },
 
   _shouldFetchOnBoundingBoxChange: function () {

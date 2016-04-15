@@ -10,12 +10,10 @@ describe('dataviews/dataview-collection', function () {
   it('should remove item when removed', function () {
     var map = jasmine.createSpyObj('map', ['getViewBounds', 'off']);
     map.getViewBounds.and.returnValue([[0, 0], [0, 0]]);
-    var windshaftMap = jasmine.createSpyObj('WindshaftMap', ['off']);
     var layer = new Backbone.Model();
     layer.getDataProvider = function () {};
     var dataviewModel = new DataviewModel(null, {
       map: map,
-      windshaftMap: windshaftMap,
       layer: layer
     });
     this.collection.add(dataviewModel);

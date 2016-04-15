@@ -18,6 +18,7 @@ var WindshaftMap = Backbone.Model.extend({
     if (!options.client) {
       throw new Error('client option is required');
     }
+    // TODO: We could use the layerGroupModel instead! Only contains layers of type 'CartoDB' and 'Torque'
     if (!options.layersCollection) {
       throw new Error('layersCollection option is required');
     }
@@ -26,6 +27,9 @@ var WindshaftMap = Backbone.Model.extend({
     }
     if (!options.analysisCollection) {
       throw new Error('analysisCollection option is required');
+    }
+    if (!options.modelUpdater) {
+      throw new Error('modelUpdater option is required');
     }
 
     this.client = options.client;
@@ -37,20 +41,11 @@ var WindshaftMap = Backbone.Model.extend({
     this._layersCollection = options.layersCollection;
     this._dataviewsCollection = options.dataviewsCollection;
     this._analysisCollection = options.analysisCollection;
+    this._modelUpdater = options.modelUpdater;
   },
 
   toJSON: function () {
     throw new Error('Subclasses of windshaft/map-base must implement .toJSON');
-  },
-
-  isNamedMap: function () {
-    var NamedMap = require('./named-map');
-    return this instanceof NamedMap;
-  },
-
-  isAnonymousMap: function () {
-    var AnonymousMap = require('./anonymous-map');
-    return this instanceof AnonymousMap;
   },
 
   createInstance: function (options) {
@@ -77,11 +72,7 @@ var WindshaftMap = Backbone.Model.extend({
       params: params,
       success: function (mapInstance) {
         this.set(mapInstance);
-
-        // TODO: This responsibility should be extracted from this class
-        this._updateLayersFromWindshaftInstance();
-
-        this.trigger('instanceCreated', this, sourceLayerId, forceFetch);
+        this._modelUpdater.updateModels(this, sourceLayerId, forceFetch);
       }.bind(this),
       error: function (error) {
         console.log('Error creating the map instance on Windshaft: ' + error);
@@ -100,18 +91,6 @@ var WindshaftMap = Backbone.Model.extend({
       }
       return filters;
     }, {});
-  },
-
-  _updateLayersFromWindshaftInstance: function () {
-    var layers = this._getLayers();
-    _.each(layers, function (layer, layerIndex) {
-      if (layer.get('type') === 'torque') {
-        layer.set('meta', this.getLayerMeta(layerIndex));
-        layer.set('urls', this.getTiles('torque'));
-      } else if (layer.get('type') === 'CartoDB') {
-        layer.set('meta', this.getLayerMeta(layerIndex));
-      }
-    }, this);
   },
 
   _getLayers: function () {
@@ -145,13 +124,23 @@ var WindshaftMap = Backbone.Model.extend({
     return this.get('urlTemplate').indexOf('https') === 0;
   },
 
-  getDataviewURL: function (options) {
-    var dataviewId = options.dataviewId;
-    var protocol = options.protocol;
+  getDataviewMetadata: function (dataviewId) {
     var dataviews = this.get('metadata') && this.get('metadata').dataviews;
     if (dataviews && dataviews[dataviewId]) {
-      return dataviews[dataviewId].url[protocol];
+      return dataviews[dataviewId];
     }
+  },
+
+  getAnalysisNodeMetadata: function (analysisId) {
+    var metadata = {};
+    var nodes = _.map(this.get('metadata').analyses, function (analysis) {
+      return analysis.nodes;
+    });
+    _.each(nodes, function (node) {
+      _.extend(metadata, node);
+    });
+
+    return metadata[analysisId];
   },
 
   getTiles: function (layerType) {
@@ -217,7 +206,7 @@ var WindshaftMap = Backbone.Model.extend({
     return baseURL + '/' + layerIndex + '/' + tileSchema + '.grid.json' + urlParams;
   },
 
-  getLayerMeta: function (layerIndex) {
+  getLayerMetadata: function (layerIndex) {
     var layerMeta = {};
     var metadataLayerIndex = this._localLayerIndexToWindshaftLayerIndex(layerIndex);
     var layers = this.get('metadata') && this.get('metadata').layers;

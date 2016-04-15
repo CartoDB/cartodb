@@ -10,22 +10,28 @@ var CartoDBLayerGroupBase = Backbone.Model.extend({
   initialize: function (attributes, options) {
     options = options || {};
 
-    if (!options.windshaftMap) {
-      throw new Error('windshaftMap option is required');
+    if (!options.layersCollection) {
+      throw new Error('layersCollection option is required');
     }
+    this._layersCollection = options.layersCollection;
 
     this.layers = new Backbone.Collection(options.layers || []);
-    this._windshaftMap = options.windshaftMap;
 
-    // When a new instance of the map is created in Windshaft, we will need to use
-    // new URLs for the tiles (`urls` attribute) and also for the attributes (`baseURL`)
-    this._windshaftMap.bind('instanceCreated', function (mapInstance) {
-      // TODO: We might need to get tiles of other type of layers too. For example, when we're generating
-      // static images, we can't the layer with labels on top to be included.
-      this.set({
-        baseURL: mapInstance.getBaseURL(),
-        urls: mapInstance.getTiles('mapnik')
-      });
+    this._layersCollection.bind('reset', function () {
+      var cartoDBLayers = this._layersCollection.select(function (layerModel) { return layerModel.get('type') === 'CartoDB'; });
+      this.layers.reset(cartoDBLayers);
+    }, this);
+
+    this._layersCollection.bind('add', function (layerModel) {
+      if (layerModel.get('type') === 'CartoDB') {
+        this.layers.add(layerModel);
+      }
+    }, this);
+
+    this._layersCollection.bind('remove', function (layerModel) {
+      if (layerModel.get('type') === 'CartoDB') {
+        this.layers.remove(layerModel);
+      }
     }, this);
   },
 
@@ -76,7 +82,7 @@ var CartoDBLayerGroupBase = Backbone.Model.extend({
     var windhaftLayerIndex = this._convertToWindshaftLayerIndex(layerIndex);
     if (windhaftLayerIndex >= 0) {
       var url = this.get('baseURL') + '/' + windhaftLayerIndex + '/attributes/' + featureID;
-      var apiKey = this._windshaftMap.get('apiKey');
+      var apiKey = this.get('apiKey');
       if (apiKey) {
         url += '?api_key=' + apiKey;
       }

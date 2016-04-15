@@ -5,13 +5,13 @@ var CartoDBLayerGroupAnonymousMap = require('../../../src/geo/cartodb-layer-grou
 
 describe('geo/layer-group-anonymous-map', function () {
   beforeEach(function () {
-    this.windshaftMap = new Backbone.Model();
+    this.layersCollection = new Backbone.Collection();
   });
 
   // TODO: This test is a bit useless
   it('should be type layergroup', function () {
     var layerGroup = new CartoDBLayerGroupAnonymousMap(null, {
-      windshaftMap: this.windshaftMap
+      layersCollection: this.layersCollection
     });
     expect(layerGroup.get('type')).toEqual('layergroup');
   });
@@ -28,9 +28,10 @@ describe('geo/layer-group-anonymous-map', function () {
       var layerGroup = new CartoDBLayerGroupAnonymousMap({
         baseURL: 'http://wadus.com'
       }, {
-        windshaftMap: this.windshaftMap,
-        layers: [cartoDBLayer1, cartoDBLayer2]
+        layersCollection: this.layersCollection
       });
+      this.layersCollection.reset([cartoDBLayer1, cartoDBLayer2]);
+
       var callback = jasmine.createSpy('callback');
 
       layerGroup.fetchAttributes(0, 1000, callback);
@@ -59,7 +60,7 @@ describe('geo/layer-group-anonymous-map', function () {
   describe('getTileJSONFromTiles', function () {
     it('should be undefined if urls are not present', function () {
       var layerGroup = new CartoDBLayerGroupAnonymousMap(null, {
-        windshaftMap: this.windshaftMap
+        layersCollection: this.layersCollection
       });
 
       expect(layerGroup.getTileJSONFromTiles(0)).toBeUndefined();
@@ -72,9 +73,9 @@ describe('geo/layer-group-anonymous-map', function () {
       var layerGroup = new CartoDBLayerGroupAnonymousMap({
         baseURL: 'http://wadus.com'
       }, {
-        windshaftMap: this.windshaftMap,
-        layers: [cartoDBLayer1, cartoDBLayer2]
+        layersCollection: this.layersCollection
       });
+      this.layersCollection.reset([cartoDBLayer1, cartoDBLayer2]);
 
       layerGroup.set('urls', {
         tiles: [
@@ -118,9 +119,9 @@ describe('geo/layer-group-anonymous-map', function () {
       var layerGroup = new CartoDBLayerGroupAnonymousMap({
         baseURL: 'http://wadus.com'
       }, {
-        windshaftMap: this.windshaftMap,
-        layers: [cartoDBLayer1, cartoDBLayer2]
+        layersCollection: this.layersCollection
       });
+      this.layersCollection.reset([cartoDBLayer1, cartoDBLayer2]);
 
       layerGroup.set('urls', {
         tiles: [

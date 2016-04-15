@@ -356,12 +356,14 @@ module CartoDB
         run_command("cat #{@path}#{file} | psql -v ON_ERROR_STOP=1 #{conn_string(@config[:dbuser], @config[:dbhost], @config[:dbport], @config[:dbname])}")
       end
 
-      def run_file_restore_postgres(file)
-        run_command("pg_restore -e --verbose -j4 --disable-triggers -Fc #{@path}#{file} #{conn_string(
+      def run_file_restore_postgres(file, sections=nil)
+        command = "pg_restore -e --verbose -j4 --disable-triggers -Fc #{@path}#{file} #{conn_string(
           @config[:dbuser],
           @target_dbhost,
           @config[:user_dbport],
-          @target_dbname)}")
+          @target_dbname)}"
+        command += " --section=#{sections}" if sections
+        run_command(command)
       end
 
       def run_file_restore_schema(file)
@@ -398,7 +400,9 @@ module CartoDB
       # Disabling it may be hard. Maybe it's easier to just exclude it in the export.
       def import_pgdump(dump)
         @logger.info("Importing dump from #{dump} using pg_restore..")
-        run_file_restore_postgres(dump)
+        run_file_restore_postgres(dump, 'pre-data')
+        run_file_restore_postgres(dump, 'data')
+        run_file_restore_postgres(dump, 'post-data')
       end
 
       def create_user(username, password = nil)
@@ -530,7 +534,7 @@ module CartoDB
       def update_redis_database_name(user, db)
         @logger.info "Updating Redis database_name..."
         metadata_redis_conn.hset("rails:users:#{user}", 'database_name', db)
-        end
+      end
 
       def importjob_logger
         @@importjob_logger ||= ::Logger.new("#{Rails.root}/log/datamover.log")
@@ -550,5 +554,5 @@ module CartoDB
         importjob_logger.info(@import_log.to_json)
       end
     end
-   end
+  end
 end

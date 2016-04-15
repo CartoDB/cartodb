@@ -24,7 +24,6 @@ FactoryGirl.define do
 
     association :user, factory: :carto_user
     permission { FactoryGirl.create :carto_permission, owner: user }
-
   end
 
 end

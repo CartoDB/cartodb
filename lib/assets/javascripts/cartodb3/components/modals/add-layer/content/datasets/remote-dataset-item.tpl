@@ -2,10 +2,10 @@
   <i data-title="Public dataset" class="CDB-IconFont CDB-IconFont-book DatasetsList-itemStatus <%- canImportDataset ? 'is-public' : 'is-banned' %>"></i>
 </div>
 <div class="ModalDataset-itemInfo">
-  <div>
-    <h3 class="CDB-Text CDB-Size-large u-bSpace"><%- title %></h3>
+  <div class="ModalDataset-itemInfoTitle">
+    <h3 class="CDB-Text CDB-Size-large u-bSpace u-ellipsis"><%- title %></h3>
     <% if (description && description.length > 0) { %>
-      <p class="u-ellipsLongText CDB-Text CDB-Size-medium u-altTextColor" title="<%- description %>"><%- description %></p>
+      <p class="u-ellipsis CDB-Text CDB-Size-medium u-altTextColor" title="<%- description %>"><%- description %></p>
     <% } else { %>
       <span class="NoResults CDB-Text CDB-Size-medium"><%- _t('components.modals.add-layer.datasets.item.no-description')%></span>
     <% } %>

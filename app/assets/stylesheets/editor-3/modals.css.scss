@@ -58,6 +58,12 @@
   box-sizing: border-box;
   cursor: pointer;
 }
+
+.ModalBlockList-item:hover {
+  @include transition(border, 200ms, ease-in);
+  border: 1px solid $cHoverLine;
+}
+
 .ModalBlockList-item--full {
   width: 100%;
   min-width: 100%;
@@ -98,6 +104,11 @@
   @include justify-content(space-between);
 }
 
+.ModalDataset-itemInfoTitle {
+  max-width: 50%;
+  padding-right: 24px;
+  box-sizing: border-box;
+}
 
 .Carousel-Navigation.is-disabled {
   opacity: 0.24;

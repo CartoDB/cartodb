@@ -17,7 +17,6 @@ var CartoDBLayerGroupBase = Backbone.Model.extend({
 
     this.layers = new Backbone.Collection(options.layers || []);
 
-    // TODO: Test this
     this._layersCollection.bind('reset', function () {
       var cartoDBLayers = this._layersCollection.select(function (layerModel) { return layerModel.get('type') === 'CartoDB'; });
       this.layers.reset(cartoDBLayers);

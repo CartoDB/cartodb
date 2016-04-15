@@ -12,6 +12,65 @@ describe('geo/cartodb-layer-group-base', function () {
     this.layersCollection = new Backbone.Collection();
   });
 
+  describe('internal collection of CartoDB layers', function () {
+    it('should reset internal collection when collection of layers is resetted', function () {
+      var layerModel1 = new Backbone.Model({
+        type: 'CartoDB'
+      });
+
+      var layerModel2 = new Backbone.Model({
+        type: 'torque'
+      });
+
+      var cartoDBLayerGroup = new MyCartoDBLayerGroup({}, {
+        layersCollection: this.layersCollection
+      });
+
+      this.layersCollection.reset([ layerModel1, layerModel2 ]);
+
+      expect(cartoDBLayerGroup.layers.models).toEqual([ layerModel1 ]);
+    });
+
+    it('should add CartoDB layers to internal collection when layers are added to the collection of layers', function () {
+      var layerModel1 = new Backbone.Model({
+        type: 'CartoDB'
+      });
+
+      var layerModel2 = new Backbone.Model({
+        type: 'torque'
+      });
+
+      var cartoDBLayerGroup = new MyCartoDBLayerGroup({}, {
+        layersCollection: this.layersCollection
+      });
+
+      this.layersCollection.add(layerModel1);
+      this.layersCollection.add(layerModel2);
+
+      expect(cartoDBLayerGroup.layers.models).toEqual([ layerModel1 ]);
+    });
+
+    it('should remove CartoDB layers to internal collection when layers are removed from collection of layers', function () {
+      var layerModel1 = new Backbone.Model({
+        type: 'CartoDB'
+      });
+
+      var layerModel2 = new Backbone.Model({
+        type: 'torque'
+      });
+
+      var cartoDBLayerGroup = new MyCartoDBLayerGroup({}, {
+        layersCollection: this.layersCollection
+      });
+
+      this.layersCollection.reset([ layerModel1, layerModel2 ]);
+      this.layersCollection.remove(layerModel1);
+      this.layersCollection.remove(layerModel2);
+
+      expect(cartoDBLayerGroup.layers.isEmpty()).toBeTruthy();
+    });
+  });
+
   describe('fetchAttributes', function () {
     it('should trigger a request to the right URL', function () {
       var callback = jasmine.createSpy('callback');

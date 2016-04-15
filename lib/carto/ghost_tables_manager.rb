@@ -38,7 +38,7 @@ module Carto
 
     # Check if any unsafe stale (dropped or renamed) tables will be shown to the user
     def safe_async?(cartodbfied_tables)
-      find_dropped_tables(cartodbfied_tables).empty? && cartodbfied_tables.select(&:renamed?).empty?
+      find_dropped_tables(cartodbfied_tables).empty? && cartodbfied_tables.select(&:stale?).empty?
     end
 
     def sync_user_tables_with_db
@@ -52,7 +52,7 @@ module Carto
     def sync
       cartodbfied_tables = fetch_cartobfied_tables
 
-      # Update table_id on UserTables with physical tables with changed oid
+      # Update table_id on UserTables with physical tables with changed oid. Should go first.
       cartodbfied_tables.select(&:regenerated?).each(&:regenerate_user_table)
 
       # Create UserTables for non linked Tables
@@ -141,6 +141,10 @@ module Carto
 
     def unaltered?
       !new? && !renamed?
+    end
+
+    def stale?
+      renamed? || regenerated?
     end
 
     def user_table_with_matching_id

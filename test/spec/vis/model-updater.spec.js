@@ -25,7 +25,7 @@ describe('src/vis/model-updater', function () {
 
     // _getProtocol uses window.location.protocol internally, and that returns "file:"
     // when running the test suite using the jasmine test runner, so we need to fake it
-    spyOn(this.modelUpdater, '_getProtocol').and.returnValue('http');
+    spyOn(this.modelUpdater, '_getProtocol').and.returnValue('http:');
   });
 
   describe('.updateModels', function () {

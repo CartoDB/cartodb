@@ -135,8 +135,8 @@ module CartoDB
       source: ERROR_SOURCE_USER
     },
     1103 => {
-      title: '',
-      what_about: "The resource you are trying to reach is accessible but there was a problem downloading your file. Please, try again.",
+      title: 'Interrupted download',
+      what_about: "The resource you are trying to reach is accessible but there was a problem downloading the file. Please, try again.",
       source: ERROR_SOURCE_USER
     },
     2001 => {

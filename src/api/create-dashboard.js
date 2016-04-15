@@ -1,8 +1,9 @@
 var _ = require('underscore');
 var cdb = require('cartodb.js');
-var DashboardView = require('./dashboard-view');
-var WidgetsCollection = require('./widgets/widgets-collection');
-var WidgetsService = require('./widgets-service');
+var Dashboard = require('./dashboard');
+var DashboardView = require('../dashboard-view');
+var WidgetsCollection = require('../widgets/widgets-collection');
+var WidgetsService = require('../widgets-service');
 
 /**
  * Translates a vizJSON v3 datastructure into a working dashboard which will be rendered in given selector.
@@ -15,7 +16,7 @@ var WidgetsService = require('./widgets-service');
  *   dashboardView: root (backbone) view of the dashboard
  *   vis: the instantiated vis map, same result as given from cdb.createVis()
  */
-module.exports = function (selector, vizJSON, opts) {
+var createDashboard = function (selector, vizJSON, opts, callback) {
   var dashboardEl = document.querySelector(selector);
   if (!dashboardEl) throw new Error('no element found with selector ' + selector);
 
@@ -81,11 +82,47 @@ module.exports = function (selector, vizJSON, opts) {
     vis.centerMapToOrigin();
   }
 
-  vis.instantiateMap();
+  vis.done(function () {
+    callback && callback(null, {
+      dashboardView: dashboardView,
+      widgets: widgetsService,
+      vis: vis
+    });
+  });
 
-  return {
-    dashboardView: dashboardView,
-    widgets: widgetsService,
-    vis: vis
-  };
+  vis.error(function (error) {
+    callback && callback(error);
+  });
+
+  vis.instantiateMap();
+};
+
+module.exports = function (selector, vizJSON, opts, callback) {
+  var args = arguments;
+  var fn = args[args.length - 1];
+
+  if (_.isFunction(fn)) {
+    callback = fn;
+  }
+
+  function _load (vizJSON) {
+    createDashboard(selector, vizJSON, opts, function (error, dashboard) {
+      if (error) {
+        throw new Error('Error creating dashboard: ' + error);
+      }
+      callback && callback(null, new Dashboard(dashboard));
+    });
+  }
+
+  if (typeof vizJSON === 'string') {
+    cdb.core.Loader.get(vizJSON, function (data) {
+      if (data) {
+        _load(data, opts);
+      } else {
+        callback && callback(new Error('error fetching viz.json file'));
+      }
+    });
+  } else {
+    _load(vizJSON, opts);
+  }
 };

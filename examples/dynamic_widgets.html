@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Deep-Insights.js – Madrid: Airbnb, nightlife, and public transport</title>
+  <meta name=viewport content="width=device-width initial-scale=1">
+  <link href="http://cartodb.com/favicon.ico" rel="shortcut icon" />
+  <link rel="stylesheet" href="../dist/themes/css/deep-insights.css" />
+  <script src="../dist/deep-insights.uncompressed.js"></script>
+  <style type="text/css">
+    html, body {
+      position:relative;
+      height: 100%;
+      padding: 0;
+      margin: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="Dashboard-canvas" id="dashboard"></div>
+
+  <script>
+    window.onload = function() {
+      var diJSON = {
+        "title": "Airbnb Madrid and closest metro lines",
+        "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed vulputate consequat vehicula. Sed eget leo a ex tempus cursus. Etiam consectetur cursus tortor, id dapibus elit condimentum id. Nulla sed gravida lorem, at ornare lectus. Aliquam quis erat porttitor, varius lectus eget, rhoncus mi...",
+        "user": {
+          "fullname": "Emilio García",
+          "avatar_url": "https://s3.amazonaws.com/com.cartodb.users-assets.production/production/piensaenpixel/assets/20150507074635Captura%20de%20pantalla%202015-05-07%20a%20la%28s%29%2009.46.28.png"
+        },
+        "updated_at": "2015-10-26T11:50:30+00:00",
+        "widgets": [
+        ],
+          "datasource": {
+            "type": "public_map",
+            "user_name": "editor3",
+            "maps_api_template": "https://{user}.cartodb.com",
+            "stat_tag": "ece6faac-7271-11e5-a85f-04013fc66a01",
+            "force_cors": true // This is sometimes set in the editor
+          },
+          "id": "84ec6844-4b4b-11e5-9c1d-080027880ca6",
+          "version": "0.1.0",
+          "likes": 0,
+          "scrollwheel": false,
+          "legends": true,
+          "url": null,
+          "map_provider": "leaflet",
+          "bounds": [
+            [
+              40.63, -3.46
+            ],
+            [
+              40.22, -3.78
+            ]
+          ],
+          "center": "[40.415363, -3.687398]",
+          "zoom": 14,
+          "layers": [{
+            "options": {
+              "visible": true,
+              "type": "Tiled",
+              "name": "Positron",
+              "className": "httpsbasemapscartocdncomlight_nolabelszxypng",
+              "base_type": "default",
+              "urlTemplate": "http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
+              "minZoom": "0",
+              "maxZoom": "18",
+              "attribution": "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"http://cartodb.com/attributions#basemaps\">CartoDB</a>",
+              "subdomains": "abcd",
+              "style": null,
+              "read_only": true,
+              "category": "CartoDB",
+              "order": 0,
+              "parent_id": null
+            },
+            "infowindow": null,
+            "tooltip": null,
+            "id": "a4b5985f-5757-4ff3-8957-01e41247318c",
+            "order": 0,
+            "type": "tiled"
+          }, {
+            "type": "layergroup",
+            "options": {
+              "user_name": "rochoa-st-ded02",
+              "maps_api_template": "https://{user}.cartodb-staging.com:443",
+              "layer_definition": {
+                "stat_tag": "84ec6844-4b4b-11e5-9c1d-080020ca7886",
+                "version": "1.0.1",
+                "layers": [{
+                  "id": "0",
+                  "type": "CartoDB",
+                  "order": 1,
+                  "visible": true,
+                  "options": {
+                    "sql": [
+                      "SELECT cartodb_id, the_geom, the_geom_webmercator, price, review_scores_value, room_type, neighbourhood_cleansed, GREATEST(4, POWER(LOG(price), 3)) price_width",
+                      "FROM airbnb_madrid_oct_2015_listings",
+                      "ORDER BY price DESC"
+                    ].join(' '),
+                    "cartocss": ['#airbnb_madrid_oct_2015_listings {',
+                      'marker-fill-opacity: 0.25;',
+                      'marker-line-color: grey;',
+                      'marker-line-width: 0.3;',
+                      'marker-line-opacity: 0;',
+                      'marker-placement: point;',
+                      'marker-type: ellipse;',
+                      'marker-width: [price_width];',
+                      'marker-fill: #d3d3d3;',
+                      'marker-allow-overlap: true;',
+                      '}'
+                    ].join(''),
+                    "cartocss_version": "2.3.0"
+                  }
+                }, {
+                  "id": "1",
+                  "type": "CartoDB",
+                  "order": 1,
+                  "visible": true,
+                  "options": {
+                    "sql": [
+                      "SELECT * FROM trazado_metro"
+                    ].join(' '),
+                    "cartocss": ['#trazado_metro {',
+                      '        line-color: #FF6600;',
+                      '        line-width: 2.5;',
+                      '        line-opacity: 0.7;',
+                      '    }',
+                      '',
+                      '#trazado_metro[name="L1"] {',
+                      '        line-color: #30a3dc;',
+                      '    }',
+                      '#trazado_metro[name="L2"] {',
+                      '        line-color: #cd031f;',
+                      '    }',
+                      '#trazado_metro[name="L3"] {',
+                      '        line-color: #ffe114;',
+                      '    }',
+                      '#trazado_metro[name="L4"] {',
+                      '        line-color: #944248;',
+                      '    }',
+                      '#trazado_metro[name="L5"] {',
+                      '        line-color: #96bf0d;',
+                      '    }',
+                      '#trazado_metro[name="L6"] {',
+                      '        line-color: #9fa4a6;',
+                      '    }',
+                      '#trazado_metro[name="L7"] {',
+                      '        line-color: #faa64a;',
+                      '    }',
+                      '#trazado_metro[name="L8"] {',
+                      '        line-color: #f27ca2;',
+                      '    }',
+                      '#trazado_metro[name="L9"] {',
+                      '        line-color: #a3228d;',
+                      '    }',
+                      '#trazado_metro[name="L10"] {',
+                      '        line-color: #084594;',
+                      '    }',
+                      '#trazado_metro[name="L11"] {',
+                      '        line-color: #008b43;',
+                      '    }',
+                      '#trazado_metro[name="L12"] {',
+                      '        line-color: #a49a00;',
+                      '    }',
+                      '#trazado_metro[name="R"] {',
+                      '        line-color: #a49a00;',
+                      '    }',
+                      '#trazado_metro[name="ML1"] {',
+                      '    ::case {',
+                      '            line-width: 3.5;',
+                      '            line-color: #30a3dc;',
+                      '        }',
+                      '    ::fill {',
+                      '            line-width: 2.5;',
+                      '            line-color: #fff;',
+                      '        }',
+                      '    }',
+                      '#trazado_metro[name="ML2"] {',
+                      '    ::case {',
+                      '            line-width: 3.5;',
+                      '            line-color: #a3228d;',
+                      '        }',
+                      '    ::fill {',
+                      '            line-width: 2.5;',
+                      '            line-color: #fff;',
+                      '        }',
+                      '    }',
+                      '#trazado_metro[name="ML3"] {',
+                      '    ::case {',
+                      '            line-width: 3.5;',
+                      '            line-color: #cd031f;',
+                      '        }',
+                      '    ::fill {',
+                      '            line-width: 2.5;',
+                      '            line-color: #fff;',
+                      '        }',
+                      '}'
+                    ].join(''),
+                    "cartocss_version": "2.3.0"
+                  }
+                }, {
+                  "id": "2",
+                  "type": "CartoDB",
+                  "interactivity": "cartodb_id,name,room_type,price,accommodates,review_scores_value,bedrooms,bathrooms,neighbourhood",
+                  "infowindow": {
+                                        "fields": [{
+                      "name": "name",
+                      "title": true,
+                      "position": 1
+                    }, {
+                      "name": "room_type",
+                      "title": true,
+                      "position": 2
+                    }, {
+                      "name": "price",
+                      "title": true,
+                      "position": 3
+                    }, {
+                      "name": "accommodates",
+                      "title": true,
+                      "position": 5
+                    }, {
+                      "name": "review_scores_value",
+                      "title": true,
+                      "position": 8
+                    }, {
+                      "name": "bedrooms",
+                      "title": true,
+                      "position": 9
+                    }, {
+                      "name": "bathrooms",
+                      "title": true,
+                      "position": 11
+                    }, {
+                      "name": "neighbourhood",
+                      "title": true,
+                      "position": 13
+                    }],
+                    "template_name": "table/views/infowindow_light",
+                    "template": " " +
+                          '<div class="CDB-infowindow CDB-infowindow--custom js-infowindow" style="max-width: 200px;">' +
+                            '<div class="CDB-infowindow-container">' +
+                              '<div class="CDB-infowindow-header CDB-infowindow-headerBg CDB-infowindow-headerBg--dark">' +
+                                '<div class="CDB-infowindow-list">' +
+                                  '<div class="CDB-infowindow-listItem">' +
+                                    '<h5 class="CDB-infowindow-subtitle">NAME</h5>' +
+                                    '<h4 class="CDB-infowindow-title">{{ name }}</h4>' +
+                                  '</div>' +
+                                  '<div class="CDB-infowindow-listItem">' +
+                                    '<h5 class="CDB-infowindow-subtitle">PRICE</h5>' +
+                                    '<h4 class="CDB-infowindow-title">{{ price }}</h4>' +
+                                  '</div>' +
+                                '</div> ' +
+                              '</div>' +
+                              '<div class="CDB-hook">' +
+                                '<div class="CDB-hook-inner">' +
+                                '</div>' +
+                              '</div>' +
+                            '</div>' +
+                          '</div>',
+                    "alternative_names": {},
+                    "width": 226,
+                    "maxHeight": 180
+                  },
+                  "tooltip": {
+                    "fields": [{
+                      "name": "name",
+                      "title": true,
+                      "position": 1
+                    }, {
+                      "name": "room_type",
+                      "title": true,
+                      "position": 2
+                    }, {
+                      "name": "price",
+                      "title": true,
+                      "position": 3
+                    }, {
+                      "name": "accommodates",
+                      "title": true,
+                      "position": 5
+                    }, {
+                      "name": "review_scores_value",
+                      "title": true,
+                      "position": 8
+                    }, {
+                      "name": "bedrooms",
+                      "title": true,
+                      "position": 9
+                    }, {
+                      "name": "bathrooms",
+                      "title": true,
+                      "position": 11
+                    }, {
+                      "name": "neighbourhood",
+                      "title": true,
+                      "position": 13
+                    }],
+                    "template_name": "tooltip_light",
+                    "template": "<div class='CDB-Tooltip CDB-Tooltip--isLight'><ul class=\"CDB-Tooltip-list\">\n {{#fields}}\n <li class=\"CDB-Tooltip-listItem\">\n {{#title}}\n <h4 class=\"CDB-Tooltip-listTitle\">\n{{title}}</h4>\n {{/title}}\n <p class=\"CDB-Tooltip-listText\">\n{{{ value }}}</p>\n </li>\n {{/fields}}\n  </ul></div>",
+                    "alternative_names": {},
+                    "maxHeight": 180
+                  },
+                  "legend": {
+                    "type": "none",
+                    "show_title": false,
+                    "title": "",
+                    "template": "",
+                    "visible": true
+                  },
+                  "order": 1,
+                  "visible": true,
+                  "user_name": "rochoa-st-ded02",
+                  "maps_api_template": "https://{user}.cartodb-staging.com:443",
+                  "options": {
+                    "sql": [
+                      "SELECT the_geom_webmercator, cartodb_id, accommodates, the_geom, price, closest_metro_distance, bathrooms, neighbourhood,bedrooms, name, review_scores_value, closest_metro_line, room_type, neighbourhood_cleansed, GREATEST(4, POWER(LOG(price), 3)) price_width",
+                      "FROM airbnb_madrid_oct_2015_listings_with_closest_metro",
+                      "ORDER BY price DESC"
+                    ].join(' '),
+                    "layer_name": "Airbnb",
+                     "cartocss": ['#airbnb_madrid_oct_2015_listings_with_closest_metro {',
+                      '   marker-fill-opacity: 0.9;',
+                      '   marker-line-color: transparent;',
+                      '   marker-line-width: 0.4;',
+                      '   marker-line-opacity: 1;',
+                      '   marker-placement: point;',
+                      '   marker-type: ellipse;',
+                      '   marker-width: [price_width];',
+                      '   marker-fill: #e00007;',
+                      '   marker-allow-overlap: true;',
+                      '   [zoom>=15] { marker-width: [price_width]*2;}',
+                      '}',
+                      '#airbnb_madrid_oct_2015_listings_with_closest_metro [ closest_metro_distance <= 14322.056966484] {',
+                      '    marker-fill: #4DDEBE;',
+                      '    marker-line-color: lighten(#4DDEBE,8);',
+                      '}',
+                      '#airbnb_madrid_oct_2015_listings_with_closest_metro [ closest_metro_distance <= 790.558310968] {',
+                      '    marker-fill: #3FC7B8;',
+                      '    marker-line-color: lighten(#3FC7B8,8);',
+                      '}',
+                      '#airbnb_madrid_oct_2015_listings_with_closest_metro [ closest_metro_distance <= 447.688508009] {',
+                      '    marker-fill: #37B1AE;',
+                      '    marker-line-color: lighten(#37B1AE,8);',
+                      '}',
+                      '#airbnb_madrid_oct_2015_listings_with_closest_metro [ closest_metro_distance <= 374.714641261] {',
+                      '    marker-fill: #369CA2;',
+                      '    marker-line-color: lighten(#369CA2,8);',
+                      '}',
+                      '#airbnb_madrid_oct_2015_listings_with_closest_metro [ closest_metro_distance <= 276.927529801] {',
+                      '    marker-fill: #378694;',
+                      '    marker-line-color: lighten(#378694,8);',
+                      '}',
+                      '#airbnb_madrid_oct_2015_listings_with_closest_metro [ closest_metro_distance <= 188.001075694] {',
+                      '    marker-fill: #387183;',
+                      '    marker-line-color: lighten(#387183,8);',
+                      '}',
+                      '#airbnb_madrid_oct_2015_listings_with_closest_metro [ closest_metro_distance <= 186.505103405] {',
+                      '    marker-fill: #375D71;',
+                      '    marker-line-color: lighten(#375D71,8);',
+                      '}'
+                    ].join(''),
+                    "cartocss_version": "2.1.1",
+                    "interactivity": "cartodb_id,name,room_type,price,accommodates,review_scores_value,bedrooms,bathrooms,neighbourhood",
+                    "table_name": "\"\".",
+                  }
+                }, {
+                  "id": "3",
+                  "type": "CartoDB",
+                  "order": 1,
+                  "visible": true,
+                  "options": {
+                    "sql": [
+                      'SELECT * FROM paradas_metro_madrid'
+                    ].join(' '),
+                    "cartocss": [
+                      '#paradas_metro_madrid{',
+                      '    marker-fill-opacity: 1.0;',
+                      '    marker-line-color: #FFF;',
+                      '    marker-line-width: 2;',
+                      '    marker-line-opacity: 0.7;',
+                      '    marker-placement: point;',
+                      '    marker-type: ellipse;',
+                      '    marker-width: 6;',
+                      '    marker-fill: #FFF;',
+                      '    marker-allow-overlap: true;',
+                      '    [zoom>12] { marker-width: 8; marker-line-width: 3; }',
+                      '}',
+                      '#paradas_metro_madrid[line="L1"] {',
+                      '    marker-line-color: #30a3dc;',
+                      '}',
+                      '#paradas_metro_madrid[line="L2"] {',
+                      '    marker-line-color: #cd031f;',
+                      '}',
+                      '#paradas_metro_madrid[line="L3"] {',
+                      '    marker-line-color: #ffe114;',
+                      '}',
+                      '#paradas_metro_madrid[line="L4"] {',
+                      '    marker-line-color: #944248;',
+                      '}',
+                      '#paradas_metro_madrid[line="L5"] {',
+                      '    marker-line-color: #96bf0d;',
+                      '}',
+                      '#paradas_metro_madrid[line="L6"] {',
+                      '    marker-line-color: #9fa4a6;',
+                      '}',
+                      '#paradas_metro_madrid[line="L7"] {',
+                      '    marker-line-color: #faa64a;',
+                      '}',
+                      '#paradas_metro_madrid[line="L8"] {',
+                      '    marker-line-color: #f27ca2;',
+                      '}',
+                      '#paradas_metro_madrid[line="L9"] {',
+                      '    marker-line-color: #a3228d;',
+                      '}',
+                      '#paradas_metro_madrid[line="L10"] {',
+                      '    marker-line-color: #084594;',
+                      '}',
+                      '#paradas_metro_madrid[line="L11"] {',
+                      '    marker-line-color: #008b43;',
+                      '}',
+                      '#paradas_metro_madrid[line="L12"] {',
+                      '    marker-line-color: #a49a00;',
+                      '}',
+                      '#trazado_metro_madrid[line="R"] {',
+                      '    marker-fill: #ffffff;',
+                      '    marker-line-color: #084594;',
+                      '}',
+                      '#paradas_metro_madrid[line="ML1"] {',
+                      '    marker-fill: #ffffff;',
+                      '    marker-line-color: #30a3dc;',
+                      '    marker-line-width: 1.5;',
+                      '}',
+                      '#paradas_metro_madrid[line="ML2"] {',
+                      '    marker-fill: #ffffff;',
+                      '    marker-line-color: #a3228d;',
+                      '    marker-line-width: 1.5;',
+                      '}',
+                      '#paradas_metro_madrid[line="ML3"] {',
+                      '    marker-fill: #ffffff;',
+                      '    marker-line-color: #cd031f;',
+                      '    marker-line-width: 1.5;',
+                      '}'
+                    ].join(''),
+                    "cartocss_version": "2.3.0"
+                  }
+                }]
+              },
+              "attribution": "wadus"
+            }
+          }],
+          "overlays": [{
+            "type": "search",
+            "order": 3,
+            "options": {
+              "display": true,
+              "x": 60,
+              "y": 20
+            },
+            "template": ""
+          }, {
+            "type": "zoom",
+            "order": 6,
+            "options": {
+              "display": true,
+              "x": 20,
+              "y": 20
+            },
+            "template": '<div class="CDB-Overlay">' +
+                '<button class="CDB-Zoom-action CDB-Zoom-action--out js-zoomOut"></button>' +
+                '<button class="CDB-Zoom-action CDB-Zoom-action--in js-zoomIn"></button>' +
+              '</div>' +
+              '<div class="CDB-Zoom-info js-zoomInfo">-</div>'
+          },{
+              "type": "loader",
+              "order": 8,
+              "options": {
+                "display": true,
+                "x": 20,
+                "y": 150
+              },
+              "template": ""
+            }
+          ],
+          "prev": null,
+          "next": null,
+          "transition_options": {
+            "time": 0
+          }
+      };
+      //diJSON = 'https://team.cartodb.com/u/javi/api/v3/viz/70f72308-3eb5-11e5-a85a-0e4fddd5de28/viz.json'
+      cartodb.deepInsights.createDashboard('#dashboard', diJSON, {
+        no_cdn: false
+      }, function(err, dashboard) {
+         var map = dashboard.getMap();
+         var params = {
+            "title": "Metro line",
+            "column": "closest_metro_line",
+            "aggregationColumn": "closest_metro_line",
+            "aggregation": "count",
+        };
+        // adds a category using column `test` from the second layer
+        dashboard.createCategoryWidget(params, map.getLayer(3));
+        
+        setTimeout(function() {
+          // add a histogram and a formula
+          params = {
+              "title": "Price",
+              "type": "histogram",
+              "column": "price",
+              "operation": "avg",
+              "bins": 10
+          }
+          dashboard.createHistogramWidget(params, map.getLayer(3));
+        }, 2000);
+        setTimeout(function() {
+          params = {
+              "title": "Avg price",
+              "column": "price",
+              "operation": "avg",
+              "prefix": "$",
+          }
+          dashboard.createFormulaWidget(params, map.getLayer(3));
+        }, 5000);
+      });
+    }
+  </script>
+</body>
+
+</html>

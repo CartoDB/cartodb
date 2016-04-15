@@ -2,9 +2,9 @@
   <div class="LayoutIcon ImportPanel-headerIcon">
     <i class="CDB-IconFont CDB-IconFont-gift"></i>
   </div>
-  <h3 class="ImportPanel-headerTitle">MailChimp <%- _t('components.modals.add-layer.imports.connector') %></h3>
-  <p class="ImportPanel-headerDescription"><%- _t('components.modals.add-layer.imports.mailchimp.fallback-desc', { brand: 'Mailchimp' }) %></p>
-  <a href="mailto:sales@cartodb.com?subject=<%- _t('components.modals.add-layer.imports.demo-email-title', { name: 'MailChimp' }) %>&body=<%- _t('components.modals.add-layer.imports.demo-email-desc', { name: 'MailChimp' }) %>" class="Button Button--invert ImportPanel-headerLink">
-    <span><%- _t('components.modals.add-layer.imports.ask-for-demo') %></span>
+  <h3 class="CDB-Text CDB-Size-large u-mainTextColor u-secondaryTextColor u-bSpace--m">MailChimp <%- _t('components.modals.add-layer.imports.connector') %></h3>
+  <p class="CDB-Text CDB-Size-medium u-altTextColor u-bSpace--xl"><%- _t('components.modals.add-layer.imports.mailchimp.fallback-desc', { brand: 'Mailchimp' }) %></p>
+  <a href="mailto:sales@cartodb.com?subject=<%- _t('components.modals.add-layer.imports.demo-email-title', { name: 'MailChimp' }) %>&body=<%- _t('components.modals.add-layer.imports.demo-email-desc', { name: 'MailChimp' }) %>" class="CDB-Button CDB-Button--primary CDB-Button--medium">
+    <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-upperCase"><%- _t('components.modals.add-layer.imports.ask-for-demo') %></span>
   </a>
 </div>

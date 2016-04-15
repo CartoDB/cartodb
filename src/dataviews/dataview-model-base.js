@@ -97,9 +97,7 @@ module.exports = Model.extend({
   },
 
   _onStyleChanged: function (style) {
-    if (this._dataProvider) {
-      this._dataProvider.applyFilter(filter);
-    } else {
+    if (!this._dataProvider) {
       this._reloadMap();
     }
   },

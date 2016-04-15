@@ -36,6 +36,11 @@ module Carto
       cartodbfied_tables.reject(&:unaltered?).empty? && find_dropped_tables(cartodbfied_tables).empty?
     end
 
+    # Check if any unsafe stale (dropped or renamed) tables will be shown to the user
+    def safe_async?(cartodbfied_tables)
+      find_dropped_tables(cartodbfied_tables).empty? && cartodbfied_tables.select(&:renamed?).empty?
+    end
+
     def sync_user_schema_and_tables_metadata
       bolt = Carto::Bolt.new("#{@user.username}:#{MUTEX_REDIS_KEY}", ttl_ms: MUTEX_TTL_MS)
 
@@ -55,11 +60,6 @@ module Carto
 
       # Unlink tables that have been created trhought the SQL API
       find_dropped_tables(cartodbfied_tables).each(&:drop_user_table)
-    end
-
-    # Check if any unsafe stale (dropped or renamed) tables will be shown to the user
-    def safe_async?(cartodbfied_tables)
-      dropped_tables(cartodbfied_tables).empty? && cartodbfied_tables.select(&:renamed?).empty?
     end
 
     # this method searchs for tables with all the columns needed in a cartodb table.

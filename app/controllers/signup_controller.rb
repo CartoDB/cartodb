@@ -30,12 +30,12 @@ class SignupController < ApplicationController
     raise "Organization doesn't allow user + password authentication" if user_password_signup? && !@organization.auth_username_password_enabled
 
     google_access_token = google_access_token_from_params
+
     # Merge both sources (signup and login) in a single param
     params[:google_access_token] = google_access_token
     if !user_password_signup? && google_signup? && !@google_plus_config.nil?
       raise "Organization doesn't allow Google authentication" if !@organization.auth_google_enabled
       account_creator.with_google_token(google_access_token)
-
     end
 
     if params[:user]
@@ -146,12 +146,19 @@ class SignupController < ApplicationController
 
   def load_mandatory_organization
     load_organization
-    render_404 and return false unless @organization && @organization.signup_page_enabled
+    render_404 and return false unless @organization && (@organization.signup_page_enabled || valid_email_invitation_token?)
     check_organization_quotas
   end
 
   def disable_if_ldap_configured
     render_404 and return false if Carto::Ldap::Manager.new.configuration_present?
+  end
+
+  def valid_email_invitation_token?
+    if (params[:user] && params[:user][:email]) || params[:email] && params[:invitation_token]
+      invitation = Carto::Invitation.find_by_seed(params[:invitation_token])
+      invitation.present? && invitation.users_emails.include?(params[:email] || params[:user][:email]) ? true : false
+    end
   end
 
 end

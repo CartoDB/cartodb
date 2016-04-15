@@ -26,6 +26,7 @@ which should be fixed manually.
 * Change Varnish table-related invalidations and tagging to use [Surrogate Keys](https://github.com/CartoDB/cartodb/wiki/CartoDB-Surrogate-Keys)
 * Remove Varnish table invalidations from Rails and replaced them with CDB_TableMetadataTouch calls (delegating invalidation responsibility to the database)
 * Adds optional strong passwords for organization signups
+* Improved logging for custom installations where Rollbar is not used
 * Add new function User#direct_db_connection which uses a new direct_port paramerer to be specified in database.yml to connect to the database. Usage instructions:
   * Use `port` in database.yml to specify the port through which the db is accessed for regular queries (such as pgbouncer connections)
   * Use `direct_port` in database.yml to specify the port through which the db can be directly accessed (i.e. the port in which Postgres is running)
@@ -33,6 +34,7 @@ which should be fixed manually.
 * Update ogr2ogr version to 2.1, configurable in `app_config.yml`. To install it in the system, run:
   * `sudo apt-get install gdal2.1-static-bin`
 * Ghost table linking is now concurrent per user (avoids race conditions)
+* Experimental support for [visualization metadata export](https://github.com/CartoDB/cartodb/pull/7114).
 
 ## Bug Fixes
 * Updating CartoDB.js submodule with last changes sanitizing attribution.

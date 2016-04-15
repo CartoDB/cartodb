@@ -88,14 +88,14 @@ module Carto
       }
 
       @user.in_database(as: :superuser)[sql].all.map do |record|
-        Carto::TableRepresentation.new(record[:reloid], record[:table_name], @user)
+        Carto::TableFacade.new(record[:reloid], record[:table_name], @user)
       end
     end
 
     # Tables that have been dropped via API but have an old UserTable
     def find_dropped_tables(cartodbfied_tables)
       linked_tables = @user.tables.all.map do |user_table|
-        Carto::TableRepresentation.new(user_table.table_id, user_table.name, @user)
+        Carto::TableFacade.new(user_table.table_id, user_table.name, @user)
       end
 
       non_linked = linked_tables - cartodbfied_tables
@@ -105,7 +105,7 @@ module Carto
     end
   end
 
-  class TableRepresentation
+  class TableFacade
     attr_reader :id, :name, :user
 
     def initialize(id, name, user)

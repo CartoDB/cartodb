@@ -52,6 +52,9 @@ module Carto
     def sync
       cartodbfied_tables = fetch_cartobfied_tables
 
+      # Update table_id on UserTables with physical tables with changed oid
+      cartodbfied_tables.select(&:regenerated?).each(&:regenerate_user_table)
+
       # Create UserTables for non linked Tables
       cartodbfied_tables.select(&:new?).each(&:create_user_table)
 
@@ -95,7 +98,10 @@ module Carto
         Carto::TableRepresentation.new(user_table.table_id, user_table.name, @user)
       end
 
-      linked_tables - cartodbfied_tables
+      non_linked = linked_tables - cartodbfied_tables
+
+      # Safety to not depend on regerate to run first
+      non_linked.reject(&:regenerated?)
     end
   end
 
@@ -127,6 +133,10 @@ module Carto
 
     def renamed?
       !!user_table_with_matching_id && !user_table_with_matching_name
+    end
+
+    def regenerated?
+      !user_table_with_matching_id && !!user_table_with_matching_name
     end
 
     def unaltered?
@@ -186,6 +196,19 @@ module Carto
       table_to_drop.keep_user_database_table = true
 
       table_to_drop.destroy
+    end
+
+    def regenerate_user_table
+      CartoDB::Logger.debug(message: 'ghost tables',
+                            action: 'regenerating table_id',
+                            user: @user,
+                            dropped_table: name,
+                            dropped_table_id: id)
+
+      user_table = user_table_with_matching_name
+
+      user_table.table_id = id
+      user_table.save
     end
 
     def physical_table_exists?

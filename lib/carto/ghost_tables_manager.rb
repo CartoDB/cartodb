@@ -14,7 +14,7 @@ module Carto
     def link_ghost_tables
       cartodbfied_tables = fetch_cartobfied_tables
 
-      return if consistent?(cartodbfied_tables)
+      return if user_tables_synced_with_db?(cartodbfied_tables)
 
       if safe_async?(cartodbfied_tables)
         ::Resque.enqueue(::Resque::UserJobs::SyncTables::LinkGhostTables, @user.id)
@@ -24,13 +24,13 @@ module Carto
     end
 
     def link_ghost_tables_synchronously
-      consistent? ? return : sync_user_schema_and_tables_metadata
+      sync_user_tables_with_db unless user_tables_synced_with_db?(fetch_cartobfied_tables)
     end
 
     private
 
     # determine linked tables vs cartodbfied tables consistency; i.e.: needs to run sync
-    def consistent?(cartodbfied_tables)
+    def user_tables_synced_with_db?(cartodbfied_tables)
       cartodbfied_tables = fetch_cartobfied_tables
 
       cartodbfied_tables.reject(&:unaltered?).empty? && find_dropped_tables(cartodbfied_tables).empty?
@@ -41,15 +41,15 @@ module Carto
       find_dropped_tables(cartodbfied_tables).empty? && cartodbfied_tables.select(&:renamed?).empty?
     end
 
-    def sync_user_schema_and_tables_metadata
+    def sync_user_tables_with_db
       bolt = Carto::Bolt.new("#{@user.username}:#{MUTEX_REDIS_KEY}", ttl_ms: MUTEX_TTL_MS)
 
-      got_locked = bolt.run_locked { manage_ghost_tables }
+      got_locked = bolt.run_locked { sync }
 
       CartoDB::Logger.info(message: 'Ghost table race condition avoided', user: @user) unless got_locked
     end
 
-    def manage_ghost_tables
+    def sync
       cartodbfied_tables = fetch_cartobfied_tables
 
       # Create UserTables for non linked Tables

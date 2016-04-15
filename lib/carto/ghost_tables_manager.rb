@@ -140,7 +140,7 @@ module Carto
     end
 
     def unaltered?
-      !new? && !renamed?
+      !new? && !renamed? && !regenerated?
     end
 
     def stale?

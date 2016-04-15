@@ -3,7 +3,6 @@ var _ = require('underscore');
 /**
  * This class exposes a method that knows how to set/update the metadata on internal
  * CartoDB.js models that are linked to a "resource" in the Maps API.
- * @param {Object} deps Required depenecies
  */
 var ModelUpdater = function (deps) {
   if (!deps.layerGroupModel) {

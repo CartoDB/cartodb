@@ -72,8 +72,10 @@ module Carto
                                                                                          .join(',')
 
       sql = %{
-        WITH a as (
-          SELECT table_name, table_name::regclass::oid reloid, count(column_name::text) cdb_columns_count
+        WITH cartodbfied_tables as (
+          SELECT c.table_name,
+                 tg.tgrelid reloid,
+                 count(column_name::text) cdb_columns_count
           FROM information_schema.columns c, pg_tables t, pg_trigger tg
           WHERE
             t.tablename = c.table_name AND
@@ -83,8 +85,8 @@ module Carto
             column_name IN (#{cartodb_columns}) AND
             tg.tgrelid = (quote_ident(t.schemaname) || '.' || quote_ident(t.tablename))::regclass::oid AND
             tg.tgname = 'test_quota_per_row'
-          GROUP BY 1)
-        SELECT table_name, reloid FROM a WHERE cdb_columns_count = #{cartodb_columns.split(',').length}
+            GROUP BY reloid, 1)
+        SELECT table_name, reloid FROM cartodbfied_tables WHERE cdb_columns_count = #{cartodb_columns.split(',').length}
       }
 
       @user.in_database(as: :superuser)[sql].all.map do |record|

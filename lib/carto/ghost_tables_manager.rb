@@ -12,9 +12,11 @@ module Carto
     end
 
     def link_ghost_tables
-      return if consistent?
+      cartodbfied_tables = fetch_cartobfied_tables
 
-      if safe_async?
+      return if consistent?(cartodbfied_tables)
+
+      if safe_async?(cartodbfied_tables)
         ::Resque.enqueue(::Resque::UserJobs::SyncTables::LinkGhostTables, @user.id)
       else
         link_ghost_tables_synchronously
@@ -28,7 +30,7 @@ module Carto
     private
 
     # determine linked tables vs cartodbfied tables consistency; i.e.: needs to run sync
-    def consistent?
+    def consistent?(cartodbfied_tables)
       cartodbfied_tables = fetch_cartobfied_tables
 
       cartodbfied_tables.reject(&:unaltered?).empty? && find_dropped_tables(cartodbfied_tables).empty?
@@ -56,8 +58,8 @@ module Carto
     end
 
     # Check if any unsafe stale (dropped or renamed) tables will be shown to the user
-    def safe_async?
-      dropped_tables.empty? && cartodbfied_tables.select(&:renamed?).empty?
+    def safe_async?(cartodbfied_tables)
+      dropped_tables(cartodbfied_tables).empty? && cartodbfied_tables.select(&:renamed?).empty?
     end
 
     # this method searchs for tables with all the columns needed in a cartodb table.
@@ -187,10 +189,10 @@ module Carto
     end
 
     def physical_table_exists?
-      !!fetch_oid_relname
+      !!fetch_oid_and_relname
     end
 
-    def fetch_oid_relname
+    def fetch_oid_and_relname
       @user.in_database(as: :superuser)
            .select(:pg_class__oid, :pg_class__relname)
            .from(:pg_class)

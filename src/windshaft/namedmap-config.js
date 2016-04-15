@@ -3,7 +3,9 @@ var NamedMapConfig = {};
 
 NamedMapConfig.generate = function (options) {
   var layers = options.layers;
-  var styles = options.styles;
+  var styles = options.layers.reduce(function (p,c,i) { 
+  	p[i] = c.get('cartocss'); return p; 
+  }, {});
   var config = {};
 
   _.each(layers, function (layer, index) {

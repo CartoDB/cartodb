@@ -24,6 +24,10 @@ var CartoDBLayer = LayerModelBase.extend({
     });
   },
 
+  restoreCartoCSS: function () {
+    this.set('cartocss', this.get('initialStyle'))
+  },
+
   hasInteraction: function() {
     return this.isVisible() && (this.containInfowindow() || this.containTooltip());
   },

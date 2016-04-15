@@ -27,7 +27,7 @@ var AnalysisFactory = require('../analysis/analysis-factory');
 var LayersCollection = require('../geo/map/layers');
 var CartoDBLayerGroupNamedMap = require('../geo/cartodb-layer-group-named-map');
 var CartoDBLayerGroupAnonymousMap = require('../geo/cartodb-layer-group-anonymous-map');
-var Something = require('./something');
+var ModelUpdater = require('./model-updater');
 
 /**
  * Visualization creation
@@ -202,11 +202,27 @@ var Vis = View.extend({
     // Create the WindhaftClient
 
     var endpoint;
+    var layerGroupModel;
     var WindshaftMapClass;
     var datasource = vizjson.datasource;
-
     // TODO: We can use something else to differentiate types of "datasource"s
-    if (datasource.template_name) {
+    var isNamedMap = !!datasource.template_name;
+
+    if (isNamedMap) {
+      layerGroupModel = new CartoDBLayerGroupNamedMap({
+        apiKey: apiKey
+      }, {
+        layersCollection: this._layersCollection
+      });
+    } else {
+      layerGroupModel = new CartoDBLayerGroupAnonymousMap({
+        apiKey: apiKey
+      }, {
+        layersCollection: this._layersCollection
+      });
+    }
+
+    if (isNamedMap) {
       endpoint = [WindshaftConfig.MAPS_API_BASE_URL, 'named', datasource.template_name].join('/');
       WindshaftMapClass = WindshaftNamedMap;
     } else {
@@ -221,14 +237,21 @@ var Vis = View.extend({
       forceCors: datasource.force_cors || true
     });
 
-    // Create the WindshaftMap
+    var modelUpdater = new ModelUpdater({
+      layerGroupModel: layerGroupModel,
+      dataviewsCollection: this._dataviewsCollection,
+      layersCollection: this._layersCollection,
+      analysisCollection: this._analysisCollection
+    });
 
+    // Create the WindshaftMap
     var apiKey = options.apiKey;
     this._windshaftMap = new WindshaftMapClass({
       apiKey: apiKey,
       statTag: datasource.stat_tag
     }, {
       client: windshaftClient,
+      modelUpdater: modelUpdater,
       dataviewsCollection: this._dataviewsCollection,
       layersCollection: this._layersCollection,
       analysisCollection: this._analysisCollection
@@ -299,23 +322,6 @@ var Vis = View.extend({
 
     var mapViewFactory = new MapViewFactory();
 
-    var layerGroupModel;
-
-    // Named map
-    if (datasource.template_name) {
-      layerGroupModel = new CartoDBLayerGroupNamedMap({
-        apiKey: apiKey
-      }, {
-        layersCollection: this._layersCollection
-      });
-    } else {
-      layerGroupModel = new CartoDBLayerGroupAnonymousMap({
-        apiKey: apiKey
-      }, {
-        layersCollection: this._layersCollection
-      });
-    }
-
     this.mapView = mapViewFactory.createMapView(this.map.get('provider'), this.map, div_hack, layerGroupModel);
 
     // Bindings
@@ -367,14 +373,6 @@ var Vis = View.extend({
         this.analysis.analyse(analysis);
       }, this);
     }
-
-    Something.sync({
-      windshaftMap: this._windshaftMap,
-      layerGroupModel: layerGroupModel,
-      layersCollection: this._layersCollection,
-      dataviewsCollection: this._dataviewsCollection,
-      analysisCollection: this._analysisCollection
-    });
 
     // Lastly: reset the layer models on the map
     this.map.layers.reset(layerModels);

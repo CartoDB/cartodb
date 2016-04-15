@@ -47,7 +47,7 @@ describe('windshaft/map-base', function () {
     this.dataviewsCollection = new Backbone.Collection();
     this.layersCollection = new Backbone.Collection();
     this.analysisCollection = new Backbone.Collection();
-
+    this.modelUpdater = jasmine.createSpyObj('modelUpdater', ['updateModels']);
     this.client = new WindshaftClient({
       endpoint: 'v1',
       urlTemplate: 'http://{user}.wadus.com',
@@ -78,6 +78,7 @@ describe('windshaft/map-base', function () {
         statTag: 'stat_tag'
       }, {
         client: this.client,
+        modelUpdater: this.modelUpdater,
         dataviewsCollection: this.dataviewsCollection,
         layersCollection: this.layersCollection,
         analysisCollection: this.analysisCollection
@@ -158,6 +159,7 @@ describe('windshaft/map-base', function () {
         statTag: 'stat_tag'
       }, { // eslint-disable-line
         client: this.client,
+        modelUpdater: this.modelUpdater,
         dataviewsCollection: this.dataviewsCollection,
         layersCollection: this.layersCollection,
         analysisCollection: this.analysisCollection
@@ -174,18 +176,6 @@ describe('windshaft/map-base', function () {
       });
     });
 
-    it('should trigger an event when the instance is created', function () {
-      this.layersCollection.reset([ this.cartoDBLayer1, this.cartoDBLayer2, this.torqueLayer ]);
-      var onWindshaftInstanceCreated = jasmine.createSpy('callback');
-      this.windshaftMap.bind('instanceCreated', onWindshaftInstanceCreated);
-
-      this.windshaftMap.createInstance({
-        sourceLayerId: 'sourceLayerId'
-      });
-
-      expect(onWindshaftInstanceCreated).toHaveBeenCalledWith(this.windshaftMap, 'sourceLayerId', undefined);
-    });
-
     it('should set the attributes of the new instance', function () {
       this.layersCollection.reset([ this.cartoDBLayer1, this.cartoDBLayer2, this.torqueLayer ]);
       this.windshaftMap.createInstance({
@@ -194,6 +184,15 @@ describe('windshaft/map-base', function () {
 
       expect(this.windshaftMap.get('layergroupid')).toEqual('layergroupid');
       expect(this.windshaftMap.get('metadata')).toEqual(this.windshaftMapInstance.metadata);
+    });
+
+    it('should use the modelUpdater to update internal models', function () {
+      this.windshaftMap.createInstance({
+        sourceLayerId: 'sourceLayerId',
+        forceFetch: 'forceFetch'
+      });
+
+      expect(this.modelUpdater.updateModels).toHaveBeenCalledWith(this.windshaftMap, 'sourceLayerId', 'forceFetch');
     });
 
     describe('.getLayerMetadata', function () {
@@ -271,6 +270,7 @@ describe('windshaft/map-base', function () {
         layergroupid: '0123456789'
       }, {
         client: windshaftClient,
+        modelUpdater: this.modelUpdater,
         dataviewsCollection: this.dataviewsCollection,
         layersCollection: this.layersCollection,
         analysisCollection: this.analysisCollection
@@ -291,6 +291,7 @@ describe('windshaft/map-base', function () {
           userName: 'rambo',
           endpoint: 'v2'
         }),
+        modelUpdater: this.modelUpdater,
         dataviewsCollection: this.dataviewsCollection,
         layersCollection: this.layersCollection,
         analysisCollection: this.analysisCollection
@@ -312,6 +313,7 @@ describe('windshaft/map-base', function () {
           userName: 'rambo',
           endpoint: 'v2'
         }),
+        modelUpdater: this.modelUpdater,
         dataviewsCollection: this.dataviewsCollection,
         layersCollection: this.layersCollection,
         analysisCollection: this.analysisCollection
@@ -343,6 +345,7 @@ describe('windshaft/map-base', function () {
           userName: 'rambo',
           endpoint: 'v2'
         }),
+        modelUpdater: this.modelUpdater,
         dataviewsCollection: this.dataviewsCollection,
         layersCollection: this.layersCollection,
         analysisCollection: this.analysisCollection
@@ -390,6 +393,7 @@ describe('windshaft/map-base', function () {
           userName: 'rambo',
           endpoint: 'v2'
         }),
+        modelUpdater: this.modelUpdater,
         dataviewsCollection: this.dataviewsCollection,
         layersCollection: this.layersCollection,
         analysisCollection: this.analysisCollection
@@ -426,6 +430,7 @@ describe('windshaft/map-base', function () {
           userName: 'rambo',
           endpoint: 'v2'
         }),
+        modelUpdater: this.modelUpdater,
         dataviewsCollection: this.dataviewsCollection,
         layersCollection: this.layersCollection,
         analysisCollection: this.analysisCollection
@@ -467,6 +472,7 @@ describe('windshaft/map-base', function () {
           userName: 'rambo',
           endpoint: 'v2'
         }),
+        modelUpdater: this.modelUpdater,
         dataviewsCollection: this.dataviewsCollection,
         layersCollection: this.layersCollection,
         analysisCollection: this.analysisCollection
@@ -510,6 +516,7 @@ describe('windshaft/map-base', function () {
           userName: 'rambo',
           endpoint: 'v2'
         }),
+        modelUpdater: this.modelUpdater,
         dataviewsCollection: this.dataviewsCollection,
         layersCollection: this.layersCollection,
         analysisCollection: this.analysisCollection
@@ -545,6 +552,7 @@ describe('windshaft/map-base', function () {
             userName: 'rambo',
             endpoint: 'v2'
           }),
+          modelUpdater: this.modelUpdater,
           dataviewsCollection: this.dataviewsCollection,
           layersCollection: this.layersCollection,
           analysisCollection: this.analysisCollection
@@ -579,6 +587,7 @@ describe('windshaft/map-base', function () {
             userName: 'rambo',
             endpoint: 'v2'
           }),
+          modelUpdater: this.modelUpdater,
           dataviewsCollection: this.dataviewsCollection,
           layersCollection: this.layersCollection,
           analysisCollection: this.analysisCollection
@@ -633,6 +642,7 @@ describe('windshaft/map-base', function () {
             userName: 'rambo',
             endpoint: 'v2'
           }),
+          modelUpdater: this.modelUpdater,
           dataviewsCollection: this.dataviewsCollection,
           layersCollection: this.layersCollection,
           analysisCollection: this.analysisCollection
@@ -671,6 +681,7 @@ describe('windshaft/map-base', function () {
             userName: 'rambo',
             endpoint: 'v2'
           }),
+          modelUpdater: this.modelUpdater,
           dataviewsCollection: this.dataviewsCollection,
           layersCollection: this.layersCollection,
           analysisCollection: this.analysisCollection
@@ -722,6 +733,7 @@ describe('windshaft/map-base', function () {
           userName: 'rambo',
           endpoint: 'v2'
         }),
+        modelUpdater: this.modelUpdater,
         dataviewsCollection: this.dataviewsCollection,
         layersCollection: this.layersCollection,
         analysisCollection: this.analysisCollection
@@ -758,6 +770,7 @@ describe('windshaft/map-base', function () {
           userName: 'rambo',
           endpoint: 'v2'
         }),
+        modelUpdater: this.modelUpdater,
         dataviewsCollection: this.dataviewsCollection,
         layersCollection: this.layersCollection,
         analysisCollection: this.analysisCollection
@@ -802,6 +815,7 @@ describe('windshaft/map-base', function () {
           userName: 'rambo',
           endpoint: 'v2'
         }),
+        modelUpdater: this.modelUpdater,
         dataviewsCollection: this.dataviewsCollection,
         layersCollection: this.layersCollection,
         analysisCollection: this.analysisCollection

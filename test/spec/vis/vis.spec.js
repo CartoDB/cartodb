@@ -10,7 +10,6 @@ _.extend(cdb.geo, require('../../../src/geo/gmaps'));
 
 var Overlay = require('../../../src/vis/vis/overlay');
 var Vis = require('../../../src/vis/vis');
-var Something = require('../../../src/vis/something');
 var VizJSON = require('../../../src/api/vizjson');
 
 require('../../../src/vis/overlays'); // Overlay.register calls
@@ -517,13 +516,5 @@ describe('vis/vis', function () {
 
       expect(tooltip.options.layer).toEqual(layerView);
     });
-  });
-
-  it('should sync stuff', function () {
-    spyOn(Something, 'sync');
-
-    this.vis.load(new VizJSON(this.mapConfig));
-
-    expect(Something.sync).toHaveBeenCalled();
   });
 });

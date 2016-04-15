@@ -28,6 +28,9 @@ var WindshaftMap = Backbone.Model.extend({
     if (!options.analysisCollection) {
       throw new Error('analysisCollection option is required');
     }
+    if (!options.modelUpdater) {
+      throw new Error('modelUpdater option is required');
+    }
 
     this.client = options.client;
     this.set({
@@ -38,6 +41,7 @@ var WindshaftMap = Backbone.Model.extend({
     this._layersCollection = options.layersCollection;
     this._dataviewsCollection = options.dataviewsCollection;
     this._analysisCollection = options.analysisCollection;
+    this._modelUpdater = options.modelUpdater;
   },
 
   toJSON: function () {
@@ -68,7 +72,7 @@ var WindshaftMap = Backbone.Model.extend({
       params: params,
       success: function (mapInstance) {
         this.set(mapInstance);
-        this.trigger('instanceCreated', this, sourceLayerId, forceFetch);
+        this._modelUpdater.updateModels(this, sourceLayerId, forceFetch);
       }.bind(this),
       error: function (error) {
         console.log('Error creating the map instance on Windshaft: ' + error);

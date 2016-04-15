@@ -1,7 +1,7 @@
-<span class="DefaultDescription Pagination-label">
+<span class="CDB-Text CDB-Size-medium u-altTextColor Pagination-label">
   Page <%- currentPage %> of <%- pagesCount %>
 </span>
-<ul class="Pagination-list">
+<ul class="Pagination-list CDB-Text CDB-Size-medium">
   <% m.pagesToDisplay().forEach(function(page) { %>
     <% if (page > 0) { %>
       <li class="Pagination-listItem <%- m.isCurrentPage(page) ? 'is-current' : '' %>">

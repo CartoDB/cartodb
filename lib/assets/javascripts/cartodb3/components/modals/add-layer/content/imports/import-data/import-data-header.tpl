@@ -25,7 +25,7 @@
   <% } %>
 </p>
 <% if (state === "selected") { %>
-  <button class="NavButton NavButton--back ImportPanel-headerButton js-back">
+  <button class="ImportPanel-headerButton js-back u-actionTextColor">
     <i class="CDB-IconFont CDB-IconFont-arrowPrev"></i>
   </button>
 <% } %>

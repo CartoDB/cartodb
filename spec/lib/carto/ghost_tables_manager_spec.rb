@@ -85,5 +85,39 @@ module Carto
       @user.tables.count.should eq 0
       @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_true
     end
+
+    it 'should regenerate user tables with bad table_ids' do
+      run_in_user_database(%{
+        CREATE TABLE manoloescobar ("description" text);
+        SELECT * FROM CDB_CartodbfyTable('manoloescobar');
+      })
+
+      @user.tables.count.should eq 0
+      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_false
+
+      ::Resque.expects(:enqueue).with(::Resque::UserJobs::SyncTables::LinkGhostTables, @user.id).never
+
+      @ghost_tables_manager.link_ghost_tables_synchronously
+      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_true
+
+      @user.tables.count.should eq 1
+      @user.tables.first.name.should == 'manoloescobar'
+
+      user_table = @user.tables.first
+      original_oid = user_table.table_id
+
+      user_table.table_id = original_oid + 1
+      user_table.save
+
+      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_false
+      @ghost_tables_manager.link_ghost_tables_synchronously
+
+      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_true
+
+      @user.tables.count.should eq 1
+      @user.tables.first.name.should == 'manoloescobar'
+
+      @user.tables.first.table_id.should == original_oid
+    end
   end
 end

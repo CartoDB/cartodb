@@ -83,6 +83,14 @@ module CartoDB
         command_output =~ /has no equivalent in encoding/i || command_output =~ /invalid byte sequence for encoding/i
       end
 
+      def duplicated_cartodb_id?
+        command_output =~ /Key \(cartodb_id\)=\(.*\) already exists/i
+      end
+
+      def invalid_cartodb_id?
+        command_output =~ /Wrong field type for cartodb_id/i
+      end
+
       def invalid_dates?
         command_output =~ /date\/time field value out of range/i
       end
@@ -202,7 +210,7 @@ module CartoDB
 
       def layer_creation_options
         # Dimension option, precision option
-        "-lco DIM=2 -lco PRECISION=NO"
+        "-lco DIM=2 -lco PRECISION=NO -lco FID='cartodb_id'"
       end
 
       def projection_option

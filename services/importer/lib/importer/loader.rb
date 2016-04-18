@@ -317,6 +317,14 @@ module CartoDB
           raise KmlWithoutStyleIdError.new(job.logger)
         end
 
+        if ogr2ogr.duplicated_cartodb_id?
+          raise CartoDB::Importer2::CartoDBfyInvalidID.new(job.logger)
+        end
+
+        if ogr2ogr.invalid_cartodb_id?
+          raise CartoDB::Importer2::CartoDBfyInvalidID.new(job.logger)
+        end
+
         # Could be OOM, could be wrong input
         if ogr2ogr.segfault_error?
           raise LoadError.new(job.logger)

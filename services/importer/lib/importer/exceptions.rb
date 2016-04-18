@@ -137,6 +137,8 @@ module CartoDB
       RowsEncodingColumnError               => 2007,
       MalformedXLSException                 => 2008,
       KmlWithoutStyleIdError                => 2009,
+      CartoDBfyError                        => 2010,
+      CartoDBfyInvalidID                    => 2011,
       InvalidGeoJSONError                   => 3007,
       UnknownSridError                      => 3008,
       ShpNormalizationError                 => 3009,

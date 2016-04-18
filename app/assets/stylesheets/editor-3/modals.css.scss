@@ -50,6 +50,7 @@
 
 .ModalBlockList-item {
   @include display-flex();
+  @include align-items(baseline);
   width: 304px;
   min-width: 304px;
   margin: 0 4px 8px;
@@ -59,6 +60,10 @@
   background: $cWhite;
   box-sizing: border-box;
   cursor: pointer;
+}
+
+.ModalBlockList-itemInput {
+  margin-right: 16px;
 }
 
 .ModalBlockList-item:hover {

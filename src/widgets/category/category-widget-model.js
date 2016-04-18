@@ -71,7 +71,7 @@ module.exports = WidgetModel.extend({
     } else {
       var index = this.dataviewModel._dataProvider._layerIndex;
       var sublayer = this.dataviewModel._dataProvider._vectorLayerView;
-      sublayer.setCartoCSS(index, this.originalStyle, true);
+      sublayer.renderers[index].restoreCartoCSS(true);
     }
     this.dataviewModel.set('autoStyle', false);
   },

@@ -131,7 +131,7 @@ class Map < Sequel::Model
   end
 
   def can_add_layer(user)
-    return false if self.user.max_layers && self.user.max_layers <= layers.count
+    return false if self.user.max_layers && self.user.max_layers <= carto_and_torque_layers.count
     current_vis = visualizations.first
     current_vis.has_permission?(user, CartoDB::Visualization::Member::PERMISSION_READWRITE)
   end

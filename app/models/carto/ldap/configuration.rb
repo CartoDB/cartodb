@@ -87,7 +87,7 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
     #     :userpassword=>["{SSHA}aaaaa"]
     # }> ]
 
-    ldap_connection = connect(valid_ldap_entry.dn, password)
+    ldap_connection = connect(valid_ldap_entry[:dn], password)
     if ldap_connection.bind
       @last_authentication_result = ldap_connection.get_operation_result
       Carto::Ldap::Entry.new(valid_ldap_entry, self)

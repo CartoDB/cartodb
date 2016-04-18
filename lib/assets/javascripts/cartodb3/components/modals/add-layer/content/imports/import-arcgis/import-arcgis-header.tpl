@@ -1,15 +1,15 @@
-<h3 class="ImportPanel-headerTitle">
+<h3 class="CDB-Text CDB-Size-large u-mainTextColor u-secondaryTextColor u-bSpace--m">
   <% if (state === 'selected') { %>
-    ArcGIS<sup>&trade;</sup> selected
+    <%= _t('components.modals.add-layer.imports.header-import.type-selected', { brand: 'ArcGIS<sup>&trade;</sup>' }) %>
   <% } else { %>
-    ArcGIS<sup>&trade;</sup> import
+    <%= _t('components.modals.add-layer.imports.header-import.type-import', { brand: 'ArcGIS<sup>&trade;</sup>' }) %>
   <% } %>
 </h3>
-<p class="ImportPanel-headerDescription">
+<p class="CDB-Text CDB-Size-medium u-altTextColor">
   <% if (state !== "selected") { %>
-    Import your data from an ArcGIS Server<sup>&trade;</sup> instance
+    <%= _t('components.modals.add-layer.imports.arcgis.import-data', { brand: 'ArcGIS<sup>&trade;</sup>' }) %>
   <% } else { %>
-    Sync options only available for a layer
+    <%- _t('components.modals.add-layer.imports.arcgis.sync-options') %>
   <% } %>
 </p>
 <% if (state === "selected") { %>

@@ -1,29 +1,29 @@
 <% if (state !== 'list' ) { %>
-  <h3 class="ImportPanel-headerTitle">
+  <h3 class="CDB-Text CDB-Size-large u-mainTextColor u-secondaryTextColor u-bSpace--m">
     <% if (state === 'selected') { %>
-      MailChimp campaign selected
+      <%- _t('components.modals.add-layer.imports.mailchimp.campaign-selected', { brand: 'MailChimp' }) %>
     <% } else { %>
-      Map your MailChimp Campaigns
+      <%- _t('components.modals.add-layer.imports.mailchimp.map-campaign', { brand: 'MailChimp' }) %>
     <% } %>
   </h3>
-  <p class="ImportPanel-headerDescription <% if (state === "error") { %>ImportPanel-headerDescription--negative<% } %>">
+  <p class="CDB-Text CDB-Size-medium u-altTextColor <% if (state === "error") { %>ImportPanel-headerDescription--negative<% } %>">
     <% if (state === "idle") { %>
-      Connect your MailChimp account to select any of your campaigns.
+      <%- _t('components.modals.add-layer.imports.mailchimp.state-idle', { brand: 'MailChimp' }) %>
     <% } %>
     <% if (state === "error") { %>
-      We are sorry, It has been an error while connecting to your MailChimp account. Just in case it helps, be sure you have the pop-up blocker deactivated for this website.
+      <%- _t('components.modals.add-layer.imports.mailchimp.state-error', { brand: 'MailChimp' }) %>
     <% } %>
     <% if (state === "token") { %>
-      Checking MailChimp Token.
+      <%- _t('components.modals.add-layer.imports.mailchimp.state-token', { brand: 'MailChimp' }) %>
     <% } %>
     <% if (state === "oauth") { %>
-      Requesting oAuth.
+      <%- _t('components.modals.add-layer.imports.mailchimp.state-oauth', { brand: 'MailChimp' }) %>
     <% } %>
     <% if (state === "retrieving") { %>
-      A list of your MailChimp campaigns will be displayed in a moment.
+      <%- _t('components.modals.add-layer.imports.mailchimp.state-retrieving', { brand: 'MailChimp' }) %>
     <% } %>
     <% if (state === "selected") { %>
-      Campaign selected.
+      <%- _t('components.modals.add-layer.imports.mailchimp.state-selected', { brand: 'MailChimp' }) %>
     <% } %>
   </p>
   <% if (state === "selected") { %>

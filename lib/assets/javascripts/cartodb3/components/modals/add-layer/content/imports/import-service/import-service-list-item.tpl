@@ -6,5 +6,7 @@
   <p class="ServiceList-itemDescription u-ellipsLongText"><%- description %></p>
 </div>
 <div class="ServiceList-itemActions">
-  <button class="Button Button--secondary ServiceList-itemButton js-choose"><span>choose</span></button>
+  <button class="Button Button--secondary ServiceList-itemButton js-choose">
+    <span><%- _t('components.modals.add-layer.imports.service-import.choose') %></span>
+  </button>
 </div>

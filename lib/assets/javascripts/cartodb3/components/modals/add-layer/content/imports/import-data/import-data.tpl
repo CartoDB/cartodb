@@ -1,6 +1,6 @@
 <div class="ImportPanel-header">
-  <h3 class="ImportPanel-headerTitle">Upload a URL</h3>
-  <p class="ImportPanel-headerDescription">Paste a URL and start the import</p>
+  <h3 class="ImportPanel-headerTitle"><%- _t('components.modals.add-layer.imports.form-import.title') %></h3>
+  <p class="ImportPanel-headerDescription"><%- _t('components.modals.add-layer.imports.form-import.desc') %></p>
 </div>
 <div class="ImportPanel-body">
   <div class="ImportPanel-bodyWrapper">

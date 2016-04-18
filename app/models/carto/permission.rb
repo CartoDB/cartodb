@@ -40,6 +40,12 @@ class Carto::Permission < ActiveRecord::Base
     self.owner_id == user.id
   end
 
+  # Explicitly remove columns from AR schema
+  DELETED_COLUMNS = ['entity_id', 'entity_type'].freeze
+  def self.columns
+    super.reject { |c| DELETED_COLUMNS.include?(c.name) }
+  end
+
   # TODO: Delete entity_* once the fields are dropped
   # Meanwhile it is needed as a transitional method and are called by AR (as the fields still exists)
   def entity_type

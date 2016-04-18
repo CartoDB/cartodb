@@ -2,9 +2,13 @@
   <div class="LayoutIcon ImportPanel-headerIcon">
     <i class="CDB-IconFont CDB-IconFont-gift"></i>
   </div>
-  <h3 class="ImportPanel-headerTitle">ArcGIS<sup>&trade;</sup> connector</h3>
-  <p class="ImportPanel-headerDescription">Enable the ArcGIS<sup>&trade;</sup> connector in your account to connect your ArcGIS Server<sup>&trade;</sup> data to CartoDB and mantain it in sync with the source.</p>
-  <a href="mailto:sales@cartodb.com?subject=I am interested in the ArcGIS connector&body=Hi, I am interested in testing the ArcGIS connector. Please, contact me to schedule a demo of this feature." class="Button Button--invert ImportPanel-headerLink">
-    <span>ask for a demo</span>
+  <h3 class="CDB-Text CDB-Size-large u-mainTextColor u-secondaryTextColor u-bSpace--m">ArcGIS<sup>&trade;</sup> <%- _t('components.modals.add-layer.imports.connector') %></h3>
+  <p class="CDB-Text CDB-Size-medium u-altTextColor u-bSpace--xl">
+    <%= _t('components.modals.add-layer.imports.arcgis.fallback-desc', {
+      brand: 'ArcGIS<sup>&trade;</sup>'
+    }) %>
+  </p>
+  <a href="mailto:sales@cartodb.com?subject=<%- _t('components.modals.add-layer.imports.demo-email-title', { name: 'ArcGIS' }) %>&body=<%- _t('components.modals.add-layer.imports.demo-email-desc', { name: 'ArcGIS' }) %>" class="CDB-Button CDB-Button--primary CDB-Button--medium">
+    <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-upperCase"><%- _t('components.modals.add-layer.imports.ask-for-demo') %></span>
   </a>
 </div>

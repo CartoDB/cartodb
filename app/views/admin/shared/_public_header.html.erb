@@ -41,12 +41,12 @@
     <div class="Header-settings">
       <ul class="Header-settingsList js-user-settings">
         <li class="Header-settingsItem js-login">
-          <a href="<%= login_url %>" class="Header-settingsLink">Login</a>
+          <a href="<%= CartoDB.url(self, 'login') %>" class="Header-settingsLink Header-settingsLink Header-settingsLink--public">Login</a>
         </li>
 
         <% unless cartodb_com_hosted? %>
           <li class="Header-settingsItem">
-            <a href="http://cartodb.com/signup" class="PublicButton PublicButton--sMedium PublicButton--cWhite is-hover">
+            <a href="http://cartodb.com/signup" class="PublicButton PublicButton--sMedium PublicButton--cWhite is-hover PublicButton--public">
               <span>Sign up</span>
             </a>
           </li>

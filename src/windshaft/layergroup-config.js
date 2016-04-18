@@ -6,9 +6,10 @@ var DEFAULT_CARTOCSS_VERSION = '2.1.0';
 LayerGroupConfig.generate = function (options) {
   var layers = options.layers;
   var dataviews = options.dataviews;
+  var styles = options.styles;
   var config = { layers: [] };
   _.each(layers, function (layer, index) {
-    var provisionalCartoCSS = options.styles[index]
+    var provisionalCartoCSS = styles && options.styles[index]
     if (layer.isVisible()) {
       var layerConfig = {
         type: layer.get('type').toLowerCase(),

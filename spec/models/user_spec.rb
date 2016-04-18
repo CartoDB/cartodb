@@ -2243,6 +2243,30 @@ describe User do
     end
   end
 
+  describe "Write locking" do
+    it "detects locking properly" do
+      @user.db_service.writes_enabled?.should eq true
+      @user.db_service.disable_writes
+      @user.db_service.terminate_database_connections
+      @user.db_service.writes_enabled?.should eq false
+      @user.db_service.enable_writes
+      @user.db_service.terminate_database_connections
+      @user.db_service.writes_enabled?.should eq true
+    end
+
+    it "enables and disables writes in user database" do
+      @user.db_service.run_pg_query("create table foo_1(a int);")
+      @user.db_service.disable_writes
+      @user.db_service.terminate_database_connections
+      lambda {
+        @user.db_service.run_pg_query("create table foo_2(a int);")
+      }.should raise_error(CartoDB::ErrorRunningQuery)
+      @user.db_service.enable_writes
+      @user.db_service.terminate_database_connections
+      @user.db_service.run_pg_query("create table foo_3(a int);")
+    end
+  end
+
   protected
 
   def create_org(org_name, org_quota, org_seats)

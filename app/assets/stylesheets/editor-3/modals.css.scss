@@ -4,7 +4,9 @@
 
 
 /* WIP*/
-
+.Dialog.is-white {
+  background: $cWhite;
+}
 
 .Filters-typeItem {
   @include display-flex(); /* todo when create new layout */

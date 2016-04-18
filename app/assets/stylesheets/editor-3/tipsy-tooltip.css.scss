@@ -19,10 +19,18 @@
 }
 
 .tipsy.is-error {
-  .tipsy-arrow-n { border-bottom-color: $cError; }
-  .tipsy-arrow-s { border-top-color: $cError; }
-  .tipsy-arrow-e { border-left-color: $cError; }
-  .tipsy-arrow-w { border-right-color: $cError; }
+  .tipsy-arrow-n {
+    border-bottom-color: $cError;
+  }
+  .tipsy-arrow-s {
+    border-top-color: $cError;
+  }
+  .tipsy-arrow-e {
+    border-left-color: $cError;
+  }
+  .tipsy-arrow-w {
+    border-right-color: $cError;
+  }
   .tipsy-inner {
     background: $cError;
   }

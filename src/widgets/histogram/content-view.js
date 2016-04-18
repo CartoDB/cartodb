@@ -36,9 +36,7 @@ module.exports = cdb.core.View.extend({
     this._initTitleView();
 
     var dropdown = new DropdownView({
-      normalized: this.model.get('normalized'),
-      collapsed: this.model.get('collapsed'),
-      pinned: this.model.get('pinned'),
+      model: this.model
       target: this.$('.js-actions'),
       container: this.$('.js-header'),
       flags: {
@@ -46,16 +44,7 @@ module.exports = cdb.core.View.extend({
       }
     });
 
-    dropdown.bind('togglePinned', function (pinned) {
-      this.model.set('pinned', pinned);
-    }, this);
-
-    dropdown.bind('toggleCollapsed', function (collapsed) {
-      this.model.set('collapsed', collapsed);
-    }, this);
-
-    dropdown.bind('toggleNormalized', function (normalized) {
-      this.model.set('normalized', normalized);
+    this.model.bind('change:normalized', function () {
       this.histogramChartView.setNormalized(normalized);
       this.miniHistogramChartView.setNormalized(normalized);
     }, this);

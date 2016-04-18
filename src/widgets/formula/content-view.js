@@ -86,19 +86,10 @@ module.exports = cdb.core.View.extend({
 
   _initViews: function () {
     var dropdown = new DropdownView({
-      collapsed: this.model.get('collapsed'),
-      pinned: this.model.get('pinned'),
+      model: this.model,
       target: this.$('.js-actions'),
       container: this.$('.js-header')
     });
-
-    dropdown.bind('toggleCollapsed', function (collapsed) {
-      this.model.set('collapsed', collapsed);
-    }, this);
-
-    dropdown.bind('togglePinned', function (pinned) {
-      this.model.set('pinned', pinned);
-    }, this);
 
     this.addView(dropdown);
   }

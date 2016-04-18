@@ -2,7 +2,6 @@ var $ = require('jquery');
 var _ = require('underscore');
 var cdb = require('cartodb.js');
 var template = require('./template.tpl');
-var WidgetDropdownModel = require('./widget-dropdown-model');
 
 /**
  * Standard widget dropdown view
@@ -25,13 +24,6 @@ module.exports = cdb.core.View.extend({
       throw new Error('target is not defined');
     }
 
-    this.model = new WidgetDropdownModel({
-      collapsed: opts.collapsed,
-      flags: opts.flags,
-      normalized: opts.normalized,
-      pinned: opts.pinned
-    });
-
     this._$target = this.options.target;
     this._$container = this.options.container;
 
@@ -39,7 +31,10 @@ module.exports = cdb.core.View.extend({
   },
 
   render: function () {
-    this.$el.html(template(this.model.attributes));
+    this.$el.html(_.extend({},
+      this.model.attributes,
+      { flags: this.options.flags }
+    ));
     return this;
   },
 
@@ -93,19 +88,19 @@ module.exports = cdb.core.View.extend({
   _togglePinned: function () {
     var pinned = !this.model.get('pinned');
     this.$('.js-inputPinned').attr('checked', pinned);
-    this.trigger('togglePinned', pinned);
+    this.model.set('pinned', collapsed);
   },
 
   _toggleCollapsed: function () {
     var collapsed = !this.model.get('collapsed');
     this.$('.js-inputCollapsed').attr('checked', collapsed);
-    this.trigger('toggleCollapsed', collapsed);
+    this.model.set('collapsed', collapsed);
   },
 
   _toggleNormalized: function () {
     var normalized = !this.model.get('normalized');
     this.$('.js-inputNormalized').attr('checked', normalized);
-    this.trigger('toggleNormalized', normalized);
+    this.model.set('normalized', normalized);
   },
 
   _open: function () {

@@ -213,7 +213,6 @@ class DataImport < Sequel::Model
     handle_failure(invalid_cartodb_id_exception)
     self
   rescue CartoDB::Importer2::CartoDBfyInvalidID => invalid_cartodb_id_exception
-    invalid_cartodb_id_exception = CartoDB::Importer2::CartoDBfyInvalidID.new
     log.append "Exception: #{invalid_cartodb_id_exception}"
     CartoDB::notify_warning_exception(invalid_cartodb_id_exception)
     handle_failure(invalid_cartodb_id_exception)

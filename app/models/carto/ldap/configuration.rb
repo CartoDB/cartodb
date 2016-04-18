@@ -65,24 +65,18 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
   # @param String username. No full CN, just the username, e.g. 'administrator1'
   # @param String password
   def authenticate(username, password)
-    @last_authentication_result = nil
+    username_filter =  Net::LDAP::Filter.eq(user_id_field, username)
 
-    # To be used for domain bases search
-    username_stringified_filter = "#{self.user_id_field}=#{username}"
-    # To be used in real search
-    username_filter =  Net::LDAP::Filter.eq(self.user_id_field, username)
-
-    domain_base = domain_bases_list.find { |domain|
-      # This is just checking if provided auth user can connect, connection is not stored
-      ldap_connection = connect("#{username_stringified_filter},#{domain}", password)
-      result = ldap_connection.bind
-      @last_authentication_result = ldap_connection.get_operation_result
-      result
-    }
-    return false if domain_base.nil?
-
-    search_results = search(domain_base, username_filter)
-    return false if search_results.nil?
+    valid_ldap_entry = nil
+    domain_bases_list.find do |domain|
+      search_results = search(domain, username_filter)
+      if search_results.nil? || search_results.empty?
+        false
+      else
+        valid_ldap_entry = search_results.first
+      end
+    end
+    return false unless valid_ldap_entry
 
     #Sample result
     # [ #<Net::LDAP::Entry:0x00000008c54628 @myhash={
@@ -92,7 +86,15 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
     #     :description=>["xxxx"],
     #     :userpassword=>["{SSHA}aaaaa"]
     # }> ]
-    Carto::Ldap::Entry.new(search_results.is_a?(Array) ? search_results.first : search_results, self)
+
+    ldap_connection = connect(valid_ldap_entry.dn, password)
+    if ldap_connection.bind
+      @last_authentication_result = ldap_connection.get_operation_result
+      Carto::Ldap::Entry.new(valid_ldap_entry, self)
+    else
+      @last_authentication_result = nil
+      false
+    end
   end
 
   # INFO: Resets connection if already made

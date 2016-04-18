@@ -1,10 +1,9 @@
 # encoding: UTF-8
+require 'json'
 
 class Carto::Analysis < ActiveRecord::Base
-  # INFO: disable ActiveRecord inheritance column
-  self.inheritance_column = :_type
-
   belongs_to :visualization, class_name: Carto::Visualization
+  belongs_to :user, class_name: Carto::User
 
   def self.find_by_natural_id(visualization_id, natural_id)
     analysis = find_by_sql(
@@ -25,6 +24,10 @@ class Carto::Analysis < ActiveRecord::Base
 
   def analysis_definition_for_api
     filter_valid_properties(analysis_definition_json)
+  end
+
+  def analysis_definition_json=(analysis_definition)
+    self.analysis_definition = analysis_definition.to_json
   end
 
   def natural_id

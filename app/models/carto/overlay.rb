@@ -9,7 +9,6 @@ module Carto
 
     serialize :options, JSON
 
-    validates :visualization_id, presence: true
     validates :type, presence: true
     validate :unique_overlay_not_duplicated
 

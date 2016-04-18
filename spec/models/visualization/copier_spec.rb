@@ -5,7 +5,6 @@ require_relative '../../spec_helper'
 require_relative '../../../services/data-repository/repository'
 require_relative '../../../app/models/visualization/member'
 require_relative '../../../app/models/visualization/copier'
-require_relative '../../../app/models/visualization/migrator'
 require 'helpers/unique_names_helper'
 
 include UniqueNamesHelper

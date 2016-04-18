@@ -84,21 +84,21 @@ describe Carto::Api::OrganizationUsersController do
 
   describe 'user creation' do
     it 'returns 401 for non authorized calls' do
-      post api_v1_organization_users_create_url(id_or_name: @organization.name)
+      post api_v2_organization_users_create_url(id_or_name: @organization.name)
       last_response.status.should == 401
     end
 
     it 'returns 401 for non authorized users' do
       login(@org_user_1)
 
-      post api_v1_organization_users_create_url(id_or_name: @organization.name)
+      post api_v2_organization_users_create_url(id_or_name: @organization.name)
       last_response.status.should == 401
     end
 
     it 'accepts org owners' do
       login(@organization.owner)
 
-      post api_v1_organization_users_create_url(id_or_name: @organization.name)
+      post api_v2_organization_users_create_url(id_or_name: @organization.name)
       last_response.status.should == 410
     end
 
@@ -106,7 +106,7 @@ describe Carto::Api::OrganizationUsersController do
       login(@organization.owner)
 
       params = { username: unique_name('user'), password: '2{Patrañas}' }
-      post api_v1_organization_users_create_url(id_or_name: @organization.name), params
+      post api_v2_organization_users_create_url(id_or_name: @organization.name), params
 
       last_response.body.include?('email is not present').should be true
       last_response.status.should == 410
@@ -116,7 +116,7 @@ describe Carto::Api::OrganizationUsersController do
       login(@organization.owner)
 
       params = { email: unique_email, password: '2{Patrañas}' }
-      post api_v1_organization_users_create_url(id_or_name: @organization.name), params
+      post api_v2_organization_users_create_url(id_or_name: @organization.name), params
 
       last_response.body.include?('username is not present').should be true
       last_response.status.should == 410
@@ -127,7 +127,7 @@ describe Carto::Api::OrganizationUsersController do
 
       username = 'manolo'
       params = { username: username, email: "#{username}@cartodb.com" }
-      post api_v1_organization_users_create_url(id_or_name: @organization.name), params
+      post api_v2_organization_users_create_url(id_or_name: @organization.name), params
 
       last_response.status.should eq 410
       last_response.body.include?('password is not present').should be true
@@ -137,7 +137,7 @@ describe Carto::Api::OrganizationUsersController do
       login(@organization.owner)
       username = 'manolo-escobar'
       params = user_params(username)
-      post api_v1_organization_users_create_url(id_or_name: @organization.name), params
+      post api_v2_organization_users_create_url(id_or_name: @organization.name), params
 
       last_response.status.should eq 200
 
@@ -153,7 +153,7 @@ describe Carto::Api::OrganizationUsersController do
       login(@organization.owner)
       username = 'soft-geocoding-limit-false-user'
       params = user_params(username, soft_geocoding_limit: nil)
-      post api_v1_organization_users_create_url(id_or_name: @organization.name), params
+      post api_v2_organization_users_create_url(id_or_name: @organization.name), params
 
       last_response.status.should eq 200
 
@@ -170,7 +170,7 @@ describe Carto::Api::OrganizationUsersController do
       username = 'soft-limits-true-user'
       params = user_params_soft_limits(username, true)
 
-      post api_v1_organization_users_create_url(id_or_name: @organization.name), params
+      post api_v2_organization_users_create_url(id_or_name: @organization.name), params
 
       last_response.status.should eq 200
 
@@ -189,7 +189,7 @@ describe Carto::Api::OrganizationUsersController do
       username = 'soft-limits-false-user'
       params = user_params_soft_limits(username, false)
 
-      post api_v1_organization_users_create_url(id_or_name: @organization.name), params
+      post api_v2_organization_users_create_url(id_or_name: @organization.name), params
 
       last_response.status.should eq 200
 
@@ -207,7 +207,7 @@ describe Carto::Api::OrganizationUsersController do
       login(@organization.owner)
       username = 'soft-limits-true-invalid-user'
       params = user_params_soft_limits(username, true)
-      post api_v1_organization_users_create_url(id_or_name: @organization.name), params
+      post api_v2_organization_users_create_url(id_or_name: @organization.name), params
 
       last_response.status.should eq 410
       errors = JSON.parse(last_response.body)
@@ -221,21 +221,21 @@ describe Carto::Api::OrganizationUsersController do
 
   describe 'user update' do
     it 'returns 401 for non authorized calls' do
-      put api_v1_organization_users_update_url(id_or_name: @organization.name, u_username: @org_user_1.username)
+      put api_v2_organization_users_update_url(id_or_name: @organization.name, u_username: @org_user_1.username)
       last_response.status.should == 401
     end
 
     it 'returns 401 for non authorized users' do
       login(@org_user_1)
 
-      put api_v1_organization_users_update_url(id_or_name: @organization.name, u_username: @org_user_1.username)
+      put api_v2_organization_users_update_url(id_or_name: @organization.name, u_username: @org_user_1.username)
       last_response.status.should == 401
     end
 
     it 'accepts org owners' do
       login(@organization.owner)
 
-      put api_v1_organization_users_update_url(id_or_name: @organization.name, u_username: @org_user_1.username)
+      put api_v2_organization_users_update_url(id_or_name: @organization.name, u_username: @org_user_1.username)
       last_response.status.should == 410
     end
 
@@ -243,7 +243,7 @@ describe Carto::Api::OrganizationUsersController do
       login(@organization.owner)
 
       user_to_update = @organization.non_owner_users[0]
-      put api_v1_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username)
+      put api_v2_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username)
 
       last_response.status.should eq 410
       last_response.body.include?('No update params provided').should be true
@@ -254,7 +254,7 @@ describe Carto::Api::OrganizationUsersController do
 
       user_to_update = @organization.non_owner_users[0]
       params = { password: 'limonero' }
-      put api_v1_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username),
+      put api_v2_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username),
           params
 
       last_response.status.should == 200
@@ -266,7 +266,7 @@ describe Carto::Api::OrganizationUsersController do
       user_to_update = @organization.non_owner_users[0]
       new_email = "new-#{user_to_update.email}"
       params = { email: new_email }
-      put api_v1_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username),
+      put api_v2_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username),
           params
       last_response.status.should eq 200
 
@@ -278,7 +278,7 @@ describe Carto::Api::OrganizationUsersController do
 
       user_to_update = @organization.non_owner_users[0]
       params = { quota_in_bytes: 2048 }
-      put api_v1_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username),
+      put api_v2_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username),
           params
 
       last_response.status.should eq 200
@@ -293,7 +293,7 @@ describe Carto::Api::OrganizationUsersController do
 
       user_to_update = @organization.users[0]
       params = { soft_geocoding_limit: true }
-      put api_v1_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username),
+      put api_v2_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username),
           params
 
       last_response.status.should eq 410
@@ -306,14 +306,14 @@ describe Carto::Api::OrganizationUsersController do
 
       user_to_update = @organization.users[0]
       params = { soft_geocoding_limit: true }
-      put api_v1_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username),
+      put api_v2_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username),
           params
 
       last_response.status.should eq 200
       user_to_update.reload.soft_geocoding_limit.should be true
 
       params = { soft_geocoding_limit: false }
-      put api_v1_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username),
+      put api_v2_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username),
           params
 
       last_response.status.should eq 200
@@ -334,7 +334,7 @@ describe Carto::Api::OrganizationUsersController do
                  password: 'pataton',
                  soft_geocoding_limit: true,
                  quota_in_bytes: 2048 }
-      put api_v1_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username),
+      put api_v2_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username),
           params
 
       last_response.status.should eq 200
@@ -353,7 +353,7 @@ describe Carto::Api::OrganizationUsersController do
       user_to_update = @organization.users[0]
       params = user_params_soft_limits(nil, true)
 
-      put api_v1_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username),
+      put api_v2_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username),
           params
 
       last_response.status.should eq 200
@@ -369,7 +369,7 @@ describe Carto::Api::OrganizationUsersController do
       user_to_update = @organization.users[0]
       params = user_params_soft_limits(nil, false)
 
-      put api_v1_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username),
+      put api_v2_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username),
           params
 
       last_response.status.should eq 200
@@ -386,7 +386,7 @@ describe Carto::Api::OrganizationUsersController do
       replace_soft_limits(user_to_update, [false, false, false])
       params = user_params_soft_limits(nil, true)
 
-      put api_v1_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username),
+      put api_v2_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username),
           params
 
       last_response.status.should eq 410
@@ -403,7 +403,7 @@ describe Carto::Api::OrganizationUsersController do
 
       user_to_update = @organization.non_owner_users[0]
       params = { email: 'fail-' + user_to_update.email }
-      put api_v1_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username),
+      put api_v2_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username),
           params
 
       last_response.status.should == 500
@@ -414,14 +414,14 @@ describe Carto::Api::OrganizationUsersController do
 
   describe 'user deletion' do
     it 'returns 401 for non authorized calls' do
-      delete api_v1_organization_users_delete_url(id_or_name: @organization.name, u_username: @org_user_1.username)
+      delete api_v2_organization_users_delete_url(id_or_name: @organization.name, u_username: @org_user_1.username)
       last_response.status.should == 401
     end
 
     it 'returns 401 for non authorized users' do
       login(@org_user_1)
 
-      delete api_v1_organization_users_delete_url(id_or_name: @organization.name, u_username: @org_user_1.username)
+      delete api_v2_organization_users_delete_url(id_or_name: @organization.name, u_username: @org_user_1.username)
       last_response.status.should == 401
     end
 
@@ -429,7 +429,7 @@ describe Carto::Api::OrganizationUsersController do
       login(@organization.owner)
 
       user_to_be_deleted = @organization.non_owner_users[0]
-      delete api_v1_organization_users_delete_url(id_or_name: @organization.name,
+      delete api_v2_organization_users_delete_url(id_or_name: @organization.name,
                                                   u_username: user_to_be_deleted.username)
 
       last_response.status.should eq 200
@@ -441,7 +441,7 @@ describe Carto::Api::OrganizationUsersController do
       login(@organization.owner)
 
       user_to_be_deleted = @organization.owner
-      delete api_v1_organization_users_delete_url(id_or_name: @organization.name,
+      delete api_v2_organization_users_delete_url(id_or_name: @organization.name,
                                                   u_username: user_to_be_deleted.username)
 
       last_response.status.should == 401
@@ -450,21 +450,21 @@ describe Carto::Api::OrganizationUsersController do
 
   describe 'user show' do
     it 'returns 401 for non authorized calls' do
-      get api_v1_organization_users_show_url(id_or_name: @organization.name, u_username: @org_user_1.username)
+      get api_v2_organization_users_show_url(id_or_name: @organization.name, u_username: @org_user_1.username)
       last_response.status.should == 401
     end
 
     it 'returns 401 for non authorized users' do
       login(@org_user_1)
 
-      get api_v1_organization_users_show_url(id_or_name: @organization.name, u_username: @org_user_1.username)
+      get api_v2_organization_users_show_url(id_or_name: @organization.name, u_username: @org_user_1.username)
       last_response.status.should == 401
     end
 
     it 'should return 404 for non existing users' do
       login(@organization.owner)
 
-      get api_v1_organization_users_show_url(id_or_name: @organization.name, u_username: 'bogus-non-existent-user')
+      get api_v2_organization_users_show_url(id_or_name: @organization.name, u_username: 'bogus-non-existent-user')
 
       last_response.status.should == 404
     end
@@ -474,7 +474,7 @@ describe Carto::Api::OrganizationUsersController do
 
       @organization.reload
       user_to_be_shown = @organization.non_owner_users[0]
-      get api_v1_organization_users_show_url(id_or_name: @organization.name, u_username: user_to_be_shown.username)
+      get api_v2_organization_users_show_url(id_or_name: @organization.name, u_username: user_to_be_shown.username)
 
       last_response.status.should eq 200
       last_response.body == Carto::Api::UserPresenter.new(user_to_be_shown, current_viewer: @organization.owner).to_poro
@@ -483,14 +483,14 @@ describe Carto::Api::OrganizationUsersController do
 
   describe 'user list' do
     it 'returns 401 for non authorized calls' do
-      get api_v1_organization_users_index_url(id_or_name: @organization.name)
+      get api_v2_organization_users_index_url(id_or_name: @organization.name)
       last_response.status.should == 401
     end
 
     it 'returns 401 for non authorized users' do
       login(@org_user_1)
 
-      get api_v1_organization_users_index_url(id_or_name: @organization.name)
+      get api_v2_organization_users_index_url(id_or_name: @organization.name)
       last_response.status.should == 401
     end
 
@@ -502,7 +502,7 @@ describe Carto::Api::OrganizationUsersController do
         Carto::Api::UserPresenter.new(user, current_viewer: @organization.owner).to_poro
       end
 
-      get api_v1_organization_users_index_url(id_or_name: @organization.name)
+      get api_v2_organization_users_index_url(id_or_name: @organization.name)
 
       last_response.status.should eq 200
 

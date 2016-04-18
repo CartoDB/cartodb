@@ -55,41 +55,6 @@ module.exports = WidgetModel.extend({
 
   autoStyle: function () {
     var style = this.autoStyler.getStyle();
-    // var defColor = this.colors.getColorByCategory('Other')
-    // style = ['#'+this.dataviewModel.layer.get('layer_name') +'[mapnik-geometry-type=polygon]{',
-    //            '  polygon-fill: {{defaultColor}};',
-    //            '  polygon-opacity: 0.6;  ',
-    //            '  line-color: #FFF;',
-    //            '  line-width: 0.3;',
-    //            '  line-opacity: 0.3;',
-    //            '  {{ramp}}',
-    //            '}',
-    //            '#'+this.dataviewModel.layer.get('layer_name') +'[mapnik-geometry-type=point]{',
-    //            '  marker-width: 10;',
-    //            '  marker-fill-opacity: 0.8;  ',
-    //            '  marker-fill: {{defaultColor}};  ',
-    //            '  marker-line-color: #fff;',
-    //            '  marker-allow-overlap: true;',
-    //            '  marker-line-width: 0.3;',
-    //            '  marker-line-opacity: 0.8;',
-    //            '  {{ramp}}',
-    //            '}',
-    //            '#'+this.dataviewModel.layer.get('layer_name') +'[mapnik-geometry-type=linestring]{',
-    //            '  line-color: {{defaultColor}};',
-    //            '  line-width: 0.3;',
-    //            '  line-opacity: 0.3;',
-    //            '  {{ramp}}',
-    //            '}'
-    //           ].join('\n')
-    //            .replace(/{{defaultColor}}/g, defColor);
-    // var cats = this.dataviewModel.get('allCategoryNames');
-    // ['polygon-fill', 'marker-fill', 'line-color'].forEach(function (s) {
-    //   var ramp = cats.map(function (c, i) {
-    //     var color = this.colors.getColorByCategory(c);
-    //     return '['+this.dataviewModel.get('column')+'=\'' + cats[i] + '\']{\n' + s + ': ' + color + ';\n}';
-    //   }.bind(this)).join('\n');
-    //   style = style.replace('{{ramp}}', ramp)
-    // }.bind(this))
     if (!this.dataviewModel._dataProvider) {
       this.dataviewModel.layer.set('cartocss', style);
     } else {

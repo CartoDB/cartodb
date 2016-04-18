@@ -21,8 +21,6 @@ describe Carto::VisualizationsExportService2 do
       type: 'derived', # derived / remote / table / slide
       tags: ['tag 1', 'tag 2'],
       privacy: 'private', # private / link / public
-      url_options: 'title=true&description=true&search=false&shareable=true&cartodb_logo=true' +
-        '&layer_selector=false&legends=false&scrollwheel=true&fullscreen=true&sublayer_options=1&sql=',
       source: 'the source',
       license: 'mit',
       title: 'the title',
@@ -133,7 +131,6 @@ describe Carto::VisualizationsExportService2 do
     visualization.type.should eq visualization_export[:type]
     visualization.tags.should eq visualization_export[:tags]
     visualization.privacy.should eq visualization_export[:privacy]
-    visualization.url_options.should eq visualization_export[:url_options]
     visualization.source.should eq visualization_export[:source]
     visualization.license.should eq visualization_export[:license]
     visualization.title.should eq visualization_export[:title]
@@ -462,7 +459,6 @@ describe Carto::VisualizationsExportService2 do
       imported_visualization.type.should eq original_visualization.type
       imported_visualization.tags.should eq original_visualization.tags
       imported_visualization.privacy.should eq original_visualization.privacy
-      imported_visualization.url_options.should eq original_visualization.url_options
       imported_visualization.source.should eq original_visualization.source
       imported_visualization.license.should eq original_visualization.license
       imported_visualization.title.should eq original_visualization.title

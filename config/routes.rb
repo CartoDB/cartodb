@@ -368,11 +368,6 @@ CartoDB::Application.routes.draw do
     # Maps
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1/maps/:id'                          => 'maps#show',    as: :api_v1_maps_show
 
-    # Overlays
-    scope '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:visualization_id/', constraints: { visualization_id: /[0-z\-]+/ } do
-      resources :overlays, only: [:index, :show, :create, :update, :destroy], constraints: { id: /[0-z\-]+/ }
-    end
-
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1/synchronizations'                => 'synchronizations#index',     as: :api_v1_synchronizations_index
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1/synchronizations/:id'            => 'synchronizations#show',     as: :api_v1_synchronizations_show
     # INFO: sync_now is public API
@@ -400,11 +395,21 @@ CartoDB::Application.routes.draw do
     # Organization (new endpoint that deprecates old, unused one, so v1)
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/:id/users' => 'organizations#users', as: :api_v1_organization_users, constraints: { id: /[^\/]+/ }
 
-    # Organization user management
-    post '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/:name/users' => 'organization_users#create', as: :api_v1_organization_users_create
-    get '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/:name/users/:u_username' => 'organization_users#show', as: :api_v1_organization_users_show
-    delete '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/:name/users/:u_username' => 'organization_users#destroy', as: :api_v1_organization_users_delete
-    put '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/:name/users/:u_username' => 'organization_users#update', as: :api_v1_organization_users_update
+    scope '(/user/:user_domain)(/u/:user_domain)/api/v1/' do
+      # Organization user management
+      scope 'organization/:name/' do
+        get    'users',             to: 'organization_users#index',   as: :api_v1_organization_users_index
+        post   'users',             to: 'organization_users#create',  as: :api_v1_organization_users_create
+        get    'users/:u_username', to: 'organization_users#show',    as: :api_v1_organization_users_show
+        delete 'users/:u_username', to: 'organization_users#destroy', as: :api_v1_organization_users_delete
+        put    'users/:u_username', to: 'organization_users#update',  as: :api_v1_organization_users_update
+      end
+
+      # Overlays
+      scope 'viz/:visualization_id/', constraints: { visualization_id: /[0-z\-]+/ } do
+        resources :overlays, only: [:index, :show, :create, :update, :destroy], constraints: { id: /[0-z\-]+/ }
+      end
+    end
 
     # Groups
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/:organization_id/groups' => 'groups#index', as: :api_v1_organization_groups, constraints: { organization_id: /[^\/]+/ }

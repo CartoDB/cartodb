@@ -130,6 +130,8 @@ module CartoDB
       end
 
       def disable_writes
+        # NOTE: This will not affect already opened connections. Run `terminate_database_conections` method after this
+        # to ensure no more writes are possible.
         @user.in_database(as: :cluster_admin) do |database|
           database.run(%{
             ALTER DATABASE "#{@user.database_name}"
@@ -139,6 +141,8 @@ module CartoDB
       end
 
       def enable_writes
+        # NOTE: This will not affect already opened connections. Run `terminate_database_conections` method after this
+        # to ensure no more writes are possible.
         @user.in_database(as: :cluster_admin) do |database|
           database.run(%{
             ALTER DATABASE "#{@user.database_name}"

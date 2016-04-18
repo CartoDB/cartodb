@@ -26,15 +26,25 @@ module Carto
       end
 
       def create
-        account_creator = CartoDB::UserAccountCreator.new(Carto::UserCreation::CREATED_VIA_API).with_organization(@organization)
+        account_creator = CartoDB::UserAccountCreator.new(Carto::UserCreation::CREATED_VIA_API)
+                                                     .with_organization(@organization)
 
         account_creator.with_username(create_params[:username]) if create_params[:username].present?
         account_creator.with_email(create_params[:email]) if create_params[:email].present?
         account_creator.with_password(create_params[:password]) if create_params[:password].present?
         account_creator.with_quota_in_bytes(create_params[:quota_in_bytes]) if create_params[:quota_in_bytes].present?
-        account_creator.with_soft_geocoding_limit(create_params[:soft_geocoding_limit]) if create_params[:soft_geocoding_limit].present?
-        account_creator.with_soft_here_isolines_limit(create_params[:soft_here_isolines_limit]) if create_params[:soft_here_isolines_limit].present?
-        account_creator.with_soft_twitter_datasource_limit(create_params[:soft_twitter_datasource_limit]) if create_params[:soft_twitter_datasource_limit].present?
+
+        if create_params[:soft_geocoding_limit].present?
+          account_creator.with_soft_geocoding_limit(create_params[:soft_geocoding_limit])
+        end
+
+        if create_params[:soft_here_isolines_limit].present?
+          account_creator.with_soft_here_isolines_limit(create_params[:soft_here_isolines_limit])
+        end
+
+        if create_params[:soft_twitter_datasource_limit].present?
+          account_creator.with_soft_twitter_datasource_limit(create_params[:soft_twitter_datasource_limit])
+        end
 
         render_jsonp(account_creator.validation_errors.full_messages, 410) && return unless account_creator.valid?
 

@@ -88,7 +88,7 @@ module.exports = cdb.core.View.extend({
   _togglePinned: function () {
     var pinned = !this.model.get('pinned');
     this.$('.js-inputPinned').attr('checked', pinned);
-    this.model.set('pinned', collapsed);
+    this.model.set('pinned', pinned);
   },
 
   _toggleCollapsed: function () {

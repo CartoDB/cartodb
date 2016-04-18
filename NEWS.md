@@ -52,6 +52,7 @@ which should be fixed manually.
 * Update and improve logging system
 * Fix broken syncs after setting sync options to "Never"
 * Fix broken visualizations due to invalid permissions
+* Check layer limits server-side
 * Fix URL generations in some views, to correctly include the subdomain
 * Make `layers.kind` not null. Run `bundle exec rake db:migrate` to update your database.
 * Fix error when deleting organizational users that had created objects via SQL-API

@@ -22,6 +22,10 @@ class Carto::Widget < ActiveRecord::Base
     JSON.parse(options).symbolize_keys
   end
 
+  def options_json=(options)
+    self.options = options.to_json
+  end
+
   def belongs_to_map?(map_id)
     !layer.nil? && !layer.maps.nil? && layer.maps.map(&:id).include?(map_id)
   end

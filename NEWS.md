@@ -49,12 +49,14 @@ which should be fixed manually.
 * Update CartoDB PostgreSQL extension to 0.14.3 to support `cartodb_id` text columns in the CartoDBfy process.
   * See instructions to upgrade to the latest extension version [here](https://github.com/CartoDB/cartodb-postgresql#update-cartodb-extension)
 * Fix slow search of visualizations by name
+* Fixed a bug where visualization with two layers using the same dataset could not be deleted
 * Update and improve logging system
 * Fix broken syncs after setting sync options to "Never"
 * Fix broken visualizations due to invalid permissions
 * Check layer limits server-side
 * Fix URL generations in some views, to correctly include the subdomain
-* Make `layers.kind` not null. Run `bundle exec rake db:migrate` to update your database.
+* Make `layers.kind` not null. Run `bundle exec rake db:migrate` to update your database
+* Remove unused and broken tool for migration of the visualization table
 * Fix error when deleting organizational users that had created objects via SQL-API
 * Change deprecated PostGIS function `ST_Force_2D` for the new `ST_Force2D`
 

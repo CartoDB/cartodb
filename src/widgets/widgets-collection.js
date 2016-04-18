@@ -15,12 +15,12 @@ module.exports = Backbone.Collection.extend({
     this.bind('change:order', _.debounce(this._onChangeOrder.bind(this), 10), this);
     // If a category model applies the category colors, rest should remove/disable
     // the category colors applied before.
-    this.bind('change:isColorsApplied', function (m, isColorCategorized) {
+    this.bind('change:isAutoStyle', function (m, isColorCategorized) {
       if (isColorCategorized) {
         this.each(function (widgetModel) {
           // Only set if model actually has the attr (i.e. it's a category model)
-          if (m !== widgetModel && _.isBoolean(widgetModel.get('isColorsApplied'))) {
-            widgetModel.set('isColorsApplied', false);
+          if (m !== widgetModel && _.isBoolean(widgetModel.get('isAutoStyle'))) {
+            widgetModel.set('isAutoStyle', false);
           }
         });
       }

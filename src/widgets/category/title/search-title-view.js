@@ -32,7 +32,7 @@ module.exports = cdb.core.View.extend({
     this.$el.html(
       template({
         isCollapsed: this.widgetModel.get('collapsed'),
-        isColorApplied: this.widgetModel.isColorApplied(),
+        isAutoStyle: this.widgetModel.isAutoStyle(),
         title: this.widgetModel.get('title'),
         columnName: this.dataviewModel.get('column'),
         q: this.dataviewModel.getSearchQuery(),
@@ -48,7 +48,7 @@ module.exports = cdb.core.View.extend({
 
   _initBinds: function () {
     this.widgetModel.bind('change:search', this._onSearchToggled, this);
-    this.widgetModel.bind('change:title change:collapsed change:isColorsApplied', this.render, this);
+    this.widgetModel.bind('change:title change:collapsed change:autoStyle', this.render, this);
     this.widgetModel.lockedCategories.bind('change add remove', this.render, this);
     this.add_related_model(this.widgetModel);
     this.add_related_model(this.widgetModel.lockedCategories);

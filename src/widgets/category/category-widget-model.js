@@ -55,58 +55,64 @@ module.exports = WidgetModel.extend({
   },
 
   autoStyle: function () {
-    var colors = this.colors.colors;
-    var defColor = Object.keys(colors).filter(function(k){return colors[k] === 'Other'})[0]
-    style = ['#layer[mapnik-geometry-type=polygon]{',
-               '  polygon-fill: {{defaultColor}}',
+    var defColor = this.colors.getColorByCategory('Other')
+    style = ['#'+this.dataviewModel.layer.get('layer_name') +'[mapnik-geometry-type=polygon]{',
+               '  polygon-fill: {{defaultColor}};',
                '  polygon-opacity: 0.6;  ',
                '  line-color: #FFF;',
                '  line-width: 0.3;',
                '  line-opacity: 0.3;',
+               '  {{ramp}}',
                '}',
-               '#layer[mapnik-geometry-type=point]{',
-               '  marker-width: 7;',
-               '  marker-fill-opacity: 0.4;  ',
+               '#'+this.dataviewModel.layer.get('layer_name') +'[mapnik-geometry-type=point]{',
+               '  marker-width: 10;',
+               '  marker-fill-opacity: 0.8;  ',
                '  marker-fill: {{defaultColor}};  ',
                '  marker-line-color: #fff;',
                '  marker-allow-overlap: true;',
                '  marker-line-width: 0.3;',
                '  marker-line-opacity: 0.8;',
+               '  {{ramp}}',
                '}',
-               '#layer[mapnik-geometry-type=linestring]{',
+               '#'+this.dataviewModel.layer.get('layer_name') +'[mapnik-geometry-type=linestring]{',
                '  line-color: {{defaultColor}};',
                '  line-width: 0.3;',
                '  line-opacity: 0.3;',
+               '  {{ramp}}',
                '}'
-              ].join('\n').replace(/{{defaultColor}}/g, defColor)
-    delete colors[defColor]
-    var ramp = Object.keys(colors).map(function (c) {
-      return '#layer' + '['+this.dataviewModel.get('column')+'=\'' + colors[c] + '\']{\nmarker-fill: ' + c + ';\n}'
-    }.bind(this)).join('\n');
-    style += '\n' + ramp;
+              ].join('\n')
+               .replace(/{{defaultColor}}/g, defColor);
+    var cats = this.dataviewModel.get('allCategoryNames');
+    ['polygon-fill', 'marker-fill', 'line-color'].forEach(function (s) {
+      var ramp = cats.map(function (c, i) {
+        var color = this.colors.getColorByCategory(c);
+        return '['+this.dataviewModel.get('column')+'=\'' + cats[i] + '\']{\n' + s + ': ' + color + ';\n}';
+      }.bind(this)).join('\n');
+      style = style.replace('{{ramp}}', ramp)
+    }.bind(this))
     if (!this.dataviewModel._dataProvider) {
-      this.dataviewModel.tempStyle = style;
+      this.dataviewModel.layer.set('cartocss', style);
     } else {
       var index = this.dataviewModel._dataProvider._layerIndex;
       var sublayer = this.dataviewModel._dataProvider._vectorLayerView;
       sublayer.setCartoCSS(index, style, true)
     }
-    this.dataviewModel.set('auto-style', true);
+    this.dataviewModel.set('autoStyle', true);
   },
 
   cancelAutoStyle: function () {
     if (!this.dataviewModel._dataProvider) {
-      delete this.dataviewModel.tempStyle
+      this.dataviewModel.layer.restoreCartoCSS()
     } else {
       var index = this.dataviewModel._dataProvider._layerIndex;
       var sublayer = this.dataviewModel._dataProvider._vectorLayerView;
       sublayer.setCartoCSS(index, this.originalStyle, true);
     }
-    this.dataviewModel.set('auto-style', false);
+    this.dataviewModel.set('autoStyle', false);
   },
 
-  isColorApplied: function () {
-    return this.dataviewModel.get('auto-style');
+  isAutoStyle: function () {
+    return this.dataviewModel.get('autoStyle');
   },
 
   isLocked: function () {
@@ -156,7 +162,7 @@ module.exports = WidgetModel.extend({
 
   _onDataviewAllCategoryNamesChange: function (m, names) {
     this.colors.updateData(names);
-    if (this.isColorApplied()) {
+    if (this.isAutoStyle()) {
       this.autoStyle();
     }
   },

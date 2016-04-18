@@ -28,7 +28,7 @@ module.exports = cdb.core.View.extend({
     this.$el.html(
       template({
         title: this.widgetModel.get('title'),
-        isAutoStyle: this.dataviewModel.get('auto-style'),
+        isAutoStyle: this.dataviewModel.get('autoStyle'),
         isCollapsed: this.widgetModel.get('collapsed')
       })
     );
@@ -39,7 +39,7 @@ module.exports = cdb.core.View.extend({
 
   _initBinds: function () {
     this.widgetModel.bind('change:title change:collapsed', this.render, this);
-    this.dataviewModel.bind('change:auto-style', function () {
+    this.dataviewModel.bind('change:autoStyle', function () {
       this.render();
       this.dataviewModel._onStyleChanged();
     }, this);
@@ -95,7 +95,7 @@ module.exports = cdb.core.View.extend({
       var data = this.dataviewModel.get('data')
       sublayer.setCartoCSS(index, style, true);
     }
-    this.dataviewModel.set('auto-style', true);
+    this.dataviewModel.set('autoStyle', true);
   },
 
   cancelAutoStyle: function () {
@@ -106,7 +106,7 @@ module.exports = cdb.core.View.extend({
       var sublayer = this.dataviewModel._dataProvider._vectorLayerView;
       sublayer.renderers[index].restoreCartoCSS(true);
     }
-    this.dataviewModel.set('auto-style', false);
+    this.dataviewModel.set('autoStyle', false);
   }
 
 });

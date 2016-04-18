@@ -254,7 +254,8 @@ describe Carto::Api::OrganizationUsersController do
 
       user_to_update = @organization.non_owner_users[0]
       params = { password: 'limonero' }
-      put api_v1_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username), params
+      put api_v1_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username),
+          params
 
       last_response.status.should == 200
     end
@@ -265,7 +266,8 @@ describe Carto::Api::OrganizationUsersController do
       user_to_update = @organization.non_owner_users[0]
       new_email = "new-#{user_to_update.email}"
       params = { email: new_email }
-      put api_v1_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username), params
+      put api_v1_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username),
+          params
       last_response.status.should eq 200
 
       user_to_update.reload.email.should == new_email
@@ -276,7 +278,8 @@ describe Carto::Api::OrganizationUsersController do
 
       user_to_update = @organization.non_owner_users[0]
       params = { quota_in_bytes: 2048 }
-      put api_v1_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username), params
+      put api_v1_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username),
+          params
 
       last_response.status.should eq 200
 
@@ -290,7 +293,8 @@ describe Carto::Api::OrganizationUsersController do
 
       user_to_update = @organization.users[0]
       params = { soft_geocoding_limit: true }
-      put api_v1_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username), params
+      put api_v1_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username),
+          params
 
       last_response.status.should eq 410
       user_to_update.reload.soft_geocoding_limit.should be false
@@ -302,13 +306,15 @@ describe Carto::Api::OrganizationUsersController do
 
       user_to_update = @organization.users[0]
       params = { soft_geocoding_limit: true }
-      put api_v1_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username), params
+      put api_v1_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username),
+          params
 
       last_response.status.should eq 200
       user_to_update.reload.soft_geocoding_limit.should be true
 
       params = { soft_geocoding_limit: false }
-      put api_v1_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username), params
+      put api_v1_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username),
+          params
 
       last_response.status.should eq 200
 
@@ -328,7 +334,8 @@ describe Carto::Api::OrganizationUsersController do
                  password: 'pataton',
                  soft_geocoding_limit: true,
                  quota_in_bytes: 2048 }
-      put api_v1_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username), params
+      put api_v1_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username),
+          params
 
       last_response.status.should eq 200
 
@@ -346,7 +353,8 @@ describe Carto::Api::OrganizationUsersController do
       user_to_update = @organization.users[0]
       params = user_params_soft_limits(nil, true)
 
-      put api_v1_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username), params
+      put api_v1_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username),
+          params
 
       last_response.status.should eq 200
 
@@ -361,7 +369,8 @@ describe Carto::Api::OrganizationUsersController do
       user_to_update = @organization.users[0]
       params = user_params_soft_limits(nil, false)
 
-      put api_v1_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username), params
+      put api_v1_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username),
+          params
 
       last_response.status.should eq 200
 
@@ -377,7 +386,8 @@ describe Carto::Api::OrganizationUsersController do
       replace_soft_limits(user_to_update, [false, false, false])
       params = user_params_soft_limits(nil, true)
 
-      put api_v1_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username), params
+      put api_v1_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username),
+          params
 
       last_response.status.should eq 410
       errors = JSON.parse(last_response.body)
@@ -393,7 +403,8 @@ describe Carto::Api::OrganizationUsersController do
 
       user_to_update = @organization.non_owner_users[0]
       params = { email: 'fail-' + user_to_update.email }
-      put api_v1_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username), params
+      put api_v1_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username),
+          params
 
       last_response.status.should == 500
       user_to_update.reload
@@ -418,7 +429,8 @@ describe Carto::Api::OrganizationUsersController do
       login(@organization.owner)
 
       user_to_be_deleted = @organization.non_owner_users[0]
-      delete api_v1_organization_users_delete_url(id_or_name: @organization.name, u_username: user_to_be_deleted.username)
+      delete api_v1_organization_users_delete_url(id_or_name: @organization.name,
+                                                  u_username: user_to_be_deleted.username)
 
       last_response.status.should eq 200
 
@@ -429,7 +441,8 @@ describe Carto::Api::OrganizationUsersController do
       login(@organization.owner)
 
       user_to_be_deleted = @organization.owner
-      delete api_v1_organization_users_delete_url(id_or_name: @organization.name, u_username: user_to_be_deleted.username)
+      delete api_v1_organization_users_delete_url(id_or_name: @organization.name,
+                                                  u_username: user_to_be_deleted.username)
 
       last_response.status.should == 401
     end

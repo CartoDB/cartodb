@@ -49,6 +49,7 @@ which should be fixed manually.
 * Update CartoDB PostgreSQL extension to 0.14.3 to support `cartodb_id` text columns in the CartoDBfy process.
   * See instructions to upgrade to the latest extension version [here](https://github.com/CartoDB/cartodb-postgresql#update-cartodb-extension)
 * Fix slow search of visualizations by name
+* Fixed a bug where visualization with two layers using the same dataset could not be deleted
 * Update and improve logging system
 * Fix broken syncs after setting sync options to "Never"
 * Fix broken visualizations due to invalid permissions

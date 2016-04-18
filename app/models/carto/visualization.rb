@@ -305,6 +305,10 @@ class Carto::Visualization < ActiveRecord::Base
     likes.count
   end
 
+  def widgets
+    layers.map(&:widgets).flatten
+  end
+
   def attributions_from_derived_visualizations
     related_canonical_visualizations.map(&:attributions).reject(&:blank?)
   end

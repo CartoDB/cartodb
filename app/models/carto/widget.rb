@@ -11,7 +11,8 @@ class Carto::Widget < ActiveRecord::Base
   after_destroy :notify_maps_change
 
   def self.from_visualization_id(visualization_id)
-    Carto::Visualization.find(visualization_id).layers.map(&:widgets).flatten
+    visualization = Carto::Visualization.where(id: visualization_id).first
+    visualization.nil? ? [] : visualization.widgets.flatten
   end
 
   # INFO: disable ActiveRecord inheritance column

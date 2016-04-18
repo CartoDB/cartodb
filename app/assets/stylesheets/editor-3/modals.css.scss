@@ -1,0 +1,118 @@
+@import 'cdb-utilities/mixins';
+@import 'cdb-variables/colors';
+@import 'cdb-variables/sizes';
+
+
+/* WIP*/
+
+
+.Filters-typeItem {
+  @include display-flex(); /* todo when create new layout */
+}
+.DatasetsList-itemMeta {
+  @include align-items(baseline); /* todo when create new layout */
+}
+
+.Modal-body {
+  padding-top: 24px;
+}
+
+.Modal-body-inner {
+  width: 944px;
+  margin: 0 auto;
+}
+
+.Modal-body-header {
+  margin-bottom: 16px;
+}
+
+.ModalBlockList-item-header {
+  @include display-flex();
+  @include justify-content(space-between);
+  @include align-items(center);
+}
+
+.ModalBlockList-item-headerTitle {
+  @include flex(1);
+}
+.ModalBlockList-item-headerSubTitle {
+  width: 100px; /* fix naming depending the rest of designs */
+}
+
+.ModalBlockList {
+  @include display-flex();
+  @include flex-wrap(wrap);
+  padding: 0 4px;
+  box-sizing: border-box;
+}
+
+.ModalBlockList-item {
+  @include display-flex();
+  width: 304px;
+  min-width: 304px;
+  margin: 0 4px 8px;
+  padding: 16px;
+  border: 1px solid $cWhite;
+  border-radius: 4px;
+  background: $cWhite;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.ModalBlockList-item:hover {
+  @include transition(border, 200ms, ease-in);
+  border: 1px solid $cHoverLine;
+}
+
+.ModalBlockList-item--full {
+  width: 100%;
+  min-width: 100%;
+  margin: 16px 0 0;
+}
+
+.ModalBlockList-item.is-selected {
+  border: 1px solid rgba($cBlue, 0.48);
+}
+.ModalBlockList-item.is-disabled {
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: auto;
+  opacity: 0.5;
+}
+
+.ModalBlockList-item-body {
+  @include display-flex();
+}
+.ModalBlockList-item-media {
+  width: 40px;
+  min-width: 40px;
+  height: 40px;
+  border-radius: 2px;
+  background: rgba($cBlue, 0.08);
+}
+
+
+.Form-row {
+  @include align-items(center);
+}
+
+/* Add Layer Modal */
+.ModalDataset-itemInfo {
+  @include display-flex();
+  @include align-items(center);
+  @include flex(1);
+  @include justify-content(space-between);
+}
+
+.ModalDataset-itemInfoTitle {
+  max-width: 50%;
+  padding-right: 24px;
+  box-sizing: border-box;
+}
+
+.Carousel-Navigation.is-disabled {
+  opacity: 0.24;
+}
+
+
+

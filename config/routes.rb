@@ -392,10 +392,12 @@ CartoDB::Application.routes.draw do
     # User assets
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1/users/:user_id/assets' => 'assets#index',   as: :api_v1_users_assets_index
 
+    # Organization (new endpoint that deprecates old, unused one, so v1)
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/:id/users' => 'organizations#users', as: :api_v1_organization_users, constraints: { id: /[^\/]+/ }
+
     scope '(/user/:user_domain)(/u/:user_domain)/api/v1/' do
       # Organization user management
       scope 'organization/:id_or_name/' do
-        get    'users',             to: 'organization_users#index',   as: :api_v1_organization_users_index
         post   'users',             to: 'organization_users#create',  as: :api_v1_organization_users_create
         get    'users/:u_username', to: 'organization_users#show',    as: :api_v1_organization_users_show
         delete 'users/:u_username', to: 'organization_users#destroy', as: :api_v1_organization_users_delete
@@ -405,6 +407,18 @@ CartoDB::Application.routes.draw do
       # Overlays
       scope 'viz/:visualization_id/', constraints: { visualization_id: /[0-z\-]+/ } do
         resources :overlays, only: [:index, :show, :create, :update, :destroy], constraints: { id: /[0-z\-]+/ }
+      end
+    end
+
+    # Using v2 to add index to EUMAPI since /users is taken in v1
+    scope '(/user/:user_domain)(/u/:user_domain)/api/v2/' do
+      # Organization user management
+      scope 'organization/:id_or_name/' do
+        get    'users',             to: 'organization_users#index',   as: :api_v2_organization_users_index
+        post   'users',             to: 'organization_users#create',  as: :api_v2_organization_users_create
+        get    'users/:u_username', to: 'organization_users#show',    as: :api_v2_organization_users_show
+        delete 'users/:u_username', to: 'organization_users#destroy', as: :api_v2_organization_users_delete
+        put    'users/:u_username', to: 'organization_users#update',  as: :api_v2_organization_users_update
       end
     end
 

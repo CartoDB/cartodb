@@ -154,13 +154,13 @@ describe Carto::Ldap::Configuration do
 private
 
 def register_ldap_user(cn, username, password)
-  # Data to return as an LDAP result, that will be loaded into Carto::Ldap::Entry
   ldap_entry_data = {
-      @user_id_field => [username]
-    }
-
+    dn: cn,
+    @user_id_field => [username]
+  }
+  # Data to return as an LDAP result, that will be loaded into Carto::Ldap::Entry
   FakeNetLdap.register_user(:username => cn, :password => password)
-  FakeNetLdap.register_query(Net::LDAP::Filter.eq('cn', username), ldap_entry_data)
+  FakeNetLdap.register_query(Net::LDAP::Filter.eq('cn', username), [ldap_entry_data])
 end
 
 end

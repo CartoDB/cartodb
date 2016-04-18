@@ -52,7 +52,6 @@ module CartoDB
       DEFAULT_OPTIONS_VALUE = '{}'
 
       # Upon adding new attributes modify also:
-      # app/models/visualization/migrator.rb
       # services/data-repository/spec/unit/backend/sequel_spec.rb -> before do
       # spec/support/helpers.rb -> random_attributes_for_vis_member
       # app/models/visualization/presenter.rb

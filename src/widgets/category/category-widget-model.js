@@ -1,7 +1,7 @@
 var _ = require('underscore');
 var WidgetModel = require('../widget-model');
-var CategoryColors = require('./category-colors');
 var LockedCategoriesCollection = require('./locked-categories-collection');
+var AutoStyler = require('../auto-styler');
 
 /**
  * Model for a category widget
@@ -19,9 +19,8 @@ module.exports = WidgetModel.extend({
 
   initialize: function () {
     WidgetModel.prototype.initialize.apply(this, arguments);
-    this.colors = new CategoryColors();
     this.lockedCategories = new LockedCategoriesCollection();
-
+    this.autoStyler = new AutoStyler(this.dataviewModel);
     this.listenTo(this.dataviewModel, 'change:allCategoryNames', this._onDataviewAllCategoryNamesChange);
     this.on('change:locked', this._onLockedChange, this);
     this.on('change:collapsed', this._onCollapsedChange, this);
@@ -55,41 +54,42 @@ module.exports = WidgetModel.extend({
   },
 
   autoStyle: function () {
-    var defColor = this.colors.getColorByCategory('Other')
-    style = ['#'+this.dataviewModel.layer.get('layer_name') +'[mapnik-geometry-type=polygon]{',
-               '  polygon-fill: {{defaultColor}};',
-               '  polygon-opacity: 0.6;  ',
-               '  line-color: #FFF;',
-               '  line-width: 0.3;',
-               '  line-opacity: 0.3;',
-               '  {{ramp}}',
-               '}',
-               '#'+this.dataviewModel.layer.get('layer_name') +'[mapnik-geometry-type=point]{',
-               '  marker-width: 10;',
-               '  marker-fill-opacity: 0.8;  ',
-               '  marker-fill: {{defaultColor}};  ',
-               '  marker-line-color: #fff;',
-               '  marker-allow-overlap: true;',
-               '  marker-line-width: 0.3;',
-               '  marker-line-opacity: 0.8;',
-               '  {{ramp}}',
-               '}',
-               '#'+this.dataviewModel.layer.get('layer_name') +'[mapnik-geometry-type=linestring]{',
-               '  line-color: {{defaultColor}};',
-               '  line-width: 0.3;',
-               '  line-opacity: 0.3;',
-               '  {{ramp}}',
-               '}'
-              ].join('\n')
-               .replace(/{{defaultColor}}/g, defColor);
-    var cats = this.dataviewModel.get('allCategoryNames');
-    ['polygon-fill', 'marker-fill', 'line-color'].forEach(function (s) {
-      var ramp = cats.map(function (c, i) {
-        var color = this.colors.getColorByCategory(c);
-        return '['+this.dataviewModel.get('column')+'=\'' + cats[i] + '\']{\n' + s + ': ' + color + ';\n}';
-      }.bind(this)).join('\n');
-      style = style.replace('{{ramp}}', ramp)
-    }.bind(this))
+    var style = this.autoStyler.getStyle();
+    // var defColor = this.colors.getColorByCategory('Other')
+    // style = ['#'+this.dataviewModel.layer.get('layer_name') +'[mapnik-geometry-type=polygon]{',
+    //            '  polygon-fill: {{defaultColor}};',
+    //            '  polygon-opacity: 0.6;  ',
+    //            '  line-color: #FFF;',
+    //            '  line-width: 0.3;',
+    //            '  line-opacity: 0.3;',
+    //            '  {{ramp}}',
+    //            '}',
+    //            '#'+this.dataviewModel.layer.get('layer_name') +'[mapnik-geometry-type=point]{',
+    //            '  marker-width: 10;',
+    //            '  marker-fill-opacity: 0.8;  ',
+    //            '  marker-fill: {{defaultColor}};  ',
+    //            '  marker-line-color: #fff;',
+    //            '  marker-allow-overlap: true;',
+    //            '  marker-line-width: 0.3;',
+    //            '  marker-line-opacity: 0.8;',
+    //            '  {{ramp}}',
+    //            '}',
+    //            '#'+this.dataviewModel.layer.get('layer_name') +'[mapnik-geometry-type=linestring]{',
+    //            '  line-color: {{defaultColor}};',
+    //            '  line-width: 0.3;',
+    //            '  line-opacity: 0.3;',
+    //            '  {{ramp}}',
+    //            '}'
+    //           ].join('\n')
+    //            .replace(/{{defaultColor}}/g, defColor);
+    // var cats = this.dataviewModel.get('allCategoryNames');
+    // ['polygon-fill', 'marker-fill', 'line-color'].forEach(function (s) {
+    //   var ramp = cats.map(function (c, i) {
+    //     var color = this.colors.getColorByCategory(c);
+    //     return '['+this.dataviewModel.get('column')+'=\'' + cats[i] + '\']{\n' + s + ': ' + color + ';\n}';
+    //   }.bind(this)).join('\n');
+    //   style = style.replace('{{ramp}}', ramp)
+    // }.bind(this))
     if (!this.dataviewModel._dataProvider) {
       this.dataviewModel.layer.set('cartocss', style);
     } else {
@@ -161,7 +161,7 @@ module.exports = WidgetModel.extend({
   },
 
   _onDataviewAllCategoryNamesChange: function (m, names) {
-    this.colors.updateData(names);
+    this.autoStyler.colors.updateData(names);
     if (this.isAutoStyle()) {
       this.autoStyle();
     }

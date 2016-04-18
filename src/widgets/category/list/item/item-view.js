@@ -35,7 +35,7 @@ module.exports = cdb.core.View.extend({
         value: value,
         formattedValue: formatter.formatNumber(value),
         percentage: ((value / this.dataviewModel.get('max')) * 100),
-        color: this.widgetModel.colors.getColorByCategory(name),
+        color: this.widgetModel.autoStyler.colors.getColorByCategory(name),
         isDisabled: !this.model.get('selected') ? 'is-disabled' : '',
         prefix: this.widgetModel.get('prefix'),
         suffix: this.widgetModel.get('suffix')

@@ -240,7 +240,6 @@ describe Visualization::Collection do
       # Latest edited
       vis1.table.add_column!(name: "test_col", type: "text")
       table = vis1.table
-      table.insert_row!(test_col: "111")
       @user_1.in_database.run("VACUUM #{table1.name}")
       sleep(1) # To avoid same sec storage
       vis1.fetch.store.fetch

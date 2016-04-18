@@ -56,6 +56,7 @@ which should be fixed manually.
 * Make `layers.kind` not null. Run `bundle exec rake db:migrate` to update your database.
 * Fix error when deleting organizational users that had created objects via SQL-API
 * Change deprecated PostGIS function `ST_Force_2D` for the new `ST_Force2D`
+* Fix bug in import mail notifier that prevented to obtain the name of tables created by queries or duplications
 
 ## Security fixes
 

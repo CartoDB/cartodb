@@ -7,11 +7,19 @@ module Carto
     class OrganizationUsersController < ::Api::ApplicationController
       include OrganizationUsersHelper
 
-      ssl_required :create, :update, :destroy, :show
+      ssl_required :create, :update, :destroy, :show, :index
 
       before_filter :load_organization
       before_filter :owners_only
       before_filter :load_user, only: [:show, :update, :destroy]
+
+      def index
+        presentations = @organization.users.each do |user|
+          Carto::Api::UserPresenter.new(user, current_viewer: current_viewer).to_poro
+        end
+
+        render_jsonp(presentations, 200)
+      end
 
       def show
         render_jsonp(Carto::Api::UserPresenter.new(@user, current_viewer: current_viewer).to_poro, 200)

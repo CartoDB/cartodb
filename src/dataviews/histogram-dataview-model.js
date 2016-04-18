@@ -143,9 +143,9 @@ module.exports = DataviewModelBase.extend({
 
   _onChangeBinds: function () {
     DataviewModelBase.prototype._onChangeBinds.call(this);
-    this.bind('change:auto-style', function (mdl, isAutoStyle, d) {
+    this.bind('change:autoStyle', function (mdl, isAutoStyle, d) {
       if (isAutoStyle) {
-        this.trigger('auto-style', this);
+        this.trigger('autoStyle', this);
       }
     }, this);
   },

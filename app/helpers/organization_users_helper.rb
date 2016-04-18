@@ -2,14 +2,12 @@
 require_dependency 'carto/uuidhelper'
 
 module OrganizationUsersHelper
+  include Carto::UUIDHelper
+
   def load_organization
     id_or_name = params[:id_or_name]
 
-    @organization = if is_uuid?(id_or_name)
-                      Carto::Organization.where(id: id_or_name).first
-                    else
-                      Carto::Organization.where(name: id_or_name).first
-                    end
+    @organization = ::Organization.where(is_uuid?(id_or_name) ? { id: id_or_name } : { name: id_or_name }).first
 
     unless @organization
       render_jsonp({}, 401) # Not giving clues to guessers via 404

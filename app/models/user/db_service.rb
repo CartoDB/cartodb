@@ -19,7 +19,7 @@ module CartoDB
       SCHEMA_IMPORTER = 'cdb_importer'.freeze
       SCHEMA_GEOCODING = 'cdb'.freeze
       SCHEMA_CDB_DATASERVICES_API = 'cdb_dataservices_client'.freeze
-      CDB_DATASERVICES_CLIENT_VERSION = '0.2.0'.freeze
+      CDB_DATASERVICES_CLIENT_VERSION = '0.3.0'.freeze
 
       def initialize(user)
         raise "User nil" unless user
@@ -437,6 +437,9 @@ module CartoDB
         configuration = db_configuration_for
         configuration[:port] = configuration.fetch(:direct_port, configuration["direct_port"]) || configuration[:port] || configuration["port"]
 
+        # Temporary trace to be removed once https://github.com/CartoDB/cartodb/issues/7047 is solved
+        CartoDB::Logger.warning(message: 'Direct connection not used from queue') unless Socket.gethostname =~ /^que/
+
         connection = @user.get_connection(_opts = {}, configuration)
 
         begin
@@ -455,7 +458,7 @@ module CartoDB
       # Upgrade the cartodb postgresql extension
       def upgrade_cartodb_postgres_extension(statement_timeout = nil, cdb_extension_target_version = nil)
         if cdb_extension_target_version.nil?
-          cdb_extension_target_version = '0.15.0'
+          cdb_extension_target_version = '0.15.1'
         end
 
         @user.in_database(as: :superuser, no_cartodb_in_schema: true) do |db|
@@ -1135,7 +1138,7 @@ module CartoDB
       end
       
       def get_database_version
-        version_match = @user.in_database(:as => :superuser).fetch("SELECT version()").first[:version].match(/(PostgreSQL (([0-9]+\.?){2,3})).*/)
+        version_match = @user.in_database.fetch("SELECT version()").first[:version].match(/(PostgreSQL (([0-9]+\.?){2,3})).*/)
         if version_match.nil?
           return nil
         else

@@ -58,8 +58,7 @@ defaults: &defaults
     primary:          ''
     embeds:           ''
     domain:           ''
-  rollbar:
-    token: ''
+  rollbar_api_key: ''
   tumblr:
     api_key: ''
   trackjs:
@@ -461,6 +460,7 @@ defaults: &defaults
   overviews:
     min_rows: 2000000
     statement_timeout: 1800000
+    tolerance_px: 1.0
 
 development:
   <<: *defaults

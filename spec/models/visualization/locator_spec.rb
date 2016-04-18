@@ -8,7 +8,6 @@ require_relative '../../spec_helper'
 require_relative '../../../app/models/visualization/locator'
 require_relative '../../../app/models/visualization'
 require_relative '../../../app/models/visualization/member'
-require_relative '../../../app/models/visualization/migrator'
 require_relative '../../doubles/support_tables.rb'
 
 include CartoDB
@@ -126,4 +125,3 @@ describe Visualization::Locator do
     model_klass
   end #model_fake
 end # Visualization::Locator
-

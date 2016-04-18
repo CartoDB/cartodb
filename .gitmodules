@@ -7,3 +7,6 @@
 [submodule "lib/sql"]
 	path = lib/sql
 	url = git://github.com/CartoDB/cartodb-postgresql.git
+[submodule "lib/carto_assets"]
+	path = lib/carto_assets
+	url = ssh://bbgithub.dev.bloomberg.com/datavis-cartodb/CartoAssets.git

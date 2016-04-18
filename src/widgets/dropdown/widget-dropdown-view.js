@@ -31,10 +31,10 @@ module.exports = cdb.core.View.extend({
   },
 
   render: function () {
-    this.$el.html(_.extend({},
+    this.$el.html(template(_.extend({},
       this.model.attributes,
       { flags: this.options.flags }
-    ));
+    )));
     return this;
   },
 

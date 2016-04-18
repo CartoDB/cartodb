@@ -43,6 +43,7 @@ which should be fixed manually.
 * Source and attributions copied to visualizations when you import a dataset from the Data Library (https://github.com/CartoDB/cartodb/issues/5970).
 * Improved performance of the check for multiple users editing the same visualization
 * Fixes a memory leak when connecting to user databases
+* Drops unused `url_options` field from visualizations table.
 * Fixed error when accessing an SQL API renamed table through the editor.
 * Refactored and fixed error handling for visualization overlays.
 * Ignore non-downloadable GDrive files that made file listing fail (https://github.com/CartoDB/cartodb/pull/6871)

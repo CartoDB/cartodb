@@ -36,6 +36,7 @@ which should be fixed manually.
 * Ghost table linking is now concurrent per user (avoids race conditions)
 * Experimental support for [visualization metadata export](https://github.com/CartoDB/cartodb/pull/7114).
 * Update CartoDB PostgreSQL extension to 0.15.1 to support overviews.
+* Update dataservices-api client to version 0.3.0 (routing functions)
 
 ## Bug Fixes
 * Updating CartoDB.js submodule with last changes sanitizing attribution.

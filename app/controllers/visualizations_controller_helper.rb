@@ -98,4 +98,9 @@ module VisualizationsControllerHelper
     Carto::Api::VizJSON3Presenter.new(visualization)
                                  .to_named_map_vizjson(https_request: is_https?, vector: params[:vector] == 'true')
   end
+
+  def generate_anonymous_map_vizjson3(visualization, params)
+    Carto::Api::VizJSON3Presenter.new(visualization)
+                                 .to_anonymous_map_vizjson(https_request: is_https?, vector: params[:vector] == 'true')
+  end
 end

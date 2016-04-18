@@ -50,7 +50,8 @@ module CartoDB
       VIZJSON_VERSION_KEY = {
         2 => '', # VizJSON v2
         3 => '3', # VizJSON v3
-        '3n' => '3n' # VizJSON v3 forcing named maps (needed for embeds, see #7093)
+        '3n' => '3n', # VizJSON v3 forcing named maps (needed for embeds, see #7093)
+        '3a' => '3a' # VizJSON v3 forcing anonymoys maps (needed for editor, see #7150)
       }.freeze
 
       def redis

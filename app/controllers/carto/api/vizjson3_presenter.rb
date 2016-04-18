@@ -12,8 +12,15 @@ module Carto
       end
     end
 
+    module DisplayVizjsonMode
+      def display_named_map?(visualization, force_vizjson)
+        force_vizjson != :force_anonymous && (visualization.retrieve_named_map? || force_vizjson == :force_named)
+      end
+    end
+
     class VizJSON3Presenter
       include ApiTemplates
+      include DisplayVizjsonMode
 
       def initialize(visualization,
                      redis_vizjson_cache = CartoDB::Visualization::RedisVizjsonCache.new($tables_metadata, 3))
@@ -22,25 +29,40 @@ module Carto
       end
 
       def to_vizjson(https_request: false, vector: false)
-        generate_vizjson(https_request: https_request, vector: vector, force_named_map: false)
+        generate_vizjson(https_request: https_request, vector: vector, force_vizjson: nil)
       end
 
       def to_named_map_vizjson(https_request: false, vector: false)
-        generate_vizjson(https_request: https_request, vector: vector, force_named_map: true)
+        generate_vizjson(https_request: https_request, vector: vector, force_vizjson: FORCE_NAMED)
+      end
+
+      def to_anonymous_map_vizjson(https_request: false, vector: false)
+        generate_vizjson(https_request: https_request, vector: vector, force_vizjson: FORCE_ANONYMOUS)
       end
 
       private
 
-      def generate_vizjson(https_request:, vector:, force_named_map:)
+      FORCE_NAMED = :force_named
+      FORCE_ANONYMOUS = :force_anonymous
+
+      def generate_vizjson(https_request:, vector:, force_vizjson:)
         https_request ||= false
         vector ||= false
-        version = force_named_map ? '3n' : 3
+        version = case force_vizjson
+                  when :force_named
+                    '3n'
+                  when :force_anonymous
+                    '3a'
+                  else
+                    3
+                  end
+
         vizjson = if @redis_vizjson_cache
                     @redis_vizjson_cache.cached(@visualization.id, https_request, version) do
-                      calculate_vizjson(https_request: https_request, vector: vector, force_named_map: force_named_map)
+                      calculate_vizjson(https_request: https_request, vector: vector, force_vizjson: force_vizjson)
                     end
                   else
-                    calculate_vizjson(https_request: https_request, vector: vector, force_named_map: force_named_map)
+                    calculate_vizjson(https_request: https_request, vector: vector, force_vizjson: force_vizjson)
                   end
 
         vizjson[:vector] = vector
@@ -64,7 +86,7 @@ module Carto
         }
       end
 
-      def calculate_vizjson(https_request: false, vector: false, force_named_map: false)
+      def calculate_vizjson(https_request: false, vector: false, force_vizjson: nil)
         options = default_options.merge(https_request: https_request, vector: vector)
 
         user = @visualization.user
@@ -83,17 +105,17 @@ module Carto
           center:         map.center,
           zoom:           map.zoom,
           updated_at:     map.viz_updated_at,
-          layers:         layers_vizjson(options, force_named_map),
+          layers:         layers_vizjson(options, force_vizjson),
           overlays:       @visualization.overlays.map { |o| Carto::Api::OverlayPresenter.new(o).to_vizjson },
           prev:           @visualization.prev_id,
           next:           @visualization.next_id,
           transition_options: @visualization.transition_options,
           widgets:        widgets_vizjson,
-          datasource:     datasource_vizjson(options, force_named_map),
+          datasource:     datasource_vizjson(options, force_vizjson),
           user:           user_info_vizjson(user)
         }
 
-        unless @visualization.retrieve_named_map? || force_named_map
+        unless display_named_map?(@visualization, force_vizjson)
           vizjson[:analyses] = @visualization.analyses.map(&:analysis_definition_json)
         end
 
@@ -122,12 +144,12 @@ module Carto
           message: "Error parsing map bounds: #{map.id}, #{map.view_bounds_sw}, #{map.view_bounds_ne}", exception: e)
       end
 
-      def layers_vizjson(options, force_named_map)
+      def layers_vizjson(options, force_vizjson)
         basemap_layer = basemap_layer_vizjson(options)
         layers_data = []
         layers_data.push(basemap_layer) if basemap_layer
 
-        if @visualization.retrieve_named_map? || force_named_map
+        if display_named_map?(@visualization, force_vizjson)
           presenter_options = {
             user_name: options.fetch(:user_name),
             https_request: options.fetch(:https_request, false),
@@ -205,14 +227,14 @@ module Carto
         Cartodb.config
       end
 
-      def datasource_vizjson(options, force_named_map)
+      def datasource_vizjson(options, force_vizjson)
         ds = {
           user_name: @visualization.user.username,
           maps_api_template: ApplicationHelper.maps_api_template(api_templates_type(options)),
           stat_tag: @visualization.id
         }
 
-        if @visualization.retrieve_named_map? || force_named_map
+        if display_named_map?(@visualization, force_vizjson)
           ds[:template_name] = CartoDB::NamedMapsWrapper::NamedMap.template_name(@visualization.id)
         end
 

@@ -13,6 +13,7 @@ namespace :cartodb do
         puts "*** Automatically fixing conflicts" if auto_fix
         sleep 5
         failed_ids = []
+
         viz.each do |v|
           begin
             puts '*** Updating permissions for visualization ' + v.id
@@ -25,9 +26,7 @@ namespace :cartodb do
               username = v.user ? v.user.username : 'cdb_unknown' # Workaround for invalid users
               perm = Carto::Permission.create(
                 owner_id:       user_id,
-                owner_username: username,
-                entity_id:      v.id,
-                entity_type:    'vis'
+                owner_username: username
               )
 
               log_file.puts "Visualization #{v.id}, permission changed from '#{v.permission_id}' to '#{perm.id}' (default)"

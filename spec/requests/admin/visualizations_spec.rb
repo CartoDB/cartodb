@@ -4,7 +4,6 @@ require 'rack/test'
 require 'json'
 require_relative '../../spec_helper'
 require_relative '../../support/factories/organizations'
-require_relative '../../../app/models/visualization/migrator'
 require_relative '../../../app/controllers/admin/visualizations_controller'
 require 'helpers/unique_names_helper'
 

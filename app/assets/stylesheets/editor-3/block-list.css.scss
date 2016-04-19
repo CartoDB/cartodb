@@ -66,6 +66,9 @@
 
 .HorizontalBlockList {
   @include display-flex();
+  /* remove when add new scroll */
+  max-width: 264px;
+  overflow: auto;
 }
 .HorizontalBlockList-item {
   @include display-flex();
@@ -74,6 +77,7 @@
   position: relative;
   box-sizing: border-box;
   width: 40px;
+  min-width: 40px;
   height: 40px;
   margin-right: 8px;
   border: 1px solid $cSecondaryLine;

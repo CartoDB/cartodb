@@ -7,9 +7,9 @@ module Carto
       @database = database
     end
 
-    def create_overviews(table_name)
+    def create_overviews(table_name, tolerance_px)
       @database.run %{
-        SELECT cartodb.CDB_CreateOverviews('#{table_name}'::REGCLASS);
+        SELECT cartodb.CDB_CreateOverviewsWithToleranceInPixels('#{table_name}'::REGCLASS, '#{tolerance_px}'::float8);
       }
     end
 

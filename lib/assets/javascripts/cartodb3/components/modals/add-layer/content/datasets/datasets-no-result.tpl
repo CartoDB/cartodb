@@ -6,7 +6,7 @@
       <% } else if (library) { %> CDB-IconFont-dribbble
       <% } else { %> CDB-IconFont-lens <% } %>" />
   </div>
-  <h4 class="IntermediateInfo-title">
+  <h4 class="CDB-Text CDB-Size-large u-mainTextColor u-bSpace u-secondaryTextColor u-tSpace-xl">
     <% if (page > 1 || totalItems === 0 && totalEntries > 0) { %>
       <%- _t('components.modals.add-layer.datasets.no-results.desc') %>
     <% } %>
@@ -19,7 +19,7 @@
       <%- _t('components.modals.add-layer.datasets.no-results.there-are-no') %> <%- shared === "only" ? 'shared' : '' %> <%- locked ? 'locked' : '' %> <%- library ? 'library' : '' %> <%- type %>
     <% } %>
   </h4>
-  <p class="DefaultParagraph">
+  <p class="CDB-Text CDB-Size-medium u-altTextColor">
     <% if (!tag && !q && totalItems === 0 && totalEntries === 0) { %>
       <%- _t('components.modals.add-layer.datasets.no-results.no-fun', { type: type }) %>
     <% } %>

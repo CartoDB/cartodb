@@ -4,7 +4,9 @@
 
 
 /* WIP*/
-
+.Dialog.is-white {
+  background: $cWhite;
+}
 
 .Filters-typeItem {
   @include display-flex(); /* todo when create new layout */
@@ -48,6 +50,7 @@
 
 .ModalBlockList-item {
   @include display-flex();
+  @include align-items(baseline);
   width: 304px;
   min-width: 304px;
   margin: 0 4px 8px;
@@ -59,12 +62,17 @@
   cursor: pointer;
 }
 
+.ModalBlockList-itemInput {
+  margin-right: 16px;
+}
+
 .ModalBlockList-item:hover {
   @include transition(border, 200ms, ease-in);
   border: 1px solid $cHoverLine;
 }
 
 .ModalBlockList-item--full {
+  @include align-items(inherit);
   width: 100%;
   min-width: 100%;
   margin: 16px 0 0;

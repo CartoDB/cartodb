@@ -1,3 +1,6 @@
+# coding: utf-8
+require 'open3'
+
 module CartoDB
   module DataMover
     module Utils
@@ -41,12 +44,32 @@ module CartoDB
         @redis_conn ||= Redis.new(host: CartoDB::DataMover::Config.config[:redis_host], port: CartoDB::DataMover::Config.config[:redis_port], db: 5)
       end
 
+      def set_user_mover_banner(user_id)
+        migration_banner = 'WARNING: Your user is under a maintenance operation set in read-only mode. Account modifications during this time might be lost.'
+        u = ::Carto::User.where(id: user_id).first
+        u.update_column(:notification, migration_banner)
+      end
+
+      def remove_user_mover_banner(user_id)
+        u = ::Carto::User.where(id: user_id).first
+        u.update_column(:notification, nil)
+      end
+
       def run_command(cmd)
-        p cmd
-        IO.popen(cmd) do |io|
-          puts io.gets while !io.eof?
+        logger.debug "Running command: \"#{cmd}\""
+        return_code = nil
+        Open3.popen2e(cmd) do |_stdin, stdout_and_stderr, wait_thr|
+          stdout_and_stderr.each { |line| logger.debug line.strip }
+          return_code = wait_thr.value
         end
-        throw "Error running #{cmd}, output code: #{$?}" if $? != 0
+        throw "Error running #{cmd}, output code: #{return_code}" if return_code != 0
+      end
+
+      def default_logger
+        my_logger = ::Logger.new(STDOUT)
+        my_logger.level = ::Logger::DEBUG
+        my_logger.formatter = ::Logger::Formatter.new
+        my_logger
       end
     end
   end

@@ -68,7 +68,7 @@ class Admin::VisualizationsController < Admin::AdminController
     @google_maps_query_string = @visualization.user.google_maps_query_string
     @basemaps = @visualization.user.basemaps
 
-    unless @visualization.has_permission?(current_user, Visualization::Member::PERMISSION_READWRITE)
+    unless @visualization.has_write_permission?(current_user)
       if request.original_fullpath =~ %r{/tables/}
         return redirect_to CartoDB.url(self, 'public_table_map', {id: request.params[:id], redirected:true})
       else
@@ -99,7 +99,7 @@ class Admin::VisualizationsController < Admin::AdminController
     end
 
     if @visualization.organization?
-      unless current_user and @visualization.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY)
+      unless current_user && @visualization.has_read_permission?(current_user)
         return(embed_forbidden)
       end
     end
@@ -122,7 +122,7 @@ class Admin::VisualizationsController < Admin::AdminController
     @api_key = nil
     @can_copy = false
 
-    if current_user && @visualization.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY)
+    if current_user && @visualization.has_read_permission?(current_user)
       if @visualization.organization?
         @auth_tokens = current_user.get_auth_tokens
         @use_https = true
@@ -201,7 +201,7 @@ class Admin::VisualizationsController < Admin::AdminController
     return(embed_forbidden) unless @visualization.is_accesible_by_user?(current_user)
     return(public_map_protected) if @visualization.password_protected?
     if current_user && @visualization.organization? &&
-        @visualization.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY)
+       @visualization.has_read_permission?(current_user)
       return(show_organization_public_map)
     end
     # Legacy redirect, now all public pages also with org. name
@@ -485,7 +485,7 @@ class Admin::VisualizationsController < Admin::AdminController
 
   def org_user_has_map_permissions?(user, visualization)
     user && visualization && visualization.organization? &&
-      visualization.has_permission?(user, Visualization::Member::PERMISSION_READONLY)
+      visualization.has_read_permission?(user)
   end
 
   def resolve_visualization_and_table

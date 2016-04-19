@@ -36,6 +36,7 @@ which should be fixed manually.
 * Ghost table linking is now concurrent per user (avoids race conditions)
 * Experimental support for [visualization metadata export](https://github.com/CartoDB/cartodb/pull/7114).
 * Update CartoDB PostgreSQL extension to 0.15.1 to support overviews.
+* Update dataservices-api client to version 0.3.0 (routing functions)
 
 ## Bug Fixes
 * Updating CartoDB.js submodule with last changes sanitizing attribution.
@@ -44,6 +45,7 @@ which should be fixed manually.
 * Source and attributions copied to visualizations when you import a dataset from the Data Library (https://github.com/CartoDB/cartodb/issues/5970).
 * Improved performance of the check for multiple users editing the same visualization
 * Fixes a memory leak when connecting to user databases
+* Drops unused `url_options` field from visualizations table.
 * Fixed error when accessing an SQL API renamed table through the editor.
 * Refactored and fixed error handling for visualization overlays.
 * Ignore non-downloadable GDrive files that made file listing fail (https://github.com/CartoDB/cartodb/pull/6871)
@@ -54,11 +56,13 @@ which should be fixed manually.
 * Update and improve logging system
 * Fix broken syncs after setting sync options to "Never"
 * Fix broken visualizations due to invalid permissions
+* Check layer limits server-side
 * Fix URL generations in some views, to correctly include the subdomain
 * Make `layers.kind` not null. Run `bundle exec rake db:migrate` to update your database
 * Remove unused and broken tool for migration of the visualization table
 * Fix error when deleting organizational users that had created objects via SQL-API
 * Change deprecated PostGIS function `ST_Force_2D` for the new `ST_Force2D`
+* Fix bug in import mail notifier that prevented to obtain the name of tables created by queries or duplications
 
 ## Security fixes
 

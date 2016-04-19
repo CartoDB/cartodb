@@ -17,7 +17,7 @@
     <% if (showTrial) { %>
       <div class="UpgradeElement-trial">
         <i class="CDB-IconFont CDB-IconFont-gift UpgradeElement-trialIcon"></i>
-        <p class="UpgradeElement-trialText u-ellipsLongText"><%- _t('components.background-importer.layers-error-details-upgrade.free-trial-days') %></p>
+        <p class="UpgradeElement-trialText u-ellipsLongText"><%- _t('components.background-importer.free-trial', { days: 14 }) %></p>
       </div>
     <% } %>
   </div>

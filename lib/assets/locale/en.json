@@ -78,7 +78,6 @@
         "upgrade-your-account": "<a href='https://cartodb.com/pricing/'>Upgrade your account</a> to add more than %{userMaxLayers} layers to your maps.",
       },
       "size-error-details-upgrade": {
-        "free-trial-duration": "14 days Free trial",
         "keep-data": "Keep your data and get more quota by upgrading your plan",
         "quota": "You have run out of quota",
         "remove-or-upgrade": "Remove some of your datasets to gain available space or upgrade your account",
@@ -106,13 +105,11 @@
         },
         "size-error-details-upgrade": {
           "description": "Remove some of your datasets to gain available space or upgrade your account",
-          "free-trial-days": "14 days Free trial",
           "title": "You have run out of quota",
           "upgrade": "upgrade",
           "upgrade-your-plan": "Keep your data and get more quota by upgrading your plan"
         },
         "layers-error-details-upgrade": {
-          "free-trial-days": "14 days Free trial",
           "keep-your-maps": "Keep your maps and get more layers quota by upgrading your plan",
           "reached-limits": "You have reached your layers limit",
           "remove-or-upgrade": "Remove any layer or upgrade your account",
@@ -144,6 +141,7 @@
         "one-file": "Unfortunately you can only import up to %{importQuota} files at the same time"
 
       },
+      "free-trial": "%{days} days Free trial",
       "connecting": "Connecting",
       "dataset": "dataset…",
       "geocoding": "Geocoding",

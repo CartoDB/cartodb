@@ -417,7 +417,7 @@ module CartoDB
       # @param permission_type String PERMISSION_xxx
       def has_permission?(user, permission_type)
         return is_owner?(user) if permission_id.nil?
-        is_owner?(user) || permission.is_permitted?(user, permission_type)
+        is_owner?(user) || permission.permitted?(user, permission_type)
       end
 
       def users_with_permissions(permission_types)

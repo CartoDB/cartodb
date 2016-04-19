@@ -351,14 +351,14 @@ describe CartoDB::Permission do
       ]
       permission.save
 
-      permission.is_permitted?(user2_mock, Permission::ACCESS_READONLY).should eq true
-      permission.is_permitted?(user2_mock, Permission::ACCESS_READWRITE).should eq false
+      permission.permitted?(user2_mock, Permission::ACCESS_READONLY).should eq true
+      permission.permitted?(user2_mock, Permission::ACCESS_READWRITE).should eq false
 
-      permission.is_permitted?(user3_mock, Permission::ACCESS_READONLY).should eq true
-      permission.is_permitted?(user3_mock, Permission::ACCESS_READWRITE).should eq true
+      permission.permitted?(user3_mock, Permission::ACCESS_READONLY).should eq true
+      permission.permitted?(user3_mock, Permission::ACCESS_READWRITE).should eq true
 
-      permission.is_permitted?(user4_mock, Permission::ACCESS_READONLY).should eq false
-      permission.is_permitted?(user4_mock, Permission::ACCESS_READWRITE).should eq false
+      permission.permitted?(user4_mock, Permission::ACCESS_READONLY).should eq false
+      permission.permitted?(user4_mock, Permission::ACCESS_READWRITE).should eq false
     end
 
     it 'checks organizations vs users permissions precedence' do
@@ -400,8 +400,8 @@ describe CartoDB::Permission do
           }
       ]
       permission.save
-      permission.is_permitted?(user2_mock, Permission::ACCESS_READONLY).should eq true
-      permission.is_permitted?(user2_mock, Permission::ACCESS_READWRITE).should eq true
+      permission.permitted?(user2_mock, Permission::ACCESS_READONLY).should eq true
+      permission.permitted?(user2_mock, Permission::ACCESS_READWRITE).should eq true
 
       # Organization has more permissions than user. Should get overriden (user prevails)
       permission.acl = [
@@ -423,8 +423,8 @@ describe CartoDB::Permission do
           }
       ]
       permission.save
-      permission.is_permitted?(user2_mock, Permission::ACCESS_READONLY).should eq true
-      permission.is_permitted?(user2_mock, Permission::ACCESS_READWRITE).should eq false
+      permission.permitted?(user2_mock, Permission::ACCESS_READONLY).should eq true
+      permission.permitted?(user2_mock, Permission::ACCESS_READWRITE).should eq false
 
       # User has revoked permissions, org has permissions. User revoked should prevail
       permission.acl = [
@@ -446,8 +446,8 @@ describe CartoDB::Permission do
           }
       ]
       permission.save
-      permission.is_permitted?(user2_mock, Permission::ACCESS_READONLY).should eq false
-      permission.is_permitted?(user2_mock, Permission::ACCESS_READWRITE).should eq false
+      permission.permitted?(user2_mock, Permission::ACCESS_READONLY).should eq false
+      permission.permitted?(user2_mock, Permission::ACCESS_READWRITE).should eq false
 
       # Organization permission only
       permission.acl = [
@@ -462,8 +462,8 @@ describe CartoDB::Permission do
       ]
       permission.save
 
-      permission.is_permitted?(user2_mock, Permission::ACCESS_READONLY).should eq true
-      permission.is_permitted?(user2_mock, Permission::ACCESS_READWRITE).should eq true
+      permission.permitted?(user2_mock, Permission::ACCESS_READONLY).should eq true
+      permission.permitted?(user2_mock, Permission::ACCESS_READWRITE).should eq true
     end
 
   end

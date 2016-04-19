@@ -222,7 +222,7 @@ module.exports = Model.extend({
   },
 
   _getSourceId: function () {
-    return this.layer.get('source') || this.layer.get('id');
+    return this.get('sourceId') || this.layer.get('source') || this.layer.get('id');
   },
 
   remove: function () {

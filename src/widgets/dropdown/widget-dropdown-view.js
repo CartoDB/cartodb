@@ -45,7 +45,7 @@ module.exports = cdb.core.View.extend({
   _initBinds: function () {
     this.add_related_model(this.model);
 
-    this.model.bind('change:open', this._onChangeOpen, this);
+    this.model.bind('change:widget_dropdown_open', this._onChangeOpen, this);
     this.model.bind('change:pinned change:collapsed change:normalized', this.render, this);
 
     this._$target.click(
@@ -71,19 +71,19 @@ module.exports = cdb.core.View.extend({
 
   _onGlobalClick: function (ev) {
     if (this._$target.get(0) !== $(ev.target).closest(this._$target).get(0)) {
-      this.model.set('open', false);
+      this.model.set('widget_dropdown_open', false);
     }
   },
 
   _onKeyUp: function (ev) {
     if (ev.keyCode === 27) {
-      this.model.set('open', false);
+      this.model.set('widget_dropdown_open', false);
       return false;
     }
   },
 
   _onChangeOpen: function () {
-    if (this.model.get('open')) {
+    if (this.model.get('widget_dropdown_open')) {
       this._open();
     } else {
       this._close();
@@ -133,11 +133,11 @@ module.exports = cdb.core.View.extend({
   },
 
   _toggleClick: function () {
-    this.model.set('open', !this.model.get('open'));
+    this.model.set('widget_dropdown_open', !this.model.get('widget_dropdown_open'));
   },
 
   clean: function () {
-    this.model.set('open', false);
+    this.model.set('widget_dropdown_open', false);
     this._unbindESC();
     this._unbindGlobalClick();
     this._$target.off('click');

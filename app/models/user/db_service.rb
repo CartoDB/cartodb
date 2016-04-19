@@ -657,7 +657,7 @@ module CartoDB
         @queries.run_in_transaction(
           (
             @queries.grant_read_on_schema_queries(SCHEMA_CARTODB, db_user) +
-            @queries.grant_write_on_cdb_tablemetadata_queries(db_user)
+            @queries.grant_write_on_cdb_tablemetadata_queries(db_user) +
             @queries.grant_write_on_cdb_analysis_catalog_queries(db_user)
           ),
           true

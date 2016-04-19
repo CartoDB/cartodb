@@ -135,8 +135,8 @@ module CartoDB
       source: ERROR_SOURCE_USER
     },
     1103 => {
-      title: 'Interrupted download',
-      what_about: "The resource you are trying to reach is accessible but there was a problem downloading the file. Please, try again.",
+      title: 'Partial file error',
+      what_about: "The resource you are trying to reach is accessible but the file transfer was shorter or larger than expected. This happens when the server first reports an expected transfer size, and then delivers data that doesn't match the previously given size. Please, try again.",
       source: ERROR_SOURCE_USER
     },
     2001 => {

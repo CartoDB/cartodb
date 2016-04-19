@@ -299,9 +299,8 @@ module CartoDB
             raise UnauthorizedDownloadError.new(error_response.body)
           elsif error_response.code == 404
             raise NotFoundDownloadError.new(error_response.body)
-          elsif error_response.code == 200
-            CartoDB::Logger.debug(message: "Interrupted download error", response: error_response.inspect)
-            raise InterruptedDownloadError.new("DOWNLOAD ERROR: Server responded with #{error_response.code} code but download failed")
+          elsif error_response.return_code == :partial_file
+            raise PartialDownloadError.new("DOWNLOAD ERROR: A file transfer was shorter or larger than expected")
           else
             raise DownloadError.new("DOWNLOAD ERROR: Code:#{error_response.code} Body:#{error_response.body}")
           end

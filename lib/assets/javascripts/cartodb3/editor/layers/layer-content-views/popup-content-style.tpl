@@ -3,10 +3,10 @@
 
   <div class="CDB-HeaderInfo-Inner CDB-Text">
     <div class="CDB-HeaderInfo-Title u-bSpace--m">
-      <h2 class="CDB-Text CDB-HeaderInfo-TitleText CDB-Size-large"><%- _t('editor.layers.popup.style.title-label') %></h2>
+      <h2 class="CDB-Text CDB-HeaderInfo-TitleText CDB-Size-large"><%- title %></h2>
     </div>
 
-    <p class="CDB-Text u-upperCase CDB-FontSize-small u-altTextColor u-bSpace--m"><%- _t('editor.layers.popup.style.description') %></p>
+    <p class="CDB-Text u-upperCase CDB-FontSize-small u-altTextColor u-bSpace--m"><%- description %></p>
 
     <select class="CDB-SelectFake js-select">
       <option value="white" selected="selected">

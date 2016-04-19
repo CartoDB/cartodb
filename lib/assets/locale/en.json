@@ -82,6 +82,10 @@
           "color": "Color",
           "image": "Image"
         },
+        "items": {
+          "title-label": "Show items",
+          "description": "Add items"
+        }
       }
     },
     "widgets": {

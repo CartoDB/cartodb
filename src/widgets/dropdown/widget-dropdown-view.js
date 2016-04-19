@@ -33,7 +33,11 @@ module.exports = cdb.core.View.extend({
   render: function () {
     this.$el.html(template(_.extend({},
       this.model.attributes,
-      { flags: this.options.flags }
+      { flags: this.options.flags || {} }, {
+        'normalized': false,
+        'pinned': false,
+        'collapsed': false
+      }
     )));
     return this;
   },

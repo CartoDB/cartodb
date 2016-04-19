@@ -9,7 +9,9 @@ describe('widgets/dropdown/widget-dropdown-view', function () {
   beforeEach(function () {
     $('body').append('<div class="Widget"><button class="js-button"><div class="js-container"></div></button></div>');
 
+    this.model = new cdb.core.Model();
     this.view = new WidgetDropdownView({
+      model: this.model,
       target: $('body').find('.js-button'),
       container: $('body').find('.js-container')
     });
@@ -31,7 +33,7 @@ describe('widgets/dropdown/widget-dropdown-view', function () {
     var called = false;
     var pinned = null;
 
-    this.view.bind('togglePinned', function (action) {
+    this.model.bind('change:pinned', function (action) {
       called = true;
       pinned = true;
     });
@@ -47,7 +49,7 @@ describe('widgets/dropdown/widget-dropdown-view', function () {
     var called = false;
     var collapsed = null;
 
-    this.view.bind('toggleCollapsed', function (action) {
+    this.model.bind('change:collapsed', function (action) {
       called = true;
       collapsed = true;
     });

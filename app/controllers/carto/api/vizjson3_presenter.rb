@@ -139,6 +139,7 @@ module Carto
       rescue => e
         CartoDB::Logger.debug(
           message: "Error parsing map bounds: #{map.id}, #{map.view_bounds_sw}, #{map.view_bounds_ne}", exception: e)
+        nil
       end
 
       def layers_vizjson(options, forced_privacy_version)

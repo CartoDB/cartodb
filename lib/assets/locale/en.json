@@ -104,6 +104,13 @@
           "free": "No extra charges have been done",
           "paid": "$%{tweetsCostFormatted} will be charged to your account"
         },
+        "size-error-details-upgrade": {
+          "description": "Remove some of your datasets to gain available space or upgrade your account",
+          "free-trial-days": "14 days Free trial",
+          "title": "You have run out of quota",
+          "upgrade": "upgrade",
+          "upgrade-your-plan": "Keep your data and get more quota by upgrading your plan"
+        },
         "layers-error-details-upgrade": {
           "free-trial-days": "14 days Free trial",
           "keep-your-maps": "Keep your maps and get more layers quota by upgrading your plan",

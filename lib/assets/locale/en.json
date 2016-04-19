@@ -90,13 +90,13 @@
         }
       },
       "background-geocoding-item": {
-        "geocoded": "%{realRowsFormatted}/%{processableRowsFormatted} %{processableRowsPluralize} geocoded…",
+        "geocoded": "%{realRowsFormatted}/%{processableRowsFormatted} row geocoded… |||| %{realRowsFormatted}/%{processableRowsFormatted} rows geocoded…",
         "geocoded-by-lat-lng": "Geocoded by latitude and longitude",
         "geocoding": "Geocoding %{tableName} dataset…",
         "show": "show",
         "rows-geocoded": {
-          "without-dataset": "%{realRowsFormatted} %{realRowsPluralize} geocoded",
-          "in-dataset": "%{realRowsFormatted} %{realRowsPluralize} geocoded in %{tableName} dataset",
+          "without-dataset": "%{realRowsFormatted} row geocoded |||| %{realRowsFormatted} rows geocoded",
+          "in-dataset": "%{realRowsFormatted} row geocoded in %{tableName} dataset|||| %{realRowsFormatted} rows geocoded in %{tableName} dataset",
         },
         "errors": {
           "no-rows-geocoded": {

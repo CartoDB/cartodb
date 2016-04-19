@@ -22,9 +22,9 @@
       <% } else { %>
 
       <% if (tableName) { %>
-      <%- _t('components.background-geocoding-item.rows-geocoded.in-dataset', { tableName: tableName, realRowsFormatted: realRowsFormatted, realRowsPluralize: realRowsPluralize}) %>
+      <%- _t('components.background-geocoding-item.rows-geocoded.in-dataset', { tableName: tableName, realRowsFormatted: realRowsFormatted, smart_count: realRows}) %>
       <% } else { %>
-      <%- _t('components.background-geocoding-item.rows-geocoded.without-dataset', { realRowsFormatted: realRowsFormatted, realRowsPluralize: realRowsPluralize}) %>
+      <%- _t('components.background-geocoding-item.rows-geocoded.without-dataset', { realRowsFormatted: realRowsFormatted, smart_count: realRows }) %>
       <% } %>
       <% } %>
     </div>
@@ -36,7 +36,7 @@
 <% } else { %>
   <div class="ImportItem-text" title="<%- tableName %>">
     <% if (realRows > 0) { %>
-    <%- _t('components.background-geocoding-item.geocoded', { realRowsFormatted: realRowsFormatted, processableRowsFormatted: processableRowsFormatted, processableRowsPluralize: processableRowsPluralize }) %>
+    <%- _t('components.background-geocoding-item.geocoded', { realRowsFormatted: realRowsFormatted, processableRowsFormatted: processableRowsFormatted, smart_count: processableRows }) %>
     <% } else { %>
     <%- _t('components.background-geocoding-item.geocoding', { tableName: tableName }) %>
     <% } %>

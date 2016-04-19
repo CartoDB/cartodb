@@ -12,9 +12,9 @@ describe('widgets/widgets-collection', function () {
     this.collection = new WidgetsCollection();
     spyOn(this.collection, 'sort');
     this.collection.reset([
-      {order: 0, isColorsApplied: false},
+      {order: 0, isAutoStyle: false},
       {order: 1},
-      {order: 2, isColorsApplied: true}
+      {order: 2, isAutoStyle: true}
     ]);
   });
 
@@ -23,14 +23,14 @@ describe('widgets/widgets-collection', function () {
     var m2 = this.collection.at(1);
     var m3 = this.collection.at(2);
 
-    expect(m1.get('isColorsApplied')).toBeFalsy();
-    expect(m2.get('isColorsApplied')).toBeUndefined();
-    expect(m3.get('isColorsApplied')).toBeTruthy();
+    expect(m1.get('isAutoStyle')).toBeFalsy();
+    expect(m2.get('isAutoStyle')).toBeUndefined();
+    expect(m3.get('isAutoStyle')).toBeTruthy();
 
-    m1.set('isColorsApplied', true);
-    expect(m1.get('isColorsApplied')).toBeTruthy();
-    expect(m2.get('isColorsApplied')).toBeUndefined();
-    expect(m3.get('isColorsApplied')).toBeFalsy();
+    m1.set('isAutoStyle', true);
+    expect(m1.get('isAutoStyle')).toBeTruthy();
+    expect(m2.get('isAutoStyle')).toBeUndefined();
+    expect(m3.get('isAutoStyle')).toBeFalsy();
   });
 
   it('should sort the collection and trigger orderChanged event when any widget order changes', function () {

@@ -52,6 +52,10 @@ class Carto::Visualization < ActiveRecord::Base
 
   has_many :analyses, class_name: Carto::Analysis
 
+  def self.columns
+    super.reject { |c| c.name == 'url_options' }
+  end
+
   def ==(other_visualization)
     self.id == other_visualization.id
   end

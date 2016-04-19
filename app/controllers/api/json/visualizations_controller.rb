@@ -99,7 +99,6 @@ class Api::Json::VisualizationsController < Api::ApplicationController
         if vis.table?
           old_vis_name = vis.name
 
-          vis_data.delete(:url_options) if vis_data[:url_options].present?
           vis.attributes = vis_data
           new_vis_name = vis.name
           old_table_name = vis.table.name
@@ -500,4 +499,3 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end
 
 end
-

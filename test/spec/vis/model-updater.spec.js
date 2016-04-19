@@ -108,7 +108,7 @@ describe('src/vis/model-updater', function () {
     });
 
     it('should update analysis models', function () {
-      var getParamNames = function () { return []; }
+      var getParamNames = function () { return []; };
       var analysis1 = new Backbone.Model({ id: 'a1' });
       var analysis2 = new Backbone.Model({ id: 'a2' });
       this.analysisCollection.reset([ analysis1, analysis2 ]);

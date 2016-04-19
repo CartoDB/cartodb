@@ -79,22 +79,17 @@ module.exports = cdb.core.View.extend({
   },
 
   _initBinds: function () {
-    this.model.bind('change:title change:description change:collapsed change:prefix change:suffix', this.render, this);
+    this.model.bind('change:title change:description change:pinned change:collapsed change:prefix change:suffix', this.render, this);
     this._dataviewModel.bind('change:data', this.render, this);
     this.add_related_model(this._dataviewModel);
   },
 
   _initViews: function () {
     var dropdown = new DropdownView({
+      model: this.model,
       target: this.$('.js-actions'),
       container: this.$('.js-header')
     });
-
-    dropdown.bind('click', function (action) {
-      if (action === 'toggle') {
-        this.model.set('collapsed', !this.model.get('collapsed'));
-      }
-    }, this);
 
     this.addView(dropdown);
   }

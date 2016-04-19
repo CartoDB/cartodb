@@ -9,7 +9,9 @@ describe('widgets/dropdown/widget-dropdown-view', function () {
   beforeEach(function () {
     $('body').append('<div class="Widget"><button class="js-button"><div class="js-container"></div></button></div>');
 
+    this.model = new cdb.core.Model();
     this.view = new WidgetDropdownView({
+      model: this.model,
       target: $('body').find('.js-button'),
       container: $('body').find('.js-container')
     });
@@ -27,20 +29,36 @@ describe('widgets/dropdown/widget-dropdown-view', function () {
     expect(this.view._toggleClick).toHaveBeenCalled();
   });
 
-  it('should trigger an event when clicking an option', function () {
+  it('should trigger an event when clicking the pinned option', function () {
     var called = false;
-    var name = null;
+    var pinned = null;
 
-    this.view.bind('click', function (action) {
+    this.model.bind('change:pinned', function (action) {
       called = true;
-      name = action;
+      pinned = true;
     });
 
     this.view.render();
-    this.view.$('button:nth(1)').click();
+    this.view.$('.js-togglePinned').click();
 
     expect(called).toBe(true);
-    expect(name).toBe('pin');
+    expect(pinned).toBe(true);
+  });
+
+  it('should trigger an event when clicking the collapsed option', function () {
+    var called = false;
+    var collapsed = null;
+
+    this.model.bind('change:collapsed', function (action) {
+      called = true;
+      collapsed = true;
+    });
+
+    this.view.render();
+    this.view.$('.js-toggleCollapsed').click();
+
+    expect(called).toBe(true);
+    expect(collapsed).toBe(true);
   });
 
   it('should close the dropdown when clicking an option', function () {
@@ -48,12 +66,12 @@ describe('widgets/dropdown/widget-dropdown-view', function () {
     $('.js-button').click();
 
     expect($('.js-container').find('.CDB-Dropdown').css('display')).toBe('block');
-    expect(this.view.model.get('open')).toBe(true);
+    expect(this.view.model.get('widget_dropdown_open')).toBe(true);
 
     this.view.$('button:nth(0)').click();
 
     expect(this.view._close).toHaveBeenCalled();
-    expect(this.view.model.get('open')).toBe(false);
+    expect(this.view.model.get('widget_dropdown_open')).toBe(false);
     expect($('.js-container').find('.CDB-Dropdown').css('display')).toBe('none');
   });
 });

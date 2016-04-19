@@ -1,13 +1,14 @@
 var cdb = require('cartodb.js');
 var CategoryColors = require('./category/category-colors');
-AutoStyler = cdb.core.Model.extend({
-  initialize: function(dataviewModel) {
+var AutoStyler = cdb.core.Model.extend({
+  initialize: function (dataviewModel) {
     this.dataviewModel = dataviewModel;
     this.colors = new CategoryColors();
     this.vector = !!this.dataviewModel._dataProvider;
   },
 
-  getStyle: function() {
+  getStyle: function () {
+    var style;
     var widgetType = this.dataviewModel.get('type');
     if (widgetType === 'category') {
       style = this._getStyleForCategory();
@@ -19,9 +20,8 @@ AutoStyler = cdb.core.Model.extend({
 
   _getStyleForHistogram: function () {
     var style = '';
-    var data = this.dataviewModel.get('data');
     var colors = ['YlGnBu', 'Greens', 'Reds', 'Blues'];
-    var color = colors[Math.floor(Math.random()*colors.length)];
+    var color = colors[Math.floor(Math.random() * colors.length)];
     var stylesByGeometry = AutoStyler.STYLE_TEMPLATE;
     if (this.vector) {
       var geometryType = this._getGeometryType();
@@ -30,7 +30,7 @@ AutoStyler = cdb.core.Model.extend({
     } else {
       for (var symbol in stylesByGeometry) {
         style += this._getHistGeometry(symbol)
-          .replace('{{layername}}', this._getLayerHeader(symbol))
+          .replace('{{layername}}', this._getLayerHeader(symbol));
       }
     }
     return style.replace(/{{column}}/g, this.dataviewModel.get('column'))
@@ -66,19 +66,18 @@ AutoStyler = cdb.core.Model.extend({
         .replace('{{layername}}', '#layer{');
     } else {
       for (var symbol in stylesByGeometry) {
-        var ramp = this._generateCategoryRamp(symbol);
         style += stylesByGeometry[symbol]
           .replace('{{layername}}', this._getLayerHeader(symbol))
-          .replace('{{ramp}}', ramp)
+          .replace('{{ramp}}', this._generateCategoryRamp(symbol));
       }
     }
     return style
       .replace(/{{defaultColor}}/g, defColor)
-      .replace('{{markerWidth}}', 10)
+      .replace('{{markerWidth}}', 10);
   },
 
   _getLayerHeader: function (symbol) {
-    return '#'+this.dataviewModel.layer.get('layer_name') +'[mapnik-geometry-type=' + AutoStyler.MAPNIK_MAPPING[symbol] + ']{'
+    return '#' + this.dataviewModel.layer.get('layer_name') + '[mapnik-geometry-type=' + AutoStyler.MAPNIK_MAPPING[symbol] + ']{';
   },
 
   _getGeometryType: function () {
@@ -89,17 +88,17 @@ AutoStyler = cdb.core.Model.extend({
       return 'marker';
     } else if (style.indexOf('polygon') > -1) {
       return 'polygon';
-    } else if (style.indexOf('line') > -1) { 
+    } else if (style.indexOf('line') > -1) {
       return 'line';
     }
   },
 
   _generateCategoryRamp: function (sym) {
     var cats = this.dataviewModel.get('allCategoryNames');
-    var geomMap = { polygon: 'polygon-fill', marker: 'marker-fill', line: 'line-color' }
+    var geomMap = { polygon: 'polygon-fill', marker: 'marker-fill', line: 'line-color' };
     var ramp = cats.map(function (c, i) {
       var color = this.colors.getColorByCategory(c);
-      return '['+this.dataviewModel.get('column')+'=\'' + cats[i] + '\']{\n' + geomMap[sym] + ': ' + color + ';\n}';
+      return '[' + this.dataviewModel.get('column') + '=\'' + cats[i] + '\']{\n' + geomMap[sym] + ': ' + color + ';\n}';
     }.bind(this)).join('\n');
     return ramp;
   }
@@ -125,18 +124,18 @@ AutoStyler.STYLE_TEMPLATE = {
          '  marker-line-opacity: 0.8;',
          '  {{ramp}}',
          '}'].join('\n'),
-  line:  ['{{layername}}',
-            '  line-color: {{defaultColor}};',
-            '  line-width: 0.3;',
-            '  line-opacity: 0.3;',
-            '  {{ramp}}',
-            '}'].join('\n'),
-}
+  line: ['{{layername}}',
+          '  line-color: {{defaultColor}};',
+          '  line-width: 0.3;',
+          '  line-opacity: 0.3;',
+          '  {{ramp}}',
+          '}'].join('\n')
+};
 
 AutoStyler.MAPNIK_MAPPING = {
   polygon: 'polygon',
   marker: 'point',
   line: 'linestring'
-}
+};
 
 module.exports = AutoStyler;

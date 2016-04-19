@@ -1,8 +1,8 @@
-var d3 = require('d3');
 var $ = require('jquery');
 var cdb = require('cartodb.js');
 var TooltipView = require('../widget-tooltip-view');
 var template = require('./histogram-title-template.tpl');
+var AutoStyler = require('../auto-styler');
 
 /**
  *  Show title + show if histogram sizes are applied or not
@@ -62,7 +62,6 @@ module.exports = cdb.core.View.extend({
     } else {
       var index = this.dataviewModel._dataProvider._layerIndex;
       var sublayer = this.dataviewModel._dataProvider._vectorLayerView;
-      var data = this.dataviewModel.get('data')
       sublayer.setCartoCSS(index, style, true);
     }
     this.dataviewModel.set('autoStyle', true);
@@ -70,7 +69,7 @@ module.exports = cdb.core.View.extend({
 
   cancelAutoStyle: function () {
     if (!this.dataviewModel._dataProvider) {
-      this.dataviewModel.layer.restoreCartoCSS()
+      this.dataviewModel.layer.restoreCartoCSS();
     } else {
       var index = this.dataviewModel._dataProvider._layerIndex;
       var sublayer = this.dataviewModel._dataProvider._vectorLayerView;

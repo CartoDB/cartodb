@@ -60,14 +60,14 @@ module.exports = WidgetModel.extend({
     } else {
       var index = this.dataviewModel._dataProvider._layerIndex;
       var sublayer = this.dataviewModel._dataProvider._vectorLayerView;
-      sublayer.setCartoCSS(index, style, true)
+      sublayer.setCartoCSS(index, style, true);
     }
     this.dataviewModel.set('autoStyle', true);
   },
 
   cancelAutoStyle: function () {
     if (!this.dataviewModel._dataProvider) {
-      this.dataviewModel.layer.restoreCartoCSS()
+      this.dataviewModel.layer.restoreCartoCSS();
     } else {
       var index = this.dataviewModel._dataProvider._layerIndex;
       var sublayer = this.dataviewModel._dataProvider._vectorLayerView;

@@ -129,6 +129,34 @@ module CartoDB
         end
       end
 
+      def disable_writes
+        # NOTE: This will not affect already opened connections. Run `terminate_database_conections` method after this
+        # to ensure no more writes are possible.
+        @user.in_database(as: :cluster_admin) do |database|
+          database.run(%{
+            ALTER DATABASE "#{@user.database_name}"
+              SET default_transaction_read_only = 'on'
+          })
+        end
+      end
+
+      def enable_writes
+        # NOTE: This will not affect already opened connections. Run `terminate_database_conections` method after this
+        # to ensure no more writes are possible.
+        @user.in_database(as: :cluster_admin) do |database|
+          database.run(%{
+            ALTER DATABASE "#{@user.database_name}"
+              SET default_transaction_read_only = default
+          })
+        end
+      end
+
+      def writes_enabled?
+        @user.in_database(as: :superuser) do |database|
+          database.fetch(%{SHOW default_transaction_read_only}).first[:default_transaction_read_only] == 'off'
+        end
+      end
+
       # Cartodb functions
       def load_cartodb_functions(statement_timeout = nil, cdb_extension_target_version = nil)
         add_python
@@ -1087,6 +1115,10 @@ module CartoDB
 
       def public_user_roles
         @user.organization_user? ? [CartoDB::PUBLIC_DB_USER, @user.database_public_username] : [CartoDB::PUBLIC_DB_USER]
+      end
+
+      def terminate_database_connections
+        CartoDB::UserModule::DBService.terminate_database_connections(@user.database_name, @user.database_host)
       end
 
       def self.terminate_database_connections(database_name, database_host)

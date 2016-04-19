@@ -2,6 +2,7 @@
 require 'ostruct'
 require_relative './name_generator'
 require_relative '../map/copier'
+require_dependency 'cartodb/errors'
 
 module CartoDB
   module Visualization
@@ -15,6 +16,8 @@ module CartoDB
       end
 
       def copy(overlays = true, layers = true, additional_fields = {})
+        raise CartoDB::UnauthorizedError.new(@user, @visualization) unless @visualization.is_owner?(@user)
+
         member = Member.new(
           name:         new_name,
           tags:         visualization.tags,
@@ -25,9 +28,9 @@ module CartoDB
           privacy:      visualization.privacy,
           user_id:      @user.id
         )
-        if overlays
-          overlays_copy(member)
-        end
+
+        overlays_copy(member) if overlays
+
         member
       end
 

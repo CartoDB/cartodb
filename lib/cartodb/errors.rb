@@ -150,19 +150,7 @@ module CartoDB
     def user_message
       "There was a problem with authentication server. #{@errors.join(' ; ')}"
     end
+
   end
 
-  class UnauthorizedError < StandardError
-    def initialize(user, object)
-      object_class = object.class
-
-      message = "#{object_class.name}"
-
-      message += " with id '#{object.id}'" if object_class.method_defined?(:id)
-
-      message += " is forbidden for User '#{user.username}'"
-
-      super(message)
-    end
-  end
 end

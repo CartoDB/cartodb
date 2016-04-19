@@ -50,6 +50,10 @@
         "popup": "Pop-up",
         "legends": "Legend"
       },
+      "popup-menu-tab-pane-labels": {
+        "click": "Click",
+        "hover": "Hover"
+      },
       "analysis-form": {
         "placeholder-text": "You have not added any analysis yet. Add new analysis to discover new things.",
         "workflow": "Workflow",
@@ -68,6 +72,16 @@
         "by-walk": "walk",
         "by-bike": "bike",
         "by-car": "drive",
+      },
+      "popup": {
+        "style": {
+          "title-label": "Style",
+          "description": "None",
+          "white": "White",
+          "dark": "Dark",
+          "color": "Color",
+          "image": "Image"
+        },
       }
     },
     "widgets": {

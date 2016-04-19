@@ -20,11 +20,11 @@ class Carto::Permission < ActiveRecord::Base
   end
 
   def user_has_read_permission?(user)
-    owner_user?(user) || permitted?(user, ACCESS_READONLY)
+    owner?(user) || permitted?(user, ACCESS_READONLY)
   end
 
   def user_has_write_permission?(user)
-    owner_user?(user) || permitted?(user, ACCESS_READWRITE)
+    owner?(user) || permitted?(user, ACCESS_READWRITE)
   end
 
   # Explicitly remove columns from AR schema
@@ -39,12 +39,12 @@ class Carto::Permission < ActiveRecord::Base
     SORTED_ACCESSES.index(permission_for_user(user)) <= SORTED_ACCESSES.index(permission_type)
   end
 
-  def owner_user?(user)
+  def owner?(user)
     owner_id == user.id
   end
 
   def permission_for_user(user)
-    return ACCESS_READWRITE if owner_user?(user)
+    return ACCESS_READWRITE if owner?(user)
 
     accesses = acl_entries_for_user(user).map do |entry|
       entry[:access]

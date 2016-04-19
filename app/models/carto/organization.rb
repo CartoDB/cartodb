@@ -53,7 +53,7 @@ module Carto
       Carto::SearchTweet.twitter_imports_count(users.joins(:search_tweets), date_from, date_to)
     end
 
-    def owner_user?(user)
+    def owner?(user)
       owner_id == user.id
     end
 

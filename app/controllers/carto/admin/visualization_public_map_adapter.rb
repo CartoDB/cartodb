@@ -36,7 +36,7 @@ module Carto
       end
 
       def is_owner?(user)
-        @visualization.owner_user?(user)
+        @visualization.owner?(user)
       end
 
       def to_hash(options={})

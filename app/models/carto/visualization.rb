@@ -143,7 +143,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def qualified_name(viewer_user = nil)
-    if viewer_user.nil? || owner_user?(viewer_user)
+    if viewer_user.nil? || owner?(viewer_user)
       name
     else
       "#{user.sql_safe_database_schema}.#{name}"
@@ -272,7 +272,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def has_read_permission?(user)
-    user && (owner_user?(user) || (permission && permission.user_has_read_permission?(user)))
+    user && (owner?(user) || (permission && permission.user_has_read_permission?(user)))
   end
 
   def estimated_row_count
@@ -371,10 +371,10 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def has_write_permission?(user)
-    user && (owner_user?(user) || (permission && permission.user_has_write_permission?(user)))
+    user && (owner?(user) || (permission && permission.user_has_write_permission?(user)))
   end
 
-  def owner_user?(user)
+  def owner?(user)
     user_id == user.id
   end
 

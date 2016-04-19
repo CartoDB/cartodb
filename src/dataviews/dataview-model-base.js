@@ -222,7 +222,7 @@ module.exports = Model.extend({
   },
 
   _getSourceId: function () {
-    return this.layer.get('source') || this.layer.get('id');
+    return this.get('sourceId') || this.layer.get('source') || this.layer.get('id');
   },
 
   remove: function () {
@@ -240,7 +240,8 @@ module.exports = Model.extend({
       'id',
       'sync_on_data_change',
       'sync_on_bbox_change',
-      'enabled'
+      'enabled',
+      'sourceId'
     ]
   }
 );

@@ -108,9 +108,11 @@ describe('src/vis/model-updater', function () {
     });
 
     it('should update analysis models', function () {
+      var getParamNames = function () { return []; };
       var analysis1 = new Backbone.Model({ id: 'a1' });
       var analysis2 = new Backbone.Model({ id: 'a2' });
       this.analysisCollection.reset([ analysis1, analysis2 ]);
+      analysis1.getParamNames = analysis2.getParamNames = getParamNames;
 
       this.windshaftMap.getAnalysisNodeMetadata = function (analysisId) {
         if (analysisId === 'a1') {
@@ -141,6 +143,30 @@ describe('src/vis/model-updater', function () {
       expect(analysis2.get('status')).toEqual('status_a2');
       expect(analysis2.get('query')).toEqual('query_a2');
       expect(analysis2.get('url')).toEqual('url_a2');
+    });
+
+    it('should not update attributes that are original params (eg: query)', function () {
+      var analysis1 = new Backbone.Model({ id: 'a1', query: 'original_query' });
+      analysis1.getParamNames = function () { return ['query']; };
+      this.analysisCollection.reset([ analysis1 ]);
+
+      this.windshaftMap.getAnalysisNodeMetadata = function (analysisId) {
+        if (analysisId === 'a1') {
+          return {
+            status: 'new_status',
+            query: 'new_query',
+            url: {
+              http: 'new_url'
+            }
+          };
+        }
+      };
+
+      this.modelUpdater.updateModels(this.windshaftMap);
+
+      expect(analysis1.get('status')).toEqual('new_status');
+      expect(analysis1.get('query')).toEqual('original_query');
+      expect(analysis1.get('url')).toEqual('new_url');
     });
   });
 });

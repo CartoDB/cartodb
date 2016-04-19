@@ -31,7 +31,7 @@ module.exports = cdb.core.View.extend({
   },
 
   render: function () {
-    this.$el.html(template(_.extend({},
+    this.$el.html(template(_.defaults({},
       this.model.attributes,
       { flags: this.options.flags || {} }, {
         'normalized': false,
@@ -46,6 +46,7 @@ module.exports = cdb.core.View.extend({
     this.add_related_model(this.model);
 
     this.model.bind('change:open', this._onChangeOpen, this);
+    this.model.bind('change:pinned change:collapsed change:normalized', this.render, this);
 
     this._$target.click(
       _.bind(this._toggleClick, this)
@@ -136,6 +137,7 @@ module.exports = cdb.core.View.extend({
   },
 
   clean: function () {
+    this.model.set('open', false);
     this._unbindESC();
     this._unbindGlobalClick();
     this._$target.off('click');

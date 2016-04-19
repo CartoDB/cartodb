@@ -26,7 +26,7 @@
     "browserify": "11.0.1",
     "browserify-resolutions": "1.0.6",
     "browserify-shim": "3.8.10",
-    "camshaft-reference": "^0.3.0",
+    "camshaft-reference": "^0.1.0",
     "cartoassets": "cartodb/CartoAssets#master",
     "cartodb-deep-insights.js": "cartodb/deep-insights.js#analysis",
     "cartodb-pecan": "0.2.x",

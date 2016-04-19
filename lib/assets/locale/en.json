@@ -7,6 +7,10 @@
     "point-in-polygon": "Point in polygon"
   },
   "data": {
+    "import-model": {
+      "error-title": "There was an error",
+      "error-starting-import": "Unfortunately there was an error starting the import"
+    },
     "upload-model": {
       "invalid-import": "Invalid import",
       "one-file": "Unfortunately only one file is allowed per upload",

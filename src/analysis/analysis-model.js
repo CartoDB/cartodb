@@ -1,6 +1,14 @@
 var _ = require('underscore');
 var Model = require('../core/model');
 
+var STATUS = {
+  PENDING: 'pending',
+  WAITING: 'waiting',
+  RUNNING: 'running',
+  FAILED: 'failed',
+  READY: 'ready'
+};
+
 module.exports = Model.extend({
 
   initialize: function (attrs, opts) {
@@ -16,6 +24,22 @@ module.exports = Model.extend({
     this._camshaftReference = opts.camshaftReference;
     this._map = opts.map;
     this._initBinds();
+  },
+
+  url: function () {
+    var url = this.get('url');
+    if (this.get('apiKey')) {
+      url += '?api_key=' + this.get('apiKey');
+    }
+    return url;
+  },
+
+  parse: function (attrs) {
+    // TODO: REMOVE THIS -> For debugging purposes
+    if (!window.ready) {
+      return { status: STATUS.PENDING };
+    }
+    return attrs;
   },
 
   _initBinds: function () {
@@ -58,6 +82,10 @@ module.exports = Model.extend({
     return this._camshaftReference.getSourceNamesForAnalysisType(this.get('type'));
   },
 
+  isDone: function () {
+    return [STATUS.READY, STATUS.FAILED].indexOf(this.get('status')) >= 0;
+  },
+
   toJSON: function () {
     var json = _.pick(this.attributes, 'id', 'type');
     json.params = _.pick(this.attributes, this._getParamNames());
@@ -73,4 +101,6 @@ module.exports = Model.extend({
   _getParamNames: function () {
     return this._camshaftReference.getParamNamesForAnalysisType(this.get('type'));
   }
+}, {
+  STATUS: STATUS
 });

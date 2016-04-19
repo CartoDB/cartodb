@@ -28,6 +28,7 @@ var LayersCollection = require('../geo/map/layers');
 var CartoDBLayerGroupNamedMap = require('../geo/cartodb-layer-group-named-map');
 var CartoDBLayerGroupAnonymousMap = require('../geo/cartodb-layer-group-anonymous-map');
 var ModelUpdater = require('./model-updater');
+var AnalysisPoller = require('../analysis/analysis-poller');
 
 /**
  * Visualization creation
@@ -199,6 +200,8 @@ var Vis = View.extend({
     this._layersCollection = new LayersCollection();
     this._analysisCollection = new Backbone.Collection();
 
+    AnalysisPoller.poll(this._analysisCollection);
+
     // Create the WindhaftClient
 
     var endpoint;
@@ -361,6 +364,7 @@ var Vis = View.extend({
 
     // Public Analysis Factory
     this.analysis = new AnalysisFactory({
+      apiKey: apiKey,
       analysisCollection: this._analysisCollection,
       map: this.map
     });

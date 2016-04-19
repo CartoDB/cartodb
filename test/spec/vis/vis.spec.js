@@ -11,6 +11,7 @@ _.extend(cdb.geo, require('../../../src/geo/gmaps'));
 var Overlay = require('../../../src/vis/vis/overlay');
 var Vis = require('../../../src/vis/vis');
 var VizJSON = require('../../../src/api/vizjson');
+var AnalysisPoller = require('../../../src/analysis/analysis-poller');
 
 require('../../../src/vis/overlays'); // Overlay.register calls
 require('../../../src/vis/layers'); // Layers.register calls
@@ -173,6 +174,14 @@ describe('vis/vis', function () {
     this.mapConfig.map_provider = 'googlemaps';
     this.vis.load(new VizJSON(this.mapConfig));
     expect(this.vis.mapView._gmapsMap).not.toEqual(undefined);
+  });
+
+  it('should listen to collection of analysis for polling', function () {
+    spyOn(AnalysisPoller, 'poll');
+
+    this.vis.load(new VizJSON(this.mapConfig));
+
+    expect(AnalysisPoller.poll).toHaveBeenCalled();
   });
 
   describe('.centerMapToOrigin', function () {

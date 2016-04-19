@@ -13,6 +13,7 @@ var AnalysisFactory = function (opts) {
 
   this._camshaftReference = opts.camshaftReference || camshaftReference;
   this._analysisCollection = opts.analysisCollection;
+  this._apiKey = opts.apiKey;
   this._map = opts.map;
 };
 
@@ -30,6 +31,9 @@ AnalysisFactory.prototype.analyse = function (analysisDefinition) {
   if (analysis) {
     analysis.set(analysisAttrs);
   } else {
+    if (this._apiKey) {
+      analysisAttrs.apiKey = this._apiKey;
+    }
     analysis = new Analysis(analysisAttrs, {
       camshaftReference: this._camshaftReference,
       map: this._map

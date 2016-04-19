@@ -1,7 +1,7 @@
 # This patches the default behavior of ActiveRecord not recovering from PG::Error
 # connection failures.
 #
-# When an ActiveRecord connection to PostgreSQL fails, it returns a 
+# When an ActiveRecord connection to PostgreSQL fails, it returns a
 # PG::Error: connection not open.
 #
 # However, this does not close the connection, which is reused over and over,
@@ -9,11 +9,11 @@
 #
 # The original code was taken from:
 # https://github.com/rails/rails/pull/6557
-# which was not merged for some reason - instead 
+# which was not merged for some reason - instead
 # https://github.com/rails/rails/pull/6654
 # was merged, which does not fix the issue as, even though verify! now works,
 # it is never called actively by Rails (tested on latest 3.2.x version).
-# 
+#
 
 module ActiveRecord
   module ConnectionAdapters
@@ -70,6 +70,15 @@ module ActiveRecord
       rescue ActiveRecord::StatementInvalid
         raise unless @connection.status == PG::CONNECTION_BAD
         raise unless open_transactions == 0
+
+        reconnect!
+        yield
+      rescue PG::Error => e
+        unless @connection.status == PG::CONNECTION_BAD
+          raise "Not valid connection status: #{@connection.status}. Error: #{e.message}"
+        end
+        raise unless open_transactions == 0
+        raise unless e.message =~ /result has been cleared/
 
         reconnect!
         yield

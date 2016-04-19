@@ -53,9 +53,9 @@
           <%- _t('components.modals.add-layer.imports.selected-state.upgrade-desc', { features: featuresLink }) %>
         </p>
         <div class="Upgrade-infoActions">
-          <!-- <% if (showTrial) { %>-->
+          <% if (showTrial) { %>
             <p class="CDB-Text CDB-Size-medium u-ellipsis is-semibold u-rSpace--xl"><%- _t('components.modals.add-layer.imports.selected-state.free-trial', { days: 14 }) %></p>
-          <!-- <% } %>-->
+          <% } %>
           <a href="<%- upgradeUrl %>" class="CDB-Button CDB-Button--secondary">
             <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-upperCase"><%- _t('components.modals.add-layer.imports.selected-state.upgrade') %></span>
           </a>

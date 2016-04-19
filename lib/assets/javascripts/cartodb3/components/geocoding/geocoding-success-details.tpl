@@ -5,9 +5,9 @@
       <i class="CDB-IconFont CDB-IconFont-check"></i>
     </span>
   </div>
-  <h3 class="Dialog-headerTitle">Data geocoded</h3>
+  <h3 class="Dialog-headerTitle"><%- _t('components.geocoding-success-detail.success-title') %></h3>
   <p class="Dialog-headerText Dialog-headerText--centered Dialog-narrowerContent">
-    We've successfully geocoded <%- realRowsFormatted %> <%- geometryTypePluralize %> of <%- processableRowsFormatted %>.
+    <%- _t('components.geocoding-success-detail.success-description', { smart_count: processableRows }) %>
   </p>
 </div>
 
@@ -16,10 +16,9 @@
     <span class="Dialog-resultsBodyIcon NavButton ">?</span>
     <div class="Dialog-resultsBodyTexts">
       <p class="DefaultParagraph">
-        Rows that are not geocoded could have errors on their column values, or just doesn’t exist in our data.
-        Try geocoding again and check the "override all values" to try again.
+        <%- _t('components.geocoding-success-detail.explanation') %>
         <% if (!googleUser) { %>
-          Unsuccessful rows don't count against your quota, so we encourage you to take a look and try again.
+        <%- _t('components.geocoding-success-detail.try-again') %>
         <% }%>
       </p>
     </div>
@@ -34,17 +33,17 @@
     <div class="Dialog-resultsBodyTexts">
       <% if (price > 0) { %>
         <p class="DefaultTitle">
-          <strong>$<%- price / 100 %></strong> will be charged to your account
+          <%- _t('components.geocoding-success-detail.amount-charged', { price: price / 100 }) %>
         </p>
         <p class="DefaultParagraph DefaultParagraph--tertiary">
-          You have consumed all your credits during this billing cycle, price is $<%- blockPrice / 100  %>/1,000 extra credits.
+          <%- _t('components.geocoding-success-detail.success-title', { price: blockPrice / 100 }) %>
         </p>
       <% } else { %>
         <p class="DefaultTitle">
-          No extra charges have been done
+          <%- _t('components.geocoding-success-detail.no-extra-charge') %>
         </p>
         <p class="DefaultParagraph DefaultParagraph--tertiary">
-          You still have <%- remainingQuotaFormatted %> credits left for this month.
+          <%- _t('components.geocoding-success-detail.remaining-quota', { remainingQuotaFormatted: remainingQuotaFormatted }) %>
         </p>
       <% } %>
     </div>
@@ -57,7 +56,7 @@
   </button>
   <% if (showGeocodingDatasetURLButton) { %>
     <a href="<%- datasetURL %>" class="Button Button--main">
-      <span>view dataset</span>
+      <span><%- _t('components.geocoding-success-detail.view-dataset') %></span>
     </a>
   <% } %>
 </div>

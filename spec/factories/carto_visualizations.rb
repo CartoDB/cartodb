@@ -24,6 +24,8 @@ module Carto
         CartoDB::Visualization::Member.any_instance.stubs(:propagate_name_to).returns(true)
         CartoDB::Visualization::Member.any_instance.stubs(:propagate_privacy_to).returns(true)
 
+        visualization.reload
+
         return map, table, table_visualization, visualization
       end
 

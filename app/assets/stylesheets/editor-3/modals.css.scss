@@ -110,6 +110,8 @@
   @include align-items(center);
   @include flex(1);
   @include justify-content(space-between);
+  width: 100%;
+  max-width: 850px;
 }
 
 .ModalDataset-itemInfoTitle {
@@ -122,5 +124,28 @@
   opacity: 0.24;
 }
 
+.Upgrade-info {
+  @include display-flex();
+  @include align-items(center);
+  @include justify-content(space-between);
+  padding: 20px;
+  border-top: 1px solid rgba($cBlue, 0.32);
+  background: rgba($cBlue, 0.08);
+}
 
+.Upgrade-infoActions {
+  @include display-flex();
+  @include align-items(center);
+}
+
+.AddLayer-tabs {
+  display: block;
+  width: 780px;
+  padding: 28px 0;
+  overflow-x: hidden;
+}
+
+.ConnectDataset-header {
+  padding: 28px 0 16px;
+}
 

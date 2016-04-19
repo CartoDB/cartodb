@@ -47,7 +47,7 @@ module.exports = cdb.core.View.extend({
   },
 
   _initBinds: function () {
-    this.model.bind('change:autoStyle', this.render, this);
+    this.dataviewModel.bind('change:autoStyle', this.render, this);
     this.model.bind('change:search', this._onSearchToggled, this);
     this.model.bind('change:title change:collapsed change:pinned', this.render, this);
     this.model.lockedCategories.bind('change add remove', this.render, this);
@@ -135,7 +135,7 @@ module.exports = cdb.core.View.extend({
   },
 
   _cancelAutoStyle: function () {
-    this.widgetModel.cancelAutoStyle();
+    this.model.cancelAutoStyle();
   },
 
   _cancelSearch: function () {

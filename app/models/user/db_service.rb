@@ -486,7 +486,7 @@ module CartoDB
       # Upgrade the cartodb postgresql extension
       def upgrade_cartodb_postgres_extension(statement_timeout = nil, cdb_extension_target_version = nil)
         if cdb_extension_target_version.nil?
-          cdb_extension_target_version = '0.15.1'
+          cdb_extension_target_version = '0.16.0'
         end
 
         @user.in_database(as: :superuser, no_cartodb_in_schema: true) do |db|
@@ -631,7 +631,8 @@ module CartoDB
         )
         @queries.run_in_transaction(
           [
-            "REVOKE SELECT ON cartodb.cdb_tablemetadata FROM #{CartoDB::PUBLIC_DB_USER} CASCADE"
+            "REVOKE SELECT ON cartodb.cdb_tablemetadata FROM #{CartoDB::PUBLIC_DB_USER} CASCADE",
+            "REVOKE SELECT ON cartodb.cdb_analysis_catalog FROM #{CartoDB::PUBLIC_DB_USER} CASCADE"
           ],
           true
         )
@@ -657,6 +658,7 @@ module CartoDB
           (
             @queries.grant_read_on_schema_queries(SCHEMA_CARTODB, db_user) +
             @queries.grant_write_on_cdb_tablemetadata_queries(db_user)
+            @queries.grant_write_on_cdb_analysis_catalog_queries(db_user)
           ),
           true
         )

@@ -240,7 +240,8 @@ module.exports = Model.extend({
       'id',
       'sync_on_data_change',
       'sync_on_bbox_change',
-      'enabled'
+      'enabled',
+      'sourceId'
     ]
   }
 );

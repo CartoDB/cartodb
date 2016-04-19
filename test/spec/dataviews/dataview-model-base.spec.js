@@ -447,7 +447,7 @@ describe('dataviews/dataview-model-base', function () {
       expect(dataview._getSourceId()).toEqual('a1');
     });
 
-    it("should return the sourceId", function () {
+    it('should return the sourceId', function () {
       var layer = new Backbone.Model({
         id: 'layerId',
         source: 'a1'

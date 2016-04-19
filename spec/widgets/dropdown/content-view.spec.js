@@ -66,12 +66,12 @@ describe('widgets/dropdown/widget-dropdown-view', function () {
     $('.js-button').click();
 
     expect($('.js-container').find('.CDB-Dropdown').css('display')).toBe('block');
-    expect(this.view.model.get('open')).toBe(true);
+    expect(this.view.model.get('widget_dropdown_open')).toBe(true);
 
     this.view.$('button:nth(0)').click();
 
     expect(this.view._close).toHaveBeenCalled();
-    expect(this.view.model.get('open')).toBe(false);
+    expect(this.view.model.get('widget_dropdown_open')).toBe(false);
     expect($('.js-container').find('.CDB-Dropdown').css('display')).toBe('none');
   });
 });

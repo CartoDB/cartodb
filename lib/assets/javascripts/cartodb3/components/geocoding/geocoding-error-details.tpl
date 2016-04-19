@@ -1,24 +1,24 @@
 <div class="Dialog-header u-inner">
   <div class="LayutIcon LayoutIcon--negative Dialog-headerIcon">
-    <i class="CDB-IconFont CDB-IconFont-<%- geometryType && geometryType === "point" ? 'Streets' : 'Globe' %>"></i>
+    <i class="CDB-IconFont CDB-IconFont-<%- geometryType && geometryType === "point" ? 'streets' : 'globe' %>"></i>
     <span class="Badge Badge--negative">!</span>
   </div>
-  <p class="Dialog-headerTitle">Geocoding Error</p>
+  <p class="Dialog-headerTitle"><%- _t('components.geocoding.geocoding-error-details.title') %></p>
   <p class="Dialog-headerText Dialog-headerText--centered Dialog-narrowerContent">
-    <%- errorDescription || "There was a problem georeferencing your data" %>.
+    <%- errorDescription || _t('components.geocoding.geocoding-error-details.description') %>.
     <% if (!customHosted && id) { %>
-      Please try again and if the problem persists, <a href="mailto:support@cartodb.com?subject=Geocoding error with id:<%- id %>">contact us</a>
-      with the following code: <br/><strong><%- id %></strong>.
+    <%- _t('components.geocoding.geocoding-error-details.try-again', { id: id }) %>
+       <br/><strong><%- id %></strong>.
     <% } %>
   </p>
 </div>
 <div class="Dialog-footer Dialog-footer--simple u-inner Dialog-narrowerContent">
   <button class="cancel Button Button--secondary <%- showGeocodingDatasetURLButton ? 'Dialog-footerBtn' : '' %>">
-    <span>close</span>
+    <span><%- _t('components.geocoding.geocoding-error-details.close') %></span>
   </button>
   <% if (showGeocodingDatasetURLButton) { %>
     <a href="<%- datasetURL %>" class="Button Button--main">
-      <span>view dataset</span>
+      <span><%- _t('components.geocoding.geocoding-error-details.view-dataset') %></span>
     </a>
   <% } %>
 </div>

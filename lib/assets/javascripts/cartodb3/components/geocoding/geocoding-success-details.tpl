@@ -5,9 +5,9 @@
       <i class="CDB-IconFont CDB-IconFont-check"></i>
     </span>
   </div>
-  <h3 class="Dialog-headerTitle"><%- _t('components.geocoding-success-detail.success-title') %></h3>
+  <h3 class="Dialog-headerTitle"><%- _t('components.geocoding.geocoding-success-detail.title') %></h3>
   <p class="Dialog-headerText Dialog-headerText--centered Dialog-narrowerContent">
-    <%- _t('components.geocoding-success-detail.success-description', { smart_count: processableRows }) %>
+    <%- _t('components.geocoding.geocoding-success-detail.description', { smart_count: processableRows }) %>
   </p>
 </div>
 
@@ -16,9 +16,9 @@
     <span class="Dialog-resultsBodyIcon NavButton ">?</span>
     <div class="Dialog-resultsBodyTexts">
       <p class="DefaultParagraph">
-        <%- _t('components.geocoding-success-detail.explanation') %>
+        <%- _t('components.geocoding.geocoding-success-detail.explanation') %>
         <% if (!googleUser) { %>
-        <%- _t('components.geocoding-success-detail.try-again') %>
+        <%- _t('components.geocoding.geocoding-success-detail.try-again') %>
         <% }%>
       </p>
     </div>
@@ -33,17 +33,17 @@
     <div class="Dialog-resultsBodyTexts">
       <% if (price > 0) { %>
         <p class="DefaultTitle">
-          <%- _t('components.geocoding-success-detail.amount-charged', { price: price / 100 }) %>
+          <%- _t('components.geocoding.geocoding-success-detail.amount-charged', { price: price / 100 }) %>
         </p>
         <p class="DefaultParagraph DefaultParagraph--tertiary">
-          <%- _t('components.geocoding-success-detail.success-title', { price: blockPrice / 100 }) %>
+          <%- _t('components.geocoding.geocoding-success-detail.success-title', { price: blockPrice / 100 }) %>
         </p>
       <% } else { %>
         <p class="DefaultTitle">
-          <%- _t('components.geocoding-success-detail.no-extra-charge') %>
+          <%- _t('components.geocoding.geocoding-success-detail.no-extra-charge') %>
         </p>
         <p class="DefaultParagraph DefaultParagraph--tertiary">
-          <%- _t('components.geocoding-success-detail.remaining-quota', { remainingQuotaFormatted: remainingQuotaFormatted }) %>
+          <%- _t('components.geocoding.geocoding-success-detail.remaining-quota', { remainingQuotaFormatted: remainingQuotaFormatted }) %>
         </p>
       <% } %>
     </div>
@@ -56,7 +56,7 @@
   </button>
   <% if (showGeocodingDatasetURLButton) { %>
     <a href="<%- datasetURL %>" class="Button Button--main">
-      <span><%- _t('components.geocoding-success-detail.view-dataset') %></span>
+      <span><%- _t('components.geocoding.geocoding-success-detail.view-dataset') %></span>
     </a>
   <% } %>
 </div>

@@ -31,6 +31,32 @@
     }
   },
   "components": {
+    "geocoding": {
+      "geocoding-error-details": {
+        "close": "close",
+        "description": "There was a problem georeferencing your data",
+        "title": "Geocoding Error",
+        "try-again": "Please try again and if the problem persists, <a href='mailto:support@cartodb.com?subject=Geocoding error with id:%{id}'>contact us</a> with the following code:",
+        "view-dataset": "view dataset"
+      },
+      "geocoding-success-detail": {
+        "amount-charged": "<strong>$%{price}</strong> will be charged to your account",
+        "credits-consumed": "You have consumed all your credits during this billing cycle, price is $%{price} / 1,000 extra credits.",
+        "description":  "We've successfully geocoded <%- realRowsFormatted %> <%- geometryType %> of <%- processableRowsFormatted %>. |||| We've successfully geocoded <%- realRowsFormatted %> <%- geometryType %>s of <%- processableRowsFormatted %>.",
+        "explanation": "Rows that are not geocoded could have errors on their column values, or just doesn’t exist in our data. Try geocoding again and check the 'override all values' to try again.",
+        "no-extra-charge": "No extra charges have been done",
+        "remainingQuotaFormatted": "You still have %{remainingQuotaFormatted} credits left for this month.",
+        "title": "Data geocoded",
+        "try-again": "Unsuccessful rows don't count against your quota, so we encourage you to take a look and try again.",
+        "view-dataset": "view dataset"
+      },
+      "geocoding-no-result-details": {
+        "close": "close",
+        "description": "These rows contained empty values or perhaps we just didn't know what the values meant. We encourage you to take a look and try again.",
+        "title": "No rows were georeferenced",
+        "view-dataset": "view dataset"
+      }
+    },
     "background-importer": {
       "background-importer-item": {
         "completed": "completed",
@@ -68,7 +94,7 @@
         "unknown-error": "An unknown error has happened"
       },
       "twitter-import-details": {
-      "new-type-created": "We've created a new %{type} containing a total of %{datasetTotalRowsFormatted}<br/>tweet%{tweetPlural} with your search terms",
+        "new-type-created": "We've created a new %{type} containing a total of %{datasetTotalRowsFormatted}<br/>tweet%{tweetPlural} with your search terms",
         "credit-left": "You still have %{availableTweetsFormatted} credit left for this billing cycle.",
         "credits-left": "You still have %{availableTweetsFormatted} credits left for this billing cycle.",
         "no-more-credits": "You have consumed all your credits during this billing cycle (price is $%{blockPriceFormatted}/%{blockSizeFormatted} extra credits).",

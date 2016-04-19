@@ -5,7 +5,9 @@ var SearchTitleView = require('../../../src/widgets/category/title/search-title-
 describe('widgets/category/search-title-view', function () {
   beforeEach(function () {
     var vis = specHelper.createDefaultVis();
-    this.dataviewModel = vis.dataviews.createCategoryModel(vis.map.layers.first(), {
+    var layer = vis.map.layers.first();
+    layer.restoreCartoCSS = jasmine.createSpy('restore');
+    this.dataviewModel = vis.dataviews.createCategoryModel(layer, {
       column: 'col'
     });
     this.widgetModel = new CategoryWidgetModel({}, {

@@ -24,15 +24,15 @@ cartodb.deepInsights.createDashboard('#dashboard', vizJSONurl, [options], functi
 
 ## cartodb.DI.Dashboard
 
-This object contains a CartoDB dashboard, a map, and some widgets:
-
-##### getWidgets() -> Array of widgets
-##### getWidget(id) -> get widget
 ##### getMap() -> returns a Map object
 
-##### createCategoryWidget(widgetAttrs, layers) -> CategoryWidget
+##### getWidget(widgetID) -> The widget with the given ID
 
-`widgetAttrs` is an object with the following attributes: 
+##### getWidgets() -> List of widgets
+
+##### createCategoryWidget(widgetAttrs, layer) -> CategoryWidget
+
+`widgetAttrs` is an object with the following attributes:
 
 Mandatory attributes:
 - `title`: title shown in the widget
@@ -44,6 +44,7 @@ Optional:
 - `order`: order inside the widget list
 - `collapsed`: show the wiget collapsed if true
 - `aggregationColumn`: use this column to aggregate, by default it uses `column`
+>>>>>>> origin/master
 
 *example*
 ```js
@@ -57,9 +58,9 @@ var params = {
 dashboard.createCategoryWidget(params, map.getLayer(2))
 ```
 
-
 ##### createHistogramWidget(widgetAttrs, layer) -> HistogramWidget
-`widgetAttrs` is an object with the following attributes: 
+
+`widgetAttrs` is an object with the following attributes:
 
 Mandatory attributes:
 - `title`: title shown in the widget
@@ -72,12 +73,14 @@ Optional:
 - `order`: order inside the widget list
 - `collapsed`: show the wiget collapsed if true
 - `show_stats`: show histogram stats
-- `normalized`: normalize data seen in the map bounding box with the global dataset histogram 
+- `normalized`: normalize data seen in the map bounding box with the global dataset histogram
 
 ##### createFormulaWidget(widgetAttrs, layer) -> FormulaWidget
+
 widgetAttrs: `id`, `title`, `order`, `collapsed`, `prefix`, `suffix`, `show_stats`, `description`
 
 ##### createTimeSeriesWidget(widgetAttrs, layer) -> TimeSeriesWidget
+
 widgetAttrs: `id`, `title`, `order`, `collapsed`, `bins`, `show_stats`, `normalized`
 
 ## cartodb.DI.CategoryWidget
@@ -102,7 +105,6 @@ removes the widget from the dashboard
 var categoryWidget = dashboard.createCategoryWidget(params, map.getLayer(2));
 categoryWidget.remove();
 ```
-
 
 ## cartodb.DI.HistogramWidget
 

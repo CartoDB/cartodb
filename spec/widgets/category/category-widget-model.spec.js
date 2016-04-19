@@ -4,7 +4,9 @@ var specHelper = require('../../spec-helper');
 describe('widgets/category/category-widget-model', function () {
   beforeEach(function () {
     var vis = specHelper.createDefaultVis();
-    this.dataviewModel = vis.dataviews.createCategoryModel(vis.map.layers.first(), {
+    var layer = vis.map.layers.first();
+    layer.restoreCartoCSS = jasmine.createSpy('restore');
+    this.dataviewModel = vis.dataviews.createCategoryModel(layer, {
       column: 'col'
     });
     this.widgetModel = new CategoryWidgetModel({}, {

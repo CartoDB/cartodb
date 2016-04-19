@@ -1,11 +1,11 @@
-<div class="ServiceList-header">
-  <p class="ServiceList-headerTitle">
+<div class="ConnectDataset-header">
+  <h2 class="CDB-Text CDB-Size-medium u-altTextColor">
     <%- _t('components.modals.add-layer.imports.service-import.found-in', {
       size: size,
       pluralize: pluralize,
       title: title
     }) %>
-  </p>
+  </h2>
 </div>
 <div class="ServiceList-body">
   <% if (size > 0) { %>

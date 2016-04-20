@@ -216,7 +216,7 @@ module Carto
                             table_name: name,
                             table_id: id)
 
-      if user.tables.where(table_id: id).count > 1
+      if user.tables.where(table_id: id).count != 0
         CartoDB::Logger.warning(message: 'Ghost Tables: avoided regeneration (UserTable with matching table_id exists)',
                                 user: @user,
                                 table_name: name,

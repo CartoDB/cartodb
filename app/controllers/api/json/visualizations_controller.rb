@@ -49,11 +49,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
                   locator.get(params.fetch(:source_visualization_id), subdomain)
                 end
 
-                can_copy = source &&
-                           source.kind != Visualization::Member::KIND_RASTER &&
-                           source.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY)
-
-                return head(403) unless can_copy
+                return head(403) unless source && source.can_copy?(current_user)
 
                 copy_overlays = params.fetch(:copy_overlays, true)
                 copy_layers = params.fetch(:copy_layers, true)

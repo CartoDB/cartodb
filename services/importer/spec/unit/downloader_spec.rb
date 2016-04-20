@@ -218,7 +218,7 @@ describe Downloader do
       stub_download(
         url:      @file_url,
         filepath: @file_filepath,
-        headers:  { }
+        headers:  {}
       )
 
       Typhoeus::Response.any_instance.stubs(:mock).returns(false)

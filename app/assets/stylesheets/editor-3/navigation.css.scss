@@ -1,6 +1,10 @@
 // Styles for navigations
 // --------------------------------------------------
 
+@import 'cdb-utilities/mixins';
+@import 'cdb-variables/colors';
+@import 'cdb-variables/sizes';
+
 
 .Editor-buttonNavigation {
   position: absolute;
@@ -11,3 +15,38 @@
 .Editor-buttonNavigation.is-hidden {
   display: none;
 }
+
+
+// Navigation tab
+// --------------------------------------------------
+
+.NavTab-inner {
+  @include display-flex();
+  @include justify-content(center);
+  padding: $baseSize * 4 0;
+}
+
+.NavTab-item {
+  margin-left: $baseSize;
+  border: 1px solid $cSecondaryLine;
+  border-radius: 4px;
+  background: $cThirdBackground;
+  color: $cSecondaryText;
+}
+
+.NavTab-item.is-selected {
+  border: 2px solid $cBlue;
+  border-radius: 4px;
+  background: $cWhite;
+  color: $cMainText;
+}
+
+
+.NavTab-item:first-child {
+  margin-left: 0;
+}
+
+.NavTab-itemLink {
+  padding: $baseSize + 4;
+}
+

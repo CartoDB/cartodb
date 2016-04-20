@@ -18,34 +18,6 @@
   }
 }
 
-.WidgetList-option {
-  margin-right: 16px;
-}
-.WidgetList-item {
-  @include display-flex;
-  @include align-items(baseline);
-  flex: 0 0 304px;
-  width: 304px;
-  margin: 0 4px 8px;
-  box-sizing: border-box;
-  padding: $baseSize * 2;
-  border: 1px solid transparent;
-  border-radius: $baseSize / 2;
-  background: $cWhite;
-}
-.WidgetList-item:hover {
-  border: 1px solid $cBlue;
-  background: #F5FAFE;
-}
-.WidgetList-inner {
-  @include display-flex;
-  flex-wrap: wrap;
-  width: 100%;
-}
-.WidgetList-title {
-  @include display-flex;
-}
-
 .WidgetPlaceHolder {
   @include display-flex();
   @include flex(1);

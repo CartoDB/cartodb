@@ -34,6 +34,7 @@ class Carto::UserCreation < ActiveRecord::Base
     user_creation.quota_in_bytes = user.quota_in_bytes
     user_creation.soft_geocoding_limit = user.soft_geocoding_limit
     user_creation.soft_here_isolines_limit = user.soft_here_isolines_limit
+    user_creation.soft_obs_snapshot_limit = user.soft_obs_snapshot_limit
     user_creation.soft_twitter_datasource_limit = user.soft_twitter_datasource_limit.nil? ? false : user.soft_twitter_datasource_limit
     user_creation.google_sign_in = user.google_sign_in
     user_creation.log = Carto::Log.new_user_creation
@@ -203,6 +204,7 @@ class Carto::UserCreation < ActiveRecord::Base
     @cartodb_user.quota_in_bytes = quota_in_bytes unless quota_in_bytes.nil?
     @cartodb_user.soft_geocoding_limit = soft_geocoding_limit unless soft_geocoding_limit.nil?
     @cartodb_user.soft_here_isolines_limit = soft_here_isolines_limit unless soft_here_isolines_limit.nil?
+    @cartodb_user.soft_obs_snapshot_limit = soft_obs_snapshot_limit unless soft_obs_snapshot_limit.nil?
     @cartodb_user.soft_twitter_datasource_limit = soft_twitter_datasource_limit unless soft_twitter_datasource_limit.nil?
 
     @cartodb_user

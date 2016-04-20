@@ -148,8 +148,8 @@ module Carto
       CartoDB::Logger.debug(message: 'ghost tables',
                             action: 'linking new table',
                             user: @user,
-                            new_table: name,
-                            new_table_id: id)
+                            table_name: name,
+                            table_id: id)
 
       # TODO: Use Carto::UserTable when it's ready and stop the Table <-> ::UserTable madness
       new_table = ::Table.new(user_table: ::UserTable.new.set_fields({ user_id: @user.id, table_id: id, name: name },
@@ -171,8 +171,8 @@ module Carto
       CartoDB::Logger.debug(message: 'ghost tables',
                             action: 'relinking renamed table',
                             user: @user,
-                            renamed_table: name,
-                            renamed_table_id: id)
+                            table_name: name,
+                            table_id: id)
 
       user_table_vis = user_table_with_matching_id.table_visualization
 
@@ -192,8 +192,8 @@ module Carto
       CartoDB::Logger.debug(message: 'ghost tables',
                             action: 'unlinking dropped table',
                             user: @user,
-                            dropped_table: name,
-                            dropped_table_id: id)
+                            table_name: name,
+                            table_id: id)
 
       # TODO: Use Carto::UserTable when it's ready and stop the Table <-> ::UserTable madness
       table_to_drop = ::Table.new(user_table: @user.tables.where(table_id: id, name: name).first)
@@ -213,8 +213,8 @@ module Carto
       CartoDB::Logger.debug(message: 'ghost tables',
                             action: 'regenerating table_id',
                             user: @user,
-                            dropped_table: name,
-                            dropped_table_id: id)
+                            table_name: name,
+                            table_id: id)
 
       user_table_to_regenerate = user_table_with_matching_name
 

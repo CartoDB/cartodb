@@ -24,13 +24,13 @@ function CategoryColors () {
 
 CategoryColors.prototype.updateData = function (d) {
   // Remove categories from colors where they are not present anymore
-  _.each(this.colors, function (value, key) {
-    if (!_.contains(d, value)) {
-      this.colors[key] = null;
-    } else {
-      d = _.without(d, value);
-    }
-  }, this);
+  // _.each(this.colors, function (value, key) {
+  //   if (!_.contains(d, value)) {
+  //     this.colors[key] = null;
+  //   } else {
+  //     d = _.without(d, value);
+  //   }
+  // }, this);
 
   // Set colors by new categories
   _.each(d, function (category) {

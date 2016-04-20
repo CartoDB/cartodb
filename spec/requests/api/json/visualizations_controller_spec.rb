@@ -69,16 +69,21 @@ describe Api::Json::VisualizationsController do
 
   describe '#duplicate map' do
     before(:all) do
+      @other_user = create_user(username: 'other-user')
+    end
+
+    before(:each) do
       bypass_named_maps
 
       @map = Map.create(user_id: @user.id, table_id: create_table(user_id: @user.id).id)
       @visualization = Carto::Visualization.where(map_id: @map.id).first
+    end
 
-      @other_user = create_user(username: 'other-user')
+    after(:each) do
+      @map.destroy
     end
 
     after(:all) do
-      @map.destroy
       @other_user.destroy
     end
 

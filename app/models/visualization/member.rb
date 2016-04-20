@@ -423,6 +423,14 @@ module CartoDB
         is_owner?(user) || permission.is_permitted?(user, permission_type)
       end
 
+      def can_copy?(user)
+        !raster_kind? && has_permission?(user, PERMISSION_READONLY)
+      end
+
+      def raster_kind?
+        kind == KIND_RASTER
+      end
+
       def users_with_permissions(permission_types)
         permission.users_with_permissions(permission_types)
       end

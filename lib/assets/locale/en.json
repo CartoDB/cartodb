@@ -47,10 +47,10 @@
         "data": "Data",
         "analyses": "Analyses",
         "style": "Style",
-        "popup": "Pop-up",
+        "infowindow": "Pop-up",
         "legends": "Legend"
       },
-      "popup-menu-tab-pane-labels": {
+      "infowindow-menu-tab-pane-labels": {
         "click": "Click",
         "hover": "Hover"
       },
@@ -73,7 +73,7 @@
         "by-bike": "bike",
         "by-car": "drive",
       },
-      "popup": {
+      "infowindow": {
         "style": {
           "title-label": "Style",
           "description": "None",

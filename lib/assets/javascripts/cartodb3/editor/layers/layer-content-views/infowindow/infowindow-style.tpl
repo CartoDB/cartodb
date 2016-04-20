@@ -9,6 +9,7 @@
     <p class="CDB-Text u-upperCase CDB-FontSize-small u-altTextColor u-bSpace--m"><%- description %></p>
 
     <select class="CDB-SelectFake js-select">
+      <!-- TODO: carousel -->
       <option value="white" selected="selected">
         white
       </option>

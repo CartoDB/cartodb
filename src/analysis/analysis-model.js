@@ -49,7 +49,7 @@ module.exports = Model.extend({
       this._reloadMap();
     }, this);
 
-    _.each(this._getParamNames(), function (paramName) {
+    _.each(this.getParamNames(), function (paramName) {
       this.bind('change:' + paramName, this._reloadMap, this);
     }, this);
   },
@@ -88,7 +88,7 @@ module.exports = Model.extend({
 
   toJSON: function () {
     var json = _.pick(this.attributes, 'id', 'type');
-    json.params = _.pick(this.attributes, this._getParamNames());
+    json.params = _.pick(this.attributes, this.getParamNames());
     _.each(this._getSourceNames(), function (sourceName) {
       var source = {};
       source[sourceName] = this.get(sourceName).toJSON();
@@ -98,7 +98,7 @@ module.exports = Model.extend({
     return json;
   },
 
-  _getParamNames: function () {
+  getParamNames: function () {
     return this._camshaftReference.getParamNamesForAnalysisType(this.get('type'));
   }
 }, {

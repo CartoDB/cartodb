@@ -1742,7 +1742,9 @@ describe User do
       redis_vizjson_keys = collection.map { |v|
         [
           redis_vizjson_cache.key(v.id, false), redis_vizjson_cache.key(v.id, true),
-          redis_vizjson_cache.key(v.id, false, 3), redis_vizjson_cache.key(v.id, true, 3)
+          redis_vizjson_cache.key(v.id, false, 3), redis_vizjson_cache.key(v.id, true, 3),
+          redis_vizjson_cache.key(v.id, false, '3n'), redis_vizjson_cache.key(v.id, true, '3n'),
+          redis_vizjson_cache.key(v.id, false, '3a'), redis_vizjson_cache.key(v.id, true, '3a'),
         ]
       }.flatten
       redis_vizjson_keys.should_not be_empty

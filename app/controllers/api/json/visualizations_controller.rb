@@ -74,7 +74,8 @@ class Api::Json::VisualizationsController < Api::ApplicationController
                   tables.flatten
                 end
 
-                map = Visualization::TableBlender.new(current_user, tables).blend
+                blender = Visualization::TableBlender.new(current_user, tables)
+                map = blender.blend
 
                 vis = Visualization::Member.new(vis_data.merge(name: name_candidate,
                                                                map_id: map.id,

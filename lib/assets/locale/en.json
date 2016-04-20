@@ -314,7 +314,7 @@
         "placeholder-text": "You have not added any analysis yet. Add new analysis to discover new things.",
         "polygons_source": "Polygon source",
         "points_source": "Point source",
-        "radio": "Radio",
+        "radius": "Radius",
         "reference-layer-pluralize": "Define your reference layer |||| Define your reference layers",
         "time": "Time",
         "type": "Type",

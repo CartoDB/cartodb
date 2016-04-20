@@ -173,7 +173,7 @@ describe CartoDB::DataMover::ExportJob do
 
     moved_user = ::User.find(username: user.username)
     moved_user.database_host.should eq '127.0.0.2'
-    moved_user.link_ghost_tables
+    Carto::GhostTablesManager.new(moved_user.id).link_ghost_tables_synchronously
     check_tables(moved_user)
     moved_user.in_database['SELECT * FROM cdb_tablemetadata']
     moved_user.organization_id.should_not eq nil

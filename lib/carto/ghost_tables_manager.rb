@@ -216,10 +216,17 @@ module Carto
                             table_name: name,
                             table_id: id)
 
-      user_table_to_regenerate = user_table_with_matching_name
+      if user.tables.where(table_id: id).count > 1
+        CartoDB::Logger.warning(message: 'Ghost Tables: avoided regeneration (UserTable with matching table_id exists)',
+                                user: @user,
+                                table_name: name,
+                                table_id: id)
+      else
+        user_table_to_regenerate = user_table_with_matching_name
 
-      user_table_to_regenerate.table_id = id
-      user_table_to_regenerate.save
+        user_table_to_regenerate.table_id = id
+        user_table_to_regenerate.save
+      end
     rescue => exception
       CartoDB::Logger.error(message: 'Ghost tables: Error syncing table_id for UserTable',
                             exception: exception,

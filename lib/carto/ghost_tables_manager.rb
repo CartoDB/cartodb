@@ -228,17 +228,6 @@ module Carto
                             table_id: id)
     end
 
-    def physical_table_exists?
-      result = @user.in_database(as: :superuser)
-                    .select(:pg_class__oid, :pg_class__relname)
-                    .from(:pg_class)
-                    .join_table(:inner, :pg_namespace, oid: :relnamespace)
-                    .where(relkind: 'r', nspname: user.database_schema, pg_class__oid: id, pg_class__relname: name)
-                    .first
-
-      !!result
-    end
-
     def eql?(other)
       id.eql?(other.id) && name.eql?(other.name) && user.id.eql?(other.user.id)
     end

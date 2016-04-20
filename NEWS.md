@@ -1,6 +1,9 @@
 3.13.0 (2016-XX-XX)
 -------------------
 ### NOTICE
+For the analysis catalog feature existing users require to run `rake cartodb:db:set_user_privileges_in_cartodb_schema['$USERNAME']`.
+
+### NOTICE
 This release introduces a different method of doing cache invalidations, using Surrogate Keys instead of the older X-Cache-Channel header.
 See [CartoDB Surrogate Keys](https://github.com/CartoDB/cartodb/wiki/CartoDB-Surrogate-Keys) on the wiki for more information about this change.
 
@@ -23,6 +26,7 @@ The task will report visualization that could not be automatically fixed, where 
 which should be fixed manually.
 
 ### Features
+* Update CartoDB PostgreSQL extension to 0.16.0 to support analysis catalog.
 * Change Varnish table-related invalidations and tagging to use [Surrogate Keys](https://github.com/CartoDB/cartodb/wiki/CartoDB-Surrogate-Keys)
 * Remove Varnish table invalidations from Rails and replaced them with CDB_TableMetadataTouch calls (delegating invalidation responsibility to the database)
 * Adds optional strong passwords for organization signups

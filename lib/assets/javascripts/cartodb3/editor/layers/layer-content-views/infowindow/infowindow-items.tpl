@@ -7,9 +7,6 @@
     </div>
     <p class="CDB-Text u-upperCase CDB-FontSize-small u-altTextColor u-bSpace--m"><%- _t('editor.layers.infowindow.items.description') %></p>
 
-    <div class="js-content">
-      <!-- TODO: backbone.forms -->
-    </div>
-
+    <div class="js-content"></div>
   </div>
 </div>

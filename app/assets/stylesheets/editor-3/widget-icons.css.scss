@@ -7,6 +7,10 @@
   width: 20px;
   height: 11px;
 }
+
+.HistogramShape.is-disabled .HistogramShape-bar {
+  background: $cHintText;
+}
 .HistogramShape-bar {
   position: absolute;
   bottom: 0;
@@ -67,7 +71,9 @@
   height: 2px;
   background: $cHighlight;
 }
-
+.CategoryShape.is-disabled .CategoryShape-percent {
+  background: $cHintText;
+}
 .FormulaShape {
   width: 18px;
   height: 14px;
@@ -86,7 +92,10 @@
 .FormulaShape-number {
   width: 12px;
   height: 7px;
-  background: $cMainLine;
+  background: $cHighlight;
+}
+.FormulaShape.is-disabled .FormulaShape-number {
+  background: $cHintText;
 }
 
 
@@ -124,6 +133,9 @@
 }
 .TimeSeriesShape-bar.is-played {
   background: #F2CC8F;
+}
+.TimeSeriesShape.is-disabled .TimeSeriesShape-bar.is-played {
+  background: $cHintText;
 }
 .TimeSeriesShape-bar.is-01 {
   top: 7px;

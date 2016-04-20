@@ -49,6 +49,24 @@ module Carto
         perform_request(__method__, url, options)
       end
 
+      def get_file(url)
+        downloaded_file = File.open "get_file_#{String.random(10)}", 'wb'
+        request = request(url)
+        request.on_headers do |response|
+          if response.code != 200
+            raise "Request failed: #{response.code}. #{response.body}"
+          end
+        end
+        request.on_body do |chunk|
+          downloaded_file.write(chunk)
+        end
+        request.on_complete do |response|
+          downloaded_file.close
+        end
+        request.run
+
+        downloaded_file
+      end
 
       private
 

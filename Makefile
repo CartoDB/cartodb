@@ -106,6 +106,7 @@ WORKING_SPECS_2 = \
 	services/importer/spec/acceptance/gz_tgz_spec.rb \
 	services/importer/spec/acceptance/zip_spec.rb \
 	services/importer/spec/acceptance/shp_spec.rb \
+	services/importer/spec/acceptance/rar_spec.rb \
 	services/importer/spec/unit/column_spec.rb \
 	services/importer/spec/unit/csv_normalizer_spec.rb \
 	services/importer/spec/unit/shp_normalizer_spec.rb \
@@ -115,9 +116,11 @@ WORKING_SPECS_2 = \
 	services/importer/spec/unit/georeferencer_spec.rb \
 	services/importer/spec/unit/json2csv_spec.rb \
 	services/importer/spec/unit/kml_splitter_spec.rb \
+	services/importer/spec/unit/gpx_splitter_spec.rb \
 	services/importer/spec/unit/loader_spec.rb \
 	services/importer/spec/unit/mail_notifier_spec.rb \
 	services/importer/spec/unit/sql_loader_spec.rb \
+	services/importer/spec/unit/table_sampler_spec.rb \
 	services/importer/spec/unit/ogr2ogr_spec.rb \
 	services/importer/spec/unit/post_import_handler_spec.rb \
 	services/importer/spec/unit/runner_spec.rb \
@@ -150,6 +153,7 @@ WORKING_SPECS_4 = \
 	spec/requests/api/json/imports_controller_spec.rb \
 	spec/requests/carto/api/imports_controller_spec.rb \
 	spec/connectors/importer_spec.rb \
+	spec/connectors/importer_overviews_spec.rb \
 	spec/requests/api/geocodings_spec.rb \
 	services/importer/spec/unit/url_translator/osm_spec.rb \
 	services/importer/spec/unit/url_translator/osm2_spec.rb \
@@ -197,6 +201,7 @@ WORKING_SPECS_9 = \
 	services/datasources/spec/acceptance/datasources_factory_spec.rb \
 	services/datasources/spec/acceptance/dropbox_spec.rb \
 	services/datasources/spec/acceptance/gdrive_spec.rb \
+	services/datasources/spec/acceptance/public_url_spec.rb \
 	services/datasources/spec/integration/csv_file_dumper_spec.rb \
 	services/datasources/spec/integration/twitter_spec.rb \
 	services/datasources/spec/unit/arcgis_spec.rb \
@@ -235,6 +240,7 @@ WORKING_SPECS_9 = \
 	services/geocoder/spec/hires_geocoder_spec.rb \
 	services/geocoder/spec/hires_geocoder_factory_spec.rb \
 	services/table-geocoder/spec/geocoder_cache_spec.rb \
+	services/user-mover/spec/user_mover_spec.rb \
 	$(NULL)
 
 # Tests using spec_helper_min instead of spec_helper

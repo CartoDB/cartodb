@@ -1,0 +1,19 @@
+// Date picker (calendar) styles
+// --------------------------------------------------
+
+@import 'cdb-utilities/mixins';
+
+.DatePicker-timers {
+  @include display-flex();
+  margin: 0 14px;
+}
+.DatePicker-timersField {
+  @include display-flex();
+  @include align-items(center);
+}
+.DatePicker-timersField--spaced {
+  margin: 0 12px 0 34px;
+}
+.DatePicker-timersInput {
+  width: 50px;
+}

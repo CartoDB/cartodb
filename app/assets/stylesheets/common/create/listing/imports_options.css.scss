@@ -1,7 +1,7 @@
-@import "../../../variables/mixins";
-@import "../../../variables/colors";
-@import "../../../variables/sizes";
-@import "compass/css3/images";
+@import '../../../variables/mixins';
+@import '../../../variables/colors';
+@import '../../../variables/sizes';
+@import 'compass/css3/images';
 
 // Imports styles
 $w: 780px;
@@ -11,18 +11,21 @@ $w: 780px;
   width: $w;
   margin: 0 auto 20px;
 }
-.ImportOptions-navigation {}
 .ImportOptions-navigationButton {
   position: absolute;
   top: 28px;
   padding: 0;
-  line-height: 40px!important;
+  line-height: 40px !important;
 }
-.ImportOptions-navigationButton--prev { left: -80px }
-.ImportOptions-navigationButton--next { right: -80px }
+.ImportOptions-navigationButton--prev {
+  left: -80px;
+}
+.ImportOptions-navigationButton--next {
+  right: -80px;
+}
 .ImportOptions-navigationButton.is-disabled:hover {
-   border-color: #ccc;
-   color: #ccc;
+  border-color: #CCC;
+  color: #CCC;
 }
 .ImportOptions-tabs {
   display: block;
@@ -34,9 +37,10 @@ $w: 780px;
 .ImportOptions-tabsList {
   @include display-flex();
   @include flex-wrap(nowrap);
-  @include transition(margin,150ms);
+  @include transition(margin, 150ms);
 }
 .ImportOptions-tab {
   min-width: 140px;
   margin: 0 $sMargin-formRow 0 0;
+  text-align: center;
 }

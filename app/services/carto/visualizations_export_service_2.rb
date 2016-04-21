@@ -149,29 +149,31 @@ module Carto
   module VisualizationsExportService2Exporter
     include VisualizationsExportService2Configuration
 
-    def export_visualization_json_string(visualization_id)
-      export_visualization_json_hash(visualization_id).to_json
+    def export_visualization_json_string(visualization_id, user)
+      export_visualization_json_hash(visualization_id, user).to_json
     end
 
-    def export_visualization_json_hash(visualization_id)
+    def export_visualization_json_hash(visualization_id, user)
       {
         version: CURRENT_VERSION,
-        visualization: export(Carto::Visualization.find(visualization_id))
+        visualization: export(Carto::Visualization.find(visualization_id), user)
       }
     end
 
     private
 
-    def export(visualization)
+    def export(visualization, user)
       check_valid_visualization(visualization)
-      export_visualization(visualization)
+      export_visualization(visualization, user)
     end
 
     def check_valid_visualization(visualization)
       raise "Only derived visualizations can be exported" unless visualization.derived?
     end
 
-    def export_visualization(visualization)
+    def export_visualization(visualization, user)
+      layers = visualization.layers_with_data_readable_by(user)
+
       {
         name: visualization.name,
         description: visualization.description,
@@ -187,7 +189,7 @@ module Carto
         bbox: visualization.bbox,
         display_name: visualization.display_name,
         map: export_map(visualization.map),
-        layers: visualization.layers.map { |l| export_layer(l, active_layer: visualization.active_layer_id == l.id) },
+        layers: layers.map { |l| export_layer(l, active_layer: visualization.active_layer_id == l.id) },
         overlays: visualization.overlays.map { |o| export_overlay(o) },
         analyses: visualization.analyses.map { |a| exported_analysis(a) }
       }

@@ -285,6 +285,7 @@ describe Carto::VisualizationsExportService2 do
   end
 
   after(:all) do
+    bypass_named_maps
     ::User[@user.id].destroy
     ::User[@no_private_maps_user.id].destroy
   end
@@ -408,6 +409,7 @@ describe Carto::VisualizationsExportService2 do
 
       before(:all) do
         @user = FactoryGirl.create(:carto_user, private_maps_enabled: true)
+        @user2 = FactoryGirl.create(:carto_user, private_maps_enabled: true)
         @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
         @analysis = FactoryGirl.create(:source_analysis, visualization: @visualization, user: @user)
       end
@@ -417,6 +419,7 @@ describe Carto::VisualizationsExportService2 do
         destroy_full_visualization(@map, @table, @table_visualization, @visualization)
         # This avoids connection leaking.
         ::User[@user.id].destroy
+        ::User[@user2.id].destroy
       end
 
       describe 'visualization types' do
@@ -433,22 +436,45 @@ describe Carto::VisualizationsExportService2 do
         it 'fails for visualizations that are not derived' do
           exporter = Carto::VisualizationsExportService2.new
           expect {
-            exporter.export_visualization_json_hash(@table_visualization.id)
+            exporter.export_visualization_json_hash(@table_visualization.id, @user)
           }.to raise_error("Only derived visualizations can be exported")
           expect {
-            exporter.export_visualization_json_hash(@remote_visualization.id)
+            exporter.export_visualization_json_hash(@remote_visualization.id, @user)
           }.to raise_error("Only derived visualizations can be exported")
         end
       end
 
       it 'exports visualization' do
-        exported_json = Carto::VisualizationsExportService2.new.export_visualization_json_hash(@visualization.id)
+        exported_json = Carto::VisualizationsExportService2.new.export_visualization_json_hash(@visualization.id, @user)
 
         exported_json[:version].split('.')[0].to_i.should eq 2
 
         exported_visualization = exported_json[:visualization]
 
         verify_visualization_vs_export(@visualization, exported_visualization)
+      end
+
+      it 'only exports layers that a user has permissions at' do
+        private_table = FactoryGirl.create(:private_user_table, user: @user)
+        public_table = FactoryGirl.create(:public_user_table, user: @user)
+
+        private_layer = FactoryGirl.create(:carto_layer, options: { table_name: private_table.name })
+        public_layer =  FactoryGirl.create(:carto_layer, options: { table_name: public_table.name })
+
+        map = FactoryGirl.create(:carto_map, layers: [private_layer, public_layer], user: @user)
+        map, table, table_visualization, visualization = create_full_visualization(@user, map: map)
+
+        exported_own = Carto::VisualizationsExportService2.new.export_visualization_json_hash(visualization.id, @user)
+        own_layers = exported_own[:visualization][:layers]
+        own_layers.count.should eq 2
+        own_layers.map { |l| l[:options][:table_name] }.sort.should eq [private_table.name, public_table.name].sort
+
+        exported_nown = Carto::VisualizationsExportService2.new.export_visualization_json_hash(visualization.id, @user2)
+        nown_layers = exported_nown[:visualization][:layers]
+        nown_layers.count.should eq 1
+        nown_layers.map { |l| l[:options][:table_name] }.sort.should eq [public_table.name].sort
+
+        destroy_full_visualization(map, table, table_visualization, visualization)
       end
     end
   end
@@ -610,6 +636,7 @@ describe Carto::VisualizationsExportService2 do
     end
 
     before(:each) do
+      bypass_named_maps
       @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
       carto_layer = @visualization.layers.find { |l| l.kind == 'carto' }
       carto_layer.options[:user_name] = @user.username
@@ -622,7 +649,7 @@ describe Carto::VisualizationsExportService2 do
     end
 
     it 'imports an exported visualization should create a new visualization with matching metadata' do
-      exported_string = Carto::VisualizationsExportService2.new.export_visualization_json_string(@visualization.id)
+      exported_string = Carto::VisualizationsExportService2.new.export_visualization_json_string(@visualization.id, @user)
       built_viz = Carto::VisualizationsExportService2.new.build_visualization_from_json_export(exported_string)
       imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user, built_viz)
 
@@ -631,7 +658,7 @@ describe Carto::VisualizationsExportService2 do
     end
 
     it 'imports an exported visualization into another account should change layer user_name option' do
-      exported_string = Carto::VisualizationsExportService2.new.export_visualization_json_string(@visualization.id)
+      exported_string = Carto::VisualizationsExportService2.new.export_visualization_json_string(@visualization.id, @user)
       built_viz = Carto::VisualizationsExportService2.new.build_visualization_from_json_export(exported_string)
       imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user2, built_viz)
 

@@ -78,6 +78,11 @@ class Carto::Visualization < ActiveRecord::Base
     super(tags)
   end
 
+  def layers_with_data_readable_by(user)
+    return [] unless map
+    map.layers.select { |l| l.data_readable_by?(user) }
+  end
+
   def related_tables
     @related_tables ||= get_related_tables
   end

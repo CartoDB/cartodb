@@ -55,20 +55,22 @@ module Carto
     def export(visualization, user, format = 'shp')
       visualization_id = visualization.id
 
-      run_dir = ensure_clean_folder("#{exporter_folder}/#{visualization_id}")
-      export_dir = ensure_clean_folder("#{run_dir}/#{visualization_id}")
+      export_dir = ensure_clean_folder("#{exporter_folder}/#{visualization_id}")
+      tmp_dir = ensure_clean_folder("#{export_dir}/#{visualization_id}")
 
       data_exporter = DataExporter.new
-      files = visualization.related_tables.map { |ut| data_exporter.export_table(ut, export_dir, format) }
+      files = visualization.related_tables.map { |ut| data_exporter.export_table(ut, tmp_dir, format) }
       visualization_json = Carto::VisualizationsExportService2.new.export_visualization_json_string(visualization_id, user)
-      visualization_json_file = "#{export_dir}/#{visualization_id}.json"
+      visualization_json_file = "#{tmp_dir}/#{visualization_id}.json"
       File.open(visualization_json_file, 'w') { |file| file.write(visualization_json) }
       files << visualization_json_file
 
       zipfile = "#{visualization_id}.carto"
-      `cd #{run_dir} && zip -r "#{zipfile}" "#{visualization_id} && cd -"`
+      `cd #{export_dir} && zip -r #{zipfile} #{visualization_id} && cd -`
 
-      zipfile
+      FileUtils.remove_dir(tmp_dir)
+
+      "#{export_dir}/#{zipfile}"
     end
   end
 

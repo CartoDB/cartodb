@@ -192,18 +192,20 @@ WORKING_SPECS_7 = \
 
 WORKING_SPECS_9 = \
   spec/rspec_configuration.rb \
-  services/twitter-search/spec/unit/ \
+	services/twitter-search/spec/unit/json_to_csv_converter_spec.rb \
+	services/twitter-search/spec/unit/search_api_spec.rb \
   services/datasources/spec/acceptance/datasources_factory_spec.rb \
 	services/datasources/spec/acceptance/dropbox_spec.rb \
 	services/datasources/spec/acceptance/gdrive_spec.rb \
-  services/datasources/spec/integration/ \
+  services/datasources/spec/integration/csv_file_dumper_spec.rb \
+	services/datasources/spec/integration/twitter_spec.rb \
   services/datasources/spec/unit/arcgis_spec.rb \
 	services/datasources/spec/unit/dropbox_spec.rb \
 	services/datasources/spec/unit/box_spec.rb \
 	services/datasources/spec/unit/gdrive_spec.rb \
   services/importer/spec/regression/query_batcher_spec.rb \
   services/importer/spec/regression/query_batcher_spec.rb \
-  services/platform-limits/spec/unit/ \
+  services/platform-limits/spec/unit/input_file_size_spec.rb \
 	spec/models/platform-limits/user_concurrent_imports_amount_spec.rb \
 	spec/models/platform-limits/user_concurrent_syncs_amount_spec.rb \
   spec/lib/initializers/carto_db_spec.rb \

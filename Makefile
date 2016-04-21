@@ -63,6 +63,9 @@ WORKING_SPECS_1 = \
   spec/models/data_import_spec.rb \
   spec/models/geocoding_spec.rb \
   spec/models/common_data_spec.rb \
+	spec/lib/api_calls_spec.rb \
+	spec/lib/sql_test_spec.rb \
+  spec/lib/errors_spec.rb \
   spec/lib/sql_parser_spec.rb \
   spec/lib/url_signer_spec.rb \
   spec/lib/string_spec.rb \

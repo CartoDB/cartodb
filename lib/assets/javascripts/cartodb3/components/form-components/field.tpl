@@ -1,10 +1,10 @@
-<div class="u-tSpace-xl CDB-Text">
-  <p class="CDB-Legend u-upperCase u-iBlock CDB-Text is-semibold CDB-Size-small u-rSpace--m" for="<%= editorId %>">
+<div class="u-tSpace--m CDB-Text Editor-FormInner">
+  <label class="CDB-Legend u-upperCase CDB- Text is-semibold CDB-Size-small u-rSpace--m" for="<%= editorId %>">
     <%- title %>
-  </p>
-  <div class="CDB-Text CDB-Size-medium u-iBlock">
+  </label>
+  <div class="CDB-Text CDB-Size-medium Editor-FormInput">
     <span data-editor></span>
-    <div data-error></div>
+    <div class="CDB-Text CDB-Text Color-Error" data-error></div>
     <div><%= help %></div>
   </div>
 </div>

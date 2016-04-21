@@ -67,6 +67,68 @@ describe Api::Json::VisualizationsController do
 
   end
 
+  describe '#duplicate map' do
+    before(:all) do
+      @other_user = create_user(username: 'other-user')
+    end
+
+    before(:each) do
+      bypass_named_maps
+
+      @map = Map.create(user_id: @user.id, table_id: create_table(user_id: @user.id).id)
+      @visualization = Carto::Visualization.where(map_id: @map.id).first
+    end
+
+    after(:each) do
+      @map.destroy
+    end
+
+    after(:all) do
+      @other_user.destroy
+    end
+
+    it 'duplicates a map' do
+      new_name = @visualization.name + ' patatas'
+
+      post_json api_v1_visualizations_create_url(api_key: @user.api_key),
+                source_visualization_id: @visualization.id,
+                name: new_name
+
+      last_response.status.should be_success
+
+      Carto::Visualization.exists?(user_id: @user.id, type: 'derived', name: new_name).should be_true
+    end
+
+    it "duplicates someone else's map if has at least read permission to it" do
+      new_name = @visualization.name + ' patatas'
+
+      CartoDB::Visualization::Member.any_instance
+                                    .stubs(:has_permission?)
+                                    .with(@other_user, Visualization::Member::PERMISSION_READONLY)
+                                    .returns(true)
+
+      post_json api_v1_visualizations_create_url(user_domain: @other_user.username, api_key: @other_user.api_key),
+                source_visualization_id: @visualization.id,
+                name: new_name
+
+      last_response.status.should be_success
+
+      Carto::Visualization.exists?(user_id: @other_user.id, type: 'derived', name: new_name).should be_true
+    end
+
+    it "doesn't duplicate someone else's map without permission" do
+      new_name = @visualization.name + ' patatas'
+
+      post_json api_v1_visualizations_create_url(user_domain: @other_user.username, api_key: @other_user.api_key),
+                source_visualization_id: @visualization.id,
+                name: new_name
+
+      last_response.status.should == 403
+
+      Carto::Visualization.exists?(user_id: @other_user.id, type: 'derived', name: new_name).should be_false
+    end
+  end
+
   describe '#likes' do
 
     before(:each) do

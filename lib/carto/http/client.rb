@@ -8,7 +8,6 @@ module Carto
   module Http
 
     class Client
-
       private_class_method :new
 
       def self.get(tag, extra_options = {})
@@ -49,8 +48,8 @@ module Carto
         perform_request(__method__, url, options)
       end
 
-      def get_file(url)
-        downloaded_file = File.open "get_file_#{String.random(10)}", 'wb'
+      def get_file(url, file_path)
+        downloaded_file = File.open file_path, 'wb'
         request = request(url)
         request.on_headers do |response|
           if response.code != 200

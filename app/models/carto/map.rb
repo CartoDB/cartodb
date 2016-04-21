@@ -112,7 +112,8 @@ class Carto::Map < ActiveRecord::Base
   end
 
   def notify_map_change
-    ::Map[id: id].notify_map_change
+    map = ::Map[id]
+    map.notify_map_change if map
   end
 
   private

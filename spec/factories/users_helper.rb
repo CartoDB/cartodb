@@ -24,3 +24,21 @@ shared_context 'users helper' do
     # User destruction is handled at spec_helper
   end
 end
+
+shared_context 'user helper' do
+  before(:all) do
+    username = "a#{String.random(10)}-a".downcase
+    @user = create_user(email: "#{username}@cartotest.com", username: username, password: '123456')
+    @carto_user = Carto::User.find(@user.id)
+  end
+
+  after(:all) do
+    bypass_named_maps
+    @user.destroy
+  end
+
+  before(:each) do
+    bypass_named_maps
+    delete_user_data(@user)
+  end
+end

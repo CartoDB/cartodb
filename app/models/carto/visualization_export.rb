@@ -14,6 +14,14 @@ module Carto
       ensure_folder(exporter_config[:exporter_temporal_folder] || DEFAULT_EXPORTER_TMP_FOLDER)
     end
 
+    def export_dir(visualization, base_dir: DEFAULT_EXPORTER_TMP_FOLDER)
+      ensure_folder("#{base_dir}/#{visualization.id}")
+    end
+
+    def tmp_dir(visualization, base_dir: DEFAULT_EXPORTER_TMP_FOLDER)
+      ensure_folder("#{export_dir(visualization, base_dir: base_dir)}/#{visualization.id}")
+    end
+
     def ensure_folder(folder)
       Dir.mkdir(folder) unless Dir.exists?(folder)
       folder
@@ -38,6 +46,10 @@ module Carto
       Carto::Http::Client.get('data_exporter', log_requests: true).get_file(url, exported_file)
     end
 
+    def export_visualization_tables(visualization, dir, format)
+      visualization.related_tables.map { |ut| export_table(ut, dir, format) }
+    end
+
     private
 
     def sql_api_query_url(query, filename, user, privacy, format)
@@ -52,19 +64,20 @@ module Carto
   module VisualizationExporter
     include ExporterConfig
 
-    def export(visualization, user, format = 'shp')
+    def export(visualization, user,
+               format: 'shp',
+               data_exporter: DataExporter.new,
+               visualization_export_service: Carto::VisualizationsExportService2.new,
+               base_dir: exporter_folder)
       visualization_id = visualization.id
+      export_dir = export_dir(visualization, base_dir: base_dir)
+      tmp_dir = tmp_dir(visualization, base_dir: base_dir)
 
-      export_dir = ensure_clean_folder("#{exporter_folder}/#{visualization_id}")
-      tmp_dir = ensure_clean_folder("#{export_dir}/#{visualization_id}")
-
-      data_exporter = DataExporter.new
-      files = visualization.related_tables.map { |ut| data_exporter.export_table(ut, tmp_dir, format) }
-      visualization_json = Carto::VisualizationsExportService2.new.export_visualization_json_string(visualization_id, user)
+      files = data_exporter.export_visualization_tables(visualization, tmp_dir, format)
+      visualization_json = visualization_export_service.export_visualization_json_string(visualization_id, user)
       visualization_json_file = "#{tmp_dir}/#{visualization_id}.json"
       File.open(visualization_json_file, 'w') { |file| file.write(visualization_json) }
-      files << visualization_json_file
-
+      files = files + [visualization_json_file]
       zipfile = "#{visualization_id}.carto"
       `cd #{export_dir} && zip -r #{zipfile} #{visualization_id} && cd -`
 

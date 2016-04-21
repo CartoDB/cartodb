@@ -7,19 +7,7 @@ describe Carto::DataExporter do
   include NamedMapsHelper
 
   describe '#export_tables' do
-    before(:all) do
-      @user = create_user(email: 'exporter@cartotest.com', username: 'dt-test', password: '123456')
-    end
-
-    after(:all) do
-      bypass_named_maps
-      @user.destroy
-    end
-
-    before(:each) do
-      bypass_named_maps
-      delete_user_data(@user)
-    end
+    include_context 'user helper'
 
     # TODO: Disabled because it needs SQL API configured for testing
     xit 'exports a table in requested format' do
@@ -41,5 +29,42 @@ describe Carto::DataExporter do
 end
 
 describe Carto::VisualizationExport do
+  include Carto::ExporterConfig
+  include_context 'user helper'
 
+  def random_filename(dir, extension: 'shp')
+    "#{dir}/test_#{String.random(12)}.#{extension}"
+  end
+
+  def random_file(dir, extension: 'shp')
+    FileUtils.touch(random_filename(dir, extension: extension)).first
+  end
+
+  let(:base_dir) { ensure_clean_folder('/tmp/exporter_test') }
+  let(:visualization) { FactoryGirl.create(:carto_visualization, user_id: @user.id) }
+  let(:file1) { random_file(tmp_dir(visualization, base_dir: base_dir), extension: 'shp') }
+  let(:file2) { random_file(tmp_dir(visualization, base_dir: base_dir), extension: 'shp') }
+  let(:data_files) { [file1, file2] }
+
+  it 'exports a .carto file including the json and the files' do
+    data_exporter_mock = mock
+    data_exporter_mock.expects(:export_visualization_tables).with(visualization, anything, anything).returns(data_files)
+    test_json = { test: 'test' }
+    export_service_mock = mock
+    export_service_mock.stubs(:export_visualization_json_string).with(visualization.id, @user).returns(test_json)
+
+    exported_file = Carto::VisualizationExport.new.export(
+      visualization,
+      @user,
+      data_exporter: data_exporter_mock,
+      visualization_export_service: export_service_mock,
+      base_dir: base_dir)
+
+    CartoDB::Importer2::Unp.new.open(exported_file) do |files|
+      files.length.should eq (data_files.count + 1)
+    end
+
+    [exported_file, file1, file2].map { |f| File.delete(f) if File.exists?(f) }
+    visualization.destroy
+  end
 end

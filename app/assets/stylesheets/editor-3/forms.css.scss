@@ -1,0 +1,14 @@
+// Styles for Form Layout
+// --------------------------------------------------
+
+@import 'cdb-utilities/mixins';
+
+.Editor-FormInner {
+  @include display-flex();
+  @include align-items(center);
+}
+
+.Editor-FormInput {
+  @include flex(1);
+}
+

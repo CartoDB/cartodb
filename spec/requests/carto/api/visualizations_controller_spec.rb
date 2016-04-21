@@ -10,6 +10,9 @@ require_relative '../../../../app/models/visualization/member'
 require_relative '../../../../app/helpers/bounding_box_helper'
 require_relative './vizjson_shared_examples'
 require 'helpers/unique_names_helper'
+require_dependency 'carto/uuidhelper'
+
+include Carto::UUIDHelper
 
 describe Carto::Api::VisualizationsController do
   include UniqueNamesHelper
@@ -1733,7 +1736,6 @@ describe Carto::Api::VisualizationsController do
       end
 
       it 'returns 404 if visualization does not exist' do
-        random_uuid = UUIDTools::UUID.timestamp_create.to_s
         get_json url(@vis_owner.username, random_uuid, @vis_owner.api_key), {}, @headers do |response|
           response.status.should == 404
           response.body[:errors].should == 'Visualization does not exist'
@@ -1831,7 +1833,6 @@ describe Carto::Api::VisualizationsController do
       end
 
       it 'returns 404 if visualization does not exist' do
-        random_uuid = UUIDTools::UUID.timestamp_create.to_s
         get_json url(@vis_owner.username, random_uuid, @vis_owner.api_key), {}, @headers do |response|
           response.status.should == 404
           response.body[:errors].should == 'Visualization does not exist'

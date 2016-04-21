@@ -1,11 +1,73 @@
 {
+  "user": {
+    "you": "You"
+  },
+  "analyses": {
+    "area-of-influence": "Area of influence",
+    "point-in-polygon": "Point in polygon"
+  },
+  "data": {
+    "upload-model": {
+      "invalid-import": "Invalid import",
+      "one-file": "Unfortunately only one file is allowed per upload",
+      "file-defined": "File name should be defined",
+      "file-extension": "Unfortunately this file extension is not allowed",
+      "file-size": "Unfortunately the size of the file is bigger than your remaining quota",
+      "visualization-id": "The remote visualization id was not specified",
+      "remote-file-size": "Unfortunately the size of the remote dataset is bigger than your remaining quota",
+      "url-invalid": "Unfortunately the URL provided is not valid",
+      "error-happened": "There was an error",
+      "connection-error": "Unfortunately there was a connection error",
+      "twitter-dates-invalid": "Twitter dates are not valid",
+      "twitter-dates-empty": "Twitter dates are empty",
+      "twitter-categories-invalid": "Twitter categories are not valid",
+      "twitter-data": "Twitter data is empty",
+      "dataset-copy-undefined": "Dataset copy is not defined",
+      "query-undefined": "Query is not provided"
+    }
+  },
   "components": {
+    "likes-pluralize": "like |||| likes",
+    "datepicker": {
+      "dates-placeholder": "Choose your dates",
+      "get-last": "Get last",
+      "hour": "hour",
+      "min": "min",
+      "from": "from",
+      "to": "to",
+      "or": "or",
+      "days-pluralize": "1 day |||| %{smart_count} days",
+      "weeks-pluralize": "1 week |||| %{smart_count} weeks",
+      "hours-pluralize": "hour week |||| %{smart_count} hours",
+      "gmt-convertion": "Date will be converted to GMT +0"
+    },
     "modals": {
+      "add-analysis": {
+        "modal-title": "Add a new analysis",
+        "modal-desc": "Select the analysis you want to add",
+        "loading-title": "Loading options",
+        "add-btn": "Add analysis",
+        "disabled-option-desc": "Your layer geometry is %{inputGeometryType} and this analysis needs %{requiredInputGeometries}",
+        "option-types": {
+          "buffer": {
+            "title": "Buffer",
+            "desc": "Calculate the area of influence of a layer determined by distance."
+          },
+          "trade-area": {
+            "title": "Trade Areas",
+            "desc": "Calculate the area of a layer determined by walking, driving, or biking time, or just by distance"
+          },
+          "point-in-polygon": {
+            "title": "Point in polygon",
+            "desc": "Analyse points in polygon (or vice versa)"
+          }
+        }
+      },
       "add-widgets": {
         "modal-title": "Add new widgets",
         "modal-desc": "Select the widgets you want to add",
         "continue-btn": "Continue",
-        "fetching-title": "Loading columns",
+        "loading-title": "Loading columns",
         "tab-pane": {
           "histogram-label": "Histogram",
           "category-label": "Category",
@@ -14,17 +76,203 @@
         },
         "time-series-no-option-title": "None",
         "time-series-no-option-desc": "This option won't show your time-series widget"
+      },
+      "add-layer": {
+        "modal-title": "Add a new layer",
+        "modal-desc": "Select an existing dataset or connect a new one",
+        "navigation": {
+          "search": "Search",
+          "search-placeholder": "by name, description or :tag",
+          "connect-dataset": "Connect dataset",
+          "shared-with-you": "Shared with you",
+          "data-library": "Data library",
+          "create-empty-map": "Create empty map",
+          "create-empty-dataset": "Create empty dataset",
+          "create-empty-addLayer": "Add an empty layer",
+          "dataset-pluralize": "Dataset |||| Datasets"
+        },
+        "create-loading-title": "Creating empty dataset…",
+        "adding-new-layer": "Adding new layer…",
+        "add-layer-error": "Could not add layer",
+        "imports": {
+          "ask-for-demo": "ask for demo",
+          "connector": "connector",
+          "demo-email-title": "I am interested in the %{name} connector",
+          "demo-email-desc": "Hi, I am interested in testing the %{name} connector. Please, contact me to schedule a demo of this feature.",
+          "tab-options-error": {
+            "no-key": "%{name} key is not specified and panel can't be enabled",
+            "not-allowed": "%{name} data source is not available in your plan. Please upgrade",
+            "limits-reached": "You've reached the limits for your account. Please upgrade",
+            "no-credits": "You've reached the available %{name} credits for your account this month"
+          },
+          "member-pluralize": "member |||| members",
+          "item-pluralize": "item |||| items",
+          "form-import": {
+            "browse": "Browse",
+            "drag-and-drop": "Drag & drop your file",
+            "error-desc": "Error. Your URL doesn’t look correct.",
+            "format": "Format",
+            "or": "or",
+            "title": "Enter a url",
+            "desc": "Paste a URL and start the import",
+            "submit": "submit"
+          },
+          "header-import": {
+            "import-url": "Import your data from a %{brand} URL",
+            "file-selected": "File selected",
+            "paste-url": "Paste a URL %{fileEnabled} ",
+            "select-a-file": "or select a file like CSV, XLS, ZIP, KML, GPX,",
+            "see-all-formats": "see all formats",
+            "sync-enabled": "Keep it synchronized with the source",
+            "sync-disabled": "Sync options are not available",
+            "type-selected": "%{brand} selected",
+            "type-import": "%{brand} import",
+            "upload-file-url": "Upload a file or a URL |||| Upload a URL"
+          },
+          "service-import": {
+            "and": "and",
+            "account-connected": "Account connected",
+            "connect-with": "Connect with %{title}",
+            "choose": "Choose",
+            "connect": "Connect",
+            "found-in": "%{size} %{pluralize} found in %{title}",
+            "item-selected": "Item selected",
+            "many-more-formats": "many more formats",
+            "no-results-title": "Oouch! There is no results",
+            "no-results-desc": "We haven't found any valid file from your account",
+            "state-idle-login": "Log in with your account and select any item.",
+            "state-error": "We are sorry, can’t connect to your %{title} account. Just in case it helps, be sure you have the pop-up blocker deactivated for this website.",
+            "state-token": "Checking Token.",
+            "state-oauth": "Requesting oAuth.",
+            "state-retrieving": "A list of your %{title} files will be displayed in a moment.",
+            "state-selected-sync": "You can also choose when to sync the file.",
+            "state-selected-instagram": "A map containing all your georeferenced photos will be created",
+            "state-selected-no-sync": "Sync options are not available.",
+            "supported": "supported",
+            "try-again": "Try again"
+          },
+          "selected-state": {
+            "sync-my-data": "Sync my data",
+            "never": "Never",
+            "every-hour": "Every hour",
+            "every-day": "Every day",
+            "every-week": "Every week",
+            "every-month": "Every month",
+            "free-trial": "%{days} days Free trial",
+            "more-features": "more features",
+            "upgrade-desc": "Upgrade your account to get sync options and %{features}",
+            "upgrade": "upgrade"
+          },
+          "twitter": {
+            "category": "Category",
+            "credits-consumed": "Twitter credits for this period consumed - %{extraTweets} will be charged",
+            "credits-left": "%{per}% of your %{remainingFormatted} Twitter credits left",
+            "credits-no-limit": "No limits - %{extraTweets} will be charged",
+            "extra-tweets": "extra tweets",
+            "fallback-title": "Enable the %{brand} Connector",
+            "fallback-desc": "The %{brand} Connector allows you to map %{brand} activity data related to your Brand, Event or any term you may be interested in.",
+            "from-to": "From / to",
+            "terms-desc": "Enter up to four search terms using the category fields.",
+            "terms-placeholder": "Insert your terms separated by commas",
+            "title": "Twitter trends",
+            "twitter-gmt": "Time is in GMT+0",
+            "use": "Use",
+            "your-gmt": "You are in GMT"
+          },
+          "arcgis": {
+            "fallback-desc": "Enable the %{brand} connector in your account to connect your %{brand} data to CartoDB and mantain it in sync with the source.",
+            "input-placeholder": "Paste here your %{brand} table URL",
+            "url-desc": "To retrieve a particular layer, add the layer index at the end of the URL",
+            "import-data": "Import your data from an %{brand} instance",
+            "sync-options": "Sync options only available for a layer"
+          },
+          "instagram": {
+            "fallback-desc": "Enable the %{brand} connector to map your photos or videos from your account in CartoDB."
+          },
+          "box": {
+            "fallback-desc": "Enable the %{brand} connector in your account to map your %{brand} files in CartoDB or mantain your CartoDB maps in sync with your Box data."
+          },
+          "mailchimp": {
+            "campaign-selected": "%{brand} campaign selected",
+            "fallback-desc": "Enable the %{brand} connector in your account to map your user lists from %{brand} in CartoDB or mantain your CartoDB maps in sync with your %{brand} data.",
+            "map-campaign": "Map your %{brand} Campaigns",
+            "state-idle": "Connect your %{brand} account to select any of your campaigns.",
+            "state-error": "We are sorry, It has been an error while connecting to your %{brand} account. Just in case it helps, be sure you have the pop-up blocker deactivated for this website.",
+            "state-token": "Checking %{brand} Token.",
+            "state-oauth": "Requesting oAuth.",
+            "state-retrieving": "A list of your %{brand} campaigns will be displayed in a moment.",
+            "state-selected": "Campaign selected."
+          },
+          "salesforce": {
+            "fallback-desc": "Enable the %{brand} connector in your account to map your user lists from %{brand} in CartoDB or mantain your CartoDB maps in sync with your %{brand} data.",
+            "input-placeholder": "Paste here your %{brand} URL"
+          }
+        },
+        "datasets": {
+          "item": {
+            "sync-failed": "Sync failed, last attempt was",
+            "syncing": "Syncing",
+            "synced": "Synced",
+            "read": "read",
+            "from": "from",
+            "by": "by",
+            "no-description": "No description",
+            "rows-pluralize": "row |||| rows",
+            "tags-more": "and %{tagsCount} more",
+            "no-tags": "No tags",
+          },
+          "loading": "Loading",
+          "searching": "Searching",
+          "error": {
+            "title": "Oouch! There has been an error loading your datasets",
+            "desc": "If the problem persists contact us at"
+          },
+          "no-datasets": {
+            "title": "You have not connected any datasets yet",
+            "desc": "You can %{connectDataset} or %{search} in all our data library",
+            "connect-datasets": "connect datasets",
+            "search": "search"
+          },
+          "no-results": {
+            "desc": "There are no results in this page",
+            "found": "found",
+            "there-are-no": "There are no",
+            "no-fun": "No %{type}, no fun"
+          }
+        },
+        "footer": {
+          "guessing-desc": "Let CartoDB automatically guess data types and content on import.",
+          "twitter-desc": "To get access to historical data (older than 30 days) you need to",
+          "contact-team": "contact our team",
+          "privacy-upgrade": "You cannot change the privacy of your new datasets. Click here to upgrade your account.",
+          "privacy-change": "Your new dataset will be %{privacy}",
+          "privacy-click": "Click to change it to %{nextPrivacy}",
+          "privacy-change-banned": "You cannot change the privacy of your new datasets.",
+          "add-layer": "Add layer"
+        }
       }
     },
     "error": {
       "default-title": "Oops, there was a problem",
       "default-desc": "Reload the page again. If the problem persists contact us at <a href='mailto:support@cartodb.com'>support@cartodb.com</a>"
+    },
+    "backbone-forms": {
+      "interval-error": "Value must between %{minValue} and %{maxValue}"
+    }
+  },
+  "data": {
+    "analysis-definition-node-model": {
+      "validation": {
+        "invalid-source": "invalid source",
+        "required-param": "required"
+      }
     }
   },
   "editor": {
     "map": "map",
     "map_name": "%{name} map",
     "map_pluralize": "%{smart_count} map |||| %{smart_count} maps",
+    "button_add": "Add",
     "tab-pane": {
       "layers": {
         "title-label": "Layers",
@@ -41,6 +289,7 @@
       "layer": {
         "analysis": "Analysis",
         "add-analysis": "Add analysis",
+        "add-layer": "Add layer",
         "delete": "Delete"
       },
       "menu-tab-pane-labels": {
@@ -55,23 +304,25 @@
         "hover": "Hover"
       },
       "analysis-form": {
-        "placeholder-text": "You have not added any analysis yet. Add new analysis to discover new things.",
-        "workflow": "Workflow",
-        "reference-layer": "Define your reference layer",
-        "parameters": "Parameters",
-        "parameters-description": "Tune your analysis",
-        "trade-area": "Trade area",
-        "point-in-polygon": "Point in polygon",
-        "polygons_source": "Polygon source",
-        "points_source": "Point source",
-        "buffer": "Buffer",
-        "input": "Input",
-        "radio": "Radio",
-        "type": "Type",
-        "time": "Time",
+        "by": "By",
         "by-walk": "walk",
         "by-bike": "bike",
         "by-car": "drive",
+        "distance": "Distance",
+        "input": "Input",
+        "kilometers": "km",
+        "meters": "m",
+        "miles": "mi",
+        "parameters": "Parameters",
+        "parameters-description": "Tune your analysis",
+        "placeholder-text": "You have not added any analysis yet. Add new analysis to discover new things.",
+        "polygons_source": "Polygon source",
+        "points_source": "Point source",
+        "radius": "Radius",
+        "reference-layer-pluralize": "Define your reference layer |||| Define your reference layers",
+        "time": "Time",
+        "type": "Type",
+        "workflow": "Workflow",
       },
       "infowindow": {
         "style": {

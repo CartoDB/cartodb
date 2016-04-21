@@ -139,7 +139,7 @@ module Carto
       ut = user_table
       ut_visualization = ut.nil? ? nil : ut.table_visualization
 
-      ut_visualization.raster_kind? unless !ut_visualization
+      ut_visualization.raster_kind? if ut_visualization
     end
 
     def stale?

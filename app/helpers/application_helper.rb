@@ -54,7 +54,7 @@ module ApplicationHelper
     if CartoDB.subdomainless_urls?
       sql_api["protocol"] + "://" + sql_api["domain"] + ":" + sql_api["port"].to_s + "/user/#{username}"
     else
-      sql_api["protocol"] + "://{user}." + sql_api["domain"] + ":" + sql_api["port"].to_s
+      sql_api["protocol"] + "://#{username}." + sql_api["domain"] + ":" + sql_api["port"].to_s
     end
   end
 

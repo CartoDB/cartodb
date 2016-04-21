@@ -44,52 +44,53 @@ class Api::Json::VisualizationsController < Api::ApplicationController
         subdomain = CartoDB.extract_subdomain(request)
         current_user_id = current_user.id
 
-        vis = nil
-        if params[:source_visualization_id]
-          source, = @stats_aggregator.timing('locate') do
-            locator.get(params.fetch(:source_visualization_id), subdomain)
-          end
+        vis = if params[:source_visualization_id]
+                source, = @stats_aggregator.timing('locate') do
+                  locator.get(params.fetch(:source_visualization_id), subdomain)
+                end
 
-          return head(403) unless source && source.can_copy?(current_user)
+                return head(403) unless source && source.can_copy?(current_user)
 
-          copy_overlays = params.fetch(:copy_overlays, true)
-          copy_layers = params.fetch(:copy_layers, true)
+                copy_overlays = params.fetch(:copy_overlays, true)
+                copy_layers = params.fetch(:copy_layers, true)
 
-          additional_fields = {
-            type:       params.fetch(:type, Visualization::Member::TYPE_DERIVED),
-            parent_id:  params.fetch(:parent_id, nil)
-          }
+                additional_fields = {
+                  type:       params.fetch(:type, Visualization::Member::TYPE_DERIVED),
+                  parent_id:  params.fetch(:parent_id, nil)
+                }
 
-          vis = @stats_aggregator.timing('copy') do
-            Visualization::Copier.new(current_user, source, name_candidate)
-                                 .copy(copy_overlays, copy_layers, additional_fields)
-          end
-        elsif param_tables
-          viewed_user = ::User.find(username: subdomain)
+                @stats_aggregator.timing('copy') do
+                  Visualization::Copier.new(current_user, source, name_candidate)
+                                       .copy(copy_overlays, copy_layers, additional_fields)
+                end
+              elsif param_tables
+                viewed_user = ::User.find(username: subdomain)
 
-          tables = @stats_aggregator.timing('locate-table') do
-            tables = param_tables.map do |table_name|
-              Helpers::TableLocator.new.get_by_id_or_name(table_name, viewed_user) if viewed_user
-            end
+                tables = @stats_aggregator.timing('locate-table') do
+                  tables = param_tables.map do |table_name|
+                    Helpers::TableLocator.new.get_by_id_or_name(table_name, viewed_user) if viewed_user
+                  end
 
-            tables.flatten
-          end
+                  tables.flatten
+                end
 
-          blender = Visualization::TableBlender.new(current_user, tables)
-          map = blender.blend
+                blender = Visualization::TableBlender.new(current_user, tables)
+                map = blender.blend
 
-          vis = Visualization::Member.new(vis_data.merge(name: name_candidate,
-                                                         map_id: map.id,
-                                                         type: 'derived',
-                                                         privacy: blender.blended_privacy,
-                                                         user_id: current_user_id))
+                vis = Visualization::Member.new(vis_data.merge(name: name_candidate,
+                                                               map_id: map.id,
+                                                               type: 'derived',
+                                                               privacy: blender.blended_privacy,
+                                                               user_id: current_user_id))
 
-          vis = @stats_aggregator.timing('default-overlays') do
-            Visualization::Overlays.new(vis).create_default_overlays
-          end
-        else
-          vis = Visualization::Member.new(vis_data.merge(name: name_candidate, user_id:  current_user_id))
-        end
+                @stats_aggregator.timing('default-overlays') do
+                  Visualization::Overlays.new(vis).create_default_overlays
+                end
+
+                vis
+              else
+                Visualization::Member.new(vis_data.merge(name: name_candidate, user_id:  current_user_id))
+              end
 
         vis.privacy = vis.default_privacy(current_user)
 

@@ -82,6 +82,7 @@ WORKING_SPECS_1 = \
 	spec/helpers/url_validator_spec.rb \
 	spec/models/carto/bi_dataset_spec.rb \
 	spec/models/carto/bi_visualization_spec.rb \
+	spec/requests/superadmin/feature_flag_spec.rb \
 	spec/models/carto/template_spec.rb \
 	spec/models/carto/group_spec.rb \
 	spec/models/carto/widget_spec.rb \
@@ -203,11 +204,13 @@ WORKING_SPECS_9 = \
   services/importer/spec/regression/query_batcher_spec.rb \
   services/importer/spec/regression/query_batcher_spec.rb \
   services/platform-limits/spec/unit/ \
-  spec/models/platform-limits/ \
+	spec/models/platform-limits/user_concurrent_imports_amount_spec.rb \
+	spec/models/platform-limits/user_concurrent_syncs_amount_spec.rb \
   spec/lib/initializers/carto_db_spec.rb \
   spec/requests/carto/api/oembed_controller_spec.rb \
-  spec/models/carto/ \
   spec/models/asset_spec.rb \
+	spec/models/log_spec.rb \
+	spec/models/access_token_spec.rb \
   spec/rspec_configuration.rb \
   spec/requests/api/permissions_controller_spec.rb \
   spec/models/shared_entity_spec.rb \
@@ -215,6 +218,7 @@ WORKING_SPECS_9 = \
 	spec/requests/account_tokens_controller_spec.rb \
   spec/requests/superadmin/users_spec.rb \
   spec/requests/superadmin/organizations_spec.rb \
+	spec/requests/superadmin/feature_flag_spec.rb \
   spec/requests/api/visualizations_spec.rb \
   spec/requests/carto/api/overlays_controller_spec.rb \
 	spec/models/carto/user_creation_spec.rb \

@@ -444,7 +444,6 @@ describe Carto::VisualizationsExportService2 do
         exported_json[:version].split('.')[0].to_i.should eq 2
 
         exported_visualization = exported_json[:visualization]
-
         verify_visualization_vs_export(@visualization, exported_visualization)
       end
     end

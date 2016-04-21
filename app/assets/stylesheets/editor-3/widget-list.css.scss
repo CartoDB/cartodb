@@ -10,9 +10,11 @@
 .WidgetList-fakeInner { // TODO: REMOVE ME
   width: 940px;
   margin: auto;
-  .CDB-NavMenu-Inner {
-    padding-top: 10px;
-    text-align: center;
+  .CDB-NavMenu-Item {
+    margin-right: 10px;
+  }
+  .CDB-NavMenu-Link {
+    padding: 32px 0;
   }
 }
 

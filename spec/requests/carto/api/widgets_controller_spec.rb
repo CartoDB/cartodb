@@ -2,6 +2,9 @@
 
 require_relative '../../../spec_helper'
 require_relative '../../../factories/users_helper'
+require_dependency 'carto/uuidhelper'
+
+include Carto::UUIDHelper
 
 shared_context 'layer hierarchy' do
   before(:each) do
@@ -14,10 +17,6 @@ shared_context 'layer hierarchy' do
   after(:each) do
     Carto::Widget.destroy_all
     @visualization.destroy if @visualization
-  end
-
-  def random_uuid
-    UUIDTools::UUID.random_create.to_s
   end
 
   def response_widget_should_match_widget(response_widget, widget)
@@ -253,10 +252,12 @@ describe Carto::Api::WidgetsController do
       end
 
       it 'contains widget data' do
-        vizjson3 = get_vizjson3(Carto::Visualization.find(@visualization.id))
-        layer = vizjson3[:layers][0][:options][:layer_definition][:layers][0]
-        options = CartoDB::NamedMapsWrapper::NamedMap.options_for_layer(layer, 1, { placeholders: {} })
-        widget_options = options[:layer_options][:widgets]
+        parent_mock = mock
+        parent_mock.stubs(:vizjson_config).returns(tiler: { filter: '' })
+        parent_mock.stubs(:username).returns(@user1.username)
+
+        template = CartoDB::NamedMapsWrapper::NamedMap.get_template_data(@visualization, parent_mock)
+        widget_options = template[:layergroup][:dataviews]
         widget_options.should_not be_nil
         widget_options.length.should == 1
         widget_options.each do |k, v|

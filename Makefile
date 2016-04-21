@@ -81,6 +81,7 @@ WORKING_SPECS_1 = \
 	spec/helpers/url_validator_spec.rb \
 	spec/models/carto/bi_dataset_spec.rb \
 	spec/models/carto/bi_visualization_spec.rb \
+	spec/models/carto/visualization_spec.rb \
 	spec/requests/superadmin/feature_flag_spec.rb \
 	spec/models/carto/template_spec.rb \
 	spec/models/carto/group_spec.rb \

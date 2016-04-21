@@ -129,6 +129,34 @@ module CartoDB
         end
       end
 
+      def disable_writes
+        # NOTE: This will not affect already opened connections. Run `terminate_database_conections` method after this
+        # to ensure no more writes are possible.
+        @user.in_database(as: :cluster_admin) do |database|
+          database.run(%{
+            ALTER DATABASE "#{@user.database_name}"
+              SET default_transaction_read_only = 'on'
+          })
+        end
+      end
+
+      def enable_writes
+        # NOTE: This will not affect already opened connections. Run `terminate_database_conections` method after this
+        # to ensure no more writes are possible.
+        @user.in_database(as: :cluster_admin) do |database|
+          database.run(%{
+            ALTER DATABASE "#{@user.database_name}"
+              SET default_transaction_read_only = default
+          })
+        end
+      end
+
+      def writes_enabled?
+        @user.in_database(as: :superuser) do |database|
+          database.fetch(%{SHOW default_transaction_read_only}).first[:default_transaction_read_only] == 'off'
+        end
+      end
+
       # Cartodb functions
       def load_cartodb_functions(statement_timeout = nil, cdb_extension_target_version = nil)
         add_python
@@ -458,7 +486,7 @@ module CartoDB
       # Upgrade the cartodb postgresql extension
       def upgrade_cartodb_postgres_extension(statement_timeout = nil, cdb_extension_target_version = nil)
         if cdb_extension_target_version.nil?
-          cdb_extension_target_version = '0.15.1'
+          cdb_extension_target_version = '0.16.0'
         end
 
         @user.in_database(as: :superuser, no_cartodb_in_schema: true) do |db|
@@ -603,7 +631,8 @@ module CartoDB
         )
         @queries.run_in_transaction(
           [
-            "REVOKE SELECT ON cartodb.cdb_tablemetadata FROM #{CartoDB::PUBLIC_DB_USER} CASCADE"
+            "REVOKE SELECT ON cartodb.cdb_tablemetadata FROM #{CartoDB::PUBLIC_DB_USER} CASCADE",
+            "REVOKE SELECT ON cartodb.cdb_analysis_catalog FROM #{CartoDB::PUBLIC_DB_USER} CASCADE"
           ],
           true
         )
@@ -628,7 +657,8 @@ module CartoDB
         @queries.run_in_transaction(
           (
             @queries.grant_read_on_schema_queries(SCHEMA_CARTODB, db_user) +
-            @queries.grant_write_on_cdb_tablemetadata_queries(db_user)
+            @queries.grant_write_on_cdb_tablemetadata_queries(db_user) +
+            @queries.grant_write_on_cdb_analysis_catalog_queries(db_user)
           ),
           true
         )
@@ -1087,6 +1117,10 @@ module CartoDB
 
       def public_user_roles
         @user.organization_user? ? [CartoDB::PUBLIC_DB_USER, @user.database_public_username] : [CartoDB::PUBLIC_DB_USER]
+      end
+
+      def terminate_database_connections
+        CartoDB::UserModule::DBService.terminate_database_connections(@user.database_name, @user.database_host)
       end
 
       def self.terminate_database_connections(database_name, database_host)

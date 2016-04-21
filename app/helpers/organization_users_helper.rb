@@ -1,9 +1,15 @@
 # encoding: UTF-8
+require_dependency 'carto/uuidhelper'
 
 module OrganizationUsersHelper
+  include Carto::UUIDHelper
+
   def load_organization
-    @organization = Organization.where(name: params[:name]).first
-    if @organization.nil?
+    id_or_name = params[:id_or_name]
+
+    @organization = ::Organization.where(is_uuid?(id_or_name) ? { id: id_or_name } : { name: id_or_name }).first
+
+    unless @organization
       render_jsonp({}, 401) # Not giving clues to guessers via 404
       return false
     end

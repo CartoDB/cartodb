@@ -68,9 +68,8 @@ describe Carto::Api::LayersController do
       data_layers.delete_if { |layer| layer['kind'] != 'carto' }
       data_layers.count.should eq 2
 
-      # Rembember, layers by default added at top
-      data_layers[0]['options']['attribution'].should eq table_2_attribution
-      data_layers[1]['options']['attribution'].should eq table_1_attribution
+      data_layers.map { |l| l['options']['attribution'] }.sort
+                 .should eq [table_1_attribution, table_2_attribution]
 
       table2_visualization.attributions = modified_table_2_attribution
       table2_visualization.store
@@ -82,9 +81,8 @@ describe Carto::Api::LayersController do
       data_layers = @layers_data['layers'].select { |layer| layer['kind'] == 'carto' }
       data_layers.count.should eq 2
 
-      # Rembember, layers by default added at top
-      data_layers[0]['options']['attribution'].should eq modified_table_2_attribution
-      data_layers[1]['options']['attribution'].should eq table_1_attribution
+      data_layers.map { |l| l['options']['attribution'] }.sort
+                 .should eq [table_1_attribution, modified_table_2_attribution]
     end
   end
 

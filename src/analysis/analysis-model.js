@@ -34,14 +34,6 @@ module.exports = Model.extend({
     return url;
   },
 
-  parse: function (attrs) {
-    // TODO: REMOVE THIS -> For debugging purposes
-    if (!window.ready) {
-      return { status: STATUS.PENDING };
-    }
-    return attrs;
-  },
-
   _initBinds: function () {
     this.bind('change:type', function () {
       this.unbind(null, null, this);

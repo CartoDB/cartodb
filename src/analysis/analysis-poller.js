@@ -1,10 +1,6 @@
 var _ = require('underscore');
 var BackbonePoller = require('backbone-poller');
 
-var START_DELAY = 1000;
-var MAX_DELAY = Infinity;
-var DELAY_MULTIPLIER = 1.5;
-
 var AnalysisPoller = {
   poll: function (analysisModel) {
     this._pollers = [];
@@ -33,7 +29,11 @@ var AnalysisPoller = {
 
   _createPoller: function (analysisModel) {
     var pollerOptions = {
-      delay: [START_DELAY, MAX_DELAY, DELAY_MULTIPLIER],
+      delay: [
+        this.CONFIG.START_DELAY,
+        this.CONFIG.MAX_DELAY,
+        this.CONFIG.DELAY_MULTIPLIER
+      ],
       condition: function (analysisModel) {
         return !analysisModel.isDone();
       }
@@ -48,6 +48,12 @@ var AnalysisPoller = {
     BackbonePoller.reset();
     this._pollers = [];
   }
+};
+
+AnalysisPoller.CONFIG = {
+  START_DELAY: 1000,
+  MAX_DELAY: Infinity,
+  DELAY_MULTIPLIER: 1.5
 };
 
 module.exports = AnalysisPoller;

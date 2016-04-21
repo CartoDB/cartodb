@@ -176,14 +176,6 @@ describe('vis/vis', function () {
     expect(this.vis.mapView._gmapsMap).not.toEqual(undefined);
   });
 
-  it('should listen to collection of analysis for polling', function () {
-    spyOn(AnalysisPoller, 'poll');
-
-    this.vis.load(new VizJSON(this.mapConfig));
-
-    expect(AnalysisPoller.poll).toHaveBeenCalled();
-  });
-
   describe('.centerMapToOrigin', function () {
     it('should invalidate map size', function () {
       spyOn(this.vis.mapView, 'invalidateSize');
@@ -454,6 +446,325 @@ describe('vis/vis', function () {
     expect(a1.get('source')).toEqual(a0);
   });
 
+  describe('polling', function () {
+    beforeEach(function () {
+      jasmine.clock().install();
+
+      this.vizjson = {
+        'id': '70af2a72-0709-11e6-a834-080027880ca6',
+        'version': '3.0.0',
+        'title': 'Untitled Map 1',
+        'likes': 0,
+        'description': null,
+        'scrollwheel': false,
+        'legends': true,
+        'map_provider': 'leaflet',
+        'bounds': [
+          [
+            41.358088,
+            2.089675
+          ],
+          [
+            41.448257,
+            2.215129
+          ]
+        ],
+        'center': '[41.4031725,2.1524020000000004]',
+        'zoom': 11,
+        'updated_at': '2016-04-20T17:05:02+00:00',
+        'layers': [
+          {
+            'type': 'layergroup',
+            'options': {
+              'user_name': 'cdb',
+              'maps_api_template': 'http://{user}.localhost.lan:8181',
+              'sql_api_template': 'http://{user}.localhost.lan:8080',
+              'filter': 'mapnik',
+              'layer_definition': {
+                'stat_tag': '70af2a72-0709-11e6-a834-080027880ca6',
+                'version': '3.0.0',
+                'layers': [
+                  {
+                    'id': 'e0d06945-74cd-4421-8229-561c3cabc854',
+                    'type': 'CartoDB',
+                    'infowindow': {
+                      'fields': [],
+                      'template_name': 'table/views/infowindow_light',
+                      'template': '<div class=\'CDB-infowindow CDB-infowindow--light js-infowindow\'>\n  <div class=\'CDB-infowindow-container\'>\n    <div class=\'CDB-infowindow-bg\'>\n      <div class=\'CDB-infowindow-inner\'>\n        <ul class=\'CDB-infowindow-list js-content\'>\n          {{#loading}}\n            <div class=\'CDB-Loader js-loader is-visible\'></div>\n          {{/loading}}\n          {{#content.fields}}\n          <li class=\'CDB-infowindow-listItem\'>\n            {{#title}}<h5 class=\'CDB-infowindow-subtitle\'>{{title}}</h5>{{/title}}\n            {{#value}}<h4 class=\'CDB-infowindow-title\'>{{{ value }}}</h4>{{/value}}\n            {{^value}}<h4 class=\'CDB-infowindow-title\'>null</h4>{{/value}}\n          </li>\n          {{/content.fields}}\n        </ul>\n      </div>\n    </div>\n    <div class=\'CDB-hook\'>\n      <div class=\'CDB-hook-inner\'></div>\n    </div>\n  </div>\n</div>\n',
+                      'alternative_names': {},
+                      'width': 226,
+                      'maxHeight': 180
+                    },
+                    'tooltip': {
+                      'fields': [],
+                      'template_name': 'tooltip_light',
+                      'template': '<div class=\'CDB-Tooltip CDB-Tooltip--isLight\'>\n  <ul class=\'CDB-Tooltip-list\'>\n    {{#fields}}\n      <li class=\'CDB-Tooltip-listItem\'>\n        {{#title}}\n          <h3 class=\'CDB-Tooltip-listTitle\'>{{{ title }}}</h3>\n        {{/title}}\n        <h4 class=\'CDB-Tooltip-listText\'>{{{ value }}}</h4>\n      </li>\n    {{/fields}}\n  </ul>\n</div>\n',
+                      'alternative_names': {},
+                      'maxHeight': 180
+                    },
+                    'legend': {
+                      'type': 'none',
+                      'show_title': false,
+                      'title': '',
+                      'template': '',
+                      'visible': true
+                    },
+                    'order': 1,
+                    'visible': true,
+                    'options': {
+                      'layer_name': 'arboles',
+                      'cartocss': 'cartocss',
+                      'cartocss_version': '2.1.1',
+                      'interactivity': 'cartodb_id',
+                      'source': 'a2'
+                    }
+                  }
+                ]
+              },
+              'attribution': ''
+            }
+          }
+        ],
+        'overlays': [],
+        'widgets': [],
+        'datasource': {
+          'user_name': 'cdb',
+          'maps_api_template': 'http://{user}.localhost.lan:8181',
+          'stat_tag': '70af2a72-0709-11e6-a834-080027880ca6'
+        },
+        'user': {
+          'fullname': 'cdb',
+          'avatar_url': '//example.com/avatars/avatar_stars_blue.png'
+        },
+        'analyses': [
+          {
+            'id': 'a2',
+            'type': 'trade-area',
+            'params': {
+              'source': {
+                'id': 'a1',
+                'type': 'trade-area',
+                'params': {
+                  'source': {
+                    'id': 'a0',
+                    'type': 'source',
+                    'params': {
+                      'query': 'SELECT * FROM arboles'
+                    }
+                  },
+                  'kind': 'drive',
+                  'time': 10
+                }
+              },
+              'kind': 'drive',
+              'time': 10
+            }
+          }
+        ],
+        'vector': false
+      };
+      spyOn($, 'ajax');
+      spyOn(AnalysisPoller, 'poll').and.callThrough();
+    });
+
+    afterEach(function () {
+      jasmine.clock().uninstall();
+    });
+
+    it('should start polling for analyses that are not ready and are the source of a layer', function () {
+      this.vis.load(new VizJSON(this.vizjson));
+      this.vis.instantiateMap();
+      jasmine.clock().tick(1000);
+
+      // Instance
+      $.ajax.calls.argsFor(0)[0].success({
+        'layergroupid': '9d7bf465e45113123bf9949c2a4f0395:0',
+        'metadata': {
+          'layers': [
+            {
+              'type': 'mapnik',
+              'meta': {
+                'stats': [],
+                'cartocss': 'cartocss'
+              }
+            }
+          ],
+          'dataviews': {
+            'cd065428-ed63-4d29-9a09-a9f8384fc8c9': {
+              'url': {
+                'http': 'http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/dataview/cd065428-ed63-4d29-9a09-a9f8384fc8c9'
+              }
+            }
+          },
+          'analyses': [
+            {
+              'nodes': {
+                'a0': {
+                  'status': 'ready',
+                  'query': 'SELECT * FROM arboles',
+                  'url': {
+                    'http': 'http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/analysis/node/5af683d5d8a6f67e11916a31cd76632884d4064f'
+                  }
+                },
+                'a1': {
+                  'status': 'pending',
+                  'query': 'select * from analysis_trade_area_e65b1ae05854aea96266808ec0686b91f3ee0a81',
+                  'url': {
+                    'http': 'http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/analysis/node/e65b1ae05854aea96266808ec0686b91f3ee0a81'
+                  }
+                },
+                'a2': {
+                  'status': 'pending',
+                  'query': 'select * from analysis_trade_area_b35b1ae05854aea96266808ec0686b91f3ee0a81',
+                  'url': {
+                    'http': 'http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/analysis/node/b75b1ae05854aea96266808ec0686b91f3ee0a81'
+                  }
+                }
+              }
+            }
+          ]
+        },
+        'last_updated': '1970-01-01T00:00:00.000Z'
+      });
+      $.ajax.calls.reset();
+
+      // Only polling for 'a2' has started cause it's "pending" and it's the source of the layer
+      expect(AnalysisPoller.poll.calls.count()).toEqual(1);
+      expect(AnalysisPoller.poll.calls.argsFor(0)[0].get('id')).toEqual('a2');
+    });
+
+    it('should NOT start polling for analysis that are "ready" and are the source of a layer', function () {
+      this.vis.load(new VizJSON(this.vizjson));
+      this.vis.instantiateMap();
+      jasmine.clock().tick(1000);
+
+      // Instance
+      $.ajax.calls.argsFor(0)[0].success({
+        'layergroupid': '9d7bf465e45113123bf9949c2a4f0395:0',
+        'metadata': {
+          'layers': [
+            {
+              'type': 'mapnik',
+              'meta': {
+                'stats': [],
+                'cartocss': 'cartocss'
+              }
+            }
+          ],
+          'dataviews': {
+            'cd065428-ed63-4d29-9a09-a9f8384fc8c9': {
+              'url': {
+                'http': 'http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/dataview/cd065428-ed63-4d29-9a09-a9f8384fc8c9'
+              }
+            }
+          },
+          'analyses': [
+            {
+              'nodes': {
+                'a0': {
+                  'status': 'ready',
+                  'query': 'SELECT * FROM arboles',
+                  'url': {
+                    'http': 'http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/analysis/node/5af683d5d8a6f67e11916a31cd76632884d4064f'
+                  }
+                },
+                'a1': {
+                  'status': 'ready',
+                  'query': 'select * from analysis_trade_area_e65b1ae05854aea96266808ec0686b91f3ee0a81',
+                  'url': {
+                    'http': 'http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/analysis/node/e65b1ae05854aea96266808ec0686b91f3ee0a81'
+                  }
+                },
+                'a2': {
+                  'status': 'ready',
+                  'query': 'select * from analysis_trade_area_b35b1ae05854aea96266808ec0686b91f3ee0a81',
+                  'url': {
+                    'http': 'http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/analysis/node/b75b1ae05854aea96266808ec0686b91f3ee0a81'
+                  }
+                }
+              }
+            }
+          ]
+        },
+        'last_updated': '1970-01-01T00:00:00.000Z'
+      });
+      $.ajax.calls.reset();
+
+      expect(AnalysisPoller.poll.calls.count()).toEqual(0);
+    });
+
+    it('should reload the map when analysis is done', function () {
+      this.vis.load(new VizJSON(this.vizjson));
+      this.vis.instantiateMap();
+      jasmine.clock().tick(1000);
+
+      // Instance
+      $.ajax.calls.argsFor(0)[0].success({
+        'layergroupid': '9d7bf465e45113123bf9949c2a4f0395:0',
+        'metadata': {
+          'layers': [
+            {
+              'type': 'mapnik',
+              'meta': {
+                'stats': [],
+                'cartocss': 'cartocss'
+              }
+            }
+          ],
+          'dataviews': {
+            'cd065428-ed63-4d29-9a09-a9f8384fc8c9': {
+              'url': {
+                'http': 'http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/dataview/cd065428-ed63-4d29-9a09-a9f8384fc8c9'
+              }
+            }
+          },
+          'analyses': [
+            {
+              'nodes': {
+                'a0': {
+                  'status': 'ready',
+                  'query': 'SELECT * FROM arboles',
+                  'url': {
+                    'http': 'http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/analysis/node/5af683d5d8a6f67e11916a31cd76632884d4064f'
+                  }
+                },
+                'a1': {
+                  'status': 'pending',
+                  'query': 'select * from analysis_trade_area_e65b1ae05854aea96266808ec0686b91f3ee0a81',
+                  'url': {
+                    'http': 'http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/analysis/node/e65b1ae05854aea96266808ec0686b91f3ee0a81'
+                  }
+                },
+                'a2': {
+                  'status': 'pending',
+                  'query': 'select * from analysis_trade_area_b35b1ae05854aea96266808ec0686b91f3ee0a81',
+                  'url': {
+                    'http': 'http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/analysis/node/b75b1ae05854aea96266808ec0686b91f3ee0a81'
+                  }
+                }
+              }
+            }
+          ]
+        },
+        'last_updated': '1970-01-01T00:00:00.000Z'
+      });
+      expect($.ajax.calls.argsFor(0)[0].url).toEqual('http://cdb.localhost.lan:8181/api/v1/map?stat_tag=70af2a72-0709-11e6-a834-080027880ca6');
+      $.ajax.calls.reset();
+
+      // Only polling for 'a2' has started cause it's "pending" and it's the source of the layer
+      expect(AnalysisPoller.poll.calls.count()).toEqual(1);
+      var analysisModel = AnalysisPoller.poll.calls.argsFor(0)[0];
+      expect(analysisModel.get('id')).toEqual('a2');
+
+      analysisModel.set('status', 'ready');
+
+      jasmine.clock().tick(2000);
+
+      expect($.ajax).toHaveBeenCalled();
+      expect($.ajax.calls.argsFor(0)[0].url).toEqual('http://cdb.localhost.lan:8181/api/v1/map?stat_tag=70af2a72-0709-11e6-a834-080027880ca6');
+    });
+  });
+
   describe('addOverlay', function () {
     it('should throw an error if no layers are available', function () {
       expect(function () {
@@ -524,260 +835,6 @@ describe('vis/vis', function () {
       var layerView = this.vis.getLayerViews()[1];
 
       expect(tooltip.options.layer).toEqual(layerView);
-    });
-
-    describe('polling', function () {
-      beforeEach(function () {
-        jasmine.clock().install();
-
-        this.vizjson = {
-          'id': '70af2a72-0709-11e6-a834-080027880ca6',
-          'version': '3.0.0',
-          'title': 'Untitled Map 1',
-          'likes': 0,
-          'description': null,
-          'scrollwheel': false,
-          'legends': true,
-          'map_provider': 'leaflet',
-          'bounds': [
-            [
-              41.358088,
-              2.089675
-            ],
-            [
-              41.448257,
-              2.215129
-            ]
-          ],
-          'center': '[41.4031725,2.1524020000000004]',
-          'zoom': 11,
-          'updated_at': '2016-04-20T17:05:02+00:00',
-          'layers': [
-            {
-              'type': 'layergroup',
-              'options': {
-                'user_name': 'cdb',
-                'maps_api_template': 'http://{user}.localhost.lan:8181',
-                'sql_api_template': 'http://{user}.localhost.lan:8080',
-                'filter': 'mapnik',
-                'layer_definition': {
-                  'stat_tag': '70af2a72-0709-11e6-a834-080027880ca6',
-                  'version': '3.0.0',
-                  'layers': [
-                    {
-                      'id': 'e0d06945-74cd-4421-8229-561c3cabc854',
-                      'type': 'CartoDB',
-                      'infowindow': {
-                        'fields': [],
-                        'template_name': 'table/views/infowindow_light',
-                        'template': '<div class=\'CDB-infowindow CDB-infowindow--light js-infowindow\'>\n  <div class=\'CDB-infowindow-container\'>\n    <div class=\'CDB-infowindow-bg\'>\n      <div class=\'CDB-infowindow-inner\'>\n        <ul class=\'CDB-infowindow-list js-content\'>\n          {{#loading}}\n            <div class=\'CDB-Loader js-loader is-visible\'></div>\n          {{/loading}}\n          {{#content.fields}}\n          <li class=\'CDB-infowindow-listItem\'>\n            {{#title}}<h5 class=\'CDB-infowindow-subtitle\'>{{title}}</h5>{{/title}}\n            {{#value}}<h4 class=\'CDB-infowindow-title\'>{{{ value }}}</h4>{{/value}}\n            {{^value}}<h4 class=\'CDB-infowindow-title\'>null</h4>{{/value}}\n          </li>\n          {{/content.fields}}\n        </ul>\n      </div>\n    </div>\n    <div class=\'CDB-hook\'>\n      <div class=\'CDB-hook-inner\'></div>\n    </div>\n  </div>\n</div>\n',
-                        'alternative_names': {},
-                        'width': 226,
-                        'maxHeight': 180
-                      },
-                      'tooltip': {
-                        'fields': [],
-                        'template_name': 'tooltip_light',
-                        'template': '<div class=\'CDB-Tooltip CDB-Tooltip--isLight\'>\n  <ul class=\'CDB-Tooltip-list\'>\n    {{#fields}}\n      <li class=\'CDB-Tooltip-listItem\'>\n        {{#title}}\n          <h3 class=\'CDB-Tooltip-listTitle\'>{{{ title }}}</h3>\n        {{/title}}\n        <h4 class=\'CDB-Tooltip-listText\'>{{{ value }}}</h4>\n      </li>\n    {{/fields}}\n  </ul>\n</div>\n',
-                        'alternative_names': {},
-                        'maxHeight': 180
-                      },
-                      'legend': {
-                        'type': 'none',
-                        'show_title': false,
-                        'title': '',
-                        'template': '',
-                        'visible': true
-                      },
-                      'order': 1,
-                      'visible': true,
-                      'options': {
-                        'layer_name': 'arboles',
-                        'cartocss': 'cartocss',
-                        'cartocss_version': '2.1.1',
-                        'interactivity': 'cartodb_id',
-                        'source': 'a2'
-                      }
-                    }
-                  ]
-                },
-                'attribution': ''
-              }
-            }
-          ],
-          'overlays': [],
-          'widgets': [],
-          'datasource': {
-            'user_name': 'cdb',
-            'maps_api_template': 'http://{user}.localhost.lan:8181',
-            'stat_tag': '70af2a72-0709-11e6-a834-080027880ca6'
-          },
-          'user': {
-            'fullname': 'cdb',
-            'avatar_url': '//example.com/avatars/avatar_stars_blue.png'
-          },
-          'analyses': [
-            {
-              'id': 'a2',
-              'type': 'trade-area',
-              'params': {
-                'source': {
-                  'id': 'a1',
-                  'type': 'trade-area',
-                  'params': {
-                    'source': {
-                      'id': 'a0',
-                      'type': 'source',
-                      'params': {
-                        'query': 'SELECT * FROM arboles'
-                      }
-                    },
-                    'kind': 'drive',
-                    'time': 10
-                  }
-                },
-                'kind': 'drive',
-                'time': 10
-              }
-            }
-          ],
-          'vector': false
-        };
-        spyOn($, 'ajax');
-        spyOn(AnalysisPoller, 'poll').and.callThrough();
-      });
-
-      afterEach(function () {
-        jasmine.clock().uninstall();
-      });
-
-      it('should start polling for analyses that are not ready and are the source of a layer', function () {
-        this.vis.load(new VizJSON(this.vizjson));
-        this.vis.instantiateMap();
-        jasmine.clock().tick(1000);
-
-        // Instance
-        $.ajax.calls.argsFor(0)[0].success({
-          'layergroupid': '9d7bf465e45113123bf9949c2a4f0395:0',
-          'metadata': {
-            'layers': [
-              {
-                'type': 'mapnik',
-                'meta': {
-                  'stats': [],
-                  'cartocss': 'cartocss'
-                }
-              }
-            ],
-            'dataviews': {
-              'cd065428-ed63-4d29-9a09-a9f8384fc8c9': {
-                'url': {
-                  'http': 'http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/dataview/cd065428-ed63-4d29-9a09-a9f8384fc8c9'
-                }
-              }
-            },
-            'analyses': [
-              {
-                'nodes': {
-                  'a0': {
-                    'status': 'ready',
-                    'query': 'SELECT * FROM arboles',
-                    'url': {
-                      'http': 'http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/analysis/node/5af683d5d8a6f67e11916a31cd76632884d4064f'
-                    }
-                  },
-                  'a1': {
-                    'status': 'pending',
-                    'query': 'select * from analysis_trade_area_e65b1ae05854aea96266808ec0686b91f3ee0a81',
-                    'url': {
-                      'http': 'http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/analysis/node/e65b1ae05854aea96266808ec0686b91f3ee0a81'
-                    }
-                  },
-                  'a2': {
-                    'status': 'pending',
-                    'query': 'select * from analysis_trade_area_b35b1ae05854aea96266808ec0686b91f3ee0a81',
-                    'url': {
-                      'http': 'http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/analysis/node/b75b1ae05854aea96266808ec0686b91f3ee0a81'
-                    }
-                  }
-                }
-              }
-            ]
-          },
-          'last_updated': '1970-01-01T00:00:00.000Z'
-        });
-        $.ajax.calls.reset();
-
-        // Only polling for 'a2' has started cause it's "pending" and it's the source of the layer
-        expect(AnalysisPoller.poll.calls.count()).toEqual(1);
-        expect(AnalysisPoller.poll.calls.argsFor(0)[0].get('id')).toEqual('a2');
-
-        jasmine.clock().tick(15000);
-
-        expect(AnalysisPoller.poll.calls.count()).toEqual(2);
-        expect(AnalysisPoller.poll.calls.argsFor(0)[0].get('id')).toEqual('a2');
-
-      });
-
-      it('should NOT start polling for analysis that are "ready" and are the source of a layer', function () {
-        this.vis.load(new VizJSON(this.vizjson));
-        this.vis.instantiateMap();
-        jasmine.clock().tick(1000);
-
-        // Instance
-        $.ajax.calls.argsFor(0)[0].success({
-          'layergroupid': '9d7bf465e45113123bf9949c2a4f0395:0',
-          'metadata': {
-            'layers': [
-              {
-                'type': 'mapnik',
-                'meta': {
-                  'stats': [],
-                  'cartocss': 'cartocss'
-                }
-              }
-            ],
-            'dataviews': {
-              'cd065428-ed63-4d29-9a09-a9f8384fc8c9': {
-                'url': {
-                  'http': 'http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/dataview/cd065428-ed63-4d29-9a09-a9f8384fc8c9'
-                }
-              }
-            },
-            'analyses': [
-              {
-                'nodes': {
-                  'a0': {
-                    'status': 'ready',
-                    'query': 'SELECT * FROM arboles',
-                    'url': {
-                      'http': 'http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/analysis/node/5af683d5d8a6f67e11916a31cd76632884d4064f'
-                    }
-                  },
-                  'a1': {
-                    'status': 'ready',
-                    'query': 'select * from analysis_trade_area_e65b1ae05854aea96266808ec0686b91f3ee0a81',
-                    'url': {
-                      'http': 'http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/analysis/node/e65b1ae05854aea96266808ec0686b91f3ee0a81'
-                    }
-                  },
-                  'a2': {
-                    'status': 'ready',
-                    'query': 'select * from analysis_trade_area_b35b1ae05854aea96266808ec0686b91f3ee0a81',
-                    'url': {
-                      'http': 'http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/analysis/node/b75b1ae05854aea96266808ec0686b91f3ee0a81'
-                    }
-                  }
-                }
-              }
-            ]
-          },
-          'last_updated': '1970-01-01T00:00:00.000Z'
-        });
-        $.ajax.calls.reset();
-
-        expect(AnalysisPoller.poll.calls.count()).toEqual(0);
-      });
     });
   });
 });

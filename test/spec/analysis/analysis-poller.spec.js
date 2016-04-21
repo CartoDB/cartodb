@@ -34,11 +34,13 @@ describe('src/analysis/analysis-poller', function () {
         expect(this.analysisModel1.fetch).toHaveBeenCalled();
         expect(this.analysisModel1.fetch.calls.count()).toEqual(1);
 
-        jasmine.clock().tick(1001);
+        // Wait until next fetch is triggered
+        jasmine.clock().tick(AnalysisPoller.CONFIG.START_DELAY + 1);
 
         expect(this.analysisModel1.fetch.calls.count()).toEqual(2);
 
-        jasmine.clock().tick(1001);
+        // Wait until next fetch is triggered
+        jasmine.clock().tick(AnalysisPoller.CONFIG.START_DELAY * AnalysisPoller.CONFIG.DELAY_MULTIPLIER + 1);
 
         expect(this.analysisModel1.fetch.calls.count()).toEqual(3);
       });
@@ -60,7 +62,8 @@ describe('src/analysis/analysis-poller', function () {
         expect(this.analysisModel1.fetch).toHaveBeenCalled();
         expect(this.analysisModel1.fetch.calls.count()).toEqual(1);
 
-        jasmine.clock().tick(1001);
+        // Wait until next fetch is triggered
+        jasmine.clock().tick(AnalysisPoller.CONFIG.START_DELAY + 1);
 
         expect(this.analysisModel1.fetch.calls.count()).toEqual(1);
       });
@@ -82,12 +85,18 @@ describe('src/analysis/analysis-poller', function () {
       expect(this.analysisModel1.fetch).toHaveBeenCalled();
       expect(this.analysisModel1.fetch.calls.count()).toEqual(1);
 
-      jasmine.clock().tick(1001);
+      // Wait until next fetch is triggered
+      jasmine.clock().tick(AnalysisPoller.CONFIG.START_DELAY + 1);
 
+      // Polling is working
       expect(this.analysisModel1.fetch.calls.count()).toEqual(2);
 
       AnalysisPoller.reset();
 
+      // Wait until next fetch is supposed to be triggered
+      jasmine.clock().tick(AnalysisPoller.CONFIG.START_DELAY * AnalysisPoller.CONFIG.DELAY_MULTIPLIER + 1);
+
+      // Polling  has been stopped
       expect(this.analysisModel1.fetch.calls.count()).toEqual(2);
     });
   });

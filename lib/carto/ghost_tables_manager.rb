@@ -100,6 +100,9 @@ module Carto
         Carto::TableFacade.new(user_table.table_id, user_table.name, @user)
       end
 
+      # HOTFIX: reject Raster
+      linked_tables.reject!(&:raster?)
+
       non_linked = linked_tables - cartodbfied_tables
 
       # Very defensive, just in case.
@@ -132,8 +135,16 @@ module Carto
       !new? && !renamed? && !regenerated?
     end
 
+    def raster?
+      user_table.table_visualization.raster_kind?
+    end
+
     def stale?
       renamed? || regenerated?
+    end
+
+    def user_table
+      user.tables.where(table_id: id, name: name).first
     end
 
     def user_table_with_matching_id

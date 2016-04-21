@@ -6,16 +6,8 @@ var MAX_DELAY = Infinity;
 var DELAY_MULTIPLIER = 1.5;
 
 var AnalysisPoller = {
-  poll: function (analysisCollection) {
-    if (!analysisCollection) {
-      throw new Error('analysisCollection is required');
-    }
+  poll: function (analysisModel) {
     this._pollers = [];
-    this._analysisCollection = analysisCollection;
-    this._analysisCollection.bind('change:status', this._onAnalysisStatusChanged, this);
-  },
-
-  _onAnalysisStatusChanged: function (analysisModel) {
     var poller = this._findOrCreatePoller(analysisModel);
     if (analysisModel.hasChanged('url') && poller.active()) {
       poller.stop();
@@ -50,7 +42,12 @@ var AnalysisPoller = {
     var poller = BackbonePoller.get(analysisModel, pollerOptions);
     this._pollers.push(poller);
     return poller;
+  },
+
+  reset: function () {
+    BackbonePoller.reset();
+    this._pollers = [];
   }
-}
+};
 
 module.exports = AnalysisPoller;

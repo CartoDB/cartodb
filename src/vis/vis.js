@@ -38,6 +38,9 @@ var Vis = View.extend({
     _.bindAll(this, 'loadingTiles', 'loadTiles', '_onResize');
 
     this.overlays = [];
+    this._dataviewsCollection = new DataviewCollection();
+    this._layersCollection = new LayersCollection();
+    this._analysisCollection = new Backbone.Collection();
 
     if (this.options.mapView) {
       this.mapView = this.options.mapView;
@@ -45,12 +48,228 @@ var Vis = View.extend({
     }
   },
 
+  done: function (fn) {
+    return this.bind('done', fn);
+  },
+
   error: function (fn) {
     return this.bind('error', fn);
   },
 
-  done: function (fn) {
-    return this.bind('done', fn);
+  load: function (vizjson, options) {
+    options = options || {};
+
+    // Create the WindhaftClient
+    var endpoint;
+    var layerGroupModel;
+    var WindshaftMapClass;
+    var apiKey = options.apiKey;
+    var datasource = vizjson.datasource;
+    // TODO: We can use something else to differentiate types of "datasource"s
+    var isNamedMap = !!datasource.template_name;
+
+    if (isNamedMap) {
+      layerGroupModel = new CartoDBLayerGroupNamedMap({
+        apiKey: apiKey
+      }, {
+        layersCollection: this._layersCollection
+      });
+    } else {
+      layerGroupModel = new CartoDBLayerGroupAnonymousMap({
+        apiKey: apiKey
+      }, {
+        layersCollection: this._layersCollection
+      });
+    }
+
+    if (isNamedMap) {
+      endpoint = [WindshaftConfig.MAPS_API_BASE_URL, 'named', datasource.template_name].join('/');
+      WindshaftMapClass = WindshaftNamedMap;
+    } else {
+      endpoint = WindshaftConfig.MAPS_API_BASE_URL;
+      WindshaftMapClass = WindshaftAnonymousMap;
+    }
+
+    var windshaftClient = new WindshaftClient({
+      endpoint: endpoint,
+      urlTemplate: datasource.maps_api_template,
+      userName: datasource.user_name,
+      forceCors: datasource.force_cors || true
+    });
+
+    var modelUpdater = new ModelUpdater({
+      layerGroupModel: layerGroupModel,
+      dataviewsCollection: this._dataviewsCollection,
+      layersCollection: this._layersCollection,
+      analysisCollection: this._analysisCollection
+    });
+
+    // Create the WindshaftMap
+    this._windshaftMap = new WindshaftMapClass({
+      apiKey: apiKey,
+      statTag: datasource.stat_tag
+    }, {
+      client: windshaftClient,
+      modelUpdater: modelUpdater,
+      dataviewsCollection: this._dataviewsCollection,
+      layersCollection: this._layersCollection,
+      analysisCollection: this._analysisCollection
+    });
+
+    // Create the Map
+
+    var allowDragging = util.isMobileDevice() || vizjson.hasZoomOverlay() || vizjson.scrollwheel;
+
+    var mapConfig = {
+      title: vizjson.title,
+      description: vizjson.description,
+      maxZoom: vizjson.maxZoom,
+      minZoom: vizjson.minZoom,
+      legends: vizjson.legends,
+      bounds: vizjson.bounds,
+      center: vizjson.center,
+      zoom: vizjson.zoom,
+      scrollwheel: !!this.scrollwheel,
+      drag: allowDragging,
+      provider: vizjson.map_provider,
+      vector: vizjson.vector
+    };
+
+    this.map = new Map(mapConfig, {
+      layersCollection: this._layersCollection,
+      windshaftMap: this._windshaftMap,
+      dataviewsCollection: this._dataviewsCollection
+    });
+
+    // If a CartoDB embed map is hidden by default, its
+    // height is 0 and it will need to recalculate its size
+    // and re-center again.
+    // We will wait until it is resized and then apply
+    // the center provided in the parameters and the
+    // correct size.
+    var map_h = this.$el.outerHeight();
+
+    if (map_h === 0) {
+      $(window).bind('resize', this._onResize);
+    }
+
+    // Create the MapView
+
+    var div = $('<div>').css({
+      position: 'relative',
+      width: '100%',
+      height: '100%'
+    });
+
+    this.container = div;
+
+    // Another div to prevent leaflet grabbing the div
+    var div_hack = $('<div>')
+      .addClass('cartodb-map-wrapper')
+      .css({
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        width: '100%'
+      });
+
+    div.append(div_hack);
+
+    this.$el.append(div);
+
+    var mapViewFactory = new MapViewFactory();
+
+    this.mapView = mapViewFactory.createMapView(this.map.get('provider'), this.map, div_hack, layerGroupModel);
+
+    // Bindings
+
+    if (options.legends || (options.legends === undefined && this.map.get('legends') !== false)) {
+      this.map.layers.bind('reset', this.addLegends, this);
+    }
+
+    this.mapView.bind('newLayerView', this._addLoading, this);
+
+    // Create the Layer Models and set them on hte map
+
+    this.https = (window && window.location.protocol && window.location.protocol === 'https:') || !!vizjson.https || !!options.https;
+    var layerModels = this._newLayerModels(vizjson, this.map);
+
+    // Infowindows && Tooltips
+    var infowindowManager = new InfowindowManager(this);
+    infowindowManager.manage(this.mapView, this.map);
+
+    var tooltipManager = new TooltipManager(this);
+    tooltipManager.manage(this.mapView, this.map);
+
+    // Create the collection of Overlays
+    var overlaysCollection = new Backbone.Collection();
+    overlaysCollection.bind('reset', function (overlays) {
+      this._addOverlays(overlays, vizjson, options);
+    }, this);
+    overlaysCollection.reset(vizjson.overlays);
+
+    // Create the public Dataview Factory
+    this.dataviews = new DataviewsFactory({
+      apiKey: apiKey
+    }, {
+      dataviewsCollection: this._dataviewsCollection,
+      map: this.map
+    });
+
+    // Public Analysis Factory
+    this.analysis = new AnalysisFactory({
+      apiKey: apiKey,
+      analysisCollection: this._analysisCollection,
+      map: this.map
+    });
+
+    // "Load" existing analyses from the viz.json. This will generate
+    // the analyses graphs and index analysis nodes in the
+    // collection of analysis
+    if (vizjson.analyses) {
+      _.each(vizjson.analyses, function (analysis) {
+        this.analysis.analyse(analysis);
+      }, this);
+    }
+
+    // Lastly: reset the layer models on the map
+    this.map.layers.reset(layerModels);
+
+    this._windshaftMap.bind('instanceCreated', this._onMapInstanceCreated, this);
+
+    // Global variable for easier console debugging / testing
+    window.vis = this;
+
+    return this;
+  },
+
+  _onMapInstanceCreated: function () {
+    AnalysisPoller.reset();
+    this._analysisCollection.each(function (analysisModel) {
+      if (!analysisModel.isDone() && this._isAnalysisSourceOfLayerOrDataview(analysisModel)) {
+        AnalysisPoller.poll(analysisModel);
+        analysisModel.once('change:status', this._onAnalysisStatusChanged, this);
+      }
+    }, this);
+  },
+
+  _isAnalysisSourceOfLayerOrDataview: function (analysisModel) {
+    var isAnalysisLinkedToLayer = this._layersCollection.any(function (layerModel) {
+      return layerModel.get('source') === analysisModel.get('id');
+    });
+    var isAnalysisLinkedToDataview = this._dataviewsCollection.any(function (dataviewModel) {
+      var sourceId = dataviewModel.get('sourceId') || dataviewModel.layer.get('source');
+      return analysisModel.get('id') === sourceId;
+    });
+    return isAnalysisLinkedToLayer || isAnalysisLinkedToDataview;
+  },
+
+  _onAnalysisStatusChanged: function (analysisModel) {
+    if (analysisModel.isDone()) {
+      this.map.reload();
+    }
   },
 
   _addLegends: function (legends) {
@@ -191,200 +410,6 @@ var Vis = View.extend({
         options.sublayer_options.push({ visible: ( lyr.options.visible !== undefined ? lyr.options.visible : true) });
       }
     });
-  },
-
-  load: function (vizjson, options) {
-    options = options || {};
-
-    this._dataviewsCollection = new DataviewCollection();
-    this._layersCollection = new LayersCollection();
-    this._analysisCollection = new Backbone.Collection();
-
-    AnalysisPoller.poll(this._analysisCollection);
-
-    // Create the WindhaftClient
-
-    var endpoint;
-    var layerGroupModel;
-    var WindshaftMapClass;
-    var datasource = vizjson.datasource;
-    // TODO: We can use something else to differentiate types of "datasource"s
-    var isNamedMap = !!datasource.template_name;
-
-    if (isNamedMap) {
-      layerGroupModel = new CartoDBLayerGroupNamedMap({
-        apiKey: apiKey
-      }, {
-        layersCollection: this._layersCollection
-      });
-    } else {
-      layerGroupModel = new CartoDBLayerGroupAnonymousMap({
-        apiKey: apiKey
-      }, {
-        layersCollection: this._layersCollection
-      });
-    }
-
-    if (isNamedMap) {
-      endpoint = [WindshaftConfig.MAPS_API_BASE_URL, 'named', datasource.template_name].join('/');
-      WindshaftMapClass = WindshaftNamedMap;
-    } else {
-      endpoint = WindshaftConfig.MAPS_API_BASE_URL;
-      WindshaftMapClass = WindshaftAnonymousMap;
-    }
-
-    var windshaftClient = new WindshaftClient({
-      endpoint: endpoint,
-      urlTemplate: datasource.maps_api_template,
-      userName: datasource.user_name,
-      forceCors: datasource.force_cors || true
-    });
-
-    var modelUpdater = new ModelUpdater({
-      layerGroupModel: layerGroupModel,
-      dataviewsCollection: this._dataviewsCollection,
-      layersCollection: this._layersCollection,
-      analysisCollection: this._analysisCollection
-    });
-
-    // Create the WindshaftMap
-    var apiKey = options.apiKey;
-    this._windshaftMap = new WindshaftMapClass({
-      apiKey: apiKey,
-      statTag: datasource.stat_tag
-    }, {
-      client: windshaftClient,
-      modelUpdater: modelUpdater,
-      dataviewsCollection: this._dataviewsCollection,
-      layersCollection: this._layersCollection,
-      analysisCollection: this._analysisCollection
-    });
-
-    // Create the Map
-
-    var allowDragging = util.isMobileDevice() || vizjson.hasZoomOverlay() || vizjson.scrollwheel;
-
-    var mapConfig = {
-      title: vizjson.title,
-      description: vizjson.description,
-      maxZoom: vizjson.maxZoom,
-      minZoom: vizjson.minZoom,
-      legends: vizjson.legends,
-      bounds: vizjson.bounds,
-      center: vizjson.center,
-      zoom: vizjson.zoom,
-      scrollwheel: !!this.scrollwheel,
-      drag: allowDragging,
-      provider: vizjson.map_provider,
-      vector: vizjson.vector
-    };
-
-    this.map = new Map(mapConfig, {
-      layersCollection: this._layersCollection,
-      windshaftMap: this._windshaftMap,
-      dataviewsCollection: this._dataviewsCollection
-    });
-
-    // If a CartoDB embed map is hidden by default, its
-    // height is 0 and it will need to recalculate its size
-    // and re-center again.
-    // We will wait until it is resized and then apply
-    // the center provided in the parameters and the
-    // correct size.
-    var map_h = this.$el.outerHeight();
-
-    if (map_h === 0) {
-      $(window).bind('resize', this._onResize);
-    }
-
-    // Create the MapView
-
-    var div = $('<div>').css({
-      position: 'relative',
-      width: '100%',
-      height: '100%'
-    });
-
-    this.container = div;
-
-    // Another div to prevent leaflet grabbing the div
-    var div_hack = $('<div>')
-      .addClass('cartodb-map-wrapper')
-      .css({
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        width: '100%'
-      });
-
-    div.append(div_hack);
-
-    this.$el.append(div);
-
-    var mapViewFactory = new MapViewFactory();
-
-    this.mapView = mapViewFactory.createMapView(this.map.get('provider'), this.map, div_hack, layerGroupModel);
-
-    // Bindings
-
-    if (options.legends || (options.legends === undefined && this.map.get('legends') !== false)) {
-      this.map.layers.bind('reset', this.addLegends, this);
-    }
-
-    this.mapView.bind('newLayerView', this._addLoading, this);
-
-    // Create the Layer Models and set them on hte map
-
-    this.https = (window && window.location.protocol && window.location.protocol === 'https:') || !!vizjson.https || !!options.https;
-    var layerModels = this._newLayerModels(vizjson, this.map);
-
-    // Infowindows && Tooltips
-    var infowindowManager = new InfowindowManager(this);
-    infowindowManager.manage(this.mapView, this.map);
-
-    var tooltipManager = new TooltipManager(this);
-    tooltipManager.manage(this.mapView, this.map);
-
-    // Create the collection of Overlays
-    var overlaysCollection = new Backbone.Collection();
-    overlaysCollection.bind('reset', function (overlays) {
-      this._addOverlays(overlays, vizjson, options);
-    }, this);
-    overlaysCollection.reset(vizjson.overlays);
-
-    // Create the public Dataview Factory
-    this.dataviews = new DataviewsFactory({
-      apiKey: apiKey
-    }, {
-      dataviewsCollection: this._dataviewsCollection,
-      map: this.map
-    });
-
-    // Public Analysis Factory
-    this.analysis = new AnalysisFactory({
-      apiKey: apiKey,
-      analysisCollection: this._analysisCollection,
-      map: this.map
-    });
-
-    // "Load" existing analyses from the viz.json. This will generate
-    // the analyses graphs and index analysis nodes in the
-    // collection of analysis
-    if (vizjson.analyses) {
-      _.each(vizjson.analyses, function (analysis) {
-        this.analysis.analyse(analysis);
-      }, this);
-    }
-
-    // Lastly: reset the layer models on the map
-    this.map.layers.reset(layerModels);
-
-    // Global variable for easier console debugging / testing
-    window.vis = this;
-
-    return this;
   },
 
   /**

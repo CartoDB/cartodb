@@ -136,7 +136,7 @@ module Carto
     end
 
     def raster?
-      user_table.table_visualization.raster_kind?
+      user_table.table_visualization.raster_kind? if user_table && user_table.table_visualization
     end
 
     def stale?

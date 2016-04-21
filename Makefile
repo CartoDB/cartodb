@@ -64,7 +64,6 @@ WORKING_SPECS_1 = \
 	spec/models/geocoding_spec.rb \
 	spec/models/common_data_spec.rb \
 	spec/lib/api_calls_spec.rb \
-	spec/lib/sql_test_spec.rb \
 	spec/lib/errors_spec.rb \
 	spec/lib/sql_parser_spec.rb \
 	spec/lib/url_signer_spec.rb \
@@ -154,7 +153,7 @@ WORKING_SPECS_4 = \
 	spec/requests/api/geocodings_spec.rb \
 	services/importer/spec/unit/url_translator/osm_spec.rb \
 	services/importer/spec/unit/url_translator/osm2_spec.rb \
-	services/importer/spec/unit/mail_notifier_spec.rb \
+	$(NULL)
 
 WORKING_SPECS_5 = \
 	spec/rspec_configuration.rb \

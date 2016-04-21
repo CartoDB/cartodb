@@ -136,7 +136,10 @@ module Carto
     end
 
     def raster?
-      user_table.table_visualization.raster_kind? if user_table && user_table.table_visualization
+      ut = user_table
+      ut_visualization = ut.nil? ? nil : ut.table_visualization
+
+      ut_visualization.raster_kind? unless !ut_visualization
     end
 
     def stale?

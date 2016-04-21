@@ -780,7 +780,7 @@ describe('windshaft/map-base', function () {
       expect(dataviewMetadata).toBeUndefined();
     });
 
-    it('should return the URL for the given dataviewId', function () {
+    it('should return the URL for the given dataviewId when metadata is under dataview', function () {
       var windshaftMap = new WindshaftMap({
         'layergroupid': '0123456789',
         'metadata': {
@@ -809,6 +809,98 @@ describe('windshaft/map-base', function () {
             }
           }
         }
+      }, {
+        client: new WindshaftClient({
+          urlTemplate: 'https://{user}.example.com:443',
+          userName: 'rambo',
+          endpoint: 'v2'
+        }),
+        modelUpdater: this.modelUpdater,
+        dataviewsCollection: this.dataviewsCollection,
+        layersCollection: this.layersCollection,
+        analysisCollection: this.analysisCollection
+      });
+
+      var dataviewMetadata = windshaftMap.getDataviewMetadata('dataviewId');
+      expect(dataviewMetadata).toEqual({
+        'url': {
+          'http': 'http://example.com',
+          'https': 'https://example.com'
+        }
+      });
+
+      dataviewMetadata = windshaftMap.getDataviewMetadata('dataviewId2');
+      expect(dataviewMetadata).toEqual({
+        'url': {
+          'http': 'http://example2.com',
+          'https': 'https://example2.com'
+        }
+      });
+    });
+
+    it('should return the URL for the given dataviewId when metadata is under layers', function () {
+      var windshaftMap = new WindshaftMap({
+        'layergroupid': 'observatory@2168bf86@a71df05e422879e95930bbcb932a9b0a:1460751254653',
+        'metadata': {
+          'layers': [
+            {
+              'type': 'http',
+              'meta': {
+                'stats': [],
+                'cartocss': {}
+              }
+            },
+            {
+              'type': 'mapnik',
+              'meta': {
+                'stats': [],
+                'cartocss': '/** choropleth visualization */\n\n\n@1 : #5C308C;\n@2 : #833599;\n@3 : #A640A2;\n@4 : #C753A8; \n@5 : #e76cac;\n@6 : #ff8db1  ;\n@7 : #ffc2c7  ;\n\n\n#5C308C,#833599,#A640A2,#C753A8,#E76CAC,#FF8DB1,#FFC2C7\n\n\n#segregated_tracts{\n  polygon-fill: #FFFFB2;\n  polygon-opacity: 0.8;\n}\n#segregated_tracts [ prob_being_same <= 1] {\n   polygon-fill: @7;\n   line-color: lighten(@7,5);\n}\n#segregated_tracts [ prob_being_same <= 0.900302811812] {\n   polygon-fill: @6;\n   line-color: lighten(@6,5);\n}\n#segregated_tracts [ prob_being_same <= 0.807340578641] {\n   polygon-fill: @5;\n   line-color: lighten(@5,5);\n}\n#segregated_tracts [ prob_being_same <= 0.69976803713] {\n   polygon-fill: @4;\n   line-color: lighten(@4,5);\n}\n#segregated_tracts [ prob_being_same <= 0.588361334051] {\n   polygon-fill: @3;\n   line-color: lighten(@3,5);\n}\n#segregated_tracts [ prob_being_same <= 0.487706534839] {\n   polygon-fill: @2;\n   line-color: lighten(@2,5);\n}\n#segregated_tracts [ prob_being_same <= 0.399914994417] {\n   polygon-fill: @1;\n   line-color: lighten(@1,5);\n}'
+              },
+              'widgets': {
+                'dataviewId': {
+                  'url': {
+                    'http': 'http://example.com',
+                    'https': 'https://example.com'
+                  }
+                },
+                'dataviewId2': {
+                  'url': {
+                    'http': 'http://example2.com',
+                    'https': 'https://example2.com'
+                  }
+                }
+              }
+            },
+            {
+              'type': 'mapnik',
+              'meta': {
+                'stats': [],
+                'cartocss': '/** simple visualization */\n\n#us_census_tiger2013_state{\n  polygon-fill: #FF6600;\n  polygon-opacity: 0;\n  line-color: #FFF;\n  line-width: 1;\n  line-opacity: 1;\n}'
+              }
+            },
+            {
+              'type': 'mapnik',
+              'meta': {
+                'stats': [],
+                'cartocss': '/** simple visualization */\n\n#detailed_water{\n  polygon-fill: #CDD2D4;\n  polygon-opacity: 1;\n  line-color: #CDD2D4;\n  line-width: 0.5;\n  line-opacity: 1;\n}'
+              }
+            },
+            {
+              'type': 'http',
+              'meta': {
+                'stats': [],
+                'cartocss': {}
+              }
+            }
+          ],
+          'dataviews': {},
+          'analyses': []
+        },
+        'cdn_url': {
+          'http': 'ashbu.cartocdn.com',
+          'https': 'cartocdn-ashbu.global.ssl.fastly.net'
+        },
+        'last_updated': '2016-04-15T20:14:14.653Z'
       }, {
         client: new WindshaftClient({
           urlTemplate: 'https://{user}.example.com:443',

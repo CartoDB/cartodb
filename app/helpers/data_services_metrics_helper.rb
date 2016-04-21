@@ -27,6 +27,8 @@ module DataServicesMetricsHelper
   def get_geocoding_data(user, from, to)
     orgname = user.organization.nil? ? nil : user.organization.name
     usage_metrics = CartoDB::GeocoderUsageMetrics.new(user.username, orgname)
+    # FIXME removed once we have fixed to charge google geocoder users for overquota
+    return 0 if user.google_maps_geocoder_enabled?
     geocoder_key = user.google_maps_geocoder_enabled? ? :geocoder_google : :geocoder_here
     cache_hits = 0
     countable_requests = 0

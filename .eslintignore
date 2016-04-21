@@ -50,7 +50,6 @@
 **/src/geo/leaflet/leaflet-point-view.js
 **/src/geo/leaflet/leaflet-tiled-layer-view.js
 **/src/geo/leaflet/leaflet-wms-layer-view.js
-**/src/geo/map/cartodb-layer.js
 **/src/geo/map/gmaps-base-layer.js
 **/src/geo/map/layers.js
 **/src/geo/map/plain-layer.js

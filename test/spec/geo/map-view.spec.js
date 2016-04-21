@@ -1,20 +1,20 @@
-var _ = require('underscore');
 var $ = require('jquery');
 var Backbone = require('backbone');
 var Map = require('../../../src/geo/map');
 var MapView = require('../../../src/geo/map-view');
 var TileLayer = require('../../../src/geo/map/tile-layer');
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
-var TorqueLayer = require('../../../src/geo/map/torque-layer');
 var Infowindow = require('../../../src/geo/ui/infowindow');
+var CartoDBLayerGroupBase = require('../../../src/geo/cartodb-layer-group-base');
+
+var LayerGroupModel = CartoDBLayerGroupBase;
 
 describe('core/geo/map-view', function () {
   beforeEach(function() {
     this.container = $('<div>').css('height', '200px');
 
     // Map needs a WindshaftMap so we're setting up a fake one
-    var windshaftMap = jasmine.createSpyObj('windshaftMap', ['bind', 'isNamedMap', 'isAnonymousMap', 'createInstance']);
-    windshaftMap.isAnonymousMap.and.returnValue(true);
+    var windshaftMap = jasmine.createSpyObj('windshaftMap', ['bind', 'createInstance']);
 
     this.map = new Map(null, {
       windshaftMap: windshaftMap
@@ -24,7 +24,11 @@ describe('core/geo/map-view', function () {
     this.mapView = new MapView({
       el: this.container,
       map: this.map,
-      layerViewFactory: this.layerViewFactory
+      layerViewFactory: this.layerViewFactory,
+      layerGroupModel: new LayerGroupModel(null, {
+        windshaftMap: windshaftMap,
+        layersCollection: this.map.layers
+      })
     });
 
     spyOn(this.mapView, 'getNativeMap');

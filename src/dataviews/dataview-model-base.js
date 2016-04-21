@@ -17,15 +17,29 @@ module.exports = Model.extend({
   },
 
   url: function () {
-    var params = [
-      'bbox=' + this._getBoundingBoxFilterParam()
-    ];
+    var params = _.union(
+      [ this._getBoundingBoxFilterParam() ],
+      this._getDataviewSpecificURLParams()
+    );
+
+    if (this.get('apiKey')) {
+      params.push('api_key=' + this.get('apiKey'));
+    }
     return this.get('url') + '?' + params.join('&');
   },
 
   _getBoundingBoxFilterParam: function () {
     var boundingBoxFilter = new WindshaftFiltersBoundingBoxFilter(this._map.getViewBounds());
-    return boundingBoxFilter.toString();
+    return 'bbox=' + boundingBoxFilter.toString();
+  },
+
+  /**
+   * Subclasses might override this method to define extra params that will be appended
+   * to the dataview's URL.
+   * @return {[Array]} An array of strings in the form of "key=value".
+   */
+  _getDataviewSpecificURLParams: function () {
+    return [];
   },
 
   initialize: function (attrs, opts) {
@@ -35,9 +49,6 @@ module.exports = Model.extend({
     if (!opts.map) {
       throw new Error('map is required');
     }
-    if (!opts.windshaftMap) {
-      throw new Error('windshaftMap is required');
-    }
 
     if (!attrs.id) {
       this.set('id', this.defaults.type + '-' + this.cid);
@@ -45,7 +56,6 @@ module.exports = Model.extend({
 
     this.layer = opts.layer;
     this._map = opts.map;
-    this._windshaftMap = opts.windshaftMap;
 
     this.sync = BackboneCancelSync.bind(this);
 
@@ -63,7 +73,6 @@ module.exports = Model.extend({
   },
 
   _initBinds: function () {
-    this.listenTo(this._windshaftMap, 'instanceCreated', this._onNewWindshaftMapInstance);
     this.listenTo(this.layer, 'change:visible', this._onLayerVisibilityChanged);
 
     if (this._dataProvider) {
@@ -116,27 +125,6 @@ module.exports = Model.extend({
     });
   },
 
-  _onNewWindshaftMapInstance: function (windshaftMapInstance, sourceLayerId, forceFetch) {
-    var url = windshaftMapInstance.getDataviewURL({
-      dataviewId: this.get('id'),
-      protocol: window.location.protocol === 'https:' ? 'https' : 'http'
-    });
-
-    if (url) {
-      var silent = (sourceLayerId && sourceLayerId !== this.layer.get('id'));
-
-      // TODO: Instead of setting the url here, we could invoke fetch directly
-      this.set('url', url, {
-        silent: silent,
-        forceFetch: forceFetch
-      });
-
-      if (this.get('sync_on_data_change')) {
-        this._newDataAvailable = true;
-      }
-    }
-  },
-
   /**
    * Enable/disable the dataview depending on the layer visibility.
    * @private
@@ -152,7 +140,10 @@ module.exports = Model.extend({
     this.listenTo(this._map, 'change:center change:zoom', _.debounce(this._onMapBoundsChanged.bind(this), BOUNDING_BOX_FILTER_WAIT));
 
     this.on('change:url', function (mdl, attrs, opts) {
-      if ((opts && opts.forceFetch) || this._shouldFetchOnURLChange()) {
+      if (this.get('sync_on_data_change')) {
+        this._newDataAvailable = true;
+      }
+      if ((opts && opts.forceFetch) || this._shouldFetchOnURLChange(opts && opts.sourceLayerId)) {
         this.fetch();
       }
     }, this);
@@ -175,8 +166,9 @@ module.exports = Model.extend({
     }
   },
 
-  _shouldFetchOnURLChange: function () {
-    return this.get('sync_on_data_change') && this.get('enabled');
+  _shouldFetchOnURLChange: function (sourceLayerId) {
+    var urlChangeTriggeredBySameLayer = sourceLayerId && sourceLayerId === this.layer.get('id');
+    return this.get('sync_on_data_change') && this.get('enabled') && urlChangeTriggeredBySameLayer;
   },
 
   _shouldFetchOnBoundingBoxChange: function () {
@@ -229,6 +221,10 @@ module.exports = Model.extend({
     throw new Error('toJSON should be defined for each dataview');
   },
 
+  _getSourceId: function () {
+    return this.get('sourceId') || this.layer.get('source') || this.layer.get('id');
+  },
+
   remove: function () {
     if (this.filter) {
       this.filter.remove();
@@ -244,7 +240,8 @@ module.exports = Model.extend({
       'id',
       'sync_on_data_change',
       'sync_on_bbox_change',
-      'enabled'
+      'enabled',
+      'sourceId'
     ]
   }
 );

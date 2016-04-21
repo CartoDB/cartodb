@@ -13,8 +13,8 @@ module.exports = DataviewModelBase.extend({
     DataviewModelBase.prototype.defaults
   ),
 
-  url: function () {
-    var params = ['bbox=' + this._getBoundingBoxFilterParam()];
+  _getDataviewSpecificURLParams: function () {
+    var params = [];
 
     if (this.get('column_type')) {
       params.push('column_type=' + this.get('column_type'));
@@ -32,11 +32,7 @@ module.exports = DataviewModelBase.extend({
         params.push('bins=' + this.get('bins'));
       }
     }
-    var url = this.get('url');
-    if (params.length > 0) {
-      url += '?' + params.join('&');
-    }
-    return url;
+    return params;
   },
 
   initialize: function (attrs, opts) {
@@ -45,7 +41,8 @@ module.exports = DataviewModelBase.extend({
 
     // Internal model for calculating all the data in the histogram (without filters)
     this._unfilteredData = new HistogramDataModel({
-      bins: this.get('bins')
+      bins: this.get('bins'),
+      apiKey: this.get('apiKey')
     });
 
     this._unfilteredData.bind('change:data', function (mdl, data) {
@@ -130,6 +127,7 @@ module.exports = DataviewModelBase.extend({
   toJSON: function (d) {
     return {
       type: 'histogram',
+      source: { id: this._getSourceId() },
       options: {
         column: this.get('column'),
         bins: this.get('bins')

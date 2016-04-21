@@ -23,6 +23,13 @@ var TorqueLayer = LayerModelBase.extend({
     options = options || {};
 
     this._map = options.map;
+    this.bind('change:visible change:sql change:cartocss change:source', this._reloadMap, this);
+  },
+
+  _reloadMap: function () {
+    this._map.reload({
+      sourceLayerId: this.get('id')
+    });
   },
 
   play: function () {

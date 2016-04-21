@@ -14,7 +14,8 @@ describe('geo/ui/tooltip', function() {
     mapView = new LeafletMapView({
       el: $('#map'),
       map: map,
-      layerViewFactory: jasmine.createSpyObj('layerViewFactory', ['createLayerView'])
+      layerViewFactory: jasmine.createSpyObj('layerViewFactory', ['createLayerView']),
+      layerGroupModel: new Backbone.Model()
     });
 
     layer = new Backbone.Model();

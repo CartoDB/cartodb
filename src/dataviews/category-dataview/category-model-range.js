@@ -15,7 +15,11 @@ module.exports = Model.extend({
   },
 
   url: function () {
-    return this.get('url');
+    var url = this.get('url');
+    if (this.get('apiKey')) {
+      url += '?api_key=' + this.get('apiKey');
+    }
+    return url;
   },
 
   initialize: function () {

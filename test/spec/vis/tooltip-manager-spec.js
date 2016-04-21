@@ -8,7 +8,6 @@ var TooltipManager = require('../../../src/vis/tooltip-manager');
 describe('src/vis/tooltip-manager.js', function () {
   beforeEach(function () {
     var windshaftMap = new Backbone.Model({});
-    windshaftMap.isNamedMap = function () { return false; };
     this.map = new Map({}, {
       windshaftMap: windshaftMap
     });
@@ -18,7 +17,8 @@ describe('src/vis/tooltip-manager.js', function () {
 
     this.mapView = new MapView({
       map: this.map,
-      layerViewFactory: layerViewFactory
+      layerViewFactory: layerViewFactory,
+      layerGroupModel: new Backbone.Model()
     });
     this.mapView.getNativeMap = function () {};
     this.mapView._addLayerToMap = function () {};

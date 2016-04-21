@@ -3,35 +3,35 @@ var config = require('cdb.config');
 var LayerModelBase = require('./layer-model-base');
 
 var CartoDBLayer = LayerModelBase.extend({
-
   defaults: {
     attribution: config.get('cartodb_attributions'),
     type: 'CartoDB',
     visible: true
   },
 
-  initialize: function(attrs, options) {
+  initialize: function (attrs, options) {
     LayerModelBase.prototype.initialize.apply(this, arguments);
     options = options || {};
+
     this._map = options.map;
-    this.bind('change:visible change:sql change:cartocss', this._onAttributeChanged, this);
+    this.bind('change:visible change:sql change:cartocss change:source', this._reloadMap, this);
   },
 
-  _onAttributeChanged: function () {
+  _reloadMap: function () {
     this._map.reload({
       sourceLayerId: this.get('id')
     });
   },
 
-  hasInteraction: function() {
+  hasInteraction: function () {
     return this.isVisible() && (this.containInfowindow() || this.containTooltip());
   },
 
-  isVisible: function() {
+  isVisible: function () {
     return this.get('visible');
   },
 
-  getTooltipFieldNames: function() {
+  getTooltipFieldNames: function () {
     var names = [];
     var tooltip = this.getTooltipData();
     if (tooltip && tooltip.fields) {
@@ -40,7 +40,7 @@ var CartoDBLayer = LayerModelBase.extend({
     return names;
   },
 
-  getTooltipData: function() {
+  getTooltipData: function () {
     var tooltip = this.get('tooltip');
     if (tooltip && tooltip.fields && tooltip.fields.length) {
       return tooltip;
@@ -48,20 +48,20 @@ var CartoDBLayer = LayerModelBase.extend({
     return null;
   },
 
-  containInfowindow: function() {
+  containInfowindow: function () {
     return !!this.getTooltipData();
   },
 
-  getInfowindowFieldNames: function() {
+  getInfowindowFieldNames: function () {
     var names = [];
     var infowindow = this.getInfowindowData();
-    if (infowindow  && infowindow.fields) {
+    if (infowindow && infowindow.fields) {
       names = _.pluck(infowindow.fields, 'name');
     }
     return names;
   },
 
-  getInfowindowData: function() {
+  getInfowindowData: function () {
     var infowindow = this.get('infowindow');
     if (infowindow && infowindow.fields && infowindow.fields.length) {
       return infowindow;
@@ -69,11 +69,11 @@ var CartoDBLayer = LayerModelBase.extend({
     return null;
   },
 
-  containTooltip: function() {
+  containTooltip: function () {
     return !!this.getInfowindowData();
   },
 
-  getInteractiveColumnNames: function() {
+  getInteractiveColumnNames: function () {
     var fieldNames = _.union(
       this.getInfowindowFieldNames(),
       this.getTooltipFieldNames()

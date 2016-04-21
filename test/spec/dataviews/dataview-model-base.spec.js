@@ -9,11 +9,8 @@ describe('dataviews/dataview-model-base', function () {
     this.map.reload = function () {};
     spyOn(this.map, 'getViewBounds').and.returnValue([[1, 2], [3, 4]]);
 
-    this.windshaftMap = new Backbone.Model();
-
     this.model = new DataviewModelBase(null, {
       map: this.map,
-      windshaftMap: this.windshaftMap,
       layer: jasmine.createSpyObj('layer', ['get', 'getDataProvider'])
     });
     this.model.toJSON = jasmine.createSpy('toJSON').and.returnValue({});
@@ -28,6 +25,29 @@ describe('dataviews/dataview-model-base', function () {
 
       this.model.set('url', 'http://example.com');
       expect(this.model.url()).toEqual('http://example.com?bbox=west,south,east,north');
+    });
+
+    it('should allow subclasses to define specific URL params', function () {
+      this.map.getViewBounds.and.returnValue([['south', 'west'], ['north', 'east']]);
+
+      this.model.set('url', 'http://example.com');
+
+      spyOn(this.model, '_getDataviewSpecificURLParams').and.returnValue([ 'a=b', 'c=d' ]);
+
+      expect(this.model.url()).toEqual('http://example.com?bbox=west,south,east,north&a=b&c=d');
+    });
+
+    it('should append an api_key param', function () {
+      this.map.getViewBounds.and.returnValue([['south', 'west'], ['north', 'east']]);
+
+      this.model.set({
+        url: 'http://example.com',
+        apiKey: 'THE_API_KEY'
+      });
+
+      spyOn(this.model, '_getDataviewSpecificURLParams').and.returnValue([ 'a=b', 'c=d' ]);
+
+      expect(this.model.url()).toEqual('http://example.com?bbox=west,south,east,north&a=b&c=d&api_key=THE_API_KEY');
     });
   });
 
@@ -89,6 +109,28 @@ describe('dataviews/dataview-model-base', function () {
       this.model.trigger('change:url', this.model, {}, { forceFetch: false });
       expect(this.model.fetch).not.toHaveBeenCalled();
     });
+
+    it('should fetch if url changes and event was initiated by the same layer', function () {
+      this.model.layer.get.and.returnValue('layerID');
+      spyOn(this.model, 'fetch');
+
+      this.model.set('url', 'http://somethingelese.com', {
+        sourceLayerId: 'layerID'
+      });
+
+      expect(this.model.fetch).toHaveBeenCalled();
+    });
+
+    it('should not fetch if url changes and event was initiated by a different layer', function () {
+      this.model.layer.get.and.returnValue('layerID');
+      spyOn(this.model, 'fetch');
+
+      this.model.trigger('change:url', this.model, {
+        sourceLayerId: 'differentLayerId'
+      });
+
+      expect(this.model.fetch).not.toHaveBeenCalled();
+    });
   });
 
   describe('when enabled is changed to true from false', function () {
@@ -139,12 +181,8 @@ describe('dataviews/dataview-model-base', function () {
       expect(this.model.fetch).not.toHaveBeenCalled();
     });
 
-    it('should fetch if a new instance of the windshaft map has been created while the dataview was disabled', function () {
-      this.windshaftMap.getDataviewURL = function () {};
-      spyOn(this.windshaftMap, 'getDataviewURL').and.returnValue('http://wadus.com');
-
-      // A new instance of the windhsaft map has been created
-      this.windshaftMap.trigger('instanceCreated', this.windshaftMap, {});
+    it('should fetch if URL has changed while the dataview was disabled', function () {
+      this.model.set('url', 'http://somethingelse.com');
 
       this.model.set('enabled', true);
 
@@ -160,50 +198,13 @@ describe('dataviews/dataview-model-base', function () {
     });
 
     it('should NOT fetch if a new instance of the windshaft map has been created while the dataview was disabled and sync_on_data_change is false', function () {
-      this.windshaftMap.getDataviewURL = function () {};
-      spyOn(this.windshaftMap, 'getDataviewURL').and.returnValue('http://wadus.com');
-
       this.model.set('sync_on_data_change', false);
 
-      // A new instance of the windhsaft map has been created
-      this.windshaftMap.trigger('instanceCreated', this.windshaftMap, {});
+      this.model.set('url', 'http://somethingelse.com');
 
       this.model.set('enabled', true);
 
       expect(this.model.fetch).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('bindings to windhsaftMap', function () {
-    beforeEach(function () {
-      this.windshaftMap.getDataviewURL = function () {};
-      spyOn(this.windshaftMap, 'getDataviewURL').and.returnValue('http://wadus.com');
-    });
-
-    it('should update the url attribute when a new windshaftMap instance have been created', function () {
-      this.windshaftMap.trigger('instanceCreated', this.windshaftMap, {});
-
-      expect(this.model.get('url')).toEqual('http://wadus.com');
-    });
-
-    it("should trigger a change:url event if the sourceLayerId matches the id of the dataview's layer", function () {
-      var callback = jasmine.createSpy('callback');
-      this.model.bind('change:url', callback);
-      this.model.layer.get.and.returnValue('123456789');
-
-      this.windshaftMap.trigger('instanceCreated', this.windshaftMap, '123456789');
-
-      expect(callback).toHaveBeenCalled();
-    });
-
-    it("should NOT trigger a change:url event if the sourceLayerId doesn't match the id of the dataview's layer", function () {
-      var callback = jasmine.createSpy('callback');
-      this.model.bind('change:url', callback);
-      this.model.layer.get.and.returnValue('123456789');
-
-      this.windshaftMap.trigger('instanceCreated', this.windshaftMap, '987654321');
-
-      expect(callback).not.toHaveBeenCalled();
     });
   });
 
@@ -411,6 +412,57 @@ describe('dataviews/dataview-model-base', function () {
 
       expect(this.map.reload).not.toHaveBeenCalled();
       expect(this.dataviewDataProvider.applyFilter).toHaveBeenCalledWith(filter);
+    });
+  });
+
+  describe('_getSourceId', function () {
+    it('should return the layer ID', function () {
+      var layer = new Backbone.Model({
+        id: 'layerId'
+      });
+      layer.getDataProvider = jasmine.createSpy('getDataProvider').and.returnValue(undefined);
+
+      var dataview = new DataviewModelBase(null, { // eslint-disable-line
+        map: this.map,
+        windshaftMap: this.windshaftMap,
+        layer: layer
+      });
+
+      expect(dataview._getSourceId()).toEqual('layerId');
+    });
+
+    it("should return the ID of the layer's source", function () {
+      var layer = new Backbone.Model({
+        id: 'layerId',
+        source: 'a1'
+      });
+      layer.getDataProvider = jasmine.createSpy('getDataProvider').and.returnValue(undefined);
+
+      var dataview = new DataviewModelBase(null, { // eslint-disable-line
+        map: this.map,
+        windshaftMap: this.windshaftMap,
+        layer: layer
+      });
+
+      expect(dataview._getSourceId()).toEqual('a1');
+    });
+
+    it('should return the sourceId', function () {
+      var layer = new Backbone.Model({
+        id: 'layerId',
+        source: 'a1'
+      });
+      layer.getDataProvider = jasmine.createSpy('getDataProvider').and.returnValue(undefined);
+
+      var dataview = new DataviewModelBase({
+        sourceId: 'THE_SOURCE_ID'
+      }, { // eslint-disable-line
+        map: this.map,
+        windshaftMap: this.windshaftMap,
+        layer: layer
+      });
+
+      expect(dataview._getSourceId()).toEqual('THE_SOURCE_ID');
     });
   });
 });

@@ -56,6 +56,50 @@ describe('vis/vis', function () {
     jasmine.clock().uninstall();
   });
 
+  describe('public API', function () {
+    describe('dataviews factory', function () {
+      it('should be defined', function () {
+        expect(this.vis.dataviews).toBeDefined();
+      });
+
+      it('should have an api_key when using an api_key option', function () {
+        this.vis.load(new VizJSON(this.mapConfig), {
+          apiKey: 'API_KEY'
+        });
+
+        expect(this.vis.dataviews.get('apiKey')).toEqual('API_KEY');
+      });
+    });
+
+    describe('analyses factory', function () {
+      it('should be defined', function () {
+        expect(this.vis.analysis).toBeDefined();
+      });
+    });
+  });
+
+  it('should insert default max and minZoom values when not provided', function () {
+    expect(this.vis.mapView._leafletMap.options.maxZoom).toEqual(20);
+    expect(this.vis.mapView._leafletMap.options.minZoom).toEqual(0);
+  });
+
+  it('should insert user max and minZoom values when provided', function () {
+    this.container = $('<div>').css('height', '200px');
+    this.mapConfig.maxZoom = 10;
+    this.mapConfig.minZoom = 5;
+    this.vis.load(new VizJSON(this.mapConfig));
+
+    expect(this.vis.mapView._leafletMap.options.maxZoom).toEqual(10);
+    expect(this.vis.mapView._leafletMap.options.minZoom).toEqual(5);
+  });
+
+  it('should create a google maps map when provider is google maps', function () {
+    this.container = $('<div>').css('height', '200px');
+    this.mapConfig.map_provider = 'googlemaps';
+    this.vis.load(new VizJSON(this.mapConfig));
+    expect(this.vis.mapView._gmapsMap).not.toEqual(undefined);
+  });
+
   it('should not invalidate map if map height is 0', function (done) {
     jasmine.clock().install();
     var container = $('<div>').css('height', '0');
@@ -332,6 +376,73 @@ describe('vis/vis', function () {
     tooltip2.clean();
     tooltip3.clean();
     expect(this.vis.getOverlaysByType('wadus').length).toEqual(0);
+  });
+
+  it('should initialize existing analyses', function () {
+    var vizjson = {
+      layers: [
+        {
+          type: 'tiled',
+          options: {
+            urlTemplate: ''
+          }
+        },
+        {
+          type: 'layergroup',
+          options: {
+            user_name: 'pablo',
+            maps_api_template: 'https://{user}.cartodb-staging.com:443',
+            layer_definition: {
+              stat_tag: 'ece6faac-7271-11e5-a85f-04013fc66a01',
+              layers: [{
+                type: 'CartoDB',
+                options: {
+                  source: 'a0'
+                }
+
+              }]
+            }
+          }
+        }
+      ],
+      user: {
+        fullname: 'Chuck Norris',
+        avatar_url: 'http://example.com/avatar.jpg'
+      },
+      datasource: {
+        user_name: 'wadus',
+        maps_api_template: 'https://{user}.example.com:443',
+        stat_tag: 'ece6faac-7271-11e5-a85f-04013fc66a01',
+        force_cors: true // This is sometimes set in the editor
+      },
+      analyses: [
+        {
+          id: 'a1',
+          type: 'buffer',
+          params: {
+            source: {
+              id: 'a0',
+              type: 'source',
+              params: {
+                'query': 'SELECT * FROM airbnb_listings'
+              }
+            },
+            radio: 300
+          }
+        }
+      ]
+    };
+
+    this.vis.load(new VizJSON(vizjson));
+
+    // Analyses have been indexed
+    expect(this.vis._analysisCollection.size()).toEqual(2);
+
+    var a1 = this.vis.analysis.findNodeById('a1');
+    var a0 = this.vis.analysis.findNodeById('a0');
+
+    // Analysis graph has been created correctly
+    expect(a1.get('source')).toEqual(a0);
   });
 
   describe('addOverlay', function () {

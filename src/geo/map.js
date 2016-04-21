@@ -28,7 +28,7 @@ var Map = Model.extend({
 
   initialize: function (attrs, options) {
     options = options || {};
-    this.layers = new Layers();
+    this.layers = options.layersCollection || new Layers();
     this.geometries = new Backbone.Collection();
 
     this._windshaftMap = options.windshaftMap;
@@ -161,8 +161,10 @@ var Map = Model.extend({
     this._updateAttributions();
   },
 
-  _onLayerRemoved: function () {
-    this.reload();
+  _onLayerRemoved: function (layerModel) {
+    this.reload({
+      sourceLayerId: layerModel.get('id')
+    });
     this._updateAttributions();
   },
 
@@ -171,18 +173,12 @@ var Map = Model.extend({
   },
 
   reload: _.debounce(function (options) {
-    if (this._windshaftMap) {
-      var instanceOptions = {
-        layers: this.layers.models,
-        sourceLayerId: options && options.sourceLayerId,
-        forceFetch: options && options.forceFetch
-      };
+    var instanceOptions = {
+      sourceLayerId: options && options.sourceLayerId,
+      forceFetch: options && options.forceFetch
+    };
 
-      if (this._dataviewsCollection) {
-        instanceOptions.dataviews = this._dataviewsCollection;
-      }
-      this._windshaftMap.createInstance(instanceOptions);
-    }
+    this._windshaftMap.createInstance(instanceOptions);
   }, this.RELOAD_DEBOUNCE_TIME),
 
   _updateAttributions: function () {

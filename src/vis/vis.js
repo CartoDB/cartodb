@@ -21,9 +21,13 @@ var InfowindowManager = require('./infowindow-manager');
 var TooltipManager = require('./tooltip-manager');
 var WindshaftConfig = require('../windshaft/config');
 var WindshaftClient = require('../windshaft/client');
-var WindshaftLayerGroupConfig = require('../windshaft/layergroup-config');
-var WindshaftNamedMapConfig = require('../windshaft/namedmap-config');
-var WindshaftMap = require('../windshaft/windshaft-map');
+var WindshaftNamedMap = require('../windshaft/named-map');
+var WindshaftAnonymousMap = require('../windshaft/anonymous-map');
+var AnalysisFactory = require('../analysis/analysis-factory');
+var LayersCollection = require('../geo/map/layers');
+var CartoDBLayerGroupNamedMap = require('../geo/cartodb-layer-group-named-map');
+var CartoDBLayerGroupAnonymousMap = require('../geo/cartodb-layer-group-anonymous-map');
+var ModelUpdater = require('./model-updater');
 
 /**
  * Visualization creation
@@ -192,20 +196,38 @@ var Vis = View.extend({
     options = options || {};
 
     this._dataviewsCollection = new DataviewCollection();
+    this._layersCollection = new LayersCollection();
+    this._analysisCollection = new Backbone.Collection();
 
     // Create the WindhaftClient
 
     var endpoint;
-    var configGenerator;
+    var layerGroupModel;
+    var WindshaftMapClass;
     var datasource = vizjson.datasource;
-
     // TODO: We can use something else to differentiate types of "datasource"s
-    if (datasource.template_name) {
+    var isNamedMap = !!datasource.template_name;
+
+    if (isNamedMap) {
+      layerGroupModel = new CartoDBLayerGroupNamedMap({
+        apiKey: apiKey
+      }, {
+        layersCollection: this._layersCollection
+      });
+    } else {
+      layerGroupModel = new CartoDBLayerGroupAnonymousMap({
+        apiKey: apiKey
+      }, {
+        layersCollection: this._layersCollection
+      });
+    }
+
+    if (isNamedMap) {
       endpoint = [WindshaftConfig.MAPS_API_BASE_URL, 'named', datasource.template_name].join('/');
-      configGenerator = WindshaftNamedMapConfig;
+      WindshaftMapClass = WindshaftNamedMap;
     } else {
       endpoint = WindshaftConfig.MAPS_API_BASE_URL;
-      configGenerator = WindshaftLayerGroupConfig;
+      WindshaftMapClass = WindshaftAnonymousMap;
     }
 
     var windshaftClient = new WindshaftClient({
@@ -215,12 +237,24 @@ var Vis = View.extend({
       forceCors: datasource.force_cors || true
     });
 
-    // Create the WindshaftMap
+    var modelUpdater = new ModelUpdater({
+      layerGroupModel: layerGroupModel,
+      dataviewsCollection: this._dataviewsCollection,
+      layersCollection: this._layersCollection,
+      analysisCollection: this._analysisCollection
+    });
 
-    var windshaftMap = new WindshaftMap(null, { // eslint-disable-line
-      client: windshaftClient,
-      configGenerator: configGenerator,
+    // Create the WindshaftMap
+    var apiKey = options.apiKey;
+    this._windshaftMap = new WindshaftMapClass({
+      apiKey: apiKey,
       statTag: datasource.stat_tag
+    }, {
+      client: windshaftClient,
+      modelUpdater: modelUpdater,
+      dataviewsCollection: this._dataviewsCollection,
+      layersCollection: this._layersCollection,
+      analysisCollection: this._analysisCollection
     });
 
     // Create the Map
@@ -243,7 +277,8 @@ var Vis = View.extend({
     };
 
     this.map = new Map(mapConfig, {
-      windshaftMap: windshaftMap,
+      layersCollection: this._layersCollection,
+      windshaftMap: this._windshaftMap,
       dataviewsCollection: this._dataviewsCollection
     });
 
@@ -286,7 +321,8 @@ var Vis = View.extend({
     this.$el.append(div);
 
     var mapViewFactory = new MapViewFactory();
-    this.mapView = mapViewFactory.createMapView(this.map.get('provider'), this.map, div_hack);
+
+    this.mapView = mapViewFactory.createMapView(this.map.get('provider'), this.map, div_hack, layerGroupModel);
 
     // Bindings
 
@@ -297,9 +333,11 @@ var Vis = View.extend({
     this.mapView.bind('newLayerView', this._addLoading, this);
 
     // Create the Layer Models and set them on hte map
+
     this.https = (window && window.location.protocol && window.location.protocol === 'https:') || !!vizjson.https || !!options.https;
     var layerModels = this._newLayerModels(vizjson, this.map);
 
+    // Infowindows && Tooltips
     var infowindowManager = new InfowindowManager(this);
     infowindowManager.manage(this.mapView, this.map);
 
@@ -314,12 +352,27 @@ var Vis = View.extend({
     overlaysCollection.reset(vizjson.overlays);
 
     // Create the public Dataview Factory
-    this.dataviews = new DataviewsFactory(null, {
+    this.dataviews = new DataviewsFactory({
+      apiKey: apiKey
+    }, {
       dataviewsCollection: this._dataviewsCollection,
-      layersCollection: this.map.layers,
-      map: this.map,
-      windshaftMap: windshaftMap
+      map: this.map
     });
+
+    // Public Analysis Factory
+    this.analysis = new AnalysisFactory({
+      analysisCollection: this._analysisCollection,
+      map: this.map
+    });
+
+    // "Load" existing analyses from the viz.json. This will generate
+    // the analyses graphs and index analysis nodes in the
+    // collection of analysis
+    if (vizjson.analyses) {
+      _.each(vizjson.analyses, function (analysis) {
+        this.analysis.analyse(analysis);
+      }, this);
+    }
 
     // Lastly: reset the layer models on the map
     this.map.layers.reset(layerModels);

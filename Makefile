@@ -211,6 +211,7 @@ WORKING_SPECS_9 = \
 	services/datasources/spec/unit/dropbox_spec.rb \
 	services/datasources/spec/unit/box_spec.rb \
 	services/datasources/spec/unit/gdrive_spec.rb \
+	services/datasources/spec/unit/twitter_spec.rb \
 	services/importer/spec/regression/query_batcher_spec.rb \
 	services/importer/spec/regression/query_batcher_spec.rb \
 	services/platform-limits/spec/unit/input_file_size_spec.rb \

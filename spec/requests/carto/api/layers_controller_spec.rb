@@ -179,17 +179,18 @@ describe Carto::Api::LayersController do
 
       table.map.add_layer layer
 
-      login_as(user_2, scope: user_2.username)
-      get api_v1_maps_layers_index_url(user_domain: user_2.username, map_id: table.map.id) do |response|
+      get api_v1_maps_layers_index_url(user_domain: user_2.username,
+                                       map_id: table.map.id,
+                                       api_key: user_2.api_key) do |response|
         response.status.should be_success
         body = JSON.parse(last_response.body)
 
         body['layers'].count { |l| l['kind'] != 'tiled' }.should == 2
       end
 
-      login_as(user_3, scope: user_3.username)
-      host! "#{user_3.username}.localhost.lan"
-      get api_v1_maps_layers_index_url(user_domain: user_3.username, map_id: table.map.id) do |response|
+      get api_v1_maps_layers_index_url(user_domain: user_3.username,
+                                       map_id: table.map.id,
+                                       api_key: user_3.api_key) do |response|
         response.status.should == 404
       end
     end

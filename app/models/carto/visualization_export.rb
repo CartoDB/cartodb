@@ -41,12 +41,12 @@ module Carto
   end
 
   module VisualizationExporter
-    def export(visualization, format = 'shp')
+    def export(visualization, user, format = 'shp')
       visualization_id = visualization.id
 
       data_exporter = DataExporter.new
       files = visualization.related_tables.map { |ut| data_exporter.export_table(ut, format) }
-      visualization_json = Carto::VisualizationsExportService2.new.export_visualization_json_string(visualization.id)
+      visualization_json = Carto::VisualizationsExportService2.new.export_visualization_json_string(visualization.id, user)
       visualization_json_file = "#{visualization_id}.json"
       File.open(visualization_json_file, 'w') { |file| file.write(visualization_json) }
       files << visualization_json_file

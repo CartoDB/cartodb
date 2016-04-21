@@ -96,7 +96,7 @@ module Carto
       cartodbfied_tables + fetch_raster_tables
     end
 
-    # Find raster tables which won't appear as cartodbfied
+    # Find raster tables which won't appear as cartodbfied but MUST be linked
     def fetch_raster_tables
       sql = %{
         WITH cartodbfied_tables as (

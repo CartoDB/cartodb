@@ -89,6 +89,33 @@ module Carto
         SELECT table_name, reloid FROM cartodbfied_tables WHERE cdb_columns_count = #{cartodb_columns.split(',').length}
       }
 
+      cartodbfied_tables = @user.in_database(as: :superuser)[sql].all.map do |record|
+        Carto::TableFacade.new(record[:reloid], record[:table_name], @user)
+      end
+
+      cartodbfied_tables + fetch_raster_tables
+    end
+
+    # Find raster tables which won't appear as cartodbfied but MUST be linked
+    def fetch_raster_tables
+      sql = %{
+        WITH cartodbfied_tables as (
+          SELECT c.table_name,
+                 tg.tgrelid reloid,
+                 count(column_name::text) cdb_columns_count
+          FROM information_schema.columns c, pg_tables t, pg_trigger tg
+          WHERE
+            t.tablename = c.table_name AND
+            t.schemaname = c.table_schema AND
+            c.table_schema = '#{@user.database_schema}' AND
+            t.tableowner = '#{@user.database_username}' AND
+            column_name IN ('cartodb_id', 'the_raster_webmercator') AND
+            tg.tgrelid = (quote_ident(t.schemaname) || '.' || quote_ident(t.tablename))::regclass::oid AND
+            tg.tgname = 'test_quota_per_row'
+            GROUP BY reloid, 1)
+        SELECT table_name, reloid FROM cartodbfied_tables WHERE cdb_columns_count = 2;
+      }
+
       @user.in_database(as: :superuser)[sql].all.map do |record|
         Carto::TableFacade.new(record[:reloid], record[:table_name], @user)
       end
@@ -99,9 +126,6 @@ module Carto
       linked_tables = @user.tables.all.map do |user_table|
         Carto::TableFacade.new(user_table.table_id, user_table.name, @user)
       end
-
-      # HOTFIX: reject Raster
-      linked_tables.reject!(&:raster?)
 
       non_linked = linked_tables - cartodbfied_tables
 
@@ -135,19 +159,8 @@ module Carto
       !new? && !renamed? && !regenerated?
     end
 
-    def raster?
-      ut = user_table
-      ut_visualization = ut.nil? ? nil : ut.table_visualization
-
-      ut_visualization.raster_kind? if ut_visualization
-    end
-
     def stale?
       renamed? || regenerated?
-    end
-
-    def user_table
-      user.tables.where(table_id: id, name: name).first
     end
 
     def user_table_with_matching_id

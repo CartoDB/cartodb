@@ -21,7 +21,7 @@ var CartoDBLayer = LayerModelBase.extend({
 
   _setCartoCSS: function (layer, cartocss) {
     if (!layer._dataProvider) {
-      layer._onAttributeChanged();
+      layer._reloadMap();
     }
   },
 

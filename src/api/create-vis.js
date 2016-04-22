@@ -1,5 +1,6 @@
 var _ = require('underscore');
-var Vis = require('../vis/vis');
+var VisView = require('../vis/vis');
+var VisModel = require('../vis/vis-model');
 var Loader = require('../core/loader');
 var VizJSON = require('./vizjson');
 
@@ -31,28 +32,31 @@ var createVis = function (el, vizjson, options, callback) {
 
   options = _.defaults(options || {}, DEFAULT_OPTIONS);
 
-  var vis = new Vis({
-    el: el
+  var visModel = new VisModel();
+
+  var visView = new VisView({
+    el: el,
+    model: visModel
   });
 
   if (callback) {
-    vis.done(callback);
+    visView.done(callback);
   }
 
   if (typeof vizjson === 'string') {
     var url = vizjson;
     Loader.get(url, function (vizjson) {
       if (vizjson) {
-        loadVizJSON(vis, vizjson, options);
+        loadVizJSON(visView, vizjson, options);
       } else {
         throw new Error('error fetching viz.json file');
       }
     });
   } else {
-    loadVizJSON(vis, vizjson, options);
+    loadVizJSON(visView, vizjson, options);
   }
 
-  return vis;
+  return visView;
 };
 
 var loadVizJSON = function (vis, vizjsonData, options) {

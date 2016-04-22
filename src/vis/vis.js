@@ -35,17 +35,22 @@ var AnalysisPoller = require('../analysis/analysis-poller');
  */
 var Vis = View.extend({
   initialize: function () {
-    _.bindAll(this, 'loadingTiles', 'loadTiles', '_onResize');
-
     this.overlays = [];
     this._dataviewsCollection = new DataviewCollection();
     this._layersCollection = new LayersCollection();
     this._analysisCollection = new Backbone.Collection();
 
-    if (this.options.mapView) {
-      this.mapView = this.options.mapView;
-      this.map = this.mapView.map;
-    }
+    this._analysisCollection.bind('add', this._bindAnalysisModelToLoader, this);
+
+    this.model.bind('change:loading', function () {
+      if (this.loader) {
+        if (this.model.get('loading')) {
+          this.loader.show();
+        } else {
+          this.loader.hide();
+        }
+      }
+    }, this);
   },
 
   done: function (fn) {
@@ -148,9 +153,10 @@ var Vis = View.extend({
     // the center provided in the parameters and the
     // correct size.
     var map_h = this.$el.outerHeight();
-
     if (map_h === 0) {
-      $(window).bind('resize', this._onResize);
+      $(window).bind('resize', function () {
+        this._onResize();
+      }.bind(this));
     }
 
     // Create the MapView
@@ -189,8 +195,6 @@ var Vis = View.extend({
       this.map.layers.bind('reset', this.addLegends, this);
     }
 
-    this.mapView.bind('newLayerView', this._addLoading, this);
-
     // Create the Layer Models and set them on hte map
 
     this.https = (window && window.location.protocol && window.location.protocol === 'https:') || !!vizjson.https || !!options.https;
@@ -218,12 +222,18 @@ var Vis = View.extend({
       map: this.map
     });
 
+    this._windshaftMap.bind('instanceCreated', this._onMapInstanceCreated, this);
+    this.mapView.bind('newLayerView', this._bindLayerViewToLoader, this);
+
     // Public Analysis Factory
     this.analysis = new AnalysisFactory({
       apiKey: apiKey,
       analysisCollection: this._analysisCollection,
       map: this.map
     });
+
+    // Lastly: reset the layer models on the map
+    this.map.layers.reset(layerModels);
 
     // "Load" existing analyses from the viz.json. This will generate
     // the analyses graphs and index analysis nodes in the
@@ -233,23 +243,28 @@ var Vis = View.extend({
         this.analysis.analyse(analysis);
       }, this);
     }
-
-    // Lastly: reset the layer models on the map
-    this.map.layers.reset(layerModels);
-
-    this._windshaftMap.bind('instanceCreated', this._onMapInstanceCreated, this);
-
     // Global variable for easier console debugging / testing
     window.vis = this;
 
     return this;
   },
 
+  _bindLayerViewToLoader: function (layerView) {
+    layerView.bind('load', function () {
+      this.model.untrackLoadingObject(layerView);
+    }, this);
+    layerView.bind('loading', function () {
+      this.model.trackLoadingObject(layerView);
+    }, this);
+  },
+
   _onMapInstanceCreated: function () {
     AnalysisPoller.reset();
+    this.model.clearLoadingObjects();
     this._analysisCollection.each(function (analysisModel) {
       if (!analysisModel.isDone() && this._isAnalysisSourceOfLayerOrDataview(analysisModel)) {
         AnalysisPoller.poll(analysisModel);
+        this.model.trackLoadingObject(analysisModel);
         analysisModel.once('change:status', this._onAnalysisStatusChanged, this);
       }
     }, this);
@@ -268,6 +283,7 @@ var Vis = View.extend({
 
   _onAnalysisStatusChanged: function (analysisModel) {
     if (analysisModel.isDone()) {
+      this.model.untrackLoadingObject(analysisModel);
       this.map.reload();
     }
   },
@@ -534,7 +550,7 @@ var Vis = View.extend({
 
     if (v) {
       // Save tiles loader view for later
-      if (overlay.type == 'loader') {
+      if (overlay.type === 'loader') {
         this.loader = v;
       }
 
@@ -558,46 +574,6 @@ var Vis = View.extend({
   createLayer: function (layerData) {
     var layerModel = Layers.create(layerData.type || layerData.kind, this, layerData);
     return this.mapView.createLayer(layerModel);
-  },
-
-  _addLoading: function (layerView) {
-    if (layerView) {
-      var self = this;
-
-      var loadingTiles = function () {
-        self.loadingTiles();
-      };
-
-      var loadTiles = function () {
-        self.loadTiles();
-      };
-
-      layerView.bind('loading', loadingTiles);
-      layerView.bind('load', loadTiles);
-    }
-  },
-
-  loadingTiles: function () {
-    if (this.loader) {
-      this.loader.show();
-    }
-    if (this.layersLoading === 0) {
-      this.trigger('loading');
-    }
-    this.layersLoading++;
-  },
-
-  loadTiles: function () {
-    if (this.loader) {
-      this.loader.hide();
-    }
-    this.layersLoading--;
-    // check less than 0 because loading event sometimes is
-    // thrown before visualization creation
-    if (this.layersLoading <= 0) {
-      this.layersLoading = 0;
-      this.trigger('load');
-    }
   },
 
   throwError: function (msg, lyr) {

@@ -42,15 +42,21 @@ describe('vis/vis', function () {
       }
     };
 
+    this.vis = new Backbone.Model();
+    this.vis.trackLoadingObject = jasmine.createSpy();
+    this.vis.untrackLoadingObject = jasmine.createSpy();
+    this.vis.clearLoadingObjects = jasmine.createSpy();
+
     this.createNewVis = function (attrs) {
       attrs.widgets = new Backbone.Collection();
-      this.vis = new Vis(attrs);
-      return this.vis;
+      attrs.model = this.vis;
+      this.visView = new Vis(attrs);
+      return this.visView;
     };
     this.createNewVis({
       el: this.container
     });
-    this.vis.load(new VizJSON(this.mapConfig));
+    this.visView.load(new VizJSON(this.mapConfig));
   });
 
   afterEach(function () {
@@ -60,45 +66,45 @@ describe('vis/vis', function () {
   describe('public API', function () {
     describe('dataviews factory', function () {
       it('should be defined', function () {
-        expect(this.vis.dataviews).toBeDefined();
+        expect(this.visView.dataviews).toBeDefined();
       });
 
       it('should have an api_key when using an api_key option', function () {
-        this.vis.load(new VizJSON(this.mapConfig), {
+        this.visView.load(new VizJSON(this.mapConfig), {
           apiKey: 'API_KEY'
         });
 
-        expect(this.vis.dataviews.get('apiKey')).toEqual('API_KEY');
+        expect(this.visView.dataviews.get('apiKey')).toEqual('API_KEY');
       });
     });
 
     describe('analyses factory', function () {
       it('should be defined', function () {
-        expect(this.vis.analysis).toBeDefined();
+        expect(this.visView.analysis).toBeDefined();
       });
     });
   });
 
   it('should insert default max and minZoom values when not provided', function () {
-    expect(this.vis.mapView._leafletMap.options.maxZoom).toEqual(20);
-    expect(this.vis.mapView._leafletMap.options.minZoom).toEqual(0);
+    expect(this.visView.mapView._leafletMap.options.maxZoom).toEqual(20);
+    expect(this.visView.mapView._leafletMap.options.minZoom).toEqual(0);
   });
 
   it('should insert user max and minZoom values when provided', function () {
     this.container = $('<div>').css('height', '200px');
     this.mapConfig.maxZoom = 10;
     this.mapConfig.minZoom = 5;
-    this.vis.load(new VizJSON(this.mapConfig));
+    this.visView.load(new VizJSON(this.mapConfig));
 
-    expect(this.vis.mapView._leafletMap.options.maxZoom).toEqual(10);
-    expect(this.vis.mapView._leafletMap.options.minZoom).toEqual(5);
+    expect(this.visView.mapView._leafletMap.options.maxZoom).toEqual(10);
+    expect(this.visView.mapView._leafletMap.options.minZoom).toEqual(5);
   });
 
   it('should create a google maps map when provider is google maps', function () {
     this.container = $('<div>').css('height', '200px');
     this.mapConfig.map_provider = 'googlemaps';
-    this.vis.load(new VizJSON(this.mapConfig));
-    expect(this.vis.mapView._gmapsMap).not.toEqual(undefined);
+    this.visView.load(new VizJSON(this.mapConfig));
+    expect(this.visView.mapView._gmapsMap).not.toEqual(undefined);
   });
 
   it('should not invalidate map if map height is 0', function (done) {
@@ -120,22 +126,24 @@ describe('vis/vis', function () {
   it('should bind resize changes when map height is 0', function () {
     var container = $('<div>').css('height', '0');
     var vis = this.createNewVis({el: container});
-    spyOn(vis, '_onResize');
-
     this.mapConfig.map_provider = 'googlemaps';
     vis.load(new VizJSON(this.mapConfig));
+    spyOn(vis, '_onResize');
+
     $(window).trigger('resize');
+
     expect(vis._onResize).toHaveBeenCalled();
   });
 
   it("shouldn't bind resize changes when map height is greater than 0", function () {
     var container = $('<div>').css('height', '200px');
     var vis = this.createNewVis({el: container});
-    spyOn(vis, '_onResize');
-
     this.mapConfig.map_provider = 'googlemaps';
     vis.load(new VizJSON(this.mapConfig));
+    spyOn(vis, '_onResize');
+
     $(window).trigger('resize');
+
     expect(vis._onResize).not.toHaveBeenCalled();
     expect(vis.center).not.toBeDefined();
   });
@@ -153,40 +161,54 @@ describe('vis/vis', function () {
   });
 
   it('when https is false all the urls should be transformed to http', function () {
-    this.vis.https = false;
+    this.visView.https = false;
     this.mapConfig.layers = [{
       type: 'tiled',
       options: {
         urlTemplate: 'https://dnv9my2eseobd.cloudfront.net/v3/{z}/{x}/{y}.png'
       }
     }];
-    this.vis.load(new VizJSON(this.mapConfig));
-    expect(this.vis.map.layers.at(0).get('urlTemplate')).toEqual(
+    this.visView.load(new VizJSON(this.mapConfig));
+    expect(this.visView.map.layers.at(0).get('urlTemplate')).toEqual(
       'http://a.tiles.mapbox.com/v3/{z}/{x}/{y}.png'
     );
   });
 
   it('should return the native map obj', function () {
-    expect(this.vis.getNativeMap()).toEqual(this.vis.mapView._leafletMap);
+    expect(this.visView.getNativeMap()).toEqual(this.visView.mapView._leafletMap);
   });
 
   it('should create a google maps map when provider is google maps', function () {
     this.mapConfig.map_provider = 'googlemaps';
-    this.vis.load(new VizJSON(this.mapConfig));
-    expect(this.vis.mapView._gmapsMap).not.toEqual(undefined);
+    this.visView.load(new VizJSON(this.mapConfig));
+    expect(this.visView.mapView._gmapsMap).not.toEqual(undefined);
+  });
+
+  it('should display/hide the loader when \'loading\' changes', function () {
+    this.visView.addOverlay({
+      type: 'loader'
+    });
+
+    this.vis.set('loading', true);
+
+    expect(this.visView.$el.find('.CDB-Loader.is-visible').length).toEqual(1);
+
+    this.vis.set('loading', false);
+
+    expect(this.visView.$el.find('.CDB-Loader:not(.is-visible)').length).toEqual(1);
   });
 
   describe('.centerMapToOrigin', function () {
     it('should invalidate map size', function () {
-      spyOn(this.vis.mapView, 'invalidateSize');
-      this.vis.centerMapToOrigin();
-      expect(this.vis.mapView.invalidateSize).toHaveBeenCalled();
+      spyOn(this.visView.mapView, 'invalidateSize');
+      this.visView.centerMapToOrigin();
+      expect(this.visView.mapView.invalidateSize).toHaveBeenCalled();
     });
 
     it('should re-center the map', function () {
-      spyOn(this.vis.map, 'reCenter');
-      this.vis.centerMapToOrigin();
-      expect(this.vis.map.reCenter).toHaveBeenCalled();
+      spyOn(this.visView.map, 'reCenter');
+      this.visView.centerMapToOrigin();
+      expect(this.visView.map.reCenter).toHaveBeenCalled();
     });
   });
 
@@ -286,7 +308,7 @@ describe('vis/vis', function () {
           urlTemplate: 'https://dnv9my2eseobd.cloudfront.net/v3/{z}/{x}/{y}.png'
         }
       }];
-      this.vis.load(new VizJSON(this.mapConfig));
+      this.visView.load(new VizJSON(this.mapConfig));
       expect(vis.getLayers().length).toBe(1);
     })
     it ('should respond to getLayerViews', function() {
@@ -296,7 +318,7 @@ describe('vis/vis', function () {
           urlTemplate: 'https://dnv9my2eseobd.cloudfront.net/v3/{z}/{x}/{y}.png'
         }
       }];
-      this.vis.load(new VizJSON(this.mapConfig));
+      this.visView.load(new VizJSON(this.mapConfig));
       expect(vis.getLayerViews().length).toBe(1);
     })
   });
@@ -346,11 +368,11 @@ describe('vis/vis', function () {
           }
         }
       ];
-      this.vis.load(new VizJSON(this.mapConfig));
+      this.visView.load(new VizJSON(this.mapConfig));
 
-      expect(this.vis.legends.$('.cartodb-legend').length).toEqual(1);
-      expect(this.vis.legends.$el.html()).toContain('visible legend item');
-      expect(this.vis.legends.$el.html()).not.toContain('invisible legend item');
+      expect(this.visView.legends.$('.cartodb-legend').length).toEqual(1);
+      expect(this.visView.legends.$el.html()).toContain('visible legend item');
+      expect(this.visView.legends.$el.html()).not.toContain('invisible legend item');
     });
   });
 
@@ -359,16 +381,16 @@ describe('vis/vis', function () {
       return new View();
     });
 
-    var tooltip1 = this.vis.addOverlay({
+    var tooltip1 = this.visView.addOverlay({
       type: 'wadus'
     });
-    var tooltip2 = this.vis.addOverlay({
+    var tooltip2 = this.visView.addOverlay({
       type: 'wadus'
     });
-    var tooltip3 = this.vis.addOverlay({
+    var tooltip3 = this.visView.addOverlay({
       type: 'wadus'
     });
-    var tooltips = this.vis.getOverlaysByType('wadus');
+    var tooltips = this.visView.getOverlaysByType('wadus');
     expect(tooltips.length).toEqual(3);
     expect(tooltips[0]).toEqual(tooltip1);
     expect(tooltips[1]).toEqual(tooltip2);
@@ -376,7 +398,7 @@ describe('vis/vis', function () {
     tooltip1.clean();
     tooltip2.clean();
     tooltip3.clean();
-    expect(this.vis.getOverlaysByType('wadus').length).toEqual(0);
+    expect(this.visView.getOverlaysByType('wadus').length).toEqual(0);
   });
 
   it('should initialize existing analyses', function () {
@@ -434,13 +456,13 @@ describe('vis/vis', function () {
       ]
     };
 
-    this.vis.load(new VizJSON(vizjson));
+    this.visView.load(new VizJSON(vizjson));
 
     // Analyses have been indexed
-    expect(this.vis._analysisCollection.size()).toEqual(2);
+    expect(this.visView._analysisCollection.size()).toEqual(2);
 
-    var a1 = this.vis.analysis.findNodeById('a1');
-    var a0 = this.vis.analysis.findNodeById('a0');
+    var a1 = this.visView.analysis.findNodeById('a1');
+    var a0 = this.visView.analysis.findNodeById('a0');
 
     // Analysis graph has been created correctly
     expect(a1.get('source')).toEqual(a0);
@@ -572,8 +594,8 @@ describe('vis/vis', function () {
     });
 
     it('should start polling for analyses that are not ready and are the source of a layer', function () {
-      this.vis.load(new VizJSON(this.vizjson));
-      this.vis.instantiateMap();
+      this.visView.load(new VizJSON(this.vizjson));
+      this.visView.instantiateMap();
       jasmine.clock().tick(1000);
 
       // Instance
@@ -626,17 +648,23 @@ describe('vis/vis', function () {
         },
         'last_updated': '1970-01-01T00:00:00.000Z'
       });
-      $.ajax.calls.reset();
+
+      expect(this.vis.trackLoadingObject).toHaveBeenCalled();
 
       // Only polling for 'a2' has started cause it's "pending" and it's the source of the layer
       expect(AnalysisPoller.poll.calls.count()).toEqual(1);
       expect(AnalysisPoller.poll.calls.argsFor(0)[0].get('id')).toEqual('a2');
+
+      AnalysisPoller.poll.calls.argsFor(0)[0].set('status', 'ready');
+
+      expect(this.vis.untrackLoadingObject).toHaveBeenCalled();
+      expect(this.vis.clearLoadingObjects).toHaveBeenCalled();
     });
 
     it('should NOT start polling for analysis that are "ready" and are the source of a layer', function () {
-      this.vis.load(new VizJSON(this.vizjson));
-      this.vis.instantiateMap();
-      jasmine.clock().tick(1000);
+      this.visView.load(new VizJSON(this.vizjson));
+      this.visView.instantiateMap();
+      jasmine.clock().tick(3000);
 
       // Instance
       $.ajax.calls.argsFor(0)[0].success({
@@ -694,9 +722,9 @@ describe('vis/vis', function () {
     });
 
     it('should reload the map when analysis is done', function () {
-      this.vis.load(new VizJSON(this.vizjson));
-      this.vis.instantiateMap();
-      jasmine.clock().tick(1000);
+      this.visView.load(new VizJSON(this.vizjson));
+      this.visView.instantiateMap();
+      jasmine.clock().tick(3000);
 
       // Instance
       $.ajax.calls.argsFor(0)[0].success({
@@ -768,7 +796,7 @@ describe('vis/vis', function () {
   describe('addOverlay', function () {
     it('should throw an error if no layers are available', function () {
       expect(function () {
-        this.vis.addOverlay({
+        this.visView.addOverlay({
           type: 'tooltip',
           template: 'test'
         });
@@ -782,7 +810,7 @@ describe('vis/vis', function () {
 
       var layer = new FakeLayer();
 
-      var tooltip = this.vis.addOverlay({
+      var tooltip = this.visView.addOverlay({
         type: 'tooltip',
         template: 'test',
         layer: layer
@@ -826,13 +854,13 @@ describe('vis/vis', function () {
         }
       };
 
-      this.vis.load(new VizJSON(vizjson));
-      var tooltip = this.vis.addOverlay({
+      this.visView.load(new VizJSON(vizjson));
+      var tooltip = this.visView.addOverlay({
         type: 'tooltip',
         template: 'test'
       });
 
-      var layerView = this.vis.getLayerViews()[1];
+      var layerView = this.visView.getLayerViews()[1];
 
       expect(tooltip.options.layer).toEqual(layerView);
     });

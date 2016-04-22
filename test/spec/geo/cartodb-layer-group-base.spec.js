@@ -9,29 +9,66 @@ var MyCartoDBLayerGroup = CartoDBLayerGroupBase.extend({
 
 describe('geo/cartodb-layer-group-base', function () {
   beforeEach(function () {
-    this.windshaftMap = new Backbone.Model();
+    this.layersCollection = new Backbone.Collection();
   });
 
-  it('should be bound to the WindshaftMap and respond to changes on the instance', function () {
-    var layerGroup = new MyCartoDBLayerGroup(null, {
-      windshaftMap: this.windshaftMap
+  describe('internal collection of CartoDB layers', function () {
+    it('should reset internal collection when collection of layers is resetted', function () {
+      var layerModel1 = new Backbone.Model({
+        type: 'CartoDB'
+      });
+
+      var layerModel2 = new Backbone.Model({
+        type: 'torque'
+      });
+
+      var cartoDBLayerGroup = new MyCartoDBLayerGroup({}, {
+        layersCollection: this.layersCollection
+      });
+
+      this.layersCollection.reset([ layerModel1, layerModel2 ]);
+
+      expect(cartoDBLayerGroup.layers.models).toEqual([ layerModel1 ]);
     });
 
-    expect(layerGroup.get('baseURL')).not.toBeDefined();
-    expect(layerGroup.get('urls')).not.toBeDefined();
+    it('should add CartoDB layers to internal collection when layers are added to the collection of layers', function () {
+      var layerModel1 = new Backbone.Model({
+        type: 'CartoDB'
+      });
 
-    this.windshaftMap.getBaseURL = function () {};
-    this.windshaftMap.getTiles = function () {};
+      var layerModel2 = new Backbone.Model({
+        type: 'torque'
+      });
 
-    spyOn(this.windshaftMap, 'getBaseURL').and.returnValue('baseURL');
-    spyOn(this.windshaftMap, 'getTiles').and.returnValue('tileJSON');
+      var cartoDBLayerGroup = new MyCartoDBLayerGroup({}, {
+        layersCollection: this.layersCollection
+      });
 
-    // A new instance is created
-    this.windshaftMap.trigger('instanceCreated', this.windshaftMap, {});
+      this.layersCollection.add(layerModel1);
+      this.layersCollection.add(layerModel2);
 
-    // Assert that layerGroup has been updated
-    expect(layerGroup.get('baseURL')).toEqual('baseURL');
-    expect(layerGroup.get('urls')).toEqual('tileJSON');
+      expect(cartoDBLayerGroup.layers.models).toEqual([ layerModel1 ]);
+    });
+
+    it('should remove CartoDB layers to internal collection when layers are removed from collection of layers', function () {
+      var layerModel1 = new Backbone.Model({
+        type: 'CartoDB'
+      });
+
+      var layerModel2 = new Backbone.Model({
+        type: 'torque'
+      });
+
+      var cartoDBLayerGroup = new MyCartoDBLayerGroup({}, {
+        layersCollection: this.layersCollection
+      });
+
+      this.layersCollection.reset([ layerModel1, layerModel2 ]);
+      this.layersCollection.remove(layerModel1);
+      this.layersCollection.remove(layerModel2);
+
+      expect(cartoDBLayerGroup.layers.isEmpty()).toBeTruthy();
+    });
   });
 
   describe('fetchAttributes', function () {
@@ -42,9 +79,9 @@ describe('geo/cartodb-layer-group-base', function () {
       var layer = new MyCartoDBLayerGroup({
         baseURL: 'http://wadus.com'
       }, {
-        windshaftMap: this.windshaftMap,
-        layers: [ cartoDBLayer1 ]
+        layersCollection: this.layersCollection
       });
+      this.layersCollection.reset([ cartoDBLayer1 ]);
 
       spyOn(layer, '_convertToWindshaftLayerIndex').and.returnValue(0);
       spyOn($, 'ajax').and.callFake(function (options) {
@@ -64,9 +101,9 @@ describe('geo/cartodb-layer-group-base', function () {
       var layer = new MyCartoDBLayerGroup({
         baseURL: 'http://wadus.com'
       }, {
-        windshaftMap: this.windshaftMap,
-        layers: [ cartoDBLayer1 ]
+        layersCollection: this.layersCollection
       });
+      this.layersCollection.reset([ cartoDBLayer1 ]);
 
       spyOn(layer, '_convertToWindshaftLayerIndex').and.returnValue(-1);
       spyOn($, 'ajax').and.callFake(function (options) {
@@ -86,9 +123,9 @@ describe('geo/cartodb-layer-group-base', function () {
       var layer = new MyCartoDBLayerGroup({
         baseURL: 'http://wadus.com'
       }, {
-        windshaftMap: this.windshaftMap,
-        layers: [ cartoDBLayer1 ]
+        layersCollection: this.layersCollection
       });
+      this.layersCollection.reset([ cartoDBLayer1 ]);
 
       spyOn(layer, '_convertToWindshaftLayerIndex').and.returnValue(-1);
       spyOn($, 'ajax').and.callFake(function (options) {
@@ -99,6 +136,29 @@ describe('geo/cartodb-layer-group-base', function () {
 
       expect(callback).toHaveBeenCalledWith(null);
       expect($.ajax).not.toHaveBeenCalled();
+    });
+
+    it('should use an api_key if WindhsaftMap has one', function () {
+      var callback = jasmine.createSpy('callback');
+      var cartoDBLayer1 = new CartoDBLayer();
+
+      var layer = new MyCartoDBLayerGroup({
+        apiKey: 'THE_API_KEY',
+        baseURL: 'http://wadus.com'
+      }, {
+        layersCollection: this.layersCollection
+      });
+      this.layersCollection.reset([ cartoDBLayer1 ]);
+
+      spyOn(layer, '_convertToWindshaftLayerIndex').and.returnValue(0);
+      spyOn($, 'ajax').and.callFake(function (options) {
+        options.success('attributes!');
+      });
+
+      layer.fetchAttributes(0, 1000, callback);
+
+      expect(callback).toHaveBeenCalledWith('attributes!');
+      expect($.ajax.calls.mostRecent().args[0].url).toEqual('http://wadus.com/0/attributes/1000?api_key=THE_API_KEY');
     });
   });
 });

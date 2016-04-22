@@ -15,30 +15,28 @@ module.exports = Model.extend({
 
   initialize: function (attrs, opts) {
     if (!opts.map) throw new Error('map is required');
-    if (!opts.windshaftMap) throw new Error('windshaftMap is required');
     if (!opts.dataviewsCollection) throw new Error('dataviewsCollection is required');
-    if (!opts.layersCollection) throw new Error('layersCollection is required');
 
     this._map = opts.map;
-    this._windshaftMap = opts.windshaftMap;
     this._dataviewsCollection = opts.dataviewsCollection;
-    this._layersCollection = opts.layersCollection;
   },
 
   createCategoryModel: function (layerModel, attrs) {
     _checkProperties(attrs, ['column']);
+    attrs = _.pick(attrs, CategorDataviewModel.ATTRS_NAMES);
+    attrs.aggregation = attrs.aggregation || 'count';
+    attrs.aggregation_column = attrs.aggregation_column || attrs.column;
+    if (this.get('apiKey')) {
+      attrs.apiKey = this.get('apiKey');
+    }
+
     var categoryFilter = new CategoryFilter({
       layer: layerModel
     });
 
-    attrs = _.pick(attrs, CategorDataviewModel.ATTRS_NAMES);
-    attrs.aggregation = attrs.aggregation || 'count';
-    attrs.aggregation_column = attrs.aggregation_column || attrs.column;
-
     return this._newModel(
       new CategorDataviewModel(attrs, {
         map: this._map,
-        windshaftMap: this._windshaftMap,
         filter: categoryFilter,
         layer: layerModel
       })
@@ -48,11 +46,13 @@ module.exports = Model.extend({
   createFormulaModel: function (layerModel, attrs) {
     _checkProperties(attrs, ['column', 'operation']);
     attrs = _.pick(attrs, FormulaDataviewModel.ATTRS_NAMES);
+    if (this.get('apiKey')) {
+      attrs.apiKey = this.get('apiKey');
+    }
 
     return this._newModel(
       new FormulaDataviewModel(attrs, {
         map: this._map,
-        windshaftMap: this._windshaftMap,
         layer: layerModel
       })
     );
@@ -60,17 +60,18 @@ module.exports = Model.extend({
 
   createHistogramModel: function (layerModel, attrs) {
     _checkProperties(attrs, ['column']);
+    attrs = _.pick(attrs, HistogramDataviewModel.ATTRS_NAMES);
+    if (this.get('apiKey')) {
+      attrs.apiKey = this.get('apiKey');
+    }
 
     var rangeFilter = new RangeFilter({
       layer: layerModel
     });
 
-    attrs = _.pick(attrs, HistogramDataviewModel.ATTRS_NAMES);
-
     return this._newModel(
       new HistogramDataviewModel(attrs, {
         map: this._map,
-        windshaftMap: this._windshaftMap,
         filter: rangeFilter,
         layer: layerModel
       })
@@ -80,11 +81,13 @@ module.exports = Model.extend({
   createListModel: function (layerModel, attrs) {
     _checkProperties(attrs, ['columns']);
     attrs = _.pick(attrs, ListDataviewModel.ATTRS_NAMES);
+    if (this.get('apiKey')) {
+      attrs.apiKey = this.get('apiKey');
+    }
 
     return this._newModel(
       new ListDataviewModel(attrs, {
         map: this._map,
-        windshaftMap: this._windshaftMap,
         layer: layerModel
       })
     );

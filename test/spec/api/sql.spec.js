@@ -1,7 +1,6 @@
 var _ = require('underscore');
 var $ = require('jquery');
 var Backbone = require('backbone');
-var Promise = require('../../../src/api/promise');
 var SQL = require('../../../src/api/sql');
 
 describe('api/sql', function() {
@@ -144,31 +143,37 @@ describe('api/sql', function() {
     )
   });
 
-  it("should call promise", function(done) {
+  it("should call promise", function () {
+    jasmine.clock().install();
+
     var data;
     var data_callback;
 
-    sql.execute('select * from bla', function(data) { data_callback = data }).done(function(d) {
+    sql.execute('select * from bla', function(err, data) { data_callback = data }).done(function(d) {
       data = d;
     });
 
-    setTimeout(function() {
-      expect(data).toEqual(TEST_DATA);
-      expect(data_callback).toEqual(TEST_DATA);
-      done()
-    }, 500); //Fix cartodb.js issue #336
+    jasmine.clock().tick(100);
+
+    expect(data).toEqual(TEST_DATA);
+    expect(data_callback).toEqual(TEST_DATA);
+
+    jasmine.clock().uninstall();
   });
 
-  it("should call promise on error", function(done) {
+  it("should call promise on error", function() {
+    jasmine.clock().install();
     throwError = true;
     var err = false;
-    sql.execute('select * from bla').error(function(d) {
+
+    sql.execute('select * from bla').error(function() {
       err = true;
     });
-    setTimeout(function() {
-      expect(err).toEqual(true);
-      done();
-    },10);
+
+    jasmine.clock().tick(10);
+    expect(err).toEqual(true);
+
+    jasmine.clock().uninstall();
   });
 
   it("should include url params", function() {
@@ -300,7 +305,7 @@ describe("api/sql column descriptions", function(){
       protocol: 'https'
     });
     sql.execute = function(sql, callback){
-      callback({});
+      callback(null, {});
     }
   });
 
@@ -331,9 +336,9 @@ describe("api/sql column descriptions", function(){
     beforeAll(function(done){
       sql.execute = function(sql, callback){
         var data = JSON.parse('{"rows":[{"uniq":462,"cnt":487,"null_count":1,"null_ratio":0.002053388090349076,"skew":0.043121149897330596,"array_agg":""}],"time":0.01,"fields":{"uniq":{"type":"number"},"cnt":{"type":"number"},"null_count":{"type":"number"},"null_ratio":{"type":"number"},"skew":{"type":"number"},"array_agg":{"type":"unknown(2287)"}},"total_rows":1}');
-        callback(data);
+        callback(null, data);
       }
-      var callback = function(stuff){
+      var callback = function(err, stuff){
         description = stuff;
         done();
       }
@@ -356,9 +361,9 @@ describe("api/sql column descriptions", function(){
     beforeAll(function(done){
       sql.execute = function(sql, callback){
         var data = {"rows":[{"bbox": '{"type":"Polygon","coordinates":[[[-179.9284,-65.2446],[-179.9284,81.8962],[179.9698,81.8962],[179.9698,-65.2446],[-179.9284,-65.2446]]]}',"geometry_type":"ST_Point","clusterrate":0.20359746623640493,"density":0.105333307745705}],"time":0.035,"fields":{"bbox":{"type":"string"},"geometry_type":{"type":"string"},"clusterrate":{"type":"number"},"density":{"type":"number"}},"total_rows":1};
-        callback(data);
+        callback(null, data);
       }
-      var callback = function(stuff){
+      var callback = function(err, stuff){
         description = stuff;
         done();
       }
@@ -378,9 +383,9 @@ describe("api/sql column descriptions", function(){
     beforeAll(function(done){
       sql.execute = function(sql, callback){
         var data = JSON.parse('{"rows":[{"hist":"{\\"(1,empty,69368)\\",\\"(25,empty,11063)\\"}","min":0,"max":4,"avg":0.3745819397993311,"cnt":89401,"uniq":5,"null_ratio":0,"stddev":0.000009057366328792043,"stddevmean":2.1617223091836313,"dist_type":"U","quantiles":[0,1,2,2,3,4,4],"equalint":[0,0,0,0,0,0,0],"jenks":[0,1,2,3,4],"headtails":[0,1,2,3,4],"cat_hist":"{\\"(1,empty,69368)\\",\\"(25,empty,11063)\\"}"}],"time":1.442,"fields":{"hist":{"type":"unknown(2287)"},"min":{"type":"number"},"max":{"type":"number"},"avg":{"type":"number"},"cnt":{"type":"number"},"uniq":{"type":"number"},"null_ratio":{"type":"number"},"stddev":{"type":"number"},"stddevmean":{"type":"number"},"dist_type":{"type":"string"},"quantiles":{"type":"number[]"},"equalint":{"type":"number[]"},"jenks":{"type":"number[]"},"headtails":{"type":"number[]"},"cat_hist":{"type":"unknown(2287)"}},"total_rows":1}');
-        callback(data);
+        callback(null, data);
       }
-      var callback = function(stuff){
+      var callback = function(err, stuff){
         description = stuff;
         done();
       }
@@ -411,9 +416,9 @@ describe("api/sql column descriptions", function(){
                     "fields":{"true_ratio":{"type":"number"},"null_ratio":{"type":"number"},"uniq":{"type":"number"},"cnt":{"type":"number"}},
                     "total_rows":1
                   };
-        callback(data);
+        callback(null, data);
       }
-      var callback = function(stuff){
+      var callback = function(err, stuff){
         description = stuff;
         done();
       }

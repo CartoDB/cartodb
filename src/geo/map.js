@@ -1,4 +1,3 @@
-var $ = require('jquery');
 var _ = require('underscore');
 var L = require('leaflet');
 var Backbone = require('backbone');
@@ -29,13 +28,23 @@ var Map = Model.extend({
 
   initialize: function (attrs, options) {
     options = options || {};
-    this.layers = new Layers();
+    this.layers = options.layersCollection || new Layers();
     this.geometries = new Backbone.Collection();
 
     this._windshaftMap = options.windshaftMap;
     this._dataviewsCollection = options.dataviewsCollection;
 
     attrs = attrs || {};
+
+    var center = attrs.center || this.defaults.center;
+    if (typeof center === 'string') {
+      center = JSON.parse(center);
+    }
+    this.set({
+      center: center,
+      original_center: center
+    });
+
     if (attrs.bounds) {
       this.set({
         view_bounds_sw: attrs.bounds[0],
@@ -46,8 +55,6 @@ var Map = Model.extend({
       this.unset('bounds');
     } else {
       this.set({
-        center: attrs.center || this.defaults.center,
-        original_center: attrs.center || this.defaults.center,
         zoom: attrs.zoom || this.defaults.zoom
       });
     }
@@ -154,8 +161,10 @@ var Map = Model.extend({
     this._updateAttributions();
   },
 
-  _onLayerRemoved: function () {
-    this.reload();
+  _onLayerRemoved: function (layerModel) {
+    this.reload({
+      sourceLayerId: layerModel.get('id')
+    });
     this._updateAttributions();
   },
 
@@ -164,18 +173,12 @@ var Map = Model.extend({
   },
 
   reload: _.debounce(function (options) {
-    if (this._windshaftMap) {
-      var instanceOptions = {
-        layers: this.layers.models,
-        sourceLayerId: options && options.sourceLayerId,
-        forceFetch: options && options.forceFetch
-      };
+    var instanceOptions = {
+      sourceLayerId: options && options.sourceLayerId,
+      forceFetch: options && options.forceFetch
+    };
 
-      if (this._dataviewsCollection) {
-        instanceOptions.dataviews = this._dataviewsCollection;
-      }
-      this._windshaftMap.createInstance(instanceOptions);
-    }
+    this._windshaftMap.createInstance(instanceOptions);
   }, this.RELOAD_DEBOUNCE_TIME),
 
   _updateAttributions: function () {

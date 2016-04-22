@@ -31,16 +31,17 @@
   "dependencies": {
     "backbone": "1.2.3",
     "browserify-shim": "3.8.10",
+    "camshaft-reference": "^0.3.0",
+    "cartoassets": "CartoDB/CartoAssets#master",
+    "d3": "3.5.8",
+    "d3.cartodb": "CartoDB/d3.cartodb#gh-pages",
     "jquery": "2.1.4",
     "jstify": "0.12.0",
     "leaflet": "0.7.3",
     "mustache": "1.1.0",
     "perfect-scrollbar": "0.6.7",
     "torque.js": "2.15.1",
-    "underscore": "1.8.3",
-    "cartoassets": "CartoDB/CartoAssets#master",
-    "d3": "3.5.8",
-    "d3.cartodb": "CartoDB/d3.cartodb#gh-pages"
+    "underscore": "1.8.3"
   },
   "devDependencies": {
     "browserify": "11.2.0",

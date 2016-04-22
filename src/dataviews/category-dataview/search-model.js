@@ -14,7 +14,11 @@ module.exports = Model.extend({
   },
 
   url: function () {
-    return this.get('url') + '/search?q=' + encodeURIComponent(this.get('q'));
+    var url = this.get('url') + '/search?q=' + encodeURIComponent(this.get('q'));
+    if (this.get('apiKey')) {
+      url += '&api_key=' + this.get('apiKey');
+    }
+    return url;
   },
 
   initialize: function (attrs, opts) {

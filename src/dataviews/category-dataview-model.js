@@ -22,22 +22,25 @@ module.exports = DataviewModelBase.extend({
     DataviewModelBase.prototype.defaults
   ),
 
-  url: function () {
+  _getDataviewSpecificURLParams: function () {
     var params = [
-      'bbox=' + this._getBoundingBoxFilterParam(),
       'own_filter=' + (this.get('filterEnabled') ? 1 : 0)
     ];
-    return this.get('url') + '?' + params.join('&');
+    return params;
   },
 
   initialize: function (attrs, opts) {
     DataviewModelBase.prototype.initialize.call(this, attrs, opts);
 
     // Internal model for calculating total amount of values in the category
-    this._rangeModel = new CategoryModelRange();
+    this._rangeModel = new CategoryModelRange({
+      apiKey: this.get('apiKey')
+    });
 
     this._data = new CategoriesCollection();
-    this._searchModel = new SearchModel();
+    this._searchModel = new SearchModel({
+      apiKey: this.get('apiKey')
+    });
 
     this.on('change:column change:aggregation change:aggregation_column', this._reloadMapAndForceFetch, this);
 
@@ -258,6 +261,7 @@ module.exports = DataviewModelBase.extend({
   toJSON: function () {
     return {
       type: 'aggregation',
+      source: { id: this._getSourceId() },
       options: {
         column: this.get('column'),
         aggregation: this.get('aggregation'),

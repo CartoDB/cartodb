@@ -5,7 +5,7 @@ var GMapsLayerViewFactory = require('./gmaps/gmaps-layer-view-factory');
 
 var MapViewFactory = function () {};
 
-MapViewFactory.prototype.createMapView = function (provider, mapModel, el) {
+MapViewFactory.prototype.createMapView = function (provider, mapModel, el, layerGroupModel) {
   var MapViewClass;
   var LayerViewFactoryClass;
 
@@ -26,6 +26,7 @@ MapViewFactory.prototype.createMapView = function (provider, mapModel, el) {
   return new MapViewClass({
     el: el,
     map: mapModel,
+    layerGroupModel: layerGroupModel,
     layerViewFactory: new LayerViewFactoryClass({
       vector: mapModel.get('vector')
     })

@@ -3,19 +3,19 @@ var config = require('cdb.config');
 var LayerModelBase = require('./layer-model-base');
 
 var CartoDBLayer = LayerModelBase.extend({
-
   defaults: {
     attribution: config.get('cartodb_attributions'),
     type: 'CartoDB',
     visible: true
   },
 
-  initialize: function(attrs, options) {
+  initialize: function (attrs, options) {
     LayerModelBase.prototype.initialize.apply(this, arguments);
     options = options || {};
+
     this._map = options.map;
     this.set('initialStyle', attrs.cartocss)
-    this.bind('change:visible change:sql', this._onAttributeChanged, this);
+    this.bind('change:visible change:sql change:source', this._reloadMap, this);
     this.bind('change:cartocss', this._setCartoCSS);
   },
 
@@ -25,7 +25,7 @@ var CartoDBLayer = LayerModelBase.extend({
     }
   },
 
-  _onAttributeChanged: function () {
+  _reloadMap: function () {
     this._map.reload({
       sourceLayerId: this.get('id')
     });
@@ -63,7 +63,7 @@ var CartoDBLayer = LayerModelBase.extend({
     return names;
   },
 
-  getTooltipData: function() {
+  getTooltipData: function () {
     var tooltip = this.get('tooltip');
     if (tooltip && tooltip.fields && tooltip.fields.length) {
       return tooltip;
@@ -71,20 +71,20 @@ var CartoDBLayer = LayerModelBase.extend({
     return null;
   },
 
-  containInfowindow: function() {
+  containInfowindow: function () {
     return !!this.getTooltipData();
   },
 
-  getInfowindowFieldNames: function() {
+  getInfowindowFieldNames: function () {
     var names = [];
     var infowindow = this.getInfowindowData();
-    if (infowindow  && infowindow.fields) {
+    if (infowindow && infowindow.fields) {
       names = _.pluck(infowindow.fields, 'name');
     }
     return names;
   },
 
-  getInfowindowData: function() {
+  getInfowindowData: function () {
     var infowindow = this.get('infowindow');
     if (infowindow && infowindow.fields && infowindow.fields.length) {
       return infowindow;
@@ -92,11 +92,11 @@ var CartoDBLayer = LayerModelBase.extend({
     return null;
   },
 
-  containTooltip: function() {
+  containTooltip: function () {
     return !!this.getInfowindowData();
   },
 
-  getInteractiveColumnNames: function() {
+  getInteractiveColumnNames: function () {
     var fieldNames = _.union(
       this.getInfowindowFieldNames(),
       this.getTooltipFieldNames()

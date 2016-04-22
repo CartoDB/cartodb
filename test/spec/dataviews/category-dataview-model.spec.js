@@ -9,10 +9,8 @@ describe('dataviews/category-dataview-model', function () {
     this.map.getViewBounds = jasmine.createSpy();
     this.map.reload = jasmine.createSpy();
     this.map.getViewBounds.and.returnValue([[1, 2], [3, 4]]);
-    var windshaftMap = jasmine.createSpyObj('windhsaftMap', ['bind']);
     this.model = new CategoryDataviewModel(null, {
       map: this.map,
-      windshaftMap: windshaftMap,
       layer: jasmine.createSpyObj('layer', ['get', 'getDataProvider']),
       filter: new WindshaftFiltersCategory()
     });
@@ -36,6 +34,19 @@ describe('dataviews/category-dataview-model', function () {
     expect(this.model._data).toBeDefined();
     expect(this.model._searchModel).toBeDefined();
     expect(this.model.filter).toBeDefined();
+  });
+
+  it('should set the api_key attribute on the internal models', function () {
+    this.model = new CategoryDataviewModel({
+      apiKey: 'API_KEY'
+    }, {
+      map: this.map,
+      layer: jasmine.createSpyObj('layer', ['get', 'getDataProvider']),
+      filter: new WindshaftFiltersCategory()
+    });
+
+    expect(this.model._searchModel.get('apiKey')).toEqual('API_KEY');
+    expect(this.model._rangeModel.get('apiKey')).toEqual('API_KEY');
   });
 
   describe('.url', function () {

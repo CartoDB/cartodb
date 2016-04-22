@@ -1,83 +1,79 @@
 var Backbone = require('backbone');
 var _ = require('underscore');
-var WindshaftFiltersCollection = require('./filters/collection');
-var WindshaftLayerGroupConfig = require('./layergroup-config');
-var WindshaftNamedMapConfig = require('./namedmap-config');
 var WindshaftConfig = require('./config');
 var EMPTY_GIF = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 
+var TILE_EXTENSIONS_BY_LAYER_TYPE = {
+  'mapnik': '.png',
+  'torque': '.json.torque'
+};
+
+var LAYER_TYPES = [
+  'CartoDB',
+  'torque'
+];
+
 var WindshaftMap = Backbone.Model.extend({
-
   initialize: function (attrs, options) {
+    if (!options.client) {
+      throw new Error('client option is required');
+    }
+    // TODO: We could use the layerGroupModel instead! Only contains layers of type 'CartoDB' and 'Torque'
+    if (!options.layersCollection) {
+      throw new Error('layersCollection option is required');
+    }
+    if (!options.dataviewsCollection) {
+      throw new Error('dataviewsCollection option is required');
+    }
+    if (!options.analysisCollection) {
+      throw new Error('analysisCollection option is required');
+    }
+    if (!options.modelUpdater) {
+      throw new Error('modelUpdater option is required');
+    }
+
     this.client = options.client;
-    this.statTag = options.statTag;
-    this.configGenerator = options.configGenerator;
-
-    // TODO: What params are really used?
-    this.pngParams = ['map_key', 'api_key', 'cache_policy', 'updated_at'];
-    this.gridParams = ['map_key', 'api_key', 'cache_policy', 'updated_at'];
-
     this.set({
       urlTemplate: this.client.urlTemplate,
       userName: this.client.userName
     });
+
+    this._layersCollection = options.layersCollection;
+    this._dataviewsCollection = options.dataviewsCollection;
+    this._analysisCollection = options.analysisCollection;
+    this._modelUpdater = options.modelUpdater;
   },
 
-  isNamedMap: function () {
-    return this.configGenerator === WindshaftNamedMapConfig;
-  },
-
-  isAnonymousMap: function () {
-    return this.configGenerator === WindshaftLayerGroupConfig;
+  toJSON: function () {
+    throw new Error('Subclasses of windshaft/map-base must implement .toJSON');
   },
 
   createInstance: function (options) {
     options = options || {};
-    // WindshaftMap knows what types of layers should be sent to Windshaft:
-    var layers = _.select(options.layers, function (layer) {
-      return layer.get('type') === 'CartoDB' || layer.get('type') === 'torque';
-    });
-    var dataviews = options.dataviews;
+
     var sourceLayerId = options.sourceLayerId;
     var forceFetch = options.forceFetch;
     var styles = options.styles;
 
-    var mapConfig = this.configGenerator.generate({
-      layers: layers,
-      dataviews: dataviews,
-      styles: styles
-    });
+    var params = {
+      stat_tag: this.get('statTag')
+    };
 
-    var filtersFromVisibleLayers = [];
-    if (dataviews) {
-      filtersFromVisibleLayers = dataviews.chain()
-        .filter(function (dataview) {
-          return dataview.layer.isVisible();
-        })
-        .map(function (dataview) {
-          return dataview.filter;
-        })
-        .compact() // not all dataviews have filters
-        .value();
+    if (this.get('apiKey')) {
+      params.api_key = this.get('apiKey');
     }
 
-    var filters = new WindshaftFiltersCollection(filtersFromVisibleLayers, layers);
+    var filters = this._getFilterParamFromDataviews();
+    if (!_.isEmpty(filters)) {
+      params.filters = filters;
+    }
 
     this.client.instantiateMap({
-      mapDefinition: mapConfig,
-      statTag: this.statTag,
-      filters: filters.toJSON(),
+      mapDefinition: this.toJSON(),
+      params: params,
       success: function (mapInstance) {
         this.set(mapInstance);
-        _.each(layers, function (layer, layerIndex) {
-          if (layer.get('type') === 'torque') {
-            layer.set('meta', this.getLayerMeta(layerIndex));
-            layer.set('urls', this.getTiles('torque'));
-          } else if (layer.get('type') === 'CartoDB') {
-            layer.set('meta', this.getLayerMeta(layerIndex));
-          }
-        }, this);
-        this.trigger('instanceCreated', this, sourceLayerId, forceFetch);
+        this._modelUpdater.updateModels(this, sourceLayerId, forceFetch);
       }.bind(this),
       error: function (error) {
         console.log('Error creating the map instance on Windshaft: ' + error);
@@ -87,9 +83,21 @@ var WindshaftMap = Backbone.Model.extend({
     return this;
   },
 
-  TILE_EXTENSIONS_BY_LAYER_TYPE: {
-    'mapnik': '.png',
-    'torque': '.json.torque'
+  _getFilterParamFromDataviews: function () {
+    return this._dataviewsCollection.reduce(function (filters, dataview) {
+      var filter = dataview.filter;
+      if (filter && !filter.isEmpty()) {
+        filters['dataviews'] = filters['dataviews'] || {};
+        _.extend(filters['dataviews'], filter.toJSON());
+      }
+      return filters;
+    }, {});
+  },
+
+  _getLayers: function () {
+    return this._layersCollection.select(function (layer) {
+      return LAYER_TYPES.indexOf(layer.get('type')) >= 0;
+    });
   },
 
   getBaseURL: function (subhost) {
@@ -117,34 +125,41 @@ var WindshaftMap = Backbone.Model.extend({
     return this.get('urlTemplate').indexOf('https') === 0;
   },
 
-  getDataviewURL: function (options) {
-    var dataviewId = options.dataviewId;
-    var protocol = options.protocol;
-    var url;
-    var layers = this.get('metadata') && this.get('metadata').layers;
+  getDataviewMetadata: function (dataviewId) {
+    // Try to get dataview's metadata from this.get('metadata').dataview
+    var dataviews = this.get('metadata') && this.get('metadata').dataviews;
+    if (dataviews && dataviews[dataviewId]) {
+      return dataviews[dataviewId];
+    }
 
-    _.each(layers, function (layer) {
-      // TODO layer.widgets is the raw data returned from metadata… should be renamed once the result from Windshaft is changed
-      var dataviews = layer.widgets;
-      for (var id in dataviews) {
-        if (dataviewId === id) {
-          url = dataviews[id].url[protocol];
-          return;
-        }
-      }
+    // Try to get dataview's metatadta from the 'widgets' dictionary inside the metadata of each of the layers
+    dataviews = {};
+    var layersDataviews = _.compact(_.map(this.get('metadata').layers, function (layer) { return layer.widgets; }));
+    _.each(layersDataviews, function (layerDataviews) {
+      _.extend(dataviews, layerDataviews);
     });
 
-    return url;
+    if (dataviews && dataviews[dataviewId]) {
+      return dataviews[dataviewId];
+    }
   },
 
-  getTiles: function (layerType, params) {
+  getAnalysisNodeMetadata: function (analysisId) {
+    var metadata = {};
+    var nodes = _.map(this.get('metadata').analyses, function (analysis) {
+      return analysis.nodes;
+    });
+    _.each(nodes, function (node) {
+      _.extend(metadata, node);
+    });
+
+    return metadata[analysisId];
+  },
+
+  getTiles: function (layerType) {
     layerType = layerType || 'mapnik';
     var grids = [];
     var tiles = [];
-
-    var pngParams = this._encodeParams(params, this.pngParams);
-    var gridParams = this._encodeParams(params, this.gridParams);
-
     var subdomains = ['0', '1', '2', '3'];
     if (this._useHTTPS()) {
       subdomains = [''];
@@ -154,7 +169,7 @@ var WindshaftMap = Backbone.Model.extend({
     if (layerIndexes.length) {
       for (var i = 0; i < subdomains.length; ++i) {
         var subdomain = subdomains[i];
-        tiles.push(this._getTileURLTemplate(subdomain, layerIndexes, layerType, pngParams));
+        tiles.push(this._getTileURLTemplate(subdomain, layerIndexes, layerType));
 
         // for mapnik layers add grid json too
         if (layerType === 'mapnik') {
@@ -162,7 +177,7 @@ var WindshaftMap = Backbone.Model.extend({
             var mapnikLayerIndex = this._getLayerIndexByType(layerIndex, 'mapnik');
             if (mapnikLayerIndex >= 0) {
               grids[layerIndex] = grids[layerIndex] || [];
-              grids[layerIndex].push(this._getGridURLTemplate(subdomain, mapnikLayerIndex, gridParams));
+              grids[layerIndex].push(this._getGridURLTemplate(subdomain, mapnikLayerIndex));
             }
           }
         }
@@ -185,8 +200,8 @@ var WindshaftMap = Backbone.Model.extend({
   _getTileURLTemplate: function (subdomain, layerIndexes, layerType, params) {
     var baseURL = this.getBaseURL(subdomain);
     var tileSchema = '{z}/{x}/{y}';
-    var tileExtension = this.TILE_EXTENSIONS_BY_LAYER_TYPE[layerType];
-    var urlParams = params ? '?' + params : '';
+    var tileExtension = TILE_EXTENSIONS_BY_LAYER_TYPE[layerType];
+    var urlParams = this.get('apiKey') ? '?api_key=' + this.get('apiKey') : '';
 
     return baseURL + '/' + layerIndexes.join(',') + '/' + tileSchema + tileExtension + urlParams;
   },
@@ -199,12 +214,12 @@ var WindshaftMap = Backbone.Model.extend({
   _getGridURLTemplate: function (subdomain, layerIndex, params) {
     var baseURL = this.getBaseURL(subdomain);
     var tileSchema = '{z}/{x}/{y}';
-    var urlParams = params ? '?' + params : '';
+    var urlParams = this.get('apiKey') ? '?api_key=' + this.get('apiKey') : '';
 
     return baseURL + '/' + layerIndex + '/' + tileSchema + '.grid.json' + urlParams;
   },
 
-  getLayerMeta: function (layerIndex) {
+  getLayerMetadata: function (layerIndex) {
     var layerMeta = {};
     var metadataLayerIndex = this._localLayerIndexToWindshaftLayerIndex(layerIndex);
     var layers = this.get('metadata') && this.get('metadata').layers;
@@ -218,28 +233,6 @@ var WindshaftMap = Backbone.Model.extend({
     var layers = this.get('metadata') && this.get('metadata').layers;
     var hasTiledLayer = layers.length > 0 && layers[0].type === 'http';
     return hasTiledLayer ? ++layerIndex : layerIndex;
-  },
-
-  _encodeParams: function (params, included) {
-    if (!params) return '';
-    var url_params = [];
-    included = included || _.keys(params);
-    for (var i in included) {
-      var k = included[i];
-      var p = params[k];
-      if (p) {
-        if (_.isArray(p)) {
-          for (var j = 0, len = p.length; j < len; j++) {
-            url_params.push(k + '[]=' + encodeURIComponent(p[j]));
-          }
-        } else {
-          var q = encodeURIComponent(p);
-          q = q.replace(/%7Bx%7D/g, '{x}').replace(/%7By%7D/g, '{y}').replace(/%7Bz%7D/g, '{z}');
-          url_params.push(k + '=' + q);
-        }
-      }
-    }
-    return url_params.join('&');
   },
 
   /**

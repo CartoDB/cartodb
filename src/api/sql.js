@@ -141,6 +141,7 @@ SQL.prototype.execute = function(sql, vars, options, callback) {
     var errors = res && JSON.parse(res);
     promise.trigger('error', errors && errors.error, resp)
     if(error) error(resp);
+    if(callback) callback(resp);
   }
   params.success = function(resp, status, xhr) {
     // manage rewest
@@ -156,7 +157,7 @@ SQL.prototype.execute = function(sql, vars, options, callback) {
     setTimeout(function() {
       promise.trigger('done', resp, status, xhr);
       if(success) success(resp, status, xhr);
-      if(callback) callback(resp);
+      if(callback) callback(null, resp);
     }, 0);
   }
 
@@ -199,11 +200,12 @@ SQL.prototype.getBounds = function(sql, vars, options, callback) {
 
         var bounds = [[lat0, lon0], [lat1, lon1]];
         promise.trigger('done', bounds);
-        callback && callback(bounds);
+        callback && callback(null, bounds);
       }
     })
     .error(function(err) {
       promise.trigger('error', err);
+      callback && callback(err);
     })
 
   return promise;
@@ -385,7 +387,12 @@ SQL.prototype.describeString = function(sql, column, callback) {
     return normalizedStr.replace(/""/g, '"'); // removes duplicated quotes
   }
 
-  this.execute(query, function(data) {
+  this.execute(query, function(err, data) {
+    if (err) {
+      callback(err);
+      return;
+    }
+
     var row = data.rows[0];
     var weight = 0;
     var histogram = [];
@@ -404,7 +411,7 @@ SQL.prototype.describeString = function(sql, column, callback) {
 
     }
 
-    callback({
+    callback(null, {
       type: 'string',
       hist: histogram,
       distinct: row.uniq,
@@ -431,7 +438,12 @@ SQL.prototype.describeDate = function(sql, column, callback) {
     sql: sql
   });
 
-  this.execute(query, function(data) {
+  this.execute(query, function(err, data) {
+    if (err) {
+      callback(err);
+      return;
+    }
+
     var row = data.rows[0];
     var e = new Date(row.end_time);
     var s = new Date(row.start_time);
@@ -440,7 +452,7 @@ SQL.prototype.describeDate = function(sql, column, callback) {
 
     var steps = Math.min(row.moments, 1024);
 
-    callback({
+    callback(null, {
       type: 'date',
       start_time: s,
       end_time: e,
@@ -469,10 +481,15 @@ SQL.prototype.describeBoolean = function(sql, column, callback){
     sql: sql
   });
 
-  this.execute(query, function(data) {
+  this.execute(query, function(err, data) {
+    if (err) {
+      callback(err);
+      return;
+    }
+
     var row = data.rows[0];
 
-    callback({
+    callback(null, {
       type: 'boolean',
       null_ratio: row.null_ratio,
       true_ratio: row.true_ratio,
@@ -519,10 +536,15 @@ SQL.prototype.describeGeom = function(sql, column, callback) {
     }[g.toLowerCase()]
   };
 
-  this.execute(query, function(data) {
+  this.execute(query, function (err, data) {
+    if (err) {
+      callback(err);
+      return;
+    }
+
     var row = data.rows[0];
     var bbox = JSON.parse(row.bbox).coordinates[0]
-    callback({
+    callback(null, {
       type: 'geom',
       //lon,lat -> lat, lon
       bbox: [[bbox[0][0],bbox[0][1]], [bbox[2][0], bbox[2][1]]],
@@ -542,14 +564,19 @@ SQL.prototype.columns = function(sql, options, callback) {
   }
   var s = "select * from (" + sql + ") __wrap limit 0";
   var exclude = ['cartodb_id','latitude','longitude','created_at','updated_at','lat','lon','the_geom_webmercator'];
-  this.execute(s, function(data) {
+  this.execute(s, function(err, data) {
+    if (err) {
+      callback(err);
+      return;
+    }
+
     var t = {}
     for (var i in data.fields) {
       if (exclude.indexOf(i) === -1) {
         t[i] = data.fields[i].type;
       }
     }
-    callback(t);
+    callback(null, t);
   });
 };
 
@@ -598,11 +625,16 @@ SQL.prototype.describeFloat = function(sql, column, callback) {
     sql: sql
   });
 
-  this.execute(query, function(data) {
+  this.execute(query, function(err, data) {
+    if (err) {
+      callback(err);
+      return;
+    }
+
     var row = data.rows[0];
     var s = array_agg(row.hist);
     var h = array_agg(row.cat_hist);
-    callback({
+    callback(null, {
       type: 'number',
       cat_hist:
         _(h).map(function(row) {
@@ -643,12 +675,21 @@ SQL.prototype.describe = function(sql, column, options) {
   if(_.isFunction(fn)) {
     var _callback = fn;
   }
-  var callback = function(data) {
+  var callback = function(err, data) {
+    if (err) {
+      _callback(err);
+      return;
+    }
+
     data.column = column;
-    _callback(data);
+    _callback(null, data);
   }
   var s = "select * from (" + sql + ") __wrap limit 0";
-  this.execute(s, function(data) {
+  this.execute(s, function(err, data) {
+    if (err) {
+      callback(err);
+      return;
+    }
 
     var type = (options && options.type) ? options.type : data.fields[column].type;
 

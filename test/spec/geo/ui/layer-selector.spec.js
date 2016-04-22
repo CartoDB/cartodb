@@ -1,4 +1,5 @@
 var $ = require('jquery');
+var Backbone = require('backbone');
 var Map = require('../../../../src/geo/map');
 var CartoDBLayer = require('../../../../src/geo/map/cartodb-layer');
 var Template = require('../../../../src/core/template');
@@ -11,8 +12,7 @@ describe('geo/ui/layer-selector', function () {
 
   beforeEach(function() {
     // Map needs a WindshaftMap so we're setting up a fake one
-    var windshaftMap = jasmine.createSpyObj('windshaftMap', ['bind', 'isNamedMap', 'isAnonymousMap', 'createInstance', 'reload']);
-    windshaftMap.isAnonymousMap.and.returnValue(true);
+    var windshaftMap = jasmine.createSpyObj('windshaftMap', ['bind', 'createInstance', 'reload']);
 
     var map2 = new Map(null, {
       windshaftMap: windshaftMap
@@ -26,7 +26,8 @@ describe('geo/ui/layer-selector', function () {
     var mapView2 = new LeafletMapView({
       el: $("<div>"),
       map: map2,
-      layerViewFactory: new LeafletLayerViewFactory()
+      layerViewFactory: new LeafletLayerViewFactory(),
+      layerGroupModel: new Backbone.Model({ type: 'layergroup' })
     });
 
     layerSelector = new LayerSelector({

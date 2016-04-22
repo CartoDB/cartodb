@@ -13,7 +13,13 @@ module.exports = Model.extend({
   },
 
   url: function () {
-    return this.get('url') + '?' + 'bins=' + this.get('bins');
+    var params = [
+      'bins=' + this.get('bins')
+    ];
+    if (this.get('apiKey')) {
+      params.push('api_key=' + this.get('apiKey'));
+    }
+    return this.get('url') + '?' + params.join('&');
   },
 
   initialize: function () {

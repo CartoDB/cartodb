@@ -1,4 +1,5 @@
 var $ = require('jquery');
+var Backbone = require('backbone');
 var Search = require('../../../../src/geo/ui/search/search');
 var NOKIA = require('../../../../src/geo/geocoder/nokia-geocoder');
 var Map = require('../../../../src/geo/map');
@@ -15,7 +16,8 @@ describe('geo/ui/search', function () {
     this.mapView = new LeafletMapView({
       el: this.$el,
       map: this.map,
-      layerViewFactory: jasmine.createSpyObj('layerViewFactory', ['createLayerView'])
+      layerViewFactory: jasmine.createSpyObj('layerViewFactory', ['createLayerView']),
+      layerGroupModel: new Backbone.Model()
     });
     this.view = new Search({
       model: this.map,

@@ -1,4 +1,4 @@
-var VizJSON = require('../../../src/vis/vizjson');
+var VizJSON = require('../../../src/api/vizjson');
 
 describe('src/vis/vizjson', function () {
   it('should expose the vizjson attributes', function () {

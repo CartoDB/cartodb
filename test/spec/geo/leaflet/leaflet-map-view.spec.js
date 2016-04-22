@@ -1,5 +1,6 @@
 var $ = require('jquery');
 var _ = require('underscore');
+var Backbone = require('backbone');
 var L = require('leaflet');
 global.L = L;
 
@@ -28,7 +29,7 @@ describe('geo/leaflet/leaflet-map-view', function () {
     });
 
     // Map needs a WindshaftMap so we're setting up a fake one
-    var fakeWindshaftMap = jasmine.createSpyObj('windshaftMap', ['isNamedMap', 'isAnonymousMap', 'createInstance', 'bind']);
+    var fakeWindshaftMap = jasmine.createSpyObj('windshaftMap', ['createInstance', 'bind']);
 
     map = new Map(null, {
       windshaftMap: fakeWindshaftMap
@@ -38,7 +39,8 @@ describe('geo/leaflet/leaflet-map-view', function () {
     mapView = new LeafletMapView({
       el: container,
       map: map,
-      layerViewFactory: new LeafletLayerViewFactory()
+      layerViewFactory: new LeafletLayerViewFactory(),
+      layerGroupModel: new Backbone.Model({ type: 'layergroup' })
     });
 
     var layerURL = 'http://{s}.tiles.mapbox.com/v3/cartodb.map-1nh578vv/{z}/{x}/{y}.png';
@@ -302,7 +304,8 @@ describe('geo/leaflet/leaflet-map-view', function () {
 
       beforeEach(function () {
         var layer = new GMapsBaseLayer(layerOpts);
-        view = mapView.createLayer(layer);
+        map.layers.add(layer);
+        view = mapView.getLayerViewByLayerCid(layer.cid);
       });
 
       it("should have a tileUrl based on substitute's template URL", function () {
@@ -377,7 +380,8 @@ describe('geo/leaflet/leaflet-map-view', function () {
         el: container,
         map: map,
         map_object: leafletMap,
-        layerViewFactory: new LeafletLayerViewFactory()
+        layerViewFactory: new LeafletLayerViewFactory(),
+        layerGroupModel: new Backbone.Model({ type: 'layergroup' })
       });
 
       // Add a CartoDB layer with some custom attribution
@@ -406,7 +410,8 @@ describe('geo/leaflet/leaflet-map-view', function () {
         el: container,
         map: map,
         map_object: leafletMap,
-        layerViewFactory: new LeafletLayerViewFactory()
+        layerViewFactory: new LeafletLayerViewFactory(),
+        layerGroupModel: new Backbone.Model({ type: 'layergroup' })
       });
 
       // Add a CartoDB layer with some custom attribution
@@ -431,7 +436,8 @@ describe('geo/leaflet/leaflet-map-view', function () {
     var mapView = new LeafletMapView({
       el: container,
       map: map,
-      layerViewFactory: new LeafletLayerViewFactory()
+      layerViewFactory: new LeafletLayerViewFactory(),
+      layerGroupModel: new Backbone.Model()
     });
 
     expect(mapView._leafletMap.dragging.enabled()).toBeFalsy();

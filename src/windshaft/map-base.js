@@ -126,7 +126,19 @@ var WindshaftMap = Backbone.Model.extend({
   },
 
   getDataviewMetadata: function (dataviewId) {
+    // Try to get dataview's metadata from this.get('metadata').dataview
     var dataviews = this.get('metadata') && this.get('metadata').dataviews;
+    if (dataviews && dataviews[dataviewId]) {
+      return dataviews[dataviewId];
+    }
+
+    // Try to get dataview's metatadta from the 'widgets' dictionary inside the metadata of each of the layers
+    dataviews = {};
+    var layersDataviews = _.compact(_.map(this.get('metadata').layers, function (layer) { return layer.widgets; }));
+    _.each(layersDataviews, function (layerDataviews) {
+      _.extend(dataviews, layerDataviews);
+    });
+
     if (dataviews && dataviews[dataviewId]) {
       return dataviews[dataviewId];
     }

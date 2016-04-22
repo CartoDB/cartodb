@@ -73,7 +73,7 @@ describe Carto::Analysis do
     end
 
     it 'triggers notify_map_change on related map(s)' do
-      map = mock()
+      map = mock
       map.stubs(:id).returns(@map.id)
       map.expects(:notify_map_change).once
       Map.stubs(:where).with(id: map.id).returns([map])

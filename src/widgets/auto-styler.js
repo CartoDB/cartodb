@@ -4,7 +4,7 @@ var AutoStyler = cdb.core.Model.extend({
   initialize: function (dataviewModel) {
     this.dataviewModel = dataviewModel;
     this.colors = new CategoryColors();
-    this.vector = !!this.dataviewModel._dataProvider;
+    this.layer = this.dataviewModel.layer;
   },
 
   getStyle: function () {
@@ -23,8 +23,8 @@ var AutoStyler = cdb.core.Model.extend({
     var colors = ['YlGnBu', 'Greens', 'Reds', 'Blues'];
     var color = colors[Math.floor(Math.random() * colors.length)];
     var stylesByGeometry = AutoStyler.STYLE_TEMPLATE;
-    if (this.vector) {
-      var geometryType = this._getGeometryType();
+    var geometryType = this.layer.getGeometryType();
+    if (geometryType) {
       style = this._getHistGeometry(geometryType)
         .replace('{{layername}}', '#layer{');
     } else {
@@ -58,8 +58,8 @@ var AutoStyler = cdb.core.Model.extend({
     var style = '';
     var defColor = this.colors.getColorByCategory('Other');
     var stylesByGeometry = AutoStyler.STYLE_TEMPLATE;
-    if (this.vector) {
-      var geometryType = this._getGeometryType();
+    var geometryType = this.layer.getGeometryType();
+    if (geometryType) {
       var ramp = this._generateCategoryRamp(geometryType);
       style = stylesByGeometry[geometryType]
         .replace('{{ramp}}', ramp)
@@ -78,19 +78,6 @@ var AutoStyler = cdb.core.Model.extend({
 
   _getLayerHeader: function (symbol) {
     return '#' + this.dataviewModel.layer.get('layer_name') + '[mapnik-geometry-type=' + AutoStyler.MAPNIK_MAPPING[symbol] + ']{';
-  },
-
-  _getGeometryType: function () {
-    var index = this.dataviewModel._dataProvider._layerIndex;
-    var sublayer = this.dataviewModel._dataProvider._vectorLayerView;
-    var style = sublayer.styles[index];
-    if (style.indexOf('marker') > -1) {
-      return 'marker';
-    } else if (style.indexOf('polygon') > -1) {
-      return 'polygon';
-    } else if (style.indexOf('line') > -1) {
-      return 'line';
-    }
   },
 
   _generateCategoryRamp: function (sym) {

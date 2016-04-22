@@ -1,7 +1,7 @@
 var _ = require('underscore');
 var WidgetModel = require('../widget-model');
 var LockedCategoriesCollection = require('./locked-categories-collection');
-var AutoStyler = require('../auto-styler');
+var AutoStylerFactory = require('../auto-style/factory');
 
 /**
  * Model for a category widget
@@ -20,7 +20,7 @@ module.exports = WidgetModel.extend({
   initialize: function () {
     WidgetModel.prototype.initialize.apply(this, arguments);
     this.lockedCategories = new LockedCategoriesCollection();
-    this.autoStyler = new AutoStyler(this.dataviewModel);
+    this.autoStyler = AutoStylerFactory.get(this.dataviewModel);
     this.listenTo(this.dataviewModel, 'change:allCategoryNames', this._onDataviewAllCategoryNamesChange);
     this.on('change:locked', this._onLockedChange, this);
     this.on('change:collapsed', this._onCollapsedChange, this);

@@ -87,6 +87,36 @@ module Carto
       @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_true
     end
 
+    it 'should link raster tables' do
+      run_in_user_database(%{
+        CREATE TABLE manolo_raster ("cartodb_id" uuid, "the_raster_webmercator" raster);
+        CREATE TRIGGER test_quota_per_row
+          BEFORE INSERT OR UPDATE
+          ON manolo_raster
+          FOR EACH ROW
+          EXECUTE PROCEDURE cdb_checkquota('0.001', '-1', 'public');
+      })
+
+      @user.tables.count.should eq 0
+      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_false
+
+      @ghost_tables_manager.link_ghost_tables_synchronously
+
+      @user.tables.count.should eq 1
+      @user.tables.first.name.should == 'manolo_raster'
+
+      run_in_user_database(%{
+        DROP TABLE manolo_raster;
+      })
+
+      @user.tables.count.should eq 1
+      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_false
+      @ghost_tables_manager.link_ghost_tables_synchronously
+
+      @user.tables.count.should eq 0
+      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_true
+    end
+
     it 'should regenerate user tables with bad table_ids' do
       run_in_user_database(%{
         CREATE TABLE manoloescobar ("description" text);

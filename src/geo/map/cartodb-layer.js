@@ -15,7 +15,14 @@ var CartoDBLayer = LayerModelBase.extend({
     options = options || {};
     this._map = options.map;
     this.set('initialStyle', attrs.cartocss)
-    this.bind('change:visible change:sql change:cartocss', this._onAttributeChanged, this);
+    this.bind('change:visible change:sql', this._onAttributeChanged, this);
+    this.bind('change:cartocss', this._setCartoCSS);
+  },
+
+  _setCartoCSS: function (layer, cartocss) {
+    if (!layer._dataProvider) {
+      layer._onAttributeChanged();
+    }
   },
 
   _onAttributeChanged: function () {
@@ -25,15 +32,26 @@ var CartoDBLayer = LayerModelBase.extend({
   },
 
   restoreCartoCSS: function () {
-    this.set('cartocss', this.get('initialStyle'))
+    this.set('cartocss', this.get('initialStyle'));
   },
 
-  hasInteraction: function() {
+  hasInteraction: function () {
     return this.isVisible() && (this.containInfowindow() || this.containTooltip());
   },
 
-  isVisible: function() {
+  isVisible: function () {
     return this.get('visible');
+  },
+
+  getGeometryType: function () {
+    var style = this.get('cartocss');
+    if (style.indexOf('marker') > -1) {
+      return 'marker';
+    } else if (style.indexOf('polygon') > -1) {
+      return 'polygon';
+    } else if (style.indexOf('line') > -1) {
+      return 'line';
+    }
   },
 
   getTooltipFieldNames: function() {

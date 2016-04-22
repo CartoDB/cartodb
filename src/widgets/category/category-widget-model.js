@@ -55,24 +55,12 @@ module.exports = WidgetModel.extend({
 
   autoStyle: function () {
     var style = this.autoStyler.getStyle();
-    if (!this.dataviewModel._dataProvider) {
-      this.dataviewModel.layer.set('cartocss', style);
-    } else {
-      var index = this.dataviewModel._dataProvider._layerIndex;
-      var sublayer = this.dataviewModel._dataProvider._vectorLayerView;
-      sublayer.setCartoCSS(index, style, true);
-    }
+    this.dataviewModel.layer.set('cartocss', style);
     this.dataviewModel.set('autoStyle', true);
   },
 
   cancelAutoStyle: function () {
-    if (!this.dataviewModel._dataProvider) {
-      this.dataviewModel.layer.restoreCartoCSS();
-    } else {
-      var index = this.dataviewModel._dataProvider._layerIndex;
-      var sublayer = this.dataviewModel._dataProvider._vectorLayerView;
-      sublayer.renderers[index].restoreCartoCSS(true);
-    }
+    this.dataviewModel.layer.restoreCartoCSS();
     this.dataviewModel.set('autoStyle', false);
   },
 

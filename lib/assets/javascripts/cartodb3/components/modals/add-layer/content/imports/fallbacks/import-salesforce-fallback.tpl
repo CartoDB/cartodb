@@ -1,5 +1,5 @@
 <div class="ImportPanel-header">
-  <div class="LayoutIcon ImportPanel-headerIcon">
+  <div class="LayoutIcon u-bSpace--xl">
     <i class="CDB-IconFont CDB-IconFont-gift"></i>
   </div>
   <h3 class="CDB-Text CDB-Size-large u-mainTextColor u-secondaryTextColor u-bSpace--m">SalesForce <%- _t('components.modals.add-layer.imports.connector') %></h3>

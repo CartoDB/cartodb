@@ -6,6 +6,9 @@ describe('widgets/category/category-widget-model', function () {
     var vis = specHelper.createDefaultVis();
     var layer = vis.map.layers.first();
     layer.restoreCartoCSS = jasmine.createSpy('restore');
+    layer.getGeometryType = function () {
+      return 'polygon';
+    };
     this.dataviewModel = vis.dataviews.createCategoryModel(layer, {
       column: 'col'
     });

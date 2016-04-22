@@ -1,5 +1,5 @@
 var _ = require('underscore');
-var CategoryColors = require('../../../src/widgets/category/category-colors');
+var CategoryColors = require('../../../src/widgets/auto-style/category-colors');
 
 describe('widgets/category/category-colors', function () {
   beforeEach(function () {

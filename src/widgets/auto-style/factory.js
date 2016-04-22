@@ -10,4 +10,4 @@ module.exports = {
       throw new Error('dataview type not supported');
     }
   }
-}
+};

@@ -53,7 +53,6 @@ var WindshaftMap = Backbone.Model.extend({
 
     var sourceLayerId = options.sourceLayerId;
     var forceFetch = options.forceFetch;
-    var styles = options.styles;
 
     var params = {
       stat_tag: this.get('statTag')

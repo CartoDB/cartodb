@@ -12,11 +12,10 @@ module.exports = Backbone.Collection.extend({
         this.each(function (mdl) {
           if (mdl !== m && mdl.layer.get('layer_name') === m.layer.get('layer_name') && mdl.get('autoStyle')) {
             mdl.set('autoStyle', false);
-            delete mdl.tempStyle
+            delete mdl.tempStyle;
           }
         });
       }
-
     }, this);
   },
 
@@ -24,10 +23,10 @@ module.exports = Backbone.Collection.extend({
     var tempStyles = {};
     this.each(function (mdl) {
       if (mdl.tempStyle) {
-        var layers = mdl.layer.collection.filter(function (l) { return l.get('type') === 'CartoDB' })
-        tempStyles[layers.indexOf(mdl.layer)] = mdl.tempStyle
+        var layers = mdl.layer.collection.filter(function (l) { return l.get('type') === 'CartoDB'; });
+        tempStyles[layers.indexOf(mdl.layer)] = mdl.tempStyle;
       }
     });
-    return tempStyles
+    return tempStyles;
   }
 });

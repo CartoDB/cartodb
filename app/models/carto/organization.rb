@@ -53,8 +53,8 @@ module Carto
       Carto::SearchTweet.twitter_imports_count(users.joins(:search_tweets), date_from, date_to)
     end
 
-    def is_owner_user?(user)
-      self.owner_id == user.id
+    def owner?(user)
+      owner_id == user.id
     end
 
     def remaining_geocoding_quota(options = {})

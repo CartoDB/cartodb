@@ -44,8 +44,6 @@ module CartoDB
       PERMISSION_READONLY = CartoDB::Permission::ACCESS_READONLY
       PERMISSION_READWRITE = CartoDB::Permission::ACCESS_READWRITE
 
-      DEFAULT_URL_OPTIONS = 'title=true&description=true&search=false&shareable=true&cartodb_logo=true&layer_selector=false&legends=false&scrollwheel=true&fullscreen=true&sublayer_options=1&sql='
-
       AUTH_DIGEST = '1211b3e77138f6e1724721f1ab740c9c70e66ba6fec5e989bb6640c4541ed15d06dbd5fdcbd3052b'
       TOKEN_DIGEST = '6da98b2da1b38c5ada2547ad2c3268caa1eb58dc20c9144ead844a2eda1917067a06dcb54833ba2'
 
@@ -72,7 +70,6 @@ module CartoDB
       attribute :updated_at,          Time
       attribute :encrypted_password,  String, default: nil
       attribute :password_salt,       String, default: nil
-      attribute :url_options,         String, default: DEFAULT_URL_OPTIONS
       attribute :user_id,             String
       attribute :permission_id,       String
       attribute :locked,              Boolean, default: false
@@ -420,7 +417,15 @@ module CartoDB
       # @param permission_type String PERMISSION_xxx
       def has_permission?(user, permission_type)
         return is_owner?(user) if permission_id.nil?
-        is_owner?(user) || permission.is_permitted?(user, permission_type)
+        is_owner?(user) || permission.permitted?(user, permission_type)
+      end
+
+      def can_copy?(user)
+        !raster_kind? && has_permission?(user, PERMISSION_READONLY)
+      end
+
+      def raster_kind?
+        kind == KIND_RASTER
       end
 
       def users_with_permissions(permission_types)

@@ -5,6 +5,8 @@
     <label class="u-iBlock u-lSpace"><%- _t('components.modals.add-layer.footer.guessing-desc') %></label>
   </div>
 <% } else if (!customHosted) { %>
-  <%- _t('components.modals.add-layer.footer.twitter-desc') %>
-  <a href="mailto:support@cartodb.com"><%- _t('components.modals.add-layer.footer.contact-team') %></a>
+  <span class="CDB-Text CDB-Size-large">
+    <%- _t('components.modals.add-layer.footer.twitter-desc') %>
+    <a href="mailto:support@cartodb.com"><%- _t('components.modals.add-layer.footer.contact-team') %></a>
+  </span>
 <% } %>

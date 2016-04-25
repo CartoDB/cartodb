@@ -46,9 +46,11 @@
       <span class="DatasetsList-itemTimeDiff DefaultTimeDiff">
         <span class="CDB-Text CDB-Size-small u-altTextColor"><%- timeDiff %></span>
         <% if (!isOwner) { %>
-          <%- _t('components.modals.add-layer.datasets.item.by') %>
-          <span class="UserAvatar">
-            <img class="UserAvatar-img UserAvatar-img--smaller" src="<%- owner.avatar_url %>" alt="<%- owner.name || owner.username  %>" title="<%- owner.name || owner.username  %>" />
+          <span class="CDB-Text CDB-Size-small u-altTextColor u-lSpace--xl">
+            <%- _t('components.modals.add-layer.datasets.item.by') %>
+          </span>
+          <span class="DatasetsList-avatar">
+            <img class="DatasetsList-avatarImg" src="<%- owner.avatar_url %>" alt="<%- owner.name || owner.username  %>" title="<%- owner.name || owner.username  %>" />
           </span>
         <% } %>
       </span>

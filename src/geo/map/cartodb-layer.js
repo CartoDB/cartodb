@@ -14,7 +14,9 @@ var CartoDBLayer = LayerModelBase.extend({
     options = options || {};
 
     this._map = options.map;
-    this.set('initialStyle', attrs.cartocss);
+    if (attrs && attrs.cartocss) {
+      this.set('initialStyle', attrs.cartocss);
+    }
     this.bind('change:visible change:sql change:source', this._reloadMap, this);
     this.bind('change:cartocss', this._setCartoCSS);
   },

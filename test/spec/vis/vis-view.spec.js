@@ -155,7 +155,7 @@ describe('vis/vis-view', function () {
       return new View();
     });
     var vis = this.createNewVis({el: this.container});
-    this.mapConfig.overlays = [ {type: 'jaja'}];
+    this.mapConfig.overlays = [{type: 'jaja'}];
     vis.load(new VizJSON(this.mapConfig));
     expect(_map).not.toEqual(undefined);
   });
@@ -301,7 +301,7 @@ describe('vis/vis-view', function () {
   });
 
   describe('api', function () {
-    it ('should respond to getLayers', function() {
+    it('should respond to getLayers', function () {
       this.mapConfig.layers = [{
         type: 'tiled',
         options: {
@@ -309,9 +309,9 @@ describe('vis/vis-view', function () {
         }
       }];
       this.visView.load(new VizJSON(this.mapConfig));
-      expect(vis.getLayers().length).toBe(1);
-    })
-    it ('should respond to getLayerViews', function() {
+      expect(this.visView.getLayers().length).toBe(1);
+    });
+    it('should respond to getLayerViews', function () {
       this.mapConfig.layers = [{
         type: 'tiled',
         options: {
@@ -319,8 +319,8 @@ describe('vis/vis-view', function () {
         }
       }];
       this.visView.load(new VizJSON(this.mapConfig));
-      expect(vis.getLayerViews().length).toBe(1);
-    })
+      expect(this.visView.getLayerViews().length).toBe(1);
+    });
   });
 
   describe('Legends', function () {

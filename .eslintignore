@@ -115,7 +115,6 @@
 **/src/vis/vis/infowindow-template.js
 **/src/vis/vis/overlay.js
 **/src/vis/vis/overlays.js
-**/src/vis/vis.js
 **/test/fail-tests-if-have-errors-in-src.js
 **/test/install-source-map-support.js
 **/test/spec/api/sql.spec.js
@@ -160,4 +159,3 @@
 **/test/spec/ui/common/table.spec.js
 **/test/spec/ui/common/tabpane.spec.js
 **/test/spec/vis/overlay_spec.js
-**/test/spec/vis/vis.spec.js

@@ -308,7 +308,7 @@ var Vis = View.extend({
     var layers = [];
 
     // flatten layers (except baselayer)
-    var layers = _.map(this.getLayerViews().slice(1), function (layer) {
+    layers = _.map(this.getLayerViews().slice(1), function (layer) {
       if (layer.getSubLayers) {
         return layer.getSubLayers();
       }
@@ -317,7 +317,7 @@ var Vis = View.extend({
 
     layers = _.flatten(layers);
 
-    for (i = 0; i < Math.min(options.sublayer_options.length, layers.length); ++i) {
+    for (var i = 0; i < Math.min(options.sublayer_options.length, layers.length); ++i) {
       var o = options.sublayer_options[i];
       var subLayer = layers[i];
       var legend = this.legends && this.legends.getLegendByIndex(i);
@@ -359,7 +359,7 @@ var Vis = View.extend({
 
       // Decide to create or not the custom overlays
       if (type === 'image' || type === 'text' || type === 'annotation') {
-        var isDevice = data.options.device == 'mobile' ? true : false;
+        var isDevice = (data.options.device === 'mobile');
         if (this.mobile !== isDevice) return;
         if (!options[type] && options[type] !== undefined) {
           return;
@@ -367,10 +367,11 @@ var Vis = View.extend({
       }
 
       // We add the header overlay
+      var overlay;
       if (type === 'header') {
-        var overlay = this._addHeader(data, vis_data);
+        overlay = this._addHeader(data, vis_data);
       } else {
-        var overlay = this.addOverlay(data);
+        overlay = this.addOverlay(data);
       }
 
       // We show/hide the overlays
@@ -378,15 +379,15 @@ var Vis = View.extend({
 
       var opt = data.options;
 
-      if (type == 'layer_selector' && options[type] || type == 'layer_selector' && overlay.model.get('display') && options[type] == undefined) {
+      if (type === 'layer_selector' && options[type] || type === 'layer_selector' && overlay.model.get('display') && options[type] === undefined) {
         overlay.show();
       }
 
-      if (type == 'fullscreen' && options[type] || type == 'fullscreen' && opt.display && options[type] == undefined) {
+      if (type === 'fullscreen' && options[type] || type === 'fullscreen' && opt.display && options[type] === undefined) {
         overlay.show();
       }
 
-      if (type == 'search' && options[type] || type == 'search' && opt.display && options[type] == undefined) {
+      if (type === 'search' && options[type] || type === 'search' && opt.display && options[type] === undefined) {
         overlay.show();
       }
 
@@ -416,14 +417,14 @@ var Vis = View.extend({
     _.each(layers.slice(1), function (lyr) {
       if (lyr.type === 'layergroup') {
         _.each(lyr.options.layer_definition.layers, function (l) {
-          options.sublayer_options.push({ visible: ( l.visible !== undefined ? l.visible : true) });
+          options.sublayer_options.push({ visible: (l.visible !== undefined ? l.visible : true) });
         });
       } else if (lyr.type === 'namedmap') {
         _.each(lyr.options.named_map.layers, function (l) {
-          options.sublayer_options.push({ visible: ( l.visible !== undefined ? l.visible : true) });
+          options.sublayer_options.push({ visible: (l.visible !== undefined ? l.visible : true) });
         });
       } else if (lyr.type === 'torque') {
-        options.sublayer_options.push({ visible: ( lyr.options.visible !== undefined ? lyr.options.visible : true) });
+        options.sublayer_options.push({ visible: (lyr.options.visible !== undefined ? lyr.options.visible : true) });
       }
     });
   },
@@ -509,14 +510,12 @@ var Vis = View.extend({
 
   createLegendView: function (layers) {
     var legends = [];
-    var self = this;
     for (var i = layers.length - 1; i >= 0; --i) {
       var cid = layers.at(i).cid;
       var layer = layers.at(i).attributes;
       if (layer.visible) {
         var layerView = this.mapView.getLayerViewByLayerCid(cid);
         if (layerView) {
-          var layerView = this.mapView.getLayerViewByLayerCid(cid);
           legends.push(this._createLayerLegendView(layer, layerView));
         }
       }
@@ -527,13 +526,14 @@ var Vis = View.extend({
   _createLayerLegendView: function (layer, layerView) {
     var self = this;
     var legends = [];
+    var sublayers;
     if (layer.options && layer.options.layer_definition) {
-      var sublayers = layer.options.layer_definition.layers;
+      sublayers = layer.options.layer_definition.layers;
       _(sublayers).each(function (sub, i) {
         legends.push(self._createLegendView(sub, layerView.getSubLayer(i)));
       });
     } else if (layer.options && layer.options.named_map && layer.options.named_map.layers) {
-      var sublayers = layer.options.named_map.layers;
+      sublayers = layer.options.named_map.layers;
       _(sublayers).each(function (sub, i) {
         legends.push(self._createLegendView(sub, layerView.getSubLayer(i)));
       });
@@ -604,15 +604,15 @@ var Vis = View.extend({
   /**
    * @return Array of {LayerModel}
    */
-  getLayers: function() {
+  getLayers: function () {
     return _.clone(this.map.layers.models);
   },
-  
+
   /**
    * @param {Integer} index Layer index (including base layer if present)
    * @return {LayerModel}
    */
-  getLayer: function(index) {
+  getLayer: function (index) {
     return this.map.layers.at(index);
   },
 
@@ -622,13 +622,13 @@ var Vis = View.extend({
 
   getOverlay: function (type) {
     return _(this.overlays).find(function (v) {
-      return v.type == type;
+      return v.type === type;
     });
   },
 
   getOverlaysByType: function (type) {
     return _(this.overlays).filter(function (v) {
-      return v.type == type;
+      return v.type === type;
     });
   },
 
@@ -667,7 +667,7 @@ var Vis = View.extend({
     var f = [];
     fields = fields.concat(options.extraFields);
     for (var i = 0; i < fields.length; ++i) {
-      f.push({ name: fields, order: i});
+      f.push({ name: fields, order: i });
     }
 
     var infowindowModel = new InfowindowModel({
@@ -688,10 +688,10 @@ var Vis = View.extend({
 
     layer.bind(options.triggerEvent, function (e, latlng, pos, data, layer) {
       var render_fields = [];
-      var d;
       for (var f = 0; f < fields.length; ++f) {
         var field = fields[f];
-        if (d = data[field]) {
+        var d = data[field];
+        if (d) {
           render_fields.push({
             title: field,
             value: d,

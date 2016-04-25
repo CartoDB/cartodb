@@ -303,14 +303,13 @@ describe Carto::Api::WidgetsController do
         @visualization = nil
       end
 
-      # TODO: #7200
-      xit 'contains widget data' do
+      it 'contains widget data' do
         parent_mock = mock
         parent_mock.stubs(:vizjson_config).returns(tiler: { filter: '' })
         parent_mock.stubs(:username).returns(@user1.username)
 
         template = CartoDB::NamedMapsWrapper::NamedMap.get_template_data(@visualization, parent_mock)
-        widget_options = template[:layergroup][:dataviews]
+        widget_options = template[:layergroup][:layers][0][:options][:widgets]
         widget_options.should_not be_nil
         widget_options.length.should == 1
         widget_options.each do |k, v|

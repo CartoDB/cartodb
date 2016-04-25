@@ -248,7 +248,7 @@ describe('src/api/create-vis', function () {
       }, 25);
     });
 
-    it('should NOT instantiate map if skipMapInstantiation options is set', function (done) {
+    it('should NOT instantiate map if skipMapInstantiation options is set to true', function (done) {
       this.vis = createVis('domId', fakeVizJSON, {
         skipMapInstantiation: true
       });

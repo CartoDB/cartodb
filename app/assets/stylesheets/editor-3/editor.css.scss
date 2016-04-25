@@ -21,10 +21,19 @@
 }
 .Editor-panel {
   @include transition(width, 300ms, ease-in-out);
-  width: 344px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
   height: 100vh;
   padding: 25px;
   box-sizing: border-box;
+}
+.Editor-panelWrapper {
+  position: relative;
+  width: 344px;
 }
 .Editor-panel.is-larger {
   width: 488px;
@@ -34,4 +43,23 @@
 }
 .CDB-Dashboard-canvas {
   @include block-shadow();
+}
+.Editor-panel .ps-scrollbar-y-rail {
+  right: 0 !Important;
+  width: 2px !Important; // Resets standard scroll track color
+  background: #EEE;
+  z-index: 3;
+}
+.Editor-panel .ps-scrollbar-y {
+  width: 2px !Important; // Resets standard scroll bar color
+  background: #AAA;
+}
+.Editor-panel .ps-scrollbar-x-rail {
+  height: 2px !Important; // Resets standard scroll track color
+  background: #EEE;
+  z-index: 3;
+}
+.Editor-panel .ps-scrollbar-x {
+  height: 2px !Important; // Resets standard scroll bar color
+  background: #AAA;
 }

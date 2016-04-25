@@ -8,6 +8,7 @@ require_relative '../carto/api/visualization_presenter'
 require_relative '../../helpers/embed_redis_cache'
 require_dependency 'static_maps_url_helper'
 require_dependency 'carto/user_db_size_cache'
+require_dependency 'carto/ghost_tables_manager'
 
 class Admin::VisualizationsController < Admin::AdminController
   include CartoDB, VisualizationsControllerHelper
@@ -439,15 +440,11 @@ class Admin::VisualizationsController < Admin::AdminController
   private
 
   def link_ghost_tables
-    return true unless current_user.present?
+    return unless current_user.has_feature_flag?('ghost_tables')
 
-    if current_user.search_for_modified_table_names && current_user.has_feature_flag?('ghost_tables')
-      # this should be removed from there once we have the table triggers enabled in cartodb-postgres extension
-      # test if there is a job already for this
-      if !current_user.link_ghost_tables_working
-        ::Resque.enqueue(::Resque::UserJobs::SyncTables::LinkGhostTables, current_user.id)
-      end
-    end
+    # This call will trigger ghost tables synchronously if there's risk of displaying a stale table
+    # or asynchronously otherwise.
+    Carto::GhostTablesManager.new(current_user.id).link_ghost_tables
   end
 
   def user_metadata_propagation

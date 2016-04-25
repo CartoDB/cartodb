@@ -132,6 +132,19 @@ describe Carto::Api::VizJSON3Presenter do
       named_named_vizjson = v3_presenter.to_vizjson.reject { |k, _| k == :updated_at }
       named_named_vizjson.should eq named_vizjson
     end
+
+    it 'includes analyses information without including sources parameters' do
+      analysis = FactoryGirl.create(:analysis_with_source, visualization: @visualization, user: @user_1)
+      analysis.analysis_definition_json[:params].should_not be_nil
+      @visualization.reload
+      v3_presenter = Carto::Api::VizJSON3Presenter.new(@visualization, nil)
+      named_vizjson = v3_presenter.to_vizjson
+      analyses_json = named_vizjson[:analyses]
+      analyses_json.should_not be_nil
+      source_analysis_definition = analyses_json[0][:params][:source]
+      source_analysis_definition[:type].should eq 'source'
+      source_analysis_definition[:params].should be_nil
+    end
   end
 
   describe 'analyses' do

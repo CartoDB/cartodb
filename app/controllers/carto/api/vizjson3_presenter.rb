@@ -112,7 +112,9 @@ module Carto
           user:           user_info_vizjson(user)
         }
 
-        unless display_named_map?(@visualization, forced_privacy_version)
+        if display_named_map?(@visualization, forced_privacy_version)
+          vizjson[:analyses] = @visualization.analyses.map { |a| named_map_analysis_json(a) }
+        else
           vizjson[:analyses] = @visualization.analyses.map(&:analysis_definition_json)
         end
 
@@ -219,6 +221,20 @@ module Carto
             VizJSON3LayerPresenter.new(layer, options, configuration).to_vizjson
           end
         end
+      end
+
+      def named_map_analysis_json(analysis)
+        analysis_definition_json_without_sources(analysis.analysis_definition_json)
+      end
+
+      def analysis_definition_json_without_sources(analysis_definition_json)
+        if analysis_definition_json[:type] == 'source'
+          analysis_definition_json.delete(:params)
+        elsif analysis_definition_json[:params] && analysis_definition_json[:params][:source]
+          analysis_definition_json_without_sources(analysis_definition_json[:params][:source])
+        end
+        byebug
+        analysis_definition_json
       end
 
       def configuration

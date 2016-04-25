@@ -12,6 +12,7 @@ describe Carto::Api::AnalysesController do
     @user = FactoryGirl.create(:carto_user)
     @user2 = FactoryGirl.create(:carto_user)
     @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
+    bypass_named_maps
     @analysis = FactoryGirl.create(:source_analysis, visualization_id: @visualization.id, user_id: @user.id)
   end
 
@@ -67,6 +68,7 @@ describe Carto::Api::AnalysesController do
     end
 
     it 'returns existing analysis by json first id with uuid ids' do
+      bypass_named_maps
       analysis2 = FactoryGirl.create(
         :source_analysis,
         visualization_id: @visualization.id,
@@ -96,6 +98,7 @@ describe Carto::Api::AnalysesController do
     end
 
     it 'creates new analysis' do
+      bypass_named_maps
       post_json create_analysis_url(@user, @visualization), payload do |response|
         response.status.should eq 201
         response.body[:id].should_not be_nil
@@ -188,6 +191,7 @@ describe Carto::Api::AnalysesController do
       @analysis.reload
       @analysis.analysis_definition_json[:id].should_not eq new_payload[:analysis_definition][:id]
       @analysis.analysis_definition_json[new_key].should be_nil
+      bypass_named_maps
 
       put_json viz_analysis_url(@user, @visualization, @analysis), new_payload do |response|
         response.status.should eq 200
@@ -267,6 +271,7 @@ describe Carto::Api::AnalysesController do
 
   describe '#destroy' do
     it 'destroys existing analysis' do
+      bypass_named_maps
       delete_json viz_analysis_url(@user, @visualization, @analysis) do |response|
         response.status.should eq 200
         Carto::Analysis.where(id: @analysis.id).first.should be_nil

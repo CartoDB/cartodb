@@ -159,7 +159,11 @@ module.exports = cdb.core.View.extend({
     if (this.model.get('lo_index') === 0 && this.model.get('hi_index') === 0) {
       return;
     }
+    this.selectRange(this.model.get('lo_index'), this.model.get('hi_index'));
+    this._adjustBrushHandles();
+    this._selectBars();
     this.trigger('range_updated', this.model.get('lo_index'), this.model.get('hi_index'));
+    this.trigger('on_brush_end', this.model.get('lo_index'), this.model.get('hi_index'));
   },
 
   _onChangeWidth: function () {
@@ -596,7 +600,7 @@ module.exports = cdb.core.View.extend({
     var lo = extent[0];
     var hi = extent[1];
 
-    this.model.set({ lo_index: this._getLoBarIndex(), hi_index: this._getHiBarIndex() });
+    //this.model.set({ lo_index: this._getLoBarIndex(), hi_index: this._getHiBarIndex() });
 
     this.chart.selectAll('.CDB-Chart-bar').classed('is-selected', function (d, i) {
       var a = Math.floor(i * self.barWidth);
@@ -713,12 +717,8 @@ module.exports = cdb.core.View.extend({
           }
         }
 
-        self._selectRange(loPosition, hiPosition);
         self.model.set({ lo_index: loBarIndex, hi_index: hiBarIndex });
-        self._adjustBrushHandles();
-        self._selectBars();
 
-        self.trigger('on_brush_end', self.model.get('lo_index'), self.model.get('hi_index'));
       }
 
       if (d3.event.sourceEvent && loPosition === undefined && hiPosition === undefined) {
@@ -728,8 +728,6 @@ module.exports = cdb.core.View.extend({
         hiPosition = self._getBarPosition(barIndex + 1);
 
         self.model.set({ lo_index: barIndex, hi_index: barIndex + 1 });
-        self._selectRange(loPosition, hiPosition);
-        self.trigger('on_brush_end', self.model.get('lo_index'), self.model.get('hi_index'));
       }
     }
 

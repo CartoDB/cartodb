@@ -171,6 +171,16 @@ module Carto
       user.tables.where(name: name).first
     end
 
+    def user_table
+      user.tables.where(name: name, table_id: table_id).first
+    end
+
+    def can_drop?
+      carto_user_table = Carto::UserTable.find(user_table.id)
+
+      carto_user_table.dependent_visualizations.empty? && carto_user_table.non_dependent_visualizations.empty?
+    end
+
     def create_user_table
       CartoDB::Logger.debug(message: 'ghost tables',
                             action: 'linking new table',
@@ -216,6 +226,15 @@ module Carto
     end
 
     def drop_user_table
+      unless can_drop?
+        CartoDB::Logger.warning(message: 'Ghost tables: Ghost table consented',
+                                user: @user,
+                                table_name: name,
+                                table_id: id)
+
+        return
+      end
+
       CartoDB::Logger.debug(message: 'ghost tables',
                             action: 'unlinking dropped table',
                             user: @user,
@@ -223,7 +242,7 @@ module Carto
                             table_id: id)
 
       # TODO: Use Carto::UserTable when it's ready and stop the Table <-> ::UserTable madness
-      table_to_drop = ::Table.new(user_table: @user.tables.where(table_id: id, name: name).first)
+      table_to_drop = ::Table.new(user_table: user_table)
 
       table_to_drop.keep_user_database_table = true
 

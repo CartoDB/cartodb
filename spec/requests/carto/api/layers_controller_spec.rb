@@ -156,6 +156,8 @@ describe Carto::Api::LayersController do
       user_3.save.reload
       organization.reload
 
+      default_url_options[:host] = "#{user_2.subdomain}.localhost.lan"
+
       table = create_table(privacy: UserTable::PRIVACY_PRIVATE, name: unique_name('table'), user_id: user_1.id)
       u1_t_1_perm_id = table.table_visualization.permission.id
 
@@ -177,18 +179,17 @@ describe Carto::Api::LayersController do
 
       table.map.add_layer layer
 
-      get api_v1_maps_layers_index_url(user_domain: user_2.username,
-                                       map_id: table.map.id,
-                                       api_key: user_2.api_key) do |response|
+      login_as(user_2, scope: user_2.username)
+      get api_v1_maps_layers_index_url(user_domain: user_2.username, map_id: table.map.id) do |response|
         response.status.should be_success
         body = JSON.parse(last_response.body)
 
         body['layers'].count { |l| l['kind'] != 'tiled' }.should == 2
       end
 
-      get api_v1_maps_layers_index_url(user_domain: user_3.username,
-                                       map_id: table.map.id,
-                                       api_key: user_3.api_key) do |response|
+      login_as(user_3, scope: user_3.username)
+      host! "#{user_3.username}.localhost.lan"
+      get api_v1_maps_layers_index_url(user_domain: user_3.username, map_id: table.map.id) do |response|
         response.status.should == 404
       end
     end
@@ -224,6 +225,7 @@ describe Carto::Api::LayersController do
       @user.add_layer layer
       @user.add_layer layer2
 
+      default_url_options[:host] = "#{@user.subdomain}.localhost.lan"
       get api_v1_users_layers_index_url(params.merge(user_id: @user.id)) do |_|
         last_response.status.should be_success
         response_body = JSON.parse(last_response.body)
@@ -256,6 +258,7 @@ describe Carto::Api::LayersController do
       @table.map.add_layer layer
       @table.map.add_layer layer2
 
+      default_url_options[:host] = "#{@user.subdomain}.localhost.lan"
       get api_v1_maps_layers_index_url(params.merge(map_id: @table.map.id)) do |_|
         last_response.status.should be_success
         response_body = JSON.parse(last_response.body)

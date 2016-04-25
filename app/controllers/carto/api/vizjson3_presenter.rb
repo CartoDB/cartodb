@@ -112,10 +112,10 @@ module Carto
           user:           user_info_vizjson(user)
         }
 
-        if display_named_map?(@visualization, forced_privacy_version)
-          vizjson[:analyses] = @visualization.analyses.map { |a| named_map_analysis_json(a) }
+        vizjson[:analyses] = if display_named_map?(@visualization, forced_privacy_version)
+          @visualization.analyses.map { |a| named_map_analysis_json(a) }
         else
-          vizjson[:analyses] = @visualization.analyses.map(&:analysis_definition_json)
+          @visualization.analyses.map(&:analysis_definition_json)
         end
 
         auth_tokens = @visualization.needed_auth_tokens

@@ -4,7 +4,7 @@ truncate -s 0 specfull.txt
 cat Makefile | grep -v 'spec/lib/varnish_spec.rb'| \
 grep -v 'spec/models/asset_spec.rb'| \
 grep -v 'services/user-mover/spec/user_mover_spec.rb'| \
-grep -v 'require spec/rspec_configuration.rb'| \
+grep -v 'require ./spec/rspec_configuration.rb'| \
 grep 'rb'| sed -e 's/^\s*//' -e '/^$/d' | sed '/^#/ d' | sed 's/\\//' | sed 's/\s.*$//' > temp.txt
 
 i=6001;

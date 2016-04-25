@@ -28,6 +28,9 @@
   },
   "components": {
     "likes-pluralize": "like |||| likes",
+    "custom-list": {
+      "placeholder": "Select a #{type}"
+    },
     "datepicker": {
       "dates-placeholder": "Choose your dates",
       "get-last": "Get last",

@@ -600,8 +600,6 @@ module.exports = cdb.core.View.extend({
     var lo = extent[0];
     var hi = extent[1];
 
-    //this.model.set({ lo_index: this._getLoBarIndex(), hi_index: this._getHiBarIndex() });
-
     this.chart.selectAll('.CDB-Chart-bar').classed('is-selected', function (d, i) {
       var a = Math.floor(i * self.barWidth);
       var b = Math.floor(a + self.barWidth);
@@ -716,9 +714,7 @@ module.exports = cdb.core.View.extend({
             hiPosition = self._getBarPosition(hiBarIndex + 1);
           }
         }
-
         self.model.set({ lo_index: loBarIndex, hi_index: hiBarIndex });
-
       }
 
       if (d3.event.sourceEvent && loPosition === undefined && hiPosition === undefined) {

@@ -1,6 +1,10 @@
 var Backbone = require('backbone');
 
 var VisModel = Backbone.Model.extend({
+  defaults: {
+    loading: false
+  },
+
   initialize: function () {
     this._loadingObjects = [];
   },

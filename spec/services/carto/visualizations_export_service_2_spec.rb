@@ -404,6 +404,7 @@ describe Carto::VisualizationsExportService2 do
       include Carto::Factories::Visualizations
 
       before(:all) do
+        bypass_named_maps
         @user = FactoryGirl.create(:carto_user, private_maps_enabled: true)
         @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
         @analysis = FactoryGirl.create(:source_analysis, visualization: @visualization, user: @user)

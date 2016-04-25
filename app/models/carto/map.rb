@@ -111,6 +111,11 @@ class Carto::Map < ActiveRecord::Base
     layers_maps.map(&:layer_id).include?(layer.id)
   end
 
+  def notify_map_change
+    map = ::Map[id]
+    map.notify_map_change if map
+  end
+
   private
 
   def get_the_last_time_tiles_have_changed_to_render_it_in_vizjsons

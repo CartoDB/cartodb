@@ -68,9 +68,8 @@ describe Carto::Api::LayersController do
       data_layers.delete_if { |layer| layer['kind'] != 'carto' }
       data_layers.count.should eq 2
 
-      # Rembember, layers by default added at top
-      data_layers[0]['options']['attribution'].should eq table_2_attribution
-      data_layers[1]['options']['attribution'].should eq table_1_attribution
+      data_layers.map { |l| l['options']['attribution'] }.sort
+                 .should eq [table_1_attribution, table_2_attribution]
 
       table2_visualization.attributions = modified_table_2_attribution
       table2_visualization.store
@@ -82,9 +81,8 @@ describe Carto::Api::LayersController do
       data_layers = @layers_data['layers'].select { |layer| layer['kind'] == 'carto' }
       data_layers.count.should eq 2
 
-      # Rembember, layers by default added at top
-      data_layers[0]['options']['attribution'].should eq modified_table_2_attribution
-      data_layers[1]['options']['attribution'].should eq table_1_attribution
+      data_layers.map { |l| l['options']['attribution'] }.sort
+                 .should eq [table_1_attribution, modified_table_2_attribution]
     end
   end
 
@@ -158,6 +156,8 @@ describe Carto::Api::LayersController do
       user_3.save.reload
       organization.reload
 
+      default_url_options[:host] = "#{user_2.subdomain}.localhost.lan"
+
       table = create_table(privacy: UserTable::PRIVACY_PRIVATE, name: unique_name('table'), user_id: user_1.id)
       u1_t_1_perm_id = table.table_visualization.permission.id
 
@@ -225,6 +225,7 @@ describe Carto::Api::LayersController do
       @user.add_layer layer
       @user.add_layer layer2
 
+      default_url_options[:host] = "#{@user.subdomain}.localhost.lan"
       get api_v1_users_layers_index_url(params.merge(user_id: @user.id)) do |_|
         last_response.status.should be_success
         response_body = JSON.parse(last_response.body)
@@ -257,6 +258,7 @@ describe Carto::Api::LayersController do
       @table.map.add_layer layer
       @table.map.add_layer layer2
 
+      default_url_options[:host] = "#{@user.subdomain}.localhost.lan"
       get api_v1_maps_layers_index_url(params.merge(map_id: @table.map.id)) do |_|
         last_response.status.should be_success
         response_body = JSON.parse(last_response.body)

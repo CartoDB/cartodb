@@ -1,4 +1,4 @@
-<div class="CDB-Text CDB-Fieldset">
+<div class="CDB-Text CDB-Fieldset u-tSpace-xl">
   <div class="CDB-Legend CDB-Legend--big u-ellipsis u-upperCase u-iBlock CDB-Text is-semibold CDB-Size-small u-rSpace--m">
     <div class="CDB-Shape u-iblock u-malign">
       <div class="CDB-Shape-rectsHandle is-small">

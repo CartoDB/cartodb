@@ -45,7 +45,14 @@ shared_context 'layer hierarchy' do
     end
   end
 
-  def widget_payload(layer_id: @layer.id, type: 'formula', title: 'the title', options: { 'a field' => 'first', 'another field' => 'second' }, order: nil)
+  def widget_payload(
+    layer_id: @layer.id,
+    type: 'formula',
+    title: 'the title',
+    options: { 'a field' => 'first', 'another field' => 'second' },
+    order: nil,
+    source: nil)
+
     payload = {
       layer_id: layer_id,
       type: type,
@@ -54,6 +61,7 @@ shared_context 'layer hierarchy' do
     }
 
     payload[:order] = order if order
+    payload[:source] = source if source
 
     payload
   end
@@ -247,8 +255,15 @@ describe Carto::Api::WidgetsController do
         source: { id: analysis.natural_id }
       )
 
-      put_json widget_url(user_domain: @user1.username, map_id: @map.id, map_layer_id: @widget.layer_id, id: @widget.id, api_key: @user1.api_key), payload, http_json_headers do |response|
-        response.status.should == 200
+      url = widget_url(
+        user_domain: @user1.username,
+        map_id: @map.id,
+        map_layer_id: @widget.layer_id,
+        id: @widget.id,
+        api_key: @user1.api_key)
+
+      put_json url, payload, http_json_headers do |response|
+        response.status.should eq 200
         response_widget_should_match_payload(response.body, payload)
 
         loaded_widget = Carto::Widget.find(response.body[:id])

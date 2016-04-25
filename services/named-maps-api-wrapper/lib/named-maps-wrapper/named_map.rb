@@ -338,10 +338,14 @@ module CartoDB
         options[:aggregationColumn] = options[:aggregation_column]
         options.delete(:aggregation_column)
 
-        {
+        dataview_data = {
           type: TILER_WIDGET_TYPES[widget.type],
           options: options
         }
+
+        dataview_data[:source] = { id: widget.source_id } if widget.source_id.present?
+
+        dataview_data
       end
 
       # @return Hash {

@@ -57,11 +57,6 @@ describe('windshaft/map-base', function () {
       options.success(this.windshaftMapInstance);
     }.bind(this));
 
-    this.map = new Map({
-      view_bounds_sw: [],
-      view_bounds_ne: []
-    });
-
     this.cartoDBLayerGroup = new Model();
     this.cartoDBLayer1 = new CartoDBLayer({ id: '12345-67890' });
     this.cartoDBLayer2 = new CartoDBLayer({ id: '09876-54321' });
@@ -82,6 +77,13 @@ describe('windshaft/map-base', function () {
         dataviewsCollection: this.dataviewsCollection,
         layersCollection: this.layersCollection,
         analysisCollection: this.analysisCollection
+      });
+
+      this.map = new Map({
+        view_bounds_sw: [],
+        view_bounds_ne: []
+      }, {
+        windshaftMap: this.windshaftMap
       });
 
       this.filter = new CategoryFilter({

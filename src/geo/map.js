@@ -68,7 +68,7 @@ var Map = Model.extend({
       };
 
       this._windshaftMap.createInstance(instanceOptions);
-    }, this.RELOAD_DEBOUNCE_TIME);
+    }.bind(this), this.RELOAD_DEBOUNCE_TIME);
   },
 
   // PUBLIC API METHODS

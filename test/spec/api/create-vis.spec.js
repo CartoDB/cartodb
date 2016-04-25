@@ -242,10 +242,10 @@ describe('src/api/create-vis', function () {
     it('should instantiate map', function (done) {
       this.vis = createVis('domId', fakeVizJSON, {});
 
-      _.defer(function () {
+      setTimeout(function () {
         expect(mapInstantiationRequestDone()).toEqual(true);
         done();
-      });
+      }, 25);
     });
 
     it('should NOT instantiate map if skipMapInstantiation options is set', function (done) {
@@ -253,10 +253,10 @@ describe('src/api/create-vis', function () {
         skipMapInstantiation: true
       });
 
-      _.defer(function () {
+      setTimeout(function () {
         expect(mapInstantiationRequestDone()).toEqual(false);
         done();
-      });
+      }, 25);
     });
   });
 });

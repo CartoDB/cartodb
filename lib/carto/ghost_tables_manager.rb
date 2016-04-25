@@ -31,14 +31,14 @@ module Carto
     def user_tables_synced_with_db?
       cartodbfied_tables = fetch_cartobfied_tables
 
-      cartodbfied_tables.reject(&:unaltered?).empty? && find_dropped_tables(cartodbfied_tables).empty?
+      cartodbfied_tables.reject(&:unaltered?).empty? && ghost_tables(cartodbfied_tables).empty?
     end
 
     # Check if any unsafe stale (dropped or renamed) tables will be shown to the user
     def safe_async?
       cartodbfied_tables = fetch_cartobfied_tables
 
-      find_dropped_tables(cartodbfied_tables).empty? && cartodbfied_tables.select(&:stale?).empty?
+      ghost_tables(cartodbfied_tables).empty? && cartodbfied_tables.select(&:stale?).empty?
     end
 
     def sync_user_tables_with_db
@@ -62,7 +62,7 @@ module Carto
       cartodbfied_tables.select(&:renamed?).each(&:rename_user_table_vis)
 
       # Unlink tables that have been created trhought the SQL API
-      find_dropped_tables(cartodbfied_tables).each(&:drop_user_table)
+      ghost_tables(cartodbfied_tables).each(&:drop_user_table)
     end
 
     # this method searchs for tables with all the columns needed in a cartodb table.
@@ -122,24 +122,12 @@ module Carto
     end
 
     # Tables that have been dropped via API but have an old UserTable
-    def find_dropped_tables(cartodbfied_tables)
+    def ghost_tables(cartodbfied_tables)
       linked_tables = @user.tables.all.map do |user_table|
         Carto::TableFacade.new(user_table.table_id, user_table.name, @user)
       end
 
-      ghost_tables = linked_tables - cartodbfied_tables
-
-      # We allow ghost tables if removing them will fully or partially destroy one or more maps
-      consented_ghost_tables = ghost_tables.select(&:part_of_map?)
-
-      consented_ghost_tables.each do |ghost_table|
-        CartoDB::Logger.warning(message: 'Ghost Tables: Ghost table consented',
-                                user: @user,
-                                table_name: ghost_table.name,
-                                table_id: ghost_table.id)
-      end
-
-      ghost_tables - consented_ghost_tables
+      linked_tables - cartodbfied_tables
     end
   end
 
@@ -184,10 +172,11 @@ module Carto
       user.tables.where(name: name, table_id: id).first
     end
 
+    # We allow ghost tables if removing them will fully or partially destroy one or more maps
     def part_of_map?
       carto_user_table = Carto::UserTable.find(user_table.id)
 
-      carto_user_table.dependent_visualizations.empty? && carto_user_table.non_dependent_visualizations.empty?
+      !carto_user_table.dependent_visualizations.empty? || !carto_user_table.non_dependent_visualizations.empty?
     end
 
     def create_user_table
@@ -235,6 +224,14 @@ module Carto
     end
 
     def drop_user_table
+      if part_of_map?
+        CartoDB::Logger.warning(message: 'Ghost Tables: Ghost table consented',
+                                user: @user,
+                                table_name: ghost_table.name,
+                                table_id: ghost_table.id)
+        return
+      end
+
       CartoDB::Logger.debug(message: 'ghost tables',
                             action: 'unlinking dropped table',
                             user: @user,

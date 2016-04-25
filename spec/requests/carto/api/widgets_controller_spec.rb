@@ -146,7 +146,7 @@ describe Carto::Api::WidgetsController do
 
     it 'creates a new widget with source_id' do
       analysis = FactoryGirl.create(:analysis, visualization: @public_visualization, user_id: @user1.id)
-      payload = widget_payload.merge(source_id: analysis.natural_id)
+      payload = widget_payload.merge(source: { id: analysis.natural_id })
       post_json widgets_url(user_domain: @user1.username, map_id: @map.id, map_layer_id: @widget.layer_id, api_key: @user1.api_key), payload, http_json_headers do |response|
         response.status.should eq 201
         response_widget = response.body
@@ -228,12 +228,19 @@ describe Carto::Api::WidgetsController do
     end
 
     it 'returns 200 and updates the model' do
+      analysis = FactoryGirl.create(:analysis, visualization: @public_visualization, user_id: @user1.id)
       new_order = @widget.order + 1
       new_type = "new #{@widget.type}"
       new_title = "new #{@widget.title}"
       new_options = @widget.options_json.merge(new: 'whatever')
 
-      payload = widget_payload(order: new_order, type: new_type, title: new_title, options: new_options)
+      payload = widget_payload(
+        order: new_order,
+        type: new_type,
+        title: new_title,
+        options: new_options,
+        source: { id: analysis.natural_id }
+      )
 
       put_json widget_url(user_domain: @user1.username, map_id: @map.id, map_layer_id: @widget.layer_id, id: @widget.id, api_key: @user1.api_key), payload, http_json_headers do |response|
         response.status.should == 200
@@ -242,6 +249,7 @@ describe Carto::Api::WidgetsController do
         loaded_widget = Carto::Widget.find(response.body[:id])
         response_widget_should_match_widget(response.body, Carto::Widget.find(response.body[:id]))
       end
+      analysis.destroy
     end
   end
 

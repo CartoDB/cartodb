@@ -215,7 +215,6 @@ WORKING_SPECS_9 = \
 	spec/lib/initializers/carto_db_spec.rb \
 	spec/requests/carto/api/oembed_controller_spec.rb \
 	spec/models/asset_spec.rb \
-	spec/models/log_spec.rb \
 	spec/models/access_token_spec.rb \
 	spec/requests/api/permissions_controller_spec.rb \
 	spec/models/shared_entity_spec.rb \

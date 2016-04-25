@@ -77,12 +77,6 @@
         "unable-to-import-as-layers": "Unable to add all imported datasets as Layers",
         "upgrade-your-account": "<a href='https://cartodb.com/pricing/'>Upgrade your account</a> to add more than %{userMaxLayers} layers to your maps.",
       },
-      "size-error-details-upgrade": {
-        "keep-data": "Keep your data and get more quota by upgrading your plan",
-        "quota": "You have run out of quota",
-        "remove-or-upgrade": "Remove some of your datasets to gain available space or upgrade your account",
-        "upgrade": "upgrade"
-      },
       "error-details": {
         "check-errors": "Check errors",
         "check-url": "Check that the URL you provided is OK",
@@ -91,6 +85,19 @@
         "remote-server-code": "The remote server returned a <span class='ErrorDetails-itemTextStrong'>%{httpResponseCode}</span> code.",
         "send-us-the-error-code": "Persisting error? Please <a href='mailto:support@cartodb.com'>send us</a> the following code",
         "unknown-error": "An unknown error has happened"
+      },
+      "upgrade-errors": {
+        "upgrade": "upgrade",
+        "8001": {
+          "description": "Remove some of your datasets to gain available space or upgrade your account",
+          "info": "Keep your data and get more quota by upgrading your plan",
+          "title": "You have run out of quota",
+        },
+        "8005": {
+          "description": "Remove any layer or upgrade your account",
+          "info": "Keep your maps and get more layers quota by upgrading your plan",
+          "title": "You have reached your layers limit",
+        },
       },
       "twitter-import-details": {
         "new-type-created": "We've created a new %{type} containing a total of %{datasetTotalRowsFormatted}<br/>tweet%{tweetPlural} with your search terms",
@@ -102,18 +109,6 @@
         "tweet-cost": {
           "free": "No extra charges have been done",
           "paid": "$%{tweetsCostFormatted} will be charged to your account"
-        },
-        "size-error-details-upgrade": {
-          "description": "Remove some of your datasets to gain available space or upgrade your account",
-          "title": "You have run out of quota",
-          "upgrade": "upgrade",
-          "upgrade-your-plan": "Keep your data and get more quota by upgrading your plan"
-        },
-        "layers-error-details-upgrade": {
-          "keep-your-maps": "Keep your maps and get more layers quota by upgrading your plan",
-          "reached-limits": "You have reached your layers limit",
-          "remove-or-upgrade": "Remove any layer or upgrade your account",
-          "upgrade": "upgrade"
         },
         "errors": {
           "no-results": "Your search query was correct but returned no results, please try with a different set of parameters before running it again"

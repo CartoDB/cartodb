@@ -212,5 +212,35 @@ module Carto
       @user.tables.count.should eq 0
       @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_true
     end
+
+    it 'should allow ghost tables if dependent visualizations are found for it' do
+      run_in_user_database(%{
+        CREATE TABLE manoloescobar ("description" text);
+        SELECT * FROM CDB_CartodbfyTable('manoloescobar');
+      })
+
+      @user.tables.count.should eq 0
+      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_false
+
+      ::Resque.expects(:enqueue).with(::Resque::UserJobs::SyncTables::LinkGhostTables, @user.id).never
+
+      @ghost_tables_manager.link_ghost_tables_synchronously
+      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_true
+
+      @user.tables.count.should eq 1
+
+      Carto::TableFacade.any_instance.stubs(:part_of_map?).returns(true)
+
+      run_in_user_database(%{
+        DROP TABLE manoloescobar;
+      })
+
+      @user.tables.count.should eq 1
+      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_false
+      @ghost_tables_manager.link_ghost_tables_synchronously
+
+      @user.tables.count.should eq 1
+      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_false
+    end
   end
 end

@@ -78,7 +78,11 @@ module HelperMethods
     get path, params, headers
     the_response = response || get_last_response
     response_parsed = the_response.body.blank? ? {} : ::JSON.parse(the_response.body)
-    yield OpenStruct.new(:body => (response_parsed.is_a?(Hash) ? response_parsed.deep_symbolize_keys : response_parsed), :status => the_response.status, :headers => the_response.headers) if block_given?
+    yield OpenStruct.new(
+      body: (response_parsed.is_a?(Hash) ? response_parsed.deep_symbolize_keys : response_parsed),
+      status: the_response.status,
+      headers: the_response.headers
+    ) if block_given?
   end
 
   def put_json(path, params = {}, headers = http_json_headers)
@@ -86,7 +90,11 @@ module HelperMethods
     put path, JSON.dump(params), headers
     the_response = response || get_last_response
     response_parsed = the_response.body.blank? ? {} : ::JSON.parse(the_response.body)
-    yield OpenStruct.new(:body => (response_parsed.is_a?(Hash) ? response_parsed.deep_symbolize_keys : response_parsed), :status => the_response.status, :headers => the_response.headers) if block_given?
+    yield OpenStruct.new(
+      body: (response_parsed.is_a?(Hash) ? response_parsed.deep_symbolize_keys : response_parsed),
+      status: the_response.status,
+      headers: the_response.headers
+    ) if block_given?
   end
 
   def post_json(path, params = {}, headers = http_json_headers)
@@ -94,7 +102,11 @@ module HelperMethods
     post path, JSON.dump(params), headers
     the_response = response || get_last_response
     response_parsed = the_response.body.blank? ? {} : ::JSON.parse(the_response.body)
-    yield OpenStruct.new(:body => (response_parsed.is_a?(Hash) ? response_parsed.deep_symbolize_keys : response_parsed), :status => the_response.status, :headers => the_response.headers) if block_given?
+    yield OpenStruct.new(
+      body: (response_parsed.is_a?(Hash) ? response_parsed.deep_symbolize_keys : response_parsed),
+      status: the_response.status,
+      headers: the_response.headers
+    ) if block_given?
   end
 
   def delete_json(path, params = {}, headers = http_json_headers)
@@ -102,7 +114,11 @@ module HelperMethods
     delete path, JSON.dump(params), headers
     the_response = response || get_last_response
     response_parsed = (the_response.body.blank? || the_response.body.to_s.length < 2) ? {} : ::JSON.parse(the_response.body)
-    yield OpenStruct.new(:body => (response_parsed.is_a?(Hash) ? response_parsed.deep_symbolize_keys : response_parsed), :status => the_response.status, :headers => the_response.headers) if block_given?
+    yield OpenStruct.new(
+      body: (response_parsed.is_a?(Hash) ? response_parsed.deep_symbolize_keys : response_parsed),
+      status: the_response.status,
+      headers: the_response.headers
+    ) if block_given?
   end
 
   def get_last_response
@@ -111,7 +127,10 @@ module HelperMethods
 
   def parse_json(response, &block)
     response_parsed = response.body.blank? ? {} : JSON.parse(response.body)
-    yield OpenStruct.new(:body => (response_parsed.is_a?(Hash) ? response_parsed.deep_symbolize_keys : response_parsed), :status => response.status)
+    yield OpenStruct.new(
+      body: (response_parsed.is_a?(Hash) ? response_parsed.deep_symbolize_keys : response_parsed),
+      status: response.statu
+    )
   end
 
   def default_schema

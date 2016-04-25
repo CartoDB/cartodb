@@ -147,7 +147,12 @@ describe Carto::Api::WidgetsController do
     it 'creates a new widget with source_id' do
       analysis = FactoryGirl.create(:analysis, visualization: @public_visualization, user_id: @user1.id)
       payload = widget_payload.merge(source: { id: analysis.natural_id })
-      post_json widgets_url(user_domain: @user1.username, map_id: @map.id, map_layer_id: @widget.layer_id, api_key: @user1.api_key), payload, http_json_headers do |response|
+      url = widgets_url(
+        user_domain: @user1.username,
+        map_id: @map.id,
+        map_layer_id: @widget.layer_id,
+        api_key: @user1.api_key)
+      post_json url, payload, http_json_headers do |response|
         response.status.should eq 201
         response_widget = response.body
         response_widget[:source][:id].should eq analysis.natural_id

@@ -145,6 +145,19 @@ describe Carto::Api::VizJSON3Presenter do
       source_analysis_definition[:type].should eq 'source'
       source_analysis_definition[:params].should be_nil
     end
+
+    it 'includes source at layers options' do
+      source = 'a1'
+      layer = @visualization.data_layers.first
+      layer.options['source'] = source
+      layer.save
+      @table.privacy = Carto::UserTable::PRIVACY_PRIVATE
+      @table.save
+      @visualization.reload
+
+      v3_vizjson = Carto::Api::VizJSON3Presenter.new(@visualization, viewer_user).send :calculate_vizjson
+      v3_vizjson[:layers][1][:options][:named_map][:layers][0][:options].should eq source: source
+    end
   end
 
   describe 'analyses' do

@@ -359,12 +359,17 @@ module Carto
       end
 
       def data_for_carto_layer(layer_vizjson)
+        layer_options = layer_vizjson[:options]
         data = {
           id: layer_vizjson[:id],
-          layer_name: layer_vizjson[:options][:layer_name],
-          interactivity: layer_vizjson[:options][:interactivity],
+          layer_name: layer_options[:layer_name],
+          interactivity: layer_options[:interactivity],
           visible: layer_vizjson[:visible]
         }
+
+        if layer_options && layer_options[:source]
+          data[:options] = { source: layer_options[:source] }
+        end
 
         infowindow = layer_vizjson[:infowindow]
         if infowindow && infowindow['fields'] && !infowindow['fields'].empty?

@@ -1,6 +1,7 @@
 require_relative '../../../spec/spec_helper.rb'
 require_relative '../import_user'
 require_relative '../export_user'
+require_relative '../../../lib/carto/ghost_tables_manager'
 
 RSpec.configure do |c|
   c.include Helpers
@@ -16,7 +17,8 @@ describe CartoDB::DataMover::ExportJob do
       quota_in_bytes: 100.megabyte,
       private_tables_enabled: true,
       database_timeout: 123450,
-      user_timeout: 456780
+      user_timeout: 456780,
+      table_quota: nil
     )
   end
 
@@ -63,18 +65,17 @@ describe CartoDB::DataMover::ExportJob do
         file: @tmp_path + "user_#{first_user.id}.json", mode: :import, host: '127.0.0.2', target_org: @org.name).run!
 
       moved_user = ::User.find(username: first_user.username)
-      moved_user.link_ghost_tables
+      Carto::GhostTablesManager.new(moved_user.id).link_ghost_tables_synchronously
       moved_user
     end
 
     it_behaves_like "a migrated user"
 
     it "matches old and new user except database_name" do
-      p first_user.as_json.reject! { |x| x == :updated_at }
-      p subject.as_json.reject! { |x| x == :updated_at }
-      expect(first_user.as_json.reject { |x| [:updated_at, :database_name, :organization_id].include? x })
-        .to eq(subject.as_json.reject { |x| [:updated_at, :database_name, :organization_id].include? x })
+      expect(first_user.as_json.reject { |x| [:updated_at, :database_name, :organization_id, :database_schema].include? x })
+        .to eq(subject.as_json.reject { |x| [:updated_at, :database_name, :organization_id, :database_schema].include? x })
       expect(subject.database_name).to eq(@org.owner.database_name)
+      expect(subject.database_schema).to eq(subject.username)
       expect(subject.organization_id).to eq(@org.id)
     end
 
@@ -101,7 +102,7 @@ describe CartoDB::DataMover::ExportJob do
     CartoDB::DataMover::ImportJob.new(file: @tmp_path + "user_#{user.id}.json", mode: :import).run!
 
     moved_user = ::User.find(username: user.username)
-    moved_user.link_ghost_tables
+    Carto::GhostTablesManager.new(moved_user.id).link_ghost_tables_synchronously
     check_tables(moved_user)
     moved_user.organization_id.should eq nil
   end
@@ -136,6 +137,35 @@ describe CartoDB::DataMover::ExportJob do
     share_group_tables(org.owner, group_1)
     share_group_tables(user, group_2)
 
+    CartoDB::DataMover::ExportJob.new(organization_name: org.name, path: @tmp_path, split_user_schemas: false)
+    CartoDB::UserModule::DBService.terminate_database_connections(org.owner.database_name, org.owner.database_host)
+    CartoDB::DataMover::ImportJob.new(file: @tmp_path + "org_#{org.id}.json", mode: :rollback, drop_database: true, drop_roles: true).run!
+    CartoDB::DataMover::ImportJob.new(file: @tmp_path + "org_#{org.id}.json", mode: :import, host: '127.0.0.2').run!
+
+    moved_user = ::User.find(username: user.username)
+    moved_user.database_host.should eq '127.0.0.2'
+    Carto::GhostTablesManager.new(moved_user.id).link_ghost_tables_synchronously
+    check_tables(moved_user)
+    moved_user.in_database['SELECT * FROM cdb_tablemetadata']
+    moved_user.organization_id.should_not eq nil
+
+    @server_thread.terminate
+  end
+
+  it "should move a whole organization without splitting user schemas" do
+
+    org = create_user_mover_test_organization
+    user = create_user(
+      quota_in_bytes: 100.megabyte, table_quota: 400, organization: org
+    )
+    user.save
+    org.reload
+
+    create_tables(org.owner)
+    share_tables(org.owner, user)
+    share_tables(user, org.owner)
+    create_tables(user)
+
     CartoDB::DataMover::ExportJob.new(organization_name: org.name, path: @tmp_path)
     CartoDB::UserModule::DBService.terminate_database_connections(org.owner.database_name, org.owner.database_host)
     CartoDB::DataMover::ImportJob.new(file: @tmp_path + "org_#{org.id}.json", mode: :rollback, drop_database: true, drop_roles: true).run!
@@ -143,12 +173,34 @@ describe CartoDB::DataMover::ExportJob do
 
     moved_user = ::User.find(username: user.username)
     moved_user.database_host.should eq '127.0.0.2'
-    moved_user.link_ghost_tables
+    Carto::GhostTablesManager.new(moved_user.id).link_ghost_tables_synchronously
     check_tables(moved_user)
     moved_user.in_database['SELECT * FROM cdb_tablemetadata']
     moved_user.organization_id.should_not eq nil
 
-    @server_thread.terminate
+  end
+
+  it "should not touch an user metadata nor update its oids when update_metadata is not set" do
+    user = create_user(
+      quota_in_bytes: 100.megabyte, table_quota: 50, private_tables_enabled: true, sync_tables_enabled: true
+    )
+    create_tables(user)
+
+    old_user_data = user.as_json
+    old_user_tables = user.real_tables
+    old_user_oids = user.tables.map(&:table_id).sort
+    CartoDB::DataMover::ExportJob.new(id: user.username, path: @tmp_path)
+    CartoDB::UserModule::DBService.terminate_database_connections(user.database_name, user.database_host)
+    CartoDB::DataMover::ImportJob.new(
+      file: @tmp_path + "user_#{user.id}.json", mode: :rollback, host: '127.0.0.2',
+      drop_database: true, drop_roles: true).run!
+    CartoDB::DataMover::ImportJob.new(file: @tmp_path + "user_#{user.id}.json", mode: :import, update_metadata: false).run!
+
+    new_user = ::User.find(username: user.username)
+
+    new_user.as_json.should eq old_user_data
+    new_user.real_tables.should_not eq old_user_tables
+    new_user.tables.map(&:table_id).sort.should eq old_user_oids
   end
 end
 

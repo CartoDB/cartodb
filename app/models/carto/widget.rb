@@ -15,11 +15,26 @@ class Carto::Widget < ActiveRecord::Base
     visualization.nil? ? [] : visualization.widgets.flatten
   end
 
+  def self.visualization_analysis_widgets(visualization_id)
+    # TODO: filter "only analysis widgets" after #7200
+    # widgets = Carto::Widget.from_visualization_id(visualization_id)
+    []
+  end
+
+  def self.layer_widgets(layer_id)
+    # TODO: filter "not analysis widgets" after #7200
+    Carto::Widget.where(layer_id: layer_id).all
+  end
+
   # INFO: disable ActiveRecord inheritance column
   self.inheritance_column = :_type
 
   def options_json
     JSON.parse(options).symbolize_keys
+  end
+
+  def options_json=(options)
+    self.options = options.to_json
   end
 
   def belongs_to_map?(map_id)

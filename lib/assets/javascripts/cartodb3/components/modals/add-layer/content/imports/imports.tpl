@@ -6,7 +6,7 @@
     <i class="CDB-IconFont CDB-IconFont-arrowNext u-actionTextColor"></i>
   </button>
 </div>
-<div class="ImportOptions-tabs">
+<div class="AddLayer-tabs">
   <ul class="ImportOptions-tabsList js-menu CDB-Text CDB-Size-medium u-altTextColor"></ul>
 </div>
 <div class="ImportOptions-panes js-content"></div>

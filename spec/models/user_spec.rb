@@ -1224,166 +1224,6 @@ describe User do
 
   end
 
-  describe '#link_ghost_tables' do
-    before(:each) do
-      @user.in_database.run('drop table if exists ghost_table')
-      @user.in_database.run('drop table if exists non_ghost_table')
-      @user.in_database.run('drop table if exists ghost_table_renamed')
-      @user.reload
-      @user.table_quota = 100
-      @user.save
-    end
-
-    it "should correctly count real tables" do
-      @user.in_database.run('create table ghost_table (cartodb_id integer, the_geom geometry, the_geom_webmercator geometry, updated_at date, created_at date)')
-      @user.in_database.run('create table non_ghost_table (test integer)')
-      @user.real_tables.map { |c| c[:relname] }.should =~ ["ghost_table", "non_ghost_table"]
-      @user.real_tables.size.should == 2
-    end
-
-    it "should return cartodbfied tables" do
-      @user.in_database.run('create table ghost_table (cartodb_id integer, the_geom geometry, the_geom_webmercator geometry, updated_at date, created_at date)')
-
-      @user.in_database.run(%Q{
-        CREATE OR REPLACE FUNCTION test_quota_per_row()
-          RETURNS trigger
-          AS $$
-          BEGIN
-            RETURN NULL;
-          END;
-          $$
-          LANGUAGE plpgsql;
-      })
-      @user.in_database.run( %Q{
-        CREATE TRIGGER test_quota_per_row BEFORE INSERT ON ghost_table EXECUTE PROCEDURE test_quota_per_row()
-      })
-
-      @user.in_database.run('create table non_ghost_table (test integer)')
-      tables = @user.search_for_cartodbfied_tables
-      tables.should =~ ['ghost_table']
-    end
-
-    it "should link a table in the database" do
-      tables = @user.tables.all.map(&:name)
-      @user.in_database.run('create table ghost_table (cartodb_id integer, the_geom geometry, the_geom_webmercator geometry, updated_at date, created_at date)')
-
-      @user.in_database.run(%Q{
-        CREATE OR REPLACE FUNCTION test_quota_per_row()
-          RETURNS trigger
-          AS $$
-          BEGIN
-            RETURN NULL;
-          END;
-          $$
-          LANGUAGE plpgsql;
-      })
-      @user.in_database.run( %Q{
-        CREATE TRIGGER test_quota_per_row BEFORE INSERT ON ghost_table EXECUTE PROCEDURE test_quota_per_row()
-      })
-
-      @user.link_ghost_tables
-      new_tables = @user.tables.all.map(&:name)
-      new_tables.should include('ghost_table')
-    end
-
-    it "should link a renamed table in the database" do
-      tables = @user.tables.all.map(&:name)
-      @user.in_database.run('create table ghost_table_2 (cartodb_id integer, the_geom geometry, the_geom_webmercator geometry, updated_at date, created_at date)')
-
-      @user.in_database.run(%Q{
-        CREATE OR REPLACE FUNCTION test_quota_per_row()
-          RETURNS trigger
-          AS $$
-          BEGIN
-            RETURN NULL;
-          END;
-          $$
-          LANGUAGE plpgsql;
-      })
-      @user.in_database.run( %Q{
-        CREATE TRIGGER test_quota_per_row BEFORE INSERT ON ghost_table_2 EXECUTE PROCEDURE test_quota_per_row()
-      })
-
-      @user.link_ghost_tables
-      @user.in_database.run('alter table ghost_table_2 rename to ghost_table_renamed')
-      @user.link_ghost_tables
-      new_tables = @user.tables.all.map(&:name)
-      new_tables.should include('ghost_table_renamed')
-      new_tables.should_not include('ghost_table_2')
-      # check visualization name
-      table = @user.tables.find(:name => 'ghost_table_renamed').first
-      table.table_visualization.name.should == 'ghost_table_renamed'
-
-
-    end
-
-    it "should remove reference to a removed table in the database" do
-      tables = @user.tables.all.map(&:name)
-      @user.in_database.run('create table ghost_table (cartodb_id integer, the_geom geometry, the_geom_webmercator geometry, updated_at date, created_at date)')
-      @user.link_ghost_tables
-      @user.in_database.run('drop table ghost_table')
-      @user.link_ghost_tables
-      new_tables = @user.tables.all.map(&:name)
-      new_tables.should_not include('ghost_table')
-    end
-
-    # not sure what the following tests mean or why they were
-    # created
-    xit "should link a table with null table_id" do
-      table = create_table :user_id => @user.id, :name => 'My table'
-      initial_count = @user.tables.count
-      table_id = table.table_id
-      table.this.update table_id: nil
-      @user.link_ghost_tables
-      table.reload
-      table.table_id.should == table_id
-      @user.tables.count.should == initial_count
-    end
-
-    xit "should link a table with wrong table_id" do
-      table = create_table :user_id => @user.id, :name => 'My table 2'
-      initial_count = @user.tables.count
-      table_id = table.table_id
-      table.this.update table_id: 1
-      @user.link_ghost_tables
-      table.reload
-      table.table_id.should == table_id
-      @user.tables.count.should == initial_count
-    end
-
-    it "should remove a table that does not exist on the user database" do
-      initial_count = @user.tables.count
-      table = create_table :user_id => @user.id, :name => 'My table 3'
-      puts "dropping", table.name
-      @user.in_database.drop_table(table.name)
-      @user.tables.where(name: table.name).first.should_not be_nil
-      @user.link_ghost_tables
-      @user.tables.where(name: table.name).first.should be_nil
-    end
-
-    it "should link a table that requires quoting, e.g: name with capitals" do
-      initial_count = @user.tables.count
-      @user.in_database.run %Q{CREATE TABLE "MyTableWithCapitals" (cartodb_id integer, the_geom geometry, the_geom_webmercator geometry)}
-      @user.in_database.run(%Q{
-        CREATE OR REPLACE FUNCTION test_quota_per_row()
-          RETURNS trigger
-          AS $$
-          BEGIN
-            RETURN NULL;
-          END;
-          $$
-          LANGUAGE plpgsql;
-      })
-      @user.in_database.run %Q{CREATE TRIGGER test_quota_per_row BEFORE INSERT ON "MyTableWithCapitals" EXECUTE PROCEDURE test_quota_per_row()}
-
-      @user.link_ghost_tables
-
-      # TODO: the table won't be cartodbfy'ed and registered until we support CamelCase identifiers.
-      @user.tables.count.should == initial_count
-    end
-
-  end
-
   describe '#shared_tables' do
     it 'Checks that shared tables include not only owned ones' do
       require_relative '../../app/models/visualization/collection'
@@ -1742,7 +1582,9 @@ describe User do
       redis_vizjson_keys = collection.map { |v|
         [
           redis_vizjson_cache.key(v.id, false), redis_vizjson_cache.key(v.id, true),
-          redis_vizjson_cache.key(v.id, false, 3), redis_vizjson_cache.key(v.id, true, 3)
+          redis_vizjson_cache.key(v.id, false, 3), redis_vizjson_cache.key(v.id, true, 3),
+          redis_vizjson_cache.key(v.id, false, '3n'), redis_vizjson_cache.key(v.id, true, '3n'),
+          redis_vizjson_cache.key(v.id, false, '3a'), redis_vizjson_cache.key(v.id, true, '3a'),
         ]
       }.flatten
       redis_vizjson_keys.should_not be_empty
@@ -2245,6 +2087,30 @@ describe User do
 
       user.destroy
       organization.destroy
+    end
+  end
+
+  describe "Write locking" do
+    it "detects locking properly" do
+      @user.db_service.writes_enabled?.should eq true
+      @user.db_service.disable_writes
+      @user.db_service.terminate_database_connections
+      @user.db_service.writes_enabled?.should eq false
+      @user.db_service.enable_writes
+      @user.db_service.terminate_database_connections
+      @user.db_service.writes_enabled?.should eq true
+    end
+
+    it "enables and disables writes in user database" do
+      @user.db_service.run_pg_query("create table foo_1(a int);")
+      @user.db_service.disable_writes
+      @user.db_service.terminate_database_connections
+      lambda {
+        @user.db_service.run_pg_query("create table foo_2(a int);")
+      }.should raise_error(CartoDB::ErrorRunningQuery)
+      @user.db_service.enable_writes
+      @user.db_service.terminate_database_connections
+      @user.db_service.run_pg_query("create table foo_3(a int);")
     end
   end
 

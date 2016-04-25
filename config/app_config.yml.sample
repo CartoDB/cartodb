@@ -5,7 +5,7 @@ defaults: &defaults
   #  https:            "https.cdn.host"
   http_client_logs: true
   ogr2ogr:
-    binary:           'which ogr2ogr2'
+    binary:           'which ogr2ogr2.1'
     csv_guessing:     false
   debug_assets: true
   mandatory_keys:     [layer_opts, sql_api, varnish_management, redis, session_domain]
@@ -58,8 +58,7 @@ defaults: &defaults
     primary:          ''
     embeds:           ''
     domain:           ''
-  rollbar:
-    token: ''
+  rollbar_api_key: ''
   tumblr:
     api_key: ''
   trackjs:
@@ -461,6 +460,7 @@ defaults: &defaults
   overviews:
     min_rows: 2000000
     statement_timeout: 1800000
+    tolerance_px: 1.0
 
 development:
   <<: *defaults

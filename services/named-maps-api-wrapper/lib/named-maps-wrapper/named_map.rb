@@ -198,6 +198,9 @@ module CartoDB
                 layer_data[:options][:sql] = layer[:options].fetch('query')
               end
 
+              widgets_data = widgets_data_for_layer(layer)
+              layer_data[:options][:widgets] = widgets_data if widgets_data
+
               layers_data.push(layer_data)
             }
           end
@@ -207,7 +210,7 @@ module CartoDB
           layergroup[:layers] = layers_data.compact.flatten
           layergroup[:stat_tag] = visualization.id
 
-          widgets = Carto::Widget.from_visualization_id(visualization.id)
+          widgets = Carto::Widget.visualization_analysis_widgets(visualization.id)
           if widgets.present?
             widget_names_and_options = widgets.map { |widget| [widget.id, dataview_data(widget)] }
             layergroup[:dataviews] = widget_names_and_options.to_h
@@ -219,8 +222,17 @@ module CartoDB
           end
 
           template_data[:view] = view_data_from(visualization)
-
           template_data
+        end
+      end
+
+      def self.widgets_data_for_layer(layer)
+        layer_widgets = Carto::Widget.layer_widgets(layer[:id])
+        if layer_widgets.empty?
+          nil
+        else
+          widget_names_and_options = layer_widgets.map { |w| [w.id, dataview_data(w)] }
+          Hash[*widget_names_and_options.flatten]
         end
       end
 
@@ -228,11 +240,16 @@ module CartoDB
         # Gentle reminder: layer groups don't contain torque layers
         layer_type = layer[:type].downcase
 
-        if layer_type == 'cartodb'
-          options_for_cartodb_layer(layer, layer_num, template_data)
-        else
-          options_for_basemap_layer(layer, layer_num, template_data)
-        end
+        options = if layer_type == 'cartodb'
+                    options_for_cartodb_layer(layer, layer_num, template_data)
+                  else
+                    options_for_basemap_layer(layer, layer_num, template_data)
+                  end
+
+        widgets_data = widgets_data_for_layer(layer)
+        options[:layer_options][:widgets] = widgets_data if widgets_data
+
+        options
       end
 
       def self.css_from(options)

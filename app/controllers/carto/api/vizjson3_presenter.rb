@@ -233,7 +233,6 @@ module Carto
         elsif analysis_definition_json[:params] && analysis_definition_json[:params][:source]
           analysis_definition_json_without_sources(analysis_definition_json[:params][:source])
         end
-        byebug
         analysis_definition_json
       end
 

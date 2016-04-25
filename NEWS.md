@@ -58,6 +58,7 @@ which should be fixed manually.
 * Fix slow search of visualizations by name
 * Fixed a bug where visualization with two layers using the same dataset could not be deleted
 * Update and improve logging system
+* Fix automatic reconnection to DB with error `result has been cleared`
 * Fix broken syncs after setting sync options to "Never"
 * Fix broken visualizations due to invalid permissions
 * Check layer limits server-side

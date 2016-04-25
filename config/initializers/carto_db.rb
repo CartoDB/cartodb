@@ -163,20 +163,25 @@ module CartoDB
     base_url
   end
 
-  def self.domainless_base_url(subdomain, protocol_override=nil)
+  def self.domainless_base_url(subdomain, protocol_override = nil)
+    base_domain = domainless_base_domain(protocol_override)
+    if !subdomain.nil? && !subdomain.empty?
+      "#{base_domain}/user/#{subdomain}"
+    else
+      base_domain
+    end
+  end
+
+  def self.domainless_base_domain(protocol_override = nil)
     protocol = self.protocol(protocol_override)
-    port = protocol == 'http' ? self.http_port : self.https_port
+    port = protocol == 'http' ? http_port : https_port
     if ip?(request_host)
-      "#{protocol}://#{request_host}#{port}/user/#{subdomain}"
+      "#{protocol}://#{request_host}#{port}"
     else
       request_subdomain = request_host.sub(session_domain, '')
-      request_subdomain += '.' if request_subdomain.length > 0 && !request_subdomain.end_with?('.')
+      request_subdomain += '.' if !request_subdomain.empty? && !request_subdomain.end_with?('.')
 
-      if !subdomain.nil? && subdomain != ''
-        "#{protocol}://#{request_subdomain}#{session_domain}#{port}/user/#{subdomain}"
-      else
-        "#{protocol}://#{request_subdomain}#{session_domain}#{port}"
-      end
+      "#{protocol}://#{request_subdomain}#{session_domain}#{port}"
     end
   end
 
@@ -238,4 +243,3 @@ module CartoDB
   end
 
 end
-

@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "3.23.62",
+  "version": "3.23.64",
   "description": "CartoDB UI frontend",
   "repository": {
     "type": "git",
@@ -12,11 +12,7 @@
     "email": "wadus@cartodb.com"
   },
   "contributors": [],
-  "licenses": [
-    {
-      "type": "BSD"
-    }
-  ],
+  "license": "BSD-3-Clause",
   "devDependencies": {
     "autoprefixer-core": "5.2.1",
     "aws-sdk": "2.0.0-rc11",

@@ -1,6 +1,6 @@
 var _ = require('underscore');
-var VisView = require('../vis/vis');
-var VisModel = require('../vis/vis-model');
+var VisView = require('../vis/vis-view');
+var VisModel = require('../vis/vis');
 var Loader = require('../core/loader');
 var VizJSON = require('./vizjson');
 

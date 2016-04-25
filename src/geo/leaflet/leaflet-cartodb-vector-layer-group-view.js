@@ -24,7 +24,7 @@ var LeafletCartoDBVectorLayerGroupView = CartoDBd3Layer.extend({
 
     layerModel.layers.bind('change:cartocss', function (child, style) {
       var index = child.get('order') - 1;
-      this.setCartoCSS(index, style, true);
+      this.setCartoCSS(index, style);
     }, this);
 
     layerModel.layers.bind('change:meta', function (child, meta) {

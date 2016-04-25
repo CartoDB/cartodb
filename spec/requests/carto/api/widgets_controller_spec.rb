@@ -26,6 +26,11 @@ shared_context 'layer hierarchy' do
     response_widget[:title].should == widget.title
     response_widget[:layer_id].should == widget.layer.id
     response_widget[:options].symbolize_keys.should == widget.options_json
+    if widget.source_id.present?
+      response_widget[:source][:id].should eq widget.source_id
+    else
+      response_widget[:source].should be_nil
+    end
   end
 
   def response_widget_should_match_payload(response_widget, payload)
@@ -33,6 +38,11 @@ shared_context 'layer hierarchy' do
     response_widget[:type].should == payload[:type]
     response_widget[:title].should == payload[:title]
     response_widget[:options].symbolize_keys.should == payload[:options].symbolize_keys
+    if payload[:source].present?
+      response_widget[:source][:id].should == payload[:source][:id]
+    else
+      response_widget[:source].should be_nil
+    end
   end
 
   def widget_payload(layer_id: @layer.id, type: 'formula', title: 'the title', options: { 'a field' => 'first', 'another field' => 'second' }, order: nil)
@@ -132,6 +142,20 @@ describe Carto::Api::WidgetsController do
         response_widget_should_match_widget(response_widget, widget)
         widget.destroy
       end
+    end
+
+    it 'creates a new widget with source_id' do
+      analysis = FactoryGirl.create(:analysis, visualization: @public_visualization, user_id: @user1.id)
+      payload = widget_payload.merge(source_id: analysis.natural_id)
+      post_json widgets_url(user_domain: @user1.username, map_id: @map.id, map_layer_id: @widget.layer_id, api_key: @user1.api_key), payload, http_json_headers do |response|
+        response.status.should eq 201
+        response_widget = response.body
+        response_widget[:source][:id].should eq analysis.natural_id
+        widget = Carto::Widget.find(response_widget[:id])
+        widget.source_id.should eq analysis.natural_id
+        widget.destroy
+      end
+      analysis.destroy
     end
 
     it 'returns 404 for unknown map id' do

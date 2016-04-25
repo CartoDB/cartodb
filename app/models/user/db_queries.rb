@@ -55,6 +55,13 @@ module CartoDB
         ]
       end
 
+      def grant_write_on_cdb_analysis_catalog_queries(db_user = nil)
+        granted_user = db_user.nil? ? @user.database_username : db_user
+        [
+          "GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE cartodb.cdb_analysis_catalog TO \"#{granted_user}\""
+        ]
+      end
+
       def revoke_permissions_on_cartodb_conf_queries(db_user)
         [
           "REVOKE ALL ON TABLE cartodb.CDB_CONF FROM \"#{db_user}\""

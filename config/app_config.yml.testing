@@ -4,7 +4,7 @@ defaults: &defaults
       port: 0000
   http_client_logs: true
   ogr2ogr:
-    binary:           'which ogr2ogr2'
+    binary:           'which ogr2ogr2.1'
     csv_guessing:     true
   debug_assets: true
   mandatory_keys:     [layer_opts, sql_api, varnish_management, redis, session_domain]

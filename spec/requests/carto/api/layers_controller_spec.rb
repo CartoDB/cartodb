@@ -158,8 +158,6 @@ describe Carto::Api::LayersController do
       user_3.save.reload
       organization.reload
 
-      default_url_options[:host] = "#{user_2.subdomain}.localhost.lan"
-
       table = create_table(privacy: UserTable::PRIVACY_PRIVATE, name: unique_name('table'), user_id: user_1.id)
       u1_t_1_perm_id = table.table_visualization.permission.id
 
@@ -227,7 +225,6 @@ describe Carto::Api::LayersController do
       @user.add_layer layer
       @user.add_layer layer2
 
-      default_url_options[:host] = "#{@user.subdomain}.localhost.lan"
       get api_v1_users_layers_index_url(params.merge(user_id: @user.id)) do |_|
         last_response.status.should be_success
         response_body = JSON.parse(last_response.body)
@@ -260,7 +257,6 @@ describe Carto::Api::LayersController do
       @table.map.add_layer layer
       @table.map.add_layer layer2
 
-      default_url_options[:host] = "#{@user.subdomain}.localhost.lan"
       get api_v1_maps_layers_index_url(params.merge(map_id: @table.map.id)) do |_|
         last_response.status.should be_success
         response_body = JSON.parse(last_response.body)

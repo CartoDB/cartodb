@@ -21,8 +21,8 @@ feature "Superadmin's users API" do
 
     post_json superadmin_users_path, { user: @user_atts }, superadmin_headers do |response|
       response.status.should == 422
-      response.body[:errors]['email'].should be_present
-      response.body[:errors]['email'].should include("is not present")
+      response.body[:errors][:email].should be_present
+      response.body[:errors][:email].should include("is not present")
     end
   end
 

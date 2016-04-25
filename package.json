@@ -30,6 +30,7 @@
   ],
   "dependencies": {
     "backbone": "1.2.3",
+    "browserify-shim": "3.8.10",
     "camshaft-reference": "^0.3.0",
     "d3": "3.5.8",
     "d3.cartodb": "CartoDB/d3.cartodb#gh-pages",
@@ -42,7 +43,6 @@
   },
   "devDependencies": {
     "browserify": "11.2.0",
-    "browserify-shim": "3.8.10",
     "cartoassets": "CartoDB/CartoAssets#master",
     "findup-sync": "0.1.3",
     "grunt": "0.4.5",

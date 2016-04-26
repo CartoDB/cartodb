@@ -11,7 +11,7 @@ module Carto
       @user = ::User.where(id: user_id).first
     end
 
-    def propose_valid_name_table_name(contendent)
+    def propose_valid_table_name(contendent)
       sanitized_contendent = Carto::DB::Sanitize.sanitize_identifier(contendent)
       physical_table_names = fetch_physical_table_names
 

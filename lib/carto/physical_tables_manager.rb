@@ -16,7 +16,7 @@ module Carto
       sanitized_contendent = Carto::DB::Sanitize.sanitize_identifier(contendent)
       physical_table_names = fetch_physical_table_names
 
-      find_unsed_name_with_prefix(physical_table_names, sanitized_contendent)
+      find_unused_name_with_prefix(physical_table_names, sanitized_contendent)
     end
 
     private

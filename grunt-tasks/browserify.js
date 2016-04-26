@@ -1,12 +1,12 @@
 module.exports = {
   src: {
-    src: 'src/index.js',
+    src: 'src/index_standalone.js',
     dest: '<%= config.dist %>/deep-insights.uncompressed.js',
     options: {
       watch: '<%= config.doWatchify %>',
       browserifyOptions: {
         debug: true, // to generate source-maps
-        standalone: 'cartodb'
+        standalone: 'cartodb',
       },
       plugin: [
         ['browserify-resolutions', '*']

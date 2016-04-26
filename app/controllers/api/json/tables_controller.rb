@@ -24,7 +24,7 @@ class Api::Json::TablesController < Api::ApplicationController
         @table = ::Table.new
         @table.user_id = current_user.id
 
-        @table.name = Carto::PhysicalTablesManager.new(@table.user_id).propose_valid_table_name(params[:name])
+        @table.name = Carto::PhysicalTablesManager.new(@table.user_id).propose_valid_table_name(contendent: params[:name])
 
         @table.description    = params[:description]   if params[:description]
         @table.the_geom_type  = params[:the_geom_type] if params[:the_geom_type]

@@ -275,7 +275,7 @@ class Table
       # ensure unique name, also ensures self.name can override any imported table name
       provided_name = name ? name : migrate_existing_table
 
-      uniname = Carto::PhysicalTablesManager.new(@user_table.user_id).propose_valid_table_name(provided_name)
+      uniname = Carto::PhysicalTablesManager.new(@user_table.user_id).propose_valid_table_name(contendent: provided_name)
 
       # with table #{uniname} table created now run migrator to CartoDBify
       hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
@@ -666,7 +666,7 @@ class Table
     value = value.downcase if value
     return if value == @user_table[:name] || value.blank?
 
-    new_name = Carto::PhysicalTablesManager.new(user_id).propose_valid_table_name(value)
+    new_name = Carto::PhysicalTablesManager.new(user_id).propose_valid_table_name(contendent: value)
 
     # Do not keep track of name changes until table has been saved
     unless new?

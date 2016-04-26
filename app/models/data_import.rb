@@ -477,7 +477,7 @@ class DataImport < Sequel::Model
     self.save
 
     candidates =  current_user.tables.select_map(:name)
-    table_name = Carto::PhysicalTablesManager.new(current_user.id).propose_valid_table_name(name)
+    table_name = Carto::PhysicalTablesManager.new(current_user.id).propose_valid_table_name(contendent: name)
     current_user.in_database.run(%{CREATE TABLE #{table_name} AS #{query}})
     if current_user.over_disk_quota?
       log.append "Over storage quota. Dropping table #{table_name}"

@@ -5,13 +5,14 @@ require_relative 'db/sanitize.rb'
 module Carto
   class PhysicalTablesManager
     DEFAULT_SEPARATOR = '_'.freeze
+    DEFAULT_TABLE_NAME = 'carto_table'.freeze
     MAX_RENAME_RETRIES = 10000
 
     def initialize(user_id)
       @user = ::User.where(id: user_id).first
     end
 
-    def propose_valid_table_name(contendent)
+    def propose_valid_table_name(contendent: DEFAULT_TABLE_NAME)
       sanitized_contendent = Carto::DB::Sanitize.sanitize_identifier(contendent)
       physical_table_names = fetch_physical_table_names
 

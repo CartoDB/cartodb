@@ -18,10 +18,10 @@ var CartoDBLayer = LayerModelBase.extend({
       this.set('initialStyle', attrs.cartocss);
     }
     this.bind('change:visible change:sql change:source', this._reloadMap, this);
-    this.bind('change:cartocss', this._setCartoCSS);
+    this.bind('change:cartocss', this._onCartoCSSChanged);
   },
 
-  _setCartoCSS: function (layer, cartocss) {
+  _onCartoCSSChanged: function (layer, cartocss) {
     if (!layer._dataProvider) {
       layer._reloadMap();
     }

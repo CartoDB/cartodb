@@ -46,7 +46,7 @@ var CartoDBLayer = LayerModelBase.extend({
   },
 
   getGeometryType: function () {
-    if (this._dataProvider) { 
+    if (this._dataProvider) {
       var index = this._dataProvider._layerIndex;
       var sublayer = this._dataProvider._vectorLayerView.renderers[index];
       return sublayer.inferGeometryType();

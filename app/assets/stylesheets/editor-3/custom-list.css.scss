@@ -1,10 +1,15 @@
 // Custom list styles
 // --------------------------------------------------
 
+@import 'cdb-utilities/mixins';
+@import 'cdb-variables/colors';
+@import 'cdb-variables/sizes';
+
 .CustomList {
   display: none;
   position: absolute;
   top: 36px;
+  right: 0;
   z-index: 100;
 }
 .CustomList.is-visible {
@@ -18,7 +23,9 @@
 }
 .CustomList-list {
   position: relative;
-  width: 100%;
+  width: 246px;
   max-height: 185px;
   overflow: hidden;
 }
+
+

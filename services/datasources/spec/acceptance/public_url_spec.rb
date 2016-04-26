@@ -8,7 +8,7 @@ describe Url::PublicUrl do
 
   describe '#basic_tests' do
     it 'Some basic download flows of this file provider, including error handling' do
-      url_provider = Url::PublicUrl.get_new()
+      url_provider = Url::PublicUrl.get_new
 
       file_url = 'http://cartodb.com/'
       invalid_url = 'http://cartodb.com/non_existant_page'
@@ -23,21 +23,14 @@ describe Url::PublicUrl do
       url_provider.fetch_headers(file_url)
       url_provider.etag_header.empty?.should eq false
 
-      expect {
-        url_provider.fetch_headers(invalid_url)
-      }.to raise_exception DownloadError
-      Data
-      expect {
-        url_provider.etag_header
-      }.to raise_exception UninitializedError
+      url_provider.fetch_headers(invalid_url).should == {}
 
-      expect {
-        url_provider.last_modified_header
-      }.to raise_exception UninitializedError
+      url_provider.etag_header.should be_empty
 
-      #puts data
+      url_provider.last_modified_header.should be_empty
+
+      # puts data
     end
   end
 
 end
-

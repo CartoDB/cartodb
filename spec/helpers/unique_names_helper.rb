@@ -18,7 +18,7 @@ module UniqueNamesHelper
 
   def unique_integer
     @@item_count += 1
-    test_run_id * 10000000 + @@item_count
+    test_run_id * 1000000 + @@item_count
   end
 
   def test_run_id

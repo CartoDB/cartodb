@@ -1,8 +1,4 @@
-var cdb = require('cartodb.js');
-
-cdb.deepInsights = {
+module.exports = {
   VERSION: require('../package.json').version,
   createDashboard: require('./api/create-dashboard')
 };
-
-module.exports = cdb;

@@ -25,13 +25,13 @@ module Carto
 
     describe '#propose_valid_table_name' do
       it 'should sanitize name' do
-        valid_name = @physical_tables_manager.propose_valid_table_name("Mªnolo !Es'co`bar##!")
+        valid_name = @physical_tables_manager.propose_valid_table_name(contendent: "Mªnolo !Es'co`bar##!")
 
         valid_name.should eq 'm_nolo__es_co_bar___'
       end
 
       it 'should remove disallowed starting characters' do
-        valid_name = @physical_tables_manager.propose_valid_table_name("____Mªnolo !Es'co`bar##!")
+        valid_name = @physical_tables_manager.propose_valid_table_name(contendent: "____Mªnolo !Es'co`bar##!")
 
         valid_name.should eq 'm_nolo__es_co_bar___'
       end
@@ -43,9 +43,21 @@ module Carto
             CREATE TABLE m_nolo__es_co_bar____3 ("description" text);
         })
 
-        valid_name = @physical_tables_manager.propose_valid_table_name("____Mªnolo !Es'co`bar##!")
+        valid_name = @physical_tables_manager.propose_valid_table_name(contendent: "____Mªnolo !Es'co`bar##!")
 
         valid_name.should eq 'm_nolo__es_co_bar____2'
+      end
+
+      it 'should propose valid names when no contendent is specified' do
+        run_in_user_database(%{
+            CREATE TABLE carto_table   ("description" text);
+            CREATE TABLE carto_table_1 ("description" text);
+            CREATE TABLE carto_table_3 ("description" text);
+        })
+
+        valid_name = @physical_tables_manager.propose_valid_table_name
+
+        valid_name.should eq 'carto_table_2'
       end
     end
   end

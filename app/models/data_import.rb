@@ -26,7 +26,7 @@ require_relative '../../services/platform-limits/platform_limits'
 require_relative '../../services/importer/lib/importer/overviews'
 require_relative '../../lib/cartodb/event_tracker'
 
-require_dependency 'lib/carto/physical_tables_manager'
+require_dependency 'carto/physical_tables_manager'
 
 include CartoDB::Datasources
 

@@ -19,7 +19,7 @@ require_relative '../model_factories/map_factory'
 require_relative '../../lib/cartodb/stats/user_tables'
 require_relative '../../lib/cartodb/stats/importer'
 
-require_dependency 'lib/carto/physical_tables_manager'
+require_dependency 'carto/physical_tables_manager'
 
 class Table
   extend Forwardable

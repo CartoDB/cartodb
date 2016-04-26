@@ -5,6 +5,9 @@ class Carto::Analysis < ActiveRecord::Base
   belongs_to :visualization, class_name: Carto::Visualization
   belongs_to :user, class_name: Carto::User
 
+  after_save :notify_map_change
+  after_destroy :notify_map_change
+
   def self.find_by_natural_id(visualization_id, natural_id)
     analysis = find_by_sql(
       [
@@ -36,6 +39,11 @@ class Carto::Analysis < ActiveRecord::Base
     pj[:id]
   end
 
+  def map
+    return nil unless visualization
+    visualization.map
+  end
+
   private
 
   # Analysis definition contains attributes not needed by Analysis API (see #7128).
@@ -48,5 +56,9 @@ class Carto::Analysis < ActiveRecord::Base
       valid[:params][:source] = filter_valid_properties(valid[:params][:source])
     end
     valid
+  end
+
+  def notify_map_change
+    map.notify_map_change if map
   end
 end

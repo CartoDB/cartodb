@@ -38,7 +38,7 @@ module.exports = cdb.core.View.extend({
 
   _initBinds: function () {
     this.widgetModel.bind('change:search', this.toggle, this);
-    this.widgetModel.bind('change:isAutoStyle', this.render, this);
+    this.widgetModel.bind('change:autoStyle', this.render, this);
     this.add_related_model(this.widgetModel);
 
     this.dataviewModel.bind('change:data', this.render, this);

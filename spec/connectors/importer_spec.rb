@@ -15,6 +15,7 @@ describe CartoDB::Connector::Importer do
   end
 
   after(:all) do
+    bypass_named_maps
     @user.destroy
   end
 
@@ -66,7 +67,7 @@ describe CartoDB::Connector::Importer do
       csv << ['nombre', 'apellido', 'profesion']
       csv << ['Manolo', 'Escobar', 'Artista']
     end
-  
+
     data_import = DataImport.create(
       :user_id       => @user.id,
       :data_source   => filepath,
@@ -312,5 +313,32 @@ describe CartoDB::Connector::Importer do
     vis.map.data_layers.count.should eq @user.max_layers
 
     data_import.rejected_layers.split(',').count.should eq 3
+  end
+
+  describe 'visualization importing' do
+    it 'imports a visualization export' do
+      filepath = "#{Rails.root}/services/importer/spec/fixtures/visualization_export_with_csv_table.carto"
+
+      data_import = DataImport.create(
+        user_id: @user.id,
+        data_source: filepath,
+        updated_at: Time.now.utc,
+        append: false,
+        create_visualization: true
+      )
+      data_import.values[:data_source] = filepath
+
+      data_import.run_import!
+      data_import.success.should eq true
+
+      # Fixture file checks
+      data_import.table_name.should eq 'twitter_t3chfest_reduced'
+      visualization = Carto::Visualization.find(data_import.visualization_id)
+      visualization.name.should eq "exported map"
+      visualization.description.should eq "A map that has been exported"
+      visualization.tags.should include('exported')
+      map = visualization.map
+      map.center.should eq "[39.75365697136308, -2.318115234375]"
+    end
   end
 end

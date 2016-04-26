@@ -65,6 +65,13 @@ module Carto
 
   module VisualizationExporter
     include ExporterConfig
+    EXPORT_EXTENSION = '.carto.json'.freeze
+
+    VISUALIZATION_EXTENSIONS = [Carto::VisualizationExporter::EXPORT_EXTENSION].freeze
+
+    def self.has_visualization_extension?(filename)
+      VISUALIZATION_EXTENSIONS.any? { |extension| filename =~ /#{extension}/ }
+    end
 
     def export(visualization, user,
                format: 'csv',
@@ -77,7 +84,7 @@ module Carto
 
       data_exporter.export_visualization_tables(visualization, tmp_dir, format)
       visualization_json = visualization_export_service.export_visualization_json_string(visualization_id, user)
-      visualization_json_file = "#{tmp_dir}/#{visualization_id}.carto.json"
+      visualization_json_file = "#{tmp_dir}/#{visualization_id}#{EXPORT_EXTENSION}"
       File.open(visualization_json_file, 'w') { |file| file.write(visualization_json) }
 
       zipfile = "#{visualization_id}.carto"

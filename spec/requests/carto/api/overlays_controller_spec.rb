@@ -110,7 +110,7 @@ describe Carto::Api::OverlaysController do
         type: 'header',
         template: 'wadus',
         order: 0,
-        options: { "display" => true }
+        options: { display: true }
       }
 
       post_json overlays_url(params), payload do |response|
@@ -127,7 +127,7 @@ describe Carto::Api::OverlaysController do
       overlay.type.should eq payload[:type]
       overlay.template.should eq payload[:template]
       overlay.order.should eq payload[:order]
-      overlay.options.should eq payload[:options]
+      overlay.options.symbolize_keys.should eq payload[:options]
     end
 
     it 'fails to create two overlays of the same unique type' do
@@ -174,7 +174,7 @@ describe Carto::Api::OverlaysController do
         type: 'header',
         template: 'wadus',
         order: 0,
-        options: { "display" => true }
+        options: { display: true }
       }
 
       put_json overlay_url(params.merge(id: overlay.id)), payload do |response|
@@ -190,7 +190,7 @@ describe Carto::Api::OverlaysController do
       overlay.type.should eq payload[:type]
       overlay.template.should eq payload[:template]
       overlay.order.should eq payload[:order]
-      overlay.options.should eq payload[:options]
+      overlay.options.symbolize_keys.should eq payload[:options]
     end
 
     it 'fails to update two overlays of the same unique type' do

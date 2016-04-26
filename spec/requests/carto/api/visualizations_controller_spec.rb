@@ -1348,12 +1348,12 @@ describe Carto::Api::VisualizationsController do
         get_json get_vizjson3_url(@user_1, @visualization), @headers do |response|
           response.status.should == 200
           vizjson3 = response.body
-          vizjson3[:datasource]['user_name'].should == @user_1.username
-          vizjson3[:datasource]['maps_api_template'].should_not be_nil
-          vizjson3[:datasource]['stat_tag'].should_not be_nil
+          vizjson3[:datasource][:user_name].should == @user_1.username
+          vizjson3[:datasource][:maps_api_template].should_not be_nil
+          vizjson3[:datasource][:stat_tag].should_not be_nil
 
-          vizjson3[:user]['fullname'].should == (@user_1.name.nil? ? @user_1.username : @user_1.name)
-          vizjson3[:user]['avatar_url'].should_not be_nil
+          vizjson3[:user][:fullname].should == (@user_1.name.nil? ? @user_1.username : @user_1.name)
+          vizjson3[:user][:avatar_url].should_not be_nil
         end
       end
 
@@ -1378,7 +1378,7 @@ describe Carto::Api::VisualizationsController do
         get_json get_vizjson3_url(@user_1, @visualization), @headers do |response|
           response.status.should == 200
           vizjson3 = response.body
-          vizjson3[:datasource]['template_name'].should_not be_nil
+          vizjson3[:datasource][:template_name].should_not be_nil
         end
       end
 

@@ -112,9 +112,12 @@ module Carto
           user:           user_info_vizjson(user)
         }
 
-        unless display_named_map?(@visualization, forced_privacy_version)
-          vizjson[:analyses] = @visualization.analyses.map(&:analysis_definition_json)
-        end
+        visualization_analyses = @visualization.analyses
+        vizjson[:analyses] = if display_named_map?(@visualization, forced_privacy_version)
+                               visualization_analyses.map { |a| named_map_analysis_json(a) }
+                             else
+                               visualization_analyses.map(&:analysis_definition_json)
+                             end
 
         auth_tokens = @visualization.needed_auth_tokens
         vizjson[:auth_tokens] = auth_tokens unless auth_tokens.empty?
@@ -219,6 +222,19 @@ module Carto
             VizJSON3LayerPresenter.new(layer, options, configuration).to_vizjson
           end
         end
+      end
+
+      def named_map_analysis_json(analysis)
+        analysis_definition_json_without_sources(analysis.analysis_definition_json)
+      end
+
+      def analysis_definition_json_without_sources(analysis_definition_json)
+        if analysis_definition_json[:type] == 'source'
+          analysis_definition_json.delete(:params)
+        elsif analysis_definition_json[:params] && analysis_definition_json[:params][:source]
+          analysis_definition_json_without_sources(analysis_definition_json[:params][:source])
+        end
+        analysis_definition_json
       end
 
       def configuration
@@ -344,12 +360,17 @@ module Carto
       end
 
       def data_for_carto_layer(layer_vizjson)
+        layer_options = layer_vizjson[:options]
         data = {
           id: layer_vizjson[:id],
-          layer_name: layer_vizjson[:options][:layer_name],
-          interactivity: layer_vizjson[:options][:interactivity],
+          layer_name: layer_options[:layer_name],
+          interactivity: layer_options[:interactivity],
           visible: layer_vizjson[:visible]
         }
+
+        if layer_options && layer_options[:source]
+          data[:options] = { source: layer_options[:source] }
+        end
 
         infowindow = layer_vizjson[:infowindow]
         if infowindow && infowindow['fields'] && !infowindow['fields'].empty?

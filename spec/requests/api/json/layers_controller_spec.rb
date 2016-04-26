@@ -50,7 +50,7 @@ describe Api::Json::LayersController do
     end
 
     let(:layer_json) do
-      { kind: kind, options: { 'table_name' => nil, 'user_name' => nil }, order: 1, infowindow: {}, tooltip: {} }
+      { kind: kind, options: { table_name: nil, user_name: nil }, order: 1, infowindow: {}, tooltip: {} }
     end
 
     it 'creates layers' do
@@ -76,7 +76,7 @@ describe Api::Json::LayersController do
         layer_id = layer_response.delete(:id)
         layer_id.should_not be_nil
 
-        layer_response.delete(:options).should eq ({ "table_name" => @table.name })
+        layer_response.delete(:options).should eq ({ table_name: @table.name })
 
         layer_response.should eq layer_json.except(:options)
 
@@ -102,7 +102,7 @@ describe Api::Json::LayersController do
 
       new_order = 2
       new_layer_json = layer_json.merge(
-        options: { 'random' => '1' },
+        options: { random: '1' },
         order: new_order
       )
       put_json update_map_layer_url(map.id, @layer.id), new_layer_json do |response|
@@ -150,7 +150,7 @@ describe Api::Json::LayersController do
       @layer = map.layers.first
 
       new_layer_json = layer_json.merge(
-        options: { 'table_name' => 'other_table_name', 'user_name' => 'other_username' }
+        options: { table_name: 'other_table_name', user_name: 'other_username' }
       )
       put_json update_map_layer_url(map.id, @layer.id), new_layer_json do |response|
         response.status.should eq 200

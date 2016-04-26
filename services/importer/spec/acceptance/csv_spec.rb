@@ -102,21 +102,20 @@ describe 'csv regression tests' do
   end
 
   it 'imports files from Google Fusion Tables' do
-    #TODO: this spec depends on network connection
-    url = "https://www.google.com/fusiontables/exporttable" +
-          "?query=select+*+from+1dimNIKKwROG1yTvJ6JlMm4-B4LxMs2YbncM4p9g"
-    downloader  = Downloader.new(url)
-    runner      = Runner.new({
-                               pg: @user.db_service.db_configuration_for,
-                               downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new(@user),
-                               user: @user
-                             })
-    runner.run
+    serve_file 'spec/support/data/dec_2012_modis_forest_change_fusion_tables.csv' do |url|
+      downloader  = Downloader.new(url)
+      runner      = Runner.new(
+        pg: @user.db_service.db_configuration_for,
+        downloader: downloader,
+        log: CartoDB::Importer2::Doubles::Log.new(@user),
+        user: @user
+      )
+      runner.run
 
-    result = runner.results.first
-    result.success?.should be_true, "error code: #{result.error_code}, trace: #{result.log_trace}"
-    geometry_type_for(runner, @user).should eq 'POINT'
+      result = runner.results.first
+      result.success?.should be_true, "error code: #{result.error_code}, trace: #{result.log_trace}"
+      geometry_type_for(runner, @user).should eq 'POINT'
+    end
   end
 
   it 'imports files with a the_geom column in GeoJSON' do

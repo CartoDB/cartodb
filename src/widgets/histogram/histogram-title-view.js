@@ -40,10 +40,7 @@ module.exports = cdb.core.View.extend({
 
   _initBinds: function () {
     this.widgetModel.bind('change:title change:collapsed', this.render, this);
-    this.dataviewModel.bind('change:autoStyle', function () {
-      this.render();
-      this.dataviewModel._onStyleChanged();
-    }, this);
+    this.dataviewModel.bind('change:autoStyle', this.render, this);
     this.add_related_model(this.dataviewModel);
   },
 

@@ -154,7 +154,8 @@ module CartoDB
       end
 
       def rename(result, current_name, new_name, _rename_attempts = 0)
-        valid_new_name = Carto::PhysicalTablesManager.new(table_registrar.user.id).propose_valid_table_name(contendent: new_name)
+        valid_new_name = Carto::PhysicalTablesManager.new(table_registrar.user.id)
+                                                     .propose_valid_table_name(contendent: new_name)
 
         database.execute(%{
           ALTER TABLE "#{ORIGIN_SCHEMA}"."#{current_name}" RENAME TO "#{valid_new_name}"

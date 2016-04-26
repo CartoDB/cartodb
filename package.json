@@ -20,7 +20,7 @@
     "browserify-shim": "3.8.10",
     "camshaft-reference": "^0.3.0",
     "cartoassets": "cartodb/CartoAssets#master",
-    "cartodb-deep-insights.js": "cartodb/deep-insights.js#master",
+    "cartodb-deep-insights.js": "cartodb/deep-insights.js#no-cartodbjs-extend",
     "cartodb-pecan": "0.2.x",
     "cartodb.js": "cartodb/cartodb.js#v4",
     "d3-queue": "^2.0.3",

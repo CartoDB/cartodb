@@ -12,25 +12,10 @@ describe('widgets/widgets-collection', function () {
     this.collection = new WidgetsCollection();
     spyOn(this.collection, 'sort');
     this.collection.reset([
-      {order: 0, isAutoStyle: false},
+      {order: 0, autoStyle: false},
       {order: 1},
-      {order: 2, isAutoStyle: true}
+      {order: 2, autoStyle: true}
     ]);
-  });
-
-  it('should only allow applying colors in one widget at a time', function () {
-    var m1 = this.collection.at(0);
-    var m2 = this.collection.at(1);
-    var m3 = this.collection.at(2);
-
-    expect(m1.get('isAutoStyle')).toBeFalsy();
-    expect(m2.get('isAutoStyle')).toBeUndefined();
-    expect(m3.get('isAutoStyle')).toBeTruthy();
-
-    m1.set('isAutoStyle', true);
-    expect(m1.get('isAutoStyle')).toBeTruthy();
-    expect(m2.get('isAutoStyle')).toBeUndefined();
-    expect(m3.get('isAutoStyle')).toBeFalsy();
   });
 
   it('should sort the collection and trigger orderChanged event when any widget order changes', function () {

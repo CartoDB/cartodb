@@ -17,14 +17,5 @@ describe('vis/vis', function () {
 
     // no objects are being loaded again so 'loading' is false
     expect(this.vis.get('loading')).toEqual(false);
-
-    this.vis.trackLoadingObject(object);
-
-    expect(this.vis.get('loading')).toEqual(true);
-
-    this.vis.clearLoadingObjects();
-
-    // no objects are being loaded again so 'loading' is false
-    expect(this.vis.get('loading')).toEqual(false);
   });
 });

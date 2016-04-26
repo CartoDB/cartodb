@@ -39,6 +39,7 @@ var Vis = View.extend({
     this._dataviewsCollection = new DataviewCollection();
     this._layersCollection = new LayersCollection();
     this._analysisCollection = new Backbone.Collection();
+    this._analysisPoller = new AnalysisPoller();
 
     this._analysisCollection.bind('add', this._bindAnalysisModelToLoader, this);
 
@@ -259,13 +260,13 @@ var Vis = View.extend({
   },
 
   _onMapInstanceCreated: function () {
-    AnalysisPoller.reset();
-    this.model.clearLoadingObjects();
+    this._analysisPoller.reset();
     this._analysisCollection.each(function (analysisModel) {
+      analysisModel.unbind('change:status', this._onAnalysisStatusChanged, this);
       if (!analysisModel.isDone() && this._isAnalysisSourceOfLayerOrDataview(analysisModel)) {
-        AnalysisPoller.poll(analysisModel);
+        this._analysisPoller.poll(analysisModel);
         this.model.trackLoadingObject(analysisModel);
-        analysisModel.once('change:status', this._onAnalysisStatusChanged, this);
+        analysisModel.bind('change:status', this._onAnalysisStatusChanged, this);
       }
     }, this);
   },

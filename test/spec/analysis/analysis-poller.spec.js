@@ -9,6 +9,7 @@ describe('src/analysis/analysis-poller', function () {
     this.map = jasmine.createSpyObj('map', ['something']);
     this.reference = jasmine.createSpyObj('reference', ['getParamNamesForAnalysisType']);
     this.analysisModel1 = new AnalysisModel({ id: 'a1' }, { map: this.map, camshaftReference: this.reference });
+    this.analysisPoller = new AnalysisPoller();
   });
 
   afterEach(function () {
@@ -29,7 +30,7 @@ describe('src/analysis/analysis-poller', function () {
           options.success();
         });
 
-        AnalysisPoller.poll(this.analysisModel1);
+        this.analysisPoller.poll(this.analysisModel1);
 
         expect(this.analysisModel1.fetch).toHaveBeenCalled();
         expect(this.analysisModel1.fetch.calls.count()).toEqual(1);
@@ -57,7 +58,7 @@ describe('src/analysis/analysis-poller', function () {
           'status': 'pending'
         });
 
-        AnalysisPoller.poll(this.analysisModel1);
+        this.analysisPoller.poll(this.analysisModel1);
 
         expect(this.analysisModel1.fetch).toHaveBeenCalled();
         expect(this.analysisModel1.fetch.calls.count()).toEqual(1);
@@ -80,7 +81,7 @@ describe('src/analysis/analysis-poller', function () {
         options.success();
       });
 
-      AnalysisPoller.poll(this.analysisModel1);
+      this.analysisPoller.poll(this.analysisModel1);
 
       expect(this.analysisModel1.fetch).toHaveBeenCalled();
       expect(this.analysisModel1.fetch.calls.count()).toEqual(1);
@@ -91,7 +92,7 @@ describe('src/analysis/analysis-poller', function () {
       // Polling is working
       expect(this.analysisModel1.fetch.calls.count()).toEqual(2);
 
-      AnalysisPoller.reset();
+      this.analysisPoller.reset();
 
       // Wait until next fetch is supposed to be triggered
       jasmine.clock().tick(AnalysisPoller.CONFIG.START_DELAY * AnalysisPoller.CONFIG.DELAY_MULTIPLIER + 1);

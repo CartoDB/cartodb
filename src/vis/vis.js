@@ -9,11 +9,6 @@ var VisModel = Backbone.Model.extend({
     this._loadingObjects = [];
   },
 
-  clearLoadingObjects: function () {
-    this._loadingObjects = [];
-    this.set('loading', false);
-  },
-
   trackLoadingObject: function (object) {
     if (this._loadingObjects.indexOf(object) === -1) {
       this._loadingObjects.push(object);

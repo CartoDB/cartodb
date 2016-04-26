@@ -11,7 +11,6 @@ _.extend(cdb.geo, require('../../../src/geo/gmaps'));
 var Overlay = require('../../../src/vis/vis/overlay');
 var VisView = require('../../../src/vis/vis-view');
 var VizJSON = require('../../../src/api/vizjson');
-var AnalysisPoller = require('../../../src/analysis/analysis-poller');
 
 require('../../../src/vis/overlays'); // Overlay.register calls
 require('../../../src/vis/layers'); // Layers.register calls
@@ -586,7 +585,6 @@ describe('vis/vis-view', function () {
         'vector': false
       };
       spyOn($, 'ajax');
-      spyOn(AnalysisPoller, 'poll').and.callThrough();
     });
 
     it('should start polling for analyses that are not ready and are the source of a layer', function () {
@@ -643,17 +641,10 @@ describe('vis/vis-view', function () {
         },
         'last_updated': '1970-01-01T00:00:00.000Z'
       });
-
       expect(this.vis.trackLoadingObject).toHaveBeenCalled();
 
-      // Only polling for 'a2' has started cause it's "pending" and it's the source of the layer
-      expect(AnalysisPoller.poll.calls.count()).toEqual(1);
-      expect(AnalysisPoller.poll.calls.argsFor(0)[0].get('id')).toEqual('a2');
-
-      AnalysisPoller.poll.calls.argsFor(0)[0].set('status', 'ready');
-
-      expect(this.vis.untrackLoadingObject).toHaveBeenCalled();
-      expect(this.vis.clearLoadingObjects).toHaveBeenCalled();
+      // Polling has started
+      expect($.ajax.calls.argsFor(1)[0].url).toEqual('http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/analysis/node/b75b1ae05854aea96266808ec0686b91f3ee0a81');
     });
 
     it('should NOT start polling for analysis that are "ready" and are the source of a layer', function () {
@@ -710,9 +701,9 @@ describe('vis/vis-view', function () {
         },
         'last_updated': '1970-01-01T00:00:00.000Z'
       });
-      $.ajax.calls.reset();
 
-      expect(AnalysisPoller.poll.calls.count()).toEqual(0);
+      // Polling has started
+      expect($.ajax.calls.count()).toEqual(1);
     });
 
     it('should reload the map when analysis is done', function () {
@@ -770,17 +761,12 @@ describe('vis/vis-view', function () {
         'last_updated': '1970-01-01T00:00:00.000Z'
       });
       expect($.ajax.calls.argsFor(0)[0].url).toEqual('http://cdb.localhost.lan:8181/api/v1/map?stat_tag=70af2a72-0709-11e6-a834-080027880ca6');
-      $.ajax.calls.reset();
 
-      // Only polling for 'a2' has started cause it's "pending" and it's the source of the layer
-      expect(AnalysisPoller.poll.calls.count()).toEqual(1);
-      var analysisModel = AnalysisPoller.poll.calls.argsFor(0)[0];
-      expect(analysisModel.get('id')).toEqual('a2');
+      // Analysis endpoint responds
+      $.ajax.calls.argsFor(1)[0].success({status: 'ready'});
 
-      analysisModel.set('status', 'ready');
-
-      expect($.ajax).toHaveBeenCalled();
-      expect($.ajax.calls.argsFor(0)[0].url).toEqual('http://cdb.localhost.lan:8181/api/v1/map?stat_tag=70af2a72-0709-11e6-a834-080027880ca6');
+      // A new request is triggered because analysis has succeeded
+      expect($.ajax.calls.argsFor(2)[0].url).toEqual('http://cdb.localhost.lan:8181/api/v1/map?stat_tag=70af2a72-0709-11e6-a834-080027880ca6');
     });
   });
 

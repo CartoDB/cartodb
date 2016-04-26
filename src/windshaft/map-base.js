@@ -73,6 +73,7 @@ var WindshaftMap = Backbone.Model.extend({
       success: function (mapInstance) {
         this.set(mapInstance);
         this._modelUpdater.updateModels(this, sourceLayerId, forceFetch);
+        this.trigger('instanceCreated');
       }.bind(this),
       error: function (error) {
         console.log('Error creating the map instance on Windshaft: ' + error);

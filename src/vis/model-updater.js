@@ -80,6 +80,11 @@ ModelUpdater.prototype._updateAnalysisModels = function (windshaftMap) {
 };
 
 ModelUpdater.prototype._getProtocol = function () {
+  // When running tests window.locationn.protocol using the jasmine test runner,
+  // window.location.protocol returns 'file:'. This is a little hack to make tests happy.
+  if (window.location.protocol === 'file:') {
+    return 'http';
+  }
   return window.location.protocol.replace(':', '');
 };
 

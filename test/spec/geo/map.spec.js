@@ -206,7 +206,7 @@ describe('core/geo/map', function() {
   });
 
   describe('reload', function () {
-    it ('should be debounced', function (done) {
+    it('should be debounced', function (done) {
       var windshaftMap = jasmine.createSpyObj('windshaftMap', ['createInstance']);
       var map = new Map({}, {
         windshaftMap: windshaftMap
@@ -217,13 +217,13 @@ describe('core/geo/map', function() {
         map.reload();
       }
 
-      _.defer(function () {
+      setTimeout(function () {
         expect(windshaftMap.createInstance).toHaveBeenCalled();
 
         // windshaftMap.createInstance is debounced and has only been called once
         expect(windshaftMap.createInstance.calls.count()).toEqual(1);
         done();
-      });
+      }, 25);
     });
   });
 

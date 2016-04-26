@@ -35,6 +35,7 @@
     "autoprefixer-core": "5.2.1",
     "aws-sdk": "2.0.0-rc11",
     "browserify": "11.0.1",
+    "browserify-resolutions": "^1.1.0",
     "csswring": "^3.0.5",
     "git-rev": "0.2.1",
     "grunt": "0.4.5",

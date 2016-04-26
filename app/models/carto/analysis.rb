@@ -5,6 +5,9 @@ class Carto::Analysis < ActiveRecord::Base
   belongs_to :visualization, class_name: Carto::Visualization
   belongs_to :user, class_name: Carto::User
 
+  after_save :notify_map_change
+  after_destroy :notify_map_change
+
   def self.find_by_natural_id(visualization_id, natural_id)
     analysis = find_by_sql(
       [
@@ -19,7 +22,11 @@ class Carto::Analysis < ActiveRecord::Base
 
   def analysis_definition_json
     return nil unless analysis_definition
-    JSON.parse(analysis_definition).symbolize_keys
+    JSON.parse(analysis_definition).deep_symbolize_keys
+  end
+
+  def analysis_definition_for_api
+    filter_valid_properties(analysis_definition_json)
   end
 
   def analysis_definition_json=(analysis_definition)
@@ -30,5 +37,28 @@ class Carto::Analysis < ActiveRecord::Base
     pj = analysis_definition_json
     return nil unless pj
     pj[:id]
+  end
+
+  def map
+    return nil unless visualization
+    visualization.map
+  end
+
+  private
+
+  # Analysis definition contains attributes not needed by Analysis API (see #7128).
+  # This methods extract the needed ones.
+  VALID_ANALYSIS_PROPERTIES = [:id, :type, :params].freeze
+
+  def filter_valid_properties(definition)
+    valid = definition.select { |property, _| VALID_ANALYSIS_PROPERTIES.include?(property) }
+    if valid[:params] && valid[:params][:source]
+      valid[:params][:source] = filter_valid_properties(valid[:params][:source])
+    end
+    valid
+  end
+
+  def notify_map_change
+    map.notify_map_change if map
   end
 end

@@ -4,6 +4,9 @@ FactoryGirl.define do
   end
 
   factory :carto_map, class: Carto::Map do
+    view_bounds_sw '[-85.0511, -179]'
+    view_bounds_ne '[85.0511, 179]'
+
     factory :carto_map_with_layers do
 
       after(:create) do |map, evaluator|

@@ -215,7 +215,8 @@ module CartoDB
                       mode: @options[:mode],
                       host: @target_dbhost,
                       target_org: @pack_config['organization']['name'],
-                      logger: @logger, data: @options[:data], metadata: @options[:metadata]).run!
+                      logger: @logger, data: @options[:data], metadata: @options[:metadata],
+                      update_metadata: @options[:update_metadata]).run!
 
         # Fix permissions and metadata settings for owner
         if @options[:update_metadata]
@@ -230,7 +231,8 @@ module CartoDB
                         mode: @options[:mode],
                         host: @target_dbhost,
                         target_org: @pack_config['organization']['name'],
-                        logger: @logger, data: @options[:data], metadata: @options[:metadata]).run!
+                        logger: @logger, data: @options[:data], metadata: @options[:metadata],
+                        update_metadata: @options[:update_metadata]).run!
         end
       rescue => e
         rollback_metadata("org_#{@organization_id}_metadata_undo.sql") if @options[:metadata]

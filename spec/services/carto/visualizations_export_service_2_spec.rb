@@ -404,6 +404,7 @@ describe Carto::VisualizationsExportService2 do
       include Carto::Factories::Visualizations
 
       before(:all) do
+        bypass_named_maps
         @user = FactoryGirl.create(:carto_user, private_maps_enabled: true)
         @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
         @analysis = FactoryGirl.create(:source_analysis, visualization: @visualization, user: @user)
@@ -444,7 +445,6 @@ describe Carto::VisualizationsExportService2 do
         exported_json[:version].split('.')[0].to_i.should eq 2
 
         exported_visualization = exported_json[:visualization]
-
         verify_visualization_vs_export(@visualization, exported_visualization)
       end
     end

@@ -63,7 +63,7 @@ describe Carto::VisualizationExport do
     CartoDB::Importer2::Unp.new.open(exported_file) do |files|
       files.length.should eq (data_files.count + 1)
       names = files.map(&:path)
-      names.select { |f| f =~ /\.carto\.json$/ }.length.should eq 1
+      names.count { |f| f =~ /\.carto\.json$/ }.should eq 1
       names.should include(file1.split('/').last)
       names.should include(file2.split('/').last)
     end

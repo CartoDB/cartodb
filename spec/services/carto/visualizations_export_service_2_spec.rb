@@ -644,9 +644,11 @@ describe Carto::VisualizationsExportService2 do
       destroy_full_visualization(@map, @table, @table_visualization, @visualization)
     end
 
+    let(:export_service) { Carto::VisualizationsExportService2.new }
+
     it 'imports an exported visualization should create a new visualization with matching metadata' do
-      exported_string = Carto::VisualizationsExportService2.new.export_visualization_json_string(@visualization.id, @user)
-      built_viz = Carto::VisualizationsExportService2.new.build_visualization_from_json_export(exported_string)
+      exported_string = export_service.export_visualization_json_string(@visualization.id, @user)
+      built_viz = export_service.build_visualization_from_json_export(exported_string)
       imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user, built_viz)
 
       imported_viz = Carto::Visualization.find(imported_viz.id)
@@ -654,9 +656,9 @@ describe Carto::VisualizationsExportService2 do
     end
 
     it 'imports an exported visualization into another account should change layer user_name option' do
-      exported_string = Carto::VisualizationsExportService2.new.export_visualization_json_string(@visualization.id, @user)
-      built_viz = Carto::VisualizationsExportService2.new.build_visualization_from_json_export(exported_string)
-      imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user2, built_viz)
+      exported_string = export_service.export_visualization_json_string(@visualization.id, @user)
+      built_viz = export_service.build_visualization_from_json_export(exported_string)
+      imported_viz = export_service.save_import(@user2, built_viz)
 
       imported_viz = Carto::Visualization.find(imported_viz.id)
       verify_visualizations_match(imported_viz, @visualization, importing_user: @user2)

@@ -136,16 +136,14 @@ describe 'zip regression tests' do
     it 'imports one table from a visualization export (ignoring the visualization json)' do
       filepath    = path_to('visualization_export_with_csv_table.carto')
       downloader  = ::CartoDB::Importer2::Downloader.new(filepath)
-      runner      = ::CartoDB::Importer2::Runner.new({
-                                 pg: @user.db_service.db_configuration_for,
-                                 downloader: downloader,
-                                 log: CartoDB::Importer2::Doubles::Log.new(@user),
-                                 user: @user
-                               })
+      runner      = ::CartoDB::Importer2::Runner.new(pg: @user.db_service.db_configuration_for,
+                                                     downloader: downloader,
+                                                     log: CartoDB::Importer2::Doubles::Log.new(@user),
+                                                     user: @user)
       runner.run
 
       runner.results.length.should eq 1
-      runner.results.select(&:success?).length.should eq 1
+      runner.results.count(&:success?).should eq 1
 
       table_results = runner.results.select { |r| !r.respond_to?(:visualization_id) }
       table_results.length.should eq 1
@@ -154,7 +152,7 @@ describe 'zip regression tests' do
       visualization_results.length.should eq 0
 
       table_result = table_results.first
-      name = @user.in_database[%Q{ SELECT * FROM pg_class WHERE relname='#{table_result.table_name}' }].first[:relname]
+      name = @user.in_database[%{ SELECT * FROM pg_class WHERE relname='#{table_result.table_name}' }].first[:relname]
       name.should eq table_result.table_name
     end
   end

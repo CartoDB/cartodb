@@ -59,7 +59,7 @@ module Carto
         request.on_body do |chunk|
           downloaded_file.write(chunk)
         end
-        request.on_complete do |response|
+        request.on_complete do
           downloaded_file.close
         end
         request.run

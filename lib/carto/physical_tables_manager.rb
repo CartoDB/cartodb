@@ -5,7 +5,7 @@ require_relative 'db/sanitize.rb'
 module Carto
   class PhysicalTablesManager
     DEFAULT_SEPARATOR = '_'.freeze
-    MAX_RENAME_RETRIES = 99999
+    MAX_RENAME_RETRIES = 10000
 
     def initialize(user_id)
       @user = ::User.where(id: user_id).first
@@ -23,7 +23,7 @@ module Carto
     def find_unsed_name_with_prefix(names, prefix, separator: DEFAULT_SEPARATOR)
       proposal = prefix
 
-      [1..MAX_RENAME_RETRIES].each do |appendix|
+      (1..MAX_RENAME_RETRIES).each do |appendix|
         return proposal unless names.include?(proposal)
 
         proposal = Carto::DB::Sanitize.append_with_truncate_and_sanitize(prefix, "#{separator}#{appendix}")

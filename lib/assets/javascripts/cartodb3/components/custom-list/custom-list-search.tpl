@@ -1,2 +1,13 @@
-<input type="text" class="CDB-InputText CDB-Text js-search" placeholder="<%- _t('components.custom-list.placeholder', { typeLabel: typeLabel }) %>"/>
-<button type="submit"></button>
+<div class="CDB-Box-ModalHeaderItem">
+  <input type="text" name="text" placeholder="<%- _t('components.custom-list.placeholder', { typeLabel: typeLabel }) %>" class="CDB-InputTextPlain CDB-Text js-search">
+  <button type="submit" class="u-lSpace--xl js-submit">
+    <div class="CDB-Shape">
+      <div class="CDB-Shape-magnify is-blue is-small"></div>
+    </div>
+  </button>
+  <button type="button" style="display:none" class="u-lSpace--xl js-clear">
+    <div class="CDB-Shape">
+      <div class="CDB-Shape-close is-blue is-large"></div>
+    </div>
+  </button>
+</div>

@@ -29,6 +29,7 @@ describe CartoDB do
       username = 'test'
       expected_session_domain = '.cartodb.com'
 
+      CartoDB.clear_internal_cache
       CartoDB.expects(:get_session_domain).returns(expected_session_domain)
 
       request = Doubles::Request.new({

@@ -43,11 +43,12 @@ describe CartoDB::Connector::Importer do
 
     table_registrar = mock
     table_registrar.stubs(:get_valid_table_name).returns('european_countries')
+    table_registrar.stubs(:user).returns(@user)
 
     importer_table_name = "table_#{UUIDTools::UUID.timestamp_create.to_s}"
     desired_table_name = 'european_countries'
 
-    result_mock = CartoDB::Doubles::Importer2::Result.new({table_name: importer_table_name, name: desired_table_name})
+    result_mock = CartoDB::Doubles::Importer2::Result.new(table_name: importer_table_name, name: desired_table_name)
 
     importer = CartoDB::Connector::Importer.new(runner, table_registrar, quota_checker, database, id, destination_schema)
     new_table_name = importer.rename(result_mock, importer_table_name, desired_table_name)
@@ -66,7 +67,7 @@ describe CartoDB::Connector::Importer do
       csv << ['nombre', 'apellido', 'profesion']
       csv << ['Manolo', 'Escobar', 'Artista']
     end
-  
+
     data_import = DataImport.create(
       :user_id       => @user.id,
       :data_source   => filepath,

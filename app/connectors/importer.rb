@@ -70,20 +70,24 @@ module CartoDB
       def register(result)
         @support_tables_helper.reset
 
-        # Sanitizing table name if it corresponds with a PostgreSQL reseved word
-        result.name = "#{result.name}_t" if CartoDB::POSTGRESQL_RESERVED_WORDS.map(&:downcase).include?(result.name.downcase)
+        result_table_name = result.table_name
+        valid_new_name = Carto::PhysicalTablesManager.new(table_registrar.user.id)
+                                                     .propose_valid_table_name(contendent: result_table_name,
+                                                                               schema: ORIGIN_SCHEMA)
 
-        runner.log.append("Before renaming from #{result.table_name} to #{result.name}")
-        name = rename(result, result.table_name, result.name)
-        result.name = name
-        runner.log.append("Before moving schema '#{name}' from #{ORIGIN_SCHEMA} to #{@destination_schema}")
-        move_to_schema(result, name, ORIGIN_SCHEMA, @destination_schema)
-        runner.log.append("Before persisting metadata '#{name}' data_import_id: #{data_import_id}")
-        persist_metadata(result, name, data_import_id)
-        runner.log.append("Table '#{name}' registered")
+        runner.log.append("Before renaming from #{result_table_name} to #{valid_new_name}")
+        result.name = rename(result, result_table_name, valid_new_name)
+
+        runner.log.append("Before moving schema '#{result.name}' from #{ORIGIN_SCHEMA} to #{@destination_schema}")
+        move_to_schema(result, result.name, ORIGIN_SCHEMA, @destination_schema)
+
+        runner.log.append("Before persisting metadata '#{result.name}' data_import_id: #{data_import_id}")
+        persist_metadata(result, result.name, data_import_id)
+
+        runner.log.append("Table '#{result.name}' registered")
       rescue => exception
         if exception.message =~ /canceling statement due to statement timeout/i
-          drop("#{ORIGIN_SCHEMA}.#{result.table_name}")
+          drop("#{ORIGIN_SCHEMA}.#{result_table_name}")
           raise CartoDB::Importer2::StatementTimeoutError.new(
             exception.message,
             CartoDB::Importer2::ERRORS_MAP[CartoDB::Importer2::StatementTimeoutError]
@@ -153,22 +157,19 @@ module CartoDB
         raise e
       end
 
-      def rename(result, current_name, new_name, _rename_attempts = 0)
-        valid_new_name = Carto::PhysicalTablesManager.new(table_registrar.user.id)
-                                                     .propose_valid_table_name(contendent: new_name)
-
+      def rename(result, current_name, new_name)
         database.execute(%{
-          ALTER TABLE "#{ORIGIN_SCHEMA}"."#{current_name}" RENAME TO "#{valid_new_name}"
+          ALTER TABLE "#{ORIGIN_SCHEMA}"."#{current_name}" RENAME TO "#{new_name}"
         })
 
-        rename_the_geom_index_if_exists(current_name, valid_new_name)
+        rename_the_geom_index_if_exists(current_name, new_name)
 
         @support_tables_helper.tables = result.support_tables.map { |table|
           { schema: ORIGIN_SCHEMA, name: table }
         }
 
         recreate_constraints = false # Delay recreation of constraints until schema change
-        results = @support_tables_helper.rename(current_name, valid_new_name, recreate_constraints)
+        results = @support_tables_helper.rename(current_name, new_name, recreate_constraints)
 
         if results[:success]
           result.update_support_tables(results[:names])
@@ -176,7 +177,7 @@ module CartoDB
           raise 'unsuccessful support tables renaming'
         end
 
-        valid_new_name
+        new_name
       end
 
       def rename_the_geom_index_if_exists(current_name, new_name)

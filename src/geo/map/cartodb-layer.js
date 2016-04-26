@@ -46,14 +46,12 @@ var CartoDBLayer = LayerModelBase.extend({
   },
 
   getGeometryType: function () {
-    var style = this.get('cartocss');
-    if (style.indexOf('marker') > -1) {
-      return 'marker';
-    } else if (style.indexOf('polygon') > -1) {
-      return 'polygon';
-    } else if (style.indexOf('line') > -1) {
-      return 'line';
+    if (this._dataProvider) { 
+      var index = this._dataProvider._layerIndex;
+      var sublayer = this._dataProvider._vectorLayerView.renderers[index];
+      return sublayer.inferGeometryType();
     }
+    return null;
   },
 
   getTooltipFieldNames: function () {

@@ -16,9 +16,10 @@ require_relative '../../services/datasources/lib/datasources/decorators/factory'
 require_relative '../../services/table-geocoder/lib/internal-geocoder/latitude_longitude'
 require_relative '../model_factories/layer_factory'
 require_relative '../model_factories/map_factory'
-
 require_relative '../../lib/cartodb/stats/user_tables'
 require_relative '../../lib/cartodb/stats/importer'
+
+require_dependency 'lib/carto/physical_tables_manager'
 
 class Table
   extend Forwardable
@@ -264,7 +265,7 @@ class Table
     @user_table.privacy ||= (owner.try(:private_tables_enabled) ? UserTable::PRIVACY_PRIVATE : UserTable::PRIVACY_PUBLIC)
   end
 
-  def import_to_cartodb(uniname=nil)
+  def import_to_cartodb(uniname: nil)
     @data_import ||= DataImport.where(id: @user_table.data_import_id).first || DataImport.new(user_id: owner.id)
     if migrate_existing_table.present? || uniname
       @data_import.data_type = DataImport::TYPE_EXTERNAL_TABLE
@@ -272,7 +273,9 @@ class Table
       @data_import.save
 
       # ensure unique name, also ensures self.name can override any imported table name
-      uniname ||= self.name ? get_valid_name(self.name) : get_valid_name(migrate_existing_table)
+      provided_name = name ? name : migrate_existing_table
+
+      uniname = Carto::PhysicalTablesManager.new(@user_table.user_id).propose_valid_table_name(provided_name)
 
       # with table #{uniname} table created now run migrator to CartoDBify
       hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
@@ -662,7 +665,8 @@ class Table
   def name=(value)
     value = value.downcase if value
     return if value == @user_table[:name] || value.blank?
-    new_name = get_valid_name(value, current_name: self.name)
+
+    new_name = Carto::PhysicalTablesManager.new(user_id).propose_valid_table_name(value)
 
     # Do not keep track of name changes until table has been saved
     unless new?
@@ -1377,63 +1381,6 @@ class Table
     @cache ||= $tables_metadata
   end
 
-  def get_valid_name(name, options={})
-    name_candidates = []
-    name_candidates = self.owner.tables.select_map(:name) if owner
-
-    options.merge!(name_candidates: name_candidates)
-    options.merge!(connection: self.owner.connection) unless self.owner.nil?
-    unless options[:database_schema].present? || self.owner.nil?
-      options.merge!(database_schema: self.owner.database_schema)
-    end
-
-    Table.get_valid_table_name(name, options)
-  end
-
-  # Gets a valid postgresql table name for a given database
-  # See http://www.postgresql.org/docs/9.3/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS
-  def self.get_valid_table_name(name, options = {})
-    # Initial name cleaning
-    name = name.to_s.squish #.downcase
-    name = 'untitled_table' if name.blank?
-
-    # Valid names start with a letter. Table names which start
-    # with an underscore are unsupported
-    # see http://stackoverflow.com/questions/26631976/how-to-rename-a-postgresql-table-by-prefixing-an-underscore
-
-    name = "table_#{name}" unless name[/^[a-z]{1}/]
-
-    # Subsequent characters can be letters, underscores or digits
-    name = name.gsub(/[^a-z0-9]/,'_').gsub(/_{2,}/, '_')
-
-    # Postgresql table name limit
-    name = name[0...PG_IDENTIFIER_MAX_LENGTH]
-
-    return name if name == options[:current_name]
-
-    name = "#{name}_t" if UserTable::RESERVED_TABLE_NAMES.include?(name)
-
-    database_schema = options[:database_schema].present? ? options[:database_schema] : 'public'
-
-    # We don't want to use an existing table name
-    #
-    existing_names = []
-    existing_names = options[:name_candidates] || options[:connection]["select relname from pg_stat_user_tables WHERE schemaname='#{database_schema}'"].map(:relname) if options[:connection]
-    existing_names = existing_names + SYSTEM_TABLE_NAMES
-    rx = /_(\d+)$/
-    count = name[rx][1].to_i rescue 0
-    while existing_names.include?(name)
-      count = count + 1
-      suffix = "_#{count}"
-      name = name[0...PG_IDENTIFIER_MAX_LENGTH-suffix.length]
-      name = name[rx] ? name.gsub(rx, suffix) : "#{name}#{suffix}"
-      # Re-check for duplicated underscores
-      name = name.gsub(/_{2,}/, '_')
-    end
-
-    name
-  end
-
   def self.sanitize_columns(table_name, options={})
     connection = options.fetch(:connection)
     database_schema = options.fetch(:database_schema, 'public')
@@ -1562,7 +1509,7 @@ class Table
   end
 
   def create_table_in_database!
-    self.name ||= get_valid_name(self.name)
+    self.name ||= Carto::PhysicalTablesManager.new(user_id).propose_valid_table_name
 
     owner.in_database do |user_database|
       if force_schema.blank?

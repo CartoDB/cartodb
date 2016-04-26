@@ -141,11 +141,6 @@ module.exports = DataviewModelBase.extend({
 
   _onChangeBinds: function () {
     DataviewModelBase.prototype._onChangeBinds.call(this);
-    this.bind('change:autoStyle', function (mdl, isAutoStyle, d) {
-      if (isAutoStyle) {
-        this.trigger('autoStyle', this);
-      }
-    }, this);
   },
 
   _fetchAndResetFilter: function () {

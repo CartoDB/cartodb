@@ -23,7 +23,6 @@
     "cartodb-deep-insights.js": "cartodb/deep-insights.js#no-cartodbjs-extend",
     "cartodb-pecan": "0.2.x",
     "cartodb.js": "cartodb/cartodb.js#v4",
-    "d3-queue": "^2.0.3",
     "jquery": "2.1.4",
     "jquery-ui": "^1.10.5",
     "moment": "2.10.6",

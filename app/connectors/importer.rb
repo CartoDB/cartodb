@@ -166,8 +166,9 @@ module CartoDB
         @support_tables_helper.tables = result.support_tables.map { |table|
           { schema: ORIGIN_SCHEMA, name: table }
         }
-        # Delay recreation of constraints until schema change
-        results = @support_tables_helper.rename(current_name, valid_new_name, recreate_constraints=false)
+
+        recreate_constraints = false # Delay recreation of constraints until schema change
+        results = @support_tables_helper.rename(current_name, valid_new_name, recreate_constraints)
 
         if results[:success]
           result.update_support_tables(results[:names])

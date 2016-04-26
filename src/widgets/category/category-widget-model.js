@@ -56,16 +56,16 @@ module.exports = WidgetModel.extend({
   autoStyle: function () {
     var style = this.autoStyler.getStyle();
     this.dataviewModel.layer.set('cartocss', style);
-    this.dataviewModel.set('autoStyle', true);
+    this.set('autoStyle', true);
   },
 
   cancelAutoStyle: function () {
     this.dataviewModel.layer.restoreCartoCSS();
-    this.dataviewModel.set('autoStyle', false);
+    this.set('autoStyle', false);
   },
 
   isAutoStyle: function () {
-    return this.dataviewModel.get('autoStyle');
+    return this.get('autoStyle');
   },
 
   isLocked: function () {

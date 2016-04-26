@@ -1,5 +1,5 @@
 <div class="CDB-Box-modalHeaderItem">
-  <input type="text" name="text" placeholder="<%- _t('components.custom-list.placeholder', { typeLabel: typeLabel }) %>" class="CDB-InputTextPlain CDB-Text js-search">
+  <input type="text" name="text" autocomplete="off" placeholder="<%- _t('components.custom-list.placeholder', { typeLabel: typeLabel }) %>" class="CDB-InputTextPlain CDB-Text js-search">
   <button type="submit" class="u-lSpace--xl js-submit">
     <div class="CDB-Shape">
       <div class="CDB-Shape-magnify is-blue is-small"></div>

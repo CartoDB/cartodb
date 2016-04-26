@@ -12,9 +12,9 @@ module Carto
       @user = ::User.where(id: user_id).first
     end
 
-    def propose_valid_table_name(contendent: DEFAULT_TABLE_NAME.dup)
+    def propose_valid_table_name(contendent: DEFAULT_TABLE_NAME.dup, schema: @user.database_schema)
       sanitized_contendent = Carto::DB::Sanitize.sanitize_identifier(contendent)
-      physical_table_names = fetch_physical_table_names
+      physical_table_names = fetch_physical_table_names(schema)
 
       find_unused_name_with_prefix(physical_table_names, sanitized_contendent)
     end
@@ -35,11 +35,11 @@ module Carto
                             table_name: prefix)
     end
 
-    def fetch_physical_table_names
+    def fetch_physical_table_names(schema)
       sql = %{
         SELECT tablename AS name
         FROM pg_tables
-        WHERE schemaname = '#{@user.database_schema}' AND
+        WHERE schemaname = '#{schema}' AND
               tableowner = '#{@user.database_username}'
       }
 

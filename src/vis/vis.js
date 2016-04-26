@@ -16,7 +16,6 @@ var Layers = require('./vis/layers');
 var Overlay = require('./vis/overlay');
 var INFOWINDOW_TEMPLATE = require('./vis/infowindow-template');
 var DataviewsFactory = require('../dataviews/dataviews-factory');
-var DataviewCollection = require('../dataviews/dataviews-collection');
 var InfowindowManager = require('./infowindow-manager');
 var TooltipManager = require('./tooltip-manager');
 var WindshaftConfig = require('../windshaft/config');
@@ -195,7 +194,7 @@ var Vis = View.extend({
   load: function (vizjson, options) {
     options = options || {};
 
-    this._dataviewsCollection = new DataviewCollection();
+    this._dataviewsCollection = new Backbone.Collection();
     this._layersCollection = new LayersCollection();
     this._analysisCollection = new Backbone.Collection();
 

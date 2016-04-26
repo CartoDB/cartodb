@@ -265,7 +265,7 @@ class Table
     @user_table.privacy ||= (owner.try(:private_tables_enabled) ? UserTable::PRIVACY_PRIVATE : UserTable::PRIVACY_PUBLIC)
   end
 
-  def import_to_cartodb(uniname: nil)
+  def import_to_cartodb(uniname = nil)
     @data_import ||= DataImport.where(id: @user_table.data_import_id).first || DataImport.new(user_id: owner.id)
     if migrate_existing_table.present? || uniname
       @data_import.data_type = DataImport::TYPE_EXTERNAL_TABLE
@@ -275,7 +275,8 @@ class Table
       # ensure unique name, also ensures self.name can override any imported table name
       provided_name = name ? name : migrate_existing_table
 
-      uniname = Carto::PhysicalTablesManager.new(@user_table.user_id).propose_valid_table_name(contendent: provided_name)
+      uniname = Carto::PhysicalTablesManager.new(@user_table.user_id)
+                                            .propose_valid_table_name(contendent: provided_name)
 
       # with table #{uniname} table created now run migrator to CartoDBify
       hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(

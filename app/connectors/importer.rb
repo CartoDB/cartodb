@@ -4,6 +4,8 @@ require 'uuidtools'
 require_relative '../models/visualization/support_tables'
 require_relative '../helpers/bounding_box_helper'
 
+require_dependency 'carto/physical_tables_manager'
+
 module CartoDB
   module Connector
     class Importer
@@ -151,46 +153,20 @@ module CartoDB
         raise e
       end
 
-      def rename(result, current_name, new_name, rename_attempts=0)
-        target_new_name = new_name
-        new_name = table_registrar.get_valid_table_name(new_name)
-        if rename_attempts > 0
-          new_name = "#{new_name}_#{rename_attempts}"
-        end
-        rename_attempts = rename_attempts + 1
+      def rename(result, current_name, new_name, _rename_attempts = 0)
+        valid_new_name = Carto::PhysicalTablesManager.new(table_registrar.user.id).propose_valid_table_name(new_name)
 
-        if data_import
-          user_id = data_import.user_id
-          if exists_user_table_for_user_id(new_name, user_id)
-            # Since get_valid_table_name should only return nonexisting table names (with a retry limit)
-            # this is likely caused by a table deletion, so we run ghost tables to cleanup and retry
-            if rename_attempts == 1
-              runner.log.append("Triggering ghost tables for #{user_id} because collision on #{new_name}")
-              Carto::GhostTablesManager.new(user_id).link_ghost_tables_synchronously
-
-              if exists_user_table_for_user_id(new_name, user_id)
-                runner.log.append("Ghost tables didn't fix the collision.")
-                raise "Existing #{new_name} already registered for #{user_id}. Running ghost tables did not help."
-              else
-                runner.log.append("Ghost tables fixed the collision.")
-              end
-            else
-              raise "Existing #{new_name} already registered for #{user_id}"
-            end
-          end
-        end
-
-        database.execute(%Q{
-          ALTER TABLE "#{ORIGIN_SCHEMA}"."#{current_name}" RENAME TO "#{new_name}"
+        database.execute(%{
+          ALTER TABLE "#{ORIGIN_SCHEMA}"."#{current_name}" RENAME TO "#{valid_new_name}"
         })
 
-        rename_the_geom_index_if_exists(current_name, new_name)
+        rename_the_geom_index_if_exists(current_name, valid_new_name)
 
         @support_tables_helper.tables = result.support_tables.map { |table|
           { schema: ORIGIN_SCHEMA, name: table }
         }
         # Delay recreation of constraints until schema change
-        results = @support_tables_helper.rename(current_name, new_name, recreate_constraints=false)
+        results = @support_tables_helper.rename(current_name, valid_new_name, recreate_constraints=false)
 
         if results[:success]
           result.update_support_tables(results[:names])
@@ -198,18 +174,7 @@ module CartoDB
           raise 'unsuccessful support tables renaming'
         end
 
-        new_name
-      rescue => exception
-        CartoDB.notify_debug('Error while renaming at importer', { current_name: current_name, new_name: new_name, rename_attempts: rename_attempts, result: result.inspect, error: exception.inspect}) if rename_attempts == 1
-        message = "Silently retrying renaming #{current_name} to #{target_new_name} (current: #{new_name}). ERROR: #{exception}"
-        runner.log.append(message)
-        if rename_attempts <= MAX_RENAME_RETRIES
-          rename(result, current_name, target_new_name, rename_attempts)
-        else
-          drop("#{ORIGIN_SCHEMA}.#{current_name}")
-          raise CartoDB::Importer2::InvalidNameError.new("#{message} #{rename_attempts} attempts. Data import: #{data_import_id}. ERROR: #{exception}")
-        end
-        raise exception
+        valid_new_name
       end
 
       def rename_the_geom_index_if_exists(current_name, new_name)

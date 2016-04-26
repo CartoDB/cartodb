@@ -32,4 +32,11 @@
   text-align: center;
 }
 
+.CustomList-item.is-highlighted,
+.CustomList-item:hover {
+  background: rgba($cHighlight, 0.16);
+  cursor: pointer;
+}
+
+
 

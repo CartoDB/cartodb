@@ -26,7 +26,6 @@
     "cartodb.js": "CartoDB/cartodb.js#v4",
     "d3": "3.5.8",
     "jquery": "2.1.4",
-    "jstify": "0.12.0",
     "moment": "2.10.6",
     "perfect-scrollbar": "0.6.7",
     "underscore": "1.8.3"
@@ -50,6 +49,7 @@
     "grunt-exorcise": "2.1.0",
     "grunt-gh-pages": "1.0.0",
     "grunt-sass": "1.1.0",
+    "jstify": "0.12.0",
     "load-grunt-tasks": "3.3.0",
     "semistandard": "7.0.4",
     "source-map-support": "0.4.0",

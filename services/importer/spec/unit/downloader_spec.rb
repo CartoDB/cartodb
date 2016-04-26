@@ -2,10 +2,10 @@
 require_relative '../../../../spec/spec_helper_min'
 require_relative '../../lib/importer/downloader'
 require_relative '../../../../lib/carto/url_validator'
-require_relative '../../../../spec/support/helpers'
+require_relative '../../../../spec/helpers/file_server_helper'
 
 include CartoDB::Importer2
-include HelperMethods
+include FileServerHelper
 
 describe Downloader do
   before do

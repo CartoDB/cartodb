@@ -85,6 +85,16 @@ describe Api::Json::LayersController do
       end
     end
 
+    it 'does not allow to exceed max_layers' do
+      @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_user1)
+      @carto_user1.max_layers = 1
+      @carto_user1.save
+
+      post_json create_map_layer_url(@map.id), layer_json.merge(kind: 'tiled', order: 10) do |response|
+        response.status.should eq 403
+      end
+    end
+
     it 'updates one layer' do
       map = FactoryGirl.create(:carto_map_with_layers, user_id: @user1.id)
       @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_user1, map: map)

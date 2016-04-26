@@ -21,7 +21,7 @@ module Carto
 
     private
 
-    def find_unsed_name_with_prefix(names, prefix, separator: DEFAULT_SEPARATOR)
+    def find_unused_name_with_prefix(names, prefix, separator: DEFAULT_SEPARATOR)
       proposal = prefix
 
       (1..MAX_RENAME_RETRIES).each do |appendix|

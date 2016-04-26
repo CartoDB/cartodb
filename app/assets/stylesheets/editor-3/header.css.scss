@@ -8,7 +8,7 @@
 .Editor-HeaderInfo {
   @include display-flex();
   @include align-items(flex-start);
-  margin-bottom: 28px;
+  margin-bottom: 32px;
 
   &.is-block {
     display: block;
@@ -53,6 +53,7 @@
 
 .Editor-HeaderNumeration {
   width: $baseSize * 3;
+  min-width: $baseSize * 3;
   height: $baseSize * 3;
   border: 1px solid $cMainLine;
   border-radius: 4px;

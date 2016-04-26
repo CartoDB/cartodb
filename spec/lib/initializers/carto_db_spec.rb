@@ -169,6 +169,23 @@ describe CartoDB do
         .should eq "#{protocol_override_http}://#{expected_session_domain}#{expected_http_port}/user/#{username}"
     end
 
+    it 'tests base_url() without logged user' do
+      expected_session_domain = 'cartodb.com'
+      expected_ip = '127.0.0.1'
+      expected_https_port = ':67890'
+
+      CartoDB.clear_internal_cache
+      CartoDB.stubs(:use_https?).returns(true)
+      CartoDB.stubs(:get_https_port).returns(expected_https_port)
+
+      CartoDB.stubs(:get_subdomainless_urls).returns(true)
+      CartoDB.stubs(:get_session_domain).returns(expected_session_domain)
+      CartoDB.base_url(nil, nil, nil).should eq "https://#{expected_session_domain}#{expected_https_port}"
+
+      CartoDB.stubs(:request_host).returns(expected_ip)
+      CartoDB.base_url(nil, nil, nil).should eq "https://#{expected_ip}#{expected_https_port}"
+    end
+
   end
 
 end

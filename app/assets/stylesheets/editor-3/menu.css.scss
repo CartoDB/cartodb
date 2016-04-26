@@ -11,33 +11,38 @@
   background: $cBlue;
 }
 
+.EditorMenu-navigation {
+  @include display-flex();
+  @include align-items(center);
+  @include flex-direction(column);
+}
+
 .EditorMenu-navigationItem {
-  padding: 12px $baseSize * 2 12px $baseSize + 6;
-  border-left: 2px solid transparent;
-  text-align: center;
+  width: $baseSize * 4;
+  height: $baseSize * 4;
+  margin-bottom: $baseSize;
 }
 .EditorMenu-navigationItem.is-selected {
-  border-left: 2px solid #FFF;
-}
-.EditorMenu-navigationItem.is-selected .EditorMenu-navigationIcon {
-  opacity: 1;
+  @include transition(background, 300ms, ease-in);
+  border-radius: 4px;
+  background: rgba($cMainBg, 0.16);
 }
 
 .EditorMenu-navigationLink {
   display: block;
   width: 100%;
+  height: 100%;
 }
 .EditorMenu-navigationIcon {
-  color: #FFF;
-  font-size: 24px;
-  line-height: 24px;
-  opacity: 0.32;
+  color: $cWhite;
+  font-size: 18px;
 }
 .EditorMenu-navigationLink:hover .EditorMenu-navigationIcon {
   opacity: 1;
 }
 
 .EditorMenu-logo {
+  display: block;
   width: 40px;
   height: 40px;
   margin: 0 auto $baseSize * 2;

@@ -213,6 +213,20 @@ describe Downloader do
       downloader = Downloader.new(@file_url)
       lambda { downloader.run }.should raise_error DownloadError
     end
+
+    it "raises if download fails with partial file error" do
+      stub_download(
+        url:      @file_url,
+        filepath: @file_filepath,
+        headers:  {}
+      )
+
+      Typhoeus::Response.any_instance.stubs(:mock).returns(false)
+      Typhoeus::Response.any_instance.stubs(:return_code).returns(:partial_file)
+
+      downloader = Downloader.new(@file_url)
+      lambda { downloader.run }.should raise_error PartialDownloadError
+    end
   end
 
   describe '#source_file' do
@@ -238,7 +252,7 @@ describe Downloader do
       downloader.run
       downloader.source_file.fullpath.should match /#{@file_url.split('/').last}/
     end
-  end #source_file
+  end
 
   describe '#name_from' do
     it 'gets the file name from the Content-Disposition header if present' do
@@ -293,7 +307,7 @@ describe Downloader do
       downloader = Downloader.new(hard_url)
       downloader.send(:name_from, headers, hard_url).should eq 'my_file.xlsx'
     end
-  end #name_from
+  end
 
   def stub_download(options)
     url       = options.fetch(:url)
@@ -318,19 +332,19 @@ describe Downloader do
         headers:  headers.merge(headers_for(filepath))
      )
      response
-  end #response_for
+  end
 
   def failed_response_for(filepath, headers={})
      Typhoeus::Response.new(code: 404, body: nil, headers: {})
-  end #response_for
+  end
 
   def headers_for(filepath)
     filename = filepath.split('/').last
     { "Content-Disposition" => "attachment; filename=#{filename}" }
-  end #headers_for
+  end
 
   def path_to(filename)
     File.join(File.dirname(__FILE__), '..', 'fixtures', filename)
   end
-end # Downloader
+end
 

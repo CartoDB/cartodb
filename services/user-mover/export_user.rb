@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# coding: utf-8
 
 # export-user.rb
 # This class can be used to generate an as-is backup of the metadata of an user.
@@ -11,6 +12,7 @@ require 'yaml'
 require 'optparse'
 require 'json'
 require 'tsort'
+require 'securerandom'
 
 require_relative 'config'
 require_relative 'utils'
@@ -18,6 +20,7 @@ require_relative 'utils'
 module CartoDB
   module DataMover
     class DumpJob
+      attr_reader :logger
       include CartoDB::DataMover::Utils
       def dump_db
         # find database host for user
@@ -25,16 +28,17 @@ module CartoDB
           CartoDB::DataMover::Config[:dbuser],
           @database_host,
           CartoDB::DataMover::Config[:user_dbport],
-          @database_name,
+          @database_name
         )} -Fc -f #{@filename} --serializable-deferrable -v")
       end
 
-      def initialize(database_host, database_name, path, filename, database_schema = nil)
+      def initialize(database_host, database_name, path, filename, database_schema = nil, logger = default_logger)
         @database_host = database_host
         @database_name = database_name
         @filename = filename
         @database_schema = database_schema
         @path = path
+        @logger = logger
 
         if database_schema == nil
           dump_db
@@ -48,10 +52,9 @@ module CartoDB
           CartoDB::DataMover::Config[:dbuser],
           @database_host,
           CartoDB::DataMover::Config[:user_dbport],
-          @database_name,
+          @database_name
         )} -f #{@path}#{@database_schema}.schema.sql -n #{@database_schema} --verbose --no-tablespaces -Z 0")
       end
-
     end
   end
 end
@@ -66,7 +69,63 @@ module CartoDB
       end
     end
     class ExportJob
-      TABLE_NULL_EXCEPTIONS = ['table_quota'] # those won't be discarded if set to NULL
+      attr_reader :logger
+
+      REDIS_KEYS = {
+        mapviews: {
+          template: "user:USERNAME:mapviews:*",
+          var_position: 1,
+          type: 'zset',
+          db: 5,
+          separator: ":"
+        },
+        map_style: {
+          template: "map_style|USERDB|*",
+          var_position: 1,
+          separator: '|',
+          db: 0,
+          type: 'string'
+        },
+        map_template: {
+          template: "map_tpl|USERNAME",
+          no_clone: true,
+          var_position: 1,
+          separator: '|',
+          db: 0,
+          type: 'hash'
+        },
+        table: {
+          template: "rails:USERDB:*",
+          var_position: 1,
+          separator: ':',
+          db: 0,
+          type: 'hash',
+          attributes: {
+            user_id: 'USERID'
+          }
+        },
+        limits_tiler: {
+          template: "limits:tiler:USERNAME",
+          no_clone: true,
+          var_position: 2,
+          separator: ':',
+          db: 5,
+          type: 'hash'
+        },
+        user: {
+          template: "rails:users:USERNAME",
+          no_clone: true,
+          var_position: 2,
+          separator: ':',
+          db: 5,
+          type: 'hash',
+          attributes: {
+            database_name: 'USERDB',
+            id: 'USERID'
+          }
+        }
+      }.freeze
+      TABLE_NULL_EXCEPTIONS = ['table_quota'].freeze # those won't be discarded if set to NULL
       include CartoDB::DataMover::Utils
 
       def get_user_metadata(user_id)
@@ -74,7 +133,7 @@ module CartoDB
         if q.count > 0
           user_data = q[0]
         else
-          throw "Can't find user #{@user_id}"
+          raise "Can't find user #{@user_id}"
         end
         user_data
       end
@@ -84,7 +143,7 @@ module CartoDB
         if q.count > 0
           org_data = q[0]
         else
-          throw "Can't find organization #{@organization_id}"
+          raise "Can't find organization #{@organization_id}"
         end
 
         org_data
@@ -95,7 +154,7 @@ module CartoDB
         if q.count > 0
           return q
         else
-          throw "Can't find organization #{@organization_id}"
+          raise "Can't find organization #{@organization_id}"
         end
       end
 
@@ -103,12 +162,16 @@ module CartoDB
         pg_conn.exec("SELECT * FROM groups WHERE organization_id = '#{organization_id}'")
       end
 
-      def dump_user_data(redis_keys)
+      def get_user_models_metadata
         data = dump_related_data(Carto::User, @user_id)
         data[Carto::User] = [@user_data]
         data.reject! { |key, _value| [Carto::Organization, Carto::Group, Carto::FeatureFlag].include?(key) }
-        dump_sql_data(data, "user_#{@user_id}")
-        dump_redis_keys(redis_keys)
+        data
+      end
+
+      def dump_user_metadata
+        dump_sql_data(get_user_models_metadata, "user_#{@user_id}")
+        dump_redis_keys
       end
 
       def dump_role_grants(role)
@@ -116,7 +179,7 @@ module CartoDB
         roles.map { |q| q['rolname'] }.reject { |r| r == role }
       end
 
-      def dump_org_data
+      def dump_org_metadata
         data = dump_related_data(Carto::Organization, @org_id)
         data[Carto::Organization] = [@org_metadata]
         data.select! { |key, _value| [::Carto::Organization, ::Carto::Group].include?(key) }
@@ -130,14 +193,14 @@ module CartoDB
         model_dependencies = models.map do |m|
           [m,
            m.reflections.values.select(&:belongs_to?)
-           .reject { |r| !r.inverse_of.nil? && r.inverse_of.belongs_to? } # Remove mutual foreign_keys
-           .map(&:klass).select { |s| models.include?(s) }]
+            .reject { |r| !r.inverse_of.nil? && r.inverse_of.belongs_to? } # Remove mutual foreign_keys
+            .map(&:klass).select { |s| models.include?(s) }]
         end
         models_ordered = TsortableHash[model_dependencies].tsort
         File.open(@options[:path] + "#{prefix}_metadata.sql", "w") do |f|
           models_ordered.each do |model|
             data[model].each do |rows|
-              keys = rows.keys.select { |k| !TABLE_NULL_EXCEPTIONS.include?(k.to_s) == (!rows[k].nil?) }
+              keys = rows.keys.select { |k| TABLE_NULL_EXCEPTIONS.include?(k.to_s) || !rows[k].nil? }
               f.write generate_pg_insert_query(model.table_name, keys, rows)
             end
           end
@@ -156,13 +219,19 @@ module CartoDB
         "DELETE FROM #{table_name} WHERE id = '#{rows['id']}';\n"
       end
 
+      # This could be more solid by avoiding to generate SQL queries manually. There are
+      # two things here besides the generation itself. The need for setting the NULL word
+      # and escaping stuff, quoting marks, etc..
+      # A safer way would be selecting the affected rows in a new table and dump the table.
+      # That would require creating and removing extra tables
+      # Another approach would be using COPY with SQL query into a CSV and restore it later
       def generate_pg_insert_query(table_name, keys, rows)
         "INSERT INTO #{table_name}(#{keys.map { |i| "\"#{i}\"" }.join(',')}) VALUES(#{keys.map { |i| rows[i] == nil ? 'NULL' : "'" + pg_conn.escape_string(rows[i]) + "'" }.join(',')});\n"
       end
 
       def dump_related_data(model, id, exclude = [])
         data = {}
-        id = [id] if id.is_a? Integer or id.is_a? String
+        id = [id] if id.is_a?(Integer) || id.is_a?(String)
 
         # first dump this model
         query = "SELECT * FROM #{model.table_name} WHERE id IN (#{id.map { |i| "'#{i}'" }.join(', ')});"
@@ -172,7 +241,7 @@ module CartoDB
         end
 
         model.reflections.each do |_name, reflection|
-          unless exclude.include? reflection.klass or !reflection.through_reflection.nil?
+          unless exclude.include?(reflection.klass) || !reflection.through_reflection.nil?
 
             if reflection.belongs_to?
               ids = data[model].map { |t| t[reflection.association_foreign_key.to_s] }.reject { |t| t == nil }
@@ -190,7 +259,7 @@ module CartoDB
             ids = data[reflection.klass].map do |data_for_related_key|
               data_for_related_key["id"]
             end
-            data.merge!(dump_related_data(reflection.klass, ids, exclude + [model])) { |_, x, y| merge_without_duplicated_ids(x, y) } if ids.length > 0
+            data.merge!(dump_related_data(reflection.klass, ids, exclude + [model])) { |_, x, y| merge_without_duplicated_ids(x, y) } if !ids.empty?
           end
         end
 
@@ -203,24 +272,26 @@ module CartoDB
         (x + y).uniq { |s| s['id'] }
       end
 
+      # This is not very solid since we are definining the protocol
+      # It would be nice using dump/restore
       def gen_redis_proto(*cmd)
         proto = ""
         proto << "*" + cmd.length.to_s + "\r\n"
-        cmd.each { |arg|
+        cmd.each do |arg|
           proto << "$" + arg.to_s.bytesize.to_s + "\r\n"
           proto << arg.to_s + "\r\n"
-        }
+        end
         proto
       end
 
       def format_redis_dump(str)
-        str.gsub("'", %q(\\\'))
+        str.gsub("'", "\\\'")
       end
 
-      def dump_redis_keys(redis_keys)
+      def dump_redis_keys
         File.open(@options[:path] + "user_#{@user_id}_metadata.redis", "wb") do |dump|
           File.open(@options[:path] + "user_#{@user_id}_metadata_undo.redis", "wb") do |undo|
-            redis_keys.each do |k, v|
+            REDIS_KEYS.each do |k, v|
               dump.write gen_redis_proto("SELECT", v[:db])
               undo.write gen_redis_proto("SELECT", v[:db])
               redis_conn.select(v[:db])
@@ -312,9 +383,9 @@ module CartoDB
       end
 
       def user_pg_conn
-        @user_conn ||= PGconn.connect(host: @user_data['database_host'],
+        @user_conn ||= PGconn.connect(host: @database_host,
                                       user: CartoDB::DataMover::Config[:dbuser],
-                                      dbname: @user_data['database_name'],
+                                      dbname: @database_name,
                                       port: CartoDB::DataMover::Config[:user_dbport],
                                       password: CartoDB::DataMover::Config[:dbpass])
       end
@@ -328,11 +399,11 @@ module CartoDB
       end
 
       def user_roles
-        if @user_data['database_schema'] == 'public'
-          roles = ['publicuser', database_username(@user_id)]
-        else
-          roles = ["cartodb_publicuser_#{@user_id}", database_username(@user_id)]
-        end
+        roles = if @user_data['database_schema'] == 'public'
+                  ['publicuser', database_username(@user_id)]
+                else
+                  ["cartodb_publicuser_#{@user_id}", database_username(@user_id)]
+                end
 
         Hash[roles.map { |role| [role, dump_role_grants(role)] }]
       end
@@ -360,106 +431,128 @@ module CartoDB
         result
       end
 
-      def initialize(options)
-        @options = options
-        @options[:path] ||= ''
+      def exportjob_logger
+        @@exportjob_logger ||= ::Logger.new("#{Rails.root}/log/datamover.log")
+      end
 
-        @logs = []
-
-        redis_keys = {
-          mapviews: {
-            template: "user:USERNAME:mapviews:*",
-            var_position: 1,
-            type: 'zset',
-            db: 5,
-            separator: ":"
-          },
-          map_style: {
-            template: "map_style|USERDB|*",
-            var_position: 1,
-            separator: '|',
-            db: 0,
-            type: 'string'
-          },
-          map_template: {
-            template: "map_tpl|USERNAME",
-            no_clone: true,
-            var_position: 1,
-            separator: '|',
-            db: 0,
-            type: 'hash'
-          },
-          table: {
-            template: "rails:USERDB:*",
-            var_position: 1,
-            separator: ':',
-            db: 0,
-            type: 'hash',
-            attributes: {
-              user_id: 'USERID'
-            }
-          },
-          limits_tiler: {
-            template: "limits:tiler:USERNAME",
-            no_clone: true,
-            var_position: 2,
-            separator: ':',
-            db: 5,
-            type: 'hash'
-          },
-          user: {
-            template: "rails:users:USERNAME",
-            no_clone: true,
-            var_position: 2,
-            separator: ':',
-            db: 5,
-            type: 'hash',
-            attributes: {
-              database_name: 'USERDB',
-              id: 'USERID'
-            }
-          }
-        }
-
-        if options[:id]
-          @user_data = get_user_metadata(options[:id])
-          @username = @user_data["username"]
-          @user_id = @user_data["id"]
-          dump_user_data(redis_keys) unless options[:database_only] == true
-          redis_conn.quit
-          DumpJob.new(
-            @user_data['database_host'] || '127.0.0.1',
-            @user_data['database_name'],
-            @options[:path],
-            "#{@options[:path]}user_#{@user_id}.dump",
-            options[:schema_mode] ? @user_data['database_schema'] : nil
-          ) unless options[:metadata_only] == true
-
-          File.open("#{@options[:path]}user_#{@user_id}.json", "w") do |f|
-            f.write(user_info.to_json)
-          end
-        elsif options[:organization_name]
-          @org_metadata = get_org_metadata(options[:organization_name])
-          @org_id = @org_metadata['id']
-          @org_users = get_org_users(@org_metadata['id'])
-          @org_groups = get_org_groups(@org_metadata['id'])
-          dump_org_data
-          data = { organization: @org_metadata, users: @org_users.to_a, groups: @org_groups }
-          File.open("#{@options[:path]}org_#{@org_metadata['id']}.json", "w") do |f|
-            f.write(data.to_json)
-          end
-          @org_users.each do |org_user|
-            CartoDB::DataMover::ExportJob.new({ id: org_user['username'], metadata_only: true, path: options[:path] })
-            DumpJob.new(
-              org_user['database_host'] || '127.0.0.1',
-              org_user['database_name'],
-              options[:path],
-              "#{@options[:path]}user_#{@user_id}.dump",
-              org_user['username']) unless options[:metadata_only] == true
-          end
+      def get_db_size(database)
+        q = user_pg_conn.exec("SELECT pg_database_size('#{database}')")
+        if q.count > 0
+          size = q[0]['pg_database_size']
+        else
+          raise "Can't find db #{database}"
         end
-        puts "#{@logs.length} errors"
-        puts @logs.join("\n")
+        size
+      end
+
+      def initialize(options)
+        default_options = { metadata: true, data: true, split_user_schemas: true, path: '', set_banner: true }
+        @options = default_options.merge(options)
+
+        @start = Time.now
+        @logger = options[:logger] || default_logger
+
+        job_uuid = @options[:job_uuid] || SecureRandom.uuid
+        export_log = { 'job_uuid' => job_uuid,
+                       'id'                     => @options[:id] || @options[:organization_name] || nil,
+                       'type'                   => 'export',
+                       'path'                   => @options[:path],
+                       'start'                  => @start,
+                       'end'                    => nil,
+                       'server'                 => `hostname`.strip,
+                       'pid'                    => Process.pid,
+                       'db_source'              => nil,
+                       'db_size'                => nil,
+                       'status'                 => nil,
+                       'trace'                  => nil
+                     }
+
+        begin
+          if @options[:id]
+            @user_data = get_user_metadata(options[:id])
+            @username = @user_data["username"]
+            @user_id = @user_data["id"]
+            @database_host = @user_data['database_host']
+            @database_name = @user_data['database_name']
+            export_log[:db_source] = @database_host
+            export_log[:db_size] = get_db_size(@database_name)
+            dump_user_metadata if @options[:metadata]
+            redis_conn.quit
+            if @options[:data]
+              DumpJob.new(
+                @user_data['database_host'] || '127.0.0.1',
+                @user_data['database_name'],
+                @options[:path],
+                "#{@options[:path]}user_#{@user_id}.dump",
+                @options[:schema_mode] ? @user_data['database_schema'] : nil,
+                @logger
+              )
+            end
+
+            File.open("#{@options[:path]}user_#{@user_id}.json", "w") do |f|
+              f.write(user_info.to_json)
+            end
+            set_user_mover_banner(@user_id) if options[:set_banner]
+          elsif @options[:organization_name]
+            @org_metadata = get_org_metadata(@options[:organization_name])
+            @org_id = @org_metadata['id']
+            @org_users = get_org_users(@org_metadata['id'])
+            @org_groups = get_org_groups(@org_metadata['id'])
+
+            # Ensure all users belong to the same database
+            database_names = @org_users.map { |u| u['database_name'] }.uniq
+            raise "Organization users inconsistent - there are users belonging to multiple databases" if database_names.length > 1
+            @database_name = database_names[0]
+
+            # Ensure all users belong to the same database host
+            database_hosts = @org_users.map { |u| u['database_host'] }.uniq
+            raise "Organization users inconsistent - there are users belonging to multiple database hosts" if database_hosts.length > 1
+            @database_host = database_hosts[0]
+
+            dump_org_metadata if @options[:metadata]
+            data = { organization: @org_metadata, users: @org_users.to_a, groups: @org_groups, split_user_schemas: @options[:split_user_schemas] }
+            File.open("#{@options[:path]}org_#{@org_metadata['id']}.json", "w") do |f|
+              f.write(data.to_json)
+            end
+
+            export_log[:db_source] ||= @database_host
+            export_log[:db_size] ||= get_db_size(@database_name)
+
+            if @options[:data] && !@options[:split_user_schemas]
+              DumpJob.new(
+                @database_host,
+                @database_name,
+                @options[:path],
+                "#{@options[:path]}org_#{@org_id}.dump",
+                nil,
+                @logger
+              )
+            end
+            @org_users.each do |org_user|
+              export_job = CartoDB::DataMover::ExportJob.new(id: org_user['username'],
+                                                             data: @options[:data] && @options[:split_user_schemas],
+                                                             path: @options[:path],
+                                                             job_uuid: job_uuid,
+                                                             from_org: true,
+                                                             schema_mode: true)
+            end
+          end
+        rescue => e
+          export_log[:end] = Time.now
+          export_log[:status] = 'failure'
+          export_log[:trace] = e.to_s
+          if options[:organization_name]
+            @org_users.each do |org_user|
+              remove_user_mover_banner(org_user['id']) if options[:set_banner]
+            end
+          end
+          raise
+        else
+          export_log[:end] = Time.now
+          export_log[:status] = 'success'
+        ensure
+          exportjob_logger.info(export_log.to_json) unless options[:from_org]
+        end
       end
     end
   end

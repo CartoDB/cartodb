@@ -29,9 +29,9 @@ module Carto
         proposal = Carto::DB::Sanitize.append_with_truncate_and_sanitize(prefix, "#{separator}#{appendix}")
       end
 
-      Carto::Logger.error(message: 'Physical tables: Out of rename retries',
-                          user: @user,
-                          table_name: prefix)
+      CartoDB::Logger.error(message: 'Physical tables: Out of rename retries',
+                            user: @user,
+                            table_name: prefix)
     end
 
     def fetch_physical_table_names

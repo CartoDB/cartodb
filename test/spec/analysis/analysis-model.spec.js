@@ -3,35 +3,35 @@ var AnalysisModel = require('../../../src/analysis/analysis-model.js');
 var AnalysisFactory = require('../../../src/analysis/analysis-factory.js');
 
 describe('src/analysis/analysis-model.js', function () {
-  describe('bindings', function () {
-    beforeEach(function () {
-      this.map = jasmine.createSpyObj('map', ['reload']);
-      var fakeCamshaftReference = {
-        getSourceNamesForAnalysisType: function (analysisType) {
-          var map = {
-            'analysis-type-1': ['source1', 'source2']
-          };
-          return map[analysisType];
-        },
-        getParamNamesForAnalysisType: function (analysisType) {
-          var map = {
-            'analysis-type-1': ['attribute1', 'attribute2']
-          };
+  beforeEach(function () {
+    this.map = jasmine.createSpyObj('map', ['reload']);
+    var fakeCamshaftReference = {
+      getSourceNamesForAnalysisType: function (analysisType) {
+        var map = {
+          'analysis-type-1': ['source1', 'source2']
+        };
+        return map[analysisType];
+      },
+      getParamNamesForAnalysisType: function (analysisType) {
+        var map = {
+          'analysis-type-1': ['attribute1', 'attribute2']
+        };
 
-          return map[analysisType];
-        }
-      };
+        return map[analysisType];
+      }
+    };
 
-      this.analysisModel = new AnalysisModel({
-        type: 'analysis-type-1',
-        attribute1: 'value1',
-        attribute2: 'value2'
-      }, {
-        map: this.map,
-        camshaftReference: fakeCamshaftReference
-      });
+    this.analysisModel = new AnalysisModel({
+      type: 'analysis-type-1',
+      attribute1: 'value1',
+      attribute2: 'value2'
+    }, {
+      map: this.map,
+      camshaftReference: fakeCamshaftReference
     });
+  });
 
+  describe('bindings', function () {
     describe('on params change', function () {
       it('should reload the map', function () {
         this.analysisModel.set({
@@ -230,6 +230,27 @@ describe('src/analysis/analysis-model.js', function () {
           }
         }
       });
+    });
+  });
+
+  describe('.isDone', function () {
+    it('should return true if analysis has been calculated', function () {
+      this.analysisModel.set('status', AnalysisModel.STATUS.READY);
+      expect(this.analysisModel.isDone()).toEqual(true);
+
+      this.analysisModel.set('status', AnalysisModel.STATUS.FAILED);
+      expect(this.analysisModel.isDone()).toEqual(true);
+    });
+
+    it('should return false if analysis has NOT been calculated', function () {
+      this.analysisModel.set('status', AnalysisModel.STATUS.PENDING);
+      expect(this.analysisModel.isDone()).toEqual(false);
+
+      this.analysisModel.set('status', AnalysisModel.STATUS.WAITING);
+      expect(this.analysisModel.isDone()).toEqual(false);
+
+      this.analysisModel.set('status', AnalysisModel.STATUS.RUNNING);
+      expect(this.analysisModel.isDone()).toEqual(false);
     });
   });
 });

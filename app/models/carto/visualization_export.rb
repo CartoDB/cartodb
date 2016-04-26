@@ -1,6 +1,8 @@
 # encoding: UTF-8
 
 require 'fileutils'
+require_relative '../../services/carto/visualizations_export_service_2'
+require_relative '../../../services/sql-api/sql_api'
 
 module Carto
   module ExporterConfig
@@ -65,7 +67,7 @@ module Carto
     include ExporterConfig
 
     def export(visualization, user,
-               format: 'shp',
+               format: 'csv',
                data_exporter: DataExporter.new,
                visualization_export_service: Carto::VisualizationsExportService2.new,
                base_dir: exporter_folder)
@@ -73,13 +75,13 @@ module Carto
       export_dir = export_dir(visualization, base_dir: base_dir)
       tmp_dir = tmp_dir(visualization, base_dir: base_dir)
 
-      files = data_exporter.export_visualization_tables(visualization, tmp_dir, format)
+      data_exporter.export_visualization_tables(visualization, tmp_dir, format)
       visualization_json = visualization_export_service.export_visualization_json_string(visualization_id, user)
-      visualization_json_file = "#{tmp_dir}/#{visualization_id}.json"
+      visualization_json_file = "#{tmp_dir}/#{visualization_id}.carto.json"
       File.open(visualization_json_file, 'w') { |file| file.write(visualization_json) }
-      files = files + [visualization_json_file]
+
       zipfile = "#{visualization_id}.carto"
-      `cd #{export_dir} && zip -r #{zipfile} #{visualization_id} && cd -`
+      `cd #{export_dir}/ && zip -r #{zipfile} #{visualization_id} && cd -`
 
       FileUtils.remove_dir(tmp_dir)
 

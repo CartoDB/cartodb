@@ -1,4 +1,5 @@
-<button type="button" class="CDB-SelectFake CDB-Text js-button
-  <% if (disabled) { %> is-disabled <% } %>">
+<div class="CDB-SelectFake CDB-Text js-button
+  <% if (disabled) { %> is-disabled <% } %>"
+  tabindex="0">
   <%- name %>
-</button>
+</div>

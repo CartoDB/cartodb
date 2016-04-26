@@ -40,5 +40,9 @@ module Carto
     def soft_here_isolines_limit?(user)
       !!user[:soft_here_isolines_limit]
     end
+
+    def soft_obs_snapshot_limit?(user)
+      !!user[:soft_obs_snapshot_limit]
+    end
   end
 end

@@ -113,10 +113,12 @@ describe Admin::OrganizationUsersController do
       def soft_limit_values(value = nil,
                             soft_geocoding_limit: nil,
                             soft_here_isolines_limit: nil,
+                            soft_obs_snapshot_limit: nil,
                             soft_twitter_datasource_limit: nil)
         values = Hash.new(value)
         values[:soft_geocoding_limit] = soft_geocoding_limit unless soft_geocoding_limit.nil?
         values[:soft_here_isolines_limit] = soft_here_isolines_limit unless soft_here_isolines_limit.nil?
+        values[:soft_obs_snapshot_limit] = soft_obs_snapshot_limit unless soft_obs_snapshot_limit.nil?
         values[:soft_twitter_datasource_limit] = soft_twitter_datasource_limit unless soft_twitter_datasource_limit.nil?
         values
       end
@@ -124,21 +126,25 @@ describe Admin::OrganizationUsersController do
       def update_soft_limits(user, value,
                              soft_geocoding_limit: nil,
                              soft_here_isolines_limit: nil,
+                             soft_obs_snapshot_limit: nil,
                              soft_twitter_datasource_limit: nil)
 
         values = soft_limit_values(value,
                                    soft_geocoding_limit: soft_geocoding_limit,
                                    soft_here_isolines_limit: soft_here_isolines_limit,
+                                   soft_obs_snapshot_limit: soft_obs_snapshot_limit,
                                    soft_twitter_datasource_limit: soft_twitter_datasource_limit)
 
         old_limits = {
           soft_geocoding_limit: user.soft_geocoding_limit,
           soft_here_isolines_limit: user.soft_here_isolines_limit,
+          soft_obs_snapshot_limit: user.soft_obs_snapshot_limit,
           soft_twitter_datasource_limit: user.soft_twitter_datasource_limit
         }
 
         user.soft_geocoding_limit = values[:soft_geocoding_limit]
         user.soft_here_isolines_limit = values[:soft_here_isolines_limit]
+        user.soft_obs_snapshot_limit = values[:soft_obs_snapshot_limit]
         user.soft_twitter_datasource_limit = values[:soft_twitter_datasource_limit]
         user.save
         user.reload
@@ -151,6 +157,7 @@ describe Admin::OrganizationUsersController do
 
         user.soft_geocoding_limit.should eq values[:soft_geocoding_limit]
         user.soft_here_isolines_limit.should eq values[:soft_here_isolines_limit]
+        user.soft_obs_snapshot_limit.should eq values[:soft_obs_snapshot_limit]
         user.soft_twitter_datasource_limit.should eq values[:soft_twitter_datasource_limit]
       end
 
@@ -159,6 +166,7 @@ describe Admin::OrganizationUsersController do
         {
           soft_geocoding_limit: values[:soft_geocoding_limit],
           soft_here_isolines_limit: values[:soft_here_isolines_limit],
+          soft_obs_snapshot_limit: values[:soft_obs_snapshot_limit],
           soft_twitter_datasource_limit: values[:soft_twitter_datasource_limit]
         }
       end

@@ -28,6 +28,10 @@ module CartoDB
           quota:       self.here_isolines_quota,
           monthly_use: self.get_here_isolines_calls
         },
+        obs_snapshot: {
+          quota:       obs_snapshot_quota,
+          monthly_use: get_obs_snapshot_calls
+        },
         twitter: {
           enabled:     self.twitter_datasource_enabled,
           quota:       self.twitter_datasource_quota,

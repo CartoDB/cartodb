@@ -6,7 +6,7 @@ module.exports = {
       watch: '<%= config.doWatchify %>',
       browserifyOptions: {
         debug: true, // to generate source-maps
-        standalone: 'cartodb',
+        standalone: 'cartodb'
       },
       plugin: [
         ['browserify-resolutions', '*']

@@ -11,7 +11,6 @@ require_relative 'acceptance_helpers'
 require_relative 'cdb_importer_context'
 require_relative 'no_stats_context'
 
-
 describe 'KML regression tests' do
   include AcceptanceHelpers
   include_context "cdb_importer schema"
@@ -41,17 +40,18 @@ describe 'KML regression tests' do
   end
 
   it 'imports KML files from url' do
-    filepath    = "https://raw.githubusercontent.com/CartoDB/cartodb/master/services/importer/spec/fixtures/one_layer.kml"
-    downloader  = CartoDB::Importer2::Downloader.new(filepath)
-    runner      = CartoDB::Importer2::Runner.new({
-                               pg: @user.db_service.db_configuration_for,
-                               downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new(@user),
-                               user: @user
-                             })
-    runner.run
+    serve_file 'services/importer/spec/fixtures/one_layer.kml' do |filepath|
+      downloader  = CartoDB::Importer2::Downloader.new(filepath)
+      runner      = CartoDB::Importer2::Runner.new(
+        pg: @user.db_service.db_configuration_for,
+        downloader: downloader,
+        log: CartoDB::Importer2::Doubles::Log.new(@user),
+        user: @user
+      )
+      runner.run
 
-    geometry_type_for(runner, @user).should be
+      geometry_type_for(runner, @user).should be
+    end
   end
 
   it 'imports KMZ in a 3D projection' do

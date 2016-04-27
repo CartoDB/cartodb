@@ -152,17 +152,17 @@ class String
   def convert_to_db_type
     cartodb_types = get_cartodb_types
 
-    if cartodb_types.keys.include?(self.downcase)
-      case (self.downcase)
-        when "number"
-          "double precision"
-        when "string"
-          "text"
-        else
-          cartodb_types[self.downcase].first
+    if cartodb_types.keys.include?(downcase)
+      case downcase
+      when "number"
+        "double precision"
+      when "string"
+        "text"
+      else
+        cartodb_types[downcase].first
       end
     else
-      self.downcase
+      downcase
     end
   end
 

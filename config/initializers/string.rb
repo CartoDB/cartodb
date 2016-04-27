@@ -186,9 +186,10 @@ class String
   end
 
   def sanitize_column_name
-    temporal_name = self.sanitize || ''
-    if temporal_name !~ /^[a-zA-Z_]/ || Carto::DB::Sanitize::RESERVED_WORDS.include?(self.downcase) \
-       || CartoDB::RESERVED_COLUMN_NAMES.include?(self.upcase)
+    temporal_name = sanitize || ''
+
+    if temporal_name !~ /^[a-zA-Z_]/ ||
+       Carto::DB::Sanitize::RESERVED_WORDS.include?(downcase) || CartoDB::RESERVED_COLUMN_NAMES.include?(upcase)
       return '_' + temporal_name
     else
       temporal_name

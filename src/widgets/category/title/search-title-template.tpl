@@ -13,10 +13,10 @@
     <h3 class="CDB-Text CDB-Size-large u-ellipsis js-titleText" title="<%- title %>"><%- title %></h3>
     <div class="CDB-Widget-options CDB-Widget-contentSpaced">
       <button class="CDB-Widget-buttonIcon CDB-Widget-buttonIcon--circle js-colors
-        <%- isColorApplied ? 'is-selected' : '' %>
-        <%- isColorApplied ? 'js-cancelColors' : 'js-applyColors' %>
+        <%- isAutoStyle ? 'is-selected' : '' %>
+        <%- isAutoStyle ? 'js-cancelAutoStyle' : 'js-autoStyle' %>
         " data-tooltip="
-          <%- isColorApplied ? 'Remove colors' : 'Apply colors' %>
+          <%- isAutoStyle ? 'Remove auto style' : 'Auto style' %>
         ">
         <i class="CDB-IconFont CDB-IconFont-drop CDB-IconFont--small CDB-IconFont--top"></i>
       </button>

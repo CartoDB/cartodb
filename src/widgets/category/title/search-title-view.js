@@ -17,8 +17,8 @@ module.exports = cdb.core.View.extend({
     'keyup .js-textInput': '_onKeyupInput',
     'submit .js-form': '_onSubmitForm',
     'click .js-applyLocked': '_applyLocked',
-    'click .js-applyColors': '_applyColors',
-    'click .js-cancelColors': '_cancelColors'
+    'click .js-autoStyle': '_autoStyle',
+    'click .js-cancelAutoStyle': '_cancelAutoStyle'
   },
 
   initialize: function () {
@@ -32,7 +32,7 @@ module.exports = cdb.core.View.extend({
     this.$el.html(
       template({
         isCollapsed: this.model.get('collapsed'),
-        isColorApplied: this.model.isColorApplied(),
+        isAutoStyle: this.model.isAutoStyle(),
         title: this.model.get('title'),
         columnName: this.dataviewModel.get('column'),
         q: this.dataviewModel.getSearchQuery(),
@@ -48,10 +48,9 @@ module.exports = cdb.core.View.extend({
 
   _initBinds: function () {
     this.model.bind('change:search', this._onSearchToggled, this);
-    this.model.bind('change:title change:collapsed change:pinned change:isColorsApplied', this.render, this);
+    this.model.bind('change:title change:collapsed change:pinned change:autoStyle', this.render, this);
     this.model.lockedCategories.bind('change add remove', this.render, this);
     this.add_related_model(this.model.lockedCategories);
-
     this.dataviewModel.filter.bind('change', this.render, this);
     this.add_related_model(this.dataviewModel.filter);
   },
@@ -130,12 +129,12 @@ module.exports = cdb.core.View.extend({
     this.model.applyLocked();
   },
 
-  _applyColors: function () {
-    this.model.applyColors();
+  _autoStyle: function () {
+    this.model.autoStyle();
   },
 
-  _cancelColors: function () {
-    this.model.cancelColors();
+  _cancelAutoStyle: function () {
+    this.model.cancelAutoStyle();
   },
 
   _cancelSearch: function () {

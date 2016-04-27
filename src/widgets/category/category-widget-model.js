@@ -1,7 +1,7 @@
 var _ = require('underscore');
 var WidgetModel = require('../widget-model');
-var CategoryColors = require('./category-colors');
 var LockedCategoriesCollection = require('./locked-categories-collection');
+var AutoStylerFactory = require('../auto-style/factory');
 
 /**
  * Model for a category widget
@@ -12,17 +12,15 @@ module.exports = WidgetModel.extend({
     {
       type: 'category',
       search: false,
-      locked: false,
-      isColorsApplied: false
+      locked: false
     },
     WidgetModel.prototype.defaults
   ),
 
   initialize: function () {
     WidgetModel.prototype.initialize.apply(this, arguments);
-    this.colors = new CategoryColors();
     this.lockedCategories = new LockedCategoriesCollection();
-
+    this.autoStyler = AutoStylerFactory.get(this.dataviewModel);
     this.listenTo(this.dataviewModel, 'change:allCategoryNames', this._onDataviewAllCategoryNamesChange);
     this.on('change:locked', this._onLockedChange, this);
     this.on('change:collapsed', this._onCollapsedChange, this);
@@ -55,16 +53,19 @@ module.exports = WidgetModel.extend({
     this.lockedCategories.reset([]);
   },
 
-  applyColors: function () {
-    this.set('isColorsApplied', true);
+  autoStyle: function () {
+    var style = this.autoStyler.getStyle();
+    this.dataviewModel.layer.set('cartocss', style);
+    this.set('autoStyle', true);
   },
 
-  cancelColors: function () {
-    this.set('isColorsApplied', false);
+  cancelAutoStyle: function () {
+    this.dataviewModel.layer.restoreCartoCSS();
+    this.set('autoStyle', false);
   },
 
-  isColorApplied: function () {
-    return this.get('isColorsApplied');
+  isAutoStyle: function () {
+    return this.get('autoStyle');
   },
 
   isLocked: function () {
@@ -113,9 +114,9 @@ module.exports = WidgetModel.extend({
   },
 
   _onDataviewAllCategoryNamesChange: function (m, names) {
-    this.colors.updateData(names);
-    if (this.isColorApplied()) {
-      this.applyColors();
+    this.autoStyler.colors.updateData(names);
+    if (this.isAutoStyle()) {
+      this.autoStyle();
     }
   },
 

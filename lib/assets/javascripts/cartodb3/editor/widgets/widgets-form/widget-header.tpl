@@ -1,5 +1,5 @@
 <div class="Editor-HeaderInfo">
-  <button class="u-rSpace--xl CDB-HeaderInfo-Back js-back">
+  <button class="u-rSpace--xl u-actionTextColor js-back">
     <i class="CDB-IconFont CDB-IconFont-arrowPrev Size-large"></i>
   </button>
   <div class="Editor-HeaderInfo-Inner">

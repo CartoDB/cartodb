@@ -58,7 +58,7 @@ describe CartoDB::Connector::Importer do
   # This test checks that the importer detects files with names that are
   # psql reserved words and knows how to rename them (appending '_t')
   it 'should allow importing tables with reserved names' do
-    reserved_word = CartoDB::POSTGRESQL_RESERVED_WORDS.sample
+    reserved_word = Carto::DB::Sanitize::RESERVED_WORDS.sample
 
     filepath        = "/tmp/#{reserved_word.downcase}.csv"
     expected_rename = reserved_word.downcase + '_t'

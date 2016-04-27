@@ -1386,7 +1386,7 @@ class Table
       options.merge!(database_schema: self.owner.database_schema)
     end
 
-    Table.get_valid_table_name(name, options)
+    Table.new_get_valid_table_name(name, owner, schema: owner.database_schema)
   end
 
   # Gets a valid postgresql table name for a given database
@@ -1418,7 +1418,7 @@ class Table
     #
     existing_names = []
     existing_names = options[:name_candidates] || options[:connection]["select relname from pg_stat_user_tables WHERE schemaname='#{database_schema}'"].map(:relname) if options[:connection]
-    existing_names = existing_names + Carto::PhysicalTablesManager::SYSTEM_TABLE_NAMES
+    existing_names = existing_names + Carto::DB::Sanitize::SYSTEM_TABLE_NAMES
     rx = /_(\d+)$/
     count = name[rx][1].to_i rescue 0
     while existing_names.include?(name)
@@ -1433,7 +1433,7 @@ class Table
     name
   end
 
-  def self.new_get_valid_table_name(name, user, schema: user.database_schema)
+  def self.new_get_valid_table_name(name, user, schema: 'public')
     Carto::PhysicalTablesManager.new(user.id).propose_valid_table_name(contendent: name, schema: schema)
   end
 

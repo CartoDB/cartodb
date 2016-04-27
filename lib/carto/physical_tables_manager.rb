@@ -7,14 +7,6 @@ module Carto
     DEFAULT_SEPARATOR = '_'.freeze
     DEFAULT_TABLE_NAME = 'untitled_table'.freeze
     MAX_RENAME_RETRIES = 10000
-    SYSTEM_TABLE_NAMES = ['spatial_ref_sys',
-                          'geography_columns',
-                          'geometry_columns',
-                          'raster_columns',
-                          'raster_overviews',
-                          'cdb_tablemetadata',
-                          'geometry',
-                          'raster'].freeze
 
     def initialize(user_id)
       @user = ::User.where(id: user_id).first
@@ -25,7 +17,7 @@ module Carto
       schema = @user.database_schema unless schema && !schema.empty?
 
       sanitized_contendent = Carto::DB::Sanitize.sanitize_identifier(contendent)
-      used_table_names = fetch_physical_table_names(schema) + SYSTEM_TABLE_NAMES
+      used_table_names = fetch_physical_table_names(schema) + Carto::DB::Sanitize::SYSTEM_TABLE_NAMES
 
       find_unused_name_with_prefix(used_table_names, sanitized_contendent)
     end

@@ -1093,7 +1093,7 @@ class User < Sequel::Model
         .from(:pg_class)
         .join_table(:inner, :pg_namespace, :oid => :relnamespace)
         .where(:relkind => 'r', :nspname => in_schema)
-        .exclude(:relname => Carto::PhysicalTablesManager::SYSTEM_TABLE_NAMES)
+        .exclude(:relname => Carto::DB::Sanitize::SYSTEM_TABLE_NAMES)
         .all
   end
 

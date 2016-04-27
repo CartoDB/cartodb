@@ -339,6 +339,10 @@ describe CartoDB::Connector::Importer do
       visualization.tags.should include('exported')
       map = visualization.map
       map.center.should eq "[39.75365697136308, -2.318115234375]"
+
+      data_import.table.destroy
+      data_import.destroy
+      visualization.destroy
     end
 
     it 'imports a visualization export with two layers' do
@@ -360,6 +364,9 @@ describe CartoDB::Connector::Importer do
       data_import.table_names.should eq "guess_country twitter_t3chfest_reduced"
       visualization = Carto::Visualization.find(data_import.visualization_id)
       visualization.name.should eq "map with two layers"
+      data_import.tables.map(&:destroy)
+      data_import.destroy
+      visualization.destroy
     end
   end
 end

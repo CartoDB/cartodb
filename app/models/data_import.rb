@@ -360,6 +360,14 @@ class DataImport < Sequel::Model
     ::Table.new(user_table: UserTable.where(id: table_id, user_id: user_id).first)
   end
 
+  def tables
+    table_names_array.map { |table_name| ::Table.new(user_table: UserTable.where(name: table_name, user_id: user_id).first) }
+  end
+
+  def table_names_array
+    table_names.present? ? table_names.split(' ') : []
+  end
+
   def is_raster?
     ::JSON.parse(self.stats).select{ |item| item['type'] == '.tif' }.length > 0
   end
@@ -378,7 +386,6 @@ class DataImport < Sequel::Model
 
     (user.quota_in_bytes / assumed_kb_sec).round
   end
-
 
   private
 

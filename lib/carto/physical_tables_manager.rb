@@ -5,7 +5,7 @@ require_relative 'db/sanitize.rb'
 module Carto
   class PhysicalTablesManager
     DEFAULT_SEPARATOR = '_'.freeze
-    DEFAULT_TABLE_NAME = 'carto_table'.freeze
+    DEFAULT_TABLE_NAME = 'untitled_table'.freeze
     MAX_RENAME_RETRIES = 10000
     SYSTEM_TABLE_NAMES = ['spatial_ref_sys',
                           'geography_columns',

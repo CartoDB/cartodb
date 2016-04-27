@@ -459,7 +459,10 @@ describe Carto::VisualizationsExportService2 do
         public_layer =  FactoryGirl.create(:carto_layer, options: { table_name: public_table.name })
 
         map = FactoryGirl.create(:carto_map, layers: [private_layer, public_layer], user: @user)
-        map, table, table_visualization, visualization = create_full_visualization(@user, map: map)
+        map, table, table_visualization, visualization = create_full_visualization(@user,
+                                                                                   map: map,
+                                                                                   table: private_table,
+                                                                                   data_layer: private_layer)
 
         exported_own = Carto::VisualizationsExportService2.new.export_visualization_json_hash(visualization.id, @user)
         own_layers = exported_own[:visualization][:layers]
@@ -658,7 +661,7 @@ describe Carto::VisualizationsExportService2 do
     it 'imports an exported visualization into another account should change layer user_name option' do
       exported_string = export_service.export_visualization_json_string(@visualization.id, @user)
       built_viz = export_service.build_visualization_from_json_export(exported_string)
-      imported_viz = export_service.save_import(@user2, built_viz)
+      imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user2, built_viz)
 
       imported_viz = Carto::Visualization.find(imported_viz.id)
       verify_visualizations_match(imported_viz, @visualization, importing_user: @user2)

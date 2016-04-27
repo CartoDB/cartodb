@@ -153,6 +153,20 @@
   border-top-left-radius: $halfBaseSize;
   border-bottom-left-radius: $halfBaseSize;
 }
+.Editor-ListAnalysis-itemInfo--error {
+  position: relative;
+  &:after {
+    display: block;
+    position: absolute;
+    top: -3px;
+    right: -3px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50px;
+    background-color: $cError;
+    content: ' ';
+  }
+}
 
 .Editor-ListAnalysis-title {
   width: 100%;

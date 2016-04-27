@@ -668,22 +668,24 @@ class User < Sequel::Model
   end
 
   def reload_avatar
-    request = http_client.request(
-      self.gravatar(protocol = 'http://', 128, default_image = '404'),
-      method: :get
-    )
-    response = request.run
-    if response.code == 200
-      # First try to update the url with the user gravatar
-      self.avatar_url = "//#{gravatar_user_url(128)}"
-      self.this.update avatar_url: self.avatar_url
-    else
-      # If the user doesn't have gravatar try to get a cartodb avatar
-      if self.avatar_url.nil? || self.avatar_url == "//#{default_avatar}"
-        # Only update the avatar if the user avatar is nil or the default image
-        self.avatar_url = "#{cartodb_avatar}"
-        self.this.update avatar_url: self.avatar_url
+    if gravatar_enabled?
+      request = http_client.request(
+        gravatar('http://', 128, '404'),
+        method: :get
+      )
+      response = request.run
+      if response.code == 200
+        # First try to update the url with the user gravatar
+        self.avatar_url = "//#{gravatar_user_url(128)}"
+        this.update avatar_url: avatar_url
       end
+    end
+
+    # If the user doesn't have gravatar try to get a cartodb avatar
+    if avatar_url.nil? || avatar_url == "//#{default_avatar}"
+      # Only update the avatar if the user avatar is nil or the default image
+      self.avatar_url = cartodb_avatar.to_s
+      this.update avatar_url: avatar_url
     end
   end
 
@@ -710,13 +712,21 @@ class User < Sequel::Model
     "/assets/unversioned/images/avatars/public_dashboard_default_avatar.png"
   end
 
+  def gravatar_enabled?
+    # Enabled by default, only disabled if specified in the config
+    gravatar_disabled = !Cartodb.config[:avatars].nil? &&
+                        !Cartodb.config[:avatars]['gravatar_enabled'].nil? &&
+                        !Cartodb.config[:avatars]['gravatar_enabled']
+    !gravatar_disabled
+  end
+
   def gravatar(protocol = "http://", size = 128, default_image = default_avatar)
-    "#{protocol}#{self.gravatar_user_url(size)}&d=#{protocol}#{URI.encode(default_image)}"
-  end #gravatar
+    "#{protocol}#{gravatar_user_url(size)}&d=#{protocol}#{URI.encode(default_image)}"
+  end # gravatar
 
   def gravatar_user_url(size = 128)
     digest = Digest::MD5.hexdigest(email.downcase)
-    return "gravatar.com/avatar/#{digest}?s=#{size}"
+    "gravatar.com/avatar/#{digest}?s=#{size}"
   end
 
   # Retrive list of user tables from database catalogue

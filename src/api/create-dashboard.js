@@ -4,6 +4,7 @@ var Dashboard = require('./dashboard');
 var DashboardView = require('../dashboard-view');
 var WidgetsCollection = require('../widgets/widgets-collection');
 var WidgetsService = require('../widgets-service');
+var URI = require('urijs');
 
 /**
  * Translates a vizJSON v3 datastructure into a working dashboard which will be rendered in given selector.
@@ -19,6 +20,9 @@ var WidgetsService = require('../widgets-service');
 var createDashboard = function (selector, vizJSON, opts, callback) {
   var dashboardEl = document.querySelector(selector);
   if (!dashboardEl) throw new Error('no element found with selector ' + selector);
+
+  var url = new URI(window.location.href);
+  var state = JSON.parse(url.query(true)['state']);
 
   // Default options
   opts = opts || {};

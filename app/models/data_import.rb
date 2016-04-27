@@ -24,9 +24,8 @@ require_relative '../../services/importer/lib/importer/mail_notifier'
 require_relative '../../services/importer/lib/importer/cartodbfy_time'
 require_relative '../../services/platform-limits/platform_limits'
 require_relative '../../services/importer/lib/importer/overviews'
-require_relative '../../lib/cartodb/event_tracker'
 
-require_dependency 'carto/physical_tables_manager'
+require_relative '../../lib/cartodb/event_tracker'
 
 include CartoDB::Datasources
 
@@ -477,7 +476,10 @@ class DataImport < Sequel::Model
     self.save
 
     candidates =  current_user.tables.select_map(:name)
-    table_name = Carto::PhysicalTablesManager.new(current_user.id).propose_valid_table_name(contendent: name)
+    table_name = ::Table.get_valid_table_name(name, {
+        connection: current_user.in_database,
+        database_schema: current_user.database_schema
+    })
     current_user.in_database.run(%{CREATE TABLE #{table_name} AS #{query}})
     if current_user.over_disk_quota?
       log.append "Over storage quota. Dropping table #{table_name}"

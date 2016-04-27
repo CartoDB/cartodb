@@ -25,7 +25,7 @@ module CartoDB
     end
 
     def get_valid_table_name(table_name)
-      table_klass.new_get_valid_table_name(table_name, user)
+      table_klass.new_get_valid_table_name(table_name, user, schema: user.database_schema)
     end
 
     attr_reader :user, :table

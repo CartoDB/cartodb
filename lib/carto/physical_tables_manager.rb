@@ -7,6 +7,14 @@ module Carto
     DEFAULT_SEPARATOR = '_'.freeze
     DEFAULT_TABLE_NAME = 'carto_table'.freeze
     MAX_RENAME_RETRIES = 10000
+    SYSTEM_TABLE_NAMES = ['spatial_ref_sys',
+                          'geography_columns',
+                          'geometry_columns',
+                          'raster_columns',
+                          'raster_overviews',
+                          'cdb_tablemetadata',
+                          'geometry',
+                          'raster'].freeze
 
     def initialize(user_id)
       @user = ::User.where(id: user_id).first
@@ -14,9 +22,9 @@ module Carto
 
     def propose_valid_table_name(contendent: DEFAULT_TABLE_NAME.dup, schema: @user.database_schema)
       sanitized_contendent = Carto::DB::Sanitize.sanitize_identifier(contendent)
-      physical_table_names = fetch_physical_table_names(schema)
+      used_table_names = fetch_physical_table_names(schema) + SYSTEM_TABLE_NAMES
 
-      find_unused_name_with_prefix(physical_table_names, sanitized_contendent)
+      find_unused_name_with_prefix(used_table_names, sanitized_contendent)
     end
 
     private

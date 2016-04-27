@@ -107,7 +107,8 @@
       "spyOn",
       "it",
       "xit",
-      "expect"
+      "expect",
+      "localStorage"
     ],
     "ignore": [
       "/.grunt",

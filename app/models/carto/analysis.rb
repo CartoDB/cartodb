@@ -1,10 +1,12 @@
 # encoding: UTF-8
+require 'json'
 
 class Carto::Analysis < ActiveRecord::Base
-  # INFO: disable ActiveRecord inheritance column
-  self.inheritance_column = :_type
-
   belongs_to :visualization, class_name: Carto::Visualization
+  belongs_to :user, class_name: Carto::User
+
+  after_save :notify_map_change
+  after_destroy :notify_map_change
 
   def self.find_by_natural_id(visualization_id, natural_id)
     analysis = find_by_sql(
@@ -27,10 +29,19 @@ class Carto::Analysis < ActiveRecord::Base
     filter_valid_properties(analysis_definition_json)
   end
 
+  def analysis_definition_json=(analysis_definition)
+    self.analysis_definition = analysis_definition.to_json
+  end
+
   def natural_id
     pj = analysis_definition_json
     return nil unless pj
     pj[:id]
+  end
+
+  def map
+    return nil unless visualization
+    visualization.map
   end
 
   private
@@ -45,5 +56,9 @@ class Carto::Analysis < ActiveRecord::Base
       valid[:params][:source] = filter_valid_properties(valid[:params][:source])
     end
     valid
+  end
+
+  def notify_map_change
+    map.notify_map_change if map
   end
 end

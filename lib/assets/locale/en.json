@@ -28,6 +28,19 @@
   },
   "components": {
     "likes-pluralize": "like |||| likes",
+    "datepicker": {
+      "dates-placeholder": "Choose your dates",
+      "get-last": "Get last",
+      "hour": "hour",
+      "min": "min",
+      "from": "from",
+      "to": "to",
+      "or": "or",
+      "days-pluralize": "1 day |||| %{smart_count} days",
+      "weeks-pluralize": "1 week |||| %{smart_count} weeks",
+      "hours-pluralize": "hour week |||| %{smart_count} hours",
+      "gmt-convertion": "Date will be converted to GMT +0"
+    },
     "modals": {
       "add-analysis": {
         "modal-title": "Add a new analysis",
@@ -81,6 +94,120 @@
         "create-loading-title": "Creating empty dataset…",
         "adding-new-layer": "Adding new layer…",
         "add-layer-error": "Could not add layer",
+        "imports": {
+          "ask-for-demo": "ask for demo",
+          "connector": "connector",
+          "demo-email-title": "I am interested in the %{name} connector",
+          "demo-email-desc": "Hi, I am interested in testing the %{name} connector. Please, contact me to schedule a demo of this feature.",
+          "tab-options-error": {
+            "no-key": "%{name} key is not specified and panel can't be enabled",
+            "not-allowed": "%{name} data source is not available in your plan. Please upgrade",
+            "limits-reached": "You've reached the limits for your account. Please upgrade",
+            "no-credits": "You've reached the available %{name} credits for your account this month"
+          },
+          "member-pluralize": "member |||| members",
+          "item-pluralize": "item |||| items",
+          "form-import": {
+            "browse": "Browse",
+            "drag-and-drop": "Drag & drop your file",
+            "error-desc": "Error. Your URL doesn’t look correct.",
+            "format": "Format",
+            "or": "or",
+            "title": "Enter a url",
+            "desc": "Paste a URL and start the import",
+            "submit": "submit"
+          },
+          "header-import": {
+            "import-url": "Import your data from a %{brand} URL",
+            "file-selected": "File selected",
+            "paste-url": "Paste a URL %{fileEnabled} ",
+            "select-a-file": "or select a file like CSV, XLS, ZIP, KML, GPX,",
+            "see-all-formats": "see all formats",
+            "sync-enabled": "Keep it synchronized with the source",
+            "sync-disabled": "Sync options are not available",
+            "type-selected": "%{brand} selected",
+            "type-import": "%{brand} import",
+            "upload-file-url": "Upload a file or a URL |||| Upload a URL"
+          },
+          "service-import": {
+            "and": "and",
+            "account-connected": "Account connected",
+            "connect-with": "Connect with %{title}",
+            "choose": "Choose",
+            "connect": "Connect",
+            "found-in": "%{size} %{pluralize} found in %{title}",
+            "item-selected": "Item selected",
+            "many-more-formats": "many more formats",
+            "no-results-title": "Oouch! There is no results",
+            "no-results-desc": "We haven't found any valid file from your account",
+            "state-idle-login": "Log in with your account and select any item.",
+            "state-error": "We are sorry, can’t connect to your %{title} account. Just in case it helps, be sure you have the pop-up blocker deactivated for this website.",
+            "state-token": "Checking Token.",
+            "state-oauth": "Requesting oAuth.",
+            "state-retrieving": "A list of your %{title} files will be displayed in a moment.",
+            "state-selected-sync": "You can also choose when to sync the file.",
+            "state-selected-instagram": "A map containing all your georeferenced photos will be created",
+            "state-selected-no-sync": "Sync options are not available.",
+            "supported": "supported",
+            "try-again": "Try again"
+          },
+          "selected-state": {
+            "sync-my-data": "Sync my data",
+            "never": "Never",
+            "every-hour": "Every hour",
+            "every-day": "Every day",
+            "every-week": "Every week",
+            "every-month": "Every month",
+            "free-trial": "%{days} days Free trial",
+            "more-features": "more features",
+            "upgrade-desc": "Upgrade your account to get sync options and %{features}",
+            "upgrade": "upgrade"
+          },
+          "twitter": {
+            "category": "Category",
+            "credits-consumed": "Twitter credits for this period consumed - %{extraTweets} will be charged",
+            "credits-left": "%{per}% of your %{remainingFormatted} Twitter credits left",
+            "credits-no-limit": "No limits - %{extraTweets} will be charged",
+            "extra-tweets": "extra tweets",
+            "fallback-title": "Enable the %{brand} Connector",
+            "fallback-desc": "The %{brand} Connector allows you to map %{brand} activity data related to your Brand, Event or any term you may be interested in.",
+            "from-to": "From / to",
+            "terms-desc": "Enter up to four search terms using the category fields.",
+            "terms-placeholder": "Insert your terms separated by commas",
+            "title": "Twitter trends",
+            "twitter-gmt": "Time is in GMT+0",
+            "use": "Use",
+            "your-gmt": "You are in GMT"
+          },
+          "arcgis": {
+            "fallback-desc": "Enable the %{brand} connector in your account to connect your %{brand} data to CartoDB and mantain it in sync with the source.",
+            "input-placeholder": "Paste here your %{brand} table URL",
+            "url-desc": "To retrieve a particular layer, add the layer index at the end of the URL",
+            "import-data": "Import your data from an %{brand} instance",
+            "sync-options": "Sync options only available for a layer"
+          },
+          "instagram": {
+            "fallback-desc": "Enable the %{brand} connector to map your photos or videos from your account in CartoDB."
+          },
+          "box": {
+            "fallback-desc": "Enable the %{brand} connector in your account to map your %{brand} files in CartoDB or mantain your CartoDB maps in sync with your Box data."
+          },
+          "mailchimp": {
+            "campaign-selected": "%{brand} campaign selected",
+            "fallback-desc": "Enable the %{brand} connector in your account to map your user lists from %{brand} in CartoDB or mantain your CartoDB maps in sync with your %{brand} data.",
+            "map-campaign": "Map your %{brand} Campaigns",
+            "state-idle": "Connect your %{brand} account to select any of your campaigns.",
+            "state-error": "We are sorry, It has been an error while connecting to your %{brand} account. Just in case it helps, be sure you have the pop-up blocker deactivated for this website.",
+            "state-token": "Checking %{brand} Token.",
+            "state-oauth": "Requesting oAuth.",
+            "state-retrieving": "A list of your %{brand} campaigns will be displayed in a moment.",
+            "state-selected": "Campaign selected."
+          },
+          "salesforce": {
+            "fallback-desc": "Enable the %{brand} connector in your account to map your user lists from %{brand} in CartoDB or mantain your CartoDB maps in sync with your %{brand} data.",
+            "input-placeholder": "Paste here your %{brand} URL"
+          }
+        },
         "datasets": {
           "item": {
             "sync-failed": "Sync failed, last attempt was",
@@ -128,6 +255,9 @@
     "error": {
       "default-title": "Oops, there was a problem",
       "default-desc": "Reload the page again. If the problem persists contact us at <a href='mailto:support@cartodb.com'>support@cartodb.com</a>"
+    },
+    "backbone-forms": {
+      "interval-error": "Value must between %{minValue} and %{maxValue}"
     }
   },
   "data": {
@@ -184,7 +314,7 @@
         "placeholder-text": "You have not added any analysis yet. Add new analysis to discover new things.",
         "polygons_source": "Polygon source",
         "points_source": "Point source",
-        "radio": "Radio",
+        "radius": "Radius",
         "reference-layer-pluralize": "Define your reference layer |||| Define your reference layers",
         "time": "Time",
         "type": "Type",

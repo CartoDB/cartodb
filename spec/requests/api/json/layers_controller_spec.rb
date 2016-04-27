@@ -50,7 +50,7 @@ describe Api::Json::LayersController do
     end
 
     let(:layer_json) do
-      { kind: kind, options: { 'table_name' => nil, 'user_name' => nil }, order: 1, infowindow: {}, tooltip: {} }
+      { kind: kind, options: { table_name: nil, user_name: nil }, order: 1, infowindow: {}, tooltip: {} }
     end
 
     it 'creates layers' do
@@ -76,12 +76,22 @@ describe Api::Json::LayersController do
         layer_id = layer_response.delete(:id)
         layer_id.should_not be_nil
 
-        layer_response.delete(:options).should eq ({ "table_name" => @table.name })
+        layer_response.delete(:options).should eq ({ table_name: @table.name })
 
         layer_response.should eq layer_json.except(:options)
 
         @layer = Carto::Layer.find(layer_id)
         @layer.maps.map(&:id).first.should eq @map.id
+      end
+    end
+
+    it 'does not allow to exceed max_layers' do
+      @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_user1)
+      @carto_user1.max_layers = 1
+      @carto_user1.save
+
+      post_json create_map_layer_url(@map.id), layer_json.merge(kind: 'tiled', order: 10) do |response|
+        response.status.should eq 403
       end
     end
 
@@ -92,7 +102,7 @@ describe Api::Json::LayersController do
 
       new_order = 2
       new_layer_json = layer_json.merge(
-        options: { 'random' => '1' },
+        options: { random: '1' },
         order: new_order
       )
       put_json update_map_layer_url(map.id, @layer.id), new_layer_json do |response|
@@ -140,7 +150,7 @@ describe Api::Json::LayersController do
       @layer = map.layers.first
 
       new_layer_json = layer_json.merge(
-        options: { 'table_name' => 'other_table_name', 'user_name' => 'other_username' }
+        options: { table_name: 'other_table_name', user_name: 'other_username' }
       )
       put_json update_map_layer_url(map.id, @layer.id), new_layer_json do |response|
         response.status.should eq 200

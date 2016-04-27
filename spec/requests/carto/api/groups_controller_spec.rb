@@ -17,7 +17,11 @@ describe Carto::Api::GroupsController do
 
     before(:all) do
       @carto_org_user_1 = Carto::User.find(@org_user_1.id)
-      @org_user_1_json = {"id"=>@org_user_1.id, "username"=>@org_user_1.username, "email"=>@org_user_1.email, "avatar_url"=>@org_user_1.avatar_url, "base_url"=>@org_user_1.public_url, "quota_in_bytes"=>@org_user_1.quota_in_bytes, "db_size_in_bytes"=>@org_user_1.db_size_in_bytes, "table_count"=>0, "maps_count"=>0}
+      @org_user_1_json = { "id" => @org_user_1.id,
+                           "username" => @org_user_1.username,
+                           "avatar_url" => @org_user_1.avatar_url,
+                           "base_url" => @org_user_1.public_url
+                         }
       @carto_org_user_2 = Carto::User.find(@org_user_2.id)
 
       @group_1 = FactoryGirl.create(:random_group, display_name: 'g_1', organization: @carto_organization)
@@ -132,7 +136,7 @@ describe Carto::Api::GroupsController do
         it 'can fetch number of shared tables, maps and users when a table is shared' do
           bypass_named_maps
           table_user_2 = create_table_with_options(@org_user_2)
-          permission = CartoDB::Permission[Carto::Visualization.find(table_user_2['table_visualization']['id']).permission.id]
+          permission = CartoDB::Permission[Carto::Visualization.find(table_user_2['table_visualization'][:id]).permission.id]
           permission.set_group_permission(@group_1, Carto::Permission::ACCESS_READONLY)
           permission.save
 

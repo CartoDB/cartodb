@@ -79,11 +79,13 @@ class User < Sequel::Model
 
   GEOCODING_BLOCK_SIZE = 1000
   HERE_ISOLINES_BLOCK_SIZE = 1000
+  OBS_SNAPSHOT_BLOCK_SIZE = 1000
 
   TRIAL_DURATION_DAYS = 15
 
   DEFAULT_GEOCODING_QUOTA = 0
   DEFAULT_HERE_ISOLINES_QUOTA = 0
+  DEFAULT_OBS_SNAPSHOT_QUOTA = 0
 
   COMMON_DATA_ACTIVE_DAYS = 31
 
@@ -126,6 +128,7 @@ class User < Sequel::Model
 
     errors.add(:geocoding_quota, "cannot be nil") if geocoding_quota.nil?
     errors.add(:here_isolines_quota, "cannot be nil") if here_isolines_quota.nil?
+    errors.add(:obs_snapshot_quota, "cannot be nil") if obs_snapshot_quota.nil?
   end
 
   def organization_validation
@@ -175,6 +178,7 @@ class User < Sequel::Model
     self.email = self.email.to_s.strip.downcase
     self.geocoding_quota ||= DEFAULT_GEOCODING_QUOTA
     self.here_isolines_quota ||= DEFAULT_HERE_ISOLINES_QUOTA
+    self.obs_snapshot_quota ||= DEFAULT_OBS_SNAPSHOT_QUOTA
   end
 
   def before_create
@@ -459,7 +463,10 @@ class User < Sequel::Model
         limit = u.here_isolines_quota.to_i - (u.here_isolines_quota.to_i * delta)
         over_here_isolines = u.get_here_isolines_calls > limit
 
-        if over_geocodings || over_twitter_imports || over_here_isolines
+        limit = u.obs_snapshot_quota.to_i - (u.obs_snapshot_quota.to_i * delta)
+        over_obs_snapshot = u.get_obs_snapshot_calls > limit
+
+        if over_geocodings || over_twitter_imports || over_here_isolines || over_obs_snapshot
           users_overquota.push(u)
         end
     end
@@ -774,6 +781,20 @@ class User < Sequel::Model
     self[:soft_here_isolines_limit] = !val
   end
 
+  def soft_obs_snapshot_limit?
+    Carto::AccountType.new.soft_obs_snapshot_limit?(self)
+  end
+  alias_method :soft_obs_snapshot_limit, :soft_obs_snapshot_limit?
+
+  def hard_obs_snapshot_limit?
+    !soft_obs_snapshot_limit?
+  end
+  alias_method :hard_obs_snapshot_limit, :hard_obs_snapshot_limit?
+
+  def hard_obs_snapshot_limit=(val)
+    self[:soft_obs_snapshot_limit] = !val
+  end
+
   def arcgis_datasource_enabled?
     self.arcgis_datasource_enabled == true
   end
@@ -836,6 +857,8 @@ class User < Sequel::Model
       'soft_geocoding_limit', soft_geocoding_limit,
       'here_isolines_quota', here_isolines_quota,
       'soft_here_isolines_limit', soft_here_isolines_limit,
+      'obs_snapshot_quota', obs_snapshot_quota,
+      'soft_obs_snapshot_limit', soft_obs_snapshot_limit,
       'google_maps_client_id', google_maps_key,
       'google_maps_api_key', google_maps_private_key,
       'period_end_date', period_end_date
@@ -897,6 +920,11 @@ class User < Sequel::Model
     get_user_here_isolines_data(self, date_from, date_to)
   end
 
+  def get_obs_snapshot_calls(options = {})
+    date_from, date_to = quota_dates(options)
+    get_user_obs_snapshot_data(self, date_from, date_to)
+  end
+
   def effective_twitter_block_price
     organization.present? ? organization.twitter_datasource_block_price : self.twitter_datasource_block_price
   end
@@ -927,6 +955,15 @@ class User < Sequel::Model
       remaining = organization.remaining_here_isolines_quota
     else
       remaining = here_isolines_quota - get_here_isolines_calls
+    end
+    (remaining > 0 ? remaining : 0)
+  end
+
+  def remaining_obs_snapshot_quota
+    if organization.present?
+      remaining = organization.remaining_obs_snapshot_quota
+    else
+      remaining = obs_snapshot_quota - get_obs_snapshot_calls
     end
     (remaining > 0 ? remaining : 0)
   end
@@ -1095,156 +1132,6 @@ class User < Sequel::Model
         .where(:relkind => 'r', :nspname => in_schema)
         .exclude(:relname => ::Table::SYSTEM_TABLE_NAMES)
         .all
-  end
-
-  def ghost_tables_work(job)
-    job && job['payload'] && job['payload']['class'] === 'Resque::UserJobs::SyncTables::LinkGhostTables' && !job['args'].nil? && job['args'].length == 1 && job['args'][0] === self.id
-  end
-
-  def link_ghost_tables_working
-    # search in the first 100. This is random number
-    enqeued = Resque.peek(:users, 0, 100).select { |job|
-      job && job['class'] === 'Resque::UserJobs::SyncTables::LinkGhostTables' && !job['args'].nil? && job['args'].length == 1 && job['args'][0] === self.id
-    }.length
-    workers = Resque::Worker.all
-    working = workers.select { |w| ghost_tables_work(w.job) }.length
-    return (workers.length > 0 && working > 0) || enqeued > 0
-  end
-
-  # Looks for tables created on the user database with
-  # the columns needed
-  def link_ghost_tables
-    lock_acquired = Carto::Bolt.new(username, ttl_ms: 60000).run_locked do
-      no_tables = real_tables.blank?
-
-      link_renamed_tables unless no_tables
-      link_deleted_tables
-      link_created_tables(search_for_cartodbfied_tables) unless no_tables
-    end
-
-    CartoDB::Logger.info(message: 'Ghost table race condition avoided', user: self) unless lock_acquired
-  end
-
-  # this method search for tables with all the columns needed in a cartodb table.
-  # it does not check column types, and only the latest cartodbfication trigger attached (test_quota_per_row)
-  # returns the list of tables in the database with those columns but not in metadata database
-  def search_for_cartodbfied_tables
-    metadata_table_names = self.tables.select(:name).map(&:name).map { |t| "'" + t + "'" }.join(',')
-
-    db = self.in_database(:as => :superuser)
-    required_columns = Table::CARTODB_REQUIRED_COLUMNS + [Table::THE_GEOM_WEBMERCATOR]
-    cartodb_columns = (required_columns).map { |t| "'" + t.to_s + "'" }.join(',')
-    sql = %Q{
-      WITH a as (
-        SELECT table_name, count(column_name::text) cdb_columns_count
-        FROM information_schema.columns c, pg_tables t, pg_trigger tg
-        WHERE
-          t.tablename = c.table_name AND
-          t.schemaname = c.table_schema AND
-          c.table_schema = '#{database_schema}' AND
-          t.tableowner = '#{database_username}' AND
-    }
-
-    if metadata_table_names.length != 0
-      sql += %Q{
-        c.table_name NOT IN (#{metadata_table_names}) AND
-      }
-    end
-
-    sql += %Q{
-          column_name IN (#{cartodb_columns}) AND
-
-          tg.tgrelid = (quote_ident(t.schemaname) || '.' || quote_ident(t.tablename))::regclass::oid AND
-          tg.tgname = 'test_quota_per_row'
-
-          GROUP BY 1
-      )
-      SELECT table_name FROM a WHERE cdb_columns_count = #{required_columns.length}
-    }
-
-    db[sql].all.map { |t| t[:table_name] }
-  end
-
-  # search in the user database for tables that are not in the metadata database
-  def search_for_modified_table_names
-    metadata_table_names = self.tables.select(:name).map(&:name)
-    #TODO: filter real tables by ownership
-    real_names = real_tables.map { |t| t[:relname] }
-    return metadata_table_names.to_set != real_names.to_set
-  end
-
-
-  def link_renamed_tables
-    metadata_tables_ids = self.tables.select(:table_id).map(&:table_id)
-    metadata_table_names = self.tables.select(:name).map(&:name)
-    renamed_tables       = real_tables.reject{|t| metadata_table_names.include?(t[:relname])}.select{|t| metadata_tables_ids.include?(t[:oid])}
-    renamed_tables.each do |t|
-      table = Table.new(:user_table => ::UserTable.find(:table_id => t[:oid], :user_id => self.id))
-      begin
-        Rollbar.report_message('ghost tables', 'debug', {
-          :action => 'rename',
-          :new_table => t[:relname]
-        })
-        vis = table.table_visualization
-        vis.register_table_only = true
-        vis.name = t[:relname]
-        vis.store
-      rescue Sequel::DatabaseError => e
-        raise unless e.message =~ /must be owner of relation/
-      end
-    end
-  end
-
-  def link_created_tables(table_names)
-    created_tables = real_tables.select {|t| table_names.include?(t[:relname]) }
-    created_tables.each do |t|
-      begin
-        Rollbar.report_message('ghost tables', 'debug', {
-          :action => 'registering table',
-          :new_table => t[:relname]
-        })
-        table = Table.new
-        table.user_id  = self.id
-        table.name     = t[:relname]
-        table.table_id = t[:oid]
-        table.register_table_only = true
-        table.keep_user_database_table = true
-        table.save
-      rescue => e
-        puts e
-      end
-    end
-  end
-
-  def link_deleted_tables
-    # Sync tables replace contents without touching metadata DB, so if method triggers meanwhile sync will fail
-    syncs = CartoDB::Synchronization::Collection.new.fetch(user_id: self.id).map(&:name).compact
-
-    # Avoid fetching full models
-    metadata_tables = self.tables.select(:table_id, :name)
-                                 .map {|table| { table_id: table.table_id, name: table.name } }
-    metadata_tables_ids = metadata_tables.select{ |table| !syncs.include?(table[:name]) }
-                                         .map{ |table| table[:table_id] }
-
-    dropped_tables = metadata_tables_ids - real_tables.map{|t| t[:oid]} - [nil]
-
-    # Remove tables with oids that don't exist on the db
-    self.tables.where(table_id: dropped_tables).all.each do |user_table|
-      Rollbar.report_message('ghost tables', 'debug', {
-        :action => 'dropping table',
-        :new_table => user_table.name
-      })
-      table = Table.new(user_table: user_table)
-      table.keep_user_database_table = true
-      table.destroy
-    end if dropped_tables.present?
-
-    # Remove tables with null oids unless the table name exists on the db
-    self.tables.filter(table_id: nil).all.each do |user_table|
-      t = Table.new(user_table: user_table)
-      t.keep_user_database_table = true
-      t.destroy unless self.real_tables.map { |t| t[:relname] }.include?(t.name)
-    end if dropped_tables.present? && dropped_tables.include?(nil)
   end
 
   def exceeded_quota?
@@ -1583,7 +1470,8 @@ class User < Sequel::Model
       :period_end_date, :map_view_block_price, :geocoding_block_price, :account_type,
       :twitter_datasource_enabled, :soft_twitter_datasource_limit, :twitter_datasource_quota,
       :twitter_datasource_block_price, :twitter_datasource_block_size, :here_isolines_quota,
-      :here_isolines_block_price, :soft_here_isolines_limit
+      :here_isolines_block_price, :soft_here_isolines_limit, :obs_snapshot_quota,
+      :obs_snapshot_block_price, :soft_obs_snapshot_limit
     ])
     to.invite_token = ::User.make_token
   end

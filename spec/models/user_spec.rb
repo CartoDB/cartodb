@@ -4,6 +4,7 @@ require 'ostruct'
 require_relative '../spec_helper'
 require_relative 'user_shared_examples'
 require_relative '../../services/dataservices-metrics/lib/here_isolines_usage_metrics'
+require_relative '../../services/dataservices-metrics/lib/observatory_snapshot_usage_metrics'
 require 'factories/organizations_contexts'
 require_relative '../../app/model_factories/layer_factory'
 require_dependency 'cartodb/redis_vizjson_cache'
@@ -588,6 +589,21 @@ describe User do
       overquota(0.10).should be_empty
     end
 
+    it "should return users near their data observatory quota" do
+      ::User.any_instance.stubs(:get_api_calls).returns([0])
+      ::User.any_instance.stubs(:map_view_quota).returns(120)
+      ::User.any_instance.stubs(:get_geocoding_calls).returns(0)
+      ::User.any_instance.stubs(:geocoding_quota).returns(100)
+      ::User.any_instance.stubs(:get_here_isolines_calls).returns(0)
+      ::User.any_instance.stubs(:here_isolines_quota).returns(100)
+      ::User.any_instance.stubs(:get_obs_snapshot_calls).returns(81)
+      ::User.any_instance.stubs(:obs_snapshot_quota).returns(100)
+      overquota.should be_empty
+      overquota(0.20).map(&:id).should include(@user.id)
+      overquota(0.20).size.should == 2
+      overquota(0.10).should be_empty
+    end
+
     it "should return users near their twitter quota" do
       ::User.any_instance.stubs(:get_api_calls).returns([0])
       ::User.any_instance.stubs(:map_view_quota).returns(120)
@@ -692,6 +708,36 @@ describe User do
 
     it "should return 0 when no here isolines actions" do
       @user.get_here_isolines_calls(from: Time.now - 15.days, to: Time.now - 10.days).should eq 0
+    end
+  end
+
+  describe '#get_obs_snapshot_calls' do
+    before do
+      delete_user_data @user
+      @mock_redis = MockRedis.new
+      @usage_metrics = CartoDB::ObservatorySnapshotUsageMetrics.new(@user.username, nil, @mock_redis)
+      CartoDB::ObservatorySnapshotUsageMetrics.stubs(:new).returns(@usage_metrics)
+      @user.stubs(:last_billing_cycle).returns(Date.today)
+      @user.period_end_date = (DateTime.current + 1) << 1
+      @user.save.reload
+    end
+
+    it "should return the sum of here isolines rows for the current billing period" do
+      @usage_metrics.incr(:obs_snapshot, :success_responses, 10, DateTime.current)
+      @usage_metrics.incr(:obs_snapshot, :success_responses, 100, (DateTime.current - 2))
+      @user.get_obs_snapshot_calls.should eq 10
+    end
+
+    it "should return the sum of here isolines rows for the specified period" do
+      @usage_metrics.incr(:obs_snapshot, :success_responses, 10, DateTime.current)
+      @usage_metrics.incr(:obs_snapshot, :success_responses, 100, (DateTime.current - 2))
+      @usage_metrics.incr(:obs_snapshot, :success_responses, 100, (DateTime.current - 7))
+      @user.get_obs_snapshot_calls(from: Time.now - 5.days).should eq 110
+      @user.get_obs_snapshot_calls(from: Time.now - 5.days, to: Time.now - 2.days).should eq 100
+    end
+
+    it "should return 0 when no here isolines actions" do
+      @user.get_obs_snapshot_calls(from: Time.now - 15.days, to: Time.now - 10.days).should eq 0
     end
   end
 
@@ -1224,162 +1270,40 @@ describe User do
 
   end
 
-  describe '#link_ghost_tables' do
+  describe '#hard_obs_snapshot_limit?' do
+
     before(:each) do
-      @user.in_database.run('drop table if exists ghost_table')
-      @user.in_database.run('drop table if exists non_ghost_table')
-      @user.in_database.run('drop table if exists ghost_table_renamed')
-      @user.reload
-      @user.table_quota = 100
-      @user.save
+      @user_account = create_user
     end
 
-    it "should correctly count real tables" do
-      @user.in_database.run('create table ghost_table (cartodb_id integer, the_geom geometry, the_geom_webmercator geometry, updated_at date, created_at date)')
-      @user.in_database.run('create table non_ghost_table (test integer)')
-      @user.real_tables.map { |c| c[:relname] }.should =~ ["ghost_table", "non_ghost_table"]
-      @user.real_tables.size.should == 2
-    end
+    it 'returns true with every plan unless it has been manually set to false' do
+      @user_account[:soft_obs_snapshot_limit].should be_nil
+      @user_account.stubs(:account_type).returns('AMBASSADOR')
+      @user_account.soft_obs_snapshot_limit?.should be_false
+      @user_account.soft_obs_snapshot_limit.should be_false
+      @user_account.hard_obs_snapshot_limit?.should be_true
+      @user_account.hard_obs_snapshot_limit.should be_true
 
-    it "should return cartodbfied tables" do
-      @user.in_database.run('create table ghost_table (cartodb_id integer, the_geom geometry, the_geom_webmercator geometry, updated_at date, created_at date)')
+      @user_account.stubs(:account_type).returns('FREE')
+      @user_account.soft_obs_snapshot_limit?.should be_false
+      @user_account.soft_obs_snapshot_limit.should be_false
+      @user_account.hard_obs_snapshot_limit?.should be_true
+      @user_account.hard_obs_snapshot_limit.should be_true
 
-      @user.in_database.run(%Q{
-        CREATE OR REPLACE FUNCTION test_quota_per_row()
-          RETURNS trigger
-          AS $$
-          BEGIN
-            RETURN NULL;
-          END;
-          $$
-          LANGUAGE plpgsql;
-      })
-      @user.in_database.run( %Q{
-        CREATE TRIGGER test_quota_per_row BEFORE INSERT ON ghost_table EXECUTE PROCEDURE test_quota_per_row()
-      })
+      @user_account.hard_obs_snapshot_limit = false
+      @user_account[:soft_obs_snapshot_limit].should_not be_nil
 
-      @user.in_database.run('create table non_ghost_table (test integer)')
-      tables = @user.search_for_cartodbfied_tables
-      tables.should =~ ['ghost_table']
-    end
+      @user_account.stubs(:account_type).returns('AMBASSADOR')
+      @user_account.soft_obs_snapshot_limit?.should be_true
+      @user_account.soft_obs_snapshot_limit.should be_true
+      @user_account.hard_obs_snapshot_limit?.should be_false
+      @user_account.hard_obs_snapshot_limit.should be_false
 
-    it "should link a table in the database" do
-      tables = @user.tables.all.map(&:name)
-      @user.in_database.run('create table ghost_table (cartodb_id integer, the_geom geometry, the_geom_webmercator geometry, updated_at date, created_at date)')
-
-      @user.in_database.run(%Q{
-        CREATE OR REPLACE FUNCTION test_quota_per_row()
-          RETURNS trigger
-          AS $$
-          BEGIN
-            RETURN NULL;
-          END;
-          $$
-          LANGUAGE plpgsql;
-      })
-      @user.in_database.run( %Q{
-        CREATE TRIGGER test_quota_per_row BEFORE INSERT ON ghost_table EXECUTE PROCEDURE test_quota_per_row()
-      })
-
-      @user.link_ghost_tables
-      new_tables = @user.tables.all.map(&:name)
-      new_tables.should include('ghost_table')
-    end
-
-    it "should link a renamed table in the database" do
-      tables = @user.tables.all.map(&:name)
-      @user.in_database.run('create table ghost_table_2 (cartodb_id integer, the_geom geometry, the_geom_webmercator geometry, updated_at date, created_at date)')
-
-      @user.in_database.run(%Q{
-        CREATE OR REPLACE FUNCTION test_quota_per_row()
-          RETURNS trigger
-          AS $$
-          BEGIN
-            RETURN NULL;
-          END;
-          $$
-          LANGUAGE plpgsql;
-      })
-      @user.in_database.run( %Q{
-        CREATE TRIGGER test_quota_per_row BEFORE INSERT ON ghost_table_2 EXECUTE PROCEDURE test_quota_per_row()
-      })
-
-      @user.link_ghost_tables
-      @user.in_database.run('alter table ghost_table_2 rename to ghost_table_renamed')
-      @user.link_ghost_tables
-      new_tables = @user.tables.all.map(&:name)
-      new_tables.should include('ghost_table_renamed')
-      new_tables.should_not include('ghost_table_2')
-      # check visualization name
-      table = @user.tables.find(:name => 'ghost_table_renamed').first
-      table.table_visualization.name.should == 'ghost_table_renamed'
-
-
-    end
-
-    it "should remove reference to a removed table in the database" do
-      tables = @user.tables.all.map(&:name)
-      @user.in_database.run('create table ghost_table (cartodb_id integer, the_geom geometry, the_geom_webmercator geometry, updated_at date, created_at date)')
-      @user.link_ghost_tables
-      @user.in_database.run('drop table ghost_table')
-      @user.link_ghost_tables
-      new_tables = @user.tables.all.map(&:name)
-      new_tables.should_not include('ghost_table')
-    end
-
-    # not sure what the following tests mean or why they were
-    # created
-    xit "should link a table with null table_id" do
-      table = create_table :user_id => @user.id, :name => 'My table'
-      initial_count = @user.tables.count
-      table_id = table.table_id
-      table.this.update table_id: nil
-      @user.link_ghost_tables
-      table.reload
-      table.table_id.should == table_id
-      @user.tables.count.should == initial_count
-    end
-
-    xit "should link a table with wrong table_id" do
-      table = create_table :user_id => @user.id, :name => 'My table 2'
-      initial_count = @user.tables.count
-      table_id = table.table_id
-      table.this.update table_id: 1
-      @user.link_ghost_tables
-      table.reload
-      table.table_id.should == table_id
-      @user.tables.count.should == initial_count
-    end
-
-    it "should remove a table that does not exist on the user database" do
-      initial_count = @user.tables.count
-      table = create_table :user_id => @user.id, :name => 'My table 3'
-      puts "dropping", table.name
-      @user.in_database.drop_table(table.name)
-      @user.tables.where(name: table.name).first.should_not be_nil
-      @user.link_ghost_tables
-      @user.tables.where(name: table.name).first.should be_nil
-    end
-
-    it "should link a table that requires quoting, e.g: name with capitals" do
-      initial_count = @user.tables.count
-      @user.in_database.run %Q{CREATE TABLE "MyTableWithCapitals" (cartodb_id integer, the_geom geometry, the_geom_webmercator geometry)}
-      @user.in_database.run(%Q{
-        CREATE OR REPLACE FUNCTION test_quota_per_row()
-          RETURNS trigger
-          AS $$
-          BEGIN
-            RETURN NULL;
-          END;
-          $$
-          LANGUAGE plpgsql;
-      })
-      @user.in_database.run %Q{CREATE TRIGGER test_quota_per_row BEFORE INSERT ON "MyTableWithCapitals" EXECUTE PROCEDURE test_quota_per_row()}
-
-      @user.link_ghost_tables
-
-      # TODO: the table won't be cartodbfy'ed and registered until we support CamelCase identifiers.
-      @user.tables.count.should == initial_count
+      @user_account.stubs(:account_type).returns('FREE')
+      @user_account.soft_obs_snapshot_limit?.should be_true
+      @user_account.soft_obs_snapshot_limit.should be_true
+      @user_account.hard_obs_snapshot_limit?.should be_false
+      @user_account.hard_obs_snapshot_limit.should be_false
     end
 
   end
@@ -1742,7 +1666,9 @@ describe User do
       redis_vizjson_keys = collection.map { |v|
         [
           redis_vizjson_cache.key(v.id, false), redis_vizjson_cache.key(v.id, true),
-          redis_vizjson_cache.key(v.id, false, 3), redis_vizjson_cache.key(v.id, true, 3)
+          redis_vizjson_cache.key(v.id, false, 3), redis_vizjson_cache.key(v.id, true, 3),
+          redis_vizjson_cache.key(v.id, false, '3n'), redis_vizjson_cache.key(v.id, true, '3n'),
+          redis_vizjson_cache.key(v.id, false, '3a'), redis_vizjson_cache.key(v.id, true, '3a'),
         ]
       }.flatten
       redis_vizjson_keys.should_not be_empty
@@ -2245,6 +2171,30 @@ describe User do
 
       user.destroy
       organization.destroy
+    end
+  end
+
+  describe "Write locking" do
+    it "detects locking properly" do
+      @user.db_service.writes_enabled?.should eq true
+      @user.db_service.disable_writes
+      @user.db_service.terminate_database_connections
+      @user.db_service.writes_enabled?.should eq false
+      @user.db_service.enable_writes
+      @user.db_service.terminate_database_connections
+      @user.db_service.writes_enabled?.should eq true
+    end
+
+    it "enables and disables writes in user database" do
+      @user.db_service.run_pg_query("create table foo_1(a int);")
+      @user.db_service.disable_writes
+      @user.db_service.terminate_database_connections
+      lambda {
+        @user.db_service.run_pg_query("create table foo_2(a int);")
+      }.should raise_error(CartoDB::ErrorRunningQuery)
+      @user.db_service.enable_writes
+      @user.db_service.terminate_database_connections
+      @user.db_service.run_pg_query("create table foo_3(a int);")
     end
   end
 

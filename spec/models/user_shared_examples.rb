@@ -4,6 +4,7 @@ require 'mock_redis'
 require 'active_support/time'
 require_relative '../spec_helper'
 require_relative '../../services/dataservices-metrics/lib/geocoder_usage_metrics'
+require_relative '../../services/dataservices-metrics/lib/observatory_snapshot_usage_metrics'
 
 # Tests should define the following method:
 # - `get_twitter_imports_count_by_user_id`
@@ -257,6 +258,96 @@ shared_examples_for "user models" do
       usage_metrics.incr(:here_isolines, :empty_responses, 10, (DateTime.current - 2))
 
       @user1.get_here_isolines_calls.should == 120
+    end
+  end
+
+  describe 'User#remaining data observatory quota' do
+    include_context 'users helper'
+    include_context 'organization with users helper'
+
+    before(:each) do
+      Date.stubs(:today).returns(Date.new(2016, 02, 28))
+      Date.stubs(:current).returns(Date.new(2016, 02, 28))
+      DateTime.stubs(:current).returns(DateTime.new(2016, 02, 28))
+      @mock_redis = MockRedis.new
+      @user1.obs_snapshot_quota = 500
+      @user1.period_end_date = (DateTime.current + 1) << 1
+      @user1.save.reload
+      @organization.obs_snapshot_quota = 500
+      @organization.save.reload
+      @organization.owner.period_end_date = (DateTime.current + 1) << 1
+      @organization.owner.save.reload
+    end
+
+    it 'calculates the remaining quota for a non-org user correctly' do
+      usage_metrics = CartoDB::ObservatorySnapshotUsageMetrics.new(@user1.username, nil, @mock_redis)
+      CartoDB::ObservatorySnapshotUsageMetrics.stubs(:new).returns(usage_metrics)
+      usage_metrics.incr(:obs_snapshot, :success_responses, 100, DateTime.current)
+
+      @user1.remaining_obs_snapshot_quota.should == 400
+    end
+
+    it 'takes into account data observatory requests performed by the org users' do
+      usage_metrics_1 = CartoDB::ObservatorySnapshotUsageMetrics.new(@org_user_1.username, @organization.name, @mock_redis)
+      usage_metrics_2 = CartoDB::ObservatorySnapshotUsageMetrics.new(@org_user_2.username, @organization.name, @mock_redis)
+      CartoDB::ObservatorySnapshotUsageMetrics.stubs(:new).
+        with(@organization.owner.username, @organization.name).
+        returns(usage_metrics_1)
+      usage_metrics_1.incr(:obs_snapshot, :success_responses, 100, DateTime.current)
+      usage_metrics_2.incr(:obs_snapshot, :success_responses, 100, DateTime.current)
+
+      @org_user_1.remaining_obs_snapshot_quota.should == 300
+      @org_user_2.remaining_obs_snapshot_quota.should == 300
+    end
+  end
+
+  describe 'User#used_obs_snapshot_quota' do
+    include_context 'users helper'
+    include_context 'organization with users helper'
+
+    before(:each) do
+      Date.stubs(:today).returns(Date.new(2016, 02, 28))
+      Date.stubs(:current).returns(Date.new(2016, 02, 28))
+      DateTime.stubs(:current).returns(DateTime.new(2016, 02, 28))
+      @mock_redis = MockRedis.new
+      @user1.obs_snapshot_quota = 500
+      @user1.period_end_date = (DateTime.current + 1) << 1
+      @user1.save.reload
+      @organization.obs_snapshot_quota = 500
+      @organization.save.reload
+      @organization.owner.period_end_date = (DateTime.current + 1) << 1
+      @organization.owner.save.reload
+    end
+
+    it 'calculates the used here isolines quota in the current billing cycle' do
+      usage_metrics = CartoDB::ObservatorySnapshotUsageMetrics.new(@user1.username, nil, @mock_redis)
+      CartoDB::ObservatorySnapshotUsageMetrics.stubs(:new).returns(usage_metrics)
+      usage_metrics.incr(:obs_snapshot, :success_responses, 10, DateTime.current)
+      usage_metrics.incr(:obs_snapshot, :success_responses, 100, (DateTime.current - 2))
+
+      @user1.get_obs_snapshot_calls.should == 110
+    end
+
+    it 'calculates the used here isolines quota for an organization' do
+      usage_metrics_1 = CartoDB::ObservatorySnapshotUsageMetrics.new(@org_user_1.username, @organization.name, @mock_redis)
+      usage_metrics_2 = CartoDB::ObservatorySnapshotUsageMetrics.new(@org_user_2.username, @organization.name, @mock_redis)
+      CartoDB::ObservatorySnapshotUsageMetrics.stubs(:new).
+        with(@organization.owner.username, @organization.name).
+        returns(usage_metrics_1)
+      usage_metrics_1.incr(:obs_snapshot, :success_responses, 100, DateTime.current)
+      usage_metrics_2.incr(:obs_snapshot, :success_responses, 120, DateTime.current - 1)
+
+      @organization.get_obs_snapshot_calls.should == 220
+    end
+
+    it 'calculates the used here isolines quota in the current billing cycle including empty requests' do
+      usage_metrics = CartoDB::ObservatorySnapshotUsageMetrics.new(@user1.username, nil, @mock_redis)
+      CartoDB::ObservatorySnapshotUsageMetrics.stubs(:new).returns(usage_metrics)
+      usage_metrics.incr(:obs_snapshot, :success_responses, 10, DateTime.current)
+      usage_metrics.incr(:obs_snapshot, :success_responses, 100, (DateTime.current - 2))
+      usage_metrics.incr(:obs_snapshot, :empty_responses, 10, (DateTime.current - 2))
+
+      @user1.get_obs_snapshot_calls.should == 120
     end
   end
 end

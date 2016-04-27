@@ -12,8 +12,8 @@
   <% } %>
 </div>
 <div class="ModalDataset-itemInfo">
-  <div>
-    <h3 class="CDB-Text CDB-Size-large u-bSpace">
+  <div class="ModalDataset-itemInfoTitle">
+    <h3 class="CDB-Text CDB-Size-large u-bSpace u-ellipsis">
       <%- title %>
       <% if (showPermissionIndicator) { %>
         <span class="DatasetsList-itemTitlePermission PermissionIndicator u-upperCase">
@@ -22,7 +22,7 @@
       <% } %>
     </h3>
     <% if (description && description.length > 0) { %>
-      <p class="u-ellipsLongText CDB-Text CDB-Size-medium u-altTextColor" title="<%- description %>"><%- description %></p>
+      <p class="u-ellipsis CDB-Text CDB-Size-medium u-altTextColor" title="<%- description %>"><%- description %></p>
     <% } else { %>
       <span class="NoResults CDB-Text CDB-Size-medium"><%- _t('components.modals.add-layer.datasets.item.no-description') %></span>
     <% } %>
@@ -46,9 +46,11 @@
       <span class="DatasetsList-itemTimeDiff DefaultTimeDiff">
         <span class="CDB-Text CDB-Size-small u-altTextColor"><%- timeDiff %></span>
         <% if (!isOwner) { %>
-          <%- _t('components.modals.add-layer.datasets.item.by') %>
-          <span class="UserAvatar">
-            <img class="UserAvatar-img UserAvatar-img--smaller" src="<%- owner.avatar_url %>" alt="<%- owner.name || owner.username  %>" title="<%- owner.name || owner.username  %>" />
+          <span class="CDB-Text CDB-Size-small u-altTextColor u-lSpace--xl">
+            <%- _t('components.modals.add-layer.datasets.item.by') %>
+          </span>
+          <span class="DatasetsList-avatar">
+            <img class="DatasetsList-avatarImg" src="<%- owner.avatar_url %>" alt="<%- owner.name || owner.username  %>" title="<%- owner.name || owner.username  %>" />
           </span>
         <% } %>
       </span>

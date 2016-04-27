@@ -38,7 +38,59 @@ class Api::Json::VisualizationsController < Api::ApplicationController
         prev_id = vis_data.delete(:prev_id) || vis_data.delete('prev_id')
         next_id = vis_data.delete(:next_id) || vis_data.delete('next_id')
 
-        vis = setup_new_visualization(vis_data)
+        vis_data = add_default_privacy(vis_data)
+
+        param_tables = params[:tables]
+        subdomain = CartoDB.extract_subdomain(request)
+        current_user_id = current_user.id
+
+        vis = if params[:source_visualization_id]
+                source, = @stats_aggregator.timing('locate') do
+                  locator.get(params.fetch(:source_visualization_id), subdomain)
+                end
+
+                return head(403) unless source && source.can_copy?(current_user)
+
+                copy_overlays = params.fetch(:copy_overlays, true)
+                copy_layers = params.fetch(:copy_layers, true)
+
+                additional_fields = {
+                  type:       params.fetch(:type, Visualization::Member::TYPE_DERIVED),
+                  parent_id:  params.fetch(:parent_id, nil)
+                }
+
+                @stats_aggregator.timing('copy') do
+                  Visualization::Copier.new(current_user, source, name_candidate)
+                                       .copy(copy_overlays, copy_layers, additional_fields)
+                end
+              elsif param_tables
+                viewed_user = ::User.find(username: subdomain)
+
+                tables = @stats_aggregator.timing('locate-table') do
+                  tables = param_tables.map do |table_name|
+                    Helpers::TableLocator.new.get_by_id_or_name(table_name, viewed_user) if viewed_user
+                  end
+
+                  tables.flatten
+                end
+
+                blender = Visualization::TableBlender.new(current_user, tables)
+                map = blender.blend
+
+                vis = Visualization::Member.new(vis_data.merge(name: name_candidate,
+                                                               map_id: map.id,
+                                                               type: 'derived',
+                                                               privacy: blender.blended_privacy,
+                                                               user_id: current_user_id))
+
+                @stats_aggregator.timing('default-overlays') do
+                  Visualization::Overlays.new(vis).create_default_overlays
+                end
+
+                vis
+              else
+                Visualization::Member.new(vis_data.merge(name: name_candidate, user_id:  current_user_id))
+              end
 
         vis.privacy = vis.default_privacy(current_user)
 
@@ -47,9 +99,9 @@ class Api::Json::VisualizationsController < Api::ApplicationController
           parent_vis = Visualization::Member.new(id: vis.parent_id).fetch
           return head(403) unless parent_vis.has_permission?(current_user, Visualization::Member::PERMISSION_READWRITE)
 
-          if parent_vis.children.length > 0
-            prev_id = parent_vis.children.last.id
-          end
+          children = parent_vis.children
+
+          prev_id = children.last.id unless children.empty?
         end
 
         vis = @stats_aggregator.timing('default-overlays') do
@@ -99,7 +151,6 @@ class Api::Json::VisualizationsController < Api::ApplicationController
         if vis.table?
           old_vis_name = vis.name
 
-          vis_data.delete(:url_options) if vis_data[:url_options].present?
           vis.attributes = vis_data
           new_vis_name = vis.name
           old_table_name = vis.table.name
@@ -418,67 +469,6 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     end
   end
 
-  def setup_new_visualization(vis_data)
-    vis = nil
-
-    vis_data = add_default_privacy(vis_data)
-
-    if params[:source_visualization_id]
-      source,  = @stats_aggregator.timing('locate') do
-        locator.get(params.fetch(:source_visualization_id), CartoDB.extract_subdomain(request))
-      end
-      return(head 403) if source.nil? || source.kind == Visualization::Member::KIND_RASTER
-
-      copy_overlays = params.fetch(:copy_overlays, true)
-      copy_layers = params.fetch(:copy_layers, true)
-
-      additional_fields = {
-        type:       params.fetch(:type, Visualization::Member::TYPE_DERIVED),
-        parent_id:  params.fetch(:parent_id, nil)
-      }
-
-      vis = @stats_aggregator.timing('copy') do
-          Visualization::Copier.new(
-          current_user, source, name_candidate
-        ).copy(copy_overlays, copy_layers, additional_fields)
-      end
-
-    elsif params[:tables]
-      viewed_user = ::User.find(:username => CartoDB.extract_subdomain(request))
-      tables = @stats_aggregator.timing('locate-table') do
-          params[:tables].map { |table_name|
-          if viewed_user
-            Helpers::TableLocator.new.get_by_id_or_name(table_name,  viewed_user)
-          end
-        }.flatten
-      end
-      blender = Visualization::TableBlender.new(current_user, tables)
-      map = blender.blend
-      vis = Visualization::Member.new(
-          vis_data.merge(
-            name:     name_candidate,
-            map_id:   map.id,
-            type:     'derived',
-            privacy:  blender.blended_privacy,
-            user_id:  current_user.id
-          )
-        )
-
-      @stats_aggregator.timing('default-overlays') do
-        Visualization::Overlays.new(vis).create_default_overlays
-      end
-    else
-      vis = Visualization::Member.new(
-          vis_data.merge(
-            name: name_candidate,
-            user_id:  current_user.id
-          )
-        )
-    end
-
-    vis
-  end
-
   def set_visualization_prev_next(vis, prev_id, next_id)
     if !prev_id.nil?
       prev_vis = Visualization::Member.new(id: prev_id).fetch
@@ -500,4 +490,3 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end
 
 end
-

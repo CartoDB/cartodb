@@ -47,14 +47,20 @@ module Carto
       get_organization_here_isolines_data(self, date_from, date_to)
     end
 
+    def get_obs_snapshot_calls(options = {})
+      date_to = (options[:to] ? options[:to].to_date : Date.today)
+      date_from = (options[:from] ? options[:from].to_date : owner.last_billing_cycle)
+      get_organization_obs_snapshot_data(self, date_from, date_to)
+    end
+
     def twitter_imports_count(options = {})
       date_to = (options[:to] ? options[:to].to_date : Date.today)
       date_from = (options[:from] ? options[:from].to_date : owner.last_billing_cycle)
       Carto::SearchTweet.twitter_imports_count(users.joins(:search_tweets), date_from, date_to)
     end
 
-    def is_owner_user?(user)
-      self.owner_id == user.id
+    def owner?(user)
+      owner_id == user.id
     end
 
     def remaining_geocoding_quota(options = {})
@@ -64,6 +70,11 @@ module Carto
 
     def remaining_here_isolines_quota(options = {})
       remaining = here_isolines_quota.to_i - get_here_isolines_calls(options)
+      (remaining > 0 ? remaining : 0)
+    end
+
+    def remaining_obs_snapshot_quota(options = {})
+      remaining = obs_snapshot_quota.to_i - get_obs_snapshot_calls(options)
       (remaining > 0 ? remaining : 0)
     end
 

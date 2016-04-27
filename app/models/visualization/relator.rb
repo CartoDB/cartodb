@@ -101,7 +101,8 @@ module CartoDB
 
       def related_tables
         @related_tables ||= layers(:carto_and_torque)
-          .flat_map{|layer| layer.affected_tables.map{|t| t.service}}.uniq
+                            .flat_map { |layer| layer.affected_tables.map(&:service) }
+                            .uniq(&:id)
       end
 
       def related_canonical_visualizations

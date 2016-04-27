@@ -1,9 +1,15 @@
 # encoding: UTF-8
+require_dependency 'carto/uuidhelper'
 
 module OrganizationUsersHelper
+  include Carto::UUIDHelper
+
   def load_organization
-    @organization = Organization.where(name: params[:name]).first
-    if @organization.nil?
+    id_or_name = params[:id_or_name]
+
+    @organization = ::Organization.where(is_uuid?(id_or_name) ? { id: id_or_name } : { name: id_or_name }).first
+
+    unless @organization
       render_jsonp({}, 401) # Not giving clues to guessers via 404
       return false
     end
@@ -50,6 +56,10 @@ module OrganizationUsersHelper
     soft_here_isolines_limit = soft_param_to_boolean(params_to_update[:soft_here_isolines_limit])
     if user.soft_here_isolines_limit != soft_here_isolines_limit && soft_here_isolines_limit && !owner.soft_here_isolines_limit
       errors.add(:soft_here_isolines_limit, "Organization owner hasn't this soft limit")
+    end
+    soft_obs_snapshot_limit = soft_param_to_boolean(params_to_update[:soft_obs_snapshot_limit])
+    if user.soft_obs_snapshot_limit != soft_obs_snapshot_limit && soft_obs_snapshot_limit && !owner.soft_obs_snapshot_limit
+      errors.add(:soft_obs_snapshot_limit, "Organization owner hasn't this soft limit")
     end
     soft_twitter_datasource_limit = soft_param_to_boolean(params_to_update[:soft_twitter_datasource_limit])
     if user.soft_twitter_datasource_limit != soft_twitter_datasource_limit && soft_twitter_datasource_limit && !owner.soft_twitter_datasource_limit

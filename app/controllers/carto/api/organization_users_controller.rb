@@ -7,26 +7,48 @@ module Carto
     class OrganizationUsersController < ::Api::ApplicationController
       include OrganizationUsersHelper
 
-      ssl_required :create, :update, :destroy, :show
+      ssl_required :index, :show, :create, :update, :destroy
 
       before_filter :load_organization
       before_filter :owners_only
       before_filter :load_user, only: [:show, :update, :destroy]
+
+      def index
+        presentations = @organization.users.each do |user|
+          Carto::Api::UserPresenter.new(user, current_viewer: current_viewer).to_poro
+        end
+
+        render_jsonp(presentations, 200)
+      end
 
       def show
         render_jsonp(Carto::Api::UserPresenter.new(@user, current_viewer: current_viewer).to_poro, 200)
       end
 
       def create
-        account_creator = CartoDB::UserAccountCreator.new(Carto::UserCreation::CREATED_VIA_API).with_organization(@organization)
+        account_creator = CartoDB::UserAccountCreator.new(Carto::UserCreation::CREATED_VIA_API)
+                                                     .with_organization(@organization)
 
         account_creator.with_username(create_params[:username]) if create_params[:username].present?
         account_creator.with_email(create_params[:email]) if create_params[:email].present?
         account_creator.with_password(create_params[:password]) if create_params[:password].present?
         account_creator.with_quota_in_bytes(create_params[:quota_in_bytes]) if create_params[:quota_in_bytes].present?
-        account_creator.with_soft_geocoding_limit(create_params[:soft_geocoding_limit]) if create_params[:soft_geocoding_limit].present?
-        account_creator.with_soft_here_isolines_limit(create_params[:soft_here_isolines_limit]) if create_params[:soft_here_isolines_limit].present?
-        account_creator.with_soft_twitter_datasource_limit(create_params[:soft_twitter_datasource_limit]) if create_params[:soft_twitter_datasource_limit].present?
+
+        if create_params[:soft_geocoding_limit].present?
+          account_creator.with_soft_geocoding_limit(create_params[:soft_geocoding_limit])
+        end
+
+        if create_params[:soft_here_isolines_limit].present?
+          account_creator.with_soft_here_isolines_limit(create_params[:soft_here_isolines_limit])
+        end
+
+        if create_params[:soft_obs_snapshot_limit].present?
+          account_creator.with_soft_obs_snapshot_limit(create_params[:soft_obs_snapshot_limit])
+        end
+
+        if create_params[:soft_twitter_datasource_limit].present?
+          account_creator.with_soft_twitter_datasource_limit(create_params[:soft_twitter_datasource_limit])
+        end
 
         render_jsonp(account_creator.validation_errors.full_messages, 410) && return unless account_creator.valid?
 
@@ -90,12 +112,14 @@ module Carto
 
       # TODO: Use native strong params when in Rails 4+
       def create_params
-        permit(:email, :username, :password, :quota_in_bytes, :soft_geocoding_limit, :soft_here_isolines_limit, :soft_twitter_datasource_limit)
+        permit(:email, :username, :password, :quota_in_bytes, :soft_geocoding_limit, :soft_here_isolines_limit,
+               :soft_obs_snapshot_limit, :soft_twitter_datasource_limit)
       end
 
       # TODO: Use native strong params when in Rails 4+
       def update_params
-        permit(:email, :password, :quota_in_bytes, :soft_geocoding_limit, :soft_here_isolines_limit, :soft_twitter_datasource_limit)
+        permit(:email, :password, :quota_in_bytes, :soft_geocoding_limit, :soft_here_isolines_limit,
+               :soft_obs_snapshot_limit, :soft_twitter_datasource_limit)
       end
     end
   end

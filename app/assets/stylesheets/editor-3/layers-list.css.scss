@@ -32,8 +32,8 @@
 .Editor-ListLayer-dragIcon {
   @include transition(opacity, 200ms, ease-in);
   position: absolute;
-  top: 16px;
-  left: -21px;
+  top: 28px;
+  left: -20px;
   opacity: 0;
 }
 .Editor-ListLayer-item:hover .Editor-ListLayer-dragIcon {

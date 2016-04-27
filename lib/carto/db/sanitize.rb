@@ -3,7 +3,8 @@
 module Carto
   module DB
     module Sanitize
-      PREFIX_REPLACEMENT = ''.freeze
+      PREFIX_REPLACEMENT = 't_'.freeze
+      SUFFIX_REPLACEMENT = '_t'.freeze
       CHARACTER_REPLACEMENT = '_'.freeze
       MAX_IDENTIFIER_LENGTH = 63
       DISALLOWED_STARTING_CHARACTERS_REGEX = /^[^a-z]+/
@@ -48,7 +49,7 @@ module Carto
         identifier.strip!
 
         # Remove disallowed starting characters
-        identifier.gsub!(DISALLOWED_STARTING_CHARACTERS_REGEX, PREFIX_REPLACEMENT)
+        identifier = PREFIX_REPLACEMENT + identifier if identifier =~ DISALLOWED_STARTING_CHARACTERS_REGEX
 
         # Replace disallowed characters with '_'
         identifier.gsub!(DISALLOWED_CHARACTERS_REGEX, CHARACTER_REPLACEMENT)
@@ -59,8 +60,10 @@ module Carto
         # Make sure it's not too long
         identifier = identifier[0..(MAX_IDENTIFIER_LENGTH - 1)]
 
-        # Append _t if is a reserved word
-        identifier += '_t' if RESERVED_WORDS.each(&:downcase).include?(identifier)
+        # Append _t if is a reserved word or reserved table name
+        if (RESERVED_WORDS + RESERVED_TABLE_NAMES).each(&:downcase).include?(identifier)
+          identifier += SUFFIX_REPLACEMENT
+        end
 
         identifier
       end

@@ -466,7 +466,7 @@ class Table
   end
 
   def optimize
-    owner.db_service.in_database_direct_connection({statement_timeout: STATEMENT_TIMEOUT}).run("VACUUM ANALYZE #{qualified_table_name}")
+    owner.in_database({as: :superuser, statement_timeout: 3600000}).run("VACUUM FULL #{qualified_table_name}")
   rescue => e
     CartoDB::notify_exception(e, { user: owner })
     false

@@ -21,6 +21,9 @@ module Carto
     end
 
     def propose_valid_table_name(contendent: DEFAULT_TABLE_NAME.dup, schema: @user.database_schema)
+      contendent = DEFAULT_TABLE_NAME.dup unless contendent && !contendent.empty?
+      schema = @user.database_schema unless schema && !schema.empty?
+
       sanitized_contendent = Carto::DB::Sanitize.sanitize_identifier(contendent)
       used_table_names = fetch_physical_table_names(schema) + SYSTEM_TABLE_NAMES
 

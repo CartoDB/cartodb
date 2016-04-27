@@ -49,15 +49,39 @@ module Carto
       end
 
       it 'should propose valid names when no contendent is specified' do
-        run_in_user_database(%{
-            CREATE TABLE carto_table   ("description" text);
-            CREATE TABLE carto_table_1 ("description" text);
-            CREATE TABLE carto_table_3 ("description" text);
-        })
-
         valid_name = @physical_tables_manager.propose_valid_table_name
 
-        valid_name.should eq 'carto_table_2'
+        valid_name.should eq 'untitled_table'
+      end
+
+      it 'should propose valid names when nil contendent is specified' do
+        valid_name = @physical_tables_manager.propose_valid_table_name(contendent: nil)
+
+        valid_name.should eq 'untitled_table'
+      end
+
+      it 'should propose valid names when empty contendent is specified' do
+        valid_name = @physical_tables_manager.propose_valid_table_name(contendent: '')
+
+        valid_name.should eq 'untitled_table'
+      end
+
+      it 'should propose valid names when no schema is specified' do
+        valid_name = @physical_tables_manager.propose_valid_table_name
+
+        valid_name.should eq 'untitled_table'
+      end
+
+      it 'should propose valid names when nil schema is specified' do
+        valid_name = @physical_tables_manager.propose_valid_table_name(schema: nil)
+
+        valid_name.should eq 'untitled_table'
+      end
+
+      it 'should propose valid names when empty schema is specified' do
+        valid_name = @physical_tables_manager.propose_valid_table_name(schema: '')
+
+        valid_name.should eq 'untitled_table'
       end
     end
   end

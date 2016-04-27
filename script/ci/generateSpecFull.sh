@@ -27,6 +27,13 @@ done
 cat Makefile | \
 grep -v $DISABLED_TEST_REGEX | \
 grep -v 'require ./spec/rspec_configuration.rb'| \
-grep 'rb'| sed -e 's/^\s*//' -e '/^$/d' | sed '/^#/ d' | sed 's/\\//' | sed 's/\s.*$//' > specfull.txt
+grep 'rb'| sed -e 's/^\s*//' -e '/^$/d' | sed '/^#/ d' | sed 's/\\//' | sed 's/\s.*$//' > temp.txt
+
+i=6001;
+while read -r line
+do
+  echo "$line $i" >> specfull.txt;
+  i=$((i+1))
+done < temp.txt
 
 echo "# Speclist has been created"

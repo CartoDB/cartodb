@@ -24,10 +24,6 @@ module CartoDB
       !table_klass.where(user_id: user.id, name: table_name).empty?
     end
 
-    def get_valid_table_name(table_name)
-      table_klass.new_get_valid_table_name(table_name, user, schema: user.database_schema)
-    end
-
     attr_reader :user, :table
 
     private

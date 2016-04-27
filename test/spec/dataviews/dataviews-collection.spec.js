@@ -1,10 +1,9 @@
 var Backbone = require('backbone');
-var DataviewsCollection = require('../../../src/dataviews/dataviews-collection');
 var DataviewModel = require('../../../src/dataviews/dataview-model-base');
 
 describe('dataviews/dataview-collection', function () {
   beforeEach(function () {
-    this.collection = new DataviewsCollection();
+    this.collection = new Backbone.Collection();
   });
 
   it('should remove item when removed', function () {

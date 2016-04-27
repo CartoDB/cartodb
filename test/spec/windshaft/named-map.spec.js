@@ -51,13 +51,13 @@ describe('windshaft/named-map', function () {
 
   describe('.toJSON', function () {
     it('should generate the payload to instantiate the map', function () {
-      expect(this.map.toJSON()).toEqual({ layer0: 1, layer1: 1, layer2: 1 });
+      expect(this.map.toJSON()).toEqual({ layer0: 1, layer1: 1, layer2: 1, styles: { 0: 'cartoCSS1', 1: 'cartoCSS2', 2: 'cartoCSS2' } });
     });
 
     it('should mark hidden layers as hidden', function () {
       this.cartoDBLayer1.set('visible', false, { silent: true });
       this.cartoDBLayer3.set('visible', false, { silent: true });
-      expect(this.map.toJSON()).toEqual({ layer0: 0, layer1: 1, layer2: 0 });
+      expect(this.map.toJSON()).toEqual({ layer0: 0, layer1: 1, layer2: 0, styles: { 0: 'cartoCSS1', 1: 'cartoCSS2', 2: 'cartoCSS2' } });
     });
   });
 });

@@ -14,7 +14,17 @@ var CartoDBLayer = LayerModelBase.extend({
     options = options || {};
 
     this._map = options.map;
-    this.bind('change:visible change:sql change:cartocss change:source', this._reloadMap, this);
+    if (attrs && attrs.cartocss) {
+      this.set('initialStyle', attrs.cartocss);
+    }
+    this.bind('change:visible change:sql change:source', this._reloadMap, this);
+    this.bind('change:cartocss', this._onCartoCSSChanged);
+  },
+
+  _onCartoCSSChanged: function (layer, cartocss) {
+    if (!layer._dataProvider) {
+      layer._reloadMap();
+    }
   },
 
   _reloadMap: function () {
@@ -23,12 +33,25 @@ var CartoDBLayer = LayerModelBase.extend({
     });
   },
 
+  restoreCartoCSS: function () {
+    this.set('cartocss', this.get('initialStyle'));
+  },
+
   hasInteraction: function () {
     return this.isVisible() && (this.containInfowindow() || this.containTooltip());
   },
 
   isVisible: function () {
     return this.get('visible');
+  },
+
+  getGeometryType: function () {
+    if (this._dataProvider) {
+      var index = this._dataProvider._layerIndex;
+      var sublayer = this._dataProvider._vectorLayerView.renderers[index];
+      return sublayer.inferGeometryType();
+    }
+    return null;
   },
 
   getTooltipFieldNames: function () {

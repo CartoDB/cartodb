@@ -54,6 +54,7 @@ module.exports = WidgetModel.extend({
   },
 
   autoStyle: function () {
+    this.autoStyler.colors.updateData(this.dataviewModel.get('allCategoryNames'));
     var style = this.autoStyler.getStyle();
     this.dataviewModel.layer.set('cartocss', style);
     this.set('autoStyle', true);
@@ -114,9 +115,8 @@ module.exports = WidgetModel.extend({
   },
 
   _onDataviewAllCategoryNamesChange: function (m, names) {
-    this.autoStyler.colors.updateData(names);
-    if (this.isAutoStyle()) {
-      this.autoStyle();
+    if (!this.isAutoStyle()) {
+      this.autoStyler.colors.updateData(names);
     }
   },
 

@@ -14,7 +14,7 @@ describe Carto::DataExporter do
       table_name = 'table1'
       table = create_table(name: table_name, user_id: @user.id)
       user_table = Carto::UserTable.find_by_table_id(table.get_table_id)
-      table.insert_row!({ id: 666, description: 'desc', name: 'a row'})
+      table.insert_row!(id: 666, description: 'desc', name: 'a row')
 
       format = 'shp'
 

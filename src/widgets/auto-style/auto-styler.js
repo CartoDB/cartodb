@@ -8,7 +8,7 @@ var AutoStyler = cdb.core.Model.extend({
   },
 
   _getLayerHeader: function (symbol) {
-    return '#' + this.dataviewModel.layer.get('layer_name') + '[mapnik-geometry-type=' + AutoStyler.MAPNIK_MAPPING[symbol] + ']{';
+    return '#' + this.dataviewModel.layer.get('layer_name').replace(/\s*/g, '') + '[mapnik-geometry-type=' + AutoStyler.MAPNIK_MAPPING[symbol] + ']{';
   }
 
 });

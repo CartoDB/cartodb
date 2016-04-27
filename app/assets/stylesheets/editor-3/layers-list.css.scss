@@ -23,6 +23,9 @@
 .Editor-ListLayer-item.is-active {
   border: 1px solid rgb(106, 181, 227);
 }
+.Editor-ListLayer-item.ui-draggable {
+  cursor: move;
+}
 .Editor-ListLayer-item.ui-draggable-dragging:hover {
   border: 1px solid $cBlue;
   box-shadow: 0 8px 16px rgba(#000, 0.16);

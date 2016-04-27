@@ -185,6 +185,7 @@ WORKING_SPECS_5 = \
 	spec/models/permission_spec.rb \
 	spec/lib/carto/ghost_tables_manager_spec.rb \
 	spec/lib/carto/bolt_spec.rb \
+	spec/lib/carto/physical_tables_manager_spec.rb \
 	$(NULL)
 
 # TODO: This block also breaks if run alongside other specs, needs checking why

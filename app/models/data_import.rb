@@ -361,7 +361,9 @@ class DataImport < Sequel::Model
   end
 
   def tables
-    table_names_array.map { |table_name| ::Table.new(user_table: UserTable.where(name: table_name, user_id: user_id).first) }
+    table_names_array.map do |table_name|
+      ::Table.new(user_table: UserTable.where(name: table_name, user_id: user_id).first)
+    end
   end
 
   def table_names_array

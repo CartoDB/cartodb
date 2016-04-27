@@ -1,7 +1,6 @@
 module Carto
   module Factories
     module Visualizations
-
       def full_visualization_table(carto_user, map)
         FactoryGirl.create(
           :carto_user_table,

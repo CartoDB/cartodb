@@ -83,10 +83,14 @@ $chartMiniSelected: rgba(#333, 1);
     background-color: $negative;
   }
   .CDB-Widget-progressState--inactive {
-    background-color: $elementBkg;
+    background-color: $elementBkg !important;
   }
   .CDB-Widget-progressState--pattern {
+    background-color: $selected;
     background-image: repeating-linear-gradient(45deg, transparent 0, rgba($secondary, 0.7) 1px, transparent 2px, transparent 3px);
+  }
+  .CDB-Widget-progressState.is-accepted {
+    background-color: $selected;
   }
   .CDB-Widget-dot--navigation {
     background: $elementBkg;
@@ -116,9 +120,6 @@ $chartMiniSelected: rgba(#333, 1);
   .CDB-Widget-listItem--fake:before {
     background-color: $loadingBkg;
   }
-  // .CDB-Widget-listButton:hover {
-  //   background: $canvasBkg;
-  // }
   .CDB-Widget-listButton--withBorder {
     &:before {
       background: transparent;
@@ -151,7 +152,6 @@ $chartMiniSelected: rgba(#333, 1);
     .CDB-Widget-textSmaller {
       color: #FFF;
     }
-
     &:hover {
       background: $primary;
     }

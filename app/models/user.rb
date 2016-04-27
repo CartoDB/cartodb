@@ -714,10 +714,8 @@ class User < Sequel::Model
 
   def gravatar_enabled?
     # Enabled by default, only disabled if specified in the config
-    gravatar_disabled = !Cartodb.config[:avatars].nil? &&
-                        !Cartodb.config[:avatars]['gravatar_enabled'].nil? &&
-                        !Cartodb.config[:avatars]['gravatar_enabled']
-    !gravatar_disabled
+    value = Cartodb.get_config(:avatars, 'gravatar_enabled')
+    value.nil? || value
   end
 
   def gravatar(protocol = "http://", size = 128, default_image = default_avatar)

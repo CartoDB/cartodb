@@ -165,7 +165,7 @@ class UserTable < Sequel::Model
 
     errors.add(
       :name, 'is a reserved keyword, please choose a different one'
-    ) if RESERVED_TABLE_NAMES.include?(name)
+    ) if Carto::DB::Sanitize::RESERVED_TABLE_NAMES.include?(name)
 
     # TODO this kind of check should be moved to the DB
     # privacy setting must be a sane value

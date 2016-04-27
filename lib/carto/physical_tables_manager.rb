@@ -17,7 +17,9 @@ module Carto
       schema = @user.database_schema unless schema && !schema.empty?
 
       sanitized_contendent = Carto::DB::Sanitize.sanitize_identifier(contendent)
-      used_table_names = fetch_physical_table_names(schema) + Carto::DB::Sanitize::SYSTEM_TABLE_NAMES
+      used_table_names = fetch_physical_table_names(schema) +
+                         Carto::DB::Sanitize::SYSTEM_TABLE_NAMES +
+                         Carto::DB::Sanitize::RESERVED_TABLE_NAMES
 
       find_unused_name_with_prefix(used_table_names, sanitized_contendent)
     end

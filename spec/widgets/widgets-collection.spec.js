@@ -24,18 +24,21 @@ describe('widgets/widgets-collection', function () {
     var m2 = this.collection.at(1);
     var m3 = this.collection.at(2);
 
-    m1.dataviewModel = { layer: new Backbone.Model({
+    m1.dataviewModel = { layer: new Backbone.Model(
+      {
         layer_name: 'l1'
       })
-    }
-    m2.dataviewModel = { layer: new Backbone.Model({
+    };
+    m2.dataviewModel = { layer: new Backbone.Model(
+      {
         layer_name: 'l2'
       })
-    }
-    m3.dataviewModel = { layer: new Backbone.Model({
+    };
+    m3.dataviewModel = { layer: new Backbone.Model(
+      {
         layer_name: 'l1'
       })
-    }
+    };
 
     expect(m1.get('autoStyle')).toBeFalsy();
     expect(m2.get('autoStyle')).toBeUndefined();

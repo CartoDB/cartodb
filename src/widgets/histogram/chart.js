@@ -156,14 +156,16 @@ module.exports = cdb.core.View.extend({
   },
 
   _onChangeRange: function () {
-    if (this.model.get('lo_index') === 0 && this.model.get('hi_index') === 0) {
+    var lo_index = this.model.get('lo_index');
+    var hi_index = this.model.get('hi_index');
+    if ((lo_index === 0 && hi_index === 0) || (lo_index === null && hi_index === null)) {
       return;
     }
-    this.selectRange(this.model.get('lo_index'), this.model.get('hi_index'));
+    this.selectRange(lo_index, hi_index);
     this._adjustBrushHandles();
     this._selectBars();
-    this.trigger('range_updated', this.model.get('lo_index'), this.model.get('hi_index'));
-    this.trigger('on_brush_end', this.model.get('lo_index'), this.model.get('hi_index'));
+    this.trigger('range_updated', lo_index, hi_index);
+    this.trigger('on_brush_end', lo_index, hi_index);
   },
 
   _onChangeWidth: function () {

@@ -12,3 +12,11 @@
   @include flex(1);
 }
 
+.Editor-FormDialog {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 500px;
+  height: 500px;
+  background: #fff;
+}

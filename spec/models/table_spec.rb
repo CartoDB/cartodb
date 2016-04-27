@@ -1747,7 +1747,7 @@ describe Table do
       @user.db_service.run_pg_query("INSERT INTO exttable (go, ttoo, bed) VALUES ( 'c', 1, 'p');
                           INSERT INTO exttable (go, ttoo, bed) VALUES ( 'c', 2, 'p')")
       table.save
-      table.name.should == 'exttable'
+      table.name.should == 'exttable_1'
       table.rows_counted.should == 2
     end
 
@@ -1760,7 +1760,7 @@ describe Table do
       @user.db_service.run_pg_query("INSERT INTO exttable (the_geom, cartodb_id, bed) VALUES ( 'c', 1, 'p');
                          INSERT INTO exttable (the_geom, cartodb_id, bed) VALUES ( 'c', 2, 'p')")
       table.save
-      table.name.should == 'exttable'
+      table.name.should == 'exttable_1'
       table.rows_counted.should == 2
     end
 
@@ -1777,7 +1777,7 @@ describe Table do
 
       table = Table.new(user_table: UserTable[data_import.table_id])
       table.should_not be_nil, "Import failure: #{data_import.log}"
-      table.name.should == 'exttable'
+      table.name.should == 'exttable_1'
       table.rows_counted.should == 2
       check_schema(table, [[:cartodb_id, "integer"], [:bed, "text"], [:the_geom, "geometry", "geometry", "point"]])
     end
@@ -2146,15 +2146,6 @@ describe Table do
       rows[:rows][1][:cartodb_id].should eq cartodb_id_2
       rows[:rows][0][:description].should eq description_1
       rows[:rows][1][:description].should eq description_2
-    end
-  end
-
-  describe 'Valid names for new table' do
-    it 'Regression for CDB-3446' do
-      new_name = 'table_'
-      Table.get_valid_table_name(new_name, {
-        name_candidates: %w(table_ table_1)
-      }).should_not == 'table_1'
     end
   end
 

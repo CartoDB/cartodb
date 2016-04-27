@@ -24,7 +24,6 @@ describe Carto::DataExporter do
       begin
         file = File.new(Carto::DataExporter.new.export_table(user_table, tmp_dir, format))
         file.path.should match(/.#{format}$/)
-        file.size.should > 0
         file.close
       ensure
         File.delete file if file

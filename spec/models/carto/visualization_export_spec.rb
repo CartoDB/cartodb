@@ -9,21 +9,27 @@ describe Carto::DataExporter do
   describe '#export_tables' do
     include_context 'user helper'
 
-    # TODO: Disabled because it needs SQL API configured for testing
-    xit 'exports a table in requested format' do
+    # INFO: this needs SQL API configured for testing
+    it 'exports a table in requested format' do
       table_name = 'table1'
       table = create_table(name: table_name, user_id: @user.id)
       user_table = Carto::UserTable.find_by_table_id(table.get_table_id)
 
       format = 'shp'
 
-      file = File.new(Carto::DataExporter.new.export_table(user_table, format))
-      file.path.should match(/.#{format}$/)
-      file.size.should > 0
-      file.close
-      File.delete file
+      tmp_dir = "/tmp/export_test_#{String.random(15)}"
+      FileUtils.mkdir_p tmp_dir
 
-      table.destroy
+      begin
+        file = File.new(Carto::DataExporter.new.export_table(user_table, tmp_dir, format))
+        file.path.should match(/.#{format}$/)
+        file.size.should > 0
+        file.close
+      ensure
+        File.delete file if file
+        FileUtils.rm_rf tmp_dir
+        table.destroy
+      end
     end
   end
 end

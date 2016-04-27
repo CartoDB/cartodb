@@ -38,5 +38,16 @@ module.exports = cdb.core.Model.extend({
     this.dataviewModel.remove();
     this.trigger('destroy', this);
     this.stopListening();
+  },
+
+  setState: function (state) {
+    this.set(state);
+  },
+
+  getState: function () {
+    return {
+      'collapsed': this.get('collapsed'),
+      'pinned': this.get('pinned')
+    }
   }
 });

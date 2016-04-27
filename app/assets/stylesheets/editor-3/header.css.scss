@@ -7,14 +7,14 @@
 
 .Editor-HeaderInfo {
   @include display-flex();
-  @include align-items(flex-start);
+  @include align-items(baseline);
   margin-bottom: 32px;
 
   &.is-block {
     display: block;
   }
 }
-.Editor-HeaderInfo-ListItem {
+.Editor-HeaderInfo-listItem {
   display: inline-block;
   margin-right: 8px;
   vertical-align: middle;
@@ -24,17 +24,17 @@
   }
 }
 
-.Editor-HeaderInfo-Inner {
+.Editor-HeaderInfo-inner {
   @include flex(1);
 }
-.Editor-HeaderInfo-Back {
+.Editor-HeaderInfo-back {
   margin-top: 7px;
 }
-.Editor-HeaderInfo-Title {
+.Editor-HeaderInfo-title {
   @include display-flex();
   @include align-items(center);
 }
-.Editor-HeaderInfo-TitleText {
+.Editor-HeaderInfo-titleText {
   @include flex(1);
   width: 0;
   padding-right: 16px;
@@ -42,12 +42,12 @@
   white-space: nowrap;
   overflow: hidden;
 }
-.Editor-HeaderInfo-ActionsItem {
+.Editor-HeaderInfo-actionsItem {
   display: inline-block;
   margin-left: 4px;
   vertical-align: middle;
 }
-.Editor-HeaderInfo-ActionsItem:first-child {
+.Editor-HeaderInfo-actionsItem:first-child {
   margin-left: 0;
 }
 

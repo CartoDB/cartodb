@@ -10,6 +10,7 @@
 
 .Editor-FormInput {
   @include flex(1);
+  position: relative;
 }
 
 .Editor-FormDialog {
@@ -18,5 +19,5 @@
   left: 10px;
   width: 500px;
   height: 500px;
-  background: #fff;
+  background: #FFF;
 }

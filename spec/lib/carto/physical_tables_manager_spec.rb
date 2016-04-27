@@ -27,13 +27,13 @@ module Carto
       it 'should sanitize name' do
         valid_name = @physical_tables_manager.propose_valid_table_name(contendent: "Mªnolo !Es'co`bar##!")
 
-        valid_name.should eq 'm_nolo__es_co_bar___'
+        valid_name.should eq 't_m_nolo__es_co_bar___'
       end
 
       it 'should remove disallowed starting characters' do
         valid_name = @physical_tables_manager.propose_valid_table_name(contendent: "____Mªnolo !Es'co`bar##!")
 
-        valid_name.should eq 'm_nolo__es_co_bar___'
+        valid_name.should eq 't_m_nolo__es_co_bar___'
       end
 
       it 'should find unused names' do
@@ -45,7 +45,7 @@ module Carto
 
         valid_name = @physical_tables_manager.propose_valid_table_name(contendent: "____Mªnolo !Es'co`bar##!")
 
-        valid_name.should eq 'm_nolo__es_co_bar____2'
+        valid_name.should eq 't_m_nolo__es_co_bar____2'
       end
 
       it 'should propose valid names when no contendent is specified' do

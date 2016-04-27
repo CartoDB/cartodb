@@ -68,7 +68,7 @@ module Carto
     VISUALIZATION_EXTENSIONS = [Carto::VisualizationExporter::EXPORT_EXTENSION].freeze
 
     def self.has_visualization_extension?(filename)
-      VISUALIZATION_EXTENSIONS.any? { |extension| filename =~ /#{extension}/ }
+      VISUALIZATION_EXTENSIONS.any? { |extension| filename =~ /#{extension}$/ }
     end
 
     def export(visualization, user,

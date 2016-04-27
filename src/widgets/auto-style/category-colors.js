@@ -56,7 +56,7 @@ CategoryColors.prototype.getColorByCategory = function (category) {
       return i;
     }
   }
-  return defaultColor;
+  return Object.keys(this.colors)[Object.keys(this.colors).length - 1];
 };
 
 CategoryColors.prototype.getCategoryByColor = function (color) {

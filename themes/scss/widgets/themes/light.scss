@@ -11,6 +11,7 @@ $link: rgba(#3AA9E3, 1);
 $linkHover: rgba(#227DBD, 1);
 $lightHighlight: rgba(#000, 0.06);
 $highlighted: rgba(#9DE0AD, 1);
+$selected: rgba(#3AA9E3, 1);
 $darkHighlighted: rgba(#5BA45E, 1);
 $highlightedAlternative: rgba(#F2CC8F, 1);
 $darkHighlightedAlternative: rgba(#EFE0C8, 1);
@@ -23,8 +24,7 @@ $blackBkg: rgba(#000, 1);
 $chartHandleGrip: rgba(#CCC, 1);
 $chartLine: rgba(#EEE, 1);
 $chartAxis: rgba(#979EA1, 1);
-$chartMini: rgba(#DDD, 1);
-$chartMiniHighlight: rgba(#333, 1);
+$chartMiniSelected: rgba(#333, 1);
 
 .CDB-Widget--light {
   border-color: $canvasBkg;
@@ -189,7 +189,6 @@ $chartMiniHighlight: rgba(#333, 1);
     }
   }
 
-
   .CDB-Widget-checkbox {
     border-color: $disabled;
 
@@ -216,6 +215,9 @@ $chartMiniHighlight: rgba(#333, 1);
     fill: $darkHighlightedAlternative;
   }
   .CDB-Chart-bar.is-selected {
+    fill: $selected;
+  }
+  .CDB-Chart-bar.is-filtered {
     fill: $lightHighlight;
   }
   .CDB-Chart-shadowBar {
@@ -234,13 +236,13 @@ $chartMiniHighlight: rgba(#333, 1);
   }
   .CDB-Chart.CDB-Chart--mini {
     .CDB-Chart-bar {
-      fill: $chartMiniHighlight;
-    }
-    .CDB-Chart-bar.is-highlighted {
-      fill: $chartMiniHighlight;
-    }
+      fill: $lightHighlight;
+    }}
     .CDB-Chart-bar.is-selected {
-      fill: $chartMini;
+      fill: $chartMiniSelected;
+    }
+    .CDB-Chart-bar.is-filtered {
+      fill: $lightHighlight;
     }
   }
   .CDB-Chart-line {

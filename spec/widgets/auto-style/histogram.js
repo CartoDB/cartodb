@@ -19,7 +19,7 @@ describe('src/widgets/auto-style/histogram', function () {
 
     it('should generate the right styles when layer has points', function () {
       this.layer.getGeometryType.and.returnValue('marker');
-      expect(this.histogramAutoStyler.getStyle().replace(/\s/g, '').indexOf('#layer{marker-width:ramp([something]')).not.toBeLessThan(0);
+      expect(this.histogramAutoStyler.getStyle().replace(/\s/g, '')).toEqual('#layer{marker-width:ramp([something],1,20,undefined);marker-fill-opacity:0.8;marker-fill:#000;marker-line-color:#fff;marker-allow-overlap:true;marker-line-width:0.3;marker-line-opacity:0.8;}');
     });
 
     it('should generate the right styles when layer has lines', function () {

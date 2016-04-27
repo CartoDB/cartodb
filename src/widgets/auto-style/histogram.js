@@ -29,7 +29,7 @@ var HistogramAutoStyler = AutoStyler.extend({
     if (geometryType === 'polygon') {
       style = style.replace('{{defaultColor}}', 'ramp([{{column}}], colorbrewer({{color}}, {{bins}}))');
     } else if (geometryType === 'marker') {
-      style = style.replace('{{markerWidth}}', 'ramp([{{column}}], {{min}}, {{max}}), {{bins}})');
+      style = style.replace('{{markerWidth}}', 'ramp([{{column}}], {{min}}, {{max}}, {{bins}})');
     } else {
       style = style.replace('{{defaultColor}}', '#000');
     }

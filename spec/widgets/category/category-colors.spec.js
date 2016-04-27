@@ -25,7 +25,7 @@ describe('widgets/category/category-colors', function () {
     it('should unset color<>category if that category is not present in the new data', function () {
       this.model.updateData(['ES', 'IT', 'PT', 'FR', 'AND', 'LUX', 'SUZ', 'SWD']);
       var color = this.model.getColorByCategory('PT');
-      expect(this.model.getColorByCategory('PT')).not.toBe('#CCC');
+      expect(this.model.getColorByCategory('PT')).not.toBe('#E1C221');
       this.model.updateData(['FR', 'AND']);
       expect(this.model.getCategoryByColor(color)).toBe(null);
     });
@@ -42,7 +42,7 @@ describe('widgets/category/category-colors', function () {
       var color = this.model.getColorByCategory('IT');
       this.model.updateData(['ES', 'PT', 'FR', 'AND', 'NOR']);
       expect(this.model.getColorByCategory('NOR')).toBe(color);
-      expect(this.model.getColorByCategory('IT')).toBe('#CCC');
+      expect(this.model.getColorByCategory('IT')).toBe('#E1C221');
     });
 
     it('should not change colors if data changes but there is no new categories', function () {
@@ -60,15 +60,15 @@ describe('widgets/category/category-colors', function () {
   describe('getColorByCategory', function () {
     it('should return the color from a category', function () {
       this.model.updateData(_generateData(7));
-      expect(this.model.getColorByCategory('CAT3')).not.toBe('#CCC');
-      expect(this.model.getColorByCategory('CAT2')).not.toBe('#CCC');
+      expect(this.model.getColorByCategory('CAT3')).not.toBe('#E1C221');
+      expect(this.model.getColorByCategory('CAT2')).not.toBe('#E1C221');
     });
 
     it('should return a default color if that category has not a color set', function () {
       this.model.updateData(_generateData(9));
-      expect(this.model.getColorByCategory('CAT8')).toBe('#CCC');
-      expect(this.model.getColorByCategory('CAT9')).toBe('#CCC');
-      expect(this.model.getColorByCategory('@')).toBe('#CCC');
+      expect(this.model.getColorByCategory('CAT8')).toBe('#E1C221');
+      expect(this.model.getColorByCategory('CAT9')).toBe('#E1C221');
+      expect(this.model.getColorByCategory('@')).toBe('#E1C221');
     });
   });
 

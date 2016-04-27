@@ -340,5 +340,26 @@ describe CartoDB::Connector::Importer do
       map = visualization.map
       map.center.should eq "[39.75365697136308, -2.318115234375]"
     end
+
+    it 'imports a visualization export with two layers' do
+      filepath = "#{Rails.root}/services/importer/spec/fixtures/visualization_export_with_two_tables.carto"
+
+      data_import = DataImport.create(
+        user_id: @user.id,
+        data_source: filepath,
+        updated_at: Time.now.utc,
+        append: false,
+        create_visualization: true
+      )
+      data_import.values[:data_source] = filepath
+
+      data_import.run_import!
+      data_import.success.should eq true
+
+      # Fixture file checks
+      data_import.table_names.should eq "guess_country twitter_t3chfest_reduced"
+      visualization = Carto::Visualization.find(data_import.visualization_id)
+      visualization.name.should eq "map with two layers"
+    end
   end
 end

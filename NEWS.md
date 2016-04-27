@@ -39,6 +39,7 @@ which should be fixed manually.
   * `sudo apt-get install gdal2.1-static-bin`
 * Ghost table linking is now concurrent per user (avoids race conditions)
 * Experimental support for [visualization metadata export](https://github.com/CartoDB/cartodb/pull/7114).
+* Full visualization export (metadata + data). Example: `bundle exec rake cartodb:vizs:export_full_visualization['5478433b-b791-419c-91d9-d934c56f2053']` (replace the id with the visualization that you want to export).
 * Update CartoDB PostgreSQL extension to 0.15.1 to support overviews.
 * Update dataservices-api client to version 0.3.0 (routing functions)
 

@@ -127,4 +127,13 @@ describe('widgets/widget-model', function () {
       expect(this.model.stopListening).toHaveBeenCalled();
     });
   });
+
+  describe('state', function () {
+    it('should change collapsed state correctly', function () {
+      this.model.setState({
+        pinned: false,
+        collapsed: true
+      })
+    })
+  })
 });

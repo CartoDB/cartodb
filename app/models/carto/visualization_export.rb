@@ -36,14 +36,12 @@ module Carto
   end
 
   class DataExporter
-    include ApplicationHelper
-
     # Returns the file
     def export_table(user_table, folder, format)
       table_name = user_table.name
 
       query = %{select * from "#{table_name}"}
-      url = sql_api_query_url(query, table_name, user_table.user, privacy(user_table), format)
+      url = ::ApplicationHelper.sql_api_query_url(query, table_name, user_table.user, privacy(user_table), format)
       exported_file = "#{folder}/#{table_name}.#{format}"
       Carto::Http::Client.get('data_exporter', log_requests: true).get_file(url, exported_file)
     end

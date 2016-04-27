@@ -95,7 +95,7 @@ describe Table do
       table.name = '_coffee'
       table.save
 
-      table.name.should eq 'table_coffee'
+      table.name.should eq 't_coffee'
       table.valid?.should == true
     end
 
@@ -670,7 +670,7 @@ describe Table do
       }.should_not raise_error
     end
 
-    it "can create a table called using a reserved postgresql word as its name" do
+    it "can't create a table using a reserved postgresql word as its name" do
       delete_user_data @user
       @user.private_tables_enabled = false
       @user.save
@@ -678,14 +678,16 @@ describe Table do
       table = create_table(name: 'as', user_id: @user.id)
 
       @user.in_database do |user_database|
-        user_database.table_exists?(table.name.to_sym).should be_true
+        user_database.table_exists?('as'.to_sym).should be_false
+        user_database.table_exists?('as_t'.to_sym).should be_true
       end
 
       table.name = 'where'
       table.save
       table.reload
       @user.in_database do |user_database|
-        user_database.table_exists?('where'.to_sym).should be_true
+        user_database.table_exists?('where'.to_sym).should be_false
+        user_database.table_exists?('where_t'.to_sym).should be_true
       end
     end
 
@@ -1305,17 +1307,6 @@ describe Table do
       table.update_row!(pk1, :description => "Description 123")
       table.records[:rows].first[:description].should be == "Description 123"
     end
-
-    # No longer used, now we automatically rename reserved word columns
-    #it "can insert and update records in a table which one of its columns uses a reserved word as its name" do
-      #table = create_table(:name => 'where', :user_id => @user.id)
-      #table.add_column!(:name => 'where', :type => 'string')
-
-      #pk1 = table.insert_row!({:_where => 'random string'})
-
-      #table.records[:rows].should have(1).rows
-      #table.records[:rows].first[:_where].should be == 'random string'
-    #end
   end
 
   context "preimport tests" do
@@ -1333,7 +1324,7 @@ describe Table do
       table = new_table :user_id => @user.id, :name => '123_table_name'
       table.save.reload
 
-      table.name.should == "table_123_table_name"
+      table.name.should == "t_123_table_name"
     end
 
     it "should get a valid name when a table when a name containing the current name exists" do
@@ -1883,13 +1874,11 @@ describe Table do
 
   describe '#name=' do
     it 'does not change the name if it is equivalent to the current one' do
-      table = Table.new
-      table.name = 'new name'
-      table.name.should == 'new_name'
+      table = new_table(user_id: @user.id, name: 'new_name')
       table.name = 'new name'
       table.name.should == 'new_name'
     end
-  end #name=
+  end
 
   describe '#validation_for_link_privacy' do
     it 'checks that only users with private tables enabled can set LINK privacy' do

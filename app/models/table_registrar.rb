@@ -25,10 +25,12 @@ module CartoDB
     end
 
     def get_valid_table_name(table_name)
-      table_klass.get_valid_table_name(table_name, {
-          connection: user.in_database,
-          database_schema: user.database_schema
-        })
+      # table_klass.get_valid_table_name(table_name, {
+      #     connection: user.in_database,
+      #     database_schema: user.database_schema
+      #   })
+
+      table_klass.new_get_valid_table_name(table_name, user)
     end
 
     attr_reader :user, :table

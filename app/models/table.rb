@@ -16,14 +16,13 @@ require_relative '../../services/datasources/lib/datasources/decorators/factory'
 require_relative '../../services/table-geocoder/lib/internal-geocoder/latitude_longitude'
 require_relative '../model_factories/layer_factory'
 require_relative '../model_factories/map_factory'
-
 require_relative '../../lib/cartodb/stats/user_tables'
 require_relative '../../lib/cartodb/stats/importer'
 
+require_dependency 'carto/physical_tables_manager'
+
 class Table
   extend Forwardable
-
-  SYSTEM_TABLE_NAMES = %w( spatial_ref_sys geography_columns geometry_columns raster_columns raster_overviews cdb_tablemetadata geometry raster )
 
    # TODO Part of a service along with schema
   # INFO: created_at and updated_at cannot be dropped from existing tables without dropping the triggers first
@@ -1419,7 +1418,7 @@ class Table
     #
     existing_names = []
     existing_names = options[:name_candidates] || options[:connection]["select relname from pg_stat_user_tables WHERE schemaname='#{database_schema}'"].map(:relname) if options[:connection]
-    existing_names = existing_names + SYSTEM_TABLE_NAMES
+    existing_names = existing_names + Carto::PhysicalTablesManager::SYSTEM_TABLE_NAMES
     rx = /_(\d+)$/
     count = name[rx][1].to_i rescue 0
     while existing_names.include?(name)
@@ -1432,6 +1431,10 @@ class Table
     end
 
     name
+  end
+
+  def self.new_get_valid_table_name(name, user, schema: user.database_schema)
+    Carto::PhysicalTablesManager.new(user.id).propose_valid_table_name(contendent: name, schema: schema)
   end
 
   def self.sanitize_columns(table_name, options={})

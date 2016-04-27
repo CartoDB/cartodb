@@ -25,6 +25,7 @@ module Carto
                             'cdb_tablemetadata',
                             'geometry',
                             'raster'].freeze
+      RESERVED_TABLE_NAMES = %w{ layergroup all public }.freeze
 
       def self.append_with_truncate_and_sanitize(identifier, suffix)
         identifier_length = identifier.length

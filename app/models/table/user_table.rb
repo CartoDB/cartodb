@@ -48,8 +48,6 @@ class UserTable < Sequel::Model
     values
   }
 
-  RESERVED_TABLE_NAMES = %w{ layergroup all public }.freeze
-
   PRIVACY_PRIVATE = 0
   PRIVACY_PUBLIC = 1
   PRIVACY_LINK = 2

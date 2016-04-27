@@ -1410,7 +1410,7 @@ class Table
 
     return name if name == options[:current_name]
 
-    name = "#{name}_t" if UserTable::RESERVED_TABLE_NAMES.include?(name)
+    name = "#{name}_t" if Carto::DB::Sanitize::RESERVED_TABLE_NAMES.include?(name)
 
     database_schema = options[:database_schema].present? ? options[:database_schema] : 'public'
 

@@ -1,5 +1,6 @@
 var WidgetsCollection = require('../../src/widgets/widgets-collection');
 var _ = require('underscore');
+var Backbone = require('backbone');
 
 describe('widgets/widgets-collection', function () {
   beforeEach(function () {
@@ -12,25 +13,46 @@ describe('widgets/widgets-collection', function () {
     this.collection = new WidgetsCollection();
     spyOn(this.collection, 'sort');
     this.collection.reset([
-      {order: 0, isColorsApplied: false},
+      {order: 0, autoStyle: false},
       {order: 1},
-      {order: 2, isColorsApplied: true}
+      {order: 2, autoStyle: true}
     ]);
   });
 
-  it('should only allow applying colors in one widget at a time', function () {
+  it('should only allow autoStyle in one layer at a time', function () {
     var m1 = this.collection.at(0);
     var m2 = this.collection.at(1);
     var m3 = this.collection.at(2);
 
-    expect(m1.get('isColorsApplied')).toBeFalsy();
-    expect(m2.get('isColorsApplied')).toBeUndefined();
-    expect(m3.get('isColorsApplied')).toBeTruthy();
+    m1.dataviewModel = { layer: new Backbone.Model(
+      {
+        layer_name: 'l1'
+      })
+    };
+    m2.dataviewModel = { layer: new Backbone.Model(
+      {
+        layer_name: 'l2'
+      })
+    };
+    m3.dataviewModel = { layer: new Backbone.Model(
+      {
+        layer_name: 'l1'
+      })
+    };
 
-    m1.set('isColorsApplied', true);
-    expect(m1.get('isColorsApplied')).toBeTruthy();
-    expect(m2.get('isColorsApplied')).toBeUndefined();
-    expect(m3.get('isColorsApplied')).toBeFalsy();
+    expect(m1.get('autoStyle')).toBeFalsy();
+    expect(m2.get('autoStyle')).toBeUndefined();
+    expect(m3.get('autoStyle')).toBeTruthy();
+
+    m1.set('autoStyle', true);
+    expect(m1.get('autoStyle')).toBeTruthy();
+    expect(m2.get('autoStyle')).toBeUndefined();
+    expect(m3.get('autoStyle')).toBeFalsy();
+
+    m2.set('autoStyle', true);
+    expect(m1.get('autoStyle')).toBeTruthy();
+    expect(m2.get('autoStyle')).toBeTruthy();
+    expect(m3.get('autoStyle')).toBeFalsy();
   });
 
   it('should sort the collection and trigger orderChanged event when any widget order changes', function () {

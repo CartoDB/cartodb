@@ -4,7 +4,12 @@ var specHelper = require('../../spec-helper');
 describe('widgets/category/category-widget-model', function () {
   beforeEach(function () {
     var vis = specHelper.createDefaultVis();
-    this.dataviewModel = vis.dataviews.createCategoryModel(vis.map.layers.first(), {
+    var layer = vis.map.layers.first();
+    layer.restoreCartoCSS = jasmine.createSpy('restore');
+    layer.getGeometryType = function () {
+      return 'polygon';
+    };
+    this.dataviewModel = vis.dataviews.createCategoryModel(layer, {
       column: 'col'
     });
     this.widgetModel = new CategoryWidgetModel({}, {
@@ -34,8 +39,8 @@ describe('widgets/category/category-widget-model', function () {
 
   describe('colors', function () {
     beforeEach(function () {
-      spyOn(this.widgetModel.colors, 'updateData').and.callThrough();
-      spyOn(this.widgetModel, 'applyColors').and.callThrough();
+      spyOn(this.widgetModel.autoStyler.colors, 'updateData').and.callThrough();
+      spyOn(this.widgetModel, 'autoStyle').and.callThrough();
     });
 
     describe('when category names are updated', function () {
@@ -44,45 +49,45 @@ describe('widgets/category/category-widget-model', function () {
       });
 
       it('should update colors data', function () {
-        expect(this.widgetModel.colors.updateData).toHaveBeenCalled();
+        expect(this.widgetModel.autoStyler.colors.updateData).toHaveBeenCalled();
       });
 
       it('should not apply colors (since have not been applied yet)', function () {
-        expect(this.widgetModel.applyColors).not.toHaveBeenCalled();
+        expect(this.widgetModel.autoStyle).not.toHaveBeenCalled();
       });
     });
 
     describe('when colors have been applied before', function () {
       beforeEach(function () {
-        this.widgetModel.applyColors();
+        this.widgetModel.autoStyle();
         this.dataviewModel.set('allCategoryNames', ['foo', 'bar', 'baz']);
       });
 
       it('should update colors data', function () {
-        expect(this.widgetModel.colors.updateData).toHaveBeenCalled();
+        expect(this.widgetModel.autoStyler.colors.updateData).toHaveBeenCalled();
       });
 
       it('should re-apply them', function () {
-        expect(this.widgetModel.applyColors).toHaveBeenCalled();
+        expect(this.widgetModel.autoStyle).toHaveBeenCalled();
       });
     });
 
-    describe('.applyColors', function () {
+    describe('.autoStyle', function () {
       beforeEach(function () {
-        this.widgetModel.applyColors();
+        this.widgetModel.autoStyle();
       });
 
       it('should enable colors', function () {
-        expect(this.widgetModel.isColorApplied()).toBe(true);
+        expect(this.widgetModel.isAutoStyle()).toBe(true);
       });
 
-      describe('.cancelColors', function () {
+      describe('.cancelAutoStyle', function () {
         beforeEach(function () {
-          this.widgetModel.cancelColors();
+          this.widgetModel.cancelAutoStyle();
         });
 
         it('should disable colors', function () {
-          expect(this.widgetModel.isColorApplied()).toBe(false);
+          expect(this.widgetModel.isAutoStyle()).toBe(false);
         });
       });
     });

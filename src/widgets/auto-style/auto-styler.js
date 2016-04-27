@@ -41,9 +41,9 @@ AutoStyler.STYLE_TEMPLATE = {
 };
 
 AutoStyler.MAPNIK_MAPPING = {
-  polygon: 'polygon',
-  marker: 'point',
-  line: 'linestring'
+  polygon: 3,
+  marker: 1,
+  line: 2
 };
 
 module.exports = AutoStyler;

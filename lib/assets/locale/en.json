@@ -7,6 +7,10 @@
     "point-in-polygon": "Point in polygon"
   },
   "data": {
+    "import-model": {
+      "error-title": "There was an error",
+      "error-starting-import": "Unfortunately there was an error starting the import"
+    },
     "upload-model": {
       "invalid-import": "Invalid import",
       "one-file": "Unfortunately only one file is allowed per upload",
@@ -27,6 +31,117 @@
     }
   },
   "components": {
+    "geocoding": {
+      "geocoding-error-details": {
+        "close": "close",
+        "description": "There was a problem georeferencing your data",
+        "title": "Geocoding Error",
+        "try-again": "Please try again and if the problem persists, <a href='mailto:support@cartodb.com?subject=Geocoding error with id:%{id}'>contact us</a> with the following code:",
+        "view-dataset": "view dataset"
+      },
+      "geocoding-success-detail": {
+        "amount-charged": "<strong>$%{price}</strong> will be charged to your account",
+        "credits-consumed": "You have consumed all your credits during this billing cycle, price is $%{price} / 1,000 extra credits.",
+        "description":  "We've successfully geocoded <%- realRowsFormatted %> <%- geometryType %> of <%- processableRowsFormatted %>. |||| We've successfully geocoded <%- realRowsFormatted %> <%- geometryType %>s of <%- processableRowsFormatted %>.",
+        "explanation": "Rows that are not geocoded could have errors on their column values, or just doesn’t exist in our data. Try geocoding again and check the 'override all values' to try again.",
+        "no-extra-charge": "No extra charges have been done",
+        "remainingQuotaFormatted": "You still have %{remainingQuotaFormatted} credits left for this month.",
+        "title": "Data geocoded",
+        "try-again": "Unsuccessful rows don't count against your quota, so we encourage you to take a look and try again.",
+        "view-dataset": "view dataset"
+      },
+      "geocoding-no-result-details": {
+        "close": "close",
+        "description": "These rows contained empty values or perhaps we just didn't know what the values meant. We encourage you to take a look and try again.",
+        "title": "No rows were georeferenced",
+        "view-dataset": "view dataset"
+      }
+    },
+    "background-importer": {
+      "background-importer-item": {
+        "completed": "completed",
+        "error-connecting": "Ouch! Error connecting %{name}",
+        "from": "from",
+        "show": "show"
+      },
+      "warnings-details": {
+        "continue-btn": "Continue",
+        "find-connected-datasets": "You can find all the connected datasets under the datasets section.",
+        "no-more-datasets": "No more than %{maxTablesPerImport} datasets can be imported from a single file.",
+        "unable-to-import-datasets": "Unable to import all datasets in file"
+      },
+      "partial-import-details": {
+        "find-connected-datasets": "You can find all the connected datasets under the datasets section.",
+        "continue-btn": "Continue",
+        "too-many-datasets": "NOTE: The file you uploaded contained too many datasets. No more than %{maxTablesPerImport} datasets can be imported from a single file.",
+        "unable-to-import-as-layers": "Unable to add all imported datasets as Layers",
+        "upgrade-your-account": "<a href='https://cartodb.com/pricing/'>Upgrade your account</a> to add more than %{userMaxLayers} layers to your maps.",
+      },
+      "error-details": {
+        "check-errors": "Check errors",
+        "check-url": "Check that the URL you provided is OK",
+        "close": "close",
+        "dont-panic": "Don’t panic, here's some info that might help",
+        "remote-server-code": "The remote server returned a <span class='ErrorDetails-itemTextStrong'>%{httpResponseCode}</span> code.",
+        "send-us-the-error-code": "Persisting error? Please <a href='mailto:support@cartodb.com'>send us</a> the following code",
+        "unknown-error": "An unknown error has happened"
+      },
+      "upgrade-errors": {
+        "upgrade": "upgrade",
+        "8001": {
+          "description": "Remove some of your datasets to gain available space or upgrade your account",
+          "info": "Keep your data and get more quota by upgrading your plan",
+          "title": "You have run out of quota",
+        },
+        "8005": {
+          "description": "Remove any layer or upgrade your account",
+          "info": "Keep your maps and get more layers quota by upgrading your plan",
+          "title": "You have reached your layers limit",
+        },
+      },
+      "twitter-import-details": {
+        "new-type-created": "We've created a new %{type} containing a total of %{datasetTotalRowsFormatted}<br/>tweet%{tweetPlural} with your search terms",
+        "credit-left": "You still have %{availableTweetsFormatted} credit left for this billing cycle.",
+        "credits-left": "You still have %{availableTweetsFormatted} credits left for this billing cycle.",
+        "no-more-credits": "You have consumed all your credits during this billing cycle (price is $%{blockPriceFormatted}/%{blockSizeFormatted} extra credits).",
+        "twitter-import-title": "Your Twitter %{type} is created",
+        "view-type": "view %{type}",
+        "tweet-cost": {
+          "free": "No extra charges have been done",
+          "paid": "$%{tweetsCostFormatted} will be charged to your account"
+        },
+        "errors": {
+          "no-results": "Your search query was correct but returned no results, please try with a different set of parameters before running it again"
+        }
+      },
+      "background-geocoding-item": {
+        "geocoded": "%{realRowsFormatted}/%{processableRowsFormatted} row geocoded… |||| %{realRowsFormatted}/%{processableRowsFormatted} rows geocoded…",
+        "geocoded-by-lat-lng": "Geocoded by latitude and longitude",
+        "geocoding": "Geocoding %{tableName} dataset…",
+        "show": "show",
+        "rows-geocoded": {
+          "without-dataset": "%{realRowsFormatted} row geocoded |||| %{realRowsFormatted} rows geocoded",
+          "in-dataset": "%{realRowsFormatted} row geocoded in %{tableName} dataset|||| %{realRowsFormatted} rows geocoded in %{tableName} dataset",
+        },
+        "errors": {
+          "no-rows-geocoded": {
+            "without-dataset": "No rows geocoded",
+            "in-dataset": "No rows geocoded in %{tableName} dataset",
+          },
+          "geocoding-layer": "Ouch! Error geocoding %{tableName} layer"
+        }
+      },
+      "background-import-limit": {
+        "hurry": "In a hurry? <a href='%{upgradeUrl}'>Upgrade your account</a> to import several files at a time",
+        "one-file": "Unfortunately you can only import up to %{importQuota} files at the same time"
+
+      },
+      "free-trial": "%{days} days Free trial",
+      "connecting": "Connecting",
+      "dataset": "dataset…",
+      "geocoding": "Geocoding",
+      "working": "Working…"
+    },
     "likes-pluralize": "like |||| likes",
     "datepicker": {
       "dates-placeholder": "Choose your dates",

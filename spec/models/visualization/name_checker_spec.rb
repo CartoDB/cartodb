@@ -3,7 +3,6 @@ require 'rspec/core'
 require 'rspec/expectations'
 require 'rspec/mocks'
 require 'sequel'
-require 'ostruct'
 require_relative '../../spec_helper'
 require_relative '../../../app/models/visualization/name_checker'
 
@@ -11,61 +10,27 @@ include CartoDB
 
 describe Visualization::NameChecker do
   before :all do
-    @db = Rails::Sequel.connection
-    Visualization.repository = DataRepository::Backend::Sequel.new(@db, :visualizations)
+    bypass_named_maps
+    @user = FactoryGirl.create(:valid_user)
+    @user2 = FactoryGirl.create(:valid_user)
 
-    # Dummy permission
-    @permission = CartoDB::Permission.new(owner_id: 'b21ff32c-45c2-4300-a49b-786d35524d52', owner_username: 'user').save
+    @vis1 = FactoryGirl.build(:derived_visualization, name: 'Visualization 1', user_id: @user.id).store
+    @vis2 = FactoryGirl.build(:derived_visualization, name: 'Visualization 2', user_id: @user.id).store
+    @vis3 = FactoryGirl.build(:derived_visualization, name: 'Visualization 4', user_id: @user2.id).store
 
-    @user = OpenStruct.new(
-      id:   'b21ff32c-45c2-4300-a49b-786d35524d52',
-      maps: [OpenStruct.new(id: 'c21ff32c-45c2-4300-a49b-786d35524d52'),
-             OpenStruct.new(id: 'c21ff32c-45c2-4300-a49b-786d35524d57')]
-    )
-
-    @db[:visualizations].insert(
-      id:            'd21ff32c-45c2-4300-a49b-786d35524d52',
-      name:          'Visualization 1',
-      privacy:       'public',
-      created_at:    Time.now,
-      updated_at:    Time.now,
-      map_id:        'c21ff32c-45c2-4300-a49b-786d35524d52',
-      user_id:       'b21ff32c-45c2-4300-a49b-786d35524d52',
-      permission_id: @permission.id
-    )
-
-    @db[:visualizations].insert(
-      id:            'd21ff32c-45c2-4300-a49b-786d35524d57',
-      name:          'Visualization 2',
-      privacy:       'public',
-      created_at:    Time.now,
-      updated_at:    Time.now,
-      map_id:        'c21ff32c-45c2-4300-a49b-786d35524d57',
-      user_id:       'b21ff32c-45c2-4300-a49b-786d35524d52',
-      permission_id: @permission.id
-    )
-
-    @db[:visualizations].insert(
-      id:            'd21ff32c-45c2-4300-a49b-786d35524d59',
-      name:          'Visualization 4',
-      privacy:       'public',
-      created_at:    Time.now,
-      updated_at:    Time.now,
-      map_id:        'c21ff32c-45c2-4300-a49b-786d35524d57',
-      user_id:       'b21ff32c-45c2-4300-a49b-786d35524d46',
-      permission_id: @permission.id
-    )
-
-    @db[:shared_entities].insert(
-      entity_type:    'vis',
-      entity_id:      'd21ff32c-45c2-4300-a49b-786d35524d59',
-      recipient_type: 'user',
-      recipient_id:   'b21ff32c-45c2-4300-a49b-786d35524d52'
-    )
+    @shared_entity = CartoDB::SharedEntity.new(
+      recipient_id:   @user.id,
+      recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_USER,
+      entity_id:      @vis3.id,
+      entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
+    ).save
   end
 
   after :all do
-    @permission.destroy
+    @shared_entity.destroy
+    @vis3.destroy
+    @vis2.destroy
+    @vis1.destroy
     @user.destroy
   end
 

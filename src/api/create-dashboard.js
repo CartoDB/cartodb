@@ -77,14 +77,7 @@ var createDashboard = function (selector, vizJSON, opts, callback) {
     }
   });
 
-  var url = new URI(window.location.href);
-  if (url.hasQuery('state')) {
-    var widgetStates = JSON.parse(url.query(true)['state']);
-    for (var i in widgetStates) {
-      var widget = widgets.at(i);
-      widget.setState(widgetStates[i])
-    }
-  }
+  widgetsService.setWidgetsState();
 
   dashboardView.render();
 

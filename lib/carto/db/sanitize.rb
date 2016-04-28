@@ -58,7 +58,7 @@ module Carto
         identifier = identifier[0..(MAX_IDENTIFIER_LENGTH - 1)]
 
         # Append _t if is a reserved word or reserved table name
-        if (RESERVED_WORDS + RESERVED_TABLE_NAMES + SYSTEM_TABLE_NAMES).each(&:downcase).include?(identifier)
+        if (RESERVED_WORDS + RESERVED_TABLE_NAMES + SYSTEM_TABLE_NAMES).map(&:downcase).include?(identifier)
           identifier += SUFFIX_REPLACEMENT
         end
 

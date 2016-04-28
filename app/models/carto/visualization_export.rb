@@ -17,11 +17,12 @@ module Carto
     end
 
     def export_dir(visualization, base_dir: exporter_folder)
-      ensure_folder("#{base_dir}/#{visualization.id}")
+      ensure_folder("#{base_dir}/#{visualization.id}_#{String.random(10).downcase}")
     end
 
-    def tmp_dir(visualization, base_dir: exporter_folder)
-      ensure_folder("#{export_dir(visualization, base_dir: base_dir)}/#{visualization.id}")
+    # Example `parent_dir`: `export_dir(visualization, base_dir: base_dir)`
+    def tmp_dir(visualization, parent_dir:)
+      ensure_folder("#{parent_dir}/#{visualization.id}")
     end
 
     def ensure_folder(folder)
@@ -78,7 +79,8 @@ module Carto
                base_dir: exporter_folder)
       visualization_id = visualization.id
       export_dir = export_dir(visualization, base_dir: base_dir)
-      tmp_dir = tmp_dir(visualization, base_dir: base_dir)
+      tmp_dir = tmp_dir(visualization, parent_dir: export_dir)
+      ensure_clean_folder(tmp_dir)
 
       data_exporter.export_visualization_tables(visualization, user, tmp_dir, format)
       visualization_json = visualization_export_service.export_visualization_json_string(visualization_id, user)

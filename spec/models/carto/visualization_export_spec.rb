@@ -37,44 +37,69 @@ end
 describe Carto::VisualizationExport do
   include Carto::ExporterConfig
   include_context 'user helper'
+  include Carto::Factories::Visualizations
 
-  def random_filename(dir, extension: 'shp')
-    "#{dir}/test_#{String.random(12)}.#{extension}".downcase
-  end
+  class FakeCartoHttpClientFileToucher
+    attr_reader :touched_files
 
-  def touch_random_filename(dir, extension: 'shp')
-    FileUtils.touch(random_filename(dir, extension: extension)).first
+    def initialize
+      @touched_files = []
+    end
+
+    def get_file(url, exported_file)
+      @touched_files << exported_file
+      touch(exported_file)
+    end
+
+    private
+
+    def random_filename(dir, extension: 'shp')
+      "#{dir}/test_#{String.random(12)}.#{extension}".downcase
+    end
+
+    def touch_random_filename(dir, extension: 'shp')
+      touch(random_filename(dir, extension: extension))
+    end
+
+    def touch(path)
+      FileUtils.touch(path).first
+    end
   end
 
   let(:base_dir) { ensure_clean_folder('/tmp/exporter_test') }
-  let(:visualization) { FactoryGirl.create(:carto_visualization, user_id: @user.id) }
-  let(:file1) { touch_random_filename(tmp_dir(visualization, base_dir: base_dir), extension: 'shp') }
-  let(:file2) { touch_random_filename(tmp_dir(visualization, base_dir: base_dir), extension: 'shp') }
-  let(:data_files) { [file1, file2] }
 
   it 'exports a .carto file including the carto.json and the files' do
-    data_exporter_mock = mock
-    data_exporter_mock.expects(:export_visualization_tables).with(visualization, @user, anything, anything).returns(data_files)
-    test_json = { test: 'test' }
-    export_service_mock = mock
-    export_service_mock.stubs(:export_visualization_json_string).with(visualization.id, @user).returns(test_json)
+    table1 = FactoryGirl.create(:private_user_table, user: @carto_user)
+    table2 = FactoryGirl.create(:private_user_table, user: @carto_user)
+
+    layer1 = FactoryGirl.create(:carto_layer, options: { table_name: table1.name })
+    layer2 = FactoryGirl.create(:carto_layer, options: { table_name: table2.name })
+
+    map = FactoryGirl.create(:carto_map, layers: [layer1, layer2], user: @carto_user)
+    map, table, table_visualization, visualization = create_full_visualization(@carto_user,
+                                                                               map: map,
+                                                                               table: table1,
+                                                                               data_layer: layer1)
+
+    fake_carto_http_client_toucher = FakeCartoHttpClientFileToucher.new
 
     exported_file = Carto::VisualizationExport.new.export(
       visualization,
-      @user,
-      data_exporter: data_exporter_mock,
-      visualization_export_service: export_service_mock,
-      base_dir: base_dir)
+      @carto_user,
+      base_dir: base_dir,
+      data_exporter: Carto::DataExporter.new(fake_carto_http_client_toucher))
 
+    touched_files = fake_carto_http_client_toucher.touched_files
     CartoDB::Importer2::Unp.new.open(exported_file) do |files|
-      files.length.should eq (data_files.count + 1)
+      files.length.should eq (map.layers.count + 1)
       names = files.map(&:path)
       names.count { |f| f =~ /\.carto\.json$/ }.should eq 1
-      names.should include(file1.split('/').last)
-      names.should include(file2.split('/').last)
+      names.should include(touched_files[0].split('/').last)
+      names.should include(touched_files[1].split('/').last)
     end
 
-    [exported_file, file1, file2].map { |f| File.delete(f) if File.exists?(f) }
-    visualization.destroy
+    ([exported_file] + touched_files).map { |f| File.delete(f) if File.exists?(f) }
+
+    destroy_full_visualization(map, table, table_visualization, visualization)
   end
 end

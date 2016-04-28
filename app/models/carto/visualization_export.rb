@@ -37,6 +37,10 @@ module Carto
   end
 
   class DataExporter
+    def initialize(http_client = Carto::Http::Client.get('data_exporter', log_requests: true))
+      @http_client = http_client
+    end
+
     # Returns the file
     def export_table(user_table, folder, format)
       table_name = user_table.name
@@ -44,7 +48,7 @@ module Carto
       query = %{select * from "#{table_name}"}
       url = sql_api_query_url(query, table_name, user_table.user, privacy(user_table), format)
       exported_file = "#{folder}/#{table_name}.#{format}"
-      Carto::Http::Client.get('data_exporter', log_requests: true).get_file(url, exported_file)
+      @http_client.get_file(url, exported_file)
     end
 
     def export_visualization_tables(visualization, user, dir, format)

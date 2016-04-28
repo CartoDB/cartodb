@@ -21,9 +21,6 @@ var createDashboard = function (selector, vizJSON, opts, callback) {
   var dashboardEl = document.querySelector(selector);
   if (!dashboardEl) throw new Error('no element found with selector ' + selector);
 
-  var url = new URI(window.location.href);
-  var state = JSON.parse(url.query(true)['state']);
-
   // Default options
   opts = opts || {};
   opts.renderMenu = _.isBoolean(opts.renderMenu)
@@ -79,6 +76,15 @@ var createDashboard = function (selector, vizJSON, opts, callback) {
       cdb.log.error('No widget found for type ' + d.type);
     }
   });
+
+  var url = new URI(window.location.href);
+  if (url.hasQuery('state')) {
+    var widgetStates = JSON.parse(url.query(true)['state']);
+    for (var i in widgetStates) {
+      var widget = widgets.at(i);
+      widget.setState(widgetStates[i])
+    }
+  }
 
   dashboardView.render();
 

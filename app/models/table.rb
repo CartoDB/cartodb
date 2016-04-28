@@ -1382,7 +1382,6 @@ class Table
   # Gets a valid postgresql table name for a given database
   # See http://www.postgresql.org/docs/9.3/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS
   def get_valid_name(contendent)
-    byebug
     Carto::PhysicalTablesManager.new(owner.id).propose_valid_table_name(contendent: contendent)
   end
 

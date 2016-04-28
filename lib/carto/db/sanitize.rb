@@ -3,7 +3,7 @@
 module Carto
   module DB
     module Sanitize
-      PREFIX_REPLACEMENT = 't_'.freeze
+      PREFIX_REPLACEMENT = 'table_'.freeze
       SUFFIX_REPLACEMENT = '_t'.freeze
       CHARACTER_REPLACEMENT = '_'.freeze
       MAX_IDENTIFIER_LENGTH = 63

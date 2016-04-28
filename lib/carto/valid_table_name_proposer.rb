@@ -38,6 +38,8 @@ module Carto
       CartoDB::Logger.error(message: 'Physical tables: Out of rename retries',
                             user: @user,
                             table_name: prefix)
+
+      raise "Out of retries (#{MAX_RENAME_RETRIES}) renaming #{proposal}"
     end
 
     def fetch_taken_names

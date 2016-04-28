@@ -661,13 +661,16 @@ class Table
   def name=(value)
     value = value.downcase if value
     return if value == @user_table[:name] || value.blank?
-    new_name = get_valid_name(value)
 
     # Do not keep track of name changes until table has been saved
-    unless new?
-      @name_changed_from = @user_table.name if @user_table.name.present?
-      update_cdb_tablemetadata
-    end
+    new_name = if new?
+                 get_valid_name(value)
+               else
+                 @name_changed_from = @user_table.name if @user_table.name.present?
+                 update_cdb_tablemetadata
+
+                 Carto::DB::Sanitize.sanitize_identifier(value)
+               end
 
     @user_table[:name] = new_name
   end
@@ -1379,6 +1382,7 @@ class Table
   # Gets a valid postgresql table name for a given database
   # See http://www.postgresql.org/docs/9.3/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS
   def get_valid_name(contendent)
+    byebug
     Carto::PhysicalTablesManager.new(owner.id).propose_valid_table_name(contendent: contendent)
   end
 

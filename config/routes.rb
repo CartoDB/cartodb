@@ -308,6 +308,8 @@ CartoDB::Application.routes.draw do
     match  '(/user/:user_domain)(/u/:user_domain)/your_apps/oauth'              => 'client_applications#oauth',              as: :oauth_credentials
     delete '(/user/:user_domain)(/u/:user_domain)/your_apps/oauth/regenerate'   => 'client_applications#regenerate_oauth',   as: :regenerate_oauth
 
+    get  '(/user/:user_domain)(/u/:user_domain)/mobile_apps'               => 'client_applications#mobile_apps',        as: :mobile_apps
+
   end
 
   scope :module => 'carto/admin' do

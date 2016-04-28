@@ -47,7 +47,14 @@ class Admin::ClientApplicationsController < Admin::AdminController
     
     redirect_to CartoDB.url(self, 'oauth_credentials', {type: 'oauth'}, current_user),
                 :flash => {:success => "Your OAuth credentials have been updated successfully"}
-    
+  end
+
+  def mobile_apps
+    @mobile_apps = []
+
+    respond_to do |format|
+      format.html { render 'mobile_apps' }
+    end
   end
 
 end

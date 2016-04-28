@@ -1,0 +1,38 @@
+<% content_for(:page_title) do %>
+  Your mobile apps |
+<% end %>
+<%= content_for(:js) do %>
+  <script type="text/javascript">
+    var username = "<%= current_user.username %>";
+    var config = <%= safe_js_object frontend_config %>;
+    var user_data = <%= safe_js_object current_user.data.to_json %>;
+    var upgrade_url = "<%= current_user.upgrade_url(request.protocol) %>";
+  </script>
+  <%= javascript_include_tag 'cdb.js', 'models.js', 'keys_templates.js', 'keys_deps.js', 'keys.js' -%>
+<% end %>
+<%= content_for(:css) do %>
+  <%= stylesheet_link_tag 'keys.css', :media => 'all' %>
+<% end %>
+
+<%= render :partial => 'shared/flash_message' %>
+
+<div class="FormAccount-Section u-inner">
+
+  <%= render :partial => 'admin/shared/pages_subheader' %>
+
+  <div class="FormAccount-Content">
+    <%= render :partial => 'admin/shared/api_keys_subheader' %>
+    <div class="FormAccount-separator"></div>
+
+    <% if @mobile_apps.empty? %>
+
+      <%= render :partial => 'admin/shared/no_mobile_apps' %>
+
+    <% else %>
+
+    <% end %>
+  </div>
+
+</div>
+
+<%= render 'admin/shared/footer' %>

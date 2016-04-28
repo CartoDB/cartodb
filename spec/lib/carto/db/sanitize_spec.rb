@@ -6,16 +6,16 @@ module Carto
   module DB
     module Sanitize
       describe '#sanitize_identifier' do
-        it 'should prepend t_ to identifiers starting with numbers' do
+        it 'should prepend table_ to identifiers starting with numbers' do
           identifier = '13102016manolo'
-          sanitized_identifier = 't_13102016manolo'
+          sanitized_identifier = 'table_13102016manolo'
 
           Carto::DB::Sanitize.sanitize_identifier(identifier).should eq sanitized_identifier
         end
 
-        it 'should prepend t_ to identifiers starting with _' do
+        it 'should prepend table_ to identifiers starting with _' do
           identifier = '_manolo'
-          sanitized_identifier = 't_manolo'
+          sanitized_identifier = 'table_manolo'
 
           Carto::DB::Sanitize.sanitize_identifier(identifier).should eq sanitized_identifier
         end
@@ -57,7 +57,7 @@ module Carto
 
         it 'should do all together' do
           identifier = '!#_   where'
-          sanitized_identifier = 't_where'
+          sanitized_identifier = 'table_where'
 
           Carto::DB::Sanitize.sanitize_identifier(identifier).should eq sanitized_identifier
         end

@@ -33,19 +33,19 @@ module Carto
       it 'should remove disallowed starting characters' do
         valid_name = @physical_tables_manager.propose_valid_table_name(contendent: "____Mªnolo !Es'co`bar##!")
 
-        valid_name.should eq 't_m_nolo_es_co_bar_'
+        valid_name.should eq 'table_m_nolo_es_co_bar_'
       end
 
       it 'should find unused names' do
         run_in_user_database(%{
-            CREATE TABLE t_m_nolo_es_co_bar_   ("description" text);
-            CREATE TABLE t_m_nolo_es_co_bar_1 ("description" text);
-            CREATE TABLE t_m_nolo_es_co_bar_3 ("description" text);
+            CREATE TABLE table_m_nolo_es_co_bar_   ("description" text);
+            CREATE TABLE table_m_nolo_es_co_bar_1 ("description" text);
+            CREATE TABLE table_m_nolo_es_co_bar_3 ("description" text);
         })
 
         valid_name = @physical_tables_manager.propose_valid_table_name(contendent: "____Mªnolo !Es'co`bar##!")
 
-        valid_name.should eq 't_m_nolo_es_co_bar_2'
+        valid_name.should eq 'table_m_nolo_es_co_bar_2'
       end
 
       it 'should propose valid names when no contendent is specified' do

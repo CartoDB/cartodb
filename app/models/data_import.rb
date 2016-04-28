@@ -362,7 +362,7 @@ class DataImport < Sequel::Model
 
   def tables
     table_names_array.map do |table_name|
-      ::Table.new(user_table: UserTable.where(name: table_name, user_id: user_id).first)
+      UserTable.where(name: table_name, user_id: user_id).first.service
     end
   end
 

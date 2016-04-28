@@ -77,7 +77,7 @@ module Carto
     end
 
     def export(visualization, user,
-               format: 'csv',
+               format: 'gpkg',
                data_exporter: DataExporter.new,
                visualization_export_service: Carto::VisualizationsExportService2.new,
                base_dir: exporter_folder)

@@ -67,7 +67,7 @@ module CartoDB
       end
 
       def reproject_raster
-        gdalwarp_command = %Q(#{gdalwarp_path} -co "COMPRESS=LZW" -t_srs EPSG:#{PROJECTION} #{filepath} #{webmercator_filepath})
+        gdalwarp_command = %Q(#{gdalwarp_path} -ot Int16 -co "COMPRESS=LZW" -t_srs EPSG:#{PROJECTION} #{filepath} #{webmercator_filepath})
 
         stdout, stderr, status  = Open3.capture3(gdalwarp_command)
         output_message = "(#{status}) |#{stdout + stderr}| Command: #{gdalwarp_command}"

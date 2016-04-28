@@ -24,12 +24,18 @@ module CartoDB
   class InvalidGeoJSONFormat < StandardError; end
   class BoundingBoxError < StandardError; end
   class QueryNotAllowed < StandardError; end
+
   class InvalidMember < StandardError; end
+
   class TableError < StandardError; end
   class CartoDBfyInvalidID < StandardError; end
   class CartoDBfyError < StandardError; end
-  class TableError < StandardError; end
-  class PhysicalTableRenameFailed < StandardError; end
+
+  class InvalidInterval < StandardError
+    def detail
+      Cartodb.error_codes[:invalid_interval]
+    end
+  end
 
   # importer errors
   class EmptyFile < StandardError

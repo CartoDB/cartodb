@@ -54,7 +54,7 @@ describe Carto::VisualizationExport do
 
   it 'exports a .carto file including the carto.json and the files' do
     data_exporter_mock = mock
-    data_exporter_mock.expects(:export_visualization_tables).with(visualization, anything, anything).returns(data_files)
+    data_exporter_mock.expects(:export_visualization_tables).with(visualization, @user, anything, anything).returns(data_files)
     test_json = { test: 'test' }
     export_service_mock = mock
     export_service_mock.stubs(:export_visualization_json_string).with(visualization.id, @user).returns(test_json)

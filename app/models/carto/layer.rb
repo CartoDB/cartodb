@@ -43,6 +43,10 @@ module Carto
       (tables_from_query_option + tables_from_table_name_option).compact.uniq
     end
 
+    def affected_tables_readable_by(user)
+      affected_tables.select { |ut| ut.readable_by?(user) }
+    end
+
     def data_readable_by?(user)
       affected_tables.find { |ut| !ut.readable_by?(user) }.nil?
     end

@@ -46,8 +46,8 @@ module Carto
       Carto::Http::Client.get('data_exporter', log_requests: true).get_file(url, exported_file)
     end
 
-    def export_visualization_tables(visualization, dir, format)
-      visualization.related_tables.map { |ut| export_table(ut, dir, format) }
+    def export_visualization_tables(visualization, user, dir, format)
+      visualization.related_tables_readable_by(user).map { |ut| export_table(ut, dir, format) }
     end
 
     private
@@ -80,7 +80,7 @@ module Carto
       export_dir = export_dir(visualization, base_dir: base_dir)
       tmp_dir = tmp_dir(visualization, base_dir: base_dir)
 
-      data_exporter.export_visualization_tables(visualization, tmp_dir, format)
+      data_exporter.export_visualization_tables(visualization, user, tmp_dir, format)
       visualization_json = visualization_export_service.export_visualization_json_string(visualization_id, user)
       visualization_json_file = "#{tmp_dir}/#{visualization_id}#{EXPORT_EXTENSION}"
       File.open(visualization_json_file, 'w') { |file| file.write(visualization_json) }

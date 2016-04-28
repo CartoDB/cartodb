@@ -62,7 +62,6 @@
 **/src/geo/ui/header.js
 **/src/geo/ui/image.js
 **/src/geo/ui/infobox.js
-**/src/geo/ui/infowindow-model.js
 **/src/geo/ui/layer-selector.js
 **/src/geo/ui/layer-view.js
 **/src/geo/ui/legend/base-legend.js

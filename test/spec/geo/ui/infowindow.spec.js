@@ -3,9 +3,9 @@ var Backbone = require('backbone');
 var Map = require('../../../../src/geo/map');
 var MapView = require('../../../../src/geo/map-view');
 var InfowindowModel = require('../../../../src/geo/ui/infowindow-model');
-var Infowindow = require('../../../../src/geo/ui/infowindow');
+var Infowindow = require('../../../../src/geo/ui/infowindow-view');
 
-describe('geo/ui/infowindow', function() {
+describe('geo/ui/infowindow-view', function() {
   var model, view;
 
   beforeEach(function() {

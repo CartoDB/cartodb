@@ -1,6 +1,7 @@
 var _ = require('underscore');
 var config = require('cdb.config');
 var LayerModelBase = require('./layer-model-base');
+var InfowindowModel = require('../../geo/ui/infowindow-model');
 
 var CartoDBLayer = LayerModelBase.extend({
   defaults: {
@@ -17,6 +18,10 @@ var CartoDBLayer = LayerModelBase.extend({
     if (attrs && attrs.cartocss) {
       this.set('initialStyle', attrs.cartocss);
     }
+
+    this.infowindow = new InfowindowModel(attrs.infowindow);
+    this.unset('infowindow');
+
     this.bind('change:visible change:sql change:source', this._reloadMap, this);
     this.bind('change:cartocss', this._onCartoCSSChanged);
   },
@@ -77,16 +82,16 @@ var CartoDBLayer = LayerModelBase.extend({
 
   getInfowindowFieldNames: function () {
     var names = [];
-    var infowindow = this.getInfowindowData();
-    if (infowindow && infowindow.fields) {
-      names = _.pluck(infowindow.fields, 'name');
+    var infowindow = this.infowindow;
+    if (infowindow && infowindow.get('fields')) {
+      names = _.pluck(infowindow.get('fields'), 'name');
     }
     return names;
   },
 
   getInfowindowData: function () {
-    var infowindow = this.get('infowindow');
-    if (infowindow && infowindow.fields && infowindow.fields.length) {
+    var infowindow = this.infowindow;
+    if (infowindow && infowindow.get('fields').length) {
       return infowindow;
     }
     return null;

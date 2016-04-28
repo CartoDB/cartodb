@@ -1,3 +1,4 @@
+var Backbone = require('backbone');
 var Layers = require('./vis/layers');
 var TileLayer = require('../geo/map/tile-layer');
 var WMSLayer = require('../geo/map/wms-layer');

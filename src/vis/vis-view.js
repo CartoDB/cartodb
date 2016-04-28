@@ -10,7 +10,7 @@ var MapViewFactory = require('../geo/map-view-factory');
 var LegendModel = require('../geo/ui/legend-model');
 var Legend = require('../geo/ui/legend');
 var InfowindowModel = require('../geo/ui/infowindow-model');
-var Infowindow = require('../geo/ui/infowindow');
+var Infowindow = require('../geo/ui/infowindow-view');
 var Template = require('../core/template');
 var Layers = require('./vis/layers');
 var Overlay = require('./vis/overlay');
@@ -201,6 +201,7 @@ var Vis = View.extend({
     var layerModels = this._newLayerModels(vizjson, this.map);
 
     // Infowindows && Tooltips
+    // TODO: Move this to the constructor
     var infowindowManager = new InfowindowManager(this);
     infowindowManager.manage(this.mapView, this.map);
 

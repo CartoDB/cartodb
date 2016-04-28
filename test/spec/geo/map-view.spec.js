@@ -4,7 +4,7 @@ var Map = require('../../../src/geo/map');
 var MapView = require('../../../src/geo/map-view');
 var TileLayer = require('../../../src/geo/map/tile-layer');
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
-var Infowindow = require('../../../src/geo/ui/infowindow');
+var Infowindow = require('../../../src/geo/ui/infowindow-view');
 var CartoDBLayerGroupBase = require('../../../src/geo/cartodb-layer-group-base');
 
 var LayerGroupModel = CartoDBLayerGroupBase;

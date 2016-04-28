@@ -79,7 +79,7 @@ cdb.geo.ui.Legend = require('./geo/ui/legend');
 _.extend(cdb.geo.ui.Legend, require('./geo/ui/legend/legend-view-exports'));
 
 cdb.geo.ui.InfowindowModel = require('./geo/ui/infowindow-model');
-cdb.geo.ui.Infowindow = require('./geo/ui/infowindow');
+cdb.geo.ui.Infowindow = require('./geo/ui/infowindow-view');
 
 cdb.geo.ui.Header = require('./geo/ui/header');
 

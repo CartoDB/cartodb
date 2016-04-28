@@ -170,6 +170,7 @@ var Infowindow = View.extend({
       // custom infowindows and CartoDB infowindows.
       var values = {};
 
+      _.each(fields, function (pair) {
         values[pair.title] = pair.value;
       });
 

@@ -22,9 +22,7 @@ class Api::Json::TablesController < Api::ApplicationController
         @table = ::Table.new
         @table.user_id = current_user.id
 
-        @table.name = Carto::ValidTableNameProposer
-                      .new(current_user.id)
-                      .propose_valid_table_name(params[:name] ? { contendent: params[:name] } : {})
+        @table.name = Carto::ValidTableNameProposer.new(current_user.id).propose_valid_table_name(params[:name])
 
         @table.description    = params[:description]   if params[:description]
         @table.the_geom_type  = params[:the_geom_type] if params[:the_geom_type]

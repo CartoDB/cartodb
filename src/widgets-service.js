@@ -159,7 +159,7 @@ WidgetsService.prototype.setWidgetsState = function (state) {
     }
   }
   this._widgetsCollection.setStates(state);
-}
+};
 
 function _checkProperties (obj, propertiesArray) {
   _.each(propertiesArray, function (prop) {

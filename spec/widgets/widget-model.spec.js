@@ -133,8 +133,8 @@ describe('widgets/widget-model', function () {
       this.model.setState({
         pinned: false,
         collapsed: true
-      })
-      expect(this.model.getState()).toEqual({collapsed: true})
-    })
-  })
+      });
+      expect(this.model.getState()).toEqual({collapsed: true});
+    });
+  });
 });

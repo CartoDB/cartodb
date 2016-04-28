@@ -55,11 +55,11 @@ module.exports = cdb.core.Model.extend({
       'pinned': this.get('pinned')
     }, this.defaultState);
     var state = {};
-    for (key in fullState) {
-      if (this.defaultState[key] !== fullState[key]){
+    for (var key in fullState) {
+      if (this.defaultState[key] !== fullState[key]) {
         state[key] = fullState[key];
       }
     }
-    return state
-  },
+    return state;
+  }
 });

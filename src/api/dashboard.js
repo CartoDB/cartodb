@@ -1,4 +1,5 @@
 var URI = require('urijs');
+var _ = require('underscore');
 
 function Dashboard (dashboard) {
   this._dashboard = dashboard;
@@ -37,7 +38,7 @@ Dashboard.prototype = {
 
   getState: function () {
     var widgetsState = this._dashboard.widgets._widgetsCollection.getStates();
-    var mapState = {}; //TODO
+    var mapState = {}; // TODO
     return _.extend(mapState, widgetsState);
   },
 

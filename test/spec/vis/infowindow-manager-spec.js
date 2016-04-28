@@ -101,23 +101,7 @@ describe('src/vis/infowindow-manager.js', function () {
     expect(this.mapView.addInfowindow.calls.count()).toEqual(1);
   });
 
-  it('should NOT add a new infowindow view to the map view when new layers are added if layer doesn\'t have infowindow fields', function () {
-    spyOn(this.mapView, 'addInfowindow');
-
-    var layer = new CartoDBLayer({
-      infowindow: {
-        fields: []
-      }
-    });
-
-    var infowindowManager = new InfowindowManager(this.vis);
-    infowindowManager.manage(this.mapView, this.map);
-
-    this.map.layers.reset([ layer ]);
-    expect(this.mapView.addInfowindow).not.toHaveBeenCalled();
-  });
-
-  it('should correctly bind the featureClick event to the corresponding layerView (when layerView has a group of layers)', function () {
+  it('should correctly bind the featureClick event to the corresponding layerView', function () {
     spyOn(this.mapView, 'addInfowindow');
 
     var layer1 = new CartoDBLayer({
@@ -157,7 +141,19 @@ describe('src/vis/infowindow-manager.js', function () {
       fetchAttributes: jasmine.createSpy('fetchAttributes').and.callFake(function (layerIndex, cartoDBId, callback) {
         callback({ name: 'juan' });
       }),
-      layers: new Backbone.Collection([ layer1, layer2 ])
+      getLayerAt: function (index) {
+        if (index === 0) {
+          return layer1;
+        }
+        return layer2;
+      },
+
+      getIndexOf: function (layerModel) {
+        if (layerModel === layer1) {
+          return 0;
+        }
+        return 1;
+      }
     };
     spyOn(infowindowView, 'adjustPan');
 
@@ -182,10 +178,6 @@ describe('src/vis/infowindow-manager.js', function () {
         }
       ],
       'template_name': 'infowindow_light',
-      'latlng': [
-        100,
-        200
-      ],
       'offset': [
         28,
         0
@@ -195,15 +187,21 @@ describe('src/vis/infowindow-manager.js', function () {
       'content': {
         'fields': [
           {
-            'type': 'loading',
-            'title': 'loading',
-            'value': '…'
+            'title': 'name',
+            'value': 'juan',
+            'index': 0
           }
-        ]
+        ],
+        'data': {
+          'name': 'juan'
+        }
       },
-      'visibility': true,
-      'sanitizeTemplate': undefined,
-      'width': undefined
+      'latlng': [
+        100,
+        200
+      ],
+      'status': 'ready',
+      'visibility': true
     });
 
     // Simulate the featureClick event for layer #1
@@ -227,10 +225,6 @@ describe('src/vis/infowindow-manager.js', function () {
         }
       ],
       'template_name': 'infowindow_light',
-      'latlng': [
-        100,
-        200
-      ],
       'offset': [
         28,
         0
@@ -240,90 +234,22 @@ describe('src/vis/infowindow-manager.js', function () {
       'content': {
         'fields': [
           {
-            'type': 'loading',
-            'title': 'loading',
-            'value': '…'
+            'title': null,
+            'value': 'No data available',
+            'index': 0,
+            'type': 'empty'
           }
-        ]
-      },
-      'visibility': true,
-      'sanitizeTemplate': undefined,
-      'width': undefined
-    });
-  });
-
-  it('should correctly bind the featureClick event to the corresponding layerView (when layerView has a single layer)', function () {
-    spyOn(this.mapView, 'addInfowindow');
-
-    var layer = new CartoDBLayer({
-      infowindow: {
-        template: 'template1',
-        template_type: 'underscore',
-        fields: [{
-          'name': 'name',
-          'title': true,
-          'position': 1
-        }],
-        alternative_names: 'alternative_names1'
-      }
-    });
-
-    var infowindowManager = new InfowindowManager(this.vis);
-    infowindowManager.manage(this.mapView, this.map);
-
-    this.map.layers.reset([ layer ]);
-    var infowindowView = this.mapView.addInfowindow.calls.mostRecent().args[0];
-    var infowindowModel = infowindowView.model;
-
-    this.layerView.model = layer;
-    layer.fetchAttributes = jasmine.createSpy('fetchAttributes').and.callFake(function (layerIndex, cartoDBId, callback) {
-      callback({ name: 'juan' });
-    });
-    spyOn(infowindowView, 'adjustPan');
-
-    // Simulate the featureClick event for layer #0
-    this.layerView.trigger('featureClick', {}, [100, 200], undefined, { cartodb_id: 10 }, 0);
-
-    // A request to fetch the attributes for the right cartodb_id and layerIndex has been triggered
-    expect(this.layerView.model.fetchAttributes.calls.count()).toEqual(1);
-    expect(this.layerView.model.fetchAttributes).toHaveBeenCalledWith(0, 10, jasmine.any(Function));
-    this.layerView.model.fetchAttributes.calls.reset();
-
-    // InfowindowModel has been updated
-    expect(infowindowModel.attributes).toEqual({
-      'template': 'template1',
-      'template_type': 'underscore',
-      'alternative_names': 'alternative_names1',
-      'fields': [
-        {
-          'name': 'name',
-          'title': true,
-          'position': 1
+        ],
+        'data': {
+          'name': 'juan'
         }
-      ],
-      'template_name': 'infowindow_light',
+      },
       'latlng': [
         100,
         200
       ],
-      'offset': [
-        28,
-        0
-      ],
-      'maxHeight': 180,
-      'autoPan': true,
-      'content': {
-        'fields': [
-          {
-            'type': 'loading',
-            'title': 'loading',
-            'value': '…'
-          }
-        ]
-      },
-      'visibility': true,
-      'sanitizeTemplate': undefined,
-      'width': undefined
+      'status': 'ready',
+      'visibility': true
     });
   });
 
@@ -398,7 +324,13 @@ describe('src/vis/infowindow-manager.js', function () {
 
     this.layerView.model = {
       fetchAttributes: jasmine.createSpy('fetchAttributes').and.returnValue({ name: 'Juan' }),
-      layers: new Backbone.Collection([ layer ])
+      getLayerAt: function (index) {
+        return layer;
+      },
+
+      getIndexOf: function (layerModel) {
+        return 0;
+      }
     };
     spyOn(infowindowView, 'adjustPan');
 

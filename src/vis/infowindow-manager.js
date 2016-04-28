@@ -86,7 +86,7 @@ InfowindowManager.prototype._fetchAttributes = function (layerView, layerModel, 
   if (layerView.tooltipView) {
     layerView.tooltipView.setFilter(function (feature) {
       return feature.cartodb_id !== this._currentFeatureId;
-    }).hide();
+    }.bind(this)).hide();
   }
 };
 
@@ -96,12 +96,16 @@ InfowindowManager.prototype._bindInfowindowModel = function (layerView, layerMod
       this._updateInfowindowModel(layerModel);
       // If the infowindow is visible and fields have changed
       if (layerModel.hasChanged('fields') && this._infowindowModel.get('visibility') === true) {
+        // TODO: Perhaps we can pass a callback to map.reload instead of having to do this!
         this._vis._windshaftMap.once('instanceCreated', function () {
           this._fetchAttributes(layerView, layerModel);
         }, this);
       }
     }
-    this._map.reload();
+
+    if (layerModel.hasChanged('fields')) {
+      this._map.reload();
+    }
   }, this);
 };
 

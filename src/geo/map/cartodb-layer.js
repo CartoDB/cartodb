@@ -11,6 +11,7 @@ var CartoDBLayer = LayerModelBase.extend({
   },
 
   initialize: function (attrs, options) {
+    attrs = attrs || {};
     LayerModelBase.prototype.initialize.apply(this, arguments);
     options = options || {};
 

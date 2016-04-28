@@ -48,6 +48,14 @@ module Carto
         valid_name.should eq 'table_m_nolo_es_co_bar_2'
       end
 
+      it 'should find unused names when taken_names is specified' do
+        taken_names = %w(manolo_escobar manolo_escobar_1)
+
+        valid_name = @valid_table_name_proposer.propose_valid_table_name("manolo_escobar", taken_names: taken_names)
+
+        valid_name.should eq 'manolo_escobar_2'
+      end
+
       it 'should propose valid names when no contendent is specified' do
         valid_name = @valid_table_name_proposer.propose_valid_table_name
 

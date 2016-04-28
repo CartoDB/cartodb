@@ -79,7 +79,7 @@ module Carto
       end
 
       it 'should propose valid names when empty taken_names is specified' do
-        valid_name = @physical_tables_manager.propose_valid_table_name(taken_names: '')
+        valid_name = @physical_tables_manager.propose_valid_table_name(taken_names: [])
 
         valid_name.should eq 'untitled_table'
       end

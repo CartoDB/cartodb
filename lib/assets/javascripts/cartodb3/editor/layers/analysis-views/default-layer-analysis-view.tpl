@@ -7,7 +7,7 @@
     <span class="CDB-Text is-light u-rSpace">
       <%- id %>
     </span>
-    <i class="CDB-IconFont CDB-IconFont-ray CDB-Size-medium HorizontalBlockList-item-icon"></i>
+    <i class="CDB-IconFont CDB-IconFont-ray CDB-Size-medium"></i>
   <% } else { %>
     <div class="CDB-LoaderIcon">
       <div class="CDB-LoaderIcon-item"></div>

@@ -76,7 +76,7 @@
   @include display-flex();
   /* remove when add new scroll */
   max-width: 264px;
-  overflow: auto;
+  overflow: visible; /* for class with .has-error to be visible */
 }
 .HorizontalBlockList-item {
   @include display-flex();
@@ -123,8 +123,8 @@
   &:after {
     display: block;
     position: absolute;
-    top: -3px;
-    right: -3px;
+    top: -5px;
+    right: -5px;
     width: 8px;
     height: 8px;
     border: 2px solid $cWhite;

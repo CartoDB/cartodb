@@ -12,12 +12,11 @@ module Carto
       @user = ::User.where(id: user_id).first
     end
 
-    def propose_valid_table_name(contendent: DEFAULT_TABLE_NAME.dup, schema: @user.database_schema)
+    def propose_valid_table_name(contendent: DEFAULT_TABLE_NAME.dup, taken_names: fetch_physical_table_names)
       contendent = DEFAULT_TABLE_NAME.dup unless contendent && !contendent.empty?
-      schema = @user.database_schema unless schema && !schema.empty?
 
       sanitized_contendent = Carto::DB::Sanitize.sanitize_identifier(contendent)
-      used_table_names = fetch_physical_table_names(schema) +
+      used_table_names = taken_names +
                          Carto::DB::Sanitize::SYSTEM_TABLE_NAMES +
                          Carto::DB::Sanitize::RESERVED_TABLE_NAMES
 
@@ -40,11 +39,11 @@ module Carto
                             table_name: prefix)
     end
 
-    def fetch_physical_table_names(schema)
+    def fetch_physical_table_names
       sql = %{
         SELECT tablename AS name
         FROM pg_tables
-        WHERE schemaname = '#{schema}' AND
+        WHERE schemaname = '#{@user.database_schema}' AND
               tableowner = '#{@user.database_username}'
       }
 

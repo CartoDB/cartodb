@@ -128,12 +128,13 @@ describe('widgets/widget-model', function () {
     });
   });
 
-  describe('state', function () {
-    it('should change collapsed state correctly', function () {
+  describe('getState', function () {
+    it('should only return states different from default', function () {
       this.model.setState({
         pinned: false,
         collapsed: true
       })
+      expect(this.model.getState()).toEqual({collapsed: true})
     })
   })
 });

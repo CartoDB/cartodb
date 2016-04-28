@@ -35,6 +35,14 @@ var CartoDBLayerGroupBase = Backbone.Model.extend({
     }, this);
   },
 
+  getIndexOf: function (layerModel) {
+    return this.layers.indexOf(layerModel);
+  },
+
+  getLayerAt: function (index) {
+    return this.layers.at(index);
+  },
+
   isEqual: function () {
     return false;
   },

@@ -1,7 +1,7 @@
 var _ = require('underscore');
 var config = require('cdb.config');
 var LayerModelBase = require('./layer-model-base');
-var InfowindowModel = require('../../geo/ui/infowindow-model');
+var InfowindowTemplate = require('./infowindow-template');
 
 var CartoDBLayer = LayerModelBase.extend({
   defaults: {
@@ -19,7 +19,7 @@ var CartoDBLayer = LayerModelBase.extend({
       this.set('initialStyle', attrs.cartocss);
     }
 
-    this.infowindow = new InfowindowModel(attrs.infowindow);
+    this.infowindow = new InfowindowTemplate(attrs.infowindow);
     this.unset('infowindow');
 
     this.bind('change:visible change:sql change:source', this._reloadMap, this);

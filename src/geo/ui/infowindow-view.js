@@ -170,7 +170,6 @@ var Infowindow = View.extend({
       // custom infowindows and CartoDB infowindows.
       var values = {};
 
-      _.each(this.model.get('content').fields, function (pair) {
         values[pair.title] = pair.value;
       });
 
@@ -214,6 +213,7 @@ var Infowindow = View.extend({
     this.model.bind('change:latlng', this._update, this);
     this.model.bind('change:visibility', this.toggle, this);
     this.model.bind('change:template change:sanitizeTemplate', this._compileTemplate, this);
+    this.model.bind('change:status', this._onModelStatusChanged, this);
 
     this.mapView.map.bind('change', this._updatePosition, this);
 
@@ -227,6 +227,19 @@ var Infowindow = View.extend({
 
     this.add_related_model(this.mapView.map);
     this.add_related_model(this.mapView);
+  },
+
+
+  _onModelStatusChanged: function () {
+    if (this.model.get('status') === 'loading') {
+      this.setLoading();
+    } else if (this.model.get('status') === 'error') {
+      this.setError();
+    } else if (this.model.get('status') === 'ready') {
+      // Does nothing for now
+    } else {
+      throw Error.new('Invalid status');
+    }
   },
 
   _onKeyUp: function (e) {

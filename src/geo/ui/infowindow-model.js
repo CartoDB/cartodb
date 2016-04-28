@@ -22,10 +22,6 @@ var InfowindowModel = Backbone.Model.extend({
     fields: null // contains the fields displayed in the infowindow
   },
 
-  update: function (attrs) {
-    this.set(attrs);
-  },
-
   // updates content with attributes
   updateContent: function (attributes) {
     var fields = this.get('fields');
@@ -36,7 +32,16 @@ var InfowindowModel = Backbone.Model.extend({
     return this.get('alternative_names') && this.get('alternative_names')[fieldName];
   },
 
-  // FOLLOWING METHODS ARE NOT USED INTERNALLY:
+  setInfowindowTemplate: function (infowindowTemplateModel) {
+    this.set(infowindowTemplateModel.toJSON());
+    this._infowindowTemplateModel = infowindowTemplateModel;
+  },
+
+  hasInfowindowTemplate: function (infowindowTemplateModel) {
+    return this._infowindowTemplateModel && this._infowindowTemplateModel === infowindowTemplateModel;
+  },
+
+  // THE FOLLOWING METHODS ARE NOT USED INTERNALLY:
 
   clearFields: function () {
     this.set({fields: []});

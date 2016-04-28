@@ -1,3 +1,4 @@
+var _ = require('underscore');
 var Overlay = require('./vis/overlay');
 
 /**
@@ -41,79 +42,61 @@ InfowindowManager.prototype._addInfowindowForLayer = function (layerModel) {
 
 InfowindowManager.prototype._addInfowindowOverlay = function (layerView, layerModel) {
   this._infowindowView = Overlay.create('infowindow', this._vis, layerModel.infowindow.toJSON());
+  this._infowindowModel = this._infowindowView.model;
   this._mapView.addInfowindow(this._infowindowView);
 };
 
 InfowindowManager.prototype._bindFeatureClickEvent = function (layerView) {
   layerView.bind('featureClick', function (e, latlng, pos, data, layerIndex) {
-    var layerModel = layerView.model;
-    if (layerModel.layers) {
-      layerModel = layerModel.layers.at(layerIndex);
-    }
+    var layerModel = layerView.model.getLayerAt(layerIndex);
     if (!layerModel) {
       throw new Error('featureClick event for layer ' + layerIndex + ' was captured but layerModel coudn\'t be retrieved');
     }
 
-    var infowindowFields = layerModel.getInfowindowData();
-    if (!infowindowFields) {
+    if (!layerModel.getInfowindowData()) {
       return;
     }
 
-    var cartoDBId = data.cartodb_id;
-    this._infowindowView.model.set(layerModel.infowindow.toJSON());
-    this._infowindowView.model.set('sourceLayerModelCID', layerModel.cid);
-    this._infowindowView.model.set('cartodb_id', cartoDBId);
-    layerView.model.fetchAttributes(layerIndex, cartoDBId, function (attributes) {
-      if (attributes) {
-        this._infowindowView.model.updateContent(attributes);
-      } else {
-        this._infowindowView.setError();
-      }
-    }.bind(this));
-
-    // Show infowindow with loading state
-    this._infowindowView
-      .setLatLng(latlng)
-      .setLoading()
-      .showInfowindow();
-
-    if (layerView.tooltipView) {
-      layerView.tooltipView.setFilter(function (feature) {
-        return feature.cartodb_id !== cartoDBId;
-      }).hide();
-    }
+    this._updateInfowindowModelAndFetchAttributes(layerView, layerModel, data.cartodb_id, latlng);
   }, this);
+};
+
+InfowindowManager.prototype._updateInfowindowModelAndFetchAttributes = function (layerView, layerModel, featureId, latlng) {
+  this._currentFeatureId = featureId || this._currentFeatureId;
+  this._infowindowModel.setInfowindowTemplate(layerModel.infowindow);
+  this._infowindowModel.set({
+    latlng: latlng,
+    status: 'loading',
+    visibility: true
+  });
+  var layerIndex = layerView.model.getIndexOf(layerModel);
+  layerView.model.fetchAttributes(layerIndex, this._currentFeatureId, function (attributes) {
+    if (attributes) {
+      this._infowindowModel.updateContent(attributes);
+      this._infowindowModel.set('status', 'ready');
+    } else {
+      this._infowindowModel.set('status', 'error');
+    }
+  }.bind(this));
+
+  if (layerView.tooltipView) {
+    layerView.tooltipView.setFilter(function (feature) {
+      return feature.cartodb_id !== this._currentFeatureId;
+    }).hide();
+  }
 };
 
 InfowindowManager.prototype._bindInfowindowModel = function (layerView, layerModel) {
   layerModel.infowindow.bind('change', function () {
-    var infowindowView = this._infowindowView;
-    // TODO: Check if the current infowindow is the one that changed
-    if (infowindowView.model.get('sourceLayerModelCID') === layerModel.cid) {
-      infowindowView.model.set(layerModel.infowindow.toJSON());
-
+    if (this._infowindowModel.hasInfowindowTemplate(layerModel.infowindow)) {
       // If the infowindow is visible and fields have changed
-      if (infowindowView.model.hasChanged('fields')) {
-
-        // If visible -> Fetch attributes as soon as new instance is created
-        if (infowindowView.model.get('visibility') === true) {
-          this._vis._windshaftMap.once('instanceCreated', function () {
-            var cartoDBId = infowindowView.model.get('cartodb_id');
-            var layerIndex = layerView.model.layers.indexOf(layerModel);
-            infowindowView.setLoading();
-            layerView.model.fetchAttributes(layerIndex, cartoDBId, function (attributes) {
-              if (attributes) {
-                infowindowView.model.updateContent(attributes);
-              } else {
-                infowindowView.setError();
-              }
-            });
-          });
-        }
+      if (layerModel.hasChanged('fields') && this._infowindowModel.get('visibility') === true) {
+        this._vis._windshaftMap.once('instanceCreated', function () {
+          this._updateInfowindowModelAndFetchAttributes(layerView, layerModel);
+        }, this);
       }
     }
-
-    this._vis.map.reload();
+    this._map.reload();
   }, this);
 };
 

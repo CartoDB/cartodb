@@ -50,14 +50,11 @@ module.exports = cdb.core.Model.extend({
   },
 
   getState: function () {
-    var fullState = _.defaults({
-      'collapsed': this.get('collapsed'),
-      'pinned': this.get('pinned')
-    }, this.defaultState);
     var state = {};
-    for (var key in fullState) {
-      if (this.defaultState[key] !== fullState[key]) {
-        state[key] = fullState[key];
+    for (var key in this.defaultState) {
+      var attribute = this.get(key);
+      if (typeof attribute !== 'undefined' && attribute !== this.defaultState[key]) {
+        state[key] = attribute;
       }
     }
     return state;

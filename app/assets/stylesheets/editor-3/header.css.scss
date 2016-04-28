@@ -36,11 +36,11 @@
 }
 .Editor-HeaderInfo-titleText {
   @include flex(1);
+  display: block;
   width: 0;
   padding-right: 16px;
   text-overflow: ellipsis;
   white-space: nowrap;
-  overflow: hidden;
 }
 .Editor-HeaderInfo-actions {
   @include display-flex();

@@ -98,7 +98,7 @@
   background: #FFF;
 }
 .Editor-ListAnalysis-item.has-error {
-  &:after {
+  &::after {
     display: block;
     position: absolute;
     top: -5px;

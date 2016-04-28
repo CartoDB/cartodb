@@ -120,7 +120,7 @@
 }
 .HorizontalBlockList-item.has-error {
   position: relative;
-  &:after {
+  &::after {
     display: block;
     position: absolute;
     top: -5px;

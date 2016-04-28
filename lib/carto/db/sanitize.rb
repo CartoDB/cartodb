@@ -18,22 +18,19 @@ module Carto
                           old on only or order outer overlaps placing primary references right select session_user
                           similar some symmetric table then to trailing true union unique user using verbose when where
                           xmin xmax).freeze
-      SYSTEM_TABLE_NAMES = ['spatial_ref_sys',
-                            'geography_columns',
-                            'geometry_columns',
-                            'raster_columns',
-                            'raster_overviews',
-                            'cdb_tablemetadata',
-                            'geometry',
-                            'raster'].freeze
+      SYSTEM_TABLE_NAMES = %w(spatial_ref_sys geography_columns geometry_columns raster_columns raster_overviews
+                              cdb_tablemetadata geometry raster).freeze
       RESERVED_TABLE_NAMES = %w{ layergroup all public }.freeze
 
       def self.append_with_truncate_and_sanitize(identifier, suffix)
-        identifier_length = identifier.length
         suffix_length = suffix.length
 
-        truncated_identifier = if identifier_length + suffix_length > MAX_IDENTIFIER_LENGTH
-                                 identifier[0..-suffix_length]
+        unless suffix_length < MAX_IDENTIFIER_LENGTH
+          raise "'#{suffix}' is too long (#{suffix_length} >= #{MAX_IDENTIFIER_LENGTH}) for append"
+        end
+
+        truncated_identifier = if identifier.length + suffix_length > MAX_IDENTIFIER_LENGTH
+                                 identifier[0..(MAX_IDENTIFIER_LENGTH - suffix_length - 1)]
                                else
                                  identifier
                                end
@@ -61,7 +58,7 @@ module Carto
         identifier = identifier[0..(MAX_IDENTIFIER_LENGTH - 1)]
 
         # Append _t if is a reserved word or reserved table name
-        if (RESERVED_WORDS + RESERVED_TABLE_NAMES).each(&:downcase).include?(identifier)
+        if (RESERVED_WORDS + RESERVED_TABLE_NAMES + SYSTEM_TABLE_NAMES).each(&:downcase).include?(identifier)
           identifier += SUFFIX_REPLACEMENT
         end
 

@@ -16,11 +16,11 @@ module Carto
       ensure_folder(exporter_config[:exporter_temporal_folder] || DEFAULT_EXPORTER_TMP_FOLDER)
     end
 
-    def export_dir(visualization, base_dir: DEFAULT_EXPORTER_TMP_FOLDER)
+    def export_dir(visualization, base_dir: exporter_folder)
       ensure_folder("#{base_dir}/#{visualization.id}")
     end
 
-    def tmp_dir(visualization, base_dir: DEFAULT_EXPORTER_TMP_FOLDER)
+    def tmp_dir(visualization, base_dir: exporter_folder)
       ensure_folder("#{export_dir(visualization, base_dir: base_dir)}/#{visualization.id}")
     end
 

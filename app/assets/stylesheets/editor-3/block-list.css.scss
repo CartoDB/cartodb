@@ -24,8 +24,16 @@
   border-style: dashed;
 }
 .BlockList-item:hover {
-  border: 1px solid $cBlue;
+  @include transition(border, 200ms, ease-in);
+  border: 1px solid $cHoverLine;
 }
+.BlockList-item.BlockList-item--noAction {
+  cursor: default;
+}
+.BlockList-item.BlockList-item--noAction:hover {
+  border: 1px solid $cSecondaryLine;
+}
+
 .BlockList-item.is-dashed.no-hover:hover {
   border: 1px dashed $cSecondaryLine;
   cursor: default;

@@ -1,3 +1,5 @@
+var URI = require('urijs');
+
 function Dashboard (dashboard) {
   this._dashboard = dashboard;
 }
@@ -16,6 +18,32 @@ Dashboard.prototype = {
    */
   getWidgets: function () {
     return this._dashboard.widgets.getList();
+  },
+
+  getDashboardURL: function () {
+    var thisURL = new URI(this._getLocalURL());
+    thisURL.removeQuery('state');
+    var states = this.getState();
+    if (!_.isEmpty(states)) {
+      var statesString = encodeURIComponent(JSON.stringify(states));
+      thisURL.setQuery('state', statesString);
+    }
+    return thisURL.toString();
+  },
+
+  _getLocalURL: function () {
+    return window.location.href;
+  },
+
+  getState: function () {
+    var widgetsState = this._dashboard.widgets._widgetsCollection.getStates();
+    var mapState = {}; //TODO
+    return _.extend(mapState, widgetsState);
+  },
+
+  setState: function (state) {
+    // todo: set map state
+    this._dashboard.widgets.setWidgetsState(state);
   },
 
   /**

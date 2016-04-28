@@ -39,10 +39,10 @@ class Api::Json::TablesController < Api::ApplicationController
         if save_status
           render_jsonp(@table.public_values({request:request}), 200, { location: "/tables/#{@table.id}" })
 
-          custom_properties = {'privacy' => @table.table_visualization.privacy,
-                               'type' => @table.table_visualization.type,
-                               'vis_id' => @table.table_visualization.id,
-                               'origin' => 'blank'}
+          custom_properties = { 'privacy' => @table.table_visualization.privacy,
+                                'type' => @table.table_visualization.type,
+                                'vis_id' => @table.table_visualization.id,
+                                'origin' => 'blank' }
           Cartodb::EventTracker.new.send_event(current_user, 'Created dataset', custom_properties)
         else
           CartoDB::StdoutLogger.info 'Error on tables#create', @table.errors.full_messages
@@ -128,9 +128,9 @@ class Api::Json::TablesController < Api::ApplicationController
           return head(403) unless @table.table_visualization.is_owner?(current_user)
         end
 
-        custom_properties = {'privacy' => @table.table_visualization.privacy,
-                             'type' => @table.table_visualization.type,
-                             'vis_id' => @table.table_visualization.id}
+        custom_properties = { 'privacy' => @table.table_visualization.privacy,
+                              'type' => @table.table_visualization.type,
+                              'vis_id' => @table.table_visualization.id }
 
         @stats_aggregator.timing('delete') do
           @table.destroy

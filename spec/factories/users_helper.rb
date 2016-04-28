@@ -26,8 +26,7 @@ end
 
 shared_context 'user helper' do
   before(:all) do
-    username = "a#{String.random(10)}-a".downcase
-    @user = create_user(email: "#{username}@cartotest.com", username: username, password: '123456')
+    @user = FactoryGirl.create(:valid_user)
     @carto_user = Carto::User.find(@user.id)
   end
 

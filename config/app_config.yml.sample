@@ -244,6 +244,7 @@ defaults: &defaults
   app_assets:
     asset_host: "//cartodb-libs.global.ssl.fastly.net/cartodbui"
   avatars:
+    gravatar_enabled: true
     base_url: 'example.com/avatars'
     kinds: ['stars', 'mountains']
     colors: ['red', 'blue']

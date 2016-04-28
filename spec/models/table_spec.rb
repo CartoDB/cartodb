@@ -95,7 +95,7 @@ describe Table do
       table.name = '_coffee'
       table.save
 
-      table.name.should eq 't_coffee'
+      table.name.should eq 'table_coffee'
       table.valid?.should == true
     end
 
@@ -678,7 +678,7 @@ describe Table do
       table = create_table(name: 'as', user_id: @user.id)
 
       @user.in_database do |user_database|
-        user_database.table_exists?('as_t'.name.to_sym).should be_true
+        user_database.table_exists?('as_t'.to_sym).should be_true
       end
 
       table.name = 'where'
@@ -1333,7 +1333,7 @@ describe Table do
       table = new_table :user_id => @user.id, :name => '123_table_name'
       table.save.reload
 
-      table.name.should == "t_123_table_name"
+      table.name.should == "table_123_table_name"
     end
 
     it "should get a valid name when a table when a name containing the current name exists" do

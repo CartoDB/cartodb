@@ -48,7 +48,7 @@ module Carto
     end
 
     def data_readable_by?(user)
-      affected_tables.all? { |ut| !ut.readable_by?(user) }
+      affected_tables.all? { |ut| ut.readable_by?(user) }
     end
 
     def legend

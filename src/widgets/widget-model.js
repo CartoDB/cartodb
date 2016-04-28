@@ -14,6 +14,11 @@ module.exports = cdb.core.Model.extend({
     show_stats: false
   },
 
+  defaultState: {
+    'collapsed': false,
+    'pinned': false
+  },
+
   initialize: function (attrs, opts) {
     this.dataviewModel = opts.dataviewModel;
   },

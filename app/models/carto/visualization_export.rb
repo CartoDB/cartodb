@@ -25,7 +25,7 @@ module Carto
     end
 
     def ensure_folder(folder)
-      Dir.mkdir(folder) unless Dir.exists?(folder)
+      FileUtils.mkdir_p(folder) unless Dir.exists?(folder)
       folder
     end
 

@@ -115,7 +115,7 @@ describe Table do
 
     it "should not allow to create tables using system names" do
       table = create_table(name: "cdb_tablemetadata", user_id: @user.id)
-      table.name.should == "cdb_tablemetadata_1"
+      table.name.should == "cdb_tablemetadata_t"
     end
 
     it 'propagates name changes to table visualization' do
@@ -678,15 +678,13 @@ describe Table do
       table = create_table(name: 'as', user_id: @user.id)
 
       @user.in_database do |user_database|
-        user_database.table_exists?('as'.to_sym).should be_false
-        user_database.table_exists?('as_t'.to_sym).should be_true
+        user_database.table_exists?('as_t'.name.to_sym).should be_true
       end
 
       table.name = 'where'
       table.save
       table.reload
       @user.in_database do |user_database|
-        user_database.table_exists?('where'.to_sym).should be_false
         user_database.table_exists?('where_t'.to_sym).should be_true
       end
     end
@@ -1307,6 +1305,17 @@ describe Table do
       table.update_row!(pk1, :description => "Description 123")
       table.records[:rows].first[:description].should be == "Description 123"
     end
+
+    # No longer used, now we automatically rename reserved word columns
+    #it "can insert and update records in a table which one of its columns uses a reserved word as its name" do
+      #table = create_table(:name => 'where', :user_id => @user.id)
+      #table.add_column!(:name => 'where', :type => 'string')
+
+      #pk1 = table.insert_row!({:_where => 'random string'})
+
+      #table.records[:rows].should have(1).rows
+      #table.records[:rows].first[:_where].should be == 'random string'
+    #end
   end
 
   context "preimport tests" do
@@ -1747,7 +1756,7 @@ describe Table do
       @user.db_service.run_pg_query("INSERT INTO exttable (go, ttoo, bed) VALUES ( 'c', 1, 'p');
                           INSERT INTO exttable (go, ttoo, bed) VALUES ( 'c', 2, 'p')")
       table.save
-      table.name.should == 'exttable_1'
+      table.name.should == 'exttable'
       table.rows_counted.should == 2
     end
 
@@ -1760,7 +1769,7 @@ describe Table do
       @user.db_service.run_pg_query("INSERT INTO exttable (the_geom, cartodb_id, bed) VALUES ( 'c', 1, 'p');
                          INSERT INTO exttable (the_geom, cartodb_id, bed) VALUES ( 'c', 2, 'p')")
       table.save
-      table.name.should == 'exttable_1'
+      table.name.should == 'exttable'
       table.rows_counted.should == 2
     end
 
@@ -1777,7 +1786,7 @@ describe Table do
 
       table = Table.new(user_table: UserTable[data_import.table_id])
       table.should_not be_nil, "Import failure: #{data_import.log}"
-      table.name.should == 'exttable_1'
+      table.name.should == 'exttable'
       table.rows_counted.should == 2
       check_schema(table, [[:cartodb_id, "integer"], [:bed, "text"], [:the_geom, "geometry", "geometry", "point"]])
     end
@@ -1874,7 +1883,10 @@ describe Table do
 
   describe '#name=' do
     it 'does not change the name if it is equivalent to the current one' do
-      table = new_table(user_id: @user.id, name: 'new_name')
+      table = new_table(user_id: @user.id, name: 'new name')
+
+      table.name.should == 'new_name'
+
       table.name = 'new name'
       table.name.should == 'new_name'
     end
@@ -2146,6 +2158,14 @@ describe Table do
       rows[:rows][1][:cartodb_id].should eq cartodb_id_2
       rows[:rows][0][:description].should eq description_1
       rows[:rows][1][:description].should eq description_2
+    end
+  end
+
+  describe 'Valid names for new table' do
+    it 'Regression for CDB-3446' do
+      new_name = 'table_'
+
+      Carto::PhysicalTablesManager.new(@user.id).propose_valid_table_name(contendent: new_name).should_not == 'table_1'
     end
   end
 

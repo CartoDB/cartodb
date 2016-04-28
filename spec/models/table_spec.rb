@@ -2165,7 +2165,7 @@ describe Table do
     it 'Regression for CDB-3446' do
       new_name = 'table_'
 
-      Carto::PhysicalTablesManager.new(@user.id).propose_valid_table_name(contendent: new_name).should_not == 'table_1'
+      Carto::ValidTableNameProposer.new(@user.id).propose_valid_table_name(new_name).should_not == 'table_1'
     end
   end
 

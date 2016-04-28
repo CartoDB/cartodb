@@ -22,7 +22,7 @@ class Api::Json::TablesController < Api::ApplicationController
         @table = ::Table.new
         @table.user_id = current_user.id
 
-        @table.name = Carto::PhysicalTablesManager
+        @table.name = Carto::ValidTableNameProposer
                       .new(current_user.id)
                       .propose_valid_table_name(params[:name] ? { contendent: params[:name] } : {})
 

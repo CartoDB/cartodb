@@ -155,10 +155,10 @@ module CartoDB
       end
 
       def rename(result, current_name, new_name)
-        new_name = Carto::PhysicalTablesManager.new(table_registrar.user.id)
-                                               .propose_valid_table_name(contendent: new_name)
+        new_name = Carto::ValidTableNameProposer.new(table_registrar.user.id)
+                                                .propose_valid_table_name(new_name)
 
-        database.execute(%Q{
+        database.execute(%{
           ALTER TABLE "#{ORIGIN_SCHEMA}"."#{current_name}" RENAME TO "#{new_name}"
         })
 
@@ -167,8 +167,9 @@ module CartoDB
         @support_tables_helper.tables = result.support_tables.map { |table|
           { schema: ORIGIN_SCHEMA, name: table }
         }
+
         # Delay recreation of constraints until schema change
-        results = @support_tables_helper.rename(current_name, new_name, recreate_constraints=false)
+        results = @support_tables_helper.rename(current_name, new_name, false)
 
         if results[:success]
           result.update_support_tables(results[:names])
@@ -177,17 +178,6 @@ module CartoDB
         end
 
         new_name
-      rescue => exception
-        CartoDB.notify_debug('Error while renaming at importer', { current_name: current_name, new_name: new_name, rename_attempts: rename_attempts, result: result.inspect, error: exception.inspect}) if rename_attempts == 1
-        message = "Silently retrying renaming #{current_name} to #{target_new_name} (current: #{new_name}). ERROR: #{exception}"
-        runner.log.append(message)
-        if rename_attempts <= MAX_RENAME_RETRIES
-          rename(result, current_name, target_new_name)
-        else
-          drop("#{ORIGIN_SCHEMA}.#{current_name}")
-          raise CartoDB::Importer2::InvalidNameError.new("#{message} #{rename_attempts} attempts. Data import: #{data_import_id}. ERROR: #{exception}")
-        end
-        raise exception
       end
 
       def rename_the_geom_index_if_exists(current_name, new_name)

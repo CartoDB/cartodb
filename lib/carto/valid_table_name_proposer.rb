@@ -3,7 +3,7 @@
 require_relative 'db/sanitize.rb'
 
 module Carto
-  class PhysicalTablesManager
+  class ValidTableNameProposer
     DEFAULT_SEPARATOR = '_'.freeze
     DEFAULT_TABLE_NAME = 'untitled_table'.freeze
     MAX_RENAME_RETRIES = 10000
@@ -12,9 +12,9 @@ module Carto
       @user = ::User.where(id: user_id).first
     end
 
-    def propose_valid_table_name(contendent: DEFAULT_TABLE_NAME.dup, taken_names: fetch_physical_table_names)
+    def propose_valid_table_name(contendent = DEFAULT_TABLE_NAME.dup, taken_names: fetch_taken_names)
       contendent = DEFAULT_TABLE_NAME.dup unless contendent && !contendent.empty?
-      taken_names = fetch_physical_table_names unless taken_names
+      taken_names = fetch_taken_names unless taken_names
 
       sanitized_contendent = Carto::DB::Sanitize.sanitize_identifier(contendent)
       used_table_names = taken_names +
@@ -38,6 +38,14 @@ module Carto
       CartoDB::Logger.error(message: 'Physical tables: Out of rename retries',
                             user: @user,
                             table_name: prefix)
+    end
+
+    def fetch_taken_names
+      fetch_physical_table_names | fetch_user_table_names
+    end
+
+    def fetch_user_table_names
+      @user.tables.map(&:name)
     end
 
     def fetch_physical_table_names

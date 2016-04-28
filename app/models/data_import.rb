@@ -25,7 +25,7 @@ require_relative '../../services/platform-limits/platform_limits'
 require_relative '../../services/importer/lib/importer/overviews'
 require_relative '../../lib/cartodb/event_tracker'
 
-require_dependency 'carto/physical_tables_manager'
+require_dependency 'carto/valid_table_name_proposer'
 
 include CartoDB::Datasources
 
@@ -475,7 +475,7 @@ class DataImport < Sequel::Model
     self.data_source  = query
     save
 
-    table_name = Carto::PhysicalTablesManager.new(current_user.id).propose_valid_table_name(contendent: name)
+    table_name = Carto::ValidTableNameProposer.new(current_user.id).propose_valid_table_name(name)
 
     current_user.in_database.run(%{CREATE TABLE #{table_name} AS #{query}})
     if current_user.over_disk_quota?

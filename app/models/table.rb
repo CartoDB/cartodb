@@ -19,7 +19,7 @@ require_relative '../model_factories/map_factory'
 require_relative '../../lib/cartodb/stats/user_tables'
 require_relative '../../lib/cartodb/stats/importer'
 
-require_dependency 'carto/physical_tables_manager'
+require_dependency 'carto/valid_table_name_proposer'
 
 class Table
   extend Forwardable
@@ -1382,8 +1382,9 @@ class Table
   def get_valid_name(contendent)
     user_table_names = owner.tables.map(&:name)
 
-    Carto::PhysicalTablesManager.new(owner.id)
-                                .propose_valid_table_name(contendent: contendent, taken_names: user_table_names)
+    # We only want to check for UserTables names
+    Carto::ValidTableNameProposer.new(owner.id)
+                                 .propose_valid_table_name(contendent, taken_names: user_table_names)
   end
 
   def self.sanitize_columns(table_name, options={})

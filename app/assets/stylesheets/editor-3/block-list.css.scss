@@ -110,10 +110,26 @@
   background: #E27D61;
   color: $cWhite;
 }
+.HorizontalBlockList-item.has-error {
+  position: relative;
+  &:after {
+    display: block;
+    position: absolute;
+    top: -3px;
+    right: -3px;
+    width: 8px;
+    height: 8px;
+    border: 2px solid $cWhite;
+    border-radius: 50px;
+    background-color: $cError;
+    content: ' ';
+  }
+}
 .HorizontalBlockList-item-actionBlock {
   width: 100%;
   height: 100%;
 }
+
 .HorizontalBlockList-item-text,
 .HorizontalBlockList-item-icon {
   @include inline-block();

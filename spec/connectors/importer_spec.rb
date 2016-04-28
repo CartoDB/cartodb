@@ -345,7 +345,7 @@ describe CartoDB::Connector::Importer do
       visualization.destroy
     end
 
-    it 'imports a visualization export with two layers' do
+    it 'imports a visualization export with two data layers' do
       filepath = "#{Rails.root}/services/importer/spec/fixtures/visualization_export_with_two_tables.carto"
 
       data_import = DataImport.create(
@@ -364,6 +364,15 @@ describe CartoDB::Connector::Importer do
       data_import.table_names.should eq "guess_country twitter_t3chfest_reduced"
       visualization = Carto::Visualization.find(data_import.visualization_id)
       visualization.name.should eq "map with two layers"
+      layers = visualization.layers
+      visualization.layers.count.should eq 3 # basemap + 2 data layers
+      layers[0].options['name'].should eq "CartoDB World Eco"
+      layer1 = visualization.layers[1]
+      layer1.options['type'].should eq "CartoDB"
+      layer1.options['table_name'].should eq "guess_country"
+      layer2 = visualization.layers[2]
+      layer2.options['type'].should eq "CartoDB"
+      layer2.options['table_name'].should eq "twitter_t3chfest_reduced"
       data_import.tables.map(&:destroy)
       data_import.destroy
       visualization.destroy

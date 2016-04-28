@@ -7,9 +7,9 @@
         <div class="CDB-Shape-rectsHandleItem CDB-Shape-rectsHandleItem--grey is-third"></div>
       </div>
     </div>
-    <input class="CDB-Checkbox" type="checkbox" name="field" value="<%- name %>">
+    <input class="CDB-Checkbox js-checkbox" type="checkbox" name="field" value="<%- name %>">
     <span class="u-iBlock CDB-Checkbox-face u-rSpace--m"></span>
     <label class="u-rSpace--m" title="<%- name %>"><%- name %></label>
   </div>
-  <input type="text" name="text" placeholder="<%- name %>" class="CDB-InputText">
+  <input type="text" name="text" placeholder='"<%- name %>"' value="<%- alternativeName %>" class="CDB-InputText" <% if (disabled) { %>disabled<% } %>>
 </div>

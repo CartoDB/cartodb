@@ -9,7 +9,7 @@
     </div>
     <input class="CDB-Checkbox" type="checkbox" name="field" value="<%- name %>">
     <span class="u-iBlock CDB-Checkbox-face u-rSpace--m"></span>
-    <label class="CDB-Text is-semibold CDB-Size-small u-rSpace--m"><%- name %></label>
+    <label class="u-rSpace--m" title="<%- name %>"><%- name %></label>
   </div>
   <input type="text" name="text" placeholder="<%- name %>" class="CDB-InputText">
 </div>

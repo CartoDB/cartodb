@@ -119,8 +119,8 @@ defaults: &defaults
   error_track:
     url: 'https://viz2.cartodb.com/api/v1/sql'
     percent_users: 10
-  mailer: 
-    from: 'cartodb.com <support@cartodb.com>' 
+  mailer:
+    from: 'cartodb.com <support@cartodb.com>'
     address: ''
     port: ''
     user_name: ''
@@ -131,7 +131,7 @@ defaults: &defaults
   # graphite endpoint used to post frontend stats
   #graphite_public:
     #host: ""
-    #port: 
+    #port:
 
   basemaps:
     GMaps:
@@ -223,6 +223,7 @@ defaults: &defaults
     s3_bucket_name: "tests"
     max_file_size: 5242880 # 5.megabytes
   avatars:
+    gravatar_enabled: false
     base_url: 'example.com/avatars'
     kinds: ['stars', 'mountains']
     colors: ['red', 'blue']

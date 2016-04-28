@@ -14,7 +14,8 @@
   background: #FFF;
 }
 .Editor-ListLayer-item:hover {
-  border: 1px solid $cBlue;
+  @include transition(border, 200ms, ease-in);
+  border: 1px solid $cHoverLine;
 }
 .Editor-ListLayer-item.last-child {
   margin-bottom: 0;
@@ -22,8 +23,11 @@
 .Editor-ListLayer-item.is-active {
   border: 1px solid rgb(106, 181, 227);
 }
-.Editor-ListLayer-item.ui-draggable-dragging {
-  border: 1px solid $cSecondaryLine;
+.Editor-ListLayer-item.ui-draggable {
+  cursor: move;
+}
+.Editor-ListLayer-item.ui-draggable-dragging:hover {
+  border: 1px solid $cBlue;
   box-shadow: 0 8px 16px rgba(#000, 0.16);
   cursor: move;
   opacity: 0.8;
@@ -56,15 +60,16 @@
   opacity: 0.24;
 }
 
-.Editor-ListLayer-Title {
+.Editor-ListLayer-title {
   @include display-flex();
   @include align-items(center);
 }
 
-.Editor-ListLayer-TitleText {
+.Editor-ListLayer-titleText {
   @include flex(1);
   width: 0;
   padding-right: $baseSize * 2;
+  cursor: pointer;
 }
 
 .Editor-ListAnalysis {
@@ -130,12 +135,15 @@
   border: 1px solid $cSecondaryLine;
   border-radius: $halfBaseSize;
   &:hover {
+    @include transition(border, 200ms, ease-in);
+    border: 1px solid $cHoverLine;
     cursor: pointer;
   }
 }
 .Editor-ListAnalysis-layer.is-base {
   background: $cThirdBackground;
   &:hover {
+    border: 1px solid $cSecondaryLine;
     cursor: default;
   }
 }
@@ -187,7 +195,7 @@
   @include align-items(center);
 }
 
-.Editor-ListLayer-Inner {
+.Editor-ListLayer-inner {
   @include flex(1);
 }
 

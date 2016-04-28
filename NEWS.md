@@ -37,6 +37,7 @@ which should be fixed manually.
   * This change is backwards compatible and will fallback to `port` whenever `direct_port` is not specified in the database configuration file.
 * Update ogr2ogr version to 2.1, configurable in `app_config.yml`. To install it in the system, run:
   * `sudo apt-get install gdal2.1-static-bin`
+* Added config option `avatars.gravatar_enabled` to disabled gravatar loading (i.e: in offline installations)
 * Ghost table linking is now concurrent per user (avoids race conditions)
 * Experimental support for [visualization metadata export](https://github.com/CartoDB/cartodb/pull/7114).
 * Update CartoDB PostgreSQL extension to 0.15.1 to support overviews.

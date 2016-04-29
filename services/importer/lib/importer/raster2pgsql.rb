@@ -183,7 +183,7 @@ module CartoDB
         overview_fqtn = SCHEMA + '.' + overview_name
         db.run %{CREATE TABLE #{overview_fqtn} AS SELECT * FROM #{base_table_fqtn}}
         db.run %{CREATE INDEX ON "#{SCHEMA}"."#{overview_name}" USING gist (st_convexhull("#{RASTER_COLUMN_NAME}"))}
-        db.run %{SELECT AddRasterConstraints(#{SCHEMA}, #{overview_name},'#{RASTER_COLUMN_NAME}',TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,FALSE,TRUE,TRUE,TRUE,TRUE,FALSE)}
+        db.run %{SELECT AddRasterConstraints('#{SCHEMA}', '#{overview_name}','#{RASTER_COLUMN_NAME}',TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,FALSE,TRUE,TRUE,TRUE,TRUE,FALSE)}
         db.run %{SELECT AddOverviewConstraints('#{SCHEMA}', '#{overview_name}'::name, '#{RASTER_COLUMN_NAME}'::name, '#{SCHEMA}', '#{table_name}'::name, '#{RASTER_COLUMN_NAME}'::name, 1)}
         additional_tables = [1] + additional_tables
       end

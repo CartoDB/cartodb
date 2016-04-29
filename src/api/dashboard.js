@@ -1,4 +1,4 @@
-var URI = require('urijs');
+var URLHelper = require('./url-helper');
 var _ = require('underscore');
 
 function Dashboard (dashboard) {
@@ -22,18 +22,7 @@ Dashboard.prototype = {
   },
 
   getDashboardURL: function () {
-    var thisURL = new URI(this._getLocalURL());
-    thisURL.removeQuery('state');
-    var states = this.getState();
-    if (!_.isEmpty(states)) {
-      var statesString = encodeURIComponent(JSON.stringify(states));
-      thisURL.setQuery('state', statesString);
-    }
-    return thisURL.toString();
-  },
-
-  _getLocalURL: function () {
-    return window.location.href;
+    return URLHelper.getURLFromState(this.getState());
   },
 
   getState: function () {

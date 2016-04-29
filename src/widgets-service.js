@@ -1,5 +1,5 @@
 var _ = require('underscore');
-var URI = require('urijs');
+var URLHelper = require('./api/url-helper.js');
 var WidgetModel = require('./widgets/widget-model');
 var CategoryWidgetModel = require('./widgets/category/category-widget-model');
 var HistogramWidgetModel = require('./widgets/histogram/histogram-widget-model');
@@ -153,10 +153,7 @@ WidgetsService.prototype.createTimeSeriesModel = function (attrs, layer) {
 
 WidgetsService.prototype.setWidgetsState = function (state) {
   if (!state) {
-    var url = new URI(window.location.href);
-    if (url.hasQuery('state')) {
-      state = JSON.parse(decodeURIComponent(url.query(true)['state']));
-    }
+    
   }
   this._widgetsCollection.setStates(state);
 };

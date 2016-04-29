@@ -40,29 +40,31 @@ module Carto
 
       def self.sanitize_identifier(identifier)
         # Make lowercase
-        identifier.downcase!
+        sanitized_identifier = identifier.downcase
 
         # Strip of starting or ending white spaces
-        identifier.strip!
+        sanitized_identifier = sanitized_identifier.strip
 
         # Remove disallowed starting characters
-        identifier = PREFIX_REPLACEMENT + identifier if identifier =~ DISALLOWED_STARTING_CHARACTERS_REGEX
+        sanitized_identifier = if sanitized_identifier =~ DISALLOWED_STARTING_CHARACTERS_REGEX
+                                 PREFIX_REPLACEMENT + sanitized_identifier
+                               end
 
         # Replace disallowed characters with '_'
-        identifier.gsub!(DISALLOWED_CHARACTERS_REGEX, CHARACTER_REPLACEMENT)
+        sanitized_identifier = sanitized_identifier.gsub(DISALLOWED_CHARACTERS_REGEX, CHARACTER_REPLACEMENT)
 
         # Remove repated '_'
-        identifier.gsub!(REPEATED_UNDERSCORES_REGEX, '_')
+        sanitized_identifier = sanitized_identifier.gsub!(REPEATED_UNDERSCORES_REGEX, '_')
 
         # Make sure it's not too long
-        identifier = identifier[0..(MAX_IDENTIFIER_LENGTH - 1)]
+        sanitized_identifier = sanitized_identifier[0..(MAX_IDENTIFIER_LENGTH - 1)]
 
         # Append _t if is a reserved word or reserved table name
-        if (RESERVED_WORDS + RESERVED_TABLE_NAMES + SYSTEM_TABLE_NAMES).map(&:downcase).include?(identifier)
-          identifier += SUFFIX_REPLACEMENT
+        if (RESERVED_WORDS + RESERVED_TABLE_NAMES + SYSTEM_TABLE_NAMES).map(&:downcase).include?(sanitized_identifier)
+          sanitized_identifier += SUFFIX_REPLACEMENT
         end
 
-        identifier
+        sanitized_identifier
       end
     end
   end

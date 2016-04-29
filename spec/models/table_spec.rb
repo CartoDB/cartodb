@@ -202,7 +202,7 @@ describe Table do
             "maxZoom" => "18",
             "name" => "Waduson",
             "className" => "waduson",
-            "attribution" => "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"http://cartodb.com/attributions#basemaps\">CartoDB</a>"
+            "attribution" => "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://cartodb.com/attributions\">CartoDB</a>"
           }
         }
       }
@@ -235,7 +235,7 @@ describe Table do
       table.map.layers[0].options["maxZoom"].should == "18"
       table.map.layers[0].options["name"].should == "Waduson"
       table.map.layers[0].options["className"].should == "waduson"
-      table.map.layers[0].options["attribution"].should == "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"http://cartodb.com/attributions#basemaps\">CartoDB</a>"
+      table.map.layers[0].options["attribution"].should == "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://cartodb.com/attributions\">CartoDB</a>"
       table.map.layers[0].order.should == 0
 
       Cartodb.config[:basemaps] = old_basemap_config
@@ -255,7 +255,7 @@ describe Table do
             "maxZoom" => "18",
             "name" => "Waduson",
             "className" => "waduson",
-            "attribution" => "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"http://cartodb.com/attributions#basemaps\">CartoDB</a>",
+            "attribution" => "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://cartodb.com/attributions\">CartoDB</a>",
             "labels" => {
               "url" => "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png"
             }
@@ -277,7 +277,7 @@ describe Table do
       table.map.layers[0].options["maxZoom"].should == "18"
       table.map.layers[0].options["name"].should == "Waduson"
       table.map.layers[0].options["className"].should == "waduson"
-      table.map.layers[0].options["attribution"].should == "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"http://cartodb.com/attributions#basemaps\">CartoDB</a>"
+      table.map.layers[0].options["attribution"].should == "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://cartodb.com/attributions\">CartoDB</a>"
       table.map.layers[0].order.should == 0
 
       table.map.layers[2].options["urlTemplate"].should == "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png"
@@ -287,7 +287,7 @@ describe Table do
       table.map.layers[2].options["maxZoom"].should == "18"
       table.map.layers[2].options["name"].should == "Waduson Labels"
       table.map.layers[2].options["className"].should be_nil
-      table.map.layers[2].options["attribution"].should == "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"http://cartodb.com/attributions#basemaps\">CartoDB</a>"
+      table.map.layers[2].options["attribution"].should == "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://cartodb.com/attributions\">CartoDB</a>"
       table.map.layers[2].options["type"].should == "Tiled"
       table.map.layers[2].options["labels"].should be_nil
       table.map.layers[2].order.should == 2

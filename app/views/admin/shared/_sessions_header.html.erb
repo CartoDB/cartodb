@@ -6,7 +6,7 @@
           <%= render_organization_avatar %>
         </div>
         <% if !Cartodb.config[:cartodb_com_hosted].present? && @organization.present? %>
-          <div class="Navbar-text">Not part of <%= @organization.name %>? Go to <a class="Navbar-textLink" href="http://cartodb.com">cartodb.com</a></div>
+          <div class="Navbar-text">Not part of <%= @organization.name %>? Go to <a class="Navbar-textLink" href="https://cartodb.com">cartodb.com</a></div>
         <% end %>
       </div>
     </nav>

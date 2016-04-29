@@ -13,7 +13,7 @@ module Carto
     end
 
     def propose_valid_table_name(contendent = DEFAULT_TABLE_NAME.dup, taken_names: fetch_taken_names)
-      contendent = DEFAULT_TABLE_NAME.dup unless contendent && !contendent.empty?
+      contendent = DEFAULT_TABLE_NAME.dup unless contendent.present?
       taken_names = fetch_taken_names unless taken_names
 
       sanitized_contendent = Carto::DB::Sanitize.sanitize_identifier(contendent)

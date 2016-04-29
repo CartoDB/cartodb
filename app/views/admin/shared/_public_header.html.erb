@@ -39,7 +39,7 @@
     </div>
 
     <div class="Header-settings">
-      <% if current_user.has_feature_flag?('bbg_profile_menu') %>
+      <% if !current_user || current_user.has_feature_flag?('bbg_profile_menu') %>
       <ul class="Header-settingsList js-user-settings">
         <li class="Header-settingsItem js-login">
           <a href="<%= login_url %>" class="Header-settingsLink">Login</a>

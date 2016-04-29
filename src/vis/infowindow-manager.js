@@ -57,22 +57,34 @@ InfowindowManager.prototype._bindFeatureClickEvent = function (layerView) {
       return;
     }
 
-    this._updateInfowindowModel(layerModel);
+    this._updateInfowindowModel(layerModel.infowindow);
     this._fetchAttributes(layerView, layerModel, data.cartodb_id, latlng);
   }, this);
 };
 
-InfowindowManager.prototype._updateInfowindowModel = function (layerModel) {
-  this._infowindowModel.setInfowindowTemplate(layerModel.infowindow);
+InfowindowManager.prototype._updateInfowindowModel = function (infowindowTemplate) {
+  this._infowindowModel.setInfowindowTemplate(infowindowTemplate);
 };
 
 InfowindowManager.prototype._fetchAttributes = function (layerView, layerModel, featureId, latlng) {
+  // TODO: If the infowindow is currently showing the data for featureId, we should
+  // only update the latlng so that the infowindow is moved and no request is made
+  // if (featureId === this._currentFeatureId && latlng) {
+  //   this._infowindowModel.set({
+  //     latlng: latlng
+  //   });
+  //   return;
+  // }
+
   this._currentFeatureId = featureId || this._currentFeatureId;
+  this._currentLatLng = latlng || this._currentLatLng;
   this._infowindowModel.set({
-    latlng: latlng,
+    latlng: this._currentLatLng,
     status: 'loading',
     visibility: true
   });
+  this._infowindowModel.updateContent();
+
   var layerIndex = layerView.model.getIndexOf(layerModel);
   layerView.model.fetchAttributes(layerIndex, this._currentFeatureId, function (attributes) {
     if (attributes) {
@@ -91,11 +103,11 @@ InfowindowManager.prototype._fetchAttributes = function (layerView, layerModel, 
 };
 
 InfowindowManager.prototype._bindInfowindowModel = function (layerView, layerModel) {
-  layerModel.infowindow.bind('change', function () {
-    if (this._infowindowModel.hasInfowindowTemplate(layerModel.infowindow)) {
-      this._updateInfowindowModel(layerModel);
+  layerModel.infowindow.bind('change', function (infowindowTemplate) {
+    if (this._infowindowModel.hasInfowindowTemplate(infowindowTemplate)) {
+      this._updateInfowindowModel(infowindowTemplate);
       // If the infowindow is visible and fields have changed
-      if (layerModel.hasChanged('fields') && this._infowindowModel.get('visibility') === true) {
+      if (infowindowTemplate.hasChanged('fields') && this._infowindowModel.get('visibility') === true) {
         // TODO: Perhaps we can pass a callback to map.reload instead of having to do this!
         this._vis._windshaftMap.once('instanceCreated', function () {
           this._fetchAttributes(layerView, layerModel);
@@ -103,7 +115,7 @@ InfowindowManager.prototype._bindInfowindowModel = function (layerView, layerMod
       }
     }
 
-    if (layerModel.hasChanged('fields')) {
+    if (infowindowTemplate.hasChanged('fields')) {
       this._map.reload();
     }
   }, this);

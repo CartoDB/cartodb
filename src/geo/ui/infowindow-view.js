@@ -49,11 +49,6 @@ var Infowindow = View.extend({
   initialize: function () {
     this.mapView = this.options.mapView;
 
-    // Set template if it is defined in options
-    if (this.options.template) {
-      this.model.set('template', this.options.template);
-    }
-
     // Set template view variable and
     // compile it if it is necessary
     if (this.model.get('template')) {
@@ -68,47 +63,10 @@ var Infowindow = View.extend({
     this.$el.hide();
   },
 
-  setLoading: function () {
-    this.model.set({
-      content: {
-        fields: [{
-          type: 'loading',
-          title: 'loading',
-          value: '…'
-        }]
-      }
-    });
-    return this;
-  },
-
-  setError: function () {
-    this.model.set({
-      content: {
-        fields: [{
-          title: null,
-          alternative_name: null,
-          value: 'There has been an error...',
-          index: null,
-          type: 'error'
-        }],
-        data: {}
-      }
-    });
-
-    return this;
-  },
-
-  /**
-   * Set the correct position for the infowindow
-   */
-  setLatLng: function (latlng) {
-    this.model.set('latlng', latlng);
-    return this;
-  },
-
   /**
    *  Adjust pan to show correctly the infowindow
    */
+  // TODO: This can be private
   adjustPan: function () {
     var offset = this.model.get('offset');
 
@@ -214,7 +172,7 @@ var Infowindow = View.extend({
     this.model.bind('change:latlng', this._update, this);
     this.model.bind('change:visibility', this.toggle, this);
     this.model.bind('change:template change:sanitizeTemplate', this._compileTemplate, this);
-    this.model.bind('change:status', this._onModelStatusChanged, this);
+    this.model.bind('change:status', this.render, this);
 
     this.mapView.map.bind('change', this._updatePosition, this);
 
@@ -228,19 +186,6 @@ var Infowindow = View.extend({
 
     this.add_related_model(this.mapView.map);
     this.add_related_model(this.mapView);
-  },
-
-
-  _onModelStatusChanged: function () {
-    if (this.model.get('status') === 'loading') {
-      this.setLoading();
-    } else if (this.model.get('status') === 'error') {
-      this.setError();
-    } else if (this.model.get('status') === 'ready') {
-      // Does nothing for now
-    } else {
-      throw Error.new('Invalid status');
-    }
   },
 
   _onKeyUp: function (e) {

@@ -22,10 +22,16 @@ var InfowindowModel = Backbone.Model.extend({
     fields: null // contains the fields displayed in the infowindow
   },
 
-  // updates content with attributes
+  // updates content with attributes, if no attributes are given it only sets the content
+  // with just the field names
   updateContent: function (attributes) {
     var fields = this.get('fields');
-    this.set('content', InfowindowModel.contentForFields(attributes, fields));
+    var options = {};
+    if (!attributes) {
+      attributes = {};
+      options = { empty_fields: true };
+    }
+    this.set('content', InfowindowModel.contentForFields(attributes, fields, options));
   },
 
   getAlternativeName: function (fieldName) {
@@ -179,13 +185,14 @@ var InfowindowModel = Backbone.Model.extend({
   contentForFields: function (attributes, fields, options) {
     options = options || {};
     var render_fields = [];
+
     for (var j = 0; j < fields.length; ++j) {
       var field = fields[j];
       var value = attributes[field.name];
       if (options.empty_fields || (value !== undefined && value !== null)) {
         render_fields.push({
           title: field.title ? field.name : null,
-          value: attributes[field.name],
+          value: value ? value : '&nbsp;',
           index: j
         });
       }

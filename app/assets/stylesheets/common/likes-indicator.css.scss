@@ -19,6 +19,8 @@ $cLiked: #D93F56;
   @include transform(1);
   color: $Grey7;
   font-size: $sFontSize-small;
+  width: $sFontSize-small;
+  height: $sFontSize-small;
 }
 .LikesIndicator-icon.LikesIndicator-icon--big {
   font-size: $sFontSize-largest;
@@ -31,12 +33,14 @@ $cLiked: #D93F56;
   text-decoration: none;
   .LikesIndicator-icon {
     color: $cLiked;
+    background-image: url('../images/sprites/common/star_32_selected.png');
   }
 }
 .LikesIndicator.is-liked {
   color: $cLiked;
   .LikesIndicator-icon {
     color: $cLiked;
+    background-image: url('../images/sprites/common/star_32_selected.png');
   }
   &:hover {
     color: $cLiked;

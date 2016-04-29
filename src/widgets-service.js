@@ -153,7 +153,7 @@ WidgetsService.prototype.createTimeSeriesModel = function (attrs, layer) {
 
 WidgetsService.prototype.setWidgetsState = function (state) {
   if (!state) {
-    
+    URLHelper.getStateFromCurrentURL();
   }
   this._widgetsCollection.setStates(state);
 };

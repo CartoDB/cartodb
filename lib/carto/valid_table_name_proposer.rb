@@ -58,7 +58,7 @@ module Carto
               tableowner = '#{@user.database_username}'
       }
 
-      results = @user.in_database[sql].all.map { |result| result[:name] }
+      @user.in_database[sql].all.map { |result| result[:name] }
     end
   end
 end

@@ -3,6 +3,10 @@
 @import '../variables/mixins';
 @import '../variables/sizes';
 
+
+@import 'cdb-variables/colors';
+@import 'cdb-variables/sizes';
+
 // Map card item
 //
 // Example usage:
@@ -118,8 +122,7 @@ $sEditButtonSize: 50px;
 }
 .MapCard--selectable {
   &:hover {
-    border-color: $cCard-hoverBorder;
-    background-color: $cCard-hoverFill;
+    border-color: $cHoverLine;
     .MapCard-desc .DefaultDescription:after,
     .MapCard-tags:after {
       @include background-horizontal(rgba(255, 255, 255, 0), $cCard-hoverFill);

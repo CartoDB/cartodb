@@ -177,7 +177,6 @@ module CartoDB
             end
           end
         end
-
         if !downloader.nil? && downloader.provides_stream? && loader.respond_to?(:streamed_run_init)
           streamed_loader_run(@job, loader, downloader)
         else

@@ -380,6 +380,23 @@ describe Carto::VisualizationsExportService2 do
         visualization.privacy.should eq Carto::Visualization::PRIVACY_PUBLIC
       end
 
+      it 'does not import more layers than the user limit' do
+        old_max_layers = @user.max_layers
+        @user.max_layers = 1
+        @user.save
+
+        imported = Carto::VisualizationsExportService2.new.build_visualization_from_json_export(export.to_json)
+        imported.layers.length.should > @user.max_layers
+
+        visualization = Carto::VisualizationsExportPersistenceService.new.save_import(@user, imported)
+        visualization.layers.length.should eq @user.max_layers
+
+        visualization.destroy
+
+        @user.max_layers = old_max_layers
+        @user.save
+      end
+
       it "Doesn't register layer tables dependencies if user table doesn't exist" do
         imported = Carto::VisualizationsExportService2.new.build_visualization_from_json_export(export.to_json)
         visualization = Carto::VisualizationsExportPersistenceService.new.save_import(@user, imported)

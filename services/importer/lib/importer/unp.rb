@@ -105,7 +105,7 @@ module CartoDB
           if stderr =~ /incorrect password/
             raise PasswordNeededForExtractionError
           else
-            raise ExtractionError
+            raise ExtractionError(stderr)
           end
         end
         FileUtils.rm(path)

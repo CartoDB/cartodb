@@ -21,10 +21,9 @@ describe('widgets/category/item-view', function () {
     });
   });
 
-  it('should add selected class when selected', function(){
+  it('should add selected class when selected', function () {
     this.dataviewModel.filter.accept('USA');
     this.view.render();
-    console.log(this.view.$('.CDB-Widget-progressState').html())
     expect(this.view.$('.CDB-Widget-progressState').hasClass('is-accepted')).toBeTruthy();
   });
 });

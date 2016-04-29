@@ -857,7 +857,7 @@ class Table
   end
 
   def add_column!(options)
-    raise CartoDB::InvalidColumnName if RESERVED_COLUMN_NAMES.include?(options[:name]) || options[:name] =~ /^[0-9]/
+    raise CartoDB::InvalidColumnName if Carto::DB::Sanitize::RESERVED_COLUMN_NAMES.include?(options[:name]) || options[:name] =~ /^[0-9]/
     type = options[:type].convert_to_db_type
     cartodb_type = options[:type].convert_to_cartodb_type
     column_name = options[:name].to_s.sanitize_column_name
@@ -912,7 +912,9 @@ class Table
     raise 'Please provide a column name' if new_name.empty?
     raise 'This column cannot be renamed' if CARTODB_COLUMNS.include?(old_name.to_s)
 
-    if new_name =~ /^[0-9]/ || RESERVED_COLUMN_NAMES.include?(new_name) || CARTODB_COLUMNS.include?(new_name)
+    if new_name =~ /^[0-9]/ ||
+       Carto::DB::Sanitize::RESERVED_COLUMN_NAMES.include?(new_name) ||
+       CARTODB_COLUMNS.include?(new_name)
       raise CartoDB::InvalidColumnName, 'That column name is reserved, please choose a different one'
     end
 

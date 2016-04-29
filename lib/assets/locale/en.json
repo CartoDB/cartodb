@@ -321,6 +321,37 @@
         "workflow": "Workflow",
       }
     },
+    "style": {
+      "components": {
+        "labels-font": "font",
+        "labels-offset": "offset",
+        "labels-fill": "size/color",
+        "labels-overlap": {
+          "label": "overlap",
+          "options": {
+            "true": "True",
+            "false": "False"
+          }
+        },
+        "labels-halo": "halo",
+        "labels-placement": {
+          "label": "placement",
+          "options": {
+            "point": "point",
+            "line": "line",
+            "vertex": "vertex",
+            "interior": "interior"
+          }
+        },
+        "animated-overlap": {
+          "label": "overlap",
+          "options": {
+            "true": "Accum.",
+            "false": "None"
+          }
+        }
+      }
+    },
     "widgets": {
       "widgets-view": {
         "add_widget": "Add widget"

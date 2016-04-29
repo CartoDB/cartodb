@@ -857,7 +857,8 @@ class Table
   end
 
   def add_column!(options)
-    raise CartoDB::InvalidColumnName if Carto::DB::Sanitize::RESERVED_COLUMN_NAMES.include?(options[:name]) || options[:name] =~ /^[0-9]/
+    raise CartoDB::InvalidColumnName if Carto::DB::Sanitize::RESERVED_COLUMN_NAMES.include?(options[:name]) ||
+                                        options[:name] =~ /^[0-9]/
     type = options[:type].convert_to_db_type
     cartodb_type = options[:type].convert_to_cartodb_type
     column_name = options[:name].to_s.sanitize_column_name

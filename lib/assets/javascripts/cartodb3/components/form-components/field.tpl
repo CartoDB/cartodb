@@ -1,5 +1,5 @@
 <div class="u-tSpace--m CDB-Text Editor-FormInner <% if (hasNestedForm) { %>Editor-FormInner--nested<% } %>">
-  <% if (title) { %>
+  <% if (!hasNestedForm) { %>
     <label class="CDB-Legend u-upperCase CDB- Text is-semibold CDB-Size-small u-rSpace--m" for="<%- editorId %>">
       <%- title %>
       <% if (help) { %>

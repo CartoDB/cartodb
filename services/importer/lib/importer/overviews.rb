@@ -57,6 +57,7 @@ module CartoDB
           end
           log("Overviews created for #{table_name}")
         end
+        CartoDB::Logger.info message: "Overviews created", user: @user, table_name: table_name
       end
 
       # Dataset overview creation

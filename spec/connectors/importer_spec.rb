@@ -42,7 +42,6 @@ describe CartoDB::Connector::Importer do
     }.returns(nil)
 
     table_registrar = mock
-    table_registrar.stubs(:get_valid_table_name).returns('european_countries')
     table_registrar.stubs(:user).returns(@user)
 
     importer_table_name = "table_#{UUIDTools::UUID.timestamp_create.to_s}"

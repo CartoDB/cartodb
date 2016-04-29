@@ -10,17 +10,18 @@ module Carto
       DISALLOWED_STARTING_CHARACTERS_REGEX = /^[^a-z]+/
       DISALLOWED_CHARACTERS_REGEX = /[^a-z|_|0-9]/
       REPEATED_UNDERSCORES_REGEX = /_{2,}/
-      RESERVED_WORDS = %w(all analyse analyze and any array as asc asymmetric authorization between binary both case
-                          cast check collate column constraint create cross current_date current_role current_time
-                          current_timestamp current_user default deferrable desc distinct do else end except false for
-                          foreign freeze from full grant group having ilike in initially inner intersect into is isnull
-                          join leading left like limit localtime localtimestamp natural new not notnull null off offset
-                          old on only or order outer overlaps placing primary references right select session_user
-                          similar some symmetric table then to trailing true union unique user using verbose when where
-                          xmin xmax).freeze
-      SYSTEM_TABLE_NAMES = %w(spatial_ref_sys geography_columns geometry_columns raster_columns raster_overviews
-                              cdb_tablemetadata geometry raster).freeze
-      RESERVED_TABLE_NAMES = %w{ layergroup all public }.freeze
+      SYSTEM_TABLE_NAMES    = %w(spatial_ref_sys geography_columns geometry_columns raster_columns raster_overviews
+                                 cdb_tablemetadata geometry raster).freeze
+      RESERVED_TABLE_NAMES  = %w(layergroup all public).freeze
+      RESERVED_COLUMN_NAMES = %w(format controller action oid tableoid xmin cmin xmax cmax ctid ogc_fid).freeze
+      RESERVED_WORDS        = %w(all analyse analyze and any array as asc asymmetric authorization between binary both
+                                 case cast check collate column constraint create cross current_date current_role
+                                 current_time current_timestamp current_user default deferrable desc distinct do else
+                                 end except false for foreign freeze from full grant group having ilike in initially
+                                 inner intersect into is isnull join leading left like limit localtime localtimestamp
+                                 natural new not notnull null off offset old on only or order outer overlaps placing
+                                 primary references right select session_user similar some symmetric table then to
+                                 trailing true union unique user using verbose when where xmin xmax).freeze
 
       def self.append_with_truncate_and_sanitize(identifier, suffix)
         suffix_length = suffix.length

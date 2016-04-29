@@ -24,7 +24,8 @@ module CartoDB
         self.exit_code            = nil
         self.command_output       = ''
         self.additional_tables    = []
-        self.db
+        self.db                   = db
+        self.base_table_fqtn      = SCHEMA + '.' + table_name
       end
 
       attr_reader   :exit_code, :command_output
@@ -58,7 +59,7 @@ module CartoDB
 
       attr_writer   :exit_code, :command_output
       attr_accessor :filepath, :pg_options, :table_name, :webmercator_filepath, :aligned_filepath, \
-                    :basepath, :additional_tables
+                    :basepath, :additional_tables, :db, :base_table_fqtn
 
       def align_raster(scale)
         gdalwarp_command = %Q(#{gdalwarp_path} -co "COMPRESS=LZW" -tr #{scale} -#{scale} #{webmercator_filepath} #{aligned_filepath} )
@@ -178,7 +179,6 @@ module CartoDB
       # should be imported without any transformation to avoid
       # reprojection/resampling artifacts in analysis.
       def add_raster_base_overview_for_tiler
-        base_table_fqtn = SCHEMA + '.' + table_name
         overview_name = OVERLAY_TABLENAME % [1, table_name]
         overview_fqtn = SCHEMA + '.' + overview_name
         db.run %{CREATE TABLE #{overview_fqtn} AS SELECT * FROM #{base_table_fqtn}}
@@ -188,9 +188,28 @@ module CartoDB
         additional_tables = [1] + additional_tables
       end
 
+      # Import the original raster file without reprojections, adjusting or scales.
+      # NOTE: the name of the column the_raster_webmercator is maintained for compatibility.
       def import_original_raster
-        # TODO implement
-        nil
+        db.run %{DROP TABLE #{base_table_fqtn}}
+        raster_import_command =
+          %{#{raster2pgsql_path} -t #{BLOCKSIZE} -C -x -Y -I -f #{RASTER_COLUMN_NAME} } +
+          %{#{filepath} #{SCHEMA}.#{table_name}}
+        # TODO refactor with run_raster2pgsql
+        command = %Q(#{raster_import_command} | #{psql_base_command})
+        stdout, stderr, status  = Open3.capture3(command)
+        output = stdout + stderr
+        output_message = "(#{status}) |#{output}| Command: #{command}"
+        self.command_output << "\n#{output_message}"
+        self.exit_code = status.to_i
+
+        if output =~ /canceling statement due to statement timeout/i
+          raise StatementTimeoutError.new(output_message, ERRORS_MAP[StatementTimeoutError])
+        end
+
+        raise UnknownSridError.new(output_message)          if output =~ /invalid srid/i
+        raise TiffToSqlConversionError.new(output_message)  if status.to_i != 0
+        raise TiffToSqlConversionError.new(output_message)  if output =~ /failure/i
       end
 
       def psql_inline_command(query)

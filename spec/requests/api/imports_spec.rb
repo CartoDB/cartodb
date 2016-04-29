@@ -121,12 +121,9 @@ describe "Imports API" do
 
   it 'imports all the sample data' do
     @user.update table_quota: 10
-    import_files = [
-        "http://cartodb.s3.amazonaws.com/static/TM_WORLD_BORDERS_SIMPL-0.3.zip",
-    ]
 
-    import_files.each do |url|
-      post api_v1_imports_create_url(params.merge(:url => url, :table_name => "wadus"))
+    serve_file(Rails.root.join('spec/support/data/TM_WORLD_BORDERS_SIMPL-0.3.zip')) do |url|
+      post api_v1_imports_create_url(params.merge(url: url, table_name: "wadus"))
 
       response.code.should be == '200'
 
@@ -141,8 +138,8 @@ describe "Imports API" do
       table.geometry_types.should_not be_blank
     end
 
-    DataImport.count.should == import_files.size
-    Map.count.should == import_files.size
+    DataImport.count.should == 1
+    Map.count.should == 1
   end
 
   it 'raises an error if the user attempts to import tables when being over quota' do

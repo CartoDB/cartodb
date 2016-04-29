@@ -7,7 +7,7 @@
 
 .Editor-HeaderInfo {
   @include display-flex();
-  @include align-items(flex-start);
+  @include align-items(baseline);
   margin-bottom: 32px;
 
   &.is-block {
@@ -42,10 +42,11 @@
   white-space: nowrap;
   overflow: hidden;
 }
+.Editor-HeaderInfo-actions {
+  @include display-flex();
+}
 .Editor-HeaderInfo-actionsItem {
-  display: inline-block;
   margin-left: 4px;
-  vertical-align: middle;
 }
 .Editor-HeaderInfo-actionsItem:first-child {
   margin-left: 0;

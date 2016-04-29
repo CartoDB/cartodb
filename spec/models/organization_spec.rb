@@ -418,6 +418,19 @@ describe Organization do
       Organization.overquota.size.should == Organization.count
     end
 
+    it "should return organizations over their data observatory quota" do
+      Organization.any_instance.stubs(:owner).returns(@owner)
+      Organization.overquota.should be_empty
+      Organization.any_instance.stubs(:get_api_calls).returns(0)
+      Organization.any_instance.stubs(:map_view_quota).returns(10)
+      Organization.any_instance.stubs(:get_geocoding_calls).returns 0
+      Organization.any_instance.stubs(:geocoding_quota).returns 10
+      Organization.any_instance.stubs(:get_obs_snapshot_calls).returns 30
+      Organization.any_instance.stubs(:obs_snapshot_quota).returns 10
+      Organization.overquota.map(&:id).should include(@organization.id)
+      Organization.overquota.size.should == Organization.count
+    end
+
     it "should return organizations near their geocoding quota" do
       Organization.any_instance.stubs(:owner).returns(@owner)
       Organization.any_instance.stubs(:get_api_calls).returns(0)
@@ -438,6 +451,24 @@ describe Organization do
       Organization.any_instance.stubs(:geocoding_quota).returns(100)
       Organization.any_instance.stubs(:get_here_isolines_calls).returns(81)
       Organization.any_instance.stubs(:here_isolines_quota).returns(100)
+      Organization.any_instance.stubs(:get_obs_snapshot_calls).returns(0)
+      Organization.any_instance.stubs(:obs_snapshot_quota).returns(100)
+      Organization.overquota.should be_empty
+      Organization.overquota(0.20).map(&:id).should include(@organization.id)
+      Organization.overquota(0.20).size.should == Organization.count
+      Organization.overquota(0.10).should be_empty
+    end
+
+    it "should return organizations near their data observatory quota" do
+      Organization.any_instance.stubs(:owner).returns(@owner)
+      Organization.any_instance.stubs(:get_api_calls).returns(0)
+      Organization.any_instance.stubs(:map_view_quota).returns(120)
+      Organization.any_instance.stubs(:get_geocoding_calls).returns(0)
+      Organization.any_instance.stubs(:geocoding_quota).returns(100)
+      Organization.any_instance.stubs(:get_here_isolines_calls).returns(0)
+      Organization.any_instance.stubs(:here_isolines_quota).returns(100)
+      Organization.any_instance.stubs(:get_obs_snapshot_calls).returns(81)
+      Organization.any_instance.stubs(:obs_snapshot_quota).returns(100)
       Organization.overquota.should be_empty
       Organization.overquota(0.20).map(&:id).should include(@organization.id)
       Organization.overquota(0.20).size.should == Organization.count

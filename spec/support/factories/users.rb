@@ -63,6 +63,8 @@ module CartoDB
       user.geocoding_block_price = attributes[:geocoding_block_price] || 1500
       user.here_isolines_quota   = attributes[:here_isolines_quota] || 1000
       user.here_isolines_block_price = attributes[:here_isolines_block_price] || 1500
+      user.obs_snapshot_quota = attributes[:obs_snapshot_quota] || 1000
+      user.obs_snapshot_block_price = attributes[:obs_snapshot_block_price] || 1500
       user.sync_tables_enabled   = attributes[:sync_tables_enabled] || false
       user.organization          = attributes[:organization] || nil
       if attributes[:organization_id]

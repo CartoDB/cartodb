@@ -15,7 +15,6 @@ WORKING_SPECS_INTEGRATIONS = \
 	$(NULL)
 
 WORKING_SPECS_1 = \
-	spec/rspec_configuration.rb \
 	spec/models/table_spec.rb \
 	spec/models/table_privacy_manager_spec.rb \
 	spec/models/table/relator_spec.rb \
@@ -138,7 +137,6 @@ WORKING_SPECS_2 = \
 	$(NULL)
 
 WORKING_SPECS_4 = \
-	spec/rspec_configuration.rb \
 	services/wms/spec/unit/wms_spec.rb \
 	services/sql-api/spec/sql_api_spec.rb \
 	spec/requests/admin/visualizations_spec.rb \
@@ -161,7 +159,6 @@ WORKING_SPECS_4 = \
 	$(NULL)
 
 WORKING_SPECS_5 = \
-	spec/rspec_configuration.rb \
 	spec/requests/api/assets_spec.rb \
 	spec/requests/carto/api/assets_controller_spec.rb \
 	spec/requests/api/user_layers_spec.rb \
@@ -192,13 +189,11 @@ WORKING_SPECS_5 = \
 
 # TODO: This block also breaks if run alongside other specs, needs checking why
 WORKING_SPECS_7 = \
-	spec/rspec_configuration.rb \
 	spec/requests/api/json/geocodings_controller_spec.rb \
 	spec/requests/carto/api/geocodings_controller_spec.rb \
 	$(NULL)
 
 WORKING_SPECS_9 = \
-	spec/rspec_configuration.rb \
 	services/twitter-search/spec/unit/json_to_csv_converter_spec.rb \
 	services/twitter-search/spec/unit/search_api_spec.rb \
 	services/datasources/spec/acceptance/datasources_factory_spec.rb \
@@ -220,9 +215,7 @@ WORKING_SPECS_9 = \
 	spec/lib/initializers/carto_db_spec.rb \
 	spec/requests/carto/api/oembed_controller_spec.rb \
 	spec/models/asset_spec.rb \
-	spec/models/log_spec.rb \
 	spec/models/access_token_spec.rb \
-	spec/rspec_configuration.rb \
 	spec/requests/api/permissions_controller_spec.rb \
 	spec/models/shared_entity_spec.rb \
 	spec/requests/signup_controller_spec.rb \
@@ -259,6 +252,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/requests/carto/api/vizjson3_presenter_spec.rb \
 	spec/requests/admin/users_controller_spec.rb \
 	spec/lib/carto/strong_password_validator_spec.rb \
+	spec/lib/initializers/zz_patch_reconnect_spec.rb \
 	spec/lib/cartodb/redis_vizjson_cache_spec.rb \
 	$(NULL)
 
@@ -282,17 +276,17 @@ endif
 
 # TODO: Ongoing removal of groups, that's the reason of holes in numbering
 check-1:
-	CHECK_SPEC=1 RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_1)
+	CHECK_SPEC=1 RAILS_ENV=test bundle exec rspec --require ./spec/rspec_configuration.rb $(WORKING_SPECS_1)
 check-2:
-	CHECK_SPEC=2 RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_2)
+	CHECK_SPEC=2 RAILS_ENV=test bundle exec rspec --require ./spec/rspec_configuration.rb $(WORKING_SPECS_2)
 check-4:
-	CHECK_SPEC=4 RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_4)
+	CHECK_SPEC=4 RAILS_ENV=test bundle exec rspec --require ./spec/rspec_configuration.rb $(WORKING_SPECS_4)
 check-5:
-	CHECK_SPEC=5 RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_5)
+	CHECK_SPEC=5 RAILS_ENV=test bundle exec rspec --require ./spec/rspec_configuration.rb $(WORKING_SPECS_5)
 check-7:
-	CHECK_SPEC=7 RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_7)
+	CHECK_SPEC=7 RAILS_ENV=test bundle exec rspec --require ./spec/rspec_configuration.rb $(WORKING_SPECS_7)
 check-9:
-	CHECK_SPEC=9 RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_9)
+	CHECK_SPEC=9 RAILS_ENV=test bundle exec rspec --require ./spec/rspec_configuration.rb $(WORKING_SPECS_9)
 check-spec-helper-min:
 	CHECK_SPEC=50 RAILS_ENV=test bundle exec rspec $(SPEC_HELPER_MIN_SPECS)
 check-carto-db-class:

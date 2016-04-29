@@ -99,10 +99,10 @@ module CartoDB
       end
 
       def self.supported_extensions_match
-        @supported_extensions_match ||= supported_extensions.map do |ext|
+        @supported_extensions_match ||= supported_extensions.map { |ext|
           ext = ext.gsub('.', '\\.')
           [/#{ext}$/, /#{ext}(?=\.)/, /#{ext}(?=\?)/, /#{ext}(?=&)/]
-        end.flatten
+        }.flatten
       end
 
       def self.url_filename_regex

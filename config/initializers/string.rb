@@ -189,8 +189,8 @@ class String
     temporal_name = sanitize || ''
 
     if temporal_name !~ /^[a-zA-Z_]/ ||
-       Carto::DB::Sanitize::RESERVED_WORDS.include?(downcase) ||
-       Carto::DB::Sanitize::RESERVED_COLUMN_NAMES.include?(downcase)
+      Carto::DB::Sanitize::RESERVED_WORDS.include?(downcase) ||
+      CartoDB::RESERVED_COLUMN_NAMES.include?(self.upcase)
       return '_' + temporal_name
     else
       temporal_name

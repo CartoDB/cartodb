@@ -13,7 +13,6 @@ module Carto
       SYSTEM_TABLE_NAMES    = %w(spatial_ref_sys geography_columns geometry_columns raster_columns raster_overviews
                                  cdb_tablemetadata geometry raster).freeze
       RESERVED_TABLE_NAMES  = %w(layergroup all public).freeze
-      RESERVED_COLUMN_NAMES = %w(format controller action oid tableoid xmin cmin xmax cmax ctid ogc_fid).freeze
       RESERVED_WORDS        = %w(all analyse analyze and any array as asc asymmetric authorization between binary both
                                  case cast check collate column constraint create cross current_date current_role
                                  current_time current_timestamp current_user default deferrable desc distinct do else

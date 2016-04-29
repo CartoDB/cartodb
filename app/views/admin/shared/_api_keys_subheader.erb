@@ -9,11 +9,17 @@
           </a>
         </li>
         <li class="Filters-typeItem">
-          <a href="<%= CartoDB.url(self, 'mobile_apps', {}, current_user) %>" class="Filters-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/client_applications_mobile_apps" %>">
+          <a href="<%= CartoDB.url(self, 'mobile_apps', {}, current_user) %>" class="Filters-typeLink <%= 'is-selected' if "#{params[:controller]}" == "admin/mobile_apps" %>">
             Mobile apps (4)
-            </a>
+          </a>
         </li>
       </ul>
+
+      <% if "#{params[:controller]}_#{params[:action]}" == "admin/mobile_apps_index" %>
+        <ul class="Filters-group">
+          <a href="<%= CartoDB.url(self, 'new_mobile_app', {}, current_user) %>" class="Button Button--positive is-smaller"><span>New application</span></a>
+        </ul>
+      <% end %>
     </div>
   </div>
 </div>

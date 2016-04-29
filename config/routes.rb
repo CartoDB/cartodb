@@ -303,12 +303,17 @@ CartoDB::Application.routes.draw do
     get '(/user/:user_domain)(/u/:user_domain)/viz/:id/protected_public_map'  => 'visualizations#show_protected_public_map', constraints: { id: /[^\/]+/ }, defaults: { dont_rewrite: true }
     post '(/user/:user_domain)(/u/:user_domain)/viz/:id/protected_public_map' => 'visualizations#show_protected_public_map', as: :protected_public_map, constraints: { id: /[^\/]+/ }, defaults: { dont_rewrite: true }
 
-    match  '(/user/:user_domain)(/u/:user_domain)/your_apps'                    => 'client_applications#api_key',            as: :api_key_credentials
-    post   '(/user/:user_domain)(/u/:user_domain)/your_apps/api_key/regenerate' => 'client_applications#regenerate_api_key', as: :regenerate_api_key
-    match  '(/user/:user_domain)(/u/:user_domain)/your_apps/oauth'              => 'client_applications#oauth',              as: :oauth_credentials
-    delete '(/user/:user_domain)(/u/:user_domain)/your_apps/oauth/regenerate'   => 'client_applications#regenerate_oauth',   as: :regenerate_oauth
+    match '(/user/:user_domain)(/u/:user_domain)/your_apps'                    => 'client_applications#api_key',            as: :api_key_credentials
+    post '(/user/:user_domain)(/u/:user_domain)/your_apps/api_key/regenerate'  => 'client_applications#regenerate_api_key', as: :regenerate_api_key
+    match '(/user/:user_domain)(/u/:user_domain)/your_apps/oauth'              => 'client_applications#oauth',              as: :oauth_credentials
+    delete '(/user/:user_domain)(/u/:user_domain)/your_apps/oauth/regenerate'  => 'client_applications#regenerate_oauth',   as: :regenerate_oauth
 
-    get  '(/user/:user_domain)(/u/:user_domain)/mobile_apps'               => 'client_applications#mobile_apps',        as: :mobile_apps
+    get '(/user/:user_domain)(/u/:user_domain)/your_apps/mobile'                 => 'mobile_apps#index',    as: :mobile_apps
+    get '(/user/:user_domain)(/u/:user_domain)/your_apps/mobile/new'             => 'mobile_apps#new',      as: :new_mobile_app
+    post '(/user/:user_domain)(/u/:user_domain)/your_apps/mobile'                => 'mobile_apps#create',   as: :create_mobile_app
+    get '(/user/:user_domain)(/u/:user_domain)/your_apps/mobile/:id/edit'        => 'mobile_apps#edit',     as: :edit_mobile_app
+    put '(/user/:user_domain)(/u/:user_domain)/your_apps/mobile/:id'             => 'mobile_apps#update',   as: :update_mobile_app
+    delete '(/user/:user_domain)(/u/:user_domain)/your_apps/mobile/:id'          => 'mobile_apps#delete',   as: :delete_mobile_app
 
   end
 

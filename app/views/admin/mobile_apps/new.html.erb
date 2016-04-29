@@ -1,0 +1,44 @@
+<% content_for(:page_title) do %>
+  New mobile application |
+<% end %>
+
+<%= content_for(:js) do %>
+  <script type="text/javascript">
+    var username = "<%= current_user.username %>";
+    var config = <%= safe_js_object frontend_config %>;
+    var user_data = <%= safe_js_object current_user.data.to_json %>;
+  </script>
+  <%= javascript_include_tag 'cdb.js', 'models.js', 'account_templates.js', 'account_deps.js', 'account.js' -%>
+<% end %>
+
+<%= render :partial => 'shared/flash_message' %>
+
+<div class="FormAccount-Section u-inner">
+  <%= render :partial => 'admin/shared/pages_subheader' %>
+
+  <div class="FormAccount-Content">
+
+    <div class="Filters is-relative">
+      <div class="Filters-inner">
+        <span class="Filters-separator"></span>
+        <div class="Filters-row">
+          <ul class="Filters-group">
+            <li>
+              <a href="<%= CartoDB.url(self, 'mobile_apps', {}, current_user) %>" class="Filters-typeLink Filters-actionButton NavButton NavButton--back">
+                <i class="CDB-IconFont CDB-IconFont-arrowPrev"></i>
+              </a>
+            </li>
+            <li class="Filters-typeItem">
+              <div class="FormAccount-title"><p class="FormAccount-titleText">New application</p></div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <%= render :partial => 'admin/mobile_apps/form' %>
+  </div>
+
+</div>
+
+<%= render 'admin/shared/footer' %>

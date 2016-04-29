@@ -25,7 +25,7 @@
     <ul class="SideMenu-list">
       <li class="SideMenu-typeItem"><a href="<%= CartoDB.url(self, 'profile_user', {}, current_user) %>" class="SideMenu-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/users_profile" %>">Profile</a></li>
       <li class="SideMenu-typeItem"><a href="<%= CartoDB.url(self, 'account_user', {}, current_user) %>" class="SideMenu-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/users_account" %>">Account</a></li>
-      <li class="SideMenu-typeItem"><a href="<%= CartoDB.url(self, 'api_key_credentials', {}, current_user) %>" class="SideMenu-typeLink <%= 'is-selected' if "#{params[:controller]}" == "admin/client_applications" %>">API keys</a></li>
+      <li class="SideMenu-typeItem"><a href="<%= CartoDB.url(self, 'api_key_credentials', {}, current_user) %>" class="SideMenu-typeLink <%= 'is-selected' if "#{params[:controller]}" == "admin/client_applications" || "#{params[:controller]}" == "admin/mobile_apps" %>">API keys</a></li>
       <% if !Cartodb.config[:cartodb_com_hosted].present? && !current_user.organization.present? %>
         <li class="SideMenu-typeItem"><a href="<%= current_user.plan_url(request.protocol) %>" class="SideMenu-typeLink">Billing</a></li>
       <% end %>

@@ -1,0 +1,97 @@
+<%= form_for @mobile_app do |f| %>
+
+  <span class="FormAccount-separator"></span>
+
+  <div class="FormAccount-row js-avatarSelector">
+    <div class="FormAccount-rowLabel">
+      <label class="FormAccount-label">App icon</label>
+    </div>
+    <div class="FormAccount-rowData FormAccount-avatar">
+      <div class="FormAccount-avatarPreview">
+        <img src="" class="FormAccount-avatarPreviewImage" />
+      </div>
+      <div class="FormAccount-avatar--input">
+        <%= f.file_field :icon_url, :class => "FormAccount-fileAvatar js-fileAvatar", :value => "Change image" %>
+        <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
+          <p class="FormAccount-rowInfoText FormAccount-rowInfoText--smaller">Recommended images should be 128x128 pixels of size</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="FormAccount-row">
+    <div class="FormAccount-rowLabel">
+      <label class="FormAccount-label">Name</label>
+    </div>
+    <div class="FormAccount-rowData">
+      <%= f.text_field :name, :class => "FormAccount-input FormAccount-input--med" %>
+    </div>
+  </div>
+
+  <div class="FormAccount-row">
+    <div class="FormAccount-rowLabel">
+      <label class="FormAccount-label">Description</label>
+    </div>
+    <div class="FormAccount-rowData">
+      <%= f.text_area :description, :class => "FormAccount-textarea FormAccount-input FormAccount-input--totalwidth" %>
+    </div>
+    <div class="FormAccount-rowInfo">
+      <p class="FormAccount-rowInfoText"></p>
+    </div>
+  </div>
+
+   <div class="FormAccount-row">
+    <div class="FormAccount-rowLabel">
+      <label class="FormAccount-label">Platform</label>
+    </div>
+
+    <div class="FormAccount-rowData">
+      <div class="RadioButton u-rspace-s">
+        <button type="button" class="RadioButton-input"></button>
+        <label class="RadioButton-label">Android</label>
+      </div>
+      <div class="RadioButton u-rspace-s">
+        <button type="button" class="RadioButton-input"></button>
+        <label class="RadioButton-label">Xamarin Android</label>
+      </div>
+      <div class="RadioButton u-rspace-s">
+        <button type="button" class="RadioButton-input"></button>
+        <label class="RadioButton-label">iOS</label>
+      </div>
+      <div class="RadioButton u-rspace-s">
+        <button type="button" class="RadioButton-input"></button>
+        <label class="RadioButton-label">Xamarin iOS</label>
+      </div>
+      <div class="RadioButton u-rspace-s">
+        <button type="button" class="RadioButton-input"></button>
+        <label class="RadioButton-label">Windows Phone</label>
+      </div>
+    </div>
+  </div>
+
+   <div class="FormAccount-row">
+    <div class="FormAccount-rowLabel">
+      <label class="FormAccount-label">Aplication ID</label>
+    </div>
+    <div class="FormAccount-rowData">
+      <%= f.text_field :app_id, :class => "FormAccount-input FormAccount-input--med #{'is-disabled' if @mobile_app.persisted?}", :readonly => @mobile_app.persisted? %>
+
+      <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
+        <p class="FormAccount-rowInfoText">This side note will change depending on the platform selected.</p>
+      </div>
+    </div>
+  </div>
+
+   <div class="FormAccount-row">
+    <div class="FormAccount-rowLabel">
+      <label class="FormAccount-label">App type</label>
+    </div>
+  </div>
+
+  <div class="FormAccount-footer">
+    <p class="FormAccount-footerText"></p>
+    <%= button_tag(type: 'submit', class: 'Button Button--main') do %>
+      <% content_tag(:span, 'Save') %>
+    <% end %>
+  </div>
+<% end %>

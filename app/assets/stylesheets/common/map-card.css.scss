@@ -103,7 +103,7 @@ $sEditButtonSize: 50px;
 .MapCard-desc {
   flex: 1;
   width: 100%;
-  height: 2 * $sLineHeight-normal;
+  height: 40px;
 
   .DefaultDescription {
     @include line-clamp(2);
@@ -123,22 +123,13 @@ $sEditButtonSize: 50px;
 .MapCard--selectable {
   &:hover {
     border-color: $cHoverLine;
-    .MapCard-desc .DefaultDescription:after,
-    .MapCard-tags:after {
-      @include background-horizontal(rgba(255, 255, 255, 0), $cCard-hoverFill);
-    }
     .MapviewsGraph-bar {
       cursor: pointer;
       fill: rgba(#FFFFFF, 1);
     }
   }
   &.is-selected {
-    background-color: $cCard-selectedFill;
-    border-color: $cCard-selectedBorder;
-    .MapCard-desc .DefaultDescription:after,
-    .MapCard-tags:after {
-      @include background-horizontal(rgba(255, 255, 255, 0), $cCard-selectedFill);
-    }
+    border-color: rgba($cBlue, 0.48);
     .MapviewsGraph-bar {
       cursor: pointer;
       fill: rgba(#FFFFFF, 1);
@@ -152,7 +143,7 @@ $sEditButtonSize: 50px;
   display: block;
   position: relative;
   width: 100%;
-  height: 170px;
+  height: 168px;
   border-radius: 2px 2px 0 0;
   overflow: hidden;
   z-index: 1;
@@ -162,19 +153,6 @@ $sEditButtonSize: 50px;
 }
 .MapCard-header--compact {
   height: 130px;
-}
-.MapCard-header:after,
-.MapCard.MapCard--squared .MapCard-header.MapCard-header--fake:after {
-  @include opacity(0.1);
-  content: ' ';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: block;
-  height: 2px;
-  background: #000000;
-  z-index: 2;
 }
 
 .MapCard-header--fake,
@@ -271,24 +249,25 @@ $sEditButtonSize: 50px;
   @include background(image-url('layout/map-card-error.png') no-repeat center 0);
 }
 .MapCard-content { // To position contentDetail at top of content, and contentFooter at bottom
-  position: relative;
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center);
   @include flex-direction(column);
-  border-radius: $sCard-borderRadius;
-  padding: $sMargin-element;
-  height: 140px;
   @include opacity(1);
   @include transition(opacity, $opacityTransition);
+  position: relative;
+  height: 183px; /* We should try avoid fix heights. For review*/
+  padding: $baseSize * 2;
+  border-radius: $halfBaseSize;
   z-index: 1;
+  box-sizing: border-box;
 }
+
 .MapCard-content--compact {
   min-height: 44px;
   height: auto;
 }
 .MapCard-contentBody { width: 100% }
-.MapCard-contentBodyRow { margin-bottom: $sMargin-min }
 .MapCard-itemTitlePermission { background-color: $cStructure-mainBkg }
 .MapCard-editButton {
   position: absolute;

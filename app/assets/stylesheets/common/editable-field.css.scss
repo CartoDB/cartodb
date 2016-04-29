@@ -5,6 +5,10 @@
 @import "../variables/sizes";
 @import "../variables/mixins";
 
+@import 'cdb-variables/colors';
+@import 'cdb-variables/sizes';
+
+
 $fieldBgColor: transparent;
 $fieldBorderColor: #DFE8EC;
 
@@ -26,16 +30,12 @@ $fieldBorderColor: #DFE8EC;
     overflow: hidden;
     width: 100%;
 
-    font-size: $sFontSize-normal;
-    line-height: $sLineHeight-normal;
-    color: $cTypography-secondary;
-
     background: -webkit-linear-gradient(bottom, $fieldBorderColor 0%, $fieldBgColor 8%) 0 0px;
     background: -moz-linear-gradient(bottom, $fieldBorderColor 0%, $fieldBgColor 8%) 0 0px;
     background: -ms-linear-gradient(bottom, $fieldBorderColor 0%, $fieldBgColor 8%) 0 0px;
     background: -o-linear-gradient(bottom, $fieldBorderColor 0%, $fieldBgColor 8%) 0 0px;
     background: linear-gradient(bottom, $fieldBorderColor 0%, $fieldBgColor 8%) 0 0px;
-    background-size: 100% $sLineHeight-normal;
+    background-size: 100% $baseSize * 2;
   }
 }
 

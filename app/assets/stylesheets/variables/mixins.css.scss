@@ -201,7 +201,6 @@
 }
 
 @mixin line-clamp($lines) {
-  height: $lines * $sLineHeight-normal;
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: $lines;

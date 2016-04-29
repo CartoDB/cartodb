@@ -7,7 +7,7 @@ require 'csv'
 describe CartoDB::Connector::Importer do
 
   before(:all) do
-    @user = create_user(:quota_in_bytes => 1000.megabyte, :table_quota => 400)
+    @user = create_user(quota_in_bytes: 1000.megabyte, table_quota: 400, max_layers: 4)
   end
 
   before(:each) do

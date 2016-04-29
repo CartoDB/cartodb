@@ -91,6 +91,10 @@ module Carto
       kind == 'torque'
     end
 
+    def data_layer?
+      !base?
+    end
+
     def supports_labels_layer?
       basemap? && options["labels"] && options["labels"]["url"]
     end

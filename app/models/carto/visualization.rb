@@ -206,6 +206,10 @@ class Carto::Visualization < ActiveRecord::Base
     map.nil? ? [] : map.data_layers
   end
 
+  def base_layers
+    map.nil? ? [] : map.base_layers
+  end
+
   def named_map_layers
     map.nil? ? [] : map.named_map_layers
   end

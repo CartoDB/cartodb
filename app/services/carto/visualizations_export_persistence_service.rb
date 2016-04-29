@@ -69,7 +69,19 @@ module Carto
 
     def apply_user_limits(user, visualization)
       visualization.privacy = Carto::Visualization::PRIVACY_PUBLIC unless user.private_maps_enabled
-      visualization.map.layers = visualization.map.layers.take(user.max_layers)
+      layers = []
+      data_layer_count = 0
+      visualization.map.layers.each do |layer|
+        if layer.data_layer?
+          if data_layer_count < user.max_layers
+            layers.push(layer)
+            data_layer_count += 1
+          end
+        else
+          layers.push(layer)
+        end
+      end
+      visualization.map.layers = layers
     end
   end
 end

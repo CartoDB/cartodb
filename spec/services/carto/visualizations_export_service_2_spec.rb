@@ -96,6 +96,38 @@ describe Carto::VisualizationsExportService2 do
           active_layer: true
         },
         {
+          options: JSON.parse('{"attribution":"CartoDB <a href=\"http://cartodb.com/attributions\" ' +
+            'target=\"_blank\">attribution</a>","type":"CartoDB","active":true,"query":"","opacity":0.99,' +
+            '"interactivity":"cartodb_id","interaction":true,"debug":false,"tiler_domain":"localhost.lan",' +
+            '"tiler_port":"80","tiler_protocol":"http","sql_api_domain":"cartodb.com","sql_api_port":"80",' +
+            '"sql_api_protocol":"http","extra_params":{"cache_policy":"persist","cache_buster":1459849314400},' +
+            '"cdn_url":null,"maxZoom":28,"auto_bound":false,"visible":true,"sql_domain":"localhost.lan",' +
+            '"sql_port":"80","sql_protocol":"http","tile_style_history":["#guess_ip_1 {\n  marker-fill: #FF6600;\n  ' +
+            'marker-opacity: 0.9;\n  marker-width: 12;\n  marker-line-color: white;\n  marker-line-width: 3;\n  ' +
+            'marker-line-opacity: 0.9;\n  marker-placement: point;\n  marker-type: ellipse;\n  ' +
+            'marker-allow-overlap: true;\n}"],"style_version":"2.1.1","table_name":"guess_ip_1",' +
+            '"user_name":"juanignaciosl","tile_style":"/** simple visualization */\n\n#guess_ip_1{\n  ' +
+            'marker-fill-opacity: 0.9;\n  marker-line-color: #FFF;\n  marker-line-width: 1;\n  ' +
+            'marker-line-opacity: 1;\n  marker-placement: point;\n  marker-type: ellipse;\n  marker-width: 10;\n  ' +
+            'marker-fill: #FF6600;\n  marker-allow-overlap: true;\n}","id":"dbb6826a-09e5-4238-b81b-86a43535bf02",' +
+            '"order":1,"use_server_style":true,"query_history":[],"stat_tag":"9e82a99a-fb12-11e5-80c0-080027880ca6",' +
+            '"maps_api_template":"http://{user}.localhost.lan:8181","cartodb_logo":false,"no_cdn":false,' +
+            '"force_cors":true,"tile_style_custom":false,"query_wrapper":null,"query_generated":false,' +
+            '"wizard_properties":{"type":"polygon","properties":{"marker-width":10,"marker-fill":"#FF6600",' +
+            '"marker-opacity":0.9,"marker-allow-overlap":true,"marker-placement":"point","marker-type":"ellipse",' +
+            '"marker-line-width":1,"marker-line-color":"#FFF","marker-line-opacity":1,"marker-comp-op":"none",' +
+            '"text-name":"None","text-face-name":"DejaVu Sans Book","text-size":10,"text-fill":"#000",' +
+            '"text-halo-fill":"#FFF","text-halo-radius":1,"text-dy":-10,"text-allow-overlap":true,' +
+            '"text-placement-type":"dummy","text-label-position-tolerance":0,"text-placement":"point",' +
+            '"geometry_type":"point"}},"legend":{"type":"none","show_title":false,"title":"","template":"",' +
+            '"visible":true}}').deep_symbolize_keys,
+          kind: 'carto',
+          infowindow: JSON.parse('{"fields":[],"template_name":"table/views/infowindow_light","template":"",' +
+            '"alternative_names":{},"width":226,"maxHeight":180}').deep_symbolize_keys,
+          tooltip: JSON.parse('{"fields":[],"template_name":"tooltip_light","template":"","alternative_names":{},' +
+            '"maxHeight":180}').deep_symbolize_keys
+        },
+        {
           options: JSON.parse('{"default":true,' +
             '"url":"http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png", ' +
             '"subdomains":"abcd","minZoom":"0","maxZoom":"18","attribution":"\u00a9 <a ' +
@@ -385,16 +417,21 @@ describe Carto::VisualizationsExportService2 do
         @user.max_layers = 1
         @user.save
 
-        imported = Carto::VisualizationsExportService2.new.build_visualization_from_json_export(export.to_json)
-        imported.layers.length.should > @user.max_layers
+        begin
+          imported = Carto::VisualizationsExportService2.new.build_visualization_from_json_export(export.to_json)
+          tiled_layers_count = imported.layers.select { |l| ['tiled'].include?(l.kind) }.count
+          tiled_layers_count.should eq 2
+          imported.layers.select { |l| ['carto', 'torque'].include?(l.kind) }.count.should > @user.max_layers
 
-        visualization = Carto::VisualizationsExportPersistenceService.new.save_import(@user, imported)
-        visualization.layers.length.should eq @user.max_layers
+          visualization = Carto::VisualizationsExportPersistenceService.new.save_import(@user, imported)
+          visualization.layers.select { |l| ['tiled'].include?(l.kind) }.count.should eq tiled_layers_count
+          visualization.layers.select { |l| ['carto', 'torque'].include?(l.kind) }.count.should eq @user.max_layers
 
-        visualization.destroy
-
-        @user.max_layers = old_max_layers
-        @user.save
+          visualization.destroy
+        ensure
+          @user.max_layers = old_max_layers
+          @user.save
+        end
       end
 
       it "Doesn't register layer tables dependencies if user table doesn't exist" do

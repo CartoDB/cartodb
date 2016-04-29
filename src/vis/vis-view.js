@@ -40,8 +40,6 @@ var Vis = View.extend({
     this._analysisCollection = new Backbone.Collection();
     this._analysisPoller = new AnalysisPoller();
 
-    this._analysisCollection.bind('add', this._bindAnalysisModelToLoader, this);
-
     this.model.bind('change:loading', function () {
       if (this.loader) {
         if (this.model.get('loading')) {

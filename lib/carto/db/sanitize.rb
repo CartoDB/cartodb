@@ -46,15 +46,15 @@ module Carto
         sanitized_identifier = sanitized_identifier.strip
 
         # Remove disallowed starting characters
-        sanitized_identifier = if sanitized_identifier =~ DISALLOWED_STARTING_CHARACTERS_REGEX
-                                 PREFIX_REPLACEMENT + sanitized_identifier
-                               end
+        if sanitized_identifier =~ DISALLOWED_STARTING_CHARACTERS_REGEX
+          sanitized_identifier = PREFIX_REPLACEMENT + sanitized_identifier
+        end
 
         # Replace disallowed characters with '_'
         sanitized_identifier = sanitized_identifier.gsub(DISALLOWED_CHARACTERS_REGEX, CHARACTER_REPLACEMENT)
 
         # Remove repated '_'
-        sanitized_identifier = sanitized_identifier.gsub!(REPEATED_UNDERSCORES_REGEX, '_')
+        sanitized_identifier = sanitized_identifier.gsub(REPEATED_UNDERSCORES_REGEX, '_')
 
         # Make sure it's not too long
         sanitized_identifier = sanitized_identifier[0..(MAX_IDENTIFIER_LENGTH - 1)]

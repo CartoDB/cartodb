@@ -587,7 +587,7 @@ describe('vis/vis-view', function () {
       spyOn($, 'ajax');
     });
 
-    it('should start polling for analyses that are not ready and are the source of a layer', function () {
+    it('should start polling for analyses that are not ready', function () {
       this.visView.load(new VizJSON(this.vizjson));
       this.visView.instantiateMap();
 
@@ -644,7 +644,8 @@ describe('vis/vis-view', function () {
       expect(this.vis.trackLoadingObject).toHaveBeenCalled();
 
       // Polling has started
-      expect($.ajax.calls.argsFor(1)[0].url).toEqual('http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/analysis/node/b75b1ae05854aea96266808ec0686b91f3ee0a81');
+      expect($.ajax.calls.argsFor(1)[0].url).toEqual('http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/analysis/node/e65b1ae05854aea96266808ec0686b91f3ee0a81');
+      expect($.ajax.calls.argsFor(2)[0].url).toEqual('http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/analysis/node/b75b1ae05854aea96266808ec0686b91f3ee0a81');
     });
 
     it('should NOT start polling for analysis that are "ready" and are the source of a layer', function () {
@@ -702,7 +703,7 @@ describe('vis/vis-view', function () {
         'last_updated': '1970-01-01T00:00:00.000Z'
       });
 
-      // Polling has started
+      // Polling has NOT started, there was only on ajax call to instantiate the map
       expect($.ajax.calls.count()).toEqual(1);
     });
 
@@ -761,12 +762,23 @@ describe('vis/vis-view', function () {
         'last_updated': '1970-01-01T00:00:00.000Z'
       });
       expect($.ajax.calls.argsFor(0)[0].url).toEqual('http://cdb.localhost.lan:8181/api/v1/map?stat_tag=70af2a72-0709-11e6-a834-080027880ca6');
+      expect($.ajax.calls.argsFor(1)[0].url).toEqual('http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/analysis/node/e65b1ae05854aea96266808ec0686b91f3ee0a81');
+      expect($.ajax.calls.argsFor(2)[0].url).toEqual('http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/analysis/node/b75b1ae05854aea96266808ec0686b91f3ee0a81');
 
-      // Analysis endpoint responds
+      expect($.ajax.calls.count()).toEqual(3);
+
+      // Analysis endpoint for a1 responds
       $.ajax.calls.argsFor(1)[0].success({status: 'ready'});
 
-      // A new request is triggered because analysis has succeeded
-      expect($.ajax.calls.argsFor(2)[0].url).toEqual('http://cdb.localhost.lan:8181/api/v1/map?stat_tag=70af2a72-0709-11e6-a834-080027880ca6');
+      // Map is not reloaded because a1 is not the source of a layer
+      expect($.ajax.calls.count()).toEqual(3);
+
+      // Analysis endpoint for a2 responds
+      $.ajax.calls.argsFor(2)[0].success({status: 'ready'});
+
+      // Map has been reloaded because a2 is the source of a layer
+      expect($.ajax.calls.count()).toEqual(4);
+      expect($.ajax.calls.argsFor(3)[0].url).toEqual('http://cdb.localhost.lan:8181/api/v1/map?stat_tag=70af2a72-0709-11e6-a834-080027880ca6');
     });
   });
 

@@ -6,7 +6,7 @@ require_relative '../../../services/sql-api/sql_api'
 
 module Carto
   module ExporterConfig
-    DEFAULT_EXPORTER_TMP_FOLDER = '/tmp/exporter/'.freeze
+    DEFAULT_EXPORTER_TMP_FOLDER = '/tmp/exporter'.freeze
 
     def exporter_config
       (Cartodb.config[:exporter] || {}).deep_symbolize_keys

@@ -16,4 +16,11 @@ describe('dashboard', function () {
     spyOn(URLHelper, 'getLocalURL').and.returnValue('https://manolo.com/');
     expect(this.dashboard.getDashboardURL().indexOf('https://manolo.com/')).not.toBeLessThan(0);
   });
+
+  it('url should resolve to correct state', function () {
+    var url = 'http://localhost:9002/examples/populated-places-vector.html?state=%257B%25221%2522%253A%257B%2522collapsed%2522%253Atrue%257D%252C%25223%2522%253A%257B%2522collapsed%2522%253Atrue%257D%252C%25225%2522%253A%257B%2522autoStyle%2522%253Atrue%257D%257D';
+    spyOn(URLHelper, 'getLocalURL').and.returnValue(url);
+    var correctState = { 1: { collapsed: true }, 3: { collapsed: true }, 5: { autoStyle: true } };
+    expect(URLHelper.getStateFromCurrentURL()).toEqual(correctState);
+  })
 });

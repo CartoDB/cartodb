@@ -3,6 +3,8 @@ require 'cartodb/logger'
 Rollbar.configure do |config|
   config.access_token = Cartodb.config[:rollbar_api_key]
   config.enabled = (Rails.env.production? || Rails.env.staging?) && config.access_token.present?
+  config.net_retries = 1 # This is actually 6 requests (18s), as Rollbar retries two times (failsafes) and CartoDB once
+
   # Add exception class names to the exception_level_filters hash to
   # change the level that exception is reported at. Note that if an exception
   # has already been reported and logged the level will need to be changed

@@ -21,14 +21,9 @@ class Api::Json::TablesController < Api::ApplicationController
       begin
         @table = ::Table.new
         @table.user_id = current_user.id
-        if params[:name]
-          @table.name = params[:name]
-        else
-          @table.name = ::Table.get_valid_table_name('', {
-              connection:       current_user.in_database,
-              database_schema:  current_user.database_schema
-          })
-        end
+
+        @table.name = Carto::ValidTableNameProposer.new(current_user.id).propose_valid_table_name(params[:name])
+
         @table.description    = params[:description]   if params[:description]
         @table.the_geom_type  = params[:the_geom_type] if params[:the_geom_type]
         @table.force_schema   = params[:schema]        if params[:schema]
@@ -42,10 +37,10 @@ class Api::Json::TablesController < Api::ApplicationController
         if save_status
           render_jsonp(@table.public_values({request:request}), 200, { location: "/tables/#{@table.id}" })
 
-          custom_properties = {'privacy' => @table.table_visualization.privacy, 
-                               'type' => @table.table_visualization.type,  
-                               'vis_id' => @table.table_visualization.id, 
-                               'origin' => 'blank'}
+          custom_properties = { 'privacy' => @table.table_visualization.privacy,
+                                'type' => @table.table_visualization.type,
+                                'vis_id' => @table.table_visualization.id,
+                                'origin' => 'blank' }
           Cartodb::EventTracker.new.send_event(current_user, 'Created dataset', custom_properties)
         else
           CartoDB::StdoutLogger.info 'Error on tables#create', @table.errors.full_messages
@@ -131,9 +126,9 @@ class Api::Json::TablesController < Api::ApplicationController
           return head(403) unless @table.table_visualization.is_owner?(current_user)
         end
 
-        custom_properties = {'privacy' => @table.table_visualization.privacy, 
-                             'type' => @table.table_visualization.type,  
-                             'vis_id' => @table.table_visualization.id}
+        custom_properties = { 'privacy' => @table.table_visualization.privacy,
+                              'type' => @table.table_visualization.type,
+                              'vis_id' => @table.table_visualization.id }
 
         @stats_aggregator.timing('delete') do
           @table.destroy

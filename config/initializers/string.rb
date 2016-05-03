@@ -152,17 +152,17 @@ class String
   def convert_to_db_type
     cartodb_types = get_cartodb_types
 
-    if cartodb_types.keys.include?(self.downcase)
-      case (self.downcase)
-        when "number"
-          "double precision"
-        when "string"          
-          "text"
-        else
-          cartodb_types[self.downcase].first
+    if cartodb_types.keys.include?(downcase)
+      case downcase
+      when "number"
+        "double precision"
+      when "string"
+        "text"
+      else
+        cartodb_types[downcase].first
       end
     else
-      self.downcase
+      downcase
     end
   end
 
@@ -184,11 +184,13 @@ class String
   def sanitize_sql
     self.gsub(/\\/, '\&\&').gsub(/'/, "''")
   end
-  
+
   def sanitize_column_name
-    temporal_name = self.sanitize || ''
-    if temporal_name !~ /^[a-zA-Z_]/ || CartoDB::POSTGRESQL_RESERVED_WORDS.include?(self.upcase) \
-       || CartoDB::RESERVED_COLUMN_NAMES.include?(self.upcase)
+    temporal_name = sanitize || ''
+
+    if temporal_name !~ /^[a-zA-Z_]/ ||
+       Carto::DB::Sanitize::RESERVED_WORDS.include?(downcase) ||
+       CartoDB::RESERVED_COLUMN_NAMES.include?(upcase)
       return '_' + temporal_name
     else
       temporal_name

@@ -1,0 +1,83 @@
+// Carousel styles
+// ----------------------------------------------
+
+/* SG
+# Carousel
+```
+<ul class="CDB-Carousel">
+  <li class="CDB-CarouselItem is-selected"></li>
+  <li class="CDB-CarouselItem"></li>
+  <li class="CDB-CarouselItem"></li>
+  <li class="CDB-CarouselItem"></li>
+  <li class="CDB-CarouselItem"></li>
+</ul>
+```
+*/
+
+@import 'cdb-utilities/mixins';
+@import 'cdb-variables/sizes';
+@import 'cdb-variables/colors';
+
+.Carousel {
+  position: relative;
+}
+.Carousel-list {
+  @include display-flex();
+  @include justify-content(flex-start);
+  position: relative;
+  max-width: 249px;
+  padding-bottom: 10px;
+}
+.Carousel-item {
+  @include display-flex();
+  @include align-items(center);
+  @include justify-content(center);
+  width: $baseSize * 11;
+  min-width: $baseSize * 11;
+  height: $baseSize * 7;
+  margin-right: 8px;
+  border: 1px solid $cSecondaryLine;
+  border-radius: 4px;
+  background: $cThirdBackground;
+  box-sizing: border-box;
+
+  &:last-child {
+    margin-right: 0;
+  }
+  &:hover {
+    border: 1px solid $cMainLine;
+    cursor: pointer;
+  }
+}
+.Carousel-item.is-selected {
+  border: 2px solid $cBlue;
+}
+.Carousel-shadow {
+  @include transition(opacity, 400ms);
+  @include opacity(0);
+  display: block;
+  position: absolute;
+  top: 0;
+  width: 30px;
+  height: $baseSize * 7;
+  pointer-events: none;
+  z-index: 100;
+}
+.Carousel-shadow.is-visible {
+  @include opacity(1);
+}
+.Carousel-shadow--left {
+  @include background-horizontal(#FFF, rgba(255, 255, 255, 0));
+  // Overriding default background color
+  background-color: rgba(255, 255, 255, 0) !important;
+  left: 0;
+}
+.Carousel-shadow--right {
+  @include background-horizontal(rgba(255, 255, 255, 0), #FFF);
+  right: 0;
+}
+.Carousel-list.ps-container > .ps-scrollbar-x-rail {
+  display: block;
+  width: 100%;
+  opacity: 1;
+}

@@ -89,6 +89,12 @@ module VisualizationsControllerHelper
     visualization
   end
 
+  def load_visualization_from_id_or_name!(id_or_name)
+    visualization = load_visualization_from_id_or_name(id_or_name)
+    raise Carto::LoadError.new("Visualization not found: #{id_or_name}") unless visualization
+    visualization
+  end
+
   def generate_vizjson3(visualization, params)
     Carto::Api::VizJSON3Presenter.new(visualization)
                                  .to_vizjson(https_request: is_https?, vector: params[:vector] == 'true')

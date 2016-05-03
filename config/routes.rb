@@ -485,7 +485,7 @@ CartoDB::Application.routes.draw do
         resources :analyses, only: [:show, :create, :update, :destroy], constraints: { id: /[^\/]+/ }
       end
 
-      resources :visualization_exports, only: [:create], constraints: { id: /[^\/]+/ }
+      resources :visualization_exports, only: [:create, :show], constraints: { id: /[^\/]+/ }
     end
   end
 

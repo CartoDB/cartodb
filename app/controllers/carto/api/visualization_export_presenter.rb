@@ -16,6 +16,7 @@ module Carto
           visualization_id: @visualization_export.visualization_id,
           user_id: @visualization_export.user_id,
           state: @visualization_export.state,
+          url: @visualization_export.url,
           created_at: @visualization_export.created_at,
           updated_at: @visualization_export.updated_at
         }

@@ -42,7 +42,7 @@ describe Carto::Api::AnalysesController do
 
     def verify_analysis_response_body(response_body, analysis)
       response_body[:id].should eq analysis.id
-      analysis_definition_json = response_body[:analysis_definition].symbolize_keys
+      analysis_definition_json = response_body[:analysis_definition].deep_symbolize_keys
       analysis_definition_json.should eq analysis.analysis_definition_json
       analysis_definition_json[:id].should eq analysis.natural_id
     end

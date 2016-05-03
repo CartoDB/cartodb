@@ -25,7 +25,7 @@ feature "API 1.0 map layers management" do
   let(:params) { { api_key: @user.api_key } }
 
   scenario "Create a new layer associated to a map" do
-    opts = { "type" => "GMapsBase", "base_type" => "roadmap", "style" => "null", "order" => "0", "query_history" => [] }
+    opts = { type: "GMapsBase", base_type: "roadmap", style: "null", order: "0", query_history: [] }
     infowindow = ['column1', 'column2', 'column3']
 
     data = { kind: 'gmapsbase', infowindow: infowindow, options: opts }
@@ -50,8 +50,8 @@ feature "API 1.0 map layers management" do
       response.body[:id].should    eq layer.id
       response.body[:kind].should  eq 'carto'
       response.body[:order].should eq 1
-      response.body[:infowindow].should eq "fields" => ["column1", "column2"] 
-      response.body[:tooltip].should eq "fields" => ["column1", "column3"] 
+      response.body[:infowindow].should eq fields: ["column1", "column2"]
+      response.body[:tooltip].should eq fields: ["column1", "column3"]
     end
   end
 
@@ -83,9 +83,9 @@ feature "API 1.0 map layers management" do
     put_json api_v1_maps_layers_update_url(params.merge(id: layer.id, map_id: @map.id)), data do |response|
       response.status.should be_success
       response.body[:id].should == layer.id
-      response.body[:options].should == { 'opt1' => 'value' }
+      response.body[:options].should == { opt1: 'value' }
       response.body[:infowindow].should == ['column1', 'column2']
-      response.body[:kind].should == 'carto'      
+      response.body[:kind].should == 'carto'
       response.body[:order].should == 3
     end
   end
@@ -113,16 +113,16 @@ feature "API 1.0 map layers management" do
   end
 
   scenario "Update a layer does not change table_name neither user_name" do
-    layer = Layer.create kind: 'carto', order: 0, options: {'table_name' => 'table1', 'user_name' => @user.username}
+    layer = Layer.create kind: 'carto', order: 0, options: { table_name: 'table1', user_name: @user.username}
     @map.add_layer layer
 
     data = { options: { table_name: 't1', user_name: 'u1'}, order: 3, kind: 'carto' }
 
     put_json api_v1_maps_layers_update_url(params.merge(id: layer.id, map_id: @map.id)), data do |response|
       response.status.should be_success
-      layer.options['table_name'].should == 'table1'
-      layer.options['user_name'].should == @user.username
-      response.body[:options].should == { 'table_name' => 'table1', 'user_name' => @user.username }
+      layer.options[:table_name].should == 'table1'
+      layer.options[:user_name].should == @user.username
+      response.body[:options].should == { table_name: 'table1', user_name: @user.username }
     end
   end
 
@@ -143,7 +143,7 @@ feature "API 1.0 map layers management" do
   scenario "Drop a layer" do
     layer = Layer.create kind: 'carto'
     @map.add_layer layer
-    
+
     delete_json api_v1_maps_layers_destroy_url(params.merge(id: layer.id, map_id: @map.id)) do |response|
       response.status.should eq 204
       expect { layer.refresh }.to raise_error

@@ -33,7 +33,7 @@ describe Carto::Widget do
       end
 
       it 'triggers notify_map_change on related map(s)' do
-        map = mock()
+        map = mock
         map.stubs(:id).returns(@map.id)
         map.expects(:notify_map_change).twice
         Map.stubs(:where).with(id: map.id).returns([map])

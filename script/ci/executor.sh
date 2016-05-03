@@ -27,18 +27,13 @@ main() {
     redis_file
     # Lock the redis file
     lock $redisfile;
-    
-    # Choose redis-server port 
+
+    # Choose redis-server port
     port=$(cat config/$redisfile)
 
     # Run the rspec
-    # Some dirty logic here
-    if [[ $1 == *"services/importer"* ]] || [[ $1 == *"services/platform-limits/spec/unit/"* ]] || [[ $1 == *"services/wms/spec/unit/wms_spec.rb"* ]] || [[ $1 == *"services/datasources"* ]] || [[ $1 == *"spec/models/overlay/collection_spec.rb"* ]]; then
-      RAILS_ENV=test PARALLEL=true RAILS_DATABASE_FILE=database_${2}.yml REDIS_PORT=$port bundle exec rspec $1 >> $port.log 2>&1;
-    else
-      RAILS_ENV=test PARALLEL=true RAILS_DATABASE_FILE=database_${2}.yml REDIS_PORT=$port bundle exec rspec --require ./spec/rspec_configuration.rb $1 >> $port.log 2>&1;
-    fi
-    
+    RAILS_ENV=test PARALLEL=true RAILS_DATABASE_FILE=database_${2}.yml REDIS_PORT=$port bundle exec rspec --require ./spec/rspec_configuration.rb $1 >> $port.log 2>&1;
+
     # Give some feedback
     if [ $? -eq 0 ]; then
       echo "Finished: $1 Port: $port";

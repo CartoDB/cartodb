@@ -305,6 +305,10 @@ class Carto::Visualization < ActiveRecord::Base
     layers.map(&:widgets).flatten
   end
 
+  def analysis_widgets
+    widgets.select { |w| w.source_id.present? }
+  end
+
   def attributions_from_derived_visualizations
     related_canonical_visualizations.map(&:attributions).reject(&:blank?)
   end

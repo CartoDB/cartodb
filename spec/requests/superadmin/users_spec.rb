@@ -21,8 +21,8 @@ feature "Superadmin's users API" do
 
     post_json superadmin_users_path, { user: @user_atts }, superadmin_headers do |response|
       response.status.should == 422
-      response.body[:errors]['email'].should be_present
-      response.body[:errors]['email'].should include("is not present")
+      response.body[:errors][:email].should be_present
+      response.body[:errors][:email].should include("is not present")
     end
   end
 
@@ -105,6 +105,8 @@ feature "Superadmin's users API" do
     @user_atts[:geocoding_block_price] = 2
     @user_atts[:here_isolines_quota] = 100
     @user_atts[:here_isolines_block_price] = 5
+    @user_atts[:obs_snapshot_quota] = 100
+    @user_atts[:obs_snapshot_block_price] = 5
     @user_atts[:notification] = 'Test'
 
     CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
@@ -121,6 +123,8 @@ feature "Superadmin's users API" do
       response.body[:geocoding_block_price].should == 2
       response.body[:here_isolines_quota].should == 100
       response.body[:here_isolines_block_price].should == 5
+      response.body[:obs_snapshot_quota].should == 100
+      response.body[:obs_snapshot_block_price].should == 5
       response.body[:notification].should == 'Test'
 
       # Double check that the user has been created properly
@@ -135,6 +139,8 @@ feature "Superadmin's users API" do
       user.geocoding_block_price.should == 2
       user.here_isolines_quota.should == 100
       user.here_isolines_block_price.should == 5
+      user.obs_snapshot_quota.should == 100
+      user.obs_snapshot_block_price.should == 5
       user.notification.should == 'Test'
     end
     ::User.where(username: @user_atts[:username]).first.destroy
@@ -157,6 +163,8 @@ feature "Superadmin's users API" do
                      geocoding_block_price: 5,
                      here_isolines_quota: 250,
                      here_isolines_block_price: 10,
+                     obs_snapshot_quota: 250,
+                     obs_snapshot_block_price: 10,
                      notification: 'Test',
                      available_for_hire: true,
                      disqus_shortname: 'abc' }
@@ -180,6 +188,8 @@ feature "Superadmin's users API" do
     user.geocoding_block_price.should == 5
     user.here_isolines_quota.should == 250
     user.here_isolines_block_price.should == 10
+    user.obs_snapshot_quota.should == 250
+    user.obs_snapshot_block_price.should == 10
     user.notification.should == 'Test'
     user.disqus_shortname.should == 'abc'
     user.available_for_hire.should == true
@@ -195,6 +205,8 @@ feature "Superadmin's users API" do
     user.geocoding_block_price.should == 5
     user.here_isolines_quota.should == 250
     user.here_isolines_block_price.should == 10
+    user.obs_snapshot_quota.should == 250
+    user.obs_snapshot_block_price.should == 10
     user.notification.should == 'Test'
 
     user.destroy

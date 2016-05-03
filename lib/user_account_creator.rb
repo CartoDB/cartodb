@@ -15,6 +15,7 @@ module CartoDB
     # For user creations from orgs
     PARAM_SOFT_GEOCODING_LIMIT = :soft_geocoding_limit
     PARAM_SOFT_HERE_ISOLINES_LIMIT = :soft_here_isolines_limit
+    PARAM_SOFT_OBS_SNAPSHOT_LIMIT = :soft_obs_snapshot_limit
     PARAM_SOFT_TWITTER_DATASOURCE_LIMIT = :soft_twitter_datasource_limit
     PARAM_QUOTA_IN_BYTES = :quota_in_bytes
 
@@ -46,6 +47,10 @@ module CartoDB
 
     def with_soft_here_isolines_limit(value)
       with_param(PARAM_SOFT_HERE_ISOLINES_LIMIT, value)
+    end
+
+    def with_soft_obs_snapshot_limit(value)
+      with_param(PARAM_SOFT_OBS_SNAPSHOT_LIMIT, value)
     end
 
     def with_soft_twitter_datasource_limit(value)
@@ -151,6 +156,7 @@ module CartoDB
       @user.username = @user_params[PARAM_USERNAME] if @user_params[PARAM_USERNAME]
       @user.soft_geocoding_limit = @user_params[PARAM_SOFT_GEOCODING_LIMIT] == 'true'
       @user.soft_here_isolines_limit = @user_params[PARAM_SOFT_HERE_ISOLINES_LIMIT] == 'true'
+      @user.soft_obs_snapshot_limit = @user_params[PARAM_SOFT_OBS_SNAPSHOT_LIMIT] == 'true'
       @user.soft_twitter_datasource_limit = @user_params[PARAM_SOFT_TWITTER_DATASOURCE_LIMIT] == 'true'
       @user.quota_in_bytes = @user_params[PARAM_QUOTA_IN_BYTES] if @user_params[PARAM_QUOTA_IN_BYTES]
 
@@ -168,6 +174,9 @@ module CartoDB
       end
       if @user_params[PARAM_SOFT_HERE_ISOLINES_LIMIT] == 'true' && !owner.soft_here_isolines_limit
         @custom_errors[:soft_here_isolines_limit] = ["Owner can't assign soft here isolines limit"]
+      end
+      if @user_params[PARAM_SOFT_OBS_SNAPSHOT_LIMIT] == 'true' && !owner.soft_obs_snapshot_limit
+        @custom_errors[:soft_obs_snapshot_limit] = ["Owner can't assign soft data observatory limit"]
       end
       if @user_params[PARAM_SOFT_TWITTER_DATASOURCE_LIMIT] == 'true' && !owner.soft_twitter_datasource_limit
         @custom_errors[:soft_twitter_datasource_limit] = ["Owner can't assign soft twitter datasource limit"]

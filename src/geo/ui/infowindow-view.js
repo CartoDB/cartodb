@@ -172,7 +172,6 @@ var Infowindow = View.extend({
     this.model.bind('change:latlng', this._update, this);
     this.model.bind('change:visibility', this.toggle, this);
     this.model.bind('change:template change:sanitizeTemplate', this._compileTemplate, this);
-    this.model.bind('change:status', this.render, this);
 
     this.mapView.map.bind('change', this._updatePosition, this);
 

@@ -80,7 +80,6 @@ InfowindowManager.prototype._fetchAttributes = function (layerView, layerModel, 
   this._currentLatLng = latlng || this._currentLatLng;
   this._infowindowModel.set({
     latlng: this._currentLatLng,
-    status: 'loading',
     visibility: true
   });
   this._infowindowModel.updateContent();
@@ -89,9 +88,8 @@ InfowindowManager.prototype._fetchAttributes = function (layerView, layerModel, 
   layerView.model.fetchAttributes(layerIndex, this._currentFeatureId, function (attributes) {
     if (attributes) {
       this._infowindowModel.updateContent(attributes);
-      this._infowindowModel.set('status', 'ready');
     } else {
-      this._infowindowModel.set('status', 'error');
+      console.log("Couldn't fetch attributes for layer #" + layerIndex + ' and feature ' + this._currentFeatureId);
     }
   }.bind(this));
 

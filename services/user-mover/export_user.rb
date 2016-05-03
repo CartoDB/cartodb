@@ -29,7 +29,7 @@ module CartoDB
           @database_host,
           CartoDB::DataMover::Config[:user_dbport],
           @database_name
-        )} -Fc -f #{@filename} --serializable-deferrable -v")
+        )} -Z0 -Fc -f #{@filename} --serializable-deferrable -v")
       end
 
       def initialize(database_host, database_name, path, filename, database_schema = nil, logger = default_logger)
@@ -53,7 +53,7 @@ module CartoDB
           @database_host,
           CartoDB::DataMover::Config[:user_dbport],
           @database_name
-        )} -f #{@path}#{@database_schema}.schema.sql -n #{@database_schema} --verbose --no-tablespaces -Z 0")
+        )} -Z0 -Fc -f #{@path}#{@database_schema}.schema.sql -n #{@database_schema} --verbose --no-tablespaces")
       end
     end
   end

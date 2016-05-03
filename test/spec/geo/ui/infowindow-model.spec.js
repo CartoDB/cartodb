@@ -1,6 +1,34 @@
 var InfowindowModel = require('../../../../src/geo/ui/infowindow-model');
 
 describe('geo/ui/infowindow-model', function () {
+  describe('.setContent', function () {
+    it('should only include empty fields when no attributes are given', function () {
+      var infowindowModel = new InfowindowModel({ fields: [ { name: 'NAME' } ], show_empty_fields: false });
+      infowindowModel.updateContent();
+
+      expect(infowindowModel.get('content').fields).toEqual([ { title: null, value: '&nbsp;', index: 0 } ]);
+
+      var infowindowModel = new InfowindowModel({ fields: [ { name: 'NAME' } ], show_empty_fields: true });
+      infowindowModel.updateContent();
+
+      expect(infowindowModel.get('content').fields).toEqual([ { title: null, value: '&nbsp;', index: 0 } ]);
+    });
+
+    it('should show empty fields', function () {
+      var infowindowModel = new InfowindowModel({ fields: [{ name: 'NAME', title: true }, { name: 'SOMETHING', title: true }], show_empty_fields: false });
+      infowindowModel.updateContent({ NAME: 'CartoDB' });
+
+      expect(infowindowModel.get('content').fields).toEqual([{ title: 'NAME', value: 'CartoDB', index: 0 }]);
+    });
+
+    it('should not show empty fields', function () {
+      var infowindowModel = new InfowindowModel({ fields: [{ name: 'NAME', title: true }, { name: 'SOMETHING', title: true }], show_empty_fields: true });
+      infowindowModel.updateContent({ NAME: 'CartoDB' });
+
+      expect(infowindowModel.get('content').fields).toEqual([{ title: 'NAME', value: 'CartoDB', index: 0 }, { title: 'SOMETHING', value: '-', index: 1 }]);
+    });
+  });
+
   describe('.contentForFields', function () {
     it('should return the title and value of each field', function () {
       var attributes = { field1: 'value1' };
@@ -31,10 +59,10 @@ describe('geo/ui/infowindow-model', function () {
       expect(content.fields[1].index).toEqual(1);
     });
 
-    it('should return empty fields', function () {
+    it('should return empty fields and use the given placeholder', function () {
       var attributes = { field1: 'value1' };
       var fields = [{ name: 'field1' }, { name: 'field2' }];
-      var options = { empty_fields: true };
+      var options = { show_empty_fields: true, placeholder: '-' };
       var content = InfowindowModel.contentForFields(attributes, fields, options);
 
       expect(content.fields.length).toEqual(2);
@@ -45,7 +73,7 @@ describe('geo/ui/infowindow-model', function () {
       });
       expect(content.fields[1]).toEqual({
         title: null,
-        value: undefined,
+        value: '-',
         index: 1
       });
     });
@@ -53,7 +81,7 @@ describe('geo/ui/infowindow-model', function () {
     it('should not return empty fields', function () {
       var attributes = { field1: 'value1' };
       var fields = [{ name: 'field1' }, { name: 'field2' }];
-      var options = { empty_fields: false };
+      var options = { show_empty_fields: false };
       var content = InfowindowModel.contentForFields(attributes, fields, options);
 
       expect(content.fields.length).toEqual(1);

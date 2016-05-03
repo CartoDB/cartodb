@@ -63,7 +63,7 @@ var Tooltip = InfoBox.extend({
             }
 
             var c = InfowindowModel.contentForFields(data, this.options.fields, {
-              empty_fields: this.options.empty_fields
+              show_empty_fields: false
             });
 
             // Remove fields and content from data

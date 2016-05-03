@@ -168,7 +168,6 @@ describe('src/vis/infowindow-manager.js', function () {
     // InfowindowModel has been updated
     expect(infowindowModel.attributes).toEqual({
       'template': 'template1',
-      'template_type': 'underscore',
       'alternative_names': 'alternative_names1',
       'fields': [
         {
@@ -178,6 +177,7 @@ describe('src/vis/infowindow-manager.js', function () {
         }
       ],
       'template_name': 'infowindow_light',
+      'template_type': 'underscore',
       'offset': [
         28,
         0
@@ -196,11 +196,11 @@ describe('src/vis/infowindow-manager.js', function () {
           'name': 'juan'
         }
       },
+      show_empty_fields: false,
       'latlng': [
         100,
         200
       ],
-      'status': 'ready',
       'visibility': true
     });
 
@@ -215,7 +215,6 @@ describe('src/vis/infowindow-manager.js', function () {
     // InfowindowModel has been updated
     expect(infowindowModel.attributes).toEqual({
       'template': 'template2',
-      'template_type': 'underscore',
       'alternative_names': 'alternative_names2',
       'fields': [
         {
@@ -225,6 +224,7 @@ describe('src/vis/infowindow-manager.js', function () {
         }
       ],
       'template_name': 'infowindow_light',
+      'template_type': 'underscore',
       'offset': [
         28,
         0
@@ -244,11 +244,11 @@ describe('src/vis/infowindow-manager.js', function () {
           'name': 'juan'
         }
       },
+      'show_empty_fields': false,
       'latlng': [
         100,
         200
       ],
-      'status': 'ready',
       'visibility': true
     });
   });

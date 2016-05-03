@@ -17,6 +17,7 @@ var InfowindowModel = Backbone.Model.extend({
     template: '',
     content: '',
     alternative_names: { },
+    show_empty_fields: false,
     fields: null // contains the fields displayed in the infowindow
   },
 
@@ -24,10 +25,15 @@ var InfowindowModel = Backbone.Model.extend({
   // with just the field names
   updateContent: function (attributes) {
     var fields = this.get('fields');
-    var options = {};
+    var options = {
+      show_empty_fields: this.get('show_empty_fields')
+    };
     if (!attributes) {
       attributes = {};
-      options = { empty_fields: true };
+      options.placeholder = '&nbsp;';
+      options.show_empty_fields = true;
+    } else {
+      options.placeholder = '-';
     }
     this.set('content', InfowindowModel.contentForFields(attributes, fields, options));
   },
@@ -52,10 +58,11 @@ var InfowindowModel = Backbone.Model.extend({
     for (var j = 0; j < fields.length; ++j) {
       var field = fields[j];
       var value = attributes[field.name];
-      if (options.empty_fields || (value !== undefined && value !== null)) {
+      if (options.show_empty_fields || (value !== undefined && value !== null)) {
+        value = value || options.placeholder;
         render_fields.push({
           title: field.title ? field.name : null,
-          value: value || '&nbsp;',
+          value: value,
           index: j
         });
       }

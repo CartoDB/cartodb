@@ -22,5 +22,5 @@ describe('dashboard', function () {
     spyOn(URLHelper, 'getLocalURL').and.returnValue(url);
     var correctState = { 1: { collapsed: true }, 3: { collapsed: true }, 5: { autoStyle: true } };
     expect(URLHelper.getStateFromCurrentURL()).toEqual(correctState);
-  })
+  });
 });

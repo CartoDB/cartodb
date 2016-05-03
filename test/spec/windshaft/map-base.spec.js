@@ -258,6 +258,38 @@ describe('windshaft/map-base', function () {
         expect(this.windshaftMap.getLayerMetadata(0)).toEqual('cartodb-metadata');
         expect(this.windshaftMap.getLayerMetadata(1)).toEqual('torque-metadata');
       });
+
+      it('should ignore plain layers present in the response', function () {
+        this.windshaftMap.set({
+          layergroupid: 'layergroupid',
+          metadata: {
+            layers: [
+              {
+                'type': 'plain'
+              },
+              {
+                'type': 'mapnik',
+                'meta': 'cartodb-metadata',
+                'widgets': {
+                  'dataviewId': {
+                    'url': {
+                      'http': 'http://example.com',
+                      'https': 'https://example.com'
+                    }
+                  }
+                }
+              },
+              {
+                'type': 'torque',
+                'meta': 'torque-metadata'
+              }
+            ]
+          }
+        });
+
+        expect(this.windshaftMap.getLayerMetadata(0)).toEqual('cartodb-metadata');
+        expect(this.windshaftMap.getLayerMetadata(1)).toEqual('torque-metadata');
+      });
     });
   });
 

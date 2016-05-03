@@ -192,17 +192,12 @@ Overlay.register('_header', function (data, vis) {
 
 // infowindow
 Overlay.register('infowindow', function (data, vis) {
-  if (_.size(data.fields) == 0) {
-    return null;
-  }
-
   var infowindowModel = new InfowindowModel({
     template: data.template,
-    template_type: data.templateType,
     alternative_names: data.alternative_names,
     fields: data.fields,
     template_name: data.template_name,
-    template_type: data.template_type
+    template_type: data.templateType // TODO: Remove this?
   });
 
   var infowindow = new Infowindow({

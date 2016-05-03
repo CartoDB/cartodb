@@ -1,4 +1,3 @@
-var _ = require('underscore');
 var Overlay = require('./vis/overlay');
 
 /**

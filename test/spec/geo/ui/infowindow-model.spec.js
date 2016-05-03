@@ -8,7 +8,7 @@ describe('geo/ui/infowindow-model', function () {
 
       expect(infowindowModel.get('content').fields).toEqual([ { title: null, value: '&nbsp;', index: 0 } ]);
 
-      var infowindowModel = new InfowindowModel({ fields: [ { name: 'NAME' } ], show_empty_fields: true });
+      infowindowModel = new InfowindowModel({ fields: [ { name: 'NAME' } ], show_empty_fields: true });
       infowindowModel.updateContent();
 
       expect(infowindowModel.get('content').fields).toEqual([ { title: null, value: '&nbsp;', index: 0 } ]);

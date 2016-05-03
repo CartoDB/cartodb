@@ -698,6 +698,7 @@ describe Carto::VisualizationsExportService2 do
     end
 
     after(:each) do
+      @analysis.destroy
       destroy_full_visualization(@map, @table, @table_visualization, @visualization)
     end
 

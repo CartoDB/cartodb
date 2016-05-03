@@ -1,6 +1,7 @@
 # encoding: UTF-8
 
 require 'fileutils'
+require 'active_record'
 require_relative '../../services/carto/visualizations_export_service_2'
 require_relative '../../../services/sql-api/sql_api'
 
@@ -100,8 +101,27 @@ module Carto
     end
   end
 
-  class VisualizationExport
+  class VisualizationExport < ::ActiveRecord::Base
     include VisualizationExporter
+    # TODO: FKs? convenient?
+    belongs_to :visualization, class_name: Carto::Visualization
+    belongs_to :user, class_name: Carto::User
+
+    validate :visualization_exportable_by_user?, if: :new_record?
+
+    STATE_PENDING = 'pending'.freeze
+    STATE_COMPLETE = 'complete'.freeze
+    STATE_FAILURE = 'failure'.freeze
+
+    def run_export!
+      export(visualization, user)
+    end
+
+    private
+
+    def visualization_exportable_by_user?
+      errors.add(:visualization, 'Must be accessible by the user') unless visualization.is_accesible_by_user?(user)
+    end
 
   end
 end

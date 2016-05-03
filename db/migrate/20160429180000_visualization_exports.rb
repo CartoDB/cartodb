@@ -5,6 +5,7 @@ Sequel.migration do
       # TODO: FK?
       foreign_key :visualization_id, :visualizations, type: 'uuid', null: false, on_delete: :cascade
       foreign_key :user_id, :users, type: 'uuid', null: false, on_delete: :cascade
+      String :user_tables_ids, text: true
       String :state, text: true, null: false, default: Carto::VisualizationExport::STATE_PENDING
       String :file, text: true
       String :url, text: true

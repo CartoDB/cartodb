@@ -103,6 +103,42 @@ describe Carto::VisualizationExport do
 
       destroy_full_visualization(map, table, table_visualization, visualization)
     end
+
+    it 'excludes layers and user_tables with user_tables_ids parameter' do
+      table1 = FactoryGirl.create(:private_user_table, user: @carto_user)
+      table2 = FactoryGirl.create(:private_user_table, user: @carto_user)
+
+      layer1 = FactoryGirl.create(:carto_layer, options: { table_name: table1.name })
+      layer2 = FactoryGirl.create(:carto_layer, options: { table_name: table2.name })
+
+      map = FactoryGirl.create(:carto_map, layers: [layer1, layer2], user: @carto_user)
+      map, table, table_visualization, visualization = create_full_visualization(@carto_user,
+                                                                                 map: map,
+                                                                                 table: table1,
+                                                                                 data_layer: layer1)
+
+      fake_carto_http_client_toucher = FakeCartoHttpClientFileToucher.new
+
+      exported_file = Carto::VisualizationExport.new.export(
+        visualization,
+        @carto_user,
+        user_tables_ids: [table1.id],
+        base_dir: base_dir,
+        data_exporter: Carto::DataExporter.new(fake_carto_http_client_toucher))
+
+      touched_files = fake_carto_http_client_toucher.touched_files
+      CartoDB::Importer2::Unp.new.open(exported_file) do |files|
+        files.length.should eq (1 + 1) # selected user_table + metadata
+        names = files.map(&:path)
+        names.count { |f| f =~ /\.carto\.json$/ }.should eq 1
+        names.should include(touched_files[0].split('/').last)
+        touched_files.length.should eq 1
+      end
+
+      ([exported_file] + touched_files).map { |f| File.delete(f) if File.exists?(f) }
+
+      destroy_full_visualization(map, table, table_visualization, visualization)
+    end
   end
 
   describe '#run_export!' do

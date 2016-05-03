@@ -53,6 +53,13 @@ describe Carto::Api::VisualizationExportsController do
       end
     end
 
+    it 'returns 422 if user_tables_ids param contains user table ids not related to the visualization' do
+      post_json create_visualization_export_url(@user),
+                visualization_id: @visualization.id, user_tables_ids: random_uuid do |response|
+        response.status.should eq 422
+      end
+    end
+
     it 'enqueues a job and returns the id' do
       Resque.expects(:enqueue).with(Resque::ExporterJobs, anything).once
       post_json create_visualization_export_url(@user), visualization_id: @visualization.id do |response|

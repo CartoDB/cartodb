@@ -172,6 +172,13 @@ defaults: &defaults
       table_name: ''
   exporter:
     exporter_temporal_folder: '/tmp/exporter'
+    s3:
+      access_key_id: ''
+      secret_access_key: ''
+      bucket_name: ''
+      url_ttl: 7200
+      async_long_uploads: false
+    uploads_path: 'public/uploads'
   importer:
     blacklisted_ip_addr: []
     content_guessing:        # Depends on geocoding

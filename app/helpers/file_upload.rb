@@ -27,7 +27,7 @@ module CartoDB
       # Used by cartodb chrome extension
       ajax_upload = false
       case
-      when params[:filename].present? && request.body.present?
+      when params[:filename].present? && request && request.body.present?
         filename = params[:filename].original_filename rescue params[:filename].to_s
         begin
           filepath = params[:filename].path
@@ -93,7 +93,6 @@ module CartoDB
 
       path = "#{token}/#{File.basename(filename)}"
       o = s3_bucket.objects[path]
-
       o.write(Pathname.new(filepath), { acl: :authenticated_read })
 
       o.url_for(:get, expires: s3_config['url_ttl']).to_s
@@ -103,7 +102,7 @@ module CartoDB
 
     def save_body_to_file(params, request, random_token, filename)
       case
-      when params[:filename].present? && request.body.present?
+      when params[:filename].present? && request && request.body.present?
         filedata = params[:filename]
       when params[:file].present?
         filedata = params[:file]
@@ -139,6 +138,18 @@ module CartoDB
       file.close
       src.close
       file
+    end
+  end
+
+  # CartoDB::FileUpload was originally designed for Rails' UploadedFile.
+  # In order to avoid this need this class provides the needed interface.
+  class FileUploadFile
+    attr_reader :path, :original_filename, :filename
+
+    def initialize(filepath)
+      @path = filepath
+      @original_filename = File.basename(filepath)
+      @filename = @original_filename
     end
   end
 end

@@ -110,14 +110,30 @@ module Carto
     validate :visualization_exportable_by_user?, if: :new_record?
 
     STATE_PENDING = 'pending'.freeze
+    STATE_EXPORTING = 'exporting'.freeze
+    STATE_UPLOADING = 'uploading'.freeze
     STATE_COMPLETE = 'complete'.freeze
     STATE_FAILURE = 'failure'.freeze
 
     def run_export!
-      export(visualization, user)
+      update_attributes(state: STATE_EXPORTING)
+      filepath = export(visualization, user)
+      if use_s3?
+        update_attributes(state: STATE_UPLOADING, file: filepath)
+        file_upload_helper = CartoDB::FileUpload.new(Cartodb.get_config(:exporter, "uploads_path"))
+        results = file_upload_helper.upload_file_to_storage({ file: CartoDB::FileUploadFile.new(filepath) }, nil, Cartodb.config[:exporter]['s3'])
+        url = results[:file_uri]
+      else
+        url = filepath
+      end
+      update_attributes(state: filepath.present? && url.present? ? STATE_COMPLETE : STATE_FAILURE, file: filepath, url: url)
     end
 
     private
+
+    def use_s3?
+      Cartodb.get_config(:exporter, 's3', 'bucket_name').present?
+    end
 
     def visualization_exportable_by_user?
       errors.add(:visualization, 'Must be accessible by the user') unless visualization.is_accesible_by_user?(user)

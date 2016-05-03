@@ -53,7 +53,7 @@ module CartoDB
           @database_host,
           CartoDB::DataMover::Config[:user_dbport],
           @database_name
-        )} -Z0 -Fc -f #{@path}#{@database_schema}.schema.sql -n #{@database_schema} --verbose --no-tablespaces")
+        )} -f #{@path}#{@database_schema}.schema.sql -n #{@database_schema} --verbose --no-tablespaces -Z 0")
       end
     end
   end

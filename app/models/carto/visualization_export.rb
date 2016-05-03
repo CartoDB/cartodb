@@ -118,17 +118,19 @@ module Carto
 
     def run_export!(file_upload_helper: default_file_upload_helper)
       logger = Carto::Log.new(type: 'visualization_export')
+
       logger.append('Exporting')
       update_attributes(state: STATE_EXPORTING, log: logger)
       filepath = export(visualization, user)
-      if use_s3?
-        logger.append('Uploading')
-        update_attributes(state: STATE_UPLOADING, file: filepath)
-        results = file_upload_helper.upload_file_to_storage({ file: CartoDB::FileUploadFile.new(filepath) }, nil, Cartodb.config[:exporter]['s3'])
-        url = results[:file_uri]
-      else
-        url = filepath
-      end
+
+      logger.append('Uploading')
+      update_attributes(state: STATE_UPLOADING, file: filepath)
+      results = file_upload_helper.upload_file_to_storage({ file: CartoDB::FileUploadFile.new(filepath) }, nil, Cartodb.config[:exporter]['s3'])
+      url = results[:file_uri]
+
+      logger.append('Deleting tmp file')
+      FileUtils.rm(filepath)
+
       logger.append('Finishing')
       state = filepath.present? && url.present? ? STATE_COMPLETE : STATE_FAILURE
       update_attributes(state: state, file: filepath, url: url)
@@ -148,10 +150,6 @@ module Carto
 
     def default_file_upload_helper
       CartoDB::FileUpload.new(Cartodb.get_config(:exporter, "uploads_path"))
-    end
-
-    def use_s3?
-      Cartodb.get_config(:exporter, 's3', 'bucket_name').present?
     end
 
     def visualization_exportable_by_user?

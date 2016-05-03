@@ -24,8 +24,7 @@ module CartoDB
         enqueue:  true
       }
 
-      # Used by cartodb chrome extension
-      ajax_upload = false
+      load_file_from_request_body = false
       case
       when params[:filename].present? && request && request.body.present?
         filename = params[:filename].original_filename rescue params[:filename].to_s
@@ -33,7 +32,7 @@ module CartoDB
           filepath = params[:filename].path
         rescue
           filepath = params[:filename].to_s
-          ajax_upload = true
+          load_file_from_request_body = true
         end
       when params[:file].present?
         filename = params[:file].original_filename rescue params[:file].to_s
@@ -50,24 +49,24 @@ module CartoDB
                s3_config['bucket_name'].present? && s3_config['url_ttl'].present?
 
       file = nil
-      if ajax_upload
+      if load_file_from_request_body
         file = save_body_to_file(params, request, random_token, filename)
         filepath = file.path
       end
 
-      do_long_upload = s3_config['async_long_uploads'].present? && s3_config['async_long_uploads'] &&
+      do_long_upload = s3_config && s3_config['async_long_uploads'].present? && s3_config['async_long_uploads'] &&
         File.size(filepath) > MAX_SYNC_UPLOAD_S3_FILE_SIZE
 
       if use_s3 && !do_long_upload
         file_url = upload_file_to_s3(filepath, filename, random_token, s3_config)
 
-        if ajax_upload
+        if load_file_from_request_body
           File.delete(file.path)
         end
 
         results[:file_uri] = file_url
       else
-        unless ajax_upload
+        unless load_file_from_request_body
           file = save_body_to_file(params, request, random_token, filename)
         end
 
@@ -144,12 +143,13 @@ module CartoDB
   # CartoDB::FileUpload was originally designed for Rails' UploadedFile.
   # In order to avoid this need this class provides the needed interface.
   class FileUploadFile
-    attr_reader :path, :original_filename, :filename
+    attr_reader :path, :original_filename, :filename, :tempfile
 
     def initialize(filepath)
       @path = filepath
       @original_filename = File.basename(filepath)
       @filename = @original_filename
+      @tempfile = File.new(filepath)
     end
   end
 end

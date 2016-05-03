@@ -115,12 +115,14 @@ describe Carto::VisualizationExport do
         @visualization.destroy
       end
 
-      let(:fake_path) { '/tmp/exports/fake' }
+      let(:test_dir) { '/tmp/exports_test/' }
+      let(:fake_path) { "#{test_dir}/fake_export.carto" }
 
       it 'runs export creating a log trace' do
         ve = Carto::VisualizationExport.new(visualization: @visualization, user: @carto_user)
 
-        ve.expects(:use_s3?).returns(true)
+        FileUtils.mkdir_p test_dir
+        FileUtils.touch(fake_path).first
         ve.expects(:export).returns(fake_path)
 
         file_upload_helper_mock = mock

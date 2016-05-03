@@ -42,8 +42,6 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
-  -webkit-line-clamp: 1;
-  -webkit-box-orient: vertical;
 }
 .Editor-HeaderInfo-actions {
   @include display-flex();

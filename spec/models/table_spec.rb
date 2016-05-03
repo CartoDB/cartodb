@@ -115,7 +115,7 @@ describe Table do
 
     it "should not allow to create tables using system names" do
       table = create_table(name: "cdb_tablemetadata", user_id: @user.id)
-      table.name.should == "cdb_tablemetadata_1"
+      table.name.should == "cdb_tablemetadata_t"
     end
 
     it 'propagates name changes to table visualization' do
@@ -670,7 +670,7 @@ describe Table do
       }.should_not raise_error
     end
 
-    it "can create a table called using a reserved postgresql word as its name" do
+    it "can't create a table using a reserved postgresql word as its name" do
       delete_user_data @user
       @user.private_tables_enabled = false
       @user.save
@@ -678,14 +678,14 @@ describe Table do
       table = create_table(name: 'as', user_id: @user.id)
 
       @user.in_database do |user_database|
-        user_database.table_exists?(table.name.to_sym).should be_true
+        user_database.table_exists?('as_t'.to_sym).should be_true
       end
 
       table.name = 'where'
       table.save
       table.reload
       @user.in_database do |user_database|
-        user_database.table_exists?('where'.to_sym).should be_true
+        user_database.table_exists?('where_t'.to_sym).should be_true
       end
     end
 
@@ -1883,13 +1883,14 @@ describe Table do
 
   describe '#name=' do
     it 'does not change the name if it is equivalent to the current one' do
-      table = Table.new
-      table.name = 'new name'
+      table = new_table(user_id: @user.id, name: 'new name')
+
       table.name.should == 'new_name'
+
       table.name = 'new name'
       table.name.should == 'new_name'
     end
-  end #name=
+  end
 
   describe '#validation_for_link_privacy' do
     it 'checks that only users with private tables enabled can set LINK privacy' do
@@ -2163,9 +2164,8 @@ describe Table do
   describe 'Valid names for new table' do
     it 'Regression for CDB-3446' do
       new_name = 'table_'
-      Table.get_valid_table_name(new_name, {
-        name_candidates: %w(table_ table_1)
-      }).should_not == 'table_1'
+
+      Carto::ValidTableNameProposer.new(@user.id).propose_valid_table_name(new_name).should_not == 'table_1'
     end
   end
 

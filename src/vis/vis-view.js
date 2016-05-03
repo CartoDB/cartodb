@@ -40,8 +40,6 @@ var Vis = View.extend({
     this._analysisCollection = new Backbone.Collection();
     this._analysisPoller = new AnalysisPoller();
 
-    this._analysisCollection.bind('add', this._bindAnalysisModelToLoader, this);
-
     this.model.bind('change:loading', function () {
       if (this.loader) {
         if (this.model.get('loading')) {
@@ -263,7 +261,7 @@ var Vis = View.extend({
     this._analysisPoller.reset();
     this._analysisCollection.each(function (analysisModel) {
       analysisModel.unbind('change:status', this._onAnalysisStatusChanged, this);
-      if (!analysisModel.isDone() && this._isAnalysisSourceOfLayerOrDataview(analysisModel)) {
+      if (!analysisModel.isDone()) {
         this._analysisPoller.poll(analysisModel);
         this.model.trackLoadingObject(analysisModel);
         analysisModel.bind('change:status', this._onAnalysisStatusChanged, this);
@@ -285,7 +283,9 @@ var Vis = View.extend({
   _onAnalysisStatusChanged: function (analysisModel) {
     if (analysisModel.isDone()) {
       this.model.untrackLoadingObject(analysisModel);
-      this.map.reload();
+      if (this._isAnalysisSourceOfLayerOrDataview(analysisModel)) {
+        this.map.reload();
+      }
     }
   },
 

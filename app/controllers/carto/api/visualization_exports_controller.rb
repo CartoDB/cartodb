@@ -13,12 +13,20 @@ module Carto
 
       rescue_from Carto::LoadError, with: :rescue_from_carto_error
       rescue_from Carto::UnauthorizedError, with: :rescue_from_carto_error
+      rescue_from Carto::UnprocesableEntityError, with: :rescue_from_carto_error
 
       def create
         user = Carto::User.find(current_user.id)
-        visualization_export = Carto::VisualizationExport.new(visualization: @visualization, user: user)
+        visualization_export = Carto::VisualizationExport.new(
+          visualization: @visualization,
+          user: user,
+          user_tables_ids: params[:user_tables_ids])
         unless visualization_export.save
-          raise Carto::UnauthorizedError.new("Errors: #{visualization_export.errors}")
+          if visualization_export.errors[:visualization].present?
+            raise Carto::UnauthorizedError.new("Errors: #{visualization_export.errors}")
+          else
+            raise Carto::UnprocesableEntityError.new("Errors: #{visualization_export.errors}")
+          end
         end
 
         Resque.enqueue(Resque::ExporterJobs, job_id: visualization_export.id)

@@ -8,36 +8,6 @@ require_relative './visualization'
 require_dependency 'carto/visualization_exporter'
 
 module Carto
-  class DataExporter
-    def initialize(http_client = Carto::Http::Client.get('data_exporter', log_requests: true))
-      @http_client = http_client
-    end
-
-    # Returns the file
-    def export_table(user_table, folder, format)
-      table_name = user_table.name
-
-      query = %{select * from "#{table_name}"}
-      url = sql_api_query_url(query, table_name, user_table.user, privacy(user_table), format)
-      exported_file = "#{folder}/#{table_name}.#{format}"
-      @http_client.get_file(url, exported_file)
-    end
-
-    def export_visualization_tables(visualization, user, dir, format)
-      visualization.related_tables_readable_by(user).map { |ut| export_table(ut, dir, format) }
-    end
-
-    private
-
-    def sql_api_query_url(query, filename, user, privacy, format)
-      CartoDB::SQLApi.with_user(user, privacy).url(query, format, filename)
-    end
-
-    def privacy(user_table)
-      user_table.private? ? 'private' : 'public'
-    end
-  end
-
   class VisualizationExport < ::ActiveRecord::Base
     include VisualizationExporter
     # TODO: FKs? convenient?
@@ -46,6 +16,7 @@ module Carto
     belongs_to :log, class_name: Carto::Log
 
     validate :visualization_exportable_by_user?, if: :new_record?
+    validate :user_tables_ids_valid?, if: :new_record?
 
     STATE_PENDING = 'pending'.freeze
     STATE_EXPORTING = 'exporting'.freeze
@@ -58,7 +29,7 @@ module Carto
 
       logger.append('Exporting')
       update_attributes(state: STATE_EXPORTING, log: logger)
-      filepath = export(visualization, user)
+      filepath = export(visualization, user, user_tables_ids: user_tables_ids)
 
       logger.append('Uploading')
       update_attributes(state: STATE_UPLOADING, file: filepath)
@@ -91,6 +62,15 @@ module Carto
 
     def visualization_exportable_by_user?
       errors.add(:visualization, 'Must be accessible by the user') unless visualization.is_accesible_by_user?(user)
+    end
+
+    def user_tables_ids_valid?
+      return unless user_tables_ids.present?
+      related_tables_ids = visualization.related_tables_readable_by(user).map(&:id)
+      not_valid = user_tables_ids.split(',').select { |user_table_id| !related_tables_ids.include?(user_table_id) }
+      not_valid.each do |user_table_id|
+        errors.add(:user_tables_ids, "User table #{user_table_id} is not related to visualization #{visualization.id}")
+      end
     end
 
   end

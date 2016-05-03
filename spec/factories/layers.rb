@@ -15,7 +15,7 @@ FactoryGirl.define do
         "subdomains": "abcd",
         "minZoom": "0",
         "maxZoom": "18",
-        "attribution": "\u00a9 <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors \u00a9 <a href=\"http://cartodb.com/attributions#basemaps\">CartoDB</a>",
+        "attribution": "\u00a9 <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors \u00a9 <a href=\"https://cartodb.com/attributions\">CartoDB</a>",
         "urlTemplate": "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png",
         "type": "Tiled",
         "name": "Positron Labels"

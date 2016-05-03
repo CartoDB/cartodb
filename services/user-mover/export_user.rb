@@ -459,6 +459,7 @@ module CartoDB
                        'path'                   => @options[:path],
                        'start'                  => @start,
                        'end'                    => nil,
+                       'elapsed_time'           => nil,
                        'server'                 => `hostname`.strip,
                        'pid'                    => Process.pid,
                        'db_source'              => nil,
@@ -539,6 +540,7 @@ module CartoDB
           end
         rescue => e
           export_log[:end] = Time.now
+          export_log[:elapsed_time] = export_log[:end] - export_log[:start]
           export_log[:status] = 'failure'
           export_log[:trace] = e.to_s
           if options[:organization_name]
@@ -549,6 +551,7 @@ module CartoDB
           raise
         else
           export_log[:end] = Time.now
+          export_log[:elapsed_time] = export_log[:end] - export_log[:start]
           export_log[:status] = 'success'
         ensure
           exportjob_logger.info(export_log.to_json) unless options[:from_org]

@@ -5,8 +5,10 @@ var Overlay = require('./vis/overlay');
  * of layers and binds a new infowindow view/model to CartoDB.js whenever the
  * collection of layers changes
  */
-var InfowindowManager = function (vis) {
+var InfowindowManager = function (vis, options) {
+  options = options || {};
   this._vis = vis;
+  this._showEmptyFields = options.showEmptyFields;
 };
 
 InfowindowManager.prototype.manage = function (mapView, map) {
@@ -81,14 +83,16 @@ InfowindowManager.prototype._fetchAttributes = function (layerView, layerModel, 
     latlng: this._currentLatLng,
     visibility: true
   });
-  this._infowindowModel.updateContent();
+  this._infowindowModel.setLoading();
 
   var layerIndex = layerView.model.getIndexOf(layerModel);
   layerView.model.fetchAttributes(layerIndex, this._currentFeatureId, function (attributes) {
     if (attributes) {
-      this._infowindowModel.updateContent(attributes);
+      this._infowindowModel.updateContent(attributes, {
+        showEmptyFields: this._showEmptyFields
+      });
     } else {
-      console.log("Couldn't fetch attributes for layer #" + layerIndex + ' and feature ' + this._currentFeatureId);
+      this._infowindowModel.setError();
     }
   }.bind(this));
 

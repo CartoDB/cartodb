@@ -196,7 +196,6 @@ describe('src/vis/infowindow-manager.js', function () {
           'name': 'juan'
         }
       },
-      show_empty_fields: false,
       'latlng': [
         100,
         200
@@ -244,7 +243,6 @@ describe('src/vis/infowindow-manager.js', function () {
           'name': 'juan'
         }
       },
-      'show_empty_fields': false,
       'latlng': [
         100,
         200

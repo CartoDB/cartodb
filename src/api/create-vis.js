@@ -9,7 +9,8 @@ var DEFAULT_OPTIONS = {
   loaderControl: true,
   infowindow: true,
   tooltip: true,
-  time_slider: true
+  time_slider: true,
+  show_empty_infowindow_fields: false
 };
 
 var createVis = function (el, vizjson, options, callback) {

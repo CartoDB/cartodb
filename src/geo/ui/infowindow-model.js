@@ -1,3 +1,4 @@
+var _ = require('underscore');
 var Backbone = require('backbone');
 
 /**
@@ -17,25 +18,46 @@ var InfowindowModel = Backbone.Model.extend({
     template: '',
     content: '',
     alternative_names: { },
-    show_empty_fields: false,
     fields: null // contains the fields displayed in the infowindow
   },
 
   // updates content with attributes, if no attributes are given it only sets the content
   // with just the field names
-  updateContent: function (attributes) {
+  updateContent: function (attributes, options) {
+    options = options || {};
+    options = _.pick(options, 'showEmptyFields');
     var fields = this.get('fields');
-    var options = {
-      show_empty_fields: this.get('show_empty_fields')
-    };
-    if (!attributes) {
-      attributes = {};
-      options.placeholder = '&nbsp;';
-      options.show_empty_fields = true;
-    } else {
-      options.placeholder = '-';
-    }
     this.set('content', InfowindowModel.contentForFields(attributes, fields, options));
+  },
+
+  setLoading: function () {
+    this.set({
+      content: {
+        fields: [{
+          type: 'loading',
+          title: 'loading',
+          value: '…'
+        }]
+      }
+    });
+    return this;
+  },
+
+  setError: function () {
+    this.set({
+      content: {
+        fields: [{
+          title: null,
+          alternative_name: null,
+          value: 'There has been an error...',
+          index: null,
+          type: 'error'
+        }],
+        data: {}
+      }
+    });
+
+    return this;
   },
 
   getAlternativeName: function (fieldName) {
@@ -58,11 +80,10 @@ var InfowindowModel = Backbone.Model.extend({
     for (var j = 0; j < fields.length; ++j) {
       var field = fields[j];
       var value = attributes[field.name];
-      if (options.show_empty_fields || (value !== undefined && value !== null)) {
-        value = value || options.placeholder;
+      if (options.showEmptyFields || (value !== undefined && value !== null)) {
         render_fields.push({
           title: field.title ? field.name : null,
-          value: value,
+          value: value || 'null',
           index: j
         });
       }

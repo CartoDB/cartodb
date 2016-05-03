@@ -199,8 +199,9 @@ var Vis = View.extend({
     var layerModels = this._newLayerModels(vizjson, this.map);
 
     // Infowindows && Tooltips
-    // TODO: Move this to the constructor
-    var infowindowManager = new InfowindowManager(this);
+    var infowindowManager = new InfowindowManager(this, {
+      showEmptyFields: options.show_empty_infowindow_fields
+    });
     infowindowManager.manage(this.mapView, this.map);
 
     var tooltipManager = new TooltipManager(this);

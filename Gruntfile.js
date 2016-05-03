@@ -72,7 +72,9 @@
     grunt.loadNpmTasks('grunt-available-tasks');
 
     // Load Grunt tasks
-    require('load-grunt-tasks')(grunt);
+    require('load-grunt-tasks')(grunt, {
+      pattern: ['grunt-*', '@*/grunt-*', '!grunt-timer']
+    });
 
     require('./lib/build/tasks/manifest').register(grunt, ASSETS_DIR);
 

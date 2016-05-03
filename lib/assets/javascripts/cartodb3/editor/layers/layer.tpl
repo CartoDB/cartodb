@@ -11,14 +11,14 @@
   <div class="Editor-ListLayer-media u-rSpace--m" style="background: #E27D61; color: #fff">
     <p class="CDB-Text CDB-Size-large is-semibold u-upperCase"><%- letter %></p>
   </div>
-  <div class="Editor-ListLayer-Inner">
-    <div class="Editor-ListLayer-Title">
-      <h2 class="Editor-ListLayer-TitleText CDB-Text CDB-Size-large u-ellipsis js-title"><%- title %></h2>
-      <ul class="Editor-HeaderInfo-Actions">
-        <li class="Editor-HeaderInfo-ActionsItem CDB-Shape">
+  <div class="Editor-ListLayer-inner">
+    <div class="Editor-ListLayer-title">
+      <h2 class="Editor-ListLayer-titleText CDB-Text CDB-Size-large u-ellipsis js-title"><%- title %></h2>
+      <ul class="Editor-HeaderInfo-actions">
+        <li class="Editor-HeaderInfo-actionsItem CDB-Shape">
           <div class="CDB-ArrowToogle is-blue is-small"></div>
         </li>
-        <li class="Editor-HeaderInfo-ActionsItem CDB-Shape">
+        <li class="Editor-HeaderInfo-actionsItem CDB-Shape">
           <button class="CDB-Shape-threePoints is-blue is-small">
             <div class="CDB-Shape-threePointsItem"></div>
             <div class="CDB-Shape-threePointsItem"></div>

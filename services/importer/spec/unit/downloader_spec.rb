@@ -2,8 +2,10 @@
 require_relative '../../../../spec/spec_helper_min'
 require_relative '../../lib/importer/downloader'
 require_relative '../../../../lib/carto/url_validator'
+require_relative '../../../../spec/helpers/file_server_helper'
 
 include CartoDB::Importer2
+include FileServerHelper
 
 describe Downloader do
   before do
@@ -172,14 +174,16 @@ describe Downloader do
 
     it 'supports accented URLs' do
       [
-        { url: 'https://raw.githubusercontent.com/CartoDB/cartodb/master/services/importer/spec/fixtures/política_agraria_común.csv', name: 'política_agraria_común'},
+        { url: 'spec/fixtures/política_agraria_común.csv', name: 'política_agraria_común' },
         # TODO: move to master branch
-        { url: 'https://raw.githubusercontent.com/CartoDB/cartodb/master/services/importer/spec/fixtures/many_characters_áÁñÑçÇàÀ.csv', name: 'many_characters_áÁñÑçÇàÀ'}
-      ].each { |url_and_name|
-        downloader = Downloader.new(url_and_name[:url])
-        downloader.run
-        downloader.source_file.name.should eq(url_and_name[:name]), "Error downloading #{url_and_name[:url]}, name: #{downloader.source_file.name}"
-      }
+        { url: 'spec/fixtures/many_characters_áÁñÑçÇàÀ.csv', name: 'many_characters_áÁñÑçÇàÀ' }
+      ].each do |url_and_name|
+        serve_file url_and_name[:url] do |url|
+          downloader = Downloader.new(url)
+          downloader.run
+          downloader.source_file.name.should eq(url_and_name[:name]), "Error downloading #{url_and_name[:url]}, name: #{downloader.source_file.name}"
+        end
+      end
 
     end
 
@@ -242,15 +246,19 @@ describe Downloader do
     end
 
     it 'returns a source_file name' do
-      downloader = Downloader.new(@file_url)
-      downloader.run
-      downloader.source_file.name.should eq 'ne_110m_lakes'
+      serve_file 'spec/support/data/ne_110m_lakes.zip' do |url|
+        downloader = Downloader.new(url)
+        downloader.run
+        downloader.source_file.name.should eq 'ne_110m_lakes'
+      end
     end
 
     it 'returns a local filepath' do
-      downloader = Downloader.new(@file_url)
-      downloader.run
-      downloader.source_file.fullpath.should match /#{@file_url.split('/').last}/
+      serve_file 'spec/support/data/ne_110m_lakes.zip' do |url|
+        downloader = Downloader.new(url)
+        downloader.run
+        downloader.source_file.fullpath.should match /#{@file_url.split('/').last}/
+      end
     end
   end
 
@@ -347,4 +355,3 @@ describe Downloader do
     File.join(File.dirname(__FILE__), '..', 'fixtures', filename)
   end
 end
-

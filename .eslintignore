@@ -142,7 +142,6 @@
 **/test/spec/geo/map.spec.js
 **/test/spec/geo/ui/header.spec.js
 **/test/spec/geo/ui/infobox.spec.js
-**/test/spec/geo/ui/infowindow-model.spec.js
 **/test/spec/geo/ui/infowindow.spec.js
 **/test/spec/geo/ui/layer-selector-torque.spec.js
 **/test/spec/geo/ui/layer-selector.spec.js

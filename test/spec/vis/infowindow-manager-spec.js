@@ -343,4 +343,98 @@ describe('src/vis/infowindow-manager.js', function () {
     expect(filterFunction({ cartodb_id: 10 })).toBeFalsy();
     expect(filterFunction({ cartodb_id: 0 })).toBeTruthy();
   });
+
+  it('should reload the map when the infowindow template gets new fields', function () {
+    spyOn(this.map, 'reload');
+
+    var layer = new CartoDBLayer({
+      infowindow: {
+        template: 'template',
+        template_type: 'underscore',
+        fields: [{
+          'name': 'name',
+          'title': true,
+          'position': 1
+        }],
+        alternative_names: 'alternative_names'
+      }
+    });
+
+    var infowindowManager = new InfowindowManager(this.vis);
+    infowindowManager.manage(this.mapView, this.map);
+
+    this.map.layers.reset([ layer ]);
+
+    this.layerView.model = {
+      fetchAttributes: jasmine.createSpy('fetchAttributes').and.returnValue({ description: 'THE DESCRIPTION' }),
+      getLayerAt: function (index) {
+        return layer;
+      },
+
+      getIndexOf: function (layerModel) {
+        return 0;
+      }
+    };
+
+    layer.infowindow.set('fields', [
+      {
+        'name': 'description',
+        'title': true,
+        'position': 1
+      }
+    ]);
+
+    expect(this.map.reload).toHaveBeenCalledWith({});
+  });
+
+  it('should reload the map and fetch attributes when the infowindow template is active (visible) and it gets fields', function () {
+    spyOn(this.mapView, 'addInfowindow');
+
+    var layer = new CartoDBLayer({
+      infowindow: {
+        template: 'template',
+        template_type: 'underscore',
+        fields: [{
+          'name': 'name',
+          'title': true,
+          'position': 1
+        }],
+        alternative_names: 'alternative_names'
+      }
+    });
+
+    var infowindowManager = new InfowindowManager(this.vis);
+    infowindowManager.manage(this.mapView, this.map);
+
+    this.map.layers.reset([ layer ]);
+
+    var infowindowView = this.mapView.addInfowindow.calls.mostRecent().args[0];
+    spyOn(infowindowView, 'adjustPan');
+
+    this.layerView.model = {
+      fetchAttributes: jasmine.createSpy('fetchAttributes').and.returnValue({ description: 'THE DESCRIPTION' }),
+      getLayerAt: function (index) {
+        return layer;
+      },
+
+      getIndexOf: function (layerModel) {
+        return 0;
+      }
+    };
+
+    infowindowManager._infowindowModel.setInfowindowTemplate(layer.infowindow);
+    infowindowManager._infowindowModel.set('visibility', true);
+
+    spyOn(this.map, 'reload');
+
+    layer.infowindow.set('fields', [
+      {
+        'name': 'description',
+        'title': true,
+        'position': 1
+      }
+    ]);
+
+    expect(this.map.reload.calls.argsFor(0)[0].success).toEqual(jasmine.any(Function));
+  });
 });

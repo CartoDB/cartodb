@@ -62,12 +62,9 @@ var Map = Model.extend({
     // This method is declared here so that we can spyOn _.debounce
     // in the tests that depend on this to work
     this.reload = _.debounce(function (options) {
-      var instanceOptions = {
-        sourceLayerId: options && options.sourceLayerId,
-        forceFetch: options && options.forceFetch
-      };
-
-      this._windshaftMap.createInstance(instanceOptions);
+      options = options || {};
+      options = _.pick(options, 'sourceLayerId', 'forceFetch', 'success');
+      this._windshaftMap.createInstance(options);
     }.bind(this), this.RELOAD_DEBOUNCE_TIME);
   },
 

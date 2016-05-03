@@ -185,7 +185,7 @@ WORKING_SPECS_5 = \
 	spec/models/permission_spec.rb \
 	spec/lib/carto/ghost_tables_manager_spec.rb \
 	spec/lib/carto/bolt_spec.rb \
-	lib/carto/valid_table_name_proposer.rb \
+	spec/lib/carto/valid_table_name_proposer_spec.rb \
 	spec/lib/carto/db/sanitize_spec.rb \
 	$(NULL)
 

@@ -231,7 +231,7 @@ var WindshaftMap = Backbone.Model.extend({
 
   _localLayerIndexToWindshaftLayerIndex: function (layerIndex) {
     var layers = this.get('metadata') && this.get('metadata').layers;
-    var hasTiledLayer = layers.length > 0 && layers[0].type === 'http';
+    var hasTiledLayer = layers.length > 0 && (layers[0].type === 'http' || layers[0].type === 'plain');
     return hasTiledLayer ? ++layerIndex : layerIndex;
   },
 

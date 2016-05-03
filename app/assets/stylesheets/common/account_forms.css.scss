@@ -174,7 +174,10 @@ $sLabel-width: 140px;
   @include align-items(center);
   position: relative;
 }
-
+.FormAccount-rowData.in-block {
+  @include flex-direction(column);
+  @include align-items(flex-start);
+}
 .FormAccount-planTag {
   padding: 5px 10px;
   border-radius: 4px;

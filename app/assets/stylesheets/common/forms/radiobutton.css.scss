@@ -49,7 +49,9 @@
   margin-left: 8px;
   color: $cTypography-secondary;
 }
-
+.RadioButton-label.dark-color {
+  color: $cTypography-headers;
+}
 .RadioButton.is-checked .RadioButton-label {
   color: $cTypography-linkSelected;
 }

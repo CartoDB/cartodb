@@ -1,10 +1,11 @@
 # coding: utf-8
+require_relative '../helpers/avatar_helper'
 
 class Admin::MobileAppsController < Admin::AdminController
-  ssl_required :new, :create, :update, :destroy
+  include AvatarHelper
 
-  before_filter :invalidate_browser_cache
-  before_filter :login_required
+  ssl_required :new, :create, :update, :destroy
+  before_filter :invalidate_browser_cache, :login_required, :central_configuration_present?
 
   layout 'application'
 
@@ -17,6 +18,7 @@ class Admin::MobileAppsController < Admin::AdminController
   end
 
   def new
+    @icon_valid_extensions = AVATAR_VALID_EXTENSIONS
     @mobile_app = MobileApp.new
 
     respond_to do |format|
@@ -25,10 +27,6 @@ class Admin::MobileAppsController < Admin::AdminController
   end
 
   def create
-    puts "=================================================================================="
-    puts "CREATE METHOD ENTERED"
-    puts "=================================================================================="
-
     redirect_to CartoDB.url(self, 'mobile_apps', {}, current_user), :flash => {:success => "Your app has been added succesfully!"}
   end
 
@@ -40,6 +38,12 @@ class Admin::MobileAppsController < Admin::AdminController
 
 
   def destroy
+  end
+
+  private
+
+  def central_configuration_present?
+    render_404 and return unless Cartodb::Central.sync_data_with_cartodb_central?
   end
 
 end

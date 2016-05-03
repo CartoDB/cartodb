@@ -7,11 +7,9 @@
     var config = <%= safe_js_object frontend_config %>;
     var user_data = <%= safe_js_object current_user.data.to_json %>;
     var upgrade_url = "<%= current_user.upgrade_url(request.protocol) %>";
+    var icon_valid_extensions = <%= raw @icon_valid_extensions %>;
   </script>
-  <%= javascript_include_tag 'cdb.js', 'models.js', 'keys_templates.js', 'keys_deps.js', 'keys.js' -%>
-<% end %>
-<%= content_for(:css) do %>
-  <%= stylesheet_link_tag 'keys.css', :media => 'all' %>
+  <%= javascript_include_tag 'cdb.js', 'models.js', 'mobile_apps.js' -%>
 <% end %>
 
 <%= render :partial => 'shared/flash_message' %>

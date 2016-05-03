@@ -8,6 +8,7 @@ Sequel.migration do
       String :state, text: true, null: false, default: Carto::VisualizationExport::STATE_PENDING
       String :file, text: true
       String :url, text: true
+      foreign_key :log_id, :logs, type: 'uuid', null: true, on_delete: :cascade
       DateTime :created_at, default: Sequel::CURRENT_TIMESTAMP
       DateTime :updated_at, default: Sequel::CURRENT_TIMESTAMP
     end

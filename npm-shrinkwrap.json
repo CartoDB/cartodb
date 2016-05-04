@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "3.23.69",
+  "version": "3.23.73",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
@@ -1091,7 +1091,7 @@
     "cartoassets": {
       "version": "0.1.30",
       "from": "cartodb/CartoAssets#master",
-      "resolved": "git://github.com/cartodb/CartoAssets.git#f6e13bdf2eddb8e8d94511951540a90f82b2c6fe"
+      "resolved": "git://github.com/cartodb/CartoAssets.git#b0ac3dfc855562f736a5ca66a1213853606324ab"
     },
     "cartodb-deep-insights.js": {
       "version": "0.0.1",

@@ -11,15 +11,18 @@ var Backbone = require('backbone');
  */
 var InfowindowModel = Backbone.Model.extend({
   defaults: {
-    template_name: 'infowindow_light',
     offset: [28, 0], // offset of the tip calculated from the bottom left corner
     maxHeight: 180, // max height of the content, not the whole infowindow
     autoPan: true,
     template: '',
+    template_name: 'infowindow_light',
+    template_type: 'mustache',
     content: '',
-    alternative_names: { },
-    fields: null // contains the fields displayed in the infowindow
+    fields: null, // contains the fields displayed in the infowindow
+    alternative_names: { }
   },
+
+  TEMPLATE_ATTRIBUTES: ['fields', 'template_name', 'template', 'alternative_names', 'width', 'maxHeight', 'offset'],
 
   // updates content with attributes, if no attributes are given it only sets the content
   // with just the field names
@@ -65,7 +68,7 @@ var InfowindowModel = Backbone.Model.extend({
   },
 
   setInfowindowTemplate: function (infowindowTemplateModel) {
-    this.set(infowindowTemplateModel.toJSON());
+    this.set(_.pick(infowindowTemplateModel.toJSON(), this.TEMPLATE_ATTRIBUTES));
     this._infowindowTemplateModel = infowindowTemplateModel;
   },
 

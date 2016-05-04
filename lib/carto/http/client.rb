@@ -8,7 +8,6 @@ module Carto
   module Http
 
     class Client
-
       private_class_method :new
 
       def self.get(tag, extra_options = {})
@@ -49,6 +48,24 @@ module Carto
         perform_request(__method__, url, options)
       end
 
+      def get_file(url, file_path)
+        downloaded_file = File.open file_path, 'wb'
+        request = request(url)
+        request.on_headers do |response|
+          if response.code != 200
+            raise "Request failed: #{response.code}. #{response.body}"
+          end
+        end
+        request.on_body do |chunk|
+          downloaded_file.write(chunk)
+        end
+        request.on_complete do
+          downloaded_file.close
+        end
+        request.run
+
+        downloaded_file
+      end
 
       private
 

@@ -108,11 +108,6 @@ module CartoDB
 
     private
 
-    def get_valid_name(name)
-      ::Table.get_valid_table_name(name,
-        name_candidates: @db_connection.tables.map(&:to_s))
-    end
-
     def log(str)
       if @@debug
         puts str
@@ -136,7 +131,7 @@ module CartoDB
 
       sanitization_map = sanitization_map.inject({}) { |memo, pair|
         if memo.values.include?(pair.last) || correct_columns.include?(pair.last)
-          sanitization_count += 1 
+          sanitization_count += 1
           memo.merge(pair.first => "#{pair.last}_#{sanitization_count}")
         else
           memo.merge(pair.first => pair.last)

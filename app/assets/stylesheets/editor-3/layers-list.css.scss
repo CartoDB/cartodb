@@ -27,7 +27,7 @@
   cursor: move;
 }
 .Editor-ListLayer-item.ui-draggable-dragging:hover {
-  border: 1px solid $cBlue;
+  border: 1px solid rgba($cBlue, 0.48);
   box-shadow: 0 8px 16px rgba(#000, 0.16);
   cursor: move;
   opacity: 0.8;

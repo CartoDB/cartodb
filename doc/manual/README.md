@@ -9,13 +9,15 @@ pip install Sphinx
 pip install sphinx_rtd_theme
 ```
 
+If previous commands trigger `Permission denied` error try with `sudo`.
+
 ```bash
 make html
 ```
 
 ### How to contribute
 
-Documentaiton uses Sphinx, an easy way to create structured documentation based on rst. Start with
+Documentation uses Sphinx, an easy way to create structured documentation based on rst. Start with
 this [tutorial](http://sphinx-doc.org/tutorial.html)
 
 **Why not markdown?**

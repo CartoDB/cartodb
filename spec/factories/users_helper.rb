@@ -23,3 +23,20 @@ shared_context 'users helper' do
     @user2.destroy if @user2
   end
 end
+
+shared_context 'user helper' do
+  before(:all) do
+    @user = FactoryGirl.create(:valid_user)
+    @carto_user = Carto::User.find(@user.id)
+  end
+
+  after(:all) do
+    bypass_named_maps
+    @user.destroy
+  end
+
+  before(:each) do
+    bypass_named_maps
+    delete_user_data(@user)
+  end
+end

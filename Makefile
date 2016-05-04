@@ -39,7 +39,6 @@ WORKING_SPECS_1 = \
 	spec/requests/carto/api/presenter_cache_spec.rb \
 	spec/requests/carto/api/templates_controller_spec.rb \
 	spec/requests/carto/api/user_creations_controller_spec.rb \
-	spec/requests/carto/api/visualization_export_presenter_spec.rb \
 	spec/requests/carto/api/widgets_controller_spec.rb \
 	spec/requests/carto/editor/public/embeds_controller_spec.rb \
 	spec/requests/carto/editor/visualizations_controller_spec.rb \

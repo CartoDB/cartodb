@@ -37,7 +37,8 @@ module Carto
 
       logger.append('Uploading')
       update_attributes(state: STATE_UPLOADING, file: filepath)
-      results = file_upload_helper.upload_file_to_storage({ file: CartoDB::FileUploadFile.new(filepath) }, nil, Cartodb.config[:exporter]['s3'])
+      upload_params = { file: CartoDB::FileUploadFile.new(filepath) }
+      results = file_upload_helper.upload_file_to_storage(upload_params, nil, Cartodb.config[:exporter]['s3'])
       url = results[:file_uri]
 
       logger.append('Deleting tmp file')

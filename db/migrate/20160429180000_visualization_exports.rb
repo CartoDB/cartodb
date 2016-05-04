@@ -2,7 +2,6 @@ Sequel.migration do
   up do
     create_table :visualization_exports do
       Uuid :id, primary_key: true, default: 'uuid_generate_v4()'.lit
-      # TODO: FK?
       foreign_key :visualization_id, :visualizations, type: 'uuid', null: false, on_delete: :cascade
       foreign_key :user_id, :users, type: 'uuid', null: false, on_delete: :cascade
       String :user_tables_ids, text: true

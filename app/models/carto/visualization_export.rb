@@ -10,7 +10,6 @@ require_dependency 'carto/visualization_exporter'
 module Carto
   class VisualizationExport < ::ActiveRecord::Base
     include VisualizationExporter
-    # TODO: FKs? convenient?
     belongs_to :visualization, class_name: Carto::Visualization
     belongs_to :user, class_name: Carto::User
     belongs_to :log, class_name: Carto::Log

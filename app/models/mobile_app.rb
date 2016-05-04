@@ -14,8 +14,7 @@ class MobileApp
   validates :license_key,   presence: true
   validates :monthly_users, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
 
-  attr_accessor :name, :description, :icon_url, :platform, :app_id, :app_type, :monthly_users
-  attr_reader   :id, :license_key
+  attr_accessor :id, :name, :description, :icon_url, :platform, :app_id, :app_type, :license_key, :monthly_users
 
   def initialize(attributes = {})
     attributes.each do |name, value|

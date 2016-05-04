@@ -3,11 +3,13 @@
 <% end %>
 <%= content_for(:js) do %>
   <script type="text/javascript">
-    var username = "<%= current_user.username %>";
     var config = <%= safe_js_object frontend_config %>;
     var user_data = <%= safe_js_object current_user.data.to_json %>;
+    var mobile_app_name = "<%= @mobile_app.name %>";
+    var mobile_app_icon = "<%= @mobile_app.icon_url %>";
+    var icon_valid_extensions = <%= raw @icon_valid_extensions %>;
   </script>
-  <%= javascript_include_tag 'cdb.js', 'models.js', 'mobile_apps.js' -%>
+  <%= javascript_include_tag 'cdb.js', 'models.js', 'mobile_apps_templates.js', 'mobile_apps_deps.js', 'mobile_apps.js' -%>
 <% end %>
 
 <%= render :partial => 'shared/flash_message' %>

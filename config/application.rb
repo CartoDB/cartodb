@@ -101,7 +101,10 @@ module CartoDB
       confirmation_templates.js
       confirmation.js
       new_public_table.js
+      
       mobile_apps.js
+      mobile_apps_templates.js
+      mobile_apps_deps.js
 
       explore_deps.js
       explore.js

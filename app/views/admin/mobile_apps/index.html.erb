@@ -3,13 +3,13 @@
 <% end %>
 <%= content_for(:js) do %>
   <script type="text/javascript">
-    var username = "<%= current_user.username %>";
     var config = <%= safe_js_object frontend_config %>;
     var user_data = <%= safe_js_object current_user.data.to_json %>;
-    var upgrade_url = "<%= current_user.upgrade_url(request.protocol) %>";
-    var icon_valid_extensions = <%= raw @icon_valid_extensions %>;
   </script>
-  <%= javascript_include_tag 'cdb.js', 'models.js', 'mobile_apps.js' -%>
+  <%= javascript_include_tag 'cdb.js', 'models.js', 'mobile_apps_templates.js', 'mobile_apps_deps.js', 'mobile_apps.js' -%>
+<% end %>
+<%= content_for(:css) do %>
+  <%= stylesheet_link_tag 'organization.css', :media => 'all' %>
 <% end %>
 
 <%= render :partial => 'shared/flash_message' %>
@@ -20,7 +20,7 @@
 
   <div class="FormAccount-Content">
     <%= render :partial => 'admin/shared/api_keys_subheader' %>
-    <div class="FormAccount-separator"></div>
+    <div class="Filters-separator"></div>
 
     <% if @mobile_apps.empty? %>
 
@@ -28,9 +28,7 @@
 
     <% else %>
 
-      <% @mobile_apps.each do |a| %>
-        <%= render :partial => 'admin/mobile_apps/show' %>
-      <% end %>
+      <%= render :partial => 'admin/mobile_apps/show' %>
 
     <% end %>
   </div>

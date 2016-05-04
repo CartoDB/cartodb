@@ -1,0 +1,16 @@
+<% @mobile_apps.each do |a| %>
+  <div class="OrganizationList-userLink">
+    <div class="OrganizationList-userAvatar UserAvatar">
+      <img src="<%= a.icon_url %>" class="UserAvatar-img UserAvatar-img--medium-large OrganizationList-userAvatar--img" />
+    </div>
+    <div class="OrganizationList-userInfo">
+      <div class="OrganizationList-userInfoName">
+        <h3 class="OrganizationList-userInfoTitle u-ellipsLongText"><%= a.name %></h3>
+        <h4 class="OrganizationList-userInfoSubtitle u-ellipsLongText"><%= a.description rescue nil %></h4>
+      </div>
+      <div class="OrganizationList-userInfoData">
+        <p class="OrganizationList-userInfoData--paragraph"><%= a.app_id %></p>
+      </div>
+    </div>
+  </div>
+<% end %>

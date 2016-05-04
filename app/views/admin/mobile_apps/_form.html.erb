@@ -2,7 +2,7 @@
 
   <span class="FormAccount-separator"></span>
 
-  <div class="FormAccount-row js-avatarSelector">
+  <div class="FormAccount-row js-iconSelector">
     <div class="FormAccount-rowLabel">
       <label class="FormAccount-label">App icon</label>
     </div>
@@ -11,7 +11,7 @@
         <img src="" class="FormAccount-avatarPreviewImage" />
       </div>
       <div class="FormAccount-avatar--input">
-        <%= f.file_field :icon_url, :class => "FormAccount-fileAvatar js-fileAvatar", :value => "Change image" %>
+        <%= f.file_field :icon_url, :class => "FormAccount-fileAvatar js-fileIcon", :value => "Change image" %>
         <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
           <p class="FormAccount-rowInfoText FormAccount-rowInfoText--smaller">Recommended images should be 128x128 pixels of size</p>
         </div>
@@ -47,23 +47,28 @@
 
     <div class="FormAccount-rowData">
       <div class="RadioButton u-rspace--20">
-        <button type="button" class="RadioButton-input"></button>
+        <input class="RadioButtonInput" type="radio" name="mobile_app[platform]" value="android">
+        <span class="RadioButtonInput-face"></span>
         <label class="RadioButton-label dark-color">Android</label>
       </div>
       <div class="RadioButton u-rspace--20">
-        <button type="button" class="RadioButton-input"></button>
-        <label class="RadioButton-label dark-color">Xamarin Android</label>
-      </div>
-      <div class="RadioButton u-rspace--20">
-        <button type="button" class="RadioButton-input"></button>
+        <input class="RadioButtonInput" type="radio" name="mobile_app[platform]" value="ios">
+        <span class="RadioButtonInput-face"></span>
         <label class="RadioButton-label dark-color">iOS</label>
       </div>
       <div class="RadioButton u-rspace--20">
-        <button type="button" class="RadioButton-input"></button>
+        <input class="RadioButtonInput" type="radio" name="mobile_app[platform]" value="xamarin-android">
+        <span class="RadioButtonInput-face"></span>
+        <label class="RadioButton-label dark-color">Xamarin Android</label>
+      </div>
+      <div class="RadioButton u-rspace--20">
+        <input class="RadioButtonInput" type="radio" name="mobile_app[platform]" value="xamarin-ios">
+        <span class="RadioButtonInput-face"></span>
         <label class="RadioButton-label dark-color">Xamarin iOS</label>
       </div>
       <div class="RadioButton u-rspace--20">
-        <button type="button" class="RadioButton-input"></button>
+        <input class="RadioButtonInput" type="radio" name="mobile_app[platform]" value="windows-phone">
+        <span class="RadioButtonInput-face"></span>
         <label class="RadioButton-label dark-color">Windows Phone</label>
       </div>
     </div>
@@ -88,30 +93,33 @@
     </div>
     <div class="FormAccount-rowData in-block u-vspace-s">
       <div class="RadioButton">
-        <button type="button" class="RadioButton-input"></button>
+        <input class="RadioButtonInput" type="radio" name="mobile_app[app_type]" value="open">
+        <span class="RadioButtonInput-face"></span>
         <label class="RadioButton-label dark-color">Open</label>
       </div>
-      <div class="FormAccount-rowInfo u-lspace-m">
+      <div class="FormAccount-rowInfo u-lspace-28">
         <p class="FormAccount-rowInfoText">Limits based on your CartoDB plan. <a href="#">Learn more</a>.</p>
       </div>
     </div>
 
     <div class="FormAccount-rowData in-block u-vspace-s">
       <div class="RadioButton">
-        <button type="button" class="RadioButton-input"></button>
+        <input class="RadioButtonInput" type="radio" name="mobile_app[app_type]" value="dev">
+        <span class="RadioButtonInput-face"></span>
         <label class="RadioButton-label dark-color">Dev</label>
       </div>
-      <div class="FormAccount-rowInfo u-lspace-m">
+      <div class="FormAccount-rowInfo u-lspace-28">
         <p class="FormAccount-rowInfoText">Charged, unlimited feature-wise. <a href="#">Learn more</a>.</p>
       </div>
     </div>
 
     <div class="FormAccount-rowData in-block">
       <div class="RadioButton">
-        <button type="button" class="RadioButton-input"></button>
+        <input class="RadioButtonInput" type="radio" name="mobile_app[app_type]" value="private">
+        <span class="RadioButtonInput-face"></span>
         <label class="RadioButton-label dark-color">Private</label>
       </div>
-      <div class="FormAccount-rowInfo u-lspace-m">
+      <div class="FormAccount-rowInfo u-lspace-28">
         <p class="FormAccount-rowInfoText">Only for enterprise. <a href="#">Learn more</a>.</p>
       </div>
     </div>

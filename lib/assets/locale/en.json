@@ -442,6 +442,26 @@
       }
     },
     "style": {
+      "types": {
+        "simple": "none",
+        "hexabins": "hexabins",
+        "squares": "squares",
+        "regions": "Adm. Regions",
+        "heatmap": "heatmap"
+      },
+      "style-form": {
+        "type": {
+          "title-label": "Aggregation"
+        },
+        "aggregation": {
+          "title-label": "Aggregation Options",
+          "desc": "Configure how the aggregation works"
+        },
+        "properties": {
+          "title-label": "Style",
+          "desc": "Change the visualization"
+        }
+      },
       "components": {
         "labels-font": "font",
         "labels-offset": "offset",

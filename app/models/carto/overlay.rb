@@ -18,7 +18,7 @@ module Carto
 
     # There can be at most one of this types per visualization
     UNIQUE_TYPES = [
-      'header', 'search', 'layer_selector', 'share', 'zoom', 'logo', 'loader', 'fullscreen'
+      'search', 'layer_selector', 'share', 'zoom', 'logo', 'loader', 'fullscreen', 'inset_map'
     ].freeze
 
     def hide

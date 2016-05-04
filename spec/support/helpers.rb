@@ -138,6 +138,7 @@ module HelperMethods
       attributions:       attributes.fetch(:attributions, ''),
       parent_id:          attributes.fetch(:parent_id, nil),
       kind:               attributes.fetch(:kind, Visualization::Member::KIND_GEOM),
+      legend_style:       attributes.fetch(:legend_style, ''),
       prev_id:            attributes.fetch(:prev_id, nil),
       next_id:            attributes.fetch(:next_id, nil),
       transition_options: attributes.fetch(:transition_options, {}),

@@ -16,7 +16,7 @@
   @import "../../../old_common/common-sprite";
   @import "../../../old_common/vars";
   @import "../../../old_common/mixins";
-  
+
 
   div.filters_panel {
     width:100%;
@@ -33,6 +33,10 @@
 
       @include size(100%, 30px);
 
+    }
+
+    .sql-and-or-toggle {
+      margin-right: 15px;
     }
 
     .content {
@@ -207,12 +211,12 @@
           .empty     { float: left; display:none; font-size:13px; color: #FF9999; vertical-align: top; }
           .only      { float: left; display:none; font-size:13px; color: #FFAB37; vertical-align: top; }
           .loading   { float: left; display:none; font-size:13px; color: #FFAB37; vertical-align: top; }
-          .range     { float:left;  display:none; font-size:13px; color: #4DC964; }
+          .range, .range-number     { float:left;  display:none; font-size:13px; color: #4DC964; }
 
           .title  { float: left; margin: 0 0 0 30px; }
         }
 
-        &.date .range { clear:both; margin: 6px 0 0 0; }
+        &.date .range, .range-number { clear:both; margin: 6px 0 0 0; }
 
         &:hover .remove { @include opacity(1); }
 
@@ -223,6 +227,20 @@
 
           @include size(13px);
           @include position(21px, 30px, false, false);
+          @include simple-transition(opacity, 150ms);
+          @include common-sprite(close_grey);
+
+          &:hover {@include common-sprite(close_grey, $offset-y:-13px);}
+        }
+
+        .remove-inline {
+          float: right;
+          margin-top: 4px;
+          margin-right: 5px;
+
+          @include opacity(1);
+
+          @include size(13px);
           @include simple-transition(opacity, 150ms);
           @include common-sprite(close_grey);
 
@@ -453,6 +471,34 @@
         }
       }
 
+      .operations {
+        margin: 0 0 0 30px;
+        padding: 0;
+        width: 325px;
+
+        li {
+          clear:both;
+          overflow:hidden;
+
+          position:relative;
+          padding: 10px 0 10px 5px;
+          margin: 0;
+          color: #666666;
+          font-size:13px;
+          border-top: 1px solid rgba(#999, .25);
+
+          input {
+            width: 145px;
+          }
+
+          .invisible {
+            visibility: hidden;
+          }
+
+          &:last-child { margin-bottom: 0; }
+        }
+      }
+
       .items {
         text-align:left;
         margin: 0 0 0 30px;
@@ -536,6 +582,9 @@
 
       .loading   { display:block; }
 
+      .range-number { height: 35px; }
+      .range-number input { width: 45%; }
+      .range-number .subtext { display: none; color: #666666; font-size: 11px; }
       .hist { margin: auto; position: relative; @include inline-block(); bottom: -3px; }
       .background.bar { fill: #E5E5E5; }
       .foreground.bar { fill: #4DC964; fill-opacity: .3; }

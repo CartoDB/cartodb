@@ -77,6 +77,7 @@ module CartoDB
       attribute :user_id,             String
       attribute :permission_id,       String
       attribute :locked,              Boolean, default: false
+      attribute :legend_style,        String, default: ''
       attribute :parent_id,           String, default: nil
       attribute :kind,                String, default: KIND_GEOM
       attribute :prev_id,             String, default: nil

@@ -496,6 +496,7 @@ CartoDB::Application.routes.draw do
 
     # Imports
     post   '(/user/:user_domain)(/u/:user_domain)/api/v1/imports'                          => 'imports#create',                      as: :api_v1_imports_create
+    delete '(/user/:user_domain)(/u/:user_domain)/api/v1/imports/:id'                      => 'imports#destroy',                      as: :api_v1_imports_update
 
     # Import services
     delete '(/user/:user_domain)(/u/:user_domain)/api/v1/imports/service/:id/invalidate_token'    => 'imports#invalidate_service_token',    as: :api_v1_imports_service_invalidate_token

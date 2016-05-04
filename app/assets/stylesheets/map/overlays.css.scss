@@ -105,7 +105,8 @@
 
 /* Overlay */
 .overlay.text,
-.overlay.annotation {
+.overlay.annotation,
+.overlay.header {
 
   display: none;
 
@@ -116,7 +117,7 @@
   &.selected.white-box {
     border-color: rgba(#000, .5);
 
-    &.editable .text { 
+    &.editable .text {
       color: #000!important;
     }
 
@@ -130,18 +131,18 @@
     &.selected.border-dark {
       border-color: rgba(#000, .5);
 
-      .hint { 
+      .hint {
         color: #000;
         @include opacity(1);
       }
     }
 
-  .content > .text { 
+  .content > .text {
     font-family: 'Helvetica Neue', Helvetica, sans-serif; font-weight: 400;
     strong { font-weight: 700; }
   }
 
-  &.droid .content > .text { 
+  &.droid .content > .text {
     font-family: 'Droid Sans', serif; font-weight: 400;
     strong { font-weight: 700; }
   }
@@ -151,32 +152,32 @@
     strong { font-weight: 700; }
   }
 
-  &.vollkorn .content > .text { 
+  &.vollkorn .content > .text {
     font-family: 'Vollkorn', serif; font-weight: 400;
     strong { font-weight: 700; }
   }
 
-  &.open_sans .content > .text { 
+  &.open_sans .content > .text {
     font-family: 'Open Sans', sans-serif; font-weight: 400;
     strong { font-weight: 700; }
   }
 
-  &.lato .content > .text { 
+  &.lato .content > .text {
     font-family: 'Lato', sans-serif; font-weight: 400;
     strong { font-weight: 700; }
   }
 
-  &.graduate .content > .text { 
+  &.graduate .content > .text {
     font-family: 'Graduate', sans-serif; font-weight: 400;
     strong { font-weight: 700; }
   }
 
-  &.old_standard_tt .content > .text { 
+  &.old_standard_tt .content > .text {
     font-family: 'Old Standard TT', sans-serif; font-weight: 400;
     strong { font-weight: 700; }
   }
 
-  &.gravitas_one .content > .text { 
+  &.gravitas_one .content > .text {
     font-family: 'Gravitas One', sans-serif; font-weight: 400;
     strong { font-weight: 700; }
   }
@@ -297,7 +298,7 @@
 
   z-index: 4;
 
-  &:hover { 
+  &:hover {
     background:rgba(#333, .7);
   }
 
@@ -311,7 +312,7 @@
     color: #fff;
     @include opacity(.7);
 
-    strong, em, span { 
+    strong, em, span {
       @include inline-block();
       margin-left: 3px;
     }
@@ -413,7 +414,7 @@
         @include opacity(.8);
       }
 
-      .text { 
+      .text {
         font-weight:normal;
       }
     }
@@ -481,11 +482,11 @@
 
   &:hover .edit,
   &:hover .close,
-  &:hover div.dropdown.properties_dropdown { 
+  &:hover div.dropdown.properties_dropdown {
     @include opacity(1);
   }
 
-  div.dropdown.properties_dropdown { 
+  div.dropdown.properties_dropdown {
     @include opacity(0);
     @include simple-transition(opacity, .10s, ease-in-out);
 
@@ -547,15 +548,15 @@
       position:absolute;
       top: 10px;
       right: 8px;
-      width: 0; 
-      height: 0; 
+      width: 0;
+      height: 0;
       border-left: 3px solid transparent;
       border-right: 3px solid transparent;
       border-top: 4px solid #fff;
     }
   }
 
-} 
+}
 
 // .overlay
 .overlay.editable .content {
@@ -588,11 +589,11 @@
 
   .text {
 
-    em, i { font-style: italic; } 
+    em, i { font-style: italic; }
     strong { font-weight: bold; }
     a { color: inherit; text-decoration: underline; }
 
-     @include user-select(none); this breaks safari edition 
+     @include user-select(none); this breaks safari edition
 
     &.text img {
       display:block;
@@ -643,6 +644,65 @@ div.cartodb-zoom .info {
 
 }
 
+.leaflet-control-minimap {
+  background: #333 url('/assets/3.22.9/images/layout/noise.png?1455192268') repeat 0 0;
+}
+
+.leaflet-control-minimap .inset-map-grabber {
+  width: 22px;
+  height: 22px;
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+
+  &:before, &:after {
+    content: '';
+    position: absolute;
+    left: 5px; top: 6px;
+    display: block;
+    width: 22px;
+    height: 22px;
+  }
+
+  &:before {
+    @include map-sprite(cog, $offset-x:3px, $offset-y:3px);
+
+    -moz-transition: all 750ms ease;
+    -webkit-transition: all 750ms ease;
+    -o-transition: all 750ms ease;
+    transition: all 750ms ease;
+
+    z-index: 10;
+  }
+
+  &:after {
+    background-color: #fff;
+    @include box-shadow(0 0 1px rgba(#000, .9));
+    @include border-radius(3px);
+  }
+}
+
+.inset-map-dropdown {
+  width: 100px;
+  font-family: "Helvetica",Arial,sans-serif;
+  top: 4px;
+  left: 4px;
+
+  li {
+    padding-top: 3px;
+    margin-left: 3px;
+    color: #666666;
+    cursor: pointer;
+
+    span {
+      padding-right: 2px;
+      margin-right: 3px;
+      border-right: 1px solid rgba(204,204,204,0.35)
+    }
+  }
+}
+
 div.rule {
   position:absolute;
   height: 100%;
@@ -655,8 +715,8 @@ div.rule {
   @include simple-transition(opacity, .10s, ease-in-out);
 
   &.horizontal {
-    height: 1px; 
-    width: 100%; 
+    height: 1px;
+    width: 100%;
   }
 
 } // .rule
@@ -700,7 +760,7 @@ div.dropdown.properties_dropdown {
           color: #666666;
         }
 
-        &.field { 
+        &.field {
           margin: 0;
           color: #333;
         }

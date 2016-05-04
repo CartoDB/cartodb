@@ -13,7 +13,7 @@ module Carto
     end
 
     def exporter_folder
-      ensure_folder(exporter_config[:exporter_temporal_folder] || DEFAULT_EXPORTER_TMP_FOLDER)
+      ensure_folder(exporter_config['exporter_temporal_folder'] || DEFAULT_EXPORTER_TMP_FOLDER)
     end
 
     def export_dir(visualization, base_dir: exporter_folder)

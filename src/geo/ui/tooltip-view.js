@@ -109,11 +109,16 @@ var TooltipView = InfoBox.extend({
   _visibility: function () {
     var self = this;
     clearTimeout(this.showhideTimeout);
-    this.showhideTimeout = setTimeout(self._showing ?
-      function () { self.$el.fadeIn(100); }
-      :
-      function () { self.$el.fadeOut(200); }
-      , 50);
+
+    var fadeIn = function () {
+      self.$el.fadeIn(100);
+    };
+
+    var fadeOut = function () {
+      self.$el.fadeOut(200);
+    };
+
+    this.showhideTimeout = setTimeout(self._showing ? fadeIn : fadeOut, 50);
   },
 
   hide: function () {

@@ -42,11 +42,12 @@ module Carto
 
       def load_visualization
         visualization_id = params[:visualization_id]
-        @visualization = load_visualization_from_id_or_name!(visualization_id)
+        @visualization = Carto::Visualization.where(id: visualization_id).first
+        raise Carto::LoadError.new("Visualization not found: #{visualization_id}") unless @visualization
       end
 
       def load_visualization_export
-        id = params[:id]
+        id = uuid_parameter(:id)
         @visualization_export = Carto::VisualizationExport.where(id: id).first
         raise Carto::LoadError.new("Visualization export not found: #{id}") unless @visualization_export
         raise Carto::UnauthorizedError.new unless @visualization_export.user_id == current_user.id

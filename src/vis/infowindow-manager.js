@@ -59,7 +59,15 @@ InfowindowManager.prototype._bindFeatureClickEvent = function (layerView) {
     }
 
     this._updateInfowindowModel(layerModel.infowindow);
-    this._fetchAttributes(layerView, layerModel, data.cartodb_id, latlng);
+
+    this._infowindowModel.set({
+      latlng: latlng,
+      visibility: true
+    });
+
+    if (this._currentFeatureId !== data.cartodb_id) {
+      this._fetchAttributes(layerView, layerModel, data.cartodb_id, latlng);
+    }
 
     if (layerView.tooltipView) {
       layerView.tooltipView.setFilter(function (feature) {
@@ -73,22 +81,8 @@ InfowindowManager.prototype._updateInfowindowModel = function (infowindowTemplat
   this._infowindowModel.setInfowindowTemplate(infowindowTemplate);
 };
 
-InfowindowManager.prototype._fetchAttributes = function (layerView, layerModel, featureId, latlng) {
-  // TODO: If the infowindow is currently showing the data for featureId, we should
-  // only update the latlng so that the infowindow is moved and no request is made
-  // if (featureId === this._currentFeatureId && latlng) {
-  //   this._infowindowModel.set({
-  //     latlng: latlng
-  //   });
-  //   return;
-  // }
-
+InfowindowManager.prototype._fetchAttributes = function (layerView, layerModel, featureId) {
   this._currentFeatureId = featureId || this._currentFeatureId;
-  this._currentLatLng = latlng || this._currentLatLng;
-  this._infowindowModel.set({
-    latlng: this._currentLatLng,
-    visibility: true
-  });
   this._infowindowModel.setLoading();
 
   var layerIndex = layerView.model.getIndexOf(layerModel);

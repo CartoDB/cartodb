@@ -251,6 +251,61 @@ describe('src/vis/infowindow-manager.js', function () {
     });
   });
 
+  it('should NOT fetch the attributes when clicking on the same feature twice', function () {
+    spyOn(this.mapView, 'addInfowindow');
+
+    var layer1 = new CartoDBLayer({
+      infowindow: {
+        template: 'template1',
+        template_type: 'underscore',
+        fields: [{
+          'name': 'name',
+          'title': true,
+          'position': 1
+        }],
+        alternative_names: 'alternative_names1'
+      }
+    });
+
+    var infowindowManager = new InfowindowManager(this.vis);
+    infowindowManager.manage(this.mapView, this.map);
+
+    this.map.layers.reset([ layer1 ]);
+    var infowindowView = this.mapView.addInfowindow.calls.mostRecent().args[0];
+
+    this.layerView.model = {
+      fetchAttributes: jasmine.createSpy('fetchAttributes').and.callFake(function (layerIndex, cartoDBId, callback) {
+        callback({ name: 'juan' });
+      }),
+      getLayerAt: function (index) {
+        if (index === 0) {
+          return layer1;
+        }
+      },
+
+      getIndexOf: function (layerModel) {
+        if (layerModel === layer1) {
+          return 0;
+        }
+        return 1;
+      }
+    };
+    spyOn(infowindowView, 'adjustPan');
+
+    // Simulate the featureClick event for layer #0
+    this.layerView.trigger('featureClick', {}, [100, 200], undefined, { cartodb_id: 10 }, 0);
+
+    // A request to fetch the attributes for the right cartodb_id and layerIndex has been triggered
+    expect(this.layerView.model.fetchAttributes.calls.count()).toEqual(1);
+    expect(this.layerView.model.fetchAttributes).toHaveBeenCalledWith(0, 10, jasmine.any(Function));
+    this.layerView.model.fetchAttributes.calls.reset();
+
+    // Simulate another featureClick event for layer #0 and the same feature
+    this.layerView.trigger('featureClick', {}, [100, 300], undefined, { cartodb_id: 10 }, 0);
+
+    expect(this.layerView.model.fetchAttributes).not.toHaveBeenCalled();
+  });
+
   it('should bind the featureClick event to the corresponding layerView only once', function () {
     spyOn(this.mapView, 'addInfowindow');
 

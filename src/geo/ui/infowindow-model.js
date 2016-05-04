@@ -24,8 +24,6 @@ var InfowindowModel = Backbone.Model.extend({
 
   TEMPLATE_ATTRIBUTES: ['fields', 'template', 'template_name', 'template_type', 'alternative_names', 'width', 'maxHeight', 'offset'],
 
-  // updates content with attributes, if no attributes are given it only sets the content
-  // with just the field names
   updateContent: function (attributes, options) {
     options = options || {};
     options = _.pick(options, 'showEmptyFields');

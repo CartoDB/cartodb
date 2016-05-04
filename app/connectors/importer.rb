@@ -57,9 +57,7 @@ module CartoDB
             create_overviews(result)
           }
 
-          if data_import.create_visualization
-            create_visualization
-          end
+          create_visualization if data_import.create_visualization
         end
 
         self
@@ -102,14 +100,30 @@ module CartoDB
       end
 
       def create_visualization
+        if runner.visualizations.empty?
+          create_default_visualization
+        else
+          user = Carto::User.find(data_import.user_id)
+          runner.visualizations.each do |visualization|
+            vis = Carto::VisualizationsExportPersistenceService.new.save_import(user, visualization)
+            bind_visualization_to_data_import(vis)
+          end
+        end
+      end
+
+      def create_default_visualization
         tables = get_imported_tables
         if tables.length > 0
           user = ::User.where(id: data_import.user_id).first
           vis, @rejected_layers = CartoDB::Visualization::DerivedCreator.new(user, tables).create
-          data_import.visualization_id = vis.id
-          data_import.save
-          data_import.reload
+          bind_visualization_to_data_import(vis)
         end
+      end
+
+      def bind_visualization_to_data_import(vis)
+        data_import.visualization_id = vis.id
+        data_import.save
+        data_import.reload
       end
 
       def get_imported_tables

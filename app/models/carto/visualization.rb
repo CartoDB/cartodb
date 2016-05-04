@@ -82,8 +82,17 @@ class Carto::Visualization < ActiveRecord::Base
     super(tags)
   end
 
+  def layers_with_data_readable_by(user)
+    return [] unless map
+    map.layers.select { |l| l.data_readable_by?(user) }
+  end
+
   def related_tables
     @related_tables ||= get_related_tables
+  end
+
+  def related_tables_readable_by(user)
+    layers_with_data_readable_by(user).map { |l| l.affected_tables_readable_by(user) }.flatten.uniq
   end
 
   def related_canonical_visualizations
@@ -195,6 +204,10 @@ class Carto::Visualization < ActiveRecord::Base
 
   def data_layers
     map.nil? ? [] : map.data_layers
+  end
+
+  def base_layers
+    map.nil? ? [] : map.base_layers
   end
 
   def named_map_layers

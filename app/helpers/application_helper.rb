@@ -46,12 +46,16 @@ module ApplicationHelper
   end
 
   def sql_api_template(privacy="private")
-      sql_api = Cartodb.config[:sql_api][privacy]
-      if CartoDB.subdomainless_urls?
-        sql_api["protocol"] + "://" + sql_api["domain"] + ":" + sql_api["port"].to_s + "/user/{user}"
-      else
-        sql_api["protocol"] + "://{user}." + sql_api["domain"] + ":" + sql_api["port"].to_s
-      end
+    sql_api_url('{user}', privacy)
+  end
+
+  def sql_api_url(username, privacy = 'private')
+    sql_api = Cartodb.config[:sql_api][privacy]
+    if CartoDB.subdomainless_urls?
+      sql_api["protocol"] + "://" + sql_api["domain"] + ":" + sql_api["port"].to_s + "/user/#{username}"
+    else
+      sql_api["protocol"] + "://#{username}." + sql_api["domain"] + ":" + sql_api["port"].to_s
+    end
   end
 
   def maps_api_template(privacy="private")
@@ -64,7 +68,7 @@ module ApplicationHelper
   end
 
   module_function :maps_api_template
-  module_function :sql_api_template
+  module_function :sql_api_template, :sql_api_url
 
   def frontend_config
     config = {

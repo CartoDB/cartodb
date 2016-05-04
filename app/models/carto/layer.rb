@@ -43,6 +43,14 @@ module Carto
       (tables_from_query_option + tables_from_table_name_option).compact.uniq
     end
 
+    def affected_tables_readable_by(user)
+      affected_tables.select { |ut| ut.readable_by?(user) }
+    end
+
+    def data_readable_by?(user)
+      affected_tables.all? { |ut| ut.readable_by?(user) }
+    end
+
     def legend
       @legend ||= options['legend']
     end
@@ -81,6 +89,10 @@ module Carto
 
     def torque?
       kind == 'torque'
+    end
+
+    def data_layer?
+      !base?
     end
 
     def supports_labels_layer?

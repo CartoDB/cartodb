@@ -97,7 +97,6 @@
 **/src/geo/ui/share.js
 **/src/geo/ui/text.js
 **/src/geo/ui/tiles-loader.js
-**/src/geo/ui/tooltip.js
 **/src/geo/ui/zoom.js
 **/src/ui/common/dialog.js
 **/src/ui/common/dropdown.js

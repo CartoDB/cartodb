@@ -41,6 +41,7 @@ module CartoDB
                         'path'                   => @path,
                         'start'                  => @start,
                         'end'                    => nil,
+                        'elapsed_time'           => nil,
                         'server'                 => `hostname`.strip,
                         'pid'                    => Process.pid,
                         'db_target'              => @target_dbhost,
@@ -545,6 +546,7 @@ module CartoDB
       def log_error(e)
         @logger.error e
         @import_log[:end] = Time.now
+        @import_log[:elapsed_time] = @import_log[:end] - @import_log[:start]
         @import_log[:status] = 'failure'
         @import_log[:trace] = e.to_s
         importjob_logger.info(@import_log.to_json)
@@ -552,6 +554,7 @@ module CartoDB
 
       def log_success
         @import_log[:end] = Time.now
+        @import_log[:elapsed_time] = @import_log[:end] - @import_log[:start]
         @import_log[:status] = 'success'
         importjob_logger.info(@import_log.to_json)
       end

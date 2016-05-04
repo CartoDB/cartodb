@@ -24,6 +24,10 @@ module Carto
     STATE_COMPLETE = 'complete'.freeze
     STATE_FAILURE = 'failure'.freeze
 
+    def exporter_folder
+      ensure_folder(exporter_config['exporter_temporal_folder'] || DEFAULT_EXPORTER_TMP_FOLDER)
+    end
+
     def run_export!(file_upload_helper: default_file_upload_helper)
       logger = Carto::Log.new(type: 'visualization_export')
 

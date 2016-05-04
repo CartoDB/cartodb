@@ -31,7 +31,7 @@
   "dependencies": {
     "backbone": "1.2.3",
     "browserify-shim": "3.8.10",
-    "camshaft-reference": "^0.4.0",
+    "camshaft-reference": "0.4.0",
     "d3": "3.5.8",
     "d3.cartodb": "CartoDB/d3.cartodb#gh-pages",
     "jquery": "2.1.4",

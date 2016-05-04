@@ -453,19 +453,19 @@ module CartoDB
         @logger = options[:logger] || default_logger
 
         job_uuid = @options[:job_uuid] || SecureRandom.uuid
-        export_log = { :job_uuid => job_uuid,
-                       :id                     => @options[:id] || @options[:organization_name] || nil,
-                       :type                   => 'export',
-                       :path                   => @options[:path],
-                       :start                  => @start,
-                       :end                    => nil,
-                       :elapsed_time           => nil,
-                       :server                 => `hostname`.strip,
-                       :pid                    => Process.pid,
-                       :db_source              => nil,
-                       :db_size                => nil,
-                       :status                 => nil,
-                       :trace                  => nil
+        export_log = { job_uuid:     job_uuid,
+                       id:           @options[:id] || @options[:organization_name] || nil,
+                       type:         'export',
+                       path:         @options[:path],
+                       start:        @start,
+                       end:          nil,
+                       elapsed_time: nil,
+                       server:       `hostname`.strip,
+                       pid:          Process.pid,
+                       db_source:    nil,
+                       db_size:      nil,
+                       status:       nil,
+                       trace:        nil
                      }
 
         begin

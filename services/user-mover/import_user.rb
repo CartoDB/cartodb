@@ -35,18 +35,18 @@ module CartoDB
         @path = File.expand_path(File.dirname(@options[:file])) + "/"
 
         job_uuid = @options[:job_uuid] || SecureRandom.uuid
-        @import_log = { :job_uuid               => job_uuid,
-                        :id                     => nil,
-                        :type                   => 'import',
-                        :path                   => @path,
-                        :start                  => @start,
-                        :end                    => nil,
-                        :server                 => `hostname`.strip,
-                        :pid                    => Process.pid,
-                        :db_target              => @target_dbhost,
-                        :status                 => nil,
-                        :trace                  => nil,
-                        :elapsed_time           => nil
+        @import_log = { job_uuid:     job_uuid,
+                        id:           nil,
+                        type:         'import',
+                        path:         @path,
+                        start:        @start,
+                        end:          nil,
+                        elapsed_time: nil,
+                        server:       `hostname`.strip,
+                        pid:          Process.pid,
+                        db_target:    @target_dbhost,
+                        status:       nil,
+                        trace:        nil
                        }
       end
 

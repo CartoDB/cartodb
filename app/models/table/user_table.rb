@@ -48,8 +48,6 @@ class UserTable < Sequel::Model
     values
   }
 
-  RESERVED_TABLE_NAMES = %w{ layergroup all public }.freeze
-
   PRIVACY_PRIVATE = 0
   PRIVACY_PUBLIC = 1
   PRIVACY_LINK = 2
@@ -167,7 +165,7 @@ class UserTable < Sequel::Model
 
     errors.add(
       :name, 'is a reserved keyword, please choose a different one'
-    ) if RESERVED_TABLE_NAMES.include?(name)
+    ) if Carto::DB::Sanitize::RESERVED_TABLE_NAMES.include?(name)
 
     # TODO this kind of check should be moved to the DB
     # privacy setting must be a sane value

@@ -47,7 +47,7 @@ describe Carto::VisualizationsExportService2 do
             '"subdomains":"abcd","minZoom":"0","maxZoom":"18","name":"Positron",' +
             '"className":"positron_rainbow_labels","attribution":"\u00a9 <a ' +
             'href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors \u00a9 ' +
-            '<a href=\"http://cartodb.com/attributions#basemaps\">CartoDB</a>",' +
+            '<a href=\"https://cartodb.com/attributions\">CartoDB</a>",' +
             '"labels":{"url":"http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png"},' +
             '"urlTemplate":"http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png"}').deep_symbolize_keys,
           kind: 'tiled',
@@ -63,7 +63,7 @@ describe Carto::VisualizationsExportService2 do
           ]
         },
         {
-          options: JSON.parse('{"attribution":"CartoDB <a href=\"http://cartodb.com/attributions\" ' +
+          options: JSON.parse('{"attribution":"CartoDB <a href=\"https://cartodb.com/attributions\" ' +
             'target=\"_blank\">attribution</a>","type":"CartoDB","active":true,"query":"","opacity":0.99,' +
             '"interactivity":"cartodb_id","interaction":true,"debug":false,"tiler_domain":"localhost.lan",' +
             '"tiler_port":"80","tiler_protocol":"http","sql_api_domain":"cartodb.com","sql_api_port":"80",' +
@@ -132,7 +132,7 @@ describe Carto::VisualizationsExportService2 do
             '"url":"http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png", ' +
             '"subdomains":"abcd","minZoom":"0","maxZoom":"18","attribution":"\u00a9 <a ' +
             'href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors \u00a9 ' +
-            '<a href=\"http://cartodb.com/attributions#basemaps\">CartoDB</a>",' +
+            '<a href=\"https://cartodb.com/attributions\">CartoDB</a>",' +
             '"urlTemplate":"http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png","type":"Tiled",' +
             '"name":"Positron Labels"}').deep_symbolize_keys,
           kind: 'tiled'

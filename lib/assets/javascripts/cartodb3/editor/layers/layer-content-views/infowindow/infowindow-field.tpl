@@ -7,7 +7,7 @@
         <div class="CDB-Shape-rectsHandleItem CDB-Shape-rectsHandleItem--grey is-third"></div>
       </div>
     </div>
-    <input class="CDB-Checkbox js-checkbox" type="checkbox" name="field" value="<%- name %>">
+    <input class="CDB-Checkbox js-checkbox" type="checkbox" <% if (isSelected) { %>checked="checked"<% } %>">
     <span class="u-iBlock CDB-Checkbox-face u-rSpace--m"></span>
     <label class="u-rSpace--m" title="<%- name %>"><%- name %></label>
   </div>

@@ -489,7 +489,11 @@
             "true": "Accum.",
             "false": "None"
           }
-        }
+        },
+        "animated-trails": "trails",
+        "animated-resolution": "resolution",
+        "animated-steps": "resolution",
+        "animated-duration": "duration",
       }
     },
     "widgets": {

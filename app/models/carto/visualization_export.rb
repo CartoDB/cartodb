@@ -56,6 +56,8 @@ module Carto
         user: user,
         visualization_id: visualization.id,
         visualization_export_id: id)
+      update_attributes(state: STATE_FAILURE)
+
       false
     end
 

@@ -12,7 +12,7 @@ module CartoDB
   module Importer2
     class Unp
       HIDDEN_FILE_REGEX     = /^(\.|\_{2})/
-      COMPRESSED_EXTENSIONS = %w{ .zip .gz .tgz .tar.gz .bz2 .tar .kmz .rar }
+      COMPRESSED_EXTENSIONS = %w{ .zip .gz .tgz .tar.gz .bz2 .tar .kmz .rar .carto }.freeze
       SUPPORTED_FORMATS     = %w{
         .csv .shp .ods .xls .xlsx .tif .tiff .kml .kmz
         .js .json .tar .gz .tgz .osm .bz2 .geojson
@@ -34,6 +34,14 @@ module CartoDB
 
       def get_temporal_subfolder_path
         @temporal_subfolder_path ||= DEFAULT_IMPORTER_TMP_SUBFOLDER
+      end
+
+      # Uncompress, yields the block with the files as argument, and cleanups
+      def open(compressed_file_path)
+        run(compressed_file_path)
+        yield(source_files)
+      ensure
+        clean_up
       end
 
       def run(path)
@@ -97,7 +105,7 @@ module CartoDB
           if stderr =~ /incorrect password/
             raise PasswordNeededForExtractionError
           else
-            raise ExtractionError
+            raise ExtractionError.new(stderr)
           end
         end
         FileUtils.rm(path)

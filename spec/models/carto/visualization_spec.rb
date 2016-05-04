@@ -12,6 +12,13 @@ describe Carto::Visualization do
       username: 'admin',
       password: '123456'
     )
+    @carto_user = Carto::User.find(@user.id)
+    @user2 = create_user(
+      email: 'noadmin@cartotest.com',
+      username: 'noadmin',
+      password: '123456'
+    )
+    @carto_user2 = Carto::User.find(@user2.id)
   end
 
   before(:each) do
@@ -22,6 +29,7 @@ describe Carto::Visualization do
   after(:all) do
     stub_named_maps_calls
     @user.destroy
+    @user2.destroy
   end
 
   describe '#estimated_row_count and #actual_row_count' do
@@ -100,4 +108,31 @@ describe Carto::Visualization do
 
   end
 
+  describe '#related_tables_readable_by' do
+    include Carto::Factories::Visualizations
+
+    it 'only returns tables that a user can read' do
+      private_table = FactoryGirl.create(:private_user_table, user: @carto_user)
+      public_table = FactoryGirl.create(:public_user_table, user: @carto_user)
+
+      private_layer = FactoryGirl.create(:carto_layer, options: { table_name: private_table.name })
+      public_layer =  FactoryGirl.create(:carto_layer, options: { table_name: public_table.name })
+
+      map = FactoryGirl.create(:carto_map, layers: [private_layer, public_layer], user: @carto_user)
+      map, table, table_visualization, visualization = create_full_visualization(@carto_user,
+                                                                                 map: map,
+                                                                                 table: private_table,
+                                                                                 data_layer: private_layer)
+
+      related_table_ids_readable_by_owner = visualization.related_tables_readable_by(@carto_user).map(&:id)
+      related_table_ids_readable_by_owner.should include(private_table.id)
+      related_table_ids_readable_by_owner.should include(public_table.id)
+
+      related_table_ids_readable_by_others = visualization.related_tables_readable_by(@carto_user2).map(&:id)
+      related_table_ids_readable_by_others.should_not include(private_table.id)
+      related_table_ids_readable_by_others.should include(public_table.id)
+
+      destroy_full_visualization(map, table, table_visualization, visualization)
+    end
+  end
 end

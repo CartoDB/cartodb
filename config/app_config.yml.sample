@@ -170,6 +170,8 @@ defaults: &defaults
       base_url: ''
       api_key: ''
       table_name: ''
+  exporter:
+    exporter_temporal_folder: '/tmp/exporter'
   importer:
     blacklisted_ip_addr: []
     content_guessing:        # Depends on geocoding

@@ -70,7 +70,7 @@ describe('src/vis/tooltip-manager.js', function () {
     expect(this.mapView.addOverlay).toHaveBeenCalled();
   });
 
-  it('should NOT add a new infowindow view to the map view when new layers share the same layerView', function () {
+  it('should NOT add a new tooltip view to the map view when new layers share the same layerView', function () {
     spyOn(this.mapView, 'addOverlay');
 
     var layer1 = new CartoDBLayer({
@@ -100,22 +100,6 @@ describe('src/vis/tooltip-manager.js', function () {
 
     expect(this.mapView.addOverlay).toHaveBeenCalled();
     expect(this.mapView.addOverlay.calls.count()).toEqual(1);
-  });
-
-  it('should NOT add a new infowindow view to the map view when new layers are added if layer doesn\'t have infowindow fields', function () {
-    spyOn(this.mapView, 'addOverlay');
-
-    var layer = new CartoDBLayer({
-      tooltip: {
-        fields: []
-      }
-    });
-
-    var tooltipManager = new TooltipManager(this.vis);
-    tooltipManager.manage(this.mapView, this.map);
-
-    this.map.layers.reset([ layer ]);
-    expect(this.mapView.addOverlay).not.toHaveBeenCalled();
   });
 
   it('should correctly bind the featureOver event to the corresponding layerView', function () {

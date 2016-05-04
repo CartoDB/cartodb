@@ -1,4 +1,4 @@
-var Tooltip = require('../geo/ui/tooltip');
+var TooltipView = require('../geo/ui/tooltip-view');
 
 /**
  * Manages the tooltips for a map. It listens to changes on the collection
@@ -20,7 +20,7 @@ TooltipManager.prototype.manage = function (mapView, map) {
 };
 
 TooltipManager.prototype._addTooltipForLayer = function (layerModel) {
-  if (layerModel.getTooltipData && layerModel.getTooltipData()) {
+  if (layerModel.tooltip) {
     var layerView = this._mapView.getLayerViewByLayerCid(layerModel.cid);
 
     if (!layerView.tooltipView) {
@@ -31,31 +31,27 @@ TooltipManager.prototype._addTooltipForLayer = function (layerModel) {
 };
 
 TooltipManager.prototype._addTooltipOverlay = function (layerView, layerModel) {
-  var tooltipView = layerView.tooltipView;
-  if (!tooltipView) {
-    var tooltipData = layerModel.getTooltipData();
-    layerView.tooltipView = tooltipView = new Tooltip({
+  if (!layerView.tooltipView) {
+    layerView.tooltipView = new TooltipView({
       mapView: this._mapView,
       layer: layerView,
-      template: tooltipData.template,
+      template: layerModel.tooltip.get('template'),
       position: 'bottom|right',
       vertical_offset: 10,
       horizontal_offset: 4,
-      fields: tooltipData.fields,
+      fields: layerModel.tooltip.get('fields'),
       omit_columns: ['cartodb_id']
     });
-    this._mapView.addOverlay(tooltipView);
+    this._mapView.addOverlay(layerView.tooltipView);
 
     // TODO: Test this
     layerView.bind('remove', function () {
-      tooltipView.clean();
-    });
+      layerView.tooltipView.clean();
+    }, this);
   }
 };
 
 TooltipManager.prototype._bindFeatureOverEvent = function (layerView) {
-  var tooltipView = layerView.tooltipView;
-
   layerView.bind('featureOver', function (e, latlng, pos, data, layerIndex) {
     var layerModel = layerView.model;
     if (layerModel.layers) {
@@ -65,16 +61,15 @@ TooltipManager.prototype._bindFeatureOverEvent = function (layerView) {
       throw new Error('featureOver event for layer ' + layerIndex + ' was captured but layerModel coudn\'t be retrieved');
     }
 
-    var tooltipData = layerModel.getTooltipData();
-    if (tooltipData) {
-      tooltipView.setTemplate(tooltipData.template);
-      tooltipView.setFields(tooltipData.fields);
-      tooltipView.setAlternativeNames(tooltipData.alternative_names);
-      tooltipView.enable();
+    if (layerModel.tooltip.hasFields()) {
+      layerView.tooltipView.setTemplate(layerModel.tooltip.get('template'));
+      layerView.tooltipView.setFields(layerModel.tooltip.get('fields'));
+      layerView.tooltipView.setAlternativeNames(layerModel.tooltip.get('alternative_names'));
+      layerView.tooltipView.enable();
     } else {
-      tooltipView.disable();
+      layerView.tooltipView.disable();
     }
-  });
+  }, this);
 };
 
 module.exports = TooltipManager;

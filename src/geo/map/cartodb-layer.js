@@ -2,6 +2,7 @@ var _ = require('underscore');
 var config = require('cdb.config');
 var LayerModelBase = require('./layer-model-base');
 var InfowindowTemplate = require('./infowindow-template');
+var TooltipTemplate = require('./tooltip-template');
 
 var CartoDBLayer = LayerModelBase.extend({
   defaults: {
@@ -22,6 +23,8 @@ var CartoDBLayer = LayerModelBase.extend({
 
     this.infowindow = new InfowindowTemplate(attrs.infowindow);
     this.unset('infowindow');
+    this.tooltip = new TooltipTemplate(attrs.tooltip);
+    this.unset('tooltip');
 
     this.bind('change:visible change:sql change:source', this._reloadMap, this);
     this.bind('change:cartocss', this._onCartoCSSChanged);
@@ -43,12 +46,20 @@ var CartoDBLayer = LayerModelBase.extend({
     this.set('cartocss', this.get('initialStyle'));
   },
 
-  hasInteraction: function () {
-    return this.isVisible() && (this.containInfowindow() || this.containTooltip());
-  },
-
   isVisible: function () {
     return this.get('visible');
+  },
+
+  hasInteraction: function () {
+    return this.isVisible() && (this._hasInfowindowFields() || this._hasTooltipFields());
+  },
+
+  _hasInfowindowFields: function () {
+    return this.infowindow.get('fields').length > 0;
+  },
+
+  _hasTooltipFields: function () {
+    return this.tooltip.get('fields').length > 0;
   },
 
   getGeometryType: function () {
@@ -60,52 +71,10 @@ var CartoDBLayer = LayerModelBase.extend({
     return null;
   },
 
-  getTooltipFieldNames: function () {
-    var names = [];
-    var tooltip = this.getTooltipData();
-    if (tooltip && tooltip.fields) {
-      names = _.pluck(tooltip.fields, 'name');
-    }
-    return names;
-  },
-
-  getTooltipData: function () {
-    var tooltip = this.get('tooltip');
-    if (tooltip && tooltip.fields && tooltip.fields.length) {
-      return tooltip;
-    }
-    return null;
-  },
-
-  containInfowindow: function () {
-    return !!this.getTooltipData();
-  },
-
-  getInfowindowFieldNames: function () {
-    var names = [];
-    var infowindow = this.infowindow;
-    if (infowindow && infowindow.get('fields')) {
-      names = _.pluck(infowindow.get('fields'), 'name');
-    }
-    return names;
-  },
-
-  getInfowindowData: function () {
-    var infowindow = this.infowindow;
-    if (infowindow && infowindow.get('fields').length) {
-      return infowindow;
-    }
-    return null;
-  },
-
-  containTooltip: function () {
-    return !!this.getInfowindowData();
-  },
-
   getInteractiveColumnNames: function () {
     var fieldNames = _.union(
-      this.getInfowindowFieldNames(),
-      this.getTooltipFieldNames()
+      this.infowindow.getFieldNames(),
+      this.tooltip.getFieldNames()
     );
     if (fieldNames.length) {
       fieldNames.unshift('cartodb_id');

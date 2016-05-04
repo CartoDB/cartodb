@@ -22,7 +22,7 @@ var InfowindowModel = Backbone.Model.extend({
     alternative_names: { }
   },
 
-  TEMPLATE_ATTRIBUTES: ['fields', 'template_name', 'template', 'alternative_names', 'width', 'maxHeight', 'offset'],
+  TEMPLATE_ATTRIBUTES: ['fields', 'template', 'template_name', 'template_type', 'alternative_names', 'width', 'maxHeight', 'offset'],
 
   // updates content with attributes, if no attributes are given it only sets the content
   // with just the field names

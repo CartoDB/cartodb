@@ -2,9 +2,9 @@ var $ = require('jquery');
 var Backbone = require('backbone');
 var Map = require('../../../../src/geo/map');
 var LeafletMapView = require('../../../../src/geo/leaflet/leaflet-map-view');
-var Tooltip = require('../../../../src/geo/ui/tooltip');
+var TooltipView = require('../../../../src/geo/ui/tooltip-view');
 
-describe('geo/ui/tooltip', function() {
+describe('geo/ui/tooltip-view', function() {
 
   var tooltip, layer, container, mapView;
   beforeEach(function() {
@@ -19,7 +19,7 @@ describe('geo/ui/tooltip', function() {
     });
 
     layer = new Backbone.Model();
-    tooltip = new Tooltip({
+    tooltip = new TooltipView({
       template: '{{#fields}}{{{ value }}},{{/fields}}',
       layer: layer,
       mapView: mapView

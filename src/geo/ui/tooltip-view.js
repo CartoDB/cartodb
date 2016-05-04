@@ -3,7 +3,7 @@ var InfoBox = require('./infobox');
 var sanitize = require('../../core/sanitize');
 var InfowindowModel = require('./infowindow-model');
 
-var Tooltip = InfoBox.extend({
+var TooltipView = InfoBox.extend({
   defaultTemplate: '<p>{{text}}</p>',
   className: 'CDB-Tooltip-wrapper',
 
@@ -211,4 +211,4 @@ var Tooltip = InfoBox.extend({
   }
 });
 
-module.exports = Tooltip;
+module.exports = TooltipView;

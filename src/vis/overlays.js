@@ -11,7 +11,7 @@ var LayerSelector = require('../geo/ui/layer-selector');
 var Search = require('../geo/ui/search/search');
 var Text = require('../geo/ui/text');
 var TilesLoader = require('../geo/ui/tiles-loader');
-var Tooltip = require('../geo/ui/tooltip');
+var TooltipView = require('../geo/ui/tooltip-view');
 var Zoom = require('../geo/ui/zoom/zoom-view');
 var FullScreen = require('../ui/common/fullscreen/fullscreen-view');
 var Attribution = require('../geo/ui/attribution/attribution-view');
@@ -295,7 +295,7 @@ Overlay.register('tooltip', function (data, vis) {
   data.layer = data.layer || vis.getLayerViews()[1];
   data.layer.setInteraction(true);
   data.mapView = vis.mapView;
-  return new Tooltip(data);
+  return new TooltipView(data);
 });
 
 Overlay.register('infobox', function (data, vis) {

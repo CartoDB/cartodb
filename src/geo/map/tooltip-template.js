@@ -1,13 +1,14 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
 
-var InfowindowTemplate = Backbone.Model.extend({
+var TooltipTemplate = Backbone.Model.extend({
   defaults: {
-    offset: [28, 0], // offset of the tip calculated from the bottom left corner
-    maxHeight: 180, // max height of the content, not the whole infowindow
+    vertical_offset: 0,
+    horizontal_offset: 0,
+    position: 'top|center',
     template: '',
     alternative_names: { },
-    fields: [] // contains the fields displayed in the infowindow
+    fields: []
   },
 
   update: function (attrs) {
@@ -23,4 +24,4 @@ var InfowindowTemplate = Backbone.Model.extend({
   }
 });
 
-module.exports = InfowindowTemplate;
+module.exports = TooltipTemplate;

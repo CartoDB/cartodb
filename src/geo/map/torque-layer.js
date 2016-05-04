@@ -71,19 +71,6 @@ var TorqueLayer = LayerModelBase.extend({
     return this.get('layer_name') || this.get('table_name');
   },
 
-  getInfowindowData: function() {
-    // TODO: use infowindow model in the future
-    var infowindow = this.get('infowindow');
-    if (infowindow && infowindow.fields && infowindow.fields.length) {
-      return infowindow;
-    }
-    return null;
-  },
-
-  getTooltipData: function() {
-    return null;
-  },
-
   getInteractiveColumnNames: function() {
     return [];
   },

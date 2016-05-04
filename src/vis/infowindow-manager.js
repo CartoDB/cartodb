@@ -54,12 +54,18 @@ InfowindowManager.prototype._bindFeatureClickEvent = function (layerView) {
       throw new Error('featureClick event for layer ' + layerIndex + ' was captured but layerModel coudn\'t be retrieved');
     }
 
-    if (!layerModel.getInfowindowData()) {
+    if (!layerModel.infowindow.hasFields()) {
       return;
     }
 
     this._updateInfowindowModel(layerModel.infowindow);
     this._fetchAttributes(layerView, layerModel, data.cartodb_id, latlng);
+
+    if (layerView.tooltipView) {
+      layerView.tooltipView.setFilter(function (feature) {
+        return feature.cartodb_id !== data.cartodb_id;
+      }).hide();
+    }
   }, this);
 };
 
@@ -95,12 +101,6 @@ InfowindowManager.prototype._fetchAttributes = function (layerView, layerModel, 
       this._infowindowModel.setError();
     }
   }.bind(this));
-
-  if (layerView.tooltipView) {
-    layerView.tooltipView.setFilter(function (feature) {
-      return feature.cartodb_id !== this._currentFeatureId;
-    }.bind(this)).hide();
-  }
 };
 
 InfowindowManager.prototype._bindInfowindowModel = function (layerView, layerModel) {

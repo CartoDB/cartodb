@@ -293,6 +293,160 @@ describe('src/vis/infowindow-manager.js', function () {
     expect(featureClickBinds.length).toEqual(1);
   });
 
+  it('should set loading content while loading', function () {
+    spyOn(this.mapView, 'addInfowindow');
+
+    var layer1 = new CartoDBLayer({
+      infowindow: {
+        template: 'template1',
+        template_type: 'underscore',
+        fields: [{
+          'name': 'name',
+          'title': true,
+          'position': 1
+        }],
+        alternative_names: 'alternative_names1'
+      }
+    });
+
+    var infowindowManager = new InfowindowManager(this.vis);
+    infowindowManager.manage(this.mapView, this.map);
+
+    this.map.layers.reset([ layer1 ]);
+    var infowindowView = this.mapView.addInfowindow.calls.mostRecent().args[0];
+    var infowindowModel = infowindowView.model;
+
+    this.layerView.model = {
+      fetchAttributes: jasmine.createSpy('fetchAttributes'),
+      getLayerAt: function (index) {
+        return layer1;
+      },
+
+      getIndexOf: function (layerModel) {
+        return 0;
+      }
+    };
+    spyOn(infowindowView, 'adjustPan');
+
+    // Simulate the featureClick event for layer #0
+    this.layerView.trigger('featureClick', {}, [100, 200], undefined, { cartodb_id: 10 }, 0);
+
+    // InfowindowModel has been updated
+    expect(infowindowModel.attributes).toEqual({
+      'template': 'template1',
+      'alternative_names': 'alternative_names1',
+      'fields': [
+        {
+          'name': 'name',
+          'title': true,
+          'position': 1
+        }
+      ],
+      'template_name': 'infowindow_light',
+      'template_type': 'underscore',
+      'offset': [
+        28,
+        0
+      ],
+      'maxHeight': 180,
+      'autoPan': true,
+      'content': {
+        'fields': [
+          {
+            'type': 'loading',
+            'title': 'loading',
+            'value': '…'
+          }
+        ]
+      },
+      'latlng': [
+        100,
+        200
+      ],
+      'visibility': true
+    });
+  });
+
+  it('should set error content if no attributes are returned', function () {
+    spyOn(this.mapView, 'addInfowindow');
+
+    var layer1 = new CartoDBLayer({
+      infowindow: {
+        template: 'template1',
+        template_type: 'underscore',
+        fields: [{
+          'name': 'name',
+          'title': true,
+          'position': 1
+        }],
+        alternative_names: 'alternative_names1'
+      }
+    });
+
+    var infowindowManager = new InfowindowManager(this.vis);
+    infowindowManager.manage(this.mapView, this.map);
+
+    this.map.layers.reset([ layer1 ]);
+    var infowindowView = this.mapView.addInfowindow.calls.mostRecent().args[0];
+    var infowindowModel = infowindowView.model;
+
+    this.layerView.model = {
+      fetchAttributes: jasmine.createSpy('fetchAttributes').and.callFake(function (layerIndex, cartoDBId, callback) {
+        callback();
+      }),
+
+      getLayerAt: function (index) {
+        return layer1;
+      },
+
+      getIndexOf: function (layerModel) {
+        return 0;
+      }
+    };
+    spyOn(infowindowView, 'adjustPan');
+
+    // Simulate the featureClick event for layer #0
+    this.layerView.trigger('featureClick', {}, [100, 200], undefined, { cartodb_id: 10 }, 0);
+
+    // InfowindowModel has been updated
+    expect(infowindowModel.attributes).toEqual({
+      'template': 'template1',
+      'alternative_names': 'alternative_names1',
+      'fields': [
+        {
+          'name': 'name',
+          'title': true,
+          'position': 1
+        }
+      ],
+      'template_name': 'infowindow_light',
+      'template_type': 'underscore',
+      'offset': [
+        28,
+        0
+      ],
+      'maxHeight': 180,
+      'autoPan': true,
+      'content': {
+        'fields': [
+          {
+            'title': null,
+            'alternative_name': null,
+            'value': 'There has been an error...',
+            'index': null,
+            'type': 'error'
+          }
+        ],
+        'data': {}
+      },
+      'latlng': [
+        100,
+        200
+      ],
+      'visibility': true
+    });
+  });
+
   it('should set a filter on the tooltipView if the layer has tooltip too', function () {
     // Simulate that the layerView has been added a tooltipView
     var tooltipView = jasmine.createSpyObj('tooltipView', ['setFilter', 'hide']);
@@ -321,7 +475,7 @@ describe('src/vis/infowindow-manager.js', function () {
     var infowindowView = this.mapView.addInfowindow.calls.mostRecent().args[0];
 
     this.layerView.model = {
-      fetchAttributes: jasmine.createSpy('fetchAttributes').and.returnValue({ name: 'Juan' }),
+      fetchAttributes: jasmine.createSpy('fetchAttributes'),
       getLayerAt: function (index) {
         return layer;
       },

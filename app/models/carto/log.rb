@@ -9,7 +9,7 @@ class Carto::Log < ActiveRecord::Base
   ENTRY_POSTFIX = "\n"
   ENTRY_FORMAT = "%s: %s#{ENTRY_POSTFIX}"
 
-  TYPE_USER_CREATION = 'user_creation'
+  TYPE_USER_CREATION = 'user_creation'.freeze
 
   # INFO: disable ActiveRecord inheritance column
   self.inheritance_column = :_type

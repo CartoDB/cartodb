@@ -23,11 +23,7 @@
     "Francisco Dans <francisco@cartodb.com>",
     "Emilio García <emilio@cartodb.com>"
   ],
-  "licenses": [
-    {
-      "type": "BSD-3-Clause"
-    }
-  ],
+  "license": "BSD-3-Clause",
   "dependencies": {
     "backbone": "1.2.3",
     "backbone-poller": "^1.1.3",

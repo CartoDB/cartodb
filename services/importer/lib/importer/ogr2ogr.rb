@@ -48,9 +48,10 @@ module CartoDB
 
       def command_for_import
         "#{OSM_INDEXING_OPTION} #{PG_COPY_OPTION} #{client_encoding_option} #{shape_encoding_option} " +
-        "#{executable_path} #{OUTPUT_FORMAT_OPTION} #{overwrite_option} #{guessing_option} " +
+        "#{executable_path} #{OUTPUT_FORMAT_OPTION} #{guessing_option} " +
         "#{postgres_options} #{projection_option} #{layer_creation_options} #{filepath} #{layer} " +
-        "#{layer_name_option} #{new_layer_type_option} #{shape_coordinate_option} #{timeout_options}"
+        "#{layer_name_option} #{new_layer_type_option} #{shape_coordinate_option} #{timeout_options} " +
+        "#{overwrite_option}"
       end
 
       def command_for_append

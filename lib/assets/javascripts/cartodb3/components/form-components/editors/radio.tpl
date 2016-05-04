@@ -1,4 +1,4 @@
-<% _.each(items, function(item, index, list) { %>
+<% _.each(items, function(item, index) { %>
   <li class="u-iBlock <%- (index === (items.length - 1)) ? '' : 'u-rSpace--xl' %>">
     <input type="radio" class="CDB-Radio u-iBlock" name="<%- item.name %>" value="<%- item.value %>" id="<%- item.id %>" />
     <span class="u-iBlock CDB-Radio-face"></span>

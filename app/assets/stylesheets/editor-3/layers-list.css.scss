@@ -141,7 +141,9 @@
   @include align-items(center);
   margin: 0 $halfBaseSize;
   background: $cWhite;
-  overflow: visible; /* for class with .has-error to be visible */
+}
+.Editor-ListAnalysis-item .Editor-ListAnalysis-innerItem {
+  max-width: calc(50% - 8px);
 }
 
 .Editor-ListAnalysis-layer {

@@ -12,6 +12,8 @@ var TooltipTemplate = Backbone.Model.extend({
   },
 
   update: function (attrs) {
+    // Deep clone attrs so that attributes like fields are not references to original objects
+    attrs = JSON.parse(JSON.stringify(attrs));
     this.set(attrs);
   },
 

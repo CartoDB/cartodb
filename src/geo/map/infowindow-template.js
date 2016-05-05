@@ -11,6 +11,8 @@ var InfowindowTemplate = Backbone.Model.extend({
   },
 
   update: function (attrs) {
+    // Deep clone attrs so that attributes like fields is not set as a reference
+    attrs = JSON.parse(JSON.stringify(attrs));
     this.set(attrs);
   },
 

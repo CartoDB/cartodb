@@ -45,7 +45,7 @@ class Carto::Widget < ActiveRecord::Base
   private
 
   def options_must_be_json
-    errors.add(:options, 'is wrongly formatted (not a Hash or invalid persisted JSON)') unless options.nil? || options.is_a?(Hash)
+    errors.add(:options, 'wrongly formatted (not a Hash or invalid JSON)') unless options.nil? || options.is_a?(Hash)
   end
 
   def notify_maps_change

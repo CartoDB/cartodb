@@ -169,13 +169,6 @@ describe('src/vis/infowindow-manager.js', function () {
     expect(infowindowModel.attributes).toEqual({
       'template': 'template1',
       'alternative_names': 'alternative_names1',
-      'fields': [
-        {
-          'name': 'name',
-          'title': true,
-          'position': 1
-        }
-      ],
       'template_name': 'infowindow_light',
       'template_type': 'underscore',
       'offset': [
@@ -215,13 +208,6 @@ describe('src/vis/infowindow-manager.js', function () {
     expect(infowindowModel.attributes).toEqual({
       'template': 'template2',
       'alternative_names': 'alternative_names2',
-      'fields': [
-        {
-          'name': 'description',
-          'title': true,
-          'position': 1
-        }
-      ],
       'template_name': 'infowindow_light',
       'template_type': 'underscore',
       'offset': [
@@ -390,13 +376,6 @@ describe('src/vis/infowindow-manager.js', function () {
     expect(infowindowModel.attributes).toEqual({
       'template': 'template1',
       'alternative_names': 'alternative_names1',
-      'fields': [
-        {
-          'name': 'name',
-          'title': true,
-          'position': 1
-        }
-      ],
       'template_name': 'infowindow_light',
       'template_type': 'underscore',
       'offset': [
@@ -467,13 +446,6 @@ describe('src/vis/infowindow-manager.js', function () {
     expect(infowindowModel.attributes).toEqual({
       'template': 'template1',
       'alternative_names': 'alternative_names1',
-      'fields': [
-        {
-          'name': 'name',
-          'title': true,
-          'position': 1
-        }
-      ],
       'template_name': 'infowindow_light',
       'template_type': 'underscore',
       'offset': [
@@ -583,13 +555,15 @@ describe('src/vis/infowindow-manager.js', function () {
       }
     };
 
-    layer.infowindow.set('fields', [
-      {
-        'name': 'description',
-        'title': true,
-        'position': 1
-      }
-    ]);
+    layer.infowindow.update({
+      fields: [
+        {
+          'name': 'description',
+          'title': true,
+          'position': 1
+        }
+      ]
+    });
 
     expect(this.map.reload).toHaveBeenCalledWith({});
   });
@@ -634,13 +608,15 @@ describe('src/vis/infowindow-manager.js', function () {
 
     spyOn(this.map, 'reload');
 
-    layer.infowindow.set('fields', [
-      {
-        'name': 'description',
-        'title': true,
-        'position': 1
-      }
-    ]);
+    layer.infowindow.update({
+      fields: [
+        {
+          'name': 'description',
+          'title': true,
+          'position': 1
+        }
+      ]
+    });
 
     expect(this.map.reload.calls.argsFor(0)[0].success).toEqual(jasmine.any(Function));
   });

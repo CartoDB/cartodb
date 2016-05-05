@@ -9,6 +9,7 @@ var InfowindowTemplate = Backbone.Model.extend({
   },
 
   initialize: function (attrs) {
+    attrs = attrs || {};
     this.fields = new Backbone.Collection(attrs.fields || []);
     this.unset('fields');
   },

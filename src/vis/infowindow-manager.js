@@ -98,24 +98,28 @@ InfowindowManager.prototype._fetchAttributes = function (layerView, layerModel, 
 };
 
 InfowindowManager.prototype._bindInfowindowModel = function (layerView, layerModel) {
-  layerModel.infowindow.bind('change', function (infowindowTemplate) {
+  layerModel.infowindow.bind('change', function () {
+    if (this._infowindowModel.hasInfowindowTemplate(layerModel.infowindow) && this._infowindowModel.get('visibility') === true) {
+      this._updateInfowindowModel(layerModel.infowindow);
+    }
+  }, this);
+
+  layerModel.infowindow.fields.bind('reset', function () {
     var needsNewAttributes = false;
-    if (this._infowindowModel.hasInfowindowTemplate(infowindowTemplate)) {
-      this._updateInfowindowModel(infowindowTemplate);
-      if (infowindowTemplate.hasChanged('fields') && this._infowindowModel.get('visibility') === true) {
+    if (this._infowindowModel.hasInfowindowTemplate(layerModel.infowindow)) {
+      this._updateInfowindowModel(layerModel.infowindow);
+      if (this._infowindowModel.get('visibility') === true) {
         needsNewAttributes = true;
       }
     }
 
-    if (infowindowTemplate.hasChanged('fields')) {
-      var options = {};
-      if (needsNewAttributes) {
-        options.success = function () {
-          this._fetchAttributes(layerView, layerModel);
-        }.bind(this);
-      }
-      this._map.reload(options);
+    var options = {};
+    if (needsNewAttributes) {
+      options.success = function () {
+        this._fetchAttributes(layerView, layerModel);
+      }.bind(this);
     }
+    this._map.reload(options);
   }, this);
 };
 

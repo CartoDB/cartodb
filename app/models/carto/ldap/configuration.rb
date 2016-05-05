@@ -65,36 +65,25 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
   # @param String username. No full CN, just the username, e.g. 'administrator1'
   # @param String password
   def authenticate(username, password)
-    username_filter =  Net::LDAP::Filter.eq(user_id_field, username)
+    ldap_connection = Net::LDAP.new
+    ldap_connection.host = self.host
+    ldap_connection.port = self.port
+    configure_encryption(ldap_connection)
+
+    ldap_connection.auth self.connection_user, self.connection_password
 
     valid_ldap_entry = nil
     domain_bases_list.find do |domain|
-      search_results = search(domain, username_filter)
-      if search_results.nil? || search_results.empty?
-        false
-      else
-        valid_ldap_entry = search_results.first
-      end
+      valid_ldap_entry = ldap_connection.bind_as(
+        :base => domain,
+        :filter => "(#{self.user_id_field}=#{username})",
+        :password => password
+      )
     end
+    @last_authentication_result = ldap_connection.get_operation_result
     return false unless valid_ldap_entry
 
-    #Sample result
-    # [ #<Net::LDAP::Entry:0x00000008c54628 @myhash={
-    #     :dn=>["cn=test,dc=cartodb"],
-    #     :objectclass=>["simpleSecurityObject", "organizationalRole"],
-    #     :cn=>["test"],
-    #     :description=>["xxxx"],
-    #     :userpassword=>["{SSHA}aaaaa"]
-    # }> ]
-
-    ldap_connection = connect(valid_ldap_entry[:dn], password)
-    if ldap_connection.bind
-      @last_authentication_result = ldap_connection.get_operation_result
-      Carto::Ldap::Entry.new(valid_ldap_entry, self)
-    else
-      @last_authentication_result = nil
-      false
-    end
+    Carto::Ldap::Entry.new(valid_ldap_entry.first, self)
   end
 
   # INFO: Resets connection if already made

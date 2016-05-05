@@ -6,7 +6,7 @@ module Carto
       include Carto::ControllerHelper
       include VisualizationsControllerHelper
 
-      ssl_required :create
+      ssl_required :create, :show
 
       before_filter :load_visualization, only: :create
       before_filter :load_visualization_export, only: :show

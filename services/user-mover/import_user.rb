@@ -180,6 +180,10 @@ module CartoDB
           end
         end
 
+        if @options[:update_metadata]
+          update_metadata
+        end
+
         log_success
         remove_user_mover_banner(@pack_config['user']['id']) if @options[:set_banner]
       end

@@ -501,24 +501,10 @@ SQL.prototype.describeBoolean = function(sql, column, callback){
 
 SQL.prototype.describeGeom = function(sql, column, callback) {
   var s = [
-    'with stats as (',
-        'select st_asgeojson(st_extent({{column}})) as bbox',
-        'from ({{sql}}) _wrap',
-    '),',
-    'geotype as (',
+    'with geotype as (',
       'select st_geometrytype({{column}}) as geometry_type from ({{sql}}) _w where {{column}} is not null limit 1',
-    '),',
-    'clusters as (',
-      'with clus as (',
-        'SELECT distinct(ST_snaptogrid(the_geom, 10)) as cluster, count(*) as clustercount FROM ({{sql}}) _wrap group by 1 order by 2 desc limit 3),',
-      'total as (',
-        'SELECT count(*) FROM ({{sql}}) _wrap)',
-      'SELECT sum(clus.clustercount)/sum(total.count) AS clusterrate FROM clus, total',
-    '),',
-    'density as (',
-      'SELECT count(*) / st_area(st_extent(the_geom)) as density FROM ({{sql}}) _wrap',
     ')',
-    'select * from stats, geotype, clusters, density'
+    'select * from geotype'
   ];
 
   var query = Mustache.render(s.join('\n'), {
@@ -543,15 +529,11 @@ SQL.prototype.describeGeom = function(sql, column, callback) {
     }
 
     var row = data.rows[0];
-    var bbox = JSON.parse(row.bbox).coordinates[0]
     callback(null, {
       type: 'geom',
       //lon,lat -> lat, lon
-      bbox: [[bbox[0][0],bbox[0][1]], [bbox[2][0], bbox[2][1]]],
       geometry_type: row.geometry_type,
-      simplified_geometry_type: simplifyType(row.geometry_type),
-      cluster_rate: row.clusterrate,
-      density: row.density
+      simplified_geometry_type: simplifyType(row.geometry_type)
     });
   });
 }

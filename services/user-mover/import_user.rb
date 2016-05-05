@@ -526,9 +526,9 @@ module CartoDB
         metadata_redis_conn.hset("rails:users:#{user}", 'database_name', db)
       end
 
-      def update_metadata(target_dbhost, target_dbname)
+      def update_metadata
         clean_oids(@target_userid, @target_schema)
-        update_database(@target_userid, @target_username, target_dbhost, target_dbname)
+        update_database(@target_userid, @target_username, @target_dbhost, @target_dbname)
         if @target_org_id
           update_postgres_organization(@target_userid, @target_org_id)
         else

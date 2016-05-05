@@ -6,7 +6,6 @@
 
 **/src/api/create-layer.js
 **/src/api/promise.js
-**/src/api/sql.js
 
 **/src/cdb.config.js
 **/src/cdb.errors.js

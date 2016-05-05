@@ -19,7 +19,7 @@ module Carto
     def export_visualization_tables(visualization, user, dir, format, user_tables_ids: nil)
       visualization.
         related_tables_readable_by(user).
-        select { |ut| user_tables_ids.nil? || user_tables_ids.include?(ut.id)}.
+        select { |ut| user_tables_ids.nil? || user_tables_ids.include?(ut.id) }.
         map { |ut| export_table(ut, dir, format) }
     end
 

@@ -10,7 +10,6 @@ require_dependency 'carto/visualization_exporter'
 module Carto
   class VisualizationExport < ::ActiveRecord::Base
     include VisualizationExporter
-    # TODO: FKs? convenient?
     belongs_to :visualization, class_name: Carto::Visualization
     belongs_to :user, class_name: Carto::User
     belongs_to :log, class_name: Carto::Log
@@ -24,6 +23,10 @@ module Carto
     STATE_COMPLETE = 'complete'.freeze
     STATE_FAILURE = 'failure'.freeze
 
+    def exporter_folder
+      ensure_folder(exporter_config['exporter_temporal_folder'] || DEFAULT_EXPORTER_TMP_FOLDER)
+    end
+
     def run_export!(file_upload_helper: default_file_upload_helper)
       logger = Carto::Log.new(type: 'visualization_export')
 
@@ -33,7 +36,8 @@ module Carto
 
       logger.append('Uploading')
       update_attributes(state: STATE_UPLOADING, file: filepath)
-      results = file_upload_helper.upload_file_to_storage({ file: CartoDB::FileUploadFile.new(filepath) }, nil, Cartodb.config[:exporter]['s3'])
+      upload_params = { file: CartoDB::FileUploadFile.new(filepath) }
+      results = file_upload_helper.upload_file_to_storage(upload_params, nil, Cartodb.config[:exporter]['s3'])
       url = results[:file_uri]
 
       logger.append('Deleting tmp file')
@@ -51,6 +55,8 @@ module Carto
         user: user,
         visualization_id: visualization.id,
         visualization_export_id: id)
+      update_attributes(state: STATE_FAILURE)
+
       false
     end
 

@@ -463,6 +463,7 @@
         }
       },
       "components": {
+        "labels-enabled": "labels",
         "labels-font": "font",
         "labels-offset": "offset",
         "labels-fill": "size/color",
@@ -483,6 +484,7 @@
             "interior": "interior"
           }
         },
+        "animated-enabled": "animated",
         "animated-overlap": {
           "label": "overlap",
           "options": {

@@ -1091,7 +1091,7 @@
     "cartoassets": {
       "version": "0.1.30",
       "from": "cartodb/CartoAssets#master",
-      "resolved": "git://github.com/cartodb/CartoAssets.git#b0ac3dfc855562f736a5ca66a1213853606324ab"
+      "resolved": "git://github.com/cartodb/CartoAssets.git#9ce66b6fd0607a68e56fe2155b855100a4216e40"
     },
     "cartodb-deep-insights.js": {
       "version": "0.0.1",

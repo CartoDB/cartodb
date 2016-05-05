@@ -10,7 +10,7 @@ class Admin::MobileAppsController < Admin::AdminController
   before_filter :login_required
   before_filter :initialize_cartodb_central_client
   before_filter :validate_id, only: [:show, :edit, :update, :destroy]
-  before_filter :load_mobile_app, only: [:show, :edit, :update]
+  before_filter :load_mobile_app, only: [:show, :edit]
   before_filter :setup_avatar_upload, only: [:new, :create, :edit]
 
   rescue_from Carto::LoadError, with: :render_404
@@ -72,6 +72,7 @@ class Admin::MobileAppsController < Admin::AdminController
       CartoDB::Logger.error(message: 'Error updating mobile_app in Central', exception: e)
       flash[:error] = 'Unable to connect to license server. Try again in a moment.'
     end
+    @mobile_app = MobileApp.new(updated_attributes.merge(id: @app_id))
     render :edit
   end
 

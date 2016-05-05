@@ -21,6 +21,6 @@ class MobileApp
   end
 
   def persisted?
-    id.present? && name.present? && icon_url.present? && app_id.present? && license_key.present?
+    id.present?
   end
 end

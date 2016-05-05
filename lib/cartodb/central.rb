@@ -134,7 +134,7 @@ module Cartodb
     end
 
     def delete_mobile_app(username, app_id)
-      send_request("api/users/#{username}/mobile_apps/#{app_id}", nil, :post, [204])
+      send_request("api/users/#{username}/mobile_apps/#{app_id}", nil, :delete, [204])
     end
   end
 end

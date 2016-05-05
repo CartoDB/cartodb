@@ -82,6 +82,12 @@ class Admin::MobileAppsController < Admin::AdminController
   end
 
   def destroy
+    @cartodb_central_client.delete_mobile_app(current_user.username, @app_id)
+    redirect_to CartoDB.url(self, 'mobile_apps'), flash: { success: 'Your app has been deleted succesfully!' }
+  rescue CartoDB::CentralCommunicationFailure => e
+    raise Carto::LoadError.new('Mobile app not found') if e.response_code == 404
+    CartoDB::Logger.error(message: 'Error deleting mobile app from Central', exception: e, app_id: @app_id)
+    redirect_to CartoDB.url(self, 'mobile_app', id: @app_id), flash: { error: 'Unable to connect to license server. Try again in a moment.' }
   end
 
   private

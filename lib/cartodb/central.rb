@@ -128,10 +128,9 @@ module Cartodb
       send_request("api/users/#{username}/mobile_apps", body, :post, [201])
     end
 
-    def update_mobile_app(username, mobile_app_attributes)
-      app_id = mobile_app_attributes.delete(:id)
+    def update_mobile_app(username, app_id, mobile_app_attributes)
       body = { mobile_app: mobile_app_attributes }
-      send_request("api/users/#{username}/mobile_apps/#{app_id}", body, :post, [204])
+      send_request("api/users/#{username}/mobile_apps/#{app_id}", body, :put, [204])
     end
 
     def delete_mobile_app(username, app_id)

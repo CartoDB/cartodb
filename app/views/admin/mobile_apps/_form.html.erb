@@ -1,4 +1,4 @@
-<%= form_for @mobile_app do |f| %>
+<%= form_for @mobile_app, url: (@mobile_app.persisted? ? CartoDB.url(self, 'mobile_app', { id: @mobile_app.id }) : CartoDB.url(self, 'mobile_apps')) do |f| %>
 
   <span class="FormAccount-separator"></span>
 
@@ -47,27 +47,27 @@
 
     <div class="FormAccount-rowData">
       <div class="RadioButton u-rspace--20">
-        <input class="RadioButtonInput" type="radio" name="mobile_app[platform]" value="android">
+        <input class="RadioButtonInput" type="radio" name="mobile_app[platform]" value="android" <% if @mobile_app.platform == 'android' %>checked<% end %>>
         <span class="RadioButtonInput-face"></span>
         <label class="RadioButton-label dark-color">Android</label>
       </div>
       <div class="RadioButton u-rspace--20">
-        <input class="RadioButtonInput" type="radio" name="mobile_app[platform]" value="ios">
+        <input class="RadioButtonInput" type="radio" name="mobile_app[platform]" value="ios" <% if @mobile_app.platform == 'ios' %>checked<% end %>>
         <span class="RadioButtonInput-face"></span>
         <label class="RadioButton-label dark-color">iOS</label>
       </div>
       <div class="RadioButton u-rspace--20">
-        <input class="RadioButtonInput" type="radio" name="mobile_app[platform]" value="xamarin-android">
+        <input class="RadioButtonInput" type="radio" name="mobile_app[platform]" value="xamarin-android" <% if @mobile_app.platform == 'xamarin-android' %>checked<% end %>>
         <span class="RadioButtonInput-face"></span>
         <label class="RadioButton-label dark-color">Xamarin Android</label>
       </div>
       <div class="RadioButton u-rspace--20">
-        <input class="RadioButtonInput" type="radio" name="mobile_app[platform]" value="xamarin-ios">
+        <input class="RadioButtonInput" type="radio" name="mobile_app[platform]" value="xamarin-ios" <% if @mobile_app.platform == 'xamarin-ios' %>checked<% end %>>
         <span class="RadioButtonInput-face"></span>
         <label class="RadioButton-label dark-color">Xamarin iOS</label>
       </div>
       <div class="RadioButton u-rspace--20">
-        <input class="RadioButtonInput" type="radio" name="mobile_app[platform]" value="windows-phone">
+        <input class="RadioButtonInput" type="radio" name="mobile_app[platform]" value="windows-phone" <% if @mobile_app.platform == 'windows-phone' %>checked<% end %>>
         <span class="RadioButtonInput-face"></span>
         <label class="RadioButton-label dark-color">Windows Phone</label>
       </div>
@@ -93,7 +93,7 @@
     </div>
     <div class="FormAccount-rowData in-block u-vspace-s">
       <div class="RadioButton">
-        <input class="RadioButtonInput" type="radio" name="mobile_app[app_type]" value="open">
+        <input class="RadioButtonInput" type="radio" name="mobile_app[app_type]" value="open" <% if @mobile_app.app_type == 'open' %>checked<% end %>>
         <span class="RadioButtonInput-face"></span>
         <label class="RadioButton-label dark-color">Open</label>
       </div>
@@ -104,7 +104,7 @@
 
     <div class="FormAccount-rowData in-block u-vspace-s">
       <div class="RadioButton">
-        <input class="RadioButtonInput" type="radio" name="mobile_app[app_type]" value="dev">
+        <input class="RadioButtonInput" type="radio" name="mobile_app[app_type]" value="dev" <% if @mobile_app.app_type == 'dev' %>checked<% end %>>
         <span class="RadioButtonInput-face"></span>
         <label class="RadioButton-label dark-color">Dev</label>
       </div>
@@ -115,7 +115,7 @@
 
     <div class="FormAccount-rowData in-block">
       <div class="RadioButton">
-        <input class="RadioButtonInput" type="radio" name="mobile_app[app_type]" value="private">
+        <input class="RadioButtonInput" type="radio" name="mobile_app[app_type]" value="private" <% if @mobile_app.app_type == 'private' %>checked<% end %>>
         <span class="RadioButtonInput-face"></span>
         <label class="RadioButton-label dark-color">Private</label>
       </div>

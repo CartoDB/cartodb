@@ -9,9 +9,9 @@ class Admin::MobileAppsController < Admin::AdminController
   before_filter :invalidate_browser_cache
   before_filter :login_required
   before_filter :initialize_cartodb_central_client
-  before_filter :validate_id, only: [:show, :edit, :update, :destroy]
-  before_filter :load_mobile_app, only: [:show, :edit]
-  before_filter :setup_avatar_upload, only: [:new, :create, :edit]
+  before_filter :validate_id, only: [:show, :update, :destroy]
+  before_filter :load_mobile_app, only: [:show, :update]
+  before_filter :setup_avatar_upload, only: [:new, :create, :show, :update]
 
   rescue_from Carto::LoadError, with: :render_404
 
@@ -56,11 +56,17 @@ class Admin::MobileAppsController < Admin::AdminController
     render :new
   end
 
-  def edit
-  end
-
   def update
     updated_attributes = params[:mobile_app].symbolize_keys.slice(:name, :description, :icon_url)
+    @mobile_app.name = updated_attributes[:name]
+    @mobile_app.icon_url = updated_attributes[:icon_url]
+    @mobile_app.description = updated_attributes[:description]
+
+    unless @mobile_app.valid?
+      flash[:error] = @mobile_app.errors.full_messages.join('; ')
+      render :show
+      return
+    end
     @cartodb_central_client.update_mobile_app(current_user.username, @app_id, updated_attributes)
 
     redirect_to CartoDB.url(self, 'mobile_app', id: @app_id), flash: { success: 'Your app has been updated succesfully!' }
@@ -72,8 +78,7 @@ class Admin::MobileAppsController < Admin::AdminController
       CartoDB::Logger.error(message: 'Error updating mobile_app in Central', exception: e)
       flash[:error] = 'Unable to connect to license server. Try again in a moment.'
     end
-    @mobile_app = MobileApp.new(updated_attributes.merge(id: @app_id))
-    render :edit
+    render :show
   end
 
   def destroy

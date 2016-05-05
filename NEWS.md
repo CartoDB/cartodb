@@ -40,6 +40,8 @@ which should be fixed manually.
 * Added config option `avatars.gravatar_enabled` to disabled gravatar loading (i.e: in offline installations)
 * Ghost table linking is now concurrent per user (avoids race conditions)
 * Experimental support for [visualization metadata export](https://github.com/CartoDB/cartodb/pull/7114).
+* Full visualization export (metadata + data). Example: `bundle exec rake cartodb:vizs:export_full_visualization['5478433b-b791-419c-91d9-d934c56f2053']` (replace the id with the visualization that you want to export).
+  * New configuration parameter: `exporter.exporter_temporal_folder`. Default value: `/tmp/exporter`. See `app_config.yml.sample`.
 * Update CartoDB PostgreSQL extension to 0.15.1 to support overviews.
 * Update dataservices-api client to version 0.3.0 (routing functions)
 
@@ -69,6 +71,7 @@ which should be fixed manually.
 * Fix error when deleting organizational users that had created objects via SQL-API
 * Change deprecated PostGIS function `ST_Force_2D` for the new `ST_Force2D`
 * Fix bug in import mail notifier that prevented to obtain the name of tables created by queries or duplications
+* Fix some import failures due to failling in finding suitable table names.
 
 ## Security fixes
 

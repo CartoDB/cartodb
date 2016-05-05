@@ -80,7 +80,7 @@ module CartoDB
         },
         {
           content_types: ['application/zip'],
-          extensions: ['zip']
+          extensions: ['zip', 'carto']
         },
         {
           content_types: ['application/x-gzip'],
@@ -98,10 +98,15 @@ module CartoDB
                                   .sort_by(&:length).reverse
       end
 
+      def self.supported_extensions_match
+        @supported_extensions_match ||= supported_extensions.map { |ext|
+          ext = ext.gsub('.', '\\.')
+          [/#{ext}$/, /#{ext}(?=\.)/, /#{ext}(?=\?)/, /#{ext}(?=&)/]
+        }.flatten
+      end
+
       def self.url_filename_regex
-        @url_filename_regex ||= Regexp.new(
-                                 "[[:word:]]+#{Regexp.union(supported_extensions)}+",
-                                 true)
+        @url_filename_regex ||= Regexp.new("[[:word:]]+#{Regexp.union(supported_extensions_match)}+", true)
       end
 
       def initialize(url, http_options = {}, options = {}, seed = nil, repository = nil)
@@ -446,4 +451,3 @@ module CartoDB
     end
   end
 end
-

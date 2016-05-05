@@ -35,17 +35,18 @@ module CartoDB
         @path = File.expand_path(File.dirname(@options[:file])) + "/"
 
         job_uuid = @options[:job_uuid] || SecureRandom.uuid
-        @import_log = { 'job_uuid'               => job_uuid,
-                        'id'                     => nil,
-                        'type'                   => 'import',
-                        'path'                   => @path,
-                        'start'                  => @start,
-                        'end'                    => nil,
-                        'server'                 => `hostname`.strip,
-                        'pid'                    => Process.pid,
-                        'db_target'              => @target_dbhost,
-                        'status'                 => nil,
-                        'trace'                  => nil
+        @import_log = { job_uuid:     job_uuid,
+                        id:           nil,
+                        type:         'import',
+                        path:         @path,
+                        start:        @start,
+                        end:          nil,
+                        elapsed_time: nil,
+                        server:       `hostname`.strip,
+                        pid:          Process.pid,
+                        db_target:    @target_dbhost,
+                        status:       nil,
+                        trace:        nil
                        }
       end
 
@@ -60,7 +61,7 @@ module CartoDB
       def process_user
         @target_username = @pack_config['user']['username']
         @target_userid = @pack_config['user']['id']
-        @import_log['id'] = @pack_config['user']['username']
+        @import_log[:id] = @pack_config['user']['username']
         @target_port = ENV['USER_DB_PORT'] || @config[:dbport]
 
         if @options[:target_org] == nil
@@ -97,7 +98,7 @@ module CartoDB
       def process_org
         @organization_id = @pack_config['organization']['id']
         @owner_id = @pack_config['organization']['owner_id']
-        @import_log['id'] = @organization_id
+        @import_log[:id] = @organization_id
 
         if @options[:mode] == :import
           import_org
@@ -545,6 +546,7 @@ module CartoDB
       def log_error(e)
         @logger.error e
         @import_log[:end] = Time.now
+        @import_log[:elapsed_time] = (@import_log[:end] - @import_log[:start]).ceil
         @import_log[:status] = 'failure'
         @import_log[:trace] = e.to_s
         importjob_logger.info(@import_log.to_json)
@@ -552,6 +554,7 @@ module CartoDB
 
       def log_success
         @import_log[:end] = Time.now
+        @import_log[:elapsed_time] = (@import_log[:end] - @import_log[:start]).ceil
         @import_log[:status] = 'success'
         importjob_logger.info(@import_log.to_json)
       end

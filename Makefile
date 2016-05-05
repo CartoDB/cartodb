@@ -185,6 +185,8 @@ WORKING_SPECS_5 = \
 	spec/models/permission_spec.rb \
 	spec/lib/carto/ghost_tables_manager_spec.rb \
 	spec/lib/carto/bolt_spec.rb \
+	spec/lib/carto/valid_table_name_proposer_spec.rb \
+	spec/lib/carto/db/sanitize_spec.rb \
 	$(NULL)
 
 # TODO: This block also breaks if run alongside other specs, needs checking why
@@ -232,6 +234,7 @@ WORKING_SPECS_9 = \
 	spec/models/carto/user_spec.rb \
 	spec/models/carto/user_table_spec.rb \
 	spec/models/carto/organization_spec.rb \
+	spec/models/carto/visualization_export_spec.rb \
 	services/table-geocoder/spec/lib/abstract_table_geocoder_spec.rb \
 	services/geocoder/spec/hires_batch_geocoder_spec.rb \
 	services/geocoder/spec/hires_geocoder_spec.rb \

@@ -33,8 +33,7 @@ class Admin::MobileAppsController < Admin::AdminController
   end
 
   def create
-    # TODO: License generation server-side
-    @mobile_app = MobileApp.new(params[:mobile_app].merge(license_key: "appkey"))
+    @mobile_app = MobileApp.new(params[:mobile_app])
 
     unless @mobile_app.valid?
       flash[:error] = @mobile_app.errors.full_messages.join('; ')
@@ -42,7 +41,7 @@ class Admin::MobileAppsController < Admin::AdminController
       return
     end
     attributes = @mobile_app.as_json.symbolize_keys.slice(:name, :description, :icon_url, :platform, :app_id, :app_type)
-    @cartodb_central_client.create_mobile_app(current_user.username, attributes.merge(license_key: "appkey"))
+    @cartodb_central_client.create_mobile_app(current_user.username, attributes)
 
     redirect_to CartoDB.url(self, 'mobile_apps'), flash: { success: 'Your app has been added succesfully!' }
   rescue CartoDB::CentralCommunicationFailure => e

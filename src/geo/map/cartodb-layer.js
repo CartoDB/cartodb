@@ -55,11 +55,11 @@ var CartoDBLayer = LayerModelBase.extend({
   },
 
   _hasInfowindowFields: function () {
-    return this.infowindow.get('fields').length > 0;
+    return this.infowindow.hasFields();
   },
 
   _hasTooltipFields: function () {
-    return this.tooltip.get('fields').length > 0;
+    return this.tooltip.hasFields();
   },
 
   getGeometryType: function () {

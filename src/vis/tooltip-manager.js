@@ -35,11 +35,9 @@ TooltipManager.prototype._addTooltipOverlay = function (layerView, layerModel) {
     layerView.tooltipView = new TooltipView({
       mapView: this._mapView,
       layer: layerView,
-      template: layerModel.tooltip.get('template'),
       position: 'bottom|right',
       vertical_offset: 10,
       horizontal_offset: 4,
-      fields: layerModel.tooltip.get('fields'),
       omit_columns: ['cartodb_id']
     });
     this._mapView.addOverlay(layerView.tooltipView);
@@ -63,7 +61,7 @@ TooltipManager.prototype._bindFeatureOverEvent = function (layerView) {
 
     if (layerModel.tooltip.hasFields()) {
       layerView.tooltipView.setTemplate(layerModel.tooltip.get('template'));
-      layerView.tooltipView.setFields(layerModel.tooltip.get('fields'));
+      layerView.tooltipView.setFields(layerModel.tooltip.fields.toJSON());
       layerView.tooltipView.setAlternativeNames(layerModel.tooltip.get('alternative_names'));
       layerView.tooltipView.enable();
     } else {

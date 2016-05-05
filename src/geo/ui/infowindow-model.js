@@ -18,16 +18,20 @@ var InfowindowModel = Backbone.Model.extend({
     template_name: 'infowindow_light',
     template_type: 'mustache',
     content: '',
-    fields: null, // contains the fields displayed in the infowindow
     alternative_names: { }
   },
 
-  TEMPLATE_ATTRIBUTES: ['fields', 'template', 'template_name', 'template_type', 'alternative_names', 'width', 'maxHeight', 'offset'],
+  TEMPLATE_ATTRIBUTES: ['template', 'template_name', 'template_type', 'alternative_names', 'width', 'maxHeight', 'offset'],
+
+  initialize: function (attrs) {
+    this._fields = new Backbone.Collection(attrs.fields || []);
+    this.unset('fields', { silent: true });
+  },
 
   updateContent: function (attributes, options) {
     options = options || {};
     options = _.pick(options, 'showEmptyFields');
-    var fields = this.get('fields');
+    var fields = this._fields.toJSON();
     this.set('content', InfowindowModel.contentForFields(attributes, fields, options));
   },
 
@@ -67,6 +71,7 @@ var InfowindowModel = Backbone.Model.extend({
 
   setInfowindowTemplate: function (infowindowTemplateModel) {
     this.set(_.pick(infowindowTemplateModel.toJSON(), this.TEMPLATE_ATTRIBUTES));
+    this._fields.reset(infowindowTemplateModel.fields.toJSON());
     this._infowindowTemplateModel = infowindowTemplateModel;
   },
 

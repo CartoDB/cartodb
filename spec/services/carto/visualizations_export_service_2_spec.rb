@@ -277,7 +277,7 @@ describe Carto::VisualizationsExportService2 do
   def verify_widget_vs_export(widget, widget_export)
     widget.type.should eq widget_export[:type]
     widget.title.should eq widget_export[:title]
-    widget.options_json.should eq widget_export[:options]
+    widget.options.should eq widget_export[:options]
     widget.layer.should_not be_nil
   end
 
@@ -645,7 +645,7 @@ describe Carto::VisualizationsExportService2 do
     def verify_widget_match(imported_widget, original_widget)
       imported_widget.type.should eq original_widget.type
       imported_widget.title.should eq original_widget.title
-      imported_widget.options_json.should eq original_widget.options
+      imported_widget.options.should eq original_widget.options
       imported_widget.layer.should_not be_nil
     end
 

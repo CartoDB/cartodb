@@ -140,7 +140,7 @@ module Carto
         layer: layer,
         type: exported_widget[:type],
         title: exported_widget[:title],
-        options_json: exported_widget[:options]
+        options: exported_widget[:options]
       )
     end
   end
@@ -231,7 +231,7 @@ module Carto
 
     def export_widget(widget)
       {
-        options: widget.options_json,
+        options: widget.options,
         type: widget.type,
         title: widget.title
       }

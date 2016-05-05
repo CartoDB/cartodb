@@ -11,7 +11,7 @@ class Admin::MobileAppsController < Admin::AdminController
   before_filter :initialize_cartodb_central_client
   before_filter :validate_id, only: [:show, :edit, :update, :destroy]
   before_filter :load_mobile_app, only: [:show, :edit, :update]
-  before_filter :setup_avatar_upload, only: [:new, :create, :edit, :update]
+  before_filter :setup_avatar_upload, only: [:new, :create, :edit]
 
   rescue_from Carto::LoadError, with: :render_404
 
@@ -61,15 +61,6 @@ class Admin::MobileAppsController < Admin::AdminController
 
   def update
     updated_attributes = params[:mobile_app].symbolize_keys.slice(:name, :description, :icon_url)
-    @mobile_app.name = updated_attributes[:name]
-    @mobile_app.icon_url = updated_attributes[:icon_url]
-    @mobile_app.description = updated_attributes[:description]
-
-    unless @mobile_app.valid?
-      flash[:error] = @mobile_app.errors.full_messages.join('; ')
-      render :new
-      return
-    end
     @cartodb_central_client.update_mobile_app(current_user.username, @app_id, updated_attributes)
 
     redirect_to CartoDB.url(self, 'mobile_app', id: @app_id), flash: { success: 'Your app has been updated succesfully!' }

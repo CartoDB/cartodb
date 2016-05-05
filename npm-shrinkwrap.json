@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "3.23.71",
+  "version": "3.23.75",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
@@ -100,9 +100,9 @@
                                   "resolved": "https://registry.npmjs.org/isarray/-/isarray-1.0.0.tgz"
                                 },
                                 "process-nextick-args": {
-                                  "version": "1.0.6",
+                                  "version": "1.0.7",
                                   "from": "process-nextick-args@>=1.0.6 <1.1.0",
-                                  "resolved": "https://registry.npmjs.org/process-nextick-args/-/process-nextick-args-1.0.6.tgz"
+                                  "resolved": "https://registry.npmjs.org/process-nextick-args/-/process-nextick-args-1.0.7.tgz"
                                 },
                                 "string_decoder": {
                                   "version": "0.10.31",
@@ -315,9 +315,9 @@
                                   "resolved": "https://registry.npmjs.org/isarray/-/isarray-1.0.0.tgz"
                                 },
                                 "process-nextick-args": {
-                                  "version": "1.0.6",
+                                  "version": "1.0.7",
                                   "from": "process-nextick-args@>=1.0.6 <1.1.0",
-                                  "resolved": "https://registry.npmjs.org/process-nextick-args/-/process-nextick-args-1.0.6.tgz"
+                                  "resolved": "https://registry.npmjs.org/process-nextick-args/-/process-nextick-args-1.0.7.tgz"
                                 },
                                 "string_decoder": {
                                   "version": "0.10.31",
@@ -388,9 +388,9 @@
                           "resolved": "https://registry.npmjs.org/qs/-/qs-5.2.0.tgz"
                         },
                         "tunnel-agent": {
-                          "version": "0.4.2",
+                          "version": "0.4.3",
                           "from": "tunnel-agent@>=0.4.1 <0.5.0",
-                          "resolved": "https://registry.npmjs.org/tunnel-agent/-/tunnel-agent-0.4.2.tgz"
+                          "resolved": "https://registry.npmjs.org/tunnel-agent/-/tunnel-agent-0.4.3.tgz"
                         },
                         "tough-cookie": {
                           "version": "2.2.2",
@@ -479,9 +479,9 @@
                           }
                         },
                         "oauth-sign": {
-                          "version": "0.8.1",
+                          "version": "0.8.2",
                           "from": "oauth-sign@>=0.8.0 <0.9.0",
-                          "resolved": "https://registry.npmjs.org/oauth-sign/-/oauth-sign-0.8.1.tgz"
+                          "resolved": "https://registry.npmjs.org/oauth-sign/-/oauth-sign-0.8.2.tgz"
                         },
                         "hawk": {
                           "version": "3.1.3",
@@ -668,9 +668,9 @@
                       }
                     },
                     "which": {
-                      "version": "1.2.4",
+                      "version": "1.2.7",
                       "from": "which@>=1.2.2 <1.3.0",
-                      "resolved": "https://registry.npmjs.org/which/-/which-1.2.4.tgz",
+                      "resolved": "https://registry.npmjs.org/which/-/which-1.2.7.tgz",
                       "dependencies": {
                         "is-absolute": {
                           "version": "0.1.7",
@@ -1084,14 +1084,14 @@
       }
     },
     "camshaft-reference": {
-      "version": "0.3.0",
-      "from": "camshaft-reference@>=0.3.0 <0.4.0",
-      "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.3.0.tgz"
+      "version": "0.4.0",
+      "from": "camshaft-reference@0.4.0",
+      "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.4.0.tgz"
     },
     "cartoassets": {
       "version": "0.1.30",
       "from": "cartodb/CartoAssets#master",
-      "resolved": "git://github.com/cartodb/CartoAssets.git#f6e13bdf2eddb8e8d94511951540a90f82b2c6fe"
+      "resolved": "git://github.com/cartodb/CartoAssets.git#9ce66b6fd0607a68e56fe2155b855100a4216e40"
     },
     "cartodb-deep-insights.js": {
       "version": "0.0.1",
@@ -1101,17 +1101,12 @@
         "cartodb.js": {
           "version": "4.0.0-alpha.1",
           "from": "cartodb/cartodb.js#v4",
-          "resolved": "git://github.com/cartodb/cartodb.js.git#c88d5ec5979a343ca54178676ca277d8507ff5ea",
+          "resolved": "git://github.com/cartodb/cartodb.js.git#7c999f62f28dcc9bb6e7271c57702bd429e30efb",
           "dependencies": {
             "backbone-poller": {
               "version": "1.1.3",
               "from": "backbone-poller@>=1.1.3 <2.0.0",
               "resolved": "https://registry.npmjs.org/backbone-poller/-/backbone-poller-1.1.3.tgz"
-            },
-            "camshaft-reference": {
-              "version": "0.4.0",
-              "from": "camshaft-reference@0.4.0",
-              "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.4.0.tgz"
             },
             "d3.cartodb": {
               "version": "1.0.2",
@@ -1290,17 +1285,12 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#v4",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#c88d5ec5979a343ca54178676ca277d8507ff5ea",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#7c999f62f28dcc9bb6e7271c57702bd429e30efb",
       "dependencies": {
         "backbone-poller": {
           "version": "1.1.3",
           "from": "backbone-poller@>=1.1.3 <2.0.0",
           "resolved": "https://registry.npmjs.org/backbone-poller/-/backbone-poller-1.1.3.tgz"
-        },
-        "camshaft-reference": {
-          "version": "0.4.0",
-          "from": "camshaft-reference@0.4.0",
-          "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.4.0.tgz"
         },
         "d3": {
           "version": "3.5.8",

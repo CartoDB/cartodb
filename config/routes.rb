@@ -308,13 +308,7 @@ CartoDB::Application.routes.draw do
     match '(/user/:user_domain)(/u/:user_domain)/your_apps/oauth'              => 'client_applications#oauth',              as: :oauth_credentials
     delete '(/user/:user_domain)(/u/:user_domain)/your_apps/oauth/regenerate'  => 'client_applications#regenerate_oauth',   as: :regenerate_oauth
 
-    get '(/user/:user_domain)(/u/:user_domain)/your_apps/mobile'                 => 'mobile_apps#index',    as: :mobile_apps
-    get '(/user/:user_domain)(/u/:user_domain)/your_apps/mobile/new'             => 'mobile_apps#new',      as: :new_mobile_app
-    post '(/user/:user_domain)(/u/:user_domain)/your_apps/mobile'                => 'mobile_apps#create',   as: :create_mobile_app
-    get '(/user/:user_domain)(/u/:user_domain)/your_apps/mobile/:id/edit'        => 'mobile_apps#edit',     as: :edit_mobile_app
-    put '(/user/:user_domain)(/u/:user_domain)/your_apps/mobile/:id'             => 'mobile_apps#update',   as: :update_mobile_app
-    delete '(/user/:user_domain)(/u/:user_domain)/your_apps/mobile/:id'          => 'mobile_apps#delete',   as: :delete_mobile_app
-
+    resources :mobile_apps, path: '(/user/:user_domain)(/u/:user_domain)/your_apps/mobile'
   end
 
   scope :module => 'carto/admin' do

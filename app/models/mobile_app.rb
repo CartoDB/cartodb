@@ -11,8 +11,6 @@ class MobileApp
   validates :platform,      inclusion: { in: APP_PLATFORMS }
   validates :app_id,        presence: true
   validates :app_type,      inclusion: { in: APP_TYPES }
-  validates :license_key,   presence: true
-  validates :monthly_users, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
 
   attr_accessor :id, :name, :description, :icon_url, :platform, :app_id, :app_type, :license_key, :monthly_users
 
@@ -25,5 +23,4 @@ class MobileApp
   def persisted?
     id.present? && name.present? && icon_url.present? && app_id.present? && license_key.present?
   end
-
 end

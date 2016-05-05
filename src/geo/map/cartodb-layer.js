@@ -22,9 +22,9 @@ var CartoDBLayer = LayerModelBase.extend({
     }
 
     this.infowindow = new InfowindowTemplate(attrs.infowindow);
-    this.unset('infowindow', { silent: true });
+    this.unset('infowindow');
     this.tooltip = new TooltipTemplate(attrs.tooltip);
-    this.unset('tooltip', { silent: true });
+    this.unset('tooltip');
 
     this.bind('change:visible change:sql change:source', this._reloadMap, this);
     this.bind('change:cartocss', this._onCartoCSSChanged);

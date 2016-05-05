@@ -2,6 +2,7 @@ var _ = require('underscore');
 var Backbone = require('backbone');
 var DataviewModelBase = require('./dataview-model-base');
 var HistogramDataModel = require('./histogram-dataview/histogram-data-model');
+var d3 = require('d3');
 
 module.exports = DataviewModelBase.extend({
 
@@ -122,6 +123,21 @@ module.exports = DataviewModelBase.extend({
       data: buckets,
       nulls: data.nulls
     };
+  },
+
+  getHistogramShape: function () {
+    var sorted = this.get('data').sort(function (a, b) {
+      return b.freq - a.freq;
+    });
+    var first = sorted[0].bin;
+    var scale = d3.scale.linear().domain([0, this.bins]).range([0,3])
+    if (first === 0) {
+      return 'L';
+    } else if (scale(first) > 1 && scale(first) < 2) {
+      return 'A';
+    } else if (scale(first) > 2) {
+      return 'J';
+    }
   },
 
   toJSON: function (d) {

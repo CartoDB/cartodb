@@ -197,7 +197,7 @@ Overlay.register('infowindow', function (data, vis) {
     alternative_names: data.alternative_names,
     fields: data.fields,
     template_name: data.template_name,
-    template_type: data.templateType // TODO: Remove this?
+    template_type: data.template_type
   });
 
   var infowindow = new Infowindow({

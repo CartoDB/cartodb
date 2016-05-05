@@ -49,7 +49,7 @@
     <% if (showUpgrade) { %>
       <div class="Upgrade-info">
         <p class="CDB-Text CDB-Size-medium u-ellipsis u-secondaryTextColor">
-         <% featuresLink = '<a href="http://cartodb.com/pricing">' + _t('components.modals.add-layer.imports.selected-state.more-features') + '</a>' %>
+         <% featuresLink = '<a href="https://cartodb.com/pricing">' + _t('components.modals.add-layer.imports.selected-state.more-features') + '</a>' %>
           <%- _t('components.modals.add-layer.imports.selected-state.upgrade-desc', { features: featuresLink }) %>
         </p>
         <div class="Upgrade-infoActions">

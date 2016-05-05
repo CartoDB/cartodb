@@ -3,7 +3,7 @@
     <div class="Header-navigation">
       <ul class="Header-navigationList">
         <li class="js-logo">
-          <% logo_url = cartodb_com_hosted? ? CartoDB.url(self, 'root') : "http://cartodb.com" %>
+          <% logo_url = cartodb_com_hosted? ? CartoDB.url(self, 'root') : "https://cartodb.com" %>
           <a href="<%= logo_url %>">
             <span class="Logo Logo--avatar">
               <i class="CDB-IconFont CDB-IconFont-cartoFante"></i>
@@ -14,7 +14,7 @@
         <% unless cartodb_com_hosted? %>
           <li class="Header-navigationItem"><a href="http://docs.cartodb.com/" class="Header-navigationLink u-hideOnMobile" target="_blank">Learn</a></li>
           <li class="Header-navigationItem js-user-support"><a href="mailto:support@cartodb.com" class="Header-navigationLink u-hideOnMobile" target="_blank">Support</a></li>
-          <li class="Header-navigationItem"><a href="http://cartodb.com/gallery/" class="Header-navigationLink u-hideOnMobile" target="_blank">Gallery</a></li>
+          <li class="Header-navigationItem"><a href="https://cartodb.com/gallery/" class="Header-navigationLink u-hideOnMobile" target="_blank">Gallery</a></li>
         <% end %>
       </ul>
     </div>

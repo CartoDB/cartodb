@@ -11,5 +11,5 @@
     <span class="u-iBlock CDB-Checkbox-face u-rSpace--m"></span>
     <label class="u-rSpace--m" title="<%- name %>"><%- name %></label>
   </div>
-  <input type="text" name="text" placeholder='"<%- name %>"' value="<% if (title) { %><% if (alternativeName) { %><%- alternativeName %><% } else { %><%- name %><% } %><% } %>" class="CDB-InputText js-input" <% if (!isSelected) { %>disabled<% } %>>
+  <input type="text" name="text" placeholder='"<%- name %>"' value="<% if (!isSelected) { %><%- name %><% } else { %><% if (title) { %><% if (alternativeName) { %><%- alternativeName %><% } else { %><%- name %><% } %><% } %><% } %>" class="CDB-InputText js-input" <% if (!isSelected) { %>disabled<% } %>>
 </div>

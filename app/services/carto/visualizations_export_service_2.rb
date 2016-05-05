@@ -121,7 +121,7 @@ module Carto
     def build_analysis_from_hash(exported_analysis)
       return nil unless exported_analysis
 
-      Carto::Analysis.new(analysis_definition_json: exported_analysis[:analysis_definition])
+      Carto::Analysis.new(analysis_definition: exported_analysis[:analysis_definition])
     end
 
     def build_widgets_from_hash(exported_widgets, layer:)
@@ -239,7 +239,7 @@ module Carto
 
     def exported_analysis(analysis)
       {
-        analysis_definition: analysis.analysis_definition_json
+        analysis_definition: analysis.analysis_definition
       }
     end
   end

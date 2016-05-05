@@ -277,7 +277,7 @@ describe Carto::VisualizationsExportService2 do
   def verify_widget_vs_export(widget, widget_export)
     widget.type.should eq widget_export[:type]
     widget.title.should eq widget_export[:title]
-    widget.options.should eq widget_export[:options]
+    widget.options.symbolize_keys.should eq widget_export[:options]
     widget.layer.should_not be_nil
   end
 
@@ -290,7 +290,7 @@ describe Carto::VisualizationsExportService2 do
   end
 
   def verify_analysis_vs_export(analysis, analysis_export)
-    analysis.analysis_definition_json.should eq analysis_export[:analysis_definition]
+    analysis.analysis_definition.deep_symbolize_keys.should eq analysis_export[:analysis_definition].deep_symbolize_keys
   end
 
   def verify_overlays_vs_export(overlays, overlays_export)
@@ -658,7 +658,7 @@ describe Carto::VisualizationsExportService2 do
     end
 
     def verify_analysis_match(imported_analysis, original_analysis)
-      imported_analysis.analysis_definition_json.should eq original_analysis.analysis_definition_json
+      imported_analysis.analysis_definition.should eq original_analysis.analysis_definition
     end
 
     def verify_overlays_match(imported_overlays, original_overlays)

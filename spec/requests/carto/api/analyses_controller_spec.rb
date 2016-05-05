@@ -42,9 +42,9 @@ describe Carto::Api::AnalysesController do
 
     def verify_analysis_response_body(response_body, analysis)
       response_body[:id].should eq analysis.id
-      analysis_definition_json = response_body[:analysis_definition].deep_symbolize_keys
-      analysis_definition_json.should eq analysis.analysis_definition_json
-      analysis_definition_json[:id].should eq analysis.natural_id
+      analysis_definition = response_body[:analysis_definition]
+      analysis_definition.deep_symbolize_keys.should eq analysis.analysis_definition.deep_symbolize_keys
+      analysis_definition[:id].should eq analysis.natural_id
     end
 
     it 'returns existing analysis by uuid' do
@@ -73,7 +73,7 @@ describe Carto::Api::AnalysesController do
         :source_analysis,
         visualization_id: @visualization.id,
         user_id: @user.id,
-        analysis_definition: %({"id": "#{UUIDTools::UUID.random_create}"})
+        analysis_definition: {"id": "#{UUIDTools::UUID.random_create}"}
       )
 
       get_json viz_analysis_url(@user, @visualization, analysis2.natural_id) do |response|
@@ -102,14 +102,14 @@ describe Carto::Api::AnalysesController do
       post_json create_analysis_url(@user, @visualization), payload do |response|
         response.status.should eq 201
         response.body[:id].should_not be_nil
-        analysis_definition_json = response.body[:analysis_definition].symbolize_keys
-        analysis_definition_json.should eq payload[:analysis_definition]
+        analysis_definition = response.body[:analysis_definition].symbolize_keys
+        analysis_definition.should eq payload[:analysis_definition]
 
         a = Carto::Analysis.find_by_natural_id(@visualization.id, natural_id)
         a.should_not eq nil
         a.user_id.should eq @user.id
         a.visualization_id.should eq @visualization.id
-        a.analysis_definition_json.should eq payload[:analysis_definition]
+        a.analysis_definition.deep_symbolize_keys.should eq payload[:analysis_definition].deep_symbolize_keys
       end
     end
 
@@ -189,18 +189,18 @@ describe Carto::Api::AnalysesController do
 
     it 'updates existing analysis' do
       @analysis.reload
-      @analysis.analysis_definition_json[:id].should_not eq new_payload[:analysis_definition][:id]
-      @analysis.analysis_definition_json[new_key].should be_nil
+      @analysis.analysis_definition[:id].should_not eq new_payload[:analysis_definition][:id]
+      @analysis.analysis_definition[new_key].should be_nil
       bypass_named_maps
 
       put_json viz_analysis_url(@user, @visualization, @analysis), new_payload do |response|
         response.status.should eq 200
         response.body[:analysis_definition].symbolize_keys.should eq new_payload[:analysis_definition]
         a = Carto::Analysis.find(@analysis.id)
-        a.analysis_definition_json[:id].should eq new_payload[:analysis_definition][:id]
-        a.analysis_definition_json[new_key].should eq new_payload[:analysis_definition][new_key]
+        a.analysis_definition[:id].should eq new_payload[:analysis_definition][:id]
+        a.analysis_definition[new_key].should eq new_payload[:analysis_definition][new_key]
 
-        a.analysis_definition_json.should eq new_payload[:analysis_definition]
+        a.analysis_definition.deep_symbolize_keys.should eq new_payload[:analysis_definition].deep_symbolize_keys
       end
     end
 

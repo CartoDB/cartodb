@@ -2,13 +2,43 @@
 // --------------------------------------------------
 
 @import 'cdb-utilities/mixins';
+@import 'cdb-variables/colors';
+@import 'cdb-variables/sizes';
 
-.Editor-FormInner {
+.Editor-formInner {
   @include display-flex();
   @include align-items(center);
 }
-
-.Editor-FormInput {
+.Editor-formInput {
   @include flex(1);
   position: relative;
+}
+.Editor-formInner--nested {
+  position: relative;
+}
+.Editor-formInner--nested::before {
+  position: absolute;
+  top: 0;
+  bottom: 12px;
+  left: 8px;
+  width: 1px;
+  background: $cSecondaryLine;
+  content: '';
+}
+.Editor-formInner--nested .CDB-Legend {
+  position: relative;
+  width: 76px;
+  padding-left: 20px;
+}
+.Editor-formInner--nested .CDB-Legend::before {
+  position: absolute;
+  bottom: 3px;
+  left: 6px;
+  width: 5px;
+  height: 5px;
+  border: 1px solid $cMainLine;
+  border-radius: 50%;
+  background: $cWhite;
+  content: '';
+  box-sizing: border-box;
 }

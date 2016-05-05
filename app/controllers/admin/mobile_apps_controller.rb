@@ -10,6 +10,7 @@ class Admin::MobileAppsController < Admin::AdminController
   before_filter :login_required
   before_filter :initialize_cartodb_central_client
   before_filter :validate_id, only: [:show, :edit, :update, :destroy]
+  before_filter :load_mobile_app, only: [:show, :edit]
   before_filter :setup_avatar_upload, only: [:new, :create, :edit, :update]
 
   rescue_from Carto::LoadError, with: :render_404
@@ -25,11 +26,6 @@ class Admin::MobileAppsController < Admin::AdminController
   end
 
   def show
-    @mobile_app = MobileApp.new(@cartodb_central_client.get_mobile_app(current_user.username, @app_id))
-  rescue CartoDB::CentralCommunicationFailure => e
-    raise Carto::LoadError.new('Mobile app not found') if e.response_code == 404
-    CartoDB::Logger.error(message: 'Error loading mobile app from Central', exception: e, app_id: @app_id)
-    redirect_to CartoDB.url(self, 'mobile_apps'), flash: { error: 'Unable to connect to license server. Try again in a moment.' }
   end
 
   def new
@@ -82,5 +78,13 @@ class Admin::MobileAppsController < Admin::AdminController
 
   def setup_avatar_upload
     @icon_valid_extensions = AVATAR_VALID_EXTENSIONS
+  end
+
+  def load_mobile_app
+    @mobile_app = MobileApp.new(@cartodb_central_client.get_mobile_app(current_user.username, @app_id))
+  rescue CartoDB::CentralCommunicationFailure => e
+    raise Carto::LoadError.new('Mobile app not found') if e.response_code == 404
+    CartoDB::Logger.error(message: 'Error loading mobile app from Central', exception: e, app_id: @app_id)
+    redirect_to CartoDB.url(self, 'mobile_apps'), flash: { error: 'Unable to connect to license server. Try again in a moment.' }
   end
 end

@@ -119,6 +119,7 @@ $sEditButtonSize: 50px;
 .MapCard-tags {
   @include line-clamp(1);
   position: relative;
+  min-height: 17px;
 }
 .MapCard--selectable {
   &:hover {

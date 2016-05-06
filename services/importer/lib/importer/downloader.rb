@@ -26,20 +26,20 @@ module CartoDB
       HTTP_CONNECT_TIMEOUT = 60
       DEFAULT_HTTP_REQUEST_TIMEOUT = 600
       MAX_REDIRECTS = 5
-      URL_ESCAPED_CHARACTERS = 'áéíóúÁÉÍÓÚñÑçÇàèìòùÀÈÌÒÙ'
+      URL_ESCAPED_CHARACTERS = 'áéíóúÁÉÍÓÚñÑçÇàèìòùÀÈÌÒÙ'.freeze
 
-      DEFAULT_FILENAME        = 'importer'
+      DEFAULT_FILENAME        = 'importer'.freeze
       CONTENT_DISPOSITION_RE  = %r{;\s*filename=(.*;|.*)}
       URL_RE                  = %r{://}
       URL_TRANSLATORS         = [
-                                  UrlTranslator::OSM2,
-                                  UrlTranslator::OSM,
-                                  UrlTranslator::FusionTables,
-                                  UrlTranslator::GitHub,
-                                  UrlTranslator::GoogleMaps,
-                                  UrlTranslator::GoogleDocs,
-                                  UrlTranslator::KimonoLabs
-                                ]
+        UrlTranslator::OSM2,
+        UrlTranslator::OSM,
+        UrlTranslator::FusionTables,
+        UrlTranslator::GitHub,
+        UrlTranslator::GoogleMaps,
+        UrlTranslator::GoogleDocs,
+        UrlTranslator::KimonoLabs
+      ].freeze
 
       CONTENT_TYPES_MAPPING = [
         {
@@ -84,13 +84,13 @@ module CartoDB
         },
         {
           content_types: ['application/x-gzip'],
-          extensions: ['tgz','gz']
+          extensions: ['tgz', 'gz']
         },
         {
           content_types: ['application/json', 'text/javascript', 'application/javascript'],
           extensions: ['json']
         }
-      ]
+      ].freeze
 
       def self.supported_extensions
         @supported_extensions ||= CartoDB::Importer2::Unp::SUPPORTED_FORMATS
@@ -250,7 +250,7 @@ module CartoDB
         download_error = false
         error_response = nil
 
-        temp_name = filepath(DEFAULT_FILENAME << '_' << random_name)
+        temp_name = filepath(DEFAULT_FILENAME + '_' + random_name)
 
         downloaded_file = File.open(temp_name, 'wb')
         request = http_client.request(@translated_url, typhoeus_options)

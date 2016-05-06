@@ -76,7 +76,6 @@
 .Filters-row--centered { @include justify-content(center) }
 .Filters-group {
   @include display-flex();
-  @include justify-content(space-between, justify);
   @include align-items(center, center);
   &:not(:first-child) {
     margin-left: 10px;
@@ -89,19 +88,16 @@
   width: 100%;
 }
 .Filters-typeItem {
-  position:relative;
-  height:80px;
-  margin:0 10px;
-
-  &:first-child { margin-left: 0 }
-  &:last-child { margin-right: 0 }
+  position: relative;
+  margin-right: 32px;
+  &:last-child { 
+    margin-right: 0;
+  }
 }
+
 .Filters-typeItem.Filters-typeItem--moreMargins {
   margin-right: 15px;
   margin-left: 15px;
-}
-.Filters-typeItem--searchEnabler {
-  min-width: 65px;
 }
 .Filters-typeItem--searchField {
   @include flex-grow(1);
@@ -114,25 +110,17 @@
 }
 
 .Filters-searchLink {
-  margin-right: 15px;
-  padding-right: 2px;
-  font-size: 14px;
-  line-height: 80px;
-  color: $cTypography-linkSelected;
-  background: transparent;
-  border: none;
-  outline: none;
-
-  &:after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    right: -5px;
-    width: 1px;
-    height: 20px;
-    margin-top: -10px;
-    background: $cStructure-softLine;
-  }
+  @include display-flex();
+}
+.Filters-searchLink:after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: -5px;
+  width: 1px;
+  height: 20px;
+  margin-top: -10px;
+  background: $cStructure-softLine;
 }
 .Filters-searchLinkIcon {
   @include inline-block();
@@ -163,20 +151,6 @@
   position:absolute;
   top:23px;
   right:0;
-  width:29px;
-  height:29px;
-  border-radius: 29px;
-  border:1px solid $cNavButton-default;
-  color: $cNavButton-default;
-  text-align: center;
-  line-height:31px;
-  background: transparent;
-  outline: none;
-
-  &:hover {
-    border:1px solid $cNavButton-active;
-    color: $cNavButton-active;
-  }
 }
 .Filters-cleanSearch.Filters-cleanSearch--short {
   right: -10px;
@@ -199,20 +173,11 @@ a.Filters-cleanSearch { line-height:32px }
   color:#DDD;
 }
 
-.Filters-typeLink {
-  display: inline-block;
-  line-height: 80px;
-  font-size: 14px;
-  color: $cTypography-link;
-  background: transparent;
-  border: none;
-  outline: none;
-
-  &:hover {
-    color: $cTypography-linkHover;
-    text-decoration: none;
-  }
+.Filters-typeLink:hover {
+  color: $cTypography-linkHover;
+  text-decoration: none;
 }
+
 .Filters-typeLink.Filters-typeLink--grey {
   color: #979EA1;
 
@@ -225,13 +190,13 @@ a.Filters-cleanSearch { line-height:32px }
 
   &:before {
     content:'';
-    position:absolute;
-    bottom:-1px;
-    left:0;
-    right:0;
-    width:100%;
-    height:1px;
-    background:$cTypography-linkSelected;
+    position: absolute;
+    bottom: -32px;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 1px;
+    background: $cTypography-linkSelected;
   }
 
   &:hover {
@@ -270,11 +235,7 @@ a.Filters-cleanSearch { line-height:32px }
   line-height: 17px;
 }
 .Filters-actionButton { margin-right: 10px }
-.Filters-selectedItems {
-  font-size:15px;
-  font-weight:300;
-  color:$cTypography-secondary;
-}
+
 .Filters-actionsList {
   @include display-flex();
   @include justify-content(space-between, justify);
@@ -287,9 +248,6 @@ a.Filters-cleanSearch { line-height:32px }
   color: $cTypography-help;
 }
 .Filters-actionsLink {
-  display: inline-block;
-  line-height: 80px;
-  font-size: 13px;
   padding-left: 25px;
 }
 .Filters-actionsLink.is--critical {
@@ -307,6 +265,9 @@ a.Filters-cleanSearch { line-height:32px }
 .Filters-typeItem.Filters-typeItem--searchField,
 .Filters-searchItem {
   display: inherit;
+}
+.Filters-typeItem--searchEnabler {
+  padding-right: 32px;
 }
 .Filters-typeItem.is-searching {
   display: none;

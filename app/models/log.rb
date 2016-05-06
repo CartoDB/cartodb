@@ -19,10 +19,10 @@ module CartoDB
     HALF_OF_LOG_MARK = '===LOG HALF===\n'
     END_OF_LOG_MARK = '===LOG END==='
 
-    TYPE_DATA_IMPORT     = 'import'
-    TYPE_SYNCHRONIZATION = 'sync'
-    TYPE_USER_CREATION   = 'user_creation'
-    TYPE_GEOCODING       = 'geocoding'
+    TYPE_DATA_IMPORT     = 'import'.freeze
+    TYPE_SYNCHRONIZATION = 'sync'.freeze
+    TYPE_USER_CREATION   = 'user_creation'.freeze
+    TYPE_GEOCODING       = 'geocoding'.freeze
 
     SUPPORTED_TYPES = [
       TYPE_DATA_IMPORT,

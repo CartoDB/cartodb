@@ -29,16 +29,12 @@ module Carto
 
     # determine linked tables vs cartodbfied tables consistency; i.e.: needs to run sync
     def user_tables_synced_with_db?
-      cartodbfied_tables = fetch_cartobfied_tables
-
-      cartodbfied_tables.reject(&:unaltered?).empty? && find_dropped_tables(cartodbfied_tables).empty?
+      cartodbfied_tables.reject(&:unaltered?).empty? && find_dropped_tables.empty?
     end
 
     # Check if any unsafe stale (dropped or renamed) tables will be shown to the user
     def safe_async?
-      cartodbfied_tables = fetch_cartobfied_tables
-
-      find_dropped_tables(cartodbfied_tables).empty? && cartodbfied_tables.select(&:stale?).empty?
+      find_dropped_tables.empty? && cartodbfied_tables.select(&:stale?).empty?
     end
 
     def sync_user_tables_with_db
@@ -50,8 +46,6 @@ module Carto
     end
 
     def sync
-      cartodbfied_tables = fetch_cartobfied_tables
-
       # Update table_id on UserTables with physical tables with changed oid. Should go first.
       cartodbfied_tables.select(&:regenerated?).each(&:regenerate_user_table)
 
@@ -62,7 +56,11 @@ module Carto
       cartodbfied_tables.select(&:renamed?).each(&:rename_user_table_vis)
 
       # Unlink tables that have been created trhought the SQL API
-      find_dropped_tables(cartodbfied_tables).each(&:drop_user_table)
+      find_dropped_tables.each(&:drop_user_table)
+    end
+
+    def cartodbfied_tables
+      @cartodbfied_tables ||= fetch_cartobfied_tables
     end
 
     # this method searchs for tables with all the columns needed in a cartodb table.
@@ -89,11 +87,11 @@ module Carto
         SELECT table_name, reloid FROM cartodbfied_tables WHERE cdb_columns_count = #{cartodb_columns.split(',').length}
       }
 
-      cartodbfied_tables = @user.in_database(as: :superuser)[sql].all.map do |record|
+      non_raster_cartodbfied_tables = @user.in_database(as: :superuser)[sql].all.map do |record|
         Carto::TableFacade.new(record[:reloid], record[:table_name], @user)
       end
 
-      cartodbfied_tables + fetch_raster_tables
+      non_raster_cartodbfied_tables + fetch_raster_tables
     end
 
     # Find raster tables which won't appear as cartodbfied but MUST be linked
@@ -122,7 +120,7 @@ module Carto
     end
 
     # Tables that have been dropped via API but have an old UserTable
-    def find_dropped_tables(cartodbfied_tables)
+    def find_dropped_tables
       linked_tables = @user.tables.all.map do |user_table|
         Carto::TableFacade.new(user_table.table_id, user_table.name, @user)
       end

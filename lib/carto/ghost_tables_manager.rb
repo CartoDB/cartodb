@@ -164,11 +164,11 @@ module Carto
     end
 
     def user_table_with_matching_id
-      user.tables.where(table_id: id).first
+      @user_table_with_matching_id ||= user.tables.where(table_id: id).first
     end
 
     def user_table_with_matching_name
-      user.tables.where(name: name).first
+      @user_table_with_matching_name ||= user.tables.where(name: name).first
     end
 
     def create_user_table

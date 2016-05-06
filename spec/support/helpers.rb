@@ -1,6 +1,7 @@
 # encoding: UTF-8
 
 require_relative '../../app/models/visualization/member'
+require_relative '../helpers/file_server_helper'
 require 'json'
 
 class Fixnum
@@ -8,6 +9,7 @@ class Fixnum
 end
 
 module HelperMethods
+  include FileServerHelper
 
   def prepare_oauth_request(consumer, url, options={})
     url = URI.parse(url)
@@ -23,51 +25,7 @@ module HelperMethods
   end
 
   def upload_file(file_path, mime_type)
-    file = Rack::Test::UploadedFile.new(Rails.root.join(file_path), mime_type)
-  end
-
-  def serve_file(file_path, options = {})
-    port = get_unused_port
-
-    require 'webrick'
-    server = WEBrick::HTTPServer.new(
-      AccessLog: [],
-      Logger: WEBrick::Log::new("/dev/null", 7), # comment this line if weird things happen
-      Port: port,
-      DocumentRoot: File.dirname(file_path),
-      RequestCallback: Proc.new() { |_req, res|
-        options[:headers].each { |k, v| res[k] = v } if options[:headers].present?
-        if options[:headers].present? && options[:headers]['content-type'].present?
-          res.content_type = options[:headers]['content-type']
-        end
-      }
-    )
-
-    trap("INT"){ server.shutdown }
-
-    a = Thread.new { server.start }
-
-    begin
-      yield "http://localhost:#{port}/#{File.basename(file_path)}" if block_given?
-    rescue => e
-      raise e
-    ensure
-      b = Thread.new { server.shutdown }
-
-      b.join
-      a.join
-    end
-  end
-
-  def get_unused_port
-    used_ports_command = `netstat -tln | tail -n +3 | awk '{ print $4 }' | cut -f2 -d ':'`
-    used_ports = used_ports_command.split("\n").map(&:to_i)
-
-    (10000..65535).each do |port|
-      return port if !used_ports.include?(port)
-    end
-
-    raise "No ports available on machine."
+    Rack::Test::UploadedFile.new(Rails.root.join(file_path), mime_type)
   end
 
   def http_json_headers

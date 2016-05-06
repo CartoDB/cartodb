@@ -126,17 +126,22 @@ module.exports = DataviewModelBase.extend({
   },
 
   getHistogramShape: function () {
-    var sorted = this.get('data').sort(function (a, b) {
+    var histogram = this.get('data');
+    var sorted = histogram.sort(function (a, b) {
       return b.freq - a.freq;
     });
+    var max = d3.max(histogram, function (bin) { return bin.freq; });
+    var min = d3.min(histogram, function (bin) { return bin.freq; });
+    if (Math.abs(max - min) < 5) return 'F';
     var first = sorted[0].bin;
-    var scale = d3.scale.linear().domain([0, this.bins]).range([0,3])
+    var scale = d3.scale.linear().domain([0, this.get('bins')]).range([0,3])
     if (first === 0) {
       return 'L';
     } else if (scale(first) > 1 && scale(first) < 2) {
       return 'A';
     } else if (scale(first) > 2) {
       return 'J';
+    } else {
     }
   },
 

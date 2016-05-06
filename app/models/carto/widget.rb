@@ -6,7 +6,7 @@ class Carto::Widget < ActiveRecord::Base
   # INFO: disable ActiveRecord inheritance column
   self.inheritance_column = :_type
 
-  serialize :options, ::Carto::CartoJsonSerializer
+  serialize :options, ::Carto::CartoJsonSymbolyzerSerializer
 
   belongs_to :layer, class_name: Carto::Layer
 

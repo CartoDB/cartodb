@@ -2,7 +2,7 @@
 require 'json'
 
 class Carto::Analysis < ActiveRecord::Base
-  serialize :analysis_definition, ::Carto::CartoJsonSerializer
+  serialize :analysis_definition, ::Carto::CartoJsonSymbolyzerSerializer
 
   belongs_to :visualization, class_name: Carto::Visualization
   belongs_to :user, class_name: Carto::User

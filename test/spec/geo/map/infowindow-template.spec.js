@@ -41,5 +41,31 @@ describe('geo/map/infowindow-template', function () {
 
       expect(this.callback).not.toHaveBeenCalled();
     });
+
+    it('should clone alternative names', function () {
+      var callback = jasmine.createSpy('callback');
+      this.infowindowTemplate.bind('change', callback);
+
+      var alternativeNames = {
+        'name': 'Nombre'
+      };
+
+      this.infowindowTemplate.update({
+        alternative_names: alternativeNames
+      });
+
+      expect(callback).toHaveBeenCalled();
+      callback.calls.reset();
+
+      // Original object with names is changed
+      alternativeNames.description = 'Descripción';
+
+      this.infowindowTemplate.update({
+        alternative_names: alternativeNames
+      });
+
+      // Change event has been triggered
+      expect(callback).toHaveBeenCalled();
+    });
   });
 });

@@ -144,7 +144,7 @@
     },
     "likes-pluralize": "like |||| likes",
     "custom-list": {
-      "placeholder": "Select a %{typeLabel}",
+      "placeholder": "Search by %{typeLabel}",
       "no-items": "There is no %{typeLabel} items",
       "no-results": "No %{typeLabel} results found with '%{query}'"
     },
@@ -377,6 +377,9 @@
       "default-desc": "Reload the page again. If the problem persists contact us at <a href='mailto:support@cartodb.com'>support@cartodb.com</a>"
     },
     "backbone-forms": {
+      "select": {
+        "placeholder": "Select a %{keyAttr}"
+      },
       "interval-error": "Value must between %{minValue} and %{maxValue}"
     }
   },

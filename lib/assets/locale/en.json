@@ -447,8 +447,9 @@
       "infowindow": {
         "style": {
           "title-label": "Style",
-          "description": "None",
-          "white": "White",
+          "none": "None",
+          "window-size": "Window size",
+          "light": "Light",
           "dark": "Dark",
           "color": "Color",
           "image": "Image"

@@ -21,9 +21,10 @@ var CartoDBLayer = LayerModelBase.extend({
       this.set('initialStyle', attrs.cartocss);
     }
 
+    // PUBLIC PROPERTIES
     this.infowindow = new InfowindowTemplate(attrs.infowindow);
-    this.unset('infowindow');
     this.tooltip = new TooltipTemplate(attrs.tooltip);
+    this.unset('infowindow');
     this.unset('tooltip');
 
     this.bind('change:visible change:sql change:source', this._reloadMap, this);

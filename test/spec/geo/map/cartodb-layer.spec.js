@@ -9,6 +9,12 @@ describe('geo/map/cartodb-layer', function () {
     expect(layer.get('type')).toEqual('CartoDB');
   });
 
+  it('should expose infowindow and tooltip properties', function () {
+    var layer = new CartoDBLayer();
+    expect(layer.infowindow).toBeDefined();
+    expect(layer.tooltip).toBeDefined();
+  });
+
   describe('.getInteractiveColumnNames', function () {
     it("should return 'cartodb_id' and the names of the fields for infowindows and tooltips with no duplicates", function () {
       this.layer = new CartoDBLayer({

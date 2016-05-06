@@ -26,10 +26,22 @@ var HistogramAutoStyler = AutoStyler.extend({
 
   _getHistGeometry: function (geometryType) {
     var style = AutoStyler.STYLE_TEMPLATE[geometryType];
+    var shape = this.dataviewModel.getHistogramShape();
     if (geometryType === 'polygon') {
       style = style.replace('{{defaultColor}}', 'ramp([{{column}}], colorbrewer({{color}}, {{bins}}))');
     } else if (geometryType === 'marker') {
-      style = style.replace('{{markerWidth}}', 'ramp([{{column}}], {{min}}, {{max}}, {{bins}})');
+      if (shape === 'F') {
+        style = style.replace('{{defaultColor}}', 'ramp([{{column}}], cartocolor(RedOr1, {{bins}}))')
+                     .replace('{{markerWidth}}', '6');
+      } else if (shape === 'L' || shape === 'J') {
+        style = style.replace('{{defaultColor}}', 'ramp([{{column}}], cartocolor(Sunset2, {{bins}}))')
+                     .replace('{{markerWidth}}', '6');
+      } else if (shape === 'A') {
+        style = style.replace('{{defaultColor}}', 'ramp([{{column}}], cartocolor(Geyser, {{bins}}))')
+                     .replace('{{markerWidth}}', '6');
+      } else {
+        style = style.replace('{{markerWidth}}', 'ramp([{{column}}], {{min}}, {{max}}, {{bins}})');
+      }
     } else {
       style = style.replace('{{defaultColor}}', '#000');
     }

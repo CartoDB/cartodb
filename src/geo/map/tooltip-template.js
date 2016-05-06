@@ -1,3 +1,4 @@
+var _ = require('underscore');
 var Backbone = require('backbone');
 
 var TooltipTemplate = Backbone.Model.extend({
@@ -16,7 +17,9 @@ var TooltipTemplate = Backbone.Model.extend({
   },
 
   update: function (attrs) {
-    this.fields.reset(attrs.fields);
+    if (!_.isEqual(attrs.fields, this.fields.toJSON())) {
+      this.fields.reset(attrs.fields);
+    }
     delete attrs.fields;
 
     this.set(attrs);

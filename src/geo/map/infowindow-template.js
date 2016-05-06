@@ -1,3 +1,4 @@
+var _ = require('underscore');
 var Backbone = require('backbone');
 
 var InfowindowTemplate = Backbone.Model.extend({
@@ -15,7 +16,9 @@ var InfowindowTemplate = Backbone.Model.extend({
   },
 
   update: function (attrs) {
-    this.fields.reset(attrs.fields);
+    if (!_.isEqual(attrs.fields, this.fields.toJSON())) {
+      this.fields.reset(attrs.fields);
+    }
     delete attrs.fields;
 
     this.set(attrs);

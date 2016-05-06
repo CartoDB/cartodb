@@ -49,11 +49,6 @@ var Infowindow = View.extend({
   initialize: function () {
     this.mapView = this.options.mapView;
 
-    // Set template if it is defined in options
-    if (this.options.template) {
-      this.model.set('template', this.options.template);
-    }
-
     // Set template view variable and
     // compile it if it is necessary
     if (this.model.get('template')) {
@@ -66,6 +61,46 @@ var Infowindow = View.extend({
 
     // Hide the element
     this.$el.hide();
+  },
+
+  /**
+   *  Adjust pan to show correctly the infowindow
+   */
+  // TODO: This can be private
+  adjustPan: function () {
+    var offset = this.model.get('offset');
+
+    if (!this.model.get('autoPan') || this.isHidden()) { return; }
+
+    var containerHeight = this.$el.outerHeight(true) + 15; // Adding some more space
+    var containerWidth = this.$el.width();
+    var pos = this.mapView.latLonToPixel(this.model.get('latlng'));
+    var adjustOffset = {x: 0, y: 0};
+    var size = this.mapView.getSize();
+    var wait_callback = 0;
+
+    if (pos.x - offset[0] < 0) {
+      adjustOffset.x = pos.x - offset[0] - 10;
+    }
+
+    if (pos.x - offset[0] + containerWidth > size.x) {
+      adjustOffset.x = pos.x + containerWidth - size.x - offset[0] + 10;
+    }
+
+    if (pos.y - containerHeight < 0) {
+      adjustOffset.y = pos.y - containerHeight - 10;
+    }
+
+    if (pos.y - containerHeight > size.y) {
+      adjustOffset.y = pos.y + containerHeight - size.y;
+    }
+
+    if (adjustOffset.x || adjustOffset.y) {
+      this.mapView.panBy(adjustOffset);
+      wait_callback = 300;
+    }
+
+    return wait_callback;
   },
 
   /**
@@ -93,7 +128,7 @@ var Infowindow = View.extend({
       // custom infowindows and CartoDB infowindows.
       var values = {};
 
-      _.each(this.model.get('content').fields, function (pair) {
+      _.each(fields, function (pair) {
         values[pair.title] = pair.value;
       });
 
@@ -120,11 +155,6 @@ var Infowindow = View.extend({
 
       if (this._containsCover()) {
         this._loadCover();
-      }
-
-      if (!this.isLoadingData()) {
-        this.model.trigger('domready', this, this.$el);
-        this.trigger('domready', this, this.$el);
       }
 
       this._setupClasses();
@@ -161,24 +191,6 @@ var Infowindow = View.extend({
     if (e && e.keyCode === 27) {
       this._closeInfowindow();
     }
-  },
-
-  _renderCoverLoader: function () {
-    var $loader = $('<div>').addClass('CDB-Loader js-loader');
-
-    if (this.$('.js-cover').length > 0) {
-      this.$('.js-cover').append($loader);
-    }
-  },
-
-  _startCoverLoader: function () {
-    this.$('.js-infowindow').addClass('is-loading');
-    this.$('.js-loader').addClass('is-visible');
-  },
-
-  _stopCoverLoader: function () {
-    this.$('.js-infowindow').removeClass('is-loading');
-    this.$('.js-loader').removeClass('is-visible');
   },
 
   _setupClasses: function () {
@@ -332,10 +344,6 @@ var Infowindow = View.extend({
     return attr;
   },
 
-  isLoadingData: function () {
-    return this.model.get('loading');
-  },
-
   /**
    *  Does header contain cover?
    */
@@ -463,6 +471,19 @@ var Infowindow = View.extend({
     }
   },
 
+  _renderCoverLoader: function () {
+    var $loader = $('<div>').addClass('CDB-Loader js-loader');
+
+    if (this.$('.js-cover').length > 0) {
+      this.$('.js-cover').append($loader);
+    }
+  },
+
+  _startCoverLoader: function () {
+    this.$('.js-infowindow').addClass('is-loading');
+    this.$('.js-loader').addClass('is-visible');
+  },
+
   _clearInfowindowImageError: function () {
     this.$('.js-infowindow').removeClass('is-fail');
   },
@@ -470,6 +491,11 @@ var Infowindow = View.extend({
   _showInfowindowImageError: function () {
     this.$('.js-infowindow').addClass('is-fail');
     this.$('.js-cover').append('<p class="CDB-infowindow-fail">Non-valid picture URL</p>');
+  },
+
+  _stopCoverLoader: function () {
+    this.$('.js-infowindow').removeClass('is-loading');
+    this.$('.js-loader').removeClass('is-visible');
   },
 
   /**
@@ -507,44 +533,6 @@ var Infowindow = View.extend({
     ev.stopPropagation();
   },
 
-  setLoading: function () {
-    this.model.set({
-      content: {
-        fields: [{
-          type: 'loading',
-          title: 'loading',
-          value: '…'
-        }]
-      }
-    });
-    return this;
-  },
-
-  setError: function () {
-    this.model.set({
-      content: {
-        fields: [{
-          title: null,
-          alternative_name: null,
-          value: 'There has been an error...',
-          index: null,
-          type: 'error'
-        }],
-        data: {}
-      }
-    });
-
-    return this;
-  },
-
-  /**
-   * Set the correct position for the infowindow
-   */
-  setLatLng: function (latlng) {
-    this.model.set('latlng', latlng);
-    return this;
-  },
-
   /**
    *  Close infowindow
    */
@@ -555,15 +543,7 @@ var Infowindow = View.extend({
     }
     if (this.model.get('visibility')) {
       this.model.set('visibility', false);
-      this.trigger('close');
     }
-  },
-
-  /**
-   *  Set visibility infowindow
-   */
-  showInfowindow: function () {
-    this.model.set('visibility', true);
   },
 
   /**
@@ -670,42 +650,10 @@ var Infowindow = View.extend({
   },
 
   /**
-   *  Adjust pan to show correctly the infowindow
+   *  Set visibility infowindow
    */
-  adjustPan: function () {
-    var offset = this.model.get('offset');
-
-    if (!this.model.get('autoPan') || this.isHidden()) { return; }
-
-    var containerHeight = this.$el.outerHeight(true) + 15; // Adding some more space
-    var containerWidth = this.$el.width();
-    var pos = this.mapView.latLonToPixel(this.model.get('latlng'));
-    var adjustOffset = {x: 0, y: 0};
-    var size = this.mapView.getSize();
-    var wait_callback = 0;
-
-    if (pos.x - offset[0] < 0) {
-      adjustOffset.x = pos.x - offset[0] - 10;
-    }
-
-    if (pos.x - offset[0] + containerWidth > size.x) {
-      adjustOffset.x = pos.x + containerWidth - size.x - offset[0] + 10;
-    }
-
-    if (pos.y - containerHeight < 0) {
-      adjustOffset.y = pos.y - containerHeight - 10;
-    }
-
-    if (pos.y - containerHeight > size.y) {
-      adjustOffset.y = pos.y + containerHeight - size.y;
-    }
-
-    if (adjustOffset.x || adjustOffset.y) {
-      this.mapView.panBy(adjustOffset);
-      wait_callback = 300;
-    }
-
-    return wait_callback;
+  showInfowindow: function () {
+    this.model.set('visibility', true);
   }
 });
 

@@ -1,14 +1,14 @@
-var _ = require('underscore');
 var Overlay = require('./vis/overlay');
-var InfowindowModel = require('../geo/ui/infowindow-model');
 
 /**
  * Manages the infowindows for a map. It listens to changes on the collection
  * of layers and binds a new infowindow view/model to CartoDB.js whenever the
  * collection of layers changes
  */
-var InfowindowManager = function (vis) {
+var InfowindowManager = function (vis, options) {
+  options = options || {};
   this._vis = vis;
+  this._showEmptyFields = options.showEmptyFields;
 };
 
 InfowindowManager.prototype.manage = function (mapView, map) {
@@ -22,13 +22,14 @@ InfowindowManager.prototype.manage = function (mapView, map) {
 };
 
 InfowindowManager.prototype._addInfowindowForLayer = function (layerModel) {
-  if (layerModel.getInfowindowData && layerModel.getInfowindowData()) {
+  if (layerModel.infowindow) {
     var layerView = this._mapView.getLayerViewByLayerCid(layerModel.cid);
 
-    if (!layerView.infowindowView) {
+    if (!this._infowindowView) {
       this._addInfowindowOverlay(layerView, layerModel);
       this._bindFeatureClickEvent(layerView);
     }
+    this._bindInfowindowModel(layerView, layerModel);
 
     layerView.bind('mouseover', function () {
       this._mapView.setCursor('pointer');
@@ -41,74 +42,85 @@ InfowindowManager.prototype._addInfowindowForLayer = function (layerModel) {
 };
 
 InfowindowManager.prototype._addInfowindowOverlay = function (layerView, layerModel) {
-  var infowindowView = layerView.infowindowView;
-  if (!infowindowView) {
-    layerView.infowindowView = infowindowView = Overlay.create('infowindow', this._vis, layerModel.getInfowindowData());
-    this._mapView.addInfowindow(infowindowView);
-  }
+  this._infowindowView = Overlay.create('infowindow', this._vis, layerModel.infowindow.toJSON());
+  this._infowindowModel = this._infowindowView.model;
+  this._mapView.addInfowindow(this._infowindowView);
 };
 
 InfowindowManager.prototype._bindFeatureClickEvent = function (layerView) {
-  var infowindowView = layerView.infowindowView;
-
   layerView.bind('featureClick', function (e, latlng, pos, data, layerIndex) {
-    var layerModel = layerView.model;
-    if (layerModel.layers) {
-      layerModel = layerModel.layers.at(layerIndex);
-    }
+    var layerModel = layerView.model.getLayerAt(layerIndex);
     if (!layerModel) {
       throw new Error('featureClick event for layer ' + layerIndex + ' was captured but layerModel coudn\'t be retrieved');
     }
 
-    var infowindowFields = layerModel.getInfowindowData();
-    if (!infowindowFields) {
+    if (!layerModel.infowindow.hasFields()) {
       return;
     }
-    var cartoDBId = data.cartodb_id;
 
-    layerView.model.fetchAttributes(layerIndex, cartoDBId, function (attributes) {
-      // Old viz.json doesn't contain width and maxHeight properties
-      // and we have to get the default values if there are not defined.
-      var extra = _.defaults(
-        {
-          offset: infowindowFields.offset,
-          width: infowindowFields.width,
-          maxHeight: infowindowFields.maxHeight
-        },
-        InfowindowModel.prototype.defaults
-      );
+    this._updateInfowindowModel(layerModel.infowindow);
 
-      infowindowView.model.set({
-        'fields': infowindowFields.fields,
-        'template': infowindowFields.template,
-        'template_type': infowindowFields.template_type,
-        'alternative_names': infowindowFields.alternative_names,
-        'sanitizeTemplate': infowindowFields.sanitizeTemplate,
-        'offset': extra.offset,
-        'width': extra.width,
-        'maxHeight': extra.maxHeight
-      });
-
-      if (attributes) {
-        infowindowView.model.updateContent(attributes);
-        infowindowView.adjustPan();
-      } else {
-        infowindowView.setError();
-      }
+    this._infowindowModel.set({
+      latlng: latlng,
+      visibility: true
     });
 
-    // Show infowindow with loading state
-    infowindowView
-      .setLatLng(latlng)
-      .setLoading()
-      .showInfowindow();
+    if (this._currentFeatureId !== data.cartodb_id) {
+      this._fetchAttributes(layerView, layerModel, data.cartodb_id, latlng);
+    }
 
     if (layerView.tooltipView) {
       layerView.tooltipView.setFilter(function (feature) {
-        return feature.cartodb_id !== cartoDBId;
+        return feature.cartodb_id !== data.cartodb_id;
       }).hide();
     }
-  });
+  }, this);
+};
+
+InfowindowManager.prototype._updateInfowindowModel = function (infowindowTemplate) {
+  this._infowindowModel.setInfowindowTemplate(infowindowTemplate);
+};
+
+InfowindowManager.prototype._fetchAttributes = function (layerView, layerModel, featureId) {
+  this._currentFeatureId = featureId || this._currentFeatureId;
+  this._infowindowModel.setLoading();
+
+  var layerIndex = layerView.model.getIndexOf(layerModel);
+  layerView.model.fetchAttributes(layerIndex, this._currentFeatureId, function (attributes) {
+    if (attributes) {
+      this._infowindowModel.updateContent(attributes, {
+        showEmptyFields: this._showEmptyFields
+      });
+    } else {
+      this._infowindowModel.setError();
+    }
+  }.bind(this));
+};
+
+InfowindowManager.prototype._bindInfowindowModel = function (layerView, layerModel) {
+  layerModel.infowindow.bind('change', function () {
+    if (this._infowindowModel.hasInfowindowTemplate(layerModel.infowindow) && this._infowindowModel.get('visibility') === true) {
+      this._updateInfowindowModel(layerModel.infowindow);
+    }
+  }, this);
+
+  layerModel.infowindow.fields.bind('reset', function () {
+    var needsNewAttributes = false;
+    if (this._infowindowModel.hasInfowindowTemplate(layerModel.infowindow)) {
+      this._updateInfowindowModel(layerModel.infowindow);
+      if (this._infowindowModel.get('visibility') === true) {
+        needsNewAttributes = true;
+      }
+    }
+
+    var options = {};
+    if (needsNewAttributes) {
+      options.success = function () {
+        this._fetchAttributes(layerView, layerModel);
+      }.bind(this);
+    }
+    this._map.reload(options);
+  }, this);
 };
 
 module.exports = InfowindowManager;

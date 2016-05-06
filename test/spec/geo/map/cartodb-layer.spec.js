@@ -1,5 +1,4 @@
 var CartoDBLayer = require('../../../../src/geo/map/cartodb-layer');
-var _ = require('underscore');
 var sharedTestsForInteractiveLayers = require('./shared-for-interactive-layers');
 
 describe('geo/map/cartodb-layer', function () {
@@ -10,27 +9,43 @@ describe('geo/map/cartodb-layer', function () {
     expect(layer.get('type')).toEqual('CartoDB');
   });
 
+  it('should expose infowindow and tooltip properties', function () {
+    var layer = new CartoDBLayer();
+    expect(layer.infowindow).toBeDefined();
+    expect(layer.tooltip).toBeDefined();
+  });
+
   describe('.getInteractiveColumnNames', function () {
-    beforeEach(function () {
-      this.layer = new CartoDBLayer();
-      spyOn(this.layer, 'getInfowindowFieldNames');
-      spyOn(this.layer, 'getTooltipFieldNames');
+    it("should return 'cartodb_id' and the names of the fields for infowindows and tooltips with no duplicates", function () {
+      this.layer = new CartoDBLayer({
+        infowindow: {
+          fields: [
+            { name: 'a' },
+            { name: 'b' }
+          ]
+        },
+        tooltip: {
+          fields: [
+            { name: 'b' },
+            { name: 'c' }
+          ]
+        }
+      });
+
+      expect(this.layer.getInteractiveColumnNames()).toEqual([ 'cartodb_id', 'a', 'b', 'c' ]);
     });
 
-    it('should include cartodb_id if there is any other field required from the infowindow or tooltip', function () {
-      this.layer.getInfowindowFieldNames.and.returnValue(['column_a']);
-      this.layer.getTooltipFieldNames.and.returnValue([]);
-      expect(_.contains(this.layer.getInteractiveColumnNames(), 'cartodb_id')).toBeTruthy();
+    it('should return an empty array if no fields are present', function () {
+      this.layer = new CartoDBLayer({
+        infowindow: {
+          fields: []
+        },
+        tooltip: {
+          fields: []
+        }
+      });
 
-      this.layer.getInfowindowFieldNames.and.returnValue([]);
-      this.layer.getTooltipFieldNames.and.returnValue(['column_b']);
-      expect(_.contains(this.layer.getInteractiveColumnNames(), 'cartodb_id')).toBeTruthy();
-    });
-
-    it("should not include cartodb_id if there isn't any field required", function () {
-      this.layer.getInfowindowFieldNames.and.returnValue([]);
-      this.layer.getTooltipFieldNames.and.returnValue([]);
-      expect(_.contains(this.layer.getInteractiveColumnNames(), 'cartodb_id')).toBeFalsy();
+      expect(this.layer.getInteractiveColumnNames()).toEqual([]);
     });
   });
 });

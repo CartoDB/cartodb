@@ -62,7 +62,6 @@
 **/src/geo/ui/header.js
 **/src/geo/ui/image.js
 **/src/geo/ui/infobox.js
-**/src/geo/ui/infowindow-model.js
 **/src/geo/ui/layer-selector.js
 **/src/geo/ui/layer-view.js
 **/src/geo/ui/legend/base-legend.js
@@ -98,7 +97,6 @@
 **/src/geo/ui/share.js
 **/src/geo/ui/text.js
 **/src/geo/ui/tiles-loader.js
-**/src/geo/ui/tooltip.js
 **/src/geo/ui/zoom.js
 **/src/ui/common/dialog.js
 **/src/ui/common/dropdown.js
@@ -143,7 +141,6 @@
 **/test/spec/geo/map.spec.js
 **/test/spec/geo/ui/header.spec.js
 **/test/spec/geo/ui/infobox.spec.js
-**/test/spec/geo/ui/infowindow-model.spec.js
 **/test/spec/geo/ui/infowindow.spec.js
 **/test/spec/geo/ui/layer-selector-torque.spec.js
 **/test/spec/geo/ui/layer-selector.spec.js

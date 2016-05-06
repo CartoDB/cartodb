@@ -118,6 +118,23 @@ describe('windshaft/map-base', function () {
       });
     });
 
+    it('should invoke the given callback', function () {
+      var successCallback = jasmine.createSpy('success');
+      this.windshaftMap.createInstance({
+        success: successCallback
+      });
+
+      expect(successCallback).toHaveBeenCalledWith(this.windshaftMap);
+    });
+
+    it('should trigger the `instanceCreated` event', function () {
+      var instanceCreatedCallback = jasmine.createSpy('instanceCreatedCallback');
+      this.windshaftMap.bind('instanceCreated', instanceCreatedCallback);
+      this.windshaftMap.createInstance();
+
+      expect(instanceCreatedCallback).toHaveBeenCalled();
+    });
+
     it('should serialize the active filters of dataviews in the URL', function () {
       this.layersCollection.reset([ this.cartoDBLayer1, this.cartoDBLayer2, this.torqueLayer ]);
       spyOn(this.windshaftMap, 'toJSON').and.returnValue({ foo: 'bar' });

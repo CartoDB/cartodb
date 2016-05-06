@@ -225,6 +225,31 @@ describe('core/geo/map', function() {
         done();
       }, 25);
     });
+
+    it('should forward options', function (done) {
+      var windshaftMap = jasmine.createSpyObj('windshaftMap', ['createInstance']);
+      var map = new Map({}, {
+        windshaftMap: windshaftMap
+      });
+
+      map.reload({
+        a: 1,
+        b: 2,
+        sourceLayerId: 'sourceLayerId',
+        forceFetch: 'forceFetch',
+        success: 'success'
+      });
+
+      setTimeout(function () {
+        expect(windshaftMap.createInstance).toHaveBeenCalledWith({
+          sourceLayerId: 'sourceLayerId',
+          forceFetch: 'forceFetch',
+          success: 'success'
+        });
+
+        done();
+      }, 25);
+    });
   });
 
   describe('API methods', function () {

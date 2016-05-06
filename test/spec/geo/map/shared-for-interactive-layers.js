@@ -4,9 +4,6 @@ module.exports = function (LayerModel) {
   var METHODS = [
     'hasInteraction',
     'isVisible',
-    'getTooltipData',
-    'getInfowindowFieldNames',
-    'getInfowindowData',
     'getInteractiveColumnNames',
     'getName',
     'setDataProvider',

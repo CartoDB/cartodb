@@ -3,7 +3,7 @@ var InfoBox = require('./infobox');
 var sanitize = require('../../core/sanitize');
 var InfowindowModel = require('./infowindow-model');
 
-var Tooltip = InfoBox.extend({
+var TooltipView = InfoBox.extend({
   defaultTemplate: '<p>{{text}}</p>',
   className: 'CDB-Tooltip-wrapper',
 
@@ -63,7 +63,7 @@ var Tooltip = InfoBox.extend({
             }
 
             var c = InfowindowModel.contentForFields(data, this.options.fields, {
-              empty_fields: this.options.empty_fields
+              show_empty_fields: false
             });
 
             // Remove fields and content from data
@@ -109,11 +109,16 @@ var Tooltip = InfoBox.extend({
   _visibility: function () {
     var self = this;
     clearTimeout(this.showhideTimeout);
-    this.showhideTimeout = setTimeout(self._showing ?
-      function () { self.$el.fadeIn(100); }
-      :
-      function () { self.$el.fadeOut(200); }
-      , 50);
+
+    var fadeIn = function () {
+      self.$el.fadeIn(100);
+    };
+
+    var fadeOut = function () {
+      self.$el.fadeOut(200);
+    };
+
+    this.showhideTimeout = setTimeout(self._showing ? fadeIn : fadeOut, 50);
   },
 
   hide: function () {
@@ -211,4 +216,4 @@ var Tooltip = InfoBox.extend({
   }
 });
 
-module.exports = Tooltip;
+module.exports = TooltipView;

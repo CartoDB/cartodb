@@ -7,10 +7,10 @@ module Carto
     include Carto::UUIDHelper
 
     def save_import(user, visualization)
+      apply_user_limits(user, visualization)
       ActiveRecord::Base.transaction do
         visualization.id = random_uuid
         visualization.user = user
-        visualization.privacy = Carto::Visualization::PRIVACY_PUBLIC unless user.private_maps_enabled
 
         visualization.layers.map do |layer|
           options = layer.options
@@ -63,6 +63,25 @@ module Carto
       visualization_member.map.layers.map(&:register_table_dependencies)
 
       visualization
+    end
+
+    private
+
+    def apply_user_limits(user, visualization)
+      visualization.privacy = Carto::Visualization::PRIVACY_PUBLIC unless user.private_maps_enabled
+      layers = []
+      data_layer_count = 0
+      visualization.map.layers.each do |layer|
+        if layer.data_layer?
+          if data_layer_count < user.max_layers
+            layers.push(layer)
+            data_layer_count += 1
+          end
+        else
+          layers.push(layer)
+        end
+      end
+      visualization.map.layers = layers
     end
   end
 end

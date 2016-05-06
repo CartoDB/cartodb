@@ -79,6 +79,10 @@ module Carto
       privacy == PRIVACY_LINK
     end
 
+    def readable_by?(user)
+      !private? || is_owner?(user)
+    end
+
     def estimated_row_count
       service.estimated_row_count
     end

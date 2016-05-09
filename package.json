@@ -37,7 +37,6 @@
     "browserify-resolutions": "1.1.0",
     "cartoassets": "cartodb/CartoAssets#master",
     "csswring": "^3.0.5",
-    "factor-bundle": "2.5.0",
     "git-rev": "0.2.1",
     "grunt": "0.4.5",
     "grunt-available-tasks": "0.5.4",

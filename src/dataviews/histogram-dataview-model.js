@@ -136,11 +136,12 @@ module.exports = DataviewModelBase.extend({
       return 100 * bin.freq / sumFreqs;
     });
     var ajus = freqs.map(function (freq, index) {
-      var next = freqs[index + 1] || 0;
+      var next = freqs[index + 1];
       if (freq > next) return -1;
       if (Math.abs(freq - next) <= 0.05) return 0;
       return 1;
     })
+    ajus.pop();
     var maxAjus = d3.max(ajus);
     var minAjus = d3.min(ajus);
     if (minAjus === 0 && maxAjus === 0) return 'F';

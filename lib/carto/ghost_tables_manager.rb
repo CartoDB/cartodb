@@ -33,8 +33,8 @@ module Carto
     end
 
     # Check if any unsafe stale (dropped or renamed) tables will be shown to the user
-    def safe_async?
-      find_dropped_tables.empty? && find_stale_tables.empty?
+    def safe_async?(cartodbfied_tables)
+      find_dropped_tables(cartodbfied_tables).empty? && find_stale_tables(cartodbfied_tables).empty?
     end
 
     def sync_user_tables_with_db
@@ -46,36 +46,38 @@ module Carto
     end
 
     def sync
+      cartodbfied_tables = fetch_cartodbfied_tables
+
       # Update table_id on UserTables with physical tables with changed oid. Should go first.
-      find_regenerated_tables.each(&:regenerate_user_table)
+      find_regenerated_tables(cartodbfied_tables).each(&:regenerate_user_table)
 
       # Relink tables that have been renamed through the SQL API
-      find_renamed_tables.each(&:rename_user_table_vis)
+      find_renamed_tables(cartodbfied_tables).each(&:rename_user_table_vis)
 
       # Create UserTables for non linked Tables
-      find_new_tables.each(&:create_user_table)
+      find_new_tables(cartodbfied_tables).each(&:create_user_table)
 
       # Unlink tables that have been created trhought the SQL API
-      find_dropped_tables.each(&:drop_user_table)
+      find_dropped_tables(cartodbfied_tables).each(&:drop_user_table)
     end
 
-    def find_stale_tables
-      find_regenerated_tables | find_renamed_tables | find_dropped_tables
+    def find_stale_tables(cartodbfied_tables)
+      find_regenerated_tables(cartodbfied_tables) |
+        find_renamed_tables(cartodbfied_tables)   |
+        find_dropped_tables(cartodbfied_tables)
     end
 
-    def find_unaltered_tables
-      fetch_cartodbfied_tables - find_altered_tables
+    def find_unaltered_tables(cartodbfied_tables)
+      cartodbfied_tables - (find_regenerated_tables(cartodbfied_tables) |
+                            find_renamed_tables(cartodbfied_tables)     |
+                            find_new_tables(cartodbfied_tables))
     end
 
-    def find_altered_tables
-      find_new_tables | find_renamed_tables | find_regenerated_tables
-    end
-
-    def find_renamed_tables
+    def find_renamed_tables(cartodbfied_tables)
       renamed_tables = []
 
       fetch_user_tables.each do |user_table|
-        renamed_tables += fetch_cartodbfied_tables.select do |cartodbfied_table|
+        renamed_tables += cartodbfied_tables.select do |cartodbfied_table|
           user_table.id == cartodbfied_table.id && user_table.name != cartodbfied_table.name
         end
       end
@@ -83,11 +85,11 @@ module Carto
       renamed_tables
     end
 
-    def find_regenerated_tables
+    def find_regenerated_tables(cartodbfied_tables)
       regenerated_tables = []
 
       fetch_user_tables.each do |user_table|
-        regenerated_tables += fetch_cartodbfied_tables.select do |cartodbfied_table|
+        regenerated_tables += cartodbfied_tables.select do |cartodbfied_table|
           user_table.name == cartodbfied_table.name && user_table.id != cartodbfied_table.id
         end
       end
@@ -95,13 +97,13 @@ module Carto
       regenerated_tables
     end
 
-    def find_new_tables
-      fetch_cartodbfied_tables - fetch_user_tables - find_stale_tables
+    def find_new_tables(cartodbfied_tables)
+      cartodbfied_tables - fetch_user_tables - find_stale_tables(cartodbfied_tables)
     end
 
     # Tables that have been dropped via API but have an old UserTable
-    def find_dropped_tables
-      fetch_user_tables - fetch_cartodbfied_tables
+    def find_dropped_tables(cartodbfied_tables)
+      fetch_user_tables - cartodbfied_tables
     end
 
     # Fetches all currently linked user tables

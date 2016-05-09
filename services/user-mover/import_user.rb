@@ -293,21 +293,24 @@ module CartoDB
         @user_conn ||= PG.connect(host: @target_dbhost,
                                   user: @target_dbuser,
                                   dbname: @target_dbname,
-                                  port: @config[:dbport])
+                                  port: @config[:dbport],
+                                  connect_timeout: CartoDB::DataMover::Config.config[:connect_timeout])
       end
 
       def superuser_user_pg_conn
         @superuser_user_conn ||= PG.connect(host: @target_dbhost,
                                             user: @config[:dbuser],
                                             dbname: @target_dbname,
-                                            port: @target_dbport)
+                                            port: @target_dbport,
+                                            connect_timeout: CartoDB::DataMover::Config.config[:connect_timeout])
       end
 
       def superuser_pg_conn
         @superuser_conn ||= PG.connect(host: @target_dbhost,
                                        user: @config[:dbuser],
                                        dbname: 'postgres',
-                                       port: @target_dbport)
+                                       port: @target_dbport,
+                                       connect_timeout: CartoDB::DataMover::Config.config[:connect_timeout])
       end
 
       def drop_database(db_name)
@@ -497,6 +500,21 @@ module CartoDB
         raise e
       end
 
+      def update_database_retries(userid, username, db_host, db_name, retries = 1)
+        begin
+          update_database(userid, username, db_host, db_name)
+        rescue => e
+          @logger.error "Error updating database"
+          if retries > 0
+            @logger.info "Retrying..."
+            update_database_retries(userid, username, db_host, db_name, retries - 1)
+          else
+            @logger.info "No more retries"
+            throw e
+          end
+        end
+      end
+
       def update_database(userid, username, db_host, db_name)
         update_postgres_database_host(userid, db_host)
         update_redis_database_host(username, db_host)
@@ -531,17 +549,31 @@ module CartoDB
       end
 
       def update_metadata
-        clean_oids(@target_userid, @target_schema)
-        update_database(@target_userid, @target_username, @target_dbhost, @target_dbname)
-        if @target_org_id
-          update_postgres_organization(@target_userid, @target_org_id)
-        else
-          update_postgres_organization(@target_userid, nil)
-        end
-
         user_model = ::User.find(username: @target_username)
-        user_model.db_service.monitor_user_notification
-        user_model.db_service.configure_database
+        orig_dbhost = user_model.database_host
+        changed_metadata = false
+        begin
+          clean_oids(@target_userid, @target_schema)
+          if @target_org_id
+            update_postgres_organization(@target_userid, @target_org_id)
+          else
+            update_postgres_organization(@target_userid, nil)
+          end
+          begin
+            update_database_retries(@target_userid, @target_username, @target_dbhost, @target_dbname, 1)
+            changed_metadata = true
+            user_model.reload
+          end
+          user_model.db_service.monitor_user_notification
+          user_model.db_service.configure_database
+        rescue => e
+          if changed_metadata
+            update_database_retries(@target_userid, @target_username, orig_dbhost, @target_dbname, 1)
+          end
+          log_error(e)
+          remove_user_mover_banner(@pack_config['user']['id']) if @options[:set_banner]
+          throw e
+        end
       end
 
       def importjob_logger

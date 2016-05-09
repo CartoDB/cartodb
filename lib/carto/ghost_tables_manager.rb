@@ -108,8 +108,10 @@ module Carto
 
     # Fetches all currently linked user tables
     def fetch_user_tables
-      @user.tables.all.map do |user_table|
-        Carto::TableFacade.new(user_table.table_id, user_table.name, @user)
+      results = Carto::UserTable.select([:name, :table_id]).where(user_id: @user.id)
+
+      results.map do |record|
+        Carto::TableFacade.new(record[:table_id], record[:name], @user)
       end
     end
 

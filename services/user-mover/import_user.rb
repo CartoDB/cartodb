@@ -500,14 +500,14 @@ module CartoDB
         raise e
       end
 
-      def update_database_retries(userid, username, db_host, db_name,retries=1)
+      def update_database_retries(userid, username, db_host, db_name, retries = 1)
         begin
           update_database(userid, username, db_host, db_name)
         rescue => e
           @logger.error "Error updating database"
-          if retries>0
+          if retries > 0
             @logger.info "Retrying..."
-            update_database_retries(userid, username, db_host, db_name,retries-1)
+            update_database_retries(userid, username, db_host, db_name, retries - 1)
           else
             @logger.info "No more retries"
             throw e
@@ -560,7 +560,7 @@ module CartoDB
             update_postgres_organization(@target_userid, nil)
           end
           begin
-            update_database_retries(@target_userid, @target_username, @target_dbhost, @target_dbname,1)
+            update_database_retries(@target_userid, @target_username, @target_dbhost, @target_dbname, 1)
             changed_metadata = true
             user_model.reload
           end
@@ -568,7 +568,7 @@ module CartoDB
           user_model.db_service.configure_database
         rescue => e
           if changed_metadata
-            update_database_retries(@target_userid, @target_username, orig_dbhost, @target_dbname,1)
+            update_database_retries(@target_userid, @target_username, orig_dbhost, @target_dbname, 1)
           end
           log_error(e)
           remove_user_mover_banner(@pack_config['user']['id']) if @options[:set_banner]

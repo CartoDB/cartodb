@@ -13,11 +13,146 @@
   position: relative;
 }
 
+.CDB-OptionInput-container {
+  height: 100%; // TODO: fix this in CartoAsssets
+}
+
+// TODO: fix this shit below
+
+.RampItem {
+  width: 100%;
+}
+
 .Editor-FormDialog {
   position: absolute;
-  top: 10px;
-  left: 10px;
-  width: 500px;
-  height: 500px;
-  background: #FFF;
+  top: 36px;
+  right: 0px;
+  width: 248px;
+  z-index: 100;
+}
+
+.InputColor {
+  background: #fff;
+  box-sizing: border-box;
+  font-size: 12px;
+  line-height: 16px;
+  padding: 7px 8px 6px;
+  width: 100%;
+}
+
+.InputColor .InputColor-band {
+  border: 1px solid #DDD;
+  height: 5px;
+  border-radius: 3px;
+  background: red;
+  min-width: 60px;
+}
+
+.Editor-FormDialog .CustomList {
+  display: block;
+  position: relative;
+  top: auto;
+  right: auto;
+  border: none;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+.CDB-ColorPicker {
+  display: block;
+  width: 100%;
+  position: relative;
+}
+
+.ColorPicker-pickerIndicator {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border: 1px solid black;
+  border-radius: 10px;
+  z-index: 1;
+}
+
+.ColorPicker-pickerIndicator:before {
+  content: '';
+  position: absolute;
+  left: -2px;
+  top: -2px;
+  width: 8px;
+  height: 8px;
+  border: 1px solid #FFF;
+  border-radius: 10px;
+  z-index: 0;
+}
+
+.ColorPicker-sliderWrapper {
+  width: 100%;
+  height: 20px;
+}
+
+.ColorPicker-pickerWrapper {
+  width: 100%;
+  height: 100px;
+}
+
+.ColorPicker-slider {
+  display: inline-block;
+  width: 100%;
+  height: 13px;
+  border-radius: 0 0 0 2px;
+  cursor: crosshair;
+  width: 12px;
+  height: 20px;
+  transform: rotate(90deg);
+}
+.ColorPicker-sliderIndicator {
+  position: absolute;
+  left: -2px;
+  width: 15px;
+  height: 1px;
+  background: #000;
+  border: 1px solid #FFF;
+}
+
+.ColorPicker-picker {
+  display: inline-block;
+  width: 100%;
+  height: 100px;
+  border-radius: 0 0 0 2px;
+  cursor: crosshair;
+}
+.ColorPicker-picker:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 1px solid rgba(#FFF, 0.4);
+}
+
+.ColorPicker-preview {
+  width: 24px;
+  height: 24px;
+  border-radius: 3px;
+  border: 1px solid rgba(#FFF, 0.4);
+}
+
+.ColorPicker-inputs {
+  display: flex;
+  text-align: center;
+}
+
+.ColorPicker-inputLabel {
+  color: #ccc;
+  margin: 0 3px;
+  font-size: 10px;
+}
+
+.ColorPicker-inputWrapper {
+  flex: 1;
+  margin: 0 2px;
+}
+
+.ColorPicker-input {
 }

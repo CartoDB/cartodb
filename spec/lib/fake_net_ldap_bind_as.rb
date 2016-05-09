@@ -6,13 +6,12 @@
 class Net::LDAP
   def bind_as(args)
     rs = search(args)
-    bind
-    if rs and rs.first and dn = rs.first[:dn]
+    if rs && rs.first && dn = rs.first[:dn]
       password = args[:password]
       password = password.call if password.respond_to?(:call)
       @username = dn
       @password = password
-      result = rs if bind
+      rs if bind
     end
   end
 end

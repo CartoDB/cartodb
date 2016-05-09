@@ -29,7 +29,7 @@
     div.wizard_wrap {
       position:absolute;
       overflow:hidden;
-      top:60px;
+      top:0px;
       left:0;
       right:0;
       height:149px;
@@ -293,7 +293,7 @@
       }
 
       &.panel_content {
-        top:212px;
+        top:152px;
       }
 
       // Color wizard styles

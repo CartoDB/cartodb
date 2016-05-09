@@ -127,7 +127,7 @@
     .menu {
       position: absolute;
       @include box-sizing(border-box);
-      top: 59px;
+      top: 0px;
       width: 100%;
       padding: 9px 23px 3px 30px;
       background: $Grey9;

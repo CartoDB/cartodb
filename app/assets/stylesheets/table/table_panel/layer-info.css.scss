@@ -78,7 +78,6 @@
         }
 
         &:hover {
-          cursor:pointer;
           i.synced {
             @include background(sprite($table-sprites, sync_layer_icon, $offset-x:0, $offset-y:-12px) no-repeat);
           }

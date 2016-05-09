@@ -127,21 +127,36 @@ module.exports = DataviewModelBase.extend({
 
   getHistogramShape: function () {
     var histogram = this.get('data');
-    var sorted = histogram.sort(function (a, b) {
-      return b.freq - a.freq;
+    var freqAccessor = function (a) { return a.freq };
+    var osc = d3.max(histogram, freqAccessor) - d3.min(histogram, freqAccessor);
+    var mean = d3.mean(histogram, freqAccessor);
+    if (osc < mean * 0.1) return 'F';
+    var sumFreqs = d3.sum(histogram, freqAccessor);
+    var freqs = histogram.map(function (bin) {
+      return 100 * bin.freq / sumFreqs;
     });
-    var max = d3.max(histogram, function (bin) { return bin.freq; });
-    var min = d3.min(histogram, function (bin) { return bin.freq; });
-    if (Math.abs(max - min) < 5) return 'F';
-    var first = sorted[0].bin;
-    var scale = d3.scale.linear().domain([0, this.get('bins')]).range([0,3])
-    if (first === 0) {
-      return 'L';
-    } else if (scale(first) > 1 && scale(first) < 2) {
-      return 'A';
-    } else if (scale(first) > 2) {
-      return 'J';
-    } else {
+    var ajus = freqs.map(function (freq, index) {
+      var next = freqs[index + 1] || 0;
+      if (freq > next) return -1;
+      if (Math.abs(freq - next) <= 0.05) return 0;
+      return 1;
+    })
+    var maxAjus = d3.max(ajus);
+    var minAjus = d3.min(ajus);
+    if (minAjus === 0 && maxAjus === 0) return 'F';
+    else if (maxAjus < 1) return 'L';
+    else if (minAjus > -1) return 'J';
+    else {
+      var uniques = _.uniq(ajus);
+      var A_TYPES = [[1,-1], [1,0,-1], [1,-1,0], [0,1,-1]];
+      var U_TYPES = [[-1,1], [-1,0,1], [-1,1,0], [0,-1,1]];
+      if (A_TYPES.some(function (e) {
+        return _.isEqual(e, uniques)
+      })) return 'A';
+      else if (U_TYPES.some(function (e) {
+        return _.isEqual(e, uniques)
+      })) return 'U';
+      else return 'S';
     }
   },
 

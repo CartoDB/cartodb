@@ -479,6 +479,7 @@
           "time_series": "Time Series"
         },
         "data": {
+          "columns-unavailable": "No columns available",
           "aggregation": "Aggregation",
           "aggregation_column": "Aggregation Column",
           "bins": "Buckets",

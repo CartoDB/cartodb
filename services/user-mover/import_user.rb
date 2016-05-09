@@ -181,18 +181,9 @@ module CartoDB
         end
 
         if @options[:update_metadata]
-          clean_oids(@target_userid, @target_schema)
-          update_database(@target_userid, @target_username, @target_dbhost, @target_dbname)
-          if @target_org_id
-            update_postgres_organization(@target_userid, @target_org_id)
-          else
-            update_postgres_organization(@target_userid, nil)
-          end
-
-          user_model = ::User.find(username: @target_username)
-          user_model.db_service.monitor_user_notification
-          user_model.db_service.configure_database
+          update_metadata
         end
+
         log_success
         remove_user_mover_banner(@pack_config['user']['id']) if @options[:set_banner]
       end
@@ -537,6 +528,20 @@ module CartoDB
       def update_redis_database_name(user, db)
         @logger.info "Updating Redis database_name..."
         metadata_redis_conn.hset("rails:users:#{user}", 'database_name', db)
+      end
+
+      def update_metadata
+        clean_oids(@target_userid, @target_schema)
+        update_database(@target_userid, @target_username, @target_dbhost, @target_dbname)
+        if @target_org_id
+          update_postgres_organization(@target_userid, @target_org_id)
+        else
+          update_postgres_organization(@target_userid, nil)
+        end
+
+        user_model = ::User.find(username: @target_username)
+        user_model.db_service.monitor_user_notification
+        user_model.db_service.configure_database
       end
 
       def importjob_logger

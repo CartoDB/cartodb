@@ -174,6 +174,7 @@
     grunt.registerTask('pre_default', ['clean', 'config', 'js']);
     grunt.registerTask('test', '(CI env) Re-build JS files and run all tests. ' +
     'For manual testing use `grunt jasmine` directly', ['lint', 'pre_default', 'jasmine']);
+    grunt.registerTask('editor3', ['browserify:editor3_vendor', 'browserify:editor3_common', 'browserify:editor3', 'browserify:editor3_public']);
     grunt.registerTask('css_editor_3', ['copy:cartofonts', 'copy:iconfont', 'copy:cartoassets', 'copy:perfect_scrollbar', 'copy:deep_insights', 'copy:cartodbjs_v4']);
     grunt.registerTask('css',         ['copy:vendor', 'css_editor_3', 'copy:app', 'compass', 'concat:css']);
     grunt.registerTask('default',     ['pre_default', 'css', 'manifest']);

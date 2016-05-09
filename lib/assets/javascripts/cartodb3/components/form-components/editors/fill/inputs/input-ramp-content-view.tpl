@@ -1,15 +1,26 @@
-<div class="Editor-HeaderInfo">
+<div class="CDB-Box-modalHeaderItem">
   <button class="u-rSpace--xl u-actionTextColor js-back">
     <i class="CDB-IconFont CDB-IconFont-arrowPrev Size-large"></i>
   </button>
-  <div class="Editor-HeaderInfo-inner">
-    <div class="Editor-HeaderInfo-title u-bSpace">
-      <h2 class="Editor-HeaderInfo-titleText CDB-Text js-title is-light"><%- attribute %></h2>
+  <%- attribute %>
+</div>
+<div class="CDB-Box-modalHeaderItem">
+  <%- bins %> buckets
+  <button class="CDB-Shape u-lSpace js-bins">
+    <div class="CDB-Shape-threePoints is-horizontal is-blue is-small">
+      <div class="CDB-Shape-threePointsItem"></div>
+      <div class="CDB-Shape-threePointsItem"></div>
+      <div class="CDB-Shape-threePointsItem"></div>
     </div>
-  </div>
+  </button>
+
+  <%- quantification %>
+  <button class="CDB-Shape u-lSpace js-quantification">
+    <div class="CDB-Shape-threePoints is-horizontal is-blue is-small">
+      <div class="CDB-Shape-threePointsItem"></div>
+      <div class="CDB-Shape-threePointsItem"></div>
+      <div class="CDB-Shape-threePointsItem"></div>
+    </div>
+  </button>
 </div>
-<div>
-  <button class="js-bins"><%- bins %> buckets…</button>
-</div>
-<div><button class="js-quantification"><%- quantification %>…</button></div>
 <div class="js-content"></div>

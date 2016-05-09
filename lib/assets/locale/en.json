@@ -491,7 +491,10 @@
             "interior": "interior"
           }
         },
-        "animated-enabled": "animated",
+        "animated-enabled": {
+          "label": "animated",
+          "already-one-torque": "There is already a torque layer in your map"
+        },
         "animated-overlap": {
           "label": "overlap",
           "options": {

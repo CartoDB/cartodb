@@ -41,7 +41,7 @@ describe('dataviews/histogram-dataview-model', function () {
     expect(this.model._unfilteredData.get('apiKey')).toEqual('API_KEY');
   });
 
-  fdescribe('should get the correct histogram shape', function () {
+  describe('should get the correct histogram shape', function () {
     beforeEach(function () {
       this.model.set('bins', 6);
     });

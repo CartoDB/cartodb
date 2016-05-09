@@ -181,35 +181,9 @@ module CartoDB
         end
 
         if @options[:update_metadata]
-          user_model = ::User.find(username: @target_username)
-          orig_dbhost = user_model.database_host
-          changed_metadata = false
-          begin
-            clean_oids(@target_userid, @target_schema)
-            if @target_org_id
-              update_postgres_organization(@target_userid, @target_org_id)
-            else
-              update_postgres_organization(@target_userid, nil)
-            end
-            begin
-              update_database(@target_userid, @target_username, @target_dbhost, @target_dbname)
-            rescue => e
-              throw e
-            else
-              changed_metadata = true
-              user_model.database_host = @target_dbhost
-            end
-            user_model.db_service.monitor_user_notification
-            user_model.db_service.configure_database
-          rescue => e
-            if changed_metadata
-              update_database(@target_userid, @target_username, orig_dbhost, @target_dbname)
-            end
-            log_error(e)
-            remove_user_mover_banner(@pack_config['user']['id']) if @options[:set_banner]
-            throw e
-          end
+          update_metadata
         end
+
         log_success
         remove_user_mover_banner(@pack_config['user']['id']) if @options[:set_banner]
       end
@@ -557,6 +531,34 @@ module CartoDB
       def update_redis_database_name(user, db)
         @logger.info "Updating Redis database_name..."
         metadata_redis_conn.hset("rails:users:#{user}", 'database_name', db)
+      end
+
+      def update_metadata
+        user_model = ::User.find(username: @target_username)
+        orig_dbhost = user_model.database_host
+        changed_metadata = false
+        begin
+          clean_oids(@target_userid, @target_schema)
+          if @target_org_id
+            update_postgres_organization(@target_userid, @target_org_id)
+          else
+            update_postgres_organization(@target_userid, nil)
+          end
+          begin
+            update_database(@target_userid, @target_username, @target_dbhost, @target_dbname)
+            changed_metadata = true
+            user_model.reload
+          end
+          user_model.db_service.monitor_user_notification
+          user_model.db_service.configure_database
+        rescue => e
+          if changed_metadata
+            update_database(@target_userid, @target_username, orig_dbhost, @target_dbname)
+          end
+          log_error(e)
+          remove_user_mover_banner(@pack_config['user']['id']) if @options[:set_banner]
+          throw e
+        end
       end
 
       def importjob_logger

@@ -143,6 +143,11 @@
       "working": "Working…"
     },
     "likes-pluralize": "like |||| likes",
+    "custom-list": {
+      "placeholder": "Select a %{typeLabel}",
+      "no-items": "There is no %{typeLabel} items",
+      "no-results": "No %{typeLabel} results found with '%{query}'"
+    },
     "datepicker": {
       "dates-placeholder": "Choose your dates",
       "get-last": "Get last",
@@ -418,7 +423,11 @@
         "by": "By",
         "by-walk": "walk",
         "by-bike": "bike",
-        "by-car": "drive",
+        "by-car": "car",
+        "tracts": "Tracts",
+        "boundaries": "Boundaries",
+        "intact": "Intact",
+        "dissolved": "Dissolved",
         "distance": "Distance",
         "input": "Input",
         "kilometers": "km",

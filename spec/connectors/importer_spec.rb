@@ -7,7 +7,7 @@ require 'csv'
 describe CartoDB::Connector::Importer do
 
   before(:all) do
-    @user = create_user(:quota_in_bytes => 1000.megabyte, :table_quota => 400)
+    @user = create_user(quota_in_bytes: 1000.megabyte, table_quota: 400, max_layers: 4)
   end
 
   before(:each) do
@@ -43,7 +43,7 @@ describe CartoDB::Connector::Importer do
     }.returns(nil)
 
     table_registrar = mock
-    table_registrar.stubs(:get_valid_table_name).returns('european_countries')
+    table_registrar.stubs(:user).returns(@user)
 
     importer_table_name = "table_#{UUIDTools::UUID.timestamp_create.to_s}"
     desired_table_name = 'european_countries'
@@ -58,7 +58,7 @@ describe CartoDB::Connector::Importer do
   # This test checks that the importer detects files with names that are
   # psql reserved words and knows how to rename them (appending '_t')
   it 'should allow importing tables with reserved names' do
-    reserved_word = CartoDB::POSTGRESQL_RESERVED_WORDS.sample
+    reserved_word = Carto::DB::Sanitize::RESERVED_WORDS.sample
 
     filepath        = "/tmp/#{reserved_word.downcase}.csv"
     expected_rename = reserved_word.downcase + '_t'

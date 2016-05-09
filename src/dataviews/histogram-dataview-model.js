@@ -125,16 +125,24 @@ module.exports = DataviewModelBase.extend({
     };
   },
 
-  getHistogramShape: function () {
+  /*
+  Ported from cartodb-postgresql
+  https://github.com/CartoDB/cartodb-postgresql/blob/master/scripts-available/CDB_DistType.sql
+  */
+  getDistributionType: function () {
     var histogram = this.get('data');
     var freqAccessor = function (a) { return a.freq; };
     var osc = d3.max(histogram, freqAccessor) - d3.min(histogram, freqAccessor);
     var mean = d3.mean(histogram, freqAccessor);
+    // When the difference between the max and the min values is less than
+    // 10 percent of the mean, it's a flat histogram (F)
     if (osc < mean * 0.1) return 'F';
     var sumFreqs = d3.sum(histogram, freqAccessor);
     var freqs = histogram.map(function (bin) {
       return 100 * bin.freq / sumFreqs;
     });
+
+    // The ajus array represents relative growths
     var ajus = freqs.map(function (freq, index) {
       var next = freqs[index + 1];
       if (freq > next) return -1;
@@ -144,6 +152,7 @@ module.exports = DataviewModelBase.extend({
     ajus.pop();
     var maxAjus = d3.max(ajus);
     var minAjus = d3.min(ajus);
+    // If it never grows or shrinks, it returns flat
     if (minAjus === 0 && maxAjus === 0) return 'F';
     else if (maxAjus < 1) return 'L';
     else if (minAjus > -1) return 'J';

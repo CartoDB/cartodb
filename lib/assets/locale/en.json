@@ -472,7 +472,7 @@
       "components": {
         "labels-enabled": {
           "label": "labels",
-          "not-with-animated": "It is not available with animated"
+          "not-with-animated": "It won't be available with animated"
         },
         "labels-font": "font",
         "labels-offset": "offset",
@@ -497,7 +497,7 @@
         "animated-enabled": {
           "label": "animated",
           "already-one-torque": "There is already a torque layer in your map",
-          "not-with-labels": "It is not available with labels"
+          "not-with-labels": "It won't be available with labels"
         },
         "animated-overlap": {
           "label": "overlap",

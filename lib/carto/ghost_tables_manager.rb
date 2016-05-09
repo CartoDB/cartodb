@@ -8,14 +8,18 @@ module Carto
     MUTEX_TTL_MS = 60000
 
     def initialize(user_id)
-      @user = ::User[user_id]
+      @user_id = user_id
+    end
+
+    def user
+      @user ||= ::User[@user_id]
     end
 
     def link_ghost_tables
       return if user_tables_synced_with_db?
 
       if safe_async?
-        ::Resque.enqueue(::Resque::UserJobs::SyncTables::LinkGhostTables, @user.id)
+        ::Resque.enqueue(::Resque::UserJobs::SyncTables::LinkGhostTables, @user_id)
       else
         link_ghost_tables_synchronously
       end
@@ -38,11 +42,11 @@ module Carto
     end
 
     def sync_user_tables_with_db
-      bolt = Carto::Bolt.new("#{@user.username}:#{MUTEX_REDIS_KEY}", ttl_ms: MUTEX_TTL_MS)
+      bolt = Carto::Bolt.new("#{user.username}:#{MUTEX_REDIS_KEY}", ttl_ms: MUTEX_TTL_MS)
 
       got_locked = bolt.run_locked { sync }
 
-      CartoDB::Logger.info(message: 'Ghost table race condition avoided', user: @user) unless got_locked
+      CartoDB::Logger.info(message: 'Ghost table race condition avoided', user: user) unless got_locked
     end
 
     def sync
@@ -102,10 +106,8 @@ module Carto
 
     # Fetches all currently linked user tables
     def fetch_user_tables
-      results = Carto::UserTable.select([:name, :table_id]).where(user_id: @user.id)
-
-      results.map do |record|
-        Carto::TableFacade.new(record[:table_id], record[:name], @user.id)
+      Carto::UserTable.select([:name, :table_id]).where(user_id: @user_id).map do |record|
+        Carto::TableFacade.new(record[:table_id], record[:name], @user_id)
       end
     end
 
@@ -129,8 +131,8 @@ module Carto
           WHERE
             t.tablename = c.table_name AND
             t.schemaname = c.table_schema AND
-            c.table_schema = '#{@user.database_schema}' AND
-            t.tableowner = '#{@user.database_username}' AND
+            c.table_schema = '#{user.database_schema}' AND
+            t.tableowner = '#{user.database_username}' AND
             column_name IN (#{cartodb_columns}) AND
             tg.tgrelid = (quote_ident(t.schemaname) || '.' || quote_ident(t.tablename))::regclass::oid AND
             tg.tgname = 'test_quota_per_row'
@@ -138,8 +140,8 @@ module Carto
         SELECT table_name, reloid FROM cartodbfied_tables WHERE cdb_columns_count = #{cartodb_columns.split(',').length}
       }
 
-      @user.in_database(as: :superuser)[sql].all.map do |record|
-        Carto::TableFacade.new(record[:reloid], record[:table_name], @user.id)
+      user.in_database(as: :superuser)[sql].all.map do |record|
+        Carto::TableFacade.new(record[:reloid], record[:table_name], @user_id)
       end
     end
 
@@ -154,8 +156,8 @@ module Carto
           WHERE
             t.tablename = c.table_name AND
             t.schemaname = c.table_schema AND
-            c.table_schema = '#{@user.database_schema}' AND
-            t.tableowner = '#{@user.database_username}' AND
+            c.table_schema = '#{user.database_schema}' AND
+            t.tableowner = '#{user.database_username}' AND
             column_name IN ('cartodb_id', 'the_raster_webmercator') AND
             tg.tgrelid = (quote_ident(t.schemaname) || '.' || quote_ident(t.tablename))::regclass::oid AND
             tg.tgname = 'test_quota_per_row'
@@ -163,8 +165,8 @@ module Carto
         SELECT table_name, reloid FROM cartodbfied_tables WHERE cdb_columns_count = 2;
       }
 
-      @user.in_database(as: :superuser)[sql].all.map do |record|
-        Carto::TableFacade.new(record[:reloid], record[:table_name], @user.id)
+      user.in_database(as: :superuser)[sql].all.map do |record|
+        Carto::TableFacade.new(record[:reloid], record[:table_name], @user_id)
       end
     end
   end

@@ -54,7 +54,7 @@ describe('dataviews/histogram-dataview-model', function () {
         {bin: 4, freq: 26},
         {bin: 5, freq: 25}
       ]);
-      expect(this.model.getHistogramShape()).toEqual('F');
+      expect(this.model.getDistributionType()).toEqual('F');
     });
     it('when it is A', function () {
       this.model.set('data', [
@@ -65,7 +65,7 @@ describe('dataviews/histogram-dataview-model', function () {
         {bin: 4, freq: 8},
         {bin: 5, freq: 2}
       ]);
-      expect(this.model.getHistogramShape()).toEqual('A');
+      expect(this.model.getDistributionType()).toEqual('A');
     });
     it('when it is J', function () {
       this.model.set('data', [
@@ -76,7 +76,7 @@ describe('dataviews/histogram-dataview-model', function () {
         {bin: 4, freq: 18},
         {bin: 5, freq: 25}
       ]);
-      expect(this.model.getHistogramShape()).toEqual('J');
+      expect(this.model.getDistributionType()).toEqual('J');
     });
     it('when it is L', function () {
       this.model.set('data', [
@@ -87,7 +87,7 @@ describe('dataviews/histogram-dataview-model', function () {
         {bin: 5, freq: 2},
         {bin: 3, freq: 0}
       ]);
-      expect(this.model.getHistogramShape()).toEqual('L');
+      expect(this.model.getDistributionType()).toEqual('L');
     });
     xit('when it is clustered', function () {
       this.model.set('data', [
@@ -98,7 +98,7 @@ describe('dataviews/histogram-dataview-model', function () {
        {bin: 4, freq: 32},
        {bin: 5, freq: 16}
       ]);
-      expect(this.model.getHistogramShape()).toEqual('C');
+      expect(this.model.getDistributionType()).toEqual('C');
     });
   });
 

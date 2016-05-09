@@ -602,13 +602,21 @@ module.exports = cdb.core.View.extend({
     var lo = extent[0];
     var hi = extent[1];
 
-    this.chart.selectAll('.CDB-Chart-bar').classed('is-selected', function (d, i) {
+    function _isIn (o, i) {
       var a = Math.floor(i * self.barWidth);
       var b = Math.floor(a + self.barWidth);
       var LO = Math.floor(self.xScale(lo));
       var HI = Math.floor(self.xScale(hi));
-      var isIn = (a > LO && a < HI) || (b > LO && b < HI) || (a <= LO && b >= HI);
-      return !isIn;
+      return (a > LO && a < HI) || (b > LO && b < HI) || (a <= LO && b >= HI);
+    }
+
+    this.chart.selectAll('.CDB-Chart-bar').classed({
+      'is-selected': function (d, i) {
+        return _isIn(self, i);
+      },
+      'is-filtered': function (d, i) {
+        return !_isIn(self, i);
+      }
     });
   },
 
@@ -641,7 +649,7 @@ module.exports = cdb.core.View.extend({
 
   removeSelection: function () {
     this.resetIndexes();
-    this.chart.selectAll('.CDB-Chart-bar').classed('is-selected', false);
+    this.chart.selectAll('.CDB-Chart-bar').classed({'is-selected': false, 'is-filtered': false});
     this._removeBrush();
     this._setupBrush();
   },

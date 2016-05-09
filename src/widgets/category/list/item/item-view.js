@@ -1,5 +1,6 @@
 var cdb = require('cartodb.js');
 var formatter = require('../../../../formatter');
+var _ = require('underscore');
 var clickableTemplate = require('./item-clickable-template.tpl');
 var unclickableTemplate = require('./item-unclickable-template.tpl');
 
@@ -26,6 +27,8 @@ module.exports = cdb.core.View.extend({
     var template = this.model.get('agg') || this.widgetModel.isLocked()
       ? unclickableTemplate
       : clickableTemplate;
+    var acceptedCategories = this.dataviewModel.filter.getAcceptedCategoryNames();
+    var isAccepted = _.contains(acceptedCategories, name);
 
     this.$el.html(
       template({
@@ -37,6 +40,7 @@ module.exports = cdb.core.View.extend({
         percentage: ((value / this.dataviewModel.get('max')) * 100),
         color: this.widgetModel.autoStyler.colors.getColorByCategory(name),
         isDisabled: !this.model.get('selected') ? 'is-disabled' : '',
+        isAccepted: isAccepted,
         prefix: this.widgetModel.get('prefix'),
         suffix: this.widgetModel.get('suffix')
       })

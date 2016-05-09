@@ -28,7 +28,8 @@
     "jquery": "2.1.4",
     "moment": "2.10.6",
     "perfect-scrollbar": "0.6.7",
-    "underscore": "1.8.3"
+    "underscore": "1.8.3",
+    "urijs": "^1.17.1"
   },
   "devDependencies": {
     "browserify": "13.0.0",

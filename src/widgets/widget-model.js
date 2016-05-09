@@ -14,6 +14,11 @@ module.exports = cdb.core.Model.extend({
     show_stats: false
   },
 
+  defaultState: {
+    'collapsed': false,
+    'pinned': false
+  },
+
   initialize: function (attrs, opts) {
     this.dataviewModel = opts.dataviewModel;
   },
@@ -38,5 +43,20 @@ module.exports = cdb.core.Model.extend({
     this.dataviewModel.remove();
     this.trigger('destroy', this);
     this.stopListening();
+  },
+
+  setState: function (state) {
+    this.set(state);
+  },
+
+  getState: function () {
+    var state = {};
+    for (var key in this.defaultState) {
+      var attribute = this.get(key);
+      if (typeof attribute !== 'undefined' && attribute !== this.defaultState[key]) {
+        state[key] = attribute;
+      }
+    }
+    return state;
   }
 });

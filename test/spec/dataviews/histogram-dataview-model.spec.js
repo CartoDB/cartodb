@@ -41,6 +41,67 @@ describe('dataviews/histogram-dataview-model', function () {
     expect(this.model._unfilteredData.get('apiKey')).toEqual('API_KEY');
   });
 
+  describe('should get the correct histogram shape', function () {
+    beforeEach(function () {
+      this.model.set('bins', 6);
+    });
+    it('when it is flat', function () {
+      this.model.set('data', [
+        {bin: 0, freq: 25},
+        {bin: 1, freq: 26},
+        {bin: 2, freq: 25},
+        {bin: 3, freq: 26},
+        {bin: 4, freq: 26},
+        {bin: 5, freq: 25}
+      ]);
+      expect(this.model.getDistributionType()).toEqual('F');
+    });
+    it('when it is A', function () {
+      this.model.set('data', [
+        {bin: 0, freq: 0},
+        {bin: 1, freq: 5},
+        {bin: 2, freq: 25},
+        {bin: 3, freq: 18},
+        {bin: 4, freq: 8},
+        {bin: 5, freq: 2}
+      ]);
+      expect(this.model.getDistributionType()).toEqual('A');
+    });
+    it('when it is J', function () {
+      this.model.set('data', [
+        {bin: 0, freq: 0},
+        {bin: 1, freq: 2},
+        {bin: 2, freq: 5},
+        {bin: 3, freq: 8},
+        {bin: 4, freq: 18},
+        {bin: 5, freq: 25}
+      ]);
+      expect(this.model.getDistributionType()).toEqual('J');
+    });
+    it('when it is L', function () {
+      this.model.set('data', [
+        {bin: 0, freq: 25},
+        {bin: 1, freq: 18},
+        {bin: 4, freq: 8},
+        {bin: 2, freq: 5},
+        {bin: 5, freq: 2},
+        {bin: 3, freq: 0}
+      ]);
+      expect(this.model.getDistributionType()).toEqual('L');
+    });
+    xit('when it is clustered', function () {
+      this.model.set('data', [
+       {bin: 0, freq: 20},
+       {bin: 1, freq: 18},
+       {bin: 2, freq: 5},
+       {bin: 3, freq: 0},
+       {bin: 4, freq: 32},
+       {bin: 5, freq: 16}
+      ]);
+      expect(this.model.getDistributionType()).toEqual('C');
+    });
+  });
+
   describe('on unfiltered data model fetch', function () {
     beforeEach(function () {
       var histogramData = {

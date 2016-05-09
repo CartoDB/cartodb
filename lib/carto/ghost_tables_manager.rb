@@ -57,7 +57,7 @@ module Carto
       # Create UserTables for non linked Tables
       find_new_tables(cartodbfied_tables).each(&:create_user_table)
 
-      # Unlink tables that have been created trhought the SQL API
+      # Unlink tables that have been created trhought the SQL API. Should go last.
       find_dropped_tables(cartodbfied_tables).each(&:drop_user_table)
     end
 
@@ -74,27 +74,21 @@ module Carto
     end
 
     def find_renamed_tables(cartodbfied_tables)
-      renamed_tables = []
+      user_tables = fetch_user_tables
 
-      fetch_user_tables.each do |user_table|
-        renamed_tables += cartodbfied_tables.select do |cartodbfied_table|
-          user_table.id == cartodbfied_table.id && user_table.name != cartodbfied_table.name
-        end
+      cartodbfied_tables.select do |cartodbfied_table|
+        user_tables.map(&:id).include?(cartodbfied_table.id) &&
+          !user_tables.map(&:name).include?(cartodbfied_table.name)
       end
-
-      renamed_tables
     end
 
     def find_regenerated_tables(cartodbfied_tables)
-      regenerated_tables = []
+      user_tables = fetch_user_tables
 
-      fetch_user_tables.each do |user_table|
-        regenerated_tables += cartodbfied_tables.select do |cartodbfied_table|
-          user_table.name == cartodbfied_table.name && user_table.id != cartodbfied_table.id
-        end
+      cartodbfied_tables.select do |cartodbfied_table|
+        user_tables.map(&:name).include?(cartodbfied_table.name) &&
+          !user_tables.map(&:id).include?(cartodbfied_table.id)
       end
-
-      regenerated_tables
     end
 
     def find_new_tables(cartodbfied_tables)

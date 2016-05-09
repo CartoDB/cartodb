@@ -8,7 +8,7 @@ module Carto
     MUTEX_TTL_MS = 60000
 
     def initialize(user_id)
-      @user = ::User.where(id: user_id).first
+      @user = ::User[user_id]
     end
 
     def link_ghost_tables
@@ -105,7 +105,7 @@ module Carto
       results = Carto::UserTable.select([:name, :table_id]).where(user_id: @user.id)
 
       results.map do |record|
-        Carto::TableFacade.new(record[:table_id], record[:name], @user)
+        Carto::TableFacade.new(record[:table_id], record[:name], @user.id)
       end
     end
 
@@ -139,7 +139,7 @@ module Carto
       }
 
       @user.in_database(as: :superuser)[sql].all.map do |record|
-        Carto::TableFacade.new(record[:reloid], record[:table_name], @user)
+        Carto::TableFacade.new(record[:reloid], record[:table_name], @user.id)
       end
     end
 
@@ -164,18 +164,22 @@ module Carto
       }
 
       @user.in_database(as: :superuser)[sql].all.map do |record|
-        Carto::TableFacade.new(record[:reloid], record[:table_name], @user)
+        Carto::TableFacade.new(record[:reloid], record[:table_name], @user.id)
       end
     end
   end
 
   class TableFacade
-    attr_reader :id, :name, :user
+    attr_reader :id, :name, :user_id
 
-    def initialize(id, name, user)
+    def initialize(id, name, user_id)
       @id = id
       @name = name
-      @user = user
+      @user_id = user_id
+    end
+
+    def user
+      @user ||= ::User[@user_id]
     end
 
     def user_table_with_matching_id
@@ -189,12 +193,12 @@ module Carto
     def create_user_table
       CartoDB::Logger.debug(message: 'ghost tables',
                             action: 'linking new table',
-                            user: @user,
+                            user: user,
                             table_name: name,
                             table_id: id)
 
       # TODO: Use Carto::UserTable when it's ready and stop the Table <-> ::UserTable madness
-      new_table = ::Table.new(user_table: ::UserTable.new.set_fields({ user_id: @user.id, table_id: id, name: name },
+      new_table = ::Table.new(user_table: ::UserTable.new.set_fields({ user_id: user.id, table_id: id, name: name },
                                                                      [:user_id, :table_id, :name]))
 
       new_table.register_table_only = true
@@ -204,7 +208,7 @@ module Carto
     rescue => exception
       CartoDB::Logger.error(message: 'Ghost tables: Error creating UserTable',
                             exception: exception,
-                            user: @user,
+                            user: user,
                             table_name: name,
                             table_id: id)
     end
@@ -212,7 +216,7 @@ module Carto
     def rename_user_table_vis
       CartoDB::Logger.debug(message: 'ghost tables',
                             action: 'relinking renamed table',
-                            user: @user,
+                            user: user,
                             table_name: name,
                             table_id: id)
 
@@ -225,7 +229,7 @@ module Carto
     rescue => exception
       CartoDB::Logger.error(message: 'Ghost tables: Error renaming Visualization',
                             exception: exception,
-                            user: @user,
+                            user: user,
                             table_name: name,
                             table_id: id)
     end
@@ -233,12 +237,12 @@ module Carto
     def drop_user_table
       CartoDB::Logger.debug(message: 'ghost tables',
                             action: 'unlinking dropped table',
-                            user: @user,
+                            user: user,
                             table_name: name,
                             table_id: id)
 
       # TODO: Use Carto::UserTable when it's ready and stop the Table <-> ::UserTable madness
-      table_to_drop = ::Table.new(user_table: @user.tables.where(table_id: id, name: name).first)
+      table_to_drop = ::Table.new(user_table: user.tables.where(table_id: id, name: name).first)
 
       table_to_drop.keep_user_database_table = true
 
@@ -246,7 +250,7 @@ module Carto
     rescue => exception
       CartoDB::Logger.error(message: 'Ghost tables: Error dropping Table',
                             exception: exception,
-                            user: @user,
+                            user: user,
                             table_name: name,
                             table_id: id)
     end
@@ -254,7 +258,7 @@ module Carto
     def regenerate_user_table
       CartoDB::Logger.debug(message: 'ghost tables',
                             action: 'regenerating table_id',
-                            user: @user,
+                            user: user,
                             table_name: name,
                             table_id: id)
 
@@ -265,13 +269,13 @@ module Carto
     rescue => exception
       CartoDB::Logger.error(message: 'Ghost tables: Error syncing table_id for UserTable',
                             exception: exception,
-                            user: @user,
+                            user: user,
                             table_name: name,
                             table_id: id)
     end
 
     def eql?(other)
-      id.eql?(other.id) && name.eql?(other.name) && user.id.eql?(other.user.id)
+      id.eql?(other.id) && name.eql?(other.name) && user.id.eql?(other.user_id)
     end
 
     def ==(other)
@@ -279,7 +283,7 @@ module Carto
     end
 
     def hash
-      [id, name, user.id].hash
+      [id, name, user_id].hash
     end
   end
 end

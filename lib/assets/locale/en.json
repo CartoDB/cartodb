@@ -470,7 +470,10 @@
         }
       },
       "components": {
-        "labels-enabled": "labels",
+        "labels-enabled": {
+          "label": "labels",
+          "not-with-animated": "It is not available with animated"
+        },
         "labels-font": "font",
         "labels-offset": "offset",
         "labels-fill": "size/color",
@@ -493,7 +496,8 @@
         },
         "animated-enabled": {
           "label": "animated",
-          "already-one-torque": "There is already a torque layer in your map"
+          "already-one-torque": "There is already a torque layer in your map",
+          "not-with-labels": "It is not available with labels"
         },
         "animated-overlap": {
           "label": "overlap",

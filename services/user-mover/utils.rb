@@ -37,7 +37,8 @@ module CartoDB
         @metadata_conn ||= PG.connect(host: CartoDB::DataMover::Config.config[:dbhost],
                                       user: CartoDB::DataMover::Config.config[:dbuser],
                                       dbname: CartoDB::DataMover::Config.config[:dbname],
-                                      port: CartoDB::DataMover::Config.config[:dbport])
+                                      port: CartoDB::DataMover::Config.config[:dbport],
+                                      connect_timeout: CartoDB::DataMover::Config.config[:connect_timeout])
       end
 
       def metadata_redis_conn

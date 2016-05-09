@@ -302,21 +302,24 @@ module CartoDB
         @user_conn ||= PG.connect(host: @target_dbhost,
                                   user: @target_dbuser,
                                   dbname: @target_dbname,
-                                  port: @config[:dbport])
+                                  port: @config[:dbport],
+                                  connect_timeout: CartoDB::DataMover::Config.config[:connect_timeout])
       end
 
       def superuser_user_pg_conn
         @superuser_user_conn ||= PG.connect(host: @target_dbhost,
                                             user: @config[:dbuser],
                                             dbname: @target_dbname,
-                                            port: @target_dbport)
+                                            port: @target_dbport,
+                                            connect_timeout: CartoDB::DataMover::Config.config[:connect_timeout])
       end
 
       def superuser_pg_conn
         @superuser_conn ||= PG.connect(host: @target_dbhost,
                                        user: @config[:dbuser],
                                        dbname: 'postgres',
-                                       port: @target_dbport)
+                                       port: @target_dbport,
+                                       connect_timeout: CartoDB::DataMover::Config.config[:connect_timeout])
       end
 
       def drop_database(db_name)

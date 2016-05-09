@@ -45,7 +45,7 @@ describe('dataviews/histogram-dataview-model', function () {
     beforeEach(function () {
       this.model.set('bins', 6);
     });
-    it ('when it is flat', function () {
+    it('when it is flat', function () {
       this.model.set('data', [
         {bin: 0, freq: 25},
         {bin: 1, freq: 26},
@@ -56,7 +56,7 @@ describe('dataviews/histogram-dataview-model', function () {
       ]);
       expect(this.model.getHistogramShape()).toEqual('F');
     });
-    it ('when it is A', function () {
+    it('when it is A', function () {
       this.model.set('data', [
         {bin: 0, freq: 0},
         {bin: 1, freq: 5},
@@ -67,7 +67,7 @@ describe('dataviews/histogram-dataview-model', function () {
       ]);
       expect(this.model.getHistogramShape()).toEqual('A');
     });
-    it ('when it is J', function () {
+    it('when it is J', function () {
       this.model.set('data', [
         {bin: 0, freq: 0},
         {bin: 1, freq: 2},
@@ -78,7 +78,7 @@ describe('dataviews/histogram-dataview-model', function () {
       ]);
       expect(this.model.getHistogramShape()).toEqual('J');
     });
-    it ('when it is L', function () {
+    it('when it is L', function () {
       this.model.set('data', [
         {bin: 0, freq: 25},
         {bin: 1, freq: 18},
@@ -89,17 +89,17 @@ describe('dataviews/histogram-dataview-model', function () {
       ]);
       expect(this.model.getHistogramShape()).toEqual('L');
     });
-   xit ('when it is clustered', function () {
-     this.model.set('data', [
+    xit('when it is clustered', function () {
+      this.model.set('data', [
        {bin: 0, freq: 20},
        {bin: 1, freq: 18},
        {bin: 2, freq: 5},
        {bin: 3, freq: 0},
        {bin: 4, freq: 32},
        {bin: 5, freq: 16}
-     ]);
-     expect(this.model.getHistogramShape()).toEqual('C');
-   });
+      ]);
+      expect(this.model.getHistogramShape()).toEqual('C');
+    });
   });
 
   describe('on unfiltered data model fetch', function () {

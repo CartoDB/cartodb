@@ -127,7 +127,7 @@ module.exports = DataviewModelBase.extend({
 
   getHistogramShape: function () {
     var histogram = this.get('data');
-    var freqAccessor = function (a) { return a.freq };
+    var freqAccessor = function (a) { return a.freq; };
     var osc = d3.max(histogram, freqAccessor) - d3.min(histogram, freqAccessor);
     var mean = d3.mean(histogram, freqAccessor);
     if (osc < mean * 0.1) return 'F';
@@ -140,7 +140,7 @@ module.exports = DataviewModelBase.extend({
       if (freq > next) return -1;
       if (Math.abs(freq - next) <= 0.05) return 0;
       return 1;
-    })
+    });
     ajus.pop();
     var maxAjus = d3.max(ajus);
     var minAjus = d3.min(ajus);
@@ -149,13 +149,13 @@ module.exports = DataviewModelBase.extend({
     else if (minAjus > -1) return 'J';
     else {
       var uniques = _.uniq(ajus);
-      var A_TYPES = [[1,-1], [1,0,-1], [1,-1,0], [0,1,-1]];
-      var U_TYPES = [[-1,1], [-1,0,1], [-1,1,0], [0,-1,1]];
+      var A_TYPES = [[1, -1], [1, 0, -1], [1, -1, 0], [0, 1, -1]];
+      var U_TYPES = [[-1, 1], [-1, 0, 1], [-1, 1, 0], [0, -1, 1]];
       if (A_TYPES.some(function (e) {
-        return _.isEqual(e, uniques)
+        return _.isEqual(e, uniques);
       })) return 'A';
       else if (U_TYPES.some(function (e) {
-        return _.isEqual(e, uniques)
+        return _.isEqual(e, uniques);
       })) return 'U';
       else return 'S';
     }

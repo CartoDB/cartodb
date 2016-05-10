@@ -33,7 +33,12 @@ module Carto
 
     # determine linked tables vs cartodbfied tables consistency; i.e.: needs to run sync
     def user_tables_synced_with_db?
-      fetch_cartodbfied_tables == fetch_user_tables
+      user_tables = fetch_user_tables
+      cartodbfied_tables = fetch_cartodbfied_tables
+
+      false if user_tables.length != cartodbfied_tables.length
+
+      !(user_tables - cartodbfied_tables).empty? || !(cartodbfied_tables - user_tables).empty? ? false : true
     end
 
     # Check if any unsafe stale (dropped or renamed) tables will be shown to the user
@@ -69,12 +74,6 @@ module Carto
       find_regenerated_tables(cartodbfied_tables) |
         find_renamed_tables(cartodbfied_tables)   |
         find_dropped_tables(cartodbfied_tables)
-    end
-
-    def find_unaltered_tables(cartodbfied_tables)
-      cartodbfied_tables - (find_regenerated_tables(cartodbfied_tables) |
-                            find_renamed_tables(cartodbfied_tables)     |
-                            find_new_tables(cartodbfied_tables))
     end
 
     def find_renamed_tables(cartodbfied_tables)

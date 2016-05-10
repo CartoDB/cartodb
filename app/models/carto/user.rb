@@ -28,7 +28,7 @@ class Carto::User < ActiveRecord::Base
   has_many :visualizations, inverse_of: :user
   has_many :maps, inverse_of: :user
   has_many :layers_user
-  has_many :layers, :through => :layers_user
+  has_many :layers, through: :layers_user
 
   belongs_to :organization, inverse_of: :users
   has_one :owned_organization, class_name: Carto::Organization, inverse_of: :owner, foreign_key: :owner_id
@@ -48,13 +48,12 @@ class Carto::User < ActiveRecord::Base
   has_many :oauth_tokens, class_name: Carto::OauthToken
 
   has_many :users_group, dependent: :destroy, class_name: Carto::UsersGroup
-  has_many :groups, :through => :users_group
+  has_many :groups, through: :users_group
 
-  delegate [
-      :database_username, :database_password, :in_database,
-      :db_size_in_bytes, :get_api_calls, :table_count, :public_visualization_count, :all_visualization_count,
-      :visualization_count, :twitter_imports_count
-    ] => :service
+  delegate [:database_username, :database_password, :in_database,
+            :db_size_in_bytes, :get_api_calls, :table_count,
+            :public_visualization_count, :all_visualization_count, :visualization_count,
+            :twitter_imports_count] => :service
 
   attr_reader :password
 

@@ -1,3 +1,4 @@
+var _ = require('underscore');
 var CartoDBLayer = require('../../../../src/geo/map/cartodb-layer');
 var sharedTestsForInteractiveLayers = require('./shared-for-interactive-layers');
 
@@ -13,6 +14,17 @@ describe('geo/map/cartodb-layer', function () {
     var layer = new CartoDBLayer();
     expect(layer.infowindow).toBeDefined();
     expect(layer.tooltip).toBeDefined();
+  });
+
+  _.each(['visible', 'sql', 'source', 'sql_wrap'], function (attribute) {
+    it("should reload the map when '" + attribute + "' attribute changes", function () {
+      var map = jasmine.createSpyObj('map', ['reload']);
+      var layer = new CartoDBLayer({}, { map: map });
+
+      layer.set(attribute, 'new_value');
+
+      expect(map.reload).toHaveBeenCalled();
+    });
   });
 
   describe('.getInteractiveColumnNames', function () {

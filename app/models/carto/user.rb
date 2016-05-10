@@ -191,12 +191,10 @@ class Carto::User < ActiveRecord::Base
   # basemaps are active for the user
   def basemaps
     basemaps = Cartodb.config[:basemaps]
-    if basemaps
-      basemaps.select { |group|
-        g = group == 'GMaps'
-        google_maps_enabled? ? g : !g
-      }
-    end
+
+    return unless basemaps
+
+    google_maps_enabled? ? basemaps.select { |group| group == 'GMaps' } : basemaps.reject { |group| group == 'GMaps' }
   end
 
   def google_maps_enabled?

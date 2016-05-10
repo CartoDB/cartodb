@@ -144,7 +144,7 @@ class Carto::User < ActiveRecord::Base
   end
 
   def organization_username
-    CartoDB.subdomainless_urls? || organization.nil? ? nil : username
+    CartoDB.subdomainless_urls? || !organization ? nil : username
   end
 
   def sql_safe_database_schema

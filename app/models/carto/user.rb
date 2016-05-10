@@ -65,16 +65,17 @@ class Carto::User < ActiveRecord::Base
   alias_method :geocodings_dataset, :geocodings
 
   def name_or_username
-    self.name.present? ? self.name : self.username
+    name.present? ? name : username
   end
 
   def password=(value)
-    return if !value.nil? && value.length < MIN_PASSWORD_LENGTH
-    return if !value.nil? && value.length >= MAX_PASSWORD_LENGTH
+    return if !value.nil? && (value.length < MIN_PASSWORD_LENGTH || value.length >= MAX_PASSWORD_LENGTH)
 
     @password = value
-    self.salt = new_record? ? service.class.make_token : ::User.filter(:id => self.id).select(:salt).first.salt
-    self.crypted_password = service.class.password_digest(value, salt)
+
+    service_class = service.class
+    self.salt = new_record? ? service_class.make_token : ::User.filter(id: id).select(:salt).first.salt
+    self.crypted_password = service_class.password_digest(value, salt)
   end
 
   def password_confirmation=(password_confirmation)

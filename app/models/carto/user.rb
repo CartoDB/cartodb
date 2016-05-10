@@ -404,15 +404,13 @@ class Carto::User < ActiveRecord::Base
     id == user_id || (organization_user? && organization.owner.id == user_id)
   end
 
-  # Some operations, such as user deletion, won't ask for password confirmation if password is not set (because of Google sign in, for example)
+  # Some operations, such as user deletion, won't ask for password confirmation
+  # if password is not set (because of Google sign in, for example)
   def needs_password_confirmation?
-    google_sign_in.nil? || !google_sign_in || !last_password_change_date.nil?
+    !google_sign_in || !!last_password_change_date
   end
 
   def organization_owner?
     organization && organization.owner_id == id
   end
-
-  private
-
 end

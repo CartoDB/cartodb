@@ -94,7 +94,7 @@ class Carto::User < ActiveRecord::Base
   end
 
   def has_feature_flag?(feature_flag_name)
-    feature_flags_names.present? && feature_flags_names.include?(feature_flag_name)
+    featrue_flag_names && featrue_flag_names.include?(feature_flag_name)
   end
 
   # TODO: Revisit methods below to delegate to the service, many look like not proper of the model itself

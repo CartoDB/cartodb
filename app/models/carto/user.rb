@@ -213,12 +213,13 @@ class Carto::User < ActiveRecord::Base
   end
 
   def remaining_geocoding_quota(options = {})
-    if organization.present?
-      remaining = organization.remaining_geocoding_quota(options)
-    else
-      remaining = geocoding_quota - get_geocoding_calls(options)
-    end
-    (remaining > 0 ? remaining : 0)
+    remaining = if organization
+                  organization.remaining_geocoding_quota(options)
+                else
+                  geocoding_quota - get_geocoding_calls(options)
+                end
+
+    [remaining, 0].max
   end
 
   def remaining_here_isolines_quota(options = {})

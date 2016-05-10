@@ -154,15 +154,15 @@ class Carto::User < ActiveRecord::Base
   # returns google maps api key. If the user is in an organization and
   # that organization has api key it's used
   def google_maps_api_key
-    has_organization? ? (organization.google_maps_key || google_maps_key) : google_maps_key
+    org_gmaps_key = organization.google_maps_key
+
+    (has_organization? && org_gmaps_key) ? org_gmaps_key : google_maps_key
   end
 
   def twitter_datasource_enabled
-    if has_organization?
-      organization.twitter_datasource_enabled || read_attribute(:twitter_datasource_enabled)
-    else
-      read_attribute(:twitter_datasource_enabled)
-    end
+    org_twitter_enabled = organization.twitter_datasource_enabled
+
+    (has_organization? && org_twitter_enabled) ? org_twitter_enabled : read_attribute(:twitter_datasource_enabled)
   end
 
   # TODO: this is the correct name for what's stored in the model, refactor changing that name

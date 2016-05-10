@@ -450,6 +450,7 @@
     },
     "style": {
       "types": {
+        "none": "...",
         "simple": "none",
         "hexabins": "hexabins",
         "squares": "squares",
@@ -473,6 +474,11 @@
         "labels-enabled": {
           "label": "labels",
           "not-with-animated": "It won't be available with animated"
+        },
+        "labels-attribute": {
+          "label": "column",
+          "loading": "Loading node schema...",
+          "error": "There was an error fetching node schema..."
         },
         "labels-font": "font",
         "labels-offset": "offset",
@@ -498,6 +504,11 @@
           "label": "animated",
           "already-one-torque": "There is already a torque layer in your map",
           "not-with-labels": "It won't be available with labels"
+        },
+        "animated-attribute": {
+          "label": "column",
+          "loading": "Loading node schema...",
+          "error": "There was an error fetching node schema..."
         },
         "animated-overlap": {
           "label": "overlap",

@@ -242,6 +242,11 @@ class Carto::User < ActiveRecord::Base
     [remaining_obs_snapshot_quota, 0].max
   end
 
+  # remaining_table_quota can return nil
+  def remaining_table_quota
+    [table_quota - service.table_count, 0].max unless !table_quota.present
+  end
+
   def oauth_for_service(service)
     synchronization_oauths.where(service: service).first
   end
@@ -318,17 +323,9 @@ class Carto::User < ActiveRecord::Base
     [to_date, from_date]
   end
 
-  #TODO: Remove unused param `use_total`
-  def remaining_quota(use_total = false, db_size = service.db_size_in_bytes)
-    self.quota_in_bytes - db_size
-  end
-
-  #can be nil table quotas
-  def remaining_table_quota
-    if self.table_quota.present?
-      remaining = self.table_quota - service.table_count
-      (remaining < 0) ? 0 : remaining
-    end
+  # TODO: Remove unused param `use_total`
+  def remaining_quota(_use_total = false, db_size = service.db_size_in_bytes)
+    quota_in_bytes - db_size
   end
 
   def organization_user?

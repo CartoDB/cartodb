@@ -262,8 +262,11 @@ class Carto::User < ActiveRecord::Base
   end
 
   def last_billing_cycle
-    day = period_end_date.day rescue 29.days.ago.day
-    date = (day > Date.today.day ? (Date.today - 1.month) : Date.today)
+    day = period_end_date.day || 29.days.ago.day
+
+    date_today = Date.today
+    date = (day > date_today.day ? (date_today - 1.month) : date_today)
+
     begin
       Date.parse("#{date.year}-#{date.month}-#{day}")
     rescue ArgumentError

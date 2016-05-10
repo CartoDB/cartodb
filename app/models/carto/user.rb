@@ -87,12 +87,10 @@ class Carto::User < ActiveRecord::Base
   end
 
   def feature_flag_names
-    @feature_flag_names ||= (self.feature_flags_user.map { |ff|
-                                                            ff.feature_flag.name
-                                                          } +
-                            FeatureFlag.where(restricted: false).map { |ff|
-                                                                        ff.name
-                                                                      }).uniq.sort
+    @feature_flag_names ||= (feature_flags_user.map { |ff| ff.feature_flag.name } +
+                             FeatureFlag.where(restricted: false).map(&:name))
+                            .uniq
+                            .sort
   end
 
   # TODO: Revisit methods below to delegate to the service, many look like not proper of the model itself

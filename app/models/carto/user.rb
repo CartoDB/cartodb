@@ -132,7 +132,7 @@ class Carto::User < ActiveRecord::Base
   end
 
   def has_organization?
-    !organization_id.nil?
+    !!organization_id
   end
 
   def avatar

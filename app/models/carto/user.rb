@@ -213,31 +213,33 @@ class Carto::User < ActiveRecord::Base
   end
 
   def remaining_geocoding_quota(options = {})
-    remaining = if organization
-                  organization.remaining_geocoding_quota(options)
-                else
-                  geocoding_quota - get_geocoding_calls(options)
-                end
+    remaining_geocoding_quota = if organization
+                                  organization.remaining_geocoding_quota(options)
+                                else
+                                  geocoding_quota - get_geocoding_calls(options)
+                                end
 
-    [remaining, 0].max
+    [remaining_geocoding_quota, 0].max
   end
 
   def remaining_here_isolines_quota(options = {})
-    if organization.present?
-      remaining = organization.remaining_here_isolines_quota(options)
-    else
-      remaining = here_isolines_quota - get_here_isolines_calls(options)
-    end
-    (remaining > 0 ? remaining : 0)
+    remaining_here_isolines_quota = if organization
+                                      organization.remaining_here_isolines_quota(options)
+                                    else
+                                      here_isolines_quota - get_here_isolines_calls(options)
+                                    end
+
+    [remaining_here_isolines_quota, 0].max
   end
 
   def remaining_obs_snapshot_quota(options = {})
-    if organization.present?
-      remaining = organization.remaining_obs_snapshot_quota(options)
-    else
-      remaining = obs_snapshot_quota - get_obs_snapshot_calls(options)
-    end
-    (remaining > 0 ? remaining : 0)
+    remaining_obs_snapshot_quota = if organization
+                                     organization.remaining_obs_snapshot_quota(options)
+                                   else
+                                     obs_snapshot_quota - get_obs_snapshot_calls(options)
+                                   end
+
+    [remaining_obs_snapshot_quota, 0].max
   end
 
   def oauth_for_service(service)

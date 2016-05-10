@@ -19,7 +19,7 @@ module CartoDB
       SCHEMA_IMPORTER = 'cdb_importer'.freeze
       SCHEMA_GEOCODING = 'cdb'.freeze
       SCHEMA_CDB_DATASERVICES_API = 'cdb_dataservices_client'.freeze
-      CDB_DATASERVICES_CLIENT_VERSION = '0.3.0'.freeze
+      CDB_DATASERVICES_CLIENT_VERSION = '0.4.0'.freeze
 
       def initialize(user)
         raise "User nil" unless user

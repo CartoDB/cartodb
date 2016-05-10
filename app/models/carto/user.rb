@@ -276,11 +276,7 @@ class Carto::User < ActiveRecord::Base
   end
 
   def get_geocoding_calls(options = {})
-    to = options[:to]
-    from = options[:from]
-
-    date_to = to ? to.to_date : Date.today
-    date_from = from ? from.to_date : last_billing_cycle
+    date_to, date_from = parse_date_to_date_from_options(options)
 
     if has_feature_flag?('new_geocoder_quota')
       get_user_geocoding_data(self, date_from, date_to)
@@ -295,21 +291,31 @@ class Carto::User < ActiveRecord::Base
   end
 
   def get_new_system_geocoding_calls(options = {})
-    date_to = (options[:to] ? options[:to].to_date : Date.current)
-    date_from = (options[:from] ? options[:from].to_date : last_billing_cycle)
+    date_to, date_from = parse_date_to_date_from_options(options)
+
     get_user_geocoding_data(self, date_from, date_to)
   end
 
   def get_here_isolines_calls(options = {})
-    date_to = (options[:to] ? options[:to].to_date : Date.today)
-    date_from = (options[:from] ? options[:from].to_date : last_billing_cycle)
+    date_to, date_from = parse_date_to_date_from_options(options)
+
     get_user_here_isolines_data(self, date_from, date_to)
   end
 
   def get_obs_snapshot_calls(options = {})
-    date_to = (options[:to] ? options[:to].to_date : Date.today)
-    date_from = (options[:from] ? options[:from].to_date : last_billing_cycle)
+    date_to, date_from = parse_date_to_date_from_options(options)
+
     get_user_obs_snapshot_data(self, date_from, date_to)
+  end
+
+  def parse_date_to_date_from_options(options)
+    to = options[:to]
+    from = options[:from]
+
+    to_date = to ? to.to_date : Date.today
+    from_date = from ? from.to_date : last_billing_cycle
+
+    [to_date, from_date]
   end
 
   #TODO: Remove unused param `use_total`
